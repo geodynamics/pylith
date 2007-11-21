@@ -14,6 +14,8 @@ subpackage = utils
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
+	EventLogger.hh \
+	EventLogger.icc \
 	array.hh \
 	arrayfwd.hh \
 	macrodefs.h \

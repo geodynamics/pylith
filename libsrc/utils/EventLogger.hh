@@ -11,37 +11,40 @@
 //
 
 /**
- * @file pylith/utils/PetscLogger.hh
+ * @file pylith/utils/EventLogger.hh
  *
- * @brief C++ object for managing PETSc logger.
+ * @brief C++ object for managing event logging using PETSc.
  *
  * Each logger object manages the events for a single "logging class".
  */
 
-#if !defined(pylith_utils_petsclogger_hh)
-#define pylith_utils_petsclogger_hh
+#if !defined(pylith_utils_eventlogger_hh)
+#define pylith_utils_eventlogger_hh
 
 #include <string> // USES std::string
+#include <map> // USES std::map
+
+#include "petsclog.h" // USES PetscLogEventBegin/End() in inline methods
 
 namespace pylith {
   namespace utils {
-    class PetscLogger;
-    class TestPetscLogger;
+    class EventLogger;
+    class TestEventLogger; // unit testing
   } // utils
 } // pylith
 
-class pylith::utils::PetscLogger
-{ // Integrator
-  friend class TestPetscLogger; // unit testing
+class pylith::utils::EventLogger
+{ // EventLogger
+  friend class TestEventLogger; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
-  PetscLogger(void);
+  EventLogger(void);
 
   /// Destructor
-  ~PetscLogger(void);
+  ~EventLogger(void);
 
   /** Set name of logging class.
    *
@@ -55,11 +58,17 @@ public :
    */
   const char* className(void) const;
 
+  /// Setup logging class.
+  void initialize(void);
+
   /** Register event.
    *
+   * @prerequisite Must call initialize() before registerEvent().
+   * 
    * @param name Name of event.
+   * @returns Event identifier.
    */
-  void registerEvent(const char* name);
+  int registerEvent(const char* name);
 
   /** Get event identifier.
    *
@@ -72,32 +81,37 @@ public :
    *
    * @param id Event identifier.
    */
-  void eventBegin(const int id)
+  void eventBegin(const int id);
 
   /** Log event end.
    *
    * @param id Event identifier.
    */
-  void eventEnd(const int id)
-
+  void eventEnd(const int id);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
-  PetscLogger(const PetscLogger&); ///< Not implemented
-  const PetscLogger& operator=(const PetscLogger&); ///< Not implemented
+  EventLogger(const EventLogger&); ///< Not implemented
+  const EventLogger& operator=(const EventLogger&); ///< Not implemented
+
+// PRIVATE TYPEDEFS /////////////////////////////////////////////////////
+private :
+
+  typedef std::map<std::string,int> map_event_type;
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
   std::string _className; ///< Name of logging class
-  std::map<string, int> _events;
+  int _classId; ///< PETSc logging identifier for class
+  map_event_type _events; ///< PETSc logging identifiers for events
 
-}; // PetscLogger
+}; // EventLogger
 
-#include "PetscLogger.icc" // inline methods
+#include "EventLogger.icc" // inline methods
 
-#endif // pylith_utils_petsclogger_hh
+#endif // pylith_utils_eventlogger_hh
 
 
 // End of file 
