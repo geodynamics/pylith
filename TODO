@@ -17,24 +17,13 @@ Release 1.0.2
 
 Release 1.1
 
-  0. Test dynamic time stepping.
-     Switch to more efficient restrict(). Need tags in ElasticityExplicit.
-     Can we refactor some of the elasticity integration stuff that is 
-     common to both implicit and explicit time stepping?
-
   1. Finish Neumann BC.
 
   2. Finish velocity Dirichlet BC.
 
   3. Generalized Maxwell viscoelastic model
 
-  4. Move PETSc logging out of modules.
-
-    Logging class
-    LogIntegrator class
-    LogConstraint class
-
-  5. Reimplement SolutionIO.
+  4. Reimplement SolutionIO.
      a. Reimplement SolutionIOVTK
      b. Implement SolutionIOHDF5
 
@@ -120,7 +109,7 @@ General
 
 Release 1.2
 
-  1. Dynamic fault interface conditions
+  1. Dynamic fault interface conditions.
 
   2. Fault constitutive models
 
