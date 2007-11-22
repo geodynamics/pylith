@@ -27,6 +27,8 @@
 
 #include <math.h> // USES fabs()
 
+#include <stdexcept> // USES std::exception
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicit );
 
