@@ -77,6 +77,7 @@ class Dirichlet(BoundaryCondition, Constraint):
     """
     BoundaryCondition.__init__(self, name)
     Constraint.__init__(self)
+    self._loggingPrefix = "DiBC "
     self.fixedDOF = []
     return
 
@@ -86,6 +87,7 @@ class Dirichlet(BoundaryCondition, Constraint):
     Do pre-initialization setup.
     """
     BoundaryCondition.preinitialize(self, mesh)
+    Constraint.preinitialize(self, mesh)
     self.cppHandle.fixedDOF = self.fixedDOF    
     return
 
@@ -94,7 +96,11 @@ class Dirichlet(BoundaryCondition, Constraint):
     """
     Initialize Dirichlet boundary condition.
     """
+    logEvent = "%sinit" % self._loggingPrefix
+
+    self._logger.eventBegin(logEvent)    
     BoundaryCondition.initialize(self)
+    self._logger.eventEnd(logEvent)    
     return
   
 
@@ -116,6 +122,18 @@ class Dirichlet(BoundaryCondition, Constraint):
     if None == self.cppHandle:
       import pylith.bc.bc as bindings
       self.cppHandle = bindings.Dirichlet()    
+    return
+  
+
+  def _setupLogging(self):
+    """
+    Setup event logging.
+    """
+    Constraint._setupLogging(self)
+
+    events = ["init"]
+    for event in events:
+      self._logger.registerEvent("%s%s" % (self._loggingPrefix, event))
     return
   
 

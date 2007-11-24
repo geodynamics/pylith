@@ -17,13 +17,28 @@ Release 1.0.2
 
 Release 1.1
 
-  1. Finish Neumann BC.
+  1. EventLogging
+   
+     Is FaultCohesiveKin an integrator?
+     Neumann
+  
+  2. Optimization of restrict()/update()
 
-  2. Finish velocity Dirichlet BC.
+     Add tags management to FieldsManager
 
-  3. Generalized Maxwell viscoelastic model
+     a. Fault
+     b. Absorbing BC
+     c. Neumann BC
 
-  4. Reimplement SolutionIO.
+  3. Nonisoparametric cells
+
+  4. Finish Neumann BC.
+
+  5. Finish velocity Dirichlet BC.
+
+  6. Generalized Maxwell viscoelastic model
+
+  7. Reimplement SolutionIO.
      a. Reimplement SolutionIOVTK
      b. Implement SolutionIOHDF5
 

@@ -52,8 +52,6 @@ class Integrator(object):
     """
     self.quadrature = None
     self.mesh = None
-    from pylith.utils.EventLogger import EventLogger
-
     return
 
 

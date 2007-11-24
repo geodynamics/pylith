@@ -19,9 +19,10 @@
 ## Factory: fault
 
 from FaultCohesive import FaultCohesive
+from pylith.feassemble.Integrator import Integrator
 
 # FaultCohesiveKin class
-class FaultCohesiveKin(FaultCohesive):
+class FaultCohesiveKin(FaultCohesive, Integrator):
   """
   Python object for a fault surface with kinematic (prescribed) slip
   implemented with cohesive elements.
@@ -60,6 +61,8 @@ class FaultCohesiveKin(FaultCohesive):
     Initialize configuration.
     """
     FaultCohesive.__init__(self, name)
+    Integrator.__init((self, name)
+    self._loggingPrefix = "FaCK "
     return
 
 
@@ -69,6 +72,7 @@ class FaultCohesiveKin(FaultCohesive):
     """
     self._info.log("Pre-initializing fault '%s'." % self.label)
     FaultCohesive.preinitialize(self, mesh)
+    Integrator.preinitialize(self, mesh)
     assert(None != self.cppHandle)
     self.eqsrc.preinitialize()
     self.cppHandle.eqsrc = self.eqsrc.cppHandle
@@ -80,8 +84,7 @@ class FaultCohesiveKin(FaultCohesive):
     Verify compatibility of configuration.
     """
     FaultCohesive.verifyConfiguration(self)
-    assert(None != self.cppHandle)
-    self.cppHandle.verifyConfiguration(self.mesh.cppHandle)
+    Integrator.verifyConfiguration(self)
     return
 
 
@@ -94,81 +97,6 @@ class FaultCohesiveKin(FaultCohesive):
     FaultCohesive.initialize(self)
     return
 
-
-  def timeStep(self, dt):
-    """
-    Set time step for advancing from time t to time t+dt.
-    """
-    self._createCppHandle()
-    self.cppHandle.timeStep = dt.value
-    return
-
-
-  def stableTimeStep(self):
-    """
-    Get stable time step for advancing from time t to time t+dt.
-    """
-    assert(None != self.cppHandle)
-    from pyre.units.time import second
-    return self.cppHandle.stableTimeStep*second
-
-
-  def integrateResidual(self, residual, t, fields):
-    """
-    Integrate contributions to residual term at time t.
-    """
-    self._info.log("Integrating residual for fault '%s'." % self.label)
-    assert(None != self.cppHandle)
-    self.cppHandle.integrateResidual(residual, t.value, fields.cppHandle,
-                                     self.mesh.cppHandle)
-    return
-
-
-  def needNewJacobian(self):
-    """
-    Returns true if we need to recompute Jacobian matrix for operator,
-    false otherwise.
-    """
-    self._createCppHandle()
-    return self.cppHandle.needNewJacobian
-
-
-  def useSolnIncr(self, flag):
-    """
-    Set flag indicating whether using total soluton field of increment.
-    """
-    self._createCppHandle()
-    self.cppHandle.useSolnIncr = flag
-    return
-
-
-  def integrateJacobian(self, jacobian, t, fields):
-    """
-    Integrate contributions to Jacobian term at time t.
-    """
-    self._info.log("Integrating Jacobian for fault '%s'." % self.label)
-    assert(None != self.cppHandle)
-    self.cppHandle.integrateJacobian(jacobian, t.value, fields.cppHandle,
-                                     self.mesh.cppHandle)
-    return
-
-
-  def updateState(self, t, field):
-    """
-    Update state variables as needed.
-    """
-    self._info.log("Updating state for fault '%s'." % self.label)
-    assert(None != self.cppHandle)
-    self.cppHandle.updateState(t.value, field, self.mesh.cppHandle)
-    return
-    
-
-  def finalize(self):
-    """
-    Cleanup after time stepping.
-    """
-    return
-  
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
