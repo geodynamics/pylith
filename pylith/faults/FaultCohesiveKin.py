@@ -61,7 +61,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     Initialize configuration.
     """
     FaultCohesive.__init__(self, name)
-    Integrator.__init((self, name)
+    Integrator.__init__(self)
     self._loggingPrefix = "FaCK "
     return
 
