@@ -58,6 +58,7 @@ class Constraint(object):
     Setup constraint.
     """
     self.mesh = mesh
+    self._setupLogging()
     return
 
 
@@ -65,6 +66,7 @@ class Constraint(object):
     """
     Verify compatibility of configuration.
     """
+    logEvent = "%sverify" % self._loggingPrefix
     return
 
 
@@ -81,8 +83,12 @@ class Constraint(object):
     """
     Set constraint sizes in field.
     """
+    logEvent = "%ssetSizes" % self._loggingPrefix
+
     assert(None != self.cppHandle)
+    self._logger.eventBegin(logEvent)
     self.cppHandle.setConstraintSizes(field, self.mesh.cppHandle)
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -90,8 +96,12 @@ class Constraint(object):
     """
     Set constraints for field.
     """
+    logEvent = "%sconstraints" % self._loggingPrefix
+
     assert(None != self.cppHandle)
+    self._logger.eventBegin(logEvent)
     self.cppHandle.setConstraints(field, self.mesh.cppHandle)
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -108,8 +118,12 @@ class Constraint(object):
     """
     Set constrained values in field at time t.
     """
+    logEvent = "%ssetField" % self._loggingPrefix
+
     assert(None != self.cppHandle)
+    self._logger.eventBegin(logEvent)
     self.cppHandle.setField(t.value, field, self.mesh.cppHandle)
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -117,6 +131,32 @@ class Constraint(object):
     """
     Cleanup after time stepping.
     """
+    return
+  
+
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _setupLogging(self):
+    """
+    Setup event logging.
+    """
+    if None == self._loggingPrefix:
+      self._loggingPrefix = ""
+
+    from pylith.utils.EventLogger import EventLogger
+    logger = EventLogger()
+    logger.setClassName("FE Constraint")
+    logger.initialize()
+
+    events = ["verify",
+              "setSizes",
+              "constraints",
+              "setField",
+              "finalize"]
+    for event in events:
+      logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+
+    self._logger = logger
     return
   
 
