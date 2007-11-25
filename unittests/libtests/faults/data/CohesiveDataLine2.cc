@@ -17,7 +17,7 @@
  *   2 -------- 3 -------- 4
  *
  * After adding cohesive elements
- *   2 -------- 3 -- 5 -------- 4
+ *   2 -------- 5 -- 3 -------- 4
  */
 
 #include "CohesiveDataLine2.hh"
@@ -44,8 +44,8 @@ const int pylith::faults::CohesiveDataLine2::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataLine2::_cells[] = {
-       2,  3,
-       5,  4,
+       2,  5,
+       3,  4,
        3,  5,
 };
 

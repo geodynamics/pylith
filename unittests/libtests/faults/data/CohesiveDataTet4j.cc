@@ -51,13 +51,13 @@ const int pylith::faults::CohesiveDataTet4j::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataTet4j::_cells[] = {
-  7,  9,  8,  6,
-  17, 15, 13, 14,
+   7,  9,  8,  6,
+  11,  9, 13, 14,
   16, 13, 17, 15,
   10,  9, 11,  7,
-  15, 13, 14, 12,
-  7, 11,  8,   9,
-  11, 9, 10, 17, 15, 16
+   9, 13, 14, 12,
+   7, 11,  8,  9,
+   9, 10, 11, 15, 16, 17
 };
 
 const int pylith::faults::CohesiveDataTet4j::_materialIds[] = {

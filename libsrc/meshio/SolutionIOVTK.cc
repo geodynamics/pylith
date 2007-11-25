@@ -144,6 +144,9 @@ pylith::meshio::SolutionIOVTK::writeVertexField(
     buffer.str("");
     buffer << name << "_verify_t" << t;
     err = SectionView_Sieve_Ascii(mesh, field, buffer.str().c_str(), _viewer, -4);
+    if (mesh->hasRealSection("problemNodes")) {
+      err = SectionView_Sieve_Ascii(mesh, mesh->getRealSection("problemNodes"), "problemNodes", _viewer);
+    }
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << name << "' at time " 
