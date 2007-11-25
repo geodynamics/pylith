@@ -12,31 +12,31 @@
 
 /* Original mesh
  *
- * Cells are 0-3, vertices are 4-12.
+ * Cells are 0-4, vertices are 5-15.
  *
  *       7 --------12 --------15
  *       |          |          |
  *       |          |          |
  *       |          |          |
- *       |          |          |
+ *       |     0    |    2     |
  *       |          |          |
  *       |          |          |
  *       |          |          |
  *       |          |          |
  *       6 --------11 --------14
  *       |        / |          |
- *       |       /  |          |
+ *       |   3   /  |          |
  *       |      /   |          |
  *       5-----9    |          |
- *             |    |          |
- *             |    |          |
+ *             |    |    1     |
+ *             | 4  |          |
  *             |    |          |
  *             |    |          |
  *             8---10 --------13
  *
  * After adding cohesive elements
  *
- * Cells are 0-3,16-17 vertices are 4-15.
+ * Cells are 0-4,19-20 vertices are 5-18.
  *
  *       7 --------12 -- 18 --------15
  *       |          |     |          |
@@ -97,13 +97,13 @@ const int pylith::faults::CohesiveDataQuad4g::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataQuad4g::_cells[] = {
-  6, 17, 18,  7,
- 11, 10, 13, 14,
- 15, 12, 11, 14,
-  6,  5,  9, 17,
-  9,  8, 16, 17,
- 11, 10, 17, 16,
- 12, 11, 18, 17,
+  6, 11, 12,  7,
+ 17, 16, 13, 14,
+ 15, 18, 17, 14,
+  6,  5,  9, 11,
+  9,  8, 10, 11,
+ 10, 11, 16, 17,
+ 11, 12, 17, 18,
 };
 
 const int pylith::faults::CohesiveDataQuad4g::_materialIds[] = {
