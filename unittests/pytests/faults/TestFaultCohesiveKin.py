@@ -94,7 +94,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     from pyre.units.time import second
     dt = 2.4*second
-    fault = FaultCohesiveKin()
+    (mesh, fault, fields) = self._initialize()
     fault.timeStep = dt
     self.assertEqual(dt, fault.timeStep)
     return
@@ -105,8 +105,8 @@ class TestFaultCohesiveKin(unittest.TestCase):
     Test stableTimeStep().
     """
     from pyre.units.time import second
-    dt = 2.3*second
-    fault = FaultCohesiveKin()
+    dt = 2.4*second
+    (mesh, fault, fields) = self._initialize()
     fault.timeStep(dt)
     self.assertEqual(dt, fault.stableTimeStep())
     return
@@ -213,7 +213,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     Initialize fault.
     """
     from pyre.units.time import second
-    dt = 1.0*second
+    dt = 2.4*second
     
     # Setup mesh
     cs = CSCart()
@@ -280,9 +280,9 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault.quadrature = quadrature
     fault.eqsrc = eqsrc
     fault.matDB = dbMat
-    fault.timeStep(dt)
     fault.adjustTopology(mesh)
     fault.preinitialize(mesh)
+    fault.timeStep(dt)
     fault.initialize()
 
     # Setup fields
