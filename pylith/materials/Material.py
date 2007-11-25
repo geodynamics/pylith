@@ -66,8 +66,7 @@ class Material(Component):
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     db = pyre.inventory.facility("db", family="spatial_database",
-                                 factory=SimpleDB,
-                                 args=["db"])
+                                 factory=SimpleDB)
     db.meta['tip'] = "Database of material property parameters."
     
     from pylith.feassemble.quadrature.Quadrature import Quadrature
