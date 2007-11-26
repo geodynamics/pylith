@@ -176,14 +176,15 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 	 ++iQuadPt, index+=spaceDim) {
       const int err = _db->query(&queryData[0], numValues, &quadPts[index],
 				 spaceDim, cs);
+
       if (err) {
 	std::ostringstream msg;
 	msg << "Could not find parameters for physical properties at \n"
 	    << "(";
 	for (int i=0; i < spaceDim; ++i)
-	  msg << "  " << quadPts[index+spaceDim];
+	  msg << "  " << quadPts[index+i];
 	msg << ") in material " << _label << "\n"
-	    << "using spatial database " << _db->label() << ".";
+	    << "using spatial database '" << _db->label() << "'.";
 	throw std::runtime_error(msg.str());
       } // if
       _dbToParameters(&paramData, queryData);
