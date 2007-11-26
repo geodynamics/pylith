@@ -17,7 +17,7 @@
  *   2 -------- 3 -------- 4
  *
  * After adding cohesive elements
- *   2 -------- 3 -6- 5 -------- 4
+ *   2 -------- 5 -6- 3 -------- 4
  */
 
 #include "CohesiveDataLine2Lagrange.hh"
@@ -45,8 +45,8 @@ const int pylith::faults::CohesiveDataLine2Lagrange::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataLine2Lagrange::_cells[] = {
-       2,  3,
-       5,  4,
+       2,  5,
+       3,  4,
        3,  5,  6
 };
 
