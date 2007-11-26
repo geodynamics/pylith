@@ -70,8 +70,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   const PointSet::const_iterator fvEnd   = faultVertices.end();
 
   int f = sieve->base()->size() + sieve->cap()->size();
-  //int debug = mesh->debug();
-  int debug = 1;
+  int debug = mesh->debug();
   ALE::Obj<PointSet> face = new PointSet();
   PointSet faultCells;
   
@@ -173,7 +172,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
           } // for
 #endif
           faultSieve->addArrow(f, *c_iter);
-          faultSieve->view("");
+          //faultSieve->view("");
           f++;
         } // if/else
         faultCells.insert(*c_iter);
