@@ -31,7 +31,7 @@ SimpleDB {
     to-meters = 1.0
     ellipsoid = clrk66
     datum-horiz = NAD27
-    datum-vert = ellipsoid
+    datum-vert = mean sea level
     projector = projection {
       projection = utm
       units = m
