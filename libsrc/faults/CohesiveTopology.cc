@@ -70,7 +70,8 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   const PointSet::const_iterator fvEnd   = faultVertices.end();
 
   int f = sieve->base()->size() + sieve->cap()->size();
-  int debug = mesh->debug();
+  //int debug = mesh->debug();
+  int debug = 1;
   ALE::Obj<PointSet> face = new PointSet();
   PointSet faultCells;
   
@@ -129,7 +130,6 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
         if (fDim < 2) {
           preFace = faultSieve->nJoin1(face);
         } else {
-          std::cout << "  Using general nJoin()" << std::endl;
           preFace = faultSieve->nJoin(face, fDim);
         }
 
@@ -191,10 +191,15 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   // Must check the orientation here
   const Mesh::point_type firstFaultCell = *(*fault)->heightStratum(1)->begin();
   const ALE::Obj<Mesh::label_sequence>& fFaces = (*fault)->heightStratum(2);
+  const int              numFaultFaces  = fFaces->size();
   int faultDepth      = (*fault)->depth()-1; // Depth of fault cells
   int numFaultCorners = 0; // The number of vertices in a fault cell
   int faultFaceSize   = 0; // The number of vertices in a face between fault cells
-  PointSet flippedFaces;   // Incorrectly oriented fault cells
+  PointSet flippedCells;   // Incorrectly oriented fault cells
+  PointSet facesSeen;      // Fault faces already considered
+  PointSet cellsSeen;      // Fault cells already matched
+  Obj<PointSet> newCells  = new PointSet();
+  Obj<PointSet> loopCells = new PointSet();
 
   if (!(*fault)->commRank()) {
     numFaultCorners = faultSieve->nCone(firstFaultCell, faultDepth)->size();
@@ -212,65 +217,105 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   }
   if (debug) std::cout << "  Fault face size " << faultFaceSize << std::endl;
 
-  // Loop over fault faces
-  for(Mesh::label_sequence::iterator e_iter = fFaces->begin(); e_iter != fFaces->end(); ++e_iter) {
-    if (debug) std::cout << "  Checking orientation of fault face " << *e_iter << std::endl;
-    // for each face get the support (2 fault cells)
-    const Obj<sieve_type::traits::supportSequence>& support = faultSieve->support(*e_iter);
-    sieve_type::traits::supportSequence::iterator   s_iter  = support->begin();
+  newCells->insert(firstFaultCell);
+  while(facesSeen.size() != numFaultFaces) {
+    Obj<PointSet> tmp = newCells; newCells = loopCells; loopCells = tmp;
+        
+    newCells->clear();
+    if (!loopCells->size()) {throw ALE::Exception("Fault surface not a single connected component.");}
+    // Loop over new cells
+    for(PointSet::iterator c_iter = loopCells->begin(); c_iter != loopCells->end(); ++c_iter) {
+      // Loop over edges of this cell
+      const Obj<sieve_type::traits::coneSequence>&     cone   = faultSieve->cone(*c_iter);
+      const sieve_type::traits::coneSequence::iterator eBegin = cone->begin();
+      const sieve_type::traits::coneSequence::iterator eEnd   = cone->end();
 
-    // Throw out boundary fault faces
-    if (support->size() > 1) {
-      Mesh::point_type cellA = *s_iter; ++s_iter;
-      Mesh::point_type cellB = *s_iter;
-      bool flippedA = (flippedFaces.find(cellA) != flippedFaces.end());
-      bool flippedB = (flippedFaces.find(cellB) != flippedFaces.end());
+      for(sieve_type::traits::coneSequence::iterator e_iter = eBegin; e_iter != eEnd; ++e_iter) {
+        if (facesSeen.find(*e_iter) != facesSeen.end()) continue;
+        facesSeen.insert(*e_iter);
+        if (debug) std::cout << "  Checking orientation of fault face " << *e_iter << std::endl;
+        const Obj<sieve_type::traits::supportSequence>& support = faultSieve->support(*e_iter);
+        sieve_type::traits::supportSequence::iterator   s_iter  = support->begin();
 
-      if (debug) std::cout << "    neighboring cells " << cellA << " and " << cellB << std::endl;
-      if (flippedA && flippedB) {throw ALE::Exception("Fault mesh is non-orientable");}
-      // In 1D, just check that vertices match
-      if (fDim == 1) {
-        const Obj<sieve_type::traits::coneSequence>& coneA = faultSieve->cone(cellA);
-        sieve_type::traits::coneSequence::iterator   iterA = coneA->begin();
-        const Obj<sieve_type::traits::coneSequence>& coneB = faultSieve->cone(cellB);
-        sieve_type::traits::coneSequence::iterator   iterB = coneB->begin();
-        int posA, posB;
+        // Throw out boundary fault faces
+        if (support->size() < 2) continue;
+        Mesh::point_type cellA = *s_iter; ++s_iter;
+        Mesh::point_type cellB = *s_iter;
+        bool flippedA = (flippedCells.find(cellA) != flippedCells.end());
+        bool flippedB = (flippedCells.find(cellB) != flippedCells.end());
+        bool seenA    = (cellsSeen.find(cellA) != cellsSeen.end());
+        bool seenB    = (cellsSeen.find(cellB) != cellsSeen.end());
 
-        for(posA = 0; posA < 2; ++posA, ++iterA) if (*iterA == *e_iter) break;
-        for(posB = 0; posB < 2; ++posB, ++iterB) if (*iterB == *e_iter) break;
-        if (debug) std::cout << "    with face positions " << posA << " and " << posB << std::endl;
-        if ((posA == 2) || (posB == 2)) {throw ALE::Exception("Could not find fault face in cone");}
-        if ((posA == posB) ^ (flippedA || flippedB)) {
-          std::cout << "Invalid orientation in fault mesh" << std::endl;
-          std::cout << "  fault face: " << *e_iter << "  cellA: " << cellA << "  cellB: " << cellB << std::endl;
-          //throw ALE::Exception("Invalid orientation in fault mesh");
-          if (!flippedA) {
-            flippedFaces.insert(cellA);
-          } else if (!flippedB) {
-            flippedFaces.insert(cellB);
+        if (!seenA) newCells->insert(cellA);
+        if (!seenB) newCells->insert(cellB);
+        if (debug) std::cout << "    neighboring cells " << cellA << " and " << cellB << std::endl;
+        // In 1D, just check that vertices match
+        if (fDim == 1) {
+          const Obj<sieve_type::traits::coneSequence>& coneA = faultSieve->cone(cellA);
+          sieve_type::traits::coneSequence::iterator   iterA = coneA->begin();
+          const Obj<sieve_type::traits::coneSequence>& coneB = faultSieve->cone(cellB);
+          sieve_type::traits::coneSequence::iterator   iterB = coneB->begin();
+          int posA, posB;
+
+          for(posA = 0; posA < 2; ++posA, ++iterA) if (*iterA == *e_iter) break;
+          for(posB = 0; posB < 2; ++posB, ++iterB) if (*iterB == *e_iter) break;
+          if (debug) std::cout << "    with face positions " << posA << " and " << posB << std::endl;
+          if ((posA == 2) || (posB == 2)) {throw ALE::Exception("Could not find fault face in cone");}
+          if ((posA == posB) ^ (flippedA || flippedB)) {
+            if (debug) {
+              std::cout << "Invalid orientation in fault mesh" << std::endl;
+              std::cout << "  fault face: " << *e_iter << "  cellA: " << cellA << "  cellB: " << cellB << std::endl;
+            }
+            if (flippedA && flippedB) {throw ALE::Exception("Attempt to flip already flipped cell: Fault mesh is non-orientable");}
+            if (seenA    && seenB)    {throw ALE::Exception("Previous cells do not match: Fault mesh is non-orientable");}
+            if (!seenA && !flippedA) {
+              flippedCells.insert(cellA);
+            } else if (!seenB && !flippedB) {
+              flippedCells.insert(cellB);
+            } else {
+              throw ALE::Exception("Inconsistent mesh orientation: Fault mesh is non-orientable");
+            }
+          }
+        } else if (fDim == 2) {
+          // Check orientation
+          ALE::MinimalArrow<sieve_type::point_type,sieve_type::point_type> arrowA(*e_iter, cellA);
+          const int oA = orientation->restrictPoint(arrowA)[0];
+          ALE::MinimalArrow<sieve_type::point_type,sieve_type::point_type> arrowB(*e_iter, cellB);
+          const int oB = orientation->restrictPoint(arrowB)[0];
+          const bool mismatch = (oA == oB);
+
+          // Truth Table
+          // mismatch    flips   action   mismatch   flipA ^ flipB   action
+          //    F       0 flips    no        F             F           F
+          //    F       1 flip     yes       F             T           T
+          //    F       2 flips    no        T             F           T
+          //    T       0 flips    yes       T             T           F
+          //    T       1 flip     no
+          //    T       2 flips    yes
+          if (mismatch ^ (flippedA ^ flippedB)) {
+            if (debug) {
+              std::cout << "Invalid orientation in fault mesh" << std::endl;
+              std::cout << "  fault face: " << *e_iter << "  cellA: " << cellA << "  cellB: " << cellB << std::endl;
+            }
+            if (flippedA && flippedB) {throw ALE::Exception("Attempt to flip already flipped cell: Fault mesh is non-orientable");}
+            if (seenA    && seenB)    {throw ALE::Exception("Previous cells do not match: Fault mesh is non-orientable");}
+            if (!seenA && !flippedA) {
+              flippedCells.insert(cellA);
+              if (debug) {std::cout << "    Scheduling cell " << cellA << " for flipping" << std::endl;}
+            } else if (!seenB && !flippedB) {
+              flippedCells.insert(cellB);
+              if (debug) {std::cout << "    Scheduling cell " << cellB << " for flipping" << std::endl;}
+            } else {
+              throw ALE::Exception("Inconsistent mesh orientation: Fault mesh is non-orientable");
+            }
           }
         }
-      } else if (fDim == 2) {
-        // Check orientation
-        ALE::MinimalArrow<sieve_type::point_type,sieve_type::point_type> arrowA(*e_iter, cellA);
-        const int oA = orientation->restrictPoint(arrowA)[0];
-        ALE::MinimalArrow<sieve_type::point_type,sieve_type::point_type> arrowB(*e_iter, cellB);
-        const int oB = orientation->restrictPoint(arrowB)[0];
-
-        if ((oA == oB) ^ (flippedA || flippedB)) {
-          std::cout << "Invalid orientation in fault mesh" << std::endl;
-          std::cout << "  fault face: " << *e_iter << "  cellA: " << cellA << "  cellB: " << cellB << std::endl;
-          //throw ALE::Exception("Invalid orientation in fault mesh");
-          if (!flippedA) {
-            flippedFaces.insert(cellA);
-          } else if (!flippedB) {
-            flippedFaces.insert(cellB);
-          }
-        }
+        cellsSeen.insert(cellA);
+        cellsSeen.insert(cellB);
       }
     }
   }
-  for(PointSet::const_iterator f_iter = flippedFaces.begin(); f_iter != flippedFaces.end(); ++f_iter) {
+  for(PointSet::const_iterator f_iter = flippedCells.begin(); f_iter != flippedCells.end(); ++f_iter) {
     if (debug) std::cout << "  Reversing fault face " << *f_iter << std::endl;
     faceVertices.clear();
     const ALE::Obj<sieve_type::traits::coneSequence>& cone = faultSieve->cone(*f_iter);
@@ -295,7 +340,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
       }
     }
   }
-  flippedFaces.clear();
+  flippedCells.clear();
   for(Mesh::label_sequence::iterator e_iter = fFaces->begin(); e_iter != fFaces->end(); ++e_iter) {
     if (debug) std::cout << "  Checking orientation of fault face " << *e_iter << std::endl;
     // for each face get the support (2 fault cells)
