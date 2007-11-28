@@ -144,8 +144,10 @@ pylith::meshio::SolutionIOVTK::writeVertexField(
     buffer.str("");
     buffer << name << "_verify_t" << t;
     err = SectionView_Sieve_Ascii(mesh, field, buffer.str().c_str(), _viewer, -4);
-    if (mesh->hasRealSection("problemNodes")) {
-      err = SectionView_Sieve_Ascii(mesh, mesh->getRealSection("problemNodes"), "problemNodes", _viewer);
+    if (mesh->hasRealSection("replacedCells")) {
+      err = PetscViewerPushFormat(_viewer, PETSC_VIEWER_ASCII_VTK_CELL);
+      err = SectionView_Sieve_Ascii(mesh, mesh->getRealSection("replacedCells"), "replacedCells", _viewer);
+      err = PetscViewerPopFormat(_viewer);
     }
   } catch (const std::exception& err) {
     std::ostringstream msg;
