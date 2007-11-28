@@ -38,7 +38,7 @@
  *       |   /      |    |   /      |
  *       |  /   3   |    |  /   2   |
  *       | /        |    | /        |
- *       4 -------- 6 --10-6------- 8
+ *       4 -------- 6 --10--------- 8
  */
 
 #include "CohesiveDataTri3f.hh"
@@ -73,7 +73,7 @@ const int pylith::faults::CohesiveDataTri3f::_numCorners[] = {
 const int pylith::faults::CohesiveDataTri3f::_cells[] = {
   4,  7,  5,
   9, 11, 10,
-  6,  8,  9,
+ 10,  8,  9,
   6,  7,  4,
   6,  7, 10, 11,
 };

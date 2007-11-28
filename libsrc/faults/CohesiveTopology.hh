@@ -30,11 +30,14 @@ namespace pylith {
 /// C++ object to manage creation of cohesive cells.
 class pylith::faults::CohesiveTopology
 { // class Fault
+public :
+  typedef std::set<Mesh::point_type>             PointSet;
+  typedef std::vector<sieve_type::point_type>    PointArray;
+  typedef std::pair<sieve_type::point_type, int> oPoint_type;
+  typedef std::vector<oPoint_type>               oPointArray;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
-  typedef std::vector<Mesh::point_type> PointArray;
-
   /** Create cohesive cells.
    *
    * @param fault Finite-element mesh of fault (output)
@@ -122,6 +125,16 @@ private :
                              const ALE::Obj<InputPoints>& points,
                              const Mesh::point_type& firstCohesiveCell,
                              const ALE::Obj<std::set<Mesh::point_type> >& modifiedPoints);
+
+  static void classifyCells(const ALE::Obj<Mesh::sieve_type>& sieve,
+                            const Mesh::point_type& vertex,
+                            const int depth,
+                            const int faceSize,
+                            const Mesh::point_type& firstCohesiveCell,
+                            const PointSet& faultBdVertices,
+                            PointSet& replaceCells,
+                            PointSet& noReplaceCells,
+                            const int debug);
 
 }; // class CohesiveTopology
 
