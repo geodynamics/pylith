@@ -792,79 +792,26 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   }
 
   // More checking
-  const ALE::Obj<real_section_type>& problemNodes = mesh->getRealSection("problemNodes");
+  const ALE::Obj<real_section_type>& replacedCells = mesh->getRealSection("replacedCells");
   PointSet cellNeighbors;
 
-  problemNodes->setFiberDimension(mesh->depthStratum(0), 1);
-  problemNodes->allocatePoint();
-  for(PointSet::const_iterator v_iter = faultVertices.begin(); v_iter != faultVertices.end(); ++v_iter) {
-    const double one = 1.0;
+  replacedCells->setFiberDimension(mesh->heightStratum(0), 1);
+  replacedCells->allocatePoint();
+  for(PointSet::const_iterator c_iter = noReplaceCells.begin(); c_iter != noReplaceCells.end(); ++c_iter) {
+    const double minusOne = -1.0;
 
-    problemNodes->updatePoint(*v_iter, &one);
+    replacedCells->updatePoint(*c_iter, &minusOne);
   }
   for(PointSet::const_iterator c_iter = replaceCells.begin(); c_iter != replaceCells.end(); ++c_iter) {
-    if (replaceCellsBase.find(*c_iter) != replaceCellsBase.end()) continue;
-    const ALE::Obj<sieve_type::traits::coneSequence>& vertices = sieve->cone(*c_iter);
-    const sieve_type::traits::coneSequence::iterator  vBegin   = vertices->begin();
-    const sieve_type::traits::coneSequence::iterator  vEnd     = vertices->end();
-    cellNeighbors.clear();
+    if (replaceCellsBase.find(*c_iter) != replaceCellsBase.end()) {
+      const double one = 1.0;
 
-    for(sieve_type::traits::coneSequence::iterator v_iter = vBegin; v_iter != vEnd; ++v_iter) {
-      const ALE::Obj<sieve_type::traits::supportSequence>& neighbors = sieve->support(*v_iter);
-      const sieve_type::traits::supportSequence::iterator  nBegin    = neighbors->begin();
-      const sieve_type::traits::supportSequence::iterator  nEnd      = neighbors->end();
-
-      for(sieve_type::traits::supportSequence::iterator n_iter = nBegin; n_iter != nEnd; ++n_iter) {
-        const ALE::Obj<sieve_type::coneSet>& preFace = sieve->nMeet(*c_iter, *n_iter, depth);
-
-        if (preFace->size() == faceSize) {
-          cellNeighbors.insert(*n_iter);
-          if (noReplaceCells.find(*n_iter) != noReplaceCells.end()) {
-            const ALE::Obj<real_section_type>& coordinates =  mesh->getRealSection("coordinates");
-            const int dim = mesh->getDimension();
-            int c = 0;
-
-            std::cout << "Cell " << *c_iter << " in replaceCells has neighbor " << *n_iter << " in noReplaceCells" << std::endl;
-            const double *coordsA = mesh->restrict(coordinates, *c_iter);
-            const ALE::Obj<sieve_type::traits::coneSequence>& verticesA = sieve->cone(*c_iter);
-
-            std::cout << "Cell " << *c_iter << std::endl;
-            for(sieve_type::traits::coneSequence::iterator v_iter = verticesA->begin(); v_iter != verticesA->end(); ++v_iter, ++c) {
-              std::cout << "Corner " << *v_iter << ":";
-              for(int d = 0; d < dim; ++d) {
-                std::cout << " " << coordsA[c*dim+d];
-              }
-              if (faultVertices.find(*v_iter) != faultVertices.end()) {
-                const double ten = 10.0;
-
-                problemNodes->updatePoint(*v_iter, &ten);
-                std::cout << " on fault";
-              }
-              std::cout << std::endl;
-            }
-            const double *coordsB = mesh->restrict(coordinates, *n_iter);
-            const ALE::Obj<sieve_type::traits::coneSequence>& verticesB = sieve->cone(*n_iter);
-
-            std::cout << "Cell " << *n_iter << std::endl;
-            c = 0;
-            for(sieve_type::traits::coneSequence::iterator v_iter = verticesB->begin(); v_iter != verticesB->end(); ++v_iter, ++c) {
-              std::cout << "Corner " << *v_iter << ":";
-              for(int d = 0; d < dim; ++d) {
-                std::cout << " " << coordsB[c*dim+d];
-              }
-              if (faultVertices.find(*v_iter) != faultVertices.end()) {
-                const double ten = 10.0;
-
-                problemNodes->updatePoint(*v_iter, &ten);
-                std::cout << " on fault";
-              }
-              std::cout << std::endl;
-            }
-            //throw ALE::Exception("Invalid division along fault");
-          }
-        }
-      }
+      replacedCells->updatePoint(*c_iter, &one);
+      continue;
     }
+    const double ten = 10.0;
+
+    replacedCells->updatePoint(*c_iter, &ten);
     // There should be a way to check for boundary elements
     if (mesh->getDimension() == 1) {
       if (cellNeighbors.size() > 2) {
