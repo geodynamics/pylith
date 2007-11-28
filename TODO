@@ -19,8 +19,7 @@ Release 1.1
 
   1. EventLogging
    
-     Is FaultCohesiveKin an integrator?
-     Neumann
+     Check constraints/integrators.
   
   2. Optimization of restrict()/update()
 
