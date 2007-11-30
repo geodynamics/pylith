@@ -28,7 +28,7 @@
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-//#define FASTER
+#define FASTER
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -180,9 +180,15 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 
   if (_residualAtlasTags.find(materialId) == _residualAtlasTags.end()) {
     _residualAtlasTags[materialId] = 
-      residual->copyCustomAtlas(dispT, dispTAtlasTag);
+      mesh->calculateCustomAtlas(residual, cells);
   } // if
   const int residualAtlasTag = _residualAtlasTags[materialId];
+  std::cout << "TAGS for material"
+	    << " id: " << materialId
+	    << ", dispT: " << dispTAtlasTag
+	    << ", dispTmdt: " << dispTmdtAtlasTag
+	    << ", residual: " << residualAtlasTag
+	    << std::endl;
 #endif
 
   int c_index = 0;
@@ -239,7 +245,8 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stress);
 
     // Assemble cell contribution into field
-#ifdef FASTER
+//#ifdef FASTER
+#if 0
     mesh->updateAdd(residual, residualAtlasTag, c_index, _cellVector);
 #else
     mesh->updateAdd(residual, *c_iter, _cellVector);
