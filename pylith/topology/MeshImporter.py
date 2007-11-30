@@ -79,7 +79,7 @@ class MeshImporter(MeshGenerator):
     import mpi
     if mpi.MPI_Comm_size(mpi.MPI_COMM_WORLD) > 1:
       mesh = self.distributor.distribute(mesh)
-    mesh.view()
+    #mesh.view()
     return mesh
 
 
