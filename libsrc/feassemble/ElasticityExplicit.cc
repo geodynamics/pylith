@@ -177,12 +177,10 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     fields->getFieldAtlasTagByHistory(1, materialId);
   const int dispTmdtAtlasTag = 
     fields->getFieldAtlasTagByHistory(2, materialId);
+  
+  const int residualAtlasTag = 
+    fields->getFieldAtlasTag("residual", materialId);
 
-  if (_residualAtlasTags.find(materialId) == _residualAtlasTags.end()) {
-    _residualAtlasTags[materialId] = 
-      mesh->calculateCustomAtlas(residual, cells);
-  } // if
-  const int residualAtlasTag = _residualAtlasTags[materialId];
   std::cout << "TAGS for material"
 	    << " id: " << materialId
 	    << ", dispT: " << dispTAtlasTag

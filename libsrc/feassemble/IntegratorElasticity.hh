@@ -181,9 +181,6 @@ protected :
   /// Elastic material associated with integrator
   materials::ElasticMaterial* _material;
 
-  /// Tag for custom atlas for residual field, optimized restrict()/update()
-  std::map<int,int> _residualAtlasTags;
-
 }; // IntegratorElasticity
 
 #endif // pylith_feassemble_integratorelasticity_hh

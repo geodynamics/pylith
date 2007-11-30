@@ -158,14 +158,12 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
 #ifdef FASTER
   fields->createCustomAtlas("material-id", materialId);
-  const int dispAtlasTag = fields->getFieldAtlasTag("dispTBctpdt", materialId);
-
-  if (_residualAtlasTags.find(materialId) == _residualAtlasTags.end()) {
-    _residualAtlasTags[materialId] = 
-      residual->copyCustomAtlas(dispTBctpdt, dispAtlasTag);
-  } // if
-  const int residualAtlasTag = _residualAtlasTags[materialId];
+  const int dispAtlasTag = 
+    fields->getFieldAtlasTag("dispTBctpdt", materialId);
+  const int residualAtlasTag = 
+    fields->getFieldAtlasTag("residual", materialId);
 #endif
+
   // Precompute the geometric and function space information
   _quadrature->precomputeGeometry(mesh, coordinates, cells);
 
