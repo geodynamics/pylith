@@ -103,7 +103,7 @@ pylith::topology::TestFieldsManager::testSetFiberDimension(void)
   const ALE::Obj<real_section_type>& fieldA = manager.getReal(labelA);
   CPPUNIT_ASSERT(!fieldA.isNull());
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-  mesh->allocate(fieldA);
+  fieldA->allocateStorage();
   for (Mesh::label_sequence::iterator v_iter = vertices->begin();
        v_iter != vertices->end();
        ++v_iter)
@@ -115,7 +115,7 @@ pylith::topology::TestFieldsManager::testSetFiberDimension(void)
   const ALE::Obj<real_section_type>& fieldB = manager.getReal(labelB);
   CPPUNIT_ASSERT(!fieldB.isNull());
   const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
-  mesh->allocate(fieldB);
+  fieldB->allocateStorage();
   for (Mesh::label_sequence::iterator c_iter = cells->begin();
        c_iter != cells->end();
        ++c_iter)
@@ -167,7 +167,7 @@ pylith::topology::TestFieldsManager::testCopyLayout(void)
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
   fieldA->setFiberDimension(vertices, fiberDim);
   fieldA->setConstraintDimension(fixedPt, 1);
-  mesh->allocate(fieldA);
+  fieldA->allocateStorage();
   fieldA->setConstraintDof(fixedPt, &fixedDim);
 
   const char* labelB = "field B";
@@ -216,7 +216,7 @@ pylith::topology::TestFieldsManager::testCopyLayoutFromField(void)
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
   fieldA->setFiberDimension(vertices, fiberDim);
   fieldA->setConstraintDimension(fixedPt, 1);
-  mesh->allocate(fieldA);
+  fieldA->allocateStorage();
   fieldA->setConstraintDof(fixedPt, &fixedDim);
 
   const char* labelB = "field B";
@@ -355,10 +355,10 @@ pylith::topology::TestFieldsManager::testShiftHistory(void)
 } // testShiftHistory
 
 // ----------------------------------------------------------------------
-// Test getHistoryItem().
+// Test getFieldByHistory().
 void
-pylith::topology::TestFieldsManager::testGetHistoryItem(void)
-{ // testGetHistoryItem
+pylith::topology::TestFieldsManager::testGetFieldByHistory(void)
+{ // testGetFieldByHistory
   ALE::Obj<Mesh> mesh;
   _initialize(&mesh);
   FieldsManager manager(mesh);
@@ -378,14 +378,216 @@ pylith::topology::TestFieldsManager::testGetHistoryItem(void)
   fieldA->setFiberDimension(vertices, fiberDimA);
   fieldB->setFiberDimension(vertices, fiberDimB);
 
-  const ALE::Obj<real_section_type>& testA = manager.getHistoryItem(0);
+  const ALE::Obj<real_section_type>& testA = manager.getFieldByHistory(0);
   CPPUNIT_ASSERT_EQUAL(fiberDimA, 
 		       testA->getFiberDimension(*(vertices->begin())));
 
-  const ALE::Obj<real_section_type>& testB = manager.getHistoryItem(1);
+  const ALE::Obj<real_section_type>& testB = manager.getFieldByHistory(1);
   CPPUNIT_ASSERT_EQUAL(fiberDimB, 
 		       testB->getFiberDimension(*(vertices->begin())));
-} // testGetHistoryItem
+} // testGetFieldByHistory
+
+// ----------------------------------------------------------------------
+// Test createCustomAtlas().
+void
+pylith::topology::TestFieldsManager::testCreateCustomAtlas(void)
+{ // testCreateCustomAtlas
+  ALE::Obj<Mesh> mesh;
+  _initialize(&mesh);
+  FieldsManager manager(mesh);
+
+  const char* fieldNames[] = { "field A", "field B" };
+  const int numFields = 2;
+  const int fiberDimA = 2;
+  const int fiberDimB = 3;
+
+  const int materialIds[] = { 4, 3 };
+  const int numMaterials = 2;
+
+  for (int iField=0; iField < numFields; ++iField)
+    manager.addReal(fieldNames[iField]);
+
+  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+
+  const ALE::Obj<real_section_type>& fieldA = manager.getReal(fieldNames[0]);
+  fieldA->setFiberDimension(vertices, fiberDimA);
+  fieldA->allocateStorage();
+
+  const ALE::Obj<real_section_type>& fieldB = manager.getReal(fieldNames[1]);
+  fieldB->setFiberDimension(vertices, fiberDimB);
+  fieldB->allocateStorage();
+
+  for (int iMaterial=0; iMaterial < numMaterials; ++iMaterial)
+    manager.createCustomAtlas("material-id", materialIds[iMaterial]);
+
+  for (int iField=0; iField < numFields; ++iField) {
+    FieldsManager::map_tags_type::iterator t_iter =
+      manager._tags.find(fieldNames[iField]);
+    CPPUNIT_ASSERT(t_iter != manager._tags.end());
+    const std::map<int,int>& tags = t_iter->second;
+    for (int iMaterial=0; iMaterial < numMaterials; ++iMaterial) {
+      std::map<int,int>::const_iterator tag = 
+	tags.find(materialIds[iMaterial]);
+      CPPUNIT_ASSERT(tag != tags.end());
+      CPPUNIT_ASSERT_EQUAL(materialIds[iMaterial], tag->first);
+    } // for
+  } // for
+} // testCreateCustomAtlas
+
+// ----------------------------------------------------------------------
+// Test getFieldAtlasTag().
+void
+pylith::topology::TestFieldsManager::testGetFieldAtlasTag(void)
+{ // testGetFieldAtlasTag
+  ALE::Obj<Mesh> mesh;
+  _initialize(&mesh);
+  FieldsManager manager(mesh);
+
+  const char* fieldNames[] = { "field A", "field B" };
+  const int numFields = 2;
+  const int fiberDimA = 2;
+  const int fiberDimB = 3;
+
+  const int materialIds[] = { 4, 3 };
+  const int numMaterials = 2;
+
+  for (int iField=0; iField < numFields; ++iField)
+    manager.addReal(fieldNames[iField]);
+
+  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+
+  const ALE::Obj<real_section_type>& fieldA = manager.getReal(fieldNames[0]);
+  fieldA->setFiberDimension(vertices, fiberDimA);
+  fieldA->allocateStorage();
+
+  const ALE::Obj<real_section_type>& fieldB = manager.getReal(fieldNames[1]);
+  fieldB->setFiberDimension(vertices, fiberDimB);
+  fieldB->allocateStorage();
+
+  for (int iMaterial=0; iMaterial < numMaterials; ++iMaterial)
+    manager.createCustomAtlas("material-id", materialIds[iMaterial]);
+
+  for (int iField=0; iField < numFields; ++iField) {
+    FieldsManager::map_tags_type::iterator t_iter =
+      manager._tags.find(fieldNames[iField]);
+    CPPUNIT_ASSERT(t_iter != manager._tags.end());
+    const std::map<int,int>& tags = t_iter->second;
+    for (int iMaterial=0; iMaterial < numMaterials; ++iMaterial) {
+      std::map<int,int>::const_iterator tag = 
+	tags.find(materialIds[iMaterial]);
+      CPPUNIT_ASSERT(tag != tags.end());
+      CPPUNIT_ASSERT_EQUAL(materialIds[iMaterial], tag->first);
+      const int tagValueE = tag->second;
+      const int tagValue = 
+	manager.getFieldAtlasTag(fieldNames[iField], materialIds[iMaterial]);
+      CPPUNIT_ASSERT_EQUAL(tagValueE, tagValue);
+    } // for
+  } // for
+} // testGetFieldAtlasTag
+
+// ----------------------------------------------------------------------
+// Test getFieldAtlasTagByHistory().
+void
+pylith::topology::TestFieldsManager::testGetFieldAtlasTagByHistory(void)
+{ // testGetFieldAtlasTagByHistory
+  ALE::Obj<Mesh> mesh;
+  _initialize(&mesh);
+  FieldsManager manager(mesh);
+
+  const char* fieldNames[] = { "field A", "field B" };
+  const int numFields = 2;
+  const int fiberDimA = 2;
+  const int fiberDimB = 3;
+
+  const int materialIds[] = { 4, 3 };
+  const int numMaterials = 2;
+
+  for (int iField=0; iField < numFields; ++iField)
+    manager.addReal(fieldNames[iField]);
+  manager.createHistory(fieldNames, numFields);
+
+  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+
+  const ALE::Obj<real_section_type>& fieldA = manager.getReal(fieldNames[0]);
+  fieldA->setFiberDimension(vertices, fiberDimA);
+  fieldA->allocateStorage();
+
+  const ALE::Obj<real_section_type>& fieldB = manager.getReal(fieldNames[1]);
+  fieldB->setFiberDimension(vertices, fiberDimB);
+  fieldB->allocateStorage();
+
+  for (int iMaterial=0; iMaterial < numMaterials; ++iMaterial)
+    manager.createCustomAtlas("material-id", materialIds[iMaterial]);
+
+  for (int iField=0; iField < numFields; ++iField) {
+    FieldsManager::map_tags_type::iterator t_iter =
+      manager._tags.find(fieldNames[iField]);
+    CPPUNIT_ASSERT(t_iter != manager._tags.end());
+    const std::map<int,int>& tags = t_iter->second;
+    for (int iMaterial=0; iMaterial < numMaterials; ++iMaterial) {
+      std::map<int,int>::const_iterator tag = 
+	tags.find(materialIds[iMaterial]);
+      CPPUNIT_ASSERT(tag != tags.end());
+      CPPUNIT_ASSERT_EQUAL(materialIds[iMaterial], tag->first);
+      const int tagValueE = tag->second;
+      const int tagValue = 
+	manager.getFieldAtlasTagByHistory(iField, materialIds[iMaterial]);
+      CPPUNIT_ASSERT_EQUAL(tagValueE, tagValue);
+    } // for
+  } // for
+} // testGetFieldAtlasTagByHistory
+
+// ----------------------------------------------------------------------
+// Test getSolutionAtlasTag().
+void
+pylith::topology::TestFieldsManager::testGetSolutionAtlasTag(void)
+{ // testGetFieldAtlasTag
+  ALE::Obj<Mesh> mesh;
+  _initialize(&mesh);
+  FieldsManager manager(mesh);
+
+  const char* fieldNames[] = { "field A", "field B" };
+  const int numFields = 2;
+  const int fiberDimA = 2;
+  const int fiberDimB = 3;
+  const char* solnName = "field B";
+
+  const int materialIds[] = { 4, 3 };
+  const int numMaterials = 2;
+
+  for (int iField=0; iField < numFields; ++iField)
+    manager.addReal(fieldNames[iField]);
+  manager.solutionField(solnName);
+
+  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+
+  const ALE::Obj<real_section_type>& fieldA = manager.getReal(fieldNames[0]);
+  fieldA->setFiberDimension(vertices, fiberDimA);
+  fieldA->allocateStorage();
+
+  const ALE::Obj<real_section_type>& fieldB = manager.getReal(fieldNames[1]);
+  fieldB->setFiberDimension(vertices, fiberDimB);
+  fieldB->allocateStorage();
+
+  for (int iMaterial=0; iMaterial < numMaterials; ++iMaterial)
+    manager.createCustomAtlas("material-id", materialIds[iMaterial]);
+
+
+  FieldsManager::map_tags_type::iterator t_iter =
+    manager._tags.find(solnName);
+  CPPUNIT_ASSERT(t_iter != manager._tags.end());
+  const std::map<int,int>& tags = t_iter->second;
+  for (int iMaterial=0; iMaterial < numMaterials; ++iMaterial) {
+    std::map<int,int>::const_iterator tag = 
+      tags.find(materialIds[iMaterial]);
+    CPPUNIT_ASSERT(tag != tags.end());
+    CPPUNIT_ASSERT_EQUAL(materialIds[iMaterial], tag->first);
+    const int tagValueE = tag->second;
+    const int tagValue = 
+      manager.getSolutionAtlasTag(materialIds[iMaterial]);
+    CPPUNIT_ASSERT_EQUAL(tagValueE, tagValue);
+  } // for
+} // testGetSolutionAtlasTag
 
 // ----------------------------------------------------------------------
 void

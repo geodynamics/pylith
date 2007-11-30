@@ -20,10 +20,15 @@ Release 1.1
   1. EventLogging
    
      Check constraints/integrators.
+     Fault::adjustTopology()
+     High level events
+       MeshGenerator
+       Problem
   
   2. Optimization of restrict()/update()
-
-     Add tags management to FieldsManager
+      UpdateState
+        Change disp to fields
+      Need to fix optimized ElasticityExplicit (something wrong)
 
      a. Fault
      b. Absorbing BC

@@ -182,8 +182,7 @@ protected :
   materials::ElasticMaterial* _material;
 
   // Optimization
-  std::map<int, int> _dispTags; ///< Tags indexing displacement field.
-  std::map<int, int> _residualTags; ///< Tags indexing residual field.
+  std::map<int, int> _residualAtlasTags; ///< Tags indexing residual field.
 
 }; // IntegratorElasticity
 

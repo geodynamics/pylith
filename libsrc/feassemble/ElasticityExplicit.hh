@@ -139,9 +139,6 @@ private :
 
   double _dtm1; ///< Time step for t-dt1 -> t
 
-  // Optimization
-  std::map<int, int> _dispTmdtTags; ///< Tags indexing dispTmdt field
-
 }; // ElasticityExplicit
 
 #endif // pylith_feassemble_elasticityexplicit_hh

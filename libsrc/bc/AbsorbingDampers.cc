@@ -233,8 +233,8 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  const ALE::Obj<real_section_type>& dispTpdt = fields->getHistoryItem(0);
-  const ALE::Obj<real_section_type>& dispTmdt = fields->getHistoryItem(2);
+  const ALE::Obj<real_section_type>& dispTpdt = fields->getFieldByHistory(0);
+  const ALE::Obj<real_section_type>& dispTmdt = fields->getFieldByHistory(2);
   assert(!dispTpdt.isNull());
   assert(!dispTmdt.isNull());
 
@@ -327,7 +327,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  const ALE::Obj<real_section_type>& dispT = fields->getHistoryItem(1);
+  const ALE::Obj<real_section_type>& dispT = fields->getFieldByHistory(1);
   assert(!dispT.isNull());
 
   // Get parameters used in integration.

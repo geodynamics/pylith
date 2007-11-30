@@ -61,7 +61,7 @@ pylith::topology::FieldsManager::getReal(const char* name)
     msg << "Could not find field '" << name << "'.";
     throw std::runtime_error(msg.str());
   } // if
-  return _real[name];
+  return iter->second;
 } // getReal
 
 // ----------------------------------------------------------------------
@@ -244,11 +244,116 @@ pylith::topology::FieldsManager::shiftHistory(void)
 // ----------------------------------------------------------------------
 // Get field in history by position.
 const ALE::Obj<pylith::real_section_type>&
-pylith::topology::FieldsManager::getHistoryItem(const int index)
-{ // getHistoryItem
+pylith::topology::FieldsManager::getFieldByHistory(const int index)
+{ // getFieldByHistory
   assert(index < _history.size());
   return getReal(_history[index].c_str());
-} // getHistoryItem
+} // getFieldByHistory
+
+// ----------------------------------------------------------------------
+// Create custom atlases for fields.
+void
+pylith::topology::FieldsManager::createCustomAtlas(const char* label,
+						   const int id)
+{ // createCustomAtlas
+  typedef std::map<int,int> map_tag_type;
+
+  assert(!_mesh.isNull());
+
+  const map_real_type::iterator f_begin = _real.begin();
+  const map_real_type::iterator f_end = _real.end();
+
+  if (f_begin == f_end) // If we don't have any fields, just return
+    return;
+  
+  // Get cells with label 'label' set to 'id'
+  const ALE::Obj<Mesh::label_sequence>& cells = 
+    _mesh->getLabelStratum(label, id);
+
+  // Create custom atlas in first field
+  const ALE::Obj<real_section_type>& field0 = f_begin->second;
+  assert(!field0.isNull());
+  int field0Tag = 0;
+  bool alreadySet = true;
+
+  const std::string& field0Name = f_begin->first;
+  map_tags_type::iterator t_iter = _tags.find(field0Name);
+  if (t_iter == _tags.end()) { // Need to create tags for field 'name'
+    map_tag_type fieldTags;
+    alreadySet = false;
+    fieldTags[id] = _mesh->calculateCustomAtlas(field0, cells);
+    field0Tag = fieldTags[id];
+    _tags[field0Name] = fieldTags;
+  } else { // Use tags already created
+    map_tag_type& fieldTags = t_iter->second;
+    if (fieldTags.find(id) == fieldTags.end()) { // Need to set tags for id
+      alreadySet = false;
+      fieldTags[id] = _mesh->calculateCustomAtlas(field0, cells);
+      field0Tag = fieldTags[id];
+    } // if
+  } // if/else
+  map_real_type::iterator f_iter=f_begin;
+  if (!alreadySet)
+    // Copy custom atlas in first field to other fields
+    for (++f_iter; f_iter != f_end; ++f_iter) {
+      assert(!f_iter->second.isNull());
+      const std::string& fieldName = f_iter->first;
+      t_iter = _tags.find(fieldName);
+      if (t_iter == _tags.end()) { // Need to create tags for field 'name'
+	map_tag_type fieldTags;
+	fieldTags[id] = f_iter->second->copyCustomAtlas(field0, field0Tag);
+	_tags[fieldName] = fieldTags;
+      } else { // Use tags already created
+	map_tag_type& fieldTags = t_iter->second;
+	if (fieldTags.find(id) == fieldTags.end()) // Need to set tags for id
+	  fieldTags[id] = f_iter->second->copyCustomAtlas(field0, field0Tag);
+      } // if/else
+    } // for
+} // createCustomAtlas
+
+// ----------------------------------------------------------------------
+// Get tag for field associated with label id.
+int
+pylith::topology::FieldsManager::getFieldAtlasTag(const char* name,
+						  const int id)
+{ // getFieldAtlasTag
+  map_tags_type::const_iterator t_iter = _tags.find(name);
+  if (t_iter == _tags.end()) {
+    std::ostringstream msg;
+    msg << "Could not find tags for field '" << name << "'.";
+    throw std::runtime_error(msg.str());
+  } // if
+  std::map<int,int>::const_iterator tag = t_iter->second.find(id);
+  if (tag == t_iter->second.end()) {
+    std::ostringstream msg;
+    msg << "Could not find tag for label '" << id
+	<< "' for field '" << name << "'.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  return tag->second;
+} // getFieldAtlasTag
+
+// ----------------------------------------------------------------------
+// Get tag for field in history by position.
+int
+pylith::topology::FieldsManager::getFieldAtlasTagByHistory(const int index,
+							   const int id)
+{ // getFieldAtlasTagByHistory
+  assert(index < _history.size());
+  return getFieldAtlasTag(_history[index].c_str(), id);
+} // getFieldAtlasTagByHistory
+
+// ----------------------------------------------------------------------
+// Get solution field atlas tag.
+int
+pylith::topology::FieldsManager::getSolutionAtlasTag(const int id)
+{ // getSolutionAtlasTag
+  if (_solutionName == "")
+    throw std::runtime_error("Cannot retrieve solution atlas tag. "
+			     "Name of solution field has not been specified.");
+  return getFieldAtlasTag(_solutionName.c_str(), id);
+} // getSolutionAtlasTag
 
 
 // End of file 

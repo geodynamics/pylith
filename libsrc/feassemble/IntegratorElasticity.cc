@@ -23,7 +23,7 @@
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-#define FASTER
+//#define FASTER
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -122,8 +122,8 @@ pylith::feassemble::IntegratorElasticity::updateState(
   } // for
 
 #ifdef FASTER
-  assert(_dispTags.find(_material->id()) != _dispTags.end());
-  const int dispTag = _dispTags[_material->id()];
+  fields->createCustomAtlas("material-id", materialId);
+  const int dispAtlasTag = fields.getSolnFieldAtlasTag(materialId);
 #endif
   
   // Loop over cells
@@ -136,7 +136,7 @@ pylith::feassemble::IntegratorElasticity::updateState(
 
     // Restrict input fields to cell
 #ifdef FASTER
-    mesh->restrict(disp, dispTag, c_index, &dispCell[0], cellVecSize);
+    mesh->restrict(disp, dispAtlasTag, c_index, &dispCell[0], cellVecSize);
 #else
     mesh->restrict(disp, *c_iter, &dispCell[0], cellVecSize);
 #endif

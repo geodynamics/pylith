@@ -196,11 +196,14 @@ pylith::bc::Dirichlet::setField(const double t,
   if (0 == numFixedDOF)
     return;
 
+
   const int numPoints = _points.size();
+  const int fiberDimension = 
+    (numPoints > 0) ? field->getFiberDimension(_points[0]) : 0;
+  double_array allValues(fiberDimension);
   for (int iPoint=0, i=0; iPoint < numPoints; ++iPoint) {
     const Mesh::point_type point = _points[iPoint];
-    const int fiberDimension = field->getFiberDimension(point);
-    double_array allValues(fiberDimension);
+    assert(fiberDimension == field->getFiberDimension(point));
     mesh->restrict(field, point, &allValues[0], fiberDimension);
     for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
       allValues[_fixedDOF[iDOF]] = _values[i++];

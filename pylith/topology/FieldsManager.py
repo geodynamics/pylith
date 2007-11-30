@@ -124,12 +124,20 @@ class FieldsManager(object):
     return
 
 
-  def getHistoryItem(self, index):
+  def getFieldByHistory(self, index):
     """
     Get field in history by position.
     """
     assert(None != self.cppHandle)
-    return self.cppHandle.getHistoryItem(index)
+    return self.cppHandle.getFieldByHistory(index)
+
+
+  def createCustomAtlas(self, label, id):
+    """
+    Calculate custom atlas for fields in FieldsManager.
+    """
+    assert(None != self.cppHandle)
+    return self.cppHandle.createCustomAtlas(label, id)
 
 
 # End of file 
