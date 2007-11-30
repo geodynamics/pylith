@@ -181,8 +181,8 @@ protected :
   /// Elastic material associated with integrator
   materials::ElasticMaterial* _material;
 
-  // Optimization
-  std::map<int, int> _residualAtlasTags; ///< Tags indexing residual field.
+  /// Tag for custom atlas for residual field, optimized restrict()/update()
+  std::map<int,int> _residualAtlasTags;
 
 }; // IntegratorElasticity
 

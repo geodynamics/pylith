@@ -239,6 +239,14 @@ pylith::topology::FieldsManager::shiftHistory(void)
   for (int i=size-1; i > 0; --i)
     _real[_history[i]] = _real[_history[i-1]];
   _real[_history[0]] = tmp;
+
+  // Shift custom atlas tags as well
+  if (_tags.size() > 0) {
+    std::map<int,int> tmp = _tags[_history[size-1]];
+    for (int i=size-1; i > 0; --i)
+      _tags[_history[i]] = _tags[_history[i-1]];
+    _tags[_history[0]] = tmp;
+  } // if
 } // shiftHistory
 
 // ----------------------------------------------------------------------

@@ -330,28 +330,50 @@ pylith::topology::TestFieldsManager::testShiftHistory(void)
   _initialize(&mesh);
   FieldsManager manager(mesh);
 
-  const char* labels[] = { "field A", "field B" };
-  const int size = 2;
+  const char* fieldNames[] = { "field A", "field B" };
+  const int numFields = 2;
   const int fiberDimA = 2;
   const int fiberDimB = 3;
 
-  for (int i=0; i < size; ++i)
-    manager.addReal(labels[i]);
-  manager.createHistory(labels, size);
+  for (int i=0; i < numFields; ++i)
+    manager.addReal(fieldNames[i]);
+  manager.createHistory(fieldNames, numFields);
 
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-  const ALE::Obj<real_section_type>& fieldA = manager.getReal(labels[0]);
-  const ALE::Obj<real_section_type>& fieldB = manager.getReal(labels[1]);
+  const ALE::Obj<real_section_type>& fieldA = manager.getReal(fieldNames[0]);
+  const ALE::Obj<real_section_type>& fieldB = manager.getReal(fieldNames[1]);
   fieldA->setFiberDimension(vertices, fiberDimA);
   fieldB->setFiberDimension(vertices, fiberDimB);
 
   manager.shiftHistory();
-  const ALE::Obj<real_section_type>& testA = manager.getReal(labels[0]);
-  const ALE::Obj<real_section_type>& testB = manager.getReal(labels[1]);
+  const ALE::Obj<real_section_type>& testA = manager.getReal(fieldNames[0]);
+  const ALE::Obj<real_section_type>& testB = manager.getReal(fieldNames[1]);
   CPPUNIT_ASSERT_EQUAL(fiberDimB, 
 		       testA->getFiberDimension(*(vertices->begin())));
   CPPUNIT_ASSERT_EQUAL(fiberDimA, 
 		       testB->getFiberDimension(*(vertices->begin())));
+
+  // Add custom atlas and retest shift history
+  const int materialIds[] = { 4, 3 };
+  const int numMaterials = 2;
+
+  for (int iMaterial=0; iMaterial < numMaterials; ++iMaterial)
+    manager.createCustomAtlas("material-id", materialIds[iMaterial]);
+
+  manager.shiftHistory(); // back to original
+  manager.shiftHistory(); // shift once more
+  for (int iField=0; iField < numFields; ++iField) {
+    FieldsManager::map_tags_type::iterator t_iter =
+      manager._tags.find(fieldNames[iField]);
+    CPPUNIT_ASSERT(t_iter != manager._tags.end());
+    const std::map<int,int>& tags = t_iter->second;
+    for (int iMaterial=0; iMaterial < numMaterials; ++iMaterial) {
+      std::map<int,int>::const_iterator tag = 
+	tags.find(materialIds[iMaterial]);
+      CPPUNIT_ASSERT(tag != tags.end());
+      CPPUNIT_ASSERT_EQUAL(materialIds[iMaterial], tag->first);
+    } // for
+  } // for
 } // testShiftHistory
 
 // ----------------------------------------------------------------------
@@ -430,6 +452,7 @@ pylith::topology::TestFieldsManager::testCreateCustomAtlas(void)
 	tags.find(materialIds[iMaterial]);
       CPPUNIT_ASSERT(tag != tags.end());
       CPPUNIT_ASSERT_EQUAL(materialIds[iMaterial], tag->first);
+      CPPUNIT_ASSERT_EQUAL(iMaterial, tag->second);
     } // for
   } // for
 } // testCreateCustomAtlas
@@ -467,22 +490,13 @@ pylith::topology::TestFieldsManager::testGetFieldAtlasTag(void)
   for (int iMaterial=0; iMaterial < numMaterials; ++iMaterial)
     manager.createCustomAtlas("material-id", materialIds[iMaterial]);
 
-  for (int iField=0; iField < numFields; ++iField) {
-    FieldsManager::map_tags_type::iterator t_iter =
-      manager._tags.find(fieldNames[iField]);
-    CPPUNIT_ASSERT(t_iter != manager._tags.end());
-    const std::map<int,int>& tags = t_iter->second;
+  for (int iField=0; iField < numFields; ++iField)
     for (int iMaterial=0; iMaterial < numMaterials; ++iMaterial) {
-      std::map<int,int>::const_iterator tag = 
-	tags.find(materialIds[iMaterial]);
-      CPPUNIT_ASSERT(tag != tags.end());
-      CPPUNIT_ASSERT_EQUAL(materialIds[iMaterial], tag->first);
-      const int tagValueE = tag->second;
+      const int tagValueE = iMaterial;
       const int tagValue = 
 	manager.getFieldAtlasTag(fieldNames[iField], materialIds[iMaterial]);
       CPPUNIT_ASSERT_EQUAL(tagValueE, tagValue);
     } // for
-  } // for
 } // testGetFieldAtlasTag
 
 // ----------------------------------------------------------------------
@@ -519,22 +533,13 @@ pylith::topology::TestFieldsManager::testGetFieldAtlasTagByHistory(void)
   for (int iMaterial=0; iMaterial < numMaterials; ++iMaterial)
     manager.createCustomAtlas("material-id", materialIds[iMaterial]);
 
-  for (int iField=0; iField < numFields; ++iField) {
-    FieldsManager::map_tags_type::iterator t_iter =
-      manager._tags.find(fieldNames[iField]);
-    CPPUNIT_ASSERT(t_iter != manager._tags.end());
-    const std::map<int,int>& tags = t_iter->second;
+  for (int iField=0; iField < numFields; ++iField)
     for (int iMaterial=0; iMaterial < numMaterials; ++iMaterial) {
-      std::map<int,int>::const_iterator tag = 
-	tags.find(materialIds[iMaterial]);
-      CPPUNIT_ASSERT(tag != tags.end());
-      CPPUNIT_ASSERT_EQUAL(materialIds[iMaterial], tag->first);
-      const int tagValueE = tag->second;
+      const int tagValueE = iMaterial;
       const int tagValue = 
 	manager.getFieldAtlasTagByHistory(iField, materialIds[iMaterial]);
       CPPUNIT_ASSERT_EQUAL(tagValueE, tagValue);
     } // for
-  } // for
 } // testGetFieldAtlasTagByHistory
 
 // ----------------------------------------------------------------------
@@ -573,16 +578,8 @@ pylith::topology::TestFieldsManager::testGetSolutionAtlasTag(void)
     manager.createCustomAtlas("material-id", materialIds[iMaterial]);
 
 
-  FieldsManager::map_tags_type::iterator t_iter =
-    manager._tags.find(solnName);
-  CPPUNIT_ASSERT(t_iter != manager._tags.end());
-  const std::map<int,int>& tags = t_iter->second;
   for (int iMaterial=0; iMaterial < numMaterials; ++iMaterial) {
-    std::map<int,int>::const_iterator tag = 
-      tags.find(materialIds[iMaterial]);
-    CPPUNIT_ASSERT(tag != tags.end());
-    CPPUNIT_ASSERT_EQUAL(materialIds[iMaterial], tag->first);
-    const int tagValueE = tag->second;
+    const int tagValueE = iMaterial;
     const int tagValue = 
       manager.getSolutionAtlasTag(materialIds[iMaterial]);
     CPPUNIT_ASSERT_EQUAL(tagValueE, tagValue);
