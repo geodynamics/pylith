@@ -135,8 +135,9 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     assert(0);
 
   // Get cell information
+  const int materialId = _material->id();
   const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
-    mesh->getLabelStratum("material-id", _material->id());
+    mesh->getLabelStratum("material-id", materialId);
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator  cellsEnd = cells->end();
 
@@ -156,17 +157,14 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   const int spaceDim = _quadrature->spaceDim();
 
 #ifdef FASTER
-  if (_dispTags.find(_material->id()) == _dispTags.end()) {
-    _dispTags[_material->id()] = 
-      mesh->calculateCustomAtlas(dispTBctpdt, cells);
+  fields->createCustomAtlas("material-id", materialId);
+  const int dispAtlasTag = fields->getFieldAtlasTag("dispTBctpdt", materialId);
+
+  if (_residualAtlasTags.find(materialId) == _residualAtlasTags.end()) {
+    _residualAtlasTags[materialId] = 
+      residual->copyCustomAtlas(dispTBctpdt, dispAtlasTag);
   } // if
-  const int dispTBctpdtTag = _dispTags[_material->id()];
-  
-  if (_residualTags.find(_material->id()) == _residualTags.end()) {
-    _residualTags[_material->id()] = 
-      residual->copyCustomAtlas(dispTBctpdt, _dispTags[_material->id()]);
-  } // if
-  const int residualTag = _residualTags[_material->id()];
+  const int residualAtlasTag = _residualAtlasTags[materialId];
 #endif
   // Precompute the geometric and function space information
   _quadrature->precomputeGeometry(mesh, coordinates, cells);
@@ -206,7 +204,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     // Restrict input fields to cell
     PetscLogEventBegin(restrictEvent,0,0,0,0);
 #ifdef FASTER
-    mesh->restrict(dispTBctpdt, dispTBctpdtTag, c_index, &dispTBctpdtCell[0], 
+    mesh->restrict(dispTBctpdt, dispAtlasTag, c_index, &dispTBctpdtCell[0], 
 		   cellVecSize);
 #else
     mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
@@ -265,7 +263,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     // Assemble cell contribution into field
     PetscLogEventBegin(updateEvent,0,0,0,0);
 #ifdef FASTER
-    mesh->updateAdd(residual, residualTag, c_index, _cellVector);
+    mesh->updateAdd(residual, residualAtlasTag, c_index, _cellVector);
 #else
     mesh->updateAdd(residual, *c_iter, _cellVector);
 #endif
@@ -320,8 +318,9 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     assert(0);
 
   // Get cell information
+  const int materialId = _material->id();
   const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
-    mesh->getLabelStratum("material-id", _material->id());
+    mesh->getLabelStratum("material-id", materialId);
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator  cellsEnd = cells->end();
 
@@ -364,11 +363,8 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   } // for
 
 #ifdef FASTER
-  if (_dispTags.find(_material->id()) == _dispTags.end()) {
-    _dispTags[_material->id()] = 
-      mesh->calculateCustomAtlas(dispTBctpdt, cells);
-  } // if
-  const int dispTBctpdtTag = _dispTags[_material->id()];
+  fields->createCustomAtlas("material-id", materialId);
+  const int dispAtlasTag = fields->getFieldAtlasTag("dispTBctpdt", materialId);
 #endif
 
   // Loop over cells
@@ -387,7 +383,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 
     // Restrict input fields to cell
 #ifdef FASTER
-    mesh->restrict(dispTBctpdt, dispTBctpdtTag, c_index, &dispTBctpdtCell[0], 
+    mesh->restrict(dispTBctpdt, dispAtlasTag, c_index, &dispTBctpdtCell[0], 
 		   cellVecSize);
 #else
     mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);

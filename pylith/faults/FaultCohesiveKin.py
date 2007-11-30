@@ -62,7 +62,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     """
     FaultCohesive.__init__(self, name)
     Integrator.__init__(self)
-    self._loggingPrefix = "FaCK "
+    self._loggingPrefix = "CoKi "
     return
 
 
@@ -92,9 +92,14 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     """
     Initialize cohesive elements.
     """
+    logEvent = "%sinit" % self._loggingPrefix
+
     self._info.log("Initializing fault '%s'." % self.label)
+
+    self._logger.eventBegin(logEvent)
     self.eqsrc.initialize()
     FaultCohesive.initialize(self)
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -119,6 +124,18 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     return
     
   
+  def _setupLogging(self):
+    """
+    Setup event logging.
+    """
+    Integrator._setupLogging(self)
+
+    events = ["init"]
+    for event in events:
+      self._logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+    return
+  
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def fault():

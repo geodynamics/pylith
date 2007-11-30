@@ -124,7 +124,40 @@ public :
    * @param index Index in history [0=most recent, 1=previous, etc]
    * @returns Field in history.
    */
-  const ALE::Obj<real_section_type>& getHistoryItem(const int index);
+  const ALE::Obj<real_section_type>& getFieldByHistory(const int index);
+
+  /** Create custom atlases for fields.
+   *
+   * @param label Name of label.
+   * @param id Id associated with label.
+   * @returns Tag for custom atlask.
+   */
+  void createCustomAtlas(const char* label,
+			 const int id);
+  
+  /** Get atlas tag for field associated with label id.
+   *
+   * @param name Name of field.
+   * @param id Id associated with label.
+   * @returns Tag for custom atlask.
+   */
+  int getFieldAtlasTag(const char* name,
+		       const int id);
+  
+  /** Get tag for field in history by position.
+   *
+   * @param index Index in history [0=most recent, 1=previous, etc]
+   * @param id Id associated with label.
+   */
+  int getFieldAtlasTagByHistory(const int index,
+				const int id);
+
+  /** Get solution field atlas tag.
+   *
+   * @param id Id associated with label.
+   * @returns Tag for custom atlask.
+   */
+  int getSolutionAtlasTag(const int id);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
@@ -139,6 +172,7 @@ private :
 private :
 
   typedef std::map< std::string, ALE::Obj<real_section_type> > map_real_type;
+  typedef std::map< std::string, std::map<int,int> > map_tags_type;
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
@@ -154,6 +188,9 @@ private :
 
   /// History manager for a subset of the fields
   std::vector<std::string> _history;
+
+  /// Tags for each real field.
+  map_tags_type _tags;
 
 }; // FieldsManager
 

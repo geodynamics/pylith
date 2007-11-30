@@ -138,9 +138,6 @@ private :
 
   double _dtm1; ///< Time step for t-dt1 -> t
 
-  // Optimization
-  std::map<int, int> _dispTBctpdtTags; ///< Tags indexing dispTBctpdt field.
-
 }; // ElasticityImplicit
 
 #endif // pylith_feassemble_elasticityimplicit_hh

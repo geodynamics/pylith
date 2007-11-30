@@ -228,7 +228,7 @@ class TestFieldsManager(unittest.TestCase):
     """
     Test createHistory().
 
-    WARNING: This is not a rigorous test of setConstraintSizes() because we
+    WARNING: This is not a rigorous test of createHitory() because we
     don't verify the results.
     """
     mesh = self._initialize()
@@ -251,7 +251,7 @@ class TestFieldsManager(unittest.TestCase):
     """
     Test createHistory().
 
-    WARNING: This is not a rigorous test of setConstraintSizes() because we
+    WARNING: This is not a rigorous test of shitHistory() because we
     don't verify the results.
     """
     mesh = self._initialize()
@@ -270,11 +270,11 @@ class TestFieldsManager(unittest.TestCase):
     return
 
 
-  def test_getHistoryItem(self):
+  def test_getFieldByHistory(self):
     """
     Test createHistory().
 
-    WARNING: This is not a rigorous test of setConstraintSizes() because we
+    WARNING: This is not a rigorous test of getFieldByHistory() because we
     don't verify the results.
     """
     mesh = self._initialize()
@@ -287,7 +287,39 @@ class TestFieldsManager(unittest.TestCase):
 
     manager.createHistory(fields)
     for i in [0, 2, 1]:
-      field = manager.getHistoryItem(i)
+      field = manager.getFieldByHistory(i)
+
+    # We should really add something here to check to make sure things
+    # actually initialized correctly.
+    return
+
+
+  def test_createCustomAtlas(self):
+    """
+    Test createCustomAtlas().
+
+    WARNING: This is not a rigorous test of createCustomAtlas() because we
+    don't verify the results.
+    """
+    mesh = self._initialize()
+    from pylith.topology.FieldsManager import FieldsManager
+    manager = FieldsManager(mesh)
+    
+    fields = ["field A", "field B", "field C"]
+    for field in fields:
+      manager.addReal(field)
+      
+    manager.setFiberDimension("field A", 3, "vertices")
+    manager.allocate("field A")
+
+    manager.setFiberDimension("field B", 4, "vertices")
+    manager.allocate("field B")
+
+    manager.setFiberDimension("field C", 5, "vertices")
+    manager.allocate("field C")
+
+    manager.createCustomAtlas("material-id", 4)
+    manager.createCustomAtlas("material-id", 3)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly.

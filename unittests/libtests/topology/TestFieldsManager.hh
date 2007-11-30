@@ -40,6 +40,7 @@ class pylith::topology::TestFieldsManager : public CppUnit::TestFixture
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestFieldsManager );
+
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testAddReal );
   CPPUNIT_TEST( testGetReal );
@@ -52,7 +53,12 @@ class pylith::topology::TestFieldsManager : public CppUnit::TestFixture
   CPPUNIT_TEST( testGetSolution );
   CPPUNIT_TEST( testCreateHistory );
   CPPUNIT_TEST( testShiftHistory );
-  CPPUNIT_TEST( testGetHistoryItem );
+  CPPUNIT_TEST( testGetFieldByHistory );
+  CPPUNIT_TEST( testCreateCustomAtlas );
+  CPPUNIT_TEST( testGetFieldAtlasTag );
+  CPPUNIT_TEST( testGetFieldAtlasTagByHistory );
+  CPPUNIT_TEST( testGetSolutionAtlasTag );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -94,8 +100,20 @@ public :
   /// Test shiftHistory().
   void testShiftHistory(void);
 
-  /// Test getHistoryItem().
-  void testGetHistoryItem(void);
+  /// Test getFieldByHistory().
+  void testGetFieldByHistory(void);
+
+  /// Test createCustomAtlas().
+  void testCreateCustomAtlas(void);
+
+  /// Test getFieldAtlasTag().
+  void testGetFieldAtlasTag(void);
+
+  /// Test getFieldAtlasTagByHistory().
+  void testGetFieldAtlasTagByHistory(void);
+
+  /// Test getSolutionAtlasTag().
+  void testGetSolutionAtlasTag(void);
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
