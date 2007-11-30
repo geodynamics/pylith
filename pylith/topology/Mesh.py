@@ -70,7 +70,7 @@ class Mesh(Component):
     View the mesh.
     """
     if not self.cppHandle is None:
-      self.cppHandle.view
+      self.cppHandle.view()
     return
 
 
