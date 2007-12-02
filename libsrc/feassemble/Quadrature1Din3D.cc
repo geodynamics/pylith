@@ -14,6 +14,8 @@
 
 #include "Quadrature1Din3D.hh" // implementation of class methods
 
+#include "CellGeometry.hh" // USES CellGeometry
+
 #include "petsc.h" // USES PetscLogFlopsNoCheck
 
 #include <assert.h> // USES assert()
@@ -69,6 +71,7 @@ pylith::feassemble::Quadrature1Din3D::computeGeometry(
 	  basis * vertCoords[iBasis*_spaceDim+iDim];
     } // for
     
+#if 0
     // Compute Jacobian at quadrature point
     // J = [dx/dp
     //      dy/dp
@@ -92,6 +95,14 @@ pylith::feassemble::Quadrature1Din3D::computeGeometry(
     det = sqrt(det);
     _checkJacobianDet(det, cell);
     _jacobianDet[iQuadPt] = det;
+#else
+    // Compute Jacobian and determinant of Jacobian at quadrature point
+    assert(0 != _geometry);
+    _geometry->jacobian(&_jacobian[iQuadPt*_cellDim*_spaceDim],
+			&_jacobianDet[iQuadPt],
+			vertCoords, &_quadPtsRef[iQuadPt*_cellDim], _spaceDim);
+    _checkJacobianDet(_jacobianDet[iQuadPt], cell);
+#endif
 
     // Compute inverse of Jacobian at quadrature point
     // Jinv = 1.0/[J]
@@ -109,8 +120,9 @@ pylith::feassemble::Quadrature1Din3D::computeGeometry(
 	    _basisDerivRef[iQuadPt*_numBasis*_cellDim+iBasis*_cellDim+jDim] *
 	    _jacobianInv[iQuadPt*_cellDim*_spaceDim+jDim*_spaceDim+iDim];
   } // for
-  PetscLogFlopsNoCheck(_numQuadPts * (1+_numBasis*_spaceDim*4 +
-				      _spaceDim*3 +
+
+  PetscLogFlopsNoCheck(_numQuadPts * (1+_numBasis*_spaceDim*2 +
+				      _spaceDim*1 +
 				      _numBasis*_spaceDim*_cellDim*2));
 
 } // computeGeometry

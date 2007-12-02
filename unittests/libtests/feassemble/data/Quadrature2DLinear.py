@@ -22,31 +22,31 @@ import numpy
 
 # ----------------------------------------------------------------------
 def N0(p):
-  return 1.0-p[0]-p[1]
+  return -0.5*(p[0]+p[1])
 
 def N0p(p):
-  return -1.0
+  return -0.5
 
 def N0q(p):
-  return -1.0
+  return -0.5
 
 def N1(p):
-  return p[0]
+  return 0.5*(1.0+p[0])
 
 def N1p(p):
-  return 1.0
+  return 0.5
 
 def N1q(p):
   return 0.0
 
 def N2(p):
-  return p[1]
+  return 0.5*(1.0+p[1])
 
 def N2p(p):
   return 0.0
 
 def N2q(p):
-  return 1.0
+  return 0.5
 
 # ----------------------------------------------------------------------
 

@@ -39,8 +39,8 @@ const double pylith::feassemble::ElasticityImplicitData1DQuadratic::_dt =   1.00
 
 const double pylith::feassemble::ElasticityImplicitData1DQuadratic::_vertices[] = {
  -2.50000000e-01,
-  8.75000000e-01,
   2.00000000e+00,
+  8.75000000e-01,
 };
 
 const int pylith::feassemble::ElasticityImplicitData1DQuadratic::_cells[] = {
@@ -64,20 +64,20 @@ const double pylith::feassemble::ElasticityImplicitData1DQuadratic::_quadWts[] =
 
 const double pylith::feassemble::ElasticityImplicitData1DQuadratic::_basis[] = {
   4.55341801e-01,
-  6.66666667e-01,
- -1.22008468e-01,
  -1.22008468e-01,
   6.66666667e-01,
+ -1.22008468e-01,
   4.55341801e-01,
+  6.66666667e-01,
 };
 
 const double pylith::feassemble::ElasticityImplicitData1DQuadratic::_basisDerivRef[] = {
  -1.07735027e+00,
-  1.15470054e+00,
  -7.73502692e-02,
+  1.15470054e+00,
   7.73502692e-02,
- -1.15470054e+00,
   1.07735027e+00,
+ -1.15470054e+00,
 };
 
 const double pylith::feassemble::ElasticityImplicitData1DQuadratic::_fieldTpdt[] = {
@@ -99,21 +99,21 @@ const double pylith::feassemble::ElasticityImplicitData1DQuadratic::_fieldTmdt[]
 };
 
 const double pylith::feassemble::ElasticityImplicitData1DQuadratic::_valsResidual[] = {
- -1.34666667e+11,
-  3.09333333e+11,
- -1.74666667e+11,
+  6.93333333e+10,
+  1.65333333e+11,
+ -2.34666667e+11,
 };
 
 const double pylith::feassemble::ElasticityImplicitData1DQuadratic::_valsJacobian[] = {
   9.33333333e+10,
+  1.33333333e+10,
  -1.06666667e+11,
   1.33333333e+10,
+  9.33333333e+10,
+ -1.06666667e+11,
+ -1.06666667e+11,
  -1.06666667e+11,
   2.13333333e+11,
- -1.06666667e+11,
-  1.33333333e+10,
- -1.06666667e+11,
-  9.33333333e+10,
 };
 
 pylith::feassemble::ElasticityImplicitData1DQuadratic::ElasticityImplicitData1DQuadratic(void)

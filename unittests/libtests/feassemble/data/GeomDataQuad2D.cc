@@ -35,20 +35,22 @@ const double pylith::feassemble::GeomDataQuad2D::_locations[] = {
  -0.2,  0.4
 };
 
+// Reference cell has area of 2.0, so divide by 2.0;
 const double pylith::feassemble::GeomDataQuad2D::_jacobian[] = {
-  0.5, -0.4, -0.3, 1.5,
-  0.5, -0.1, -0.3, 1.4,
-  0.8, -0.4, -0.4, 1.5,
-  0.8, -0.1, -0.4, 1.4,
-  0.71, -0.28, -0.37, 1.46
+  0.5/2.0, -0.4/2.0, -0.3/2.0, 1.5/2.0,
+  0.5/2.0, -0.1/2.0, -0.3/2.0, 1.4/2.0,
+  0.8/2.0, -0.4/2.0, -0.4/2.0, 1.5/2.0,
+  0.8/2.0, -0.1/2.0, -0.4/2.0, 1.4/2.0,
+  0.71/2.0, -0.28/2.0, -0.37/2.0, 1.46/2.0
 };
 
+// Reference cell has area of 2.0, so divide by 4.0;
 const double pylith::feassemble::GeomDataQuad2D::_jacobianDet[] = {
-  0.63,
-  0.67,
-  1.04,
-  1.08,
-  0.933
+  0.63/4.0,
+  0.67/4.0,
+  1.04/4.0,
+  1.08/4.0,
+  0.933/4.0
 };
 
 pylith::feassemble::GeomDataQuad2D::GeomDataQuad2D(void)

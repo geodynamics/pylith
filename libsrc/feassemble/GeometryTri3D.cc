@@ -82,14 +82,14 @@ pylith::feassemble::GeometryTri3D::jacobian(double_array* jacobian,
   const double y2 = vertices[7];
   const double z2 = vertices[8];
 
-  (*jacobian)[0] = x1 - x0;
-  (*jacobian)[1] = x2 - x0;
+  (*jacobian)[0] = (x1 - x0) / 2.0;
+  (*jacobian)[1] = (x2 - x0) / 2.0;
 
-  (*jacobian)[2] = y1 - y0;
-  (*jacobian)[3] = y2 - y0;
+  (*jacobian)[2] = (y1 - y0) / 2.0;
+  (*jacobian)[3] = (y2 - y0) / 2.0;
 
-  (*jacobian)[4] = z1 - z0;
-  (*jacobian)[5] = z2 - z0;
+  (*jacobian)[4] = (z1 - z0) / 2.0;
+  (*jacobian)[5] = (z2 - z0) / 2.0;
 
   const double jj00 = 
     (*jacobian)[0]*(*jacobian)[0] +
@@ -106,6 +106,61 @@ pylith::feassemble::GeometryTri3D::jacobian(double_array* jacobian,
     (*jacobian)[5]*(*jacobian)[5];
   *det = sqrt(jj00*jj11 - jj01*jj10);
   PetscLogFlopsNoCheck(25);
+} // jacobian
+
+// ----------------------------------------------------------------------
+// Compute Jacobian at location in cell.
+void
+pylith::feassemble::GeometryTri3D::jacobian(double* jacobian,
+					    double* det,
+					    const double* vertices,
+					    const double* location,
+					    const int dim) const
+{ // jacobian
+  assert(0 != jacobian);
+  assert(0 != det);
+  assert(0 != vertices);
+  assert(0 != location);
+  assert(3 == dim);
+  assert(spaceDim() == dim);
+  
+  const double x0 = vertices[0];
+  const double y0 = vertices[1];
+  const double z0 = vertices[2];
+
+  const double x1 = vertices[3];
+  const double y1 = vertices[4];
+  const double z1 = vertices[5];
+
+  const double x2 = vertices[6];
+  const double y2 = vertices[7];
+  const double z2 = vertices[8];
+
+  jacobian[0] = (x1 - x0) / 2.0;
+  jacobian[1] = (x2 - x0) / 2.0;
+
+  jacobian[2] = (y1 - y0) / 2.0;
+  jacobian[3] = (y2 - y0) / 2.0;
+
+  jacobian[4] = (z1 - z0) / 2.0;
+  jacobian[5] = (z2 - z0) / 2.0;
+
+  const double jj00 = 
+    jacobian[0]*jacobian[0] +
+    jacobian[2]*jacobian[2] +
+    jacobian[4]*jacobian[4];
+  const double jj10 =
+    jacobian[0]*jacobian[1] +
+    jacobian[2]*jacobian[3] +
+    jacobian[4]*jacobian[5];
+  const double jj01 = jj10;
+  const double jj11 = 
+    jacobian[1]*jacobian[1] +
+    jacobian[3]*jacobian[3] +
+    jacobian[5]*jacobian[5];
+  *det = sqrt(jj00*jj11 - jj01*jj10);
+
+  PetscLogFlopsNoCheck(31);
 } // jacobian
 
 

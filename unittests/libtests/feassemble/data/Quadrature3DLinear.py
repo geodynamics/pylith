@@ -22,22 +22,22 @@ import numpy
 
 # ----------------------------------------------------------------------
 def N0(p):
-  return 1.0-p[0]-p[1]-p[2]
+  return 0.5*(1.0 + p[0] + p[1] + p[2])
 
 def N0p(p):
-  return -1.0
+  return -0.5
 
 def N0q(p):
-  return -1.0
+  return -0.5
 
 def N0r(p):
-  return -1.0
+  return -0.5
 
 def N1(p):
-  return p[0]
+  return 0.5*(1.0 + p[0])
 
 def N1p(p):
-  return 1.0
+  return 0.5
 
 def N1q(p):
   return 0.0
@@ -46,19 +46,19 @@ def N1r(p):
   return 0.0
 
 def N2(p):
-  return p[1]
+  return 0.5*(1.0 + p[1])
 
 def N2p(p):
   return 0.0
 
 def N2q(p):
-  return 1.0
+  return 0.5
 
 def N2r(p):
   return 0.0
 
 def N3(p):
-  return p[2]
+  return 0.5*(1.0 + p[2])
 
 def N3p(p):
   return 0.0
@@ -67,7 +67,7 @@ def N3q(p):
   return 0.0
 
 def N3r(p):
-  return 1.0
+  return 0.5
 
 
 # ----------------------------------------------------------------------
@@ -87,9 +87,9 @@ class Quadrature3DLinear(Component):
     """
     Component.__init__(self, name, facility="quadrature")
     
-    self.quadPtsRef = numpy.array( [[1.0/4.0, 1.0/4.0, 1.0/4.0]],
+    self.quadPtsRef = numpy.array( [[-0.5, -0.5, -0.5]],
                                    dtype=numpy.float64)
-    self.quadWts = numpy.array([1.0/6.0], dtype=numpy.float64)
+    self.quadWts = numpy.array([4.0/3.0], dtype=numpy.float64)
     self.numBasis = 4
     self.numQuadPts = 1
     self.spaceDim = 3

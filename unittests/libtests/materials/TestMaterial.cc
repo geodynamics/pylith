@@ -19,6 +19,7 @@
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "pylith/utils/array.hh" // USES double_array
 #include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
+#include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
@@ -146,6 +147,8 @@ pylith::materials::TestMaterial::testInitialize(void)
   cs.initialize();
 
   feassemble::Quadrature1D quadrature;
+  feassemble::GeometryLine1D geometry;
+  quadrature.refGeometry(&geometry);
   const int cellDim = 1;
   const int numCorners = 3;
   const int numQuadPts = 2;

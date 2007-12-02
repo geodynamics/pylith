@@ -21,7 +21,7 @@ const double pylith::bc::AbsorbingDampersDataTet4::_quadPts[] = {
   0.3333333333333333, 0.3333333333333333
 };
 const double pylith::bc::AbsorbingDampersDataTet4::_quadWts[] = {
-  0.5,
+  2.0,
 };
 const double pylith::bc::AbsorbingDampersDataTet4::_basis[] = {
   0.3333333333333333,

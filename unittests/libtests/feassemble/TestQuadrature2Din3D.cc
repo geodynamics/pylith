@@ -15,6 +15,7 @@
 #include "TestQuadrature2Din3D.hh" // Implementation of class methods
 
 #include "pylith/feassemble/Quadrature2Din3D.hh"
+#include "pylith/feassemble/GeometryTri3D.hh"
 
 #include "data/QuadratureData2Din3DLinearXYZ.hh"
 #include "data/QuadratureData2Din3DLinearXY.hh"
@@ -39,6 +40,8 @@ void
 pylith::feassemble::TestQuadrature2Din3D::testLinearXYZ(void)
 { // testLinearXYZ
   Quadrature2Din3D q;
+  GeometryTri3D geometry;
+  q.refGeometry(&geometry);
   QuadratureData2Din3DLinearXYZ data;
 
   _testComputeGeometry(&q, data);
@@ -51,6 +54,8 @@ pylith::feassemble::TestQuadrature2Din3D::testLinearXY(void)
 { // testLinearXY
   Quadrature2Din3D q;
   QuadratureData2Din3DLinearXY data;
+  GeometryTri3D geometry;
+  q.refGeometry(&geometry);
 
   _testComputeGeometry(&q, data);
 } // testLinearXY
@@ -61,6 +66,8 @@ void
 pylith::feassemble::TestQuadrature2Din3D::testLinearYZ(void)
 { // testLinearYZ
   Quadrature2Din3D q;
+  GeometryTri3D geometry;
+  q.refGeometry(&geometry);
   QuadratureData2Din3DLinearYZ data;
 
   _testComputeGeometry(&q, data);
@@ -72,6 +79,8 @@ void
 pylith::feassemble::TestQuadrature2Din3D::testLinearXZ(void)
 { // testLinearXZ
   Quadrature2Din3D q;
+  GeometryTri3D geometry;
+  q.refGeometry(&geometry);
   QuadratureData2Din3DLinearXZ data;
 
   _testComputeGeometry(&q, data);
@@ -83,6 +92,8 @@ void
 pylith::feassemble::TestQuadrature2Din3D::testQuadratic(void)
 { // testQuadratic
   Quadrature2Din3D q;
+  GeometryTri3D geometry;
+  q.refGeometry(&geometry);
   QuadratureData2Din3DQuadratic data;
 
   _testComputeGeometry(&q, data);

@@ -15,6 +15,7 @@
 #include "Quadrature1D.hh" // implementation of class methods
 
 #include "pylith/utils/array.hh" // USES double_array
+#include "CellGeometry.hh" // USES CellGeometry
 
 #include "petsc.h" // USES PetscLogFlopsNoCheck
 
@@ -66,6 +67,7 @@ pylith::feassemble::Quadrature1D::computeGeometry(
       _quadPts[iQuadPt] += 
 	_basis[iQuadPt*_numBasis+iBasis]*vertCoords[iBasis];
 
+#if 0
     // Compute Jacobian at quadrature point
     // J = dx/dp = sum[i=0,n-1] (dNi/dp * xi)
     for (int iBasis=0; iBasis < _numBasis; ++iBasis)
@@ -77,10 +79,17 @@ pylith::feassemble::Quadrature1D::computeGeometry(
     const double det = _jacobian[iQuadPt];
     _checkJacobianDet(det, cell);
     _jacobianDet[iQuadPt] = _jacobian[iQuadPt];
+#else
+    // Compute Jacobian and determinant of Jacobian at quadrature point
+    assert(0 != _geometry);
+    _geometry->jacobian(&_jacobian[iQuadPt], &_jacobianDet[iQuadPt],
+			vertCoords, &_quadPtsRef[iQuadPt], _spaceDim);
+    _checkJacobianDet(_jacobianDet[iQuadPt], cell);
+#endif
     
     // Compute inverse of Jacobian at quadrature point
     // Jinv = 1/j00
-    _jacobianInv[iQuadPt] = 1.0/_jacobianDet[iQuadPt];
+    _jacobianInv[iQuadPt] = 1.0 / _jacobianDet[iQuadPt];
 
     assert(_numQuadPts*_numBasis*_spaceDim == _basisDeriv.size());
     assert(_numQuadPts*_numBasis*_cellDim == _basisDerivRef.size());
@@ -94,6 +103,7 @@ pylith::feassemble::Quadrature1D::computeGeometry(
 	  _basisDerivRef[iQuadPt*_numBasis+iBasis] *
 	  _jacobianInv[iQuadPt];
   } // for
+
   PetscLogFlopsNoCheck(_numQuadPts * (1 + _numBasis * 4));
 } // computeGeometry
 

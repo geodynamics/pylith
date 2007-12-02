@@ -18,6 +18,8 @@
 
 #include "pylith/utils/array.hh" // USES double_array
 
+#include "petsc.h" // USES PetscLogFlopsNoCheck
+
 #include <assert.h> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -58,9 +60,9 @@ pylith::feassemble::GeometryLine1D::geometryLowerDim(void) const
 // Compute Jacobian at location in cell.
 void
 pylith::feassemble::GeometryLine1D::jacobian(double_array* jacobian,
-					   double* det,
-					   const double_array& vertices,
-					   const double_array& location) const
+					     double* det,
+					     const double_array& vertices,
+					     const double_array& location) const
 { // jacobian
   assert(0 != jacobian);
   assert(0 != det);
@@ -71,8 +73,32 @@ pylith::feassemble::GeometryLine1D::jacobian(double_array* jacobian,
   const double x0 = vertices[0];
   const double x1 = vertices[1];
 
-  (*jacobian)[0] = x1 - x0;
+  (*jacobian)[0] = (x1 - x0)/2.0;
   *det = (*jacobian)[0];
+} // jacobian
+
+// ----------------------------------------------------------------------
+// Compute Jacobian at location in cell.
+void
+pylith::feassemble::GeometryLine1D::jacobian(double* jacobian,
+					     double* det,
+					     const double* vertices,
+					     const double* location,
+					     const int dim) const
+{ // jacobian
+  assert(0 != jacobian);
+  assert(0 != det);
+  assert(0 != vertices);
+  assert(0 != location);
+  assert(1 == dim);
+  assert(spaceDim() == dim);
+
+  const double x0 = vertices[0];
+  const double x1 = vertices[1];
+
+  jacobian[0] = (x1 - x0)/2.0;
+  *det = jacobian[0];
+  PetscLogFlopsNoCheck(2);
 } // jacobian
 
 

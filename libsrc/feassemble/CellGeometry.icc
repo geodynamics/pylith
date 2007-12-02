@@ -41,6 +41,17 @@ pylith::feassemble::CellGeometry::orientation(double_array* orientation,
     _orientFn(orientation, jacobian, jacobianDet, upDir);
 } // orientation
 
+// TEMPORARY
+// Compute Jacobian at location in cell.
+inline
+void
+pylith::feassemble::CellGeometry::jacobian(double* jacobian,
+					   double* det,
+					   const double* vertices,
+					   const double* location,
+					   const int dim) const {
+}
+
 
 #endif
 

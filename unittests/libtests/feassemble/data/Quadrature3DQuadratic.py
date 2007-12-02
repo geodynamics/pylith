@@ -22,22 +22,22 @@ import numpy
 
 # ----------------------------------------------------------------------
 def N0(p):
-  return (1.0-p[0]-p[1]-p[2])*(1.0-2.0*p[0]-2.0*p[1]-2.0*p[2])
+  return 0.5 * (1.0+p[0]+p[1]+p[2])*(2.0+p[0]+p[1]+p[2])
 
 def N0p(p):
-  return 4.0*p[0]+4.0*p[1]+4.0*p[2]-3.0
+  return 1.5+p[0]+p[1]+p[2]
 
 def N0q(p):
-  return 4.0*p[0]+4.0*p[1]+4.0*p[2]-3.0
+  return 1.5+p[0]+p[1]+p[2]
 
 def N0r(p):
-  return 4.0*p[0]+4.0*p[1]+4.0*p[2]-3.0
+  return 1.5+p[0]+p[1]+p[2]
 
 def N1(p):
-  return p[0]*(2.0*p[0]-1.0)
+  return 0.5*(1.0+p[0])*p[0]
 
 def N1p(p):
-  return 4.0*p[0]-1
+  return 0.5+p[0]
 
 def N1q(p):
   return 0.0
@@ -46,19 +46,19 @@ def N1r(p):
   return 0.0
 
 def N2(p):
-  return p[1]*(2.0*p[1]-1.0)
+  return 0.5*(1.0+p[1])*p[1]
 
 def N2p(p):
   return 0.0
 
 def N2q(p):
-  return 4.0*p[1]-1.0
+  return 0.5+p[1]
 
 def N2r(p):
   return 0.0
 
 def N3(p):
-  return p[2]*(2.0*p[2]-1.0)
+  return 0.5*(1.0+p[2])*p[2]
 
 def N3p(p):
   return 0.0
@@ -67,79 +67,79 @@ def N3q(p):
   return 0.0
 
 def N3r(p):
-  return 4.0*p[2]-1.0
+  return 0.5+p[2]
 
 def N4(p):
-  return 4.0*p[0]*(1.0-p[0]-p[1]-p[2])
+  return (1.0+p[0])*(1.0+p[1])
 
 def N4p(p):
-  return -8.0*p[0]+4.0*(1.0-p[1]-p[2])
+  return 1.0+p[1]
 
 def N4q(p):
-  return -4.0*p[0]
+  return 1.0+p[0]
 
 def N4r(p):
-  return -4.0*p[0]
+  return 0.0
 
 def N5(p):
-  return 4.0*p[1]*(1.0-p[0]-p[1]-p[2])
+  return -(1.0+p[1])*(1.0+p[0]+p[1]+p[2])
 
 def N5p(p):
-  return -4.0*p[1]
+  return -(1.0+p[1])
 
 def N5q(p):
-  return -8.0*p[1]+4.0*(1.0-p[0]-p[2])
+  return -2.0-p[0]-2.0*p[1]-p[2]
 
 def N5r(p):
-  return -4.0*p[1]
+  return -(1.0+p[1])
 
 def N6(p):
-  return 4.0*p[2]*(1.0-p[0]-p[1]-p[2])
+  return -(1.0+p[0])*(1.0+p[0]+p[1]+p[2])
 
 def N6p(p):
-  return -4.0*p[2]
+  return -2.0-2.0*p[0]-p[1]-p[2]
 
 def N6q(p):
-  return -4.0*p[2]
+  return -(1.0+p[0])
 
 def N6r(p):
-  return -8.0*p[2]+4.0*(1.0-p[0]-p[1])
+  return -(1.0+p[0])
 
 def N7(p):
-  return 4.0*p[0]*p[1]
+  return -(1.0+p[2])*(1.0+p[0]+p[1]+p[2])
 
 def N7p(p):
-  return 4.0*p[1]
+  return -(1.0+p[2])
 
 def N7q(p):
-  return 4.0*p[0]
+  return -(1.0+p[2])
 
 def N7r(p):
-  return 0.0
+  return -2.0-p[0]-p[1]-2.0*p[2]
 
 def N8(p):
-  return 4.0*p[1]*p[2]
+  return (1.0+p[0])*(1.0+p[2])
 
 def N8p(p):
-  return 0.0
+  return 1.0 + p[2]
 
 def N8q(p):
-  return 4.0*p[2]
-
-def N8r(p):
-  return 4.0*p[1]
-
-def N9(p):
-  return 4.0*p[0]*p[2]
-
-def N9p(p):
-  return 4.0*p[2]
-
-def N9q(p):
   return 0.0
 
+def N8r(p):
+  return 1.0 + p[0]
+
+def N9(p):
+  return (1.0+p[1])*(1.0+p[2])
+
+def N9p(p):
+  return 0.0
+
+def N9q(p):
+  return 1.0 + p[2]
+
 def N9r(p):
-  return 4.0*p[0]
+  return 1.0 + p[1]
 
 
 # ----------------------------------------------------------------------
@@ -161,12 +161,12 @@ class Quadrature3DQuadratic(Component):
     
 
     # These are just approximate points used to test the quadrature routine
-    self.quadPtsRef = numpy.array( [[1.0/12.0, 1.0/12.0, 1.0/12.0],
-                                    [3.0/4.0, 1.0/12.0, 1.0/12.0],
-                                    [1.0/12.0, 3.0/4.0, 1.0/12.0],
-                                    [1.0/12.0, 1.0/12.0, 3.0/4.0]],
+    self.quadPtsRef = numpy.array( [[-1.0+1.0/5.0, -1.0+1.0/5.0, -1.0+1.0/5.0],
+                                    [-1.0+3.0/2.0, -1.0+1.0/5.0, -1.0+1.0/5.0],
+                                    [-1.0+1.0/5.0, -1.0+3.0/2.0, -1.0+1.0/5.0],
+                                    [-1.0+1.0/5.0, -1.0+1.0/5.0, -1.0+3.0/2.0]],
                                    dtype=numpy.float64)
-    self.quadWts = numpy.array([1.0/8.0, 1.0/8.0, 1.0/8.0, 1.0/8.0],
+    self.quadWts = numpy.array([1.0/3.0, 1.0/3.0, 1.0/3.0, 1.0/3.0],
                                dtype=numpy.float64)
     self.numBasis = 10
     self.numQuadPts = 4

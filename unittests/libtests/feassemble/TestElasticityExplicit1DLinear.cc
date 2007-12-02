@@ -17,6 +17,7 @@
 #include "data/ElasticityExplicitData1DLinear.hh"
 
 #include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
+#include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
 #include "pylith/materials/ElasticStrain1D.hh" // USES ElasticStrain1D
 
 // ----------------------------------------------------------------------
@@ -29,6 +30,9 @@ pylith::feassemble::TestElasticityExplicit1DLinear::setUp(void)
 { // setUp
   _data = new ElasticityExplicitData1DLinear();
   _quadrature = new Quadrature1D();
+  GeometryLine1D geometry;
+  CPPUNIT_ASSERT(0 != _quadrature);
+  _quadrature->refGeometry(&geometry);
   _material = new materials::ElasticStrain1D;
 
   CPPUNIT_ASSERT(0 != _data);

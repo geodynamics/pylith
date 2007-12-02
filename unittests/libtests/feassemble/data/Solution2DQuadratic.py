@@ -52,7 +52,7 @@ class Solution2DQuadratic(Component):
                                 -0.1, -0.2 ], dtype=numpy.float64)
     self.fieldTmdt = numpy.array([ -0.2, -0.3,
                                    +0.3, +0.4,
-                                   +0.0, +0.1,
+                                   +0.0, -0.1,
                                    -0.3, -0.2,
                                    +0.1, +0.4,
                                    -0.2, -0.6 ], dtype=numpy.float64)

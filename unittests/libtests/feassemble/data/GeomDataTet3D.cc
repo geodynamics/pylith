@@ -32,14 +32,16 @@ const double pylith::feassemble::GeomDataTet3D::_locations[] = {
   0.459, 0.727, 0.693
 };
 
+// Reference cell has volume of 2.0, so divide by 2.0;
 const double pylith::feassemble::GeomDataTet3D::_jacobian[] = {
-  3.4, 0.3, 1.2, 0.1, 3.2, 1.0, -0.1, -0.5, 2.8,
-  3.4, 0.3, 1.2, 0.1, 3.2, 1.0, -0.1, -0.5, 2.8
+  3.4/2.0, 0.3/2.0, 1.2/2.0, 0.1/2.0, 3.2/2.0, 1.0/2.0, -0.1/2.0, -0.5/2.0, 2.8/2.0,
+  3.4/2.0, 0.3/2.0, 1.2/2.0, 0.1/2.0, 3.2/2.0, 1.0/2.0, -0.1/2.0, -0.5/2.0, 2.8/2.0
 };
 
+// Reference cell has volume of 2.0, so divide by 8.0;
 const double pylith::feassemble::GeomDataTet3D::_jacobianDet[] = {
-  32.374,
-  32.374
+  32.374/8.0,
+  32.374/8.0
 };
 
 pylith::feassemble::GeomDataTet3D::GeomDataTet3D(void)

@@ -24,17 +24,20 @@ Release 1.1
      High level events
        MeshGenerator
        Problem
-  
+
   2. Optimization of restrict()/update()
       UpdateState
-        Change disp to fields
-      Need to fix optimized ElasticityExplicit (something wrong)
+        Change disp argument to fields?
 
      a. Fault
      b. Absorbing BC
      c. Neumann BC
 
   3. Nonisoparametric cells
+     Need routine to transform coordinates in reference cell to coordinates
+       in actual cell (given vertices of actual cell)
+     Clean up CellGeometry::jacobian
+       Switch from double_array to double* (used by faults)
 
   4. Finish Neumann BC.
 
