@@ -31,14 +31,16 @@ const double pylith::feassemble::GeomDataTri3D::_locations[] = {
   0.459, 0.727
 };
 
+// Reference cell has area of 2.0, so divide by 2.0;
 const double pylith::feassemble::GeomDataTri3D::_jacobian[] = {
-  -1.5, -1.3, -3.0, -0.9, 0.5, 1.8,
-  -1.5, -1.3, -3.0, -0.9, 0.5, 1.8
+  -1.5/2.0, -1.3/2.0, -3.0/2.0, -0.9/2.0, 0.5/2.0, 1.8/2.0,
+  -1.5/2.0, -1.3/2.0, -3.0/2.0, -0.9/2.0, 0.5/2.0, 1.8/2.0
 };
 
+// Reference cell has area of 2.0, so divide by 4.0;
 const double pylith::feassemble::GeomDataTri3D::_jacobianDet[] = {
-  5.933590818383081,
-  5.933590818383081
+  5.933590818383081/4.0,
+  5.933590818383081/4.0
 };
 
 pylith::feassemble::GeomDataTri3D::GeomDataTri3D(void)

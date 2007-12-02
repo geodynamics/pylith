@@ -29,8 +29,8 @@ const int pylith::feassemble::QuadratureData1DQuadratic::_numQuadPts = 2;
 
 const double pylith::feassemble::QuadratureData1DQuadratic::_vertices[] = {
  -2.50000000e-01,
-  8.75000000e-01,
   2.00000000e+00,
+  8.75000000e-01,
 };
 
 const int pylith::feassemble::QuadratureData1DQuadratic::_cells[] = {
@@ -59,29 +59,29 @@ const double pylith::feassemble::QuadratureData1DQuadratic::_quadPts[] = {
 
 const double pylith::feassemble::QuadratureData1DQuadratic::_basis[] = {
   4.55341801e-01,
-  6.66666667e-01,
- -1.22008468e-01,
  -1.22008468e-01,
   6.66666667e-01,
+ -1.22008468e-01,
   4.55341801e-01,
+  6.66666667e-01,
 };
 
 const double pylith::feassemble::QuadratureData1DQuadratic::_basisDerivRef[] = {
  -1.07735027e+00,
-  1.15470054e+00,
  -7.73502692e-02,
+  1.15470054e+00,
   7.73502692e-02,
- -1.15470054e+00,
   1.07735027e+00,
+ -1.15470054e+00,
 };
 
 const double pylith::feassemble::QuadratureData1DQuadratic::_basisDeriv[] = {
  -9.57644684e-01,
-  1.02640048e+00,
  -6.87557948e-02,
+  1.02640048e+00,
   6.87557948e-02,
- -1.02640048e+00,
   9.57644684e-01,
+ -1.02640048e+00,
 };
 
 const double pylith::feassemble::QuadratureData1DQuadratic::_jacobian[] = {

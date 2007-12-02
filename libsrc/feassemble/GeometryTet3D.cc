@@ -88,15 +88,15 @@ pylith::feassemble::GeometryTet3D::jacobian(double_array* jacobian,
   const double y3 = vertices[10];
   const double z3 = vertices[11];
 
-  (*jacobian)[0] = x1 - x0;
-  (*jacobian)[1] = x2 - x0;
-  (*jacobian)[2] = x3 - x0;
-  (*jacobian)[3] = y1 - y0;
-  (*jacobian)[4] = y2 - y0;
-  (*jacobian)[5] = y3 - y0;
-  (*jacobian)[6] = z1 - z0;
-  (*jacobian)[7] = z2 - z0;
-  (*jacobian)[8] = z3 - z0;
+  (*jacobian)[0] = (x1 - x0) / 2.0;
+  (*jacobian)[1] = (x2 - x0) / 2.0;
+  (*jacobian)[2] = (x3 - x0) / 2.0;
+  (*jacobian)[3] = (y1 - y0) / 2.0;
+  (*jacobian)[4] = (y2 - y0) / 2.0;
+  (*jacobian)[5] = (y3 - y0) / 2.0;
+  (*jacobian)[6] = (z1 - z0) / 2.0;
+  (*jacobian)[7] = (z2 - z0) / 2.0;
+  (*jacobian)[8] = (z3 - z0) / 2.0;
 
   *det = 
     (*jacobian)[0]*((*jacobian)[4]*(*jacobian)[8] -
@@ -105,7 +105,58 @@ pylith::feassemble::GeometryTet3D::jacobian(double_array* jacobian,
 		    (*jacobian)[5]*(*jacobian)[6]) +
     (*jacobian)[2]*((*jacobian)[3]*(*jacobian)[7] -
 		    (*jacobian)[4]*(*jacobian)[6]);
-  PetscLogFlopsNoCheck(23);
+
+  PetscLogFlopsNoCheck(32);
+} // jacobian
+
+// ----------------------------------------------------------------------
+// Compute Jacobian at location in cell.
+void
+pylith::feassemble::GeometryTet3D::jacobian(double* jacobian,
+					    double* det,
+					    const double* vertices,
+					    const double* location,
+					    const int dim) const
+{ // jacobian
+  assert(0 != jacobian);
+  assert(0 != det);
+  assert(0 != vertices);
+  assert(0 != location);
+  assert(3 == dim);
+  assert(spaceDim() == dim);
+  
+  const double x0 = vertices[0];
+  const double y0 = vertices[1];
+  const double z0 = vertices[2];
+
+  const double x1 = vertices[3];
+  const double y1 = vertices[4];
+  const double z1 = vertices[5];
+
+  const double x2 = vertices[6];
+  const double y2 = vertices[7];
+  const double z2 = vertices[8];
+
+  const double x3 = vertices[9];
+  const double y3 = vertices[10];
+  const double z3 = vertices[11];
+
+  jacobian[0] = (x1 - x0) / 2.0;
+  jacobian[1] = (x2 - x0) / 2.0;
+  jacobian[2] = (x3 - x0) / 2.0;
+  jacobian[3] = (y1 - y0) / 2.0;
+  jacobian[4] = (y2 - y0) / 2.0;
+  jacobian[5] = (y3 - y0) / 2.0;
+  jacobian[6] = (z1 - z0) / 2.0;
+  jacobian[7] = (z2 - z0) / 2.0;
+  jacobian[8] = (z3 - z0) / 2.0;
+
+  *det = 
+    jacobian[0]*(jacobian[4]*jacobian[8] - jacobian[5]*jacobian[7]) -
+    jacobian[1]*(jacobian[3]*jacobian[8] - jacobian[5]*jacobian[6]) +
+    jacobian[2]*(jacobian[3]*jacobian[7] - jacobian[4]*jacobian[6]);
+
+  PetscLogFlopsNoCheck(32);
 } // jacobian
 
 

@@ -15,6 +15,7 @@
 #include "TestQuadrature1Din3D.hh" // Implementation of class methods
 
 #include "pylith/feassemble/Quadrature1Din3D.hh"
+#include "pylith/feassemble/GeomertyLine3D.hh"
 
 #include "data/QuadratureData1Din3DLinear.hh"
 #include "data/QuadratureData1Din3DQuadratic.hh"
@@ -36,6 +37,8 @@ void
 pylith::feassemble::TestQuadrature1Din3D::testLinear(void)
 { // testLinear
   Quadrature1Din3D q;
+  GeometryLine3D geometry;
+  q.refGeometry(&geometry);
   QuadratureData1Din3DLinear data;
 
   _testComputeGeometry(&q, data);
@@ -47,6 +50,8 @@ void
 pylith::feassemble::TestQuadrature1Din3D::testQuadratic(void)
 { // testQuadratic
   Quadrature1Din3D q;
+  GeometryLine3D geometry;
+  q.refGeometry(&geometry);
   QuadratureData1Din3DQuadratic data;
 
   _testComputeGeometry(&q, data);

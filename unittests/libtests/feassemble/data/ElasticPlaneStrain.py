@@ -40,8 +40,10 @@ class ElasticPlaneStrain(Component):
     self.id = 0
     self.label = "elastic strain 2-D"
     self.density = 2500.0
-    self.lameMu = 3.0e+10
-    self.lameLambda = self.lameMu
+    vs = 3500.0
+    vp = 6000.0
+    self.lameMu = self.density*vs*vs
+    self.lameLambda = self.density*vp*vp - 2.0*self.lameMu
     return
   
 

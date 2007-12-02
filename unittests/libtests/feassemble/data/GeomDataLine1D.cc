@@ -30,14 +30,16 @@ const double pylith::feassemble::GeomDataLine1D::_locations[] = {
   0.459
 };
 
+// Reference cell has length of 2.0, so divide by 2.0;
 const double pylith::feassemble::GeomDataLine1D::_jacobian[] = {
-  3.3,
-  3.3
+  3.3/2.0,
+  3.3/2.0
 };
 
+// Reference cell has length of 2.0, so divide by 2.0;
 const double pylith::feassemble::GeomDataLine1D::_jacobianDet[] = {
-  3.3,
-  3.3
+  3.3/2.0,
+  3.3/2.0
 };
 
 pylith::feassemble::GeomDataLine1D::GeomDataLine1D(void)

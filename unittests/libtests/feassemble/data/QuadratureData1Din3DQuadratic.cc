@@ -29,8 +29,8 @@ const int pylith::feassemble::QuadratureData1Din3DQuadratic::_numQuadPts = 2;
 
 const double pylith::feassemble::QuadratureData1Din3DQuadratic::_vertices[] = {
   1.00000000e+00, -1.50000000e+00, -2.00000000e+00,
-  3.00000000e-01,  3.00000000e-01,  8.00000000e-01,
  -5.00000000e-01,  2.00000000e+00,  3.00000000e+00,
+  2.50000000e-01,  2.50000000e-01,  5.00000000e-01,
 };
 
 const int pylith::feassemble::QuadratureData1Din3DQuadratic::_cells[] = {
@@ -53,53 +53,53 @@ const double pylith::feassemble::QuadratureData1Din3DQuadratic::_quadWts[] = {
 };
 
 const double pylith::feassemble::QuadratureData1Din3DQuadratic::_quadPts[] = {
-  7.16346035e-01, -7.27029638e-01, -7.43375673e-01,
- -1.49679369e-01,  1.29369630e+00,  2.14337567e+00,
+  6.83012702e-01, -7.60362971e-01, -9.43375673e-01,
+ -1.83012702e-01,  1.26036297e+00,  1.94337567e+00,
 };
 
 const double pylith::feassemble::QuadratureData1Din3DQuadratic::_basis[] = {
   4.55341801e-01,
-  6.66666667e-01,
- -1.22008468e-01,
  -1.22008468e-01,
   6.66666667e-01,
+ -1.22008468e-01,
   4.55341801e-01,
+  6.66666667e-01,
 };
 
 const double pylith::feassemble::QuadratureData1Din3DQuadratic::_basisDerivRef[] = {
  -1.07735027e+00,
-  1.15470054e+00,
  -7.73502692e-02,
+  1.15470054e+00,
   7.73502692e-02,
- -1.15470054e+00,
   1.07735027e+00,
+ -1.15470054e+00,
 };
 
 const double pylith::feassemble::QuadratureData1Din3DQuadratic::_basisDeriv[] = {
-  1.55626864e+00, -5.95966916e-01, -3.78494387e-01,
- -1.66800370e+00,  6.38755416e-01,  4.05669061e-01,
-  1.11735061e-01, -4.27884994e-02, -2.71746743e-02,
- -9.57619351e-02,  4.57081311e-02,  3.59168992e-02,
-  1.42955363e+00, -6.82340270e-01, -5.36174771e-01,
- -1.33379169e+00,  6.36632139e-01,  5.00257872e-01,
+  1.43646703e+00, -6.15628725e-01, -4.30940108e-01,
+  1.03133692e-01, -4.42001538e-02, -3.09401077e-02,
+ -1.53960072e+00,  6.59828879e-01,  4.61880215e-01,
+ -1.03133692e-01,  4.42001538e-02,  3.09401077e-02,
+ -1.43646703e+00,  6.15628725e-01,  4.30940108e-01,
+  1.53960072e+00, -6.59828879e-01, -4.61880215e-01,
 };
 
 const double pylith::feassemble::QuadratureData1Din3DQuadratic::_jacobian[] = {
- -6.92264973e-01,
-  1.80773503e+00,
-  2.84641016e+00,
- -8.07735027e-01,
-  1.69226497e+00,
-  2.15358984e+00,
+ -7.50000000e-01,
+  1.75000000e+00,
+  2.50000000e+00,
+ -7.50000000e-01,
+  1.75000000e+00,
+  2.50000000e+00,
 };
 
 const double pylith::feassemble::QuadratureData1Din3DQuadratic::_jacobianDet[] = {
-  3.44226488e+00,  2.85554650e+00,
+  3.14245127e+00,  3.14245127e+00,
 };
 
 const double pylith::feassemble::QuadratureData1Din3DQuadratic::_jacobianInv[] = {
- -1.44453358e+00,  5.53178417e-01,  3.51319713e-01,
- -1.23802976e+00,  5.90924008e-01,  4.64340973e-01,
+ -1.33333333e+00,  5.71428571e-01,  4.00000000e-01,
+ -1.33333333e+00,  5.71428571e-01,  4.00000000e-01,
 };
 
 pylith::feassemble::QuadratureData1Din3DQuadratic::QuadratureData1Din3DQuadratic(void)

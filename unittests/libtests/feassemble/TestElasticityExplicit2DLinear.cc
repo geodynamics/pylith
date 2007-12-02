@@ -17,6 +17,7 @@
 #include "data/ElasticityExplicitData2DLinear.hh"
 
 #include "pylith/feassemble/Quadrature2D.hh" // USES Quadrature2D
+#include "pylith/feassemble/GeometryTri2D.hh" // USES GeometryTri2D
 #include "pylith/materials/ElasticPlaneStrain.hh" // USES ElasticPlaneStrain
 
 // ----------------------------------------------------------------------
@@ -29,8 +30,13 @@ pylith::feassemble::TestElasticityExplicit2DLinear::setUp(void)
 { // setUp
   _data = new ElasticityExplicitData2DLinear();
   _quadrature = new Quadrature2D();
-  _material = new materials::ElasticPlaneStrain;
+  CPPUNIT_ASSERT(0 != _quadrature);
+  GeometryTri2D geometry;
+  _quadrature->refGeometry(&geometry);
 
+  _material = new materials::ElasticPlaneStrain;
+  CPPUNIT_ASSERT(0 != _material);
+  
   CPPUNIT_ASSERT(0 != _data);
   CPPUNIT_ASSERT_EQUAL(std::string("ElasticPlaneStrain"),
 		       std::string(_data->matType));

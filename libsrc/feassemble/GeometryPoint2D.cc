@@ -66,5 +66,25 @@ pylith::feassemble::GeometryPoint2D::jacobian(double_array* jacobian,
   *det = 1.0;
 } // jacobian
 
+// ----------------------------------------------------------------------
+// Compute Jacobian at location in cell.
+void
+pylith::feassemble::GeometryPoint2D::jacobian(double* jacobian,
+					      double* det,
+					      const double* vertices,
+					      const double* location,
+					      const int dim) const
+{ // jacobian
+  assert(0 != jacobian);
+  assert(0 != det);
+  assert(0 != vertices);
+  assert(0 != location);
+  assert(2 == dim);
+  assert(spaceDim() == dim);
+
+  jacobian[0] = 1.0;
+  *det = 1.0;
+} // jacobian
+
 
 // End of file

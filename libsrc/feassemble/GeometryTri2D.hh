@@ -72,6 +72,20 @@ public :
 		const double_array& vertices,
 		const double_array& location) const;
 
+  /** Compute Jacobian at location in cell.
+   *
+   * @param jacobian Jacobian at location.
+   * @param det Determinant of Jacobian at location.
+   * @param vertices Coordinates of vertices of cell.
+   * @param location Location in reference cell at which to compute Jacobian.
+   * @param dim Dimension of coordinate system.
+   */
+  void jacobian(double* jacobian,
+		double* det,
+		const double* vertices,
+		const double* location,
+		const int dim) const;
+
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 

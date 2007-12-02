@@ -30,14 +30,16 @@ const double pylith::feassemble::GeomDataLine2D::_locations[] = {
   0.459
 };
 
+// Reference cell has length of 2.0, so divide by 2.0;
 const double pylith::feassemble::GeomDataLine2D::_jacobian[] = {
-  3.3, -3.8,
-  3.3, -3.8
+  3.3/2.0, -3.8/2.0,
+  3.3/2.0, -3.8/2.0
 };
 
+// Reference cell has length of 2.0, so divide by 2.0;
 const double pylith::feassemble::GeomDataLine2D::_jacobianDet[] = {
-  5.0328918128646478,
-  5.0328918128646478
+  5.0328918128646478/2.0,
+  5.0328918128646478/2.0
 };
 
 pylith::feassemble::GeomDataLine2D::GeomDataLine2D(void)

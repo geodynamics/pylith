@@ -56,22 +56,22 @@ const double pylith::feassemble::ElasticityImplicitData3DLinear::_verticesRef[] 
 };
 
 const double pylith::feassemble::ElasticityImplicitData3DLinear::_quadPts[] = {
-  2.50000000e-01,  2.50000000e-01,  2.50000000e-01,
+ -5.00000000e-01, -5.00000000e-01, -5.00000000e-01,
 };
 
 const double pylith::feassemble::ElasticityImplicitData3DLinear::_quadWts[] = {
-  1.66666667e-01,
+  1.33333333e+00,
 };
 
 const double pylith::feassemble::ElasticityImplicitData3DLinear::_basis[] = {
-  2.50000000e-01,  2.50000000e-01,  2.50000000e-01,
+ -2.50000000e-01,  2.50000000e-01,  2.50000000e-01,
   2.50000000e-01,};
 
 const double pylith::feassemble::ElasticityImplicitData3DLinear::_basisDerivRef[] = {
- -1.00000000e+00, -1.00000000e+00, -1.00000000e+00,
-  1.00000000e+00,  0.00000000e+00,  0.00000000e+00,
-  0.00000000e+00,  1.00000000e+00,  0.00000000e+00,
-  0.00000000e+00,  0.00000000e+00,  1.00000000e+00,
+ -5.00000000e-01, -5.00000000e-01, -5.00000000e-01,
+  5.00000000e-01,  0.00000000e+00,  0.00000000e+00,
+  0.00000000e+00,  5.00000000e-01,  0.00000000e+00,
+  0.00000000e+00,  0.00000000e+00,  5.00000000e-01,
 };
 
 const double pylith::feassemble::ElasticityImplicitData3DLinear::_fieldTpdt[] = {

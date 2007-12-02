@@ -22,58 +22,58 @@ import numpy
 
 # ----------------------------------------------------------------------
 def N0(p):
-  return (1.0-p[0]-p[1])*(1-2.0*p[0]-2.0*p[1])
+  return 0.5*(1.0+p[0]+p[1])*(p[0]+p[1])
 
 def N0p(p):
-  return 4.0*p[0]+4.0*p[1]-3.0
+  return 0.5+p[0]+p[1]
 
 def N0q(p):
-  return 4.0*p[0]+4.0*p[1]-3.0
+  return 0.5+p[0]+p[1]
 
 def N1(p):
-  return p[0]*(2.0*p[0]-1.0)
+  return 0.5*p[0]*(p[0]+1.0)
 
 def N1p(p):
-  return 4.0*p[0]-1.0
+  return 0.5+p[0]
 
 def N1q(p):
   return 0.0
 
 def N2(p):
-  return p[1]*(2.0*p[1]-1.0)
+  return 0.5*p[1]*(p[1]+1.0)
 
 def N2p(p):
   return 0.0
 
 def N2q(p):
-  return 4.0*p[1]-1.0
+  return 0.5+p[1]
 
 def N3(p):
-  return 4.0*p[0]*(1.0-p[0]-p[1])
+  return (1.0+p[0])*(1.0+p[1])
 
 def N3p(p):
-  return -8.0*p[0]-4.0*p[1]+4.0
+  return 1.0+p[1]
 
 def N3q(p):
-  return -4.0*p[0]
+  return 1.0+p[0]
 
 def N4(p):
-  return 4.0*p[0]*p[1]
+  return -(p[0]+p[1])*(1.0+p[1])
 
 def N4p(p):
-  return 4.0*p[1]
+  return -(1.0+p[1])
 
 def N4q(p):
-  return 4.0*p[0]
+  return -1.0-p[0]-2.0*p[1]
 
 def N5(p):
-  return 4.0*p[1]*(1.0-p[0]-p[1])
+  return -(p[0]+p[1])*(1.0+p[0])
 
 def N5p(p):
-  return -4.0*p[1]
+  return -1.0-p[1]-2.0*p[0]
 
 def N5q(p):
-  return -8.0*p[1]-4.0*p[0]+4.0
+  return -(1.0+p[0])
 
 # ----------------------------------------------------------------------
 
@@ -92,11 +92,12 @@ class Quadrature2DQuadratic(Component):
     """
     Component.__init__(self, name, facility="quadrature")
     
-    self.quadPtsRef = numpy.array( [[2.0/3.0, 1.0/6.0],
-                                    [1.0/6.0, 2.0/3.0],
-                                    [1.0/6.0, 1.0/6.0]],
+    # These are just approximate points used to test the quadrature routine
+    self.quadPtsRef = numpy.array( [[-1.0+4.0/4.0, -1.0+1.0/4.0],
+                                    [-1.0+1.0/4.0, -1.0+4.0/4.0],
+                                    [-1.0+1.0/4.0, -1.0+1.0/4.0]],
                                    dtype=numpy.float64)
-    self.quadWts = numpy.array([1.0/6.0, 1.0/6.0, 1.0/6.0],
+    self.quadWts = numpy.array([2.0/3.0, 2.0/3.0, 2.0/3.0],
                                dtype=numpy.float64)
     self.numBasis = 6
     self.numQuadPts = 3

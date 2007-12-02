@@ -79,15 +79,53 @@ pylith::feassemble::GeometryTri2D::jacobian(double_array* jacobian,
   const double x2 = vertices[4];
   const double y2 = vertices[5];
 
-  (*jacobian)[0] = x1 - x0;
-  (*jacobian)[1] = x2 - x0;
-  (*jacobian)[2] = y1 - y0;
-  (*jacobian)[3] = y2 - y0;
+  (*jacobian)[0] = (x1 - x0) / 2.0;
+  (*jacobian)[1] = (x2 - x0) / 2.0;
+  (*jacobian)[2] = (y1 - y0) / 2.0;
+  (*jacobian)[3] = (y2 - y0) / 2.0;
 
   *det = 
     (*jacobian)[0]*(*jacobian)[3] - 
     (*jacobian)[1]*(*jacobian)[2];
-  PetscLogFlopsNoCheck(7);
+
+  PetscLogFlopsNoCheck(11);
+} // jacobian
+
+// ----------------------------------------------------------------------
+// Compute Jacobian at location in cell.
+void
+pylith::feassemble::GeometryTri2D::jacobian(double* jacobian,
+					    double* det,
+					    const double* vertices,
+					    const double* location,
+					    const int dim) const
+{ // jacobian
+  assert(0 != jacobian);
+  assert(0 != det);
+  assert(0 != vertices);
+  assert(0 != location);
+  assert(2 == dim);
+  assert(spaceDim() == dim);
+  
+  const double x0 = vertices[0];
+  const double y0 = vertices[1];
+
+  const double x1 = vertices[2];
+  const double y1 = vertices[3];
+
+  const double x2 = vertices[4];
+  const double y2 = vertices[5];
+
+  jacobian[0] = (x1 - x0) / 2.0;
+  jacobian[1] = (x2 - x0) / 2.0;
+  jacobian[2] = (y1 - y0) / 2.0;
+  jacobian[3] = (y2 - y0) / 2.0;
+
+  *det = 
+    jacobian[0]*jacobian[3] - 
+    jacobian[1]*jacobian[2];
+
+  PetscLogFlopsNoCheck(11);
 } // jacobian
 
 

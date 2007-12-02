@@ -17,6 +17,7 @@
 #include "data/ElasticityImplicitData2DQuadratic.hh"
 
 #include "pylith/feassemble/Quadrature2D.hh" // USES Quadrature2D
+#include "pylith/feassemble/GeometryTri2D.hh" // USES GeometryTri2D
 #include "pylith/materials/ElasticPlaneStrain.hh" // USES ElasticPlaneStrain
 
 // ----------------------------------------------------------------------
@@ -29,7 +30,12 @@ pylith::feassemble::TestElasticityImplicit2DQuadratic::setUp(void)
 { // setUp
   _data = new ElasticityImplicitData2DQuadratic();
   _quadrature = new Quadrature2D();
+  CPPUNIT_ASSERT(0 != _quadrature);
+  GeometryTri2D geometry;
+  _quadrature->refGeometry(&geometry);
+
   _material = new materials::ElasticPlaneStrain;
+  CPPUNIT_ASSERT(0 != _material);
 
   CPPUNIT_ASSERT(0 != _data);
   CPPUNIT_ASSERT_EQUAL(std::string("ElasticPlaneStrain"),

@@ -27,16 +27,16 @@ def N0p(p):
   return -0.5*(1.0-p) + 0.5*p
 
 def N1(p):
-  return (1.0-p**2)
-
-def N1p(p):
-  return -2.0*p
-
-def N2(p):
   return 0.5*p*(1.0+p)
 
-def N2p(p):
+def N1p(p):
   return +0.5*(1.0+p) + 0.5*p
+
+def N2(p):
+  return (1.0-p**2)
+
+def N2p(p):
+  return -2.0*p
 
 # ----------------------------------------------------------------------
 

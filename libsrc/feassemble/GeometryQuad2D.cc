@@ -93,15 +93,63 @@ pylith::feassemble::GeometryQuad2D::jacobian(double_array* jacobian,
   const double f_xy = x2 - x1 - x3 + x0;
   const double g_xy = y2 - y1 - y3 + y0;
 
-  (*jacobian)[0] = x1 - x0 + f_xy*y;
-  (*jacobian)[1] = x3 - x0 + f_xy*x;
-  (*jacobian)[2] = y1 - y0 + g_xy*y;
-  (*jacobian)[3] = y3 - y0 + g_xy*x;
+  (*jacobian)[0] = (x1 - x0 + f_xy*y) / 2.0;
+  (*jacobian)[1] = (x3 - x0 + f_xy*x) / 2.0;
+  (*jacobian)[2] = (y1 - y0 + g_xy*y) / 2.0;
+  (*jacobian)[3] = (y3 - y0 + g_xy*x) / 2.0;
 
   *det = 
     (*jacobian)[0]*(*jacobian)[3] - 
     (*jacobian)[1]*(*jacobian)[2];
-  PetscLogFlopsNoCheck(25);
+
+  PetscLogFlopsNoCheck(31);
+} // jacobian
+
+// ----------------------------------------------------------------------
+// Compute Jacobian at location in cell.
+void
+pylith::feassemble::GeometryQuad2D::jacobian(double* jacobian,
+					     double* det,
+					     const double* vertices,
+					     const double* location,
+					     const int dim) const
+{ // jacobian
+  assert(0 != jacobian);
+  assert(0 != det);
+  assert(0 != vertices);
+  assert(0 != location);
+  assert(2 == dim);
+  assert(spaceDim() == dim);
+    
+  const double x0 = vertices[0];
+  const double y0 = vertices[1];
+
+  const double x1 = vertices[2];
+  const double y1 = vertices[3];
+
+  const double x2 = vertices[4];
+  const double y2 = vertices[5];
+
+  const double x3 = vertices[6];
+  const double y3 = vertices[7];
+
+  const double x = 0.5 * (location[0] + 1.0);
+  const double y = 0.5 * (location[1] + 1.0);
+  assert(0 <= x && x <= 1.0);
+  assert(0 <= y && y <= 1.0);
+
+  const double f_xy = x2 - x1 - x3 + x0;
+  const double g_xy = y2 - y1 - y3 + y0;
+
+  jacobian[0] = (x1 - x0 + f_xy*y) / 2.0;
+  jacobian[1] = (x3 - x0 + f_xy*x) / 2.0;
+  jacobian[2] = (y1 - y0 + g_xy*y) / 2.0;
+  jacobian[3] = (y3 - y0 + g_xy*x) / 2.0;
+
+  *det = 
+    jacobian[0]*jacobian[3] - 
+    jacobian[1]*jacobian[2];
+  PetscLogFlopsNoCheck(29);
 } // jacobian
 
 
