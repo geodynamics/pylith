@@ -181,9 +181,8 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     (mesh, fault, fields) = self._initialize()
 
-    disp = fields.getReal("disp")
     t = 1.0*second
-    fault.updateState(t, disp)
+    fault.updateState(t, fields)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    

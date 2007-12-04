@@ -152,9 +152,8 @@ class TestAbsorbingDampers(unittest.TestCase):
     """
     (mesh, bc, fields) = self._initialize()
 
-    dispT = fields.getReal("dispT")
     t = 0.50*second
-    bc.updateState(t, dispT)
+    bc.updateState(t, fields)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    

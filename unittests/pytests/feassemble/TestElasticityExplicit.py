@@ -177,9 +177,8 @@ class TestElasticityExplicit(unittest.TestCase):
     """
     (mesh, integrator, fields) = self._initialize()
 
-    dispT = fields.getReal("dispT")
     t = 3.45*second
-    integrator.updateState(t, dispT)
+    integrator.updateState(t, fields)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    

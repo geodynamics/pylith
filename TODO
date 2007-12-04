@@ -6,11 +6,9 @@ Release 1.0.2
 
   1. Fix memory imbalance associated with distribution.
 
-  2. Fix cohesive cell creation (hex8 and tet4).
+  2. Fix problems with buildbot on darwin? (is binary ok?)
 
-  3. Fix problems with buildbot on darwin? (is binary ok?)
-
-  4. Add check to make sure every material in mesh has a material model.
+  3. Add check to make sure every material in mesh has a material model.
 
     Add check for overlapping of material ids for bulk and cohesive
     cells.
