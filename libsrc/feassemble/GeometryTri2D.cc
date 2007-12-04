@@ -58,6 +58,37 @@ pylith::feassemble::GeometryTri2D::geometryLowerDim(void) const
 } // geometryLowerDim
 
 // ----------------------------------------------------------------------
+// Transform coordinates in reference cell to global coordinates.
+void
+pylith::feassemble::GeometryTri2D::coordsRefToGlobal(double* coordsGlobal,
+						     const double* coordsRef,
+						     const double* vertices,
+						     const int dim) const
+{ // coordsRefToGlobal
+  assert(0 != coordsGlobal);
+  assert(0 != coordsRef);
+  assert(0 != vertices);
+  assert(2 == dim);
+  assert(spaceDim() == dim);
+
+  const double x0 = vertices[0];
+  const double y0 = vertices[1];
+
+  const double x1 = vertices[2];
+  const double y1 = vertices[3];
+
+  const double x2 = vertices[4];
+  const double y2 = vertices[5];
+
+  const double p0 = 0.5*(1.0+coordsRef[0]);
+  const double p1 = 0.5*(1.0+coordsRef[1]);
+  coordsGlobal[0] = x0 + (x1-x0) * p0 + (x2-x0) * p1;
+  coordsGlobal[1] = y0 + (y1-y0) * p0 + (y2-y0) * p1;
+
+  PetscLogFlopsNoCheck(16);
+} // coordsRefToGlobal
+
+// ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
 pylith::feassemble::GeometryTri2D::jacobian(double_array* jacobian,
