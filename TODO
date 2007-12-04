@@ -2,48 +2,18 @@
 CURRENT ISSUES
 ======================================================================
 
-Release 1.0.2
-
-  1. Fix memory imbalance associated with distribution.
-
-  2. Fix problems with buildbot on darwin? (is binary ok?)
-
-  3. Add check to make sure every material in mesh has a material model.
-
-    Add check for overlapping of material ids for bulk and cohesive
-    cells.
-
 Release 1.1
 
-  1. EventLogging
-   
+  1. Finish Neumann BC [CHARLES]
+
+  2. EventLogging [BRAD]
      Check constraints/integrators.
      Fault::adjustTopology()
      High level events
        MeshGenerator
        Problem
 
-  2. Optimization of restrict()/update()
-
-     a. Fault
-     b. Absorbing BC
-     c. Neumann BC
-
-  3. Nonisoparametric cells
-     Dirichlet and fault constraints?
-     Fix Quadrature2DLinear.py (wrong quad pts and wts)?
-     Cleanup CellGeometry
-       Allow multiple locations for ptRefToGlobal() and jacobian() for 
-         better efficiency
-       Switch from double_array to double* (used by faults)
-
-  4. Finish Neumann BC.
-
-  5. Finish velocity Dirichlet BC.
-
-  6. Generalized Maxwell viscoelastic model
-
-  7. Reimplement SolutionIO.
+  3. Reimplement SolutionIO [BRAD & MATT]
      a. Reimplement SolutionIOVTK
      b. Implement SolutionIOHDF5
 
@@ -118,6 +88,15 @@ Release 1.1
 
          Solution field (time history)
 
+  4. Optimization of restrict()/update() [BRAD]
+     a. Fault
+     b. Absorbing BC
+     c. Neumann BC
+
+  5. Velocity Dirichlet BC [BRAD]
+
+  6. Generalized Maxwell viscoelastic model [CHARLES]
+
 General
 
   1. Need to add explanation of output and output parameters to
@@ -125,7 +104,12 @@ General
 
   2. Add dependency diagram to manual.
 
-  3. Experiment with different preconditioners and tabulate results
+  3. Fix memory imbalance associated with distribution.
+
+  4. Add check to make sure every material in mesh has a material model.
+
+    Add check for overlapping of material ids for bulk and cohesive
+    cells.
 
 Release 1.2
 
@@ -135,7 +119,15 @@ Release 1.2
 
   3. Nonlinear solver  
 
-  4. Replace use of Pyrexembed with SWIG
+  4. Nonisoparametric cells
+
+     C++ unit tests for CellGeometry refPtsToGlobal() and jacobian()
+     Update quadrature to use CellGeometry refPtsToGlobal() and jacobian()
+     Remove CellGeometry jacobian(double_array)
+
+     Dirichlet and fault constraints?
+
+  5. Replace use of Pyrexembed with SWIG
 
 ======================================================================
 KNOWN DEFICIENCIES

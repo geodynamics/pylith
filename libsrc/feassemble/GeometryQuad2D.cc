@@ -61,13 +61,14 @@ pylith::feassemble::GeometryQuad2D::geometryLowerDim(void) const
 // ----------------------------------------------------------------------
 // Transform coordinates in reference cell to global coordinates.
 void
-pylith::feassemble::GeometryQuad2D::coordsRefToGlobal(double* coordsGlobal,
-						      const double* coordsRef,
-						      const double* vertices,
-						      const int dim) const
-{ // coordsRefToGlobal
-  assert(0 != coordsGlobal);
-  assert(0 != coordsRef);
+pylith::feassemble::GeometryQuad2D::ptsRefToGlobal(double* ptsGlobal,
+						   const double* ptsRef,
+						   const double* vertices,
+						   const int dim,
+						   const int npts) const
+{ // ptsRefToGlobal
+  assert(0 != ptsGlobal);
+  assert(0 != ptsRef);
   assert(0 != vertices);
   assert(2 == dim);
   assert(spaceDim() == dim);
@@ -84,15 +85,24 @@ pylith::feassemble::GeometryQuad2D::coordsRefToGlobal(double* coordsGlobal,
   const double x3 = vertices[6];
   const double y3 = vertices[7];
 
-  const double p0 = 0.5*(1.0+coordsRef[0]);
-  const double p1 = 0.5*(1.0+coordsRef[1]);
+  const double f_1 = x1 - x0;
+  const double g_1 = y1 - y0;
+
+  const double f_3 = x3 - x0;
+  const double g_3 = y3 - y0;
+
   const double f_01 = x2 - x1 - x3 + x0;
   const double g_01 = y2 - y1 - y3 + y0;
-  coordsGlobal[0] = x0 + (x1-x0) * p0 + (x2-x0) * p1 + f_01 * p0 * p1;
-  coordsGlobal[1] = y0 + (y1-y0) * p0 + (y2-y0) * p1 + g_01 * p0 * p1;
 
-  PetscLogFlopsNoCheck(28);
-} // coordsRefToGlobal
+  for (int i=0, iR=0, iG=0; i < npts; ++i) {
+    const double p0 = 0.5 * (1.0 + ptsRef[iR++]);
+    const double p1 = 0.5 * (1.0 + ptsRef[iR++]);
+    ptsGlobal[iG++] = x0 + f_1 * p0 + f_3 * p1 + f_01 * p0 * p1;
+    ptsGlobal[iG++] = y0 + g_1 * p0 + g_3 * p1 + g_01 * p0 * p1;
+  } // for
+
+  PetscLogFlopsNoCheck(10 + npts*18);
+} // ptsRefToGlobal
 
 // ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
@@ -147,13 +157,14 @@ void
 pylith::feassemble::GeometryQuad2D::jacobian(double* jacobian,
 					     double* det,
 					     const double* vertices,
-					     const double* location,
-					     const int dim) const
+					     const double* ptsRef,
+					     const int dim,
+					     const int npts) const
 { // jacobian
   assert(0 != jacobian);
   assert(0 != det);
   assert(0 != vertices);
-  assert(0 != location);
+  assert(0 != ptsRef);
   assert(2 == dim);
   assert(spaceDim() == dim);
     
@@ -169,23 +180,33 @@ pylith::feassemble::GeometryQuad2D::jacobian(double* jacobian,
   const double x3 = vertices[6];
   const double y3 = vertices[7];
 
-  const double x = 0.5 * (location[0] + 1.0);
-  const double y = 0.5 * (location[1] + 1.0);
-  assert(0 <= x && x <= 1.0);
-  assert(0 <= y && y <= 1.0);
+  const double f_1 = x1 - x0;
+  const double g_1 = y1 - y0;
 
-  const double f_xy = x2 - x1 - x3 + x0;
-  const double g_xy = y2 - y1 - y3 + y0;
+  const double f_3 = x3 - x0;
+  const double g_3 = y3 - y0;
 
-  jacobian[0] = (x1 - x0 + f_xy*y) / 2.0;
-  jacobian[1] = (x3 - x0 + f_xy*x) / 2.0;
-  jacobian[2] = (y1 - y0 + g_xy*y) / 2.0;
-  jacobian[3] = (y3 - y0 + g_xy*x) / 2.0;
+  const double f_01 = x2 - x1 - x3 + x0;
+  const double g_01 = y2 - y1 - y3 + y0;
 
-  *det = 
-    jacobian[0]*jacobian[3] - 
-    jacobian[1]*jacobian[2];
-  PetscLogFlopsNoCheck(29);
+  for (int i=0, iR=0, iJ=0; i < npts; ++i) {
+    const double p0 = 0.5 * (1.0 + ptsRef[iR++]);
+    const double p1 = 0.5 * (1.0 + ptsRef[iR++]);
+    assert(0 <= p0 && p0 <= 1.0);
+    assert(0 <= p1 && p1 <= 1.0);
+    const double j0 = (f_1 + f_01 * p1) / 2.0; 
+    const double j1 = (f_3 + f_01 * p0) / 2.0; 
+    const double j2 = (g_1 + g_01 * p1) / 2.0;
+    const double j3 = (g_3 + g_01 * p0) / 2.0; 
+
+    jacobian[iJ++] = j0;
+    jacobian[iJ++] = j1;
+    jacobian[iJ++] = j2;
+    jacobian[iJ++] = j3;
+    det[i] = j0*j3 - j1*j2;
+  } // for
+
+  PetscLogFlopsNoCheck(10 + npts*19);
 } // jacobian
 
 

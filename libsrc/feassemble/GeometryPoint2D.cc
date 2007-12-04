@@ -52,20 +52,22 @@ pylith::feassemble::GeometryPoint2D::geometryLowerDim(void) const
 // ----------------------------------------------------------------------
 // Transform coordinates in reference cell to global coordinates.
 void
-pylith::feassemble::GeometryPoint2D::coordsRefToGlobal(double* coordsGlobal,
-						       const double* coordsRef,
-						       const double* vertices,
-						       const int dim) const
-{ // coordsRefToGlobal
-  assert(0 != coordsGlobal);
-  assert(0 != coordsRef);
+pylith::feassemble::GeometryPoint2D::ptsRefToGlobal(double* ptsGlobal,
+						    const double* ptsRef,
+						    const double* vertices,
+						    const int dim,
+						    const int npts) const
+{ // ptsRefToGlobal
+  assert(0 != ptsGlobal);
+  assert(0 != ptsRef);
   assert(0 != vertices);
   assert(2 == dim);
   assert(spaceDim() == dim);
 
-  coordsGlobal[0] = vertices[0];
-  coordsGlobal[1] = vertices[1];
-} // coordsRefToGlobal
+  const int size = npts*dim;
+  for (int i=0; i < size; ++i)
+    ptsGlobal[i] = vertices[i];
+} // ptsRefToGlobal
 
 // ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
@@ -91,7 +93,8 @@ pylith::feassemble::GeometryPoint2D::jacobian(double* jacobian,
 					      double* det,
 					      const double* vertices,
 					      const double* location,
-					      const int dim) const
+					      const int dim,
+					      const int npts) const
 { // jacobian
   assert(0 != jacobian);
   assert(0 != det);
@@ -100,8 +103,10 @@ pylith::feassemble::GeometryPoint2D::jacobian(double* jacobian,
   assert(2 == dim);
   assert(spaceDim() == dim);
 
-  jacobian[0] = 1.0;
-  *det = 1.0;
+  for (int i=0; i < npts; ++i) {
+    jacobian[i] = 1.0;
+    det[i] = 1.0;
+  } // for
 } // jacobian
 
 
