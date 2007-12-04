@@ -24,8 +24,6 @@ Release 1.1
        Problem
 
   2. Optimization of restrict()/update()
-      UpdateState
-        Change disp argument to fields?
 
      a. Fault
      b. Absorbing BC
