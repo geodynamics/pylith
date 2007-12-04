@@ -66,6 +66,18 @@ public :
    */
   CellGeometry* geometryLowerDim(void) const;
 
+  /** Transform coordinates in reference cell to global coordinates.
+   *
+   * @param coordsGlobal Coordinates in global coordinate system.
+   * @param coordsRef Coordinates in reference cell.
+   * @param vertices Array of cell vertices in global coordinates.
+   * @param dim Dimension of global coordinate system.
+   */
+  void coordsRefToGlobal(double* coordsGlobal,
+			 const double* coordsRef,
+			 const double* vertices,
+			 const int dim) const;
+
   /** Compute Jacobian at location in cell.
    *
    * @param jacobian Jacobian at location.

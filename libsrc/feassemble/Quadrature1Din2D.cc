@@ -20,6 +20,8 @@
 
 #include <assert.h> // USES assert()
 
+#define ISOPARAMETRIC
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::Quadrature1Din2D::Quadrature1Din2D(void) : Quadrature()
@@ -61,6 +63,7 @@ pylith::feassemble::Quadrature1Din2D::computeGeometry(
   for (int iQuadPt=0; iQuadPt < _numQuadPts; ++iQuadPt) {
     
     // Compute coordinates of quadrature point in cell
+#if defined(ISOPARAMETRIC)
     // x = sum[i=0,n-1] (Ni * xi)
     // y = sum[i=0,n-1] (Ni * yi)
     for (int iBasis=0; iBasis < _numBasis; ++iBasis) {
@@ -69,8 +72,14 @@ pylith::feassemble::Quadrature1Din2D::computeGeometry(
 	_quadPts[iQuadPt*_spaceDim+iDim] +=
 	  basis * vertCoords[iBasis*_spaceDim+iDim];
     } // for
+#else
+    assert(0 != _geometry);
+    _geometry->coordsRefToGlobal(&_quadPts[iQuadPt*_spaceDim],
+				 &_quadPtsRef[iQuadPt*_cellDim],
+				 vertCoords, _spaceDim);
+#endif
 
-#if 0    
+#if defined(ISOPARAMETRIC)
     // Compute Jacobian at quadrature point
     // J = [dx/dp
     //      dy/dp]

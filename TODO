@@ -30,9 +30,11 @@ Release 1.1
      c. Neumann BC
 
   3. Nonisoparametric cells
-     Need routine to transform coordinates in reference cell to coordinates
-       in actual cell (given vertices of actual cell)
-     Clean up CellGeometry::jacobian
+     Dirichlet and fault constraints?
+     Fix Quadrature2DLinear.py (wrong quad pts and wts)?
+     Cleanup CellGeometry
+       Allow multiple locations for ptRefToGlobal() and jacobian() for 
+         better efficiency
        Switch from double_array to double* (used by faults)
 
   4. Finish Neumann BC.

@@ -99,6 +99,19 @@ public :
   virtual
   CellGeometry* geometryLowerDim(void) const = 0;
 
+  /** Transform coordinates in reference cell to global coordinates.
+   *
+   * @param coordsGlobal Coordinates in global coordinate system.
+   * @param coordsRef Coordinates in reference cell.
+   * @param vertices Array of cell vertices in global coordinates.
+   * @param dim Dimension of global coordinate system.
+   */
+  virtual
+  void coordsRefToGlobal(double* coordsGlobal,
+			 const double* coordsRef,
+			 const double* vertices,
+			 const int dim) const = 0;
+
   /** Compute Jacobian at location in cell.
    *
    * @param jacobian Jacobian at location.
@@ -254,7 +267,7 @@ private :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  /** Array of coordinates of vertices in reference cell (dual basis).
+  /** Array of coordinates of vertices in reference cell.
    *
    * Reference coordinates: (p,q,r)
    *

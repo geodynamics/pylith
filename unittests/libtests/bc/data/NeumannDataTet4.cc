@@ -39,7 +39,7 @@ const double pylith::bc::NeumannDataTet4::_quadPts[] = {
   0.3333333333333333, 0.3333333333333333
 };
 const double pylith::bc::NeumannDataTet4::_quadWts[] = {
-  2.0,
+  0.5,
 };
 const double pylith::bc::NeumannDataTet4::_basis[] = {
   0.3333333333333333,

@@ -59,6 +59,51 @@ pylith::feassemble::GeometryQuad3D::geometryLowerDim(void) const
 } // geometryLowerDim
 
 // ----------------------------------------------------------------------
+// Transform coordinates in reference cell to global coordinates.
+void
+pylith::feassemble::GeometryQuad3D::coordsRefToGlobal(double* coordsGlobal,
+						      const double* coordsRef,
+						      const double* vertices,
+						      const int dim) const
+{ // coordsRefToGlobal
+  assert(0 != coordsGlobal);
+  assert(0 != coordsRef);
+  assert(0 != vertices);
+  assert(3 == dim);
+  assert(spaceDim() == dim);
+
+  const double x0 = vertices[0];
+  const double y0 = vertices[1];
+  const double z0 = vertices[2];
+
+  const double x1 = vertices[3];
+  const double y1 = vertices[4];
+  const double z1 = vertices[5];
+
+  const double x2 = vertices[6];
+  const double y2 = vertices[7];
+  const double z2 = vertices[8];
+
+  const double x3 = vertices[9];
+  const double y3 = vertices[10];
+  const double z3 = vertices[11];
+
+  const double p0 = 0.5*(1.0+coordsRef[0]);
+  const double p1 = 0.5*(1.0+coordsRef[1]);
+  const double f_01 = x2 - x1 - x3 + x0;
+  const double g_01 = y2 - y1 - y3 + y0;
+  const double h_01 = z2 - z1 - z3 + z0;
+  assert(0 <= p0 && p0 <= 1.0);
+  assert(0 <= p1 && p1 <= 1.0);
+
+  coordsGlobal[0] = x0 + (x1-x0) * p0 + (x2-x0) * p1 + f_01 * p0 * p1;
+  coordsGlobal[1] = y0 + (y1-y0) * p0 + (y2-y0) * p1 + g_01 * p0 * p1;
+  coordsGlobal[2] = z0 + (z1-z0) * p0 + (z2-z0) * p1 + h_01 * p0 * p1;
+
+  PetscLogFlopsNoCheck(40);
+} // coordsRefToGlobal
+
+// ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
 pylith::feassemble::GeometryQuad3D::jacobian(double_array* jacobian,

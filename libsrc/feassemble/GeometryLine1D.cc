@@ -57,6 +57,29 @@ pylith::feassemble::GeometryLine1D::geometryLowerDim(void) const
 } // geometryLowerDim
 
 // ----------------------------------------------------------------------
+// Transform coordinates in reference cell to global coordinates.
+void
+pylith::feassemble::GeometryLine1D::coordsRefToGlobal(double* coordsGlobal,
+						      const double* coordsRef,
+						      const double* vertices,
+						      const int dim) const
+{ // coordsRefToGlobal
+  assert(0 != coordsGlobal);
+  assert(0 != coordsRef);
+  assert(0 != vertices);
+  assert(1 == dim);
+  assert(spaceDim() == dim);
+
+  const double x0 = vertices[0];
+  const double x1 = vertices[1];
+
+  const double p0 = 0.5*(1.0+coordsRef[0]);
+  coordsGlobal[0] = x0 + (x1-x0) * p0;
+
+  PetscLogFlopsNoCheck(5);
+} // coordsRefToGlobal
+
+// ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
 pylith::feassemble::GeometryLine1D::jacobian(double_array* jacobian,

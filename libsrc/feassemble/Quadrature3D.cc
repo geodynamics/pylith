@@ -20,6 +20,8 @@
 
 #include <assert.h> // USES assert()
 
+#define ISOPARAMETRIC
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::Quadrature3D::Quadrature3D(void) : pylith::feassemble::Quadrature::Quadrature()
@@ -61,6 +63,7 @@ pylith::feassemble::Quadrature3D::computeGeometry(
   for (int iQuadPt=0; iQuadPt < _numQuadPts; ++iQuadPt) {
     
     // Compute coordinates of quadrature point in cell
+#if defined(ISOPARAMETRIC)
     // x = sum[i=0,n-1] (Ni * xi)
     // y = sum[i=0,n-1] (Ni * yi)
     // z = sum[i=0,n-1] (Ni * zi)
@@ -70,8 +73,14 @@ pylith::feassemble::Quadrature3D::computeGeometry(
 	_quadPts[iQuadPt*_spaceDim+iDim] += 
 	  basis * vertCoords[iBasis*_spaceDim+iDim];
     } // for
+#else
+    assert(0 != _geometry);
+    _geometry->coordsRefToGlobal(&_quadPts[iQuadPt*_spaceDim],
+				 &_quadPtsRef[iQuadPt*_cellDim],
+				 vertCoords, _spaceDim);
+#endif
     
-#if 0
+#if defined(ISOPARAMETRIC)
     // Compute Jacobian at quadrature point
     // J = [dx/dp dx/dq dx/dr]
     //     [dy/dp dy/dq dy/dr]

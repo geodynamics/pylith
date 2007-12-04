@@ -63,6 +63,85 @@ pylith::feassemble::GeometryHex3D::geometryLowerDim(void) const
 } // geometryLowerDim
 
 // ----------------------------------------------------------------------
+// Transform coordinates in reference cell to global coordinates.
+void
+pylith::feassemble::GeometryHex3D::coordsRefToGlobal(double* coordsGlobal,
+						     const double* coordsRef,
+						     const double* vertices,
+						     const int dim) const
+{ // coordsRefToGlobal
+  assert(0 != coordsGlobal);
+  assert(0 != coordsRef);
+  assert(0 != vertices);
+  assert(3 == dim);
+  assert(spaceDim() == dim);
+
+  const double x0 = vertices[0];
+  const double y0 = vertices[1];
+  const double z0 = vertices[2];
+
+  const double x1 = vertices[3];
+  const double y1 = vertices[4];
+  const double z1 = vertices[5];
+
+  const double x2 = vertices[6];
+  const double y2 = vertices[7];
+  const double z2 = vertices[8];
+
+  const double x3 = vertices[9];
+  const double y3 = vertices[10];
+  const double z3 = vertices[11];
+
+  const double x4 = vertices[12];
+  const double y4 = vertices[13];
+  const double z4 = vertices[14];
+
+  const double x5 = vertices[15];
+  const double y5 = vertices[16];
+  const double z5 = vertices[17];
+
+  const double x6 = vertices[18];
+  const double y6 = vertices[19];
+  const double z6 = vertices[20];
+
+  const double x7 = vertices[21];
+  const double y7 = vertices[22];
+  const double z7 = vertices[23];
+
+  const double p0 = 0.5*(1.0+coordsRef[0]);
+  const double p1 = 0.5*(1.0+coordsRef[1]);
+  const double p2 = 0.5*(1.0+coordsRef[2]);
+  assert(0 <= p0 && p0 <= 1.0);
+  assert(0 <= p1 && p1 <= 1.0);
+  assert(0 <= p2 && p2 <= 1.0);
+
+  const double f_01 = x2 - x1 - x3 + x0;
+  const double g_01 = y2 - y1 - y3 + y0;
+  const double h_01 = z2 - z1 - z3 + z0;
+
+  const double f_12 = x7 - x3 - x4 + x0;
+  const double g_12 = y7 - y3 - y4 + y0;
+  const double h_12 = z7 - z3 - z4 + z0;
+
+  const double f_02 = x5 - x1 - x4 + x0;
+  const double g_02 = y5 - y1 - y4 + y0;
+  const double h_02 = z5 - z1 - z4 + z0;
+
+  const double f_012 = x6 - x0 + x1 - x2 + x3 + x4 - x5 - x7;
+  const double g_012 = y6 - y0 + y1 - y2 + y3 + y4 - y5 - y7;
+  const double h_012 = z6 - z0 + z1 - z2 + z3 + z4 - z5 - z7;
+
+  coordsGlobal[0] = x0 + (x1-x0) * p0 + (x3-x0) * p1 + (x4-x0) * p2
+    + f_01*p0*p1 + f_12*p1*p2 + f_02*p0*p2 + f_012*p0*p1*p2;
+  coordsGlobal[1] = y0 + (y1-y0) * p0 + (y3-y0) * p1 + (y4-y0) * p2
+    + g_01*p0*p1 + g_12*p1*p2 + g_02*p0*p2 + g_012*p0*p1*p2;
+  coordsGlobal[2] = z0 + (z1-z0) * p0 + (z3-z0) * p1 + (z4-z0) * p2
+    + h_01*p0*p1 + h_12*p1*p2 + h_02*p0*p2 + h_012*p0*p1*p2;
+
+  PetscLogFlopsNoCheck(120);
+} // coordsRefToGlobal
+
+// ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
 pylith::feassemble::GeometryHex3D::jacobian(double_array* jacobian,
