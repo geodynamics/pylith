@@ -160,7 +160,7 @@ pylith::feassemble::TestElasticityExplicit::testUpdateState(void)
   const ALE::Obj<real_section_type>& dispT = fields.getReal("dispT");
   CPPUNIT_ASSERT(!dispT.isNull());
   const double t = 1.0;
-  integrator.updateState(t, dispT, mesh);
+  integrator.updateState(t, &fields, mesh);
 } // testUpdateState
 
 // ----------------------------------------------------------------------

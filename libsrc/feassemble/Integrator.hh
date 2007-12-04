@@ -122,12 +122,12 @@ public :
   /** Update state variables as needed.
    *
    * @param t Current time
-   * @param field Current solution field.
+   * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
   virtual
   void updateState(const double t,
-		   const ALE::Obj<real_section_type>& field,
+		   topology::FieldsManager* const fields,
 		   const ALE::Obj<Mesh>& mesh);
 
   /** Verify configuration is acceptable.

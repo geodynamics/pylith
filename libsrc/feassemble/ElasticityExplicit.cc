@@ -235,8 +235,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stress);
 
     // Assemble cell contribution into field
-//#ifdef FASTER
-#if 0
+#ifdef FASTER
     mesh->updateAdd(residual, residualAtlasTag, c_index, _cellVector);
 #else
     mesh->updateAdd(residual, *c_iter, _cellVector);

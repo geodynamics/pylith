@@ -151,7 +151,7 @@ pylith::feassemble::TestElasticityImplicit::testUpdateState(void)
     fields.getReal("dispTBctpdt");
   CPPUNIT_ASSERT(!dispTBctpdt.isNull());
   const double t = 1.0;
-  integrator.updateState(t, dispTBctpdt, mesh);
+  integrator.updateState(t, &fields, mesh);
 } // testUpdateState
 
 // ----------------------------------------------------------------------

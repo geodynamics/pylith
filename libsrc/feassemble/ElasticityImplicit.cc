@@ -260,8 +260,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 #endif
     // Assemble cell contribution into field
     PetscLogEventBegin(updateEvent,0,0,0,0);
-//#ifdef FASTER
-#if 0
+#ifdef FASTER
     mesh->updateAdd(residual, residualAtlasTag, c_index, _cellVector);
 #else
     mesh->updateAdd(residual, *c_iter, _cellVector);

@@ -150,7 +150,7 @@ class Integrator(object):
     return
 
 
-  def updateState(self, t, field):
+  def updateState(self, t, fields):
     """
     Update state variables as needed.
     """
@@ -158,7 +158,7 @@ class Integrator(object):
     
     assert(None != self.cppHandle)
     self._logger.eventBegin(logEvent)
-    self.cppHandle.updateState(t.value, field, self.mesh.cppHandle)
+    self.cppHandle.updateState(t.value, fields.cppHandle, self.mesh.cppHandle)
     self._logger.eventEnd(logEvent)
     return
     

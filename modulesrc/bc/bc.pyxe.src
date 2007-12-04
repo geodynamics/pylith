@@ -533,21 +533,21 @@ cdef class AbsorbingDampers(BoundaryCondition):
     return
 
 
-  def updateState(self, t, field, mesh):
+  def updateState(self, t, fields, mesh):
     """
     Update state variables as needed.
     """
     # create shim for method 'updateState'
-    #embed{ void AbsorbingDampers_updateState(void* objVptr, double t, void* fieldVptr, void* meshVptr)
+    #embed{ void AbsorbingDampers_updateState(void* objVptr, double t, void* fieldsVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
-      assert(0 != fieldVptr);
+      assert(0 != fieldsVptr);
       assert(0 != meshVptr);
-      ALE::Obj<pylith::real_section_type>* field =
-        (ALE::Obj<pylith::real_section_type>*) fieldVptr;
+      pylith::topology::FieldsManager* fields =
+        (pylith::topology::FieldsManager*) fieldsVptr;
       ALE::Obj<ALE::Mesh>* mesh =
         (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::bc::AbsorbingDampers*) objVptr)->updateState(t, *field, *mesh);
+      ((pylith::bc::AbsorbingDampers*) objVptr)->updateState(t, fields, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -559,12 +559,15 @@ cdef class AbsorbingDampers(BoundaryCondition):
                       "Caught unknown C++ exception.");
     } // try/catch
     #}embed
+    if fields.name != "pylith_topology_FieldsManager":
+      raise TypeError, \
+            "Argument 'fields' must be extension module type 'FieldsManager'."
     if mesh.name != "pylith_topology_Mesh":
       raise TypeError, \
             "Argument 'mesh' must be extension module type 'Mesh'."
     AbsorbingDampers_updateState(self.thisptr,
                            t,
-                           PyCObject_AsVoidPtr(field),
+                           ptrFromHandle(fields),
                            ptrFromHandle(mesh))
     return
 

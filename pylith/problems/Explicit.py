@@ -158,7 +158,7 @@ class Explicit(Formulation):
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
-      integrator.updateState(t, self.fields.getReal("dispT"))
+      integrator.updateState(t, self.fields.cppHandle)
 
     Formulation.poststep(self, t, dt, totalTime)
     return

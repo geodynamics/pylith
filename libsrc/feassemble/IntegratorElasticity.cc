@@ -18,12 +18,13 @@
 #include "CellGeometry.hh" // USES CellGeometry
 
 #include "pylith/materials/ElasticMaterial.hh" // USES ElasticMaterial
+#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 #include "pylith/utils/array.hh" // USES double_array
 
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-//#define FASTER
+#define FASTER
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -65,12 +66,12 @@ pylith::feassemble::IntegratorElasticity::needNewJacobian(void)
 void
 pylith::feassemble::IntegratorElasticity::updateState(
 				   const double t,
-				   const ALE::Obj<real_section_type>& disp,
+				   topology::FieldsManager* const fields,
 				   const ALE::Obj<Mesh>& mesh)
 { // updateState
   assert(0 != _quadrature);
   assert(0 != _material);
-  assert(!disp.isNull());
+  assert(0 != fields);
 
   // No need to update state if using elastic behavior
   if (!_material->usesUpdateState())
@@ -96,8 +97,9 @@ pylith::feassemble::IntegratorElasticity::updateState(
     assert(0);
 
   // Get cell information
+  const int materialId = _material->id();
   const ALE::Obj<Mesh::label_sequence>& cells = 
-    mesh->getLabelStratum("material-id", _material->id());
+    mesh->getLabelStratum("material-id", materialId);
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
 
@@ -121,9 +123,9 @@ pylith::feassemble::IntegratorElasticity::updateState(
     totalStrain[iQuad] = 0.0;
   } // for
 
+  const ALE::Obj<real_section_type>& disp = fields->getSolution();
 #ifdef FASTER
-  fields->createCustomAtlas("material-id", materialId);
-  const int dispAtlasTag = fields.getSolnFieldAtlasTag(materialId);
+  const int dispAtlasTag = fields->getSolutionAtlasTag(materialId);
 #endif
   
   // Loop over cells
