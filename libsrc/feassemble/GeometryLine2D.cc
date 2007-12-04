@@ -59,13 +59,14 @@ pylith::feassemble::GeometryLine2D::geometryLowerDim(void) const
 // ----------------------------------------------------------------------
 // Transform coordinates in reference cell to global coordinates.
 void
-pylith::feassemble::GeometryLine2D::coordsRefToGlobal(double* coordsGlobal,
-						      const double* coordsRef,
-						      const double* vertices,
-						      const int dim) const
-{ // coordsRefToGlobal
-  assert(0 != coordsGlobal);
-  assert(0 != coordsRef);
+pylith::feassemble::GeometryLine2D::ptsRefToGlobal(double* ptsGlobal,
+						   const double* ptsRef,
+						   const double* vertices,
+						   const int dim,
+						   const int npts) const
+{ // ptsRefToGlobal
+  assert(0 != ptsGlobal);
+  assert(0 != ptsRef);
   assert(0 != vertices);
   assert(2 == dim);
   assert(spaceDim() == dim);
@@ -76,20 +77,25 @@ pylith::feassemble::GeometryLine2D::coordsRefToGlobal(double* coordsGlobal,
   const double x1 = vertices[2];
   const double y1 = vertices[3];
 
-  const double p0 = 0.5*(1.0+coordsRef[0]);
-  coordsGlobal[0] = x0 + (x1-x0) * p0;
-  coordsGlobal[1] = y0 + (y1-y0) * p0;
+  const double f_1 = x1 - x0;
+  const double g_1 = y1 - y0;
 
-  PetscLogFlopsNoCheck(8);
-} // coordsRefToGlobal
+  for (int i=0, iG=0; i < npts; ++i) {
+    const double p0 = 0.5 * (1.0 + ptsRef[i]);
+    ptsGlobal[iG++] = x0 + f_1 * p0;
+    ptsGlobal[iG++] = y0 + g_1 * p0;
+  } // for
+
+  PetscLogFlopsNoCheck(2 + npts*6);
+} // ptsRefToGlobal
 
 // ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
 pylith::feassemble::GeometryLine2D::jacobian(double_array* jacobian,
-					   double* det,
-					   const double_array& vertices,
-					   const double_array& location) const
+					     double* det,
+					     const double_array& vertices,
+					     const double_array& location) const
 { // jacobian
   assert(0 != jacobian);
   assert(0 != det);
@@ -118,7 +124,8 @@ pylith::feassemble::GeometryLine2D::jacobian(double* jacobian,
 					     double* det,
 					     const double* vertices,
 					     const double* location,
-					     const int dim) const
+					     const int dim,
+					     const int npts) const
 { // jacobian
   assert(0 != jacobian);
   assert(0 != det);
@@ -133,10 +140,16 @@ pylith::feassemble::GeometryLine2D::jacobian(double* jacobian,
   const double x1 = vertices[2];
   const double y1 = vertices[3];
 
-  jacobian[0] = (x1 - x0)/2.0;
-  jacobian[1] = (y1 - y0)/2.0;
-  *det = sqrt(pow(jacobian[0], 2) +
-	      pow(jacobian[1], 2));
+  const double j1 = (x1 - x0) / 2.0;
+  const double j2 = (y1 - y0) / 2.0;
+  const double jdet = sqrt(j1*j1 + j2*j2);
+
+  for (int i=0, iJ=0; i < npts; ++i) {
+    jacobian[iJ++] = j1;
+    jacobian[iJ++] = j2;
+    det[i] = jdet;
+  } // for
+
   PetscLogFlopsNoCheck(8);
 } // jacobian
 

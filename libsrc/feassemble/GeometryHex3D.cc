@@ -65,13 +65,14 @@ pylith::feassemble::GeometryHex3D::geometryLowerDim(void) const
 // ----------------------------------------------------------------------
 // Transform coordinates in reference cell to global coordinates.
 void
-pylith::feassemble::GeometryHex3D::coordsRefToGlobal(double* coordsGlobal,
-						     const double* coordsRef,
-						     const double* vertices,
-						     const int dim) const
-{ // coordsRefToGlobal
-  assert(0 != coordsGlobal);
-  assert(0 != coordsRef);
+pylith::feassemble::GeometryHex3D::ptsRefToGlobal(double* ptsGlobal,
+						  const double* ptsRef,
+						  const double* vertices,
+						  const int dim,
+						  const int npts) const
+{ // ptsRefToGlobal
+  assert(0 != ptsGlobal);
+  assert(0 != ptsRef);
   assert(0 != vertices);
   assert(3 == dim);
   assert(spaceDim() == dim);
@@ -108,12 +109,17 @@ pylith::feassemble::GeometryHex3D::coordsRefToGlobal(double* coordsGlobal,
   const double y7 = vertices[22];
   const double z7 = vertices[23];
 
-  const double p0 = 0.5*(1.0+coordsRef[0]);
-  const double p1 = 0.5*(1.0+coordsRef[1]);
-  const double p2 = 0.5*(1.0+coordsRef[2]);
-  assert(0 <= p0 && p0 <= 1.0);
-  assert(0 <= p1 && p1 <= 1.0);
-  assert(0 <= p2 && p2 <= 1.0);
+  const double f_1 = x1 - x0;
+  const double g_1 = y1 - y0;
+  const double h_1 = z1 - z0;
+
+  const double f_3 = x3 - x0;
+  const double g_3 = y3 - y0;
+  const double h_3 = z3 - z0;
+
+  const double f_4 = x4 - x0;
+  const double g_4 = y4 - y0;
+  const double h_4 = z4 - z0;
 
   const double f_01 = x2 - x1 - x3 + x0;
   const double g_01 = y2 - y1 - y3 + y0;
@@ -131,15 +137,23 @@ pylith::feassemble::GeometryHex3D::coordsRefToGlobal(double* coordsGlobal,
   const double g_012 = y6 - y0 + y1 - y2 + y3 + y4 - y5 - y7;
   const double h_012 = z6 - z0 + z1 - z2 + z3 + z4 - z5 - z7;
 
-  coordsGlobal[0] = x0 + (x1-x0) * p0 + (x3-x0) * p1 + (x4-x0) * p2
-    + f_01*p0*p1 + f_12*p1*p2 + f_02*p0*p2 + f_012*p0*p1*p2;
-  coordsGlobal[1] = y0 + (y1-y0) * p0 + (y3-y0) * p1 + (y4-y0) * p2
-    + g_01*p0*p1 + g_12*p1*p2 + g_02*p0*p2 + g_012*p0*p1*p2;
-  coordsGlobal[2] = z0 + (z1-z0) * p0 + (z3-z0) * p1 + (z4-z0) * p2
-    + h_01*p0*p1 + h_12*p1*p2 + h_02*p0*p2 + h_012*p0*p1*p2;
+  for (int i=0, iR=0, iG=0; i < npts; ++i) {
+    const double p0 = 0.5 * (1.0 + ptsRef[iR++]);
+    const double p1 = 0.5 * (1.0 + ptsRef[iR++]);
+    const double p2 = 0.5 * (1.0 + ptsRef[iR++]);
+    assert(0 <= p0 && p0 <= 1.0);
+    assert(0 <= p1 && p1 <= 1.0);
+    assert(0 <= p2 && p2 <= 1.0);
+    ptsGlobal[iG++] = x0 + f_1*p0 + f_3*p1 + f_4*p2
+      + f_01*p0*p1 + f_12*p1*p2 + f_02*p0*p2 + f_012*p0*p1*p2;
+    ptsGlobal[iG++] = y0 + g_1*p0 + g_3*p1 + g_4*p2 + g_01*p0*p1
+      + g_01*p0*p1 + g_12*p1*p2 + g_02*p0*p2 + g_012*p0*p1*p2;
+    ptsGlobal[iG++] = z0 + h_1*p0 + h_3*p1 + h_4*p2 + h_01*p0*p1
+      + h_01*p0*p1 + h_12*p1*p2 + h_02*p0*p2 + h_012*p0*p1*p2;
+  } // for
 
-  PetscLogFlopsNoCheck(120);
-} // coordsRefToGlobal
+  PetscLogFlopsNoCheck(57 + npts*57);
+} // ptsRefToGlobal
 
 // ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
@@ -240,13 +254,14 @@ void
 pylith::feassemble::GeometryHex3D::jacobian(double* jacobian,
 					    double* det,
 					    const double* vertices,
-					    const double* location,
-					    const int dim) const
+					    const double* ptsRef,
+					    const int dim,
+					    const int npts) const
 { // jacobian
   assert(0 != jacobian);
   assert(0 != det);
   assert(0 != vertices);
-  assert(0 != location);
+  assert(0 != ptsRef);
   assert(3 == dim);
   assert(spaceDim() == dim);
 
@@ -282,47 +297,66 @@ pylith::feassemble::GeometryHex3D::jacobian(double* jacobian,
   const double y7 = vertices[22];
   const double z7 = vertices[23];
 
-  const double x = 0.5 * (location[0] + 1.0);
-  const double y = 0.5 * (location[1] + 1.0);
-  const double z = 0.5 * (location[2] + 1.0);
-  assert(-1.0 <= x && x <= 1.0);
-  assert(-1.0 <= y && y <= 1.0);
-  assert(-1.0 <= z && z <= 1.0);
+  const double f_1 = (x1 - x0) / 2.0;
+  const double g_1 = (y1 - y0) / 2.0;
+  const double h_1 = (z1 - z0) / 2.0;
 
-  const double f_xy = x2 - x1 - x3 + x0;
-  const double g_xy = y2 - y1 - y3 + y0;
-  const double h_xy = z2 - z1 - z3 + z0;
+  const double f_3 = (x3 - x0) / 2.0;
+  const double g_3 = (y3 - y0) / 2.0;
+  const double h_3 = (z3 - z0) / 2.0;
+  
+  const double f_4 = (x4 - x0) / 2.0;
+  const double g_4 = (y4 - y0) / 2.0;
+  const double h_4 = (z4 - z0) / 2.0;
 
-  const double f_yz = x7 - x3 - x4 + x0;
-  const double g_yz = y7 - y3 - y4 + y0;
-  const double h_yz = z7 - z3 - z4 + z0;
+  const double f_01 = (x2 - x1 - x3 + x0) / 2.0;
+  const double g_01 = (y2 - y1 - y3 + y0) / 2.0;
+  const double h_01 = (z2 - z1 - z3 + z0) / 2.0;
 
-  const double f_xz = x5 - x1 - x4 + x0;
-  const double g_xz = y5 - y1 - y4 + y0;
-  const double h_xz = z5 - z1 - z4 + z0;
+  const double f_12 = (x7 - x3 - x4 + x0) / 2.0;
+  const double g_12 = (y7 - y3 - y4 + y0) / 2.0;
+  const double h_12 = (z7 - z3 - z4 + z0) / 2.0;
 
-  const double f_xyz = x6 - x0 + x1 - x2 + x3 + x4 - x5 - x7;
-  const double g_xyz = y6 - y0 + y1 - y2 + y3 + y4 - y5 - y7;
-  const double h_xyz = z6 - z0 + z1 - z2 + z3 + z4 - z5 - z7;
+  const double f_02 = (x5 - x1 - x4 + x0) / 2.0;
+  const double g_02 = (y5 - y1 - y4 + y0) / 2.0;
+  const double h_02 = (z5 - z1 - z4 + z0) / 2.0;
 
-  jacobian[0] = (x1 - x0 + f_xy*y + f_xz*z + f_xyz*y*z) / 2.0;
-  jacobian[1] = (x3 - x0 + f_xy*x + f_yz*z + f_xyz*x*z) / 2.0;
-  jacobian[2] = (x4 - x0 + f_yz*y + f_xz*x + f_xyz*x*y) / 2.0;
+  const double f_012 = (x6 - x0 + x1 - x2 + x3 + x4 - x5 - x7) / 2.0;
+  const double g_012 = (y6 - y0 + y1 - y2 + y3 + y4 - y5 - y7) / 2.0;
+  const double h_012 = (z6 - z0 + z1 - z2 + z3 + z4 - z5 - z7) / 2.0;
 
-  jacobian[3] = (y1 - y0 + g_xy*y + g_xz*z + g_xyz*y*z) / 2.0;
-  jacobian[4] = (y3 - y0 + g_xy*x + g_yz*z + g_xyz*x*z) / 2.0;
-  jacobian[5] = (y4 - y0 + g_yz*y + g_xz*x + g_xyz*x*y) / 2.0;
+  for (int i=0, iR=0, iJ=0; i < npts; ++i) {
+    const double p0 = 0.5 * (1.0 + ptsRef[iR++]);
+    const double p1 = 0.5 * (1.0 + ptsRef[iR++]);
+    const double p2 = 0.5 * (1.0 + ptsRef[iR++]);
+    assert(0 <= p0 && p0 <= 1.0);
+    assert(0 <= p1 && p1 <= 1.0);
+    assert(0 <= p2 && p2 <= 1.0);
+    const double j0 = f_1 + f_01*p1 + f_02*p2 + f_012*p1*p2;
+    const double j1 = f_3 + f_01*p0 + f_12*p2 + f_012*p0*p2;
+    const double j2 = f_4 + f_12*p1 + f_02*p0 + f_012*p0*p1;
+    
+    const double j3 = g_1 + g_01*p1 + g_02*p2 + g_012*p1*p2;
+    const double j4 = g_3 + g_01*p0 + g_12*p2 + g_012*p0*p2;
+    const double j5 = g_4 + g_12*p1 + g_02*p0 + g_012*p0*p1;
+    
+    const double j6 = h_1 + h_01*p1 + h_02*p2 + h_012*p1*p2;
+    const double j7 = h_3 + h_01*p0 + h_12*p2 + h_012*p0*p2;
+    const double j8 = h_4 + h_12*p1 + h_02*p0 + h_012*p0*p1;
 
-  jacobian[6] = (z1 - z0 + h_xy*y + h_xz*z + h_xyz*y*z) / 2.0;
-  jacobian[7] = (z3 - z0 + h_xy*x + h_yz*z + h_xyz*x*z) / 2.0;
-  jacobian[8] = (z4 - z0 + h_yz*y + h_xz*x + h_xyz*x*y) / 2.0;
+    jacobian[iJ++] = j0;
+    jacobian[iJ++] = j1;
+    jacobian[iJ++] = j2;
+    jacobian[iJ++] = j3;
+    jacobian[iJ++] = j4;
+    jacobian[iJ++] = j5;
+    jacobian[iJ++] = j6;
+    jacobian[iJ++] = j7;
+    jacobian[iJ++] = j8;
+    det[i] = j0*(j4*j8 - j5*j7) - j1*(j3*j8 - j5*j6) + j2*(j3*j7 - j4*j6);
+  } // for
 
-  *det = 
-    jacobian[0]*(jacobian[4]*jacobian[8] - jacobian[5]*jacobian[7]) -
-    jacobian[1]*(jacobian[3]*jacobian[8] - jacobian[5]*jacobian[6]) +
-    jacobian[2]*(jacobian[3]*jacobian[7] - jacobian[4]*jacobian[6]);
-
-  PetscLogFlopsNoCheck(152);
+  PetscLogFlopsNoCheck(78 + npts*69);
 } // jacobian
 
 

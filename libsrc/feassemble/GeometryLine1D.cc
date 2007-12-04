@@ -59,13 +59,14 @@ pylith::feassemble::GeometryLine1D::geometryLowerDim(void) const
 // ----------------------------------------------------------------------
 // Transform coordinates in reference cell to global coordinates.
 void
-pylith::feassemble::GeometryLine1D::coordsRefToGlobal(double* coordsGlobal,
-						      const double* coordsRef,
-						      const double* vertices,
-						      const int dim) const
-{ // coordsRefToGlobal
-  assert(0 != coordsGlobal);
-  assert(0 != coordsRef);
+pylith::feassemble::GeometryLine1D::ptsRefToGlobal(double* ptsGlobal,
+						   const double* ptsRef,
+						   const double* vertices,
+						   const int dim,
+						   const int npts) const
+{ // ptsRefToGlobal
+  assert(0 != ptsGlobal);
+  assert(0 != ptsRef);
   assert(0 != vertices);
   assert(1 == dim);
   assert(spaceDim() == dim);
@@ -73,11 +74,13 @@ pylith::feassemble::GeometryLine1D::coordsRefToGlobal(double* coordsGlobal,
   const double x0 = vertices[0];
   const double x1 = vertices[1];
 
-  const double p0 = 0.5*(1.0+coordsRef[0]);
-  coordsGlobal[0] = x0 + (x1-x0) * p0;
+  for (int i=0; i < npts; ++i) {
+    const double p0 = 0.5*(1.0+ptsRef[i]);
+    ptsGlobal[i] = x0 + (x1-x0) * p0;
+  } // for
 
-  PetscLogFlopsNoCheck(5);
-} // coordsRefToGlobal
+  PetscLogFlopsNoCheck(5*npts);
+} // ptsRefToGlobal
 
 // ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
@@ -107,7 +110,8 @@ pylith::feassemble::GeometryLine1D::jacobian(double* jacobian,
 					     double* det,
 					     const double* vertices,
 					     const double* location,
-					     const int dim) const
+					     const int dim,
+					     const int npts) const
 { // jacobian
   assert(0 != jacobian);
   assert(0 != det);
@@ -119,8 +123,12 @@ pylith::feassemble::GeometryLine1D::jacobian(double* jacobian,
   const double x0 = vertices[0];
   const double x1 = vertices[1];
 
-  jacobian[0] = (x1 - x0)/2.0;
-  *det = jacobian[0];
+  const double j = (x1 - x0)/2.0;
+  for (int i=0; i < npts; ++i) {
+    jacobian[i] = j;
+    det[i] = j;
+  } // for
+
   PetscLogFlopsNoCheck(2);
 } // jacobian
 

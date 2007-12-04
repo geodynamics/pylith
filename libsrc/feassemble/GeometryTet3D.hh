@@ -63,15 +63,17 @@ public :
 
   /** Transform coordinates in reference cell to global coordinates.
    *
-   * @param coordsGlobal Coordinates in global coordinate system.
-   * @param coordsRef Coordinates in reference cell.
+   * @param ptsGlobal Array of points in global coordinate system.
+   * @param ptsRef Array of points in reference cell.
    * @param vertices Array of cell vertices in global coordinates.
    * @param dim Dimension of global coordinate system.
+   * @param npts Number of points to transform.
    */
-  void coordsRefToGlobal(double* coordsGlobal,
-			 const double* coordsRef,
-			 const double* vertices,
-			 const int dim) const;
+  void ptsRefToGlobal(double* ptsGlobal,
+		      const double* ptsRef,
+		      const double* vertices,
+		      const int dim,
+		      const int npts =1) const;
 
   /** Compute Jacobian at location in cell.
    *
@@ -90,14 +92,16 @@ public :
    * @param jacobian Jacobian at location.
    * @param det Determinant of Jacobian at location.
    * @param vertices Coordinates of vertices of cell.
-   * @param location Location in reference cell at which to compute Jacobian.
+   * @param ptsRef Points in reference cell at which to compute Jacobian.
    * @param dim Dimension of coordinate system.
+   * @param npts Number of points to transform.
    */
   void jacobian(double* jacobian,
 		double* det,
 		const double* vertices,
-		const double* location,
-		const int dim) const;
+		const double* ptsRef,
+		const int dim,
+		const int npts =1) const;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

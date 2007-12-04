@@ -38,9 +38,80 @@ automatic generation of higher-order elements from linear elements,
 and the generation of Green's functions to be used in inversions.  
 Many of these features should be available in Fall 2007.
 
+
+======================================================================
+TIPS
+======================================================================
+
+  * For most crustal deformation problems, we recommend using the
+    Additive Schwartz preconditioner via the following PETSc
+    settings:
+
+      - Command line arguments
+
+        --petsc.pc_type=asm
+        --petsc.ksp_max_it=100
+        --petsc.ksp_gmres_restart=50
+        --petsc.ksp_rtol=1.0e-08
+
+      - pylithapp.cfg (or your other favorite .cfg file)
+
+        [pylithapp.petsc]
+        pc_type = asm
+        ksp_max_it = 200
+        ksp_gmres_restart = 50
+        ksp_rtol = 1.0e-08
+
+  * If the solve takes more than a few hundred iterations for a
+    large problem (use the --petsc.ksp_monitor=1 and
+    --petsc.ksp_view=1 to see diagnostic information for the
+    solver), this is an indication that something is wrong. Either
+    the preconditioner is inappropriate for the type of problem you
+    are solving or there is an error in the problem setup.
+
+
 ======================================================================
 RELEASE NOTES
 ======================================================================
+
+----------------------------------------------------------------------
+Version 1.0.2
+----------------------------------------------------------------------
+
+  * Performance optimizations have significantly reduced runtime and
+    memory use relative to version 1.0.1. The default quadrature order
+    for tetrahedral cells is now 1, which is appropriate for the
+    default basis functions.
+
+  * Added checks to verify the compatibility of quadrature scheme for solid
+    and cohesive cells.
+
+  * Bug fixes
+
+      - In some cases, cohesive cells were not inserted into the
+        finite-element mesh properly. The cells mixed together vertices
+        from the different sides of the fault. A more efficient
+        procedure for creating cohesive cells fixed this problem.
+
+      - Cell adjacency graph was created incorrectly which resulted in
+        a poor quality of partitioning among processors.
+
+      - VTK output for meshes with N faults included cohesive cells
+        for N-1 faults. Since VTK output does not understand cohesive
+        cells, we now remove all cohesive cells from the VTK output.
+
+      - Using the SimpleDB in Spatialdata from Python limited
+        interpolation to the "linear" scheme instead of allowing use of
+        the "nearest" scheme. Setting the SimpleDB property to "nearest"
+        and "linear" now works as expected.
+
+      - The reader for Spatialdata coordinate systems information did not
+        correctly putback characters in the input stream, resulting in
+        reading errors. The putback routines were fixed.
+
+      - Fault "up" and "normal" directions remained as string arrays
+        when passed to the module, instead of being converted to float
+        arrays.
 
 ----------------------------------------------------------------------
 Version 1.0.1
@@ -87,7 +158,7 @@ Version 1.0.0
         to fault slip, which increase the accuracy of displacement
         fields near faults and facilitate visualization of fault slip.
 
-      - Usage of cohesive elements will facilitiate the upcoming
+      - Usage of cohesive elements will facilitate the upcoming
         addition of fault constitutive relations, where fault slip
         occurs in response to prescribed physics.
 
@@ -104,6 +175,7 @@ Version 1.0.0
       - Traction boundary conditions
 
       - Generalized Maxwell and Power-law Maxwell viscoelastic models
+
 
 ======================================================================
 KNOWN ISSUES

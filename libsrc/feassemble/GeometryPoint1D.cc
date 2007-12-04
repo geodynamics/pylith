@@ -52,27 +52,29 @@ pylith::feassemble::GeometryPoint1D::geometryLowerDim(void) const
 // ----------------------------------------------------------------------
 // Transform coordinates in reference cell to global coordinates.
 void
-pylith::feassemble::GeometryPoint1D::coordsRefToGlobal(double* coordsGlobal,
-						       const double* coordsRef,
-						       const double* vertices,
-						       const int dim) const
-{ // coordsRefToGlobal
-  assert(0 != coordsGlobal);
-  assert(0 != coordsRef);
+pylith::feassemble::GeometryPoint1D::ptsRefToGlobal(double* ptsGlobal,
+						    const double* ptsRef,
+						    const double* vertices,
+						    const int dim,
+						    const int npts) const
+{ // ptsRefToGlobal
+  assert(0 != ptsGlobal);
+  assert(0 != ptsRef);
   assert(0 != vertices);
   assert(1 == dim);
   assert(spaceDim() == dim);
 
-  coordsGlobal[0] = vertices[0];
-} // coordsRefToGlobal
+  for (int i=0; i < npts; ++i)
+    ptsGlobal[i] = vertices[i];
+} // ptsRefToGlobal
 
 // ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
 pylith::feassemble::GeometryPoint1D::jacobian(double_array* jacobian,
-					    double* det,
-					    const double_array& vertices,
-					    const double_array& location) const
+					      double* det,
+					      const double_array& vertices,
+					      const double_array& location) const
 { // jacobian
   assert(0 != jacobian);
   assert(0 != det);
@@ -89,18 +91,21 @@ void
 pylith::feassemble::GeometryPoint1D::jacobian(double* jacobian,
 					      double* det,
 					      const double* vertices,
-					      const double* location,
-					      const int dim) const
+					      const double* ptsRef,
+					      const int dim,
+					      const int npts) const
 { // jacobian
   assert(0 != jacobian);
   assert(0 != det);
   assert(0 != vertices);
-  assert(0 != location);
+  assert(0 != ptsRef);
   assert(1 == dim);
   assert(spaceDim() == dim);
 
-  jacobian[0] = 1.0;
-  *det = 1.0;
+  for (int i=0; i < npts; ++i) {
+    jacobian[i] = 1.0;
+    det[i] = 1.0;
+  } // for
 } // jacobian
 
 

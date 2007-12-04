@@ -61,13 +61,14 @@ pylith::feassemble::GeometryQuad3D::geometryLowerDim(void) const
 // ----------------------------------------------------------------------
 // Transform coordinates in reference cell to global coordinates.
 void
-pylith::feassemble::GeometryQuad3D::coordsRefToGlobal(double* coordsGlobal,
-						      const double* coordsRef,
-						      const double* vertices,
-						      const int dim) const
-{ // coordsRefToGlobal
-  assert(0 != coordsGlobal);
-  assert(0 != coordsRef);
+pylith::feassemble::GeometryQuad3D::ptsRefToGlobal(double* ptsGlobal,
+						   const double* ptsRef,
+						   const double* vertices,
+						   const int dim,
+						   const int npts) const
+{ // ptsRefToGlobal
+  assert(0 != ptsGlobal);
+  assert(0 != ptsRef);
   assert(0 != vertices);
   assert(3 == dim);
   assert(spaceDim() == dim);
@@ -88,20 +89,30 @@ pylith::feassemble::GeometryQuad3D::coordsRefToGlobal(double* coordsGlobal,
   const double y3 = vertices[10];
   const double z3 = vertices[11];
 
-  const double p0 = 0.5*(1.0+coordsRef[0]);
-  const double p1 = 0.5*(1.0+coordsRef[1]);
+  const double f_1 = x1 - x0;
+  const double g_1 = y1 - y0;
+  const double h_1 = z1 - z0;
+
+  const double f_3 = x3 - x0;
+  const double g_3 = y3 - y0;
+  const double h_3 = z3 - z0;
+
   const double f_01 = x2 - x1 - x3 + x0;
   const double g_01 = y2 - y1 - y3 + y0;
   const double h_01 = z2 - z1 - z3 + z0;
-  assert(0 <= p0 && p0 <= 1.0);
-  assert(0 <= p1 && p1 <= 1.0);
 
-  coordsGlobal[0] = x0 + (x1-x0) * p0 + (x2-x0) * p1 + f_01 * p0 * p1;
-  coordsGlobal[1] = y0 + (y1-y0) * p0 + (y2-y0) * p1 + g_01 * p0 * p1;
-  coordsGlobal[2] = z0 + (z1-z0) * p0 + (z2-z0) * p1 + h_01 * p0 * p1;
+  for (int i=0, iR=0, iG=0; i < npts; ++i) {
+    const double p0 = 0.5 * (1.0 + ptsRef[iR++]);
+    const double p1 = 0.5 * (1.0 + ptsRef[iR++]);
+    assert(0 <= p0 && p0 <= 1.0);
+    assert(0 <= p1 && p1 <= 1.0);
+    ptsGlobal[iG++] = x0 + f_1 * p0 + f_3 * p1 + f_01 * p0 * p1;
+    ptsGlobal[iG++] = y0 + g_1 * p0 + g_3 * p1 + g_01 * p0 * p1;
+    ptsGlobal[iG++] = z0 + h_1 * p0 + h_3 * p1 + h_01 * p0 * p1;
+  } // for
 
-  PetscLogFlopsNoCheck(40);
-} // coordsRefToGlobal
+  PetscLogFlopsNoCheck(15 + npts*25);
+} // ptsRefToGlobal
 
 // ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
@@ -176,13 +187,14 @@ void
 pylith::feassemble::GeometryQuad3D::jacobian(double* jacobian,
 					     double* det,
 					     const double* vertices,
-					     const double* location,
-					     const int dim) const
+					     const double* ptsRef,
+					     const int dim,
+					     const int npts) const
 { // jacobian
   assert(0 != jacobian);
   assert(0 != det);
   assert(0 != vertices);
-  assert(0 != location);
+  assert(0 != ptsRef);
   assert(3 == dim);
   assert(spaceDim() == dim);
   
@@ -202,40 +214,44 @@ pylith::feassemble::GeometryQuad3D::jacobian(double* jacobian,
   const double y3 = vertices[10];
   const double z3 = vertices[11];
 
-  const double x = 0.5 * (location[0] + 1.0);
-  const double y = 0.5 * (location[1] + 1.0);
-  assert(0 <= x && x <= 1.0);
-  assert(0 <= y && y <= 1.0);
+  const double f_1 = (x1 - x0) / 2.0;
+  const double g_1 = (y1 - y0) / 2.0;
+  const double h_1 = (z1 - z0) / 2.0;
 
-  const double f_xy = x2 - x1 - x3 + x0;
-  const double g_xy = y2 - y1 - y3 + y0;
-  const double h_xy = z2 - z1 - z3 + z0;
+  const double f_3 = (x3 - x0) / 2.0;
+  const double g_3 = (y3 - y0) / 2.0;
+  const double h_3 = (z3 - z0) / 2.0;
 
-  jacobian[0] = (x1 - x0 + f_xy*y) / 2.0;
-  jacobian[1] = (x3 - x0 + f_xy*x) / 2.0;
+  const double f_01 = (x2 - x1 - x3 + x0) / 2.0;
+  const double g_01 = (y2 - y1 - y3 + y0) / 2.0;
+  const double h_01 = (z2 - z1 - z3 + z0) / 2.0;
 
-  jacobian[2] = (y1 - y0 + g_xy*y) / 2.0;
-  jacobian[3] = (y3 - y0 + g_xy*x) / 2.0;
+  for (int i=0, iR=0, iJ=0; i < npts; ++i) {
+    const double p0 = 0.5 * (1.0 + ptsRef[iR++]);
+    const double p1 = 0.5 * (1.0 + ptsRef[iR++]);
+    assert(0 <= p0 && p0 <= 1.0);
+    assert(0 <= p1 && p1 <= 1.0);
+    const double j0 = f_1 + f_01 * p1; 
+    const double j1 = f_3 + f_01 * p0; 
+    const double j2 = g_1 + g_01 * p1;
+    const double j3 = g_3 + g_01 * p0; 
+    const double j4 = h_1 + h_01 * p1;
+    const double j5 = h_3 + h_01 * p0;
+    jacobian[iJ++] = j0;
+    jacobian[iJ++] = j1;
+    jacobian[iJ++] = j2;
+    jacobian[iJ++] = j3;
+    jacobian[iJ++] = j4;
+    jacobian[iJ++] = j5;
 
-  jacobian[4] = (z1 - z0 + h_xy*y) / 2.0;
-  jacobian[5] = (z3 - z0 + h_xy*x) / 2.0;
+    const double jj00 = j0*j0 + j2*j2 + j4*j4;
+    const double jj10 = j0*j1 + j2*j3 + j4*j5;
+    const double jj01 = jj10;
+    const double jj11 = j1*j1 + j3*j3 + j5*j5;
+    det[i] = sqrt(jj00*jj11 - jj01*jj10);
+  } // for
 
-  const double jj00 = 
-    jacobian[0]*jacobian[0] +
-    jacobian[2]*jacobian[2] +
-    jacobian[4]*jacobian[4];
-  const double jj10 =
-    jacobian[0]*jacobian[1] +
-    jacobian[2]*jacobian[3] +
-    jacobian[4]*jacobian[5];
-  const double jj01 = jj10;
-  const double jj11 = 
-    jacobian[1]*jacobian[1] +
-    jacobian[3]*jacobian[3] +
-    jacobian[5]*jacobian[5];
-  *det = sqrt(jj00*jj11 - jj01*jj10);
-
-  PetscLogFlopsNoCheck(50);
+  PetscLogFlopsNoCheck(28 + npts*32);
 } // jacobian
 
 

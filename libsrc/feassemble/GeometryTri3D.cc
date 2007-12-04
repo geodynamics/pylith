@@ -60,13 +60,14 @@ pylith::feassemble::GeometryTri3D::geometryLowerDim(void) const
 // ----------------------------------------------------------------------
 // Transform coordinates in reference cell to global coordinates.
 void
-pylith::feassemble::GeometryTri3D::coordsRefToGlobal(double* coordsGlobal,
-						     const double* coordsRef,
-						     const double* vertices,
-						     const int dim) const
-{ // coordsRefToGlobal
-  assert(0 != coordsGlobal);
-  assert(0 != coordsRef);
+pylith::feassemble::GeometryTri3D::ptsRefToGlobal(double* ptsGlobal,
+						  const double* ptsRef,
+						  const double* vertices,
+						  const int dim,
+						  const int npts) const
+{ // ptsRefToGlobal
+  assert(0 != ptsGlobal);
+  assert(0 != ptsRef);
   assert(0 != vertices);
   assert(3 == dim);
   assert(spaceDim() == dim);
@@ -83,22 +84,32 @@ pylith::feassemble::GeometryTri3D::coordsRefToGlobal(double* coordsGlobal,
   const double y2 = vertices[7];
   const double z2 = vertices[8];
 
-  const double p0 = 0.5*(1.0+coordsRef[0]);
-  const double p1 = 0.5*(1.0+coordsRef[1]);
-  coordsGlobal[0] = x0 + (x1-x0) * p0 + (x2-x0) * p1;
-  coordsGlobal[1] = y0 + (y1-y0) * p0 + (y2-y0) * p1;
-  coordsGlobal[2] = z0 + (z1-z0) * p0 + (z2-z0) * p1;
+  const double f_1 = x1 - x0;
+  const double g_1 = y1 - y0;
+  const double h_1 = z1 - z0;
+
+  const double f_2 = x2 - x0;
+  const double g_2 = y2 - y0;
+  const double h_2 = z2 - z0;
+
+  for (int i=0, iR=0, iG=0; i < npts; ++i) {
+    const double p0 = 0.5 * (1.0 + ptsRef[iR++]);
+    const double p1 = 0.5 * (1.0 + ptsRef[iR++]);
+    ptsGlobal[iG++] = x0 + f_1 * p0 + f_2 * p1;
+    ptsGlobal[iG++] = y0 + g_1 * p0 + g_2 * p1;
+    ptsGlobal[iG++] = z0 + h_1 * p0 + h_2 * p1;
+  } // for
 
   PetscLogFlopsNoCheck(22);
-} // coordsRefToGlobal
+} // ptsRefToGlobal
 
 // ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
 pylith::feassemble::GeometryTri3D::jacobian(double_array* jacobian,
-					  double* det,
-					  const double_array& vertices,
-					  const double_array& location) const
+					    double* det,
+					    const double_array& vertices,
+					    const double_array& location) const
 { // jacobian
   assert(0 != jacobian);
 
@@ -150,7 +161,8 @@ pylith::feassemble::GeometryTri3D::jacobian(double* jacobian,
 					    double* det,
 					    const double* vertices,
 					    const double* location,
-					    const int dim) const
+					    const int dim,
+					    const int npts) const
 { // jacobian
   assert(0 != jacobian);
   assert(0 != det);
@@ -171,29 +183,30 @@ pylith::feassemble::GeometryTri3D::jacobian(double* jacobian,
   const double y2 = vertices[7];
   const double z2 = vertices[8];
 
-  jacobian[0] = (x1 - x0) / 2.0;
-  jacobian[1] = (x2 - x0) / 2.0;
+  const double j0 = (x1 - x0) / 2.0;
+  const double j1 = (x2 - x0) / 2.0;
 
-  jacobian[2] = (y1 - y0) / 2.0;
-  jacobian[3] = (y2 - y0) / 2.0;
+  const double j2 = (y1 - y0) / 2.0;
+  const double j3 = (y2 - y0) / 2.0;
 
-  jacobian[4] = (z1 - z0) / 2.0;
-  jacobian[5] = (z2 - z0) / 2.0;
+  const double j4 = (z1 - z0) / 2.0;
+  const double j5 = (z2 - z0) / 2.0;
 
-  const double jj00 = 
-    jacobian[0]*jacobian[0] +
-    jacobian[2]*jacobian[2] +
-    jacobian[4]*jacobian[4];
-  const double jj10 =
-    jacobian[0]*jacobian[1] +
-    jacobian[2]*jacobian[3] +
-    jacobian[4]*jacobian[5];
+  const double jj00 = j0*j0 + j2*j2 + j4*j4;
+  const double jj10 = j0*j1 + j2*j3 + j4*j5;
   const double jj01 = jj10;
-  const double jj11 = 
-    jacobian[1]*jacobian[1] +
-    jacobian[3]*jacobian[3] +
-    jacobian[5]*jacobian[5];
-  *det = sqrt(jj00*jj11 - jj01*jj10);
+  const double jj11 = j1*j1 + j3*j3 + j5*j5;
+  const double jdet = sqrt(jj00*jj11 - jj01*jj10);
+
+  for (int i=0, iJ=0; i < npts; ++i) {
+    jacobian[iJ++] = j0;
+    jacobian[iJ++] = j1;
+    jacobian[iJ++] = j2;
+    jacobian[iJ++] = j3;
+    jacobian[iJ++] = j4;
+    jacobian[iJ++] = j5;
+    det[i] = jdet;
+  } // for
 
   PetscLogFlopsNoCheck(31);
 } // jacobian
