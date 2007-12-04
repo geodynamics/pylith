@@ -195,7 +195,7 @@ class Implicit(Formulation):
     self._info.log("Updating integrators states.")
     self._debug.log(resourceUsageString())
     for integrator in self.integrators:
-      integrator.updateState(t+dt, self.fields.cppHandle)
+      integrator.updateState(t+dt, self.fields)
     self._debug.log(resourceUsageString())
 
     # If finishing first time step, then switch from solving for total
