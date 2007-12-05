@@ -83,6 +83,7 @@ class MeshIOLagrit(MeshIO):
     self.filenameGmv = self.inventory.filenameGmv
     self.filenamePset = self.inventory.filenamePset
     self.coordsys = self.inventory.coordsys
+    self.flipEndian = self.inventory.flipEndian
     return
 
 
@@ -97,6 +98,7 @@ class MeshIOLagrit(MeshIO):
     MeshIO._sync(self)
     self.cppHandle.filenameGmv = self.filenameGmv
     self.cppHandle.filenamePset = self.filenamePset
+    self.cppHandle.flipEndian = self.flipEndian
     return
   
 
