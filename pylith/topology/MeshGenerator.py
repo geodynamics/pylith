@@ -88,10 +88,36 @@ class MeshGenerator(Component):
     """
     Adjust topology for interface implementation.
     """
+    logEvent = "%sadjTopo" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+    
     if not interfaces is None:
       for interface in interfaces:
         interface.adjustTopology(mesh)
+
+    self._logger.eventEnd(logEvent)
     return
   
 
-# End of file 
+  def _setupLogging(self):
+    """
+    Setup event logging.
+    """
+    if not "_loggingPrefix" in dir(self):
+      self._loggingPrefix = ""
+
+    from pylith.utils.EventLogger import EventLogger
+    logger = EventLogger()
+    logger.setClassName("Mesh Generator")
+    logger.initialize()
+
+    events = ["create",
+              "adjTopo"]
+    for event in events:
+      logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+
+    self._logger = logger
+    return
+  
+
+# End of file

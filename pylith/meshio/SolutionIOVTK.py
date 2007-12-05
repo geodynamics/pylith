@@ -60,6 +60,7 @@ class SolutionIOVTK(SolutionIO):
     Constructor.
     """
     SolutionIO.__init__(self, name)
+    self._loggingPrefix = "VTKo "
     return
 
 

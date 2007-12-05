@@ -33,7 +33,8 @@ class PyLithApp(Application):
     ## Python object for managing PyLithApp facilities and properties.
     ##
     ## \b Properties
-    ## @li None
+ 
+   ## @li None
     ##
     ## \b Facilities
     ## @li \b mesher Generates or imports the computational mesh.
@@ -78,6 +79,10 @@ class PyLithApp(Application):
     self.petsc.initialize()
     self._debug.log(resourceUsageString())
 
+    self._setupLogging()
+    logEvent = "PyLith main"
+    self._logger.eventBegin(logEvent)
+
     # Create mesh (adjust to account for interfaces (faults) if necessary)
     interfaces = None
     if "interfaces" in dir(self.problem):
@@ -94,11 +99,14 @@ class PyLithApp(Application):
     self.problem.initialize()
     self._debug.log(resourceUsageString())
 
-    # Run problem and cleanup
+    # Run problem
     self.problem.run(self)
     self._debug.log(resourceUsageString())
 
+    # Cleanup
     self.problem.finalize()
+    
+    self._logger.eventEnd(logEvent)
     self.petsc.finalize()
     return
   
@@ -118,5 +126,18 @@ class PyLithApp(Application):
     self._debug = journal.debug(self.name)
     return
 
+  def _setupLogging(self):
+    """
+    Setup event logging.
+    """
+    from pylith.utils.EventLogger import EventLogger
+    logger = EventLogger()
+    logger.setClassName("PyLith")
+    logger.initialize()
+    logger.registerEvent("PyLith main")
+
+    self._logger = logger
+    return
+  
 
 # End of file 

@@ -45,6 +45,7 @@ class Explicit(Formulation):
     Constructor.
     """
     Formulation.__init__(self, name)
+    self._loggingPrefix = "TSEx "
     self.solnField = {'name': "dispT",
                       'label': "displacements"}
     return
@@ -66,6 +67,9 @@ class Explicit(Formulation):
     t = 0.0*second
     Formulation.initialize(self, dimension, dt)
 
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+    
     self._info.log("Creating other fields and matrices.")
     self.fields.addReal("dispTpdt")
     self.fields.addReal("dispTmdt")
@@ -81,6 +85,8 @@ class Explicit(Formulation):
       constraint.useSolnIncr(False)
     for integrator in self.integrators:
       integrator.useSolnIncr(False)
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -92,20 +98,13 @@ class Explicit(Formulation):
     return 0.0*second
 
 
-  def stableTimeStep(self):
-    """
-    Get stable time step for advancing forward in time.
-    """
-    self._info.log("WARNING: Explicit::stableTimeStep() not implemented.")
-    from pyre.units.time import second
-    dt = 0.0*second
-    return dt
-  
-
   def prestep(self, t, dt):
     """
     Hook for doing stuff before advancing time step.
     """
+    logEvent = "%sprestep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+    
     dispTpdt = self.fields.getReal("dispTpdt")
     for constraint in self.constraints:
       constraint.setField(t+dt, dispTpdt)
@@ -116,6 +115,8 @@ class Explicit(Formulation):
         needNewJacobian = True
     if needNewJacobian:
       self._reformJacobian(t, dt)
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -123,6 +124,9 @@ class Explicit(Formulation):
     """
     Advance to next time step.
     """
+    logEvent = "%sstep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+    
     self._info.log("Integrating constant term in operator.")
     residual = self.fields.getReal("residual")
     import pylith.topology.topology as bindings
@@ -143,6 +147,7 @@ class Explicit(Formulation):
     #print "JACOBIAN"
     #petscbindings.mat_view(self.jacobian)
     # END TEMPORARY
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -150,6 +155,9 @@ class Explicit(Formulation):
     """
     Hook for doing stuff after advancing time step.
     """
+    logEvent = "%spoststep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+    
     self.fields.shiftHistory()
     if not self.solver.guessZero:
       import pylith.topology.topology as bindings
@@ -160,6 +168,8 @@ class Explicit(Formulation):
     for integrator in self.integrators:
       integrator.updateState(t, self.fields)
 
+    self._logger.eventEnd(logEvent)
+    
     Formulation.poststep(self, t, dt, totalTime)
     return
 

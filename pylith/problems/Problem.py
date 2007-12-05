@@ -78,7 +78,7 @@ class Problem(Component):
     Setup integrators for each element family (material/quadrature,
     bc/quadrature, etc.).
     """
-    raise NotImplementedError, "preinitialize() not implemented."
+    raise NotImplementedError, "initialize() not implemented."
     return
 
 
@@ -86,12 +86,16 @@ class Problem(Component):
     """
     Verify compatibility of configuration.
     """
+    logEvent = "%sverify" % self._loggingPrefix
+
+    self._logger.eventBegin(logEvent)
     for material in self.materials.bin:
       material.verifyConfiguration()
     for bc in self.bc.bin:
       bc.verifyConfiguration()
     for interface in self.interfaces.bin:
       interface.verifyConfiguration()
+    self._logger.eventEnd(logEvent)
     return
   
 
@@ -109,6 +113,14 @@ class Problem(Component):
     Solve the problem.
     """
     raise NotImplementedError, "run() not implemented."
+    return
+
+
+  def finalize(self, mesh):
+    """
+    Cleanup.
+    """
+    raise NotImplementedError, "finalize() not implemented."
     return
 
 
@@ -132,6 +144,30 @@ class Problem(Component):
     self.interfaces = self.inventory.interfaces
     return
 
+
+  def _setupLogging(self):
+    """
+    Setup event logging.
+    """
+    if not "_loggingPrefix" in dir(self):
+      self._loggingPrefix = ""
+
+    from pylith.utils.EventLogger import EventLogger
+    logger = EventLogger()
+    logger.setClassName("Problem")
+    logger.initialize()
+
+    events = ["preinit",
+              "verify",
+              "init",
+              "run",
+              "finalize"]
+    for event in events:
+      logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+
+    self._logger = logger
+    return
+  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

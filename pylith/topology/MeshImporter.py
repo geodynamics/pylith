@@ -64,6 +64,7 @@ class MeshImporter(MeshGenerator):
     Constructor.
     """
     MeshGenerator.__init__(self, name)
+    self._loggingPrefix = "MeIm "
     return
 
 
@@ -71,6 +72,10 @@ class MeshImporter(MeshGenerator):
     """
     Hook for creating mesh.
     """
+    self._setupLogging()
+    logEvent = "%screate" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)    
+    
     mesh = self.importer.read(self.debug, self.interpolate)
     self._info.log("Adjusting topology.")
     self._adjustTopology(mesh, faults)
@@ -80,6 +85,8 @@ class MeshImporter(MeshGenerator):
     if mpi.MPI_Comm_size(mpi.MPI_COMM_WORLD) > 1:
       mesh = self.distributor.distribute(mesh)
     #mesh.view()
+
+    self._logger.eventEnd(logEvent)    
     return mesh
 
 

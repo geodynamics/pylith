@@ -81,6 +81,7 @@ class TimeDependent(Problem):
     Constructor.
     """
     Problem.__init__(self, name)
+    self._loggingPrefix = "PrTD "
     return
 
 
@@ -89,10 +90,16 @@ class TimeDependent(Problem):
     Setup integrators for each element family (material/quadrature,
     bc/quadrature, etc.).
     """
+    self._setupLogging()
+    logEvent = "%spreinit" % self._loggingPrefix    
+    self._logger.eventBegin(logEvent)
+    
     self._info.log("Pre-initializing problem.")
     self.mesh = mesh
     self.formulation.preinitialize(mesh, self.materials, self.bc,
                                    self.interfaces)
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -100,6 +107,9 @@ class TimeDependent(Problem):
     """
     Verify compatibility of configuration.
     """
+    logEvent = "%sverify" % self._loggingPrefix    
+    self._logger.eventBegin(logEvent)
+    
     self._info.log("Verifying compatibility of problem configuration.")
     if self.dimension != self.mesh.dimension():
       raise ValueError, \
@@ -114,6 +124,8 @@ class TimeDependent(Problem):
               (self.dimension, material.label, material.quadrature.spaceDim)
     Problem.verifyConfiguration(self)
     self.formulation.verifyConfiguration()
+
+    self._logger.eventEnd(logEvent)
     return
   
 
@@ -122,8 +134,13 @@ class TimeDependent(Problem):
     Setup integrators for each element family (material/quadrature,
     bc/quadrature, etc.).
     """
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     self._info.log("Initializing problem.")
     self.formulation.initialize(self.dimension, self.dt)
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -131,6 +148,9 @@ class TimeDependent(Problem):
     """
     Solve time dependent problem.
     """
+    logEvent = "%srun" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     self._info.log("Solving problem.")
     self.checkpointTimer.toplevel = app # Set handle for saving state
     
@@ -161,6 +181,8 @@ class TimeDependent(Problem):
 
       # Update time step
       t += dt
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -168,7 +190,12 @@ class TimeDependent(Problem):
     """
     Cleanup after running problem.
     """
+    logEvent = "%sfinalize" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     self.formulation.finalize()
+
+    self._logger.eventEnd(logEvent)
     return
 
 

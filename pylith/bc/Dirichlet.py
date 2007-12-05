@@ -97,9 +97,10 @@ class Dirichlet(BoundaryCondition, Constraint):
     Initialize Dirichlet boundary condition.
     """
     logEvent = "%sinit" % self._loggingPrefix
-
-    self._logger.eventBegin(logEvent)    
+    self._logger.eventBegin(logEvent)
+    
     BoundaryCondition.initialize(self)
+
     self._logger.eventEnd(logEvent)    
     return
   

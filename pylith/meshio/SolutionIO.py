@@ -91,6 +91,10 @@ class SolutionIO(Component):
     """
     Open files for solution.
     """
+    self._setupLogging()
+    logEvent = "%sopen" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)    
+    
     self._info.log("Opening files for output of solution.")
     self.mesh = mesh
 
@@ -104,6 +108,8 @@ class SolutionIO(Component):
 
     assert(self.cppHandle != None)
     self.cppHandle.open(mesh.cppHandle)
+
+    self._logger.eventEnd(logEvent)    
     return
 
 
@@ -111,6 +117,8 @@ class SolutionIO(Component):
     """
     Close files for solution.
     """
+    logEvent = "%sclose" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)    
     self._info.log("Closing files for output of solution.")
 
     # Set flags
@@ -118,6 +126,8 @@ class SolutionIO(Component):
 
     assert(self.cppHandle != None)
     self.cppHandle.close()
+
+    self._logger.eventEnd(logEvent)    
     return
 
 
@@ -125,6 +135,8 @@ class SolutionIO(Component):
     """
     Write solution topology to file.
     """
+    logEvent = "%swriteTopo" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)    
     self._info.log("Writing solution topology.")
 
     assert(self.cppHandle != None)
@@ -132,6 +144,8 @@ class SolutionIO(Component):
     assert(self.mesh.coordsys.cppHandle != None)
     self.cppHandle.writeTopology(self.mesh.cppHandle,
                                  self.mesh.coordsys.cppHandle)
+
+    self._logger.eventEnd(logEvent)    
     return
 
 
@@ -139,6 +153,9 @@ class SolutionIO(Component):
     """
     Write field over vertices at time t to file.
     """
+    logEvent = "%swriteVertex" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)    
+
     write = False
     if self.istep == None or not "value" in dir(self.t):
       write = True
@@ -155,6 +172,8 @@ class SolutionIO(Component):
                                       self.mesh.cppHandle)
       self.istep = istep
       self.t = t
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -162,6 +181,9 @@ class SolutionIO(Component):
     """
     Write field over cells at time t to file.
     """
+    logEvent = "%swriteCell" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)    
+
     write = False
     if self.istep == None or not "value" in dir(self.t):
       write = True
@@ -177,6 +199,8 @@ class SolutionIO(Component):
       self.cppHandle.writeCellField(t.value, field, name, self.mesh.cppHandle)
       self.istep = istep
       self.t = t
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -211,4 +235,28 @@ class SolutionIO(Component):
                               "derived class.")
   
   
-# End of file 
+  def _setupLogging(self):
+    """
+    Setup event logging.
+    """
+    if not "_loggingPrefix" in dir(self):
+      self._loggingPrefix = ""
+
+    from pylith.utils.EventLogger import EventLogger
+    logger = EventLogger()
+    logger.setClassName("FE Integrator")
+    logger.initialize()
+
+    events = ["open",
+              "close",
+              "writeTopo",
+              "writeVertex",
+              "writeCell"]
+    for event in events:
+      logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+
+    self._logger = logger
+    return
+  
+
+# End of file
