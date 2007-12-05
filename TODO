@@ -278,6 +278,8 @@ THINGS WE NEED SIEVE TO DO (Matt)
 
 5. Throw out cohesive midnodes from censored depth (not easy since they are mixed in with new vertices, maybe change numbering)
 
+   I think you can do this by placing them after cohesive cells
+
 6. Coarsening for PyLith meshes
 
 7. Time fixes
@@ -294,7 +296,7 @@ THINGS WE NEED SIEVE TO DO (Matt)
 
 10. Move events to Python (make wrappers for events)
 
-11. For Schur complement directly for mass matrix and Lagrang multiplier problem
+11. For Schur complement directly for mass matrix and Lagrange multiplier problem
 
 ======================================================================
 QUESTIONS FOR LEIF
