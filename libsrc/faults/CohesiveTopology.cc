@@ -515,26 +515,47 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   }
 
   // More checking
+  const bool                         firstFault    = !mesh->hasRealSection("replacedCells");
   const ALE::Obj<real_section_type>& replacedCells = mesh->getRealSection("replacedCells");
   PointSet cellNeighbors;
 
-  replacedCells->setFiberDimension(mesh->heightStratum(0), 1);
-  replacedCells->allocatePoint();
+  if (firstFault) {
+    replacedCells->setFiberDimension(mesh->heightStratum(0), 1);
+    replacedCells->allocatePoint();
+  }
   for(PointSet::const_iterator c_iter = noReplaceCells.begin(); c_iter != noReplaceCells.end(); ++c_iter) {
     const double minusOne = -1.0;
 
-    replacedCells->updatePoint(*c_iter, &minusOne);
+    if (replacedCells->restrictPoint(*c_iter)[0] == 0.0) {
+      replacedCells->updatePoint(*c_iter, &minusOne);
+    } else {
+      const double minusTwo = -2.0;
+
+      replacedCells->updatePoint(*c_iter, &minusTwo);
+    }
   }
   for(PointSet::const_iterator c_iter = replaceCells.begin(); c_iter != replaceCells.end(); ++c_iter) {
     if (replaceCellsBase.find(*c_iter) != replaceCellsBase.end()) {
       const double one = 1.0;
 
-      replacedCells->updatePoint(*c_iter, &one);
+      if (replacedCells->restrictPoint(*c_iter)[0] == 0.0) {
+        replacedCells->updatePoint(*c_iter, &one);
+      } else {
+        const double two = 2.0;
+
+        replacedCells->updatePoint(*c_iter, &two);
+      }
       continue;
     }
     const double ten = 10.0;
 
-    replacedCells->updatePoint(*c_iter, &ten);
+    if (replacedCells->restrictPoint(*c_iter)[0] == 0.0) {
+      replacedCells->updatePoint(*c_iter, &ten);
+    } else {
+        const double twenty = 20.0;
+
+        replacedCells->updatePoint(*c_iter, &twenty);
+    }
     // There should be a way to check for boundary elements
     if (mesh->getDimension() == 1) {
       if (cellNeighbors.size() > 2) {
