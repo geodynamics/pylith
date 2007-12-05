@@ -626,7 +626,8 @@ class FIATLagrange(ReferenceCell):
                       self.basisDeriv[n][m][2] = basis[r][g]*basis[q][f]*basisDeriv[s][h][0]
                       m += 1
                 if not m == self.numCorners: raise RuntimeError('Invalid 3D function tabulation')
-          if not n == self.numQuadPts: raise RuntimeError('Invalid 2D quadrature')
+                n += 1
+          if not n == self.numQuadPts: raise RuntimeError('Invalid 3D quadrature')
         self.vertices = numpy.reshape(self.vertices, (self.numCorners, dim))
         self.quadPts = numpy.reshape(self.quadPts, (self.numQuadPts, dim))
         self.quadWts = numpy.reshape(self.quadWts, (self.numQuadPts))
