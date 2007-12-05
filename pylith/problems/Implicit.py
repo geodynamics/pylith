@@ -69,6 +69,7 @@ class Implicit(Formulation):
     Constructor.
     """
     Formulation.__init__(self, name)
+    self._loggingPrefix = "TSIm "
     self.solnField = {'name': "dispTBctpdt",
                       'label': "displacements"}
     return
@@ -88,6 +89,9 @@ class Implicit(Formulation):
     """
     Formulation.initialize(self, dimension, dt)
 
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+    
     self._info.log("Creating other fields.")
     self._debug.log(resourceUsageString())
     self.fields.addReal("dispIncr")
@@ -108,6 +112,8 @@ class Implicit(Formulation):
       constraint.useSolnIncr(False)
     for integrator in self.integrators:
       integrator.useSolnIncr(False)
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -118,28 +124,19 @@ class Implicit(Formulation):
     return -dt
 
 
-  def stableTimeStep(self):
-    """
-    Get stable time step for advancing forward in time.
-    """
-    self._info.log("WARNING: Implicit::stableTimeStep() not implemented.")
-    from pyre.units.time import second
-    dt = 0.0*second
-    return dt
-  
-
   def prestep(self, t, dt):
     """
     Hook for doing stuff before advancing time step.
     """
+    logEvent = "%sprestep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+    
     # Set dispTBctpdt to the BC t time t+dt. Unconstrained DOF are
     # unaffected and will be equal to their values at time t.
     self._info.log("Setting constraints.")
-    self._debug.log(resourceUsageString())
     dispTBctpdt = self.fields.getReal("dispTBctpdt")
     for constraint in self.constraints:
       constraint.setField(t+dt, dispTBctpdt)
-    self._debug.log(resourceUsageString())
 
     needNewJacobian = False
     for integrator in self.integrators:
@@ -147,6 +144,8 @@ class Implicit(Formulation):
         needNewJacobian = True
     if needNewJacobian:
       self._reformJacobian(t, dt)
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -154,9 +153,10 @@ class Implicit(Formulation):
     """
     Advance to next time step.
     """
+    logEvent = "%sstep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
 
     self._info.log("Integrating residual term in operator.")
-    self._debug.log(resourceUsageString())
     residual = self.fields.getReal("residual")
     dispIncr = self.fields.getReal("dispIncr")
     import pylith.topology.topology as bindings
@@ -165,16 +165,15 @@ class Implicit(Formulation):
     for integrator in self.integrators:
       integrator.timeStep(dt)
       integrator.integrateResidual(residual, t+dt, self.fields)
-    self._debug.log(resourceUsageString())
 
     self._info.log("Completing residual.")
     bindings.completeSection(self.mesh.cppHandle, residual)
-    self._debug.log(resourceUsageString())
 
     import pylith.utils.petsc as petsc
     self._info.log("Solving equations.")
     self.solver.solve(dispIncr, self.jacobian, residual)
-    self._debug.log(resourceUsageString())
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -182,6 +181,9 @@ class Implicit(Formulation):
     """
     Hook for doing stuff after advancing time step.
     """
+    logEvent = "%spoststep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+    
     # After solving, dispTBctpdt contains the displacements at time t
     # for unconstrained DOF and displacements at time t+dt at
     # constrained DOF. We add in the displacement increments (only
@@ -193,10 +195,8 @@ class Implicit(Formulation):
     bindings.addRealSections(disp, disp, dispIncr)
 
     self._info.log("Updating integrators states.")
-    self._debug.log(resourceUsageString())
     for integrator in self.integrators:
       integrator.updateState(t+dt, self.fields)
-    self._debug.log(resourceUsageString())
 
     # If finishing first time step, then switch from solving for total
     # displacements to solving for incremental displacements
@@ -208,8 +208,9 @@ class Implicit(Formulation):
       for integrator in self.integrators:
         integrator.useSolnIncr(True)
       self._reformJacobian(t, dt)
-      self._debug.log(resourceUsageString())
 
+    self._logger.eventEnd(logEvent)
+    
     Formulation.poststep(self, t, dt, totalTime)
     return
 

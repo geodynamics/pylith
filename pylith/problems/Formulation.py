@@ -80,6 +80,10 @@ class Formulation(Component):
     """
     Create integrator for each element family.
     """
+    self._setupLogging()
+    logEvent = "%spreinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+    
     from pylith.feassemble.Integrator import implementsIntegrator
     from pylith.feassemble.Constraint import implementsConstraint
 
@@ -142,6 +146,7 @@ class Formulation(Component):
               "Could not determine whether interface condition '%s' is an " \
               "integrator or a constraint." % ic.name
     self._debug.log(resourceUsageString())
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -149,12 +154,17 @@ class Formulation(Component):
     """
     Verify compatibility of configuration.
     """
+    logEvent = "%sverify" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     for integrator in self.integrators:
       integrator.verifyConfiguration()
     for constraint in self.constraints:
       constraint.verifyConfiguration()
     for output in self.output.bin:
       output.verifyConfiguration()
+
+    self._logger.eventEnd(logEvent)
     return
   
 
@@ -162,6 +172,9 @@ class Formulation(Component):
     """
     Create integrators for each element family.
     """
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     from pylith.topology.FieldsManager import FieldsManager
     self.fields = FieldsManager(self.mesh)
 
@@ -193,6 +206,37 @@ class Formulation(Component):
     for constraint in self.constraints:
       constraint.setConstraints(self.fields.getSolution())
     self._debug.log(resourceUsageString())
+
+    self._logger.eventEnd(logEvent)
+    return
+
+
+  def stableTimeStep(self):
+    """
+    Get stable time step for advancing forward in time.
+    """
+    logEvent = "%stimestep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
+    self._info.log("WARNING: Formulation::stableTimeStep() not implemented.")
+    from pyre.units.time import second
+    dt = 0.0*second
+
+    self._logger.eventEnd(logEvent)
+    return dt
+  
+
+  def prestep(self, t, dt):
+    """
+    Hook for doing stuff before advancing time step.
+    """
+    return
+
+
+  def step(self, t, dt):
+    """
+    Advance to next time step.
+    """
     return
 
 
@@ -200,13 +244,16 @@ class Formulation(Component):
     """
     Hook for doing stuff after advancing time step.
     """
+    logEvent = "%spoststep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     self._info.log("Writing solution field.")
-    self._debug.log(resourceUsageString())
     field = self.fields.getSolution()
     for output in self.output.bin:
       output.writeVertexField(t+dt, self._istep, field, self.solnField['label'])
-    self._debug.log(resourceUsageString())
     self._istep += 1
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -214,6 +261,9 @@ class Formulation(Component):
     """
     Cleanup after time stepping.
     """
+    logEvent = "%sfinalize" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     self._info.log("Formulation finalize.")
     self._debug.log(resourceUsageString())
     for integrator in self.integrators:
@@ -223,6 +273,8 @@ class Formulation(Component):
     for output in self.output.bin:
       output.close()
     self._debug.log(resourceUsageString())
+
+    self._logger.eventEnd(logEvent)
     return
   
 
@@ -256,6 +308,33 @@ class Formulation(Component):
     self._debug.log(resourceUsageString())
     return
 
+
+  def _setupLogging(self):
+    """
+    Setup event logging.
+    """
+    if not "_loggingPrefix" in dir(self):
+      self._loggingPrefix = ""
+
+    from pylith.utils.EventLogger import EventLogger
+    logger = EventLogger()
+    logger.setClassName("PDE Formulation")
+    logger.initialize()
+
+    events = ["preinit",
+              "verify",
+              "init",
+              "timestep",
+              "prestep",
+              "step",
+              "poststep",
+              "finalize"]
+    for event in events:
+      logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+
+    self._logger = logger
+    return
+  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

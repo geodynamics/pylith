@@ -68,10 +68,11 @@ class Integrator(object):
     Verify compatibility of configuration.
     """
     logEvent = "%sverify" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
 
     assert(None != self.cppHandle)
-    self._logger.eventBegin(logEvent)
     self.cppHandle.verifyConfiguration(self.mesh.cppHandle)
+
     self._logger.eventEnd(logEvent)
     return
 
@@ -90,11 +91,12 @@ class Integrator(object):
     Get stable time step for advancing from time t to time t+dt.
     """
     logEvent = "%stimestep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
     
     assert(None != self.cppHandle)
     from pyre.units.time import second
-    self._logger.eventBegin(logEvent)
     dt = self.cppHandle.stableTimeStep*second
+
     self._logger.eventEnd(logEvent)
     return dt
 
@@ -113,9 +115,9 @@ class Integrator(object):
     Integrate contributions to residual term at time t.
     """
     logEvent = "%sresidual" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
     
     assert(None != self.cppHandle)
-    self._logger.eventBegin(logEvent)
     self.cppHandle.integrateResidual(residual, t.value, fields.cppHandle,
                                      self.mesh.cppHandle)
     self._logger.eventEnd(logEvent)
@@ -128,9 +130,9 @@ class Integrator(object):
     false otherwise.
     """
     logEvent = "%snewJacobian" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
     
     assert(None != self.cppHandle)
-    self._logger.eventBegin(logEvent)
     flag = self.cppHandle.needNewJacobian
     self._logger.eventEnd(logEvent)
     return flag
@@ -141,9 +143,9 @@ class Integrator(object):
     Integrate contributions to Jacobian term at time t.
     """
     logEvent = "%sjacobian" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
     
     assert(None != self.cppHandle)
-    self._logger.eventBegin(logEvent)
     self.cppHandle.integrateJacobian(jacobian, t.value, fields.cppHandle,
                                      self.mesh.cppHandle)
     self._logger.eventEnd(logEvent)
@@ -155,10 +157,11 @@ class Integrator(object):
     Update state variables as needed.
     """
     logEvent = "%sstate" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
     
     assert(None != self.cppHandle)
-    self._logger.eventBegin(logEvent)
     self.cppHandle.updateState(t.value, fields.cppHandle, self.mesh.cppHandle)
+
     self._logger.eventEnd(logEvent)
     return
     
@@ -176,7 +179,7 @@ class Integrator(object):
     """
     Setup event logging.
     """
-    if None == self._loggingPrefix:
+    if not "_loggingPrefix" in dir(self):
       self._loggingPrefix = ""
 
     from pylith.utils.EventLogger import EventLogger
