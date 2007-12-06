@@ -41,6 +41,7 @@ class TestMeshIOLagrit(unittest.TestCase):
     Test filename().
     """
     iohandler = MeshIOLagrit()
+    iohandler._configure()
     valueGmv = "hi.txt"
     valuePset = "hi2.txt"
     iohandler.filenameGmv = valueGmv
@@ -59,6 +60,7 @@ class TestMeshIOLagrit(unittest.TestCase):
     # For now, we only test reading the file. We would like to write
     # the file and compare against the original.
     iohandler = MeshIOLagrit()
+    iohandler._configure()
 
     filenameGmvIn = "data/cube2_ascii.gmv"
     filenamePsetIn = "data/cube2_ascii.pset"
