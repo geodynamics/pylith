@@ -126,8 +126,8 @@ class Transform(Application):
 
 
   def main(self):
-    import pdb
-    pdb.set_trace()
+    # import pdb
+    # pdb.set_trace()
     self._readPoints()
     self._readSegs()
     f = open(self.pointsSpatialDB, 'w')
