@@ -321,8 +321,11 @@ class Transform(Application):
     mag = math.sqrt(numpy.dot(horPerp,horPerp))
     horPerp /= mag
     dipCos = math.sin(math.radians(dip))
-    r = math.sqrt(1.0/(1.0-dipCos*dipCos))
-    udVec = numpy.array([horPerp[0]/r, horPerp[1]/r, dipCos], dtype=float)
+    if math.abs(dipCos) != 1.0:
+      r = math.sqrt(1.0/(1.0-dipCos*dipCos))
+      udVec = numpy.array([horPerp[0]/r, horPerp[1]/r, dipCos], dtype=float)
+    else:
+      udVec = numpy.array([0.0, 0.0, dipCos], dtype=float)
     normVec = numpy.cross(asVec, udVec)
     slipVec = numpy.array([ss, ds,ts], dtype=float)
     rot1 = numpy.vstack((asVec, udVec, normVec))
