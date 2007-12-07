@@ -321,7 +321,7 @@ class Transform(Application):
     mag = math.sqrt(numpy.dot(horPerp,horPerp))
     horPerp /= mag
     dipCos = math.sin(math.radians(dip))
-    if math.abs(dipCos) != 1.0:
+    if math.fabs(dipCos) != 1.0:
       r = math.sqrt(1.0/(1.0-dipCos*dipCos))
       udVec = numpy.array([horPerp[0]/r, horPerp[1]/r, dipCos], dtype=float)
     else:
