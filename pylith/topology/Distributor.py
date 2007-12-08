@@ -74,6 +74,10 @@ class Distributor(Component):
     """
     Distribute a Mesh
     """
+    self._setupLogging()
+    logEvent = "%sdistribute" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     self._createCppHandle()
     
     from Mesh import Mesh
@@ -86,6 +90,8 @@ class Distributor(Component):
       self.writer.open(newMesh)
       self.cppHandle.write(newMesh.cppHandle, self.writer.cppHandle)
       self.writer.close()
+
+    self._logger.eventEnd(logEvent)
     return newMesh
 
 
@@ -109,6 +115,23 @@ class Distributor(Component):
     if None == self.cppHandle:
       import pylith.topology.topology as bindings
       self.cppHandle = bindings.Distributor()
+    return
+  
+
+  def _setupLogging(self):
+    """
+    Setup event logging.
+    """
+    self._loggingPrefix = "Dist "
+    from pylith.utils.EventLogger import EventLogger
+    logger = EventLogger()
+    logger.setClassName("FE Distribution")
+    logger.initialize()
+    events = ["distribute"]
+    for event in events:
+      logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+
+    self._logger = logger
     return
   
 
