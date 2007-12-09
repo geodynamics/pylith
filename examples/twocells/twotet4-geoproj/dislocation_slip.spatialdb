@@ -16,9 +16,9 @@ SimpleDB {
   // The values are specified at one spatial location.
   num-locs = 1
 
-  // The dimension of the spatial distribution is 0, since the same data
-  // is specified for all points in the set.
-  data-dim = 0
+  // The dimension of the spatial distribution is 2, since the same data
+  // is specified on a plane.
+  data-dim = 2
 
   // The spatial dimension of the database is 3.
   space-dim = 3
@@ -39,7 +39,9 @@ SimpleDB {
 
 // This is where the data is specified.
 // As described in dislocation.cfg, this database will be used to specify
-// uniform data for a fault (pylith.faults.SingleFault).
+// varying data for a fault (pylith.faults.SingleFault).
 // The entries are:
 // X-Coord, Y-Coord, Z-Coord, left-lateral slip, reverse-slip, fault-opening slip
-500000.0  3.7e6  0.0   0.01  0.0  0.0
+500000.0  3699900.0  -100.0   0.01  0.0  0.0
+500000.0  3700000.0  0.0   0.02  0.0  0.0
+500000.0  3700100.0  -100.0   0.03  0.0  0.0
