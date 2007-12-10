@@ -50,7 +50,7 @@ class SolutionIOVTK(SolutionIO):
     filename.meta['tip'] = "Name of VTK file."
 
     timeFormat = pyre.inventory.str("time_format", default="%f")
-    timeFormat.meta = "C style format string for time stamp in filename."
+    timeFormat.meta['tip'] = "C style format string for time stamp in filename."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
