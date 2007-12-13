@@ -1,0 +1,39 @@
+X (OSX install disc 1, additional options)
+Xcode (OSX install disc 1)
+
+Fink
+
+Fink COmmander
+
+  svn-client
+
+  autoconf2.5
+  automake1.9
+  libtool14
+  netcdf
+
+mercurial
+
+MPICH2
+
+ParMetis
+
+cppunit
+
+FIAT
+
+PETSc
+
+Pyrex??
+
+pyrexembed
+
+pythia
+
+nemesis
+
+spatialdata
+
+pylith
+
+pytables

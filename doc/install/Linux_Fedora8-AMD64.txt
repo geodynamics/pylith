@@ -1,0 +1,45 @@
+Packages
+
+  cppunit
+  cppunit-devel
+  proj
+  proj-devel
+  proj-nad
+  numpy
+  Pyrex
+  netcdf
+  netcdf-devel
+  
+ACML
+
+MPICH2
+
+ParMetis
+
+PETSc
+
+pythia
+
+nemesis
+
+pyrexembed
+
+spatialdata
+
+pylith
+
+
+
+Mayavi2
+
+  Packages
+    scipy
+    python-matplotlib
+    python-imaging
+    python-setuptools
+    python-setuptools-python
+    vtk-python
+
+  Eggs (source)
+
+    

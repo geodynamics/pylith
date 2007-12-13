@@ -1,0 +1,44 @@
+Additional packages (frontend):
+  ??
+
+Rolls: PVFS2
+
+Adjustments to environment
+
+  Use python (version 2.4) in /opt/rocks, not python (version 2.3) in
+  /usr/bin.
+
+PVFS2 (temporary)
+
+mercurial
+
+MPICH2
+
+ParMetis
+
+cppunit
+
+PETSc
+
+numpy (not rocks)
+
+FIAT
+
+PROJ
+
+  (replicate data on nodes)
+
+pythia
+
+nemesis
+
+Pyrex (not package)
+
+pyrexembed
+
+netcdf
+
+spatialdata
+  (replicate data on nodes)
+
+pylith
