@@ -449,10 +449,6 @@ cdef class AbsorbingDampers(BoundaryCondition):
     return
 
 
-    BoundaryCondition.__init__(self)
-    self.thisptr = AbsorbingDampers_constructor()
-    self.handle = self._createHandle()
-
   def integrateResidual(self, residual, t, fields, mesh):
     """
     Integrate contributions to residual term (r) for operator.
