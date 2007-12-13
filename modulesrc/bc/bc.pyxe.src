@@ -450,7 +450,7 @@ cdef class AbsorbingDampers(BoundaryCondition):
 
 
     BoundaryCondition.__init__(self)
-    self.thisptr = Dirichlet_constructor()
+    self.thisptr = AbsorbingDampers_constructor()
     self.handle = self._createHandle()
 
   def integrateResidual(self, residual, t, fields, mesh):
