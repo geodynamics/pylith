@@ -115,8 +115,13 @@ pylith::meshio::SolutionIOVTK::writeVertexField(
 
     std::ostringstream buffer;
     const int indexExt = _filename.find(".vtk");
-    char timestamp[256];
-    sprintf(timestamp, _timeFormat.c_str(), t);
+    char sbuffer[256];
+    sprintf(sbuffer, _timeFormat.c_str(), t);
+    std::string timestamp(sbuffer);
+    
+    const int pos = timestamp.find(".");
+    if (pos != timestamp.length())
+      timestamp.erase(pos, 1);
     buffer
       << std::string(_filename, 0, indexExt) << "_t" << timestamp << ".vtk";
 
