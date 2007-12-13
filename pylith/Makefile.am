@@ -22,6 +22,7 @@ nobase_pkgpyexec_PYTHON = \
 	bc/BCTwoSides.py \
 	bc/BCFourSides.py \
 	bc/BCSixSides.py \
+	bc/Neumann.py \
 	faults/__init__.py \
 	faults/BruneSlipFn.py \
 	faults/EqKinSrc.py \
