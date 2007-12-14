@@ -14,6 +14,7 @@ subpackage = meshio
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
+	DataWriter.hh \
 	MeshIO.hh \
 	MeshIO.icc \
 	MeshIOAscii.hh \

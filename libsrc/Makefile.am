@@ -69,6 +69,7 @@ libpylith_la_SOURCES = \
 	materials/ElasticPlaneStress.cc \
 	materials/MaxwellIsotropic3D.cc \
 	meshio/BinaryIO.cc \
+	meshio/DataWriter.cc \
 	meshio/GMVFile.cc \
 	meshio/GMVFileAscii.cc \
 	meshio/GMVFileBinary.cc \
