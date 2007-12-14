@@ -6,27 +6,22 @@ Release 1.1
 
   1. Finish Neumann BC [CHARLES]
 
-  2. EventLogging [BRAD]
-     Check constraints/integrators.
-     Fault::adjustTopology()
-     High level events
-       MeshGenerator
-       Problem
-
-  3. Reimplement SolutionIO [BRAD & MATT]
-     a. Reimplement SolutionIOVTK
-     b. Implement SolutionIOHDF5
-
-     General Ideas
-
-       Need to be able to append fields.
-
-       It should be possible to use PETSc viewers, but we will want to
-       setup the viewers in implementation classes and then call the
-       view in the parent class?
-
-       Want open(), writeTopology(), appendVertexField(),
-       appendCellField(), close() paradigm.
+  2. Reimplement SolutionIO [BRAD & MATT]
+     a. C++ OutputManager
+     b. VertexFilter, CellFilter
+     b. Bindings for OutputManager, DataWriter, DataWriterVTK
+     c. SolutionOutput, SolutionSubsetOutput, DirichletOutput
+     d. DataWriter/DataWriterVTK
+       (1) Replace use of PetscViewer with extraction to arrays so that 
+           DataWriters can be generalized.
+     e. FaultOutput
+        Need fault mesh associated with fields over fault [MATT?]
+     f. CellFilterAvg
+        Average data over quadrature points
+     g. VertexFilterCells
+        Zero out data for vertices not in normal cells
+     g. NeumannOutput
+     h. DataWriterHDF5
 
      Use Cases
 
@@ -88,14 +83,18 @@ Release 1.1
 
          Solution field (time history)
 
-  4. Optimization of restrict()/update() [BRAD]
-     a. Fault
-     b. Absorbing BC
-     c. Neumann BC
+  3. Optimization [BRAD]
+     a. ElasticMaterial [try single section for all parameters]
+     b. Fault?
+     c. Absorbing BC?
+     d. Neumann BC?
 
-  5. Velocity Dirichlet BC [BRAD]
+  4. Velocity Dirichlet BC [BRAD]
 
-  6. Generalized Maxwell viscoelastic model [CHARLES]
+      Should we replace Dirichlet BC with BC that has u(t) = u0 + u1*t?
+      Default u0 and u1 would be 0.
+
+  5. Generalized Maxwell viscoelastic model [CHARLES]
 
 General
 
@@ -110,6 +109,8 @@ General
 
     Add check for overlapping of material ids for bulk and cohesive
     cells.
+
+  5. Install cases
 
 Release 1.2
 
@@ -260,7 +261,7 @@ THINGS WE NEED SIEVE TO DO (Matt)
   add the appropriate setFiberDimension() call. FIAT has this information,
   we just are not using it right now.
 
-3. Global refinement of mesh.
+3. Uniform refinement of mesh.
 
   Inputs:
     * PETSc Mesh (original)
@@ -286,15 +287,13 @@ THINGS WE NEED SIEVE TO DO (Matt)
 
   Not used a. Remove extra time in uninterpolated restrict(). May need special method for P1.
 
-  Done c. getStateVars() is way to expensive. It looks like _getParameters() allocates an int_array. Try just using _numParamValues.
+  Done c. getStateVars() is way too expensive. It looks like _getParameters() allocates an int_array. Try just using _numParamValues.
 
   Not used d. Same as a) for update
 
 8. Memory fixes
 
   Done a. Share memory in precomputation sections
-
-10. Move events to Python (make wrappers for events)
 
 11. For Schur complement directly for mass matrix and Lagrange multiplier problem
 

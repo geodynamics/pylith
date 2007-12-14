@@ -70,12 +70,14 @@ libpylith_la_SOURCES = \
 	materials/MaxwellIsotropic3D.cc \
 	meshio/BinaryIO.cc \
 	meshio/DataWriter.cc \
+	meshio/DataWriterVTK.cc \
 	meshio/GMVFile.cc \
 	meshio/GMVFileAscii.cc \
 	meshio/GMVFileBinary.cc \
 	meshio/MeshIO.cc \
 	meshio/MeshIOAscii.cc \
 	meshio/MeshIOLagrit.cc \
+	meshio/OutputManager.cc \
 	meshio/PsetFile.cc \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \
