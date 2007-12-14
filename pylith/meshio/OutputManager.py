@@ -64,12 +64,12 @@ class OutputManager(Component):
     writer.meta['tip'] = "Writer for data."
 
     vertexFilter = pyre.inventory.facility("vertex_filter",
-                                           factory=DataVertexFilter,
+                                           factory=VertexFilter,
                                            family="output_vertex_filter")
     vertexFilter.meta['tip'] = "Filter for vertex data."
                                      
     cellFilter = pyre.inventory.facility("cell_filter",
-                                           factory=DataCellFilter,
+                                           factory=CellFilter,
                                            family="output_cell_filter")
     cellFilter.meta['tip'] = "Filter for cell data."
                                      
@@ -95,7 +95,18 @@ class OutputManager(Component):
     return
 
 
+  def initialize(self, quadrature):
+    """
+    Initialize output manager.
+    """
+    self.cellFilter.initialize(quadrature)
+    return
+
+
   def open(self, mesh):
+    """
+    Prepare for writing data.
+    """
     self._setupLogging()
     logEvent = "%sopen" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
@@ -113,6 +124,9 @@ class OutputManager(Component):
 
 
   def close(self):
+    """
+    Perform post-write cleanup.
+    """
     logEvent = "%sclose" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
@@ -124,6 +138,11 @@ class OutputManager(Component):
 
 
   def writeFields(self, t, istep, fields=None):
+    """
+    Write vertex and cell fields.
+
+    @param fields FieldsManager containing fields (if not in mesh).
+    """
     logEvent = "%swriteVertex" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
@@ -174,8 +193,8 @@ class OutputManager(Component):
       self.cppHandle = bindings.OutputManager()
     self.cppHandle.vertexFields = self.vertexFields
     self.cppHandle.cellFields = self.cellFields
-    self.cppHandle.vertexFilter = self.vertexFilter
-    self.cppHandle.cellFilter = self.cellFilter
+    self.cppHandle.vertexFilter = self.vertexFilter.cppHandle
+    self.cppHandle.cellFilter = self.cellFilter.cppHandle
     return
 
 
