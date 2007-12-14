@@ -15,14 +15,12 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	DataWriter.hh \
-	DataWriterVTK.hh \
 	MeshIO.hh \
 	MeshIO.icc \
 	MeshIOAscii.hh \
 	MeshIOAscii.icc \
 	MeshIOLagrit.hh \
 	MeshIOLagrit.icc \
-	OutputManager.hh \
 	SolutionIO.hh \
 	SolutionIOVTK.hh \
 	SolutionIOVTK.icc
