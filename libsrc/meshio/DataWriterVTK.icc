@@ -1,0 +1,34 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_meshio_datawritervtk_hh)
+#error "DataWriterVTK.icc must be included only from DataWriterVTK.hh"
+#else
+
+// Set filename for VTK file.
+inline
+void
+pylith::meshio::DataWriterVTK::filename(const char* filename) {
+  _filename = filename;
+}
+
+// Set time format for time stamp in name of VTK file.
+inline
+void
+pylith::meshio::DataWriterVTK::timeFormat(const char* format) {
+  _timeFormat = format;
+}
+
+
+#endif
+
+// End of file
