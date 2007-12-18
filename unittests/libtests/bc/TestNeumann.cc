@@ -142,10 +142,12 @@ pylith::bc::TestNeumann::testInitialize(void)
 			    &tractionsCell[0], tractionsCell.size());
 
     // std::cout << "Tractions at quadrature points: " << std::endl;
+    // std::cout << "Computed    Expected" << std::endl;
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       for (int iDim =0; iDim < spaceDim; ++iDim) {
-        // std::cout << "  " << tractionsCell[iQuad*spaceDim+iDim];
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->tractionsCell[index],
+	const double tractionsCellData = _data->tractionsCell[index];
+        // std::cout << "  " << tractionsCell[iQuad*spaceDim+iDim] << "   " << tractionsCellData << std::endl;
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(tractionsCellData,
 				     tractionsCell[iQuad*spaceDim+iDim],
 				     tolerance);
 	++index;
