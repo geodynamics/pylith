@@ -57,4 +57,12 @@ mesh = {
       0  1  4  5
     }
   }
+  group = {
+    name = bc3
+    type = vertices
+    count = 3
+    indices = {
+      0  2  4
+    }
+  }
 }

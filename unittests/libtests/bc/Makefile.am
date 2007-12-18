@@ -40,6 +40,7 @@ testbc_SOURCES = \
 	TestNeumann.cc \
 	TestNeumannLine2.cc \
 	TestNeumannTri3.cc \
+	TestNeumannQuad4.cc \
 	TestNeumannTet4.cc \
 	TestNeumannHex8.cc \
 	test_bc.cc
@@ -64,6 +65,7 @@ noinst_HEADERS = \
 	TestNeumann.hh \
 	TestNeumannLine2.hh \
 	TestNeumannTri3.hh \
+	TestNeumannQuad4.hh \
 	TestNeumannTet4.hh \
 	TestNeumannHex8.hh
 
@@ -87,6 +89,7 @@ testbc_SOURCES += \
 	data/NeumannData.cc \
 	data/NeumannDataLine2.cc \
 	data/NeumannDataTri3.cc \
+	data/NeumannDataQuad4.cc \
 	data/NeumannDataTet4.cc \
 	data/NeumannDataHex8.cc
 
@@ -109,6 +112,7 @@ noinst_HEADERS += \
 	data/NeumannData.hh \
 	data/NeumannDataLine2.hh \
 	data/NeumannDataTri3.hh \
+	data/NeumannDataQuad4.hh \
 	data/NeumannDataTet4.hh \
 	data/NeumannDataHex8.hh
 

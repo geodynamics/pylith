@@ -22,6 +22,7 @@ noinst_DATA = \
 	elasticplanestrain.spatialdb \
 	quad4.mesh \
 	quad4.spatialdb \
+	quad4-tractions.spatialdb \
 	tet4.mesh \
 	tet4.spatialdb \
 	tet4-tractions.spatialdb \
