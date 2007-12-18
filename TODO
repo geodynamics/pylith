@@ -151,15 +151,18 @@ KNOWN DEFICIENCIES
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-0. Create 6x6x4 meshes for examples.
-  CUBIT
-    Add GUI instructions in journal files.
+0. CUBIT
+    Add GUI instructions in journal files for examples/3d/hex8.
 
 1. Create meshes for benchmarks
 
   reverse
     tet (LaGriT)
     hex (CUBIT)
+
+2. Add support for multiple kinematic sources. Reference time for each
+event. Add slips together to get current slip. Would allow
+Savage-Prescott benchmark.
 
 2. Additional unit tests
 
