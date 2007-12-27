@@ -320,11 +320,11 @@ pylith::bc::Neumann::integrateResidual(
 // Integrate contributions to Jacobian matrix (A) associated with
 void
 pylith::bc::Neumann::integrateJacobian(PetscMat* mat,
-				       const double t,
-				       topology::FieldsManager* const fields,
-				       const ALE::Obj<Mesh>& mesh)
+ 				       const double t,
+ 				       topology::FieldsManager* const fields,
+ 				       const ALE::Obj<Mesh>& mesh)
 { // integrateJacobian
-  throw std::logic_error("Not implemented.");
+//  throw std::logic_error("Not implemented.");
 } // integrateJacobian
 
 // ----------------------------------------------------------------------
