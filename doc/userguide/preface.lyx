@@ -1,5 +1,5 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
-\lyxformat 245
+#LyX 1.5.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
 \begin_document
 \begin_header
 \textclass book
@@ -8,13 +8,21 @@
 \end_preamble
 \language english
 \inputencoding latin1
-\fontscheme default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
 \graphics default
 \paperfontsize default
 \spacing single
 \papersize default
 \use_geometry true
 \use_amsmath 1
+\use_esint 0
 \cite_engine basic
 \use_bibtopic false
 \paperorientation portrait
@@ -32,6 +40,7 @@
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
+\author "" 
 \end_header
 
 \begin_body
@@ -72,7 +81,9 @@ Citation
 
 \begin_layout Standard
 The 
-\begin_inset LatexCommand \htmlurl[Computational Infrastructure for Geodynamics (CIG)]{geodynamics.org}
+\begin_inset LatexCommand htmlurl
+name "Computational Infrastructure for Geodynamics (CIG)"
+target "geodynamics.org"
 
 \end_inset
 
@@ -121,28 +132,45 @@ Support
 
 \begin_layout Standard
 Current PyLith development is supported by the 
-\begin_inset LatexCommand \htmlurl[Southern California Earthquake Center]{www.scec.org}
+\begin_inset LatexCommand htmlurl
+name "Southern California Earthquake Center"
+target "www.scec.org"
 
 \end_inset
 
 , the 
-\begin_inset LatexCommand \htmlurl[National Science Foundation]{www.nsf.gov}
+\begin_inset LatexCommand htmlurl
+name "National Science Foundation"
+target "www.nsf.gov"
 
 \end_inset
 
 , the CIG, and internal 
-\begin_inset LatexCommand \htmlurl[U.S. Geological Survey]{www.usgs.gov}
+\begin_inset LatexCommand htmlurl
+name "U.S. Geological Survey"
+target "www.usgs.gov"
 
 \end_inset
 
  funding.
  Pyre development is funded by the 
-\begin_inset LatexCommand \htmlurl[Department of Energy's]{www.doe.gov/engine/content.do}
+\begin_inset LatexCommand htmlurl
+name "Department of Energy's"
+target "www.doe.gov/engine/content.do"
 
 \end_inset
 
  Advanced Simulation and Computing program and the National Science Foundation's
  Information Technology Research (ITR) program.
+\end_layout
+
+\begin_layout Standard
+This material is based upon work supported by the National Science Foundation
+ under Grant No.
+ 0313238.
+ Any opinions, findings, and conclusions or recommendations expressed in
+ this material are those of the author(s) and do not necessarily reflect
+ the views of the National Science Foundation.
 \end_layout
 
 \begin_layout Section
@@ -152,7 +180,9 @@ Request for Comments
 \begin_layout Standard
 Your suggestions and corrections can only improve this documentation.
  Please report any errors, inaccuracies, or typos to 
-\begin_inset LatexCommand \url[Sue Kientz]{sue@geodynamics.org}
+\begin_inset LatexCommand url
+name "Sue Kientz"
+target "sue@geodynamics.org"
 
 \end_inset
 
