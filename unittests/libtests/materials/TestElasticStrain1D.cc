@@ -100,12 +100,11 @@ pylith::materials::TestElasticStrain1D::testUpdateState(void)
 
   const int numParams = data.numParameters;
 
-  std::vector<double_array> parameters(numParams);
+  double_array parameters(numParams);
   const int paramsSize = 1;
   for (int i=0; i < numParams; ++i) {
-    parameters[i].resize(numParams);
     for (int j=0; j < paramsSize; ++j)
-      parameters[i][j] = i+j;
+      parameters[i*paramsSize+j] = i+j;
   } // for
     
   const int tensorSize = 9;
@@ -113,12 +112,13 @@ pylith::materials::TestElasticStrain1D::testUpdateState(void)
   for (int i=0; i < tensorSize; ++i)
     totalStrain[i] = i;
   
-  material._updateState(&parameters, totalStrain);
+  material._updateState(&parameters[0], numParams, &totalStrain[0], tensorSize);
 
   const double tolerance = 1.0e-06;
   for (int i=0; i < numParams; ++i)
     for (int j=0; j < paramsSize; ++j)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i+j), parameters[i][j], tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i+j), parameters[i*paramsSize+j],
+				   tolerance);
     
   for (int i=0; i < tensorSize; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i), totalStrain[i], tolerance);

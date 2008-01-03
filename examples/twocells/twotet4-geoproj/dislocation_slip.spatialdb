@@ -14,11 +14,11 @@ SimpleDB {
   value-units =  m  m  m
 
   // The values are specified at one spatial location.
-  num-locs = 1
+  num-locs = 3
 
   // The dimension of the spatial distribution is 2, since the same data
   // is specified on a plane.
-  data-dim = 2
+  data-dim = 1
 
   // The spatial dimension of the database is 3.
   space-dim = 3

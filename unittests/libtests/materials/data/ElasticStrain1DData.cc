@@ -21,6 +21,8 @@ const int pylith::materials::ElasticStrain1DData::_numDBValues = 2;
 
 const int pylith::materials::ElasticStrain1DData::_numParameters = 2;
 
+const int pylith::materials::ElasticStrain1DData::_numParamsQuadPt = 2;
+
 const int pylith::materials::ElasticStrain1DData::_numLocs = 2;
 
 const int pylith::materials::ElasticStrain1DData::_numParamValues[] = {
@@ -31,11 +33,6 @@ const int pylith::materials::ElasticStrain1DData::_numParamValues[] = {
 const char* pylith::materials::ElasticStrain1DData::_dbValues[] = {
 "density",
 "vp",
-};
-
-const char* pylith::materials::ElasticStrain1DData::_parameterNames[] = {
-"density",
-"lambda2mu",
 };
 
 const double pylith::materials::ElasticStrain1DData::_dbData[] = {
@@ -77,10 +74,10 @@ pylith::materials::ElasticStrain1DData::ElasticStrain1DData(void)
   dimension = _dimension;
   numDBValues = _numDBValues;
   numParameters = _numParameters;
+  numParamsQuadPt = _numParamsQuadPt;
   numLocs = _numLocs;
   numParamValues = const_cast<int*>(_numParamValues);
   dbValues = const_cast<char**>(_dbValues);
-  parameterNames = const_cast<char**>(_parameterNames);
   dbData = const_cast<double*>(_dbData);
   parameterData = const_cast<double*>(_parameterData);
   density = const_cast<double*>(_density);

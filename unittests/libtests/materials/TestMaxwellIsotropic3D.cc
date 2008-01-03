@@ -19,7 +19,6 @@
 
 #include "pylith/materials/MaxwellIsotropic3D.hh" // USES MaxwellIsotropic3D
 
-#include <stdexcept> // TEMPORARY
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestMaxwellIsotropic3D );
 
@@ -150,46 +149,45 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdateStateElastic(void)
   MaxwellIsotropic3D material;
   MaxwellIsotropic3DElasticData data;
 
-  const int numParams = data.numParameters;
-    
+  const int_array& numParamValues = material._getNumParamValues();
+  const int numParams = numParamValues.size();
+  const int numParamsQuadPt = material._numParamsQuadPt;;
+
   const int tensorSize = 6;
   double_array totalStrain(tensorSize);
   for (int i=0; i < tensorSize; ++i)
     totalStrain[i] = i;
 
-  const double meanStrain = (totalStrain[0] + totalStrain[1] + totalStrain[2])/3.0;
+  const double meanStrain = 
+    (totalStrain[0] + totalStrain[1] + totalStrain[2]) / 3.0;
 
-  std::vector<double_array> parameters(numParams);
-  std::vector<double_array> paramdata(numParams);
-  const int paramsSize [] = { 1, 1, 1, 1, 6, 6};
-  for (int i=0; i < numParams; ++i) {
-    parameters[i].resize(paramsSize[i]);
-    paramdata[i].resize(paramsSize[i]);
-    for (int j=0; j < paramsSize[i]; ++j)
-      parameters[i][j] = i+j;
-  } // for
+  double_array parameters(numParamsQuadPt);
+  double_array parametersE(numParamsQuadPt);
+  for (int i=0, index=0; i < numParams; ++i)
+    for (int j=0; j < numParamValues[i]; ++j, ++index) {
+      parametersE[index] = i+j;
+      parameters[index] = i+j;
+    } // for
 
   // Set up vector parameters, which are the only ones updated.
-  for (int i=0; i< 3; ++i) {
-    paramdata[4][i] = totalStrain[i];
-    paramdata[5][i] = totalStrain[i] - meanStrain;
+  const int pidStrainT = 4;
+  const int pidVisStrain = pidStrainT + 6;
+  for (int i=0; i < 3; ++i) {
+    parametersE[pidStrainT+i] = totalStrain[i];
+    parametersE[pidVisStrain+i] = totalStrain[i] - meanStrain;
   } // for
   
-  for (int i=3; i< 6; ++i) {
-    paramdata[4][i] = totalStrain[i];
-    paramdata[5][i] = totalStrain[i];
+  for (int i=3; i < 6; ++i) {
+    parametersE[pidStrainT+i] = totalStrain[i];
+    parametersE[pidVisStrain+i] = totalStrain[i];
   } // for
   
-  material._updateState(&parameters, totalStrain);
+  material._updateState(&parameters[0], numParamsQuadPt, 
+			&totalStrain[0], tensorSize);
 
   const double tolerance = 1.0e-06;
-  // Only test vector parameters
-  for (int i=4; i < numParams; ++i)
-    for (int j=0; j < paramsSize[i]; ++j)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(paramdata[i][j], parameters[i][j], tolerance);
-    
-  for (int i=0; i < tensorSize; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i), totalStrain[i], tolerance);
+  for (int i=0; i < numParamsQuadPt; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(parametersE[i], parameters[i], tolerance);
 } // testUpdateStateElastic
 
 // ----------------------------------------------------------------------
@@ -200,7 +198,7 @@ pylith::materials::TestMaxwellIsotropic3D::testCalcStressTimeDep(void)
   MaxwellIsotropic3D material;
   MaxwellIsotropic3DTimeDepData data;
   material.useElasticBehavior(false);
-  double dt = 2.0e5;
+  double dt = 2.0e+5;
   material.timeStep(dt);
   _testCalcStress(&material, data);
 } // testCalcStressTimeDep
@@ -213,7 +211,7 @@ pylith::materials::TestMaxwellIsotropic3D::testCalcElasticConstsTimeDep(void)
   MaxwellIsotropic3D material;
   MaxwellIsotropic3DTimeDepData data;
   material.useElasticBehavior(false);
-  double dt = 2.0e5;
+  double dt = 2.0e+5;
   material.timeStep(dt);
   _testCalcElasticConsts(&material, data);
 } // testElasticConstsTimeDep
@@ -226,14 +224,16 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdateStateTimeDep(void)
   MaxwellIsotropic3D material;
   MaxwellIsotropic3DTimeDepData data;
 
-  const int numParams = data.numParameters;
+  const int_array& numParamValues = material._getNumParamValues();
+  const int numParams = numParamValues.size();
+  const int numParamsQuadPt = material._numParamsQuadPt;;
 
   material.useElasticBehavior(false);
-  const double dt = 2.0e5;
+  const double dt = 2.0e+5;
   material.timeStep(dt);
-  const double viscosity = 1.0e18;
-  const double mu = 3.0e10;
-  const double maxwelltime = viscosity/mu;
+  const double viscosity = 1.0e+18;
+  const double mu = 3.0e+10;
+  const double maxwelltime = viscosity / mu;
     
   const int tensorSize = 6;
   double_array totalStrainTpdt(tensorSize);
@@ -241,27 +241,31 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdateStateTimeDep(void)
   double_array visStrainT(tensorSize);
   for (int i=0; i < tensorSize; ++i) {
     totalStrainTpdt[i] = i;
-    totalStrainT[i] = totalStrainTpdt[i]/2.0;
-    visStrainT[i] = totalStrainTpdt[i]/4.0;
+    totalStrainT[i] = totalStrainTpdt[i] / 2.0;
+    visStrainT[i] = totalStrainTpdt[i] / 4.0;
   } // for
 
-  const double meanStrainTpdt = (totalStrainTpdt[0] + totalStrainTpdt[1] + totalStrainTpdt[2])/3.0;
-  const double meanStrainT = (totalStrainT[0] + totalStrainT[1] + totalStrainT[2])/3.0;
+  const double meanStrainTpdt = 
+    (totalStrainTpdt[0] + totalStrainTpdt[1] + totalStrainTpdt[2]) / 3.0;
+  const double meanStrainT = 
+    (totalStrainT[0] + totalStrainT[1] + totalStrainT[2]) / 3.0;
 
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 
-  std::vector<double_array> parameters(numParams);
-  std::vector<double_array> paramdata(numParams);
-  const int paramsSize []= { 1, 1, 1, 1, 6, 6};
-  for (int i=0; i < numParams; ++i) {
-    parameters[i].resize(paramsSize[i]);
-    paramdata[i].resize(paramsSize[i]);
-    for (int j=0; j < paramsSize[i]; ++j)
-      parameters[i][j] = i+j;
-  } // for
+  double_array parameters(numParamsQuadPt);
+  double_array parametersE(numParamsQuadPt);
+  for (int i=0, index=0; i < numParams; ++i)
+    for (int j=0; j < numParamValues[i]; ++j, ++index) {
+      parametersE[index] = i+j;
+      parameters[index] = i+j;
+    } // for
 
-  parameters[3][0] = maxwelltime;
-  paramdata[3][0] = maxwelltime;
+  const int pidMaxwellTime = 3;
+  const int pidStrainT = pidMaxwellTime + 1;
+  const int pidVisStrain = pidStrainT + 6;
+
+  parameters[pidMaxwellTime] = maxwelltime;
+  parametersE[pidMaxwellTime] = maxwelltime;
 
   const double dq = maxwelltime*(1.0-exp(-dt/maxwelltime))/dt;
   const double expFac = exp(-dt/maxwelltime);
@@ -271,22 +275,19 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdateStateTimeDep(void)
   for (int i=0; i < tensorSize; ++i) {
     devStrainTpdt = totalStrainTpdt[i] - diag[i]*meanStrainTpdt;
     devStrainT = totalStrainT[i] - diag[i]*meanStrainT;
-    parameters[4][i] = totalStrainT[i];
-    parameters[5][i] = visStrainT[i];
-    paramdata[4][i] = totalStrainTpdt[i];
-    paramdata[5][i] = expFac * visStrainT[i] + dq * (devStrainTpdt - devStrainT);
+    parameters[pidStrainT+i] = totalStrainT[i];
+    parameters[pidVisStrain+i] = visStrainT[i];
+    parametersE[pidStrainT+i] = totalStrainTpdt[i];
+    parametersE[pidVisStrain+i] = 
+      expFac * visStrainT[i] + dq * (devStrainTpdt - devStrainT);
   } //for
   
-  material._updateState(&parameters, totalStrainTpdt);
+  material._updateState(&parameters[0], numParamsQuadPt, 
+			&totalStrainTpdt[0], tensorSize);
 
   const double tolerance = 1.0e-06;
-  // Test vector parameters and Maxwell time.
-  for (int i=3; i < numParams; ++i)
-    for (int j=0; j < paramsSize[i]; ++j)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(paramdata[i][j], parameters[i][j], tolerance);
-    
-  for (int i=0; i < tensorSize; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i), totalStrainTpdt[i], tolerance);
+  for (int i=0; i < numParamsQuadPt; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(parametersE[i], parameters[i], tolerance);
 } // testUpdateStateTimeDep
 
 

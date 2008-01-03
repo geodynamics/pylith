@@ -123,7 +123,12 @@ pylith::meshio::OutputManager::writeFields(
     } else if (0 != fields) {
       // If field is not in mesh, try to get it from fields manager
       // ADD STUFF HERE
-    } // else
+    } else {
+      std::ostringstream msg;
+      msg << "Could not find field '" << _vertexFields[i]
+	  << "' in fields available for output.";
+      throw std::runtime_error(msg.str());
+    } // if/else
     
     // Extract values from section
     // ADD STUFF HERE

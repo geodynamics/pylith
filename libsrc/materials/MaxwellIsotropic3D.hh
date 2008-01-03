@@ -85,12 +85,6 @@ protected :
    */
   int _numDBValues(void) const;
 
-  /** Get names of parameters for physical properties.
-   *
-   * @returns Names of parameters
-   */
-  const char** _parameterNames(void) const;
-
   /** Compute parameters from values in spatial database.
    *
    * Order of values in arrays matches order used in dbValues() and
@@ -99,7 +93,8 @@ protected :
    * @param paramVals Array of parameters
    * @param dbValues Array of database values
    */
-  void _dbToParameters(std::vector<double_array>* paramVals,
+  void _dbToParameters(double* const paramVals,
+		       const int numParams,
 		       const double_array& dbValues) const;
 
   /** Get number of entries in stress/strain tensors.
@@ -124,120 +119,178 @@ protected :
 
   /** Compute density from parameters.
    *
-   * @param density Array for density
-   * @param parameters Parameters at location
+   * @param density Array for density.
+   * @param parameters Parameters at location.
+   * @param numParams Number of parameters.
    */
-  void _calcDensity(double_array* const density,
-		    const std::vector<double_array>& parameters);
+  void _calcDensity(double* const density,
+		    const double* parameters,
+		    const int numParams);
 
   /** Compute stress tensor from parameters.
    *
-   * @param stress Array for stress tensor
-   * @param parameters Parameters at locations.
-   * @param totalStrain Total strain at locations.
+   * @param stress Array for stress tensor.
+   * @param stressSize Size of stress tensor.
+   * @param parameters Parameters at location.
+   * @param numParams Number of parameters.
+   * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
    */
-  void _calcStress(double_array* const stress,
-		   const std::vector<double_array>& parameters,
-		   const double_array& totalStrain);
+  void _calcStress(double* const stress,
+		   const int stressSize,
+		   const double* parameters,
+		   const int numParams,
+		   const double* totalStrain,
+		   const int strainSize);
 
   /** Compute derivatives of elasticity matrix from parameters.
    *
-   * @param elasticConsts Array for elastic constants
-   * @param parameters Parameters at locations.
-   * @param totalStrain Total strain at locations.
+   * @param elasticConsts Array for elastic constants.
+   * @param numElasticConsts Number of elastic constants.
+   * @param parameters Parameters at location.
+   * @param numParams Number of parameters.
+   * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
    */
-  void _calcElasticConsts(double_array* const elasticConsts,
-			  const std::vector<double_array>& parameters,
-			  const double_array& totalStrain);
+  void _calcElasticConsts(double* const elasticConsts,
+			  const int numElasticConsts,
+			  const double* parameters,
+			  const int numParams,
+			  const double* totalStrain,
+			  const int strainSize);
 
-  /** Update state variables after solve.
+  /** Update parameters (for next time step).
    *
-   * @param parameters Parameters at locations.
-   * @param totalStrain Total strain at locations.
+   * @param parameters Parameters at location.
+   * @param numParams Number of parameters.
+   * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
    */
-  void _updateState(std::vector<double_array>* parameters,
-		    const double_array& totalStrain);
+  void _updateState(double* const parameters,
+		    const int numParams,
+		    const double* totalStrain,
+		    const int strainSize);
 
   // PRIVATE TYPEDEFS ///////////////////////////////////////////////////
 private :
 
   /// Member prototype for _calcStress()
   typedef void (pylith::materials::MaxwellIsotropic3D::*calcStress_fn_type)
-    (double_array* const,
-     const std::vector<double_array>&,
-     const double_array&);
+    (double* const,
+     const int,
+     const double*,
+     const int,
+     const double*,
+     const int);
 
   /// Member prototype for _calcElasticConsts()
   typedef void (pylith::materials::MaxwellIsotropic3D::*calcElasticConsts_fn_type)
-    (double_array* const,
-     const std::vector<double_array>&,
-     const double_array&);
+    (double* const,
+     const int,
+     const double*,
+     const int,
+     const double*,
+     const int);
 
   /// Member prototype for _updateState()
   typedef void (pylith::materials::MaxwellIsotropic3D::*updateState_fn_type)
-    (std::vector<double_array>* const,
-     const double_array&);
+    (double* const,
+     const int,
+     const double*,
+     const int);
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
   /** Compute stress tensor from parameters as an elastic material.
    *
-   * @param stress Array for stress tensor
+   * @param stress Array for stress tensor.
+   * @param stressSize Size of stress tensor.
    * @param parameters Parameters at locations.
+   * @param numParams Number of parameters.
    * @param totalStrain Total strain at locations.
+   * @param strainSize Size of strain tensor.
    */
-  void _calcStressElastic(double_array* const stress,
-			  const std::vector<double_array>& parameters,
-			  const double_array& totalStrain);
+  void _calcStressElastic(double* const stress,
+			  const int stressSize,
+			  const double* parameters,
+			  const int numParams,
+			  const double* totalStrain,
+			  const int strainSize);
 
   /** Compute stress tensor from parameters as an viscoelastic material.
    *
-   * @param stress Array for stress tensor
+   * @param stress Array for stress tensor.
+   * @param stressSize Size of stress tensor.
    * @param parameters Parameters at locations.
+   * @param numParams Number of parameters.
    * @param totalStrain Total strain at locations.
+   * @param strainSize Size of strain tensor.
    */
-  void _calcStressViscoelastic(double_array* const stress,
-			       const std::vector<double_array>& parameters,
-			       const double_array& totalStrain);
+  void _calcStressViscoelastic(double* const stress,
+			  const int stressSize,
+			  const double* parameters,
+			  const int numParams,
+			  const double* totalStrain,
+			  const int strainSize);
 
   /** Compute derivatives of elasticity matrix from parameters as an
    * elastic material.
    *
-   * @param elasticConsts Array for elastic constants
-   * @param parameters Parameters at locations.
-   * @param totalStrain Total strain at locations.
+   * @param elasticConsts Array for elastic constants.
+   * @param numElasticConsts Number of elastic constants.
+   * @param parameters Parameters at location.
+   * @param numParams Number of parameters.
+   * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
    */
-  void _calcElasticConstsElastic(double_array* const elasticConsts,
-				 const std::vector<double_array>& parameters,
-				 const double_array& totalStrain);
+  void _calcElasticConstsElastic(double* const elasticConsts,
+				 const int numElasticConsts,
+				 const double* parameters,
+				 const int numParams,
+				 const double* totalStrain,
+				 const int strainSize);
 
   /** Compute derivatives of elasticity matrix from parameters as a
    * viscoelastic material.
    *
-   * @param elasticConsts Array for elastic constants
-   * @param parameters Parameters at locations.
-   * @param totalStrain Total strain at locations.
+   * @param elasticConsts Array for elastic constants.
+   * @param numElasticConsts Number of elastic constants.
+   * @param parameters Parameters at location.
+   * @param numParams Number of parameters.
+   * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
    */
-  void _calcElasticConstsViscoelastic(double_array* const elasticConsts,
-				      const std::vector<double_array>& parameters,
-				      const double_array& totalStrain);
+  void _calcElasticConstsViscoelastic(double* const elasticConsts,
+				      const int numElasticConsts,
+				      const double* parameters,
+				      const int numParams,
+				      const double* totalStrain,
+				      const int strainSize);
 
   /** Update state variables after solve as an elastic material.
    *
-   * @param parameters Parameters at locations.
-   * @param totalStrain Total strain at locations.
+   * @param parameters Parameters at location.
+   * @param numParams Number of parameters.
+   * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
    */
-  void _updateStateElastic(std::vector<double_array>* parameters,
-			   const double_array& totalStrain);
+  void _updateStateElastic(double* const parameters,
+			   const int numParams,
+			   const double* totalStrain,
+			   const int strainSize);
 
   /** Update state variables after solve as a viscoelastic material.
    *
-   * @param parameters Parameters at locations.
-   * @param totalStrain Total strain at locations.
+   * @param parameters Parameters at location.
+   * @param numParams Number of parameters.
+   * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
    */
-  void _updateStateViscoelastic(std::vector<double_array>* parameters,
-				const double_array& totalStrain);
+  void _updateStateViscoelastic(double* const parameters,
+				const int numParams,
+				const double* totalStrain,
+				const int strainSize);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

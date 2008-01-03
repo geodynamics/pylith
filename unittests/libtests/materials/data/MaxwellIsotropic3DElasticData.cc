@@ -21,6 +21,8 @@ const int pylith::materials::MaxwellIsotropic3DElasticData::_numDBValues = 4;
 
 const int pylith::materials::MaxwellIsotropic3DElasticData::_numParameters = 6;
 
+const int pylith::materials::MaxwellIsotropic3DElasticData::_numParamsQuadPt = 16;
+
 const int pylith::materials::MaxwellIsotropic3DElasticData::_numLocs = 2;
 
 const int pylith::materials::MaxwellIsotropic3DElasticData::_numParamValues[] = {
@@ -37,15 +39,6 @@ const char* pylith::materials::MaxwellIsotropic3DElasticData::_dbValues[] = {
 "vs",
 "vp",
 "viscosity",
-};
-
-const char* pylith::materials::MaxwellIsotropic3DElasticData::_parameterNames[] = {
-"density",
-"mu",
-"lambda",
-"maxwellTime",
-"strainT",
-"visStrain",
 };
 
 const double pylith::materials::MaxwellIsotropic3DElasticData::_dbData[] = {
@@ -179,10 +172,10 @@ pylith::materials::MaxwellIsotropic3DElasticData::MaxwellIsotropic3DElasticData(
   dimension = _dimension;
   numDBValues = _numDBValues;
   numParameters = _numParameters;
+  numParamsQuadPt = _numParamsQuadPt;
   numLocs = _numLocs;
   numParamValues = const_cast<int*>(_numParamValues);
   dbValues = const_cast<char**>(_dbValues);
-  parameterNames = const_cast<char**>(_parameterNames);
   dbData = const_cast<double*>(_dbData);
   parameterData = const_cast<double*>(_parameterData);
   density = const_cast<double*>(_density);

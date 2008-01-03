@@ -66,21 +66,17 @@ protected :
    */
   int _numDBValues(void) const;
 
-  /** Get names of parameters for physical properties.
-   *
-   * @returns Names of parameters
-   */
-  const char** _parameterNames(void) const;
-
   /** Compute parameters from values in spatial database.
    *
    * Order of values in arrays matches order used in dbValues() and
    * parameterNames().
    *
    * @param paramVals Array of parameters
+   * @param numParams Number of parameters at quadrature point.
    * @param dbValues Array of database values
    */
-  void _dbToParameters(std::vector<double_array>* paramVals,
+  void _dbToParameters(double* const paramVals,
+		       const int numParams,
 		       const double_array& dbValues) const;
 
   /** Get number of entries in stress/strain tensors.
@@ -105,31 +101,45 @@ protected :
 
   /** Compute density from parameters.
    *
-   * @param density Array for density
-   * @param parameters Parameters at location
+   * @param density Array for density.
+   * @param parameters Parameters at location.
+   * @param numParams Number of parameters.
    */
-  void _calcDensity(double_array* const density,
-		    const std::vector<double_array>& parameters);
+  void _calcDensity(double* const density,
+		    const double* parameters,
+		    const int numParams);
 
   /** Compute stress tensor from parameters.
    *
-   * @param stress Array for stress tensor
-   * @param parameters Parameters at locations.
-   * @param totalStrain Total strain at locations.
+   * @param stress Array for stress tensor.
+   * @param stressSize Size of stress tensor.
+   * @param parameters Parameters at location.
+   * @param numParams Number of parameters.
+   * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
    */
-  void _calcStress(double_array* const stress,
-		   const std::vector<double_array>& parameters,
-		   const double_array& totalStrain);
+  void _calcStress(double* const stress,
+		   const int stressSize,
+		   const double* parameters,
+		   const int numParams,
+		   const double* totalStrain,
+		   const int strainSize);
 
   /** Compute derivatives of elasticity matrix from parameters.
    *
-   * @param elasticConsts Array for elastic constants
-   * @param parameters Parameters at locations.
-   * @param totalStrain Total strain at locations.
+   * @param elasticConsts Array for elastic constants.
+   * @param numElasticConsts Number of elastic constants.
+   * @param parameters Parameters at location.
+   * @param numParams Number of parameters.
+   * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
    */
-  void _calcElasticConsts(double_array* const elasticConsts,
-			  const std::vector<double_array>& parameters,
-			  const double_array& totalStrain);
+  void _calcElasticConsts(double* const elasticConsts,
+			  const int numElasticConsts,
+			  const double* parameters,
+			  const int numParams,
+			  const double* totalStrain,
+			  const int strainSize);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

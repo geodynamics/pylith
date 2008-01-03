@@ -39,10 +39,10 @@ public:
 
   int numDBValues; ///< Number of database values
   int numParameters; ///< Number of parameters
+  int numParamsQuadPt; ///< Number of parameters per quadrature point.
   int* numParamValues; ///< Number of values for each parameter
 
   char** dbValues; ///< Aray of names of database values;
-  char** parameterNames; //< Array of names of parameters
 
   double* dbData; ///< Array of database values at locations
   double* parameterData; ///< Array of parameter values at locations
