@@ -189,32 +189,34 @@ pylith::materials::TestMaterial::testInitialize(void)
   // Get cells associated with material
   const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
 
-  Mesh::label_sequence::iterator cellIter=cells->begin();
+  Mesh::label_sequence::iterator c_iter = cells->begin();
   const double tolerance = 1.0e-06;
 
-  const ALE::Obj<real_section_type>& parameterDensity = 
-    material._parameters->getReal("density");
-  const real_section_type::value_type* densityCell = 
-    parameterDensity->restrictPoint(*cellIter);
-  CPPUNIT_ASSERT(0 != densityCell);
-  for (int i=0; i < numQuadPts; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, densityCell[i]/densityE[i], tolerance);
+  const real_section_type::value_type* paramsCell =
+    material._parameters->restrictPoint(*c_iter);
+  CPPUNIT_ASSERT(0 != paramsCell);
+
+  const int pidDensity = 0;
+  const int pidMu = 1;
+  const int pidLambda = 2;
+
+  // density
+  for (int i=0; i < numQuadPts; ++i) {
+    const int index = i*material._numParamsQuadPt + pidDensity;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, paramsCell[index]/densityE[i], tolerance);
+  } // for
   
-  const ALE::Obj<real_section_type>& parameterMu = 
-    material._parameters->getReal("mu");
-  const real_section_type::value_type* muCell = 
-    parameterMu->restrictPoint(*cellIter);
-  CPPUNIT_ASSERT(0 != muCell);
-  for (int i=0; i < numQuadPts; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, muCell[i]/muE[i], tolerance);
+  // mu
+  for (int i=0; i < numQuadPts; ++i) {
+    const int index = i*material._numParamsQuadPt + pidMu;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, paramsCell[index]/muE[i], tolerance);
+  } // for
   
-  const ALE::Obj<real_section_type>& parameterLambda = 
-    material._parameters->getReal("lambda");
-  const real_section_type::value_type* lambdaCell = 
-    parameterLambda->restrictPoint(*cellIter);
-  CPPUNIT_ASSERT(0 != lambdaCell);
-  for (int i=0; i < numQuadPts; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, lambdaCell[i]/lambdaE[i], tolerance);
+  // lambda
+  for (int i=0; i < numQuadPts; ++i) {
+    const int index = i*material._numParamsQuadPt + pidLambda;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, paramsCell[index]/lambdaE[i], tolerance);
+  } // for
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -235,28 +237,23 @@ pylith::materials::TestMaterial::_testDBToParameters(Material* material,
 
     const int numParameters = data.numParameters;
     int numParamEntries = 0;
-
-    std::vector<double_array> parameterData(numParameters);
-    for (int iParam=0; iParam < numParameters; ++iParam) {
-      parameterData[iParam].resize(data.numParamValues[iParam]);
+    for (int iParam=0; iParam < numParameters; ++iParam)
       numParamEntries += data.numParamValues[iParam];
-    } // for
+
+    double_array parameterData(numParamEntries);
 
     double* const parameterDataE = &data.parameterData[iLoc*numParamEntries];
-    material->_dbToParameters(&parameterData, dbData);
+    material->_dbToParameters(&parameterData[0], numParamEntries, dbData);
 
     const double tolerance = 1.0e-06;
-    for (int iParam=0, i=0; iParam < numParameters; ++iParam) {
-      const int numParamValues = data.numParamValues[iParam];
-      CPPUNIT_ASSERT_EQUAL(numParamValues, int(parameterData[iParam].size()));
-      for (int iValue=0; iValue < numParamValues; ++iValue)
-	if (fabs(parameterDataE[i]) > tolerance)
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				       parameterData[iParam][iValue]/parameterDataE[i++],
-				       tolerance);
-	else
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(parameterDataE[i++], parameterData[iParam][iValue],
-				       tolerance);
+    for (int i=0; i < numParamEntries; ++i) {
+      if (fabs(parameterDataE[i]) > tolerance)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
+				     parameterData[i]/parameterDataE[i],
+				     tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(parameterDataE[i], parameterData[i],
+				     tolerance);
     } // for
   } // for
 } // _testDBToParameters
@@ -279,7 +276,7 @@ pylith::materials::TestMaterial::_testDBValues(Material* material,
 } // _testDBValues
 
 // ----------------------------------------------------------------------
-// Test _numParameters() and _parameterNames()
+// Test _numParameters().
 void
 pylith::materials::TestMaterial::_testParameters(Material* material,
 						 const MaterialData& data) const
@@ -291,12 +288,6 @@ pylith::materials::TestMaterial::_testParameters(Material* material,
   const int_array& numParamValues = material->_getNumParamValues();
 
   CPPUNIT_ASSERT_EQUAL(numParameters, int(numParamValues.size()));
-  char** const namesE = data.parameterNames;
-  const char** names = material->_parameterNames();
-  for (int i=0; i < numParameters; ++i) {
-    CPPUNIT_ASSERT_EQUAL(data.numParamValues[i], numParamValues[i]);
-    CPPUNIT_ASSERT(0 == strcmp(namesE[i], names[i]));
-  } // for
 } // _testParameters
 
 

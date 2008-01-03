@@ -65,7 +65,7 @@ public :
    *
    * @returns Array of density values at cell's quadrature points.
    */
-  const std::vector<double_array>& calcDensity(void);
+  const double_array& calcDensity(void);
   
   /** Get stress tensor at quadrature points.
    *
@@ -85,8 +85,8 @@ public :
    *
    * @returns Array of stresses at cell's quadrature points.
    */
-  const std::vector<double_array>&
-  calcStress(const std::vector<double_array>& totalStrain);
+  const double_array&
+  calcStress(const double_array& totalStrain);
 
   /** Compute derivative of elasticity matrix for cell at quadrature points.
    *
@@ -111,8 +111,8 @@ public :
    * @param totalStrain Total strain tensor at quadrature points
    *    [numQuadPts][tensorSize]
    */
-  const std::vector<double_array>&
-  calcDerivElastic(const std::vector<double_array>& totalStrain);
+  const double_array&
+  calcDerivElastic(const double_array& totalStrain);
 
   /** Update state variables (for next time step).
    *
@@ -120,7 +120,7 @@ public :
    *    [numQuadPts][tensorSize]
    * @param cell Finite element cell
    */
-  void updateState(const std::vector<double_array>& totalStrain,
+  void updateState(const double_array& totalStrain,
 		   const Mesh::point_type& cell);
 
   /** Set whether elastic or inelastic constitutive relations are used.
@@ -157,43 +157,61 @@ protected :
 
   /** Compute density from parameters.
    *
-   * @param density Array for density
-   * @param parameters Parameters at location
+   * @param density Array for density.
+   * @param parameters Parameters at location.
+   * @param numParams Number of parameters.
    */
   virtual
-  void _calcDensity(double_array* const density,
-		    const std::vector<double_array>& parameters) = 0;
+  void _calcDensity(double* const density,
+		    const double* parameters,
+		    const int numParams) = 0;
 
   /** Compute stress tensor from parameters.
    *
-   * @param stress Array for stress tensor
+   * @param stress Array for stress tensor.
+   * @param stressSize Size of stress tensor.
    * @param parameters Parameters at location.
+   * @param numParams Number of parameters.
    * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
    */
   virtual
-  void _calcStress(double_array* const stress,
-		   const std::vector<double_array>& parameters,
-		   const double_array& totalStrain) = 0;
+  void _calcStress(double* const stress,
+		   const int stressSize,
+		   const double* parameters,
+		   const int numParams,
+		   const double* totalStrain,
+		   const int strainSize) = 0;
 
   /** Compute derivatives of elasticity matrix from parameters.
    *
-   * @param elasticConsts Array for elastic constants
+   * @param elasticConsts Array for elastic constants.
+   * @param numElasticConsts Number of elastic constants.
    * @param parameters Parameters at location.
+   * @param numParams Number of parameters.
    * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
    */
   virtual
-  void _calcElasticConsts(double_array* const elasticConsts,
-			  const std::vector<double_array>& parameters,
-			  const double_array& totalStrain) = 0;
+  void _calcElasticConsts(double* const elasticConsts,
+			  const int numElasticConsts,
+			  const double* parameters,
+			  const int numParams,
+			  const double* totalStrain,
+			  const int strainSize) = 0;
 
   /** Update parameters (for next time step).
    *
    * @param parameters Parameters at location.
+   * @param numParams Number of parameters.
    * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
    */
   virtual
-  void _updateState(std::vector<double_array>* const parameters,
-		    const double_array& totalStrain);
+  void _updateState(double* const parameters,
+		    const int numParams,
+		    const double* totalStrain,
+		    const int strainSize);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -220,38 +238,31 @@ private :
 
   /** Parameters at quadrature points for current cell.
    *
-   * size = [numQuadPts][numParams][numValues]
-   * index = [iQuadPt][iParam][iValue]
+   * size = numQuadPts*numParamsQuadPt
+   * index = iQuadPt*iParam*iValue
    */
-  std::vector<std::vector<double_array> > _paramsCell;
-
-  /** Single parameter at quadrature points for current cell.
-   *
-   * size = [numQuadPts*numValues]
-   * index = [iQuadPt*numValues+iValue]
-   */
-  double_array _parameterCell;
+  double_array _paramsCell;
 
   /** Density value at quadrature points for current cell.
    *
-   * size = [numQuadPts][1]
-   * index = [iQuadPt][0]
+   * size = numQuadPts
+   * index = iQuadPt
    */
-  std::vector<double_array> _density;
+  double_array _density;
 
   /** Stress tensor at quadrature points for current cell.
    *
-   * size = [numQuadPts][tensorSize]
-   * index = [iQuadPt][iStress]
+   * size = numQuadPts*tensorSize
+   * index = *iQuadPt*tensorSize + iStress
    */
-  std::vector<double_array> _stress;
+  double_array _stress;
 
   /** Elasticity matrix at quadrature points for current cell.
    *
-   * size = [numQuadPts][numElasticConsts]
-   * index = [iQuadPt][iConstant]
+   * size = numQuadPts*numElasticConsts
+   * index = iQuadPt*numElasticConsts+iConstant
    */
-  std::vector<double_array> _elasticConsts;
+  double_array _elasticConsts;
 
 }; // class ElasticMaterial
 

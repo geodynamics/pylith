@@ -22,8 +22,9 @@
 #if !defined(pylith_materials_material_hh)
 #define pylith_materials_material_hh
 
-#include "pylith/utils/array.hh" // USES std::vector, double_array
+#include "pylith/utils/array.hh" // USES double_array
 #include <string> // HASA std::string
+#include "pylith/utils/sievetypes.hh" // USES real_section_type
 
 /// Namespace for pylith package
 namespace pylith {
@@ -50,12 +51,6 @@ namespace spatialdata {
     class CoordSys;
   } // geocoords
 } // spatialdata
-
-/// Namespace for Sieve package.
-namespace ALE {
-  class Mesh;
-  template<class T> class Obj;
-} // ALE
 
 /// C++ abstract base class for Material object.
 class pylith::materials::Material
@@ -167,13 +162,6 @@ protected :
   virtual
   int _numDBValues(void) const = 0;
 
-  /** Get names of parameters for physical properties.
-   *
-   * @returns Names of parameters
-   */
-  virtual
-  const char** _parameterNames(void) const = 0;
-
   /** Get number of values for each parameter for physical properties.
    *
    * @returns Array of number of values for each parameter.
@@ -182,13 +170,13 @@ protected :
 
   /** Compute parameters from values in spatial database.
    *
-   * @param paramVals Array of parameters
-   * @param numParams Number of parameters
+   * @param paramVals Array of parameters.
+   * @param numParams Number of parameters at quadrature point.
    * @param dbValues Array of database values
-   * @param numValues Number of database values
    */
   virtual
-  void _dbToParameters(std::vector<double_array>* const paramVals,
+  void _dbToParameters(double* const paramVals,
+		       const int numParams,
 		       const double_array& dbValues) const = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
@@ -205,9 +193,10 @@ protected :
 
   double _dt; ///< Current time step
 
-  ///< Manager of parameters for physical properties of material
-  topology::FieldsManager* _parameters;
-
+  ///< Section containing parameters for physical properties of material.
+  ALE::Obj<real_section_type> _parameters;
+  
+  int _numParamsQuadPt; ///< Number of parameters per quadrature point.
   int _dimension; ///< Spatial dimension associated with material
   bool _needNewJacobian; ///< True if need to reform Jacobian, false otherwise
 

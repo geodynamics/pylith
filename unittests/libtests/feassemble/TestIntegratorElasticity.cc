@@ -44,24 +44,19 @@ pylith::feassemble::TestIntegratorElasticity::testCalcTotalStrain1D(void)
   const double dispVals[] = { 0.5, 1.5 };
   const double strainE[] = { 0.5, 0.25 };
 
-  std::vector<double_array> strain(numQuadPts);
-  for (int i=0; i < numQuadPts; ++i)
-    strain[i].resize(tensorSize);
+  const int size = numQuadPts * tensorSize;
+  double_array strain(size);
 
   double_array basisDeriv(basisDerivVals, numQuadPts*numBasis*dim);
   double_array disp(dispVals, numBasis*dim);
 
-  IntegratorElasticity::_calcTotalStrain1D(&strain, 
-					   basisDeriv, disp, numBasis);
+  IntegratorElasticity::_calcTotalStrain1D(&strain,
+					   basisDeriv, disp, numBasis, numQuadPts);
 
   const double tolerance = 1.0e-06;
-  CPPUNIT_ASSERT_EQUAL(numQuadPts, int(strain.size()));
-  for (int iQuad=0, i=0; iQuad < numQuadPts; ++iQuad) {
-    CPPUNIT_ASSERT_EQUAL(tensorSize, int(strain[iQuad].size()));
-    for (int iStrain=0; iStrain < tensorSize; ++iStrain)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(strainE[i++], strain[iQuad][iStrain], 
-				   tolerance);
-  } // for
+  CPPUNIT_ASSERT_EQUAL(size, int(strain.size()));
+  for (int i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(strainE[i], strain[i], tolerance);
 } // testCalcTotalStrain1D
 
 // ----------------------------------------------------------------------
@@ -97,24 +92,19 @@ pylith::feassemble::TestIntegratorElasticity::testCalcTotalStrain2D(void)
     0.6, -0.4, 1.3
   };
 
-  std::vector<double_array> strain(numQuadPts);
-  for (int i=0; i < numQuadPts; ++i)
-    strain[i].resize(tensorSize);
+  const int size = numQuadPts * tensorSize;
+  double_array strain(size);
 
   double_array basisDeriv(basisDerivVals, numQuadPts*numBasis*dim);
   double_array disp(dispVals, numBasis*dim);
 
-  IntegratorElasticity::_calcTotalStrain2D(&strain, 
-					   basisDeriv, disp, numBasis);
+  IntegratorElasticity::_calcTotalStrain2D(&strain, basisDeriv, disp,
+					   numBasis, numQuadPts);
 
   const double tolerance = 1.0e-06;
-  CPPUNIT_ASSERT_EQUAL(numQuadPts, int(strain.size()));
-  for (int iQuad=0, i=0; iQuad < numQuadPts; ++iQuad) {
-    CPPUNIT_ASSERT_EQUAL(tensorSize, int(strain[iQuad].size()));
-    for (int iStrain=0; iStrain < tensorSize; ++iStrain)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(strainE[i++], strain[iQuad][iStrain], 
-				   tolerance);
-  } // for
+  CPPUNIT_ASSERT_EQUAL(size, int(strain.size()));
+  for (int i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(strainE[i], strain[i], tolerance);
 } // testCalcTotalStrain2D
 
 // ----------------------------------------------------------------------
@@ -160,24 +150,19 @@ pylith::feassemble::TestIntegratorElasticity::testCalcTotalStrain3D(void)
     0.9, -0.6, -0.9, 1.95, 0.75, 0.9
   };
 
-  std::vector<double_array> strain(numQuadPts);
-  for (int i=0; i < numQuadPts; ++i)
-    strain[i].resize(tensorSize);
+  const int size = numQuadPts * tensorSize;
+  double_array strain(size);
 
   double_array basisDeriv(basisDerivVals, numQuadPts*numBasis*dim);
   double_array disp(dispVals, numBasis*dim);
 
-  IntegratorElasticity::_calcTotalStrain3D(&strain, 
-					   basisDeriv, disp, numBasis);
+  IntegratorElasticity::_calcTotalStrain3D(&strain, basisDeriv, disp,
+					   numBasis, numQuadPts);
 
   const double tolerance = 1.0e-06;
-  CPPUNIT_ASSERT_EQUAL(numQuadPts, int(strain.size()));
-  for (int iQuad=0, i=0; iQuad < numQuadPts; ++iQuad) {
-    CPPUNIT_ASSERT_EQUAL(tensorSize, int(strain[iQuad].size()));
-    for (int iStrain=0; iStrain < tensorSize; ++iStrain)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(strainE[i++], strain[iQuad][iStrain], 
-				   tolerance);
-  } // for
+  CPPUNIT_ASSERT_EQUAL(size, int(strain.size()));
+  for (int i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(strainE[i], strain[i], tolerance);
 } // testCalcTotalStrain3D
 
 

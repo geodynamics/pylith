@@ -81,7 +81,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 { // integrateResidual
   /// Member prototype for _elasticityResidualXD()
   typedef void (pylith::feassemble::ElasticityExplicit::*elasticityResidual_fn_type)
-    (const std::vector<double_array>&);
+    (const double_array&);
 
   assert(0 != _quadrature);
   assert(0 != _material);
@@ -165,11 +165,8 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   double_array dispTmdtCell(cellVecSize);
 
   // Allocate vector for total strain
-  std::vector<double_array> totalStrain(numQuadPts);
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    totalStrain[iQuad].resize(tensorSize);
-    totalStrain[iQuad] = 0.0;
-  } // for
+  double_array totalStrain(numQuadPts*tensorSize);
+  totalStrain = 0.0;
 
 #ifdef FASTER
   fields->createCustomAtlas("material-id", materialId);
@@ -210,11 +207,10 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     const double_array& jacobianDet = _quadrature->jacobianDet();
 
     // Compute action for inertial terms
-    const std::vector<double_array>& density = 
-      _material->calcDensity();
+    const double_array& density = _material->calcDensity();
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const double wt = 
-	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad][0] / dt2;
+	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / dt2;
       for (int iBasis=0; iBasis < numBasis; ++iBasis) {
         const double valI = wt*basis[iQuad*numBasis+iBasis];
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
@@ -229,9 +225,9 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     PetscLogFlopsNoCheck(numQuadPts*(3+numBasis*(1+numBasis*(6*spaceDim))));
 
     // Compute B(transpose) * sigma, first computing strains
-    calcTotalStrainFn(&totalStrain, basisDeriv, dispTCell, numBasis);
-    const std::vector<double_array>& stress = 
-      _material->calcStress(totalStrain);
+    calcTotalStrainFn(&totalStrain, basisDeriv, dispTCell, 
+		      numBasis, numQuadPts);
+    const double_array& stress = _material->calcStress(totalStrain);
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stress);
 
     // Assemble cell contribution into field
@@ -307,12 +303,12 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     const double_array& jacobianDet = _quadrature->jacobianDet();
 
     // Get material physical properties at quadrature points for this cell
-    const std::vector<double_array>& density = _material->calcDensity();
+    const double_array& density = _material->calcDensity();
 
     // Compute Jacobian for inertial terms
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const double wt = 
-	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad][0] / dt2;
+	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / dt2;
       for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
         const double valI = wt*basis[iQ+iBasis];
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {

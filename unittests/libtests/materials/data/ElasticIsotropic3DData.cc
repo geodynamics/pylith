@@ -21,6 +21,8 @@ const int pylith::materials::ElasticIsotropic3DData::_numDBValues = 3;
 
 const int pylith::materials::ElasticIsotropic3DData::_numParameters = 3;
 
+const int pylith::materials::ElasticIsotropic3DData::_numParamsQuadPt = 3;
+
 const int pylith::materials::ElasticIsotropic3DData::_numLocs = 2;
 
 const int pylith::materials::ElasticIsotropic3DData::_numParamValues[] = {
@@ -33,12 +35,6 @@ const char* pylith::materials::ElasticIsotropic3DData::_dbValues[] = {
 "density",
 "vs",
 "vp",
-};
-
-const char* pylith::materials::ElasticIsotropic3DData::_parameterNames[] = {
-"density",
-"mu",
-"lambda",
 };
 
 const double pylith::materials::ElasticIsotropic3DData::_dbData[] = {
@@ -144,10 +140,10 @@ pylith::materials::ElasticIsotropic3DData::ElasticIsotropic3DData(void)
   dimension = _dimension;
   numDBValues = _numDBValues;
   numParameters = _numParameters;
+  numParamsQuadPt = _numParamsQuadPt;
   numLocs = _numLocs;
   numParamValues = const_cast<int*>(_numParamValues);
   dbValues = const_cast<char**>(_dbValues);
-  parameterNames = const_cast<char**>(_parameterNames);
   dbData = const_cast<double*>(_dbData);
   parameterData = const_cast<double*>(_parameterData);
   density = const_cast<double*>(_density);

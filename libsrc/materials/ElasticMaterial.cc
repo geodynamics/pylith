@@ -21,8 +21,6 @@
 
 #include <assert.h> // USES assert()
 
-#define FASTER
-
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::ElasticMaterial::ElasticMaterial(const int* numParamValues,
@@ -40,50 +38,59 @@ pylith::materials::ElasticMaterial::~ElasticMaterial(void)
 
 // ----------------------------------------------------------------------
 // Compute density for cell at quadrature points.
-const std::vector<pylith::double_array>&
+const pylith::double_array&
 pylith::materials::ElasticMaterial::calcDensity(void)
 { // calcDensity
   const int numQuadPts = _numQuadPts;
-  assert(_paramsCell.size() == numQuadPts);
+  const int numParamsQuadPt = _numParamsQuadPt;
+  assert(_paramsCell.size() == numQuadPts*numParamsQuadPt);
   assert(_density.size() == numQuadPts);
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-    _calcDensity(&_density[iQuad], _paramsCell[iQuad]);
+    _calcDensity(&_density[iQuad], 
+		 &_paramsCell[iQuad*numParamsQuadPt], numParamsQuadPt);
 
   return _density;
 } // calcDensity
 
 // ----------------------------------------------------------------------
 // Compute stress tensor for cell at quadrature points.
-const std::vector<pylith::double_array>&
-pylith::materials::ElasticMaterial::calcStress(
-			         const std::vector<double_array>& totalStrain)
+const pylith::double_array&
+pylith::materials::ElasticMaterial::calcStress(const double_array& totalStrain)
 { // calcStress
   const int numQuadPts = _numQuadPts;
-  assert(_paramsCell.size() == numQuadPts);
-  assert(totalStrain.size() == numQuadPts);
-  assert(_stress.size() == numQuadPts);
+  const int numParamsQuadPt = _numParamsQuadPt;
+  const int tensorSize = _tensorSize();
+  assert(_paramsCell.size() == numQuadPts*numParamsQuadPt);
+  assert(totalStrain.size() == numQuadPts*tensorSize);
+  assert(_stress.size() == numQuadPts*tensorSize);
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-    _calcStress(&_stress[iQuad], _paramsCell[iQuad], totalStrain[iQuad]);
+    _calcStress(&_stress[iQuad*tensorSize], tensorSize,
+		&_paramsCell[iQuad*numParamsQuadPt], numParamsQuadPt,
+		&totalStrain[iQuad*tensorSize], tensorSize);
 
   return _stress;
 } // calcStress
 
 // ----------------------------------------------------------------------
 // Compute derivative of elasticity matrix for cell at quadrature points.
-const std::vector<pylith::double_array>&
+const pylith::double_array&
 pylith::materials::ElasticMaterial::calcDerivElastic(
-				const std::vector<double_array>& totalStrain)
+					       const double_array& totalStrain)
 { // calcDerivElastic
   const int numQuadPts = _numQuadPts;
-  assert(_paramsCell.size() == numQuadPts);
-  assert(totalStrain.size() == numQuadPts);
-  assert(_elasticConsts.size() == numQuadPts);
+  const int numParamsQuadPt = _numParamsQuadPt;
+  const int tensorSize = _tensorSize();
+  const int numElasticConsts = _numElasticConsts();
+  assert(_paramsCell.size() == numQuadPts*numParamsQuadPt);
+  assert(totalStrain.size() == numQuadPts*tensorSize);
+  assert(_elasticConsts.size() == numQuadPts*numElasticConsts);
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-    _calcElasticConsts(&_elasticConsts[iQuad], _paramsCell[iQuad], 
-		       totalStrain[iQuad]);
+    _calcElasticConsts(&_elasticConsts[iQuad*numElasticConsts], numElasticConsts,
+		       &_paramsCell[iQuad*numParamsQuadPt], numParamsQuadPt, 
+		       &totalStrain[iQuad*tensorSize], tensorSize);
 
   return _elasticConsts;
 } // calcDerivElastic
@@ -91,33 +98,21 @@ pylith::materials::ElasticMaterial::calcDerivElastic(
 // ----------------------------------------------------------------------
 // Get cell's state variable information from material's sections.
 void
-pylith::materials::ElasticMaterial::getStateVarsCell(const Mesh::point_type& cell,
-						 const int numQuadPts)
+pylith::materials::ElasticMaterial::getStateVarsCell(
+						   const Mesh::point_type& cell,
+						   const int numQuadPts)
 { // getStateVarsCell
   if (_numQuadPts != numQuadPts) {
+    const int numParamsQuadPt = _numParamsQuadPt;
+    const int tensorSize = _tensorSize();
+    const int numElasticConsts = _numElasticConsts();
+
     _numQuadPts = numQuadPts;
 
-    _paramsCell.resize(numQuadPts);
-    _density.resize(numQuadPts);
-    _stress.resize(numQuadPts);
-    _elasticConsts.resize(numQuadPts);
-
-    const int_array& numParamValues = _getNumParamValues();
-    const int numParams = numParamValues.size();
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      _density[iQuad].resize(1);
-      _stress[iQuad].resize(_tensorSize());
-      _elasticConsts[iQuad].resize(_numElasticConsts());
-      _paramsCell[iQuad].resize(numParams);
-      for (int iParam=0; iParam < numParams; ++iParam)
-	_paramsCell[iQuad][iParam].resize(numParamValues[iParam]);
-    } // for
-
-    int maxNumValues = 0;
-    for (int iParam=0; iParam < numParams; ++iParam)
-      if (numParamValues[iParam] > maxNumValues)
-	maxNumValues = numParamValues[iParam];
-    _parameterCell.resize(numQuadPts*maxNumValues);
+    _paramsCell.resize(numQuadPts*numParamsQuadPt);
+    _density.resize(numQuadPts*1);
+    _stress.resize(numQuadPts*tensorSize);
+    _elasticConsts.resize(numQuadPts*numElasticConsts);
   } // if
 
   _getParameters(cell);
@@ -126,42 +121,19 @@ pylith::materials::ElasticMaterial::getStateVarsCell(const Mesh::point_type& cel
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
-pylith::materials::ElasticMaterial::updateState(
-				const std::vector<double_array>& totalStrain,
-				const Mesh::point_type& cell)
+pylith::materials::ElasticMaterial::updateState(const double_array& totalStrain,
+						const Mesh::point_type& cell)
 { // updateState
   const int numQuadPts = _numQuadPts;
+  const int numParamsQuadPt = _numParamsQuadPt;
+  const int tensorSize = _tensorSize();
   getStateVarsCell(cell, numQuadPts);
 
-  assert(_paramsCell.size() == numQuadPts);
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-    _updateState(&_paramsCell[iQuad], totalStrain[iQuad]);
-
-  const int_array& numParamValues = _getNumParamValues();
-  const int numParams = numParamValues.size();
-  const char** paramNames = _parameterNames();
+    _updateState(&_paramsCell[iQuad*numParamsQuadPt], numParamsQuadPt,
+		 &totalStrain[iQuad*tensorSize], tensorSize);
   
-  for (int iParam=0; iParam < numParams; ++iParam) {
-    const ALE::Obj<real_section_type>& parameter = 
-      _parameters->getReal(paramNames[iParam]);
-    assert(!parameter.isNull());
-
-    const int numValues = numParamValues[iParam];
-    assert(_parameterCell.size() >= numQuadPts*numValues);
-    
-    assert(parameter->getFiberDimension(cell) == numQuadPts*numValues);
-    for (int iQuadPt=0; iQuadPt < numQuadPts; ++iQuadPt)
-#ifdef FASTER
-      memcpy(&_parameterCell[iQuadPt*numValues],
-	     &_paramsCell[iQuadPt][iParam][0], 
-	     numValues*sizeof(double));
-#else
-      for (int iValue=0; iValue < numValues; ++iValue)
-	_parameterCell[iQuadPt*numValues+iValue] = 
-	  _paramsCell[iQuadPt][iParam][iValue];
-#endif
-    parameter->updatePoint(cell, &_parameterCell[0]);
-  } // for
+  _parameters->updatePoint(cell, &_paramsCell[0]);
 } // updateState
 
 // ----------------------------------------------------------------------
@@ -169,43 +141,25 @@ pylith::materials::ElasticMaterial::updateState(
 void
 pylith::materials::ElasticMaterial::_getParameters(const Mesh::point_type& cell)
 { // _getParameters
-  assert(0 != _parameters);
+  assert(!_parameters.isNull());
 
   const int numQuadPts = _numQuadPts;
-  assert(_paramsCell.size() == numQuadPts);
-  
-  const int_array& numParamValues = _getNumParamValues();
-  const int numParams = numParamValues.size();
-  const char** paramNames = _parameterNames();
-  
-  for (int iParam=0; iParam < numParams; ++iParam) {
-    const ALE::Obj<real_section_type>& parameter = 
-      _parameters->getReal(paramNames[iParam]);
-    assert(!parameter.isNull());
-
-    const int numValues = numParamValues[iParam];
-    assert(parameter->getFiberDimension(cell) == numQuadPts*numValues);
-    const real_section_type::value_type* parameterCell =
-      parameter->restrictPoint(cell);
-    for (int iQuadPt=0; iQuadPt < numQuadPts; ++iQuadPt)
-#ifdef FASTER
-      memcpy(&_paramsCell[iQuadPt][iParam][0], 
-	     &parameterCell[iQuadPt*numValues],
-	     numValues*sizeof(double));
-#else
-      for (int iValue=0; iValue < numValues; ++iValue)
-	_paramsCell[iQuadPt][iParam][iValue] = 
-	  parameterCell[iQuadPt*numValues+iValue];
-#endif
-  } // for
+  const int numParamsQuadPt = _numParamsQuadPt;
+  assert(_paramsCell.size() == numQuadPts*numParamsQuadPt);  
+  assert(_parameters->getFiberDimension(cell) == numQuadPts*numParamsQuadPt);
+  const real_section_type::value_type* parameterCell =
+    _parameters->restrictPoint(cell);
+  memcpy(&_paramsCell[0], parameterCell, 
+		      numQuadPts*numParamsQuadPt*sizeof(double));
 } // _getParameters
 
 // ----------------------------------------------------------------------
 // Update parameters (for next time step).
 void
-pylith::materials::ElasticMaterial::_updateState(
-				 std::vector<double_array>* const parameters,
-				 const double_array& totalStrain)
+pylith::materials::ElasticMaterial::_updateState(double* const parameters,
+						 const int numParamsQuadPt,
+						 const double* totalStrain,
+						 const int strainSize)
 { // _updateState
 } // _updateState
 

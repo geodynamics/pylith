@@ -117,11 +117,8 @@ pylith::feassemble::IntegratorElasticity::updateState(
   double_array dispCell(cellVecSize);
 
   // Allocate vector for total strain
-  std::vector<double_array> totalStrain(numQuadPts);
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    totalStrain[iQuad].resize(tensorSize);
-    totalStrain[iQuad] = 0.0;
-  } // for
+  double_array totalStrain(numQuadPts*tensorSize);
+  totalStrain = 0.0;
 
   const ALE::Obj<real_section_type>& disp = fields->getSolution();
 #ifdef FASTER
@@ -147,7 +144,7 @@ pylith::feassemble::IntegratorElasticity::updateState(
     const double_array& basisDeriv = _quadrature->basisDeriv();
   
     // Compute strains
-    calcTotalStrainFn(&totalStrain, basisDeriv, dispCell, numBasis);
+    calcTotalStrainFn(&totalStrain, basisDeriv, dispCell, numBasis, numQuadPts);
 
     // Update material state
     _material->updateState(totalStrain, *c_iter);
@@ -215,7 +212,7 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(
 // Integrate elasticity term in residual for 1-D cells.
 void
 pylith::feassemble::IntegratorElasticity::_elasticityResidual1D(
-				     const std::vector<double_array>& stress)
+				     const double_array& stress)
 { // _elasticityResidual1D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -230,7 +227,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual1D(
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-    const double s11 = stress[iQuad][0];
+    const double s11 = stress[iQuad];
     for (int iBasis=0; iBasis < numBasis; ++iBasis) {
       const double N1 = wt*basisDeriv[iQuad*numBasis+iBasis  ];
       _cellVector[iBasis*spaceDim  ] -= N1*s11;
@@ -243,7 +240,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual1D(
 // Integrate elasticity term in residual for 2-D cells.
 void
 pylith::feassemble::IntegratorElasticity::_elasticityResidual2D(
-				     const std::vector<double_array>& stress)
+				     const double_array& stress)
 { // _elasticityResidual2D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -255,12 +252,13 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual2D(
   
   assert(2 == cellDim);
   assert(quadWts.size() == numQuadPts);
-  
+  const int stressSize = 3;
+
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-    const double s11 = stress[iQuad][0];
-    const double s22 = stress[iQuad][1];
-    const double s12 = stress[iQuad][2];
+    const double s11 = stress[iQuad*stressSize+0];
+    const double s22 = stress[iQuad*stressSize+1];
+    const double s12 = stress[iQuad*stressSize+2];
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
@@ -277,7 +275,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual2D(
 // Integrate elasticity term in residual for 3-D cells.
 void
 pylith::feassemble::IntegratorElasticity::_elasticityResidual3D(
-				     const std::vector<double_array>& stress)
+				     const double_array& stress)
 { // _elasticityResidual3D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -289,15 +287,16 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual3D(
   
   assert(3 == cellDim);
   assert(quadWts.size() == numQuadPts);
+  const int stressSize = 6;
   
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-    const double s11 = stress[iQuad][0];
-    const double s22 = stress[iQuad][1];
-    const double s33 = stress[iQuad][2];
-    const double s12 = stress[iQuad][3];
-    const double s23 = stress[iQuad][4];
-    const double s13 = stress[iQuad][5];
+    const double s11 = stress[iQuad*stressSize+0];
+    const double s22 = stress[iQuad*stressSize+1];
+    const double s33 = stress[iQuad*stressSize+2];
+    const double s12 = stress[iQuad*stressSize+3];
+    const double s23 = stress[iQuad*stressSize+4];
+    const double s13 = stress[iQuad*stressSize+5];
     
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
@@ -319,7 +318,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual3D(
 // Integrate elasticity term in Jacobian for 1-D cells.
 void
 pylith::feassemble::IntegratorElasticity::_elasticityJacobian1D(
-			       const std::vector<double_array>& elasticConsts)
+			       const double_array& elasticConsts)
 { // _elasticityJacobian1D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -334,7 +333,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian1D(
   
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-    const double C1111 = elasticConsts[iQuad][0];
+    const double C1111 = elasticConsts[iQuad];
     for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
       const double valI = wt*basisDeriv[iQ+iBasis]*C1111;
       for (int jBasis=0; jBasis < numBasis; ++jBasis) {
@@ -352,7 +351,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian1D(
 // Integrate elasticity term in Jacobian for 2-D cells.
 void
 pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(
-			       const std::vector<double_array>& elasticConsts)
+			       const double_array& elasticConsts)
 { // _elasticityJacobian2D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -364,19 +363,20 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(
   
   assert(2 == cellDim);
   assert(quadWts.size() == numQuadPts);
-  
+  const int numConsts = 6;
+
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const double wt = quadWts[iQuad] * jacobianDet[iQuad];
     // tau_ij = C_ijkl * e_kl
     //        = C_ijlk * 0.5 (u_k,l + u_l,k)
     //        = 0.5 * C_ijkl * (u_k,l + u_l,k)
     // divide C_ijkl by 2 if k != l
-    const double C1111 = elasticConsts[iQuad][0];
-    const double C1122 = elasticConsts[iQuad][1];
-    const double C1112 = elasticConsts[iQuad][2]/2.0;
-    const double C2222 = elasticConsts[iQuad][3];
-    const double C2212 = elasticConsts[iQuad][4]/2.0;
-    const double C1212 = elasticConsts[iQuad][5]/2.0;
+    const double C1111 = elasticConsts[iQuad*numConsts+0];
+    const double C1122 = elasticConsts[iQuad*numConsts+1];
+    const double C1112 = elasticConsts[iQuad*numConsts+2]/2.0;
+    const double C2222 = elasticConsts[iQuad*numConsts+3];
+    const double C2212 = elasticConsts[iQuad*numConsts+4]/2.0;
+    const double C1212 = elasticConsts[iQuad*numConsts+5]/2.0;
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
@@ -415,7 +415,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(
 // Integrate elasticity term in Jacobian for 3-D cells.
 void
 pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
-			       const std::vector<double_array>& elasticConsts)
+			       const double_array& elasticConsts)
 { // _elasticityJacobian3D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -427,7 +427,8 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
   
   assert(3 == cellDim);
   assert(quadWts.size() == numQuadPts);
-  
+  const int numConsts = 21;
+
   // Compute Jacobian for consistent tangent matrix
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const double wt = quadWts[iQuad] * jacobianDet[iQuad];
@@ -435,27 +436,27 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
     //        = C_ijlk * 0.5 (u_k,l + u_l,k)
     //        = 0.5 * C_ijkl * (u_k,l + u_l,k)
     // divide C_ijkl by 2 if k != l
-    const double C1111 = elasticConsts[iQuad][ 0];
-    const double C1122 = elasticConsts[iQuad][ 1];
-    const double C1133 = elasticConsts[iQuad][ 2];
-    const double C1112 = elasticConsts[iQuad][ 3]/2.0;
-    const double C1123 = elasticConsts[iQuad][ 4]/2.0;
-    const double C1113 = elasticConsts[iQuad][ 5]/2.0;
-    const double C2222 = elasticConsts[iQuad][ 6];
-    const double C2233 = elasticConsts[iQuad][ 7];
-    const double C2212 = elasticConsts[iQuad][ 8]/2.0;
-    const double C2223 = elasticConsts[iQuad][ 9]/2.0;
-    const double C2213 = elasticConsts[iQuad][10]/2.0;
-    const double C3333 = elasticConsts[iQuad][11];
-    const double C3312 = elasticConsts[iQuad][12]/2.0;
-    const double C3323 = elasticConsts[iQuad][13]/2.0;
-    const double C3313 = elasticConsts[iQuad][14]/2.0;
-    const double C1212 = elasticConsts[iQuad][15]/2.0;
-    const double C1223 = elasticConsts[iQuad][16]/2.0;
-    const double C1213 = elasticConsts[iQuad][17]/2.0;
-    const double C2323 = elasticConsts[iQuad][18]/2.0;
-    const double C2313 = elasticConsts[iQuad][19]/2.0;
-    const double C1313 = elasticConsts[iQuad][20]/2.0;
+    const double C1111 = elasticConsts[iQuad*numConsts+ 0];
+    const double C1122 = elasticConsts[iQuad*numConsts+ 1];
+    const double C1133 = elasticConsts[iQuad*numConsts+ 2];
+    const double C1112 = elasticConsts[iQuad*numConsts+ 3] / 2.0;
+    const double C1123 = elasticConsts[iQuad*numConsts+ 4] / 2.0;
+    const double C1113 = elasticConsts[iQuad*numConsts+ 5] / 2.0;
+    const double C2222 = elasticConsts[iQuad*numConsts+ 6];
+    const double C2233 = elasticConsts[iQuad*numConsts+ 7];
+    const double C2212 = elasticConsts[iQuad*numConsts+ 8] / 2.0;
+    const double C2223 = elasticConsts[iQuad*numConsts+ 9] / 2.0;
+    const double C2213 = elasticConsts[iQuad*numConsts+10] / 2.0;
+    const double C3333 = elasticConsts[iQuad*numConsts+11];
+    const double C3312 = elasticConsts[iQuad*numConsts+12] / 2.0;
+    const double C3323 = elasticConsts[iQuad*numConsts+13] / 2.0;
+    const double C3313 = elasticConsts[iQuad*numConsts+14] / 2.0;
+    const double C1212 = elasticConsts[iQuad*numConsts+15] / 2.0;
+    const double C1223 = elasticConsts[iQuad*numConsts+16] / 2.0;
+    const double C1213 = elasticConsts[iQuad*numConsts+17] / 2.0;
+    const double C2323 = elasticConsts[iQuad*numConsts+18] / 2.0;
+    const double C2313 = elasticConsts[iQuad*numConsts+19] / 2.0;
+    const double C1313 = elasticConsts[iQuad*numConsts+20] / 2.0;
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
@@ -526,91 +527,92 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
 // ----------------------------------------------------------------------
 void
 pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D(
-					    std::vector<double_array>* strain,
+					    double_array* strain,
 					    const double_array& basisDeriv,
 					    const double_array& disp,
-					    const int numBasis)
+					    const int numBasis,
+					    const int numQuadPts)
 { // calcTotalStrain1D
   assert(0 != strain);
-  
-  const int dim = 1;
-  const int numQuadPts = strain->size();
 
+  const int dim = 1;
+  
   assert(basisDeriv.size() == numQuadPts*numBasis*dim);
   assert(disp.size() == numBasis*dim);
 
+  (*strain) = 0.0;
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    assert(1 == (*strain)[iQuad].size());
-    (*strain)[iQuad] *= 0.0;
     for (int iBasis=0; iBasis < numBasis; ++iBasis)
-      (*strain)[iQuad][0] += 
-	basisDeriv[iQuad*numBasis+iBasis] * disp[iBasis];
+      (*strain)[iQuad] += basisDeriv[iQuad*numBasis+iBasis] * disp[iBasis];
   } // for
 } // calcTotalStrain1D
 
 // ----------------------------------------------------------------------
 void
 pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D(
-					    std::vector<double_array>* strain,
+					    double_array* strain,
 					    const double_array& basisDeriv,
 					    const double_array& disp,
-					    const int numBasis)
+					    const int numBasis,
+					    const int numQuadPts)
 { // calcTotalStrain2D
   assert(0 != strain);
   
   const int dim = 2;
-  const int numQuadPts = strain->size();
 
   assert(basisDeriv.size() == numQuadPts*numBasis*dim);
   assert(disp.size() == numBasis*dim);
 
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    assert(3 == (*strain)[iQuad].size());
-    (*strain)[iQuad] *= 0.0;
+  (*strain) = 0.0;
+  const int strainSize = 3;
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
     for (int iBasis=0, iQ=iQuad*numBasis*dim; iBasis < numBasis; ++iBasis) {
-      (*strain)[iQuad][0] += basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim  ];
-      (*strain)[iQuad][1] += basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+1];
-      (*strain)[iQuad][2] += 
+      (*strain)[iQuad*strainSize+0] += 
+	basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim  ];
+      (*strain)[iQuad*strainSize+1] += 
+	basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+1];
+      (*strain)[iQuad*strainSize+2] += 
 	0.5 * (basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim  ] +
 	       basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+1]);
     } // for
-  } // for
 } // calcTotalStrain2D
 
 // ----------------------------------------------------------------------
 void
 pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D(
-					    std::vector<double_array>* strain,
+					    double_array* strain,
 					    const double_array& basisDeriv,
 					    const double_array& disp,
-					    const int numBasis)
+					    const int numBasis,
+					    const int numQuadPts)
 { // calcTotalStrain3D
   assert(0 != strain);
 
   const int dim = 3;
-  const int numQuadPts = strain->size();
 
   assert(basisDeriv.size() == numQuadPts*numBasis*dim);
   assert(disp.size() == numBasis*dim);
 
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    assert(6 == (*strain)[iQuad].size());
-    (*strain)[iQuad] *= 0.0;
+  (*strain) = 0.0;
+  const int strainSize = 6;
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
     for (int iBasis=0, iQ=iQuad*numBasis*dim; iBasis < numBasis; ++iBasis) {
-      (*strain)[iQuad][0] += basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim  ];
-      (*strain)[iQuad][1] += basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+1];
-      (*strain)[iQuad][2] += basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim+2];
-      (*strain)[iQuad][3] += 
+      (*strain)[iQuad*strainSize+0] += 
+	basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim  ];
+      (*strain)[iQuad*strainSize+1] += 
+	basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+1];
+      (*strain)[iQuad*strainSize+2] += 
+	basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim+2];
+      (*strain)[iQuad*strainSize+3] += 
 	0.5 * (basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim  ] +
 	       basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+1]);
-      (*strain)[iQuad][4] += 
+      (*strain)[iQuad*strainSize+4] += 
 	0.5 * (basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim+1] +
 	       basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+2]);
-      (*strain)[iQuad][5] += 
+      (*strain)[iQuad*strainSize+5] += 
 	0.5 * (basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim  ] +
 	       basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+2]);
     } // for
-  } // for
 } // calcTotalStrain3D
 
 

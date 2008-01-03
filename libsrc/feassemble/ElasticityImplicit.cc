@@ -80,7 +80,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 { // integrateResidual
   /// Member prototype for _elasticityResidualXD()
   typedef void (pylith::feassemble::ElasticityImplicit::*elasticityResidual_fn_type)
-    (const std::vector<double_array>&);
+    (const double_array&);
   
   assert(0 != _quadrature);
   assert(0 != _material);
@@ -174,11 +174,8 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   //double_array gravCell(cellVecSize);
 
   // Allocate vector for total strain
-  std::vector<double_array> totalStrain(numQuadPts);
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    totalStrain[iQuad].resize(tensorSize);
-    totalStrain[iQuad] = 0.0;
-  } // for
+  double_array totalStrain(numQuadPts*tensorSize);
+  totalStrain = 0.0;
   PetscLogEventEnd(setupEvent,0,0,0,0);
 
   // Loop over cells
@@ -222,7 +219,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     // with gravity vector.
 
     // Get density at quadrature points for this cell
-    const std::vector<double_array>& density = _material->calcDensity();
+    const double_array& density = _material->calcDensity();
 
     // Compute action for element body forces
     if (!grav.isNull()) {
@@ -243,9 +240,9 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
     // Compute B(transpose) * sigma, first computing strains
     PetscLogEventBegin(stressEvent,0,0,0,0);
-    calcTotalStrainFn(&totalStrain, basisDeriv, dispTBctpdtCell, numBasis);
-    const std::vector<double_array>& stress = 
-      _material->calcStress(totalStrain);
+    calcTotalStrainFn(&totalStrain, basisDeriv, dispTBctpdtCell, 
+		      numBasis, numQuadPts);
+    const double_array& stress = _material->calcStress(totalStrain);
     PetscLogEventEnd(stressEvent,0,0,0,0);
 
     PetscLogEventBegin(computeEvent,0,0,0,0);
@@ -281,7 +278,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 { // integrateJacobian
   /// Member prototype for _elasticityJacobianXD()
   typedef void (pylith::feassemble::ElasticityImplicit::*elasticityJacobian_fn_type)
-    (const std::vector<double_array>&);
+    (const double_array&);
 
   assert(0 != _quadrature);
   assert(0 != _material);
@@ -354,11 +351,8 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   double_array dispTBctpdtCell(cellVecSize);
 
   // Allocate vector for total strain
-  std::vector<double_array> totalStrain(numQuadPts);
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    totalStrain[iQuad].resize(tensorSize);
-    totalStrain[iQuad] = 0.0;
-  } // for
+  double_array totalStrain(numQuadPts*tensorSize);
+  totalStrain = 0.0;
 
 #ifdef FASTER
   fields->createCustomAtlas("material-id", materialId);
@@ -393,10 +387,11 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     const double_array& jacobianDet = _quadrature->jacobianDet();
 
     // Compute strains
-    calcTotalStrainFn(&totalStrain, basisDeriv, dispTBctpdtCell, numBasis);
+    calcTotalStrainFn(&totalStrain, basisDeriv, dispTBctpdtCell, 
+		      numBasis, numQuadPts);
       
     // Get "elasticity" matrix at quadrature points for this cell
-    const std::vector<double_array>& elasticConsts = 
+    const double_array& elasticConsts = 
       _material->calcDerivElastic(totalStrain);
 
     CALL_MEMBER_FN(*this, elasticityJacobianFn)(elasticConsts);
