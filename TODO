@@ -84,14 +84,13 @@ Release 1.1
          Solution field (time history)
 
   3. Optimization [BRAD]
-     a. ElasticMaterial [try single section for all parameters]
-     b. Fault?
-     c. Absorbing BC?
-     d. Neumann BC?
+     a. Fault? (all parameters in one section)?
+     b. Absorbing BC?
+     c. Neumann BC?
 
-  4. Velocity Dirichlet BC [BRAD]
+  4. Dirichlet BC [BRAD]
 
-      Should we replace Dirichlet BC with BC that has u(t) = u0 + u1*t?
+      Replace Dirichlet BC with BC that has u(t) = u0 + u1*t?
       Default u0 and u1 would be 0.
 
   5. Generalized Maxwell viscoelastic model [CHARLES]
@@ -130,6 +129,12 @@ Release 1.2
 
   5. Replace use of Pyrexembed with SWIG
 
+  6. Multiple earthquake sources
+     Add time of rupture to KinEqSrc
+     Time within rupture is relative to time of rupture
+     Loop over eq sources, if time is greater than time of rupture, use it
+     Would allow Savage-Prescott benchmark.
+
 ======================================================================
 KNOWN DEFICIENCIES
 ======================================================================
@@ -158,11 +163,9 @@ MAIN PRIORITIES (Brad)
 
   reverse
     tet (LaGriT)
-    hex (CUBIT)
 
 2. Add support for multiple kinematic sources. Reference time for each
-event. Add slips together to get current slip. Would allow
-Savage-Prescott benchmark.
+event. Add slips together to get current slip. 
 
 2. Additional unit tests
 
