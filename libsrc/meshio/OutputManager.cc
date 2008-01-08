@@ -15,6 +15,7 @@
 #include "OutputManager.hh" // implementation of class methods
 
 #include "DataWriter.hh" // HOLDSA DataWriter
+#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 #if 0 // TEMPORARY
 #include "VertexFilter.hh" // HOLDS VertexFilter
 #include "CellFilter.hh" // HOLDS CellFilter
@@ -108,7 +109,7 @@ pylith::meshio::OutputManager::close(void)
 void
 pylith::meshio::OutputManager::writeFields(
 				const double t,
-				const topology::FieldsManager* fields,
+				topology::FieldsManager* const fields,
 				const ALE::Obj<ALE::Mesh>& mesh,
 				const spatialdata::geocoords::CoordSys* csMesh)
 { // writeFields
@@ -120,7 +121,7 @@ pylith::meshio::OutputManager::writeFields(
   const int nvfields = _vertexFields.size();
   for (int i=0; i < nvfields; ++i) {
     const ALE::Obj<real_section_type>& field = 
-      fields->getReal(_vertexFields[i]);
+      fields->getReal(_vertexFields[i].c_str());
     
     // Create PETSc Vec for field values (if nec)
     // ADD STUFF HERE
@@ -138,7 +139,7 @@ pylith::meshio::OutputManager::writeFields(
   const int ncfields = _cellFields.size();
   for (int i=0; i < ncfields; ++i) {
     const ALE::Obj<real_section_type>& field = 
-      fields->getReal(_cellFields[i]);
+      fields->getReal(_cellFields[i].c_str());
     
     // Create PETSc Vec for field values (if nec)
     // ADD STUFF HERE

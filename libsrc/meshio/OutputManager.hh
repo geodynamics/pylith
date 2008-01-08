@@ -106,7 +106,7 @@ public :
    * @param csMesh Coordinate system of mesh geometry
    */
   void writeFields(const double t,
-		   const topology::FieldsManager* fields,
+		   topology::FieldsManager* const fields,
 		   const ALE::Obj<ALE::Mesh>& mesh,
 		   const spatialdata::geocoords::CoordSys* csMesh);
 

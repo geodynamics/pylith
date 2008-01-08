@@ -143,8 +143,7 @@ pylith::meshio::DataWriterVTK::writeCellField(
     buffer << name << "_t" << timestamp;
 
     err = PetscViewerPushFormat(_viewer, PETSC_VIEWER_ASCII_VTK_CELL);
-
-    PetscErrorCode err = VecView(*vec, _viewer);
+    err = VecView(*vec, _viewer);
     if (err)
       throw std::runtime_error("Could not write cell data.");   
   } catch (const std::exception& err) {
