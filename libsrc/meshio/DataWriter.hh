@@ -19,7 +19,7 @@
 #if !defined(pylith_meshio_datawriter_hh)
 #define pylith_meshio_datawriter_hh
 
-#include "pylith/utils/petscfwd.hh" // USES PetscVec
+#include "pylith/utils/petscfwd.h" // USES PetscVec
 #include "pylith/utils/sievetypes.hh" // USES ALE::Mesh, real_section_type
 
 namespace pylith {
