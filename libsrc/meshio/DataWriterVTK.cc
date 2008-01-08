@@ -14,7 +14,9 @@
 
 #include "DataWriterVTK.hh" // implementation of class methods
 
-#include <petscmesh_viewers.hh> // USES VTKViewer
+#include "petscmesh_viewers.hh" // USES VTKViewer
+#include "petscvec.h" // USES Petsc Vec
+
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
@@ -96,11 +98,9 @@ pylith::meshio::DataWriterVTK::closeTimeStep(void)
 // ----------------------------------------------------------------------
 // Write field over vertices to file.
 void
-pylith::meshio::DataWriterVTK::writeVertexField(
-				       const double t,
-				       const ALE::Obj<real_section_type>& field,
-				       const char* name,
-				       const ALE::Obj<ALE::Mesh>& mesh)
+pylith::meshio::DataWriterVTK::writeVertexField(const double t,
+						const PetscVec* vec, 
+						const char* name)
 { // writeVertexField
   try {
     std::ostringstream buffer;
@@ -109,12 +109,7 @@ pylith::meshio::DataWriterVTK::writeVertexField(
     sprintf(timestamp, _timeFormat.c_str(), t);
     buffer << name << "_t" << timestamp;
 
-    // Now we are enforcing a 3D solution
-    //   Perhaps we need to push this argument higher
-    const int spaceDim = 3;
-    PetscErrorCode err = SectionView_Sieve_Ascii(mesh, field, 
-						 buffer.str().c_str(), 
-						 _viewer, spaceDim);
+    PetscErrorCode err = VecView(*vec, _viewer);
     if (err)
       throw std::runtime_error("Could not write vertex data.");
   } catch (const std::exception& err) {
@@ -135,9 +130,8 @@ pylith::meshio::DataWriterVTK::writeVertexField(
 void
 pylith::meshio::DataWriterVTK::writeCellField(
 				       const double t,
-				       const ALE::Obj<real_section_type>& field,
-				       const char* name,
-				       const ALE::Obj<ALE::Mesh>& mesh)
+				       const PetscVec* vec,
+				       const char* name)
 { // writeCellField
   try {
     PetscErrorCode err = 0;
@@ -150,11 +144,7 @@ pylith::meshio::DataWriterVTK::writeCellField(
 
     err = PetscViewerPushFormat(_viewer, PETSC_VIEWER_ASCII_VTK_CELL);
 
-   // Get fiber dimension of first cell
-   const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
-   const int fiberDim = field->getFiberDimension(*cells->begin());
-   err = SectionView_Sieve_Ascii(mesh, field, buffer.str().c_str(), 
-				 _viewer, fiberDim);
+    PetscErrorCode err = VecView(*vec, _viewer);
     if (err)
       throw std::runtime_error("Could not write cell data.");   
   } catch (const std::exception& err) {
