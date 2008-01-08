@@ -113,51 +113,44 @@ pylith::meshio::OutputManager::writeFields(
 				const spatialdata::geocoords::CoordSys* csMesh)
 { // writeFields
   assert(0 != _writer);
+  assert(0 != fields);
+
   _writer->openTimeStep(t, mesh, csMesh);
 
   const int nvfields = _vertexFields.size();
   for (int i=0; i < nvfields; ++i) {
-    // Try to get field from mesh
-    if (1) {
-      // ADD STUFF HERE
-    } else if (0 != fields) {
-      // If field is not in mesh, try to get it from fields manager
-      // ADD STUFF HERE
-    } else {
-      std::ostringstream msg;
-      msg << "Could not find field '" << _vertexFields[i]
-	  << "' in fields available for output.";
-      throw std::runtime_error(msg.str());
-    } // if/else
+    const ALE::Obj<real_section_type>& field = 
+      fields->getReal(_vertexFields[i]);
     
-    // Extract values from section
+    // Create PETSc Vec for field values (if nec)
+    // ADD STUFF HERE
+
+    // Copy values from section to PETSc Vec
     // ADD STUFF HERE
     
     if (0 != _vertexFilter) {
       // Apply vertex filter
       // ADD STUFF HERE
     } // if
-    //_writer->writeVertexField(t, data, _vertexFields[i], mesh);
+    //_writer->writeVertexField(t, fieldVec, _vertexFields[i], mesh);
   } // for
 
   const int ncfields = _cellFields.size();
   for (int i=0; i < ncfields; ++i) {
-    // Try to get field from mesh
-    if (1) {
-      // ADD STUFF HERE
-    } else if (0 != fields) {
-      // If field is not in mesh, try to get it from fields manager
-      // ADD STUFF HERE
-    } // else
+    const ALE::Obj<real_section_type>& field = 
+      fields->getReal(_cellFields[i]);
     
-    // Extract values from section
+    // Create PETSc Vec for field values (if nec)
+    // ADD STUFF HERE
+
+    // Copy values from section to PETSc Vec
     // ADD STUFF HERE
     
     if (0 != _cellFilter) {
       // Apply vertex filter
       // ADD STUFF HERE
     } // if
-    //_writer->writeCellField(t, data, _cellFields[i], mesh);
+    //_writer->writeCellField(t, fieldVec, _cellFields[i], mesh);
   } // for
 
   _writer->closeTimeStep();

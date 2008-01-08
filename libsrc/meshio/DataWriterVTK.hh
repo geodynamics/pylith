@@ -67,26 +67,22 @@ public :
   /** Write field over vertices to file.
    *
    * @param t Time associated with field.
-   * @param field PETSc field over vertices.
-   * @param mesh Finite-element mesh
+   * @param vec PETSc Vec field over vertices.
    * @param name Name of field.
    */
   void writeVertexField(const double t,
-			const ALE::Obj<real_section_type>& field,
-			const char* name,
-			const ALE::Obj<ALE::Mesh>& mesh);
+			const PetscVec* vec,
+			const char* name);
 
   /** Write field over cells to file.
    *
    * @param t Time associated with field.
-   * @param field PETSc field over cells.
+   * @param vec PETSc Vec field over cells.
    * @param name Name of field.
-   * @param mesh PETSc mesh object.
    */
   void writeCellField(const double t,
-		      const ALE::Obj<real_section_type>& field,
-		      const char* name,
-		      const ALE::Obj<ALE::Mesh>& mesh);
+		      const PetscVec* vec,
+		      const char* name);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
