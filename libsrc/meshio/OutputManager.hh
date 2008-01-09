@@ -19,7 +19,8 @@
 #if !defined(pylith_meshio_outputmanager_hh)
 #define pylith_meshio_outputmanager_hh
 
-#include "pylith/utils/sievetypes.hh" // USES ALE::Obj, ALE::Mesh, real_section_type
+#include "pylith/utils/sievetypes.hh" // USES ALE::Mesh, real_section_type
+#include <map> // USES std::map
 
 namespace pylith {
   namespace meshio {
@@ -47,6 +48,11 @@ class pylith::meshio::OutputManager
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
+  typedef std::map<std::string, std::string> map_names_type;
+
+// PUBLIC METHODS ///////////////////////////////////////////////////////
+public :
+
   /// Constructor
   OutputManager(void);
 
@@ -61,19 +67,15 @@ public :
 
   /** Set which vertex fields to output.
    *
-   * @param names Names of fields.
-   * @param nfields Number of fields
+   * @param fields Map of names and field labels.
    */
-  void vertexFields(const char** names,
-		    const int nfields);
+  void vertexFields(const map_names_type& fields);
 
   /** Set which cell fields to output.
    *
-   * @param names Names of fields.
-   * @param nfields Number of fields
+   * @param fields Map of names and field labels.
    */
-  void cellFields(const char** names,
-		  const int nfields);
+  void cellFields(const map_names_type& fields);
 
   /** Set filter for vertex data.
    *
@@ -114,8 +116,11 @@ public :
 
 private :
 
-  std::vector<std::string> _vertexFields; ///< Names of vertex fields to output
-  std::vector<std::string> _cellFields; ///< Names of cell fields to output
+  /// Name and section label of vertex fields to output
+  map_names_type _vertexFields;
+
+  /// Name and section label of cell fields to output
+  map_names_type _cellFields;
 
   DataWriter* _writer; ///< Writer for data
   VertexFilter* _vertexFilter; ///< Filter applied to vertex data
