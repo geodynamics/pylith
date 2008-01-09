@@ -42,28 +42,6 @@ pylith::meshio::OutputManager::~OutputManager(void)
 } // destructor  
 
 // ----------------------------------------------------------------------
-// Set which vertex fields to output.
-void
-pylith::meshio::OutputManager::vertexFields(const char** names,
-					    const int nfields)
-{ // vertexFields
-  _vertexFields.resize(nfields);
-  for (int i=0; i < nfields; ++i)
-    _vertexFields[i] = names[i];
-} // vertexFields
-
-// ----------------------------------------------------------------------
-// Set which cell fields to output.
-void
-pylith::meshio::OutputManager::cellFields(const char** names,
-					  const int nfields)
-{ // cellFields
-  _cellFields.resize(nfields);
-  for (int i=0; i < nfields; ++i)
-    _cellFields[i] = names[i];
-} // cellFields
-
-// ----------------------------------------------------------------------
 // Set filter for vertex data.
 void
 pylith::meshio::OutputManager::vertexFilter(const VertexFilter* filter)
@@ -118,40 +96,35 @@ pylith::meshio::OutputManager::writeFields(
 
   _writer->openTimeStep(t, mesh, csMesh);
 
-  const int nvfields = _vertexFields.size();
-  for (int i=0; i < nvfields; ++i) {
-    const ALE::Obj<real_section_type>& field = 
-      fields->getReal(_vertexFields[i].c_str());
-    
-    // Create PETSc Vec for field values (if nec)
-    // ADD STUFF HERE
+  
+  for (map_names_type::iterator f_iter=_vertexFields.begin();
+       f_iter != _vertexFields.end();
+       ++f_iter) {
+    const char* fieldName = f_iter->first.c_str();
+    const char* fieldLabel = f_iter->second.c_str();
+    const ALE::Obj<real_section_type>& field = fields->getReal(fieldLabel);
 
-    // Copy values from section to PETSc Vec
-    // ADD STUFF HERE
-    
-    if (0 != _vertexFilter) {
-      // Apply vertex filter
-      // ADD STUFF HERE
-    } // if
-    //_writer->writeVertexField(t, fieldVec, _vertexFields[i], mesh);
+#if 0
+    const ALE::Obj<real_section_type>& fieldFiltered = 
+      (0 != _vertexFilter) ? field : _vertexFilter->filter(field);
+
+    _writer->writeVertexField(t, fieldFiltered, fieldName, mesh);
+#endif
   } // for
 
-  const int ncfields = _cellFields.size();
-  for (int i=0; i < ncfields; ++i) {
-    const ALE::Obj<real_section_type>& field = 
-      fields->getReal(_cellFields[i].c_str());
+  for (map_names_type::iterator f_iter=_cellFields.begin();
+       f_iter != _cellFields.end();
+       ++f_iter) {
+    const char* fieldName = f_iter->first.c_str();
+    const char* fieldLabel = f_iter->second.c_str();
+    const ALE::Obj<real_section_type>& field = fields->getReal(fieldLabel);
     
-    // Create PETSc Vec for field values (if nec)
-    // ADD STUFF HERE
+#if 0
+    const ALE::Obj<real_section_type>& fieldFiltered = 
+      (0 != _cellFilter) ? field : _cellFilter->filter(field);
 
-    // Copy values from section to PETSc Vec
-    // ADD STUFF HERE
-    
-    if (0 != _cellFilter) {
-      // Apply vertex filter
-      // ADD STUFF HERE
-    } // if
-    //_writer->writeCellField(t, fieldVec, _cellFields[i], mesh);
+    _writer->writeCellField(t, fieldFiltered, fieldName, mesh);
+#endif
   } // for
 
   _writer->closeTimeStep();
