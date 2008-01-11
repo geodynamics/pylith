@@ -68,6 +68,7 @@ libpylith_la_SOURCES = \
 	materials/ElasticPlaneStrain.cc \
 	materials/ElasticPlaneStress.cc \
 	materials/MaxwellIsotropic3D.cc \
+	materials/ViscoelasticMaxwell.cc \
 	meshio/BinaryIO.cc \
 	meshio/DataWriter.cc \
 	meshio/DataWriterVTK.cc \
