@@ -14,6 +14,8 @@
 
 #include "MaxwellIsotropic3D.hh" // implementation of object methods
 
+#include "ViscoelasticMaxwell.hh" // USES computeVisStrain
+
 #include "pylith/utils/array.hh" // USES double_array
 
 #include "petsc.h" // USES PetscLogFlopsNoCheck
@@ -268,29 +270,9 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
 			      parameters[_MaxwellIsotropic3D::pidStrainT+2])/3.0;
   
   PetscLogFlopsNoCheck(11);
-  // The code below should probably be in a separate function since it
-  // is used more than once.  I should also probably cover the possibility
-  // that Maxwell time is zero (although this should never happen).
-  const double timeFrac = 1.0e-5;
-  const int numTerms = 5;
-  double dq = 0.0;
-  if(maxwelltime < timeFrac*_dt) {
-    double fSign = 1.0;
-    double factorial = 1.0;
-    double fraction = 1.0;
-    dq = 1.0;
-    for (int iTerm=2; iTerm <= numTerms; ++iTerm) {
-      factorial *= iTerm;
-      fSign *= -1.0;
-      fraction *= _dt/maxwelltime;
-      dq += fSign*fraction/factorial;
-    } // for
-    PetscLogFlopsNoCheck(1+7*numTerms);
-  } else {
-    dq = maxwelltime*(1.0-exp(-_dt/maxwelltime))/_dt;
-    PetscLogFlopsNoCheck(7);
-  } // else
 
+  // Time integration.
+  double dq = ViscoelasticMaxwell::computeVisStrain(_dt, maxwelltime);
   const double expFac = exp(-_dt/maxwelltime);
   const double elasFac = 2.0*mu;
   double devStrainTpdt = 0.0;
@@ -396,27 +378,7 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsViscoelastic(
   const double mu2 = 2.0 * mu;
   const double bulkmodulus = lambda + mu2/3.0;
 
-  const double timeFrac = 1.0e-5;
-  const int numTerms = 5;
-  double dq = 0.0;
-
-  PetscLogFlopsNoCheck(3);
-  if(maxwelltime < timeFrac*_dt) {
-    double fSign = 1.0;
-    double factorial = 1.0;
-    double fraction = 1.0;
-    dq = 1.0;
-    for (int iTerm=2; iTerm <= numTerms; ++iTerm) {
-      factorial *= iTerm;
-      fSign *= -1.0;
-      fraction *= _dt/maxwelltime;
-      dq += fSign*fraction/factorial;
-    } // for
-    PetscLogFlopsNoCheck(1+7*numTerms);
-  } else {
-    dq = maxwelltime*(1.0-exp(-_dt/maxwelltime))/_dt;
-    PetscLogFlopsNoCheck(7);
-  } // else
+  double dq = ViscoelasticMaxwell::computeVisStrain(_dt, maxwelltime);
 
   const double visFac = mu*dq/3.0;
   elasticConsts[ 0] = bulkmodulus + 4.0*visFac; // C1111
@@ -529,28 +491,7 @@ pylith::materials::MaxwellIsotropic3D::_updateStateViscoelastic(
   
   PetscLogFlopsNoCheck(6);
 
-  // The code below should probably be in a separate function since it
-  // is used more than once.  I should also probably cover the possibility
-  // that Maxwell time is zero (although this should never happen).
-  const double timeFrac = 1.0e-5;
-  const int numTerms = 5;
-  double dq = 0.0;
-  if (maxwelltime < timeFrac*_dt) {
-    double fSign = 1.0;
-    double factorial = 1.0;
-    double fraction = 1.0;
-    dq = 1.0;
-    for (int iTerm=2; iTerm <= numTerms; ++iTerm) {
-      factorial *= iTerm;
-      fSign *= -1.0;
-      fraction *= _dt/maxwelltime;
-      dq += fSign*fraction/factorial;
-    } // for
-    PetscLogFlopsNoCheck(1 + 7 * numTerms);
-  } else {
-    dq = maxwelltime*(1.0-exp(-_dt/maxwelltime))/_dt;
-    PetscLogFlopsNoCheck(7);
-  } // else
+  double dq = ViscoelasticMaxwell::computeVisStrain(_dt, maxwelltime);
 
   const double expFac = exp(-_dt/maxwelltime);
   double devStrainTpdt = 0.0;
