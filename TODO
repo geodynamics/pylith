@@ -24,8 +24,8 @@ Release 1.1
      g. Implement output of solution subset (ground surface).
         i. OutputSubdomain
         ii. OutputPoints
-     h. OutputManager/DataWriter
-        i. Implement support for writing vertex coordinates in another 
+     h. VertexFilterChangeCS
+        i. OutputFilter for writing vertex coordinates in another 
            coordinate system.
      i. DataWriterHDF5
 

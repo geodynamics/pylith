@@ -14,8 +14,9 @@
 
 #include "OutputManager.hh" // implementation of class methods
 
-#include "DataWriter.hh" // HOLDSA DataWriter
-#include "OutputFilter.hh" // HOLDS OutputFilter
+#include "DataWriter.hh" // USES DataWriter
+#include "VertexFilter.hh" // USES VertexFilter
+#include "CellFilter.hh" // USES CellFilter
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 
 // ----------------------------------------------------------------------
@@ -85,7 +86,7 @@ pylith::meshio::OutputManager::cellFields(void) const
 // ----------------------------------------------------------------------
 // Set filter for vertex data.
 void
-pylith::meshio::OutputManager::vertexFilter(const OutputFilter* filter)
+pylith::meshio::OutputManager::vertexFilter(const VertexFilter* filter)
 { // vertexFilter
   delete _vertexFilter; _vertexFilter = (0 != filter) ? filter->clone() : 0;
 } // vertexFilter
@@ -93,7 +94,7 @@ pylith::meshio::OutputManager::vertexFilter(const OutputFilter* filter)
 // ----------------------------------------------------------------------
 // Set filter for cell data.
 void
-pylith::meshio::OutputManager::cellFilter(const OutputFilter* filter)
+pylith::meshio::OutputManager::cellFilter(const CellFilter* filter)
 { // cellFilter
   delete _cellFilter; _cellFilter = (0 != filter) ? filter->clone() : 0;
 } // cellFilter

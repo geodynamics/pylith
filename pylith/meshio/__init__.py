@@ -14,13 +14,18 @@
 ##
 ## @brief Python PyLith meshio module initialization
 
-__all__ = ['MeshIO',
+__all__ = ['CellFilter',
+           'DataWriter',
+           'DataWriterVTK',
+           'MeshIO',
            'MeshIOAscii',
            'MeshIOCubit',
            'MeshIOLagrit',
+           'OutputManager',
            'SingleOutput',
            'SolutionIO',
-           'SolutionIOVTK']
+           'SolutionIOVTK',
+           'VertexFilter']
 
 
 # End of file

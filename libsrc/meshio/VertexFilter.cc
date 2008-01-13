@@ -12,36 +12,31 @@
 
 #include <portinfo>
 
-#include "OutputFilter.hh" // implementation of class methods
+#include "VertexFilter.hh" // implementation of class methods
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshio::OutputFilter::OutputFilter(void) :
-  _filterType(VERTEX_FILTER)
+pylith::meshio::VertexFilter::VertexFilter(void)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::OutputFilter::~OutputFilter(void)
+pylith::meshio::VertexFilter::~VertexFilter(void)
 { // destructor
 } // destructor  
 
 // ----------------------------------------------------------------------
 // Copy constructor.
-pylith::meshio::OutputFilter::OutputFilter(const OutputFilter& f) :
-  _filterType(f._filterType)
+pylith::meshio::VertexFilter::VertexFilter(const VertexFilter& f)
 { // copy constructor
 } // copy constructor
 
 // ----------------------------------------------------------------------
 // operator=.
-const pylith::meshio::OutputFilter&
-pylith::meshio::OutputFilter::operator=(const OutputFilter& f)
+const pylith::meshio::VertexFilter&
+pylith::meshio::VertexFilter::operator=(const VertexFilter& f)
 { // operator=
-  if (this != &f) {
-    _filterType = f._filterType;
-  } // if
 } // operator=
 
 
