@@ -78,6 +78,7 @@ libpylith_la_SOURCES = \
 	meshio/MeshIO.cc \
 	meshio/MeshIOAscii.cc \
 	meshio/MeshIOLagrit.cc \
+	meshio/OutputFilter.cc \
 	meshio/OutputManager.cc \
 	meshio/PsetFile.cc \
 	meshio/PsetFileAscii.cc \

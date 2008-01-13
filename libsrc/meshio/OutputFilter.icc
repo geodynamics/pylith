@@ -1,0 +1,25 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_meshio_outputfilter_hh)
+#error OutputFilter.icc must only be included from OutputFilter.hh
+#endif
+
+// Get filter type.
+inline
+pylith::meshio::OutputFilter::FilterEnum
+pylith::meshio::OutputFilter::filterType(void) const {
+  return _filterType;
+}
+
+
+// End of file
