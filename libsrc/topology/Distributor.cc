@@ -76,7 +76,7 @@ pylith::topology::Distributor::write(const ALE::Obj<Mesh>& mesh,
 
   partition->view("PARTITION");
   const double t = 0.0;
-  writer->writeCellField(t, partition, "partition", mesh);
+  writer->writeCellField(t, "partition", partition, mesh);
 } // write
 
 
