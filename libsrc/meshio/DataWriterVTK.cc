@@ -99,10 +99,12 @@ pylith::meshio::DataWriterVTK::closeTimeStep(void)
 void
 pylith::meshio::DataWriterVTK::writeVertexField(
 				       const double t,
-				       const ALE::Obj<real_section_type>& field,
 				       const char* name,
+				       const ALE::Obj<real_section_type>& field,
 				       const ALE::Obj<ALE::Mesh>& mesh)
 { // writeVertexField
+  assert(0 != name);
+
   try {
     std::ostringstream buffer;
     buffer.str("");
@@ -133,10 +135,12 @@ pylith::meshio::DataWriterVTK::writeVertexField(
 void
 pylith::meshio::DataWriterVTK::writeCellField(
 				       const double t,
-				       const ALE::Obj<real_section_type>& field,
 				       const char* name,
+				       const ALE::Obj<real_section_type>& field,
 				       const ALE::Obj<ALE::Mesh>& mesh)
 { // writeCellField
+  assert(0 != name);
+
   try {
     PetscErrorCode err = 0;
 

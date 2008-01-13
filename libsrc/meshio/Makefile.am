@@ -21,6 +21,9 @@ subpkginclude_HEADERS = \
 	MeshIOAscii.icc \
 	MeshIOLagrit.hh \
 	MeshIOLagrit.icc \
+	OutputFilter.hh \
+	OutputFilter.icc \
+	OutputManager.hh \
 	SolutionIO.hh \
 	SolutionIOVTK.hh \
 	SolutionIOVTK.icc

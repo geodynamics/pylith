@@ -27,8 +27,7 @@ namespace pylith {
     class OutputManager;
 
     class DataWriter; // HOLDS DataWriter
-    class VertexFilter; // HOLDSA VertexFilter
-    class CellFilter; // HOLDSA CellFilter
+    class OutputFilter; // HOLDSA OutputFilter
   } // meshio
 
   namespace topology {
@@ -48,6 +47,7 @@ class pylith::meshio::OutputManager
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
+  /// Map to hold field names and mesh labels (name -> label).
   typedef std::map<std::string, std::string> map_names_type;
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
@@ -67,27 +67,47 @@ public :
 
   /** Set which vertex fields to output.
    *
-   * @param fields Map of names and field labels.
+   * @param names Names of fields.
+   * @param labels Mesh labels of fields.
+   * @param numFields Number of fields.
    */
-  void vertexFields(const map_names_type& fields);
+  void vertexFields(const char** names,
+		    const char** labels,
+		    const int numFields);
 
   /** Set which cell fields to output.
    *
-   * @param fields Map of names and field labels.
+   * @param names Names of fields.
+   * @param labels Mesh labels of fields.
+   * @param numFields Number of fields.
    */
-  void cellFields(const map_names_type& fields);
+  void cellFields(const char** names,
+		  const char** labels,
+		  const int numFields);
+
+  /** Get vertex fields to output.
+   *
+   * @returns Map of field name to mesh label for fields.
+   */
+  const map_names_type& vertexFields(void) const;
+
+  /** Get cell fields to output.
+   *
+   * @returns Map of field name to mesh label for fields.
+   */
+  const map_names_type& cellFields(void) const;
 
   /** Set filter for vertex data.
    *
    * @param filter Filter to apply to vertex data before writing.
    */
-  void vertexFilter(const VertexFilter* filter);
+  void vertexFilter(const OutputFilter* filter);
 
   /** Set filter for cell data.
    *
    * @param filter Filter to apply to cell data before writing.
    */
-  void cellFilter(const CellFilter* filter);
+  void cellFilter(const OutputFilter* filter);
 
   /** Prepare for output.
    *
@@ -112,6 +132,43 @@ public :
 		   const ALE::Obj<ALE::Mesh>& mesh,
 		   const spatialdata::geocoords::CoordSys* csMesh);
 
+  /** Setup file for writing fields at time step.
+   *
+   * @param t Time of time step.
+   * @param mesh PETSc mesh object.
+   * @param csMesh Coordinate system of mesh geometry
+   */
+  void openTimeStep(const double t,
+	       const ALE::Obj<ALE::Mesh>& mesh,
+	       const spatialdata::geocoords::CoordSys* csMesh);
+
+  /// End writing fields at time step.
+  void closeTimeStep(void);
+
+  /** Append finite-element vertex field to file.
+   *
+   * @param t Time associated with field.
+   * @param field Vertex field.
+   * @param mesh PETSc mesh object.
+   * @param csMesh Coordinate system of mesh geometry
+   */
+  void appendVertexField(const double t,
+			 const ALE::Obj<real_section_type>& field,
+			 const ALE::Obj<ALE::Mesh>& mesh,
+			 const spatialdata::geocoords::CoordSys* csMesh);
+
+  /** Append finite-element cell field to file.
+   *
+   * @param t Time associated with field.
+   * @param field Cell field.
+   * @param mesh PETSc mesh object.
+   * @param csMesh Coordinate system of mesh geometry
+   */
+  void appendCellField(const double t,
+		       const ALE::Obj<real_section_type>& field,
+		       const ALE::Obj<ALE::Mesh>& mesh,
+		       const spatialdata::geocoords::CoordSys* csMesh);
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 
 private :
@@ -123,8 +180,8 @@ private :
   map_names_type _cellFields;
 
   DataWriter* _writer; ///< Writer for data
-  VertexFilter* _vertexFilter; ///< Filter applied to vertex data
-  CellFilter* _cellFilter; ///< Filter applied to cell data
+  OutputFilter* _vertexFilter; ///< Filter applied to vertex data
+  OutputFilter* _cellFilter; ///< Filter applied to cell data
 
 }; // OutputManager
 
