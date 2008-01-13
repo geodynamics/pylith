@@ -11,56 +11,42 @@
 //
 
 /**
- * @file pylith/meshio/OutputFilter.hh
+ * @file pylith/meshio/VertexFilter.hh
  *
- * @brief C++ object for filtering finite-element output fields.
+ * @brief C++ object for filtering vertex fields when outputing
+ * finite-element data.
  */
 
-#if !defined(pylith_meshio_outputfilter_hh)
-#define pylith_meshio_outputfilter_hh
+#if !defined(pylith_meshio_vertexfilter_hh)
+#define pylith_meshio_vertexfilter_hh
 
 #include "pylith/utils/sievetypes.hh" // USES ALE::Mesh, real_section_type
 
 namespace pylith {
   namespace meshio {
-    class OutputFilter;
+    class VertexFilter;
   } // meshio
 
 } // pylith
 
-class pylith::meshio::OutputFilter
-{ // OutputFilter
-
-// PUBLIC ENUMS /////////////////////////////////////////////////////////
-public :
-
-  /// Type of filter.
-  enum FilterEnum { 
-    VERTEX_FILTER, ///< Filter vertex field.
-    CELL_FILTER ///< Filter cell field.
-  };
+class pylith::meshio::VertexFilter
+{ // VertexFilter
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
-  OutputFilter(void);
+  VertexFilter(void);
 
   /// Destructor
-  ~OutputFilter(void);
+  ~VertexFilter(void);
 
   /** Create copy of filter.
    *
    * @returns Copy of filter.
    */
   virtual
-  OutputFilter* clone(void) const = 0;
-
-  /** Get filter type.
-   *
-   * @returns Type of filter.
-   */
-  FilterEnum filterType(void) const;
+  VertexFilter* clone(void) const = 0;
 
   /** Filter field.
    *
@@ -80,23 +66,18 @@ protected :
    * @param f Filter to copy.
    * @returns Pointer to this.
    */
-  OutputFilter(const OutputFilter& f);
+  VertexFilter(const VertexFilter& f);
 
   /** operator=.
   *
   * @param f Filter to copy.
   * @returns Copy of filter.
   */
-  const OutputFilter& operator=(const OutputFilter& f);
+  const VertexFilter& operator=(const VertexFilter& f);
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
+}; // VertexFilter
 
-  FilterEnum _filterType; ///< Type of filter.
-
-}; // OutputFilter
-
-#endif // pylith_meshio_outputfilter_hh
+#endif // pylith_meshio_vertexfilter_hh
 
 
 // End of file 

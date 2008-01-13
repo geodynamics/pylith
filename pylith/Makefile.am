@@ -75,13 +75,18 @@ nobase_pkgpyexec_PYTHON = \
 	materials/Material.py \
 	materials/MaxwellIsotropic3D.py \
 	meshio/__init__.py \
+	meshio/CellFilter.py \
+	meshio/DataWriter.py \
+	meshio/DataWriterVTK.py \
 	meshio/MeshIO.py \
 	meshio/MeshIOAscii.py \
 	meshio/MeshIOCubit.py \
 	meshio/MeshIOLagrit.py \
+	meshio/OutputManager.py \
 	meshio/SingleOutput.py \
 	meshio/SolutionIO.py \
 	meshio/SolutionIOVTK.py \
+	meshio/VertexFilter.py \
 	problems/__init__.py \
 	problems/Explicit.py \
 	problems/Formulation.py \

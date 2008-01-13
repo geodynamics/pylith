@@ -14,19 +14,20 @@ subpackage = meshio
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
+	CellFilter.hh \
 	DataWriter.hh \
+	DataWriterVTK.hh \
 	MeshIO.hh \
 	MeshIO.icc \
 	MeshIOAscii.hh \
 	MeshIOAscii.icc \
 	MeshIOLagrit.hh \
 	MeshIOLagrit.icc \
-	OutputFilter.hh \
-	OutputFilter.icc \
 	OutputManager.hh \
 	SolutionIO.hh \
 	SolutionIOVTK.hh \
-	SolutionIOVTK.icc
+	SolutionIOVTK.icc \
+	VertexFilter.hh
 
 if ENABLE_CUBIT
   subpkginclude_HEADERS += \

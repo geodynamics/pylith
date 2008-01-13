@@ -10,29 +10,33 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/meshio/DataWriter.py
+## @file pyre/meshio/VertexFilter.py
 ##
-## @brief Python abstract base class for writing finite-element data.
+## @brief Python abstract base class for filtering vertex fields when
+## writing finite-element data.
 ##
-## Factory: output_data_writer
+## Factory: output_vertex_filter
 
 from pyre.components.Component import Component
 
-# DataWriter class
-class DataWriter(Component):
+# VertexFilter class
+class VertexFilter(Component):
   """
-  Python abstract base class for writing finite-element data.
+  Python abstract base class for filtering cell fields when writing
+  finite-element data.
+
+  Factory: output_vertex_filter
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(Component.Inventory):
     """
-    Python object for managing DataWriter facilities and properties.
+    Python object for managing VertexFilter facilities and properties.
     """
 
     ## @class Inventory
-    ## Python object for managing DataWriter facilities and properties.
+    ## Python object for managing VertexFilter facilities and properties.
     ##
     ## \b Properties
     ## @li None
@@ -45,11 +49,11 @@ class DataWriter(Component):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="datawriter"):
+  def __init__(self, name="vertexfilter"):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="datawriter")
+    Component.__init__(self, name, facility="vertexfilter")
     self.cppHandle = None
     return
 
@@ -63,10 +67,11 @@ class DataWriter(Component):
 
   def initialize(self):
     """
-    Initialize writer.
+    Initialize output manager.
     """
-    self._createCppHandle()
-
+    if None == self.cppHandle:
+      import pylith.meshio.meshio as bindings
+      self.cppHandle = bindings.VertexFilter()
     return
 
 
@@ -77,16 +82,16 @@ class DataWriter(Component):
     Set members based using inventory.
     """
     Component._configure(self)
-    self.coordsys = self.inventory.coordsys
     return
 
 
-  def _createCppHandle(self):
-    """
-    Create handle to corresponding C++ object.
-    """
-    raise NotImplementedError("Please implement _createCppHandle() in " \
-                              "derived class.")
-  
-  
-# End of file
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def output_vertex_filter():
+  """
+  Factory associated with VertexFilter.
+  """
+  return VertexFilter()
+
+
+# End of file 

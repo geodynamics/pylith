@@ -70,6 +70,7 @@ libpylith_la_SOURCES = \
 	materials/MaxwellIsotropic3D.cc \
 	materials/ViscoelasticMaxwell.cc \
 	meshio/BinaryIO.cc \
+	meshio/CellFilter.cc \
 	meshio/DataWriter.cc \
 	meshio/DataWriterVTK.cc \
 	meshio/GMVFile.cc \
@@ -78,13 +79,13 @@ libpylith_la_SOURCES = \
 	meshio/MeshIO.cc \
 	meshio/MeshIOAscii.cc \
 	meshio/MeshIOLagrit.cc \
-	meshio/OutputFilter.cc \
 	meshio/OutputManager.cc \
 	meshio/PsetFile.cc \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \
 	meshio/SolutionIO.cc \
 	meshio/SolutionIOVTK.cc \
+	meshio/VertexFilter.cc \
 	topology/FieldsManager.cc \
 	topology/Distributor.cc \
 	utils/EventLogger.cc

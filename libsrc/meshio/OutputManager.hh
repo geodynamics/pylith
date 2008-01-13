@@ -27,7 +27,8 @@ namespace pylith {
     class OutputManager;
 
     class DataWriter; // HOLDS DataWriter
-    class OutputFilter; // HOLDSA OutputFilter
+    class CellFilter; // HOLDSA CellFilter
+    class VertexFilter; // HOLDSA VertexFilter
   } // meshio
 
   namespace topology {
@@ -101,13 +102,13 @@ public :
    *
    * @param filter Filter to apply to vertex data before writing.
    */
-  void vertexFilter(const OutputFilter* filter);
+  void vertexFilter(const VertexFilter* filter);
 
   /** Set filter for cell data.
    *
    * @param filter Filter to apply to cell data before writing.
    */
-  void cellFilter(const OutputFilter* filter);
+  void cellFilter(const CellFilter* filter);
 
   /** Prepare for output.
    *
@@ -184,8 +185,8 @@ private :
   map_names_type _cellFields;
 
   DataWriter* _writer; ///< Writer for data
-  OutputFilter* _vertexFilter; ///< Filter applied to vertex data
-  OutputFilter* _cellFilter; ///< Filter applied to cell data
+  VertexFilter* _vertexFilter; ///< Filter applied to vertex data
+  CellFilter* _cellFilter; ///< Filter applied to cell data
 
 }; // OutputManager
 
