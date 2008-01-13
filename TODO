@@ -10,23 +10,24 @@ Release 1.1
      a. Implement solution output for full mesh
         i. C++ OutputManager
         ii. Bindings for OutputManager, DataWriter, DataWriterVTK
-     b. Implement output of fault data.
+     b. Implement output of partition information.
+     c. Implement output of fault data.
         i. Translation of field names to section labels.
         ii. Compatibility of fault mesh and sections defined over fault.
         iii. FaultCohesiveKin: writeInfo(),writeTimeStep()
-     c. Implement output of material information.
+     d. Implement output of material information.
         i. CellFilterAvg (average data over quadrature points)
-     d. Implement output of Neumann information.
+     e. Implement output of Neumann information.
         i. BoundaryCondition::writeInfo()?
-     e. Implement output of Dirichlet information.
+     f. Implement output of Dirichlet information.
         i. DirichletBoundary versus DirichletPoints
-     f. Implement output of solution subset (ground surface).
+     g. Implement output of solution subset (ground surface).
         i. OutputSubdomain
         ii. OutputPoints
-     g. OutputManager/DataWriter
+     h. OutputManager/DataWriter
         i. Implement support for writing vertex coordinates in another 
            coordinate system.
-     h. DataWriterHDF5
+     i. DataWriterHDF5
 
      Use Cases
 

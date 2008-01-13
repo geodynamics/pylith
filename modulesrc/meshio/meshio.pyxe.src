@@ -628,12 +628,12 @@ cdef class SolutionIO:
     return
 
 
-  def writeTopology(self, mesh, cs):
+  def openTimeStep(self, t, mesh, cs):
     """
-    Write solution topology to file.
+    Prepare for writing solution to file.
     """
-    # create shim for method 'writeTopology'
-    #embed{ void SolutionIO_writeTopology(void* objVptr, void* meshVptr, void* csVptr)
+    # create shim for method 'openTimeStep'
+    #embed{ void SolutionIO_openTimeStep(void* objVptr, double t, void* meshVptr, void* csVptr)
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
@@ -641,7 +641,7 @@ cdef class SolutionIO:
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
       spatialdata::geocoords::CoordSys* cs =
         (spatialdata::geocoords::CoordSys*) csVptr;
-      ((pylith::meshio::SolutionIO*) objVptr)->writeTopology(*mesh, cs);
+      ((pylith::meshio::SolutionIO*) objVptr)->openTimeStep(t, *mesh, cs);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -659,16 +659,41 @@ cdef class SolutionIO:
     if not cs.name == "spatialdata_geocoords_CoordSys":
       raise TypeError, \
             "Argument must be extension module type 'CoordSys'."
-    SolutionIO_writeTopology(self.thisptr, ptrFromHandle(mesh), ptrFromHandle(cs))
+    SolutionIO_openTimeStep(self.thisptr, t, 
+                            ptrFromHandle(mesh), ptrFromHandle(cs))
     return
 
 
-  def writeVertexField(self, t, field, name, mesh):
+  def closeTimeStep(self):
+    """
+    Prepare for writing solution to file.
+    """
+    # create shim for method 'closeTimeStep'
+    #embed{ void SolutionIO_closeTimeStep(void* objVptr)
+    try {
+      assert(0 != objVptr);
+      ((pylith::meshio::SolutionIO*) objVptr)->closeTimeStep();
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    SolutionIO_closeTimeStep(self.thisptr)
+    return
+
+
+  def writeVertexField(self, t, name, field, mesh):
     """
     Write field over vertices to file.
     """
     # create shim for method 'writeVertxField'
-    #embed{ void SolutionIO_writeVertexField(void* objVptr, double t, void* fieldVptr, char* name, void* meshVptr)
+    #embed{ void SolutionIO_writeVertexField(void* objVptr, double t, char* name, void* fieldVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
@@ -677,8 +702,8 @@ cdef class SolutionIO:
       ALE::Obj<pylith::real_section_type>* field =
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::meshio::SolutionIO*) objVptr)->writeVertexField(t, *field,
-                                                                name, *mesh);
+      ((pylith::meshio::SolutionIO*) objVptr)->writeVertexField(t, name,
+                                                                *field, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -695,17 +720,17 @@ cdef class SolutionIO:
             "Argument must be extension module type 'Mesh'."
     cdef void* fieldVptr
     fieldVptr = PyCObject_AsVoidPtr(field)
-    SolutionIO_writeVertexField(self.thisptr, t, fieldVptr, name,
+    SolutionIO_writeVertexField(self.thisptr, t, name, fieldVptr, 
                                 ptrFromHandle(mesh))
     return
 
 
-  def writeCellField(self, t, field, name, mesh):
+  def writeCellField(self, t, name, field, mesh):
     """
     Write field over cells to file.
     """
     # create shim for method 'writeCellField'
-    #embed{ void SolutionIO_writeCellField(void* objVptr, double t, void* fieldVptr, char* name, void* meshVptr)
+    #embed{ void SolutionIO_writeCellField(void* objVptr, double t, char* name, void* fieldVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
@@ -714,7 +739,7 @@ cdef class SolutionIO:
       ALE::Obj<pylith::real_section_type>* field =
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::meshio::SolutionIO*) objVptr)->writeCellField(t, *field, name,
+      ((pylith::meshio::SolutionIO*) objVptr)->writeCellField(t, name, *field,
                                                               *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -732,7 +757,7 @@ cdef class SolutionIO:
             "Argument must be extension module type 'Mesh'."
     cdef void* fieldVptr
     fieldVptr = PyCObject_AsVoidPtr(field)
-    SolutionIO_writeCellField(self.thisptr, t, fieldVptr, name,
+    SolutionIO_writeCellField(self.thisptr, t, name, fieldVptr,
                               ptrFromHandle(mesh))
     return
 

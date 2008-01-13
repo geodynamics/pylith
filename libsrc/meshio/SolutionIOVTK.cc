@@ -74,39 +74,29 @@ pylith::meshio::SolutionIOVTK::close(void)
 } // close
 
 // ----------------------------------------------------------------------
-// Write solution topology to file.
+// Prepare file for data at a new time step.
 void
-pylith::meshio::SolutionIOVTK::writeTopology(const ALE::Obj<ALE::Mesh>& mesh,
-			        const spatialdata::geocoords::CoordSys* csMesh)
-{ // writeTopology
-  #if 0
-  try {
-    PetscErrorCode err = 0;
+pylith::meshio::SolutionIOVTK::openTimeStep(
+			       const double t,
+			       const ALE::Obj<ALE::Mesh>& mesh,
+			       const spatialdata::geocoords::CoordSys* csMesh)
+{ // openTimeStep
+} // openTimeStep
 
-    err = VTKViewer::writeHeader(_viewer);
-    err = VTKViewer::writeVertices(mesh, _viewer);
-    err = VTKViewer::writeElements(mesh, _viewer);
-  } catch (const std::exception& err) {
-    std::ostringstream msg;
-    msg << "Error while writing topology information to VTK file '"
-	<< _filename << "'.\n" << err.what();
-    throw std::runtime_error(msg.str());
-  } catch (...) { 
-    std::ostringstream msg;
-    msg << "Error while writing topology information to VTK file '"
-	<< _filename << "'.\n";
-    throw std::runtime_error(msg.str());
-  } // try/catch
-#endif
-} // writeTopology
+// ----------------------------------------------------------------------
+// Cleanup after writing data for a time step.
+void
+pylith::meshio::SolutionIOVTK::closeTimeStep(void)
+{ // closeTimeStep
+} // closeTimeStep
 
 // ----------------------------------------------------------------------
 // Write field over vertices to file.
 void
 pylith::meshio::SolutionIOVTK::writeVertexField(
 				     const double t,
-				     const ALE::Obj<real_section_type>& field,
 				     const char* name,
+				     const ALE::Obj<real_section_type>& field,
 				     const ALE::Obj<ALE::Mesh>& mesh)
 { // writeVertexField
 
@@ -172,8 +162,8 @@ pylith::meshio::SolutionIOVTK::writeVertexField(
 void
 pylith::meshio::SolutionIOVTK::writeCellField(
 				     const double t,
-				     const ALE::Obj<real_section_type>& field,
 				     const char* name,
+				     const ALE::Obj<real_section_type>& field,
 				     const ALE::Obj<ALE::Mesh>& mesh)
 { // writeVertexField
 

@@ -68,36 +68,41 @@ public :
   /// Close output files.
   void close(void);
 
-  /** Write solution topology to file.
+  /** Prepare file for data at a new time step.
    *
-   * @param mesh PETSc mesh object.
-   * @param 
+   * @param t Time stamp for new data
+   * @param mesh PETSc mesh object
+   * @param csMesh Coordinate system of mesh geometry
    */
-  void writeTopology(const ALE::Obj<ALE::Mesh>& mesh,
-		     const spatialdata::geocoords::CoordSys* csMesh);
+  void openTimeStep(const double t,
+		    const ALE::Obj<ALE::Mesh>& mesh,
+		    const spatialdata::geocoords::CoordSys* csMesh);
+
+  /// Cleanup after writing data for a time step.
+  void closeTimeStep(void);
 
   /** Write field over vertices to file.
    *
    * @param t Time associated with field.
-   * @param field PETSc field over vertices.
    * @param name Name of field.
+   * @param field PETSc field over vertices.
    * @param mesh PETSc mesh object.
    */
   void writeVertexField(const double t,
-			const ALE::Obj<real_section_type>& field,
 			const char* name,
+			const ALE::Obj<real_section_type>& field,
 			const ALE::Obj<ALE::Mesh>& mesh);
 
   /** Write field over cells to file.
    *
    * @param t Time associated with field.
-   * @param field PETSc field over cells.
    * @param name Name of field.
+   * @param field PETSc field over cells.
    * @param mesh PETSc mesh object.
    */
   void writeCellField(const double t,
-		      const ALE::Obj<real_section_type>& field,
 		      const char* name,
+		      const ALE::Obj<real_section_type>& field,
 		      const ALE::Obj<ALE::Mesh>& mesh);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////

@@ -131,30 +131,13 @@ class SolutionIO(Component):
     return
 
 
-  def writeTopology(self):
+  def openTimeStep(self, t, istep):
     """
-    Write solution topology to file.
+    Prepare for writing solution to file.
     """
-    logEvent = "%swriteTopo" % self._loggingPrefix
+    logEvent = "%sopenStep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
-    self._info.log("Writing solution topology.")
-
-    assert(self.cppHandle != None)
-    assert(self.mesh.cppHandle != None)
-    assert(self.mesh.coordsys.cppHandle != None)
-    self.cppHandle.writeTopology(self.mesh.cppHandle,
-                                 self.mesh.coordsys.cppHandle)
-
-    self._logger.eventEnd(logEvent)    
-    return
-
-
-  def writeVertexField(self, t, istep, field, name):
-    """
-    Write field over vertices at time t to file.
-    """
-    logEvent = "%swriteVertex" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)    
+    self._info.log("Preparing for writing solution to file.")
 
     write = False
     if self.istep == None or not "value" in dir(self.t):
@@ -164,11 +147,47 @@ class SolutionIO(Component):
         write = True
     elif t >= self.t + self.dt:
       write = True
-    if write:
+    self.writeFlag = write
+
+    assert(self.cppHandle != None)
+    assert(self.mesh.cppHandle != None)
+    assert(self.mesh.coordsys.cppHandle != None)
+    self.cppHandle.openTimeStep(t.value,
+                                self.mesh.cppHandle,
+                                self.mesh.coordsys.cppHandle)
+
+    self._logger.eventEnd(logEvent)    
+    return
+
+
+  def closeTimeStep(self):
+    """
+    Cleanup after writing solution to file.
+    """
+    logEvent = "%scloseStep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)    
+    self._info.log("Cleaning up afterwriting solution to file.")
+
+    self.writeFlag = False
+    assert(self.cppHandle != None)
+    self.cppHandle.closeTimeStep()
+
+    self._logger.eventEnd(logEvent)    
+    return
+
+
+  def writeVertexField(self, t, istep, name, field):
+    """
+    Write field over vertices at time t to file.
+    """
+    logEvent = "%swriteVertex" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)    
+
+    if self.writeFlag:
       self._info.log("Writing solution field '%s'." % name)
       assert(self.cppHandle != None)
       assert(self.mesh.cppHandle != None)
-      self.cppHandle.writeVertexField(t.value, field, name,
+      self.cppHandle.writeVertexField(t.value, name, field,
                                       self.mesh.cppHandle)
       self.istep = istep
       self.t = t
@@ -177,26 +196,19 @@ class SolutionIO(Component):
     return
 
 
-  def writeCellField(self, t, istep, field, name):
+  def writeCellField(self, t, istep, name, field):
     """
     Write field over cells at time t to file.
     """
     logEvent = "%swriteCell" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    write = False
-    if self.istep == None or not "value" in dir(self.t):
-      write = True
-    elif self.outputFreq == "skip":
-      if istep > self.istep + self.skip:
-        write = True
-    elif t >= self.t + self.dt:
-      write = True
-    if write:
+    if self.writeFlag:
       self._info.log("Writing solution field '%s'." % name)
       assert(self.cppHandle != None)
       assert(self.mesh.cppHandle != None)
-      self.cppHandle.writeCellField(t.value, field, name, self.mesh.cppHandle)
+      self.cppHandle.writeCellField(t.value, name, field, 
+                                    self.mesh.cppHandle)
       self.istep = istep
       self.t = t
 
@@ -244,12 +256,13 @@ class SolutionIO(Component):
 
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("FE Integrator")
+    logger.setClassName("FE Output")
     logger.initialize()
 
     events = ["open",
               "close",
-              "writeTopo",
+              "openStep",
+              "closeStep",
               "writeVertex",
               "writeCell"]
     for event in events:

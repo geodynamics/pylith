@@ -192,7 +192,6 @@ class Formulation(Component):
     self._info.log("Setting up solution output.")
     for output in self.output.bin:
       output.open(self.mesh)
-      output.writeTopology()
     self._debug.log(resourceUsageString())
 
     self._info.log("Creating solution field.")
@@ -250,7 +249,9 @@ class Formulation(Component):
     self._info.log("Writing solution field.")
     field = self.fields.getSolution()
     for output in self.output.bin:
-      output.writeVertexField(t+dt, self._istep, field, self.solnField['label'])
+      output.openTimeStep(t+dt, self._istep)
+      output.writeVertexField(t+dt, self._istep, self.solnField['label'], field)
+      output.closeTimeStep()
     self._istep += 1
 
     self._logger.eventEnd(logEvent)

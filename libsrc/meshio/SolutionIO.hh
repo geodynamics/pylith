@@ -69,39 +69,45 @@ public :
   virtual
   void close(void) = 0;
 
-  /** Write solution topology to file.
+  /** Prepare file for data at a new time step.
    *
-   * @param mesh PETSc mesh object.
-   * @param 
+   * @param t Time stamp for new data
+   * @param mesh PETSc mesh object
+   * @param csMesh Coordinate system of mesh geometry
    */
   virtual
-  void writeTopology(const ALE::Obj<ALE::Mesh>& mesh,
-		     const spatialdata::geocoords::CoordSys* csMesh) = 0;
+  void openTimeStep(const double t,
+		    const ALE::Obj<ALE::Mesh>& mesh,
+		    const spatialdata::geocoords::CoordSys* csMesh) = 0;
+
+  /// Cleanup after writing data for a time step.
+  virtual
+  void closeTimeStep(void) = 0;
 
   /** Write field over vertices to file.
    *
    * @param t Time associated with field.
-   * @param field PETSc field over vertices.
    * @param name Name of field.
+   * @param field PETSc field over vertices.
    * @param mesh PETSc mesh object.
    */
   virtual
   void writeVertexField(const double t,
-			const ALE::Obj<real_section_type>& field,
 			const char* name,
+			const ALE::Obj<real_section_type>& field,
 			const ALE::Obj<ALE::Mesh>& mesh) = 0;
 
   /** Write field over cells to file.
    *
    * @param t Time associated with field.
-   * @param field PETSc field over cells.
    * @param name Name of field.
+   * @param field PETSc field over cells.
    * @param mesh PETSc mesh object.
    */
   virtual
   void writeCellField(const double t,
-		      const ALE::Obj<real_section_type>& field,
 		      const char* name,
+		      const ALE::Obj<real_section_type>& field,
 		      const ALE::Obj<ALE::Mesh>& mesh) = 0;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
