@@ -148,11 +148,13 @@ public :
   /** Append finite-element vertex field to file.
    *
    * @param t Time associated with field.
+   * @param name Name of field.
    * @param field Vertex field.
    * @param mesh PETSc mesh object.
    * @param csMesh Coordinate system of mesh geometry
    */
   void appendVertexField(const double t,
+			 const char* name,
 			 const ALE::Obj<real_section_type>& field,
 			 const ALE::Obj<ALE::Mesh>& mesh,
 			 const spatialdata::geocoords::CoordSys* csMesh);
@@ -160,11 +162,13 @@ public :
   /** Append finite-element cell field to file.
    *
    * @param t Time associated with field.
+   * @param name Name of field.
    * @param field Cell field.
    * @param mesh PETSc mesh object.
    * @param csMesh Coordinate system of mesh geometry
    */
   void appendCellField(const double t,
+		       const char* name,
 		       const ALE::Obj<real_section_type>& field,
 		       const ALE::Obj<ALE::Mesh>& mesh,
 		       const spatialdata::geocoords::CoordSys* csMesh);

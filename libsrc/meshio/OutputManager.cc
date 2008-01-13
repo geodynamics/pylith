@@ -143,7 +143,7 @@ pylith::meshio::OutputManager::writeFields(
     const ALE::Obj<real_section_type>& fieldFiltered = 
       (0 != _vertexFilter) ? field : _vertexFilter->filter(field, mesh);
 
-    _writer->writeVertexField(t, fieldFiltered, fieldName, mesh);
+    _writer->writeVertexField(t, fieldName, fieldFiltered, mesh);
   } // for
 
   for (map_names_type::iterator f_iter=_cellFields.begin();
@@ -156,7 +156,7 @@ pylith::meshio::OutputManager::writeFields(
     const ALE::Obj<real_section_type>& fieldFiltered = 
       (0 != _cellFilter) ? field : _cellFilter->filter(field, mesh);
 
-    _writer->writeCellField(t, fieldFiltered, fieldName, mesh);
+    _writer->writeCellField(t, fieldName, fieldFiltered, mesh);
   } // for
 
   _writer->closeTimeStep();
@@ -197,23 +197,25 @@ pylith::meshio::OutputManager::appendVertexField(
   const ALE::Obj<real_section_type>& fieldFiltered = 
     (0 != _vertexFilter) ? field : _vertexFilter->filter(field, mesh);
 
-  _writer->writeVertexField(t, fieldFiltered, name, mesh);
+  _writer->writeVertexField(t, name, fieldFiltered, mesh);
 } // appendVertexField
 
 // ----------------------------------------------------------------------
 // Append finite-element cell field to file.
 void
-appendCellField(const double t,
-		const ALE::Obj<real_section_type>& field,
-		const ALE::Obj<ALE::Mesh>& mesh,
-		const spatialdata::geocoords::CoordSys* csMesh)
+pylith::meshio::OutputManager::appendCellField(
+				const double t,
+				const char* name,
+				const ALE::Obj<real_section_type>& field,
+				const ALE::Obj<ALE::Mesh>& mesh,
+				const spatialdata::geocoords::CoordSys* csMesh)
 { // appendCellField
   assert(0 != name);
 
   const ALE::Obj<real_section_type>& fieldFiltered = 
     (0 != _cellFilter) ? field : _cellFilter->filter(field, mesh);
 
-  _writer->writeCellField(t, fieldFiltered, name, mesh);
+  _writer->writeCellField(t, name, fieldFiltered, mesh);
 } // appendCellField
 
 
