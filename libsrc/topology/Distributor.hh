@@ -21,8 +21,6 @@
 
 #include "pylith/utils/sievefwd.hh" // USES PETSc Mesh
 
-#include <ALE.hh>
-
 namespace pylith {
   namespace topology {
     class Distributor;

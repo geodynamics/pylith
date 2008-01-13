@@ -23,7 +23,6 @@
 #include "pylith/utils/sievefwd.hh" // USES PETSc Mesh
 #include "pylith/utils/arrayfwd.hh" // USES double_array
 
-#include <ALE.hh>
 #include <string> // HASA std::string
 
 /// Namespace for pylith package
