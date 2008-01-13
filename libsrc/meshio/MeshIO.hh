@@ -18,8 +18,6 @@
 
 #include "pylith/utils/sievefwd.hh" // USES ALE::Obj, ALE::Mesh
 
-#include <ALE.hh>
-
 namespace pylith {
   namespace meshio {
     class MeshIO;
