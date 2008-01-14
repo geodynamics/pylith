@@ -1,0 +1,101 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_materials_genmaxwellisotropic3d_hh)
+#error "GenMaxwellIsotropic3D.icc can only be included from GenMaxwellIsotropic3D.hh"
+#endif
+
+#include <assert.h> // USES assert()
+#include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
+
+// Set current time step.
+inline
+void
+pylith::materials::GenMaxwellIsotropic3D::timeStep(const double dt) {
+  // Jacobian needs to be reformed if the time step size changes.
+  if (_dt > 0.0 && dt != _dt)
+    _needNewJacobian = true;
+  _dt = dt;
+} // timeStep
+
+// Set whether elastic or inelastic constitutive relations are used.
+inline
+void
+pylith::materials::GenMaxwellIsotropic3D::useElasticBehavior(const bool flag) {
+  if (flag) {
+    _calcStressFn = 
+      &pylith::materials::GenMaxwellIsotropic3D::_calcStressElastic;
+    _calcElasticConstsFn = 
+      &pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsElastic;
+    _updateStateFn = 
+      &pylith::materials::GenMaxwellIsotropic3D::_updateStateElastic;
+  } else {
+    _calcStressFn = 
+      &pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic;
+    _calcElasticConstsFn = 
+      &pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic;
+    _updateStateFn = 
+      &pylith::materials::GenMaxwellIsotropic3D::_updateStateViscoelastic;
+  } // if/else
+} // useElasticBehavior
+
+// Get flag indicating whether material implements an empty
+inline
+bool
+pylith::materials::GenMaxwellIsotropic3D::usesUpdateState(void) const {
+  return true;
+} // usesUpdateState
+
+// Compute stress tensor from parameters.
+inline
+void
+pylith::materials::GenMaxwellIsotropic3D::_calcStress(double* const stress,
+						   const int stressSize,
+						   const double* parameters,
+						   const int numParams,
+						   const double* totalStrain,
+						   const int strainSize) {
+  assert(0 != _calcStressFn);
+  CALL_MEMBER_FN(*this, _calcStressFn)(stress, stressSize, 
+				       parameters, numParams,
+				       totalStrain, strainSize);
+} // _calcStress
+
+// Compute derivatives of elasticity matrix from parameters.
+inline
+void
+pylith::materials::GenMaxwellIsotropic3D::_calcElasticConsts(
+						 double* const elasticConsts,
+						 const int numElasticConsts,
+						 const double* parameters,
+						 const int numParams,
+						 const double* totalStrain,
+						 const int strainSize) {
+  assert(0 != _calcElasticConstsFn);
+  CALL_MEMBER_FN(*this, _calcElasticConstsFn)(elasticConsts, numElasticConsts,
+					      parameters, numParams,
+					      totalStrain, strainSize);
+} // _calcElasticConsts
+
+// Update state variables after solve.
+inline
+void
+pylith::materials::GenMaxwellIsotropic3D::_updateState(double* const parameters,
+						    const int numParams,
+						    const double* totalStrain,
+						    const int strainSize) {
+  assert(0 != _updateStateFn);
+  CALL_MEMBER_FN(*this, _updateStateFn)(parameters, numParams,
+					totalStrain, strainSize);
+} // _updateState
+
+// End of file 
