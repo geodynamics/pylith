@@ -110,7 +110,7 @@ class OutputManager(Component):
     self._istep = None
     self.vertexFields = None
     self.cellFields = None
-    self._fieldTranslator = None
+    self._fieldTranslator = copyTranslator
     return
 
 
@@ -283,8 +283,8 @@ class OutputManager(Component):
     self.skip = self.inventory.skip
     self.coordsys = self.inventory.coordsys
     self.writer = self.inventory.writer
-    self.vertexFieldsNames = self.inventory.vertexFields
-    self.cellFieldsNames = self.inventory.cellFields
+    self.vertexFieldNames = self.inventory.vertexFields
+    self.cellFieldNames = self.inventory.cellFields
     self.vertexFilter = self.inventory.vertexFilter
     self.cellFilter = self.inventory.cellFilter
     return
@@ -319,11 +319,10 @@ class OutputManager(Component):
     
     self.vertexFields = {}
     self.cellFields = {}
-    if None != self._fieldTranslator: # TEMPORARY
-      for name in self.vertexFieldNames:
-        self.vertexFields[name] = self._fieldTranslator(name)
-      for name in self.cellFieldNames:
-        self.cellFields[name] = self._fieldTranslator(name)
+    for name in self.vertexFieldNames:
+      self.vertexFields[name] = self._fieldTranslator(name)
+    for name in self.cellFieldNames:
+      self.cellFields[name] = self._fieldTranslator(name)
     return
 
 
@@ -360,6 +359,12 @@ def output_manager():
   Factory associated with OutputManager.
   """
   return OutputManager()
+
+
+# MISCELLANEOUS ////////////////////////////////////////////////////////
+
+def copyTranslator(name):
+  return name
 
 
 # End of file 
