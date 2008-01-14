@@ -25,9 +25,6 @@ subpkginclude_HEADERS = \
 	MeshIOLagrit.hh \
 	MeshIOLagrit.icc \
 	OutputManager.hh \
-	SolutionIO.hh \
-	SolutionIOVTK.hh \
-	SolutionIOVTK.icc \
 	VertexFilter.hh
 
 if ENABLE_CUBIT

@@ -84,8 +84,6 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/MeshIOLagrit.py \
 	meshio/OutputManager.py \
 	meshio/SingleOutput.py \
-	meshio/SolutionIO.py \
-	meshio/SolutionIOVTK.py \
 	meshio/VertexFilter.py \
 	problems/__init__.py \
 	problems/Explicit.py \

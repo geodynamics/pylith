@@ -1223,7 +1223,6 @@ cdef class OutputManager:
       cdef char** labels
       labels = NULL
       numFields = len(fields)
-      print "numFields",numFields
       if numFields > 0:
         names = <char**> malloc(numFields*sizeof(char*))
         labels = <char**> malloc(numFields*sizeof(char*))

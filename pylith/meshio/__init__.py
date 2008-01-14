@@ -23,8 +23,6 @@ __all__ = ['CellFilter',
            'MeshIOLagrit',
            'OutputManager',
            'SingleOutput',
-           'SolutionIO',
-           'SolutionIOVTK',
            'VertexFilter']
 
 
