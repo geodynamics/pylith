@@ -65,13 +65,15 @@ class CellFilter(Component):
     return
 
 
-  def initialize(self):
+  def initialize(self, quadrature):
     """
     Initialize output manager.
     """
-    if None == self.cppHandle:
-      import pylith.meshio.meshio as bindings
-      self.cppHandle = bindings.CellFilter()
+    self._createCppHandle()
+
+    if quadrature != None:
+      assert(None != self.cppHandle)
+      self.cppHandle.quadrature = quadrature.cppHandle
     return
 
 
@@ -84,6 +86,13 @@ class CellFilter(Component):
     Component._configure(self)
     return
 
+
+  def _createCppHandle(self):
+    """
+    Create handle to C++ object.
+    """
+    return
+  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

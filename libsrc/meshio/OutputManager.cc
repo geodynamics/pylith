@@ -140,49 +140,6 @@ pylith::meshio::OutputManager::close(void)
 } // close
 
 // ----------------------------------------------------------------------
-// Write finite-element fields to file.
-void
-pylith::meshio::OutputManager::writeFields(
-				const double t,
-				topology::FieldsManager* const fields,
-				const ALE::Obj<ALE::Mesh>& mesh,
-				const spatialdata::geocoords::CoordSys* csMesh)
-{ // writeFields
-  assert(0 != _writer);
-  assert(0 != fields);
-
-  _writer->openTimeStep(t, mesh, csMesh);
-  
-  for (map_names_type::iterator f_iter=_vertexFields.begin();
-       f_iter != _vertexFields.end();
-       ++f_iter) {
-    const char* fieldName = f_iter->first.c_str();
-    const char* fieldLabel = f_iter->second.c_str();
-    const ALE::Obj<real_section_type>& field = fields->getReal(fieldLabel);
-
-    const ALE::Obj<real_section_type>& fieldFiltered = 
-      (0 != _vertexFilter) ? field : _vertexFilter->filter(field, mesh);
-
-    _writer->writeVertexField(t, fieldName, fieldFiltered, mesh);
-  } // for
-
-  for (map_names_type::iterator f_iter=_cellFields.begin();
-       f_iter != _cellFields.end();
-       ++f_iter) {
-    const char* fieldName = f_iter->first.c_str();
-    const char* fieldLabel = f_iter->second.c_str();
-    const ALE::Obj<real_section_type>& field = fields->getReal(fieldLabel);
-    
-    const ALE::Obj<real_section_type>& fieldFiltered = 
-      (0 != _cellFilter) ? field : _cellFilter->filter(field, mesh);
-
-    _writer->writeCellField(t, fieldName, fieldFiltered, mesh);
-  } // for
-
-  _writer->closeTimeStep();
-} // writeFields
-
-// ----------------------------------------------------------------------
 // Setup file for writing fields at time step.
 void
 pylith::meshio::OutputManager::openTimeStep(const double t,
@@ -209,14 +166,15 @@ pylith::meshio::OutputManager::appendVertexField(
 			       const double t,
 			       const char* name,
 			       const ALE::Obj<real_section_type>& field,
-			       const ALE::Obj<ALE::Mesh>& mesh)
+			       const ALE::Obj<ALE::Mesh>& mesh,
+			       const int dim)
 { // appendVertexField
   assert(0 != name);
 
   const ALE::Obj<real_section_type>& fieldFiltered = 
-    (0 != _vertexFilter) ? field : _vertexFilter->filter(field, mesh);
+    (0 == _vertexFilter) ? field : _vertexFilter->filter(field, mesh);
 
-  _writer->writeVertexField(t, name, fieldFiltered, mesh);
+  _writer->writeVertexField(t, name, fieldFiltered, mesh, dim);
 } // appendVertexField
 
 // ----------------------------------------------------------------------
@@ -226,14 +184,15 @@ pylith::meshio::OutputManager::appendCellField(
 				const double t,
 				const char* name,
 				const ALE::Obj<real_section_type>& field,
-				const ALE::Obj<ALE::Mesh>& mesh)
+				const ALE::Obj<ALE::Mesh>& mesh,
+				const int dim)
 { // appendCellField
   assert(0 != name);
 
   const ALE::Obj<real_section_type>& fieldFiltered = 
-    (0 != _cellFilter) ? field : _cellFilter->filter(field, mesh);
+    (0 == _cellFilter) ? field : _cellFilter->filter(field, mesh);
 
-  _writer->writeCellField(t, name, fieldFiltered, mesh);
+  _writer->writeCellField(t, name, fieldFiltered, mesh, dim);
 } // appendCellField
 
 

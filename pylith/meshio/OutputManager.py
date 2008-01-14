@@ -72,6 +72,7 @@ class OutputManager(Component):
     cellFields = pyre.inventory.list("cell_fields", default=[])
     cellFields.meta['tip'] = "Fields of cell data to output."
 
+    from DataWriterVTK import DataWriterVTK
     writer = pyre.inventory.facility("writer", factory=DataWriterVTK,
                                      family="data_writer")
     writer.meta['tip'] = "Writer for data."
@@ -107,6 +108,8 @@ class OutputManager(Component):
     self.mesh = None
     self._t = None
     self._istep = None
+    self.vertexFields = None
+    self.cellFields = None
     self._fieldTranslator = None
     return
 
@@ -117,13 +120,7 @@ class OutputManager(Component):
     """
     # Verify fields requested for output are available by creating map
     # of names of requested fields to mesh labels.
-    self.vertexFields = {}
-    self.cellFields = {}
-    if None != self.fieldTraslator: # TEMPORARY
-      for name in self.vertexFieldNames:
-        self.vertexFields[name] = self._fieldTranslator(name)
-      for name in self.cellFieldNames:
-        self.cellFields[name] = self._fieldTranslator(name)
+    self._createFieldDicts()
     return
 
 
@@ -135,16 +132,20 @@ class OutputManager(Component):
     return
 
 
-  def initialize(self, quadrature):
+  def initialize(self, quadrature=None):
     """
     Initialize output manager.
     """
+    self._createFieldDicts()
+    
     # Initialize coordinate system
     if self.coordsys is None:
       raise ValueError, "Coordinate system for output is unknown."
     self.coordsys.initialize()
 
     self.cellFilter.initialize(quadrature)
+    self.writer.initialize()
+    self._sync()
     return
 
 
@@ -157,7 +158,6 @@ class OutputManager(Component):
     self._logger.eventBegin(logEvent)    
 
     self.mesh = mesh # Keep handle to mesh
-    self._sync()
     
     assert(None != self.cppHandle)
     assert(None != mesh.cppHandle)
@@ -182,38 +182,6 @@ class OutputManager(Component):
     return
 
 
-  def writeFields(self, t, istep, fields):
-    """
-    Write vertex and cell fields.
-
-    @param fields FieldsManager containing fields (if not in mesh).
-    """
-    logEvent = "%swriteFields" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)    
-
-    write = False
-    if self.istep == None or not "value" in dir(self._t):
-      write = True
-    elif self.outputFreq == "skip":
-      if istep > self._istep + self.skip:
-        write = True
-    elif t >= self._t + self._dt:
-      write = True
-    if write:
-      self._info.log("Writing fields.")
-      assert(None != self.cppHandle)
-      assert(None != mesh.cppHandle)
-      assert(None != mesh.coordsys.cppHandle)
-      self.cppHandle.writeFields(t, fields,
-                                 self.mesh.cppHandle,
-                                 self.mesh.coordsys.cppHandle)
-      self._istep = istep
-      self._t = t
-
-    self._logger.eventEnd(logEvent)
-    return
-  
-
   def openTimeStep(self, t, istep):
     """
     Prepare for writing solution to file.
@@ -223,13 +191,16 @@ class OutputManager(Component):
     self._info.log("Preparing for writing solution to file.")
 
     write = False
-    if self.istep == None or not "value" in dir(self.t):
+    if self._istep == None or not "value" in dir(self._t):
       write = True
     elif self.outputFreq == "skip":
-      if istep > self.istep + self.skip:
+      if istep > self._istep + self.skip:
         write = True
-    elif t >= self.t + self.dt:
+    elif t >= self._t + self.dt:
       write = True
+    if write:
+      self._istep = istep
+      self._t = t
     self.writeFlag = write
 
     assert(self.cppHandle != None)
@@ -251,9 +222,6 @@ class OutputManager(Component):
     self._logger.eventBegin(logEvent)    
     self._info.log("Cleaning up afterwriting solution to file.")
 
-    if self.write:
-      self._istep = istep
-      self._t = t
     self.writeFlag = False
 
     assert(self.cppHandle != None)
@@ -263,7 +231,7 @@ class OutputManager(Component):
     return
 
 
-  def writeVertexField(self, t, istep, name, field):
+  def appendVertexField(self, t, istep, name, field, dim=0):
     """
     Write field over vertices at time t to file.
     """
@@ -274,8 +242,8 @@ class OutputManager(Component):
       self._info.log("Writing solution field '%s'." % name)
       assert(self.cppHandle != None)
       assert(self.mesh.cppHandle != None)
-      self.cppHandle.writeVertexField(t.value, name, field,
-                                      self.mesh.cppHandle)
+      self.cppHandle.appendVertexField(t.value, name, field,
+                                       self.mesh.cppHandle, dim)
       self.istep = istep
       self.t = t
 
@@ -283,7 +251,7 @@ class OutputManager(Component):
     return
 
 
-  def writeCellField(self, t, istep, name, field):
+  def appendCellField(self, t, istep, name, field, dim=0):
     """
     Write field over cells at time t to file.
     """
@@ -294,8 +262,8 @@ class OutputManager(Component):
       self._info.log("Writing solution field '%s'." % name)
       assert(self.cppHandle != None)
       assert(self.mesh.cppHandle != None)
-      self.cppHandle.writeCellField(t.value, name, field, 
-                                    self.mesh.cppHandle)
+      self.cppHandle.appendCellField(t.value, name, field, 
+                                     self.mesh.cppHandle, dim)
       self.istep = istep
       self.t = t
 
@@ -329,12 +297,33 @@ class OutputManager(Component):
     if None == self.cppHandle:
       import pylith.meshio.meshio as bindings
       self.cppHandle = bindings.OutputManager()
-    self.cppHandle.coordsys = self.coordsys
-    self.cppHandle.writer = self.writer
+
+    assert(self.coordsys.cppHandle != None)
+    assert(self.writer.cppHandle != None)
+      
+    self.cppHandle.coordsys = self.coordsys.cppHandle
+    self.cppHandle.writer = self.writer.cppHandle
     self.cppHandle.vertexFields = self.vertexFields
     self.cppHandle.cellFields = self.cellFields
     self.cppHandle.vertexFilter = self.vertexFilter.cppHandle
     self.cppHandle.cellFilter = self.cellFilter.cppHandle
+    return
+
+
+  def _createFieldDicts(self):
+    """
+    Create dictionaries with field names and mesh labels of fields.
+    """
+    if None != self.vertexFields and None != self.cellFields:
+      return
+    
+    self.vertexFields = {}
+    self.cellFields = {}
+    if None != self._fieldTranslator: # TEMPORARY
+      for name in self.vertexFieldNames:
+        self.vertexFields[name] = self._fieldTranslator(name)
+      for name in self.cellFieldNames:
+        self.cellFields[name] = self._fieldTranslator(name)
     return
 
 

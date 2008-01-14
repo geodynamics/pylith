@@ -30,10 +30,6 @@ namespace pylith {
     class CellFilter; // HOLDSA CellFilter
     class VertexFilter; // HOLDSA VertexFilter
   } // meshio
-
-  namespace topology {
-    class FieldsManager; // USES FieldsManager
-  } // topology
 } // pylith
 
 namespace spatialdata {
@@ -128,18 +124,6 @@ public :
   /// Close output files.
   void close(void);
 
-  /** Write finite-element fields to file.
-   *
-   * @param t Time associated with field.
-   * @param fields Fields manager.
-   * @param mesh PETSc mesh object.
-   * @param csMesh Coordinate system of mesh geometry
-   */
-  void writeFields(const double t,
-		   topology::FieldsManager* const fields,
-		   const ALE::Obj<ALE::Mesh>& mesh,
-		   const spatialdata::geocoords::CoordSys* csMesh);
-
   /** Setup file for writing fields at time step.
    *
    * @param t Time of time step.
@@ -159,11 +143,14 @@ public :
    * @param name Name of field.
    * @param field Vertex field.
    * @param mesh PETSc mesh object.
+   * @param dim Fiber dimension to use when writing data
+   *   (=0 means use fiber dimension of field).
    */
   void appendVertexField(const double t,
 			 const char* name,
 			 const ALE::Obj<real_section_type>& field,
-			 const ALE::Obj<ALE::Mesh>& mesh);
+			 const ALE::Obj<ALE::Mesh>& mesh,
+			 const int dim =0);
 
   /** Append finite-element cell field to file.
    *
@@ -172,11 +159,14 @@ public :
    * @param field Cell field.
    * @param mesh PETSc mesh object.
    * @param csMesh Coordinate system of mesh geometry
+   * @param dim Fiber dimension to use when writing data
+   *   (=0 means use fiber dimension of field).
    */
   void appendCellField(const double t,
 		       const char* name,
 		       const ALE::Obj<real_section_type>& field,
-		       const ALE::Obj<ALE::Mesh>& mesh);
+		       const ALE::Obj<ALE::Mesh>& mesh,
+		       const int dim =0);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 

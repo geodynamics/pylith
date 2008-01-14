@@ -28,9 +28,15 @@ namespace pylith {
   } // topology
 
   namespace meshio {
-    class SolutionIO;
+    class OutputManager;
   } // meshio
 } // pylith
+
+namespace spatialdata {
+  namespace geocoords {
+    class CoordSys;
+  } // geocoords
+} // spatialdata
 
 class pylith::topology::Distributor
 { // Distributor
@@ -58,12 +64,14 @@ public :
 
   /** Write partitioning info for distributed mesh.
    *
+   * @param output Output manager for partition information.
    * @param mesh Distributed mesh.
-   * @param writer Writer for partition information.
+   * @param cs Coordinate system for mesh.
    */
   static
-  void write(const ALE::Obj<ALE::Mesh>& mesh,
-	     meshio::SolutionIO* const writer);
+  void write(meshio::OutputManager* const output,
+	     const ALE::Obj<ALE::Mesh>& mesh,
+	     const spatialdata::geocoords::CoordSys* cs);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

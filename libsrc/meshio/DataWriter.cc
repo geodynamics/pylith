@@ -53,7 +53,7 @@ pylith::meshio::DataWriter::openTimeStep(
 } // openTimeStep
 
 // ----------------------------------------------------------------------
-/// Cleanup after writing data for a time step.
+// Cleanup after writing data for a time step.
 void
 pylith::meshio::DataWriter::closeTimeStep(void)
 { // closeTimeStep

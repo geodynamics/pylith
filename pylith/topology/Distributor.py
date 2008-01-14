@@ -41,7 +41,7 @@ class Distributor(Component):
     ## @li \b debug Write partition information to file.
     ##
     ## \b Facilities
-    ## @li \b writer Writer for partition information
+    ## @li \b output Output manager for partition information
 
     import pyre.inventory
 
@@ -53,10 +53,10 @@ class Distributor(Component):
     debug = pyre.inventory.bool("debug", default=False)
     debug.meta['tip'] = "Write partition information to file."
 
-    from pylith.meshio.SolutionIOVTK import SolutionIOVTK
-    writer = pyre.inventory.facility("writer", factory=SolutionIOVTK,
-                                     family="solution_io")
-    writer.meta['tip'] = "Writer for partition information."
+    from pylith.meshio.OutputManager import OutputManager
+    output = pyre.inventory.facility("output", factory=OutputManager,
+                                     family="output_manager")
+    output.meta['tip'] = "Output manager for partition information."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -87,9 +87,9 @@ class Distributor(Component):
     newMesh.coordsys = mesh.coordsys
 
     if self.debug:
-      self.writer.open(newMesh)
-      self.cppHandle.write(newMesh.cppHandle, self.writer.cppHandle)
-      self.writer.close()
+      self.output.initialize()
+      self.cppHandle.write(self.output.cppHandle,
+                           newMesh.cppHandle, newMesh.coordsys.cppHandle)
 
     self._logger.eventEnd(logEvent)
     return newMesh
@@ -104,7 +104,7 @@ class Distributor(Component):
     Component._configure(self)
     self.partitioner = self.inventory.partitioner
     self.debug = self.inventory.debug
-    self.writer = self.inventory.writer
+    self.output = self.inventory.output
     return
 
 

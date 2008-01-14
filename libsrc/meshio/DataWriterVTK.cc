@@ -101,7 +101,7 @@ pylith::meshio::DataWriterVTK::openTimeStep(
 void
 pylith::meshio::DataWriterVTK::closeTimeStep(void)
 { // closeTimeStep
-  PetscViewerDestroy(_viewer);
+  PetscViewerDestroy(_viewer); _viewer = 0;
 } // closeTimeStep
 
 // ----------------------------------------------------------------------
@@ -111,7 +111,8 @@ pylith::meshio::DataWriterVTK::writeVertexField(
 				       const double t,
 				       const char* name,
 				       const ALE::Obj<real_section_type>& field,
-				       const ALE::Obj<ALE::Mesh>& mesh)
+				       const ALE::Obj<ALE::Mesh>& mesh,
+				       const int dim)
 { // writeVertexField
   assert(0 != name);
 
@@ -122,9 +123,13 @@ pylith::meshio::DataWriterVTK::writeVertexField(
     sprintf(timestamp, _timeFormat.c_str(), t);
     buffer << name << "_t" << timestamp;
 
+    const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+   const int fiberDim = 
+     (dim == 0) ? field->getFiberDimension(*vertices->begin()) : dim;
+
     PetscErrorCode err = SectionView_Sieve_Ascii(mesh, field, 
 						 buffer.str().c_str(), 
-						 _viewer);
+						 _viewer, fiberDim);
     if (err)
       throw std::runtime_error("Could not write vertex data.");
   } catch (const std::exception& err) {
@@ -147,7 +152,8 @@ pylith::meshio::DataWriterVTK::writeCellField(
 				       const double t,
 				       const char* name,
 				       const ALE::Obj<real_section_type>& field,
-				       const ALE::Obj<ALE::Mesh>& mesh)
+				       const ALE::Obj<ALE::Mesh>& mesh,
+				       const int dim)
 { // writeCellField
   assert(0 != name);
 
@@ -164,7 +170,8 @@ pylith::meshio::DataWriterVTK::writeCellField(
 
    // Get fiber dimension of first cell
    const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
-   const int fiberDim = field->getFiberDimension(*cells->begin());
+   const int fiberDim = 
+     (dim == 0) ? field->getFiberDimension(*cells->begin()) : dim;
    err = SectionView_Sieve_Ascii(mesh, field, buffer.str().c_str(), 
 				 _viewer, fiberDim);
     if (err)
