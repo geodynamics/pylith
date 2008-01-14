@@ -96,7 +96,7 @@ Release 1.1
       Default u0 and u1 would be 0.
 
       DirichletBoundary
-      DifichletPoints
+      DirichletPoints
 
   5. Generalized Maxwell viscoelastic model [CHARLES]
 
@@ -158,7 +158,7 @@ KNOWN DEFICIENCIES
   is often !good() at eof(). Test of !good() and !eof()?
 
 ======================================================================
-MAIN PRIORITIES (Brad)
+MISC PRIORITIES (Brad)
 ======================================================================
 
 0. CUBIT
@@ -169,27 +169,20 @@ MAIN PRIORITIES (Brad)
   reverse
     tet (LaGriT)
 
-2. Add support for multiple kinematic sources. Reference time for each
-event. Add slips together to get current slip. 
-
 2. Additional unit tests
 
    a. ElasticityExplicit and ElasticityImplicit
       i. multiple materials
       ii. partially constrained DOF
 
-======================================================================
-SECONDARY PRIORITIES
-======================================================================
+3. Want to take advantage of symmetry and block structure of Jacobian
+   matrix when possible.
 
-Want to take advantage of symmetry and block structure of Jacobian
-matrix when possible.
-
-Additional unit tests
+4. Additional unit tests
   a. FaultCohesive
     i. Add checking of faultMesh [not currently used]
 
-1. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
+5. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
    a. Materials C++ code
    b. Integrator C++ code
    b. Material C++ unit tests
@@ -205,7 +198,6 @@ Other (unknown release):
 ----------------------------------------------------------------------
 PyLith 1.1
 ----------------------------------------------------------------------
-Nonlinear solvers
 HDF5 output
   volume (solution field)
   ground surface (or other surfaces) (solution field)
@@ -226,6 +218,7 @@ Fault constitutive models
   Rate- and state-friction
   Uniform friction
   Slip- and rate-weakening friction model
+Nonlinear solvers
 
 ----------------------------------------------------------------------
 PyLith 1.3
@@ -298,7 +291,7 @@ THINGS WE NEED SIEVE TO DO (Matt)
 
   Not used a. Remove extra time in uninterpolated restrict(). May need special method for P1.
 
-  Done c. getStateVars() is way too expensive. It looks like _getParameters() allocates an int_array. Try just using _numParamValues.
+  Done c. getStateVars() is way too expensive. 
 
   Not used d. Same as a) for update
 
