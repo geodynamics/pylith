@@ -21,6 +21,8 @@ subpkginclude_HEADERS = \
 	ElasticMaterial.icc \
 	ElasticPlaneStrain.hh \
 	ElasticPlaneStress.hh \
+	GenMaxwellIsotropic3D.hh \
+	GenMaxwellIsotropic3D.icc \
 	MaxwellIsotropic3D.hh \
 	MaxwellIsotropic3D.icc \
 	Material.hh \

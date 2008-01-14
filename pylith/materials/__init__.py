@@ -23,7 +23,8 @@ __all__ = ['BiMaterial',
            'ElasticStress1D',
            'Homogeneous',
            'Material',
-           'MaxwellIsotropic3D']
+           'MaxwellIsotropic3D',
+           'GenMaxwellIsotropic3D']
 
 
 # End of file

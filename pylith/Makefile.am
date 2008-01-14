@@ -71,6 +71,7 @@ nobase_pkgpyexec_PYTHON = \
 	materials/ElasticPlaneStress.py \
 	materials/ElasticStrain1D.py \
 	materials/ElasticStress1D.py \
+	materials/GenMaxwellIsotropic3D.py \
 	materials/Homogeneous.py \
 	materials/Material.py \
 	materials/MaxwellIsotropic3D.py \
