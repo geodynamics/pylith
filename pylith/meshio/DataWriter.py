@@ -77,7 +77,6 @@ class DataWriter(Component):
     Set members based using inventory.
     """
     Component._configure(self)
-    self.coordsys = self.inventory.coordsys
     return
 
 

@@ -44,9 +44,9 @@ class SingleOutput(ObjectBin):
 
     import pyre.inventory
 
-    from SolutionIOVTK import SolutionIOVTK
-    output = pyre.inventory.facility("output", family="solution_io",
-                                     factory=SolutionIOVTK)
+    from OutputManager import OutputManager
+    output = pyre.inventory.facility("output", family="output_manager",
+                                     factory=OutputManager)
     output.meta['tip'] = "Output manager."
 
 

@@ -7,10 +7,6 @@ Release 1.1
   1. Finish Neumann BC [CHARLES]
 
   2. Reimplement SolutionIO [BRAD & MATT]
-     a. Implement solution output for full mesh
-        i. C++ OutputManager
-        ii. Bindings for OutputManager, DataWriter, DataWriterVTK
-     b. Implement output of partition information.
      c. Implement output of fault data.
         i. Translation of field names to section labels.
         ii. Compatibility of fault mesh and sections defined over fault.

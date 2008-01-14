@@ -69,9 +69,7 @@ class VertexFilter(Component):
     """
     Initialize output manager.
     """
-    if None == self.cppHandle:
-      import pylith.meshio.meshio as bindings
-      self.cppHandle = bindings.VertexFilter()
+    self._createCppHandle()
     return
 
 
@@ -84,6 +82,13 @@ class VertexFilter(Component):
     Component._configure(self)
     return
 
+
+  def _createCppHandle(self):
+    """
+    Create handle to C++ object.
+    """
+    return
+  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

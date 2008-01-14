@@ -11,14 +11,16 @@
 #
 
 #header{
+#include "pylith/meshio/CellFilter.hh"
+#include "pylith/meshio/DataWriter.hh"
+#include "pylith/meshio/DataWriterVTK.hh"
 #include "pylith/meshio/MeshIO.hh"
 #include "pylith/meshio/MeshIOAscii.hh"
 #include "pylith/meshio/MeshIOLagrit.hh"
 #include "pylith/meshio/SolutionIO.hh"
 #include "pylith/meshio/SolutionIOVTK.hh"
 #include "pylith/meshio/OutputManager.hh"
-#include "pylith/meshio/DataWriter.hh"
-#include "pylith/meshio/DataWriterVTK.hh"
+#include "pylith/meshio/VertexFilter.hh"
 
 #if defined(ENABLE_CUBIT)
 #include "pylith/meshio/MeshIOCubit.hh"
@@ -43,6 +45,7 @@ cdef extern from "stdlib.h":
   void* malloc(size_t size)
   void free(void* mem)
 
+# ----------------------------------------------------------------------
 cdef void MeshIO_destructor(void* obj):
   """
   Destroy MeshIO object.
@@ -55,19 +58,6 @@ cdef void MeshIO_destructor(void* obj):
   MeshIO_destructor_cpp(obj)
   return
 
-cdef void SolutionIO_destructor(void* obj):
-  """
-  Destroy SolutionIO object.
-  """
-  # create shim for destructor
-  #embed{ void SolutionIO_destructor_cpp(void* pObj)
-  pylith::meshio::SolutionIO* io = (pylith::meshio::SolutionIO*) pObj;
-  delete io;
-  #}embed
-  SolutionIO_destructor_cpp(obj)
-  return
-
-# ----------------------------------------------------------------------
 cdef class MeshIO:
 
   cdef void* thisptr # Pointer to C++ object
@@ -562,6 +552,18 @@ cdef class MeshIOLagrit(MeshIO):
 
 
 # ----------------------------------------------------------------------
+cdef void SolutionIO_destructor(void* obj):
+  """
+  Destroy SolutionIO object.
+  """
+  # create shim for destructor
+  #embed{ void SolutionIO_destructor_cpp(void* pObj)
+  pylith::meshio::SolutionIO* io = (pylith::meshio::SolutionIO*) pObj;
+  delete io;
+  #}embed
+  SolutionIO_destructor_cpp(obj)
+  return
+
 cdef class SolutionIO:
 
   cdef void* thisptr # Pointer to C++ object
@@ -914,9 +916,28 @@ cdef class OutputManager:
     """
     Constructor.
     """
-    self.handle = None
-    self.thisptr = NULL
+    # create shim for constructor
+    #embed{ void* OutputManager_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::meshio::OutputManager);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
     self.name = "pylith_meshio_OutputManager"
+    self.thisptr = OutputManager_constructor()
+    self.handle = self._createHandle()
     return
 
 
@@ -946,10 +967,10 @@ cdef class OutputManager:
     #}embed
     if mesh.name != "pylith_topology_Mesh":
       raise TypeError, \
-            "Argument must be extension module type 'Mesh'."
+            "Argument 'mesh' must be extension module type 'Mesh'."
     if not cs.name == "spatialdata_geocoords_CoordSys":
       raise TypeError, \
-            "Argument must be extension module type 'CoordSys'."
+            "Argument 'cs' must be extension module type 'CoordSys'."
     OutputManager_open(self.thisptr, ptrFromHandle(mesh),
                        ptrFromHandle(cs))
     return
@@ -976,48 +997,6 @@ cdef class OutputManager:
     } // try/catch
     #}embed
     OutputManager_close(self.thisptr)
-    return
-
-
-  def writeFields(self, t, fields, mesh, cs):
-    """
-    Write fields to file.
-    """
-    # create shim for method 'writeFields'
-    #embed{ void OutputManager_writeFields(void* objVptr, double t, void* fieldsVptr, void* meshVptr, void* csVptr)
-    try {
-      assert(0 != objVptr);
-      assert(0 != fieldsVptr);
-      assert(0 != meshVptr);
-      assert(0 != csVptr);
-      pylith::topology::FieldsManager* fields = 
-        (pylith::topology::FieldsManager*) fieldsVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      spatialdata::geocoords::CoordSys* cs =
-        (spatialdata::geocoords::CoordSys*) csVptr;
-      ((pylith::meshio::OutputManager*) objVptr)->writeFields(t, fields,
-                                                              *mesh, cs);
-    } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (const ALE::Exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.msg().c_str()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
-    if not fields.name == "pylith_topology_FieldsManager":
-      raise TypeError, \
-            "Argument must be extension module type 'FieldsManager'."
-    if not mesh.name == "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument must be extension module type 'Mesh'."
-    cdef void* fieldVptr
-    fieldVptr = PyCObject_AsVoidPtr(field)
-    OutputManager_writeFields(self.thisptr, t, ptrFromHandle(fields), 
-                              ptrFromHandle(mesh), ptrFromHandle(cs))
     return
 
 
@@ -1081,12 +1060,12 @@ cdef class OutputManager:
     return
 
 
-  def appendVertexField(self, t, name, field, mesh):
+  def appendVertexField(self, t, name, field, mesh, dim):
     """
     Append field over vertices to file.
     """
     # create shim for method 'appendVertxField'
-    #embed{ void OutputManager_appendVertexField(void* objVptr, double t, char* name, void* fieldVptr, void* meshVptr)
+    #embed{ void OutputManager_appendVertexField(void* objVptr, double t, char* name, void* fieldVptr, void* meshVptr, int dim)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
@@ -1096,7 +1075,8 @@ cdef class OutputManager:
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
       ((pylith::meshio::OutputManager*) objVptr)->appendVertexField(t, name,
-                                                                *field, *mesh);
+                                                                *field, *mesh,
+                                                                    dim);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -1114,16 +1094,16 @@ cdef class OutputManager:
     cdef void* fieldVptr
     fieldVptr = PyCObject_AsVoidPtr(field)
     OutputManager_appendVertexField(self.thisptr, t, name, fieldVptr, 
-                                ptrFromHandle(mesh))
+                                    ptrFromHandle(mesh), dim)
     return
 
 
-  def appendCellField(self, t, name, field, mesh):
+  def appendCellField(self, t, name, field, mesh, dim):
     """
     Append field over cells to file.
     """
     # create shim for method 'appendCellField'
-    #embed{ void OutputManager_appendCellField(void* objVptr, double t, char* name, void* fieldVptr, void* meshVptr)
+    #embed{ void OutputManager_appendCellField(void* objVptr, double t, char* name, void* fieldVptr, void* meshVptr, int dim)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
@@ -1132,8 +1112,10 @@ cdef class OutputManager:
       ALE::Obj<pylith::real_section_type>* field =
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::meshio::OutputManager*) objVptr)->appendCellField(t, name, *field,
-                                                              *mesh);
+      ((pylith::meshio::OutputManager*) objVptr)->appendCellField(t, name,
+                                                                  *field,
+                                                                  *mesh,
+                                                                  dim);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -1151,7 +1133,7 @@ cdef class OutputManager:
     cdef void* fieldVptr
     fieldVptr = PyCObject_AsVoidPtr(field)
     OutputManager_appendCellField(self.thisptr, t, name, fieldVptr,
-                              ptrFromHandle(mesh))
+                              ptrFromHandle(mesh), dim)
     return
 
 
@@ -1241,12 +1223,13 @@ cdef class OutputManager:
       cdef char** labels
       labels = NULL
       numFields = len(fields)
+      print "numFields",numFields
       if numFields > 0:
         names = <char**> malloc(numFields*sizeof(char*))
         labels = <char**> malloc(numFields*sizeof(char*))
       keys = fields.keys()
       values = fields.values()
-      for i from 0 <= i <= numFields:
+      for i from 0 <= i < numFields:
         strsize = len(keys[i])
         names[i] = <char*> malloc(1+strsize*sizeof(char))
         tmp = keys[i]
@@ -1300,7 +1283,7 @@ cdef class OutputManager:
         labels = <char**> malloc(numFields*sizeof(char*))
       keys = fields.keys()
       values = fields.values()
-      for i from 0 <= i <= numFields:
+      for i from 0 <= i < numFields:
         strsize = len(keys[i])
         names[i] = <char*> malloc(1+strsize*sizeof(char))
         tmp = keys[i]
@@ -1329,7 +1312,6 @@ cdef class OutputManager:
       #embed{ void OutputManager_vertexFilter_set(void* objVptr, void* filterVptr)
       try {
         assert(0 != objVptr);
-        assert(0 != filterVptr);
         pylith::meshio::VertexFilter* filter = 
           (pylith::meshio::VertexFilter*) filterVptr;
         ((pylith::meshio::OutputManager*) objVptr)->vertexFilter(filter);
@@ -1344,7 +1326,10 @@ cdef class OutputManager:
                         "Caught unknown C++ exception.");
       } // try/catch
       #}embed
-      OutputManager_vertexFilter_set(self.thisptr, ptrFromHandle(filter))
+      if filter != None:
+        OutputManager_vertexFilter_set(self.thisptr, ptrFromHandle(filter))
+      else:
+        OutputManager_vertexFilter_set(self.thisptr, NULL)
 
 
   property cellFilter:
@@ -1356,7 +1341,6 @@ cdef class OutputManager:
       #embed{ void OutputManager_cellFilter_set(void* objVptr, void* filterVptr)
       try {
         assert(0 != objVptr);
-        assert(0 != filterVptr);
         pylith::meshio::CellFilter* filter = 
           (pylith::meshio::CellFilter*) filterVptr;
         ((pylith::meshio::OutputManager*) objVptr)->cellFilter(filter);
@@ -1371,7 +1355,118 @@ cdef class OutputManager:
                         "Caught unknown C++ exception.");
       } // try/catch
       #}embed
-      OutputManager_cellFilter_set(self.thisptr, ptrFromHandle(filter))
+      if filter != None:
+        OutputManager_cellFilter_set(self.thisptr, ptrFromHandle(filter))
+      else:
+        OutputManager_cellFilter_set(self.thisptr, NULL)
+
+
+# ----------------------------------------------------------------------
+cdef void DataWriter_destructor(void* obj):
+  """
+  Destroy DataWriter object.
+  """
+  # create shim for destructor
+  #embed{ void DataWriter_destructor_cpp(void* pObj)
+  pylith::meshio::DataWriter* io = (pylith::meshio::DataWriter*) pObj;
+  delete io;
+  #}embed
+  DataWriter_destructor_cpp(obj)
+  return
+
+cdef class DataWriter:
+
+  cdef void* thisptr # Pointer to C++ object
+  cdef readonly object handle # PyCObject holding pointer to C++ object
+  cdef readonly object name # Identifier for object base type
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    self.handle = None
+    self.thisptr = NULL
+    self.name = "pylith_meshio_DataWriter"
+    return
+
+
+  def _createHandle(self):
+    """Wrap pointer to C++ object in PyCObject."""
+    return PyCObject_FromVoidPtr(self.thisptr, DataWriter_destructor)
+
+
+# ----------------------------------------------------------------------
+cdef class DataWriterVTK(DataWriter):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* DataWriterVTK_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::meshio::DataWriterVTK);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    DataWriter.__init__(self)
+    self.thisptr = DataWriterVTK_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+  property filename:
+    def __set__(self, name):
+      """Set filename."""
+      # create shim for method 'filename'
+      #embed{ void DataWriterVTK_filename_set(void* objVptr, char* name)
+      try {
+        assert(0 != objVptr);
+        ((pylith::meshio::DataWriterVTK*) objVptr)->filename(name);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      DataWriterVTK_filename_set(self.thisptr, name)
+
+
+  property timeFormat:
+    def __set__(self, format):
+      """Set timeFormat."""
+      # create shim for method 'timeFormat'
+      #embed{ void DataWriterVTK_timeFormat_set(void* objVptr, char* format)
+      try {
+        assert(0 != objVptr);
+        ((pylith::meshio::DataWriterVTK*) objVptr)->timeFormat(format);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      DataWriterVTK_timeFormat_set(self.thisptr, format)
 
 
 # End of file

@@ -15,7 +15,7 @@
 #include "Distributor.hh" // implementation of class methods
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
-#include "pylith/meshio/SolutionIO.hh" // USES SolutionIO
+#include "pylith/meshio/OutputManager.hh" // USES OutputManager
 
 #include <string.h> // USES strlen()
 #include <stdexcept> // USES std::runtime_error
@@ -51,8 +51,9 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
 // ----------------------------------------------------------------------
 // Write partitioning info for distributed mesh.
 void
-pylith::topology::Distributor::write(const ALE::Obj<Mesh>& mesh,
-				     meshio::SolutionIO* const writer)
+pylith::topology::Distributor::write(meshio::OutputManager* const output,
+				     const ALE::Obj<Mesh>& mesh,
+				     const spatialdata::geocoords::CoordSys* cs)
 { // write
   
   // Setup and allocate field
@@ -76,7 +77,11 @@ pylith::topology::Distributor::write(const ALE::Obj<Mesh>& mesh,
 
   partition->view("PARTITION");
   const double t = 0.0;
-  writer->writeCellField(t, "partition", partition, mesh);
+  output->open(mesh, cs);
+  output->openTimeStep(t, mesh, cs);
+  output->appendCellField(t, "partition", partition, mesh);
+  output->closeTimeStep();
+  output->close();
 } // write
 
 
