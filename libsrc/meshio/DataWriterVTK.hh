@@ -39,6 +39,12 @@ public :
   /// Destructor
   ~DataWriterVTK(void);
 
+  /** Make copy of this object.
+   *
+   * @returns Copy of this.
+   */
+  DataWriter* clone(void) const;
+
   /** Set filename for VTK file.
    *
    * @param filename Name of VTK file.
@@ -87,6 +93,20 @@ public :
 		      const char* name,
 		      const ALE::Obj<real_section_type>& field,
 		      const ALE::Obj<ALE::Mesh>& mesh);
+
+// PRIVATE METHODS //////////////////////////////////////////////////////
+private :
+
+  /** Copy constructor.
+   *
+   * @param w Object to copy.
+   */
+  DataWriterVTK(const DataWriterVTK& w);
+
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
+private :
+
+  const DataWriterVTK& operator=(const DataWriterVTK&); ///< Not implemented
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

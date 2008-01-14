@@ -17,6 +17,7 @@ subpkginclude_HEADERS = \
 	CellFilter.hh \
 	DataWriter.hh \
 	DataWriterVTK.hh \
+	DataWriterVTK.icc \
 	MeshIO.hh \
 	MeshIO.icc \
 	MeshIOAscii.hh \

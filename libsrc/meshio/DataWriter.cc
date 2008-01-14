@@ -14,12 +14,9 @@
 
 #include "DataWriter.hh" // implementation of class methods
 
-#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshio::DataWriter::DataWriter(void) :
-  _cs(0)
+pylith::meshio::DataWriter::DataWriter(void)
 { // constructor
 } // constructor
 
@@ -27,16 +24,7 @@ pylith::meshio::DataWriter::DataWriter(void) :
 // Destructor
 pylith::meshio::DataWriter::~DataWriter(void)
 { // destructor
-  delete _cs; _cs = 0;
 } // destructor  
-
-// ----------------------------------------------------------------------
-// Set coordinate system for output.
-void
-pylith::meshio::DataWriter::coordsys(const spatialdata::geocoords::CoordSys* cs)
-{ // coordsys
-  delete _cs; _cs = (0 != cs) ? cs->clone() : 0;
-} // coordsys
 
 // ----------------------------------------------------------------------
 // Prepare for writing files.
@@ -70,6 +58,12 @@ void
 pylith::meshio::DataWriter::closeTimeStep(void)
 { // closeTimeStep
 } // closeTimeStep
+
+// ----------------------------------------------------------------------
+// Copy constructor.
+pylith::meshio::DataWriter::DataWriter(const DataWriter& w)
+{ // copy constructor
+} // copy constructor
 
 
 // End of file 

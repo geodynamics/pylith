@@ -39,6 +39,16 @@ pylith::meshio::DataWriterVTK::~DataWriterVTK(void)
 } // destructor  
 
 // ----------------------------------------------------------------------
+// Copy constructor.
+pylith::meshio::DataWriterVTK::DataWriterVTK(const DataWriterVTK& w) :
+  DataWriter(w),
+  _filename(w._filename),
+  _timeFormat(w._timeFormat),
+  _viewer(0)
+{ // copy constructor
+} // copy constructor
+
+// ----------------------------------------------------------------------
 // Prepare file for data at a new time step.
 void
 pylith::meshio::DataWriterVTK::openTimeStep(
