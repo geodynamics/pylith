@@ -29,7 +29,7 @@ namespace pylith {
 
 namespace spatialdata {
   namespace geocoords {
-    class CoordSys; // HOLDSA CoordSys
+    class CoordSys; // USES CoordSys
   } // geocoords
 } // spatialdata
 
@@ -46,11 +46,12 @@ public :
   virtual
   ~DataWriter(void);
 
-  /** Set coordinate system for output.
+  /** Make copy of this object.
    *
-   * @param cs Coordinate system
+   * @returns Copy of this.
    */
-  void coordsys(const spatialdata::geocoords::CoordSys* cs);
+  virtual
+  DataWriter* clone(void) const = 0;
 
   /** Prepare for writing files.
    *
@@ -106,10 +107,19 @@ public :
 		      const ALE::Obj<real_section_type>& field,
 		      const ALE::Obj<ALE::Mesh>& mesh) = 0;
 
-// PROTECTED MEMBERS ////////////////////////////////////////////////////
-public :
+// PROTECTED METHODS ////////////////////////////////////////////////////
+protected :
 
-  spatialdata::geocoords::CoordSys* _cs; ///< Coordinate system for output
+  /** Copy constructor.
+   *
+   * @param w Object to copy.
+   */
+  DataWriter(const DataWriter& w);
+
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
+private :
+
+  const DataWriter& operator=(const DataWriter&); ///< Not implemented
 
 }; // DataWriter
 

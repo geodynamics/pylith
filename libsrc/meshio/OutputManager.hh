@@ -60,6 +60,13 @@ public :
   /// Destructor
   ~OutputManager(void);
 
+  /** Set coordinate system in output. The vertex fields in the output
+   * are not affected by any change in coordinates.
+   *
+   * @param cs Coordinate system in output.
+   */
+  void coordsys(const spatialdata::geocoords::CoordSys* cs);
+
   /** Set writer to write data to file.
    *
    * @param datawriter Writer for data.
@@ -152,13 +159,11 @@ public :
    * @param name Name of field.
    * @param field Vertex field.
    * @param mesh PETSc mesh object.
-   * @param csMesh Coordinate system of mesh geometry
    */
   void appendVertexField(const double t,
 			 const char* name,
 			 const ALE::Obj<real_section_type>& field,
-			 const ALE::Obj<ALE::Mesh>& mesh,
-			 const spatialdata::geocoords::CoordSys* csMesh);
+			 const ALE::Obj<ALE::Mesh>& mesh);
 
   /** Append finite-element cell field to file.
    *
@@ -171,8 +176,7 @@ public :
   void appendCellField(const double t,
 		       const char* name,
 		       const ALE::Obj<real_section_type>& field,
-		       const ALE::Obj<ALE::Mesh>& mesh,
-		       const spatialdata::geocoords::CoordSys* csMesh);
+		       const ALE::Obj<ALE::Mesh>& mesh);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 
@@ -184,9 +188,10 @@ private :
   /// Name and section label of cell fields to output
   map_names_type _cellFields;
 
-  DataWriter* _writer; ///< Writer for data
-  VertexFilter* _vertexFilter; ///< Filter applied to vertex data
-  CellFilter* _cellFilter; ///< Filter applied to cell data
+  spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system for output.
+  DataWriter* _writer; ///< Writer for data.
+  VertexFilter* _vertexFilter; ///< Filter applied to vertex data.
+  CellFilter* _cellFilter; ///< Filter applied to cell data.
 
 }; // OutputManager
 

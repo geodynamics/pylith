@@ -330,6 +330,7 @@ class OutputManager(Component):
       import pylith.meshio.meshio as bindings
       self.cppHandle = bindings.OutputManager()
     self.cppHandle.coordsys = self.coordsys
+    self.cppHandle.writer = self.writer
     self.cppHandle.vertexFields = self.vertexFields
     self.cppHandle.cellFields = self.cellFields
     self.cppHandle.vertexFilter = self.vertexFilter.cppHandle

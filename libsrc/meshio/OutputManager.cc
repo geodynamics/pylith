@@ -19,9 +19,12 @@
 #include "CellFilter.hh" // USES CellFilter
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputManager::OutputManager(void) :
+  _coordsys(0),
   _writer(0),
   _vertexFilter(0),
   _cellFilter(0)
@@ -36,6 +39,22 @@ pylith::meshio::OutputManager::~OutputManager(void)
   delete _vertexFilter; _vertexFilter = 0;
   delete _cellFilter; _cellFilter = 0;
 } // destructor  
+
+// ----------------------------------------------------------------------
+// Set coordinate system in output. The vertex fields in the output
+void
+pylith::meshio::OutputManager::coordsys(const spatialdata::geocoords::CoordSys* cs)
+{ // coordsys
+  delete _coordsys; _coordsys = (0 != cs) ? cs->clone() : 0;
+} // coordsys
+
+// ----------------------------------------------------------------------
+// Set writer to write data to file.
+void
+pylith::meshio::OutputManager::writer(const DataWriter* datawriter)
+{ // writer
+  delete _writer; _writer = (0 != datawriter) ? datawriter->clone() : 0;
+} // writer
 
 // ----------------------------------------------------------------------
 // Set which vertex fields to output.
@@ -190,8 +209,7 @@ pylith::meshio::OutputManager::appendVertexField(
 			       const double t,
 			       const char* name,
 			       const ALE::Obj<real_section_type>& field,
-			       const ALE::Obj<ALE::Mesh>& mesh,
-			       const spatialdata::geocoords::CoordSys* csMesh)
+			       const ALE::Obj<ALE::Mesh>& mesh)
 { // appendVertexField
   assert(0 != name);
 
@@ -208,8 +226,7 @@ pylith::meshio::OutputManager::appendCellField(
 				const double t,
 				const char* name,
 				const ALE::Obj<real_section_type>& field,
-				const ALE::Obj<ALE::Mesh>& mesh,
-				const spatialdata::geocoords::CoordSys* csMesh)
+				const ALE::Obj<ALE::Mesh>& mesh)
 { // appendCellField
   assert(0 != name);
 
