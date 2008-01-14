@@ -41,17 +41,19 @@ class TestMeshGenSimple(unittest.TestCase):
     generator.setBoundary(generator.createCubeBoundary())
     mesh = generator.create()
 
-    from pylith.meshio.SolutionIOVTK import SolutionIOVTK
-    io = SolutionIOVTK()
+    from pylith.meshio.OutputManager import OutputManager
+    io = OutputManager()
     io._configure()
-    io.filename = 'mesh.vtk'
+    io.writer._configure()
+    io.writer.filename = 'mesh.vtk'
     from spatialdata.geocoords.CSCart import CSCart
     io.coordsys = CSCart()
     mesh.coordsys = CSCart()
+    io.initialize()
     io.open(mesh)
     from pyre.units.time import s
     t = 0.0*s
-    io.openTimeStep(0.0, 0, mesh)
+    io.openTimeStep(t, 0)
     io.closeTimeStep()
     io.close()
 
@@ -59,9 +61,9 @@ class TestMeshGenSimple(unittest.TestCase):
     distributor = Distributor()
     distributor.partitioner = "chaco"
     newMesh = distributor.distribute(mesh)
-    io.filename = 'newMesh.vtk'
+    io.writer.filename = 'newMesh.vtk'
     io.open(newMesh)
-    io.openTimeStep(0.0, 0, mesh)
+    io.openTimeStep(t, 0)
     io.closeTimeStep()
     io.close()
     return
