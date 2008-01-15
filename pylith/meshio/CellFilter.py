@@ -71,7 +71,9 @@ class CellFilter(Component):
     """
     self._createCppHandle()
 
-    if quadrature != None:
+    if None != self.cppHandle and quadrature != None:
+      # Only set quadrature if filter is specified and quadrature is
+      # provided.
       assert(None != self.cppHandle)
       self.cppHandle.quadrature = quadrature.cppHandle
     return
