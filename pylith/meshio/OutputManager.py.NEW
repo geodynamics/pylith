@@ -1,0 +1,318 @@
+#!/usr/bin/env python
+#
+# ----------------------------------------------------------------------
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# <LicenseText>
+#
+# ----------------------------------------------------------------------
+#
+
+## @file pyre/meshio/OutputManager.py
+##
+## @brief Python object for managing output of finite-element
+## information.
+##
+## Factory: output_manager
+
+from pyre.components.Component import Component
+
+# OutputManager class
+class OutputManager(Component):
+  """
+  Python object for managing output of finite-element information.
+
+  Factory: output_manager
+  """
+
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(Component.Inventory):
+    """
+    Python object for managing OutputManager facilities and properties.
+    """
+
+    ## @class Inventory
+    ## Python object for managing OutputManager facilities and properties.
+    ##
+    ## \b Properties
+    ## @li \b vertex_info_fields Names of vertex info fields to output.
+    ## @li \b vertex_data_fields Names of vertex data fields to output.
+    ## @li \b cell_info_fields Names of cell info fields to output.
+    ## @li \b cell_data_fields Names of cell data fields to output.
+    ## @li \b output_freq Flag indicating whether to use 'time_step' or 'skip'
+    ##   to set frequency of solution output.
+    ## @li \b time_step Time step between solution output.
+    ## @li \b skip Number of time steps to skip between solution output.
+    ##
+    ## \b Facilities
+    ## @li \b writer Writer for data.
+    ## @li \b coordsys Coordinate system for output.
+    ## @li \b vertex_filter Filter for vertex data.
+    ## @li \b cell_filter Filter for cell data.
+
+    import pyre.inventory
+
+    outputFreq = pyre.inventory.str("output_freq", default="skip",
+             validator=pyre.inventory.choice(["skip", "time_step"]))
+    outputFreq.meta['tip'] = "Flag indicating whether to use 'time_step' " \
+                             "or 'skip' to set frequency of output."
+
+    from pyre.units.time import s
+    dt = pyre.inventory.dimensional("time_step", default=1.0*s)
+    dt.meta['tip'] = "Time step between output."
+
+    skip = pyre.inventory.int("skip", default=0,
+                              validator=pyre.inventory.greaterEqual(0))
+    skip.meta['tip'] = "Number of time steps to skip between output."
+
+    vertexFields = pyre.inventory.list("vertex_fields", default=[])
+    vertexFields.meta['tip'] = "Fields of vertex data to output."
+
+    cellFields = pyre.inventory.list("cell_fields", default=[])
+    cellFields.meta['tip'] = "Fields of cell data to output."
+
+    from DataWriterVTK import DataWriterVTK
+    writer = pyre.inventory.facility("writer", factory=DataWriterVTK,
+                                     family="data_writer")
+    writer.meta['tip'] = "Writer for data."
+
+    from spatialdata.geocoords.CSCart import CSCart
+    coordsys = pyre.inventory.facility("coordsys", family="coordsys",
+                                       factory=CSCart)
+    coordsys.meta['tip'] = "Coordinate system for output."
+  
+    from VertexFilter import VertexFilter
+    vertexFilter = pyre.inventory.facility("vertex_filter",
+                                           factory=VertexFilter,
+                                           family="output_vertex_filter")
+    vertexFilter.meta['tip'] = "Filter for vertex data."
+                                     
+    from CellFilter import CellFilter
+    cellFilter = pyre.inventory.facility("cell_filter",
+                                           factory=CellFilter,
+                                           family="output_cell_filter")
+    cellFilter.meta['tip'] = "Filter for cell data."
+                                     
+
+  # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  def __init__(self, name="outputmanager"):
+    """
+    Constructor.
+    """
+    Component.__init__(self, name, facility="outputmanager")
+    self._loggingPrefix = "OutM "
+    self.cppHandle = None
+    self.coordsys = None
+    self._stepCur = 0
+    self._stepWrite = None
+    self._tWrite = None
+    self.vertexFields = None
+    self.cellFields = None
+    self.dataProvider = None
+    return
+
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    if None == self.dataProvide:
+      raise ValueError("Need to set 'dataProvider' in OutputManager.")
+    self.dataProvider.verifyVertexFields(self.vertexFields)
+    self.dataProvider.verifyCellFields(self.cellFields)
+    return
+
+
+  def initialize(self, quadrature=None):
+    """
+    Initialize output manager.
+    """
+    # Initialize coordinate system
+    if self.coordsys is None:
+      raise ValueError, "Coordinate system for output is unknown."
+    self.coordsys.initialize()
+
+    self.cellFilter.initialize(quadrature)
+    self.writer.initialize()
+    self._sync()
+    return
+
+
+  def open(self):
+    """
+    Prepare for writing data.
+    """
+    self._setupLogging()
+    logEvent = "%sopen" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)    
+
+    mesh = self.dataProvider.mesh
+    
+    assert(None != self.cppHandle)
+    assert(None != mesh.cppHandle)
+    assert(None != mesh.coordsys.cppHandle)
+    self.cppHandle.open(mesh.cppHandle, mesh.coordsys.cppHandle)
+
+    self._logger.eventEnd(logEvent)    
+    return
+
+
+  def close(self):
+    """
+    Perform post-write cleanup.
+    """
+    logEvent = "%sclose" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)    
+
+    assert(None != self.cppHandle)
+    self.cppHandle.close()
+
+    self._logger.eventEnd(logEvent)    
+    return
+
+
+  def writeInfo(self):
+    """
+    Write information fields.
+    """
+    self.open()
+    mesh = self.dataProvider.mesh
+    self.cppHandle.openTimeStep(mesh)
+
+    for name in self.vertexFieldsInfo:
+      field = self.dataProvider.getVertexField(name)
+      self.cppHandle.appendVertexField(field)
+
+    for name in self.cellFieldsInfo:
+      field = self.dataProvider.getCellField(name)
+      self.cppHandle.appendCellField(field)
+
+    self.cppHandle.closeTimeStep()
+    self.close()
+
+    return
+
+
+  def writeData(self, t):
+    """
+    Write fields at current time step.
+    """
+    if self._checkWrite(t):
+
+      mesh = self.dataProvider.mesh
+      self.cppHandle.openTimeStep(mesh)
+
+      for name in self.vertexFieldsData:
+        field = self.dataProvider.getVertexField(name)
+        self.cppHandle.appendVertexField(field)
+
+      for name in self.cellFieldsData:
+        field = self.dataProvider.getCellField(name)
+        self.cppHandle.appendCellField(field)
+
+      self.cppHandle.closeTimeStep()
+
+    return
+      
+    
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _configure(self):
+    """
+    Set members based using inventory.
+    """
+    Component._configure(self)
+    self.outputFreq = self.inventory.outputFreq
+    self.dt = self.inventory.dt
+    self.skip = self.inventory.skip
+    self.coordsys = self.inventory.coordsys
+    self.writer = self.inventory.writer
+    self.vertexFieldsInfo = self.inventory.vertexFieldsInfo
+    self.vertexFieldsData = self.inventory.vertexFieldsData
+    self.cellFieldsInfo = self.inventory.cellFields
+    self.vertexFilter = self.inventory.vertexFilter
+    self.cellFilter = self.inventory.cellFilter
+    return
+
+
+  def _sync(self):
+    """
+    Force synchronization between Python and C++.
+    """
+    if None == self.cppHandle:
+      import pylith.meshio.meshio as bindings
+      self.cppHandle = bindings.OutputManager()
+
+    assert(self.coordsys.cppHandle != None)
+    assert(self.writer.cppHandle != None)
+      
+    self.cppHandle.coordsys = self.coordsys.cppHandle
+    self.cppHandle.writer = self.writer.cppHandle
+    self.cppHandle.vertexFilter = self.vertexFilter.cppHandle
+    self.cppHandle.cellFilter = self.cellFilter.cppHandle
+    return
+
+
+  def _checkWrite(self, t):
+    """
+    Check if we want to write data at time t.
+    """
+    write = False
+    if self._stepWrite == None or not "value" in dir(self._tWrite):
+      write = True
+    elif self.outputFreq == "skip":
+      if self._stepCur > self._stepWrite + self.skip:
+        write = True
+    elif t >= self._tWrite + self.dt:
+      write = True
+    return write
+
+
+  def _setupLogging(self):
+    """
+    Setup event logging.
+    """
+    if not "_loggingPrefix" in dir(self):
+      self._loggingPrefix = ""
+
+    from pylith.utils.EventLogger import EventLogger
+    logger = EventLogger()
+    logger.setClassName("FE Output")
+    logger.initialize()
+
+    events = ["open",
+              "close",
+              "writeFields",
+              "openStep",
+              "closeStep",
+              "writeVertex",
+              "writeCell"]
+    for event in events:
+      logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+
+    self._logger = logger
+    return
+  
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def output_manager():
+  """
+  Factory associated with OutputManager.
+  """
+  return OutputManager()
+
+
+# MISCELLANEOUS ////////////////////////////////////////////////////////
+
+def copyTranslator(name):
+  """
+  Field translator that simply copies the field name.
+  """
+  return name
+
+
+# End of file 
