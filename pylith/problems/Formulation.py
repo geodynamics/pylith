@@ -46,7 +46,8 @@ class Formulation(Component):
     ##
     ## \b Facilities
     ## @li \b solver Algebraic solver.
-    ## @li \b output Solution output.
+    ## @li \b output Output manager associated with solution over the
+    ##   entire domain.
 
     import pyre.inventory
 
@@ -58,6 +59,8 @@ class Formulation(Component):
     from pylith.meshio.SingleOutput import SingleOutput
     output = pyre.inventory.facility("output", family="object_bin",
                                      factory=SingleOutput)
+    output.meta['tip'] = "Output managers associated with solution over " \
+                         "the entire domain."
 
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -71,7 +74,6 @@ class Formulation(Component):
     self.constraints = None
     self.fields = None
     self.solnField = None
-    self._istep = 0
     return
 
 
@@ -247,13 +249,17 @@ class Formulation(Component):
     logEvent = "%spoststep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    self._info.log("Writing solution field.")
+    self._info.log("Writing solution fields.")
     field = self.fields.getSolution()
     for output in self.output.bin:
-      output.openTimeStep(t+dt, self._istep)
-      output.appendVertexField(t+dt, self._istep, self.solnField['label'], field, dim=3)
+      output.openTimeStep(t+dt)
+      output.appendVertexField(t+dt, self.solnField['label'],
+                               field, dim=3)
       output.closeTimeStep()
-    self._istep += 1
+    #for integrator in integrators:
+    #  integrator.poststep(t, dt, totalTime)
+    #for constraint in constraints:
+    #  constraint.poststep(t, dt, totalTime)
 
     self._logger.eventEnd(logEvent)
     return

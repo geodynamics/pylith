@@ -72,6 +72,7 @@ class Implicit(Formulation):
     self._loggingPrefix = "TSIm "
     self.solnField = {'name': "dispTBctpdt",
                       'label': "displacements"}
+    self._step0 = None
     return
 
 
@@ -108,6 +109,7 @@ class Implicit(Formulation):
     self._debug.log(resourceUsageString())
 
     # Initial time step solves for total displacement field, not increment
+    self._step0 = True
     for constraint in self.constraints:
       constraint.useSolnIncr(False)
     for integrator in self.integrators:
@@ -200,7 +202,7 @@ class Implicit(Formulation):
 
     # If finishing first time step, then switch from solving for total
     # displacements to solving for incremental displacements
-    if 0 == self._istep and (t + dt) < totalTime:
+    if self._step0 and (t + dt) < totalTime:
       self._info.log("Switching from total field solution to incremental " \
                      "field solution.")
       for constraint in self.constraints:
@@ -208,6 +210,7 @@ class Implicit(Formulation):
       for integrator in self.integrators:
         integrator.useSolnIncr(True)
       self._reformJacobian(t, dt)
+      self._step0 = False
 
     self._logger.eventEnd(logEvent)
     

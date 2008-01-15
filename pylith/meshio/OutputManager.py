@@ -106,8 +106,9 @@ class OutputManager(Component):
     self.cppHandle = None
     self.coordsys = None
     self.mesh = None
-    self._t = None
-    self._istep = None
+    self._stepCur = 0
+    self._stepWrite = None
+    self._tWrite = None
     self.vertexFields = None
     self.cellFields = None
     self._fieldTranslator = copyTranslator
@@ -182,7 +183,7 @@ class OutputManager(Component):
     return
 
 
-  def openTimeStep(self, t, istep):
+  def openTimeStep(self, t):
     """
     Prepare for writing solution to file.
     """
@@ -191,16 +192,16 @@ class OutputManager(Component):
     self._info.log("Preparing for writing solution to file.")
 
     write = False
-    if self._istep == None or not "value" in dir(self._t):
+    if self._stepWrite == None or not "value" in dir(self._tWrite):
       write = True
     elif self.outputFreq == "skip":
-      if istep > self._istep + self.skip:
+      if self._stepCur > self._stepWrite + self.skip:
         write = True
-    elif t >= self._t + self.dt:
+    elif t >= self._tWrite + self.dt:
       write = True
     if write:
-      self._istep = istep
-      self._t = t
+      self._stepWrite = self._stepCur
+      self._tWrite = t
     self.writeFlag = write
 
     assert(self.cppHandle != None)
@@ -223,6 +224,7 @@ class OutputManager(Component):
     self._info.log("Cleaning up afterwriting solution to file.")
 
     self.writeFlag = False
+    self._stepCur += 1
 
     assert(self.cppHandle != None)
     self.cppHandle.closeTimeStep()
@@ -231,7 +233,7 @@ class OutputManager(Component):
     return
 
 
-  def appendVertexField(self, t, istep, name, field, dim=0):
+  def appendVertexField(self, t, name, field, dim=0):
     """
     Write field over vertices at time t to file.
     """
@@ -244,14 +246,12 @@ class OutputManager(Component):
       assert(self.mesh.cppHandle != None)
       self.cppHandle.appendVertexField(t.value, name, field,
                                        self.mesh.cppHandle, dim)
-      self.istep = istep
-      self.t = t
 
     self._logger.eventEnd(logEvent)
     return
 
 
-  def appendCellField(self, t, istep, name, field, dim=0):
+  def appendCellField(self, t, name, field, dim=0):
     """
     Write field over cells at time t to file.
     """
@@ -264,8 +264,6 @@ class OutputManager(Component):
       assert(self.mesh.cppHandle != None)
       self.cppHandle.appendCellField(t.value, name, field, 
                                      self.mesh.cppHandle, dim)
-      self.istep = istep
-      self.t = t
 
     self._logger.eventEnd(logEvent)
     return
@@ -364,6 +362,9 @@ def output_manager():
 # MISCELLANEOUS ////////////////////////////////////////////////////////
 
 def copyTranslator(name):
+  """
+  Field translator that simply copies the field name.
+  """
   return name
 
 
