@@ -141,7 +141,7 @@ class BoundaryCondition(Component):
     Component._configure(self)
     self.id = self.inventory.id
     self.label = self.inventory.label
-    self.upDir = mat(float, self.inventory.upDir)
+    self.upDir = map(float, self.inventory.upDir)
     self.db = self.inventory.db
     return
 
