@@ -175,13 +175,13 @@ cdef class Fault:
             "Argument 'matDB' must be extension module type " \
             "'spatialdata::spatialdb::SpatialDB'."
     cdef double upDirCpp[3]
-    upDirCpp[0] = float(upDir[0])
-    upDirCpp[1] = float(upDir[1])
-    upDirCpp[2] = float(upDir[2])
+    upDirCpp[0] = upDir[0]
+    upDirCpp[1] = upDir[1]
+    upDirCpp[2] = upDir[2]
     cdef double normalDirCpp[3]
-    normalDirCpp[0] = float(normalDir[0])
-    normalDirCpp[1] = float(normalDir[1])
-    normalDirCpp[2] = float(normalDir[2])
+    normalDirCpp[0] = normalDir[0]
+    normalDirCpp[1] = normalDir[1]
+    normalDirCpp[2] = normalDir[2]
     Fault_initialize(self.thisptr, ptrFromHandle(mesh), ptrFromHandle(cs),
                      upDirCpp, normalDirCpp, ptrFromHandle(matDB))
     return
