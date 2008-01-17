@@ -111,9 +111,9 @@ cdef class BoundaryCondition:
       raise TypeError, \
             "Argument 'upDir' must be a 3 vector (list)."
     cdef double upDirCpp[3]
-    upDirCpp[0] = upDir[0]
-    upDirCpp[1] = upDir[1]
-    upDirCpp[2] = upDir[2]
+    upDirCpp[0] = float(upDir[0])
+    upDirCpp[1] = float(upDir[1])
+    upDirCpp[2] = float(upDir[2])
     BoundaryCondition_initialize(self.thisptr, ptrFromHandle(mesh), ptrFromHandle(cs), upDirCpp)
     return
 
