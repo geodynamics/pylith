@@ -601,6 +601,13 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     const ALE::Obj<PointSet>          modifiedPoints = new PointSet();
 
     _computeCensoredDepth(mesh, label, mesh->getSieve(), mesh->getSieve()->roots(), firstCohesiveCell-(constraintCell?numFaultVertices:0), modifiedPoints);
+  } else {
+    // Insert new shadow vertices into existing label
+    const ALE::Obj<Mesh::label_type>& label          = mesh->getLabel(labelName);
+
+    for(std::map<int,int>::const_iterator v_iter = vertexRenumber.begin(); v_iter != vertexRenumber.end(); ++v_iter) {
+      mesh->setValue(label, v_iter->second, 0);
+    }
   }
   if (debug) mesh->view("Mesh with Cohesive Elements");
 
