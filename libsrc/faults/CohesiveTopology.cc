@@ -376,8 +376,9 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
   const ALE::Obj<std::set<std::string> >& groupNames = mesh->getIntSections();
   Mesh::point_type newPoint = sieve->base()->size() + sieve->cap()->size();
+  const int        numFaultVertices = fVertices->size();
   std::map<int,int> vertexRenumber;
-  
+
   for(Mesh::label_sequence::iterator v_iter = fVertices->begin();
       v_iter != fVertices->end();
       ++v_iter, ++newPoint) {
@@ -390,7 +391,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     // associated with fault
     groupField->addPoint(newPoint, 1);
     if (constraintCell)
-      groupField->addPoint(newPoint+1, 1);
+      groupField->addPoint(newPoint+numFaultVertices, 1);
 
     // Add shadow vertices to other groups, don't add constraint
     // vertices (if they exist) because we don't want BC, etc to act
@@ -401,12 +402,12 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
       if (group->hasPoint(*v_iter))
         group->addPoint(newPoint, 1);
     } // for
-    if (constraintCell) newPoint++;
   } // for
   for(std::set<std::string>::const_iterator name = groupNames->begin();
       name != groupNames->end(); ++name) {
     mesh->reallocate(mesh->getIntSection(*name));
   } // for
+  if (constraintCell) newPoint += numFaultVertices;
 
   // Split the mesh along the fault sieve and create cohesive elements
   const ALE::Obj<Mesh::label_sequence>& faces = (*fault)->heightStratum(1);
@@ -491,10 +492,10 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
       sieve->addArrow(vertexRenumber[*v_iter], newPoint, color++);
     }
     if (constraintCell) {
-    for(sieve_type::coneArray::iterator v_iter = fBegin; v_iter != fEnd; ++v_iter) {
+      for(sieve_type::coneArray::iterator v_iter = fBegin; v_iter != fEnd; ++v_iter) {
         if (debug)
-          std::cout << "    Lagrange vertex " << vertexRenumber[*v_iter]+1 << std::endl;
-        sieve->addArrow(vertexRenumber[*v_iter]+1, newPoint, color++);
+          std::cout << "    Lagrange vertex " << vertexRenumber[*v_iter]+numFaultVertices << std::endl;
+        sieve->addArrow(vertexRenumber[*v_iter]+numFaultVertices, newPoint, color++);
       }
     }
     mesh->setValue(material, newPoint, materialId);
@@ -599,7 +600,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     const ALE::Obj<Mesh::label_type>& label          = mesh->createLabel(labelName);
     const ALE::Obj<PointSet>          modifiedPoints = new PointSet();
 
-    _computeCensoredDepth(mesh, label, mesh->getSieve(), mesh->getSieve()->roots(), firstCohesiveCell, modifiedPoints);
+    _computeCensoredDepth(mesh, label, mesh->getSieve(), mesh->getSieve()->roots(), firstCohesiveCell-(constraintCell?numFaultVertices:0), modifiedPoints);
   }
   if (debug) mesh->view("Mesh with Cohesive Elements");
 
@@ -614,7 +615,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     coordinates->addPoint(vertexRenumber[*v_iter],
 			  coordinates->getFiberDimension(*v_iter));
     if (constraintCell) {
-      coordinates->addPoint(vertexRenumber[*v_iter]+1,
+      coordinates->addPoint(vertexRenumber[*v_iter]+numFaultVertices,
 			  coordinates->getFiberDimension(*v_iter));
     }
   } // for
@@ -625,7 +626,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     coordinates->updatePoint(vertexRenumber[*v_iter], 
 			     coordinates->restrictPoint(*v_iter));
     if (constraintCell) {
-      coordinates->updatePoint(vertexRenumber[*v_iter]+1,
+      coordinates->updatePoint(vertexRenumber[*v_iter]+numFaultVertices,
 			     coordinates->restrictPoint(*v_iter));
     }
   }
