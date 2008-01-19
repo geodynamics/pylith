@@ -68,11 +68,17 @@ class OutputManager(Component):
                               validator=pyre.inventory.greaterEqual(0))
     skip.meta['tip'] = "Number of time steps to skip between output."
 
-    vertexFields = pyre.inventory.list("vertex_fields", default=[])
-    vertexFields.meta['tip'] = "Fields of vertex data to output."
+    vertexInfoFields = pyre.inventory.list("vertex_info_fields", default=[])
+    vertexInfoFields.meta['tip'] = "Names of vertex info fields to output."
 
-    cellFields = pyre.inventory.list("cell_fields", default=[])
-    cellFields.meta['tip'] = "Fields of cell data to output."
+    vertexDataFields = pyre.inventory.list("vertex_data_fields", default=[])
+    vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
+
+    cellInfoFields = pyre.inventory.list("cell_info_fields", default=[])
+    cellInfoFields.meta['tip'] = "Names of cell info fields to output."
+
+    cellDataFields = pyre.inventory.list("cell_data_fields", default=[])
+    cellDataFields.meta['tip'] = "Names of cell data fields to output."
 
     from DataWriterVTK import DataWriterVTK
     writer = pyre.inventory.facility("writer", factory=DataWriterVTK,
@@ -106,12 +112,9 @@ class OutputManager(Component):
     Component.__init__(self, name, facility="outputmanager")
     self._loggingPrefix = "OutM "
     self.cppHandle = None
-    self.coordsys = None
     self._stepCur = 0
     self._stepWrite = None
     self._tWrite = None
-    self.vertexFields = None
-    self.cellFields = None
     self.dataProvider = None
     return
 
@@ -121,8 +124,10 @@ class OutputManager(Component):
     """
     if None == self.dataProvide:
       raise ValueError("Need to set 'dataProvider' in OutputManager.")
-    self.dataProvider.verifyVertexFields(self.vertexFields)
-    self.dataProvider.verifyCellFields(self.cellFields)
+    self.dataProvider.verifyVertexInfoFields(self.vertexInfoFields)
+    self.dataProvider.verifyVertexDataFields(self.vertexDataFields)
+    self.dataProvider.verifyCellInfoFields(self.cellInfoFields)
+    self.dataProvider.verifyCellDataFields(self.cellDataFields)
     return
 
 
@@ -149,7 +154,7 @@ class OutputManager(Component):
     logEvent = "%sopen" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    mesh = self.dataProvider.mesh
+    mesh = self.dataProvider.getDataMesh()
     
     assert(None != self.cppHandle)
     assert(None != mesh.cppHandle)
@@ -178,17 +183,21 @@ class OutputManager(Component):
     """
     Write information fields.
     """
+    from pyre.units.time import s
+    t = 0.0*s
+    # Do we want to set an info flag in open()?
     self.open()
-    mesh = self.dataProvider.mesh
-    self.cppHandle.openTimeStep(mesh)
+    mesh = self.dataProvider.getDataMesh()
+    self.cppHandle.openTimeStep(t.value,
+                                mesh.cppHandle, mesh.coordsys.cppHandle)
 
-    for name in self.vertexFieldsInfo:
-      field = self.dataProvider.getVertexField(name)
-      self.cppHandle.appendVertexField(field)
+    for name in self.vertexInfoFields:
+      (field, fieldType) = self.dataProvider.getVertexField(name)
+      self.cppHandle.appendVertexField(t.value, name, field, fieldType, mesh)
 
-    for name in self.cellFieldsInfo:
-      field = self.dataProvider.getCellField(name)
-      self.cppHandle.appendCellField(field)
+    for name in self.cellInfoFields:
+      (field, fieldType) = self.dataProvider.getCellField(name)
+      self.cppHandle.appendCellField(t.value, name, field, fieldType, mesh)
 
     self.cppHandle.closeTimeStep()
     self.close()
@@ -202,16 +211,17 @@ class OutputManager(Component):
     """
     if self._checkWrite(t):
 
-      mesh = self.dataProvider.mesh
-      self.cppHandle.openTimeStep(mesh)
+      mesh = self.dataProvider.getDataMesh()
+      self.cppHandle.openTimeStep(t.value,
+                                  mesh.cppHandle, mesh.coordsys.cppHandle)
 
-      for name in self.vertexFieldsData:
-        field = self.dataProvider.getVertexField(name)
-        self.cppHandle.appendVertexField(field)
+      for name in self.vertexDataFields:
+        (field, fieldType) = self.dataProvider.getVertexField(name)
+        self.cppHandle.appendVertexField(t.value, name, field, fieldType, mesh)
 
-      for name in self.cellFieldsData:
-        field = self.dataProvider.getCellField(name)
-        self.cppHandle.appendCellField(field)
+      for name in self.cellDataFields:
+        (field, fieldType) = self.dataProvider.getCellField(name)
+        self.cppHandle.appendCellField(t.value, name, field, fieldType, mesh)
 
       self.cppHandle.closeTimeStep()
 
@@ -230,9 +240,10 @@ class OutputManager(Component):
     self.skip = self.inventory.skip
     self.coordsys = self.inventory.coordsys
     self.writer = self.inventory.writer
-    self.vertexFieldsInfo = self.inventory.vertexFieldsInfo
-    self.vertexFieldsData = self.inventory.vertexFieldsData
-    self.cellFieldsInfo = self.inventory.cellFields
+    self.vertexInfoFields = self.inventory.vertexInfoFields
+    self.vertexDataFields = self.inventory.vertexDataFields
+    self.cellInfoFields = self.inventory.cellInfoFields
+    self.cellDataFields = self.inventory.cellDataFields
     self.vertexFilter = self.inventory.vertexFilter
     self.cellFilter = self.inventory.cellFilter
     return
