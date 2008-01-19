@@ -36,6 +36,17 @@ namespace spatialdata {
 class pylith::meshio::DataWriter
 { // DataWriter
 
+// PUBLIC ENUMS /////////////////////////////////////////////////////////
+public :
+
+  /// Enumeration of types of fields
+  enum FieldEnum {
+    SCALAR, ///< Scalar field
+    VECTOR, ///< Vector field
+    TENSOR, ///< Tensor field
+    OTHER ///< Other type of field
+  }; // FieldEnum
+
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
