@@ -224,7 +224,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     fault.useSolnIncr(false);
     fault.integrateResidual(residual, t, &fields, mesh);
 
-    //residual->view("RESIDUAL");
+    //residual->view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->valsResidual;
@@ -259,7 +259,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     fault.useSolnIncr(true);
     fault.integrateResidual(residual, t, &fields, mesh);
 
-    //residual->view("RESIDUAL");
+    //residual->view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->valsResidualIncr;
@@ -340,7 +340,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   err = MatAssemblyEnd(jacobian, MAT_FINAL_ASSEMBLY);
   CPPUNIT_ASSERT(0 == err);
 
-  //MatView(jacobian, PETSC_VIEWER_STDOUT_WORLD);
+  //MatView(jacobian, PETSC_VIEWER_STDOUT_WORLD); // DEBUGGING
 
   const double* valsE = _data->valsJacobian;
   const int nrowsE = solution->sizeWithBC();
@@ -408,6 +408,8 @@ pylith::faults::TestFaultCohesiveKin::_initialize(ALE::Obj<ALE::Mesh>* mesh,
     iohandler.read(mesh);
     CPPUNIT_ASSERT(!mesh->isNull());
     (*mesh)->getFactory()->clear();
+
+    //(*mesh)->setDebug(true); // DEBUGGING
 
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim((*mesh)->getDimension());
