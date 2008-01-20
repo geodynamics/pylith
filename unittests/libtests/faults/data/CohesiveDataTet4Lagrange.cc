@@ -44,10 +44,10 @@ const double pylith::faults::CohesiveDataTet4Lagrange::_vertices[] = {
    0.0,  1.0,  0.0,
    1.0,  0.0,  0.0,
    0.0, -1.0,  0.0,
-   0.0, -1.0,  0.0,
-   0.0,  0.0,  1.0,
    0.0,  0.0,  1.0,
    0.0,  1.0,  0.0,
+   0.0, -1.0,  0.0,
+   0.0,  0.0,  1.0,
    0.0,  1.0,  0.0
 };
 
@@ -59,8 +59,8 @@ const int pylith::faults::CohesiveDataTet4Lagrange::_numCorners[] = {
 
 const int pylith::faults::CohesiveDataTet4Lagrange::_cells[] = {
   3,  4,  5,  2,
-  7, 11,  9,  6,
-  4,  3,  5,  9,  7,  11,  10, 8,  12
+  7,  9,  8,  6,
+  4,  3,  5,  8,  7,   9,  11, 10, 12
 };
 
 const int pylith::faults::CohesiveDataTet4Lagrange::_materialIds[] = {
@@ -75,7 +75,7 @@ const int pylith::faults::CohesiveDataTet4Lagrange::_groupSizes[] =
 
 const int pylith::faults::CohesiveDataTet4Lagrange::_groups[] = {
   3, 4, 5, 7, 8, 9, 10, 11, 12,
-  2, 4, 5, 9, 11
+  2, 4, 5, 8, 9
 };
 
 const char* pylith::faults::CohesiveDataTet4Lagrange::_groupNames[] = {
