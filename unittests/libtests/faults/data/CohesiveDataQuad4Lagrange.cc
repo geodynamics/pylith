@@ -29,7 +29,7 @@
  *
  * Cells are 0-1,10 vertices are 2-9.
  *
- *       3 -------- 5 -11- 10 -------- 7
+ *       3 -------- 5 -11-  9 -------- 7
  *       |          |       |          |
  *       |          |       |          |
  *       |          |       |          |
@@ -38,7 +38,7 @@
  *       |          |       |          |
  *       |          |       |          |
  *       |          |       |          |
- *       2 -------- 4 --9-- 8 -------- 6
+ *       2 -------- 4 -10-- 8 -------- 6
  */
 
 #include "CohesiveDataQuad4Lagrange.hh"
@@ -59,8 +59,8 @@ const double pylith::faults::CohesiveDataQuad4Lagrange::_vertices[] = {
    2.0, -1.0,
    2.0,  1.0,
    0.0, -1.0,
-   0.0, -1.0,
    0.0,  1.0,
+   0.0, -1.0,
    0.0,  1.0,
 };
 
@@ -72,8 +72,8 @@ const int pylith::faults::CohesiveDataQuad4Lagrange::_numCorners[] = {
 
 const int pylith::faults::CohesiveDataQuad4Lagrange::_cells[] = {
   2,  4,  5,  3,
-  6,  7, 10,  8,
-  4,  5,  8, 10,  9, 11
+  6,  7,  9,  8,
+  4,  5,  8,  9, 10, 11
 };
 
 const int pylith::faults::CohesiveDataQuad4Lagrange::_materialIds[] = {
@@ -88,7 +88,7 @@ const int pylith::faults::CohesiveDataQuad4Lagrange::_groupSizes[] =
 
 const int pylith::faults::CohesiveDataQuad4Lagrange::_groups[] = {
   4, 5, 8, 9, 10, 11,
-  3, 5, 7, 10
+  3, 5, 7, 9
 };
 
 const char* pylith::faults::CohesiveDataQuad4Lagrange::_groupNames[] = {

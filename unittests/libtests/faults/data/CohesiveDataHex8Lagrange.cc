@@ -22,8 +22,8 @@
  *
  * Cells are 0-1,16 and vertices are 4-15.
  *
- *       2,3,4,5 -------- 6,7,8,9 -- 14,16,18,20 -------- 10,11,12,13
- *                                    15,17,19,21
+ *       2,3,4,5 -------- 6,7,8,9 -- 14,15,16,17 -------- 10,11,12,13
+ *                                    18,19,20,21
  *                        ^^^^^^^^^^^^^^^^^^^^^^ Cohesive element
  *
  */
@@ -52,12 +52,12 @@ const double pylith::faults::CohesiveDataHex8Lagrange::_vertices[] = {
    2.0, -1.0,  1.0,
    2.0,  1.0,  1.0,
    0.0, -1.0, -1.0,
-   0.0, -1.0, -1.0,
    0.0,  1.0, -1.0,
-   0.0,  1.0, -1.0,
-   0.0, -1.0,  1.0,
    0.0, -1.0,  1.0,
    0.0,  1.0,  1.0,
+   0.0, -1.0, -1.0,
+   0.0,  1.0, -1.0,
+   0.0, -1.0,  1.0,
    0.0,  1.0,  1.0
 };
 
@@ -68,9 +68,9 @@ const int pylith::faults::CohesiveDataHex8Lagrange::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataHex8Lagrange::_cells[] = {
-  2,  3,  5,  4, 14, 16, 20, 18,
+  2,  3,  5,  4, 14, 15, 17, 16,
   6,  7,  9,  8, 10, 11, 13, 12,
-  8,  9,  7,  6, 18, 20, 16, 14, 19, 21, 17, 15
+  8,  9,  7,  6, 16, 17, 15, 14, 20, 21, 19, 18
 };
 
 const int pylith::faults::CohesiveDataHex8Lagrange::_materialIds[] = {
@@ -85,7 +85,7 @@ const int pylith::faults::CohesiveDataHex8Lagrange::_groupSizes[] =
 
 const int pylith::faults::CohesiveDataHex8Lagrange::_groups[] = {
   6, 7, 8, 9, 14, 15, 16, 17, 18, 19, 20, 21,
-  4, 5, 8, 9, 12, 13, 18, 20
+  4, 5, 8, 9, 12, 13, 16, 17
 };
 
 const char* pylith::faults::CohesiveDataHex8Lagrange::_groupNames[] = {
