@@ -53,7 +53,7 @@ class TestMeshGenSimple(unittest.TestCase):
     io.open(mesh)
     from pyre.units.time import s
     t = 0.0*s
-    io.openTimeStep(t, 0)
+    io.openTimeStep(t)
     io.closeTimeStep()
     io.close()
 
@@ -63,7 +63,7 @@ class TestMeshGenSimple(unittest.TestCase):
     newMesh = distributor.distribute(mesh)
     io.writer.filename = 'newMesh.vtk'
     io.open(newMesh)
-    io.openTimeStep(t, 0)
+    io.openTimeStep(t)
     io.closeTimeStep()
     io.close()
     return
