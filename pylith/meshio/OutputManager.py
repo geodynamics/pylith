@@ -38,8 +38,10 @@ class OutputManager(Component):
     ## Python object for managing OutputManager facilities and properties.
     ##
     ## \b Properties
-    ## @li \b vertex_fields Names of vertex fields to output.
-    ## @li \b cell_fields Names of cell fields to output.
+    ## @li \b vertex_info_fields Names of vertex info fields to output.
+    ## @li \b vertex_data_fields Names of vertex data fields to output.
+    ## @li \b cell_info_fields Names of cell info fields to output.
+    ## @li \b cell_data_fields Names of cell data fields to output.
     ## @li \b output_freq Flag indicating whether to use 'time_step' or 'skip'
     ##   to set frequency of solution output.
     ## @li \b time_step Time step between solution output.
@@ -66,11 +68,18 @@ class OutputManager(Component):
                               validator=pyre.inventory.greaterEqual(0))
     skip.meta['tip'] = "Number of time steps to skip between output."
 
-    vertexFields = pyre.inventory.list("vertex_fields", default=[])
-    vertexFields.meta['tip'] = "Fields of vertex data to output."
+    vertexInfoFields = pyre.inventory.list("vertex_info_fields", default=[])
+    vertexInfoFields.meta['tip'] = "Names of vertex info fields to output."
 
-    cellFields = pyre.inventory.list("cell_fields", default=[])
-    cellFields.meta['tip'] = "Fields of cell data to output."
+    vertexDataFields = pyre.inventory.list("vertex_data_fields", 
+                                           default=["displacements"])
+    vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
+
+    cellInfoFields = pyre.inventory.list("cell_info_fields", default=[])
+    cellInfoFields.meta['tip'] = "Names of cell info fields to output."
+
+    cellDataFields = pyre.inventory.list("cell_data_fields", default=[])
+    cellDataFields.meta['tip'] = "Names of cell data fields to output."
 
     from DataWriterVTK import DataWriterVTK
     writer = pyre.inventory.facility("writer", factory=DataWriterVTK,
@@ -104,14 +113,10 @@ class OutputManager(Component):
     Component.__init__(self, name, facility="outputmanager")
     self._loggingPrefix = "OutM "
     self.cppHandle = None
-    self.coordsys = None
-    self.mesh = None
     self._stepCur = 0
     self._stepWrite = None
     self._tWrite = None
-    self.vertexFields = None
-    self.cellFields = None
-    self._fieldTranslator = copyTranslator
+    self.dataProvider = None
     return
 
 
@@ -119,17 +124,13 @@ class OutputManager(Component):
     """
     Verify compatibility of configuration.
     """
-    # Verify fields requested for output are available by creating map
-    # of names of requested fields to mesh labels.
-    self._createFieldDicts()
-    return
-
-
-  def fieldTranslator(self, translator):
-    """
-    Set function to call to translate names of fields to mesh labels.
-    """
-    self._fieldTranslator = translator
+    self._setupLogging()
+    if None == self.dataProvider:
+      raise ValueError("Need to set 'dataProvider' in OutputManager.")
+    self.dataProvider.verifyFields(self.vertexInfoFields, "vertex", "info")
+    self.dataProvider.verifyFields(self.vertexDataFields, "vertex", "data")
+    self.dataProvider.verifyFields(self.cellInfoFields, "cell", "info")
+    self.dataProvider.verifyFields(self.cellDataFields, "cell", "data")
     return
 
 
@@ -137,8 +138,9 @@ class OutputManager(Component):
     """
     Initialize output manager.
     """
-    self._createFieldDicts()
-    
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)    
+
     # Initialize coordinate system
     if self.coordsys is None:
       raise ValueError, "Coordinate system for output is unknown."
@@ -147,23 +149,31 @@ class OutputManager(Component):
     self.cellFilter.initialize(quadrature)
     self.writer.initialize()
     self._sync()
+
+    self._logger.eventEnd(logEvent)
     return
 
 
-  def open(self, mesh):
+  def open(self, totalTime, numTimeSteps):
     """
     Prepare for writing data.
     """
-    self._setupLogging()
     logEvent = "%sopen" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    self.mesh = mesh # Keep handle to mesh
+    nsteps = numTimeSteps
+    if self.outputFreq == "skip" and self.skip > 0:
+      nsteps = numTimeSteps / (1+self.skip)
+    elif self.outputFreq == "time_step":
+      nsteps = 1 + int(totalTime / self.dt)
+
+    mesh = self.dataProvider.getDataMesh()
     
     assert(None != self.cppHandle)
     assert(None != mesh.cppHandle)
     assert(None != mesh.coordsys.cppHandle)
-    self.cppHandle.open(mesh.cppHandle, mesh.coordsys.cppHandle)
+    self.cppHandle.open(mesh.cppHandle, mesh.coordsys.cppHandle,
+                        nsteps)
 
     self._logger.eventEnd(logEvent)    
     return
@@ -183,92 +193,67 @@ class OutputManager(Component):
     return
 
 
-  def openTimeStep(self, t):
+  def writeInfo(self):
     """
-    Prepare for writing solution to file.
+    Write information fields.
     """
-    logEvent = "%sopenStep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)    
-    self._info.log("Preparing for writing solution to file.")
-
-    write = False
-    if self._stepWrite == None or not "value" in dir(self._tWrite):
-      write = True
-    elif self.outputFreq == "skip":
-      if self._stepCur > self._stepWrite + self.skip:
-        write = True
-    elif t >= self._tWrite + self.dt:
-      write = True
-    if write:
-      self._stepWrite = self._stepCur
-      self._tWrite = t
-    self.writeFlag = write
-
-    assert(self.cppHandle != None)
-    assert(self.mesh.cppHandle != None)
-    assert(self.mesh.coordsys.cppHandle != None)
-    self.cppHandle.openTimeStep(t.value,
-                                self.mesh.cppHandle,
-                                self.mesh.coordsys.cppHandle)
-
-    self._logger.eventEnd(logEvent)    
-    return
-
-
-  def closeTimeStep(self):
-    """
-    Cleanup after writing solution to file.
-    """
-    logEvent = "%scloseStep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)    
-    self._info.log("Cleaning up afterwriting solution to file.")
-
-    self.writeFlag = False
-    self._stepCur += 1
-
-    assert(self.cppHandle != None)
-    self.cppHandle.closeTimeStep()
-
-    self._logger.eventEnd(logEvent)    
-    return
-
-
-  def appendVertexField(self, t, name, field, dim=0):
-    """
-    Write field over vertices at time t to file.
-    """
-    logEvent = "%swriteVertex" % self._loggingPrefix
+    logEvent = "%swriteInfo" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    if self.writeFlag:
-      self._info.log("Writing solution field '%s'." % name)
-      assert(self.cppHandle != None)
-      assert(self.mesh.cppHandle != None)
-      self.cppHandle.appendVertexField(t.value, name, field,
-                                       self.mesh.cppHandle, dim)
+    if len(self.vertexInfoFields) > 0 or len(self.cellInfoFields) > 0:
+      from pyre.units.time import s
+      t = 0.0*s
+      self.open(totalTime=0.0*s, numTimeSteps=0)
+      mesh = self.dataProvider.getDataMesh()
+      self.cppHandle.openTimeStep(t.value,
+                                  mesh.cppHandle, mesh.coordsys.cppHandle)
+
+      for name in self.vertexInfoFields:
+        (field, fieldType) = self.dataProvider.getVertexField(name)
+        self.cppHandle.appendVertexField(t.value, name, field, fieldType, 
+                                         mesh.cppHandle)
+
+      for name in self.cellInfoFields:
+        (field, fieldType) = self.dataProvider.getCellField(name)
+        self.cppHandle.appendCellField(t.value, name, field, fieldType, 
+                                       mesh.cppHandle)
+
+        self.cppHandle.closeTimeStep()
+        self.close()
 
     self._logger.eventEnd(logEvent)
     return
 
 
-  def appendCellField(self, t, name, field, dim=0):
+  def writeData(self, t):
     """
-    Write field over cells at time t to file.
+    Write fields at current time step.
     """
-    logEvent = "%swriteCell" % self._loggingPrefix
+    logEvent = "%swriteData" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    if self.writeFlag:
-      self._info.log("Writing solution field '%s'." % name)
-      assert(self.cppHandle != None)
-      assert(self.mesh.cppHandle != None)
-      self.cppHandle.appendCellField(t.value, name, field, 
-                                     self.mesh.cppHandle, dim)
+    if self._checkWrite(t):
+
+      mesh = self.dataProvider.getDataMesh()
+      self.cppHandle.openTimeStep(t.value,
+                                  mesh.cppHandle, mesh.coordsys.cppHandle)
+
+      for name in self.vertexDataFields:
+        (field, fieldType) = self.dataProvider.getVertexField(name)
+        self.cppHandle.appendVertexField(t.value, name, field, fieldType, 
+                                         mesh.cppHandle)
+
+      for name in self.cellDataFields:
+        (field, fieldType) = self.dataProvider.getCellField(name)
+        self.cppHandle.appendCellField(t.value, name, field, fieldType, 
+                                       mesh.cppHandle)
+
+      self.cppHandle.closeTimeStep()
 
     self._logger.eventEnd(logEvent)
     return
-
-
+      
+    
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
@@ -281,8 +266,10 @@ class OutputManager(Component):
     self.skip = self.inventory.skip
     self.coordsys = self.inventory.coordsys
     self.writer = self.inventory.writer
-    self.vertexFieldNames = self.inventory.vertexFields
-    self.cellFieldNames = self.inventory.cellFields
+    self.vertexInfoFields = self.inventory.vertexInfoFields
+    self.vertexDataFields = self.inventory.vertexDataFields
+    self.cellInfoFields = self.inventory.cellInfoFields
+    self.cellDataFields = self.inventory.cellDataFields
     self.vertexFilter = self.inventory.vertexFilter
     self.cellFilter = self.inventory.cellFilter
     return
@@ -301,27 +288,24 @@ class OutputManager(Component):
       
     self.cppHandle.coordsys = self.coordsys.cppHandle
     self.cppHandle.writer = self.writer.cppHandle
-    self.cppHandle.vertexFields = self.vertexFields
-    self.cppHandle.cellFields = self.cellFields
     self.cppHandle.vertexFilter = self.vertexFilter.cppHandle
     self.cppHandle.cellFilter = self.cellFilter.cppHandle
     return
 
 
-  def _createFieldDicts(self):
+  def _checkWrite(self, t):
     """
-    Create dictionaries with field names and mesh labels of fields.
+    Check if we want to write data at time t.
     """
-    if None != self.vertexFields and None != self.cellFields:
-      return
-    
-    self.vertexFields = {}
-    self.cellFields = {}
-    for name in self.vertexFieldNames:
-      self.vertexFields[name] = self._fieldTranslator(name)
-    for name in self.cellFieldNames:
-      self.cellFields[name] = self._fieldTranslator(name)
-    return
+    write = False
+    if self._stepWrite == None or not "value" in dir(self._tWrite):
+      write = True
+    elif self.outputFreq == "skip":
+      if self._stepCur > self._stepWrite + self.skip:
+        write = True
+    elif t >= self._tWrite + self.dt:
+      write = True
+    return write
 
 
   def _setupLogging(self):
@@ -336,13 +320,13 @@ class OutputManager(Component):
     logger.setClassName("FE Output")
     logger.initialize()
 
-    events = ["open",
+    events = ["init",
+              "open",
               "close",
-              "writeFields",
               "openStep",
               "closeStep",
-              "writeVertex",
-              "writeCell"]
+              "writeInfo",
+              "writeData"]
     for event in events:
       logger.registerEvent("%s%s" % (self._loggingPrefix, event))
 
@@ -357,15 +341,6 @@ def output_manager():
   Factory associated with OutputManager.
   """
   return OutputManager()
-
-
-# MISCELLANEOUS ////////////////////////////////////////////////////////
-
-def copyTranslator(name):
-  """
-  Field translator that simply copies the field name.
-  """
-  return name
 
 
 # End of file 

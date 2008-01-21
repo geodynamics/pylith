@@ -168,7 +168,7 @@ class Fault(Component):
 
     # :TODO: Make sure mesh has group of vertices with label.
 
-    self.output.verifyConfiguration()
+    #self.output.verifyConfiguration()
     return
   
 
@@ -178,7 +178,7 @@ class Fault(Component):
     """
     self.quadrature.initialize()
     self.matDB.initialize()
-    self.output.initialize(self.quadrature.cppHandle)
+    #self.output.initialize(self.quadrature.cppHandle)
 
     assert(None != self.cppHandle)
     self.cppHandle.initialize(self.mesh.cppHandle,

@@ -16,7 +16,8 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshio::DataWriter::DataWriter(void)
+pylith::meshio::DataWriter::DataWriter(void) :
+  _numTimeSteps(0)
 { // constructor
 } // constructor
 
@@ -31,8 +32,10 @@ pylith::meshio::DataWriter::~DataWriter(void)
 void
 pylith::meshio::DataWriter::open(
 			       const ALE::Obj<ALE::Mesh>& mesh,
-			       const spatialdata::geocoords::CoordSys* csMesh)
+			       const spatialdata::geocoords::CoordSys* csMesh,
+			       const int numTimeSteps)
 { // open
+  _numTimeSteps = numTimeSteps;
 } // open
 
 // ----------------------------------------------------------------------

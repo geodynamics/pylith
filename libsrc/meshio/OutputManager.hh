@@ -19,14 +19,14 @@
 #if !defined(pylith_meshio_outputmanager_hh)
 #define pylith_meshio_outputmanager_hh
 
+#include "DataWriter.hh" // USES DataWriter::FieldEnum
+
 #include "pylith/utils/sievetypes.hh" // USES ALE::Mesh, real_section_type
-#include <map> // USES std::map
 
 namespace pylith {
   namespace meshio {
     class OutputManager;
 
-    class DataWriter; // HOLDS DataWriter
     class CellFilter; // HOLDSA CellFilter
     class VertexFilter; // HOLDSA VertexFilter
   } // meshio
@@ -40,12 +40,6 @@ namespace spatialdata {
 
 class pylith::meshio::OutputManager
 { // OutputManager
-
-// PUBLIC METHODS ///////////////////////////////////////////////////////
-public :
-
-  /// Map to hold field names and mesh labels (name -> label).
-  typedef std::map<std::string, std::string> map_names_type;
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -69,38 +63,6 @@ public :
    */
   void writer(const DataWriter* datawriter);
 
-  /** Set which vertex fields to output.
-   *
-   * @param names Names of fields.
-   * @param labels Mesh labels of fields.
-   * @param numFields Number of fields.
-   */
-  void vertexFields(const char** names,
-		    const char** labels,
-		    const int numFields);
-
-  /** Set which cell fields to output.
-   *
-   * @param names Names of fields.
-   * @param labels Mesh labels of fields.
-   * @param numFields Number of fields.
-   */
-  void cellFields(const char** names,
-		  const char** labels,
-		  const int numFields);
-
-  /** Get vertex fields to output.
-   *
-   * @returns Map of field name to mesh label for fields.
-   */
-  const map_names_type& vertexFields(void) const;
-
-  /** Get cell fields to output.
-   *
-   * @returns Map of field name to mesh label for fields.
-   */
-  const map_names_type& cellFields(void) const;
-
   /** Set filter for vertex data.
    *
    * @param filter Filter to apply to vertex data before writing.
@@ -115,11 +77,13 @@ public :
 
   /** Prepare for output.
    *
-   * @param mesh PETSc mesh object
-   * @param csMesh Coordinate system of mesh geometry
+   * @param mesh PETSc mesh object.
+   * @param csMesh Coordinate system of mesh geometry.
+   * @param numTimeSteps Expected number of time steps.
    */
   void open(const ALE::Obj<ALE::Mesh>& mesh,
-	    const spatialdata::geocoords::CoordSys* csMesh);
+	    const spatialdata::geocoords::CoordSys* csMesh,
+	    const int numTimeSteps);
 
   /// Close output files.
   void close(void);
@@ -142,46 +106,38 @@ public :
    * @param t Time associated with field.
    * @param name Name of field.
    * @param field Vertex field.
+   * @param fieldType Type of field.
    * @param mesh PETSc mesh object.
-   * @param dim Fiber dimension to use when writing data
-   *   (=0 means use fiber dimension of field).
    */
   void appendVertexField(const double t,
 			 const char* name,
 			 const ALE::Obj<real_section_type>& field,
-			 const ALE::Obj<ALE::Mesh>& mesh,
-			 const int dim =0);
+			 const DataWriter::FieldEnum fieldType,
+			 const ALE::Obj<ALE::Mesh>& mesh);
 
   /** Append finite-element cell field to file.
    *
    * @param t Time associated with field.
    * @param name Name of field.
    * @param field Cell field.
+   * @param fieldType Type of field.
    * @param mesh PETSc mesh object.
-   * @param csMesh Coordinate system of mesh geometry
-   * @param dim Fiber dimension to use when writing data
-   *   (=0 means use fiber dimension of field).
    */
   void appendCellField(const double t,
 		       const char* name,
 		       const ALE::Obj<real_section_type>& field,
-		       const ALE::Obj<ALE::Mesh>& mesh,
-		       const int dim =0);
+		       const DataWriter::FieldEnum fieldType,
+		       const ALE::Obj<ALE::Mesh>& mesh);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
-
 private :
-
-  /// Name and section label of vertex fields to output
-  map_names_type _vertexFields;
-
-  /// Name and section label of cell fields to output
-  map_names_type _cellFields;
 
   spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system for output.
   DataWriter* _writer; ///< Writer for data.
   VertexFilter* _vertexFilter; ///< Filter applied to vertex data.
   CellFilter* _cellFilter; ///< Filter applied to cell data.
+
+  bool _isInfo; ///< Is output info (diagnostic stuff) or data (solution, etc).
 
 }; // OutputManager
 

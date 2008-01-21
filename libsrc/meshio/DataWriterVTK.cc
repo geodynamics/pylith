@@ -61,15 +61,19 @@ pylith::meshio::DataWriterVTK::openTimeStep(
 
     std::ostringstream buffer;
     const int indexExt = _filename.find(".vtk");
-    char sbuffer[256];
-    sprintf(sbuffer, _timeFormat.c_str(), t);
-    std::string timestamp(sbuffer);
-    
-    const int pos = timestamp.find(".");
-    if (pos != timestamp.length())
-      timestamp.erase(pos, 1);
-    buffer
-      << std::string(_filename, 0, indexExt) << "_t" << timestamp << ".vtk";
+    if (_numTimeSteps > 0) {
+      // If data with multiple time steps, then add time stamp to filename
+      char sbuffer[256];
+      sprintf(sbuffer, _timeFormat.c_str(), t);
+      std::string timestamp(sbuffer);
+      const int pos = timestamp.find(".");
+      if (pos != timestamp.length())
+	timestamp.erase(pos, 1);
+      buffer
+	<< std::string(_filename, 0, indexExt) << "_t" << timestamp << ".vtk";
+    } else
+      buffer
+	<< std::string(_filename, 0, indexExt) << "_info.vtk";
 
     err = PetscViewerCreate(mesh->comm(), &_viewer);
     err = PetscViewerSetType(_viewer, PETSC_VIEWER_ASCII);
@@ -111,8 +115,8 @@ pylith::meshio::DataWriterVTK::writeVertexField(
 				       const double t,
 				       const char* name,
 				       const ALE::Obj<real_section_type>& field,
-				       const ALE::Obj<ALE::Mesh>& mesh,
-				       const int dim)
+				       const FieldEnum fieldType,
+				       const ALE::Obj<ALE::Mesh>& mesh)
 { // writeVertexField
   assert(0 != name);
 
@@ -124,8 +128,8 @@ pylith::meshio::DataWriterVTK::writeVertexField(
     buffer << name << "_t" << timestamp;
 
     const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-   const int fiberDim = 
-     (dim == 0) ? field->getFiberDimension(*vertices->begin()) : dim;
+    const int fiberDim = (fieldType != VECTOR_FIELD) ? 
+      field->getFiberDimension(*vertices->begin()) : 3;
 
     PetscErrorCode err = SectionView_Sieve_Ascii(mesh, field, 
 						 buffer.str().c_str(), 
@@ -152,8 +156,8 @@ pylith::meshio::DataWriterVTK::writeCellField(
 				       const double t,
 				       const char* name,
 				       const ALE::Obj<real_section_type>& field,
-				       const ALE::Obj<ALE::Mesh>& mesh,
-				       const int dim)
+				       const FieldEnum fieldType,
+				       const ALE::Obj<ALE::Mesh>& mesh)
 { // writeCellField
   assert(0 != name);
 
@@ -167,13 +171,13 @@ pylith::meshio::DataWriterVTK::writeCellField(
     buffer << name << "_t" << timestamp;
 
     err = PetscViewerPushFormat(_viewer, PETSC_VIEWER_ASCII_VTK_CELL);
-
-   // Get fiber dimension of first cell
-   const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
-   const int fiberDim = 
-     (dim == 0) ? field->getFiberDimension(*cells->begin()) : dim;
-   err = SectionView_Sieve_Ascii(mesh, field, buffer.str().c_str(), 
-				 _viewer, fiberDim);
+    
+    // Get fiber dimension of first cell
+    const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+    const int fiberDim = (fieldType != VECTOR_FIELD) ? 
+      field->getFiberDimension(*cells->begin()) : 3;
+    err = SectionView_Sieve_Ascii(mesh, field, buffer.str().c_str(), 
+				  _viewer, fiberDim);
     if (err)
       throw std::runtime_error("Could not write cell data.");   
   } catch (const std::exception& err) {

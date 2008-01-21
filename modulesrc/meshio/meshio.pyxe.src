@@ -24,6 +24,7 @@
 #include "pylith/meshio/MeshIOCubit.hh"
 #endif
 
+#include <strings.h> // USES strcasecmp()
 #include <stdexcept>
 #include <assert.h>
 #include <Python.h>
@@ -597,19 +598,19 @@ cdef class OutputManager:
     return
 
 
-  def open(self, mesh, cs):
+  def open(self, mesh, cs, numTimeSteps):
     """
     Open output file.
     """
     # create shim for method 'open'
-    #embed{ void OutputManager_open(void* objVptr, void* meshVptr, void* csVptr)
+    #embed{ void OutputManager_open(void* objVptr, void* meshVptr, void* csVptr, int numTimeSteps)
     try {
       assert(0 != objVptr);
       assert(0 != csVptr);
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
       spatialdata::geocoords::CoordSys* cs =
         (spatialdata::geocoords::CoordSys*) csVptr;
-      ((pylith::meshio::OutputManager*) objVptr)->open(*mesh, cs);
+      ((pylith::meshio::OutputManager*) objVptr)->open(*mesh, cs, numTimeSteps);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -628,7 +629,7 @@ cdef class OutputManager:
       raise TypeError, \
             "Argument 'cs' must be extension module type 'CoordSys'."
     OutputManager_open(self.thisptr, ptrFromHandle(mesh),
-                       ptrFromHandle(cs))
+                       ptrFromHandle(cs), numTimeSteps)
     return
 
 
@@ -716,12 +717,12 @@ cdef class OutputManager:
     return
 
 
-  def appendVertexField(self, t, name, field, mesh, dim):
+  def appendVertexField(self, t, name, field, fieldType, mesh):
     """
     Append field over vertices to file.
     """
-    # create shim for method 'appendVertxField'
-    #embed{ void OutputManager_appendVertexField(void* objVptr, double t, char* name, void* fieldVptr, void* meshVptr, int dim)
+    # create shim for method 'appendVertexField'
+    #embed{ void OutputManager_appendVertexField(void* objVptr, double t, char* name, void* fieldVptr, char* fieldTypeName, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
@@ -730,9 +731,16 @@ cdef class OutputManager:
       ALE::Obj<pylith::real_section_type>* field =
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      pylith::meshio::DataWriter::FieldEnum fieldType = 
+        pylith::meshio::DataWriter::OTHER_FIELD;
+      if (0 == strcasecmp("scalar field", fieldTypeName))
+        fieldType = pylith::meshio::DataWriter::SCALAR_FIELD;
+      else if (0 == strcasecmp("vector field", fieldTypeName))
+        fieldType = pylith::meshio::DataWriter::VECTOR_FIELD;
+      else if (0 == strcasecmp("tensor field", fieldTypeName))
+        fieldType = pylith::meshio::DataWriter::TENSOR_FIELD;
       ((pylith::meshio::OutputManager*) objVptr)->appendVertexField(t, name,
-                                                                *field, *mesh,
-                                                                    dim);
+                                                     *field, fieldType, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -746,20 +754,20 @@ cdef class OutputManager:
     #}embed
     if not mesh.name == "pylith_topology_Mesh":
       raise TypeError, \
-            "Argument must be extension module type 'Mesh'."
+            "Argument 'mesh' must be extension module type 'Mesh'."
     cdef void* fieldVptr
     fieldVptr = PyCObject_AsVoidPtr(field)
-    OutputManager_appendVertexField(self.thisptr, t, name, fieldVptr, 
-                                    ptrFromHandle(mesh), dim)
+    OutputManager_appendVertexField(self.thisptr, t, name, fieldVptr, fieldType, 
+                                    ptrFromHandle(mesh))   
     return
 
 
-  def appendCellField(self, t, name, field, mesh, dim):
+  def appendCellField(self, t, name, field, fieldType, mesh):
     """
     Append field over cells to file.
     """
     # create shim for method 'appendCellField'
-    #embed{ void OutputManager_appendCellField(void* objVptr, double t, char* name, void* fieldVptr, void* meshVptr, int dim)
+    #embed{ void OutputManager_appendCellField(void* objVptr, double t, char* name, void* fieldVptr, char* fieldTypeName, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
@@ -768,10 +776,18 @@ cdef class OutputManager:
       ALE::Obj<pylith::real_section_type>* field =
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      pylith::meshio::DataWriter::FieldEnum fieldType = 
+        pylith::meshio::DataWriter::OTHER_FIELD;
+      if (0 == strcasecmp("scalar field", fieldTypeName))
+        fieldType = pylith::meshio::DataWriter::SCALAR_FIELD;
+      else if (0 == strcasecmp("vector field", fieldTypeName))
+        fieldType = pylith::meshio::DataWriter::VECTOR_FIELD;
+      else if (0 == strcasecmp("tensor field", fieldTypeName))
+        fieldType = pylith::meshio::DataWriter::TENSOR_FIELD;
       ((pylith::meshio::OutputManager*) objVptr)->appendCellField(t, name,
                                                                   *field,
-                                                                  *mesh,
-                                                                  dim);
+                                                                  fieldType,
+                                                                  *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -788,8 +804,8 @@ cdef class OutputManager:
             "Argument must be extension module type 'Mesh'."
     cdef void* fieldVptr
     fieldVptr = PyCObject_AsVoidPtr(field)
-    OutputManager_appendCellField(self.thisptr, t, name, fieldVptr,
-                              ptrFromHandle(mesh), dim)
+    OutputManager_appendCellField(self.thisptr, t, name, fieldVptr, fieldType,
+                                  ptrFromHandle(mesh))
     return
 
 
@@ -848,114 +864,6 @@ cdef class OutputManager:
       } // try/catch
       #}embed
       OutputManager_writer_set(self.thisptr, ptrFromHandle(writer))
-
-
-  property vertexFields:
-    def __set__(self, fields):
-      """
-      Set names and mesh labels of vertex fields
-      """
-      # create shim for method 'vertexFields'
-      #embed{ void OutputManager_vertexFields_set(void* objVptr, char** names, char** labels, int numFields)
-      try {
-        assert(0 != objVptr);
-        ((pylith::meshio::OutputManager*) objVptr)->vertexFields((const char**) names, 
-                                                                 (const char**) labels,
-                                                                 numFields);
-      } catch (const std::exception& err) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        const_cast<char*>(err.what()));
-      } catch (const ALE::Exception& err) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        const_cast<char*>(err.msg().c_str()));
-      } catch (...) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        "Caught unknown C++ exception.");
-      } // try/catch
-      #}embed
-
-      cdef char** names
-      names = NULL
-      cdef char** labels
-      labels = NULL
-      numFields = len(fields)
-      if numFields > 0:
-        names = <char**> malloc(numFields*sizeof(char*))
-        labels = <char**> malloc(numFields*sizeof(char*))
-      keys = fields.keys()
-      values = fields.values()
-      for i from 0 <= i < numFields:
-        strsize = len(keys[i])
-        names[i] = <char*> malloc(1+strsize*sizeof(char))
-        tmp = keys[i]
-        strcpy(names[i], tmp)
-        strsize = len(values[i])
-        labels[i] = <char*> malloc(1+strsize*sizeof(char))
-        tmp = values[i]
-        strcpy(labels[i], tmp)
-      
-      OutputManager_vertexFields_set(self.thisptr, names, labels, numFields)
-
-      # memory cleanup
-      for i from 0 <= i < numFields:
-        free(<void*> names[i])
-        free(<void*> labels[i])
-      free(<void*> names)
-      free(<void*> labels)
-
-
-  property cellFields:
-    def __set__(self, fields):
-      """
-      Set names and mesh labels of cell fields
-      """
-      # create shim for method 'cellFields'
-      #embed{ void OutputManager_cellFields_set(void* objVptr, char** names, char** labels, int numFields)
-      try {
-        assert(0 != objVptr);
-        ((pylith::meshio::OutputManager*) objVptr)->cellFields((const char**) names, 
-                                                               (const char**) labels,
-                                                                 numFields);
-      } catch (const std::exception& err) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        const_cast<char*>(err.what()));
-      } catch (const ALE::Exception& err) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        const_cast<char*>(err.msg().c_str()));
-      } catch (...) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        "Caught unknown C++ exception.");
-      } // try/catch
-      #}embed
-
-      cdef char** names
-      names = NULL
-      cdef char** labels
-      labels = NULL
-      numFields = len(fields)
-      if numFields > 0:
-        names = <char**> malloc(numFields*sizeof(char*))
-        labels = <char**> malloc(numFields*sizeof(char*))
-      keys = fields.keys()
-      values = fields.values()
-      for i from 0 <= i < numFields:
-        strsize = len(keys[i])
-        names[i] = <char*> malloc(1+strsize*sizeof(char))
-        tmp = keys[i]
-        strcpy(names[i], tmp)
-        strsize = len(values[i])
-        labels[i] = <char*> malloc(1+strsize*sizeof(char))
-        tmp = values[i]
-        strcpy(labels[i], tmp)
-      
-      OutputManager_cellFields_set(self.thisptr, names, labels, numFields)
-
-      # memory cleanup
-      for i from 0 <= i < numFields:
-        free(<void*> names[i])
-        free(<void*> labels[i])
-      free(<void*> names)
-      free(<void*> labels)
 
 
   property vertexFilter:

@@ -17,7 +17,6 @@
 #include "DataWriter.hh" // USES DataWriter
 #include "VertexFilter.hh" // USES VertexFilter
 #include "CellFilter.hh" // USES CellFilter
-#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
@@ -27,7 +26,8 @@ pylith::meshio::OutputManager::OutputManager(void) :
   _coordsys(0),
   _writer(0),
   _vertexFilter(0),
-  _cellFilter(0)
+  _cellFilter(0),
+  _isInfo(false)
 { // constructor
 } // constructor
 
@@ -57,52 +57,6 @@ pylith::meshio::OutputManager::writer(const DataWriter* datawriter)
 } // writer
 
 // ----------------------------------------------------------------------
-// Set which vertex fields to output.
-void
-pylith::meshio::OutputManager::vertexFields(const char** names,
-					    const char** labels,
-					    const int numFields)
-{ // vertexFields
-  assert( (0 == numFields && 0 == names && 0 == labels) ||
-	  (0 < numFields && 0 != names && 0 != labels) );
-
-  _vertexFields.clear();
-  for (int iField=0; iField < numFields; ++iField)
-    _vertexFields[names[iField]] = _vertexFields[labels[iField]];
-} // vertexFields
-
-// ----------------------------------------------------------------------
-// Set which cell fields to output.
-void
-pylith::meshio::OutputManager::cellFields(const char** names,
-					  const char** labels,
-					  const int numFields)
-{ // cellFields
-  assert( (0 == numFields && 0 == names && 0 == labels) ||
-	  (0 < numFields && 0 != names && 0 != labels) );
-
-  _cellFields.clear();
-  for (int iField=0; iField < numFields; ++iField)
-    _cellFields[names[iField]] = _cellFields[labels[iField]];
-} // cellFields
-
-// ----------------------------------------------------------------------
-// Get vertex fields to output.
-const pylith::meshio::OutputManager::map_names_type&
-pylith::meshio::OutputManager::vertexFields(void) const
-{ // vertexFields
-  return _vertexFields;
-} // vertexFields
-
-// ----------------------------------------------------------------------
-// Get cell fields to output.
-const pylith::meshio::OutputManager::map_names_type&
-pylith::meshio::OutputManager::cellFields(void) const
-{ // cellFields
-  return _cellFields;
-} // cellFields
-
-// ----------------------------------------------------------------------
 // Set filter for vertex data.
 void
 pylith::meshio::OutputManager::vertexFilter(const VertexFilter* filter)
@@ -123,11 +77,12 @@ pylith::meshio::OutputManager::cellFilter(const CellFilter* filter)
 void
 pylith::meshio::OutputManager::open(
 				 const ALE::Obj<ALE::Mesh>& mesh,
-				 const spatialdata::geocoords::CoordSys* csMesh)
+				 const spatialdata::geocoords::CoordSys* csMesh,
+				 const int numTimeSteps)
 { // open
   assert(0 != _writer);
 
-  _writer->open(mesh, csMesh);
+  _writer->open(mesh, csMesh, numTimeSteps);
 } // open
 
 // ----------------------------------------------------------------------
@@ -166,15 +121,15 @@ pylith::meshio::OutputManager::appendVertexField(
 			       const double t,
 			       const char* name,
 			       const ALE::Obj<real_section_type>& field,
-			       const ALE::Obj<ALE::Mesh>& mesh,
-			       const int dim)
+			       const DataWriter::FieldEnum fieldType,
+			       const ALE::Obj<ALE::Mesh>& mesh)
 { // appendVertexField
   assert(0 != name);
 
   const ALE::Obj<real_section_type>& fieldFiltered = 
     (0 == _vertexFilter) ? field : _vertexFilter->filter(field, mesh);
 
-  _writer->writeVertexField(t, name, fieldFiltered, mesh, dim);
+  _writer->writeVertexField(t, name, fieldFiltered, fieldType, mesh);
 } // appendVertexField
 
 // ----------------------------------------------------------------------
@@ -184,15 +139,15 @@ pylith::meshio::OutputManager::appendCellField(
 				const double t,
 				const char* name,
 				const ALE::Obj<real_section_type>& field,
-				const ALE::Obj<ALE::Mesh>& mesh,
-				const int dim)
+				const DataWriter::FieldEnum fieldType,
+				const ALE::Obj<ALE::Mesh>& mesh)
 { // appendCellField
   assert(0 != name);
 
   const ALE::Obj<real_section_type>& fieldFiltered = 
     (0 == _cellFilter) ? field : _cellFilter->filter(field, mesh);
 
-  _writer->writeCellField(t, name, fieldFiltered, mesh, dim);
+  _writer->writeCellField(t, name, fieldFiltered, fieldType, mesh);
 } // appendCellField
 
 

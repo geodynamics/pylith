@@ -41,10 +41,10 @@ public :
 
   /// Enumeration of types of fields
   enum FieldEnum {
-    SCALAR, ///< Scalar field
-    VECTOR, ///< Vector field
-    TENSOR, ///< Tensor field
-    OTHER ///< Other type of field
+    SCALAR_FIELD, ///< Scalar field
+    VECTOR_FIELD, ///< Vector field
+    TENSOR_FIELD, ///< Tensor field
+    OTHER_FIELD ///< Other type of field
   }; // FieldEnum
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
@@ -68,10 +68,12 @@ public :
    *
    * @param mesh PETSc mesh object 
    * @param csMesh Coordinate system of mesh geometry
+   * @param numTimeSteps Expected number of time steps for fields.
    */
   virtual
   void open(const ALE::Obj<ALE::Mesh>& mesh,
-	    const spatialdata::geocoords::CoordSys* csMesh);
+	    const spatialdata::geocoords::CoordSys* csMesh,
+	    const int numTimeSteps);
 
   /// Close output files.
   virtual
@@ -97,32 +99,30 @@ public :
    * @param t Time associated with field.
    * @param name Name of field.
    * @param field PETSc field over vertices.
+   * @param fieldType Type of field.
    * @param mesh Finite-element mesh
-   * @param dim Fiber dimension to use when writing data
-   *   (=0 means use fiber dimension of field).
    */
   virtual
   void writeVertexField(const double t,
 			const char* name,
 			const ALE::Obj<real_section_type>& field,
-			const ALE::Obj<ALE::Mesh>& mesh,
-			const int dim) = 0;
+			const FieldEnum fieldType,
+			const ALE::Obj<ALE::Mesh>& mesh) = 0;
 
   /** Write field over cells to file.
    *
    * @param t Time associated with field.
    * @param name Name of field.
    * @param field PETSc field over cells.
+   * @param fieldType Type of field.
    * @param mesh PETSc mesh object.
-   * @param dim Fiber dimension to use when writing data
-   *   (=0 means use fiber dimension of field).
    */
   virtual
   void writeCellField(const double t,
 		      const char* name,
 		      const ALE::Obj<real_section_type>& field,
-		      const ALE::Obj<ALE::Mesh>& mesh,
-		      const int dim) = 0;
+		      const FieldEnum fieldType,
+		      const ALE::Obj<ALE::Mesh>& mesh) = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -137,6 +137,11 @@ protected :
 private :
 
   const DataWriter& operator=(const DataWriter&); ///< Not implemented
+
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
+
+  int _numTimeSteps; ///< Expected number of time steps for fields.
 
 }; // DataWriter
 

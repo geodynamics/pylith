@@ -16,6 +16,7 @@
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 #include "pylith/meshio/OutputManager.hh" // USES OutputManager
+#include "pylith/meshio/DataWriter.hh" // USES DataWriter::SCALAR_FIELD
 
 #include <string.h> // USES strlen()
 #include <stdexcept> // USES std::runtime_error
@@ -77,9 +78,11 @@ pylith::topology::Distributor::write(meshio::OutputManager* const output,
 
   partition->view("PARTITION");
   const double t = 0.0;
-  output->open(mesh, cs);
+  const int numTimeSteps = 0;
+  output->open(mesh, cs, numTimeSteps);
   output->openTimeStep(t, mesh, cs);
-  output->appendCellField(t, "partition", partition, mesh);
+  output->appendCellField(t, "partition", partition, 
+			  meshio::DataWriter::SCALAR_FIELD, mesh);
   output->closeTimeStep();
   output->close();
 } // write

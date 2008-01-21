@@ -59,13 +59,13 @@ class Explicit(Formulation):
     return ElasticityExplicit()
 
 
-  def initialize(self, dimension, dt):
+  def initialize(self, dimension, totalTime, dt):
     """
     Initialize problem for explicit time integration.
     """
     from pyre.units.time import second
     t = 0.0*second
-    Formulation.initialize(self, dimension, dt)
+    Formulation.initialize(self, dimension, totalTime, dt)
 
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
