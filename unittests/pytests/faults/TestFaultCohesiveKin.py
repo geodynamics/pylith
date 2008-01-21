@@ -32,6 +32,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     Test to make sure FaultCohesiveKin satisfies integrator requirements.
     """
     fault = FaultCohesiveKin()
+    fault._configure()
     from pylith.feassemble.Integrator import implementsIntegrator
     self.failUnless(implementsIntegrator(fault))
     return
@@ -42,6 +43,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     Test constructor.
     """
     fault = FaultCohesiveKin()
+    fault._configure()
     fault._createCppHandle()
     self.failIfEqual(None, fault.cppHandle)
     return
@@ -64,6 +66,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     mesh = importer.read(debug=False, interpolate=False)
 
     fault = FaultCohesiveKin()
+    fault._configure()
     fault.id = 10
     fault.label = "fault"
 
@@ -272,6 +275,9 @@ class TestFaultCohesiveKin(unittest.TestCase):
     
     # Setup fault
     fault = FaultCohesiveKin()
+    fault._configure()
+    fault.output._configure()
+    fault.output.writer._configure()
     fault.id = 10
     fault.label = "fault"
     fault.upDir = [0, 0, 1]
