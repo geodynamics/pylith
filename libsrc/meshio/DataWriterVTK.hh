@@ -75,30 +75,28 @@ public :
    * @param t Time associated with field.
    * @param name Name of field.
    * @param field PETSc field over vertices.
+   * @param fieldType Type of field.
    * @param mesh Finite-element mesh
-   * @param dim Fiber dimension to use when writing data
-   *   (=0 means use fiber dimension of field).
    */
   void writeVertexField(const double t,
 			const char* name,
 			const ALE::Obj<real_section_type>& field,
-			const ALE::Obj<ALE::Mesh>& mesh,
-			const int dim =0);
+			const FieldEnum fieldType,
+			const ALE::Obj<ALE::Mesh>& mesh);
 
   /** Write field over cells to file.
    *
    * @param t Time associated with field.
    * @param name Name of field.
    * @param field PETSc field over cells.
+   * @param fieldType Type of field.
    * @param mesh PETSc mesh object.
-   * @param dim Fiber dimension to use when writing data
-   *   (=0 means use fiber dimension of field).
    */
   void writeCellField(const double t,
 		      const char* name,
 		      const ALE::Obj<real_section_type>& field,
-		      const ALE::Obj<ALE::Mesh>& mesh,
-		      const int dim =0);
+		      const FieldEnum fieldType,
+		      const ALE::Obj<ALE::Mesh>& mesh);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :

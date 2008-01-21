@@ -164,13 +164,14 @@ class Formulation(Component):
     for constraint in self.constraints:
       constraint.verifyConfiguration()
     for output in self.output.bin:
+      output.dataProvider = self
       output.verifyConfiguration()
 
     self._logger.eventEnd(logEvent)
     return
   
 
-  def initialize(self, dimension, dt):
+  def initialize(self, dimension, totalTime, dt):
     """
     Create integrators for each element family.
     """
@@ -193,8 +194,10 @@ class Formulation(Component):
 
     self._info.log("Setting up solution output.")
     for output in self.output.bin:
+      numTimeSteps = 1.0 + int(totalTime / dt)
       output.initialize()
-      output.open(self.mesh)
+      output.writeInfo()
+      output.open(totalTime, numTimeSteps)
     self._debug.log(resourceUsageString())
 
     self._info.log("Creating solution field.")
@@ -252,10 +255,7 @@ class Formulation(Component):
     self._info.log("Writing solution fields.")
     field = self.fields.getSolution()
     for output in self.output.bin:
-      output.openTimeStep(t+dt)
-      output.appendVertexField(t+dt, self.solnField['label'],
-                               field, dim=3)
-      output.closeTimeStep()
+      output.writeData(t+dt)
     #for integrator in integrators:
     #  integrator.poststep(t, dt, totalTime)
     #for constraint in constraints:
@@ -285,6 +285,71 @@ class Formulation(Component):
     self._logger.eventEnd(logEvent)
     return
   
+
+  def verifyFields(self, names, fieldCategory, dataCategory):
+    """
+    Verify vertex info fields for output are available.
+    """
+    if fieldCategory == "vertex":
+      if dataCategory == "info":
+        available=[]
+        notavailable=names
+      elif dataCategory == "data":
+        available = ["displacements"]
+        notavailable = []
+        for name in names:
+          if not name in available:
+            notavailable.append(name)
+    elif fieldCategory == "cell":
+      available=[]
+      notavailable=names
+    else:
+      raise ValueError, \
+          "Argument 'fieldCategory' must be 'vertex' or 'field'." \
+          "Current value: '%s'" % fieldCategory
+    if len(notavailable) > 0:
+      msg = \
+          "Requested fields not available for output.\n" \
+          "Field type: '%s'\n" \
+          "Data type: '%s'\n" % (fieldCategory, dataCategory)
+      msg += "Available fields: "
+      for name in available:
+        msg += " '%s'" % name
+      msg += "\n"
+      msg += "Fields not available: "
+      for name in notavailable:
+        msg += " '%s'" % name
+      raise ValueError(msg)
+    return
+
+
+  def getDataMesh(self):
+    """
+    Get mesh associated with data fields.
+    """
+    return self.mesh
+
+
+  def getVertexField(self, name):
+    """
+    Get vertex field.
+    """
+    field = None
+    fieldType = None
+    if name == "displacements":
+      field = self.fields.getSolution()
+      fieldType = "vector field"
+    else:
+      raise ValueError, "Vertex field '%s' not available for output." % name
+    return (field, fieldType)
+
+
+  def getCellField(self):
+    field = None
+    fieldType = None
+    raise ValueError, "Cell field '%s' not available for output." % name
+    return (field, fieldType)
+
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 

@@ -138,7 +138,7 @@ class TimeDependent(Problem):
     self._logger.eventBegin(logEvent)
 
     self._info.log("Initializing problem.")
-    self.formulation.initialize(self.dimension, self.dt)
+    self.formulation.initialize(self.dimension, self.totalTime, self.dt)
 
     self._logger.eventEnd(logEvent)
     return
