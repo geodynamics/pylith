@@ -108,11 +108,19 @@ class OutputManager(Component):
     return
 
 
+  def preinitialize(self, dataProvider):
+    """
+    Do
+    """
+    self._setupLogging()
+    self.dataProvider = dataProvider
+    return
+  
+
   def verifyConfiguration(self):
     """
     Verify compatibility of configuration.
     """
-    self._setupLogging()
     if None == self.dataProvider:
       raise ValueError("Need to set 'dataProvider' in OutputManager.")
     self._verifyFields(self.dataProvider.availableFields)
