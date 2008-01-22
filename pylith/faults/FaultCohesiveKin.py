@@ -95,7 +95,6 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     assert(None != self.cppHandle)
     self.eqsrc.preinitialize()
     self.cppHandle.eqsrc = self.eqsrc.cppHandle
-    #self.cppHandle.output = self.output # TODO
     return
   
 
@@ -156,7 +155,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     elif name in ["slip_time"]:
       fieldType = "scalar field"
     else:
-      raise ValueError, "Vertex field '%s' not available for output." % name
+      raise ValueError, "Vertex field '%s' not available." % name
     return (field, fieldType)
 
 
@@ -169,7 +168,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     if name in ["traction_change"]:
       fieldType = "vector field"
     else:
-      raise ValueError, "Cell field '%s' not available for output." % name
+      raise ValueError, "Cell field '%s' not available." % name
     return (field, fieldType)
 
 
@@ -181,6 +180,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     """
     FaultCohesive._configure(self)
     self.eqsrc = self.inventory.eqsrc
+    self.output = self.inventory.output
     return
 
 

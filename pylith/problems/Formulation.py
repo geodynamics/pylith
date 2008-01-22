@@ -311,7 +311,7 @@ class Formulation(Component):
       field = self.fields.getSolution()
       fieldType = "vector field"
     else:
-      raise ValueError, "Vertex field '%s' not available for output." % name
+      raise ValueError, "Vertex field '%s' not available." % name
     return (field, fieldType)
 
 
@@ -321,7 +321,7 @@ class Formulation(Component):
     """
     field = None
     fieldType = None
-    raise ValueError, "Cell field '%s' not available for output." % name
+    raise ValueError, "Cell field '%s' not available." % name
     return (field, fieldType)
 
 
