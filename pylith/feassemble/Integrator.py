@@ -30,6 +30,7 @@ def implementsIntegrator(obj):
      not "integrateJacobian" in attrs or \
      not "updateState" in attrs or \
      not "verifyConfiguration" in attrs or \
+     not "poststep" in attrs or \
      not "finalize" in attrs:
     result = False
   return result
@@ -166,6 +167,13 @@ class Integrator(object):
     return
     
 
+  def poststep(self, t, dt, totalTime):
+    """
+    Hook for doing stuff after advancing time step.
+    """
+    return
+
+
   def finalize(self):
     """
     Cleanup after time stepping.
@@ -193,6 +201,7 @@ class Integrator(object):
               "newJacobian",
               "jacobian",
               "state",
+              "poststep",
               "finalize"]
     for event in events:
       logger.registerEvent("%s%s" % (self._loggingPrefix, event))

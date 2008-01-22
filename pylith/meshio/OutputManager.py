@@ -12,8 +12,8 @@
 
 ## @file pyre/meshio/OutputManager.py
 ##
-## @brief Python object for managing output of finite-element
-## information.
+## @brief Python abstract base class for managing output of
+## finite-element information.
 ##
 ## Factory: output_manager
 
@@ -22,7 +22,8 @@ from pyre.components.Component import Component
 # OutputManager class
 class OutputManager(Component):
   """
-  Python object for managing output of finite-element information.
+  Python abstract base class for managing output of finite-element
+  information.
 
   Factory: output_manager
   """
@@ -38,10 +39,6 @@ class OutputManager(Component):
     ## Python object for managing OutputManager facilities and properties.
     ##
     ## \b Properties
-    ## @li \b vertex_info_fields Names of vertex info fields to output.
-    ## @li \b vertex_data_fields Names of vertex data fields to output.
-    ## @li \b cell_info_fields Names of cell info fields to output.
-    ## @li \b cell_data_fields Names of cell data fields to output.
     ## @li \b output_freq Flag indicating whether to use 'time_step' or 'skip'
     ##   to set frequency of solution output.
     ## @li \b time_step Time step between solution output.
@@ -67,19 +64,6 @@ class OutputManager(Component):
     skip = pyre.inventory.int("skip", default=0,
                               validator=pyre.inventory.greaterEqual(0))
     skip.meta['tip'] = "Number of time steps to skip between output."
-
-    vertexInfoFields = pyre.inventory.list("vertex_info_fields", default=[])
-    vertexInfoFields.meta['tip'] = "Names of vertex info fields to output."
-
-    vertexDataFields = pyre.inventory.list("vertex_data_fields", 
-                                           default=["displacements"])
-    vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
-
-    cellInfoFields = pyre.inventory.list("cell_info_fields", default=[])
-    cellInfoFields.meta['tip'] = "Names of cell info fields to output."
-
-    cellDataFields = pyre.inventory.list("cell_data_fields", default=[])
-    cellDataFields.meta['tip'] = "Names of cell data fields to output."
 
     from DataWriterVTK import DataWriterVTK
     writer = pyre.inventory.facility("writer", factory=DataWriterVTK,
@@ -117,6 +101,10 @@ class OutputManager(Component):
     self._stepWrite = None
     self._tWrite = None
     self.dataProvider = None
+    self.vertexInfoFields = []
+    self.vertexDataFields = []
+    self.cellInfoFields = []
+    self.cellDataFields = []
     return
 
 
@@ -127,10 +115,7 @@ class OutputManager(Component):
     self._setupLogging()
     if None == self.dataProvider:
       raise ValueError("Need to set 'dataProvider' in OutputManager.")
-    self.dataProvider.verifyFields(self.vertexInfoFields, "vertex", "info")
-    self.dataProvider.verifyFields(self.vertexDataFields, "vertex", "data")
-    self.dataProvider.verifyFields(self.cellInfoFields, "cell", "info")
-    self.dataProvider.verifyFields(self.cellDataFields, "cell", "data")
+    self._verifyFields(self.dataProvider.availableFields)
     return
 
 
@@ -266,10 +251,6 @@ class OutputManager(Component):
     self.skip = self.inventory.skip
     self.coordsys = self.inventory.coordsys
     self.writer = self.inventory.writer
-    self.vertexInfoFields = self.inventory.vertexInfoFields
-    self.vertexDataFields = self.inventory.vertexDataFields
-    self.cellInfoFields = self.inventory.cellInfoFields
-    self.cellDataFields = self.inventory.cellDataFields
     self.vertexFilter = self.inventory.vertexFilter
     self.cellFilter = self.inventory.cellFilter
     return
@@ -306,6 +287,47 @@ class OutputManager(Component):
     elif t >= self._tWrite + self.dt:
       write = True
     return write
+
+
+  def _verifyFields(self, available):
+    """
+    Verify fields for output are available.
+    """
+    requested = {'vertex': \
+                   {'info': self.vertexInfoFields,
+                    'data': self.vertexDataFields},
+                 'cell': \
+                   {'info': self.cellInfoFields,
+                    'data': self.cellDataFields}}
+    for fieldCategory in ["vertex", "cell"]:
+      if not fieldCategory in available.keys():
+        raise ValueError, \
+            "Key '%s' not found in available fields dictionary for " \
+            "object '%s'." % (fieldCategory, self.dataProvider.name)
+      for dataCategory in ["info", "data"]:
+        if not dataCategory in available[fieldCategory].keys():
+          raise ValueError, \
+              "Key '%s' not found in available fields dictionary for " \
+              "object '%s'." % (fieldCategory, self.dataProvider.name)
+
+        notavailable = []
+        for name in requested[fieldCategory][dataCategory]:
+          if not name in available[fieldCategory][dataCategory]:
+            notavailable.append(name)
+        if len(notavailable) > 0:
+          msg = \
+              "Requested fields not available for output.\n" \
+              "Field type: '%s'\n" \
+              "Data type: '%s'\n" % (fieldCategory, dataCategory)
+          msg += "Available fields: "
+          for name in available:
+            msg += " '%s'" % name
+            msg += "\n"
+          msg += "Fields not available: "
+          for name in notavailable:
+            msg += " '%s'" % name
+          raise ValueError(msg)
+    return
 
 
   def _setupLogging(self):
