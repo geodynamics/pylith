@@ -28,6 +28,7 @@ def implementsConstraint(obj):
      not "setConstraints" in attrs or \
      not "useSolnIncr" in attrs or \
      not "setField" in attrs or \
+     not "poststep" in attrs or \
      not "finalize" in attrs:
     result = False
   return result
@@ -127,6 +128,13 @@ class Constraint(object):
     return
 
 
+  def poststep(self, t, dt, totalTime):
+    """
+    Hook for doing stuff after advancing time step.
+    """
+    return
+
+
   def finalize(self):
     """
     Cleanup after time stepping.
@@ -152,6 +160,7 @@ class Constraint(object):
               "setSizes",
               "constraints",
               "setField",
+              "poststep",
               "finalize"]
     for event in events:
       logger.registerEvent("%s%s" % (self._loggingPrefix, event))

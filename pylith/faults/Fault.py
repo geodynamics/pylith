@@ -74,7 +74,6 @@ class Fault(Component):
     ##
     ## \b Facilities
     ## @li \b quadrature Quadrature object for numerical integration
-    ## @li \b output Output manager associated with fault data.
 
     import pyre.inventory
 
@@ -107,12 +106,6 @@ class Fault(Component):
                                    factory=SimpleDB, args=["bulk materials"])
     matDB.meta['tip'] = "Spatial database for bulk material properties " \
                         "(used in improving conditioning of Jacobian matrix)."
-
-    from pylith.meshio.OutputManager import OutputManager
-    output = pyre.inventory.facility("output", family="output_manager",
-                                     factory=OutputManager)
-    output.meta['tip'] = "Output manager associated with fault data."
-
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -151,7 +144,6 @@ class Fault(Component):
     
     self.quadrature.preinitialize()    
     self.cppHandle.quadrature = self.quadrature.cppHandle
-    #self.cppHandle.output = self.output
     return
   
 
@@ -167,8 +159,6 @@ class Fault(Component):
             (self.quadrature.cell.cellDim, faultDim)
 
     # :TODO: Make sure mesh has group of vertices with label.
-
-    #self.output.verifyConfiguration()
     return
   
 
@@ -178,29 +168,24 @@ class Fault(Component):
     """
     self.quadrature.initialize()
     self.matDB.initialize()
-    #self.output.initialize(self.quadrature.cppHandle)
 
     assert(None != self.cppHandle)
     self.cppHandle.initialize(self.mesh.cppHandle,
                               self.mesh.coordsys.cppHandle,
                               self.upDir, self.normalDir,
                               self.matDB.cppHandle)
+    from pylith.topology.Mesh import Mesh
+    self.faultMesh = Mesh()
+    self.faultMesh.initialize(self.mesh.coordsys)
+    #self.faultMesh.cppHandle = self.cppHandle.faultMesh() # TODO
     return
 
 
-  def poststep(self, t, dt, totalTime):
+  def getDataMesh(self):
     """
-    Hook for doing stuff after advancing time step.
+    Get mesh associated with data fields.
     """
-    logEvent = "%spoststep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
-
-    self._info.log("Writing fault data.")
-    #if output.writeFlag:
-    #  self.cppHandle.writeData(t+dt)
-
-    self._logger.eventEnd(logEvent)
-    return
+    return self.faultMesh
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////

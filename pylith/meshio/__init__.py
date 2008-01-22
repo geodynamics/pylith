@@ -22,6 +22,8 @@ __all__ = ['CellFilter',
            'MeshIOCubit',
            'MeshIOLagrit',
            'OutputManager',
+           'OutputSoln',
+           'OutputFaultKin',
            'SingleOutput',
            'VertexFilter']
 

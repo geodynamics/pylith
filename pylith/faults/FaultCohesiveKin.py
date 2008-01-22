@@ -45,6 +45,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     ##
     ## \b Facilities
     ## @li \b eq_src Kinematic earthquake source information.
+    ## @li \b output Output manager associated with fault data.
 
     import pyre.inventory
 
@@ -52,6 +53,12 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     eqsrc = pyre.inventory.facility("eq_src", family="eq_kinematic_src",
                                     factory=EqKinSrc)
     eqsrc.meta['tip'] = "Kinematic earthquake source information."
+
+    from pylith.meshio.OutputFaultKin import OutputFaultKin
+    output = pyre.inventory.facility("output", family="output_manager",
+                                     factory=OutputFaultKin)
+    output.meta['tip'] = "Output manager associated with fault data."
+
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -63,6 +70,18 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     FaultCohesive.__init__(self, name)
     Integrator.__init__(self)
     self._loggingPrefix = "CoKi "
+
+    self.availableFields = \
+        {'vertex': \
+           {'info': ["strike_dir",
+                     "dip_dir",
+                     "normal_dir",
+                     "final_slip",
+                     "slip_time"],
+            'data': ["slip"]},
+         'cell': \
+           {'info': [],
+            'data': ["traction_change"]}}
     return
 
 
@@ -76,6 +95,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     assert(None != self.cppHandle)
     self.eqsrc.preinitialize()
     self.cppHandle.eqsrc = self.eqsrc.cppHandle
+    #self.cppHandle.output = self.output # TODO
     return
   
 
@@ -85,6 +105,8 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     """
     FaultCohesive.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
+    self.output.dataProvider = self
+    self.output.verifyConfiguration()
     return
 
 
@@ -99,8 +121,56 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     self._logger.eventBegin(logEvent)
     self.eqsrc.initialize()
     FaultCohesive.initialize(self)
+    self.output.initialize(self.quadrature.cppHandle)
+
     self._logger.eventEnd(logEvent)
     return
+
+
+  def poststep(self, t, dt, totalTime):
+    """
+    Hook for doing stuff after advancing time step.
+    """
+    logEvent = "%spoststep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
+    self._info.log("Writing fault data.")
+    #self.cppHandle.writeData(t+dt)
+
+    self._logger.eventEnd(logEvent)
+    return
+
+
+  def getVertexField(self, name):
+    """
+    Get vertex field.
+    """
+    field = self.cppHandle.getVertexField(name) # TODO
+    fieldType = None
+    if name in ["strike_dir",
+                "dip_dir",
+                "normal_dir",
+                "final_slip",
+                "traction_change"]:
+      fieldType = "vector field"
+    elif name in ["slip_time"]:
+      fieldType = "scalar field"
+    else:
+      raise ValueError, "Vertex field '%s' not available for output." % name
+    return (field, fieldType)
+
+
+  def getCellField(self):
+    """
+    Get cell field.
+    """
+    field = self.cppHandle.getVertexField(name) # TODO
+    fieldType = None
+    if name in ["traction_change"]:
+      fieldType = "vector field"
+    else:
+      raise ValueError, "Cell field '%s' not available for output." % name
+    return (field, fieldType)
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////

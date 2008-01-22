@@ -74,6 +74,14 @@ class Formulation(Component):
     self.constraints = None
     self.fields = None
     self.solnField = None
+
+    self.availableFields = \
+        {'vertex': \
+           {'info': [],
+            'data': ["displacements"]},
+         'cell': \
+           {'info': [],
+            'data': []}}
     return
 
 
@@ -256,10 +264,10 @@ class Formulation(Component):
     field = self.fields.getSolution()
     for output in self.output.bin:
       output.writeData(t+dt)
-    #for integrator in integrators:
-    #  integrator.poststep(t, dt, totalTime)
-    #for constraint in constraints:
-    #  constraint.poststep(t, dt, totalTime)
+    for integrator in self.integrators:
+      integrator.poststep(t, dt, totalTime)
+    for constraint in self.constraints:
+      constraint.poststep(t, dt, totalTime)
 
     self._logger.eventEnd(logEvent)
     return
@@ -286,43 +294,6 @@ class Formulation(Component):
     return
   
 
-  def verifyFields(self, names, fieldCategory, dataCategory):
-    """
-    Verify vertex info fields for output are available.
-    """
-    if fieldCategory == "vertex":
-      if dataCategory == "info":
-        available=[]
-        notavailable=names
-      elif dataCategory == "data":
-        available = ["displacements"]
-        notavailable = []
-        for name in names:
-          if not name in available:
-            notavailable.append(name)
-    elif fieldCategory == "cell":
-      available=[]
-      notavailable=names
-    else:
-      raise ValueError, \
-          "Argument 'fieldCategory' must be 'vertex' or 'field'." \
-          "Current value: '%s'" % fieldCategory
-    if len(notavailable) > 0:
-      msg = \
-          "Requested fields not available for output.\n" \
-          "Field type: '%s'\n" \
-          "Data type: '%s'\n" % (fieldCategory, dataCategory)
-      msg += "Available fields: "
-      for name in available:
-        msg += " '%s'" % name
-      msg += "\n"
-      msg += "Fields not available: "
-      for name in notavailable:
-        msg += " '%s'" % name
-      raise ValueError(msg)
-    return
-
-
   def getDataMesh(self):
     """
     Get mesh associated with data fields.
@@ -345,6 +316,9 @@ class Formulation(Component):
 
 
   def getCellField(self):
+    """
+    Get cell field.
+    """
     field = None
     fieldType = None
     raise ValueError, "Cell field '%s' not available for output." % name
