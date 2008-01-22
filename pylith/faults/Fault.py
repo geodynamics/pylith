@@ -201,7 +201,6 @@ class Fault(Component):
     self.normalDir = map(float, self.inventory.normalDir)
     self.quadrature = self.inventory.quadrature
     self.matDB = self.inventory.matDB
-    self.output = self.inventory.output
     return
 
   
