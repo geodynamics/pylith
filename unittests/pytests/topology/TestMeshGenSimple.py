@@ -49,24 +49,29 @@ class TestMeshGenSimple(unittest.TestCase):
     from spatialdata.geocoords.CSCart import CSCart
     io.coordsys = CSCart()
     mesh.coordsys = CSCart()
-    io.initialize()
-    io.open(mesh)
+    self.mesh = mesh
+    
     from pyre.units.time import s
     t = 0.0*s
-    io.openTimeStep(t)
-    io.closeTimeStep()
-    io.close()
+    io.preinitialize(self)
+    io.initialize()
+    io.writeData(t)
 
     from pylith.topology.Distributor import Distributor
     distributor = Distributor()
     distributor.partitioner = "chaco"
     newMesh = distributor.distribute(mesh)
+    self.mesh = newMesh
     io.writer.filename = 'newMesh.vtk'
-    io.open(newMesh)
-    io.openTimeStep(t)
-    io.closeTimeStep()
-    io.close()
+    io.writeData(t)
     return
 
+
+  def getDataMesh(self):
+    """
+    Get mesh.
+    """
+    return self.mesh
+  
 
 # End of file 

@@ -95,6 +95,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     assert(None != self.cppHandle)
     self.eqsrc.preinitialize()
     self.cppHandle.eqsrc = self.eqsrc.cppHandle
+    self.output.preinitialize(self)
     return
   
 
@@ -104,7 +105,6 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     """
     FaultCohesive.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
-    self.output.dataProvider = self
     self.output.verifyConfiguration()
     return
 

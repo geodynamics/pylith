@@ -156,6 +156,11 @@ class Formulation(Component):
               "Could not determine whether interface condition '%s' is an " \
               "integrator or a constraint." % ic.name
     self._debug.log(resourceUsageString())
+
+    self._info.log("Pre-initializing output.")
+    for output in self.output.bin:
+      output.preinitialize(self)
+
     self._logger.eventEnd(logEvent)
     return
 
@@ -172,7 +177,6 @@ class Formulation(Component):
     for constraint in self.constraints:
       constraint.verifyConfiguration()
     for output in self.output.bin:
-      output.dataProvider = self
       output.verifyConfiguration()
 
     self._logger.eventEnd(logEvent)

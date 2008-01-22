@@ -288,6 +288,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault.adjustTopology(mesh)
     fault.preinitialize(mesh)
     fault.timeStep(dt)
+    fault.verifyConfiguration()
     fault.initialize()
 
     # Setup fields
