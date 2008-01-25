@@ -136,6 +136,9 @@ private :
                             PointSet& noReplaceCells,
                             const int debug);
 
+  static void createParallel(ALE::Obj<Mesh>* fault,
+                             const ALE::Obj<Mesh>& mesh,
+                             const int materialId);
 }; // class CohesiveTopology
 
 #endif // pylith_faults_cohesivetopology_hh
