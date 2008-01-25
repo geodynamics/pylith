@@ -826,5 +826,41 @@ pylith::faults::CohesiveTopology::_computeCensoredDepth(const ALE::Obj<Mesh>& me
   }
 };
 
+// Form a parallel fault mesh using the cohesive cell information
+void
+pylith::faults::CohesiveTopology::createParallel(ALE::Obj<Mesh>* fault,
+                                                 const ALE::Obj<Mesh>& mesh,
+                                                 const int materialId)
+{
+  assert(0 != fault);
+  *fault = new Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
+
+  const ALE::Obj<sieve_type>&           sieve         = mesh->getSieve();
+  const ALE::Obj<sieve_type>            faultSieve    = new sieve_type(sieve->comm(), sieve->debug());
+  const ALE::Obj<Mesh::label_sequence>& cohesiveCells = mesh->getLabelStratum("material-id", materialId);
+  const Mesh::label_sequence::iterator  cBegin        = cohesiveCells->begin();
+  const Mesh::label_sequence::iterator  cEnd          = cohesiveCells->end();
+  const int                             sieveEnd      = sieve->base()->size() + sieve->cap()->size();
+  const int                             numFaces      = cohesiveCells->size();
+  int                                   globalSieveEnd;
+  int                                   globalFaceOffset;
+  int                                   face;
+
+  MPI_Allreduce((void *) &sieveEnd, (void *) &globalSieveEnd, 1, MPI_INT, MPI_SUM, sieve->comm());
+  MPI_Scan((void *) &numFaces, (void *) &globalFaceOffset, 1, MPI_INT, MPI_SUM, sieve->comm());
+  face = globalSieveEnd + globalFaceOffset;
+  for(Mesh::label_sequence::iterator c_iter = cBegin; c_iter != cEnd; ++c_iter) {
+    const ALE::Obj<sieve_type::traits::coneSequence>& cone  = sieve->cone(*c_iter);
+    const sieve_type::traits::coneSequence::iterator  begin = cone->begin();
+    const sieve_type::traits::coneSequence::iterator  end   = cone->end();
+    int                                               color = 0;
+
+    for(sieve_type::traits::coneSequence::iterator v_iter = begin; v_iter != end; ++v_iter) {
+      faultSieve->addArrow(*v_iter, face, color++);
+    }
+    ++face;
+  }
+  (*fault)->setSieve(faultSieve);
+};
 
 // End of file
