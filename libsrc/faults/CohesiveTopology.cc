@@ -686,6 +686,27 @@ pylith::faults::CohesiveTopology::createParallel(ALE::Obj<Mesh>* fault,
   } // for
   (*fault)->setSieve(faultSieve);
   (*fault)->stratify();
+#if 1
+  (*fault)->setRealSection("coordinates", mesh->getRealSection("coordinates"));
+#else
+  const ALE::Obj<Mesh::real_section_type>& coordinates  = mesh->getRealSection("coordinates");
+  const ALE::Obj<Mesh::real_section_type>& fCoordinates = (*fault)->getRealSection("coordinates");
+  const ALE::Obj<Mesh::label_sequence>&    vertices     = (*fault)->depthStratum(0);
+  const Mesh::label_sequence::iterator     vBegin       = vertices->begin();
+  const Mesh::label_sequence::iterator     vEnd         = vertices->end();
+
+  for(Mesh::label_sequence::iterator v_iter = vBegin;
+      v_iter != vEnd;
+      ++v_iter) {
+    fCoordinates->setFiberDimension(*v_iter, coordinates->getFiberDimension(*v_iter));
+  }
+  (*fault)->allocate(fCoordinates);
+  for(Mesh::label_sequence::iterator v_iter = vBegin;
+      v_iter != vEnd;
+      ++v_iter) {
+    fCoordinates->updatePoint(*v_iter, coordinates->restrictPoint(*v_iter));
+  }
+#endif
 }
 
 // ----------------------------------------------------------------------
