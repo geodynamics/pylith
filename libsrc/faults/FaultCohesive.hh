@@ -74,11 +74,6 @@ private :
   /// Not implemented
   const FaultCohesive& operator=(const FaultCohesive& m);
 
-// PROTECTED MEMBERS ////////////////////////////////////////////////////
-protected :
-
-  ALE::Obj<ALE::Mesh>* _faultMesh;
-
 }; // class FaultCohesive
 
 #endif // pylith_faults_faultcohesive_hh

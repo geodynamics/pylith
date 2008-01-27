@@ -20,8 +20,9 @@
 #if !defined(pylith_faults_fault_hh)
 #define pylith_faults_fault_hh
 
-#include "pylith/utils/sievefwd.hh" // USES PETSc Mesh
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh, real_section_type
 #include "pylith/utils/arrayfwd.hh" // USES double_array
+#include "pylith/meshio/DataWriter.hh" // USES FieldEnum
 
 #include <string> // HASA std::string
 
@@ -111,8 +112,37 @@ public :
 		  const double_array& normalDir,
 		  spatialdata::spatialdb::SpatialDB* matDB) = 0;
 
-  // PROTECTED METHODS //////////////////////////////////////////////////
-protected :
+  /** Get mesh associated with fault fields.
+   *
+   * @returns PETSc mesh object
+   */
+  const ALE::Obj<ALE::Mesh>& faultMesh(void) const;
+
+  /** Get vertex field associated with integrator.
+   *
+   * @param fieldType Type of field.
+   * @param name Name of vertex field.
+   * @param mesh PETSc mesh for problem.
+   * @returns Vertex field.
+   */
+  virtual
+  const ALE::Obj<real_section_type>&
+  vertexField(meshio::DataWriter::FieldEnum* fieldType,
+		   const char* name,
+		   const ALE::Obj<Mesh>& mesh) = 0;
+
+  /** Get cell field associated with integrator.
+   *
+   * @param fieldType Type of field.
+   * @param name Name of vertex field.
+   * @param mesh PETSc mesh for problem.
+   * @returns Cell field.
+   */
+  virtual
+  const ALE::Obj<real_section_type>&
+  cellField(meshio::DataWriter::FieldEnum* fieldType,
+	    const char* name,
+	    const ALE::Obj<Mesh>& mesh) = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -122,6 +152,11 @@ private :
 
   /// Not implemented
   const Fault& operator=(const Fault& m);
+
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
+
+  ALE::Obj<ALE::Mesh> _faultMesh; ///< Mesh over fault surface
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

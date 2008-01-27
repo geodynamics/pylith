@@ -124,6 +124,30 @@ public :
    */
   void verifyConfiguration(const ALE::Obj<Mesh>& mesh);
 
+  /** Get vertex field associated with integrator.
+   *
+   * @param fieldType Type of field.
+   * @param name Name of vertex field.
+   * @param mesh PETSc mesh for problem.
+   * @returns Vertex field.
+   */
+  const ALE::Obj<real_section_type>&
+  vertexField(meshio::DataWriter::FieldEnum* fieldType,
+		   const char* name,
+		   const ALE::Obj<Mesh>& mesh);
+
+  /** Get cell field associated with integrator.
+   *
+   * @param fieldType Type of field.
+   * @param name Name of vertex field.
+   * @param mesh PETSc mesh for problem.
+   * @returns Cell field.
+   */
+  const ALE::Obj<real_section_type>&
+  cellField(meshio::DataWriter::FieldEnum* fieldType,
+	    const char* name,
+	    const ALE::Obj<Mesh>& mesh);
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
@@ -133,6 +157,27 @@ protected :
    * constraints, false otherwise.
    */
   bool _useLagrangeConstraints(void) const;
+
+  // PRIVATE METHODS ////////////////////////////////////////////////////
+private :
+
+  /// Allocate scalar field for output of vertex information.
+  void _allocateOutputVertexScalar(void);
+
+  /// Allocate vector field for output of vertex information.
+  void _allocateOutputVertexVector(void);
+
+  /** Project field defined over cohesive cells to fault mesh.
+   *
+   * @param fieldFault Field defined over fault mesh.
+   * @param fieldCohesive Field defined over cohesive cells.
+   * @param mesh PETSc mesh for problem.
+   */
+  void _projectCohesiveVertexField(
+			     ALE::Obj<real_section_type>* fieldFault,
+			     const ALE::Obj<real_section_type>& fieldCohesive,
+			     const ALE::Obj<Mesh>& mesh);
+
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -163,6 +208,12 @@ private :
   /// prevent overlap so that only 1 cell will contribute for
   /// each vertex).
   ALE::Obj<int_section_type> _constraintCell;
+
+  /// Scalar field for output of vertex information.
+  ALE::Obj<real_section_type> _outputVertexScalar;
+
+  /// Vector field for output of vertex information.
+  ALE::Obj<real_section_type> _outputVertexVector;
 
 }; // class FaultCohesiveKin
 

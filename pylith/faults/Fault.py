@@ -177,7 +177,7 @@ class Fault(Component):
     from pylith.topology.Mesh import Mesh
     self.faultMesh = Mesh()
     self.faultMesh.initialize(self.mesh.coordsys)
-    #self.faultMesh.cppHandle = self.cppHandle.faultMesh() # TODO
+    self.cppHandle.faultMesh(self.faultMesh.cppHandle)
     return
 
 

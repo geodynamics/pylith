@@ -15,6 +15,7 @@
 #include "FaultCohesiveKin.hh" // implementation of object methods
 
 #include "EqKinSrc.hh" // USES EqKinSrc
+#include "CohesiveTopology.hh" // USES CohesiveTopology
 
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
@@ -73,6 +74,9 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     throw std::runtime_error("Normal direction for fault orientation must be "
 			     "a vector with 3 components.");
 
+  CohesiveTopology::createParallel(&_faultMesh, mesh, id(),
+                           _useLagrangeConstraints());
+
   /* First find vertices associated with Lagrange multiplier
    * constraints in cohesive cells and compute the orientation of the
    * fault at these locations.
@@ -101,7 +105,6 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       sieve->cone(*c_iter);
     assert(!cone.isNull());
     const sieve_type::traits::coneSequence::iterator vBegin = cone->begin();
-    const sieve_type::traits::coneSequence::iterator vEnd = cone->end();
     const int coneSize = cone->size();
     assert(coneSize % 3 == 0);
     sieve_type::traits::coneSequence::iterator v_iter = vBegin;
@@ -120,6 +123,9 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int orientationSize = spaceDim*spaceDim;
   _orientation = new real_section_type(mesh->comm(), mesh->debug());
   assert(!_orientation.isNull());
+  for (int iDim=0; iDim < spaceDim; ++iDim)
+    _orientation->addSpace();
+  assert(spaceDim == _orientation->getNumSpaces());
   const std::set<Mesh::point_type>::const_iterator vertConstraintBegin = 
     _constraintVert.begin();
   const std::set<Mesh::point_type>::const_iterator vertConstraintEnd = 
@@ -127,8 +133,13 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int vertConstraintSize = _constraintVert.size();
   for (std::set<Mesh::point_type>::const_iterator v_iter=vertConstraintBegin;
        v_iter != vertConstraintEnd;
-       ++v_iter)
+       ++v_iter) {
     _orientation->setFiberDimension(*v_iter, orientationSize);
+
+    // Create fibrations, one for each direction
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      _orientation->setFiberDimension(*v_iter, spaceDim, iDim);
+  } // for
   mesh->allocate(_orientation);
 
   // Compute orientation of fault at constraint vertices
@@ -258,7 +269,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     PetscLogFlopsNoCheck(5 + vertConstraintSize * 3);
   } // if
 
-  _eqsrc->initialize(mesh, *_faultMesh, _constraintVert, cs);
+  _eqsrc->initialize(mesh, _faultMesh, _constraintVert, cs);
 
   // Establish pairing between constraint vertices and first cell they
   // appear in to prevent overlap in integrating Jacobian
@@ -649,6 +660,151 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(
     } // if
   } // for
 } // verifyConfiguration
+
+// ----------------------------------------------------------------------
+// Get vertex field associated with integrator.
+const ALE::Obj<pylith::real_section_type>&
+pylith::faults::FaultCohesiveKin::vertexField(
+				    meshio::DataWriter::FieldEnum* fieldType,
+				    const char* name,
+				    const ALE::Obj<Mesh>& mesh)
+{ // vertexField
+  if (0 == strcasecmp("strike_dir", name)) {
+    _allocateOutputVertexScalar();
+    const ALE::Obj<real_section_type>& strikeDir = 
+      _orientation->getFibration(0);
+    _projectCohesiveVertexField(&_outputVertexScalar, strikeDir, mesh);
+    *fieldType = meshio::DataWriter::SCALAR_FIELD;
+    return _outputVertexScalar;
+  } // if
+
+  // Should not reach this point if requested field was found
+  std::ostringstream msg;
+  msg << "Request for unknown vertex field '" << name
+      << "' for fault '" << label() << ".";
+  throw std::runtime_error(msg.str());
+
+  // Return generic section to satisfy member function definition.
+  return _outputVertexScalar;
+} // vertexField
+
+// ----------------------------------------------------------------------
+// Get cell field associated with integrator.
+const ALE::Obj<pylith::real_section_type>&
+pylith::faults::FaultCohesiveKin::cellField(
+				    meshio::DataWriter::FieldEnum* fieldType,
+				    const char* name,
+				    const ALE::Obj<Mesh>& mesh)
+{ // cellField
+  // Should not reach this point if requested field was found
+  std::ostringstream msg;
+  msg << "Request for unknown vertex field '" << name
+      << "' for fault '" << label() << ".";
+  throw std::runtime_error(msg.str());
+
+  // Return generic section to satisfy member function definition.
+  //return _outputCellVector;
+} // cellField
+
+// ----------------------------------------------------------------------
+// Allocate scalar field for output.
+void
+pylith::faults::FaultCohesiveKin::_allocateOutputVertexScalar(void)
+{ // _allocateOutputVertexScalar
+  const int fiberDim = 1;
+  if (_outputVertexScalar.isNull()) {
+    _outputVertexScalar = new real_section_type(_faultMesh->comm(), 
+						_faultMesh->debug());
+    const ALE::Obj<Mesh::label_sequence>& vertices = 
+      _faultMesh->depthStratum(0);
+    _outputVertexScalar->setFiberDimension(vertices, fiberDim);
+  } // if
+} // _allocateOutputVertexScalar
+
+// ----------------------------------------------------------------------
+// Allocate vector field for output.
+void
+pylith::faults::FaultCohesiveKin::_allocateOutputVertexVector(void)
+{ // _allocateOutputVertexVector
+  assert(0 != _quadrature);
+  const int fiberDim = _quadrature->spaceDim();
+  if (_outputVertexVector.isNull()) {
+    _outputVertexVector = new real_section_type(_faultMesh->comm(), 
+						_faultMesh->debug());
+    const ALE::Obj<Mesh::label_sequence>& vertices = 
+      _faultMesh->depthStratum(0);
+    _outputVertexVector->setFiberDimension(vertices, fiberDim);
+  } // if
+} // _allocateOutputVertexVector
+
+// ----------------------------------------------------------------------
+// Project field defined over cohesive cells to fault mesh.
+void
+pylith::faults::FaultCohesiveKin::_projectCohesiveVertexField(
+			      ALE::Obj<real_section_type>* fieldFault,
+			      const ALE::Obj<real_section_type>& fieldCohesive,
+			      const ALE::Obj<Mesh>& mesh)
+{ // _projectCohesiveVertexField
+
+  // Get cohesive cells
+  const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
+  assert(!sieve.isNull());
+  const ALE::Obj<ALE::Mesh::label_sequence>& cellsCohesive = 
+    mesh->getLabelStratum("material-id", id());
+  assert(!cellsCohesive.isNull());
+  const Mesh::label_sequence::iterator cellsCohesiveBegin =
+    cellsCohesive->begin();
+  const Mesh::label_sequence::iterator cellsCohesiveEnd =
+    cellsCohesive->end();
+
+  assert(!fieldCohesive.isNull());  
+  assert(!fieldFault->isNull());  
+
+  // Replace this with simultaneous loop over cohesive cells and fault
+  // cells. Restrict on cohesive cells and update on fault cells. Only
+  // works if sections are limited to lagrange vertices (include
+  // assert on fiber dimensions).
+  for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+       c_iter != cellsCohesiveEnd;
+       ++c_iter) {
+    // Vertices for each cohesive cell are in three groups of N.
+    // 0 to N-1: vertices on negative side of the fault
+    // N-1 to 2N-1: vertices on positive side of the fault
+    // 2N to 3N-1: vertices associated with constraint forces
+    const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
+      sieve->cone(*c_iter);
+    assert(!cone.isNull());
+    const int coneSize = cone->size();
+    assert(coneSize % 3 == 0);
+    sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
+
+    // Loop over each group of 3 vertices (negative, positive,
+    // Lagrange) in cohesive cells.
+    for (int i=0; i < coneSize; i += 3) {
+      // Get vertex on negative side of the fault
+      const sieve_type::traits::coneSequence::iterator v_fault = v_iter;    
+
+      // Get vertex associated with Lagrange multiplier (constraint)
+      ++v_iter;
+      ++v_iter;
+      const sieve_type::traits::coneSequence::iterator v_cohesive = v_iter;
+
+      // Copy values from Lagrange multplier vertex in field over
+      // cohesive cells to vertex (on negative side of the fault) in
+      // field over fault.
+      //    
+      // NOTE: THIS IS INEFFICIENT BECAUSE WE COPY VALUES MULTIPLE
+      // TIMES.  If the fields are only defined at the Lagrange
+      // multiplier vertices and the fault mesh is ordered the same as
+      // the cohseive cells, we could do a direct copy of the values
+      // for the entire section.
+      assert((*fieldFault)->getFiberDimension(*v_fault) ==
+	     fieldCohesive->getFiberDimension(*v_cohesive));
+      (*fieldFault)->updatePoint(*v_fault, 
+				 fieldCohesive->restrictPoint(*v_cohesive));
+    } // for
+  } // for
+} // _projectCohesiveVertexField
 
 
 // End of file 

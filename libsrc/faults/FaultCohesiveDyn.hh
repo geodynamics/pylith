@@ -101,6 +101,30 @@ public :
    */
   void verifyConfiguration(const ALE::Obj<Mesh>& mesh);
 
+  /** Get vertex field associated with integrator.
+   *
+   * @param fieldType Type of field.
+   * @param name Name of vertex field.
+   * @param mesh PETSc mesh for problem.
+   * @returns Vertex field.
+   */
+  const ALE::Obj<real_section_type>&
+  vertexField(meshio::DataWriter::FieldEnum* fieldType,
+		   const char* name,
+		   const ALE::Obj<Mesh>& mesh);
+
+  /** Get cell field associated with integrator.
+   *
+   * @param fieldType Type of field.
+   * @param name Name of vertex field.
+   * @param mesh PETSc mesh for problem.
+   * @returns Cell field.
+   */
+  const ALE::Obj<real_section_type>&
+  cellField(meshio::DataWriter::FieldEnum* fieldType,
+	    const char* name,
+	    const ALE::Obj<Mesh>& mesh);
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 

@@ -23,8 +23,7 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::FaultCohesive::FaultCohesive(void) :
-  _faultMesh(new ALE::Obj<ALE::Mesh>)
+pylith::faults::FaultCohesive::FaultCohesive(void)
 { // constructor
 } // constructor
 
@@ -32,7 +31,6 @@ pylith::faults::FaultCohesive::FaultCohesive(void) :
 // Destructor.
 pylith::faults::FaultCohesive::~FaultCohesive(void)
 { // destructor
-  delete _faultMesh; _faultMesh = 0;
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -47,7 +45,8 @@ pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<ALE::Mesh>& mesh)
     mesh->getIntSection(label());
   assert(!groupField.isNull());
 
-  CohesiveTopology::create(_faultMesh, mesh, groupField, id(),
+  ALE::Obj<Mesh> faultMesh;
+  CohesiveTopology::create(&faultMesh, mesh, groupField, id(),
                            _useLagrangeConstraints());
 } // adjustTopology
 

@@ -121,6 +121,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     self.eqsrc.initialize()
     FaultCohesive.initialize(self)
     self.output.initialize(self.quadrature.cppHandle)
+    self.output.writeInfo()
 
     self._logger.eventEnd(logEvent)
     return
@@ -134,17 +135,17 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     self._logger.eventBegin(logEvent)
 
     self._info.log("Writing fault data.")
-    #self.cppHandle.writeData(t+dt)
+    #self.output.writeData(t+dt)
 
     self._logger.eventEnd(logEvent)
     return
 
 
-  def getVertexField(self, name):
+  def getVertexField(self, name, mesh):
     """
     Get vertex field.
     """
-    field = self.cppHandle.getVertexField(name) # TODO
+    field = self.cppHandle.getVertexField(name, mesh.cppHandle)
     fieldType = None
     if name in ["strike_dir",
                 "dip_dir",
@@ -159,11 +160,11 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     return (field, fieldType)
 
 
-  def getCellField(self):
+  def getCellField(self, name, mesh):
     """
     Get cell field.
     """
-    field = self.cppHandle.getVertexField(name) # TODO
+    field = self.cppHandle.getVertexField(name, mesh.cppHandle)
     fieldType = None
     if name in ["traction_change"]:
       fieldType = "vector field"

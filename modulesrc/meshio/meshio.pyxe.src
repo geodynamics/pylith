@@ -689,7 +689,7 @@ cdef class OutputManager:
       raise TypeError, \
             "Argument must be extension module type 'CoordSys'."
     OutputManager_openTimeStep(self.thisptr, t, 
-                            ptrFromHandle(mesh), ptrFromHandle(cs))
+                               ptrFromHandle(mesh), ptrFromHandle(cs))
     return
 
 
