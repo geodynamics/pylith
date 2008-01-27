@@ -676,12 +676,26 @@ pylith::faults::CohesiveTopology::createParallel(ALE::Obj<Mesh>* fault,
     int color = 0;
 
     const int coneSize = cone->size();
-    const int faceSize = (constraintCell) ? coneSize / 3 : coneSize / 2;
-    assert(0 == coneSize % faceSize);
+    if (!constraintCell) {
+      const int faceSize = coneSize / 2;
+      assert(0 == coneSize % faceSize);
 
-    sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
-    for(int i=0; i < faceSize; ++i, ++v_iter)
-      faultSieve->addArrow(*v_iter, face, color++);
+      // Use first vertices (negative side of the fault) for fault mesh
+      sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
+      for(int i=0; i < faceSize; ++i, ++v_iter)
+	faultSieve->addArrow(*v_iter, face, color++);
+    } else {
+      const int faceSize = coneSize / 3;
+      assert(0 == coneSize % faceSize);
+
+      // Use last vertices (contraints) for fault mesh
+      sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
+      for(int i=0; i < 2*faceSize; ++i)
+	++v_iter;
+      for(int i=0; i < faceSize; ++i, ++v_iter)
+	faultSieve->addArrow(*v_iter, face, color++);
+    } // if/else
+
     ++face;
   } // for
   (*fault)->setSieve(faultSieve);

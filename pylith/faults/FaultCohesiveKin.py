@@ -73,9 +73,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
 
     self.availableFields = \
         {'vertex': \
-           {'info': ["strike_dir",
-                     "dip_dir",
-                     "normal_dir",
+           {'info': ["normal_dir",
                      "final_slip",
                      "slip_time"],
             'data': ["slip"]},
@@ -96,6 +94,12 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     self.eqsrc.preinitialize()
     self.cppHandle.eqsrc = self.eqsrc.cppHandle
     self.output.preinitialize(self)
+
+    if mesh.dimension() == 2:
+      self.availableFields['vertex']['info'] += ["strike_dir"]
+    elif mesh.dimension() == 3:
+      self.availableFields['vertex']['info'] += ["strike_dir",
+                                                 "dip_dir"]
     return
   
 
@@ -141,36 +145,18 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     return
 
 
-  def getVertexField(self, name, mesh):
+  def getVertexField(self, name):
     """
     Get vertex field.
     """
-    field = self.cppHandle.getVertexField(name, mesh.cppHandle)
-    fieldType = None
-    if name in ["strike_dir",
-                "dip_dir",
-                "normal_dir",
-                "final_slip",
-                "traction_change"]:
-      fieldType = "vector field"
-    elif name in ["slip_time"]:
-      fieldType = "scalar field"
-    else:
-      raise ValueError, "Vertex field '%s' not available." % name
-    return (field, fieldType)
+    return self.cppHandle.vertexField(name, self.mesh.cppHandle)
 
 
-  def getCellField(self, name, mesh):
+  def getCellField(self, name):
     """
     Get cell field.
     """
-    field = self.cppHandle.getVertexField(name, mesh.cppHandle)
-    fieldType = None
-    if name in ["traction_change"]:
-      fieldType = "vector field"
-    else:
-      raise ValueError, "Cell field '%s' not available." % name
-    return (field, fieldType)
+    return self.cppHandle.cellField(name, self.mesh.cppHandle)
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////

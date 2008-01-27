@@ -201,15 +201,17 @@ class OutputManager(Component):
       self.cppHandle.openTimeStep(t.value,
                                   mesh.cppHandle, mesh.coordsys.cppHandle)
 
-      #for name in self.vertexInfoFields:
-      #  (field, fieldType) = self.dataProvider.getVertexField(name)
-      #  self.cppHandle.appendVertexField(t.value, name, field, fieldType, 
-      #                                   mesh.cppHandle)
+      for name in self.vertexInfoFields:
+        print "Getting field '%s'." % name
+        (field, fieldType) = self.dataProvider.getVertexField(name)
+        print "Writing field '%s'." % name
+        self.cppHandle.appendVertexField(t.value, name, field, fieldType, 
+                                         mesh.cppHandle)
 
-      #for name in self.cellInfoFields:
-      #  (field, fieldType) = self.dataProvider.getCellField(name)
-      #  self.cppHandle.appendCellField(t.value, name, field, fieldType, 
-      #                                 mesh.cppHandle)
+      for name in self.cellInfoFields:
+        (field, fieldType) = self.dataProvider.getCellField(name)
+        self.cppHandle.appendCellField(t.value, name, field, fieldType, 
+                                       mesh.cppHandle)
 
       self.cppHandle.closeTimeStep()
       self.close()
@@ -328,9 +330,9 @@ class OutputManager(Component):
               "Field type: '%s'\n" \
               "Data type: '%s'\n" % (fieldCategory, dataCategory)
           msg += "Available fields: "
-          for name in available:
+          for name in available[fieldCategory][dataCategory]:
             msg += " '%s'" % name
-            msg += "\n"
+          msg += "\n"
           msg += "Fields not available: "
           for name in notavailable:
             msg += " '%s'" % name
