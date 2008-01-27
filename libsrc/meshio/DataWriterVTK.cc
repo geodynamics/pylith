@@ -56,6 +56,9 @@ pylith::meshio::DataWriterVTK::openTimeStep(
 			       const ALE::Obj<ALE::Mesh>& mesh,
 			       const spatialdata::geocoords::CoordSys* csMesh)
 { // openTimeStep
+  assert(!mesh.isNull());
+  assert(0 != csMesh);
+
   try {
     PetscErrorCode err;
 
@@ -91,6 +94,11 @@ pylith::meshio::DataWriterVTK::openTimeStep(
     std::ostringstream msg;
     msg << "Error while preparing for writing data to VTK file "
 	<< _filename << " at time " << t << ".\n" << err.what();
+    throw std::runtime_error(msg.str());
+  } catch (const ALE::Exception& err) {
+    std::ostringstream msg;
+    msg << "Error while preparing for writing data to VTK file "
+	<< _filename << " at time " << t << ".\n" << err.msg();
     throw std::runtime_error(msg.str());
   } catch (...) { 
     std::ostringstream msg;

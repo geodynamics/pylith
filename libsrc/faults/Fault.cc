@@ -18,7 +18,8 @@
 // Default constructor.
 pylith::faults::Fault::Fault(void) :
   _id(0),
-  _label("")
+  _label(""),
+  _faultMesh(0)
 { // constructor
 } // constructor
 
@@ -27,6 +28,14 @@ pylith::faults::Fault::Fault(void) :
 pylith::faults::Fault::~Fault(void)
 { // destructor
 } // destructor
+
+// ----------------------------------------------------------------------
+// Get mesh associated with fault fields.
+const ALE::Obj<ALE::Mesh>&
+pylith::faults::Fault:: faultMesh(void) const
+{ // faultMesh
+  return _faultMesh;
+} // faultMesh
 
 
 // End of file 

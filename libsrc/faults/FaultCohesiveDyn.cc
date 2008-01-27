@@ -112,4 +112,42 @@ pylith::faults::FaultCohesiveDyn::verifyConfiguration(
     } // if
   } // for
 } // verifyConfiguration
+
+// ----------------------------------------------------------------------
+// Get vertex field associated with integrator.
+const ALE::Obj<pylith::real_section_type>&
+pylith::faults::FaultCohesiveDyn::vertexField(
+				    meshio::DataWriter::FieldEnum* fieldType,
+				    const char* name,
+				    const ALE::Obj<Mesh>& mesh)
+{ // vertexField
+  // Should not reach this point if requested field was found
+  std::ostringstream msg;
+  msg << "Request for unknown vertex field '" << name
+      << "' for fault '" << label() << ".";
+  throw std::runtime_error(msg.str());
+
+  // Return generic section to satisfy member function definition.
+  //return _outputVertxScalar;
+} // vertexField
+
+// ----------------------------------------------------------------------
+// Get cell field associated with integrator.
+const ALE::Obj<pylith::real_section_type>&
+pylith::faults::FaultCohesiveDyn::cellField(
+				    meshio::DataWriter::FieldEnum* fieldType,
+				    const char* name,
+				    const ALE::Obj<Mesh>& mesh)
+{ // cellField
+  // Should not reach this point if requested field was found
+  std::ostringstream msg;
+  msg << "Request for unknown vertex field '" << name
+      << "' for fault '" << label() << ".";
+  throw std::runtime_error(msg.str());
+
+  // Return generic section to satisfy member function definition.
+  //return _outputCellVector;
+} // cellField
+
+
 // End of file 

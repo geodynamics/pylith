@@ -201,18 +201,18 @@ class OutputManager(Component):
       self.cppHandle.openTimeStep(t.value,
                                   mesh.cppHandle, mesh.coordsys.cppHandle)
 
-      for name in self.vertexInfoFields:
-        (field, fieldType) = self.dataProvider.getVertexField(name)
-        self.cppHandle.appendVertexField(t.value, name, field, fieldType, 
-                                         mesh.cppHandle)
+      #for name in self.vertexInfoFields:
+      #  (field, fieldType) = self.dataProvider.getVertexField(name)
+      #  self.cppHandle.appendVertexField(t.value, name, field, fieldType, 
+      #                                   mesh.cppHandle)
 
-      for name in self.cellInfoFields:
-        (field, fieldType) = self.dataProvider.getCellField(name)
-        self.cppHandle.appendCellField(t.value, name, field, fieldType, 
-                                       mesh.cppHandle)
+      #for name in self.cellInfoFields:
+      #  (field, fieldType) = self.dataProvider.getCellField(name)
+      #  self.cppHandle.appendCellField(t.value, name, field, fieldType, 
+      #                                 mesh.cppHandle)
 
-        self.cppHandle.closeTimeStep()
-        self.close()
+      self.cppHandle.closeTimeStep()
+      self.close()
 
     self._logger.eventEnd(logEvent)
     return

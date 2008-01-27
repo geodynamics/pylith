@@ -39,6 +39,7 @@ cdef extern from "stdlib.h":
   void* malloc(size_t size)
   void free(void* mem)
 
+# ----------------------------------------------------------------------
 cdef void Fault_destructor(void* obj):
   """
   Destroy Fault object.
@@ -51,33 +52,6 @@ cdef void Fault_destructor(void* obj):
   Fault_destructor_cpp(obj)
   return
 
-cdef void EqKinSrc_destructor(void* obj):
-  """
-  Destroy EqKinSrc object.
-  """
-  # create shim for destructor
-  #embed{ void EqKinSrc_destructor_cpp(void* objVptr)
-  pylith::faults::EqKinSrc* src = (pylith::faults::EqKinSrc*) objVptr;
-  delete src;
-  #}embed
-  EqKinSrc_destructor_cpp(obj)
-  return
-
-
-cdef void SlipTimeFn_destructor(void* obj):
-  """
-  Destroy SlipTimeFn object.
-  """
-  # create shim for destructor
-  #embed{ void SlipTimeFn_destructor_cpp(void* objVptr)
-  pylith::faults::SlipTimeFn* f = (pylith::faults::SlipTimeFn*) objVptr;
-  delete f;
-  #}embed
-  SlipTimeFn_destructor_cpp(obj)
-  return
-
-
-# ----------------------------------------------------------------------
 cdef class Fault:
 
   cdef void* thisptr # Pointer to C++ object
@@ -185,6 +159,79 @@ cdef class Fault:
     Fault_initialize(self.thisptr, ptrFromHandle(mesh), ptrFromHandle(cs),
                      upDirCpp, normalDirCpp, ptrFromHandle(matDB))
     return
+
+
+  def faultMesh(self, mesh):
+    """
+    Get mesh associated with fault fields.
+    """
+    # create shim for method 'faultMesh'
+    #embed{ void Fault_faultMesh(void* objVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      *mesh = ((pylith::faults::Fault*) objVptr)->faultMesh();
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type " \
+            "'pylith::topology::Mesh'."
+    Fault_faultMesh(self.thisptr, ptrFromHandle(mesh))
+    return
+    
+
+  def vertexField(self, name, mesh):
+    """
+    Get vertex field.
+    """
+    # create shim for method 'vertexField'
+    #embed{ void* Fault_vertexField(void* objVptr, int* fieldPtr, char* name, void* meshVptr)
+    void* result = 0;
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldPtr);
+      assert(0 != name);
+      assert(0 != meshVptr);
+      pylith::faults::Fault* fault = (pylith::faults::Fault*) objVptr;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      pylith::meshio::DataWriter::FieldEnum fieldType;
+      const ALE::Obj<pylith::real_section_type>& field =
+        fault->vertexField(&fieldType, name, *mesh);
+      *fieldPtr = fieldType;
+      result = (void*) &field;
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type " \
+            "'pylith::topology::Mesh'."
+    cdef void* ptr
+    cdef int fieldType
+    ptr = Fault_vertexField(self.thisptr, &fieldType, name, ptrFromHandle(mesh))
+    return (PyCObject_FromVoidPtr(ptr, NULL), fieldType)
+    
 
 
   def _createHandle(self):
@@ -621,6 +668,19 @@ cdef class FaultCohesiveKin(FaultCohesive):
 
 
 # ----------------------------------------------------------------------
+cdef void EqKinSrc_destructor(void* obj):
+  """
+  Destroy EqKinSrc object.
+  """
+  # create shim for destructor
+  #embed{ void EqKinSrc_destructor_cpp(void* objVptr)
+  pylith::faults::EqKinSrc* src = (pylith::faults::EqKinSrc*) objVptr;
+  delete src;
+  #}embed
+  EqKinSrc_destructor_cpp(obj)
+  return
+
+
 cdef class EqKinSrc:
 
   cdef void* thisptr # Pointer to C++ object
@@ -695,6 +755,19 @@ cdef class EqKinSrc:
 
 
 # ----------------------------------------------------------------------
+cdef void SlipTimeFn_destructor(void* obj):
+  """
+  Destroy SlipTimeFn object.
+  """
+  # create shim for destructor
+  #embed{ void SlipTimeFn_destructor_cpp(void* objVptr)
+  pylith::faults::SlipTimeFn* f = (pylith::faults::SlipTimeFn*) objVptr;
+  delete f;
+  #}embed
+  SlipTimeFn_destructor_cpp(obj)
+  return
+
+
 cdef class SlipTimeFn:
 
   cdef void* thisptr # Pointer to C++ object

@@ -38,6 +38,7 @@ public :
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
+
   /** Create cohesive cells.
    *
    * @param fault Finite-element mesh of fault (output)
@@ -53,7 +54,21 @@ public :
               const ALE::Obj<Mesh>& mesh,
               const ALE::Obj<Mesh::int_section_type>& groupField,
               const int materialId,
-              const bool constraintCell = false);
+              const bool constraintCell =false);
+
+  /** Create (distributed) fault mesh from cohesive cells.
+   *
+   * @param fault Finite-element mesh of fault (output)
+   * @param mesh Finite-element mesh
+   * @param materialId Material id for cohesive elements.
+   * @param constraintCell True if creating cells constrained with 
+   *   Lagrange multipliers that require extra vertices, false otherwise
+   */
+  static
+  void createParallel(ALE::Obj<Mesh>* fault,
+		      const ALE::Obj<Mesh>& mesh,
+		      const int materialId,
+		      const bool constraintCell =false);
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
@@ -136,9 +151,6 @@ private :
                             PointSet& noReplaceCells,
                             const int debug);
 
-  static void createParallel(ALE::Obj<Mesh>* fault,
-                             const ALE::Obj<Mesh>& mesh,
-                             const int materialId);
 }; // class CohesiveTopology
 
 #endif // pylith_faults_cohesivetopology_hh
