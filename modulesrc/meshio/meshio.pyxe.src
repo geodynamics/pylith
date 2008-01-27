@@ -722,7 +722,7 @@ cdef class OutputManager:
     Append field over vertices to file.
     """
     # create shim for method 'appendVertexField'
-    #embed{ void OutputManager_appendVertexField(void* objVptr, double t, char* name, void* fieldVptr, char* fieldTypeName, void* meshVptr)
+    #embed{ void OutputManager_appendVertexField(void* objVptr, double t, char* name, void* fieldVptr, int fieldTypeInt, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
@@ -731,14 +731,8 @@ cdef class OutputManager:
       ALE::Obj<pylith::real_section_type>* field =
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      pylith::meshio::DataWriter::FieldEnum fieldType = 
-        pylith::meshio::DataWriter::OTHER_FIELD;
-      if (0 == strcasecmp("scalar field", fieldTypeName))
-        fieldType = pylith::meshio::DataWriter::SCALAR_FIELD;
-      else if (0 == strcasecmp("vector field", fieldTypeName))
-        fieldType = pylith::meshio::DataWriter::VECTOR_FIELD;
-      else if (0 == strcasecmp("tensor field", fieldTypeName))
-        fieldType = pylith::meshio::DataWriter::TENSOR_FIELD;
+      const pylith::meshio::DataWriter::FieldEnum fieldType =
+        (pylith::meshio::DataWriter::FieldEnum) fieldTypeInt;
       ((pylith::meshio::OutputManager*) objVptr)->appendVertexField(t, name,
                                                      *field, fieldType, *mesh);
     } catch (const std::exception& err) {
@@ -767,7 +761,7 @@ cdef class OutputManager:
     Append field over cells to file.
     """
     # create shim for method 'appendCellField'
-    #embed{ void OutputManager_appendCellField(void* objVptr, double t, char* name, void* fieldVptr, char* fieldTypeName, void* meshVptr)
+    #embed{ void OutputManager_appendCellField(void* objVptr, double t, char* name, void* fieldVptr, int fieldTypeInt, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
@@ -776,14 +770,8 @@ cdef class OutputManager:
       ALE::Obj<pylith::real_section_type>* field =
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      pylith::meshio::DataWriter::FieldEnum fieldType = 
-        pylith::meshio::DataWriter::OTHER_FIELD;
-      if (0 == strcasecmp("scalar field", fieldTypeName))
-        fieldType = pylith::meshio::DataWriter::SCALAR_FIELD;
-      else if (0 == strcasecmp("vector field", fieldTypeName))
-        fieldType = pylith::meshio::DataWriter::VECTOR_FIELD;
-      else if (0 == strcasecmp("tensor field", fieldTypeName))
-        fieldType = pylith::meshio::DataWriter::TENSOR_FIELD;
+      const pylith::meshio::DataWriter::FieldEnum fieldType =
+        (pylith::meshio::DataWriter::FieldEnum) fieldTypeInt;
       ((pylith::meshio::OutputManager*) objVptr)->appendCellField(t, name,
                                                                   *field,
                                                                   fieldType,

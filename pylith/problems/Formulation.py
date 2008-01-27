@@ -313,7 +313,7 @@ class Formulation(Component):
     fieldType = None
     if name == "displacements":
       field = self.fields.getSolution()
-      fieldType = "vector field"
+      fieldType = 1 # vector field
     else:
       raise ValueError, "Vertex field '%s' not available." % name
     return (field, fieldType)
