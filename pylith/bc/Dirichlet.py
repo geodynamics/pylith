@@ -92,14 +92,14 @@ class Dirichlet(BoundaryCondition, Constraint):
     return
 
 
-  def initialize(self):
+  def initialize(self, totalTime, numTimeSteps):
     """
     Initialize Dirichlet boundary condition.
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
     
-    BoundaryCondition.initialize(self)
+    BoundaryCondition.initialize(self, totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)    
     return
@@ -123,18 +123,6 @@ class Dirichlet(BoundaryCondition, Constraint):
     if None == self.cppHandle:
       import pylith.bc.bc as bindings
       self.cppHandle = bindings.Dirichlet()    
-    return
-  
-
-  def _setupLogging(self):
-    """
-    Setup event logging.
-    """
-    Constraint._setupLogging(self)
-
-    events = ["init"]
-    for event in events:
-      self._logger.registerEvent("%s%s" % (self._loggingPrefix, event))
     return
   
 

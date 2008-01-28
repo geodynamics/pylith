@@ -402,17 +402,16 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   const ALE::Obj<real_section_type>& solution = fields->getSolution();
   assert(!solution.isNull());  
 
-  ALE::Obj<real_section_type> slip;
   if (!_useSolnIncr) {
     // Compute slip field at current time step
     assert(0 != _eqsrc);
-    slip = _eqsrc->slip(t, _constraintVert);
-    assert(!slip.isNull());
+    _slip = _eqsrc->slip(t, _constraintVert);
+    assert(!_slip.isNull());
   } else {
     // Compute increment of slip field at current time step
     assert(0 != _eqsrc);
-    slip = _eqsrc->slipIncr(t-_dt, t, _constraintVert);
-    assert(!slip.isNull());
+    _slip = _eqsrc->slipIncr(t-_dt, t, _constraintVert);
+    assert(!_slip.isNull());
   } // else
   
   for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
@@ -433,7 +432,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 		   cellStiffness.size());
     
     // Get slip at cells vertices (only valid at constraint vertices)
-    mesh->restrict(slip, *c_iter, &cellSlip[0], cellSlip.size());
+    mesh->restrict(_slip, *c_iter, &cellSlip[0], cellSlip.size());
 
     // Get solution at cells vertices (valid at all cohesive vertices)
     mesh->restrict(solution, *c_iter, &cellSoln[0], cellSoln.size());
@@ -675,51 +674,57 @@ pylith::faults::FaultCohesiveKin::vertexField(
 
   const int cohesiveDim = _faultMesh->getDimension();
 
-  if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
-    _allocateOutputVertexVector();
+  if (0 == strcasecmp("slip", name)) {
+    assert(!_slip.isNull());
+    _allocateBufferVertexVector();
+    _projectCohesiveVertexField(&_bufferVertexVector, _slip, mesh);
+    *fieldType = meshio::DataWriter::VECTOR_FIELD;
+    return _bufferVertexVector;
+  } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
+    _allocateBufferVertexVector();
     const ALE::Obj<real_section_type>& strikeDir = 
       _orientation->getFibration(0);
-    _projectCohesiveVertexField(&_outputVertexVector, strikeDir, mesh);
+    _projectCohesiveVertexField(&_bufferVertexVector, strikeDir, mesh);
     *fieldType = meshio::DataWriter::VECTOR_FIELD;
-    return _outputVertexVector;
+    return _bufferVertexVector;
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
-    _allocateOutputVertexVector();
+    _allocateBufferVertexVector();
     const ALE::Obj<real_section_type>& dipDir = 
       _orientation->getFibration(1);
-    _projectCohesiveVertexField(&_outputVertexVector, dipDir, mesh);
+    _projectCohesiveVertexField(&_bufferVertexVector, dipDir, mesh);
     *fieldType = meshio::DataWriter::VECTOR_FIELD;
-    return _outputVertexVector;
+    return _bufferVertexVector;
   } else if (0 == strcasecmp("normal_dir", name)) {
-    _allocateOutputVertexVector();
+    _allocateBufferVertexVector();
     const int space = 
       (0 == cohesiveDim) ? 0 : (1 == cohesiveDim) ? 1 : 2;
     const ALE::Obj<real_section_type>& normalDir = 
       _orientation->getFibration(space);
-    _projectCohesiveVertexField(&_outputVertexVector, normalDir, mesh);
+    _projectCohesiveVertexField(&_bufferVertexVector, normalDir, mesh);
     *fieldType = meshio::DataWriter::VECTOR_FIELD;
-    return _outputVertexVector;
+    return _bufferVertexVector;
   } else if (0 == strcasecmp("final_slip", name)) {
-    _allocateOutputVertexVector();
+    _allocateBufferVertexVector();
     const ALE::Obj<real_section_type>& finalSlip = _eqsrc->finalSlip();
-    _projectCohesiveVertexField(&_outputVertexVector, finalSlip, mesh);
+    _projectCohesiveVertexField(&_bufferVertexVector, finalSlip, mesh);
     *fieldType = meshio::DataWriter::VECTOR_FIELD;
-    return _outputVertexVector;
+    return _bufferVertexVector;
   } else if (0 == strcasecmp("slip_time", name)) {
-    _allocateOutputVertexScalar();
+    _allocateBufferVertexScalar();
     const ALE::Obj<real_section_type>& slipTime = _eqsrc->slipTime();
-    _projectCohesiveVertexField(&_outputVertexScalar, slipTime, mesh);
+    _projectCohesiveVertexField(&_bufferVertexScalar, slipTime, mesh);
     *fieldType = meshio::DataWriter::SCALAR_FIELD;
-    return _outputVertexScalar;
+    return _bufferVertexScalar;
   } // if/else
 
   // Should not reach this point if requested field was found
   std::ostringstream msg;
   msg << "Request for unknown vertex field '" << name
-      << "' for fault '" << label() << ".";
+      << "' for fault '" << label() << "'.";
   throw std::runtime_error(msg.str());
 
   // Return generic section to satisfy member function definition.
-  return _outputVertexScalar;
+  return _bufferVertexScalar;
 } // vertexField
 
 // ----------------------------------------------------------------------
@@ -730,48 +735,93 @@ pylith::faults::FaultCohesiveKin::cellField(
 				    const char* name,
 				    const ALE::Obj<Mesh>& mesh)
 { // cellField
+  assert(!_faultMesh.isNull());
+  assert(!_orientation.isNull());
+  assert(0 != _eqsrc);
+
+  const int cohesiveDim = _faultMesh->getDimension();
+
+  if (0 == strcasecmp("traction_change", name)) {
+    _allocateBufferCellVector();
+    // ADD STUFF HERE
+    return _bufferCellVector;
+  } // if
+
   // Should not reach this point if requested field was found
   std::ostringstream msg;
   msg << "Request for unknown vertex field '" << name
-      << "' for fault '" << label() << ".";
+      << "' for fault '" << label() << "'.";
   throw std::runtime_error(msg.str());
 
   // Return generic section to satisfy member function definition.
-  //return _outputCellVector;
+  return _bufferCellScalar;
 } // cellField
 
 // ----------------------------------------------------------------------
-// Allocate scalar field for output.
+// Allocate scalar field for output of vertex information.
 void
-pylith::faults::FaultCohesiveKin::_allocateOutputVertexScalar(void)
-{ // _allocateOutputVertexScalar
+pylith::faults::FaultCohesiveKin::_allocateBufferVertexScalar(void)
+{ // _allocateBufferVertexScalar
   const int fiberDim = 1;
-  if (_outputVertexScalar.isNull()) {
-    _outputVertexScalar = new real_section_type(_faultMesh->comm(), 
+  if (_bufferVertexScalar.isNull()) {
+    _bufferVertexScalar = new real_section_type(_faultMesh->comm(), 
 						_faultMesh->debug());
     const ALE::Obj<Mesh::label_sequence>& vertices = 
       _faultMesh->depthStratum(0);
-    _outputVertexScalar->setFiberDimension(vertices, fiberDim);
-    _faultMesh->allocate(_outputVertexScalar);
+    _bufferVertexScalar->setFiberDimension(vertices, fiberDim);
+    _faultMesh->allocate(_bufferVertexScalar);
   } // if
-} // _allocateOutputVertexScalar
+} // _allocateBufferVertexScalar
 
 // ----------------------------------------------------------------------
-// Allocate vector field for output.
+// Allocate vector field for output of vertex information.
 void
-pylith::faults::FaultCohesiveKin::_allocateOutputVertexVector(void)
-{ // _allocateOutputVertexVector
+pylith::faults::FaultCohesiveKin::_allocateBufferVertexVector(void)
+{ // _allocateBufferVertexVector
   assert(0 != _quadrature);
   const int fiberDim = _quadrature->spaceDim();
-  if (_outputVertexVector.isNull()) {
-    _outputVertexVector = new real_section_type(_faultMesh->comm(), 
+  if (_bufferVertexVector.isNull()) {
+    _bufferVertexVector = new real_section_type(_faultMesh->comm(), 
 						_faultMesh->debug());
     const ALE::Obj<Mesh::label_sequence>& vertices = 
       _faultMesh->depthStratum(0);
-    _outputVertexVector->setFiberDimension(vertices, fiberDim);
-    _faultMesh->allocate(_outputVertexVector);
+    _bufferVertexVector->setFiberDimension(vertices, fiberDim);
+    _faultMesh->allocate(_bufferVertexVector);
   } // if  
-} // _allocateOutputVertexVector
+} // _allocateBufferVertexVector
+
+// ----------------------------------------------------------------------
+// Allocate scalar field for output of cell information.
+void
+pylith::faults::FaultCohesiveKin::_allocateBufferCellScalar(void)
+{ // _allocateBufferCellScalar
+  const int fiberDim = 1;
+  if (_bufferCellScalar.isNull()) {
+    _bufferCellScalar = new real_section_type(_faultMesh->comm(), 
+					      _faultMesh->debug());
+    const ALE::Obj<Mesh::label_sequence>& cells = 
+      _faultMesh->heightStratum(0);
+    _bufferCellScalar->setFiberDimension(cells, fiberDim);
+    _faultMesh->allocate(_bufferCellScalar);
+  } // if
+} // _allocateBufferCellScalar
+
+// ----------------------------------------------------------------------
+// Allocate vector field for output of cell information.
+void
+pylith::faults::FaultCohesiveKin::_allocateBufferCellVector(void)
+{ // _allocateBufferCellVector
+  assert(0 != _quadrature);
+  const int fiberDim = _quadrature->spaceDim();
+  if (_bufferCellVector.isNull()) {
+    _bufferCellVector = new real_section_type(_faultMesh->comm(), 
+					      _faultMesh->debug());
+    const ALE::Obj<Mesh::label_sequence>& cells = 
+      _faultMesh->heightStratum(0);
+    _bufferCellVector->setFiberDimension(cells, fiberDim);
+    _faultMesh->allocate(_bufferCellVector);
+  } // if  
+} // _allocateBufferCellVector
 
 // ----------------------------------------------------------------------
 // Project field defined over cohesive cells to fault mesh.

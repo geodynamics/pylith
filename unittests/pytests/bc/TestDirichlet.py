@@ -174,7 +174,8 @@ class TestDirichlet(unittest.TestCase):
     mesh = importer.read(debug=False, interpolate=False)
     
     bc.preinitialize(mesh)
-    bc.initialize()
+    from pyre.units.time import second
+    bc.initialize(totalTime=0.0*second, numTimeSteps=1)
     return (mesh, bc)
 
 

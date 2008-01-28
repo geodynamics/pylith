@@ -190,23 +190,24 @@ class Formulation(Component):
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
+    numTimeSteps = 1.0 + int(totalTime / dt)
+
     from pylith.topology.FieldsManager import FieldsManager
     self.fields = FieldsManager(self.mesh)
 
     self._info.log("Initializing integrators.")
     self._debug.log(resourceUsageString())
     for integrator in self.integrators:
-      integrator.initialize()
+      integrator.initialize(totalTime, numTimeSteps)
     self._debug.log(resourceUsageString())
 
     self._info.log("Initializing constraints.")
     for constraint in self.constraints:
-      constraint.initialize()
+      constraint.initialize(totalTime, numTimeSteps)
     self._debug.log(resourceUsageString())
 
     self._info.log("Setting up solution output.")
     for output in self.output.bin:
-      numTimeSteps = 1.0 + int(totalTime / dt)
       output.initialize()
       output.writeInfo()
       output.open(totalTime, numTimeSteps)

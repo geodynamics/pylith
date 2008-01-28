@@ -289,7 +289,8 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault.preinitialize(mesh)
     fault.timeStep(dt)
     fault.verifyConfiguration()
-    fault.initialize()
+    from pyre.units.time import s
+    fault.initialize(totalTime=0.0*s, numTimeSteps=1)
 
     # Setup fields
     from pylith.topology.FieldsManager import FieldsManager

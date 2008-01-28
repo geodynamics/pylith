@@ -120,7 +120,7 @@ class BoundaryCondition(Component):
     return
 
 
-  def initialize(self):
+  def initialize(self, totalTime, numTimeSteps):
     """
     Initialize boundary condition.
     """    

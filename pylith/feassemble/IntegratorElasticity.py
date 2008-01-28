@@ -57,33 +57,20 @@ class IntegratorElasticity(Integrator):
     return
   
 
-  def initialize(self):
+  def initialize(self, totalTime, numTimeSteps):
     """
     Initialize material properties.
     """
     logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
 
     self._info.log("Initializing integrator for material '%s'." % \
                    self.material.label)
 
-    self._logger.eventBegin(logEvent)
     self.material.initialize(self.mesh)
+
     self._logger.eventEnd(logEvent)
     return
   
   
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _setupLogging(self):
-    """
-    Setup event logging.
-    """
-    Integrator._setupLogging(self)
-
-    events = ["init"]
-    for event in events:
-      self._logger.registerEvent("%s%s" % (self._loggingPrefix, event))
-    return
-  
-
 # End of file 

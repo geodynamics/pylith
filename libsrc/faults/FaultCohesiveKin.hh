@@ -162,10 +162,16 @@ protected :
 private :
 
   /// Allocate scalar field for output of vertex information.
-  void _allocateOutputVertexScalar(void);
+  void _allocateBufferVertexScalar(void);
 
   /// Allocate vector field for output of vertex information.
-  void _allocateOutputVertexVector(void);
+  void _allocateBufferVertexVector(void);
+
+  /// Allocate scalar field for output of cell information.
+  void _allocateBufferCellScalar(void);
+
+  /// Allocate vector field for output of cell information.
+  void _allocateBufferCellVector(void);
 
   /** Project field defined over cohesive cells to fault mesh.
    *
@@ -201,6 +207,9 @@ private :
   /// nonzero only at constraint vertices)
   ALE::Obj<real_section_type> _orientation;
 
+  /// Vector field of current slip or slip increment.
+  ALE::Obj<real_section_type> _slip;
+
   /// Fault vertices associated with constraints
   std::set<Mesh::point_type> _constraintVert;
 
@@ -210,10 +219,16 @@ private :
   ALE::Obj<int_section_type> _constraintCell;
 
   /// Scalar field for output of vertex information.
-  ALE::Obj<real_section_type> _outputVertexScalar;
+  ALE::Obj<real_section_type> _bufferVertexScalar;
 
   /// Vector field for output of vertex information.
-  ALE::Obj<real_section_type> _outputVertexVector;
+  ALE::Obj<real_section_type> _bufferVertexVector;
+
+  /// Scalar field for output of cell information.
+  ALE::Obj<real_section_type> _bufferCellScalar;
+
+  /// Vector field for output of cell information.
+  ALE::Obj<real_section_type> _bufferCellVector;
 
 }; // class FaultCohesiveKin
 
