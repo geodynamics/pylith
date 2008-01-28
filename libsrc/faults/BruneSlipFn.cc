@@ -100,15 +100,6 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   peakRate->setAtlas(slipTime->getAtlas()); // reuse atlas from slipTime
   peakRate->allocateStorage();
 
-  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter) {
-    finalSlip->setFiberDimension(*v_iter, spaceDim);
-    slipTime->setFiberDimension(*v_iter, 1);
-    peakRate->setFiberDimension(*v_iter, 1);
-  } // for
-  mesh->allocate(finalSlip);
-  mesh->allocate(slipTime);
-  mesh->allocate(peakRate);
-  
   // Open databases and set query values
   _dbFinalSlip->open();
   switch (spaceDim)
@@ -313,6 +304,22 @@ pylith::faults::BruneSlipFn::slipIncr(const double t0,
 
   return _slipField;
 } // slipIncr
+
+// ----------------------------------------------------------------------
+// Get final slip.
+ALE::Obj<pylith::real_section_type>
+pylith::faults::BruneSlipFn::finalSlip(void)
+{ // finalSlip
+  return _parameters->getReal("final slip");
+} // finalSlip
+
+// ----------------------------------------------------------------------
+// Get time when slip begins at each point.
+ALE::Obj<pylith::real_section_type>
+pylith::faults::BruneSlipFn::slipTime(void)
+{ // slipTime
+  return _parameters->getReal("slip time");
+} // slipTime
 
 
 // End of file 
