@@ -113,19 +113,19 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     return
 
 
-  def initialize(self):
+  def initialize(self, totalTime, numTimeSteps):
     """
     Initialize cohesive elements.
     """
     logEvent = "%sinit" % self._loggingPrefix
-
     self._info.log("Initializing fault '%s'." % self.label)
 
     self._logger.eventBegin(logEvent)
     self.eqsrc.initialize()
-    FaultCohesive.initialize(self)
+    FaultCohesive.initialize(self, totalTime, numTimeSteps)
     self.output.initialize(self.quadrature.cppHandle)
     self.output.writeInfo()
+    self.output.open(totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)
     return
@@ -139,7 +139,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     self._logger.eventBegin(logEvent)
 
     self._info.log("Writing fault data.")
-    #self.output.writeData(t+dt)
+    self.output.writeData(t+dt)
 
     self._logger.eventEnd(logEvent)
     return
@@ -181,18 +181,6 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     return
     
   
-  def _setupLogging(self):
-    """
-    Setup event logging.
-    """
-    Integrator._setupLogging(self)
-
-    events = ["init"]
-    for event in events:
-      self._logger.registerEvent("%s%s" % (self._loggingPrefix, event))
-    return
-  
-
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def fault():

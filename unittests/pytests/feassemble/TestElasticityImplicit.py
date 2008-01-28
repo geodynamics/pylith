@@ -242,7 +242,8 @@ class TestElasticityImplicit(unittest.TestCase):
     # Setup integrator
     integrator = ElasticityImplicit()
     integrator.preinitialize(mesh, material)
-    integrator.initialize()
+    from pyre.units.time import s
+    integrator.initialize(totalTime=0.0*s, numTimeSteps=1)
     integrator.timeStep(dt)
 
     # Setup fields

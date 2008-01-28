@@ -202,9 +202,7 @@ class OutputManager(Component):
                                   mesh.cppHandle, mesh.coordsys.cppHandle)
 
       for name in self.vertexInfoFields:
-        print "Getting field '%s'." % name
         (field, fieldType) = self.dataProvider.getVertexField(name)
-        print "Writing field '%s'." % name
         self.cppHandle.appendVertexField(t.value, name, field, fieldType, 
                                          mesh.cppHandle)
 

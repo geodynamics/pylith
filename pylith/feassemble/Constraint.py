@@ -22,16 +22,22 @@ def implementsConstraint(obj):
   Check whether object implements a constraint.
   """
   result = True
-  attrs = dir(obj)
-  if not "timeStep" in attrs or \
-     not "setConstraintSizes" in attrs or \
-     not "setConstraints" in attrs or \
-     not "useSolnIncr" in attrs or \
-     not "setField" in attrs or \
-     not "poststep" in attrs or \
-     not "finalize" in attrs:
-    result = False
+  available = dir(obj)
+  required = ["preinitialize",
+              "verifyConfiguration",
+              "initialize",
+              "timeStep",
+              "setConstraintSizes",
+              "setConstraints",
+              "useSolnIncr",
+              "setField",
+              "poststep",
+              "finalize"]
+  for attr in required:
+    if not attr in available:
+      result = False
   return result
+
 
 
 # Constraint class
@@ -67,7 +73,13 @@ class Constraint(object):
     """
     Verify compatibility of configuration.
     """
-    logEvent = "%sverify" % self._loggingPrefix
+    return
+
+
+  def initialize(self, totalTime, numTimeSteps):
+    """
+    Do initialization.
+    """
     return
 
 
@@ -120,10 +132,11 @@ class Constraint(object):
     Set constrained values in field at time t.
     """
     logEvent = "%ssetField" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
 
     assert(None != self.cppHandle)
-    self._logger.eventBegin(logEvent)
     self.cppHandle.setField(t.value, field, self.mesh.cppHandle)
+
     self._logger.eventEnd(logEvent)
     return
 
@@ -157,6 +170,7 @@ class Constraint(object):
     logger.initialize()
 
     events = ["verify",
+              "init",
               "setSizes",
               "constraints",
               "setField",

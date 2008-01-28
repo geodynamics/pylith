@@ -216,7 +216,7 @@ class TestAbsorbingDampers(unittest.TestCase):
     mesh = importer.read(debug=False, interpolate=False)
     
     bc.preinitialize(mesh)
-    bc.initialize()
+    bc.initialize(totalTime=0.0*second, numTimeSteps=1)
     bc.timeStep(0.01*second)
 
     # Setup fields

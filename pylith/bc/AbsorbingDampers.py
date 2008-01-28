@@ -74,15 +74,16 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     return
 
 
-  def initialize(self):
+  def initialize(self, totalTime, numTimeSteps):
     """
     Initialize AbsorbingDampers boundary condition.
     """
     logEvent = "%sinit" % self._loggingPrefix
-
     self._logger.eventBegin(logEvent)
+    
     self.cppHandle.quadrature = self.quadrature.cppHandle
-    BoundaryCondition.initialize(self)
+    BoundaryCondition.initialize(self, totalTime, numTimeSteps)
+
     self._logger.eventEnd(logEvent)
     return
   
@@ -120,18 +121,6 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     if None == self.cppHandle:
       import pylith.bc.bc as bindings
       self.cppHandle = bindings.AbsorbingDampers()    
-    return
-  
-
-  def _setupLogging(self):
-    """
-    Setup event logging.
-    """
-    Integrator._setupLogging(self)
-
-    events = ["init"]
-    for event in events:
-      self._logger.registerEvent("%s%s" % (self._loggingPrefix, event))
     return
   
 

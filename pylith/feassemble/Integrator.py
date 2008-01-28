@@ -22,17 +22,22 @@ def implementsIntegrator(obj):
   Check whether object implements an integrator.
   """
   result = True
-  attrs = dir(obj)
-  if not "timeStep" in attrs or \
-     not "stableTimeStep" in attrs or \
-     not "useSolnIncr" in attrs or \
-     not "integrateResidual" in attrs or \
-     not "integrateJacobian" in attrs or \
-     not "updateState" in attrs or \
-     not "verifyConfiguration" in attrs or \
-     not "poststep" in attrs or \
-     not "finalize" in attrs:
-    result = False
+  available = dir(obj)
+  required = ["timeStep",
+              "stableTimeStep",
+              "useSolnIncr",
+              "integrateResidual",
+              "integrateJacobian",
+              "updateState",
+              "preinitialize",
+              "verifyConfiguration",
+              "initialize",
+              "poststep",
+              "finalize"]
+  
+  for attr in required:
+    if not attr in available:
+      result = False
   return result
 
 
@@ -75,6 +80,13 @@ class Integrator(object):
     self.cppHandle.verifyConfiguration(self.mesh.cppHandle)
 
     self._logger.eventEnd(logEvent)
+    return
+
+
+  def initialize(self, totalTime, numTimeSteps):
+    """
+    Do initialization.
+    """
     return
 
 
@@ -196,6 +208,7 @@ class Integrator(object):
     logger.initialize()
 
     events = ["verify",
+              "init",
               "timestep",
               "residual",
               "newJacobian",
