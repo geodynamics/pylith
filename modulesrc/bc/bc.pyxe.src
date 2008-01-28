@@ -15,7 +15,7 @@
 #include "pylith/feassemble/Constraint.hh"
 #include "pylith/feassemble/Integrator.hh"
 #include "pylith/bc/AbsorbingDampers.hh"
-#include "pylith/bc/Dirichlet.hh"
+#include "pylith/bc/DirichletPoints.hh"
 #include "pylith/bc/Neumann.hh"
 
 #include "pylith/utils/array.hh"
@@ -229,17 +229,17 @@ cdef class BoundaryCondition:
 
 
 # ----------------------------------------------------------------------
-cdef class Dirichlet(BoundaryCondition):
+cdef class DirichletPoints(BoundaryCondition):
 
   def __init__(self):
     """
     Constructor.
     """
     # create shim for constructor
-    #embed{ void* Dirichlet_constructor()
+    #embed{ void* DirichletPoints_constructor()
     void* result = 0;
     try {
-      result = (void*)(new pylith::bc::Dirichlet);
+      result = (void*)(new pylith::bc::DirichletPoints);
       assert(0 != result);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -255,7 +255,7 @@ cdef class Dirichlet(BoundaryCondition):
     #}embed
 
     BoundaryCondition.__init__(self)
-    self.thisptr = Dirichlet_constructor()
+    self.thisptr = DirichletPoints_constructor()
     self.handle = self._createHandle()
     return
 
@@ -266,12 +266,12 @@ cdef class Dirichlet(BoundaryCondition):
       Set fixed DOF.
       """
       # create shim for method 'fixedDOF'
-      #embed{ void Dirichlet_fixedDOF_set(void* objVptr, int* dofVptr, int numFixedDOF)
+      #embed{ void DirichletPoints_fixedDOF_set(void* objVptr, int* dofVptr, int numFixedDOF)
       try {
         assert(0 != objVptr);
         assert(0 != dofVptr);
         pylith::int_array fixedDOF((int*) dofVptr, numFixedDOF);
-        ((pylith::bc::Dirichlet*) objVptr)->fixedDOF(fixedDOF);
+        ((pylith::bc::DirichletPoints*) objVptr)->fixedDOF(fixedDOF);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -289,7 +289,7 @@ cdef class Dirichlet(BoundaryCondition):
       assert(fixedDOF != NULL)
       for i from 0 <= i < numFixedDOF:
         fixedDOF[i] = value[i]
-      Dirichlet_fixedDOF_set(self.thisptr, fixedDOF, numFixedDOF)
+      DirichletPoints_fixedDOF_set(self.thisptr, fixedDOF, numFixedDOF)
       free(fixedDOF)
 
 
@@ -298,14 +298,14 @@ cdef class Dirichlet(BoundaryCondition):
     Set number of degrees of freedom that are constrained at points in field.
     """
     # create shim for method 'setConstraintSizes'
-    #embed{ void Dirichlet_setConstraintSizes(void* objVptr, void* fieldVptr, void* meshVptr)
+    #embed{ void DirichletPoints_setConstraintSizes(void* objVptr, void* fieldVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
       assert(0 != meshVptr);
       ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::bc::Dirichlet*) objVptr)->setConstraintSizes(*field, *mesh);
+      ((pylith::bc::DirichletPoints*) objVptr)->setConstraintSizes(*field, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -322,7 +322,7 @@ cdef class Dirichlet(BoundaryCondition):
       raise TypeError, \
             "Argument must be extension module type " \
             "'pylith::topology::Mesh'."
-    Dirichlet_setConstraintSizes(self.thisptr, PyCObject_AsVoidPtr(field),
+    DirichletPoints_setConstraintSizes(self.thisptr, PyCObject_AsVoidPtr(field),
                                   ptrFromHandle(mesh))
     return
 
@@ -332,14 +332,14 @@ cdef class Dirichlet(BoundaryCondition):
     Set which degrees of freedom that are constrained at points in field.
     """
     # create shim for method 'setConstraints'
-    #embed{ void Dirichlet_setConstraints(void* objVptr, void* fieldVptr, void* meshVptr)
+    #embed{ void DirichletPoints_setConstraints(void* objVptr, void* fieldVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
       assert(0 != meshVptr);
       ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::bc::Dirichlet*) objVptr)->setConstraints(*field, *mesh);
+      ((pylith::bc::DirichletPoints*) objVptr)->setConstraints(*field, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -356,7 +356,7 @@ cdef class Dirichlet(BoundaryCondition):
       raise TypeError, \
             "Argument must be extension module type " \
             "'pylith::topology::Mesh'."
-    Dirichlet_setConstraints(self.thisptr, PyCObject_AsVoidPtr(field), ptrFromHandle(mesh))
+    DirichletPoints_setConstraints(self.thisptr, PyCObject_AsVoidPtr(field), ptrFromHandle(mesh))
     return
 
 
@@ -365,14 +365,14 @@ cdef class Dirichlet(BoundaryCondition):
     Set values in field.
     """
     # create shim for method 'setField'
-    #embed{ void Dirichlet_setField(void* objVptr, double t, void* fieldVptr, void* meshVptr)
+    #embed{ void DirichletPoints_setField(void* objVptr, double t, void* fieldVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
       assert(0 != meshVptr);
       ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::bc::Dirichlet*) objVptr)->setField(t, *field, *mesh);
+      ((pylith::bc::DirichletPoints*) objVptr)->setField(t, *field, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -389,7 +389,7 @@ cdef class Dirichlet(BoundaryCondition):
       raise TypeError, \
             "Argument must be extension module type " \
             "'pylith::topology::Mesh'."
-    Dirichlet_setField(self.thisptr, t, PyCObject_AsVoidPtr(field),
+    DirichletPoints_setField(self.thisptr, t, PyCObject_AsVoidPtr(field),
                           ptrFromHandle(mesh))
     return
 
@@ -400,10 +400,10 @@ cdef class Dirichlet(BoundaryCondition):
       Set solution increment flag.
       """
       # create shim for method 'useSolnIncr'
-      #embed{ void Dirichlet_useSolnIncr_set(void* objVptr, int flag)
+      #embed{ void DirichletPoints_useSolnIncr_set(void* objVptr, int flag)
       try {
         assert(0 != objVptr);
-        ((pylith::bc::Dirichlet*) objVptr)->useSolnIncr(flag);
+        ((pylith::bc::DirichletPoints*) objVptr)->useSolnIncr(flag);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -415,7 +415,7 @@ cdef class Dirichlet(BoundaryCondition):
                         "Caught unknown C++ exception.");
       } // try/catch
       #}embed
-      Dirichlet_useSolnIncr_set(self.thisptr, flag)
+      DirichletPoints_useSolnIncr_set(self.thisptr, flag)
 
 
 # ----------------------------------------------------------------------

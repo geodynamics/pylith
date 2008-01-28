@@ -21,7 +21,7 @@ check_SCRIPTS = testbc.py
 
 noinst_PYTHON = \
 	TestAbsorbingDampers.py \
-	TestDirichlet.py \
+	TestDirichletPoints.py \
 	TestBCSingle.py \
 	TestBCTwoSides.py \
 	TestBCFourSides.py \

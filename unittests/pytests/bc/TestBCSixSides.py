@@ -37,13 +37,13 @@ class TestBCSixSides(unittest.TestCase):
     """
     from pylith.bc.BCSixSides import BCSixSides
     bc = BCSixSides()
-    from pylith.bc.Dirichlet import Dirichlet
-    bc.inventory.xNeg = Dirichlet()
-    bc.inventory.xPos = Dirichlet()
-    bc.inventory.yNeg = Dirichlet()
-    bc.inventory.yPos = Dirichlet()
-    bc.inventory.zNeg = Dirichlet()
-    bc.inventory.zPos = Dirichlet()
+    from pylith.bc.DirichletPoints import DirichletPoints
+    bc.inventory.xNeg = DirichletPoints()
+    bc.inventory.xPos = DirichletPoints()
+    bc.inventory.yNeg = DirichletPoints()
+    bc.inventory.yPos = DirichletPoints()
+    bc.inventory.zNeg = DirichletPoints()
+    bc.inventory.zPos = DirichletPoints()
     bc._configure()
     self.assertEqual(6, len(bc.bin))
     return

@@ -37,11 +37,11 @@ class TestBCFourSides(unittest.TestCase):
     """
     from pylith.bc.BCFourSides import BCFourSides
     bc = BCFourSides()
-    from pylith.bc.Dirichlet import Dirichlet
-    bc.inventory.xNeg = Dirichlet()
-    bc.inventory.xPos = Dirichlet()
-    bc.inventory.yNeg = Dirichlet()
-    bc.inventory.yPos = Dirichlet()
+    from pylith.bc.DirichletPoints import DirichletPoints
+    bc.inventory.xNeg = DirichletPoints()
+    bc.inventory.xPos = DirichletPoints()
+    bc.inventory.yNeg = DirichletPoints()
+    bc.inventory.yPos = DirichletPoints()
     bc._configure()
     self.assertEqual(4, len(bc.bin))
     return

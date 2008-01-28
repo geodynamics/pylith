@@ -44,10 +44,10 @@ class BCSingle(ObjectBin):
 
     import pyre.inventory
     
-    from pylith.bc.Dirichlet import Dirichlet
+    from pylith.bc.DirichletPoints import DirichletPoints
 
     bc = pyre.inventory.facility("bc", family="boundary_condition",
-                                 factory=Dirichlet)
+                                 factory=DirichletPoints)
     bc.meta['tip'] = "Boundary condition."
 
 

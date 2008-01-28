@@ -37,8 +37,8 @@ class TestBCSingle(unittest.TestCase):
     """
     from pylith.bc.BCSingle import BCSingle
     bc = BCSingle()
-    from pylith.bc.Dirichlet import Dirichlet
-    bc.inventory.bc = Dirichlet()
+    from pylith.bc.DirichletPoints import DirichletPoints
+    bc.inventory.bc = DirichletPoints()
     bc._configure()
     self.assertEqual(1, len(bc.bin))
     return
