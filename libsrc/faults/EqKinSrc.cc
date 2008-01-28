@@ -74,5 +74,23 @@ pylith::faults::EqKinSrc::slipIncr(const double t0,
   return _slipfn->slipIncr(t0, t1, vertices);
 } // slip
 
+// ----------------------------------------------------------------------
+// Get final slip.
+ALE::Obj<pylith::real_section_type>
+pylith::faults::EqKinSrc::finalSlip(void)
+{ // finalSlip
+  assert(0 != _slipfn);
+  return _slipfn->finalSlip();
+} // finalSlip
+
+// ----------------------------------------------------------------------
+// Get time when slip begins at each point.
+ALE::Obj<pylith::real_section_type>
+pylith::faults::EqKinSrc::slipTime(void)
+{ // slipTime
+  assert(0 != _slipfn);
+  return _slipfn->slipTime();
+} // slipTime
+
 
 // End of file 

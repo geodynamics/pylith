@@ -669,6 +669,10 @@ pylith::faults::FaultCohesiveKin::vertexField(
 				    const char* name,
 				    const ALE::Obj<Mesh>& mesh)
 { // vertexField
+  assert(!_faultMesh.isNull());
+  assert(!_orientation.isNull());
+  assert(0 != _eqsrc);
+
   const int cohesiveDim = _faultMesh->getDimension();
 
   if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
@@ -696,14 +700,14 @@ pylith::faults::FaultCohesiveKin::vertexField(
     return _outputVertexVector;
   } else if (0 == strcasecmp("final_slip", name)) {
     _allocateOutputVertexVector();
-    // ADD STUFF HERE
-    //_projectCohesiveVertexField(&_outputVertexVector, finalSlip, mesh);
+    const ALE::Obj<real_section_type>& finalSlip = _eqsrc->finalSlip();
+    _projectCohesiveVertexField(&_outputVertexVector, finalSlip, mesh);
     *fieldType = meshio::DataWriter::VECTOR_FIELD;
     return _outputVertexVector;
   } else if (0 == strcasecmp("slip_time", name)) {
     _allocateOutputVertexScalar();
-    // ADD STUFF HERE
-    //_projectCohesiveVertexField(&_outputVertexScalar, slipTime, mesh);
+    const ALE::Obj<real_section_type>& slipTime = _eqsrc->slipTime();
+    _projectCohesiveVertexField(&_outputVertexScalar, slipTime, mesh);
     *fieldType = meshio::DataWriter::SCALAR_FIELD;
     return _outputVertexScalar;
   } // if/else

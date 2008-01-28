@@ -73,6 +73,7 @@ public :
    *
    * @param t Time t.
    * @param vertices Vertices where slip will be prescribed.
+   * @returns Slip vector as left-lateral/reverse/normal.
    */
   virtual
   const ALE::Obj<real_section_type>& slip(const double t,
@@ -83,11 +84,26 @@ public :
    * @param t0 Time t.
    * @param t1 Time t+dt.
    * @param vertices Vertices where slip will be prescribed.
+   * @returns Increment in slip vector as left-lateral/reverse/normal.
    */
   virtual
   const ALE::Obj<real_section_type>& slipIncr(const double t0,
 					      const double t1,
 					      const std::set<Mesh::point_type>& vertices) = 0;
+
+  /** Get final slip.
+   *
+   * @returns Final slip.
+   */
+  virtual
+  ALE::Obj<real_section_type> finalSlip(void) = 0;
+
+  /** Get time when slip begins at each point.
+   *
+   * @returns Time when slip begins.
+   */
+  virtual
+  ALE::Obj<real_section_type> slipTime(void) = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

@@ -99,6 +99,20 @@ public :
 			      const double t1,
 			      const std::set<Mesh::point_type>& vertices);
 
+  /** Get final slip.
+   *
+   * @returns Final slip.
+   */
+  virtual
+  ALE::Obj<real_section_type> finalSlip(void);
+
+  /** Get time when slip begins at each point.
+   *
+   * @returns Time when slip begins.
+   */
+  virtual
+  ALE::Obj<real_section_type> slipTime(void);
+
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
