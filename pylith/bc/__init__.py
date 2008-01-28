@@ -21,7 +21,7 @@ __all__ = ['AbsorbingDampers',
            'BCTwoSides',
            'BoundaryCondition',
            'BCIntegrator',
-           'Dirichlet']
+           'DirichletPoints']
 
 
 # End of file

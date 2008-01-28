@@ -56,8 +56,8 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
-    from TestDirichlet import TestDirichlet
-    suite.addTest(unittest.makeSuite(TestDirichlet))
+    from TestDirichletPoints import TestDirichletPoints
+    suite.addTest(unittest.makeSuite(TestDirichletPoints))
 
     from TestAbsorbingDampers import TestAbsorbingDampers
     suite.addTest(unittest.makeSuite(TestAbsorbingDampers))

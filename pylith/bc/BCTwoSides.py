@@ -49,14 +49,14 @@ class BCTwoSides(ObjectBin):
 
     import pyre.inventory
     
-    from pylith.bc.Dirichlet import Dirichlet
+    from pylith.bc.DirichletPoints import DirichletPoints
 
     pos = pyre.inventory.facility("pos", family="boundary_condition",
-                                  factory=Dirichlet)
+                                  factory=DirichletPoints)
     pos.meta['tip'] = "Boundary condition on positive face of 1-D box."
     
     neg = pyre.inventory.facility("neg", family="boundary_condition",
-                                  factory=Dirichlet)
+                                  factory=DirichletPoints)
     neg.meta['tip'] = "Boundary condition on negative face of 1-D box."
 
 

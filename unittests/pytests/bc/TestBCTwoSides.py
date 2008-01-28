@@ -37,9 +37,9 @@ class TestBCTwoSides(unittest.TestCase):
     """
     from pylith.bc.BCTwoSides import BCTwoSides
     bc = BCTwoSides()
-    from pylith.bc.Dirichlet import Dirichlet
-    bc.inventory.neg = Dirichlet()
-    bc.inventory.pos = Dirichlet()
+    from pylith.bc.DirichletPoints import DirichletPoints
+    bc.inventory.neg = DirichletPoints()
+    bc.inventory.pos = DirichletPoints()
     bc._configure()
     self.assertEqual(2, len(bc.bin))
     return
