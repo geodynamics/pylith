@@ -20,6 +20,8 @@
  *   0: 0.1, 0.6
  *   1: 0.5, 0.3
  *   4: 0.4, 0.2
+ * tRef = 3.0
+ * Rate of change = -0.5
  */
 
 #include "DirichletPointsDataQuad4.hh"
@@ -34,7 +36,10 @@ const int pylith::bc::DirichletPointsDataQuad4::_fixedDOF[] = { 0, 1 };
 
 const int pylith::bc::DirichletPointsDataQuad4::_numConstrainedPts = 3;
 const int pylith::bc::DirichletPointsDataQuad4::_constrainedPoints[] = { 0, 1, 4 };
-const double pylith::bc::DirichletPointsDataQuad4::_values[] =
+
+const double pylith::bc::DirichletPointsDataQuad4::_tRef = 3.0;
+const double pylith::bc::DirichletPointsDataQuad4::_valueRate = -0.5;
+const double pylith::bc::DirichletPointsDataQuad4::_valuesInitial[] =
   { 0.1, 0.6, 0.5, 0.3, 0.4, 0.2 };
 
 const char* pylith::bc::DirichletPointsDataQuad4::_meshFilename = 
@@ -53,7 +58,10 @@ pylith::bc::DirichletPointsDataQuad4::DirichletPointsDataQuad4(void)
 
   numConstrainedPts = _numConstrainedPts;
   constrainedPoints = const_cast<int*>(_constrainedPoints);
-  values = const_cast<double*>(_values);
+
+  tRef = _tRef;
+  valueRate = _valueRate;
+  valuesInitial = const_cast<double*>(_valuesInitial);
 
   meshFilename = const_cast<char*>(_meshFilename);
   dbFilename = const_cast<char*>(_dbFilename);

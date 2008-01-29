@@ -17,7 +17,9 @@ noinst_DATA = \
 	elasticstrain1d.spatialdb \
 	tri3.mesh \
 	tri3.spatialdb \
+	tri3_rate.spatialdb \
 	tri3_b.spatialdb \
+	tri3_b_rate.spatialdb \
 	tri3-tractions.spatialdb \
 	elasticplanestrain.spatialdb \
 	quad4.mesh \

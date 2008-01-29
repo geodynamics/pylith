@@ -43,8 +43,9 @@ public:
   char* labelA; ///< Label for boundary condition group
   int* fixedDOFA; ///< Degrees of freedom that are constrained at each point
   int* constrainedPointsA; ///< Array of indices of constrained points.
-  double* valuesA; ///< Values at constrained points.
-  char* dbFilenameA; ///< Filename of simple spatial datamultibase.
+  char* dbFilenameA; ///< Filename for db with initial values.
+  char* dbFilenameARate; ///< Filename for db with rate of change of values.
+  double tRefA; ///< Reference time for rate of change of values.
   //@}
 
   //@{ Boundary condition B
@@ -54,8 +55,9 @@ public:
   char* labelB; ///< Label for boundary condition group
   int* fixedDOFB; ///< Degrees of freedom that are constrained at each point
   int* constrainedPointsB; ///< Array of indices of constrained points.
-  double* valuesB; ///< Values at constrained points.
-  char* dbFilenameB; ///< Filename of simple spatial datamultibase.
+  char* dbFilenameB; ///< Filename for db with initial values.
+  char* dbFilenameBRate; ///< Filename for db with rate of change of values.
+  double tRefB; ///< Reference time for rate of change of values.
   //@}
 
   double* field; ///< Values in field

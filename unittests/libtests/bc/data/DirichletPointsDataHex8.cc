@@ -16,11 +16,14 @@
  *
  * Fixed DOF: { 0, 2 }
  *
- * Values
+ * Initial values
  *   0: -0.2, 0.3
  *   1:  0.1, 0.7
  *   6:  0.5, 0.4
  *   7:  3.2, 6.1
+ * tref = 0.2
+ * Rate of change
+ *   +0.4
  */
 
 #include "DirichletPointsDataHex8.hh"
@@ -35,7 +38,10 @@ const int pylith::bc::DirichletPointsDataHex8::_fixedDOF[] = { 0, 2 };
 
 const int pylith::bc::DirichletPointsDataHex8::_numConstrainedPts = 4;
 const int pylith::bc::DirichletPointsDataHex8::_constrainedPoints[] = { 0, 1, 6, 7 };
-const double pylith::bc::DirichletPointsDataHex8::_values[] = {
+
+const double pylith::bc::DirichletPointsDataHex8::_tRef = 0.2;
+const double pylith::bc::DirichletPointsDataHex8::_valueRate = 0.4;
+const double pylith::bc::DirichletPointsDataHex8::_valuesInitial[] = {
   -0.2, 0.3,
    0.1, 0.7,
    0.5, 0.4,
@@ -52,13 +58,16 @@ pylith::bc::DirichletPointsDataHex8::DirichletPointsDataHex8(void)
   id = _id;
   label = const_cast<char*>(_label);
 
+  tRef = _tRef;
+  valueRate = _valueRate;
+
   numDOF = _numDOF;
   numFixedDOF = _numFixedDOF;
   fixedDOF = const_cast<int*>(_fixedDOF);
 
   numConstrainedPts = _numConstrainedPts;
   constrainedPoints = const_cast<int*>(_constrainedPoints);
-  values = const_cast<double*>(_values);
+  valuesInitial = const_cast<double*>(_valuesInitial);
 
   meshFilename = const_cast<char*>(_meshFilename);
   dbFilename = const_cast<char*>(_dbFilename);

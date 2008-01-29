@@ -98,7 +98,7 @@ pylith::bc::TestDirichletPoints::testInitialize(void)
   CPPUNIT_ASSERT_EQUAL(size, bc._valuesInitial.size());
   const double tolerance = 1.0e-06;
   for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->values[i], bc._valuesInitial[i], 
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valuesInitial[i], bc._valuesInitial[i], 
 				 tolerance);
 } // testInitialize
 
@@ -248,8 +248,10 @@ pylith::bc::TestDirichletPoints::testSetField(void)
       // check constrained DOF
       for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) {
 	const int index = iConstraint * numFixedDOF + iDOF;
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->values[index],
-				     values[_data->fixedDOF[iDOF]],
+	const double valueE = (t > _data->tRef) ?
+	  _data->valuesInitial[index] + (t-_data->tRef)*_data->valueRate :
+	  _data->valuesInitial[index];
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, values[_data->fixedDOF[iDOF]],
 				     tolerance);
       } // for
       ++iConstraint;
@@ -282,7 +284,9 @@ pylith::bc::TestDirichletPoints::_initialize(ALE::Obj<Mesh>* mesh,
 
   spatialdata::spatialdb::UniformDB dbRate("TestDirichletPoints rate");
   const char* names[] = { "dof-0", "dof-1", "dof-2" };
-  const double values[] = { 0.0, 0.0, 0.0 };
+  const double values[] = { _data->valueRate,
+			    _data->valueRate,
+			    _data->valueRate };
   const int numValues = 3;
   dbRate.setData(names, values, numValues);
 
@@ -294,6 +298,7 @@ pylith::bc::TestDirichletPoints::_initialize(ALE::Obj<Mesh>* mesh,
   bc->label(_data->label);
   bc->db(&db);
   bc->dbRate(&dbRate);
+  bc->referenceTime(_data->tRef);
   bc->fixedDOF(fixedDOF);
   bc->initialize(*mesh, &cs, upDir);
 } // _initialize

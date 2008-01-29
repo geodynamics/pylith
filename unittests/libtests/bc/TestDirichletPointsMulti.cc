@@ -143,7 +143,7 @@ pylith::bc::TestDirichletPointsMulti::testSetField(void)
 
   // Only unconstrained values should be zero.
   // Expected values set in _data->field
-  const double t = 1.0;
+  const double t = 10.0;
   bcA.setField(t, field, mesh);
   bcB.setField(t, field, mesh);
 
@@ -184,11 +184,10 @@ pylith::bc::TestDirichletPointsMulti::_initialize(ALE::Obj<Mesh>* mesh,
   dbIO.filename(_data->dbFilenameA);
   db.ioHandler(&dbIO);
 
-  spatialdata::spatialdb::UniformDB dbRate("TestDirichletPointsMulti rate");
-  const char* names[] = { "dof-0", "dof-1", "dof-2" };
-  const double values[] = { 0.0, 0.0, 0.0 };
-  const int numValues = 3;
-  dbRate.setData(names, values, numValues);
+  spatialdata::spatialdb::SimpleDB dbRate("TestDirichletPointsMulti rate");
+  spatialdata::spatialdb::SimpleIOAscii dbIORate;
+  dbIORate.filename(_data->dbFilenameARate);
+  dbRate.ioHandler(&dbIORate);
 
   int_array fixedDOFA(_data->fixedDOFA, _data->numFixedDOFA);
   const double upDirVals[] = { 0.0, 0.0, 1.0 };
@@ -198,6 +197,7 @@ pylith::bc::TestDirichletPointsMulti::_initialize(ALE::Obj<Mesh>* mesh,
   bcA->label(_data->labelA);
   bcA->db(&db);
   bcA->dbRate(&dbRate);
+  bcA->referenceTime(_data->tRefA);
   bcA->fixedDOF(fixedDOFA);
   bcA->initialize(*mesh, &cs, upDir);
 
@@ -205,12 +205,16 @@ pylith::bc::TestDirichletPointsMulti::_initialize(ALE::Obj<Mesh>* mesh,
   dbIO.filename(_data->dbFilenameB);
   db.ioHandler(&dbIO);
 
+  dbIORate.filename(_data->dbFilenameBRate);
+  dbRate.ioHandler(&dbIORate);
+
   int_array fixedDOFB(_data->fixedDOFB, _data->numFixedDOFB);
 
   bcB->id(_data->idB);
   bcB->label(_data->labelB);
   bcB->db(&db);
   bcB->dbRate(&dbRate);
+  bcB->referenceTime(_data->tRefB);
   bcB->fixedDOF(fixedDOFB);
   bcB->initialize(*mesh, &cs, upDir);
 } // _initialize
