@@ -84,7 +84,8 @@ class BoundaryCondition(Component):
 			"with normal direction."
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
-    db = pyre.inventory.facility("db", factory=SimpleDB,
+    db = pyre.inventory.facility("db", factory=SimpleDB, 
+                                 family="spatial_database",
                                  args=["db"])
     db.meta['tip'] = "Database of boundary condition parameters."
     
