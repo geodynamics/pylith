@@ -23,7 +23,9 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::bc::DirichletPoints::DirichletPoints(void)
+pylith::bc::DirichletPoints::DirichletPoints(void) :
+  _tRef(0.0),
+  _dbRate(0)
 { // constructor
 } // constructor
 
@@ -31,6 +33,7 @@ pylith::bc::DirichletPoints::DirichletPoints(void)
 // Destructor.
 pylith::bc::DirichletPoints::~DirichletPoints(void)
 { // destructor
+  _dbRate = 0;
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -42,6 +45,7 @@ pylith::bc::DirichletPoints::initialize(
 				   const double_array& upDir)
 { // initialize
   assert(0 != _db);
+  assert(0 != _dbRate);
   assert(!mesh.isNull());
   assert(0 != cs);
 
@@ -78,6 +82,8 @@ pylith::bc::DirichletPoints::initialize(
   } // for
   _db->open();
   _db->queryVals((const char**) valueNames, numFixedDOF);
+  _dbRate->open();
+  _dbRate->queryVals((const char**) valueNames, numFixedDOF);
   for (int i=0; i < numFixedDOF; ++i) {
     delete[] valueNames[i]; valueNames[i] = 0;
   } // for
@@ -88,13 +94,15 @@ pylith::bc::DirichletPoints::initialize(
   assert(!coordinates.isNull());
   const int spaceDim = cs->spaceDim();
 
-  _values.resize(numPoints*numFixedDOF);
+  _valuesInitial.resize(numPoints*numFixedDOF);
+  _valuesRate.resize(numPoints*numFixedDOF);
   double_array queryValues(numFixedDOF);
-  for (int iPoint=0, i=0; iPoint < numPoints; ++iPoint) {
+  for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     // Get coordinates of vertex
     const real_section_type::value_type* vCoords = 
       coordinates->restrictPoint(_points[iPoint]);
-    int err = _db->query(&queryValues[0], numFixedDOF, vCoords, spaceDim, cs);
+    int err = _db->query(&queryValues[0], numFixedDOF, vCoords, 
+				spaceDim, cs);
     if (err) {
       std::ostringstream msg;
       msg << "Could not find values at (";
@@ -104,9 +112,23 @@ pylith::bc::DirichletPoints::initialize(
       throw std::runtime_error(msg.str());
     } // if
     for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
-      _values[i++] = queryValues[iDOF];
+      _valuesInitial[numFixedDOF*iPoint+iDOF] = queryValues[iDOF];
+
+    err = _dbRate->query(&queryValues[0], numFixedDOF, vCoords, 
+			 spaceDim, cs);
+    if (err) {
+      std::ostringstream msg;
+      msg << "Could not find values at (";
+      for (int i=0; i < spaceDim; ++i)
+	msg << "  " << vCoords[i];
+      msg << ") using spatial database " << _dbRate->label() << ".";
+      throw std::runtime_error(msg.str());
+    } // if
+    for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
+      _valuesRate[numFixedDOF*iPoint+iDOF] = queryValues[iDOF];
   } // for
   _db->close();
+  _dbRate->close();
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -199,17 +221,20 @@ pylith::bc::DirichletPoints::setField(const double t,
   if (0 == numFixedDOF)
     return;
 
-
   const int numPoints = _points.size();
   const int fiberDimension = 
     (numPoints > 0) ? field->getFiberDimension(_points[0]) : 0;
   double_array allValues(fiberDimension);
-  for (int iPoint=0, i=0; iPoint < numPoints; ++iPoint) {
+  for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const Mesh::point_type point = _points[iPoint];
     assert(fiberDimension == field->getFiberDimension(point));
     mesh->restrict(field, point, &allValues[0], fiberDimension);
     for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
-      allValues[_fixedDOF[iDOF]] = _values[i++];
+      allValues[_fixedDOF[iDOF]] = _valuesInitial[iPoint*numFixedDOF+iDOF];
+    if (t > _tRef)
+      for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
+	allValues[_fixedDOF[iDOF]] += 
+	  (t-_tRef) * _valuesRate[iPoint*numFixedDOF+iDOF];
     field->updatePointAll(_points[iPoint], &allValues[0]);
   } // for
 } // setField

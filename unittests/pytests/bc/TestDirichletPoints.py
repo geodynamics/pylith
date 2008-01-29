@@ -163,6 +163,13 @@ class TestDirichletPoints(unittest.TestCase):
     db.initialize()
     bc.db = db
 
+    from pylith.bc.FixedDOFDB import FixedDOFDB
+    dbRate = FixedDOFDB()
+    dbRate._configure()
+    dbRate.label = "TestDirichletPoints rate tri3"
+    dbRate.initialize()
+    bc.dbRate = dbRate
+
     from spatialdata.geocoords.CSCart import CSCart
     cs = CSCart()
     cs.spaceDim = 2

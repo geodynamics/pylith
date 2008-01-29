@@ -23,6 +23,7 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
+#include "spatialdata/spatialdb/UniformDB.hh" // USES UniformDB
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletPoints );
@@ -94,10 +95,11 @@ pylith::bc::TestDirichletPoints::testInitialize(void)
 
   // Check values
   const size_t size = numPoints * numFixedDOF;
-  CPPUNIT_ASSERT_EQUAL(size, bc._values.size());
+  CPPUNIT_ASSERT_EQUAL(size, bc._valuesInitial.size());
   const double tolerance = 1.0e-06;
   for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->values[i], bc._values[i], tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->values[i], bc._valuesInitial[i], 
+				 tolerance);
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -273,10 +275,16 @@ pylith::bc::TestDirichletPoints::_initialize(ALE::Obj<Mesh>* mesh,
   cs.setSpaceDim((*mesh)->getDimension());
   cs.initialize();
 
-  spatialdata::spatialdb::SimpleDB db("TestDirichletPoints");
+  spatialdata::spatialdb::SimpleDB db("TestDirichletPoints initial");
   spatialdata::spatialdb::SimpleIOAscii dbIO;
   dbIO.filename(_data->dbFilename);
   db.ioHandler(&dbIO);
+
+  spatialdata::spatialdb::UniformDB dbRate("TestDirichletPoints rate");
+  const char* names[] = { "dof-0", "dof-1", "dof-2" };
+  const double values[] = { 0.0, 0.0, 0.0 };
+  const int numValues = 3;
+  dbRate.setData(names, values, numValues);
 
   int_array fixedDOF(_data->fixedDOF, _data->numFixedDOF);
   const double upDirVals[] = { 0.0, 0.0, 1.0 };
@@ -285,6 +293,7 @@ pylith::bc::TestDirichletPoints::_initialize(ALE::Obj<Mesh>* mesh,
   bc->id(_data->id);
   bc->label(_data->label);
   bc->db(&db);
+  bc->dbRate(&dbRate);
   bc->fixedDOF(fixedDOF);
   bc->initialize(*mesh, &cs, upDir);
 } // _initialize

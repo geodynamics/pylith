@@ -48,6 +48,12 @@ public :
   /// Destructor.
   ~DirichletPoints(void);
 
+  /** Set database for rate of change of values.
+   *
+   * @param db Spatial database
+   */
+  void dbRate(spatialdata::spatialdb::SpatialDB* const db);
+
   /** Set indices of fixed degrees of freedom. 
    *
    * Note: all points associated with boundary condition has same
@@ -58,6 +64,12 @@ public :
    * @param flags Indices of fixed degrees of freedom.
    */
   void fixedDOF(const int_array& flags);
+
+  /** Set time at which rate of change begins.
+   *
+   * @param t Reference time.
+   */
+  void referenceTime(const double t);
 
   /** Initialize boundary condition.
    *
@@ -106,13 +118,19 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
+  double _tRef; /// Time when rate of change for values begins
+  double_array _valuesInitial; ///< Initial values at degrees of freedom
+  double_array _valuesRate; ///< Rate of change of Values at degrees of freedom
+
   std::vector<Mesh::point_type> _points; ///< Locations of boundary condition
-  double_array _values; ///< Values at degrees of freedom
   int_array _fixedDOF; ///< Indices of fixed degrees of freedom
 
   /// Offset in list of fixed DOF at point to get to fixed DOF
   /// associated with this DirichletPoints boundary condition.
   int_array _offsetLocal;
+
+  /// Spatial database with parameters for rate of change values.
+  spatialdata::spatialdb::SpatialDB* _dbRate;
 
 }; // class DirichletPoints
 

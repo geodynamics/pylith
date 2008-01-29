@@ -18,6 +18,7 @@ nobase_pkgpyexec_PYTHON = \
 	bc/BCIntegrator.py \
 	bc/BoundaryCondition.py \
 	bc/DirichletPoints.py \
+	bc/FixedDOFDB.py \
 	bc/BCSingle.py \
 	bc/BCTwoSides.py \
 	bc/BCFourSides.py \

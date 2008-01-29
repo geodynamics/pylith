@@ -23,6 +23,7 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
+#include "spatialdata/spatialdb/UniformDB.hh" // USES UniformDB
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -178,10 +179,16 @@ pylith::bc::TestDirichletPointsMulti::_initialize(ALE::Obj<Mesh>* mesh,
   cs.initialize();
 
   // Setup boundary condition A
-  spatialdata::spatialdb::SimpleDB db("TestDirichletPointsMulti");
+  spatialdata::spatialdb::SimpleDB db("TestDirichletPointsMulti initial");
   spatialdata::spatialdb::SimpleIOAscii dbIO;
   dbIO.filename(_data->dbFilenameA);
   db.ioHandler(&dbIO);
+
+  spatialdata::spatialdb::UniformDB dbRate("TestDirichletPointsMulti rate");
+  const char* names[] = { "dof-0", "dof-1", "dof-2" };
+  const double values[] = { 0.0, 0.0, 0.0 };
+  const int numValues = 3;
+  dbRate.setData(names, values, numValues);
 
   int_array fixedDOFA(_data->fixedDOFA, _data->numFixedDOFA);
   const double upDirVals[] = { 0.0, 0.0, 1.0 };
@@ -190,6 +197,7 @@ pylith::bc::TestDirichletPointsMulti::_initialize(ALE::Obj<Mesh>* mesh,
   bcA->id(_data->idA);
   bcA->label(_data->labelA);
   bcA->db(&db);
+  bcA->dbRate(&dbRate);
   bcA->fixedDOF(fixedDOFA);
   bcA->initialize(*mesh, &cs, upDir);
 
@@ -202,6 +210,7 @@ pylith::bc::TestDirichletPointsMulti::_initialize(ALE::Obj<Mesh>* mesh,
   bcB->id(_data->idB);
   bcB->label(_data->labelB);
   bcB->db(&db);
+  bcB->dbRate(&dbRate);
   bcB->fixedDOF(fixedDOFB);
   bcB->initialize(*mesh, &cs, upDir);
 } // _initialize
