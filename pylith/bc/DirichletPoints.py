@@ -76,11 +76,11 @@ class DirichletPoints(BoundaryCondition, Constraint):
 
     from FixedDOFDB import FixedDOFDB
     db = pyre.inventory.facility("db", factory=FixedDOFDB,
-                                 args=["initial value db"])
+                                 family="spatial_database")
     db.meta['tip'] = "Database of parameters for initial values."
 
     dbRate = pyre.inventory.facility("rate_db", factory=FixedDOFDB,
-                                 args=["rate of change db"])
+                                 family="spatial_database")
     dbRate.meta['tip'] = "Database of parameters for rate of change of values."
     
 
