@@ -14,6 +14,14 @@
 #error "DirichletPoints.icc can only be included from DirichletPoints.hh"
 #endif
 
+// Set database for boundary condition parameters.
+inline
+void
+pylith::bc::DirichletPoints::dbRate(
+			      spatialdata::spatialdb::SpatialDB* const db) {
+  _dbRate = db;
+}
+
 // Set indices of fixed degrees of freedom. 
 inline
 void
@@ -22,6 +30,13 @@ pylith::bc::DirichletPoints::fixedDOF(const int_array& flags) {
   _fixedDOF.resize(size);
   _fixedDOF = flags;
 } // fixedDOF
+
+// Set time at which rate of change begins.
+inline
+void 
+pylith::bc::DirichletPoints::referenceTime(const double t) {
+  _tRef = t;
+} // referenceTime
 
 
 // End of file 

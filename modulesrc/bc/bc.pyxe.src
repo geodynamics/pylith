@@ -39,6 +39,7 @@ cdef extern from "stdlib.h":
   void* malloc(size_t size)
   void free(void* mem)
 
+# ----------------------------------------------------------------------
 cdef void BoundaryCondition_destructor(void* obj):
   """
   Destroy BoundaryCondition object.
@@ -52,7 +53,6 @@ cdef void BoundaryCondition_destructor(void* obj):
   return
 
 
-# ----------------------------------------------------------------------
 cdef class BoundaryCondition:
 
   cdef void* thisptr # Pointer to C++ object
@@ -258,6 +258,37 @@ cdef class DirichletPoints(BoundaryCondition):
     self.thisptr = DirichletPoints_constructor()
     self.handle = self._createHandle()
     return
+
+
+  property dbRate:
+    def __set__(self, value):
+      """
+      Set spatial database for parameters of rate of change of values.
+      """
+      # create shim for method 'dbRate'
+      #embed{ void DirichletPoints_dbRate_set(void* objVptr, void* dbVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != dbVptr);
+        spatialdata::spatialdb::SpatialDB* db =
+          (spatialdata::spatialdb::SpatialDB*) dbVptr;
+        ((pylith::bc::DirichletPoints*) objVptr)->dbRate(db);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "spatialdata_spatialdb_SpatialDB":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::spatialdb::SpatialDB'."
+      DirichletPoints_dbRate_set(self.thisptr, ptrFromHandle(value))
 
 
   property fixedDOF:

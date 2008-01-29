@@ -58,20 +58,35 @@ class DirichletPoints(BoundaryCondition, Constraint):
     ##
     ## \b Properties
     ## @li \b fixed_dof Indices of fixed DOF (0=1st DOF, 1=2nd DOF, etc).
+    ## @li \b reference_t Reference time for rate of change of values.
     ##
     ## \b Facilities
-    ## @li None
+    ## @li \b initial_db Database of parameters for initial values.
+    ## @li \b rate_db Database of parameters for rate of change of values.
 
     import pyre.inventory
 
     fixedDOF = pyre.inventory.list("fixed_dof", default=[],
                                    validator=validateDOF)
     fixedDOF.meta['tip'] = "Indices of fixed DOF (0=1st DOF, 1=2nd DOF, etc)."
+
+    from pyre.units.time import s
+    tRef = pyre.inventory.dimensional("reference_t", default=0.0*s)
+    tRef.meta['tip'] = "Reference time for rate of change of values."
+
+    from FixedDOFDB import FixedDOFDB
+    db = pyre.inventory.facility("db", factory=FixedDOFDB,
+                                 args=["initial value db"])
+    db.meta['tip'] = "Database of parameters for initial values."
+
+    dbRate = pyre.inventory.facility("rate_db", factory=FixedDOFDB,
+                                 args=["rate of change db"])
+    dbRate.meta['tip'] = "Database of parameters for rate of change of values."
     
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="dirichlet"):
+  def __init__(self, name="dirichletpoints"):
     """
     Constructor.
     """
@@ -99,6 +114,10 @@ class DirichletPoints(BoundaryCondition, Constraint):
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
     
+    assert(None != self.cppHandle)
+    self.dbRate.initialize()
+    self.cppHandle.dbRate = self.dbRate.cppHandle
+
     BoundaryCondition.initialize(self, totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)    
@@ -112,7 +131,9 @@ class DirichletPoints(BoundaryCondition, Constraint):
     Setup members using inventory.
     """
     BoundaryCondition._configure(self)
+    self.tRef = self.inventory.tRef
     self.fixedDOF = self.inventory.fixedDOF
+    self.dbRate = self.inventory.dbRate
     return
 
 
