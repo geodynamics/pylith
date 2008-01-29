@@ -18,6 +18,8 @@
  *
  * Values
  *   2: 0.7, 0.2
+ * tRef = 1.2
+ * Rate of change = 4.0
  */
 
 #include "DirichletPointsDataTet4.hh"
@@ -32,7 +34,12 @@ const int pylith::bc::DirichletPointsDataTet4::_fixedDOF[] = { 1, 2 };
 
 const int pylith::bc::DirichletPointsDataTet4::_numConstrainedPts = 1;
 const int pylith::bc::DirichletPointsDataTet4::_constrainedPoints[] = { 2 };
-const double pylith::bc::DirichletPointsDataTet4::_values[] = { 0.7, 0.2 };
+
+
+const double pylith::bc::DirichletPointsDataTet4::_tRef = 1.2;
+const double pylith::bc::DirichletPointsDataTet4::_valueRate = 4.0;
+const double pylith::bc::DirichletPointsDataTet4::_valuesInitial[] =
+  { 0.7, 0.2 };
 
 const char* pylith::bc::DirichletPointsDataTet4::_meshFilename = 
   "data/tet4.mesh";
@@ -50,7 +57,10 @@ pylith::bc::DirichletPointsDataTet4::DirichletPointsDataTet4(void)
 
   numConstrainedPts = _numConstrainedPts;
   constrainedPoints = const_cast<int*>(_constrainedPoints);
-  values = const_cast<double*>(_values);
+
+  tRef = _tRef;
+  valueRate = _valueRate;
+  valuesInitial = const_cast<double*>(_valuesInitial);
 
   meshFilename = const_cast<char*>(_meshFilename);
   dbFilename = const_cast<char*>(_dbFilename);
