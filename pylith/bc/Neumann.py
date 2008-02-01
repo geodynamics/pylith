@@ -80,7 +80,7 @@ class Neumann(BoundaryCondition, Integrator):
     self._logger.eventBegin(logEvent)
     
     self.cppHandle.quadrature = self.quadrature.cppHandle
-    BoundaryCondition.initialize(self)
+    BoundaryCondition.initialize(self, totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)
     return
