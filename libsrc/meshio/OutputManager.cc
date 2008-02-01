@@ -78,11 +78,13 @@ void
 pylith::meshio::OutputManager::open(
 				 const ALE::Obj<ALE::Mesh>& mesh,
 				 const spatialdata::geocoords::CoordSys* csMesh,
-				 const int numTimeSteps)
+				 const int numTimeSteps,
+				 const char* label,
+				 const int labelId)
 { // open
   assert(0 != _writer);
 
-  _writer->open(mesh, csMesh, numTimeSteps);
+  _writer->open(mesh, csMesh, numTimeSteps, label, labelId);
 } // open
 
 // ----------------------------------------------------------------------
@@ -97,12 +99,15 @@ pylith::meshio::OutputManager::close(void)
 // ----------------------------------------------------------------------
 // Setup file for writing fields at time step.
 void
-pylith::meshio::OutputManager::openTimeStep(const double t,
-	     const ALE::Obj<ALE::Mesh>& mesh,
-	     const spatialdata::geocoords::CoordSys* csMesh)
+pylith::meshio::OutputManager::openTimeStep(
+			     const double t,
+			     const ALE::Obj<ALE::Mesh>& mesh,
+			     const spatialdata::geocoords::CoordSys* csMesh,
+			     const char* label,
+			     const int labelId)
 { // openTimeStep
   assert(0 != _writer);
-  _writer->openTimeStep(t, mesh, csMesh);
+  _writer->openTimeStep(t, mesh, csMesh, label, labelId);
 } // openTimeStep
 
 // ----------------------------------------------------------------------

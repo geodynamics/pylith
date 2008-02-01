@@ -303,7 +303,7 @@ class Formulation(Component):
     """
     Get mesh associated with data fields.
     """
-    return self.mesh
+    return (self.mesh, None, None)
 
 
   def getVertexField(self, name):

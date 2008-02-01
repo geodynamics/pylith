@@ -80,10 +80,15 @@ public :
    * @param mesh PETSc mesh object.
    * @param csMesh Coordinate system of mesh geometry.
    * @param numTimeSteps Expected number of time steps.
+   * @param label Name of label defining cells to include in output
+   *   (=0 means use all cells in mesh).
+   * @param labelId Value of label defining which cells to include.
    */
   void open(const ALE::Obj<ALE::Mesh>& mesh,
 	    const spatialdata::geocoords::CoordSys* csMesh,
-	    const int numTimeSteps);
+	    const int numTimeSteps,
+	    const char* label =0,
+	    const int labelId =0);
 
   /// Close output files.
   void close(void);
@@ -93,10 +98,15 @@ public :
    * @param t Time of time step.
    * @param mesh PETSc mesh object.
    * @param csMesh Coordinate system of mesh geometry
+   * @param label Name of label defining cells to include in output
+   *   (=0 means use all cells in mesh).
+   * @param labelId Value of label defining which cells to include.
    */
   void openTimeStep(const double t,
 	       const ALE::Obj<ALE::Mesh>& mesh,
-	       const spatialdata::geocoords::CoordSys* csMesh);
+	       const spatialdata::geocoords::CoordSys* csMesh,
+		    const char* label =0,
+		    const int labelId =0);
 
   /// End writing fields at time step.
   void closeTimeStep(void);

@@ -54,7 +54,9 @@ void
 pylith::meshio::DataWriterVTK::openTimeStep(
 			       const double t,
 			       const ALE::Obj<ALE::Mesh>& mesh,
-			       const spatialdata::geocoords::CoordSys* csMesh)
+			       const spatialdata::geocoords::CoordSys* csMesh,
+			       const char* label,
+			       const int labelId)
 { // openTimeStep
   assert(!mesh.isNull());
   assert(0 != csMesh);
@@ -87,7 +89,10 @@ pylith::meshio::DataWriterVTK::openTimeStep(
     
     err = VTKViewer::writeHeader(_viewer);
     err = VTKViewer::writeVertices(mesh, _viewer);
-    err = VTKViewer::writeElements(mesh, _viewer);
+    if (0 == label)
+      err = VTKViewer::writeElements(mesh, _viewer);
+    else
+      err = VTKViewer::writeElements(mesh, label, labelId, _viewer);      
     if (err)
       throw std::runtime_error("Could not write topology.");
   } catch (const std::exception& err) {

@@ -598,19 +598,19 @@ cdef class OutputManager:
     return
 
 
-  def open(self, mesh, cs, numTimeSteps):
+  def open(self, mesh, cs, numTimeSteps, label, labelId):
     """
     Open output file.
     """
     # create shim for method 'open'
-    #embed{ void OutputManager_open(void* objVptr, void* meshVptr, void* csVptr, int numTimeSteps)
+    #embed{ void OutputManager_open(void* objVptr, void* meshVptr, void* csVptr, int numTimeSteps, char* label, int labelId)
     try {
       assert(0 != objVptr);
       assert(0 != csVptr);
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
       spatialdata::geocoords::CoordSys* cs =
         (spatialdata::geocoords::CoordSys*) csVptr;
-      ((pylith::meshio::OutputManager*) objVptr)->open(*mesh, cs, numTimeSteps);
+      ((pylith::meshio::OutputManager*) objVptr)->open(*mesh, cs, numTimeSteps, label, labelId);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -628,8 +628,12 @@ cdef class OutputManager:
     if not cs.name == "spatialdata_geocoords_CoordSys":
       raise TypeError, \
             "Argument 'cs' must be extension module type 'CoordSys'."
-    OutputManager_open(self.thisptr, ptrFromHandle(mesh),
-                       ptrFromHandle(cs), numTimeSteps)
+    if None == label or None == labelId:
+      OutputManager_open(self.thisptr, ptrFromHandle(mesh),
+                         ptrFromHandle(cs), numTimeSteps, NULL, 0)
+    else:
+      OutputManager_open(self.thisptr, ptrFromHandle(mesh),
+                         ptrFromHandle(cs), numTimeSteps, label, labelId)
     return
 
 
@@ -657,12 +661,12 @@ cdef class OutputManager:
     return
 
 
-  def openTimeStep(self, t, mesh, cs):
+  def openTimeStep(self, t, mesh, cs, label, labelId):
     """
     Prepare for writing solution to file.
     """
     # create shim for method 'openTimeStep'
-    #embed{ void OutputManager_openTimeStep(void* objVptr, double t, void* meshVptr, void* csVptr)
+    #embed{ void OutputManager_openTimeStep(void* objVptr, double t, void* meshVptr, void* csVptr, char* label, int labelId)
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
@@ -670,7 +674,8 @@ cdef class OutputManager:
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
       spatialdata::geocoords::CoordSys* cs =
         (spatialdata::geocoords::CoordSys*) csVptr;
-      ((pylith::meshio::OutputManager*) objVptr)->openTimeStep(t, *mesh, cs);
+      ((pylith::meshio::OutputManager*) objVptr)->openTimeStep(t, *mesh, cs,
+                                                               label, labelId);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -688,8 +693,14 @@ cdef class OutputManager:
     if not cs.name == "spatialdata_geocoords_CoordSys":
       raise TypeError, \
             "Argument must be extension module type 'CoordSys'."
-    OutputManager_openTimeStep(self.thisptr, t, 
-                               ptrFromHandle(mesh), ptrFromHandle(cs))
+    if None == label or None == labelId:
+      OutputManager_openTimeStep(self.thisptr, t, 
+                                 ptrFromHandle(mesh), ptrFromHandle(cs),
+                                 NULL, 0)
+    else:
+      OutputManager_openTimeStep(self.thisptr, t, 
+                                 ptrFromHandle(mesh), ptrFromHandle(cs),
+                                 label, labelId)
     return
 
 

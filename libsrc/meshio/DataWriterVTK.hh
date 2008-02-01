@@ -62,10 +62,15 @@ public :
    * @param t Time stamp for new data
    * @param mesh PETSc mesh object
    * @param csMesh Coordinate system of mesh geometry
+   * @param label Name of label defining cells to include in output
+   *   (=0 means use all cells in mesh).
+   * @param labelId Value of label defining which cells to include.
    */
   void openTimeStep(const double t,
 		    const ALE::Obj<ALE::Mesh>& mesh,
-		    const spatialdata::geocoords::CoordSys* csMesh);
+		    const spatialdata::geocoords::CoordSys* csMesh,
+		    const char* label =0,
+		    const int labelId =0);
 
   /// Cleanup after writing data for a time step.
   void closeTimeStep(void);
