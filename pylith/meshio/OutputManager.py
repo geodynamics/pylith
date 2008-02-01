@@ -160,13 +160,13 @@ class OutputManager(Component):
     elif self.outputFreq == "time_step":
       nsteps = 1 + int(totalTime / self.dt)
 
-    mesh = self.dataProvider.getDataMesh()
+    (mesh, label, labelId) = self.dataProvider.getDataMesh()
     
     assert(None != self.cppHandle)
     assert(None != mesh.cppHandle)
     assert(None != mesh.coordsys.cppHandle)
     self.cppHandle.open(mesh.cppHandle, mesh.coordsys.cppHandle,
-                        nsteps)
+                        nsteps, label, labelId)
 
     self._logger.eventEnd(logEvent)    
     return
@@ -197,9 +197,10 @@ class OutputManager(Component):
       from pyre.units.time import s
       t = 0.0*s
       self.open(totalTime=0.0*s, numTimeSteps=0)
-      mesh = self.dataProvider.getDataMesh()
+      (mesh, label, labelId) = self.dataProvider.getDataMesh()
       self.cppHandle.openTimeStep(t.value,
-                                  mesh.cppHandle, mesh.coordsys.cppHandle)
+                                  mesh.cppHandle, mesh.coordsys.cppHandle,
+                                  label, labelId)
 
       for name in self.vertexInfoFields:
         (field, fieldType) = self.dataProvider.getVertexField(name)
@@ -227,9 +228,10 @@ class OutputManager(Component):
 
     if self._checkWrite(t):
 
-      mesh = self.dataProvider.getDataMesh()
+      (mesh, label, labelId) = self.dataProvider.getDataMesh()
       self.cppHandle.openTimeStep(t.value,
-                                  mesh.cppHandle, mesh.coordsys.cppHandle)
+                                  mesh.cppHandle, mesh.coordsys.cppHandle,
+                                  label, labelId)
 
       for name in self.vertexDataFields:
         (field, fieldType) = self.dataProvider.getVertexField(name)

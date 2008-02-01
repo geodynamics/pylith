@@ -71,7 +71,7 @@ class TestMeshGenSimple(unittest.TestCase):
     """
     Get mesh.
     """
-    return self.mesh
+    return (self.mesh, None, None)
   
 
 # End of file 

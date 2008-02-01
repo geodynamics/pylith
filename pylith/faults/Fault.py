@@ -185,7 +185,7 @@ class Fault(Component):
     """
     Get mesh associated with data fields.
     """
-    return self.faultMesh
+    return (self.faultMesh, None, None)
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
