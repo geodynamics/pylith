@@ -21,11 +21,23 @@ noinst_DATA = \
 	box.exo \
 	matprops.spatialdb \
 	matprops-maxwell.spatialdb \
+	axial-small-tractions.cfg \
 	axialelasticisotropic.cfg \
+	axialgenmax1-tract-8cells.cfg \
+	axialgenmax1a-tract-8cells.cfg \
+	axialgenmax2-tract-8cells.cfg \
+	axialgenmax3-tract-8cells.cfg \
 	axialmaxwellisotropic.cfg \
+	axialtractions-small.spatialdb \
+	axialxyz.spatialdb \
 	axialx.spatialdb \
 	axialy.spatialdb \
 	axialz.spatialdb \
+	genmaxwell1.spatialdb \
+	genmaxwell1a.spatialdb \
+	genmaxwell2.spatialdb \
+	genmaxwell3.spatialdb \
+	pylithapp.cfg \
 	shearelasticisotropic.cfg \
 	shearplanestrain.cfg \
 	shearmaxwellisotropic.cfg \
@@ -46,6 +58,50 @@ noinst_DATA = \
 noinst_TMP = \
 	axialelasticisotropic_t0.vtk \
 	axialelasticisotropic_t1.vtk \
+	axialgenmax1-tract-8cells_t0000000.vtk \
+	axialgenmax1-tract-8cells_t11045160000000.vtk \
+	axialgenmax1-tract-8cells_t12623040000000.vtk \
+	axialgenmax1-tract-8cells_t14200920000000.vtk \
+	axialgenmax1-tract-8cells_t1577880000000.vtk \
+	axialgenmax1-tract-8cells_t15778800000000.vtk \
+	axialgenmax1-tract-8cells_t3155760000000.vtk \
+	axialgenmax1-tract-8cells_t4733640000000.vtk \
+	axialgenmax1-tract-8cells_t6311520000000.vtk \
+	axialgenmax1-tract-8cells_t7889400000000.vtk \
+	axialgenmax1-tract-8cells_t9467280000000.vtk \
+	axialgenmax1a-tract-8cells_t0000000.vtk \
+	axialgenmax1a-tract-8cells_t11045160000000.vtk \
+	axialgenmax1a-tract-8cells_t12623040000000.vtk \
+	axialgenmax1a-tract-8cells_t14200920000000.vtk \
+	axialgenmax1a-tract-8cells_t1577880000000.vtk \
+	axialgenmax1a-tract-8cells_t15778800000000.vtk \
+	axialgenmax1a-tract-8cells_t3155760000000.vtk \
+	axialgenmax1a-tract-8cells_t4733640000000.vtk \
+	axialgenmax1a-tract-8cells_t6311520000000.vtk \
+	axialgenmax1a-tract-8cells_t7889400000000.vtk \
+	axialgenmax1a-tract-8cells_t9467280000000.vtk \
+	axialgenmax2-tract-8cells_t0000000.vtk \
+	axialgenmax2-tract-8cells_t11045160000000.vtk \
+	axialgenmax2-tract-8cells_t12623040000000.vtk \
+	axialgenmax2-tract-8cells_t14200920000000.vtk \
+	axialgenmax2-tract-8cells_t1577880000000.vtk \
+	axialgenmax2-tract-8cells_t15778800000000.vtk \
+	axialgenmax2-tract-8cells_t3155760000000.vtk \
+	axialgenmax2-tract-8cells_t4733640000000.vtk \
+	axialgenmax2-tract-8cells_t6311520000000.vtk \
+	axialgenmax2-tract-8cells_t7889400000000.vtk \
+	axialgenmax2-tract-8cells_t9467280000000.vtk \
+	axialgenmax3-tract-8cells_t0000000.vtk \
+	axialgenmax3-tract-8cells_t11045160000000.vtk \
+	axialgenmax3-tract-8cells_t12623040000000.vtk \
+	axialgenmax3-tract-8cells_t14200920000000.vtk \
+	axialgenmax3-tract-8cells_t1577880000000.vtk \
+	axialgenmax3-tract-8cells_t15778800000000.vtk \
+	axialgenmax3-tract-8cells_t3155760000000.vtk \
+	axialgenmax3-tract-8cells_t4733640000000.vtk \
+	axialgenmax3-tract-8cells_t6311520000000.vtk \
+	axialgenmax3-tract-8cells_t7889400000000.vtk \
+	axialgenmax3-tract-8cells_t9467280000000.vtk \
 	axialmaxwellisotropic_t0.vtk \
 	axialmaxwellisotropic_t1.vtk \
 	shearelasticisotropic_t0.vtk \
