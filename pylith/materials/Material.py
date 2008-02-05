@@ -154,7 +154,7 @@ class Material(Component):
     """
     Get mesh associated with data fields.
     """
-    return (self.mesh, "material-id", self.label)
+    return (self.mesh, "material-id", self.id)
 
 
   def getVertexField(self, name):
