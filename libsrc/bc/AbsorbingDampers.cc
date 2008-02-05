@@ -404,7 +404,6 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 void
 pylith::bc::AbsorbingDampers::verifyConfiguration(const ALE::Obj<Mesh>& mesh)
 { // verifyConfiguration
-  throw std::logic_error("Not implemented.");
 } // verifyConfiguration
 
 
