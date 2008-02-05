@@ -55,7 +55,7 @@ class IntegratorElasticity(Integrator):
     self.material = material
     self.cppHandle.material = self.material.cppHandle
     return
-  
+
 
   def initialize(self, totalTime, numTimeSteps):
     """
@@ -73,4 +73,17 @@ class IntegratorElasticity(Integrator):
     return
   
   
+  def poststep(self, t, dt, totalTime):
+    """
+    Hook for doing stuff after advancing time step.
+    """
+    logEvent = "%spoststep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
+    self.material.poststep(t, dt, totalTime)
+
+    self._logger.eventEnd(logEvent)
+    return
+
+
 # End of file 

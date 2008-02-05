@@ -85,6 +85,7 @@ class ElasticMaterial(Material):
     Setup members using inventory.
     """
     Material._configure(self)
+    self.output = self.inventory.output
     return
 
   

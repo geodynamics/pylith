@@ -39,8 +39,6 @@ class OutputMatElastic(OutputManager):
     ## Python object for managing OutputMatElastic facilities and properties.
     ##
     ## \b Properties
-    ## @li \b vertex_info_fields Names of vertex info fields to output.
-    ## @li \b vertex_data_fields Names of vertex data fields to output.
     ## @li \b cell_info_fields Names of cell info fields to output.
     ## @li \b cell_data_fields Names of cell data fields to output.
     ##
@@ -49,15 +47,10 @@ class OutputMatElastic(OutputManager):
 
     import pyre.inventory
 
-    vertexInfoFields = pyre.inventory.list("vertex_info_fields",
-                                           default=[])
-    vertexInfoFields.meta['tip'] = "Names of vertex info fields to output."
-
-    vertexDataFields = pyre.inventory.list("vertex_data_fields", 
-                                           default=[])
-    vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
-
-    cellInfoFields = pyre.inventory.list("cell_info_fields", default=[])
+    cellInfoFields = pyre.inventory.list("cell_info_fields",
+                                         default=["Lame mu",
+                                                  "Lame lambda",
+                                                  "density"])
     cellInfoFields.meta['tip'] = "Names of cell info fields to output."
 
     cellDataFields = pyre.inventory.list("cell_data_fields", 
@@ -82,8 +75,8 @@ class OutputMatElastic(OutputManager):
     Set members based using inventory.
     """
     OutputManager._configure(self)
-    self.vertexInfoFields = self.inventory.vertexInfoFields
-    self.vertexDataFields = self.inventory.vertexDataFields
+    self.vertexInfoFields = []
+    self.vertexDataFields = []
     self.cellInfoFields = self.inventory.cellInfoFields
     self.cellDataFields = self.inventory.cellDataFields
     return
