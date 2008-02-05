@@ -66,7 +66,10 @@ class TestMaterial(unittest.TestCase):
     mesh = importer.read(debug=False, interpolate=False)
     
     material.preinitialize()
-    material.initialize(mesh)
+    from pyre.units.time import second
+    totalTime = 0.0*second
+    numTimeSteps = 1
+    material.initialize(mesh, totalTime, numTimeSteps)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
