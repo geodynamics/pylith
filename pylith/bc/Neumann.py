@@ -72,6 +72,22 @@ class Neumann(BoundaryCondition, Integrator):
     return
 
 
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    BoundaryCondition.verifyConfiguration(self)
+    Integrator.verifyConfiguration(self)
+    if self.quadrature.cellDim != self.mesh.dimension()-1:
+        raise ValueError, \
+              "Quadrature scheme and mesh are incompatible.\n" \
+              "Dimension for quadrature: %d\n" \
+              "Dimension of mesh boundary '%s': %d" % \
+              (self.quadrature.cellDim,
+               self.label, self.mesh.dimension()-1)    
+    return
+  
+
   def initialize(self, totalTime, numTimeSteps):
     """
     Initialize Neumann boundary condition.
@@ -83,21 +99,6 @@ class Neumann(BoundaryCondition, Integrator):
     BoundaryCondition.initialize(self, totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)
-    return
-  
-
-  def verifyConfiguration(self):
-    """
-    Verify compatibility of configuration.
-    """
-    BoundaryCondition.verifyConfiguration(self)
-    if self.quadrature.cellDim != self.mesh.dimension()-1:
-        raise ValueError, \
-              "Quadrature scheme and mesh are incompatible.\n" \
-              "Dimension for quadrature: %d\n" \
-              "Dimension of mesh boundary '%s': %d" % \
-              (self.quadrature.cellDim,
-               self.label, self.mesh.dimension()-1)    
     return
   
 

@@ -37,7 +37,7 @@ class Problem(Component):
     ## Python object for managing Problem facilities and properties.
     ##
     ## \b Properties
-    ## @li None
+    ## @li \b dimension Spatial dimension of problem space.
     ##
     ## \b Facilities
     ## @li \b materials Materials in problem.
@@ -47,6 +47,10 @@ class Problem(Component):
 
     import pyre.inventory
     from pylith.utils.ObjectBin import ObjectBin
+
+    dimension = pyre.inventory.int("dimension", default=3,
+                                   validator=pyre.inventory.choice([1,2,3]))
+    dimension.meta['tip'] = "Spatial dimension of problem space."
 
     from pylith.materials.Homogeneous import Homogeneous
     materials = pyre.inventory.facility("materials", family="object_bin",
@@ -86,16 +90,21 @@ class Problem(Component):
     """
     Verify compatibility of configuration.
     """
-    logEvent = "%sverify" % self._loggingPrefix
 
-    self._logger.eventBegin(logEvent)
+    self._info.log("Verifying compatibility of problem configuration.")
+    if self.dimension != self.mesh.dimension():
+      raise ValueError, \
+            "Spatial dimension of problem is '%d' but mesh contains cells " \
+            "for spatial dimension '%d'." % \
+            (self.dimension, mesh.dimension)
+
     for material in self.materials.bin:
-      material.verifyConfiguration()
-    for bc in self.bc.bin:
-      bc.verifyConfiguration()
-    for interface in self.interfaces.bin:
-      interface.verifyConfiguration()
-    self._logger.eventEnd(logEvent)
+      if material.quadrature.spaceDim != self.dimension:
+        raise ValueError, \
+              "Spatial dimension of problem is '%d' but quadrature " \
+              "for material '%s' is for spatial dimension '%d'." % \
+              (self.dimension, material.label, material.quadrature.spaceDim)
+
     return
   
 
@@ -139,6 +148,7 @@ class Problem(Component):
     Set members based using inventory.
     """
     Component._configure(self)
+    self.dimension = self.inventory.dimension
     self.materials = self.inventory.materials
     self.bc = self.inventory.bc
     self.interfaces = self.inventory.interfaces

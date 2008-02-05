@@ -107,6 +107,15 @@ class DirichletPoints(BoundaryCondition, Constraint):
     return
 
 
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    BoundaryCondition.verifyConfiguration(self)
+    Constraint.verifyConfiguration(self)
+    return
+
+
   def initialize(self, totalTime, numTimeSteps):
     """
     Initialize DirichletPoints boundary condition.

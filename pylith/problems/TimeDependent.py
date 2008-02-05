@@ -40,7 +40,6 @@ class TimeDependent(Problem):
     ## \b Properties
     ## @li \b total_time Time duration for simulation.
     ## @li \b default_dt Default time step.
-    ## @li \b dimension Spatial dimension of problem space.
     ##
     ## \b Facilities
     ## @li \b formulation Formulation for solving PDE.
@@ -56,10 +55,6 @@ class TimeDependent(Problem):
     dt = pyre.inventory.dimensional("default_dt", default=1.0*second,
                                  validator=pyre.inventory.greater(0.0*second))
     dt.meta['tip'] = "Default time step for simulation."
-
-    dimension = pyre.inventory.int("dimension", default=3,
-                                   validator=pyre.inventory.choice([1,2,3]))
-    dimension.meta['tip'] = "Spatial dimension of problem space."
 
     from Implicit import Implicit
     formulation = pyre.inventory.facility("formulation",
@@ -110,18 +105,6 @@ class TimeDependent(Problem):
     logEvent = "%sverify" % self._loggingPrefix    
     self._logger.eventBegin(logEvent)
     
-    self._info.log("Verifying compatibility of problem configuration.")
-    if self.dimension != self.mesh.dimension():
-      raise ValueError, \
-            "Spatial dimension of problem is '%d' but mesh contains cells " \
-            "for spatial dimension '%d'." % \
-            (self.dimension, mesh.dimension)
-    for material in self.materials.bin:
-      if material.quadrature.spaceDim != self.dimension:
-        raise ValueError, \
-              "Spatial dimension of problem is '%d' but quadrature " \
-              "for material '%s' is for spatial dimension '%d'." % \
-              (self.dimension, material.label, material.quadrature.spaceDim)
     Problem.verifyConfiguration(self)
     self.formulation.verifyConfiguration()
 
@@ -222,7 +205,6 @@ class TimeDependent(Problem):
     Problem._configure(self)
     self.totalTime = self.inventory.totalTime
     self.dt = self.inventory.dt
-    self.dimension = self.inventory.dimension
     self.formulation = self.inventory.formulation
     self.checkpointTimer = self.inventory.checkpointTimer
     return

@@ -94,69 +94,14 @@ class Formulation(Component):
     logEvent = "%spreinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
     
-    from pylith.feassemble.Integrator import implementsIntegrator
-    from pylith.feassemble.Constraint import implementsConstraint
-
     self.mesh = mesh
     self.integrators = []
     self.constraints = []
 
-    self._info.log("Pre-initializing materials.")
-    self._debug.log(resourceUsageString())
-    for material in materials.bin:
-      integrator = self.elasticityIntegrator()
-      if not implementsIntegrator(integrator):
-        raise TypeError, \
-              "Could not use '%s' as an integrator for material '%s'. " \
-              "Functionality missing." % (integrator.name, material.label)
-      integrator.preinitialize(mesh, material)
-      self.integrators.append(integrator)
-      self._debug.log(resourceUsageString())
-
-      self._info.log("Added elasticity integrator for material '%s'." % \
-                     material.label)
-
-    self._info.log("Pre-initializing boundary conditions.")
-    self._debug.log(resourceUsageString())
-    for bc in boundaryConditions.bin:
-      bc.preinitialize(mesh)
-      foundType = False
-      if implementsIntegrator(bc):
-        foundType = True
-        self.integrators.append(bc)
-        self._info.log("Added boundary condition '%s' as an integrator." % \
-                       bc.label)
-      if implementsConstraint(bc):
-        foundType = True
-        self.constraints.append(bc)
-        self._info.log("Added boundary condition '%s' as a constraint." % \
-                       bc.label)
-      if not foundType:
-        raise TypeError, \
-              "Could not determine whether boundary condition '%s' is an " \
-              "integrator or a constraint." % bc.name
-    self._debug.log(resourceUsageString())
-
-    self._info.log("Pre-initializing interior interfaces.")
-    for ic in interfaceConditions.bin:
-      ic.preinitialize(mesh)
-      foundType = False
-      if implementsIntegrator(ic):
-        foundType = True
-        self.integrators.append(ic)
-        self._info.log("Added interface condition '%s' as an integrator." % \
-                       ic.label)
-      if implementsConstraint(ic):
-        foundType = True
-        self.constraints.append(ic)
-        self._info.log("Added interface condition '%s' as a constraint." % \
-                       ic.label)
-      if not foundType:
-        raise TypeError, \
-              "Could not determine whether interface condition '%s' is an " \
-              "integrator or a constraint." % ic.name
-    self._debug.log(resourceUsageString())
-
+    self._setupMaterials(materials)
+    self._setupBC(boundaryConditions)
+    self._setupInterfaces(interfaceConditions)
+    
     self._info.log("Pre-initializing output.")
     for output in self.output.bin:
       output.preinitialize(self)
@@ -194,9 +139,9 @@ class Formulation(Component):
 
     from pylith.topology.FieldsManager import FieldsManager
     self.fields = FieldsManager(self.mesh)
+    self._debug.log(resourceUsageString())
 
     self._info.log("Initializing integrators.")
-    self._debug.log(resourceUsageString())
     for integrator in self.integrators:
       integrator.initialize(totalTime, numTimeSteps)
     self._debug.log(resourceUsageString())
@@ -320,16 +265,6 @@ class Formulation(Component):
     return (field, fieldType)
 
 
-  def getCellField(self):
-    """
-    Get cell field.
-    """
-    field = None
-    fieldType = None
-    raise ValueError, "Cell field '%s' not available." % name
-    return (field, fieldType)
-
-
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
@@ -345,6 +280,88 @@ class Formulation(Component):
     return
 
 
+  def _setupMaterials(self, materials):
+    """
+    Setup materials as integrators.
+    """
+    from pylith.feassemble.Integrator import implementsIntegrator
+    
+    self._info.log("Pre-initializing materials.")
+    self._debug.log(resourceUsageString())
+    for material in materials.bin:
+      integrator = self.elasticityIntegrator()
+      if not implementsIntegrator(integrator):
+        raise TypeError, \
+              "Could not use '%s' as an integrator for material '%s'. " \
+              "Functionality missing." % (integrator.name, material.label)
+      integrator.preinitialize(self.mesh, material)
+      self.integrators.append(integrator)
+      self._debug.log(resourceUsageString())
+
+      self._info.log("Added elasticity integrator for material '%s'." % \
+                     material.label)    
+    return
+
+
+  def _setupBC(self, boundaryConditions):
+    """
+    Setup boundary conditions as integrators or constraints.
+    """
+    from pylith.feassemble.Integrator import implementsIntegrator
+    from pylith.feassemble.Constraint import implementsConstraint
+
+    self._info.log("Pre-initializing boundary conditions.")
+    self._debug.log(resourceUsageString())
+    for bc in boundaryConditions.bin:
+      bc.preinitialize(self.mesh)
+      foundType = False
+      if implementsIntegrator(bc):
+        foundType = True
+        self.integrators.append(bc)
+        self._info.log("Added boundary condition '%s' as an integrator." % \
+                       bc.label)
+      if implementsConstraint(bc):
+        foundType = True
+        self.constraints.append(bc)
+        self._info.log("Added boundary condition '%s' as a constraint." % \
+                       bc.label)
+      if not foundType:
+        raise TypeError, \
+              "Could not determine whether boundary condition '%s' is an " \
+              "integrator or a constraint." % bc.name
+    self._debug.log(resourceUsageString())    
+    return
+
+
+  def _setupInterfaces(self, interfaceConditions):
+    """
+    Setup interfaces as integrators or constraints.
+    """
+    from pylith.feassemble.Integrator import implementsIntegrator
+    from pylith.feassemble.Constraint import implementsConstraint
+
+    self._info.log("Pre-initializing interior interfaces.")
+    for ic in interfaceConditions.bin:
+      ic.preinitialize(self.mesh)
+      foundType = False
+      if implementsIntegrator(ic):
+        foundType = True
+        self.integrators.append(ic)
+        self._info.log("Added interface condition '%s' as an integrator." % \
+                       ic.label)
+      if implementsConstraint(ic):
+        foundType = True
+        self.constraints.append(ic)
+        self._info.log("Added interface condition '%s' as a constraint." % \
+                       ic.label)
+      if not foundType:
+        raise TypeError, \
+              "Could not determine whether interface condition '%s' is an " \
+              "integrator or a constraint." % ic.name
+    self._debug.log(resourceUsageString())    
+    return
+  
+
   def _reformJacobian(self, t, dt):
     """
     Reform Jacobian matrix for operator.
@@ -358,6 +375,23 @@ class Formulation(Component):
       integrator.integrateJacobian(self.jacobian, t+dt, self.fields)
     petsc.mat_assemble(self.jacobian)
     self._debug.log(resourceUsageString())
+    return
+
+
+  def _reformResidual(self, t, dt):
+    """
+    Reform residual vector for operator.
+    """
+    self._info.log("Integrating residual term in operator.")
+    residual = self.fields.getReal("residual")
+    import pylith.topology.topology as bindings
+    bindings.zeroRealSection(residual)
+    for integrator in self.integrators:
+      integrator.timeStep(dt)
+      integrator.integrateResidual(residual, t, self.fields)
+
+    self._info.log("Completing residual.")
+    bindings.completeSection(self.mesh.cppHandle, residual)
     return
 
 

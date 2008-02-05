@@ -158,21 +158,14 @@ class Implicit(Formulation):
     logEvent = "%sstep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    self._info.log("Integrating residual term in operator.")
-    residual = self.fields.getReal("residual")
     dispIncr = self.fields.getReal("dispIncr")
     import pylith.topology.topology as bindings
-    bindings.zeroRealSection(residual)
     bindings.zeroRealSection(dispIncr)
-    for integrator in self.integrators:
-      integrator.timeStep(dt)
-      integrator.integrateResidual(residual, t+dt, self.fields)
 
-    self._info.log("Completing residual.")
-    bindings.completeSection(self.mesh.cppHandle, residual)
+    self._reformResidual(t, dt)
 
-    import pylith.utils.petsc as petsc
     self._info.log("Solving equations.")
+    residual = self.fields.getReal("residual")
     self.solver.solve(dispIncr, self.jacobian, residual)
 
     self._logger.eventEnd(logEvent)
