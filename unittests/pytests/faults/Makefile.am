@@ -16,8 +16,9 @@ include $(top_srcdir)/subpackage.am
 SUBDIRS = data
 
 TESTS = testfaults.py
-
 check_SCRIPTS = testfaults.py
+
+TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
 	TestBruneSlipFn.py \
@@ -25,8 +26,6 @@ noinst_PYTHON = \
 	TestFaultCohesive.py \
 	TestFaultCohesiveKin.py \
 	TestSingleFault.py
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 
 # End of file 

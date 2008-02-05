@@ -16,8 +16,9 @@ include $(top_srcdir)/subpackage.am
 SUBDIRS = data
 
 TESTS = testbc.py
-
 check_SCRIPTS = testbc.py
+
+TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
 	TestAbsorbingDampers.py \
@@ -26,8 +27,6 @@ noinst_PYTHON = \
 	TestBCTwoSides.py \
 	TestBCFourSides.py \
 	TestBCSixSides.py
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 
 # End of file 

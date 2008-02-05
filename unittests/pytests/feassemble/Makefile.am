@@ -16,8 +16,9 @@ include $(top_srcdir)/subpackage.am
 SUBDIRS = data
 
 TESTS = testfeassemble.py
-
 check_SCRIPTS = testfeassemble.py
+
+TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
 	TestFIATLagrange.py \
@@ -59,8 +60,6 @@ testfeassemble_embed.h: testfeassemble.pyx
 CLEANFILES = \
 	testfeassemble.pyxe testfeassemble.pyx testfeassemble.c *_embed.* \
 	$(am__installdirs)/testfeassemblemodule.*
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 
 # End of file 
