@@ -38,7 +38,7 @@ class ElasticIsotropic3D(ElasticMaterial):
            {'info': [],
             'data': []},
          'cell': \
-           {'info': ["vp", "vs", "density"],
+           {'info': ["Lame mu", "Lame lambda", "density"],
             'data': []}}
     return
 

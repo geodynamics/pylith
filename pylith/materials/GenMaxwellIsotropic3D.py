@@ -33,6 +33,13 @@ class GenMaxwellIsotropic3D(ElasticMaterial):
     Constructor.
     """
     ElasticMaterial.__init__(self, name)
+    self.availableFields = \
+        {'vertex': \
+           {'info': [],
+            'data': []},
+         'cell': \
+           {'info': ["Lame mu", "Lame lambda", "density"],
+            'data': []}}
     return
 
 
