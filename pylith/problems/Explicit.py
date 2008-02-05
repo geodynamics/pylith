@@ -126,21 +126,15 @@ class Explicit(Formulation):
     """
     logEvent = "%sstep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
-    
-    self._info.log("Integrating constant term in operator.")
-    residual = self.fields.getReal("residual")
-    import pylith.topology.topology as bindings
-    bindings.zeroRealSection(residual)
-    for integrator in self.integrators:
-      integrator.timeStep(dt)
-      integrator.integrateResidual(residual, t, self.fields)
 
-    self._info.log("Completing residual.")
-    bindings.completeSection(self.mesh.cppHandle, residual)
+    self._reformResidual(t, dt)
+    
     self._info.log("Solving equations.")
+    residual = self.fields.getReal("residual")
     self.solver.solve(self.fields.getReal("dispTpdt"), self.jacobian, residual)
 
     # BEGIN TEMPORARY
+    #import pylith.topology.topology as bindings
     #bindings.sectionView(residual, "RHS");
     #bindings.sectionView(self.fields.getReal("dispTpdt"), "SOLUTION");
     #import pylith.utils.petsc as petscbindings

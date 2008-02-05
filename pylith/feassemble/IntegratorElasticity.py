@@ -57,6 +57,15 @@ class IntegratorElasticity(Integrator):
     return
 
 
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    Integrator.verifyConfiguration(self)
+    self.material.verifyConfiguration()
+    return
+
+
   def initialize(self, totalTime, numTimeSteps):
     """
     Initialize material properties.
