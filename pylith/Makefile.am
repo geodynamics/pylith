@@ -87,6 +87,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/OutputManager.py \
 	meshio/OutputSoln.py \
 	meshio/OutputFaultKin.py \
+	meshio/OutputMatElastic.py \
 	meshio/SingleOutput.py \
 	meshio/VertexFilter.py \
 	problems/__init__.py \

@@ -67,7 +67,7 @@ class IntegratorElasticity(Integrator):
     self._info.log("Initializing integrator for material '%s'." % \
                    self.material.label)
 
-    self.material.initialize(self.mesh)
+    self.material.initialize(self.mesh, totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)
     return

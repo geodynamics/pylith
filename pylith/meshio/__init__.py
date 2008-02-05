@@ -24,6 +24,7 @@ __all__ = ['CellFilter',
            'OutputManager',
            'OutputSoln',
            'OutputFaultKin',
+           'OutputMatElastic',
            'SingleOutput',
            'VertexFilter']
 

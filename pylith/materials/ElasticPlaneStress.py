@@ -35,6 +35,13 @@ class ElasticPlaneStress(ElasticMaterial):
     Constructor.
     """
     ElasticMaterial.__init__(self, name)
+    self.availableFields = \
+        {'vertex': \
+           {'info': [],
+            'data': []},
+         'cell': \
+           {'info': ["vp", "vs", "density"],
+            'data': []}}
     return
 
 

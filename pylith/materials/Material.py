@@ -83,6 +83,7 @@ class Material(Component):
     Component.__init__(self, name, facility="material")
     self.cppHandle = None
     self.dimension = None
+    self.output = None
     return
 
 
@@ -94,6 +95,8 @@ class Material(Component):
     self.cppHandle.id = self.id
     self.cppHandle.label = self.label
     self.quadrature.preinitialize()
+    if None != self.output:
+      self.output.preinitialize(self)
     return
 
 
@@ -111,19 +114,62 @@ class Material(Component):
     # :TODO: Make sure mesh contains material (need to account for the
     # fact that any given processor may only have a subset of the
     # materials)
+
+    if None != self.output:
+      self.output.verifyConfiguration()
+
     return
   
 
-  def initialize(self, mesh):
+  def initialize(self, mesh, totalTime, numTimeSteps):
     """
     Initialize material property manager.
     """
     self._info.log("Initializing material '%s'." % self.label)
+    self.mesh = mesh
     assert(None != self.cppHandle)
     self.db.initialize()
     self.cppHandle.db = self.db.cppHandle
     self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
                               self.quadrature.cppHandle)
+
+    if None != self.output:
+      self.output.initialize(self.quadrature.cppHandle)
+      self.output.writeInfo()
+      self.output.open(totalTime, numTimeSteps)
+    return
+
+
+  def poststep(self, t, dt, totalTime):
+    """
+    Hook for doing stuff after advancing time step.
+    """
+    if None != self.output:
+      self._info.log("Writing material data.")
+      self.output.writeData(t+dt)
+    return
+
+
+  def getDataMesh(self):
+    """
+    Get mesh associated with data fields.
+    """
+    return (self.mesh, "material-id", self.label)
+
+
+  def getVertexField(self, name):
+    """
+    Get vertex field.
+    """
+    raise NotImplementedError("Material.getVertexField() not implemented.")
+    return
+
+
+  def getCellField(self, name):
+    """
+    Get cell field.
+    """
+    raise NotImplementedError("Material.getCellField() not implemented.")
     return
 
 
