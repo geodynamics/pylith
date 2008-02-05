@@ -207,10 +207,10 @@ class OutputManager(Component):
         self.cppHandle.appendVertexField(t.value, name, field, fieldType, 
                                          mesh.cppHandle)
 
-      for name in self.cellInfoFields:
-        (field, fieldType) = self.dataProvider.getCellField(name)
-        self.cppHandle.appendCellField(t.value, name, field, fieldType, 
-                                       mesh.cppHandle)
+      #for name in self.cellInfoFields:
+      #  (field, fieldType) = self.dataProvider.getCellField(name)
+      #  self.cppHandle.appendCellField(t.value, name, field, fieldType, 
+      #                                 mesh.cppHandle)
 
       self.cppHandle.closeTimeStep()
       self.close()
@@ -327,8 +327,10 @@ class OutputManager(Component):
         if len(notavailable) > 0:
           msg = \
               "Requested fields not available for output.\n" \
+              "Data provider: '%s'\n" \
               "Field type: '%s'\n" \
-              "Data type: '%s'\n" % (fieldCategory, dataCategory)
+              "Data type: '%s'\n" % (self.dataProvider.name,
+                                     fieldCategory, dataCategory)
           msg += "Available fields: "
           for name in available[fieldCategory][dataCategory]:
             msg += " '%s'" % name
