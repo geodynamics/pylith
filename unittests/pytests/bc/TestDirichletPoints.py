@@ -120,7 +120,7 @@ class TestDirichletPoints(unittest.TestCase):
     bc.setConstraints(field)
     from pyre.units.time import second
     t = 1.0*second
-    bc.setField(t, field)
+    #bc.setField(t, field)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
