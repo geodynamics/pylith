@@ -34,6 +34,13 @@ class ElasticStrain1D(ElasticMaterial):
     Constructor.
     """
     ElasticMaterial.__init__(self, name)
+    self.availableFields = \
+        {'vertex': \
+           {'info': [],
+            'data': []},
+         'cell': \
+           {'info': ["vp", "density"],
+            'data': []}}
     return
 
 

@@ -28,6 +28,30 @@ class ElasticMaterial(Material):
   Factory: material
   """
 
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(Material.Inventory):
+    """
+    Python object for managing FaultCohesiveKin facilities and properties.
+    """
+    
+    ## @class Inventory
+    ## Python object for managing FaultCohesiveKin facilities and properties.
+    ##
+    ## \b Properties
+    ## @li None
+    ##
+    ## \b Facilities
+    ## @li \b output Output manager associated with fault data.
+
+    import pyre.inventory
+
+    from pylith.meshio.OutputMatElastic import OutputMatElastic
+    output = pyre.inventory.facility("output", family="output_manager",
+                                     factory=OutputMatElastic)
+    output.meta['tip'] = "Output manager for elastic material information."
+
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="elasticmaterial"):
@@ -45,6 +69,13 @@ class ElasticMaterial(Material):
     assert(None != self.cppHandle)
     self.cppHandle.useElasticBehavior = flag
     return
+
+
+  def getCellField(self, name):
+    """
+    Get cell field.
+    """
+    return self.cppHandle.cellField(name, self.mesh.cppHandle)
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////

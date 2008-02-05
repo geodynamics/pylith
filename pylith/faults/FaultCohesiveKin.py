@@ -93,7 +93,6 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     assert(None != self.cppHandle)
     self.eqsrc.preinitialize()
     self.cppHandle.eqsrc = self.eqsrc.cppHandle
-    self.output.preinitialize(self)
 
     if mesh.dimension() == 2:
       self.availableFields['vertex']['info'] += ["strike_dir"]
@@ -109,7 +108,6 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     """
     FaultCohesive.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
-    self.output.verifyConfiguration()
     return
 
 
@@ -123,9 +121,6 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     self._logger.eventBegin(logEvent)
     self.eqsrc.initialize()
     FaultCohesive.initialize(self, totalTime, numTimeSteps)
-    self.output.initialize(self.quadrature.cppHandle)
-    self.output.writeInfo()
-    self.output.open(totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)
     return
@@ -138,8 +133,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     logEvent = "%spoststep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    self._info.log("Writing fault data.")
-    self.output.writeData(t+dt)
+    FaultCohesive.poststep(self, t, dt, totalTime)
 
     self._logger.eventEnd(logEvent)
     return

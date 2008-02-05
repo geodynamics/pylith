@@ -116,6 +116,7 @@ class Fault(Component):
     Component.__init__(self, name, facility="fault")
     self.cppHandle = None
     self.mesh = None
+    self.output = None
     return
 
 
@@ -144,6 +145,10 @@ class Fault(Component):
     
     self.quadrature.preinitialize()    
     self.cppHandle.quadrature = self.quadrature.cppHandle
+
+    if None != self.output:
+      self.output.preinitialize(self)
+
     return
   
 
@@ -159,6 +164,10 @@ class Fault(Component):
             (self.quadrature.cell.cellDim, faultDim)
 
     # :TODO: Make sure mesh has group of vertices with label.
+
+    if None != self.output:
+      self.output.verifyConfiguration()
+
     return
   
 
@@ -178,6 +187,21 @@ class Fault(Component):
     self.faultMesh = Mesh()
     self.faultMesh.initialize(self.mesh.coordsys)
     self.cppHandle.faultMesh(self.faultMesh.cppHandle)
+
+    if None != self.output:
+      self.output.initialize(self.quadrature.cppHandle)
+      self.output.writeInfo()
+      self.output.open(totalTime, numTimeSteps)
+
+    return
+
+
+  def poststep(self, t, dt, totalTime):
+    """
+    Hook for doing stuff after advancing time step.
+    """
+    self._info.log("Writing fault data.")
+    self.output.writeData(t+dt)
     return
 
 
@@ -186,6 +210,22 @@ class Fault(Component):
     Get mesh associated with data fields.
     """
     return (self.faultMesh, None, None)
+
+
+  def getVertexField(self, name):
+    """
+    Get vertex field.
+    """
+    raise NotImplementedError("Material.getVertexField() not implemented.")
+    return
+
+
+  def getCellField(self, name):
+    """
+    Get cell field.
+    """
+    raise NotImplementedError("Material.getCellField() not implemented.")
+    return
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////

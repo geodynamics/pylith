@@ -7,20 +7,20 @@ Release 1.1
   1. Finish Neumann BC [CHARLES]
 
   2. Reimplement SolutionIO [BRAD & MATT]
-     a. Implement output of fault data.
-       Need to finish implementing output of traction_change.
      b. Implement output of material information.
         i. CellFilterAvg (average data over quadrature points)
      c. Implement output of Neumann information.
-        i. BoundaryCondition::writeInfo()?
      d. Implement output of Dirichlet information.
-        i. DirichletBoundary versus DirichletPoints
+        i. DirichletBoundary
+        ii.  DirichletPoints
      e. Implement output of solution subset (ground surface).
         i. OutputSubdomain
         ii. OutputPoints
      f. VertexFilterChangeCS
         i. OutputFilter for writing vertex coordinates in another 
            coordinate system.
+     a. Implement output of fault data.
+       Need to finish implementing output of traction_change.
      g. DataWriterHDF5
 
      Use Cases
