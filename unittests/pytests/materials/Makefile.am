@@ -16,8 +16,9 @@ include $(top_srcdir)/subpackage.am
 SUBDIRS = data
 
 TESTS = testmaterials.py
-
 check_SCRIPTS = testmaterials.py
+
+TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
 	TestBiMaterial.py \
@@ -29,8 +30,6 @@ noinst_PYTHON = \
 	TestHomogeneous.py \
 	TestMaterial.py \
 	TestMaxwellIsotropic3D.py
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 
 # End of file 

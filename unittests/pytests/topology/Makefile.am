@@ -16,8 +16,9 @@ include $(top_srcdir)/subpackage.am
 SUBDIRS = data
 
 TESTS = testdriver.py
-
 check_SCRIPTS = testdriver.py
+
+TESTS_ENVIRONMENT = $(PYTHON)
 
 if ENABLE_TETGEN
   TESTS += testgensimple.py
@@ -30,8 +31,6 @@ noinst_PYTHON = \
 	TestMeshGenerator.py \
 	TestMeshGenSimple.py \
 	TestMeshImporter.py
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 
 # End of file 
