@@ -51,7 +51,7 @@ class TestDirichletPoints(unittest.TestCase):
     don't verify the results.
     """
 
-    (mesh, bc) = self._initialize()
+    (mesh, bc, fields) = self._initialize()
 
     self.assertNotEqual(None, bc.cppHandle)
 
@@ -68,8 +68,8 @@ class TestDirichletPoints(unittest.TestCase):
     don't verify the results.
     """
 
-    (mesh, bc) = self._initialize()
-    field = mesh.createRealSection("field", mesh.dimension())
+    (mesh, bc, fields) = self._initialize()
+    field = fields.getReal("field")
     bc.setConstraintSizes(field)
 
     # We should really add something here to check to make sure things
@@ -85,8 +85,8 @@ class TestDirichletPoints(unittest.TestCase):
     don't verify the results.
     """
 
-    (mesh, bc) = self._initialize()
-    field = mesh.createRealSection("field", mesh.dimension())
+    (mesh, bc, fields) = self._initialize()
+    field = fields.getReal("field")
     bc.setConstraintSizes(field)
     mesh.allocateRealSection(field)
     bc.setConstraints(field)
@@ -100,7 +100,7 @@ class TestDirichletPoints(unittest.TestCase):
     """
     Test useSolnIncr().
     """
-    (mesh, bc) = self._initialize()
+    (mesh, bc, fields) = self._initialize()
     bc.useSolnIncr(True)
     return
 
@@ -113,14 +113,14 @@ class TestDirichletPoints(unittest.TestCase):
     don't verify the results.
     """
 
-    (mesh, bc) = self._initialize()
-    field = mesh.createRealSection("field", mesh.dimension())
+    (mesh, bc, fields) = self._initialize()
+    field = fields.getReal("field")
     bc.setConstraintSizes(field)
     mesh.allocateRealSection(field)
     bc.setConstraints(field)
     from pyre.units.time import second
     t = 1.0*second
-    #bc.setField(t, field)
+    bc.setField(t, field)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
@@ -134,7 +134,7 @@ class TestDirichletPoints(unittest.TestCase):
     WARNING: This is not a rigorous test of finalize() because we
     neither set the input fields or verify the results.
     """
-    (mesh, bc) = self._initialize()
+    (mesh, bc, fields) = self._initialize()
     bc.finalize()
 
     # We should really add something here to check to make sure things
@@ -183,7 +183,18 @@ class TestDirichletPoints(unittest.TestCase):
     bc.preinitialize(mesh)
     from pyre.units.time import second
     bc.initialize(totalTime=0.0*second, numTimeSteps=1)
-    return (mesh, bc)
+
+    # Setup fields
+    from pylith.topology.FieldsManager import FieldsManager
+    fields = FieldsManager(mesh)
+    fields.addReal("field")
+    fields.setFiberDimension("field", cs.spaceDim)
+    fields.allocate("field")
+
+    import pylith.topology.topology as bindings
+    bindings.zeroRealSection(fields.getReal("field"))
+    
+    return (mesh, bc, fields)
 
 
 # End of file 
