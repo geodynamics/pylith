@@ -162,11 +162,17 @@ class Implicit(Formulation):
     import pylith.topology.topology as bindings
     bindings.zeroRealSection(dispIncr)
 
-    self._reformResidual(t, dt)
+    self._reformResidual(t+dt, dt)
 
     self._info.log("Solving equations.")
     residual = self.fields.getReal("residual")
     self.solver.solve(dispIncr, self.jacobian, residual)
+
+    # BEGIN TEMPORARY
+    import pylith.topology.topology as bindings
+    bindings.sectionView(self.fields.getReal("dispIncr"), "SOLUTION");
+    bindings.sectionView(self.fields.getReal("residual"), "RESIDUAL");
+    # END TEMPORARY
 
     self._logger.eventEnd(logEvent)
     return
