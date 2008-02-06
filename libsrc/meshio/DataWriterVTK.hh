@@ -125,6 +125,9 @@ private :
 
   PetscViewer _viewer; ///< Output file
 
+  bool _wroteVertexHeader; ///< True if wrote header for vertex data.
+  bool _wroteCellHeader; ///< True if wrote header for cell data
+
 }; // DataWriterVTK
 
 #include "DataWriterVTK.icc" // inline methods
