@@ -25,7 +25,9 @@
 pylith::meshio::DataWriterVTK::DataWriterVTK(void) :
   _filename("output.vtk"),
   _timeFormat("%f"),
-  _viewer(0)
+  _viewer(0),
+  _wroteVertexHeader(false),
+  _wroteCellHeader(false)
 { // constructor
 } // constructor
 
@@ -44,7 +46,9 @@ pylith::meshio::DataWriterVTK::DataWriterVTK(const DataWriterVTK& w) :
   DataWriter(w),
   _filename(w._filename),
   _timeFormat(w._timeFormat),
-  _viewer(0)
+  _viewer(0),
+  _wroteVertexHeader(w._wroteVertexHeader),
+  _wroteCellHeader(w._wroteCellHeader)
 { // copy constructor
 } // copy constructor
 
@@ -95,6 +99,9 @@ pylith::meshio::DataWriterVTK::openTimeStep(
       err = VTKViewer::writeElements(mesh, label, labelId, _viewer);      
     if (err)
       throw std::runtime_error("Could not write topology.");
+
+    _wroteVertexHeader = false;
+    _wroteCellHeader = false;
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while preparing for writing data to VTK file "
@@ -119,6 +126,8 @@ void
 pylith::meshio::DataWriterVTK::closeTimeStep(void)
 { // closeTimeStep
   PetscViewerDestroy(_viewer); _viewer = 0;
+  _wroteVertexHeader = false;
+  _wroteCellHeader = false;
 } // closeTimeStep
 
 // ----------------------------------------------------------------------
@@ -143,14 +152,22 @@ pylith::meshio::DataWriterVTK::writeVertexField(
       labelName = "depth";
     }
     const ALE::Obj<Mesh::numbering_type>& numbering = mesh->getFactory()->getNumbering(mesh, labelName, 0);
-    const int fiberDim = (fieldType != VECTOR_FIELD) ? 
-      field->getFiberDimension(*mesh->getLabelStratum(labelName, 0)->begin()) : 3;
 
-    // Should only print this once
-    err = PetscViewerASCIIPrintf(_viewer, "POINT_DATA %d\n", numbering->getGlobalSize());
-    if (err)
-      throw std::runtime_error("Could not write VTK point data header.");
-    VTKViewer::writeField(field, name, fiberDim, numbering, _viewer, fiberDim);
+    const int fiberDim = 
+      field->getFiberDimension(*mesh->getLabelStratum(labelName, 0)->begin());
+    const int enforceDim = (fieldType != VECTOR_FIELD) ? fiberDim : 3;
+
+    if (!_wroteVertexHeader) {
+      err = PetscViewerASCIIPrintf(_viewer, "POINT_DATA %d\n", 
+				   numbering->getGlobalSize());
+      if (err)
+	throw std::runtime_error("Could not write VTK point data header.");
+      _wroteVertexHeader = true;
+    } // if
+
+    VTKViewer::writeField(field, name, fiberDim, numbering, _viewer, 
+			  enforceDim);
+
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << name << "' at time " 
@@ -186,15 +203,24 @@ pylith::meshio::DataWriterVTK::writeCellField(
       labelName = "depth";
     }
 
-    const ALE::Obj<Mesh::numbering_type>& numbering = mesh->getFactory()->getNumbering(mesh, labelName, mesh->depth());
-    const int fiberDim = (fieldType != VECTOR_FIELD) ? 
-      field->getFiberDimension(*mesh->getLabelStratum(labelName, mesh->depth())->begin()) : 3;
+    const ALE::Obj<Mesh::numbering_type>& numbering = 
+      mesh->getFactory()->getNumbering(mesh, labelName, mesh->depth());
+    const int fiberDim = 
+      field->getFiberDimension(*mesh->getLabelStratum(labelName, 
+						      mesh->depth())->begin());
+    const int enforceDim = (fieldType != VECTOR_FIELD) ? fiberDim : 3;
 
-    // Should only print this once
-    err = PetscViewerASCIIPrintf(_viewer, "CELL_DATA %d\n", numbering->getGlobalSize());
-    if (err)
-      throw std::runtime_error("Could not write VTK point data header.");
-    VTKViewer::writeField(field, name, fiberDim, numbering, _viewer, fiberDim);
+    if (!_wroteCellHeader) {
+      err = PetscViewerASCIIPrintf(_viewer, "CELL_DATA %d\n", 
+				   numbering->getGlobalSize());
+      if (err)
+	throw std::runtime_error("Could not write VTK point data header.");
+      _wroteCellHeader = true;
+    } // if
+
+    VTKViewer::writeField(field, name, fiberDim, numbering, _viewer, 
+			  enforceDim);
+
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << name << "' at time " 
