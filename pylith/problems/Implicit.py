@@ -169,9 +169,9 @@ class Implicit(Formulation):
     self.solver.solve(dispIncr, self.jacobian, residual)
 
     # BEGIN TEMPORARY
-    import pylith.topology.topology as bindings
-    bindings.sectionView(self.fields.getReal("dispIncr"), "SOLUTION");
-    bindings.sectionView(self.fields.getReal("residual"), "RESIDUAL");
+    #import pylith.topology.topology as bindings
+    #bindings.sectionView(self.fields.getReal("dispIncr"), "SOLUTION");
+    #bindings.sectionView(self.fields.getReal("residual"), "RESIDUAL");
     # END TEMPORARY
 
     self._logger.eventEnd(logEvent)
