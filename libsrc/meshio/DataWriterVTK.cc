@@ -134,14 +134,23 @@ pylith::meshio::DataWriterVTK::writeVertexField(
   assert(0 != name);
 
   try {
-    const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-    const int fiberDim = (fieldType != VECTOR_FIELD) ? 
-      field->getFiberDimension(*vertices->begin()) : 3;
+    std::string    labelName;
+    PetscErrorCode err = 0;
 
-    PetscErrorCode err = SectionView_Sieve_Ascii(mesh, field, name,
-						 _viewer, fiberDim);
+    if (mesh->hasLabel("censored depth")) {
+      labelName = "censored depth";
+    } else {
+      labelName = "depth";
+    }
+    const ALE::Obj<Mesh::numbering_type>& numbering = mesh->getFactory()->getNumbering(mesh, labelName, 0);
+    const int fiberDim = (fieldType != VECTOR_FIELD) ? 
+      field->getFiberDimension(*mesh->getLabelStratum(labelName, 0)->begin()) : 3;
+
+    // Should only print this once
+    err = PetscViewerASCIIPrintf(_viewer, "POINT_DATA %d\n", numbering->getGlobalSize());
     if (err)
-      throw std::runtime_error("Could not write vertex data.");
+      throw std::runtime_error("Could not write VTK point data header.");
+    VTKViewer::writeField(field, name, fiberDim, numbering, _viewer, fiberDim);
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << name << "' at time " 
@@ -168,18 +177,24 @@ pylith::meshio::DataWriterVTK::writeCellField(
   assert(0 != name);
 
   try {
+    std::string    labelName;
     PetscErrorCode err = 0;
 
-    err = PetscViewerPushFormat(_viewer, PETSC_VIEWER_ASCII_VTK_CELL);
-    
-    // Get fiber dimension of first cell
-    const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+    if (mesh->hasLabel("censored depth")) {
+      labelName = "censored depth";
+    } else {
+      labelName = "depth";
+    }
+
+    const ALE::Obj<Mesh::numbering_type>& numbering = mesh->getFactory()->getNumbering(mesh, labelName, mesh->depth());
     const int fiberDim = (fieldType != VECTOR_FIELD) ? 
-      field->getFiberDimension(*cells->begin()) : 3;
-    err = SectionView_Sieve_Ascii(mesh, field, name, 
-				  _viewer, fiberDim);
+      field->getFiberDimension(*mesh->getLabelStratum(labelName, mesh->depth())->begin()) : 3;
+
+    // Should only print this once
+    err = PetscViewerASCIIPrintf(_viewer, "CELL_DATA %d\n", numbering->getGlobalSize());
     if (err)
-      throw std::runtime_error("Could not write cell data.");   
+      throw std::runtime_error("Could not write VTK point data header.");
+    VTKViewer::writeField(field, name, fiberDim, numbering, _viewer, fiberDim);
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << name << "' at time " 
