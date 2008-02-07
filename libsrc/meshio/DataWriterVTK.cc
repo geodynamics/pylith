@@ -96,7 +96,7 @@ pylith::meshio::DataWriterVTK::openTimeStep(
     if (0 == label)
       err = VTKViewer::writeElements(mesh, _viewer);
     else
-      err = VTKViewer::writeElements(mesh, label, labelId, _viewer);      
+      err = VTKViewer::writeElements(mesh, label, labelId, "censored depth", 0, _viewer);      
     if (err)
       throw std::runtime_error("Could not write topology.");
 
