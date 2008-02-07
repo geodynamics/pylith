@@ -51,17 +51,15 @@ class BruneSlipFn(SlipTimeFn):
     from spatialdata.spatialdb.SimpleDB import SimpleDB
 
     slip = pyre.inventory.facility("slip", family="spatial_database",
-                                   factory=SimpleDB, args=["slip"])
+                                   factory=SimpleDB)
     slip.meta['tip'] = "Spatial database of slip."
 
     slipTime = pyre.inventory.facility("slip_time", family="spatial_database",
-                                       factory=SimpleDB,
-                                       args=["slip time"])
+                                       factory=SimpleDB)
     slipTime.meta['tip'] = "Spatial database of slip initiation time."
 
     slipRate = pyre.inventory.facility("slip_rate", family="spatial_database",
-                                       factory=SimpleDB,
-                                       args=["slip rate"])
+                                       factory=SimpleDB)
     slipRate.meta['tip'] = "Spatial database of peak slip rate."
 
 

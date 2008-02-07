@@ -103,7 +103,7 @@ class Fault(Component):
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     matDB = pyre.inventory.facility("mat_db", family="spatial_database",
-                                   factory=SimpleDB, args=["bulk materials"])
+                                   factory=SimpleDB)
     matDB.meta['tip'] = "Spatial database for bulk material properties " \
                         "(used in improving conditioning of Jacobian matrix)."
 
