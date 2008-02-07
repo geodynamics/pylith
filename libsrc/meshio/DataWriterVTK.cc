@@ -151,7 +151,8 @@ pylith::meshio::DataWriterVTK::writeVertexField(
     } else {
       labelName = "depth";
     }
-    const ALE::Obj<Mesh::numbering_type>& numbering = mesh->getFactory()->getNumbering(mesh, labelName, 0);
+    const ALE::Obj<Mesh::numbering_type>& numbering =
+      mesh->getFactory()->getNumbering(mesh, labelName, 0);
 
     const int fiberDim = 
       field->getFiberDimension(*mesh->getLabelStratum(labelName, 0)->begin());
