@@ -621,19 +621,18 @@ pylith::materials::GenMaxwellIsotropic3D::_updateStateViscoelastic(
     parameters[_GenMaxwellIsotropic3D::pidStrainT+iComp] = totalStrain[iComp];
     // std::cout << devStrainTpdt << "  "  << devStrainT << "  " << deltaStrain << std::endl;
     for (int model = 0; model < numMaxwellModels; ++model) {
+      int index = iComp + model * tensorSize;
       const double maxwellTime =
 	parameters[_GenMaxwellIsotropic3D::pidMaxwellTime + model];
       visStrain = 
 	exp(-_dt/maxwellTime) * 
-	parameters[_GenMaxwellIsotropic3D::pidVisStrain + iComp +
-		   model * tensorSize] +
+	parameters[_GenMaxwellIsotropic3D::pidVisStrain + index] +
 	dq[model] * deltaStrain;
       // std::cout << "  " << maxwellTime
 // 		<< "  " << parameters[_GenMaxwellIsotropic3D::pidVisStrain +
 // 		 iComp + model * tensorSize]
 // 		<< "  " << visStrain << std::endl;
-      parameters[_GenMaxwellIsotropic3D::pidVisStrain +
-		 iComp + model * tensorSize] = visStrain;
+      parameters[_GenMaxwellIsotropic3D::pidVisStrain + index] = visStrain;
     } // for
   } // for
   PetscLogFlopsNoCheck((5 + (6 * numMaxwellModels)) * tensorSize);
