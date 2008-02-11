@@ -22,6 +22,7 @@ TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
 	TestAbsorbingDampers.py \
+	TestNeumann.py \
 	TestDirichletPoints.py \
 	TestBCSingle.py \
 	TestBCTwoSides.py \

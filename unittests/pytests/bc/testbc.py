@@ -74,6 +74,9 @@ class TestApp(Script):
     from TestBCSixSides import TestBCSixSides
     suite.addTest(unittest.makeSuite(TestBCSixSides))
 
+    from TestNeumann import TestNeumann
+    suite.addTest(unittest.makeSuite(TestNeumann))
+
     return suite
 
 
