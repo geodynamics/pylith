@@ -38,12 +38,14 @@ class pylith::materials::TestMaterial : public CppUnit::TestFixture
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestMaterial );
+
   CPPUNIT_TEST( testDB );
   CPPUNIT_TEST( testID );
   CPPUNIT_TEST( testLabel );
   CPPUNIT_TEST( testTimeStep );
   CPPUNIT_TEST( testNeedNewJacobian );
   CPPUNIT_TEST( testInitialize );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -67,32 +69,33 @@ public :
   /// Test initialize()
   void testInitialize(void);
 
-  // PROTECTED METHODS //////////////////////////////////////////////////
+  // PUBLIC METHODS /////////////////////////////////////////////////////
+public :
+
+  // Methods used in testing children of this class.
+
+  /// Setup testing data.
+  virtual
+  void setUp(void);
+
+  /// Tear down testing data.
+  virtual
+  void tearDown(void);
+
+  /// Test dbToProperties().
+  void testDBToProperties(void);
+
+  /// Test dbValues().
+  void testDBValues(void);
+
+  /// Test _numProperties.
+  void testProperties(void);
+
+  // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
-  /** Test dbToParameters().
-   *
-   * @param material Pointer to material
-   * @param data Data for testing material
-   */
-  void _testDBToParameters(Material* material,
-			   const MaterialData& data) const;
-
-  /** Test _numDBValues and _dbValues()
-   *
-   * @param material Pointer to material
-   * @param data Data for testing material
-   */
-  void _testDBValues(Material* material,
-		     const MaterialData& data) const;
-
-  /** Test _numParameters() and _parameterNames()
-   *
-   * @param material Pointer to material
-   * @param data Data for testing material
-   */
-  void _testParameters(Material* material,
-		       const MaterialData& data) const;
+  Material* _material; ///< Object for testing
+  MaterialData* _data; ///< Data for testing
 
 }; // class TestMaterial
 

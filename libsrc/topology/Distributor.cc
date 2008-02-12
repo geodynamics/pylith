@@ -15,8 +15,8 @@
 #include "Distributor.hh" // implementation of class methods
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "pylith/utils/vectorfields.hh" // USES SCALAR_FIELD
 #include "pylith/meshio/OutputManager.hh" // USES OutputManager
-#include "pylith/meshio/DataWriter.hh" // USES DataWriter::SCALAR_FIELD
 
 #include <string.h> // USES strlen()
 #include <stdexcept> // USES std::runtime_error
@@ -81,8 +81,7 @@ pylith::topology::Distributor::write(meshio::OutputManager* const output,
   const int numTimeSteps = 0;
   output->open(mesh, cs, numTimeSteps);
   output->openTimeStep(t, mesh, cs);
-  output->appendCellField(t, "partition", partition, 
-			  meshio::DataWriter::SCALAR_FIELD, mesh);
+  output->appendCellField(t, "partition", partition, SCALAR_FIELD, mesh);
   output->closeTimeStep();
   output->close();
 } // write

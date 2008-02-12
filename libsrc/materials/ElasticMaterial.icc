@@ -21,11 +21,12 @@ pylith::materials::ElasticMaterial::useElasticBehavior(const bool flag) {
 } // useElasticBehavior
 
 // Get flag indicating whether material implements an empty
+// _updateProperties() method.
 inline
 bool
-pylith::materials::ElasticMaterial::usesUpdateState(void) const {
+pylith::materials::ElasticMaterial::usesUpdateProperties(void) const {
   return false;
-} // usesUpdateState
+} // usesUpdateProperties
 
 
 // End of file 

@@ -17,36 +17,42 @@
 
 const int pylith::materials::ElasticStrain1DData::_dimension = 1;
 
-const int pylith::materials::ElasticStrain1DData::_numDBValues = 2;
+const int pylith::materials::ElasticStrain1DData::_numDBValues = 3;
 
-const int pylith::materials::ElasticStrain1DData::_numParameters = 2;
+const int pylith::materials::ElasticStrain1DData::_numParameters = 3;
 
-const int pylith::materials::ElasticStrain1DData::_numParamsQuadPt = 2;
+const int pylith::materials::ElasticStrain1DData::_numParamsQuadPt = 3;
 
 const int pylith::materials::ElasticStrain1DData::_numLocs = 2;
 
 const int pylith::materials::ElasticStrain1DData::_numParamValues[] = {
 1,
 1,
+1,
 };
 
 const char* pylith::materials::ElasticStrain1DData::_dbValues[] = {
 "density",
+"vs",
 "vp",
 };
 
 const double pylith::materials::ElasticStrain1DData::_dbData[] = {
   2.50000000e+03,
-  5.00000000e+03,
-  2.00000000e+03,
   3.00000000e+03,
+  5.19615242e+03,
+  2.00000000e+03,
+  1.20000000e+03,
+  2.07846097e+03,
 };
 
 const double pylith::materials::ElasticStrain1DData::_parameterData[] = {
   2.50000000e+03,
-  6.25000000e+10,
+  2.25000000e+10,
+  2.25000000e+10,
   2.00000000e+03,
-  1.80000000e+10,
+  2.88000000e+09,
+  2.88000000e+09,
 };
 
 const double pylith::materials::ElasticStrain1DData::_density[] = {
@@ -60,13 +66,13 @@ const double pylith::materials::ElasticStrain1DData::_strain[] = {
 };
 
 const double pylith::materials::ElasticStrain1DData::_stress[] = {
-  6.87500000e+06,
-  2.16000000e+06,
+  7.42500000e+06,
+  1.03680000e+06,
 };
 
 const double pylith::materials::ElasticStrain1DData::_elasticConsts[] = {
-  6.25000000e+10,
-  1.80000000e+10,
+  6.75000000e+10,
+  8.64000000e+09,
 };
 
 pylith::materials::ElasticStrain1DData::ElasticStrain1DData(void)

@@ -57,32 +57,34 @@ public :
   /// Test calcDerivElastic()
   void testCalcDerivElastic(void);
 
-  // PROTECTED METHODS //////////////////////////////////////////////////
+  // PUBLIC METHODS /////////////////////////////////////////////////////
+public :
+
+  // Methods used in testing children of this class.
+
+  /// Setup testing data.
+  virtual
+  void setUp(void);
+
+  /// Tear down testing data.
+  virtual
+  void tearDown(void);
+
+  /// Test _calcDensity().
+  void test_calcDensity(void);
+
+  /// Test _calcStress().
+  void test_calcStress(void);
+
+  /// Test _calcElasticConsts().
+  void test_calcElasticConsts(void);
+
+
+  // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
-  /** Test _calcDensity()
-   *
-   * @param material Pointer to material
-   * @param data Data for testing material
-   */
-  void _testCalcDensity(ElasticMaterial* material,
-			const ElasticMaterialData& data) const;
-
-  /** Test _calcStress()
-   *
-   * @param material Pointer to material
-   * @param data Data for testing material
-   */
-  void _testCalcStress(ElasticMaterial* material,
-		       const ElasticMaterialData& data) const;
-
-  /** Test _calcElasticConsts()
-   *
-   * @param material Pointer to material
-   * @param data Data for testing material
-   */
-  void _testCalcElasticConsts(ElasticMaterial* material,
-			      const ElasticMaterialData& data) const;
+  ElasticMaterial* _matElastic; ///< Test subject.
+  ElasticMaterialData* _dataElastic; ///< Data for tests.
 
 }; // class TestElasticMaterial
 

@@ -40,24 +40,28 @@ class pylith::materials::TestGenMaxwellIsotropic3D : public TestElasticMaterial
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestGenMaxwellIsotropic3D );
 
+  CPPUNIT_TEST( testDBToProperties );
+  CPPUNIT_TEST( testDBValues );
+  CPPUNIT_TEST( testProperties );
+  CPPUNIT_TEST( test_calcDensity );
+
   CPPUNIT_TEST( testTimeStep );
   CPPUNIT_TEST( testUseElasticBehavior );
-  CPPUNIT_TEST( testUsesUpdateState );
-  CPPUNIT_TEST( testDBToParameters );
-  CPPUNIT_TEST( testDBValues );
-  CPPUNIT_TEST( testParameters );
-  CPPUNIT_TEST( testCalcDensity );
   CPPUNIT_TEST( testCalcStressElastic );
   CPPUNIT_TEST( testCalcStressTimeDep );
   CPPUNIT_TEST( testCalcElasticConstsElastic );
   CPPUNIT_TEST( testCalcElasticConstsTimeDep );
-  CPPUNIT_TEST( testUpdateStateElastic );
-  CPPUNIT_TEST( testUpdateStateTimeDep );
+  CPPUNIT_TEST( testUsesUpdateProperties );
+  CPPUNIT_TEST( testUpdatePropertiesElastic );
+  CPPUNIT_TEST( testUpdatePropertiesTimeDep );
 
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
+
+  /// Setup testing data.
+  void setUp(void);
 
   /// Test timeStep()
   void testTimeStep(void);
@@ -65,20 +69,8 @@ public :
   /// Test useElasticBehavior()
   void testUseElasticBehavior(void);
 
-  /// Test usesUpdateState()
-  void testUsesUpdateState(void);
-
-  /// Test DBValues()
-  void testDBValues(void);
-
-  /// Test parameters()
-  void testParameters(void);
-
-  /// Test _dbToParameters()
-  void testDBToParameters(void);
-
-  /// Test calcDensity()
-  void testCalcDensity(void);
+  /// Test usesUpdateProperties()
+  void testUsesUpdateProperties(void);
 
   /// Test calcStressElastic()
   void testCalcStressElastic(void);
@@ -92,11 +84,11 @@ public :
   /// Test calcElasticConstsTimeDep()
   void testCalcElasticConstsTimeDep(void);
 
-  /// Test updateStateElastic()
-  void testUpdateStateElastic(void);
+  /// Test updatePropertiesElastic()
+  void testUpdatePropertiesElastic(void);
 
-  /// Test updateStateTimeDep()
-  void testUpdateStateTimeDep(void);
+  /// Test updatePropertiesTimeDep()
+  void testUpdatePropertiesTimeDep(void);
 
 }; // class TestGenMaxwellIsotropic3D
 

@@ -18,17 +18,18 @@
  * This consists of several Maxwell models in parallel. At present,
  * the number of models is fixed at 3, but this will be changed in the
  * future. The physical properties are specified using density,
- * shear-wave speed, and compressional-wave speed. A viscosity and a shear ratio
- * are also given for each Maxwell model. The shear ratio specifies how much of
- * the total shear modulus is associated with that model. The shear ratios must
- * sum to a value less than one. If the value is less than one, the remainder of
- * the total shear modulus is associated with a spring in parallel with the
- * Maxwell models.
- * The physical properties are stored internally using density, lambdaTot,
- * muTot, which are directly related to the elasticity constants used in the
- * finite-element integration. The viscosity for each model is stored using
- * Maxwell Time (viscosity/mu), and the shear ratio is also stored for each
- * Maxwell model.
+ * shear-wave speed, and compressional-wave speed. A viscosity and a
+ * shear ratio are also given for each Maxwell model. The shear ratio
+ * specifies how much of the total shear modulus is associated with
+ * that model. The shear ratios must sum to a value less than one. If
+ * the value is less than one, the remainder of the total shear
+ * modulus is associated with a spring in parallel with the Maxwell
+ * models.  The physical properties are stored internally using
+ * density, lambdaTot, muTot, which are directly related to the
+ * elasticity constants used in the finite-element integration. The
+ * viscosity for each model is stored using Maxwell Time
+ * (viscosity/mu), and the shear ratio is also stored for each Maxwell
+ * model.
  */
 
 #if !defined(pylith_materials_genmaxwellisotropic3d_hh)
@@ -71,112 +72,77 @@ public :
   void useElasticBehavior(const bool flag);
 
   /** Get flag indicating whether material implements an empty
-   * _updateState() method.
+   * _updateProperties() method.
    *
-   * @returns False if _updateState() is empty, true otherwise.
+   * @returns False if _updateProperties() is empty, true otherwise.
    */
-  bool usesUpdateState(void) const;
+  bool usesUpdateProperties(void) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
-  /** Get names of values expected to be in database of parameters for
-   *  physical properties.
-   *
-   * @returns Names of values
-   */
-  const char** _dbValues(void) const;
-
-  /** Get number of values expected to be in database of parameters for
-   *  physical properties.
-   *
-   * @returns Number of values
-   */
-  int _numDBValues(void) const;
-
-  /** Compute parameters from values in spatial database.
+  /** Compute properties from values in spatial database.
    *
    * Order of values in arrays matches order used in dbValues() and
    * parameterNames().
    *
-   * @param paramVals Array of parameters
-   * @param dbValues Array of database values
+   * @param propValues Array of property values.
+   * @param dbValues Array of database values.
    */
-  void _dbToParameters(double* const paramVals,
-		       const int numParams,
+  void _dbToProperties(double* const propValues,
 		       const double_array& dbValues) const;
 
-  /** Get number of entries in stress/strain tensors.
-   *
-   * 1-D = 1
-   * 2-D = 3
-   * 3-D = 6
-   *
-   * @returns Number of entries in stress/strain tensors.
-   */
-  int _tensorSize(void) const;
-
-  /** Get number of entries in derivative of elasticity matrix.
-   *
-   * 1-D = 1
-   * 2-D = 6
-   * 3-D = 21
-   *
-   * @returns Number of entries in derivative of elasticity matrix.
-   */
-  int _numElasticConsts(void) const;
-
-  /** Compute density from parameters.
+  /** Compute density from properties.
    *
    * @param density Array for density.
-   * @param parameters Parameters at location.
-   * @param numParams Number of parameters.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
    */
   void _calcDensity(double* const density,
-		    const double* parameters,
-		    const int numParams);
+		    const double* properties,
+		    const int numProperties);
 
-  /** Compute stress tensor from parameters.
+  /** Compute stress tensor from properties.
    *
    * @param stress Array for stress tensor.
    * @param stressSize Size of stress tensor.
-   * @param parameters Parameters at location.
-   * @param numParams Number of parameters.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
    */
   void _calcStress(double* const stress,
 		   const int stressSize,
-		   const double* parameters,
-		   const int numParams,
+		   const double* properties,
+		   const int numProperties,
 		   const double* totalStrain,
 		   const int strainSize);
 
-  /** Compute derivatives of elasticity matrix from parameters.
+  /** Compute derivatives of elasticity matrix from properties.
    *
    * @param elasticConsts Array for elastic constants.
    * @param numElasticConsts Number of elastic constants.
-   * @param parameters Parameters at location.
-   * @param numParams Number of parameters.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
    */
   void _calcElasticConsts(double* const elasticConsts,
 			  const int numElasticConsts,
-			  const double* parameters,
-			  const int numParams,
+			  const double* properties,
+			  const int numProperties,
 			  const double* totalStrain,
 			  const int strainSize);
 
-  /** Update parameters (for next time step).
+  /** Update properties (for next time step).
    *
-   * @param parameters Parameters at location.
-   * @param numParams Number of parameters.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
    */
-  void _updateState(double* const parameters,
-		    const int numParams,
+  void _updateProperties(double* const properties,
+		    const int numProperties,
 		    const double* totalStrain,
 		    const int strainSize);
 
@@ -201,8 +167,8 @@ private :
      const double*,
      const int);
 
-  /// Member prototype for _updateState()
-  typedef void (pylith::materials::GenMaxwellIsotropic3D::*updateState_fn_type)
+  /// Member prototype for _updateProperties()
+  typedef void (pylith::materials::GenMaxwellIsotropic3D::*updateProperties_fn_type)
     (double* const,
      const int,
      const double*,
@@ -211,93 +177,93 @@ private :
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
-  /** Compute stress tensor from parameters as an elastic material.
+  /** Compute stress tensor from properties as an elastic material.
    *
    * @param stress Array for stress tensor.
    * @param stressSize Size of stress tensor.
-   * @param parameters Parameters at locations.
-   * @param numParams Number of parameters.
+   * @param properties Properties at locations.
+   * @param numProperties Number of properties.
    * @param totalStrain Total strain at locations.
    * @param strainSize Size of strain tensor.
    */
   void _calcStressElastic(double* const stress,
 			  const int stressSize,
-			  const double* parameters,
-			  const int numParams,
+			  const double* properties,
+			  const int numProperties,
 			  const double* totalStrain,
 			  const int strainSize);
 
-  /** Compute stress tensor from parameters as an viscoelastic material.
+  /** Compute stress tensor from properties as an viscoelastic material.
    *
    * @param stress Array for stress tensor.
    * @param stressSize Size of stress tensor.
-   * @param parameters Parameters at locations.
-   * @param numParams Number of parameters.
+   * @param properties Properties at locations.
+   * @param numProperties Number of properties.
    * @param totalStrain Total strain at locations.
    * @param strainSize Size of strain tensor.
    */
   void _calcStressViscoelastic(double* const stress,
 			  const int stressSize,
-			  const double* parameters,
-			  const int numParams,
+			  const double* properties,
+			  const int numProperties,
 			  const double* totalStrain,
 			  const int strainSize);
 
-  /** Compute derivatives of elasticity matrix from parameters as an
+  /** Compute derivatives of elasticity matrix from properties as an
    * elastic material.
    *
    * @param elasticConsts Array for elastic constants.
    * @param numElasticConsts Number of elastic constants.
-   * @param parameters Parameters at location.
-   * @param numParams Number of parameters.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
    */
   void _calcElasticConstsElastic(double* const elasticConsts,
 				 const int numElasticConsts,
-				 const double* parameters,
-				 const int numParams,
+				 const double* properties,
+				 const int numProperties,
 				 const double* totalStrain,
 				 const int strainSize);
 
-  /** Compute derivatives of elasticity matrix from parameters as a
+  /** Compute derivatives of elasticity matrix from properties as a
    * viscoelastic material.
    *
    * @param elasticConsts Array for elastic constants.
    * @param numElasticConsts Number of elastic constants.
-   * @param parameters Parameters at location.
-   * @param numParams Number of parameters.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
    */
   void _calcElasticConstsViscoelastic(double* const elasticConsts,
 				      const int numElasticConsts,
-				      const double* parameters,
-				      const int numParams,
+				      const double* properties,
+				      const int numProperties,
 				      const double* totalStrain,
 				      const int strainSize);
 
   /** Update state variables after solve as an elastic material.
    *
-   * @param parameters Parameters at location.
-   * @param numParams Number of parameters.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
    */
-  void _updateStateElastic(double* const parameters,
-			   const int numParams,
+  void _updatePropertiesElastic(double* const properties,
+			   const int numProperties,
 			   const double* totalStrain,
 			   const int strainSize);
 
   /** Update state variables after solve as a viscoelastic material.
    *
-   * @param parameters Parameters at location.
-   * @param numParams Number of parameters.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
    */
-  void _updateStateViscoelastic(double* const parameters,
-				const int numParams,
+  void _updatePropertiesViscoelastic(double* const properties,
+				const int numProperties,
 				const double* totalStrain,
 				const int strainSize);
 
@@ -319,8 +285,8 @@ private :
   /// Method to use for _calcStress().
   calcStress_fn_type _calcStressFn;
 
-  /// Method to use for _updateState().
-  updateState_fn_type _updateStateFn;
+  /// Method to use for _updateProperties().
+  updateProperties_fn_type _updatePropertiesFn;
 
 }; // class GenMaxwellIsotropic3D
 

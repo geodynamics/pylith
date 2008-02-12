@@ -74,7 +74,7 @@ pylith::feassemble::IntegratorElasticity::updateState(
   assert(0 != fields);
 
   // No need to update state if using elastic behavior
-  if (!_material->usesUpdateState())
+  if (!_material->usesUpdateProperties())
     return;
 
   // Set variables dependent on dimension of cell
@@ -147,7 +147,7 @@ pylith::feassemble::IntegratorElasticity::updateState(
     calcTotalStrainFn(&totalStrain, basisDeriv, dispCell, numBasis, numQuadPts);
 
     // Update material state
-    _material->updateState(totalStrain, *c_iter);
+    _material->updateProperties(totalStrain, *c_iter);
   } // for
 
   _material->useElasticBehavior(false);

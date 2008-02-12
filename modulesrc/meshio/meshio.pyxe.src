@@ -742,8 +742,8 @@ cdef class OutputManager:
       ALE::Obj<pylith::real_section_type>* field =
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      const pylith::meshio::DataWriter::FieldEnum fieldType =
-        (pylith::meshio::DataWriter::FieldEnum) fieldTypeInt;
+      const pylith::VectorFieldEnum fieldType =
+        (pylith::VectorFieldEnum) fieldTypeInt;
       ((pylith::meshio::OutputManager*) objVptr)->appendVertexField(t, name,
                                                      *field, fieldType, *mesh);
     } catch (const std::exception& err) {
@@ -781,8 +781,8 @@ cdef class OutputManager:
       ALE::Obj<pylith::real_section_type>* field =
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      const pylith::meshio::DataWriter::FieldEnum fieldType =
-        (pylith::meshio::DataWriter::FieldEnum) fieldTypeInt;
+      const pylith::VectorFieldEnum fieldType =
+        (pylith::VectorFieldEnum) fieldTypeInt;
       ((pylith::meshio::OutputManager*) objVptr)->appendCellField(t, name,
                                                                   *field,
                                                                   fieldType,

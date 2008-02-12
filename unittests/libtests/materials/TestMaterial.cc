@@ -193,7 +193,7 @@ pylith::materials::TestMaterial::testInitialize(void)
   const double tolerance = 1.0e-06;
 
   const real_section_type::value_type* paramsCell =
-    material._parameters->restrictPoint(*c_iter);
+    material._properties->restrictPoint(*c_iter);
   CPPUNIT_ASSERT(0 != paramsCell);
 
   const int pidDensity = 0;
@@ -202,48 +202,66 @@ pylith::materials::TestMaterial::testInitialize(void)
 
   // density
   for (int i=0; i < numQuadPts; ++i) {
-    const int index = i*material._numParamsQuadPt + pidDensity;
+    const int index = i*material._totalPropsQuadPt + pidDensity;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, paramsCell[index]/densityE[i], tolerance);
   } // for
   
   // mu
   for (int i=0; i < numQuadPts; ++i) {
-    const int index = i*material._numParamsQuadPt + pidMu;
+    const int index = i*material._totalPropsQuadPt + pidMu;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, paramsCell[index]/muE[i], tolerance);
   } // for
   
   // lambda
   for (int i=0; i < numQuadPts; ++i) {
-    const int index = i*material._numParamsQuadPt + pidLambda;
+    const int index = i*material._totalPropsQuadPt + pidLambda;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, paramsCell[index]/lambdaE[i], tolerance);
   } // for
 } // testInitialize
 
 // ----------------------------------------------------------------------
-// Test DBToParameters
+// Setup testing data.
 void
-pylith::materials::TestMaterial::_testDBToParameters(Material* material,
-						     const MaterialData& data) const
-{ // _testDBToParameters
-  CPPUNIT_ASSERT(0 != material);
+pylith::materials::TestMaterial::setUp(void)
+{ // setUp
+  _material = 0;
+  _data = 0;
+} // setUp
+
+// ----------------------------------------------------------------------
+// Tear down testing data.
+void
+pylith::materials::TestMaterial::tearDown(void)
+{ // tearDown
+  delete _material; _material = 0;
+  delete _data; _data = 0;
+} // tearDown
+
+// ----------------------------------------------------------------------
+// Test DBToProperties
+void
+pylith::materials::TestMaterial::testDBToProperties(void)
+{ // testDBToProperties
+  CPPUNIT_ASSERT(0 != _material);
+  CPPUNIT_ASSERT(0 != _data);
   
-  const int numLocs = data.numLocs;
-  const int numDBValues = data.numDBValues;
+  const int numLocs = _data->numLocs;
+  const int numDBValues = _data->numDBValues;
   double_array dbData(numDBValues);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
     for (int i=0; i < numDBValues; ++i)
-      dbData[i] = data.dbData[iLoc*numDBValues+i];
+      dbData[i] = _data->dbData[iLoc*numDBValues+i];
 
-    const int numParameters = data.numParameters;
+    const int numProperties = _data->numParameters;
     int numParamEntries = 0;
-    for (int iParam=0; iParam < numParameters; ++iParam)
-      numParamEntries += data.numParamValues[iParam];
+    for (int iParam=0; iParam < numProperties; ++iParam)
+      numParamEntries += _data->numParamValues[iParam];
 
     double_array parameterData(numParamEntries);
 
-    double* const parameterDataE = &data.parameterData[iLoc*numParamEntries];
-    material->_dbToParameters(&parameterData[0], numParamEntries, dbData);
+    double* const parameterDataE = &_data->parameterData[iLoc*numParamEntries];
+    _material->_dbToProperties(&parameterData[0], dbData);
 
     const double tolerance = 1.0e-06;
     for (int i=0; i < numParamEntries; ++i) {
@@ -256,39 +274,35 @@ pylith::materials::TestMaterial::_testDBToParameters(Material* material,
 				     tolerance);
     } // for
   } // for
-} // _testDBToParameters
+} // testDBToProperties
 
 // ----------------------------------------------------------------------
-// Test _dbValues() and _numDBValues()
+// Test _dbValues and _numDBValues.
 void
-pylith::materials::TestMaterial::_testDBValues(Material* material,
-					       const MaterialData& data) const
-{ // _testDBValues
-  CPPUNIT_ASSERT(0 != material);
+pylith::materials::TestMaterial::testDBValues(void)
+{ // testDBValues
+  CPPUNIT_ASSERT(0 != _material);
+  CPPUNIT_ASSERT(0 != _data);
 
-  const int numDBValues = data.numDBValues;
+  const int numDBValues = _data->numDBValues;
+  CPPUNIT_ASSERT_EQUAL(numDBValues, _material->_numDBValues);
 
-  CPPUNIT_ASSERT(numDBValues == material->_numDBValues());
-  char** const dbValuesE = data.dbValues;
-  const char** dbValues = material->_dbValues();
+  char** const dbValuesE = _data->dbValues;
   for (int i=0; i < numDBValues; ++i)
-    CPPUNIT_ASSERT(0 == strcmp(dbValuesE[i], dbValues[i]));
-} // _testDBValues
+    CPPUNIT_ASSERT(0 == strcmp(dbValuesE[i], _material->_dbValues[i]));
+} // testDBValues
 
 // ----------------------------------------------------------------------
-// Test _numParameters().
+// Test _numProperties.
 void
-pylith::materials::TestMaterial::_testParameters(Material* material,
-						 const MaterialData& data) const
-{ // _testParameters
-  CPPUNIT_ASSERT(0 != material);
+pylith::materials::TestMaterial::testProperties(void)
+{ // testProperties
+  CPPUNIT_ASSERT(0 != _material);
+  CPPUNIT_ASSERT(0 != _data);
 
-  const int numParameters = data.numParameters;
-
-  const int_array& numParamValues = material->_getNumParamValues();
-
-  CPPUNIT_ASSERT_EQUAL(numParameters, int(numParamValues.size()));
-} // _testParameters
+  const int numProperties = _data->numParameters;
+  CPPUNIT_ASSERT_EQUAL(numProperties, _material->_numProperties);
+} // testProperties
 
 
 // End of file 

@@ -22,7 +22,7 @@
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh, real_section_type
 #include "pylith/utils/arrayfwd.hh" // USES double_array
-#include "pylith/meshio/DataWriter.hh" // USES FieldEnum
+#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
 
 #include <string> // HASA std::string
 
@@ -127,20 +127,20 @@ public :
    */
   virtual
   const ALE::Obj<real_section_type>&
-  vertexField(meshio::DataWriter::FieldEnum* fieldType,
-		   const char* name,
-		   const ALE::Obj<Mesh>& mesh) = 0;
+  vertexField(VectorFieldEnum* fieldType,
+	      const char* name,
+	      const ALE::Obj<Mesh>& mesh) = 0;
 
   /** Get cell field associated with integrator.
    *
    * @param fieldType Type of field.
-   * @param name Name of vertex field.
+   * @param name Name of cell field.
    * @param mesh PETSc mesh for problem.
    * @returns Cell field.
    */
   virtual
   const ALE::Obj<real_section_type>&
-  cellField(meshio::DataWriter::FieldEnum* fieldType,
+  cellField(VectorFieldEnum* fieldType,
 	    const char* name,
 	    const ALE::Obj<Mesh>& mesh) = 0;
 

@@ -23,6 +23,17 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestGenMaxwellIsotropic3D );
 
 // ----------------------------------------------------------------------
+// Setup testing data.
+void
+pylith::materials::TestGenMaxwellIsotropic3D::setUp(void)
+{ // setUp
+  _material = new GenMaxwellIsotropic3D();
+  _matElastic = new GenMaxwellIsotropic3D();
+  _data = new GenMaxwellIsotropic3DElasticData();
+  _dataElastic = new GenMaxwellIsotropic3DElasticData();
+} // setUp
+
+// ----------------------------------------------------------------------
 // Test timeStep()
 void
 pylith::materials::TestGenMaxwellIsotropic3D::testTimeStep(void)
@@ -54,80 +65,36 @@ pylith::materials::TestGenMaxwellIsotropic3D::testUseElasticBehavior(void)
 		       material._calcStressFn);
   CPPUNIT_ASSERT_EQUAL(&pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsElastic,
 		       material._calcElasticConstsFn);
-  CPPUNIT_ASSERT_EQUAL(&pylith::materials::GenMaxwellIsotropic3D::_updateStateElastic,
-		       material._updateStateFn);
+  CPPUNIT_ASSERT_EQUAL(&pylith::materials::GenMaxwellIsotropic3D::_updatePropertiesElastic,
+		       material._updatePropertiesFn);
 
   material.useElasticBehavior(false);
   CPPUNIT_ASSERT_EQUAL(&pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic,
 		       material._calcStressFn);
   CPPUNIT_ASSERT_EQUAL(&pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic,
 		       material._calcElasticConstsFn);
-  CPPUNIT_ASSERT_EQUAL(&pylith::materials::GenMaxwellIsotropic3D::_updateStateViscoelastic,
-		       material._updateStateFn);
+  CPPUNIT_ASSERT_EQUAL(&pylith::materials::GenMaxwellIsotropic3D::_updatePropertiesViscoelastic,
+		       material._updatePropertiesFn);
 } // testUseElasticBehavior
 
 // ----------------------------------------------------------------------
-// Test usesUpdateState()
+// Test usesUpdateProperties()
 void
-pylith::materials::TestGenMaxwellIsotropic3D::testUsesUpdateState(void)
-{ // testUsesUpdateState
+pylith::materials::TestGenMaxwellIsotropic3D::testUsesUpdateProperties(void)
+{ // testUsesUpdateProperties
   GenMaxwellIsotropic3D material;
-  CPPUNIT_ASSERT_EQUAL(true, material.usesUpdateState());
-} // testUsesUpdateState
-
-// ----------------------------------------------------------------------
-// Test DBValues()
-void
-pylith::materials::TestGenMaxwellIsotropic3D::testDBValues(void)
-{ // testDBValues
-  GenMaxwellIsotropic3D material;
-  GenMaxwellIsotropic3DElasticData data;
-  material.useElasticBehavior(true);
-  _testDBValues(&material, data);
-} // testDBValues
-
-// ----------------------------------------------------------------------
-// Test parameters()
-void
-pylith::materials::TestGenMaxwellIsotropic3D::testParameters(void)
-{ // testParameters
-  GenMaxwellIsotropic3D material;
-  GenMaxwellIsotropic3DElasticData data;
-  material.useElasticBehavior(true);
-  _testParameters(&material, data);
-} // testParameters
-
-// ----------------------------------------------------------------------
-// Test _dbToParameters()
-void
-pylith::materials::TestGenMaxwellIsotropic3D::testDBToParameters(void)
-{ // testDBToParameters
-  GenMaxwellIsotropic3D material;
-  GenMaxwellIsotropic3DElasticData data;
-  material.useElasticBehavior(true);
-  _testDBToParameters(&material, data);
-} // testDBToParameters
-
-// ----------------------------------------------------------------------
-// Test calcDensity()
-void
-pylith::materials::TestGenMaxwellIsotropic3D::testCalcDensity(void)
-{ // testCalcDensity
-  GenMaxwellIsotropic3D material;
-  GenMaxwellIsotropic3DElasticData data;
-  material.useElasticBehavior(true);
-  _testCalcDensity(&material, data);
-} // testCalcDensity
+  CPPUNIT_ASSERT_EQUAL(true, material.usesUpdateProperties());
+} // testUsesUpdateProperties
 
 // ----------------------------------------------------------------------
 // Test calcStressElastic()
 void
 pylith::materials::TestGenMaxwellIsotropic3D::testCalcStressElastic(void)
 { // testCalcStressElastic
-  GenMaxwellIsotropic3D material;
-  GenMaxwellIsotropic3DElasticData data;
-  material.useElasticBehavior(true);
-  _testCalcStress(&material, data);
+  CPPUNIT_ASSERT(0 != _matElastic);
+  _matElastic->useElasticBehavior(true);
+
+  test_calcStress();
 } // testCalcStressElastic
 
 // ----------------------------------------------------------------------
@@ -135,23 +102,22 @@ pylith::materials::TestGenMaxwellIsotropic3D::testCalcStressElastic(void)
 void
 pylith::materials::TestGenMaxwellIsotropic3D::testCalcElasticConstsElastic(void)
 { // testElasticConstsElastic
-  GenMaxwellIsotropic3D material;
-  GenMaxwellIsotropic3DElasticData data;
-  material.useElasticBehavior(true);
-  _testCalcElasticConsts(&material, data);
+  CPPUNIT_ASSERT(0 != _matElastic);
+  _matElastic->useElasticBehavior(true);
+
+  test_calcElasticConsts();
 } // testElasticConstsElastic
 
 // ----------------------------------------------------------------------
-// Test updateStateElastic()
+// Test updatePropertiesElastic()
 void
-pylith::materials::TestGenMaxwellIsotropic3D::testUpdateStateElastic(void)
-{ // testUpdateStateElastic
+pylith::materials::TestGenMaxwellIsotropic3D::testUpdatePropertiesElastic(void)
+{ // testUpdatePropertiesElastic
   GenMaxwellIsotropic3D material;
   GenMaxwellIsotropic3DElasticData data;
 
-  const int_array& numParamValues = material._getNumParamValues();
-  const int numParams = numParamValues.size();
-  const int numParamsQuadPt = material._numParamsQuadPt;;
+  const int numParams = data.numParameters;
+  const int numParamsQuadPt = data.numParamsQuadPt;
 
   const int tensorSize = 6;
   double_array totalStrain(tensorSize);
@@ -164,7 +130,7 @@ pylith::materials::TestGenMaxwellIsotropic3D::testUpdateStateElastic(void)
   double_array parameters(numParamsQuadPt);
   double_array parametersE(numParamsQuadPt);
   for (int i=0, index=0; i < numParams; ++i)
-    for (int j=0; j < numParamValues[i]; ++j, ++index) {
+    for (int j=0; j < data.numParamValues[i]; ++j, ++index) {
       parametersE[index] = i+j;
       parameters[index] = i+j;
     } // for
@@ -187,25 +153,27 @@ pylith::materials::TestGenMaxwellIsotropic3D::testUpdateStateElastic(void)
 	totalStrain[i];
   } // for
   
-  material._updateState(&parameters[0], numParamsQuadPt, 
+  material._updateProperties(&parameters[0], numParamsQuadPt, 
 			&totalStrain[0], tensorSize);
 
   const double tolerance = 1.0e-06;
   for (int i=0; i < numParamsQuadPt; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(parametersE[i], parameters[i], tolerance);
-} // testUpdateStateElastic
+} // testUpdatePropertiesElastic
 
 // ----------------------------------------------------------------------
 // Test calcStressTimeDep()
 void
 pylith::materials::TestGenMaxwellIsotropic3D::testCalcStressTimeDep(void)
 { // testCalcStressTimeDep
-  GenMaxwellIsotropic3D material;
-  GenMaxwellIsotropic3DTimeDepData data;
-  material.useElasticBehavior(false);
+  CPPUNIT_ASSERT(0 != _matElastic);
+  _matElastic->useElasticBehavior(false);
+
+  delete _dataElastic; _dataElastic = new GenMaxwellIsotropic3DTimeDepData();
+
   double dt = 2.0e+5;
-  material.timeStep(dt);
-  _testCalcStress(&material, data);
+  _matElastic->timeStep(dt);
+  test_calcStress();
 } // testCalcStressTimeDep
 
 // ----------------------------------------------------------------------
@@ -213,25 +181,26 @@ pylith::materials::TestGenMaxwellIsotropic3D::testCalcStressTimeDep(void)
 void
 pylith::materials::TestGenMaxwellIsotropic3D::testCalcElasticConstsTimeDep(void)
 { // testElasticConstsTimeDep
-  GenMaxwellIsotropic3D material;
-  GenMaxwellIsotropic3DTimeDepData data;
-  material.useElasticBehavior(false);
+  CPPUNIT_ASSERT(0 != _matElastic);
+  _matElastic->useElasticBehavior(false);
+
+  delete _dataElastic; _dataElastic = new GenMaxwellIsotropic3DTimeDepData();
+
   double dt = 2.0e+5;
-  material.timeStep(dt);
-  _testCalcElasticConsts(&material, data);
+  _matElastic->timeStep(dt);
+  test_calcElasticConsts();
 } // testElasticConstsTimeDep
 
 // ----------------------------------------------------------------------
-// Test updateStateTimeDep()
+// Test updatePropertiesTimeDep()
 void
-pylith::materials::TestGenMaxwellIsotropic3D::testUpdateStateTimeDep(void)
-{ // testUpdateStateTimeDep
+pylith::materials::TestGenMaxwellIsotropic3D::testUpdatePropertiesTimeDep(void)
+{ // testUpdatePropertiesTimeDep
   GenMaxwellIsotropic3D material;
   GenMaxwellIsotropic3DTimeDepData data;
 
-  const int_array& numParamValues = material._getNumParamValues();
-  const int numParams = numParamValues.size();
-  const int numParamsQuadPt = material._numParamsQuadPt;;
+  const int numParams = data.numParameters;
+  const int numParamsQuadPt = data.numParamsQuadPt;
 
   const int numMaxwellModels = 3;
   const int tensorSize = 6;
@@ -267,7 +236,7 @@ pylith::materials::TestGenMaxwellIsotropic3D::testUpdateStateTimeDep(void)
   double_array parameters(numParamsQuadPt);
   double_array parametersE(numParamsQuadPt);
   for (int i=0, index=0; i < numParams; ++i)
-    for (int j=0; j < numParamValues[i]; ++j, ++index) {
+    for (int j=0; j < data.numParamValues[i]; ++j, ++index) {
       parametersE[index] = i+j;
       parameters[index] = i+j;
     } // for
@@ -311,13 +280,13 @@ pylith::materials::TestGenMaxwellIsotropic3D::testUpdateStateTimeDep(void)
     } // for
   } // for
   
-  material._updateState(&parameters[0], numParamsQuadPt, 
+  material._updateProperties(&parameters[0], numParamsQuadPt, 
 			&totalStrainTpdt[0], tensorSize);
 
   const double tolerance = 1.0e-06;
   for (int i=0; i < numParamsQuadPt; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(parametersE[i], parameters[i], tolerance);
-} // testUpdateStateTimeDep
+} // testUpdatePropertiesTimeDep
 
 
 // End of file 

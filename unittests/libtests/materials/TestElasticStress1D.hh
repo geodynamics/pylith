@@ -39,43 +39,29 @@ class pylith::materials::TestElasticStress1D : public TestElasticMaterial
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestElasticStress1D );
 
-  CPPUNIT_TEST( testUsesUpdateState );
-  CPPUNIT_TEST( testDBToParameters );
+  CPPUNIT_TEST( testDBToProperties );
   CPPUNIT_TEST( testDBValues );
-  CPPUNIT_TEST( testParameters );
-  CPPUNIT_TEST( testCalcDensity );
-  CPPUNIT_TEST( testCalcStress );
-  CPPUNIT_TEST( testCalcElasticConsts );
-  CPPUNIT_TEST( testUpdateState );
+  CPPUNIT_TEST( testProperties );
+  CPPUNIT_TEST( test_calcDensity );
+  CPPUNIT_TEST( test_calcStress );
+  CPPUNIT_TEST( test_calcElasticConsts );
+
+  CPPUNIT_TEST( testUsesUpdateProperties );
+  CPPUNIT_TEST( testUpdateProperties );
 
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
-  /// Test usesUpdateState()
-  void testUsesUpdateState();
+  /// Setup testing data.
+  void setUp(void);
 
-  /// Test DBValues()
-  void testDBValues(void);
+  /// Test usesUpdateProperties().
+  void testUsesUpdateProperties(void);
 
-  /// Test parameters()
-  void testParameters(void);
-
-  /// Test _dbToParameters()
-  void testDBToParameters(void);
-
-  /// Test calcDensity()
-  void testCalcDensity(void);
-
-  /// Test calcStress()
-  void testCalcStress(void);
-
-  /// Test calcElasticConsts()
-  void testCalcElasticConsts(void);
-
-  /// Test updateState()
-  void testUpdateState(void);
+  /// Test updateProperties()
+  void testUpdateProperties(void);
 
 }; // class TestElasticStress1D
 

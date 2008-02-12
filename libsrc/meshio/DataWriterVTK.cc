@@ -137,7 +137,7 @@ pylith::meshio::DataWriterVTK::writeVertexField(
 				       const double t,
 				       const char* name,
 				       const ALE::Obj<real_section_type>& field,
-				       const FieldEnum fieldType,
+				       const VectorFieldEnum fieldType,
 				       const ALE::Obj<ALE::Mesh>& mesh)
 { // writeVertexField
   assert(0 != name);
@@ -189,7 +189,7 @@ pylith::meshio::DataWriterVTK::writeCellField(
 				       const double t,
 				       const char* name,
 				       const ALE::Obj<real_section_type>& field,
-				       const FieldEnum fieldType,
+				       const VectorFieldEnum fieldType,
 				       const ALE::Obj<ALE::Mesh>& mesh)
 { // writeCellField
   assert(0 != name);

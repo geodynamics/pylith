@@ -35,6 +35,26 @@ namespace pylith {
       /// Number of entries in derivative of elasticity matrix.
       const int numElasticConsts = 21;
 
+      /// Number of physical properties.
+      const int numProperties = 6;
+
+      /// Physical properties.
+      const Material::PropMetaData properties[] = {
+	{ "density", 1, SCALAR_FIELD },
+	{ "lambda", 1, SCALAR_FIELD },
+	{ "mu", 1, SCALAR_FIELD },
+	{ "Maxwell-time", 1, SCALAR_FIELD },
+	{ "total-strain", 6, TENSOR_FIELD },
+	{ "viscous-strain", 6, TENSOR_FIELD },
+      };
+      /// Indices (order) of properties.
+      const int pidDensity = 0;
+      const int pidMu = pidDensity + 1;
+      const int pidLambda = pidMu + 1;
+      const int pidMaxwellTime = pidLambda + 1;
+      const int pidStrainT = pidMaxwellTime + 1;
+      const int pidVisStrain = pidStrainT + 6;
+
       /// Values expected in spatial database
       const int numDBValues = 4;
       const char* namesDBValues[] = {"density", "vs", "vp" , "viscosity"};
@@ -45,17 +65,6 @@ namespace pylith {
       const int didVp = 2;
       const int didViscosity = 3;
 
-      /// Parameters
-      const int numParameters = 6;
-      const int numParamValues[] = { 1, 1, 1, 1, 6, 6};
-
-      /// Indices (order) of parameters
-      const int pidDensity = 0;
-      const int pidMu = pidDensity + 1;
-      const int pidLambda = pidMu + 1;
-      const int pidMaxwellTime = pidLambda + 1;
-      const int pidStrainT = pidMaxwellTime + 1;
-      const int pidVisStrain = pidStrainT + 6;
     } // _MaxwellIsotropic3D
   } // materials
 } // pylith
@@ -63,11 +72,15 @@ namespace pylith {
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::MaxwellIsotropic3D::MaxwellIsotropic3D(void) :
-  ElasticMaterial(_MaxwellIsotropic3D::numParamValues,
-		  _MaxwellIsotropic3D::numParameters),
+  ElasticMaterial(_MaxwellIsotropic3D::tensorSize,
+		  _MaxwellIsotropic3D::numElasticConsts,
+		  _MaxwellIsotropic3D::namesDBValues,
+		  _MaxwellIsotropic3D::numDBValues,
+		  _MaxwellIsotropic3D::properties,
+		  _MaxwellIsotropic3D::numProperties),
   _calcElasticConstsFn(&pylith::materials::MaxwellIsotropic3D::_calcElasticConstsElastic),
   _calcStressFn(&pylith::materials::MaxwellIsotropic3D::_calcStressElastic),
-  _updateStateFn(&pylith::materials::MaxwellIsotropic3D::_updateStateElastic)
+  _updatePropertiesFn(&pylith::materials::MaxwellIsotropic3D::_updatePropertiesElastic)
 { // constructor
   _dimension = 3;
 } // constructor
@@ -79,31 +92,13 @@ pylith::materials::MaxwellIsotropic3D::~MaxwellIsotropic3D(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Get names of values expected to be in database of parameters for
-const char**
-pylith::materials::MaxwellIsotropic3D::_dbValues(void) const
-{ // _dbValues
-  return _MaxwellIsotropic3D::namesDBValues;
-} // _dbValues
-
-// ----------------------------------------------------------------------
-// Get number of values expected to be in database of parameters for
-int
-pylith::materials::MaxwellIsotropic3D::_numDBValues(void) const
-{ // _numDBValues
-  return _MaxwellIsotropic3D::numDBValues;
-} // _numDBValues
-
-// ----------------------------------------------------------------------
-// Compute parameters from values in spatial database.
+// Compute properties from values in spatial database.
 void
-pylith::materials::MaxwellIsotropic3D::_dbToParameters(
-					    double* const paramVals,
-					    const int numParams,
+pylith::materials::MaxwellIsotropic3D::_dbToProperties(
+					    double* const propValues,
 					    const double_array& dbValues) const
-{ // _dbToParameters
-  assert(0 != paramVals);
-  assert(_numParamsQuadPt == numParams);
+{ // _dbToProperties
+  assert(0 != propValues);
   const int numDBValues = dbValues.size();
   assert(_MaxwellIsotropic3D::numDBValues == numDBValues);
 
@@ -114,6 +109,7 @@ pylith::materials::MaxwellIsotropic3D::_dbToParameters(
  
   const double mu = density * vs*vs;
   const double lambda = density * vp*vp - 2.0*mu;
+
   if (lambda < 0.0) {
     std::ostringstream msg;
     msg << "Attempted to set Lame's constant lambda to negative value.\n"
@@ -122,71 +118,56 @@ pylith::materials::MaxwellIsotropic3D::_dbToParameters(
 	<< "vs: " << vs << "\n";
     throw std::runtime_error(msg.str());
   } // if
-
   assert(mu > 0);
-  const double maxwelltime = viscosity / mu;
 
-  paramVals[_MaxwellIsotropic3D::pidDensity] = density;
-  paramVals[_MaxwellIsotropic3D::pidMu] = mu;
-  paramVals[_MaxwellIsotropic3D::pidLambda] = lambda;
-  paramVals[_MaxwellIsotropic3D::pidMaxwellTime] = maxwelltime;
+  const double maxwelltime = viscosity / mu;
+  assert(maxwelltime > 0.0);
+
+  propValues[_MaxwellIsotropic3D::pidDensity] = density;
+  propValues[_MaxwellIsotropic3D::pidMu] = mu;
+  propValues[_MaxwellIsotropic3D::pidLambda] = lambda;
+  propValues[_MaxwellIsotropic3D::pidMaxwellTime] = maxwelltime;
 
   PetscLogFlopsNoCheck(7);
-} // _dbToParameters
+} // _dbToProperties
 
 // ----------------------------------------------------------------------
-// Get number of entries in stress tensor.
-int
-pylith::materials::MaxwellIsotropic3D::_tensorSize(void) const
-{ // _tensorSize
-  return _MaxwellIsotropic3D::tensorSize;
-} // _tensorSize
-
-// ----------------------------------------------------------------------
-// Get number of entries in elasticity matrix for material.
-int
-pylith::materials::MaxwellIsotropic3D::_numElasticConsts(void) const
-{ // numElasticConsts
-  return _MaxwellIsotropic3D::numElasticConsts;
-} // numElasticConsts
-
-// ----------------------------------------------------------------------
-// Compute density at location from parameters.
+// Compute density at location from properties.
 void
 pylith::materials::MaxwellIsotropic3D::_calcDensity(double* const density,
-						    const double* parameters,
-						    const int numParams)
+						    const double* properties,
+						    const int numProperties)
 { // _calcDensity
   assert(0 != density);
-  assert(0 != parameters);
-  assert(_numParamsQuadPt == numParams);
+  assert(0 != properties);
+  assert(_totalPropsQuadPt == numProperties);
 
-  density[0] = parameters[_MaxwellIsotropic3D::pidDensity];
+  density[0] = properties[_MaxwellIsotropic3D::pidDensity];
 } // _calcDensity
 
 // ----------------------------------------------------------------------
-// Compute stress tensor at location from parameters as an elastic
+// Compute stress tensor at location from properties as an elastic
 // material.
 void
 pylith::materials::MaxwellIsotropic3D::_calcStressElastic(
 						    double* const stress,
 						    const int stressSize,
-						    const double* parameters,
-						    const int numParams,
+						    const double* properties,
+						    const int numProperties,
 						    const double* totalStrain,
 						    const int strainSize)
 { // _calcStressElastic
   assert(0 != stress);
   assert(_MaxwellIsotropic3D::tensorSize == stressSize);
-  assert(0 != parameters);
-  assert(_numParamsQuadPt == numParams);
+  assert(0 != properties);
+  assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_MaxwellIsotropic3D::tensorSize == strainSize);
 
-  const double density = parameters[_MaxwellIsotropic3D::pidDensity];
-  const double mu = parameters[_MaxwellIsotropic3D::pidMu];
-  const double lambda = parameters[_MaxwellIsotropic3D::pidLambda];
-  const double maxwelltime = parameters[_MaxwellIsotropic3D::pidMaxwellTime];
+  const double density = properties[_MaxwellIsotropic3D::pidDensity];
+  const double mu = properties[_MaxwellIsotropic3D::pidMu];
+  const double lambda = properties[_MaxwellIsotropic3D::pidLambda];
+  const double maxwelltime = properties[_MaxwellIsotropic3D::pidMaxwellTime];
 
   const double mu2 = 2.0 * mu;
 
@@ -219,28 +200,28 @@ pylith::materials::MaxwellIsotropic3D::_calcStressElastic(
 } // _calcStressElastic
 
 // ----------------------------------------------------------------------
-// Compute stress tensor at location from parameters as a viscoelastic
+// Compute stress tensor at location from properties as a viscoelastic
 // material.
 void
 pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
 						    double* const stress,
 						    const int stressSize,
-						    const double* parameters,
-						    const int numParams,
+						    const double* properties,
+						    const int numProperties,
 						    const double* totalStrain,
 						    const int strainSize)
 { // _calcStressElastic
   assert(0 != stress);
   assert(_MaxwellIsotropic3D::tensorSize == stressSize);
-  assert(0 != parameters);
-  assert(_numParamsQuadPt == numParams);
+  assert(0 != properties);
+  assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_MaxwellIsotropic3D::tensorSize == strainSize);
 
-  const double density = parameters[_MaxwellIsotropic3D::pidDensity];
-  const double mu = parameters[_MaxwellIsotropic3D::pidMu];
-  const double lambda = parameters[_MaxwellIsotropic3D::pidLambda];
-  const double maxwelltime = parameters[_MaxwellIsotropic3D::pidMaxwellTime];
+  const double density = properties[_MaxwellIsotropic3D::pidDensity];
+  const double mu = properties[_MaxwellIsotropic3D::pidMu];
+  const double lambda = properties[_MaxwellIsotropic3D::pidLambda];
+  const double maxwelltime = properties[_MaxwellIsotropic3D::pidMaxwellTime];
 
   const double mu2 = 2.0 * mu;
   const double bulkmodulus = lambda + mu2/3.0;
@@ -261,13 +242,13 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
   // See what's going on in state variables.
   // std::cout << " pidStrainT, pidVisStrain : " << std::endl;
   // for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
-    // std::cout << "  " << parameters[_MaxwellIsotropic3D::pidStrainT][iComp]
-	    // << "   " << parameters[_MaxwellIsotropic3D::pidVisStrain][iComp]
+    // std::cout << "  " << properties[_MaxwellIsotropic3D::pidStrainT][iComp]
+	    // << "   " << properties[_MaxwellIsotropic3D::pidVisStrain][iComp]
 	    // << std::endl;
 
-  const double meanStrainT = (parameters[_MaxwellIsotropic3D::pidStrainT+0] +
-			      parameters[_MaxwellIsotropic3D::pidStrainT+1] +
-			      parameters[_MaxwellIsotropic3D::pidStrainT+2])/3.0;
+  const double meanStrainT = (properties[_MaxwellIsotropic3D::pidStrainT+0] +
+			      properties[_MaxwellIsotropic3D::pidStrainT+1] +
+			      properties[_MaxwellIsotropic3D::pidStrainT+2])/3.0;
   
   PetscLogFlopsNoCheck(11);
 
@@ -284,9 +265,9 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
   // std::cout << " stress  totalStrain  visStrain: " << std::endl;
   for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp) {
     devStrainTpdt = totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
-    devStrainT = parameters[_MaxwellIsotropic3D::pidStrainT+iComp] -
+    devStrainT = properties[_MaxwellIsotropic3D::pidStrainT+iComp] -
       diag[iComp]*meanStrainT;
-    visStrain = expFac*parameters[_MaxwellIsotropic3D::pidVisStrain+iComp] +
+    visStrain = expFac*properties[_MaxwellIsotropic3D::pidVisStrain+iComp] +
       dq*(devStrainTpdt - devStrainT);
     devStressTpdt = elasFac*visStrain;
     // Later I will want to put in initial stresses.
@@ -300,27 +281,27 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
 } // _calcStress
 
 // ----------------------------------------------------------------------
-// Compute derivative of elasticity matrix at location from parameters.
+// Compute derivative of elasticity matrix at location from properties.
 void
 pylith::materials::MaxwellIsotropic3D::_calcElasticConstsElastic(
 						  double* const elasticConsts,
 						  const int numElasticConsts,
-						  const double* parameters,
-						  const int numParams,
+						  const double* properties,
+						  const int numProperties,
 						  const double* totalStrain,
 						  const int strainSize)
 { // _calcElasticConstsElastic
   assert(0 != elasticConsts);
   assert(_MaxwellIsotropic3D::numElasticConsts == numElasticConsts);
-  assert(0 != parameters);
-  assert(_numParamsQuadPt == numParams);
+  assert(0 != properties);
+  assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_MaxwellIsotropic3D::tensorSize == strainSize);
  
-  const double density = parameters[_MaxwellIsotropic3D::pidDensity];
-  const double mu = parameters[_MaxwellIsotropic3D::pidMu];
-  const double lambda = parameters[_MaxwellIsotropic3D::pidLambda];
-  const double maxwelltime = parameters[_MaxwellIsotropic3D::pidMaxwellTime];
+  const double density = properties[_MaxwellIsotropic3D::pidDensity];
+  const double mu = properties[_MaxwellIsotropic3D::pidMu];
+  const double lambda = properties[_MaxwellIsotropic3D::pidLambda];
+  const double maxwelltime = properties[_MaxwellIsotropic3D::pidMaxwellTime];
 
   const double mu2 = 2.0 * mu;
   const double lambda2mu = lambda + mu2;
@@ -352,28 +333,28 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsElastic(
 } // _calcElasticConstsElastic
 
 // ----------------------------------------------------------------------
-// Compute derivative of elasticity matrix at location from parameters
+// Compute derivative of elasticity matrix at location from properties
 // as an elastic material.
 void
 pylith::materials::MaxwellIsotropic3D::_calcElasticConstsViscoelastic(
 						  double* const elasticConsts,
 						  const int numElasticConsts,
-						  const double* parameters,
-						  const int numParams,
+						  const double* properties,
+						  const int numProperties,
 						  const double* totalStrain,
 						  const int strainSize)
 { // _calcElasticConstsViscoelastic
   assert(0 != elasticConsts);
   assert(_MaxwellIsotropic3D::numElasticConsts == numElasticConsts);
-  assert(0 != parameters);
-  assert(_numParamsQuadPt == numParams);
+  assert(0 != properties);
+  assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_MaxwellIsotropic3D::tensorSize == strainSize);
  
-  const double density = parameters[_MaxwellIsotropic3D::pidDensity];
-  const double mu = parameters[_MaxwellIsotropic3D::pidMu];
-  const double lambda = parameters[_MaxwellIsotropic3D::pidLambda];
-  const double maxwelltime = parameters[_MaxwellIsotropic3D::pidMaxwellTime];
+  const double density = properties[_MaxwellIsotropic3D::pidDensity];
+  const double mu = properties[_MaxwellIsotropic3D::pidMu];
+  const double lambda = properties[_MaxwellIsotropic3D::pidLambda];
+  const double maxwelltime = properties[_MaxwellIsotropic3D::pidMaxwellTime];
 
   const double mu2 = 2.0 * mu;
   const double bulkmodulus = lambda + mu2/3.0;
@@ -409,18 +390,18 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsViscoelastic(
 // ----------------------------------------------------------------------
 // Update state variables.
 void
-pylith::materials::MaxwellIsotropic3D::_updateStateElastic(
-						 double* const parameters,
-						 const int numParams,
+pylith::materials::MaxwellIsotropic3D::_updatePropertiesElastic(
+						 double* const properties,
+						 const int numProperties,
 						 const double* totalStrain,
 						 const int strainSize)
-{ // _updateStateElastic
-  assert(0 != parameters);
-  assert(_numParamsQuadPt == numParams);
+{ // _updatePropertiesElastic
+  assert(0 != properties);
+  assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_MaxwellIsotropic3D::tensorSize == strainSize);
 
-  const double maxwelltime = parameters[_MaxwellIsotropic3D::pidMaxwellTime];
+  const double maxwelltime = properties[_MaxwellIsotropic3D::pidMaxwellTime];
 
   const double e11 = totalStrain[0];
   const double e22 = totalStrain[1];
@@ -433,41 +414,41 @@ pylith::materials::MaxwellIsotropic3D::_updateStateElastic(
 
   // Temporary to get stresses.
   // double_array stress(6);
-  // _calcStressElastic(&stress, (*parameters), totalStrain);
+  // _calcStressElastic(&stress, (*properties), totalStrain);
 
   for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp) {
-    parameters[_MaxwellIsotropic3D::pidStrainT+iComp] = totalStrain[iComp];
-    parameters[_MaxwellIsotropic3D::pidVisStrain+iComp] =
+    properties[_MaxwellIsotropic3D::pidStrainT+iComp] = totalStrain[iComp];
+    properties[_MaxwellIsotropic3D::pidVisStrain+iComp] =
       totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
   } // for
   PetscLogFlopsNoCheck(5 * _MaxwellIsotropic3D::tensorSize);
 //   std::cout << std::endl;
-//   std::cout << " updateStateElastic: "<< std::endl;
+//   std::cout << " updatePropertiesElastic: "<< std::endl;
 //   std::cout << " StrainT  VisStrain  Stress: " << std::endl;
 //   for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
-//     std::cout << "  " << parameters[_MaxwellIsotropic3D::pidStrainT+iComp]
-// 	    << "   " << parameters[_MaxwellIsotropic3D::pidVisStrain+iComp]
+//     std::cout << "  " << properties[_MaxwellIsotropic3D::pidStrainT+iComp]
+// 	    << "   " << properties[_MaxwellIsotropic3D::pidVisStrain+iComp]
 // 	    << "   " << stress[iComp]
 // 	    << std::endl;
 
   _needNewJacobian = true;
-} // _updateStateElastic
+} // _updatePropertiesElastic
 
 // ----------------------------------------------------------------------
 // Update state variables.
 void
-pylith::materials::MaxwellIsotropic3D::_updateStateViscoelastic(
-						 double* const parameters,
-						 const int numParams,
+pylith::materials::MaxwellIsotropic3D::_updatePropertiesViscoelastic(
+						 double* const properties,
+						 const int numProperties,
 						 const double* totalStrain,
 						 const int strainSize)
-{ // _updateStateViscoelastic
-  assert(0 != parameters);
-  assert(_numParamsQuadPt == numParams);
+{ // _updatePropertiesViscoelastic
+  assert(0 != properties);
+  assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_MaxwellIsotropic3D::tensorSize == strainSize);
 
-  const double maxwelltime = parameters[_MaxwellIsotropic3D::pidMaxwellTime];
+  const double maxwelltime = properties[_MaxwellIsotropic3D::pidMaxwellTime];
 
   const double e11 = totalStrain[0];
   const double e22 = totalStrain[1];
@@ -481,13 +462,13 @@ pylith::materials::MaxwellIsotropic3D::_updateStateViscoelastic(
   double stress[6];
   const int stressSize = 6;
   _calcStressViscoelastic(stress, stressSize, 
-			  parameters, numParams,
+			  properties, numProperties,
 			  totalStrain, strainSize);
 
   const double meanStrainT = 
-    (parameters[_MaxwellIsotropic3D::pidStrainT+0] +
-     parameters[_MaxwellIsotropic3D::pidStrainT+1] +
-     parameters[_MaxwellIsotropic3D::pidStrainT+2]) / 3.0;
+    (properties[_MaxwellIsotropic3D::pidStrainT+0] +
+     properties[_MaxwellIsotropic3D::pidStrainT+1] +
+     properties[_MaxwellIsotropic3D::pidStrainT+2]) / 3.0;
   
   PetscLogFlopsNoCheck(6);
 
@@ -500,27 +481,27 @@ pylith::materials::MaxwellIsotropic3D::_updateStateViscoelastic(
   PetscLogFlopsNoCheck(3);
   for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp) {
     devStrainTpdt = totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
-    devStrainT = parameters[_MaxwellIsotropic3D::pidStrainT+iComp] -
+    devStrainT = properties[_MaxwellIsotropic3D::pidStrainT+iComp] -
       diag[iComp] * meanStrainT;
     visStrain = expFac * 
-      parameters[_MaxwellIsotropic3D::pidVisStrain+iComp] +
+      properties[_MaxwellIsotropic3D::pidVisStrain+iComp] +
       dq * (devStrainTpdt - devStrainT);
-    parameters[_MaxwellIsotropic3D::pidVisStrain+iComp] = visStrain;
-    parameters[_MaxwellIsotropic3D::pidStrainT+iComp] = totalStrain[iComp];
+    properties[_MaxwellIsotropic3D::pidVisStrain+iComp] = visStrain;
+    properties[_MaxwellIsotropic3D::pidStrainT+iComp] = totalStrain[iComp];
   } // for
   PetscLogFlopsNoCheck(8 * _MaxwellIsotropic3D::tensorSize);
 
   _needNewJacobian = false;
 
 //   std::cout << std::endl;
-//   std::cout << " updateStateViscoelastic: "<< std::endl;
+//   std::cout << " updatePropertiesViscoelastic: "<< std::endl;
 //   std::cout << " StrainT  VisStrain  Stress: " << std::endl;
 //   for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
-//     std::cout << "  " << parameters[_MaxwellIsotropic3D::pidStrainT+iComp]
-// 	    << "   " << parameters[_MaxwellIsotropic3D::pidVisStrain+iComp]
+//     std::cout << "  " << properties[_MaxwellIsotropic3D::pidStrainT+iComp]
+// 	    << "   " << properties[_MaxwellIsotropic3D::pidVisStrain+iComp]
 // 	    << "   " << stress[iComp]
 // 	    << std::endl;
-} // _updateStateViscoelastic
+} // _updatePropertiesViscoelastic
 
 
 // End of file 

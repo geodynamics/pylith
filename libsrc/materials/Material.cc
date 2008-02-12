@@ -14,7 +14,6 @@
 
 #include "Material.hh" // implementation of object methods
 
-#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/utils/array.hh" // USES double_array, std::vector
 
@@ -28,20 +27,25 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::materials::Material::Material(const int* numParamValues,
-				      const int size) :
+pylith::materials::Material::Material(const char** dbValues,
+				      const int numDBValues,
+				      const PropMetaData* properties,
+				      const int numProperties) :
   _dt(0.0),
-  _numParamsQuadPt(0),
+  _totalPropsQuadPt(0),
   _dimension(0),
   _needNewJacobian(false),
   _db(0),
   _id(0),
   _label(""),
-  _numParamValues(numParamValues, size)
+  _propMetaData(properties),
+  _numProperties(numProperties),
+  _dbValues(dbValues),
+  _numDBValues(numDBValues)
 { // constructor
-  for (int i=0; i < size; ++i)
-    _numParamsQuadPt += numParamValues[i];
-  assert(_numParamsQuadPt >= 0);
+  for (int i=0; i < numProperties; ++i)
+    _totalPropsQuadPt += properties[i].fiberDim;
+  assert(_totalPropsQuadPt >= 0);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -73,24 +77,22 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const ALE::Mesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Create sections to hold parameters for physical properties
-  _parameters = new real_section_type(mesh->comm(), mesh->debug());
-  assert(!_parameters.isNull());
+  _properties = new real_section_type(mesh->comm(), mesh->debug());
+  assert(!_properties.isNull());
   const int numQuadPts = quadrature->numQuadPts();
   const int spaceDim = quadrature->spaceDim();
 
-  const int numParams = _numParamValues.size();
-
   // Fiber dimension is number of quadrature points times number of
   // values per parameter
-  const int numParamsQuadPt = _numParamsQuadPt;
-  const int fiberDim = numParamsQuadPt * numQuadPts;
-  _parameters->setFiberDimension(cells, fiberDim);
-  mesh->allocate(_parameters);
+  const int totalPropsQuadPt = _totalPropsQuadPt;
+  const int fiberDim = totalPropsQuadPt * numQuadPts;
+  _properties->setFiberDimension(cells, fiberDim);
+  mesh->allocate(_properties);
 
   // Setup database for querying
-  const int numValues = _numDBValues();
+  const int numValues = _numDBValues;
   _db->open();
-  _db->queryVals(_dbValues(), numValues);
+  _db->queryVals(_dbValues, numValues);
   
   // Container for data returned in query of database
   double_array queryData(numValues);
@@ -123,17 +125,41 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 	    << "using spatial database '" << _db->label() << "'.";
 	throw std::runtime_error(msg.str());
       } // if
-      _dbToParameters(&cellData[numParamsQuadPt*iQuadPt], numParamsQuadPt, 
-		      queryData);
+      _dbToProperties(&cellData[totalPropsQuadPt*iQuadPt], queryData);
 
     } // for
     // Insert cell contribution into fields
-    _parameters->updatePoint(*c_iter, &cellData[0]);
+    _properties->updatePoint(*c_iter, &cellData[0]);
   } // for
 
   // Close database
   _db->close();
 } // initialize
+
+// ----------------------------------------------------------------------
+// Get metadata for physical property. Values are returned through the
+// arguments.
+void
+pylith::materials::Material::propertyInfo(int* space,
+					  int* fiberDim,
+					  VectorFieldEnum* fieldType,
+					  const char* name) const
+{ // propertyInfo
+  int i=0;
+  while (i < _numProperties)
+    if (0 == strcasecmp(name, _propMetaData[i].name))
+      break;
+  if (i < _numProperties) {
+    *space = i;
+    *fiberDim = _propMetaData[i].fiberDim;
+    *fieldType = _propMetaData[i].fieldType;
+  } else {
+    std::ostringstream msg;
+    msg << "Unknown physical property '" << name << "' for material '"
+	<< _label << "'.";
+    throw std::runtime_error(msg.str());
+  } // else
+} // propertyInfo
   
 
 // End of file 

@@ -37,29 +37,35 @@ class ElasticStrain1D(ElasticMaterialApp):
 
     self.dimension = 1
 
-    self.numDBValues = 2
-    self.dbValues = ["density", "vp"]
-    self.numParameters = 2
-    self.numParamValues = [1, 1]
-    self.parameterNames = ["density", "lambda2mu"]
+    self.numDBValues = 3
+    self.dbValues = ["density", "vs", "vp"]
+    self.numParameters = 3
+    self.numParamValues = [1, 1, 1]
+    self.parameterNames = ["density", "mu", "lambda"]
 
     densityA = 2500.0
-    vpA = 5000.0
+    vsA = 3000.0
+    vpA = vsA*3**0.5
     strainA = [1.1e-4]
     
     densityB = 2000.0
-    vpB = 3000.0
+    vsB = 1200.0
+    vpB = vsB*3**0.5
     strainB = [1.2e-4]
 
-    self.dbData = numpy.array([ [densityA, vpA],
-                                [densityB, vpB] ],
+    self.dbData = numpy.array([ [densityA, vsA, vpA],
+                                [densityB, vsB, vpB] ],
                               dtype=numpy.float64)
-    lambda2muA = vpA*vpA*densityA
-    lambda2muB = vpB*vpB*densityB
-    self.parameterData = numpy.array([ [densityA, lambda2muA],
-                                       [densityB, lambda2muB] ],
+    muA = vsA*vsA*densityA
+    lambdaA = vpA*vpA*densityA - 2.0*muA
+    lambda2muA = lambdaA + 2.0*muA
+    muB = vsB*vsB*densityB
+    lambdaB = vpB*vpB*densityB - 2.0*muB
+    lambda2muB = lambdaB + 2.0*muB
+    self.parameterData = numpy.array([ [densityA, muA, lambdaA],
+                                       [densityB, muB, lambdaB] ],
                                      dtype=numpy.float64)
-    
+        
     self.numLocs = 2
     numElasticConsts = 1
     self.density = numpy.array([densityA, densityB],

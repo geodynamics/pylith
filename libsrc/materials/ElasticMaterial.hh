@@ -22,8 +22,6 @@
 
 #include "Material.hh" // ISA Material
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
-
 /// Namespace for pylith package
 namespace pylith {
   namespace materials {
@@ -43,23 +41,31 @@ public :
 
   /** Default constructor.
    *
-   * @param numParamValues Array of number of values for each parameter.
-   * @param size Size of array
+   * @param tensorSize Number of entries in stress tensor.
+   * @param numElasticConsts Number of elastic constants.
+   * @param dbValues Array of names of database values for material.
+   * @param numDBValues Number of database values.
+   * @param properties Array of physical property meta data.
+   * @param numProperties Number of physical properties for material.
    */
-  ElasticMaterial(const int* numParamValues,
-		  const int size);
+  ElasticMaterial(const int tensorSize,
+		  const int numElasticConsts,
+		  const char** dbValues,
+		  const int numDBValues,
+		  const PropMetaData* properties,
+		  const int numProperties);
 
   /// Destructor.
   virtual
   ~ElasticMaterial(void);
 
-  /** Push cell's state variable information into material's sections.
+  /** Get cell's property information from material's section.
    *
    * @param cell Finite element cell
    * @param numQuadPts Number of quadrature points
    */
-  void getStateVarsCell(const Mesh::point_type& cell,
-			const int numQuadPts);
+  void getPropertiesCell(const Mesh::point_type& cell,
+			 const int numQuadPts);
 
   /** Compute density for cell at quadrature points.
    *
@@ -114,14 +120,14 @@ public :
   const double_array&
   calcDerivElastic(const double_array& totalStrain);
 
-  /** Update state variables (for next time step).
+  /** Update properties (for next time step).
    *
    * @param totalStrain Total strain tensor at quadrature points
    *    [numQuadPts][tensorSize]
    * @param cell Finite element cell
    */
-  void updateState(const double_array& totalStrain,
-		   const Mesh::point_type& cell);
+  void updateProperties(const double_array& totalStrain,
+			const Mesh::point_type& cell);
 
   /** Set whether elastic or inelastic constitutive relations are used.
    *
@@ -131,87 +137,73 @@ public :
   void useElasticBehavior(const bool flag);
 
   /** Get flag indicating whether material implements an empty
-   * _updateState() method.
+   * _updateProperties() method.
    *
-   * @returns False if _updateState() is empty, true otherwise.
+   * @returns False if _updateProperties() is empty, true otherwise.
    */
   virtual
-  bool usesUpdateState(void) const;
+  bool usesUpdateProperties(void) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
-  /** Get number of entries in stress/strain tensors.
-   *
-   * @returns Size of stress/strain tensors.
-   */
-  virtual
-  int _tensorSize(void) const = 0;
-
-  /** Get number of entries in elastic constants array.
-   *
-   * @returns Number of entries in array of elastic constants.
-   */
-  virtual
-  int _numElasticConsts(void) const = 0;
-
-  /** Compute density from parameters.
+  /** Compute density from properties.
    *
    * @param density Array for density.
-   * @param parameters Parameters at location.
-   * @param numParams Number of parameters.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
    */
   virtual
   void _calcDensity(double* const density,
-		    const double* parameters,
-		    const int numParams) = 0;
+		    const double* properties,
+		    const int numProperties) = 0;
 
-  /** Compute stress tensor from parameters.
+  /** Compute stress tensor from properties.
    *
    * @param stress Array for stress tensor.
    * @param stressSize Size of stress tensor.
-   * @param parameters Parameters at location.
-   * @param numParams Number of parameters.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
    */
   virtual
   void _calcStress(double* const stress,
 		   const int stressSize,
-		   const double* parameters,
-		   const int numParams,
+		   const double* properties,
+		   const int numProperties,
 		   const double* totalStrain,
 		   const int strainSize) = 0;
 
-  /** Compute derivatives of elasticity matrix from parameters.
+  /** Compute derivatives of elasticity matrix from properties.
    *
    * @param elasticConsts Array for elastic constants.
    * @param numElasticConsts Number of elastic constants.
-   * @param parameters Parameters at location.
-   * @param numParams Number of parameters.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
    */
   virtual
   void _calcElasticConsts(double* const elasticConsts,
 			  const int numElasticConsts,
-			  const double* parameters,
-			  const int numParams,
+			  const double* properties,
+			  const int numProperties,
 			  const double* totalStrain,
 			  const int strainSize) = 0;
 
-  /** Update parameters (for next time step).
+  /** Update properties (for next time step).
    *
-   * @param parameters Parameters at location.
-   * @param numParams Number of parameters.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
    */
   virtual
-  void _updateState(double* const parameters,
-		    const int numParams,
-		    const double* totalStrain,
-		    const int strainSize);
+  void _updateProperties(double* const properties,
+			 const int numProperties,
+			 const double* totalStrain,
+			 const int strainSize);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -225,23 +217,25 @@ private :
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
-  /** Get parameters for cell.
+  /** Get properties for cell.
    *
    * @param cell Finite-element cell
    */
-  void _getParameters(const Mesh::point_type& cell);
+  void _getProperties(const Mesh::point_type& cell);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
   int _numQuadPts; ///< Number of quadrature points
+  int _tensorSize; ///< Number of entries in stress tensor.
+  int _numElasticConsts; ///< Number of elastic constants.
 
-  /** Parameters at quadrature points for current cell.
+  /** Properties at quadrature points for current cell.
    *
-   * size = numQuadPts*numParamsQuadPt
+   * size = numQuadPts*numPropsQuadPt
    * index = iQuadPt*iParam*iValue
    */
-  double_array _paramsCell;
+  double_array _propertiesCell;
 
   /** Density value at quadrature points for current cell.
    *

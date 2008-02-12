@@ -132,9 +132,9 @@ public :
    * @returns Vertex field.
    */
   const ALE::Obj<real_section_type>&
-  vertexField(meshio::DataWriter::FieldEnum* fieldType,
-		   const char* name,
-		   const ALE::Obj<Mesh>& mesh);
+  vertexField(VectorFieldEnum* fieldType,
+	      const char* name,
+	      const ALE::Obj<Mesh>& mesh);
 
   /** Get cell field associated with integrator.
    *
@@ -144,7 +144,7 @@ public :
    * @returns Cell field.
    */
   const ALE::Obj<real_section_type>&
-  cellField(meshio::DataWriter::FieldEnum* fieldType,
+  cellField(VectorFieldEnum* fieldType,
 	    const char* name,
 	    const ALE::Obj<Mesh>& mesh);
 

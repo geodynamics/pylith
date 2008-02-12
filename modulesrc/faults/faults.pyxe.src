@@ -206,7 +206,7 @@ cdef class Fault:
       assert(0 != meshVptr);
       pylith::faults::Fault* fault = (pylith::faults::Fault*) objVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      pylith::meshio::DataWriter::FieldEnum fieldType;
+      pylith::VectorFieldEnum fieldType;
       const ALE::Obj<pylith::real_section_type>& field =
         fault->vertexField(&fieldType, name, *mesh);
       *fieldPtr = fieldType;
@@ -247,7 +247,7 @@ cdef class Fault:
       assert(0 != meshVptr);
       pylith::faults::Fault* fault = (pylith::faults::Fault*) objVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      pylith::meshio::DataWriter::FieldEnum fieldType;
+      pylith::VectorFieldEnum fieldType;
       const ALE::Obj<pylith::real_section_type>& field =
         fault->cellField(&fieldType, name, *mesh);
       *fieldPtr = fieldType;

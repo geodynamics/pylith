@@ -19,14 +19,14 @@
 #if !defined(pylith_meshio_outputmanager_hh)
 #define pylith_meshio_outputmanager_hh
 
-#include "DataWriter.hh" // USES DataWriter::FieldEnum
-
 #include "pylith/utils/sievetypes.hh" // USES ALE::Mesh, real_section_type
+#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
 
 namespace pylith {
   namespace meshio {
     class OutputManager;
 
+    class DataWriter; // HOLDS DataWriter
     class CellFilter; // HOLDSA CellFilter
     class VertexFilter; // HOLDSA VertexFilter
   } // meshio
@@ -122,7 +122,7 @@ public :
   void appendVertexField(const double t,
 			 const char* name,
 			 const ALE::Obj<real_section_type>& field,
-			 const DataWriter::FieldEnum fieldType,
+			 const VectorFieldEnum fieldType,
 			 const ALE::Obj<ALE::Mesh>& mesh);
 
   /** Append finite-element cell field to file.
@@ -136,7 +136,7 @@ public :
   void appendCellField(const double t,
 		       const char* name,
 		       const ALE::Obj<real_section_type>& field,
-		       const DataWriter::FieldEnum fieldType,
+		       const VectorFieldEnum fieldType,
 		       const ALE::Obj<ALE::Mesh>& mesh);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////

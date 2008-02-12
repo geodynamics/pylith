@@ -36,9 +36,11 @@ class pylith::bc::TestAbsorbingDampersHex8 : public TestAbsorbingDampers
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUB_SUITE( TestAbsorbingDampersHex8, TestAbsorbingDampers );
+
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST( testIntegrateJacobian );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////

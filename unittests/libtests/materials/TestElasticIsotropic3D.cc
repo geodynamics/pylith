@@ -22,79 +22,30 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticIsotropic3D );
 
 // ----------------------------------------------------------------------
+// Setup testing data.
+void
+pylith::materials::TestElasticIsotropic3D::setUp(void)
+{ // setUp
+  _material = new ElasticIsotropic3D();
+  _matElastic = new ElasticIsotropic3D();
+  _data = new ElasticIsotropic3DData();
+  _dataElastic = new ElasticIsotropic3DData();
+} // setUp
+
+// ----------------------------------------------------------------------
 // Test usesUpdateState()
 void
-pylith::materials::TestElasticIsotropic3D::testUsesUpdateState(void)
-{ // testUsesUpdateState
+pylith::materials::TestElasticIsotropic3D::testUsesUpdateProperties(void)
+{ // testUsesUpdateProperties
   ElasticIsotropic3D material;
-  CPPUNIT_ASSERT_EQUAL(false, material.usesUpdateState());
-} // testUsesUpdateState
+  CPPUNIT_ASSERT_EQUAL(false, material.usesUpdateProperties());
+} // testUsesUpdateProperties
 
 // ----------------------------------------------------------------------
-// Test DBValues()
+// Test updateProperties()
 void
-pylith::materials::TestElasticIsotropic3D::testDBValues(void)
-{ // testDBValues
-  ElasticIsotropic3D material;
-  ElasticIsotropic3DData data;
-  _testDBValues(&material, data);
-} // testDBValues
-
-// ----------------------------------------------------------------------
-// Test parameters()
-void
-pylith::materials::TestElasticIsotropic3D::testParameters(void)
-{ // testParameters
-  ElasticIsotropic3D material;
-  ElasticIsotropic3DData data;
-  _testParameters(&material, data);
-} // testParameters
-
-// ----------------------------------------------------------------------
-// Test _dbToParameters()
-void
-pylith::materials::TestElasticIsotropic3D::testDBToParameters(void)
-{ // testDBToParameters
-  ElasticIsotropic3D material;
-  ElasticIsotropic3DData data;
-  _testDBToParameters(&material, data);
-} // testDBToParameters
-
-// ----------------------------------------------------------------------
-// Test calcDensity()
-void
-pylith::materials::TestElasticIsotropic3D::testCalcDensity(void)
-{ // testCalcDensity
-  ElasticIsotropic3D material;
-  ElasticIsotropic3DData data;
-  _testCalcDensity(&material, data);
-} // testCalcDensity
-
-// ----------------------------------------------------------------------
-// Test calcStress()
-void
-pylith::materials::TestElasticIsotropic3D::testCalcStress(void)
-{ // testCalcStress
-  ElasticIsotropic3D material;
-  ElasticIsotropic3DData data;
-  _testCalcStress(&material, data);
-} // testCalcStress
-
-// ----------------------------------------------------------------------
-// Test calcElasticConsts()
-void
-pylith::materials::TestElasticIsotropic3D::testCalcElasticConsts(void)
-{ // testElasticConsts
-  ElasticIsotropic3D material;
-  ElasticIsotropic3DData data;
-  _testCalcElasticConsts(&material, data);
-} // testElasticConsts
-
-// ----------------------------------------------------------------------
-// Test updateState()
-void
-pylith::materials::TestElasticIsotropic3D::testUpdateState(void)
-{ // testUpdateState
+pylith::materials::TestElasticIsotropic3D::testUpdateProperties(void)
+{ // testUpdateProperties
   ElasticIsotropic3D material;
   ElasticIsotropic3DData data;
 
@@ -112,7 +63,7 @@ pylith::materials::TestElasticIsotropic3D::testUpdateState(void)
   for (int i=0; i < tensorSize; ++i)
     totalStrain[i] = i;
   
-  material._updateState(&parameters[0], numParams, &totalStrain[0], tensorSize);
+  material._updateProperties(&parameters[0], numParams, &totalStrain[0], tensorSize);
 
   const double tolerance = 1.0e-06;
   for (int i=0; i < numParams; ++i)
@@ -122,7 +73,7 @@ pylith::materials::TestElasticIsotropic3D::testUpdateState(void)
     
   for (int i=0; i < tensorSize; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i), totalStrain[i], tolerance);
-} // testUpdateState
+} // testUpdateProperties
 
 
 // End of file 

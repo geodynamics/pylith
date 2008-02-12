@@ -21,11 +21,13 @@ subpkginclude_HEADERS = \
 	macrodefs.h \
 	petscfwd.h \
 	sievefwd.hh \
-	sievetypes.hh
+	sievetypes.hh \
+	vectorfields.hh
 
 noinst_HEADERS = 
 
-# export
+#
+   export
 clean-local: clean-subpkgincludeHEADERS
 BUILT_SOURCES = export-subpkgincludeHEADERS
 CLEANFILES = export-subpkgincludeHEADERS

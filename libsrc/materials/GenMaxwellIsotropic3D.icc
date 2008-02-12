@@ -36,24 +36,24 @@ pylith::materials::GenMaxwellIsotropic3D::useElasticBehavior(const bool flag) {
       &pylith::materials::GenMaxwellIsotropic3D::_calcStressElastic;
     _calcElasticConstsFn = 
       &pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsElastic;
-    _updateStateFn = 
-      &pylith::materials::GenMaxwellIsotropic3D::_updateStateElastic;
+    _updatePropertiesFn = 
+      &pylith::materials::GenMaxwellIsotropic3D::_updatePropertiesElastic;
   } else {
     _calcStressFn = 
       &pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic;
     _calcElasticConstsFn = 
       &pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic;
-    _updateStateFn = 
-      &pylith::materials::GenMaxwellIsotropic3D::_updateStateViscoelastic;
+    _updatePropertiesFn = 
+      &pylith::materials::GenMaxwellIsotropic3D::_updatePropertiesViscoelastic;
   } // if/else
 } // useElasticBehavior
 
 // Get flag indicating whether material implements an empty
 inline
 bool
-pylith::materials::GenMaxwellIsotropic3D::usesUpdateState(void) const {
+pylith::materials::GenMaxwellIsotropic3D::usesUpdateProperties(void) const {
   return true;
-} // usesUpdateState
+} // usesUpdateProperties
 
 // Compute stress tensor from parameters.
 inline
@@ -89,13 +89,14 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConsts(
 // Update state variables after solve.
 inline
 void
-pylith::materials::GenMaxwellIsotropic3D::_updateState(double* const parameters,
+pylith::materials::GenMaxwellIsotropic3D::_updateProperties(double* const parameters,
 						    const int numParams,
 						    const double* totalStrain,
 						    const int strainSize) {
-  assert(0 != _updateStateFn);
-  CALL_MEMBER_FN(*this, _updateStateFn)(parameters, numParams,
+  assert(0 != _updatePropertiesFn);
+  CALL_MEMBER_FN(*this, _updatePropertiesFn)(parameters, numParams,
 					totalStrain, strainSize);
-} // _updateState
+} // _updateProperties
+
 
 // End of file 
