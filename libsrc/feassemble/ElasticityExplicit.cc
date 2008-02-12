@@ -186,7 +186,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c_index);
 
     // Get state variables for cell.
-    _material->getStateVarsCell(*c_iter, numQuadPts);
+    _material->getPropertiesCell(*c_iter, numQuadPts);
 
     // Reset element vector to zero
     _resetCellVector();
@@ -293,7 +293,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c_index);
 
     // Get state variables for cell.
-    _material->getStateVarsCell(*c_iter, numQuadPts);
+    _material->getPropertiesCell(*c_iter, numQuadPts);
 
     // Reset element vector to zero
     _resetCellMatrix();

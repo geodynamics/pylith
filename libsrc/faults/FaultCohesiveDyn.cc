@@ -116,10 +116,9 @@ pylith::faults::FaultCohesiveDyn::verifyConfiguration(
 // ----------------------------------------------------------------------
 // Get vertex field associated with integrator.
 const ALE::Obj<pylith::real_section_type>&
-pylith::faults::FaultCohesiveDyn::vertexField(
-				    meshio::DataWriter::FieldEnum* fieldType,
-				    const char* name,
-				    const ALE::Obj<Mesh>& mesh)
+pylith::faults::FaultCohesiveDyn::vertexField(VectorFieldEnum* fieldType,
+					      const char* name,
+					      const ALE::Obj<Mesh>& mesh)
 { // vertexField
   // Should not reach this point if requested field was found
   std::ostringstream msg;
@@ -134,10 +133,9 @@ pylith::faults::FaultCohesiveDyn::vertexField(
 // ----------------------------------------------------------------------
 // Get cell field associated with integrator.
 const ALE::Obj<pylith::real_section_type>&
-pylith::faults::FaultCohesiveDyn::cellField(
-				    meshio::DataWriter::FieldEnum* fieldType,
-				    const char* name,
-				    const ALE::Obj<Mesh>& mesh)
+pylith::faults::FaultCohesiveDyn::cellField(VectorFieldEnum* fieldType,
+					    const char* name,
+					    const ALE::Obj<Mesh>& mesh)
 { // cellField
   // Should not reach this point if requested field was found
   std::ostringstream msg;

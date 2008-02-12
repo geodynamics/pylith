@@ -95,7 +95,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   if (!cellGeomEvent)
     PetscLogEventRegister(&cellGeomEvent, "IRCellGeom", 0);
   if (!stateVarsEvent)
-    PetscLogEventRegister(&stateVarsEvent, "IRStateVars", 0);
+    PetscLogEventRegister(&stateVarsEvent, "IRProperties", 0);
   if (!restrictEvent)
     PetscLogEventRegister(&restrictEvent, "IRRestrict", 0);
   if (!computeEvent)
@@ -190,7 +190,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
     // Get state variables for cell.
     PetscLogEventBegin(stateVarsEvent,0,0,0,0);
-    _material->getStateVarsCell(*c_iter, numQuadPts);
+    _material->getPropertiesCell(*c_iter, numQuadPts);
     PetscLogEventEnd(stateVarsEvent,0,0,0,0);
 
     // Reset element vector to zero
@@ -368,7 +368,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c_index);
 
     // Get state variables for cell.
-    _material->getStateVarsCell(*c_iter, numQuadPts);
+    _material->getPropertiesCell(*c_iter, numQuadPts);
 
     // Reset element vector to zero
     _resetCellMatrix();

@@ -60,20 +60,19 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
   ElasticIsotropic3D material;
   ElasticIsotropic3DData data;
   const int numQuadPts = 2;
-  const int_array& numParamValues = material._getNumParamValues();
   const int numParams = data.numParameters;
   const int numParamsQuadPt = data.numParamsQuadPt;
   
   Mesh::label_sequence::iterator c_iter = cells->begin();
 
   const int fiberDim = numQuadPts * numParamsQuadPt;
-  material._parameters = new real_section_type(mesh->comm(), mesh->debug());
-  material._parameters->setFiberDimension(cells, fiberDim);
-  mesh->allocate(material._parameters);
+  material._properties = new real_section_type(mesh->comm(), mesh->debug());
+  material._properties->setFiberDimension(cells, fiberDim);
+  mesh->allocate(material._properties);
 
-  material._parameters->updatePoint(*c_iter, data.parameterData);
+  material._properties->updatePoint(*c_iter, data.parameterData);
 
-  material.getStateVarsCell(*c_iter, numQuadPts);
+  material.getPropertiesCell(*c_iter, numQuadPts);
   const double_array& density = material.calcDensity();
 
   const double tolerance = 1.0e-06;
@@ -120,35 +119,21 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
   ElasticIsotropic3D material;
   ElasticIsotropic3DData data;
   const int numQuadPts = 2;
-  const int_array& numParamValues = material._getNumParamValues();
   const int numParams = data.numParameters;
   const int numParamsQuadPt = data.numParamsQuadPt;
 
   Mesh::label_sequence::iterator c_iter = cells->begin();
 
   const int fiberDim = numQuadPts * numParamsQuadPt;
-  material._parameters = new real_section_type(mesh->comm(), mesh->debug());
-  material._parameters->setFiberDimension(cells, fiberDim);
-  mesh->allocate(material._parameters);
+  material._properties = new real_section_type(mesh->comm(), mesh->debug());
+  material._properties->setFiberDimension(cells, fiberDim);
+  mesh->allocate(material._properties);
 
-  material._parameters->updatePoint(*c_iter, data.parameterData);
-
-  int strainSize = 0;
-  switch(data.dimension)
-    { // switch
-    case 1 :
-      strainSize = 1;
-      break;
-    case 2 :
-      strainSize = 3;
-      break;
-    case 3 :
-      strainSize = 6;
-      break;
-    } // switch
+  material._properties->updatePoint(*c_iter, data.parameterData);
+  const int strainSize = material._tensorSize;
   double_array strain(data.strain, numQuadPts*strainSize);
 
-  material.getStateVarsCell(*c_iter, numQuadPts);
+  material.getPropertiesCell(*c_iter, numQuadPts);
   const double_array& stress = material.calcStress(strain);
 
   const double tolerance = 1.0e-06;
@@ -200,35 +185,21 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
   ElasticIsotropic3D material;
   ElasticIsotropic3DData data;
   const int numQuadPts = 2;
-  const int_array& numParamValues = material._getNumParamValues();
   const int numParams = data.numParameters;
   const int numParamsQuadPt = data.numParamsQuadPt;
 
   Mesh::label_sequence::iterator c_iter = cells->begin();
 
   const int fiberDim = numQuadPts * numParamsQuadPt;
-  material._parameters = new real_section_type(mesh->comm(), mesh->debug());
-  material._parameters->setFiberDimension(cells, fiberDim);
-  mesh->allocate(material._parameters);
+  material._properties = new real_section_type(mesh->comm(), mesh->debug());
+  material._properties->setFiberDimension(cells, fiberDim);
+  mesh->allocate(material._properties);
 
-  material._parameters->updatePoint(*c_iter, data.parameterData);
-
-  int strainSize = 0;
-  switch(data.dimension)
-    { // switch
-    case 1 :
-      strainSize = 1;
-      break;
-    case 2 :
-      strainSize = 3;
-      break;
-    case 3 :
-      strainSize = 6;
-      break;
-    } // switch
+  material._properties->updatePoint(*c_iter, data.parameterData);
+  const int strainSize = material._tensorSize;
   double_array strain(data.strain, numQuadPts*strainSize);
 
-  material.getStateVarsCell(*c_iter, numQuadPts);
+  material.getPropertiesCell(*c_iter, numQuadPts);
   const double_array& elasticConsts = material.calcDerivElastic(strain);
 
   const double tolerance = 1.0e-06;
@@ -248,16 +219,36 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
 } // testCalcDerivElastic
     
 // ----------------------------------------------------------------------
+// Setup testing data.
+void
+pylith::materials::TestElasticMaterial::setUp(void)
+{ // setUp
+  TestMaterial::setUp();
+  _dataElastic = 0;
+} // setUp
+
+// ----------------------------------------------------------------------
+// Tear down testing data.
+void
+pylith::materials::TestElasticMaterial::tearDown(void)
+{ // tearDown
+  TestMaterial::tearDown();
+  delete _dataElastic; _dataElastic = 0;
+} // tearDown
+
+// ----------------------------------------------------------------------
 // Test _calcDensity()
 void
-pylith::materials::TestElasticMaterial::_testCalcDensity(
-					ElasticMaterial* material,
-					const ElasticMaterialData& data) const
+pylith::materials::TestElasticMaterial::test_calcDensity(void)
 { // _testCalcDensity
-  double_array density(1);
-  material->_calcDensity(&density[0], data.parameterData, data.numParamsQuadPt);
+  CPPUNIT_ASSERT(0 != _matElastic);
+  CPPUNIT_ASSERT(0 != _dataElastic);
+  const ElasticMaterialData* data = _dataElastic;
 
-  const double* densityE = data.density;
+  double_array density(1);
+  _matElastic->_calcDensity(&density[0], data->parameterData, data->numParamsQuadPt);
+
+  const double* densityE = data->density;
   CPPUNIT_ASSERT(0 != densityE);
 
   const double tolerance = 1.0e-06;
@@ -267,29 +258,19 @@ pylith::materials::TestElasticMaterial::_testCalcDensity(
 // ----------------------------------------------------------------------
 // Test _calcStress()
 void
-pylith::materials::TestElasticMaterial::_testCalcStress(
-				       ElasticMaterial* material,
-				       const ElasticMaterialData& data) const
+pylith::materials::TestElasticMaterial::test_calcStress(void)
 { // _testCalcElasticConsts
-  int stressSize = 0;
-  switch(data.dimension)
-    { // switch
-    case 1 :
-      stressSize = 1;
-      break;
-    case 2 :
-      stressSize = 3;
-      break;
-    case 3 :
-      stressSize = 6;
-      break;
-    } // switch
-  double_array stress(stressSize);
-  material->_calcStress(&stress[0], stress.size(),
-			data.parameterData, data.numParamsQuadPt,
-			data.strain, stressSize);
+  CPPUNIT_ASSERT(0 != _matElastic);
+  CPPUNIT_ASSERT(0 != _dataElastic);
+  const ElasticMaterialData* data = _dataElastic;
 
-  const double* stressE = data.stress;
+  const int stressSize = _matElastic->_tensorSize;
+  double_array stress(stressSize);
+  _matElastic->_calcStress(&stress[0], stress.size(),
+			 data->parameterData, data->numParamsQuadPt,
+			 data->strain, stressSize);
+  
+  const double* stressE = data->stress;
   CPPUNIT_ASSERT(0 != stressE);
 
   const double tolerance = 1.0e-06;
@@ -305,13 +286,15 @@ pylith::materials::TestElasticMaterial::_testCalcStress(
 // ----------------------------------------------------------------------
 // Test _calcElasticConsts()
 void
-pylith::materials::TestElasticMaterial::_testCalcElasticConsts(
-				       ElasticMaterial* material,
-				       const ElasticMaterialData& data) const
+pylith::materials::TestElasticMaterial::test_calcElasticConsts(void)
 { // _testCalcElasticConsts
+  CPPUNIT_ASSERT(0 != _matElastic);
+  CPPUNIT_ASSERT(0 != _dataElastic);
+  const ElasticMaterialData* data = _dataElastic;
+
   int numConsts = 0;
   int strainSize = 0;
-  switch(data.dimension)
+  switch(data->dimension)
     { // switch
     case 1 :
       numConsts = 1;
@@ -327,11 +310,11 @@ pylith::materials::TestElasticMaterial::_testCalcElasticConsts(
       break;
     } // switch
   double_array elasticConsts(numConsts);
-  material->_calcElasticConsts(&elasticConsts[0], numConsts,
-			       data.parameterData, data.numParamsQuadPt,
-			       data.strain, strainSize);
+  _matElastic->_calcElasticConsts(&elasticConsts[0], numConsts,
+				data->parameterData, data->numParamsQuadPt,
+				data->strain, strainSize);
 
-  const double* elasticConstsE = data.elasticConsts;
+  const double* elasticConstsE = data->elasticConsts;
   CPPUNIT_ASSERT(0 != elasticConstsE);
 
   const double tolerance = 1.0e-06;

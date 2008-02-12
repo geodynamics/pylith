@@ -664,7 +664,7 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(
 // Get vertex field associated with integrator.
 const ALE::Obj<pylith::real_section_type>&
 pylith::faults::FaultCohesiveKin::vertexField(
-				    meshio::DataWriter::FieldEnum* fieldType,
+				    VectorFieldEnum* fieldType,
 				    const char* name,
 				    const ALE::Obj<Mesh>& mesh)
 { // vertexField
@@ -678,21 +678,21 @@ pylith::faults::FaultCohesiveKin::vertexField(
     assert(!_slip.isNull());
     _allocateBufferVertexVector();
     _projectCohesiveVertexField(&_bufferVertexVector, _slip, mesh);
-    *fieldType = meshio::DataWriter::VECTOR_FIELD;
+    *fieldType = VECTOR_FIELD;
     return _bufferVertexVector;
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
     _allocateBufferVertexVector();
     const ALE::Obj<real_section_type>& strikeDir = 
       _orientation->getFibration(0);
     _projectCohesiveVertexField(&_bufferVertexVector, strikeDir, mesh);
-    *fieldType = meshio::DataWriter::VECTOR_FIELD;
+    *fieldType = VECTOR_FIELD;
     return _bufferVertexVector;
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
     _allocateBufferVertexVector();
     const ALE::Obj<real_section_type>& dipDir = 
       _orientation->getFibration(1);
     _projectCohesiveVertexField(&_bufferVertexVector, dipDir, mesh);
-    *fieldType = meshio::DataWriter::VECTOR_FIELD;
+    *fieldType = VECTOR_FIELD;
     return _bufferVertexVector;
   } else if (0 == strcasecmp("normal_dir", name)) {
     _allocateBufferVertexVector();
@@ -701,19 +701,19 @@ pylith::faults::FaultCohesiveKin::vertexField(
     const ALE::Obj<real_section_type>& normalDir = 
       _orientation->getFibration(space);
     _projectCohesiveVertexField(&_bufferVertexVector, normalDir, mesh);
-    *fieldType = meshio::DataWriter::VECTOR_FIELD;
+    *fieldType = VECTOR_FIELD;
     return _bufferVertexVector;
   } else if (0 == strcasecmp("final_slip", name)) {
     _allocateBufferVertexVector();
     const ALE::Obj<real_section_type>& finalSlip = _eqsrc->finalSlip();
     _projectCohesiveVertexField(&_bufferVertexVector, finalSlip, mesh);
-    *fieldType = meshio::DataWriter::VECTOR_FIELD;
+    *fieldType = VECTOR_FIELD;
     return _bufferVertexVector;
   } else if (0 == strcasecmp("slip_time", name)) {
     _allocateBufferVertexScalar();
     const ALE::Obj<real_section_type>& slipTime = _eqsrc->slipTime();
     _projectCohesiveVertexField(&_bufferVertexScalar, slipTime, mesh);
-    *fieldType = meshio::DataWriter::SCALAR_FIELD;
+    *fieldType = SCALAR_FIELD;
     return _bufferVertexScalar;
   } // if/else
 
@@ -731,7 +731,7 @@ pylith::faults::FaultCohesiveKin::vertexField(
 // Get cell field associated with integrator.
 const ALE::Obj<pylith::real_section_type>&
 pylith::faults::FaultCohesiveKin::cellField(
-				    meshio::DataWriter::FieldEnum* fieldType,
+				    VectorFieldEnum* fieldType,
 				    const char* name,
 				    const ALE::Obj<Mesh>& mesh)
 { // cellField

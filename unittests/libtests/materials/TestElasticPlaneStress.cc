@@ -22,79 +22,30 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticPlaneStress );
 
 // ----------------------------------------------------------------------
-// Test usesUpdateState()
+// Setup testing data.
 void
-pylith::materials::TestElasticPlaneStress::testUsesUpdateState(void)
-{ // testUsesUpdateState
-  ElasticPlaneStress material;
-  CPPUNIT_ASSERT_EQUAL(false, material.usesUpdateState());
-} // testUsesUpdateState
+pylith::materials::TestElasticPlaneStress::setUp(void)
+{ // setUp
+  _material = new ElasticPlaneStress();
+  _matElastic = new ElasticPlaneStress();
+  _data = new ElasticPlaneStressData();
+  _dataElastic = new ElasticPlaneStressData();
+} // setUp
 
 // ----------------------------------------------------------------------
-// Test DBValues()
+// Test usesUpdateProperties()
 void
-pylith::materials::TestElasticPlaneStress::testDBValues(void)
-{ // testDBValues
+pylith::materials::TestElasticPlaneStress::testUsesUpdateProperties(void)
+{ // testUsesUpdateProperties
   ElasticPlaneStress material;
-  ElasticPlaneStressData data;
-  _testDBValues(&material, data);
-} // testDBValues
+  CPPUNIT_ASSERT_EQUAL(false, material.usesUpdateProperties());
+} // testUsesUpdateProperties
 
 // ----------------------------------------------------------------------
-// Test parameters()
+// Test updateProperties()
 void
-pylith::materials::TestElasticPlaneStress::testParameters(void)
-{ // testParameters
-  ElasticPlaneStress material;
-  ElasticPlaneStressData data;
-  _testParameters(&material, data);
-} // testParameters
-
-// ----------------------------------------------------------------------
-// Test _dbToParameters()
-void
-pylith::materials::TestElasticPlaneStress::testDBToParameters(void)
-{ // testDBToParameters
-  ElasticPlaneStress material;
-  ElasticPlaneStressData data;
-  _testDBToParameters(&material, data);
-} // testDBToParameters
-
-// ----------------------------------------------------------------------
-// Test calcDensity()
-void
-pylith::materials::TestElasticPlaneStress::testCalcDensity(void)
-{ // testCalcDensity
-  ElasticPlaneStress material;
-  ElasticPlaneStressData data;
-  _testCalcDensity(&material, data);
-} // testCalcDensity
-
-// ----------------------------------------------------------------------
-// Test calcStress()
-void
-pylith::materials::TestElasticPlaneStress::testCalcStress(void)
-{ // testCalcStress
-  ElasticPlaneStress material;
-  ElasticPlaneStressData data;
-  _testCalcStress(&material, data);
-} // testCalcStress
-
-// ----------------------------------------------------------------------
-// Test calcElasticConsts()
-void
-pylith::materials::TestElasticPlaneStress::testCalcElasticConsts(void)
-{ // testElasticConsts
-  ElasticPlaneStress material;
-  ElasticPlaneStressData data;
-  _testCalcElasticConsts(&material, data);
-} // testElasticConsts
-
-// ----------------------------------------------------------------------
-// Test updateState()
-void
-pylith::materials::TestElasticPlaneStress::testUpdateState(void)
-{ // testUpdateState
+pylith::materials::TestElasticPlaneStress::testUpdateProperties(void)
+{ // testUpdateProperties
   ElasticPlaneStress material;
   ElasticPlaneStressData data;
 
@@ -112,7 +63,7 @@ pylith::materials::TestElasticPlaneStress::testUpdateState(void)
   for (int i=0; i < tensorSize; ++i)
     totalStrain[i] = i;
   
-  material._updateState(&parameters[0], numParams, &totalStrain[0], tensorSize);
+  material._updateProperties(&parameters[0], numParams, &totalStrain[0], tensorSize);
 
   const double tolerance = 1.0e-06;
   for (int i=0; i < numParams; ++i)
@@ -122,7 +73,7 @@ pylith::materials::TestElasticPlaneStress::testUpdateState(void)
     
   for (int i=0; i < tensorSize; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i), totalStrain[i], tolerance);
-} // testUpdateState
+} // testUpdateProperties
 
 
 // End of file 

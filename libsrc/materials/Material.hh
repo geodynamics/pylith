@@ -14,9 +14,10 @@
  *
  * @brief C++ abstract base class for Material object.
  *
- * Interface definition for material. The parameters for the material
- * physical properties include state variables associated with the
- * material constitutive model.
+ * Interface definition for a material. The physical properties for
+ * the material include BOTH parameters for the physical properties
+ * AND state variables associated with the material constitutive
+ * model.
  */
 
 #if !defined(pylith_materials_material_hh)
@@ -25,6 +26,7 @@
 #include "pylith/utils/array.hh" // USES double_array
 #include <string> // HASA std::string
 #include "pylith/utils/sievetypes.hh" // USES real_section_type
+#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
 
 /// Namespace for pylith package
 namespace pylith {
@@ -36,10 +38,6 @@ namespace pylith {
   namespace feassemble {
     class Quadrature; // USES Quadrature
   } // feassemble
-
-  namespace topology {
-    class FieldsManager; // HOLDSA FieldsManager
-  } // feassemble
 } // pylith
 
 /// Namespace for spatialdata package
@@ -48,7 +46,7 @@ namespace spatialdata {
     class SpatialDB; // forward declaration
   } // spatialdb
   namespace geocoords {
-    class CoordSys;
+    class CoordSys; // forward declaration
   } // geocoords
 } // spatialdata
 
@@ -57,16 +55,29 @@ class pylith::materials::Material
 { // class Material
   friend class TestMaterial; // unit testing
 
+  // PUBLIC STRUCTURES //////////////////////////////////////////////////
+public :
+
+  struct PropMetaData {
+    const char* name;
+    int fiberDim;
+    VectorFieldEnum fieldType;
+  }; // PropMetaData
+
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
   /** Default constructor.
    *
-   * @param numParamValues Array of number of values for each parameter.
-   * @param size Size of array
+   * @param dbValues Array of names of database values for material.
+   * @param numDBValues Number of database values.
+   * @param properties Array of physical property meta data.
+   * @param numProperties Number of physical properties for material.
    */
-  Material(const int* numParamValues,
-	   const int size);
+  Material(const char** dbValues,
+	   const int numDBValues,
+	   const PropMetaData* properties,
+	   const int numProperties);
 
   /// Destructor.
   virtual
@@ -128,7 +139,7 @@ public :
    * @param cs Coordinate system associated with mesh
    * @param quadrature Quadrature for finite-element integration
    */
-  void initialize(const ALE::Obj<ALE::Mesh>& mesh,
+  void initialize(const ALE::Obj<Mesh>& mesh,
 		  const spatialdata::geocoords::CoordSys* cs,
 		  pylith::feassemble::Quadrature* quadrature);
   
@@ -143,40 +154,29 @@ public :
   /// current state.
   void resetNeedNewJacobian(void);
 
+  /** Get metadata for physical property. Values are returned through
+   * the arguments.
+   *
+   * @param space Subspace index.
+   * @param fiberDim Fiber dimension.
+   * @param fieldType Vector field type.
+   * @param name Name of physical property.
+   */
+  void propertyInfo(int* space,
+		    int* fiberDim,
+		    VectorFieldEnum* fieldType,
+		    const char* name) const;
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
-  /** Get names of values expected to be in database of parameters for
-   *  physical properties.
+  /** Compute properties from values in spatial database.
    *
-   * @returns Names of values
+   * @param propVals Array of property values.
+   * @param dbValues Array of database values.
    */
   virtual
-  const char** _dbValues(void) const = 0;
-
-  /** Get number of values expected to be in database of parameters for
-   *  physical properties.
-   *
-   * @returns Number of values
-   */
-  virtual
-  int _numDBValues(void) const = 0;
-
-  /** Get number of values for each parameter for physical properties.
-   *
-   * @returns Array of number of values for each parameter.
-   */
-  const int_array& _getNumParamValues(void) const;
-
-  /** Compute parameters from values in spatial database.
-   *
-   * @param paramVals Array of parameters.
-   * @param numParams Number of parameters at quadrature point.
-   * @param dbValues Array of database values
-   */
-  virtual
-  void _dbToParameters(double* const paramVals,
-		       const int numParams,
+  void _dbToProperties(double* const propValues,
 		       const double_array& dbValues) const = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
@@ -193,12 +193,12 @@ protected :
 
   double _dt; ///< Current time step
 
-  ///< Section containing parameters for physical properties of material.
-  ALE::Obj<real_section_type> _parameters;
+  /// Section containing physical properties of material.
+  ALE::Obj<real_section_type> _properties;
   
-  int _numParamsQuadPt; ///< Number of parameters per quadrature point.
-  int _dimension; ///< Spatial dimension associated with material
-  bool _needNewJacobian; ///< True if need to reform Jacobian, false otherwise
+  int _totalPropsQuadPt; ///< Total # of property values per quad point.
+  int _dimension; ///< Spatial dimension associated with material.
+  bool _needNewJacobian; ///< True if need to reform Jacobian, false otherwise.
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
@@ -209,12 +209,11 @@ private :
   int _id; ///< Material identifier
   std::string _label; ///< Label of material
 
-  /** Number of values associated with each parameter.
-   *
-   * size = numParams
-   * index = iParam
-   */
-  int_array _numParamValues;
+  const PropMetaData* _propMetaData; ///< Property meta data.
+  const int _numProperties; ///< Number of properties
+
+  const char** _dbValues; ///< Names of database values
+  const int _numDBValues; ///< Number of database values
 
 }; // class Material
 

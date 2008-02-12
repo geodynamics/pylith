@@ -22,79 +22,30 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticStress1D );
 
 // ----------------------------------------------------------------------
-// Test usesUpdateState()
+// Setup testing data.
 void
-pylith::materials::TestElasticStress1D::testUsesUpdateState(void)
-{ // testUsesUpdateState
-  ElasticStress1D material;
-  CPPUNIT_ASSERT_EQUAL(false, material.usesUpdateState());
-} // testUsesUpdateState
+pylith::materials::TestElasticStress1D::setUp(void)
+{ // setUp
+  _material = new ElasticStress1D();
+  _matElastic = new ElasticStress1D();
+  _data = new ElasticStress1DData();
+  _dataElastic = new ElasticStress1DData();
+} // setUp
 
 // ----------------------------------------------------------------------
-// Test DBValues()
+// Test usesUpdateProperties()
 void
-pylith::materials::TestElasticStress1D::testDBValues(void)
-{ // testDBValues
+pylith::materials::TestElasticStress1D::testUsesUpdateProperties(void)
+{ // testUsesUpdateProperties
   ElasticStress1D material;
-  ElasticStress1DData data;
-  _testDBValues(&material, data);
-} // testDBValues
+  CPPUNIT_ASSERT_EQUAL(false, material.usesUpdateProperties());
+} // testUsesUpdateProperties
 
 // ----------------------------------------------------------------------
-// Test parameters()
+// Test updateProperties()
 void
-pylith::materials::TestElasticStress1D::testParameters(void)
-{ // testParameters
-  ElasticStress1D material;
-  ElasticStress1DData data;
-  _testParameters(&material, data);
-} // testParameters
-
-// ----------------------------------------------------------------------
-// Test _dbToParameters()
-void
-pylith::materials::TestElasticStress1D::testDBToParameters(void)
-{ // testDBToParameters
-  ElasticStress1D material;
-  ElasticStress1DData data;
-  _testDBToParameters(&material, data);
-} // testDBToParameters
-
-// ----------------------------------------------------------------------
-// Test calcDensity()
-void
-pylith::materials::TestElasticStress1D::testCalcDensity(void)
-{ // testCalcDensity
-  ElasticStress1D material;
-  ElasticStress1DData data;
-  _testCalcDensity(&material, data);
-} // testCalcDensity
-
-// ----------------------------------------------------------------------
-// Test calcStress()
-void
-pylith::materials::TestElasticStress1D::testCalcStress(void)
-{ // testCalcStress
-  ElasticStress1D material;
-  ElasticStress1DData data;
-  _testCalcStress(&material, data);
-} // testCalcStress
-
-// ----------------------------------------------------------------------
-// Test calcElasticConsts()
-void
-pylith::materials::TestElasticStress1D::testCalcElasticConsts(void)
-{ // testElasticConsts
-  ElasticStress1D material;
-  ElasticStress1DData data;
-  _testCalcElasticConsts(&material, data);
-} // testElasticConsts
-
-// ----------------------------------------------------------------------
-// Test updateState()
-void
-pylith::materials::TestElasticStress1D::testUpdateState(void)
-{ // testUpdateState
+pylith::materials::TestElasticStress1D::testUpdateProperties(void)
+{ // testUpdateProperties
   ElasticStress1D material;
   ElasticStress1DData data;
 
@@ -112,7 +63,7 @@ pylith::materials::TestElasticStress1D::testUpdateState(void)
   for (int i=0; i < tensorSize; ++i)
     totalStrain[i] = i;
   
-  material._updateState(&parameters[0], numParams, &totalStrain[0], tensorSize);
+  material._updateProperties(&parameters[0], numParams, &totalStrain[0], tensorSize);
 
   const double tolerance = 1.0e-06;
   for (int i=0; i < numParams; ++i)
@@ -122,7 +73,7 @@ pylith::materials::TestElasticStress1D::testUpdateState(void)
     
   for (int i=0; i < tensorSize; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i), totalStrain[i], tolerance);
-} // testUpdateState
+} // testUpdateProperties
 
 
 // End of file 

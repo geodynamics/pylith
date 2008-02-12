@@ -86,7 +86,7 @@ public :
   void writeVertexField(const double t,
 			const char* name,
 			const ALE::Obj<real_section_type>& field,
-			const FieldEnum fieldType,
+			const VectorFieldEnum fieldType,
 			const ALE::Obj<ALE::Mesh>& mesh);
 
   /** Write field over cells to file.
@@ -100,7 +100,7 @@ public :
   void writeCellField(const double t,
 		      const char* name,
 		      const ALE::Obj<real_section_type>& field,
-		      const FieldEnum fieldType,
+		      const VectorFieldEnum fieldType,
 		      const ALE::Obj<ALE::Mesh>& mesh);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////

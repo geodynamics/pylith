@@ -126,7 +126,7 @@ pylith::meshio::OutputManager::appendVertexField(
 			       const double t,
 			       const char* name,
 			       const ALE::Obj<real_section_type>& field,
-			       const DataWriter::FieldEnum fieldType,
+			       const VectorFieldEnum fieldType,
 			       const ALE::Obj<ALE::Mesh>& mesh)
 { // appendVertexField
   assert(0 != name);
@@ -144,7 +144,7 @@ pylith::meshio::OutputManager::appendCellField(
 				const double t,
 				const char* name,
 				const ALE::Obj<real_section_type>& field,
-				const DataWriter::FieldEnum fieldType,
+				const VectorFieldEnum fieldType,
 				const ALE::Obj<ALE::Mesh>& mesh)
 { // appendCellField
   assert(0 != name);

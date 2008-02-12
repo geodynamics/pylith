@@ -20,6 +20,7 @@
 #define pylith_meshio_datawriter_hh
 
 #include "pylith/utils/sievetypes.hh" // USES ALE::Obj, ALE::Mesh, real_section_type
+#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
 
 namespace pylith {
   namespace meshio {
@@ -35,17 +36,6 @@ namespace spatialdata {
 
 class pylith::meshio::DataWriter
 { // DataWriter
-
-// PUBLIC ENUMS /////////////////////////////////////////////////////////
-public :
-
-  /// Enumeration of types of fields
-  enum FieldEnum {
-    SCALAR_FIELD, ///< Scalar field
-    VECTOR_FIELD, ///< Vector field
-    TENSOR_FIELD, ///< Tensor field
-    OTHER_FIELD ///< Other type of field
-  }; // FieldEnum
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -116,7 +106,7 @@ public :
   void writeVertexField(const double t,
 			const char* name,
 			const ALE::Obj<real_section_type>& field,
-			const FieldEnum fieldType,
+			const VectorFieldEnum fieldType,
 			const ALE::Obj<ALE::Mesh>& mesh) = 0;
 
   /** Write field over cells to file.
@@ -131,7 +121,7 @@ public :
   void writeCellField(const double t,
 		      const char* name,
 		      const ALE::Obj<real_section_type>& field,
-		      const FieldEnum fieldType,
+		      const VectorFieldEnum fieldType,
 		      const ALE::Obj<ALE::Mesh>& mesh) = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
