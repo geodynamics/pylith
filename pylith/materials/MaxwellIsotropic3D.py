@@ -38,8 +38,8 @@ class MaxwellIsotropic3D(ElasticMaterial):
            {'info': [],
             'data': []},
          'cell': \
-           {'info': ["Lame mu", "Lame lambda", "density"],
-            'data': []}}
+           {'info': ["mu", "lambda", "density", "Maxwell-time"],
+            'data': ["total-strain", "viscous-strain", "stress"]}}
     return
 
 

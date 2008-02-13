@@ -40,7 +40,7 @@ class ElasticPlaneStrain(ElasticMaterial):
            {'info': [],
             'data': []},
          'cell': \
-           {'info': ["Lame mu", "Lame lambda", "density"],
+           {'info': ["mu", "lambda", "density"],
             'data': []}}
     return
 

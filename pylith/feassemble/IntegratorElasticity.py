@@ -35,6 +35,9 @@ class IntegratorElasticity(Integrator):
     Integrator.__init__(self)
     import journal
     self._info = journal.info(name)
+    self.output = None
+    self.availableFields = None
+    self.name = "Integrator Elasticity"
     return
 
 
@@ -54,6 +57,9 @@ class IntegratorElasticity(Integrator):
 
     self.material = material
     self.cppHandle.material = self.material.cppHandle
+    self.output = material.output
+    self.availableFields = material.availableFields
+    self.output.preinitialize(self)
     return
 
 
@@ -63,6 +69,7 @@ class IntegratorElasticity(Integrator):
     """
     Integrator.verifyConfiguration(self)
     self.material.verifyConfiguration()
+    self.output.verifyConfiguration()    
     return
 
 
@@ -77,22 +84,45 @@ class IntegratorElasticity(Integrator):
                    self.material.label)
 
     self.material.initialize(self.mesh, totalTime, numTimeSteps)
+    self.output.initialize(self.quadrature.cppHandle)
+    #self.output.writeInfo()
+    #self.output.open(totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)
     return
   
   
-  def poststep(self, t, dt, totalTime):
+  def poststep(self, t, dt, totalTime, fields):
     """
     Hook for doing stuff after advancing time step.
     """
     logEvent = "%spoststep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    self.material.poststep(t, dt, totalTime)
+    self._info.log("Writing material data.")
+    #self.output.writeData(t+dt, fields)
 
     self._logger.eventEnd(logEvent)
     return
+
+
+  def getDataMesh(self):
+    """
+    Get mesh associated with data fields.
+    """
+    return self.material.getDataMesh()
+
+
+  def getCellField(self, name, fields=None):
+    """
+    Get cell field.
+    """
+    if None == fields:
+      (field, fieldType) = self.cppHandle.cellField(name, self.mesh.cppHandle)
+    else:
+      (field, fieldType) = self.cppHandle.cellField(name, self.mesh.cppHandle,
+                                                   fields.cppHandle)
+    return (field, fieldType)
 
 
 # End of file 

@@ -48,8 +48,8 @@ class OutputMatElastic(OutputManager):
     import pyre.inventory
 
     cellInfoFields = pyre.inventory.list("cell_info_fields",
-                                         default=["Lame mu",
-                                                  "Lame lambda",
+                                         default=["mu",
+                                                  "lambda",
                                                   "density"])
     cellInfoFields.meta['tip'] = "Names of cell info fields to output."
 

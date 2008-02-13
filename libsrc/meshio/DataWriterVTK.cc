@@ -143,14 +143,8 @@ pylith::meshio::DataWriterVTK::writeVertexField(
   assert(0 != name);
 
   try {
-    std::string    labelName;
-    PetscErrorCode err = 0;
-
-    if (mesh->hasLabel("censored depth")) {
-      labelName = "censored depth";
-    } else {
-      labelName = "depth";
-    }
+    const std::string labelName = 
+      (mesh->hasLabel("censored depth")) ? "censored depth" : "depth";
     const ALE::Obj<Mesh::numbering_type>& numbering =
       mesh->getFactory()->getNumbering(mesh, labelName, 0);
 
@@ -159,8 +153,8 @@ pylith::meshio::DataWriterVTK::writeVertexField(
     const int enforceDim = (fieldType != VECTOR_FIELD) ? fiberDim : 3;
 
     if (!_wroteVertexHeader) {
-      err = PetscViewerASCIIPrintf(_viewer, "POINT_DATA %d\n", 
-				   numbering->getGlobalSize());
+      PetscErrorCode err = PetscViewerASCIIPrintf(_viewer, "POINT_DATA %d\n", 
+						  numbering->getGlobalSize());
       if (err)
 	throw std::runtime_error("Could not write VTK point data header.");
       _wroteVertexHeader = true;

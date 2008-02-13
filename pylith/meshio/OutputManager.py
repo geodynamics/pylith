@@ -207,10 +207,10 @@ class OutputManager(Component):
         self.cppHandle.appendVertexField(t.value, name, field, fieldType, 
                                          mesh.cppHandle)
 
-      #for name in self.cellInfoFields:
-      #  (field, fieldType) = self.dataProvider.getCellField(name)
-      #  self.cppHandle.appendCellField(t.value, name, field, fieldType, 
-      #                                 mesh.cppHandle)
+      for name in self.cellInfoFields:
+        (field, fieldType) = self.dataProvider.getCellField(name)
+        self.cppHandle.appendCellField(t.value, name, field, fieldType, 
+                                       mesh.cppHandle)
 
       self.cppHandle.closeTimeStep()
       self.close()
@@ -219,7 +219,7 @@ class OutputManager(Component):
     return
 
 
-  def writeData(self, t):
+  def writeData(self, t, fields):
     """
     Write fields at current time step.
     """
@@ -234,12 +234,12 @@ class OutputManager(Component):
                                   label, labelId)
 
       for name in self.vertexDataFields:
-        (field, fieldType) = self.dataProvider.getVertexField(name)
+        (field, fieldType) = self.dataProvider.getVertexField(name, fields)
         self.cppHandle.appendVertexField(t.value, name, field, fieldType, 
                                          mesh.cppHandle)
 
       for name in self.cellDataFields:
-        (field, fieldType) = self.dataProvider.getCellField(name)
+        (field, fieldType) = self.dataProvider.getCellField(name, fields)
         self.cppHandle.appendCellField(t.value, name, field, fieldType, 
                                        mesh.cppHandle)
 

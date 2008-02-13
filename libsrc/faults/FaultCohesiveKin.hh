@@ -128,25 +128,29 @@ public :
    *
    * @param fieldType Type of field.
    * @param name Name of vertex field.
-   * @param mesh PETSc mesh for problem.
+   * @param mesh PETSc mesh for problem. 
+   * @param fields Fields manager.
    * @returns Vertex field.
    */
   const ALE::Obj<real_section_type>&
   vertexField(VectorFieldEnum* fieldType,
 	      const char* name,
-	      const ALE::Obj<Mesh>& mesh);
+	      const ALE::Obj<Mesh>& mesh,
+	      topology::FieldsManager* const fields);
 
   /** Get cell field associated with integrator.
    *
    * @param fieldType Type of field.
    * @param name Name of vertex field.
    * @param mesh PETSc mesh for problem.
+   * @param fields Fields manager.
    * @returns Cell field.
    */
   const ALE::Obj<real_section_type>&
   cellField(VectorFieldEnum* fieldType,
 	    const char* name,
-	    const ALE::Obj<Mesh>& mesh);
+	    const ALE::Obj<Mesh>& mesh,
+	    topology::FieldsManager* const fields);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

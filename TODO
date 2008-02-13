@@ -4,8 +4,6 @@ CURRENT ISSUES
 
 Release 1.1
 
-  1. Finish Neumann BC [CHARLES]
-
   2. Reimplement SolutionIO [BRAD & MATT]
      b. Implement output of material information.
         i. CellFilterAvg (average data over quadrature points)

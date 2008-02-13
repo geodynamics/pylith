@@ -35,6 +35,7 @@
 #include "pylith/feassemble/Quadrature3D.hh"
 
 #include "pylith/feassemble/Integrator.hh"
+#include "pylith/feassemble/IntegratorElasticity.hh"
 #include "pylith/feassemble/ElasticityExplicit.hh"
 #include "pylith/feassemble/ElasticityImplicit.hh"
 
@@ -61,6 +62,22 @@ cdef extern from "stdlib.h":
     void* malloc(size_t size)
     void free(void* mem)
 
+cdef void Section_destructor(void* obj):
+  """
+  Destroy ALE::Obj<real_section_type> object.
+  """
+  # create shim for destructor
+  #embed{ void Section_destructor_cpp(void* objVptr)
+  ALE::Obj<pylith::real_section_type>* field =
+    (ALE::Obj<pylith::real_section_type>*) objVptr;
+  assert(0 != field);
+  assert(!field->isNull());
+  delete *field;
+  #}embed
+  Section_destructor_cpp(obj)
+  return
+  
+# ----------------------------------------------------------------------
 cdef void CellGeometry_destructor(void* obj):
   """
   Destroy CellGeometry object.
@@ -74,48 +91,6 @@ cdef void CellGeometry_destructor(void* obj):
   CellGeometry_destructor_cpp(obj)
   return
 
-cdef void Quadrature_destructor(void* obj):
-  """
-  Destroy Quadrature object.
-  """
-  # create shim for destructor
-  #embed{ void Quadrature_destructor_cpp(void* objVptr)
-  pylith::feassemble::Quadrature* pQ =
-    (pylith::feassemble::Quadrature*) objVptr;
-  delete pQ;
-  #}embed
-  Quadrature_destructor_cpp(obj)
-  return
-
-cdef void Integrator_destructor(void* obj):
-  """
-  Destroy Integrator object.
-  """
-  # create shim for destructor
-  #embed{ void Integrator_destructor_cpp(void* objVptr)
-  pylith::feassemble::Integrator* pQ =
-    (pylith::feassemble::Integrator*) objVptr;
-  delete pQ;
-  #}embed
-  Integrator_destructor_cpp(obj)
-  return
-
-
-cdef void Constraint_destructor(void* obj):
-  """
-  Destroy Constraint object.
-  """
-  # create shim for destructor
-  #embed{ void Constraint_destructor_cpp(void* objVptr)
-  pylith::feassemble::Constraint* pQ =
-    (pylith::feassemble::Constraint*) objVptr;
-  delete pQ;
-  #}embed
-  Constraint_destructor_cpp(obj)
-  return
-
-
-# ----------------------------------------------------------------------
 cdef class CellGeometry:
 
   cdef void* thisptr # Pointer to C++ object
@@ -498,6 +473,19 @@ cdef class GeometryHex3D(CellGeometry):
 
 
 # ----------------------------------------------------------------------
+cdef void Quadrature_destructor(void* obj):
+  """
+  Destroy Quadrature object.
+  """
+  # create shim for destructor
+  #embed{ void Quadrature_destructor_cpp(void* objVptr)
+  pylith::feassemble::Quadrature* pQ =
+    (pylith::feassemble::Quadrature*) objVptr;
+  delete pQ;
+  #}embed
+  Quadrature_destructor_cpp(obj)
+  return
+
 cdef class Quadrature:
 
   cdef void* thisptr # Pointer to C++ object
@@ -920,6 +908,20 @@ cdef class Quadrature3D(Quadrature):
 
 
 # ----------------------------------------------------------------------
+cdef void Integrator_destructor(void* obj):
+  """
+  Destroy Integrator object.
+  """
+  # create shim for destructor
+  #embed{ void Integrator_destructor_cpp(void* objVptr)
+  pylith::feassemble::Integrator* pQ =
+    (pylith::feassemble::Integrator*) objVptr;
+  delete pQ;
+  #}embed
+  Integrator_destructor_cpp(obj)
+  return
+
+
 cdef class Integrator:
 
   cdef void* thisptr # Pointer to C++ object
@@ -1229,7 +1231,101 @@ cdef class Integrator:
 
 
 # ----------------------------------------------------------------------
-cdef class ElasticityExplicit(Integrator):
+cdef class IntegratorElasticity(Integrator):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    Integrator.__init__(self)
+    return
+
+
+  def cellField(self, name, mesh, fields=None):
+    """
+    Get cell field.
+    """
+    # create shim for method 'cellField'
+    #embed{ void* IntegratorElasticity_cellField(void* objVptr, int* fieldPtr, char* name, void* meshVptr, void* fieldsVptr)
+    void* result = 0;
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldPtr);
+      assert(0 != name);
+      assert(0 != meshVptr);
+      pylith::feassemble::IntegratorElasticity* integrator = (pylith::feassemble::IntegratorElasticity*) objVptr;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      pylith::topology::FieldsManager* fields =
+        (pylith::topology::FieldsManager*) fieldsVptr;
+      pylith::VectorFieldEnum fieldType;
+      const ALE::Obj<pylith::real_section_type>& field =
+        integrator->cellField(&fieldType, name, *mesh, fields);
+      *fieldPtr = fieldType;
+      result = (void*) &field;
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type " \
+            "'pylith::topology::Mesh'."
+    if None != fields:
+      if not fields.name == "pylith_topology_FieldsManager":
+        raise TypeError, \
+              "Argument 'fields' must be extension module type " \
+              "'pylith::topology::FieldsManager'."
+    cdef void* ptr
+    cdef int fieldType
+    if None != fields:
+      ptr = IntegratorElasticity_cellField(self.thisptr, &fieldType, name,
+                                           ptrFromHandle(mesh),
+                                           ptrFromHandle(fields))
+    else:
+      ptr = IntegratorElasticity_cellField(self.thisptr, &fieldType, name,
+                                           ptrFromHandle(mesh), NULL)
+    return (PyCObject_FromVoidPtr(ptr, NULL), fieldType)
+    
+
+  property material:
+    def __set__(self, m):
+      """
+      Set material.
+      """
+      # create shim for method 'material'
+      #embed{ void IntegratorElasticity_material_set(void* objVptr, void* mVptr)
+      try {
+        assert(0 != objVptr);
+        pylith::materials::ElasticMaterial* material =
+          (pylith::materials::ElasticMaterial*) mVptr;
+        ((pylith::feassemble::IntegratorElasticity*) objVptr)->material(material);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not m.name == "pylith_materials_ElasticMaterial":
+        raise TypeError, \
+              "Argument must be extension module type 'ElasticMaterial'."
+      IntegratorElasticity_material_set(self.thisptr, ptrFromHandle(m))
+
+
+# ----------------------------------------------------------------------
+cdef class ElasticityExplicit(IntegratorElasticity):
 
   def __init__(self):
     """
@@ -1260,37 +1356,8 @@ cdef class ElasticityExplicit(Integrator):
     return
 
 
-  property material:
-    def __set__(self, m):
-      """
-      Set material.
-      """
-      # create shim for method 'material'
-      #embed{ void ElasticityExplicit_material_set(void* objVptr, void* mVptr)
-      try {
-        assert(0 != objVptr);
-        pylith::materials::ElasticMaterial* material =
-          (pylith::materials::ElasticMaterial*) mVptr;
-        ((pylith::feassemble::ElasticityExplicit*) objVptr)->material(material);
-      } catch (const std::exception& err) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        const_cast<char*>(err.what()));
-      } catch (const ALE::Exception& err) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        const_cast<char*>(err.msg().c_str()));
-      } catch (...) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        "Caught unknown C++ exception.");
-      } // try/catch
-      #}embed
-      if not m.name == "pylith_materials_ElasticMaterial":
-        raise TypeError, \
-              "Argument must be extension module type 'ElasticMaterial'."
-      ElasticityExplicit_material_set(self.thisptr, ptrFromHandle(m))
-
-
 # ----------------------------------------------------------------------
-cdef class ElasticityImplicit(Integrator):
+cdef class ElasticityImplicit(IntegratorElasticity):
 
   def __init__(self):
     """
@@ -1321,36 +1388,21 @@ cdef class ElasticityImplicit(Integrator):
     return
 
 
-  property material:
-    def __set__(self, m):
-      """
-      Set material.
-      """
-      # create shim for method 'material'
-      #embed{ void ElasticityImplicit_material_set(void* objVptr, void* mVptr)
-      try {
-        assert(0 != objVptr);
-        pylith::materials::ElasticMaterial* material =
-          (pylith::materials::ElasticMaterial*) mVptr;
-        ((pylith::feassemble::ElasticityImplicit*) objVptr)->material(material);
-      } catch (const std::exception& err) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        const_cast<char*>(err.what()));
-      } catch (const ALE::Exception& err) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        const_cast<char*>(err.msg().c_str()));
-      } catch (...) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        "Caught unknown C++ exception.");
-      } // try/catch
-      #}embed
-      if not m.name == "pylith_materials_ElasticMaterial":
-        raise TypeError, \
-              "Argument must be extension module type 'ElasticMaterial'."
-      ElasticityImplicit_material_set(self.thisptr, ptrFromHandle(m))
-
-
 # ----------------------------------------------------------------------
+cdef void Constraint_destructor(void* obj):
+  """
+  Destroy Constraint object.
+  """
+  # create shim for destructor
+  #embed{ void Constraint_destructor_cpp(void* objVptr)
+  pylith::feassemble::Constraint* pQ =
+    (pylith::feassemble::Constraint*) objVptr;
+  delete pQ;
+  #}embed
+  Constraint_destructor_cpp(obj)
+  return
+
+
 cdef class Constraint:
 
   cdef void* thisptr # Pointer to C++ object

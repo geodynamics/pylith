@@ -39,7 +39,7 @@ class ElasticStrain1D(ElasticMaterial):
            {'info': [],
             'data': []},
          'cell': \
-           {'info': ["Lame mu", "Lame lambda", "density"],
+           {'info': ["mu", "lambda", "density"],
             'data': []}}
     return
 

@@ -95,8 +95,6 @@ class Material(Component):
     self.cppHandle.id = self.id
     self.cppHandle.label = self.label
     self.quadrature.preinitialize()
-    if None != self.output:
-      self.output.preinitialize(self)
     return
 
 
@@ -115,9 +113,6 @@ class Material(Component):
     # fact that any given processor may only have a subset of the
     # materials)
 
-    if None != self.output:
-      self.output.verifyConfiguration()
-
     return
   
 
@@ -133,20 +128,6 @@ class Material(Component):
     self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
                               self.quadrature.cppHandle)
 
-    if None != self.output:
-      self.output.initialize(self.quadrature.cppHandle)
-      self.output.writeInfo()
-      self.output.open(totalTime, numTimeSteps)
-    return
-
-
-  def poststep(self, t, dt, totalTime):
-    """
-    Hook for doing stuff after advancing time step.
-    """
-    if None != self.output:
-      self._info.log("Writing material data.")
-      self.output.writeData(t+dt)
     return
 
 
@@ -155,22 +136,6 @@ class Material(Component):
     Get mesh associated with data fields.
     """
     return (self.mesh, "material-id", self.id)
-
-
-  def getVertexField(self, name):
-    """
-    Get vertex field.
-    """
-    raise NotImplementedError("Material.getVertexField() not implemented.")
-    return
-
-
-  def getCellField(self, name):
-    """
-    Get cell field.
-    """
-    raise NotImplementedError("Material.getCellField() not implemented.")
-    return
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////

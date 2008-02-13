@@ -666,7 +666,8 @@ const ALE::Obj<pylith::real_section_type>&
 pylith::faults::FaultCohesiveKin::vertexField(
 				    VectorFieldEnum* fieldType,
 				    const char* name,
-				    const ALE::Obj<Mesh>& mesh)
+				    const ALE::Obj<Mesh>& mesh,
+				    topology::FieldsManager* fields)
 { // vertexField
   assert(!_faultMesh.isNull());
   assert(!_orientation.isNull());
@@ -675,53 +676,63 @@ pylith::faults::FaultCohesiveKin::vertexField(
   const int cohesiveDim = _faultMesh->getDimension();
 
   if (0 == strcasecmp("slip", name)) {
-    assert(!_slip.isNull());
     _allocateBufferVertexVector();
+    assert(!_slip.isNull());
     _projectCohesiveVertexField(&_bufferVertexVector, _slip, mesh);
     *fieldType = VECTOR_FIELD;
     return _bufferVertexVector;
+
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
     _allocateBufferVertexVector();
     const ALE::Obj<real_section_type>& strikeDir = 
       _orientation->getFibration(0);
+    assert(!strikeDir.isNull());
     _projectCohesiveVertexField(&_bufferVertexVector, strikeDir, mesh);
     *fieldType = VECTOR_FIELD;
     return _bufferVertexVector;
+
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
     _allocateBufferVertexVector();
     const ALE::Obj<real_section_type>& dipDir = 
       _orientation->getFibration(1);
+    assert(!dipDir.isNull());
     _projectCohesiveVertexField(&_bufferVertexVector, dipDir, mesh);
     *fieldType = VECTOR_FIELD;
     return _bufferVertexVector;
+
   } else if (0 == strcasecmp("normal_dir", name)) {
     _allocateBufferVertexVector();
     const int space = 
       (0 == cohesiveDim) ? 0 : (1 == cohesiveDim) ? 1 : 2;
     const ALE::Obj<real_section_type>& normalDir = 
       _orientation->getFibration(space);
+    assert(!normalDir.isNull());
     _projectCohesiveVertexField(&_bufferVertexVector, normalDir, mesh);
     *fieldType = VECTOR_FIELD;
     return _bufferVertexVector;
+
   } else if (0 == strcasecmp("final_slip", name)) {
     _allocateBufferVertexVector();
     const ALE::Obj<real_section_type>& finalSlip = _eqsrc->finalSlip();
+    assert(!finalSlip.isNull());
     _projectCohesiveVertexField(&_bufferVertexVector, finalSlip, mesh);
     *fieldType = VECTOR_FIELD;
     return _bufferVertexVector;
+
   } else if (0 == strcasecmp("slip_time", name)) {
     _allocateBufferVertexScalar();
     const ALE::Obj<real_section_type>& slipTime = _eqsrc->slipTime();
+    assert(!slipTime.isNull());
     _projectCohesiveVertexField(&_bufferVertexScalar, slipTime, mesh);
     *fieldType = SCALAR_FIELD;
     return _bufferVertexScalar;
-  } // if/else
 
-  // Should not reach this point if requested field was found
-  std::ostringstream msg;
-  msg << "Request for unknown vertex field '" << name
-      << "' for fault '" << label() << "'.";
-  throw std::runtime_error(msg.str());
+  } else {
+    std::ostringstream msg;
+    msg << "Request for unknown vertex field '" << name
+	<< "' for fault '" << label() << "'.";
+    throw std::runtime_error(msg.str());
+  } // else
 
   // Return generic section to satisfy member function definition.
   return _bufferVertexScalar;
@@ -733,7 +744,8 @@ const ALE::Obj<pylith::real_section_type>&
 pylith::faults::FaultCohesiveKin::cellField(
 				    VectorFieldEnum* fieldType,
 				    const char* name,
-				    const ALE::Obj<Mesh>& mesh)
+				    const ALE::Obj<Mesh>& mesh,
+				    topology::FieldsManager* fields)
 { // cellField
   assert(!_faultMesh.isNull());
   assert(!_orientation.isNull());

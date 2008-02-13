@@ -211,13 +211,12 @@ class Formulation(Component):
     self._logger.eventBegin(logEvent)
 
     self._info.log("Writing solution fields.")
-    field = self.fields.getSolution()
     for output in self.output.bin:
-      output.writeData(t+dt)
+      output.writeData(t+dt, self.fields)
     for integrator in self.integrators:
-      integrator.poststep(t, dt, totalTime)
+      integrator.poststep(t, dt, totalTime, self.fields)
     for constraint in self.constraints:
-      constraint.poststep(t, dt, totalTime)
+      constraint.poststep(t, dt, totalTime, self.fields)
 
     self._logger.eventEnd(logEvent)
     return
@@ -251,14 +250,14 @@ class Formulation(Component):
     return (self.mesh, None, None)
 
 
-  def getVertexField(self, name):
+  def getVertexField(self, name, fields):
     """
     Get vertex field.
     """
     field = None
     fieldType = None
     if name == "displacements":
-      field = self.fields.getSolution()
+      field = fields.getSolution()
       fieldType = 1 # vector field
     else:
       raise ValueError, "Vertex field '%s' not available." % name
