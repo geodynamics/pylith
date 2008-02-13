@@ -54,7 +54,7 @@ class OutputMatElastic(OutputManager):
     cellInfoFields.meta['tip'] = "Names of cell info fields to output."
 
     cellDataFields = pyre.inventory.list("cell_data_fields", 
-                                         default=["total-strain"])
+                                         default=["total-strain", "stress"])
     cellDataFields.meta['tip'] = "Names of cell data fields to output."
 
 
