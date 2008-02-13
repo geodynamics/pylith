@@ -154,16 +154,26 @@ public :
   /// current state.
   void resetNeedNewJacobian(void);
 
-  /** Get physical property field. Meta data is returned via the
-   * arguments.
+  /** Get type of field associated with physical property.
    *
-   * @param fiberDim Fiber dimension.
-   * @param fieldType Vector field type.
    * @param name Name of physical property.
+   *
+   * @returns Type of vector field associated with property.
    */
-  ALE::Obj<real_section_type> propertyField(int* fiberDim,
-					    VectorFieldEnum* fieldType,
-					    const char* name) const;
+  VectorFieldEnum propertyFieldType(const char* name) const;
+
+  /** Get physical property field. Data is returned via the
+   * argument.
+   *
+   * @param field Proeprty field.
+   * @param name Name of physical property.
+   * @param mesh PETSc mesh.
+   * @param numQuadPoints Number of quadrature points.
+   */
+  void propertyField(ALE::Obj<real_section_type>* field,
+		     const char* name,
+		     const ALE::Obj<Mesh>& mesh,
+		     const int numQuadPts) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

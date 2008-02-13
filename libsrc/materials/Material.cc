@@ -56,7 +56,6 @@ pylith::materials::Material::~Material(void)
   _db = 0;
 } // destructor
 
-#include <iostream>
 // ----------------------------------------------------------------------
 // Get physical property parameters from database.
 void
@@ -80,8 +79,6 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   // Create sections to hold physical properties and state variables.
   _properties = new real_section_type(mesh->comm(), mesh->debug());
   assert(!_properties.isNull());
-  for (int i=0; i < _numProperties; ++i)
-    _properties->addSpace();
 
   const int numQuadPts = quadrature->numQuadPts();
   const int spaceDim = quadrature->spaceDim();
@@ -91,11 +88,6 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int totalPropsQuadPt = _totalPropsQuadPt;
   const int fiberDim = totalPropsQuadPt * numQuadPts;
   _properties->setFiberDimension(cells, fiberDim);
-
-  for (int i=0; i < _numProperties; ++i) {
-    const int dim = _propMetaData[i].fiberDim*numQuadPts;
-    _properties->setFiberDimension(cells, dim, i);
-  } // for
   mesh->allocate(_properties);
 
   // Setup database for querying
@@ -146,30 +138,90 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 } // initialize
 
 // ----------------------------------------------------------------------
-// Get physical property field.
-ALE::Obj<pylith::real_section_type>
-pylith::materials::Material::propertyField(int* fiberDim,
-					   VectorFieldEnum* fieldType,
-					   const char* name) const
-{ // propertyField
+// Get type of field associated with physical property.
+pylith::VectorFieldEnum
+pylith::materials::Material::propertyFieldType(const char* name) const
+{ // propertyFieldType
+  VectorFieldEnum fieldType = OTHER_FIELD;
+
+  // Find property in list of physical properties.
   int i=0;
   while (i < _numProperties)
     if (0 == strcasecmp(name, _propMetaData[i].name))
       break;
     else
       ++i;
-  if (i < _numProperties) {
-    *fiberDim = _propMetaData[i].fiberDim;
-    *fieldType = _propMetaData[i].fieldType;
-  } else {
+  if (i < _numProperties)
+    fieldType = _propMetaData[i].fieldType;
+  else {
+    std::ostringstream msg;
+    msg << "Unknown physical property '" << name << "' for material '"
+	<< _label << "'.";
+    throw std::runtime_error(msg.str());
+  } // else
+ 
+  return fieldType;
+} // propertyFieldType
+
+// ----------------------------------------------------------------------
+// Get physical property field.
+void
+pylith::materials::Material::propertyField(ALE::Obj<real_section_type>* field,
+					   const char* name,
+					   const ALE::Obj<Mesh>& mesh,
+					   const int numQuadPts) const
+{ // propertyField
+  // Find property in list of physical properties.
+  int i=0;
+  int propOffset = 0;
+  int fiberDim = 0;
+  while (i < _numProperties)
+    if (0 == strcasecmp(name, _propMetaData[i].name))
+      break;
+    else {
+      propOffset += _propMetaData[i].fiberDim;
+      ++i;
+    } // else
+  if (i < _numProperties)
+    fiberDim = _propMetaData[i].fiberDim;
+  else {
     std::ostringstream msg;
     msg << "Unknown physical property '" << name << "' for material '"
 	<< _label << "'.";
     throw std::runtime_error(msg.str());
   } // else
 
-  assert(i < _numProperties);
-  return _properties->getFibration(i);
+  // Get cell information
+  const ALE::Obj<Mesh::label_sequence>& cells = 
+    mesh->getLabelStratum("material-id", _id);
+  assert(!cells.isNull());
+  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  
+  // Allocate buffer for property field.
+  if (field->isNull()) {
+    const int totalFiberDim = numQuadPts * fiberDim;
+    *field = new real_section_type(mesh->comm(), mesh->debug());
+    (*field)->setFiberDimension(cells, totalFiberDim);
+    mesh->allocate(*field);
+  } // if
+  
+  // Buffer for property at cell's quadrature points
+  double_array fieldCell(fiberDim * numQuadPts);
+
+  // Loop over cells
+  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+       c_iter != cellsEnd;
+       ++c_iter) {
+    const real_section_type::value_type* propVals = 
+      _properties->restrictPoint(*c_iter);
+    
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
+      memcpy(&fieldCell[iQuad*fiberDim], 
+	     &propVals[iQuad*_totalPropsQuadPt+propOffset],
+	     fiberDim*sizeof(double));
+
+    (*field)->updatePoint(*c_iter, &fieldCell[0]);
+  } // for
 } // propertyField
   
 

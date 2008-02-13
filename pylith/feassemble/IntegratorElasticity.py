@@ -85,8 +85,8 @@ class IntegratorElasticity(Integrator):
 
     self.material.initialize(self.mesh, totalTime, numTimeSteps)
     self.output.initialize(self.quadrature.cppHandle)
-    #self.output.writeInfo()
-    #self.output.open(totalTime, numTimeSteps)
+    self.output.writeInfo()
+    self.output.open(totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)
     return
@@ -100,7 +100,7 @@ class IntegratorElasticity(Integrator):
     self._logger.eventBegin(logEvent)
 
     self._info.log("Writing material data.")
-    #self.output.writeData(t+dt, fields)
+    self.output.writeData(t+dt, fields)
 
     self._logger.eventEnd(logEvent)
     return

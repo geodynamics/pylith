@@ -202,7 +202,7 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(
 
 // ----------------------------------------------------------------------
 // Get cell field associated with integrator.
-ALE::Obj<pylith::real_section_type>
+const ALE::Obj<pylith::real_section_type>&
 pylith::feassemble::IntegratorElasticity::cellField(
 				 VectorFieldEnum* fieldType,
 				 const char* name,
@@ -214,26 +214,48 @@ pylith::feassemble::IntegratorElasticity::cellField(
   // We assume the material stores the total-strain field if
   // usesUpdateProperties() is TRUE.
 
-  ALE::Obj<real_section_type> field;
+  const int numQuadPts = _quadrature->numQuadPts();
 
   if (!_material->usesUpdateProperties() &&
       (0 == strcasecmp(name, "total-strain") ||
        0 == strcasecmp(name, "stress")) ) {
     assert(0 != fields);
     _calcStrainStressField(&_bufferCellTensor, name, mesh, fields);
-    field = _bufferCellTensor;
+    return _bufferCellTensor;
+
   } else if (0 == strcasecmp(name, "stress")) {
-    int fiberDim = 0;
-    const ALE::Obj<real_section_type>& strain = 
-      _material->propertyField(&fiberDim, fieldType, "total-strain");
-    _calcStressFromStrain(&_bufferCellTensor, mesh, strain);
-    field = _bufferCellTensor;
+    _material->propertyField(&_bufferCellTensor,
+			     "total-strain", mesh, numQuadPts);
+    _calcStressFromStrain(&_bufferCellTensor, mesh);
+    return _bufferCellTensor;
+
   } else {
-    int fiberDim = 0;
-    field = _material->propertyField(&fiberDim, fieldType, name);
+    const VectorFieldEnum fieldType = _material->propertyFieldType(name);
+    switch (fieldType)
+      { // switch
+      case SCALAR_FIELD :
+	_material->propertyField(&_bufferCellScalar, name, mesh, numQuadPts);
+	return _bufferCellScalar;
+	break;
+      case VECTOR_FIELD :
+	_material->propertyField(&_bufferCellVector, name, mesh, numQuadPts);
+	return _bufferCellVector;
+	break;
+      case TENSOR_FIELD :
+	_material->propertyField(&_bufferCellTensor, name, mesh, numQuadPts);
+	return _bufferCellTensor;
+	break;
+      case OTHER_FIELD :
+	_material->propertyField(&_bufferCellOther, name, mesh, numQuadPts);
+	return _bufferCellOther;
+	break;
+      default:
+	assert(0);
+      } // switch
   } // else
 
-  return field;
+  // Return scalar section to satisfy member function definition.
+  return _bufferCellScalar;
 } // cellField
 
 // ----------------------------------------------------------------------
@@ -333,8 +355,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
 void
 pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
 				 ALE::Obj<real_section_type>* field,
-				 const ALE::Obj<Mesh>& mesh,
-				 const ALE::Obj<real_section_type>& strain)
+				 const ALE::Obj<Mesh>& mesh)
 { // _calcStressFromStrain
   assert(0 != _quadrature);
   assert(0 != _material);
@@ -377,7 +398,7 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
        c_iter != cellsEnd;
        ++c_iter) {
     const real_section_type::value_type* strainVals = 
-      strain->restrictPoint(*c_iter);
+      (*field)->restrictPoint(*c_iter);
     memcpy(&totalStrain[0], strainVals, sizeof(double)*totalStrain.size());
 
     const double_array& stress = _material->calcStress(totalStrain);

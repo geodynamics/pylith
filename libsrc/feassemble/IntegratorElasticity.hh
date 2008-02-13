@@ -94,7 +94,7 @@ public :
    * @param fields Fields manager.
    * @returns Cell field.
    */
-  ALE::Obj<real_section_type>
+  const ALE::Obj<real_section_type>&
   cellField(VectorFieldEnum* fieldType,
 	    const char* name,
 	    const ALE::Obj<Mesh>& mesh,
@@ -116,15 +116,14 @@ protected :
 			      const ALE::Obj<Mesh>& mesh,
 			      topology::FieldsManager* const fields);
 
-  /** Calculate stress field from total strain field.
+  /** Calculate stress field from total strain field. Stress field
+   * replaces strain field in section.
    *
    * @param field Field in which to store stress.
    * @param mesh PETSc mesh for problem.
-   * @param strain Total strain field.
    */
   void _calcStressFromStrain(ALE::Obj<real_section_type>* field,
-			     const ALE::Obj<Mesh>& mesh,
-			     const ALE::Obj<real_section_type>& strain);
+			     const ALE::Obj<Mesh>& mesh);
 			      
 
   /** Integrate elasticity term in residual for 1-D cells.
@@ -224,8 +223,17 @@ protected :
   /// Elastic material associated with integrator
   materials::ElasticMaterial* _material;
 
+  /// Buffer for storing scalar cell field.
+  ALE::Obj<real_section_type> _bufferCellScalar;
+
+  /// Buffer for storing vector cell field.
+  ALE::Obj<real_section_type> _bufferCellVector;
+
   /// Buffer for storing cell tensor field.
   ALE::Obj<real_section_type> _bufferCellTensor;
+
+  /// Buffer for storing other cell fields.
+  ALE::Obj<real_section_type> _bufferCellOther;
 
 }; // IntegratorElasticity
 
