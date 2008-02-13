@@ -154,18 +154,16 @@ public :
   /// current state.
   void resetNeedNewJacobian(void);
 
-  /** Get metadata for physical property. Values are returned through
-   * the arguments.
+  /** Get physical property field. Meta data is returned via the
+   * arguments.
    *
-   * @param space Subspace index.
    * @param fiberDim Fiber dimension.
    * @param fieldType Vector field type.
    * @param name Name of physical property.
    */
-  void propertyInfo(int* space,
-		    int* fiberDim,
-		    VectorFieldEnum* fieldType,
-		    const char* name) const;
+  ALE::Obj<real_section_type> propertyField(int* fiberDim,
+					    VectorFieldEnum* fieldType,
+					    const char* name) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

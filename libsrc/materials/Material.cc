@@ -76,9 +76,12 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   assert(!cells.isNull());
   const ALE::Mesh::label_sequence::iterator cellsEnd = cells->end();
 
-  // Create sections to hold parameters for physical properties
+  // Create sections to hold physical properties and state variables.
   _properties = new real_section_type(mesh->comm(), mesh->debug());
   assert(!_properties.isNull());
+  for (int i=0; i < _numProperties; ++i)
+    _properties->addSpace();
+
   const int numQuadPts = quadrature->numQuadPts();
   const int spaceDim = quadrature->spaceDim();
 
@@ -87,6 +90,9 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int totalPropsQuadPt = _totalPropsQuadPt;
   const int fiberDim = totalPropsQuadPt * numQuadPts;
   _properties->setFiberDimension(cells, fiberDim);
+  for (int i=0; i < _numProperties; ++i)
+    _properties->setFiberDimension(cells, spaceDim, 
+				   _propMetaData[i].fiberDim*numQuadPts);
   mesh->allocate(_properties);
 
   // Setup database for querying
@@ -137,20 +143,17 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 } // initialize
 
 // ----------------------------------------------------------------------
-// Get metadata for physical property. Values are returned through the
-// arguments.
-void
-pylith::materials::Material::propertyInfo(int* space,
-					  int* fiberDim,
-					  VectorFieldEnum* fieldType,
-					  const char* name) const
-{ // propertyInfo
+// Get physical property field.
+ALE::Obj<pylith::real_section_type>
+pylith::materials::Material::propertyField(int* fiberDim,
+					   VectorFieldEnum* fieldType,
+					   const char* name) const
+{ // propertyField
   int i=0;
   while (i < _numProperties)
     if (0 == strcasecmp(name, _propMetaData[i].name))
       break;
   if (i < _numProperties) {
-    *space = i;
     *fiberDim = _propMetaData[i].fiberDim;
     *fieldType = _propMetaData[i].fieldType;
   } else {
@@ -159,7 +162,10 @@ pylith::materials::Material::propertyInfo(int* space,
 	<< _label << "'.";
     throw std::runtime_error(msg.str());
   } // else
-} // propertyInfo
+
+  assert(i < _numProperties);
+  return _properties->getFibration(i);
+} // propertyField
   
 
 // End of file 
