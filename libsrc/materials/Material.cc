@@ -90,9 +90,12 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int totalPropsQuadPt = _totalPropsQuadPt;
   const int fiberDim = totalPropsQuadPt * numQuadPts;
   _properties->setFiberDimension(cells, fiberDim);
-  for (int i=0; i < _numProperties; ++i)
-    _properties->setFiberDimension(cells, spaceDim, 
-				   _propMetaData[i].fiberDim*numQuadPts);
+
+#if 0
+  for (int i=0; i < _numProperties; ++i) {
+    const int dim = _propMetaData[i].fiberDim*numQuadPts;
+    _properties->setFiberDimension(cells, i, dim);
+#endif
   mesh->allocate(_properties);
 
   // Setup database for querying
