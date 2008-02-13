@@ -56,6 +56,7 @@ pylith::materials::Material::~Material(void)
   _db = 0;
 } // destructor
 
+#include <iostream>
 // ----------------------------------------------------------------------
 // Get physical property parameters from database.
 void
@@ -91,11 +92,10 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int fiberDim = totalPropsQuadPt * numQuadPts;
   _properties->setFiberDimension(cells, fiberDim);
 
-#if 0
   for (int i=0; i < _numProperties; ++i) {
     const int dim = _propMetaData[i].fiberDim*numQuadPts;
-    _properties->setFiberDimension(cells, i, dim);
-#endif
+    _properties->setFiberDimension(cells, dim, i);
+  } // for
   mesh->allocate(_properties);
 
   // Setup database for querying
