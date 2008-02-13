@@ -141,7 +141,7 @@ class Constraint(object):
     return
 
 
-  def poststep(self, t, dt, totalTime):
+  def poststep(self, t, dt, totalTime, fields):
     """
     Hook for doing stuff after advancing time step.
     """

@@ -118,7 +118,8 @@ pylith::faults::FaultCohesiveDyn::verifyConfiguration(
 const ALE::Obj<pylith::real_section_type>&
 pylith::faults::FaultCohesiveDyn::vertexField(VectorFieldEnum* fieldType,
 					      const char* name,
-					      const ALE::Obj<Mesh>& mesh)
+					      const ALE::Obj<Mesh>& mesh,
+					      topology::FieldsManager* fields)
 { // vertexField
   // Should not reach this point if requested field was found
   std::ostringstream msg;
@@ -135,7 +136,8 @@ pylith::faults::FaultCohesiveDyn::vertexField(VectorFieldEnum* fieldType,
 const ALE::Obj<pylith::real_section_type>&
 pylith::faults::FaultCohesiveDyn::cellField(VectorFieldEnum* fieldType,
 					    const char* name,
-					    const ALE::Obj<Mesh>& mesh)
+					    const ALE::Obj<Mesh>& mesh,
+					    topology::FieldsManager* fields)
 { // cellField
   // Should not reach this point if requested field was found
   std::ostringstream msg;

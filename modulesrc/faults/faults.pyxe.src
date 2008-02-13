@@ -192,12 +192,12 @@ cdef class Fault:
     return
     
 
-  def vertexField(self, name, mesh):
+  def vertexField(self, name, mesh, fields=None):
     """
     Get vertex field.
     """
     # create shim for method 'vertexField'
-    #embed{ void* Fault_vertexField(void* objVptr, int* fieldPtr, char* name, void* meshVptr)
+    #embed{ void* Fault_vertexField(void* objVptr, int* fieldPtr, char* name, void* meshVptr, void* fieldsVptr)
     void* result = 0;
     try {
       assert(0 != objVptr);
@@ -206,9 +206,11 @@ cdef class Fault:
       assert(0 != meshVptr);
       pylith::faults::Fault* fault = (pylith::faults::Fault*) objVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      pylith::topology::FieldsManager* fields =
+        (pylith::topology::FieldsManager*) fieldsVptr;
       pylith::VectorFieldEnum fieldType;
       const ALE::Obj<pylith::real_section_type>& field =
-        fault->vertexField(&fieldType, name, *mesh);
+        fault->vertexField(&fieldType, name, *mesh, fields);
       *fieldPtr = fieldType;
       result = (void*) &field;
       } catch (const std::exception& err) {
@@ -227,18 +229,28 @@ cdef class Fault:
       raise TypeError, \
             "Argument 'mesh' must be extension module type " \
             "'pylith::topology::Mesh'."
+    if None != fields:
+      if not fields.name == "pylith_topology_FieldsManager":
+        raise TypeError, \
+              "Argument 'fields' must be extension module type " \
+              "'pylith::topology::FieldsManager'."
     cdef void* ptr
     cdef int fieldType
-    ptr = Fault_vertexField(self.thisptr, &fieldType, name, ptrFromHandle(mesh))
+    if None != fields:
+      ptr = Fault_vertexField(self.thisptr, &fieldType, name,
+                              ptrFromHandle(mesh), ptrFromHandle(fields))
+    else:
+      ptr = Fault_vertexField(self.thisptr, &fieldType, name,
+                              ptrFromHandle(mesh), NULL)
     return (PyCObject_FromVoidPtr(ptr, NULL), fieldType)
     
 
-  def cellField(self, name, mesh):
+  def cellField(self, name, mesh, fields=None):
     """
     Get cell field.
     """
     # create shim for method 'cellField'
-    #embed{ void* Fault_cellField(void* objVptr, int* fieldPtr, char* name, void* meshVptr)
+    #embed{ void* Fault_cellField(void* objVptr, int* fieldPtr, char* name, void* meshVptr, void* fieldsVptr)
     void* result = 0;
     try {
       assert(0 != objVptr);
@@ -247,9 +259,11 @@ cdef class Fault:
       assert(0 != meshVptr);
       pylith::faults::Fault* fault = (pylith::faults::Fault*) objVptr;
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      pylith::topology::FieldsManager* fields =
+        (pylith::topology::FieldsManager*) fieldsVptr;
       pylith::VectorFieldEnum fieldType;
       const ALE::Obj<pylith::real_section_type>& field =
-        fault->cellField(&fieldType, name, *mesh);
+        fault->cellField(&fieldType, name, *mesh, fields);
       *fieldPtr = fieldType;
       result = (void*) &field;
       } catch (const std::exception& err) {
@@ -268,9 +282,19 @@ cdef class Fault:
       raise TypeError, \
             "Argument 'mesh' must be extension module type " \
             "'pylith::topology::Mesh'."
+    if None != fields:
+      if not fields.name == "pylith_topology_FieldsManager":
+        raise TypeError, \
+              "Argument 'fields' must be extension module type " \
+              "'pylith::topology::FieldsManager'."
     cdef void* ptr
     cdef int fieldType
-    ptr = Fault_cellField(self.thisptr, &fieldType, name, ptrFromHandle(mesh))
+    if None != fields:
+      ptr = Fault_cellField(self.thisptr, &fieldType, name,
+                            ptrFromHandle(mesh), ptrFromHandle(fields))
+    else:
+      ptr = Fault_cellField(self.thisptr, &fieldType, name,
+                            ptrFromHandle(mesh), NULL)
     return (PyCObject_FromVoidPtr(ptr, NULL), fieldType)
     
 

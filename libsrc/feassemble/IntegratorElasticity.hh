@@ -94,7 +94,7 @@ public :
    * @param fields Fields manager.
    * @returns Cell field.
    */
-  const ALE::Obj<real_section_type>&
+  ALE::Obj<real_section_type>
   cellField(VectorFieldEnum* fieldType,
 	    const char* name,
 	    const ALE::Obj<Mesh>& mesh,
@@ -224,14 +224,8 @@ protected :
   /// Elastic material associated with integrator
   materials::ElasticMaterial* _material;
 
-  /// Scalar field for output of cell information.
-  ALE::Obj<real_section_type> _bufferCellScalar;
-
-  /// Tensor field for output of cell information.
+  /// Buffer for storing cell tensor field.
   ALE::Obj<real_section_type> _bufferCellTensor;
-
-  /// Other field for output of cell information.
-  ALE::Obj<real_section_type> _bufferCellOther;
 
 }; // IntegratorElasticity
 

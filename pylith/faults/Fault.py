@@ -196,12 +196,12 @@ class Fault(Component):
     return
 
 
-  def poststep(self, t, dt, totalTime):
+  def poststep(self, t, dt, totalTime, fields):
     """
     Hook for doing stuff after advancing time step.
     """
     self._info.log("Writing fault data.")
-    self.output.writeData(t+dt)
+    self.output.writeData(t+dt, fields)
     return
 
 
@@ -212,19 +212,19 @@ class Fault(Component):
     return (self.faultMesh, None, None)
 
 
-  def getVertexField(self, name):
+  def getVertexField(self, name, fields=None):
     """
     Get vertex field.
     """
-    raise NotImplementedError("Material.getVertexField() not implemented.")
+    raise NotImplementedError("Fault.getVertexField() not implemented.")
     return
 
 
-  def getCellField(self, name):
+  def getCellField(self, name, fields=None):
     """
     Get cell field.
     """
-    raise NotImplementedError("Material.getCellField() not implemented.")
+    raise NotImplementedError("Fault.getCellField() not implemented.")
     return
 
 

@@ -202,7 +202,7 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(
 
 // ----------------------------------------------------------------------
 // Get cell field associated with integrator.
-const ALE::Obj<pylith::real_section_type>&
+ALE::Obj<pylith::real_section_type>
 pylith::feassemble::IntegratorElasticity::cellField(
 				 VectorFieldEnum* fieldType,
 				 const char* name,
@@ -214,40 +214,26 @@ pylith::feassemble::IntegratorElasticity::cellField(
   // We assume the material stores the total-strain field if
   // usesUpdateProperties() is TRUE.
 
+  ALE::Obj<real_section_type> field;
+
   if (!_material->usesUpdateProperties() &&
       (0 == strcasecmp(name, "total-strain") ||
        0 == strcasecmp(name, "stress")) ) {
-
+    assert(0 != fields);
     _calcStrainStressField(&_bufferCellTensor, name, mesh, fields);
-    return _bufferCellTensor;
+    field = _bufferCellTensor;
   } else if (0 == strcasecmp(name, "stress")) {
     int fiberDim = 0;
     const ALE::Obj<real_section_type>& strain = 
       _material->propertyField(&fiberDim, fieldType, "total-strain");
     _calcStressFromStrain(&_bufferCellTensor, mesh, strain);
-    return _bufferCellTensor;
+    field = _bufferCellTensor;
   } else {
     int fiberDim = 0;
-    const ALE::Obj<real_section_type>& field = 
-      _material->propertyField(&fiberDim, fieldType, name);
-    switch (*fieldType)
-      { // switch
-      case SCALAR_FIELD :
-	_bufferCellScalar = field;
-	return _bufferCellScalar;
-	break;
-      case TENSOR_FIELD :
-	_bufferCellTensor = field;
-	return _bufferCellTensor;
-	break;
-      case OTHER_FIELD :
-      default:
-	_bufferCellOther = field;
-	return _bufferCellOther;
-      } // switch
+    field = _material->propertyField(&fiberDim, fieldType, name);
   } // else
 
-  return _bufferCellScalar;
+  return field;
 } // cellField
 
 // ----------------------------------------------------------------------

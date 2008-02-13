@@ -32,6 +32,10 @@ namespace pylith {
     class Fault;
     class TestFault; // unit testing
   } // faults
+
+  namespace topology {
+    class FieldsManager;
+  } // topology
 } // pylith
 
 /// Namespace for spatialdata package
@@ -123,26 +127,30 @@ public :
    * @param fieldType Type of field.
    * @param name Name of vertex field.
    * @param mesh PETSc mesh for problem.
+   * @param fields Fields manager.
    * @returns Vertex field.
    */
   virtual
   const ALE::Obj<real_section_type>&
   vertexField(VectorFieldEnum* fieldType,
 	      const char* name,
-	      const ALE::Obj<Mesh>& mesh) = 0;
+	      const ALE::Obj<Mesh>& mesh,
+	      topology::FieldsManager* const fields) = 0;
 
   /** Get cell field associated with integrator.
    *
    * @param fieldType Type of field.
    * @param name Name of cell field.
    * @param mesh PETSc mesh for problem.
+   * @param fields Fields manager.
    * @returns Cell field.
    */
   virtual
   const ALE::Obj<real_section_type>&
   cellField(VectorFieldEnum* fieldType,
 	    const char* name,
-	    const ALE::Obj<Mesh>& mesh) = 0;
+	    const ALE::Obj<Mesh>& mesh,
+	    topology::FieldsManager* const fields) = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

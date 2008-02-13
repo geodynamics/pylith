@@ -156,6 +156,8 @@ pylith::materials::Material::propertyField(int* fiberDim,
   while (i < _numProperties)
     if (0 == strcasecmp(name, _propMetaData[i].name))
       break;
+    else
+      ++i;
   if (i < _numProperties) {
     *fiberDim = _propMetaData[i].fiberDim;
     *fieldType = _propMetaData[i].fieldType;

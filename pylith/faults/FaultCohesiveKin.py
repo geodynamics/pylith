@@ -126,31 +126,43 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     return
 
 
-  def poststep(self, t, dt, totalTime):
+  def poststep(self, t, dt, totalTime, fields):
     """
     Hook for doing stuff after advancing time step.
     """
     logEvent = "%spoststep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    FaultCohesive.poststep(self, t, dt, totalTime)
+    FaultCohesive.poststep(self, t, dt, totalTime, fields)
 
     self._logger.eventEnd(logEvent)
     return
 
 
-  def getVertexField(self, name):
+  def getVertexField(self, name, fields=None):
     """
     Get vertex field.
     """
-    return self.cppHandle.vertexField(name, self.mesh.cppHandle)
+    if None == fields:
+      (field, fieldType) = self.cppHandle.vertexField(name,
+                                                      self.mesh.cppHandle)
+    else:
+      (field, fieldType) = self.cppHandle.vertexField(name,
+                                                     self.mesh.cppHandle,
+                                                     fields.cppHandle)
+    return (field, fieldType)
 
 
-  def getCellField(self, name):
+  def getCellField(self, name, fields=None):
     """
     Get cell field.
     """
-    return self.cppHandle.cellField(name, self.mesh.cppHandle)
+    if None == fields:
+      (field, fieldType) = self.cppHandle.cellField(name, self.mesh.cppHandle)
+    else:
+      (field, fieldType) = self.cppHandle.cellField(name, self.mesh.cppHandle,
+                                                    fields.cppHandle)
+    return (field, fieldType)
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
