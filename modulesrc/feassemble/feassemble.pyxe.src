@@ -62,21 +62,6 @@ cdef extern from "stdlib.h":
     void* malloc(size_t size)
     void free(void* mem)
 
-cdef void Section_destructor(void* obj):
-  """
-  Destroy ALE::Obj<real_section_type> object.
-  """
-  # create shim for destructor
-  #embed{ void Section_destructor_cpp(void* objVptr)
-  ALE::Obj<pylith::real_section_type>* field =
-    (ALE::Obj<pylith::real_section_type>*) objVptr;
-  assert(0 != field);
-  assert(!field->isNull());
-  delete *field;
-  #}embed
-  Section_destructor_cpp(obj)
-  return
-  
 # ----------------------------------------------------------------------
 cdef void CellGeometry_destructor(void* obj):
   """
@@ -1293,7 +1278,7 @@ cdef class IntegratorElasticity(Integrator):
       ptr = IntegratorElasticity_cellField(self.thisptr, &fieldType, name,
                                            ptrFromHandle(mesh), NULL)
     return (PyCObject_FromVoidPtr(ptr, NULL), fieldType)
-    
+
 
   property material:
     def __set__(self, m):

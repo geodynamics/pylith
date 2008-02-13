@@ -40,7 +40,7 @@ class ElasticStress1D(ElasticMaterial):
             'data': []},
          'cell': \
            {'info': ["mu", "lambda", "density"],
-            'data': []}}
+            'data': ["total-strain", "stress"]}}
     return
 
 
