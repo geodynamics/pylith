@@ -22,6 +22,7 @@
 
 #include "Integrator.hh" // ISA Integrator
 #include "pylith/utils/array.hh" // USES std::vector, double_array
+#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
 
 namespace pylith {
   namespace feassemble {
@@ -85,8 +86,46 @@ public :
    */
   void verifyConfiguration(const ALE::Obj<Mesh>& mesh);
 
+  /** Get cell field associated with integrator.
+   *
+   * @param fieldType Type of field.
+   * @param name Name of vertex field.
+   * @param mesh PETSc mesh for problem.
+   * @param fields Fields manager.
+   * @returns Cell field.
+   */
+  const ALE::Obj<real_section_type>&
+  cellField(VectorFieldEnum* fieldType,
+	    const char* name,
+	    const ALE::Obj<Mesh>& mesh,
+	    topology::FieldsManager* const fields);
+
+
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
+
+  /** Calculate stress or strain field from solution field.
+   *
+   * @param field Field in which to store stress or strain.
+   * @param name Name of field to compute ('total-strain' or 'stress')
+   * @param mesh PETSc mesh for problem.
+   * @param fields Fields manager with solution.
+   */
+  void _calcStrainStressField(ALE::Obj<real_section_type>* field,
+			      const char* name,
+			      const ALE::Obj<Mesh>& mesh,
+			      topology::FieldsManager* const fields);
+
+  /** Calculate stress field from total strain field.
+   *
+   * @param field Field in which to store stress.
+   * @param mesh PETSc mesh for problem.
+   * @param strain Total strain field.
+   */
+  void _calcStressFromStrain(ALE::Obj<real_section_type>* field,
+			     const ALE::Obj<Mesh>& mesh,
+			     const ALE::Obj<real_section_type>& strain);
+			      
 
   /** Integrate elasticity term in residual for 1-D cells.
    *
@@ -184,6 +223,15 @@ protected :
 
   /// Elastic material associated with integrator
   materials::ElasticMaterial* _material;
+
+  /// Scalar field for output of cell information.
+  ALE::Obj<real_section_type> _bufferCellScalar;
+
+  /// Tensor field for output of cell information.
+  ALE::Obj<real_section_type> _bufferCellTensor;
+
+  /// Other field for output of cell information.
+  ALE::Obj<real_section_type> _bufferCellOther;
 
 }; // IntegratorElasticity
 
