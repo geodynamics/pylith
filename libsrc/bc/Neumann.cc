@@ -117,11 +117,11 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int numQuadPts = _quadrature->numQuadPts();
   const int spaceDim = cs->spaceDim();
   const int fiberDim = spaceDim * numQuadPts;
-  _tractionsGlobal = new real_section_type(_boundaryMesh->comm(),
-					   _boundaryMesh->debug());
-  assert(!_tractionsGlobal.isNull());
-  _tractionsGlobal->setFiberDimension(cells, fiberDim);
-  _boundaryMesh->allocate(_tractionsGlobal);
+  _tractions = new real_section_type(_boundaryMesh->comm(),
+				     _boundaryMesh->debug());
+  assert(!_tractions.isNull());
+  _tractions->setFiberDimension(cells, fiberDim);
+  _boundaryMesh->allocate(_tractions);
 
   // Containers for orientation information
   const int orientationSize = spaceDim * spaceDim;
@@ -132,8 +132,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   double_array orientation(orientationSize);
   double_array cellVertices(numBasis*spaceDim);
 
-  // open database with traction information
-  // NEED TO SET NAMES BASED ON DIMENSION OF BOUNDARY
+  // Set names based on dimension of problem.
   // 1-D problem = {'normal-traction'}
   // 2-D problem = {'shear-traction', 'normal-traction'}
   // 3-D problem = {'horiz-shear-traction', 'vert-shear-traction',
@@ -231,9 +230,9 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     } // for
 
       // Update tractionsGlobal
-    _tractionsGlobal->updatePoint(*c_iter, &cellTractionsGlobal[0]);
+    _tractions->updatePoint(*c_iter, &cellTractionsGlobal[0]);
   } // for
-  // _tractionsGlobal->view("Global tractions from Neumann::initialize");
+  // _tractions->view("Global tractions from Neumann::initialize");
 
   _db->close();
 } // initialize
@@ -291,7 +290,7 @@ pylith::bc::Neumann::integrateResidual(
     _resetCellVector();
 
     // Restrict tractions to cell
-    _boundaryMesh->restrict(_tractionsGlobal, *c_iter, 
+    _boundaryMesh->restrict(_tractions, *c_iter, 
 			    &tractionsCell[0], tractionsCell.size());
 
     // Get cell geometry information that depends on cell
@@ -351,9 +350,11 @@ pylith::bc::Neumann::cellField(VectorFieldEnum* fieldType,
 	    const ALE::Obj<Mesh>& mesh,
 	    topology::FieldsManager* const fields)
 { // cellField
+  _tractions->view("TRACTIONS");
+
   if (0 == strcasecmp(name, "tractions")) {
     *fieldType = VECTOR_FIELD;
-    return _tractionsGlobal;
+    return _tractions;
   } else {
     std::ostringstream msg;
     msg << "Unknown field '" << name << "' requested for Neumann BC '" 
@@ -361,7 +362,7 @@ pylith::bc::Neumann::cellField(VectorFieldEnum* fieldType,
     throw std::runtime_error(msg.str());
   } // else
 
-  return _tractionsGlobal;
+  return _tractions;
 } // cellField
 
 
