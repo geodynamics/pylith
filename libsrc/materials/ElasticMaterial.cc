@@ -60,7 +60,8 @@ pylith::materials::ElasticMaterial::calcDensity(void)
 // ----------------------------------------------------------------------
 // Compute stress tensor for cell at quadrature points.
 const pylith::double_array&
-pylith::materials::ElasticMaterial::calcStress(const double_array& totalStrain)
+pylith::materials::ElasticMaterial::calcStress(const double_array& totalStrain,
+					       const bool computeStateVars)
 { // calcStress
   const int numQuadPts = _numQuadPts;
   const int totalPropsQuadPt = _totalPropsQuadPt;
@@ -71,7 +72,8 @@ pylith::materials::ElasticMaterial::calcStress(const double_array& totalStrain)
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
     _calcStress(&_stress[iQuad*_tensorSize], _tensorSize,
 		&_propertiesCell[iQuad*totalPropsQuadPt], totalPropsQuadPt,
-		&totalStrain[iQuad*_tensorSize], _tensorSize);
+		&totalStrain[iQuad*_tensorSize], _tensorSize, 
+		computeStateVars);
 
   return _stress;
 } // calcStress

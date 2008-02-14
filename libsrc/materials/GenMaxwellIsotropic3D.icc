@@ -58,16 +58,19 @@ pylith::materials::GenMaxwellIsotropic3D::usesUpdateProperties(void) const {
 // Compute stress tensor from parameters.
 inline
 void
-pylith::materials::GenMaxwellIsotropic3D::_calcStress(double* const stress,
-						   const int stressSize,
-						   const double* parameters,
-						   const int numParams,
-						   const double* totalStrain,
-						   const int strainSize) {
+pylith::materials::GenMaxwellIsotropic3D::_calcStress(
+					       double* const stress,
+					       const int stressSize,
+					       const double* parameters,
+					       const int numParams,
+					       const double* totalStrain,
+					       const int strainSize,
+					       const bool computeStateVars) {
   assert(0 != _calcStressFn);
   CALL_MEMBER_FN(*this, _calcStressFn)(stress, stressSize, 
 				       parameters, numParams,
-				       totalStrain, strainSize);
+				       totalStrain, strainSize,
+				       computeStateVars);
 } // _calcStress
 
 // Compute derivatives of elasticity matrix from parameters.

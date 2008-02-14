@@ -272,14 +272,20 @@ pylith::bc::DirichletBoundary::setField(const double t,
 // ----------------------------------------------------------------------
 // Get vertex field of BC initial or rate of change of values.
 const ALE::Obj<pylith::real_section_type>&
-pylith::bc::DirichletBoundary::getVertexField(const char* name)
+pylith::bc::DirichletBoundary::vertexField(VectorFieldEnum* fieldType,
+					   const char* name,
+					   const ALE::Obj<Mesh>& mesh,
+					   topology::FieldsManager* const fields)
 { // getVertexField
   
-  if (0 == strcasecmp(name, "initial"))
+
+  if (0 == strcasecmp(name, "initial")) {
+    *fieldType = VECTOR_FIELD;
     _buffer = _values->getFibration(0);
-  else if (0 == strcasecmp(name, "rate-of-change"))
+  } else if (0 == strcasecmp(name, "rate-of-change")) {
+    *fieldType = VECTOR_FIELD;
     _buffer = _values->getFibration(1);
-  else {
+  } else {
     std::ostringstream msg;
     msg << "Unknown field '" << name << "' requested for Dirichlet BC '" 
 	<< _label << "'.";

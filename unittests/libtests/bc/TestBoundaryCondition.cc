@@ -24,18 +24,6 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestBoundaryCondition );
 
 // ----------------------------------------------------------------------
-// Test id().
-void
-pylith::bc::TestBoundaryCondition::testID(void)
-{ // testID
-  const int id = 346;
-  DirichletPoints bc;
-  bc.id(id);
-  
-  CPPUNIT_ASSERT(id == bc.id());
-} // testID
-
-// ----------------------------------------------------------------------
 // Test label().
 void
 pylith::bc::TestBoundaryCondition::testLabel(void)

@@ -23,6 +23,7 @@
 #include "pylith/feassemble/Constraint.hh" // ISA Constraint
 
 #include "pylith/utils/array.hh" // USES std::vector, double_array, int_array
+#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
 
 /// Namespace for pylith package
 namespace pylith {
@@ -30,6 +31,10 @@ namespace pylith {
     class DirichletBoundary;
     class TestDirichletBoundary; // unit testing
   } // bc
+
+  namespace topology {
+    class FieldsManager; // forward declaration
+  } // topology
 } // pylith
 
 
@@ -106,18 +111,26 @@ public :
 		const ALE::Obj<real_section_type>& field,
 		const ALE::Obj<ALE::Mesh>& mesh);
 
-  /** Get data mesh.
+  /** Get boundary mesh.
    *
    * @return Boundary mesh.
    */
-  const ALE::Obj<Mesh>& dataMesh(void) const;
+  const ALE::Obj<Mesh>& boundaryMesh(void) const;
 
-  /** Get vertex field of BC initial or rate of change of values.
+  /** Get vertex field with BC information.
    *
-   * @param name Name of field {'initial', 'rate-of-change'}
+   * @param fieldType Type of field.
+   * @param name Name of field.
+   * @param mesh Finite-element mesh.
+   * @param fields Solution fields.
+   *
+   * @returns Field over vertices.
    */
   const ALE::Obj<real_section_type>&
-  getVertexField(const char* name);
+  vertexField(VectorFieldEnum* fieldType,
+	      const char* name,
+	      const ALE::Obj<Mesh>& mesh,
+	      topology::FieldsManager* const fields);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

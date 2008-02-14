@@ -60,6 +60,17 @@ pylith::feassemble::IntegratorElasticity::needNewJacobian(void)
 } // needNewJacobian
 
 // ----------------------------------------------------------------------
+// Set flag for setting constraints for total field solution or
+void
+pylith::feassemble::IntegratorElasticity::useSolnIncr(const bool flag)
+{ // useSolnIncr
+  Integrator::useSolnIncr(flag);
+  
+  assert(0 != _material);
+  _material->useElasticBehavior(!flag);
+} // useSolnIncr
+
+// ----------------------------------------------------------------------
 // Update state variables as needed.
 void
 pylith::feassemble::IntegratorElasticity::updateState(
@@ -141,8 +152,6 @@ pylith::feassemble::IntegratorElasticity::updateState(
     // Update material state
     _material->updateProperties(totalStrain, *c_iter);
   } // for
-
-  _material->useElasticBehavior(false);
 } // updateState
 
 // ----------------------------------------------------------------------

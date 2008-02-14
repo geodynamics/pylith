@@ -72,7 +72,10 @@ protected :
 		    const double* properties,
 		    const int numProperties);
 
-  /** Compute stress tensor from properties.
+  /** Compute stress tensor from properties. If the state variables
+   * are from the previous time step, then the computeStateVars flag
+   * should be set to true so that the state variables are updated
+   * (but not stored) when computing the stresses.
    *
    * @param stress Array for stress tensor.
    * @param stressSize Size of stress tensor.
@@ -80,13 +83,15 @@ protected :
    * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
+   * @param computeStateVars Flag indicating to compute updated state vars.
    */
   void _calcStress(double* const stress,
 		   const int stressSize,
 		   const double* properties,
 		   const int numProperties,
 		   const double* totalStrain,
-		   const int strainSize);
+		   const int strainSize,
+		   const bool computeStateVars);
 
   /** Compute derivatives of elasticity matrix from properties.
    *

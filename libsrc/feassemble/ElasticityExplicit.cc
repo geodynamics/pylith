@@ -227,7 +227,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     // Compute B(transpose) * sigma, first computing strains
     calcTotalStrainFn(&totalStrain, basisDeriv, dispTCell, 
 		      numBasis, numQuadPts);
-    const double_array& stress = _material->calcStress(totalStrain);
+    const double_array& stress = _material->calcStress(totalStrain, true);
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stress);
 
     // Assemble cell contribution into field

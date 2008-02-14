@@ -63,11 +63,13 @@ pylith::materials::MaxwellIsotropic3D::_calcStress(double* const stress,
 						   const double* parameters,
 						   const int numParams,
 						   const double* totalStrain,
-						   const int strainSize) {
+						   const int strainSize,
+						   const bool computeStateVars) {
   assert(0 != _calcStressFn);
   CALL_MEMBER_FN(*this, _calcStressFn)(stress, stressSize, 
 				       parameters, numParams,
-				       totalStrain, strainSize);
+				       totalStrain, strainSize,
+				       computeStateVars);
 } // _calcStress
 
 // Compute derivatives of elasticity matrix from parameters.

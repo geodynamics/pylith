@@ -242,7 +242,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     PetscLogEventBegin(stressEvent,0,0,0,0);
     calcTotalStrainFn(&totalStrain, basisDeriv, dispTBctpdtCell, 
 		      numBasis, numQuadPts);
-    const double_array& stress = _material->calcStress(totalStrain);
+    const double_array& stress = _material->calcStress(totalStrain, true);
     PetscLogEventEnd(stressEvent,0,0,0,0);
 
     PetscLogEventBegin(computeEvent,0,0,0,0);

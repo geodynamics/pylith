@@ -264,11 +264,13 @@ pylith::materials::TestElasticMaterial::test_calcStress(void)
   CPPUNIT_ASSERT(0 != _dataElastic);
   const ElasticMaterialData* data = _dataElastic;
 
+  const bool computeStateVars = true;
+
   const int stressSize = _matElastic->_tensorSize;
   double_array stress(stressSize);
   _matElastic->_calcStress(&stress[0], stress.size(),
 			 data->parameterData, data->numParamsQuadPt,
-			 data->strain, stressSize);
+			   data->strain, stressSize, computeStateVars);
   
   const double* stressE = data->stress;
   CPPUNIT_ASSERT(0 != stressE);

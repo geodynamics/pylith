@@ -294,7 +294,6 @@ pylith::bc::TestDirichletPoints::_initialize(ALE::Obj<Mesh>* mesh,
   const double upDirVals[] = { 0.0, 0.0, 1.0 };
   double_array upDir(upDirVals, 3);
 
-  bc->id(_data->id);
   bc->label(_data->label);
   bc->db(&db);
   bc->dbRate(&dbRate);

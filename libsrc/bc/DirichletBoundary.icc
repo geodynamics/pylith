@@ -44,7 +44,7 @@ pylith::bc::DirichletBoundary::referenceTime(const double t) {
    */
 inline
 const ALE::Obj<pylith::Mesh>&
-pylith::bc::DirichletBoundary::dataMesh(void) const {
+pylith::bc::DirichletBoundary::boundaryMesh(void) const {
   return _boundaryMesh;
 } // dataMesh
 

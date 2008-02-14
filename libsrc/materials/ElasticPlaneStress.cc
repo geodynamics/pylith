@@ -133,7 +133,8 @@ pylith::materials::ElasticPlaneStress::_calcStress(double* const stress,
 						   const double* properties,
 						   const int numProperties,
 						   const double* totalStrain,
-						   const int strainSize)
+						   const int strainSize,
+						   const bool computeStateVars)
 { // _calcStress
   assert(0 != stress);
   assert(_ElasticPlaneStress::tensorSize == stressSize);
