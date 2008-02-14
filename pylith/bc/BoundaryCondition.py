@@ -63,16 +63,12 @@ class BoundaryCondition(Component):
     ## Python object for managing BoundaryCondition facilities and properties.
     ##
     ## \b Properties
-    ## @li \b id Object face identifier (from mesh generator)
     ## @li \b name Name identifier for object face
     ##
     ## \b Facilities
     ## @li \b db Database of boundary condition parameters
 
     import pyre.inventory
-
-    id = pyre.inventory.int("id", default=0)
-    id.meta['tip'] = "Object face identifier (from mesh generator)."
 
     label = pyre.inventory.str("label", default="")
     label.meta['tip'] = "Name identifier for object face."
@@ -107,7 +103,6 @@ class BoundaryCondition(Component):
     Setup boundary condition.
     """
     self._createCppHandle()
-    self.cppHandle.id = self.id
     self.cppHandle.label = self.label
     self.mesh = mesh
     return
@@ -140,7 +135,6 @@ class BoundaryCondition(Component):
     Setup members using inventory.
     """
     Component._configure(self)
-    self.id = self.inventory.id
     self.label = self.inventory.label
     self.upDir = map(float, self.inventory.upDir)
     self.db = self.inventory.db

@@ -125,54 +125,6 @@ cdef class BoundaryCondition:
     return PyCObject_FromVoidPtr(self.thisptr, BoundaryCondition_destructor)
 
 
-  property id:
-    def __set__(self, value):
-      """
-      Set identifier of material.
-      """
-      # create shim for method 'id'
-      #embed{ void BoundaryCondition_id_set(void* objVptr, int value)
-      try {
-        assert(0 != objVptr);
-        ((pylith::bc::BoundaryCondition*) objVptr)->id(value);
-      } catch (const std::exception& err) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        const_cast<char*>(err.what()));
-      } catch (const ALE::Exception& err) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        const_cast<char*>(err.msg().c_str()));
-      } catch (...) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        "Caught unknown C++ exception.");
-      } // try/catch
-      #}embed
-      BoundaryCondition_id_set(self.thisptr, value)
-
-    def __get__(self):
-      """
-      Get identifier of material.
-      """
-      # create shim for method 'id'
-      #embed{ int BoundaryCondition_id_get(void* objVptr)
-      int result = 0;
-      try {
-        assert(0 != objVptr);
-        result = ((pylith::bc::BoundaryCondition*) objVptr)->id();
-      } catch (const std::exception& err) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        const_cast<char*>(err.what()));
-      } catch (const ALE::Exception& err) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        const_cast<char*>(err.msg().c_str()));
-      } catch (...) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        "Caught unknown C++ exception.");
-      } // try/catch
-      return result;
-      #}embed
-      return BoundaryCondition_id_get(self.thisptr)
-
-
   property label:
     def __set__(self, value):
       """
