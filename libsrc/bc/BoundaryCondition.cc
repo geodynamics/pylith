@@ -17,7 +17,6 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::BoundaryCondition::BoundaryCondition(void) :
-  _id(0),
   _label(""),
   _db(0)
 { // constructor
