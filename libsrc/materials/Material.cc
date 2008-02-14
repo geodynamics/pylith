@@ -197,9 +197,11 @@ pylith::materials::Material::propertyField(ALE::Obj<real_section_type>* field,
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
   
+  const int totalFiberDim = numQuadPts * fiberDim;
+
   // Allocate buffer for property field.
-  if (field->isNull()) {
-    const int totalFiberDim = numQuadPts * fiberDim;
+  if (field->isNull() || 
+      totalFiberDim != (*field)->getFiberDimension(*cells->begin())) {
     *field = new real_section_type(mesh->comm(), mesh->debug());
     (*field)->setFiberDimension(cells, totalFiberDim);
     mesh->allocate(*field);
