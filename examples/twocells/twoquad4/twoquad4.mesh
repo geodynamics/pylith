@@ -1,24 +1,33 @@
-// Global mesh object.
-// This defines a rectangular mesh composed of two square
-// elements with edge lengths of 2.0.
+// Finite-element mesh with two quad4 cells.
+//
+//
+//  1 ----- 3 ----- 5
+//  |       |       |
+//  |       |       |
+//  |       |       |
+//  0 ----- 2 ----- 4
+//
+// Each edge has a length of 2.0.
+//
 mesh = {
 
-  // This is a two-dimensional mesh.
+  // Dimenion associated with topology of mesh.
   dimension = 2
 
-  // We are using zero-indexing (default) rather than one-indexing.
+  // We are using zero-based indexing (default, C style) rather than 
+  // one-based (Fortran style) indexing.
   use-index-zero = true
 
-  // Describe the vertices (nodes) defining the mesh.
+  // Vertices in the mesh.
   vertices = {
 
-    // The vertices are defined in a 2D coordinate system.
+    // Dimension of coordinate system for vertices.
     dimension = 2
 
-    // There are 6 vertices.
+    // Number of vertices in mesh.
     count = 6
 
-    // List the coordinates as:
+    // Coordinates are listed as:
     // Vertex number (starting from zero), x-coord, y-coord
     // Use coordinate units that are consistent with the other units used.
     coordinates = {
@@ -31,7 +40,7 @@ mesh = {
     }
   }
 
-  // Describe the cells (elements) composing the mesh.
+  // Finite-element cells in the mesh.
   cells = {
 
     // There are 2 cells.
@@ -40,8 +49,8 @@ mesh = {
     // These are bilinear quadrilateral cells, so there are 4 corners per cell.
     num-corners = 4
 
-    // List the vertices composing each cell,
-    // moving counter-clockwise around the cell.
+    // List the vertices composing each cell, moving counter-clockwise 
+    // around the cell.
     // List the information as:
     // Cell number (starting from zero), vertex 0, vertex 1, vertex 2, vertex 3
     simplices = {
@@ -52,15 +61,15 @@ mesh = {
     // List the material ID's associated with each cell.
     // Different ID's may be used to specify a different material type, or
     // to use a different spatial database for each material ID.
-    // In this example, cells 0 and 1 both are associated with material ID 1.
+    // In this example, cells 0 and 1 both are associated with material ID 0.
     material-ids = {
              0   0
              1   0
     }
   }
 
-  // Here we list different groups (cells or vertices) that we want to associate
-  // with a particular name (ID).
+  // Here we list different groups (cells or vertices) that we want to 
+  // associate with a particular name.
 
   // This group of vertices may be used to define a fault.
   // There are 2 vertices corresponding to indices 2 and 3.
@@ -75,13 +84,14 @@ mesh = {
   }
 
   // This group of vertices may be used to specify boundary conditions.
-  // There are 2 vertices corresponding to indices 0 and 4.
+  // There are 3 vertices corresponding to indices 0, 2, and 4.
   group = {
     name = y_neg
     type = vertices
-    count = 2
+    count = 3
     indices = {
       0
+      2
       4
     }
   }
