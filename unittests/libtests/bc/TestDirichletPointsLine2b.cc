@@ -14,7 +14,7 @@
 
 #include "TestDirichletPointsLine2b.hh" // Implementation of class methods
 
-#include "data/DirichletPointsDataLine2b.hh" // USES DirichletPointsDataLine2b
+#include "data/DirichletDataLine2b.hh" // USES DirichletDataLine2b
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletPointsLine2b );
@@ -24,7 +24,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletPointsLine2b );
 void
 pylith::bc::TestDirichletPointsLine2b::setUp(void)
 { // setUp
-  _data = new DirichletPointsDataLine2b();
+  _data = new DirichletDataLine2b();
 } // setUp
 
 

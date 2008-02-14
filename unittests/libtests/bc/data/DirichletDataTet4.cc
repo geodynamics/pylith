@@ -17,36 +17,41 @@
  * Fixed DOF: { 1, 2 }
  *
  * Values
+ *   1: 0.7, 0.2
  *   2: 0.7, 0.2
+ *   3: 0.7, 0.2
  * tRef = 1.2
  * Rate of change = 4.0
  */
 
-#include "DirichletPointsDataTet4.hh"
+#include "DirichletDataTet4.hh"
 
-const int pylith::bc::DirichletPointsDataTet4::_id = 0;
+const int pylith::bc::DirichletDataTet4::_id = 0;
 
-const char* pylith::bc::DirichletPointsDataTet4::_label = "bc";
+const char* pylith::bc::DirichletDataTet4::_label = "bc3";
 
-const int pylith::bc::DirichletPointsDataTet4::_numDOF = 3;
-const int pylith::bc::DirichletPointsDataTet4::_numFixedDOF = 2;
-const int pylith::bc::DirichletPointsDataTet4::_fixedDOF[] = { 1, 2 };
+const int pylith::bc::DirichletDataTet4::_numDOF = 3;
+const int pylith::bc::DirichletDataTet4::_numFixedDOF = 2;
+const int pylith::bc::DirichletDataTet4::_fixedDOF[] = { 1, 2 };
 
-const int pylith::bc::DirichletPointsDataTet4::_numConstrainedPts = 1;
-const int pylith::bc::DirichletPointsDataTet4::_constrainedPoints[] = { 2 };
+const int pylith::bc::DirichletDataTet4::_numConstrainedPts = 3;
+const int pylith::bc::DirichletDataTet4::_constrainedPoints[] = { 1, 2, 3 };
 
 
-const double pylith::bc::DirichletPointsDataTet4::_tRef = 1.2;
-const double pylith::bc::DirichletPointsDataTet4::_valueRate = 4.0;
-const double pylith::bc::DirichletPointsDataTet4::_valuesInitial[] =
-  { 0.7, 0.2 };
+const double pylith::bc::DirichletDataTet4::_tRef = 1.2;
+const double pylith::bc::DirichletDataTet4::_valueRate = 4.0;
+const double pylith::bc::DirichletDataTet4::_valuesInitial[] = {
+  0.7, 0.2,
+  0.7, 0.2,
+  0.7, 0.2,
+};
 
-const char* pylith::bc::DirichletPointsDataTet4::_meshFilename = 
+const char* pylith::bc::DirichletDataTet4::_meshFilename = 
   "data/tet4.mesh";
-const char* pylith::bc::DirichletPointsDataTet4::_dbFilename =
+const char* pylith::bc::DirichletDataTet4::_dbFilename =
   "data/tet4.spatialdb";
 
-pylith::bc::DirichletPointsDataTet4::DirichletPointsDataTet4(void)
+pylith::bc::DirichletDataTet4::DirichletDataTet4(void)
 { // constructor
   id = _id;
   label = const_cast<char*>(_label);
@@ -66,7 +71,7 @@ pylith::bc::DirichletPointsDataTet4::DirichletPointsDataTet4(void)
   dbFilename = const_cast<char*>(_dbFilename);
 } // constructor
 
-pylith::bc::DirichletPointsDataTet4::~DirichletPointsDataTet4(void)
+pylith::bc::DirichletDataTet4::~DirichletDataTet4(void)
 {}
 
 

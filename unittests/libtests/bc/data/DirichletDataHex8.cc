@@ -26,34 +26,34 @@
  *   +0.4
  */
 
-#include "DirichletPointsDataHex8.hh"
+#include "DirichletDataHex8.hh"
 
-const int pylith::bc::DirichletPointsDataHex8::_id = 0;
+const int pylith::bc::DirichletDataHex8::_id = 0;
 
-const char* pylith::bc::DirichletPointsDataHex8::_label = "bc";
+const char* pylith::bc::DirichletDataHex8::_label = "bc";
 
-const int pylith::bc::DirichletPointsDataHex8::_numDOF = 3;
-const int pylith::bc::DirichletPointsDataHex8::_numFixedDOF = 2;
-const int pylith::bc::DirichletPointsDataHex8::_fixedDOF[] = { 0, 2 };
+const int pylith::bc::DirichletDataHex8::_numDOF = 3;
+const int pylith::bc::DirichletDataHex8::_numFixedDOF = 2;
+const int pylith::bc::DirichletDataHex8::_fixedDOF[] = { 0, 2 };
 
-const int pylith::bc::DirichletPointsDataHex8::_numConstrainedPts = 4;
-const int pylith::bc::DirichletPointsDataHex8::_constrainedPoints[] = { 0, 1, 6, 7 };
+const int pylith::bc::DirichletDataHex8::_numConstrainedPts = 4;
+const int pylith::bc::DirichletDataHex8::_constrainedPoints[] = { 0, 1, 6, 7 };
 
-const double pylith::bc::DirichletPointsDataHex8::_tRef = 0.2;
-const double pylith::bc::DirichletPointsDataHex8::_valueRate = 0.4;
-const double pylith::bc::DirichletPointsDataHex8::_valuesInitial[] = {
+const double pylith::bc::DirichletDataHex8::_tRef = 0.2;
+const double pylith::bc::DirichletDataHex8::_valueRate = 0.4;
+const double pylith::bc::DirichletDataHex8::_valuesInitial[] = {
   -0.2, 0.3,
    0.1, 0.7,
    0.5, 0.4,
    3.2, 6.1,
 };
 
-const char* pylith::bc::DirichletPointsDataHex8::_meshFilename = 
+const char* pylith::bc::DirichletDataHex8::_meshFilename = 
   "data/hex8.mesh";
-const char* pylith::bc::DirichletPointsDataHex8::_dbFilename =
+const char* pylith::bc::DirichletDataHex8::_dbFilename =
   "data/hex8.spatialdb";
 
-pylith::bc::DirichletPointsDataHex8::DirichletPointsDataHex8(void)
+pylith::bc::DirichletDataHex8::DirichletDataHex8(void)
 { // constructor
   id = _id;
   label = const_cast<char*>(_label);
@@ -73,7 +73,7 @@ pylith::bc::DirichletPointsDataHex8::DirichletPointsDataHex8(void)
   dbFilename = const_cast<char*>(_dbFilename);
 } // constructor
 
-pylith::bc::DirichletPointsDataHex8::~DirichletPointsDataHex8(void)
+pylith::bc::DirichletDataHex8::~DirichletDataHex8(void)
 {}
 
 

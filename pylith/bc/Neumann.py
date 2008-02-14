@@ -42,6 +42,7 @@ class Neumann(BoundaryCondition, Integrator):
     ##
     ## \b Facilities
     ## @li \b quadrature Quadrature object for numerical integration
+    ## @li \b output Output manager associated with diagnostic output.
 
     import pyre.inventory
 
@@ -49,6 +50,11 @@ class Neumann(BoundaryCondition, Integrator):
     quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
     quadrature.meta['tip'] = "Quadrature object for numerical integration."
 
+    from pylith.meshio.OutputNeumann import OutputNeumann
+    output = pyre.inventory.facility("output", family="output_manager",
+                                     factory=OutputNeumann)
+    output.meta['tip'] = "Output manager associated with diagnostic output."
+    
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -59,6 +65,13 @@ class Neumann(BoundaryCondition, Integrator):
     BoundaryCondition.__init__(self, name)
     Integrator.__init__(self)
     self._loggingPrefix = "NeBC "
+    self.availableFields = \
+        {'vertex': \
+           {'info': [],
+            'data': []},
+         'cell': \
+           {'info': ["tractions"],
+            'data': []}}
     return
 
 
@@ -69,6 +82,7 @@ class Neumann(BoundaryCondition, Integrator):
     BoundaryCondition.preinitialize(self, mesh)
     Integrator.preinitialize(self, mesh)
     self.quadrature.preinitialize()
+    self.output.preinitialize(self)
     return
 
 
@@ -85,6 +99,7 @@ class Neumann(BoundaryCondition, Integrator):
               "Dimension of mesh boundary '%s': %d" % \
               (self.quadrature.cellDim,
                self.label, self.mesh.dimension()-1)    
+    self.output.verifyConfiguration()
     return
   
 
@@ -98,9 +113,37 @@ class Neumann(BoundaryCondition, Integrator):
     self.cppHandle.quadrature = self.quadrature.cppHandle
     BoundaryCondition.initialize(self, totalTime, numTimeSteps)
 
+    from pylith.topology.Mesh import Mesh
+    self.boundaryMesh = Mesh()
+    self.boundaryMesh.initialize(self.mesh.coordsys)
+    self.cppHandle.boundaryMesh(self.boundaryMesh.cppHandle)
+
+    if None != self.output:
+      self.output.initialize(self.quadrature)
+      self.output.writeInfo()
+
     self._logger.eventEnd(logEvent)
     return
   
+
+  def getDataMesh(self):
+    """
+    Get mesh associated with data fields.
+    """
+    return (self.boundaryMesh, None, None)
+
+
+  def getCellField(self, name, fields=None):
+    """
+    Get vertex field.
+    """
+    if None == fields:
+      (field, fieldType) = self.cppHandle.cellField(name, self.mesh.cppHandle)
+    else:
+      (field, fieldType) = self.cppHandle.cellField(name, self.mesh.cppHandle,
+                                                    fields.cppHandle)
+    return (field, fieldType)
+
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -110,6 +153,7 @@ class Neumann(BoundaryCondition, Integrator):
     """
     BoundaryCondition._configure(self)
     self.quadrature = self.inventory.quadrature
+    self.output = self.inventory.output
     return
 
 

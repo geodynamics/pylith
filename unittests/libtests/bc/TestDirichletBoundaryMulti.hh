@@ -11,15 +11,15 @@
 //
 
 /**
- * @file unittests/libtests/bc/TestDirichletPointsMulti.hh
+ * @file unittests/libtests/bc/TestDirichletBoundaryMulti.hh
  *
- * @brief C++ TestDirichletPointsMulti object.
+ * @brief C++ TestDirichletBoundaryMulti object.
  *
- * C++ unit testing for DirichletPointsMulti.
+ * C++ unit testing for DirichletBoundaryMulti.
  */
 
-#if !defined(pylith_bc_testdirichletpointsmulti_hh)
-#define pylith_bc_testdirichletpointsmulti_hh
+#if !defined(pylith_bc_testdirichletboundarymulti_hh)
+#define pylith_bc_testdirichletboundarymulti_hh
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -28,16 +28,16 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace bc {
-    class TestDirichletPointsMulti;
+    class TestDirichletBoundaryMulti;
 
-    class DirichletPoints;
+    class DirichletBoundary;
     class DirichletDataMulti;
   } // bc
 } // pylith
 
-/// C++ unit testing for DirichletPointsMulti.
-class pylith::bc::TestDirichletPointsMulti : public CppUnit::TestFixture
-{ // class TestDirichletPointsMulti
+/// C++ unit testing for DirichletBoundaryMulti.
+class pylith::bc::TestDirichletBoundaryMulti : public CppUnit::TestFixture
+{ // class TestDirichletBoundaryMulti
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -65,19 +65,19 @@ protected :
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
-  /** Initialize DirichletPointsMulti boundary condition.
+  /** Initialize DirichletBoundaryMulti boundary condition.
    *
    * @param mesh PETSc mesh to initialize
-   * @param bcA DirichletPoints boundary condition A to initialize.
-   * @param bcB DirichletPoints boundary condition B to initialize.
+   * @param bcA DirichletBoundary boundary condition A to initialize.
+   * @param bcB DirichletBoundary boundary condition B to initialize.
    */
   void _initialize(ALE::Obj<ALE::Mesh>* mesh,
-		   DirichletPoints* const bcA,
-		   DirichletPoints* const bcB) const;
+		   DirichletBoundary* const bcA,
+		   DirichletBoundary* const bcB) const;
 
-}; // class TestDirichletPointsMulti
+}; // class TestDirichletBoundaryMulti
 
-#endif // pylith_bc_dirichletpointsmulti_hh
+#endif // pylith_bc_dirichletboundarymulti_hh
 
 
 // End of file 

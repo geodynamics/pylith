@@ -23,30 +23,30 @@
  * Rate of change = -0.2
  */
 
-#include "DirichletPointsDataTri3.hh"
+#include "DirichletDataTri3.hh"
 
-const int pylith::bc::DirichletPointsDataTri3::_id = 0;
+const int pylith::bc::DirichletDataTri3::_id = 0;
 
-const char* pylith::bc::DirichletPointsDataTri3::_label = "bc";
+const char* pylith::bc::DirichletDataTri3::_label = "bc";
 
-const int pylith::bc::DirichletPointsDataTri3::_numDOF = 2;
-const int pylith::bc::DirichletPointsDataTri3::_numFixedDOF = 1;
-const int pylith::bc::DirichletPointsDataTri3::_fixedDOF[] = { 1 };
+const int pylith::bc::DirichletDataTri3::_numDOF = 2;
+const int pylith::bc::DirichletDataTri3::_numFixedDOF = 1;
+const int pylith::bc::DirichletDataTri3::_fixedDOF[] = { 1 };
 
-const int pylith::bc::DirichletPointsDataTri3::_numConstrainedPts = 2;
-const int pylith::bc::DirichletPointsDataTri3::_constrainedPoints[] = { 1, 3 };
+const int pylith::bc::DirichletDataTri3::_numConstrainedPts = 2;
+const int pylith::bc::DirichletDataTri3::_constrainedPoints[] = { 1, 3 };
 
-const double pylith::bc::DirichletPointsDataTri3::_tRef = 0.7;
-const double pylith::bc::DirichletPointsDataTri3::_valueRate = -0.2;
-const double pylith::bc::DirichletPointsDataTri3::_valuesInitial[] =
+const double pylith::bc::DirichletDataTri3::_tRef = 0.7;
+const double pylith::bc::DirichletDataTri3::_valueRate = -0.2;
+const double pylith::bc::DirichletDataTri3::_valuesInitial[] =
   { 0.3, 0.7 };
 
-const char* pylith::bc::DirichletPointsDataTri3::_meshFilename = 
+const char* pylith::bc::DirichletDataTri3::_meshFilename = 
   "data/tri3.mesh";
-const char* pylith::bc::DirichletPointsDataTri3::_dbFilename =
+const char* pylith::bc::DirichletDataTri3::_dbFilename =
   "data/tri3.spatialdb";
 
-pylith::bc::DirichletPointsDataTri3::DirichletPointsDataTri3(void)
+pylith::bc::DirichletDataTri3::DirichletDataTri3(void)
 { // constructor
   id = _id;
   label = const_cast<char*>(_label);
@@ -66,7 +66,7 @@ pylith::bc::DirichletPointsDataTri3::DirichletPointsDataTri3(void)
   dbFilename = const_cast<char*>(_dbFilename);
 } // constructor
 
-pylith::bc::DirichletPointsDataTri3::~DirichletPointsDataTri3(void)
+pylith::bc::DirichletDataTri3::~DirichletDataTri3(void)
 {}
 
 

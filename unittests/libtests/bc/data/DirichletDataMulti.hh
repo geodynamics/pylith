@@ -10,26 +10,26 @@
 // ======================================================================
 //
 
-#if !defined(pylith_bc_dirichletpointsdatamulti_hh)
-#define pylith_bc_dirichletpointsdatamulti_hh
+#if !defined(pylith_bc_dirichletdatamulti_hh)
+#define pylith_bc_dirichletdatamulti_hh
 
 namespace pylith {
   namespace bc {
-     class DirichletPointsDataMulti;
+     class DirichletDataMulti;
   } // pylith
 } // bc
 
-class pylith::bc::DirichletPointsDataMulti
+class pylith::bc::DirichletDataMulti
 {
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
   
   /// Constructor
-  DirichletPointsDataMulti(void);
+  DirichletDataMulti(void);
 
   /// Destructor
-  ~DirichletPointsDataMulti(void);
+  ~DirichletDataMulti(void);
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
@@ -67,6 +67,6 @@ public:
   char* meshFilename; ///< Filename for input mesh.
 };
 
-#endif // pylith_bc_cohesivedatamulti_hh
+#endif // pylith_bc_dirichletdatamulti_hh
 
 // End of file

@@ -31,7 +31,7 @@ namespace pylith {
     class TestDirichletPoints;
 
     class DirichletPoints;
-    class DirichletPointsData;
+    class DirichletData;
   } // bc
 } // pylith
 
@@ -75,7 +75,7 @@ public :
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
-  DirichletPointsData* _data; ///< Data for testing
+  DirichletData* _data; ///< Data for testing
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :

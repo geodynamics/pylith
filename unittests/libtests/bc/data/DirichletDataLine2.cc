@@ -25,30 +25,30 @@
  *   +0.3
  */
 
-#include "DirichletPointsDataLine2.hh"
+#include "DirichletDataLine2.hh"
 
-const int pylith::bc::DirichletPointsDataLine2::_id = 0;
+const int pylith::bc::DirichletDataLine2::_id = 0;
 
-const char* pylith::bc::DirichletPointsDataLine2::_label = "bc0";
+const char* pylith::bc::DirichletDataLine2::_label = "bc0";
 
-const int pylith::bc::DirichletPointsDataLine2::_numDOF = 1;
-const int pylith::bc::DirichletPointsDataLine2::_numFixedDOF = 1;
-const int pylith::bc::DirichletPointsDataLine2::_fixedDOF[] = { 0 };
+const int pylith::bc::DirichletDataLine2::_numDOF = 1;
+const int pylith::bc::DirichletDataLine2::_numFixedDOF = 1;
+const int pylith::bc::DirichletDataLine2::_fixedDOF[] = { 0 };
 
-const int pylith::bc::DirichletPointsDataLine2::_numConstrainedPts = 2;
-const int pylith::bc::DirichletPointsDataLine2::_constrainedPoints[] = { 0, 2 };
+const int pylith::bc::DirichletDataLine2::_numConstrainedPts = 2;
+const int pylith::bc::DirichletDataLine2::_constrainedPoints[] = { 0, 2 };
 
-const double pylith::bc::DirichletPointsDataLine2::_tRef = 0.6;
-const double pylith::bc::DirichletPointsDataLine2::_valueRate = 0.3;
-const double pylith::bc::DirichletPointsDataLine2::_valuesInitial[] =
+const double pylith::bc::DirichletDataLine2::_tRef = 0.6;
+const double pylith::bc::DirichletDataLine2::_valueRate = 0.3;
+const double pylith::bc::DirichletDataLine2::_valuesInitial[] =
   { 1.1, 2.2 };
 
-const char* pylith::bc::DirichletPointsDataLine2::_meshFilename = 
+const char* pylith::bc::DirichletDataLine2::_meshFilename = 
   "data/line2.mesh";
-const char* pylith::bc::DirichletPointsDataLine2::_dbFilename =
+const char* pylith::bc::DirichletDataLine2::_dbFilename =
   "data/line2.spatialdb";
 
-pylith::bc::DirichletPointsDataLine2::DirichletPointsDataLine2(void)
+pylith::bc::DirichletDataLine2::DirichletDataLine2(void)
 { // constructor
   id = _id;
   label = const_cast<char*>(_label);
@@ -68,7 +68,7 @@ pylith::bc::DirichletPointsDataLine2::DirichletPointsDataLine2(void)
   dbFilename = const_cast<char*>(_dbFilename);
 } // constructor
 
-pylith::bc::DirichletPointsDataLine2::~DirichletPointsDataLine2(void)
+pylith::bc::DirichletDataLine2::~DirichletDataLine2(void)
 {}
 
 

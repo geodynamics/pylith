@@ -14,7 +14,7 @@
 
 #include "TestDirichletPointsHex8.hh" // Implementation of class methods
 
-#include "data/DirichletPointsDataHex8.hh" // USES DirichletPointsDataHex8
+#include "data/DirichletDataHex8.hh" // USES DirichletDataHex8
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletPointsHex8 );
@@ -24,7 +24,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletPointsHex8 );
 void
 pylith::bc::TestDirichletPointsHex8::setUp(void)
 { // setUp
-  _data = new DirichletPointsDataHex8();
+  _data = new DirichletDataHex8();
 } // setUp
 
 

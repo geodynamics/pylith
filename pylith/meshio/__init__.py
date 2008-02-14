@@ -22,10 +22,12 @@ __all__ = ['CellFilter',
            'MeshIOAscii',
            'MeshIOCubit',
            'MeshIOLagrit',
+           'OutputDirichlet',
            'OutputManager',
            'OutputSoln',
            'OutputFaultKin',
            'OutputMatElastic',
+           'OutputNeumann',
            'SingleOutput',
            'VertexFilter']
 

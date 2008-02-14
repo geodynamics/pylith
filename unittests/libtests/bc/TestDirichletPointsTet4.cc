@@ -14,7 +14,7 @@
 
 #include "TestDirichletPointsTet4.hh" // Implementation of class methods
 
-#include "data/DirichletPointsDataTet4.hh" // USES DirichletPointsDataTet4
+#include "data/DirichletDataTet4.hh" // USES DirichletDataTet4
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletPointsTet4 );
@@ -24,7 +24,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletPointsTet4 );
 void
 pylith::bc::TestDirichletPointsTet4::setUp(void)
 { // setUp
-  _data = new DirichletPointsDataTet4();
+  _data = new DirichletDataTet4();
 } // setUp
 
 

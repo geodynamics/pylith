@@ -11,15 +11,15 @@
 //
 
 /**
- * @file unittests/libtests/bc/TestDirichletPointsMulti.hh
+ * @file unittests/libtests/bc/TestDirichletBoundary.hh
  *
- * @brief C++ TestDirichletPointsMulti object.
+ * @brief C++ TestDirichletBoundary object.
  *
- * C++ unit testing for DirichletPointsMulti.
+ * C++ unit testing for DirichletBoundary.
  */
 
-#if !defined(pylith_bc_testdirichletpointsmulti_hh)
-#define pylith_bc_testdirichletpointsmulti_hh
+#if !defined(pylith_bc_testdirichletboundary_hh)
+#define pylith_bc_testdirichletboundary_hh
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -28,16 +28,22 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace bc {
-    class TestDirichletPointsMulti;
+    class TestDirichletBoundary;
 
-    class DirichletPoints;
-    class DirichletDataMulti;
+    class DirichletBoundary;
+    class DirichletData;
   } // bc
 } // pylith
 
-/// C++ unit testing for DirichletPointsMulti.
-class pylith::bc::TestDirichletPointsMulti : public CppUnit::TestFixture
-{ // class TestDirichletPointsMulti
+/// C++ unit testing for DirichletBoundary.
+class pylith::bc::TestDirichletBoundary : public CppUnit::TestFixture
+{ // class TestDirichletBoundary
+
+  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+  CPPUNIT_TEST_SUITE( TestDirichletBoundary );
+  CPPUNIT_TEST( testConstructor );
+  CPPUNIT_TEST( testFixedDOF );
+  CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -47,6 +53,15 @@ public :
 
   /// Tear down testing data.
   void tearDown(void);
+
+  /// Test constructor.
+  void testConstructor(void);
+
+  /// Test fixedDOF().
+  void testFixedDOF(void);
+
+  /// Test initialize().
+  void testInitialize(void);
 
   /// Test setConstraintSizes().
   void testSetConstraintSizes(void);
@@ -60,24 +75,22 @@ public :
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
-  DirichletDataMulti* _data; ///< Data for testing
+  DirichletData* _data; ///< Data for testing
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
-  /** Initialize DirichletPointsMulti boundary condition.
+  /** Initialize DirichletBoundary boundary condition.
    *
    * @param mesh PETSc mesh to initialize
-   * @param bcA DirichletPoints boundary condition A to initialize.
-   * @param bcB DirichletPoints boundary condition B to initialize.
+   * @param bc DirichletBoundary boundary condition to initialize.
    */
   void _initialize(ALE::Obj<ALE::Mesh>* mesh,
-		   DirichletPoints* const bcA,
-		   DirichletPoints* const bcB) const;
+		   DirichletBoundary* const bc) const;
 
-}; // class TestDirichletPointsMulti
+}; // class TestDirichletBoundary
 
-#endif // pylith_bc_dirichletpointsmulti_hh
+#endif // pylith_bc_dirichletboundary_hh
 
 
 // End of file 

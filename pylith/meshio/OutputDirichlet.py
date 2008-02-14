@@ -10,20 +10,20 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/meshio/OutputMatElastic.py
+## @file pyre/meshio/OutputDirichlet.py
 ##
 ## @brief Python object for managing output of finite-element
-## information for material state variables.
+## information for Dirichlet boundary conditions.
 ##
 ## Factory: output_manager
 
 from OutputManager import OutputManager
 
-# OutputMatElastic class
-class OutputMatElastic(OutputManager):
+# OutputDirichlet class
+class OutputDirichlet(OutputManager):
   """
   Python object for managing output of finite-element information for
-  material state variables.
+  Dirichlet boundary conditions.
 
   Factory: output_manager
   """
@@ -32,31 +32,25 @@ class OutputMatElastic(OutputManager):
 
   class Inventory(OutputManager.Inventory):
     """
-    Python object for managing OutputMatElastic facilities and properties.
+    Python object for managing OutputDirichlet facilities and properties.
     """
 
     ## @class Inventory
-    ## Python object for managing OutputMatElastic facilities and properties.
+    ## Python object for managing OutputDirichlet facilities and properties.
     ##
     ## \b Properties
-    ## @li \b cell_info_fields Names of cell info fields to output.
-    ## @li \b cell_data_fields Names of cell data fields to output.
+    ## @li \b vertex_info_fields Names of vertex info fields to output.
     ##
     ## \b Facilities
     ## @li None
 
     import pyre.inventory
 
-    cellInfoFields = pyre.inventory.list("cell_info_fields",
-                                         default=["mu",
-                                                  "lambda",
-                                                  "density"])
-    cellInfoFields.meta['tip'] = "Names of cell info fields to output."
-
-    cellDataFields = pyre.inventory.list("cell_data_fields", 
-                                         default=["total-strain", "stress"])
-    cellDataFields.meta['tip'] = "Names of cell data fields to output."
-
+    vertexInfoFields = pyre.inventory.list("vertex_info_fields",
+                                           default=["initial",
+                                                    "rate-of-change"])
+    vertexInfoFields.meta['tip'] = "Names of vertex info fields to output."
+    
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -75,10 +69,10 @@ class OutputMatElastic(OutputManager):
     Set members based using inventory.
     """
     OutputManager._configure(self)
-    self.vertexInfoFields = []
+    self.vertexInfoFields = self.inventory.vertexInfoFields
     self.vertexDataFields = []
-    self.cellInfoFields = self.inventory.cellInfoFields
-    self.cellDataFields = self.inventory.cellDataFields
+    self.cellInfoFields = []
+    self.cellDataFields = []
     return
 
 
@@ -86,9 +80,9 @@ class OutputMatElastic(OutputManager):
 
 def output_manager():
   """
-  Factory associated with OutputMatElastic.
+  Factory associated with OutputDirichlet.
   """
-  return OutputMatElastic()
+  return OutputDirichlet()
 
 
 # End of file 
