@@ -64,6 +64,8 @@ pylith::bc::DirichletBoundary::initialize(
 	<< "condition '" << _label << "'.";
     throw std::runtime_error(msg.str());
   } // if
+  _boundaryMesh->setRealSection("coordinates", 
+				mesh->getRealSection("coordinates"));
 
   // Get values for degrees of freedom
   char** valueNames = (numFixedDOF > 0) ? new char*[numFixedDOF] : 0;

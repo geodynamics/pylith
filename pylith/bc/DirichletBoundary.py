@@ -149,9 +149,8 @@ class DirichletBoundary(BoundaryCondition, Constraint):
     self.boundaryMesh.initialize(self.mesh.coordsys)
     self.cppHandle.boundaryMesh(self.boundaryMesh.cppHandle)
 
-    if None != self.output:
-      self.output.initialize()
-      self.output.writeInfo()
+    self.output.initialize()
+    self.output.writeInfo()
 
     self._logger.eventEnd(logEvent)    
     return
