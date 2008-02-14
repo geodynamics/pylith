@@ -11,51 +11,40 @@
 //
 
 /**
- * @file pylith/meshio/CellFilter.hh
+ * @file pylith/meshio/CellFilterAvg.hh
  *
- * @brief C++ object for filtering cell fields when outputing
- * finite-element data.
+ * @brief C++ object for averaging cell fields over quadrature points
+ * when outputing finite-element data.
  */
 
-#if !defined(pylith_meshio_cellfilter_hh)
-#define pylith_meshio_cellfilter_hh
+#if !defined(pylith_meshio_cellfilteravg_hh)
+#define pylith_meshio_cellfilteravg_hh
 
-#include "pylith/utils/sievetypes.hh" // USES ALE::Mesh, real_section_type
+#include "CellFilter.hh" // ISA CellFilter
 
 namespace pylith {
   namespace meshio {
-    class CellFilter;
+    class CellFilterAvg;
   } // meshio
-
-  namespace feassemble {
-    class Quadrature;
-  } // meshio  
 } // pylith
 
-class pylith::meshio::CellFilter
-{ // CellFilter
+class pylith::meshio::CellFilterAvg : public CellFilter
+{ // CellFilterAvg
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
-  CellFilter(void);
+  CellFilterAvg(void);
 
   /// Destructor
-  ~CellFilter(void);
+  ~CellFilterAvg(void);
 
   /** Create copy of filter.
    *
    * @returns Copy of filter.
    */
-  virtual
-  CellFilter* clone(void) const = 0;
-
-  /** Set quadrature associated with cells.
-   *
-   * @param q Quadrature for cells.
-   */
-  void quadrature(const feassemble::Quadrature* q);
+  CellFilter* clone(void) const;
 
   /** Filter field.
    *
@@ -66,12 +55,11 @@ public :
    *
    * @returns Averaged field.
    */
-  virtual
   const ALE::Obj<real_section_type>&
   filter(const ALE::Obj<real_section_type>& fieldIn,
 	 const ALE::Obj<ALE::Mesh>& mesh,
 	 const char* label,
-	 const int labelId) = 0;
+	 const int labelId);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -81,7 +69,7 @@ protected :
    * @param f Filter to copy.
    * @returns Pointer to this.
    */
-  CellFilter(const CellFilter& f);
+  CellFilterAvg(const CellFilterAvg& f);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
@@ -89,14 +77,14 @@ private :
   /// Not implemented.
   const CellFilter& operator=(const CellFilter&);
 
-// PROTECTED MEMBERS ////////////////////////////////////////////////////
-protected :
+// PRIVATE MEMBERS //////////////////////////////////////////////////////
+private :
 
-  feassemble::Quadrature* _quadrature; ///< Quadrature associated with cells.
+  ALE::Obj<real_section_type> _fieldAvg; ///< Averaged cell field
 
-}; // CellFilter
+}; // CellFilterAvg
 
-#endif // pylith_meshio_cellfilter_hh
+#endif // pylith_meshio_cellfilteravg_hh
 
 
 // End of file 

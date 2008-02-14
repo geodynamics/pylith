@@ -40,17 +40,6 @@ pylith::meshio::CellFilter::CellFilter(const CellFilter& f) :
 } // copy constructor
 
 // ----------------------------------------------------------------------
-// operator=.
-const pylith::meshio::CellFilter&
-pylith::meshio::CellFilter::operator=(const CellFilter& f)
-{ // operator=
-  if (&f != this) {
-    delete _quadrature; 
-    _quadrature = (0 != f._quadrature) ? f._quadrature->clone() : 0;
-  } // if
-} // operator=
-
-// ----------------------------------------------------------------------
 // Set quadrature associated with cells.
 void
 pylith::meshio::CellFilter::quadrature(const feassemble::Quadrature* q)

@@ -84,7 +84,7 @@ class IntegratorElasticity(Integrator):
                    self.material.label)
 
     self.material.initialize(self.mesh, totalTime, numTimeSteps)
-    self.output.initialize(self.quadrature.cppHandle)
+    self.output.initialize(self.quadrature)
     self.output.writeInfo()
     self.output.open(totalTime, numTimeSteps)
 

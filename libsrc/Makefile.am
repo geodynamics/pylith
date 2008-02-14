@@ -72,6 +72,7 @@ libpylith_la_SOURCES = \
 	materials/ViscoelasticMaxwell.cc \
 	meshio/BinaryIO.cc \
 	meshio/CellFilter.cc \
+	meshio/CellFilterAvg.cc \
 	meshio/DataWriter.cc \
 	meshio/DataWriterVTK.cc \
 	meshio/GMVFile.cc \

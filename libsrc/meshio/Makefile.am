@@ -15,6 +15,7 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	CellFilter.hh \
+	CellFilterAvg.hh \
 	DataWriter.hh \
 	DataWriterVTK.hh \
 	DataWriterVTK.icc \

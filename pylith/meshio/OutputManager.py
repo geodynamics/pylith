@@ -210,7 +210,7 @@ class OutputManager(Component):
       for name in self.cellInfoFields:
         (field, fieldType) = self.dataProvider.getCellField(name)
         self.cppHandle.appendCellField(t.value, name, field, fieldType, 
-                                       mesh.cppHandle)
+                                       mesh.cppHandle, label, labelId)
 
       self.cppHandle.closeTimeStep()
       self.close()
@@ -241,7 +241,7 @@ class OutputManager(Component):
       for name in self.cellDataFields:
         (field, fieldType) = self.dataProvider.getCellField(name, fields)
         self.cppHandle.appendCellField(t.value, name, field, fieldType, 
-                                       mesh.cppHandle)
+                                       mesh.cppHandle, label, labelId)
 
       self.cppHandle.closeTimeStep()
 

@@ -132,12 +132,17 @@ public :
    * @param field Cell field.
    * @param fieldType Type of field.
    * @param mesh PETSc mesh object.
+   * @param label Name of label defining cells to include in output
+   *   (=0 means use all cells in mesh).
+   * @param labelId Value of label defining which cells to include.
    */
   void appendCellField(const double t,
 		       const char* name,
 		       const ALE::Obj<real_section_type>& field,
 		       const VectorFieldEnum fieldType,
-		       const ALE::Obj<ALE::Mesh>& mesh);
+		       const ALE::Obj<ALE::Mesh>& mesh,
+		       const char* label =0,
+		       const int labelId =0);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
