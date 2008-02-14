@@ -70,6 +70,13 @@ public :
    */
   bool needNewJacobian(void);
 
+  /** Set flag for setting constraints for total field solution or
+   *  incremental field solution.
+   *
+   * @param flag True if using incremental solution, false otherwise.
+   */
+  void useSolnIncr(const bool flag);
+
   /** Update state variables as needed.
    *
    * @param t Current time

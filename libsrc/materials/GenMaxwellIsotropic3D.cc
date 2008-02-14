@@ -178,12 +178,13 @@ pylith::materials::GenMaxwellIsotropic3D::_calcDensity(double* const density,
 // material.
 void
 pylith::materials::GenMaxwellIsotropic3D::_calcStressElastic(
-							     double* const stress,
-							     const int stressSize,
-							     const double* properties,
-							     const int numProperties,
-							     const double* totalStrain,
-							     const int strainSize)
+						  double* const stress,
+						  const int stressSize,
+						  const double* properties,
+						  const int numProperties,
+						  const double* totalStrain,
+						  const int strainSize,
+						  const bool computeStateVars)
 { // _calcStressElastic
   assert(0 != stress);
   assert(_GenMaxwellIsotropic3D::tensorSize == stressSize);
@@ -231,12 +232,13 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressElastic(
 // material.
 void
 pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic(
-								  double* const stress,
-								  const int stressSize,
-								  const double* properties,
-								  const int numProperties,
-								  const double* totalStrain,
-								  const int strainSize)
+						   double* const stress,
+						   const int stressSize,
+						   const double* properties,
+						   const int numProperties,
+						   const double* totalStrain,
+						   const int strainSize,
+						   const bool computeStateVars)
 { // _calcStressViscoelastic
   assert(0 != stress);
   assert(_GenMaxwellIsotropic3D::tensorSize == stressSize);
@@ -502,7 +504,7 @@ pylith::materials::GenMaxwellIsotropic3D::_updatePropertiesElastic(
   const int stressSize = 6;
   _calcStressElastic(stress, stressSize,
 		     properties, numProperties,
-		     totalStrain, strainSize);
+		     totalStrain, strainSize, true);
 
   // Initialize all viscous strains to deviatoric elastic strains.
   std::cout << std::endl;
@@ -564,7 +566,7 @@ pylith::materials::GenMaxwellIsotropic3D::_updatePropertiesViscoelastic(
   const int stressSize = 6;
   _calcStressViscoelastic(stress, stressSize, 
 			  properties, numProperties,
-			  totalStrain, strainSize);
+			  totalStrain, strainSize, true);
 
   const double meanStrainT = 
     (properties[_GenMaxwellIsotropic3D::pidStrainT+0] +

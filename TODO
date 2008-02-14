@@ -5,15 +5,11 @@ CURRENT ISSUES
 Release 1.1
 
   2. Reimplement SolutionIO [BRAD & MATT]
-     b. Implement output of material information.
-        i. CellFilterAvg (average data over quadrature points)
      c. Implement output of Neumann information.
      d. Implement output of Dirichlet information.
         i. DirichletBoundary
-        ii.  DirichletPoints
      e. Implement output of solution subset (ground surface).
         i. OutputSubdomain
-        ii. OutputPoints
      f. VertexFilterChangeCS
         i. OutputFilter for writing vertex coordinates in another 
            coordinate system.
@@ -88,11 +84,7 @@ Release 1.1
 
   4. Dirichlet BC [BRAD]
 
-      Replace Dirichlet BC with BC that has u(t) = u0 + u1*t?
-      Default u0 and u1 would be 0.
-
       DirichletBoundary
-      DirichletPoints
 
   5. Generalized Maxwell viscoelastic model [CHARLES]
 
@@ -194,7 +186,7 @@ Other (unknown release):
 ----------------------------------------------------------------------
 PyLith 1.1
 ----------------------------------------------------------------------
-HDF5 output
+Output
   volume (solution field)
   ground surface (or other surfaces) (solution field)
   points (solution field)

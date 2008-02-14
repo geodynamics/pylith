@@ -73,7 +73,10 @@ public :
    */
   const double_array& calcDensity(void);
   
-  /** Get stress tensor at quadrature points.
+  /** Get stress tensor at quadrature points. If the state variables
+   * are from the previous time step, then the computeStateVars flag
+   * should be set to true so that the state variables are updated
+   * (but not stored) when computing the stresses.
    *
    * Size of array of stress tensors = [numQuadPts][tensorSize].
    *
@@ -88,11 +91,13 @@ public :
    *
    * @param totalStrain Total strain tensor at quadrature points
    *    [numQuadPts][tensorSize]
+   * @param computeStateVars Flag indicating to compute updated state vars.
    *
    * @returns Array of stresses at cell's quadrature points.
    */
   const double_array&
-  calcStress(const double_array& totalStrain);
+  calcStress(const double_array& totalStrain,
+	     const bool computeStateVars =false);
 
   /** Compute derivative of elasticity matrix for cell at quadrature points.
    *
@@ -158,7 +163,10 @@ protected :
 		    const double* properties,
 		    const int numProperties) = 0;
 
-  /** Compute stress tensor from properties.
+  /** Compute stress tensor from properties. If the state variables
+   * are from the previous time step, then the computeStateVars flag
+   * should be set to true so that the state variables are updated
+   * (but not stored) when computing the stresses.
    *
    * @param stress Array for stress tensor.
    * @param stressSize Size of stress tensor.
@@ -166,6 +174,7 @@ protected :
    * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
+   * @param computeStateVars Flag indicating to compute updated state vars.
    */
   virtual
   void _calcStress(double* const stress,
@@ -173,7 +182,8 @@ protected :
 		   const double* properties,
 		   const int numProperties,
 		   const double* totalStrain,
-		   const int strainSize) = 0;
+		   const int strainSize,
+		   const bool computeStateVars) = 0;
 
   /** Compute derivatives of elasticity matrix from properties.
    *

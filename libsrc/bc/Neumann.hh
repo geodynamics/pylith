@@ -24,6 +24,7 @@
 
 #include "pylith/utils/array.hh" // USES std::vector, double_array, int_array
 #include "pylith/utils/sievetypes.hh" // USES real_section_type
+#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
 
 /// Namespace for pylith package
 namespace pylith {
@@ -90,6 +91,27 @@ public :
    * @param mesh Finite-element mesh
    */
   void verifyConfiguration(const ALE::Obj<Mesh>& mesh);
+
+  /** Get boundary mesh.
+   *
+   * @returns Boundary mesh.
+   */
+  const ALE::Obj<Mesh>& boundaryMesh(void) const;
+
+  /** Get cell field with BC information.
+   *
+   * @param fieldType Type of field.
+   * @param name Name of field.
+   * @param mesh Finite-element mesh.
+   * @param fields Solution fields.
+   *
+   * @returns Traction vector at integration points.
+   */
+  const ALE::Obj<real_section_type>&
+  cellField(VectorFieldEnum* fieldType,
+	    const char* name,
+	    const ALE::Obj<Mesh>& mesh,
+	    topology::FieldsManager* const fields);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

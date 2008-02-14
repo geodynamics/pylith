@@ -333,5 +333,34 @@ pylith::bc::Neumann::verifyConfiguration(const ALE::Obj<Mesh>& mesh)
 { // verifyConfiguration
 } // verifyConfiguration
 
+// ----------------------------------------------------------------------
+// Get boundary mesh.
+const ALE::Obj<pylith::Mesh>&
+pylith::bc::Neumann::boundaryMesh(void) const
+{ // dataMesh
+  return _boundaryMesh;
+} // dataMesh
+
+// ----------------------------------------------------------------------
+// Get cell field for tractions.
+const ALE::Obj<pylith::real_section_type>&
+pylith::bc::Neumann::cellField(VectorFieldEnum* fieldType,
+	    const char* name,
+	    const ALE::Obj<Mesh>& mesh,
+	    topology::FieldsManager* const fields)
+{ // cellField
+  if (0 == strcasecmp(name, "tractions")) {
+    *fieldType = VECTOR_FIELD;
+    return _tractionsGlobal;
+  } else {
+    std::ostringstream msg;
+    msg << "Unknown field '" << name << "' requested for Neumann BC '" 
+	<< _label << "'.";
+    throw std::runtime_error(msg.str());
+  } // else
+
+  return _tractionsGlobal;
+} // cellField
+
 
 // End of file 

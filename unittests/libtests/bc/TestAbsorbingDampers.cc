@@ -274,7 +274,6 @@ pylith::bc::TestAbsorbingDampers::_initialize(
 
     bc->quadrature(_quadrature);
     bc->timeStep(_data->dt);
-    bc->id(_data->id);
     bc->label(_data->label);
     bc->db(&db);
     bc->initialize(*mesh, &cs, upDir);

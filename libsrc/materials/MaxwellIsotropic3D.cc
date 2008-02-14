@@ -150,12 +150,13 @@ pylith::materials::MaxwellIsotropic3D::_calcDensity(double* const density,
 // material.
 void
 pylith::materials::MaxwellIsotropic3D::_calcStressElastic(
-						    double* const stress,
-						    const int stressSize,
-						    const double* properties,
-						    const int numProperties,
-						    const double* totalStrain,
-						    const int strainSize)
+						  double* const stress,
+						  const int stressSize,
+						  const double* properties,
+						  const int numProperties,
+						  const double* totalStrain,
+						  const int strainSize,
+						  const bool computeStateVars)
 { // _calcStressElastic
   assert(0 != stress);
   assert(_MaxwellIsotropic3D::tensorSize == stressSize);
@@ -204,12 +205,13 @@ pylith::materials::MaxwellIsotropic3D::_calcStressElastic(
 // material.
 void
 pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
-						    double* const stress,
-						    const int stressSize,
-						    const double* properties,
-						    const int numProperties,
-						    const double* totalStrain,
-						    const int strainSize)
+						  double* const stress,
+						  const int stressSize,
+						  const double* properties,
+						  const int numProperties,
+						  const double* totalStrain,
+						  const int strainSize,
+						  const bool computeStateVars)
 { // _calcStressElastic
   assert(0 != stress);
   assert(_MaxwellIsotropic3D::tensorSize == stressSize);
@@ -463,7 +465,7 @@ pylith::materials::MaxwellIsotropic3D::_updatePropertiesViscoelastic(
   const int stressSize = 6;
   _calcStressViscoelastic(stress, stressSize, 
 			  properties, numProperties,
-			  totalStrain, strainSize);
+			  totalStrain, strainSize, true);
 
   const double meanStrainT = 
     (properties[_MaxwellIsotropic3D::pidStrainT+0] +

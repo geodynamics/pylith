@@ -907,6 +907,152 @@ cdef class Neumann(BoundaryCondition):
     return
 
 
+  def verifyConfiguration(self, mesh):
+    """
+    Verify compatibility of configuration settings.
+    """
+    # create shim for method 'verifyConfiguration'
+    #embed{ void Neumann_verifyConfiguration(void* objVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* mesh =
+        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::bc::Neumann*) objVptr)->verifyConfiguration(*mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type 'Mesh'."
+    Neumann_verifyConfiguration(self.thisptr,
+                                   ptrFromHandle(mesh))
+    return
+
+
+  def cellField(self, name, mesh):
+    """
+    Verify compatibility of configuration settings.
+    """
+    # create shim for method 'verifyConfiguration'
+    #embed{ void Neumann_verifyConfiguration(void* objVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* mesh =
+        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::bc::Neumann*) objVptr)->verifyConfiguration(*mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type 'Mesh'."
+    Neumann_verifyConfiguration(self.thisptr,
+                                   ptrFromHandle(mesh))
+    return
+
+
+  def boundaryMesh(self, mesh):
+    """
+    Get mesh associated with fields over boundary.
+    """
+    # create shim for method 'boundaryMesh'
+    #embed{ void Neumann_faultMesh(void* objVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      *mesh = ((pylith::bc::Neumann*) objVptr)->boundaryMesh();
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type " \
+            "'pylith::topology::Mesh'."
+    Neumann_faultMesh(self.thisptr, ptrFromHandle(mesh))
+    return
+    
+
+  def cellField(self, name, mesh, fields=None):
+    """
+    Get cell field.
+    """
+    # create shim for method 'cellField'
+    #embed{ void* Neumann_cellField(void* objVptr, int* fieldPtr, char* name, void* meshVptr, void* fieldsVptr)
+    void* result = 0;
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldPtr);
+      assert(0 != name);
+      assert(0 != meshVptr);
+      pylith::bc::Neumann* bc = (pylith::bc::Neumann*) objVptr;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      pylith::topology::FieldsManager* fields =
+        (pylith::topology::FieldsManager*) fieldsVptr;
+      pylith::VectorFieldEnum fieldType;
+      const ALE::Obj<pylith::real_section_type>& field =
+        bc->cellField(&fieldType, name, *mesh, fields);
+      *fieldPtr = fieldType;
+      result = (void*) &field;
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type " \
+            "'pylith::topology::Mesh'."
+    if None != fields:
+      if not fields.name == "pylith_topology_FieldsManager":
+        raise TypeError, \
+              "Argument 'fields' must be extension module type " \
+              "'pylith::topology::FieldsManager'."
+    cdef void* ptr
+    cdef int fieldType
+    if None != fields:
+      ptr = Neumann_cellField(self.thisptr, &fieldType, name,
+                              ptrFromHandle(mesh), ptrFromHandle(fields))
+    else:
+      ptr = Neumann_cellField(self.thisptr, &fieldType, name,
+                              ptrFromHandle(mesh), NULL)
+    return (PyCObject_FromVoidPtr(ptr, NULL), fieldType)
+    
+
   def _createHandle(self):
     """
     Wrap pointer to C++ object in PyCObject.

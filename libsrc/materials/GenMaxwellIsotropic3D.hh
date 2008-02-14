@@ -102,7 +102,10 @@ protected :
 		    const double* properties,
 		    const int numProperties);
 
-  /** Compute stress tensor from properties.
+  /** Compute stress tensor from properties. If the state variables
+   * are from the previous time step, then the computeStateVars flag
+   * should be set to true so that the state variables are updated
+   * (but not stored) when computing the stresses.
    *
    * @param stress Array for stress tensor.
    * @param stressSize Size of stress tensor.
@@ -110,13 +113,15 @@ protected :
    * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
+   * @param computeStateVars Flag indicating to compute updated state vars.
    */
   void _calcStress(double* const stress,
 		   const int stressSize,
 		   const double* properties,
 		   const int numProperties,
 		   const double* totalStrain,
-		   const int strainSize);
+		   const int strainSize,
+		   const bool computeStateVars);
 
   /** Compute derivatives of elasticity matrix from properties.
    *
@@ -156,7 +161,8 @@ private :
      const double*,
      const int,
      const double*,
-     const int);
+     const int,
+     const bool);
 
   /// Member prototype for _calcElasticConsts()
   typedef void (pylith::materials::GenMaxwellIsotropic3D::*calcElasticConsts_fn_type)
@@ -185,13 +191,15 @@ private :
    * @param numProperties Number of properties.
    * @param totalStrain Total strain at locations.
    * @param strainSize Size of strain tensor.
+   * @param computeStateVars Flag indicating to compute updated state vars.
    */
   void _calcStressElastic(double* const stress,
 			  const int stressSize,
 			  const double* properties,
 			  const int numProperties,
 			  const double* totalStrain,
-			  const int strainSize);
+			  const int strainSize,
+			  const bool computeStateVars);
 
   /** Compute stress tensor from properties as an viscoelastic material.
    *
@@ -201,13 +209,15 @@ private :
    * @param numProperties Number of properties.
    * @param totalStrain Total strain at locations.
    * @param strainSize Size of strain tensor.
+   * @param computeStateVars Flag indicating to compute updated state vars.
    */
   void _calcStressViscoelastic(double* const stress,
-			  const int stressSize,
-			  const double* properties,
-			  const int numProperties,
-			  const double* totalStrain,
-			  const int strainSize);
+			       const int stressSize,
+			       const double* properties,
+			       const int numProperties,
+			       const double* totalStrain,
+			       const int strainSize,
+			       const bool computeStateVars);
 
   /** Compute derivatives of elasticity matrix from properties as an
    * elastic material.

@@ -193,7 +193,6 @@ pylith::bc::TestDirichletPointsMulti::_initialize(ALE::Obj<Mesh>* mesh,
   const double upDirVals[] = { 0.0, 0.0, 1.0 };
   double_array upDir(upDirVals, 3);
 
-  bcA->id(_data->idA);
   bcA->label(_data->labelA);
   bcA->db(&db);
   bcA->dbRate(&dbRate);
@@ -210,7 +209,6 @@ pylith::bc::TestDirichletPointsMulti::_initialize(ALE::Obj<Mesh>* mesh,
 
   int_array fixedDOFB(_data->fixedDOFB, _data->numFixedDOFB);
 
-  bcB->id(_data->idB);
   bcB->label(_data->labelB);
   bcB->db(&db);
   bcB->dbRate(&dbRate);
