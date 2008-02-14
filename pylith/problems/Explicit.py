@@ -158,13 +158,9 @@ class Explicit(Formulation):
       bindings.copyRealSection(self.fields.getReal("dispTpdt"),
                                self.fields.getReal("dispT"))
 
-    self._info.log("Updating integrators' states.")
-    for integrator in self.integrators:
-      integrator.updateState(t, self.fields)
-
-    self._logger.eventEnd(logEvent)
-    
     Formulation.poststep(self, t, dt, totalTime)
+
+    self._logger.eventEnd(logEvent)    
     return
 
 

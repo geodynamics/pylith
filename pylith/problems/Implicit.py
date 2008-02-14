@@ -195,9 +195,7 @@ class Implicit(Formulation):
     disp = self.fields.getSolution()
     bindings.addRealSections(disp, disp, dispIncr)
 
-    self._info.log("Updating integrators states.")
-    for integrator in self.integrators:
-      integrator.updateState(t+dt, self.fields)
+    Formulation.poststep(self, t, dt, totalTime)
 
     # If finishing first time step, then switch from solving for total
     # displacements to solving for incremental displacements
@@ -213,7 +211,6 @@ class Implicit(Formulation):
 
     self._logger.eventEnd(logEvent)
     
-    Formulation.poststep(self, t, dt, totalTime)
     return
 
 

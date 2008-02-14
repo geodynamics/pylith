@@ -28,7 +28,6 @@ def implementsIntegrator(obj):
               "useSolnIncr",
               "integrateResidual",
               "integrateJacobian",
-              "updateState",
               "preinitialize",
               "verifyConfiguration",
               "initialize",
@@ -165,24 +164,20 @@ class Integrator(object):
     return
 
 
-  def updateState(self, t, fields):
-    """
-    Update state variables as needed.
-    """
-    logEvent = "%sstate" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
-    
-    assert(None != self.cppHandle)
-    self.cppHandle.updateState(t.value, fields.cppHandle, self.mesh.cppHandle)
-
-    self._logger.eventEnd(logEvent)
-    return
-    
-
   def poststep(self, t, dt, totalTime, fields):
     """
     Hook for doing stuff after advancing time step.
     """
+    logEvent = "%spoststep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
+    assert(None != self.cppHandle)
+    self.cppHandle.updateState(t.value, fields.cppHandle, self.mesh.cppHandle)
+
+    self._info.log("Writing material data.")
+    self.output.writeData(t+dt, fields)
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -213,7 +208,6 @@ class Integrator(object):
               "residual",
               "newJacobian",
               "jacobian",
-              "state",
               "poststep",
               "finalize"]
     for event in events:
