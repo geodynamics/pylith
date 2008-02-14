@@ -60,27 +60,15 @@ public :
   virtual
   ~BoundaryCondition(void);
 
-  /** Set identifier of fault.
+  /** Set label of boundary condition surface.
    *
-   * @param value BoundaryCondition identifier
-   */
-  void id(const int value);
-
-  /** Get identifier of fault.
-   *
-   * @returns BoundaryCondition identifier
-   */
-  int id(void) const;
-
-  /** Set label of fault.
-   *
-   * @param value Label of fault
+   * @param value Label of surface (from mesh generator).
    */
   void label(const char* value);
 
-  /** Get label of fault.
+  /** Get label of boundary condition surface.
    *
-   * @returns Label of fault
+   * @returns Label of surface (from mesh generator).
    */
   const std::string& label(void) const;
 
@@ -112,7 +100,6 @@ private :
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
-  int _id; ///< BoundaryCondition identifier
   std::string _label; ///< Label of boundary condition
   spatialdata::spatialdb::SpatialDB* _db; ///< Spatial database w/parameters
 
