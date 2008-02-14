@@ -12,9 +12,9 @@
 
 #include <portinfo>
 
-#include "TestDirichletPointsMulti.hh" // Implementation of class methods
+#include "TestDirichletBoundaryMulti.hh" // Implementation of class methods
 
-#include "pylith/bc/DirichletPoints.hh" // USES DirichletPoints
+#include "pylith/bc/DirichletBoundary.hh" // USES DirichletBoundary
 
 #include "data/DirichletDataMulti.hh" // USES DirichletData
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
@@ -28,7 +28,7 @@
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::bc::TestDirichletPointsMulti::setUp(void)
+pylith::bc::TestDirichletBoundaryMulti::setUp(void)
 { // setUp
   _data = 0;
 } // setUp
@@ -36,7 +36,7 @@ pylith::bc::TestDirichletPointsMulti::setUp(void)
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::bc::TestDirichletPointsMulti::tearDown(void)
+pylith::bc::TestDirichletBoundaryMulti::tearDown(void)
 { // tearDown
   delete _data; _data = 0;
 } // tearDown
@@ -44,11 +44,11 @@ pylith::bc::TestDirichletPointsMulti::tearDown(void)
 // ----------------------------------------------------------------------
 // Test setConstraintSizes().
 void
-pylith::bc::TestDirichletPointsMulti::testSetConstraintSizes(void)
+pylith::bc::TestDirichletBoundaryMulti::testSetConstraintSizes(void)
 { // testSetConstraintSizes
   ALE::Obj<Mesh> mesh;
-  DirichletPoints bcA;
-  DirichletPoints bcB;
+  DirichletBoundary bcA;
+  DirichletBoundary bcB;
   _initialize(&mesh, &bcA, &bcB);
 
   const ALE::Obj<real_section_type>& field = mesh->getRealSection("field");
@@ -74,11 +74,11 @@ pylith::bc::TestDirichletPointsMulti::testSetConstraintSizes(void)
 // ----------------------------------------------------------------------
 // Test setConstraints().
 void
-pylith::bc::TestDirichletPointsMulti::testSetConstraints(void)
+pylith::bc::TestDirichletBoundaryMulti::testSetConstraints(void)
 { // testSetConstraints
   ALE::Obj<Mesh> mesh;
-  DirichletPoints bcA;
-  DirichletPoints bcB;
+  DirichletBoundary bcA;
+  DirichletBoundary bcB;
   _initialize(&mesh, &bcA, &bcB);
 
   const ALE::Obj<real_section_type>& field = mesh->getRealSection("field");
@@ -110,11 +110,11 @@ pylith::bc::TestDirichletPointsMulti::testSetConstraints(void)
 // ----------------------------------------------------------------------
 // Test setField().
 void
-pylith::bc::TestDirichletPointsMulti::testSetField(void)
+pylith::bc::TestDirichletBoundaryMulti::testSetField(void)
 { // testSetField
   ALE::Obj<Mesh> mesh;
-  DirichletPoints bcA;
-  DirichletPoints bcB;
+  DirichletBoundary bcA;
+  DirichletBoundary bcB;
   _initialize(&mesh, &bcA, &bcB);
 
   const ALE::Obj<real_section_type>& field = mesh->getRealSection("field");
@@ -161,9 +161,9 @@ pylith::bc::TestDirichletPointsMulti::testSetField(void)
 
 // ----------------------------------------------------------------------
 void
-pylith::bc::TestDirichletPointsMulti::_initialize(ALE::Obj<Mesh>* mesh,
-					    DirichletPoints* const bcA,
-					    DirichletPoints* const bcB) const
+pylith::bc::TestDirichletBoundaryMulti::_initialize(ALE::Obj<Mesh>* mesh,
+					    DirichletBoundary* const bcA,
+					    DirichletBoundary* const bcB) const
 { // _initialize
   CPPUNIT_ASSERT(0 != _data);
   CPPUNIT_ASSERT(0 != bcA);
@@ -179,12 +179,12 @@ pylith::bc::TestDirichletPointsMulti::_initialize(ALE::Obj<Mesh>* mesh,
   cs.initialize();
 
   // Setup boundary condition A
-  spatialdata::spatialdb::SimpleDB db("TestDirichletPointsMulti initial");
+  spatialdata::spatialdb::SimpleDB db("TestDirichletBoundaryMulti initial");
   spatialdata::spatialdb::SimpleIOAscii dbIO;
   dbIO.filename(_data->dbFilenameA);
   db.ioHandler(&dbIO);
 
-  spatialdata::spatialdb::SimpleDB dbRate("TestDirichletPointsMulti rate");
+  spatialdata::spatialdb::SimpleDB dbRate("TestDirichletBoundaryMulti rate");
   spatialdata::spatialdb::SimpleIOAscii dbIORate;
   dbIORate.filename(_data->dbFilenameARate);
   dbRate.ioHandler(&dbIORate);

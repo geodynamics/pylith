@@ -14,7 +14,7 @@
 
 #include "TestDirichletPointsMultiTri3.hh" // Implementation of class methods
 
-#include "data/DirichletPointsDataMultiTri3.hh" // USES DirichletPointsDataMultiTri3
+#include "data/DirichletDataMultiTri3.hh" // USES DirichletDataMultiTri3
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletPointsMultiTri3 );
@@ -24,7 +24,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletPointsMultiTri3 );
 void
 pylith::bc::TestDirichletPointsMultiTri3::setUp(void)
 { // setUp
-  _data = new DirichletPointsDataMultiTri3();
+  _data = new DirichletDataMultiTri3();
 } // setUp
 
 

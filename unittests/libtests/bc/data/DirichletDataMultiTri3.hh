@@ -10,28 +10,28 @@
 // ======================================================================
 //
 
-#if !defined(pylith_bc_dirichletpointsdatamultitri3_hh)
-#define pylith_bc_dirichletpointsdatamultitri3_hh
+#if !defined(pylith_bc_DirichletPointsDatamultitri3_hh)
+#define pylith_bc_DirichletPointsDatamultitri3_hh
 
-#include "DirichletPointsDataMulti.hh"
+#include "DirichletDataMulti.hh"
 
 namespace pylith {
   namespace bc {
-     class DirichletPointsDataMultiTri3;
+     class DirichletDataMultiTri3;
   } // pylith
 } // bc
 
-class pylith::bc::DirichletPointsDataMultiTri3 : public DirichletPointsDataMulti
+class pylith::bc::DirichletDataMultiTri3 : public DirichletDataMulti
 {
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public: 
 
   /// Constructor
-  DirichletPointsDataMultiTri3(void);
+  DirichletDataMultiTri3(void);
 
   /// Destructor
-  ~DirichletPointsDataMultiTri3(void);
+  ~DirichletDataMultiTri3(void);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
@@ -65,6 +65,6 @@ private:
   static const char* _meshFilename; ///< Filename of input mesh.
 };
 
-#endif // pylith_bc_dirichletpointsdatamultitri3_hh
+#endif // pylith_bc_dirichletdatamultitri3_hh
 
 // End of file

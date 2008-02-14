@@ -28,6 +28,13 @@ testbc_SOURCES = \
 	TestAbsorbingDampersTet4.cc \
 	TestAbsorbingDampersHex8.cc \
 	TestBoundaryCondition.cc \
+	TestDirichletBoundary.cc \
+	TestDirichletBoundaryTri3.cc \
+	TestDirichletBoundaryQuad4.cc \
+	TestDirichletBoundaryTet4.cc \
+	TestDirichletBoundaryHex8.cc \
+	TestDirichletBoundaryMulti.cc \
+	TestDirichletBoundaryMultiTri3.cc \
 	TestDirichletPoints.cc \
 	TestDirichletPointsLine2.cc \
 	TestDirichletPointsLine2b.cc \
@@ -53,6 +60,13 @@ noinst_HEADERS = \
 	TestAbsorbingDampersTet4.hh \
 	TestAbsorbingDampersHex8.hh \
 	TestBoundaryCondition.hh \
+	TestDirichletBoundary.hh \
+	TestDirichletBoundaryTri3.hh \
+	TestDirichletBoundaryQuad4.hh \
+	TestDirichletBoundaryTet4.hh \
+	TestDirichletBoundaryHex8.hh \
+	TestDirichletBoundaryMulti.hh \
+	TestDirichletBoundaryMultiTri3.hh \
 	TestDirichletPoints.hh \
 	TestDirichletPointsLine2.hh \
 	TestDirichletPointsLine2b.hh \
@@ -77,15 +91,15 @@ testbc_SOURCES += \
 	data/AbsorbingDampersDataQuad4.cc \
 	data/AbsorbingDampersDataTet4.cc \
 	data/AbsorbingDampersDataHex8.cc \
-	data/DirichletPointsData.cc \
-	data/DirichletPointsDataLine2.cc \
-	data/DirichletPointsDataLine2b.cc \
-	data/DirichletPointsDataTri3.cc \
-	data/DirichletPointsDataQuad4.cc \
-	data/DirichletPointsDataTet4.cc \
-	data/DirichletPointsDataHex8.cc \
-	data/DirichletPointsDataMulti.cc \
-	data/DirichletPointsDataMultiTri3.cc \
+	data/DirichletData.cc \
+	data/DirichletDataLine2.cc \
+	data/DirichletDataLine2b.cc \
+	data/DirichletDataTri3.cc \
+	data/DirichletDataQuad4.cc \
+	data/DirichletDataTet4.cc \
+	data/DirichletDataHex8.cc \
+	data/DirichletDataMulti.cc \
+	data/DirichletDataMultiTri3.cc \
 	data/NeumannData.cc \
 	data/NeumannDataLine2.cc \
 	data/NeumannDataTri3.cc \
@@ -100,15 +114,15 @@ noinst_HEADERS += \
 	data/AbsorbingDampersDataQuad4.hh \
 	data/AbsorbingDampersDataTet4.hh \
 	data/AbsorbingDampersDataHex8.hh \
-	data/DirichletPointsData.hh \
-	data/DirichletPointsDataLine2.hh \
-	data/DirichletPointsDataLine2b.hh \
-	data/DirichletPointsDataTri3.hh \
-	data/DirichletPointsDataQuad4.hh \
-	data/DirichletPointsDataTet4.hh \
-	data/DirichletPointsDataHex8.hh \
-	data/DirichletPointsDataMulti.hh \
-	data/DirichletPointsDataMultiTri3.hh \
+	data/DirichletData.hh \
+	data/DirichletDataLine2.hh \
+	data/DirichletDataLine2b.hh \
+	data/DirichletDataTri3.hh \
+	data/DirichletDataQuad4.hh \
+	data/DirichletDataTet4.hh \
+	data/DirichletDataHex8.hh \
+	data/DirichletDataMulti.hh \
+	data/DirichletDataMultiTri3.hh \
 	data/NeumannData.hh \
 	data/NeumannDataLine2.hh \
 	data/NeumannDataTri3.hh \

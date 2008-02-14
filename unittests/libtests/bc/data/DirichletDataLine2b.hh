@@ -10,28 +10,28 @@
 // ======================================================================
 //
 
-#if !defined(pylith_bc_dirichletpointsdatatet4_hh)
-#define pylith_bc_dirichletpointsdatatet4_hh
+#if !defined(pylith_bc_dirichletdataline2b_hh)
+#define pylith_bc_dirichletdataline2b_hh
 
-#include "DirichletPointsData.hh"
+#include "DirichletData.hh"
 
 namespace pylith {
   namespace bc {
-     class DirichletPointsDataTet4;
+     class DirichletDataLine2b;
   } // pylith
 } // bc
 
-class pylith::bc::DirichletPointsDataTet4 : public DirichletPointsData
+class pylith::bc::DirichletDataLine2b : public DirichletData
 {
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public: 
 
   /// Constructor
-  DirichletPointsDataTet4(void);
+  DirichletDataLine2b(void);
 
   /// Destructor
-  ~DirichletPointsDataTet4(void);
+  ~DirichletDataLine2b(void);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
@@ -55,6 +55,6 @@ private:
   static const char* _dbFilename; ///< Filename of simple spatial database.
 };
 
-#endif // pylith_bc_dirichletpointsdatatet4_hh
+#endif // pylith_bc_dirichletdataline2b_hh
 
 // End of file

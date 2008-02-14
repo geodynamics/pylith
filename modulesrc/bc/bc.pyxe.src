@@ -16,6 +16,7 @@
 #include "pylith/feassemble/Integrator.hh"
 #include "pylith/bc/AbsorbingDampers.hh"
 #include "pylith/bc/DirichletPoints.hh"
+#include "pylith/bc/DirichletBoundary.hh"
 #include "pylith/bc/Neumann.hh"
 
 #include "pylith/utils/array.hh"
@@ -399,6 +400,311 @@ cdef class DirichletPoints(BoundaryCondition):
       } // try/catch
       #}embed
       DirichletPoints_useSolnIncr_set(self.thisptr, flag)
+
+
+# ----------------------------------------------------------------------
+cdef class DirichletBoundary(BoundaryCondition):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* DirichletBoundary_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::bc::DirichletBoundary);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    BoundaryCondition.__init__(self)
+    self.thisptr = DirichletBoundary_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+  property dbRate:
+    def __set__(self, value):
+      """
+      Set spatial database for parameters of rate of change of values.
+      """
+      # create shim for method 'dbRate'
+      #embed{ void DirichletBoundary_dbRate_set(void* objVptr, void* dbVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != dbVptr);
+        spatialdata::spatialdb::SpatialDB* db =
+          (spatialdata::spatialdb::SpatialDB*) dbVptr;
+        ((pylith::bc::DirichletBoundary*) objVptr)->dbRate(db);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "spatialdata_spatialdb_SpatialDB":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::spatialdb::SpatialDB'."
+      DirichletBoundary_dbRate_set(self.thisptr, ptrFromHandle(value))
+
+
+  property fixedDOF:
+    def __set__(self, value):
+      """
+      Set fixed DOF.
+      """
+      # create shim for method 'fixedDOF'
+      #embed{ void DirichletBoundary_fixedDOF_set(void* objVptr, int* dofVptr, int numFixedDOF)
+      try {
+        assert(0 != objVptr);
+        assert(0 != dofVptr);
+        pylith::int_array fixedDOF((int*) dofVptr, numFixedDOF);
+        ((pylith::bc::DirichletBoundary*) objVptr)->fixedDOF(fixedDOF);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      cdef int* fixedDOF
+      numFixedDOF = len(value)
+      fixedDOF = <int*> malloc(numFixedDOF*sizeof(int))
+      assert(fixedDOF != NULL)
+      for i from 0 <= i < numFixedDOF:
+        fixedDOF[i] = value[i]
+      DirichletBoundary_fixedDOF_set(self.thisptr, fixedDOF, numFixedDOF)
+      free(fixedDOF)
+
+
+  def setConstraintSizes(self, field, mesh):
+    """
+    Set number of degrees of freedom that are constrained at points in field.
+    """
+    # create shim for method 'setConstraintSizes'
+    #embed{ void DirichletBoundary_setConstraintSizes(void* objVptr, void* fieldVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::bc::DirichletBoundary*) objVptr)->setConstraintSizes(*field, *mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    DirichletBoundary_setConstraintSizes(self.thisptr, PyCObject_AsVoidPtr(field),
+                                  ptrFromHandle(mesh))
+    return
+
+
+  def setConstraints(self, field, mesh):
+    """
+    Set which degrees of freedom that are constrained at points in field.
+    """
+    # create shim for method 'setConstraints'
+    #embed{ void DirichletBoundary_setConstraints(void* objVptr, void* fieldVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::bc::DirichletBoundary*) objVptr)->setConstraints(*field, *mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    DirichletBoundary_setConstraints(self.thisptr, PyCObject_AsVoidPtr(field), ptrFromHandle(mesh))
+    return
+
+
+  def setField(self, t, field, mesh):
+    """
+    Set values in field.
+    """
+    # create shim for method 'setField'
+    #embed{ void DirichletBoundary_setField(void* objVptr, double t, void* fieldVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::bc::DirichletBoundary*) objVptr)->setField(t, *field, *mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    DirichletBoundary_setField(self.thisptr, t, PyCObject_AsVoidPtr(field),
+                          ptrFromHandle(mesh))
+    return
+
+
+  def boundaryMesh(self, mesh):
+    """
+    Get mesh associated with fields over boundary.
+    """
+    # create shim for method 'boundaryMesh'
+    #embed{ void DirichletBoundary_boundaryMesh(void* objVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      *mesh = ((pylith::bc::DirichletBoundary*) objVptr)->boundaryMesh();
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type " \
+            "'pylith::topology::Mesh'."
+    DirichletBoundary_boundaryMesh(self.thisptr, ptrFromHandle(mesh))
+    return
+    
+
+  def vertexField(self, name, mesh, fields=None):
+    """
+    Get cell field.
+    """
+    # create shim for method 'vertexField'
+    #embed{ void* DirichletBoundary_vertexField(void* objVptr, int* fieldPtr, char* name, void* meshVptr, void* fieldsVptr)
+    void* result = 0;
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldPtr);
+      assert(0 != name);
+      assert(0 != meshVptr);
+      pylith::bc::DirichletBoundary* bc = (pylith::bc::DirichletBoundary*) objVptr;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      pylith::topology::FieldsManager* fields =
+        (pylith::topology::FieldsManager*) fieldsVptr;
+      pylith::VectorFieldEnum fieldType;
+      const ALE::Obj<pylith::real_section_type>& field =
+        bc->vertexField(&fieldType, name, *mesh, fields);
+      *fieldPtr = fieldType;
+      result = (void*) &field;
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type " \
+            "'pylith::topology::Mesh'."
+    if None != fields:
+      if not fields.name == "pylith_topology_FieldsManager":
+        raise TypeError, \
+              "Argument 'fields' must be extension module type " \
+              "'pylith::topology::FieldsManager'."
+    cdef void* ptr
+    cdef int fieldType
+    if None != fields:
+      ptr = DirichletBoundary_vertexField(self.thisptr, &fieldType, name,
+                              ptrFromHandle(mesh), ptrFromHandle(fields))
+    else:
+      ptr = DirichletBoundary_vertexField(self.thisptr, &fieldType, name,
+                              ptrFromHandle(mesh), NULL)
+    return (PyCObject_FromVoidPtr(ptr, NULL), fieldType)
+    
+
+  property useSolnIncr:
+    def __set__(self, flag):
+      """
+      Set solution increment flag.
+      """
+      # create shim for method 'useSolnIncr'
+      #embed{ void DirichletBoundary_useSolnIncr_set(void* objVptr, int flag)
+      try {
+        assert(0 != objVptr);
+        ((pylith::bc::DirichletBoundary*) objVptr)->useSolnIncr(flag);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      DirichletBoundary_useSolnIncr_set(self.thisptr, flag)
 
 
 # ----------------------------------------------------------------------
@@ -912,7 +1218,7 @@ cdef class Neumann(BoundaryCondition):
     Get mesh associated with fields over boundary.
     """
     # create shim for method 'boundaryMesh'
-    #embed{ void Neumann_faultMesh(void* objVptr, void* meshVptr)
+    #embed{ void Neumann_boundaryMesh(void* objVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
@@ -934,7 +1240,7 @@ cdef class Neumann(BoundaryCondition):
       raise TypeError, \
             "Argument 'mesh' must be extension module type " \
             "'pylith::topology::Mesh'."
-    Neumann_faultMesh(self.thisptr, ptrFromHandle(mesh))
+    Neumann_boundaryMesh(self.thisptr, ptrFromHandle(mesh))
     return
     
 

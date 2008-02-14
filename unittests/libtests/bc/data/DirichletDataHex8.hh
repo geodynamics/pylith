@@ -10,28 +10,28 @@
 // ======================================================================
 //
 
-#if !defined(pylith_bc_dirichletpointsdatatri3_hh)
-#define pylith_bc_dirichletpointsdatatri3_hh
+#if !defined(pylith_bc_dirichletdatahex8_hh)
+#define pylith_bc_dirichletdatahex8_hh
 
-#include "DirichletPointsData.hh"
+#include "DirichletData.hh"
 
 namespace pylith {
   namespace bc {
-     class DirichletPointsDataTri3;
+     class DirichletDataHex8;
   } // pylith
 } // bc
 
-class pylith::bc::DirichletPointsDataTri3 : public DirichletPointsData
+class pylith::bc::DirichletDataHex8 : public DirichletData
 {
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public: 
 
   /// Constructor
-  DirichletPointsDataTri3(void);
+  DirichletDataHex8(void);
 
   /// Destructor
-  ~DirichletPointsDataTri3(void);
+  ~DirichletDataHex8(void);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
@@ -48,13 +48,13 @@ private:
 
   static const int _constrainedPoints[]; ///< Array of indices of constrained pts.
   static const double _tRef; ///< Reference time for rate of change of value
-  static const double _valueRate; ///< Rate of change of values.
   static const double _valuesInitial[]; ///< Initial values.
+  static const double _valueRate; ///< Rate of change of values.
 
   static const char* _meshFilename; ///< Filename of input mesh.
   static const char* _dbFilename; ///< Filename of simple spatial database.
 };
 
-#endif // pylith_bc_dirichletpointsdatatri3_hh
+#endif // pylith_bc_dirichletdatahex8_hh
 
 // End of file

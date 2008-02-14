@@ -10,20 +10,20 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/meshio/OutputMatElastic.py
+## @file pyre/meshio/OutputNeumann.py
 ##
 ## @brief Python object for managing output of finite-element
-## information for material state variables.
+## information for Neumann boundary conditions.
 ##
 ## Factory: output_manager
 
 from OutputManager import OutputManager
 
-# OutputMatElastic class
-class OutputMatElastic(OutputManager):
+# OutputNeumann class
+class OutputNeumann(OutputManager):
   """
   Python object for managing output of finite-element information for
-  material state variables.
+  Neumann boundary conditions.
 
   Factory: output_manager
   """
@@ -32,15 +32,14 @@ class OutputMatElastic(OutputManager):
 
   class Inventory(OutputManager.Inventory):
     """
-    Python object for managing OutputMatElastic facilities and properties.
+    Python object for managing OutputNeumann facilities and properties.
     """
 
     ## @class Inventory
-    ## Python object for managing OutputMatElastic facilities and properties.
+    ## Python object for managing OutputNeumann facilities and properties.
     ##
     ## \b Properties
     ## @li \b cell_info_fields Names of cell info fields to output.
-    ## @li \b cell_data_fields Names of cell data fields to output.
     ##
     ## \b Facilities
     ## @li None
@@ -48,14 +47,8 @@ class OutputMatElastic(OutputManager):
     import pyre.inventory
 
     cellInfoFields = pyre.inventory.list("cell_info_fields",
-                                         default=["mu",
-                                                  "lambda",
-                                                  "density"])
+                                         default=["tractions"])
     cellInfoFields.meta['tip'] = "Names of cell info fields to output."
-
-    cellDataFields = pyre.inventory.list("cell_data_fields", 
-                                         default=["total-strain", "stress"])
-    cellDataFields.meta['tip'] = "Names of cell data fields to output."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -78,7 +71,7 @@ class OutputMatElastic(OutputManager):
     self.vertexInfoFields = []
     self.vertexDataFields = []
     self.cellInfoFields = self.inventory.cellInfoFields
-    self.cellDataFields = self.inventory.cellDataFields
+    self.cellDataFields = []
     return
 
 
@@ -86,9 +79,9 @@ class OutputMatElastic(OutputManager):
 
 def output_manager():
   """
-  Factory associated with OutputMatElastic.
+  Factory associated with OutputNeumann.
   """
-  return OutputMatElastic()
+  return OutputNeumann()
 
 
 # End of file 

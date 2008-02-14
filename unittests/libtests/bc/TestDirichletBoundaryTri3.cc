@@ -12,19 +12,19 @@
 
 #include <portinfo>
 
-#include "TestDirichletPointsQuad4.hh" // Implementation of class methods
+#include "TestDirichletBoundaryTri3.hh" // Implementation of class methods
 
-#include "data/DirichletDataQuad4.hh" // USES DirichletDataQuad4
+#include "data/DirichletDataTri3.hh" // USES DirichletDataTri3
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletPointsQuad4 );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletBoundaryTri3 );
 
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::bc::TestDirichletPointsQuad4::setUp(void)
+pylith::bc::TestDirichletBoundaryTri3::setUp(void)
 { // setUp
-  _data = new DirichletDataQuad4();
+  _data = new DirichletDataTri3();
 } // setUp
 
 

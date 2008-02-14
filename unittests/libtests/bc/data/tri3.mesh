@@ -54,7 +54,7 @@ mesh = {
     type = vertices
     count = 2
     indices = {
-      0  3
+      2  3
     }
   }
 }

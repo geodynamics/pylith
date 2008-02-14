@@ -10,11 +10,11 @@
 // ======================================================================
 //
 
-#include "DirichletPointsDataMulti.hh"
+#include "DirichletDataMulti.hh"
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::bc::DirichletPointsDataMulti::DirichletPointsDataMulti(void) :
+pylith::bc::DirichletDataMulti::DirichletDataMulti(void) :
   numDOF(0),
   numFixedDOFA(0),
   numConstrainedPtsA(0),
@@ -43,7 +43,7 @@ pylith::bc::DirichletPointsDataMulti::DirichletPointsDataMulti(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::bc::DirichletPointsDataMulti::~DirichletPointsDataMulti(void)
+pylith::bc::DirichletDataMulti::~DirichletDataMulti(void)
 { // destructor
 } // destructor
 

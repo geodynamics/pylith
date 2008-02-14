@@ -12,9 +12,9 @@
 
 #include <portinfo>
 
-#include "TestDirichletPoints.hh" // Implementation of class methods
+#include "TestDirichletBoundary.hh" // Implementation of class methods
 
-#include "pylith/bc/DirichletPoints.hh" // USES DirichletPoints
+#include "pylith/bc/DirichletBoundary.hh" // USES DirichletBoundary
 
 #include "data/DirichletData.hh" // USES DirichletData
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
@@ -26,12 +26,12 @@
 #include "spatialdata/spatialdb/UniformDB.hh" // USES UniformDB
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletPoints );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletBoundary );
 
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::bc::TestDirichletPoints::setUp(void)
+pylith::bc::TestDirichletBoundary::setUp(void)
 { // setUp
   _data = 0;
 } // setUp
@@ -39,7 +39,7 @@ pylith::bc::TestDirichletPoints::setUp(void)
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::bc::TestDirichletPoints::tearDown(void)
+pylith::bc::TestDirichletBoundary::tearDown(void)
 { // tearDown
   delete _data; _data = 0;
 } // tearDown
@@ -47,17 +47,17 @@ pylith::bc::TestDirichletPoints::tearDown(void)
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::bc::TestDirichletPoints::testConstructor(void)
+pylith::bc::TestDirichletBoundary::testConstructor(void)
 { // testConstructor
-  DirichletPoints bc;
+  DirichletBoundary bc;
 } // testConstructor
 
 // ----------------------------------------------------------------------
 // Test fixedDOF()
 void
-pylith::bc::TestDirichletPoints::testFixedDOF(void)
+pylith::bc::TestDirichletBoundary::testFixedDOF(void)
 { // testfixedDOF
-  DirichletPoints bc;
+  DirichletBoundary bc;
   
   const size_t numDOF = 4;
   const int dof[] = { 0, 2, 3, 5 };
@@ -69,13 +69,14 @@ pylith::bc::TestDirichletPoints::testFixedDOF(void)
     CPPUNIT_ASSERT_EQUAL(fixedDOF[i], bc._fixedDOF[i]);
 } // testFixedDOF
 
+#include <iostream>
 // ----------------------------------------------------------------------
 // Test initialize().
 void
-pylith::bc::TestDirichletPoints::testInitialize(void)
+pylith::bc::TestDirichletBoundary::testInitialize(void)
 { // testInitialize
   ALE::Obj<Mesh> mesh;
-  DirichletPoints bc;
+  DirichletBoundary bc;
   _initialize(&mesh, &bc);
 
   CPPUNIT_ASSERT(0 != _data);
@@ -83,37 +84,51 @@ pylith::bc::TestDirichletPoints::testInitialize(void)
   const int numCells = mesh->heightStratum(0)->size();
 
   const int numFixedDOF = _data->numFixedDOF;
-  const size_t numPoints = _data->numConstrainedPts;
+  const size_t numBoundary = _data->numConstrainedPts;
+  // Check vertices in boundary mesh
+  const ALE::Obj<Mesh::label_sequence>& vertices = 
+    bc._boundaryMesh->depthStratum(0);
+  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
 
-  // Check points
   const int offset = numCells;
   if (numFixedDOF > 0) {
-    CPPUNIT_ASSERT_EQUAL(numPoints, bc._points.size());
-    for (int i=0; i < numPoints; ++i)
-      CPPUNIT_ASSERT_EQUAL(_data->constrainedPoints[i]+offset, bc._points[i]);
+    int i = 0;
+    for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+	 v_iter != verticesEnd;
+	 ++v_iter, ++i) {
+      CPPUNIT_ASSERT_EQUAL(_data->constrainedPoints[i]+offset, *v_iter);
+    } // for
+    CPPUNIT_ASSERT_EQUAL(int(numBoundary), i);
   } // if
 
-  // Check values
-  const size_t size = numPoints * numFixedDOF;
-  CPPUNIT_ASSERT_EQUAL(size, bc._valuesInitial.size());
-  const double tolerance = 1.0e-06;
-  for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valuesInitial[i], bc._valuesInitial[i], 
-				 tolerance);
+  // Check initial and rate values
+  int i = 0;
+  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != verticesEnd;
+       ++v_iter) {
+    CPPUNIT_ASSERT_EQUAL(2*numFixedDOF, 
+			 bc._values->getFiberDimension(*v_iter));
 
-  CPPUNIT_ASSERT_EQUAL(size, bc._valuesRate.size());
-  for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valueRate, bc._valuesRate[i], 
-				 tolerance);
+    const real_section_type::value_type* values = 
+      bc._values->restrictPoint(*v_iter);
+
+    const double tolerance = 1.0e-06;
+    for (int iDOF=0; iDOF < numFixedDOF; ++iDOF, ++i)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valuesInitial[i], values[iDOF],
+				   tolerance);
+    for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valueRate, values[numFixedDOF+iDOF],
+				   tolerance);
+  } // for
 } // testInitialize
 
 // ----------------------------------------------------------------------
 // Test setConstraintSizes().
 void
-pylith::bc::TestDirichletPoints::testSetConstraintSizes(void)
+pylith::bc::TestDirichletBoundary::testSetConstraintSizes(void)
 { // testSetConstraintSizes
   ALE::Obj<Mesh> mesh;
-  DirichletPoints bc;
+  DirichletBoundary bc;
   _initialize(&mesh, &bc);
 
   const ALE::Obj<real_section_type>& field = mesh->getRealSection("field");
@@ -144,10 +159,10 @@ pylith::bc::TestDirichletPoints::testSetConstraintSizes(void)
 // ----------------------------------------------------------------------
 // Test setConstraints().
 void
-pylith::bc::TestDirichletPoints::testSetConstraints(void)
+pylith::bc::TestDirichletBoundary::testSetConstraints(void)
 { // testSetConstraints
   ALE::Obj<Mesh> mesh;
-  DirichletPoints bc;
+  DirichletBoundary bc;
   _initialize(&mesh, &bc);
 
   const ALE::Obj<real_section_type>& field = mesh->getRealSection("field");
@@ -183,10 +198,10 @@ pylith::bc::TestDirichletPoints::testSetConstraints(void)
 // ----------------------------------------------------------------------
 // Test setField().
 void
-pylith::bc::TestDirichletPoints::testSetField(void)
+pylith::bc::TestDirichletBoundary::testSetField(void)
 { // testSetField
   ALE::Obj<Mesh> mesh;
-  DirichletPoints bc;
+  DirichletBoundary bc;
   _initialize(&mesh, &bc);
 
   const ALE::Obj<real_section_type>& field = mesh->getRealSection("field");
@@ -266,8 +281,8 @@ pylith::bc::TestDirichletPoints::testSetField(void)
 
 // ----------------------------------------------------------------------
 void
-pylith::bc::TestDirichletPoints::_initialize(ALE::Obj<Mesh>* mesh,
-				       DirichletPoints* const bc) const
+pylith::bc::TestDirichletBoundary::_initialize(ALE::Obj<Mesh>* mesh,
+				       DirichletBoundary* const bc) const
 { // _initialize
   CPPUNIT_ASSERT(0 != _data);
   CPPUNIT_ASSERT(0 != bc);
@@ -282,13 +297,13 @@ pylith::bc::TestDirichletPoints::_initialize(ALE::Obj<Mesh>* mesh,
   cs.setSpaceDim((*mesh)->getDimension());
   cs.initialize();
 
-  spatialdata::spatialdb::SimpleDB db("TestDirichletPoints initial");
+  spatialdata::spatialdb::SimpleDB db("TestDirichletBoundary initial");
   spatialdata::spatialdb::SimpleIOAscii dbIO;
   dbIO.filename(_data->dbFilename);
   db.ioHandler(&dbIO);
   db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
 
-  spatialdata::spatialdb::UniformDB dbRate("TestDirichletPoints rate");
+  spatialdata::spatialdb::UniformDB dbRate("TestDirichletBoundary rate");
   const char* names[] = { "dof-0", "dof-1", "dof-2" };
   const double values[] = { _data->valueRate,
 			    _data->valueRate,

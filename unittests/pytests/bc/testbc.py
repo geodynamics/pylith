@@ -56,6 +56,9 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
+    from TestDirichletBoundary import TestDirichletBoundary
+    suite.addTest(unittest.makeSuite(TestDirichletBoundary))
+
     from TestDirichletPoints import TestDirichletPoints
     suite.addTest(unittest.makeSuite(TestDirichletPoints))
 

@@ -84,10 +84,10 @@ class DirichletBoundary(BoundaryCondition, Constraint):
                                  family="spatial_database")
     dbRate.meta['tip'] = "Database of parameters for rate of change of values."
 
-    #from pylith.meshio.OutputDirichlet import OutputDirichlet
-    #output = pyre.inventory.facility("output", family="output_manager",
-    #                                 factory=OutputDirichlet)
-    #output.meta['tip'] = "Output manager associated with diagnostic output."
+    from pylith.meshio.OutputDirichlet import OutputDirichlet
+    output = pyre.inventory.facility("output", family="output_manager",
+                                     factory=OutputDirichlet)
+    output.meta['tip'] = "Output manager associated with diagnostic output."
     
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -144,14 +144,14 @@ class DirichletBoundary(BoundaryCondition, Constraint):
 
     BoundaryCondition.initialize(self, totalTime, numTimeSteps)
 
-    #from pylith.topology.Mesh import Mesh
-    #self.boundaryMesh = Mesh()
-    #self.boundaryMesh.initialize(self.mesh.coordsys)
-    #self.cppHandle.boundaryMesh(self.boundaryMesh.cppHandle)
+    from pylith.topology.Mesh import Mesh
+    self.boundaryMesh = Mesh()
+    self.boundaryMesh.initialize(self.mesh.coordsys)
+    self.cppHandle.boundaryMesh(self.boundaryMesh.cppHandle)
 
-    #if None != self.output:
-    #  self.output.initialize()
-    #  self.output.writeInfo()
+    if None != self.output:
+      self.output.initialize()
+      self.output.writeInfo()
 
     self._logger.eventEnd(logEvent)    
     return
@@ -168,9 +168,14 @@ class DirichletBoundary(BoundaryCondition, Constraint):
     """
     Get vertex field.
     """
-    (field, fieldType) = self.cppHandle.vertexField(name,
-                                                    self.mesh.cppHandle)
-    return
+    if None == fields:
+      (field, fieldType) = self.cppHandle.vertexField(name,
+                                                      self.mesh.cppHandle)
+    else:
+      (field, fieldType) = self.cppHandle.vertexField(name,
+                                                     self.mesh.cppHandle,
+                                                     fields.cppHandle)
+    return (field, fieldType)
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -183,6 +188,7 @@ class DirichletBoundary(BoundaryCondition, Constraint):
     self.tRef = self.inventory.tRef
     self.fixedDOF = self.inventory.fixedDOF
     self.dbRate = self.inventory.dbRate
+    self.output = self.inventory.output
     return
 
 

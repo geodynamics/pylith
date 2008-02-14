@@ -10,11 +10,11 @@
 // ======================================================================
 //
 
-#include "DirichletPointsData.hh"
+#include "DirichletData.hh"
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::bc::DirichletPointsData::DirichletPointsData(void) :
+pylith::bc::DirichletData::DirichletData(void) :
   tRef(0),
   valueRate(0),
   numDOF(0),
@@ -32,7 +32,7 @@ pylith::bc::DirichletPointsData::DirichletPointsData(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::bc::DirichletPointsData::~DirichletPointsData(void)
+pylith::bc::DirichletData::~DirichletData(void)
 { // destructor
 } // destructor
 

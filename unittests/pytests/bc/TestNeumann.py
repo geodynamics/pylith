@@ -182,7 +182,8 @@ class TestNeumann(unittest.TestCase):
     from pylith.bc.Neumann import Neumann
     bc = Neumann()
     bc._configure()
-    bc.id = 0
+    bc.output._configure()
+    bc.output.writer._configure()
     bc.label = "bc"
 
     from pylith.feassemble.FIATSimplex import FIATSimplex

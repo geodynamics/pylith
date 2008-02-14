@@ -18,6 +18,7 @@ nobase_pkgpyexec_PYTHON = \
 	bc/BCIntegrator.py \
 	bc/BoundaryCondition.py \
 	bc/DirichletPoints.py \
+	bc/DirichletBoundary.py \
 	bc/FixedDOFDB.py \
 	bc/BCSingle.py \
 	bc/BCTwoSides.py \
@@ -85,10 +86,12 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/MeshIOAscii.py \
 	meshio/MeshIOCubit.py \
 	meshio/MeshIOLagrit.py \
+	meshio/OutputDirichlet.py \
 	meshio/OutputManager.py \
 	meshio/OutputSoln.py \
 	meshio/OutputFaultKin.py \
 	meshio/OutputMatElastic.py \
+	meshio/OutputNeumann.py \
 	meshio/SingleOutput.py \
 	meshio/VertexFilter.py \
 	problems/__init__.py \
