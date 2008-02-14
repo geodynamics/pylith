@@ -81,8 +81,7 @@ class BoundaryCondition(Component):
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     db = pyre.inventory.facility("db", factory=SimpleDB, 
-                                 family="spatial_database",
-                                 args=["db"])
+                                 family="spatial_database")
     db.meta['tip'] = "Database of boundary condition parameters."
     
 
