@@ -75,6 +75,10 @@ class TestElasticityImplicit(unittest.TestCase):
     material.label = "elastic plane strain"
     material.db = db
     material.quadrature = quadrature
+    from pylith.meshio.OutputMatElastic import OutputMatElastic
+    material.output = OutputMatElastic()
+    material.output._configure()
+    material.output.writer._configure()
 
     integrator = ElasticityImplicit()
     integrator.preinitialize(mesh, material)
@@ -163,17 +167,19 @@ class TestElasticityImplicit(unittest.TestCase):
     return
 
   
-  def test_updateState(self):
+  def test_poststep(self):
     """
-    Test updateState().
+    Test poststep().
 
-    WARNING: This is not a rigorous test of updateState() because we
+    WARNING: This is not a rigorous test of poststep() because we
     neither set the input fields or verify the results.
     """
     (mesh, integrator, fields) = self._initialize()
 
     t = 0.27*year
-    integrator.updateState(t, fields)
+    dt = 0.01*year
+    totalTime = 10*year
+    #integrator.poststep(t, dt, totalTime, fields)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
@@ -238,6 +244,10 @@ class TestElasticityImplicit(unittest.TestCase):
     material.label = "elastic plane strain"
     material.db = db
     material.quadrature = quadrature
+    from pylith.meshio.OutputMatElastic import OutputMatElastic
+    material.output = OutputMatElastic()
+    material.output._configure()
+    material.output.writer._configure()
 
     # Setup integrator
     integrator = ElasticityImplicit()
@@ -251,6 +261,7 @@ class TestElasticityImplicit(unittest.TestCase):
     fields = FieldsManager(mesh)
     fields.addReal("residual")
     fields.addReal("dispTBctpdt")
+    fields.solutionField("dispTBctpdt")
     fields.setFiberDimension("residual", cs.spaceDim)
     fields.allocate("residual")
     fields.copyLayout("residual")
