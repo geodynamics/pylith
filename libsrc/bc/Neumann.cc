@@ -324,7 +324,6 @@ pylith::bc::Neumann::integrateJacobian(PetscMat* mat,
  				       topology::FieldsManager* const fields,
  				       const ALE::Obj<Mesh>& mesh)
 { // integrateJacobian
-//  throw std::logic_error("Not implemented.");
 } // integrateJacobian
 
 // ----------------------------------------------------------------------
