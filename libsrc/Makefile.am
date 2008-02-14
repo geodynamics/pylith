@@ -24,6 +24,7 @@ lib_LTLIBRARIES = libpylith.la
 libpylith_la_SOURCES = \
 	bc/AbsorbingDampers.cc \
 	bc/BoundaryCondition.cc \
+	bc/DirichletBoundary.cc \
 	bc/DirichletPoints.cc \
 	bc/Neumann.cc \
 	faults/BruneSlipFn.cc \
