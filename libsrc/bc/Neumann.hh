@@ -129,7 +129,7 @@ private :
   ALE::Obj<Mesh> _boundaryMesh;
 
   /// Traction vector in global coordinates at integration points.
-  ALE::Obj<real_section_type> _tractionsGlobal;
+  ALE::Obj<real_section_type> _tractions;
 
 }; // class Neumann
 
