@@ -174,9 +174,6 @@ class Integrator(object):
     assert(None != self.cppHandle)
     self.cppHandle.updateState(t.value, fields.cppHandle, self.mesh.cppHandle)
 
-    self._info.log("Writing material data.")
-    self.output.writeData(t+dt, fields)
-
     self._logger.eventEnd(logEvent)
     return
 
