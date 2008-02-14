@@ -332,7 +332,6 @@ pylith::bc::Neumann::integrateJacobian(PetscMat* mat,
 void
 pylith::bc::Neumann::verifyConfiguration(const ALE::Obj<Mesh>& mesh)
 { // verifyConfiguration
-  throw std::logic_error("Not implemented.");
 } // verifyConfiguration
 
 
