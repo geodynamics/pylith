@@ -145,12 +145,14 @@ pylith::meshio::OutputManager::appendCellField(
 				const char* name,
 				const ALE::Obj<real_section_type>& field,
 				const VectorFieldEnum fieldType,
-				const ALE::Obj<ALE::Mesh>& mesh)
+				const ALE::Obj<ALE::Mesh>& mesh,
+				const char* label,
+				const int labelId)
 { // appendCellField
   assert(0 != name);
 
   const ALE::Obj<real_section_type>& fieldFiltered = 
-    (0 == _cellFilter) ? field : _cellFilter->filter(field, mesh);
+    (0 == _cellFilter) ? field : _cellFilter->filter(field, mesh, label, labelId);
 
   _writer->writeCellField(t, name, fieldFiltered, fieldType, mesh);
 } // appendCellField

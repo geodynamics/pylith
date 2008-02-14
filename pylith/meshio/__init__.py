@@ -15,6 +15,7 @@
 ## @brief Python PyLith meshio module initialization
 
 __all__ = ['CellFilter',
+           'CellFilterAvg',
            'DataWriter',
            'DataWriterVTK',
            'MeshIO',

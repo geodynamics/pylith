@@ -12,6 +12,7 @@
 
 #header{
 #include "pylith/meshio/CellFilter.hh"
+#include "pylith/meshio/CellFilterAvg.hh"
 #include "pylith/meshio/DataWriter.hh"
 #include "pylith/meshio/DataWriterVTK.hh"
 #include "pylith/meshio/MeshIO.hh"
@@ -767,12 +768,12 @@ cdef class OutputManager:
     return
 
 
-  def appendCellField(self, t, name, field, fieldType, mesh):
+  def appendCellField(self, t, name, field, fieldType, mesh, label, labelId):
     """
     Append field over cells to file.
     """
     # create shim for method 'appendCellField'
-    #embed{ void OutputManager_appendCellField(void* objVptr, double t, char* name, void* fieldVptr, int fieldTypeInt, void* meshVptr)
+    #embed{ void OutputManager_appendCellField(void* objVptr, double t, char* name, void* fieldVptr, int fieldTypeInt, void* meshVptr, char* label, int labelId)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
@@ -786,7 +787,7 @@ cdef class OutputManager:
       ((pylith::meshio::OutputManager*) objVptr)->appendCellField(t, name,
                                                                   *field,
                                                                   fieldType,
-                                                                  *mesh);
+                                                                  *mesh, label, labelId);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -803,8 +804,12 @@ cdef class OutputManager:
             "Argument must be extension module type 'Mesh'."
     cdef void* fieldVptr
     fieldVptr = PyCObject_AsVoidPtr(field)
-    OutputManager_appendCellField(self.thisptr, t, name, fieldVptr, fieldType,
-                                  ptrFromHandle(mesh))
+    if None == label or None == labelId:
+      OutputManager_appendCellField(self.thisptr, t, name, fieldVptr, fieldType,
+                                    ptrFromHandle(mesh), NULL, 0)
+    else:
+      OutputManager_appendCellField(self.thisptr, t, name, fieldVptr, fieldType,
+                                    ptrFromHandle(mesh), label, labelId)
     return
 
 
@@ -1029,6 +1034,100 @@ cdef class DataWriterVTK(DataWriter):
       } // try/catch
       #}embed
       DataWriterVTK_timeFormat_set(self.thisptr, format)
+
+
+# ----------------------------------------------------------------------
+cdef void CellFilter_destructor(void* obj):
+  """
+  Destroy CellFilter object.
+  """
+  # create shim for destructor
+  #embed{ void CellFilter_destructor_cpp(void* pObj)
+  pylith::meshio::CellFilter* f = (pylith::meshio::CellFilter*) pObj;
+  delete f;
+  #}embed
+  CellFilter_destructor_cpp(obj)
+  return
+
+cdef class CellFilter:
+
+  cdef void* thisptr # Pointer to C++ object
+  cdef readonly object handle # PyCObject holding pointer to C++ object
+  cdef readonly object name # Identifier for object base type
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    self.handle = None
+    self.thisptr = NULL
+    self.name = "pylith_meshio_CellFilter"
+    return
+
+
+  property quadrature:
+    def __set__(self, quadrature):
+      """
+      Set quadrature.
+      """
+      # create shim for method 'quadrature'
+      #embed{ void CellFilter_quadrature_set(void* objVptr, void* qVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != qVptr);
+        pylith::feassemble::Quadrature* quadrature =
+          (pylith::feassemble::Quadrature*) qVptr;
+        ((pylith::meshio::CellFilter*) objVptr)->quadrature(quadrature);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not quadrature.name == "pylith_feassemble_Quadrature":
+        raise TypeError, \
+              "Argument must be extension module type 'Quadrature'."
+      CellFilter_quadrature_set(self.thisptr, ptrFromHandle(quadrature))
+
+
+  def _createHandle(self):
+    """Wrap pointer to C++ object in PyCObject."""
+    return PyCObject_FromVoidPtr(self.thisptr, CellFilter_destructor)
+
+
+# ----------------------------------------------------------------------
+cdef class CellFilterAvg(CellFilter):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* CellFilterAvg_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::meshio::CellFilterAvg);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    CellFilter.__init__(self)
+    self.thisptr = CellFilterAvg_constructor()
+    self.handle = self._createHandle()
+    return
 
 
 # End of file

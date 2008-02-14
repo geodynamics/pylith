@@ -78,6 +78,7 @@ nobase_pkgpyexec_PYTHON = \
 	materials/MaxwellIsotropic3D.py \
 	meshio/__init__.py \
 	meshio/CellFilter.py \
+	meshio/CellFilterAvg.py \
 	meshio/DataWriter.py \
 	meshio/DataWriterVTK.py \
 	meshio/MeshIO.py \
