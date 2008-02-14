@@ -6,8 +6,6 @@ Release 1.1
 
   2. Reimplement SolutionIO [BRAD & MATT]
      c. Implement output of Neumann information.
-     d. Implement output of Dirichlet information.
-        i. DirichletBoundary
      e. Implement output of solution subset (ground surface).
         i. OutputSubdomain
      f. VertexFilterChangeCS
