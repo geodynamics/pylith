@@ -50,12 +50,11 @@ class TestMeshGenSimple(unittest.TestCase):
     io.coordsys = CSCart()
     mesh.coordsys = CSCart()
     self.mesh = mesh
-    
+
     from pyre.units.time import s
-    t = 0.0*s
     io.preinitialize(self)
     io.initialize()
-    io.writeData(t)
+    io.writeInfo()
 
     from pylith.topology.Distributor import Distributor
     distributor = Distributor()
@@ -63,7 +62,7 @@ class TestMeshGenSimple(unittest.TestCase):
     newMesh = distributor.distribute(mesh)
     self.mesh = newMesh
     io.writer.filename = 'newMesh.vtk'
-    io.writeData(t)
+    io.writeInfo()
     return
 
 

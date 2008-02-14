@@ -143,17 +143,19 @@ class TestAbsorbingDampers(unittest.TestCase):
     return
 
 
-  def test_updateState(self):
+  def test_poststep(self):
     """
-    Test updateState().
+    Test poststep().
 
-    WARNING: This is not a rigorous test of updateState() because we
+    WARNING: This is not a rigorous test of poststep() because we
     neither set the input fields or verify the results.
     """
     (mesh, bc, fields) = self._initialize()
 
     t = 0.50*second
-    bc.updateState(t, fields)
+    dt = 0.1*second
+    totalTime = 5*second
+    bc.poststep(t, dt, totalTime, fields)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
