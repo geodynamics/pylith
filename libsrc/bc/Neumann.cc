@@ -65,6 +65,8 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 	<< "boundary condition '" << _label << "'.";
     throw std::runtime_error(msg.str());
   } // if
+  _boundaryMesh->setRealSection("coordinates", 
+				mesh->getRealSection("coordinates"));
 
   //_boundaryMesh->view("TRACTION BOUNDARY MESH");
 
