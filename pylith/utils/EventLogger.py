@@ -32,6 +32,7 @@ class EventLogger(object):
     """
     self.cppHandle = None
     self._createCppHandle()
+    self.event = None
     return
 
 
@@ -80,18 +81,22 @@ class EventLogger(object):
   def eventBegin(self, name):
     """
     Log event begin.
-    """    
-    assert(None != self.cppHandle)
-    self.cppHandle.eventBegin(self.cppHandle.eventId(name))
+    """
+    if self.event != name: # prevent double logging
+      assert(None != self.cppHandle)
+      self.cppHandle.eventBegin(self.cppHandle.eventId(name))
+      self.event = name
     return
 
 
   def eventEnd(self, name):
     """
     Log event end.
-    """    
-    assert(None != self.cppHandle)
-    self.cppHandle.eventEnd(self.cppHandle.eventId(name))
+    """
+    if None != self.event: # prevent double logging
+      assert(None != self.cppHandle)
+      self.cppHandle.eventEnd(self.cppHandle.eventId(name))
+      self.event = None
     return
 
 
