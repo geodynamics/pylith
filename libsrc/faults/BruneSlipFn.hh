@@ -76,33 +76,29 @@ public :
 
   /** Initialize slip time function.
    *
-   * @param mesh Finite-element mesh.
    * @param faultMesh Finite-element mesh of fault.
-   * @param vertices Vertices where slip will be prescribed.
    * @param cs Coordinate system for mesh
    */
-  void initialize(const ALE::Obj<Mesh>& mesh,
-		  const ALE::Obj<Mesh>& faultMesh,
-		  const std::set<Mesh::point_type>& vertices,
+  void initialize(const ALE::Obj<Mesh>& faultMesh,
 		  const spatialdata::geocoords::CoordSys* cs);
 
   /** Get slip on fault surface at time t.
    *
    * @param t Time t.
-   * @param vertices Vertices where slip will be prescribed.
+   * @param faultMesh Mesh over fault surface.
    */
   const ALE::Obj<real_section_type>& slip(const double t,
-			      const std::set<Mesh::point_type>& vertices);
+					  const ALE::Obj<Mesh>& faultMesh);
 
   /** Get slip increment on fault surface between time t0 and t1.
    *
    * @param t0 Time t.
    * @param t1 Time t+dt.
-   * @param vertices Vertices where slip will be prescribed.
+   * @param faultMesh Mesh over fault surface.
    */
   const ALE::Obj<real_section_type>& slipIncr(const double t0,
 					      const double t1,
-					      const std::set<Mesh::point_type>& vertices);
+					      const ALE::Obj<Mesh>& faultMesh);
 
   /** Get final slip.
    *
@@ -137,14 +133,18 @@ private :
    * @returns Slip at point at time t
    */
   static
-  double _slip(const double t,
-	       const double finalSlip,
-	       const double peakRate);
+  double _slipFn(const double t,
+		 const double finalSlip,
+		 const double peakRate);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  ALE::Obj<real_section_type> _slipField; ///< Slip field on fault surface
+  /// Parameters for Brune slip time function.
+  /// Final slip (vector), peak slip rate (scalar), slip time (scalar).
+  ALE::Obj<real_section_type> _parameters;
+
+  ALE::Obj<real_section_type> _slip; ///< Slip field on fault surface
 
   /// Spatial database for final slip
   spatialdata::spatialdb::SpatialDB* _dbFinalSlip;
@@ -154,6 +154,8 @@ private :
 
    /// Spatial database for peak slip rate
   spatialdata::spatialdb::SpatialDB* _dbPeakRate;
+
+  int _spaceDim; ///< Spatial dimension for slip field.
 
 }; // class BruneSlipFn
 

@@ -58,14 +58,16 @@ public :
 
   /** Create (distributed) fault mesh from cohesive cells.
    *
-   * @param fault Finite-element mesh of fault (output)
-   * @param mesh Finite-element mesh
+   * @param fault Finite-element mesh of fault (output).
+   * @param cohesiveToFault Mapping of cohesive cell to fault mesh cell.
+   * @param mesh Finite-element mesh.
    * @param materialId Material id for cohesive elements.
    * @param constraintCell True if creating cells constrained with 
-   *   Lagrange multipliers that require extra vertices, false otherwise
+   *   Lagrange multipliers that require extra vertices, false otherwise.
    */
   static
   void createParallel(ALE::Obj<Mesh>* fault,
+		      std::map<Mesh::point_type, Mesh::point_type>* cohesiveToFault,
 		      const ALE::Obj<Mesh>& mesh,
 		      const int materialId,
 		      const bool constraintCell =false);

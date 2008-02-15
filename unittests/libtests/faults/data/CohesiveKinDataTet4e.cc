@@ -111,7 +111,7 @@ const int pylith::faults::CohesiveKinDataTet4e::_constraintVertices[] = {
 };
 
 const int pylith::faults::CohesiveKinDataTet4e::_constraintCells[] = {
-  18, 18, 18, 19
+  22, 22, 22, 23
 };
 
 const double pylith::faults::CohesiveKinDataTet4e::_valsResidual[] = {

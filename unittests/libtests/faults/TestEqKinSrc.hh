@@ -21,16 +21,20 @@
 #if !defined(pylith_faults_testeqkinsrc_hh)
 #define pylith_faults_testeqkinsrc_hh
 
+#include "pylith/utils/sievetypes.hh" // USES Mesh
+
 #include <cppunit/extensions/HelperMacros.h>
 
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
     class TestEqKinSrc;
+    class EqKinSrc;
+    class BruneSlipFn;
 
     namespace _TestEqKinSrc {
       struct DataStruct;
-    } // _BruneSlipTimeFn
+    } // _TestEqKinSrc
   } // faults
 } // pylith
 
@@ -69,6 +73,20 @@ public :
   /// Test slipIncr(). Use 2-D mesh with Brune slip function to test
   /// slip().
   void testSlipIncr(void);
+
+  // PRIVATE METHODS ////////////////////////////////////////////////////
+private :
+
+  /** Initialize EqKinSrc.
+   *
+   * @param faultMesh Fault mesh.
+   * @param eqsrc Earthquake source.
+   * @param slipfn Slip time function.
+   */
+  static
+  void _initialize(ALE::Obj<Mesh>* faultMesh,
+		   EqKinSrc* eqsrc,
+		   BruneSlipFn* slipfn);
 
 }; // class TestEqKinSrc
 

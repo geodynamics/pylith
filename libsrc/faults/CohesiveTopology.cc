@@ -643,13 +643,18 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
 // ----------------------------------------------------------------------
 // Form a parallel fault mesh using the cohesive cell information
 void
-pylith::faults::CohesiveTopology::createParallel(ALE::Obj<Mesh>* fault,
-                                                 const ALE::Obj<Mesh>& mesh,
-                                                 const int materialId,
-						 const bool constraintCell)
+pylith::faults::CohesiveTopology::createParallel(
+		ALE::Obj<Mesh>* fault,
+		std::map<Mesh::point_type, Mesh::point_type>* cohesiveToFault,
+		const ALE::Obj<Mesh>& mesh,
+		const int materialId,
+		const bool constraintCell)
 {
   assert(0 != fault);
+  assert(0 != cohesiveToFault);
+
   *fault = new Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
+  cohesiveToFault->clear();
 
   const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
   const ALE::Obj<sieve_type> faultSieve = 
@@ -695,11 +700,21 @@ pylith::faults::CohesiveTopology::createParallel(ALE::Obj<Mesh>* fault,
       for(int i=0; i < faceSize; ++i, ++v_iter)
 	faultSieve->addArrow(*v_iter, face, color++);
     } // if/else
-
+    (*cohesiveToFault)[*c_iter] = face;
     ++face;
   } // for
   (*fault)->setSieve(faultSieve);
   (*fault)->stratify();
+
+  const ALE::Obj<Mesh::label_sequence>& faultCells = 
+    (*fault)->heightStratum(0);
+  assert(!faultCells.isNull());
+  for (Mesh::label_sequence::iterator c_iter=cBegin,
+	 f_iter=faultCells->begin();
+       c_iter != cEnd;
+       ++c_iter, ++f_iter)
+    (*cohesiveToFault)[*c_iter] = *f_iter;
+    
 #if 1
   (*fault)->setRealSection("coordinates", mesh->getRealSection("coordinates"));
 #else

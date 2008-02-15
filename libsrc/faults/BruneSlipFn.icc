@@ -41,9 +41,9 @@ pylith::faults::BruneSlipFn::dbPeakRate(spatialdata::spatialdb::SpatialDB* const
 // Compute slip using slip time function.
 inline
 double
-pylith::faults::BruneSlipFn::_slip(const double t,
-				   const double finalSlip,
-				   const double peakRate) {
+pylith::faults::BruneSlipFn::_slipFn(const double t,
+				     const double finalSlip,
+				     const double peakRate) {
   double slip = 0.0;
   if (t > 0) {
     assert(peakRate > 0.0);

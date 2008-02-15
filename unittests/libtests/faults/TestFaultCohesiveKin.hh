@@ -106,6 +106,15 @@ private :
   void _initialize(ALE::Obj<ALE::Mesh>* mesh,
 		   FaultCohesiveKin* const fault) const;
 
+  /** Determine if vertex is a Lagrange multiplier constraint vertex.
+   *
+   * @param vertex Label of vertex.
+   *
+   * @returns True if vertex is a constraint vertex, false otherwise.
+   */
+  bool _isConstraintVertex(const int vertex) const;
+  
+
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 

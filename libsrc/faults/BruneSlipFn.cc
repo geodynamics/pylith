@@ -24,12 +24,22 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
+namespace pylith {
+  namespace faults {
+    namespace _BruneSlipFn {
+      const int offsetPeakRate = 0;
+      const int offsetSlipTime = 1;
+    } // _BruneSlipFn
+  } // faults
+} // pylith
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::BruneSlipFn::BruneSlipFn(void) :
   _dbFinalSlip(0),
   _dbSlipTime(0),
-  _dbPeakRate(0)
+  _dbPeakRate(0),
+  _spaceDim(0)
 { // constructor
 } // constructor
 
@@ -45,60 +55,38 @@ pylith::faults::BruneSlipFn::~BruneSlipFn(void)
 // ----------------------------------------------------------------------
 // Initialize slip time function.
 void
-pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
-					const ALE::Obj<Mesh>& faultMesh,
-					const std::set<Mesh::point_type>& vertices,
-
-					const spatialdata::geocoords::CoordSys* cs)
+pylith::faults::BruneSlipFn::initialize(
+				 const ALE::Obj<Mesh>& faultMesh,
+				 const spatialdata::geocoords::CoordSys* cs)
 { // initialize
-  typedef std::set<Mesh::point_type>::const_iterator vert_iterator;  
-
-  assert(!mesh.isNull());
+  assert(!faultMesh.isNull());
   assert(0 != cs);
   assert(0 != _dbFinalSlip);
   assert(0 != _dbSlipTime);
   assert(0 != _dbPeakRate);
 
-  const int spaceDim = cs->spaceDim();
+  _spaceDim = cs->spaceDim();
+  const int spaceDim = _spaceDim;
+  const int indexFinalSlip = 0;
+  const int indexPeakRate = spaceDim + _BruneSlipFn::offsetPeakRate;
+  const int indexSlipTime = spaceDim + _BruneSlipFn::offsetSlipTime;
 
-  // Create and allocate sections for parameters
-  if (0 != _parameters) // Can't delete NULL pointer that holds reference
-    delete _parameters; 
-  _parameters = new topology::FieldsManager(mesh);
-  if (0 == _parameters)
-    throw std::runtime_error("Could not create manager for parameters of "
-			     "Brune slip time function.");
-  assert(0 != _parameters);
-  
-  // Parameter: final slip
-  _parameters->addReal("final slip");
-  const ALE::Obj<real_section_type>& finalSlip = 
-    _parameters->getReal("final slip");
-  assert(!finalSlip.isNull());
-  const vert_iterator vBegin = vertices.begin();
-  const vert_iterator vEnd = vertices.end();
-  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter)
-    finalSlip->setFiberDimension(*v_iter, spaceDim);
-  mesh->allocate(finalSlip);
+  // Get vertices in fault mesh
+  const ALE::Obj<Mesh::label_sequence>& vertices = faultMesh->depthStratum(0);
+  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
 
-  // Parameter: slip initiation time
-  _parameters->addReal("slip time");
-  const ALE::Obj<real_section_type>& slipTime = 
-    _parameters->getReal("slip time");
-  assert(!slipTime.isNull());
-  // reuse atlas from finalSlip (but use local fiber dimension)
-  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter)
-    slipTime->setFiberDimension(*v_iter, 1);
-  mesh->allocate(slipTime);  
-  slipTime->getAtlas()->setAtlas(finalSlip->getAtlas()->getAtlas());
-
-  // Parameter: peak slip rate
-  _parameters->addReal("peak rate");
-  const ALE::Obj<real_section_type>& peakRate = 
-    _parameters->getReal("peak rate");
-  assert(!peakRate.isNull());
-  peakRate->setAtlas(slipTime->getAtlas()); // reuse atlas from slipTime
-  peakRate->allocateStorage();
+  const int fiberDim = spaceDim + 2;
+  _parameters = new real_section_type(faultMesh->comm(), faultMesh->debug());
+  _parameters->addSpace(); // final slip
+  _parameters->addSpace(); // peak slip rate
+  _parameters->addSpace(); // slip time
+  assert(3 == _parameters->getNumSpaces());
+  _parameters->setFiberDimension(vertices, fiberDim);
+  _parameters->setFiberDimension(vertices, spaceDim, 0); // final slip
+  _parameters->setFiberDimension(vertices, 1, 1); // peak slip rate
+  _parameters->setFiberDimension(vertices, 1, 2); // slip time
+  faultMesh->allocate(_parameters);
+  assert(!_parameters.isNull());
 
   // Open databases and set query values
   _dbFinalSlip->open();
@@ -134,51 +122,53 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
 
   // Get coordinates of vertices
   const ALE::Obj<real_section_type>& coordinates = 
-    mesh->getRealSection("coordinates");
+    faultMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
 
-  // Query databases for parameters
-  double_array slipData(spaceDim);
-  double slipTimeData;
-  double peakRateData;
-  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter) {
+  double_array paramsVertex(fiberDim);
+
+  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != verticesEnd;
+       ++v_iter) {
+
     // Get coordinates of vertex
-    const real_section_type::value_type* vCoords = 
+    const real_section_type::value_type* coordsVertex = 
       coordinates->restrictPoint(*v_iter);
+    assert(0 != coordsVertex);
     
-    int err = _dbFinalSlip->query(&slipData[0], spaceDim, 
-				  vCoords, spaceDim, cs);
+    int err = _dbFinalSlip->query(&paramsVertex[indexFinalSlip], spaceDim, 
+				  coordsVertex, spaceDim, cs);
     if (err) {
       std::ostringstream msg;
       msg << "Could not find final slip at (";
       for (int i=0; i < spaceDim; ++i)
-	msg << "  " << vCoords[i];
+	msg << "  " << coordsVertex[i];
       msg << ") using spatial database " << _dbFinalSlip->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
-    finalSlip->updatePoint(*v_iter, &slipData[0]);
-
-    err = _dbSlipTime->query(&slipTimeData, 1, vCoords, spaceDim, cs);
-    if (err) {
-      std::ostringstream msg;
-      msg << "Could not find slip initiation time at (";
-      for (int i=0; i < spaceDim; ++i)
-	msg << "  " << vCoords[i];
-      msg << ") using spatial database " << _dbSlipTime->label() << ".";
-      throw std::runtime_error(msg.str());
-    } // if
-    slipTime->updatePoint(*v_iter, &slipTimeData);
-
-    err = _dbPeakRate->query(&peakRateData, 1, vCoords, spaceDim, cs);
+    err = _dbPeakRate->query(&paramsVertex[indexPeakRate], 1, 
+			     coordsVertex, spaceDim, cs);
     if (err) {
       std::ostringstream msg;
       msg << "Could not find peak slip rate at (";
       for (int i=0; i < spaceDim; ++i)
-	msg << "  " << vCoords[i];
+	msg << "  " << coordsVertex[i];
       msg << ") using spatial database " << _dbPeakRate->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
-    peakRate->updatePoint(*v_iter, &peakRateData);
+
+    err = _dbSlipTime->query(&paramsVertex[indexSlipTime], 1, 
+			     coordsVertex, spaceDim, cs);
+    if (err) {
+      std::ostringstream msg;
+      msg << "Could not find slip initiation time at (";
+      for (int i=0; i < spaceDim; ++i)
+	msg << "  " << coordsVertex[i];
+      msg << ") using spatial database " << _dbSlipTime->label() << ".";
+      throw std::runtime_error(msg.str());
+    } // if
+
+    _parameters->updatePoint(*v_iter, &paramsVertex[0]);
   } // for
 
   // Close databases
@@ -187,65 +177,62 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   _dbPeakRate->close();
 
   // Allocate slip field
-  _slipField = new real_section_type(mesh->comm(), mesh->debug());
-  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter)
-    _slipField->setFiberDimension(*v_iter, spaceDim);
-  mesh->allocate(_slipField);
+  _slip = new real_section_type(faultMesh->comm(), faultMesh->debug());
+  _slip->setFiberDimension(vertices, spaceDim);
+  faultMesh->allocate(_slip);
+  assert(!_slip.isNull());
 } // initialize
 
 // ----------------------------------------------------------------------
 // Get slip on fault surface at time t.
 const ALE::Obj<pylith::real_section_type>&
 pylith::faults::BruneSlipFn::slip(const double t,
-				  const std::set<Mesh::point_type>& vertices)
+				  const ALE::Obj<Mesh>& faultMesh)
 { // slip
-  typedef std::set<Mesh::point_type>::const_iterator vert_iterator;  
+  assert(!_parameters.isNull());
+  assert(!_slip.isNull());
+  assert(!faultMesh.isNull());
 
-  assert(0 != _parameters);
-  assert(!_slipField.isNull());
+  const int spaceDim = _spaceDim;
+  const int indexFinalSlip = 0;
+  const int indexPeakRate = spaceDim + _BruneSlipFn::offsetPeakRate;
+  const int indexSlipTime = spaceDim + _BruneSlipFn::offsetSlipTime;
+
+  double_array slipValues(spaceDim);
   
-  // Get parameters
-  const ALE::Obj<real_section_type>& finalSlip = 
-    _parameters->getReal("final slip");
-  assert(!finalSlip.isNull());
+  // Get vertices in fault mesh
+  const ALE::Obj<Mesh::label_sequence>& vertices = faultMesh->depthStratum(0);
+  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
 
-  const ALE::Obj<real_section_type>& slipTime = 
-    _parameters->getReal("slip time");
-  assert(!slipTime.isNull());
+  int count = 0;
+  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != verticesEnd;
+       ++v_iter, ++count) {
+    const real_section_type::value_type* paramsVertex = 
+      _parameters->restrictPoint(*v_iter);
+    assert(0 != paramsVertex);
 
-  const ALE::Obj<real_section_type>& peakRate = 
-    _parameters->getReal("peak rate");
-  assert(!peakRate.isNull());
+    const double* finalSlip = &paramsVertex[indexFinalSlip];
+    const double peakRate = paramsVertex[indexPeakRate];
+    const double slipTime = paramsVertex[indexSlipTime];
+    
+    double finalSlipMag = 0.0;
+    for (int i=0; i < spaceDim; ++i)
+      finalSlipMag += finalSlip[i]*finalSlip[i];
+    finalSlipMag = sqrt(finalSlipMag);
 
-  double_array slipValues(3);
-  const vert_iterator vBegin = vertices.begin();
-  const vert_iterator vEnd = vertices.end();
-  const int vSize = vertices.size();
-  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter) {
-    // Get values of parameters at vertex
-    const int numSlipValues = finalSlip->getFiberDimension(*v_iter);
-    const real_section_type::value_type* vFinalSlip = 
-      finalSlip->restrictPoint(*v_iter);
-    const real_section_type::value_type* vSlipTime = 
-      slipTime->restrictPoint(*v_iter);
-    const real_section_type::value_type* vPeakRate = 
-      peakRate->restrictPoint(*v_iter);
-
-    double vFinalSlipMag = 0.0;
-    for (int iSlip=0; iSlip < numSlipValues; ++iSlip)
-      vFinalSlipMag += vFinalSlip[iSlip]*vFinalSlip[iSlip];
-    vFinalSlipMag = sqrt(vFinalSlipMag);
-    const double vSlip = _slip(t-vSlipTime[0], vFinalSlipMag, vPeakRate[0]);
-    const double scale = vFinalSlipMag > 0.0 ? vSlip / vFinalSlipMag : 0.0;
-    for (int iSlip=0; iSlip < numSlipValues; ++iSlip)
-      slipValues[iSlip] = scale * vFinalSlip[iSlip];
+    const double slip = _slipFn(t-slipTime, finalSlipMag, peakRate);
+    const double scale = finalSlipMag > 0.0 ? slip / finalSlipMag : 0.0;
+    for (int i=0; i < spaceDim; ++i)
+      slipValues[i] = scale * finalSlip[i];
 
     // Update field
-    _slipField->updatePoint(*v_iter, &slipValues[0]);
+    _slip->updatePoint(*v_iter, &slipValues[0]);
   } // for
-  PetscLogFlopsNoCheck(vSize * (10 + 3*finalSlip->getFiberDimension(*vBegin)));
 
-  return _slipField;
+  PetscLogFlopsNoCheck(count * (2+8 + 3*spaceDim));
+
+  return _slip;
 } // slip
 
 // ----------------------------------------------------------------------
@@ -253,56 +240,54 @@ pylith::faults::BruneSlipFn::slip(const double t,
 const ALE::Obj<pylith::real_section_type>&
 pylith::faults::BruneSlipFn::slipIncr(const double t0,
 				      const double t1,
-				      const std::set<Mesh::point_type>& vertices)
+				      const ALE::Obj<Mesh>& faultMesh)
 { // slipIncr
-  typedef std::set<Mesh::point_type>::const_iterator vert_iterator;  
+  assert(!_parameters.isNull());
+  assert(!_slip.isNull());
+  assert(!faultMesh.isNull());
 
-  assert(0 != _parameters);
-  assert(!_slipField.isNull());
+  const int spaceDim = _spaceDim;
+  const int indexFinalSlip = 0;
+  const int indexPeakRate = spaceDim + _BruneSlipFn::offsetPeakRate;
+  const int indexSlipTime = spaceDim + _BruneSlipFn::offsetSlipTime;
+
+  double_array slipValues(spaceDim);
   
-  // Get parameters
-  const ALE::Obj<real_section_type>& finalSlip = 
-    _parameters->getReal("final slip");
-  assert(!finalSlip.isNull());
+  // Get vertices in fault mesh
+  const ALE::Obj<Mesh::label_sequence>& vertices = faultMesh->depthStratum(0);
+  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
 
-  const ALE::Obj<real_section_type>& slipTime = 
-    _parameters->getReal("slip time");
-  assert(!slipTime.isNull());
+  int count = 0;
+  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != verticesEnd;
+       ++v_iter, ++count) {
+    const real_section_type::value_type* paramsVertex = 
+      _parameters->restrictPoint(*v_iter);
+    assert(0 != paramsVertex);
 
-  const ALE::Obj<real_section_type>& peakRate = 
-    _parameters->getReal("peak rate");
-  assert(!peakRate.isNull());
+    const double* finalSlip = &paramsVertex[indexFinalSlip];
+    const double peakRate = paramsVertex[indexPeakRate];
+    const double slipTime = paramsVertex[indexSlipTime];
+    
+    double finalSlipMag = 0.0;
+    for (int i=0; i < spaceDim; ++i)
+      finalSlipMag += finalSlip[i]*finalSlip[i];
+    finalSlipMag = sqrt(finalSlipMag);
 
-  double_array slipValues(3);
-  const vert_iterator vBegin = vertices.begin();
-  const vert_iterator vEnd = vertices.end();
-  const int vSize = vertices.size();
-  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter) {
-    // Get values of parameters at vertex
-    const int numSlipValues = finalSlip->getFiberDimension(*v_iter);
-    const real_section_type::value_type* vFinalSlip = 
-      finalSlip->restrictPoint(*v_iter);
-    const real_section_type::value_type* vSlipTime = 
-      slipTime->restrictPoint(*v_iter);
-    const real_section_type::value_type* vPeakRate = 
-      peakRate->restrictPoint(*v_iter);
-
-    double vFinalSlipMag = 0.0;
-    for (int iSlip=0; iSlip < numSlipValues; ++iSlip)
-      vFinalSlipMag += vFinalSlip[iSlip]*vFinalSlip[iSlip];
-    vFinalSlipMag = sqrt(vFinalSlipMag);
-    const double vSlip0 = _slip(t0-vSlipTime[0], vFinalSlipMag, vPeakRate[0]);
-    const double vSlip1 = _slip(t1-vSlipTime[0], vFinalSlipMag, vPeakRate[0]);
-    const double scale = vFinalSlipMag > 0.0 ? (vSlip1 - vSlip0) / vFinalSlipMag : 0.0;
-    for (int iSlip=0; iSlip < numSlipValues; ++iSlip)
-      slipValues[iSlip] = scale * vFinalSlip[iSlip];
+    const double slip0 = _slipFn(t0-slipTime, finalSlipMag, peakRate);
+    const double slip1 = _slipFn(t1-slipTime, finalSlipMag, peakRate);
+    const double scale = finalSlipMag > 0.0 ? 
+      (slip1 - slip0) / finalSlipMag : 0.0;
+    for (int i=0; i < spaceDim; ++i)
+      slipValues[i] = scale * finalSlip[i];
 
     // Update field
-    _slipField->updatePoint(*v_iter, &slipValues[0]);
+    _slip->updatePoint(*v_iter, &slipValues[0]);
   } // for
-  PetscLogFlopsNoCheck(vSize * (19 + 3*finalSlip->getFiberDimension(*vBegin)));
 
-  return _slipField;
+  PetscLogFlopsNoCheck(count * (3+2*8 + 3*spaceDim));
+
+  return _slip;
 } // slipIncr
 
 // ----------------------------------------------------------------------
@@ -310,7 +295,7 @@ pylith::faults::BruneSlipFn::slipIncr(const double t0,
 ALE::Obj<pylith::real_section_type>
 pylith::faults::BruneSlipFn::finalSlip(void)
 { // finalSlip
-  return _parameters->getReal("final slip");
+  return _parameters->getFibration(0);
 } // finalSlip
 
 // ----------------------------------------------------------------------
@@ -318,7 +303,7 @@ pylith::faults::BruneSlipFn::finalSlip(void)
 ALE::Obj<pylith::real_section_type>
 pylith::faults::BruneSlipFn::slipTime(void)
 { // slipTime
-  return _parameters->getReal("slip time");
+  return _parameters->getFibration(2);
 } // slipTime
 
 
