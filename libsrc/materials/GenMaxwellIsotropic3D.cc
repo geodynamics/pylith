@@ -521,13 +521,15 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic(
   elasticConsts[19] = 0; // C2313
   elasticConsts[20] = elasticConsts[15]; // C1313
 
-  // std::cout << "_calcElasticConstsViscoelastic" << std::endl;
-  // std::cout << elasticConsts[0] << "  " << elasticConsts[1] << "  " << elasticConsts[2] << std::endl;
-  // std::cout << elasticConsts[6] << "  " << elasticConsts[7] << std::endl;
-  // std::cout << elasticConsts[11] << std::endl;
-  // std::cout << elasticConsts[15] << std::endl;
-  // std::cout << elasticConsts[18] << std::endl;
-  // std::cout << elasticConsts[20] << std::endl;
+#if 0
+  std::cout << "_calcElasticConstsViscoelastic" << std::endl;
+  std::cout << elasticConsts[0] << "  " << elasticConsts[1] << "  " << elasticConsts[2] << std::endl;
+  std::cout << elasticConsts[6] << "  " << elasticConsts[7] << std::endl;
+  std::cout << elasticConsts[11] << std::endl;
+  std::cout << elasticConsts[15] << std::endl;
+  std::cout << elasticConsts[18] << std::endl;
+  std::cout << elasticConsts[20] << std::endl;
+#endif
 
   PetscLogFlopsNoCheck(8 + 2*numMaxwellModels);
 } // _calcElasticConstsViscoelastic
@@ -557,16 +559,18 @@ pylith::materials::GenMaxwellIsotropic3D::_updatePropertiesElastic(
 
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 
+#if 0
   // Temporary to get stresses.
-  // double stress[6];
-  // const int stressSize = 6;
-  // _calcStressElastic(stress, stressSize,
-		     // properties, numProperties,
-		     // totalStrain, strainSize, true);
+  double stress[6];
+  const int stressSize = 6;
+  _calcStressElastic(stress, stressSize,
+		     properties, numProperties,
+		     totalStrain, strainSize, true);
 
   // Initialize all viscous strains to deviatoric elastic strains.
-  // std::cout << std::endl;
-  // std::cout << " updatePropertiesElastic: "<< std::endl;
+  std::cout << std::endl;
+  std::cout << " updatePropertiesElastic: "<< std::endl;
+#endif
   double devStrain = 0.0;
   double shearRatio = 0.0;
   for (int iComp=0; iComp < _GenMaxwellIsotropic3D::tensorSize; ++iComp) {
@@ -580,17 +584,21 @@ pylith::materials::GenMaxwellIsotropic3D::_updatePropertiesElastic(
     } // for
   } // for
   PetscLogFlopsNoCheck(3+2*_GenMaxwellIsotropic3D::tensorSize);
-  // std::cout << std::endl;
-  // std::cout << " StrainT  Stress  VisStrain: " << std::endl;
-  // for (int iComp=0; iComp < _GenMaxwellIsotropic3D::tensorSize; ++iComp) {
-    // std::cout << "   " << properties[_GenMaxwellIsotropic3D::pidStrainT+iComp]
-	      // << "   " << stress[iComp];
-    // for (int model = 0; model < numMaxwellModels; ++model) 
-      // std::cout << "   " << properties[_GenMaxwellIsotropic3D::pidVisStrain+
-					// iComp+
-					// model*_GenMaxwellIsotropic3D::tensorSize];
-    // std::cout << std::endl;
+
+#if 0
+  std::cout << std::endl;
+  std::cout << " StrainT  Stress  VisStrain: " << std::endl;
+  for (int iComp=0; iComp < _GenMaxwellIsotropic3D::tensorSize; ++iComp) {
+    std::cout << "   " << properties[_GenMaxwellIsotropic3D::pidStrainT+iComp]
+	      << "   " << stress[iComp];
+    for (int model = 0; model < numMaxwellModels; ++model) 
+      std::cout << "   " << properties[_GenMaxwellIsotropic3D::pidVisStrain+
+				       iComp+
+				       model*_GenMaxwellIsotropic3D::tensorSize];
+    std::cout << std::endl;
   } // for
+#endif
+
   _needNewJacobian = true;
 } // _updatePropertiesElastic
 
@@ -611,12 +619,14 @@ pylith::materials::GenMaxwellIsotropic3D::_updatePropertiesViscoelastic(
   const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
   const int tensorSize = _GenMaxwellIsotropic3D::tensorSize;
 
+#if 0
   // Temporary to get stresses.
-  // double stress[6];
-  // const int stressSize = 6;
-  // _calcStressViscoelastic(stress, stressSize, 
-			  // properties, numProperties,
-			  // totalStrain, strainSize, true);
+  double stress[6];
+  const int stressSize = 6;
+  _calcStressViscoelastic(stress, stressSize, 
+			  properties, numProperties,
+			  totalStrain, strainSize, true);
+#endif
 
   pylith::materials::GenMaxwellIsotropic3D::_computeStateVars(properties,
 							      numProperties,
@@ -632,17 +642,19 @@ pylith::materials::GenMaxwellIsotropic3D::_updatePropertiesViscoelastic(
 
   _needNewJacobian = false;
 
-  // std::cout << std::endl;
-  // std::cout << " StrainT  Stress  VisStrain: " << std::endl;
-  // for (int iComp=0; iComp < _GenMaxwellIsotropic3D::tensorSize; ++iComp) {
-    // std::cout << "   " << properties[_GenMaxwellIsotropic3D::pidStrainT+iComp]
-	      // << "   " << stress[iComp];
-    // for (int model = 0; model < numMaxwellModels; ++model) 
-      // std::cout << "   " << properties[_GenMaxwellIsotropic3D::pidVisStrain+
-					// iComp+
-					// model*_GenMaxwellIsotropic3D::tensorSize];
-    // std::cout << std::endl;
+#if 0
+  std::cout << std::endl;
+  std::cout << " StrainT  Stress  VisStrain: " << std::endl;
+  for (int iComp=0; iComp < _GenMaxwellIsotropic3D::tensorSize; ++iComp) {
+    std::cout << "   " << properties[_GenMaxwellIsotropic3D::pidStrainT+iComp]
+	      << "   " << stress[iComp];
+    for (int model = 0; model < numMaxwellModels; ++model) 
+      std::cout << "   " << properties[_GenMaxwellIsotropic3D::pidVisStrain+
+				       iComp+
+				       model*_GenMaxwellIsotropic3D::tensorSize];
+    std::cout << std::endl;
   } // for
+#endif
 } // _updatePropertiesViscoelastic
 
 
