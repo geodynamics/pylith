@@ -139,7 +139,7 @@ const int pylith::faults::CohesiveKinDataTri3d::_constraintVertices[] = {
 };
 
 const int pylith::faults::CohesiveKinDataTri3d::_constraintCells[] = {
-  16, 16, 17
+  20, 20, 21
 };
 
 const double pylith::faults::CohesiveKinDataTri3d::_valsResidual[] = {

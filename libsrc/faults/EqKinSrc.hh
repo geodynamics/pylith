@@ -68,36 +68,32 @@ public :
 
   /** Initialize slip time function.
    *
-   * @param mesh Finite-element mesh.
    * @param faultMesh Finite-element mesh of fault.
-   * @param vertices Vertices where slip will be prescribed.
    * @param cs Coordinate system for mesh
    */
   virtual
-  void initialize(const ALE::Obj<Mesh>& mesh,
-		  const ALE::Obj<Mesh>& faultMesh,
-		  const std::set<Mesh::point_type>& vertices,
+  void initialize(const ALE::Obj<Mesh>& faultMesh,
 		  const spatialdata::geocoords::CoordSys* cs);
 
   /** Get slip on fault surface at time t.
    *
    * @param t Time t.
-   * @param vertices Vertices where slip will be prescribed.
+   * @param faultMesh Finite-element mesh of fault.
    */
   virtual
   const ALE::Obj<real_section_type>& slip(const double t,
-			      const std::set<Mesh::point_type>& vertices);
+					  const ALE::Obj<Mesh>& faultMesh);
 
   /** Get increment of slip on fault surface between time t0 and t1.
    *
    * @param t Time t.
-   * @param vertices Vertices where slip will be prescribed.
+   * @param faultMesh Finite-element mesh of fault.
    */
   virtual
   const ALE::Obj<real_section_type>& slipIncr(
 			      const double t0,
 			      const double t1,
-			      const std::set<Mesh::point_type>& vertices);
+			      const ALE::Obj<Mesh>& faultMesh);
 
   /** Get final slip.
    *

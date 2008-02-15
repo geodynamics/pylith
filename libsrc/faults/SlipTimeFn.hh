@@ -28,10 +28,6 @@ namespace pylith {
     class SlipTimeFn;
     class TestSlipTimeFn; // unit testing
   } // faults
-
-  namespace topology {
-    class FieldsManager; // HOLDSA FieldsManager
-  } // feassemble
 } // pylith
 
 /// Namespace for spatialdata package
@@ -58,38 +54,38 @@ public :
 
   /** Initialize slip time function.
    *
-   * @param mesh Finite-element mesh.
    * @param faultMesh Finite-element mesh of fault.
-   * @param vertices Vertices where slip will be prescribed.
    * @param cs Coordinate system for mesh
    */
   virtual
-  void initialize(const ALE::Obj<Mesh>& mesh,
-		  const ALE::Obj<Mesh>& faultMesh,
-		  const std::set<Mesh::point_type>& vertices,
+  void initialize(const ALE::Obj<Mesh>& faultMesh,
 		  const spatialdata::geocoords::CoordSys* cs) = 0;
 
   /** Get slip on fault surface at time t.
    *
    * @param t Time t.
-   * @param vertices Vertices where slip will be prescribed.
+   * @param faultMesh Mesh over fault surface.
+   *
    * @returns Slip vector as left-lateral/reverse/normal.
    */
   virtual
-  const ALE::Obj<real_section_type>& slip(const double t,
-					  const std::set<Mesh::point_type>& vertices) = 0;
-
+  const ALE::Obj<real_section_type>&
+  slip(const double t,
+       const ALE::Obj<Mesh>& faultMesh) = 0;
+  
   /** Get slip increment on fault surface between time t0 and t1.
    *
    * @param t0 Time t.
    * @param t1 Time t+dt.
-   * @param vertices Vertices where slip will be prescribed.
+   * @param faultMesh Mesh over fault surface.
+   * 
    * @returns Increment in slip vector as left-lateral/reverse/normal.
    */
   virtual
-  const ALE::Obj<real_section_type>& slipIncr(const double t0,
-					      const double t1,
-					      const std::set<Mesh::point_type>& vertices) = 0;
+  const ALE::Obj<real_section_type>&
+  slipIncr(const double t0,
+	   const double t1,
+	   const ALE::Obj<Mesh>& faultMesh) = 0;
 
   /** Get final slip.
    *
@@ -113,12 +109,6 @@ private :
 
   /// Not implemented
   const SlipTimeFn& operator=(const SlipTimeFn& f);
-
-  // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected :
-
-  /// Parameters for slip time function
-  topology::FieldsManager* _parameters;
 
 }; // class SlipTimeFn
 

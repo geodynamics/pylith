@@ -18,8 +18,7 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::SlipTimeFn::SlipTimeFn(void) :
-  _parameters(0)
+pylith::faults::SlipTimeFn::SlipTimeFn(void)
 { // constructor
 } // constructor
 
@@ -27,15 +26,7 @@ pylith::faults::SlipTimeFn::SlipTimeFn(void) :
 // Destructor.
 pylith::faults::SlipTimeFn::~SlipTimeFn(void)
 { // destructor
-  delete _parameters; _parameters = 0;
 } // destructor
-
-// ----------------------------------------------------------------------
-// Copy constructor.
-pylith::faults::SlipTimeFn::SlipTimeFn(const SlipTimeFn& f) :
-  _parameters(0)
-{ // copy constructor
-} // copy constructor
 
 
 // End of file 

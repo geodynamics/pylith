@@ -21,12 +21,15 @@
 #if !defined(pylith_faults_testbruneslipfn_hh)
 #define pylith_faults_testbruneslipfn_hh
 
+#include "pylith/utils/sievetypes.hh" // USES Mesh
+
 #include <cppunit/extensions/HelperMacros.h>
 
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
     class TestBruneSlipFn;
+    class BruneSlipFn;
 
     namespace _TestBruneSlipFn {
       struct DataStruct;
@@ -90,10 +93,20 @@ public :
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
+  /** Initialize BruneSlipFn.
+   *
+   * @param faultMesh Fault mesh.
+   * @param slipfn Brune slip function.
+   */
+  static
+  void _initialize(ALE::Obj<Mesh>* faultMesh,
+		   BruneSlipFn* slipfn);
+
   /** Test intialize().
    *
    * @param data Data for initialization and testing of BruneSlipFn.
    */
+  static
   void _testInitialize(const _TestBruneSlipFn::DataStruct& data);
 
 }; // class TestBruneSlipFn

@@ -116,33 +116,32 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   FaultCohesiveKin fault;
   _initialize(&mesh, &fault);
   
-  // Check set of constraint vertices
-  CPPUNIT_ASSERT_EQUAL(_data->numConstraintVert,
-		       int(fault._constraintVert.size()));
-  const std::set<Mesh::point_type>::const_iterator vertConstraintBegin = 
-    fault._constraintVert.begin();
-  const std::set<Mesh::point_type>::const_iterator vertConstraintEnd = 
-    fault._constraintVert.end();
+  const ALE::Obj<Mesh::label_sequence>& vertices = 
+    fault._faultMesh->depthStratum(0);
+  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
   int iVertex = 0;
-  for (std::set<Mesh::point_type>::const_iterator v_iter=vertConstraintBegin;
-       v_iter != vertConstraintEnd;
-       ++v_iter, ++iVertex)
+  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != verticesEnd;
+       ++v_iter, ++iVertex) {
     CPPUNIT_ASSERT_EQUAL(_data->constraintVertices[iVertex],
 			 *v_iter);
+  } // for
+  CPPUNIT_ASSERT_EQUAL(_data->numConstraintVert, iVertex);
 
   // Check orientation
-  iVertex = 0;
   const int cellDim = _data->cellDim;
   const int spaceDim = _data->spaceDim;
   const int orientationSize = spaceDim*spaceDim;
-  for (std::set<Mesh::point_type>::const_iterator v_iter=vertConstraintBegin;
-       v_iter != vertConstraintEnd;
+  iVertex = 0;
+  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != verticesEnd;
        ++v_iter, ++iVertex) {
     const int fiberDim = fault._orientation->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(orientationSize, fiberDim);
     const real_section_type::value_type* vertexOrient = 
       fault._orientation->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != vertexOrient);
+
     const double tolerance = 1.0e-06;
     for (int i=0; i < orientationSize; ++i) {
       const int index = iVertex*orientationSize+i;
@@ -153,21 +152,21 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
 
   // Check pairing of constraint vertices with cells
   iVertex = 0;
-  for (std::set<Mesh::point_type>::const_iterator v_iter=vertConstraintBegin;
-       v_iter != vertConstraintEnd;
+  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != verticesEnd;
        ++v_iter, ++iVertex) {
-    const int fiberDim = fault._constraintCell->getFiberDimension(*v_iter);
+    const int fiberDim = fault._faultVertexCell->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(1, fiberDim);
     const int_section_type::value_type* vertexCell = 
-      fault._constraintCell->restrictPoint(*v_iter);
+      fault._faultVertexCell->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != vertexCell);
     CPPUNIT_ASSERT_EQUAL(_data->constraintCells[iVertex], vertexCell[0]);
   } // for
 
   // Check pseudoStiffness
   iVertex = 0;
-  for (std::set<Mesh::point_type>::const_iterator v_iter=vertConstraintBegin;
-       v_iter != vertConstraintEnd;
+  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != verticesEnd;
        ++v_iter, ++iVertex) {
     const int fiberDim = fault._pseudoStiffness->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(1, fiberDim);
@@ -238,9 +237,9 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
       CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
       const real_section_type::value_type* vals = 
 	residual->restrictPoint(*v_iter);
+      CPPUNIT_ASSERT(0 != vals);
       
-      const bool isConstraint = 
-	(fault._constraintVert.end() != fault._constraintVert.find(*v_iter));
+      const bool isConstraint = _isConstraintVertex(*v_iter);
       const double pseudoStiffness = 
 	(!isConstraint) ? _data->pseudoStiffness : 1.0;
       for (int i=0; i < fiberDimE; ++i) {
@@ -273,9 +272,9 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
       CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
       const real_section_type::value_type* vals = 
 	residual->restrictPoint(*v_iter);
+      CPPUNIT_ASSERT(0 != vals);
       
-      const bool isConstraint = 
-	(fault._constraintVert.end() != fault._constraintVert.find(*v_iter));
+      const bool isConstraint = _isConstraintVertex(*v_iter);
       const double pseudoStiffness = 
 	(!isConstraint) ? _data->pseudoStiffness : 1.0;
       for (int i=0; i < fiberDimE; ++i) {
@@ -463,6 +462,23 @@ pylith::faults::TestFaultCohesiveKin::_initialize(ALE::Obj<ALE::Mesh>* mesh,
     throw std::runtime_error(err.msg());
   } // catch
 } // _initialize
+
+// ----------------------------------------------------------------------
+// Determine if vertex is a Lagrange multiplier constraint vertex.
+bool
+pylith::faults::TestFaultCohesiveKin::_isConstraintVertex(const int vertex) const
+{ // _isConstraintVertex
+  assert(0 != _data);
+
+  const int numConstraintVert = _data->numConstraintVert;
+  bool isFound = false;
+  for (int i=0; i < _data->numConstraintVert; ++i)
+    if (_data->constraintVertices[i] == vertex) {
+      isFound = true;
+      break;
+    } // if
+  return isFound;
+} // _isConstraintVertex
 
 
 // End of file 

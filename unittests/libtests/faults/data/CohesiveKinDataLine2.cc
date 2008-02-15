@@ -89,7 +89,7 @@ const int pylith::faults::CohesiveKinDataLine2::_constraintVertices[] = {
 };
 
 const int pylith::faults::CohesiveKinDataLine2::_constraintCells[] = {
-  7
+  9
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_valsResidualIncr[] = {

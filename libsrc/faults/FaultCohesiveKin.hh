@@ -40,6 +40,8 @@
 #include "FaultCohesive.hh" // ISA FaultCohesive
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
+#include <map> // HASA std::map
+
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
@@ -165,29 +167,40 @@ protected :
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
+  /** Calculate orientation at fault vertices.
+   *
+   * @param upDir Direction perpendicular to along-strike direction that is 
+   *   not collinear with fault normal (usually "up" direction but could 
+   *   be up-dip direction; only applies to fault surfaces in a 3-D domain).
+   * @param normalDir General preferred direction for fault normal
+   *   (used to pick which of two possible normal directions for
+   *   interface; only applies to fault surfaces in a 3-D domain).
+   */
+  void _calcOrientation(const double_array& upDir,
+			const double_array& normalDir);
+
+  /** Calculate pairing between fault vertices and first cell they
+   * appear in to prevent double counting in integrating Jacobian.
+   */
+  void _calcVertexCellPairs(void);
+
+  /** Calculate conditioning field.
+   *
+   * @param cs Coordinate system for mesh
+   * @param matDB Database of bulk elastic properties for fault region
+   *   (used to improve conditioning of Jacobian matrix)
+   */
+  void _calcConditioning(const spatialdata::geocoords::CoordSys* cs,
+			 spatialdata::spatialdb::SpatialDB* matDB);
+
   /// Allocate scalar field for output of vertex information.
   void _allocateBufferVertexScalar(void);
 
   /// Allocate vector field for output of vertex information.
   void _allocateBufferVertexVector(void);
 
-  /// Allocate scalar field for output of cell information.
-  void _allocateBufferCellScalar(void);
-
   /// Allocate vector field for output of cell information.
   void _allocateBufferCellVector(void);
-
-  /** Project field defined over cohesive cells to fault mesh.
-   *
-   * @param fieldFault Field defined over fault mesh.
-   * @param fieldCohesive Field defined over cohesive cells.
-   * @param mesh PETSc mesh for problem.
-   */
-  void _projectCohesiveVertexField(
-			     ALE::Obj<real_section_type>* fieldFault,
-			     const ALE::Obj<real_section_type>& fieldCohesive,
-			     const ALE::Obj<Mesh>& mesh);
-
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -203,35 +216,33 @@ private :
 
   EqKinSrc* _eqsrc; ///< Kinematic earthquake source information
 
-  /// Pseudo-stiffness for scaling constraint information to improve
-  /// conditioning of Jacobian matrix
+  /// Field over fault mesh vertices of pseudo-stiffness values for
+  /// scaling constraint information to improve conditioning of
+  /// Jacobian matrix.
   ALE::Obj<real_section_type> _pseudoStiffness;
 
-  /// Orientation of fault surface at vertices (fiber dimension is
-  /// nonzero only at constraint vertices)
+  /// Field over the fault mesh vertices of orientation of fault
+  /// surface.
   ALE::Obj<real_section_type> _orientation;
 
-  /// Vector field of current slip or slip increment.
+  /// Field over the fault mesh vertices of vector field of current
+  /// slip or slip increment.
   ALE::Obj<real_section_type> _slip;
 
-  /// Fault vertices associated with constraints
-  std::set<Mesh::point_type> _constraintVert;
-
-  /// Label of cell used to compute Jacobian for each constraint vertex (must
+  /// Label of cell used to compute Jacobian for each fault vertex (must
   /// prevent overlap so that only 1 cell will contribute for
   /// each vertex).
-  ALE::Obj<int_section_type> _constraintCell;
+  ALE::Obj<int_section_type> _faultVertexCell;
 
-  /// Scalar field for output of vertex information.
+  std::map<Mesh::point_type, Mesh::point_type> _cohesiveToFault;
+
+  /// Scalar field for vertex information over fault mesh.
   ALE::Obj<real_section_type> _bufferVertexScalar;
 
-  /// Vector field for output of vertex information.
+  /// Vector field for vertex information over fault mesh.
   ALE::Obj<real_section_type> _bufferVertexVector;
 
-  /// Scalar field for output of cell information.
-  ALE::Obj<real_section_type> _bufferCellScalar;
-
-  /// Vector field for output of cell information.
+  /// Vector field for cell information over fault mesh.
   ALE::Obj<real_section_type> _bufferCellVector;
 
 }; // class FaultCohesiveKin
