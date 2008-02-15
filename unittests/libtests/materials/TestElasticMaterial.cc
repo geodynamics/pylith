@@ -224,6 +224,7 @@ void
 pylith::materials::TestElasticMaterial::setUp(void)
 { // setUp
   TestMaterial::setUp();
+  _matElastic = 0;
   _dataElastic = 0;
 } // setUp
 
@@ -233,6 +234,7 @@ void
 pylith::materials::TestElasticMaterial::tearDown(void)
 { // tearDown
   TestMaterial::tearDown();
+  delete _matElastic; _matElastic = 0;
   delete _dataElastic; _dataElastic = 0;
 } // tearDown
 
