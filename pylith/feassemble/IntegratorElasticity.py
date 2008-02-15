@@ -67,9 +67,15 @@ class IntegratorElasticity(Integrator):
     """
     Verify compatibility of configuration.
     """
+    logEvent = "%sverify" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     Integrator.verifyConfiguration(self)
     self.material.verifyConfiguration()
-    self.output.verifyConfiguration()    
+    self.output.verifyConfiguration()
+
+
+    self._logger.eventEnd(logEvent)    
     return
 
 
