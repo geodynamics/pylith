@@ -138,8 +138,8 @@ pylith::bc::TestNeumann::testInitialize(void)
       c_iter != cells->end();
       ++c_iter) {
 
-    bc._boundaryMesh->restrict(bc._tractionsGlobal, *c_iter,
-			    &tractionsCell[0], tractionsCell.size());
+    bc._boundaryMesh->restrict(bc._tractions, *c_iter,
+			       &tractionsCell[0], tractionsCell.size());
 
     // std::cout << "Tractions at quadrature points: " << std::endl;
     // std::cout << "Computed    Expected" << std::endl;
