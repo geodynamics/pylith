@@ -10,26 +10,26 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/materials/TestMaxwellIsotropic3D.py
+## @file unittests/pytests/materials/TestGenMaxwellIsotropic3D.py
 
-## @brief Unit testing of MaxwellIsotropic3D object.
+## @brief Unit testing of GenMaxwellIsotropic3D object.
 
 import unittest
 
-from pylith.materials.MaxwellIsotropic3D import MaxwellIsotropic3D
+from pylith.materials.GenMaxwellIsotropic3D import GenMaxwellIsotropic3D
 
 # ----------------------------------------------------------------------
-class TestMaxwellIsotropic3D(unittest.TestCase):
+class TestGenMaxwellIsotropic3D(unittest.TestCase):
   """
-  Unit testing of MaxwellIsotropic3D object.
+  Unit testing of GenMaxwellIsotropic3D object.
   """
 
   def test_constructor(self):
     """
     Test constructor.
     """
-    from pylith.materials.MaxwellIsotropic3D import MaxwellIsotropic3D
-    material = MaxwellIsotropic3D()
+    from pylith.materials.GenMaxwellIsotropic3D import GenMaxwellIsotropic3D
+    material = GenMaxwellIsotropic3D()
     material._createCppHandle()
     self.assertNotEqual(None, material.cppHandle)
     return
@@ -39,7 +39,7 @@ class TestMaxwellIsotropic3D(unittest.TestCase):
     """
     Test dimension().
     """
-    material = MaxwellIsotropic3D()
+    material = GenMaxwellIsotropic3D()
     material._createCppHandle()
     self.assertEqual(3, material.dimension)
     return
@@ -49,7 +49,7 @@ class TestMaxwellIsotropic3D(unittest.TestCase):
     """
     Test useElasticBehavior().
     """
-    material = MaxwellIsotropic3D()
+    material = GenMaxwellIsotropic3D()
     material._createCppHandle()
     material.useElasticBehavior(False)
     return

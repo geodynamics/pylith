@@ -27,6 +27,7 @@ noinst_PYTHON = \
 	TestElasticPlaneStress.py \
 	TestElasticStrain1D.py \
 	TestElasticStress1D.py \
+	TestGenMaxwellIsotropic3D.py \
 	TestHomogeneous.py \
 	TestMaterial.py \
 	TestMaxwellIsotropic3D.py
