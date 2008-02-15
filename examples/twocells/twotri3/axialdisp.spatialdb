@@ -1,9 +1,6 @@
-#SPATIAL.ascii 1
-
 // This database is used to specify the boundary conditions for the axial
 // displacement example.
-
-// This follows the format for a Simple DB (the only type presently available).
+#SPATIAL.ascii 1
 SimpleDB {
 
   // There are two values specified in the database, corresponding to the
