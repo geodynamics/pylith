@@ -193,6 +193,14 @@ private :
   void _calcConditioning(const spatialdata::geocoords::CoordSys* cs,
 			 spatialdata::spatialdb::SpatialDB* matDB);
 
+  /** Compute change in tractions on fault surface using solution.
+   *
+   * @param tractions Field for tractions.
+   * @param solution Solution field.
+   */
+  void _calcTractionsChange(ALE::Obj<real_section_type>* tractions,
+			    const ALE::Obj<real_section_type>& solution);
+
   /// Allocate scalar field for output of vertex information.
   void _allocateBufferVertexScalar(void);
 
