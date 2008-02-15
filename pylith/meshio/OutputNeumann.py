@@ -47,7 +47,7 @@ class OutputNeumann(OutputManager):
     import pyre.inventory
 
     cellInfoFields = pyre.inventory.list("cell_info_fields",
-                                         default=["tractions"])
+                                         default=[])
     cellInfoFields.meta['tip'] = "Names of cell info fields to output."
 
 
