@@ -104,7 +104,7 @@ class Formulation(Component):
     
     self._info.log("Pre-initializing output.")
     for output in self.output.bin:
-      output.preinitialize(self)
+      output.preinitialize()
 
     self._logger.eventEnd(logEvent)
     return
@@ -153,7 +153,7 @@ class Formulation(Component):
 
     self._info.log("Setting up solution output.")
     for output in self.output.bin:
-      output.initialize()
+      output.initialize(self.mesh)
       output.writeInfo()
       output.open(totalTime, numTimeSteps)
     self._debug.log(resourceUsageString())
@@ -242,27 +242,6 @@ class Formulation(Component):
     self._logger.eventEnd(logEvent)
     return
   
-
-  def getDataMesh(self):
-    """
-    Get mesh associated with data fields.
-    """
-    return (self.mesh, None, None)
-
-
-  def getVertexField(self, name, fields):
-    """
-    Get vertex field.
-    """
-    field = None
-    fieldType = None
-    if name == "displacements":
-      field = fields.getSolution()
-      fieldType = 1 # vector field
-    else:
-      raise ValueError, "Vertex field '%s' not available." % name
-    return (field, fieldType)
-
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
