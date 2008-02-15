@@ -47,8 +47,7 @@ class OutputDirichlet(OutputManager):
     import pyre.inventory
 
     vertexInfoFields = pyre.inventory.list("vertex_info_fields",
-                                           default=["initial",
-                                                    "rate-of-change"])
+                                           default=[])
     vertexInfoFields.meta['tip'] = "Names of vertex info fields to output."
     
 
