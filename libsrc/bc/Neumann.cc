@@ -83,7 +83,8 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int numCorners = _quadrature->numBasis();
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
-  const ALE::Obj<Mesh::label_sequence>& cells = _boundaryMesh->heightStratum(1);
+  const ALE::Obj<Mesh::label_sequence>& cells = 
+    _boundaryMesh->heightStratum(1);
   assert(!cells.isNull());
 
   const Mesh::label_sequence::iterator cellsBegin = cells->begin();
@@ -98,7 +99,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   for (Mesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
-    const int cellNumCorners = (_boundaryMesh->getDimension() >0) ?
+    const int cellNumCorners = (_boundaryMesh->getDimension() > 0) ?
       sieve->nCone(*c_iter, boundaryDepth)->size() : 1;
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
