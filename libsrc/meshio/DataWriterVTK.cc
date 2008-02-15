@@ -194,7 +194,7 @@ pylith::meshio::DataWriterVTK::writeCellField(
   try {
     // Correctly handle boundary and fault meshes
     //const int depth = mesh->depth();
-    const int depth = mesh->getDimension();
+    const int depth = 1;
     const std::string labelName = 
       (mesh->hasLabel("censored depth")) ? "censored depth" : "depth";
     const ALE::Obj<Mesh::numbering_type>& numbering = 
