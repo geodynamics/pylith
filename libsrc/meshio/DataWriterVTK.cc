@@ -192,13 +192,15 @@ pylith::meshio::DataWriterVTK::writeCellField(
   assert(0 != name);
 
   try {
+    // Correctly handle boundary and fault meshes
+    //const int depth = mesh->depth();
+    const int depth = mesh->getDimension();
     const std::string labelName = 
       (mesh->hasLabel("censored depth")) ? "censored depth" : "depth";
     const ALE::Obj<Mesh::numbering_type>& numbering = 
-      mesh->getFactory()->getNumbering(mesh, labelName, mesh->depth());
+      mesh->getFactory()->getNumbering(mesh, labelName, depth);
     const int fiberDim = 
-      field->getFiberDimension(*mesh->getLabelStratum(labelName, 
-						      mesh->depth())->begin());
+      field->getFiberDimension(*mesh->getLabelStratum(labelName, depth)->begin());
     const int enforceDim = (fieldType != VECTOR_FIELD) ? fiberDim : 3;
 
     if (!_wroteCellHeader) {
