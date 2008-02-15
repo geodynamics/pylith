@@ -470,13 +470,16 @@ pylith::faults::FaultCohesiveKin::cellField(
 { // cellField
   assert(!_faultMesh.isNull());
   assert(!_orientation.isNull());
+  assert(0 != fields);
   assert(0 != _eqsrc);
 
   const int cohesiveDim = _faultMesh->getDimension();
 
   if (0 == strcasecmp("traction_change", name)) {
     _allocateBufferCellVector();
-    // ADD STUFF HERE
+    *fieldType = VECTOR_FIELD;
+    const ALE::Obj<real_section_type>& solution = fields->getSolution();
+    _calcTractionsChange(&_bufferCellVector, solution);
     return _bufferCellVector;
   } // if
 
@@ -776,6 +779,53 @@ pylith::faults::FaultCohesiveKin::_calcConditioning(
 } // _calcConditioning
 
 // ----------------------------------------------------------------------
+// Compute change in tractions on fault surface using solution.
+void
+pylith::faults::FaultCohesiveKin::_calcTractionsChange(
+				 ALE::Obj<real_section_type>* tractions,
+				 const ALE::Obj<real_section_type>& solution)
+{ // _calcTractionsChange
+  assert(0 != tractions);
+  assert(!tractions->isNull());
+  assert(!solution.isNull());
+  assert(!_faultMesh.isNull());
+  assert(!_pseudoStiffness.isNull());
+  assert(0 != _quadrature);
+
+  const ALE::Obj<Mesh::label_sequence>& cells = 
+    _faultMesh->heightStratum(0);
+  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const int numQuadPts = _quadrature->numQuadPts();
+  const double_array& basis = _quadrature->basis();
+
+  double_array solutionCell(numBasis*spaceDim);
+  double_array stiffnessCell(numBasis);
+  double_array tractionsCell(numQuadPts*spaceDim);
+
+  int count = 0;
+  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+       c_iter != cellsEnd;
+       ++c_iter, ++count) {
+    _faultMesh->restrict(solution, *c_iter, 
+			 &solutionCell[0], solutionCell.size());
+    _faultMesh->restrict(_pseudoStiffness, *c_iter, 
+			 &stiffnessCell[0], stiffnessCell.size());
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
+      for (int iBasis=0; iBasis < numBasis; ++iBasis)
+	for (int iDim=0; iDim < spaceDim; ++iDim)
+	  tractionsCell[iQuad*spaceDim+iDim] = basis[iBasis] *
+	    solutionCell[iBasis*spaceDim+iDim] * stiffnessCell[iBasis];
+    (*tractions)->updatePoint(*c_iter, &tractionsCell[0]);
+  } // for
+
+  //solution->view("SOLUTION");
+  //(*tractions)->view("TRACTIONS");
+} // _calcTractionsChange
+
+// ----------------------------------------------------------------------
 // Allocate scalar field for output of vertex information.
 void
 pylith::faults::FaultCohesiveKin::_allocateBufferVertexScalar(void)
@@ -814,7 +864,9 @@ void
 pylith::faults::FaultCohesiveKin::_allocateBufferCellVector(void)
 { // _allocateBufferCellVector
   assert(0 != _quadrature);
-  const int fiberDim = _quadrature->spaceDim();
+  const int numQuadPts = _quadrature->numQuadPts();
+  const int spaceDim = _quadrature->spaceDim();
+  const int fiberDim = numQuadPts * spaceDim;
   if (_bufferCellVector.isNull()) {
     _bufferCellVector = new real_section_type(_faultMesh->comm(), 
 					      _faultMesh->debug());
