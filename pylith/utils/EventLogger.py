@@ -32,7 +32,7 @@ class EventLogger(object):
     """
     self.cppHandle = None
     self._createCppHandle()
-    self.event = None
+    self.events = {} # dict of events with counts for current logging.
     return
 
 
@@ -65,7 +65,8 @@ class EventLogger(object):
   def registerEvent(self, name):
     """
     Register event.
-    """    
+    """
+    self.events[name] = 0 # Set log count to 0
     assert(None != self.cppHandle)
     return self.cppHandle.registerEvent(name)
 
@@ -82,10 +83,10 @@ class EventLogger(object):
     """
     Log event begin.
     """
-    if self.event != name: # prevent double logging
+    if self.events[name] == 0: # prevent double counting
       assert(None != self.cppHandle)
       self.cppHandle.eventBegin(self.cppHandle.eventId(name))
-      self.event = name
+    self.events[name] += 1
     return
 
 
@@ -93,10 +94,12 @@ class EventLogger(object):
     """
     Log event end.
     """
-    if None != self.event: # prevent double logging
+    if self.events[name] > 0:
+      self.events[name] -= 1
+    if 0 == self.events[name]: # prevent double counting
       assert(None != self.cppHandle)
       self.cppHandle.eventEnd(self.cppHandle.eventId(name))
-      self.event = None
+    
     return
 
 
