@@ -183,6 +183,18 @@ private :
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
+  /** Compute viscous strains (state variables) for the current time step.
+   *
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
+   * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
+   */
+  void _computeStateVars(const double* properties,
+			 const int numProperties,
+			 const double* totalStrain,
+			 const int strainSize);
+
   /** Compute stress tensor from properties as an elastic material.
    *
    * @param stress Array for stress tensor.
@@ -261,9 +273,9 @@ private :
    * @param strainSize Size of strain tensor.
    */
   void _updatePropertiesElastic(double* const properties,
-			   const int numProperties,
-			   const double* totalStrain,
-			   const int strainSize);
+				const int numProperties,
+				const double* totalStrain,
+				const int strainSize);
 
   /** Update state variables after solve as a viscoelastic material.
    *
@@ -273,9 +285,9 @@ private :
    * @param strainSize Size of strain tensor.
    */
   void _updatePropertiesViscoelastic(double* const properties,
-				const int numProperties,
-				const double* totalStrain,
-				const int strainSize);
+				     const int numProperties,
+				     const double* totalStrain,
+				     const int strainSize);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -288,6 +300,9 @@ private :
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
+
+  /// Viscous strain array
+  double_array _visStrain;
 
   /// Method to use for _calcElasticConsts().
   calcElasticConsts_fn_type _calcElasticConstsFn;
