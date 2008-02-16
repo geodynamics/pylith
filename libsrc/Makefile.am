@@ -83,6 +83,7 @@ libpylith_la_SOURCES = \
 	meshio/MeshIOAscii.cc \
 	meshio/MeshIOLagrit.cc \
 	meshio/OutputManager.cc \
+	meshio/OutputSolnSubset.cc \
 	meshio/PsetFile.cc \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \

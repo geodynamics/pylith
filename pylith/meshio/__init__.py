@@ -18,6 +18,7 @@ __all__ = ['CellFilter',
            'CellFilterAvg',
            'DataWriter',
            'DataWriterVTK',
+           'DoubleOutput',
            'MeshIO',
            'MeshIOAscii',
            'MeshIOCubit',
@@ -27,7 +28,8 @@ __all__ = ['CellFilter',
            'OutputSoln',
            'OutputFaultKin',
            'OutputMatElastic',
-           'OutputNeumann',
+           'OutputNeumann'
+           'OutputSolnSubset',
            'SingleOutput',
            'VertexFilter']
 

@@ -10,20 +10,20 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/meshio/OutputSoln.py
+## @file pyre/meshio/OutputSolnSubset.py
 ##
-## @brief Python object for managing output of finite-element
-## solution information.
+## @brief Python object for managing output of finite-element solution
+## information over a subdomain.
 ##
 ## Factory: output_manager
 
 from OutputManager import OutputManager
 
-# OutputSoln class
-class OutputSoln(OutputManager):
+# OutputSolnSubset class
+class OutputSolnSubset(OutputManager):
   """
   Python object for managing output of finite-element solution
-  information.
+  information over a subdomain.
 
   Factory: output_manager
   """
@@ -32,14 +32,15 @@ class OutputSoln(OutputManager):
 
   class Inventory(OutputManager.Inventory):
     """
-    Python object for managing OutputSoln facilities and properties.
+    Python object for managing OutputSolnSubset facilities and properties.
     """
 
     ## @class Inventory
-    ## Python object for managing OutputSoln facilities and properties.
+    ## Python object for managing OutputSolnSubset facilities and properties.
     ##
     ## \b Properties
     ## @li \b vertex_data_fields Names of vertex data fields to output.
+    ## @li \b label Name identifier for subdomain.
     ##
     ## \b Facilities
     ## @li None
@@ -50,13 +51,18 @@ class OutputSoln(OutputManager):
                                            default=["displacements"])
     vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
 
+    label = pyre.inventory.str("label", default="")
+    label.meta['tip'] = "Label identifier for subdomain."
+
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="outputsoln"):
+  def __init__(self, name="outputsolnsubset"):
     """
     Constructor.
     """
     OutputManager.__init__(self, name)
+    self.cppHandle = None
     self.availableFields = \
         {'vertex': \
            {'info': [],
@@ -72,6 +78,9 @@ class OutputSoln(OutputManager):
     Do
     """
     OutputManager.preinitialize(self, dataProvider=self)
+    import meshio as bindings
+    self.cppHandle = bindings.OutputSolnSubset()
+    self.cppHandle.label = self.label
     return
   
 
@@ -82,7 +91,14 @@ class OutputSoln(OutputManager):
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    self.mesh = mesh
+    from pylith.topology.Mesh import Mesh
+    self.mesh = Mesh()
+    self.mesh.initialize(mesh.coordsys)
+    assert(None != self.cppHandle)
+    self.cppHandle.mesh(self.mesh.cppHandle, mesh.cppHandle)
+
+    self.mesh.view()
+
     OutputManager.initialize(self)
 
     self._logger.eventEnd(logEvent)
@@ -118,6 +134,7 @@ class OutputSoln(OutputManager):
     """
     OutputManager._configure(self)
     self.vertexDataFields = self.inventory.vertexDataFields
+    self.label = self.inventory.label
     return
 
 
@@ -125,9 +142,9 @@ class OutputSoln(OutputManager):
 
 def output_manager():
   """
-  Factory associated with OutputSoln.
+  Factory associated with OutputSolnSubset.
   """
-  return OutputSoln()
+  return OutputSolnSubset()
 
 
 # End of file 

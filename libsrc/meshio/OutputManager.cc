@@ -26,8 +26,7 @@ pylith::meshio::OutputManager::OutputManager(void) :
   _coordsys(0),
   _writer(0),
   _vertexFilter(0),
-  _cellFilter(0),
-  _isInfo(false)
+  _cellFilter(0)
 { // constructor
 } // constructor
 

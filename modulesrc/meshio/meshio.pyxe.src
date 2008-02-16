@@ -19,6 +19,7 @@
 #include "pylith/meshio/MeshIOAscii.hh"
 #include "pylith/meshio/MeshIOLagrit.hh"
 #include "pylith/meshio/OutputManager.hh"
+#include "pylith/meshio/OutputSolnSubset.hh"
 #include "pylith/meshio/VertexFilter.hh"
 
 #if defined(ENABLE_CUBIT)
@@ -926,6 +927,101 @@ cdef class OutputManager:
         OutputManager_cellFilter_set(self.thisptr, ptrFromHandle(filter))
       else:
         OutputManager_cellFilter_set(self.thisptr, NULL)
+
+
+# ----------------------------------------------------------------------
+cdef class OutputSolnSubset(OutputManager):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* OutputSolnSubset_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::meshio::OutputSolnSubset);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    self.name = "pylith_meshio_OutputSolnSubset"
+    self.thisptr = OutputSolnSubset_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+  def mesh(self, submesh, mesh):
+    """
+    Get mesh associated with subdomain.
+    """
+    # create shim for method 'subdomainMesh'
+    #embed{ void OutputSolnSubset_subdomainMesh(void* objVptr, void* submeshVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != submeshVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* submesh = (ALE::Obj<ALE::Mesh>*) submeshVptr;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      *submesh =
+        ((pylith::meshio::OutputSolnSubset*) objVptr)->subdomainMesh(*mesh);
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not submesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'submesh' must be extension module type " \
+            "'pylith::topology::Mesh'."
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type " \
+            "'pylith::topology::Mesh'."
+    OutputSolnSubset_subdomainMesh(self.thisptr,
+                                   ptrFromHandle(submesh), ptrFromHandle(mesh))
+    return
+    
+
+  property label:
+    def __set__(self, value):
+      """
+      Set label of subdomain.
+      """
+      # create shim for method 'label'
+      #embed{ void OutputSolnSubset_label_set(void* objVptr, char* value)
+      try {
+        assert(0 != objVptr);
+        ((pylith::meshio::OutputSolnSubset*) objVptr)->label(value);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      OutputSolnSubset_label_set(self.thisptr, value)
 
 
 # ----------------------------------------------------------------------

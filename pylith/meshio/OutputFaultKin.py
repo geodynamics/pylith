@@ -69,7 +69,7 @@ class OutputFaultKin(OutputManager):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="outputmanager"):
+  def __init__(self, name="outputfaultkin"):
     """
     Constructor.
     """

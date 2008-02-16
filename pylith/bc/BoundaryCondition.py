@@ -63,7 +63,7 @@ class BoundaryCondition(Component):
     ## Python object for managing BoundaryCondition facilities and properties.
     ##
     ## \b Properties
-    ## @li \b name Name identifier for object face
+    ## @li \b label Label identifier for boundary.
     ##
     ## \b Facilities
     ## @li \b db Database of boundary condition parameters
@@ -71,7 +71,7 @@ class BoundaryCondition(Component):
     import pyre.inventory
 
     label = pyre.inventory.str("label", default="")
-    label.meta['tip'] = "Name identifier for object face."
+    label.meta['tip'] = "Label identifier for boundary."
 
     upDir = pyre.inventory.list("up_dir", default=[0, 0, 1],
 		                validator=validateDir)

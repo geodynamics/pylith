@@ -48,6 +48,7 @@ public :
   OutputManager(void);
 
   /// Destructor
+  virtual
   ~OutputManager(void);
 
   /** Set coordinate system in output. The vertex fields in the output
@@ -144,6 +145,12 @@ public :
 		       const char* label =0,
 		       const int labelId =0);
 
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
+private :
+
+  OutputManager(const OutputManager&); ///< Not implemented.
+  const OutputManager& operator=(const OutputManager&); ///< Not implemented
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
@@ -151,8 +158,6 @@ private :
   DataWriter* _writer; ///< Writer for data.
   VertexFilter* _vertexFilter; ///< Filter applied to vertex data.
   CellFilter* _cellFilter; ///< Filter applied to cell data.
-
-  bool _isInfo; ///< Is output info (diagnostic stuff) or data (solution, etc).
 
 }; // OutputManager
 
