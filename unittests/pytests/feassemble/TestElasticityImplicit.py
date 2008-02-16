@@ -177,9 +177,13 @@ class TestElasticityImplicit(unittest.TestCase):
     (mesh, integrator, fields) = self._initialize()
 
     t = 0.27*year
+
+    residual = fields.getReal("residual")
+    integrator.integrateResidual(residual, t, fields)
+
     dt = 0.01*year
     totalTime = 10*year
-    #integrator.poststep(t, dt, totalTime, fields)
+    integrator.poststep(t, dt, totalTime, fields)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    

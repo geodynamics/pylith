@@ -144,15 +144,19 @@ pylith::meshio::DataWriterVTK::writeVertexField(
 				       const ALE::Obj<ALE::Mesh>& mesh)
 { // writeVertexField
   assert(0 != name);
+  assert(!mesh.isNull());
+  assert(!field.isNull());
 
   try {
     const std::string labelName = 
       (mesh->hasLabel("censored depth")) ? "censored depth" : "depth";
     const ALE::Obj<Mesh::numbering_type>& numbering =
       mesh->getFactory()->getNumbering(mesh, labelName, 0);
+    assert(!numbering.isNull());
 
     const int fiberDim = 
       field->getFiberDimension(*mesh->getLabelStratum(labelName, 0)->begin());
+    assert(fiberDim > 0);
     const int enforceDim = (fieldType != VECTOR_FIELD) ? fiberDim : 3;
 
     if (!_wroteVertexHeader) {
@@ -190,6 +194,8 @@ pylith::meshio::DataWriterVTK::writeCellField(
 				       const ALE::Obj<ALE::Mesh>& mesh)
 { // writeCellField
   assert(0 != name);
+  assert(!mesh.isNull());
+  assert(!field.isNull());
 
   try {
     // Correctly handle boundary and fault meshes
@@ -199,6 +205,7 @@ pylith::meshio::DataWriterVTK::writeCellField(
       (mesh->hasLabel("censored depth")) ? "censored depth" : "depth";
     const ALE::Obj<Mesh::numbering_type>& numbering = 
       mesh->getFactory()->getNumbering(mesh, labelName, depth);
+    assert(!numbering.isNull());
     const int fiberDim = 
       field->getFiberDimension(*mesh->getLabelStratum(labelName, depth)->begin());
     const int enforceDim = (fieldType != VECTOR_FIELD) ? fiberDim : 3;

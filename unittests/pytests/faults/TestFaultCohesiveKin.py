@@ -185,9 +185,12 @@ class TestFaultCohesiveKin(unittest.TestCase):
     (mesh, fault, fields) = self._initialize()
 
     t = 0.50*second
+    residual = fields.getReal("residual")
+    fault.integrateResidual(residual, t, fields)
+
     dt = 0.1*second
     totalTime = 5*second
-    #fault.poststep(t, dt, totalTime, fields)
+    fault.poststep(t, dt, totalTime, fields)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
