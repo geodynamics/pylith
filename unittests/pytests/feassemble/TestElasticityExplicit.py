@@ -182,9 +182,13 @@ class TestElasticityExplicit(unittest.TestCase):
     (mesh, integrator, fields) = self._initialize()
 
     t = 3.45*second
+
+    residual = fields.getReal("residual")
+    integrator.integrateResidual(residual, t, fields)
+
     dt = 0.02*second
     totalTime = 5.0*second
-    #integrator.poststep(t, dt, totalTime, fields)
+    integrator.poststep(t, dt, totalTime, fields)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    

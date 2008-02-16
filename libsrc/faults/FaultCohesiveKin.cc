@@ -420,6 +420,7 @@ pylith::faults::FaultCohesiveKin::vertexField(
 
   if (0 == strcasecmp("slip", name)) {
     *fieldType = VECTOR_FIELD;
+    assert(!_slip.isNull());
     return _slip;
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
