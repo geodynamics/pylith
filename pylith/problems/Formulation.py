@@ -46,8 +46,7 @@ class Formulation(Component):
     ##
     ## \b Facilities
     ## @li \b solver Algebraic solver.
-    ## @li \b output Output manager associated with solution over the
-    ##   entire domain.
+    ## @li \b output Output manager associated with solution.
 
     import pyre.inventory
 
@@ -59,8 +58,7 @@ class Formulation(Component):
     from pylith.meshio.SingleOutput import SingleOutput
     output = pyre.inventory.facility("output", family="object_bin",
                                      factory=SingleOutput)
-    output.meta['tip'] = "Output managers associated with solution over " \
-                         "the entire domain."
+    output.meta['tip'] = "Output managers associated with solution."
 
   
   # PUBLIC METHODS /////////////////////////////////////////////////////

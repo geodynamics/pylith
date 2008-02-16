@@ -82,6 +82,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/CellFilterAvg.py \
 	meshio/DataWriter.py \
 	meshio/DataWriterVTK.py \
+	meshio/DoubleOutput.py \
 	meshio/MeshIO.py \
 	meshio/MeshIOAscii.py \
 	meshio/MeshIOCubit.py \
@@ -92,6 +93,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/OutputFaultKin.py \
 	meshio/OutputMatElastic.py \
 	meshio/OutputNeumann.py \
+	meshio/OutputSolnSubset.py \
 	meshio/SingleOutput.py \
 	meshio/VertexFilter.py \
 	problems/__init__.py \
