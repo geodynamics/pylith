@@ -24,11 +24,14 @@
 namespace pylith {
   namespace meshio {
     class DataWriterVTK;
+
+    class TestDataWriterVTK; // unit testing
   } // meshio
 } // pylith
 
 class pylith::meshio::DataWriterVTK : public DataWriter
 { // DataWriterVTK
+  friend class TestDataWriterVTK; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
