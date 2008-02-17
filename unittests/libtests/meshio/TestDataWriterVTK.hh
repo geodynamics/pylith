@@ -1,0 +1,113 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+/**
+ * @file unittests/libtests/meshio/TestDataWriterVTK.hh
+ *
+ * @brief C++ TestDataWriterVTK object
+ *
+ * C++ unit testing for DataWriterVTK.
+ */
+
+#if !defined(pylith_meshio_testdatawritervtk_hh)
+#define pylith_meshio_testdatawritervtk_hh
+
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+
+#include <vector> // USES std::vector
+
+#include <cppunit/extensions/HelperMacros.h>
+
+/// Namespace for pylith package
+namespace pylith {
+  namespace meshio {
+    class TestDataWriterVTK;
+
+    class DataWriterVTKData;
+  } // meshio
+} // pylith
+
+/// C++ unit testing for DataWriterVTK
+class pylith::meshio::TestDataWriterVTK : public CppUnit::TestFixture
+{ // class TestDataWriterVTK
+
+  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+  CPPUNIT_TEST_SUITE( TestDataWriterVTK );
+
+  CPPUNIT_TEST( testConstructor );
+  CPPUNIT_TEST( testFilename );
+  CPPUNIT_TEST( testTimeFormat );
+
+  CPPUNIT_TEST_SUITE_END();
+
+  // PUBLIC METHODS /////////////////////////////////////////////////////
+public :
+
+  /// Setup testing data.
+  void setUp(void);
+
+  /// Tear down testing data.
+  void tearDown(void);
+
+  /// Test constructor
+  void testConstructor(void);
+
+  /// Test filename()
+  void testFilename(void);
+
+  /// Test timeFormat()
+  void testTimeFormat(void);
+
+  /// Test openTimeStep() and closeTimeStep()
+  void testTimeStep(void);
+
+  /// Test writeVertexField.
+  void testWriteVertexField(void);
+
+  /// Test writeCellField.
+  void testWriteCellField(void);
+
+  // PROTECTED MEMBERS //////////////////////////////////////////////////
+protected :
+
+  DataWriterVTKData* _data; ///< Data for testing
+  ALE::Obj<Mesh> _mesh; ///< Mesh for data
+
+  // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private :
+
+  /** Create vertex fields.
+   *
+   * @param fields Vertex fields.
+   */
+  void
+  _createVertexFields(std::vector< ALE::Obj<real_section_type> >* fields) const;
+
+  /** Create cell fields.
+   *
+   * @param fields Cell fields.
+   */
+  void
+  _createCellFields(std::vector< ALE::Obj<real_section_type> >* fields) const;
+
+  /** Check VTK file against archived file.
+   *
+   * @param filename Name of file to check.
+   */
+  void _checkFile(const char* filename) const;
+  
+}; // class TestDataWriterVTK
+
+#endif // pylith_meshio_testdatawritervtk_hh
+
+
+// End of file 

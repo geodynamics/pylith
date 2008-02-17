@@ -21,18 +21,27 @@ check_PROGRAMS = testmeshio
 
 # Primary source files
 testmeshio_SOURCES = \
+	TestDataWriterVTK.cc \
+	TestDataWriterVTKMesh.cc \
+	TestDataWriterVTKMeshLine2.cc \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
 	TestMeshIOLagrit.cc \
 	test_meshio.cc
 
 noinst_HEADERS = \
+	TestDataWriterVTK.hh \
+	TestDataWriterVTKMesh.hh \
+	TestDataWriterVTKMeshLine2.hh \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh
 
 # Source files associated with testing data
 testmeshio_SOURCES += \
+	data/DataWriterVTKData.cc \
+	data/DataWriterVTKDataMesh.cc \
+	data/DataWriterVTKDataMeshLine2.cc \
 	data/MeshData.cc \
 	data/MeshData1D.cc \
 	data/MeshData1Din3D.cc \
@@ -48,6 +57,9 @@ testmeshio_SOURCES += \
 	data/MeshDataLagritTet.cc
 
 noinst_HEADERS += \
+	data/DataWriterVTKData.hh \
+	data/DataWriterVTKDataMesh.hh \
+	data/DataWriterVTKDataMeshLine2.hh \
 	data/MeshData.hh \
 	data/MeshData1D.hh \
 	data/MeshData1Din2D.hh \
@@ -88,7 +100,10 @@ noinst_tmp = \
 	mesh1Din3D.txt \
 	mesh2D.txt \
 	mesh2Din3D.txt \
-	mesh3D.txt
+	mesh3D.txt \
+	line2_t10.vtk \
+	line2_vertex_t10.vtk \
+	line2_cell_t10.vtk
 
 CLEANFILES = $(noinst_tmp)
 

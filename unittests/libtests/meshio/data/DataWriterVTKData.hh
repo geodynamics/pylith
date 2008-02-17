@@ -1,0 +1,76 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_meshio_datawritervtkdata_hh)
+#define pylith_meshio_datawritervtkdata_hh
+
+#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
+
+namespace pylith {
+  namespace meshio {
+     class DataWriterVTKData;
+  } // meshio
+} // pylith
+
+class pylith::meshio::DataWriterVTKData
+{ // DataWriterVTKData
+
+// PUBLIC METHODS ///////////////////////////////////////////////////////
+public :
+  
+  /// Constructor
+  DataWriterVTKData(void);
+
+  /// Destructor
+  virtual
+  ~DataWriterVTKData(void);
+
+// PUBLIC STRUCTS ///////////////////////////////////////////////////////
+public:
+
+  struct FieldStruct {
+    char* name; ///< Name of field
+    VectorFieldEnum field_type; ///< Type of field.
+    int fiber_dim; ///< Fiber dimension for field.
+    double* values; ///< Values for field.
+  }; // FieldStruct
+
+// PUBLIC MEMBERS ///////////////////////////////////////////////////////
+public:
+
+  char* timestepFilename; ///< Name of VTK file without fields.
+  char* vertexFilename; ///< Name of VTK file for vertex fields.
+  char* cellFilename; ///< Name of VTK file for cell fields.
+
+  double time; ///< Time for fields.
+  char* timeFormat; ///< Format for time stamp.
+
+  /// @name Vertex field information.
+  //@{
+  int numVertexFields; ///< Number of vertex fields.
+  int numVertices; ///< Number of vertices.
+  FieldStruct* vertexFields; ///< Array of vertex fields.
+  //@}
+
+  /// @name Cell field information.
+  //@{
+  int numCellFields; ///< Number of cell fields.
+  int numCells; ///< Number of vertices.
+  FieldStruct* cellFields; ///< Array of cell fields.
+  //@}
+
+}; // DataWriterVTKData
+
+#endif // pylith_meshio_datawritervtkdata_hh
+
+
+// End of file

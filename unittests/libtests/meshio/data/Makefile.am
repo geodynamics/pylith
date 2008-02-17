@@ -20,7 +20,11 @@ noinst_DATA = \
 	twoquad4.exo \
 	twotet4.exo \
 	twohex8.exo \
-	mesh2D_comments.txt
+	mesh2D_comments.txt \
+	line2.mesh \
+	line2_t10.vtk \
+	line2_vertex_t10.vtk \
+	line2_cell_t10.vtk
 
 noinst_TMP =
 
