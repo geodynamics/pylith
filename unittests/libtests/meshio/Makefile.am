@@ -24,6 +24,10 @@ testmeshio_SOURCES = \
 	TestDataWriterVTK.cc \
 	TestDataWriterVTKMesh.cc \
 	TestDataWriterVTKMeshLine2.cc \
+	TestDataWriterVTKMeshTri3.cc \
+	TestDataWriterVTKMeshQuad4.cc \
+	TestDataWriterVTKMeshTet4.cc \
+	TestDataWriterVTKMeshHex8.cc \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
 	TestMeshIOLagrit.cc \
@@ -33,6 +37,10 @@ noinst_HEADERS = \
 	TestDataWriterVTK.hh \
 	TestDataWriterVTKMesh.hh \
 	TestDataWriterVTKMeshLine2.hh \
+	TestDataWriterVTKMeshTri3.hh \
+	TestDataWriterVTKMeshQuad4.hh \
+	TestDataWriterVTKMeshTet4.hh \
+	TestDataWriterVTKMeshHex8.hh \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh
@@ -42,6 +50,10 @@ testmeshio_SOURCES += \
 	data/DataWriterVTKData.cc \
 	data/DataWriterVTKDataMesh.cc \
 	data/DataWriterVTKDataMeshLine2.cc \
+	data/DataWriterVTKDataMeshTri3.cc \
+	data/DataWriterVTKDataMeshQuad4.cc \
+	data/DataWriterVTKDataMeshTet4.cc \
+	data/DataWriterVTKDataMeshHex8.cc \
 	data/MeshData.cc \
 	data/MeshData1D.cc \
 	data/MeshData1Din3D.cc \
@@ -60,6 +72,10 @@ noinst_HEADERS += \
 	data/DataWriterVTKData.hh \
 	data/DataWriterVTKDataMesh.hh \
 	data/DataWriterVTKDataMeshLine2.hh \
+	data/DataWriterVTKDataMeshTri3.hh \
+	data/DataWriterVTKDataMeshQuad4.hh \
+	data/DataWriterVTKDataMeshTet4.hh \
+	data/DataWriterVTKDataMeshHex8.hh \
 	data/MeshData.hh \
 	data/MeshData1D.hh \
 	data/MeshData1Din2D.hh \
@@ -103,7 +119,19 @@ noinst_tmp = \
 	mesh3D.txt \
 	line2_t10.vtk \
 	line2_vertex_t10.vtk \
-	line2_cell_t10.vtk
+	line2_cell_t10.vtk \
+	tri3_t10.vtk \
+	tri3_vertex_t10.vtk \
+	tri3_cell_t10.vtk \
+	quad4_t10.vtk \
+	quad4_vertex_t10.vtk \
+	quad4_cell_t10.vtk \
+	tet4_t10.vtk \
+	tet4_vertex_t10.vtk \
+	tet4_cell_t10.vtk \
+	hex8_t10.vtk \
+	hex8_vertex_t10.vtk \
+	hex8_cell_t10.vtk
 
 CLEANFILES = $(noinst_tmp)
 

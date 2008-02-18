@@ -1,0 +1,17 @@
+# vtk DataFile Version 2.0
+Simplicial Mesh Example
+ASCII
+DATASET UNSTRUCTURED_GRID
+POINTS 6 double
+-1 -1 0.0
+-1 1 0.0
+0 -1 0.0
+0 1 0.0
+1 -1 0.0
+1 1 0.0
+CELLS 2 10
+4  0 2 3 1
+4  2 4 5 3
+CELL_TYPES 2
+9
+9
