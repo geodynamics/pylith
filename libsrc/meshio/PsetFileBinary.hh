@@ -34,9 +34,11 @@ public :
    *
    * @param filename Name of Pset file
    * @param flipEndian Flip endian type when reading/writing.
+   * @param isRecordHeader32Bit True if Fortran record header size is 32-bit.
    */
   PsetFileBinary(const char* name,
-		 const bool flipEndian);
+		 const bool flipEndian,
+		 const bool isRecordHeader32Bit);
 
   /// Default destructor 
   ~PsetFileBinary(void);
@@ -96,7 +98,9 @@ private :
   /** Header in binary Pset file */
   static const char* _HEADER;
 
-  bool _flipEndian; ///< True if need to change endian when reading/writing
+  int _recordHeaderSize; ///< Size of Fortran record header in bytes.
+
+  bool _flipEndian; ///< True if need to change endian when reading/writing.
 
 }; // PsetFileInBinary
 

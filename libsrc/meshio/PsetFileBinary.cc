@@ -30,9 +30,11 @@ const char* pylith::meshio::PsetFileBinary::_HEADER = "pset unformatted";
 // ----------------------------------------------------------------------
 // Constructor with name of Pset file.
 pylith::meshio::PsetFileBinary::PsetFileBinary(const char* filename,
-					       const bool flipEndian) :
+					       const bool flipEndian,
+					       const bool isRecordHeader32Bit) :
   PsetFile(filename),
-  _flipEndian(flipEndian)
+  _flipEndian(flipEndian),
+  _recordHeaderSize(isRecordHeader32Bit ? 4 : 8)
 { // constructor
 } // constructor
 
@@ -72,7 +74,7 @@ pylith::meshio::PsetFileBinary::read(std::vector<Pset>* groups)
     BinaryIO::swapByteOrder((char*) &numGroups, 1, sizeof(int));
   assert(numGroups >= 0);
   groups->resize(numGroups);
-  std::string extra = BinaryIO::readString(fin, 8);
+  std::string extra = BinaryIO::readString(fin, 2*_recordHeaderSize);
 
   // Read groups
   info << journal::at(__HERE__)
@@ -119,7 +121,7 @@ pylith::meshio::PsetFileBinary::write(const std::vector<Pset>& groups)
 void
 pylith::meshio::PsetFileBinary::_readHeader(std::ifstream& fin)
 { // _readHeader
-  std::string extra = BinaryIO::readString(fin, 4); // Read superfluous 4 bytes
+  std::string extra = BinaryIO::readString(fin, _recordHeaderSize);
 
   std::string header = BinaryIO::readString(fin, strlen(_HEADER));
   std::string headerE = _HEADER;
@@ -158,17 +160,17 @@ pylith::meshio::PsetFileBinary::_readPset(std::ifstream& fin,
 
   int size = 0;
   fin.read((char*) &size, sizeof(int));
-  std::string extra = BinaryIO::readString(fin, 8);
   if (_flipEndian)
     BinaryIO::swapByteOrder((char*) &size, 1, sizeof(size));
   assert(size >= 0);
+  std::string extra = BinaryIO::readString(fin, 2*_recordHeaderSize);
   info << journal::at(__HERE__)
        << "Reading point set '" << group->name << "' with " << size
        << " points." << journal::endl;
 
   group->points.resize(size);
   fin.read((char*) &group->points[0], size*sizeof(int));
-  extra = BinaryIO::readString(fin, 8);
+  extra = BinaryIO::readString(fin, 2*_recordHeaderSize);
   if (_flipEndian)
     BinaryIO::swapByteOrder((char*) &group->points[0], size, sizeof(int));
 

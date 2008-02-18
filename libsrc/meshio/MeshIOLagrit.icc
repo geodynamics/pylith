@@ -70,6 +70,20 @@ pylith::meshio::MeshIOLagrit::flipEndian(void) const {
   return _flipEndian;
 }
 
+// Set Fortran record header size flag.
+inline
+void
+pylith::meshio::MeshIOLagrit::isRecordHeader32Bit(const bool flag) {
+  _isRecordHeader32Bit = flag;
+}
+
+// Get Fortran record header size flag.
+inline
+bool
+pylith::meshio::MeshIOLagrit::isRecordHeader32Bit(void) const {
+  return _isRecordHeader32Bit;
+}
+
 #endif
 
 // End of file
