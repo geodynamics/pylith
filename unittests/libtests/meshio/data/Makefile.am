@@ -24,7 +24,23 @@ noinst_DATA = \
 	line2.mesh \
 	line2_t10.vtk \
 	line2_vertex_t10.vtk \
-	line2_cell_t10.vtk
+	line2_cell_t10.vtk \
+	tri3.mesh \
+	tri3_t10.vtk \
+	tri3_vertex_t10.vtk \
+	tri3_cell_t10.vtk \
+	quad4.mesh \
+	quad4_t10.vtk \
+	quad4_vertex_t10.vtk \
+	quad4_cell_t10.vtk \
+	tet4.mesh \
+	tet4_t10.vtk \
+	tet4_vertex_t10.vtk \
+	tet4_cell_t10.vtk \
+	hex8.mesh \
+	hex8_t10.vtk \
+	hex8_vertex_t10.vtk \
+	hex8_cell_t10.vtk
 
 noinst_TMP =
 
