@@ -86,6 +86,19 @@ public :
    */
   bool flipEndian(void) const;
 
+  /** Set Fortran record header size flag.
+   *
+   * @param flag True if Fortran record header size is 32-bit, false if 64-bit.
+   */
+  void isRecordHeader32Bit(const bool flag);
+
+  /** Get Fortran record header size flag.
+   *
+   * @param returns True if Fortran record header size is 32-bit,
+   *   false if 64-bit.
+   */
+  bool isRecordHeader32Bit(void) const;
+
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
@@ -129,10 +142,11 @@ private :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  std::string _filenameGmv; ///< Name of GMV file
-  std::string _filenamePset; ///< Name of PSET file
-  bool _writeAscii; ///< True if writing ASCII, false if writing binary
-  bool _flipEndian; ///< True if need to change endian when reading/writing
+  std::string _filenameGmv; ///< Name of GMV file.
+  std::string _filenamePset; ///< Name of PSET file.
+  bool _writeAscii; ///< True if writing ASCII, false if writing binary.
+  bool _flipEndian; ///< True if need to change endian when reading/writing.
+  bool _isRecordHeader32Bit; ///< True if Fortran record header is 32-bit.
 
 }; // MeshIOLagrit
 
