@@ -12,6 +12,8 @@
 
 #include "DataWriterVTKDataMeshQuad4.hh"
 
+#include <assert.h> // USES assert()
+
 const char* pylith::meshio::DataWriterVTKDataMeshQuad4::_meshFilename = 
   "data/quad4.mesh";
 
@@ -34,9 +36,9 @@ const int pylith::meshio::DataWriterVTKDataMeshQuad4::_numVertices = 6;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataMeshQuad4::_vertexFields[] = {
-  { "displacements", VECTOR_FIELD, 2, 0 },
-  { "pressure", SCALAR_FIELD, 1, 0 },
-  { "other", OTHER_FIELD, 2, 0 },
+  { "displacements", VECTOR_FIELD, 2 },
+  { "pressure", SCALAR_FIELD, 1 },
+  { "other", OTHER_FIELD, 2 },
 };
 const double pylith::meshio::DataWriterVTKDataMeshQuad4::_vertexField0[] = {
   1.1, 2.2,
@@ -63,9 +65,9 @@ const int pylith::meshio::DataWriterVTKDataMeshQuad4::_numCells = 2;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataMeshQuad4::_cellFields[] = {
-  { "traction", VECTOR_FIELD, 2, 0 },
-  { "pressure", SCALAR_FIELD, 1, 0 },
-  { "other", TENSOR_FIELD, 3, 0 },
+  { "traction", VECTOR_FIELD, 2 },
+  { "pressure", SCALAR_FIELD, 1 },
+  { "other", TENSOR_FIELD, 3 },
 };
 const double pylith::meshio::DataWriterVTKDataMeshQuad4::_cellField0[] = {
   1.1, 2.2,
@@ -91,18 +93,20 @@ pylith::meshio::DataWriterVTKDataMeshQuad4::DataWriterVTKDataMeshQuad4(void)
   timeFormat = const_cast<char*>(_timeFormat);
   
   numVertexFields = _numVertexFields;
+  assert(3 == numVertexFields);
   numVertices = _numVertices;
-  vertexFields = const_cast<DataWriterVTKData::FieldStruct*>(_vertexFields);
-  vertexFields[0].values = const_cast<double*>(_vertexField0);
-  vertexFields[1].values = const_cast<double*>(_vertexField1);
-  vertexFields[2].values = const_cast<double*>(_vertexField2);
+  vertexFieldsInfo = const_cast<DataWriterVTKData::FieldStruct*>(_vertexFields);
+  vertexFields[0] = const_cast<double*>(_vertexField0);
+  vertexFields[1] = const_cast<double*>(_vertexField1);
+  vertexFields[2] = const_cast<double*>(_vertexField2);
 
   numCellFields = _numCellFields;
+  assert(3 == numCellFields);
   numVertices = _numVertices;
-  cellFields = const_cast<DataWriterVTKData::FieldStruct*>(_cellFields);
-  cellFields[0].values = const_cast<double*>(_cellField0);
-  cellFields[1].values = const_cast<double*>(_cellField1);
-  cellFields[2].values = const_cast<double*>(_cellField2);
+  cellFieldsInfo = const_cast<DataWriterVTKData::FieldStruct*>(_cellFields);
+  cellFields[0] = const_cast<double*>(_cellField0);
+  cellFields[1] = const_cast<double*>(_cellField1);
+  cellFields[2] = const_cast<double*>(_cellField2);
 } // constructor
 
 pylith::meshio::DataWriterVTKDataMeshQuad4::~DataWriterVTKDataMeshQuad4(void)

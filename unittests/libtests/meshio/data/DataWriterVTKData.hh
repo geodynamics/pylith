@@ -41,7 +41,6 @@ public:
     char* name; ///< Name of field
     VectorFieldEnum field_type; ///< Type of field.
     int fiber_dim; ///< Fiber dimension for field.
-    double* values; ///< Values for field.
   }; // FieldStruct
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
@@ -58,14 +57,16 @@ public:
   //@{
   int numVertexFields; ///< Number of vertex fields.
   int numVertices; ///< Number of vertices.
-  FieldStruct* vertexFields; ///< Array of vertex fields.
+  FieldStruct* vertexFieldsInfo; ///< Array of vertex field information.
+  double* vertexFields[3]; ///< Array of vertex field values.
   //@}
 
   /// @name Cell field information.
   //@{
   int numCellFields; ///< Number of cell fields.
   int numCells; ///< Number of vertices.
-  FieldStruct* cellFields; ///< Array of cell fields.
+  FieldStruct* cellFieldsInfo; ///< Array of cell fields information.
+  double* cellFields[3]; /// Array of cell field values.
   //@}
 
 }; // DataWriterVTKData

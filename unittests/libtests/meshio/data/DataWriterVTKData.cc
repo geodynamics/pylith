@@ -22,10 +22,10 @@ pylith::meshio::DataWriterVTKData::DataWriterVTKData(void) :
   timeFormat(0),
   numVertexFields(0),
   numVertices(0),
-  vertexFields(0),
+  vertexFieldsInfo(0),
   numCellFields(0),
   numCells(0),
-  cellFields(0)
+  cellFieldsInfo(0)
 { // constructor
 } // constructor
 
