@@ -138,8 +138,9 @@ pylith::meshio::TestDataWriterVTK::testWriteVertexField(void)
   writer.open(_mesh, &cs, numTimeSteps);
   writer.openTimeStep(t, _mesh, &cs);
   for (int i=0; i < nfields; ++i) {
-    writer.writeVertexField(t, _data->vertexFields[i].name,
-			    vertexFields[i], _data->vertexFields[i].field_type,
+    writer.writeVertexField(t, _data->vertexFieldsInfo[i].name,
+			    vertexFields[i], 
+			    _data->vertexFieldsInfo[i].field_type,
 			    _mesh);
     CPPUNIT_ASSERT(writer._wroteVertexHeader);
     CPPUNIT_ASSERT(false == writer._wroteCellHeader);
@@ -178,8 +179,9 @@ pylith::meshio::TestDataWriterVTK::testWriteCellField(void)
   writer.open(_mesh, &cs, numTimeSteps);
   writer.openTimeStep(t, _mesh, &cs);
   for (int i=0; i < nfields; ++i) {
-    writer.writeCellField(t, _data->cellFields[i].name,
-			    cellFields[i], _data->cellFields[i].field_type,
+    writer.writeCellField(t, _data->cellFieldsInfo[i].name,
+			    cellFields[i], 
+			  _data->cellFieldsInfo[i].field_type,
 			    _mesh);
     CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
     CPPUNIT_ASSERT(writer._wroteCellHeader);
@@ -213,7 +215,7 @@ pylith::meshio::TestDataWriterVTK::_createVertexFields(
     fields->resize(nfields);
     for (int i=0; i < nfields; ++i) {
       (*fields)[i] = new real_section_type(_mesh->comm(), _mesh->debug());
-      const int fiberDim = _data->vertexFields[i].fiber_dim;
+      const int fiberDim = _data->vertexFieldsInfo[i].fiber_dim;
       (*fields)[i]->setFiberDimension(vertices, fiberDim);
       _mesh->allocate((*fields)[i]);
 
@@ -221,7 +223,7 @@ pylith::meshio::TestDataWriterVTK::_createVertexFields(
       for (Mesh::label_sequence::iterator v_iter=vertices->begin();
 	   v_iter != verticesEnd;
 	   ++v_iter, ++ipt) {
-	const double* values = &_data->vertexFields[i].values[ipt*fiberDim];
+	const double* values = &_data->vertexFields[i][ipt*fiberDim];
 	(*fields)[i]->updatePoint(*v_iter, values);
       } // for
     } // for
@@ -251,7 +253,7 @@ pylith::meshio::TestDataWriterVTK::_createCellFields(
     fields->resize(nfields);
     for (int i=0; i < nfields; ++i) {
       (*fields)[i] = new real_section_type(_mesh->comm(), _mesh->debug());
-      const int fiberDim = _data->cellFields[i].fiber_dim;
+      const int fiberDim = _data->cellFieldsInfo[i].fiber_dim;
       (*fields)[i]->setFiberDimension(cells, fiberDim);
       _mesh->allocate((*fields)[i]);
 
@@ -259,7 +261,7 @@ pylith::meshio::TestDataWriterVTK::_createCellFields(
       for (Mesh::label_sequence::iterator c_iter=cells->begin();
 	   c_iter != cellsEnd;
 	   ++c_iter, ++icell) {
-	const double* values = &_data->cellFields[i].values[icell*fiberDim];
+	const double* values = &_data->cellFields[i][icell*fiberDim];
 	(*fields)[i]->updatePoint(*c_iter, values);
       } // for
     } // for
