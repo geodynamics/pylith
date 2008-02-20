@@ -86,6 +86,10 @@ class Integrator(object):
     """
     Do initialization.
     """
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -117,8 +121,13 @@ class Integrator(object):
     """
     Set behavior for using total field solution or incremental field solution.
     """
+    logEvent = "%ssolnIncr" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     assert(None != self.cppHandle)
     self.cppHandle.useSolnIncr = flag
+
+    self._logger.eventEnd(logEvent)
     return
   
 
@@ -202,6 +211,7 @@ class Integrator(object):
     events = ["verify",
               "init",
               "timestep",
+              "solnIncr",
               "residual",
               "newJacobian",
               "jacobian",

@@ -63,6 +63,7 @@ class EqKinSrc(Component):
     """
     Component.__init__(self, name, facility="eqkinsrc")
     self.cppHandle = None
+    self._loggingPrefix = "EqKi "
     return
 
 
@@ -70,6 +71,7 @@ class EqKinSrc(Component):
     """
     Do pre-initialization setup.
     """
+    self._setupLogging()
     self._createCppHandle()
     self.slipfn.preinitialize()
     self.cppHandle.slipfn = self.slipfn.cppHandle
@@ -80,7 +82,12 @@ class EqKinSrc(Component):
     """
     Verify compatibility of configuration.
     """
+    logEvent = "%sverify" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     self.slipfn.verifyConfiguration()
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -88,7 +95,12 @@ class EqKinSrc(Component):
     """
     Initialize.
     """
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     self.slipfn.initialize()
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -110,6 +122,27 @@ class EqKinSrc(Component):
     if None == self.cppHandle:
       import pylith.faults.faults as bindings
       self.cppHandle = bindings.EqKinSrc()
+    return
+  
+
+  def _setupLogging(self):
+    """
+    Setup event logging.
+    """
+    if not "_loggingPrefix" in dir(self):
+      self._loggingPrefix = ""
+
+    from pylith.utils.EventLogger import EventLogger
+    logger = EventLogger()
+    logger.setClassName("FE Constraint")
+    logger.initialize()
+
+    events = ["verify",
+              "init"]
+    for event in events:
+      logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+
+    self._logger = logger
     return
   
 

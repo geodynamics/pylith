@@ -79,6 +79,27 @@ class Solver(Component):
     return
 
 
+  def _setupLogging(self):
+    """
+    Setup event logging.
+    """
+    if not "_loggingPrefix" in dir(self):
+      self._loggingPrefix = ""
+
+    from pylith.utils.EventLogger import EventLogger
+    logger = EventLogger()
+    logger.setClassName("FE Solver")
+    logger.initialize()
+
+    events = ["init",
+              "solve"]
+    for event in events:
+      logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+
+    self._logger = logger
+    return
+  
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def solver():

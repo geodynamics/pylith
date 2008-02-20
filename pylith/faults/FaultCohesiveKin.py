@@ -106,8 +106,13 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     """
     Verify compatibility of configuration.
     """
+    logEvent = "%sverify" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     FaultCohesive.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
+
+    self._logger.eventEnd(logEvent)
     return
 
 

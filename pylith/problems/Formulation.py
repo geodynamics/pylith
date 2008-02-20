@@ -191,6 +191,10 @@ class Formulation(Component):
     """
     Hook for doing stuff before advancing time step.
     """
+    logEvent = "%sprestep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -198,6 +202,10 @@ class Formulation(Component):
     """
     Advance to next time step.
     """
+    logEvent = "%sstep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
+    self._logger.eventEnd(logEvent)
     return
 
 

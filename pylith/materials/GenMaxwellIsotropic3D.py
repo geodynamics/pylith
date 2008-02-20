@@ -40,6 +40,7 @@ class GenMaxwellIsotropic3D(ElasticMaterial):
          'cell': \
            {'info': ["mu", "lambda", "density", "shear-ratio", "Maxwell-time"],
             'data': ["total-strain", "viscous-strain", "stress"]}}
+    self._loggingPrefix = "MaGM3D "
     return
 
 

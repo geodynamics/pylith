@@ -95,6 +95,7 @@ class Material(Component):
     self.cppHandle.id = self.id
     self.cppHandle.label = self.label
     self.quadrature.preinitialize()
+    self._setupLogging()
     return
 
 
@@ -102,6 +103,9 @@ class Material(Component):
     """
     Verify compatibility of configuration.
     """
+    logEvent = "%sverify" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     if self.quadrature.spaceDim != self.dimension:
         raise ValueError, \
               "Quadrature scheme and material are incompatible.\n" \
@@ -113,6 +117,7 @@ class Material(Component):
     # fact that any given processor may only have a subset of the
     # materials)
 
+    self._logger.eventEnd(logEvent)
     return
   
 
@@ -120,6 +125,9 @@ class Material(Component):
     """
     Initialize material property manager.
     """
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     self._info.log("Initializing material '%s'." % self.label)
     self.mesh = mesh
     assert(None != self.cppHandle)
@@ -128,6 +136,7 @@ class Material(Component):
     self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
                               self.quadrature.cppHandle)
 
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -160,4 +169,25 @@ class Material(Component):
                               "derived class.")
   
   
+  def _setupLogging(self):
+    """
+    Setup event logging.
+    """
+    if None == self._loggingPrefix:
+      self._loggingPrefix = ""
+
+    from pylith.utils.EventLogger import EventLogger
+    logger = EventLogger()
+    logger.setClassName("FE Material")
+    logger.initialize()
+
+    events = ["verify",
+              "init"]
+    for event in events:
+      logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+
+    self._logger = logger
+    return
+  
+
 # End of file 
