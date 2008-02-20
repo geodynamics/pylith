@@ -20,7 +20,6 @@ __all__ = ['AbsorbingDampers',
            'BCSixSides',
            'BCTwoSides',
            'BoundaryCondition',
-           'BCIntegrator',
            'DirichletPoints']
 
 

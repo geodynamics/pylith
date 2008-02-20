@@ -15,7 +15,6 @@ nobase_pkgpyexec_PYTHON = \
 	__init__.py \
 	bc/__init__.py \
 	bc/AbsorbingDampers.py \
-	bc/BCIntegrator.py \
 	bc/BoundaryCondition.py \
 	bc/DirichletPoints.py \
 	bc/DirichletBoundary.py \

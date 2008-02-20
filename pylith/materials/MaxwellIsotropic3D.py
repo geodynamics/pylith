@@ -40,6 +40,7 @@ class MaxwellIsotropic3D(ElasticMaterial):
          'cell': \
            {'info': ["mu", "lambda", "density", "Maxwell-time"],
             'data': ["total-strain", "viscous-strain", "stress"]}}
+    self._loggingPrefix = "MaMx3D "
     return
 
 

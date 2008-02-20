@@ -48,6 +48,7 @@ class SolverLinear(Solver):
     Constructor.
     """
     Solver.__init__(self, name)
+    self._loggingPrefix = "SoLi "
     return
 
 
@@ -55,9 +56,15 @@ class SolverLinear(Solver):
     """
     Initialize solver.
     """
+    self._setupLogging()
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     self._createCppHandle()
     Solver.initialize(self, mesh, field)
     self.cppHandle.initialize(mesh.cppHandle, field)
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -65,9 +72,14 @@ class SolverLinear(Solver):
     """
     Solve linear system.
     """
+    logEvent = "%ssolve" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     self._info.log("Solving linear equations.")
     assert(None != self.cppHandle)
     self.cppHandle.solve(fieldOut, jacobian, fieldIn)
+
+    self._logger.eventEnd(logEvent)
     return
   
 

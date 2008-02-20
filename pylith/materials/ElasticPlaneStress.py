@@ -42,6 +42,7 @@ class ElasticPlaneStress(ElasticMaterial):
          'cell': \
            {'info': ["mu", "lambda", "density"],
             'data': ["total-strain", "stress"]}}
+    self._loggingPrefix = "MaPlSt "
     return
 
 

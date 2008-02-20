@@ -73,6 +73,10 @@ class Constraint(object):
     """
     Verify compatibility of configuration.
     """
+    logEvent = "%sverify" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -80,6 +84,10 @@ class Constraint(object):
     """
     Do initialization.
     """
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -97,10 +105,11 @@ class Constraint(object):
     Set constraint sizes in field.
     """
     logEvent = "%ssetSizes" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
 
     assert(None != self.cppHandle)
-    self._logger.eventBegin(logEvent)
     self.cppHandle.setConstraintSizes(field, self.mesh.cppHandle)
+
     self._logger.eventEnd(logEvent)
     return
 
@@ -110,10 +119,11 @@ class Constraint(object):
     Set constraints for field.
     """
     logEvent = "%sconstraints" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
 
     assert(None != self.cppHandle)
-    self._logger.eventBegin(logEvent)
     self.cppHandle.setConstraints(field, self.mesh.cppHandle)
+
     self._logger.eventEnd(logEvent)
     return
 
@@ -122,8 +132,13 @@ class Constraint(object):
     """
     Set behavior for using total field solution or incremental field solution.
     """
+    logEvent = "%ssolnIncr" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     assert(None != self.cppHandle)
     self.cppHandle.useSolnIncr = flag
+
+    self._logger.eventEnd(logEvent)
     return
   
 
@@ -145,6 +160,10 @@ class Constraint(object):
     """
     Hook for doing stuff after advancing time step.
     """
+    logEvent = "%spoststep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -152,6 +171,10 @@ class Constraint(object):
     """
     Cleanup after time stepping.
     """
+    logEvent = "%sfinalize" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
+    self._logger.eventEnd(logEvent)
     return
   
 
@@ -171,6 +194,7 @@ class Constraint(object):
 
     events = ["verify",
               "init",
+              "solnIncr",
               "setSizes",
               "constraints",
               "setField",

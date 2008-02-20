@@ -78,6 +78,9 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     """
     Verify compatibility of configuration.
     """
+    logEvent = "%sverify" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     BoundaryCondition.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
     if self.quadrature.cellDim != self.mesh.dimension()-1:
@@ -87,6 +90,8 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
               "Dimension of mesh boundary '%s': %d" % \
               (self.quadrature.cellDim,
                self.label, self.mesh.dimension()-1)    
+
+    self._logger.eventEnd(logEvent)
     return
   
 

@@ -42,6 +42,8 @@ class SlipTimeFn(Component):
     """
     Do pre-initialization setup.
     """
+    self._setupLogging()
+    self._createCppHandle()      
     return
 
 
@@ -49,6 +51,10 @@ class SlipTimeFn(Component):
     """
     Verify compatibility of configuration.
     """
+    logEvent = "%sverify" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -56,6 +62,10 @@ class SlipTimeFn(Component):
     """
     Initialize.
     """
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -69,4 +79,33 @@ class SlipTimeFn(Component):
     return
 
   
+  def _createCppHandle(self):
+    """
+    Create handle to C++ object.
+    """
+    raise NotImplementedError("Please implement _createCppHandle().")
+    return
+  
+  
+  def _setupLogging(self):
+    """
+    Setup event logging.
+    """
+    if not "_loggingPrefix" in dir(self):
+      self._loggingPrefix = ""
+
+    from pylith.utils.EventLogger import EventLogger
+    logger = EventLogger()
+    logger.setClassName("FE Constraint")
+    logger.initialize()
+
+    events = ["verify",
+              "init"]
+    for event in events:
+      logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+
+    self._logger = logger
+    return
+  
+
 # End of file 

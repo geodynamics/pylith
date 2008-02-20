@@ -48,6 +48,7 @@ class SolverNonlinear(Solver):
     Constructor.
     """
     Solver.__init__(self, name)
+    self._loggingPrefix = "SoNL "
     return
 
 
@@ -55,8 +56,14 @@ class SolverNonlinear(Solver):
     """
     Initialize solver.
     """
+    self._setupLogging()
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     self._createCppHandle()
     self.cppHandle.initialize(mesh.cppHandle, field)
+
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -64,9 +71,14 @@ class SolverNonlinear(Solver):
     """
     Solve nonlinear system.
     """
+    logEvent = "%ssolve" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     self._info.log("Solving nonlinear equations.")
     assert(None != self.cppHandle)
     self.cppHandle.solve(fieldOut, jacobian, fieldIn)
+
+    self._logger.eventEnd(logEvent)
     return
   
 

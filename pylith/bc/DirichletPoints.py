@@ -111,8 +111,13 @@ class DirichletPoints(BoundaryCondition, Constraint):
     """
     Verify compatibility of configuration.
     """
+    logEvent = "%sverify" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     BoundaryCondition.verifyConfiguration(self)
     Constraint.verifyConfiguration(self)
+
+    self._logger.eventEnd(logEvent)
     return
 
 

@@ -90,7 +90,9 @@ class Problem(Component):
     """
     Verify compatibility of configuration.
     """
-
+    logEvent = "%sverify" % self._loggingPrefix    
+    self._logger.eventBegin(logEvent)
+    
     self._info.log("Verifying compatibility of problem configuration.")
     if self.dimension != self.mesh.dimension():
       raise ValueError, \
@@ -105,6 +107,7 @@ class Problem(Component):
               "for material '%s' is for spatial dimension '%d'." % \
               (self.dimension, material.label, material.quadrature.spaceDim)
 
+    self._logger.eventEnd(logEvent)
     return
   
 

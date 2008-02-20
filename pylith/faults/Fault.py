@@ -156,6 +156,9 @@ class Fault(Component):
     """
     Verify compatibility of configuration.
     """
+    logEvent = "%sverify" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     faultDim = self.mesh.dimension() - 1
     if faultDim != self.quadrature.cell.cellDim:
       raise ValueError, \
@@ -168,6 +171,7 @@ class Fault(Component):
     if None != self.output:
       self.output.verifyConfiguration()
 
+    self._logger.eventEnd(logEvent)
     return
   
 
@@ -175,6 +179,9 @@ class Fault(Component):
     """
     Initialize fault.
     """
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     self.quadrature.initialize()
     self.matDB.initialize()
 
@@ -193,6 +200,7 @@ class Fault(Component):
       self.output.writeInfo()
       self.output.open(totalTime, numTimeSteps)
 
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -200,8 +208,13 @@ class Fault(Component):
     """
     Hook for doing stuff after advancing time step.
     """
+    logEvent = "%spoststep" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     self._info.log("Writing fault data.")
     self.output.writeData(t+dt, fields)
+
+    self._logger.eventEnd(logEvent)
     return
 
 

@@ -63,13 +63,13 @@ class Explicit(Formulation):
     """
     Initialize problem for explicit time integration.
     """
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+    
     from pyre.units.time import second
     t = 0.0*second
     Formulation.initialize(self, dimension, totalTime, dt)
 
-    logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
-    
     self._info.log("Creating other fields and matrices.")
     self.fields.addReal("dispTpdt")
     self.fields.addReal("dispTmdt")

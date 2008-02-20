@@ -88,11 +88,11 @@ class Implicit(Formulation):
     """
     Initialize problem for implicit time integration.
     """
-    Formulation.initialize(self, dimension, totalTime, dt)
-
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
     
+    Formulation.initialize(self, dimension, totalTime, dt)
+
     self._info.log("Creating other fields.")
     self._debug.log(resourceUsageString())
     self.fields.addReal("dispIncr")
@@ -210,7 +210,6 @@ class Implicit(Formulation):
       self._step0 = False
 
     self._logger.eventEnd(logEvent)
-    
     return
 
 

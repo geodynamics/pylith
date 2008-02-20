@@ -70,15 +70,7 @@ class BruneSlipFn(SlipTimeFn):
     Constructor.
     """
     SlipTimeFn.__init__(self, name)
-    return
-
-
-  def preinitialize(self):
-    """
-    Do pre-initialization setup.
-    """
-    self._createCppHandle()      
-    SlipTimeFn.preinitialize(self)
+    self._loggingPrefix = "BrSF "
     return
 
 
@@ -86,6 +78,9 @@ class BruneSlipFn(SlipTimeFn):
     """
     Initialize.
     """
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
     self.slip.initialize()
     self.slipTime.initialize()
     self.slipRate.initialize()
@@ -94,6 +89,8 @@ class BruneSlipFn(SlipTimeFn):
     self.cppHandle.dbFinalSlip = self.slip.cppHandle
     self.cppHandle.dbSlipTime = self.slipTime.cppHandle
     self.cppHandle.dbPeakRate = self.slipRate.cppHandle
+
+    self._logger.eventEnd(logEvent)
     return
 
 
