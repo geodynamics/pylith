@@ -81,7 +81,7 @@ to maintain multiple copies of packages built with different options
 
   b. Verify the shared libraries (lib*.dyllib) are created.
   c. If any of the dylib files are missing, create them by hand from the 
-     static libraies.
+     static libraries.
 
     export MPI_DIR=$TOOLS_DIR/mpich2-1.0.5/${TOOLS_FORMAT}
     PATH=$PATH:$MPI_DIR/bin
@@ -99,7 +99,7 @@ to maintain multiple copies of packages built with different options
     COPTIONS = -fPIC
     INCDIR = -I${MPI_INCDIR}
     LD = gcc
-    LIBDIR = -L${MLI_LIBDIR} -lmpich -lpmpich
+    LIBDIR = -L${MPI_LIBDIR} -lmpich -lpmpich
 
   c. Create shared libraries by hand.
 
