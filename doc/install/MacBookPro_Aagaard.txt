@@ -207,7 +207,7 @@ to maintain multiple copies of packages built with different options
 
   a. Download the source code from the SVN repository.
 
-    svn co svn list http://geodynamics.org/svn/cig/cs/pythia/trunk pythia
+    svn co http://geodynamics.org/svn/cig/cs/pythia/trunk pythia
 
   b. Install the software.
 
@@ -221,7 +221,7 @@ to maintain multiple copies of packages built with different options
 
   a. Download the source code from the SVN repository.
 
-    svn co svn list http://geodynamics.org/svn/cig/cs/nemesis/trunk nemesis
+    svn co http://geodynamics.org/svn/cig/cs/nemesis/trunk nemesis
 
   b. Create the configure script.
 
@@ -262,7 +262,7 @@ to maintain multiple copies of packages built with different options
 
   a. Download the source code from the SVN repository.
 
-    svn co svn list http://geodynamics.org/svn/cig/cs/spatialdata-0.1/trunk spatialdata
+    svn co http://geodynamics.org/svn/cig/cs/spatialdata-0.1/trunk spatialdata
 
   b. Create the configure script.
 
@@ -279,7 +279,7 @@ to maintain multiple copies of packages built with different options
 
   a. Download the source code from the SVN repository.
 
-    svn co svn list http://geodynamics.org/svn/cig/short/3D/PyLith/trunk pylith
+    svn co http://geodynamics.org/svn/cig/short/3D/PyLith/trunk pylith
 
   b. Create the configure script.
 
