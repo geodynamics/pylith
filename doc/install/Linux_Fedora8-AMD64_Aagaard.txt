@@ -1,3 +1,7 @@
+======================================================================
+INSTRUCTIONS FOR INSTALLING PYLITH ON LINUX x86_64 RUNNING FEDORA 8
+======================================================================
+
 I place applications that are rarely updated in /tools/common. This
 directory is in a separate /tools partition from system and user
 files; this is why I don't use /usr/local. For CIG source code, I
@@ -55,6 +59,7 @@ gfortran, etc). in the installation.
     Pyrex
     netcdf
     netcdf-devel
+    mercurial
   
 3. Install the AMD Core Math Library (ACML).
 
@@ -75,7 +80,7 @@ gfortran, etc). in the installation.
     export ACML_LIBS="-lacml_mv -lacml -lgfortran -lm"
     export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${ACML_LIBDIR}
 
-4. Install MPICH2 
+4. Install MPICH2 (http://www.mcs.anl.gov/research/projects/mpich2/)
  
   a. Untar the source and then run configure, build, and install.
 
