@@ -1,3 +1,7 @@
+======================================================================
+INSTRUCTIONS FOR INSTALLING PYLITH ON AN INTEL MAC RUNNING OSX 10.4
+======================================================================
+
 I place applications that are rarely updated in /sw/tools (with Fink
 stuff in /sw). For CIG source code, I separate the source code, build
 directories, and installed code. The source code sits in
@@ -60,7 +64,7 @@ to maintain multiple copies of packages built with different options
 
 7. Install mercurial (http://www.selenic.com/mercurial/wiki/)
 
-  a. Download the package to $HOME/sw/tools/mercurial-0.9.4.
+  a. Download the package to $TOOLS_DIR/mercurial-0.9.4.
   b. Install package.
 
     python setup.py install --prefix=$TOOLS_DIR/mercurial-0.9.4/${TOOLS_FORMAT}
@@ -127,7 +131,7 @@ to maintain multiple copies of packages built with different options
 
   a. Untar the source and run configure, build, and install.
 
-    ./configure --prefix=/sw/tools/cppunit-1.12.0/gcc-4.0
+    ./configure --prefix=${TOOLS_DIR}/cppunit-1.12.0/${TOOLS_FORMAT}
     make
     make install
 
@@ -245,7 +249,7 @@ to maintain multiple copies of packages built with different options
 
   c. Run configure and build.
 
-    ./configure --prefix=${TOOLS_DIR}/proj-4.5.0/gcc-4.0
+    ./configure --prefix=${TOOLS_DIR}/proj-4.5.0/${TOOLS_FORMAT}
     make
     make install
 

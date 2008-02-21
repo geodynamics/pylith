@@ -19,6 +19,12 @@ packages. For example, some Fink packages use Apple gcc while others
 use Fink gcc (these two versions of gcc are not necessarily
 compatible).
 
+The particular versions of several packages used in the installation
+instructions vary depending on how when the package was installed and
+how often it is updated. Unless otherwise noted, you should be able to
+install the current stable releases and not run into compatibility
+problems.
+
 ======================================================================
 INSTRUCTIONS FOR VARIOUS PLATFORMS
 ======================================================================
