@@ -12,9 +12,9 @@ CIG_DIR, and TOOLS_FORMAT. The TOOLS_FORMAT variable makes it easier
 to maintain multiple copies of packages built with different options
 (e.g., different compilers and different levels of optimization).
 
-  export $TOOLS_DIR=/sw/tools
-  export $CIG_DIR=$HOME/tools/cig
+  export TOOLS_DIR=/sw/tools
   export TOOLS_FORMAT=gcc-4.0
+  export CIG_DIR=$HOME/tools/cig/${TOOLS_FORMAT}
 
   export CIG_INCDIR=${CIG_DIR}/include
   export CIG_LIBDIR=${CIG_DIR}/lib
@@ -101,7 +101,21 @@ to maintain multiple copies of packages built with different options
     LD = gcc
     LIBDIR = -L${MLI_LIBDIR} -lmpich -lpmpich
 
-  c. Set environment variables.
+  c. Create shared libraries by hand.
+
+    cd ${TOOLS_DIR}/parmetis-3.1/${TOOLS_FORMAT}/lib
+    mkdir tmp
+    cd tmp
+    ar -x ../libmetis.a
+    gcc -o ../libmetis.so ADD_FLAGS_HERE *.o
+    rm *.o
+    ar -x ../libparmetis.a
+    gcc -o ../libparmetis.so ADD_FLAGS_HERE *.o
+    rm *.o
+    cd ..
+    rmdir tmp
+
+  d. Set environment variables.
 
     PARMETIS_DIR=$TOOLS_DIR/parmetis-3.1/${TOOLS_FORMAT}
     export PARMETIS_INCDIR=$PARMETIS_DIR/include
