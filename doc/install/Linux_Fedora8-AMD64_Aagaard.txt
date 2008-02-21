@@ -1,5 +1,5 @@
 I place applications that are rarely updated in /tools/common. This
-directory is in a seperate /tools partition from system and user
+directory is in a separate /tools partition from system and user
 files; this is why I don't use /usr/local. For CIG source code, I
 separate the source code, build directories, and installed code. The
 source code sits in $HOME/src/cig, I build the packages under
@@ -109,7 +109,7 @@ gfortran, etc). in the installation.
     COPTIONS = -fPIC
     INCDIR = -I${MPI_INCDIR}
     LD = gcc
-    LIBDIR = -L${MLI_LIBDIR} -lmpich -lpthread -lrt
+    LIBDIR = -L${MPI_LIBDIR} -lmpich -lpthread -lrt
 
   c. Create shared libraries by hand.
 
