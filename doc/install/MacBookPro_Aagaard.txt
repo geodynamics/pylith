@@ -84,8 +84,24 @@ to maintain multiple copies of packages built with different options
     make install
 
   b. Verify the shared libraries (lib*.dyllib) are created.
+
   c. If any of the dylib files are missing, create them by hand from the 
-     static libraries.
+     static libraries. 
+
+    Note: It is important to specify the full path for the .dylib files.
+
+    To create libmpich.dylib:
+
+    cd ${TOOLS_DIR}/mpich2-1.0.5/${TOOLS_FORMAT}/lib
+    mkdir lib
+    cd lib
+    ar -x ../libmpich.a
+    gcc -dynamiclib -single_module -undefined dynamic_lookup -o ${TOOLS_DIR}/mpich2-1.0.5/${TOOLS_FORMAT}/lib/libmpich.dylib *.o
+    rm *.o
+    cd ..
+    rmdir tmp
+
+  d. Set environment variables.
 
     export MPI_DIR=$TOOLS_DIR/mpich2-1.0.5/${TOOLS_FORMAT}
     PATH=$PATH:$MPI_DIR/bin
@@ -107,17 +123,20 @@ to maintain multiple copies of packages built with different options
 
   c. Create shared libraries by hand.
 
+    Note: It is important to specify the full path for the .dylib files.
+
     cd ${TOOLS_DIR}/parmetis-3.1/${TOOLS_FORMAT}/lib
     mkdir tmp
     cd tmp
     ar -x ../libmetis.a
-    gcc -o ../libmetis.so ADD_FLAGS_HERE *.o
+    gcc -o ${TOOLS_DIR}/parmetis-3.1/${TOOLS_FORMAT}/lib/libmetis.dylib -dynamiclib -single_module -undefined dynamic_lookup  *.o
     rm *.o
     ar -x ../libparmetis.a
-    gcc -o ../libparmetis.so ADD_FLAGS_HERE *.o
+    gcc -o ${TOOLS_DIR}/parmetis-3.1/${TOOLS_FORMAT}/lib/libparmetis.dylib -dynamiclib -single_module -undefined dynamic_lookup  *.o
     rm *.o
     cd ..
     rmdir tmp
+
 
   d. Set environment variables.
 
