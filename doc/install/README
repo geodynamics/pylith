@@ -32,10 +32,11 @@ INSTRUCTIONS FOR VARIOUS PLATFORMS
 In cases where there are multiple instructions for a given platform,
 simply pick the procedure with which you are most comfortable.
 
-FILE                              PLATFORM
-MacBookPro_Aagaard.txt            Intel Mac
-Linux_Fedora8-AMD64_Aagaard.txt   x86_64 machine running Fedora 8
-Cluster_Rocks-4.3.txt             x86_64 cluster running Rocks 4.3
+FILE                             PLATFORM
+
+MacBookPro_Aagaard.txt           Intel Mac (Apple gcc 4.0)
+Linux_Fedora8-AMD64_Aagaard.txt  x86_64 machine running Fedora 8 (gcc 4.1.2)
+Cluster_Rocks-4.3.txt            x86_64 cluster running Rocks 4.3 (gcc 3.4)
 
 ======================================================================
 BUILDING IN A SEPARATE DIRECTORY FROM THE SOURCE TREE
