@@ -55,7 +55,7 @@ to maintain multiple copies of packages built with different options
 
   PVFS2 provides a virtual parallel file system using the local disk
   on each node. Stability is not great, but it does provide
-  significantly better performance than serial I/O. Another features
+  significantly better performance than serial I/O. Another feature
   is that it spreads the data over the local disks on the I/O
   (compute) nodes.
 
@@ -69,7 +69,7 @@ to maintain multiple copies of packages built with different options
 
 3. Adjust your environment to use Python 2.4 instead of Python 2.3.
 
-  Python 2.3 contains bugs that prevent it full functionality on a
+  Python 2.3 contains bugs that prevent its full functionality on a
   x86_64 system. Rocks installs Python 2.4 in /opt/rocks.
 
   export PYTHON_VERSION=2.4
@@ -257,7 +257,7 @@ to maintain multiple copies of packages built with different options
 
     python setup.py install --prefix=${TOOLS_DIR}/pyrex-0.9.5.1/${TOOLS_FORMAT}
 
-  b. Update environment variables
+  b. Update environment variables.
 
     PYREX_DIR=${TOOLS_DIR}/pyrex-0.9.5.1a/${TOOLS_FORMAT}
     PATH=${PATH}:${PYREX_DIR}/bin
