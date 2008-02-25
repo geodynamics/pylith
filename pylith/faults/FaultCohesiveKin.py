@@ -111,7 +111,8 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
 
     FaultCohesive.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
-
+    self.eqsrc.verifyConfiguration()
+    
     self._logger.eventEnd(logEvent)
     return
 
