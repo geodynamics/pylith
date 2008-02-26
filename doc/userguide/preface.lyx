@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -96,7 +96,7 @@ target "geodynamics.org"
  practice by citing the appropriate peer-reviewed papers and making appropriate
  acknowledgements in talks and publications.
  At this time there are no refereed journal articles discussing the design
- and implementation of PyLith, so we request that you cite two AGU meeting
+ and implementation of PyLith, so we request that you cite three AGU meeting
  abstracts associated with PyLith:
 \end_layout
 
@@ -125,6 +125,19 @@ Eos Trans.
 (36), Jt.
  Assem.
  Suppl., Abstract T24A-01 Invited.
+\end_layout
+
+\begin_layout Itemize
+Aagaard, B., C.
+ Williams, M.
+ Knepley (2007), PyLith: A finite-element code for modeling quasi-static
+ and dynamic crustal deformation, 
+\emph on
+Eos Trans.
+ AGU, 8
+\emph default
+8(52), Fall Meet.
+ Suppl., Abstract T21B-0592.
 \end_layout
 
 \begin_layout Standard
