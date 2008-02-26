@@ -1,5 +1,5 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
-\lyxformat 245
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
 \begin_document
 \begin_header
 \textclass book
@@ -8,13 +8,21 @@
 \end_preamble
 \language english
 \inputencoding latin1
-\fontscheme default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
 \graphics default
 \paperfontsize default
 \spacing single
 \papersize default
 \use_geometry true
 \use_amsmath 1
+\use_esint 0
 \cite_engine basic
 \use_bibtopic false
 \paperorientation portrait
@@ -32,6 +40,7 @@
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
+\author "" 
 \end_header
 
 \begin_body
@@ -56,11 +65,12 @@ History
 \end_layout
 
 \begin_layout Standard
-This version of PyLith (1.0) is the first version to allow the solution of
+This version of PyLith (1.1) is the first version to allow the solution of
  both implicit (quasi-static) and explicit (dynamic) problems, and represents
  a complete rewrite of the original PyLith.
  This version combines the functionality of EqSim 
-\begin_inset LatexCommand \cite{Aagaard:etal:2001a,Aagaard:etal:2001b}
+\begin_inset LatexCommand cite
+key "Aagaard:etal:2001a,Aagaard:etal:2001b"
 
 \end_inset
 
@@ -81,9 +91,9 @@ This release of PyLith allows the solution of both quasi-static and dynamic
  problems in one, two, or three dimensions.
  The code runs in either serial or parallel mode, and the design allows
  for relatively easy scripting using the Python programming language.
- Material properties and parameters for boundary and fault conditions are
- specified using a spatial database, which permits easy prescription of
- complex spatial variations of properties and parameters.
+ Material properties and values for boundary and fault conditions are specified
+ using a spatial database, which permits easy prescription of complex spatial
+ variations of properties and parameters.
  Simulation parameters are generally specified through the use of simple
  ASCII files or the command line.
  At present, mesh information may be provided using a simple ASCII file
@@ -94,8 +104,10 @@ This release of PyLith allows the solution of both quasi-static and dynamic
  Higher-order (quadratic) elements are also supported, but it is not presently
  possible to create a quadratic mesh from the linear meshes provided by
  most meshing packages.
- Materials presently available include isotropic elastic and linear Maxwell
- viscoelastic (3D only).
+ Materials presently available include isotropic elastic, linear Maxwell
+ viscoelastic (3D only), and generalized Maxwell viscoelastic (3D only).
+ Boundary conditions include Dirichlet (prescribed displacements and velocities)
+, Neumann (traction), and absorbing boundaries.
  Cohesive elements are used to implement slip across interior surfaces (faults).
  At present, only kinematically-specified fault slip is available.
  In the near future, we will provide several constitutive models for cohesive
@@ -106,13 +118,11 @@ This release of PyLith allows the solution of both quasi-static and dynamic
 \begin_layout Standard
 PyLith is under active development and we expect a number of additions and
  improvements in the near future.
- Likely enhancements will include a more complete set of boundary conditions
- (absorbing boundaries for use in dynamic modeling and traction boundary
- conditions for use in quasi-static modeling), additional constitutive models
- for both volume elements and cohesive (fault) elements, automatic generation
- of higher-order elements from linear elements, and the generation of Green's
+ Likely enhancements will include additional constitutive models for both
+ volume elements and cohesive (fault) elements, automatic generation of
+ higher-order elements from linear elements, and the generation of Green's
  functions to be used in inversions.
- Many of these features should be available in Fall 2007.
+ Many of these features should be available in Fall 2008.
 \end_layout
 
 \begin_layout Section
@@ -122,7 +132,8 @@ PyLith Workflow
 \begin_layout Standard
 PyLith is one component in the process of investigating problems in tectonics
  (Figure 
-\begin_inset LatexCommand \ref{fig:Workflow-summary}
+\begin_inset LatexCommand ref
+reference "fig:Workflow-summary"
 
 \end_inset
 
@@ -139,7 +150,7 @@ PyLith is one component in the process of investigating problems in tectonics
  Once the computations have been performed, the results must be exported
  into a format that can be used by a visualization code.
  Present output consists of VTK files which can be used by a number of visualiza
-tion codes (e.g., ParaView and MayaVi).
+tion codes (e.g., ParaView, Visit, and MayaVi).
  In the near future, a more flexible HDF5 format is planned.
  
 \end_layout
@@ -163,12 +174,21 @@ status open
 
 \end_layout
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{fig:Workflow-summary}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "fig:Workflow-summary"
 
 \end_inset
 
 Workflow involved in going from geologic structure to problem analysis.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -185,9 +205,9 @@ PyLith is separated into modules to encapsulate behavior and facilitate
  use across multiple applications.
  This allows expert users to replace functionality of a wide variety of
  components without recompiling or polluting the main code.
- PyLith employs external packages to reduce development time and enhance
- computational efficiency; for example, PyLith 0.8 ran two times faster when
- the PETSc linear solver was used.
+ PyLith employs external packages (ADD REFERENCE TO FIGURE) to reduce developmen
+t time and enhance computational efficiency; for example, PyLith 0.8 ran
+ two times faster when the PETSc linear solver was used.
 \end_layout
 
 \begin_layout Standard
@@ -237,34 +257,14 @@ During development, tests were constructed for nearly every module function.
  These tests are run continuously during development to expose bugs and
  isolate their origin.
  As additional changes are made to the code, the tests are rerun to help
- prevent introduction of bugs.
+ prevent introduction of new bugs.
  A number of simple, full scale tests, such as axial compression, simple
  shear, and slip between two cells, have been used to test the code.
+ ADD MENTION OF SCEC BENCHMARKS
 \end_layout
 
 \begin_layout Standard
-Our new design begins with the
-\family typewriter
- Sieve
-\family default
- to represent the topology of our domain.
- Zero volume elements are inserted along all fault surfaces which can implement
- both kinematic (prescribed) and dynamic (constitutive model) implementations
- of fault slip.
- Material properties and other parameters are represented as sections (scalar
- and vector fields) over the mesh, and values for a vertex or cell can be
- retrieved by restricting the section to the vertex or cell.
- For each problem, functions are provided to calculate the residual and
- its Jacobian.
- All numerical integration is done in these functions, and parallel assembly
- is accomplished using the restrict/update paradigm of the
-\family typewriter
- Sieve
-\family default
- framework.
- We assemble into PETSc linear algebra objects and then call PETSc solvers.
- The solution is mapped back into a section, which can be output in VTK
- format.
+ADD DESCRIPTION OF OTHER EXTERNAL PACKAGES (FIAT, numpy)
 \end_layout
 
 \begin_layout Subsection
@@ -290,9 +290,17 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Pyre Architecture.
  The integration framework is a set of cooperating abstract services.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -373,24 +381,34 @@ Sieve
 \family default
  is a new method for representing computational meshes, and it greatly simplifie
 s finite-element computations.
- 
+
+\family typewriter
+ Sieve
+\family default
+ represents the topology of the domain.
+ Zero volume elements are inserted along all fault surfaces which can implement
+ both kinematic (prescribed) and dynamic (constitutive model) implementations
+ of fault slip.
+ Material properties and other parameters are represented as sections (scalar
+ and vector fields) over the mesh, and values for a vertex or cell can be
+ retrieved by restricting the section to the vertex or cell.
+ For each problem, functions are provided to calculate the residual and
+ its Jacobian.
+ All numerical integration is done in these functions, and parallel assembly
+ is accomplished using the restrict/update paradigm of the 
 \family typewriter
 Sieve
 \family default
- provides a number of useful features, such as the ability to grab ``sections''
- of a mesh that share common characteristics, such as cells of the same
- material type or vertices to which boundary conditions need to be applied.
- This version of PyLith uses 
-\family typewriter
-Sieve
-\family default
- much more extensively than PyLith 0.8, and should provide significantly
- better performance.
- Sieve interfaces with PETSc for solving the system of equations.
+ framework.
+ We assemble into PETSc linear algebra objects and then call PETSc solvers.
+ The solution is mapped back into a section, which can be output in VTK
+ format.
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand \htmlurl[PETSc]{www-unix.mcs.anl.gov/petsc/petsc-as}
+\begin_inset LatexCommand htmlurl
+name "PETSc"
+target "www-unix.mcs.anl.gov/petsc/petsc-as"
 
 \end_inset
 
