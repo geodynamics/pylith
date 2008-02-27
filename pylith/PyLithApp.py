@@ -86,7 +86,7 @@ class PyLithApp(Application):
     # Create mesh (adjust to account for interfaces (faults) if necessary)
     interfaces = None
     if "interfaces" in dir(self.problem):
-      interfaces = self.problem.interfaces.bin
+      interfaces = self.problem.interfaces.components()
     mesh = self.mesher.create(interfaces)
     self._debug.log(resourceUsageString())
 

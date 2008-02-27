@@ -19,10 +19,6 @@ nobase_pkgpyexec_PYTHON = \
 	bc/DirichletPoints.py \
 	bc/DirichletBoundary.py \
 	bc/FixedDOFDB.py \
-	bc/BCSingle.py \
-	bc/BCTwoSides.py \
-	bc/BCFourSides.py \
-	bc/BCSixSides.py \
 	bc/Neumann.py \
 	faults/__init__.py \
 	faults/BruneSlipFn.py \
@@ -30,7 +26,6 @@ nobase_pkgpyexec_PYTHON = \
 	faults/Fault.py \
 	faults/FaultCohesive.py \
 	faults/FaultCohesiveKin.py \
-	faults/SingleFault.py \
 	faults/SlipTimeFn.py \
 	feassemble/__init__.py \
 	feassemble/Constraint.py \
@@ -65,7 +60,6 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/geometry/GeometryTet3D.py \
 	feassemble/geometry/GeometryHex3D.py \
 	materials/__init__.py \
-	materials/BiMaterial.py \
 	materials/ElasticMaterial.py \
 	materials/ElasticIsotropic3D.py \
 	materials/ElasticPlaneStrain.py \
@@ -81,7 +75,6 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/CellFilterAvg.py \
 	meshio/DataWriter.py \
 	meshio/DataWriterVTK.py \
-	meshio/DoubleOutput.py \
 	meshio/MeshIO.py \
 	meshio/MeshIOAscii.py \
 	meshio/MeshIOCubit.py \

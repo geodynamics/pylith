@@ -14,12 +14,13 @@
 ##
 ## @brief Python PyLith faults module initialization
 
-__all__ = ['EqKinSrc',
-           'Fault',
-           'FaultCohesive',
+__all__ = ['BruneSlipFn',
+           'EqKinSrc',
            'FaultCohesiveKin',
-           'SlipTimeFn',
-           'BruneSlipFn']
+           'FaultCohesive',
+           'Fault',
+            'SlipTimeFn',
+           ]
 
 
 # End of file

@@ -33,7 +33,6 @@ class ObjectBin(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="object_bin")
-    self.bin = []
     return
 
 

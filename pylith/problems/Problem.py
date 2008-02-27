@@ -18,6 +18,35 @@
 
 from pyre.components.Component import Component
 
+# ITEM FACTORIES ///////////////////////////////////////////////////////
+
+def materialFactory(name):
+  """
+  Factory for material items.
+  """
+  from pyre.inventory import facility
+  from pylith.materials.ElasticIsotropic3D import ElasticIsotropic3D
+  return facility(name, family="material", factory=ElasticIsotropic3D)
+
+
+def bcFactory(name):
+  """
+  Factory for boundary condition items.
+  """
+  from pyre.inventory import facility
+  from pylith.bc.DirichletPoints import DirichletPoints
+  return facility(name, family="boundary_condition", factory=DirichletPoints)
+
+
+def faultFactory(name):
+  """
+  Factory for fault items.
+  """
+  from pyre.inventory import facility
+  from pylith.faults.FaultCohesiveKin import FaultCohesiveKin
+  return facility(name, family="fault", factory=FaultCohesiveKin)
+
+
 # Problem class
 class Problem(Component):
   """
@@ -53,15 +82,19 @@ class Problem(Component):
     dimension.meta['tip'] = "Spatial dimension of problem space."
 
     from pylith.materials.Homogeneous import Homogeneous
-    materials = pyre.inventory.facility("materials", family="object_bin",
-                                        factory=Homogeneous)
+    materials = pyre.inventory.facilityArray("materials",
+                                             itemFactory=materialFactory,
+                                             factory=Homogeneous)
     materials.meta['tip'] = "Materials in problem."
 
-    bc = pyre.inventory.facility("bc", family="object_bin", factory=ObjectBin)
+    bc = pyre.inventory.facilityArray("bc",
+                                      itemFactory=bcFactory,
+                                      factory=ObjectBin)
     bc.meta['tip'] = "Boundary conditions."
 
-    interfaces = pyre.inventory.facility("interfaces", family="object_bin",
-                                         factory=ObjectBin)
+    interfaces = pyre.inventory.facilityArray("interfaces",
+                                              itemFactory=faultFactory,
+                                              factory=ObjectBin)
     interfaces.meta['tip'] = "Interior surfaces with constraints or " \
                              "constitutive models."
 
@@ -100,7 +133,7 @@ class Problem(Component):
             "for spatial dimension '%d'." % \
             (self.dimension, mesh.dimension)
 
-    for material in self.materials.bin:
+    for material in self.materials.components():
       if material.quadrature.spaceDim != self.dimension:
         raise ValueError, \
               "Spatial dimension of problem is '%d' but quadrature " \
@@ -189,6 +222,5 @@ def problem():
   Factory associated with Problem.
   """
   return Problem()
-
 
 # End of file 

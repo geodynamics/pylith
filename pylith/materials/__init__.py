@@ -14,17 +14,17 @@
 
 ## @brief Python PyLith materials module initialization
 
-__all__ = ['BiMaterial',
-           'ElasticMaterial',
+__all__ = ['ElasticMaterial',
            'ElasticIsotropic3D',
            'ElasticPlaneStrain',
            'ElasticPlaneStress',
            'ElasticStrain1D',
            'ElasticStress1D',
+           'GenMaxwellIsotropic3D',
            'Homogeneous',
            'Material',
            'MaxwellIsotropic3D',
-           'GenMaxwellIsotropic3D']
+           ]
 
 
 # End of file

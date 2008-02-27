@@ -14,13 +14,16 @@
 ##
 ## @brief Python PyLith finite-element assembler module initialization
 
-__all__ = ['ElasticityExplicit',
+__all__ = ['Constraint',
+           'ElasticityExplicit',
            'ElasticityImplicit',
            'FIATLagrange',
            'FIATSimplex',
+           'IntegratorElasticity',
            'Integrator',
            'ReferenceCell',
-           'quadrature']
+           'quadrature'
+           ]
 
 
 # End of file

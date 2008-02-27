@@ -1,75 +1,106 @@
 ======================================================================
+KNOWN DEFICIENCIES
+======================================================================
+
+  Can't use block Jacobi preconditioner when Dirichlet BC overlap with
+  fault BC's, because we end up with a DOF associated with a Lagrange
+  multiplier that is "free". Not sure if this is okay, when the fault
+  is at an angle to the boundary.
+
+    Might be able to fix this problem by examining constraints
+    relative to orientation and if orientation coincides with
+    preexisting constraint, then constrain Lagrange multiplier DOF.
+
+  Need better error trapping when using LineParser. State of
+  ifstream is insufficient. Need state of istringstream buffer, but it
+  is often !good() at eof(). Test of !good() and !eof()?
+
+======================================================================
 CURRENT ISSUES
 ======================================================================
 
 Release 1.1
 
-  2. Reimplement SolutionIO [BRAD & MATT]
-     e. Implement output of solution subset (ground surface).
-        i. OutputSubdomain
+  1. OutputManager [BRAD]
      f. VertexFilterChangeCS
         i. OutputFilter for writing vertex coordinates in another 
            coordinate system.
-     g. DataWriterHDF5
 
-     Use Cases
+  2. Check performance of current distribution.
 
-       HDF5 files
+  3. Add more error checking.
 
-         Would prefer to include multiple materials
+     a. Add check to make sure every material in mesh has a material model.
 
-         Datasets contain entire time histories (makes it possible to
-         slice along time or space)
+        Add check for overlapping of material ids for bulk and
+        cohesive cells.
 
-       Lower dimension information (surface/line mesh specified by set
-       of vertices)
+     b. When importing mesh, add check to make sure all cells have same
+        number of vertices (especially CUBIT).
 
-         Solution field (time histories)
+  Benchmarks
 
-       Spontaneous (dynamic) fault rupture
+    1. Strike-slip benchmark.
+      a. Update meshes to use 2 materials.
+      b. Update parameters with output controls.
+      c. Rerun benchmarks.
+      d. Tabulate results.
+      e. Test scaling (1,2,4,8 processors) for 500m hex8 case
 
-         Slip and change in tractions (time histories)
+    2. Reverse-slip benchmark.
+      a. Create BC for CUBIT mesh.
+      b. Create LaGriT mesh (based on old LaGriT script).
+      c. Create BC for LaGriT mesh.
+      d. Run benchmarks.
+      e. Generate analytic solutions.
+      f. Tabulate results.
 
-         Fault constitutive values (time histories)
+  Examples
 
-         Orientation , Fault constitutive parameters (diagnostic)
+    1. Test and update settings.
+      a. Use pyre.facilityArray
+      b. Update output settings (materials, faults, solution).
+         twoquad4-geoproj
+         twofaults
+      c. Updated examples/3d to use 2 materials.
 
-       Point locations (arbitrary location such as instrument site)
+      d. Remove twoquad4-tractions (have twoquad4/axialtract.cfg)
+        If we want these as tests, move them to tests.
 
-         Interpolate solution to desired location
+    2. Add some simple kinematic rupture examples.
+      a. 2-D bar (tri3, quad4)
+      b. 3-D bar (tet4, hex8)
+      c. simple strike-slip propagating rupture (500m resolution)
 
-         Solution field (time history)
+  Manual
 
-  3. Optimization [BRAD]
-     a. Fault?
-     b. Absorbing BC?
-     c. Neumann BC?
+    1. Need to add explanation of output and output parameters
+       (especially fault information).
 
-General
+       Fault information is in fault coordinate system. Add example of
+       how to convert it to global coordinates using orientation
+       information.
 
-  1. Need to add explanation of output and output parameters to
-  manual (especially fault information).
+    2. 3 kinds of spatial databases
+         UniformDB
+         SimpleDB
+         SCECCVMHDB
 
-    Fault information is in fault coordinate system. Add example of
-    how to convert it to global coordinates using orientation
-    information.
+    2. Add dependency diagram.
 
-  2. Add dependency diagram to manual.
+    3. Add benchmarks.
 
-  3. Fix memory imbalance associated with distribution.
+    4. Update cover figure with current result.
 
-  4. Add check to make sure every material in mesh has a material model.
+    5. Remove discussion of containers.
+       Use facility array. Include defaults for items.
 
-    Add check for overlapping of material ids for bulk and cohesive
-    cells.
+    6. DirichletPoints/DirichletBoundary
+       FixedDOFDB (special case of UniformDB).
 
-  5. Install cases
+    7. Add twotet4-geoproj to tutorials.
 
-  3 kinds of spatial databases
-    UniformDB
-    SimpleDB
-    SCECCVMHDB
-
+----------------------------------------------------------------------
 Release 1.2
 
   1. Dynamic fault interface conditions.
@@ -94,22 +125,30 @@ Release 1.2
      Loop over eq sources, if time is greater than time of rupture, use it
      Would allow Savage-Prescott benchmark.
 
-======================================================================
-KNOWN DEFICIENCIES
-======================================================================
+  7. Additional output
 
-  Can't use block Jacobi preconditioner when Dirichlet BC overlap with
-  fault BC's, because we end up with a DOF associated with a Lagrange
-  multiplier that is "free". Not sure if this is okay, when the fault
-  is at an angle to the boundary.
+     Use Cases
 
-    Might be able to fix this problem by examining constraints
-    relative to orientation and if orientation coincides with
-    preexisting constraint, then constrain Lagrange multiplier DOF.
+       HDF5 files
 
-  Need better error trapping when using LineParser. State of
-  ifstream is insufficient. Need state of istringstream buffer, but it
-  is often !good() at eof(). Test of !good() and !eof()?
+         Would prefer to include multiple materials
+
+         Datasets contain entire time histories (makes it possible to
+         slice along time or space)
+
+       Spontaneous (dynamic) fault rupture
+
+         Slip and change in tractions (time histories)
+
+         Fault constitutive values (time histories)
+
+         Orientation , Fault constitutive parameters (diagnostic)
+
+       Point locations (arbitrary location such as instrument site)
+
+         Interpolate solution to desired location
+
+         Solution field (time history)
 
 ======================================================================
 MISC PRIORITIES (Brad)

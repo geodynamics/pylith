@@ -17,9 +17,10 @@
 __all__ = ['Distributor',
            'FieldsManager',
            'Mesh',
-           'MeshDistributor',
+           'MeshGenSimple',
            'MeshGenerator',
-           'MeshImporter']
+           'MeshImporter',
+           ]
 
 
 # End of file
