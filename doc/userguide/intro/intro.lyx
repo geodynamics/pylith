@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -40,6 +40,7 @@
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
+\author "" 
 \author "" 
 \end_header
 
@@ -118,11 +119,12 @@ This release of PyLith allows the solution of both quasi-static and dynamic
 \begin_layout Standard
 PyLith is under active development and we expect a number of additions and
  improvements in the near future.
- Likely enhancements will include additional constitutive models for both
- volume elements and cohesive (fault) elements, automatic generation of
- higher-order elements from linear elements, and the generation of Green's
- functions to be used in inversions.
- Many of these features should be available in Fall 2008.
+ Likely enhancements will include fault constitutive models with cohesive
+ (fault) cells, integration with PETSc's nonlinear solvers, additional bulk
+ constitutive models, automatic generation of higher-order elements from
+ linear elements, and the generation of Green's functions to be used in
+ inversions.
+ Many of these features should be available by Fall 2008.
 \end_layout
 
 \begin_layout Section

@@ -65,6 +65,11 @@ General
 
   5. Install cases
 
+  3 kinds of spatial databases
+    UniformDB
+    SimpleDB
+    SCECCVMHDB
+
 Release 1.2
 
   1. Dynamic fault interface conditions.

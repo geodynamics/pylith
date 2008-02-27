@@ -1,5 +1,5 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
-\lyxformat 245
+#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
 \begin_document
 \begin_header
 \textclass book
@@ -8,13 +8,21 @@
 \end_preamble
 \language english
 \inputencoding latin1
-\fontscheme default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
 \graphics default
 \paperfontsize default
 \spacing single
 \papersize default
 \use_geometry true
 \use_amsmath 1
+\use_esint 0
 \cite_engine basic
 \use_bibtopic false
 \paperorientation portrait
@@ -32,12 +40,14 @@
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
+\author "" 
 \end_header
 
 \begin_body
 
 \begin_layout Chapter
-\begin_inset LatexCommand \label{cha:Tutorials}
+\begin_inset LatexCommand label
+name "cha:Tutorials"
 
 \end_inset
 
@@ -61,20 +71,25 @@ Prerequisites
 Before you begin any of the tutorials, you will need to install PyLith following
  the instructions in Chapter\InsetSpace ~
 
-\begin_inset LatexCommand \ref{cha:Installation-and-Getting}
+\begin_inset LatexCommand ref
+reference "cha:Installation-and-Getting"
 
 \end_inset
 
 .
- 
+
 \color none
-For more complex tutorials, you will also need either the 
-\begin_inset LatexCommand \htmlurl[CUBIT]{cubit.sandia.gov}
+ For more complex tutorials, you will also need either the 
+\begin_inset LatexCommand htmlurl
+name "CUBIT"
+target "cubit.sandia.gov"
 
 \end_inset
 
  or 
-\begin_inset LatexCommand \htmlurl[LaGriT]{meshing.lanl.gov}
+\begin_inset LatexCommand htmlurl
+name "LaGriT"
+target "meshing.lanl.gov"
 
 \end_inset
 
@@ -82,7 +97,9 @@ For more complex tutorials, you will also need either the
  If you do not wish to create your own mesh at this time, the meshes are
  also provided as part of the tutorial.
  The 
-\begin_inset LatexCommand \htmlurl[ParaView]{www.paraview.org}
+\begin_inset LatexCommand htmlurl
+name "ParaView"
+target "www.paraview.org"
 
 \end_inset
 
@@ -105,7 +122,7 @@ examples
 examples/twocells
 \family default
 , each consisting of just two cells (elements).
- These very simple examples make use of PyLith mesh ASCII format to describe
+ These very simple examples make use of PyLith mesh ASCII format to define
  the mesh.
  This format is useful for understanding the basics of how PyLith works,
  since it is easy to create these files by hand.
