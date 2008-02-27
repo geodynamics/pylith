@@ -83,9 +83,6 @@ class TestApp(Script):
     from TestHomogeneous import TestHomogeneous
     suite.addTest(unittest.makeSuite(TestHomogeneous))
 
-    from TestBiMaterial import TestBiMaterial
-    suite.addTest(unittest.makeSuite(TestBiMaterial))
-
     return suite
 
 

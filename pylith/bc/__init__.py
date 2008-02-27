@@ -15,12 +15,12 @@
 ## @brief Python PyLith boundary condition module initialization
 
 __all__ = ['AbsorbingDampers',
-           'BCFourSides',
-           'BCSingle',
-           'BCSixSides',
-           'BCTwoSides',
            'BoundaryCondition',
-           'DirichletPoints']
+           'DirichletBoundary',
+           'DirichletPoints',
+           'FixedDOFDB',
+           'Neumann',
+           ]
 
 
 # End of file

@@ -25,14 +25,10 @@ mesh volume all
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
-block 1 volume 1
-block 1 name "elastic x_pos"
-block 2 volume 4
-block 2 name "elastic x_neg"
-block 3 volume 5
-block 3 name "viscoelastic x_pos"
-block 4 volume 6
-block 4 name "viscoelastic x_neg"
+block 1 volume 1 4
+block 1 name "elastic"
+block 2 volume 5 6
+block 2 name "viscoelastic"
 
 # ----------------------------------------------------------------------
 # Create nodeset for fault
@@ -93,6 +89,14 @@ group "face_zneg_nofault" add node in face_zneg
 group "face_zneg_nofault" remove node in fault
 nodeset 16 group face_zneg_nofault
 nodeset 16 name "face zneg nofault"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +z face
+# ----------------------------------------------------------------------
+group "face_zpos" add node in surface 10
+group "face_zpos" add node in surface 17
+nodeset 17 group face_zpos
+nodeset 17 name "face zpos"
 
 # ----------------------------------------------------------------------
 # Export exodus file

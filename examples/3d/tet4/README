@@ -28,12 +28,6 @@ fixeddisp_shear.spatialdb - Spatial database for spatial variation of
 the displacement field in the Dirichlet (prescribed displacement)
 boundary conditions for the shear problem
 
-fixeddisp_zero.spatialdb - Spatial database for spatial variation of
-the displacement field in the Dirichlet (prescribed displacement)
-boundary conditions for fault slip problem
-
-fourmaterials.odb - Material container with four materials
-
 mat_elastic.spatialdb - Spatial database for spatial variation of the
 elastic material properties
 

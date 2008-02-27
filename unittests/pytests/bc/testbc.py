@@ -65,18 +65,6 @@ class TestApp(Script):
     from TestAbsorbingDampers import TestAbsorbingDampers
     suite.addTest(unittest.makeSuite(TestAbsorbingDampers))
 
-    from TestBCSingle import TestBCSingle
-    suite.addTest(unittest.makeSuite(TestBCSingle))
-
-    from TestBCTwoSides import TestBCTwoSides
-    suite.addTest(unittest.makeSuite(TestBCTwoSides))
-
-    from TestBCFourSides import TestBCFourSides
-    suite.addTest(unittest.makeSuite(TestBCFourSides))
-
-    from TestBCSixSides import TestBCSixSides
-    suite.addTest(unittest.makeSuite(TestBCSixSides))
-
     from TestNeumann import TestNeumann
     suite.addTest(unittest.makeSuite(TestNeumann))
 

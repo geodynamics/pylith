@@ -20,6 +20,17 @@ from pyre.components.Component import Component
 
 from pylith.utils.profiling import resourceUsageString
 
+# ITEM FACTORIES ///////////////////////////////////////////////////////
+
+def outputFactory(name):
+  """
+  Factory for material items.
+  """
+  from pyre.inventory import facility
+  from pylith.meshio.OutputSoln import OutputSoln
+  return facility(name, family="output_manager", factory=OutputSoln)
+
+
 # Formulation class
 class Formulation(Component):
   """
@@ -56,8 +67,9 @@ class Formulation(Component):
     solver.meta['tip'] = "Algebraic solver."
 
     from pylith.meshio.SingleOutput import SingleOutput
-    output = pyre.inventory.facility("output", family="object_bin",
-                                     factory=SingleOutput)
+    output = pyre.inventory.facilityArray("output",
+                                          itemFactory=outputFactory,
+                                          factory=SingleOutput)
     output.meta['tip'] = "Output managers associated with solution."
 
   
@@ -101,7 +113,7 @@ class Formulation(Component):
     self._setupInterfaces(interfaceConditions)
     
     self._info.log("Pre-initializing output.")
-    for output in self.output.bin:
+    for output in self.output.components():
       output.preinitialize()
 
     self._logger.eventEnd(logEvent)
@@ -119,7 +131,7 @@ class Formulation(Component):
       integrator.verifyConfiguration()
     for constraint in self.constraints:
       constraint.verifyConfiguration()
-    for output in self.output.bin:
+    for output in self.output.components():
       output.verifyConfiguration()
 
     self._logger.eventEnd(logEvent)
@@ -150,7 +162,7 @@ class Formulation(Component):
     self._debug.log(resourceUsageString())
 
     self._info.log("Setting up solution output.")
-    for output in self.output.bin:
+    for output in self.output.components():
       output.initialize(self.mesh)
       output.writeInfo()
       output.open(totalTime, numTimeSteps)
@@ -217,7 +229,7 @@ class Formulation(Component):
     self._logger.eventBegin(logEvent)
 
     self._info.log("Writing solution fields.")
-    for output in self.output.bin:
+    for output in self.output.components():
       output.writeData(t+dt, self.fields)
     for integrator in self.integrators:
       integrator.poststep(t, dt, totalTime, self.fields)
@@ -241,7 +253,7 @@ class Formulation(Component):
       integrator.finalize()
     for constraint in self.constraints:
       constraint.finalize()
-    for output in self.output.bin:
+    for output in self.output.components():
       output.close()
     self._debug.log(resourceUsageString())
 
@@ -272,7 +284,7 @@ class Formulation(Component):
     
     self._info.log("Pre-initializing materials.")
     self._debug.log(resourceUsageString())
-    for material in materials.bin:
+    for material in materials.components():
       integrator = self.elasticityIntegrator()
       if not implementsIntegrator(integrator):
         raise TypeError, \
@@ -296,7 +308,7 @@ class Formulation(Component):
 
     self._info.log("Pre-initializing boundary conditions.")
     self._debug.log(resourceUsageString())
-    for bc in boundaryConditions.bin:
+    for bc in boundaryConditions.components():
       bc.preinitialize(self.mesh)
       foundType = False
       if implementsIntegrator(bc):
@@ -325,7 +337,7 @@ class Formulation(Component):
     from pylith.feassemble.Constraint import implementsConstraint
 
     self._info.log("Pre-initializing interior interfaces.")
-    for ic in interfaceConditions.bin:
+    for ic in interfaceConditions.components():
       ic.preinitialize(self.mesh)
       foundType = False
       if implementsIntegrator(ic):

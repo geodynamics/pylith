@@ -40,12 +40,6 @@ fixeddisp_shear.spatialdb - Spatial database for spatial variation of
 the displacement field in the Dirichlet (prescribed displacement)
 boundary conditions for the shear problem
 
-fixeddisp_zero.spatialdb - Spatial database for spatial variation of
-the displacement field in the Dirichlet (prescribed displacement)
-boundary conditions for fault slip problem
-
-fourmaterials.odb - Material container with four materials
-
 geometry.jou - CUBIT journal file (script) to generate solid model geometry
 
 mat_elastic.spatialdb - Spatial database for spatial variation of the
