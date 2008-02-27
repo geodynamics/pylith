@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -51,13 +51,13 @@ Running PyLith
 \end_layout
 
 \begin_layout Standard
-There are essentially three major pieces needed to run a problem with PyLith:
+There are essentially three major inputs needed to run a problem with PyLith:
 \end_layout
 
 \begin_layout Enumerate
 A set of parameters describing the problem.
  These parameters describe the type of problem to be run, solver information,
- time-stepping information, etc.
+ time-stepping information, boundary conditions, materials, etc.
  This information can be provided from the command-line or by using a 
 \family typewriter
 .cfg
@@ -72,9 +72,9 @@ A set of parameters describing the problem.
 \begin_layout Enumerate
 Mesh information.
  This includes the topology of the finite-element mesh (coordinates of vertices
- and how the vertices are connected into cells), the material identifier
- for each cell, and sets of vertices associated with boundary conditions,
- faults, and output (for subsets of the mesh).
+ and how the vertices are connected into cells), a material identifier for
+ each cell, and sets of vertices associated with boundary conditions, faults,
+ and output (for subsets of the mesh).
  This information can be provided using the PyLith mesh ASCII format (See
  Chapter 
 \begin_inset LatexCommand ref
@@ -89,7 +89,7 @@ reference "sec:MeshIOAscii"
 \end_inset
 
  for the format specification) or by importing the information from the
- LaGriT or CUBIT meshing packages (See 
+ LaGriT or CUBIT meshing packages (see 
 \family typewriter
 examples/3d/hex8
 \family default
@@ -101,10 +101,10 @@ examples/3d/tet4
 \end_layout
 
 \begin_layout Enumerate
-Databases specifying the material properties and boundary conditions to
- be used.
+Databases specifying the material property values and boundary condition
+ values to be used.
  Arbitrarily complex spatial variations in boundary and fault conditions
- and material properties may be given in the spatial database (See Chapter
+ and material properties may be given in the spatial database (see Chapter
  
 \begin_inset LatexCommand ref
 reference "cha:Tutorials"
@@ -121,16 +121,12 @@ reference "sec:Spatialdata:SimpleIOAscii"
 \end_layout
 
 \begin_layout Section
-Setting Parameters for PyLith
-\end_layout
-
-\begin_layout Standard
 \begin_inset LatexCommand label
 name "sec:setting:parameters"
 
 \end_inset
 
-
+Setting Parameters for PyLith
 \end_layout
 
 \begin_layout Standard
@@ -141,7 +137,7 @@ The most basic information for setting up a PyLith simulation is the problem
 \family typewriter
 pylith
 \family default
- executable: via the command line, or by using a configuration file in 
+ executable: via the command line, or by using a text file in 
 \family typewriter
 .cfg
 \family default
@@ -150,7 +146,7 @@ pylith
 .pml
 \family default
  format.
- PyLith gathers many simulation parameters and settings using Pyre properties
+ PyLith gathers most simulation parameters and settings using Pyre properties
  and facilities.
  Properties correspond to simple settings in the form of strings, integers,
  and real numbers.
@@ -214,8 +210,8 @@ All PyLith-related properties are associated with the
 pylithapp
 \family default
  component.
- You can get a list of all of these properties along with a description
- of what they do by running PyLith with the 
+ You can get a list of all of these top-level properties along with a descriptio
+n of what they do by running PyLith with the 
 \family typewriter
 --help-properties
 \family default
@@ -236,6 +232,10 @@ pylithapp
 
 \begin_layout LyX-Code
 $ pylith --problem.help-properties
+\end_layout
+
+\begin_layout LyX-Code
+DISCUSS SUBCOMPONENTS AND EXAMPLES
 \end_layout
 
 \begin_layout Subsection
@@ -259,7 +259,7 @@ Entering all those parameters via the command line involves the risk of
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.component1.component2]
+[pylithapp.subcomponent1.subcomponent2]
 \end_layout
 
 \begin_layout LyX-Code
@@ -280,7 +280,7 @@ We strongly recommend that you use
 .cfg
 \family default
  files for your work.
- The files are syntax-colored by the vim editor.
+ The files are syntax-colored in the vim editor.
 \end_layout
 
 \begin_layout Subsection
@@ -442,9 +442,9 @@ reference "tab:petsc:options:defaults"
 \end_inset
 
 .
- In many quasi-static simulations, runtime can be reduced by replacing the
- Jacobi preconditioner with Additive Schwarz with Gram-Schmidt orthogonalization
- (see Table\InsetSpace ~
+ In many quasi-static or dynamic elasticity simulations, runtime can be
+ reduced by replacing the Jacobi preconditioner with Additive Schwartz with
+ Gram-Schmidt orthogonalization (see Table\InsetSpace ~
 
 \begin_inset LatexCommand ref
 reference "tab:petsc:options:quasistatic"
@@ -893,7 +893,7 @@ name "tab:petsc:options:quasistatic"
 \end_inset
 
 PETSc options that often result in improved performance in quasi-static
- problems.
+ and dynamic elasticity problems.
 \end_layout
 
 \end_inset
@@ -964,7 +964,7 @@ reference "fig:3D-linear-elements"
 \end_layout
 
 \begin_layout Standard
-The mesh information defines the nodal coordinates as well as specifying
+The mesh information defines the vertex coordinates as well as specifying
  the vertices composing each cell in the mesh.
  The mesh information must also define at least one set of vertices for
  which displacement (Dirichlet) boundary conditions will be provided.
@@ -973,7 +973,7 @@ The mesh information defines the nodal coordinates as well as specifying
  For example, one group might define a surface of the mesh where displacement
  (Dirichlet) boundary conditions will be applied, another might define a
  surface where traction (Neumann) boundary conditions will be applied, while
- a third might specify a surface that will define a fault.
+ a third might specify a surface that defines a fault.
  Similarly, the mesh information contains cell labels that define the material
  type for each cell in the mesh.
  For a mesh with a single material type, there will only be a single label
@@ -1291,8 +1291,12 @@ reference "cha:Tutorials"
  spatial database files.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Section
+Labels and Identifiers for Materials, Boundary Conditions, and Faults
+\end_layout
 
+\begin_layout Standard
+ADD STUFF HERE
 \end_layout
 
 \end_body
