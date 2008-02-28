@@ -38,6 +38,8 @@ public:
 private:
 
   static const char* _meshFilename; ///< Name of mesh file.
+  static const char* _faultLabel; ///< Name of group of vertices for fault.
+  static const int _faultId; ///< Material identifier for fault.
 
   static const char* _timestepFilename; ///< Name of VTK file without fields.
   static const char* _vertexFilename; ///< Name of VTK file for vertex fields.
