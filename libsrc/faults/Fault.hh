@@ -15,6 +15,10 @@
  * @brief C++ abstract base class for Fault object.
  *
  * Interface definition for fault.
+ *
+ * The fault id is associated with the material-id for the fault and
+ * the label is associated with the group of vertices that define the
+ * fault surface.
  */
 
 #if !defined(pylith_faults_fault_hh)
@@ -64,25 +68,25 @@ public :
   virtual
   ~Fault(void);
 
-  /** Set identifier of fault.
+  /** Set material identifier of fault.
    *
    * @param value Fault identifier
    */
   void id(const int value);
 
-  /** Get identifier of fault.
+  /** Get material identifier of fault.
    *
    * @returns Fault identifier
    */
   int id(void) const;
 
-  /** Set label of fault.
+  /** Set label of group of vertices associated with fault.
    *
    * @param value Label of fault
    */
   void label(const char* value);
 
-  /** Get label of fault.
+  /** Get label of group of vertices associated with fault.
    *
    * @returns Label of fault
    */
