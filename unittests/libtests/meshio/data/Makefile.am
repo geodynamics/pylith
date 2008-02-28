@@ -43,7 +43,10 @@ noinst_DATA = \
 	hex8_cell_t10.vtk \
 	line2_sub_t10.vtk \
 	line2_sub_vertex_t10.vtk \
-	line2_sub_cell_t10.vtk
+	line2_sub_cell_t10.vtk \
+	tri3_sub_t10.vtk \
+	tri3_sub_vertex_t10.vtk \
+	tri3_sub_cell_t10.vtk
 
 noinst_TMP =
 

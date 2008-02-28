@@ -29,6 +29,7 @@ testmeshio_SOURCES = \
 	TestDataWriterVTKMeshTet4.cc \
 	TestDataWriterVTKMeshHex8.cc \
 	TestDataWriterVTKSubMeshLine2.cc \
+	TestDataWriterVTKSubMeshTri3.cc \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
 	TestMeshIOLagrit.cc \
@@ -43,6 +44,7 @@ noinst_HEADERS = \
 	TestDataWriterVTKMeshTet4.hh \
 	TestDataWriterVTKMeshHex8.hh \
 	TestDataWriterVTKSubMeshLine2.hh \
+	TestDataWriterVTKSubMeshTri3.hh \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh
@@ -57,6 +59,7 @@ testmeshio_SOURCES += \
 	data/DataWriterVTKDataMeshTet4.cc \
 	data/DataWriterVTKDataMeshHex8.cc \
 	data/DataWriterVTKDataSubMeshLine2.cc \
+	data/DataWriterVTKDataSubMeshTri3.cc \
 	data/MeshData.cc \
 	data/MeshData1D.cc \
 	data/MeshData1Din3D.cc \
@@ -80,6 +83,7 @@ noinst_HEADERS += \
 	data/DataWriterVTKDataMeshTet4.hh \
 	data/DataWriterVTKDataMeshHex8.hh \
 	data/DataWriterVTKDataSubMeshLine2.hh \
+	data/DataWriterVTKDataSubMeshTri3.hh \
 	data/MeshData.hh \
 	data/MeshData1D.hh \
 	data/MeshData1Din2D.hh \
