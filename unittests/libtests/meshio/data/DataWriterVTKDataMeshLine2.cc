@@ -17,6 +17,10 @@
 const char* pylith::meshio::DataWriterVTKDataMeshLine2::_meshFilename = 
   "data/line2.mesh";
 
+const char* pylith::meshio::DataWriterVTKDataMeshLine2::_faultLabel = 
+  "fault";
+const int pylith::meshio::DataWriterVTKDataMeshLine2::_faultId = 100;
+
 const char* pylith::meshio::DataWriterVTKDataMeshLine2::_timestepFilename = 
   "line2.vtk";
 
@@ -32,7 +36,7 @@ const char* pylith::meshio::DataWriterVTKDataMeshLine2::_timeFormat =
   "%3.1f";
 
 const int pylith::meshio::DataWriterVTKDataMeshLine2::_numVertexFields = 3;
-const int pylith::meshio::DataWriterVTKDataMeshLine2::_numVertices = 3;
+const int pylith::meshio::DataWriterVTKDataMeshLine2::_numVertices = 4;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataMeshLine2::_vertexFields[] = {
@@ -41,15 +45,16 @@ pylith::meshio::DataWriterVTKDataMeshLine2::_vertexFields[] = {
   { "other", OTHER_FIELD, 2 },
 };
 const double pylith::meshio::DataWriterVTKDataMeshLine2::_vertexField0[] = {
-  1.1, 2.2, 3.3,
+  1.1, 2.2, 3.3, 4.4
 };
 const double pylith::meshio::DataWriterVTKDataMeshLine2::_vertexField1[] = {
-  2.1, 3.2, 4.3,
+  2.1, 3.2, 4.3, 5.4
 };
 const double pylith::meshio::DataWriterVTKDataMeshLine2::_vertexField2[] = {
   1.2, 2.3,
   3.4, 4.5,
   5.6, 6.7,
+  7.8, 8.9,
 };
 
 const int pylith::meshio::DataWriterVTKDataMeshLine2::_numCellFields = 3;
@@ -74,6 +79,8 @@ const double pylith::meshio::DataWriterVTKDataMeshLine2::_cellField2[] = {
 pylith::meshio::DataWriterVTKDataMeshLine2::DataWriterVTKDataMeshLine2(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
+  faultLabel = const_cast<char*>(_faultLabel);
+  faultId = _faultId;
 
   timestepFilename = const_cast<char*>(_timestepFilename);
   vertexFilename = const_cast<char*>(_vertexFilename);
