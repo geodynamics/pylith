@@ -201,9 +201,9 @@ pylith::meshio::TestDataWriterVTK::testWriteCellField(void)
   } // else
   for (int i=0; i < nfields; ++i) {
     writer.writeCellField(t, _data->cellFieldsInfo[i].name,
-			    cellFields[i], 
+			  cellFields[i], 
 			  _data->cellFieldsInfo[i].field_type,
-			    _mesh);
+			  _mesh);
     CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
     CPPUNIT_ASSERT(writer._wroteCellHeader);
   } // for
@@ -328,7 +328,7 @@ pylith::meshio::TestDataWriterVTK::_checkFile(const char* filenameRoot) const
   char line[maxLen];
   char lineE[maxLen];
 
-  int i = 0;
+  int i = 1;
   while(!fileInE.eof()) {
     fileInE.getline(lineE, maxLen);
     fileIn.getline(line, maxLen);
@@ -337,6 +337,7 @@ pylith::meshio::TestDataWriterVTK::_checkFile(const char* filenameRoot) const
 		<< std::endl;
       CPPUNIT_ASSERT(false);
     } // if
+    ++i;
   } // while
 
   fileInE.close();
