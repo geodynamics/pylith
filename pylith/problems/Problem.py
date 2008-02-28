@@ -133,12 +133,27 @@ class Problem(Component):
             "for spatial dimension '%d'." % \
             (self.dimension, mesh.dimension)
 
+    materialIds = {}
     for material in self.materials.components():
       if material.quadrature.spaceDim != self.dimension:
         raise ValueError, \
               "Spatial dimension of problem is '%d' but quadrature " \
               "for material '%s' is for spatial dimension '%d'." % \
               (self.dimension, material.label, material.quadrature.spaceDim)
+      if material.id in materialIds.keys():
+        raise ValueError, \
+            "ID values for materials '%s' and '%s' are both '%d'. " \
+            "Material id values must be unique." % \
+            (material.label, materialIds[material.id], material.id)
+      materialIds[material.id] = material.label
+    
+    for interface in self.interfaces.components():
+      if interface.id in materialIds.keys():
+        raise ValueError, \
+            "ID values for material '%s' and interface '%s' are both '%d'. " \
+            "Material and interface id values must be unique." % \
+            (materialIds[interface.id], interface.label, interface.id)
+      materialIds[interface.id] = interface.label
 
     self._logger.eventEnd(logEvent)
     return
