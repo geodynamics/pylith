@@ -53,6 +53,9 @@ public:
   double time; ///< Time for fields.
   char* timeFormat; ///< Format for time stamp.
 
+  char* cellsLabel; ///< Name of label for mesh cells (if using subset).
+  int labelId; ///< Id for label associated with cells (if cellsLabel != 0)
+
   /// @name Vertex field information.
   //@{
   int numVertexFields; ///< Number of vertex fields.

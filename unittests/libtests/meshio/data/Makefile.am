@@ -40,7 +40,10 @@ noinst_DATA = \
 	hex8.mesh \
 	hex8_t10.vtk \
 	hex8_vertex_t10.vtk \
-	hex8_cell_t10.vtk
+	hex8_cell_t10.vtk \
+	line2_sub_t10.vtk \
+	line2_sub_vertex_t10.vtk \
+	line2_sub_cell_t10.vtk
 
 noinst_TMP =
 

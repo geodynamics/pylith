@@ -97,8 +97,15 @@ pylith::meshio::TestDataWriterVTK::testTimeStep(void)
 
   const double t = _data->time;
   const int numTimeSteps = 1;
-  writer.open(_mesh, &cs, numTimeSteps);
-  writer.openTimeStep(t, _mesh, &cs);
+  if (0 == _data->cellsLabel) {
+    writer.open(_mesh, &cs, numTimeSteps);
+    writer.openTimeStep(t, _mesh, &cs);
+  } else {
+    const char* label = _data->cellsLabel;
+    const int id = _data->labelId;
+    writer.open(_mesh, &cs, numTimeSteps, label, id);
+    writer.openTimeStep(t, _mesh, &cs, label, id);
+  } // else
 
   CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
   CPPUNIT_ASSERT(false == writer._wroteCellHeader);
@@ -135,8 +142,15 @@ pylith::meshio::TestDataWriterVTK::testWriteVertexField(void)
 
   const double t = _data->time;
   const int numTimeSteps = 1;
-  writer.open(_mesh, &cs, numTimeSteps);
-  writer.openTimeStep(t, _mesh, &cs);
+  if (0 == _data->cellsLabel) {
+    writer.open(_mesh, &cs, numTimeSteps);
+    writer.openTimeStep(t, _mesh, &cs);
+  } else {
+    const char* label = _data->cellsLabel;
+    const int id = _data->labelId;
+    writer.open(_mesh, &cs, numTimeSteps, label, id);
+    writer.openTimeStep(t, _mesh, &cs, label, id);
+  } // else
   for (int i=0; i < nfields; ++i) {
     writer.writeVertexField(t, _data->vertexFieldsInfo[i].name,
 			    vertexFields[i], 
@@ -176,8 +190,15 @@ pylith::meshio::TestDataWriterVTK::testWriteCellField(void)
 
   const double t = _data->time;
   const int numTimeSteps = 1;
-  writer.open(_mesh, &cs, numTimeSteps);
-  writer.openTimeStep(t, _mesh, &cs);
+  if (0 == _data->cellsLabel) {
+    writer.open(_mesh, &cs, numTimeSteps);
+    writer.openTimeStep(t, _mesh, &cs);
+  } else {
+    const char* label = _data->cellsLabel;
+    const int id = _data->labelId;
+    writer.open(_mesh, &cs, numTimeSteps, label, id);
+    writer.openTimeStep(t, _mesh, &cs, label, id);
+  } // else
   for (int i=0; i < nfields; ++i) {
     writer.writeCellField(t, _data->cellFieldsInfo[i].name,
 			    cellFields[i], 
@@ -246,7 +267,9 @@ pylith::meshio::TestDataWriterVTK::_createCellFields(
     const int nfields = _data->numCellFields;
 
     const ALE::Obj<Mesh::label_sequence>& cells = 
-      _mesh->depthStratum(1);
+      (0 == _data->cellsLabel) ? 
+      _mesh->depthStratum(1) :
+      _mesh->getLabelStratum(_data->cellsLabel, _data->labelId);
     const Mesh::label_sequence::iterator cellsEnd = cells->end();
 
     // Set cell fields
