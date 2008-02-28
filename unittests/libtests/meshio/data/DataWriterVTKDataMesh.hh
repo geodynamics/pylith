@@ -32,13 +32,12 @@ public :
   virtual
   ~DataWriterVTKDataMesh(void);
 
-// PUBLIC STRUCTS ///////////////////////////////////////////////////////
-public:
-
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
   char* meshFilename; ///< Name of mesh file.
+  char* faultLabel; ///< Name of group of vertices for fault.
+  int faultId; ///< Material identifier for fault.
 
 }; // DataWriterVTKDataMesh
 

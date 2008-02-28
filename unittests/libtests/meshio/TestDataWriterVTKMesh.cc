@@ -18,6 +18,7 @@
 #include "data/DataWriterVTKDataMesh.hh" // USES DataWriterVTKDataMesh
 
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/faults/FaultCohesiveKin.hh" // USES MeshIOAscii
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -49,6 +50,14 @@ pylith::meshio::TestDataWriterVTKMesh::_initialize(void)
   iohandler.read(&_mesh);
   CPPUNIT_ASSERT(!_mesh.isNull());
   _mesh->getFactory()->clear();
+
+
+  if (0 != _dataMesh->faultLabel) {
+    faults::FaultCohesiveKin fault;
+    fault.label(_dataMesh->faultLabel);
+    fault.id(_dataMesh->faultId);
+    fault.adjustTopology(_mesh);
+  } // if
 } // _initialize
 
 

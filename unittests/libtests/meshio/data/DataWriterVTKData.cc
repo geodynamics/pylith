@@ -20,6 +20,8 @@ pylith::meshio::DataWriterVTKData::DataWriterVTKData(void) :
   cellFilename(0),
   time(0),
   timeFormat(0),
+  cellsLabel(0),
+  labelId(0),
   numVertexFields(0),
   numVertices(0),
   vertexFieldsInfo(0),

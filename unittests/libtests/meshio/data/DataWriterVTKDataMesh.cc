@@ -15,7 +15,9 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::DataWriterVTKDataMesh::DataWriterVTKDataMesh(void) :
-  meshFilename(0)
+  meshFilename(0),
+  faultLabel(0),
+  faultId(0)
 { // constructor
 } // constructor
 
