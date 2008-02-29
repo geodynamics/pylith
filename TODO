@@ -55,13 +55,10 @@ Release 1.1
   Examples
 
     1. Test and update settings.
-      a. Use pyre.facilityArray
-      b. Update output settings (materials, faults, solution).
+      a. Update output settings (materials, faults, solution).
          twoquad4-geoproj
-         twofaults
-      c. Updated examples/3d to use 2 materials.
 
-      d. Remove twoquad4-tractions (have twoquad4/axialtract.cfg)
+      b. Remove twoquad4-tractions (have twoquad4/axialtract.cfg)
         If we want these as tests, move them to tests.
 
     2. Add some simple kinematic rupture examples.
@@ -96,6 +93,8 @@ Release 1.1
        FixedDOFDB (special case of UniformDB).
 
     7. Add twotet4-geoproj to tutorials.
+
+    8. Neumann BC
 
 ----------------------------------------------------------------------
 Release 1.2
