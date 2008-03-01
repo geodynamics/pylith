@@ -33,6 +33,11 @@ testmeshio_SOURCES = \
 	TestDataWriterVTKSubMeshQuad4.cc \
 	TestDataWriterVTKSubMeshTet4.cc \
 	TestDataWriterVTKSubMeshHex8.cc \
+	TestDataWriterVTKFaultMesh.cc \
+	TestDataWriterVTKFaultMeshTri3.cc \
+	TestDataWriterVTKFaultMeshQuad4.cc \
+	TestDataWriterVTKFaultMeshTet4.cc \
+	TestDataWriterVTKFaultMeshHex8.cc \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
 	TestMeshIOLagrit.cc \
@@ -51,6 +56,11 @@ noinst_HEADERS = \
 	TestDataWriterVTKSubMeshQuad4.hh \
 	TestDataWriterVTKSubMeshTet4.hh \
 	TestDataWriterVTKSubMeshHex8.hh \
+	TestDataWriterVTKFaultMesh.hh \
+	TestDataWriterVTKFaultMeshTri3.hh \
+	TestDataWriterVTKFaultMeshQuad4.hh \
+	TestDataWriterVTKFaultMeshTet4.hh \
+	TestDataWriterVTKFaultMeshHex8.hh \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh
@@ -69,6 +79,10 @@ testmeshio_SOURCES += \
 	data/DataWriterVTKDataSubMeshQuad4.cc \
 	data/DataWriterVTKDataSubMeshTet4.cc \
 	data/DataWriterVTKDataSubMeshHex8.cc \
+	data/DataWriterVTKDataFaultMeshTri3.cc \
+	data/DataWriterVTKDataFaultMeshQuad4.cc \
+	data/DataWriterVTKDataFaultMeshTet4.cc \
+	data/DataWriterVTKDataFaultMeshHex8.cc \
 	data/MeshData.cc \
 	data/MeshData1D.cc \
 	data/MeshData1Din3D.cc \
@@ -96,6 +110,10 @@ noinst_HEADERS += \
 	data/DataWriterVTKDataSubMeshQuad4.hh \
 	data/DataWriterVTKDataSubMeshTet4.hh \
 	data/DataWriterVTKDataSubMeshHex8.hh \
+	data/DataWriterVTKDataFaultMeshTri3.hh \
+	data/DataWriterVTKDataFaultMeshQuad4.hh \
+	data/DataWriterVTKDataFaultMeshTet4.hh \
+	data/DataWriterVTKDataFaultMeshHex8.hh \
 	data/MeshData.hh \
 	data/MeshData1D.hh \
 	data/MeshData1Din2D.hh \
@@ -166,7 +184,19 @@ noinst_tmp = \
 	tet4_sub_cell_t10.vtk \
 	hex8_sub_t10.vtk \
 	hex8_sub_vertex_t10.vtk \
-	hex8_sub_cell_t10.vtk
+	hex8_sub_cell_t10.vtk \
+	tri3_fault_t10.vtk \
+	tri3_fault_vertex_t10.vtk \
+	tri3_fault_cell_t10.vtk \
+	quad4_fault_t10.vtk \
+	quad4_fault_vertex_t10.vtk \
+	quad4_fault_cell_t10.vtk \
+	tet4_fault_t10.vtk \
+	tet4_fault_vertex_t10.vtk \
+	tet4_fault_cell_t10.vtk \
+	hex8_fault_t10.vtk \
+	hex8_fault_vertex_t10.vtk \
+	hex8_fault_cell_t10.vtk
 
 CLEANFILES = $(noinst_tmp)
 

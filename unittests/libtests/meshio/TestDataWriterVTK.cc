@@ -333,7 +333,7 @@ pylith::meshio::TestDataWriterVTK::_checkFile(const char* filenameRoot) const
     fileInE.getline(lineE, maxLen);
     fileIn.getline(line, maxLen);
     if (0 != strcmp(line, lineE)) {
-      std::cerr << "Line " << i << " of file '" << filename << " is incorrect."
+      std::cerr << "Line " << i << " of file '" << filename << "' is incorrect."
 		<< std::endl;
       CPPUNIT_ASSERT(false);
     } // if
