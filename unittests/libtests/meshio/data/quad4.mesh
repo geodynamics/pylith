@@ -34,6 +34,14 @@ mesh = {
     }
   }
   group = {
+    name = fault
+    type = vertices
+    count = 2
+    indices = {
+      2  3
+    }
+  }
+  group = {
     name = bc
     type = vertices
     count = 3
