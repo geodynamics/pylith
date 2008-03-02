@@ -102,7 +102,7 @@ pylith::meshio::DataWriterVTKDataMeshQuad4::DataWriterVTKDataMeshQuad4(void)
 
   numCellFields = _numCellFields;
   assert(3 == numCellFields);
-  numVertices = _numVertices;
+  numCells = _numCells;
   cellFieldsInfo = const_cast<DataWriterVTKData::FieldStruct*>(_cellFields);
   cellFields[0] = const_cast<double*>(_cellField0);
   cellFields[1] = const_cast<double*>(_cellField1);

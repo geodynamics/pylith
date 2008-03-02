@@ -15,6 +15,10 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::DataWriterVTKData::DataWriterVTKData(void) :
+  meshFilename(0),
+  faultLabel(0),
+  faultId(0),
+  bcLabel(0),
   timestepFilename(0),
   vertexFilename(0),
   cellFilename(0),

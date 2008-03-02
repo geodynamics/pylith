@@ -27,8 +27,6 @@
 namespace pylith {
   namespace meshio {
     class TestDataWriterVTKMesh;
-
-    class DataWriterVTKDataMesh;
   } // meshio
 } // pylith
 
@@ -36,25 +34,11 @@ namespace pylith {
 class pylith::meshio::TestDataWriterVTKMesh : public TestDataWriterVTK
 { // class TestDataWriterVTKMesh
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
-
-  /// Setup testing data.
-  void setUp(void);
-
-  /// Tear down testing data.
-  void tearDown(void);
-
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
   /// Initialize mesh.
   void _initialize(void);
-
-  // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected :
-
-  DataWriterVTKDataMesh* _dataMesh; ///< Data for testing
 
 }; // class TestDataWriterVTKMesh
 

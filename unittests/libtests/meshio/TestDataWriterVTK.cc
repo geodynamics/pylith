@@ -247,6 +247,7 @@ pylith::meshio::TestDataWriterVTK::_createVertexFields(
 	const double* values = &_data->vertexFields[i][ipt*fiberDim];
 	(*fields)[i]->updatePoint(*v_iter, values);
       } // for
+      CPPUNIT_ASSERT_EQUAL(_data->numVertices, ipt);
     } // for
   } catch (const ALE::Exception& err) {
     throw std::runtime_error(err.msg());
@@ -287,6 +288,7 @@ pylith::meshio::TestDataWriterVTK::_createCellFields(
 	const double* values = &_data->cellFields[i][icell*fiberDim];
 	(*fields)[i]->updatePoint(*c_iter, values);
       } // for
+      CPPUNIT_ASSERT_EQUAL(_data->numCells, icell);
     } // for
   } catch (const ALE::Exception& err) {
     throw std::runtime_error(err.msg());

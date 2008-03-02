@@ -26,7 +26,6 @@ pylith::meshio::TestDataWriterVTKSubMeshLine2::setUp(void)
 { // setUp
   TestDataWriterVTKMesh::setUp();
   _data = new DataWriterVTKDataSubMeshLine2;
-  _dataMesh = new DataWriterVTKDataSubMeshLine2;
   _initialize();
 } // setUp
 

@@ -46,6 +46,11 @@ public:
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
+  char* meshFilename; ///< Name of mesh file.
+  char* faultLabel; ///< Name of group of vertices for fault.
+  int faultId; ///< Material identifier for fault.
+  char* bcLabel; ///< Name of group of vertices for bc.
+
   char* timestepFilename; ///< Name of VTK file without fields.
   char* vertexFilename; ///< Name of VTK file for vertex fields.
   char* cellFilename; ///< Name of VTK file for cell fields.

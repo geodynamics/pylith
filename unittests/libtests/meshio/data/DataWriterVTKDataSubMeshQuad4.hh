@@ -14,7 +14,6 @@
 #define pylith_meshio_datawritervtkdatasubmeshquad4_hh
 
 #include "DataWriterVTKData.hh" // ISA DataWriterVTKData
-#include "DataWriterVTKDataMesh.hh" // ISA DataWriterVTKDataMesh
 
 namespace pylith {
   namespace meshio {
@@ -22,9 +21,7 @@ namespace pylith {
   } // meshio
 } // pylith
 
-class pylith::meshio::DataWriterVTKDataSubMeshQuad4 :
-  public DataWriterVTKData,
-  public DataWriterVTKDataMesh
+class pylith::meshio::DataWriterVTKDataSubMeshQuad4 : public DataWriterVTKData
 { // DataWriterVTKDataSubMeshQuad4
 
 public: 

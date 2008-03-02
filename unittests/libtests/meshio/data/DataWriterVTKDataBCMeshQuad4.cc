@@ -35,7 +35,7 @@ const char* pylith::meshio::DataWriterVTKDataBCMeshQuad4::_timeFormat =
   "%3.1f";
 
 const int pylith::meshio::DataWriterVTKDataBCMeshQuad4::_numVertexFields = 3;
-const int pylith::meshio::DataWriterVTKDataBCMeshQuad4::_numVertices = 4;
+const int pylith::meshio::DataWriterVTKDataBCMeshQuad4::_numVertices = 3;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataBCMeshQuad4::_vertexFields[] = {
@@ -47,16 +47,14 @@ const double pylith::meshio::DataWriterVTKDataBCMeshQuad4::_vertexField0[] = {
   1.1, 2.2,
   3.3, 4.4,
   5.5, 6.6,
-  7.7, 8.8,
 };
 const double pylith::meshio::DataWriterVTKDataBCMeshQuad4::_vertexField1[] = {
-  2.1, 3.2, 4.3, 5.4,
+  2.1, 3.2, 4.3,
 };
 const double pylith::meshio::DataWriterVTKDataBCMeshQuad4::_vertexField2[] = {
   1.2, 2.3,
   3.4, 4.5,
   5.6, 6.7,
-  7.8, 8.9,
 };
 
 const int pylith::meshio::DataWriterVTKDataBCMeshQuad4::_numCellFields = 3;
@@ -102,7 +100,7 @@ pylith::meshio::DataWriterVTKDataBCMeshQuad4::DataWriterVTKDataBCMeshQuad4(void)
 
   numCellFields = _numCellFields;
   assert(3 == numCellFields);
-  numVertices = _numVertices;
+  numCells = _numCells;
   cellFieldsInfo = const_cast<DataWriterVTKData::FieldStruct*>(_cellFields);
   cellFields[0] = const_cast<double*>(_cellField0);
   cellFields[1] = const_cast<double*>(_cellField1);
