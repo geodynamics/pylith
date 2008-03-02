@@ -36,7 +36,7 @@ const char* pylith::meshio::DataWriterVTKDataMeshHex8::_timeFormat =
   "%3.1f";
 
 const int pylith::meshio::DataWriterVTKDataMeshHex8::_numVertexFields = 3;
-const int pylith::meshio::DataWriterVTKDataMeshHex8::_numVertices = 16;
+const int pylith::meshio::DataWriterVTKDataMeshHex8::_numVertices = 20;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataMeshHex8::_vertexFields[] = {
@@ -61,10 +61,15 @@ const double pylith::meshio::DataWriterVTKDataMeshHex8::_vertexField0[] = {
   16.8, 17.9, 18.1,
   19.2, 20.3, 21.4,
   22.5, 23.6, 24.7,
+  25.8, 26.9, 27.1,
+  28.8, 29.9, 30.1,
+  31.8, 32.9, 33.1,
+  34.8, 35.9, 36.1,
 };
 const double pylith::meshio::DataWriterVTKDataMeshHex8::_vertexField1[] = {
   2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8,
-  10.0, 12.1, 11.1, 13.1, 14.1, 15.1, 16.1, 17.1
+  10.0, 12.1, 11.1, 13.1, 14.1, 15.1, 16.1, 17.1,
+  18.1, 19.1, 20.1, 21.2
 };
 const double pylith::meshio::DataWriterVTKDataMeshHex8::_vertexField2[] = {
   1.2, 2.3,
@@ -83,10 +88,14 @@ const double pylith::meshio::DataWriterVTKDataMeshHex8::_vertexField2[] = {
   4.8, 1.5,
   2.6, 3.7,
   4.8, 5.9,
+  6.1, 7.2,
+  7.1, 8.2,
+  8.1, 9.2,
+  9.1, 10.1
 };
 
 const int pylith::meshio::DataWriterVTKDataMeshHex8::_numCellFields = 3;
-const int pylith::meshio::DataWriterVTKDataMeshHex8::_numCells = 2;
+const int pylith::meshio::DataWriterVTKDataMeshHex8::_numCells = 3;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataMeshHex8::_cellFields[] = {
@@ -96,14 +105,16 @@ pylith::meshio::DataWriterVTKDataMeshHex8::_cellFields[] = {
 };
 const double pylith::meshio::DataWriterVTKDataMeshHex8::_cellField0[] = {
   1.1, 2.2, 3.3,
-  4.4, 5.5, 6.6
+  4.4, 5.5, 6.6,
+  7.7, 8.8, 9.9
 };
 const double pylith::meshio::DataWriterVTKDataMeshHex8::_cellField1[] = {
-  2.1, 3.2,
+  2.1, 3.2, 4.3
 };
 const double pylith::meshio::DataWriterVTKDataMeshHex8::_cellField2[] = {
   1.2, 2.3, 3.4, 4.5, 5.6, 6.7,
   1.1, 2.2, 3.3, 4.4, 5.5, 6.6,
+  1.3, 2.4, 3.5, 4.6, 5.7, 6.8
 };
 
 pylith::meshio::DataWriterVTKDataMeshHex8::DataWriterVTKDataMeshHex8(void)
@@ -128,7 +139,7 @@ pylith::meshio::DataWriterVTKDataMeshHex8::DataWriterVTKDataMeshHex8(void)
   vertexFields[2] = const_cast<double*>(_vertexField2);
 
   numCellFields = _numCellFields;
-  numVertices = _numVertices;
+  numCells = _numCells;
   assert(3 == numCellFields);
   cellFieldsInfo = const_cast<DataWriterVTKData::FieldStruct*>(_cellFields);
   cellFields[0] = const_cast<double*>(_cellField0);

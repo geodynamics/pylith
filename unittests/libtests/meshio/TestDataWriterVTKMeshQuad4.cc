@@ -26,7 +26,6 @@ pylith::meshio::TestDataWriterVTKMeshQuad4::setUp(void)
 { // setUp
   TestDataWriterVTKMesh::setUp();
   _data = new DataWriterVTKDataMeshQuad4;
-  _dataMesh = new DataWriterVTKDataMeshQuad4;
   _initialize();
 } // setUp
 

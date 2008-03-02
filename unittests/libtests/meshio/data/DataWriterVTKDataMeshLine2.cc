@@ -36,7 +36,7 @@ const char* pylith::meshio::DataWriterVTKDataMeshLine2::_timeFormat =
   "%3.1f";
 
 const int pylith::meshio::DataWriterVTKDataMeshLine2::_numVertexFields = 3;
-const int pylith::meshio::DataWriterVTKDataMeshLine2::_numVertices = 4;
+const int pylith::meshio::DataWriterVTKDataMeshLine2::_numVertices = 5;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataMeshLine2::_vertexFields[] = {
@@ -45,20 +45,21 @@ pylith::meshio::DataWriterVTKDataMeshLine2::_vertexFields[] = {
   { "other", OTHER_FIELD, 2 },
 };
 const double pylith::meshio::DataWriterVTKDataMeshLine2::_vertexField0[] = {
-  1.1, 2.2, 3.3, 4.4
+  1.1, 2.2, 3.3, 4.4, 5.5
 };
 const double pylith::meshio::DataWriterVTKDataMeshLine2::_vertexField1[] = {
-  2.1, 3.2, 4.3, 5.4
+  2.1, 3.2, 4.3, 5.4, 6.5
 };
 const double pylith::meshio::DataWriterVTKDataMeshLine2::_vertexField2[] = {
   1.2, 2.3,
   3.4, 4.5,
   5.6, 6.7,
   7.8, 8.9,
+  9.0, 10.1
 };
 
 const int pylith::meshio::DataWriterVTKDataMeshLine2::_numCellFields = 3;
-const int pylith::meshio::DataWriterVTKDataMeshLine2::_numCells = 2;
+const int pylith::meshio::DataWriterVTKDataMeshLine2::_numCells = 3;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataMeshLine2::_cellFields[] = {
@@ -67,13 +68,13 @@ pylith::meshio::DataWriterVTKDataMeshLine2::_cellFields[] = {
   { "other", TENSOR_FIELD, 1 },
 };
 const double pylith::meshio::DataWriterVTKDataMeshLine2::_cellField0[] = {
-  1.1, 2.2,
+  1.1, 2.2, 3.3
 };
 const double pylith::meshio::DataWriterVTKDataMeshLine2::_cellField1[] = {
-  2.1, 2.2,
+  2.1, 2.2, 2.3
 };
 const double pylith::meshio::DataWriterVTKDataMeshLine2::_cellField2[] = {
-  1.2, 2.3,
+  1.2, 2.3, 3.4
 };
 
 pylith::meshio::DataWriterVTKDataMeshLine2::DataWriterVTKDataMeshLine2(void)
@@ -98,7 +99,7 @@ pylith::meshio::DataWriterVTKDataMeshLine2::DataWriterVTKDataMeshLine2(void)
   vertexFields[2] = const_cast<double*>(_vertexField2);
 
   numCellFields = _numCellFields;
-  numVertices = _numVertices;
+  numCells = _numCells;
   assert(3 == numCellFields);
   cellFieldsInfo = const_cast<DataWriterVTKData::FieldStruct*>(_cellFields);
   cellFields[0] = const_cast<double*>(_cellField0);

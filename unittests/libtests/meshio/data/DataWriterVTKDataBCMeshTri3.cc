@@ -101,7 +101,7 @@ pylith::meshio::DataWriterVTKDataBCMeshTri3::DataWriterVTKDataBCMeshTri3(void)
   vertexFields[2] = const_cast<double*>(_vertexField2);
 
   numCellFields = _numCellFields;
-  numVertices = _numVertices;
+  numCells = _numCells;
   assert(3 == numCellFields);
   cellFieldsInfo = const_cast<DataWriterVTKData::FieldStruct*>(_cellFields);
   cellFields[0] = const_cast<double*>(_cellField0);

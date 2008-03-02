@@ -26,7 +26,6 @@ pylith::meshio::TestDataWriterVTKSubMeshHex8::setUp(void)
 { // setUp
   TestDataWriterVTKMesh::setUp();
   _data = new DataWriterVTKDataSubMeshHex8;
-  _dataMesh = new DataWriterVTKDataSubMeshHex8;
   _initialize();
 } // setUp
 

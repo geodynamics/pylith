@@ -14,7 +14,6 @@
 #define pylith_meshio_datawritervtkdatabcmeshtri3_hh
 
 #include "DataWriterVTKData.hh" // ISA DataWriterVTKData
-#include "DataWriterVTKDataMesh.hh" // ISA DataWriterVTKDataMesh
 
 namespace pylith {
   namespace meshio {
@@ -22,9 +21,7 @@ namespace pylith {
   } // meshio
 } // pylith
 
-class pylith::meshio::DataWriterVTKDataBCMeshTri3 :
-  public DataWriterVTKData,
-  public DataWriterVTKDataMesh
+class pylith::meshio::DataWriterVTKDataBCMeshTri3 : public DataWriterVTKData
 { // DataWriterVTKDataBCMeshTri3
 
 public: 

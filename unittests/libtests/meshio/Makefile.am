@@ -78,7 +78,6 @@ noinst_HEADERS = \
 # Source files associated with testing data
 testmeshio_SOURCES += \
 	data/DataWriterVTKData.cc \
-	data/DataWriterVTKDataMesh.cc \
 	data/DataWriterVTKDataMeshLine2.cc \
 	data/DataWriterVTKDataMeshTri3.cc \
 	data/DataWriterVTKDataMeshQuad4.cc \
@@ -111,7 +110,6 @@ testmeshio_SOURCES += \
 
 noinst_HEADERS += \
 	data/DataWriterVTKData.hh \
-	data/DataWriterVTKDataMesh.hh \
 	data/DataWriterVTKDataMeshLine2.hh \
 	data/DataWriterVTKDataMeshTri3.hh \
 	data/DataWriterVTKDataMeshQuad4.hh \

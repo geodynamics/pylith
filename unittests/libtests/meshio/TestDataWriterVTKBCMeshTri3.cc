@@ -26,7 +26,6 @@ pylith::meshio::TestDataWriterVTKBCMeshTri3::setUp(void)
 { // setUp
   TestDataWriterVTKBCMesh::setUp();
   _data = new DataWriterVTKDataBCMeshTri3;
-  _dataMesh = new DataWriterVTKDataBCMeshTri3;
   _initialize();
 } // setUp
 

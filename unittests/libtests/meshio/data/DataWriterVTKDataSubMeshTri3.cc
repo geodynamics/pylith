@@ -40,7 +40,7 @@ const char* pylith::meshio::DataWriterVTKDataSubMeshTri3::_timeFormat =
   "%3.1f";
 
 const int pylith::meshio::DataWriterVTKDataSubMeshTri3::_numVertexFields = 3;
-const int pylith::meshio::DataWriterVTKDataSubMeshTri3::_numVertices = 6;
+const int pylith::meshio::DataWriterVTKDataSubMeshTri3::_numVertices = 8;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataSubMeshTri3::_vertexFields[] = {
@@ -54,10 +54,12 @@ const double pylith::meshio::DataWriterVTKDataSubMeshTri3::_vertexField0[] = {
   5.5, 6.6,
   7.7, 8.8,
   9.9, 10.0,
-  11.1, 12.2
+  11.1, 12.2,
+  13.3, 14.4,
+  15.5, 16.6,
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshTri3::_vertexField1[] = {
-  2.1, 3.2, 4.3, 5.4, 6.5, 7.6
+  2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshTri3::_vertexField2[] = {
   1.2, 2.3,
@@ -65,7 +67,9 @@ const double pylith::meshio::DataWriterVTKDataSubMeshTri3::_vertexField2[] = {
   5.6, 6.7,
   7.8, 8.9,
   9.0, 10.1,
-  11.2, 12.3
+  11.2, 12.3,
+  13.4, 14.5,
+  15.6, 16.7
 };
 
 const int pylith::meshio::DataWriterVTKDataSubMeshTri3::_numCellFields = 3;
@@ -111,7 +115,7 @@ pylith::meshio::DataWriterVTKDataSubMeshTri3::DataWriterVTKDataSubMeshTri3(void)
   vertexFields[2] = const_cast<double*>(_vertexField2);
 
   numCellFields = _numCellFields;
-  numVertices = _numVertices;
+  numCells = _numCells;
   assert(3 == numCellFields);
   cellFieldsInfo = const_cast<DataWriterVTKData::FieldStruct*>(_cellFields);
   cellFields[0] = const_cast<double*>(_cellField0);
