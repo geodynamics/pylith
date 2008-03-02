@@ -30,6 +30,9 @@ testbc_SOURCES = \
 	TestBoundaryCondition.cc \
 	TestBoundaryMesh.cc \
 	TestBoundaryMeshTri3.cc \
+	TestBoundaryMeshQuad4.cc \
+	TestBoundaryMeshTet4.cc \
+	TestBoundaryMeshHex8.cc \
 	TestDirichletBoundary.cc \
 	TestDirichletBoundaryTri3.cc \
 	TestDirichletBoundaryQuad4.cc \
@@ -64,6 +67,9 @@ noinst_HEADERS = \
 	TestBoundaryCondition.hh \
 	TestBoundaryMesh.hh \
 	TestBoundaryMeshTri3.hh \
+	TestBoundaryMeshQuad4.hh \
+	TestBoundaryMeshTet4.hh \
+	TestBoundaryMeshHex8.hh \
 	TestDirichletBoundary.hh \
 	TestDirichletBoundaryTri3.hh \
 	TestDirichletBoundaryQuad4.hh \
@@ -97,6 +103,9 @@ testbc_SOURCES += \
 	data/AbsorbingDampersDataHex8.cc \
 	data/BoundaryMeshData.cc \
 	data/BoundaryMeshDataTri3.cc \
+	data/BoundaryMeshDataQuad4.cc \
+	data/BoundaryMeshDataTet4.cc \
+	data/BoundaryMeshDataHex8.cc \
 	data/DirichletData.cc \
 	data/DirichletDataLine2.cc \
 	data/DirichletDataLine2b.cc \
@@ -122,6 +131,9 @@ noinst_HEADERS += \
 	data/AbsorbingDampersDataHex8.hh \
 	data/BoundaryMeshData.hh \
 	data/BoundaryMeshDataTri3.hh \
+	data/BoundaryMeshDataQuad4.hh \
+	data/BoundaryMeshDataTet4.hh \
+	data/BoundaryMeshDataHex8.hh \
 	data/DirichletData.hh \
 	data/DirichletDataLine2.hh \
 	data/DirichletDataLine2b.hh \
