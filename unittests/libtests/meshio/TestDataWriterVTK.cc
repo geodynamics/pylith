@@ -193,20 +193,28 @@ pylith::meshio::TestDataWriterVTK::testWriteCellField(void)
   if (0 == _data->cellsLabel) {
     writer.open(_mesh, &cs, numTimeSteps);
     writer.openTimeStep(t, _mesh, &cs);
+    for (int i=0; i < nfields; ++i) {
+      writer.writeCellField(t, _data->cellFieldsInfo[i].name,
+                            cellFields[i], 
+                            _data->cellFieldsInfo[i].field_type,
+                            _mesh);
+      CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
+      CPPUNIT_ASSERT(writer._wroteCellHeader);
+    } // for
   } else {
     const char* label = _data->cellsLabel;
     const int id = _data->labelId;
     writer.open(_mesh, &cs, numTimeSteps, label, id);
     writer.openTimeStep(t, _mesh, &cs, label, id);
+    for (int i=0; i < nfields; ++i) {
+      writer.writeCellField(t, _data->cellFieldsInfo[i].name,
+                            cellFields[i], 
+                            _data->cellFieldsInfo[i].field_type,
+                            _mesh, label, id);
+      CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
+      CPPUNIT_ASSERT(writer._wroteCellHeader);
+    } // for
   } // else
-  for (int i=0; i < nfields; ++i) {
-    writer.writeCellField(t, _data->cellFieldsInfo[i].name,
-			  cellFields[i], 
-			  _data->cellFieldsInfo[i].field_type,
-			  _mesh);
-    CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
-    CPPUNIT_ASSERT(writer._wroteCellHeader);
-  } // for
   writer.closeTimeStep();
   writer.close();
   CPPUNIT_ASSERT(false == writer._wroteCellHeader);
