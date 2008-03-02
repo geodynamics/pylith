@@ -159,8 +159,10 @@ pylith::meshio::DataWriterVTK::writeVertexField(
     assert(fiberDim > 0);
     const int enforceDim = (fieldType != VECTOR_FIELD) ? fiberDim : 3;
 
+    PetscErrorCode err = 0;
+
     if (!_wroteVertexHeader) {
-      PetscErrorCode err = PetscViewerASCIIPrintf(_viewer, "POINT_DATA %d\n", 
+      err = PetscViewerASCIIPrintf(_viewer, "POINT_DATA %d\n", 
 						  numbering->getGlobalSize());
       if (err)
 	throw std::runtime_error("Could not write VTK point data header.");
@@ -214,8 +216,10 @@ pylith::meshio::DataWriterVTK::writeCellField(
       field->getFiberDimension(*mesh->getLabelStratum(labelName, depth)->begin());
     const int enforceDim = (fieldType != VECTOR_FIELD) ? fiberDim : 3;
 
+    PetscErrorCode err = 0;
+
     if (!_wroteCellHeader) {
-      PetscErrorCode err = PetscViewerASCIIPrintf(_viewer, "CELL_DATA %d\n", 
+      err = PetscViewerASCIIPrintf(_viewer, "CELL_DATA %d\n", 
 						  numbering->getGlobalSize());
       if (err)
 	throw std::runtime_error("Could not write VTK point data header.");
@@ -224,11 +228,12 @@ pylith::meshio::DataWriterVTK::writeCellField(
 
     if (0 == label)
       err = VTKViewer::writeField(field, name, fiberDim, numbering, _viewer, 
-			    enforceDim);
+				  enforceDim);
     else {
       const std::string labelName = 
 	(mesh->hasLabel("censored depth")) ? "censored depth" : "depth";
-      err = VTKViewer::writeField(mesh, label, labelId, labelName, 0, _viewer);      
+      err = VTKViewer::writeField(field, name, fiberDim, numbering, _viewer, 
+				  enforceDim);      
     } // if/else
     if (err)
       throw std::runtime_error("Coult not write cell field.");
