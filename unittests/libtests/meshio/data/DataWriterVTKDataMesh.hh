@@ -38,6 +38,7 @@ public:
   char* meshFilename; ///< Name of mesh file.
   char* faultLabel; ///< Name of group of vertices for fault.
   int faultId; ///< Material identifier for fault.
+  char* bcLabel; ///< Name of group of vertices for bc.
 
 }; // DataWriterVTKDataMesh
 
