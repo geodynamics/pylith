@@ -167,8 +167,10 @@ pylith::meshio::DataWriterVTK::writeVertexField(
       _wroteVertexHeader = true;
     } // if
 
-    VTKViewer::writeField(field, name, fiberDim, numbering, _viewer, 
-			  enforceDim);
+    err = VTKViewer::writeField(field, name, fiberDim, numbering, _viewer, 
+				enforceDim);
+    if (err)
+      throw std::runtime_error("Coult not write vertex field.");
 
   } catch (const std::exception& err) {
     std::ostringstream msg;
@@ -191,7 +193,9 @@ pylith::meshio::DataWriterVTK::writeCellField(
 				       const char* name,
 				       const ALE::Obj<real_section_type>& field,
 				       const VectorFieldEnum fieldType,
-				       const ALE::Obj<ALE::Mesh>& mesh)
+				       const ALE::Obj<ALE::Mesh>& mesh,
+				       const char* label,
+				       const int labelId)
 { // writeCellField
   assert(0 != name);
   assert(!mesh.isNull());
@@ -218,8 +222,16 @@ pylith::meshio::DataWriterVTK::writeCellField(
       _wroteCellHeader = true;
     } // if
 
-    VTKViewer::writeField(field, name, fiberDim, numbering, _viewer, 
-			  enforceDim);
+    if (0 == label)
+      err = VTKViewer::writeField(field, name, fiberDim, numbering, _viewer, 
+			    enforceDim);
+    else {
+      const std::string labelName = 
+	(mesh->hasLabel("censored depth")) ? "censored depth" : "depth";
+      err = VTKViewer::writeField(mesh, label, labelId, labelName, 0, _viewer);      
+    } // if/else
+    if (err)
+      throw std::runtime_error("Coult not write cell field.");
 
   } catch (const std::exception& err) {
     std::ostringstream msg;

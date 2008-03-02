@@ -153,7 +153,7 @@ pylith::meshio::OutputManager::appendCellField(
   const ALE::Obj<real_section_type>& fieldFiltered = 
     (0 == _cellFilter) ? field : _cellFilter->filter(field, mesh, label, labelId);
 
-  _writer->writeCellField(t, name, fieldFiltered, fieldType, mesh);
+  _writer->writeCellField(t, name, fieldFiltered, fieldType, mesh, label, labelId);
 } // appendCellField
 
 
