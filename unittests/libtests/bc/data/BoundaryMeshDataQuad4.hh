@@ -1,0 +1,59 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_bc_boundarymeshdataquad4_hh)
+#define pylith_bc_boundarymeshdataquad4_hh
+
+#include "BoundaryMeshData.hh"
+
+namespace pylith {
+  namespace bc {
+     class BoundaryMeshDataQuad4;
+  } // pylith
+} // bc
+
+class pylith::bc::BoundaryMeshDataQuad4 : public BoundaryMeshData
+{
+
+public: 
+
+  /// Constructor
+  BoundaryMeshDataQuad4(void);
+
+  /// Destructor
+  ~BoundaryMeshDataQuad4(void);
+
+private:
+
+  static const char* _filename;
+
+  static const char* _bcLabel;
+
+  static const char* _faultLabel;
+  static const int _faultId;
+
+  static const int _numCorners;
+  static const int _numCells;
+
+  static const int _numVerticesNoFault;
+  static const int _verticesNoFault[];
+  static const int _cellsNoFault[];
+
+  static const int _numVerticesFault;
+  static const int _verticesFault[];
+  static const int _cellsFault[];
+
+};
+
+#endif // pylith_bc_boundarymeshdataquad4_hh
+
+// End of file
