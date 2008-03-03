@@ -30,9 +30,9 @@ const int pylith::bc::BoundaryMeshDataTri3::_cellsNoFault[] = {
   3, 5
 };
 
-const int pylith::bc::BoundaryMeshDataTri3::_numVerticesFault = 3;
+const int pylith::bc::BoundaryMeshDataTri3::_numVerticesFault = 2;
 const int pylith::bc::BoundaryMeshDataTri3::_verticesFault[] = {
-  3, 5, 6
+  3, 5
 };
 const int pylith::bc::BoundaryMeshDataTri3::_cellsFault[] = {
   3, 5
