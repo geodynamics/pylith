@@ -301,7 +301,7 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  /// Viscous strain array
+  /// Viscous strain array.
   double_array _visStrain;
 
   /// Method to use for _calcElasticConsts().

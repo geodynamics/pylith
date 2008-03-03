@@ -172,6 +172,18 @@ private :
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
+/** Compute viscous strains (state variables) for the current time step.
+   *
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
+   * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
+   */
+  void _computeStateVars(const double* properties,
+			 const int numProperties,
+			 const double* totalStrain,
+			 const int strainSize);
+
   /** Compute stress tensor from properties as an elastic material.
    *
    * @param stress Array for stress tensor.
@@ -277,6 +289,9 @@ private :
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
+
+  /// Viscous strain array.
+  double_array _visStrain;
 
   /// Method to use for _calcElasticConsts().
   calcElasticConsts_fn_type _calcElasticConstsFn;
