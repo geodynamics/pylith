@@ -21,6 +21,7 @@
 #include "petsc.h" // USES PetscLogFlopsNoCheck
 
 #include <assert.h> // USES assert()
+#include <string.h> // USES memcpy()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
@@ -53,7 +54,7 @@ namespace pylith {
       const int pidLambda = pidMu + 1;
       const int pidMaxwellTime = pidLambda + 1;
       const int pidStrainT = pidMaxwellTime + 1;
-      const int pidVisStrain = pidStrainT + 6;
+      const int pidVisStrain = pidStrainT + tensorSize;
 
       /// Values expected in spatial database
       const int numDBValues = 4;
@@ -83,6 +84,7 @@ pylith::materials::MaxwellIsotropic3D::MaxwellIsotropic3D(void) :
   _updatePropertiesFn(&pylith::materials::MaxwellIsotropic3D::_updatePropertiesElastic)
 { // constructor
   _dimension = 3;
+  _visStrain.resize(_MaxwellIsotropic3D::tensorSize);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -146,17 +148,70 @@ pylith::materials::MaxwellIsotropic3D::_calcDensity(double* const density,
 } // _calcDensity
 
 // ----------------------------------------------------------------------
+// Compute viscous strain for current time step.
+// material.
+void
+pylith::materials::MaxwellIsotropic3D::_computeStateVars(
+				         const double* properties,
+					 const int numProperties,
+					 const double* totalStrain,
+					 const int strainSize)
+{ // _computeStateVars
+  assert(0 != properties);
+  assert(_totalPropsQuadPt == numProperties);
+  assert(0 != totalStrain);
+  assert(_MaxwellIsotropic3D::tensorSize == strainSize);
+
+  const int tensorSize = _MaxwellIsotropic3D::tensorSize;
+  const double maxwelltime = properties[_MaxwellIsotropic3D::pidMaxwellTime];
+
+  const double e11 = totalStrain[0];
+  const double e22 = totalStrain[1];
+  const double e33 = totalStrain[2];
+  const double e12 = totalStrain[3];
+  const double e23 = totalStrain[4];
+  const double e13 = totalStrain[5];
+  
+  const double meanStrainTpdt = (e11 + e22 + e33)/3.0;
+
+  const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+
+  const double meanStrainT =
+    (properties[_MaxwellIsotropic3D::pidStrainT+0] +
+     properties[_MaxwellIsotropic3D::pidStrainT+1] +
+     properties[_MaxwellIsotropic3D::pidStrainT+2])/3.0;
+  
+  // Time integration.
+  double dq = ViscoelasticMaxwell::computeVisStrain(_dt, maxwelltime);
+  const double expFac = exp(-_dt/maxwelltime);
+
+  double devStrainTpdt = 0.0;
+  double devStrainT = 0.0;
+
+  for (int iComp=0; iComp < tensorSize; ++iComp) {
+    devStrainTpdt = totalStrain[iComp] - diag[iComp] * meanStrainTpdt;
+    devStrainT = properties[_MaxwellIsotropic3D::pidStrainT+iComp] -
+      diag[iComp] * meanStrainT;
+    _visStrain[iComp] = expFac *
+      properties[_MaxwellIsotropic3D::pidVisStrain + iComp] +
+      dq * (devStrainTpdt - devStrainT);
+  } // for
+
+  PetscLogFlopsNoCheck(8 + 7 * tensorSize);
+} // _computeStateVars
+
+// ----------------------------------------------------------------------
 // Compute stress tensor at location from properties as an elastic
 // material.
 void
 pylith::materials::MaxwellIsotropic3D::_calcStressElastic(
-						  double* const stress,
-						  const int stressSize,
-						  const double* properties,
-						  const int numProperties,
-						  const double* totalStrain,
-						  const int strainSize,
-						  const bool computeStateVars)
+				         double* const stress,
+					 const int stressSize,
+					 const double* properties,
+					 const int numProperties,
+					 const double* totalStrain,
+					 const int strainSize,
+					 const bool computeStateVars)
 { // _calcStressElastic
   assert(0 != stress);
   assert(_MaxwellIsotropic3D::tensorSize == stressSize);
@@ -165,11 +220,8 @@ pylith::materials::MaxwellIsotropic3D::_calcStressElastic(
   assert(0 != totalStrain);
   assert(_MaxwellIsotropic3D::tensorSize == strainSize);
 
-  const double density = properties[_MaxwellIsotropic3D::pidDensity];
   const double mu = properties[_MaxwellIsotropic3D::pidMu];
   const double lambda = properties[_MaxwellIsotropic3D::pidLambda];
-  const double maxwelltime = properties[_MaxwellIsotropic3D::pidMaxwellTime];
-
   const double mu2 = 2.0 * mu;
 
   const double e11 = totalStrain[0];
@@ -188,14 +240,6 @@ pylith::materials::MaxwellIsotropic3D::_calcStressElastic(
   stress[3] = mu2 * e12;
   stress[4] = mu2 * e23;
   stress[5] = mu2 * e13;
-  // std::cout << " _calcStressElastic: " << std::endl;
-  // std::cout << " totalStrain: " << std::endl;
-  // for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
-    // std::cout << "  " << totalStrain[iComp];
-  // std::cout << std::endl << " stress: " << std::endl;
-  // for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
-    // std::cout << "  " << (*stress)[iComp];
-  // std::cout << std::endl;
 
   PetscLogFlopsNoCheck(13);
 } // _calcStressElastic
@@ -205,14 +249,14 @@ pylith::materials::MaxwellIsotropic3D::_calcStressElastic(
 // material.
 void
 pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
-						  double* const stress,
-						  const int stressSize,
-						  const double* properties,
-						  const int numProperties,
-						  const double* totalStrain,
-						  const int strainSize,
-						  const bool computeStateVars)
-{ // _calcStressElastic
+				         double* const stress,
+					 const int stressSize,
+					 const double* properties,
+					 const int numProperties,
+					 const double* totalStrain,
+					 const int strainSize,
+					 const bool computeStateVars)
+{ // _calcStressViscoelastic
   assert(0 != stress);
   assert(_MaxwellIsotropic3D::tensorSize == stressSize);
   assert(0 != properties);
@@ -220,78 +264,59 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
   assert(0 != totalStrain);
   assert(_MaxwellIsotropic3D::tensorSize == strainSize);
 
-  const double density = properties[_MaxwellIsotropic3D::pidDensity];
+  const int tensorSize = _MaxwellIsotropic3D::tensorSize;
+
   const double mu = properties[_MaxwellIsotropic3D::pidMu];
   const double lambda = properties[_MaxwellIsotropic3D::pidLambda];
   const double maxwelltime = properties[_MaxwellIsotropic3D::pidMaxwellTime];
 
   const double mu2 = 2.0 * mu;
-  const double bulkmodulus = lambda + mu2/3.0;
+  const double bulkModulus = lambda + mu2/3.0;
 
   const double e11 = totalStrain[0];
   const double e22 = totalStrain[1];
   const double e33 = totalStrain[2];
-  const double e12 = totalStrain[3];
-  const double e23 = totalStrain[4];
-  const double e13 = totalStrain[5];
   
   const double traceStrainTpdt = e11 + e22 + e33;
   const double meanStrainTpdt = traceStrainTpdt/3.0;
-  const double s123 = lambda * traceStrainTpdt;
+  const double meanStressTpdt = bulkModulus * traceStrainTpdt;
 
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-  const double meanStressTpdt = bulkmodulus * traceStrainTpdt;
-  // See what's going on in state variables.
-  // std::cout << " pidStrainT, pidVisStrain : " << std::endl;
-  // for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
-    // std::cout << "  " << properties[_MaxwellIsotropic3D::pidStrainT][iComp]
-	    // << "   " << properties[_MaxwellIsotropic3D::pidVisStrain][iComp]
-	    // << std::endl;
 
-  const double meanStrainT = (properties[_MaxwellIsotropic3D::pidStrainT+0] +
-			      properties[_MaxwellIsotropic3D::pidStrainT+1] +
-			      properties[_MaxwellIsotropic3D::pidStrainT+2])/3.0;
-  
-  PetscLogFlopsNoCheck(11);
+  // Get viscous strains
+  if (computeStateVars) {
+    pylith::materials::MaxwellIsotropic3D::_computeStateVars(properties,
+							     numProperties,
+							     totalStrain,
+							     strainSize);
+  } else {
+    memcpy(&_visStrain[0], &properties[_MaxwellIsotropic3D::pidVisStrain],
+	   tensorSize * sizeof(double));
+  } // else
 
-  // Time integration.
-  double dq = ViscoelasticMaxwell::computeVisStrain(_dt, maxwelltime);
-  const double expFac = exp(-_dt/maxwelltime);
-  const double elasFac = 2.0*mu;
-  double devStrainTpdt = 0.0;
-  double devStrainT = 0.0;
+  // Compute new stresses
   double devStressTpdt = 0.0;
-  double visStrain = 0.0;
-  PetscLogFlopsNoCheck(4);
-  // std::cout << " _calcStressViscoelastic: " << std::endl;
-  // std::cout << " stress  totalStrain  visStrain: " << std::endl;
-  for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp) {
-    devStrainTpdt = totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
-    devStrainT = properties[_MaxwellIsotropic3D::pidStrainT+iComp] -
-      diag[iComp]*meanStrainT;
-    visStrain = expFac*properties[_MaxwellIsotropic3D::pidVisStrain+iComp] +
-      dq*(devStrainTpdt - devStrainT);
-    devStressTpdt = elasFac*visStrain;
-    // Later I will want to put in initial stresses.
-    stress[iComp] =diag[iComp]*meanStressTpdt+devStressTpdt;
 
-    // Temporary to get stresses and strains.
-    // std::cout << "  " << stress[iComp] << "  " << totalStrain[iComp] << "  " << visStrain << std:: endl;
+  for (int iComp=0; iComp < tensorSize; ++iComp) {
+    devStressTpdt = mu2 * _visStrain[iComp];
+
+    // Later I will want to put in initial stresses.
+    stress[iComp] = diag[iComp] * meanStressTpdt + devStressTpdt;
   } // for
 
-  PetscLogFlopsNoCheck(11 * _MaxwellIsotropic3D::tensorSize);
-} // _calcStress
+  PetscLogFlopsNoCheck(7 + 3 * tensorSize);
+} // _calcStressViscoelastic
 
 // ----------------------------------------------------------------------
 // Compute derivative of elasticity matrix at location from properties.
 void
 pylith::materials::MaxwellIsotropic3D::_calcElasticConstsElastic(
-						  double* const elasticConsts,
-						  const int numElasticConsts,
-						  const double* properties,
-						  const int numProperties,
-						  const double* totalStrain,
-						  const int strainSize)
+				         double* const elasticConsts,
+					 const int numElasticConsts,
+					 const double* properties,
+					 const int numProperties,
+					 const double* totalStrain,
+					 const int strainSize)
 { // _calcElasticConstsElastic
   assert(0 != elasticConsts);
   assert(_MaxwellIsotropic3D::numElasticConsts == numElasticConsts);
@@ -300,14 +325,11 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsElastic(
   assert(0 != totalStrain);
   assert(_MaxwellIsotropic3D::tensorSize == strainSize);
  
-  const double density = properties[_MaxwellIsotropic3D::pidDensity];
   const double mu = properties[_MaxwellIsotropic3D::pidMu];
   const double lambda = properties[_MaxwellIsotropic3D::pidLambda];
-  const double maxwelltime = properties[_MaxwellIsotropic3D::pidMaxwellTime];
 
   const double mu2 = 2.0 * mu;
   const double lambda2mu = lambda + mu2;
-  const double bulkmodulus = lambda + mu2 / 3.0;
 
   elasticConsts[ 0] = lambda2mu; // C1111
   elasticConsts[ 1] = lambda; // C1122
@@ -339,12 +361,12 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsElastic(
 // as an elastic material.
 void
 pylith::materials::MaxwellIsotropic3D::_calcElasticConstsViscoelastic(
-						  double* const elasticConsts,
-						  const int numElasticConsts,
-						  const double* properties,
-						  const int numProperties,
-						  const double* totalStrain,
-						  const int strainSize)
+				         double* const elasticConsts,
+					 const int numElasticConsts,
+					 const double* properties,
+					 const int numProperties,
+					 const double* totalStrain,
+					 const int strainSize)
 { // _calcElasticConstsViscoelastic
   assert(0 != elasticConsts);
   assert(_MaxwellIsotropic3D::numElasticConsts == numElasticConsts);
@@ -353,19 +375,18 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsViscoelastic(
   assert(0 != totalStrain);
   assert(_MaxwellIsotropic3D::tensorSize == strainSize);
  
-  const double density = properties[_MaxwellIsotropic3D::pidDensity];
   const double mu = properties[_MaxwellIsotropic3D::pidMu];
   const double lambda = properties[_MaxwellIsotropic3D::pidLambda];
   const double maxwelltime = properties[_MaxwellIsotropic3D::pidMaxwellTime];
 
   const double mu2 = 2.0 * mu;
-  const double bulkmodulus = lambda + mu2/3.0;
+  const double bulkModulus = lambda + mu2/3.0;
 
   double dq = ViscoelasticMaxwell::computeVisStrain(_dt, maxwelltime);
 
   const double visFac = mu*dq/3.0;
-  elasticConsts[ 0] = bulkmodulus + 4.0*visFac; // C1111
-  elasticConsts[ 1] = bulkmodulus - 2.0*visFac; // C1122
+  elasticConsts[ 0] = bulkModulus + 4.0*visFac; // C1111
+  elasticConsts[ 1] = bulkModulus - 2.0*visFac; // C1122
   elasticConsts[ 2] = elasticConsts[1]; // C1133
   elasticConsts[ 3] = 0; // C1112
   elasticConsts[ 4] = 0; // C1123
@@ -386,17 +407,17 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsViscoelastic(
   elasticConsts[19] = 0; // C2313
   elasticConsts[20] = elasticConsts[15]; // C1313
 
-  PetscLogFlopsNoCheck(7);
+  PetscLogFlopsNoCheck(10);
 } // _calcElasticConstsViscoelastic
 
 // ----------------------------------------------------------------------
 // Update state variables.
 void
 pylith::materials::MaxwellIsotropic3D::_updatePropertiesElastic(
-						 double* const properties,
-						 const int numProperties,
-						 const double* totalStrain,
-						 const int strainSize)
+				         double* const properties,
+					 const int numProperties,
+					 const double* totalStrain,
+					 const int strainSize)
 { // _updatePropertiesElastic
   assert(0 != properties);
   assert(_totalPropsQuadPt == numProperties);
@@ -414,24 +435,12 @@ pylith::materials::MaxwellIsotropic3D::_updatePropertiesElastic(
 
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 
-  // Temporary to get stresses.
-  // double_array stress(6);
-  // _calcStressElastic(&stress, (*properties), totalStrain);
-
   for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp) {
     properties[_MaxwellIsotropic3D::pidStrainT+iComp] = totalStrain[iComp];
     properties[_MaxwellIsotropic3D::pidVisStrain+iComp] =
-      totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
+      totalStrain[iComp] - diag[iComp] * meanStrainTpdt;
   } // for
-  PetscLogFlopsNoCheck(5 * _MaxwellIsotropic3D::tensorSize);
-//   std::cout << std::endl;
-//   std::cout << " updatePropertiesElastic: "<< std::endl;
-//   std::cout << " StrainT  VisStrain  Stress: " << std::endl;
-//   for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
-//     std::cout << "  " << properties[_MaxwellIsotropic3D::pidStrainT+iComp]
-// 	    << "   " << properties[_MaxwellIsotropic3D::pidVisStrain+iComp]
-// 	    << "   " << stress[iComp]
-// 	    << std::endl;
+  PetscLogFlopsNoCheck(3 + 2 * _MaxwellIsotropic3D::tensorSize);
 
   _needNewJacobian = true;
 } // _updatePropertiesElastic
@@ -450,59 +459,22 @@ pylith::materials::MaxwellIsotropic3D::_updatePropertiesViscoelastic(
   assert(0 != totalStrain);
   assert(_MaxwellIsotropic3D::tensorSize == strainSize);
 
-  const double maxwelltime = properties[_MaxwellIsotropic3D::pidMaxwellTime];
+  const int tensorSize = _MaxwellIsotropic3D::tensorSize;
 
-  const double e11 = totalStrain[0];
-  const double e22 = totalStrain[1];
-  const double e33 = totalStrain[2];
+  pylith::materials::MaxwellIsotropic3D::_computeStateVars(properties,
+							   numProperties,
+							   totalStrain,
+							   strainSize);
 
-  const double meanStrainTpdt = (e11 + e22 + e33) / 3.0;
-
-  const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-
-  // Temporary to get stresses.
-  double stress[6];
-  const int stressSize = 6;
-  _calcStressViscoelastic(stress, stressSize, 
-			  properties, numProperties,
-			  totalStrain, strainSize, true);
-
-  const double meanStrainT = 
-    (properties[_MaxwellIsotropic3D::pidStrainT+0] +
-     properties[_MaxwellIsotropic3D::pidStrainT+1] +
-     properties[_MaxwellIsotropic3D::pidStrainT+2]) / 3.0;
-  
-  PetscLogFlopsNoCheck(6);
-
-  double dq = ViscoelasticMaxwell::computeVisStrain(_dt, maxwelltime);
-
-  const double expFac = exp(-_dt/maxwelltime);
-  double devStrainTpdt = 0.0;
-  double devStrainT = 0.0;
-  double visStrain = 0.0;
-  PetscLogFlopsNoCheck(3);
-  for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp) {
-    devStrainTpdt = totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
-    devStrainT = properties[_MaxwellIsotropic3D::pidStrainT+iComp] -
-      diag[iComp] * meanStrainT;
-    visStrain = expFac * 
-      properties[_MaxwellIsotropic3D::pidVisStrain+iComp] +
-      dq * (devStrainTpdt - devStrainT);
-    properties[_MaxwellIsotropic3D::pidVisStrain+iComp] = visStrain;
-    properties[_MaxwellIsotropic3D::pidStrainT+iComp] = totalStrain[iComp];
-  } // for
-  PetscLogFlopsNoCheck(8 * _MaxwellIsotropic3D::tensorSize);
+  memcpy(&properties[_MaxwellIsotropic3D::pidVisStrain],
+	 &_visStrain[0], 
+	 tensorSize * sizeof(double));
+  memcpy(&properties[_MaxwellIsotropic3D::pidStrainT],
+	 &totalStrain[0], 
+	 tensorSize * sizeof(double));
 
   _needNewJacobian = false;
 
-//   std::cout << std::endl;
-//   std::cout << " updatePropertiesViscoelastic: "<< std::endl;
-//   std::cout << " StrainT  VisStrain  Stress: " << std::endl;
-//   for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
-//     std::cout << "  " << properties[_MaxwellIsotropic3D::pidStrainT+iComp]
-// 	    << "   " << properties[_MaxwellIsotropic3D::pidVisStrain+iComp]
-// 	    << "   " << stress[iComp]
-// 	    << std::endl;
 } // _updatePropertiesViscoelastic
 
 
