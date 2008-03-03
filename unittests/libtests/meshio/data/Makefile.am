@@ -68,9 +68,18 @@ noinst_DATA = \
 	hex8_fault_t10.vtk \
 	hex8_fault_vertex_t10.vtk \
 	hex8_fault_cell_t10.vtk \
+	tri3_bc_t10.vtk \
+	tri3_bc_vertex_t10.vtk \
+	tri3_bc_cell_t10.vtk \
 	quad4_bc_t10.vtk \
 	quad4_bc_vertex_t10.vtk \
-	quad4_bc_cell_t10.vtk
+	quad4_bc_cell_t10.vtk \
+	tet4_bc_t10.vtk \
+	tet4_bc_vertex_t10.vtk \
+	tet4_bc_cell_t10.vtk \
+	hex8_bc_t10.vtk \
+	hex8_bc_vertex_t10.vtk \
+	hex8_bc_cell_t10.vtk 
 
 noinst_TMP =
 

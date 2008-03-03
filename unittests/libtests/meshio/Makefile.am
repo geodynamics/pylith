@@ -39,14 +39,15 @@ testmeshio_SOURCES = \
 	TestDataWriterVTKFaultMeshTet4.cc \
 	TestDataWriterVTKFaultMeshHex8.cc \
 	TestDataWriterVTKBCMesh.cc \
+	TestDataWriterVTKBCMeshTri3.cc \
 	TestDataWriterVTKBCMeshQuad4.cc \
+	TestDataWriterVTKBCMeshTet4.cc \
+	TestDataWriterVTKBCMeshHex8.cc \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
 	TestMeshIOLagrit.cc \
 	test_meshio.cc
 
-# Need to determine proper behavior for submesh w/cohesive cells()
-#	TestDataWriterVTKBCMeshTri3.cc 
 
 noinst_HEADERS = \
 	TestDataWriterVTK.hh \
@@ -67,13 +68,14 @@ noinst_HEADERS = \
 	TestDataWriterVTKFaultMeshTet4.hh \
 	TestDataWriterVTKFaultMeshHex8.hh \
 	TestDataWriterVTKBCMesh.hh \
+	TestDataWriterVTKBCMeshTri3.hh \
 	TestDataWriterVTKBCMeshQuad4.hh \
+	TestDataWriterVTKBCMeshTet4.hh \
+	TestDataWriterVTKBCMeshHex8.hh \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh
 
-# Need to determine proper behavior for submesh w/cohesive cells()
-#	TestDataWriterVTKBCMeshTri3.hh
 
 # Source files associated with testing data
 testmeshio_SOURCES += \
@@ -94,6 +96,8 @@ testmeshio_SOURCES += \
 	data/DataWriterVTKDataFaultMeshHex8.cc \
 	data/DataWriterVTKDataBCMeshTri3.cc \
 	data/DataWriterVTKDataBCMeshQuad4.cc \
+	data/DataWriterVTKDataBCMeshTet4.cc \
+	data/DataWriterVTKDataBCMeshHex8.cc \
 	data/MeshData.cc \
 	data/MeshData1D.cc \
 	data/MeshData1Din3D.cc \
@@ -126,6 +130,8 @@ noinst_HEADERS += \
 	data/DataWriterVTKDataFaultMeshHex8.hh \
 	data/DataWriterVTKDataBCMeshTri3.hh \
 	data/DataWriterVTKDataBCMeshQuad4.hh \
+	data/DataWriterVTKDataBCMeshTet4.hh \
+	data/DataWriterVTKDataBCMeshHex8.hh \
 	data/MeshData.hh \
 	data/MeshData1D.hh \
 	data/MeshData1Din2D.hh \
@@ -209,9 +215,18 @@ noinst_tmp = \
 	hex8_fault_t10.vtk \
 	hex8_fault_vertex_t10.vtk \
 	hex8_fault_cell_t10.vtk \
+	tri3_bc_t10.vtk \
+	tri3_bc_vertex_t10.vtk \
+	tri3_bc_cell_t10.vtk \
 	quad4_bc_t10.vtk \
 	quad4_bc_vertex_t10.vtk \
-	quad4_bc_cell_t10.vtk
+	quad4_bc_cell_t10.vtk \
+	tet4_bc_t10.vtk \
+	tet4_bc_vertex_t10.vtk \
+	tet4_bc_cell_t10.vtk \
+	hex8_bc_t10.vtk \
+	hex8_bc_vertex_t10.vtk \
+	hex8_bc_cell_t10.vtk 
 
 CLEANFILES = $(noinst_tmp)
 
