@@ -26,6 +26,7 @@ pylith::meshio::BinaryIO::readString(std::ifstream& fin,
   std::string bstring = "";
   if (numChars > 0) {
     char* buffer = new char[numChars+1];
+    buffer[0] = '\0';
     fin.read(buffer, sizeof(char)*numChars);
     buffer[numChars] = '\0';
 
