@@ -94,9 +94,9 @@ Release 1.1
 
     8. Neumann BC
 
-    9. Add note that groups for DirichletBoundary, Neumann, and
-       AbsorbingDampers must be associated with simply-connected
-       surfaces.
+    9. Add note that groups for DirichletBoundary, Neumann,
+       AbsorbingDampers, and Fault must be associated with
+       simply-connected surfaces.
 
 ----------------------------------------------------------------------
 Release 1.2

@@ -1185,6 +1185,11 @@ Databases for Boundaries, Interfaces, and Material Properties
 \end_layout
 
 \begin_layout Standard
+ADD DISCUSSION OF 3 SPATIAL DATABASE IMPLEMENTATIONS (UniformDB, SimpleDB,
+ SCECCVMHDB)
+\end_layout
+
+\begin_layout Standard
 Once the problem has been defined with PyLith parameters, and the mesh informati
 on has been provided, the final step is to specify the boundary conditions
  and material properties to be used.
