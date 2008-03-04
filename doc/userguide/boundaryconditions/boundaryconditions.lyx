@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -67,13 +67,11 @@ Create sets of vertices in the mesh generation process for each boundary
 \end_layout
 
 \begin_layout Enumerate
-Create a container to hold the various boundary conditions unless a suitable
- one already exists.
+Define boundary condition groups corresponding to the vertex sets.
 \end_layout
 
 \begin_layout Enumerate
-Set the parameters for each boundary condition in the boundary condition
- container using 
+Set the parameters for each boundary condition group using 
 \family typewriter
 .cfg
 \family default
@@ -112,260 +110,38 @@ reference "sec:MeshIOAscii"
  Note also that we currently associate boundary conditions with string identifie
 rs, so even if the mesh generator uses integers, the name is specified as
  the digits of the integer value.
- 
+ Finally, note that every vertex set used to specify boundary conditions
+ must correspond to a simply-connected surface, meaning that all vertices
+ in the set must be connected to each other.
 \end_layout
 
 \begin_layout Subsection
-Boundary Condition Container
+Boundary Condition Groups
 \end_layout
 
 \begin_layout Standard
-The boundary condition container associates a type of boundary condition
- with a set of vertices via a string label.
- Because the number of boundary conditions depends on the problem and Pyre
- does not support dynamic arrays of components, a generic boundary condition
- container is not yet available.
- However, we supply containers for one, two, four, and six boundary conditions.
- Table 
-\begin_inset LatexCommand ref
-reference "tab:bc:containers"
-
-\end_inset
-
- gives the predefined boundary condition containers.
- The default boundary condition in each of the containers is the Dirichlet
- boundary condition.
- If no parameters are specified for the boundary condition, it is not used.
- For problems with more than six boundary conditions, the user must create
- the container using an 
+A boundary condition group associates a type of boundary condition with
+ a set of vertices via a string label.
+ In previous versions of PyLith it was necessary to specify containers that
+ defined the number of groups and associated label for each group.
+ This was necessary because previous versions of Pyre did not support dynamic
+ arrays of components, and it was necessary to predefine these arrays.
+ The current version of Pythia (0.8.1.5) does support this, however, and it
+ is now possible to define boundary condition groups using a 
 \family typewriter
-.odb
+.cfg
 \family default
- file (a template is provided in the 
+ file, a 
 \family typewriter
-examples/templates
+.pml
 \family default
- directory of the PyLith distribution).
- This 
-\family typewriter
-.odb
-\family default
- file should be placed in the directory with the other simulation input
- files.
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Float table
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="3">
-<features>
-<column alignment="left" valignment="top" leftline="true" width="0.75in">
-<column alignment="center" valignment="top" leftline="true" width="1.3in">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="2in">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\series bold
-Container
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\series bold
-Number of Boundary Conditions
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\series bold
-Container Facilities
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-BCSingle
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-1
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-bc
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-BCTwoSides
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-2
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-neg, pos
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-BCFourSides
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-4
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-x_neg, x_pos, y_neg, y_pos
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-BCSixSides
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-6
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-x_neg, x_pos, y_neg, y_pos, z_neg, z_pos
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "tab:bc:containers"
-
-\end_inset
-
-Predefined boundary condition containers.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+ file, or on the command-line.
+ User-defined containers are no longer necessary, and the predefined containers
+ are no longer available (or necessary).
+ The default boundary condition for each group is the Dirichlet boundary
+ condition.
+ It is possible to specify as many boundary condition groups as desired.
+ If no parameters are specified for a group, it is not used.
 \end_layout
 
 \begin_layout Section
@@ -638,8 +414,244 @@ Neumann Boundary Conditions
 \end_layout
 
 \begin_layout Standard
-Neumann (traction) boundary conditions are not implemented in this release.
- We hope to include these in the next release.
+Neumann boundary conditions are surface tractions applied over a subset
+ of the mesh vertices.
+ As for Dirichlet boundary conditions, each boundary condition group must
+ be a simply-connected surface.
+ The surface over which the tractions are applied always has a spatial dimension
+ that is one less than the dimension of the problem of interest.
+ Traction values are computed at the integration points of each cell on
+ the surface, using values from the spatial database.
+ These are then integrated over the surface to obtain the equivalent nodal
+ forces.
+ An example problem using Neumann boundary conditions may be found in 
+\family typewriter
+examples/twocells/twoquad4
+\family default
+.
+ The Neumann example may be run by typing:
+\end_layout
+
+\begin_layout LyX-Code
+pylith axialtract.cfg
+\end_layout
+
+\begin_layout Subsection
+Neumann Boundary Condition Parameters
+\end_layout
+
+\begin_layout Standard
+The principal Neumann boundary condition properties are:
+\end_layout
+
+\begin_layout Description
+label This is a string used to identify the boundary in the mesh.
+\end_layout
+
+\begin_layout Description
+up_dir This is a 3-vector that provides a hint for the direction perpendicular
+ to the horizontal tangent direction that is not collinear with the direction
+ normal to the surface.
+ The default value is (0,0,1), which assumes that the z-axis is positive
+ upward.
+\end_layout
+
+\begin_layout Standard
+The principal Neumann boundary condition components are:
+\end_layout
+
+\begin_layout Description
+db The spatial database specifying the spatial variation in the applied
+ tractions.
+\end_layout
+
+\begin_layout Description
+output The output manager associated with diagnostic output.
+\end_layout
+
+\begin_layout Description
+quadrature The quadrature object to be used for numerical integration.
+ Since we are integrating over a surface that is one dimenion lower than
+ the problem domain, this would typically be set to something like 
+\family typewriter
+quadrature2din3d
+\family default
+ (for a three-dimensional problem).
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
+
+\begin_layout LyX-Code
+formulation = pylith.problems.Implicit
+\end_layout
+
+\begin_layout LyX-Code
+bc = [x_neg,x_pos,y_neg]
+\end_layout
+
+\begin_layout LyX-Code
+bc.x_pos = pylith.bc.Neumann
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.bc.x_pos]
+\end_layout
+
+\begin_layout LyX-Code
+label = x_pos
+\end_layout
+
+\begin_layout LyX-Code
+db = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db.label = Dirichlet BC +x edge
+\end_layout
+
+\begin_layout LyX-Code
+db.iohandler.filename = axialtract.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+db.query_type = nearest
+\end_layout
+
+\begin_layout LyX-Code
+quadrature = pylith.feassemble.quadrature.Quadrature1Din2D
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell = pylith.feassemble.FIATLagrange
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell.dimension = 1
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell.quad_order = 2
+\end_layout
+
+\begin_layout Standard
+These settings correspond to the two-dimensional example problem in 
+\family typewriter
+examples/twocells/twoquad4
+\family default
+.
+ The group of vertices to which Neumann boundary conditions are to be applied
+ has the label 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+x_pos
+\family default
+'' and the spatial database query should use the nearest point algorithm.
+ See Appendix 
+\begin_inset LatexCommand ref
+reference "sec:Spatialdata:SimpleIOAscii"
+
+\end_inset
+
+ for a complete list of the spatial database settings.
+ Note that it is necessary to explicitly set the boundary condition type
+ for this group to 
+\family typewriter
+pylith.bc.Neumann
+\family default
+, since the default value is 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+dirichletpoints
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ It is also necessary to define the quadrature information.
+ Since this is a two-dimensional problem, we must integrate over edges in
+ two dimensions.
+ The quadrature is therefore 
+\family typewriter
+Quadrature1Din2D
+\family default
+, and the cell dimension is one.
+ The cell quadrature order has been set to two.
+ Since constant tractions are used for this particular problem, a quadrature
+ order of one would have been sufficient; however, for problems involving
+ more complex variations (e.g., a linear variation), a quadrature order of
+ two will provide more accurate results.
+ Note that there is no advantage to specifying an integration order higher
+ than two, since linear elements are being used for this problem.
+\end_layout
+
+\begin_layout Subsection
+Neumann Boundary Condition Spatial Database Files
+\end_layout
+
+\begin_layout Standard
+The spatial database files for the Neumann boundary condition specify the
+ applied tractions.
+ The number of traction components is equal to the number of degrees of
+ freedom for the problem.
+ The tractions are specified in a boundary-local coordinate system.
+ The traction value names for the different types of problems are:
+\end_layout
+
+\begin_layout Description
+one-dimensional normal-traction
+\end_layout
+
+\begin_layout Description
+two-dimensional shear-traction, normal-traction
+\end_layout
+
+\begin_layout Description
+three-dimensional horiz-shear-traction, vert-shear-traction, normal-traction
+\end_layout
+
+\begin_layout Standard
+To resolve any ambiguities in specifying the shear tractions in three-dimensiona
+l problems, users may make use of the 
+\family typewriter
+up_dir
+\family default
+ parameter, which gives the components of the vector generally thought to
+ represent 
+\begin_inset Quotes eld
+\end_inset
+
+up
+\begin_inset Quotes erd
+\end_inset
+
+.
+ In the case of a horizontal surface, users will need to pick an alternative
+ vector, as the default 
+\family typewriter
+up_dir
+\family default
+ would coincide with the normal direction.
 \end_layout
 
 \begin_layout Section
