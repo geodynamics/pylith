@@ -194,22 +194,24 @@ pylith::feassemble::TestCellGeometry::testOrientFn(void)
 { // testOrientFn
   CPPUNIT_ASSERT(0 != _object);
   CPPUNIT_ASSERT(0 != _data);
+
+  // We can't compare function pointers, because they depend on how
+  // the dynamic library is loaded (seems okay on Linux and Darwin but
+  // fails with cygwin). Instead we settle for making sure the
+  // function pointer is not 0 (NULL).
+
   switch (_data->cellDim)
     { // switch
     case 0 :
-      CPPUNIT_ASSERT(CellGeometry::_orient0D == _object->_orientFn);
-      break;
     case 1 :
-      CPPUNIT_ASSERT(CellGeometry::_orient1D == _object->_orientFn);
-      break;
     case 2 :
-      CPPUNIT_ASSERT(CellGeometry::_orient2D == _object->_orientFn);
+      CPPUNIT_ASSERT(0 != _object->_orientFn);
       break;
     case 3 :
       CPPUNIT_ASSERT(0 == _object->_orientFn);
       break;
     default :
-      assert(0);
+      CPPUNIT_ASSERT(0);
     } // switch
 } // testOrientFn
 
