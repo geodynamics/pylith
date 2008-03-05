@@ -47,6 +47,7 @@ testmeshio_SOURCES = \
 	TestMeshIOAscii.cc \
 	TestMeshIOLagrit.cc \
 	TestOutputManager.cc \
+	TestOutputSolnSubset.cc \
 	test_meshio.cc
 
 
@@ -76,7 +77,8 @@ noinst_HEADERS = \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh \
-	TestOutputManager.hh
+	TestOutputManager.hh \
+	TestOutputSolnSubset.hh
 
 
 # Source files associated with testing data
