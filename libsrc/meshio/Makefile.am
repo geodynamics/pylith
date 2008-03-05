@@ -27,7 +27,8 @@ subpkginclude_HEADERS = \
 	MeshIOLagrit.icc \
 	OutputManager.hh \
 	OutputSolnSubset.hh \
-	VertexFilter.hh
+	VertexFilter.hh \
+	VertexFilterVecNorm.hh
 
 if ENABLE_CUBIT
   subpkginclude_HEADERS += \

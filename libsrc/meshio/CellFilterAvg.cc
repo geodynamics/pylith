@@ -47,11 +47,13 @@ pylith::meshio::CellFilterAvg::clone(void) const
 // Filter field.
 const ALE::Obj<pylith::real_section_type>&
 pylith::meshio::CellFilterAvg::filter(
+				  VectorFieldEnum* fieldType,
 				  const ALE::Obj<real_section_type>& fieldIn,
 				  const ALE::Obj<ALE::Mesh>& mesh,
 				  const char* label,
 				  const int labelId)
 { // filter
+  assert(0 != fieldType);
   assert(0 != _quadrature);
 
   const int numQuadPts = _quadrature->numQuadPts();
@@ -67,6 +69,13 @@ pylith::meshio::CellFilterAvg::filter(
   const int fiberDim = totalFiberDim / numQuadPts;
   assert(fiberDim * numQuadPts == totalFiberDim);
 
+  if (1 == fiberDim)
+    *fieldType = SCALAR_FIELD;
+  else if (mesh->getDimension() == fiberDim)
+    *fieldType = VECTOR_FIELD;
+  else
+    *fieldType = OTHER_FIELD;
+  
   // Allocation field if necessary
   if (_fieldAvg.isNull() ||
       fiberDim != _fieldAvg->getFiberDimension(*cells->begin())) {

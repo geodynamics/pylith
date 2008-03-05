@@ -46,8 +46,9 @@ public :
    */
   CellFilter* clone(void) const;
 
-  /** Filter field.
+  /** Filter field. Field type of filtered field is returned via an argument.
    *
+   * @param fieldType Field type of filtered field.
    * @param fieldIn Field to filter.
    * @param mesh PETSc mesh.
    * @param label Label identifying cells.
@@ -56,7 +57,8 @@ public :
    * @returns Averaged field.
    */
   const ALE::Obj<real_section_type>&
-  filter(const ALE::Obj<real_section_type>& fieldIn,
+  filter(VectorFieldEnum* fieldType,
+	 const ALE::Obj<real_section_type>& fieldIn,
 	 const ALE::Obj<ALE::Mesh>& mesh,
 	 const char* label,
 	 const int labelId);

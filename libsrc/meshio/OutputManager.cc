@@ -130,10 +130,12 @@ pylith::meshio::OutputManager::appendVertexField(
 { // appendVertexField
   assert(0 != name);
 
+  VectorFieldEnum fieldTypeFiltered = fieldType;
   const ALE::Obj<real_section_type>& fieldFiltered = 
-    (0 == _vertexFilter) ? field : _vertexFilter->filter(field, mesh);
+    (0 == _vertexFilter) ? 
+    field : _vertexFilter->filter(&fieldTypeFiltered, field, mesh);
 
-  _writer->writeVertexField(t, name, fieldFiltered, fieldType, mesh);
+  _writer->writeVertexField(t, name, fieldFiltered, fieldTypeFiltered, mesh);
 } // appendVertexField
 
 // ----------------------------------------------------------------------
@@ -150,10 +152,14 @@ pylith::meshio::OutputManager::appendCellField(
 { // appendCellField
   assert(0 != name);
 
+  VectorFieldEnum fieldTypeFiltered = fieldType;
   const ALE::Obj<real_section_type>& fieldFiltered = 
-    (0 == _cellFilter) ? field : _cellFilter->filter(field, mesh, label, labelId);
+    (0 == _cellFilter) ? 
+    field : _cellFilter->filter(&fieldTypeFiltered, field, 
+				mesh, label, labelId);
 
-  _writer->writeCellField(t, name, fieldFiltered, fieldType, mesh, label, labelId);
+  _writer->writeCellField(t, name, fieldFiltered, fieldTypeFiltered,
+			  mesh, label, labelId);
 } // appendCellField
 
 

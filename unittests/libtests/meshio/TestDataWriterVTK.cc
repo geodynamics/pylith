@@ -116,7 +116,7 @@ pylith::meshio::TestDataWriterVTK::testTimeStep(void)
   CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
   CPPUNIT_ASSERT(false == writer._wroteCellHeader);
 
-  _checkFile(_data->timestepFilename);
+  checkFile(_data->timestepFilename, t, _data->timeFormat);
 } // testTimeStep
 
 // ----------------------------------------------------------------------
@@ -164,7 +164,7 @@ pylith::meshio::TestDataWriterVTK::testWriteVertexField(void)
   CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
   CPPUNIT_ASSERT(false == writer._wroteCellHeader);
   
-  _checkFile(_data->vertexFilename);
+  checkFile(_data->vertexFilename, t, _data->timeFormat);
 } // testWriteVertexField
 
 // ----------------------------------------------------------------------
@@ -220,7 +220,7 @@ pylith::meshio::TestDataWriterVTK::testWriteCellField(void)
   CPPUNIT_ASSERT(false == writer._wroteCellHeader);
   CPPUNIT_ASSERT(false == writer._wroteCellHeader);
   
-  _checkFile(_data->cellFilename);
+  checkFile(_data->cellFilename, t, _data->timeFormat);
 } // testWriteCellField
 
 // ----------------------------------------------------------------------
@@ -306,10 +306,10 @@ pylith::meshio::TestDataWriterVTK::_createCellFields(
 // ----------------------------------------------------------------------
 // Check VTK file against archived file.
 void
-pylith::meshio::TestDataWriterVTK::_checkFile(const char* filenameRoot) const
-{ // _checkFile
-  CPPUNIT_ASSERT(0 != _data);
-  const double t = _data->time;
+pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
+					     const double t,
+					     const char* timeFormat)
+{ // checkFile
 
   const std::string& fileroot = filenameRoot;
 
@@ -317,7 +317,7 @@ pylith::meshio::TestDataWriterVTK::_checkFile(const char* filenameRoot) const
   const int indexExt = fileroot.find(".vtk");
   // Add time stamp to filename
   char sbuffer[256];
-  sprintf(sbuffer, _data->timeFormat, t);
+  sprintf(sbuffer, timeFormat, t);
   std::string timestamp(sbuffer);
   const int pos = timestamp.find(".");
   if (pos != timestamp.length())
@@ -352,7 +352,7 @@ pylith::meshio::TestDataWriterVTK::_checkFile(const char* filenameRoot) const
 
   fileInE.close();
   fileIn.close();
-} // _checkFile
+} // checkFile
 
 
 // End of file 
