@@ -25,6 +25,7 @@
 namespace pylith {
   namespace meshio {
     class OutputManager;
+    class TestOutputManager; // unit testing
 
     class DataWriter; // HOLDS DataWriter
     class CellFilter; // HOLDSA CellFilter
@@ -43,6 +44,7 @@ class pylith::meshio::OutputManager
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
+  friend class TestOutputManager; // unit testing
 
   /// Constructor
   OutputManager(void);
@@ -104,8 +106,8 @@ public :
    * @param labelId Value of label defining which cells to include.
    */
   void openTimeStep(const double t,
-	       const ALE::Obj<ALE::Mesh>& mesh,
-	       const spatialdata::geocoords::CoordSys* csMesh,
+		    const ALE::Obj<ALE::Mesh>& mesh,
+		    const spatialdata::geocoords::CoordSys* csMesh,
 		    const char* label =0,
 		    const int labelId =0);
 

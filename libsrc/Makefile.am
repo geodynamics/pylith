@@ -88,6 +88,7 @@ libpylith_la_SOURCES = \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \
 	meshio/VertexFilter.cc \
+	meshio/VertexFilterVecNorm.cc \
 	topology/FieldsManager.cc \
 	topology/Distributor.cc \
 	utils/EventLogger.cc

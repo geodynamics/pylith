@@ -79,7 +79,12 @@ noinst_DATA = \
 	tet4_bc_cell_t10.vtk \
 	hex8_bc_t10.vtk \
 	hex8_bc_vertex_t10.vtk \
-	hex8_bc_cell_t10.vtk 
+	hex8_bc_cell_t10.vtk \
+	output_t12.vtk \
+	output_vertex_t12.vtk \
+	output_vertex_filter_t12.vtk \
+	output_cell_t12.vtk \
+	output_cell_filter_t12.vtk
 
 noinst_TMP =
 

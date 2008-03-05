@@ -46,6 +46,7 @@ testmeshio_SOURCES = \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
 	TestMeshIOLagrit.cc \
+	TestOutputManager.cc \
 	test_meshio.cc
 
 
@@ -74,7 +75,8 @@ noinst_HEADERS = \
 	TestDataWriterVTKBCMeshHex8.hh \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
-	TestMeshIOLagrit.hh
+	TestMeshIOLagrit.hh \
+	TestOutputManager.hh
 
 
 # Source files associated with testing data
@@ -226,7 +228,12 @@ noinst_tmp = \
 	tet4_bc_cell_t10.vtk \
 	hex8_bc_t10.vtk \
 	hex8_bc_vertex_t10.vtk \
-	hex8_bc_cell_t10.vtk 
+	hex8_bc_cell_t10.vtk \
+	output_t12.vtk \
+	output_vertex_t12.vtk \
+	output_vertex_filter_t12.vtk \
+	output_cell_t12.vtk \
+	output_cell_filter_t12.vtk
 
 CLEANFILES = $(noinst_tmp)
 

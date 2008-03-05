@@ -21,6 +21,7 @@
 #define pylith_meshio_cellfilter_hh
 
 #include "pylith/utils/sievetypes.hh" // USES ALE::Mesh, real_section_type
+#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
 
 namespace pylith {
   namespace meshio {
@@ -57,8 +58,9 @@ public :
    */
   void quadrature(const feassemble::Quadrature* q);
 
-  /** Filter field.
+  /** Filter field. Field type of filtered field is returned via an argument.
    *
+   * @param fieldType Field type of filtered field.
    * @param fieldIn Field to filter.
    * @param mesh PETSc mesh.
    * @param label Label identifying cells.
@@ -68,7 +70,8 @@ public :
    */
   virtual
   const ALE::Obj<real_section_type>&
-  filter(const ALE::Obj<real_section_type>& fieldIn,
+  filter(VectorFieldEnum* fieldType,
+	 const ALE::Obj<real_section_type>& fieldIn,
 	 const ALE::Obj<ALE::Mesh>& mesh,
 	 const char* label,
 	 const int labelId) = 0;

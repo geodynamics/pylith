@@ -76,6 +76,20 @@ public :
   /// Test writeCellField.
   void testWriteCellField(void);
 
+  // PUBLIC METHODS /////////////////////////////////////////////////////
+public :
+
+  /** Check VTK file against archived file.
+   *
+   * @param filename Name of file to check.
+   * @param t Time for file.
+   * @param timeFormat Format of timestamp in filename.
+   */
+  static
+  void checkFile(const char* filename,
+		 const double t,
+		 const char* timeFormat);
+  
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
@@ -99,12 +113,6 @@ private :
   void
   _createCellFields(std::vector< ALE::Obj<real_section_type> >* fields) const;
 
-  /** Check VTK file against archived file.
-   *
-   * @param filename Name of file to check.
-   */
-  void _checkFile(const char* filename) const;
-  
 }; // class TestDataWriterVTK
 
 #endif // pylith_meshio_testdatawritervtk_hh

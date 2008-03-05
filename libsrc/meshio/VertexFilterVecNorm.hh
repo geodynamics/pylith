@@ -11,43 +11,40 @@
 //
 
 /**
- * @file pylith/meshio/VertexFilter.hh
+ * @file pylith/meshio/VertexFilterVecNorm.hh
  *
- * @brief C++ object for filtering vertex fields when outputing
- * finite-element data.
+ * @brief C++ object for computing vector norms for fields over
+ * vertices when outputing finite-element data.
  */
 
-#if !defined(pylith_meshio_vertexfilter_hh)
-#define pylith_meshio_vertexfilter_hh
+#if !defined(pylith_meshio_cellfiltervecnorm_hh)
+#define pylith_meshio_cellfiltervecnorm_hh
 
-#include "pylith/utils/sievetypes.hh" // USES ALE::Mesh, real_section_type
-#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
+#include "VertexFilter.hh" // ISA VertexFilter
 
 namespace pylith {
   namespace meshio {
-    class VertexFilter;
+    class VertexFilterVecNorm;
   } // meshio
-
 } // pylith
 
-class pylith::meshio::VertexFilter
-{ // VertexFilter
+class pylith::meshio::VertexFilterVecNorm : public VertexFilter
+{ // VertexFilterVecNorm
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
-  VertexFilter(void);
+  VertexFilterVecNorm(void);
 
   /// Destructor
-  ~VertexFilter(void);
+  ~VertexFilterVecNorm(void);
 
   /** Create copy of filter.
    *
    * @returns Copy of filter.
    */
-  virtual
-  VertexFilter* clone(void) const = 0;
+  VertexFilter* clone(void) const;
 
   /** Filter field. Field type of filtered field is returned via an argument.
    *
@@ -55,11 +52,10 @@ public :
    * @param fieldIn Field to filter.
    * @param mesh PETSc mesh.
    */
-  virtual
   const ALE::Obj<real_section_type>&
   filter(VectorFieldEnum* fieldType,
 	 const ALE::Obj<real_section_type>& fieldIn,
-	 const ALE::Obj<ALE::Mesh>& mesh) = 0;
+	 const ALE::Obj<ALE::Mesh>& mesh);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -69,18 +65,22 @@ protected :
    * @param f Filter to copy.
    * @returns Pointer to this.
    */
-  VertexFilter(const VertexFilter& f);
+  VertexFilterVecNorm(const VertexFilterVecNorm& f);
 
-  /** operator=.
-  *
-  * @param f Filter to copy.
-  * @returns Copy of filter.
-  */
-  const VertexFilter& operator=(const VertexFilter& f);
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
+private :
 
-}; // VertexFilter
+  /// Not implemented.
+  const VertexFilter& operator=(const VertexFilter&);
 
-#endif // pylith_meshio_vertexfilter_hh
+// PRIVATE MEMBERS //////////////////////////////////////////////////////
+private :
+
+  ALE::Obj<real_section_type> _fieldVecNorm; ///< Filtered vertex field
+
+}; // VertexFilterVecNorm
+
+#endif // pylith_meshio_cellfiltervecnorm_hh
 
 
 // End of file 
