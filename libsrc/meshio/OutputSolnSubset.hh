@@ -28,11 +28,14 @@
 namespace pylith {
   namespace meshio {
     class OutputSolnSubset;
+
+    class TestOutputSolnSubset; // unit testing
   } // meshio
 } // pylith
 
 class pylith::meshio::OutputSolnSubset : public OutputManager
 { // OutputSolnSubset
+  friend class TestOutputSolnSubset; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :

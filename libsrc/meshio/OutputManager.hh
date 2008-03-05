@@ -41,10 +41,10 @@ namespace spatialdata {
 
 class pylith::meshio::OutputManager
 { // OutputManager
+  friend class TestOutputManager; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
-  friend class TestOutputManager; // unit testing
 
   /// Constructor
   OutputManager(void);
