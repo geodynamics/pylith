@@ -269,7 +269,13 @@ preview false
 
 \end_inset
 
- 
+
+\begin_inset Include \input{analyticalsolns/analyticalsolns.lyx}
+preview false
+
+\end_inset
+
+
 \begin_inset Include \input{license.lyx}
 preview false
 
@@ -438,6 +444,22 @@ Taylor, R.L.
 Version 7.5 Theory Manual
 \shape default
 , 154 pp.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset LatexCommand bibitem
+label "9"
+key "Timoshenko:Goodier:1987"
+
+\end_inset
+
+Timoshenko, S.P.
+ and J.N.
+ Goodier (1987), 
+\shape italic
+Theory of Elasticity, Third Edition
+\shape default
+, McGraw-Hill, New York, 567 pp.
 \end_layout
 
 \end_body
