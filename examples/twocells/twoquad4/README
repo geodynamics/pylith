@@ -21,6 +21,15 @@ The examples and associated files are:
     - axialdisp.cfg:  Parameter settings.
     - axialdisp.spatialdb: Database of Dirichlet BC values.
 
+  * axialtract
+
+    A constant normal traction is applied to the right edge of the mesh.
+    The left edge is pinned in the x-direction, and the bottom edge is
+    pinned in the y-direction.
+
+    - axialtract.cfg:  Parameter settings.
+    - axialtract.spatialdb: Database of Neumann BC values.
+
   * sheardisp: 
 
     The left and right edges of the mesh are pinned in the
@@ -48,6 +57,7 @@ settings, you may place an additional .cfg file on the command line.
 To run the examples, you can type:
 
   pylith axialdisp.cfg
+  pylith axialtract.cfg
   pylith sheardisp.cfg
   pylith dislocation.cfg
 
