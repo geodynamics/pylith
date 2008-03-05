@@ -419,7 +419,7 @@ Neumann boundary conditions are surface tractions applied over a subset
  As for Dirichlet boundary conditions, each boundary condition group must
  be a simply-connected surface.
  The surface over which the tractions are applied always has a spatial dimension
- that is one less than the dimension of the problem of interest.
+ that is one less than the dimension of the problem domain.
  Traction values are computed at the integration points of each cell on
  the surface, using values from the spatial database.
  These are then integrated over the surface to obtain the equivalent nodal
@@ -454,6 +454,8 @@ up_dir This is a 3-vector that provides a hint for the direction perpendicular
  normal to the surface.
  The default value is (0,0,1), which assumes that the z-axis is positive
  upward.
+ This vector is only needed for three-dimensional problems where the positive
+ upward direction differs from the default.
 \end_layout
 
 \begin_layout Standard
@@ -619,15 +621,33 @@ The spatial database files for the Neumann boundary condition specify the
 \end_layout
 
 \begin_layout Description
-one-dimensional normal-traction
+one-dimensional 
+\family typewriter
+normal-traction
 \end_layout
 
 \begin_layout Description
-two-dimensional shear-traction, normal-traction
+two-dimensional 
+\family typewriter
+shear-traction
+\family default
+, 
+\family typewriter
+normal-traction
 \end_layout
 
 \begin_layout Description
-three-dimensional horiz-shear-traction, vert-shear-traction, normal-traction
+three-dimensional 
+\family typewriter
+horiz-shear-traction
+\family default
+, 
+\family typewriter
+vert-shear-traction
+\family default
+, 
+\family typewriter
+normal-traction
 \end_layout
 
 \begin_layout Standard
@@ -652,6 +672,15 @@ up
 up_dir
 \family default
  would coincide with the normal direction.
+ In this case, the orientation for the 
+\family typewriter
+vert-shear-traction
+\family default
+ component will correspond to whatever the user specifies for 
+\family typewriter
+up_dir
+\family default
+, rather than the actual vertical direction.
 \end_layout
 
 \begin_layout Section
