@@ -1,0 +1,37 @@
+The traction example is a simple problem to demonstrate the usage of
+Neumann (traction) boundary conditions. A constant traction of 4.0e8 Pa
+is applied to the right edge of the mesh, the left edge is pinned in x,
+and the bottom edge is pinned in y. The constant normal traction yields
+a constant stress field within the domain, where the xx-component is equal
+to the applied traction. The yy and xy components are both zero. The
+corresponding strain field is:
+
+exx = (1 - nu^2) * N/E
+eyy = -nu * (1 + nu) * N/E
+exy = 0
+
+where nu is Poisson's ratio (0.25 for this problem), E is Young's modulus
+(75 GPa for this problem), and N is the applied normal traction (400 MPa
+for this problem). Integrating the strain-displacement relations and using
+the applied displacement BC, the corresponding displacement field is:
+
+u = (1 - nu^2) * N * (x - x0)/E
+v = nu * (1 + nu) * N * (y0 - y)/E
+
+where x0 and y0 are the minimum x and y-values respectively, along which
+displacements are fixed. Using the mesh, properties, and boundary conditions
+for this problem, the solution should be:
+
+exx = 5.0e-3
+eyy = -1.66667e-3
+exy = 0.0
+
+(-2,-1): u = 0.0,  v = -0.003333
+(-2, 1): u = 0.0,  v =  0.0
+( 0,-1): u = 0.01, v = -0.003333
+( 0, 1): u = 0.01, v =  0.0
+( 2,-1): u = 0.02, v = -0.003333
+( 2, 1): u = 0.02, v =  0.0
+
+Users should compare the computed solution to the analytical solution to
+insure that everything is computed correctly.
