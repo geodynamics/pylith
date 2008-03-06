@@ -35,6 +35,9 @@ Release 1.1
      b. When importing mesh, add check to make sure all cells have same
         number of vertices (especially CUBIT).
 
+     c. Add check to make sure that label in BC, faults, and output
+     subset actually exists in mesh (verifyConfiguration()).
+
   Benchmarks
 
     1. Strike-slip benchmark.
@@ -97,6 +100,8 @@ Release 1.1
     9. Add note that groups for DirichletBoundary, Neumann,
        AbsorbingDampers, and Fault must be associated with
        simply-connected surfaces.
+
+    10. Add list of concepts at the beginning of each tutorial.
 
 ----------------------------------------------------------------------
 Release 1.2
