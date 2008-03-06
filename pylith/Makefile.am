@@ -88,6 +88,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/OutputSolnSubset.py \
 	meshio/SingleOutput.py \
 	meshio/VertexFilter.py \
+	meshio/VertexFilterVecNorm.py \
 	problems/__init__.py \
 	problems/Explicit.py \
 	problems/Formulation.py \

@@ -60,6 +60,12 @@ class TestApp(Script):
     from TestMeshIOLagrit import TestMeshIOLagrit
     suite.addTest(unittest.makeSuite(TestMeshIOLagrit))
 
+    from TestVertexFilterVecNorm import TestVertexFilterVecNorm
+    suite.addTest(unittest.makeSuite(TestVertexFilterVecNorm))
+
+    from TestCellFilterAvg import TestCellFilterAvg
+    suite.addTest(unittest.makeSuite(TestCellFilterAvg))
+
     return suite
 
 
