@@ -21,10 +21,7 @@ CURRENT ISSUES
 
 Release 1.1
 
-  1. OutputManager [BRAD]
-     f. VertexFilterChangeCS
-        i. OutputFilter for writing vertex coordinates in another 
-           coordinate system.
+  1. Fix calcTractionsChange.
 
   2. Check performance of current distribution.
 
@@ -67,6 +64,9 @@ Release 1.1
       b. 3-D bar (tet4, hex8)
       c. simple strike-slip propagating rupture (500m resolution)
 
+    3. CUBIT (Brad)
+       Add GUI instructions in journal files for examples/3d/hex8.
+
   Manual
 
     1. Need to add explanation of output and output parameters
@@ -81,11 +81,11 @@ Release 1.1
          SimpleDB
          SCECCVMHDB
 
-    2. Add dependency diagram.
+    2. Add dependency diagram. (Brad)
 
     3. Add benchmarks.
 
-    4. Update cover figure with current result.
+    4. Update cover figure with current result. (Brad)
 
     5. Remove discussion of containers.
        Use facility array. Include defaults for items.
@@ -160,31 +160,23 @@ Release 1.3
 MISC PRIORITIES (Brad)
 ======================================================================
 
-0. CUBIT
-    Add GUI instructions in journal files for examples/3d/hex8.
-
-1. Create meshes for benchmarks
-
-  reverse
-    tet (LaGriT)
-
-2. Additional unit tests
-
-   a. ElasticityExplicit and ElasticityImplicit
-      i. multiple materials
-      ii. partially constrained DOF
-
-3. Want to take advantage of symmetry and block structure of Jacobian
+1. Want to take advantage of symmetry and block structure of Jacobian
    matrix when possible.
 
-4. Additional unit tests
+2. Additional unit tests
   a. FaultCohesive
     i. Add checking of faultMesh [not currently used]
 
-5. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
+3. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
    a. Materials C++ code
    b. Integrator C++ code
    b. Material C++ unit tests
+
+4. OutputManager
+   a. VertexFilterChangeCS
+      OutputFilter for writing vertex coordinates in another 
+      coordinate system. Need test for whether two coordinate systems 
+      are the same.
 
 ======================================================================
 PLANNED RELEASES
