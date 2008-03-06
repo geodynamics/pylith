@@ -66,6 +66,9 @@ class TestApp(Script):
     from TestCellFilterAvg import TestCellFilterAvg
     suite.addTest(unittest.makeSuite(TestCellFilterAvg))
 
+    from TestOutputManager import TestOutputManager
+    suite.addTest(unittest.makeSuite(TestOutputManager))
+
     return suite
 
 
