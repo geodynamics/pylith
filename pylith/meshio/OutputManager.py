@@ -127,10 +127,14 @@ class OutputManager(Component):
 
     if not "getDataMesh" in dir(self.dataProvider):
       raise TypeError("Data provider must have a 'getDataMesh' function.")
-    if not "getVertexField" in dir(self.dataProvider):
-      raise TypeError("Data provider must have a 'getVertexField' function.")
-    if not "getCellField" in dir(self.dataProvider):
-      raise TypeError("Data provider must have a 'getCellField' function.")
+
+    if len(self.vertexInfoFields) > 0 or len(self.vertexDataFields) > 0:
+      if not "getVertexField" in dir(self.dataProvider):
+        raise TypeError("Data provider must have a 'getVertexField' function.")
+
+    if len(self.cellInfoFields) > 0 or len(self.cellDataFields) > 0:
+      if not "getCellField" in dir(self.dataProvider):
+        raise TypeError("Data provider must have a 'getCellField' function.")
     return
 
 

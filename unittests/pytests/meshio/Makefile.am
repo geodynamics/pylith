@@ -26,7 +26,8 @@ noinst_PYTHON = \
 	TestMeshIOLagrit.py \
 	TestVertexFilterVecNorm.py \
 	TestCellFilterAvg.py \
-	TestOutputManager.py
+	TestOutputManager.py \
+	TestOutputSolnSubset.py
 
 if ENABLE_CUBIT
   TESTS += testdriver_cubit.py
@@ -35,7 +36,8 @@ endif
 
 noinst_tmp = \
 	output_info.vtk \
-	output_t20.vtk
+	output_t20.vtk \
+	output_sub_t20.vtk
 
 CLEANFILES = $(noinst_tmp)
 

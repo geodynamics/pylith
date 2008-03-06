@@ -42,7 +42,12 @@ class TestProvider(object):
     iohandler.filename = filename
     iohandler.coordsys = CSCart()
     mesh = iohandler.read(debug=False, interpolate=False)
-    self._mesh = mesh
+
+    from pylith.topology.FieldsManager import FieldsManager
+    fields = FieldsManager(mesh)
+    
+    self.mesh = mesh
+    self.fields = fields
     return
 
 
@@ -50,29 +55,29 @@ class TestProvider(object):
     """
     Get mesh.
     """
-    return (self._mesh, None, None)
+    return (self.mesh, None, None)
 
 
   def getVertexField(self, name, fields=None):
     """
     Get vertex field.
     """
-    mesh = self._mesh
-    
     if name == "vertex info":
       fieldType = 0
       fiberDim = 1
     elif name == "vertex data 1":
       fieldType = 1
-      fiberDim = mesh.dimension()
+      fiberDim = self.mesh.dimension()
     elif name == "vertex data 2":
       fieldType = 3
       fiberDim = 5
     else:
       raise ValueError("Unknown field '%s'." % name)
 
-    field = mesh.createRealSection(name, fiberDim)
-    mesh.allocateRealSection(field)
+    self.fields.addReal(name)
+    self.fields.setFiberDimension(name, fiberDim)
+    self.fields.allocate(name)
+    field = self.fields.getReal(name)
     return (field, fieldType)
 
 
@@ -80,8 +85,20 @@ class TestProvider(object):
     """
     Get cell field.
     """
-    raise NotImplementedError("Please implement 'getCellField().'")
-    return
+    if name == "cell info":
+      fieldType = 0
+      fiberDim = 1
+    elif name == "cell data":
+      fieldType = 1
+      fiberDim = self.mesh.dimension()
+    else:
+      raise ValueError("Unknown field '%s'." % name)
+
+    self.fields.addReal(name)
+    self.fields.setFiberDimension(name, fiberDim, "cells")
+    self.fields.allocate(name)
+    field = self.fields.getReal(name)
+    return (field, fieldType)
 
 
 # ----------------------------------------------------------------------
@@ -188,6 +205,7 @@ class TestOutputManager(unittest.TestCase):
     dataProvider = TestProvider()
     output.preinitialize(dataProvider)
     output.initialize()
+
     from pyre.units.time import s
     output.open(totalTime=5.0*s, numTimeSteps=2)
     output.close()
@@ -203,6 +221,7 @@ class TestOutputManager(unittest.TestCase):
     output.writer._configure()
     output.writer.filename = "output.vtk"
     output.vertexInfoFields = ["vertex info"]
+    output.cellInfoFields = ["cell info"]
     
     dataProvider = TestProvider()
     output.preinitialize(dataProvider)
@@ -226,17 +245,15 @@ class TestOutputManager(unittest.TestCase):
     output.writer.timeFormat = "%3.1f"
     output.vertexDataFields = ["vertex data 2",
                                "vertex data 1"]
+    output.cellDataFields = ["cell data"]
     
     dataProvider = TestProvider()
     output.preinitialize(dataProvider)
     output.initialize()
 
-    from pylith.topology.FieldsManager import FieldsManager
-    fields = FieldsManager(dataProvider._mesh)
-    
     from pyre.units.time import s
     output.open(totalTime=5.0*s, numTimeSteps=2)
-    output.writeData(2.0*s, fields)
+    output.writeData(2.0*s, dataProvider.fields)
     output.close()
     return
 
