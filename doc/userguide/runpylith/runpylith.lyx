@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -234,8 +234,38 @@ n of what they do by running PyLith with the
 $ pylith --problem.help-properties
 \end_layout
 
+\begin_layout Standard
+Each component may also have sub-components associated with it:
+\end_layout
+
 \begin_layout LyX-Code
-DISCUSS SUBCOMPONENTS AND EXAMPLES
+$ pylith -- problem.help-components
+\end_layout
+
+\begin_layout Standard
+By starting at the top-level components, you can determine the components
+ and properties at each level by working down to lower-level components:
+\end_layout
+
+\begin_layout LyX-Code
+$ pylith --problem.bc.help-components
+\end_layout
+
+\begin_layout LyX-Code
+$ pylith --problem.bc.help-properties
+\end_layout
+
+\begin_layout Standard
+Using the 
+\family typewriter
+--help-components
+\family default
+ and 
+\family typewriter
+--help-properties
+\family default
+ flags for the various components and sub-components is a good way to discover
+ potential problems in a simulation.
 \end_layout
 
 \begin_layout Subsection
@@ -417,6 +447,77 @@ pylithapp.cfg
 \family default
  files placed in (3) will override those in (2), (2) overrides (1), and
  (1) overrides only the built-in defaults.
+\end_layout
+
+\begin_layout Standard
+All of the example problems are set up using configuration files in the
+ example directory, and specific problems are defined by including the appropria
+te configuration file on the command-line.
+ Referring to the directory 
+\family typewriter
+examples/twocells/twohex8
+\family default
+, the following configuration files are present:
+\end_layout
+
+\begin_layout LyX-Code
+axialdisp.cfg
+\end_layout
+
+\begin_layout LyX-Code
+dislocation.cfg
+\end_layout
+
+\begin_layout LyX-Code
+pylithapp.cfg
+\end_layout
+
+\begin_layout LyX-Code
+sheardisp.cfg
+\end_layout
+
+\begin_layout Standard
+The settings in pylithapp.cfg will be read automatically, and additional
+ settings are included by specifying one of the other files on the command-line:
+\end_layout
+
+\begin_layout LyX-Code
+$ pylith axialdisp.cfg
+\end_layout
+
+\begin_layout Standard
+If you want to see what settings are being used, you can either examine
+ the 
+\family typewriter
+.cfg
+\family default
+ files, or use the help flags as described above:
+\end_layout
+
+\begin_layout LyX-Code
+$ pylith axialdisp.cfg --problem.help-components
+\end_layout
+
+\begin_layout LyX-Code
+$ pylith axialdisp.cfg --problem.help-properties
+\end_layout
+
+\begin_layout LyX-Code
+$ pylith axialdisp.cfg --problem.bc.help-components
+\end_layout
+
+\begin_layout LyX-Code
+$ pylith axialdisp.cfg --problem.bc.help-properties
+\end_layout
+
+\begin_layout Standard
+This is generally a more useful way of determining problem settings, since
+ it includes default values as well as those that have been specified in
+ the 
+\family typewriter
+.cfg
+\family default
+ file.
 \end_layout
 
 \begin_layout Subsection
