@@ -1,5 +1,5 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
-\lyxformat 245
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
 \begin_document
 \begin_header
 \textclass book
@@ -8,13 +8,21 @@
 \end_preamble
 \language english
 \inputencoding latin1
-\fontscheme default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
 \graphics default
 \paperfontsize default
 \spacing single
 \papersize default
 \use_geometry true
 \use_amsmath 1
+\use_esint 0
 \cite_engine basic
 \use_bibtopic false
 \paperorientation portrait
@@ -32,12 +40,14 @@
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
+\author "" 
 \end_header
 
 \begin_body
 
 \begin_layout Chapter
-\begin_inset LatexCommand \label{cha:material:models}
+\begin_inset LatexCommand label
+name "cha:material:models"
 
 \end_inset
 
@@ -74,11 +84,11 @@ In the mesh generation process, assign a material identifier to each cell.
 \end_layout
 
 \begin_layout Enumerate
-Create a material container unless a suitable one already exists.
+Define material property groups corresponding to each material identifier.
 \end_layout
 
 \begin_layout Enumerate
-Set the parameters for each material in the materials container using 
+Set the parameters for each material group using 
 \family typewriter
 .cfg
 \family default
@@ -119,33 +129,31 @@ imt1
 \end_layout
 
 \begin_layout Subsection
-Creating a Material Container
+Material Property Groups
 \end_layout
 
 \begin_layout Standard
-The material container associates a material model (label for the material,
+The material property group associates a material model (label for the material,
  a bulk constitutive model, and parameters for the constitutive model) with
  a material identifier.
- Because the number of materials depends on the problem and Pyre does not
- support dynamic arrays of components, a generic materials container is
- not yet available.
- The default material container is a homogeneous material, i.e., a single
- material model for the entire problem.
- A two-material container (
+ In previous versions of PyLith it was necessary to specify containers that
+ defined the number of groups and associated information for each group.
+ This was necessary because previous versions of Pyre did not support dynamic
+ arrays of components, and it was necessary to predefine these arrays.
+ The current version of Pythia (0.8.1.5) does support this, however, and it
+ is now possible to define material property groups using a 
 \family typewriter
-pylith.materials.BiMaterial
+.cfg
 \family default
-) is also supplied.
- For problems with more than two materials, the user must create the material
- container using an 
+ file, a 
 \family typewriter
-.odb
+.pml
 \family default
- file (a template is provided in the 
-\family typewriter
-examples/templates
-\family default
- directory of the PyLith distribution).
+ file, or on the command-line.
+ User-defined containers are no longer necessary, and the predefined containers
+ are no longer available (or necessary).
+ If a set of material groups is not specified, a single material model is
+ used for the entire problem.
  The examples in 
 \family typewriter
 examples/3d/hex8
@@ -154,13 +162,8 @@ examples/3d/hex8
 \family typewriter
 examples/3d/tet4
 \family default
- use a material container using this template.
- This 
-\family typewriter
-.odb
-\family default
- file should be placed in the directory with the other simulation input
- files.
+ demonstrate how to specify more than one material model for a problem,
+ while the remainder of the example problems assume a single material model.
 \end_layout
 
 \begin_layout Subsection
@@ -168,17 +171,16 @@ Material Parameters
 \end_layout
 
 \begin_layout Standard
-The principal parameters for a material are:
-\end_layout
-
-\begin_layout Description
-id This is the material identifier that matches the integer value assigned
- to each cell in the mesh generation process.
-\end_layout
-
-\begin_layout Description
-name Name or label for the material.
- This is used in error and diagnostic reports.
+For each material group, there is a single component defining the material
+ model to be used.
+ If no groups are specified, a single material model is assumed for the
+ problem.
+ The default material model is 
+\family typewriter
+elasticisotropic3d
+\family default
+.
+ For each material model, the available components are:
 \end_layout
 
 \begin_layout Description
@@ -187,8 +189,26 @@ db Spatial database specifying the spatial variation in the parameters of
 \end_layout
 
 \begin_layout Description
+output The output manager used for outputting material information.
+\end_layout
+
+\begin_layout Description
 quadrature Numerical integration scheme used in integrating fields over
  each cell.
+\end_layout
+
+\begin_layout Standard
+The properties for each material group are:
+\end_layout
+
+\begin_layout Description
+id This is the material identifier that matches the integer value assigned
+ to each cell in the mesh generation process.
+\end_layout
+
+\begin_layout Description
+label Name or label for the material.
+ This is used in error and diagnostic reports.
 \end_layout
 
 \begin_layout Standard
@@ -196,15 +216,15 @@ An example of setting these parameters in a
 \family typewriter
 .cfg
 \family default
- file for the homogeneous material is:
+ file for a problem with two material groups is:
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.materials.homogeneous]
+[pylithapp.timedependent]
 \end_layout
 
 \begin_layout LyX-Code
-material = pylith.materials.ElasticIsotropic3D
+materials = [elastic_upper,elastic_lower]
 \end_layout
 
 \begin_layout LyX-Code
@@ -212,7 +232,11 @@ material = pylith.materials.ElasticIsotropic3D
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.materials.material]
+[pylithapp.timedependent.materials.elastic_upper]
+\end_layout
+
+\begin_layout LyX-Code
+label = Upper elastic material
 \end_layout
 
 \begin_layout LyX-Code
@@ -220,36 +244,76 @@ id = 1
 \end_layout
 
 \begin_layout LyX-Code
-name = Elastic material
+db.iohandler.filename = mat_elastic.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
-db.iohandler.filename = elastic.spatialdb
+quadrature = pylith.feassemble.quadrature.Quadrature3D
 \end_layout
 
 \begin_layout LyX-Code
-db.query_type = linear
+quadrature.cell = pylith.feassemble.FIATLagrange
 \end_layout
 
 \begin_layout LyX-Code
-quadrature = pylith.feassemble.Quadrature3D
+quadrature.cell.dimension = 3
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.elastic_lower]
+\end_layout
+
+\begin_layout LyX-Code
+label = Lower elastic material
+\end_layout
+
+\begin_layout LyX-Code
+id = 2
+\end_layout
+
+\begin_layout LyX-Code
+db.iohandler.filename = mat_elastic.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+quadrature = pylith.feassemble.quadrature.Quadrature3D
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell = pylith.feassemble.FIATLagrange
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell.dimension = 3
 \end_layout
 
 \begin_layout Standard
-where we have specified that the bulk constitutive model is the 3D linear
- elastic model and we use linear interpolation for computing the spatial
- variation of the parameters within the spatial database.
- The parameters for the bulk constitutive model are specified using a spatial
- database.
+These settings correspond to the the problem in 
+\family typewriter
+examples/3d/hex8
+\family default
+.
+ The parameters for each bulk constitutive model are specified using the
+ same spatial database (
+\family typewriter
+mat_elastic.spatialdb
+\family default
+).
  Refer to the discussion of each material model to find the parameters that
  must be specified in the spatial database.
  Appendix 
-\begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
+\begin_inset LatexCommand ref
+reference "sec:Spatialdata:SimpleIOAscii"
 
 \end_inset
 
  describes the format of the spatial database files.
- 
+ In a more realistic problem, a different spatial database, and possibly
+ a different material model, would be used for each material group.
 \end_layout
 
 \begin_layout Section
@@ -453,9 +517,17 @@ density
 
 \end_layout
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Values in spatial database used as parameters in the elastic material constituti
 ve models.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -671,25 +743,24 @@ Viscoelastic Materials
 \end_layout
 
 \begin_layout Standard
-At present, there is only a single viscoelastic material model available
- in PyLith 1.0, with several others planned for the near future (Table 
-\begin_inset LatexCommand \ref{tab:Material-models-available}
+At present, there are two viscoelastic material models available in PyLith
+ 1.1, with at least one additional model planned for the near future (Table
+ 
+\begin_inset LatexCommand ref
+reference "tab:Material-models-available"
 
 \end_inset
 
  and Figure 
-\begin_inset LatexCommand \ref{fig:Material-models}
+\begin_inset LatexCommand ref
+reference "fig:Material-models"
 
 \end_inset
 
 ).
- Note that there are two formulations for two of the material models (linear
- and power-law Maxwell viscoelastic).
- The alternate formulations are being evaluated, and at present it is still
- unclear which formulations are most effective.
- It is likely that the performance of each formulation will depend on the
- loading conditions, so users may wish to try different formulations for
- each particular problem when they become available.
+ Future code versions may include alternative formulations for the various
+ material models, so that users may use the most efficient formulation for
+ a particular problem.
  
 \end_layout
 
@@ -706,10 +777,10 @@ status open
 \noindent
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="6" columns="3">
+<lyxtabular version="3" rows="4" columns="3">
 <features>
-<column alignment="left" valignment="top" leftline="true" width="0.68in">
-<column alignment="left" valignment="top" leftline="true" width="2.85in">
+<column alignment="left" valignment="top" leftline="true" rightline="true" width="0.68in">
+<column alignment="left" valignment="top" leftline="true" rightline="true" width="2.85in">
 <column alignment="center" valignment="top" leftline="true" rightline="true" width="2.47in">
 <row topline="true" bottomline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -780,7 +851,7 @@ Isotropic Maxwell material with linear viscous rheology
 \begin_inset Text
 
 \begin_layout Standard
-No
+Yes
 \end_layout
 
 \end_inset
@@ -804,7 +875,7 @@ Generalized model consisting of 3 Maxwell models in parallel
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row topline="true" bottomline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -833,66 +904,6 @@ Isotropic Maxwell material with power-law viscous rheology
 \end_inset
 </cell>
 </row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-No
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-MaxwellIsotropicESF3D
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Another linear Maxwell model formulated with an Effective Stress Function
- (ESF) approach
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-No
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-PowerLawMaxwellIsotropicZT3D
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Another power-law Maxwell model using a formulation based on that of Zienkiewicz
- & Taylor
-\end_layout
-
-\end_inset
-</cell>
-</row>
 </lyxtabular>
 
 \end_inset
@@ -900,12 +911,21 @@ Another power-law Maxwell model using a formulation based on that of Zienkiewicz
 
 \end_layout
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{tab:Material-models-available}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:Material-models-available"
 
 \end_inset
 
 Planned and available 3D viscoelastic materials for PyLith.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -922,16 +942,38 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 \noindent
-\begin_inset LatexCommand \label{fig:Material-models}
+\begin_inset LatexCommand label
+name "fig:Material-models"
 
 \end_inset
 
-Spring-dashpot 1D representations of the planned and available 3D viscoelastic
- material models for PyLith.
+Spring-dashpot 1D representations of the planned and available 3D elastic
+ and viscoelastic material models for PyLith.
  The top model is a linear elastic model, the middle model is a Maxwell
  model, and the bottom model is a generalized Maxwell model.
+ For the generalized Maxwell model, 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ and 
+\begin_inset Formula $\mu_{tot}$
+\end_inset
+
+ are specified for the entire model, and then the ratio 
+\begin_inset Formula $\mu_{i}/\mu_{tot}$
+\end_inset
+
+ is specified for each Maxwell model.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -958,7 +1000,8 @@ Definitions
 \begin_layout Standard
 In the following sections, we use a combination of vector and index notation
  (our notation conventions are shown in Table 
-\begin_inset LatexCommand \ref{tab:Mathematical-notation}
+\begin_inset LatexCommand ref
+reference "tab:Mathematical-notation"
 
 \end_inset
 
@@ -1044,7 +1087,8 @@ Note the use of engineering strain measures (
 \end_inset
 
 ) in Equation 
-\begin_inset LatexCommand \ref{eq:5}
+\begin_inset LatexCommand ref
+reference "eq:5"
 
 \end_inset
 
@@ -1188,8 +1232,12 @@ Second order tensor field a
 
 \end_layout
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{tab:Mathematical-notation}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:Mathematical-notation"
 
 \end_inset
 
@@ -1201,34 +1249,40 @@ Mathematical notation used in this section.
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
-Zienkiewicz and Taylor Formulation for Generalized Maxwell Models
+Formulation for Generalized Maxwell Models
 \end_layout
 
 \begin_layout Standard
 The generalized Maxwell viscoelastic model consists of a number of Maxwell
  linear viscoelastic models in parallel with a spring, as shown in Figure
  
-\begin_inset LatexCommand \ref{fig:Material-models}
+\begin_inset LatexCommand ref
+reference "fig:Material-models"
 
 \end_inset
 
 .
- At present, the only material model available is a single Maxwell model
- using this formulation.
- In future versions of PyLith, we will also include a model consisting of
- a spring in parallel with three Maxwell models.
+ PyLith 1.1 includes the specific case of a standard Maxwell model as well
+ as a model consisting of a spring in parallel with three Maxwell models.
  A number of common material models may be obtained from this model by setting
  the shear moduli of various springs to zero, such as the Maxwell model,
  the Kelvin model, and the standard linear solid.
  We follow formulations similar to those used by Zienkiewicz and Taylor
  
-\begin_inset LatexCommand \cite{Zienkiewicz:Taylor:2000}
+\begin_inset LatexCommand cite
+key "Zienkiewicz:Taylor:2000"
 
 \end_inset
 
  and Taylor 
-\begin_inset LatexCommand \cite{Taylor:2003}
+\begin_inset LatexCommand cite
+key "Taylor:2003"
 
 \end_inset
 
@@ -1251,8 +1305,8 @@ The generalized Maxwell viscoelastic model consists of a number of Maxwell
 , since this is obtained by subtracting the sum of the other ratios from
  1.
  Note that the sum of all these fractions must equal 1.
- We use a similar formulation for the first instance of our linear Maxwell
- viscoelastic model, but in that case 
+ We use a similar formulation for our linear Maxwell viscoelastic model,
+ but in that case 
 \begin_inset Formula $\mu_{0}$
 \end_inset
 
@@ -1337,7 +1391,8 @@ where
 \end_inset
 
 With the form in Equation 
-\begin_inset LatexCommand \ref{eq:23}
+\begin_inset LatexCommand ref
+reference "eq:23"
 
 \end_inset
 
@@ -1371,7 +1426,8 @@ The first term is zero, the second term includes a jump term associated
 
  at time zero, and the last term covers the subsequent history of strain.
  Applying this separation to Equation 
-\begin_inset LatexCommand \ref{eq:22}
+\begin_inset LatexCommand ref
+reference "eq:22"
 
 \end_inset
 
@@ -1386,12 +1442,14 @@ where we have left the sign off of the lower limit on the integral.
 
 \begin_layout Standard
 Substituting Equation 
-\begin_inset LatexCommand \ref{eq:25}
+\begin_inset LatexCommand ref
+reference "eq:25"
 
 \end_inset
 
  into 
-\begin_inset LatexCommand \ref{eq:28}
+\begin_inset LatexCommand ref
+reference "eq:28"
 
 \end_inset
 
@@ -1479,7 +1537,8 @@ We need to compute the tangent constitutive matrix when forming the stiffness
 
 where the second derivative on the right may be easily deduced from Equation
  
-\begin_inset LatexCommand \ref{eq:16}
+\begin_inset LatexCommand ref
+reference "eq:16"
 
 \end_inset
 
@@ -1496,12 +1555,14 @@ where
 
  is the identity matrix.
  From Equations 
-\begin_inset LatexCommand \ref{eq:33}
+\begin_inset LatexCommand ref
+reference "eq:33"
 
 \end_inset
 
  through 
-\begin_inset LatexCommand \ref{eq:35}
+\begin_inset LatexCommand ref
+reference "eq:35"
 
 \end_inset
 
@@ -1520,14 +1581,29 @@ The complete deviatoric tangent relation is then
 
 \end_layout
 
+\begin_layout Standard
+We use this formulation for both our Maxwell and generalized Maxwell viscoelasti
+c models, where we include two additional Maxwell elements in the generalized
+ Maxwell model.
+\end_layout
+
 \begin_layout Subsection
 Effective Stress Formulations for Viscoelastic Materials
 \end_layout
 
 \begin_layout Standard
-For the viscoelastic materials considered here, the viscous volumetric strains
- are zero (incompressible flow), and it is convenient to separate the general
- stress-strain relationship at time 
+As an alternative to the approach outlined above, an effective stress function
+ formulation 
+\begin_inset LatexCommand cite
+key "Kojic:Bathe:1987"
+
+\end_inset
+
+ may be employed for both a linear Maxwell model and a power-law Maxwell
+ model.
+ For the viscoelastic materials considered here, the viscous volumetric
+ strains are zero (incompressible flow), and it is convenient to separate
+ the general stress-strain relationship at time 
 \begin_inset Formula $t+\Delta t$
 \end_inset
 
@@ -1569,7 +1645,8 @@ where
 
 , respectively.
  The topmost equation in Equation 
-\begin_inset LatexCommand \ref{eq:42}
+\begin_inset LatexCommand ref
+reference "eq:42"
 
 \end_inset
 
@@ -1654,22 +1731,26 @@ Therefore,
 \end_inset
 
 Substituting Equations 
-\begin_inset LatexCommand \ref{eq:46}
+\begin_inset LatexCommand ref
+reference "eq:46"
 
 \end_inset
 
 , 
-\begin_inset LatexCommand \ref{eq:50}
+\begin_inset LatexCommand ref
+reference "eq:50"
 
 \end_inset
 
 , and 
-\begin_inset LatexCommand \ref{eq:51}
+\begin_inset LatexCommand ref
+reference "eq:51"
 
 \end_inset
 
  into 
-\begin_inset LatexCommand \ref{eq:43}
+\begin_inset LatexCommand ref
+reference "eq:43"
 
 \end_inset
 
@@ -1731,7 +1812,8 @@ Using the chain rule,
 \end_inset
 
 From Equation 
-\begin_inset LatexCommand \ref{eq:44}
+\begin_inset LatexCommand ref
+reference "eq:44"
 
 \end_inset
 
@@ -1742,7 +1824,8 @@ From Equation
 \end_inset
 
 and from Equation 
-\begin_inset LatexCommand \ref{eq:16}
+\begin_inset LatexCommand ref
+reference "eq:16"
 
 \end_inset
 
@@ -1757,7 +1840,8 @@ and from Equation
 \end_inset
 
 Finally, from Equation 
-\begin_inset LatexCommand \ref{eq:53}
+\begin_inset LatexCommand ref
+reference "eq:53"
 
 \end_inset
 
@@ -1768,7 +1852,8 @@ Finally, from Equation
 \end_inset
 
 From Equation 
-\begin_inset LatexCommand \ref{eq:57}
+\begin_inset LatexCommand ref
+reference "eq:57"
 
 \end_inset
 
@@ -1832,12 +1917,14 @@ C_{44}^{E}=\frac{E}{2(1+\nu)}\,\,\nonumber \end{gather}
 \end_inset
 
 This is consistent with the regular elasticity matrix, and Equation 
-\begin_inset LatexCommand \ref{eq:63}
+\begin_inset LatexCommand ref
+reference "eq:63"
 
 \end_inset
 
  should thus be used when forming the stiffness matrix.
- 
+ We do not presently use this formulation in PyLith 1.1, but it may be included
+ in future versions.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1876,22 +1963,26 @@ Therefore,
 \end_inset
 
 substituting Equations 
-\begin_inset LatexCommand \ref{eq:46}
+\begin_inset LatexCommand ref
+reference "eq:46"
 
 \end_inset
 
 , 
-\begin_inset LatexCommand \ref{eq:65}
+\begin_inset LatexCommand ref
+reference "eq:65"
 
 \end_inset
 
 , and 
-\begin_inset LatexCommand \ref{eq:66}
+\begin_inset LatexCommand ref
+reference "eq:66"
 
 \end_inset
 
  into 
-\begin_inset LatexCommand \ref{eq:43}
+\begin_inset LatexCommand ref
+reference "eq:43"
 
 \end_inset
 
@@ -1923,7 +2014,8 @@ d=\Delta t\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\,\,\nonumber \end{gathe
 \end_inset
 
 Equation 
-\begin_inset LatexCommand \ref{eq:69}
+\begin_inset LatexCommand ref
+reference "eq:69"
 
 \end_inset
 
@@ -1935,17 +2027,20 @@ Equation
  -- and may be solved by bisection or by Newton's method.
  Once this parameter has been found, the deviatoric stresses for the current
  time step may be found from Equations 
-\begin_inset LatexCommand \ref{eq:65}
+\begin_inset LatexCommand ref
+reference "eq:65"
 
 \end_inset
 
  and 
-\begin_inset LatexCommand \ref{eq:66}
+\begin_inset LatexCommand ref
+reference "eq:66"
 
 \end_inset
 
 , and the total stresses may be found from Equation 
-\begin_inset LatexCommand \ref{eq:54}
+\begin_inset LatexCommand ref
+reference "eq:54"
 
 \end_inset
 
@@ -1955,13 +2050,15 @@ Equation
 \begin_layout Standard
 To compute the tangent stress-strain relation, we proceed as for the linear
  case, but the evaluation of the first derivative in Equation 
-\begin_inset LatexCommand \ref{eq:58}
+\begin_inset LatexCommand ref
+reference "eq:58"
 
 \end_inset
 
  is more complicated.
  We begin by rewriting Equation 
-\begin_inset LatexCommand \ref{eq:68}
+\begin_inset LatexCommand ref
+reference "eq:68"
 
 \end_inset
 
@@ -1985,7 +2082,8 @@ The derivative is then
 \end_inset
 
 From Equation 
-\begin_inset LatexCommand \ref{eq:66}
+\begin_inset LatexCommand ref
+reference "eq:66"
 
 \end_inset
 
@@ -2002,7 +2100,8 @@ We first note that
 \end_inset
 
  which allows us to rewrite Equation 
-\begin_inset LatexCommand \ref{eq:69}
+\begin_inset LatexCommand ref
+reference "eq:69"
 
 \end_inset
 
@@ -2037,18 +2136,21 @@ Note that for a linear material
 
 , this derivative is zero.
  This relation may be used in Equation 
-\begin_inset LatexCommand \ref{eq:73}
+\begin_inset LatexCommand ref
+reference "eq:73"
 
 \end_inset
 
 .
  Then, using Equations 
-\begin_inset LatexCommand \ref{eq:57}
+\begin_inset LatexCommand ref
+reference "eq:57"
 
 \end_inset
 
  through 
-\begin_inset LatexCommand \ref{eq:60}
+\begin_inset LatexCommand ref
+reference "eq:60"
 
 \end_inset
 
@@ -2097,7 +2199,8 @@ where we have neglected the changes in
 \begin_layout Standard
 To compute the zero of the effective stress function using Newton's method,
  we require the derivative of equation 
-\begin_inset LatexCommand \ref{eq:69}
+\begin_inset LatexCommand ref
+reference "eq:69"
 
 \end_inset
 
@@ -2108,6 +2211,12 @@ To compute the zero of the effective stress function using Newton's method,
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+PyLith 1.1 does not presently include power-law viscoelasticity, but we plan
+ to provide the effective stress function formulation as one possible implementa
+tion of a power-law Maxwell viscoelastic material.
 \end_layout
 
 \end_body
