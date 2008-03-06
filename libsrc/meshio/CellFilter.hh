@@ -73,8 +73,8 @@ public :
   filter(VectorFieldEnum* fieldType,
 	 const ALE::Obj<real_section_type>& fieldIn,
 	 const ALE::Obj<ALE::Mesh>& mesh,
-	 const char* label,
-	 const int labelId) = 0;
+	 const char* label =0,
+	 const int labelId =0) = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :

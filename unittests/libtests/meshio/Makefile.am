@@ -21,6 +21,7 @@ check_PROGRAMS = testmeshio
 
 # Primary source files
 testmeshio_SOURCES = \
+	TestCellFilterAvg.cc \
 	TestDataWriterVTK.cc \
 	TestDataWriterVTKMesh.cc \
 	TestDataWriterVTKMeshLine2.cc \
@@ -48,10 +49,12 @@ testmeshio_SOURCES = \
 	TestMeshIOLagrit.cc \
 	TestOutputManager.cc \
 	TestOutputSolnSubset.cc \
+	TestVertexFilterVecNorm.cc \
 	test_meshio.cc
 
 
 noinst_HEADERS = \
+	TestCellFilterAvg.hh \
 	TestDataWriterVTK.hh \
 	TestDataWriterVTKMesh.hh \
 	TestDataWriterVTKMeshLine2.hh \
@@ -78,7 +81,8 @@ noinst_HEADERS = \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh \
 	TestOutputManager.hh \
-	TestOutputSolnSubset.hh
+	TestOutputSolnSubset.hh \
+	TestVertexFilterVecNorm.hh
 
 
 # Source files associated with testing data
