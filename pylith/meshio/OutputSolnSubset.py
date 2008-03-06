@@ -97,8 +97,6 @@ class OutputSolnSubset(OutputManager):
     assert(None != self.cppHandle)
     self.cppHandle.mesh(self.mesh.cppHandle, mesh.cppHandle)
 
-    self.mesh.view()
-
     OutputManager.initialize(self)
 
     self._logger.eventEnd(logEvent)

@@ -69,6 +69,9 @@ class TestApp(Script):
     from TestOutputManager import TestOutputManager
     suite.addTest(unittest.makeSuite(TestOutputManager))
 
+    from TestOutputSolnSubset import TestOutputSolnSubset
+    suite.addTest(unittest.makeSuite(TestOutputSolnSubset))
+
     return suite
 
 
