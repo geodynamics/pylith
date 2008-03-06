@@ -30,7 +30,9 @@ __all__ = ['CellFilter',
            'OutputSoln',
            'OutputSolnSubset',
            'SingleOutput',
-           'VertexFilter']
+           'VertexFilter',
+           'VertexFilterVecNorm',
+           ]
 
 
 # End of file

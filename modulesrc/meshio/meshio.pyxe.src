@@ -21,6 +21,7 @@
 #include "pylith/meshio/OutputManager.hh"
 #include "pylith/meshio/OutputSolnSubset.hh"
 #include "pylith/meshio/VertexFilter.hh"
+#include "pylith/meshio/VertexFilterVecNorm.hh"
 
 #if defined(ENABLE_CUBIT)
 #include "pylith/meshio/MeshIOCubit.hh"
@@ -1266,6 +1267,70 @@ cdef class CellFilterAvg(CellFilter):
 
     CellFilter.__init__(self)
     self.thisptr = CellFilterAvg_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef void VertexFilter_destructor(void* obj):
+  """
+  Destroy VertexFilter object.
+  """
+  # create shim for destructor
+  #embed{ void VertexFilter_destructor_cpp(void* pObj)
+  pylith::meshio::VertexFilter* f = (pylith::meshio::VertexFilter*) pObj;
+  delete f;
+  #}embed
+  VertexFilter_destructor_cpp(obj)
+  return
+
+cdef class VertexFilter:
+
+  cdef void* thisptr # Pointer to C++ object
+  cdef readonly object handle # PyCObject holding pointer to C++ object
+  cdef readonly object name # Identifier for object base type
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    self.handle = None
+    self.thisptr = NULL
+    self.name = "pylith_meshio_VertexFilter"
+    return
+
+
+  def _createHandle(self):
+    """Wrap pointer to C++ object in PyCObject."""
+    return PyCObject_FromVoidPtr(self.thisptr, VertexFilter_destructor)
+
+
+# ----------------------------------------------------------------------
+cdef class VertexFilterVecNorm(VertexFilter):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* VertexFilterVecNorm_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::meshio::VertexFilterVecNorm);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    VertexFilter.__init__(self)
+    self.thisptr = VertexFilterVecNorm_constructor()
     self.handle = self._createHandle()
     return
 

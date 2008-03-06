@@ -23,7 +23,9 @@ TESTS_ENVIRONMENT = $(PYTHON)
 noinst_PYTHON = \
 	TestMeshIOAscii.py \
 	TestMeshIOCubit.py \
-	TestMeshIOLagrit.py
+	TestMeshIOLagrit.py \
+	TestVertexFilterVecNorm.py \
+	TestCellFilterAvg.py
 
 if ENABLE_CUBIT
   TESTS += testdriver_cubit.py
