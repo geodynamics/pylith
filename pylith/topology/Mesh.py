@@ -107,8 +107,9 @@ class Mesh(Component):
     Allocated (and zero) real section.
     """
     assert(None != self.cppHandle)
-    return self.cppHandle.allocateRealSection(field)
-
+    self.cppHandle.allocateRealSection(field)
+    return
+  
 
   def createMatrix(self, field):
     """

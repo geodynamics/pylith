@@ -124,6 +124,13 @@ class OutputManager(Component):
     if None == self.dataProvider:
       raise ValueError("Need to set 'dataProvider' in OutputManager.")
     self._verifyFields(self.dataProvider.availableFields)
+
+    if not "getDataMesh" in dir(self.dataProvider):
+      raise TypeError("Data provider must have a 'getDataMesh' function.")
+    if not "getVertexField" in dir(self.dataProvider):
+      raise TypeError("Data provider must have a 'getVertexField' function.")
+    if not "getCellField" in dir(self.dataProvider):
+      raise TypeError("Data provider must have a 'getCellField' function.")
     return
 
 
@@ -289,13 +296,28 @@ class OutputManager(Component):
     Check if we want to write data at time t.
     """
     write = False
-    if self._stepWrite == None or not "value" in dir(self._tWrite):
+    
+    # If first call, then _stepWrite and _tWrite are None
+    if None == self._stepWrite and None == self._tWrite:
       write = True
+      self._stepWrite = self._stepCur
+      self._tWrite = t
+
     elif self.outputFreq == "skip":
       if self._stepCur > self._stepWrite + self.skip:
         write = True
-    elif t >= self._tWrite + self.dt:
-      write = True
+        self._stepWrite = self._stepCur
+
+    elif self.outputFreq == "time_step":
+      if t >= self._tWrite + self.dt:
+       write = True
+       self._tWrite = t
+
+    else:
+      raise ValueError, \
+            "Unknown value '%s' for output frequency." % self.outputFreq
+
+    self._stepCur += 1
     return write
 
 

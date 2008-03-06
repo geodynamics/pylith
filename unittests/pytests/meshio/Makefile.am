@@ -25,12 +25,18 @@ noinst_PYTHON = \
 	TestMeshIOCubit.py \
 	TestMeshIOLagrit.py \
 	TestVertexFilterVecNorm.py \
-	TestCellFilterAvg.py
+	TestCellFilterAvg.py \
+	TestOutputManager.py
 
 if ENABLE_CUBIT
   TESTS += testdriver_cubit.py
   check_SCRIPTS += testdriver_cubit.py
 endif	
 
+noinst_tmp = \
+	output_info.vtk \
+	output_t20.vtk
+
+CLEANFILES = $(noinst_tmp)
 
 # End of file 
