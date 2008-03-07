@@ -1286,11 +1286,6 @@ Databases for Boundaries, Interfaces, and Material Properties
 \end_layout
 
 \begin_layout Standard
-ADD DISCUSSION OF 3 SPATIAL DATABASE IMPLEMENTATIONS (UniformDB, SimpleDB,
- SCECCVMHDB)
-\end_layout
-
-\begin_layout Standard
 Once the problem has been defined with PyLith parameters, and the mesh informati
 on has been provided, the final step is to specify the boundary conditions
  and material properties to be used.
@@ -1395,6 +1390,196 @@ reference "cha:Tutorials"
 
  also contain more information regarding the specification and use of the
  spatial database files.
+\end_layout
+
+\begin_layout Subsection
+SimpleDB Database Implementation
+\end_layout
+
+\begin_layout Standard
+The default database used for faults, boundary conditions, and materials
+ is 
+\family typewriter
+SimpleDB
+\family default
+.
+ This is a simple database format that is used in most of the example problems.
+ The file format is described in 
+\begin_inset LatexCommand ref
+reference "sec:Spatialdata:SimpleIOAscii"
+
+\end_inset
+
+.
+ Looking at 
+\family typewriter
+examples/twocells/twotet4
+\family default
+, for example, we find the following spatial database files:
+\end_layout
+
+\begin_layout LyX-Code
+axialdisp.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+dislocation_disp.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+dislocation_slip.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+dislocation_sliprate.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+dislocation_sliptime.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+matprops.spatialdb
+\end_layout
+
+\begin_layout Standard
+Each of these files is a SimpleDB implementation.
+ They represent the most general method for specifying spatial variations
+ in parameters.
+\end_layout
+
+\begin_layout Subsection
+UniformDB Database Implementation
+\end_layout
+
+\begin_layout Standard
+Although the SimpleDB implementation is quite general, in some cases a simpler
+ implementation may be easier to use.
+ For example, for the case of a 0D variation (constant values throughout
+ the mesh), it should not be necessary to create a separate file simply
+ to specify these constant parameter values.
+ In this case, it may be easier to include the information in a 
+\family typewriter
+.cfg
+\family default
+ file.
+ This is possible using the UniformDB database implementation.
+ Although most of the example problems make use of the SimpleDB implementation,
+ a problem using UniformDB is available in 
+\family typewriter
+examples/twocells/twohex8
+\family default
+.
+ In the file 
+\family typewriter
+pylithapp.cfg
+\family default
+ you will find the following:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.material]
+\end_layout
+
+\begin_layout LyX-Code
+db = spatialdata.spatialdb.UniformDB
+\end_layout
+
+\begin_layout LyX-Code
+db.values = [vp,vs,density,viscosity]
+\end_layout
+
+\begin_layout LyX-Code
+db.data = [5773.502691896258, 3333.333333333333, 2700.0, 1.0e18]
+\end_layout
+
+\begin_layout Standard
+The first line switches the default 
+\family typewriter
+db
+\family default
+ to 
+\family typewriter
+UniformDB
+\family default
+.
+ The next line defines the parameter names for this database, and the third
+ line provides values for each parameter.
+ If these three lines are commented out of 
+\family typewriter
+pylithapp.cfg
+\family default
+, and the following line is uncommented,
+\end_layout
+
+\begin_layout LyX-Code
+# db.iohandler.filename = matprops.spatialdb
+\end_layout
+
+\begin_layout Standard
+the file 
+\family typewriter
+matprops.spatialdb
+\family default
+ will be used to define the parameter values.
+ The results will be identical, but in the first case (using UniformDB),
+ no spatial database file is needed.
+\end_layout
+
+\begin_layout Subsection
+SCECCVMH Implementation
+\end_layout
+
+\begin_layout Standard
+Although the SimpleDB implementation is able to specify arbitrarily complex
+ spatial variations, there are existing parameter databases, and when they
+ are available, it is desirable to access these directly.
+ One such database is the SCEC CVM-H database, which provides seismic velocity
+ and density information for much of southern California.
+ PyLith 1.1 provides a direct interface to this database, provided that the
+ SpatialData package has been built with CVM-H support.
+ An example that uses this implementation is provided in 
+\family typewriter
+examples/twocells/twotet4-geoproj
+\family default
+.
+ This example is somewhat unique in that the 
+\family typewriter
+pylithapp.cfg
+\family default
+ file must be edited to run the example.
+ This is because the directory where the SCEC CVM-H database resides will
+ be different for each user, and the location must be specified.
+ In pylithapp.cfg, we have:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.material]
+\end_layout
+
+\begin_layout LyX-Code
+db = spatialdata.spatialdb.SCECCVMH
+\end_layout
+
+\begin_layout LyX-Code
+db.data_dir = /home/brad/data/sceccvm-h/vx53/bin
+\end_layout
+
+\begin_layout Standard
+The first line switches the default 
+\family typewriter
+db
+\family default
+ to 
+\family typewriter
+SCECCVMH
+\family default
+.
+ The next line defines the location of the vx53 executable, and must be
+ changed to the location specified by the user when the package is installed.
+ The package may be obtained from http://structure.harvard.edu/cvm-h.
+ There are some additional aspects of this example that are explained more
+ fully in INSERT-TUTORIAL-REF.
 \end_layout
 
 \begin_layout Section
