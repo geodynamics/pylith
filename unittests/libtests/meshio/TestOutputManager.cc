@@ -112,7 +112,6 @@ pylith::meshio::TestOutputManager::testOpenClose(void)
   iohandler.filename("data/tri3.mesh");
   iohandler.read(&mesh);
   CPPUNIT_ASSERT(!mesh.isNull());
-  mesh->getFactory()->clear();
 
   spatialdata::geocoords::CSCart cs;
   const int numTimeSteps = 1;
@@ -138,7 +137,6 @@ pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
   iohandler.filename("data/tri3.mesh");
   iohandler.read(&mesh);
   CPPUNIT_ASSERT(!mesh.isNull());
-  mesh->getFactory()->clear();
 
   spatialdata::geocoords::CSCart cs;
   const int numTimeSteps = 1;
@@ -183,7 +181,6 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
   iohandler.filename(meshFilename);
   iohandler.read(&mesh);
   CPPUNIT_ASSERT(!mesh.isNull());
-  mesh->getFactory()->clear();
 
   // Set vertex field
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
@@ -260,7 +257,6 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
   iohandler.filename(meshFilename);
   iohandler.read(&mesh);
   CPPUNIT_ASSERT(!mesh.isNull());
-  mesh->getFactory()->clear();
 
   // Set cell field
   const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);

@@ -60,7 +60,6 @@ pylith::meshio::TestOutputSolnSubset::testSubdomainMesh(void)
   iohandler.filename("data/quad4.mesh");
   iohandler.read(&mesh);
   CPPUNIT_ASSERT(!mesh.isNull());
-  mesh->getFactory()->clear();
 
   OutputSolnSubset output;
   output.label(label);

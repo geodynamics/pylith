@@ -216,7 +216,6 @@ pylith::bc::TestNeumann::_initialize(ALE::Obj<Mesh>* mesh,
     iohandler.filename(_data->meshFilename);
     iohandler.read(mesh);
     CPPUNIT_ASSERT(!mesh->isNull());
-    (*mesh)->getFactory()->clear();
 
     // Set up coordinates
     spatialdata::geocoords::CSCart cs;

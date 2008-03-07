@@ -252,7 +252,6 @@ pylith::bc::TestAbsorbingDampers::_initialize(
     //iohandler.debug(true);
     iohandler.read(mesh);
     CPPUNIT_ASSERT(!mesh->isNull());
-    (*mesh)->getFactory()->clear();
 
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim((*mesh)->getDimension());
