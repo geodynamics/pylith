@@ -59,7 +59,6 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
   iohandler.filename(filename);
   iohandler.read(&mesh);
   CPPUNIT_ASSERT(!mesh.isNull());
-  mesh->getFactory()->clear();
 
   // Set vertex field
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);

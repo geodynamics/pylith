@@ -276,7 +276,6 @@ pylith::bc::TestDirichletPoints::_initialize(ALE::Obj<Mesh>* mesh,
   iohandler.filename(_data->meshFilename);
   iohandler.read(mesh);
   CPPUNIT_ASSERT(!mesh->isNull());
-  (*mesh)->getFactory()->clear();
 
   spatialdata::geocoords::CSCart cs;
   cs.setSpaceDim((*mesh)->getDimension());

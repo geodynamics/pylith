@@ -80,7 +80,6 @@ pylith::meshio::TestCellFilterAvg::testFilter(void)
   iohandler.filename(filename);
   iohandler.read(&mesh);
   CPPUNIT_ASSERT(!mesh.isNull());
-  mesh->getFactory()->clear();
 
   // Set cell field
   const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);

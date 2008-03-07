@@ -30,7 +30,6 @@ pylith::meshio::TestDataWriterVTKMesh::_initialize(void)
   iohandler.filename(_data->meshFilename);
   iohandler.read(&_mesh);
   CPPUNIT_ASSERT(!_mesh.isNull());
-  _mesh->getFactory()->clear();
 
   if (0 != _data->faultLabel) {
     faults::FaultCohesiveKin fault;

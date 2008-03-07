@@ -406,7 +406,6 @@ pylith::faults::TestFaultCohesiveKin::_initialize(ALE::Obj<ALE::Mesh>* mesh,
     iohandler.filename(_data->meshFilename);
     iohandler.read(mesh);
     CPPUNIT_ASSERT(!mesh->isNull());
-    (*mesh)->getFactory()->clear();
 
     //(*mesh)->setDebug(true); // DEBUGGING
 

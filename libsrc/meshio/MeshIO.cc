@@ -57,6 +57,7 @@ pylith::meshio::MeshIO::read(ALE::Obj<Mesh>* mesh)
   _mesh = mesh;
   _read();
   _mesh = 0;
+  (*mesh)->getFactory()->clear();
 } // read
 
 // ----------------------------------------------------------------------
