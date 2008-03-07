@@ -37,6 +37,7 @@ pylith::meshio::OutputManager::~OutputManager(void)
   delete _writer; _writer = 0;
   delete _vertexFilter; _vertexFilter = 0;
   delete _cellFilter; _cellFilter = 0;
+  delete _coordsys; _coordsys = 0;
 } // destructor  
 
 // ----------------------------------------------------------------------
