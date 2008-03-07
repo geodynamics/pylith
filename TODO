@@ -56,9 +56,6 @@ Release 1.1
       a. Update output settings (materials, faults, solution).
          twoquad4-geoproj
 
-      b. Remove twoquad4-tractions (have twoquad4/axialtract.cfg)
-        If we want these as tests, move them to tests.
-
     2. Add some simple kinematic rupture examples.
       a. 2-D bar (tri3, quad4)
       b. 3-D bar (tet4, hex8)
@@ -88,18 +85,18 @@ Release 1.1
     4. Update cover figure with current result. (Brad)
 
     5. Remove discussion of containers.
-       Use facility array. Include defaults for items.
+       Use facility array. Include defaults for items.  ****Done for some sections****.
 
     6. DirichletPoints/DirichletBoundary
        FixedDOFDB (special case of UniformDB).
 
     7. Add twotet4-geoproj to tutorials.
 
-    8. Neumann BC
+    8. Neumann BC   ****Done****
 
     9. Add note that groups for DirichletBoundary, Neumann,
        AbsorbingDampers, and Fault must be associated with
-       simply-connected surfaces.
+       simply-connected surfaces.    ****Done for general case and Neumann****
 
     10. Add list of concepts at the beginning of each tutorial.
 
