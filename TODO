@@ -73,10 +73,13 @@ Release 1.1
        how to convert it to global coordinates using orientation
        information.
 
-    2. 3 kinds of spatial databases
+    2. 3 kinds of spatial databases   **** Done in runpylith.lyx. ****
          UniformDB
          SimpleDB
          SCECCVMHDB
+
+	 a.  There is still a section at the end of runpylith.lyx for labels
+	 and identifiers that has not been done yet.
 
     2. Add dependency diagram. (Brad)
 
