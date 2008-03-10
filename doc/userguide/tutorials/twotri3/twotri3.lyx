@@ -687,7 +687,7 @@ twotri3.mesh
 \family default
 ) defining the points desired, and assigns a label to the boundary condition
  set.
- In this case, rather than specifying a spatialial database file to define
+ In this case, rather than specifying a spatial database file to define
  the boundary conditions, the default for Dirichlet BC is used, which sets
  the displacements to zero for all time.
 \end_layout
