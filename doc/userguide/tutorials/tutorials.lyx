@@ -167,9 +167,5 @@ preview false
 ADD twoquad4-geoproj
 \end_layout
 
-\begin_layout Standard
-ADD twohex8
-\end_layout
-
 \end_body
 \end_document
