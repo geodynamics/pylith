@@ -354,7 +354,7 @@ pylith::bc::Neumann::cellField(VectorFieldEnum* fieldType,
   _tractions->view("TRACTIONS");
 
   if (0 == strcasecmp(name, "tractions")) {
-    *fieldType = VECTOR_FIELD;
+    *fieldType = OTHER_FIELD;
     return _tractions;
   } else {
     std::ostringstream msg;
