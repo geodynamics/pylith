@@ -3,7 +3,7 @@
 // This database is used to specify the boundary conditions for the axial
 // displacement example.
 
-// This follows the format for a Simple DB (the only type presently available).
+// This follows the format for a Simple DB.
 SimpleDB {
 
   // There are 3 values specified in the database, corresponding to the
@@ -37,7 +37,7 @@ SimpleDB {
 
 // This is where the data is specified.
 // As described in axialdisp.cfg, this database will be used to specify
-// data along edges (pylith.bc.BCSixSides).
+// data along edges.
 // The entries are:
 // X-coord, Y-coord, Z-coord, dof-0, dof-1, dof-2.
 -1.0  0.0  0.0  -0.01  0.0  0.0
