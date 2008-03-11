@@ -1527,6 +1527,11 @@ matprops.spatialdb
 \end_layout
 
 \begin_layout Subsection
+\begin_inset LatexCommand label
+name "sub:SCECCVMH-Impl"
+
+\end_inset
+
 SCECCVMH Implementation
 \end_layout
 
@@ -1575,11 +1580,21 @@ db
 SCECCVMH
 \family default
 .
- The next line defines the location of the vx53 executable, and must be
- changed to the location specified by the user when the package is installed.
+ The next line defines the location of the 
+\family typewriter
+vx53
+\family default
+ executable, and must be changed to the location specified by the user when
+ the package is installed.
  The package may be obtained from http://structure.harvard.edu/cvm-h.
  There are some additional aspects of this example that are explained more
- fully in INSERT-TUTORIAL-REF.
+ fully in 
+\begin_inset LatexCommand ref
+reference "sec:Tutorial-Two-tet4-geoproj"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section

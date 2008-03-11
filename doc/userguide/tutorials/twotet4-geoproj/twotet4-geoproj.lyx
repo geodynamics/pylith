@@ -47,11 +47,12 @@
 
 \begin_layout Section
 \begin_inset LatexCommand label
-name "sec:Tutorial-Two-tet4"
+name "sec:Tutorial-Two-tet4-geoproj"
 
 \end_inset
 
-Tutorial Using Two Linear Tetrahedra and PyLith Mesh ASCII Format
+Tutorial Using Two Linear Tetrahedra and PyLith Mesh ASCII Format in a Geoprojec
+ted Mesh
 \end_layout
 
 \begin_layout Subsection
@@ -59,10 +60,45 @@ Overview
 \end_layout
 
 \begin_layout Standard
-This tutorial is a simple 3D example of a quasi-static finite element problem.
- It is a mesh composed of two linear tetrahedra subject to displacement
- boundary conditions, and is probably the simplest example of a 3D elastic
- problem.
+This tutorial is virtually identical to the other tutorial using two linear
+ tetrahedra (
+\begin_inset LatexCommand ref
+reference "sec:Tutorial-Two-tet4"
+
+\end_inset
+
+).
+ The primary difference is in how the material properties are assigned.
+ For this tutorial, we use the SCEC CVM-H database to assign material properties
+, as described in 
+\begin_inset LatexCommand ref
+reference "sub:SCECCVMH-Impl"
+
+\end_inset
+
+.
+ Actually using the SCEC SVM-H database is very straightforward, requiring
+ only a few modifications to 
+\family typewriter
+pylithapp.cfg
+\family default
+.
+ Additional changes are required, however, because the database requires
+ a geoprojected coordinate system.
+ This requires changes to the mesh description, the spatial databases, and
+ the 
+\family typewriter
+pylithapp.cfg
+\family default
+ files.
+ Since all aspects of this problem other than the material database and
+ the coordinate system are identical to the examples in 
+\begin_inset LatexCommand ref
+reference "sec:Tutorial-Two-tet4"
+
+\end_inset
+
+, we only describe the kinematic fault problem in this tutorial.
  Due to the simple geometry of the problem, the mesh may be constructed
  by hand, using PyLith mesh ASCII format to describe the mesh.
  In this tutorial, we will walk through the steps necessary to construct,
@@ -78,7 +114,7 @@ Mesh Description
 \begin_layout Standard
 The mesh consists of two tetrahedra forming a pyramid shape (Figure 
 \begin_inset LatexCommand ref
-reference "fig:twotet4-mesh"
+reference "fig:twotet4-geoproj-mesh"
 
 \end_inset
 
@@ -100,6 +136,18 @@ reference "cha:File-Formats"
  (element), the material ID to be associated with each cell, and then provides
  groups of vertices that may be used to define faults or surfaces to which
  boundary conditions may be applied.
+ If you compare this mesh against the one used in 
+\begin_inset LatexCommand ref
+reference "sec:Tutorial-Two-tet4"
+
+\end_inset
+
+, you will notice that, although the mesh topology is the same, the vertex
+ coordinates are significantly different.
+ That is because the SCEC CVM-H database requires a UTM coordinate system
+ in zone 11, using the NAD27 datum.
+ If you want to use the SCEC CVM-H database, you will need to put your mesh
+ in this coordinate system.
 \end_layout
 
 \begin_layout Standard
@@ -126,7 +174,7 @@ status open
 \begin_layout Standard
 Mesh used for the two tetrahedra examples.
 \begin_inset LatexCommand label
-name "fig:twotet4-mesh"
+name "fig:twotet4-geoproj-mesh"
 
 \end_inset
 
@@ -148,7 +196,7 @@ Additional Common Information
 \end_layout
 
 \begin_layout Standard
-In addition to the mesh, the two example problems share additional information.
+In addition to the mesh, the three example problems share additional information.
  For problems of this type, it is generally useful to create a file named
  
 \family typewriter
@@ -177,6 +225,8 @@ pylithapp.journal.info Settings that control the verbosity of the output for
 \begin_layout Description
 pylithapp.mesh_generator Settings that control mesh importing, such as the
  importer type, the filename, and the spatial dimension of the mesh.
+ These setting are particularly important for this problem, as they define
+ the coordinate system used.
 \end_layout
 
 \begin_layout Description
@@ -187,8 +237,11 @@ pylithapp.timedependent Settings that control the problem, such as the total
 \begin_layout Description
 pylithapp.timedependent.materials Settings that control the material type,
  specify which material IDs are to be associated with a particular material
- type, and give the name of the spatial database containing material parameters
- for the mesh.
+ type, and define the database (
+\family typewriter
+SCECCVMH
+\family default
+) used to obtain material parameters for the mesh.
  The quadrature information is also given.
 \end_layout
 
@@ -198,255 +251,216 @@ pylithapp.petsc PETSc settings to use for the problem, such as the preconditione
 \end_layout
 
 \begin_layout Standard
-All of the problems in this directory use the same material database, as
- specified under 
+This problem has some unique aspects compared to the other tutorials.
+ First, all of the other tutorials use a Cartesian coordinate system, while
+ this one uses a geoprojected coordinate system.
+ In addition to using different vertex coordinates, we also define the coordinat
+e system in pylithapp.cfg:
 \end_layout
 
 \begin_layout LyX-Code
+[pylithapp.mesh_generator.importer]
+\end_layout
 
-\family typewriter
-pylithapp.timedependent.materials
-\family default
+\begin_layout LyX-Code
+coordsys = spatialdata.geocoords.CSGeoProj
+\end_layout
+
+\begin_layout LyX-Code
+filename = twotet4.mesh
+\end_layout
+
+\begin_layout LyX-Code
+coordsys.space_dim = 3
+\end_layout
+
+\begin_layout LyX-Code
  
 \end_layout
 
-\begin_layout Standard
-in 
-\family typewriter
-pylithapp.cfg
-\family default
-.
- This information is contained in the file 
-\family typewriter
-matprops.spatialdb
-\family default
-.
- Although the material model is specified in 
-\family typewriter
-pylithapp.cfg
-\family default
-, the parameters for the material model are given in 
-\family typewriter
-matprops.spatialdb
-\family default
-.
- For this example, values describing three-dimensional elastic material
- properties are given at a single point, resulting in uniform material propertie
-s.
-\end_layout
-
-\begin_layout Subsection
-Axial Displacement Example
-\end_layout
-
-\begin_layout Standard
-The first example problem is extension of the mesh along the diagonal, extending
- along the base of the pyramid between two opposing vertices.
- Parameter settings that override or augment those in 
-\family typewriter
-pylithapp.cfg
-\family default
- are contained in the file 
-\family typewriter
-axialdisp.cfg
-\family default
-.
- These settings are:
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent Specifies an implicit formulation for the problem
- and specifies the array of boundary conditions.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.bc.bc Defines which degrees of freedom are being constraine
-d (
-\family typewriter
-x
-\family default
-, 
-\family typewriter
-y
-\family default
-, and 
-\family typewriter
-z
-\family default
-), gives the label (defined in 
-\family typewriter
-twotet4.mesh
-\family default
-) defining the points desired, assigns a label to the boundary condition
- set, and gives the name of the spatial database defining the boundary condition
-s (
-\family typewriter
-axialdisp.spatialdb
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.problem.formulation.output.output.writer Gives the base filename for
- VTK output (
-\family typewriter
-axialdisp.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.materials.material.output Gives the base filename for
- state variable output files (
-\family typewriter
-axialdisp-statevars.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Standard
-The boundary conditions are described in the file 
-\family typewriter
-axialdisp.spatialdb
-\family default
-, as specified in 
-\family typewriter
-axialdisp.cfg
-\family default
-.
- The format of all spatial database files is similar.
- In this case, the desired displacement values are given at two points.
- Since data is being specified at points (rather than being uniform over
- the mesh, for example), the data dimension is one.
-\end_layout
-
-\begin_layout Standard
-The files containing common information (
-\family typewriter
-twotet4.mesh
-\family default
-, 
-\family typewriter
-pylithapp.cfg
-\family default
-, 
-\family typewriter
-matprops.spatialdb
-\family default
-) along with the problem-specific files (
-\family typewriter
-axialdisp.cfg
-\family default
-, 
-\family typewriter
-axialdisp.spatialdb
-\family default
-) provide a complete description of the problem, and we can then run this
- example by typing
+\begin_layout LyX-Code
+[pylithapp.mesh_generator.importer.coordsys]
 \end_layout
 
 \begin_layout LyX-Code
-pylith axialdisp.cfg
+datum_horiz = NAD27
+\end_layout
+
+\begin_layout LyX-Code
+datum_vert = mean sea level
+\end_layout
+
+\begin_layout LyX-Code
+ellipsoid = clrk66
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.mesh_generator.importer.coordsys.projector]
+\end_layout
+
+\begin_layout LyX-Code
+projection = utm
+\end_layout
+
+\begin_layout LyX-Code
+proj-options = +zone=11 
 \end_layout
 
 \begin_layout Standard
-Once the problem has run, three files will be produced.
- The first file is named 
+At the top level, we define the type of coordinate system, give the file
+ describing the mesh, and give the number of spatial dimensions for the
+ coordinate system.
+ We then provide the horizontal datum and vertical datum for the coordinate
+ system, along with the ellipsoid to be used.
+ Finally, we specify a utm projection, and specify zone 11 as the zone to
+ be used.
+ All of the coordinate transformations in the SpatialData package are perfomed
+ using the proj projections library (http://remotesensing.org/proj), and
+ additional projection options may be included using the proj-options parameter.
+ See the proj documentation for additional information.
+\end_layout
+
+\begin_layout Standard
+In addition to the usual material information, we must specify that we want
+ to use the 
 \family typewriter
-axialdisp_t0000000.vtk
+SCECCVMH
 \family default
-.
- The 
+ database implementation:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.material]
+\end_layout
+
+\begin_layout LyX-Code
+db = spatialdata.spatialdb.SCECCVMH
+\end_layout
+
+\begin_layout LyX-Code
+db.data_dir = /home/brad/data/sceccvm-h/vx53/bin
+\end_layout
+
+\begin_layout Standard
+The first 
 \family typewriter
-t0000000
+db
 \family default
- indicates that the output is for the first (and only) time step, corresponding
- to an elastic solution.
- This file contains mesh information as well as displacement values at the
- mesh vertices.
- The second file is named 
+ option defines 
 \family typewriter
-axialdisp-statevars_t0000000.vtk
+SCECCVMH
 \family default
-.
- This file contains the state variables for each cell.
- The default fields are the total strain and stress fields.
- Since the cells are linear tetrahedra, there is a single quadrature point
- for each cell and thus a single set of stress and strain values for each
- cell.
- The final file (
+ as the database to be used.
+ The next line defines the location of the 
 \family typewriter
-axialdisp-statevars_info.vtk
+vx53
 \family default
-) gives the material properties used for the problem.
- Since we have not specified which properties to write, the default properties
- (
-\family typewriter
-mu
-\family default
-, 
-\family typewriter
-lambda
-\family default
-, 
-\family typewriter
-density
-\family default
-) are written.
- All of the 
-\family typewriter
-.vtk
-\family default
- files may be used with a number of visualization packages.
- If the problem ran correctly, you should be able to generate a figure such
- as 
+ executable, and must be changed to the location specified by the user when
+ the package is installed.
+ The package may be obtained from http://structure.harvard.edu/cvm-h.
+\end_layout
+
+\begin_layout Standard
+The final difference with the other examples is in the description of the
+ spatial databases.
+ These must also be defined as geoprojected databases.
+ Examining dislocation_slip.spatialdb, we find:
+\end_layout
+
+\begin_layout LyX-Code
+// We are specifying the data in a projected geographic coordinate system.
+\end_layout
+
+\begin_layout LyX-Code
+cs-data = geo-projected {
+\end_layout
+
+\begin_layout LyX-Code
+  to-meters = 1.0
+\end_layout
+
+\begin_layout LyX-Code
+  ellipsoid = clrk66
+\end_layout
+
+\begin_layout LyX-Code
+  datum-horiz = NAD27
+\end_layout
+
+\begin_layout LyX-Code
+  datum-vert = mean sea level
+\end_layout
+
+\begin_layout LyX-Code
+  projector = projection {
+\end_layout
+
+\begin_layout LyX-Code
+    projection = utm
+\end_layout
+
+\begin_layout LyX-Code
+    units = m
+\end_layout
+
+\begin_layout LyX-Code
+    proj-options = +zone=11
+\end_layout
+
+\begin_layout LyX-Code
+  }
+\end_layout
+
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout Standard
+Note that the description is somewhat more complex than the corresponding
+ entry in 
 \begin_inset LatexCommand ref
-reference "fig:twotet4-axial"
+reference "sec:Tutorial-Two-tet4"
 
 \end_inset
 
-, which was generated using ParaView.
+:
+\end_layout
+
+\begin_layout LyX-Code
+// We are specifying the data in a Cartesian coordinate system.
+\end_layout
+
+\begin_layout LyX-Code
+cs-data = cartesian {
+\end_layout
+
+\begin_layout LyX-Code
+  // Our units are already in meters, so we can just multiply by one.
+\end_layout
+
+\begin_layout LyX-Code
+  to-meters = 1.0
+\end_layout
+
+\begin_layout LyX-Code
+  // We are using a 3D Cartesian coordinate system.
+\end_layout
+
+\begin_layout LyX-Code
+  space-dim = 3
+\end_layout
+
+\begin_layout LyX-Code
+}
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename figs/axialdisp.jpg
-	lyxscale 50
-	scale 45
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Color contours and vectors of displacement for the axial displacement example.
-\begin_inset LatexCommand label
-name "fig:twotet4-axial"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+Fortunately, it is quite easy to substitute the appropriate lines in an
+ existing spatial database file, which is what we have done with this example.
 \end_layout
 
 \begin_layout Subsection
@@ -454,8 +468,14 @@ Kinematic Fault Slip Example
 \end_layout
 
 \begin_layout Standard
-The next example problem is left lateral fault slip applied between the
- two tetrahedral cells using kinematic cohesive cells.
+This example problem is left lateral fault slip applied between the two
+ tetrahedral cells using kinematic cohesive cells.
+ Note that we vary the amount of fault slip for each vertex with this example,
+ as described in 
+\family typewriter
+dislocation_slip.spatialdb
+\family default
+.
  The vertices away from the fault are held fixed in the 
 \family typewriter
 x
@@ -557,6 +577,37 @@ dislocation-statevars.vtk
 Rather than specifying the displacement boundary conditions in a spatial
  database file, we use the default behavior for Dirichlet boundary conditions,
  which is a uniform displacement of zero applied at all times.
+ There is one part of the fault examples that is slightly different from
+ the other examples.
+ Since the material properties are being defined using the SCEC CVM-H database,
+ this same database should be used to condition the equations associated
+ with the fault.
+ We do this as follows:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.interfaces.fault]
+\end_layout
+
+\begin_layout LyX-Code
+mat_db = spatialdata.spatialdb.SCECCVMH
+\end_layout
+
+\begin_layout LyX-Code
+mat_db.data_dir = /home/brad/data/sceccvm-h/vx53/bin
+\end_layout
+
+\begin_layout Standard
+This specifies the 
+\family typewriter
+SCECCVMH
+\family default
+ implementation for the material database, and again provides the location
+ of the 
+\family typewriter
+vx53
+\family default
+ binary.
 \end_layout
 
 \begin_layout Standard
@@ -567,8 +618,8 @@ The fault example requires three additional database files that were not
 dislocation_slip.spatialdb
 \family default
 ) specifies 0.01 m of left-lateral fault slip for the entire fault.
- The data dimension is zero since the same data is applied to all points
- in the set.
+ Since we specify a different amount of slip for every vertex on the fault,
+ the data dimension is one.
  It is also necessary to specify the slip rate, which is done in the file
  
 \family typewriter
@@ -600,10 +651,6 @@ twotet4.mesh
 , 
 \family typewriter
 pylithapp.cfg
-\family default
-, 
-\family typewriter
-matprops.spatialdb
 \family default
 ) along with the problem-specific files (
 \family typewriter
@@ -696,7 +743,7 @@ dislocation-fault_info.vtk
  If the problem ran correctly, you should be able to generate a figure such
  as 
 \begin_inset LatexCommand vref
-reference "fig:twotet4-disloc"
+reference "fig:twotet4-geoproj-disloc"
 
 \end_inset
 
@@ -727,7 +774,7 @@ status open
 \begin_layout Standard
 Color contours and vectors of displacement for the kinematic fault example.
 \begin_inset LatexCommand label
-name "fig:twotet4-disloc"
+name "fig:twotet4-geoproj-disloc"
 
 \end_inset
 
