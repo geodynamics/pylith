@@ -506,7 +506,7 @@ bc.x_pos = pylith.bc.Neumann
 \end_layout
 
 \begin_layout LyX-Code
-
+ 
 \end_layout
 
 \begin_layout LyX-Code
