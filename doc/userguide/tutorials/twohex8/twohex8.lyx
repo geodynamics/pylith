@@ -52,7 +52,7 @@ name "sec:Tutorial-Two-hexahedra"
 
 \end_inset
 
-Tutorial Using Two Linear Hexahedra and PyLith Mesh ASCII Format
+Tutorial Using Two Trilinear Hexahedra and PyLith Mesh ASCII Format
 \end_layout
 
 \begin_layout Subsection
@@ -61,8 +61,8 @@ Overview
 
 \begin_layout Standard
 This tutorial is a simple 3D example of a quasi-static finite element problem.
- It is a mesh composed of two linear hexahedra subject to displacement boundary
- conditions.
+ It is a mesh composed of two trilinear hexahedra subject to displacement
+ boundary conditions.
  One primary difference between this example and the example with two tetrahedra
  is that we use a Maxwell viscoelastic material model, and run the model
  for 10 time steps of 0.1 year each.

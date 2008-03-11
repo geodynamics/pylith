@@ -336,7 +336,7 @@ axialdisp.spatialdb
 axialdisp.cfg
 \family default
 .
- In this case, the desired displacement values is given at two points.
+ In this case, the desired displacement values are given at two points.
  Since data is being specified at points (rather than being uniform over
  the mesh, for example), the data dimension is one.
 \end_layout
@@ -918,7 +918,15 @@ density
 \family typewriter
 axialtract-tractions_info.vtk
 \family default
-) gives the traction values applied along the cell boundary.
+) gives the 
+\family typewriter
+x
+\family default
+ and 
+\family typewriter
+y
+\family default
+-components of traction applied at each integration point.
  All of the 
 \family typewriter
 .vtk
@@ -927,7 +935,7 @@ axialtract-tractions_info.vtk
  If the problem ran correctly, you should be able to generate a figure such
  as 
 \begin_inset LatexCommand vref
-reference "fig:twoquad4-axial"
+reference "fig:twoquad4-axialtract"
 
 \end_inset
 
@@ -940,6 +948,7 @@ status open
 \begin_layout Standard
 \begin_inset Graphics
 	filename figs/axialtract.eps
+	lyxscale 50
 	scale 45
 
 \end_inset
