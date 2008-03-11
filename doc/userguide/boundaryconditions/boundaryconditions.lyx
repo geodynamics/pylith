@@ -554,6 +554,12 @@ These settings correspond to the two-dimensional example problem in
 \family typewriter
 examples/twocells/twoquad4
 \family default
+, as described in 
+\begin_inset LatexCommand ref
+reference "sub:Tutorial-twoquad4-traction"
+
+\end_inset
+
 .
  The group of vertices to which Neumann boundary conditions are to be applied
  has the label 
