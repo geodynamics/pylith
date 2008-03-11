@@ -38,7 +38,7 @@ SimpleDB {
 
 // This is where the data is specified.
 // As described in dislocation.cfg, this database will be used to specify
-// uniform data for a fault (pylith.faults.SingleFault).
+// uniform data for a fault.
 // The entries are:
 // X-Coord, Y-Coord, Z-Coord,  slip rate
 500000.0  3.7e6  0.0  1.0e+6

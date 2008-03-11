@@ -45,8 +45,7 @@ The examples and associated files are:
     the left and right edges are fixed in x and y.
 
     - dislocation.cfg:  Parameter settings.
-    - dislocation.spatialdb: Database of Dirichlet BC values.
-    - dislocation_disp.spatialdb:  Database of fault slip values.
+    - dislocation_slip.spatialdb:  Database of fault slip values.
     - dislocation_sliprate.spatialdb: Database of peak slip rate values.
     - dislocation_sliptime.spatialdb: Database of slip initiation time values.
 
