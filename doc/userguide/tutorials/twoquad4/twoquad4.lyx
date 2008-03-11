@@ -706,6 +706,11 @@ name "fig:twoquad4-shear"
 \end_layout
 
 \begin_layout Subsection
+\begin_inset LatexCommand label
+name "sub:Tutorial-twoquad4-traction"
+
+\end_inset
+
 Axial Traction Example
 \end_layout
 
@@ -940,6 +945,15 @@ reference "fig:twoquad4-axialtract"
 \end_inset
 
 , which was generated using ParaView.
+ The results may be compared against the analytical solution derived in
+ 
+\begin_inset LatexCommand ref
+reference "sub:Analytical-Constant-Traction"
+
+\end_inset
+
+.
+ 
 \begin_inset Float figure
 wide false
 sideways false
@@ -947,7 +961,7 @@ status open
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename figs/axialtract.eps
+	filename figs/axialtract.jpg
 	lyxscale 50
 	scale 45
 

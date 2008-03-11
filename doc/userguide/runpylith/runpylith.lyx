@@ -1469,6 +1469,12 @@ Although the SimpleDB implementation is quite general, in some cases a simpler
 \family typewriter
 examples/twocells/twohex8
 \family default
+, as described in 
+\begin_inset LatexCommand ref
+reference "sec:Tutorial-Two-hexahedra"
+
+\end_inset
+
 .
  In the file 
 \family typewriter

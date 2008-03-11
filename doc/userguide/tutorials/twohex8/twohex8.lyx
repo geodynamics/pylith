@@ -127,7 +127,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Mesh used for the two tetrahedra examples.
+Mesh used for the two hexahedra examples.
 \begin_inset LatexCommand label
 name "fig:twohex8-mesh"
 
@@ -236,7 +236,7 @@ material = pylith.materials.MaxwellIsotropic3D
 \end_layout
 
 \begin_layout LyX-Code
-
+ 
 \end_layout
 
 \begin_layout LyX-Code
@@ -252,7 +252,7 @@ id = 1
 \end_layout
 
 \begin_layout LyX-Code
-
+ 
 \end_layout
 
 \begin_layout LyX-Code
@@ -268,7 +268,7 @@ db.data = [5773.502691896258, 3333.333333333333, 2700.0, 1.0e18]
 \end_layout
 
 \begin_layout LyX-Code
-
+ 
 \end_layout
 
 \begin_layout LyX-Code

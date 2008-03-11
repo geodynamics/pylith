@@ -187,6 +187,11 @@ y
 \end_layout
 
 \begin_layout Subsection
+\begin_inset LatexCommand label
+name "sub:Analytical-Constant-Traction"
+
+\end_inset
+
 Constant Traction Applied to a Rectangular Region
 \end_layout
 
