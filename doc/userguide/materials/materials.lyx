@@ -41,6 +41,7 @@
 \tracking_changes false
 \output_changes false
 \author "" 
+\author "" 
 \end_header
 
 \begin_body
@@ -228,7 +229,7 @@ materials = [elastic_upper,elastic_lower]
 \end_layout
 
 \begin_layout LyX-Code
-
+ 
 \end_layout
 
 \begin_layout LyX-Code
@@ -260,7 +261,7 @@ quadrature.cell.dimension = 3
 \end_layout
 
 \begin_layout LyX-Code
-
+ 
 \end_layout
 
 \begin_layout LyX-Code
