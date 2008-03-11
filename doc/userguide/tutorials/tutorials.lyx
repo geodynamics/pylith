@@ -118,7 +118,7 @@ The files needed to work through the tutorials are found in the
 examples
 \family default
  directory in the top-level PyLith directory.
- There are four examples in 
+ There are five examples in 
 \family typewriter
 examples/twocells
 \family default
@@ -161,10 +161,12 @@ preview false
 \end_inset
 
 
-\end_layout
+\begin_inset Include \input{twotet4-geoproj/twotet4-geoproj.lyx}
+preview false
 
-\begin_layout Standard
-ADD twoquad4-geoproj
+\end_inset
+
+
 \end_layout
 
 \end_body
