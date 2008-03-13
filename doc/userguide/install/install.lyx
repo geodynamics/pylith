@@ -2275,11 +2275,12 @@ Run .
 \family default
  to configure the package for your system
 \family typewriter
-.
+. Note that PyLith requires spatialdata to be configured with the
+--enable-pythia flag.
 \newline
 
 \newline
-$ ./configure --prefix=$HOME/cig
+$ ./configure --enable-pythia --prefix=$HOME/cig
 \end_layout
 
 \begin_layout Enumerate
