@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -153,7 +153,7 @@ reference "fig:Workflow-summary"
  into a format that can be used by a visualization code.
  Present output consists of VTK files which can be used by a number of visualiza
 tion codes (e.g., ParaView, Visit, and MayaVi).
- In the near future, a more flexible HDF5 format is planned.
+ In the near future, PyLith will also use the HDF5 format.
  
 \end_layout
 
@@ -213,6 +213,49 @@ t time and enhance computational efficiency; for example, PyLith 0.8 ran
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "fig:pylith-dependencies"
+
+\end_inset
+
+PyLith dependencies. PyLith makes direct use of several other packages, 
+  some of which have their own dependencies.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/packages.eps
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 PyLith is written in two programming languages.
  High-level code is written in Python; this rich, expressive interpreted
  language with dynamic typing reduces development time and permits flexible
@@ -242,31 +285,41 @@ In writing PyLith 1.0, the code was completely redesigned to be object-oriented
 \end_layout
 
 \begin_layout Standard
-The new code design leverages Pyre, Sieve, and PETSc much more extensively
+The new code design leverages Pyre, Sieve, and PETSc much more  extensively
  than the previous version.
- Pyre is used to glue together the various modules used to construct a simulatio
-n and specify the simulation parameters.
- Sieve is used for all finite-element storage and manipulation and handles
- the creation of the PETSc matrices and vectors.
- As a result, most of the PyLith source code pertains to implementing the
- geodynamics, such as bulk rheology, boundary conditions, and slip on faults.
+  Pyre is used to glue  together the various modules used to construct a
+ simulation and  specify the parameters.
+  Sieve is used for all finite-element  storage and manipulation and handles
+ the creation of the PETSc  matrices and vectors.
+  As a result, most of the PyLith source code  pertains to implementing
+ the geodynamics, such as bulk rheology,  boundary conditions, and slip
+ on faults.
  
 \end_layout
 
 \begin_layout Standard
-During development, tests were constructed for nearly every module function.
- These unit tests are distributed with the source code.
- These tests are run continuously during development to expose bugs and
- isolate their origin.
- As additional changes are made to the code, the tests are rerun to help
- prevent introduction of new bugs.
- A number of simple, full scale tests, such as axial compression, simple
- shear, and slip between two cells, have been used to test the code.
- ADD MENTION OF SCEC BENCHMARKS
+PyLith also uses FIAT to tabulate the finite-element basis functions  at
+ the numerical integration (quadrature) points.
+ Nemesis allows  PyLith to run Python using the Message Passing Interface
+ (MPI) for  parallel processing.
+ Additional, indirect dependencies (see Figure  ??) include numpy (efficient
+ operations on numerical arrays in  Python), Proj.4 (geographic projections),
+ and Pyrex/Pyrexemebed  (calling C and C++ functions from Python).
 \end_layout
 
 \begin_layout Standard
-ADD DESCRIPTION OF OTHER EXTERNAL PACKAGES (FIAT, numpy)
+During development, tests were constructed for nearly every module  function.
+  These unit tests are distributed with the source code.
+  These tests are run throughout the development cycle to expose bugs  and
+ isolate their origin.
+  As additional changes are made to the  code, the tests are rerun to help
+ prevent introduction of new bugs.
+  A number of simple, full scale tests, such as axial compression and  extension
+, simple shear, and slip on through-going faults, have been  used to test
+ the code.
+ Additionally, we have run the Southern  California Earthquake Center crustal
+ deformation benchmarks for  strike-slip and reverse-slip to determine the
+ relative local and  global error (SEE APPENDIX ??).
 \end_layout
 
 \begin_layout Subsection

@@ -181,15 +181,11 @@ $ tar -xzf pylith-1.1.0-linux-i686.tar.gz
 \end_layout
 
 \begin_layout Itemize
-Set your path to the bin directory.
+Set environment variables.
 \end_layout
 
 \begin_layout LyX-Code
-$ PATH=${PATH}:${HOME}/pylith/pylith-1.1.0-linux-i686/bin
-\end_layout
-
-\begin_layout LyX-Code
-ADD setup.sh for Linux
+$ source setup.sh
 \end_layout
 
 \begin_layout Subsection
@@ -265,7 +261,9 @@ Installation from Source
 \end_layout
 
 \begin_layout Standard
-PyLith 1.1 depends on a number of other packages.
+
+PyLith 1.1 depends on a number of other packages (see Figure
+pylith-dependencies).
  This complicates building the software from the source code.
  In many cases some of the packages required by PyLith are available as
  binary packages.
@@ -282,10 +280,21 @@ PyLith 1.1 depends on a number of other packages.
  PyLith is developed and tested on Linux and Mac OS X.
 \end_layout
 
-\begin_layout Standard
-Detailed installation instructions for building PyLith using the SVN source
- repository are available for several platforms.
- The instructions can be accessed via ADD URL HERE.
+\begin_layout Standard 
+Detailed installation instructions for building
+  PyLith using the SVN source repository are available for several
+  platforms.  The instructions can be accessed via the web interface
+  to the source repository
+  (http://www.geodynamics.org/wsvn/cig/short/3D/PyLith/trunk/doc/install/).
+  Even though using the software repositories is recommended only for
+  experienced users, less experienced users will find the platform
+  specific instructions useful. For example, the platform specific
+  instructions include a list of binary packages/distributions that
+  can be used, eliminating the need to compile those packages from
+  source. Thus, less experienced users should follow the platform
+  specific instructions but replace checking out the source code from
+  the repository (applies to PETSc and CIG code only) with downloading
+  the prepackaged source code.
 \end_layout
 
 \begin_layout Subsection
@@ -406,7 +415,7 @@ Python
 PyLith's high-level user interface code is written in Python, utilizing
  the Pyre framework.
  Pyre is included in the Python package known as Pythia.
- PyLith requires Pythia v0.8.1.4 or later, but you need not install Pythia
+ PyLith requires Pythia v0.8.1.6 or later, but you need not install Pythia
  because PyLith's 
 \family typewriter
 configure
@@ -608,7 +617,7 @@ pyrexembed (CIG version)
 \end_layout
 
 \begin_layout Itemize
-Pythia* (v0.8.1.4 or later)
+Pythia* (v0.8.1.6 or later)
 \end_layout
 
 \begin_layout Itemize
@@ -628,9 +637,12 @@ Chaco*
 \end_layout
 
 \begin_layout Standard
-Dependencies marked with an asterisk (*) can be downloaded and installed
- automatically.
- In addition, PyLith has the following optional dependencies:
+Dependencies marked with an asterisk (*) can be downloaded and
+  installed automatically. The source code for Nemesis, Pyrexembed,
+  spatialdata, and PyLith package can all be downloaded from the CIG
+  PyLith web page
+  (http://www.geodynamics.org/cig/software/packages/short/pylith/).
+  PyLith also has the following optional dependencies:
 \end_layout
 
 \begin_layout Itemize
@@ -1356,56 +1368,967 @@ Installing nemesis
 \end_layout
 
 \begin_layout Standard
-ADD STUFF HERE
+As with many other packages, to install nemesis, first, download the source package available at the 
+\begin_inset LatexCommand htmlurl
+name "Geodynamics Software Packages web page"
+target "www.geodynamics.org/cig/software/packages/short/pylith"
+
+\end_inset
+. After unpacking the source, run the prepackaged shell script to configure
+ nemesis for your system. Finally, use the 
+\family typewriter
+make
+\family default
+ utility to build and install nemesis.
+ 
 \end_layout
 
-\begin_layout Subsection
-Installing proj
+\begin_layout Subsubsection
+Downloading and Unpacking the Nemesis Source
 \end_layout
 
 \begin_layout Standard
-ADD STUFF HERE
+Download Nemesis from the 
+\begin_inset LatexCommand htmlurl
+name "Geodynamics website"
+target "www.geodynamics.org"
+
+\end_inset
+
+.
+ Click the 
+\family sans
+software
+\family default
+ tab at the top of the page.
+ Then click 
+\family sans
+Software Packages
+\family default
+, then 
+\family sans
+Short-Term Crustal Dynamics
+\family default
+.
+ Once you click the PyLith link, download the source archive and unpack
+ it using the 
+\family typewriter
+tar
+\family default
+ command: 
 \end_layout
 
-\begin_layout Subsection
-Installing FIAT
+\begin_layout LyX-Code
+$ tar xzf nemesis-1.0.tar.gz
 \end_layout
 
 \begin_layout Standard
-ADD STUFF HERE
+If you don't have GNU Tar, try the following command instead: 
 \end_layout
+
+\begin_layout LyX-Code
+$ gunzip -c nemesis-1.0.tar.gz | tar xf -
+\end_layout
+
+\begin_layout Subsubsection
+Nemesis Installation Procedure
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+TIP:
+\series default
+ If you run into problems configuring or building nemesis, send both the
+ 
+\family typewriter
+config.log
+\family default
+ and 
+\family typewriter
+make.log
+\family default
+ files to the 
+\begin_inset LatexCommand url
+name "CIG Short-Term Crustal Dynamics Mailing List"
+target "cig-short@geodynamics.org"
+
+\end_inset
+
+.
+ To create the 
+\family typewriter
+make.log
+\family default
+ file, redirect the output of 
+\family typewriter
+make
+\family default
+ to a file: 
+\family typewriter
+make 
+\begin_inset Formula $>$
+\end_inset
+
+ make.log
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+After unpacking the source, use the following procedure to install Nemesis:
+\end_layout
+
+\begin_layout Enumerate
+Navigate (i.e., 
+\family typewriter
+cd
+\family default
+) to the directory containing the Nemesis source
+\family typewriter
+.
+\newline
+
+\newline
+$ cd nemesis-1.0
+\end_layout
+
+\begin_layout Enumerate
+Run .
+\family typewriter
+/configure
+\family default
+ to configure the package for your system
+\family typewriter
+.
+\newline
+
+\newline
+$ ./configure --prefix=$HOME/cig
+\end_layout
+
+\begin_layout Enumerate
+Type 
+\family typewriter
+make
+\family default
+ to build the package.
+\family typewriter
+
+\newline
+
+\newline
+$ make
+\end_layout
+
+\begin_layout Enumerate
+Type 
+\family typewriter
+make install
+\family default
+ to install the package.
+\family typewriter
+
+\newline
+
+\newline
+$ make install
+\end_layout
+
+\begin_layout Standard
+The above commands will install Nemesis under 
+\family typewriter
+$HOME/cig
+\family default
+.
+ Afterwards, you may wish to add 
+\family typewriter
+PREFIX/bin
+\family default
+ (
+\family typewriter
+$HOME/cig/bin
+\family default
+, in this example) to your 
+\family typewriter
+PATH
+\family default
+.
+
+\begin_layout Subsection
+Installing Proj.4
+\end_layout
+
+\begin_layout Standard
+As with many other packages, to install Proj.4, first, download the source package available at the 
+\begin_inset LatexCommand htmlurl
+name "PROJ.4 web page"
+target "http://www.remotesensing.org/proj/"
+
+\end_inset
+. You should download both the source code and the US, Canadian, and New Zealand datum shift grid. After unpacking the files, run the prepackaged shell script to configure
+ Proj.4 for your system. Finally, use the 
+\family typewriter
+make
+\family default
+ utility to build and install Proj.4.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Downloading and Unpacking the Proj.4 Source
+\end_layout
+
+\begin_layout Standard
+Download Proj.4 from the 
+\begin_inset LatexCommand htmlurl
+name "Proj.4 website"
+target "http://www.remotesensing.org/proj/"
+
+\end_inset
+
+. Download the source archive and unpack
+ it using the 
+\family typewriter
+tar
+\family default
+ command: 
+\end_layout
+
+\begin_layout LyX-Code
+$ tar xzf proj-4.6.0.tar.gz
+\end_layout
+
+\begin_layout Standard
+If you don't have GNU Tar, try the following command instead: 
+\end_layout
+
+\begin_layout LyX-Code
+$ gunzip -c proj-4.6.0.tar.gz | tar xf -
+\end_layout
+
+\begin_layout Standard
+Download the datum shift archive and unpack
+ it in the proj-4.6.0/nad directory using the 
+\family typewriter
+unzip
+\family default
+ command: 
+\end_layout
+
+\begin_layout LyX-Code
+$ cd proj-4.6.0/nad
+$ unzip proj-datumgrid-1.3.zip
+\end_layout
+
+\begin_layout Subsubsection
+Proj.4 Installation Procedure
+\end_layout
+
+\begin_layout Standard
+After unpacking the source, use the following procedure to install Proj.4:
+\end_layout
+
+\begin_layout Enumerate
+Navigate (i.e., 
+\family typewriter
+cd
+\family default
+) to the directory containing the Proj.4 source
+\family typewriter
+.
+\newline
+
+\newline
+$ cd proj-4.6.0
+\end_layout
+
+\begin_layout Enumerate
+Run .
+\family typewriter
+/configure
+\family default
+ to configure the package for your system
+\family typewriter
+.
+\newline
+
+\newline
+$ ./configure --prefix=$HOME/cig
+\end_layout
+
+\begin_layout Enumerate
+Type 
+\family typewriter
+make
+\family default
+ to build the package.
+\family typewriter
+
+\newline
+
+\newline
+$ make
+\end_layout
+
+\begin_layout Enumerate
+Type 
+\family typewriter
+make install
+\family default
+ to install the package.
+\family typewriter
+
+\newline
+
+\newline
+$ make install
+\end_layout
+
+\begin_layout Standard
+The above commands will install Proj.4 under 
+\family typewriter
+$HOME/cig
+\family default
+.
+ Afterwards, you may wish to add 
+\family typewriter
+PREFIX/bin
+\family default
+ (
+\family typewriter
+$HOME/cig/bin
+\family default
+, in this example) to your 
+\family typewriter
+PATH
+\family default
+.
 
 \begin_layout Subsection
 Installing numpy
 \end_layout
 
 \begin_layout Standard
-ADD STUFF HERE
+Numpy is written exclusively in Python, although it has some Python extension modules. As a result, its installation is relatively simple. First, download the source package available at the 
+\begin_inset LatexCommand htmlurl
+name "SciPy.org web page"
+target "http://www.scipy.org/Download/"
+
+\end_inset
+. Download the Numpy source code and install the package.
 \end_layout
+
+\begin_layout Subsubsection
+Downloading and Unpacking the Numpy Source
+\end_layout
+
+\begin_layout Standard
+Download Numpy from the 
+\begin_inset LatexCommand htmlurl
+name "SciPy website"
+target "http://www.scipy.org/"
+
+\end_inset
+
+. Download the source archive and unpack
+ it using the 
+\family typewriter
+tar
+\family default
+ command: 
+\end_layout
+
+\begin_layout LyX-Code
+$ tar xzf numpy-1.0.4.tar.gz
+\end_layout
+
+\begin_layout Standard
+If you don't have GNU Tar, try the following command instead: 
+\end_layout
+
+\begin_layout LyX-Code
+$ gunzip -c numpy-1.0.4.tar.gz | tar xf -
+\end_layout
+
+\begin_layout Subsubsection
+Numpy Installation Procedure
+\end_layout
+
+\begin_layout Standard
+After unpacking the source, use the following procedure to install Numpy:
+\end_layout
+
+\begin_layout Enumerate
+Navigate (i.e., 
+\family typewriter
+cd
+\family default
+) to the directory containing the Numpy source
+\family typewriter
+.
+\newline
+
+\newline
+$ cd numpy-1.0.4
+\end_layout
+
+\begin_layout Enumerate
+Run 
+\family typewriter
+python setup.py install
+\family default
+ to configure the package for your system
+\family typewriter
+.
+\newline
+
+\newline
+$ python setup.py install --prefix=$HOME/cig
+\end_layout
+
+\begin_layout Standard
+The above commands will install FIAT under 
+\family typewriter
+$HOME/cig
+\family default
+.
+ Afterwards, you may wish to add 
+\family typewriter
+PREFIX/bin
+\family default
+ (
+\family typewriter
+$HOME/cig/bin
+\family default
+, in this example) to your 
+\family typewriter
+PATH
+\family default
+.
+
+\begin_layout Subsection
+Installing FIAT
+\end_layout
+
+\begin_layout Standard
+FIAT is written exclusively in Python. As a result, its installation is very simple. First, download the source package available at the 
+\begin_inset LatexCommand htmlurl
+name "FENICS web page"
+target "http://www.fenics.org/wiki/Download/"
+
+\end_inset
+. Download the FIAT source code and install the package.
+\end_layout
+
+\begin_layout Subsubsection
+Downloading and Unpacking the FIAT Source
+\end_layout
+
+\begin_layout Standard
+Download FIAT from the 
+\begin_inset LatexCommand htmlurl
+name "FENICS website"
+target "http://www.fenics.org/"
+
+\end_inset
+
+. Download the source archive and unpack
+ it using the 
+\family typewriter
+tar
+\family default
+ command: 
+\end_layout
+
+\begin_layout LyX-Code
+$ tar xzf FIAT-0.3.4.tar.gz
+\end_layout
+
+\begin_layout Standard
+If you don't have GNU Tar, try the following command instead: 
+\end_layout
+
+\begin_layout LyX-Code
+$ gunzip -c FIAT-0.3.4.tar.gz | tar xf -
+\end_layout
+
+\begin_layout Subsubsection
+FIAT Installation Procedure
+\end_layout
+
+\begin_layout Standard
+After unpacking the source, use the following procedure to install FIAT:
+\end_layout
+
+\begin_layout Enumerate
+Navigate (i.e., 
+\family typewriter
+cd
+\family default
+) to the directory containing the FIAT source
+\family typewriter
+.
+\newline
+
+\newline
+$ cd FIAT-0.3.4
+\end_layout
+
+\begin_layout Enumerate
+Run 
+\family typewriter
+python setup.py install
+\family default
+ to configure the package for your system
+\family typewriter
+.
+\newline
+
+\newline
+$ python setup.py install --prefix=$HOME/cig
+\end_layout
+
+\begin_layout Standard
+The above commands will install FIAT under 
+\family typewriter
+$HOME/cig
+\family default
+.
+ Afterwards, you may wish to add 
+\family typewriter
+PREFIX/bin
+\family default
+ (
+\family typewriter
+$HOME/cig/bin
+\family default
+, in this example) to your 
+\family typewriter
+PATH
+\family default
+.
 
 \begin_layout Subsection
 Installing Pyrex
 \end_layout
 
 \begin_layout Standard
-ADD STUFF HERE
+Pyrex is written exclusively in Python. As a result, its installation is very simple. First, download the source package available at the 
+\begin_inset LatexCommand htmlurl
+name "Pyrex web page"
+target "http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/"
+
+\end_inset
+. Some recent releases of Pyrex are incompatible with PyLith. Release 0.9.5.1 is known to work with PyLith.
 \end_layout
+
+\begin_layout Subsubsection
+Downloading and Unpacking the Pyrex Source
+\end_layout
+
+\begin_layout Standard
+Download Pyrex 0.9.5.1 from the 
+\begin_inset LatexCommand htmlurl
+name "Pyrex website"
+target "http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/"
+
+\end_inset
+
+. Click on the Previous Releases link to retrieve release 0.9.5.1. Download the source archive and unpack
+ it using the 
+\family typewriter
+tar
+\family default
+ command: 
+\end_layout
+
+\begin_layout LyX-Code
+$ tar xzf Pyrex-0.9.5.1.1.tar.gz
+\end_layout
+
+\begin_layout Standard
+If you don't have GNU Tar, try the following command instead: 
+\end_layout
+
+\begin_layout LyX-Code
+$ gunzip -c Pyrex-0.9.5.1.1.tar.gz | tar xf -
+\end_layout
+
+\begin_layout Subsubsection
+Pyrex Installation Procedure
+\end_layout
+
+\begin_layout Standard
+After unpacking the source, use the following procedure to install Pyrex:
+\end_layout
+
+\begin_layout Enumerate
+Navigate (i.e., 
+\family typewriter
+cd
+\family default
+) to the directory containing the FIAT source
+\family typewriter
+.
+\newline
+
+\newline
+$ cd Pyrex-0.9.5.1a
+\end_layout
+
+\begin_layout Enumerate
+Run 
+\family typewriter
+python setup.py install
+\family default
+ to configure the package for your system
+\family typewriter
+.
+\newline
+
+\newline
+$ python setup.py install --prefix=$HOME/cig
+\end_layout
+
+\begin_layout Standard
+The above commands will install FIAT under 
+\family typewriter
+$HOME/cig
+\family default
+.
+ Afterwards, you may wish to add 
+\family typewriter
+PREFIX/bin
+\family default
+ (
+\family typewriter
+$HOME/cig/bin
+\family default
+, in this example) to your 
+\family typewriter
+PATH
+\family default
+.
+
 
 \begin_layout Subsection
 Installing pyrexembed
 \end_layout
 
 \begin_layout Standard
-ADD STUFF HERE
+CIG distributes a customized version of Pyrexembed (http://www.freenet.org.nz/python/pyrexembed/) that handles C++ exceptions. Pyrexembed is written exclusively in Python and its installation is very simple. First, download the source package available at the 
+\begin_inset LatexCommand htmlurl
+name "Geodynamics Software Packages web page"
+target "www.geodynamics.org/cig/software/packages/short/pylith"
+
+\end_inset
+. Download the Pyrexembed source code and install the package.
 \end_layout
+
+\begin_layout Subsubsection
+Downloading and Unpacking the Pyrexembed Source
+\end_layout
+
+\begin_layout Standard
+Download Pyrexembed from the 
+\begin_inset LatexCommand htmlurl
+name "Geodynamics website"
+target "www.geodynamics.org"
+
+\end_inset
+
+.
+ Click the 
+\family sans
+software
+\family default
+ tab at the top of the page.
+ Then click 
+\family sans
+Software Packages
+\family default
+, then 
+\family sans
+Short-Term Crustal Dynamics
+\family default
+.
+ Once you click the PyLith link, download the source archive and unpack
+ it using the 
+\family typewriter
+tar
+\family default
+ command: 
+\end_layout
+
+. Download the source archive and unpack
+ it using the 
+\family typewriter
+tar
+\family default
+ command: 
+\end_layout
+
+\begin_layout LyX-Code
+$ tar xzf pyrexembed-1.0.tgz
+\end_layout
+
+\begin_layout Standard
+If you don't have GNU Tar, try the following command instead: 
+\end_layout
+
+\begin_layout LyX-Code
+$ gunzip -c pyrexembed-1.0.tgz | tar xf -
+\end_layout
+
+\begin_layout Subsubsection
+Pyrexembed Installation Procedure
+\end_layout
+
+\begin_layout Standard
+After unpacking the source, use the following procedure to install Pyrexembed:
+\end_layout
+
+\begin_layout Enumerate
+Navigate (i.e., 
+\family typewriter
+cd
+\family default
+) to the directory containing the Pyrexembed source
+\family typewriter
+.
+\newline
+
+\newline
+$ cd pyrexembed-1.0
+\end_layout
+
+\begin_layout Enumerate
+Run 
+\family typewriter
+python setup.py install
+\family default
+ to configure the package for your system
+\family typewriter
+.
+\newline
+
+\newline
+$ python setup.py install --prefix=$HOME/cig
+\end_layout
+
+\begin_layout Standard
+The above commands will install Pyrexembed under 
+\family typewriter
+$HOME/cig
+\family default
+.
+ Afterwards, you may wish to add 
+\family typewriter
+PREFIX/bin
+\family default
+ (
+\family typewriter
+$HOME/cig/bin
+\family default
+, in this example) to your 
+\family typewriter
+PATH
+\family default
+.
 
 \begin_layout Subsection
 Installing spatialdata
 \end_layout
 
 \begin_layout Standard
-ADD STUFF HERE
+As with many other packages, to install spatialdata, first, download the source package available at the 
+\begin_inset LatexCommand htmlurl
+name "Geodynamics Software Packages web page"
+target "www.geodynamics.org/cig/software/packages/short/pylith"
+
+\end_inset
+. After unpacking the source, run the prepackaged shell script to configure
+ nemesis for your system. Finally, use the 
+\family typewriter
+make
+\family default
+ utility to build and install nemesis.
 \end_layout
+
+\begin_layout Subsubsection
+Downloading and Unpacking the Spatialdata Source
+\end_layout
+
+\begin_layout Standard
+Download Nemesis from the 
+\begin_inset LatexCommand htmlurl
+name "Geodynamics website"
+target "www.geodynamics.org"
+
+\end_inset
+
+.
+ Click the 
+\family sans
+software
+\family default
+ tab at the top of the page.
+ Then click 
+\family sans
+Software Packages
+\family default
+, then 
+\family sans
+Short-Term Crustal Dynamics
+\family default
+.
+ Once you click the PyLith link, download the source archive and unpack
+ it using the 
+\family typewriter
+tar
+\family default
+ command: 
+\end_layout
+
+\begin_layout LyX-Code
+$ tar xzf spatialdata.tgz
+\end_layout
+
+\begin_layout Standard
+If you don't have GNU Tar, try the following command instead: 
+\end_layout
+
+\begin_layout LyX-Code
+$ gunzip -c spatialdata.tgz | tar xf -
+\end_layout
+
+\begin_layout Subsubsection
+Nemesis Installation Procedure
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+TIP:
+\series default
+ If you run into problems configuring or building spatialdata, send both the
+ 
+\family typewriter
+config.log
+\family default
+ and 
+\family typewriter
+make.log
+\family default
+ files to the 
+\begin_inset LatexCommand url
+name "CIG Short-Term Crustal Dynamics Mailing List"
+target "cig-short@geodynamics.org"
+
+\end_inset
+
+.
+ To create the 
+\family typewriter
+make.log
+\family default
+ file, redirect the output of 
+\family typewriter
+make
+\family default
+ to a file: 
+\family typewriter
+make 
+\begin_inset Formula $>$
+\end_inset
+
+ make.log
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+After unpacking the source, use the following procedure to install Spatialdata:
+\end_layout
+
+\begin_layout Enumerate
+Navigate (i.e., 
+\family typewriter
+cd
+\family default
+) to the directory containing the Spatialdata source
+\family typewriter
+.
+\newline
+
+\newline
+$ cd spatialdata
+\end_layout
+
+\begin_layout Enumerate
+Run .
+\family typewriter
+/configure
+\family default
+ to configure the package for your system
+\family typewriter
+.
+\newline
+
+\newline
+$ ./configure --prefix=$HOME/cig
+\end_layout
+
+\begin_layout Enumerate
+Type 
+\family typewriter
+make
+\family default
+ to build the package.
+\family typewriter
+
+\newline
+
+\newline
+$ make
+\end_layout
+
+\begin_layout Enumerate
+Type 
+\family typewriter
+make install
+\family default
+ to install the package.
+\family typewriter
+
+\newline
+
+\newline
+$ make install
+\end_layout
+
+\begin_layout Standard
+The above commands will install Spatialdata under 
+\family typewriter
+$HOME/cig
+\family default
+.
+ Afterwards, you may wish to add 
+\family typewriter
+PREFIX/bin
+\family default
+ (
+\family typewriter
+$HOME/cig/bin
+\family default
+, in this example) to your 
+\family typewriter
+PATH
+\family default
+.
 
 \begin_layout Subsection
 \begin_inset LatexCommand label
@@ -1473,7 +2396,7 @@ tar
 \end_layout
 
 \begin_layout LyX-Code
-$ tar xzf pylith-1.0.1.tar.gz
+$ tar xzf pylith-1.1.0.tar.gz
 \end_layout
 
 \begin_layout Standard
@@ -1481,7 +2404,7 @@ If you don't have GNU Tar, try the following command instead:
 \end_layout
 
 \begin_layout LyX-Code
-$ gunzip -c pylith-1.0.1.tar.gz | tar xf -
+$ gunzip -c pylith-1.1.0.tar.gz | tar xf -
 \end_layout
 
 \begin_layout Subsubsection
@@ -1753,7 +2676,7 @@ configure
 \end_layout
 
 \begin_layout Standard
-PyLith 1.1 requires Pythia v0.8.1.4 or later, which 
+PyLith 1.1 requires Pythia v0.8.1.6 or later, which 
 \family typewriter
 configure
 \family default
@@ -1766,7 +2689,7 @@ configure
 \family default
  (e.g., 
 \family typewriter
-pythia-0.8.1.4.egg
+pythia-0.8.1.6.egg
 \family default
 ).
  The 
@@ -2543,14 +3466,9 @@ Warning:
 \color none
  Building PyLith using the source repositories is recommended only for expert
  users who are willing to work with a moving target and rebuild on a frequent
- basis.
+ basis. 
  The installation instructions cover the basic steps and assume the user
  has experience building and installing software.
-\end_layout
-
-\begin_layout Quote
-If you are content with the prepared source packages, you may skip this
- section.
 \end_layout
 
 \begin_layout Subsection
@@ -2578,14 +3496,6 @@ Mercurial (0.9 or later)
 
 \begin_layout Itemize
 GNU Autotools (Autoconf, Automake, and Libtool)
-\end_layout
-
-\begin_layout Itemize
-Pyrex (v0.9.5.1 or later)
-\end_layout
-
-\begin_layout Itemize
-the CIG version of pyrexembed
 \end_layout
 
 \begin_layout Subsubsection
@@ -2644,39 +3554,6 @@ target "http://www.selenic.com/mercurial/"
 \end_layout
 
 \begin_layout Subsubsection
-Pyrex
-\end_layout
-
-\begin_layout Standard
-The software layer which connects PyLith's high-level Python code with its
- low-level C++ code is written in a language called 
-\emph on
-Pyrex
-\emph default
-.
- Pyrex is a Python-like language for writing native Python extension modules.
- To download Pyrex, visit 
-\begin_inset LatexCommand htmlurl
-name "the Pyrex web site"
-target "http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/"
-
-\end_inset
-
-.
- After installing Pyrex, make sure the 
-\family typewriter
-pyrexc
-\family default
- command is accessible via your 
-\family typewriter
-PATH
-\family default
-.
- The Pyrex compiler generates C code as its output.
- PyLith requires Pyrex v0.9.5.1 or later.
-\end_layout
-
-\begin_layout Subsubsection
 Autotools
 \end_layout
 
@@ -2728,19 +3605,19 @@ petsc-dev
 \begin_layout LyX-Code
 
 \family typewriter
-$ hg clone http://mercurial.mcs.anl.gov/petsc/petsc-dev
+$ hg clone http://petsc.cs.iit.edu/petsc/petsc-dev
 \end_layout
 
 \begin_layout LyX-Code
 
 \family typewriter
-$ cd petsc-dev/python
+$ cd petsc-dev/config
 \end_layout
 
 \begin_layout LyX-Code
 
 \family typewriter
-$ hg clone http://mercurial.mcs.anl.gov/petsc/BuildSystem BuildSystem
+$ hg clone http://petsc.cs.iit.edu/petsc/BuildSystem BuildSystem
 \end_layout
 
 \begin_layout Standard
@@ -2770,7 +3647,7 @@ $ hg update
 \begin_layout LyX-Code
 
 \family typewriter
-$ cd python/BuildSystem
+$ cd config
 \end_layout
 
 \begin_layout LyX-Code
