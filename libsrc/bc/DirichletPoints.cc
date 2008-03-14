@@ -188,6 +188,20 @@ pylith::bc::DirichletPoints::setConstraints(
     // Create array holding all constrained DOF
     int_array allFixedDOF(curFixedDOF, numTotalConstrained);
 
+    // Verify other BC has not already constrained DOF
+    const int numPrevious = _offsetLocal[iPoint];
+    for (int iDOF=0; iDOF < numPrevious; ++iDOF)
+      for (int jDOF=0; jDOF < numFixedDOF; ++jDOF)
+	if (allFixedDOF[jDOF] == _fixedDOF[iDOF]) {
+	  std::ostringstream msg;
+	  msg << "Found multiple constraints on degrees of freedom at "
+	      << "point while setting up constraints for DirichletPoints "
+	      << "boundary condition '" << _label << "'.\n"
+	      << "Degree of freedom " << _fixedDOF[iDOF] 
+	      << " is already constrained by another Dirichlet BC.";
+	  throw std::runtime_error(msg.str());
+	} // if
+
     // Add in the ones for this DirichletPoints BC
     for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
       allFixedDOF[_offsetLocal[iPoint]+iDOF] = _fixedDOF[iDOF];
