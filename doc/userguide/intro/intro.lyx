@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -207,9 +207,14 @@ PyLith is separated into modules to encapsulate behavior and facilitate
  use across multiple applications.
  This allows expert users to replace functionality of a wide variety of
  components without recompiling or polluting the main code.
- PyLith employs external packages (ADD REFERENCE TO FIGURE) to reduce developmen
-t time and enhance computational efficiency; for example, PyLith 0.8 ran
- two times faster when the PETSc linear solver was used.
+ PyLith employs external packages (see Figure 
+\begin_inset LatexCommand ref
+reference "fig:pylith-dependencies"
+
+\end_inset
+
+) to reduce development time and enhance computational efficiency; for example,
+ PyLith 0.8 ran two times faster when the PETSc linear solver was used.
 \end_layout
 
 \begin_layout Standard
@@ -222,6 +227,13 @@ sideways false
 status open
 
 \begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/packages.eps
+	scale 75
+
+\end_inset
+
 \begin_inset Caption
 
 \begin_layout Standard
@@ -230,20 +242,10 @@ name "fig:pylith-dependencies"
 
 \end_inset
 
-PyLith dependencies. PyLith makes direct use of several other packages, 
-  some of which have their own dependencies.
+PyLith dependencies.
+ PyLith makes direct use of several other packages, some of which have
+ their own dependencies.
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename figs/packages.eps
-	scale 75
 
 \end_inset
 
@@ -346,6 +348,14 @@ sideways false
 status open
 
 \begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/pyre_overview.png
+	scale 25
+
+\end_inset
+
+\begin_layout Standard
 \begin_inset Caption
 
 \begin_layout Standard
@@ -358,16 +368,6 @@ Pyre Architecture.
 
 \end_layout
 
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename figs/pyre_overview.png
-	scale 75
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
