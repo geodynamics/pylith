@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -473,7 +473,7 @@ output The output manager associated with diagnostic output.
 
 \begin_layout Description
 quadrature The quadrature object to be used for numerical integration.
- Since we are integrating over a surface that is one dimenion lower than
+ Since we are integrating over a surface that is one dimension lower than
  the problem domain, this would typically be set to something like 
 \family typewriter
 quadrature2din3d

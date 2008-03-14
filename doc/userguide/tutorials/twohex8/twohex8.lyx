@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -86,7 +86,7 @@ reference "fig:twohex8-mesh"
 \end_inset
 
 ).
- The mesh geometry and topology is described in the file 
+ The mesh geometry and topology are described in the file 
 \family typewriter
 twohex8.mesh
 \family default
@@ -223,8 +223,11 @@ pylithapp.cfg
  rather than the SimpleDB implementation used in the other example problems.
  For simple distributions of material properties (or boundary conditions),
  this implementation is actually easier to use.
- Examining pylithapp.cfg, we specify the material information with the following
- set of parameters:
+ Examining 
+\family typewriter
+pylithapp.cfg
+\family default
+, we specify the material information with the following set of parameters:
 \end_layout
 
 \begin_layout LyX-Code
@@ -943,7 +946,9 @@ dislocation_sliprate.spatialdb
 \family default
 , 
 \family typewriter
-dislocation_sliptime.spatialdb
+dislocation_
+\newline
+sliptime.spatialdb
 \family default
 \size default
 ) provide a complete description of the problem, and we can then run this

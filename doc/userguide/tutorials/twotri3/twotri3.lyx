@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -892,7 +892,7 @@ status open
 \begin_inset Graphics
 	filename figs/dislocation.jpg
 	lyxscale 50
-	scale 50
+	scale 44
 
 \end_inset
 

@@ -1,4 +1,4 @@
-#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -129,7 +129,7 @@ Installation of Binary Executable
 Binary executables are available for Linux, Mac OS X (Power PC and Intel),
  and Windows from the 
 \begin_inset LatexCommand htmlurl
-name "CIG website"
+name "PyLith web page"
 target "geodynamics.org/cig/software/packages/short/pylith/"
 
 \end_inset
@@ -159,14 +159,14 @@ $ cd pylith
 \end_layout
 
 \begin_layout Itemize
-Download the 
+Download the Linux tarball from the 
 \begin_inset LatexCommand htmlurl
-name "Linux tarball"
+name "PyLith web page"
 target "geodynamics.org/cig/software/packages/short/pylith/"
 
 \end_inset
 
- and save it to the desired location, e.g., 
+, and save it to the desired location, e.g., 
 \family typewriter
 $HOME/pylith
 \family default
@@ -211,9 +211,9 @@ $ cd pylith
 \end_layout
 
 \begin_layout Itemize
-Download the 
+Download the Darwin tarball from the 
 \begin_inset LatexCommand htmlurl
-name "Darwin tarball"
+name "PyLith web page"
 target "geodynamics.org/cig/software/packages/short/pylith/"
 
 \end_inset
@@ -247,9 +247,9 @@ Windows
 \end_layout
 
 \begin_layout Itemize
-Download the 
+Download the Windows installer from the 
 \begin_inset LatexCommand htmlurl
-name "Windows installer"
+name "PyLith web page"
 target "geodynamics.org/cig/software/packages/short/pylith/"
 
 \end_inset
@@ -262,14 +262,20 @@ Installation from Source
 \end_layout
 
 \begin_layout Standard
-PyLith 1.1 depends on a number of other packages (see Figurepylith-dependencies).
+PyLith 1.1 depends on a number of other packages (see Figure 
+\begin_inset LatexCommand ref
+reference "fig:pylith-dependencies"
+
+\end_inset
+
+).
  This complicates building the software from the source code.
  In many cases some of the packages required by PyLith are available as
  binary packages.
  On the one hand, using these packages removes the burden of configuring,
- building, and installing these packages, but it can come with its own host
- of complications if consistent compiler and configuration settings are
- not used across all of the packages on which PyLith depends.
+ building, and installing these packages, but that can come with its own
+ host of complications if consistent compiler and configuration settings
+ are not used across all of the packages on which PyLith depends.
  This is usually not an issue with Linux distributions, such as Fedora,
  Ubuntu, and Debian that have good quality control; it can be an issue with
  Darwin package managers, such as Fink, where there is limited enforcement
@@ -280,20 +286,25 @@ PyLith 1.1 depends on a number of other packages (see Figurepylith-dependencies)
 \end_layout
 
 \begin_layout Standard
-Detailed installation instructions for building  PyLith using the SVN source
+Detailed installation instructions for building PyLith using the SVN source
  repository are available for several  platforms.
-  The instructions can be accessed via the web interface  to the source
- repository  (http://www.geodynamics.org/wsvn/cig/short/3D/PyLith/trunk/doc/instal
-l/).
-  Even though using the software repositories is recommended only for  experienc
-ed users, less experienced users will find the platform  specific instructions
+ The instructions can be accessed via the 
+\begin_inset LatexCommand htmlurl
+name "web interface into the PyLith source repository"
+target "geodynamics.org/wsvn/cig/short/3D/PyLith/trunk/doc/install/"
+
+\end_inset
+
+.
+ Even though using the software repositories is recommended only for experienced
+ users, less experienced users will find the platform- specific instructions
  useful.
- For example, the platform specific  instructions include a list of binary
- packages/distributions that  can be used, eliminating the need to compile
- those packages from  source.
- Thus, less experienced users should follow the platform  specific instructions
- but replace checking out the source code from  the repository (applies
- to PETSc and CIG code only) with downloading  the prepackaged source code.
+ For example, the platform-specific instructions include a list of binary
+ packages/distributions that can be used, eliminating the need to compile
+ those packages from source.
+ Thus, less experienced users should follow the platform-specific instructions,
+ but replace checking out the source code from the repository (applies to
+ PETSc and CIG code only) with downloading the prepackaged source code.
 \end_layout
 
 \begin_layout Subsection
@@ -701,10 +712,11 @@ PETSc itself depends upon several other sofware packages.
 \end_layout
 
 \begin_layout Standard
-For general information about the development version of PETSc, visit 
+For general information about the development version of PETSc, visit the
+ 
 \begin_inset LatexCommand htmlurl
-name "the PETSc Developers Site"
-target "http://www-unix.mcs.anl.gov/petsc/petsc-as/developers/"
+name "PETSc Developers Site"
+target "www-unix.mcs.anl.gov/petsc/petsc-as/developers"
 
 \end_inset
 
@@ -759,10 +771,10 @@ target "petsc-maint@mcs.anl.gov"
 \end_layout
 
 \begin_layout Standard
-For detailed information on installing PETSc, see 
+For detailed information on installing PETSc, see the 
 \begin_inset LatexCommand htmlurl
-name "the PETSc Installation Docs"
-target "http://www-unix.mcs.anl.gov/petsc/petsc-as/documentation/installation.html"
+name "PETSc Installation Docs"
+target "www-unix.mcs.anl.gov/petsc/petsc-as/documentation/installation.html"
 
 \end_inset
 
@@ -787,8 +799,8 @@ petsc-dev
 \family default
  from the 
 \begin_inset LatexCommand htmlurl
-name "the PETSc Developers Site"
-target "http://www-unix.mcs.anl.gov/petsc/petsc-as/developers/"
+name "PETSc Developers Site"
+target "www-unix.mcs.anl.gov/petsc/petsc-as/developers"
 
 \end_inset
 
@@ -1370,8 +1382,8 @@ Installing nemesis
 As with many other packages, to install nemesis, first, download the source
  package available at the 
 \begin_inset LatexCommand htmlurl
-name "Geodynamics Software Packages web page"
-target "www.geodynamics.org/cig/software/packages/short/pylith"
+name "PyLith web page"
+target "geodynamics.org/cig/software/packages/short/pylith"
 
 \end_inset
 
@@ -1393,28 +1405,12 @@ Downloading and Unpacking the Nemesis Source
 \begin_layout Standard
 Download Nemesis from the 
 \begin_inset LatexCommand htmlurl
-name "Geodynamics website"
-target "www.geodynamics.org"
+name "PyLith web page"
+target "geodynamics.org/cig/software/packages/short/pylith"
 
 \end_inset
 
-.
- Click the 
-\family sans
-software
-\family default
- tab at the top of the page.
- Then click 
-\family sans
-Software Packages
-\family default
-, then 
-\family sans
-Short-Term Crustal Dynamics
-\family default
-.
- Once you click the PyLith link, download the source archive and unpack
- it using the 
+ and unpack it using the 
 \family typewriter
 tar
 \family default
@@ -1569,7 +1565,7 @@ As with many other packages, to install Proj.4, first, download the source
  package available at the 
 \begin_inset LatexCommand htmlurl
 name "PROJ.4 web page"
-target "http://www.remotesensing.org/proj/"
+target "www.remotesensing.org/proj"
 
 \end_inset
 
@@ -1594,7 +1590,7 @@ Downloading and Unpacking the Proj.4 Source
 Download Proj.4 from the 
 \begin_inset LatexCommand htmlurl
 name "Proj.4 website"
-target "http://www.remotesensing.org/proj/"
+target "www.remotesensing.org/proj"
 
 \end_inset
 
@@ -1727,7 +1723,7 @@ Numpy is written exclusively in Python, although it has some Python extension
  First, download the source package available at the 
 \begin_inset LatexCommand htmlurl
 name "SciPy.org web page"
-target "http://www.scipy.org/Download/"
+target "www.scipy.org/Download"
 
 \end_inset
 
@@ -1743,7 +1739,7 @@ Downloading and Unpacking the Numpy Source
 Download Numpy from the 
 \begin_inset LatexCommand htmlurl
 name "SciPy website"
-target "http://www.scipy.org/"
+target "www.scipy.org"
 
 \end_inset
 
@@ -1834,7 +1830,7 @@ FIAT is written exclusively in Python.
  First, download the source package available at the 
 \begin_inset LatexCommand htmlurl
 name "FENICS web page"
-target "http://www.fenics.org/wiki/Download/"
+target "www.fenics.org/wiki/Download"
 
 \end_inset
 
@@ -1850,7 +1846,7 @@ Downloading and Unpacking the FIAT Source
 Download FIAT from the 
 \begin_inset LatexCommand htmlurl
 name "FENICS website"
-target "http://www.fenics.org/"
+target "www.fenics.org"
 
 \end_inset
 
@@ -1941,7 +1937,7 @@ Pyrex is written exclusively in Python.
  First, download the source package available at the 
 \begin_inset LatexCommand htmlurl
 name "Pyrex web page"
-target "http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/"
+target "www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex"
 
 \end_inset
 
@@ -1958,7 +1954,7 @@ Downloading and Unpacking the Pyrex Source
 Download Pyrex 0.9.5.1 from the 
 \begin_inset LatexCommand htmlurl
 name "Pyrex website"
-target "http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/"
+target "www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex"
 
 \end_inset
 
@@ -2051,8 +2047,8 @@ n/pyrexembed/) that handles C++ exceptions.
  simple.
  First, download the source package available at the 
 \begin_inset LatexCommand htmlurl
-name "Geodynamics Software Packages web page"
-target "www.geodynamics.org/cig/software/packages/short/pylith"
+name "PyLith web page"
+target "geodynamics.org/cig/software/packages/short/pylith"
 
 \end_inset
 
@@ -2067,28 +2063,12 @@ Downloading and Unpacking the Pyrexembed Source
 \begin_layout Standard
 Download Pyrexembed from the 
 \begin_inset LatexCommand htmlurl
-name "Geodynamics website"
-target "www.geodynamics.org"
+name "PyLith web page"
+target "geodynamics.org/cig/software/packages/short/pylith"
 
 \end_inset
 
-.
- Click the 
-\family sans
-software
-\family default
- tab at the top of the page.
- Then click 
-\family sans
-Software Packages
-\family default
-, then 
-\family sans
-Short-Term Crustal Dynamics
-\family default
-.
- Once you click the PyLith link, download the source archive and unpack
- it using the 
+ and unpack it using the 
 \family typewriter
 tar
 \family default
@@ -2172,8 +2152,8 @@ Installing spatialdata
 As with many other packages, to install spatialdata, first, download the
  source package available at the 
 \begin_inset LatexCommand htmlurl
-name "Geodynamics Software Packages web page"
-target "www.geodynamics.org/cig/software/packages/short/pylith"
+name "PyLith web page"
+target "geodynamics.org/cig/software/packages/short/pylith"
 
 \end_inset
 
@@ -2194,28 +2174,12 @@ Downloading and Unpacking the Spatialdata Source
 \begin_layout Standard
 Download Nemesis from the 
 \begin_inset LatexCommand htmlurl
-name "Geodynamics website"
-target "www.geodynamics.org"
+name "PyLith web page"
+target "geodynamics.org/cig/software/packages/short/pylith"
 
 \end_inset
 
-.
- Click the 
-\family sans
-software
-\family default
- tab at the top of the page.
- Then click 
-\family sans
-Software Packages
-\family default
-, then 
-\family sans
-Short-Term Crustal Dynamics
-\family default
-.
- Once you click the PyLith link, download the source archive and unpack
- it using the 
+ and unpack it using the 
 \family typewriter
 tar
 \family default
@@ -2306,8 +2270,15 @@ Run .
  to configure the package for your system
 \family typewriter
 .
- Note that PyLith requires spatialdata to be configured with the--enable-pythia
- flag.
+ 
+\family default
+Note that PyLith requires spatialdata to be configured with the 
+\family typewriter
+--enable-pythia
+\family default
+ flag
+\family typewriter
+.
 \newline
 
 \newline
@@ -2377,8 +2348,8 @@ To install PyLith, you follow the procedure that is commonly used with other
  open source software packages.
  First, download the source package available at the 
 \begin_inset LatexCommand htmlurl
-name "Geodynamics Software Packages web page"
-target "www.geodynamics.org/cig/software/packages"
+name "PyLith web page"
+target "geodynamics.org/cig/software/packages/short/pylith"
 
 \end_inset
 
@@ -2400,28 +2371,12 @@ Downloading and Unpacking the PyLith Source
 \begin_layout Standard
 Download PyLith from the 
 \begin_inset LatexCommand htmlurl
-name "Geodynamics website"
-target "www.geodynamics.org"
+name "PyLith web page"
+target "geodynamics.org/cig/software/packages/short/pylith"
 
 \end_inset
 
-.
- Click the 
-\family sans
-software
-\family default
- tab at the top of the page.
- Then click 
-\family sans
-Software Packages
-\family default
-, then 
-\family sans
-Short-Term Crustal Dynamics
-\family default
-.
- Once you click the PyLith link, download the source archive and unpack
- it using the 
+ and unpack it using the 
 \family typewriter
 tar
 \family default
@@ -3460,7 +3415,7 @@ For more information on configuring Pyre for your batch system, see CIG's
  
 \begin_inset LatexCommand htmlurl
 name "Pythia page"
-target "www.geodynamics.org/cig/software/packages/cs/pythia"
+target "geodynamics.org/cig/software/packages/cs/pythia"
 
 \end_inset
 
@@ -3479,8 +3434,8 @@ Installing from the Software Repository
 \begin_layout Standard
 The PyLith source code is available via the 
 \begin_inset LatexCommand htmlurl
-name "Geodynamics Subversion Repository"
-target "www.geodynamics.org/cig/software/Repository/"
+name "CIG Subversion Repository"
+target "geodynamics.org/cig/software/Repository/"
 
 \end_inset
 
@@ -3576,10 +3531,10 @@ Mercurial
 To check out the PETSc source, you must have Mercurial 0.9 or later installed.
  You will likely have to build Mercurial from source, but this is a very
  easy task that takes only a couple of minutes.
- To learn how to download and install Mercurial, visit 
+ To learn how to download and install Mercurial, visit the 
 \begin_inset LatexCommand htmlurl
-name "the Mercurial web site"
-target "http://www.selenic.com/mercurial/"
+name "Mercurial web site"
+target "www.selenic.com/mercurial"
 
 \end_inset
 

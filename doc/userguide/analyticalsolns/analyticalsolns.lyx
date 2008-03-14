@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -88,7 +88,7 @@ key "Timoshenko:Goodier:1987"
 , and we restrict ourselves to two-dimensional problems.
  Any problem in elastostatics must satisfy the equilibrium equations
 \begin_inset Formula \begin{gather}
-\frac{\partial\sigma_{xx}}{\partial x}+\frac{\partial\sigma_{xy}}{\partial y}+X=0\\
+\frac{\partial\sigma_{xx}}{\partial x}+\frac{\partial\sigma_{xy}}{\partial y}+X=0\label{eq:1}\\
 \frac{\partial\sigma_{yy}}{\partial y}+\frac{\partial\sigma_{xy}}{\partial x}+Y=0,\nonumber \end{gather}
 
 \end_inset
@@ -109,7 +109,7 @@ x
 \shape italic
 y
 \shape default
--directions, respectively, and the stress components are given by 
+ directions, respectively, and the stress components are given by 
 \begin_inset Formula $\sigma$
 \end_inset
 
@@ -128,7 +128,7 @@ Y
  Finally, the solution must satisfy the conditions of compatibility, which
  may be expressed as:
 \begin_inset Formula \begin{equation}
-\left(\frac{\partial^{2}}{\partial x^{2}}+\frac{\partial^{2}}{\partial y^{2}}\right)\left(\sigma_{xx}+\sigma_{yy}\right)=0.\end{equation}
+\left(\frac{\partial^{2}}{\partial x^{2}}+\frac{\partial^{2}}{\partial y^{2}}\right)\left(\sigma_{xx}+\sigma_{yy}\right)=0.\label{eq:2}\end{equation}
 
 \end_inset
 
@@ -137,7 +137,13 @@ To compute the displacement field, it is also necessary to specify displacement
 \end_layout
 
 \begin_layout Standard
-Equations (1) may be satisfied by taking any function 
+Equations 
+\begin_inset LatexCommand ref
+reference "eq:1"
+
+\end_inset
+
+ may be satisfied by taking any function 
 \begin_inset Formula $\phi$
 \end_inset
 
@@ -151,19 +157,30 @@ y
 \shape default
 , and letting the stress components be given by the following expressions:
 \begin_inset Formula \begin{equation}
-\sigma_{xx}=\frac{\partial^{2}\phi}{\partial y^{2}},\;\sigma_{yy}=\frac{\partial^{2}\phi}{\partial x^{2}},\;\sigma_{xy}=-\frac{\partial^{2}\phi}{\partial x\partial y}.\end{equation}
+\sigma_{xx}=\frac{\partial^{2}\phi}{\partial y^{2}},\;\sigma_{yy}=\frac{\partial^{2}\phi}{\partial x^{2}},\;\sigma_{xy}=-\frac{\partial^{2}\phi}{\partial x\partial y}.\label{eq:3}\end{equation}
 
 \end_inset
 
 The solution must also satisfy the compatibility equations.
- Substituting equations (3) into equation (2), we find that the stress function
- 
+ Substituting Equations 
+\begin_inset LatexCommand ref
+reference "eq:3"
+
+\end_inset
+
+ into Equation 
+\begin_inset LatexCommand ref
+reference "eq:2"
+
+\end_inset
+
+, we find that the stress function 
 \begin_inset Formula $\phi$
 \end_inset
 
  must satisfy
 \begin_inset Formula \begin{equation}
-\frac{\partial^{4}\phi}{\partial x^{4}}+2\frac{\partial^{4}\phi}{\partial x^{2}\partial y^{2}}+\frac{\partial^{4}\phi}{\partial y^{4}}=0.\end{equation}
+\frac{\partial^{4}\phi}{\partial x^{4}}+2\frac{\partial^{4}\phi}{\partial x^{2}\partial y^{2}}+\frac{\partial^{4}\phi}{\partial y^{4}}=0.\label{eq:4}\end{equation}
 
 \end_inset
 
@@ -181,9 +198,21 @@ x
 y
 \shape default
  of second degree or higher.
- Any polynomial of second or third degree will satisfy equation (4).
- For polynomials of higher degree, they must be substituted into equation
- (4) to determine what restrictions must be placed on the solution.
+ Any polynomial of second or third degree will satisfy Equation 
+\begin_inset LatexCommand ref
+reference "eq:4"
+
+\end_inset
+
+.
+ For polynomials of higher degree, they must be substituted into Equation
+ 
+\begin_inset LatexCommand ref
+reference "eq:4"
+
+\end_inset
+
+ to determine what restrictions must be placed on the solution.
 \end_layout
 
 \begin_layout Subsection
@@ -219,19 +248,19 @@ reference "fig:Const-tractions"
  Since the tractions are constant, we assume a second degree polynomial
  for the stress function:
 \begin_inset Formula \begin{equation}
-\phi_{2}=\frac{a_{2}}{2}x^{2}+b_{2}xy+\frac{c_{2}}{2}y^{2}.\end{equation}
+\phi_{2}=\frac{a_{2}}{2}x^{2}+b_{2}xy+\frac{c_{2}}{2}y^{2}.\label{eq:5}\end{equation}
 
 \end_inset
 
 This yields the following expressions for the stresses:
 \begin_inset Formula \begin{equation}
-\sigma_{xx}=\frac{\partial^{2}\phi_{2}}{\partial y^{2}}=c_{2}=N,\;\sigma_{yy}=a_{2}=0,\;\sigma_{xy}=-b_{2}=0.\end{equation}
+\sigma_{xx}=\frac{\partial^{2}\phi_{2}}{\partial y^{2}}=c_{2}=N,\;\sigma_{yy}=a_{2}=0,\;\sigma_{xy}=-b_{2}=0.\label{eq:6}\end{equation}
 
 \end_inset
 
 From Hooke's law, we have:
 \begin_inset Formula \begin{equation}
-\epsilon_{xx}=\frac{\partial u}{\partial x}=\frac{\left(1-\nu^{2}\right)N}{E},\;\epsilon_{yy}=\frac{\partial v}{\partial y}=\frac{-\nu\left(1+\nu\right)N}{E},\;\epsilon_{xy}=\frac{1}{2}\left(\frac{\partial v}{\partial x}+\frac{\partial u}{\partial y}\right)=0.\end{equation}
+\epsilon_{xx}=\frac{\partial u}{\partial x}=\frac{\left(1-\nu^{2}\right)N}{E},\;\epsilon_{yy}=\frac{\partial v}{\partial y}=\frac{-\nu\left(1+\nu\right)N}{E},\;\epsilon_{xy}=\frac{1}{2}\left(\frac{\partial v}{\partial x}+\frac{\partial u}{\partial y}\right)=0.\label{eq:7}\end{equation}
 
 \end_inset
 
@@ -239,17 +268,22 @@ The strain components are thus easily obtained from the stress components.
 \end_layout
 
 \begin_layout Standard
-To obtain the displacements, we must integrate equation (7) and make use
- of the displacement boundary conditions.
+To obtain the displacements, we must integrate Equation 
+\begin_inset LatexCommand ref
+reference "eq:7"
+
+\end_inset
+
+ and make use of the displacement boundary conditions.
  Integrating the first two of these, we obtain
 \begin_inset Formula \begin{equation}
-u=\frac{\left(1-\nu^{2}\right)Nx}{E}+f\left(y\right),\; v=\frac{-\nu\left(1+\nu\right)Ny}{E}+f\left(x\right).\end{equation}
+u=\frac{\left(1-\nu^{2}\right)Nx}{E}+f\left(y\right),\; v=\frac{-\nu\left(1+\nu\right)Ny}{E}+f\left(x\right).\label{eq:8}\end{equation}
 
 \end_inset
 
 Substituting these into the third expression, we obtain
 \begin_inset Formula \begin{equation}
-\frac{\partial f\left(x\right)}{\partial x}=-\frac{\partial f\left(y\right)}{\partial y},\end{equation}
+\frac{\partial f\left(x\right)}{\partial x}=-\frac{\partial f\left(y\right)}{\partial y},\label{eq:9}\end{equation}
 
 \end_inset
 
@@ -275,7 +309,7 @@ which means that both
  Doing this, we obtain the following expressions for the displacement components
 :
 \begin_inset Formula \begin{equation}
-u=\frac{\left(1-\nu^{2}\right)N}{E}\left(x-x_{0}\right),\; v=\frac{\nu\left(1+\nu\right)N}{E}\left(y_{0}-y\right).\end{equation}
+u=\frac{\left(1-\nu^{2}\right)N}{E}\left(x-x_{0}\right),\; v=\frac{\nu\left(1+\nu\right)N}{E}\left(y_{0}-y\right).\label{eq:10}\end{equation}
 
 \end_inset
 
@@ -283,6 +317,8 @@ u=\frac{\left(1-\nu^{2}\right)N}{E}\left(x-x_{0}\right),\; v=\frac{\nu\left(1+\n
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
 wide false
 sideways false
@@ -310,6 +346,8 @@ Problem with constant traction boundary conditions applied along right edge.
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Graphics
 	filename figs/consttract.eps
 
