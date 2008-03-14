@@ -288,41 +288,46 @@ In writing PyLith 1.0, the code was completely redesigned to be object-oriented
 \end_layout
 
 \begin_layout Standard
-The new code design leverages Pyre, Sieve, and PETSc much more  extensively
+The new code design leverages Pyre, Sieve, and PETSc much more extensively
  than the previous version.
-  Pyre is used to glue  together the various modules used to construct a
+  Pyre is used to glue together the various modules used to construct a
  simulation and  specify the parameters.
-  Sieve is used for all finite-element  storage and manipulation and handles
- the creation of the PETSc  matrices and vectors.
-  As a result, most of the PyLith source code  pertains to implementing
- the geodynamics, such as bulk rheology,  boundary conditions, and slip
- on faults.
+ Sieve is used for all finite-element  storage and manipulation and handles
+ the creation of the PETSc matrices and vectors.
+  As a result, most of the PyLith source code pertains to implementing the
+ geodynamics, such as bulk rheology, boundary conditions, and slip on faults.
  
 \end_layout
 
 \begin_layout Standard
 PyLith also uses FIAT to tabulate the finite-element basis functions  at
  the numerical integration (quadrature) points.
- Nemesis allows  PyLith to run Python using the Message Passing Interface
- (MPI) for  parallel processing.
- Additional, indirect dependencies (see Figure  ??) include numpy (efficient
- operations on numerical arrays in  Python), Proj.4 (geographic projections),
- and Pyrex/Pyrexemebed  (calling C and C++ functions from Python).
+ Nemesis allows PyLith to run Python using the Message Passing Interface
+ (MPI) for parallel processing.
+ Additional, indirect dependencies (see Figure 
+\begin_inset LatexCommand ref
+reference "fig:pylith-dependencies"
+
+\end_inset
+
+) include numpy (efficient operations on numerical arrays in Python), Proj.4
+ (geographic projections), and Pyrex/Pyrexembed (calling C and C++ functions
+ from Python).
 \end_layout
 
 \begin_layout Standard
-During development, tests were constructed for nearly every module  function.
-  These unit tests are distributed with the source code.
-  These tests are run throughout the development cycle to expose bugs  and
+During development, tests were constructed for nearly every module function.
+ These unit tests are distributed with the source code.
+ These tests are run throughout the development cycle to expose bugs and
  isolate their origin.
-  As additional changes are made to the  code, the tests are rerun to help
+ As additional changes are made to the code, the tests are rerun to help
  prevent introduction of new bugs.
-  A number of simple, full scale tests, such as axial compression and  extension
-, simple shear, and slip on through-going faults, have been  used to test
+ A number of simple, full-scale tests, such as axial compression and extension,
+ simple shear, and slip on through-going faults, have been used to test
  the code.
- Additionally, we have run the Southern  California Earthquake Center crustal
- deformation benchmarks for  strike-slip and reverse-slip to determine the
- relative local and  global error (SEE APPENDIX ??).
+ Additionally, we have run the Southern California Earthquake Center crustal
+ deformation benchmarks for strike-slip and reverse-slip to determine the
+ relative local and global error (see Appendix TODO which appendix?).
 \end_layout
 
 \begin_layout Subsection
@@ -331,7 +336,7 @@ Pyre
 
 \begin_layout Standard
 Pyre is an object-oriented environment capable of specifying and launching
- numerical simulations on multiple platforms, including Beowulf class parallel
+ numerical simulations on multiple platforms, including Beowulf-class parallel
  computers and grid computing systems.
  Pyre allows the binding of multiple components such as solid and fluid
  models used in Earth science simulations, and different meshers.
