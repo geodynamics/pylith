@@ -1538,5 +1538,20 @@ with a material, quadrature scheme, fault, etc., we ask Sieve for a list
 of all cells with material-id equal to some value.
 \end_layout
 
+\begin_layout Section
+PyLith Output
+\end_layout
+
+\begin_layout Section
+Troubleshooting Problems Running PyLith
+\end_layout
+
+ImportError: liblapack.so.2: cannot open shared object file: No such file or directory
+
+Need to set your environment variables.
+
+mpirun stuff
+nemesis (adding MPICH libraries)
+
 \end_body
 \end_document
