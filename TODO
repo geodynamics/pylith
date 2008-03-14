@@ -44,7 +44,7 @@ Release 1.1
 
     2. Reverse-slip benchmark.
       a. Create BC for CUBIT mesh.
-      b. Create LaGriT mesh (based on old LaGriT script).
+      b. Create LaGriT mesh
       c. Create BC for LaGriT mesh.
       d. Run benchmarks.
       e. Generate analytic solutions.
@@ -64,24 +64,26 @@ Release 1.1
     3. CUBIT (Brad)
        Add GUI instructions in journal files for examples/3d/hex8.
 
+  Binaries
+
+    Add setup.sh for linux.
+
+  Source
+
+    Generate configure script for spatialdata.tgz on PyLith web page.
+
   Manual
 
-    1. Need to add explanation of output and output parameters
+    1. Intro
+
+       Add dependency diagram (update).
+
+    2. Need to add explanation of output and output parameters
        (especially fault information).
 
        Fault information is in fault coordinate system. Add example of
        how to convert it to global coordinates using orientation
        information.
-
-    2. 3 kinds of spatial databases   **** Done in runpylith.lyx. ****
-         UniformDB
-         SimpleDB
-         SCECCVMHDB
-
-	 a.  There is still a section at the end of runpylith.lyx for labels
-	 and identifiers that has not been done yet.
-
-    2. Add dependency diagram. (Brad)
 
     3. Add benchmarks.
 
@@ -95,13 +97,7 @@ Release 1.1
 
     7. Add twotet4-geoproj to tutorials.
 
-    8. Neumann BC   ****Done****
-
-    9. Add note that groups for DirichletBoundary, Neumann,
-       AbsorbingDampers, and Fault must be associated with
-       simply-connected surfaces.    ****Done for general case and Neumann****
-
-    10. Add list of concepts at the beginning of each tutorial.
+    8. Add list of concepts at the beginning of each tutorial.
 
 ----------------------------------------------------------------------
 Release 1.2
