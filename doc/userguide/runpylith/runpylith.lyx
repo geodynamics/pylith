@@ -1397,139 +1397,60 @@ SimpleDB Database Implementation
 \end_layout
 
 \begin_layout Standard
-The default database used for faults, boundary conditions, and materials
+In most cases the default type of spatial database for faults, boundary conditions, and materials
  is 
 \family typewriter
 SimpleDB
 \family default
 .
- This is a simple database format that is used in most of the example problems.
- The file format is described in 
+ SimpleDB uses a simple ASCII file to specify the variation of values
+ (e.g., displacement field, slip field, physical properties) in
+ space. The file format is described in
 \begin_inset LatexCommand ref
-reference "sec:Spatialdata:SimpleIOAscii"
+ reference "sec:Spatialdata:SimpleIOAscii"
 
 \end_inset
 
-.
- Looking at 
-\family typewriter
-examples/twocells/twotet4
-\family default
-, for example, we find the following spatial database files:
-\end_layout
-
-\begin_layout LyX-Code
-axialdisp.spatialdb
-\end_layout
-
-\begin_layout LyX-Code
-dislocation_disp.spatialdb
-\end_layout
-
-\begin_layout LyX-Code
-dislocation_slip.spatialdb
-\end_layout
-
-\begin_layout LyX-Code
-dislocation_sliprate.spatialdb
-\end_layout
-
-\begin_layout LyX-Code
-dislocation_sliptime.spatialdb
-\end_layout
-
-\begin_layout LyX-Code
-matprops.spatialdb
-\end_layout
-
-\begin_layout Standard
-Each of these files is a SimpleDB implementation.
- They represent the most general method for specifying spatial variations
- in parameters.
-\end_layout
+.  The tutorials in (REFERENCE TUTORIALS CHAPTER) use SimpleDB files
+to specify the values for the boundary conditions, physical
+properties, and fault slip.
 
 \begin_layout Subsection
 UniformDB Database Implementation
 \end_layout
 
 \begin_layout Standard
-Although the SimpleDB implementation is quite general, in some cases a simpler
- implementation may be easier to use.
- For example, for the case of a 0D variation (constant values throughout
- the mesh), it should not be necessary to create a separate file simply
- to specify these constant parameter values.
- In this case, it may be easier to include the information in a 
-\family typewriter
-.cfg
-\family default
- file.
- This is possible using the UniformDB database implementation.
- Although most of the example problems make use of the SimpleDB implementation,
- a problem using UniformDB is available in 
-\family typewriter
-examples/twocells/twohex8
-\family default
-, as described in 
-\begin_inset LatexCommand ref
-reference "sec:Tutorial-Two-hexahedra"
+The SimpleDB spatial database is quite general. When the values are
+uniform, it is often easier to use the UniformDB spatial database and
+specify the values directly (either on the command line or in a
+parameters settings file). However, if the values are used in more
+than one place, it is easier to place the values in a SimpleDB file,
+because they can then be referred to using the filename of the
+spatialdatabase rather than having to repeatedly list all of the
+values on the command line or in a parameter settings (.cfg) file.
 
-\end_inset
+PYRE PROPERTIES
 
-.
- In the file 
-\family typewriter
-pylithapp.cfg
-\family default
- you will find the following:
-\end_layout
+values Array of names of values in spatial database
+data Array of values in spatial database
+
+EXAMPLE
+
+Specify the physical properties of a linearly elastic, isotropic
+material in a pylithapp.cfg file.
+
 
 \begin_layout LyX-Code
 [pylithapp.timedependent.materials.material]
 \end_layout
-
 \begin_layout LyX-Code
-db = spatialdata.spatialdb.UniformDB
+db = spatialdata.spatialdb.UniformDB ; Set the db to a UniformDB
 \end_layout
-
 \begin_layout LyX-Code
-db.values = [vp,vs,density,viscosity]
+db.values = [vp,vs,density] ; Set the names of the values in the database
 \end_layout
-
 \begin_layout LyX-Code
-db.data = [5773.502691896258, 3333.333333333333, 2700.0, 1.0e18]
-\end_layout
-
-\begin_layout Standard
-The first line switches the default 
-\family typewriter
-db
-\family default
- to 
-\family typewriter
-UniformDB
-\family default
-.
- The next line defines the parameter names for this database, and the third
- line provides values for each parameter.
- If these three lines are commented out of 
-\family typewriter
-pylithapp.cfg
-\family default
-, and the following line is uncommented,
-\end_layout
-
-\begin_layout LyX-Code
-# db.iohandler.filename = matprops.spatialdb
-\end_layout
-
-\begin_layout Standard
-the file 
-\family typewriter
-matprops.spatialdb
-\family default
- will be used to define the parameter values.
- The results will be identical, but in the first case (using UniformDB),
- no spatial database file is needed.
+db.data = [5773.5, 3333.3, 2700.0] ; Set the values in the database
 \end_layout
 
 \begin_layout Subsection
@@ -1542,27 +1463,27 @@ SCECCVMH Implementation
 \end_layout
 
 \begin_layout Standard
-Although the SimpleDB implementation is able to specify arbitrarily complex
- spatial variations, there are existing parameter databases, and when they
- are available, it is desirable to access these directly.
- One such database is the SCEC CVM-H database, which provides seismic velocity
- and density information for much of southern California.
- PyLith 1.1 provides a direct interface to this database, provided that the
- SpatialData package has been built with CVM-H support.
- An example that uses this implementation is provided in 
-\family typewriter
-examples/twocells/twotet4-geoproj
-\family default
-.
- This example is somewhat unique in that the 
-\family typewriter
-pylithapp.cfg
-\family default
- file must be edited to run the example.
- This is because the directory where the SCEC CVM-H database resides will
- be different for each user, and the location must be specified.
- In pylithapp.cfg, we have:
-\end_layout
+
+Although the SimpleDB implementation is able to specify arbitrarily
+complex spatial variations, there are existing databases for physical
+proeprties, and when they are available, it is desirable to access
+these directly. One such database is the SCEC CVM-H database, which
+provides seismic velocities and density information for much of
+southern California. Spatialdata provides a direct interface to this
+database. See tutorial ?? for an example of using the SCEC CVM-H
+database for physical properties of an elastic material. The interface
+for the SCEC CVM-H is known to work with versions 5.2 and 5.3.
+
+PYRE PROPERTIES
+
+data_dir Directory containing the SCEC CVM-H data files (e.g., )
+squash Squash topography/bathymetry to sea level (make the Earth's surface flat).
+squash_limit Elevation above which topography is squashed (geometry below this elevation remains undistorted).
+
+EXAMPLE
+
+Specify the physical properties of a linearly elastic, isotropic
+material using the SCEC CVM-H in a pylithapp.cfg file.
 
 \begin_layout LyX-Code
 [pylithapp.timedependent.materials.material]
@@ -1573,32 +1494,8 @@ db = spatialdata.spatialdb.SCECCVMH
 \end_layout
 
 \begin_layout LyX-Code
-db.data_dir = /home/brad/data/sceccvm-h/vx53/bin
+db.data_dir = /home/johndoe/data/sceccvm-h/vx53
 \end_layout
-
-\begin_layout Standard
-The first line switches the default 
-\family typewriter
-db
-\family default
- to 
-\family typewriter
-SCECCVMH
-\family default
-.
- The next line defines the location of the 
-\family typewriter
-vx53
-\family default
- executable, and must be changed to the location specified by the user when
- the package is installed.
- The package may be obtained from http://structure.harvard.edu/cvm-h.
- There are some additional aspects of this example that are explained more
- fully in 
-\begin_inset LatexCommand ref
-reference "sec:Tutorial-Two-tet4-geoproj"
-
-\end_inset
 
 .
 \end_layout
@@ -1608,7 +1505,37 @@ Labels and Identifiers for Materials, Boundary Conditions, and Faults
 \end_layout
 
 \begin_layout Standard
-ADD STUFF HERE
+For materials, the "label" is a string used only for error messages. The id is 
+an integer that corresponds to the material identifier in LaGriT (imt1) and 
+CUBIT (block id). The id also tags the cells in the mesh for associating 
+cells with a specific material and quadrature rule.
+
+For BC, the "label" is a string used to associate groups of vertices (psets in 
+LaGriT and nodesets in CUBIT) with vertices for a BC. I believe in 1.0.1 we 
+had an "id", but we have since removed it because we were not using it.
+
+For faults, the "label" is a string used to associated groups of vertices 
+(psets in LaGriT and nodesets in CUBIT) with vertices on the fault. The "id" 
+is a integer used to tag the cells in the mesh with a specific fault and 
+quadrature rule. Because we use the "id" it to tag cohesive cells in the 
+mesh, it must be unique among the faults as well as the materials.
+
+Fault "label"
+
+In order to know which vertices are associated with the fault, we use 
+the fault label (which is a string), because some mesh generators use 
+strings (LaGriT) to identify groups of nodes while others use integers 
+(CUBIT Exodus files).
+
+
+Fault "id"
+
+For each finite-element cell in the mesh, we set a "material-id" tag 
+that corresponds to the material and quadrature scheme for that cell. 
+The material-id is set based on the material id for bulk cells and the 
+fault id for cohesive cells. When we want to operate on cells associated 
+with a material, quadrature scheme, fault, etc., we ask Sieve for a list 
+of all cells with material-id equal to some value.
 \end_layout
 
 \end_body
