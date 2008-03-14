@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1353,13 +1353,6 @@ volume
  or 3D variation).
  This might be the case, for example, if the material properties are provided
  by a database of seismic velocities and densities.
- See Section 
-\begin_inset LatexCommand ref
-reference "sec:Spatialdata:SimpleIOAscii"
-
-\end_inset
-
- for the specification of the file format for the default spatial database.
  For boundary conditions the simplest case would be where all vertices in
  a given group have the same boundary condition parameters (
 \begin_inset Quotes eld
@@ -1393,62 +1386,196 @@ reference "cha:Tutorials"
 \end_layout
 
 \begin_layout Subsection
-SimpleDB Database Implementation
+SimpleDB Spatial Database
 \end_layout
 
 \begin_layout Standard
-In most cases the default type of spatial database for faults, boundary conditions, and materials
- is 
+In most cases the default type of spatial database for faults, boundary
+ conditions, and materials is 
 \family typewriter
 SimpleDB
 \family default
 .
- SimpleDB uses a simple ASCII file to specify the variation of values
- (e.g., displacement field, slip field, physical properties) in
- space. The file format is described in
-\begin_inset LatexCommand ref
- reference "sec:Spatialdata:SimpleIOAscii"
-
+ Spatial database files provide specification of a field over some set of
+ points.
+ There is no topology associated with the points.
+ Although multiple values can be specified at each point with more than
+ one value included in a search query, the interpolation of each value will
+ be done independently.
+ Time dependent variations of a field are not supported in these files.
+ Spatial database files can specifiy spatial variations over zero, one,
+ two, and three dimensions.
+ Zero dimensional variations correspond to uniform values.
+ One-dimensional spatial variations correspond to piecewise linear variations,
+ which need not coincide with coordinate axes.
+ Likewise, two-dimensional spatial variations correspond to variations on
+ a planar surface (which need not coincide with the coordinate axes) and
+ three-dimensional spatial variations correspond to variations over a volume.
+ In one, two, or three dimensions, queries can use a 
+\begin_inset Quotes eld
 \end_inset
 
-.  The tutorials in (REFERENCE TUTORIALS CHAPTER) use SimpleDB files
-to specify the values for the boundary conditions, physical
-properties, and fault slip.
+nearest value
+\begin_inset Quotes erd
+\end_inset
 
-\begin_layout Subsection
-UniformDB Database Implementation
+ search or linear interpolation.
 \end_layout
 
 \begin_layout Standard
-The SimpleDB spatial database is quite general. When the values are
-uniform, it is often easier to use the UniformDB spatial database and
-specify the values directly (either on the command line or in a
-parameters settings file). However, if the values are used in more
-than one place, it is easier to place the values in a SimpleDB file,
-because they can then be referred to using the filename of the
-spatialdatabase rather than having to repeatedly list all of the
-values on the command line or in a parameter settings (.cfg) file.
+The spatial database files need not provide the data using the same coordinate
+ system as the mesh coordinate system, provided the two coordinate systems
+ are compatible.
+ Examples of compatible coordinate systems include geographic coordinates
+ (longitude/latitude/elevation), and projected coordiates (e.g., coordinates
+ in a transverse Mercator projection).
+ Spatial database queries use the 
+\begin_inset LatexCommand htmlurl
+name "Proj.4 Cartographic Projections library"
+target "proj.maptools.org"
 
-PYRE PROPERTIES
+\end_inset
 
+ to convert between coordinate systems, so a large number of geographic
+ projections are available with support for converting between NAD27 and
+ WGS84 horizontal datums as well as several other frequently used datums.
+ Because the interpolation is done in the coordinate system of the spatial
+ database, geographic coordinates should only be used for very simple datasets,
+ or undesirable results will occur.
+ This is especially true when the spatial database coordinate system combines
+ latitude, longitude, and elevation in meters (longitude and latitude in
+ degrees are often much smaller than elevations in meters leading to distorted
+ 
+\begin_inset Quotes eld
+\end_inset
+
+distance
+\begin_inset Quotes erd
+\end_inset
+
+ between locations and interpolation).
+\end_layout
+
+\begin_layout Standard
+SimpleDB uses a simple ASCII file to specify the variation of values (e.g.,
+ displacement field, slip field, physical properties) in space.
+ The file format is described in Section
+\begin_inset LatexCommand ref
+reference "sec:Spatialdata:SimpleIOAscii"
+
+\end_inset
+
+.
+ The tutorials in Chapter
+\begin_inset LatexCommand ref
+reference "cha:Tutorials"
+
+\end_inset
+
+ use SimpleDB files to specify the values for the boundary conditions, 
+ physical properties, and fault slip.
+\end_layout
+
+\begin_layout Standard
+As in the other Pyre objects, spatial database objects contain parameters
+ that can be set from the command line or using 
+\family typewriter
+.cfg or 
+\family typewriter
+.pml
+\family default
+ files.
+ The parameters for a spatial database are:
+\end_layout
+
+\begin_layout Description
+label Label for the database, which is used in diagnostic messages.
+\end_layout
+
+\begin_layout Description
+query_type Type of search query to perform.
+ Values for this parameter are ``linear'' and ``nearest'' (default).
+\end_layout
+
+\begin_layout Description
+iohandler Database importer.
+ Only one importer is implemented, so you do not need to change this setting.
+\end_layout
+
+\begin_layout Description
+iohandler.filename Filename for the spatial database.
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+label = Material properties
+\end_layout
+
+\begin_layout LyX-Code
+query_type = linear
+\end_layout
+
+\begin_layout LyX-Code
+iohandler.filename = mydb.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Subsection
+UniformDB Spatial Database
+\end_layout
+
+\begin_layout Standard
+The SimpleDB spatial database is quite general.
+ When the values are uniform, it is often easier to use the UniformDB spatial
+ database and specify the values directly (either on the command line or
+ in aparameters settings file).
+ However, if the values are used in more than one place, it is easier to
+ place the values in a SimpleDB file, because they can then be referred
+ to using the filename of the spatial database rather than having to repeatedly
+ list all of the values on the command line or in a parameter settings (.cfg)
+ file.
+ The Pyre properties for a UniformDB are:
+\end_layout
+
+\begin_layout Description
 values Array of names of values in spatial database
+\end_layout
+
+\begin_layout Description
 data Array of values in spatial database
+\end_layout
 
-EXAMPLE
+\begin_layout Subsubsection
+Example
+\end_layout
 
-Specify the physical properties of a linearly elastic, isotropic
-material in a pylithapp.cfg file.
-
+\begin_layout Standard
+Specify the physical properties of a linearly elastic, isotropicmaterial
+ in a pylithapp.cfg file.
+\end_layout
 
 \begin_layout LyX-Code
 [pylithapp.timedependent.materials.material]
 \end_layout
+
 \begin_layout LyX-Code
 db = spatialdata.spatialdb.UniformDB ; Set the db to a UniformDB
 \end_layout
+
 \begin_layout LyX-Code
 db.values = [vp,vs,density] ; Set the names of the values in the database
 \end_layout
+
 \begin_layout LyX-Code
 db.data = [5773.5, 3333.3, 2700.0] ; Set the values in the database
 \end_layout
@@ -1459,45 +1586,65 @@ name "sub:SCECCVMH-Impl"
 
 \end_inset
 
-SCECCVMH Implementation
+SCEC CVM-H Spatial Database
 \end_layout
 
 \begin_layout Standard
+Although the SimpleDB implementation is able to specify arbitrarily complex
+ spatial variations, there are existing databases for physical properties,
+ and when they are available, it is desirable to access these directly.
+ One such database is the SCEC CVM-H database, which provides seismic velocities
+ and density information for much of southern California.
+ Spatialdata provides a direct interface to this database.
+ See tutorial ?? for an example of using the SCEC CVM-H database for physical
+ properties of an elastic material.
+ The interface is known to work with versions 5.2 and 5.3 of the SCEC CVM-H.
+ The Pyre properties for the SCEC CVM-H are:
+\end_layout
 
-Although the SimpleDB implementation is able to specify arbitrarily
-complex spatial variations, there are existing databases for physical
-proeprties, and when they are available, it is desirable to access
-these directly. One such database is the SCEC CVM-H database, which
-provides seismic velocities and density information for much of
-southern California. Spatialdata provides a direct interface to this
-database. See tutorial ?? for an example of using the SCEC CVM-H
-database for physical properties of an elastic material. The interface
-for the SCEC CVM-H is known to work with versions 5.2 and 5.3.
+\begin_layout Description
+data_dir Directory containing the SCEC CVM-H data files
+\end_layout
 
-PYRE PROPERTIES
+\begin_layout Description
+squash Squash topography/bathymetry to sea level (make the Earth's surface
+ flat)
+\end_layout
 
-data_dir Directory containing the SCEC CVM-H data files (e.g., )
-squash Squash topography/bathymetry to sea level (make the Earth's surface flat).
-squash_limit Elevation above which topography is squashed (geometry below this elevation remains undistorted).
+\begin_layout Description
+squash_limit Elevation above which topography is squashed (geometry below
+ this elevation remains undistorted)
+\end_layout
 
-EXAMPLE
+\begin_layout Subsubsection
+Example
+\end_layout
 
-Specify the physical properties of a linearly elastic, isotropic
-material using the SCEC CVM-H in a pylithapp.cfg file.
+\begin_layout Standard
+Specify the physical properties of a linearly elastic, isotropicmaterial
+ using the SCEC CVM-H in a pylithapp.cfg file.
+\end_layout
 
 \begin_layout LyX-Code
 [pylithapp.timedependent.materials.material]
 \end_layout
 
 \begin_layout LyX-Code
-db = spatialdata.spatialdb.SCECCVMH
+db = spatialdata.spatialdb.SCECCVMH ; Set the database to the SCEC CVM-H
 \end_layout
 
 \begin_layout LyX-Code
-db.data_dir = /home/johndoe/data/sceccvm-h/vx53
+db.data_dir = /home/johndoe/data/sceccvm-h/vx53 ; Directory containing the
+ database data files
 \end_layout
 
-.
+\begin_layout LyX-Code
+squash = True ; Turn on squashing
+\end_layout
+
+\begin_layout LyX-Code
+squash_limit = -1000.0 ; Only distort the geometry above z = -1 km in flattening
+ the Earth
 \end_layout
 
 \begin_layout Section
@@ -1505,53 +1652,91 @@ Labels and Identifiers for Materials, Boundary Conditions, and Faults
 \end_layout
 
 \begin_layout Standard
-For materials, the "label" is a string used only for error messages. The id is 
-an integer that corresponds to the material identifier in LaGriT (imt1) and 
-CUBIT (block id). The id also tags the cells in the mesh for associating 
-cells with a specific material and quadrature rule.
-
-For BC, the "label" is a string used to associate groups of vertices (psets in 
-LaGriT and nodesets in CUBIT) with vertices for a BC. I believe in 1.0.1 we 
-had an "id", but we have since removed it because we were not using it.
-
-For faults, the "label" is a string used to associated groups of vertices 
-(psets in LaGriT and nodesets in CUBIT) with vertices on the fault. The "id" 
-is a integer used to tag the cells in the mesh with a specific fault and 
-quadrature rule. Because we use the "id" it to tag cohesive cells in the 
-mesh, it must be unique among the faults as well as the materials.
-
-Fault "label"
-
-In order to know which vertices are associated with the fault, we use 
-the fault label (which is a string), because some mesh generators use 
-strings (LaGriT) to identify groups of nodes while others use integers 
-(CUBIT Exodus files).
-
-
-Fault "id"
-
-For each finite-element cell in the mesh, we set a "material-id" tag 
-that corresponds to the material and quadrature scheme for that cell. 
-The material-id is set based on the material id for bulk cells and the 
-fault id for cohesive cells. When we want to operate on cells associated 
-with a material, quadrature scheme, fault, etc., we ask Sieve for a list 
-of all cells with material-id equal to some value.
+For materials, the "label" is a string used only for error messages.
+ The "id" is an integer that corresponds to the material identifier in LaGriT
+ (itetclr) and CUBIT (block id).
+ The id also tags the cells in the mesh for associating cells with a specific
+ material model and quadrature rule.
+ For boundary conditions the "label" is a string used to associate groups
+ of vertices (psets in LaGriT and nodesets in CUBIT) with aboundary condition.
+ PyLith 1.0 had an "id" for boundary conditions, but we removed it because
+ it was not used.
+ For faults the "label" is a string used to associated groups of vertices
+ (psets in LaGriT and nodesets in CUBIT) with vertices on the fault.
+ Note that some mesh generators use strings (LaGriT) to identify groups
+ of nodes while others use integers (CUBIT Exodus files).
+ Although CUBIT permits associated strings with nodesets, they are not included
+ in the Exodus files.
+ The fault "id" is a integer used to tag the cohesive cells in the mesh
+ with a specific fault and quadrature rule.
+ Because we use the fault "id" to tag the cohesive cells in the mesh, it
+ must be unique among the faults as well as the materials.
 \end_layout
 
 \begin_layout Section
 PyLith Output
 \end_layout
 
+\begin_layout Standard
+ADD STUFF HERE
+\end_layout
+
 \begin_layout Section
 Troubleshooting Problems Running PyLith
 \end_layout
 
-ImportError: liblapack.so.2: cannot open shared object file: No such file or directory
+\begin_layout Itemize
 
-Need to set your environment variables.
+\family typewriter
+ImportError: liblapack.so.2: cannot open shared object file: No such file
+ or directory
+\end_layout
 
-mpirun stuff
-nemesis (adding MPICH libraries)
+\begin_layout Quote
+PyLith cannot find one of the libraries.
+ You need to setup your environment variables (e.g., PATH, PYTHONPATH, and
+ LD_LIBRARY_PATH) to match your installation.
+ If you are using the PyLith binary on Linux or Mac OS X, run the command
+ 
+\family typewriter
+source setup.sh 
+\family default
+in the directory where you unpacked the distribution.
+ This will setup your environment variables for you.
+ If you are building PyLith from source, please consult the instructions
+ for building from source.
+\end_layout
+
+\begin_layout Itemize
+\paragraph_spacing single
+
+\family typewriter
+>> {command line}:: \newline
+-- pyre.inventory(error) \newline
+-- p4wd <- 'true' \newline
+-- unrecognized property 'p4wd' \newline
+>> {command line}:: \newline
+-- pyre.inventory(error) \newline
+-- p4pg <- 'true' \newline
+-- unrecognized property ' p4pg'
+\end_layout
+
+\begin_layout Quote
+Verify that the 'mpirun' command included in the PyLith package is the first
+ one on your PATH:
+\end_layout
+
+\begin_layout Quote
+
+\family typewriter
+$ which mpirun
+\end_layout
+
+\begin_layout Quote
+If it is not, adjust your PATH environment variable accordingly.
+\end_layout
+
+
 
 \end_body
 \end_document

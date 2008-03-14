@@ -1,5 +1,5 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
-\lyxformat 245
+#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
 \begin_document
 \begin_header
 \textclass book
@@ -8,13 +8,21 @@
 \end_preamble
 \language english
 \inputencoding latin1
-\fontscheme default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
 \graphics default
 \paperfontsize default
 \spacing single
 \papersize default
 \use_geometry true
 \use_amsmath 1
+\use_esint 0
 \cite_engine basic
 \use_bibtopic false
 \paperorientation portrait
@@ -32,12 +40,14 @@
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
+\author "" 
 \end_header
 
 \begin_body
 
 \begin_layout Chapter
-\begin_inset LatexCommand \label{cha:File-Formats}
+\begin_inset LatexCommand label
+name "cha:File-Formats"
 
 \end_inset
 
@@ -45,7 +55,8 @@ File Formats
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:MeshIOAscii}
+\begin_inset LatexCommand label
+name "sec:MeshIOAscii"
 
 \end_inset
 
@@ -79,14 +90,24 @@ status open
 
 \end_layout
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Diagram of mesh specified in Figure 
-\begin_inset LatexCommand \ref{fig:meshioascii:format}
+\begin_inset LatexCommand ref
+reference "fig:meshioascii:format"
 
 \end_inset
 
 .
-\begin_inset LatexCommand \label{fig:meshioascii:diagram}
+\begin_inset LatexCommand label
+name "fig:meshioascii:diagram"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -395,13 +416,22 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Format of 
 \family typewriter
 PyLith
 \family default
  mesh ASCII files.
-\begin_inset LatexCommand \label{fig:meshioascii:format}
+\begin_inset LatexCommand label
+name "fig:meshioascii:format"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -414,80 +444,19 @@ PyLith
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand \label{sec:Spatialdata:SimpleIOAscii}
+\begin_inset LatexCommand label
+name "sec:Spatialdata:SimpleIOAscii"
 
 \end_inset
 
-Spatial Database Files
+SimpleDB Spatial Database Files
 \end_layout
 
 \begin_layout Standard
-Spatial database files provide specification of a field over some set of
- points.
- There is no topology associated with the points.
- Spatial database files contain a header describing the set of points and
- then the data with each line listing the coordinates of a point followed
+SimplDB spatial database files contain a header describing the set of points
+ and then the data with each line listing the coordinates of a point followed
  by the values of the fields for that point.
- Although multiple values can be specified at each point with more than
- one value included in a search query, the interpolation of each value will
- be done independently.
- Time dependent variations of a field are not supported in these files.
- Alternative implementations of spatial databases using the same application
- programming interface (API) can provide other representations of spatial
- variations of parameters for material properties (for example, the USGS
- Bay Area Velocity Model), boundary conditions, and earthquake source parameters.
-\end_layout
-
-\begin_layout Standard
-Spatial database files can specifiy spatial variations over zero, one, two,
- and three dimensions.
- Zero dimensional variations correspond to uniform values.
- One-dimensional spatial variations correspond to piecewise linear variations,
- which need not coincide with coordinate axes.
- Likewise, two-dimensional spatial variations correspond to variations on
- a planar surface (which need not coincide with the coordinate axes) and
- three-dimensional spatial variations correspond to variations over a volume.
- In one, two, or three dimensions, queries can use a 
-\begin_inset Quotes eld
-\end_inset
-
-nearest value
-\begin_inset Quotes erd
-\end_inset
-
- search or linear interpolation.
-\end_layout
-
-\begin_layout Standard
-The spatial database files need not provide the data using the same coordinate
- system as the mesh coordinate system, provided the two coordinate systems
- are compatible.
- Examples of compatible coordinate systems include geographic coordinates
- (longitude/latitude/elevation), and projected coordiates (e.g., coordinates
- in a transverse Mercator projection).
- Spatial database queries use the 
-\begin_inset LatexCommand \htmlurl[Proj.4 Cartographic Projections library]{proj.maptools.org}
-
-\end_inset
-
- to convert between coordinate systems, so a large number of geographic
- projections are available with support for converting between NAD27 and
- WGS84 horizontal datums as well as several other frequently used datums.
- Because the interpolation is done in the coordinate system of the spatial
- database, geographic coordinates should only be used for very simple datasets,
- or undesirable results will occur.
- This is especially true when the spatial database coordinate system combines
- latitude, longitude, and elevation in meters (longitude and latitude in
- degrees are often much smaller than elevations in meters leading to distorted
  
-\begin_inset Quotes eld
-\end_inset
-
-distance
-\begin_inset Quotes erd
-\end_inset
-
- between locations and interpolation).
 \end_layout
 
 \begin_layout LyX-Code
@@ -695,8 +664,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Format of spatial database files.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -722,7 +699,9 @@ proj
  program in addition to the Proj.4 libraries, so that you can obtain a list
  of support projections, datums, and ellipsoids.
  Alternatively, refer to the documentation for the 
-\begin_inset LatexCommand \htmlurl[Proj.4 Cartographic Projections library]{proj.maptools.org}
+\begin_inset LatexCommand htmlurl
+name "Proj.4 Cartographic Projections library"
+target "proj.maptools.org"
 
 \end_inset
 
@@ -761,8 +740,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Format for Cartesian coordinate systems in spatial database files.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -905,8 +892,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Format for geographic coordinate systems in spatial database files.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1107,9 +1102,17 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Format for geographic projection coordinate systems in spatial database
  files.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1304,7 +1307,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Format for the geographic local Cartesian coordinate system in spatial database
  files.
 \end_layout
@@ -1314,63 +1320,8 @@ Format for the geographic local Cartesian coordinate system in spatial database
 
 \end_layout
 
-\begin_layout Subsection
-Spatial Database Parameters
-\end_layout
+\end_inset
 
-\begin_layout Standard
-As in the other Pyre objects, spatial database objects contain parameters
- that can be set from the command line or using 
-\family typewriter
-.cf
-\family default
-g or 
-\family typewriter
-.pml
-\family default
- files.
- The parameters for a spatial database are:
-\end_layout
-
-\begin_layout Description
-label Label for the database, which is used in diagnostic messages.
-\end_layout
-
-\begin_layout Description
-query_type Type of search query to perform.
- Values for this parameter are ``linear'' and ``nearest'' (default).
-\end_layout
-
-\begin_layout Description
-iohandler Database importer.
- Only one importer is implemented, so you do not need to change this setting.
-\end_layout
-
-\begin_layout Description
-iohandler.filename Filename for the spatial database.
-\end_layout
-
-\begin_layout Standard
-An example of setting these parameters in a 
-\family typewriter
-.cfg
-\family default
- file is:
-\end_layout
-
-\begin_layout LyX-Code
-label = Material properties
-\end_layout
-
-\begin_layout LyX-Code
-query_type = linear
-\end_layout
-
-\begin_layout LyX-Code
-iohandler.filename = mydb.spatialdb
-\end_layout
-
-\begin_layout LyX-Code
 
 \end_layout
 
