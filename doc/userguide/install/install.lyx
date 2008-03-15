@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -294,7 +294,7 @@ reference "fig:pylith-dependencies"
  This complicates building the software from the source code.
  In many cases some of the packages required by PyLith are available as
  binary packages.
- On the one hand, using these packages removes the burden of configuring,
+ On the one hand, using the binary packages removes the burden of configuring,
  building, and installing these packages, but that can come with its own
  host of complications if consistent compiler and configuration settings
  are not used across all of the packages on which PyLith depends.
@@ -319,7 +319,7 @@ target "geodynamics.org/wsvn/cig/short/3D/PyLith/trunk/doc/install/"
 
 .
  Even though using the software repositories is recommended only for experienced
- users, less experienced users will find the platform- specific instructions
+ users, less experienced users will find the platform-specific instructions
  useful.
  For example, the platform-specific instructions include a list of binary
  packages/distributions that can be used, eliminating the need to compile
