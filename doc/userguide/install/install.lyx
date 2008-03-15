@@ -63,8 +63,14 @@ Installation of PyLith on a desktop or laptop machine is, in most cases,
  Installation of PyLith on other operating systems -- or installation on
  a cluster -- requires building the software from the source code, which
  can be difficult for inexperienced users.
- Help is available from both a CIG mailing list and a roundup bug tracking
- system.
+ Help is available from both a CIG mailing list and 
+\begin_inset LatexCommand htmlurl
+name "CIG Roundup Bug Tracking System"
+target "geodynamics.org/roundup/"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
@@ -141,11 +147,12 @@ target "geodynamics.org/cig/software/packages/short/pylith/"
 Linux
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 Open a terminal window and change to the directory where you want to place
  the distribution.
 \end_layout
 
+\begin_deeper
 \begin_layout LyX-Code
 $ cd $HOME
 \end_layout
@@ -158,7 +165,8 @@ $ mkdir pylith
 $ cd pylith
 \end_layout
 
-\begin_layout Itemize
+\end_deeper
+\begin_layout Enumerate
 Download the Linux tarball from the 
 \begin_inset LatexCommand htmlurl
 name "PyLith web page"
@@ -173,31 +181,36 @@ $HOME/pylith
 .
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 Unpack the tarball.
 \end_layout
 
+\begin_deeper
 \begin_layout LyX-Code
 $ tar -xzf pylith-1.1.0-linux-i686.tar.gz
 \end_layout
 
-\begin_layout Itemize
+\end_deeper
+\begin_layout Enumerate
 Set environment variables.
 \end_layout
 
+\begin_deeper
 \begin_layout LyX-Code
 $ source setup.sh
 \end_layout
 
+\end_deeper
 \begin_layout Subsection
 Mac OS X
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 Open a terminal window and change to the directory where you want to place
  the distribution.
 \end_layout
 
+\begin_deeper
 \begin_layout LyX-Code
 $ cd $HOME
 \end_layout
@@ -210,7 +223,8 @@ $ mkdir pylith
 $ cd pylith
 \end_layout
 
-\begin_layout Itemize
+\end_deeper
+\begin_layout Enumerate
 Download the Darwin tarball from the 
 \begin_inset LatexCommand htmlurl
 name "PyLith web page"
@@ -225,28 +239,32 @@ $HOME/pylith
 .
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 Unpack the tarball.
  For the PowerPC architecture,
 \end_layout
 
+\begin_deeper
 \begin_layout LyX-Code
 $ tar -xzf pylith-1.1.0-darwin-powerpc.tar.gz
 \end_layout
 
-\begin_layout Itemize
+\end_deeper
+\begin_layout Enumerate
 Set environment variables.
 \end_layout
 
+\begin_deeper
 \begin_layout LyX-Code
 $ source setup.sh
 \end_layout
 
+\end_deeper
 \begin_layout Subsection
 Windows
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 Download the Windows installer from the 
 \begin_inset LatexCommand htmlurl
 name "PyLith web page"
@@ -254,7 +272,11 @@ target "geodynamics.org/cig/software/packages/short/pylith/"
 
 \end_inset
 
-, save it to your desktop, and run the installer.
+ and save it to your desktop.
+\end_layout
+
+\begin_layout Enumerate
+Run the installer.
 \end_layout
 
 \begin_layout Section
@@ -439,8 +461,10 @@ Pythia (and therefore PyLith) requires Python 2.3 or later.
 
 \begin_layout Quote
 
+\series bold
 \color red
 Warning:
+\series default
 \color none
  On 64-bit machines, Python 2.4 or later is required.
  Python 2.3 contains a bug which prevents installation on 64-bit hardware.
@@ -650,8 +674,14 @@ Chaco*
 Dependencies marked with an asterisk (*) can be downloaded and  installed
  automatically.
  The source code for Nemesis, Pyrexembed,  spatialdata, and PyLith package
- can all be downloaded from the CIG  PyLith web page  (http://www.geodynamics.org/
-cig/software/packages/short/pylith/).
+ can all be downloaded from the 
+\begin_inset LatexCommand htmlurl
+name "PyLith web page"
+target "geodynamics.org/cig/software/packages/short/pylith/"
+
+\end_inset
+
+.
   PyLith also has the following optional dependencies:
 \end_layout
 
@@ -934,10 +964,14 @@ If you have an MPI implementation installed on your workstation, you can
 
 \begin_layout Quote
 
+\series bold
 \color red
 Warning:
+\color inherit
+ 
+\series default
 \color none
- When using an existing MPI library (instead of one downloaded and installed
+When using an existing MPI library (instead of one downloaded and installed
  by PETSc), check to make sure that a shared version of the MPI library
  is available.
  PyLith will not work correctly with a static MPI library (e.g., 
@@ -1379,7 +1413,7 @@ Installing nemesis
 \end_layout
 
 \begin_layout Standard
-As with many other packages, to install nemesis, first, download the source
+As with many other packages, to install nemesis, first download the source
  package available at the 
 \begin_inset LatexCommand htmlurl
 name "PyLith web page"
@@ -1561,7 +1595,7 @@ Installing Proj.4
 \end_layout
 
 \begin_layout Standard
-As with many other packages, to install Proj.4, first, download the source
+As with many other packages, to install Proj.4, first download the source
  package available at the 
 \begin_inset LatexCommand htmlurl
 name "PROJ.4 web page"
@@ -1570,7 +1604,7 @@ target "www.remotesensing.org/proj"
 \end_inset
 
 .
- You should download both the source code and the US, Canadian, and New
+ You should download both the source code and the U.S., Canadian, and New
  Zealand datum shift grid.
  After unpacking the files, run the prepackaged shell script to configure
  Proj.4 for your system.
@@ -1615,8 +1649,11 @@ $ gunzip -c proj-4.6.0.tar.gz | tar xf -
 \end_layout
 
 \begin_layout Standard
-Download the datum shift archive and unpack it in the proj-4.6.0/nad directory
- using the 
+Download the datum shift archive and unpack it in the 
+\family typewriter
+proj-4.6.0/nad
+\family default
+ directory using the 
 \family typewriter
 unzip
 \family default
@@ -1713,7 +1750,7 @@ PATH
 \end_layout
 
 \begin_layout Subsection
-Installing numpy
+Installing Numpy
 \end_layout
 
 \begin_layout Standard
@@ -1800,7 +1837,7 @@ $ python setup.py install --prefix=$HOME/cig
 \end_layout
 
 \begin_layout Standard
-The above commands will install FIAT under 
+The above commands will install Numpy under 
 \family typewriter
 $HOME/cig
 \family default
@@ -1992,7 +2029,7 @@ Navigate (i.e.,
 \family typewriter
 cd
 \family default
-) to the directory containing the FIAT source
+) to the directory containing the Pyrex source
 \family typewriter
 .
 \newline
@@ -2016,7 +2053,7 @@ $ python setup.py install --prefix=$HOME/cig
 \end_layout
 
 \begin_layout Standard
-The above commands will install FIAT under 
+The above commands will install Pyrex under 
 \family typewriter
 $HOME/cig
 \family default
@@ -2041,8 +2078,14 @@ Installing pyrexembed
 \end_layout
 
 \begin_layout Standard
-CIG distributes a customized version of Pyrexembed (http://www.freenet.org.nz/pytho
-n/pyrexembed/) that handles C++ exceptions.
+CIG distributes a customized version of 
+\begin_inset LatexCommand htmlurl
+name "Pyrexembed"
+target "www.freenet.org.nz/python/pyrexembed"
+
+\end_inset
+
+ that handles C++ exceptions.
  Pyrexembed is written exclusively in Python and its installation is very
  simple.
  First, download the source package available at the 
@@ -2052,8 +2095,7 @@ target "geodynamics.org/cig/software/packages/short/pylith"
 
 \end_inset
 
-.
- Download the Pyrexembed source code and install the package.
+, unpack the source, and install the package.
 \end_layout
 
 \begin_layout Subsubsection
@@ -2145,11 +2187,11 @@ PATH
 \end_layout
 
 \begin_layout Subsection
-Installing spatialdata
+Installing Spatialdata
 \end_layout
 
 \begin_layout Standard
-As with many other packages, to install spatialdata, first, download the
+As with many other packages, to install Spatialdata, first download the
  source package available at the 
 \begin_inset LatexCommand htmlurl
 name "PyLith web page"
@@ -2159,12 +2201,12 @@ target "geodynamics.org/cig/software/packages/short/pylith"
 
 .
  After unpacking the source, run the prepackaged shell script to configure
- nemesis for your system.
+ Spacialdata for your system.
  Finally, use the 
 \family typewriter
 make
 \family default
- utility to build and install nemesis.
+ utility to build and install Spacialdata.
 \end_layout
 
 \begin_layout Subsubsection
@@ -2172,7 +2214,7 @@ Downloading and Unpacking the Spatialdata Source
 \end_layout
 
 \begin_layout Standard
-Download Nemesis from the 
+Download Spacialdata from the 
 \begin_inset LatexCommand htmlurl
 name "PyLith web page"
 target "geodynamics.org/cig/software/packages/short/pylith"
@@ -2199,7 +2241,7 @@ $ gunzip -c spatialdata.tgz | tar xf -
 \end_layout
 
 \begin_layout Subsubsection
-Nemesis Installation Procedure
+Spacialdata Installation Procedure
 \end_layout
 
 \begin_layout Quote
@@ -2272,7 +2314,7 @@ Run .
 .
  
 \family default
-Note that PyLith requires spatialdata to be configured with the 
+Note that PyLith requires Spatialdata to be configured with the 
 \family typewriter
 --enable-pythia
 \family default
@@ -2344,9 +2386,7 @@ Installing PyLith
 \end_layout
 
 \begin_layout Standard
-To install PyLith, you follow the procedure that is commonly used with other
- open source software packages.
- First, download the source package available at the 
+To install PyLith, download the source package available at the 
 \begin_inset LatexCommand htmlurl
 name "PyLith web page"
 target "geodynamics.org/cig/software/packages/short/pylith"
@@ -2354,9 +2394,9 @@ target "geodynamics.org/cig/software/packages/short/pylith"
 \end_inset
 
 .
- After unpacking the source, you run a prepackaged shell script to configure
+ After unpacking the source, run the prepackaged shell script to configure
  PyLith for your system.
- Finally, you use the 
+ Finally, use the 
 \family typewriter
 make
 \family default
@@ -3308,10 +3348,14 @@ $ pylith example.cfg
 
 \begin_layout Quote
 
+\series bold
 \color red
 Warning:
+\color inherit
+ 
+\series default
 \color none
- This assumes your machine list has enough nodes for the simulation in question.
+This assumes your machine list has enough nodes for the simulation in question.
 \end_layout
 
 \begin_layout Standard
