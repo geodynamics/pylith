@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1282,6 +1282,11 @@ name "fig:3D-linear-elements"
 \end_layout
 
 \begin_layout Section
+\begin_inset LatexCommand label
+name "sec:spatial:databases"
+
+\end_inset
+
 Databases for Boundaries, Interfaces, and Material Properties
 \end_layout
 
