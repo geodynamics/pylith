@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -116,32 +116,52 @@ rs, so even if the mesh generator uses integers, the name is specified as
 \end_layout
 
 \begin_layout Subsection
-Boundary Condition Groups
+Arrays of Boundary Condition Components
 \end_layout
 
 \begin_layout Standard
-A boundary condition group associates a type of boundary condition with
- a set of vertices via a string label.
- In previous versions of PyLith it was necessary to specify containers that
- defined the number of groups and associated label for each group.
- This was necessary because previous versions of Pyre did not support dynamic
- arrays of components, and it was necessary to predefine these arrays.
- The current version of Pythia (0.8.1.5) does support this, however, and it
- is now possible to define boundary condition groups using a 
-\family typewriter
-.cfg
-\family default
- file, a 
-\family typewriter
-.pml
-\family default
- file, or on the command-line.
+A dynamic array of boundary condition components associates a name (string)
+ with each boundary condition.
+ This dynamic array of boundary conditions replaces the boundary condition
+ container in PyLith 1.0.
  User-defined containers are no longer necessary, and the predefined containers
  are no longer available (or necessary).
- The default boundary condition for each group is the Dirichlet boundary
- condition.
- It is possible to specify as many boundary condition groups as desired.
- If no parameters are specified for a group, it is not used.
+ The default boundary condition for each component in the array is the Dirichlet
+Points object.
+ Other boundary conditions can be bound to the names itesm in the array
+ via a .cfg file, .pml file, or the command line.
+ The parameters for the boundary condition are set using the name of the
+ boundary condition.
+ An example of setting the array of boundary condition components and changing
+ the types of boundary conditions in a .cfg file:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem]
+\end_layout
+
+\begin_layout LyX-Code
+bc = [x_neg,x_pos,y_pos,z_neg] ; Array of boundary conditions
+\end_layout
+
+\begin_layout LyX-Code
+# Default boundary condition is DirichletPoints
+\end_layout
+
+\begin_layout LyX-Code
+# Keep default value for bc.x_neg
+\end_layout
+
+\begin_layout LyX-Code
+bc.x_pos = pylith.bc.DirichletBoundary ; change BC type to DirichletBoundary
+\end_layout
+
+\begin_layout LyX-Code
+bc.y_pos = pylith.bc.AbsorbingDampers ; change BC type to AbsorbingDampers
+\end_layout
+
+\begin_layout LyX-Code
+bc.z_neg = pylith.bc.Neumann ; change BC type to Neumann (traction)
 \end_layout
 
 \begin_layout Section
@@ -149,14 +169,37 @@ Dirichlet Boundary Conditions
 \end_layout
 
 \begin_layout Standard
-Dirichlet boundary conditions prescribe a fixed value of displacement on
- a subset of the vertices of the finite-element mesh.
+Dirichlet boundary conditions in PyLith prescribe the displacement of a
+ subset of the vertices of the finite-element mesh,
+\begin_inset Formula \[
+u(t)=u_{o}+(t-t_{ref})\dot{u}_{o},\]
+
+\end_inset
+
+where 
+\begin_inset Formula $u_{o}$
+\end_inset
+
+is the prescribed displacement at time 
+\begin_inset Formula $t_{ref}$
+\end_inset
+
+ and 
+\begin_inset Formula $\dot{u}_{o}$
+\end_inset
+
+ is the rate of change of displacement (velocity).
  While Dirichlet boundary conditions can be applied to any vertex, usually
  they are applied to vertices on the lateral and bottom boundaries of the
  domain.
- Currently, time dependent displacements are not supported.
- Allowing time variation of the prescribed displacements on the boundaries
- will likely be available in a future release.
+ Time dependent displacements with a uniform velocity are now supported.
+ The default velocity is zero (fixed displacement).
+ There are two types of Dirichlet boundary conditions, DirichletPoints and
+ DirichletBoundary.
+ Both provide identical constraints on the solution, but DirichletBoundary
+ is limited to vertices of a simply-connected surface, which allows diagnostic
+ output of the prescribed displacements.
+ DirichletPoints can be applied to a set of unconnected vertices.
 \end_layout
 
 \begin_layout Subsection
@@ -164,23 +207,22 @@ Dirichlet Boundary Condition Parameters
 \end_layout
 
 \begin_layout Standard
-The principal parameters for the Dirichlet boundary condition are:
+The properties and components common to both the DirichletPoints and DirichletBo
+undary boundary conditions are:
 \end_layout
 
 \begin_layout Description
-id This is an integer identifier for the boundary condition.
- It is not used in the current implementation and may be omitted.
-\end_layout
-
-\begin_layout Description
-name Name or label for the boundary condition.
- This associates sets of vertices with the boundary condition in addition
- to being used in error and diagnostic reports.
+label Label of the group of vertices associated with the boundary condition.
 \end_layout
 
 \begin_layout Description
 db Spatial database specifying the spatial variation in the displacement
- field.
+ field (default is FixedDOFDB).
+\end_layout
+
+\begin_layout Description
+rate_db Spatial database specifying rate of change in the displacement field
+ (default is FixedDOFDB).
 \end_layout
 
 \begin_layout Description
@@ -188,8 +230,48 @@ fixed_dof Array of degrees of freedom to be fixed (first degree of freedom
  is 0).
 \end_layout
 
+\begin_layout Description
+reference_t Reference time for rate of change of values (
+\begin_inset Formula $t_{ref},$
+\end_inset
+
+ default value is 0.0 s).
+\end_layout
+
 \begin_layout Standard
-An example of setting these parameters in a 
+DirichletBoundary contains an additional component:
+\end_layout
+
+\begin_layout Description
+output Manager for output of displacements on boundary with specified displaceme
+nts.
+\end_layout
+
+\begin_layout Standard
+By default the output manager does not output any information.
+ The specified displacements and velocities can be output by including 
+\begin_inset Quotes eld
+\end_inset
+
+displacements
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+velocities
+\begin_inset Quotes erd
+\end_inset
+
+ in the output managers 
+\family typewriter
+vertex_info_fields
+\family default
+ array parameter.
+ An example of setting the Dirichlet boundary condition parameters in a
+ 
 \family typewriter
 .cfg
 \family default
@@ -201,7 +283,7 @@ An example of setting these parameters in a
 \end_layout
 
 \begin_layout LyX-Code
-bc = pylith.bc.BCTwoSides
+bc = [mybc]
 \end_layout
 
 \begin_layout LyX-Code
@@ -209,11 +291,23 @@ bc = pylith.bc.BCTwoSides
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.problem.bc.pos]
+[pylithapp.problem.bc.mybc]
 \end_layout
 
 \begin_layout LyX-Code
-label = face A
+label = group A 
+\end_layout
+
+\begin_layout LyX-Code
+fixed_dof = [2] ; fixed displacement in z direction
+\end_layout
+
+\begin_layout LyX-Code
+reference_t = 3.0*yr
+\end_layout
+
+\begin_layout LyX-Code
+db = spatialdata.spatialdb.SimpleDB ; change db to SimpleDB
 \end_layout
 
 \begin_layout LyX-Code
@@ -221,32 +315,42 @@ db.iohandler.filename = disp_A.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
-db.query_type = nearest
+db.query_type = nearest ; change query type to nearest point algorithm
 \end_layout
 
 \begin_layout LyX-Code
-fixed_dof = [2]
-\end_layout
-
-\begin_layout Standard
-where we have specified that we want to use the 
-\family typewriter
-BCTwoSides
-\family default
- boundary condition container, the group of vertices has the label 
+rate_db.values = [
 \begin_inset Quotes eld
 \end_inset
 
-face A,'' the spatial database query should use the nearest point algorithm,
- and motion in the z-direction is constrained.
- See Appendix 
+dof-2
+\begin_inset Quotes erd
+\end_inset
+
+]
+\end_layout
+
+\begin_layout LyX-Code
+rate_db.data = [1.0e-06] ; velocity is 1.0e-06 m/s
+\end_layout
+
+\begin_layout Standard
+We have created an array with one boundary condition, mybc.
+ The group of vertices associated with the boundary condition is group A.
+ For the database associated with the displacement at the reference time
+ (3.0 yr), we change the spatial database from the default FixedDOFDB to
+ a SimpleDB.
+ We set the filename and query type for the database.
+ For the rate of change of values, we use the FixedDOFDB (which is a special
+ case of the UniformDB) and specify the velocity in the z-direction to be
+ 1.0e-06 m/s.
+ See section 
 \begin_inset LatexCommand ref
-reference "sec:Spatialdata:SimpleIOAscii"
+reference "sec:spatial:databases"
 
 \end_inset
 
- for a complete list of the spatial database settings.
- 
+ for a discussion of the different types of spatial databases available.
 \end_layout
 
 \begin_layout Subsection
@@ -334,7 +438,7 @@ Name in Spatial Database
 \begin_layout Standard
 
 \family typewriter
-dof-1
+dof-0
 \end_layout
 
 \end_inset
@@ -356,7 +460,7 @@ dof-1
 \begin_layout Standard
 
 \family typewriter
-dof-2
+dof-1
 \end_layout
 
 \end_inset
@@ -378,7 +482,7 @@ dof-2
 \begin_layout Standard
 
 \family typewriter
-dof-3
+dof-2
 \end_layout
 
 \end_inset
@@ -395,8 +499,7 @@ dof-3
 \begin_inset Caption
 
 \begin_layout Standard
-Values in spatial database used as parameters in the elastic material constituti
-ve models.
+Values in spatial database used for Dirichlet boundary conditions.
 \end_layout
 
 \end_inset
@@ -415,25 +518,22 @@ Neumann Boundary Conditions
 
 \begin_layout Standard
 Neumann boundary conditions are surface tractions applied over a subset
- of the mesh vertices.
- As for Dirichlet boundary conditions, each boundary condition group must
- be a simply-connected surface.
+ of the mesh.
+ As with the DirichletBoundary condition, each Neumann boundary condition
+ can only be applied to a simply-connected surface.
  The surface over which the tractions are applied always has a spatial dimension
- that is one less than the dimension of the problem domain.
+ that is one less than the dimension of the finite-element mesh.
  Traction values are computed at the integration points of each cell on
- the surface, using values from the spatial database.
- These are then integrated over the surface to obtain the equivalent nodal
- forces.
- An example problem using Neumann boundary conditions may be found in 
-\family typewriter
-examples/twocells/twoquad4
-\family default
-.
- The Neumann example may be run by typing:
-\end_layout
+ the surface, using values from a spatial database.
+ The tractions are integrated over each cell and assembled to obtain the
+ forces applied at the vertices.
+ See section 
+\begin_inset LatexCommand ref
+reference "sub:Tutorial-twoquad4-traction"
 
-\begin_layout LyX-Code
-pylith axialtract.cfg
+\end_inset
+
+ for a tutorial that uses Neumann boundary conditions.
 \end_layout
 
 \begin_layout Subsection
@@ -441,11 +541,12 @@ Neumann Boundary Condition Parameters
 \end_layout
 
 \begin_layout Standard
-The principal Neumann boundary condition properties are:
+The Neumann boundary condition properties and components are:
 \end_layout
 
 \begin_layout Description
-label This is a string used to identify the boundary in the mesh.
+label Name of the group of vertices defining the mesh boundary for the Neumann
+ boundary condition.
 \end_layout
 
 \begin_layout Description
@@ -458,17 +559,13 @@ up_dir This is a 3-vector that provides a hint for the direction perpendicular
  upward direction differs from the default.
 \end_layout
 
-\begin_layout Standard
-The principal Neumann boundary condition components are:
-\end_layout
-
 \begin_layout Description
 db The spatial database specifying the spatial variation in the applied
  tractions.
 \end_layout
 
 \begin_layout Description
-output The output manager associated with diagnostic output.
+output The output manager associated with diagnostic output (traction vector).
 \end_layout
 
 \begin_layout Description
@@ -476,13 +573,28 @@ quadrature The quadrature object to be used for numerical integration.
  Since we are integrating over a surface that is one dimension lower than
  the problem domain, this would typically be set to something like 
 \family typewriter
-quadrature2din3d
+Quadrature2Din3D
 \family default
  (for a three-dimensional problem).
 \end_layout
 
 \begin_layout Standard
-An example of setting these parameters in a 
+By default the output manager does not output any information.
+ The specified tractions can be output in global coordinates by including
+ 
+\begin_inset Quotes eld
+\end_inset
+
+tractions
+\begin_inset Quotes erd
+\end_inset
+
+ in the output managers 
+\family typewriter
+cell_info_fields
+\family default
+ array parameter.
+ An example of setting these parameters in a 
 \family typewriter
 .cfg
 \family default
@@ -494,15 +606,11 @@ An example of setting these parameters in a
 \end_layout
 
 \begin_layout LyX-Code
-formulation = pylith.problems.Implicit
-\end_layout
-
-\begin_layout LyX-Code
 bc = [x_neg,x_pos,y_neg]
 \end_layout
 
 \begin_layout LyX-Code
-bc.x_pos = pylith.bc.Neumann
+bc.x_pos = pylith.bc.Neumann ; Change BC type to Neumann
 \end_layout
 
 \begin_layout LyX-Code
@@ -514,11 +622,11 @@ bc.x_pos = pylith.bc.Neumann
 \end_layout
 
 \begin_layout LyX-Code
-label = x_pos
+label = x_pos ; Name of group of vertices for +x boundary
 \end_layout
 
 \begin_layout LyX-Code
-db = spatialdata.spatialdb.SimpleDB
+db = spatialdata.spatialdb.SimpleDB ; default
 \end_layout
 
 \begin_layout LyX-Code
@@ -530,7 +638,7 @@ db.iohandler.filename = axialtract.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
-db.query_type = nearest
+db.query_type = nearest ; default
 \end_layout
 
 \begin_layout LyX-Code
@@ -550,62 +658,25 @@ quadrature.cell.quad_order = 2
 \end_layout
 
 \begin_layout Standard
-These settings correspond to the two-dimensional example problem in 
-\family typewriter
-examples/twocells/twoquad4
-\family default
-, as described in 
+These settings correspond to the example problem described in section 
 \begin_inset LatexCommand ref
 reference "sub:Tutorial-twoquad4-traction"
 
 \end_inset
 
 .
- The group of vertices to which Neumann boundary conditions are to be applied
- has the label 
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-x_pos
-\family default
-'' and the spatial database query should use the nearest point algorithm.
- See Appendix 
-\begin_inset LatexCommand ref
-reference "sec:Spatialdata:SimpleIOAscii"
-
-\end_inset
-
- for a complete list of the spatial database settings.
- Note that it is necessary to explicitly set the boundary condition type
- for this group to 
+ It is necessary to set the boundary condition type to 
 \family typewriter
 pylith.bc.Neumann
 \family default
 , since the default value is 
-\begin_inset Quotes eld
-\end_inset
-
-
 \family typewriter
-dirichletpoints
+DirichletPoints
 \family default
-
-\begin_inset Quotes erd
-\end_inset
-
 .
- It is also necessary to define the quadrature information.
- Since this is a two-dimensional problem, we must integrate over edges in
- two dimensions.
- The quadrature is therefore 
-\family typewriter
-Quadrature1Din2D
-\family default
-, and the cell dimension is one.
- The cell quadrature order has been set to two.
- Since constant tractions are used for this particular problem, a quadrature
+ Because the problem is two-dimensional, we must supply a quadrature object
+ to integrate over edges in two dimensions.
+ Constant tractions are used for this particular problem, so a quadrature
  order of one would have been sufficient; however, for problems involving
  more complex variations (e.g., a linear variation), a quadrature order of
  two will provide more accurate results.
@@ -620,10 +691,10 @@ Neumann Boundary Condition Spatial Database Files
 \begin_layout Standard
 The spatial database files for the Neumann boundary condition specify the
  applied tractions.
- The number of traction components is equal to the number of degrees of
- freedom for the problem.
- The tractions are specified in a boundary-local coordinate system.
- The traction value names for the different types of problems are:
+ The number of traction components is equal to the spatial dimension for
+ the problem.
+ The tractions are specified in a local coordinate system for the boundary.
+ The names of the components of the traction vector are:
 \end_layout
 
 \begin_layout Description
@@ -657,21 +728,12 @@ normal-traction
 \end_layout
 
 \begin_layout Standard
-To resolve any ambiguities in specifying the shear tractions in three-dimensiona
-l problems, users may make use of the 
+Ambiguities in specifying the shear tractions in 3D problems are resolved
+ using the 
 \family typewriter
 up_dir
 \family default
- parameter, which gives the components of the vector generally thought to
- represent 
-\begin_inset Quotes eld
-\end_inset
-
-up
-\begin_inset Quotes erd
-\end_inset
-
-.
+ parameter.
  In the case of a horizontal surface, users will need to pick an alternative
  vector, as the default 
 \family typewriter
@@ -703,7 +765,41 @@ This boundary condition attempts to prevent seismic waves reflecting off
  waves.
  If the waves arriving at the absorbing boundary are relatively small in
  amplitude compared to the amplitudes of primary interest, this boundary
- condition gives reasonable results.
+ condition gives reasonable results.Neumann Boundary Condition Parameters
+\end_layout
+
+\begin_layout Standard
+The Neumann boundary condition properties and components are:
+\end_layout
+
+\begin_layout Description
+label Name of the group of vertices defining the mesh boundary for the absorbing
+ boundary condition.
+\end_layout
+
+\begin_layout Description
+up_dir This is a 3-vector that provides a hint for the direction perpendicular
+ to the horizontal tangent direction that is not collinear with the direction
+ normal to the surface.
+ The default value is (0,0,1), which assumes that the z-axis is positive
+ upward.
+ This vector is only needed for three-dimensional problems where the positive
+ upward direction differs from the default.
+\end_layout
+
+\begin_layout Description
+db The spatial database specifying the material properties for the seismic
+ velocities.
+\end_layout
+
+\begin_layout Description
+quadrature The quadrature object to be used for numerical integration.
+ Since we are integrating over a surface that is one dimension lower than
+ the problem domain, this would typically be set to something like 
+\family typewriter
+Quadrature2Din3D
+\family default
+ (for a three-dimensional problem).
 \end_layout
 
 \begin_layout Subsection
@@ -942,9 +1038,9 @@ Fault interfaces are used to create dislocations (jumps in displacement
  For fault interfaces, dislocations in 1D correspond to fault-opening (and
  closing), in 2D lateral-slip and fault opening, and in 3D lateral-slip,
  reverse-slip, and fault opening.
- The current release of PyLith supports kinematic (prescribed) slip.
+ The current release of PyLith only supports kinematic (prescribed) slip.
  Support for fault constitutive models for frictional interface conditions
- will be supported in a future release (Winter 2007).
+ will be supported in a future release (Winter 2008).
 \end_layout
 
 \begin_layout Subsection
@@ -1074,163 +1170,13 @@ name "fig:fault:slip:motions"
 \end_layout
 
 \begin_layout Subsection
-Fault Surface Container
-\end_layout
-
-\begin_layout Standard
-The fault surface container associates a fault interface condition with
- a set of vertices via a string label.
- Because the number of fault surfaces depends on the problem, and Pyre does
- not support dynamic arrays of components, a generic fault surface container
- is not yet available.
- We supply a container for a single fault surface, 
-\family typewriter
-pylith.faults.SingleFault
-\family default
-.
- For problems with multiple fault surfaces, the user must supply an appropriate
- fault surface container (see 
-\family typewriter
-examples/templates/containers/faults.odb
-\family default
- for a template fault surface container).
- This 
-\family typewriter
-.odb
-\family default
- file should be placed in the directory with the other simulation input
- files.
- The default fault surface container is an empty container, so you must
- specify a fault surface container to include fault interfaces.
- Each simply connected fault surface should be placed in a separate container.
- Additionally, fault surfaces may not share vertices.
- At fault intersections, one fault must end one cell before the intersection.
- Future releases of PyLith may relax this requirement.
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Float table
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="2" columns="3">
-<features>
-<column alignment="left" valignment="top" leftline="true" width="0.88in">
-<column alignment="center" valignment="top" leftline="true" width="1.3in">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="2in">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\series bold
-Container
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\series bold
-Number of Fault Surfaces
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\series bold
-Container Facilities
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-SingleFault
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-1
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-f
-\family typewriter
-ault
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "tab:fault:containers"
-
-\end_inset
-
-Predefined fault surface containers.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
 Fault Implementation
 \end_layout
 
 \begin_layout Standard
 In order to create relative motion across the fault surface in the finite-elemen
-t mesh, additional degrees of freedom must be added along with adjustment
- of the topology of the mesh.
+t mesh, additional degrees of freedom are added along with adjustment of
+ the topology of the mesh.
  These additional degreees of freedom are associated with cohesive cells.
  These zero-volume cells allow control of the relative motion between vertices
  on the two sides of the fault.
@@ -1257,7 +1203,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/quad4cohesive.eps
+	filename /Users/brad/src/cig/pylith/doc/userguide/boundaryconditions/figs/quad4cohesive.eps
 
 \end_inset
 
@@ -1274,6 +1220,57 @@ Example of cohesive cell inserted into a mesh of two quadrilateral cells.
  6.
 \begin_inset LatexCommand label
 name "fig:fault:cohesive:quad4"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /Users/brad/src/cig/pylith/doc/userguide/boundaryconditions/figs/quad4cohesivekin.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Example of cohesive cell using Lagrange multipliers inserted into a mesh
+ of two quadrilateral cells.
+ The zero thickness cohesive cell (shown with dashed lines) controls slip
+ on the fault.
+ The Lagrange mutipliers for a kinematic earthquake source are associated
+ with the degrees of freedom for vertices 8 and 9.
+ The constraint associated with vertex 8 controls the relative motion between
+ vertices 2 and 6, and the constraint associated with vertex 9 controls
+ the relative motion between vertices 3 and 7.
+ 
+\begin_inset LatexCommand label
+name "fig:fault:cohesive:quad4:kin"
 
 \end_inset
 
@@ -1341,8 +1338,31 @@ mat_db Spatial database for bulk material properties (used in improving
  the conditioning of the system).
 \end_layout
 
+\begin_layout Description
+output Manager for output of diagnostic and data fields for the fault.
+\end_layout
+
 \begin_layout Standard
-An example of setting these parameters in a 
+By default the output manager outputs both diagnostic information (fault
+ normal direction, final slip, and slip initiation time) and the slip at
+ each time step.
+ Table 
+\begin_inset LatexCommand ref
+reference "tab:fault:output"
+
+\end_inset
+
+ lists the fields available for output.
+ The fault coordinate system is shown in Figure 
+\begin_inset LatexCommand ref
+reference "fig:fault:slip:motions"
+
+\end_inset
+
+.
+ The vectors in the fault coordinate system can be transformed to the global
+ coordinate system using the direction vectors in the diagnostic output.
+ An example of setting these parameters in a 
 \family typewriter
 .cfg
 \family default
@@ -1354,7 +1374,7 @@ An example of setting these parameters in a
 \end_layout
 
 \begin_layout LyX-Code
-interfaces = pylith.faults.SingleFault
+interfaces = [fault]
 \end_layout
 
 \begin_layout LyX-Code
@@ -1366,7 +1386,7 @@ interfaces = pylith.faults.SingleFault
 \end_layout
 
 \begin_layout LyX-Code
-fault = pylith.faults.FaultCohesiveKin 
+fault = pylith.faults.FaultCohesiveKin ; default
 \end_layout
 
 \begin_layout LyX-Code
@@ -1374,19 +1394,20 @@ fault = pylith.faults.FaultCohesiveKin
 \end_layout
 
 \begin_layout LyX-Code
-label = fault A
+label = fault A ; Group of vertices defining the fault surface
 \end_layout
 
 \begin_layout LyX-Code
-id = 100 // This is the default value.
+id = 100 ; Value for material identifier associated with fault's cohesive
+ cells
 \end_layout
 
 \begin_layout LyX-Code
-up_dir = [0, 0, 1] // This is the default value.
+up_dir = [0, 0, 1] ; default
 \end_layout
 
 \begin_layout LyX-Code
-normal_dir = [1, 0, 0] // This is the default value.
+normal_dir = [1, 0, 0] ; default
 \end_layout
 
 \begin_layout LyX-Code
@@ -1406,8 +1427,7 @@ mat_db.iohandler.filename = elastic_materials.spatialdb
 \end_layout
 
 \begin_layout Standard
-We have specified that we want to use the SingleFault container.
- The group of vertices has the label ``fault A.'' We replicate the default
+The group of vertices has the label ``fault A.'' We replicate the default
  values for the fault ``up'' direction, and the desired general direction
  for the fault normal.
  These settings apply to a 2D fault surface embedded within a 3D mesh, so
@@ -1415,7 +1435,308 @@ We have specified that we want to use the SingleFault container.
  reference cells.
  The spatial database for elastic properties is used to determine the approximat
 e shear modulus and condition the equations for faster convergence rates.
- 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="3">
+<features>
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
+<column alignment="center" valignment="top" rightline="true" width="0">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Field Type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Field
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+vertex_info_fields
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+normal_dir
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Direction of fault normal in global coordinate system
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+strike_dir
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Direction of fault strike in global coordinate system
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+dip_dir
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Up-dip direction on hanging wall in global coordinate system
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+final_slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Vector of final slip (in fault coordinate system)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+slip_time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Time at which slip begins
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+vertex_data_fields
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Slip vector at time step (in fault coordinate system)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+tractions_change
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Change in fault tractions (in fault coordinate system)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Fields available in output of fault information.
+\begin_inset LatexCommand label
+name "tab:fault:output"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -1445,7 +1766,14 @@ The insertion of cohesive cells into the finite-element mesh has the effect
  multipliers results in a complex implementation.
  However, the use of Lagrange multiplier constraints with cohesive cells
  makes this very easy; we simply add the additional degrees of freedom associate
-d with the Lagrange multipliers to the cohesive cells.
+d with the Lagrange multipliers to the cohesive cells as shown in Figure
+ 
+\begin_inset LatexCommand ref
+reference "fig:fault:cohesive:quad4:kin"
+
+\end_inset
+
+.
  As a result, the fault implementation is completely confined to the cohesive
  cell.
  Furthermore, the Lagrange multiplier constraints correspond to forces required
