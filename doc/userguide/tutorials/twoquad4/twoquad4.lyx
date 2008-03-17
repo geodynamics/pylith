@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -380,7 +380,7 @@ axialdisp.spatialdb
 axialdisp.cfg
 \family default
 .
- Because the data is being specified using two control points with a linear
+ Because the data are being specified using two control points with a linear
  variation in the values between the two (rather than being uniform over
  the mesh, for example), the data dimension is one.
 \end_layout
@@ -615,7 +615,7 @@ sheardisp.cfg
 .
  In this case, the desired displacement values are given at two control
  points, corresponding to the two edges we want to constrain.
- Since data is being specified at two points with a linear variations in
+ Since data are being specified at two points with a linear variations in
  the values between the points (rather than being uniform over the mesh,
  for example), the data dimension is one.
 \end_layout
@@ -988,7 +988,7 @@ reference "fig:twoquad4-axialtract"
 
 , which was generated using ParaView.
  The results may be compared against the analytical solution derived in
- section 
+ Section 
 \begin_inset LatexCommand ref
 reference "sub:Analytical-Constant-Traction"
 
@@ -1154,7 +1154,7 @@ The fault example requires three additional database files that were not
 dislocation_slip.spatialdb
 \family default
 ) specifies 0.01 m of left-lateral fault slip for the entire fault.
- The data dimension is zero since the same data is applied to all points
+ The data dimension is zero since the same data are applied to all points
  in the set.
  It is also necessary to specify the peak slip rate, which is done in the
  file 
