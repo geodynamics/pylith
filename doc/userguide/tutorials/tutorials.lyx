@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -80,7 +80,7 @@ reference "cha:Installation-and-Getting"
 .
 
 \color none
- For more complex tutorials, you will also need either the 
+ For more complex tutorials, you will also need either 
 \begin_inset LatexCommand htmlurl
 name "CUBIT"
 target "cubit.sandia.gov"
@@ -94,7 +94,7 @@ target "meshing.lanl.gov"
 
 \end_inset
 
- mesh generation packages to create your own mesh.
+ mesh generation software to create the meshes.
  If you do not wish to create your own mesh at this time, the meshes are
  also provided as part of the tutorial.
  The 
@@ -105,8 +105,12 @@ target "www.paraview.org"
 \end_inset
 
  visualization package may be used to view simulation results.
- You may use other packages, but some adaption from what is described here
- will be necessary.
+ ParaView 3 includes built-in documentation that is accessed by clicking
+ on the Help menu item.
+ Some additional documentation is available on the ParaView wiki site (http://pa
+raview.org/Wiki/ParaView).
+ You may use other visualization software, but some adaption from what is
+ described here will be necessary.
  Alternatively, you can complete a subset of the tutorial using files provided
  (as described below), skipping the steps for which you do not have the
  proper software packages installed.
@@ -131,9 +135,9 @@ examples/twocells
 \family typewriter
 examples/3d
 \family default
-, will require the use of a mesh generation package to create the meshes.
- All of the files used in the example problems are heavily documented, which
- should help users to understand the different file formats.
+, use external mesh generation software to create the meshes.
+ All of the files used in the example problems are extensively documented
+ with commented files.
 \end_layout
 
 \begin_layout Standard

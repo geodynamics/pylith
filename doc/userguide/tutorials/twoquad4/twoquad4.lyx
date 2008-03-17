@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -52,7 +52,47 @@ name "sec:Tutorial-Two-quad4"
 
 \end_inset
 
-Tutorial Using Two Bilinear Quadrilaterals and PyLith Mesh ASCII Format
+Tutorial Using Two Quadrilaterals
+\end_layout
+
+\begin_layout Standard
+PyLith features discussed in this tutorial:
+\end_layout
+
+\begin_layout Itemize
+Quasi-static solution
+\end_layout
+
+\begin_layout Itemize
+Mesh ASCII format
+\end_layout
+
+\begin_layout Itemize
+Dirichlet boundary conditions
+\end_layout
+
+\begin_layout Itemize
+Kinematic fault interface conditions
+\end_layout
+
+\begin_layout Itemize
+Plane strain linearly elastic material
+\end_layout
+
+\begin_layout Itemize
+VTK output
+\end_layout
+
+\begin_layout Itemize
+Bilinear quadrilateral cells
+\end_layout
+
+\begin_layout Itemize
+SimpleDB spatial database
+\end_layout
+
+\begin_layout Itemize
+FixedDOFDB spatial database
 \end_layout
 
 \begin_layout Subsection
@@ -68,8 +108,8 @@ This tutorial is another simple 2D example of a quasi-static finite element
  by hand, using PyLith mesh ASCII format to describe the mesh.
  In this tutorial, we will walk through the steps necessary to construct,
  run, and view three problems that use the same mesh.
- In addition to this manual, each of the files for the example problem is
- heavily documented to aid users in understanding the basic file formats.
+ In addition to this manual, each of the files for the example problem includes
+ extensive comments.
 \end_layout
 
 \begin_layout Subsection
@@ -77,8 +117,8 @@ Mesh Description
 \end_layout
 
 \begin_layout Standard
-The mesh consists of two square cells with edge lengths of one forming a
- regular region (Figure 
+The mesh consists of two square cells with edge lengths of one unit forming
+ a regular region (Figure 
 \begin_inset LatexCommand ref
 reference "fig:twoquad4-mesh"
 
@@ -189,8 +229,8 @@ pylithapp.timedependent Settings that control the problem, such as the total
 \begin_layout Description
 pylithapp.timedependent.materials Settings that control the material type,
  specify which material IDs are to be associated with a particular material
- type, and give the name of the spatial database containing material parameters
- for the mesh.
+ type, and give the name of the spatial database containing physical properties 
+ for the material.
  The quadrature information is also given.
 \end_layout
 
@@ -227,7 +267,7 @@ matprops.spatialdb
 \family typewriter
 pylithapp.cfg
 \family default
-, the parameters for the material model are given in 
+, the physical properties for the material are given in 
 \family typewriter
 matprops.spatialdb
 \family default
@@ -267,8 +307,8 @@ pylithapp.timedependent.bc.x_neg Specifies the boundary conditions for the
 twoquad4.mesh
 \family default
 ) defining the points desired, assigning a label to the boundary condition
- set, and giving the name of the spatial database defining the boundary
- conditions (
+ set, and giving the name of the spatial database with the values for the
+ Dirichlet boundary condition (
 \family typewriter
 axialdisp.spatialdb
 \family default
@@ -299,8 +339,8 @@ pylithapp.timedependent.bc.y_neg Specifies the boundary conditions for the
 twoquad4.mesh
 \family default
 ) defining the points desired, assigning a label to the boundary condition
- set, and giving the name of the spatial database defining the boundary
- conditions (
+ set, and giving the name of the spatial database with the values for the
+ Dirichlet boundary condition (
 \family typewriter
 axialdisp.spatialdb
 \family default
@@ -327,7 +367,7 @@ axialdisp-statevars.vtk
 \end_layout
 
 \begin_layout Standard
-The boundary conditions are described in the file 
+The values for the Dirichlet boundary condition are given in the file 
 \family typewriter
 axialdisp.spatialdb
 \family default
@@ -336,8 +376,8 @@ axialdisp.spatialdb
 axialdisp.cfg
 \family default
 .
- In this case, the desired displacement values are given at two points.
- Since data is being specified at points (rather than being uniform over
+ Because the data is being specified using two control points with a linear
+ variation in the values between the two (rather than being uniform over
  the mesh, for example), the data dimension is one.
 \end_layout
 
@@ -511,8 +551,8 @@ x_neg
 twoquad4.mesh
 \family default
 ) defining the points desired, assigning a label to the boundary condition
- set, and giving the name of the spatial database defining the boundary
- conditions (
+ set, and giving the name of the spatial database with the values for the
+ Dirichlet boundary condition (
 \family typewriter
 sheardisp.spatialdb
 \family default
@@ -531,8 +571,8 @@ pos, defined in
 twoquad4.mesh
 \family default
 ) defining the points desired, assigning a label to the boundary condition
- set, and giving the name of the spatial database defining the boundary
- conditions (
+ set, and giving the name of the spatial database with the values for the
+ Dirichlet boundary condition (
 \family typewriter
 sheardisp.spatialdb
 \family default
@@ -559,7 +599,8 @@ sheardisp-statevars.vtk
 \end_layout
 
 \begin_layout Standard
-The boundary conditions are described in the file 
+The values for the Dirichlet boundary conditions are described in the file
+ 
 \family typewriter
 sheardisp.spatialdb
 \family default
@@ -568,10 +609,11 @@ sheardisp.spatialdb
 sheardisp.cfg
 \family default
 .
- In this case, the desired displacement values are given at two points,
- corresponding to the two edges we want to constrain.
- Since data is being specified at points (rather than being uniform over
- the mesh, for example), the data dimension is one.
+ In this case, the desired displacement values are given at two control
+ points, corresponding to the two edges we want to constrain.
+ Since data is being specified at two points with a linear variations in
+ the values between the points (rather than being uniform over the mesh,
+ for example), the data dimension is one.
 \end_layout
 
 \begin_layout Standard
@@ -757,9 +799,10 @@ pylithapp.timedependent.bc.x_neg Specifies the boundary conditions for the
 twoquad4.mesh
 \family default
 ) defining the points desired.
- In this case, rather than specifying a spatial database file to define
- the boundary conditions, the default for Dirichlet BC is used, which sets
- the displacements to zero for all time.
+ In this case, rather than specifying a spatial database file with values
+ for the Dirichlet boundary conditions, we use the default spatial database
+ (FixedDOFDB) for the Dirichlet boundary condition, which sets the displacements
+ to zero for all time.
 \end_layout
 
 \begin_layout Description
@@ -769,8 +812,8 @@ pylithapp.timedependent.bc.x_pos Specifies the Neumann boundary conditions
 twoquad4.mesh
 \family default
 ) defining the points desired, assigning a label to the boundary condition
- set, and giving the name of the spatial database defining the boundary
- conditions (
+ set, and giving the name of the spatial database with the traction vectors
+ for the Neumann boundary condition (
 \family typewriter
 axialtract.spatialdb
 \family default
@@ -785,9 +828,8 @@ pylithapp.timedependent.bc.y_neg Specifies the boundary conditions for the
 twoquad4.mesh
 \family default
 ) defining the points desired.
- In this case, rather than specifying a spatial database file to define
- the boundary conditions, the default for Dirichlet BC is used, which sets
- the displacements to zero for all time.
+ In this case, we again use the FixedDOFDB, which sets the displacements
+ to zero for all time.
 \end_layout
 
 \begin_layout Description
@@ -831,7 +873,8 @@ axialtract-tractions.vtk
 \end_layout
 
 \begin_layout Standard
-The Neumann boundary conditions are described in the file 
+The traction vectors for the Neumann boundary conditions are given in the
+ file 
 \family typewriter
 axialtract.spatialdb
 \family default
@@ -840,12 +883,7 @@ axialtract.spatialdb
 axialtract.cfg
 \family default
 .
- In this case, the desired displacement values is given at a single point.
- Since data is uniform over the mesh, the data dimension is zero.
-\end_layout
-
-\begin_layout Standard
-The files containing common information (
+ The files containing common information (
 \family typewriter
 twoquad4.mesh
 \family default
@@ -946,20 +984,23 @@ reference "fig:twoquad4-axialtract"
 
 , which was generated using ParaView.
  The results may be compared against the analytical solution derived in
- 
+ section 
 \begin_inset LatexCommand ref
 reference "sub:Analytical-Constant-Traction"
 
 \end_inset
 
 .
- 
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
 status open
 
 \begin_layout Standard
+\align center
 \begin_inset Graphics
 	filename figs/axialtract.jpg
 	lyxscale 50
@@ -1002,7 +1043,7 @@ Kinematic Fault Slip Example
 \end_layout
 
 \begin_layout Standard
-The next example problem is left lateral fault slip applied between the
+The next example problem is left-lateral fault slip applied between the
  two square cells using kinematic cohesive cells.
  The left and right boundaries are held fixed in the x and y directions.
  Parameter settings that override or augment those in 
@@ -1040,9 +1081,10 @@ twoquad4.mesh
 \family default
 ) defining the points desired, and assigning a label to the boundary condition
  set.
- In this case, rather than specifying a spatial database file to define
- the boundary conditions, the default for Dirichlet BC is used, which sets
- the displacements to zero for all time.
+ Instead of specifying a spatial database file for the values of the Dirichlet
+ boundary condition, we use the default spatial database (FixedDOFDB) for
+ the Dirichlet boundary condition, which sets the displacements to zero
+ for all time.
 \end_layout
 
 \begin_layout Description
@@ -1058,9 +1100,8 @@ twoquad4.mesh
 \family default
 ) defining the points desired, and assigning a label to the boundary condition
  set.
- In this case, rather than specifying a spatial database file to define
- the boundary conditions, the default for Dirichlet BC is used, which sets
- the displacements to zero for all time.
+ We use the FixedDOFDB for this boundary condition as well, which sets the
+ displacements to zero for all time.
 \end_layout
 
 \begin_layout Description
@@ -1070,7 +1111,7 @@ twoquad4.mesh
 \family default
 ) defining the points on the fault, provides quadrature information, and
  then gives database names for material properties (needed for conditioning),
- fault slip, fault slip rate, and fault slip time.
+ fault slip, peak fault slip rate, and fault slip time.
 \end_layout
 
 \begin_layout Description
@@ -1102,12 +1143,6 @@ dislocation-statevars.vtk
 \end_layout
 
 \begin_layout Standard
-Rather than specifying the displacement boundary conditions in a spatial
- database file, we use the default behavior for Dirichlet boundary conditions,
- which is a uniform displacement of zero applied at all times.
-\end_layout
-
-\begin_layout Standard
 The fault example requires three additional database files that were not
  needed for the simple displacement examples.
  The first file (
@@ -1117,13 +1152,14 @@ dislocation_slip.spatialdb
 ) specifies 0.01 m of left-lateral fault slip for the entire fault.
  The data dimension is zero since the same data is applied to all points
  in the set.
- It is also necessary to specify the slip rate, which is done in the file
- 
+ It is also necessary to specify the peak slip rate, which is done in the
+ file 
 \family typewriter
 dislocation_sliprate.spatialdb
 \family default
 .
- The slip rate of 1.0e6 m/s is essentially instantaneous.
+ The peak slip rate of 1.0e6 m/s creates a step function for the slip time
+ history.
  Finally, we must provide the time at which slip begins.
  The elastic solution begins at 
 \begin_inset Formula $t=-dt$
