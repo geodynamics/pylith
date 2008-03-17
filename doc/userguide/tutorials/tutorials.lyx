@@ -171,6 +171,12 @@ preview false
 \end_inset
 
 
+\begin_inset Include \input{3dhex8/3dhex8.lyx}
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \end_body
