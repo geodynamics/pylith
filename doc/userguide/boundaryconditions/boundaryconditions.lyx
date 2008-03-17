@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -128,8 +128,8 @@ A dynamic array of boundary condition components associates a name (string)
  are no longer available (or necessary).
  The default boundary condition for each component in the array is the Dirichlet
 Points object.
- Other boundary conditions can be bound to the names itesm in the array
- via a .cfg file, .pml file, or the command line.
+ Other boundary conditions can be bound to the names item in the array via
+ a .cfg file, .pml file, or the command line.
  The parameters for the boundary condition are set using the name of the
  boundary condition.
  An example of setting the array of boundary condition components and changing
@@ -180,7 +180,7 @@ where
 \begin_inset Formula $u_{o}$
 \end_inset
 
-is the prescribed displacement at time 
+ is the prescribed displacement at time 
 \begin_inset Formula $t_{ref}$
 \end_inset
 
@@ -344,7 +344,7 @@ We have created an array with one boundary condition, mybc.
  For the rate of change of values, we use the FixedDOFDB (which is a special
  case of the UniformDB) and specify the velocity in the z-direction to be
  1.0e-06 m/s.
- See section 
+ See Section 
 \begin_inset LatexCommand ref
 reference "sec:spatial:databases"
 
@@ -527,7 +527,7 @@ Neumann boundary conditions are surface tractions applied over a subset
  the surface, using values from a spatial database.
  The tractions are integrated over each cell and assembled to obtain the
  forces applied at the vertices.
- See section 
+ See Section 
 \begin_inset LatexCommand ref
 reference "sub:Tutorial-twoquad4-traction"
 
@@ -658,7 +658,7 @@ quadrature.cell.quad_order = 2
 \end_layout
 
 \begin_layout Standard
-These settings correspond to the example problem described in section 
+These settings correspond to the example problem described in Section 
 \begin_inset LatexCommand ref
 reference "sub:Tutorial-twoquad4-traction"
 
@@ -765,11 +765,11 @@ This boundary condition attempts to prevent seismic waves reflecting off
  waves.
  If the waves arriving at the absorbing boundary are relatively small in
  amplitude compared to the amplitudes of primary interest, this boundary
- condition gives reasonable results.Neumann Boundary Condition Parameters
+ condition gives reasonable results.
 \end_layout
 
 \begin_layout Standard
-The Neumann boundary condition properties and components are:
+The Absorbing boundary condition properties and components are:
 \end_layout
 
 \begin_layout Description
@@ -1031,7 +1031,7 @@ Fault Interface Conditions
 \end_layout
 
 \begin_layout Standard
-Fault interfaces are used to create dislocations (jumps in displacement
+Fault interfaces are used to create dislocations (jumps in the displacement
  field) in the model.
  The dislocations arise from slip across a fault surface.
  Both shear and tensile dislocations are supported.
@@ -1203,7 +1203,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename /Users/brad/src/cig/pylith/doc/userguide/boundaryconditions/figs/quad4cohesive.eps
+	filename figs/quad4cohesive.eps
 
 \end_inset
 
@@ -1248,7 +1248,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename /Users/brad/src/cig/pylith/doc/userguide/boundaryconditions/figs/quad4cohesivekin.eps
+	filename figs/quad4cohesivekin.eps
 
 \end_inset
 

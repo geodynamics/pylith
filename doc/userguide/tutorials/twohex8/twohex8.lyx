@@ -84,7 +84,7 @@ VTK output
 \end_layout
 
 \begin_layout Itemize
-Trilinear hexaahedral cells
+Trilinear hexahedral cells
 \end_layout
 
 \begin_layout Itemize
@@ -431,9 +431,10 @@ axialdisp.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.material.output Defines the filter to be used
- when writing cell state variables (average over the quadrature points of the
- cell), gives the base filename for state variable output files, and defines
- the format to use when defining the output filenames for each time step.
+ when writing cell state variables (average over the quadrature points of
+ the cell), gives the base filename for state variable output files, and
+ defines the format to use when defining the output filenames for each time
+ step.
 \end_layout
 
 \begin_layout Standard
@@ -446,7 +447,7 @@ axialdisp.spatialdb
 axialdisp.cfg
 \family default
 .
- Since data is being specified using two control points (rather than being
+ Since data are being specified using two control points (rather than being
  uniform over the mesh, for example), the data dimension is one.
 \end_layout
 
@@ -661,9 +662,10 @@ sheardisp.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.material.output Defines the filter to be used
- when writing cell state variables (average over the quadrature points of the
- cell), gives the base filename for state variable output files, and defines
- the format to use when defining the output filenames for each time step.
+ when writing cell state variables (average over the quadrature points of
+ the cell), gives the base filename for state variable output files, and
+ defines the format to use when defining the output filenames for each time
+ step.
 \end_layout
 
 \begin_layout Standard
@@ -676,8 +678,8 @@ sheardisp.spatialdb
 sheardisp.cfg
 \family default
 .
- Data is being specified at two control points (rather than being uniform over
- the mesh, for example), so the data dimension is one.
+ Data are being specified at two control points (rather than being uniform
+ over the mesh, for example), so the data dimension is one.
 \end_layout
 
 \begin_layout Standard
@@ -923,15 +925,16 @@ The fault example requires three additional database files that were not
 dislocation_slip.spatialdb
 \family default
 ) specifies 0.01 m of left-lateral fault slip for the entire fault.
- The data dimension is zero since the same data is applied to all points
+ The data dimension is zero since the same data are applied to all points
  in the set.
- It is also necessary to specify the peak slip rate, which is done in the file
- 
+ It is also necessary to specify the peak slip rate, which is done in the
+ file 
 \family typewriter
 dislocation_sliprate.spatialdb
 \family default
 .
- The peak slip rate of 1.0e6 m/s creates a step function for the slip time history.
+ The peak slip rate of 1.0e6 m/s creates a step function for the slip time
+ history.
  Finally, we must provide the time at which slip begins.
  The elastic solution begins at 
 \begin_inset Formula $t=-dt$
