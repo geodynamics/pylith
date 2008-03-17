@@ -52,7 +52,55 @@ name "sec:Tutorial-Two-hexahedra"
 
 \end_inset
 
-Tutorial Using Two Trilinear Hexahedra and PyLith Mesh ASCII Format
+Tutorial Using Two Hexahedra
+\end_layout
+
+\begin_layout Standard
+PyLith features discussed in this tutorial:
+\end_layout
+
+\begin_layout Itemize
+Quasi-static solution
+\end_layout
+
+\begin_layout Itemize
+Mesh ASCII format
+\end_layout
+
+\begin_layout Itemize
+Dirichlet boundary conditions
+\end_layout
+
+\begin_layout Itemize
+Kinematic fault interface conditions
+\end_layout
+
+\begin_layout Itemize
+Maxwell viscoelastic material
+\end_layout
+
+\begin_layout Itemize
+VTK output
+\end_layout
+
+\begin_layout Itemize
+Trilinear hexaahedral cells
+\end_layout
+
+\begin_layout Itemize
+SimpleDB spatial database
+\end_layout
+
+\begin_layout Itemize
+FixedDOFDB spatial database
+\end_layout
+
+\begin_layout Itemize
+UniformDB spatial database
+\end_layout
+
+\begin_layout Itemize
+Filtering of cell output fields
 \end_layout
 
 \begin_layout Subsection
@@ -70,8 +118,8 @@ This tutorial is a simple 3D example of a quasi-static finite element problem.
  by hand, using PyLith mesh ASCII format to describe the mesh.
  In this tutorial, we will walk through the steps necessary to construct,
  run, and view three problems that use the same mesh.
- In addition to this manual, each of the files for the example problem is
- heavily documented to aid users in understanding the basic file formats.
+ In addition to this manual, each of the files for the example problems
+ includes extensive comments.
 \end_layout
 
 \begin_layout Subsection
@@ -79,7 +127,7 @@ Mesh Description
 \end_layout
 
 \begin_layout Standard
-The mesh consists of two hexahedra forming a brick shape (Figure 
+The mesh consists of two hexahedra forming a rectangular prism (Figure 
 \begin_inset LatexCommand ref
 reference "fig:twohex8-mesh"
 
@@ -219,10 +267,11 @@ in
 pylithapp.cfg
 \family default
 .
- Note that in this example we make use of the UniformDB implementation,
- rather than the SimpleDB implementation used in the other example problems.
+ Note that in this example we make use of the UniformDB spatial database,
+ rather than the SimpleDB implementation used to specify the physical properties
+ in the other example problems.
  For simple distributions of material properties (or boundary conditions),
- this implementation is actually easier to use.
+ this implementation is often easier to use.
  Examining 
 \family typewriter
 pylithapp.cfg
@@ -287,11 +336,6 @@ quadrature.cell.dimension = 3
 \end_layout
 
 \begin_layout Standard
-Note the specification of material properties in the 
-\family typewriter
-db
-\family default
- parameters.
  Rather than specifying a database file, as for the other examples, the
  properties are specified directly in the 
 \family typewriter
@@ -302,13 +346,7 @@ db
 \family typewriter
 pylithapp.cfg
 \family default
-, we have commented out the section that would have used the 
-\family typewriter
-matprops.spatialdb
-\family default
- file to specify material properties.
- Either method may be used, since the material properties are uniform for
- this example.
+.
 \end_layout
 
 \begin_layout Subsection
@@ -317,7 +355,7 @@ Axial Displacement Example
 
 \begin_layout Standard
 The first example problem is extension of the mesh along the long axis of
- the brick.
+ the prism.
  Parameter settings that override or augment those in 
 \family typewriter
 pylithapp.cfg
@@ -354,8 +392,8 @@ x_neg
 twohex8.mesh
 \family default
 ) defining the points desired, assigns a label to the boundary condition
- set, and gives the name of the spatial database defining the boundary condition
-s (
+ set, and gives the name of the spatial database with the values for the
+ Dirichlet boundary conditions (
 \family typewriter
 axialdisp.spatialdb
 \family default
@@ -373,8 +411,8 @@ pos, defined in
 twohex8.mesh
 \family default
 ) defining the points desired, assigns a label to the boundary condition
- set, and gives the name of the spatial database defining the boundary condition
-s (
+ set, and gives the name of the spatial database with the values for the
+ Dirichlet boundary conditions (
 \family typewriter
 axialdisp.spatialdb
 \family default
@@ -393,13 +431,13 @@ axialdisp.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.material.output Defines the filter to be used
- when writing cell state variables (average the quadrature points for the
+ when writing cell state variables (average over the quadrature points of the
  cell), gives the base filename for state variable output files, and defines
  the format to use when defining the output filenames for each time step.
 \end_layout
 
 \begin_layout Standard
-The boundary conditions are described in the file 
+The values for the Dirichlet boundary conditions are given in the file 
 \family typewriter
 axialdisp.spatialdb
 \family default
@@ -408,9 +446,8 @@ axialdisp.spatialdb
 axialdisp.cfg
 \family default
 .
- In this case, the desired displacement values are given at two points.
- Since data is being specified at points (rather than being uniform over
- the mesh, for example), the data dimension is one.
+ Since data is being specified using two control points (rather than being
+ uniform over the mesh, for example), the data dimension is one.
 \end_layout
 
 \begin_layout Standard
@@ -460,7 +497,7 @@ axialdisp-statevars_txxxx.vtk
 \family typewriter
 xxxx
 \family default
- is the time for which output has been produced.
+ is the time in seconds for which output has been produced.
  These files contain the state variables for each cell at the given time.
  The default fields are the total strain and stress fields.
  As specified in 
@@ -585,8 +622,8 @@ x_neg
 twohex8.mesh
 \family default
 ) defining the points desired, assigns a label to the boundary condition
- set, and gives the name of the spatial database defining the boundary condition
-s (
+ set, and gives the name of the spatial database with the values for the
+ Dirichlet boundary conditions (
 \family typewriter
 sheardisp.spatialdb
 \family default
@@ -604,8 +641,8 @@ pos, defined in
 twohex8.mesh
 \family default
 ) defining the points desired, assigns a label to the boundary condition
- set, and gives the name of the spatial database defining the boundary condition
-s (
+ set, and gives the name of the spatial database with the values for the
+ Dirichlet boundary conditions (
 \family typewriter
 sheardisp.spatialdb
 \family default
@@ -624,13 +661,13 @@ sheardisp.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.material.output Defines the filter to be used
- when writing cell state variables (average the quadrature points for the
+ when writing cell state variables (average over the quadrature points of the
  cell), gives the base filename for state variable output files, and defines
  the format to use when defining the output filenames for each time step.
 \end_layout
 
 \begin_layout Standard
-The boundary conditions are described in the file 
+The values for the Dirichlet boundary conditions are given in the file 
 \family typewriter
 sheardisp.spatialdb
 \family default
@@ -639,9 +676,8 @@ sheardisp.spatialdb
 sheardisp.cfg
 \family default
 .
- In this case, the desired displacement values are given at two points.
- Since data is being specified at points (rather than being uniform over
- the mesh, for example), the data dimension is one.
+ Data is being specified at two control points (rather than being uniform over
+ the mesh, for example), so the data dimension is one.
 \end_layout
 
 \begin_layout Standard
@@ -691,7 +727,7 @@ axialdisp-statevars_txxxx.vtk
 \family typewriter
 xxxx
 \family default
- is the time for which output has been produced.
+ is the time in seconds for which output has been produced.
  These files contain the state variables for each cell at the given time.
  The default fields are the total strain and stress fields.
  As specified in 
@@ -779,9 +815,9 @@ Kinematic Fault Slip Example
 \end_layout
 
 \begin_layout Standard
-The next example problem is left lateral fault slip applied between the
+The next example problem is left-lateral fault slip applied between the
  two hexahedral cells using kinematic cohesive cells.
- The vertices away from the fault are held fixed in the x, y, and z-directions.
+ The vertices away from the fault are held fixed in the x, y, and z directions.
  Parameter settings that override or augment those in 
 \family typewriter
 pylithapp.cfg
@@ -828,9 +864,8 @@ twohex8.mesh
 \family default
 ) defining the points desired, and assigns a label to the boundary condition
  set.
- In this case, rather than specifying a spatialial database file to define
- the boundary conditions, the default for Dirichlet BC is used, which sets
- the displacements to zero for all time.
+ In this case, we use the default spatial database (FixedDOFDB) for the
+ Dirichlet boundary condition, which sets the displacements to zero.
 \end_layout
 
 \begin_layout Description
@@ -845,9 +880,6 @@ twohex8.mesh
 \family default
 ) defining the points desired, and assigns a label to the boundary condition
  set.
- In this case, rather than specifying a spatial database file to define
- the boundary conditions, the default for Dirichlet BC is used, which sets
- the displacements to zero for all time.
 \end_layout
 
 \begin_layout Description
@@ -857,7 +889,7 @@ twotet4.mesh
 \family default
 ) defining the points on the fault, provides quadrature information, and
  then gives database names for material properties (needed for conditioning),
- fault slip, fault slip rate, and fault slip time.
+ fault slip, peak fault slip rate, and fault slip time.
 \end_layout
 
 \begin_layout Description
@@ -884,12 +916,6 @@ pylithapp.timedependent.materials.material.output Defines the filter to be used
 \end_layout
 
 \begin_layout Standard
-Rather than specifying the displacement boundary conditions in a spatial
- database file, we use the default behavior for Dirichlet boundary conditions,
- which is a uniform displacement of zero applied at all times.
-\end_layout
-
-\begin_layout Standard
 The fault example requires three additional database files that were not
  needed for the simple displacement examples.
  The first file (
@@ -899,13 +925,13 @@ dislocation_slip.spatialdb
 ) specifies 0.01 m of left-lateral fault slip for the entire fault.
  The data dimension is zero since the same data is applied to all points
  in the set.
- It is also necessary to specify the slip rate, which is done in the file
+ It is also necessary to specify the peak slip rate, which is done in the file
  
 \family typewriter
 dislocation_sliprate.spatialdb
 \family default
 .
- The slip rate of 1.0e6 m/s is essentially instantaneous.
+ The peak slip rate of 1.0e6 m/s creates a step function for the slip time history.
  Finally, we must provide the time at which slip begins.
  The elastic solution begins at 
 \begin_inset Formula $t=-dt$
@@ -970,7 +996,7 @@ dislocation_txxxx.vtk
 \family typewriter
 xxxx
 \family default
- is the time for which output has been produced.
+ is the time in seconds for which output has been produced.
  These files will contain mesh information as well as displacement values
  at the mesh vertices.
  The second set of files will have names such as 

@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -52,7 +52,47 @@ name "sec:Tutorial-Two-triangle"
 
 \end_inset
 
-Tutorial Using Two Linear Triangles and PyLith Mesh ASCII Format
+Tutorial Using Two Triangles
+\end_layout
+
+\begin_layout Standard
+PyLith features discussed in this tutorial:
+\end_layout
+
+\begin_layout Itemize
+Quasi-static solution
+\end_layout
+
+\begin_layout Itemize
+Mesh ASCII format
+\end_layout
+
+\begin_layout Itemize
+Dirichlet boundary conditions
+\end_layout
+
+\begin_layout Itemize
+Kinematic fault interface conditions
+\end_layout
+
+\begin_layout Itemize
+Plane strain linearly elastic material
+\end_layout
+
+\begin_layout Itemize
+VTK output
+\end_layout
+
+\begin_layout Itemize
+Linear triangular cells
+\end_layout
+
+\begin_layout Itemize
+SimpleDB spatial database
+\end_layout
+
+\begin_layout Itemize
+FixedDOFDB spatial database
 \end_layout
 
 \begin_layout Subsection
@@ -68,8 +108,8 @@ This tutorial is the simplest 2D example of a quasi-static finite element
  by hand, using PyLith mesh ASCII format.
  In this tutorial, we will walk through the steps necessary to construct,
  run, and view three problems that use the same mesh.
- In addition to this manual, each of the files for the example problem is
- heavily documented to aid users in understanding the basic file formats.
+ In addition to this manual, each of the files for the example problem includes
+ extensive comments.
 \end_layout
 
 \begin_layout Subsection
@@ -183,8 +223,8 @@ pylithapp.timedependent Settings that control the problem, such as the total
 \begin_layout Description
 pylithapp.timedependent.materials Settings that control the material type,
  specify which material IDs are to be associated with a particular material
- type, and give the name of the spatial database containing material parameters
- for the mesh.
+ type, and give the name of the spatial database containing the physical 
+ properties for the material.
  The quadrature information is also given.
 \end_layout
 
@@ -261,8 +301,8 @@ d (x and y), gives the label (defined in
 twotri3.mesh
 \family default
 ) defining the points desired, assigns a label to the boundary condition
- set, and gives the name of the spatial database defining the boundary condition
-s (
+ set, and gives the name of the spatial database with the values for the
+ Dirichlet boundary condition (
 \family typewriter
 axialdisp.spatialdb
 \family default
@@ -288,7 +328,7 @@ axialdisp-statevars.vtk
 \end_layout
 
 \begin_layout Standard
-The boundary conditions are described in the file 
+The values for the Dirichlet boundary condition are given in the file 
 \family typewriter
 axialdisp.spatialdb
 \family default
@@ -471,8 +511,8 @@ x_neg
 twotri3.mesh
 \family default
 ) defining the points desired, assigning a label to the boundary condition
- set, and giving the name of the spatial database defining the boundary
- conditions (
+ set, and giving the name of the spatial database with the values for the
+ Dirichlet boundary condition (
 \family typewriter
 sheardisp.spatialdb
 \family default
@@ -491,8 +531,8 @@ pos, defined in
 twotri3.mesh
 \family default
 ) defining the points desired, assigning a label to the boundary condition
- set, and giving the name of the spatial database defining the boundary
- conditions (
+ set, and giving the name of the spatial database with the values for the
+ Dirichlet boundary condition (
 \family typewriter
 sheardisp.spatialdb
 \family default
@@ -653,7 +693,7 @@ Kinematic Fault Slip Example
 \end_layout
 
 \begin_layout Standard
-The next example problem is left lateral fault slip applied between the
+The next example problem is left-lateral fault slip applied between the
  two triangular cells using kinematic cohesive cells.
  The lower left and upper right boundaries are held fixed in the x and y
  directions.
@@ -666,6 +706,8 @@ pylithapp.cfg
 dislocation.cfg
 \family default
 .
+ The solution corresponds to rigid body rotation of each triangular cell.
+ As a result, the tractions on the fault are zero.
  These settings are:
 \end_layout
 
@@ -687,9 +729,10 @@ twotri3.mesh
 \family default
 ) defining the points desired, and assigns a label to the boundary condition
  set.
- In this case, rather than specifying a spatial database file to define
- the boundary conditions, the default for Dirichlet BC is used, which sets
- the displacements to zero for all time.
+ In this case, rather than specifying a spatial database file with the values
+ for the Dirichlet boundary condition.
+ The default database (FixedDOFDB) for Dirichlet boundary conditions is
+ used, which sets the displacements to zero.
 \end_layout
 
 \begin_layout Description
@@ -699,7 +742,7 @@ twotri3.mesh
 \family default
 ) defining the points on the fault, provides quadrature information, and
  then gives database names for material properties (needed for conditioning),
- fault slip, fault slip rate, and fault slip time.
+ fault slip, peak fault slip rate, and fault slip time.
 \end_layout
 
 \begin_layout Description
@@ -732,7 +775,7 @@ dislocation-statevars.vtk
 \begin_layout Standard
 Rather than specifying the displacement boundary conditions in a spatial
  database file, we use the default behavior for Dirichlet boundary conditions,
- which is a uniform displacement of zero applied at all times.
+ which is a uniform, constant displacement of zero.
 \end_layout
 
 \begin_layout Standard
@@ -745,13 +788,14 @@ dislocation_slip.spatialdb
 ) specifies 0.01 m of left-lateral fault slip for the entire fault.
  The data dimension is zero since the same data is applied to all points
  in the set.
- It is also necessary to specify the slip rate, which is done in the file
- 
+ It is also necessary to specify the peak slip rate, which is done in the
+ file 
 \family typewriter
 dislocation_sliprate.spatialdb
 \family default
 .
- The slip rate of 1.0e6 m/s is essentially instantaneous.
+ The peak slip rate of 1.0e6 m/s creates a step-function for the slip time
+ history.
  Finally, we must provide the time at which slip begins.
  The elastic solution begins at 
 \begin_inset Formula $t=-dt$
