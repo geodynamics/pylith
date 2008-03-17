@@ -107,13 +107,19 @@ Overview
 This tutorial is a simple 3D example of a quasi-static finite element problem.
  It is a mesh composed of 144 trilinear hexahedra subject to displacement
  boundary conditions.
- This example demonstrates the usage of the CUBIT mesh generation package
- [http://cubit.sandia.gov] to create a mesh, as well as describing how to
- use a CUBIT-generated mesh in PyLith.
+ This example demonstrates the usage of the 
+\begin_inset LatexCommand htmlurl
+name "CUBIT mesh generation package"
+target "cubit.sandia.gov"
+
+\end_inset
+
+ to create a mesh, as well as describing how to use a CUBIT-generated mesh
+ in PyLith.
  In this tutorial, we will walk through the steps necessary to construct,
  run, and view two problems that use the same mesh.
  In addition to this manual, each of the files for the example problems
- include extensive comments.
+ includes extensive comments.
 \end_layout
 
 \begin_layout Subsection
@@ -131,12 +137,21 @@ reference "fig:3dhex8-mesh"
  Although it would be possible to generate this mesh by hand, it is much
  simpler to use a mesh generation package, and we use the CUBIT mesh generation
  package for this example.
- For this simple example, we provide documented journal files in examples/3d/hex
-8.
+ For this simple example, we provide documented journal files in 
+\family typewriter
+examples/3d/hex8.
+
+\family default
  Investigation of these journal files should provide some insight into how
  to use CUBIT with PyLith.
- For more detailed information on using CUBIT, refer to the CUBIT website
- [http://cubit.sandia.gov].
+ For more detailed information on using CUBIT, refer to the 
+\begin_inset LatexCommand htmlurl
+name "CUBIT web site"
+target "cubit.sandia.gov"
+
+\end_inset
+
+.
  If you have CUBIT installed on your machine, you can use the journal files
  to create your own mesh.
  Otherwise, you can use the mesh that has already been created.
@@ -145,15 +160,15 @@ reference "fig:3dhex8-mesh"
 \begin_layout Standard
 If you are using CUBIT to generate your own mesh, there are two ways to
  use the journal files.
- The simplest method is to go to the '
-\family typewriter
-Tools
+ The simplest method is to go to the
+\family sans
+ Tools
 \family default
-' menu, select '
-\family typewriter
+ menu, select 
+\family sans
 Play Journal File
 \family default
-', and then select the file 
+, and then select the file 
 \family typewriter
 mesh_hex8_1000m.jou
 \family default
@@ -167,7 +182,7 @@ geometry.jou
 mesh_hex8_1000m.jou
 \family default
 .
- Prior to doing this, you should set your directory to the directory containing
+ Prior to doing this, you should set your directory to the one containing
  the journal files.
  This method will create the mesh, but you will gain very little insight
  into what is being done.
@@ -180,7 +195,11 @@ mesh_hex8_1000m.jou
 \family default
  is '
 \family typewriter
-playback geometry.jou
+playback
+\family default
+ 
+\family typewriter
+geometry.jou
 \family default
 ', so you should start with the commands in 
 \family typewriter
@@ -203,8 +222,11 @@ volume 1 move x 0 y 0 z -2000
 \end_layout
 
 \begin_layout Standard
-Continuing through the remainder of the commands in geometry.jou, and then
- using the additional commands in 
+Continuing through the remainder of the commands in 
+\family typewriter
+geometry.jou
+\family default
+, and then using the additional commands in 
 \family typewriter
 mesh_hex8_1000m.jou
 \family default
@@ -435,7 +457,8 @@ quadrature.cell.dimension = 3
 \end_layout
 
 \begin_layout Standard
-The two material groups correspond to the two different colors in 
+The two material groups correspond to the two different colors in Figure
+ 
 \begin_inset LatexCommand ref
 reference "fig:3dhex8-mesh"
 
@@ -501,9 +524,9 @@ pylithapp.timedependent.bc.x_pos Specifies the boundary conditions for the
 \family typewriter
 x
 \family default
-, and
+ and 
 \family typewriter
- y
+y
 \family default
 ), providing the label (defined in 
 \family typewriter
@@ -525,9 +548,9 @@ pylithapp.timedependent.bc.x_neg Specifies the boundary conditions for the
 \family typewriter
 x
 \family default
-, and
+ and 
 \family typewriter
- y
+y
 \family default
 ), providing the label (defined in 
 \family typewriter
@@ -549,9 +572,9 @@ pylithapp.timedependent.bc.z_neg Specifies the boundary conditions for the
 \family typewriter
 x
 \family default
-, and
+ and 
 \family typewriter
- y
+y
 \family default
 ), providing the label (defined in 
 \family typewriter
@@ -591,8 +614,8 @@ pylithapp.timedependent.materials.elastic_upper.output Gives the base filename
 \family typewriter
 shearxy-statevars-upper.vtk
 \family default
-), and cause state variables to be averaged over all quadrature points in
- each cell.
+), and causes state variables to be averaged over all quadrature points
+ in each cell.
 \end_layout
 
 \begin_layout Description
@@ -601,8 +624,8 @@ pylithapp.timedependent.materials.elastic_lower.output Gives the base filename
 \family typewriter
 shearxy-statevars-lower.vtk
 \family default
-), and cause state variables to be averaged over all quadrature points in
- each cell.
+), and causes state variables to be averaged over all quadrature points
+ in each cell.
 \end_layout
 
 \begin_layout Standard
@@ -617,12 +640,16 @@ shearxy.cfg
 \family default
 .
  The format of all spatial database files is similar.
- Because data is being specified using two control points (rather than being
- uniform over the mesh, for example), the data dimension is one.
+ Because data are being specified using two control points (rather than
+ being uniform over the mesh, for example), the data dimension is one.
 \end_layout
 
 \begin_layout Standard
-The files containing common information (box_hex8_1000m.exo, 
+The files containing common information (
+\family typewriter
+box_hex8_1000m.exo
+\family default
+, 
 \family typewriter
 pylithapp.cfg
 \family default
@@ -695,9 +722,9 @@ lambda
 density
 \family default
 ) are written.
- The fourth and fifth files 
+ The fourth and fifth files for the lower elastic material 
 \family typewriter
-for the lower elastic material (shearxy-statevars-lower_t0000000.vtk
+(shearxy-statevars-lower_t0000000.vtk
 \family default
  and 
 \family typewriter
@@ -707,9 +734,7 @@ shearxy-statevars-lower_info.vtk
  material.
  The final file (
 \family typewriter
-shearxy-groundsurf_
-\newline
-t0000000.vtk
+shearxy-groundsurf_t0000000.vtk
 \family default
 ) is analagous to 
 \family typewriter
@@ -784,7 +809,7 @@ Kinematic Fault Slip Example
 \end_layout
 
 \begin_layout Standard
-The next example problem is right-lateral fault slip applied on the vertical
+The next example problem is a right-lateral fault slip applied on the vertical
  fault defined by 
 \family typewriter
 x = 0
@@ -794,15 +819,15 @@ x = 0
 \family typewriter
 x
 \family default
-, and 
+ and 
 \family typewriter
 y
 \family default
--directions, while the bottom is fixed in the 
+ directions, while the bottom is fixed in the 
 \family typewriter
 z
 \family default
--direction.
+ direction.
  Parameter settings that override or augment those in 
 \family typewriter
 pylithapp.cfg
@@ -833,9 +858,9 @@ pylithapp.timedependent.bc.x_pos Specifies the boundary conditions for the
 \family typewriter
 x
 \family default
-, and
+ and 
 \family typewriter
- y
+y
 \family default
 ), providing the label (defined in 
 \family typewriter
@@ -844,7 +869,7 @@ box_hex8_1000m.exo
 ) defining the points desired, and assigning a label to the boundary condition
  set.
  Rather than specifying a spatial database file to define the boundary condition
-s, we use the default spatial database (FixedDOFDB) for  the Dirichlet boundary
+s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
  condition, which sets the displacements to zero.
 \end_layout
 
@@ -855,9 +880,9 @@ pylithapp.timedependent.bc.x_neg Specifies the boundary conditions for the
 \family typewriter
 x
 \family default
-, and
+ and 
 \family typewriter
- y
+y
 \family default
 ), providing the label (defined in 
 \family typewriter
@@ -866,7 +891,7 @@ box_hex8_1000m.exo
 ) defining the points desired, and assigning a label to the boundary condition
  set.
  Rather than specifying a spatial database file to define the boundary condition
-s, we use the default spatial database (FixedDOFDB) for  the Dirichlet boundary
+s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
  condition, which sets the displacements to zero.
 \end_layout
 
@@ -880,7 +905,7 @@ box_hex8_1000m.exo
 ) defining the points desired, and assigning a label to the boundary condition
  set.
  Rather than specifying a spatial database file to define the boundary condition
-s, we use the default spatial database (FixedDOFDB) for  the Dirichlet boundary
+s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
  condition, which sets the displacements to zero.
 \end_layout
 
@@ -928,8 +953,8 @@ pylithapp.timedependent.materials.elastic_upper.output Gives the base filename
 \family typewriter
 dislocation-statevars-upper.vtk
 \family default
-), and cause state variables to be averaged over all quadrature points in
- each cell.
+), and causes state variables to be averaged over all quadrature points
+ in each cell.
 \end_layout
 
 \begin_layout Description
@@ -938,8 +963,8 @@ pylithapp.timedependent.materials.elastic_lower.output Gives the base filename
 \family typewriter
 dislocation-statevars-lower.vtk
 \family default
-), and cause state variables to be averaged over all quadrature points in
- each cell.
+), and causes state variables to be averaged over all quadrature points
+ in each cell.
 \end_layout
 
 \begin_layout Standard
@@ -953,7 +978,7 @@ finalslip.spatialdb
  tapers linearly to zero from 2 km to 4 km depth, and a linearly-varying
  amount of reverse slip, with a maximum of 0.25 m at the surface, linearly
  tapering to 0 m at 2 km depth.
- The data dimension is one since the data varies linearly along a vertical
+ The data dimension is one since the data vary linearly along a vertical
  line.
  It is also necessary to specify the peak slip rate, which is done in the
  file 
@@ -980,7 +1005,11 @@ dislocation_sliptime.spatialdb
 \end_layout
 
 \begin_layout Standard
-The files containing common information (box_hex8_1000m.exo, 
+The files containing common information (
+\family typewriter
+box_hex8_1000m.exo
+\family default
+, 
 \family typewriter
 pylithapp.cfg
 \family default
@@ -1119,6 +1148,8 @@ reference "fig:3dhex-disloc"
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
 wide false
 sideways false
