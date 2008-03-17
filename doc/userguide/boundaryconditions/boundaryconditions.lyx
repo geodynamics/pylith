@@ -128,8 +128,8 @@ A dynamic array of boundary condition components associates a name (string)
  are no longer available (or necessary).
  The default boundary condition for each component in the array is the Dirichlet
 Points object.
- Other boundary conditions can be bound to the names item in the array via
- a .cfg file, .pml file, or the command line.
+ Other boundary conditions can be bound to the named items in the array
+ via a .cfg file, .pml file, or the command line.
  The parameters for the boundary condition are set using the name of the
  boundary condition.
  An example of setting the array of boundary condition components and changing
@@ -1040,7 +1040,7 @@ Fault interfaces are used to create dislocations (jumps in the displacement
  reverse-slip, and fault opening.
  The current release of PyLith only supports kinematic (prescribed) slip.
  Support for fault constitutive models for frictional interface conditions
- will be supported in a future release (Winter 2008).
+ will be supported in a future release (December 2008).
 \end_layout
 
 \begin_layout Subsection
