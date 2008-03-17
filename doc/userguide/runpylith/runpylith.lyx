@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1065,8 +1065,8 @@ reference "fig:3D-linear-elements"
 \end_layout
 
 \begin_layout Standard
-The mesh information defines the vertex coordinates as well as specifies
- the vertices composing each cell in the mesh.
+The mesh information defines the vertex coordinates and specifies the vertices
+ composing each cell in the mesh.
  The mesh information must also define at least one set of vertices for
  which displacement (Dirichlet) boundary conditions will be provided.
  In most realistic problems, there will be several vertex groups, each with
@@ -1563,7 +1563,7 @@ Example
 \end_layout
 
 \begin_layout Standard
-Specify the physical properties of a linearly elastic, isotropicmaterial
+Specify the physical properties of a linearly elastic, isotropic material
  in a 
 \family typewriter
 pylithapp.cfg
@@ -1603,8 +1603,14 @@ Although the SimpleDB implementation is able to specify arbitrarily complex
  One such database is the SCEC CVM-H database, which provides seismic velocities
  and density information for much of southern California.
  Spatialdata provides a direct interface to this database.
- See Tutorial TODO:?? for an example of using the SCEC CVM-H database for
- physical properties of an elastic material.
+ See 
+\begin_inset LatexCommand ref
+reference "sec:Tutorial-Two-tet4-geoproj"
+
+\end_inset
+
+ for an example of using the SCEC CVM-H database for physical properties
+ of an elastic material.
  The interface is known to work with versions 5.2 and 5.3 of the SCEC CVM-H.
  The Pyre properties for the SCEC CVM-H are:
 \end_layout
@@ -1628,7 +1634,7 @@ Example
 \end_layout
 
 \begin_layout Standard
-Specify the physical properties of a linearly elastic, isotropicmaterial
+Specify the physical properties of a linearly elastic, isotropic material
  using the SCEC CVM-H in a 
 \family typewriter
 pylithapp.cfg
