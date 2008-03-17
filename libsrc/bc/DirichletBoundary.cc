@@ -216,12 +216,12 @@ pylith::bc::DirichletBoundary::setConstraints(
     const int numPrevious = offset[0];
     for (int iDOF=0; iDOF < numPrevious; ++iDOF)
       for (int jDOF=0; jDOF < numFixedDOF; ++jDOF)
-	if (allFixedDOF[jDOF] == _fixedDOF[iDOF]) {
+	if (allFixedDOF[iDOF] == _fixedDOF[jDOF]) {
 	  std::ostringstream msg;
-	  msg << "Found multiple constraints on degrees of freedom at "
-	      << "point while setting up constraints for DirichletBoundary "
+	  msg << "Found multiple constraints on degrees of freedom at\n"
+	      << "point while setting up constraints for DirichletPoints\n"
 	      << "boundary condition '" << _label << "'.\n"
-	      << "Degree of freedom " << _fixedDOF[iDOF] 
+	      << "Degree of freedom " << _fixedDOF[jDOF] 
 	      << " is already constrained by another Dirichlet BC.";
 	  throw std::runtime_error(msg.str());
 	} // if

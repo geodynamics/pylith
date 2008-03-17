@@ -152,10 +152,12 @@ pylith::bc::DirichletPoints::setConstraintSizes(
     const int curNumConstraints = field->getConstraintDimension(_points[iPoint]);
     if (curNumConstraints + numFixedDOF > fiberDim) {
       std::ostringstream msg;
-      msg << "Found overly constrained point while setting up constraints for DirichletPoints "
-	  << "boundary condition '" << _label << "'.\n" << "Number of DOF at point "
-	  << _points[iPoint] << " is " << fiberDim << " and number of attempted constraints is "
-	  << curNumConstraints+numFixedDOF << ".";
+      msg
+	<< "Found overly constrained point while setting up constraints for\n"
+	<< "DirichletPoints boundary condition '" << _label << "'.\n"
+	<< "Number of DOF at point " << _points[iPoint] << " is " << fiberDim
+	<< "\nand number of attempted constraints is "
+	<< curNumConstraints+numFixedDOF << ".";
       throw std::runtime_error(msg.str());
     } // if
     _offsetLocal[iPoint] = curNumConstraints;
@@ -192,12 +194,12 @@ pylith::bc::DirichletPoints::setConstraints(
     const int numPrevious = _offsetLocal[iPoint];
     for (int iDOF=0; iDOF < numPrevious; ++iDOF)
       for (int jDOF=0; jDOF < numFixedDOF; ++jDOF)
-	if (allFixedDOF[jDOF] == _fixedDOF[iDOF]) {
+	if (allFixedDOF[iDOF] == _fixedDOF[jDOF]) {
 	  std::ostringstream msg;
-	  msg << "Found multiple constraints on degrees of freedom at "
-	      << "point while setting up constraints for DirichletPoints "
+	  msg << "Found multiple constraints on degrees of freedom at\n"
+	      << "point while setting up constraints for DirichletPoints\n"
 	      << "boundary condition '" << _label << "'.\n"
-	      << "Degree of freedom " << _fixedDOF[iDOF] 
+	      << "Degree of freedom " << _fixedDOF[jDOF] 
 	      << " is already constrained by another Dirichlet BC.";
 	  throw std::runtime_error(msg.str());
 	} // if
