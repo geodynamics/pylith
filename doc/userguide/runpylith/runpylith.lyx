@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1587,6 +1587,37 @@ db.values = [vp,vs,density] ; Set the names of the values in the database
 db.data = [5773.5, 3333.3, 2700.0] ; Set the values in the database
 \end_layout
 
+\begin_layout Subsubsection
+FixedDOFDB
+\end_layout
+
+\begin_layout Standard
+The FixedDOFDB is a a special case of the UniformDB for the Dirichlet boundary
+ conditions.
+ The values in the database are the ones requested by the Dirichlet boundary
+ conditions, 
+\family typewriter
+dof-0
+\family default
+, 
+\family typewriter
+dof-1
+\family default
+, and 
+\family typewriter
+dof-2
+\family default
+, and are all set to zero.
+ This makes it trivial to set displacements to zero on a boundary.
+ The examples discussed in Chapter 
+\begin_inset LatexCommand ref
+reference "cha:Tutorials"
+
+\end_inset
+
+ use this database.
+\end_layout
+
 \begin_layout Subsection
 \begin_inset LatexCommand label
 name "sub:SCECCVMH-Impl"
@@ -1699,6 +1730,48 @@ TODO: ADD STUFF HERE
 \end_layout
 
 \begin_layout Section
+Tips and Hints
+\end_layout
+
+\begin_layout Subsection
+Tips and Hints For Running PyLith
+\end_layout
+
+\begin_layout Itemize
+Examine the examples for a problem similar to the one you want to run and
+ dissect it in detail.
+\end_layout
+
+\begin_layout Itemize
+Start with a uniform resolution, coarse mesh to debug the problem setup.
+ Increase the resolution as necessary to resolve the solution fields of
+ interest (resolving stresses/strains may require a higher resolution than
+ that for resolving displacements).
+\end_layout
+
+\begin_layout Itemize
+Merge materials using the same material model.
+ This will result in only one VTK file for each material model rather than
+ several files.
+\end_layout
+
+\begin_layout Itemize
+If you encounter errors or warnings, use the --help, --help-components,
+ and --help-properties command line arguments to check the parameters to
+ make sure PyLith is using the parameters you intended.
+\end_layout
+
+\begin_layout Itemize
+Use the --petsc.log_summary, --petsc.ksp_monitor, and --petsc.ksp_view command
+ line arguments (or set them in a parameter file) to view PyLith performance
+ and monitor the convergence.
+\end_layout
+
+\begin_layout Itemize
+Turn on the journals (see the examples) to monitor the progress of the code.
+\end_layout
+
+\begin_layout Subsection
 Troubleshooting Problems Running PyLith
 \end_layout
 
