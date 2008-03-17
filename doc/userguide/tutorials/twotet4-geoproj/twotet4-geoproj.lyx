@@ -624,7 +624,9 @@ dislocation_sliprate.spatialdb
 \family default
 , 
 \family typewriter
-dislocation_sliptime.spatialdb
+dislocation_
+\newline
+sliptime.spatialdb
 \family default
 \size default
 ) provide a complete description of the problem, and we can then run this
