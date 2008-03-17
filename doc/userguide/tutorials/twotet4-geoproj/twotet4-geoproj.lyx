@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -114,7 +114,7 @@ reference "sec:Tutorial-Two-tet4"
 ).
  The primary difference is in how the material properties are assigned.
  For this tutorial, the physical properties come from the SCEC CVM-H database
- (described in 
+ (described in Section 
 \begin_inset LatexCommand ref
 reference "sub:SCECCVMH-Impl"
 
@@ -137,7 +137,7 @@ pylithapp.cfg
  The spatial databases should all use a Cartesian coordinate system, such
  as a geographic projection to insure interpolation is performed properly.
  Since all aspects of this problem other than the material database and
- the coordinate system are identical to the examples in 
+ the coordinate system are identical to the examples in Section 
 \begin_inset LatexCommand ref
 reference "sec:Tutorial-Two-tet4"
 
@@ -187,8 +187,13 @@ reference "sec:Tutorial-Two-tet4"
  Although we used the same coordinate system as the SCEC CVM-H, we could
  have also used any another geographic projection supported by spatialdata
  and Proj.4.
- See appendix SPATIALDATA FILE FORMAT for other examples of using geographic
- coordinates.
+ See Appendix 
+\begin_inset LatexCommand ref
+reference "sec:Spatialdata:SimpleIOAscii"
+
+\end_inset
+
+ for other examples of using geographic coordinates.
  
 \end_layout
 
@@ -555,7 +560,7 @@ dislocation-statevars.vtk
 \end_layout
 
 \begin_layout Standard
- Recall that we condition problems with the kinematic fault interface using
+Recall that we condition problems with the kinematic fault interface using
  the material properties.
  Since the material properties are being defined using the SCEC CVM-H database,
  this same database should be used as the material database for the faults.
