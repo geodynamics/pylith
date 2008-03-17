@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -69,6 +69,10 @@ Mesh ASCII format
 
 \begin_layout Itemize
 Dirichlet boundary conditions
+\end_layout
+
+\begin_layout Itemize
+Neumann boundary conditions
 \end_layout
 
 \begin_layout Itemize
@@ -229,8 +233,8 @@ pylithapp.timedependent Settings that control the problem, such as the total
 \begin_layout Description
 pylithapp.timedependent.materials Settings that control the material type,
  specify which material IDs are to be associated with a particular material
- type, and give the name of the spatial database containing physical properties 
- for the material.
+ type, and give the name of the spatial database containing physical properties
+  for the material.
  The quadrature information is also given.
 \end_layout
 

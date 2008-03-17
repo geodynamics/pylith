@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -52,8 +52,7 @@ name "sec:Tutorial-Two-tet4-geoproj"
 
 \end_inset
 
-Tutorial Using Two Tetrahedra with Georeferenced Coordinate Systems
-ted Mesh
+Tutorial Using Two Tetrahedra with Georeferenced Coordinate System Mesh
 \end_layout
 
 \begin_layout Standard
@@ -93,6 +92,10 @@ SimpleDB spatial database with geographic coordinates
 \end_layout
 
 \begin_layout Itemize
+SCEC CVM-H spatial database
+\end_layout
+
+\begin_layout Itemize
 FixedDOFDB spatial database
 \end_layout
 
@@ -110,33 +113,33 @@ reference "sec:Tutorial-Two-tet4"
 
 ).
  The primary difference is in how the material properties are assigned.
- For this tutorial, the physical properties come from the SCEC CVM-H database (described in 
+ For this tutorial, the physical properties come from the SCEC CVM-H database
+ (described in 
 \begin_inset LatexCommand ref
 reference "sub:SCECCVMH-Impl"
 
 \end_inset
+
 ).
- Using the SCEC SVM-H database is straightforward, requiring
- only a few modifications to 
+ Using the SCEC SVM-H database is straightforward, requiring only a few
+ modifications to 
 \family typewriter
 pylithapp.cfg
 \family default
 .
-
- Because the SCEC CVM-H database uses geographic coordinates, we must
- also use geographic coordinates in the PyLith mesh ASCII file and
- other spatial databases.
- Note that all of these geographic coordinate
- systems do not need to be the same. PyLith will automatically
- transform from one geographic coordinate system to another using the
- spatialdata package.
- The spatial databases should all use a Cartesian
- coordinate system, such as a geographic projection to insure
- interpolation is performed properly.
- Since all aspects of this
- problem other than the material database and the coordinate system
- are identical to the examples in \begin_inset LatexCommand ref
- reference "sec:Tutorial-Two-tet4"
+ Because the SCEC CVM-H database uses geographic coordinates, we must also
+ use geographic coordinates in the PyLith mesh ASCII file and other spatial
+ databases.
+ Note that all of these geographic coordinate systems do not need to be
+ the same.
+ PyLith will automatically transform from one geographic coordinate system
+ to another using the spatialdata package.
+ The spatial databases should all use a Cartesian coordinate system, such
+ as a geographic projection to insure interpolation is performed properly.
+ Since all aspects of this problem other than the material database and
+ the coordinate system are identical to the examples in 
+\begin_inset LatexCommand ref
+reference "sec:Tutorial-Two-tet4"
 
 \end_inset
 
@@ -178,15 +181,16 @@ reference "sec:Tutorial-Two-tet4"
 
 \end_inset
 
-, you will notice that, although the mesh topology is the same, the
- vertex coordinates are significantly different.
- We use zone 11 UTM
- coordinates with the NAD27 datum for the mesh.
- Although we used the
- same coordinate system as the SCEC CVM-H, we could have also used any
- another geographic projection supported by spatialdata and Proj.4.
- See appendix SPATIALDATA FILE FORMAT for other examples of using geographic coordinates.
- \end_layout
+, you will notice that, although the mesh topology is the same, the vertex
+ coordinates are significantly different.
+ We use zone 11 UTM coordinates with the NAD27 datum for the mesh.
+ Although we used the same coordinate system as the SCEC CVM-H, we could
+ have also used any another geographic projection supported by spatialdata
+ and Proj.4.
+ See appendix SPATIALDATA FILE FORMAT for other examples of using geographic
+ coordinates.
+ 
+\end_layout
 
 \begin_layout Standard
 \noindent
@@ -551,12 +555,15 @@ dislocation-statevars.vtk
 \end_layout
 
 \begin_layout Standard
- Recall that we condition problems with the kinematic fault interface using the material properties. Since the material properties are being defined using the SCEC CVM-H database,
- this same database should be used as the material database for the faults. This also applies to the AbsorbingDampers boundary condition.
+ Recall that we condition problems with the kinematic fault interface using
+ the material properties.
+ Since the material properties are being defined using the SCEC CVM-H database,
+ this same database should be used as the material database for the faults.
+ This also applies to the AbsorbingDampers boundary condition.
+\end_layout
 
 \begin_layout Standard
-The fault example requires three additional database files that were not
- needed for the simple displacement examples.
+The fault example requires three additional database files.
  The first file (
 \family typewriter
 dislocation_slip.spatialdb
@@ -564,13 +571,14 @@ dislocation_slip.spatialdb
 ) specifies 0.01 m of left-lateral fault slip for the entire fault.
  Since we specify a different amount of slip for every vertex on the fault,
  the data dimension is one.
- It is also necessary to specify the peak slip rate, which is done in the file
- 
+ It is also necessary to specify the peak slip rate, which is done in the
+ file 
 \family typewriter
 dislocation_sliprate.spatialdb
 \family default
 .
- The peak slip rate of 1.0e6 m/s generates a step-function for the slip time history.
+ The peak slip rate of 1.0e6 m/s generates a step-function for the slip time
+ history.
  Finally, we must provide the time at which slip begins.
  The elastic solution begins at 
 \begin_inset Formula $t=-dt$
@@ -611,9 +619,7 @@ dislocation_sliprate.spatialdb
 \family default
 , 
 \family typewriter
-dislocation_
-\newline
-sliptime.spatialdb
+dislocation_sliptime.spatialdb
 \family default
 \size default
 ) provide a complete description of the problem, and we can then run this
