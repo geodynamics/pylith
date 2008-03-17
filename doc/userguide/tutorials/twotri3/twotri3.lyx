@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -223,8 +223,8 @@ pylithapp.timedependent Settings that control the problem, such as the total
 \begin_layout Description
 pylithapp.timedependent.materials Settings that control the material type,
  specify which material IDs are to be associated with a particular material
- type, and give the name of the spatial database containing the physical 
- properties for the material.
+ type, and give the name of the spatial database containing the physical
+  properties for the material.
  The quadrature information is also given.
 \end_layout
 
@@ -340,7 +340,7 @@ axialdisp.cfg
  The format of all spatial database files is similar.
  In this case, the desired displacement values are given at two points (lower
  left and upper right).
- Since data is being specified at points (rather than being uniform over
+ Since data are being specified at points (rather than being uniform over
  the mesh, for example), the data dimension is one.
 \end_layout
 
@@ -786,7 +786,7 @@ The fault example requires three additional database files that were not
 dislocation_slip.spatialdb
 \family default
 ) specifies 0.01 m of left-lateral fault slip for the entire fault.
- The data dimension is zero since the same data is applied to all points
+ The data dimension is zero since the same data are applied to all points
  in the set.
  It is also necessary to specify the peak slip rate, which is done in the
  file 

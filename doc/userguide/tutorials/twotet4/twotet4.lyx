@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -272,7 +272,8 @@ matprops.spatialdb
 \family default
 .
  For this example, values describing three-dimensional elastic material
- properties are given at a single point, resulting in uniform material properties.
+ properties are given at a single point, resulting in uniform material propertie
+s.
 \end_layout
 
 \begin_layout Subsection
@@ -300,7 +301,8 @@ pylithapp.timedependent Specifies an implicit formulation for the problem
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.bc.bc Defines which degrees of freedom are being constrained (
+pylithapp.timedependent.bc.bc Defines which degrees of freedom are being constraine
+d (
 \family typewriter
 x
 \family default
@@ -317,7 +319,8 @@ z
 twotet4.mesh
 \family default
 ) defining the points desired, assigns a label to the boundary condition
- set, and gives the name of the spatial database defining the boundary conditions (
+ set, and gives the name of the spatial database defining the boundary condition
+s (
 \family typewriter
 axialdisp.spatialdb
 \family default
@@ -343,7 +346,8 @@ axialdisp-statevars.vtk
 \end_layout
 
 \begin_layout Standard
-The values for the Dirichlet boundary conditions are described in the file 
+The values for the Dirichlet boundary conditions are described in the file
+ 
 \family typewriter
 axialdisp.spatialdb
 \family default
@@ -353,8 +357,8 @@ axialdisp.cfg
 \family default
 .
  The format of all spatial database files is similar.
- Because data is being specified using two control points (rather than being uniform over
- the mesh, for example), the data dimension is one.
+ Because data are being specified using two control points (rather than
+ being uniform over the mesh, for example), the data dimension is one.
 \end_layout
 
 \begin_layout Standard
@@ -548,9 +552,9 @@ twotet4.mesh
 \family default
 ) defining the points desired, and assigns a label to the boundary condition
  set.
- Rather than specifying a spatial database file to define
- the boundary conditions, we use the default spatial database (FixedDOFDB) for 
- the Dirichlet boundary condition, which sets the displacements to zero.
+ Rather than specifying a spatial database file to define the boundary condition
+s, we use the default spatial database (FixedDOFDB) for  the Dirichlet boundary
+ condition, which sets the displacements to zero.
 \end_layout
 
 \begin_layout Description
@@ -600,13 +604,14 @@ dislocation_slip.spatialdb
 ) specifies 0.01 m of left-lateral fault slip for the entire fault.
  The data dimension is zero since the same data is applied to all points
  in the set.
- It is also necessary to specify the peak slip rate, which is done in the file
- 
+ It is also necessary to specify the peak slip rate, which is done in the
+ file 
 \family typewriter
 dislocation_sliprate.spatialdb
 \family default
 .
- The peak slip rate of 1.0e6 m/s creates a step function for the slip time history.
+ The peak slip rate of 1.0e6 m/s creates a step function for the slip time
+ history.
  Finally, we must provide the time at which slip begins.
  The elastic solution begins at 
 \begin_inset Formula $t=-dt$
