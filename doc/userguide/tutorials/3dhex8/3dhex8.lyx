@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -707,7 +707,9 @@ shearxy-statevars-lower_info.vtk
  material.
  The final file (
 \family typewriter
-shearxy-groundsurf_t0000000.vtk
+shearxy-groundsurf_
+\newline
+t0000000.vtk
 \family default
 ) is analagous to 
 \family typewriter
@@ -1073,7 +1075,9 @@ dislocation-statevars-lower_info.vtk
  material.
  The sixth file (
 \family typewriter
-dislocation-groundsurf_t0000000.vtk
+dislocation-ground
+\newline
+surf_t0000000.vtk
 \family default
 ) is analagous to 
 \family typewriter
