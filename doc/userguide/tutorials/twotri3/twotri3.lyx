@@ -202,7 +202,11 @@ pylithapp.cfg
 \family default
  files, as described later, and then those files are placed on the command
  line.
- The settings contained in pylithapp.cfg for this problem consist of:
+ The settings contained in 
+\family typewriter
+pylithapp.cfg
+\family default
+ for this problem consist of:
 \end_layout
 
 \begin_layout Description

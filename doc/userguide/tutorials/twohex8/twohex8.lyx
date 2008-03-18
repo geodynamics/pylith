@@ -586,7 +586,7 @@ Shear Displacement Example
 \end_layout
 
 \begin_layout Standard
-The second example problem is shearing of the mesh in the y-direction.
+The second example problem is shearing of the mesh in the y direction.
  Parameter settings that override or augment those in 
 \family typewriter
 pylithapp.cfg
@@ -1066,12 +1066,15 @@ reference "fig:twohex8-disloc"
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
 wide false
 sideways false
 status open
 
 \begin_layout Standard
+\noindent
 \align center
 \begin_inset Graphics
 	filename figs/dislocation.jpg

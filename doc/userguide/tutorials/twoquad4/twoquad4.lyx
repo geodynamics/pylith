@@ -1047,7 +1047,7 @@ Kinematic Fault Slip Example
 \end_layout
 
 \begin_layout Standard
-The next example problem is left-lateral fault slip applied between the
+The next example problem is a left-lateral fault slip applied between the
  two square cells using kinematic cohesive cells.
  The left and right boundaries are held fixed in the x and y directions.
  Parameter settings that override or augment those in 
