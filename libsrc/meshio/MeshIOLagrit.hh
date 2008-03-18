@@ -86,6 +86,18 @@ public :
    */
   bool flipEndian(void) const;
 
+  /** Set flag indicating LaGriT Pset files use 32-bit integers.
+   *
+   * @param flag True if using 32-bit integers, false if using 64-bit integers.
+   */
+  void ioInt32(const bool flag);
+
+  /** Get flag indicating LaGriT Pset files use 32-bit integers.
+   *
+   * @returns True if using 32-bit integers, false if using 64-bit integers.
+   */
+  bool ioInt32(void) const;
+
   /** Set Fortran record header size flag.
    *
    * @param flag True if Fortran record header size is 32-bit, false if 64-bit.
@@ -146,6 +158,7 @@ private :
   std::string _filenamePset; ///< Name of PSET file.
   bool _writeAscii; ///< True if writing ASCII, false if writing binary.
   bool _flipEndian; ///< True if need to change endian when reading/writing.
+  bool _ioInt32; ///< True if using 64-bit integers in Pset files.
   bool _isRecordHeader32Bit; ///< True if Fortran record header is 32-bit.
 
 }; // MeshIOLagrit

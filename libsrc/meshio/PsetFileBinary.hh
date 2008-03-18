@@ -34,10 +34,12 @@ public :
    *
    * @param filename Name of Pset file
    * @param flipEndian Flip endian type when reading/writing.
+   * @param ioInt32 True if Pset file uses 64-bit integers.
    * @param isRecordHeader32Bit True if Fortran record header size is 32-bit.
    */
   PsetFileBinary(const char* name,
 		 const bool flipEndian,
+		 const bool ioInt32,
 		 const bool isRecordHeader32Bit);
 
   /// Default destructor 
@@ -81,16 +83,32 @@ private :
    * @param fin Input file stream.
    * @param group Point set
    */
-  void _readPset(std::ifstream& fin,
-		 Pset* group);
+  void _readPset32(std::ifstream& fin,
+		   Pset* group);
 
   /** Write point set.
    *
    * @param fout Output file stream.
    * @param group Point set
    */
-  void _writePset(std::ofstream& fout,
-		  const Pset& group);
+  void _writePset32(std::ofstream& fout,
+		    const Pset& group);
+
+  /** Read point set.
+   *
+   * @param fin Input file stream.
+   * @param group Point set
+   */
+  void _readPset64(std::ifstream& fin,
+		   Pset* group);
+
+  /** Write point set.
+   *
+   * @param fout Output file stream.
+   * @param group Point set
+   */
+  void _writePset64(std::ofstream& fout,
+		    const Pset& group);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
@@ -101,6 +119,7 @@ private :
   int _recordHeaderSize; ///< Size of Fortran record header in bytes.
 
   bool _flipEndian; ///< True if need to change endian when reading/writing.
+  bool _ioInt32; ///< True if I/O uses pset file uses 32-bit integers.
 
 }; // PsetFileInBinary
 

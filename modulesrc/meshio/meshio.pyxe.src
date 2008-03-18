@@ -553,6 +553,50 @@ cdef class MeshIOLagrit(MeshIO):
       return MeshIOLagrit_flipEndian_get(self.thisptr)
 
 
+  property ioInt32:
+    def __set__(self, flag):
+      """Set flip endian flag."""
+      # create shim for method 'ioInt32'
+      #embed{ void MeshIOLagrit_ioInt32_set(void* objVptr, int flag)
+      try {
+        assert(0 != objVptr);
+        ((pylith::meshio::MeshIOLagrit*) objVptr)->ioInt32(flag);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      MeshIOLagrit_ioInt32_set(self.thisptr, flag)
+
+    def __get__(self):
+      """Get flip endian flag."""
+      # create shim for method 'ioInt32'
+      #embed{ int MeshIOLagrit_ioInt32_get(void* objVptr)
+      int result = 0;
+      try {
+        assert(0 != objVptr);
+        result = ((pylith::meshio::MeshIOLagrit*) objVptr)->ioInt32();
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return MeshIOLagrit_ioInt32_get(self.thisptr)
+
+
   property isRecordHeader32Bit:
     def __set__(self, flag):
       """Set Fortran record header size flag."""
