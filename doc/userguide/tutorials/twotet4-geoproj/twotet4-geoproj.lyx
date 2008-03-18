@@ -105,7 +105,7 @@ Overview
 
 \begin_layout Standard
 This tutorial is virtually identical to the other tutorial using two linear
- tetrahedra (
+ tetrahedra (See Section 
 \begin_inset LatexCommand ref
 reference "sec:Tutorial-Two-tet4"
 
@@ -302,7 +302,11 @@ This problem has some unique aspects compared to the other tutorials.
  First, all of the other tutorials use a Cartesian coordinate system, while
  this one uses a geographic coordinate system.
  In addition to using different vertex coordinates, we also define the coordinat
-e system for the mesh in pylithapp.cfg:
+e system for the mesh in 
+\family typewriter
+pylithapp.cfg
+\family default
+:
 \end_layout
 
 \begin_layout LyX-Code
@@ -404,14 +408,25 @@ vx53
 \family default
  data files, and must be changed to the location specified by the user when
  the package is installed.
- The package may be obtained from http://structure.harvard.edu/cvm-h.
+ The package may be obtained from 
+\begin_inset LatexCommand htmlurl
+name "Harvard's Structural Geology and Tectonics"
+target "structure.harvard.edu/cvm-h"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
 The final difference with the other examples is in the description of the
  spatial databases.
  They must also use geographic coordinates.
- Examining dislocation_slip.spatialdb, we find:
+ Examining 
+\family typewriter
+dislocation_slip.spatialdb
+\family default
+, we find:
 \end_layout
 
 \begin_layout LyX-Code
@@ -467,7 +482,7 @@ Kinematic Fault Slip Example
 \end_layout
 
 \begin_layout Standard
-This example problem is left-lateral fault slip applied between the two
+This example problem is a left-lateral fault slip applied between the two
  tetrahedral cells using kinematic cohesive cells.
  Note that we vary the amount of fault slip for each vertex with this example,
  as described in 

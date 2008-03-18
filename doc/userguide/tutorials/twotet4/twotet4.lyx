@@ -138,9 +138,9 @@ reference "cha:File-Formats"
 .
  This file describes the dimensionality of the problem (1D, 2D, or 3D),
  the coordinates of the vertices (nodes), the vertices composing each cell
- (element), the material ID to be associated with each cell, and then provides
- groups of vertices that may be used to define faults or surfaces to which
- boundary conditions may be applied.
+ (element), and the material ID to be associated with each cell.
+ It then provides groups of vertices that may be used to define faults or
+ surfaces to which boundary conditions may be applied.
 \end_layout
 
 \begin_layout Standard
@@ -495,7 +495,7 @@ Kinematic Fault Slip Example
 \end_layout
 
 \begin_layout Standard
-The next example problem is left-lateral fault slip applied between the
+The next example problem is a left-lateral fault slip applied between the
  two tetrahedral cells using kinematic cohesive cells.
  The vertices away from the fault are held fixed in the 
 \family typewriter
@@ -509,7 +509,7 @@ y
 \family typewriter
 z
 \family default
--directions.
+ directions.
  Parameter settings that override or augment those in 
 \family typewriter
 pylithapp.cfg
@@ -602,7 +602,7 @@ The fault example requires three additional database files that were not
 dislocation_slip.spatialdb
 \family default
 ) specifies 0.01 m of left-lateral fault slip for the entire fault.
- The data dimension is zero since the same data is applied to all points
+ The data dimension is zero since the same data are applied to all points
  in the set.
  It is also necessary to specify the peak slip rate, which is done in the
  file 

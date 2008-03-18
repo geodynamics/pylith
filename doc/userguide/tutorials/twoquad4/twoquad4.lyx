@@ -973,7 +973,7 @@ x
 \family typewriter
 y
 \family default
--components of traction applied at each integration point.
+ components of traction applied at each integration point.
  All of the 
 \family typewriter
 .vtk
