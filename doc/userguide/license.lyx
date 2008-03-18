@@ -1,5 +1,5 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
-\lyxformat 245
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
 \begin_document
 \begin_header
 \textclass book
@@ -8,13 +8,21 @@
 \end_preamble
 \language english
 \inputencoding latin1
-\fontscheme default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
 \graphics default
 \paperfontsize default
 \spacing single
 \papersize default
 \use_geometry true
 \use_amsmath 1
+\use_esint 0
 \cite_engine basic
 \use_bibtopic false
 \paperorientation portrait
@@ -32,6 +40,7 @@
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
+\author "" 
 \end_header
 
 \begin_body
@@ -41,7 +50,7 @@ PyLith Software License
 \end_layout
 
 \begin_layout Standard
-Copyright (C) 2004-2007 Rensselaer Polytechnic Institute
+Copyright (C) 2004-2008 Rensselaer Polytechnic Institute
 \end_layout
 
 \begin_layout Standard

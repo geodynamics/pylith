@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -430,7 +430,7 @@ Parameter
 \align center
 
 \series bold
-Name in Spatial Database 
+Name in Spatial Database
 \end_layout
 
 \end_inset
@@ -780,7 +780,7 @@ status open
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="3">
 <features>
-<column alignment="left" valignment="top" leftline="true" rightline="true" width="0.68in">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="0.68in">
 <column alignment="left" valignment="top" leftline="true" rightline="true" width="2.85in">
 <column alignment="center" valignment="top" leftline="true" rightline="true" width="2.47in">
 <row topline="true" bottomline="true">
@@ -1088,7 +1088,7 @@ Note the use of engineering strain measures (
 \end_inset
 
 ) in Equation 
-\begin_inset LatexCommand ref
+\begin_inset LatexCommand vpageref
 reference "eq:5"
 
 \end_inset
