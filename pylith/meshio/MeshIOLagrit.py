@@ -41,6 +41,7 @@ class MeshIOLagrit(MeshIO):
     ## @li \b filename_gmv Name of mesh GMV file.
     ## @li \b filename_pset Name of mesh PSET file.
     ## @li \b flip_endian Flip endian type when reading/writing binary files.
+    ## @li \b io_int32 PSET files use 64-bit integers.
     ## @li \b record_header_32bit Fortran record header is 32-bit.
     ##
     ## \b Facilities
@@ -58,7 +59,11 @@ class MeshIOLagrit(MeshIO):
     flipEndian.meta['tip'] = "Flip endian type when reading/writing binary " \
                              "files."
 
-    isRecordHeader32Bit = pyre.inventory.bool("record_header_32bit", default=True)
+    ioInt32 = pyre.inventory.bool("io_int32", default=True)
+    ioInt32.meta['tip'] = "PSTE files use 32-bit integers."
+
+    isRecordHeader32Bit = pyre.inventory.bool("record_header_32bit",
+                                              default=True)
     isRecordHeader32Bit.meta['tip'] = "Fortran record header is 32-bit."
 
     from spatialdata.geocoords.CSCart import CSCart
@@ -88,6 +93,7 @@ class MeshIOLagrit(MeshIO):
     self.filenamePset = self.inventory.filenamePset
     self.coordsys = self.inventory.coordsys
     self.flipEndian = self.inventory.flipEndian
+    self.ioInt32 = self.inventory.ioInt32
     self.isRecordHeader32Bit = self.inventory.isRecordHeader32Bit
     return
 
@@ -104,6 +110,7 @@ class MeshIOLagrit(MeshIO):
     self.cppHandle.filenameGmv = self.filenameGmv
     self.cppHandle.filenamePset = self.filenamePset
     self.cppHandle.flipEndian = self.flipEndian
+    self.cppHandle.ioInt32 = self.ioInt32
     self.cppHandle.isRecordHeader32Bit = self.isRecordHeader32Bit
     return
   

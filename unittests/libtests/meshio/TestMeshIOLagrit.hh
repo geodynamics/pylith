@@ -43,6 +43,8 @@ class pylith::meshio::TestMeshIOLagrit : public TestMeshIO
   CPPUNIT_TEST( testFilename );
   CPPUNIT_TEST( testReadTetAscii );
   CPPUNIT_TEST( testReadTetBinary );
+  CPPUNIT_TEST( testReadTetBinary32on64 );
+  CPPUNIT_TEST( testReadTetBinary64 );
   CPPUNIT_TEST( testOrientAsciiTet );
   CPPUNIT_TEST( testOrientBinaryTet );
   CPPUNIT_TEST_SUITE_END();
@@ -68,6 +70,13 @@ public :
   /// Test read() for mesh with binary files.
   void testReadTetBinary(void);
 
+  /// Test read() for mesh with binary files for 32-bit LaGrit built 
+  /// on 64-bit platform.
+  void testReadTetBinary32on64(void);
+
+  /// Test read() for mesh with binary files for 64-bit LaGriT.
+  void testReadTetBinary64(void);
+
   /// Test _orientCellsAscii with tet cells.
   void testOrientAsciiTet(void);
 
@@ -82,10 +91,14 @@ private :
    * @param data Mesh data
    * @param filenameGmv Name of mesh GMV file to read
    * @param filenamePset Name of mesh Pset file to read
+   * @param ioInt32 True if Pset uses 32-bit integers.
+   * @param isRecordHeader32Bit True if Fortran record headers are 32-bit.
    */
   void _testRead(const MeshData& data,
 		 const char* filenameGmv,
-		 const char* filenamePset);
+		 const char* filenamePset,
+		 const bool ioInt32 =true,
+		 const bool isRecordHeader32Bit =true);
 
 }; // class TestMeshIOLagrit
 

@@ -70,6 +70,20 @@ pylith::meshio::MeshIOLagrit::flipEndian(void) const {
   return _flipEndian;
 }
 
+// Set flag indicating LaGriT Pset files use 32-bit integers.
+inline
+void
+pylith::meshio::MeshIOLagrit::ioInt32(const bool flag) {
+  _ioInt32 = flag;
+}
+
+// Get flag indicating LaGriT Pset files use 32-bit integers.
+inline
+bool
+pylith::meshio::MeshIOLagrit::ioInt32(void) const {
+  return _ioInt32;
+}
+
 // Set Fortran record header size flag.
 inline
 void

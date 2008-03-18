@@ -95,15 +95,45 @@ pylith::meshio::TestMeshIOLagrit::testReadTetBinary(void)
 } // testReadTetBinary
 
 // ----------------------------------------------------------------------
+// Test read() for mesh with binary files.
+void
+pylith::meshio::TestMeshIOLagrit::testReadTetBinary32on64(void)
+{ // testReadTetBinary32on64
+  MeshDataLagritTet data;
+  const char* filenameGmv = "data/cube2_binary_32on64.gmv";
+  const char* filenamePset = "data/cube2_binary_32on64.pset";
+  const bool ioInt32 = true;
+  const bool isRecordHeader32Bit = false;
+  _testRead(data, filenameGmv, filenamePset, ioInt32, isRecordHeader32Bit);
+} // testReadTetBinary32on64
+
+// ----------------------------------------------------------------------
+// Test read() for mesh with binary files using 64-bit LaGriT.
+void
+pylith::meshio::TestMeshIOLagrit::testReadTetBinary64(void)
+{ // testReadTetBinary64
+  MeshDataLagritTet data;
+  const char* filenameGmv = "data/cube2_binary_64.gmv";
+  const char* filenamePset = "data/cube2_binary_64.pset";
+  const bool ioInt32 = false;
+  const bool isRecordHeader32Bit = false;
+  _testRead(data, filenameGmv, filenamePset, ioInt32, isRecordHeader32Bit);
+} // testReadTetBinary64
+
+// ----------------------------------------------------------------------
 // Build mesh, perform read(), and then check values.
 void
 pylith::meshio::TestMeshIOLagrit::_testRead(const MeshData& data,
 					    const char* filenameGmv,
-					    const char* filenamePset)
+					    const char* filenamePset,
+					    const bool ioInt32,
+					    const bool isRecordHeader32Bit)
 { // _testRead
   MeshIOLagrit iohandler;
   iohandler.filenameGmv(filenameGmv);
   iohandler.filenamePset(filenamePset);
+  iohandler.ioInt32(ioInt32);
+  iohandler.isRecordHeader32Bit(isRecordHeader32Bit);
   
   // LaGriT file was created on little endian machine, so flip endian if
   // running test on big endian machine.

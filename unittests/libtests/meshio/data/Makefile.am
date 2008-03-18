@@ -15,6 +15,10 @@ noinst_DATA = \
 	cube2_ascii.pset \
 	cube2_binary.gmv \
 	cube2_binary.pset \
+	cube2_binary_32on64.gmv \
+	cube2_binary_32on64.pset \
+	cube2_binary_64.gmv \
+	cube2_binary_64.pset \
 	mesh3DIndexOne.txt \
 	twotri3.exo \
 	twoquad4.exo \

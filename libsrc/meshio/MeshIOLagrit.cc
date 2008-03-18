@@ -32,6 +32,7 @@ pylith::meshio::MeshIOLagrit::MeshIOLagrit(void) :
   _filenameGmv(""),
   _filenamePset(""),
   _flipEndian(false),
+  _ioInt32(true),
   _isRecordHeader32Bit(true)
 { // constructor
 } // constructor
@@ -83,7 +84,9 @@ pylith::meshio::MeshIOLagrit::_read(void)
       filein.read(&groups);
     } else {
       PsetFileBinary filein(_filenamePset.c_str(), 
-			    _flipEndian, _isRecordHeader32Bit);
+			    _flipEndian,
+			    _ioInt32,
+			    _isRecordHeader32Bit);
       filein.read(&groups);
     } // if/else
     GroupPtType type = VERTEX;

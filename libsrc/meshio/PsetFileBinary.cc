@@ -10,6 +10,8 @@
 // ======================================================================
 //
 
+#include <portinfo>
+
 #include "PsetFileBinary.hh" // implementation of class methods
 
 #include "BinaryIO.hh" // USES readString()
@@ -24,6 +26,8 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::exception
 
+#include <iostream>
+
 // ----------------------------------------------------------------------
 const char* pylith::meshio::PsetFileBinary::_HEADER = "pset unformatted";
 
@@ -31,10 +35,12 @@ const char* pylith::meshio::PsetFileBinary::_HEADER = "pset unformatted";
 // Constructor with name of Pset file.
 pylith::meshio::PsetFileBinary::PsetFileBinary(const char* filename,
 					       const bool flipEndian,
+					       const bool ioInt32,
 					       const bool isRecordHeader32Bit) :
   PsetFile(filename),
+  _recordHeaderSize(isRecordHeader32Bit ? 4 : 8),
   _flipEndian(flipEndian),
-  _recordHeaderSize(isRecordHeader32Bit ? 4 : 8)
+  _ioInt32(ioInt32)
 { // constructor
 } // constructor
 
@@ -67,20 +73,37 @@ pylith::meshio::PsetFileBinary::read(std::vector<Pset>* groups)
 
   _readHeader(fin);
 
-  // Read number of psets
-  int numGroups = 0;
-  fin.read((char*) &numGroups, sizeof(int));
-  if (_flipEndian)
-    BinaryIO::swapByteOrder((char*) &numGroups, 1, sizeof(int));
-  assert(numGroups >= 0);
-  groups->resize(numGroups);
-  std::string extra = BinaryIO::readString(fin, 2*_recordHeaderSize);
+  if (_ioInt32) {
+    // Read number of psets
+    int numGroups = 0;
+    fin.read((char*) &numGroups, sizeof(int));
+    if (_flipEndian)
+      BinaryIO::swapByteOrder((char*) &numGroups, 1, sizeof(int));
+    assert(numGroups >= 0);
+    groups->resize(numGroups);
+    std::string extra = BinaryIO::readString(fin, 2*_recordHeaderSize);
 
-  // Read groups
-  info << journal::at(__HERE__)
-       << "Reading " << numGroups << " point sets from file." << journal::endl;
-  for (int iGroup=0; iGroup < numGroups; ++iGroup)
-    _readPset(fin, &(*groups)[iGroup]);
+    // Read groups
+    info << journal::at(__HERE__)
+	 << "Reading " << numGroups << " point sets from file." << journal::endl;
+    for (int iGroup=0; iGroup < numGroups; ++iGroup)
+      _readPset32(fin, &(*groups)[iGroup]);
+  } else {
+    // Read number of psets
+    long numGroups = 0;
+    fin.read((char*) &numGroups, sizeof(numGroups));
+    if (_flipEndian)
+      BinaryIO::swapByteOrder((char*) &numGroups, 1, sizeof(numGroups));
+    assert(numGroups >= 0);
+    groups->resize(numGroups);
+    std::string extra = BinaryIO::readString(fin, 2*_recordHeaderSize);
+
+    // Read groups
+    info << journal::at(__HERE__)
+	 << "Reading " << numGroups << " point sets from file." << journal::endl;
+    for (int iGroup=0; iGroup < numGroups; ++iGroup)
+      _readPset64(fin, &(*groups)[iGroup]);
+  } // if/else
 } // read
 
 // ----------------------------------------------------------------------
@@ -104,17 +127,31 @@ pylith::meshio::PsetFileBinary::write(const std::vector<Pset>& groups)
 
   _writeHeader(fout);
 
-  // Write number of groups
-  int numGroups = groups.size();
-  if (_flipEndian)
-    BinaryIO::swapByteOrder((char*) &numGroups, 1, sizeof(numGroups));
-  fout.write((char*) &numGroups, sizeof(numGroups));
-
-  // Write groups
-  info << journal::at(__HERE__)
-       << "Writing " << numGroups << " point sets to file." << journal::endl;
-  for (int iGroup=0; iGroup < numGroups; ++iGroup)
-    _writePset(fout, groups[iGroup]);
+  if (_ioInt32) {
+    // Write number of groups
+    int numGroups = groups.size();
+    if (_flipEndian)
+      BinaryIO::swapByteOrder((char*) &numGroups, 1, sizeof(numGroups));
+    fout.write((char*) &numGroups, sizeof(numGroups));
+    
+    // Write groups
+    info << journal::at(__HERE__)
+	 << "Writing " << numGroups << " point sets to file." << journal::endl;
+    for (int iGroup=0; iGroup < numGroups; ++iGroup)
+      _writePset32(fout, groups[iGroup]);
+  } else {
+    // Write number of groups
+    long numGroups = groups.size();
+    if (_flipEndian)
+      BinaryIO::swapByteOrder((char*) &numGroups, 1, sizeof(numGroups));
+    fout.write((char*) &numGroups, sizeof(numGroups));
+    
+    // Write groups
+    info << journal::at(__HERE__)
+	 << "Writing " << numGroups << " point sets to file." << journal::endl;
+    for (int iGroup=0; iGroup < numGroups; ++iGroup)
+      _writePset64(fout, groups[iGroup]);
+  } // if/else
 } // write
 
 // ----------------------------------------------------------------------
@@ -144,9 +181,9 @@ pylith::meshio::PsetFileBinary::_writeHeader(std::ofstream& fout)
 
 // ----------------------------------------------------------------------
 void
-pylith::meshio::PsetFileBinary::_readPset(std::ifstream& fin,
-					 Pset* group)
-{ // _readPset
+pylith::meshio::PsetFileBinary::_readPset32(std::ifstream& fin,
+					    Pset* group)
+{ // _readPset32
   assert(0 != group);
 
   journal::info_t info("psetfile");
@@ -178,13 +215,13 @@ pylith::meshio::PsetFileBinary::_readPset(std::ifstream& fin,
 
   info << journal::at(__HERE__)
        << "Done." << journal::endl;
-} // _readPset
+} // _readPset32
 
 // ----------------------------------------------------------------------
 void
-pylith::meshio::PsetFileBinary::_writePset(std::ofstream& fout,
+pylith::meshio::PsetFileBinary::_writePset32(std::ofstream& fout,
 					   const Pset& group)
-{ // _writePset
+{ // _writePset32
   journal::info_t info("psetfile");
   const int size = group.points.size();
   info << journal::at(__HERE__)
@@ -211,7 +248,82 @@ pylith::meshio::PsetFileBinary::_writePset(std::ofstream& fout,
 
   info << journal::at(__HERE__)
        << "Done." << journal::endl;
-} // _writePset
+} // _writePset32
+
+// ----------------------------------------------------------------------
+void
+pylith::meshio::PsetFileBinary::_readPset64(std::ifstream& fin,
+					    Pset* group)
+{ // _readPset64
+  assert(0 != group);
+
+  journal::info_t info("psetfile");
+
+  group->name = BinaryIO::readString(fin, 32);
+
+  long id = 0;
+  fin.read((char*) &id, sizeof(id));
+  if (_flipEndian)
+    BinaryIO::swapByteOrder((char*) &id, 1, sizeof(id));
+
+  long size = 0;
+  fin.read((char*) &size, sizeof(size));
+  if (_flipEndian)
+    BinaryIO::swapByteOrder((char*) &size, 1, sizeof(size));
+  assert(size >= 0);
+  std::string extra = BinaryIO::readString(fin, 2*_recordHeaderSize);
+  info << journal::at(__HERE__)
+       << "Reading point set '" << group->name << "' with " << size
+       << " points." << journal::endl;
+
+  group->points.resize(size);
+  std::valarray<long> pointsIO(size);
+  fin.read((char*) &pointsIO[0], size*sizeof(long));
+  extra = BinaryIO::readString(fin, 2*_recordHeaderSize);
+  if (_flipEndian)
+    BinaryIO::swapByteOrder((char*) &pointsIO[0], size, sizeof(long));
+
+  for (int i=0; i < size; ++i)
+    group->points[i] = pointsIO[i];
+
+  group->points -= 1; // use zero base
+
+  info << journal::at(__HERE__)
+       << "Done." << journal::endl;
+} // _readPset64
+
+// ----------------------------------------------------------------------
+void
+pylith::meshio::PsetFileBinary::_writePset64(std::ofstream& fout,
+					     const Pset& group)
+{ // _writePset64
+  journal::info_t info("psetfile");
+  const int size = group.points.size();
+  info << journal::at(__HERE__)
+       << "Writing point set '" << group.name << "' with " << size
+       << " points." << journal::endl;
+
+  fout.write((char*) group.name.c_str(), 32);
+
+  long id = group.id;
+  if (_flipEndian)
+    BinaryIO::swapByteOrder((char*) &id, 1, sizeof(id));
+  fout.write((char*) &id, sizeof(int));
+
+  long sizeIO = size;
+  if (_flipEndian)
+    BinaryIO::swapByteOrder((char*) &sizeIO, 1, sizeof(sizeIO));
+  fout.write((char*) &sizeIO, sizeof(int));
+
+  std::valarray<long> pointsIO(size);
+  pointsIO += 1; // switch from zero base to one base
+  if (_flipEndian)
+    BinaryIO::swapByteOrder((char*) &pointsIO[0], size, sizeof(long));
+  fout.write((char*) &pointsIO[0], size*sizeof(long));
+
+  info << journal::at(__HERE__)
+       << "Done." << journal::endl;
+} // _writePset64
 
 
 // End of file 
