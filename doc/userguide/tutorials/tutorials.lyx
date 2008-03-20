@@ -177,6 +177,12 @@ preview false
 \end_inset
 
 
+\begin_inset Include \input{3dtet4/3dtet4.lyx}
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \end_body

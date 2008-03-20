@@ -48,11 +48,11 @@
 
 \begin_layout Section
 \begin_inset LatexCommand label
-name "sec:Tutorial-3d-hex8"
+name "sec:Tutorial-3d-tet4"
 
 \end_inset
 
-Tutorial Using Hexahedral Mesh Created by CUBIT
+Tutorial Using Tetrahedral Mesh Created by LaGriT
 \end_layout
 
 \begin_layout Standard
@@ -64,7 +64,7 @@ Quasi-static solution
 \end_layout
 
 \begin_layout Itemize
-CUBIT mesh format
+LaGriT mesh format
 \end_layout
 
 \begin_layout Itemize
@@ -88,7 +88,7 @@ VTK output
 \end_layout
 
 \begin_layout Itemize
-Trilinear hexahedral cells
+Linear tetrahedral cells
 \end_layout
 
 \begin_layout Itemize
@@ -105,16 +105,16 @@ Overview
 
 \begin_layout Standard
 This tutorial is a simple 3D example of a quasi-static finite element problem.
- It is a mesh composed of 144 trilinear hexahedra subject to displacement
+ It is a mesh composed of 852 linear tetrahedra subject to displacement
  boundary conditions.
  This example demonstrates the usage of the 
 \begin_inset LatexCommand htmlurl
-name "CUBIT mesh generation package"
-target "cubit.sandia.gov"
+name "LaGriT mesh generation package"
+target "lagrit.lanl.gov"
 
 \end_inset
 
- to create a mesh, as well as describing how to use a CUBIT-generated mesh
+ to create a mesh, as well as describing how to use a LaGriT-generated mesh
  in PyLith.
  In this tutorial, we will walk through the steps necessary to construct,
  run, and view two problems that use the same mesh.
@@ -129,128 +129,132 @@ Mesh Generation and Description
 \begin_layout Standard
 The mesh for these examples is a simple rectangular solid (Figure 
 \begin_inset LatexCommand ref
-reference "fig:3dhex8-mesh"
+reference "fig:3dtet4-mesh"
 
 \end_inset
 
 ).
- Although it would be possible to generate this mesh by hand, it is much
- simpler to use a mesh generation package, and we use the CUBIT mesh generation
- package for this example.
- For this simple example, we provide documented journal files in 
+ This mesh would be quite difficult to generate by hand, so we use the LaGriT
+ mesh generation package.
+ For this example, we provide a documented journal file in 
 \family typewriter
-examples/3d/hex8.
+examples/3d/tet4.
 
 \family default
- Investigation of these journal files should provide some insight into how
- to use CUBIT with PyLith.
- For more detailed information on using CUBIT, refer to the 
+ Investigation of this journal file should provide some insight into how
+ to use LaGriT with PyLith.
+ For more detailed information on using LaGriT, refer to the 
 \begin_inset LatexCommand htmlurl
-name "CUBIT web site"
-target "cubit.sandia.gov"
+name "LaGriT web site"
+target "lagrit.lanl..gov"
 
 \end_inset
 
 .
- If you have CUBIT installed on your machine, you can use the journal files
+ If you have LaGriT installed on your machine, you can use the journal file
  to create your own mesh.
  Otherwise, you can use the mesh that has already been created.
 \end_layout
 
 \begin_layout Standard
-If you are using CUBIT to generate your own mesh, there are two ways to
- use the journal files.
+If you are using LaGriT to generate your own mesh, there are two ways to
+ use the journal file.
  The simplest method is to go to the
 \family sans
- Tools
+ 
 \family default
- menu, select 
-\family sans
-Play Journal File
-\family default
-, and then select the file 
+example directory (
 \family typewriter
-mesh_hex8_1000m.jou
+examples/3d/tet4
 \family default
-.
- This will run the commands in that file as well as the commands in 
-\family typewriter
-geometry.jou
-\family default
-, which is referenced from 
-\family typewriter
-mesh_hex8_1000m.jou
-\family default
-.
- Prior to doing this, you should set your directory to the one containing
- the journal files.
+), start LaGriT, and then type:
+\end_layout
+
+\begin_layout LyX-Code
+input/mesh_tet4_1000m.lagrit
+\end_layout
+
+\begin_layout Standard
+This will run the commands in that file, which will produce the necessary
+ files to run the example.
  This method will create the mesh, but you will gain very little insight
  into what is being done.
- A more informative approach is to input each journal command into the CUBIT
- command window directly.
+ A more informative approach is to input each command directly.
  That way, you will see what each command does.
- The first command in 
+ You can simply copy and paste the commands from 
 \family typewriter
-mesh_hex8_1000m.jou
-\family default
- is '
-\family typewriter
-playback
-\family default
- 
-\family typewriter
-geometry.jou
-\family default
-', so you should start with the commands in 
-\family typewriter
-geometry.jou
+mesh_tet4_1000m.lagrit
 \family default
 .
- The first three commands, which define the block shape, are
+ For example, the first six commands, which define the block shape, are
 \end_layout
 
 \begin_layout LyX-Code
-reset
+define / domain_xm / -3.0e+3
 \end_layout
 
 \begin_layout LyX-Code
-brick x 6000 y 6000 z 4000
+define / domain_xp /  3.0e+3
 \end_layout
 
 \begin_layout LyX-Code
-volume 1 move x 0 y 0 z -2000
+define / domain_ym / -3.0e+3
+\end_layout
+
+\begin_layout LyX-Code
+define / domain_yp /  3.0e+3
+\end_layout
+
+\begin_layout LyX-Code
+define / domain_zm / -4.0e+3
+\end_layout
+
+\begin_layout LyX-Code
+define / domain_zp /  0.0e+3 
 \end_layout
 
 \begin_layout Standard
 Continuing through the remainder of the commands in 
 \family typewriter
-geometry.jou
+mesh_tet4_1000m.lagrit
 \family default
-, and then using the additional commands in 
+, you will eventually end up with the files tet4_1000m_binary.gmv, 
 \family typewriter
-mesh_hex8_1000m.jou
+tet4_1000m_ascii.gmv
 \family default
-, you will eventually end up with the file 
+, 
 \family typewriter
-box_hex8_1000m.exo
+tet4_1000m_ascii.pset
 \family default
-, which contains all of the mesh information.
- This includes all of the information included in PyLith mesh ASCII format,
- but the information is contained in an Exodus file, which is a specialized
- netCDF file.
- If you have the 
+, and 
 \family typewriter
-ncdump
+tet4_1000m_binary.pset
 \family default
- command available, you can see what is in the file by typing:
-\end_layout
+.
+ The ASCII files are not actually needed, but we create them so users can
+ see what is contained in the files.
+ These files may also be used instead of the binary versions, if desired.
+ The 
+\family typewriter
+.gmv
+\family default
+ files define the mesh information, and they may be read directly by the
+ 
+\begin_inset LatexCommand htmlurl
+name "GMV"
+target "laws.lanl.gov/XCM/gmv/GMVHome.html"
 
-\begin_layout LyX-Code
-ncdump box_hex8_1000m.exo
-\end_layout
+\end_inset
 
-\begin_layout Standard
-This mesh may then be used for the examples described below.
+ mesh visualization package.
+ The 
+\family typewriter
+.pset
+\family default
+ files specify the vertices corresponding to each boundary used in the problem,
+ including the fault as well as external boundaries to with boundary conditions
+ are applied.
+ This mesh may then be used for the examples described below.
 \end_layout
 
 \begin_layout Standard
@@ -264,7 +268,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/hex8-mesh.jpg
+	filename figs/tet4-mesh.jpg
 	lyxscale 50
 	scale 45
 
@@ -278,9 +282,9 @@ status open
 
 \begin_layout Standard
 Mesh used for the two tetrahedra examples.
- The different colors represent the two different material groups.
+ The different colors represent the different material groups.
 \begin_inset LatexCommand label
-name "fig:3dhex8-mesh"
+name "fig:3dtet4-mesh"
 
 \end_inset
 
@@ -330,12 +334,12 @@ pylithapp.journal.info Settings that control the verbosity of the output for
 
 \begin_layout Description
 pylithapp.mesh_generator Settings that control mesh importing, such as the
- importer type, the filename, and the spatial dimension of the mesh.
+ importer type, the filenames, and the spatial dimension of the mesh.
 \end_layout
 
 \begin_layout Description
 pylithapp.timedependent Settings that control the problem, such as the total
- time, time step size, and spatial dimension.
+ time, time step size, and number of entries in the material array.
 \end_layout
 
 \begin_layout Description
@@ -352,11 +356,11 @@ pylithapp.petsc PETSc settings to use for the problem, such as the preconditione
 \end_layout
 
 \begin_layout Standard
-Since these examples use CUBIT format, we set the importer to 
+Since these examples use LaGriT format, we set the importer to 
 \family typewriter
-MeshIOCubit
+MeshIO
 \family default
-:
+Lagrit:
 \end_layout
 
 \begin_layout LyX-Code
@@ -364,7 +368,7 @@ MeshIOCubit
 \end_layout
 
 \begin_layout LyX-Code
-importer = pylith.meshio.MeshIOCubit
+importer = pylith.meshio.MeshIOLagrit
 \end_layout
 
 \begin_layout LyX-Code
@@ -376,11 +380,45 @@ importer = pylith.meshio.MeshIOCubit
 \end_layout
 
 \begin_layout LyX-Code
-filename = box_hex8_1000m.exo
+filename_gmv = tet4_1000m_binary.gmv
+\end_layout
+
+\begin_layout LyX-Code
+filename_pset = tet4_1000m_binary.pset
+\end_layout
+
+\begin_layout LyX-Code
+flip_endian = True
+\end_layout
+
+\begin_layout LyX-Code
+# record_header_32bit = False
 \end_layout
 
 \begin_layout Standard
-This example differs from most other examples, because we specify two material
+Notice that there are a couple of settings pertinent to binary files.
+ The first flag (
+\family typewriter
+flip_endian
+\family default
+) is used if the binary files were produced on a machine with a different
+ endianness than the machine on which they are being read.
+ If you get an error when attempting to run an example, you may need to
+ change the setting of this flag.
+ The second flag (
+\family typewriter
+record_header_32bit
+\family default
+) may need to be set to 
+\family typewriter
+False
+\family default
+ if the version of LaGriT being used has 64-bit Fortran record headers.
+ 
+\end_layout
+
+\begin_layout Standard
+This example differs from most other examples, because we specify four material
  groups:
 \end_layout
 
@@ -389,7 +427,7 @@ This example differs from most other examples, because we specify two material
 \end_layout
 
 \begin_layout LyX-Code
-materials = [elastic_upper,elastic_lower]
+materials = elastic_neg1,elastic_neg2,elastic_pos1,elastic_pos2
 \end_layout
 
 \begin_layout LyX-Code
@@ -397,11 +435,11 @@ materials = [elastic_upper,elastic_lower]
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.timedependent.materials.elastic_upper]
+[pylithapp.timedependent.materials.elastic_pos1]
 \end_layout
 
 \begin_layout LyX-Code
-label = Upper elastic material
+label = Elastic material +x (upper)
 \end_layout
 
 \begin_layout LyX-Code
@@ -417,11 +455,11 @@ quadrature = pylith.feassemble.quadrature.Quadrature3D
 \end_layout
 
 \begin_layout LyX-Code
-quadrature.cell = pylith.feassemble.FIATLagrange
+quadrature.cell = pylith.feassemble.FIATSimplex
 \end_layout
 
 \begin_layout LyX-Code
-quadrature.cell.dimension = 3
+quadrature.cell.shape = tetrahedron
 \end_layout
 
 \begin_layout LyX-Code
@@ -429,11 +467,11 @@ quadrature.cell.dimension = 3
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.timedependent.materials.elastic_lower]
+[pylithapp.timedependent.materials.elastic_neg1]
 \end_layout
 
 \begin_layout LyX-Code
-label = Lower elastic material
+label = Elastic material -x (upper)
 \end_layout
 
 \begin_layout LyX-Code
@@ -449,18 +487,86 @@ quadrature = pylith.feassemble.quadrature.Quadrature3D
 \end_layout
 
 \begin_layout LyX-Code
-quadrature.cell = pylith.feassemble.FIATLagrange
+quadrature.cell = pylith.feassemble.FIATSimplex
 \end_layout
 
 \begin_layout LyX-Code
-quadrature.cell.dimension = 3
+quadrature.cell.shape = tetrahedron
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.elastic_pos2]
+\end_layout
+
+\begin_layout LyX-Code
+label = Elastic material +x (lower)
+\end_layout
+
+\begin_layout LyX-Code
+id = 3
+\end_layout
+
+\begin_layout LyX-Code
+db.iohandler.filename = mat_elastic.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+quadrature = pylith.feassemble.quadrature.Quadrature3D
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell = pylith.feassemble.FIATSimplex
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell.shape = tetrahedron
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.elastic_neg2]
+\end_layout
+
+\begin_layout LyX-Code
+label = Elastic material -x (lower)
+\end_layout
+
+\begin_layout LyX-Code
+id = 4
+\end_layout
+
+\begin_layout LyX-Code
+db.iohandler.filename = mat_elastic.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+quadrature = pylith.feassemble.quadrature.Quadrature3D
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell = pylith.feassemble.FIATSimplex
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell.shape = tetrahedron 
+\end_layout
+
+\begin_layout LyX-Code
+
 \end_layout
 
 \begin_layout Standard
-The two material groups correspond to the two different colors in Figure
+The four material groups correspond to the four different colors in Figure
  
 \begin_inset LatexCommand ref
-reference "fig:3dhex8-mesh"
+reference "fig:3dtet4-mesh"
 
 \end_inset
 
@@ -472,6 +578,10 @@ reference "fig:3dhex8-mesh"
 mat_elastic.spatialdb
 \family default
 .
+ One of the reasons that there are four material sets is because the boundary
+ between material sets is used to define the fault surface.
+ See the benchmarks for an example where these material sets are merged
+ back together.
  Although the material groups are specified in 
 \family typewriter
 pylithapp.cfg
@@ -530,7 +640,7 @@ y
 \family default
 ), providing the label (defined in 
 \family typewriter
-box_hex8_1000m.exo
+tet4_1000m_binary.pset
 \family default
 ) defining the points desired, assigning a label to the boundary condition
  set, and giving the name of the spatial database defining the boundary
@@ -554,9 +664,9 @@ y
 \family default
 ), providing the label (defined in 
 \family typewriter
-box_hex8_1000m.exo
+tet4_1000m_binary.
 \family default
-) defining the points desired, assigning a label to the boundary condition
+pset) defining the points desired, assigning a label to the boundary condition
  set, and giving the name of the spatial database defining the boundary
  conditions (
 \family typewriter
@@ -578,9 +688,9 @@ y
 \family default
 ), providing the label (defined in 
 \family typewriter
-box_hex8_1000m.exo
+tet4_1000m_binary.
 \family default
-) defining the points desired, assigning a label to the boundary condition
+pset) defining the points desired, assigning a label to the boundary condition
  set, and giving the name of the spatial database defining the boundary
  conditions (
 \family typewriter
@@ -609,20 +719,56 @@ shearxy-groundsurf.vtk
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.materials.elastic_upper.output Gives the base filename
- for state variable output files for the upper elastic material (
+pylithapp.timedependent.materials.elastic_neg1.output Gives the base filename
+ for state variable output files for the 
 \family typewriter
-shearxy-statevars-upper.vtk
+elastic_neg1
+\family default
+ material set (
+\family typewriter
+shearxy-statevars-neg1.vtk
 \family default
 ), and causes state variables to be averaged over all quadrature points
  in each cell.
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.materials.elastic_lower.output Gives the base filename
- for state variable output files for the lower elastic material (
+pylithapp.timedependent.materials.elastic_pos1.output Gives the base filename
+ for state variable output files for the 
 \family typewriter
-shearxy-statevars-lower.vtk
+elastic_pos1
+\family default
+ material set (
+\family typewriter
+shearxy-statevars-pos1.vtk
+\family default
+), and causes state variables to be averaged over all quadrature points
+ in each cell.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.materials.elastic_neg2.output Gives the base filename
+ for state variable output files for the 
+\family typewriter
+elastic_neg2
+\family default
+ material set (
+\family typewriter
+shearxy-statevars-neg2.vtk
+\family default
+), and causes state variables to be averaged over all quadrature points
+ in each cell.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.materials.elastic_pos2.output Gives the base filename
+ for state variable output files for the 
+\family typewriter
+elastic_pos2
+\family default
+ material set (
+\family typewriter
+shearxy-statevars-pos2.vtk
 \family default
 ), and causes state variables to be averaged over all quadrature points
  in each cell.
@@ -647,7 +793,11 @@ shearxy.cfg
 \begin_layout Standard
 The files containing common information (
 \family typewriter
-box_hex8_1000m.exo
+tet4_1000m_binary.
+\family default
+gmv, 
+\family typewriter
+tet4_1000m_binary.pset
 \family default
 , 
 \family typewriter
@@ -674,7 +824,7 @@ pylith shearxy.cfg
 \end_layout
 
 \begin_layout Standard
-Once the problem has run, six files will be produced.
+Once the problem has run, ten files will be produced.
  The first file is named 
 \family typewriter
 shearxy_t0000000.vtk
@@ -690,24 +840,29 @@ t0000000
  mesh vertices.
  The second file is named 
 \family typewriter
-shearxy-statevars-upper_t0000000.vtk
+shearxy-statevars-neg1_t0000000.vtk
 \family default
 .
  This file contains the state variables for each cell in the material group
  
 \family typewriter
-elastic_upper
+elastic_neg1
 \family default
 .
  The default fields are the total strain and stress fields.
  These values are computed at each quadrature point in the cell.
- There are eight quadrature points for each cell; however, we have requested
- that these values be averaged, so there is a single set of values per cell.
+ We have requested that the values be averaged over all quadrature points
+ for each cell; however, since we only have a single quadrature point for
+ each linear tetrahedron, this will have no effect.
  The third file (
 \family typewriter
-shearxy-statevars-upper_info.vtk
+shearxy-statevars-neg1_info.vtk
 \family default
-) gives the material properties used for the upper elastic material.
+) gives the material properties used for the 
+\family typewriter
+elastic_neg1
+\family default
+ material set.
  Since we have not specified which properties to write, the default properties
  (
 \family typewriter
@@ -722,16 +877,8 @@ lambda
 density
 \family default
 ) are written.
- The fourth and fifth files for the lower elastic material 
-\family typewriter
-(shearxy-statevars-lower_t0000000.vtk
-\family default
- and 
-\family typewriter
-shearxy-statevars-lower_info.vtk
-\family default
-) are exactly analagous to the corresponding files for the upper elastic
- material.
+ There are six additional files containing the state variables and material
+ properties for each of the three additional material sets.
  The final file (
 \family typewriter
 shearxy-groundsurf_t0000000.vtk
@@ -747,7 +894,7 @@ ding to the ground surface.
 \family typewriter
 shearxy_t0000000.vtk
 \family default
-, so they are quadrilaterials rather than hexahedra.
+, so they are triangles rather than tetrahedra.
  All of the 
 \family typewriter
 .vtk
@@ -756,7 +903,7 @@ shearxy_t0000000.vtk
  If the problem ran correctly, you should be able to generate a figure such
  as 
 \begin_inset LatexCommand ref
-reference "fig:3dhex8-shear"
+reference "fig:3dtet4-shear"
 
 \end_inset
 
@@ -787,7 +934,7 @@ status open
 \begin_layout Standard
 Color contours and vectors of displacement for the axial displacement example.
 \begin_inset LatexCommand label
-name "fig:3dhex8-shear"
+name "fig:3dtet4-shear"
 
 \end_inset
 
@@ -819,15 +966,15 @@ x = 0
 \family typewriter
 x
 \family default
- and 
+, 
 \family typewriter
 y
 \family default
- directions, while the bottom is fixed in the 
+, and 
 \family typewriter
 z
 \family default
- direction.
+ directions.
  Parameter settings that override or augment those in 
 \family typewriter
 pylithapp.cfg
@@ -858,16 +1005,20 @@ pylithapp.timedependent.bc.x_pos Specifies the boundary conditions for the
 \family typewriter
 x
 \family default
- and 
+, 
 \family typewriter
 y
 \family default
+, and 
+\family typewriter
+z
+\family default
 ), providing the label (defined in 
 \family typewriter
-box_hex8_1000m.exo
+tet4_1000m_binary.
 \family default
-) defining the points desired, and assigning a label to the boundary condition
- set.
+pset) defining the points desired, and assigning a label to the boundary
+ condition set.
  Rather than specifying a spatial database file to define the boundary condition
 s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
  condition, which sets the displacements to zero.
@@ -880,30 +1031,20 @@ pylithapp.timedependent.bc.x_neg Specifies the boundary conditions for the
 \family typewriter
 x
 \family default
- and 
+, 
 \family typewriter
 y
 \family default
+, and 
+\family typewriter
+z
+\family default
 ), providing the label (defined in 
 \family typewriter
-box_hex8_1000m.exo
+tet4_1000m_binary.
 \family default
-) defining the points desired, and assigning a label to the boundary condition
- set.
- Rather than specifying a spatial database file to define the boundary condition
-s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
- condition, which sets the displacements to zero.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.bc.z_neg Specifies the boundary conditions for the
- bottom of the mesh, defining which degrees of freedom are being constrained
- (z), providing the label (defined in 
-\family typewriter
-box_hex8_1000m.exo
-\family default
-) defining the points desired, and assigning a label to the boundary condition
- set.
+pset) defining the points desired, and assigning a label to the boundary
+ condition set.
  Rather than specifying a spatial database file to define the boundary condition
 s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
  condition, which sets the displacements to zero.
@@ -912,11 +1053,11 @@ s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
 \begin_layout Description
 pylithapp.timedependent.interfaces Gives the label (defined in 
 \family typewriter
-box_hex8_1000m.exo
+tet4_1000m_binary.
 \family default
-) defining the points on the fault, provides quadrature information, and
- then gives database names for material properties (needed for conditioning),
- fault slip, peak fault slip rate, and fault slip time.
+pset) defining the points on the fault, provides quadrature information,
+ and then gives database names for material properties (needed for conditioning)
+, fault slip, peak fault slip rate, and fault slip time.
 \end_layout
 
 \begin_layout Description
@@ -948,20 +1089,48 @@ dislocation-fault.vtk
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.materials.elastic_upper.output Gives the base filename
- for state variable output files for the upper elastic material (
+pylithapp.timedependent.materials.elastic_neg1.output Gives the base filename
+ for state variable output files for the 
 \family typewriter
-dislocation-statevars-upper.vtk
+elastic_neg1
+\family default
+ material set (
+\family typewriter
+dislocation-statevars-neg1.vtk
 \family default
 ), and causes state variables to be averaged over all quadrature points
  in each cell.
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.materials.elastic_lower.output Gives the base filename
- for state variable output files for the lower elastic material (
+pylithapp.timedependent.materials.elastic_pos1.output Gives the base filename
+ for state variable output files for the elastic_pos1 material set (
 \family typewriter
-dislocation-statevars-lower.vtk
+dislocation-statevars-pos1.vtk
+\family default
+), and causes state variables to be averaged over all quadrature points
+ in each cell.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.materials.elastic_neg2.output Gives the base filename
+ for state variable output files for the 
+\family typewriter
+elastic_neg2
+\family default
+ material set (
+\family typewriter
+dislocation-statevars-neg2.vtk
+\family default
+), and causes state variables to be averaged over all quadrature points
+ in each cell.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.materials.elastic_pos2.output Gives the base filename
+ for state variable output files for the elastic_pos2 material set (
+\family typewriter
+dislocation-statevars-pos2.vtk
 \family default
 ), and causes state variables to be averaged over all quadrature points
  in each cell.
@@ -1007,7 +1176,11 @@ dislocation_sliptime.spatialdb
 \begin_layout Standard
 The files containing common information (
 \family typewriter
-box_hex8_1000m.exo
+tet4_1000m_binary.gmv
+\family default
+, 
+\family typewriter
+tet4_1000m_binary.pset
 \family default
 , 
 \family typewriter
@@ -1044,7 +1217,7 @@ pylith dislocation.cfg
 \end_layout
 
 \begin_layout Standard
-Once the problem has run, eight files will be produced.
+Once the problem has run, 12 files will be produced.
  The first file is named 
 \family typewriter
 dislocation_t0000000.vtk
@@ -1060,24 +1233,28 @@ t0000000
  mesh vertices.
  The second file is named 
 \family typewriter
-dislocation-statevars-upper_t0000000.vtk
+dislocation-statevars-neg1_t0000000.vtk
 \family default
 .
  This file contains the state variables for each cell in the material group
  
 \family typewriter
-elastic_upper
+elastic_neg1
 \family default
 .
  The default fields are the total strain and stress fields.
- These values are computed at each quadrature point in the cell.
- There are eight quadrature points for each cell; however, we have requested
- that these values be averaged, so there is a single set of values per cell.
+ We have requested that the values be averaged over all quadrature points
+ for each cell; however, since we only have a single quadrature point for
+ each linear tetrahedron, this will have no effect.
  The third file (
 \family typewriter
-dislocation-statevars-upper_info.vtk
+dislocation-statevars-neg1_info.vtk
 \family default
-) gives the material properties used for the upper elastic material.
+) gives the material properties used for the 
+\family typewriter
+elastic_neg1
+\family default
+ material set.
  Since we have not specified which properties to write, the default properties
  (
 \family typewriter
@@ -1092,21 +1269,11 @@ lambda
 density
 \family default
 ) are written.
- The fourth and fifth files 
+ There are six additional files containing the state variables and material
+ properties for each of the three additional material sets.
+ The tenth file (
 \family typewriter
-for the lower elastic material (dislocation-statevars-lower_t0000000.vtk
-\family default
- and 
-\family typewriter
-dislocation-statevars-lower_info.vtk
-\family default
-) are exactly analagous to the corresponding files for the upper elastic
- material.
- The sixth file (
-\family typewriter
-dislocation-ground
-\newline
-surf_t0000000.vtk
+dislocation-groundsurf_t0000000.vtk
 \family default
 ) is analagous to 
 \family typewriter
@@ -1119,8 +1286,8 @@ ding to the ground surface.
 \family typewriter
 dislocation_t0000000.vtk
 \family default
-, so they are quadrilaterials rather than hexahedra.
- The seventh file (
+, so they are triangles rather than tetrahedra.
+ The 11th file (
 \family typewriter
 dislocation-fault_t0000000.vtk
 \family default
@@ -1140,7 +1307,7 @@ dislocation-fault_info.vtk
  If the problem ran correctly, you should be able to generate a figure such
  as
 \begin_inset LatexCommand vref
-reference "fig:3dhex-disloc"
+reference "fig:3dtet-disloc"
 
 \end_inset
 
@@ -1173,7 +1340,7 @@ status open
 \begin_layout Standard
 Color contours and vectors of displacement for the kinematic fault example.
 \begin_inset LatexCommand label
-name "fig:3dhex-disloc"
+name "fig:3dtet-disloc"
 
 \end_inset
 
