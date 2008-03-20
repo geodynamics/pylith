@@ -237,7 +237,9 @@ class OutputManager(Component):
     logEvent = "%swriteData" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    if self._checkWrite(t):
+    if self._checkWrite(t) and \
+           ( len(self.vertexInfoFields) > 0 or \
+             len(self.cellInfoFields) ) > 0:
 
       (mesh, label, labelId) = self.dataProvider.getDataMesh()
       self.cppHandle.openTimeStep(t.value,
