@@ -40,26 +40,15 @@ Release 1.1
     1. Strike-slip benchmark.
       c. Rerun benchmarks.
       d. Tabulate results.
-      e. Test scaling (1,2,4,8 processors) for 500m hex8 case
-
-    2. Reverse-slip benchmark.
-      a. Create BC for CUBIT mesh.
-      b. Create LaGriT mesh
-      c. Create BC for LaGriT mesh.
-      d. Run benchmarks.
-      e. Generate analytic solutions.
-      f. Tabulate results.
+      e. Test scaling (1,2,4,8,16 processors) for 500m cases
 
   Examples
 
-    1. Test and update settings.
-      a. Update output settings (materials, faults, solution).
-         twoquad4-geoproj
+    1. Redo old figures for examples.
 
-    2. Add some simple kinematic rupture examples.
+    2. Add some simple kinematic rupture examples. (Brad)
       a. 2-D bar (tri3, quad4)
       b. 3-D bar (tet4, hex8)
-      c. simple strike-slip propagating rupture (500m resolution)
 
     3. CUBIT (Brad)
        Add GUI instructions in journal files for examples/3d/hex8.
@@ -68,10 +57,6 @@ Release 1.1
 
     Add setup.sh for linux.
 
-  Source
-
-    Generate configure script for spatialdata.tgz on PyLith web page.
-
   Manual
 
     1. Need to add explanation of output and output parameters
@@ -79,9 +64,22 @@ Release 1.1
 
     2. Add 3d/hex8 and 3d/tet4 to tutorials.
 
-    3. Add benchmarks.
+    3. Add strike-slip benchmarks.
 
     4. Update cover figure with current result. (Brad)
+
+----------------------------------------------------------------------
+Workshop
+
+    simple strike-slip propagating rupture (performance benchmark 
+	500m resolution)
+
+    2. Reverse-slip benchmark.
+      a. Create BC for CUBIT mesh.
+      b. Create BC for LaGriT mesh.
+      c. Run benchmarks.
+      d. Generate analytic solutions.
+      e. Tabulate results.
 
 ----------------------------------------------------------------------
 Release 1.2
@@ -117,6 +115,8 @@ Release 1.2
 
          Interpolate solution to desired location
          Solution field (time history)
+
+  6. Uniform global refinement.
 
 ----------------------------------------------------------------------
 Release 1.3
