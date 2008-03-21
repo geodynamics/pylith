@@ -27,6 +27,8 @@ noinst_DATA = \
 	quad4-tractions.spatialdb \
 	tet4.mesh \
 	tet4.spatialdb \
+	tet4_a.spatialdb \
+	tet4_a_rate.spatialdb \
 	tet4-tractions.spatialdb \
 	elasticisotropic3d.spatialdb \
 	hex8.mesh \

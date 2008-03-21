@@ -49,13 +49,15 @@ pylith::bc::TestDirichletBoundaryMulti::testSetConstraintSizes(void)
   ALE::Obj<Mesh> mesh;
   DirichletBoundary bcA;
   DirichletBoundary bcB;
-  _initialize(&mesh, &bcA, &bcB);
+  DirichletBoundary bcC;
+  _initialize(&mesh, &bcA, &bcB, &bcC);
 
   const ALE::Obj<real_section_type>& field = mesh->getRealSection("field");
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
   field->setFiberDimension(vertices, _data->numDOF);
   bcA.setConstraintSizes(field, mesh);
   bcB.setConstraintSizes(field, mesh);
+  bcC.setConstraintSizes(field, mesh);
 
   CPPUNIT_ASSERT(0 != _data);
 
@@ -79,16 +81,19 @@ pylith::bc::TestDirichletBoundaryMulti::testSetConstraints(void)
   ALE::Obj<Mesh> mesh;
   DirichletBoundary bcA;
   DirichletBoundary bcB;
-  _initialize(&mesh, &bcA, &bcB);
+  DirichletBoundary bcC;
+  _initialize(&mesh, &bcA, &bcB, &bcC);
 
   const ALE::Obj<real_section_type>& field = mesh->getRealSection("field");
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
   field->setFiberDimension(vertices, _data->numDOF);
   bcA.setConstraintSizes(field, mesh);
   bcB.setConstraintSizes(field, mesh);
+  bcC.setConstraintSizes(field, mesh);
   mesh->allocate(field);
   bcA.setConstraints(field, mesh);
   bcB.setConstraints(field, mesh);
+  bcC.setConstraints(field, mesh);
 
   CPPUNIT_ASSERT(0 != _data);
 
@@ -115,16 +120,19 @@ pylith::bc::TestDirichletBoundaryMulti::testSetField(void)
   ALE::Obj<Mesh> mesh;
   DirichletBoundary bcA;
   DirichletBoundary bcB;
-  _initialize(&mesh, &bcA, &bcB);
+  DirichletBoundary bcC;
+  _initialize(&mesh, &bcA, &bcB, &bcC);
 
   const ALE::Obj<real_section_type>& field = mesh->getRealSection("field");
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
   field->setFiberDimension(vertices, _data->numDOF);
   bcA.setConstraintSizes(field, mesh);
   bcB.setConstraintSizes(field, mesh);
+  bcC.setConstraintSizes(field, mesh);
   mesh->allocate(field);
   bcA.setConstraints(field, mesh);
   bcB.setConstraints(field, mesh);
+  bcC.setConstraints(field, mesh);
 
   CPPUNIT_ASSERT(0 != _data);
   const double tolerance = 1.0e-06;
@@ -146,6 +154,7 @@ pylith::bc::TestDirichletBoundaryMulti::testSetField(void)
   const double t = 10.0;
   bcA.setField(t, field, mesh);
   bcB.setField(t, field, mesh);
+  bcC.setField(t, field, mesh);
 
   int i = 0;
   for (Mesh::label_sequence::iterator v_iter = vertices->begin();
@@ -163,11 +172,13 @@ pylith::bc::TestDirichletBoundaryMulti::testSetField(void)
 void
 pylith::bc::TestDirichletBoundaryMulti::_initialize(ALE::Obj<Mesh>* mesh,
 					    DirichletBoundary* const bcA,
-					    DirichletBoundary* const bcB) const
+					    DirichletBoundary* const bcB,
+					    DirichletBoundary* const bcC) const
 { // _initialize
   CPPUNIT_ASSERT(0 != _data);
   CPPUNIT_ASSERT(0 != bcA);
   CPPUNIT_ASSERT(0 != bcB);
+  CPPUNIT_ASSERT(0 != bcC);
 
   meshio::MeshIOAscii iohandler;
   iohandler.filename(_data->meshFilename);
@@ -215,6 +226,24 @@ pylith::bc::TestDirichletBoundaryMulti::_initialize(ALE::Obj<Mesh>* mesh,
   bcB->referenceTime(_data->tRefB);
   bcB->fixedDOF(fixedDOFB);
   bcB->initialize(*mesh, &cs, upDir);
+
+  // Setup boundary condition C
+  if (_data->numFixedDOFC > 0) {
+    dbIO.filename(_data->dbFilenameC);
+    db.ioHandler(&dbIO);
+    
+    dbIORate.filename(_data->dbFilenameCRate);
+    dbRate.ioHandler(&dbIORate);
+    
+    int_array fixedDOFC(_data->fixedDOFC, _data->numFixedDOFC);
+    
+    bcC->label(_data->labelC);
+    bcC->db(&db);
+    bcC->dbRate(&dbRate);
+    bcC->referenceTime(_data->tRefC);
+    bcC->fixedDOF(fixedDOFC);
+    bcC->initialize(*mesh, &cs, upDir);
+  } // if
 } // _initialize
 
 

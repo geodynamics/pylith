@@ -60,6 +60,18 @@ public:
   double tRefB; ///< Reference time for rate of change of values.
   //@}
 
+  //@{ Boundary condition C
+  int numFixedDOFC; ///< Number of fixedDOF at constrained points.
+  int numConstrainedPtsC; ///< Number of points constrained.
+  int idC; ///< Boundary condition identifier
+  char* labelC; ///< Label for boundary condition group
+  int* fixedDOFC; ///< Degrees of freedom that are constrained at each point
+  int* constrainedPointsC; ///< Array of indices of constrained points.
+  char* dbFilenameC; ///< Filename for db with initial values.
+  char* dbFilenameCRate; ///< Filename for db with rate of change of values.
+  double tRefC; ///< Reference time for rate of change of values.
+  //@}
+
   double* field; ///< Values in field
   int* constraintSizes; ///< Number of constrained DOF at each vertex
   int* constrainedDOF; ///< Indices of constrained DOF at each constrained vertex

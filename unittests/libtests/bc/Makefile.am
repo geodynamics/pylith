@@ -40,6 +40,7 @@ testbc_SOURCES = \
 	TestDirichletBoundaryHex8.cc \
 	TestDirichletBoundaryMulti.cc \
 	TestDirichletBoundaryMultiTri3.cc \
+	TestDirichletBoundaryMultiTet4.cc \
 	TestDirichletPoints.cc \
 	TestDirichletPointsLine2.cc \
 	TestDirichletPointsLine2b.cc \
@@ -49,6 +50,7 @@ testbc_SOURCES = \
 	TestDirichletPointsHex8.cc \
 	TestDirichletPointsMulti.cc \
 	TestDirichletPointsMultiTri3.cc \
+	TestDirichletPointsMultiTet4.cc \
 	TestNeumann.cc \
 	TestNeumannLine2.cc \
 	TestNeumannTri3.cc \
@@ -77,6 +79,7 @@ noinst_HEADERS = \
 	TestDirichletBoundaryHex8.hh \
 	TestDirichletBoundaryMulti.hh \
 	TestDirichletBoundaryMultiTri3.hh \
+	TestDirichletBoundaryMultiTet4.hh \
 	TestDirichletPoints.hh \
 	TestDirichletPointsLine2.hh \
 	TestDirichletPointsLine2b.hh \
@@ -86,6 +89,7 @@ noinst_HEADERS = \
 	TestDirichletPointsHex8.hh \
 	TestDirichletPointsMulti.hh \
 	TestDirichletPointsMultiTri3.hh \
+	TestDirichletPointsMultiTet4.hh \
 	TestNeumann.hh \
 	TestNeumannLine2.hh \
 	TestNeumannTri3.hh \
@@ -115,6 +119,7 @@ testbc_SOURCES += \
 	data/DirichletDataHex8.cc \
 	data/DirichletDataMulti.cc \
 	data/DirichletDataMultiTri3.cc \
+	data/DirichletDataMultiTet4.cc \
 	data/NeumannData.cc \
 	data/NeumannDataLine2.cc \
 	data/NeumannDataTri3.cc \
@@ -143,6 +148,7 @@ noinst_HEADERS += \
 	data/DirichletDataHex8.hh \
 	data/DirichletDataMulti.hh \
 	data/DirichletDataMultiTri3.hh \
+	data/DirichletDataMultiTet4.hh \
 	data/NeumannData.hh \
 	data/NeumannDataLine2.hh \
 	data/NeumannDataTri3.hh \
