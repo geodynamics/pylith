@@ -70,10 +70,12 @@ private :
    * @param mesh PETSc mesh to initialize
    * @param bcA DirichletPoints boundary condition A to initialize.
    * @param bcB DirichletPoints boundary condition B to initialize.
+   * @param bcC DirichletPoints boundary condition C to initialize.
    */
   void _initialize(ALE::Obj<ALE::Mesh>* mesh,
 		   DirichletPoints* const bcA,
-		   DirichletPoints* const bcB) const;
+		   DirichletPoints* const bcB,
+		   DirichletPoints* const bcC) const;
 
 }; // class TestDirichletPointsMulti
 

@@ -236,6 +236,7 @@ cdef class Fault:
               "'pylith::topology::FieldsManager'."
     cdef void* ptr
     cdef int fieldType
+    fieldType = 3
     if None != fields:
       ptr = Fault_vertexField(self.thisptr, &fieldType, name,
                               ptrFromHandle(mesh), ptrFromHandle(fields))

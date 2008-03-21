@@ -205,14 +205,19 @@ pylith::bc::DirichletPoints::setConstraints(
 	} // if
 
     // Add in the ones for this DirichletPoints BC
-    for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
+    for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) {
+      assert(_offsetLocal[iPoint]+iDOF < numTotalConstrained);
       allFixedDOF[_offsetLocal[iPoint]+iDOF] = _fixedDOF[iDOF];
+    } // for
 
-    // Fill in rest of values not yet set (will be set by another DirichletPoints BC)
+    // Fill in rest of values not yet set (will be set by
+    // another DirichletPoints BC)
     for (int iDOF=_offsetLocal[iPoint]+numFixedDOF; 
 	 iDOF < numTotalConstrained; 
-	 ++iDOF)
-      allFixedDOF[_offsetLocal[iPoint]+iDOF] = 999;
+	 ++iDOF) {
+      assert(iDOF < numTotalConstrained);
+      allFixedDOF[iDOF] = 999;
+    }
 
     // Sort list of constrained DOF
     //   I need these sorted for my update algorithms to work properly

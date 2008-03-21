@@ -1270,6 +1270,7 @@ cdef class IntegratorElasticity(Integrator):
               "'pylith::topology::FieldsManager'."
     cdef void* ptr
     cdef int fieldType
+    fieldType = 3
     if None != fields:
       ptr = IntegratorElasticity_cellField(self.thisptr, &fieldType, name,
                                            ptrFromHandle(mesh),

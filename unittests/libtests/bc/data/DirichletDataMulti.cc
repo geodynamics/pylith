@@ -15,8 +15,8 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::bc::DirichletDataMulti::DirichletDataMulti(void) :
-  numDOF(0),
-  numFixedDOFA(0),
+  numDOF(0), // General
+  numFixedDOFA(0), // BC A
   numConstrainedPtsA(0),
   idA(0),
   labelA(0),
@@ -25,7 +25,7 @@ pylith::bc::DirichletDataMulti::DirichletDataMulti(void) :
   dbFilenameA(0),
   dbFilenameARate(0),
   tRefA(0),
-  numFixedDOFB(0),
+  numFixedDOFB(0), // BC B
   numConstrainedPtsB(0),
   idB(0),
   labelB(0),
@@ -34,7 +34,16 @@ pylith::bc::DirichletDataMulti::DirichletDataMulti(void) :
   dbFilenameB(0),
   dbFilenameBRate(0),
   tRefB(0),
-  field(0),
+  numFixedDOFC(0), // BC C
+  numConstrainedPtsC(0),
+  idC(0),
+  labelC(0),
+  fixedDOFC(0),
+  constrainedPointsC(0),
+  dbFilenameC(0),
+  dbFilenameCRate(0),
+  tRefC(0),
+  field(0), // General
   constraintSizes(0),
   constrainedDOF(0),
   meshFilename(0)
