@@ -1,4 +1,4 @@
-#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -119,14 +119,29 @@ properties The material is a Poisson solid with a shear modulus
 Fault The fault is a vertical, right-lateral strike-slip fault.
  The strike is parallel to the y-direction at the center of the model:
 \begin_inset Formula \begin{gather*}
-x=12\ km\\
-0\leq y\leq16\ km\\
+x=12\ km,\\
+0\leq y\leq16\ km,\\
 -16\ km\leq z\leq0.\end{gather*}
 
 \end_inset
 
-Uniform slip is applied over the region ?? and ?? with a linear taper to
- 0 at y = 16 km and z = -16 km.
+Uniform slip of 1 m is applied over the region 
+\begin_inset Formula $0\leq y\leq12\ km$
+\end_inset
+
+ and 
+\begin_inset Formula $-12\ km\leq z\leq0$
+\end_inset
+
+ with a linear taper to 0 at y = 16 km and z = -16 km.
+ The tapered region is the light red portion of the fault surface in Figure
+ 
+\begin_inset LatexCommand ref
+reference "fig:benchmark:strikeslip:geometry"
+
+\end_inset
+
+.
  In the region where the two tapers overlap, each slip value is the minimum
  of the two tapers (so that the taper remains linear).
 \end_layout
@@ -144,26 +159,19 @@ conditions Bottom and side displacements are set to the elastic
 \end_layout
 
 \begin_layout Description
-Discretization The model should be discretized with nominal spatial resolutions
+Discretization The model is discretized with nominal spatial resolutions
  of 1000 m, 500 m, and 250 m.
- If possible, also run the models with a nominal spatial resolution of 125
- m.
- Optionally, use meshes with variable (optimal) spatial resolution with
- the same number of nodes as the uniform resolution meshes.
 \end_layout
 
 \begin_layout Description
 Basis\InsetSpace ~
-functions Linear and/or quadratic and tetrahedral and/or hexahedral.
+functions We use linear basis functions with both tetrahedral and hexahedra
+l cells.
 \end_layout
 
 \begin_layout Description
-Solution Displacements at all nodes at times of 0, 1, 5, and 10 years as
- well as the mesh topology (i.e., element connectivity arrays and coordinates
- of vertices) and basis functions.
- Okada routines are available to generate an elastic solution.
- The ‘best’ viscoelastic answer will be derived via mesh refinement.
- 
+Solution We compute the error in the elastic solution and compare the solution
+ over the domain after 0, 1, 5, and 10 years.
 \end_layout
 
 \begin_layout Standard
@@ -175,7 +183,8 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/twotri3-mesh.eps
+	filename figs/geometry.png
+	scale 75
 
 \end_inset
 
@@ -210,7 +219,60 @@ Running the Benchmark
 \end_layout
 
 \begin_layout Standard
-running the different meshes and resolutions
+After checking out the benchmark files from the CIG SVN repository, change
+ to the 
+\family typewriter
+quasistatic/strikeslip
+\family default
+ directory.
+ Uncompress the gzipped files in the meshes and parameters directories,
+\end_layout
+
+\begin_layout LyX-Code
+gunzip meshes/*.gz parameters/*.gz
+\end_layout
+
+\begin_layout Standard
+Change to the parameters directory.
+ Each benchmark uses 3 
+\family typewriter
+.cfg
+\family default
+ files: 
+\family typewriter
+pylithapp.cfg
+\family default
+, a mesher related file (
+\family typewriter
+strikeslip_cubit.cfg
+\family default
+ or 
+\family typewriter
+strikeslip_lagrit.cfg
+\family default
+), and a resolution and cell related file (e.g., 
+\family typewriter
+strikeslip_hex8_1000m.cfg
+\family default
+).
+ A few examples of running the benchmarks are
+\end_layout
+
+\begin_layout LyX-Code
+pylith strikeslip_cubit.cfg strikeslip_hex8_1000m.cfg
+\end_layout
+
+\begin_layout LyX-Code
+pylith strikeslip_cubit.cfg strikeslip_hex8_0500m.cfg
+\end_layout
+
+\begin_layout LyX-Code
+pylith strikeslip_lagrit.cfg strikeslip_tet4_1000m.cfg
+\end_layout
+
+\begin_layout Standard
+The benchmarks at resolutions of 1000 m, 500 m, and 250 m require approximately
+ ?? GB, ?? GB, and ?? GB, respectively.
 \end_layout
 
 \begin_layout Subsection
