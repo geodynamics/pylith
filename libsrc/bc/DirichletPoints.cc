@@ -217,7 +217,7 @@ pylith::bc::DirichletPoints::setConstraints(
 	 ++iDOF) {
       assert(iDOF < numTotalConstrained);
       allFixedDOF[iDOF] = 999;
-    }
+    } // for
 
     // Sort list of constrained DOF
     //   I need these sorted for my update algorithms to work properly
