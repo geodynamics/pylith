@@ -1,0 +1,249 @@
+#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+
+\end_preamble
+\language english
+\inputencoding latin1
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry true
+\use_amsmath 0
+\use_esint 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Section
+\begin_inset LatexCommand label
+name "sec:benchmarks:strikeslip"
+
+\end_inset
+
+Strike-Slip Benchmark
+\end_layout
+
+\begin_layout Standard
+This benchmark problem computes the viscoelastic (Maxwell) relaxation of
+ stresses from a single, finite, strike-slip earthquake in 3-D without gravity.
+  Dirichlet boundary conditions equal to the analytical elastic solution
+  are imposed on the sides of a cube with sides of length 24 km.
+ Anti-plane strain boundary conditions are imposed at y = 0, so the solution
+ is equivalent to that for a domain with a 48 km length in the y direction.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Subsection
+Problem Description
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset LatexCommand ref
+reference "fig:benchmark:strikeslip:geometry"
+
+\end_inset
+
+ shows the geometry of the strike-slip fault (red surface)  embeded in the
+ cube consisting of an elastic material (yellow block) over a Maxwell viscoelast
+ic material (blue block).
+ 
+\end_layout
+
+\begin_layout Description
+Domain The domain spans the region
+\begin_inset Formula \begin{gather*}
+0\leq x\leq24\ km,\\
+0\leq y\leq24\ km,\\
+-24\ km\leq z\leq0.\end{gather*}
+
+\end_inset
+
+The top (elastic) layer occupies the region 
+\begin_inset Formula $-12\ km\ \leq z\leq0$
+\end_inset
+
+ and the bottom (viscoelastic) layer occupies the region 
+\begin_inset Formula $-24\ km\ \leq z\leq-12\ km$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Description
+Material\InsetSpace ~
+properties The material is a Poisson solid with a shear modulus
+ of 30 GPa.
+ The domain is modeled with two viscoelastic materials with a large viscosity
+ in the top layer that results in essentially elastic behavior.
+ The top layer has a viscosity of 1.0e+25 Pa-s and the bottom layer has a
+ viscosity of 1.0e+18 Pa-s.
+\end_layout
+
+\begin_layout Description
+Fault The fault is a vertical, right-lateral strike-slip fault.
+ The strike is parallel to the y-direction at the center of the model:
+\begin_inset Formula \begin{gather*}
+x=12\ km\\
+0\leq y\leq16\ km\\
+-16\ km\leq z\leq0.\end{gather*}
+
+\end_inset
+
+Uniform slip is applied over the region ?? and ?? with a linear taper to
+ 0 at y = 16 km and z = -16 km.
+ In the region where the two tapers overlap, each slip value is the minimum
+ of the two tapers (so that the taper remains linear).
+\end_layout
+
+\begin_layout Description
+Boundary\InsetSpace ~
+conditions Bottom and side displacements are set to the elastic
+ analytical solution, and the top of the model is a free surface.
+ There are two exceptions to these applied boundary conditions.
+ The first is on the y=0 plane, where y-displacements are left free to preserve
+ symmetry, and the x- and z-displacements are set to zero.
+ The second is along the line segment between (12, 0, -24) and (12, 24,
+ -24), where the analytical solution blows up in some cases.
+ Along this line segment, all 3 displacement components are left free.
+\end_layout
+
+\begin_layout Description
+Discretization The model should be discretized with nominal spatial resolutions
+ of 1000 m, 500 m, and 250 m.
+ If possible, also run the models with a nominal spatial resolution of 125
+ m.
+ Optionally, use meshes with variable (optimal) spatial resolution with
+ the same number of nodes as the uniform resolution meshes.
+\end_layout
+
+\begin_layout Description
+Basis\InsetSpace ~
+functions Linear and/or quadratic and tetrahedral and/or hexahedral.
+\end_layout
+
+\begin_layout Description
+Solution Displacements at all nodes at times of 0, 1, 5, and 10 years as
+ well as the mesh topology (i.e., element connectivity arrays and coordinates
+ of vertices) and basis functions.
+ Okada routines are available to generate an elastic solution.
+ The ‘best’ viscoelastic answer will be derived via mesh refinement.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/twotri3-mesh.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Geometry of strike-slip benchmark problem.
+\begin_inset LatexCommand label
+name "fig:benchmark:strikeslip:geometry"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Running the Benchmark
+\end_layout
+
+\begin_layout Standard
+running the different meshes and resolutions
+\end_layout
+
+\begin_layout Subsection
+Benchmark Results
+\end_layout
+
+\begin_layout Standard
+plot of solution
+\end_layout
+
+\begin_layout Subsubsection
+Solution Accuracy
+\end_layout
+
+\begin_layout Standard
+Definition of local and global error
+\end_layout
+
+\begin_layout Standard
+plot of local error
+\end_layout
+
+\begin_layout Standard
+plot of convergence
+\end_layout
+
+\begin_layout Subsubsection
+Performance
+\end_layout
+
+\begin_layout Standard
+comparison of error versus runtime and # flops
+\end_layout
+
+\end_body
+\end_document
