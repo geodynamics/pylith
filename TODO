@@ -35,6 +35,8 @@ Release 1.1
      c. Add check to make sure that label in BC, faults, and output
      subset actually exists in mesh (verifyConfiguration()).
 
+  4. Fix hanging on multiple processors (proc 0 doesn't have a fault?).
+
   Benchmarks
 
     1. Strike-slip benchmark.
@@ -62,11 +64,9 @@ Release 1.1
     1. Need to add explanation of output and output parameters
        (especially fault information).
 
-    2. Add 3d/hex8 and 3d/tet4 to tutorials.
+    2. Add strike-slip benchmarks.
 
-    3. Add strike-slip benchmarks.
-
-    4. Update cover figure with current result. (Brad)
+    3. Update cover figure with current result. (Brad)
 
 ----------------------------------------------------------------------
 Workshop

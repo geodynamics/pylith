@@ -1726,7 +1726,290 @@ PyLith Output
 \end_layout
 
 \begin_layout Standard
-TODO: ADD STUFF HERE
+PyLith currently supports output to VTK files, which can be imported directly
+ into a number of visualization tools, such as ParaView, Visit, and MayaVi.
+ PyLith 1.1 significantly expands the information available for output, including
+ fault information and state variables.
+ Output of solution information for the domain, faults, materials, and boundary
+ conditions is controlled by an output manager for each module.
+ This allows the user to tailor the output to the problem.
+ By default PyLith will write a number of VTK files: one VTK file for the
+ solution over the entire domain, two VTK files for each fault, and two
+ VTK files for each material.
+ One of the files for each fault and material includes diagnostic  information.
+ For a fault the fields include the final slip, the slip initiation  time,
+ and the fault normal vector.
+ For a material the fields include the density and the elastic constants.
+ Additional diagnostic can be included by setting the output parameters.
+ See Sections ?? and ?? for more information on the available fields and
+ the next section for output parameters.
+ The second file for each fault and material includes solution information
+ at each time step where output was requested (also customizable by the
+ user).
+ For a fault the solution information includes the slip and the change in
+ tractions on the fault surface.
+ For a material the solution information includes the total strain and stress.
+ For some materials fields for additional state variables may be available.
+\end_layout
+
+\begin_layout Subsection
+Output Manager
+\end_layout
+
+\begin_layout Standard
+The OutputManager object controls the type of files written, the fields
+ included in the output, and how often output is written.
+ PyLith includes some specialized OutputManagers that precsribe while fields
+ are output by default.
+ In some cases, additional fields are available but not included by default.
+ For example, in 3D problems, the along-strike and up-dir directions over
+ the fault surface can be included in the diagnostic information.
+ These are not included by default, because 1D problems have neither an
+ along-strike nor up-dip direction and 2D problems do not have an up-dip
+ direction.
+\end_layout
+
+\begin_layout Subsubsection
+Output Manager Parameters
+\end_layout
+
+\begin_layout Standard
+The parameters for the OutputManager are:
+\end_layout
+
+\begin_layout Description
+output_freq Flag indicating whether to write output based on the time or
+ number of time steps since the last output.
+ Permissible values are 
+\begin_inset Quotes eld
+\end_inset
+
+time_step
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+skip
+\begin_inset Quotes erd
+\end_inset
+
+ (default).
+\end_layout
+
+\begin_layout Description
+time_step Minimum time between output if output_freq is set to 
+\begin_inset Quotes eld
+\end_inset
+
+time_step
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Description
+skip Number of time steps between output if output_freq is set to 
+\begin_inset Quotes eld
+\end_inset
+
+skip
+\begin_inset Quotes erd
+\end_inset
+
+.
+ A value of 0 means every time step is written.
+\end_layout
+
+\begin_layout Description
+writer Writer for data (currently limited to VTK writer).
+\end_layout
+
+\begin_layout Description
+coordsys Coordinate system for vertex coordinates (currently ignored).
+\end_layout
+
+\begin_layout Description
+vertex_filter Filter to apply to all vertex fields (see Section 
+\begin_inset LatexCommand ref
+reference "sub:vertex:field:filters"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Description
+cell_filter Filter to apply to all cell fields (see Section 
+\begin_inset LatexCommand ref
+reference "sub:cell:field:filters"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+An example of setting the output parameters for a material in a .cfg file
+ is
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.elastic.output]
+\end_layout
+
+\begin_layout LyX-Code
+output_freq = time_step
+\end_layout
+
+\begin_layout LyX-Code
+time_step = 1.0*yr
+\end_layout
+
+\begin_layout LyX-Code
+cell_filter = pylith.meshio.CellFilterAvg
+\end_layout
+
+\begin_layout LyX-Code
+cell_info_fields = [density] ; limit diagnostic data to density
+\end_layout
+
+\begin_layout LyX-Code
+cell_data_fields = [total-strain,stress] ; default
+\end_layout
+
+\begin_layout LyX-Code
+writer.filename = dislocation-statevars-elastic.vtk
+\end_layout
+
+\begin_layout Subsubsection
+Output Over Subdomain
+\end_layout
+
+\begin_layout Standard
+Output of the solution over the entire domain for large problems generates
+ very large data files.
+ In some cases one is primarily interested in the solution over the ground
+ surface.
+ PyLith supports output of the solution on any boundary of the domain by
+ associating an output manager with a group of vertices corresponding to
+ the surface of the boundary.
+ As with several of the boundary conditions, the boundary must be a simply-conne
+cted surface.
+ The OutputSolnSubset is the specialized OutputManager that implements this
+ feature and, by default, includes the displacement field in the output.
+ In addition to the OutputManager parameters, the OutputSolnSubset includes:
+\end_layout
+
+\begin_layout Description
+label Label of group of vertices defining boundary surface.
+\end_layout
+
+\begin_layout Description
+vertex_data_fields Names of vertex data fields to output (default is [
+\begin_inset Quotes eld
+\end_inset
+
+displacements
+\begin_inset Quotes erd
+\end_inset
+
+]).
+\end_layout
+
+\begin_layout Subsection
+Output Field Filters
+\end_layout
+
+\begin_layout Standard
+Output fields may not directly correspond to the information a user desires.
+ For example, the state variables of the materials, the default output includes
+ the state variables (or physical properties) at each quadrature point.
+ Most visualization packages cannot handle cell fields with multiple points
+ in a cell (the locations of the points within the cell are not included
+ in the data file).
+ In order to reduce the field to a single point within the cell, we would
+ like to average the values.
+ This is best done within PyLith before output, because it reduces the file
+ size and the quadrature information provides the information necessary
+ (the weights of the quadrature points) to compute the appropriate average
+ over the cell.
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset LatexCommand label
+name "sub:vertex:field:filters"
+
+\end_inset
+
+Vertex Field Filters
+\end_layout
+
+\begin_layout Standard
+Currently the only filter available for vertex fields computes the magnitude
+ of a vector at each location.
+ Most visualization packages support this operation, so this filter is not
+ very useful.
+\end_layout
+
+\begin_layout Description
+VertexFilterVecNorm Computes the magnitude of a vector field at each location.
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset LatexCommand label
+name "sub:cell:field:filters"
+
+\end_inset
+
+Cell Field Filters
+\end_layout
+
+\begin_layout Standard
+Most users will want to apply a filter to cell fields to average the fields
+ over the cell, producing values at one location per cell for visualization.
+\end_layout
+
+\begin_layout Description
+CellFilterAvg Compute the weighted average of the values within a cell.
+ The weights are determined from the quadrature associated with the cells.
+\end_layout
+
+\begin_layout Subsection
+VTK Output
+\end_layout
+
+\begin_layout Standard
+PyLith writes legacy (non-XML) VTK files.
+ These are simple files with vertex coordinates, the mesh topology, and
+ fields over vertices and/or cells.
+ Each time step is written to a different file.
+ The time stamp (in seconds) is included in the filename with the decimal
+ point removed.
+ This allows automatic generation of animations with many visualization
+ packages that use VTK files.
+\end_layout
+
+\begin_layout Subsubsection
+VTKWriter Parameters
+\end_layout
+
+\begin_layout Standard
+The parameters for the VTKWriter are:
+\end_layout
+
+\begin_layout Description
+filename Name of VTK file
+\end_layout
+
+\begin_layout Description
+timeFormat C style format string for time stamp in filename.
+ The decimal point in the time stamp will be removed for compatibility with
+ VTK visualization packages that provide seamless animation of data from
+ multiple VTK files.
 \end_layout
 
 \begin_layout Section
@@ -1762,9 +2045,20 @@ If you encounter errors or warnings, use the --help, --help-components,
 \end_layout
 
 \begin_layout Itemize
-Use the --petsc.log_summary, --petsc.ksp_monitor, and --petsc.ksp_view command
- line arguments (or set them in a parameter file) to view PyLith performance
- and monitor the convergence.
+Use the 
+\family typewriter
+--petsc.log_summary
+\family default
+, 
+\family typewriter
+--petsc.ksp_monitor
+\family default
+, and 
+\family typewriter
+--petsc.ksp_view
+\family default
+ command line arguments (or set them in a parameter file) to view PyLith
+ performance and monitor the convergence.
 \end_layout
 
 \begin_layout Itemize
@@ -1772,7 +2066,7 @@ Turn on the journals (see the examples) to monitor the progress of the code.
 \end_layout
 
 \begin_layout Subsection
-Troubleshooting Problems Running PyLith
+Troubleshooting
 \end_layout
 
 \begin_layout Itemize
@@ -1833,6 +2127,85 @@ $ which mpirun
 
 \begin_layout Quote
 If it is not, adjust your PATH environment variable accordingly.
+\end_layout
+
+\begin_layout Itemize
+PyLith crashes with a bus error.
+\end_layout
+
+\begin_layout Quote
+This often indicates that PyLith is using incompatible versions of libraries.
+ This can result from changing your environment variables after configuring
+ or installing PyLith (when building from source) or errors in setting the
+ environment variables (PATH, LD_LIBRARY_PATH, and PYTHONPATH).
+ If the former case, simply reconfigure and rebuild PyLith.
+ In the latter case, check your environment variables (order matters!) to
+ make sure PyLith finds the desired directories before system directories.
+ 
+\end_layout
+
+\begin_layout Itemize
+PyLith crashes with a segmentation fault.
+\end_layout
+
+\begin_layout Quote
+A segmentation fault might be caused by an error that wasn't trapped or
+ a bug in the code.
+ Please report these cases so that we can fix these problems (either trap
+ the error and provide the user with an informative error message or fix
+ the bug).
+ If this occurs with any of the problems distributed with PyLith, simply
+ submit a bug report (see Section ) indicating which problem you ran and
+ your platform.
+ If the crash occurs for a problem you created, it is a great help if you
+ can try to reproduce the crash with a very simple problem (e.g., adjust the
+ boundary conditions or other parameters of one of the examples to reproduce
+ the segmentation fault).
+ Submit a bug report along with log files showing the backtrace from a debugger
+ (e.g., gdb) and the valgrind log file (only available on Linux platforms).
+ You can generate a backtrace using the debugger by using the 
+\family typewriter
+--petsc.start_in_debugger
+\family default
+ command line argument:
+\end_layout
+
+\begin_layout LyX-Code
+pylith [..args..] --petsc.start_in_debugger
+\end_layout
+
+\begin_layout LyX-Code
+(gdb) continue
+\end_layout
+
+\begin_layout LyX-Code
+(gdb) backtrace
+\end_layout
+
+\begin_layout Quote
+To use valgrind to detect the memory error, first, go to your working directory
+ and run the problem with 
+\family typewriter
+--launcher.dry
+\family default
+:
+\end_layout
+
+\begin_layout LyX-Code
+pylith [..args..] --launcher.dry
+\end_layout
+
+\begin_layout Quote
+Instead of actually running the problem, this causes PyLith to dump the
+ mpirun/mpiexec command it will execute.
+ Copy and paste this command into your shell so you can run it directly.
+ Insert the full path to valgrind before the full path to mpinemesis and
+ tell valgrind to use a log file:
+\end_layout
+
+\begin_layout LyX-Code
+mpirun -np 1 /path/to/valgrind --log-file=valgrind-log  /path/to/mpinemesis
+ --pyre-start [..lots of junk..]
 \end_layout
 
 \end_body
