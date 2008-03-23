@@ -72,7 +72,7 @@ class IntegratorElasticity(Integrator):
 
     Integrator.verifyConfiguration(self)
     self.material.verifyConfiguration()
-    self.output.verifyConfiguration()
+    self.output.verifyConfiguration(self.mesh)
 
 
     self._logger.eventEnd(logEvent)    

@@ -91,7 +91,7 @@ public :
    *
    * @param mesh Finite-element mesh
    */
-  void verifyConfiguration(const ALE::Obj<Mesh>& mesh);
+  void verifyConfiguration(const ALE::Obj<Mesh>& mesh) const;
 
   /** Get cell field associated with integrator.
    *

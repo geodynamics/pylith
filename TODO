@@ -1,21 +1,4 @@
 ======================================================================
-KNOWN DEFICIENCIES
-======================================================================
-
-  Can't use block Jacobi preconditioner when Dirichlet BC overlap with
-  fault BC's, because we end up with a DOF associated with a Lagrange
-  multiplier that is "free". Not sure if this is okay, when the fault
-  is at an angle to the boundary.
-
-    Might be able to fix this problem by examining constraints
-    relative to orientation and if orientation coincides with
-    preexisting constraint, then constrain Lagrange multiplier DOF.
-
-  Need better error trapping when using LineParser. State of
-  ifstream is insufficient. Need state of istringstream buffer, but it
-  is often !good() at eof(). Test of !good() and !eof()?
-
-======================================================================
 CURRENT ISSUES
 ======================================================================
 
@@ -28,12 +11,6 @@ Release 1.1
   3. Add more error checking.
 
      a. Add check to make sure every material in mesh has a material model.
-
-     b. When importing mesh, add check to make sure all cells have same
-        number of vertices (especially CUBIT).
-
-     c. Add check to make sure that label in BC, faults, and output
-     subset actually exists in mesh (verifyConfiguration()).
 
   4. Fix hanging on multiple processors (proc 0 doesn't have a fault?).
 
@@ -61,8 +38,7 @@ Release 1.1
 
   Manual
 
-    1. Need to add explanation of output and output parameters
-       (especially fault information).
+    1. Add list of output fields for elastic materials.
 
     2. Add strike-slip benchmarks.
 
@@ -135,6 +111,23 @@ Release 1.3
          Slip and change in tractions (time histories)
          Fault constitutive values (time histories)
          Orientation , Fault constitutive parameters (diagnostic)
+
+======================================================================
+KNOWN DEFICIENCIES
+======================================================================
+
+  Can't use block Jacobi preconditioner when Dirichlet BC overlap with
+  fault BC's, because we end up with a DOF associated with a Lagrange
+  multiplier that is "free". Not sure if this is okay, when the fault
+  is at an angle to the boundary.
+
+    Might be able to fix this problem by examining constraints
+    relative to orientation and if orientation coincides with
+    preexisting constraint, then constrain Lagrange multiplier DOF.
+
+  Need better error trapping when using LineParser. State of
+  ifstream is insufficient. Need state of istringstream buffer, but it
+  is often !good() at eof(). Test of !good() and !eof()?
 
 ======================================================================
 MISC PRIORITIES (Brad)
@@ -251,10 +244,6 @@ THINGS WE NEED SIEVE TO DO (Matt)
 
   There is another version that takes an array of maxVolumes, one for each cell in oldMesh.
 
-5. Throw out cohesive midnodes from censored depth (not easy since they are mixed in with new vertices, maybe change numbering)
-
-   I think you can do this by placing them after cohesive cells
-
 6. Coarsening for PyLith meshes
 
 7. Time fixes
@@ -270,8 +259,3 @@ THINGS WE NEED SIEVE TO DO (Matt)
   Done a. Share memory in precomputation sections
 
 11. For Schur complement directly for mass matrix and Lagrange multiplier problem
-
-======================================================================
-QUESTIONS FOR LEIF
-======================================================================
-

@@ -77,11 +77,11 @@ class TestOutputSolnSubset(unittest.TestCase):
     """
     output = OutputSolnSubset()
     output._configure()
-    output.label = "label"
+    output.label = "2"
     output.preinitialize()
 
     output.vertexDataFields = ["displacements"]
-    output.verifyConfiguration()
+    output.verifyConfiguration(self.mesh)
     return
   
   

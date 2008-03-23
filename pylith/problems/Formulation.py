@@ -132,7 +132,7 @@ class Formulation(Component):
     for constraint in self.constraints:
       constraint.verifyConfiguration()
     for output in self.output.components():
-      output.verifyConfiguration()
+      output.verifyConfiguration(self.mesh)
 
     self._logger.eventEnd(logEvent)
     return

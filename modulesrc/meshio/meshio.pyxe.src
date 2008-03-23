@@ -1050,6 +1050,37 @@ cdef class OutputSolnSubset(OutputManager):
     return
 
 
+  def verifyConfiguration(self, mesh):
+    """
+    Verify compatibility of configuration settings.
+    """
+    # create shim for method 'verifyConfiguration'
+    #embed{ void OutputSolnSubset_verifyConfiguration(void* objVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::meshio::OutputSolnSubset*) objVptr)->verifyConfiguration(*mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    OutputSolnSubset_verifyConfiguration(self.thisptr, ptrFromHandle(mesh))
+    return
+
+
   def mesh(self, submesh, mesh):
     """
     Get mesh associated with subdomain.

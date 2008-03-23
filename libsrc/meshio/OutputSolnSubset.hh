@@ -52,6 +52,12 @@ public :
    */
   void label(const char* value);
 
+  /** Verify configuration.
+   *
+   * @param mesh PETSc mesh
+   */
+  void verifyConfiguration(const ALE::Obj<Mesh>& mesh) const;
+
   /** Get mesh associated with subdomain.
    *
    * @returns Mesh associated with subdomain.

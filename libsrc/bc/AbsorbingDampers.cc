@@ -402,8 +402,9 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::bc::AbsorbingDampers::verifyConfiguration(const ALE::Obj<Mesh>& mesh)
+pylith::bc::AbsorbingDampers::verifyConfiguration(const ALE::Obj<Mesh>& mesh) const
 { // verifyConfiguration
+  BoundaryCondition::verifyConfiguration(mesh);
 } // verifyConfiguration
 
 
