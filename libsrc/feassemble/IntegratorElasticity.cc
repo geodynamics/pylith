@@ -158,7 +158,7 @@ pylith::feassemble::IntegratorElasticity::updateState(
 // Verify configuration is acceptable.
 void
 pylith::feassemble::IntegratorElasticity::verifyConfiguration(
-						 const ALE::Obj<Mesh>& mesh)
+						 const ALE::Obj<Mesh>& mesh) const
 { // verifyConfiguration
   assert(0 != _quadrature);
   assert(0 != _material);

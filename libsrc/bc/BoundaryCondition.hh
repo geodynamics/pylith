@@ -78,13 +78,20 @@ public :
    */
   void db(spatialdata::spatialdb::SpatialDB* const db);
 
+  /** Verify configuration.
+   *
+   * @param mesh PETSc mesh
+   */
+  virtual
+  void verifyConfiguration(const ALE::Obj<Mesh>& mesh) const;
+
   /** Initialize boundary condition.
    *
    * @param mesh PETSc mesh
    * @param cs Coordinate system for mesh
    */
   virtual
-  void initialize(const ALE::Obj<ALE::Mesh>& mesh,
+  void initialize(const ALE::Obj<Mesh>& mesh,
 		  const spatialdata::geocoords::CoordSys* cs,
 		  const double_array& upDir) = 0;
 

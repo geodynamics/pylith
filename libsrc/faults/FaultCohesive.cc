@@ -20,6 +20,8 @@
 #include "pylith/utils/array.hh" // USES double_array
 
 #include <assert.h> // USES assert()
+#include <sstream> // USES std::ostringstream
+#include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -39,6 +41,13 @@ void
 pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<ALE::Mesh>& mesh)
 { // adjustTopology
   assert(std::string("") != label());
+
+  if (!mesh->hasIntSection(label())) {
+    std::ostringstream msg;
+    msg << "Mesh missing group of vertices '" << label()
+	<< " for fault interface condition.";
+    throw std::runtime_error(msg.str());
+  } // if  
 
   // Get group of vertices associated with fault
   const ALE::Obj<int_section_type>& groupField = 

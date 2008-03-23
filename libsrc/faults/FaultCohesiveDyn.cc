@@ -75,9 +75,16 @@ pylith::faults::FaultCohesiveDyn::integrateJacobian(
 // Verify configuration is acceptable.
 void
 pylith::faults::FaultCohesiveDyn::verifyConfiguration(
-					      const ALE::Obj<Mesh>& mesh)
+					      const ALE::Obj<Mesh>& mesh) const
 { // verifyConfiguration
   assert(0 != _quadrature);
+
+  if (!mesh->hasIntSection(label())) {
+    std::ostringstream msg;
+    msg << "Mesh missing group of vertices '" << label()
+	<< " for boundary condition.";
+    throw std::runtime_error(msg.str());
+  } // if  
 
   // check compatibility of mesh and quadrature scheme
   const int dimension = mesh->getDimension()-1;

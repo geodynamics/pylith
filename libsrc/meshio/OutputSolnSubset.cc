@@ -38,6 +38,21 @@ pylith::meshio::OutputSolnSubset::label(const char* value)
 } // label
 
 // ----------------------------------------------------------------------
+// Verify configuration is acceptable.
+void
+pylith::meshio::OutputSolnSubset::verifyConfiguration(const ALE::Obj<Mesh>& mesh) const
+{ // verifyConfiguration
+  assert(!mesh.isNull());
+
+  if (!mesh->hasIntSection(_label)) {
+    std::ostringstream msg;
+    msg << "Mesh missing group of vertices '" << _label
+	<< " for subdomain output.";
+    throw std::runtime_error(msg.str());
+  } // if
+} // verifyConfiguration
+
+// ----------------------------------------------------------------------
 // Get mesh associated with subdomain.
 const ALE::Obj<pylith::Mesh>&
 pylith::meshio::OutputSolnSubset::subdomainMesh(const ALE::Obj<Mesh>& mesh)

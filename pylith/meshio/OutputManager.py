@@ -117,7 +117,7 @@ class OutputManager(Component):
     return
   
 
-  def verifyConfiguration(self):
+  def verifyConfiguration(self, mesh):
     """
     Verify compatibility of configuration.
     """

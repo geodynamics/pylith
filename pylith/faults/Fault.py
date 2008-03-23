@@ -166,10 +166,11 @@ class Fault(Component):
             "Dimensions for quadrature: %d, dimensions of fault: %d" % \
             (self.quadrature.cell.cellDim, faultDim)
 
-    # :TODO: Make sure mesh has group of vertices with label.
+    assert(None != self.cppHandle)
+    self.cppHandle.verifyConfiguration(self.mesh.cppHandle)
 
     if None != self.output:
-      self.output.verifyConfiguration()
+      self.output.verifyConfiguration(self.mesh)
 
     self._logger.eventEnd(logEvent)
     return

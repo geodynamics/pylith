@@ -154,7 +154,7 @@ class TestOutputManager(unittest.TestCase):
     output.vertexDataFields = ["vertex data 2"]
     output.cellInfoFields = []
     output.cellDataFields = ["cell data"]
-    output.verifyConfiguration()
+    output.verifyConfiguration(dataProvider.getDataMesh())
     return
   
   

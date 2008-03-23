@@ -29,5 +29,20 @@ pylith::bc::BoundaryCondition::~BoundaryCondition(void)
   _db = 0;
 } // destructor
 
+// ----------------------------------------------------------------------
+// Verify configuration is acceptable.
+void
+pylith::bc::BoundaryCondition::verifyConfiguration(const ALE::Obj<Mesh>& mesh) const
+{ // verifyConfiguration
+  assert(!mesh.isNull());
+
+  if (!mesh->hasIntSection(_label)) {
+    std::ostringstream msg;
+    msg << "Mesh missing group of vertices '" << _label
+	<< " for boundary condition.";
+    throw std::runtime_error(msg.str());
+  } // if
+} // verifyConfiguration
+
 
 // End of file 

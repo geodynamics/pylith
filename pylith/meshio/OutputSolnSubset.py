@@ -84,6 +84,16 @@ class OutputSolnSubset(OutputManager):
     return
   
 
+  def verifyConfiguration(self, mesh):
+    """
+    Verify compatibility of configuration.
+    """
+    OutputManager.verifyConfiguration(self, mesh)
+    assert(None != self.cppHandle);
+    self.cppHandle.verifyConfiguration(mesh.cppHandle)
+    return
+
+
   def initialize(self, mesh):
     """
     Initialize output manager.

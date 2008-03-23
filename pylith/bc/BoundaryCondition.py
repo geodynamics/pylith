@@ -111,7 +111,8 @@ class BoundaryCondition(Component):
     """
     Verify compatibility of configuration.
     """
-    # :TODO:  Make sure mesh contains group with label.
+    assert(None != self.cppHandle)
+    self.cppHandle.verifyConfiguration(self.mesh.cppHandle)
     return
 
 

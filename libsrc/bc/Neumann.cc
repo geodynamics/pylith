@@ -331,8 +331,9 @@ pylith::bc::Neumann::integrateJacobian(PetscMat* mat,
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::bc::Neumann::verifyConfiguration(const ALE::Obj<Mesh>& mesh)
+pylith::bc::Neumann::verifyConfiguration(const ALE::Obj<Mesh>& mesh) const
 { // verifyConfiguration
+  BoundaryCondition::verifyConfiguration(mesh);
 } // verifyConfiguration
 
 // ----------------------------------------------------------------------

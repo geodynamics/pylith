@@ -135,7 +135,7 @@ public :
    * @param mesh Finite-element mesh
    */
   virtual
-  void verifyConfiguration(const ALE::Obj<Mesh>& mesh) = 0;
+  void verifyConfiguration(const ALE::Obj<Mesh>& mesh) const = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :

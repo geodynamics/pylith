@@ -70,6 +70,37 @@ cdef class BoundaryCondition:
     return
 
 
+  def verifyConfiguration(self, mesh):
+    """
+    Verify compatibility of configuration settings.
+    """
+    # create shim for method 'verifyConfiguration'
+    #embed{ void BoundaryCondition_verifyConfiguration(void* objVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::bc::BoundaryCondition*) objVptr)->verifyConfiguration(*mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    BoundaryCondition_verifyConfiguration(self.thisptr, ptrFromHandle(mesh))
+    return
+
+
   def initialize(self, mesh, cs, upDir):
     """
     Initialize boundary condition.
@@ -858,37 +889,6 @@ cdef class AbsorbingDampers(BoundaryCondition):
     return
 
 
-  def verifyConfiguration(self, mesh):
-    """
-    Verify compatibility of configuration settings.
-    """
-    # create shim for method 'verifyConfiguration'
-    #embed{ void AbsorbingDampers_verifyConfiguration(void* objVptr, void* meshVptr)
-    try {
-      assert(0 != objVptr);
-      assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::bc::AbsorbingDampers*) objVptr)->verifyConfiguration(*mesh);
-    } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (const ALE::Exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.msg().c_str()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
-    if mesh.name != "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument 'mesh' must be extension module type 'Mesh'."
-    AbsorbingDampers_verifyConfiguration(self.thisptr,
-                                   ptrFromHandle(mesh))
-    return
-
-
   def _createHandle(self):
     """
     Wrap pointer to C++ object in PyCObject.
@@ -1180,37 +1180,6 @@ cdef class Neumann(BoundaryCondition):
                            t,
                            ptrFromHandle(fields),
                            ptrFromHandle(mesh))
-    return
-
-
-  def verifyConfiguration(self, mesh):
-    """
-    Verify compatibility of configuration settings.
-    """
-    # create shim for method 'verifyConfiguration'
-    #embed{ void Neumann_verifyConfiguration(void* objVptr, void* meshVptr)
-    try {
-      assert(0 != objVptr);
-      assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::bc::Neumann*) objVptr)->verifyConfiguration(*mesh);
-    } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (const ALE::Exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.msg().c_str()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
-    if mesh.name != "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument 'mesh' must be extension module type 'Mesh'."
-    Neumann_verifyConfiguration(self.thisptr,
-                                   ptrFromHandle(mesh))
     return
 
 
