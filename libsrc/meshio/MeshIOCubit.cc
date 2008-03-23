@@ -215,8 +215,13 @@ pylith::meshio::MeshIOCubit::_readCells(NcFile& ncfile,
       *numCorners = num_nod_per_el->size();
       const int size = (*numCells) * (*numCorners);
       cells->resize(size);
-    } else
-      assert(num_nod_per_el->size() == *numCorners);
+    } else if (num_nod_per_el->size() != *numCorners) {
+      std::ostringstream msg;
+      msg << "All materials must have the same number of vertices per cell.\n"
+	  << "Expected " << *numCorners << " vertices per cell, but block "
+	  << blockIds[iMaterial] << " has " << num_nod_per_el->size() << " vertices.";
+      throw std::runtime_error(msg.str());
+    } // if
 
     varname.str("");
     varname << "num_el_in_blk" << iMaterial+1;
