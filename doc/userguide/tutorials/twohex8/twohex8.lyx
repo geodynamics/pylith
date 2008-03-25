@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -432,9 +432,9 @@ axialdisp.vtk
 \begin_layout Description
 pylithapp.timedependent.materials.material.output Defines the filter to be used
  when writing cell state variables (average over the quadrature points of
- the cell), gives the base filename for state variable output files, and
- defines the format to use when defining the output filenames for each time
- step.
+ the cell), specifies which state variables and properties to output, gives
+ the base filename for state variable output files, and defines the format
+ to use when defining the output filenames for each time step.
 \end_layout
 
 \begin_layout Standard
@@ -449,6 +449,21 @@ axialdisp.cfg
 .
  Since data are being specified using two control points (rather than being
  uniform over the mesh, for example), the data dimension is one.
+ Note that since we are using a Maxwell viscoelastic model, additional state
+ variables and properties may be output if they are specified.
+ Otherwise, the default values will be used:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.material.output]
+\end_layout
+
+\begin_layout LyX-Code
+cell_data_fields = [total-strain,viscous-strain,stress]
+\end_layout
+
+\begin_layout LyX-Code
+cell_info_fields = [mu,lambda,density,Maxwell-time]
 \end_layout
 
 \begin_layout Standard
@@ -500,7 +515,8 @@ xxxx
 \family default
  is the time in seconds for which output has been produced.
  These files contain the state variables for each cell at the given time.
- The default fields are the total strain and stress fields.
+ The default fields are the total strain and stress fields; however, we
+ have also requested the viscous strains.
  As specified in 
 \family typewriter
 axialdisp.cfg
@@ -511,7 +527,7 @@ axialdisp.cfg
 axialdisp-statevars_info.vtk
 \family default
 ) gives the material properties used for the problem.
- Since we have not specified which properties to write, the default properties
+ We have requested all of the properties available for this material model
  (
 \family typewriter
 mu
@@ -524,7 +540,11 @@ lambda
 \family typewriter
 density
 \family default
-) are written.
+, 
+\family typewriter
+Maxwell-time
+\family default
+).
  All of the 
 \family typewriter
 .vtk
@@ -663,9 +683,9 @@ sheardisp.vtk
 \begin_layout Description
 pylithapp.timedependent.materials.material.output Defines the filter to be used
  when writing cell state variables (average over the quadrature points of
- the cell), gives the base filename for state variable output files, and
- defines the format to use when defining the output filenames for each time
- step.
+ the cell), specifies which state variables and properties to output, gives
+ the base filename for state variable output files, and defines the format
+ to use when defining the output filenames for each time step.
 \end_layout
 
 \begin_layout Standard
@@ -680,6 +700,21 @@ sheardisp.cfg
 .
  Data are being specified at two control points (rather than being uniform
  over the mesh, for example), so the data dimension is one.
+ Note that since we are using a Maxwell viscoelastic model, additional state
+ variables and properties may be output if they are specified.
+ Otherwise, the default values will be used:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.material.output]
+\end_layout
+
+\begin_layout LyX-Code
+cell_data_fields = [total-strain,viscous-strain,stress]
+\end_layout
+
+\begin_layout LyX-Code
+cell_info_fields = [mu,lambda,density,Maxwell-time]
 \end_layout
 
 \begin_layout Standard
@@ -731,7 +766,8 @@ xxxx
 \family default
  is the time in seconds for which output has been produced.
  These files contain the state variables for each cell at the given time.
- The default fields are the total strain and stress fields.
+ The default fields are the total strain and stress fields; however, we
+ have also requested the viscous strains.
  As specified in 
 \family typewriter
 sheardisp.cfg
@@ -742,7 +778,7 @@ sheardisp.cfg
 sheardisp-statevars_info.vtk
 \family default
 ) gives the material properties used for the problem.
- Since we have not specified which properties to write, the default properties
+ We have requested all of the properties available for this material model
  (
 \family typewriter
 mu
@@ -755,7 +791,11 @@ lambda
 \family typewriter
 density
 \family default
-) are written.
+, 
+\family typewriter
+Maxwell-time
+\family default
+).
  All of the 
 \family typewriter
 .vtk
@@ -913,8 +953,9 @@ pylithapp.timedependent.interfaces.fault.output.writer Gives the base filename
 \begin_layout Description
 pylithapp.timedependent.materials.material.output Defines the filter to be used
  when writing cell state variables (average the quadrature points for the
- cell), gives the base filename for state variable output files, and defines
- the format to use when defining the output filenames for each time step.
+ cell), specifies which state variables and properties to output, gives
+ the base filename for state variable output files, and defines the format
+ to use when defining the output filenames for each time step.
 \end_layout
 
 \begin_layout Standard
@@ -949,6 +990,21 @@ dislocation_sliprate.spatialdb
 dislocation_sliptime.spatialdb
 \family default
 .
+ Note that since we are using a Maxwell viscoelastic model, additional state
+ variables and properties may be output if they are specified.
+ Otherwise, the default values will be used:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.material.output]
+\end_layout
+
+\begin_layout LyX-Code
+cell_data_fields = [total-strain,viscous-strain,stress]
+\end_layout
+
+\begin_layout LyX-Code
+cell_info_fields = [mu,lambda,density,Maxwell-time]
 \end_layout
 
 \begin_layout Standard
@@ -1012,7 +1068,8 @@ xxxx
 \family default
  is the time for which output has been produced.
  These files contain the state variables for each cell at the given time.
- The default fields are the total strain and stress fields.
+ The default fields are the total strain and stress fields; however, we
+ have also requested the viscous strains.
  As specified in 
 \family typewriter
 dislocation.cfg
@@ -1030,7 +1087,7 @@ dislocation-fault_txxxx.vtk
 dislocation-statevars_info.vtk
 \family default
 ) gives the material properties used for the problem.
- Since we have not specified which properties to write, the default properties
+ We have requested all of the properties available for this material model
  (
 \family typewriter
 mu
@@ -1043,7 +1100,11 @@ lambda
 \family typewriter
 density
 \family default
-) are written.
+, 
+\family typewriter
+Maxwell-time
+\family default
+).
  The final additional file (
 \family typewriter
 dislocation-fault_info.vtk
