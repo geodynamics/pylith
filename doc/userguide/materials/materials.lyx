@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -315,6 +315,273 @@ reference "sec:Spatialdata:SimpleIOAscii"
  describes the format of the spatial database files.
  In a more realistic problem, a different spatial database, and possibly
  a different material model, would be used for each material group.
+\end_layout
+
+\begin_layout Standard
+By default the output manager for a material does not output any information.
+ This behavior may be changed by specifying output files for each material
+ group:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.elastic_upper.output]
+\end_layout
+
+\begin_layout LyX-Code
+cell_filter = pylith.meshio.CellFilterAvg
+\end_layout
+
+\begin_layout LyX-Code
+writer.filename = dislocation-statevars-upper.vtk
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.elastic_lower.output]
+\end_layout
+
+\begin_layout LyX-Code
+cell_filter = pylith.meshio.CellFilterAvg
+\end_layout
+
+\begin_layout LyX-Code
+writer.filename = dislocation-statevars-lower.vtk
+\end_layout
+
+\begin_layout Standard
+These settings again correspond to the problem in 
+\family typewriter
+examples/3d/hex8
+\family default
+.
+ The specification of a state variable base filename (
+\family typewriter
+writer.filename
+\family default
+ settings) will cause two files to be created for each material group: an
+ info file, which describes the material properties used in the model, and
+ a state variables file, which contains the state variable information.
+ If the problem has more than one time step, a state variable output file
+ will be created for each requested time step.
+ We have requested that the values be averaged over each cell.
+ Otherwise, output would be produced for each quadrature point, which can
+ cause problems with some visualization packages.
+ For this example problem, the material is three-dimensional isotropic elastic,
+ and is thus described by only three material properties (
+\begin_inset Formula $\lambda$
+\end_inset
+
+, 
+\begin_inset Formula $\mu$
+\end_inset
+
+, 
+\begin_inset Formula $\rho$
+\end_inset
+
+), as described below.
+ These properties are output by default.
+ Other material models require additional parameters, and if users want
+ these to be output, they must be specified.
+ Similarly, other material models require state variables in addition to
+ the default stress and strain variables that are used by all material models.
+ Additional output may be requested for a material model, as in this example
+ (
+\family typewriter
+examples/twocells/twohex8
+\family default
+):
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.material.output]
+\end_layout
+
+\begin_layout LyX-Code
+cell_data_fields = [total-strain,viscous-strain,stress]
+\end_layout
+
+\begin_layout LyX-Code
+cell_info_fields = [mu,lambda,density,Maxwell-time]
+\end_layout
+
+\begin_layout Standard
+The properties and state variable available for output in each material
+ model are listed in 
+\begin_inset LatexCommand ref
+reference "tab:material-model-output"
+
+\end_inset
+
+.
+ For the generalized Maxwell model, values of shear-ratio and Maxwell-time
+ are given for each Maxwell element in the model (there are presently three,
+ as described below).
+ Similarly, there are three sets of viscous-strain values for the generalized
+ Maxwell model.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:material-model-output"
+
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="3">
+<features>
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Model
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Properties
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+State Variables
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Elastic
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+[mu,lambda,density]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+[total-strain,stress]
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Maxwell Viscoelastic
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+[mu,lambda,density,Maxwell-time]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+[total-strain,viscous-strain,stress]
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Generalized Maxwell Viscoelastic
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+[mu,lambda,density,shear-ratio,Maxwell-time]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+[total-strain,viscous-strain,stress]
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Properties and state variables available for output for existing material
+ models.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
