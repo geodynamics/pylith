@@ -56,7 +56,6 @@ pylith::meshio::VertexFilterVecNorm::filter(
   assert(!vertices.isNull());
   const Mesh::label_sequence::iterator verticesEnd = vertices->end();
 
-  const int totalFiberDim = fieldIn->getFiberDimension(*vertices->begin());
   const int fiberDim = fieldIn->getFiberDimension(*vertices->begin());
 
   // Allocation field if necessary

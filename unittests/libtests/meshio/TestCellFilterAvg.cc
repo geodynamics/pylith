@@ -68,7 +68,7 @@ pylith::meshio::TestCellFilterAvg::testFilter(void)
 
 
 
-  const VectorFieldEnum fieldTypeE = SCALAR_FIELD;
+  const VectorFieldEnum fieldTypeE = OTHER_FIELD;
   const int fiberDimE = 1;
   const double fieldValuesE[] = {
     (1.5*1.1 + 0.5*1.2)/2.0,
