@@ -135,7 +135,9 @@ pylith::meshio::MeshIO::_getVertices(double_array* coordinates,
   assert(!coordsField.isNull());
 
   *numVertices = vertices->size();
+  assert(*numVertices > 0);
   *spaceDim = coordsField->getFiberDimension(*vertices->begin());
+  assert(*spaceDim > 0);
 
   const int size = (*numVertices) * (*spaceDim);
   coordinates->resize(size);

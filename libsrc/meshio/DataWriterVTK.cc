@@ -148,6 +148,14 @@ pylith::meshio::DataWriterVTK::writeVertexField(
   assert(!field.isNull());
 
   try {
+    const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+    assert(!vertices.isNull());
+    int rank = 0;
+    MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+    std::cout << "Proc: " << rank
+	      << ", # vertices: " << vertices->size() 
+	      << std::endl;
+
     const std::string labelName = 
       (mesh->hasLabel("censored depth")) ? "censored depth" : "depth";
     const ALE::Obj<Mesh::numbering_type>& numbering =
@@ -156,7 +164,6 @@ pylith::meshio::DataWriterVTK::writeVertexField(
 
     const int fiberDim = 
       field->getFiberDimension(*mesh->getLabelStratum(labelName, 0)->begin());
-    assert(fiberDim > 0);
     const int enforceDim = (fieldType != VECTOR_FIELD) ? fiberDim : 3;
 
     PetscErrorCode err = 0;
@@ -204,6 +211,16 @@ pylith::meshio::DataWriterVTK::writeCellField(
   assert(!field.isNull());
 
   try {
+    const ALE::Obj<Mesh::label_sequence>& cells = (0 == label) ?
+      mesh->heightStratum(0) :
+      mesh->getLabelStratum(label, labelId);
+    assert(!cells.isNull());
+    int rank = 0;
+    MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+    std::cout << "Proc: " << rank
+	      << ", # cells: " << cells->size() 
+	      << std::endl;
+
     // Correctly handle boundary and fault meshes
     //const int depth = mesh->depth();
     const int depth = (0 == label) ? 1 : labelId;

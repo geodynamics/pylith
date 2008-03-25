@@ -65,16 +65,12 @@ pylith::meshio::CellFilterAvg::filter(
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
 
+  // Only processors with cells for output get the correct fiber dimension.
   const int totalFiberDim = fieldIn->getFiberDimension(*cells->begin());
   const int fiberDim = totalFiberDim / numQuadPts;
   assert(fiberDim * numQuadPts == totalFiberDim);
 
-  if (1 == fiberDim)
-    *fieldType = SCALAR_FIELD;
-  else if (mesh->getDimension() == fiberDim)
-    *fieldType = VECTOR_FIELD;
-  else
-    *fieldType = OTHER_FIELD;
+  *fieldType = OTHER_FIELD; // Don't know field type
   
   // Allocation field if necessary
   if (_fieldAvg.isNull() ||
