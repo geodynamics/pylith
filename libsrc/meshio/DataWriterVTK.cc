@@ -152,9 +152,6 @@ pylith::meshio::DataWriterVTK::writeVertexField(
     assert(!vertices.isNull());
     int rank = 0;
     MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
-    std::cout << "Proc: " << rank
-	      << ", # vertices: " << vertices->size() 
-	      << std::endl;
 
     const std::string labelName = 
       (mesh->hasLabel("censored depth")) ? "censored depth" : "depth";
@@ -217,9 +214,6 @@ pylith::meshio::DataWriterVTK::writeCellField(
     assert(!cells.isNull());
     int rank = 0;
     MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
-    std::cout << "Proc: " << rank
-	      << ", # cells: " << cells->size() 
-	      << std::endl;
 
     // Correctly handle boundary and fault meshes
     //   Cannot just use mesh->depth() because boundaries report the wrong thing
