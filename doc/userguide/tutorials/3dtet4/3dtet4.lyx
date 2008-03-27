@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -146,7 +146,7 @@ examples/3d/tet4.
  For more detailed information on using LaGriT, refer to the 
 \begin_inset LatexCommand htmlurl
 name "LaGriT web site"
-target "lagrit.lanl..gov"
+target "lagrit.lanl.gov"
 
 \end_inset
 
@@ -163,7 +163,7 @@ If you are using LaGriT to generate your own mesh, there are two ways to
 \family sans
  
 \family default
-example directory (
+examples directory (
 \family typewriter
 examples/3d/tet4
 \family default
@@ -218,7 +218,11 @@ Continuing through the remainder of the commands in
 \family typewriter
 mesh_tet4_1000m.lagrit
 \family default
-, you will eventually end up with the files tet4_1000m_binary.gmv, 
+, you will eventually end up with the files 
+\family typewriter
+tet4_1000m_binary.gmv
+\family default
+, 
 \family typewriter
 tet4_1000m_ascii.gmv
 \family default
@@ -252,7 +256,7 @@ target "laws.lanl.gov/XCM/gmv/GMVHome.html"
 .pset
 \family default
  files specify the vertices corresponding to each boundary used in the problem,
- including the fault as well as external boundaries to with boundary conditions
+ including the fault as well as external boundaries to which boundary conditions
  are applied.
  This mesh may then be used for the examples described below.
 \end_layout
@@ -883,7 +887,7 @@ density
 \family typewriter
 shearxy-groundsurf_t0000000.vtk
 \family default
-) is analagous to 
+) is analogous to 
 \family typewriter
 shearxy_t0000000.vtk
 \family default
@@ -1104,7 +1108,11 @@ dislocation-statevars-neg1.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.elastic_pos1.output Gives the base filename
- for state variable output files for the elastic_pos1 material set (
+ for state variable output files for the 
+\family typewriter
+elastic_pos1
+\family default
+ material set (
 \family typewriter
 dislocation-statevars-pos1.vtk
 \family default
@@ -1128,7 +1136,11 @@ dislocation-statevars-neg2.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.elastic_pos2.output Gives the base filename
- for state variable output files for the elastic_pos2 material set (
+ for state variable output files for the 
+\family typewriter
+elastic_pos2
+\family default
+ material set (
 \family typewriter
 dislocation-statevars-pos2.vtk
 \family default
@@ -1275,7 +1287,7 @@ density
 \family typewriter
 dislocation-groundsurf_t0000000.vtk
 \family default
-) is analagous to 
+) is analogous to 
 \family typewriter
 dislocation_t0000000.vtk
 \family default

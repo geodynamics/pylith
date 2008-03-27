@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -64,13 +64,25 @@ The Crustal Deformation Modeling Working Group within the Southern California
  Earthquake Center and the Short-Term Tectonics Working Group within CIG
  developed a suite of benchmarks to test the accuracy and peformance of
  3D numerical codes.
- The benchmark definitions are posted on the CIG website at http://www.geodynamic
-s.org/cig/workinggroups/short/workarea/benchmarks/.
+ The benchmark definitions are posted on the CIG website at 
+\begin_inset LatexCommand htmlurl
+name "Short-Term Tectonics Benchmarks"
+target "geodynamics.org/cig/workinggroups/short/workarea/benchmarks/"
+
+\end_inset
+
+.
  These benchmarks permit evaluating the relative performance of different
- types of basis functions, quadrature schemes, and discretizations for 
- geophysical applications.
- The files needed to run the benchmarks are in the CIG SVN repository at
- http://geodynamics.org/svn/cig/short/3D/PyLith/benchmarks.
+ types of basis functions, quadrature schemes, and discretizations for geophysic
+al applications.
+ The files needed to run the benchmarks are in the 
+\begin_inset LatexCommand htmlurl
+name "CIG SVN Repository"
+target "geodynamics.org/svn/cig/short/3D/PyLith/benchmarks"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
