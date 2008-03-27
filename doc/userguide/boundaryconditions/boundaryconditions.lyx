@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -354,6 +354,8 @@ reference "sec:spatial:databases"
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float table
 placement H
 wide false
@@ -830,6 +832,8 @@ DirichletPoints
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float table
 placement H
 wide false

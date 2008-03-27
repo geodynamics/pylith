@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -74,6 +74,11 @@ target "geodynamics.org/roundup/"
 \end_layout
 
 \begin_layout Section
+\begin_inset LatexCommand label
+name "sec:Getting-Help-and"
+
+\end_inset
+
 Getting Help and Reporting Bugs
 \end_layout
 

@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -730,13 +730,13 @@ density
 \family typewriter
 shearxy-statevars-lower_info.vtk
 \family default
-) are exactly analagous to the corresponding files for the upper elastic
+) are exactly analogous to the corresponding files for the upper elastic
  material.
  The final file (
 \family typewriter
 shearxy-groundsurf_t0000000.vtk
 \family default
-) is analagous to 
+) is analogous to 
 \family typewriter
 shearxy_t0000000.vtk
 \family default
@@ -1100,7 +1100,7 @@ for the lower elastic material (dislocation-statevars-lower_t0000000.vtk
 \family typewriter
 dislocation-statevars-lower_info.vtk
 \family default
-) are exactly analagous to the corresponding files for the upper elastic
+) are exactly analogous to the corresponding files for the upper elastic
  material.
  The sixth file (
 \family typewriter
@@ -1108,7 +1108,7 @@ dislocation-ground
 \newline
 surf_t0000000.vtk
 \family default
-) is analagous to 
+) is analogous to 
 \family typewriter
 dislocation_t0000000.vtk
 \family default

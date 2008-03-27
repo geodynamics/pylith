@@ -1,4 +1,4 @@
-#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1780,47 +1780,23 @@ The parameters for the OutputManager are:
 \begin_layout Description
 output_freq Flag indicating whether to write output based on the time or
  number of time steps since the last output.
- Permissible values are 
-\begin_inset Quotes eld
-\end_inset
-
-time_step
-\begin_inset Quotes erd
-\end_inset
-
- and 
-\begin_inset Quotes eld
-\end_inset
-
-skip
-\begin_inset Quotes erd
-\end_inset
-
- (default).
+ Permissible values are ``time_step'' and ``skip'' (default).
 \end_layout
 
 \begin_layout Description
-time_step Minimum time between output if output_freq is set to 
-\begin_inset Quotes eld
-\end_inset
-
-time_step
-\begin_inset Quotes erd
-\end_inset
-
-.
+time_step Minimum time between output if 
+\family typewriter
+output_freq
+\family default
+ is set to ``time_step''.
 \end_layout
 
 \begin_layout Description
-skip Number of time steps between output if output_freq is set to 
-\begin_inset Quotes eld
-\end_inset
-
-skip
-\begin_inset Quotes erd
-\end_inset
-
-.
+skip Number of time steps between output if 
+\family typewriter
+output_freq
+\family default
+ is set to ``skip''.
  A value of 0 means every time step is written.
 \end_layout
 
@@ -1853,8 +1829,11 @@ reference "sub:cell:field:filters"
 \end_layout
 
 \begin_layout Standard
-An example of setting the output parameters for a material in a .cfg file
- is
+An example of setting the output parameters for a material in a 
+\family typewriter
+.cfg
+\family default
+ file is
 \end_layout
 
 \begin_layout LyX-Code
@@ -1909,15 +1888,8 @@ label Label of group of vertices defining boundary surface.
 \end_layout
 
 \begin_layout Description
-vertex_data_fields Names of vertex data fields to output (default is [
-\begin_inset Quotes eld
-\end_inset
-
-displacements
-\begin_inset Quotes erd
-\end_inset
-
-]).
+vertex_data_fields Names of vertex data fields to output (default is [``displace
+ments'']).
 \end_layout
 
 \begin_layout Subsection
@@ -2006,7 +1978,7 @@ filename Name of VTK file
 \end_layout
 
 \begin_layout Description
-timeFormat C style format string for time stamp in filename.
+timeFormat C-style format string for time stamp in filename.
  The decimal point in the time stamp will be removed for compatibility with
  VTK visualization packages that provide seamless animation of data from
  multiple VTK files.
@@ -2026,7 +1998,7 @@ Examine the examples for a problem similar to the one you want to run and
 \end_layout
 
 \begin_layout Itemize
-Start with a uniform resolution, coarse mesh to debug the problem setup.
+Start with a uniform-resolution coarse mesh to debug the problem setup.
  Increase the resolution as necessary to resolve the solution fields of
  interest (resolving stresses/strains may require a higher resolution than
  that for resolving displacements).
@@ -2039,9 +2011,20 @@ Merge materials using the same material model.
 \end_layout
 
 \begin_layout Itemize
-If you encounter errors or warnings, use the --help, --help-components,
- and --help-properties command line arguments to check the parameters to
- make sure PyLith is using the parameters you intended.
+If you encounter errors or warnings, use the 
+\family typewriter
+--help
+\family default
+, 
+\family typewriter
+--help-components
+\family default
+, and 
+\family typewriter
+--help-properties
+\family default
+ command line arguments to check the parameters to make sure PyLith is using
+ the parameters you intended.
 \end_layout
 
 \begin_layout Itemize
@@ -2152,11 +2135,16 @@ PyLith crashes with a segmentation fault.
 A segmentation fault might be caused by an error that wasn't trapped or
  a bug in the code.
  Please report these cases so that we can fix these problems (either trap
- the error and provide the user with an informative error message or fix
+ the error and provide the user with an informative error message, or fix
  the bug).
  If this occurs with any of the problems distributed with PyLith, simply
- submit a bug report (see Section ) indicating which problem you ran and
- your platform.
+ submit a bug report (see Section 
+\begin_inset LatexCommand ref
+reference "sec:Getting-Help-and"
+
+\end_inset
+
+) indicating which problem you ran and your platform.
  If the crash occurs for a problem you created, it is a great help if you
  can try to reproduce the crash with a very simple problem (e.g., adjust the
  boundary conditions or other parameters of one of the examples to reproduce
@@ -2183,7 +2171,7 @@ pylith [..args..] --petsc.start_in_debugger
 \end_layout
 
 \begin_layout Quote
-To use valgrind to detect the memory error, first, go to your working directory
+To use valgrind to detect the memory error, first go to your working directory
  and run the problem with 
 \family typewriter
 --launcher.dry
