@@ -362,7 +362,7 @@ pylith::meshio::MeshIO::_getGroup(int_array* points,
   if ((*_mesh)->height(firstPoint) == 0) {
     *type = CELL;
     numbering = (*_mesh)->getFactory()->getNumbering(*_mesh, 
-						     (*_mesh)->depth());
+                                                    (*_mesh)->depth());
   } else {
     *type = VERTEX;
     numbering = (*_mesh)->getFactory()->getNumbering(*_mesh, 0);
