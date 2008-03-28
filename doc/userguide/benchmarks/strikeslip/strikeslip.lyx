@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -284,7 +284,11 @@ The benchmarks at resolutions of 1000 m, 500 m, and 250 m require approximately
  step), which is the only solution that we can compare against analytical
  results.
  To run the time-dependent (viscoelastic) problem, it is necessary to append
- timedep.cfg to the above commands, e.g.:
+ 
+\family typewriter
+timedep.cfg
+\family default
+ to the above commands, e.g.:
 \end_layout
 
 \begin_layout LyX-Code
@@ -292,8 +296,8 @@ pylith strikeslip_cubit.cfg strikeslip_hex8_1000m.cfg timedep.cfg
 \end_layout
 
 \begin_layout Standard
-This will run the problem for 10 years, using a time step size of 0.1 years,
- and results will produced for each year.
+This will run the problem for 10 years, using a time-step size of 0.1 years,
+ and results will be produced for each year.
 \end_layout
 
 \begin_layout Subsection
@@ -306,7 +310,7 @@ After running the elastic solution for one of the meshes, you will end up
 \family typewriter
 .vtk
 \family default
- files, as described in 
+ files, as described in Chapter 
 \begin_inset LatexCommand ref
 reference "cha:Tutorials"
 
@@ -346,7 +350,7 @@ where
 \begin_inset Formula $u_{i}^{t}$
 \end_inset
 
- is the 'true' displacement for component i, and 
+ is the `true' displacement for component i, and 
 \begin_inset Formula $u_{i}^{c}$
 \end_inset
 
@@ -360,7 +364,7 @@ where
  CIG has developed a package called 
 \begin_inset LatexCommand htmlurl
 name "CIGMA"
-target "http://www.geodynamics.org/cig/software/packages/cs/cigma"
+target "geodynamics.org/cig/software/packages/cs/cigma"
 
 \end_inset
 
