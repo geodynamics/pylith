@@ -484,12 +484,17 @@ pylith::faults::FaultCohesiveKin::cellField(
   const int cohesiveDim = _faultMesh->getDimension();
 
   if (0 == strcasecmp("traction_change", name)) {
-    _allocateBufferCellVector();
-    *fieldType = VECTOR_FIELD;
+    _allocateBufferCellOther();
+    *fieldType = OTHER_FIELD;
     const ALE::Obj<real_section_type>& solution = fields->getSolution();
-    _calcTractionsChange(&_bufferCellVector, solution);
-    return _bufferCellVector;
-  } // if
+    _calcTractionsChange(&_bufferCellOther, solution);
+    return _bufferCellOther;
+  } else {
+    std::ostringstream msg;
+    msg << "Request for unknown cell field '" << name
+	<< "' for fault '" << label() << "'.";
+    throw std::runtime_error(msg.str());
+  } // else
 
   // Should not reach this point if requested field was found
   std::ostringstream msg;
@@ -498,7 +503,7 @@ pylith::faults::FaultCohesiveKin::cellField(
   throw std::runtime_error(msg.str());
 
   // Return generic section to satisfy member function definition.
-  return _bufferCellVector;
+  return _bufferCellOther;
 } // cellField
 
 // ----------------------------------------------------------------------
@@ -869,21 +874,21 @@ pylith::faults::FaultCohesiveKin::_allocateBufferVertexVector(void)
 // ----------------------------------------------------------------------
 // Allocate vector field for output of cell information.
 void
-pylith::faults::FaultCohesiveKin::_allocateBufferCellVector(void)
-{ // _allocateBufferCellVector
+pylith::faults::FaultCohesiveKin::_allocateBufferCellOther(void)
+{ // _allocateBufferCellOther
   assert(0 != _quadrature);
   const int numQuadPts = _quadrature->numQuadPts();
   const int spaceDim = _quadrature->spaceDim();
   const int fiberDim = numQuadPts * spaceDim;
-  if (_bufferCellVector.isNull()) {
-    _bufferCellVector = new real_section_type(_faultMesh->comm(), 
+  if (_bufferCellOther.isNull()) {
+    _bufferCellOther = new real_section_type(_faultMesh->comm(), 
 					      _faultMesh->debug());
     const ALE::Obj<Mesh::label_sequence>& cells = 
       _faultMesh->heightStratum(0);
-    _bufferCellVector->setFiberDimension(cells, fiberDim);
-    _faultMesh->allocate(_bufferCellVector);
+    _bufferCellOther->setFiberDimension(cells, fiberDim);
+    _faultMesh->allocate(_bufferCellOther);
   } // if  
-} // _allocateBufferCellVector
+} // _allocateBufferCellOther
 
 
 // End of file 

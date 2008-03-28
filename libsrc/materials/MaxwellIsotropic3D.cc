@@ -41,12 +41,12 @@ namespace pylith {
 
       /// Physical properties.
       const Material::PropMetaData properties[] = {
-	{ "density", 1, SCALAR_FIELD },
-	{ "lambda", 1, SCALAR_FIELD },
-	{ "mu", 1, SCALAR_FIELD },
-	{ "Maxwell-time", 1, SCALAR_FIELD },
-	{ "total-strain", 6, TENSOR_FIELD },
-	{ "viscous-strain", 6, TENSOR_FIELD },
+	{ "density", 1, OTHER_FIELD },
+	{ "lambda", 1, OTHER_FIELD },
+	{ "mu", 1, OTHER_FIELD },
+	{ "Maxwell-time", 1, OTHER_FIELD },
+	{ "total-strain", 6, OTHER_FIELD },
+	{ "viscous-strain", 6, OTHER_FIELD },
       };
       /// Indices (order) of properties.
       const int pidDensity = 0;

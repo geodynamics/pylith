@@ -207,8 +207,8 @@ private :
   /// Allocate vector field for output of vertex information.
   void _allocateBufferVertexVector(void);
 
-  /// Allocate vector field for output of cell information.
-  void _allocateBufferCellVector(void);
+  /// Allocate other field for output of cell information.
+  void _allocateBufferCellOther(void);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -251,7 +251,7 @@ private :
   ALE::Obj<real_section_type> _bufferVertexVector;
 
   /// Vector field for cell information over fault mesh.
-  ALE::Obj<real_section_type> _bufferCellVector;
+  ALE::Obj<real_section_type> _bufferCellOther;
 
 }; // class FaultCohesiveKin
 
