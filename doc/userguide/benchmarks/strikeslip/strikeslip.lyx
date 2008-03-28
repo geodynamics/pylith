@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -62,6 +62,14 @@ This benchmark problem computes the viscoelastic (Maxwell) relaxation of
  are imposed on the sides of a cube with sides of length 24 km.
  Anti-plane strain boundary conditions are imposed at y = 0, so the solution
  is equivalent to that for a domain with a 48 km length in the y direction.
+ We can use the analytical solution of 
+\begin_inset LatexCommand cite
+key "Okada:1992"
+
+\end_inset
+
+ both to apply the boundary conditions and to compare against the numerically-co
+mputed elastic solution.
 \end_layout
 
 \begin_layout Standard
@@ -109,10 +117,9 @@ The top (elastic) layer occupies the region
 Material\InsetSpace ~
 properties The material is a Poisson solid with a shear modulus
  of 30 GPa.
- The domain is modeled with two viscoelastic materials with a large viscosity
- in the top layer that results in essentially elastic behavior.
- The top layer has a viscosity of 1.0e+25 Pa-s and the bottom layer has a
- viscosity of 1.0e+18 Pa-s.
+ The domain is modeled using an elastic isotropic material for the top layer
+ and a Maxwell viscoelastic material for the bottom layer.
+ The bottom layer has a viscosity of 1.0e+18 Pa-s.
 \end_layout
 
 \begin_layout Description
@@ -165,8 +172,8 @@ Discretization The model is discretized with nominal spatial resolutions
 
 \begin_layout Description
 Basis\InsetSpace ~
-functions We use linear basis functions with both tetrahedral and hexahedra
-l cells.
+functions We use trilinear hexahedral cells and linear tetrahedral
+ cells.
 \end_layout
 
 \begin_layout Description
@@ -273,6 +280,20 @@ pylith strikeslip_lagrit.cfg strikeslip_tet4_1000m.cfg
 \begin_layout Standard
 The benchmarks at resolutions of 1000 m, 500 m, and 250 m require approximately
  ?? GB, ?? GB, and ?? GB, respectively.
+ Note that the commands above will only run the elastic solution (one time
+ step), which is the only solution that we can compare against analytical
+ results.
+ To run the time-dependent (viscoelastic) problem, it is necessary to append
+ timedep.cfg to the above commands, e.g.:
+\end_layout
+
+\begin_layout LyX-Code
+pylith strikeslip_cubit.cfg strikeslip_hex8_1000m.cfg timedep.cfg
+\end_layout
+
+\begin_layout Standard
+This will run the problem for 10 years, using a time step size of 0.1 years,
+ and results will produced for each year.
 \end_layout
 
 \begin_layout Subsection
@@ -280,7 +301,24 @@ Benchmark Results
 \end_layout
 
 \begin_layout Standard
-plot of solution
+After running the elastic solution for one of the meshes, you will end up
+ with several 
+\family typewriter
+.vtk
+\family default
+ files, as described in 
+\begin_inset LatexCommand ref
+reference "cha:Tutorials"
+
+\end_inset
+
+.
+ Using a file such as 
+\family typewriter
+strikeslip_hex8_1000m_t0000000.vtk
+\family default
+, you can create an image of the results such as ***RESULTS-FIGURE***, which
+ was generated using ParaView.
 \end_layout
 
 \begin_layout Subsubsection
@@ -288,15 +326,52 @@ Solution Accuracy
 \end_layout
 
 \begin_layout Standard
-Definition of local and global error
-\end_layout
+To check the solution accuracy for a given mesh, we can compare the elastic
+ solution to the analytical solution of 
+\begin_inset LatexCommand cite
+key "Okada:1992"
 
-\begin_layout Standard
-plot of local error
-\end_layout
+\end_inset
 
-\begin_layout Standard
-plot of convergence
+.
+ To do this, we need robust methods of measuring both the local (cell-level)
+ and global (mesh-level) error.
+ We define the local error as
+\begin_inset Formula \begin{equation}
+\epsilon_{local}=\frac{1}{V_{cell}}\intop_{cell}\sqrt{\left(u_{i}^{t}-u_{i}^{c}\right)^{2}}\: dV,\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $u_{i}^{t}$
+\end_inset
+
+ is the 'true' displacement for component i, and 
+\begin_inset Formula $u_{i}^{c}$
+\end_inset
+
+ is the computed displacement.
+ The errors are integrated over the cell using the same quadrature rules
+ that were used in the finite element solution.
+ The error is normalized by the cell volume so that the error is not related
+ to cell size.
+ The global error is obtained by summing the local errors for the entire
+ mesh.
+ CIG has developed a package called 
+\begin_inset LatexCommand htmlurl
+name "CIGMA"
+target "http://www.geodynamics.org/cig/software/packages/cs/cigma"
+
+\end_inset
+
+ that can be used to compute both local and global estimates of solution
+ accuracy.
+ The local error estimates may be output in a VTK file and may be visualized
+ using a package such as ParaView, as shown in ***Figure of local error***.
+ As seen in the figure, as mesh resolution increases, so does the solution
+ accuracy, as we would expect.
+ The figure also shows that hexahedral meshes provide greater accuracy at
+ the same resolution, at least for linear elements.
 \end_layout
 
 \begin_layout Subsubsection
