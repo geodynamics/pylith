@@ -468,5 +468,27 @@ Theory of Elasticity, Third Edition
 , McGraw-Hill, New York, 567 pp.
 \end_layout
 
+\begin_layout Bibliography
+\begin_inset LatexCommand bibitem
+label "10"
+key "Okada:1992"
+
+\end_inset
+
+Okada, Y., Internal deformation due to shear and tensile faults in a half-space
+ (1992), 
+\shape italic
+Bull.
+ Seismol.
+ Soc.
+ Am.
+\shape default
+, 
+\shape italic
+83
+\shape default
+, 1018-1040.
+\end_layout
+
 \end_body
 \end_document

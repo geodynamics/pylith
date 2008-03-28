@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -83,6 +83,14 @@ target "geodynamics.org/svn/cig/short/3D/PyLith/benchmarks"
 \end_inset
 
 .
+ In addition to evaluating the efficiency and accuracy of numerical codes,
+ the benchmarks also make good test problems, where users can perform simulation
+s based on actual geophysical problems.
+ The benchmarks are performed at various resolutions and using different
+ element types.
+ By comparing the runtimes and accuracy for different resolutions and element
+ types, users can evaluate which combination will be best for their problems
+ of interest.
 \end_layout
 
 \begin_layout Standard
