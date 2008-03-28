@@ -239,7 +239,9 @@ pylith::meshio::PsetFileBinary::_writePset32(std::ofstream& fout,
     BinaryIO::swapByteOrder((char*) &sizeIO, 1, sizeof(sizeIO));
   fout.write((char*) &sizeIO, sizeof(sizeIO));
 
-  std::valarray<int32_t> pointsIO(group.points);
+  std::valarray<int32_t> pointsIO(size);
+  for (int i=0; i < size; ++i)
+    pointsIO[i] = group.points[i];
   pointsIO += 1; // switch from zero base to one base
   if (_flipEndian)
     BinaryIO::swapByteOrder((char*) &pointsIO[0], size, sizeof(int32_t));
