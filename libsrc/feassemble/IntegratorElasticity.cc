@@ -229,14 +229,14 @@ pylith::feassemble::IntegratorElasticity::cellField(
       (0 == strcasecmp(name, "total-strain") ||
        0 == strcasecmp(name, "stress")) ) {
     assert(0 != fields);
-    _calcStrainStressField(&_bufferCellTensor, name, mesh, fields);
-    return _bufferCellTensor;
+    _calcStrainStressField(&_bufferCellOther, name, mesh, fields);
+    return _bufferCellOther;
 
   } else if (0 == strcasecmp(name, "stress")) {
-    _material->propertyField(&_bufferCellTensor,
+    _material->propertyField(&_bufferCellOther,
 			     "total-strain", mesh, numQuadPts);
     _calcStressFromStrain(&_bufferCellTensor, mesh);
-    return _bufferCellTensor;
+    return _bufferCellOther;
 
   } else {
     const VectorFieldEnum fieldType = _material->propertyFieldType(name);
