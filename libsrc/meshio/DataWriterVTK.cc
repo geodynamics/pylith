@@ -159,8 +159,10 @@ pylith::meshio::DataWriterVTK::writeVertexField(
       mesh->getFactory()->getNumbering(mesh, labelName, 0);
     assert(!numbering.isNull());
 
-    const int fiberDim = 
+    const int localFiberDim = 
       field->getFiberDimension(*mesh->getLabelStratum(labelName, 0)->begin());
+    int fiberDim;
+    MPI_Allreduce((void *) &localFiberDim, (void *) &fiberDim, 1, MPI_INT, MPI_MAX, mesh->comm());
     const int enforceDim = (fieldType != VECTOR_FIELD) ? fiberDim : 3;
 
     PetscErrorCode err = 0;
@@ -224,8 +226,10 @@ pylith::meshio::DataWriterVTK::writeCellField(
     const ALE::Obj<Mesh::numbering_type>& numbering = 
       mesh->getFactory()->getNumbering(mesh, labelName, depth);
     assert(!numbering.isNull());
-    const int fiberDim = 
+    const int localFiberDim = 
       field->getFiberDimension(*mesh->getLabelStratum(labelName, depth)->begin());
+    int fiberDim;
+    MPI_Allreduce((void *) &localFiberDim, (void *) &fiberDim, 1, MPI_INT, MPI_MAX, mesh->comm());
     const int enforceDim = (fieldType != VECTOR_FIELD) ? fiberDim : 3;
 
     PetscErrorCode err = 0;
