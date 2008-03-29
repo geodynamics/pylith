@@ -657,10 +657,8 @@ pylith::faults::CohesiveTopology::createParallel(
   cohesiveToFault->clear();
 
   const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
-  const ALE::Obj<sieve_type> faultSieve = 
-    new sieve_type(sieve->comm(), sieve->debug());
-  const ALE::Obj<Mesh::label_sequence>& cohesiveCells = 
-    mesh->getLabelStratum("material-id", materialId);
+  const ALE::Obj<sieve_type> faultSieve = new sieve_type(sieve->comm(), sieve->debug());
+  const ALE::Obj<Mesh::label_sequence>& cohesiveCells = mesh->getLabelStratum("material-id", materialId);
   const Mesh::label_sequence::iterator cBegin = cohesiveCells->begin();
   const Mesh::label_sequence::iterator cEnd = cohesiveCells->end();
   const int sieveEnd = sieve->base()->size() + sieve->cap()->size();
@@ -668,37 +666,33 @@ pylith::faults::CohesiveTopology::createParallel(
   int globalSieveEnd = 0;
   int globalFaceOffset = 0;
 
-  MPI_Allreduce((void *) &sieveEnd, (void *) &globalSieveEnd, 1, 
-		MPI_INT, MPI_SUM, sieve->comm());
-  MPI_Scan((void *) &numFaces, (void *) &globalFaceOffset, 1, 
-	   MPI_INT, MPI_SUM, sieve->comm());
-  int face = globalSieveEnd + globalFaceOffset;
-  for(Mesh::label_sequence::iterator c_iter = cBegin;
-      c_iter != cEnd;
-      ++c_iter) {
-    const ALE::Obj<sieve_type::traits::coneSequence>& cone =
-      sieve->cone(*c_iter);
-    int color = 0;
-
+  MPI_Allreduce((void *) &sieveEnd, (void *) &globalSieveEnd, 1, MPI_INT, MPI_SUM, sieve->comm());
+  MPI_Scan((void *) &numFaces, (void *) &globalFaceOffset, 1, MPI_INT, MPI_SUM, sieve->comm());
+  int face = globalSieveEnd + globalFaceOffset - numFaces;
+  for(Mesh::label_sequence::iterator c_iter = cBegin; c_iter != cEnd; ++c_iter) {
+    const ALE::Obj<sieve_type::traits::coneSequence>& cone = sieve->cone(*c_iter);
     const int coneSize = cone->size();
+    int       color    = 0;
+
     if (!constraintCell) {
       const int faceSize = coneSize / 2;
       assert(0 == coneSize % faceSize);
 
       // Use first vertices (negative side of the fault) for fault mesh
       sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
-      for(int i=0; i < faceSize; ++i, ++v_iter)
-	faultSieve->addArrow(*v_iter, face, color++);
+      for(int i=0; i < faceSize; ++i, ++v_iter) {
+        faultSieve->addArrow(*v_iter, face, color++);
+      }
     } else {
       const int faceSize = coneSize / 3;
       assert(0 == coneSize % faceSize);
 
       // Use last vertices (contraints) for fault mesh
       sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
-      for(int i=0; i < 2*faceSize; ++i)
-	++v_iter;
-      for(int i=0; i < faceSize; ++i, ++v_iter)
-	faultSieve->addArrow(*v_iter, face, color++);
+      for(int i=0; i < 2*faceSize; ++i) ++v_iter;
+      for(int i=0; i < faceSize; ++i, ++v_iter) {
+        faultSieve->addArrow(*v_iter, face, color++);
+      }
     } // if/else
     (*cohesiveToFault)[*c_iter] = face;
     ++face;
@@ -706,14 +700,11 @@ pylith::faults::CohesiveTopology::createParallel(
   (*fault)->setSieve(faultSieve);
   (*fault)->stratify();
 
-  const ALE::Obj<Mesh::label_sequence>& faultCells = 
-    (*fault)->heightStratum(0);
+  const ALE::Obj<Mesh::label_sequence>& faultCells = (*fault)->heightStratum(0);
   assert(!faultCells.isNull());
-  for (Mesh::label_sequence::iterator c_iter=cBegin,
-	 f_iter=faultCells->begin();
-       c_iter != cEnd;
-       ++c_iter, ++f_iter)
+  for(Mesh::label_sequence::iterator c_iter = cBegin, f_iter=faultCells->begin(); c_iter != cEnd; ++c_iter, ++f_iter) {
     (*cohesiveToFault)[*c_iter] = *f_iter;
+  }
     
 #if 1
   (*fault)->setRealSection("coordinates", mesh->getRealSection("coordinates"));
