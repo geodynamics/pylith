@@ -4,15 +4,15 @@ CURRENT ISSUES
 
 Release 1.1
 
-  1. Fix calcTractionsChange.
+  1. Fix parallel output for VTK files.
+    a. Cell fields where proc 0 doesn't have cells.
+    b. Faults are missing cells.
 
-  2. Check performance of current distribution.
+  2. Fix calcTractionsChange.
 
   3. Add more error checking.
 
      a. Add check to make sure every material in mesh has a material model.
-
-  4. Fix hanging on multiple processors (proc 0 doesn't have a fault?).
 
   Benchmarks
 
@@ -23,14 +23,9 @@ Release 1.1
 
   Examples
 
-    1. Redo old figures for examples.
-
     2. Add some simple kinematic rupture examples. (Brad)
       a. 2-D bar (tri3, quad4)
       b. 3-D bar (tet4, hex8)
-
-    3. CUBIT (Brad)
-       Add GUI instructions in journal files for examples/3d/hex8.
 
   Binaries
 
@@ -47,6 +42,8 @@ Release 1.1
 ----------------------------------------------------------------------
 Workshop
 
+    Fix holding onto memory from before distribution.
+
     simple strike-slip propagating rupture (performance benchmark 
 	500m resolution)
 
@@ -56,6 +53,9 @@ Workshop
       c. Run benchmarks.
       d. Generate analytic solutions.
       e. Tabulate results.
+
+    3. CUBIT (Brad)
+       Add GUI instructions in journal files for examples/3d/hex8.
 
 ----------------------------------------------------------------------
 Release 1.2
