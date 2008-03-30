@@ -226,7 +226,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
   const int numQuadPts = _quadrature->numQuadPts();
 
   if (!_material->usesUpdateProperties() &&
-      (0 == strcasecmp(name, "total-strain") ||
+      (0 == strcasecmp(name, "total_strain") ||
        0 == strcasecmp(name, "stress")) ) {
     assert(0 != fields);
     _calcStrainStressField(&_bufferCellOther, name, mesh, fields);
@@ -234,7 +234,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
 
   } else if (0 == strcasecmp(name, "stress")) {
     _material->propertyField(&_bufferCellOther,
-			     "total-strain", mesh, numQuadPts);
+			     "total_strain", mesh, numQuadPts);
     _calcStressFromStrain(&_bufferCellOther, mesh);
     return _bufferCellOther;
 
