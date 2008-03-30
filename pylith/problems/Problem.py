@@ -133,6 +133,7 @@ class Problem(Component):
             "for spatial dimension '%d'." % \
             (self.dimension, mesh.dimension)
 
+    # Check to make sure ids of materials and interfaces are unique
     materialIds = {}
     for material in self.materials.components():
       if material.quadrature.spaceDim != self.dimension:
@@ -154,6 +155,9 @@ class Problem(Component):
             "Material and interface id values must be unique." % \
             (materialIds[interface.id], interface.label, interface.id)
       materialIds[interface.id] = interface.label
+
+    # Check to make sure material-id for each cell matches the id of a material
+    self.mesh.checkMaterialIds(materialIds.keys())
 
     self._logger.eventEnd(logEvent)
     return

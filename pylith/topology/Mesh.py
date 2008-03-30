@@ -119,6 +119,15 @@ class Mesh(Component):
     return self.cppHandle.createMatrix(field)
   
 
+  def checkMaterialIds(self, materialIds):
+    """
+    Make sure material id for each cell matches id of a material.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.checkMaterialIds(materialIds)
+    return
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):

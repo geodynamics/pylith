@@ -13,6 +13,7 @@
 #header{
 #include "pylith/topology/FieldsManager.hh"
 #include "pylith/topology/Distributor.hh"
+#include "pylith/topology/MeshOps.hh"
 #include "pylith/utils/sievetypes.hh"
 #include "pylith/utils/petscfwd.h"
 #include <petscmesh.hh>
@@ -284,6 +285,40 @@ cdef class Mesh:
     } // try/catch
     #}embed
     Mesh_view(self.thisptr)
+    return
+
+ 
+  def checkMaterialIds(self, materialIds):
+    """
+    Make sure material id for each cell matches id of a material.
+    """
+    # create shim for checkMaterialIds
+    #embed{ void* Mesh_checkMaterialIds(void* objVptr, int* materialIds, int numMaterials)
+    try {
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) objVptr;
+      assert(0 != mesh);
+      assert(!mesh->isNull());
+      pylith::topology::MeshOps::checkMaterialIds(*mesh, materialIds, numMaterials);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    cdef int* materialIdVals
+    materialIdVals = NULL
+    numMaterials = len(materialIds);
+    if numMaterials > 0:
+      materialIdVals = <int*> malloc(numMaterials*sizeof(int));
+    for i from 0 <= i < numMaterials:
+      materialIdVals[i] = materialIds[i]
+    Mesh_checkMaterialIds(self.thisptr, materialIdVals, numMaterials)
+    free(materialIdVals)
     return
 
 
