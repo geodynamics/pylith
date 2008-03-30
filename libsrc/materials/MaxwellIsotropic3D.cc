@@ -44,9 +44,9 @@ namespace pylith {
 	{ "density", 1, OTHER_FIELD },
 	{ "lambda", 1, OTHER_FIELD },
 	{ "mu", 1, OTHER_FIELD },
-	{ "Maxwell-time", 1, OTHER_FIELD },
-	{ "total-strain", 6, OTHER_FIELD },
-	{ "viscous-strain", 6, OTHER_FIELD },
+	{ "maxwell_time", 1, OTHER_FIELD },
+	{ "total_strain", 6, OTHER_FIELD },
+	{ "viscous_strain", 6, OTHER_FIELD },
       };
       /// Indices (order) of properties.
       const int pidDensity = 0;
