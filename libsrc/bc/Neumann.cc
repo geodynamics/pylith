@@ -311,10 +311,10 @@ pylith::bc::Neumann::integrateResidual(
         } // for
       } // for
     } // for
-    PetscLogFlopsNoCheck(numQuadPts*(1+numBasis*(1+numBasis*(1+2*spaceDim))));
-
     // Assemble cell contribution into field
     _boundaryMesh->updateAdd(residual, *c_iter, _cellVector);
+
+    PetscLogFlopsNoCheck(numQuadPts*(1+numBasis*(1+numBasis*(1+2*spaceDim))));
   } // for
 } // integrateResidual
 
