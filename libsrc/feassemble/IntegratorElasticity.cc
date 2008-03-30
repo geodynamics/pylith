@@ -278,7 +278,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   assert(0 != _quadrature);
   assert(0 != _material);
 
-  bool calcStress = (0 == strcasecmp(name, "stress")) ? true : false;
+  const bool calcStress = (0 == strcasecmp(name, "stress")) ? true : false;
     
   const int cellDim = _quadrature->cellDim();
   int tensorSize = 0;
@@ -318,15 +318,16 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   const int cellVecSize = numBasis*spaceDim;
   double_array dispCell(cellVecSize);
   
-  // Allocate vector for total strain
-  double_array totalStrain(numQuadPts*tensorSize);
+  // Allocate array for total strain
+  const int totalFiberDim = numQuadPts * tensorSize;
+  double_array totalStrain(totalFiberDim);
   totalStrain = 0.0;
   
-  // Allocate buffer for tensor field.
-  if (field->isNull()) {
-    const int fiberDim = numQuadPts * tensorSize;
+  // Allocate buffer for property field.
+  if (field->isNull() || 
+      totalFiberDim != (*field)->getFiberDimension(*cells->begin())) {
     *field = new real_section_type(mesh->comm(), mesh->debug());
-    (*field)->setFiberDimension(cells, fiberDim);
+    (*field)->setFiberDimension(cells, totalFiberDim);
     mesh->allocate(*field);
   } // if
   
