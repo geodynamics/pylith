@@ -4,15 +4,7 @@ CURRENT ISSUES
 
 Release 1.1
 
-  1. Fix parallel output for VTK files.
-    a. Cell fields where proc 0 doesn't have cells.
-    b. Faults are missing cells.
-
   2. Fix calcTractionsChange.
-
-  3. Add more error checking.
-
-     a. Add check to make sure every material in mesh has a material model.
 
   Benchmarks
 

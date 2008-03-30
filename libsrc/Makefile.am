@@ -91,6 +91,7 @@ libpylith_la_SOURCES = \
 	meshio/VertexFilterVecNorm.cc \
 	topology/FieldsManager.cc \
 	topology/Distributor.cc \
+	topology/MeshOps.cc \
 	utils/EventLogger.cc
 
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)

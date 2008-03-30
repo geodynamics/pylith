@@ -120,6 +120,23 @@ class TestMesh(unittest.TestCase):
     return
 
 
+  def test_checkMaterialIds(self):
+    """
+    Test createRealSection().
+    """
+    mesh = self._getMesh()
+    materialIds = [4, 3]
+    mesh.checkMaterialIds(materialIds)
+
+    materialIds[0] = -2
+    caughtError = False
+    try:
+      mesh.checkMaterialIds(materialIds)
+    except RuntimeError:
+      caughtError = True
+    self.assertTrue(caughtError)
+    return
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _getMesh(self):
