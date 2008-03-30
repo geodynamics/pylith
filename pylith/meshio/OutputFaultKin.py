@@ -48,13 +48,13 @@ class OutputFaultKin(OutputManager):
     import pyre.inventory
 
     vertexInfoFields = pyre.inventory.list("vertex_info_fields",
-                                           default=["normal_dir",
-                                                    "final_slip",
-                                                    "slip_time"])
+                                           default=["normal-dir",
+                                                    "final-slip",
+                                                    "slip-time"])
     vertexInfoFields.meta['tip'] = "Names of vertex info fields to output."
 
     vertexDataFields = pyre.inventory.list("vertex_data_fields", 
-                                           default=["slip","traction_change"])
+                                           default=["slip","traction-change"])
     vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
