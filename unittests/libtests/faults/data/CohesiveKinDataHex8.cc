@@ -141,7 +141,7 @@ const int pylith::faults::CohesiveKinDataHex8::_constraintVertices[] = {
 };
 
 const int pylith::faults::CohesiveKinDataHex8::_constraintCells[] = {
-  24, 24, 24, 24
+  23, 23, 23, 23
 };
 
 const double pylith::faults::CohesiveKinDataHex8::_valsResidual[] = {

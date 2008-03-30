@@ -143,7 +143,7 @@ const int pylith::faults::CohesiveKinDataQuad4e::_constraintVertices[] = {
 };
 
 const int pylith::faults::CohesiveKinDataQuad4e::_constraintCells[] = {
-  23, 23, 24
+  21, 21, 22
 };
 
 const double pylith::faults::CohesiveKinDataQuad4e::_valsResidual[] = {
