@@ -448,7 +448,6 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
   fault._faultMesh->allocate(tractions);
   
   fault._calcTractionsChange(&tractions, solution);
-  tractions->view("TRACTIONS");
 
   int iVertex = 0;
   const double tolerance = 1.0e-06;
@@ -470,7 +469,6 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
     const double scale = _data->pseudoStiffness / _data->area[iVertex];
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       const double tractionE = vertexSolution[iDim] * scale;
-      std::cout << "iVertex: " << iVertex << ", tractionE: " << tractionE << ", traction: " << vertexTractions[iDim] << std::endl;
       if (tractionE > 1.0) 
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vertexTractions[iDim]/tractionE,
 				     tolerance);
