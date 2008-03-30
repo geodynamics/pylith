@@ -433,32 +433,32 @@ pylith::faults::FaultCohesiveKin::vertexField(
     assert(!_slip.isNull());
     return _slip;
 
-  } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
+  } else if (cohesiveDim > 0 && 0 == strcasecmp("strike-dir", name)) {
     _bufferVertexVector = _orientation->getFibration(0);
     *fieldType = VECTOR_FIELD;
     return _bufferVertexVector;
 
-  } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
+  } else if (2 == cohesiveDim && 0 == strcasecmp("dip-dir", name)) {
     _bufferVertexVector = _orientation->getFibration(1);
     *fieldType = VECTOR_FIELD;
     return _bufferVertexVector;
 
-  } else if (0 == strcasecmp("normal_dir", name)) {
+  } else if (0 == strcasecmp("normal-dir", name)) {
     const int space = 
       (0 == cohesiveDim) ? 0 : (1 == cohesiveDim) ? 1 : 2;
     _bufferVertexVector = _orientation->getFibration(space);
     *fieldType = VECTOR_FIELD;
     return _bufferVertexVector;
 
-  } else if (0 == strcasecmp("final_slip", name)) {
+  } else if (0 == strcasecmp("final-slip", name)) {
     _bufferVertexVector = _eqsrc->finalSlip();
     *fieldType = VECTOR_FIELD;
     return _bufferVertexVector;
-  } else if (0 == strcasecmp("slip_time", name)) {
+  } else if (0 == strcasecmp("slip-time", name)) {
     _bufferVertexScalar = _eqsrc->slipTime();
     *fieldType = SCALAR_FIELD;
     return _bufferVertexScalar;
-  } else if (0 == strcasecmp("traction_change", name)) {
+  } else if (0 == strcasecmp("traction-change", name)) {
     *fieldType = VECTOR_FIELD;
     const ALE::Obj<real_section_type>& solution = fields->getSolution();
     _calcTractionsChange(&_bufferVertexVector, solution);

@@ -73,10 +73,10 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
 
     self.availableFields = \
         {'vertex': \
-           {'info': ["normal_dir",
-                     "final_slip",
-                     "slip_time"],
-            'data': ["slip", "traction_change"]},
+           {'info': ["normal-dir",
+                     "final-slip",
+                     "slip-time"],
+            'data': ["slip", "traction-change"]},
          'cell': \
            {'info': [],
             'data': []}}
@@ -95,10 +95,10 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     self.cppHandle.eqsrc = self.eqsrc.cppHandle
 
     if mesh.dimension() == 2:
-      self.availableFields['vertex']['info'] += ["strike_dir"]
+      self.availableFields['vertex']['info'] += ["strike-dir"]
     elif mesh.dimension() == 3:
-      self.availableFields['vertex']['info'] += ["strike_dir",
-                                                 "dip_dir"]
+      self.availableFields['vertex']['info'] += ["strike-dir",
+                                                 "dip-dir"]
     return
   
 
