@@ -235,7 +235,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
   } else if (0 == strcasecmp(name, "stress")) {
     _material->propertyField(&_bufferCellOther,
 			     "total-strain", mesh, numQuadPts);
-    _calcStressFromStrain(&_bufferCellTensor, mesh);
+    _calcStressFromStrain(&_bufferCellOther, mesh);
     return _bufferCellOther;
 
   } else {
