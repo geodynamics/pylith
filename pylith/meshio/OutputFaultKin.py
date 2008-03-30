@@ -41,8 +41,6 @@ class OutputFaultKin(OutputManager):
     ## \b Properties
     ## @li \b vertex_info_fields Names of vertex info fields to output.
     ## @li \b vertex_data_fields Names of vertex data fields to output.
-    ## @li \b cell_info_fields Names of cell info fields to output.
-    ## @li \b cell_data_fields Names of cell data fields to output.
     ##
     ## \b Facilities
     ## @li None
@@ -56,16 +54,8 @@ class OutputFaultKin(OutputManager):
     vertexInfoFields.meta['tip'] = "Names of vertex info fields to output."
 
     vertexDataFields = pyre.inventory.list("vertex_data_fields", 
-                                           default=["slip"])
+                                           default=["slip","traction_change"])
     vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
-
-    cellInfoFields = pyre.inventory.list("cell_info_fields", default=[])
-    cellInfoFields.meta['tip'] = "Names of cell info fields to output."
-
-    cellDataFields = pyre.inventory.list("cell_data_fields", 
-                                         default=["traction_change"])
-    cellDataFields.meta['tip'] = "Names of cell data fields to output."
-
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -86,8 +76,6 @@ class OutputFaultKin(OutputManager):
     OutputManager._configure(self)
     self.vertexInfoFields = self.inventory.vertexInfoFields
     self.vertexDataFields = self.inventory.vertexDataFields
-    self.cellInfoFields = self.inventory.cellInfoFields
-    self.cellDataFields = self.inventory.cellDataFields
     return
 
 

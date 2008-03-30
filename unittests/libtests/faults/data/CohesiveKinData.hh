@@ -67,6 +67,7 @@ public:
   /// @name Calculated values.
   //@{
   double* orientation; ///< Expected values for fault orientation.
+  double* area; ///< Expected values for fault area.
   int* constraintVertices; ///< Expected points for constraint vertices
   int* constraintCells; ///< Expected cells for constraint vertices
   double* valsResidual; ///< Expected values from residual calculation.

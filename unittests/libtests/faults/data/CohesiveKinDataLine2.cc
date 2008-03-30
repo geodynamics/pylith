@@ -84,6 +84,10 @@ const double pylith::faults::CohesiveKinDataLine2::_orientation[] = {
   1.0
 };
 
+const double pylith::faults::CohesiveKinDataLine2::_area[] = {
+  1.0
+};
+
 const int pylith::faults::CohesiveKinDataLine2::_constraintVertices[] = {
   6
 };
@@ -138,6 +142,7 @@ pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)
   matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
+  area = const_cast<double*>(_area);
   constraintVertices = const_cast<int*>(_constraintVertices);
   constraintCells = const_cast<int*>(_constraintCells);
   valsResidualIncr = const_cast<double*>(_valsResidualIncr);

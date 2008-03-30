@@ -33,6 +33,7 @@ pylith::faults::CohesiveKinData::CohesiveKinData(void) :
   matPropsFilename(0),
   fieldT(0),
   orientation(0),
+  area(0),
   constraintVertices(0),
   constraintCells(0),
   valsResidual(0),

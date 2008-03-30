@@ -150,6 +150,22 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
     } // for
   } // for
 
+  // Check area
+  iVertex = 0;
+  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != verticesEnd;
+       ++v_iter, ++iVertex) {
+    const int fiberDim = fault._area->getFiberDimension(*v_iter);
+    CPPUNIT_ASSERT_EQUAL(1, fiberDim);
+    const real_section_type::value_type* vertexArea = 
+      fault._area->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(0 != vertexArea);
+
+    const double tolerance = 1.0e-06;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->area[iVertex], vertexArea[0],
+				 tolerance);
+  } // for
+
   // Check pairing of constraint vertices with cells
   iVertex = 0;
   for (Mesh::label_sequence::iterator v_iter=vertices->begin();
@@ -387,6 +403,83 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   MatDestroy(jSparseAIJ);
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
 } // testIntegrateJacobian
+
+// ----------------------------------------------------------------------
+// Test integrateJacobian().
+void
+pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
+{ // testCalcTractionsChange
+  ALE::Obj<Mesh> mesh;
+  FaultCohesiveKin fault;
+  _initialize(&mesh, &fault);
+
+  // Setup fields
+  topology::FieldsManager fields(mesh);
+  fields.addReal("solution");
+  fields.solutionField("solution");
+  
+  const int spaceDim = _data->spaceDim;
+  const ALE::Obj<real_section_type>& solution = fields.getReal("solution");
+  { // setup solution
+    CPPUNIT_ASSERT(!solution.isNull());
+    solution->setFiberDimension(mesh->depthStratum(0), spaceDim);
+    mesh->allocate(solution);
+    solution->zero();
+    fields.copyLayout("solution");
+    
+    const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+    CPPUNIT_ASSERT(!vertices.isNull());
+    const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+    int iVertex = 0;
+    for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+	 v_iter != verticesEnd;
+	 ++v_iter, ++iVertex) {
+      solution->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
+    } // for
+  } // setup solution
+
+  ALE::Obj<real_section_type> tractions =
+    new real_section_type(fault._faultMesh->comm(), fault._faultMesh->debug());
+  CPPUNIT_ASSERT(!tractions.isNull());
+  const ALE::Obj<Mesh::label_sequence>& vertices = 
+    fault._faultMesh->depthStratum(0);
+  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  tractions->setFiberDimension(vertices, spaceDim);
+  fault._faultMesh->allocate(tractions);
+  
+  fault._calcTractionsChange(&tractions, solution);
+  tractions->view("TRACTIONS");
+
+  int iVertex = 0;
+  const double tolerance = 1.0e-06;
+  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != verticesEnd;
+       ++v_iter, ++iVertex) {
+    int fiberDim = tractions->getFiberDimension(*v_iter);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
+    const real_section_type::value_type* vertexTractions = 
+      tractions->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(0 != vertexTractions);
+
+    fiberDim = solution->getFiberDimension(*v_iter);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
+    const real_section_type::value_type* vertexSolution = 
+      solution->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(0 != vertexSolution);
+
+    const double scale = _data->pseudoStiffness / _data->area[iVertex];
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      const double tractionE = vertexSolution[iDim] * scale;
+      std::cout << "iVertex: " << iVertex << ", tractionE: " << tractionE << ", traction: " << vertexTractions[iDim] << std::endl;
+      if (tractionE > 1.0) 
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vertexTractions[iDim]/tractionE,
+				     tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(tractionE, vertexTractions[iDim],
+				     tolerance);
+    } // for
+  } // for
+} // testCalcTractionsChange
 
 // ----------------------------------------------------------------------
 // Initialize FaultCohesiveKin interface condition.
