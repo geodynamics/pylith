@@ -193,6 +193,9 @@ private :
   void _calcConditioning(const spatialdata::geocoords::CoordSys* cs,
 			 spatialdata::spatialdb::SpatialDB* matDB);
 
+  /// Calculate fault area field.
+  void _calcArea(void);
+
   /** Compute change in tractions on fault surface using solution.
    *
    * @param tractions Field for tractions.
@@ -206,9 +209,6 @@ private :
 
   /// Allocate vector field for output of vertex information.
   void _allocateBufferVertexVector(void);
-
-  /// Allocate other field for output of cell information.
-  void _allocateBufferCellOther(void);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -228,6 +228,9 @@ private :
   /// scaling constraint information to improve conditioning of
   /// Jacobian matrix.
   ALE::Obj<real_section_type> _pseudoStiffness;
+
+  /// Field over fault mesh vertices of area associated with each vertex.
+  ALE::Obj<real_section_type> _area;
 
   /// Field over the fault mesh vertices of orientation of fault
   /// surface.
@@ -249,9 +252,6 @@ private :
 
   /// Vector field for vertex information over fault mesh.
   ALE::Obj<real_section_type> _bufferVertexVector;
-
-  /// Vector field for cell information over fault mesh.
-  ALE::Obj<real_section_type> _bufferCellOther;
 
 }; // class FaultCohesiveKin
 

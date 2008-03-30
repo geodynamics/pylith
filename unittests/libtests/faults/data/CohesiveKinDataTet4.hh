@@ -60,6 +60,7 @@ private:
   static const double _fieldT[]; ///< Solution field at time t.
 
   static const double _orientation[]; ///< Expected values for fault orientation.
+  static const double _area[]; ///< Expected values for fault area.
   static const int _constraintVertices[]; ///< Expected points for constraint vertices
   static const int _constraintCells[]; ///< Expected cells for constraint vertices
   static const double _valsResidual[]; ///< Expected values from residual calculation.

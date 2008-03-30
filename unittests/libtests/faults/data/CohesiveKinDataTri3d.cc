@@ -134,6 +134,12 @@ const double pylith::faults::CohesiveKinDataTri3d::_orientation[] = {
  +1.0,  0.0,   0.0, -1.0
 };
 
+const double pylith::faults::CohesiveKinDataTri3d::_area[] = {
+  2.0,
+  1.0,
+  1.0,
+};
+
 const int pylith::faults::CohesiveKinDataTri3d::_constraintVertices[] = {
   13, 14, 15
 };
@@ -485,6 +491,7 @@ pylith::faults::CohesiveKinDataTri3d::CohesiveKinDataTri3d(void)
   matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
+  area = const_cast<double*>(_area);
   constraintVertices = const_cast<int*>(_constraintVertices);
   constraintCells = const_cast<int*>(_constraintCells);
   valsResidual = const_cast<double*>(_valsResidual);

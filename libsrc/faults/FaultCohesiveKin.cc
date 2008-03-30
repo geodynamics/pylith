@@ -91,6 +91,9 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   // Compute orientation at vertices in fault mesh.
   _calcOrientation(upDir, normalDir);
 
+  // Compute tributary area for each vertex in fault mesh.
+  _calcArea();
+
   _eqsrc->initialize(_faultMesh, cs);
 } // initialize
 
@@ -455,6 +458,11 @@ pylith::faults::FaultCohesiveKin::vertexField(
     _bufferVertexScalar = _eqsrc->slipTime();
     *fieldType = SCALAR_FIELD;
     return _bufferVertexScalar;
+  } else if (0 == strcasecmp("traction_change", name)) {
+    *fieldType = VECTOR_FIELD;
+    const ALE::Obj<real_section_type>& solution = fields->getSolution();
+    _calcTractionsChange(&_bufferVertexVector, solution);
+    return _bufferVertexVector;
 
   } else {
     std::ostringstream msg;
@@ -470,40 +478,19 @@ pylith::faults::FaultCohesiveKin::vertexField(
 // ----------------------------------------------------------------------
 // Get cell field associated with integrator.
 const ALE::Obj<pylith::real_section_type>&
-pylith::faults::FaultCohesiveKin::cellField(
-				    VectorFieldEnum* fieldType,
-				    const char* name,
-				    const ALE::Obj<Mesh>& mesh,
-				    topology::FieldsManager* fields)
+pylith::faults::FaultCohesiveKin::cellField(VectorFieldEnum* fieldType,
+					    const char* name,
+					    const ALE::Obj<Mesh>& mesh,
+					    topology::FieldsManager* fields)
 { // cellField
-  assert(!_faultMesh.isNull());
-  assert(!_orientation.isNull());
-  assert(0 != fields);
-  assert(0 != _eqsrc);
-
-  const int cohesiveDim = _faultMesh->getDimension();
-
-  if (0 == strcasecmp("traction_change", name)) {
-    _allocateBufferCellOther();
-    *fieldType = OTHER_FIELD;
-    const ALE::Obj<real_section_type>& solution = fields->getSolution();
-    _calcTractionsChange(&_bufferCellOther, solution);
-    return _bufferCellOther;
-  } else {
-    std::ostringstream msg;
-    msg << "Request for unknown cell field '" << name
-	<< "' for fault '" << label() << "'.";
-    throw std::runtime_error(msg.str());
-  } // else
-
   // Should not reach this point if requested field was found
   std::ostringstream msg;
-  msg << "Request for unknown vertex field '" << name
-      << "' for fault '" << label() << "'.";
+  msg << "Request for unknown cell field '" << name
+      << "' for fault '" << label() << ".";
   throw std::runtime_error(msg.str());
 
   // Return generic section to satisfy member function definition.
-  return _bufferCellOther;
+  //return _outputCellVector;
 } // cellField
 
 // ----------------------------------------------------------------------
@@ -545,7 +532,8 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
   assert(cohesiveDim == _quadrature->cellDim());
   assert(spaceDim == _quadrature->spaceDim());
 
-  // Loop over cohesive cells, computing orientation at constraint vertices
+  // Loop over cohesive cells, computing orientation weighted by
+  // jacobian at constraint vertices
   const int numBasis = _quadrature->numBasis();
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
   const double_array& verticesRef = cellGeometry.vertices();
@@ -792,6 +780,77 @@ pylith::faults::FaultCohesiveKin::_calcConditioning(
 } // _calcConditioning
 
 // ----------------------------------------------------------------------
+void
+pylith::faults::FaultCohesiveKin::_calcArea(void)
+{ // _calcArea
+  assert(!_faultMesh.isNull());
+
+  // Get vertices in fault mesh
+  const ALE::Obj<Mesh::label_sequence>& vertices = 
+    _faultMesh->depthStratum(0);
+  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const int numVertices = vertices->size();
+
+  _area = new real_section_type(_faultMesh->comm(), 
+				_faultMesh->debug());
+  assert(!_area.isNull());
+  _area->setFiberDimension(vertices, 1);
+  _faultMesh->allocate(_area);
+  
+  // Get fault cells (1 dimension lower than top-level cells)
+  const ALE::Obj<Mesh::label_sequence>& cells = 
+    _faultMesh->heightStratum(0);
+  assert(!cells.isNull());
+  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+
+  // Get section containing coordinates of vertices
+  const ALE::Obj<real_section_type>& coordinates = 
+    _faultMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+
+  // Containers for area information
+  const int cellDim = _quadrature->cellDim();
+  const int numBasis = _quadrature->numBasis();
+  const int numQuadPts = _quadrature->numQuadPts();
+  const int spaceDim = _quadrature->spaceDim();
+  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
+  const int jacobianSize = (cellDim > 0) ? spaceDim * cellDim : 1;
+  double_array jacobian(jacobianSize);
+  double jacobianDet = 0;
+  double_array cellArea(numBasis);
+  double_array cellVertices(numBasis*spaceDim);
+
+  // Loop over cells in fault mesh, compute area
+  for(Mesh::label_sequence::iterator c_iter = cells->begin();
+      c_iter != cellsEnd;
+      ++c_iter) {
+    _quadrature->computeGeometry(_faultMesh, coordinates, *c_iter);
+    cellArea = 0.0;
+    
+    // Get cell geometry information that depends on cell
+    const double_array& basis = _quadrature->basis();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
+
+    // Compute action for traction bc terms
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+        const double dArea = wt*basis[iQuad*numBasis+iBasis];
+	cellArea[iBasis] += dArea;
+      } // for
+    } // for
+    _faultMesh->updateAdd(_area, *c_iter, &cellArea[0]);
+
+    PetscLogFlopsNoCheck( numQuadPts*(1+numBasis*2) );
+  } // for
+
+  // Assemble area information
+  ALE::Distribution<Mesh>::completeSection(_faultMesh, _area);
+} // _calcArea
+
+// ----------------------------------------------------------------------
 // Compute change in tractions on fault surface using solution.
 void
 pylith::faults::FaultCohesiveKin::_calcTractionsChange(
@@ -803,36 +862,43 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   assert(!solution.isNull());
   assert(!_faultMesh.isNull());
   assert(!_pseudoStiffness.isNull());
-  assert(0 != _quadrature);
+  assert(!_area.isNull());
 
-  const ALE::Obj<Mesh::label_sequence>& cells = 
-    _faultMesh->heightStratum(0);
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& basis = _quadrature->basis();
+  const ALE::Obj<Mesh::label_sequence>& vertices = 
+    _faultMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const int numVertices = vertices->size();
 
-  double_array solutionCell(numBasis*spaceDim);
-  double_array stiffnessCell(numBasis);
-  double_array tractionsCell(numQuadPts*spaceDim);
+  const int fiberDim = solution->getFiberDimension(*vertices->begin());
+  double_array tractionValues(fiberDim);
 
-  int count = 0;
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
-       c_iter != cellsEnd;
-       ++c_iter, ++count) {
-    _faultMesh->restrict(solution, *c_iter, 
-			 &solutionCell[0], solutionCell.size());
-    _faultMesh->restrict(_pseudoStiffness, *c_iter, 
-			 &stiffnessCell[0], stiffnessCell.size());
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-      for (int iBasis=0; iBasis < numBasis; ++iBasis)
-	for (int iDim=0; iDim < spaceDim; ++iDim)
-	  tractionsCell[iQuad*spaceDim+iDim] = basis[iBasis] *
-	    solutionCell[iBasis*spaceDim+iDim] * stiffnessCell[iBasis];
-    (*tractions)->updatePoint(*c_iter, &tractionsCell[0]);
+  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != verticesEnd;
+       ++v_iter) {
+    assert(fiberDim == solution->getFiberDimension(*v_iter));
+    assert(fiberDim == (*tractions)->getFiberDimension(*v_iter));
+    assert(1 == _pseudoStiffness->getFiberDimension(*v_iter));
+    assert(1 == _area->getFiberDimension(*v_iter));
+
+    const real_section_type::value_type* solutionValues =
+      solution->restrictPoint(*v_iter);
+    assert(0 != solutionValues);
+    const real_section_type::value_type* pseudoStiffValue = 
+      _pseudoStiffness->restrictPoint(*v_iter);
+    assert(0 != _pseudoStiffness);
+    const real_section_type::value_type* areaValue = 
+      _area->restrictPoint(*v_iter);
+    assert(0 != _area);
+
+    const double scale = pseudoStiffValue[0] / areaValue[0];
+    for (int i=0; i < fiberDim; ++i)
+      tractionValues[i] = solutionValues[i] * scale;
+
+    (*tractions)->updatePoint(*v_iter, &tractionValues[0]);
   } // for
+
+  PetscLogFlopsNoCheck(numVertices * (1 + fiberDim) );
 
   //solution->view("SOLUTION");
   //(*tractions)->view("TRACTIONS");
@@ -870,25 +936,6 @@ pylith::faults::FaultCohesiveKin::_allocateBufferVertexVector(void)
     _faultMesh->allocate(_bufferVertexVector);
   } // if  
 } // _allocateBufferVertexVector
-
-// ----------------------------------------------------------------------
-// Allocate vector field for output of cell information.
-void
-pylith::faults::FaultCohesiveKin::_allocateBufferCellOther(void)
-{ // _allocateBufferCellOther
-  assert(0 != _quadrature);
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int spaceDim = _quadrature->spaceDim();
-  const int fiberDim = numQuadPts * spaceDim;
-  if (_bufferCellOther.isNull()) {
-    _bufferCellOther = new real_section_type(_faultMesh->comm(), 
-					      _faultMesh->debug());
-    const ALE::Obj<Mesh::label_sequence>& cells = 
-      _faultMesh->heightStratum(0);
-    _bufferCellOther->setFiberDimension(cells, fiberDim);
-    _faultMesh->allocate(_bufferCellOther);
-  } // if  
-} // _allocateBufferCellOther
 
 
 // End of file 

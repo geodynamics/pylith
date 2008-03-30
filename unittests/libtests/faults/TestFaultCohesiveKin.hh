@@ -95,6 +95,9 @@ public :
   /// Test integrateJacobian().
   void testIntegrateJacobian(void);
 
+  /// Test _calcTractionsChange().
+  void testCalcTractionsChange(void);
+
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 

@@ -148,7 +148,7 @@ pylith::faults::FaultCohesiveDyn::cellField(VectorFieldEnum* fieldType,
 { // cellField
   // Should not reach this point if requested field was found
   std::ostringstream msg;
-  msg << "Request for unknown vertex field '" << name
+  msg << "Request for unknown cell field '" << name
       << "' for fault '" << label() << ".";
   throw std::runtime_error(msg.str());
 

@@ -102,6 +102,12 @@ const double pylith::faults::CohesiveKinDataTet4::_orientation[] = {
   0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
 };
 
+const double pylith::faults::CohesiveKinDataTet4::_area[] = {
+  1.0/3.0, 
+  1.0/3.0, 
+  1.0/3.0,
+};
+
 const int pylith::faults::CohesiveKinDataTet4::_constraintVertices[] = {
   10, 11, 12
 };
@@ -526,6 +532,7 @@ pylith::faults::CohesiveKinDataTet4::CohesiveKinDataTet4(void)
   matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
+  area = const_cast<double*>(_area);
   constraintVertices = const_cast<int*>(_constraintVertices);
   constraintCells = const_cast<int*>(_constraintCells);
   valsResidual = const_cast<double*>(_valsResidual);
