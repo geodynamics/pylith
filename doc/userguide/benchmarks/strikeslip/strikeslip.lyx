@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -278,7 +278,7 @@ pylith strikeslip_lagrit.cfg strikeslip_tet4_1000m.cfg
 \end_layout
 
 \begin_layout Standard
- To run the time-dependent (viscoelastic) problem, it is necessary to append
+To run the time-dependent (viscoelastic) problem, it is necessary to append
  
 \family typewriter
 timedep.cfg
@@ -293,9 +293,8 @@ pylith strikeslip_cubit.cfg strikeslip_hex8_1000m.cfg timedep.cfg
 \begin_layout Standard
 This will run the problem for 10 years, using a time-step size of 0.1 years,
  and results will be output for each year.
- The benchmarks at resolutions of 1000 m, 500 m, and 250 m require 
- approximately 0.3 GB, 2.5 GB, and 24 GB, respectively.
-
+ The benchmarks at resolutions of 1000 m, 500 m, and 250 m require  approximatel
+y 0.3 GB, 2.5 GB, and 24 GB, respectively.
 \end_layout
 
 \begin_layout Subsection
@@ -303,25 +302,67 @@ Benchmark Results
 \end_layout
 
 \begin_layout Standard
-Figure ?? shows the displacement field from the simulation with
- hexehedral cells with trilinear basis functions at a resolution of 1000 m.
- For each resolution and set of basis functions, we measure the
- accuracy by comparing the numerical solution against the 
- semi-analytical Okada solution
+Figure 
+\begin_inset LatexCommand ref
+reference "fig:benchmark:strikeslip:solution"
+
+\end_inset
+
+ shows the displacement field from the simulation with hexehedral cells
+ with trilinear basis functions at a resolution of 1000 m.
+ For each resolution and set of basis functions, we measure the accuracy
+ by comparing the numerical solution against the  semi-analytical Okada
+ solution
 \begin_inset LatexCommand cite
 key "Okada:1992"
 
 \end_inset
+
 .
- We also compare the accuracy and run time across resolutions and
- different cell types.
- This provides practical information about what cell types and
- resolutions are required to achieve a given level of accuracy with the
- shortest runtime.
+ We also compare the accuracy and run time across resolutions and different
+ cell types.
+ This provides practical information about what cell types and resolutions
+ are required to achieve a given level of accuracy with the shortest runtime.
 \end_layout
 
 \begin_layout Standard
-ADD FIGURE HERE: SOLUTION
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/soln.eps
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Displacement field for strike-slip benchmark problem.
+\begin_inset LatexCommand label
+name "fig:benchmark:strikeslip:solution"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -329,34 +370,38 @@ Solution Accuracy
 \end_layout
 
 \begin_layout Standard
-We quantify the error in the finite-element solution by integrating
- the L2 norm of the difference between the finite-element solution 
- and the semi-analytical solution evaluated at the quadrature points.
+We quantify the error in the finite-element solution by integrating the
+ L2 norm of the difference between the finite-element solution  and the
+ semi-analytical solution evaluated at the quadrature points.
  We define the local error (error for each finite-element cell) to be
 \begin_inset Formula \begin{equation}
 \epsilon_{local}=\frac{1}{V_{cell}}\sqrt{\intop_{cell}\left(u_{i}^{t}-u_{i}^{fem}\right)^{2}\: dV},\end{equation}
+
 \end_inset
+
 where 
 \begin_inset Formula $u_{i}^{t}$
 \end_inset
- is the ith component of the displacement field for the semi-analytical 
- solution, and 
+
+ is the ith component of the displacement field for the semi-analytical
+  solution, and 
 \begin_inset Formula $u_{i}^{fem}$
 \end_inset
+
  is the ith component of the displacement field for the finite-element 
- solution. 
- Taking the square root of the L2 norm and normalizing by 
- the volume of the cell results in an error metric with dimensions of
- length. 
- This roughly corresponds to the error in the magnitude of the
- displacement field in the finite element solution.
+ solution.
+  Taking the square root of the L2 norm and normalizing by  the volume of
+ the cell results in an error metric with dimensions of length.
+  This roughly corresponds to the error in the magnitude of the displacement
+ field in the finite element solution.
  We define the global error in a similar fashion,
 \begin_inset Formula \begin{equation}
 \epsilon_{global}=\frac{1}{V_{domain}}\sqrt{\intop_{domain}\left(u_{i}^{t}-u_{i}^{fem}\right)^{2}\: dV},\end{equation}
+
 \end_inset
+
  where we sum the L2 norm computed for the local error over all of the 
- cells before taking the square root and dividing by the volume of the
- domain.
+ cells before taking the square root and dividing by the volume of the domain.
  CIG has developed a package called 
 \begin_inset LatexCommand htmlurl
 name "CIGMA"
@@ -368,46 +413,326 @@ target "geodynamics.org/cig/software/packages/cs/cigma"
 \end_layout
 
 \begin_layout Standard
+Figures 
+\begin_inset LatexCommand ref
+reference "fig:benchmark:strikeslip:hex8:1000m"
 
-Figures ?? -- ?? show the local error for each of the three
- resolutions and the two cell types.
- The error decreases with
- decreasing cell size as expected for a converging solution.
- The largest errors, which approach 1 mm for 1 m of slip at the finest
- resolutions, occur where the gradient in slip is discontinuous at the
- boundary between the region of uniform slip and linear taper in
- slip.
+\end_inset
+
+ through 
+\begin_inset LatexCommand ref
+reference "fig:benchmark:strikeslip:tet4:250m"
+
+\end_inset
+
+ show the local error for each of the three resolutions and two cell types.
+ The error decreases with decreasing cell size as expected for a converging
+ solution.
+ The largest errors, which approach 1 mm for 1 m of slip for a discretization
+ size of 250 m, occur where the gradient in slip is discontinuous at the
+ boundary between the region of uniform slip and linear taper in slip.
  The linear basis functions cannot match this higher order variation.
- The trilinear basis functions in the hexahedral element provide more
- terms in the polynomial defining the variation in the displacement
- field within each cell compared to the linear basis functions for the
- tetrahedral cell.
- As a result, for this problem the error for the hexahedral cell
- smaller at a given resolution than that for a tetrahedral cell.
+ The trilinear basis functions in the hexahedral element provide more terms
+ in the polynomial defining the variation in the displacement field within
+ each cell compared to the linear basis functions for the tetrahedral cell.
+ Consequently, for this problem the error for the hexahedral cells at a
+ given resolution is smaller than that for the tetrahedral cells.
+ Both sets of cell types and basis functions provide the same rate of convergenc
+e as shown in Figure 
+\begin_inset LatexCommand ref
+reference "fig:benchmark:strikeslip:convergence"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
-ADD FIGURE HERE: ERROR HEX8 1000m
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/error_hex8_1000m.eps
+	scale 75
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-ADD FIGURE HERE: ERROR TET4 1000m
+\begin_inset Caption
+
+\begin_layout Standard
+Local error for strike-slip benchmark problem with hexahedral cells and
+ trilinear basis functions with a uniform discretization size of 1000m.
+\begin_inset LatexCommand label
+name "fig:benchmark:strikeslip:hex8:1000m"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-ADD FIGURE HERE: ERROR HEX8 500m
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /Users/brad/src/cig/pylith/doc/userguide/benchmarks/strikeslip/figs/error_tet4_1000m.eps
+	scale 75
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-ADD FIGURE HERE: ERROR TET4 500m
+\begin_inset Caption
+
+\begin_layout Standard
+Local error for strike-slip benchmark problem with tetrahedral cells and
+ linear basis functions with a uniform discretization size of 1000m.
+\begin_inset LatexCommand label
+name "fig:benchmark:strikeslip:tet4:1000m"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-ADD FIGURE HERE: ERROR HEX8 250m
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /Users/brad/src/cig/pylith/doc/userguide/benchmarks/strikeslip/figs/error_hex8_0500m.eps
+	scale 75
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-ADD FIGURE HERE: ERROR TET4 250m
+\begin_inset Caption
+
+\begin_layout Standard
+Local error for strike-slip benchmark problem with hexahedral cells and
+ trilinear basis functions with a uniform discretization size of 500m.
+\begin_inset LatexCommand label
+name "fig:benchmark:strikeslip:hex8:500m"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /Users/brad/src/cig/pylith/doc/userguide/benchmarks/strikeslip/figs/error_tet4_0500m.eps
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Local error for strike-slip benchmark problem with tetrahedral cells and
+ linear basis functions with a uniform discretization size of 500m.
+\begin_inset LatexCommand label
+name "fig:benchmark:strikeslip:tet4:500m"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /Users/brad/src/cig/pylith/doc/userguide/benchmarks/strikeslip/figs/error_hex8_0250m.eps
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Local error for strike-slip benchmark problem with hexahedral cells and
+ trilinear basis functions with a uniform discretization size of 250m.
+\begin_inset LatexCommand label
+name "fig:benchmark:strikeslip:hex8:250m"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /Users/brad/src/cig/pylith/doc/userguide/benchmarks/strikeslip/figs/error_tet4_0250m.eps
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Local error for strike-slip benchmark problem with tetrahedral cells and
+ linear basis functions with a uniform discretization size of 250m.
+\begin_inset LatexCommand label
+name "fig:benchmark:strikeslip:tet4:250m"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /Users/brad/src/cig/pylith/doc/userguide/benchmarks/strikeslip/figs/convergence.eps
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Convergence rate for the strike-slip benchmark problem with tetrahedral
+ cells and linear basis functions and with hexahedral cells with trilinear
+ basis funtions.
+\begin_inset LatexCommand label
+name "fig:benchmark:strikeslip:convergence"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -415,46 +740,151 @@ Performance
 \end_layout
 
 \begin_layout Standard
-Figure ?? summarizes the overall performance of each of the six simulations.
+Figure 
+\begin_inset LatexCommand ref
+reference "fig:benchmark:strikeslip:summary"
+
+\end_inset
+
+ summarizes the overall performance of each of the six simulations.
  Although at a given resolution, the number of degrees of freedom in the
  hexahedral and tetrahedral meshes are the the same, the number of cells
  in the tetrahedral mesh is about six times greater.
- However, we use only
- one integration point per tetrahedral cell compared to eight for the 
- hexahedral cell.
+ However, we use only one integration point per tetrahedral cell compared
+ to eight for the  hexahedral cell.
  This leads to approximately the same number of integration points for the
- two meshes, but the time required to unpack/pack information for each
- cell from the Sieve data structure is much greater than the time required
- to do the calculation for each quadrature point.
- As a result, the run time for the simulations with hexahedral cells
- is much less than that for the tetrahedral cells at the same resolution.
+ two meshes, but the time required to unpack/pack information for each cell
+ from the Sieve data structure is greater than the time required to do the
+ calculation for each quadrature point (which can take advantage of the
+ very fast, small memory cache in the processor).
+ As a result, the run time for the simulations with hexahedral cells is
+ much less than that for the tetrahedral cells at the same resolution.
+ 
 \end_layout
 
 \begin_layout Standard
-ADD FIGURE HERE: ERROR SUMMARY
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /Users/brad/src/cig/pylith/doc/userguide/benchmarks/strikeslip/figs/summary.eps
+	scale 75
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Figure ?? compares the run time for the benchmark at 500m resolution
- for 1 to 16 processors.
+\begin_inset Caption
+
+\begin_layout Standard
+Summary of performance of PyLith for the six simulations of the strike-slip
+ benchmark.
+ For a given discretization size, hexahedral cells with trilinear basis
+ functions provide greater accuracy with a shorter runtime compared with
+ tetrahedral cells and linear basis functions.
+\begin_inset LatexCommand label
+name "fig:benchmark:strikeslip:summary"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset LatexCommand ref
+reference "fig:benchmark:strikeslip:scaling"
+
+\end_inset
+
+ compares the run time for the benchmark at 500m resolution for 1 to 16
+ processors.
  The run time includes both the time required to distribute the mesh over
  the processors as well as write the output to VTK files.
- These are known bottlenecks in the code and future releases will
- eliminate these bottlenecks.
+ These are known bottlenecks in the code and future releases will eliminate
+ these bottlenecks.
  The run time neglecting the time required for distributing the mesh and
- output are also included in Figure ??.
- This gives provides a more accurate representation of the
- parallel-performance of the computational portion of the code.
- As shown in Figure ??, the number of iterations required to solve the problem
- increases with problem side.
- Switching to a multi-grid solver will reduce the number of iterations
- to a small number of iterations that does not increase with problem size.
+ output are also included in Figure 
+\begin_inset LatexCommand ref
+reference "fig:benchmark:strikeslip:scaling"
+
+\end_inset
+
+.
+ This gives provides a more accurate representation of the parallel-performance
+ of the computational portion of the code.
+ As shown in Figure 
+\begin_inset LatexCommand ref
+reference "fig:benchmark:strikeslip:summary"
+
+\end_inset
+
+, the number of iterations required to solve the problem increases with
+ problem side.
+ Switching to a multi-grid solver will reduce the number of iterations to
+ a small number of iterations that does not increase with problem size.
 \end_layout
 
 \begin_layout Standard
-ADD FIGURE HERE: ERROR SUMMARY
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /Users/brad/src/cig/pylith/doc/userguide/benchmarks/strikeslip/figs/scaling.eps
+	scale 75
+
+\end_inset
+
+
 \end_layout
 
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Parallel performance of PyLith for the strike-slip benchmark problem with
+ tetrahedral cells and linear basis functions with a uniform discretization
+ size of 500m.
+ A linear trend would indicate strong scaling, which is rarely achieved
+ in any real application).
+ 
+\begin_inset LatexCommand label
+name "fig:benchmark:strikeslip:scaling"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
 
 \end_body
 \end_document
