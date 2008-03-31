@@ -21,7 +21,6 @@ check_SCRIPTS = testmaterials.py
 TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
-	TestBiMaterial.py \
 	TestElasticIsotropic3D.py \
 	TestElasticPlaneStrain.py \
 	TestElasticPlaneStress.py \

@@ -24,10 +24,7 @@ noinst_PYTHON = \
 	TestAbsorbingDampers.py \
 	TestNeumann.py \
 	TestDirichletPoints.py \
-	TestBCSingle.py \
-	TestBCTwoSides.py \
-	TestBCFourSides.py \
-	TestBCSixSides.py
+	TestDirichletBoundary.py
 
 
 # End of file 
