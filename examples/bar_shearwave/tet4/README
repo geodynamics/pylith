@@ -1,11 +1,4 @@
-This directory contains a wave propagation example problem. We create
-a shear dislocation in a rectangular, elastic bar 8 km long with a
-square cross-section 400 m on a side. The shear dislocation (the
-vertices are fixed in the longitudinal and other shear direction)
-generates a shear wave that propagates down the bar. Absorbing
-boundary conditions on each end perfectly absorb the shear wave.
-The bar is discretized with tetrahedral cells (see examples/3d/bar_hex8)
-for the same problem discretized with hexahedral cells.
+The bar is discretized with tetrahedral cells.
 
 Files associated with the example problem:
 
