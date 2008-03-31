@@ -1,4 +1,4 @@
-#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -756,8 +756,8 @@ reference "fig:benchmark:strikeslip:summary"
  from the Sieve data structure is greater than the time required to do the
  calculation for each quadrature point (which can take advantage of the
  very fast, small memory cache in the processor).
- As a result, the runtime for the simulations with hexahedral cells is
- much less than that for the tetrahedral cells at the same resolution.
+ As a result, the runtime for the simulations with hexahedral cells is much
+ less than that for the tetrahedral cells at the same resolution.
  
 \end_layout
 
@@ -812,21 +812,21 @@ reference "fig:benchmark:strikeslip:scaling"
 
 \end_inset
 
- compares the runtime for the benchmark at 500m resolution for 1 to 16
- processors.
+ compares the runtime for the benchmark at 500m resolution for 1 to 16 processor
+s.
  The runtime includes both the time required to distribute the mesh over
  the processors as well as write the output to VTK files.
  These are known bottlenecks in the code and future releases will eliminate
  these bottlenecks.
- The runtime minus the time required for distributing the mesh is
- also included in Figure 
+ The runtime minus the time required for distributing the mesh is also included
+ in Figure 
 \begin_inset LatexCommand ref
 reference "fig:benchmark:strikeslip:scaling"
 
 \end_inset
 
 .
- This gives provides a more accurate representation of the parallel-performance
+ This provides a more accurate representation of the parallel-performance
  of the computational portion of the code.
  As shown in Figure 
 \begin_inset LatexCommand ref
@@ -836,8 +836,8 @@ reference "fig:benchmark:strikeslip:summary"
 
 , the number of iterations required to solve the problem increases with
  problem side.
- Switching to a multi-grid solver will lead to fast convergence with
- a small number of iterations that does not increase with problem size.
+ Switching to a multi-grid solver will lead to fast convergence with a small
+ number of iterations that does not increase with problem size.
 \end_layout
 
 \begin_layout Standard
@@ -864,10 +864,10 @@ status open
 Parallel performance of PyLith for the strike-slip benchmark problem with
  tetrahedral cells and linear basis functions with a uniform discretization
  size of 500m.
- The total runtime (total) and the runtime minus the time required to
- distribute the mesh (compute) are shown.
- A linear decrease with a slope of 1 would indicate strong scaling, 
- which is rarely achieved in any real application.
+ The total runtime (total) and the runtime minus the time required to distribute
+ the mesh (compute) are shown.
+ A linear decrease with a slope of 1 would indicate strong scaling,  which
+ is rarely achieved in any real application.
  
 \begin_inset LatexCommand label
 name "fig:benchmark:strikeslip:scaling"
