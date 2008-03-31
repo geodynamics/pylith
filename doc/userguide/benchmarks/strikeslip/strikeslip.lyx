@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -308,11 +308,10 @@ reference "fig:benchmark:strikeslip:solution"
 
 \end_inset
 
- shows the displacement field from the simulation with hexehedral cells
- with trilinear basis functions at a resolution of 1000 m.
+ shows the displacement field from the simulation with hexahedral cells
+ using trilinear basis functions at a resolution of 1000 m.
  For each resolution and set of basis functions, we measure the accuracy
- by comparing the numerical solution against the  semi-analytical Okada
- solution
+ by comparing the numerical solution against the semi-analytical Okada solution
 \begin_inset LatexCommand cite
 key "Okada:1992"
 
