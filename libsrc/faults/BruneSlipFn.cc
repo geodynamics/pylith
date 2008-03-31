@@ -230,7 +230,7 @@ pylith::faults::BruneSlipFn::slip(const double t,
     _slip->updatePoint(*v_iter, &slipValues[0]);
   } // for
 
-  PetscLogFlopsNoCheck(numVertices * (2+8 + 3*spaceDim));
+  PetscLogFlops(numVertices * (2+8 + 3*spaceDim));
 
   return _slip;
 } // slip
@@ -285,7 +285,7 @@ pylith::faults::BruneSlipFn::slipIncr(const double t0,
     _slip->updatePoint(*v_iter, &slipValues[0]);
   } // for
 
-  PetscLogFlopsNoCheck(count * (3+2*8 + 3*spaceDim));
+  PetscLogFlops(count * (3+2*8 + 3*spaceDim));
 
   return _slip;
 } // slipIncr

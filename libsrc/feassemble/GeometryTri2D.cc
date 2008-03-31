@@ -16,7 +16,7 @@
 
 #include "GeometryLine2D.hh" // USES GeometryLine2D
 
-#include "petsc.h" // USES PetscLogFlopsNoCheck
+#include "petsc.h" // USES PetscLogFlops
 
 #include "pylith/utils/array.hh" // USES double_array
 
@@ -94,7 +94,7 @@ pylith::feassemble::GeometryTri2D::ptsRefToGlobal(double* ptsGlobal,
     ptsGlobal[iG++] = y0 + g_1 * p0 + g_2 * p1;
   } // for
 
-  PetscLogFlopsNoCheck(4 + npts*12);
+  PetscLogFlops(4 + npts*12);
 } // ptsRefToGlobal
 
 // ----------------------------------------------------------------------
@@ -128,7 +128,7 @@ pylith::feassemble::GeometryTri2D::jacobian(double_array* jacobian,
     (*jacobian)[0]*(*jacobian)[3] - 
     (*jacobian)[1]*(*jacobian)[2];
 
-  PetscLogFlopsNoCheck(11);
+  PetscLogFlops(11);
 } // jacobian
 
 // ----------------------------------------------------------------------
@@ -174,7 +174,7 @@ pylith::feassemble::GeometryTri2D::jacobian(double* jacobian,
     det[i] = jdet;
   } // for
 
-  PetscLogFlopsNoCheck(11);
+  PetscLogFlops(11);
 } // jacobian
 
 

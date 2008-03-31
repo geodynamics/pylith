@@ -98,7 +98,7 @@ pylith::meshio::CellFilterAvg::filter(
 	fieldAvgCell[i] += wts[iQuad] / scalar * values[iQuad*fiberDim+i];
 
     _fieldAvg->updatePoint(*c_iter, &fieldAvgCell[0]);
-    PetscLogFlopsNoCheck( numQuadPts*fiberDim*3 );
+    PetscLogFlops( numQuadPts*fiberDim*3 );
   } // for
 
   return _fieldAvg;

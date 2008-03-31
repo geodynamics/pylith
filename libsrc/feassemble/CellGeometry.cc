@@ -14,7 +14,7 @@
 
 #include "CellGeometry.hh" // implementation of class methods
 
-#include "petsc.h" // USES PetscLogFlopsNoCheck
+#include "petsc.h" // USES PetscLogFlops
 
 #include <iostream> // USES std::cerr
 
@@ -184,7 +184,7 @@ pylith::feassemble::CellGeometry::_orient1D(double_array* orientation,
   (*orientation)[1] =  j2;
   (*orientation)[2] =  j2;
   (*orientation)[3] = -j1;
-  PetscLogFlopsNoCheck(1);
+  PetscLogFlops(1);
 } // _orient1D
 		
 // ----------------------------------------------------------------------
@@ -251,7 +251,7 @@ pylith::feassemble::CellGeometry::_orient2D(double_array* orientation,
   (*orientation)[6] =  r0*wt;
   (*orientation)[7] =  r1*wt;
   (*orientation)[8] =  r2*wt;
-  PetscLogFlopsNoCheck(63);
+  PetscLogFlops(63);
 } // _orient2D
 
 

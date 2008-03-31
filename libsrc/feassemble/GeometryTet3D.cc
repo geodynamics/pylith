@@ -16,7 +16,7 @@
 
 #include "GeometryTri3D.hh" // USES GeometryTri3D
 
-#include "petsc.h" // USES PetscLogFlopsNoCheck
+#include "petsc.h" // USES PetscLogFlops
 
 #include "pylith/utils/array.hh" // USES double_array
 
@@ -114,7 +114,7 @@ pylith::feassemble::GeometryTet3D::ptsRefToGlobal(double* ptsGlobal,
     ptsGlobal[iG++] = z0 + h_1 * p0 + h_2 * p1 + h_3 * p2;
   } // for
 
-  PetscLogFlopsNoCheck(9 + npts*24);
+  PetscLogFlops(9 + npts*24);
 } // ptsRefToGlobal
 
 // ----------------------------------------------------------------------
@@ -165,7 +165,7 @@ pylith::feassemble::GeometryTet3D::jacobian(double_array* jacobian,
     (*jacobian)[2]*((*jacobian)[3]*(*jacobian)[7] -
 		    (*jacobian)[4]*(*jacobian)[6]);
 
-  PetscLogFlopsNoCheck(32);
+  PetscLogFlops(32);
 } // jacobian
 
 // ----------------------------------------------------------------------
@@ -228,7 +228,7 @@ pylith::feassemble::GeometryTet3D::jacobian(double* jacobian,
     det[i] = jdet;
   } // for
 
-  PetscLogFlopsNoCheck(32);
+  PetscLogFlops(32);
 } // jacobian
 
 

@@ -234,7 +234,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 	  } // for
 	} // for
       } // for
-      PetscLogFlopsNoCheck(numQuadPts*(2+numBasis*(2+2*spaceDim)));
+      PetscLogFlops(numQuadPts*(2+numBasis*(2+2*spaceDim)));
     } // if
 #endif
 

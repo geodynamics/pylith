@@ -16,7 +16,7 @@
 
 #include "CellGeometry.hh" // USES CellGeometry
 
-#include "petsc.h" // USES PetscLogFlopsNoCheck
+#include "petsc.h" // USES PetscLogFlops
 
 #include <assert.h> // USES assert()
 
@@ -178,7 +178,7 @@ pylith::feassemble::Quadrature3D::computeGeometry(
 	    _jacobianInv[iQuadPt*_cellDim*_spaceDim+jDim*_spaceDim+iDim];
   } // for
 
-  PetscLogFlopsNoCheck(_numQuadPts*(2+36 + 
+  PetscLogFlops(_numQuadPts*(2+36 + 
 				    _numBasis*_spaceDim*_cellDim*4));
 } // computeGeometry
 

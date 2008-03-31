@@ -16,7 +16,7 @@
 
 #include "GeometryQuad3D.hh" // USES GeometryQuad3D
 
-#include "petsc.h" // USES PetscLogFlopsNoCheck
+#include "petsc.h" // USES PetscLogFlops
 
 #include "pylith/utils/array.hh" // USES double_array
 
@@ -152,7 +152,7 @@ pylith::feassemble::GeometryHex3D::ptsRefToGlobal(double* ptsGlobal,
       + h_01*p0*p1 + h_12*p1*p2 + h_02*p0*p2 + h_012*p0*p1*p2;
   } // for
 
-  PetscLogFlopsNoCheck(57 + npts*57);
+  PetscLogFlops(57 + npts*57);
 } // ptsRefToGlobal
 
 // ----------------------------------------------------------------------
@@ -245,7 +245,7 @@ pylith::feassemble::GeometryHex3D::jacobian(double_array* jacobian,
     (*jacobian)[2]*((*jacobian)[3]*(*jacobian)[7] -
 		    (*jacobian)[4]*(*jacobian)[6]);
 
-  PetscLogFlopsNoCheck(152);
+  PetscLogFlops(152);
 } // jacobian
 
 // ----------------------------------------------------------------------
@@ -356,7 +356,7 @@ pylith::feassemble::GeometryHex3D::jacobian(double* jacobian,
     det[i] = j0*(j4*j8 - j5*j7) - j1*(j3*j8 - j5*j6) + j2*(j3*j7 - j4*j6);
   } // for
 
-  PetscLogFlopsNoCheck(78 + npts*69);
+  PetscLogFlops(78 + npts*69);
 } // jacobian
 
 

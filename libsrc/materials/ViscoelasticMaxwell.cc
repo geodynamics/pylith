@@ -14,7 +14,7 @@
 
 #include "ViscoelasticMaxwell.hh" // implementation of object methods
 
-#include "petsc.h" // USES PetscLogFlopsNoCheck
+#include "petsc.h" // USES PetscLogFlops
 
 #include <stdexcept> // USES std::runtime_error
 
@@ -47,15 +47,15 @@ pylith::materials::ViscoelasticMaxwell::computeVisStrain(const double dt,
       fraction *= dt/maxwelltime;
       dq += fSign*fraction/factorial;
     } // for
-    PetscLogFlopsNoCheck(8*(numTerms-1));
+    PetscLogFlops(8*(numTerms-1));
   // Throw away exponential term if maxwelltime is very small.
   } else if (maxwelltime < timeFrac*dt) {
     dq = maxwelltime/dt;
-    PetscLogFlopsNoCheck(1);
+    PetscLogFlops(1);
   // Default solution.
   } else{
     dq = maxwelltime*(1.0-exp(-dt/maxwelltime))/dt;
-    PetscLogFlopsNoCheck(6);
+    PetscLogFlops(6);
   } // else
 
   return dq;

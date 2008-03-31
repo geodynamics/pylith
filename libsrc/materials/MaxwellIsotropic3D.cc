@@ -18,7 +18,7 @@
 
 #include "pylith/utils/array.hh" // USES double_array
 
-#include "petsc.h" // USES PetscLogFlopsNoCheck
+#include "petsc.h" // USES PetscLogFlops
 
 #include <assert.h> // USES assert()
 #include <string.h> // USES memcpy()
@@ -130,7 +130,7 @@ pylith::materials::MaxwellIsotropic3D::_dbToProperties(
   propValues[_MaxwellIsotropic3D::pidLambda] = lambda;
   propValues[_MaxwellIsotropic3D::pidMaxwellTime] = maxwelltime;
 
-  PetscLogFlopsNoCheck(7);
+  PetscLogFlops(7);
 } // _dbToProperties
 
 // ----------------------------------------------------------------------
@@ -197,7 +197,7 @@ pylith::materials::MaxwellIsotropic3D::_computeStateVars(
       dq * (devStrainTpdt - devStrainT);
   } // for
 
-  PetscLogFlopsNoCheck(8 + 7 * tensorSize);
+  PetscLogFlops(8 + 7 * tensorSize);
 } // _computeStateVars
 
 // ----------------------------------------------------------------------
@@ -241,7 +241,7 @@ pylith::materials::MaxwellIsotropic3D::_calcStressElastic(
   stress[4] = mu2 * e23;
   stress[5] = mu2 * e13;
 
-  PetscLogFlopsNoCheck(13);
+  PetscLogFlops(13);
 } // _calcStressElastic
 
 // ----------------------------------------------------------------------
@@ -304,7 +304,7 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
     stress[iComp] = diag[iComp] * meanStressTpdt + devStressTpdt;
   } // for
 
-  PetscLogFlopsNoCheck(7 + 3 * tensorSize);
+  PetscLogFlops(7 + 3 * tensorSize);
 } // _calcStressViscoelastic
 
 // ----------------------------------------------------------------------
@@ -353,7 +353,7 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsElastic(
   elasticConsts[19] = 0; // C2313
   elasticConsts[20] = mu2; // C1313
 
-  PetscLogFlopsNoCheck(4);
+  PetscLogFlops(4);
 } // _calcElasticConstsElastic
 
 // ----------------------------------------------------------------------
@@ -407,7 +407,7 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsViscoelastic(
   elasticConsts[19] = 0; // C2313
   elasticConsts[20] = elasticConsts[15]; // C1313
 
-  PetscLogFlopsNoCheck(10);
+  PetscLogFlops(10);
 } // _calcElasticConstsViscoelastic
 
 // ----------------------------------------------------------------------
@@ -440,7 +440,7 @@ pylith::materials::MaxwellIsotropic3D::_updatePropertiesElastic(
     properties[_MaxwellIsotropic3D::pidVisStrain+iComp] =
       totalStrain[iComp] - diag[iComp] * meanStrainTpdt;
   } // for
-  PetscLogFlopsNoCheck(3 + 2 * _MaxwellIsotropic3D::tensorSize);
+  PetscLogFlops(3 + 2 * _MaxwellIsotropic3D::tensorSize);
 
   _needNewJacobian = true;
 } // _updatePropertiesElastic

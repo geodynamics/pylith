@@ -17,7 +17,7 @@
 #include "pylith/utils/array.hh" // USES double_array
 #include "CellGeometry.hh" // USES CellGeometry
 
-#include "petsc.h" // USES PetscLogFlopsNoCheck
+#include "petsc.h" // USES PetscLogFlops
 
 #include <assert.h> // USES assert()
 
@@ -112,7 +112,7 @@ pylith::feassemble::Quadrature1D::computeGeometry(
 	  _jacobianInv[iQuadPt];
   } // for
 
-  PetscLogFlopsNoCheck(_numQuadPts * (1 + _numBasis * 4));
+  PetscLogFlops(_numQuadPts * (1 + _numBasis * 4));
 } // computeGeometry
 
 

@@ -16,7 +16,7 @@
 
 #include "GeometryPoint3D.hh" // USES GeometryPoint3D
 
-#include "petsc.h" // USES PetscLogFlopsNoCheck
+#include "petsc.h" // USES PetscLogFlops
 
 #include "pylith/utils/array.hh" // USES double_array
 
@@ -90,7 +90,7 @@ pylith::feassemble::GeometryLine3D::ptsRefToGlobal(double* ptsGlobal,
     ptsGlobal[iG++] = z0 + h_1 * p0;
   } // for
 
-  PetscLogFlopsNoCheck(3 + npts*8);
+  PetscLogFlops(3 + npts*8);
 } // ptsRefToGlobal
 
 // ----------------------------------------------------------------------
@@ -121,7 +121,7 @@ pylith::feassemble::GeometryLine3D::jacobian(double_array* jacobian,
   *det = sqrt(pow((*jacobian)[0], 2) +
 	      pow((*jacobian)[1], 2) +
 	      pow((*jacobian)[2], 2));
-  PetscLogFlopsNoCheck(12);
+  PetscLogFlops(12);
 } // jacobian
 
 // ----------------------------------------------------------------------
@@ -161,7 +161,7 @@ pylith::feassemble::GeometryLine3D::jacobian(double* jacobian,
     det[i] = jdet;
   } // for
 
-  PetscLogFlopsNoCheck(12);
+  PetscLogFlops(12);
 } // jacobian
 
 

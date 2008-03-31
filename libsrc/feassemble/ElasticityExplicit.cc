@@ -222,7 +222,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
         } // for
       } // for
     } // for
-    PetscLogFlopsNoCheck(numQuadPts*(3+numBasis*(1+numBasis*(6*spaceDim))));
+    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(6*spaceDim))));
 
     // Compute B(transpose) * sigma, first computing strains
     calcTotalStrainFn(&totalStrain, basisDeriv, dispTCell, 
@@ -321,7 +321,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
         } // for
       } // for
     } // for
-    PetscLogFlopsNoCheck(numQuadPts*(3+numBasis*(1+numBasis*(1+spaceDim))));
+    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+spaceDim))));
     
     // Assemble cell contribution into PETSc Matrix
     const ALE::Obj<Mesh::order_type>& globalOrder = 

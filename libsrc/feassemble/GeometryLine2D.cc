@@ -18,7 +18,7 @@
 
 #include "pylith/utils/array.hh" // USES double_array
 
-#include "petsc.h" // USES PetscLogFlopsNoCheck
+#include "petsc.h" // USES PetscLogFlops
 
 #include <assert.h> // USES assert()
 
@@ -86,7 +86,7 @@ pylith::feassemble::GeometryLine2D::ptsRefToGlobal(double* ptsGlobal,
     ptsGlobal[iG++] = y0 + g_1 * p0;
   } // for
 
-  PetscLogFlopsNoCheck(2 + npts*6);
+  PetscLogFlops(2 + npts*6);
 } // ptsRefToGlobal
 
 // ----------------------------------------------------------------------
@@ -114,7 +114,7 @@ pylith::feassemble::GeometryLine2D::jacobian(double_array* jacobian,
   *det = sqrt(pow((*jacobian)[0], 2) +
 	      pow((*jacobian)[1], 2));
 
-  PetscLogFlopsNoCheck(8);
+  PetscLogFlops(8);
 } // jacobian
 
 // ----------------------------------------------------------------------
@@ -150,7 +150,7 @@ pylith::feassemble::GeometryLine2D::jacobian(double* jacobian,
     det[i] = jdet;
   } // for
 
-  PetscLogFlopsNoCheck(8);
+  PetscLogFlops(8);
 } // jacobian
 
 
