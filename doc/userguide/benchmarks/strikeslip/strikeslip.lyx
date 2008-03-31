@@ -468,7 +468,7 @@ status open
 
 \begin_layout Standard
 Local error for strike-slip benchmark problem with tetrahedral cells and
- linear basis functions with a uniform discretization size of 1000m.
+ linear basis functions with a uniform discretization size of 1000 m.
 \begin_inset LatexCommand label
 name "fig:benchmark:strikeslip:tet4:1000m"
 
@@ -509,7 +509,7 @@ status open
 
 \begin_layout Standard
 Local error for strike-slip benchmark problem with hexahedral cells and
- trilinear basis functions with a uniform discretization size of 1000m.
+ trilinear basis functions with a uniform discretization size of 1000 m.
 \begin_inset LatexCommand label
 name "fig:benchmark:strikeslip:hex8:1000m"
 
@@ -550,7 +550,7 @@ status open
 
 \begin_layout Standard
 Local error for strike-slip benchmark problem with tetrahedral cells and
- linear basis functions with a uniform discretization size of 500m.
+ linear basis functions with a uniform discretization size of 500 m.
 \begin_inset LatexCommand label
 name "fig:benchmark:strikeslip:tet4:500m"
 
@@ -591,7 +591,7 @@ status open
 
 \begin_layout Standard
 Local error for strike-slip benchmark problem with hexahedral cells and
- trilinear basis functions with a uniform discretization size of 500m.
+ trilinear basis functions with a uniform discretization size of 500 m.
 \begin_inset LatexCommand label
 name "fig:benchmark:strikeslip:hex8:500m"
 
@@ -632,7 +632,7 @@ status open
 
 \begin_layout Standard
 Local error for strike-slip benchmark problem with tetrahedral cells and
- linear basis functions with a uniform discretization size of 250m.
+ linear basis functions with a uniform discretization size of 250 m.
 \begin_inset LatexCommand label
 name "fig:benchmark:strikeslip:tet4:250m"
 
@@ -673,7 +673,7 @@ status open
 
 \begin_layout Standard
 Local error for strike-slip benchmark problem with hexahedral cells and
- trilinear basis functions with a uniform discretization size of 250m.
+ trilinear basis functions with a uniform discretization size of 250 m.
 \begin_inset LatexCommand label
 name "fig:benchmark:strikeslip:hex8:250m"
 
@@ -812,8 +812,8 @@ reference "fig:benchmark:strikeslip:scaling"
 
 \end_inset
 
- compares the runtime for the benchmark at 500m resolution for 1 to 16 processor
-s.
+ compares the runtime for the benchmark at 500 m resolution for 1 to 16
+ processors.
  The runtime includes both the time required to distribute the mesh over
  the processors as well as write the output to VTK files.
  These are known bottlenecks in the code and future releases will eliminate
@@ -863,7 +863,7 @@ status open
 \begin_layout Standard
 Parallel performance of PyLith for the strike-slip benchmark problem with
  tetrahedral cells and linear basis functions with a uniform discretization
- size of 500m.
+ size of 500 m.
  The total runtime (total) and the runtime minus the time required to distribute
  the mesh (compute) are shown.
  A linear decrease with a slope of 1 would indicate strong scaling,  which

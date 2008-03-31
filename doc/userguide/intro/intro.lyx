@@ -327,7 +327,13 @@ During development, tests were constructed for nearly every module function.
  the code.
  Additionally, we have run the Southern California Earthquake Center crustal
  deformation benchmarks for strike-slip and reverse-slip to determine the
- relative local and global error (see Appendix TODO which appendix?).
+ relative local and global error (see Chapter 
+\begin_inset LatexCommand ref
+reference "cha:Benchmarks"
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Subsection
