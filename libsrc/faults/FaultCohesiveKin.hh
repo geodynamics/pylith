@@ -253,6 +253,9 @@ private :
   /// Vector field for vertex information over fault mesh.
   ALE::Obj<real_section_type> _bufferVertexVector;
 
+  /// Handle to field managed elsewhere for data over fault mesh.
+  ALE::Obj<real_section_type> _bufferTmp;
+
 }; // class FaultCohesiveKin
 
 #include "FaultCohesiveKin.icc" // inline methods

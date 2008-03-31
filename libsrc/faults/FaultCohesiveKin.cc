@@ -434,30 +434,30 @@ pylith::faults::FaultCohesiveKin::vertexField(
     return _slip;
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
-    _bufferVertexVector = _orientation->getFibration(0);
+    _bufferTmp = _orientation->getFibration(0);
     *fieldType = VECTOR_FIELD;
-    return _bufferVertexVector;
+    return _bufferTmp;
 
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
-    _bufferVertexVector = _orientation->getFibration(1);
+    _bufferTmp = _orientation->getFibration(1);
     *fieldType = VECTOR_FIELD;
-    return _bufferVertexVector;
+    return _bufferTmp;
 
   } else if (0 == strcasecmp("normal_dir", name)) {
     const int space = 
       (0 == cohesiveDim) ? 0 : (1 == cohesiveDim) ? 1 : 2;
-    _bufferVertexVector = _orientation->getFibration(space);
+    _bufferTmp = _orientation->getFibration(space);
     *fieldType = VECTOR_FIELD;
-    return _bufferVertexVector;
+    return _bufferTmp;
 
   } else if (0 == strcasecmp("final_slip", name)) {
-    _bufferVertexVector = _eqsrc->finalSlip();
+    _bufferTmp = _eqsrc->finalSlip();
     *fieldType = VECTOR_FIELD;
-    return _bufferVertexVector;
+    return _bufferTmp;
   } else if (0 == strcasecmp("slip_time", name)) {
-    _bufferVertexScalar = _eqsrc->slipTime();
+    _bufferTmp = _eqsrc->slipTime();
     *fieldType = SCALAR_FIELD;
-    return _bufferVertexScalar;
+    return _bufferTmp;
   } else if (0 == strcasecmp("traction_change", name)) {
     *fieldType = VECTOR_FIELD;
     const ALE::Obj<real_section_type>& solution = fields->getSolution();
@@ -858,7 +858,6 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
 				 const ALE::Obj<real_section_type>& solution)
 { // _calcTractionsChange
   assert(0 != tractions);
-  assert(!tractions->isNull());
   assert(!solution.isNull());
   assert(!_faultMesh.isNull());
   assert(!_pseudoStiffness.isNull());
@@ -873,6 +872,14 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   const int fiberDim = solution->getFiberDimension(*vertices->begin());
   double_array tractionValues(fiberDim);
 
+  // Allocate buffer for tractions field (if nec.).
+  if (tractions->isNull() ||
+      fiberDim != (*tractions)->getFiberDimension(*vertices->begin())) {
+    *tractions = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
+    (*tractions)->setFiberDimension(vertices, fiberDim);
+    _faultMesh->allocate(*tractions);
+  } // if
+  
   for (Mesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter) {
