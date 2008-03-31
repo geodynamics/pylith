@@ -8,15 +8,11 @@ Release 1.1
 
     1. Strike-slip benchmark.
       c. Rerun benchmarks.
-      d. Tabulate results.
+      d. Check results.
 
   Binaries
 
     Add setup.sh for linux.
-
-  Manual
-
-    2. Add strike-slip benchmarks.
 
 ----------------------------------------------------------------------
 Workshop
