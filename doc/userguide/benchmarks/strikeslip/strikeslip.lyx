@@ -162,7 +162,7 @@ conditions Bottom and side displacements are set to the elastic
  symmetry, and the x- and z-displacements are set to zero.
  The second is along the line segment between (12, 0, -24) and (12, 24,
  -24), where the analytical solution blows up in some cases.
- Along this line segment, all 3 displacement components are left free.
+ Along this line segment, all three displacement components are left free.
 \end_layout
 
 \begin_layout Description
@@ -241,7 +241,7 @@ gunzip meshes/*.gz parameters/*.gz
 
 \begin_layout Standard
 Change to the parameters directory.
- Each benchmark uses 3 
+ Each benchmark uses three 
 \family typewriter
 .cfg
 \family default
@@ -262,7 +262,7 @@ strikeslip_lagrit.cfg
 strikeslip_hex8_1000m.cfg
 \family default
 ).
- A few examples of running the benchmarks are
+ A few examples of running the benchmarks (elastic solution only) are
 \end_layout
 
 \begin_layout LyX-Code
@@ -278,17 +278,12 @@ pylith strikeslip_lagrit.cfg strikeslip_tet4_1000m.cfg
 \end_layout
 
 \begin_layout Standard
-The benchmarks at resolutions of 1000 m, 500 m, and 250 m require approximately
- ?? GB, ?? GB, and ?? GB, respectively.
- Note that the commands above will only run the elastic solution (one time
- step), which is the only solution that we can compare against analytical
- results.
  To run the time-dependent (viscoelastic) problem, it is necessary to append
  
 \family typewriter
 timedep.cfg
 \family default
- to the above commands, e.g.:
+ to the above commands, for example
 \end_layout
 
 \begin_layout LyX-Code
@@ -297,7 +292,10 @@ pylith strikeslip_cubit.cfg strikeslip_hex8_1000m.cfg timedep.cfg
 
 \begin_layout Standard
 This will run the problem for 10 years, using a time-step size of 0.1 years,
- and results will be produced for each year.
+ and results will be output for each year.
+ The benchmarks at resolutions of 1000 m, 500 m, and 250 m require 
+ approximately 0.3 GB, 2.5 GB, and 24 GB, respectively.
+
 \end_layout
 
 \begin_layout Subsection
@@ -305,24 +303,25 @@ Benchmark Results
 \end_layout
 
 \begin_layout Standard
-After running the elastic solution for one of the meshes, you will end up
- with several 
-\family typewriter
-.vtk
-\family default
- files, as described in Chapter 
-\begin_inset LatexCommand ref
-reference "cha:Tutorials"
+Figure ?? shows the displacement field from the simulation with
+ hexehedral cells with trilinear basis functions at a resolution of 1000 m.
+ For each resolution and set of basis functions, we measure the
+ accuracy by comparing the numerical solution against the 
+ semi-analytical Okada solution
+\begin_inset LatexCommand cite
+key "Okada:1992"
 
 \end_inset
-
 .
- Using a file such as 
-\family typewriter
-strikeslip_hex8_1000m_t0000000.vtk
-\family default
-, you can create an image of the results such as ***RESULTS-FIGURE***, which
- was generated using ParaView.
+ We also compare the accuracy and run time across resolutions and
+ different cell types.
+ This provides practical information about what cell types and
+ resolutions are required to achieve a given level of accuracy with the
+ shortest runtime.
+\end_layout
+
+\begin_layout Standard
+ADD FIGURE HERE: SOLUTION
 \end_layout
 
 \begin_layout Subsubsection
@@ -330,37 +329,34 @@ Solution Accuracy
 \end_layout
 
 \begin_layout Standard
-To check the solution accuracy for a given mesh, we can compare the elastic
- solution to the analytical solution of 
-\begin_inset LatexCommand cite
-key "Okada:1992"
-
-\end_inset
-
-.
- To do this, we need robust methods of measuring both the local (cell-level)
- and global (mesh-level) error.
- We define the local error as
+We quantify the error in the finite-element solution by integrating
+ the L2 norm of the difference between the finite-element solution 
+ and the semi-analytical solution evaluated at the quadrature points.
+ We define the local error (error for each finite-element cell) to be
 \begin_inset Formula \begin{equation}
-\epsilon_{local}=\frac{1}{V_{cell}}\intop_{cell}\sqrt{\left(u_{i}^{t}-u_{i}^{c}\right)^{2}}\: dV,\end{equation}
-
+\epsilon_{local}=\frac{1}{V_{cell}}\sqrt{\intop_{cell}\left(u_{i}^{t}-u_{i}^{fem}\right)^{2}\: dV},\end{equation}
 \end_inset
-
 where 
 \begin_inset Formula $u_{i}^{t}$
 \end_inset
-
- is the `true' displacement for component i, and 
-\begin_inset Formula $u_{i}^{c}$
+ is the ith component of the displacement field for the semi-analytical 
+ solution, and 
+\begin_inset Formula $u_{i}^{fem}$
 \end_inset
-
- is the computed displacement.
- The errors are integrated over the cell using the same quadrature rules
- that were used in the finite element solution.
- The error is normalized by the cell volume so that the error is not related
- to cell size.
- The global error is obtained by summing the local errors for the entire
- mesh.
+ is the ith component of the displacement field for the finite-element 
+ solution. 
+ Taking the square root of the L2 norm and normalizing by 
+ the volume of the cell results in an error metric with dimensions of
+ length. 
+ This roughly corresponds to the error in the magnitude of the
+ displacement field in the finite element solution.
+ We define the global error in a similar fashion,
+\begin_inset Formula \begin{equation}
+\epsilon_{global}=\frac{1}{V_{domain}}\sqrt{\intop_{domain}\left(u_{i}^{t}-u_{i}^{fem}\right)^{2}\: dV},\end{equation}
+\end_inset
+ where we sum the L2 norm computed for the local error over all of the 
+ cells before taking the square root and dividing by the volume of the
+ domain.
  CIG has developed a package called 
 \begin_inset LatexCommand htmlurl
 name "CIGMA"
@@ -368,14 +364,50 @@ target "geodynamics.org/cig/software/packages/cs/cigma"
 
 \end_inset
 
- that can be used to compute both local and global estimates of solution
- accuracy.
- The local error estimates may be output in a VTK file and may be visualized
- using a package such as ParaView, as shown in ***Figure of local error***.
- As seen in the figure, as mesh resolution increases, so does the solution
- accuracy, as we would expect.
- The figure also shows that hexahedral meshes provide greater accuracy at
- the same resolution, at least for linear elements.
+ that computes these local and global error metrics.
+\end_layout
+
+\begin_layout Standard
+
+Figures ?? -- ?? show the local error for each of the three
+ resolutions and the two cell types.
+ The error decreases with
+ decreasing cell size as expected for a converging solution.
+ The largest errors, which approach 1 mm for 1 m of slip at the finest
+ resolutions, occur where the gradient in slip is discontinuous at the
+ boundary between the region of uniform slip and linear taper in
+ slip.
+ The linear basis functions cannot match this higher order variation.
+ The trilinear basis functions in the hexahedral element provide more
+ terms in the polynomial defining the variation in the displacement
+ field within each cell compared to the linear basis functions for the
+ tetrahedral cell.
+ As a result, for this problem the error for the hexahedral cell
+ smaller at a given resolution than that for a tetrahedral cell.
+\end_layout
+
+\begin_layout Standard
+ADD FIGURE HERE: ERROR HEX8 1000m
+\end_layout
+
+\begin_layout Standard
+ADD FIGURE HERE: ERROR TET4 1000m
+\end_layout
+
+\begin_layout Standard
+ADD FIGURE HERE: ERROR HEX8 500m
+\end_layout
+
+\begin_layout Standard
+ADD FIGURE HERE: ERROR TET4 500m
+\end_layout
+
+\begin_layout Standard
+ADD FIGURE HERE: ERROR HEX8 250m
+\end_layout
+
+\begin_layout Standard
+ADD FIGURE HERE: ERROR TET4 250m
 \end_layout
 
 \begin_layout Subsubsection
@@ -383,8 +415,46 @@ Performance
 \end_layout
 
 \begin_layout Standard
-comparison of error versus runtime and # flops
+Figure ?? summarizes the overall performance of each of the six simulations.
+ Although at a given resolution, the number of degrees of freedom in the
+ hexahedral and tetrahedral meshes are the the same, the number of cells
+ in the tetrahedral mesh is about six times greater.
+ However, we use only
+ one integration point per tetrahedral cell compared to eight for the 
+ hexahedral cell.
+ This leads to approximately the same number of integration points for the
+ two meshes, but the time required to unpack/pack information for each
+ cell from the Sieve data structure is much greater than the time required
+ to do the calculation for each quadrature point.
+ As a result, the run time for the simulations with hexahedral cells
+ is much less than that for the tetrahedral cells at the same resolution.
 \end_layout
+
+\begin_layout Standard
+ADD FIGURE HERE: ERROR SUMMARY
+\end_layout
+
+\begin_layout Standard
+Figure ?? compares the run time for the benchmark at 500m resolution
+ for 1 to 16 processors.
+ The run time includes both the time required to distribute the mesh over
+ the processors as well as write the output to VTK files.
+ These are known bottlenecks in the code and future releases will
+ eliminate these bottlenecks.
+ The run time neglecting the time required for distributing the mesh and
+ output are also included in Figure ??.
+ This gives provides a more accurate representation of the
+ parallel-performance of the computational portion of the code.
+ As shown in Figure ??, the number of iterations required to solve the problem
+ increases with problem side.
+ Switching to a multi-grid solver will reduce the number of iterations
+ to a small number of iterations that does not increase with problem size.
+\end_layout
+
+\begin_layout Standard
+ADD FIGURE HERE: ERROR SUMMARY
+\end_layout
+
 
 \end_body
 \end_document
