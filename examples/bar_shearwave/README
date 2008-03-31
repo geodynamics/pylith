@@ -1,0 +1,33 @@
+This directory contains a wave propagation example problem. We create
+a shear dislocation in a rectangular, elastic bar 8 km long with a
+square cross-section 400 m on a side. In 2-D the we use a mid-surface
+cross-section and plane strain conditions. The shear dislocation (the
+vertices are fixed in the longitudinal and other shear direction)
+generates a shear wave that propagates down the bar. Absorbing
+boundary conditions on each end perfectly absorb the shear wave.
+
+The problem can be run by entering
+
+  pylith shearwave.cfg
+
+in any of the subdirectories.
+
+
+Subdirectories
+
+  - tri3: Mesh with triangular cells
+  - quad4: Mesh with quadrilateral cells
+  - tet4: Mesh with tetrahedral cells
+  - quad4: Mesh with quadrilateral cells
+
+Each of the subdirectories contains the files listed below (along with
+other files for the mesh).
+
+  - shearwave.cfg: Parameter settings for the shear wave dislocation problem
+  - matprops.spatialdb: Material database of physical properties
+  - shearwave_slip.spatialdb: Spatial database with values for final slip
+  - shearwave_sliprate.spatialdb: Spatial database with values for the
+    peak slip rate
+  - shearwave_sliptime.spatialdb: Spatial database with values for the
+    slip initiation time
+
