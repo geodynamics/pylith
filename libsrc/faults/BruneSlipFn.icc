@@ -45,7 +45,7 @@ pylith::faults::BruneSlipFn::_slipFn(const double t,
 				     const double finalSlip,
 				     const double peakRate) {
   double slip = 0.0;
-  if (t > 0) {
+  if (t > 0.0) {
     assert(peakRate > 0.0);
     const double tau = 
       // prevent 0 == tau when 0 == finalSlip 
