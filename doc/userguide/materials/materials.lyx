@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -461,7 +461,7 @@ Model
 \begin_layout Standard
 
 \series bold
-Properties
+Physical Properties
 \end_layout
 
 \end_inset
@@ -492,7 +492,7 @@ Elastic
 \begin_inset Text
 
 \begin_layout Standard
-[mu,lambda,density]
+mu, lambda, density
 \end_layout
 
 \end_inset
@@ -501,7 +501,7 @@ Elastic
 \begin_inset Text
 
 \begin_layout Standard
-[total-strain,stress]
+total_strain, stress
 \end_layout
 
 \end_inset
@@ -521,7 +521,7 @@ Maxwell Viscoelastic
 \begin_inset Text
 
 \begin_layout Standard
-[mu,lambda,density,Maxwell-time]
+mu, lambda, density, maxwell_time
 \end_layout
 
 \end_inset
@@ -530,7 +530,7 @@ Maxwell Viscoelastic
 \begin_inset Text
 
 \begin_layout Standard
-[total-strain,viscous-strain,stress]
+total_strain, viscous_strain, stress
 \end_layout
 
 \end_inset
@@ -550,7 +550,7 @@ Generalized Maxwell Viscoelastic
 \begin_inset Text
 
 \begin_layout Standard
-[mu,lambda,density,shear-ratio,Maxwell-time]
+mu,lambda, density, shear-ratio, maxwell_time
 \end_layout
 
 \end_inset
@@ -559,7 +559,7 @@ Generalized Maxwell Viscoelastic
 \begin_inset Text
 
 \begin_layout Standard
-[total-strain,viscous-strain,stress]
+total_strain, viscous_strain, stress
 \end_layout
 
 \end_inset
@@ -578,6 +578,15 @@ Generalized Maxwell Viscoelastic
 \begin_layout Standard
 Properties and state variables available for output for existing material
  models.
+ Physical properties are available for output as 
+\family typewriter
+cell_info_fields
+\family default
+ and state variables are available for output as 
+\family typewriter
+cell_data_fields
+\family default
+.
 \end_layout
 
 \end_inset

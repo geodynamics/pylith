@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1741,8 +1741,20 @@ PyLith currently supports output to VTK files, which can be imported directly
  and the fault normal vector.
  For a material the fields include the density and the elastic constants.
  Additional diagnostic can be included by setting the output parameters.
- See Sections ?? and ?? for more information on the available fields and
- the next section for output parameters.
+ See Chapters 
+\begin_inset LatexCommand ref
+reference "cha:material:models"
+
+\end_inset
+
+ and 
+\begin_inset LatexCommand ref
+reference "cha:boundary:interface:conditions"
+
+\end_inset
+
+ for more information on the available fields and the next section for output
+ parameters.
  The second file for each fault and material includes solution information
  at each time step where output was requested (also customizable by the
  user).
