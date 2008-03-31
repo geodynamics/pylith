@@ -16,7 +16,7 @@
 
 #include "pylith/utils/array.hh" // USES double_array
 
-#include "petsc.h" // USES PetscLogFlopsNoCheck
+#include "petsc.h" // USES PetscLogFlops
 
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -111,7 +111,7 @@ pylith::materials::ElasticIsotropic3D::_dbToProperties(
   propValues[_ElasticIsotropic3D::pidMu] = mu;
   propValues[_ElasticIsotropic3D::pidLambda] = lambda;
 
-  PetscLogFlopsNoCheck(6);
+  PetscLogFlops(6);
 } // _dbToProperties
 
 // ----------------------------------------------------------------------
@@ -170,7 +170,7 @@ pylith::materials::ElasticIsotropic3D::_calcStress(
   stress[4] = mu2 * e23;
   stress[5] = mu2 * e13;
 
-  PetscLogFlopsNoCheck(13);
+  PetscLogFlops(13);
 } // _calcStress
 
 // ----------------------------------------------------------------------
@@ -220,7 +220,7 @@ pylith::materials::ElasticIsotropic3D::_calcElasticConsts(
   elasticConsts[19] = 0; // C2313
   elasticConsts[20] = mu2; // C1313
 
-  PetscLogFlopsNoCheck(2);
+  PetscLogFlops(2);
 } // _calcElasticConsts
 
 

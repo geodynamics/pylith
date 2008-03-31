@@ -14,7 +14,7 @@
 
 #include "ElasticStress1D.hh" // implementation of object methods
 
-#include "petsc.h" // USES PetscLogFlopsNoCheck
+#include "petsc.h" // USES PetscLogFlops
 
 #include <assert.h> // USES assert()
 
@@ -105,7 +105,7 @@ pylith::materials::ElasticStress1D::_dbToProperties(
   propValues[_ElasticStress1D::pidMu] = mu;
   propValues[_ElasticStress1D::pidLambda] = lambda;
 
-  PetscLogFlopsNoCheck(6);
+  PetscLogFlops(6);
 } // _dbToProperties
 
 // ----------------------------------------------------------------------
@@ -147,7 +147,7 @@ pylith::materials::ElasticStress1D::_calcStress(double* const stress,
   const double e11 = totalStrain[0];
   stress[0] = mu * (3.0*lambda+2.0*mu) / (lambda + mu) * e11;
 
-  PetscLogFlopsNoCheck(7);
+  PetscLogFlops(7);
 } // _calcStress
 
 // ----------------------------------------------------------------------
@@ -174,7 +174,7 @@ pylith::materials::ElasticStress1D::_calcElasticConsts(
 
   elasticConsts[0] = mu * (3.0*lambda+2.0*mu) / (lambda + mu);
 
-  PetscLogFlopsNoCheck(6);
+  PetscLogFlops(6);
 } // _calcElasticConsts
 
 

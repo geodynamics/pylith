@@ -239,7 +239,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     // Assemble cell contribution into field
     mesh->updateAdd(residual, *c_iter, &cellResidual[0]);
   } // for
-  PetscLogFlopsNoCheck(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*7);
+  PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*7);
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -359,7 +359,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
   } // for
-  PetscLogFlopsNoCheck(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*4);
+  PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*4);
   _needNewJacobian = false;
 } // integrateJacobian
   
@@ -610,7 +610,7 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
 
     _orientation->updatePoint(*v_iter, &vertexDir[0]);
   } // for
-  PetscLogFlopsNoCheck(count * orientationSize * 4);
+  PetscLogFlops(count * orientationSize * 4);
 
   if (2 == cohesiveDim) {
     // Check orientation of first vertex, if dot product of fault
@@ -650,7 +650,7 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
 	_orientation->updatePoint(*v_iter, &vertexDir[0]);
       } // for
 
-    PetscLogFlopsNoCheck(5 + count * 3);
+    PetscLogFlops(5 + count * 3);
   } // if
 
   //_orientation->view("ORIENTATION");
@@ -776,7 +776,7 @@ pylith::faults::FaultCohesiveKin::_calcConditioning(
     //const double mu = 1.0;
     _pseudoStiffness->updatePoint(*v_iter, &mu);
   } // for
-  PetscLogFlopsNoCheck(count * 2);
+  PetscLogFlops(count * 2);
 } // _calcConditioning
 
 // ----------------------------------------------------------------------
@@ -843,7 +843,7 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
     } // for
     _faultMesh->updateAdd(_area, *c_iter, &cellArea[0]);
 
-    PetscLogFlopsNoCheck( numQuadPts*(1+numBasis*2) );
+    PetscLogFlops( numQuadPts*(1+numBasis*2) );
   } // for
 
   // Assemble area information
@@ -905,7 +905,7 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
     (*tractions)->updatePoint(*v_iter, &tractionValues[0]);
   } // for
 
-  PetscLogFlopsNoCheck(numVertices * (1 + fiberDim) );
+  PetscLogFlops(numVertices * (1 + fiberDim) );
 
   //solution->view("SOLUTION");
   //(*tractions)->view("TRACTIONS");

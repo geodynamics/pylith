@@ -293,7 +293,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
       } // for
 
     } // for
-    PetscLogFlopsNoCheck(numQuadPts*(3+numBasis*(1+numBasis*(5*spaceDim))));
+    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(5*spaceDim))));
 
     // Assemble cell contribution into field
     _boundaryMesh->updateAdd(residual, *c_iter, _cellVector);
@@ -384,7 +384,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
         } // for
       } // for
     } // for
-    PetscLogFlopsNoCheck(numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
+    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
     
     // Assemble cell contribution into PETSc Matrix
     const ALE::Obj<Mesh::order_type>& globalOrder = 

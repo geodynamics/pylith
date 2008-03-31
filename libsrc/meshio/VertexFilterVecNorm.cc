@@ -81,7 +81,7 @@ pylith::meshio::VertexFilterVecNorm::filter(
     norm = sqrt(norm);
 
     _fieldVecNorm->updatePoint(*v_iter, &norm);
-    PetscLogFlopsNoCheck( 1 + fiberDim*2 );
+    PetscLogFlops( 1 + fiberDim*2 );
   } // for
 
   return _fieldVecNorm;

@@ -4,20 +4,11 @@ CURRENT ISSUES
 
 Release 1.1
 
-  2. Fix calcTractionsChange.
-
   Benchmarks
 
     1. Strike-slip benchmark.
       c. Rerun benchmarks.
       d. Tabulate results.
-      e. Test scaling (1,2,4,8,16 processors) for 500m cases
-
-  Examples
-
-    2. Add some simple kinematic rupture examples. (Brad)
-      a. 2-D bar (tri3, quad4)
-      b. 3-D bar (tet4, hex8)
 
   Binaries
 
@@ -25,11 +16,7 @@ Release 1.1
 
   Manual
 
-    1. Add list of output fields for elastic materials.
-
     2. Add strike-slip benchmarks.
-
-    3. Update cover figure with current result. (Brad)
 
 ----------------------------------------------------------------------
 Workshop
@@ -45,9 +32,6 @@ Workshop
       c. Run benchmarks.
       d. Generate analytic solutions.
       e. Tabulate results.
-
-    3. CUBIT (Brad)
-       Add GUI instructions in journal files for examples/3d/hex8.
 
 ----------------------------------------------------------------------
 Release 1.2

@@ -441,7 +441,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual1D(
       _cellVector[iBasis*spaceDim  ] -= N1*s11;
     } // for
   } // for
-  PetscLogFlopsNoCheck(numQuadPts*(1+numBasis*5));
+  PetscLogFlops(numQuadPts*(1+numBasis*5));
 } // _elasticityResidual1D
 
 // ----------------------------------------------------------------------
@@ -476,7 +476,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual2D(
       _cellVector[iBasis*spaceDim+1] -= N1*s12 + N2*s22;
     } // for
   } // for
-  PetscLogFlopsNoCheck(numQuadPts*(1+numBasis*(8+2+9)));
+  PetscLogFlops(numQuadPts*(1+numBasis*(8+2+9)));
 } // _elasticityResidual2D
 
 // ----------------------------------------------------------------------
@@ -519,7 +519,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual3D(
       _cellVector[iBlock+2] -= N1*s13 + N2*s23 + N3*s33;
     } // for
   } // for
-  PetscLogFlopsNoCheck(numQuadPts*(1+numBasis*(3+12)));
+  PetscLogFlops(numQuadPts*(1+numBasis*(3+12)));
 } // _elasticityResidual3D
 
 // ----------------------------------------------------------------------
@@ -552,7 +552,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian1D(
       } // for
     } // for
   } // for
-  PetscLogFlopsNoCheck(numQuadPts*(1+numBasis*(2+numBasis*3)));
+  PetscLogFlops(numQuadPts*(1+numBasis*(2+numBasis*3)));
 } // _elasticityJacobian1D
 
 // ----------------------------------------------------------------------
@@ -616,7 +616,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(
       } // for
     } // for
   } // for
-  PetscLogFlopsNoCheck(numQuadPts*(1+numBasis*(2+numBasis*(3*11+4))));
+  PetscLogFlops(numQuadPts*(1+numBasis*(2+numBasis*(3*11+4))));
 } // _elasticityJacobian2D
 
 // ----------------------------------------------------------------------
@@ -729,7 +729,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
       } // for
     } // for
   } // for
-  PetscLogFlopsNoCheck(numQuadPts*(1+numBasis*(3+numBasis*(6*26+9))));
+  PetscLogFlops(numQuadPts*(1+numBasis*(3+numBasis*(6*26+9))));
 } // _elasticityJacobian3D
 
 // ----------------------------------------------------------------------

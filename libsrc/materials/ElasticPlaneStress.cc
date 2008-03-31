@@ -14,7 +14,7 @@
 
 #include "ElasticPlaneStress.hh" // implementation of object methods
 
-#include "petsc.h" // USES PetscLogFlopsNoCheck
+#include "petsc.h" // USES PetscLogFlops
 
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -108,7 +108,7 @@ pylith::materials::ElasticPlaneStress::_dbToProperties(
   propValues[_ElasticPlaneStress::pidMu] = mu;
   propValues[_ElasticPlaneStress::pidLambda] = lambda;
 
-  PetscLogFlopsNoCheck(6);
+  PetscLogFlops(6);
 } // _dbToProperties
 
 // ----------------------------------------------------------------------
@@ -159,7 +159,7 @@ pylith::materials::ElasticPlaneStress::_calcStress(double* const stress,
   stress[1] = (mu2*lambda * e11 + 2.0*mu2*lambdamu * e22) / lambda2mu;
   stress[2] = mu2 * e12;
 
-  PetscLogFlopsNoCheck(18);
+  PetscLogFlops(18);
 } // _calcStress
 
 // ----------------------------------------------------------------------
@@ -195,7 +195,7 @@ pylith::materials::ElasticPlaneStress::_calcElasticConsts(
   elasticConsts[4] = 0; // C2212
   elasticConsts[5] = mu2; // C1212
 
-  PetscLogFlopsNoCheck(8);
+  PetscLogFlops(8);
 } // calcElasticConsts
 
 
