@@ -1,4 +1,4 @@
-#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -425,12 +425,16 @@ reference "tab:material-model-output"
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float table
+placement H
 wide false
 sideways false
 status open
 
 \begin_layout Standard
+\align center
 \begin_inset LatexCommand label
 name "tab:material-model-output"
 
@@ -440,9 +444,9 @@ name "tab:material-model-output"
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="3">
 <features>
-<column alignment="center" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" width="1.5in">
+<column alignment="center" valignment="top" leftline="true" width="1.5in">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="1.5in">
 <row topline="true" bottomline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text

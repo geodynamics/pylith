@@ -1,4 +1,4 @@
-#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -2204,6 +2204,8 @@ Instead of actually running the problem, this causes PyLith to dump the
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 mpirun -np 1 /path/to/valgrind --log-file=valgrind-log  /path/to/mpinemesis
  --pyre-start [..lots of junk..]
 \end_layout
