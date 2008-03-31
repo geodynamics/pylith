@@ -2,20 +2,7 @@
 CURRENT ISSUES
 ======================================================================
 
-Release 1.1
-
-  Benchmarks
-
-    1. Strike-slip benchmark.
-      c. Rerun benchmarks.
-      d. Check results.
-
-  Binaries
-
-    Add setup.sh for linux.
-
-----------------------------------------------------------------------
-Workshop
+Before June workshop
 
     Fix holding onto memory from before distribution.
 
