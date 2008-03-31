@@ -21,15 +21,6 @@ The examples and associated files are:
     - axialdisp.cfg:  Parameter settings.
     - axialdisp.spatialdb: Database of Dirichlet BC values.
 
-  * axialtract
-
-    A constant normal traction is applied to the right edge of the mesh.
-    The left edge is pinned in the x-direction, and the bottom edge is
-    pinned in the y-direction.
-
-    - axialtract.cfg:  Parameter settings.
-    - axialtract.spatialdb: Database of Neumann BC values.
-
   * sheardisp: 
 
     The left and right edges of the mesh are pinned in the
@@ -46,6 +37,20 @@ The examples and associated files are:
 
     - dislocation.cfg:  Parameter settings.
     - dislocation_slip.spatialdb:  Database of fault slip values.
+    - dislocation_sliprate.spatialdb: Database of peak slip rate values.
+    - dislocation_sliptime.spatialdb: Database of slip initiation time values.
+
+  * axialtract
+
+    A constant normal traction is applied to the right edge of the mesh.
+    The left edge is pinned in the x-direction, and the bottom edge is
+    pinned in the y-direction. We include a fault with zero slip to 
+    illustrate how the computation of the change in tractions on the
+    fault surface.
+
+    - axialtract.cfg:  Parameter settings.
+    - axialtract.spatialdb: Database of Neumann BC values.
+    - dislocation_slip_zero.spatialdb:  Database of fault slip values.
     - dislocation_sliprate.spatialdb: Database of peak slip rate values.
     - dislocation_sliptime.spatialdb: Database of slip initiation time values.
 
