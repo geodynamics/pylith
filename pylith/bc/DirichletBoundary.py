@@ -130,7 +130,7 @@ class DirichletBoundary(BoundaryCondition, Constraint):
 
     BoundaryCondition.verifyConfiguration(self)
     Constraint.verifyConfiguration(self)
-    self.output.verifyConfiguration()
+    self.output.verifyConfiguration(self.mesh)
 
     self._logger.eventEnd(logEvent)
     return

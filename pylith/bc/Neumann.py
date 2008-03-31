@@ -102,7 +102,7 @@ class Neumann(BoundaryCondition, Integrator):
               "Dimension of mesh boundary '%s': %d" % \
               (self.quadrature.cellDim,
                self.label, self.mesh.dimension()-1)    
-    self.output.verifyConfiguration()
+    self.output.verifyConfiguration(self.mesh)
 
     self._logger.eventEnd(logEvent)
     return
