@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -190,7 +190,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/geometry.eps
+	filename figs/geometry.png
 	scale 75
 
 \end_inset
@@ -333,7 +333,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/soln.eps
+	filename figs/soln.png
 	scale 75
 
 \end_inset
@@ -455,7 +455,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/error_hex8_1000m.eps
+	filename figs/error_hex8_1000m.png
 	scale 75
 
 \end_inset
@@ -496,7 +496,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename /Users/brad/src/cig/pylith/doc/userguide/benchmarks/strikeslip/figs/error_tet4_1000m.eps
+	filename /Users/brad/src/cig/pylith/doc/userguide/benchmarks/strikeslip/figs/error_tet4_1000m.png
 	scale 75
 
 \end_inset
@@ -537,7 +537,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename /Users/brad/src/cig/pylith/doc/userguide/benchmarks/strikeslip/figs/error_hex8_0500m.eps
+	filename /Users/brad/src/cig/pylith/doc/userguide/benchmarks/strikeslip/figs/error_hex8_0500m.png
 	scale 75
 
 \end_inset
@@ -578,7 +578,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename /Users/brad/src/cig/pylith/doc/userguide/benchmarks/strikeslip/figs/error_tet4_0500m.eps
+	filename /Users/brad/src/cig/pylith/doc/userguide/benchmarks/strikeslip/figs/error_tet4_0500m.png
 	scale 75
 
 \end_inset
@@ -660,7 +660,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename /Users/brad/src/cig/pylith/doc/userguide/benchmarks/strikeslip/figs/error_tet4_0250m.eps
+	filename /Users/brad/src/cig/pylith/doc/userguide/benchmarks/strikeslip/figs/error_tet4_0250m.png
 	scale 75
 
 \end_inset
