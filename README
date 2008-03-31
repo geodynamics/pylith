@@ -26,15 +26,12 @@ You can download the source code and binaries from
 Installation instructions are in the bundled README and INSTALL  
 files, as well as in the User Manual on the web page.
 
-PyLith is under active development and we expect a number of  
-additions and improvements in the near future. Likely enhancements  
-will include a more complete set of boundary conditions (absorbing  
-boundaries for use in dynamic modeling and traction boundary  
-conditions for use in quasi-static modeling), additional constitutive  
-models for both volume elements and cohesive (fault) elements,  
-automatic generation of higher-order elements from linear elements,  
-and the generation of Green's functions to be used in inversions.  
-Many of these features should be available in Fall 2007.
+PyLith is under active development and we expect a number of additions
+and improvements in the near future. Likely enhancements will include
+additional constitutive models for both volume elements and cohesive
+(fault) elements, automatic generation of higher-order elements from
+linear elements, and the generation of Green's functions to be used in
+inversions.  Many of these features should be available in late 2008.
 
 
 ======================================================================
@@ -71,6 +68,91 @@ TIPS
 ======================================================================
 RELEASE NOTES
 ======================================================================
+
+----------------------------------------------------------------------
+Version 1.1.0
+----------------------------------------------------------------------
+
+  * New boundary conditions
+
+    - Neumann (traction) boundary conditions
+
+    - Absorbing boundary conditions via simple, tuned dampers
+
+    - Dirichlet boundary conditions with displacement and/or velocity values
+
+  * New bulk constitutive models
+
+    - Generalized Maxwell viscoelastic model 
+
+  * New output implementation
+
+    The output to VTK files has been completely rewritten. This new
+    implementation includes output of physical properties and state
+    variables associated with the bulk constitutive models, as well as
+    output of fault information (earthquake rupture parameters and
+    slip and traction time histories). Additionally, the VTK file with
+    the solution no longer includes fault related values- it contains
+    just the displacement field over the domain as one would expect. A
+    user can now also request output of the solution over an arbitrary
+    number of sub-domains of the domain boundary, e.g., the ground
+    surface. For each of these different kinds of output, the
+    frequency of output and the values included can be customized by
+    the user. The names of the VTK files and the variable names have
+    also been adjusted to permit animation of solutions within most
+    VTK visualization tools.
+
+  * New spatial database implementations
+
+    Spatialdata includes two new spatial database implementations. The
+    SCECCVMHDB provides a seamless interface to the SCEC CVM-H seismic
+    velocity model for elastic material properties. The UniformDB
+    permits creating a spatial database for uniform values using only
+    .cfg files or the command line; this eliminates the need to create
+    a SimpleDB database file with one location.
+
+  * Dynamic arrays of components in Pyre
+
+    Pyre now contains dynamic arrays of components, eliminating the
+    need for containers for materials, boundary conditions, and
+    faults.
+
+  * Better consistency checking of input parameters
+
+    - Uniqueness of material identifiers for materials and faults is
+      enforced.
+
+    - The material identifier of each cell in the mesh is checked to
+      make sure it matches a material model.
+
+    - Each boundary, interface condition, and output group is checked
+      to make sure it exists in the mesh.
+
+  * Bug fixes
+
+    - Fixed bug causing segmentation fault with multiple,
+      non-overlapping Dirichlet boundary conditions applied to vertices.
+
+    - Fixed numerous bugs related to explicit time integration for
+      dynamic problems.
+
+    - Eliminated several small memory errors.
+
+    - Fixed several bugs associated with writing VTK files in parallel.
+
+  * Known issues
+
+      - PyLith still uses much more memory that PyLith 0.8 due to the
+        current general Sieve implementation. A much more efficient,
+        albeit less general Sieve implementation is under
+        development. Additionally, distribution of the mesh will also be
+        improved in a future release.
+
+      - The preconditioner for explicit time stepping provides
+        relatively poor overall performance compared to a direct solve
+        with traditional mass lumping. An appropriate preconditioner and
+        traditional mass lumping will be supported in a future release.
+
 
 ----------------------------------------------------------------------
 Version 1.0.2
@@ -110,6 +192,7 @@ Version 1.0.2
       - Fault "up" and "normal" directions remained as string arrays
         when passed to the module, instead of being converted to float
         arrays.
+
 
 ----------------------------------------------------------------------
 Version 1.0.1
