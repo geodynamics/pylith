@@ -362,8 +362,8 @@ axialdisp.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.material.output Defines the filter to be used
- when writing cell state variables (average the quadrature points for the
- cell) and gives the base filename for state variable output files (
+ when writing cell state variables (average over the quadrature points for
+ the cell) and gives the base filename for state variable output files (
 \family typewriter
 axialdisp-statevars.vtk
 \family default
@@ -594,8 +594,8 @@ sheardisp.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.material.output Defines the filter to be used
- when writing cell state variables (average the quadrature points for the
- cell) and gives the base filename for state variable output files (
+ when writing cell state variables (average over the quadrature points for
+ the cell) and gives the base filename for state variable output files (
 \family typewriter
 sheardisp-statevars.vtk
 \family default
@@ -847,8 +847,8 @@ dislocation-fault.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.material.output Defines the filter to be used
- when writing cell state variables (average the quadrature points for the
- cell) and gives the base filename for state variable output files (
+ when writing cell state variables (average over the quadrature points for
+ the cell) and gives the base filename for state variable output files (
 \family typewriter
 dislocation-statevars.vtk
 \family default
@@ -1139,8 +1139,8 @@ axialtract.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.material.output Defines the filter to be used
- when writing cell state variables (average the quadrature points for the
- cell) and gives the base filename for state variable output files (
+ when writing cell state variables (average over the quadrature points for
+ the cell) and gives the base filename for state variable output files (
 \family typewriter
 axialtract-statevars.vtk
 \family default
@@ -1270,17 +1270,16 @@ y
 \family typewriter
 axialtract-fault_info.vtk
 \family default
- gives the fault normal direction, 
- slip (zero) and time of slip (-1 second) for the fault.
+ gives the fault normal direction,  slip (zero) and time of slip (-1 second)
+ for the fault.
  The final file 
 \family typewriter
 axialtract-fault_t0000000.vtk
 \family default
- gives the slip vector
- and change in tractions on the fault surface in the fault coordinate
- system (along-strike and opening).
- The second component of the change in traction vector corresponds to
- the applied traction, as expected.
+ gives the slip vector and change in tractions on the fault surface in the
+ fault coordinate system (along-strike and opening).
+ The second component of the change in traction vector corresponds to the
+ applied traction, as expected.
  All of the 
 \family typewriter
 .vtk
