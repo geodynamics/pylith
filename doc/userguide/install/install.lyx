@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -835,7 +835,7 @@ petsc-dev
  for PyLith 1.1.0 from 
 \begin_inset LatexCommand htmlurl
 name "PyLith PETSc tarball"
-target "http://www.geodynamics.org/cig/software/packages/short/pylith/petsc-dev-2008-04-01.tgz"
+target "www.geodynamics.org/cig/software/packages/short/pylith/petsc-dev-2008-04-01.tgz"
 
 \end_inset
 

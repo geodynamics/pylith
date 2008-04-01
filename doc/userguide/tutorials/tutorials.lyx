@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -107,8 +107,14 @@ target "www.paraview.org"
  visualization package may be used to view simulation results.
  ParaView 3 includes built-in documentation that is accessed by clicking
  on the Help menu item.
- Some additional documentation is available on the ParaView wiki site (http://pa
-raview.org/Wiki/ParaView).
+ Some additional documentation is available on the 
+\begin_inset LatexCommand htmlurl
+name "ParaView Wiki site"
+target "paraview.org/Wiki/ParaView"
+
+\end_inset
+
+.
  You may use other visualization software, but some adaption from what is
  described here will be necessary.
  Alternatively, you can complete a subset of the tutorial using files provided
