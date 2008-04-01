@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -828,14 +828,14 @@ The development version of PETSc is called
 petsc-dev
 \family default
 .
- Download the nightly tarball snapshot of 
+ Download the tarball snapshot of 
 \family typewriter
 petsc-dev
 \family default
- from the 
+ for PyLith 1.1.0 from 
 \begin_inset LatexCommand htmlurl
-name "PETSc Developers Site"
-target "www-unix.mcs.anl.gov/petsc/petsc-as/developers"
+name "PyLith PETSc tarball"
+target "http://www.geodynamics.org/cig/software/packages/short/pylith/petsc-dev-2008-04-01.tgz"
 
 \end_inset
 
