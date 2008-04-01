@@ -182,10 +182,13 @@ Solution We compute the error in the elastic solution and compare the solution
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
+placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Standard
 \align center
@@ -414,13 +417,13 @@ target "geodynamics.org/cig/software/packages/cs/cigma"
 \begin_layout Standard
 Figures 
 \begin_inset LatexCommand ref
-reference "fig:benchmark:strikeslip:hex8:1000m"
+reference "fig:benchmark:strikeslip:tet4:1000m"
 
 \end_inset
 
  through 
 \begin_inset LatexCommand ref
-reference "fig:benchmark:strikeslip:tet4:250m"
+reference "fig:benchmark:strikeslip:hex8:250m"
 
 \end_inset
 
@@ -438,7 +441,7 @@ reference "fig:benchmark:strikeslip:tet4:250m"
  given resolution is smaller than that for the tetrahedral cells.
  Both sets of cell types and basis functions provide the same rate of convergenc
 e as shown in Figure 
-\begin_inset LatexCommand ref
+\begin_inset LatexCommand vref
 reference "fig:benchmark:strikeslip:convergence"
 
 \end_inset
@@ -447,7 +450,10 @@ reference "fig:benchmark:strikeslip:convergence"
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
+placement H
 wide false
 sideways false
 status open
@@ -488,7 +494,10 @@ name "fig:benchmark:strikeslip:tet4:1000m"
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
+placement H
 wide false
 sideways false
 status open
@@ -529,7 +538,10 @@ name "fig:benchmark:strikeslip:hex8:1000m"
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
+placement H
 wide false
 sideways false
 status open
@@ -570,6 +582,8 @@ name "fig:benchmark:strikeslip:tet4:500m"
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
 wide false
 sideways false
@@ -611,7 +625,10 @@ name "fig:benchmark:strikeslip:hex8:500m"
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
+placement H
 wide false
 sideways false
 status open
@@ -652,7 +669,10 @@ name "fig:benchmark:strikeslip:tet4:250m"
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
+placement H
 wide false
 sideways false
 status open
@@ -693,7 +713,10 @@ name "fig:benchmark:strikeslip:hex8:250m"
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
+placement H
 wide false
 sideways false
 status open
@@ -762,10 +785,13 @@ reference "fig:benchmark:strikeslip:summary"
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
+placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Standard
 \align center
@@ -807,7 +833,7 @@ name "fig:benchmark:strikeslip:summary"
 
 \begin_layout Standard
 Figure 
-\begin_inset LatexCommand ref
+\begin_inset LatexCommand vref
 reference "fig:benchmark:strikeslip:scaling"
 
 \end_inset
@@ -841,10 +867,13 @@ reference "fig:benchmark:strikeslip:summary"
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
+placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Standard
 \align center

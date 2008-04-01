@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -353,7 +353,9 @@ axialdisp.spatialdb
 
 \begin_layout Description
 pylithapp.problem.formulation.output.output.writer Gives the base filename for
- VTK output (
+ VTK output 
+\newline
+(
 \family typewriter
 axialdisp.vtk
 \family default
@@ -587,7 +589,9 @@ sheardisp.spatialdb
 
 \begin_layout Description
 pylithapp.problem.formulation.output.output.writer Gives the base filename for
- VTK output (
+ VTK output 
+\newline
+(
 \family typewriter
 sheardisp.vtk
 \family default
@@ -833,7 +837,9 @@ twoquad4.mesh
 
 \begin_layout Description
 pylithapp.problem.formulation.output.output.writer Gives the base filename for
- VTK output (
+ VTK output 
+\newline
+(
 \family typewriter
 dislocation.vtk
 \family default
@@ -1136,7 +1142,9 @@ twoquad4.mesh
 
 \begin_layout Description
 pylithapp.problem.formulation.output.output.writer Gives the base filename for
- VTK output (
+ VTK output 
+\newline
+(
 \family typewriter
 axialtract.vtk
 \family default

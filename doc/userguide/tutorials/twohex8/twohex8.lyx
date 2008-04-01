@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -421,7 +421,9 @@ axialdisp.spatialdb
 
 \begin_layout Description
 pylithapp.problem.formulation.output.output.writer Gives the base filename for
- VTK output (
+ VTK output 
+\newline
+(
 \family typewriter
 axialdisp.vtk
 \family default
@@ -673,7 +675,9 @@ sheardisp.spatialdb
 
 \begin_layout Description
 pylithapp.problem.formulation.output.output.writer Gives the base filename for
- VTK output (
+ VTK output 
+\newline
+(
 \family typewriter
 sheardisp.vtk
 \family default
@@ -938,7 +942,9 @@ twohex8.mesh
 
 \begin_layout Description
 pylithapp.problem.formulation.output.output.writer Gives the base filename for
- VTK output (
+ VTK output 
+\newline
+(
 \family typewriter
 dislocation.vtk
 \family default
@@ -1012,12 +1018,14 @@ cell_info_fields = [mu,lambda,density,Maxwell-time]
 \begin_layout Standard
 The files containing common information (
 \family typewriter
+\size small
 twohex8.mesh
 \family default
 , 
 \family typewriter
 pylithapp.cfg
 \family default
+\size default
 ) along with the problem-specific files (
 \family typewriter
 \size small
@@ -1033,9 +1041,9 @@ dislocation_sliprate.spatialdb
 \family default
 , 
 \family typewriter
-dislocation_
+dislocation_sliptime.
 \newline
-sliptime.spatialdb
+spatialdb
 \family default
 \size default
 ) provide a complete description of the problem, and we can then run this
