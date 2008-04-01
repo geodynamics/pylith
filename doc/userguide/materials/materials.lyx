@@ -401,11 +401,11 @@ examples/twocells/twohex8
 \end_layout
 
 \begin_layout LyX-Code
-cell_data_fields = [total-strain,viscous-strain,stress]
+cell_data_fields = [total_strain,viscous_strain,stress]
 \end_layout
 
 \begin_layout LyX-Code
-cell_info_fields = [mu,lambda,density,Maxwell-time]
+cell_info_fields = [mu,lambda,density,maxwell_time]
 \end_layout
 
 \begin_layout Standard
@@ -554,7 +554,7 @@ Generalized Maxwell Viscoelastic
 \begin_inset Text
 
 \begin_layout Standard
-mu,lambda, density, shear-ratio, maxwell_time
+mu,lambda, density, shear_ratio, maxwell_time
 \end_layout
 
 \end_inset
