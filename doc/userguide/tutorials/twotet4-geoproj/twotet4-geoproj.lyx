@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -219,7 +219,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Mesh used for the two tetrahedra examples.
+Mesh composed of two linear tetrahedral cells in a georeferenced coordinate
+ system used for the example problems.
 \begin_inset LatexCommand label
 name "fig:twotet4-geoproj-mesh"
 
@@ -746,7 +747,9 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Color contours and vectors of displacement for the kinematic fault example.
+Color contours and vectors of displacement for the kinematic fault example
+ using a mesh composed of two linear tetrahedral cells in a georeferenced
+ coordinate system.
 \begin_inset LatexCommand label
 name "fig:twotet4-geoproj-disloc"
 
