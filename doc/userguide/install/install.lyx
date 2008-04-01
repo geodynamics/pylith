@@ -835,7 +835,7 @@ petsc-dev
  for PyLith 1.1.0 from 
 \begin_inset LatexCommand htmlurl
 name "PyLith PETSc tarball"
-target "www.geodynamics.org/cig/software/packages/short/pylith/petsc-dev-2008-04-01.tgz"
+target "www.geodynamics.org/cig/software/packages/short/pylith/petsc-dev-pylith-1_1_0.tgz"
 
 \end_inset
 
@@ -848,7 +848,7 @@ tar
 \end_layout
 
 \begin_layout LyX-Code
-$ tar xzf petsc-dev.tar.gz
+$ tar xzf petsc-dev-pylith-1_1_0.tgz
 \end_layout
 
 \begin_layout Standard
@@ -856,7 +856,7 @@ If you don't have GNU Tar, try the following command instead:
 \end_layout
 
 \begin_layout LyX-Code
-$ gunzip -c petsc-dev.tar.gz | tar xf -
+$ gunzip -c petsc-dev-pylith-1_1_0.tgz | tar xf -
 \end_layout
 
 \begin_layout Standard
