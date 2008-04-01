@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -175,7 +175,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Mesh used for the two hexahedra examples.
+Mesh composed of two trilinear hexahedral cells used for the example problems.
 \begin_inset LatexCommand label
 name "fig:twohex8-mesh"
 
@@ -582,7 +582,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Color contours and vectors of displacement for the axial displacement example.
+Color contours and vectors of displacement for the axial displacement example
+ using a mesh composed of two trilinear hexahedral cells.
 \begin_inset LatexCommand label
 name "fig:twohex8-axial"
 
@@ -829,7 +830,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Color contours and vectors of displacement for the shear displacement example.
+Color contours and vectors of displacement for the shear displacement example
+ using a mesh composed of two trilinear hexahedral cells.
 \begin_inset LatexCommand label
 name "fig:twohex8-shear"
 
@@ -927,7 +929,7 @@ twohex8.mesh
 \begin_layout Description
 pylithapp.timedependent.interfaces Gives the label (defined in 
 \family typewriter
-twotet4.mesh
+twohex8.mesh
 \family default
 ) defining the points on the fault, provides quadrature information, and
  then gives database names for material properties (needed for conditioning),
@@ -1152,6 +1154,7 @@ status open
 
 \begin_layout Standard
 Color contours and vectors of displacement for the kinematic fault example
+ using a mesh composed of two trilinear hexahedral cells.
 \begin_inset LatexCommand label
 name "fig:twohex8-disloc"
 

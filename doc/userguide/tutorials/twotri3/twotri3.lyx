@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -164,7 +164,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Mesh used in the two triangle examples.
+Mesh composed of two linear trianglular cells used in the example problems.
 \begin_inset LatexCommand label
 name "fig:twotri3-mesh"
 
@@ -460,7 +460,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Color contours and vectors of displacement for the axial displacement example.
+Color contours and vectors of displacement for the axial displacement example
+ using a mesh composed of two linear triangular cells.
 \begin_inset LatexCommand label
 name "fig:twotri3-axial"
 
@@ -673,7 +674,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Color contours and vectors of displacement for the shear displacement example.
+Color contours and vectors of displacement for the shear displacement example
+ using a mesh composed of two linear triangular cells.
 \begin_inset LatexCommand label
 name "fig:twotri-shear"
 
@@ -951,7 +953,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Color contours and vectors of displacement for the kinematic fault example.
+Color contours and vectors of displacement for the kinematic fault example
+ using a mesh composed of two linear triangular cells.
 \begin_inset LatexCommand label
 name "fig:twotri-disloc"
 

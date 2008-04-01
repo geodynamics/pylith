@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -170,7 +170,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Mesh used for the two bilinear quadrilateral examples.
+Mesh composed of two bilinear quadrilateral cells used for the example problems.
 \begin_inset LatexCommand label
 name "fig:twoquad4-mesh"
 
@@ -501,7 +501,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Color contours and vectors of displacement for the axial displacement example.
+Color contours and vectors of displacement for the axial displacement example
+ using a mesh composed of two bilinear quadrilateral cells.
 \begin_inset LatexCommand label
 name "fig:twoquad4-axial"
 
@@ -734,7 +735,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Color contours and vectors of displacement for the shear displacement example.
+Color contours and vectors of displacement for the shear displacement example
+ using a mesh composed of two bilinear quadrilateral cells.
 \begin_inset LatexCommand label
 name "fig:twoquad4-shear"
 
@@ -1027,7 +1029,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Color contours and vectors of displacement for the kinematic fault example.
+Color contours and vectors of displacement for the kinematic fault example
+ using a mesh composed of two bilinear quadrilateral cells.
 \begin_inset LatexCommand label
 name "fig:twoquad4-disloc"
 
@@ -1329,7 +1332,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Color contours and vectors of displacement for the axial traction example.
+Color contours and vectors of displacement for the axial traction example
+ using a mesh composed of two bilinear quadrilateral cells.
 \begin_inset LatexCommand label
 name "fig:twoquad4-axialtract"
 
