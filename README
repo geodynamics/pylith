@@ -35,6 +35,21 @@ inversions.  Many of these features should be available in late 2008.
 
 
 ======================================================================
+MIGRATING FROM VERSION 1.0 TO !.1
+======================================================================
+
+There are two new features in PyLith version 1.1 that require users to
+adjust input parameters from those used with PyLith 1.0. The
+elimination of containers in favor of the dynamic arrays of components
+present in the latest version of Pyre requires switching from setting
+the container to specifying the array of components on the command
+line or .cfg file. Additionally, the new implementation of output
+requires a completely new set of parameters. When using PyLith version
+1.1 with a problem previously setup for PyLith 1.0, look for warnings
+about unknown components and settings in the output at the beginning
+of a run.
+
+======================================================================
 TIPS
 ======================================================================
 
@@ -64,10 +79,6 @@ TIPS
     the preconditioner is inappropriate for the type of problem you
     are solving or there is an error in the problem setup.
 
-
-======================================================================
-RELEASE NOTES
-======================================================================
 
 ----------------------------------------------------------------------
 Version 1.1.0
