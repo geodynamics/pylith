@@ -76,7 +76,7 @@ cdef class Fault:
     #embed{ void Fault_adjustTopology(void* objVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::faults::Fault*) objVptr)->adjustTopology(*mesh);
     } catch (const std::exception& err) {
     PyErr_SetString(PyExc_RuntimeError,
@@ -104,7 +104,7 @@ cdef class Fault:
       assert(0 != meshVptr);
       assert(0 != csVptr);
       assert(0 != dbVptr);
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       spatialdata::geocoords::CoordSys* cs =
         (spatialdata::geocoords::CoordSys*) csVptr;
       spatialdata::spatialdb::SpatialDB* matDB =
@@ -170,7 +170,7 @@ cdef class Fault:
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       *mesh = ((pylith::faults::Fault*) objVptr)->faultMesh();
       } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -205,7 +205,7 @@ cdef class Fault:
       assert(0 != name);
       assert(0 != meshVptr);
       pylith::faults::Fault* fault = (pylith::faults::Fault*) objVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
       pylith::VectorFieldEnum fieldType;
@@ -259,7 +259,7 @@ cdef class Fault:
       assert(0 != name);
       assert(0 != meshVptr);
       pylith::faults::Fault* fault = (pylith::faults::Fault*) objVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
       pylith::VectorFieldEnum fieldType;
@@ -432,8 +432,8 @@ cdef class FaultCohesiveKin(FaultCohesive):
       assert(0 != residualVptr);
       assert(0 != fieldsVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
       ALE::Obj<pylith::real_section_type>* residual =
         (ALE::Obj<pylith::real_section_type>*) residualVptr;
       pylith::topology::FieldsManager* fields =
@@ -473,8 +473,8 @@ cdef class FaultCohesiveKin(FaultCohesive):
       assert(0 != matVptr);
       assert(0 != fieldsVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
       PetscMat* mat = (PetscMat*) matVptr;
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
@@ -514,8 +514,8 @@ cdef class FaultCohesiveKin(FaultCohesive):
       assert(0 != meshVptr);
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::faults::FaultCohesiveKin*) objVptr)->updateState(t, fields, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -550,8 +550,8 @@ cdef class FaultCohesiveKin(FaultCohesive):
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::faults::FaultCohesiveKin*) objVptr)->verifyConfiguration(*mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,

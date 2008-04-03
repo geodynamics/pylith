@@ -19,7 +19,7 @@
 #if !defined(pylith_topology_distributor_hh)
 #define pylith_topology_distributor_hh
 
-#include "pylith/utils/sievefwd.hh" // USES PETSc Mesh
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
 namespace pylith {
   namespace topology {
@@ -58,8 +58,8 @@ public :
    * @param partitioner Name of partitioner to use in distributing mesh.
    */
   static
-  void distribute(ALE::Obj<ALE::Mesh>* const newMesh,
-		  const ALE::Obj<ALE::Mesh>& mesh,
+  void distribute(ALE::Obj<Mesh>* const newMesh,
+		  const ALE::Obj<Mesh>& mesh,
 		  const char* partitioner);
 
   /** Write partitioning info for distributed mesh.
@@ -70,7 +70,7 @@ public :
    */
   static
   void write(meshio::OutputManager* const output,
-	     const ALE::Obj<ALE::Mesh>& mesh,
+	     const ALE::Obj<Mesh>& mesh,
 	     const spatialdata::geocoords::CoordSys* cs);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

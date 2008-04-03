@@ -43,10 +43,10 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
 					  const char* partitioner)
 { // distribute
   if (strlen(partitioner) == 0)
-    *newMesh = ALE::Distribution<ALE::Mesh>::distributeMesh(origMesh);
+    *newMesh = ALE::Distribution<Mesh>::distributeMesh(origMesh);
   else
     *newMesh = 
-      ALE::Distribution<ALE::Mesh>::distributeMesh(origMesh, 0, partitioner);
+      ALE::Distribution<Mesh>::distributeMesh(origMesh, 0, partitioner);
 } // distribute
 
 // ----------------------------------------------------------------------

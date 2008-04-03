@@ -934,8 +934,8 @@ cdef class Integrator:
       assert(0 != residualVptr);
       assert(0 != fieldsVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
       ALE::Obj<pylith::real_section_type>* residual =
         (ALE::Obj<pylith::real_section_type>*) residualVptr;
       pylith::topology::FieldsManager* fields =
@@ -975,8 +975,8 @@ cdef class Integrator:
       assert(0 != matVptr);
       assert(0 != fieldsVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
       PetscMat* mat = (PetscMat*) matVptr;
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
@@ -1019,8 +1019,8 @@ cdef class Integrator:
       assert(0 != meshVptr);
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::feassemble::Integrator*) objVptr)->updateState(t, fields, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -1055,8 +1055,8 @@ cdef class Integrator:
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::feassemble::Integrator*) objVptr)->verifyConfiguration(*mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -1239,7 +1239,7 @@ cdef class IntegratorElasticity(Integrator):
       assert(0 != name);
       assert(0 != meshVptr);
       pylith::feassemble::IntegratorElasticity* integrator = (pylith::feassemble::IntegratorElasticity*) objVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
       pylith::VectorFieldEnum fieldType;
@@ -1416,7 +1416,7 @@ cdef class Constraint:
       assert(0 != fieldVptr);
       assert(0 != meshVptr);
       ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::feassemble::Constraint*) objVptr)->setConstraintSizes(*field, *mesh);
       } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -1450,7 +1450,7 @@ cdef class Constraint:
       assert(0 != fieldVptr);
       assert(0 != meshVptr);
       ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::feassemble::Constraint*) objVptr)->setConstraints(*field, *mesh);
       } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -1483,7 +1483,7 @@ cdef class Constraint:
       assert(0 != fieldVptr);
       assert(0 != meshVptr);
       ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::feassemble::Constraint*) objVptr)->setField(t, *field, *mesh);
       } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,

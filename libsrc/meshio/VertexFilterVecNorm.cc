@@ -47,7 +47,7 @@ const ALE::Obj<pylith::real_section_type>&
 pylith::meshio::VertexFilterVecNorm::filter(
 				  VectorFieldEnum* fieldType,
 				  const ALE::Obj<real_section_type>& fieldIn,
-				  const ALE::Obj<ALE::Mesh>& mesh)
+				  const ALE::Obj<Mesh>& mesh)
 { // filter
   assert(0 != fieldType);
   *fieldType = SCALAR_FIELD;

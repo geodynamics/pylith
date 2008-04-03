@@ -142,7 +142,7 @@ pylith::feassemble::TestElasticityImplicit::testUpdateState(void)
 { // testUpdateState
   CPPUNIT_ASSERT(0 != _data);
 
-  ALE::Obj<ALE::Mesh> mesh;
+  ALE::Obj<Mesh> mesh;
   ElasticityImplicit integrator;
   topology::FieldsManager fields(mesh);
   _initialize(&mesh, &integrator, &fields);
@@ -161,7 +161,7 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateResidual(void)
 { // testIntegrateResidual
   CPPUNIT_ASSERT(0 != _data);
 
-  ALE::Obj<ALE::Mesh> mesh;
+  ALE::Obj<Mesh> mesh;
   ElasticityImplicit integrator;
   topology::FieldsManager fields(mesh);
   _initialize(&mesh, &integrator, &fields);
@@ -193,7 +193,7 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateJacobian(void)
 { // testIntegrateJacobian
   CPPUNIT_ASSERT(0 != _data);
 
-  ALE::Obj<ALE::Mesh> mesh;
+  ALE::Obj<Mesh> mesh;
   ElasticityImplicit integrator;
   topology::FieldsManager fields(mesh);
   _initialize(&mesh, &integrator, &fields);
@@ -256,7 +256,7 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateJacobian(void)
 // Initialize elasticity integrator.
 void
 pylith::feassemble::TestElasticityImplicit::_initialize(
-					 ALE::Obj<ALE::Mesh>* mesh,
+					 ALE::Obj<Mesh>* mesh,
 					 ElasticityImplicit* const integrator,
 					 topology::FieldsManager* fields)
 { // _initialize
@@ -270,7 +270,7 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   spatialdata::geocoords::CSCart cs;
   cs.setSpaceDim(_data->spaceDim);
   cs.initialize();
-  *mesh = new ALE::Mesh(PETSC_COMM_WORLD, _data->cellDim);
+  *mesh = new Mesh(PETSC_COMM_WORLD, _data->cellDim);
   CPPUNIT_ASSERT(!mesh->isNull());
   ALE::Obj<sieve_type> sieve = new sieve_type((*mesh)->comm());
   CPPUNIT_ASSERT(!sieve.isNull());

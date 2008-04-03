@@ -53,7 +53,7 @@ public :
    */
   virtual
   void setConstraintSizes(const ALE::Obj<real_section_type>& field,
-			  const ALE::Obj<ALE::Mesh>& mesh) = 0;
+			  const ALE::Obj<Mesh>& mesh) = 0;
 
   /** Set which degrees of freedom are constrained at points in field.
    *
@@ -62,7 +62,7 @@ public :
    */
   virtual
   void setConstraints(const ALE::Obj<real_section_type>& field,
-		      const ALE::Obj<ALE::Mesh>& mesh) = 0;
+		      const ALE::Obj<Mesh>& mesh) = 0;
 
   /** Set flag for setting constraints for total field solution or
    *  incremental field solution.
@@ -81,7 +81,7 @@ public :
   virtual
   void setField(const double t,
 		const ALE::Obj<real_section_type>& field,
-		const ALE::Obj<ALE::Mesh>& mesh) = 0;
+		const ALE::Obj<Mesh>& mesh) = 0;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :

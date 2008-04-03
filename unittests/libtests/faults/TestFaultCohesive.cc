@@ -457,7 +457,7 @@ void
 pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
 						      const CohesiveData& data)
 { // _testAdjustTopology
-  ALE::Obj<ALE::Mesh> mesh;
+  ALE::Obj<Mesh> mesh;
   meshio::MeshIOAscii iohandler;
   iohandler.filename(data.filename);
   iohandler.debug(false);
@@ -572,7 +572,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
 						       Fault* faultB,
 						      const CohesiveData& data)
 { // _testAdjustTopology
-  ALE::Obj<ALE::Mesh> mesh;
+  ALE::Obj<Mesh> mesh;
   meshio::MeshIOAscii iohandler;
   iohandler.filename(data.filename);
   iohandler.debug(false);

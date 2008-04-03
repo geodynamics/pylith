@@ -83,7 +83,7 @@ cdef class Material:
       assert(0 != meshVptr);
       assert(0 != csVptr);
       assert(0 != qVptr);
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       spatialdata::geocoords::CoordSys* cs =
         (spatialdata::geocoords::CoordSys*) csVptr;
       pylith::feassemble::Quadrature* quadrature =

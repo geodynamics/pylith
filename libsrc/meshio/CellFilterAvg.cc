@@ -49,7 +49,7 @@ const ALE::Obj<pylith::real_section_type>&
 pylith::meshio::CellFilterAvg::filter(
 				  VectorFieldEnum* fieldType,
 				  const ALE::Obj<real_section_type>& fieldIn,
-				  const ALE::Obj<ALE::Mesh>& mesh,
+				  const ALE::Obj<Mesh>& mesh,
 				  const char* label,
 				  const int labelId)
 { // filter

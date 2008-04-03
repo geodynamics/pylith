@@ -16,7 +16,7 @@
 #include "pylith/utils/arrayfwd.hh" // USES double_array, int_array,
                                     // string_vector
 
-#include "pylith/utils/sievefwd.hh" // USES ALE::Obj, ALE::Mesh
+#include "pylith/utils/sievetypes.hh" // USES Obj, PETSc Mesh
 
 namespace pylith {
   namespace meshio {
@@ -71,13 +71,13 @@ public :
    *
    * @param mesh Pointer to PETSc mesh object
    */
-  void read(ALE::Obj<ALE::Mesh>* mesh);
+  void read(ALE::Obj<pylith::Mesh>* mesh);
 
   /** Write mesh to file.
    *
    * @param mesh Pointer to PETSc mesh object
    */
-  void write(ALE::Obj<ALE::Mesh>* mesh);
+  void write(ALE::Obj<pylith::Mesh>* mesh);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
@@ -202,7 +202,7 @@ private :
   bool _debug; ///< True to turn of mesh debugging output
   bool _interpolate; ///< True if building intermediate topology elements
 
-  ALE::Obj<ALE::Mesh>* _mesh; ///< Pointer to PETSc mesh object
+  ALE::Obj<pylith::Mesh>* _mesh; ///< Pointer to PETSc mesh object
 
 }; // MeshIO
 

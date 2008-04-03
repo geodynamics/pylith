@@ -55,7 +55,7 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
 
   const char* label = _data->bcLabel;
   const ALE::Obj<Mesh>& subMesh = 
-    ALE::Selection<ALE::Mesh>::submesh(mesh, mesh->getIntSection(label));
+    ALE::Selection<Mesh>::submesh(mesh, mesh->getIntSection(label));
   CPPUNIT_ASSERT(!subMesh.isNull());
 
   //subMesh->view("SUBMESH WITHOUT FAULT");
@@ -121,7 +121,7 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
 
   const char* label = _data->bcLabel;
   const ALE::Obj<Mesh>& subMesh = 
-    ALE::Selection<ALE::Mesh>::submesh(mesh, mesh->getIntSection(label));
+    ALE::Selection<Mesh>::submesh(mesh, mesh->getIntSection(label));
   CPPUNIT_ASSERT(!subMesh.isNull());
 
   //subMesh->view("SUBMESH WITH FAULT");

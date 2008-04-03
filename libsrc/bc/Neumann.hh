@@ -57,7 +57,7 @@ public :
    * @param upDir Direction perpendicular to horizontal surface tangent 
    *   direction that is not collinear with surface normal.
    */
-  void initialize(const ALE::Obj<ALE::Mesh>& mesh,
+  void initialize(const ALE::Obj<Mesh>& mesh,
 		  const spatialdata::geocoords::CoordSys* cs,
 		  const double_array& upDir);
 

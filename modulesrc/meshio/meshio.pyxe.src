@@ -85,7 +85,7 @@ cdef class MeshIO:
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::meshio::MeshIO*) objVptr)->read(mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -113,7 +113,7 @@ cdef class MeshIO:
     #embed{ void MeshIO_write(void* objVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::meshio::MeshIO*) objVptr)->write(mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -698,7 +698,7 @@ cdef class OutputManager:
     try {
       assert(0 != objVptr);
       assert(0 != csVptr);
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       spatialdata::geocoords::CoordSys* cs =
         (spatialdata::geocoords::CoordSys*) csVptr;
       ((pylith::meshio::OutputManager*) objVptr)->open(*mesh, cs, numTimeSteps, label, labelId);
@@ -762,7 +762,7 @@ cdef class OutputManager:
       assert(0 != objVptr);
       assert(0 != meshVptr);
       assert(0 != csVptr);
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       spatialdata::geocoords::CoordSys* cs =
         (spatialdata::geocoords::CoordSys*) csVptr;
       ((pylith::meshio::OutputManager*) objVptr)->openTimeStep(t, *mesh, cs,
@@ -832,7 +832,7 @@ cdef class OutputManager:
       assert(0 != meshVptr);
       ALE::Obj<pylith::real_section_type>* field =
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       const pylith::VectorFieldEnum fieldType =
         (pylith::VectorFieldEnum) fieldTypeInt;
       ((pylith::meshio::OutputManager*) objVptr)->appendVertexField(t, name,
@@ -871,7 +871,7 @@ cdef class OutputManager:
       assert(0 != meshVptr);
       ALE::Obj<pylith::real_section_type>* field =
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       const pylith::VectorFieldEnum fieldType =
         (pylith::VectorFieldEnum) fieldTypeInt;
       ((pylith::meshio::OutputManager*) objVptr)->appendCellField(t, name,
@@ -1059,7 +1059,7 @@ cdef class OutputSolnSubset(OutputManager):
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::meshio::OutputSolnSubset*) objVptr)->verifyConfiguration(*mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -1091,8 +1091,8 @@ cdef class OutputSolnSubset(OutputManager):
       assert(0 != objVptr);
       assert(0 != submeshVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* submesh = (ALE::Obj<ALE::Mesh>*) submeshVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* submesh = (ALE::Obj<pylith::Mesh>*) submeshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       *submesh =
         ((pylith::meshio::OutputSolnSubset*) objVptr)->subdomainMesh(*mesh);
       } catch (const std::exception& err) {

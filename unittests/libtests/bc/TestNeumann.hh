@@ -85,7 +85,7 @@ private :
    * @param bc Neumann boundary condition to initialize.
    * @param fields Solution fields.
    */
-  void _initialize(ALE::Obj<ALE::Mesh>* mesh,
+  void _initialize(ALE::Obj<Mesh>* mesh,
 		   Neumann* const bc,
 		   topology::FieldsManager* fields) const;
 

@@ -43,7 +43,7 @@ pylith::bc::Neumann::~Neumann(void)
 // Initialize boundary condition. Determine orienation and compute traction
 // vector at integration points.
 void
-pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
+pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
 				const spatialdata::geocoords::CoordSys* cs,
 				const double_array& upDir)
 { // initialize
@@ -58,7 +58,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 
   // Extract submesh associated with surface
   _boundaryMesh =
-    ALE::Selection<ALE::Mesh>::submesh(mesh, mesh->getIntSection(_label));
+    ALE::Selection<Mesh>::submesh(mesh, mesh->getIntSection(_label));
   if (_boundaryMesh.isNull()) {
     std::ostringstream msg;
     msg << "Could not construct boundary mesh for Neumann traction "
@@ -256,7 +256,7 @@ pylith::bc::Neumann::integrateResidual(
   PetscErrorCode err = 0;
 
   // Get cell information
-  const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
+  const ALE::Obj<Mesh::label_sequence>& cells = 
     _boundaryMesh->heightStratum(1);
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsBegin = cells->begin();

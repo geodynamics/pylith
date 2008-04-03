@@ -97,7 +97,7 @@ public :
    * @param mesh PETSc mesh
    */
   virtual
-  void adjustTopology(const ALE::Obj<ALE::Mesh>& mesh) = 0;
+  void adjustTopology(const ALE::Obj<Mesh>& mesh) = 0;
 
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
@@ -114,7 +114,7 @@ public :
    *   (used to improve conditioning of Jacobian matrix)
    */
   virtual
-  void initialize(const ALE::Obj<ALE::Mesh>& mesh,
+  void initialize(const ALE::Obj<Mesh>& mesh,
 		  const spatialdata::geocoords::CoordSys* cs,
 		  const double_array& upDir,
 		  const double_array& normalDir,
@@ -124,7 +124,7 @@ public :
    *
    * @returns PETSc mesh object
    */
-  const ALE::Obj<ALE::Mesh>& faultMesh(void) const;
+  const ALE::Obj<Mesh>& faultMesh(void) const;
 
   /** Get vertex field associated with integrator.
    *
@@ -168,7 +168,7 @@ private :
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  ALE::Obj<ALE::Mesh> _faultMesh; ///< Mesh over fault surface
+  ALE::Obj<Mesh> _faultMesh; ///< Mesh over fault surface
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

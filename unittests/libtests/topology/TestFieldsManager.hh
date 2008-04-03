@@ -122,7 +122,7 @@ private :
    *
    * @param mesh PETSc mesh to initialize
    */
-  void _initialize(ALE::Obj<ALE::Mesh>* mesh) const;
+  void _initialize(ALE::Obj<Mesh>* mesh) const;
 
 }; // class TestFieldsManager
 

@@ -38,7 +38,7 @@ pylith::faults::FaultCohesive::~FaultCohesive(void)
 // ----------------------------------------------------------------------
 // Adjust mesh topology for fault implementation.
 void
-pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<ALE::Mesh>& mesh)
+pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<Mesh>& mesh)
 { // adjustTopology
   assert(std::string("") != label());
 

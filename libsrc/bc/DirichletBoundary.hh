@@ -81,7 +81,7 @@ public :
    * @param mesh PETSc mesh
    * @param cs Coordinate system for mesh
    */
-  void initialize(const ALE::Obj<ALE::Mesh>& mesh,
+  void initialize(const ALE::Obj<Mesh>& mesh,
 		  const spatialdata::geocoords::CoordSys* cs,
 		  const double_array& upDir);
 
@@ -91,7 +91,7 @@ public :
    * @param mesh PETSc mesh
    */
   void setConstraintSizes(const ALE::Obj<real_section_type>& field,
-			  const ALE::Obj<ALE::Mesh>& mesh);
+			  const ALE::Obj<Mesh>& mesh);
 
   /** Set which degrees of freedom are constrained at points in field.
    *
@@ -99,7 +99,7 @@ public :
    * @param mesh PETSc mesh
    */
   void setConstraints(const ALE::Obj<real_section_type>& field,
-		      const ALE::Obj<ALE::Mesh>& mesh);
+		      const ALE::Obj<Mesh>& mesh);
 
   /** Set values in field.
    *
@@ -109,7 +109,7 @@ public :
    */
   void setField(const double t,
 		const ALE::Obj<real_section_type>& field,
-		const ALE::Obj<ALE::Mesh>& mesh);
+		const ALE::Obj<Mesh>& mesh);
 
   /** Get boundary mesh.
    *

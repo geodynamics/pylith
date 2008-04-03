@@ -31,7 +31,7 @@ pylith::faults::Fault::~Fault(void)
 
 // ----------------------------------------------------------------------
 // Get mesh associated with fault fields.
-const ALE::Obj<ALE::Mesh>&
+const ALE::Obj<pylith::Mesh>&
 pylith::faults::Fault:: faultMesh(void) const
 { // faultMesh
   return _faultMesh;

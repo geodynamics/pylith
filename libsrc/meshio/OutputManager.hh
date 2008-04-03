@@ -19,7 +19,7 @@
 #if !defined(pylith_meshio_outputmanager_hh)
 #define pylith_meshio_outputmanager_hh
 
-#include "pylith/utils/sievetypes.hh" // USES ALE::Mesh, real_section_type
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh, real_section_type
 #include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
 
 namespace pylith {
@@ -87,7 +87,7 @@ public :
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
-  void open(const ALE::Obj<ALE::Mesh>& mesh,
+  void open(const ALE::Obj<Mesh>& mesh,
 	    const spatialdata::geocoords::CoordSys* csMesh,
 	    const int numTimeSteps,
 	    const char* label =0,
@@ -106,7 +106,7 @@ public :
    * @param labelId Value of label defining which cells to include.
    */
   void openTimeStep(const double t,
-		    const ALE::Obj<ALE::Mesh>& mesh,
+		    const ALE::Obj<Mesh>& mesh,
 		    const spatialdata::geocoords::CoordSys* csMesh,
 		    const char* label =0,
 		    const int labelId =0);
@@ -126,7 +126,7 @@ public :
 			 const char* name,
 			 const ALE::Obj<real_section_type>& field,
 			 const VectorFieldEnum fieldType,
-			 const ALE::Obj<ALE::Mesh>& mesh);
+			 const ALE::Obj<Mesh>& mesh);
 
   /** Append finite-element cell field to file.
    *
@@ -143,7 +143,7 @@ public :
 		       const char* name,
 		       const ALE::Obj<real_section_type>& field,
 		       const VectorFieldEnum fieldType,
-		       const ALE::Obj<ALE::Mesh>& mesh,
+		       const ALE::Obj<Mesh>& mesh,
 		       const char* label =0,
 		       const int labelId =0);
 

@@ -43,7 +43,7 @@ pylith::bc::AbsorbingDampers::~AbsorbingDampers(void)
 // Initialize boundary condition. Determine orienation and compute traction
 // vector at integration points.
 void
-pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
+pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<Mesh>& mesh,
 				const spatialdata::geocoords::CoordSys* cs,
 				const double_array& upDir)
 { // initialize
@@ -58,7 +58,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 
   // Extract submesh associated with boundary
   _boundaryMesh = 
-    ALE::Selection<ALE::Mesh>::submesh(mesh, mesh->getIntSection(_label));
+    ALE::Selection<Mesh>::submesh(mesh, mesh->getIntSection(_label));
   if (_boundaryMesh.isNull()) {
     std::ostringstream msg;
     msg << "Could not construct boundary mesh for absorbing boundary "
@@ -80,7 +80,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   } // if
   const int numCorners = _quadrature->numBasis();
 
-  const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
+  const ALE::Obj<Mesh::label_sequence>& cells = 
     _boundaryMesh->heightStratum(1);
     
   assert(!cells.isNull());
@@ -224,7 +224,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   PetscErrorCode err = 0;
 
   // Get cell information
-  const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
+  const ALE::Obj<Mesh::label_sequence>& cells = 
     _boundaryMesh->heightStratum(1);
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
@@ -318,7 +318,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   PetscErrorCode err = 0;
 
   // Get cell information
-  const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
+  const ALE::Obj<Mesh::label_sequence>& cells = 
     _boundaryMesh->heightStratum(1);
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsEnd = cells->end();

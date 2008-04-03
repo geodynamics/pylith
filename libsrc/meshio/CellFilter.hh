@@ -20,7 +20,7 @@
 #if !defined(pylith_meshio_cellfilter_hh)
 #define pylith_meshio_cellfilter_hh
 
-#include "pylith/utils/sievetypes.hh" // USES ALE::Mesh, real_section_type
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh, real_section_type
 #include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
 
 namespace pylith {
@@ -72,7 +72,7 @@ public :
   const ALE::Obj<real_section_type>&
   filter(VectorFieldEnum* fieldType,
 	 const ALE::Obj<real_section_type>& fieldIn,
-	 const ALE::Obj<ALE::Mesh>& mesh,
+	 const ALE::Obj<Mesh>& mesh,
 	 const char* label =0,
 	 const int labelId =0) = 0;
 

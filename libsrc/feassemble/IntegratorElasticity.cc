@@ -187,7 +187,7 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(
     throw std::runtime_error(msg.str());
   } // if
   const int numCorners = _quadrature->refGeometry().numCorners();
-  const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
+  const ALE::Obj<Mesh::label_sequence>& cells = 
     mesh->getLabelStratum("material-id", _material->id());
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsEnd = cells->end();

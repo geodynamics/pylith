@@ -59,7 +59,7 @@ pylith::faults::FaultCohesiveKin::eqsrc(EqKinSrc* src)
 // ----------------------------------------------------------------------
 // Initialize fault. Determine orientation and setup boundary
 void
-pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
+pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
 					     const spatialdata::geocoords::CoordSys* cs,
 					     const double_array& upDir,
 					     const double_array& normalDir,
@@ -130,7 +130,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   double_array cellStiffness(numConstraintVert);
 
   // Get cohesive cells
-  const ALE::Obj<ALE::Mesh::label_sequence>& cellsCohesive = 
+  const ALE::Obj<Mesh::label_sequence>& cellsCohesive = 
     mesh->getLabelStratum("material-id", id());
   assert(!cellsCohesive.isNull());
   const Mesh::label_sequence::iterator cellsCohesiveBegin =
@@ -262,7 +262,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
   PetscErrorCode err = 0;
 
   // Get cohesive cells
-  const ALE::Obj<ALE::Mesh::label_sequence>& cellsCohesive = 
+  const ALE::Obj<Mesh::label_sequence>& cellsCohesive = 
     mesh->getLabelStratum("material-id", id());
   assert(!cellsCohesive.isNull());
   const Mesh::label_sequence::iterator cellsCohesiveBegin =
@@ -391,7 +391,7 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const ALE::Obj<Mesh>& mesh
   } // if
 
   const int numCorners = _quadrature->refGeometry().numCorners();
-  const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
+  const ALE::Obj<Mesh::label_sequence>& cells = 
     mesh->getLabelStratum("material-id", id());
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsBegin = cells->begin();

@@ -40,7 +40,7 @@ pylith::bc::DirichletPoints::~DirichletPoints(void)
 // Initialize boundary condition.
 void
 pylith::bc::DirichletPoints::initialize(
-				   const ALE::Obj<ALE::Mesh>& mesh,
+				   const ALE::Obj<Mesh>& mesh,
 				   const spatialdata::geocoords::CoordSys* cs,
 				   const double_array& upDir)
 { // initialize
@@ -136,7 +136,7 @@ pylith::bc::DirichletPoints::initialize(
 void
 pylith::bc::DirichletPoints::setConstraintSizes(
 				     const ALE::Obj<real_section_type>& field,
-				     const ALE::Obj<ALE::Mesh>& mesh)
+				     const ALE::Obj<Mesh>& mesh)
 { // setConstraintSizes
   assert(!field.isNull());
   assert(!mesh.isNull());
@@ -170,7 +170,7 @@ pylith::bc::DirichletPoints::setConstraintSizes(
 void
 pylith::bc::DirichletPoints::setConstraints(
 				    const ALE::Obj<real_section_type>& field,
-				    const ALE::Obj<ALE::Mesh>& mesh)
+				    const ALE::Obj<Mesh>& mesh)
 { // setConstraints
   assert(!field.isNull());
   assert(!mesh.isNull());
@@ -233,7 +233,7 @@ pylith::bc::DirichletPoints::setConstraints(
 void
 pylith::bc::DirichletPoints::setField(const double t,
 				      const ALE::Obj<real_section_type>& field,
-				      const ALE::Obj<ALE::Mesh>& mesh)
+				      const ALE::Obj<Mesh>& mesh)
 { // setField
   assert(!field.isNull());
   assert(!mesh.isNull());
