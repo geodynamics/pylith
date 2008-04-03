@@ -25,7 +25,7 @@
 
 // ----------------------------------------------------------------------
 // Get simple mesh for testing I/O.
-ALE::Obj<ALE::Mesh>*
+ALE::Obj<Mesh>*
 pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
 { // _createMesh
   // buildTopology() requires zero based index

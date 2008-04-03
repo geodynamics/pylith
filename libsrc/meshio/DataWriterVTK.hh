@@ -70,7 +70,7 @@ public :
    * @param labelId Value of label defining which cells to include.
    */
   void openTimeStep(const double t,
-		    const ALE::Obj<ALE::Mesh>& mesh,
+		    const ALE::Obj<Mesh>& mesh,
 		    const spatialdata::geocoords::CoordSys* csMesh,
 		    const char* label =0,
 		    const int labelId =0);
@@ -90,7 +90,7 @@ public :
 			const char* name,
 			const ALE::Obj<real_section_type>& field,
 			const VectorFieldEnum fieldType,
-			const ALE::Obj<ALE::Mesh>& mesh);
+			const ALE::Obj<Mesh>& mesh);
 
   /** Write field over cells to file.
    *
@@ -107,7 +107,7 @@ public :
 		      const char* name,
 		      const ALE::Obj<real_section_type>& field,
 		      const VectorFieldEnum fieldType,
-              const ALE::Obj<ALE::Mesh>& mesh,
+              const ALE::Obj<Mesh>& mesh,
 		      const char* label =0,
 		      const int labelId =0);
 

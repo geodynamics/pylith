@@ -72,7 +72,7 @@ private :
    * @param bcB DirichletPoints boundary condition B to initialize.
    * @param bcC DirichletPoints boundary condition C to initialize.
    */
-  void _initialize(ALE::Obj<ALE::Mesh>* mesh,
+  void _initialize(ALE::Obj<Mesh>* mesh,
 		   DirichletPoints* const bcA,
 		   DirichletPoints* const bcB,
 		   DirichletPoints* const bcC) const;

@@ -482,7 +482,7 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
 // ----------------------------------------------------------------------
 // Initialize FaultCohesiveKin interface condition.
 void
-pylith::faults::TestFaultCohesiveKin::_initialize(ALE::Obj<ALE::Mesh>* mesh,
+pylith::faults::TestFaultCohesiveKin::_initialize(ALE::Obj<Mesh>* mesh,
 					FaultCohesiveKin* const fault) const
 { // _initialize
   CPPUNIT_ASSERT(0 != _data);

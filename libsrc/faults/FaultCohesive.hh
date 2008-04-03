@@ -52,7 +52,7 @@ public :
    *
    * @param mesh PETSc mesh
    */
-  void adjustTopology(const ALE::Obj<ALE::Mesh>& mesh);
+  void adjustTopology(const ALE::Obj<Mesh>& mesh);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

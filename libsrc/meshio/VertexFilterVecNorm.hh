@@ -55,7 +55,7 @@ public :
   const ALE::Obj<real_section_type>&
   filter(VectorFieldEnum* fieldType,
 	 const ALE::Obj<real_section_type>& fieldIn,
-	 const ALE::Obj<ALE::Mesh>& mesh);
+	 const ALE::Obj<Mesh>& mesh);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :

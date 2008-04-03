@@ -37,7 +37,7 @@ pylith::faults::FaultCohesiveDyn::~FaultCohesiveDyn(void)
 // ----------------------------------------------------------------------
 // Initialize fault. Determine orientation and setup boundary
 void
-pylith::faults::FaultCohesiveDyn::initialize(const ALE::Obj<ALE::Mesh>& mesh,
+pylith::faults::FaultCohesiveDyn::initialize(const ALE::Obj<Mesh>& mesh,
 					     const spatialdata::geocoords::CoordSys* cs,
 					     const double_array& upDir,
 					     const double_array& normalDir,
@@ -98,7 +98,7 @@ pylith::faults::FaultCohesiveDyn::verifyConfiguration(
     throw std::runtime_error(msg.str());
   } // if
   const int numCorners = _quadrature->numBasis();
-  const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
+  const ALE::Obj<Mesh::label_sequence>& cells = 
     mesh->getLabelStratum("material-id", id());
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsBegin = cells->begin();

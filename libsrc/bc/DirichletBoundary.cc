@@ -42,7 +42,7 @@ pylith::bc::DirichletBoundary::~DirichletBoundary(void)
 // Initialize boundary condition.
 void
 pylith::bc::DirichletBoundary::initialize(
-				   const ALE::Obj<ALE::Mesh>& mesh,
+				   const ALE::Obj<Mesh>& mesh,
 				   const spatialdata::geocoords::CoordSys* cs,
 				   const double_array& upDir)
 { // initialize
@@ -57,7 +57,7 @@ pylith::bc::DirichletBoundary::initialize(
 
   // Extract submesh associated with boundary
   _boundaryMesh = 
-    ALE::Selection<ALE::Mesh>::submesh(mesh, mesh->getIntSection(_label));
+    ALE::Selection<Mesh>::submesh(mesh, mesh->getIntSection(_label));
   if (_boundaryMesh.isNull()) {
     std::ostringstream msg;
     msg << "Could not construct boundary mesh for Dirichlet boundary "
@@ -144,7 +144,7 @@ pylith::bc::DirichletBoundary::initialize(
 void
 pylith::bc::DirichletBoundary::setConstraintSizes(
 				     const ALE::Obj<real_section_type>& field,
-				     const ALE::Obj<ALE::Mesh>& mesh)
+				     const ALE::Obj<Mesh>& mesh)
 { // setConstraintSizes
   assert(!field.isNull());
   assert(!mesh.isNull());
@@ -186,7 +186,7 @@ pylith::bc::DirichletBoundary::setConstraintSizes(
 void
 pylith::bc::DirichletBoundary::setConstraints(
 				    const ALE::Obj<real_section_type>& field,
-				    const ALE::Obj<ALE::Mesh>& mesh)
+				    const ALE::Obj<Mesh>& mesh)
 { // setConstraints
   assert(!field.isNull());
   assert(!mesh.isNull());
@@ -253,7 +253,7 @@ pylith::bc::DirichletBoundary::setConstraints(
 void
 pylith::bc::DirichletBoundary::setField(const double t,
 				      const ALE::Obj<real_section_type>& field,
-				      const ALE::Obj<ALE::Mesh>& mesh)
+				      const ALE::Obj<Mesh>& mesh)
 { // setField
   assert(!field.isNull());
   assert(!mesh.isNull());

@@ -31,7 +31,7 @@ pylith::meshio::DataWriter::~DataWriter(void)
 // Prepare for writing files.
 void
 pylith::meshio::DataWriter::open(
-			       const ALE::Obj<ALE::Mesh>& mesh,
+			       const ALE::Obj<Mesh>& mesh,
 			       const spatialdata::geocoords::CoordSys* csMesh,
 			       const int numTimeSteps,
 			       const char* label,
@@ -52,7 +52,7 @@ pylith::meshio::DataWriter::close(void)
 void
 pylith::meshio::DataWriter::openTimeStep(
 			       const double t,
-			       const ALE::Obj<ALE::Mesh>& mesh,
+			       const ALE::Obj<Mesh>& mesh,
 			       const spatialdata::geocoords::CoordSys* csMesh,
 			       const char* label,
 			       const int labelId)

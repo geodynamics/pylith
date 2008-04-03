@@ -76,7 +76,7 @@ pylith::meshio::OutputManager::cellFilter(const CellFilter* filter)
 // Prepare for output.
 void
 pylith::meshio::OutputManager::open(
-				 const ALE::Obj<ALE::Mesh>& mesh,
+				 const ALE::Obj<Mesh>& mesh,
 				 const spatialdata::geocoords::CoordSys* csMesh,
 				 const int numTimeSteps,
 				 const char* label,
@@ -101,7 +101,7 @@ pylith::meshio::OutputManager::close(void)
 void
 pylith::meshio::OutputManager::openTimeStep(
 			     const double t,
-			     const ALE::Obj<ALE::Mesh>& mesh,
+			     const ALE::Obj<Mesh>& mesh,
 			     const spatialdata::geocoords::CoordSys* csMesh,
 			     const char* label,
 			     const int labelId)
@@ -127,7 +127,7 @@ pylith::meshio::OutputManager::appendVertexField(
 			       const char* name,
 			       const ALE::Obj<real_section_type>& field,
 			       const VectorFieldEnum fieldType,
-			       const ALE::Obj<ALE::Mesh>& mesh)
+			       const ALE::Obj<Mesh>& mesh)
 { // appendVertexField
   assert(0 != name);
 
@@ -147,7 +147,7 @@ pylith::meshio::OutputManager::appendCellField(
 				const char* name,
 				const ALE::Obj<real_section_type>& field,
 				const VectorFieldEnum fieldType,
-				const ALE::Obj<ALE::Mesh>& mesh,
+				const ALE::Obj<Mesh>& mesh,
 				const char* label,
 				const int labelId)
 { // appendCellField

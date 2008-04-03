@@ -69,7 +69,7 @@ pylith::faults::TestBoundary::testCreateBoundaryHex8(void)
 void
 pylith::faults::TestBoundary::_testCreateBoundary(const BoundaryData& data)
 { // _testAdjustTopology
-  ALE::Obj<ALE::Mesh> mesh;
+  ALE::Obj<Mesh> mesh;
   meshio::MeshIOAscii iohandler;
   iohandler.filename(data.filename);
   iohandler.debug(false);
@@ -77,7 +77,7 @@ pylith::faults::TestBoundary::_testCreateBoundary(const BoundaryData& data)
   iohandler.read(&mesh);
 
   // Extract submesh for "traction"
-  const ALE::Obj<ALE::Mesh> submesh = ALE::Selection<ALE::Mesh>::submesh(mesh, mesh->getIntSection("traction"));
+  const ALE::Obj<Mesh> submesh = ALE::Selection<Mesh>::submesh(mesh, mesh->getIntSection("traction"));
 
   CPPUNIT_ASSERT_EQUAL(data.cellDim, submesh->getDimension());
 

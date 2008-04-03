@@ -14,6 +14,8 @@
 #include <petscmesh.hh>
 #include <petscksp.h>
 
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+
 #include <assert.h>
 #include <stdexcept>
 #include <Python.h>
@@ -129,10 +131,10 @@ cdef class Solver:
       assert(0 != vecOutVptr);
       assert(0 != meshVptr);
       assert(0 != fieldVptr);
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ALE::Obj<ALE::Mesh::real_section_type>* field =
-        (ALE::Obj<ALE::Mesh::real_section_type>*) fieldVptr;
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh::real_section_type>* field =
+        (ALE::Obj<pylith::Mesh::real_section_type>*) fieldVptr;
       VecScatter scatter;
       PetscErrorCode err = MeshCreateGlobalScatter(*mesh, *field, &scatter);
       if (err) {
@@ -148,7 +150,7 @@ cdef class Solver:
       } // if
       *scatterVptr = (void *) scatter;
       Vec in;
-      const ALE::Obj<ALE::Mesh::order_type>& order = (*mesh)->getFactory()->getGlobalOrder((*mesh), "default", (*field));
+      const ALE::Obj<pylith::Mesh::order_type>& order = (*mesh)->getFactory()->getGlobalOrder((*mesh), "default", (*field));
 
       err = VecCreate((*mesh)->comm(), &in);
       err = VecSetSizes(in, order->getLocalSize(), order->getGlobalSize());
@@ -256,7 +258,7 @@ cdef class SolverLinear(Solver):
     """
     # create shim for method 'solve'
     #embed{ int SolverLinear_solve(void* objVptr, void* fieldOutVptr, void* jacobianVptr, void* fieldInVptr, void* scatterVptr, void* vecInVptr, void* vecOutVptr)
-    typedef ALE::Mesh::real_section_type real_section_type;
+    typedef pylith::Mesh::real_section_type real_section_type;
     PetscErrorCode err = 0;
     try {
       assert(0 != objVptr);
@@ -338,7 +340,7 @@ cdef class SolverNonlinear(Solver):
     """
     # create shim for method 'solve'
     #embed{ int SolverNonlinear_solve(void* objVptr, void* fieldOutVptr, void* jacobianVptr, void* fieldInVptr, void* scatterVptr, void* vecInVptr, void* vecOutVptr)
-    typedef ALE::Mesh::real_section_type real_section_type;
+    typedef pylith::Mesh::real_section_type real_section_type;
     PetscErrorCode err = 0;
     try {
       assert(0 != objVptr);

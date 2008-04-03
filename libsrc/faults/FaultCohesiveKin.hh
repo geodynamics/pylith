@@ -89,7 +89,7 @@ public :
    * @param matDB Database of bulk elastic properties for fault region
    *   (used to improve conditioning of Jacobian matrix)
    */
-  void initialize(const ALE::Obj<ALE::Mesh>& mesh,
+  void initialize(const ALE::Obj<Mesh>& mesh,
 		  const spatialdata::geocoords::CoordSys* cs,
 		  const double_array& upDir,
 		  const double_array& normalDir,

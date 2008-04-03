@@ -29,7 +29,7 @@ pylith::topology::MeshOps::checkMaterialIds(const ALE::Obj<Mesh>& mesh,
   assert( (0 == numMaterials && 0 == materialIds) ||
 	  (0 < numMaterials && 0 != materialIds) );
 
-  const ALE::Obj<ALE::Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
   const ALE::Obj<Mesh::label_type>& materialsLabel = mesh->getLabel("material-id");

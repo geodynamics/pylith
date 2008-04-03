@@ -106,7 +106,7 @@ private :
    * @param mesh PETSc mesh to initialize
    * @param fault Cohesive fault interface condition to initialize.
    */
-  void _initialize(ALE::Obj<ALE::Mesh>* mesh,
+  void _initialize(ALE::Obj<Mesh>* mesh,
 		   FaultCohesiveKin* const fault) const;
 
   /** Determine if vertex is a Lagrange multiplier constraint vertex.

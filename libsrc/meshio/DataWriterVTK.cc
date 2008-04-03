@@ -57,7 +57,7 @@ pylith::meshio::DataWriterVTK::DataWriterVTK(const DataWriterVTK& w) :
 void
 pylith::meshio::DataWriterVTK::openTimeStep(
 			       const double t,
-			       const ALE::Obj<ALE::Mesh>& mesh,
+			       const ALE::Obj<Mesh>& mesh,
 			       const spatialdata::geocoords::CoordSys* csMesh,
 			       const char* label,
 			       const int labelId)
@@ -141,7 +141,7 @@ pylith::meshio::DataWriterVTK::writeVertexField(
 				       const char* name,
 				       const ALE::Obj<real_section_type>& field,
 				       const VectorFieldEnum fieldType,
-				       const ALE::Obj<ALE::Mesh>& mesh)
+				       const ALE::Obj<Mesh>& mesh)
 { // writeVertexField
   assert(0 != name);
   assert(!mesh.isNull());
@@ -203,7 +203,7 @@ pylith::meshio::DataWriterVTK::writeCellField(
 				       const char* name,
 				       const ALE::Obj<real_section_type>& field,
 				       const VectorFieldEnum fieldType,
-				       const ALE::Obj<ALE::Mesh>& mesh,
+				       const ALE::Obj<Mesh>& mesh,
 				       const char* label,
 				       const int labelId)
 { // writeCellField

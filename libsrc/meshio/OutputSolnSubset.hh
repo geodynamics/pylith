@@ -22,7 +22,7 @@
 
 #include "OutputManager.hh" // ISA OutputManager
 
-#include "pylith/utils/sievetypes.hh" // HASA ALE::Mesh
+#include "pylith/utils/sievetypes.hh" // HASA PETSc Mesh
 #include <string> // HASA std::string
 
 namespace pylith {

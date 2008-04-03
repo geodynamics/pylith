@@ -79,7 +79,7 @@ cdef class BoundaryCondition:
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::bc::BoundaryCondition*) objVptr)->verifyConfiguration(*mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -111,7 +111,7 @@ cdef class BoundaryCondition:
       assert(0 != objVptr);
       assert(0 != meshVptr);
       assert(0 != csVptr);
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       spatialdata::geocoords::CoordSys* cs =
         (spatialdata::geocoords::CoordSys*) csVptr;
       pylith::double_array upDir(3);
@@ -319,7 +319,7 @@ cdef class DirichletPoints(BoundaryCondition):
       assert(0 != fieldVptr);
       assert(0 != meshVptr);
       ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::bc::DirichletPoints*) objVptr)->setConstraintSizes(*field, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -353,7 +353,7 @@ cdef class DirichletPoints(BoundaryCondition):
       assert(0 != fieldVptr);
       assert(0 != meshVptr);
       ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::bc::DirichletPoints*) objVptr)->setConstraints(*field, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -386,7 +386,7 @@ cdef class DirichletPoints(BoundaryCondition):
       assert(0 != fieldVptr);
       assert(0 != meshVptr);
       ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::bc::DirichletPoints*) objVptr)->setField(t, *field, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -540,7 +540,7 @@ cdef class DirichletBoundary(BoundaryCondition):
       assert(0 != fieldVptr);
       assert(0 != meshVptr);
       ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::bc::DirichletBoundary*) objVptr)->setConstraintSizes(*field, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -574,7 +574,7 @@ cdef class DirichletBoundary(BoundaryCondition):
       assert(0 != fieldVptr);
       assert(0 != meshVptr);
       ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::bc::DirichletBoundary*) objVptr)->setConstraints(*field, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -607,7 +607,7 @@ cdef class DirichletBoundary(BoundaryCondition):
       assert(0 != fieldVptr);
       assert(0 != meshVptr);
       ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::bc::DirichletBoundary*) objVptr)->setField(t, *field, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -639,7 +639,7 @@ cdef class DirichletBoundary(BoundaryCondition):
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       *mesh = ((pylith::bc::DirichletBoundary*) objVptr)->boundaryMesh();
       } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -674,7 +674,7 @@ cdef class DirichletBoundary(BoundaryCondition):
       assert(0 != name);
       assert(0 != meshVptr);
       pylith::bc::DirichletBoundary* bc = (pylith::bc::DirichletBoundary*) objVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
       pylith::VectorFieldEnum fieldType;
@@ -780,8 +780,8 @@ cdef class AbsorbingDampers(BoundaryCondition):
       assert(0 != residualVptr);
       assert(0 != fieldsVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
       ALE::Obj<pylith::real_section_type>* residual =
         (ALE::Obj<pylith::real_section_type>*) residualVptr;
       pylith::topology::FieldsManager* fields =
@@ -821,8 +821,8 @@ cdef class AbsorbingDampers(BoundaryCondition):
       assert(0 != matVptr);
       assert(0 != fieldsVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
       PetscMat* mat = (PetscMat*) matVptr;
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
@@ -862,8 +862,8 @@ cdef class AbsorbingDampers(BoundaryCondition):
       assert(0 != meshVptr);
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::bc::AbsorbingDampers*) objVptr)->updateState(t, fields, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -1074,8 +1074,8 @@ cdef class Neumann(BoundaryCondition):
       assert(0 != residualVptr);
       assert(0 != fieldsVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
       ALE::Obj<pylith::real_section_type>* residual =
         (ALE::Obj<pylith::real_section_type>*) residualVptr;
       pylith::topology::FieldsManager* fields =
@@ -1115,8 +1115,8 @@ cdef class Neumann(BoundaryCondition):
       assert(0 != matVptr);
       assert(0 != fieldsVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
       PetscMat* mat = (PetscMat*) matVptr;
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
@@ -1156,8 +1156,8 @@ cdef class Neumann(BoundaryCondition):
       assert(0 != meshVptr);
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
-      ALE::Obj<ALE::Mesh>* mesh =
-        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
       ((pylith::bc::Neumann*) objVptr)->updateState(t, fields, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -1192,7 +1192,7 @@ cdef class Neumann(BoundaryCondition):
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       *mesh = ((pylith::bc::Neumann*) objVptr)->boundaryMesh();
       } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -1227,7 +1227,7 @@ cdef class Neumann(BoundaryCondition):
       assert(0 != name);
       assert(0 != meshVptr);
       pylith::bc::Neumann* bc = (pylith::bc::Neumann*) objVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
       pylith::VectorFieldEnum fieldType;

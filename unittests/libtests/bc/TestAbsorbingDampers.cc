@@ -129,7 +129,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
 { // testIntegrateResidual
   CPPUNIT_ASSERT(0 != _data);
 
-  ALE::Obj<ALE::Mesh> mesh;
+  ALE::Obj<Mesh> mesh;
   AbsorbingDampers bc;
   topology::FieldsManager fields(mesh);
   _initialize(&mesh, &bc, &fields);
@@ -164,7 +164,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
 { // testIntegrateJacobian
   CPPUNIT_ASSERT(0 != _data);
 
-  ALE::Obj<ALE::Mesh> mesh;
+  ALE::Obj<Mesh> mesh;
   AbsorbingDampers bc;
   topology::FieldsManager fields(mesh);
   _initialize(&mesh, &bc, &fields);

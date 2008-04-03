@@ -48,14 +48,14 @@ protected :
    *
    * @returns PETSc mesh
    */
-  ALE::Obj<ALE::Mesh>* _createMesh(const MeshData& data);
+  ALE::Obj<Mesh>* _createMesh(const MeshData& data);
 
   /** Check values in mesh against data.
    *
    * @param mesh PETSc mesh
    * @param data Mesh data
    */
-  void _checkVals(const ALE::Obj<ALE::Mesh>& mesh,
+  void _checkVals(const ALE::Obj<Mesh>& mesh,
 		  const MeshData& data);
 
   /** Test debug().

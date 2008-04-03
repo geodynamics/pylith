@@ -45,7 +45,7 @@ pylith::meshio::TestDataWriterVTKBCMesh::_initialize(void)
 
   const char* label = _data->bcLabel;
   _mesh = 
-    ALE::Selection<ALE::Mesh>::submesh(_meshDomain, 
+    ALE::Selection<Mesh>::submesh(_meshDomain, 
 				       _meshDomain->getIntSection(label));
   CPPUNIT_ASSERT(!_mesh.isNull());
   _mesh->setRealSection("coordinates", 

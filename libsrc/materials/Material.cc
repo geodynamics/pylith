@@ -59,7 +59,7 @@ pylith::materials::Material::~Material(void)
 // ----------------------------------------------------------------------
 // Get physical property parameters from database.
 void
-pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
+pylith::materials::Material::initialize(const ALE::Obj<Mesh>& mesh,
 					const spatialdata::geocoords::CoordSys* cs,
 					pylith::feassemble::Quadrature* quadrature)
 { // initialize
@@ -71,10 +71,10 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   // Get cells associated with material
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
-  const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
+  const ALE::Obj<Mesh::label_sequence>& cells = 
     mesh->getLabelStratum("material-id", _id);
   assert(!cells.isNull());
-  const ALE::Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const Mesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Create sections to hold physical properties and state variables.
   _properties = new real_section_type(mesh->comm(), mesh->debug());
