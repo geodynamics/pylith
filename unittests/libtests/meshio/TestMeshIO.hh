@@ -23,7 +23,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "pylith/utils/sievefwd.hh" // USES PETSc Mesh
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
 /// Namespace for pylith package
 namespace pylith {
@@ -48,7 +48,7 @@ protected :
    *
    * @returns PETSc mesh
    */
-  ALE::Obj<Mesh>* _createMesh(const MeshData& data);
+  ALE::Obj<pylith::Mesh>* _createMesh(const MeshData& data);
 
   /** Check values in mesh against data.
    *
