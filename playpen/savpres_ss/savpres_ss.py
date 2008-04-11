@@ -305,7 +305,7 @@ class Savpres_ss(Application):
 
     for cycle in range(self.numberCycles):
       fileBaseCycle = fileBase + "_c" + str(cycle) + "_t"
-      time = cycle * self.numberSteps * self.deltaT
+      time = 0.0
 
       for step in range(self.numberSteps + 1):
         VTKFile = fileBaseCycle + str(time) + ".vtk"
@@ -353,7 +353,7 @@ class Savpres_ss(Application):
     head = "X,Y,Z"
     for cycle in range(self.numberCycles):
       cycleHead = "c" + str(cycle) + "_t"
-      time = cycle * self.numberSteps * self.deltaT
+      time = 0.0
 
       for step in range(self.numberSteps + 1):
         head += "," + cycleHead + str(time)
