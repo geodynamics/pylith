@@ -163,7 +163,7 @@ class Savpres_ss(Application):
     Create array of points for output along with series terms
     for each point.
     """
-    self.points = numpy.zeros((self.numberPoints), dtype=float)
+    self.points = numpy.zeros(self.numberPoints, dtype=float)
     self.pointCoeff = numpy.zeros((self.numberPoints, self.numberTerms),
                                   dtype=float)
 
@@ -200,7 +200,6 @@ class Savpres_ss(Application):
     for cycle in range(self.numberCycles):
       time = cycle * self.numberSteps * self.deltaT
       tau = time * self.tauFac
-      tauSub = cycle * self.tau0
       if cycle > 0:
         solutionU2[cycle, :, :] += solutionU2[cycle - 1, :, :]
 
@@ -312,7 +311,7 @@ class Savpres_ss(Application):
         f = open(VTKFile, 'w')
         self._writeVTK(f, cycle, step)
         f.close()
-        time = time + self.deltaT
+        time += self.deltaT
 
     return
 
@@ -357,7 +356,7 @@ class Savpres_ss(Application):
 
       for step in range(self.numberSteps + 1):
         head += "," + cycleHead + str(time)
-        time = time + self.deltaT
+        time += self.deltaT
 
     f.write('%s\n' % head)
     y = 0.0
