@@ -142,7 +142,7 @@ class Euler(Application):
     self.eulerPole = numpy.array([0.0, 0.0, 0.0], dtype=float)
     # Note that we use a mean radius since we are doing rotations on a
     # spherical Earth.
-    self.earthRad = 63727954.77598
+    self.earthRad = 6372795.477598
     return
 
 
