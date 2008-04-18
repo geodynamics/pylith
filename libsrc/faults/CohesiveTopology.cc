@@ -50,7 +50,11 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
 
   if (!(*fault)->commRank()) {
     numCorners = sieve->nCone(*mesh->heightStratum(0)->begin(), depth)->size();
+#if 1
+    faceSize   = selection::numFaceVertices(mesh);
+#else
     faceSize   = selection::numFaceVertices(*mesh->heightStratum(0)->begin(), mesh);
+#endif
     indices    = new int[faceSize];
   }
 
