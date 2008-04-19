@@ -14,14 +14,14 @@
 
 #include "TestBoundaryMesh.hh" // Implementation of class methods
 
-#include <Selection.hh> // USES submesh algorithms
-
 #include "data/BoundaryMeshData.hh" // USES BoundaryMeshData
 
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultsCohesiveKin
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+
+#include <Selection.hh> // USES submesh algorithms
 
 // ----------------------------------------------------------------------
 // Setup testing data.
