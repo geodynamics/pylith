@@ -26,6 +26,8 @@ if ENABLE_TESTING
 #	tests
 endif
 
+DIST_SUBDIRS = $(SUBDIRS) tests
+
 if ENABLE_DOCUMENTATION
   SUBDIRS += doc
 endif
@@ -40,7 +42,5 @@ install-data-hook:
 		$(PYTHON) setup.py install_deps -H None -f $$top_builddir/deps --prefix=$(prefix) && \
 		$(PYTHON) setup.py egg_info -e $(pythondir)
 
-# version
-# $Id$
 
 # End of file 

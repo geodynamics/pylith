@@ -14,7 +14,9 @@ subpackage = utils
 include $(top_srcdir)/subpackage.am
 
 TESTS = testmanager.py testutils.py
-check_SCRIPTS = testmanager.py testutils.py
+dist_check_SCRIPTS = \
+	testmanager.py \
+	testutils.py
 
 TESTS_ENVIRONMENT = $(PYTHON)
 

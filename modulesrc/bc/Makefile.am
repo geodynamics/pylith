@@ -18,9 +18,9 @@ subpkgpyexec_LTLIBRARIES = bcmodule.la
 bcmodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-bcmodule_la_SOURCES = bc.pyxe
-
+dist_bcmodule_la_SOURCES = bc.pyxe.src
 nodist_bcmodule_la_SOURCES = \
+	bc.pyxe \
 	bc.c bc_embed.cpp bc_embed.h
 
 bcmodule_la_LIBADD = \

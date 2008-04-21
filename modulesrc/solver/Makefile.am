@@ -18,9 +18,9 @@ subpkgpyexec_LTLIBRARIES = solvermodule.la
 solvermodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-solvermodule_la_SOURCES = solver.pyxe
-
+dist_solvermodule_la_SOURCES = solver.pyxe.src
 nodist_solvermodule_la_SOURCES = \
+	solver.pyxe \
 	solver.c solver_embed.cpp solver_embed.h
 
 solvermodule_la_LIBADD = \

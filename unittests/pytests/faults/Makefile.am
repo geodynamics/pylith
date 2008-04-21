@@ -16,7 +16,7 @@ include $(top_srcdir)/subpackage.am
 SUBDIRS = data
 
 TESTS = testfaults.py
-check_SCRIPTS = testfaults.py
+dist_check_SCRIPTS = testfaults.py
 
 TESTS_ENVIRONMENT = $(PYTHON)
 

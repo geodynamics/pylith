@@ -1,4 +1,4 @@
-We are pleased to announce release of PyLith version 1.1.0.
+We are pleased to announce release of PyLith version 1.1.1.
 
 Please submit bug reports via the World Wide Web at:
     http://geodynamics.org/roundup    
@@ -79,6 +79,13 @@ TIPS
     the preconditioner is inappropriate for the type of problem you
     are solving or there is an error in the problem setup.
 
+
+----------------------------------------------------------------------
+Version 1.1.1
+----------------------------------------------------------------------
+
+  * Fixed Makefile.am files to include files missing from the source
+    distribution.
 
 ----------------------------------------------------------------------
 Version 1.1.0

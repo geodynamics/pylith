@@ -34,7 +34,15 @@ testmaterials_SOURCES = \
 
 
 noinst_HEADERS = \
-	TestMaterial.hh
+	TestMaterial.hh \
+	TestElasticMaterial.hh \
+	TestElasticStrain1D.hh \
+	TestElasticStress1D.hh \
+	TestElasticPlaneStrain.hh \
+	TestElasticPlaneStress.hh \
+	TestElasticIsotropic3D.hh \
+	TestGenMaxwellIsotropic3D.hh \
+	TestMaxwellIsotropic3D.hh
 
 # Source files associated with testing data
 testmaterials_SOURCES += \

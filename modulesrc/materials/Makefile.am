@@ -18,9 +18,9 @@ subpkgpyexec_LTLIBRARIES = materialsmodule.la
 materialsmodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-materialsmodule_la_SOURCES = materials.pyxe
-
+dist_materialsmodule_la_SOURCES = materials.pyxe.src
 nodist_materialsmodule_la_SOURCES = \
+	materials.pyxe \
 	materials.c materials_embed.cpp materials_embed.h
 
 materialsmodule_la_LIBADD = \

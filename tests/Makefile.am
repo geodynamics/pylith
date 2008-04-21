@@ -11,10 +11,9 @@
 #
 
 SUBDIRS = \
-	1d
-
-#	2d
-#	3d
+	1d \
+	2d \
+	3d
 
 
 # End of file 

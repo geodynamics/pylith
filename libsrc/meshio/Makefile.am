@@ -44,6 +44,7 @@ noinst_HEADERS = \
 	GMVFileBinary.hh \
 	PsetFile.hh \
 	PsetFileAscii.hh \
+	PsetFileAscii.icc \
 	PsetFileBinary.hh
 
 # export
