@@ -22,6 +22,8 @@ if ENABLE_TESTING
   SUBDIRS += \
 	unittests
 
+  DIST_SUBDIRS = $(SUBDIRS) tests
+
 # Can't run tests without being able to 'rename' PyLith app.
 #	tests
 endif
