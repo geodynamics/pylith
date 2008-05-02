@@ -25,8 +25,9 @@ testtopology_SOURCES = \
 	TestMeshOps.cc \
 	test_topology.cc
 
-noinst_HEADERS =
-	TestFieldsManager.hh
+noinst_HEADERS = \
+	TestFieldsManager.hh \
+	TestMeshOps.hh
 
 # Source files associated with testing data
 testtopology_SOURCES += 

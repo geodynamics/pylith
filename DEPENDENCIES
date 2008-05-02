@@ -1,25 +1,20 @@
-TEMPORARY KLUDGES
-
-#define NEW_SECTION in $PETSC_DIR/include/petscmesh.h
-
-  Matt will change the section type in PETSc Sieve to this new section
-  type after his meeting in Turkey.
-
 REQUIRED DEPENDENCIES
 
 MPI
-PETSc
+PETSc (development version)
 pythia
 spatialdata
   proj
 numpy
+FIAT
 pyrexembed (from CIG)
+Pyrex
 nemesis
 
 OPTIONAL DEPENDENCIES
 
 cppunit
 CUBIT
-PETSc w/TetGen
+  netcdf
+PETSc (development version) w/TetGen and ParMetis
 doxygen
-

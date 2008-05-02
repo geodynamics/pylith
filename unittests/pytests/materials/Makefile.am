@@ -16,20 +16,20 @@ include $(top_srcdir)/subpackage.am
 SUBDIRS = data
 
 TESTS = testmaterials.py
-check_SCRIPTS = testmaterials.py
+dist_check_SCRIPTS = testmaterials.py
 
 TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
-	TestElasticIsotropic3D.py \
-	TestElasticPlaneStrain.py \
-	TestElasticPlaneStress.py \
-	TestElasticStrain1D.py \
-	TestElasticStress1D.py \
-	TestGenMaxwellIsotropic3D.py \
 	TestHomogeneous.py \
 	TestMaterial.py \
-	TestMaxwellIsotropic3D.py
+	TestElasticStrain1D.py \
+	TestElasticStress1D.py \
+	TestElasticPlaneStrain.py \
+	TestElasticPlaneStress.py \
+	TestElasticIsotropic3D.py \
+	TestMaxwellIsotropic3D.py \
+	TestGenMaxwellIsotropic3D.py
 
 
 # End of file 

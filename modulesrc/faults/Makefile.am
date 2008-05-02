@@ -18,9 +18,9 @@ subpkgpyexec_LTLIBRARIES = faultsmodule.la
 faultsmodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-faultsmodule_la_SOURCES = faults.pyxe
-
+dist_faultsmodule_la_SOURCES = faults.pyxe.src
 nodist_faultsmodule_la_SOURCES = \
+	faults.pyxe \
 	faults.c faults_embed.cpp faults_embed.h
 
 faultsmodule_la_LIBADD = \

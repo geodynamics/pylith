@@ -18,9 +18,9 @@ subpkgpyexec_LTLIBRARIES = feassemblemodule.la
 feassemblemodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-feassemblemodule_la_SOURCES = feassemble.pyxe
-
+dist_feassemblemodule_la_SOURCES = feassemble.pyxe.src
 nodist_feassemblemodule_la_SOURCES = \
+	feassemble.pyxe \
 	feassemble.c feassemble_embed.cpp feassemble_embed.h
 
 feassemblemodule_la_LIBADD = \

@@ -16,16 +16,18 @@ include $(top_srcdir)/subpackage.am
 SUBDIRS = data
 
 TESTS = testfeassemble.py
-check_SCRIPTS = testfeassemble.py
+dist_check_SCRIPTS = testfeassemble.py
 
 TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
 	TestFIATLagrange.py \
 	TestFIATSimplex.py \
+	TestCellGeometry.py \
 	TestQuadrature.py \
-	TestIntegrator.py
-
+	TestIntegrator.py \
+	TestElasticityExplicit.py \
+	TestElasticityImplicit.py
 
 # module
 subpkgpyexec_LTLIBRARIES = testfeassemblemodule.la
@@ -33,9 +35,13 @@ subpkgpyexec_LTLIBRARIES = testfeassemblemodule.la
 testfeassemblemodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-testfeassemblemodule_la_SOURCES = testfeassemble.pyxe
+dist_testfeassemblemodule_la_SOURCES = \
+	testfeassemble.pyxe.src \
+	TestQuadrature.hh \
+	TestQuadrature.icc
 
 nodist_testfeassemblemodule_la_SOURCES = \
+	testfeassemble.pyxe \
 	testfeassemble.c testfeassemble_embed.cpp testfeassemble_embed.h
 
 testfeassemblemodule_la_LIBADD = \
