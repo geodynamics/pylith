@@ -18,9 +18,9 @@ subpkgpyexec_LTLIBRARIES = topologymodule.la
 topologymodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-topologymodule_la_SOURCES = topology.pyxe
-
+dist_topologymodule_la_SOURCES = topology.pyxe.src
 nodist_topologymodule_la_SOURCES = \
+	topology.pyxe \
 	topology.c topology_embed.cpp topology_embed.h
 
 topologymodule_la_LIBADD = \

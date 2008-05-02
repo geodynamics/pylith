@@ -95,7 +95,8 @@ noinst_HEADERS = \
 	TestQuadrature1Din2D.hh \
 	TestQuadrature1Din3D.hh \
 	TestQuadrature2D.hh \
-	TestQuadrature2Din3D.hh
+	TestQuadrature2Din3D.hh \
+	TestQuadrature3D.hh
 
 # Source files associated with testing data
 testfeassemble_SOURCES += \

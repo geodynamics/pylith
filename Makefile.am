@@ -22,11 +22,11 @@ if ENABLE_TESTING
   SUBDIRS += \
 	unittests
 
-  DIST_SUBDIRS = $(SUBDIRS) tests
-
 # Can't run tests without being able to 'rename' PyLith app.
 #	tests
 endif
+
+DIST_SUBDIRS = $(SUBDIRS) tests
 
 if ENABLE_DOCUMENTATION
   SUBDIRS += doc
@@ -42,7 +42,5 @@ install-data-hook:
 		$(PYTHON) setup.py install_deps -H None -f $$top_builddir/deps --prefix=$(prefix) && \
 		$(PYTHON) setup.py egg_info -e $(pythondir)
 
-# version
-# $Id$
 
 # End of file 

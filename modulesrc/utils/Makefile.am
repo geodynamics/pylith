@@ -17,8 +17,9 @@ subpkgpyexec_LTLIBRARIES = petscmodule.la utilsmodule.la
 
 petscmodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
-petscmodule_la_SOURCES = petsc.pyxe
+dist_petscmodule_la_SOURCES = petsc.pyxe.src
 nodist_petscmodule_la_SOURCES = \
+	petsc.pyxe \
 	petsc.c petsc_embed.cpp petsc_embed.h
 petscmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
@@ -33,8 +34,9 @@ endif
 
 utilsmodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
-utilsmodule_la_SOURCES = utils.pyxe
+dist_utilsmodule_la_SOURCES = utils.pyxe.src
 nodist_utilsmodule_la_SOURCES = \
+	utils.pyxe \
 	utils.c utils_embed.cpp utils_embed.h
 utilsmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \

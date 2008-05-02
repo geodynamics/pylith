@@ -143,7 +143,7 @@ noinst_HEADERS += \
 	data/MeshData.hh \
 	data/MeshData1D.hh \
 	data/MeshData1Din2D.hh \
-	data/MeshData1Din2D.hh \
+	data/MeshData1Din3D.hh \
 	data/MeshData2D.hh \
 	data/MeshData2Din3D.hh \
 	data/MeshData3D.hh \

@@ -18,9 +18,9 @@ subpkgpyexec_LTLIBRARIES = meshiomodule.la
 meshiomodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-meshiomodule_la_SOURCES = meshio.pyxe
-
+dist_meshiomodule_la_SOURCES = meshio.pyxe.src
 nodist_meshiomodule_la_SOURCES = \
+	meshio.pyxe \
 	meshio.c meshio_embed.cpp meshio_embed.h
 
 meshiomodule_la_LIBADD = \
