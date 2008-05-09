@@ -20,6 +20,8 @@
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
+#include <string.h> // USES strcmp()
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTK );
 

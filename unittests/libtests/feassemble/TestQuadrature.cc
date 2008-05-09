@@ -19,6 +19,8 @@
 
 #include "data/QuadratureData.hh" // USES QuadratureData
 
+#include <string.h> // USES memcpy()
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature );
 
