@@ -28,6 +28,7 @@
 
 #include "pylith/utils/sievetypes.hh" // USES Mesh
 
+#include <string.h> // USES strcmp()
 #include <math.h> // USES assert()
 
 // ----------------------------------------------------------------------

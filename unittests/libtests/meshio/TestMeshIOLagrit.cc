@@ -21,6 +21,8 @@
 
 #include "data/MeshDataLagritTet.hh"
 
+#include <strings.h> // USES strcasecmp()
+
 #if defined(WORDS_BIGENDIAN)
 #define NATIVE_BIG_ENDIAN
 #else

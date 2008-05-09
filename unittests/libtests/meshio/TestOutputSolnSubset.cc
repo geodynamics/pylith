@@ -18,6 +18,8 @@
 
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
+#include <string.h> // USES strcmp()
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestOutputSolnSubset );
 

@@ -26,6 +26,8 @@
 #include "data/MeshData3D.hh"
 #include "data/MeshData3DIndexOne.hh"
 
+#include <strings.h> // USES strcasecmp()
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestMeshIOAscii );
 
