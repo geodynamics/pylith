@@ -17,6 +17,7 @@
 #include "pylith/utils/array.hh" // USES double_array
 #include "pylith/utils/sievetypes.hh" // USES Mesh
 
+#include <string.h> // USES memcpy()
 #include <assert.h> // USES assert()
 
 // ----------------------------------------------------------------------
