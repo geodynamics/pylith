@@ -26,7 +26,7 @@ if ENABLE_TESTING
 #	tests
 endif
 
-DIST_SUBDIRS = $(SUBDIRS) tests
+DIST_SUBDIRS = $(SUBDIRS) tests doc
 
 if ENABLE_DOCUMENTATION
   SUBDIRS += doc
