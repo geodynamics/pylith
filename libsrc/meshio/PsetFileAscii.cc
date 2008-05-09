@@ -18,6 +18,7 @@
 
 #include <fstream> // USES std::ifstream
 #include <iomanip> // USES std::setw()
+#include <string.h> // USES strcmp()
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::exception

@@ -30,6 +30,7 @@
 #include <Selection.hh> // Algorithms for submeshes
 
 #include <math.h> // USES pow(), sqrt()
+#include <strings.h> // USES strcasecmp()
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
