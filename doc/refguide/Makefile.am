@@ -10,10 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	install \
-	presentations \
-	userguide \
-	refguide
+dist_noinst_DATA = \
+	doxyconfig
 
 # End of file 
