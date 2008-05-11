@@ -10,10 +10,12 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	install \
-	presentations \
-	userguide \
-	refguide
+dist_noinst_DATA = \
+	pylith_book-1.1.pdf
+
+default: userguide.pdf
+
+userguide.pdf:
+	lyx -e pdflatex userguide.lyx
 
 # End of file 

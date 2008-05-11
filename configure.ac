@@ -265,7 +265,12 @@ AC_CONFIG_FILES([Makefile
 		tests/3d/Makefile
 		tests/3d/tet4/Makefile
 		tests/3d/hex8/Makefile
-                doc/Makefile])
+                doc/Makefile
+		doc/install/Makefile
+		doc/refguide/Makefile
+		doc/userguide/Makefile
+		doc/presentations/Makefile
+		doc/presentations/overview/Makefile])
 
 AC_OUTPUT
 

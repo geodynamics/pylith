@@ -11,9 +11,6 @@
 #
 
 SUBDIRS = \
-	install \
-	presentations \
-	userguide \
-	refguide
+	overview
 
 # End of file 

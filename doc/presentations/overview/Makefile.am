@@ -10,10 +10,8 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	install \
-	presentations \
-	userguide \
-	refguide
+dist_noinst_DATA = \
+	pylith_overview.pdf
+
 
 # End of file 
