@@ -87,6 +87,9 @@ Version 1.1.2
   * Fixed bug in output of solution over sub-domain boundary surfaces
     in parallel.
 
+  * Fixed Makefile.am files to include documentation files in source
+    distribution.
+
 ----------------------------------------------------------------------
 Version 1.1.1
 ----------------------------------------------------------------------
