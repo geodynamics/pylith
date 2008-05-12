@@ -41,7 +41,7 @@ pylith::utils::EventLogger::initialize(void)
 			   "initializaing EventLogger.");
   
   _events.clear();
-  PetscErrorCode err = PetscLogClassRegister(&_classId, _className.c_str());
+  PetscErrorCode err = PetscCookieRegister(_className.c_str(), &_classId);
   if (err) {
     std::ostringstream msg;
     msg << "Could not register logging class '" << _className << "'.";
@@ -57,7 +57,7 @@ pylith::utils::EventLogger::registerEvent(const char* name)
 { // registerEvent
   assert(0 != _classId);
   int id = 0;
-  PetscErrorCode err = PetscLogEventRegister(&id, name, _classId);
+  PetscErrorCode err = PetscLogEventRegister(name, _classId, &id);
   if (err) {
     std::ostringstream msg;
     msg << "Could not register logging event '" << name

@@ -88,22 +88,22 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   assert(0 != fields);
   assert(!mesh.isNull());
 
-  static PetscEvent setupEvent = 0, cellGeomEvent = 0, stateVarsEvent = 0, restrictEvent = 0, computeEvent = 0, updateEvent = 0, stressEvent;
+  static PetscLogEvent setupEvent = 0, cellGeomEvent = 0, stateVarsEvent = 0, restrictEvent = 0, computeEvent = 0, updateEvent = 0, stressEvent;
 
   if (!setupEvent)
-    PetscLogEventRegister(&setupEvent, "IRSetup", 0);
+    PetscLogEventRegister("IRSetup", 0, &setupEvent);
   if (!cellGeomEvent)
-    PetscLogEventRegister(&cellGeomEvent, "IRCellGeom", 0);
+    PetscLogEventRegister("IRCellGeom", 0, &cellGeomEvent);
   if (!stateVarsEvent)
-    PetscLogEventRegister(&stateVarsEvent, "IRProperties", 0);
+    PetscLogEventRegister("IRProperties", 0, &stateVarsEvent);
   if (!restrictEvent)
-    PetscLogEventRegister(&restrictEvent, "IRRestrict", 0);
+    PetscLogEventRegister("IRRestrict", 0, &restrictEvent);
   if (!computeEvent)
-    PetscLogEventRegister(&computeEvent, "IRCompute", 0);
+    PetscLogEventRegister("IRCompute", 0, &computeEvent);
   if (!updateEvent)
-    PetscLogEventRegister(&updateEvent, "IRUpdate", 0);
+    PetscLogEventRegister("IRUpdate", 0, &updateEvent);
   if (!stressEvent)
-    PetscLogEventRegister(&stressEvent, "IRMaterialStress", 0);
+    PetscLogEventRegister("IRMaterialStress", 0, &stressEvent);
 
   const Obj<sieve_type>& sieve = mesh->getSieve();
 
