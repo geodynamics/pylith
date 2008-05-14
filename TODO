@@ -75,6 +75,8 @@ Release 1.3
 KNOWN DEFICIENCIES
 ======================================================================
 
+* Dirichlet BC and fault BC
+
   Can't use block Jacobi preconditioner when Dirichlet BC overlap with
   fault BC's, because we end up with a DOF associated with a Lagrange
   multiplier that is "free". Not sure if this is okay, when the fault
@@ -87,6 +89,14 @@ KNOWN DEFICIENCIES
   Need better error trapping when using LineParser. State of
   ifstream is insufficient. Need state of istringstream buffer, but it
   is often !good() at eof(). Test of !good() and !eof()?
+
+* FixedDOFDB
+
+  The default BC is FixedDOF which hardwires the values in a UniformDB
+  to 0. No error message is generated if the user sets the values or
+  data properties and they are overwritten by the hardwired values. A
+  possible solution is for FixedDOF to use a C++ UniformDB but not
+  inherit from the Python UniformDB.
 
 ======================================================================
 MISC PRIORITIES (Brad)
