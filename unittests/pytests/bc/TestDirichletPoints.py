@@ -155,6 +155,9 @@ class TestDirichletPoints(unittest.TestCase):
     bc.label = "bc"
     bc.fixedDOF = [1]
 
+    from pyre.units.time import second
+    bc.tRef = -1.0*second
+
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     db = SimpleDB()
     db._configure()
