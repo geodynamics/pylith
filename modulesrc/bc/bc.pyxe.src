@@ -244,6 +244,30 @@ cdef class DirichletPoints(BoundaryCondition):
     return
 
 
+  property referenceTime:
+    def __set__(self, value):
+      """
+      Set reference time for rate of change of values.
+      """
+      # create shim for method 'referenceTime'
+      #embed{ void DirichletPoints_referenceTime_set(void* objVptr, double value)
+      try {
+        assert(0 != objVptr);
+        ((pylith::bc::DirichletPoints*) objVptr)->referenceTime(value);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      DirichletPoints_referenceTime_set(self.thisptr, value)
+
+
   property dbRate:
     def __set__(self, value):
       """
@@ -463,6 +487,30 @@ cdef class DirichletBoundary(BoundaryCondition):
     self.thisptr = DirichletBoundary_constructor()
     self.handle = self._createHandle()
     return
+
+
+  property referenceTime:
+    def __set__(self, value):
+      """
+      Set reference time for rate of change of values.
+      """
+      # create shim for method 'referenceTime'
+      #embed{ void DirichletBoundary_referenceTime_set(void* objVptr, double value)
+      try {
+        assert(0 != objVptr);
+        ((pylith::bc::DirichletBoundary*) objVptr)->referenceTime(value);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      DirichletBoundary_referenceTime_set(self.thisptr, value)
 
 
   property dbRate:

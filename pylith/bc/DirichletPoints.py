@@ -129,6 +129,7 @@ class DirichletPoints(BoundaryCondition, Constraint):
     self._logger.eventBegin(logEvent)
     
     assert(None != self.cppHandle)
+    self.cppHandle.referenceTime = self.tRef.value
     self.dbRate.initialize()
     self.cppHandle.dbRate = self.dbRate.cppHandle
 
