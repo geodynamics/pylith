@@ -53,7 +53,6 @@ pylith::feassemble::ElasticityImplicit::timeStep(const double dt)
   else
     _dtm1 = dt;
   _dt = dt;
-  assert(_dt == _dtm1); // For now, don't allow variable time step
   if (0 != _material)
     _material->timeStep(_dt);
 } // timeStep
