@@ -456,7 +456,9 @@ cdef class MeshGenSimple:
       const double lower[3] = {0.0, 0.0, 0.0};
       const double upper[3] = {1.0, 1.0, 1.0};
       const int    faces[3] = {1, 1, 1};
+#ifdef IMESH_TODO
       *mesh = ALE::MeshBuilder::createCubeBoundary(PETSC_COMM_WORLD, lower, upper, faces, debug);
+#endif
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -484,7 +486,9 @@ cdef class MeshGenSimple:
       assert(0 != meshBdryVptr);
       ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       ALE::Obj<pylith::Mesh>* meshBdry = (ALE::Obj<pylith::Mesh>*) meshBdryVptr;
+#ifdef IMESH_TODO
       *mesh = ALE::Generator::generateMesh(*meshBdry);
+#endif
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));

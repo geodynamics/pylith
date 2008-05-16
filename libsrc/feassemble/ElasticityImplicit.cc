@@ -28,8 +28,6 @@
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-#define FASTER
-
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::ElasticityImplicit::ElasticityImplicit(void) :
@@ -155,14 +153,6 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
-#ifdef FASTER
-  fields->createCustomAtlas("material-id", materialId);
-  const int dispAtlasTag = 
-    fields->getFieldAtlasTag("dispTBctpdt", materialId);
-  const int residualAtlasTag = 
-    fields->getFieldAtlasTag("residual", materialId);
-#endif
-
   // Precompute the geometric and function space information
   _quadrature->precomputeGeometry(mesh, coordinates, cells);
 
@@ -197,12 +187,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
     // Restrict input fields to cell
     PetscLogEventBegin(restrictEvent,0,0,0,0);
-#ifdef FASTER
-    mesh->restrict(dispTBctpdt, dispAtlasTag, c_index, &dispTBctpdtCell[0], 
-		   cellVecSize);
-#else
     mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
-#endif
     PetscLogEventEnd(restrictEvent,0,0,0,0);
 
     // Get cell geometry information that depends on cell
@@ -256,11 +241,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 #endif
     // Assemble cell contribution into field
     PetscLogEventBegin(updateEvent,0,0,0,0);
-#ifdef FASTER
-    mesh->updateAdd(residual, residualAtlasTag, c_index, _cellVector);
-#else
     mesh->updateAdd(residual, *c_iter, _cellVector);
-#endif
     PetscLogEventEnd(updateEvent,0,0,0,0);
   } // for
 } // integrateResidual
@@ -284,6 +265,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   assert(0 != mat);
   assert(0 != fields);
   assert(!mesh.isNull());
+  typedef ALE::ISieveVisitor::IndicesVisitor<Mesh::real_section_type,Mesh::order_type,PetscInt> visitor_type;
 
   // Set variables dependent on dimension of cell
   const int cellDim = _quadrature->cellDim();
@@ -353,10 +335,10 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   double_array totalStrain(numQuadPts*tensorSize);
   totalStrain = 0.0;
 
-#ifdef FASTER
-  fields->createCustomAtlas("material-id", materialId);
-  const int dispAtlasTag = fields->getFieldAtlasTag("dispTBctpdt", materialId);
-#endif
+  const ALE::Obj<Mesh::order_type>& globalOrder = mesh->getFactory()->getGlobalOrder(mesh, "default", dispTBctpdt);
+  assert(!globalOrder.isNull());
+  globalOrder->view("Global Order for Jacobian");
+  visitor_type iV(*dispTBctpdt, *globalOrder, (int) pow(mesh->getSieve()->getMaxConeSize(), mesh->depth())*spaceDim);
 
   // Loop over cells
   int c_index = 0;
@@ -373,12 +355,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     _resetCellMatrix();
 
     // Restrict input fields to cell
-#ifdef FASTER
-    mesh->restrict(dispTBctpdt, dispAtlasTag, c_index, &dispTBctpdtCell[0], 
-		   cellVecSize);
-#else
     mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
-#endif
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -397,12 +374,10 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 
     // Assemble cell contribution into field.  Not sure if this is correct for
     // global stiffness matrix.
-    const ALE::Obj<Mesh::order_type>& globalOrder = 
-      mesh->getFactory()->getGlobalOrder(mesh, "default", dispTBctpdt);
-    PetscErrorCode err = updateOperator(*mat, mesh, dispTBctpdt, globalOrder,
-					*c_iter, _cellMatrix, ADD_VALUES);
+    PetscErrorCode err = updateOperator(*mat, *mesh->getSieve(), iV, *c_iter, _cellMatrix, ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
+    iV.clear();
   } // for
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();

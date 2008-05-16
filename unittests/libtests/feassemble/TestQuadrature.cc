@@ -274,8 +274,12 @@ pylith::feassemble::TestQuadrature::_testComputeGeometry(Quadrature* pQuad,
   CPPUNIT_ASSERT(!sieve.isNull());
 
   const bool interpolate = false;
-  ALE::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
+  ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+
+  ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, cellDim, numCells,
 		     (int*) cells, numVertices, interpolate, numBasis);
+  std::map<Mesh::point_type,Mesh::point_type> renumbering;
+  ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
   mesh->setSieve(sieve);
   mesh->stratify();
   ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);

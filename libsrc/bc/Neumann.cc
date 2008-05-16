@@ -60,7 +60,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
 
   // Extract submesh associated with surface
   _boundaryMesh =
-    ALE::Selection<Mesh>::submesh(mesh, mesh->getIntSection(_label));
+    ALE::Selection<Mesh>::submeshV(mesh, mesh->getIntSection(_label));
   if (_boundaryMesh.isNull()) {
     std::ostringstream msg;
     msg << "Could not construct boundary mesh for Neumann traction "
@@ -93,16 +93,13 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
   // std::cout << "cellsBegin:  " << *cellsBegin << std::endl;
   // std::cout << "cellsEnd:  " << *cellsEnd << std::endl;
-  const ALE::Obj<sieve_type>& sieve = _boundaryMesh->getSieve();
   const int boundaryDepth = _boundaryMesh->depth()-1;  //depth of boundary cells
-  assert(!sieve.isNull());
 
   // Make sure surface cells are compatible with quadrature.
   for (Mesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
-    const int cellNumCorners = (_boundaryMesh->getDimension() > 0) ?
-      sieve->nCone(*c_iter, boundaryDepth)->size() : 1;
+    const int cellNumCorners = _boundaryMesh->getNumCellCorners(*c_iter, boundaryDepth);
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell for Neumann traction "
@@ -123,6 +120,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
   _tractions = new real_section_type(_boundaryMesh->comm(),
 				     _boundaryMesh->debug());
   assert(!_tractions.isNull());
+  _tractions->setChart(real_section_type::chart_type(*std::min_element(cells->begin(), cells->end()), *std::max_element(cells->begin(), cells->end())+1));
   _tractions->setFiberDimension(cells, fiberDim);
   _boundaryMesh->allocate(_tractions);
 

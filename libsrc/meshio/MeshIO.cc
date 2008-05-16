@@ -102,14 +102,19 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
   if (!rank) {
     assert(coordinates.size() == numVertices*spaceDim);
     assert(cells.size() == numCells*numCorners);
-    ALE::SieveBuilder<Mesh>::buildTopology(sieve, meshDim, 
-                                           numCells, 
-                                           const_cast<int*>(&cells[0]), 
-                                           numVertices, 
-                                           _interpolate, numCorners, -1,
-                                           (*_mesh)->getArrowSection("orientation"));
+    ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+
+    ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, meshDim, 
+                                                numCells, 
+                                                const_cast<int*>(&cells[0]), 
+                                                numVertices, 
+                                                _interpolate,
+                                                numCorners);
+    std::map<Mesh::point_type,Mesh::point_type> renumbering;
+    ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
   } else {
-    (*_mesh)->getArrowSection("orientation");
+    (*_mesh)->getSieve()->setChart(sieve_type::chart_type());
+    (*_mesh)->getSieve()->allocate();
   }
   (*_mesh)->stratify();
   ALE::SieveBuilder<Mesh>::buildCoordinates(*_mesh, spaceDim, &coordinates[0]);
@@ -174,7 +179,7 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
 
   *meshDim = (*_mesh)->getDimension();
   *numCells = meshCells->size();
-  *numCorners = sieve->nCone(*meshCells->begin(), (*_mesh)->depth())->size();
+  *numCorners = (*_mesh)->getNumCellCorners();
   
   const ALE::Obj<Mesh::numbering_type>& vNumbering = 
     (*_mesh)->getFactory()->getLocalNumbering(*_mesh, 0);
@@ -182,16 +187,17 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
   const int size = (*numCells) * (*numCorners);
   cells->resize(size);
     
+  ALE::ISieveVisitor::PointRetriever<Mesh::sieve_type> pV(sieve->getMaxConeSize());
   int i = 0;
   for(Mesh::label_sequence::iterator e_iter = meshCells->begin();
       e_iter != meshCells->end();
       ++e_iter) {
-    const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
-      sieve->cone(*e_iter);
-    for(sieve_type::traits::coneSequence::iterator c_iter = cone->begin();
-	c_iter != cone->end();
-	++c_iter)
-      (*cells)[i++] = vNumbering->getIndex(*c_iter);
+    sieve->cone(*e_iter, pV);
+    const Mesh::point_type *cone = pV.getPoints();
+    for(int p = 0; p < pV.getSize(); ++p, ++i) {
+      (*cells)[i] = vNumbering->getIndex(cone[p]);
+    }
+    pV.clear();
   } // for
 } // _getCells
 
@@ -267,12 +273,15 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
   const ALE::Obj<int_section_type>& groupField = (*_mesh)->getIntSection(name);
   assert(!groupField.isNull());
 
-  const int numPoints = points.size();
-  if (CELL == type)
+  const int numPoints   = points.size();
+  const int numVertices = (*_mesh)->depthStratum(0)->size();
+  const int numCells    = (*_mesh)->heightStratum(0)->size();
+  if (CELL == type) {
+    groupField->setChart(int_section_type::chart_type(0,numCells));
     for(int i=0; i < numPoints; ++i)
       groupField->setFiberDimension(points[i], 1);
-  else if (VERTEX == type) {
-    const int numCells = (*_mesh)->heightStratum(0)->size();
+  } else if (VERTEX == type) {
+    groupField->setChart(int_section_type::chart_type(numCells,numCells+numVertices));
     for(int i=0; i < numPoints; ++i)
       groupField->setFiberDimension(numCells+points[i], 1);
   } // if/else
@@ -356,7 +365,10 @@ pylith::meshio::MeshIO::_getGroup(int_array* points,
   const ALE::Obj<int_section_type>& groupField = (*_mesh)->getIntSection(name);
   assert(!groupField.isNull());
   const int_section_type::chart_type& chart = groupField->getChart();
-  const Mesh::point_type firstPoint = *chart.begin();
+  Mesh::point_type firstPoint;
+  for(int_section_type::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
+    if (groupField->getFiberDimension(*c_iter)) {firstPoint = *c_iter; break;}
+  }
   ALE::Obj<Mesh::numbering_type> numbering;
 
   if ((*_mesh)->height(firstPoint) == 0) {
@@ -367,15 +379,15 @@ pylith::meshio::MeshIO::_getGroup(int_array* points,
     *type = VERTEX;
     numbering = (*_mesh)->getFactory()->getNumbering(*_mesh, 0);
   } // if/else
-  const int numPoints = chart.size();
+  const int numPoints = groupField->size();
   points->resize(numPoints);
   int i = 0;
 
-  for(int_section_type::chart_type::iterator c_iter = chart.begin();
+  for(int_section_type::chart_type::const_iterator c_iter = chart.begin();
       c_iter != chart.end();
       ++c_iter) {
     assert(!numbering.isNull());
-    (*points)[i++] = numbering->getIndex(*c_iter);
+    if (groupField->getFiberDimension(*c_iter)) (*points)[i++] = numbering->getIndex(*c_iter);
   } // for
 } // _getGroup
 

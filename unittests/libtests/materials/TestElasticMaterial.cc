@@ -45,8 +45,12 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
     ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
 
     const bool interpolate = false;
-    ALE::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
+    ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+
+    ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, cellDim, numCells,
 	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
+    std::map<Mesh::point_type,Mesh::point_type> renumbering;
+    ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
     mesh->setSieve(sieve);
     mesh->stratify();
     ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
@@ -67,6 +71,7 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
 
   const int fiberDim = numQuadPts * numParamsQuadPt;
   material._properties = new real_section_type(mesh->comm(), mesh->debug());
+  material._properties->setChart(mesh->getSieve()->getChart());
   material._properties->setFiberDimension(cells, fiberDim);
   mesh->allocate(material._properties);
 
@@ -104,8 +109,12 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
     ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
 
     const bool interpolate = false;
-    ALE::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
+    ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+
+    ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, cellDim, numCells,
 	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
+    std::map<Mesh::point_type,Mesh::point_type> renumbering;
+    ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
     mesh->setSieve(sieve);
     mesh->stratify();
     ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
@@ -126,6 +135,7 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
 
   const int fiberDim = numQuadPts * numParamsQuadPt;
   material._properties = new real_section_type(mesh->comm(), mesh->debug());
+  material._properties->setChart(mesh->getSieve()->getChart());
   material._properties->setFiberDimension(cells, fiberDim);
   mesh->allocate(material._properties);
 
@@ -170,8 +180,12 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
     ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
 
     const bool interpolate = false;
-    ALE::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
+    ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+
+    ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, cellDim, numCells,
 	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
+    std::map<Mesh::point_type,Mesh::point_type> renumbering;
+    ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
     mesh->setSieve(sieve);
     mesh->stratify();
     ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
@@ -192,6 +206,7 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
 
   const int fiberDim = numQuadPts * numParamsQuadPt;
   material._properties = new real_section_type(mesh->comm(), mesh->debug());
+  material._properties->setChart(mesh->getSieve()->getChart());
   material._properties->setFiberDimension(cells, fiberDim);
   mesh->allocate(material._properties);
 

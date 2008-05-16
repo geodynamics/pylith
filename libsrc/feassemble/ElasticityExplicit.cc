@@ -28,8 +28,6 @@
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-#define FASTER
-
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::ElasticityExplicit::ElasticityExplicit(void) :
@@ -168,16 +166,6 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   double_array totalStrain(numQuadPts*tensorSize);
   totalStrain = 0.0;
 
-#ifdef FASTER
-  fields->createCustomAtlas("material-id", materialId);
-  const int dispTAtlasTag = 
-    fields->getFieldAtlasTagByHistory(1, materialId);
-  const int dispTmdtAtlasTag = 
-    fields->getFieldAtlasTagByHistory(2, materialId);
-  const int residualAtlasTag = 
-    fields->getFieldAtlasTag("residual", materialId);
-#endif
-
   int c_index = 0;
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
@@ -191,15 +179,8 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     // Reset element vector to zero
     _resetCellVector();
 
-#ifdef FASTER
-    mesh->restrict(dispT, dispTAtlasTag, c_index, &dispTCell[0], 
-		   cellVecSize);
-    mesh->restrict(dispTmdt, dispTmdtAtlasTag, c_index, &dispTmdtCell[0], 
-		   cellVecSize);
-#else
     mesh->restrict(dispT, *c_iter, &dispTCell[0], cellVecSize);
     mesh->restrict(dispTmdt, *c_iter, &dispTmdtCell[0], cellVecSize);
-#endif
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -231,11 +212,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stress);
 
     // Assemble cell contribution into field
-#ifdef FASTER
-    mesh->updateAdd(residual, residualAtlasTag, c_index, _cellVector);
-#else
     mesh->updateAdd(residual, *c_iter, _cellVector);
-#endif
   } // for
 } // integrateResidual
 
@@ -253,6 +230,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   assert(0 != jacobian);
   assert(0 != fields);
   assert(!mesh.isNull());
+  typedef ALE::ISieveVisitor::IndicesVisitor<Mesh::real_section_type,Mesh::order_type,PetscInt> visitor_type;
 
   // Get cell information
   const ALE::Obj<Mesh::label_sequence>& cells = 
@@ -284,6 +262,10 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
 
   // Allocate vector for cell values (if necessary)
   _initCellMatrix();
+
+  const ALE::Obj<Mesh::order_type>& globalOrder = mesh->getFactory()->getGlobalOrder(mesh, "default", dispT);
+  assert(!globalOrder.isNull());
+  visitor_type iV(*dispT, *globalOrder, (int) pow(mesh->getSieve()->getMaxConeSize(), mesh->depth())*spaceDim);
 
   int c_index = 0;
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
@@ -324,14 +306,10 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+spaceDim))));
     
     // Assemble cell contribution into PETSc Matrix
-    const ALE::Obj<Mesh::order_type>& globalOrder = 
-      mesh->getFactory()->getGlobalOrder(mesh, "default", dispT);
-    assert(!globalOrder.isNull());
-
-    PetscErrorCode err = updateOperator(*jacobian, mesh, dispT, globalOrder,
-					*c_iter, _cellMatrix, ADD_VALUES);
+    PetscErrorCode err = updateOperator(*jacobian, *mesh->getSieve(), iV, *c_iter, _cellMatrix, ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
+    iV.clear();
   } // for
 
   _needNewJacobian = false;

@@ -58,7 +58,7 @@ const ALE::Obj<pylith::Mesh>&
 pylith::meshio::OutputSolnSubset::subdomainMesh(const ALE::Obj<Mesh>& mesh)
 { // subdomainMesh
   _mesh =
-    ALE::Selection<Mesh>::submesh(mesh, mesh->getIntSection(_label));
+    ALE::Selection<Mesh>::submeshV(mesh, mesh->getIntSection(_label));
   if (_mesh.isNull()) {
     std::ostringstream msg;
     msg << "Could not construct mesh of subdomain " << _label << "'.";

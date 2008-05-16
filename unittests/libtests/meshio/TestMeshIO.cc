@@ -50,9 +50,13 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
 
   // Cells and vertices
   const bool interpolate = false;
-  ALE::SieveBuilder<Mesh>::buildTopology(sieve, data.cellDim, data.numCells,
-			      const_cast<int*>(data.cells), data.numVertices,
-					 interpolate, data.numCorners);
+  ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+
+  ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, data.cellDim, data.numCells,
+                                              const_cast<int*>(data.cells), data.numVertices,
+                                              interpolate, data.numCorners);
+  std::map<Mesh::point_type,Mesh::point_type> renumbering;
+  ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
   (*mesh)->setSieve(sieve);
   (*mesh)->stratify();
   ALE::SieveBuilder<Mesh>::buildCoordinates(*mesh, data.spaceDim, 
@@ -75,18 +79,19 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
     const ALE::Obj<int_section_type>& groupField = 
       (*mesh)->getIntSection(data.groupNames[iGroup]);
     CPPUNIT_ASSERT(!groupField.isNull());
+    groupField->setChart((*mesh)->getSieve()->getChart());
 
     MeshIO::GroupPtType type;
     const int numPoints = data.groupSizes[iGroup];
     if (0 == strcasecmp("cell", data.groupTypes[iGroup])) {
       type = MeshIO::CELL;
       for(int i=0; i < numPoints; ++i)
-	groupField->setFiberDimension(data.groups[index++], 1);
+        groupField->setFiberDimension(data.groups[index++], 1);
     } else if (0 == strcasecmp("vertex", data.groupTypes[iGroup])) {
       type = MeshIO::VERTEX;
       const int numCells = (*mesh)->heightStratum(0)->size();
       for(int i=0; i < numPoints; ++i)
-	groupField->setFiberDimension(data.groups[index++]+numCells, 1);
+        groupField->setFiberDimension(data.groups[index++]+numCells, 1);
     } else
       throw std::logic_error("Could not parse group type.");
     (*mesh)->allocate(groupField);
@@ -141,21 +146,21 @@ pylith::meshio::TestMeshIO::_checkVals(const ALE::Obj<Mesh>& mesh,
 
   const int numCells = cells->size();
   CPPUNIT_ASSERT_EQUAL(data.numCells, numCells);
-  const int numCorners = sieve->nCone(*cells->begin(), 
-				      mesh->depth())->size();
+  const int numCorners = mesh->getNumCellCorners();
   CPPUNIT_ASSERT_EQUAL(data.numCorners, numCorners);
 
+  ALE::ISieveVisitor::PointRetriever<Mesh::sieve_type> pV(sieve->getMaxConeSize());
   const int offset = numCells;
   i = 0;
   for(Mesh::label_sequence::iterator e_iter = cells->begin();
       e_iter != cells->end();
       ++e_iter) {
-    const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
-      sieve->cone(*e_iter);
-    for(sieve_type::traits::coneSequence::iterator c_iter = cone->begin();
-	c_iter != cone->end();
-	++c_iter)
-      CPPUNIT_ASSERT_EQUAL(data.cells[i++], *c_iter-offset);
+    sieve->cone(*e_iter, pV);
+    const Mesh::point_type *cone = pV.getPoints();
+    for(int p = 0; p < pV.getSize(); ++p, ++i) {
+      CPPUNIT_ASSERT_EQUAL(data.cells[i], cone[p]-offset);
+    }
+    pV.clear();
   } // for
 
   // check materials
@@ -188,17 +193,19 @@ pylith::meshio::TestMeshIO::_checkVals(const ALE::Obj<Mesh>& mesh,
     const ALE::Obj<int_section_type>& groupField = mesh->getIntSection(*name);
     CPPUNIT_ASSERT(!groupField.isNull());
     const int_section_type::chart_type& chart = groupField->getChart();
-    const Mesh::point_type firstPoint = *chart.begin();
+    Mesh::point_type firstPoint;
+    for(int_section_type::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
+      if (groupField->getFiberDimension(*c_iter)) {firstPoint = *c_iter; break;}
+    }
     std::string groupType = 
       (mesh->height(firstPoint) == 0) ? "cell" : "vertex";
-    const int numPoints = chart.size();
+    const int numPoints = groupField->size();
     int_array points(numPoints);
     int i = 0;
     const int offset = ("vertex" == groupType) ? numCells : 0;
-    for(int_section_type::chart_type::iterator c_iter = chart.begin();
-	c_iter != chart.end();
-	++c_iter)
-      points[i++] = *c_iter - offset;
+    for(int_section_type::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
+      if (groupField->getFiberDimension(*c_iter)) points[i++] = *c_iter - offset;
+    }
     
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[iGroup]), *name);
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[iGroup]), groupType);

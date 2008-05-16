@@ -255,6 +255,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
   assert(0 != mat);
   assert(0 != fields);
   assert(!mesh.isNull());
+  typedef ALE::ISieveVisitor::IndicesVisitor<Mesh::real_section_type,Mesh::order_type,PetscInt> visitor_type;
 
   // Add constraint information to Jacobian matrix; these are the
   // direction cosines. Entries are associated with vertices ik, jk,
@@ -285,6 +286,10 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
   double_array cellOrientation(numConstraintVert*orientationSize);
   int_array cellConstraintCell(numConstraintVert);
   double_array cellStiffness(numConstraintVert);
+
+  const ALE::Obj<Mesh::order_type>& globalOrder = mesh->getFactory()->getGlobalOrder(mesh, "default", solution);
+  assert(!globalOrder.isNull());
+  visitor_type iV(*solution, *globalOrder, (int) pow(mesh->getSieve()->getMaxConeSize(), mesh->depth())*spaceDim);
 
   for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
@@ -350,15 +355,13 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
     } // for
 
     // Assemble cell contribution into PETSc Matrix
-    const ALE::Obj<Mesh::order_type>& globalOrder = 
-      mesh->getFactory()->getGlobalOrder(mesh, "default", solution);
     // Note: We are not really adding values because we prevent
     // overlap across cells. We use ADD_VALUES for compatibility with
     // the other integrators.
-    err = updateOperator(*mat, mesh, solution, globalOrder,
-			 *c_iter, &cellMatrix[0], ADD_VALUES);
+    err = updateOperator(*mat, *mesh->getSieve(), iV, *c_iter, &cellMatrix[0], ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
+    iV.clear();
   } // for
   PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*4);
   _needNewJacobian = false;
@@ -397,12 +400,10 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const ALE::Obj<Mesh>& mesh
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsBegin = cells->begin();
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
-  assert(!sieve.isNull());
   for (Mesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
-    const int cellNumCorners = sieve->nCone(*c_iter, mesh->depth())->size();
+    const int cellNumCorners = mesh->getNumCellCorners(*c_iter);
     if (3*numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Number of vertices in reference cell (" << numCorners 
@@ -517,6 +518,7 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
   for (int iDim=0; iDim <= cohesiveDim; ++iDim)
     _orientation->addSpace();
   assert(cohesiveDim+1 == _orientation->getNumSpaces());
+  _orientation->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
   _orientation->setFiberDimension(vertices, orientationSize);
   for (int iDim=0; iDim <= cohesiveDim; ++iDim)
     _orientation->setFiberDimension(vertices, spaceDim, iDim);
@@ -555,24 +557,21 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
   const int faultDepth = _faultMesh->depth();  // depth of fault cells
   typedef ALE::SieveAlg<Mesh> SieveAlg;
 
+  ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, (size_t) pow(sieve->getMaxConeSize(), _faultMesh->depth()));
+
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
     _faultMesh->restrict(coordinates, *c_iter, 
 			 &faceVertices[0], faceVertices.size());
 
-    const ALE::Obj<SieveAlg::coneArray>& cone =
-      SieveAlg::nCone(_faultMesh, *c_iter, faultDepth);
-    assert(!cone.isNull());
-    const SieveAlg::coneArray::iterator vBegin = cone->begin();
-    const SieveAlg::coneArray::iterator vEnd = cone->end();
-
-    int iBasis = 0;
-    for(SieveAlg::coneArray::iterator v_iter=vBegin;
-	v_iter != vEnd;
-	++v_iter, ++iBasis) {
+    ALE::ISieveTraversal<sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
+    const int               coneSize = ncV.getSize();
+    const Mesh::point_type *cone     = ncV.getPoints();
+    
+    for(int v = 0; v < coneSize; ++v) {
       // Compute Jacobian and determinant of Jacobian at vertex
-      double_array vertex(&verticesRef[iBasis*cohesiveDim], cohesiveDim);
+      double_array vertex(&verticesRef[v*cohesiveDim], cohesiveDim);
       cellGeometry.jacobian(&jacobian, &jacobianDet, faceVertices, vertex);
 
       // Compute orientation
@@ -580,8 +579,9 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
 			       upDir);
       
       // Update orientation
-      _orientation->updateAddPoint(*v_iter, &vertexOrientation[0]);
+      _orientation->updateAddPoint(cone[v], &vertexOrientation[0]);
     } // for
+    ncV.clear();
   } // for
 
   // Assemble orientation information
@@ -673,6 +673,7 @@ pylith::faults::FaultCohesiveKin::_calcVertexCellPairs(void)
   _faultVertexCell = new int_section_type(_faultMesh->comm(), 
 					  _faultMesh->debug());
   assert(!_faultVertexCell.isNull());
+  _faultVertexCell->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
   _faultVertexCell->setFiberDimension(vertices, 1);
   _faultMesh->allocate(_faultVertexCell);
   
@@ -692,28 +693,27 @@ pylith::faults::FaultCohesiveKin::_calcVertexCellPairs(void)
   const int faultDepth = _faultMesh->depth();  // depth of fault cells
   typedef ALE::SieveAlg<Mesh> SieveAlg;
   
+  ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, (size_t) pow(sieve->getMaxConeSize(), _faultMesh->depth()));
+
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
-    const ALE::Obj<SieveAlg::coneArray>& cone =
-      SieveAlg::nCone(_faultMesh, *c_iter, faultDepth);
-    assert(!cone.isNull());
-    const SieveAlg::coneArray::iterator vBegin = cone->begin();
-    const SieveAlg::coneArray::iterator vEnd = cone->end();
-    const int coneSize = cone->size();
+    ALE::ISieveTraversal<sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
+    const int               coneSize = ncV.getSize();
+    const Mesh::point_type *cone     = ncV.getPoints();
 
     // If haven't set cell-constraint pair, then set it for current
     // cell, otherwise move on.
-    SieveAlg::coneArray::iterator v_iter = vBegin;
-    for(int i=0; i < coneSize; ++i, ++v_iter) {
+    for(int v = 0; v < coneSize; ++v) {
       const int_section_type::value_type* curCell = 
-	_faultVertexCell->restrictPoint(*v_iter);
+        _faultVertexCell->restrictPoint(cone[v]);
       assert(0 != curCell);
       if (noCell == *curCell) {
-	int point = *c_iter;
-	_faultVertexCell->updatePoint(*v_iter, &point);
+        int point = *c_iter;
+        _faultVertexCell->updatePoint(cone[v], &point);
       } // if
     } // for
+    ncV.clear();
   } // for
 
   //_faultVertexCell->view("VERTEX/CELL PAIRINGS");
@@ -739,6 +739,7 @@ pylith::faults::FaultCohesiveKin::_calcConditioning(
   _pseudoStiffness = new real_section_type(_faultMesh->comm(), 
 					   _faultMesh->debug());
   assert(!_pseudoStiffness.isNull());
+  _pseudoStiffness->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
   _pseudoStiffness->setFiberDimension(vertices, 1);
   _faultMesh->allocate(_pseudoStiffness);
   
@@ -795,6 +796,7 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   _area = new real_section_type(_faultMesh->comm(), 
 				_faultMesh->debug());
   assert(!_area.isNull());
+  _area->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
   _area->setFiberDimension(vertices, 1);
   _faultMesh->allocate(_area);
   
@@ -877,6 +879,7 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   if (tractions->isNull() ||
       fiberDim != (*tractions)->getFiberDimension(*vertices->begin())) {
     *tractions = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
+    (*tractions)->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
     (*tractions)->setFiberDimension(vertices, fiberDim);
     _faultMesh->allocate(*tractions);
   } // if
@@ -923,6 +926,7 @@ pylith::faults::FaultCohesiveKin::_allocateBufferVertexScalar(void)
 						_faultMesh->debug());
     const ALE::Obj<Mesh::label_sequence>& vertices = 
       _faultMesh->depthStratum(0);
+    _bufferVertexScalar->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
     _bufferVertexScalar->setFiberDimension(vertices, fiberDim);
     _faultMesh->allocate(_bufferVertexScalar);
   } // if
@@ -940,6 +944,7 @@ pylith::faults::FaultCohesiveKin::_allocateBufferVertexVector(void)
 						_faultMesh->debug());
     const ALE::Obj<Mesh::label_sequence>& vertices = 
       _faultMesh->depthStratum(0);
+    _bufferVertexVector->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
     _bufferVertexVector->setFiberDimension(vertices, fiberDim);
     _faultMesh->allocate(_bufferVertexVector);
   } // if  

@@ -136,6 +136,7 @@ cdef class Solver:
       ALE::Obj<pylith::Mesh::real_section_type>* field =
         (ALE::Obj<pylith::Mesh::real_section_type>*) fieldVptr;
       VecScatter scatter;
+      (*field)->setName("default");
       PetscErrorCode err = MeshCreateGlobalScatter(*mesh, *field, &scatter);
       if (err) {
         PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
@@ -150,7 +151,7 @@ cdef class Solver:
       } // if
       *scatterVptr = (void *) scatter;
       Vec in;
-      const ALE::Obj<pylith::Mesh::order_type>& order = (*mesh)->getFactory()->getGlobalOrder((*mesh), "default", (*field));
+      const ALE::Obj<pylith::Mesh::order_type>& order = (*mesh)->getFactory()->getGlobalOrder((*mesh), (*field)->getName(), (*field));
 
       err = VecCreate((*mesh)->comm(), &in);
       err = VecSetSizes(in, order->getLocalSize(), order->getGlobalSize());

@@ -87,6 +87,7 @@ pylith::meshio::TestCellFilterAvg::testFilter(void)
 
   ALE::Obj<real_section_type> field = 
     new real_section_type(mesh->comm(), mesh->debug());
+  field->setChart(real_section_type::chart_type(0, cells->size()));
   field->setFiberDimension(cells, fiberDim);
   mesh->allocate(field);
 

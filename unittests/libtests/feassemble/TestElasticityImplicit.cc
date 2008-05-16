@@ -208,8 +208,10 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateJacobian(void)
   CPPUNIT_ASSERT(0 == err);
 
   const double t = 1.0;
+  mesh->getSieve()->setDebug(10);
   integrator.integrateJacobian(&jacobian, t, &fields, mesh);
   CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
+  mesh->getSieve()->setDebug(0);
 
   err = MatAssemblyBegin(jacobian, MAT_FINAL_ASSEMBLY);
   CPPUNIT_ASSERT(0 == err);
@@ -275,11 +277,16 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   ALE::Obj<sieve_type> sieve = new sieve_type((*mesh)->comm());
   CPPUNIT_ASSERT(!sieve.isNull());
   const bool interpolate = false;
-  ALE::SieveBuilder<Mesh>::buildTopology(sieve, _data->cellDim, 
+  ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+
+  ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, _data->cellDim, 
 	       _data->numCells, const_cast<int*>(_data->cells), 
 	       _data->numVertices, interpolate, _data->numBasis);
+  std::map<Mesh::point_type,Mesh::point_type> renumbering;
+  ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering, false);
   (*mesh)->setSieve(sieve);
   (*mesh)->stratify();
+  std::cout << "Mesh chart: " << (*mesh)->getSieve()->getChart() << std::endl;
   ALE::SieveBuilder<Mesh>::buildCoordinates((*mesh), _data->spaceDim,
 					    _data->vertices);
   const ALE::Obj<Mesh::label_type>& labelMaterials = 
@@ -320,9 +327,11 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   
   const ALE::Obj<real_section_type>& residual = fields->getReal("residual");
   CPPUNIT_ASSERT(!residual.isNull());
+  residual->setChart((*mesh)->getSieve()->getChart());
   residual->setFiberDimension((*mesh)->depthStratum(0), _data->spaceDim);
   (*mesh)->allocate(residual);
   residual->zero();
+  residual->view("Residual");
   fields->copyLayout("residual");
 
   const int fieldSize = _data->spaceDim * _data->numVertices;

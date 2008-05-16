@@ -77,7 +77,8 @@ pylith::faults::TestBoundary::_testCreateBoundary(const BoundaryData& data)
   iohandler.read(&mesh);
 
   // Extract submesh for "traction"
-  const ALE::Obj<Mesh> submesh = ALE::Selection<Mesh>::submesh(mesh, mesh->getIntSection("traction"));
+  mesh->setDebug(1);
+  const ALE::Obj<Mesh> submesh = ALE::Selection<Mesh>::submeshV(mesh, mesh->getIntSection("traction"));
 
   CPPUNIT_ASSERT_EQUAL(data.cellDim, submesh->getDimension());
 
@@ -114,20 +115,21 @@ pylith::faults::TestBoundary::_testCreateBoundary(const BoundaryData& data)
   const int numCells = cells->size();
   CPPUNIT_ASSERT_EQUAL(data.numCells, numCells);
 
+  ALE::ISieveVisitor::PointRetriever<Mesh::sieve_type> pV(sieve->getMaxConeSize());
   int iCell = 0;
   i = 0;
   //mesh->view(data.filename);
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
-    const int numCorners = sieve->nCone(*c_iter, mesh->depth())->size();
+    const int numCorners = submesh->getNumCellCorners(*c_iter, 1);
     CPPUNIT_ASSERT_EQUAL(data.numCorners[iCell++], numCorners);
-    const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
-      sieve->cone(*c_iter);
-    for(sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
-	v_iter != cone->end();
-	++v_iter)
-      CPPUNIT_ASSERT_EQUAL(data.cells[i++], *v_iter);
+    sieve->cone(*c_iter, pV);
+    const Mesh::point_type *cone = pV.getPoints();
+    for(int p = 0; p < pV.getSize(); ++p, ++i) {
+      CPPUNIT_ASSERT_EQUAL(data.cells[i], cone[p]);
+    }
+    pV.clear();
   } // for
 #if 0
   // check materials
@@ -156,16 +158,18 @@ pylith::faults::TestBoundary::_testCreateBoundary(const BoundaryData& data)
     const ALE::Obj<int_section_type>& groupField = mesh->getIntSection(*name);
     CPPUNIT_ASSERT(!groupField.isNull());
     const int_section_type::chart_type& chart = groupField->getChart();
-    const Mesh::point_type firstPoint = *chart.begin();
+    Mesh::point_type firstPoint;
+    for(int_section_type::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
+      if (groupField->getFiberDimension(*c_iter)) {firstPoint = *c_iter; break;}
+    }
     std::string groupType = 
       (mesh->height(firstPoint) == 0) ? "cell" : "vertex";
-    const int numPoints = chart.size();
+    const int numPoints = groupField->size();
     int_array points(numPoints);
     int i = 0;
-    for(int_section_type::chart_type::iterator c_iter = chart.begin();
-	c_iter != chart.end();
-	++c_iter)
-      points[i++] = *c_iter;
+    for(int_section_type::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
+      if (groupField->getFiberDimension(*c_iter)) points[i++] = *c_iter;
+    }
 
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[iGroup]), *name);
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[iGroup]), groupType);

@@ -279,25 +279,25 @@ pylith::feassemble::Quadrature::precomputeGeometry(
   if (_precomputed) return;
   const Mesh::label_sequence::iterator end = cells->end();
 
+  _quadPtsPre->setChart(real_section_type::chart_type(0, cells->size()));
   _quadPtsPre->setFiberDimension(cells, _numQuadPts*_spaceDim);
   _quadPtsPre->allocatePoint();
-  _qTag = mesh->calculateCustomAtlas(_quadPtsPre, cells);
   _jacobianPre->getAtlas()->setAtlas(_quadPtsPre->getAtlas()->getAtlas());
+  _jacobianPre->getAtlas()->allocatePoint();
   _jacobianPre->setFiberDimension(cells, _numQuadPts*_cellDim*_spaceDim);
   _jacobianPre->allocatePoint();
-  _jTag = mesh->calculateCustomAtlas(_jacobianPre, cells);
   _jacobianDetPre->getAtlas()->setAtlas(_quadPtsPre->getAtlas()->getAtlas());
+  _jacobianDetPre->getAtlas()->allocatePoint();
   _jacobianDetPre->setFiberDimension(cells, _numQuadPts);
   _jacobianDetPre->allocatePoint();
-  _jDTag = mesh->calculateCustomAtlas(_jacobianDetPre, cells);
   _jacobianInvPre->setAtlas(_jacobianPre->getAtlas());
   _jacobianInvPre->setFiberDimension(cells, _numQuadPts*_cellDim*_spaceDim);
   _jacobianInvPre->allocatePoint();
-  _jITag = _jacobianInvPre->copyCustomAtlas(_jacobianPre, _jTag);
+  //_jITag = _jacobianInvPre->copyCustomAtlas(_jacobianPre, _jTag);
   _basisDerivPre->getAtlas()->setAtlas(_quadPtsPre->getAtlas()->getAtlas());
+  _basisDerivPre->getAtlas()->allocatePoint();
   _basisDerivPre->setFiberDimension(cells, _numQuadPts*_numBasis*_spaceDim);
   _basisDerivPre->allocatePoint();
-  _bTag = mesh->calculateCustomAtlas(_basisDerivPre, cells);
 
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != end;
@@ -331,27 +331,27 @@ pylith::feassemble::Quadrature::retrieveGeometry(
 			      const int c)
 { // retrieveGeometry
   const real_section_type::value_type* values =
-    mesh->restrict(_quadPtsPre, _qTag, c);
+    mesh->restrict(_quadPtsPre, cell);
   int size = _numQuadPts * _spaceDim;
   assert(size == _quadPtsPre->getFiberDimension(cell));
   memcpy(&_quadPts[0], &values[0], size*sizeof(double));
 
-  values = mesh->restrict(_jacobianPre, _jTag, c);
+  values = mesh->restrict(_jacobianPre, cell);
   size = _numQuadPts * _cellDim * _spaceDim;
   assert(size == _jacobianPre->getFiberDimension(cell));
   memcpy(&_jacobian[0], &values[0], size*sizeof(double));
 
-  values = mesh->restrict(_jacobianDetPre, _jDTag, c);
+  values = mesh->restrict(_jacobianDetPre, cell);
   size = _numQuadPts;
   assert(size == _jacobianDetPre->getFiberDimension(cell));
   memcpy(&_jacobianDet[0], &values[0], size*sizeof(double));
 
-  values = mesh->restrict(_jacobianInvPre, _jITag, c);
+  values = mesh->restrict(_jacobianInvPre, cell);
   size = _numQuadPts * _cellDim * _spaceDim;
   assert(size == _jacobianInvPre->getFiberDimension(cell));
   memcpy(&_jacobianInv[0], &values[0], size*sizeof(double));
 
-  values = mesh->restrict(_basisDerivPre, _bTag, c);
+  values = mesh->restrict(_basisDerivPre, cell);
   size = _numQuadPts * _numBasis * _spaceDim;
   assert(size == _basisDerivPre->getFiberDimension(cell));
   memcpy(&_basisDeriv[0], &values[0], size*sizeof(double));

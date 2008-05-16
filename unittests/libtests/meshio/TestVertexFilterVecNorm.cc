@@ -66,6 +66,7 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
 
   ALE::Obj<real_section_type> field = 
     new real_section_type(mesh->comm(), mesh->debug());
+  field->setChart(mesh->getSieve()->getChart());
   field->setFiberDimension(vertices, fiberDim);
   mesh->allocate(field);
 

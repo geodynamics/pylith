@@ -59,7 +59,7 @@ pylith::bc::DirichletBoundary::initialize(
 
   // Extract submesh associated with boundary
   _boundaryMesh = 
-    ALE::Selection<Mesh>::submesh(mesh, mesh->getIntSection(_label));
+    ALE::Selection<Mesh>::submeshV(mesh, mesh->getIntSection(_label));
   if (_boundaryMesh.isNull()) {
     std::ostringstream msg;
     msg << "Could not construct boundary mesh for Dirichlet boundary "
@@ -100,6 +100,7 @@ pylith::bc::DirichletBoundary::initialize(
 				  _boundaryMesh->debug());
   _values->addSpace(); // initial values
   _values->addSpace(); // rate of change of values
+  _values->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
   _values->setFiberDimension(vertices, 2*numFixedDOF);
   _values->setFiberDimension(vertices, numFixedDOF, 0); // initial values
   _values->setFiberDimension(vertices, numFixedDOF, 1); // rate of change
@@ -161,6 +162,7 @@ pylith::bc::DirichletBoundary::setConstraintSizes(
 
   _offsetLocal = new int_section_type(_boundaryMesh->comm(), 
 				      _boundaryMesh->debug());
+  _offsetLocal->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
   _offsetLocal->setFiberDimension(vertices, 1);
   _boundaryMesh->allocate(_offsetLocal);
 

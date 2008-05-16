@@ -35,6 +35,127 @@ public :
   typedef std::vector<sieve_type::point_type>    PointArray;
   typedef std::pair<sieve_type::point_type, int> oPoint_type;
   typedef std::vector<oPoint_type>               oPointArray;
+protected:
+  template<typename Sieve, typename Renumbering>
+  class ReplaceVisitor {
+  public:
+    typedef typename Sieve::point_type point_type;
+  protected:
+    Renumbering& renumbering;
+    const int    size;
+    int          i;
+    const int    debug;
+    point_type  *points;
+    bool         mapped;
+  public:
+    ReplaceVisitor(Renumbering& r, const int size, const int debug = 0) : renumbering(r), size(size), i(0), debug(debug) {
+      this->points = new point_type[this->size];
+      this->mapped = false;
+    };
+    ~ReplaceVisitor() {delete [] this->points;};
+    void visitPoint(const point_type& point) {
+      if (i >= this->size) {throw ALE::Exception("Too many points for ReplaceVisitor");}
+      if (this->renumbering.find(point) != this->renumbering.end()) {
+        if (debug) std::cout << "    point " << this->renumbering[point] << std::endl;
+        points[i] = this->renumbering[point];
+        this->mapped = true;
+      } else {
+        if (debug) std::cout << "    point " << point << std::endl;
+        points[i] = point;
+      }
+      ++i;
+    };
+    void visitArrow(const typename Sieve::arrow_type&) {};
+  public:
+    const point_type *getPoints() {return this->points;};
+    bool mappedPoint() {return this->mapped;};
+    void clear() {this->i = 0; this->mapped = false;};
+  };
+  template<typename Sieve>
+  class ClassifyVisitor {
+  public:
+    typedef typename Sieve::point_type point_type;
+  protected:
+    const Sieve&     sieve;
+    const PointSet&  replaceCells;
+    const PointSet&  noReplaceCells;
+    const point_type firstCohesiveCell;
+    const int        faceSize;
+    const int        debug;
+    PointSet         vReplaceCells;
+    PointSet         vNoReplaceCells;
+    bool             modified;
+    bool             setupMode;
+    int              size;
+    ALE::ISieveVisitor::PointRetriever<Sieve> pR;
+  public:
+    ClassifyVisitor(const Sieve& s, const PointSet& rC, const PointSet& nrC, const point_type& fC, const int fS, const int debug = 0) : sieve(s), replaceCells(rC), noReplaceCells(nrC), firstCohesiveCell(fC), faceSize(fS), debug(debug), modified(false), setupMode(true), size(0) {
+      pR.setSize(s.getMaxConeSize());
+    };
+    ~ClassifyVisitor() {};
+    void visitPoint(const point_type& point) {
+      if (this->setupMode) {
+        if (replaceCells.find(point)   != replaceCells.end())   vReplaceCells.insert(point);
+        if (noReplaceCells.find(point) != noReplaceCells.end()) vNoReplaceCells.insert(point);
+        if (point >= firstCohesiveCell) return;
+        this->modified = true;
+        this->size++;
+        return;
+      }
+      bool classified = false;
+
+      if (debug) {std::cout << "Checking neighbor " << point << std::endl;}
+      if (vReplaceCells.find(point)   != vReplaceCells.end()) {
+        if (debug) {std::cout << "  already in replaceCells" << std::endl;}
+        return;
+      }
+      if (vNoReplaceCells.find(point) != vNoReplaceCells.end()) {
+        if (debug) {std::cout << "  already in noReplaceCells" << std::endl;}
+        return;
+      }
+      if (point >= firstCohesiveCell) {
+        if (debug) {std::cout << "  already a cohesive cell" << std::endl;}
+        return;
+      }
+      // If neighbor shares a face with anyone in replaceCells, then add
+      for(PointSet::const_iterator c_iter = vReplaceCells.begin(); c_iter != vReplaceCells.end(); ++c_iter) {
+        sieve.meet(*c_iter, point, pR);
+
+        if (pR.getSize() == faceSize) {
+          if (debug) {std::cout << "    Scheduling " << point << " for replacement" << std::endl;}
+          vReplaceCells.insert(point);
+          modified   = true;
+          classified = true;
+          pR.clear();
+          break;
+        }
+        pR.clear();
+      }
+      if (classified) return;
+      // It is unclear whether taking out the noReplace cells will speed this up
+      for(PointSet::const_iterator c_iter = vNoReplaceCells.begin(); c_iter != vNoReplaceCells.end(); ++c_iter) {
+        sieve.meet(*c_iter, point, pR);
+
+        if (pR.getSize() == faceSize) {
+          if (debug) {std::cout << "    Scheduling " << point << " for no replacement" << std::endl;}
+          vNoReplaceCells.insert(point);
+          modified   = true;
+          classified = true;
+          pR.clear();
+          break;
+        }
+        pR.clear();
+      }
+    };
+    void visitArrow(const typename Sieve::arrow_type&) {};
+  public:
+    const PointSet& getReplaceCells() const {return this->vReplaceCells;};
+    const PointSet& getNoReplaceCells() const {return this->vNoReplaceCells;};
+    const bool      getModified() const {return this->modified;};
+    const int       getSize() const {return this->size;};
+    void            setMode(const bool isSetup) {this->setupMode = isSetup;};
+    void            reset() {this->modified = false;};
+  };
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -129,19 +250,9 @@ private :
                               PointArray *neighborVertices);
 
   static
-  void _replaceCell(const Obj<sieve_type>& sieve,
-                    const Mesh::point_type cell,
-                    std::map<int,int> *vertexRenumber,
-                    const int debug = 0);
-
-  template<class InputPoints>
-  static
-  void _computeCensoredDepth(const ALE::Obj<Mesh>& mesh,
-                             const ALE::Obj<Mesh::label_type>& depth,
+  void _computeCensoredDepth(const ALE::Obj<Mesh::label_type>& depth,
                              const ALE::Obj<Mesh::sieve_type>& sieve,
-                             const ALE::Obj<InputPoints>& points,
-                             const Mesh::point_type& firstCohesiveCell,
-                             const ALE::Obj<std::set<Mesh::point_type> >& modifiedPoints);
+                             const Mesh::point_type& firstCohesiveCell);
 
   static void classifyCells(const ALE::Obj<Mesh::sieve_type>& sieve,
                             const Mesh::point_type& vertex,

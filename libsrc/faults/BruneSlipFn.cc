@@ -81,6 +81,7 @@ pylith::faults::BruneSlipFn::initialize(
   _parameters->addSpace(); // peak slip rate
   _parameters->addSpace(); // slip time
   assert(3 == _parameters->getNumSpaces());
+  _parameters->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
   _parameters->setFiberDimension(vertices, fiberDim);
   _parameters->setFiberDimension(vertices, spaceDim, 0); // final slip
   _parameters->setFiberDimension(vertices, 1, 1); // peak slip rate
@@ -178,6 +179,7 @@ pylith::faults::BruneSlipFn::initialize(
 
   // Allocate slip field
   _slip = new real_section_type(faultMesh->comm(), faultMesh->debug());
+  _slip->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
   _slip->setFiberDimension(vertices, spaceDim);
   faultMesh->allocate(_slip);
   assert(!_slip.isNull());

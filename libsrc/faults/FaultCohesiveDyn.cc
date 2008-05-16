@@ -103,12 +103,10 @@ pylith::faults::FaultCohesiveDyn::verifyConfiguration(
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsBegin = cells->begin();
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
-  assert(!sieve.isNull());
   for (Mesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
-    const int cellNumCorners = sieve->nCone(*c_iter, mesh->depth())->size();
+    const int cellNumCorners = mesh->getNumCellCorners(*c_iter);
     if (3*numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Number of vertices in reference cell (" << numCorners 
