@@ -62,6 +62,7 @@ pylith::meshio::VertexFilterVecNorm::filter(
   if (_fieldVecNorm.isNull() ||
       1 != _fieldVecNorm->getFiberDimension(*vertices->begin())) {
     _fieldVecNorm = new real_section_type(mesh->comm(), mesh->debug());
+    _fieldVecNorm->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
     _fieldVecNorm->setFiberDimension(vertices, 1);
     mesh->allocate(_fieldVecNorm);
   } // if

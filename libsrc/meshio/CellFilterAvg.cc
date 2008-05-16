@@ -76,6 +76,7 @@ pylith::meshio::CellFilterAvg::filter(
   if (_fieldAvg.isNull() ||
       fiberDim != _fieldAvg->getFiberDimension(*cells->begin())) {
     _fieldAvg = new real_section_type(mesh->comm(), mesh->debug());
+    _fieldAvg->setChart(real_section_type::chart_type(0,cells->size()));
     _fieldAvg->setFiberDimension(cells, fiberDim);
     mesh->allocate(_fieldAvg);
   } // if

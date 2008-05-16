@@ -246,6 +246,7 @@ pylith::meshio::TestDataWriterVTK::_createVertexFields(
     fields->resize(nfields);
     for (int i=0; i < nfields; ++i) {
       (*fields)[i] = new real_section_type(_mesh->comm(), _mesh->debug());
+      (*fields)[i]->setChart(_mesh->getSieve()->getChart());
       const int fiberDim = _data->vertexFieldsInfo[i].fiber_dim;
       (*fields)[i]->setFiberDimension(vertices, fiberDim);
       _mesh->allocate((*fields)[i]);
@@ -287,6 +288,7 @@ pylith::meshio::TestDataWriterVTK::_createCellFields(
     fields->resize(nfields);
     for (int i=0; i < nfields; ++i) {
       (*fields)[i] = new real_section_type(_mesh->comm(), _mesh->debug());
+      (*fields)[i]->setChart(_mesh->getSieve()->getChart());
       const int fiberDim = _data->cellFieldsInfo[i].fiber_dim;
       (*fields)[i]->setFiberDimension(cells, fiberDim);
       _mesh->allocate((*fields)[i]);

@@ -76,7 +76,6 @@ pylith::bc::TestNeumann::testInitialize(void)
   CPPUNIT_ASSERT(!boundaryMesh.isNull());
 
   const int cellDim = boundaryMesh->getDimension();
-  const ALE::Obj<sieve_type>& sieve = boundaryMesh->getSieve();
   const ALE::Obj<Mesh::label_sequence>& cells = boundaryMesh->heightStratum(1);
   const int numBoundaryVertices = boundaryMesh->depthStratum(0)->size();
   const int numBoundaryCells = cells->size();
@@ -104,8 +103,7 @@ pylith::bc::TestNeumann::testInitialize(void)
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
-    const int numCorners = (boundaryMesh->getDimension() > 0) ?
-      sieve->nCone(*c_iter, boundaryDepth)->size() : 1;
+    const int numCorners = boundaryMesh->getNumCellCorners(*c_iter, boundaryDepth);
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
 
     boundaryMesh->restrict(coordinates, *c_iter, &cellVertices[0],
@@ -249,6 +247,7 @@ pylith::bc::TestNeumann::_initialize(ALE::Obj<Mesh>* mesh,
 
     const ALE::Obj<real_section_type>& residual = fields->getReal("residual");
     CPPUNIT_ASSERT(!residual.isNull());
+    residual->setChart((*mesh)->getSieve()->getChart());
     residual->setFiberDimension((*mesh)->depthStratum(0), _data->spaceDim);
     (*mesh)->allocate(residual);
     residual->zero();

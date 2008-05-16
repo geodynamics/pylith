@@ -99,9 +99,11 @@ pylith::topology::FieldsManager::setFiberDimension(const char* name,
   assert(!_real[name].isNull());
   if (0 == strcasecmp(points, "vertices")) {
     const ALE::Obj<Mesh::label_sequence>& vertices = _mesh->depthStratum(0);
+    _real[name]->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(),vertices->end()),*std::max_element(vertices->begin(),vertices->end())+1));
     _real[name]->setFiberDimension(vertices, fiberDim);
   } else if (0 == strcasecmp(points, "cells")) {
     const ALE::Obj<Mesh::label_sequence>& cells = _mesh->heightStratum(0);
+    _real[name]->setChart(real_section_type::chart_type(*std::min_element(cells->begin(),cells->end()),*std::max_element(cells->begin(),cells->end())+1));
     _real[name]->setFiberDimension(cells, fiberDim);
   } else {
     std::ostringstream msg;
@@ -290,14 +292,12 @@ pylith::topology::FieldsManager::createCustomAtlas(const char* label,
   if (t_iter == _tags.end()) { // Need to create tags for field 'name'
     map_tag_type fieldTags;
     alreadySet = false;
-    fieldTags[id] = _mesh->calculateCustomAtlas(field0, cells);
     field0Tag = fieldTags[id];
     _tags[field0Name] = fieldTags;
   } else { // Use tags already created
     map_tag_type& fieldTags = t_iter->second;
     if (fieldTags.find(id) == fieldTags.end()) { // Need to set tags for id
       alreadySet = false;
-      fieldTags[id] = _mesh->calculateCustomAtlas(field0, cells);
       field0Tag = fieldTags[id];
     } // if
   } // if/else
@@ -310,12 +310,9 @@ pylith::topology::FieldsManager::createCustomAtlas(const char* label,
       t_iter = _tags.find(fieldName);
       if (t_iter == _tags.end()) { // Need to create tags for field 'name'
 	map_tag_type fieldTags;
-	fieldTags[id] = f_iter->second->copyCustomAtlas(field0, field0Tag);
 	_tags[fieldName] = fieldTags;
       } else { // Use tags already created
 	map_tag_type& fieldTags = t_iter->second;
-	if (fieldTags.find(id) == fieldTags.end()) // Need to set tags for id
-	  fieldTags[id] = f_iter->second->copyCustomAtlas(field0, field0Tag);
       } // if/else
     } // for
 } // createCustomAtlas

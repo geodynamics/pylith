@@ -54,6 +54,7 @@ pylith::bc::TestDirichletBoundaryMulti::testSetConstraintSizes(void)
 
   const ALE::Obj<real_section_type>& field = mesh->getRealSection("field");
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+  field->setChart(mesh->getSieve()->getChart());
   field->setFiberDimension(vertices, _data->numDOF);
   bcA.setConstraintSizes(field, mesh);
   bcB.setConstraintSizes(field, mesh);
@@ -86,6 +87,7 @@ pylith::bc::TestDirichletBoundaryMulti::testSetConstraints(void)
 
   const ALE::Obj<real_section_type>& field = mesh->getRealSection("field");
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+  field->setChart(mesh->getSieve()->getChart());
   field->setFiberDimension(vertices, _data->numDOF);
   bcA.setConstraintSizes(field, mesh);
   bcB.setConstraintSizes(field, mesh);
@@ -125,6 +127,7 @@ pylith::bc::TestDirichletBoundaryMulti::testSetField(void)
 
   const ALE::Obj<real_section_type>& field = mesh->getRealSection("field");
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+  field->setChart(mesh->getSieve()->getChart());
   field->setFiberDimension(vertices, _data->numDOF);
   bcA.setConstraintSizes(field, mesh);
   bcB.setConstraintSizes(field, mesh);

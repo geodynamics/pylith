@@ -86,23 +86,16 @@ pylith::meshio::TestOutputSolnSubset::testSubdomainMesh(void)
 
   CPPUNIT_ASSERT_EQUAL(ncells, int(cells->size()));
 
-  int icell = 0;
-  int index = 0;
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
-       c_iter != cellsEnd;
-       ++c_iter, ++icell) {
-    const int depth = 1;
-    const ALE::Obj<SieveAlg::coneArray>& cone = 
-      SieveAlg::nCone(submesh, *c_iter, depth);
-    assert(!cone.isNull());
-    const SieveAlg::coneArray::iterator vEnd = cone->end();
-
-    CPPUNIT_ASSERT_EQUAL(ncorners, int(cone->size()));
-    
-    for(SieveAlg::coneArray::iterator v_iter=cone->begin();
-	v_iter != vEnd;
-	++v_iter, ++index)
-      CPPUNIT_ASSERT_EQUAL(cellsE[index], *v_iter);
+  ALE::ISieveVisitor::PointRetriever<Mesh::sieve_type> pV(sieve->getMaxConeSize());
+  int i = 0;
+  for (Mesh::label_sequence::iterator c_iter=cells->begin(); c_iter != cellsEnd; ++c_iter) {
+    sieve->cone(*c_iter, pV);
+    const Mesh::point_type *cone = pV.getPoints();
+    CPPUNIT_ASSERT_EQUAL(ncorners, (int) pV.getSize());
+    for(int p = 0; p < pV.getSize(); ++p, ++i) {
+      CPPUNIT_ASSERT_EQUAL(cellsE[i], cone[p]);
+    }
+    pV.clear();
   } // for
 } // testSubdomainMesh
 

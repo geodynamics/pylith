@@ -55,7 +55,7 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
 
   const char* label = _data->bcLabel;
   const ALE::Obj<Mesh>& subMesh = 
-    ALE::Selection<Mesh>::submesh(mesh, mesh->getIntSection(label));
+    ALE::Selection<Mesh>::submeshV(mesh, mesh->getIntSection(label));
   CPPUNIT_ASSERT(!subMesh.isNull());
 
   //subMesh->view("SUBMESH WITHOUT FAULT");
@@ -75,28 +75,25 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
   const ALE::Obj<sieve_type>& sieve = subMesh->getSieve();
   assert(!sieve.isNull());
-  typedef ALE::SieveAlg<Mesh> SieveAlg;
 
-  CPPUNIT_ASSERT_EQUAL(_data->numCells, int(cells->size()));
+  CPPUNIT_ASSERT_EQUAL(_data->numCells, (int) cells->size());
+
+  ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, (int) pow(sieve->getMaxConeSize(), subMesh->depth()));
 
   int icell = 0;
   int index = 0;
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter, ++icell) {
-    const int depth = 1;
-    const ALE::Obj<SieveAlg::coneArray>& cone = 
-      SieveAlg::nCone(subMesh, *c_iter, depth);
-    assert(!cone.isNull());
-    const SieveAlg::coneArray::iterator vEnd = cone->end();
+    ALE::ISieveTraversal<sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
+    const int               coneSize = ncV.getSize();
+    const Mesh::point_type *cone     = ncV.getPoints();
 
-    CPPUNIT_ASSERT_EQUAL(_data->numCorners, int(cone->size()));
+    CPPUNIT_ASSERT_EQUAL(_data->numCorners, coneSize);
 
-    int ivertex = 0;
-    for(SieveAlg::coneArray::iterator v_iter=cone->begin();
-	v_iter != vEnd;
-	++v_iter, ++ivertex, ++index)
-      CPPUNIT_ASSERT_EQUAL(_data->cellsNoFault[index], *v_iter);
+    for(int v = 0; v < coneSize; ++v, ++index)
+      CPPUNIT_ASSERT_EQUAL(_data->cellsNoFault[index], cone[v]);
+    ncV.clear();
   } // for
 } // testSubmesh
 
@@ -121,10 +118,8 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
 
   const char* label = _data->bcLabel;
   const ALE::Obj<Mesh>& subMesh = 
-    ALE::Selection<Mesh>::submesh(mesh, mesh->getIntSection(label));
+    ALE::Selection<Mesh>::submeshV(mesh, mesh->getIntSection(label));
   CPPUNIT_ASSERT(!subMesh.isNull());
-
-  //subMesh->view("SUBMESH WITH FAULT");
 
   const ALE::Obj<Mesh::label_sequence>& vertices = subMesh->depthStratum(0);
   const Mesh::label_sequence::iterator verticesEnd = vertices->end();
@@ -146,23 +141,22 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
 
   CPPUNIT_ASSERT_EQUAL(_data->numCells, int(cells->size()));
 
+  ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, (int) pow(sieve->getMaxConeSize(), subMesh->depth()));
+
   int icell = 0;
   int index = 0;
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter, ++icell) {
-    const ALE::Obj<SieveAlg::coneArray>& cone = 
-      SieveAlg::nCone(subMesh, *c_iter, depth);
-    assert(!cone.isNull());
-    const SieveAlg::coneArray::iterator vEnd = cone->end();
+    ALE::ISieveTraversal<sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
+    const int               coneSize = ncV.getSize();
+    const Mesh::point_type *cone     = ncV.getPoints();
 
-    CPPUNIT_ASSERT_EQUAL(_data->numCorners, int(cone->size()));
+    CPPUNIT_ASSERT_EQUAL(_data->numCorners, coneSize);
 
-    int ivertex = 0;
-    for(SieveAlg::coneArray::iterator v_iter=cone->begin();
-	v_iter != vEnd;
-	++v_iter, ++ivertex, ++index)
-      CPPUNIT_ASSERT_EQUAL(_data->cellsFault[index], *v_iter);
+    for(int v = 0; v < coneSize; ++v, ++index)
+      CPPUNIT_ASSERT_EQUAL(_data->cellsFault[index], cone[v]);
+    ncV.clear();
   } // for
 } // testSubmeshFault
 

@@ -213,6 +213,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   const ALE::Obj<real_section_type>& residual = fields.getReal("residual");
   CPPUNIT_ASSERT(!residual.isNull());
   const int spaceDim = _data->spaceDim;
+  residual->setChart(mesh->getSieve()->getChart());
   residual->setFiberDimension(mesh->depthStratum(0), spaceDim);
   mesh->allocate(residual);
   residual->zero();
@@ -323,6 +324,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   const ALE::Obj<real_section_type>& residual = fields.getReal("residual");
   CPPUNIT_ASSERT(!residual.isNull());
   const int spaceDim = _data->spaceDim;
+  residual->setChart(mesh->getSieve()->getChart());
   residual->setFiberDimension(mesh->depthStratum(0), spaceDim);
   mesh->allocate(residual);
   residual->zero();
@@ -422,6 +424,7 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
   const ALE::Obj<real_section_type>& solution = fields.getReal("solution");
   { // setup solution
     CPPUNIT_ASSERT(!solution.isNull());
+    solution->setChart(mesh->getSieve()->getChart());
     solution->setFiberDimension(mesh->depthStratum(0), spaceDim);
     mesh->allocate(solution);
     solution->zero();
@@ -444,6 +447,7 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
   const ALE::Obj<Mesh::label_sequence>& vertices = 
     fault._faultMesh->depthStratum(0);
   const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  tractions->setChart(mesh->getSieve()->getChart());
   tractions->setFiberDimension(vertices, spaceDim);
   fault._faultMesh->allocate(tractions);
   

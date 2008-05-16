@@ -132,7 +132,7 @@ pylith::feassemble::IntegratorElasticity::updateState(
   totalStrain = 0.0;
 
   const ALE::Obj<real_section_type>& disp = fields->getSolution();
-  const int dispAtlasTag = fields->getSolutionAtlasTag(materialId);
+  /// const int dispAtlasTag = fields->getSolutionAtlasTag(materialId);
   
   // Loop over cells
   int c_index = 0;
@@ -143,7 +143,7 @@ pylith::feassemble::IntegratorElasticity::updateState(
     _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c_index);
 
     // Restrict input fields to cell
-    mesh->restrict(disp, dispAtlasTag, c_index, &dispCell[0], cellVecSize);
+    mesh->restrict(disp, *c_iter, &dispCell[0], cellVecSize);
 
     // Get cell geometry information that depends on cell
     const double_array& basisDeriv = _quadrature->basisDeriv();
@@ -193,12 +193,10 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(
     mesh->getLabelStratum("material-id", _material->id());
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
-  assert(!sieve.isNull());
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
-    const int cellNumCorners = sieve->nCone(*c_iter, mesh->depth())->size();
+    const int cellNumCorners = mesh->getNumCellCorners(*c_iter);
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell in material '"
@@ -329,12 +327,13 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   if (field->isNull() || 
       totalFiberDim != (*field)->getFiberDimension(*cells->begin())) {
     *field = new real_section_type(mesh->comm(), mesh->debug());
+    (*field)->setChart(real_section_type::chart_type(0, cells->size()));
     (*field)->setFiberDimension(cells, totalFiberDim);
     mesh->allocate(*field);
   } // if
   
   const ALE::Obj<real_section_type>& disp = fields->getSolution();
-  const int dispAtlasTag = fields->getSolutionAtlasTag(materialId);
+  /// const int dispAtlasTag = fields->getSolutionAtlasTag(materialId);
   
   // Loop over cells
   int c_index = 0;
@@ -345,7 +344,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
     _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c_index);
     
     // Restrict input fields to cell
-    mesh->restrict(disp, dispAtlasTag, c_index, &dispCell[0], cellVecSize);
+    mesh->restrict(disp, *c_iter, &dispCell[0], cellVecSize);
     
     // Get cell geometry information that depends on cell
     const double_array& basisDeriv = _quadrature->basisDeriv();
@@ -401,6 +400,7 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
   if (field->isNull()) {
     const int fiberDim = numQuadPts * tensorSize;
     *field = new real_section_type(mesh->comm(), mesh->debug());
+    (*field)->setChart(real_section_type::chart_type(0, cells->size()));
     (*field)->setFiberDimension(cells, fiberDim);
     mesh->allocate(*field);
   } // if

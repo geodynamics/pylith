@@ -284,9 +284,13 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
   ALE::Obj<sieve_type> sieve = new sieve_type((*mesh)->comm());
   CPPUNIT_ASSERT(!sieve.isNull());
   const bool interpolate = false;
-  ALE::SieveBuilder<Mesh>::buildTopology(sieve, _data->cellDim, 
+  ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+
+  ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, _data->cellDim, 
 	       _data->numCells, const_cast<int*>(_data->cells), 
 	       _data->numVertices, interpolate, _data->numBasis);
+  std::map<Mesh::point_type,Mesh::point_type> renumbering;
+  ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
   (*mesh)->setSieve(sieve);
   (*mesh)->stratify();
   ALE::SieveBuilder<Mesh>::buildCoordinates((*mesh), _data->spaceDim,
@@ -334,6 +338,7 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
   
   const ALE::Obj<real_section_type>& residual = fields->getReal("residual");
   CPPUNIT_ASSERT(!residual.isNull());
+  residual->setChart((*mesh)->getSieve()->getChart());
   residual->setFiberDimension((*mesh)->depthStratum(0), _data->spaceDim);
   (*mesh)->allocate(residual);
   residual->zero();

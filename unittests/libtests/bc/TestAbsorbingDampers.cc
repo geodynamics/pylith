@@ -87,21 +87,21 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
 
   //boundaryMesh->view("BOUNDARY MESH");
 
-  const int boundaryDepth = boundaryMesh->depth()-1; // depth of bndry cells  
-  int iCell = 0;
+  const int boundaryDepth = boundaryMesh->depth()-1; // depth of bndry cells
+  ALE::ISieveVisitor::PointRetriever<Mesh::sieve_type> pV(sieve->getMaxConeSize());
+  int dp = 0;
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
-    const int numCorners = (boundaryMesh->getDimension() > 0) ?
-      sieve->nCone(*c_iter, boundaryDepth)->size() : 1;
+    const int numCorners = boundaryMesh->getNumCellCorners(*c_iter, boundaryDepth);
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
 
-    const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
-      sieve->cone(*c_iter);
-    for(sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
-	v_iter != cone->end();
-	++v_iter)
-      CPPUNIT_ASSERT_EQUAL(_data->cells[iCell++], *v_iter);
+    sieve->cone(*c_iter, pV);
+    const Mesh::point_type *cone = pV.getPoints();
+    for(int p = 0; p < pV.getSize(); ++p, ++dp) {
+      CPPUNIT_ASSERT_EQUAL(_data->cells[dp], cone[p]);
+    }
+    pV.clear();
   } // for
 
   // Check damping constants
@@ -175,6 +175,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   CPPUNIT_ASSERT(!dispTpdt.isNull());
 
   PetscMat jacobian;
+  mesh->getFactory()->getGlobalOrder(mesh, "default", dispTpdt)->view("Global Order");
   PetscErrorCode err = MeshCreateMatrix(mesh, dispTpdt, MATMPIBAIJ, &jacobian);
   CPPUNIT_ASSERT(0 == err);
 
@@ -212,11 +213,11 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
     cols[iCol] = iCol;
   MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
 
-#if 0
+#if 1
   std::cout << "JACOBIAN\n";
   for (int iRow=0, i=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol, ++i)
-      std::cout << "  iRow: " << iRow << ", iCol: " << iCol << ", value: " << vals[i] << std::endl;
+      std::cout << "  iRow: " << iRow << ", iCol: " << iCol << ", value: " << vals[i] << ", valueE: " << valsE[i] << std::endl;
 #endif
 
   const double tolerance = 1.0e-06;
@@ -291,6 +292,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(
   
     const ALE::Obj<real_section_type>& residual = fields->getReal("residual");
     CPPUNIT_ASSERT(!residual.isNull());
+    residual->setChart((*mesh)->getSieve()->getChart());
     residual->setFiberDimension((*mesh)->depthStratum(0), _data->spaceDim);
     (*mesh)->allocate(residual);
     residual->zero();

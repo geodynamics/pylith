@@ -63,13 +63,13 @@ pylith::bc::DirichletPoints::initialize(
   } // if
   assert(!groupField.isNull());
   const int_section_type::chart_type& chart = groupField->getChart();
-  const int numPoints = chart.size();
+  const int numPoints = groupField->size();
   _points.resize(numPoints);
   int i = 0;
-  for(int_section_type::chart_type::iterator c_iter = chart.begin();
+  for(int_section_type::chart_type::const_iterator c_iter = chart.begin();
       c_iter != chart.end();
       ++c_iter) {
-    _points[i++] = *c_iter;
+    if (groupField->getFiberDimension(*c_iter)) _points[i++] = *c_iter;
   }
 
   // Get values for degrees of freedom

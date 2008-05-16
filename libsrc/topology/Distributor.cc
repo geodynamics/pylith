@@ -42,11 +42,86 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
 					  const ALE::Obj<Mesh>& origMesh,
 					  const char* partitioner)
 { // distribute
-  if (strlen(partitioner) == 0)
-    *newMesh = ALE::Distribution<Mesh>::distributeMesh(origMesh);
-  else
-    *newMesh = 
-      ALE::Distribution<Mesh>::distributeMesh(origMesh, 0, partitioner);
+  typedef Mesh::point_type                  point_type;
+  typedef ALE::DistributionNew<Mesh>        distribution_type;
+  typedef distribution_type::partition_type partition_type;
+
+  // IMESH_TODO
+  //   Must distribute auxilliary sections
+  const Obj<Mesh::sieve_type>        newSieve        = new Mesh::sieve_type(origMesh->comm(), origMesh->debug());
+  const Obj<Mesh::send_overlap_type> sendMeshOverlap = new Mesh::send_overlap_type(origMesh->comm(), origMesh->debug());
+  const Obj<Mesh::recv_overlap_type> recvMeshOverlap = new Mesh::recv_overlap_type(origMesh->comm(), origMesh->debug());
+  std::map<point_type,point_type>    renumbering;
+
+  *newMesh = new Mesh(origMesh->comm(), origMesh->getDimension(), origMesh->debug());
+  (*newMesh)->setSieve(newSieve);
+  // Distribute the mesh
+  if (strlen(partitioner) != 0) {
+    std::cout << "ERROR: Using default partitioner instead of " << partitioner << std::endl;
+  }
+  Obj<partition_type> partition = distribution_type::distributeMeshV(origMesh, (*newMesh), renumbering, sendMeshOverlap, recvMeshOverlap);
+  origMesh->view("Serial Mesh");
+  (*newMesh)->view("Parallel Mesh");
+  // Distribute the coordinates
+  const Obj<real_section_type>& coordinates         = origMesh->getRealSection("coordinates");
+  const Obj<real_section_type>& parallelCoordinates = (*newMesh)->getRealSection("coordinates");
+
+  (*newMesh)->setupCoordinates(parallelCoordinates);
+  distribution_type::distributeSection(coordinates, partition, renumbering, sendMeshOverlap, recvMeshOverlap, parallelCoordinates);
+  coordinates->view("Serial Coordinates");
+  parallelCoordinates->view("Parallel Coordinates");
+  // Distribute other sections
+  if (origMesh->getRealSections()->size() > 1) {
+    throw ALE::Exception("Need to distribute more real sections");
+  }
+  if (origMesh->getIntSections()->size() > 0) {
+    Obj<std::set<std::string> > names = origMesh->getIntSections();
+
+    for(std::set<std::string>::const_iterator n_iter = names->begin(); n_iter != names->end(); ++n_iter) {
+      const Obj<Mesh::int_section_type>& origSection = origMesh->getIntSection(*n_iter);
+      const Obj<Mesh::int_section_type>& newSection  = (*newMesh)->getIntSection(*n_iter);
+
+      // We assume all integer sections are complete sections
+      newSection->setChart((*newMesh)->getSieve()->getChart());
+      distribution_type::distributeSection(origSection, partition, renumbering, sendMeshOverlap, recvMeshOverlap, newSection);
+      std::cout << "Distributed integer section " << *n_iter << std::endl;
+      std::string serialName("Serial ");
+      std::string parallelName("Parallel ");
+      serialName   += *n_iter;
+      parallelName += *n_iter;
+      origSection->view(serialName.c_str());
+      newSection->view(parallelName.c_str());
+    }
+  }
+  if (origMesh->getArrowSections()->size() > 1) {
+    throw ALE::Exception("Need to distribute more arrow sections");
+  }
+  // Distribute labels
+  const Mesh::labels_type& labels = origMesh->getLabels();
+
+  for(Mesh::labels_type::const_iterator l_iter = labels.begin(); l_iter != labels.end(); ++l_iter) {
+    if ((*newMesh)->hasLabel(l_iter->first)) continue;
+    const Obj<Mesh::label_type>& origLabel = l_iter->second;
+    const Obj<Mesh::label_type>& newLabel  = (*newMesh)->createLabel(l_iter->first);
+    // Get remote labels
+    ALE::New::Completion<Mesh,Mesh::point_type>::scatterCones(origLabel, newLabel, sendMeshOverlap, recvMeshOverlap, renumbering);
+    // Create local label
+    newLabel->add(origLabel, (*newMesh)->getSieve(), renumbering);
+    std::string serialName("Serial ");
+    std::string parallelName("Parallel ");
+    serialName   += l_iter->first;
+    parallelName += l_iter->first;
+    origLabel->view(serialName.c_str());
+    newLabel->view(parallelName.c_str());
+  }
+  // Create the parallel overlap
+  Obj<Mesh::send_overlap_type> sendParallelMeshOverlap = (*newMesh)->getSendOverlap();
+  Obj<Mesh::recv_overlap_type> recvParallelMeshOverlap = (*newMesh)->getRecvOverlap();
+  //   Can I figure this out in a nicer way?
+  ALE::SetFromMap<std::map<point_type,point_type> > globalPoints(renumbering);
+
+  ALE::OverlapBuilder<>::constructOverlap(globalPoints, renumbering, sendParallelMeshOverlap, recvParallelMeshOverlap);
+  (*newMesh)->setCalculatedOverlap(true);
 } // distribute
 
 // ----------------------------------------------------------------------

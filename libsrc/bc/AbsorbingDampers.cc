@@ -58,8 +58,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<Mesh>& mesh,
 			     "a vector with 3 components.");
 
   // Extract submesh associated with boundary
-  _boundaryMesh = 
-    ALE::Selection<Mesh>::submesh(mesh, mesh->getIntSection(_label));
+  _boundaryMesh = ALE::Selection<Mesh>::submeshV(mesh, mesh->getIntSection(_label));
   if (_boundaryMesh.isNull()) {
     std::ostringstream msg;
     msg << "Could not construct boundary mesh for absorbing boundary "
@@ -87,14 +86,12 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<Mesh>& mesh,
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsBegin = cells->begin();
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  const ALE::Obj<sieve_type>& sieve = _boundaryMesh->getSieve();
   const int boundaryDepth = _boundaryMesh->depth()-1; // depth of bndry cells
-  assert(!sieve.isNull());
   for (Mesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
-    const int cellNumCorners = (_boundaryMesh->getDimension() > 0) ?
-      sieve->nCone(*c_iter, boundaryDepth)->size() : 1;
+    const int cellNumCorners = _boundaryMesh->getNumCellCorners(*c_iter, boundaryDepth);
+
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell for absorbing boundary "
@@ -116,6 +113,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<Mesh>& mesh,
   _dampingConsts = new real_section_type(_boundaryMesh->comm(), 
 					 _boundaryMesh->debug());
   assert(!_dampingConsts.isNull());
+  _dampingConsts->setChart(real_section_type::chart_type(*std::min_element(cells->begin(), cells->end()), *std::max_element(cells->begin(), cells->end())+1));
   _dampingConsts->setFiberDimension(cells, fiberDim);
   _boundaryMesh->allocate(_dampingConsts);
 
@@ -315,7 +313,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   assert(0 != jacobian);
   assert(0 != fields);
   assert(!mesh.isNull());
-
+  typedef ALE::ISieveVisitor::IndicesVisitor<Mesh::real_section_type,Mesh::order_type,PetscInt> visitor_type;
   PetscErrorCode err = 0;
 
   // Get cell information
@@ -349,6 +347,10 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 
   // Allocate vector for cell values (if necessary)
   _initCellMatrix();
+
+  const ALE::Obj<Mesh::order_type>& globalOrder = mesh->getFactory()->getGlobalOrder(mesh, "default", dispT);
+  assert(!globalOrder.isNull());
+  visitor_type iV(*dispT, *globalOrder, (int) pow(_boundaryMesh->getSieve()->getMaxConeSize(), _boundaryMesh->depth()));
 
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
@@ -388,13 +390,10 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
     
     // Assemble cell contribution into PETSc Matrix
-    const ALE::Obj<Mesh::order_type>& globalOrder = 
-      mesh->getFactory()->getGlobalOrder(mesh, "default", dispT);
-    assert(!globalOrder.isNull());
-    err = updateOperator(*jacobian, _boundaryMesh, dispT, globalOrder,
-			 *c_iter, _cellMatrix, ADD_VALUES);
+    err = updateOperator(*jacobian, *_boundaryMesh->getSieve(), iV, *c_iter, _cellMatrix, ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
+    iV.clear();
   } // for
 
   _needNewJacobian = false;

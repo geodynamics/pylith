@@ -188,6 +188,7 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
 
   ALE::Obj<real_section_type> field = 
     new real_section_type(mesh->comm(), mesh->debug());
+  field->setChart(mesh->getSieve()->getChart());
   field->setFiberDimension(vertices, fiberDim);
   mesh->allocate(field);
 
@@ -264,6 +265,7 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
 
   ALE::Obj<real_section_type> field = 
     new real_section_type(mesh->comm(), mesh->debug());
+  field->setChart(mesh->getSieve()->getChart());
   field->setFiberDimension(cells, fiberDim);
   mesh->allocate(field);
 
