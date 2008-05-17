@@ -16,6 +16,11 @@ Before June workshop
       d. Generate analytic solutions.
       e. Tabulate results.
 
+  Manual
+
+    1. Add order of stress/strain components to state variables output.
+
+
 ----------------------------------------------------------------------
 Release 1.2
 
