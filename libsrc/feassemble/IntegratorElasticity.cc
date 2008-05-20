@@ -327,7 +327,8 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   if (field->isNull() || 
       totalFiberDim != (*field)->getFiberDimension(*cells->begin())) {
     *field = new real_section_type(mesh->comm(), mesh->debug());
-    (*field)->setChart(real_section_type::chart_type(0, cells->size()));
+    (*field)->setChart(real_section_type::chart_type(*std::min_element(cells->begin(), cells->end()),
+                                                     *std::max_element(cells->begin(), cells->end())+1));
     (*field)->setFiberDimension(cells, totalFiberDim);
     mesh->allocate(*field);
   } // if
@@ -400,7 +401,8 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
   if (field->isNull()) {
     const int fiberDim = numQuadPts * tensorSize;
     *field = new real_section_type(mesh->comm(), mesh->debug());
-    (*field)->setChart(real_section_type::chart_type(0, cells->size()));
+    (*field)->setChart(real_section_type::chart_type(*std::min_element(cells->begin(), cells->end()),
+                                                     *std::max_element(cells->begin(), cells->end())+1));
     (*field)->setFiberDimension(cells, fiberDim);
     mesh->allocate(*field);
   } // if

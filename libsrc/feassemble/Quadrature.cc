@@ -279,7 +279,8 @@ pylith::feassemble::Quadrature::precomputeGeometry(
   if (_precomputed) return;
   const Mesh::label_sequence::iterator end = cells->end();
 
-  _quadPtsPre->setChart(real_section_type::chart_type(0, cells->size()));
+  _quadPtsPre->setChart(real_section_type::chart_type(*std::min_element(cells->begin(), cells->end()),
+                                                      *std::max_element(cells->begin(), cells->end())+1));
   _quadPtsPre->setFiberDimension(cells, _numQuadPts*_spaceDim);
   _quadPtsPre->allocatePoint();
   _jacobianPre->getAtlas()->setAtlas(_quadPtsPre->getAtlas()->getAtlas());
