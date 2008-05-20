@@ -81,7 +81,8 @@ pylith::materials::Material::initialize(const ALE::Obj<Mesh>& mesh,
   // Create sections to hold physical properties and state variables.
   _properties = new real_section_type(mesh->comm(), mesh->debug());
   assert(!_properties.isNull());
-  _properties->setChart(real_section_type::chart_type(0, cells->size()));
+  _properties->setChart(real_section_type::chart_type(*std::min_element(cells->begin(), cells->end()),
+                                                      *std::max_element(cells->begin(), cells->end())+1));
 
   const int numQuadPts = quadrature->numQuadPts();
   const int spaceDim = quadrature->spaceDim();
@@ -206,7 +207,8 @@ pylith::materials::Material::propertyField(ALE::Obj<real_section_type>* field,
   if (field->isNull() || 
       totalFiberDim != (*field)->getFiberDimension(*cells->begin())) {
     *field = new real_section_type(mesh->comm(), mesh->debug());
-    (*field)->setChart(real_section_type::chart_type(0, cells->size()));
+    (*field)->setChart(real_section_type::chart_type(*std::min_element(cells->begin(), cells->end()),
+                                                     *std::max_element(cells->begin(), cells->end())+1));
     (*field)->setFiberDimension(cells, totalFiberDim);
     mesh->allocate(*field);
   } // if
