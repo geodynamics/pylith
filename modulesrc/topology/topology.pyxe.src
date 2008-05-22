@@ -167,6 +167,7 @@ cdef class Mesh:
       const ALE::Obj<pylith::real_section_type>& section =
         (*mesh)->getRealSection(label);
       assert(!section.isNull());
+      section->setChart((*mesh)->getSieve()->getChart());
       section->setFiberDimension((*mesh)->depthStratum(0), fiberDim);
       result = (void*) &section;
     } catch (const std::exception& err) {
