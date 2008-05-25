@@ -270,6 +270,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
 
     from pylith.faults.EqKinSrc import EqKinSrc
     eqsrc = EqKinSrc()
+    eqsrc.originTime = 1.23*second
     eqsrc.slipfn = slipfn
 
     ioMatDB = SimpleIOAscii()

@@ -224,7 +224,7 @@ pylith::bc::TestDirichletBoundary::testSetField(void)
        ++v_iter) {
     const int fiberDim = field->getFiberDimension(*v_iter);
     const real_section_type::value_type* values = 
-      mesh->restrict(field, *v_iter);
+      mesh->restrictClosure(field, *v_iter);
     for (int i=0; i < fiberDim; ++i)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, values[i], tolerance);
   } // for
@@ -255,7 +255,7 @@ pylith::bc::TestDirichletBoundary::testSetField(void)
        ++v_iter) {
     const int fiberDim = field->getFiberDimension(*v_iter);
     const real_section_type::value_type* values = 
-      mesh->restrict(field, *v_iter);
+      mesh->restrictClosure(field, *v_iter);
 
     if (*v_iter != _data->constrainedPoints[iConstraint] + offset) {
       // unconstrained point

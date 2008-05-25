@@ -174,7 +174,7 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateResidual(void)
   const double* valsE = _data->valsResidual;
   const int sizeE = _data->spaceDim * _data->numVertices;
 
-  const double* vals = residual->restrict();
+  const double* vals = residual->restrictSpace();
   const int size = residual->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 

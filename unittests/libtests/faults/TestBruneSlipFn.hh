@@ -97,10 +97,12 @@ private :
    *
    * @param faultMesh Fault mesh.
    * @param slipfn Brune slip function.
+   * @param originTime Origin time for earthquake rupture.
    */
   static
   void _initialize(ALE::Obj<Mesh>* faultMesh,
-		   BruneSlipFn* slipfn);
+		   BruneSlipFn* slipfn,
+		   const double originTime);
 
   /** Test intialize().
    *

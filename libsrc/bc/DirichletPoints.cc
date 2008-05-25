@@ -250,7 +250,7 @@ pylith::bc::DirichletPoints::setField(const double t,
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const Mesh::point_type point = _points[iPoint];
     assert(fiberDimension == field->getFiberDimension(point));
-    mesh->restrict(field, point, &allValues[0], fiberDimension);
+    mesh->restrictClosure(field, point, &allValues[0], fiberDimension);
     for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
       allValues[_fixedDOF[iDOF]] = _valuesInitial[iPoint*numFixedDOF+iDOF];
     if (t > _tRef)

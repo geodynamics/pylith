@@ -143,7 +143,7 @@ pylith::feassemble::IntegratorElasticity::updateState(
     _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c_index);
 
     // Restrict input fields to cell
-    mesh->restrict(disp, *c_iter, &dispCell[0], cellVecSize);
+    mesh->restrictClosure(disp, *c_iter, &dispCell[0], cellVecSize);
 
     // Get cell geometry information that depends on cell
     const double_array& basisDeriv = _quadrature->basisDeriv();
@@ -345,7 +345,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
     _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c_index);
     
     // Restrict input fields to cell
-    mesh->restrict(disp, *c_iter, &dispCell[0], cellVecSize);
+    mesh->restrictClosure(disp, *c_iter, &dispCell[0], cellVecSize);
     
     // Get cell geometry information that depends on cell
     const double_array& basisDeriv = _quadrature->basisDeriv();

@@ -279,7 +279,7 @@ pylith::bc::DirichletBoundary::setField(const double t,
        v_iter != verticesEnd;
        ++v_iter) {
     assert(fiberDimension == field->getFiberDimension(*v_iter));
-    mesh->restrict(field, *v_iter, &fieldValues[0], fiberDimension);
+    mesh->restrictClosure(field, *v_iter, &fieldValues[0], fiberDimension);
 
     const real_section_type::value_type* values = 
       _values->restrictPoint(*v_iter);

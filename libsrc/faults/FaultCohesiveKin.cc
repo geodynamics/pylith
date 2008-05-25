@@ -163,22 +163,23 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 
     cellResidual = 0.0;
     // Get Lagrange constraint / fault cell pairings.
-    _faultMesh->restrict(_faultVertexCell, c_fault, &cellConstraintCell[0], 
-			 cellConstraintCell.size());
+    _faultMesh->restrictClosure(_faultVertexCell, c_fault,
+				&cellConstraintCell[0], 
+				cellConstraintCell.size());
     
     // Get orientations at fault cell's vertices.
-    _faultMesh->restrict(_orientation, c_fault, &cellOrientation[0], 
-		   cellOrientation.size());
+    _faultMesh->restrictClosure(_orientation, c_fault, &cellOrientation[0], 
+				cellOrientation.size());
     
     // Get pseudo stiffness at fault cell's vertices.
-    _faultMesh->restrict(_pseudoStiffness, c_fault, &cellStiffness[0], 
-			 cellStiffness.size());
+    _faultMesh->restrictClosure(_pseudoStiffness, c_fault, &cellStiffness[0], 
+				cellStiffness.size());
     
     // Get slip at fault cell's vertices.
-    _faultMesh->restrict(_slip, c_fault, &cellSlip[0], cellSlip.size());
+    _faultMesh->restrictClosure(_slip, c_fault, &cellSlip[0], cellSlip.size());
 
     // Get solution at cohesive cell's vertices.
-    mesh->restrict(solution, *c_iter, &cellSoln[0], cellSoln.size());
+    mesh->restrictClosure(solution, *c_iter, &cellSoln[0], cellSoln.size());
     
     for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
       // Skip setting values if they are set by another cell
@@ -298,16 +299,17 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 
     cellMatrix = 0.0;
     // Get Lagrange constraint / fault cell pairings.
-    _faultMesh->restrict(_faultVertexCell, c_fault, &cellConstraintCell[0], 
-			 cellConstraintCell.size());
+    _faultMesh->restrictClosure(_faultVertexCell, c_fault,
+				&cellConstraintCell[0], 
+				cellConstraintCell.size());
 
     // Get orientations at fault cell's vertices.
-    _faultMesh->restrict(_orientation, c_fault, &cellOrientation[0], 
-			 cellOrientation.size());
+    _faultMesh->restrictClosure(_orientation, c_fault, &cellOrientation[0], 
+				cellOrientation.size());
 
     // Get pseudo stiffness at fault cell's vertices.
-    _faultMesh->restrict(_pseudoStiffness, c_fault, &cellStiffness[0], 
-			 cellStiffness.size());
+    _faultMesh->restrictClosure(_pseudoStiffness, c_fault, &cellStiffness[0], 
+				cellStiffness.size());
     
     for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
       // Skip setting values if they are set by another cell
@@ -562,8 +564,8 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
-    _faultMesh->restrict(coordinates, *c_iter, 
-			 &faceVertices[0], faceVertices.size());
+    _faultMesh->restrictClosure(coordinates, *c_iter, 
+				&faceVertices[0], faceVertices.size());
 
     ALE::ISieveTraversal<sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
     const int               coneSize = ncV.getSize();

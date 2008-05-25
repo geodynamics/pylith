@@ -182,8 +182,8 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<Mesh>& mesh,
       dampingConstsLocal[spaceDim-1] = constNormal;
 
       // Compute normal/tangential orientation
-      _boundaryMesh->restrict(coordinates, *c_iter, 
-		     &cellVertices[0], cellVertices.size());
+      _boundaryMesh->restrictClosure(coordinates, *c_iter, 
+				     &cellVertices[0], cellVertices.size());
       memcpy(&quadPtRef[0], &quadPtsRef[iQuad*cellDim], cellDim*sizeof(double));
       cellGeometry.jacobian(&jacobian, &jacobianDet, cellVertices, quadPtRef);
       cellGeometry.orientation(&orientation, jacobian, jacobianDet, 
@@ -265,8 +265,10 @@ pylith::bc::AbsorbingDampers::integrateResidual(
     _resetCellVector();
 
     // Restrict input fields to cell
-    _boundaryMesh->restrict(dispTpdt, *c_iter, &dispTpdtCell[0], cellVecSize);
-    _boundaryMesh->restrict(dispTmdt, *c_iter, &dispTmdtCell[0], cellVecSize);
+    _boundaryMesh->restrictClosure(dispTpdt, *c_iter, 
+				   &dispTpdtCell[0], cellVecSize);
+    _boundaryMesh->restrictClosure(dispTmdt, *c_iter, 
+				   &dispTmdtCell[0], cellVecSize);
     assert(numQuadPts*spaceDim == _dampingConsts->getFiberDimension(*c_iter));
     const real_section_type::value_type* dampingConstsCell = 
       _dampingConsts->restrictPoint(*c_iter);
