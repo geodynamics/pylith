@@ -82,11 +82,13 @@ private :
    * @param faultMesh Fault mesh.
    * @param eqsrc Earthquake source.
    * @param slipfn Slip time function.
+   * @param originTime Origin time for earthquake rupture.
    */
   static
   void _initialize(ALE::Obj<Mesh>* faultMesh,
 		   EqKinSrc* eqsrc,
-		   BruneSlipFn* slipfn);
+		   BruneSlipFn* slipfn,
+		   const double originTime);
 
 }; // class TestEqKinSrc
 

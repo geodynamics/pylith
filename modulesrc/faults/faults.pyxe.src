@@ -788,6 +788,30 @@ cdef class EqKinSrc:
     return PyCObject_FromVoidPtr(self.thisptr, EqKinSrc_destructor)
 
 
+  property originTime:
+    def __set__(self, value):
+      """
+      Set origin time for earthquake rupture.
+      """
+      # create shim for method 'originTime'
+      #embed{ void EqKinSrc_originTime_set(void* objVptr, double value)
+      try {
+        assert(0 != objVptr);
+        ((pylith::faults::EqKinSrc*) objVptr)->originTime(value);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      EqKinSrc_originTime_set(self.thisptr, value)
+
+
   property slipfn:
     def __set__(self, value):
       """

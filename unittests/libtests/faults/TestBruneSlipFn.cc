@@ -215,15 +215,16 @@ pylith::faults::TestBruneSlipFn::testSlip(void)
 				0.0, 0.0};
   const double slipTimeE[] = { 1.2, 1.3 };
   const double peakRateE[] = { 1.4, 1.5 };
+  const double originTime = 5.064;
 
   ALE::Obj<Mesh> faultMesh;
   BruneSlipFn slipfn;
-  _initialize(&faultMesh, &slipfn);
+  _initialize(&faultMesh, &slipfn, originTime);
   
   const int spaceDim = faultMesh->getDimension() + 1;
 
   const double t = 2.134;
-  const ALE::Obj<real_section_type>& slip = slipfn.slip(t, faultMesh);
+  const ALE::Obj<real_section_type>& slip = slipfn.slip(originTime+t, faultMesh);
   CPPUNIT_ASSERT(!slip.isNull());
 
   const double tolerance = 1.0e-06;
@@ -266,16 +267,18 @@ pylith::faults::TestBruneSlipFn::testSlipIncr(void)
 				0.0, 0.0};
   const double slipTimeE[] = { 1.2, 1.3 };
   const double peakRateE[] = { 1.4, 1.5 };
+  const double originTime = 1.064;
 
   ALE::Obj<Mesh> faultMesh;
   BruneSlipFn slipfn;
-  _initialize(&faultMesh, &slipfn);
+  _initialize(&faultMesh, &slipfn, originTime);
 
   const int spaceDim = faultMesh->getDimension() + 1;
 
   const double t0 = 1.234;
   const double t1 = 3.635;
-  const ALE::Obj<real_section_type>& slip = slipfn.slipIncr(t0, t1, faultMesh);
+  const ALE::Obj<real_section_type>& slip = 
+    slipfn.slipIncr(originTime+t0, originTime+t1, faultMesh);
   CPPUNIT_ASSERT(!slip.isNull());
 
   const double tolerance = 1.0e-06;
@@ -342,7 +345,8 @@ pylith::faults::TestBruneSlipFn::testSlipTH(void)
 // Initialize BruneSlipFn.
 void
 pylith::faults::TestBruneSlipFn::_initialize(ALE::Obj<Mesh>* faultMesh,
-					     BruneSlipFn* slipfn)
+					     BruneSlipFn* slipfn,
+					     const double originTime)
 { // _initialize
   assert(0 != slipfn);
 
@@ -396,7 +400,7 @@ pylith::faults::TestBruneSlipFn::_initialize(ALE::Obj<Mesh>* faultMesh,
   slipfn->dbSlipTime(&dbSlipTime);
   slipfn->dbPeakRate(&dbPeakRate);
   
-  slipfn->initialize(*faultMesh, &cs);
+  slipfn->initialize(*faultMesh, &cs, originTime);
 } // _initialize
 
 // ----------------------------------------------------------------------
@@ -452,7 +456,9 @@ pylith::faults::TestBruneSlipFn::_testInitialize(const _TestBruneSlipFn::DataStr
   slipfn.dbSlipTime(&dbSlipTime);
   slipfn.dbPeakRate(&dbPeakRate);
   
-  slipfn.initialize(faultMesh, &cs);
+  const double originTime = 5.353;
+  
+  slipfn.initialize(faultMesh, &cs, originTime);
 
   const double tolerance = 1.0e-06;
 
@@ -480,7 +486,8 @@ pylith::faults::TestBruneSlipFn::_testInitialize(const _TestBruneSlipFn::DataStr
     const double slipTime = vals[spaceDim+1];
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL(data.peakRateE[iPoint], peakRate, tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(data.slipTimeE[iPoint], slipTime, tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(data.slipTimeE[iPoint]+originTime,
+				 slipTime, tolerance);
   } // for
 } // _testInitialize
 

@@ -77,10 +77,12 @@ public :
   /** Initialize slip time function.
    *
    * @param faultMesh Finite-element mesh of fault.
-   * @param cs Coordinate system for mesh
+   * @param cs Coordinate system for mesh.
+   * @param originTime Origin time for earthquake source.
    */
   void initialize(const ALE::Obj<Mesh>& faultMesh,
-		  const spatialdata::geocoords::CoordSys* cs);
+		  const spatialdata::geocoords::CoordSys* cs,
+		  const double originTime =0.0);
 
   /** Get slip on fault surface at time t.
    *

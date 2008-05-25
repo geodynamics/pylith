@@ -57,7 +57,8 @@ pylith::faults::TestEqKinSrc::testInitialize(void)
   ALE::Obj<Mesh> faultMesh;
   EqKinSrc eqsrc;
   BruneSlipFn slipfn;
-  _initialize(&faultMesh, &eqsrc, &slipfn);
+  const double originTime = 2.45;
+  _initialize(&faultMesh, &eqsrc, &slipfn, originTime);
   
   // Don't have access to details of slip time function, so we can't
   // check parameters. Have to rely on test of slip() for verification
@@ -73,16 +74,17 @@ pylith::faults::TestEqKinSrc::testSlip(void)
 				2.4, 0.2};
   const double slipTimeE[] = { 1.2, 1.3 };
   const double peakRateE[] = { 1.4, 1.5 };
+  const double originTime = 2.42;
 
   ALE::Obj<Mesh> faultMesh;
   EqKinSrc eqsrc;
   BruneSlipFn slipfn;
-  _initialize(&faultMesh, &eqsrc, &slipfn);
+  _initialize(&faultMesh, &eqsrc, &slipfn, originTime);
   
   const int spaceDim = faultMesh->getDimension() + 1;
 
   const double t = 2.134;
-  const ALE::Obj<real_section_type>& slip = eqsrc.slip(t, faultMesh);
+  const ALE::Obj<real_section_type>& slip = eqsrc.slip(originTime+t, faultMesh);
   CPPUNIT_ASSERT(!slip.isNull());
 
   const double tolerance = 1.0e-06;
@@ -125,18 +127,19 @@ pylith::faults::TestEqKinSrc::testSlipIncr(void)
 				2.4, 0.2};
   const double slipTimeE[] = { 1.2, 1.3 };
   const double peakRateE[] = { 1.4, 1.5 };
+  const double originTime = -4.29;
 
   ALE::Obj<Mesh> faultMesh;
   EqKinSrc eqsrc;
   BruneSlipFn slipfn;
-  _initialize(&faultMesh, &eqsrc, &slipfn);
+  _initialize(&faultMesh, &eqsrc, &slipfn, originTime);
   
   const int spaceDim = faultMesh->getDimension() + 1;
 
   const double t0 = 1.234;
   const double t1 = 2.525;
   const ALE::Obj<real_section_type>& slip = 
-    eqsrc.slipIncr(t0, t1, faultMesh);
+    eqsrc.slipIncr(originTime+t0, originTime+t1, faultMesh);
   CPPUNIT_ASSERT(!slip.isNull());
 
   const double tolerance = 1.0e-06;
@@ -179,7 +182,8 @@ pylith::faults::TestEqKinSrc::testSlipIncr(void)
 void
 pylith::faults::TestEqKinSrc::_initialize(ALE::Obj<Mesh>* faultMesh,
 					  EqKinSrc* eqsrc,
-					  BruneSlipFn* slipfn)
+					  BruneSlipFn* slipfn,
+					  const double originTime)
 { // _initialize
   const char* meshFilename = "data/tri3.mesh";
   const char* faultLabel = "fault";
@@ -231,6 +235,7 @@ pylith::faults::TestEqKinSrc::_initialize(ALE::Obj<Mesh>* faultMesh,
   slipfn->dbSlipTime(&dbSlipTime);
   slipfn->dbPeakRate(&dbPeakRate);
   
+  eqsrc->originTime(originTime);
   eqsrc->slipfn(slipfn);
   eqsrc->initialize(*faultMesh, &cs);
 } // _initialize

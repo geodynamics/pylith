@@ -60,6 +60,18 @@ public :
   virtual
   ~EqKinSrc(void);
 
+  /** Set origin time for earthquake source.
+   *
+   * @param value Origin time for earthquake source.
+   */
+  void originTime(const double value);
+
+  /** Get origin time for earthquake source.
+   *
+   * @returns Origin time for earthquake source.
+   */
+  double originTime(void) const;
+
   /** Set slip time function.
    *
    * @param slipfn Slip time function.
@@ -121,6 +133,7 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
+  double _originTime; ///< Origin time for earthquake source
   SlipTimeFn* _slipfn; ///< Slip time function
 
 }; // class EqKinSrc
