@@ -40,6 +40,7 @@ class TestEqKinSrc(unittest.TestCase):
     """
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
+    from pyre.units.time import second
 
     ioFinalSlip = SimpleIOAscii()
     ioFinalSlip.filename = "finalslip.spatialdb"
@@ -66,6 +67,7 @@ class TestEqKinSrc(unittest.TestCase):
     slipfn.slipRate = dbPeakRate
 
     eqsrc = EqKinSrc()
+    eqsrc.originTime = 5.3*second
     eqsrc.slipfn = slipfn
     eqsrc.preinitialize()
     eqsrc.initialize()

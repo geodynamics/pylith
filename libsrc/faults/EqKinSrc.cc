@@ -21,6 +21,7 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::EqKinSrc::EqKinSrc(void) :
+  _originTime(0.0),
   _slipfn(0)
 { // constructor
 } // constructor
@@ -31,6 +32,22 @@ pylith::faults::EqKinSrc::~EqKinSrc(void)
 { // destructor
   _slipfn = 0; // Don't manage memory for slip fn
 } // destructor
+
+// ----------------------------------------------------------------------
+// Set origin time for earthquake source.
+void
+pylith::faults::EqKinSrc::originTime(const double value)
+{ // originTime
+  _originTime = value;
+} // originTime
+
+// ----------------------------------------------------------------------
+// Get origin time for earthquake source.
+double
+pylith::faults::EqKinSrc::originTime(void) const
+{ // originTime
+  return _originTime;
+} // originTime
 
 // ----------------------------------------------------------------------
 // Set slip time function.
@@ -48,7 +65,7 @@ pylith::faults::EqKinSrc::initialize(
 				  const spatialdata::geocoords::CoordSys* cs)
 { // initialize
   assert(0 != _slipfn);
-  _slipfn->initialize(faultMesh, cs);
+  _slipfn->initialize(faultMesh, cs, _originTime);
 } // initialize
 
 // ----------------------------------------------------------------------

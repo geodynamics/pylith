@@ -57,7 +57,8 @@ pylith::faults::BruneSlipFn::~BruneSlipFn(void)
 void
 pylith::faults::BruneSlipFn::initialize(
 				 const ALE::Obj<Mesh>& faultMesh,
-				 const spatialdata::geocoords::CoordSys* cs)
+				 const spatialdata::geocoords::CoordSys* cs,
+				 const double originTime)
 { // initialize
   assert(!faultMesh.isNull());
   assert(0 != cs);
@@ -168,6 +169,8 @@ pylith::faults::BruneSlipFn::initialize(
       msg << ") using spatial database " << _dbSlipTime->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
+    // add origin time to rupture time
+    paramsVertex[indexSlipTime] += originTime;
 
     _parameters->updatePoint(*v_iter, &paramsVertex[0]);
   } // for

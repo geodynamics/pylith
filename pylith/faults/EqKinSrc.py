@@ -42,12 +42,16 @@ class EqKinSrc(Component):
     ## Python object for managing EqKinSrc facilities and properties.
     ##
     ## \b Properties
-    ## @li None
+    ## @li \b origin_time Origin time for earthquake rupture.
     ##
     ## \b Facilities
     ## @li \b slip_function Slip time history function.
 
     import pyre.inventory
+
+    from pyre.units.time import second
+    originTime = pyre.inventory.dimensional("origin_time", default=0.0*second)
+    originTime.meta['tip'] = "Origin time for earthquake rupture."
 
     from BruneSlipFn import BruneSlipFn
     slipfn = pyre.inventory.facility("slip_function", family="slip_time_fn",
@@ -73,6 +77,7 @@ class EqKinSrc(Component):
     """
     self._setupLogging()
     self._createCppHandle()
+    self.cppHandle.originTime = self.originTime.value
     self.slipfn.preinitialize()
     self.cppHandle.slipfn = self.slipfn.cppHandle
     return
@@ -111,6 +116,7 @@ class EqKinSrc(Component):
     Setup members using inventory.
     """
     Component._configure(self)
+    self.originTime = self.inventory.originTime
     self.slipfn = self.inventory.slipfn
     return
 
