@@ -283,7 +283,7 @@ cdef class SolverLinear(Solver):
       Vec localVec;
 
       err = VecCreateSeqWithArray(PETSC_COMM_SELF, (*fieldIn)->sizeWithBC(),
-                                  (*fieldIn)->restrict(), &localVec);CHKERRQ(err);
+                                  (*fieldIn)->restrictSpace(), &localVec);CHKERRQ(err);
       err = VecScatterBegin(scatter, localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD
                             );CHKERRQ(err);
       err = VecScatterEnd(scatter, localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD
@@ -293,7 +293,7 @@ cdef class SolverLinear(Solver):
                             DIFFERENT_NONZERO_PATTERN); CHKERRQ(err);
       err = KSPSolve(*ksp, vecIn, vecOut); CHKERRQ(err);
       err = VecCreateSeqWithArray(PETSC_COMM_SELF, (*fieldOut)->sizeWithBC(),
-                                (*fieldOut)->restrict(), &localVec);CHKERRQ(err);
+                                (*fieldOut)->restrictSpace(), &localVec);CHKERRQ(err);
       err = VecScatterBegin(scatter, vecOut, localVec, INSERT_VALUES, SCATTER_REVERSE
                             ); CHKERRQ(err);
       err = VecScatterEnd(scatter, vecOut, localVec, INSERT_VALUES, SCATTER_REVERSE
@@ -365,7 +365,7 @@ cdef class SolverNonlinear(Solver):
       Vec localVec;
 
       err = VecCreateSeqWithArray(PETSC_COMM_SELF, (*fieldIn)->sizeWithBC(),
-                                  (*fieldIn)->restrict(), &localVec);CHKERRQ(err);
+                                  (*fieldIn)->restrictSpace(), &localVec);CHKERRQ(err);
       err = VecScatterBegin(scatter, localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD
                             );CHKERRQ(err);
       err = VecScatterEnd(scatter, localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD
@@ -375,7 +375,7 @@ cdef class SolverNonlinear(Solver):
                             DIFFERENT_NONZERO_PATTERN); CHKERRQ(err);
       err = KSPSolve(*ksp, vecIn, vecOut); CHKERRQ(err);
       err = VecCreateSeqWithArray(PETSC_COMM_SELF, (*fieldOut)->sizeWithBC(),
-                                (*fieldOut)->restrict(), &localVec);CHKERRQ(err);
+                                (*fieldOut)->restrictSpace(), &localVec);CHKERRQ(err);
       err = VecScatterBegin(scatter, vecOut, localVec, INSERT_VALUES, SCATTER_REVERSE
                             ); CHKERRQ(err);
       err = VecScatterEnd(scatter, vecOut, localVec, INSERT_VALUES, SCATTER_REVERSE

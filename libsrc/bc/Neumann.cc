@@ -185,8 +185,8 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
     // std::cout << "c_iter:  " << *c_iter << std::endl;
     _quadrature->computeGeometry(_boundaryMesh, coordinates, *c_iter);
     const double_array& quadPts = _quadrature->quadPts();
-    _boundaryMesh->restrict(coordinates, *c_iter,
-			    &cellVertices[0], cellVertices.size());
+    _boundaryMesh->restrictClosure(coordinates, *c_iter,
+				   &cellVertices[0], cellVertices.size());
     /* Debugging stuff
     std::cout << "cellVertices:  " << std::endl;
     for(int iTest = 0; iTest < numBasis; ++iTest) {
@@ -291,8 +291,8 @@ pylith::bc::Neumann::integrateResidual(
     _resetCellVector();
 
     // Restrict tractions to cell
-    _boundaryMesh->restrict(_tractions, *c_iter, 
-			    &tractionsCell[0], tractionsCell.size());
+    _boundaryMesh->restrictClosure(_tractions, *c_iter, 
+				   &tractionsCell[0], tractionsCell.size());
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();

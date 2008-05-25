@@ -106,7 +106,7 @@ pylith::bc::TestNeumann::testInitialize(void)
     const int numCorners = boundaryMesh->getNumCellCorners(*c_iter, boundaryDepth);
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
 
-    boundaryMesh->restrict(coordinates, *c_iter, &cellVertices[0],
+    boundaryMesh->restrictClosure(coordinates, *c_iter, &cellVertices[0],
 			   cellVertices.size());
     double vert =0.0;
     double vertE =0.0;
@@ -136,7 +136,7 @@ pylith::bc::TestNeumann::testInitialize(void)
       c_iter != cells->end();
       ++c_iter) {
 
-    bc._boundaryMesh->restrict(bc._tractions, *c_iter,
+    bc._boundaryMesh->restrictClosure(bc._tractions, *c_iter,
 			       &tractionsCell[0], tractionsCell.size());
 
     // std::cout << "Tractions at quadrature points: " << std::endl;
@@ -180,7 +180,7 @@ pylith::bc::TestNeumann::testIntegrateResidual(void)
   const int totalNumVertices = mesh->depthStratum(0)->size();
   const int sizeE = _data->spaceDim * totalNumVertices;
 
-  const double* vals = residual->restrict();
+  const double* vals = residual->restrictSpace();
   const int size = residual->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 

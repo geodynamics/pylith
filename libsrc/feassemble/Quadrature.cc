@@ -332,27 +332,27 @@ pylith::feassemble::Quadrature::retrieveGeometry(
 			      const int c)
 { // retrieveGeometry
   const real_section_type::value_type* values =
-    mesh->restrict(_quadPtsPre, cell);
+    mesh->restrictClosure(_quadPtsPre, cell);
   int size = _numQuadPts * _spaceDim;
   assert(size == _quadPtsPre->getFiberDimension(cell));
   memcpy(&_quadPts[0], &values[0], size*sizeof(double));
 
-  values = mesh->restrict(_jacobianPre, cell);
+  values = mesh->restrictClosure(_jacobianPre, cell);
   size = _numQuadPts * _cellDim * _spaceDim;
   assert(size == _jacobianPre->getFiberDimension(cell));
   memcpy(&_jacobian[0], &values[0], size*sizeof(double));
 
-  values = mesh->restrict(_jacobianDetPre, cell);
+  values = mesh->restrictClosure(_jacobianDetPre, cell);
   size = _numQuadPts;
   assert(size == _jacobianDetPre->getFiberDimension(cell));
   memcpy(&_jacobianDet[0], &values[0], size*sizeof(double));
 
-  values = mesh->restrict(_jacobianInvPre, cell);
+  values = mesh->restrictClosure(_jacobianInvPre, cell);
   size = _numQuadPts * _cellDim * _spaceDim;
   assert(size == _jacobianInvPre->getFiberDimension(cell));
   memcpy(&_jacobianInv[0], &values[0], size*sizeof(double));
 
-  values = mesh->restrict(_basisDerivPre, cell);
+  values = mesh->restrictClosure(_basisDerivPre, cell);
   size = _numQuadPts * _numBasis * _spaceDim;
   assert(size == _basisDerivPre->getFiberDimension(cell));
   memcpy(&_basisDeriv[0], &values[0], size*sizeof(double));

@@ -187,7 +187,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
     // Restrict input fields to cell
     PetscLogEventBegin(restrictEvent,0,0,0,0);
-    mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
+    mesh->restrictClosure(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
     PetscLogEventEnd(restrictEvent,0,0,0,0);
 
     // Get cell geometry information that depends on cell
@@ -207,7 +207,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
     // Compute action for element body forces
     if (!grav.isNull()) {
-      mesh->restrict(grav, *c_iter, &gravCell[0], cellVecSize);
+      mesh->restrictClosure(grav, *c_iter, &gravCell[0], cellVecSize);
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
 	const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
 	for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
@@ -355,7 +355,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     _resetCellMatrix();
 
     // Restrict input fields to cell
-    mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
+    mesh->restrictClosure(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();

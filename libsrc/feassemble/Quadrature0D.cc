@@ -55,7 +55,7 @@ pylith::feassemble::Quadrature0D::computeGeometry(
   
   // Get coordinates of cell's vertices
   const real_section_type::value_type* vertCoords = 
-    mesh->restrict(coordinates, cell);
+    mesh->restrictClosure(coordinates, cell);
   assert(1 == coordinates->getFiberDimension(*mesh->depthStratum(0)->begin()));
 
   for (int i=0; i < _spaceDim; ++i)

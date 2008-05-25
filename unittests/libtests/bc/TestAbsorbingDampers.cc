@@ -109,7 +109,7 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
   const double* valsE = _data->dampingConsts;
 
   const int size = bc._dampingConsts->sizeWithBC();
-  const double* vals = bc._dampingConsts->restrict();
+  const double* vals = bc._dampingConsts->restrictSpace();
 
   //bc._dampingConsts->view("DAMPING CONSTS");
 
@@ -143,7 +143,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   const int totalNumVertices = mesh->depthStratum(0)->size();
   const int sizeE = _data->spaceDim * totalNumVertices;
 
-  const double* vals = residual->restrict();
+  const double* vals = residual->restrictSpace();
   const int size = residual->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 

@@ -179,8 +179,8 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     // Reset element vector to zero
     _resetCellVector();
 
-    mesh->restrict(dispT, *c_iter, &dispTCell[0], cellVecSize);
-    mesh->restrict(dispTmdt, *c_iter, &dispTmdtCell[0], cellVecSize);
+    mesh->restrictClosure(dispT, *c_iter, &dispTCell[0], cellVecSize);
+    mesh->restrictClosure(dispTmdt, *c_iter, &dispTmdtCell[0], cellVecSize);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
