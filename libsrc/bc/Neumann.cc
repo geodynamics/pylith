@@ -69,6 +69,15 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
   } // if
   _boundaryMesh->setRealSection("coordinates", 
 				mesh->getRealSection("coordinates"));
+  // Create the parallel overlap
+  Obj<Mesh::send_overlap_type> sendParallelMeshOverlap = _boundaryMesh->getSendOverlap();
+  Obj<Mesh::recv_overlap_type> recvParallelMeshOverlap = _boundaryMesh->getRecvOverlap();
+  Mesh::renumbering_type&      renumbering             = mesh->getRenumbering();
+  //   Can I figure this out in a nicer way?
+  ALE::SetFromMap<std::map<Mesh::point_type,Mesh::point_type> > globalPoints(renumbering);
+
+  ALE::OverlapBuilder<>::constructOverlap(globalPoints, renumbering, sendParallelMeshOverlap, recvParallelMeshOverlap);
+  _boundaryMesh->setCalculatedOverlap(true);
 
   //_boundaryMesh->view("TRACTION BOUNDARY MESH");
 
