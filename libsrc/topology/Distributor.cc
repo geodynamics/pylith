@@ -69,7 +69,16 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
   distribution_type::distributeSection(coordinates, partition, renumbering, sendMeshOverlap, recvMeshOverlap, parallelCoordinates);
   // Distribute other sections
   if (origMesh->getRealSections()->size() > 1) {
-    throw ALE::Exception("Need to distribute more real sections");
+    Obj<std::set<std::string> > names = origMesh->getRealSections();
+    int                         n     = 0;
+
+    for(std::set<std::string>::const_iterator n_iter = names->begin(); n_iter != names->end(); ++n_iter) {
+      if (*n_iter == "coordinates")   continue;
+      if (*n_iter == "replacedCells") continue;
+      std::cout << "ERROR: Did not distribute real section " << *n_iter << std::endl;
+      ++n;
+    }
+    if (n) {throw ALE::Exception("Need to distribute more real sections");}
   }
   if (origMesh->getIntSections()->size() > 0) {
     Obj<std::set<std::string> > names = origMesh->getIntSections();
