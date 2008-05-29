@@ -25,6 +25,8 @@
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
+#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+
 /// Namespace for pylith package
 namespace pylith {
   namespace feassemble {
@@ -43,6 +45,12 @@ namespace pylith {
     class FieldsManager; // USES FieldsManager
   } // topology
 } // pylith
+
+namespace spatialdata {
+  namespace spatialdb {
+    class GravityField; // HOLDSA GravityField
+  } // spatialdb
+} // spatialdata
 
 /// C++ unit testing for ElasticityImplicit
 class pylith::feassemble::TestElasticityImplicit : public CppUnit::TestFixture
@@ -102,6 +110,7 @@ protected :
   IntegratorData* _data; ///< Data for testing.
   materials::ElasticMaterial* _material; ///< Elastic material.
   Quadrature* _quadrature; ///< Quadrature information.
+  spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :

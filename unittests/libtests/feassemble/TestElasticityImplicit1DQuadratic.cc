@@ -30,6 +30,7 @@ pylith::feassemble::TestElasticityImplicit1DQuadratic::setUp(void)
 { // setUp
   _data = new ElasticityImplicitData1DQuadratic();
   _quadrature = new Quadrature1D();
+  _gravityField = 0;
   GeometryLine1D geometry;
   CPPUNIT_ASSERT(0 != _quadrature);
   _quadrature->refGeometry(&geometry);

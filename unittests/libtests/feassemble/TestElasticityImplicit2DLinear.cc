@@ -30,6 +30,7 @@ pylith::feassemble::TestElasticityImplicit2DLinear::setUp(void)
 { // setUp
   _data = new ElasticityImplicitData2DLinear();
   _quadrature = new Quadrature2D();
+  _gravityField = 0;
   CPPUNIT_ASSERT(0 != _quadrature);
   GeometryTri2D geometry;
   _quadrature->refGeometry(&geometry);
