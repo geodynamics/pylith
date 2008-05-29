@@ -337,7 +337,6 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 
   const ALE::Obj<Mesh::order_type>& globalOrder = mesh->getFactory()->getGlobalOrder(mesh, "default", dispTBctpdt);
   assert(!globalOrder.isNull());
-  globalOrder->view("Global Order for Jacobian");
   visitor_type iV(*dispTBctpdt, *globalOrder, (int) pow(mesh->getSieve()->getMaxConeSize(), mesh->depth())*spaceDim);
 
   // Loop over cells

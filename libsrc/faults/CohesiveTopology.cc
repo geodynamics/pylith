@@ -90,9 +90,9 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
   }
 
   // This only works for uninterpolated meshes
-  assert(mesh->depth() == 1);
-  ALE::ISieveVisitor::PointRetriever<sieve_type> sV(sieve->getMaxSupportSize());
-  ALE::ISieveVisitor::PointRetriever<sieve_type> cV(sieve->getMaxConeSize());
+  assert((mesh->depth() == 1) || (mesh->depth() == -1));
+  ALE::ISieveVisitor::PointRetriever<sieve_type> sV(std::max(1, sieve->getMaxSupportSize()));
+  ALE::ISieveVisitor::PointRetriever<sieve_type> cV(std::max(1, sieve->getMaxConeSize()));
   for(PointSet::const_iterator fv_iter = fvBegin; fv_iter != fvEnd; ++fv_iter) {
     sieve->support(*fv_iter, sV);
     const Mesh::point_type *support = sV.getPoints();
@@ -423,8 +423,8 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
   PointSet replaceCells;
   PointSet noReplaceCells;
   PointSet replaceVertices;
-  ALE::ISieveVisitor::PointRetriever<sieve_type> sV2(ifaultSieve->getMaxSupportSize());
-  ALE::ISieveVisitor::NConeRetriever<sieve_type> cV2(*ifaultSieve, (size_t) pow(ifaultSieve->getMaxConeSize(), (*ifault)->depth()));
+  ALE::ISieveVisitor::PointRetriever<sieve_type> sV2(std::max(1, ifaultSieve->getMaxSupportSize()));
+  ALE::ISieveVisitor::NConeRetriever<sieve_type> cV2(*ifaultSieve, (size_t) pow(std::max(1, ifaultSieve->getMaxConeSize()), (*ifault)->depth()));
 
   for(Mesh::label_sequence::iterator f_iter = faces->begin(); f_iter != faces->end(); ++f_iter, ++newPoint) {
     const Mesh::point_type face = *f_iter;
@@ -612,7 +612,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
       }
     }
   }
-  ReplaceVisitor<sieve_type,std::map<Mesh::point_type,Mesh::point_type> > rVc(vertexRenumber, sieve->getMaxConeSize(), debug);
+  ReplaceVisitor<sieve_type,std::map<Mesh::point_type,Mesh::point_type> > rVc(vertexRenumber, std::max(1, sieve->getMaxConeSize()), debug);
 
   for(PointSet::const_iterator c_iter = replaceCells.begin(); c_iter != replaceCells.end(); ++c_iter) {
     sieve->cone(*c_iter, rVc);
@@ -622,7 +622,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
     }
     rVc.clear();
   }
-  ReplaceVisitor<sieve_type,std::map<Mesh::point_type,Mesh::point_type> > rVs(cellRenumber, sieve->getMaxSupportSize(), debug);
+  ReplaceVisitor<sieve_type,std::map<Mesh::point_type,Mesh::point_type> > rVs(cellRenumber, std::max(1, sieve->getMaxSupportSize()), debug);
 
   for(PointSet::const_iterator v_iter = replaceVertices.begin(); v_iter != replaceVertices.end(); ++v_iter) {
     sieve->support(*v_iter, rVs);
