@@ -56,6 +56,7 @@ class Integrator(object):
     Constructor.
     """
     self.quadrature = None
+    self.gravityField = None
     self.mesh = None
     return
 
@@ -140,7 +141,8 @@ class Integrator(object):
     
     assert(None != self.cppHandle)
     self.cppHandle.integrateResidual(residual, t.value, fields.cppHandle,
-                                     self.mesh.cppHandle)
+                                     self.mesh.cppHandle,
+				     self.mesh.coordsys.cppHandle)
     self._logger.eventEnd(logEvent)
     return
 
