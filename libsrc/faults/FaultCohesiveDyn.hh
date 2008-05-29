@@ -34,6 +34,15 @@ namespace pylith {
   } // faults
 } // pylith
 
+/*
+namespace spatialdata {
+  namespace geocoords {
+    class CoordSys; // USES CoordSys
+  } // geocoords
+} // spatialdata
+*/
+
+
 /// @brief C++ implementation for a fault surface with spontaneous
 /// (dynamic) slip implemented with cohesive elements.
 class pylith::faults::FaultCohesiveDyn : public FaultCohesive,
@@ -77,11 +86,13 @@ public :
    * @param t Current time
    * @param fields Solution fields
    * @param mesh Finite-element mesh
+   * @param cs Mesh coordinate system
    */
   void integrateResidual(const ALE::Obj<real_section_type>& residual,
 			 const double t,
 			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh);
+			 const ALE::Obj<Mesh>& mesh,
+			 const spatialdata::geocoords::CoordSys* cs);
 
   /** Compute Jacobian matrix (A) associated with operator.
    *

@@ -99,18 +99,20 @@ public :
    * included in the residual (tractions, concentrated nodal forces,
    * and contributions to internal force vector due to
    * displacement/velocity BC).  This routine computes the additional
-   * external loads due to body forces (not yet implemented) plus the
+   * external loads due to body forces plus the
    * element internal forces for the current stress state.
    *
    * @param residual Residual field (output)
    * @param t Current time
    * @param fields Solution fields
    * @param mesh Mesh object
+   * @param cs Coordinate system
    */
   void integrateResidual(const ALE::Obj<real_section_type>& residual,
 			 const double t,
 			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh);
+			 const ALE::Obj<Mesh>& mesh,
+			 const spatialdata::geocoords::CoordSys* cs);
 
   /** Compute Jacobian matrix (A) associated with operator.
    *

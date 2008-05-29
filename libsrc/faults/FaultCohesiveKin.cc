@@ -105,7 +105,8 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 				const ALE::Obj<real_section_type>& residual,
 				const double t,
 				topology::FieldsManager* const fields,
-				const ALE::Obj<Mesh>& mesh)
+				const ALE::Obj<Mesh>& mesh,
+				const spatialdata::geocoords::CoordSys* cs)
 { // integrateResidual
   assert(!residual.isNull());
   assert(0 != fields);

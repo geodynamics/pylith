@@ -52,6 +52,15 @@ namespace pylith {
   } // faults
 } // pylith
 
+/*
+namespace spatialdata {
+  namespace geocoords {
+    class CoordSys; // USES CoordSys
+  } // geocoords
+} // spatialdata
+*/
+
+
 /// C++ implementation for a fault surface with kinematic (prescribed)
 /// slip implemented with cohesive elements.
 class pylith::faults::FaultCohesiveKin : public FaultCohesive,
@@ -105,7 +114,8 @@ public :
   void integrateResidual(const ALE::Obj<real_section_type>& residual,
 			 const double t,
 			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh);
+			 const ALE::Obj<Mesh>& mesh,
+			 const spatialdata::geocoords::CoordSys* cs);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator.

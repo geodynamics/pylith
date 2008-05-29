@@ -40,6 +40,15 @@ namespace pylith {
   } // topology
 } // pylith
 
+namespace spatialdata {
+  namespace spatialdb {
+    class GravityField; // HOLDSA GravityField
+  } // spatialdb
+  namespace geocoords {
+    class CoordSys; // USES CoordSys
+  } // geocoords
+} // spatialdata
+
 class pylith::feassemble::Integrator
 { // Integrator
   friend class TestIntegrator; // unit testing
@@ -60,6 +69,12 @@ public :
    * @param q Quadrature for integrating.
    */
   void quadrature(const Quadrature* q);
+
+  /** Set gravity field. Gravity Field should already be initialized.
+   *
+   * @param g Gravity field.
+   */
+  void gravityField(spatialdata::spatialdb::GravityField* const gravityField);
 
   /** Set time step for advancing from time t to time t+dt.
    *
@@ -98,12 +113,14 @@ public :
    * @param t Current time
    * @param fields Solution fields
    * @param mesh Finite-element mesh
+   * @param cs Mesh coordinate system
    */
   virtual 
   void integrateResidual(const ALE::Obj<real_section_type>& residual,
 			 const double t,
 			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh) = 0;
+			 const ALE::Obj<Mesh>& mesh,
+			 const spatialdata::geocoords::CoordSys* cs) = 0;
 
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator.
@@ -167,6 +184,8 @@ protected :
   double _dt; ///< Time step for t -> t+dt
 
   Quadrature* _quadrature; ///< Quadrature for integrating finite-element
+
+  spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 
   /// Vector local to cell containing result of integration action
   real_section_type::value_type* _cellVector;

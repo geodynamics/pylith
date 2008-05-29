@@ -23,7 +23,8 @@
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 
 #include "petscmat.h" // USES PetscMat
-#include "spatialdata/spatialdb/SpatialDB.hh"
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -73,7 +74,8 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 			      const ALE::Obj<real_section_type>& residual,
 			      const double t,
 			      topology::FieldsManager* const fields,
-			      const ALE::Obj<Mesh>& mesh)
+			      const ALE::Obj<Mesh>& mesh,
+			      const spatialdata::geocoords::CoordSys* cs)
 { // integrateResidual
   /// Member prototype for _elasticityResidualXD()
   typedef void (pylith::feassemble::ElasticityImplicit::*elasticityResidual_fn_type)
@@ -160,7 +162,6 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   _initCellVector();
   const int cellVecSize = numBasis*spaceDim;
   double_array dispTBctpdtCell(cellVecSize);
-  //double_array gravCell(cellVecSize);
 
   // Allocate vector for total strain
   double_array totalStrain(numQuadPts*tensorSize);
@@ -194,33 +195,54 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     const double_array& basis = _quadrature->basis();
     const double_array& basisDeriv = _quadrature->basisDeriv();
     const double_array& jacobianDet = _quadrature->jacobianDet();
+    const double_array& quadPts = _quadrature->quadPts();
 
     if (cellDim != spaceDim)
       throw std::logic_error("Not implemented yet.");
 
-#if 0
-    // Comment out gravity section for now, until we figure out how to deal
-    // with gravity vector.
 
-    // Get density at quadrature points for this cell
-    const double_array& density = _material->calcDensity();
+    // Compute body force vector if gravity is being used.
+    if (0 != _gravityField) {
 
-    // Compute action for element body forces
-    if (!grav.isNull()) {
-      mesh->restrictClosure(grav, *c_iter, &gravCell[0], cellVecSize);
+      // Make sure coordinate names exist in gravity field.
+      _gravityField->open();
+      if (1 == spaceDim){
+	const char* queryNames[] = { "x"};
+	_gravityField->queryVals(queryNames, spaceDim);
+      } else if (2 == spaceDim){
+	const char* queryNames[] = { "x", "y"};
+	_gravityField->queryVals(queryNames, spaceDim);
+      } else if (3 == spaceDim){
+        const char* queryNames[] = { "x", "y", "z"};
+	_gravityField->queryVals(queryNames, spaceDim);
+      } else
+	assert(0);
+
+      // Get density at quadrature points for this cell
+      const double_array& density = _material->calcDensity();
+
+      // Compute action for element body forces
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+	double gravVec[spaceDim];
+	double coords[spaceDim];
+	memcpy(coords, &quadPts[iQuad * spaceDim], sizeof(double)*spaceDim);
+
+	const int err = _gravityField->query(gravVec, spaceDim,
+				  coords, spaceDim, cs);
+	if (err)
+	  throw std::runtime_error("Unable to get gravity vector for point.");
 	const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
 	for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
 	     iBasis < numBasis; ++iBasis) {
 	  const double valI = wt*basis[iQ+iBasis];
 	  for (int iDim=0; iDim < spaceDim; ++iDim) {
-	    _cellVector[iBasis*spaceDim+iDim] += valI*gravCell[iDim];
+	    _cellVector[iBasis*spaceDim+iDim] += valI*gravVec[iDim];
 	  } // for
 	} // for
       } // for
-      PetscLogFlops(numQuadPts*(2+numBasis*(2+2*spaceDim)));
+      PetscLogFlops(numQuadPts*(2+numBasis*(1+2*spaceDim)));
+      _gravityField->close();
     } // if
-#endif
 
     // Compute B(transpose) * sigma, first computing strains
     PetscLogEventBegin(stressEvent,0,0,0,0);
