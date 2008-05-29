@@ -34,6 +34,14 @@ namespace pylith {
   } // bc
 } // pylith
 
+/*
+namespace spatialdata {
+  namespace geocoords {
+    class CoordSys; // USES CoordSys
+  } // geocoords
+} // spatialdata
+*/
+
 
 /// C++ implementation of Neumann boundary conditions.
 class pylith::bc::Neumann : public BoundaryCondition, 
@@ -67,11 +75,13 @@ public :
    * @param t Current time
    * @param fields Solution fields
    * @param mesh Finite-element mesh
+   * @param cs Mesh coordinate system
    */
   void integrateResidual(const ALE::Obj<real_section_type>& residual,
 			 const double t,
 			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh);
+			 const ALE::Obj<Mesh>& mesh,
+			 const spatialdata::geocoords::CoordSys* cs);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator.

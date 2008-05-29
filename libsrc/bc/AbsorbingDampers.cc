@@ -223,7 +223,8 @@ pylith::bc::AbsorbingDampers::integrateResidual(
 				 const ALE::Obj<real_section_type>& residual,
 				 const double t,
 				 topology::FieldsManager* const fields,
-				 const ALE::Obj<Mesh>& mesh)
+				 const ALE::Obj<Mesh>& mesh,
+				 const spatialdata::geocoords::CoordSys* cs)
 { // integrateResidual
   assert(0 != _quadrature);
   assert(!_boundaryMesh.isNull());

@@ -23,7 +23,7 @@
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 
 #include "petscmat.h" // USES PetscMat
-#include "spatialdata/spatialdb/SpatialDB.hh"
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -75,7 +75,8 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 			      const ALE::Obj<real_section_type>& residual,
 			      const double t,
 			      topology::FieldsManager* const fields,
-			      const ALE::Obj<Mesh>& mesh)
+			      const ALE::Obj<Mesh>& mesh,
+			      const spatialdata::geocoords::CoordSys* cs)
 { // integrateResidual
   /// Member prototype for _elasticityResidualXD()
   typedef void (pylith::feassemble::ElasticityExplicit::*elasticityResidual_fn_type)

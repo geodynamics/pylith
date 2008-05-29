@@ -18,6 +18,8 @@
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 #include "pylith/utils/array.hh" // USES double_array
 
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
@@ -53,7 +55,8 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 				const ALE::Obj<real_section_type>& residual,
 				const double t,
 				topology::FieldsManager* const fields,
-				const ALE::Obj<Mesh>& mesh)
+				const ALE::Obj<Mesh>& mesh,
+				const spatialdata::geocoords::CoordSys* cs)
 { // integrateResidual
   throw std::logic_error("FaultCohesiveDyn::integrateResidual() not implemented.");
 } // integrateResidual

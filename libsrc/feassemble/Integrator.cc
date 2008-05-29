@@ -16,6 +16,8 @@
 
 #include "Quadrature.hh" // USES Quadrature
 
+#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+
 #include <assert.h> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -23,6 +25,7 @@
 pylith::feassemble::Integrator::Integrator(void) :
   _dt(-1.0),
   _quadrature(0),
+  _gravityField(0),
   _cellVector(0),
   _cellMatrix(0),
   _needNewJacobian(true),
@@ -35,6 +38,7 @@ pylith::feassemble::Integrator::Integrator(void) :
 pylith::feassemble::Integrator::~Integrator(void)
 { // destructor
   delete _quadrature; _quadrature = 0;
+  delete _gravityField; _gravityField = 0;
   delete[] _cellVector; _cellVector = 0;
   delete[] _cellMatrix; _cellMatrix = 0;
 } // destructor
@@ -51,6 +55,15 @@ pylith::feassemble::Integrator::quadrature(const Quadrature* q)
   delete[] _cellVector; _cellVector = 0;
   delete[] _cellMatrix; _cellMatrix = 0;
 } // quadrature
+
+// ----------------------------------------------------------------------
+// Set gravity field.
+void
+pylith::feassemble::Integrator::gravityField(spatialdata::spatialdb::GravityField* const gravityField)
+{ // gravityField
+  _gravityField = gravityField;
+
+} // gravityField
 
 // ----------------------------------------------------------------------
 // Initialize vector containing result of integration action for cell.
