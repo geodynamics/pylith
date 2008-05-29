@@ -923,25 +923,29 @@ cdef class Integrator:
     return
 
 
-  def integrateResidual(self, residual, t, fields, mesh):
+  def integrateResidual(self, residual, t, fields, mesh, cs):
     """
     Integrate contributions to residual term (r) for operator.
     """
     # create shim for method 'integrateResidual'
-    #embed{ void Integrator_integrateResidual(void* objVptr, void* residualVptr, double t, void* fieldsVptr, void* meshVptr)
+    #embed{ void Integrator_integrateResidual(void* objVptr, void* residualVptr, double t, void* fieldsVptr, void* meshVptr, void* csVptr)
     try {
       assert(0 != objVptr);
       assert(0 != residualVptr);
       assert(0 != fieldsVptr);
       assert(0 != meshVptr);
+      assert(0 != csVptr);
       ALE::Obj<pylith::Mesh>* mesh =
         (ALE::Obj<pylith::Mesh>*) meshVptr;
       ALE::Obj<pylith::real_section_type>* residual =
         (ALE::Obj<pylith::real_section_type>*) residualVptr;
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
+      spatialdata::geocoords::CoordSys* cs =
+        (spatialdata::geocoords::CoordSys*) csVptr;
       ((pylith::feassemble::Integrator*) objVptr)->integrateResidual(*residual,
-                                                            t, fields, *mesh);
+                                                            t, fields, *mesh,
+							    cs);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -960,7 +964,8 @@ cdef class Integrator:
                                  PyCObject_AsVoidPtr(residual),
                                  t,
                                  ptrFromHandle(fields),
-                                 ptrFromHandle(mesh))
+                                 ptrFromHandle(mesh),
+				 ptrFromHandle(cs))
     return
 
 
@@ -1111,6 +1116,38 @@ cdef class Integrator:
         raise TypeError, \
               "Argument must be extension module type 'Quadrature'."
       Integrator_quadrature_set(self.thisptr, ptrFromHandle(q))
+
+
+  property gravityField:
+    def __set__(self, g):
+      """
+      Set gravity field.
+      """
+      # create shim for method 'gravityField'
+      #embed{ void Integrator_gravityField_set(void* objVptr, void* gVptr)
+      try {
+        assert(0 != objVptr);
+        spatialdata::spatialdb::GravityField* gravityField =
+          (spatialdata::spatialdb::GravityField*) gVptr;
+        ((pylith::feassemble::Integrator*) objVptr)->gravityField(gravityField);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not g.name == "pylith_feassemble_GravityField":
+        raise TypeError, \
+              "Argument must be extension module type 'GravityField'."
+      if None == g:
+        Integrator_gravityField_set(self.thisptr, NULL)
+      else:
+        Integrator_gravityField_set(self.thisptr, ptrFromHandle(g))
 
 
   property timeStep:
