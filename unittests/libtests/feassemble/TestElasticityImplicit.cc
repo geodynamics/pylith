@@ -24,6 +24,7 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
+#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include <math.h> // USES fabs()
 
@@ -38,6 +39,7 @@ pylith::feassemble::TestElasticityImplicit::setUp(void)
   _data = 0;
   _quadrature = 0;
   _material = 0;
+  _gravityField = 0;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -48,6 +50,7 @@ pylith::feassemble::TestElasticityImplicit::tearDown(void)
   delete _data; _data = 0;
   delete _quadrature; _quadrature = 0;
   delete _material; _material = 0;
+  delete _gravityField; _gravityField = 0;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -166,10 +169,14 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateResidual(void)
   topology::FieldsManager fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim((mesh)->getDimension());
+  cs.initialize();
+
   const ALE::Obj<real_section_type>& residual = fields.getReal("residual");
   CPPUNIT_ASSERT(!residual.isNull());
   const double t = 1.0;
-  integrator.integrateResidual(residual, t, &fields, mesh);
+  integrator.integrateResidual(residual, t, &fields, mesh, &cs);
 
   const double* valsE = _data->valsResidual;
   const int sizeE = _data->spaceDim * _data->numVertices;
@@ -304,6 +311,8 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   _quadrature->initialize(_data->basis, _data->basisDerivRef, _data->quadPts,
 			  _data->quadWts, _data->cellDim, _data->numBasis,
 			  _data->numQuadPts, _data->spaceDim);
+  // Setup gravityField
+  _gravityField = 0;
 
   // Setup material
   spatialdata::spatialdb::SimpleIOAscii iohandler;
@@ -317,6 +326,7 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   _material->initialize(*mesh, &cs, _quadrature);
 
   integrator->quadrature(_quadrature);
+  integrator->gravityField(_gravityField);
   integrator->timeStep(_data->dt);
   integrator->material(_material);
 

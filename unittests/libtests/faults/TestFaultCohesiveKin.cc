@@ -204,6 +204,10 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   FaultCohesiveKin fault;
   _initialize(&mesh, &fault);
 
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim((mesh)->getDimension());
+  cs.initialize();
+
   // Setup fields
   topology::FieldsManager fields(mesh);
   fields.addReal("residual");
@@ -238,7 +242,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   fault.timeStep(dt);
   { // Integrate residual with solution (as opposed to solution increment).
     fault.useSolnIncr(false);
-    fault.integrateResidual(residual, t, &fields, mesh);
+    fault.integrateResidual(residual, t, &fields, mesh, &cs);
 
     //residual->view("RESIDUAL"); // DEBUGGING
 
@@ -273,7 +277,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   residual->zero();
   { // Integrate residual with solution increment.
     fault.useSolnIncr(true);
-    fault.integrateResidual(residual, t, &fields, mesh);
+    fault.integrateResidual(residual, t, &fields, mesh, &cs);
 
     //residual->view("RESIDUAL"); // DEBUGGING
 

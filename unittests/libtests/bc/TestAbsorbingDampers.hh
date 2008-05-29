@@ -86,6 +86,7 @@ private :
    *
    * @param mesh PETSc mesh to initialize
    * @param bc AbsorbingDampers boundary condition to initialize.
+   * @param cs Mesh coordinate system.
    * @param fields Solution fields.
    */
   void _initialize(ALE::Obj<Mesh>* mesh,

@@ -168,13 +168,17 @@ pylith::bc::TestNeumann::testIntegrateResidual(void)
   topology::FieldsManager fields(mesh);
   _initialize(&mesh, &bc, &fields);
 
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(mesh->getDimension());
+  cs.initialize();
+
   const ALE::Obj<real_section_type>& residual = fields.getReal("residual");
   CPPUNIT_ASSERT(!residual.isNull());
 
   const int spaceDim = _data->spaceDim;
 
   const double t = 0.0;
-  bc.integrateResidual(residual, t, &fields, mesh);
+  bc.integrateResidual(residual, t, &fields, mesh, &cs);
 
   const double* valsE = _data->valsResidual;
   const int totalNumVertices = mesh->depthStratum(0)->size();
