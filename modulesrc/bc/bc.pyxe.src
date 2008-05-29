@@ -817,25 +817,28 @@ cdef class AbsorbingDampers(BoundaryCondition):
     return
 
 
-  def integrateResidual(self, residual, t, fields, mesh):
+  def integrateResidual(self, residual, t, fields, mesh, cs):
     """
     Integrate contributions to residual term (r) for operator.
     """
     # create shim for method 'integrateResidual'
-    #embed{ void AbsorbingDampers_integrateResidual(void* objVptr, void* residualVptr, double t, void* fieldsVptr, void* meshVptr)
+    #embed{ void AbsorbingDampers_integrateResidual(void* objVptr, void* residualVptr, double t, void* fieldsVptr, void* meshVptr, void* csVptr)
     try {
       assert(0 != objVptr);
       assert(0 != residualVptr);
       assert(0 != fieldsVptr);
       assert(0 != meshVptr);
+      assert(0 != csVptr);
       ALE::Obj<pylith::Mesh>* mesh =
         (ALE::Obj<pylith::Mesh>*) meshVptr;
       ALE::Obj<pylith::real_section_type>* residual =
         (ALE::Obj<pylith::real_section_type>*) residualVptr;
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
+      spatialdata::geocoords::CoordSys* cs =
+        (spatialdata::geocoords::CoordSys*) csVptr;
       ((pylith::bc::AbsorbingDampers*) objVptr)->integrateResidual(*residual,
-                                                            t, fields, *mesh);
+                                                            t, fields, *mesh, cs);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -854,7 +857,8 @@ cdef class AbsorbingDampers(BoundaryCondition):
                                  PyCObject_AsVoidPtr(residual),
                                  t,
                                  ptrFromHandle(fields),
-                                 ptrFromHandle(mesh))
+                                 ptrFromHandle(mesh),
+				 ptrFromHandle(cs))
     return
 
 
@@ -1111,25 +1115,28 @@ cdef class Neumann(BoundaryCondition):
     self.handle = self._createHandle()
 
 
-  def integrateResidual(self, residual, t, fields, mesh):
+  def integrateResidual(self, residual, t, fields, mesh, cs):
     """
     Integrate contributions to residual term (r) for operator.
     """
     # create shim for method 'integrateResidual'
-    #embed{ void Neumann_integrateResidual(void* objVptr, void* residualVptr, double t, void* fieldsVptr, void* meshVptr)
+    #embed{ void Neumann_integrateResidual(void* objVptr, void* residualVptr, double t, void* fieldsVptr, void* meshVptr, void* csVptr)
     try {
       assert(0 != objVptr);
       assert(0 != residualVptr);
       assert(0 != fieldsVptr);
       assert(0 != meshVptr);
+      assert(0 != csVptr);
       ALE::Obj<pylith::Mesh>* mesh =
         (ALE::Obj<pylith::Mesh>*) meshVptr;
       ALE::Obj<pylith::real_section_type>* residual =
         (ALE::Obj<pylith::real_section_type>*) residualVptr;
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
+      spatialdata::geocoords::CoordSys* cs =
+        (spatialdata::geocoords::CoordSys*) csVptr;
       ((pylith::bc::Neumann*) objVptr)->integrateResidual(*residual,
-                                                            t, fields, *mesh);
+                                                            t, fields, *mesh, cs);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -1148,7 +1155,8 @@ cdef class Neumann(BoundaryCondition):
                                  PyCObject_AsVoidPtr(residual),
                                  t,
                                  ptrFromHandle(fields),
-                                 ptrFromHandle(mesh))
+                                 ptrFromHandle(mesh),
+				 ptrFromHandle(cs))
     return
 
 
