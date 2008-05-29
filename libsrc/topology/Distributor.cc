@@ -46,30 +46,27 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
   typedef ALE::DistributionNew<Mesh>        distribution_type;
   typedef distribution_type::partition_type partition_type;
 
-  // IMESH_TODO
-  //   Must distribute auxilliary sections
   const Obj<Mesh::sieve_type>        newSieve        = new Mesh::sieve_type(origMesh->comm(), origMesh->debug());
   const Obj<Mesh::send_overlap_type> sendMeshOverlap = new Mesh::send_overlap_type(origMesh->comm(), origMesh->debug());
   const Obj<Mesh::recv_overlap_type> recvMeshOverlap = new Mesh::recv_overlap_type(origMesh->comm(), origMesh->debug());
-  std::map<point_type,point_type>    renumbering;
 
   *newMesh = new Mesh(origMesh->comm(), origMesh->getDimension(), origMesh->debug());
   (*newMesh)->setSieve(newSieve);
+  // IMESH_TODO
+  //   This might be unnecessary, since the overlap for submeshes is just the restriction of the overlaps
+  // std::map<point_type,point_type>    renumbering;
+  Mesh::renumbering_type&            renumbering     = (*newMesh)->getRenumbering();
   // Distribute the mesh
   if (strlen(partitioner) != 0) {
     std::cout << "ERROR: Using default partitioner instead of " << partitioner << std::endl;
   }
   Obj<partition_type> partition = distribution_type::distributeMeshV(origMesh, (*newMesh), renumbering, sendMeshOverlap, recvMeshOverlap);
-  origMesh->view("Serial Mesh");
-  (*newMesh)->view("Parallel Mesh");
   // Distribute the coordinates
   const Obj<real_section_type>& coordinates         = origMesh->getRealSection("coordinates");
   const Obj<real_section_type>& parallelCoordinates = (*newMesh)->getRealSection("coordinates");
 
   (*newMesh)->setupCoordinates(parallelCoordinates);
   distribution_type::distributeSection(coordinates, partition, renumbering, sendMeshOverlap, recvMeshOverlap, parallelCoordinates);
-  coordinates->view("Serial Coordinates");
-  parallelCoordinates->view("Parallel Coordinates");
   // Distribute other sections
   if (origMesh->getRealSections()->size() > 1) {
     throw ALE::Exception("Need to distribute more real sections");
@@ -84,13 +81,14 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
       // We assume all integer sections are complete sections
       newSection->setChart((*newMesh)->getSieve()->getChart());
       distribution_type::distributeSection(origSection, partition, renumbering, sendMeshOverlap, recvMeshOverlap, newSection);
-      std::cout << "Distributed integer section " << *n_iter << std::endl;
+#if 0
       std::string serialName("Serial ");
       std::string parallelName("Parallel ");
       serialName   += *n_iter;
       parallelName += *n_iter;
       origSection->view(serialName.c_str());
       newSection->view(parallelName.c_str());
+#endif
     }
   }
   if (origMesh->getArrowSections()->size() > 1) {
@@ -107,12 +105,14 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
     ALE::New::Completion<Mesh,Mesh::point_type>::scatterCones(origLabel, newLabel, sendMeshOverlap, recvMeshOverlap, renumbering);
     // Create local label
     newLabel->add(origLabel, (*newMesh)->getSieve(), renumbering);
+#if 0
     std::string serialName("Serial ");
     std::string parallelName("Parallel ");
     serialName   += l_iter->first;
     parallelName += l_iter->first;
     origLabel->view(serialName.c_str());
     newLabel->view(parallelName.c_str());
+#endif
   }
   // Create the parallel overlap
   Obj<Mesh::send_overlap_type> sendParallelMeshOverlap = (*newMesh)->getSendOverlap();

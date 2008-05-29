@@ -66,6 +66,15 @@ pylith::meshio::OutputSolnSubset::subdomainMesh(const ALE::Obj<Mesh>& mesh)
   } // if
   _mesh->setRealSection("coordinates", 
 			mesh->getRealSection("coordinates"));
+  // Create the parallel overlap
+  Obj<Mesh::send_overlap_type> sendParallelMeshOverlap = _mesh->getSendOverlap();
+  Obj<Mesh::recv_overlap_type> recvParallelMeshOverlap = _mesh->getRecvOverlap();
+  Mesh::renumbering_type&      renumbering             = mesh->getRenumbering();
+  //   Can I figure this out in a nicer way?
+  ALE::SetFromMap<std::map<Mesh::point_type,Mesh::point_type> > globalPoints(renumbering);
+
+  ALE::OverlapBuilder<>::constructOverlap(globalPoints, renumbering, sendParallelMeshOverlap, recvParallelMeshOverlap);
+  _mesh->setCalculatedOverlap(true);
 
   return _mesh;
 } // subdomainMesh
