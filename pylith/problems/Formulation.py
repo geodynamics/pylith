@@ -53,14 +53,18 @@ class Formulation(Component):
     ## Python object for managing Formulation facilities and properties.
     ##
     ## \b Properties
-    ## @li None
+    ## @li useGravity Gravity on (true) or off (false).
     ##
     ## \b Facilities
     ## @li \b solver Algebraic solver.
     ## @li \b output Output manager associated with solution.
+    ## @li \b gravityField Gravity field for problem (SpatialDB).
 
     import pyre.inventory
 
+    useGravity = pyre.inventory.bool("use_gravity", default=False)
+    useGravity.meta['tip'] = "Use gravitational acceleration for problem."
+    
     from pylith.solver.SolverLinear import SolverLinear
     solver = pyre.inventory.facility("solver", family="solver",
                                      factory=SolverLinear)
@@ -71,6 +75,12 @@ class Formulation(Component):
                                           itemFactory=outputFactory,
                                           factory=SingleOutput)
     output.meta['tip'] = "Output managers associated with solution."
+
+    from spatialdata.spatialdb.GravityField import GravityField
+    gravityField = pyre.inventory.facility("gravity_field",
+                                          factory=GravityField,
+                                          family="spatial_database")
+    gravityField.meta['tip'] = "Database used for gravity field."
 
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -151,8 +161,13 @@ class Formulation(Component):
     self.fields = FieldsManager(self.mesh)
     self._debug.log(resourceUsageString())
 
+    self._info.log("Initializing gravity field.")
+    from spatialdata.spatialdb.GravityField import GravityField
+    self.gravityField.initialize()
+
     self._info.log("Initializing integrators.")
     for integrator in self.integrators:
+      integrator.gravityField(self.gravityField)
       integrator.initialize(totalTime, numTimeSteps)
     self._debug.log(resourceUsageString())
 
@@ -270,6 +285,10 @@ class Formulation(Component):
     Component._configure(self)
     self.solver = self.inventory.solver
     self.output = self.inventory.output
+    if (self.useGravity):
+      self.gravityField = self.inventory.gravityField
+    else:
+      self.gravityField = None
 
     import journal
     self._debug = journal.debug(self.name)
