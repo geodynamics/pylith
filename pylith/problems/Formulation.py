@@ -63,7 +63,7 @@ class Formulation(Component):
     import pyre.inventory
 
     useGravity = pyre.inventory.bool("use_gravity", default=False)
-    useGravity.meta['tip'] = "Use gravitational acceleration for problem."
+    useGravity.meta['tip'] = "Use gravitational body forces in problem."
     
     from pylith.solver.SolverLinear import SolverLinear
     solver = pyre.inventory.facility("solver", family="solver",
@@ -161,13 +161,13 @@ class Formulation(Component):
     self.fields = FieldsManager(self.mesh)
     self._debug.log(resourceUsageString())
 
-    self._info.log("Initializing gravity field.")
-    from spatialdata.spatialdb.GravityField import GravityField
-    self.gravityField.initialize()
+    if self.gravityField != None:
+      self._info.log("Initializing gravity field.")
+      self.gravityField.initialize()
 
     self._info.log("Initializing integrators.")
     for integrator in self.integrators:
-      integrator.gravityField(self.gravityField)
+      integrator.gravityField = self.gravityField
       integrator.initialize(totalTime, numTimeSteps)
     self._debug.log(resourceUsageString())
 
@@ -285,7 +285,7 @@ class Formulation(Component):
     Component._configure(self)
     self.solver = self.inventory.solver
     self.output = self.inventory.output
-    if (self.useGravity):
+    if (self.inventory.useGravity):
       self.gravityField = self.inventory.gravityField
     else:
       self.gravityField = None
