@@ -22,6 +22,7 @@ check_PROGRAMS = testfaults
 # Primary source files
 testfaults_SOURCES = \
 	TestBruneSlipFn.cc \
+	TestConstRateSlipFn.cc \
 	TestEqKinSrc.cc \
 	TestFault.cc \
 	TestFaultCohesive.cc \
@@ -42,6 +43,7 @@ testfaults_SOURCES = \
 
 noinst_HEADERS = \
 	TestBruneSlipFn.hh \
+	TestConstRateSlipFn.hh \
 	TestEqKinSrc.hh \
 	TestFault.hh \
 	TestFaultCohesive.hh \

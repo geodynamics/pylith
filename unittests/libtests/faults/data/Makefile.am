@@ -18,6 +18,7 @@ dist_noinst_DATA = \
 	line2_finalslip.spatialdb \
 	line2_sliptime.spatialdb \
 	line2_peakrate.spatialdb \
+	line2_sliprate.spatialdb \
 	tri3.mesh \
 	tri3b.mesh \
 	tri3c.mesh \
@@ -28,6 +29,7 @@ dist_noinst_DATA = \
 	tri3_finalslipB.spatialdb \
 	tri3_sliptime.spatialdb \
 	tri3_peakrate.spatialdb \
+	tri3_sliprate.spatialdb \
 	tri3d_finalslip.spatialdb \
 	tri3d_sliptime.spatialdb \
 	tri3d_peakrate.spatialdb \
@@ -58,6 +60,7 @@ dist_noinst_DATA = \
 	tet4_finalslip.spatialdb \
 	tet4_sliptime.spatialdb \
 	tet4_peakrate.spatialdb \
+	tet4_sliprate.spatialdb \
 	tet4e_finalslip.spatialdb \
 	tet4e_sliptime.spatialdb \
 	tet4e_peakrate.spatialdb \

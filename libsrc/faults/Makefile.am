@@ -16,6 +16,8 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	BruneSlipFn.hh \
 	BruneSlipFn.icc \
+	ConstRateSlipFn.hh \
+	ConstRateSlipFn.icc \
 	CohesiveTopology.hh \
 	EqKinSrc.hh \
 	Fault.hh \

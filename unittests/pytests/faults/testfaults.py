@@ -59,6 +59,9 @@ class TestApp(Script):
     from TestBruneSlipFn import TestBruneSlipFn
     suite.addTest(unittest.makeSuite(TestBruneSlipFn))
 
+    from TestConstRateSlipFn import TestConstRateSlipFn
+    suite.addTest(unittest.makeSuite(TestConstRateSlipFn))
+
     from TestEqKinSrc import TestEqKinSrc
     suite.addTest(unittest.makeSuite(TestEqKinSrc))
 
