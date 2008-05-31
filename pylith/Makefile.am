@@ -22,6 +22,7 @@ nobase_pkgpyexec_PYTHON = \
 	bc/Neumann.py \
 	faults/__init__.py \
 	faults/BruneSlipFn.py \
+	faults/ConstRateSlipFn.py \
 	faults/EqKinSrc.py \
 	faults/Fault.py \
 	faults/FaultCohesive.py \

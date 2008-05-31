@@ -28,6 +28,7 @@ libpylith_la_SOURCES = \
 	bc/DirichletPoints.cc \
 	bc/Neumann.cc \
 	faults/BruneSlipFn.cc \
+	faults/ConstRateSlipFn.cc \
 	faults/CohesiveTopology.cc \
 	faults/EqKinSrc.cc \
 	faults/Fault.cc \
