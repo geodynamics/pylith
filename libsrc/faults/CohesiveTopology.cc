@@ -371,12 +371,16 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
   if (debug) fault->view("Oriented Fault mesh");
 
   // Convert fault to an IMesh
-  std::map<Mesh::point_type,Mesh::point_type> renumbering;
+  Mesh::renumbering_type&      renumbering             = (*ifault)->getRenumbering();
+  Obj<Mesh::send_overlap_type> sendParallelMeshOverlap = (*ifault)->getSendOverlap();
+  Obj<Mesh::recv_overlap_type> recvParallelMeshOverlap = (*ifault)->getRecvOverlap();
   (*ifault)->setSieve(ifaultSieve);
   ALE::ISieveConverter::convertMesh(*fault, *(*ifault), renumbering, false);
-  fault->view("Old fault mesh");
-  (*ifault)->view("New fault mesh");
-  renumbering.clear();
+  // Create the parallel overlap
+  //   Can I figure this out in a nicer way?
+  ALE::SetFromMap<std::map<Mesh::point_type,Mesh::point_type> > globalPoints(renumbering);
+  ALE::OverlapBuilder<>::constructOverlap(globalPoints, renumbering, sendParallelMeshOverlap, recvParallelMeshOverlap);
+  (*ifault)->setCalculatedOverlap(true);
   fault      = NULL;
   faultSieve = NULL;
 
