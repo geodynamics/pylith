@@ -588,7 +588,7 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
   } // for
 
   // Assemble orientation information
-  ALE::Distribution<Mesh>::completeSection(_faultMesh, _orientation);
+  ALE::Completion::completeSection(_faultMesh->getSendOverlap(), _faultMesh->getRecvOverlap(), _orientation, _orientation);
 
   // Loop over vertices, make orientation information unit magnitude
   double_array vertexDir(orientationSize);
@@ -853,7 +853,7 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   } // for
 
   // Assemble area information
-  ALE::Distribution<Mesh>::completeSection(_faultMesh, _area);
+  ALE::Completion::completeSection(_faultMesh->getSendOverlap(), _faultMesh->getRecvOverlap(), _area, _area);
 } // _calcArea
 
 // ----------------------------------------------------------------------
