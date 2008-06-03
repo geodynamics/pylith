@@ -179,23 +179,17 @@ pylith::faults::BruneSlipFn::initialize(
   _dbFinalSlip->close();
   _dbSlipTime->close();
   _dbPeakRate->close();
-
-  // Allocate slip field
-  _slip = new real_section_type(faultMesh->comm(), faultMesh->debug());
-  _slip->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
-  _slip->setFiberDimension(vertices, spaceDim);
-  faultMesh->allocate(_slip);
-  assert(!_slip.isNull());
 } // initialize
 
 // ----------------------------------------------------------------------
 // Get slip on fault surface at time t.
-const ALE::Obj<pylith::real_section_type>&
-pylith::faults::BruneSlipFn::slip(const double t,
+void
+pylith::faults::BruneSlipFn::slip(const ALE::Obj<pylith::real_section_type>& slipField,
+				  const double t,
 				  const ALE::Obj<Mesh>& faultMesh)
 { // slip
   assert(!_parameters.isNull());
-  assert(!_slip.isNull());
+  assert(!slipField.isNull());
   assert(!faultMesh.isNull());
 
   const int spaceDim = _spaceDim;
@@ -232,23 +226,22 @@ pylith::faults::BruneSlipFn::slip(const double t,
       slipValues[i] = scale * finalSlip[i];
 
     // Update field
-    _slip->updatePoint(*v_iter, &slipValues[0]);
+    slipField->updateAddPoint(*v_iter, &slipValues[0]);
   } // for
 
   PetscLogFlops(numVertices * (2+8 + 3*spaceDim));
-
-  return _slip;
 } // slip
 
 // ----------------------------------------------------------------------
 // Get increment of slip on fault surface between time t0 and t1.
-const ALE::Obj<pylith::real_section_type>&
-pylith::faults::BruneSlipFn::slipIncr(const double t0,
+void
+pylith::faults::BruneSlipFn::slipIncr(const ALE::Obj<pylith::real_section_type>& slipField,
+				      const double t0,
 				      const double t1,
 				      const ALE::Obj<Mesh>& faultMesh)
 { // slipIncr
   assert(!_parameters.isNull());
-  assert(!_slip.isNull());
+  assert(!slipField.isNull());
   assert(!faultMesh.isNull());
 
   const int spaceDim = _spaceDim;
@@ -287,12 +280,10 @@ pylith::faults::BruneSlipFn::slipIncr(const double t0,
       slipValues[i] = scale * finalSlip[i];
 
     // Update field
-    _slip->updatePoint(*v_iter, &slipValues[0]);
+    slipField->updateAddPoint(*v_iter, &slipValues[0]);
   } // for
 
   PetscLogFlops(count * (3+2*8 + 3*spaceDim));
-
-  return _slip;
 } // slipIncr
 
 // ----------------------------------------------------------------------

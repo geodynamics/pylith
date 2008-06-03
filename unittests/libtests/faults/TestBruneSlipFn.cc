@@ -223,16 +223,21 @@ pylith::faults::TestBruneSlipFn::testSlip(void)
   
   const int spaceDim = faultMesh->getDimension() + 1;
 
-  const double t = 2.134;
-  const ALE::Obj<real_section_type>& slip = slipfn.slip(originTime+t, faultMesh);
+  const ALE::Obj<Mesh::label_sequence>& vertices = faultMesh->depthStratum(0);
+  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  ALE::Obj<real_section_type> slip = 
+    new real_section_type(faultMesh->comm(), faultMesh->debug());
+  slip->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), 
+								 vertices->end()), 
+					       *std::max_element(vertices->begin(), vertices->end())+1));
+  slip->setFiberDimension(vertices, spaceDim);
+  faultMesh->allocate(slip);
   CPPUNIT_ASSERT(!slip.isNull());
 
-  const double tolerance = 1.0e-06;
-  
-  const ALE::Obj<Mesh::label_sequence>& vertices = 
-    faultMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const double t = 2.134;
+  slipfn.slip(slip, originTime+t, faultMesh);
 
+  const double tolerance = 1.0e-06;
   int iPoint = 0;
   for (Mesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
@@ -275,18 +280,22 @@ pylith::faults::TestBruneSlipFn::testSlipIncr(void)
 
   const int spaceDim = faultMesh->getDimension() + 1;
 
-  const double t0 = 1.234;
-  const double t1 = 3.635;
-  const ALE::Obj<real_section_type>& slip = 
-    slipfn.slipIncr(originTime+t0, originTime+t1, faultMesh);
+  const ALE::Obj<Mesh::label_sequence>& vertices = faultMesh->depthStratum(0);
+  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  ALE::Obj<real_section_type> slip =
+    new real_section_type(faultMesh->comm(), faultMesh->debug());
+  slip->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), 
+								 vertices->end()), 
+					       *std::max_element(vertices->begin(), vertices->end())+1));
+  slip->setFiberDimension(vertices, spaceDim);
+  faultMesh->allocate(slip);
   CPPUNIT_ASSERT(!slip.isNull());
 
+  const double t0 = 1.234;
+  const double t1 = 3.635;
+  slipfn.slipIncr(slip, originTime+t0, originTime+t1, faultMesh);
+
   const double tolerance = 1.0e-06;
-
-  const ALE::Obj<Mesh::label_sequence>& vertices = 
-    faultMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
-
   int iPoint = 0;
   for (Mesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;

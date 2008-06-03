@@ -70,23 +70,25 @@ pylith::faults::EqKinSrc::initialize(
 
 // ----------------------------------------------------------------------
 // Get slip on fault surface at time t.
-const ALE::Obj<pylith::real_section_type>&
-pylith::faults::EqKinSrc::slip(const double t,
+void
+pylith::faults::EqKinSrc::slip(const ALE::Obj<pylith::real_section_type>& slipField,
+			       const double t,
 			       const ALE::Obj<Mesh>& faultMesh)
 { // slip
   assert(0 != _slipfn);
-  return _slipfn->slip(t, faultMesh);
+  _slipfn->slip(slipField, t, faultMesh);
 } // slip
 
 // ----------------------------------------------------------------------
 // Get slip increment on fault surface from time t0 to 1.
-const ALE::Obj<pylith::real_section_type>&
-pylith::faults::EqKinSrc::slipIncr(const double t0,
+void
+pylith::faults::EqKinSrc::slipIncr(const ALE::Obj<pylith::real_section_type>& slipField,
+				   const double t0,
 				   const double t1,
 				   const ALE::Obj<Mesh>& faultMesh)
 { // slip
   assert(0 != _slipfn);
-  return _slipfn->slipIncr(t0, t1, faultMesh);
+  _slipfn->slipIncr(slipField, t0, t1, faultMesh);
 } // slip
 
 // ----------------------------------------------------------------------

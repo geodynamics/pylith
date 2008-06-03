@@ -37,8 +37,7 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
-  _eqsrc(0)
+pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void)
 { // constructor
 } // constructor
 
@@ -46,15 +45,21 @@ pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
 // Destructor.
 pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void)
 { // destructor
-  _eqsrc = 0; // Don't manage memory for eq source
+  // Don't manage memory for eq source pointers
 } // destructor
 
 // ----------------------------------------------------------------------
 // Set kinematic earthquake source.
 void
-pylith::faults::FaultCohesiveKin::eqsrc(EqKinSrc* src)
+pylith::faults::FaultCohesiveKin::eqsrcs(EqKinSrc** sources,
+					 const int numSources)
 { // eqsrc
-  _eqsrc = src; // Don't manage memory for eq source
+  _eqSrcs.resize(numSources);
+  for (int i=0; i < numSources; ++i) {
+    if (0 == sources[i])
+      throw std::runtime_error("Null earthquake source.");
+    _eqSrcs[i] = sources[i]; // Don't manage memory for eq source
+  } // for
 } // eqsrc
 
 // ----------------------------------------------------------------------
@@ -67,7 +72,6 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
 					     spatialdata::spatialdb::SpatialDB* matDB)
 { // initialize
   assert(0 != _quadrature);
-  assert(0 != _eqsrc);
   
   if (3 != upDir.size())
     throw std::runtime_error("Up direction for fault orientation must be "
@@ -95,7 +99,21 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
   // Compute tributary area for each vertex in fault mesh.
   _calcArea();
 
-  _eqsrc->initialize(_faultMesh, cs);
+  const int nsrcs = _eqSrcs.size();
+  for (int i=0; i < nsrcs; ++i) {
+    assert(0 != _eqSrcs[i]);
+    _eqSrcs[i]->initialize(_faultMesh, cs);
+  } // for
+
+  // Allocate slip field
+  const ALE::Obj<Mesh::label_sequence>& vertices = _faultMesh->depthStratum(0);
+  _slip = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
+  _slip->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), 
+								  vertices->end()), 
+						*std::max_element(vertices->begin(), vertices->end())+1));
+  _slip->setFiberDimension(vertices, cs->spaceDim());
+  _faultMesh->allocate(_slip);
+  assert(!_slip.isNull());
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -145,17 +163,26 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   const ALE::Obj<real_section_type>& solution = fields->getSolution();
   assert(!solution.isNull());  
 
+  assert(!_slip.isNull());
+  _slip->zero();
   if (!_useSolnIncr) {
     // Compute slip field at current time step
-    assert(0 != _eqsrc);
-    _slip = _eqsrc->slip(t, _faultMesh);
-    assert(!_slip.isNull());
+    const int nsrcs = _eqSrcs.size();
+    for (int i=0; i < nsrcs; ++i) {
+      assert(0 != _eqSrcs[i]);
+      if (t >= _eqSrcs[i]->originTime())
+	_eqSrcs[i]->slip(_slip, t, _faultMesh);
+    } // for
   } else {
     // Compute increment of slip field at current time step
-    assert(0 != _eqsrc);
-    _slip = _eqsrc->slipIncr(t-_dt, t, _faultMesh);
-    assert(!_slip.isNull());
+    const int nsrcs = _eqSrcs.size();
+    for (int i=0; i < nsrcs; ++i) {
+      assert(0 != _eqSrcs[i]);
+      if (t >= _eqSrcs[i]->originTime())
+	_eqSrcs[i]->slipIncr(_slip, t-_dt, t, _faultMesh);
+    } // for
   } // else
+  _slip->view("SLIP");
   
   for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
@@ -429,7 +456,6 @@ pylith::faults::FaultCohesiveKin::vertexField(
 { // vertexField
   assert(!_faultMesh.isNull());
   assert(!_orientation.isNull());
-  assert(0 != _eqsrc);
 
   const int cohesiveDim = _faultMesh->getDimension();
 
@@ -456,11 +482,11 @@ pylith::faults::FaultCohesiveKin::vertexField(
     return _bufferTmp;
 
   } else if (0 == strcasecmp("final_slip", name)) {
-    _bufferTmp = _eqsrc->finalSlip();
+    _bufferTmp = _eqSrcs[0]->finalSlip();
     *fieldType = VECTOR_FIELD;
     return _bufferTmp;
   } else if (0 == strcasecmp("slip_time", name)) {
-    _bufferTmp = _eqsrc->slipTime();
+    _bufferTmp = _eqSrcs[0]->slipTime();
     *fieldType = SCALAR_FIELD;
     return _bufferTmp;
   } else if (0 == strcasecmp("traction_change", name)) {

@@ -268,11 +268,6 @@ class TestFaultCohesiveKin(unittest.TestCase):
     slipfn.slipTime = dbSlipTime
     slipfn.slipRate = dbPeakRate
 
-    from pylith.faults.EqKinSrc import EqKinSrc
-    eqsrc = EqKinSrc()
-    eqsrc.originTime = 1.23*second
-    eqsrc.slipfn = slipfn
-
     ioMatDB = SimpleIOAscii()
     ioMatDB.filename = "data/bulkprops_2d.spatialdb"
     dbMat = SimpleDB()
@@ -289,7 +284,9 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault.upDir = [0, 0, 1]
     fault.normalDir = [1, 0, 0]
     fault.quadrature = quadrature
-    fault.eqsrc = eqsrc
+    eqsrc = fault.eqsrcs.components()[0]
+    eqsrc.originTime = 1.23*second
+    eqsrc.slipfn = slipfn
     fault.matDB = dbMat
     fault.adjustTopology(mesh)
     fault.preinitialize(mesh)

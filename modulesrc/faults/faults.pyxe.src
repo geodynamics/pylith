@@ -606,18 +606,18 @@ cdef class FaultCohesiveKin(FaultCohesive):
       FaultCohesiveKin_quadrature_set(self.thisptr, ptrFromHandle(q))
 
 
-  property eqsrc:
-    def __set__(self, src):
+  property eqsrcs:
+    def __set__(self, srcs):
       """
       Set quadrature.
       """
       # create shim for method 'eqsrc'
-      #embed{ void FaultCohesiveKin_eqsrc_set(void* objVptr, void* srcVptr)
+      #embed{ void FaultCohesiveKin_eqsrcs_set(void* objVptr, void** srcsVptr, int nsrcs)
       try {
         assert(0 != objVptr);
-        pylith::faults::EqKinSrc* eqsrc =
-          (pylith::faults::EqKinSrc*) srcVptr;
-        ((pylith::faults::FaultCohesiveKin*) objVptr)->eqsrc(eqsrc);
+        pylith::faults::EqKinSrc** eqsrcs =
+          (pylith::faults::EqKinSrc**) srcsVptr;
+        ((pylith::faults::FaultCohesiveKin*) objVptr)->eqsrcs(eqsrcs, nsrcs);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -629,10 +629,15 @@ cdef class FaultCohesiveKin(FaultCohesive):
                         "Caught unknown C++ exception.");
       } // try/catch
       #}embed
-      if not src.name == "pylith_faults_EqKinSrc":
-        raise TypeError, \
-              "Argument must be extension module type 'EqKinSrc'."
-      FaultCohesiveKin_eqsrc_set(self.thisptr, ptrFromHandle(src))
+      cdef void** srcsCpp
+      nsrcs = len(srcs)
+      srcsCpp = <void**> malloc(nsrcs*sizeof(void*))
+      for i from 0 <= i < nsrcs:
+        if not srcs[i].cppHandle.name == "pylith_faults_EqKinSrc":
+          raise TypeError, \
+            "Argument srcs must be an array of extension module type 'EqKinSrc'."
+        srcsCpp[i] = ptrFromHandle(srcs[i].cppHandle)
+      FaultCohesiveKin_eqsrcs_set(self.thisptr, srcsCpp, nsrcs)
 
 
   property timeStep:

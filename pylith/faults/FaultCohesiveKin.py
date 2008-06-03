@@ -21,6 +21,17 @@
 from FaultCohesive import FaultCohesive
 from pylith.feassemble.Integrator import Integrator
 
+# ITEM FACTORIES ///////////////////////////////////////////////////////
+
+def eqsrcFactory(name):
+  """
+  Factory for earthquake source items.
+  """
+  from pyre.inventory import facility
+  from EqKinSrc import EqKinSrc
+  return facility(name, family="eq_kinematic_src", factory=EqKinSrc)
+
+
 # FaultCohesiveKin class
 class FaultCohesiveKin(FaultCohesive, Integrator):
   """
@@ -44,15 +55,15 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     ## @li None
     ##
     ## \b Facilities
-    ## @li \b eq_src Kinematic earthquake source information.
+    ## @li \b eq_srcs Kinematic earthquake sources information.
     ## @li \b output Output manager associated with fault data.
 
     import pyre.inventory
 
-    from EqKinSrc import EqKinSrc
-    eqsrc = pyre.inventory.facility("eq_src", family="eq_kinematic_src",
-                                    factory=EqKinSrc)
-    eqsrc.meta['tip'] = "Kinematic earthquake source information."
+    from SingleRupture import SingleRupture
+    eqsrcs = pyre.inventory.facilityArray("eq_srcs", itemFactory=eqsrcFactory,
+                                          factory=SingleRupture)
+    eqsrcs.meta['tip'] = "Kinematic earthquake sources information."
 
     from pylith.meshio.OutputFaultKin import OutputFaultKin
     output = pyre.inventory.facility("output", family="output_manager",
@@ -92,8 +103,9 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     FaultCohesive.preinitialize(self, mesh)
     Integrator.preinitialize(self, mesh)
     assert(None != self.cppHandle)
-    self.eqsrc.preinitialize()
-    self.cppHandle.eqsrc = self.eqsrc.cppHandle
+    for eqsrc in self.eqsrcs.components():
+      eqsrc.preinitialize()
+    self.cppHandle.eqsrcs = self.eqsrcs.components()
 
     if mesh.dimension() == 2:
       self.availableFields['vertex']['info'] += ["strike_dir"]
@@ -112,7 +124,8 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
 
     FaultCohesive.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
-    self.eqsrc.verifyConfiguration()
+    for eqsrc in self.eqsrcs.components():
+      eqsrc.verifyConfiguration()
     
     self._logger.eventEnd(logEvent)
     return
@@ -126,7 +139,8 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     self._info.log("Initializing fault '%s'." % self.label)
 
     self._logger.eventBegin(logEvent)
-    self.eqsrc.initialize()
+    for eqsrc in self.eqsrcs.components():
+      eqsrc.initialize()
     FaultCohesive.initialize(self, totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)
@@ -179,7 +193,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     Setup members using inventory.
     """
     FaultCohesive._configure(self)
-    self.eqsrc = self.inventory.eqsrc
+    self.eqsrcs = self.inventory.eqsrcs
     self.output = self.inventory.output
     return
 

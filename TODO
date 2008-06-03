@@ -4,17 +4,22 @@ CURRENT ISSUES
 
 Before June workshop
 
-    Fix holding onto memory from before distribution.
+  Fix holding onto memory from before distribution.
 
-    simple strike-slip propagating rupture (performance benchmark 
-	500m resolution)
+  simple strike-slip propagating rupture (performance benchmark 
+    500m resolution)
 
-    2. Reverse-slip benchmark.
-      a. Create BC for CUBIT mesh.
-      b. Create BC for LaGriT mesh.
-      c. Run benchmarks.
-      d. Generate analytic solutions.
-      e. Tabulate results.
+  1. Reverse-slip benchmark.
+    a. Create BC for CUBIT mesh.
+    b. Create BC for LaGriT mesh.
+    c. Run benchmarks.
+    d. Generate analytic solutions.
+    e. Tabulate results.
+
+  2. Multiple earthquake sources
+    Output info should be final_slip_X, slip_time_X
+
+  3. Gravity
 
   Manual
 
@@ -33,14 +38,6 @@ Release 1.2
      Remove CellGeometry jacobian(double_array)
 
      Dirichlet and fault constraints?
-
-  3. Multiple earthquake sources
-     Add time of rupture to KinEqSrc
-     Time within rupture is relative to time of rupture
-     Loop over eq sources, if time is greater than time of rupture, use it
-     Would allow Savage-Prescott benchmark.
-
-  4. Gravity
 
   5. Output
 
