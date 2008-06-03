@@ -40,6 +40,7 @@
 #include "FaultCohesive.hh" // ISA FaultCohesive
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
+#include <vector> // HASA std::vector
 #include <map> // HASA std::map
 
 /// Namespace for pylith package
@@ -78,11 +79,13 @@ public :
   virtual
   ~FaultCohesiveKin(void);
 
-  /** Set kinematic earthquake source.
+  /** Set kinematic earthquake sources.
    *
-   * @param src Kinematic earthquake source.
+   * @param sources Array of kinematic earthquake sources.
+   * @param numSources Number of earthquake sources
    */
-  void eqsrc(EqKinSrc* src);
+  void eqsrcs(EqKinSrc** sources, 
+	      const int numSources);
 
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
@@ -232,8 +235,8 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  EqKinSrc* _eqsrc; ///< Kinematic earthquake source information
-
+  std::vector<EqKinSrc*> _eqSrcs; ///< Array of kinematic earthquake sources.
+  
   /// Field over fault mesh vertices of pseudo-stiffness values for
   /// scaling constraint information to improve conditioning of
   /// Jacobian matrix.

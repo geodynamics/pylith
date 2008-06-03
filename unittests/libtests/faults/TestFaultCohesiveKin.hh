@@ -25,6 +25,8 @@
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
+#include <vector> // HASA std::vector
+
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
@@ -121,8 +123,8 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  EqKinSrc* _eqsrc; ///< Kinematic earthquake source
-  BruneSlipFn* _slipfn; ///< Slip time function
+  std::vector<EqKinSrc*> _eqsrcs; ///< Array of Kinematic earthquake sources.
+  BruneSlipFn* _slipfn; ///< Slip time function.
 
 }; // class TestFaultCohesiveKin
 

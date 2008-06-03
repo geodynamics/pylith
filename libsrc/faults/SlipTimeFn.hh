@@ -65,18 +65,20 @@ public :
 
   /** Get slip on fault surface at time t.
    *
+   * @param slipField Slip field over fault surface.
    * @param t Time t.
    * @param faultMesh Mesh over fault surface.
    *
    * @returns Slip vector as left-lateral/reverse/normal.
    */
   virtual
-  const ALE::Obj<real_section_type>&
-  slip(const double t,
-       const ALE::Obj<Mesh>& faultMesh) = 0;
+  void slip(const ALE::Obj<real_section_type>& slipField,
+	    const double t,
+	    const ALE::Obj<Mesh>& faultMesh) = 0;
   
   /** Get slip increment on fault surface between time t0 and t1.
    *
+   * @param slipField Slip field over fault surface.
    * @param t0 Time t.
    * @param t1 Time t+dt.
    * @param faultMesh Mesh over fault surface.
@@ -84,10 +86,10 @@ public :
    * @returns Increment in slip vector as left-lateral/reverse/normal.
    */
   virtual
-  const ALE::Obj<real_section_type>&
-  slipIncr(const double t0,
-	   const double t1,
-	   const ALE::Obj<Mesh>& faultMesh) = 0;
+  void slipIncr(const ALE::Obj<real_section_type>& slipField,
+		const double t0,
+		const double t1,
+		const ALE::Obj<Mesh>& faultMesh) = 0;
 
   /** Get final slip.
    *

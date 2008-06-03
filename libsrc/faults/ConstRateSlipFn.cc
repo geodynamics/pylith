@@ -157,23 +157,17 @@ pylith::faults::ConstRateSlipFn::initialize(
   // Close databases
   _dbSlipRate->close();
   _dbSlipTime->close();
-
-  // Allocate slip field
-  _slip = new real_section_type(faultMesh->comm(), faultMesh->debug());
-  _slip->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
-  _slip->setFiberDimension(vertices, spaceDim);
-  faultMesh->allocate(_slip);
-  assert(!_slip.isNull());
 } // initialize
 
 // ----------------------------------------------------------------------
 // Get slip on fault surface at time t.
-const ALE::Obj<pylith::real_section_type>&
-pylith::faults::ConstRateSlipFn::slip(const double t,
-				  const ALE::Obj<Mesh>& faultMesh)
+void
+pylith::faults::ConstRateSlipFn::slip(const ALE::Obj<pylith::real_section_type>& slipField,
+				      const double t,
+				      const ALE::Obj<Mesh>& faultMesh)
 { // slip
   assert(!_parameters.isNull());
-  assert(!_slip.isNull());
+  assert(!slipField.isNull());
   assert(!faultMesh.isNull());
 
   const int spaceDim = _spaceDim;
@@ -203,23 +197,22 @@ pylith::faults::ConstRateSlipFn::slip(const double t,
 	slipValues[i] = slipRate[i] * relTime;
     
     // Update field
-    _slip->updatePoint(*v_iter, &slipValues[0]);
+    slipField->updateAddPoint(*v_iter, &slipValues[0]);
   } // for
 
   PetscLogFlops(numVertices * (1+1 + 4*spaceDim));
-
-  return _slip;
 } // slip
 
 // ----------------------------------------------------------------------
 // Get increment of slip on fault surface between time t0 and t1.
-const ALE::Obj<pylith::real_section_type>&
-pylith::faults::ConstRateSlipFn::slipIncr(const double t0,
-				      const double t1,
-				      const ALE::Obj<Mesh>& faultMesh)
+void
+pylith::faults::ConstRateSlipFn::slipIncr(const ALE::Obj<pylith::real_section_type>& slipField,
+					  const double t0,
+					  const double t1,
+					  const ALE::Obj<Mesh>& faultMesh)
 { // slipIncr
   assert(!_parameters.isNull());
-  assert(!_slip.isNull());
+  assert(!slipField.isNull());
   assert(!faultMesh.isNull());
 
   const int spaceDim = _spaceDim;
@@ -254,12 +247,10 @@ pylith::faults::ConstRateSlipFn::slipIncr(const double t0,
       slipValues[i] = slipRate[i] * elapsedTime;
     
     // Update field
-    _slip->updatePoint(*v_iter, &slipValues[0]);
+    slipField->updateAddPoint(*v_iter, &slipValues[0]);
   } // for
 
   PetscLogFlops(count * (2 + spaceDim));
-
-  return _slip;
 } // slipIncr
 
 // ----------------------------------------------------------------------
@@ -276,7 +267,7 @@ pylith::faults::ConstRateSlipFn::finalSlip(void)
 ALE::Obj<pylith::real_section_type>
 pylith::faults::ConstRateSlipFn::slipTime(void)
 { // slipTime
-  return _parameters->getFibration(2);
+  return _parameters->getFibration(1);
 } // slipTime
 
 

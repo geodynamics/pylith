@@ -57,7 +57,6 @@ public :
   EqKinSrc(void);
 
   /// Destructor.
-  virtual
   ~EqKinSrc(void);
 
   /** Set origin time for earthquake source.
@@ -83,42 +82,40 @@ public :
    * @param faultMesh Finite-element mesh of fault.
    * @param cs Coordinate system for mesh
    */
-  virtual
   void initialize(const ALE::Obj<Mesh>& faultMesh,
 		  const spatialdata::geocoords::CoordSys* cs);
 
   /** Get slip on fault surface at time t.
    *
+   * @param slipField Slip field over fault mesh.
    * @param t Time t.
    * @param faultMesh Finite-element mesh of fault.
    */
-  virtual
-  const ALE::Obj<real_section_type>& slip(const double t,
-					  const ALE::Obj<Mesh>& faultMesh);
+  void slip(const ALE::Obj<real_section_type>& slipField,
+	    const double t,
+	    const ALE::Obj<Mesh>& faultMesh);
 
   /** Get increment of slip on fault surface between time t0 and t1.
    *
+   * @param slipField Slip field over fault mesh.
    * @param t Time t.
    * @param faultMesh Finite-element mesh of fault.
    */
-  virtual
-  const ALE::Obj<real_section_type>& slipIncr(
-			      const double t0,
-			      const double t1,
-			      const ALE::Obj<Mesh>& faultMesh);
+  void slipIncr(const ALE::Obj<real_section_type>& slipField,
+		const double t0,
+		const double t1,
+		const ALE::Obj<Mesh>& faultMesh);
 
   /** Get final slip.
    *
    * @returns Final slip.
    */
-  virtual
   ALE::Obj<real_section_type> finalSlip(void);
 
   /** Get time when slip begins at each point.
    *
    * @returns Time when slip begins.
    */
-  virtual
   ALE::Obj<real_section_type> slipTime(void);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
