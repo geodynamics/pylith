@@ -638,6 +638,7 @@ cdef class FaultCohesiveKin(FaultCohesive):
             "Argument srcs must be an array of extension module type 'EqKinSrc'."
         srcsCpp[i] = ptrFromHandle(srcs[i].cppHandle)
       FaultCohesiveKin_eqsrcs_set(self.thisptr, srcsCpp, nsrcs)
+      free(srcsCpp)
 
 
   property timeStep:
