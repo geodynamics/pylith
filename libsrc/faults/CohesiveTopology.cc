@@ -371,16 +371,10 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
   if (debug) fault->view("Oriented Fault mesh");
 
   // Convert fault to an IMesh
-  Mesh::renumbering_type&      renumbering             = (*ifault)->getRenumbering();
-  Obj<Mesh::send_overlap_type> sendParallelMeshOverlap = (*ifault)->getSendOverlap();
-  Obj<Mesh::recv_overlap_type> recvParallelMeshOverlap = (*ifault)->getRecvOverlap();
+  Mesh::renumbering_type& renumbering = (*ifault)->getRenumbering();
   (*ifault)->setSieve(ifaultSieve);
   ALE::ISieveConverter::convertMesh(*fault, *(*ifault), renumbering, false);
-  // Create the parallel overlap
-  //   Can I figure this out in a nicer way?
-  ALE::SetFromMap<std::map<Mesh::point_type,Mesh::point_type> > globalPoints(renumbering);
-  ALE::OverlapBuilder<>::constructOverlap(globalPoints, renumbering, sendParallelMeshOverlap, recvParallelMeshOverlap);
-  (*ifault)->setCalculatedOverlap(true);
+  renumbering.clear();
   fault      = NULL;
   faultSieve = NULL;
 
@@ -787,6 +781,15 @@ pylith::faults::CohesiveTopology::createParallel(
     fCoordinates->updatePoint(*v_iter, coordinates->restrictPoint(*v_iter));
   }
 #endif
+
+  // Create the parallel overlap
+  //   Can I figure this out in a nicer way?
+  Obj<Mesh::send_overlap_type> sendParallelMeshOverlap = (*ifault)->getSendOverlap();
+  Obj<Mesh::recv_overlap_type> recvParallelMeshOverlap = (*ifault)->getRecvOverlap();
+  ALE::SetFromMap<std::map<Mesh::point_type,Mesh::point_type> > globalPoints((*ifault)->getRenumbering());
+
+  ALE::OverlapBuilder<>::constructOverlap(globalPoints, (*ifault)->getRenumbering(), sendParallelMeshOverlap, recvParallelMeshOverlap);
+  (*ifault)->setCalculatedOverlap(true);
 }
 
 // ----------------------------------------------------------------------
