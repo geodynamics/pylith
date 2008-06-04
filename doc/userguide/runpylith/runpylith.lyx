@@ -1771,10 +1771,10 @@ Output Manager
 \begin_layout Standard
 The OutputManager object controls the type of files written, the fields
  included in the output, and how often output is written.
- PyLith includes some specialized OutputManagers that precsribe while fields
+ PyLith includes some specialized OutputManagers that prescribe while fields
  are output by default.
  In some cases, additional fields are available but not included by default.
- For example, in 3D problems, the along-strike and up-dir directions over
+ For example, in 3D problems, the along-strike and up-dip directions over
  the fault surface can be included in the diagnostic information.
  These are not included by default, because 1D problems have neither an
  along-strike nor up-dip direction and 2D problems do not have an up-dip
