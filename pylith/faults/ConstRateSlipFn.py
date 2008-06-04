@@ -58,7 +58,7 @@ class ConstRateSlipFn(SlipTimeFn):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="bruneslipfn"):
+  def __init__(self, name="constrateslipfn"):
     """
     Constructor.
     """
@@ -113,7 +113,7 @@ def slip_time_fn():
   """
   Factory associated with ConstRateSlipFn.
   """
-  return slip_time_fn()
+  return ConstRateSlipFn()
 
 
 # End of file 

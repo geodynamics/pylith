@@ -123,7 +123,7 @@ def slip_time_fn():
   """
   Factory associated with BruneSlipFn.
   """
-  return slip_time_fn()
+  return BruneSlipFn()
 
 
 # End of file 
