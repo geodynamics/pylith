@@ -44,8 +44,8 @@ pylith::faults::TestFaultCohesiveKin::setUp(void)
   const int nsrcs = 1;
   _eqsrcs.resize(nsrcs);
   _eqsrcs[0] = new EqKinSrc();
-  //_eqsrcs[1] = new EqKinSrc();
-  _slipfn = new BruneSlipFn();
+  _slipfns.resize(nsrcs);
+  _slipfns[0] = new BruneSlipFn();
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -55,10 +55,12 @@ pylith::faults::TestFaultCohesiveKin::tearDown(void)
 { // tearDown
   delete _data; _data = 0;
   delete _quadrature; _quadrature = 0;
-  const int nsrcs = _eqsrcs.size();
+  int nsrcs = _eqsrcs.size();
   for (int i=0; i < nsrcs; ++i)
     delete _eqsrcs[i];
-  delete _slipfn; _slipfn = 0;
+  nsrcs = _slipfns.size();
+  for (int i=0; i < nsrcs; ++i)
+    delete _slipfns[i];
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -256,7 +258,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     fault.useSolnIncr(false);
     fault.integrateResidual(residual, t, &fields, mesh, &cs);
 
-    residual->view("RESIDUAL"); // DEBUGGING
+    //residual->view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->valsResidual;
@@ -509,7 +511,6 @@ pylith::faults::TestFaultCohesiveKin::_initialize(ALE::Obj<Mesh>* mesh,
   CPPUNIT_ASSERT(0 != mesh);
   CPPUNIT_ASSERT(0 != fault);
   CPPUNIT_ASSERT(0 != _quadrature);
-  CPPUNIT_ASSERT(0 != _slipfn);
 
   try {
     meshio::MeshIOAscii iohandler;
@@ -543,14 +544,15 @@ pylith::faults::TestFaultCohesiveKin::_initialize(ALE::Obj<Mesh>* mesh,
     ioPeakRate.filename(_data->peakRateFilename);
     dbPeakRate.ioHandler(&ioPeakRate);
 
-    _slipfn->dbFinalSlip(&dbFinalSlip);
-    _slipfn->dbSlipTime(&dbSlipTime);
-    _slipfn->dbPeakRate(&dbPeakRate);
-  
     const int nsrcs = _eqsrcs.size();
+    CPPUNIT_ASSERT(nsrcs == _slipfns.size());
     EqKinSrc** sources = new EqKinSrc*[nsrcs];
     for (int i=0; i < nsrcs; ++i) {
-      _eqsrcs[i]->slipfn(_slipfn);
+      _slipfns[i]->dbFinalSlip(&dbFinalSlip);
+      _slipfns[i]->dbSlipTime(&dbSlipTime);
+      _slipfns[i]->dbPeakRate(&dbPeakRate);
+      
+      _eqsrcs[i]->slipfn(_slipfns[i]);
       sources[i] = _eqsrcs[i];
     } // for
   

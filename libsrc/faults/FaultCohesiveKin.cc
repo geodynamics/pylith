@@ -182,7 +182,6 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 	_eqSrcs[i]->slipIncr(_slip, t-_dt, t, _faultMesh);
     } // for
   } // else
-  _slip->view("SLIP");
   
   for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
