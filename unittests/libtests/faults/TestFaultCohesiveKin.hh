@@ -63,6 +63,8 @@ protected :
 
   CohesiveKinData* _data; ///< Data for testing
   feassemble::Quadrature* _quadrature; ///< Data used in testing
+  std::vector<EqKinSrc*> _eqsrcs; ///< Array of Kinematic earthquake sources.
+  std::vector<BruneSlipFn*> _slipfns; ///< Slip time function.
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -119,12 +121,6 @@ private :
    */
   bool _isConstraintVertex(const int vertex) const;
   
-
-  // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private :
-
-  std::vector<EqKinSrc*> _eqsrcs; ///< Array of Kinematic earthquake sources.
-  BruneSlipFn* _slipfn; ///< Slip time function.
 
 }; // class TestFaultCohesiveKin
 

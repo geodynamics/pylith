@@ -36,6 +36,12 @@ testfaults_SOURCES = \
 	TestFaultCohesiveKinTet4e.cc \
 	TestFaultCohesiveKinTet4f.cc \
 	TestFaultCohesiveKinHex8.cc \
+	TestFaultCohesiveKinSrcs.cc \
+	TestFaultCohesiveKinSrcsLine2.cc \
+	TestFaultCohesiveKinSrcsTri3.cc \
+	TestFaultCohesiveKinSrcsQuad4.cc \
+	TestFaultCohesiveKinSrcsTet4.cc \
+	TestFaultCohesiveKinSrcsHex8.cc \
 	TestBoundary.cc \
 	test_faults.cc
 
@@ -57,6 +63,12 @@ noinst_HEADERS = \
 	TestFaultCohesiveKinTet4e.hh \
 	TestFaultCohesiveKinTet4f.hh \
 	TestFaultCohesiveKinHex8.hh \
+	TestFaultCohesiveKinSrcs.hh \
+	TestFaultCohesiveKinSrcsLine2.hh \
+	TestFaultCohesiveKinSrcsTri3.hh \
+	TestFaultCohesiveKinSrcsQuad4.hh \
+	TestFaultCohesiveKinSrcsTet4.hh \
+	TestFaultCohesiveKinSrcsHex8.hh \
 	TestBoundary.hh
 
 # Source files associated with testing data
@@ -110,6 +122,11 @@ testfaults_SOURCES += \
 	data/CohesiveKinDataTet4e.cc \
 	data/CohesiveKinDataTet4f.cc \
 	data/CohesiveKinDataHex8.cc \
+	data/CohesiveKinSrcsDataLine2.cc \
+	data/CohesiveKinSrcsDataTri3.cc \
+	data/CohesiveKinSrcsDataQuad4.cc \
+	data/CohesiveKinSrcsDataTet4.cc \
+	data/CohesiveKinSrcsDataHex8.cc \
 	data/BoundaryData.cc \
 	data/BoundaryDataTri3.cc \
 	data/BoundaryDataQuad4.cc \
@@ -166,6 +183,11 @@ noinst_HEADERS += \
 	data/CohesiveKinDataTet4e.hh \
 	data/CohesiveKinDataTet4f.hh \
 	data/CohesiveKinDataHex8.hh \
+	data/CohesiveKinSrcsDataLine2.hh \
+	data/CohesiveKinSrcsDataTri3.hh \
+	data/CohesiveKinSrcsDataQuad4.hh \
+	data/CohesiveKinSrcsDataTet4.hh \
+	data/CohesiveKinSrcsDataHex8.hh \
 	data/BoundaryData.hh \
 	data/BoundaryDataTri3.hh \
 	data/BoundaryDataQuad4.hh \
