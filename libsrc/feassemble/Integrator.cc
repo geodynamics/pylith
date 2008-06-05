@@ -38,7 +38,6 @@ pylith::feassemble::Integrator::Integrator(void) :
 pylith::feassemble::Integrator::~Integrator(void)
 { // destructor
   delete _quadrature; _quadrature = 0;
-  delete _gravityField; _gravityField = 0;
   delete[] _cellVector; _cellVector = 0;
   delete[] _cellMatrix; _cellMatrix = 0;
 } // destructor
