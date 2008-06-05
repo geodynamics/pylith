@@ -32,6 +32,12 @@ namespace pylith {
   } // feassemble
 } // pylith
 
+namespace spatialdata {
+  namespace spatialdb {
+    class GravityField; // USES GravityField
+  } // spatialdb
+} // spatialdata
+
 /// C++ unit testing for Integrator
 class pylith::feassemble::TestIntegrator : public CppUnit::TestFixture
 { // class TestIntegrator
@@ -40,6 +46,7 @@ class pylith::feassemble::TestIntegrator : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestIntegrator );
 
   CPPUNIT_TEST( testQuadrature );
+  CPPUNIT_TEST( testGravityField );
   CPPUNIT_TEST( testInitCellVector );
   CPPUNIT_TEST( testResetCellVector );
   CPPUNIT_TEST( testInitCellMatrix );
@@ -52,6 +59,9 @@ public :
 
   /// Test quadrature()
   void testQuadrature(void);
+
+  /// Test gravityField()
+  void testGravityField(void);
 
   /// Test _initCellVector()
   void testInitCellVector(void);
