@@ -262,6 +262,15 @@ if [ $1 == "implicit" ] || [ $1 == "all" ]; then
     --material=ElasticIsotropic3D \
     --solution=Solution3DQuadratic
 
+  python ElasticityImplicitGrav.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=ElasticityImplicitGravData3DLinear \
+    --data.parent=IntegratorData \
+    --mesh=Mesh3DLinear \
+    --quadrature=Quadrature3DLinear \
+    --material=ElasticIsotropic3D \
+    --solution=Solution3DLinear
+
 fi
 
 
