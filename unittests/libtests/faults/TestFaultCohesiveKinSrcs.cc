@@ -28,8 +28,16 @@ pylith::faults::TestFaultCohesiveKinSrcs::setUp(void)
   TestFaultCohesiveKin::setUp();
   _data = 0;
   _quadrature = 0;
-  const int nsrcs = 2;
 
+  // Cleanup previous allocation
+  int nsrcs = _eqsrcs.size();
+  for (int i=0; i < nsrcs; ++i)
+    delete _eqsrcs[i];
+  nsrcs = _slipfns.size();
+  for (int i=0; i < nsrcs; ++i)
+    delete _slipfns[i];
+
+  nsrcs = 2;
   _eqsrcs.resize(nsrcs);
   _eqsrcs[0] = new EqKinSrc();
   _eqsrcs[0]->originTime(0.5);
