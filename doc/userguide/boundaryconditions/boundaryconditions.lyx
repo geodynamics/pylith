@@ -777,7 +777,7 @@ db = spatialdata.spatialdb.SimpleDB ; default
 \end_layout
 
 \begin_layout LyX-Code
-db.label = Dirichlet BC +x edge
+db.label = Neumann BC +x edge
 \end_layout
 
 \begin_layout LyX-Code
