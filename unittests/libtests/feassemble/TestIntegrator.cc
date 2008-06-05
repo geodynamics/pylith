@@ -15,7 +15,10 @@
 #include "TestIntegrator.hh" // Implementation of class methods
 
 #include "pylith/feassemble/ElasticityExplicit.hh" // USES ElasticityExplicit
+#include "pylith/feassemble/ElasticityImplicit.hh" // USES ElasticityImplicit
 #include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
+#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
 #include <petscmat.h>
 
@@ -39,6 +42,35 @@ pylith::feassemble::TestIntegrator::testQuadrature(void)
 
   CPPUNIT_ASSERT_EQUAL(minJacobian, integrator._quadrature->minJacobian());
 } // testQuadrature
+
+// ----------------------------------------------------------------------
+// Test gravityField().
+void
+pylith::feassemble::TestIntegrator::testGravityField(void)
+{ // testGravityField
+  // Test gravity field by testing value of gravity vector.
+  const int spaceDim = 3;
+  const double gravityE[] = { 0.0, 0.0, -9.80665 };
+
+  ElasticityImplicit integrator;
+  spatialdata::spatialdb::GravityField gravityField;
+  integrator.gravityField(&gravityField);
+
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(spaceDim);
+
+  integrator._gravityField->open();
+  double gravity[spaceDim];
+  const double coords[] = { 1.0, 2.0, 3.0 };
+  const int err = integrator._gravityField->query(gravity, spaceDim,
+						  coords, spaceDim, &cs);
+  CPPUNIT_ASSERT_EQUAL(0, err);
+  integrator._gravityField->close();
+
+  const double tolerance = 1.0e-06;
+  for (int i=0; i < spaceDim; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(gravityE[i], gravity[i], tolerance);
+} // testGravityField
 
 // ----------------------------------------------------------------------
 // Test _initCellVector()
