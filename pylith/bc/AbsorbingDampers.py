@@ -101,6 +101,8 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
+
+    Integrator.initialize(self, totalTime, numTimeSteps)
     
     self.cppHandle.quadrature = self.quadrature.cppHandle
     BoundaryCondition.initialize(self, totalTime, numTimeSteps)

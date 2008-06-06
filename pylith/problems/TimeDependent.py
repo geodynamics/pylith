@@ -92,7 +92,7 @@ class TimeDependent(Problem):
     self._info.log("Pre-initializing problem.")
     self.mesh = mesh
     self.formulation.preinitialize(mesh, self.materials, self.bc,
-                                   self.interfaces)
+                                   self.interfaces, self.gravityField)
 
     self._logger.eventEnd(logEvent)
     return
