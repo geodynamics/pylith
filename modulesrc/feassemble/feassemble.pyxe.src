@@ -1141,9 +1141,9 @@ cdef class Integrator:
                         "Caught unknown C++ exception.");
       } // try/catch
       #}embed
-      if not g.name == "pylith_feassemble_GravityField":
+      if not g.name == "spatialdata_spatialdb_SpatialDB":
         raise TypeError, \
-              "Argument must be extension module type 'GravityField'."
+              "Argument must be extension module type 'SpatialDB'."
       if None == g:
         Integrator_gravityField_set(self.thisptr, NULL)
       else:
