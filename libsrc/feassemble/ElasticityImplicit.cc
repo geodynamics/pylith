@@ -232,7 +232,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 	if (err)
 	  throw std::runtime_error("Unable to get gravity vector for point.");
 	const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
-	for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
+	for (int iBasis=0, iQ=iQuad*numBasis;
 	     iBasis < numBasis; ++iBasis) {
 	  const double valI = wt*basis[iQ+iBasis];
 	  for (int iDim=0; iDim < spaceDim; ++iDim) {
