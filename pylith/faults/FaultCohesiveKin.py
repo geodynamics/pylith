@@ -136,9 +136,11 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     Initialize cohesive elements.
     """
     logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
     self._info.log("Initializing fault '%s'." % self.label)
 
-    self._logger.eventBegin(logEvent)
+    Integrator.initialize(self, totalTime, numTimeSteps)
+    
     for eqsrc in self.eqsrcs.components():
       eqsrc.initialize()
     FaultCohesive.initialize(self, totalTime, numTimeSteps)

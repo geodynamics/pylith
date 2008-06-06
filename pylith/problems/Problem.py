@@ -67,16 +67,21 @@ class Problem(Component):
     ##
     ## \b Properties
     ## @li \b dimension Spatial dimension of problem space.
+    ## @li \b useGravity Gravity on (true) or off (false).
     ##
     ## \b Facilities
     ## @li \b materials Materials in problem.
     ## @li \b bc Boundary conditions.
     ## @li \b interfaces Interior surfaces with constraints or
     ##   constitutive models.
+    ## @li \b gravityField Gravity field for problem (SpatialDB).
 
     import pyre.inventory
     from pylith.utils.ObjectBin import ObjectBin
 
+    useGravity = pyre.inventory.bool("use_gravity", default=False)
+    useGravity.meta['tip'] = "Use gravitational body forces in problem."
+    
     dimension = pyre.inventory.int("dimension", default=3,
                                    validator=pyre.inventory.choice([1,2,3]))
     dimension.meta['tip'] = "Spatial dimension of problem space."
@@ -98,6 +103,13 @@ class Problem(Component):
     interfaces.meta['tip'] = "Interior surfaces with constraints or " \
                              "constitutive models."
 
+    from spatialdata.spatialdb.GravityField import GravityField
+    gravityField = pyre.inventory.facility("gravity_field",
+                                          factory=GravityField,
+                                          family="spatial_database")
+    gravityField.meta['tip'] = "Database used for gravity field."
+
+  
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -207,6 +219,10 @@ class Problem(Component):
     self.materials = self.inventory.materials
     self.bc = self.inventory.bc
     self.interfaces = self.inventory.interfaces
+    if self.inventory.useGravity:
+      self.gravityField = self.inventory.gravityField
+    else:
+      self.gravityField = None
     return
 
 

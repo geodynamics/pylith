@@ -89,6 +89,8 @@ class IntegratorElasticity(Integrator):
     self._info.log("Initializing integrator for material '%s'." % \
                    self.material.label)
 
+    Integrator.initialize(self, totalTime, numTimeSteps)
+
     self.material.initialize(self.mesh, totalTime, numTimeSteps)
     self.output.initialize(self.quadrature)
     self.output.writeInfo()

@@ -67,10 +67,6 @@ class Integrator(object):
     """
     self._setupLogging()
 
-    assert(None != self.cppHandle)
-    if None != self.gravityField:
-      self.cppHandle.gravityField = self.gravityField.cppHandle
-    
     return
 
 
@@ -95,6 +91,10 @@ class Integrator(object):
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
+    assert(None != self.cppHandle)
+    if None != self.gravityField:
+      self.cppHandle.gravityField = self.gravityField.cppHandle
+    
     self._logger.eventEnd(logEvent)
     return
 

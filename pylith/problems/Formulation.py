@@ -53,18 +53,14 @@ class Formulation(Component):
     ## Python object for managing Formulation facilities and properties.
     ##
     ## \b Properties
-    ## @li useGravity Gravity on (true) or off (false).
+    ## @li None
     ##
     ## \b Facilities
     ## @li \b solver Algebraic solver.
     ## @li \b output Output manager associated with solution.
-    ## @li \b gravityField Gravity field for problem (SpatialDB).
 
     import pyre.inventory
 
-    useGravity = pyre.inventory.bool("use_gravity", default=False)
-    useGravity.meta['tip'] = "Use gravitational body forces in problem."
-    
     from pylith.solver.SolverLinear import SolverLinear
     solver = pyre.inventory.facility("solver", family="solver",
                                      factory=SolverLinear)
@@ -76,13 +72,6 @@ class Formulation(Component):
                                           factory=SingleOutput)
     output.meta['tip'] = "Output managers associated with solution."
 
-    from spatialdata.spatialdb.GravityField import GravityField
-    gravityField = pyre.inventory.facility("gravity_field",
-                                          factory=GravityField,
-                                          family="spatial_database")
-    gravityField.meta['tip'] = "Database used for gravity field."
-
-  
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="formulation"):
@@ -106,7 +95,7 @@ class Formulation(Component):
 
 
   def preinitialize(self, mesh, materials, boundaryConditions,
-                    interfaceConditions):
+                    interfaceConditions, gravityField):
     """
     Create integrator for each element family.
     """
@@ -117,6 +106,7 @@ class Formulation(Component):
     self.mesh = mesh
     self.integrators = []
     self.constraints = []
+    self.gravityField = gravityField
 
     self._setupMaterials(materials)
     self._setupBC(boundaryConditions)
@@ -285,10 +275,6 @@ class Formulation(Component):
     Component._configure(self)
     self.solver = self.inventory.solver
     self.output = self.inventory.output
-    if (self.inventory.useGravity):
-      self.gravityField = self.inventory.gravityField
-    else:
-      self.gravityField = None
 
     import journal
     self._debug = journal.debug(self.name)
