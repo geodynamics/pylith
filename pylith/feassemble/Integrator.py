@@ -66,6 +66,11 @@ class Integrator(object):
     Do pre-initialization setup.
     """
     self._setupLogging()
+
+    assert(None != self.cppHandle)
+    if None != self.gravityField:
+      self.cppHandle.gravityField = self.gravityField.cppHandle
+    
     return
 
 
