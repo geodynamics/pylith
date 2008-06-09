@@ -19,6 +19,7 @@ pylith::feassemble::CellGeomData::CellGeomData(void) :
   spaceDim(0),
   numCorners(0),
   numLocs(0),
+  gravityVec(0),
   vertices(0),
   locations(0),
   jacobian(0),

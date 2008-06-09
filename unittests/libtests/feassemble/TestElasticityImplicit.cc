@@ -312,7 +312,7 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
 			  _data->quadWts, _data->cellDim, _data->numBasis,
 			  _data->numQuadPts, _data->spaceDim);
   // Setup gravityField
-  _gravityField = 0;
+  // _gravityField = 0;
 
   // Setup material
   spatialdata::spatialdb::SimpleIOAscii iohandler;

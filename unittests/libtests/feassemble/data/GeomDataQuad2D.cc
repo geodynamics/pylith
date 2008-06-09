@@ -16,6 +16,9 @@ const int pylith::feassemble::GeomDataQuad2D::_cellDim = 2;
 
 const int pylith::feassemble::GeomDataQuad2D::_spaceDim = 2;
 
+const double pylith::feassemble::GeomDataQuad2D::_gravityVec[] = {
+  0.0, -9.80665 };
+
 const int pylith::feassemble::GeomDataQuad2D::_numCorners = 4;
 
 const int pylith::feassemble::GeomDataQuad2D::_numLocs = 5;
@@ -59,6 +62,7 @@ pylith::feassemble::GeomDataQuad2D::GeomDataQuad2D(void)
   spaceDim = _spaceDim;
   numCorners = _numCorners;
   numLocs = _numLocs;
+  gravityVec = const_cast<double*>(_gravityVec);
   vertices = const_cast<double*>(_vertices);
   locations = const_cast<double*>(_locations);
   jacobian = const_cast<double*>(_jacobian);

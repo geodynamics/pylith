@@ -74,6 +74,7 @@ class IntegratorApp(Script):
     # Mesh information
     self.spaceDim = None
     self.cellDim = None
+    self.gravityVec = None
     self.numVertices = None
     self.numCells = None
     self.vertices = None
@@ -140,6 +141,7 @@ class IntegratorApp(Script):
     # Mesh information
     self.spaceDim = self.mesh.spaceDim
     self.cellDim = self.mesh.cellDim
+    self.gravityVec = self.mesh.gravityVec
     self.numVertices = self.mesh.numVertices
     self.numCells = self.mesh.numCells
     self.vertices = self.mesh.vertices
@@ -197,6 +199,8 @@ class IntegratorApp(Script):
                         format="%d")
     self.data.addScalar(vtype="int", name="_numCells", value=self.numCells,
                         format="%d")
+    self.data.addArray(vtype="double", name="_gravityVec", values=self.gravityVec,
+                       format="%16.8e", ncols=self.spaceDim)
     self.data.addArray(vtype="double", name="_vertices", values=self.vertices,
                        format="%16.8e", ncols=self.spaceDim)
     self.data.addArray(vtype="int", name="_cells", values=self.cells,

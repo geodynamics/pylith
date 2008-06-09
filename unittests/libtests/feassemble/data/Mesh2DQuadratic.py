@@ -41,6 +41,8 @@ class Mesh2DQuadratic(Component):
     self.cellDim = 2
     self.numVertices = 6
     self.numCells = 1
+    self.gravityVec = numpy.array( [0.0, -1.0e8],
+                                   dtype=numpy.float64)
     self.vertices = numpy.array( [[-1.0, -1.0],
                                   [+1.0, +0.2],
                                   [-1.5, +0.5],

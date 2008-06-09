@@ -41,6 +41,7 @@ class Mesh1Din2DLinear(Component):
     self.cellDim = 1
     self.numVertices = 2
     self.numCells = 1
+    self.gravityVec = numpy.array( [0.0, -1.0e8], dtype=numpy.float64)
     self.vertices = numpy.array( [[-0.2, -0.5], [0.7, 0.3]],
                                  dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1]], dtype=numpy.int32)

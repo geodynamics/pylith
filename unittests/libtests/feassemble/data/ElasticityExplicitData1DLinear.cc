@@ -37,6 +37,10 @@ const char* pylith::feassemble::ElasticityExplicitData1DLinear::_matLabel = "ela
 
 const double pylith::feassemble::ElasticityExplicitData1DLinear::_dt =   1.00000000e-02;
 
+const double pylith::feassemble::ElasticityExplicitData1DLinear::_gravityVec[] = {
+ -1.00000000e+08,
+};
+
 const double pylith::feassemble::ElasticityExplicitData1DLinear::_vertices[] = {
  -2.50000000e-01,
   2.00000000e+00,
@@ -109,6 +113,7 @@ pylith::feassemble::ElasticityExplicitData1DLinear::ElasticityExplicitData1DLine
   matId = _matId;
   matLabel = const_cast<char*>(_matLabel);
   dt = _dt;
+  gravityVec = const_cast<double*>(_gravityVec);
   vertices = const_cast<double*>(_vertices);
   cells = const_cast<int*>(_cells);
   verticesRef = const_cast<double*>(_verticesRef);

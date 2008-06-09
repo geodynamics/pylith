@@ -16,6 +16,7 @@
 // Constructor
 pylith::feassemble::IntegratorData::IntegratorData(void) :
   spaceDim(0),
+  gravityVec(0),
   cellDim(0),
   numVertices(0),
   numCells(0),

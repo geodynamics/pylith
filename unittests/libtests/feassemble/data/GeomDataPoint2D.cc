@@ -16,6 +16,9 @@ const int pylith::feassemble::GeomDataPoint2D::_cellDim = 0;
 
 const int pylith::feassemble::GeomDataPoint2D::_spaceDim = 2;
 
+const double pylith::feassemble::GeomDataPoint2D::_gravityVec[] = {
+  0.0, -9.80665 };
+
 const int pylith::feassemble::GeomDataPoint2D::_numCorners = 1;
 
 const int pylith::feassemble::GeomDataPoint2D::_numLocs = 2;
@@ -46,6 +49,7 @@ pylith::feassemble::GeomDataPoint2D::GeomDataPoint2D(void)
   spaceDim = _spaceDim;
   numCorners = _numCorners;
   numLocs = _numLocs;
+  gravityVec = const_cast<double*>(_gravityVec);
   vertices = const_cast<double*>(_vertices);
   locations = const_cast<double*>(_locations);
   jacobian = const_cast<double*>(_jacobian);

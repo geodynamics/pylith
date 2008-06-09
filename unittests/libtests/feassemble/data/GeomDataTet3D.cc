@@ -16,6 +16,9 @@ const int pylith::feassemble::GeomDataTet3D::_cellDim = 3;
 
 const int pylith::feassemble::GeomDataTet3D::_spaceDim = 3;
 
+const double pylith::feassemble::GeomDataTet3D::_gravityVec[] = {
+  0.0, 0.0, -9.80665 };
+
 const int pylith::feassemble::GeomDataTet3D::_numCorners = 4;
 
 const int pylith::feassemble::GeomDataTet3D::_numLocs = 2;
@@ -50,6 +53,7 @@ pylith::feassemble::GeomDataTet3D::GeomDataTet3D(void)
   spaceDim = _spaceDim;
   numCorners = _numCorners;
   numLocs = _numLocs;
+  gravityVec = const_cast<double*>(_gravityVec);
   vertices = const_cast<double*>(_vertices);
   locations = const_cast<double*>(_locations);
   jacobian = const_cast<double*>(_jacobian);

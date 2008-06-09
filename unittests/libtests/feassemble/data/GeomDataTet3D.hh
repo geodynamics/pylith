@@ -42,6 +42,7 @@ private:
 
   static const int _numLocs; ///< Number of locations for computing Jacobian
 
+  static const double _gravityVec[]; ///< Constant gravity vector
   static const double _vertices[]; ///< Coordinates of cell's vertices
   static const double _locations[]; ///< Locations to compute Jacobian
   static const double _jacobian[]; ///< Jacobian at locations

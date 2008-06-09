@@ -19,6 +19,7 @@
 #include "pylith/feassemble/Quadrature3D.hh" // USES Quadrature3D
 #include "pylith/feassemble/GeometryTet3D.hh" // USES GeometryTet3D
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
+#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicitGrav3DLinear );
@@ -30,10 +31,16 @@ pylith::feassemble::TestElasticityImplicitGrav3DLinear::setUp(void)
 { // setUp
   _data = new ElasticityImplicitGravData3DLinear();
   _quadrature = new Quadrature3D();
-  _gravityField = 0; // CHANGE THIS
+  // _gravityField = 0;
+  // spatialdata::spatialdb::GravityField* _gravityField;
+  _gravityField = new spatialdata::spatialdb::GravityField();
   CPPUNIT_ASSERT(0 != _quadrature);
+  CPPUNIT_ASSERT(0 != _gravityField);
   GeometryTet3D geometry;
   _quadrature->refGeometry(&geometry);
+
+  const double g = 1.0e8;
+  _gravityField->gravAcceleration(g);
 
   _material = new materials::ElasticIsotropic3D;
   CPPUNIT_ASSERT(0 != _material);

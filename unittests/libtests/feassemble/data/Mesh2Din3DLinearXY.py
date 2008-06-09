@@ -41,6 +41,8 @@ class Mesh2Din3DLinearXY(Component):
     self.cellDim = 2
     self.numVertices = 3
     self.numCells = 1
+    self.gravityVec = numpy.array( [0.0, 0.0, -1.0e8],
+                                   dtype=numpy.float64)
     self.vertices = numpy.array( [[ 0.0,  0.0,  0.0],
                                   [-1.0,  0.0,  0.0],
                                   [ 0.0,  0.0,  1.0]],
