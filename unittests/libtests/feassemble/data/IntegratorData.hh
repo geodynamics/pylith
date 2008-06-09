@@ -37,6 +37,7 @@ public:
   /// @name Mesh information
   //@{
   int spaceDim; ///< Number of dimensions in vertex coordinates
+  double* gravityVec; ///< Constant gravity vector (for now)
   int cellDim; ///< Number of dimensions associated with cell
   int numVertices; ///< Number of vertices
   int numCells; ///< Number of cells

@@ -59,6 +59,8 @@ private:
 
   static const double _dt;
 
+  static const double _gravityVec[];
+
   static const double _vertices[];
 
   static const int _cells[];

@@ -40,6 +40,7 @@ public:
 
   int numLocs; ///< Number of locations
 
+  double* gravityVec; ///< Gravity vector for problem
   double* vertices; ///< Coordinates of vertices of cell
   double* locations; ///< Locations where Jacobian is computed
   double* jacobian; ///< Jacobian at locations

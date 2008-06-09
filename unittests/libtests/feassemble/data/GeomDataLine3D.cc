@@ -16,6 +16,9 @@ const int pylith::feassemble::GeomDataLine3D::_cellDim = 1;
 
 const int pylith::feassemble::GeomDataLine3D::_spaceDim = 3;
 
+const double pylith::feassemble::GeomDataLine3D::_gravityVec[] = {
+  0.0, 0.0, -9.80665 };
+
 const int pylith::feassemble::GeomDataLine3D::_numCorners = 2;
 
 const int pylith::feassemble::GeomDataLine3D::_numLocs = 2;
@@ -48,6 +51,7 @@ pylith::feassemble::GeomDataLine3D::GeomDataLine3D(void)
   spaceDim = _spaceDim;
   numCorners = _numCorners;
   numLocs = _numLocs;
+  gravityVec = const_cast<double*>(_gravityVec);
   vertices = const_cast<double*>(_vertices);
   locations = const_cast<double*>(_locations);
   jacobian = const_cast<double*>(_jacobian);

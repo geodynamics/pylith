@@ -37,6 +37,10 @@ const char* pylith::feassemble::ElasticityExplicitData3DQuadratic::_matLabel = "
 
 const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_dt =   1.00000000e-02;
 
+const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_gravityVec[] = {
+  0.00000000e+00,  0.00000000e+00, -1.00000000e+08,
+};
+
 const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_vertices[] = {
  -5.00000000e-01, -2.00000000e+00, -1.00000000e+00,
   2.00000000e+00, -2.00000000e+00, -5.00000000e-01,
@@ -505,6 +509,7 @@ pylith::feassemble::ElasticityExplicitData3DQuadratic::ElasticityExplicitData3DQ
   matId = _matId;
   matLabel = const_cast<char*>(_matLabel);
   dt = _dt;
+  gravityVec = const_cast<double*>(_gravityVec);
   vertices = const_cast<double*>(_vertices);
   cells = const_cast<int*>(_cells);
   verticesRef = const_cast<double*>(_verticesRef);
