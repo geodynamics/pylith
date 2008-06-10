@@ -647,16 +647,13 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
     }
   }
   if (debug) mesh->view("Mesh with Cohesive Elements");
-  mesh->view("Mesh with Cohesive Elements");
-  mesh->getLabel("depth")->view("Depth");
-  mesh->getLabel("censored depth")->view("Censored Depth");
 
   // Fix coordinates
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
   const ALE::Obj<Mesh::label_sequence>& fVertices2 = (*ifault)->depthStratum(0);
 
-  coordinates->view("Coordinates without shadow vertices");
+  if (debug) coordinates->view("Coordinates without shadow vertices");
   for(Mesh::label_sequence::iterator v_iter = fVertices2->begin();
       v_iter != fVertices2->end();
       ++v_iter) {
@@ -679,7 +676,6 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
     }
   }
   if (debug) coordinates->view("Coordinates with shadow vertices");
-  coordinates->view("Coordinates with shadow vertices");
 } // createCohesiveCells
 
 // ----------------------------------------------------------------------
