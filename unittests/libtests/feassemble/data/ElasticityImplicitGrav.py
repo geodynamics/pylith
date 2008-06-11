@@ -19,7 +19,7 @@ from IntegratorElasticity import IntegratorElasticity
 
 import numpy
 import feutils
-import pdb
+# import pdb
 
 # ----------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ class ElasticityImplicitGrav(IntegratorElasticity):
     """
     Constructor.
     """
-    pdb.set_trace()
+    # pdb.set_trace()
     IntegratorElasticity.__init__(self, name)
     return
   
@@ -49,11 +49,11 @@ class ElasticityImplicitGrav(IntegratorElasticity):
 
     {r} = -[K]{u(t)}
     """
-    pdb.set_trace()
+    # pdb.set_trace()
     K = self._calculateStiffnessMat()    
     gravityGlobal = self._calculateGravity()
 
-    self.valsResidual = -numpy.dot(K, self.fieldTpdt) + gravityGlobal
+    self.valsResidual = -numpy.dot(K, self.fieldTpdt) + gravityGlobal.reshape(self.fieldTpdt.shape)
     return
 
 
@@ -73,8 +73,8 @@ class ElasticityImplicitGrav(IntegratorElasticity):
     """
     Calculate body force vector.
     """
-    pdb.set_trace()
-    gravityGlobal = numpy.zeros(self.spaceDim*self.numVertices,
+    # pdb.set_trace()
+    gravityGlobal = numpy.zeros(( self.numVertices*self.spaceDim ),
                                 dtype=numpy.float64)
     for cell in self.cells:
       gravityCell = numpy.zeros(self.spaceDim*self.numBasis)
