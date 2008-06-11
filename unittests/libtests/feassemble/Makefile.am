@@ -36,7 +36,12 @@ testfeassemble_SOURCES = \
 	TestElasticityImplicit2DQuadratic.cc \
 	TestElasticityImplicit3DLinear.cc \
 	TestElasticityImplicit3DQuadratic.cc \
+	TestElasticityImplicitGrav1DLinear.cc \
+	TestElasticityImplicitGrav1DQuadratic.cc \
+	TestElasticityImplicitGrav2DLinear.cc \
+	TestElasticityImplicitGrav2DQuadratic.cc \
 	TestElasticityImplicitGrav3DLinear.cc \
+	TestElasticityImplicitGrav3DQuadratic.cc \
 	TestGeometryPoint1D.cc \
 	TestGeometryPoint2D.cc \
 	TestGeometryPoint3D.cc \
@@ -76,7 +81,12 @@ noinst_HEADERS = \
 	TestElasticityImplicit2DQuadratic.hh \
 	TestElasticityImplicit3DLinear.hh \
 	TestElasticityImplicit3DQuadratic.hh \
+	TestElasticityImplicitGrav1DLinear.hh \
+	TestElasticityImplicitGrav1DQuadratic.hh \
+	TestElasticityImplicitGrav2DLinear.hh \
+	TestElasticityImplicitGrav2DQuadratic.hh \
 	TestElasticityImplicitGrav3DLinear.hh \
+	TestElasticityImplicitGrav3DQuadratic.hh \
 	TestGeometryPoint1D.hh \
 	TestGeometryPoint2D.hh \
 	TestGeometryPoint3D.hh \
@@ -128,7 +138,12 @@ testfeassemble_SOURCES += \
 	data/ElasticityImplicitData2DQuadratic.cc \
 	data/ElasticityImplicitData3DLinear.cc \
 	data/ElasticityImplicitData3DQuadratic.cc \
+	data/ElasticityImplicitGravData1DLinear.cc \
+	data/ElasticityImplicitGravData1DQuadratic.cc \
+	data/ElasticityImplicitGravData2DLinear.cc \
+	data/ElasticityImplicitGravData2DQuadratic.cc \
 	data/ElasticityImplicitGravData3DLinear.cc \
+	data/ElasticityImplicitGravData3DQuadratic.cc \
 	data/QuadratureData.cc \
 	data/QuadratureData1DLinear.cc \
 	data/QuadratureData1DQuadratic.cc \
@@ -173,7 +188,12 @@ noinst_HEADERS += \
 	data/ElasticityImplicitData2DQuadratic.hh \
 	data/ElasticityImplicitData3DLinear.hh \
 	data/ElasticityImplicitData3DQuadratic.hh \
+	data/ElasticityImplicitGravData1DLinear.hh \
+	data/ElasticityImplicitGravData1DQuadratic.hh \
+	data/ElasticityImplicitGravData2DLinear.hh \
+	data/ElasticityImplicitGravData2DQuadratic.hh \
 	data/ElasticityImplicitGravData3DLinear.hh \
+	data/ElasticityImplicitGravData3DQuadratic.hh \
 	data/QuadratureData.hh \
 	data/QuadratureData1DLinear.hh \
 	data/QuadratureData1DQuadratic.hh \

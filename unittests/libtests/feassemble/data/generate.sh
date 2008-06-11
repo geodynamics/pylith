@@ -221,6 +221,24 @@ if [ $1 == "implicit" ] || [ $1 == "all" ]; then
     --material=MaterialElasticStrain1D \
     --solution=Solution1DQuadratic
 
+  python ElasticityImplicitGrav.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=ElasticityImplicitGravData1DLinear \
+    --data.parent=IntegratorData \
+    --mesh=Mesh1DLinear \
+    --quadrature=Quadrature1DLinear \
+    --material=MaterialElasticStrain1D \
+    --solution=Solution1DLinear
+
+  python ElasticityImplicitGrav.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=ElasticityImplicitGravData1DQuadratic \
+    --data.parent=IntegratorData \
+    --mesh=Mesh1DQuadratic \
+    --quadrature=Quadrature1DQuadratic \
+    --material=MaterialElasticStrain1D \
+    --solution=Solution1DQuadratic
+
   # 2-D ----------------------------------------------------------------
 
   python ElasticityImplicit.py \
@@ -235,6 +253,24 @@ if [ $1 == "implicit" ] || [ $1 == "all" ]; then
   python ElasticityImplicit.py \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitData2DQuadratic \
+    --data.parent=IntegratorData \
+    --mesh=Mesh2DQuadratic \
+    --quadrature=Quadrature2DQuadratic \
+    --material=ElasticPlaneStrain \
+    --solution=Solution2DQuadratic
+
+  python ElasticityImplicitGrav.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=ElasticityImplicitGravData2DLinear \
+    --data.parent=IntegratorData \
+    --mesh=Mesh2DLinear \
+    --quadrature=Quadrature2DLinear \
+    --material=ElasticPlaneStrain \
+    --solution=Solution2DLinear
+
+  python ElasticityImplicitGrav.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=ElasticityImplicitGravData2DQuadratic \
     --data.parent=IntegratorData \
     --mesh=Mesh2DQuadratic \
     --quadrature=Quadrature2DQuadratic \
@@ -270,6 +306,15 @@ if [ $1 == "implicit" ] || [ $1 == "all" ]; then
     --quadrature=Quadrature3DLinear \
     --material=ElasticIsotropic3D \
     --solution=Solution3DLinear
+
+  python ElasticityImplicitGrav.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=ElasticityImplicitGravData3DQuadratic \
+    --data.parent=IntegratorData \
+    --mesh=Mesh3DQuadratic \
+    --quadrature=Quadrature3DQuadratic \
+    --material=ElasticIsotropic3D \
+    --solution=Solution3DQuadratic
 
 fi
 
