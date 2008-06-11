@@ -1,3 +1,45 @@
+// 2 x 2 four cell mesh with fault between 2 cells.
+//
+// Mesh without cohesive cells (vertices numbered from )
+//
+// 2 ----- 5 ----- 8
+// |       |       |
+// |   1   |   3   |
+// |       |       |
+// 1 ----- 4 ----- 7
+// |       |       |
+// |   0   |   2   |
+// |       |       |
+// 0 ----- 3 ----- 6
+//
+// Mesh without cohesive cells (Sieve numbering)
+//
+// 6 ----- 9-----12
+// |       |      |
+// |   1   |   3  |
+// |       |      |
+// 5 ----- 8-----11
+// |       |      |
+// |   0   |   2  |
+// |       |      |
+// 4 ----- 7 ----10
+//
+// Fault is along edge 8-9
+//
+// Mesh with cohesive cells (Sieve numbering)
+//
+// 6 ----- 9-16-14---12
+// |       |     |    |
+// |   1   |     |  3 |
+// |       |     |    |
+// 5 ----- 8-15-13---11
+// |       |          |
+// |   0   |   2      |
+// |       |          |
+// 4 ----- 7 --------10
+//
+// Cohesive cell is 9 8 14 13 16 15
+
 mesh = {
   dimension = 2
   use-index-zero = true
