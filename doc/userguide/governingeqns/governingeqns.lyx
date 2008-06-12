@@ -1,17 +1,25 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
-\lyxformat 245
+#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
 \begin_document
 \begin_header
 \textclass book
 \language english
 \inputencoding auto
-\fontscheme default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
 \graphics default
 \paperfontsize default
 \spacing single
 \papersize default
 \use_geometry true
 \use_amsmath 1
+\use_esint 0
 \cite_engine basic
 \use_bibtopic false
 \paperorientation portrait
@@ -29,11 +37,17 @@
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
+\author "" 
 \end_header
 
 \begin_body
 
 \begin_layout Chapter
+\begin_inset LatexCommand label
+name "cha:Governing-Equations"
+
+\end_inset
+
 Governing Equations
 \end_layout
 
@@ -44,7 +58,8 @@ We present here a brief derivation of the equations for both quasi-static
 n terms in the quasi-static case), we first derive these equations.
  We then present solution methods for each specific case.
  In all of our derivations, we use the notation described in Table 
-\begin_inset LatexCommand \ref{tab:Mathematical-notation}
+\begin_inset LatexCommand ref
+reference "tab:Mathematical-notation"
 
 \end_inset
 
@@ -62,12 +77,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{tab:Mathematical-notation}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:Mathematical-notation"
 
 \end_inset
 
 Mathematical notation
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -472,7 +496,8 @@ where
 
 .
  Substituting into Equation 
-\begin_inset LatexCommand \ref{eqn:momentum:index}
+\begin_inset LatexCommand ref
+reference "eqn:momentum:index"
 
 \end_inset
 
@@ -573,7 +598,8 @@ where
 
 .
  Substituting into Equation 
-\begin_inset LatexCommand \ref{eqn:momentum:vec}
+\begin_inset LatexCommand ref
+reference "eqn:momentum:vec"
 
 \end_inset
 
@@ -1321,7 +1347,8 @@ with the external forces for any given time:
 Note that the internal forces include the effects of initial stresses.
  Iterative methods such as Newton-Raphson may be used to solve Equation
  
-\begin_inset LatexCommand \ref{eq:qs-force-balance}
+\begin_inset LatexCommand ref
+reference "eq:qs-force-balance"
 
 \end_inset
 
