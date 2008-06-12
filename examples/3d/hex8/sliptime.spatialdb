@@ -2,9 +2,8 @@
 //
 // This spatial database specifies the distribution of the slip
 // initiation time over the fault surface for the kinematic fault
-// rupture. Because this is a quasi-static simulation, we specify that
-// the slip initiates at t=-1.0 s (before the simulation starts) so
-// that we have slip at the first time step.
+// rupture. We specify a slip time of 0.0 s so that the slip occurs at
+// the origin time of the earthquake rupture.
 //
 #SPATIAL.ascii 1
 SimpleDB {
@@ -24,4 +23,4 @@ SimpleDB {
 // (2) y coordinate (m)
 // (3) z coordinate (m)
 // (4) Slip initiation time (s)
-0.0  0.0  0.0   -1.0
+0.0  0.0  0.0   0.0
