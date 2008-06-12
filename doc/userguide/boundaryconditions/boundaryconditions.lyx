@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -2464,6 +2464,129 @@ ve models.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Including Gravitational Body Forces
+\end_layout
+
+\begin_layout Standard
+Many problems in geophysics require the consideration of gravitational body
+ forces.
+ For example, the lithostatic stress state is important in many problems.
+ In future versions of the code that include nonlinear behavior, body forces
+ will also affect model aspects such as plastic yield criteria and the deformati
+on field for large deformation/finite strain problems.
+ As described in 
+\begin_inset LatexCommand ref
+reference "cha:Governing-Equations"
+
+\end_inset
+
+, the contribution of body forces to the global force vector is given by
+\begin_inset Formula \begin{equation}
+\overrightarrow{B}\phantom{}_{b}=\sum_{elements}\int_{V^{e}}N^{P}f_{i}\: dV.\end{equation}
+
+\end_inset
+
+The body force per unit volume, 
+\begin_inset Formula $f_{i}$
+\end_inset
+
+, is given as the product of the mass density, 
+\begin_inset Formula $\rho$
+\end_inset
+
+, the scalar gravitational acceleration value, 
+\begin_inset Formula $g$
+\end_inset
+
+, and the gravitational acceleration orientation vector, 
+\begin_inset Formula $a_{i}$
+\end_inset
+
+:
+\begin_inset Formula \begin{equation}
+f_{i}=\rho ga_{i}.\end{equation}
+
+\end_inset
+
+The mass density is a property of every material type, and is thus specified
+ in the same spatial database as the other material properties for a given
+ type.
+ The gravitational acceleration is assumed constant for a given problem,
+ with a default value of 9.80665 m/s
+\begin_inset Formula $^{\text{2}}$
+\end_inset
+
+.
+ The orientation vector will depend on the dimension of the problem as well
+ as the coordinate system being used.
+ The default orientation vector is a constant vector with components (0,
+ 0, -1).
+ This would be appropriate for three-dimensional problems where the gravity
+ vector is aligned with the negative z-axis for the entire region of interest,
+ as would be the case in a geoprojected coordinate system or a Cartesian
+ coordinate system that ignores the curvature of the Earth.
+ If Earth curvature needs to be considered, an Earth-centered, Earth-fixed
+ (ECEF) or local Cartesian system should be used, in which case the orientation
+ vector is computed automatically.
+ For problems in one or two dimensions where the orientation vector is constant,
+ the vector will need to be explicitly specified.
+ For example, in a two-dimensional problem, the vector might be specified
+ as (0, -1, 0).
+ The vector still has three components, although the extra components are
+ not used.
+\end_layout
+
+\begin_layout Standard
+Gravity is turned off by default.
+ To include gravitational effects in a simulation, you can turn it on as
+ follows:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
+
+\begin_layout LyX-Code
+use_gravity = true
+\end_layout
+
+\begin_layout Standard
+By simply adding this flag, the default gravity field values will be used
+ and a 
+\family typewriter
+gravity_field
+\family default
+ component will be assigned for the problem.
+ The default values may be changed by altering the properties of 
+\family typewriter
+gravity_field
+\family default
+:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.gravity_field]
+\end_layout
+
+\begin_layout LyX-Code
+acceleration = 100.0*m*s**-2
+\end_layout
+
+\begin_layout LyX-Code
+gravity_dir = [0, -1, 0]
+\end_layout
+
+\begin_layout Standard
+An example problem using gravity is described in Section 
+\begin_inset LatexCommand ref
+reference "sec:Tutorial-3d-hex8"
+
+\end_inset
+
+.
 \end_layout
 
 \end_body
