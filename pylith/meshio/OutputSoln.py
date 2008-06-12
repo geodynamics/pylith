@@ -40,6 +40,7 @@ class OutputSoln(OutputManager):
     ##
     ## \b Properties
     ## @li \b vertex_data_fields Names of vertex data fields to output.
+    ## @li \b cell_info_fields Names of cell info fields to output.
     ##
     ## \b Facilities
     ## @li None
@@ -49,6 +50,9 @@ class OutputSoln(OutputManager):
     vertexDataFields = pyre.inventory.list("vertex_data_fields", 
                                            default=["displacements"])
     vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
+
+    cellInfoFields = pyre.inventory.list("cell_info_fields", default=[])
+    cellInfoFields.meta['tip'] = "Names of cell info fields to output."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -62,7 +66,7 @@ class OutputSoln(OutputManager):
            {'info': [],
             'data': ["displacements"]},
          'cell': \
-           {'info': [],
+           {'info': ["replaced_cells"],
             'data': []}}
     return
 
@@ -110,6 +114,20 @@ class OutputSoln(OutputManager):
     return (field, fieldType)
 
 
+  def getCellField(self, name):
+    """
+    Get vertex field.
+    """
+    field = None
+    fieldType = None
+    if name == "replaced_cells":
+      field = self.mesh.getRealSection("replaced_cells")
+      fieldType = 0 # scalar field
+    else:
+      raise ValueError, "Vertex field '%s' not available." % name
+    return (field, fieldType)
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
@@ -118,6 +136,7 @@ class OutputSoln(OutputManager):
     """
     OutputManager._configure(self)
     self.vertexDataFields = self.inventory.vertexDataFields
+    self.cellInfoFields = self.inventory.cellInfoFields
     return
 
 

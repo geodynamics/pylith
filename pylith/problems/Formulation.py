@@ -84,13 +84,6 @@ class Formulation(Component):
     self.fields = None
     self.solnField = None
 
-    self.availableFields = \
-        {'vertex': \
-           {'info': [],
-            'data': ["displacements"]},
-         'cell': \
-           {'info': [],
-            'data': []}}
     return
 
 

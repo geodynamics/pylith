@@ -534,8 +534,8 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
   }
 
   // More checking
-  const bool                         firstFault    = !mesh->hasRealSection("replacedCells");
-  const ALE::Obj<real_section_type>& replacedCells = mesh->getRealSection("replacedCells");
+  const bool                         firstFault    = !mesh->hasRealSection("replaced_cells");
+  const ALE::Obj<real_section_type>& replacedCells = mesh->getRealSection("replaced_cells");
   PointSet cellNeighbors;
 
   if (firstFault) {
