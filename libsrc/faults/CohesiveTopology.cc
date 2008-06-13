@@ -505,20 +505,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
     sV2.clear();
     cV2.clear();
   } // for
-  // Add new arrows for support of replaced vertices
-  for(PointSet::const_iterator v_iter = replaceVertices.begin(); v_iter != replaceVertices.end(); ++v_iter) {
-    sieve->support(*v_iter, sV);
-    const Mesh::point_type *support = sV.getPoints();
-
-    for(int s = 0; s < sV.getSize(); ++s) {
-      if (replaceCells.find(support[s]) != replaceCells.end()) {
-        sieve->addArrow(vertexRenumber[*v_iter], support[s]);
-      }
-    }
-    sV.clear();
-  }
-  sieve->reallocate();
-  // More checking
+  // This completes the set of cells scheduled to be replaced
   PointSet replaceCellsBase(replaceCells);
 
   const ALE::Obj<Mesh::label_sequence>& faultBdVerts = faultBd->depthStratum(0);
@@ -532,6 +519,23 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
   for(PointSet::const_iterator v_iter = faultBdVertices.begin(); v_iter != faultBdVertices.end(); ++v_iter) {
     classifyCells(sieve, *v_iter, depth, faceSize, firstCohesiveCell, faultBdVertices, replaceCells, noReplaceCells, debug);
   }
+  // Add new arrows for support of replaced vertices
+  for(PointSet::const_iterator v_iter = replaceVertices.begin(); v_iter != replaceVertices.end(); ++v_iter) {
+    sieve->support(*v_iter, sV);
+    const Mesh::point_type *support = sV.getPoints();
+
+    if (debug) std::cout << "  Checking support of " << *v_iter << std::endl;
+    for(int s = 0; s < sV.getSize(); ++s) {
+      if (replaceCells.find(support[s]) != replaceCells.end()) {
+        if (debug) std::cout << "    Adding new support " << vertexRenumber[*v_iter] << " --> " << support[s] << std::endl;
+        sieve->addArrow(vertexRenumber[*v_iter], support[s]);
+      } else {
+        if (debug) std::cout << "    Keeping same support " << *v_iter<<","<<vertexRenumber[*v_iter] << " --> " << support[s] << std::endl;
+      }
+    }
+    sV.clear();
+  }
+  sieve->reallocate();
 
   // More checking
   const bool                         firstFault    = !mesh->hasRealSection("replaced_cells");
@@ -625,8 +629,10 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
   for(PointSet::const_iterator v_iter = replaceVertices.begin(); v_iter != replaceVertices.end(); ++v_iter) {
     sieve->support(*v_iter, rVs);
     if (rVs.mappedPoint()) {
-      if (debug) std::cout << "  Replacing support " << *v_iter << std::endl;
+      if (debug) std::cout << "  Replacing support for " << *v_iter << std::endl;
       sieve->setSupport(*v_iter, rVs.getPoints());
+    } else {
+      if (debug) std::cout << "  Not replacing support for " << *v_iter << std::endl;
     }
     rVs.clear();
   }
