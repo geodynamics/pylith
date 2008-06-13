@@ -2,7 +2,7 @@
 //
 // This spatial database specifies the distribution of slip rate on
 // the fault surface for a constant slip rate time function. In this
-// case we specify a uniform slip rate of -0.10 m/s for z < -2.0 m and
+// case we specify a uniform slip rate of -0.20 m/s for z < -2.0 m and
 // zero slip for z >= -2.0 m. There is no reverse-slip or fault
 // opening.
 //
@@ -28,5 +28,5 @@ SimpleDB {
 // (6) fault-opening rate (m/s)
 0.0   0.0   0.00     0.00  0.0  0.0
 0.0   0.0  -2.00     0.00  0.0  0.0
-0.0   0.0  -2.01    -0.10  0.0  0.0
-0.0   0.0  -4.00    -0.10  0.0  0.0
+0.0   0.0  -2.01    -0.20  0.0  0.0
+0.0   0.0  -4.00    -0.20  0.0  0.0

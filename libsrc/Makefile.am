@@ -36,6 +36,7 @@ libpylith_la_SOURCES = \
 	faults/FaultCohesiveKin.cc \
 	faults/FaultCohesiveDyn.cc \
 	faults/SlipTimeFn.cc \
+	faults/StepSlipFn.cc \
 	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
 	feassemble/ElasticityExplicit.cc \

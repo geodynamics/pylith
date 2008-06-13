@@ -10,18 +10,18 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/faults/ConstRateSlipFn.py
+## @file pylith/faults/StepSlipFn.py
 ##
-## @brief Python object for a constant slip rate slip time function.
+## @brief Python object for a step-function slip time function.
 ##
 ## Factory: slip_time_fn
 
 from SlipTimeFn import SlipTimeFn
 
-# ConstRateSlipFn class
-class ConstRateSlipFn(SlipTimeFn):
+# StepSlipFn class
+class StepSlipFn(SlipTimeFn):
   """
-  Python object for a constant slip rate slip time function.
+  Python object for a step-function slip time function.
 
   Factory: slip_time_fn
   """
@@ -30,18 +30,18 @@ class ConstRateSlipFn(SlipTimeFn):
 
   class Inventory(SlipTimeFn.Inventory):
     """
-    Python object for managing ConstRateSlipFn facilities and properties.
+    Python object for managing StepSlipFn facilities and properties.
     """
     
     ## @class Inventory
-    ## Python object for managing ConstRateSlipFn facilities and properties.
+    ## Python object for managing StepSlipFn facilities and properties.
     ##
     ## \b Properties
     ## @li None
     ##
     ## \b Facilities
-    ## @li \b slip_rate Spatial database of slip rate
-    ## @li \b slip_time Spatial database of slip initiation time
+    ## @li \b slip Spatial database of final slip.
+    ## @li \b slip_time Spatial database of slip initiation time.
 
     import pyre.inventory
 
@@ -51,19 +51,19 @@ class ConstRateSlipFn(SlipTimeFn):
                                        factory=SimpleDB)
     slipTime.meta['tip'] = "Spatial database of slip initiation time."
 
-    slipRate = pyre.inventory.facility("slip_rate", family="spatial_database",
-                                       factory=SimpleDB)
-    slipRate.meta['tip'] = "Spatial database of slip rate."
+    slip = pyre.inventory.facility("slip", family="spatial_database",
+                                   factory=SimpleDB)
+    slip.meta['tip'] = "Spatial database of final slip."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="constrateslipfn"):
+  def __init__(self, name="stepslipfn"):
     """
     Constructor.
     """
     SlipTimeFn.__init__(self, name)
-    self._loggingPrefix = "CrSF "
+    self._loggingPrefix = "StSF "
     return
 
 
@@ -74,11 +74,11 @@ class ConstRateSlipFn(SlipTimeFn):
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    self.slipRate.initialize()
+    self.slip.initialize()
     self.slipTime.initialize()
     assert(None != self.cppHandle)
 
-    self.cppHandle.dbSlipRate = self.slipRate.cppHandle
+    self.cppHandle.dbFinalSlip = self.slip.cppHandle
     self.cppHandle.dbSlipTime = self.slipTime.cppHandle
 
     self._logger.eventEnd(logEvent)
@@ -92,7 +92,7 @@ class ConstRateSlipFn(SlipTimeFn):
     Setup members using inventory.
     """
     SlipTimeFn._configure(self)
-    self.slipRate = self.inventory.slipRate
+    self.slip = self.inventory.slip
     self.slipTime = self.inventory.slipTime
     return
 
@@ -103,7 +103,7 @@ class ConstRateSlipFn(SlipTimeFn):
     """
     if None == self.cppHandle:
       import pylith.faults.faults as bindings
-      self.cppHandle = bindings.ConstRateSlipFn()
+      self.cppHandle = bindings.StepSlipFn()
     return
   
   
@@ -111,9 +111,9 @@ class ConstRateSlipFn(SlipTimeFn):
 
 def slip_time_fn():
   """
-  Factory associated with ConstRateSlipFn.
+  Factory associated with StepSlipFn.
   """
-  return ConstRateSlipFn()
+  return StepSlipFn()
 
 
 # End of file 

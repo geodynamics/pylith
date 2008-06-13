@@ -40,7 +40,6 @@ The examples and associated files are:
 
     - dislocation.cfg:  Parameter settings.
     - dislocation_slip.spatialdb:  Database with fault slip values.
-    - dislocation_sliprate.spatialdb: Database with peak slip rate values.
     - dislocation_sliptime.spatialdb:  Database with slip initiation time 
         values.
 

@@ -18,6 +18,7 @@
 #include "pylith/faults/SlipTimeFn.hh"
 #include "pylith/faults/BruneSlipFn.hh"
 #include "pylith/faults/ConstRateSlipFn.hh"
+#include "pylith/faults/StepSlipFn.hh"
 
 #include "pylith/utils/array.hh"
 
@@ -1126,6 +1127,100 @@ cdef class ConstRateSlipFn(SlipTimeFn):
               "Argument must be extension module type " \
               "'spatialdata::spatialdb::SpatialDB'."
       ConstRateSlipFn_dbSlipTime_set(self.thisptr, ptrFromHandle(value))
+
+
+# ----------------------------------------------------------------------
+cdef class StepSlipFn(SlipTimeFn):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* StepSlipFn_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::faults::StepSlipFn);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    SlipTimeFn.__init__(self)
+    self.thisptr = StepSlipFn_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+  property dbFinalSlip:
+    def __set__(self, value):
+      """
+      Set database for slip rate.
+      """
+      # create shim for method 'dbFinalSlip'
+      #embed{ void StepSlipFn_dbFinalSlip_set(void* objVptr, void* dbVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != dbVptr);
+        spatialdata::spatialdb::SpatialDB* db =
+          (spatialdata::spatialdb::SpatialDB*) dbVptr;
+        ((pylith::faults::StepSlipFn*) objVptr)->dbFinalSlip(db);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "spatialdata_spatialdb_SpatialDB":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::spatialdb::SpatialDB'."
+      StepSlipFn_dbFinalSlip_set(self.thisptr, ptrFromHandle(value))
+
+
+  property dbSlipTime:
+    def __set__(self, value):
+      """
+      Set database for slip initiation time.
+      """
+      # create shim for method 'dbSlipTime'
+      #embed{ void StepSlipFn_dbSlipTime_set(void* objVptr, void* dbVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != dbVptr);
+        spatialdata::spatialdb::SpatialDB* db =
+          (spatialdata::spatialdb::SpatialDB*) dbVptr;
+        ((pylith::faults::StepSlipFn*) objVptr)->dbSlipTime(db);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "spatialdata_spatialdb_SpatialDB":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::spatialdb::SpatialDB'."
+      StepSlipFn_dbSlipTime_set(self.thisptr, ptrFromHandle(value))
 
 
 # End of file 
