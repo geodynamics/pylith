@@ -1611,11 +1611,12 @@ By default the output manager outputs both diagnostic information (fault
  each time step.
  Table 
 \begin_inset LatexCommand ref
-reference "tab:fault:output"
+reference "tab:fault:kin:output"
 
 \end_inset
 
- lists the fields available for output.
+ lists the fields available for output for a fault with kinematic (prescribed)
+ earthquake rupture.
  The fault coordinate system is shown in Figure 
 \begin_inset LatexCommand ref
 reference "fig:fault:slip:motions"
@@ -1700,315 +1701,13 @@ The group of vertices has the label ``fault A.'' We replicate the default
 e shear modulus and condition the equations for faster convergence rates.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float table
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="8" columns="3">
-<features>
-<column alignment="center" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
-<column alignment="center" valignment="top" rightline="true" width="0">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\series bold
-Field Type
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\series bold
-Field
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\series bold
-Description
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-vertex_info_fields
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-normal_dir
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Direction of fault normal in global coordinate system
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-strike_dir
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Direction of fault strike in global coordinate system
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-dip_dir
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Up-dip direction on hanging wall in global coordinate system
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-final_slip
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Vector of final slip (in fault coordinate system)
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-slip_time
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Time at which slip begins
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-vertex_data_fields
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-slip
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Slip vector at time step (in fault coordinate system)
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-tractions_change
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Change in fault tractions (in fault coordinate system)
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Fields available in output of fault information.
-\begin_inset LatexCommand label
-name "tab:fault:output"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
-Kinematic Earthquake Source
+Kinematic Earthquake Rupture
 \end_layout
 
 \begin_layout Standard
-Kinematic earthquake sources specify the slip as a function of time on the
- fault surface.
+Kinematic earthquake ruptures specify the slip as a function of time on
+ the fault surface.
  Slip may evolve simultaneously over the fault surface instantaneously in
  a single time step (as is usually done in quasi-static simulations) or
  propagate over the fault surface over hundreds and up to thousands of time
@@ -2109,15 +1808,1049 @@ While the matrix on the left-hand side is now nonsymmetric, the solution
 \end_layout
 
 \begin_layout Subsubsection
+Arrays of Kinematic Rupture Components
+\end_layout
+
+\begin_layout Standard
+Multiple earthquake ruptures can be specified on a single fault surface.
+ This permits repeatedly rupturing the same portion of a fault or combining
+ earthquake rupture on one subset of the fault surface with steady aseismic
+ slip on another subset (the two subsets may overlap in both time and space).
+ A dynamic array of kinematic earthquake rupture components associates a
+ name (string) with each kinematic rupture.
+ The default dynamic array contains a single earthquake rupture, 
+\begin_inset Quotes eld
+\end_inset
+
+rupture
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The eq_srcs is the FaultCohesiveKin facility for thie dynamic array.
+ An example of setting the array of kinematic rupture components in a .cfg
+ file:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault]
+\end_layout
+
+\begin_layout LyX-Code
+eq_srcs = [earthquake,creep] ; Array of kinematic earthquake ruptures
+\end_layout
+
+\begin_layout Standard
+The output manager includes generic fault information (orientation) as well
+ as the final slip or slip rate (as in the case of the constant slip rate
+ slip time function) and slip initiation time for each kinematic rupture.
+ The name of the slip and slip initiation time vertex fields are of the
+ form 
+\family typewriter
+final_slip_NAME
+\family default
+ and 
+\family typewriter
+slip_time_NAME
+\family default
+, respectively, where 
+\family typewriter
+NAME
+\family default
+ refers to the name used in the dynamic array of kinematic ruptures, 
+\family typewriter
+eq_srcs
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="3">
+<features>
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
+<column alignment="center" valignment="top" rightline="true" width="0">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Field Type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Field
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+vertex_info_fields
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+normal_dir
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Direction of fault normal in global coordinate system
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+strike_dir
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Direction of fault strike in global coordinate system
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+dip_dir
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Up-dip direction on hanging wall in global coordinate system
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+final_slip_NAME
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Vector of final slip (in fault coordinate system) in meters
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+slip_time
+\family default
+_
+\family typewriter
+\noun on
+NAME
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Time at which slip begins in seconds
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+vertex_data_fields
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Slip vector at time step (in fault coordinate system) in meters
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+tractions_change
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Change in fault tractions (in fault coordinate system) in Pa
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Fields available in output of fault information.
+\begin_inset LatexCommand label
+name "tab:fault:kin:output"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Kinematic Earthquake Rupture Parameters
+\end_layout
+
+\begin_layout Standard
+The kinematic rupture parameters include the origin time and slip time function.
+ The slip initiation time in the slip time function is relative to the origin
+ time (default is 0).
+ This means that slip initiates at a point at a time corresponding to the
+ sum of the kinematic rupture's origin time and the slip initiation time
+ for that point.
+ An example of specifying the kinematic earthquake rupture properties and
+ components in a .cfg file:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault]
+\end_layout
+
+\begin_layout LyX-Code
+eq_srcs = [earthquake,creep]
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault.eq_srcs.earthquake]
+\end_layout
+
+\begin_layout LyX-Code
+origin_time = 0.0*s ; default origin time
+\end_layout
+
+\begin_layout LyX-Code
+slip_function = pylith.faults.BruneSlipFn ; default slip time function
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault.eq_srcs.creep]
+\end_layout
+
+\begin_layout LyX-Code
+origin_time = 10.0*year ; start creep at 10.0 years
+\end_layout
+
+\begin_layout LyX-Code
+slip_function = pylith.faults.ConstRateSlipFn ; switch to constant slip rate
+ slip function
+\end_layout
+
+\begin_layout Subsubsection
 Slip Time Function
 \end_layout
 
 \begin_layout Standard
 The current release of PyLith supports specification of the evolution of
- fault slip using an analytical expression for the slip time history at
- each point where the parameters for the slip time function may vary over
- the fault surface.
- We use an integral of Brune's far-field time function 
+ fault slip using analytical expressions for the slip time history at each
+ point where the parameters for the slip time function may vary over the
+ fault surface.
+ Currently, three slip time functions are available: (1) a step-function
+ for quasi-static modeling of earthquake rupture, (2) a constant slip rate
+ time function for modeling steady aseismic slip, and (3) the integral of
+ Brune's far-field time function 
+\begin_inset LatexCommand cite
+key "Brune:1970"
+
+\end_inset
+
+ for modeling the dynamics of earthquake rupture.
+ Additional slip time functions will likely be available in future releases.
+\end_layout
+
+\begin_layout Paragraph
+Step-Function Slip Time Function
+\end_layout
+
+\begin_layout Standard
+This slip function prescribes a step in slip at a given time at a point:
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather*}
+D(t)=\left\{ \begin{array}{cc}
+0 & t<t_{r}\\
+D_{final} & t\ge t_{r}\end{array}\right.\,,\end{gather*}
+
+\end_inset
+
+where 
+\begin_inset Formula $D(t)$
+\end_inset
+
+ is slip at time 
+\begin_inset Formula $t$
+\end_inset
+
+, 
+\begin_inset Formula $D_{final}$
+\end_inset
+
+ is the final slip, and 
+\begin_inset Formula $t_{r}$
+\end_inset
+
+ is the slip initiation time (time when rupture reaches the location).
+ The slip is specified independently for each of the component of slip,
+ and the slip and slip starting time may vary over the fault surface.
+\end_layout
+
+\begin_layout Description
+final_slip Spatial database of slip (
+\begin_inset Formula $D_{final})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Description
+slip_time Spatial database of slip initiation times (
+\begin_inset Formula $t_{r}$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault.eq_srcs.rupture]
+\end_layout
+
+\begin_layout LyX-Code
+slip_function = pylith.faults.StepSlipFn
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault.eq_srcs.rupture.slip_function]
+\end_layout
+
+\begin_layout LyX-Code
+final_slip.iohandler.filename = final_slip.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+slip_time.iohandler.filename = sliptime.spatialdb
+\end_layout
+
+\begin_layout Standard
+The spatial database files for the slip time function specify the spatial
+ variation in the parameters for the slip time function.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="3">
+<features>
+<column alignment="left" valignment="top" leftline="true" width="0">
+<column alignment="left" valignment="top" leftline="true" width="0">
+<column alignment="left" valignment="top" leftline="true" rightline="true" width="2.5in">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Database
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+final_slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+left-lateral-slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Amount of left-lateral final slip in meters.
+ Use negative values for right-lateral slip.
+ Applies to faults in 2D and 3D only.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+reverse-slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Amount of reverse slip in meters.
+ Use negative values for normal slip.
+ Applies to faults in 3D only.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+fault-opening
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Amount of fault opening in meters.
+ Negative values imply penetration.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+slip_time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+slip_time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Slip initiation time (
+\begin_inset Formula $t_{t})$
+\end_inset
+
+ in seconds.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Values in spatial database used as parameters in the constant slip rate
+ slip time function.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Constant Slip Rate Slip Time Function
+\end_layout
+
+\begin_layout Standard
+This slip function prescribes a constant slip rate for the evolution of
+ slip at a point: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather*}
+D(t)=\left\{ \begin{array}{cc}
+0 & t<t_{r}\\
+V(t-t_{r}) & t\ge t_{r}\end{array}\right.\,,\end{gather*}
+
+\end_inset
+
+where 
+\begin_inset Formula $D(t)$
+\end_inset
+
+ is slip at time 
+\begin_inset Formula $t$
+\end_inset
+
+, 
+\begin_inset Formula $V$
+\end_inset
+
+ is the slip rate, and 
+\begin_inset Formula $t_{r}$
+\end_inset
+
+ is the slip initiation time (time when rupture reaches the location).
+ The slip rate is specified independently for each of the component of slip,
+ and the slip rate and slip starting time may vary over the fault surface.
+\end_layout
+
+\begin_layout Description
+slip_rate Spatial database of slip rate (
+\begin_inset Formula $V)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Description
+slip_time Spatial database of slip initiation times (
+\begin_inset Formula $t_{r}$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault.eq_srcs.ruptures]
+\end_layout
+
+\begin_layout LyX-Code
+slip_function = pylith.faults.ConstRateSlipFn
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault.eq_srcs.ruptures.slip_function]
+\end_layout
+
+\begin_layout LyX-Code
+slip_rate.iohandler.filename = slip_rate.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+slip_time.iohandler.filename = sliptime.spatialdb
+\end_layout
+
+\begin_layout Standard
+The spatial database files for the slip time function specify the spatial
+ variation in the parameters for the slip time function.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="3">
+<features>
+<column alignment="left" valignment="top" leftline="true" width="0">
+<column alignment="left" valignment="top" leftline="true" width="0">
+<column alignment="left" valignment="top" leftline="true" rightline="true" width="2.5in">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Database
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+slip_rate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+left-lateral-slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Slip rate for left-lateral final slip in meters per second.
+ Use negative values for right-lateral slip.
+ Applies to faults in 2D and 3D only.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+reverse-slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Slip rate for reverse slip in meters per second.
+ Use negative values for normal slip.
+ Applies to faults in 3D only.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+fault-opening
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Slip rate for fault opening in meters per second.
+ Negative values imply penetration.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+slip_time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+slip_time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Slip initiation time (
+\begin_inset Formula $t_{t})$
+\end_inset
+
+ in seconds.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Values in spatial database used as parameters in the constant slip rate
+ slip time function.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Brune Slip Time Function
+\end_layout
+
+\begin_layout Standard
+We use an integral of Brune's far-field time function 
 \begin_inset LatexCommand cite
 key "Brune:1970"
 
@@ -2128,7 +2861,9 @@ key "Brune:1970"
 
 \begin_layout Standard
 \begin_inset Formula \begin{gather*}
-D(t)=D_{final}(1-e^{-(t-t_{r})/t_{0}}(1+(t-t_{r})/t_{0}))\,,\\
+D(t)=\left\{ \begin{array}{cc}
+0 & t<t_{r}\\
+D_{final}(1-e^{-(t-t_{r})/t_{0}}(1+(t-t_{r})/t_{0})) & t\ge t_{r}\end{array}\right.\,,\\
 t_{0}=D/D_{final}eV_{max}\,,\end{gather*}
 
 \end_inset
@@ -2190,7 +2925,15 @@ An example of setting these parameters in a
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.problem.interfaces.fault.eq_src.slip_function]
+[pylithapp.problem.interfaces.fault.eq_srcs.ruptures]
+\end_layout
+
+\begin_layout LyX-Code
+slip_function = pylith.faults.BruneSlipFn
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault.eq_srcs.rupture.slip_function]
 \end_layout
 
 \begin_layout LyX-Code
@@ -2203,10 +2946,6 @@ slip_rate.iohandler.filename = sliprate.spatialdb
 
 \begin_layout LyX-Code
 slip_time.iohandler.filename = sliptime.spatialdb
-\end_layout
-
-\begin_layout Subsubsection
-Slip Time Function Spatial Database Files
 \end_layout
 
 \begin_layout Standard
@@ -2294,7 +3033,7 @@ left-lateral-slip
 \begin_inset Text
 
 \begin_layout Standard
-Amount of left-lateral final slip.
+Amount of left-lateral final slip in meters.
  Use negative values for right-lateral slip.
  Applies to faults in 2D and 3D only.
 \end_layout
@@ -2327,7 +3066,7 @@ reverse-slip
 \begin_inset Text
 
 \begin_layout Standard
-Amount of reverse slip.
+Amount of reverse slip in meters.
  Use negative values for normal slip.
  Applies to faults in 3D only.
 \end_layout
@@ -2360,7 +3099,7 @@ fault-opening
 \begin_inset Text
 
 \begin_layout Standard
-Amount of fault opening.
+Amount of fault opening in meters.
  Negative values imply penetration.
 \end_layout
 
@@ -2398,7 +3137,7 @@ Peak slip rate (
 \begin_inset Formula $V_{max})$
 \end_inset
 
-.
+ in meters per second.
 \end_layout
 
 \end_inset
@@ -2435,7 +3174,7 @@ Slip initiation time (
 \begin_inset Formula $t_{t})$
 \end_inset
 
-.
+ in meters.
 \end_layout
 
 \end_inset
@@ -2452,8 +3191,7 @@ Slip initiation time (
 \begin_inset Caption
 
 \begin_layout Standard
-Values in spatial database used as parameters in the elastic material constituti
-ve models.
+Values in spatial database used as parameters in the Brune slip time function.
 \end_layout
 
 \end_inset
