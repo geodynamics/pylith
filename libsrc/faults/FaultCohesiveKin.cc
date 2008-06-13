@@ -31,6 +31,8 @@
 
 #include <math.h> // USES pow(), sqrt()
 #include <strings.h> // USES strcasecmp()
+#include <string.h> // USES strlen()
+#include <stdlib.h> // USES atoi()
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
@@ -51,16 +53,17 @@ pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void)
 // ----------------------------------------------------------------------
 // Set kinematic earthquake source.
 void
-pylith::faults::FaultCohesiveKin::eqsrcs(EqKinSrc** sources,
+pylith::faults::FaultCohesiveKin::eqsrcs(const char** names,
+					 EqKinSrc** sources,
 					 const int numSources)
-{ // eqsrc
-  _eqSrcs.resize(numSources);
+{ // eqsrcs
+  _eqSrcs.clear();
   for (int i=0; i < numSources; ++i) {
     if (0 == sources[i])
       throw std::runtime_error("Null earthquake source.");
-    _eqSrcs[i] = sources[i]; // Don't manage memory for eq source
+    _eqSrcs[std::string(names[i])] = sources[i]; // Don't manage memory for eq source
   } // for
-} // eqsrc
+} // eqsrcs
 
 // ----------------------------------------------------------------------
 // Initialize fault. Determine orientation and setup boundary
@@ -99,10 +102,13 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
   // Compute tributary area for each vertex in fault mesh.
   _calcArea();
 
-  const int nsrcs = _eqSrcs.size();
-  for (int i=0; i < nsrcs; ++i) {
-    assert(0 != _eqSrcs[i]);
-    _eqSrcs[i]->initialize(_faultMesh, cs);
+  const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
+  for (srcs_type::iterator s_iter=_eqSrcs.begin(); 
+       s_iter != srcsEnd; 
+       ++s_iter) {
+    EqKinSrc* src = s_iter->second;
+    assert(0 != src);
+    src->initialize(_faultMesh, cs);
   } // for
 
   // Allocate slip field
@@ -167,19 +173,25 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   _slip->zero();
   if (!_useSolnIncr) {
     // Compute slip field at current time step
-    const int nsrcs = _eqSrcs.size();
-    for (int i=0; i < nsrcs; ++i) {
-      assert(0 != _eqSrcs[i]);
-      if (t >= _eqSrcs[i]->originTime())
-	_eqSrcs[i]->slip(_slip, t, _faultMesh);
+    const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
+    for (srcs_type::iterator s_iter=_eqSrcs.begin(); 
+	 s_iter != srcsEnd; 
+	 ++s_iter) {
+      EqKinSrc* src = s_iter->second;
+      assert(0 != src);
+      if (t >= src->originTime())
+	src->slip(_slip, t, _faultMesh);
     } // for
   } else {
     // Compute increment of slip field at current time step
-    const int nsrcs = _eqSrcs.size();
-    for (int i=0; i < nsrcs; ++i) {
-      assert(0 != _eqSrcs[i]);
-      if (t >= _eqSrcs[i]->originTime())
-	_eqSrcs[i]->slipIncr(_slip, t-_dt, t, _faultMesh);
+    const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
+    for (srcs_type::iterator s_iter=_eqSrcs.begin(); 
+	 s_iter != srcsEnd; 
+	 ++s_iter) {
+      EqKinSrc* src = s_iter->second;
+      assert(0 != src);
+      if (t >= src->originTime())
+	src->slipIncr(_slip, t-_dt, t, _faultMesh);
     } // for
   } // else
   
@@ -458,6 +470,9 @@ pylith::faults::FaultCohesiveKin::vertexField(
 
   const int cohesiveDim = _faultMesh->getDimension();
 
+  const int slipStrLen = strlen("final_slip");
+  const int timeStrLen = strlen("slip_time");
+
   if (0 == strcasecmp("slip", name)) {
     *fieldType = VECTOR_FIELD;
     assert(!_slip.isNull());
@@ -480,12 +495,19 @@ pylith::faults::FaultCohesiveKin::vertexField(
     *fieldType = VECTOR_FIELD;
     return _bufferTmp;
 
-  } else if (0 == strcasecmp("final_slip", name)) {
-    _bufferTmp = _eqSrcs[0]->finalSlip();
+  } else if (0 == strncasecmp("final_slip_X", name, slipStrLen)) {
+    const std::string value = std::string(name).substr(slipStrLen+1);
+
+    const srcs_type::const_iterator s_iter = _eqSrcs.find(value);
+    assert(s_iter != _eqSrcs.end());
+    _bufferTmp = s_iter->second->finalSlip();
     *fieldType = VECTOR_FIELD;
     return _bufferTmp;
-  } else if (0 == strcasecmp("slip_time", name)) {
-    _bufferTmp = _eqSrcs[0]->slipTime();
+  } else if (0 == strncasecmp("slip_time_X", name, timeStrLen)) {
+    const std::string value = std::string(name).substr(timeStrLen+1);
+    const srcs_type::const_iterator s_iter = _eqSrcs.find(value);
+    assert(s_iter != _eqSrcs.end());
+    _bufferTmp = s_iter->second->slipTime();
     *fieldType = SCALAR_FIELD;
     return _bufferTmp;
   } else if (0 == strcasecmp("traction_change", name)) {

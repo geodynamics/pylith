@@ -105,7 +105,12 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     assert(None != self.cppHandle)
     for eqsrc in self.eqsrcs.components():
       eqsrc.preinitialize()
-    self.cppHandle.eqsrcs = self.eqsrcs.components()
+    self.cppHandle.eqsrcs(self.eqsrcs.inventory.facilityNames(),
+                          self.eqsrcs.components())
+
+    for name in self.eqsrcs.inventory.facilityNames():
+      self.availableFields['vertex']['info'] += ["final_slip_%s" % name]
+      self.availableFields['vertex']['info'] += ["slip_time_%s" % name]
 
     if mesh.dimension() == 2:
       self.availableFields['vertex']['info'] += ["strike_dir"]

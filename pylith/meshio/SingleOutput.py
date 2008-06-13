@@ -13,13 +13,11 @@
 ## @file pylith/meshio/SingleOutput.py
 ##
 ## @brief Python container with one output manager.
-##
-## Factory: object_bin
 
-from pylith.utils.ObjectBin import ObjectBin
+from pyre.components.Component import Component
 
 # SingleOutput class
-class SingleOutput(ObjectBin):
+class SingleOutput(Component):
   """
   Python container with one output manager.
 
@@ -28,7 +26,7 @@ class SingleOutput(ObjectBin):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(ObjectBin.Inventory):
+  class Inventory(Component.Inventory):
     """
     Python object for managing SingleOutput facilities and properties.
     """
@@ -56,28 +54,8 @@ class SingleOutput(ObjectBin):
     """
     Constructor.
     """
-    ObjectBin.__init__(self, name)
+    Component.__init__(self, name)
     return
-
-
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _configure(self):
-    """
-    Set attributes from inventory.
-    """
-    ObjectBin._configure(self)
-    self.bin = [self.inventory.output]
-    return
-
-  
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def object_bin():
-  """
-  Factory associated with SingleOutput.
-  """
-  return SingleOutput()
 
 
 # End of file 

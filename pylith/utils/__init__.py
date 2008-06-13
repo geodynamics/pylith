@@ -12,7 +12,6 @@
 
 __all__ = ['CheckpointTimer',
            'CppData',
-           'ObjectBin',
            'PetscManager',
            'testarray',
            'importing']

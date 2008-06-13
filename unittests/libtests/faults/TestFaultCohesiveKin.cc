@@ -82,11 +82,12 @@ pylith::faults::TestFaultCohesiveKin::testEqsrc(void)
   EqKinSrc eqsrcB;
   const int nsrcs = 2;
   EqKinSrc** sources = new EqKinSrc*[2];
+  const char* names[] = {"one", "two"};
   sources[0] = &eqsrcA;
   sources[1] = &eqsrcB;
-  fault.eqsrcs(sources, nsrcs);
-  CPPUNIT_ASSERT(&eqsrcA == fault._eqSrcs[0]);
-  CPPUNIT_ASSERT(&eqsrcB == fault._eqSrcs[1]);
+  fault.eqsrcs(names, sources, nsrcs);
+  CPPUNIT_ASSERT(&eqsrcA == fault._eqSrcs["one"]);
+  CPPUNIT_ASSERT(&eqsrcB == fault._eqSrcs["two"]);
   delete[] sources; sources = 0;
 } // testEqsrc
 
@@ -547,6 +548,7 @@ pylith::faults::TestFaultCohesiveKin::_initialize(ALE::Obj<Mesh>* mesh,
     const int nsrcs = _eqsrcs.size();
     CPPUNIT_ASSERT(nsrcs == _slipfns.size());
     EqKinSrc** sources = new EqKinSrc*[nsrcs];
+    char** names = new char*[nsrcs];
     for (int i=0; i < nsrcs; ++i) {
       _slipfns[i]->dbFinalSlip(&dbFinalSlip);
       _slipfns[i]->dbSlipTime(&dbSlipTime);
@@ -554,13 +556,16 @@ pylith::faults::TestFaultCohesiveKin::_initialize(ALE::Obj<Mesh>* mesh,
       
       _eqsrcs[i]->slipfn(_slipfns[i]);
       sources[i] = _eqsrcs[i];
+      names[i] = new char[2];
+      names[i][0] = 'a' + i;
+      names[i][1] = '\0';
     } // for
   
     fault->id(_data->id);
     fault->label(_data->label);
     fault->quadrature(_quadrature);
     
-    fault->eqsrcs(sources, nsrcs);
+    fault->eqsrcs(const_cast<const char**>(names), sources, nsrcs);
     fault->adjustTopology(*mesh);
 
     const double upDirVals[] = { 0.0, 0.0, 1.0 };
@@ -577,6 +582,9 @@ pylith::faults::TestFaultCohesiveKin::_initialize(ALE::Obj<Mesh>* mesh,
     fault->initialize(*mesh, &cs, upDir, normalDir, &dbMatProp); 
 
     delete[] sources; sources = 0;
+    for (int i=0; i < nsrcs; ++i)
+      delete[] names[i];
+    delete[] names; names = 0;
   } catch (const ALE::Exception& err) {
     throw std::runtime_error(err.msg());
   } // catch

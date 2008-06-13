@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/utils/ObjectBin.py
+## @file pylith/utils/EmptyBin.py
 ##
 ## @brief Python container for a collection of objects.
 ##
@@ -18,21 +18,19 @@
 
 from pyre.components.Component import Component
 
-# ObjectBin class
-class ObjectBin(Component):
+# EmptyBin class
+class EmptyBin(Component):
   """
   Python container for a collection of objects.
-
-  Factory: object_bin
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="objectbin"):
+  def __init__(self, name="emptybin"):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="object_bin")
+    Component.__init__(self, name, facility="empty_bin")
     return
 
 

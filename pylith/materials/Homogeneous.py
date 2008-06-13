@@ -13,22 +13,18 @@
 ## @file pylith/materials/Homogeneous.py
 ##
 ## @brief Python materials container with one material.
-##
-## Factory: object_bin
 
-from pylith.utils.ObjectBin import ObjectBin
+from pyre.components.Component import Component
 
 # Homogeneous class
-class Homogeneous(ObjectBin):
+class Homogeneous(Component):
   """
   Python materials container with one material.
-
-  Factory: object_bin
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(ObjectBin.Inventory):
+  class Inventory(Component.Inventory):
     """
     Python object for managing Homogeneous facilities and properties.
     """
@@ -56,28 +52,8 @@ class Homogeneous(ObjectBin):
     """
     Constructor.
     """
-    ObjectBin.__init__(self, name)
+    Component.__init__(self, name)
     return
-
-
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _configure(self):
-    """
-    Set attributes from inventory.
-    """
-    ObjectBin._configure(self)
-    self.bin = [self.inventory.material]
-    return
-
-  
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def object_bin():
-  """
-  Factory associated with Homogeneous.
-  """
-  return Homogeneous()
 
 
 # End of file 

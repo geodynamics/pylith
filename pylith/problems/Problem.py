@@ -77,7 +77,7 @@ class Problem(Component):
     ## @li \b gravityField Gravity field for problem (SpatialDB).
 
     import pyre.inventory
-    from pylith.utils.ObjectBin import ObjectBin
+    from pylith.utils.EmptyBin import EmptyBin
 
     useGravity = pyre.inventory.bool("use_gravity", default=False)
     useGravity.meta['tip'] = "Use gravitational body forces in problem."
@@ -94,12 +94,12 @@ class Problem(Component):
 
     bc = pyre.inventory.facilityArray("bc",
                                       itemFactory=bcFactory,
-                                      factory=ObjectBin)
+                                      factory=EmptyBin)
     bc.meta['tip'] = "Boundary conditions."
 
     interfaces = pyre.inventory.facilityArray("interfaces",
                                               itemFactory=faultFactory,
-                                              factory=ObjectBin)
+                                              factory=EmptyBin)
     interfaces.meta['tip'] = "Interior surfaces with constraints or " \
                              "constitutive models."
 

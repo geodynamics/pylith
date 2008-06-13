@@ -110,8 +110,8 @@ nobase_pkgpyexec_PYTHON = \
 	utils/__init__.py \
 	utils/CheckpointTimer.py \
 	utils/CppData.py \
+	utils/EmptyBin.py \
 	utils/EventLogger.py \
-	utils/ObjectBin.py \
 	utils/PetscManager.py \
 	utils/importing.py \
 	utils/profiling.py \
