@@ -13,22 +13,18 @@
 ## @file pylith/faults/SingleRupure.py
 ##
 ## @brief Python kinematic rupture container with one rupture.
-##
-## Factory: object_bin
 
-from pylith.utils.ObjectBin import ObjectBin
+from pyre.components.Component import Component
 
 # SingleRupture class
-class SingleRupture(ObjectBin):
+class SingleRupture(Component):
   """
   Python kinematic rupture container with one rupture.
-
-  Factory: object_bin
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(ObjectBin.Inventory):
+  class Inventory(Component.Inventory):
     """
     Python object for managing SingleRupture facilities and properties.
     """
@@ -56,28 +52,8 @@ class SingleRupture(ObjectBin):
     """
     Constructor.
     """
-    ObjectBin.__init__(self, name)
+    Component.__init__(self, name)
     return
-
-
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _configure(self):
-    """
-    Set attributes from inventory.
-    """
-    ObjectBin._configure(self)
-    self.bin = [self.inventory.rupture]
-    return
-
-  
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def object_bin():
-  """
-  Factory associated with Homogeneous.
-  """
-  return SingleRupture()
 
 
 # End of file 

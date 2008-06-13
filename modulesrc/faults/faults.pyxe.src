@@ -39,6 +39,7 @@ cdef extern from "stdlib.h":
   ctypedef unsigned long size_t
   void* malloc(size_t size)
   void free(void* mem)
+  void strcpy(char*, char*)
 
 # ----------------------------------------------------------------------
 cdef void Fault_destructor(void* obj):
@@ -577,6 +578,58 @@ cdef class FaultCohesiveKin(FaultCohesive):
     return
 
 
+  def eqsrcs(self, names, srcs):
+    """
+    Set quadrature.
+    """
+    # create shim for method 'eqsrc'
+    #embed{ void FaultCohesiveKin_eqsrcs_set(void* objVptr, char** names, void** srcsVptr, int nsrcs)
+    try {
+      assert(0 != objVptr);
+      pylith::faults::EqKinSrc** eqsrcs =
+        (pylith::faults::EqKinSrc**) srcsVptr;
+      ((pylith::faults::FaultCohesiveKin*) objVptr)->eqsrcs(
+      const_cast<const char**>(names), eqsrcs, nsrcs);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    cdef char** namesArray
+    cdef void** srcsArray
+    namesArray = NULL
+    srcsArray = NULL
+    nsrcs = len(srcs)
+    if len(names) != nsrcs:
+      raise ValueError("Lengths of arrays 'names' and 'srcs' must match.")
+    if nsrcs > 0:
+      namesArray = <char**> malloc(nsrcs*sizeof(char*))
+      srcsArray = <void**> malloc(nsrcs*sizeof(void*))
+    for i from 0 <= i < nsrcs:
+      strsize = len(names[i])
+      namesArray[i] = <char*> malloc(1+strsize*sizeof(char))
+      tmp = names[i] # KLUDGE??
+      strcpy(namesArray[i], tmp)
+      
+      if not srcs[i].cppHandle.name == "pylith_faults_EqKinSrc":
+        raise TypeError, \
+          "Argument srcs must be an array of extension module type 'EqKinSrc'."
+      srcsArray[i] = ptrFromHandle(srcs[i].cppHandle)
+    FaultCohesiveKin_eqsrcs_set(self.thisptr, namesArray, srcsArray, nsrcs)
+
+    for i from 0 <= i < nsrcs:
+      free(<void*> namesArray[i])
+    free(<void*> namesArray)
+    free(srcsArray)
+    return
+
+
   property quadrature:
     def __set__(self, q):
       """
@@ -604,41 +657,6 @@ cdef class FaultCohesiveKin(FaultCohesive):
         raise TypeError, \
               "Argument must be extension module type 'Quadrature'."
       FaultCohesiveKin_quadrature_set(self.thisptr, ptrFromHandle(q))
-
-
-  property eqsrcs:
-    def __set__(self, srcs):
-      """
-      Set quadrature.
-      """
-      # create shim for method 'eqsrc'
-      #embed{ void FaultCohesiveKin_eqsrcs_set(void* objVptr, void** srcsVptr, int nsrcs)
-      try {
-        assert(0 != objVptr);
-        pylith::faults::EqKinSrc** eqsrcs =
-          (pylith::faults::EqKinSrc**) srcsVptr;
-        ((pylith::faults::FaultCohesiveKin*) objVptr)->eqsrcs(eqsrcs, nsrcs);
-      } catch (const std::exception& err) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        const_cast<char*>(err.what()));
-      } catch (const ALE::Exception& err) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        const_cast<char*>(err.msg().c_str()));
-      } catch (...) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        "Caught unknown C++ exception.");
-      } // try/catch
-      #}embed
-      cdef void** srcsCpp
-      nsrcs = len(srcs)
-      srcsCpp = <void**> malloc(nsrcs*sizeof(void*))
-      for i from 0 <= i < nsrcs:
-        if not srcs[i].cppHandle.name == "pylith_faults_EqKinSrc":
-          raise TypeError, \
-            "Argument srcs must be an array of extension module type 'EqKinSrc'."
-        srcsCpp[i] = ptrFromHandle(srcs[i].cppHandle)
-      FaultCohesiveKin_eqsrcs_set(self.thisptr, srcsCpp, nsrcs)
-      free(srcsCpp)
 
 
   property timeStep:

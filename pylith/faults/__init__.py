@@ -19,7 +19,8 @@ __all__ = ['BruneSlipFn',
            'FaultCohesiveKin',
            'FaultCohesive',
            'Fault',
-            'SlipTimeFn',
+           'SlipTimeFn',
+           'SingleRupture',
            ]
 
 
