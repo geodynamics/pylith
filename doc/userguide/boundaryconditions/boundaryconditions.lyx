@@ -1,4 +1,4 @@
-#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -2467,16 +2467,17 @@ ve models.
 \end_layout
 
 \begin_layout Section
-Including Gravitational Body Forces
+Gravitational Body Forces
 \end_layout
 
 \begin_layout Standard
 Many problems in geophysics require the consideration of gravitational body
  forces.
- For example, the lithostatic stress state is important in many problems.
- In future versions of the code that include nonlinear behavior, body forces
- will also affect model aspects such as plastic yield criteria and the deformati
-on field for large deformation/finite strain problems.
+ For example, it is often important to include the effects of the lithostatic
+ (overburden) pressure.
+ In future releases of PyLith that permit nonlinear bulk rheologies, body
+ forces will affect plastic yield criteria and the deformation field for
+ large deformation/finite strain problems.
  As described in 
 \begin_inset LatexCommand ref
 reference "cha:Governing-Equations"
@@ -2511,26 +2512,24 @@ f_{i}=\rho ga_{i}.\end{equation}
 
 \end_inset
 
-The mass density is a property of every material type, and is thus specified
- in the same spatial database as the other material properties for a given
- type.
- The gravitational acceleration is assumed constant for a given problem,
- with a default value of 9.80665 m/s
+The mass density is a property of every material model, and is thus included
+ in the spatial database with the physical properties for each material.
+ The gravitational acceleration is assumed to be uniform and constant for
+ a given problem, with a default value of 9.80665 m/s
 \begin_inset Formula $^{\text{2}}$
 \end_inset
 
 .
  The orientation vector will depend on the dimension of the problem as well
  as the coordinate system being used.
- The default orientation vector is a constant vector with components (0,
- 0, -1).
- This would be appropriate for three-dimensional problems where the gravity
- vector is aligned with the negative z-axis for the entire region of interest,
- as would be the case in a geoprojected coordinate system or a Cartesian
- coordinate system that ignores the curvature of the Earth.
- If Earth curvature needs to be considered, an Earth-centered, Earth-fixed
- (ECEF) or local Cartesian system should be used, in which case the orientation
- vector is computed automatically.
+ The default orientation vector has components (0, 0, -1).
+ This is appropriate for three-dimensional problems where the gravity vector
+ is aligned with the negative z-axis, as would be the case in a geographic-proje
+cted coordinate system or a generic Cartesian coordinate system.
+ For cases in which the curvature of the earth should be considered, the
+ spatialdata package provides an earth-centered, earth-fixed (ECEF) coordinate
+ system and a local georeference Cartesian system; in each of these cases
+ the orientation vector is computed automatically.
  For problems in one or two dimensions where the orientation vector is constant,
  the vector will need to be explicitly specified.
  For example, in a two-dimensional problem, the vector might be specified
