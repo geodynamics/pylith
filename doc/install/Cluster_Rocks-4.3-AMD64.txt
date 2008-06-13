@@ -20,13 +20,17 @@ available, the linker will use the one compatible with the requested
 architecture (the default is usually the 64-bit architecture).
 
 To make things easier, I create environment variables TOOLS_DIR,
-CIG_DIR, and TOOLS_FORMAT. The TOOLS_FORMAT variable makes it easier
-to maintain multiple copies of packages built with different options
-(e.g., different compilers and different levels of optimization).
+CIG_DIR, TOOLS_FORMAT, and PYTHON_VERSION. The TOOLS_FORMAT variable
+makes it easier to maintain multiple copies of packages built with
+different options (e.g., different compilers and different levels of
+optimization). Note that the python version should match the version
+of Python you will be using. If you don't know the version of python,
+run "python --version".
 
-  export $TOOLS_DIR=${HOME}/tools
-  export $CIG_DIR=$HOME/tools/cig
+  export TOOLS_DIR=${HOME}/tools
+  export CIG_DIR=$HOME/tools/cig
   export TOOLS_FORMAT=gcc-3.4_64
+  export PYTHON_VERSION=2.4
 
   export CIG_DIR=${HOME}/tools/cig/${TOOLS_FORMAT}
   export CIG_INCDIR=${CIG_DIR}/include
@@ -72,7 +76,6 @@ to maintain multiple copies of packages built with different options
   Python 2.3 contains bugs that prevent its full functionality on a
   x86_64 system. Rocks installs Python 2.4 in /opt/rocks.
 
-  export PYTHON_VERSION=2.4
   PATH=/opt/rocks/bin:${PATH}
   export PYTHON_DIR=/opt/rocks/lib/python$PYTHON_VERSION
   export PYTHON_LIBDIR=/opt/rocks/lib/python$PYTHON_VERSION

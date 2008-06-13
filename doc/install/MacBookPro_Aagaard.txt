@@ -12,13 +12,17 @@ I use the bash shell and place all software package environment
 variables in a .bash.tools file that is read by the .bashrc file.
 
 To make things easier, I create environment variables TOOLS_DIR,
-CIG_DIR, and TOOLS_FORMAT. The TOOLS_FORMAT variable makes it easier
-to maintain multiple copies of packages built with different options
-(e.g., different compilers and different levels of optimization).
+CIG_DIR, TOOLS_FORMAT, and PYTHON_VERSION. The TOOLS_FORMAT variable
+makes it easier to maintain multiple copies of packages built with
+different options (e.g., different compilers and different levels of
+optimization). Note that the python version should match the version
+of Python you will be using. If you don't know the version of python,
+run "python --version".
 
   export TOOLS_DIR=/sw/tools
   export TOOLS_FORMAT=gcc-4.0
   export CIG_DIR=$HOME/tools/cig/${TOOLS_FORMAT}
+  export PYTHON_VERSION=2.5
 
   export CIG_INCDIR=${CIG_DIR}/include
   export CIG_LIBDIR=${CIG_DIR}/lib
@@ -52,7 +56,6 @@ to maintain multiple copies of packages built with different options
   b. Install the package by double clicking on MacPython.mpkg.
   c. Update environment variables.
 
-    export PYTHON_VERSION=2.5
     PATH=/Library/Frameworks/Python.framework/Versions/Current/bin:${PATH}
 
 6. Install the Scipy superpack (http://trichech.us/?page_id=5).
