@@ -254,11 +254,11 @@ pylith::faults::BruneSlipFn::slipIncr(const ALE::Obj<pylith::real_section_type>&
   // Get vertices in fault mesh
   const ALE::Obj<Mesh::label_sequence>& vertices = faultMesh->depthStratum(0);
   const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const int numVertices = vertices->size();
 
-  int count = 0;
   for (Mesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
-       ++v_iter, ++count) {
+       ++v_iter) {
     const real_section_type::value_type* paramsVertex = 
       _parameters->restrictPoint(*v_iter);
     assert(0 != paramsVertex);
@@ -283,7 +283,7 @@ pylith::faults::BruneSlipFn::slipIncr(const ALE::Obj<pylith::real_section_type>&
     slipField->updateAddPoint(*v_iter, &slipValues[0]);
   } // for
 
-  PetscLogFlops(count * (3+2*8 + 3*spaceDim));
+  PetscLogFlops(numVertices * (3+2*8 + 3*spaceDim));
 } // slipIncr
 
 // ----------------------------------------------------------------------

@@ -12,9 +12,9 @@
 
 #include <portinfo>
 
-#include "TestConstRateSlipFn.hh" // Implementation of class methods
+#include "TestStepSlipFn.hh" // Implementation of class methods
 
-#include "pylith/faults/ConstRateSlipFn.hh" // USES ConstRateSlipFn
+#include "pylith/faults/StepSlipFn.hh" // USES StepSlipFn
 
 #include "pylith/faults/CohesiveTopology.hh" // USES CohesiveTopology
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
@@ -25,59 +25,59 @@
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestConstRateSlipFn );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestStepSlipFn );
 
 // ----------------------------------------------------------------------
 namespace pylith {
   namespace faults {
-    namespace _TestConstRateSlipFn {
+    namespace _TestStepSlipFn {
       struct DataStruct {
 	const char* meshFilename;
 	const char* faultLabel;
 	const int faultId;
-	const char* slipRateFilename;
+	const char* finalSlipFilename;
 	const char* slipTimeFilename;
 	const int* constraintPts;
-	const double* slipRateE;
+	const double* finalSlipE;
 	const double* slipTimeE;
 	const int numConstraintPts;
       }; // DataStruct
-    } // _TestConstRateSlipFn
+    } // _TestStepSlipFn
   } // faults
 } // pylith
 
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::faults::TestConstRateSlipFn::testConstructor(void)
+pylith::faults::TestStepSlipFn::testConstructor(void)
 { // testConstructor
-  ConstRateSlipFn slipfn;
+  StepSlipFn slipfn;
 } // testConstructor
 
 // ----------------------------------------------------------------------
-// Test dbSlipRate().
+// Test dbFinalSlip().
 void
-pylith::faults::TestConstRateSlipFn::testDbSlipRate(void)
-{ // testDbSlipRate
+pylith::faults::TestStepSlipFn::testDbFinalSlip(void)
+{ // testDbFinalSlip
   const char* label = "database ABC";
-  ConstRateSlipFn slipfn;
+  StepSlipFn slipfn;
   
   spatialdata::spatialdb::SimpleDB db(label);
-  slipfn.dbSlipRate(&db);
+  slipfn.dbFinalSlip(&db);
 
-  CPPUNIT_ASSERT(0 != slipfn._dbSlipRate);
+  CPPUNIT_ASSERT(0 != slipfn._dbFinalSlip);
   CPPUNIT_ASSERT_EQUAL(std::string(label),
-		       std::string(slipfn._dbSlipRate->label()));
+		       std::string(slipfn._dbFinalSlip->label()));
   CPPUNIT_ASSERT(0 == slipfn._dbSlipTime);
-} // testDbSlipRate
+} // testDbFinalSlip
 
 // ----------------------------------------------------------------------
 // Test dbSlipTime().
 void
-pylith::faults::TestConstRateSlipFn::testDbSlipTime(void)
+pylith::faults::TestStepSlipFn::testDbSlipTime(void)
 { // testDbSlipTime
   const char* label = "database ABCD";
-  ConstRateSlipFn slipfn;
+  StepSlipFn slipfn;
   
   spatialdata::spatialdb::SimpleDB db(label);
   slipfn.dbSlipTime(&db);
@@ -85,31 +85,31 @@ pylith::faults::TestConstRateSlipFn::testDbSlipTime(void)
   CPPUNIT_ASSERT(0 != slipfn._dbSlipTime);
   CPPUNIT_ASSERT_EQUAL(std::string(label),
 		       std::string(slipfn._dbSlipTime->label()));
-  CPPUNIT_ASSERT(0 == slipfn._dbSlipRate);
+  CPPUNIT_ASSERT(0 == slipfn._dbFinalSlip);
 } // testDbSlipTime
 
 // ----------------------------------------------------------------------
 // Test initialize() in 1-D.
 void
-pylith::faults::TestConstRateSlipFn::testInitialize1D(void)
+pylith::faults::TestStepSlipFn::testInitialize1D(void)
 { // testInitialize1D
   const char* meshFilename = "data/line2.mesh";
   const char* faultLabel = "fault";
   const int faultId = 2;
-  const char* slipRateFilename = "data/line2_sliprate.spatialdb";
+  const char* finalSlipFilename = "data/line2_finalslip.spatialdb";
   const char* slipTimeFilename = "data/line2_sliptime.spatialdb";
   const int constraintPts[] = { 3 };
-  const double slipRateE[] = { 0.4 };
+  const double finalSlipE[] = { 2.3 };
   const double slipTimeE[] = { 1.2 };
   const int numConstraintPts = 1;
 
-  _TestConstRateSlipFn::DataStruct data = {meshFilename,
+  _TestStepSlipFn::DataStruct data = {meshFilename,
 					   faultLabel,
 					   faultId,
-					   slipRateFilename,
+					   finalSlipFilename,
 					   slipTimeFilename,
 					   constraintPts,
-					   slipRateE,
+					   finalSlipE,
 					   slipTimeE,
 					   numConstraintPts};
   _testInitialize(data);
@@ -118,26 +118,26 @@ pylith::faults::TestConstRateSlipFn::testInitialize1D(void)
 // ----------------------------------------------------------------------
 // Test initialize() in 2-D.
 void
-pylith::faults::TestConstRateSlipFn::testInitialize2D(void)
+pylith::faults::TestStepSlipFn::testInitialize2D(void)
 { // testInitialize2D
   const char* meshFilename = "data/tri3.mesh";
   const char* faultLabel = "fault";
   const int faultId = 2;
-  const char* slipRateFilename = "data/tri3_sliprate.spatialdb";
+  const char* finalSlipFilename = "data/tri3_finalslip.spatialdb";
   const char* slipTimeFilename = "data/tri3_sliptime.spatialdb";
   const int constraintPts[] = { 3, 4 };
-  const double slipRateE[] = { 0.1, 0.2, 
-			       0.3, 0.4 };
+  const double finalSlipE[] = { 2.3, 0.1, 
+				2.4, 0.2 };
   const double slipTimeE[] = { 1.2, 1.3 };
   const int numConstraintPts = 2;
 
-  _TestConstRateSlipFn::DataStruct data = {meshFilename,
+  _TestStepSlipFn::DataStruct data = {meshFilename,
 					   faultLabel,
 					   faultId,
-					   slipRateFilename,
+					   finalSlipFilename,
 					   slipTimeFilename,
 					   constraintPts,
-					   slipRateE,
+					   finalSlipE,
 					   slipTimeE,
 					   numConstraintPts};
   _testInitialize(data);
@@ -146,27 +146,27 @@ pylith::faults::TestConstRateSlipFn::testInitialize2D(void)
 // ----------------------------------------------------------------------
 // Test initialize() in 3-D.
 void
-pylith::faults::TestConstRateSlipFn::testInitialize3D(void)
+pylith::faults::TestStepSlipFn::testInitialize3D(void)
 { // testInitialize3D
   const char* meshFilename = "data/tet4.mesh";
   const char* faultLabel = "fault";
   const int faultId = 2;
-  const char* slipRateFilename = "data/tet4_sliprate.spatialdb";
+  const char* finalSlipFilename = "data/tet4_finalslip.spatialdb";
   const char* slipTimeFilename = "data/tet4_sliptime.spatialdb";
   const int constraintPts[] = { 3, 4, 5 };
-  const double slipRateE[] = { 1.6, -0.7, 0.1,
-			       1.7, -0.8, 0.2,
-			       1.8, -0.9, 0.3 };
+  const double finalSlipE[] = { 2.3, -0.7, 0.1,
+				2.4, -0.8, 0.2,
+				2.5, -0.9, 0.3 };
   const double slipTimeE[] = { 1.2, 1.3, 1.4 };
   const int numConstraintPts = 3;
 
-  _TestConstRateSlipFn::DataStruct data = {meshFilename,
+  _TestStepSlipFn::DataStruct data = {meshFilename,
 					   faultLabel,
 					   faultId,
-					   slipRateFilename,
+					   finalSlipFilename,
 					   slipTimeFilename,
 					   constraintPts,
-					   slipRateE,
+					   finalSlipE,
 					   slipTimeE,
 					   numConstraintPts};
   _testInitialize(data);
@@ -175,15 +175,14 @@ pylith::faults::TestConstRateSlipFn::testInitialize3D(void)
 // ----------------------------------------------------------------------
 // Test slip().
 void
-pylith::faults::TestConstRateSlipFn::testSlip(void)
+pylith::faults::TestStepSlipFn::testSlip(void)
 { // testSlip
-  const double slipRateE[] = { 0.1, 0.2, 
-			       0.3, 0.4};
-  const double slipTimeE[] = { 1.2, 1.3 };
+  const double slipE[] = { 2.3, 0.1, 
+			   0.0, 0.0};
   const double originTime = 5.064;
 
   ALE::Obj<Mesh> faultMesh;
-  ConstRateSlipFn slipfn;
+  StepSlipFn slipfn;
   _initialize(&faultMesh, &slipfn, originTime);
   
   const int spaceDim = faultMesh->getDimension() + 1;
@@ -206,33 +205,28 @@ pylith::faults::TestConstRateSlipFn::testSlip(void)
   for (Mesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++iPoint) {
-    const double t0 = slipTimeE[iPoint];
     const int fiberDim = slip->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
     const real_section_type::value_type* vals = 
       slip->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != vals);
-
-    for (int iDim=0; iDim < fiberDim; ++iDim) {
-      const double slipE = (t - slipTimeE[iPoint]) > 0.0 ?
-	slipRateE[iPoint*spaceDim+iDim] * (t - slipTimeE[iPoint]) : 0.0;
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(slipE, vals[iDim], tolerance);
-    } // for
+    for (int iDim=0; iDim < fiberDim; ++iDim)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(slipE[iPoint*spaceDim+iDim], vals[iDim], 
+				   tolerance);
   } // for
 } // testSlip
 
 // ----------------------------------------------------------------------
 // Test slipIncr().
 void
-pylith::faults::TestConstRateSlipFn::testSlipIncr(void)
+pylith::faults::TestStepSlipFn::testSlipIncr(void)
 { // testSlipIncr
-  const double slipRateE[] = { 0.1, 0.2, 
-			       0.3, 0.4 };
-  const double slipTimeE[] = { 1.2, 1.3 };
+  const double slipE[] = { 0.0, 0.0, 
+			   2.4, 0.2};
   const double originTime = 1.064;
 
   ALE::Obj<Mesh> faultMesh;
-  ConstRateSlipFn slipfn;
+  StepSlipFn slipfn;
   _initialize(&faultMesh, &slipfn, originTime);
 
   const int spaceDim = faultMesh->getDimension() + 1;
@@ -263,20 +257,17 @@ pylith::faults::TestConstRateSlipFn::testSlipIncr(void)
       slip->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != vals);
 
-    for (int iDim=0; iDim < fiberDim; ++iDim) {
-      const double tRef = (slipTimeE[iPoint] > t0) ? slipTimeE[iPoint] : t0;
-      const double slipE = 
-	slipRateE[iPoint*spaceDim+iDim] * (t1 - tRef);
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(slipE, vals[iDim], tolerance);
-    } // for
+    for (int iDim=0; iDim < fiberDim; ++iDim)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(slipE[iPoint*spaceDim+iDim], vals[iDim], 
+				   tolerance);
   } // for
 } // testSlipIncr
 
 // ----------------------------------------------------------------------
-// Initialize ConstRateSlipFn.
+// Initialize StepSlipFn.
 void
-pylith::faults::TestConstRateSlipFn::_initialize(ALE::Obj<Mesh>* faultMesh,
-						 ConstRateSlipFn* slipfn,
+pylith::faults::TestStepSlipFn::_initialize(ALE::Obj<Mesh>* faultMesh,
+						 StepSlipFn* slipfn,
 						 const double originTime)
 { // _initialize
   assert(0 != slipfn);
@@ -284,7 +275,7 @@ pylith::faults::TestConstRateSlipFn::_initialize(ALE::Obj<Mesh>* faultMesh,
   const char* meshFilename = "data/tri3.mesh";
   const char* faultLabel = "fault";
   const int faultId = 2;
-  const char* slipRateFilename = "data/tri3_sliprate.spatialdb";
+  const char* finalSlipFilename = "data/tri3_finalslip.spatialdb";
   const char* slipTimeFilename = "data/tri3_sliptime.spatialdb";
 
   ALE::Obj<Mesh> mesh;
@@ -310,18 +301,18 @@ pylith::faults::TestConstRateSlipFn::_initialize(ALE::Obj<Mesh>* faultMesh,
 			       mesh->getRealSection("coordinates"));
 
   // Setup databases
-  spatialdata::spatialdb::SimpleDB dbSlipRate("slip rate");
-  spatialdata::spatialdb::SimpleIOAscii ioSlipRate;
-  ioSlipRate.filename(slipRateFilename);
-  dbSlipRate.ioHandler(&ioSlipRate);
+  spatialdata::spatialdb::SimpleDB dbFinalSlip("final slip");
+  spatialdata::spatialdb::SimpleIOAscii ioFinalSlip;
+  ioFinalSlip.filename(finalSlipFilename);
+  dbFinalSlip.ioHandler(&ioFinalSlip);
   
   spatialdata::spatialdb::SimpleDB dbSlipTime("slip time");
   spatialdata::spatialdb::SimpleIOAscii ioSlipTime;
   ioSlipTime.filename(slipTimeFilename);
   dbSlipTime.ioHandler(&ioSlipTime);
   
-  // setup ConstRateSlipFn
-  slipfn->dbSlipRate(&dbSlipRate);
+  // setup StepSlipFn
+  slipfn->dbFinalSlip(&dbFinalSlip);
   slipfn->dbSlipTime(&dbSlipTime);
   
   slipfn->initialize(*faultMesh, &cs, originTime);
@@ -330,7 +321,7 @@ pylith::faults::TestConstRateSlipFn::_initialize(ALE::Obj<Mesh>* faultMesh,
 // ----------------------------------------------------------------------
 // Test initialize().
 void
-pylith::faults::TestConstRateSlipFn::_testInitialize(const _TestConstRateSlipFn::DataStruct& data)
+pylith::faults::TestStepSlipFn::_testInitialize(const _TestStepSlipFn::DataStruct& data)
 { // _testInitialize
   typedef std::set<Mesh::point_type>::const_iterator vert_iterator;  
 
@@ -359,19 +350,19 @@ pylith::faults::TestConstRateSlipFn::_testInitialize(const _TestConstRateSlipFn:
 			    mesh->getRealSection("coordinates"));
 
   // Setup databases
-  spatialdata::spatialdb::SimpleDB dbSlipRate("slip rate");
-  spatialdata::spatialdb::SimpleIOAscii ioSlipRate;
-  ioSlipRate.filename(data.slipRateFilename);
-  dbSlipRate.ioHandler(&ioSlipRate);
+  spatialdata::spatialdb::SimpleDB dbFinalSlip("final slip");
+  spatialdata::spatialdb::SimpleIOAscii ioFinalSlip;
+  ioFinalSlip.filename(data.finalSlipFilename);
+  dbFinalSlip.ioHandler(&ioFinalSlip);
   
   spatialdata::spatialdb::SimpleDB dbSlipTime("slip time");
   spatialdata::spatialdb::SimpleIOAscii ioSlipTime;
   ioSlipTime.filename(data.slipTimeFilename);
   dbSlipTime.ioHandler(&ioSlipTime);
   
-  // setup ConstRateSlipFn
-  ConstRateSlipFn slipfn;
-  slipfn.dbSlipRate(&dbSlipRate);
+  // setup StepSlipFn
+  StepSlipFn slipfn;
+  slipfn.dbFinalSlip(&dbFinalSlip);
   slipfn.dbSlipTime(&dbSlipTime);
   
   const double originTime = 5.353;
@@ -396,7 +387,7 @@ pylith::faults::TestConstRateSlipFn::_testInitialize(const _TestConstRateSlipFn:
     CPPUNIT_ASSERT(0 != vals);
 
     for (int iDim=0; iDim < spaceDim; ++iDim)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(data.slipRateE[iPoint*spaceDim+iDim],
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(data.finalSlipE[iPoint*spaceDim+iDim],
 				   vals[iDim],
 				   tolerance);
 

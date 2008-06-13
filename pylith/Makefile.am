@@ -29,6 +29,7 @@ nobase_pkgpyexec_PYTHON = \
 	faults/FaultCohesiveKin.py \
 	faults/SingleRupture.py \
 	faults/SlipTimeFn.py \
+	faults/StepSlipFn.py \
 	feassemble/__init__.py \
 	feassemble/Constraint.py \
 	feassemble/ElasticityExplicit.py \

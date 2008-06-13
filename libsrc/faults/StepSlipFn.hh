@@ -10,26 +10,25 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/faults/ConstRateSlipFn.hh
+/** @file libsrc/faults/StepSlipFn.hh
  *
- * @brief C++ implementation of a constant slip rate slip time function.
+ * @brief C++ implementation of a step-function slip time function.
  *
- * Slip time function follows the integral of constant slip rate slip
- * time function.
+ * Slip time function is a step function with slip beginning at time t0.
  *
- * Normalized slip = sliprate * (t - t0)
+ * Normalized slip = 1 if t >= t0, 0 otherwise
  */
 
-#if !defined(pylith_faults_constrateslipfn_hh)
-#define pylith_faults_constrateslipfn_hh
+#if !defined(pylith_faults_stepslipfn_hh)
+#define pylith_faults_stepslipfn_hh
 
 #include "SlipTimeFn.hh"
 
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
-    class ConstRateSlipFn;
-    class TestConstRateSlipFn; // unit testing
+    class StepSlipFn;
+    class TestStepSlipFn; // unit testing
   } // faults
 } // pylith
 
@@ -40,26 +39,25 @@ namespace spatialdata {
   } // spatialdb
 } // spatialdata
 
-/// C++ implementation of ConstRate slip time function.
-class pylith::faults::ConstRateSlipFn : public SlipTimeFn
-{ // class ConstRateSlipFn
-  friend class TestConstRateSlipFn; // unit testing
+/// C++ implementation of Step slip time function.
+class pylith::faults::StepSlipFn : public SlipTimeFn
+{ // class StepSlipFn
+  friend class TestStepSlipFn; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
   /// Default constructor.
-  ConstRateSlipFn(void);
+  StepSlipFn(void);
 
   /// Destructor.
-  virtual
-  ~ConstRateSlipFn(void);
+  ~StepSlipFn(void);
 
-  /** Set spatial database for slip rate.
+  /** Set spatial database for final slip.
    *
    * @param db Spatial database
    */
-  void dbSlipRate(spatialdata::spatialdb::SpatialDB* const db);
+  void dbFinalSlip(spatialdata::spatialdb::SpatialDB* const db);
 
   /** Set spatial database for slip initiation time.
    *
@@ -119,31 +117,31 @@ public :
 private :
 
   /// Not implemented
-  ConstRateSlipFn(const ConstRateSlipFn& m);
+  StepSlipFn(const StepSlipFn& m);
 
   /// Not implemented
-  const ConstRateSlipFn& operator=(const ConstRateSlipFn& f);
+  const StepSlipFn& operator=(const StepSlipFn& f);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  /// Parameters for ConstRate slip time function.
-  /// Slip rate (vector), slip time (scalar).
+  /// Parameters for Step slip time function.
+  /// Final slip (vector), slip time (scalar).
   ALE::Obj<real_section_type> _parameters;
 
-  /// Spatial database for slip rate.
-  spatialdata::spatialdb::SpatialDB* _dbSlipRate;
+  /// Spatial database for final slip
+  spatialdata::spatialdb::SpatialDB* _dbFinalSlip;
 
-  /// Spatial database for slip time.
+  /// Spatial database for slip time
   spatialdata::spatialdb::SpatialDB* _dbSlipTime;
 
   int _spaceDim; ///< Spatial dimension for slip field.
 
-}; // class ConstRateSlipFn
+}; // class StepSlipFn
 
-#include "ConstRateSlipFn.icc" // inline methods
+#include "StepSlipFn.icc" // inline methods
 
-#endif // pylith_faults_constrateslipfn_hh
+#endif // pylith_faults_stepslipfn_hh
 
 
 // End of file 

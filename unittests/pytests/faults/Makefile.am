@@ -26,7 +26,8 @@ noinst_PYTHON = \
 	TestFault.py \
 	TestFaultCohesive.py \
 	TestFaultCohesiveKin.py \
-	TestEqKinSrc.py
+	TestEqKinSrc.py \
+	TestStepSlipFn.py
 
 
 # End of file 

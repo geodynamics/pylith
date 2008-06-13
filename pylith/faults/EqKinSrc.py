@@ -53,9 +53,9 @@ class EqKinSrc(Component):
     originTime = pyre.inventory.dimensional("origin_time", default=0.0*second)
     originTime.meta['tip'] = "Origin time for earthquake rupture."
 
-    from BruneSlipFn import BruneSlipFn
+    from StepSlipFn import StepSlipFn
     slipfn = pyre.inventory.facility("slip_function", family="slip_time_fn",
-                                     factory=BruneSlipFn)
+                                     factory=StepSlipFn)
     slipfn.meta['tip'] = "Slip time history function."
 
 

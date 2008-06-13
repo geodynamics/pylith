@@ -15,12 +15,14 @@
 ## @brief Python PyLith faults module initialization
 
 __all__ = ['BruneSlipFn',
+           'ConstRateSlipFn',
            'EqKinSrc',
            'FaultCohesiveKin',
            'FaultCohesive',
            'Fault',
            'SlipTimeFn',
            'SingleRupture',
+           'StepSlipFn',
            ]
 
 

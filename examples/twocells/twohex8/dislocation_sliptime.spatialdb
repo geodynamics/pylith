@@ -38,4 +38,4 @@ SimpleDB {
 // uniform data for a fault (pylith.faults.SingleFault).
 // The entries are:
 // X-Coord, Y-Coord, Z-Coord, slip time
-0.0  0.0  0.0   -1.0
+0.0  0.0  0.0   0.0

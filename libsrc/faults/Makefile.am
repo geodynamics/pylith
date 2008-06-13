@@ -27,7 +27,9 @@ subpkginclude_HEADERS = \
 	FaultCohesiveDyn.icc \
 	FaultCohesiveKin.hh \
 	FaultCohesiveKin.icc \
-	SlipTimeFn.hh
+	SlipTimeFn.hh \
+	StepSlipFn.hh \
+	StepSlipFn.icc
 
 noinst_HEADERS =
 

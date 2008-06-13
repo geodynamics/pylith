@@ -37,7 +37,6 @@ The examples and associated files are:
 
     - dislocation.cfg:  Parameter settings.
     - dislocation_slip.spatialdb:  Database of fault slip values.
-    - dislocation_sliprate.spatialdb: Database of peak slip rate values.
     - dislocation_sliptime.spatialdb: Database of slip initiation time values.
 
   * axialtract
@@ -51,7 +50,6 @@ The examples and associated files are:
     - axialtract.cfg:  Parameter settings.
     - axialtract.spatialdb: Database of Neumann BC values.
     - dislocation_slip_zero.spatialdb:  Database of fault slip values.
-    - dislocation_sliprate.spatialdb: Database of peak slip rate values.
     - dislocation_sliptime.spatialdb: Database of slip initiation time values.
 
 All of the files are documented.  The 'pylithapp.cfg' file is read
