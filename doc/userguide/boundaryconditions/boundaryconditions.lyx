@@ -2203,7 +2203,7 @@ origin_time = 0.0*s ; default origin time
 \end_layout
 
 \begin_layout LyX-Code
-slip_function = pylith.faults.BruneSlipFn ; default slip time function
+slip_function = pylith.faults.StepSlipFn ; default slip time function
 \end_layout
 
 \begin_layout LyX-Code
@@ -2239,6 +2239,7 @@ key "Brune:1970"
 
  for modeling the dynamics of earthquake rupture.
  Additional slip time functions will likely be available in future releases.
+ The default slip time function is the step-function slip function.
 \end_layout
 
 \begin_layout Paragraph
