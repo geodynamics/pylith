@@ -38,15 +38,14 @@ inversions.  Many of these features should be available in late 2008.
 MIGRATING FROM VERSION 1.1 TO 1.2
 ======================================================================
 
-There are two new features in PyLith version 1.1 that require users to
-adjust input parameters from those used with PyLith 1.0. The
-elimination of containers in favor of the dynamic arrays of components
-present in the latest version of Pyre requires switching from setting
-the container to specifying the array of components on the command
-line or .cfg file. Additionally, the new implementation of output
-requires a completely new set of parameters. When using PyLith version
-1.1 with a problem previously setup for PyLith 1.0, look for warnings
-about unknown components and settings in the output at the beginning
+There are two new features in PyLith version 1.2 that require users to
+adjust input parameters from those used with PyLith 1.1. A dynamic
+array of kinematic rupture replaces a single kinematic rupture on a
+fault. Additionally, the default slip time function is now a
+step-function. This eliminates the need to specify a peak slip rate
+for quasi-static simulations. When using PyLith version 1.2 with a
+problem previously setup for PyLith 1.1, look for warnings about
+unknown components and settings in the screen output at the beginning
 of a run.
 
 ======================================================================
@@ -99,21 +98,48 @@ TIPS
 Version 1.2
 ----------------------------------------------------------------------
 
-  * Added gravitational body forces.
+  * New Sieve implementation
 
-  * Added ability to have multiple kinematic earthquake ruptures on a
-    single fault surface. Ruptures can overlap in space and/or time.
+    The previous implementation of Sieve provided a very generalized
+    implementation of data structures and operations for
+    finite-element meshes. Switching to a more rigid implementation in
+    the new implementation strealined the data structures, resulting
+    in a significant reduction in the memory use for storing the
+    mesh. This leads to an overall reduction in memory use of 25-30%
+    in many cases.
+
+  * Multiple kinematic ruptures
+
+    A single kinematic rupture on a fault has been replaced by a
+    dynamic array of kinematic ruptures. This allows creation of an
+    arbitrary number of kinematic ruptures on each fault surface. By
+    using spatial databases to control the spatial and temporal extent
+    of slip in each rupture independently, slip from different
+    earthquake ruptures can overlap in space and/or
+    time. Additionally, the rupture time at each location is specified
+    with respect to the origin time of the corresponding earthquake
+    rupture.
 
   * New slip time functions
 
-    - Step-function slip time function (now the default)
+    - Step slip time function (now the default)
 
-    - Constant slip rate slip time function 
+      This slip time function simplifies specifying instantaneous slip
+      in a quasi-static simulation compared with using the Brune slip
+      time function.
 
-  * New Sieve implementation significantly reduces memory use.
+    - Constant slip rate slip time function
+
+      This slip time function permits prescribing a constant slip rate
+      on the fault surface.
+
+  * Gravitational body forces
+
+    Gravitational body forces are implemented (they are turned off by
+    default). The direction and acceleration of gravity may be specified.
 
   * Fixed Makefile.am files to not delete source files during "make
-    clean" when building in the source directories.
+    clean" when building in the source tree.
 
 ----------------------------------------------------------------------
 Version 1.1.2

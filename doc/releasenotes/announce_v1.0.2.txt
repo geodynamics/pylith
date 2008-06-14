@@ -1,0 +1,109 @@
+Greetings,
+
+I am pleased to announce the 1.0.2 release of PyLith, a finite element
+code designed to solve quasi-static viscoelastic problems in tectonic
+deformation.
+
+This is a bugfix release, which fixes several bugs discovered since
+the release of version 1.0.1 in July. We encourage all users of PyLith
+1.0 to switch to this latest release. We have also made some
+significant performance improvements. A binary package for Intel Macs
+is now available!
+
+You can download the source code and binaries from
+
+    http://geodynamics.org/cig/software/packages/short/pylith
+
+Installation instructions are in the bundled README and INSTALL  
+files, as well as in the User Manual on the web page.
+
+
+RELEASE NOTES:
+
+  * Performance optimizations have significantly reduced runtime and
+    memory use relative to version 1.0.1. The default quadrature order
+    for tetrahedral cells is now 1, which is appropriate for the
+    default basis functions.
+
+  * Tips
+
+      - For most crustal deformation problems, we recommend using the
+        Additive Schwartz preconditioner via the following PETSc
+        settings:
+
+          + Command line arguments
+
+            --petsc.pc_type=asm
+            --petsc.ksp_max_it=100
+            --petsc.ksp_gmres_restart=50
+            --petsc.ksp_rtol=1.0e-08
+
+          + pylithapp.cfg (or your other favorite .cfg file)
+
+            [pylithapp.petsc]
+            pc_type = asm
+            ksp_max_it = 100
+            ksp_gmres_restart = 50
+            ksp_rtol = 1.0e-08
+
+      - If the solve takes more than a few hundred iterations for a
+        large problem (use the --petsc.ksp_monitor=1 and
+        --petsc.ksp_view=1 to see diagnostic information for the
+        solver), this is an indication that something is wrong. Either
+        the preconditioner is inappropriate for the type of problem you
+        are solving or there is an error in the problem setup.
+
+  * Added checks to verify the compatibility of quadrature scheme for solid
+    and cohesive cells.
+
+  * Bug fixes
+
+      - In some cases, cohesive cells were not inserted into the
+        finite-element mesh properly. The cells mixed together vertices
+        from the different sides of the fault. A more efficient
+        procedure for creating cohesive cells fixed this problem.
+
+      - Cell adjacency graph was created incorrectly which resulted in
+        a poor quality of partitioning among processors.
+
+      - VTK output for meshes with N faults included cohesive cells
+        for N-1 faults. Since VTK output does not understand cohesive
+        cells, we now remove all cohesive cells from the VTK output.
+
+      - Using the SimpleDB in Spatialdata from Python limited
+        interpolation to the "linear" scheme instead of allowing use of
+        the "nearest" scheme. Setting the SimpleDB property to "nearest"
+        and "linear" now works as expected.
+
+      - The reader for Spatialdata coordinate systems information did not
+        correctly putback characters in the input stream, resulting in
+        reading errors. The putback routines were fixed.
+
+      - Fault "up" and "normal" directions remained as string arrays
+        when passed to the module, instead of being converted to float
+        arrays.
+
+  * Known issues
+
+      - The VTK output contains the Lagrange vertices in the cohesive
+        cells. These are forces, not displacements, which can cause
+        confusion when visualizing the output. These will be removed
+        when we improve the output in version 1.1.
+
+      - Using the 32-bit linux binary on 64-bit linux systems
+
+        The error message is ""merlin.DistributionNotFound:
+        Cheetah". This error arises because one of the packages that
+        PyLith uses does not know how to determine the system
+        architecture at runtime. The workaround is:
+
+        (1) Go to the lib/python2.5/site-packages directory.
+        (2) Unzip merlin-1.3-py2.5.egg (if it is a file and not a directory).
+        (3) Go to the merlin directory.
+        (4) Edit __init__.py. Replace line 308
+              plat = get_platform()
+            with
+             plat = "linux-i686"
+        (5) If merlin-1.3-py2.5.egg is a file, rezip merlin. Go to the
+            site-packages directory and enter
+            "zip -r merlin-1.3-py2.5.egg merlin".

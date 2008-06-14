@@ -1,0 +1,120 @@
+Greetings,
+
+I am pleased to announce the release of PyLith 1.1.0, a finite element
+code designed to solve dynamic elastic problems ans quasi-static
+viscoelastic problems in tectonic deformation.
+
+This release adds a number of new features, including Neumann
+(traction) boundary conditions, absorbing boundary conditions,
+Dirichlet boundary conditions with displacement and/or velocity
+values, a generalized Maxwell viscoelastic bulk constitutive model,
+and output of fault and material information (state variables and
+diagnostic information). We have also added a number of consistency
+checks to trap and report errors in the input parameters. The manual
+has been updated to reflect the new features and also includes
+detailed installation instructions for building from source. We
+encourage all users of PyLith 1.0 to switch to this latest release.
+
+You can download the source code and binaries from
+
+    http://geodynamics.org/cig/software/packages/short/pylith
+
+Installation instructions are in the bundled README and INSTALL  
+files, as well as in the User Manual on the web page.
+
+
+RELEASE NOTES:
+
+  * New boundary conditions
+
+    - Neumann (traction) boundary conditions
+
+    - Absorbing boundary conditions via simple, tuned dampers
+
+    - Dirichlet boundary conditions with displacement and/or velocity values
+
+  * New bulk constitutive models
+
+    - Generalized Maxwell viscoelastic model 
+
+  * New output implementation
+
+    The output to VTK files has been completely rewritten. This new
+    implementation includes output of physical properties and state
+    variables associated with the bulk constitutive models, as well as
+    output of fault information (earthquake rupture parameters and
+    slip and traction time histories). Additionally, the VTK file with
+    the solution no longer includes fault related values- it contains
+    just the displacement field over the domain as one would expect. A
+    user can now also request output of the solution over an arbitrary
+    number of sub-domains of the domain boundary, e.g., the ground
+    surface. For each of these different kinds of output, the
+    frequency of output and the values included can be customized by
+    the user. The names of the VTK files and the variable names have
+    also been adjusted to permit animation of solutions within most
+    VTK visualization tools.
+
+  * New spatial database implementations
+
+    Spatialdata includes two new spatial database implementations. The
+    SCECCVMHDB provides a seamless interface to the SCEC CVM-H seismic
+    velocity model for elastic material properties. The UniformDB
+    permits creating a spatial database for uniform values using only
+    .cfg files or the command line; this eliminates the need to create
+    a SimpleDB database file with one location.
+
+  * Dynamic arrays of components in Pyre
+
+    Pyre now contains dynamic arrays of components, eliminating the
+    need for containers for materials, boundary conditions, and
+    faults.
+
+  * Better consistency checking of input parameters
+
+    - Uniqueness of material identifiers for materials and faults is
+      enforced.
+
+    - The material identifier of each cell in the mesh is checked to
+      make sure it matches a material model.
+
+    - Each boundary, interface condition, and output group is checked
+      to make sure it exists in the mesh.
+
+  * Bug fixes
+
+    - Fixed bug causing segmentation fault with multiple,
+      non-overlapping Dirichlet boundary conditions applied to vertices.
+
+    - Fixed numerous bugs related to explicit time integration for
+      dynamic problems.
+
+    - Eliminated several small memory errors.
+
+    - Fixed several bugs associated with writing VTK files in parallel.
+
+  * Known issues
+
+      - PyLith still uses much more memory that PyLith 0.8 due to the
+        current general Sieve implementation. A much more efficient,
+        albeit less general Sieve implementation is under
+        development. Additionally, distribution of the mesh will also be
+        improved in a future release.
+
+      - The preconditioner for explicit time stepping provides
+        relatively poor overall performance compared to a direct solve
+        with traditional mass lumping. An appropriate preconditioner and
+        traditional mass lumping will be supported in a future release.
+
+MIGRATING FROM VERSION 1.0 TO 1.1
+
+  There are two new features in PyLith version 1.1 that require users
+  to adjust input parameters from those used with PyLith 1.0. The
+  elimination of containers in favor of the dynamic arrays of
+  components present in the latest version of Pyre requires switching
+  from setting the container to specifying the array of components on
+  the command line or .cfg file. Additionally, the new implementation
+  of output requires a completely new set of parameters. When using
+  PyLith version 1.1 with a problem previously setup for PyLith 1.0,
+  look for warnings about unknown components and settings in the
+  output at the beginning of a run.
+

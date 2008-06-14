@@ -1,0 +1,83 @@
+Greetings,
+
+I am pleased to announce the release of PyLith 1.2.0, a finite-element
+code designed to solve dynamic elastic problems and quasi-static
+viscoelastic problems in tectonic deformation.
+
+This release uses a new, more memory efficient Sieve implementation
+and adds new features, including multiple kinematic earthquake
+ruptures on a fault surface, two new slip time functions, and
+gravitational body forces. This release also fixes some minor build
+issues and corrects typos in the manual and installation
+instructions. We encourage all users of PyLith 1.1 to switch to this
+latest release.
+
+You can download the source code and binaries from
+
+    http://geodynamics.org/cig/software/packages/short/pylith
+
+Installation instructions are in the bundled README and INSTALL  
+files, as well as in the User Manual on the web page.
+
+
+RELEASE NOTES
+
+  * New Sieve implementation
+
+    Previously Sieve provided a very generalized implementation of
+    data structures and operations for finite-element
+    meshes. Switching to a more rigid implementation streamlined the
+    data structures, resulting in a significant reduction in the
+    memory use for storing the mesh. This leads to an overall
+    reduction in memory use of 25-30% in many cases. [IS DISTRIBUTION
+    FIXED?]
+
+  * Multiple kinematic ruptures
+
+    A single kinematic rupture on a fault has been replaced by a
+    dynamic array of kinematic ruptures. This allows creation of an
+    arbitrary number of kinematic ruptures on each fault
+    surface. Spatial databases for the slip and slip initiation time
+    control the spatial and temporal extent of slip in each rupture
+    independently. Additionally, the rupture time at each location on
+    the fault surface is specified with respect to the origin time of
+    the corresponding earthquake rupture.
+
+  * New slip time functions
+
+    - Step slip time function (now the default)
+
+      This slip time function simplifies specifying instantaneous slip
+      in a quasi-static simulation compared with using the Brune slip
+      time function.
+
+    - Constant slip rate slip time function
+
+      This slip time function permits prescribing a constant slip rate.
+
+  * Gravitational body forces
+
+    Gravitational body forces are implemented (they are turned off by
+    default). The direction and acceleration of gravity may be specified.
+
+  * Known issues
+
+      - PyLith still uses much more memory that PyLith 0.8 [UPDATE].
+
+      - The preconditioner for explicit time stepping provides
+        relatively poor overall performance compared to a direct solve
+        with traditional mass lumping. An appropriate preconditioner and
+        traditional mass lumping will be supported in a future release.
+
+MIGRATING FROM VERSION 1.1 TO 1.2
+
+  There are two new features in PyLith version 1.2 that require users
+  to adjust input parameters from those used with PyLith 1.1. A
+  dynamic array of kinematic rupture replaces a single kinematic
+  rupture on a fault. Additionally, the default slip time function is
+  now a step-function. This eliminates the need to specify a peak slip
+  rate for quasi-static simulations. When using PyLith version 1.2
+  with a problem previously setup for PyLith 1.1, look for warnings
+  about unknown components and settings in the screen output at the
+  beginning of a run.
+
