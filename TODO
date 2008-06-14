@@ -6,34 +6,12 @@ Before June workshop
 
   Fix holding onto memory from before distribution.
 
-----------------------------------------------------------------------
-Release 1.2
+  Update examples for step-function slip function.
 
-  1. Green's functions
+    No peak slip rate parameter.
 
-  2. Nonisoparametric cells
 
-     C++ unit tests for CellGeometry refPtsToGlobal() and jacobian()
-     Update quadrature to use CellGeometry refPtsToGlobal() and jacobian()
-     Remove CellGeometry jacobian(double_array)
-
-     Dirichlet and fault constraints?
-
-  5. Output
-
-       HDF5 files
-
-         Would prefer to include multiple materials
-
-         Datasets contain entire time histories (makes it possible to
-         slice along time or space)
-
-       Point locations (arbitrary location such as instrument site)
-
-         Interpolate solution to desired location
-         Solution field (time history)
-
-  6. Uniform global refinement.
+Other
 
   simple strike-slip propagating rupture (performance benchmark 
     500m resolution)
@@ -44,24 +22,6 @@ Release 1.2
     c. Run benchmarks.
     d. Generate analytic solutions.
     e. Tabulate results.
-
-----------------------------------------------------------------------
-Release 1.3
-
-  1. Dynamic fault interface conditions.
-
-  2. Fault constitutive models
-
-  3. Nonlinear solver  
-
-  4. Replace use of Pyrex/Pyrexembed with SWIG
-
-  5. Additional output
-
-       Spontaneous (dynamic) fault rupture
-         Slip and change in tractions (time histories)
-         Fault constitutive values (time histories)
-         Orientation , Fault constitutive parameters (diagnostic)
 
 ======================================================================
 KNOWN DEFICIENCIES
@@ -116,56 +76,99 @@ MISC PRIORITIES (Brad)
 PLANNED RELEASES
 ======================================================================
 
-Other (unknown release):
-  higher order cells from linear cells
-  initial stress field (from spatial db)
+----------------------------------------------------------------------
+Release 1.3
+----------------------------------------------------------------------
+
+  1. Initial stress state
+
+  2. Adaptive time steppping
+
+  3. HDF5 output
+
+       HDF5 files
+
+         Would prefer to include multiple materials
+
+         Datasets contain entire time histories (makes it possible to
+         slice along time or space)
+
+       Point locations (arbitrary location such as instrument site)
+
+         Interpolate solution to desired location
+         Solution field (time history)
 
 ----------------------------------------------------------------------
-PyLith 1.1
+Release 1.4
 ----------------------------------------------------------------------
-Output
-  volume (solution field)
-  ground surface (or other surfaces) (solution field)
-  cells (state variables)
-Absorbing boundary conditions
-Traction boundary conditions
-Generalized Maxwell viscoelastic model
-Velocity boundary conditions
-Gravity (spatial db)
+
+  1. Interface w/PETSc nonlinear solvers
+
+  2. Replace Pyrex/pyrexembed with SWIG
+
+    PyLith Mesh
+      Sieve mesh
+      coordinate system
+
+    PyLith Field
+      Sieve real section
+      type of field (scalar, vector, tensor, vector at quad, tensor at quad)
+
+  3. Nonlinear bulk rheologies
+
+     Power-law viscoelastic material
+  4. Fault constitutive models
+
+     Linear slip-weakening
+     Rate- and state-friction
+     Uniform friction
+     Slip- and rate-weakening friction model
+
+       Spontaneous (dynamic) fault rupture output
+         Slip and change in tractions (time histories)
+         Fault constitutive values (time histories)
+         Orientation , Fault constitutive parameters (diagnostic)
+
+  5. Uniform global refinement
+
+  6. Improved PC for kinematic faults
+
+  Improved support for spherical geometry in user-interface
 
 ----------------------------------------------------------------------
-PyLith 1.2
+Release 1.5
 ----------------------------------------------------------------------
-Fault friction interface conditions
-Fault constitutive models
-  Linear slip-weakening
-  Rate- and state-friction
-  Uniform friction
-  Slip- and rate-weakening friction model
-Nonlinear solvers
+
+  1. Time dependent BCs
+
+  2. Large deformations
+
+  3. Finite strain
+
+  4. Higher order cells
+
+     Nonisoparametric cells
+
+       C++ unit tests for CellGeometry refPtsToGlobal() and jacobian()
+       Update quadrature to use CellGeometry refPtsToGlobal() and
+       jacobian() Remove CellGeometry jacobian(double_array)
 
 ----------------------------------------------------------------------
-PyLith 1.3
+Release 1.6
 ----------------------------------------------------------------------
-Green's functions
+
+  1. Green's functions
 
 ----------------------------------------------------------------------
-PyLith 1.4
+Release 1.7
 ----------------------------------------------------------------------
-Coupling
-Adaptive time stepping
 
-----------------------------------------------------------------------
-PyLith 1.5
-----------------------------------------------------------------------
-Large deformation
-Improved support for spherical geometry in user-interface
-Power-law viscoelastic material
+  1. Coupling of quasi-static and dynamic simulations
 
-----------------------------------------------------------------------
-PyLith 1.6
-----------------------------------------------------------------------
-Adaptive mesh refinement
+  2. Restart / checkpointing
+
+  3. Uniform global refinement.
+
 
 ======================================================================
 THINGS WE NEED SIEVE TO DO (Matt)
