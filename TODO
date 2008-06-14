@@ -6,26 +6,6 @@ Before June workshop
 
   Fix holding onto memory from before distribution.
 
-  simple strike-slip propagating rupture (performance benchmark 
-    500m resolution)
-
-  1. Reverse-slip benchmark.
-    a. Create BC for CUBIT mesh.
-    b. Create BC for LaGriT mesh.
-    c. Run benchmarks.
-    d. Generate analytic solutions.
-    e. Tabulate results.
-
-  2. Multiple earthquake sources
-    Output info should be final_slip_X, slip_time_X
-
-  3. Gravity
-
-  Manual
-
-    1. Add order of stress/strain components to state variables output.
-
-
 ----------------------------------------------------------------------
 Release 1.2
 
@@ -54,6 +34,16 @@ Release 1.2
          Solution field (time history)
 
   6. Uniform global refinement.
+
+  simple strike-slip propagating rupture (performance benchmark 
+    500m resolution)
+
+  1. Reverse-slip benchmark.
+    a. Create BC for CUBIT mesh.
+    b. Create BC for LaGriT mesh.
+    c. Run benchmarks.
+    d. Generate analytic solutions.
+    e. Tabulate results.
 
 ----------------------------------------------------------------------
 Release 1.3
