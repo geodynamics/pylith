@@ -1,4 +1,4 @@
-#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1102,9 +1102,9 @@ lambda
 density
 \family default
 ) are written.
- The fourth and fifth files 
+ The fourth and fifth files for the lower elastic material (
 \family typewriter
-for the lower elastic material (dislocation-statevars-lower_t0000000.vtk
+dislocation-statevars-lower_t0000000.vtk
 \family default
  and 
 \family typewriter
@@ -1148,7 +1148,7 @@ dislocation-fault_info.vtk
 \family default
  files may be used with a number of visualization packages.
  If the problem ran correctly, you should be able to generate a figure such
- as
+ as Figure 
 \begin_inset LatexCommand vref
 reference "fig:3dhex-disloc"
 
