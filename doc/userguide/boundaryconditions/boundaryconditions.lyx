@@ -1,4 +1,4 @@
-#LyX 1.5.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -265,7 +265,7 @@ velocities
 \begin_inset Quotes erd
 \end_inset
 
- in the output managers 
+ in the output manager's 
 \family typewriter
 vertex_info_fields
 \family default
@@ -736,7 +736,7 @@ tractions
 \begin_inset Quotes erd
 \end_inset
 
- in the output managers 
+ in the output manager's 
 \family typewriter
 cell_info_fields
 \family default
@@ -2326,7 +2326,13 @@ slip_time.iohandler.filename = sliptime.spatialdb
 
 \begin_layout Standard
 The spatial database files for the slip time function specify the spatial
- variation in the parameters for the slip time function.
+ variation in the parameters for the slip time function, as shown in 
+\begin_inset LatexCommand ref
+reference "tab:step-function-db-params"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -2530,9 +2536,15 @@ Slip initiation time (
 \begin_inset Caption
 
 \begin_layout Standard
-Values in spatial database used as parameters in the constant slip rate
- slip time function.
+Values in spatial database used as parameters in the step function slip
+ time function.
 \end_layout
+
+\end_inset
+
+
+\begin_inset LatexCommand label
+name "tab:step-function-db-params"
 
 \end_inset
 
@@ -2628,7 +2640,13 @@ slip_time.iohandler.filename = sliptime.spatialdb
 
 \begin_layout Standard
 The spatial database files for the slip time function specify the spatial
- variation in the parameters for the slip time function.
+ variation in the parameters for the slip time function, as shown in 
+\begin_inset LatexCommand ref
+reference "tab:const-slip-rate-db-params"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -2839,6 +2857,12 @@ Values in spatial database used as parameters in the constant slip rate
 \end_inset
 
 
+\begin_inset LatexCommand label
+name "tab:const-slip-rate-db-params"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -2951,7 +2975,13 @@ slip_time.iohandler.filename = sliptime.spatialdb
 
 \begin_layout Standard
 The spatial database files for the slip time function specify the spatial
- variation in the parameters for the slip time function.
+ variation in the parameters for the slip time function, as shown in 
+\begin_inset LatexCommand ref
+reference "tab:Brune-slip-db-params"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -3198,6 +3228,12 @@ Values in spatial database used as parameters in the Brune slip time function.
 \end_inset
 
 
+\begin_inset LatexCommand label
+name "tab:Brune-slip-db-params"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -3267,8 +3303,9 @@ The mass density is a property of every material model, and is thus included
 cted coordinate system or a generic Cartesian coordinate system.
  For cases in which the curvature of the earth should be considered, the
  spatialdata package provides an earth-centered, earth-fixed (ECEF) coordinate
- system and a local georeference Cartesian system; in each of these cases
- the orientation vector is computed automatically.
+ system and a local georeferenced Cartesian system; in each of these cases
+ the orientation vector is computed automatically, although this feature
+ has not been tested.
  For problems in one or two dimensions where the orientation vector is constant,
  the vector will need to be explicitly specified.
  For example, in a two-dimensional problem, the vector might be specified
