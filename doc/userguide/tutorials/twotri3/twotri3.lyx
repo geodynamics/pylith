@@ -429,7 +429,7 @@ density
 \family default
  files may be used with a number of visualization packages.
  If the problem ran correctly, you should be able to generate a figure such
- as 
+ as Figure 
 \begin_inset LatexCommand vref
 reference "fig:twotri3-axial"
 
@@ -645,7 +645,7 @@ density
 \family default
  files may be used with a number of visualization packages.
  If the problem ran correctly, you should be able to generate a figure such
- as 
+ as Figure 
 \begin_inset LatexCommand vref
 reference "fig:twotri-shear"
 
@@ -926,7 +926,7 @@ dislocation-fault_info.vtk
 \family default
  files may be used with a number of visualization packages.
  If the problem ran correctly, you should be able to generate a figure such
- as 
+ as Figure 
 \begin_inset LatexCommand vref
 reference "fig:twotri-disloc"
 

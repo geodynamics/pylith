@@ -442,7 +442,7 @@ density
 \family default
  files may be used with a number of visualization packages.
  If the problem ran correctly, you should be able to generate a figure such
- as 
+ as Figure 
 \begin_inset LatexCommand ref
 reference "fig:twotet4-axial"
 
@@ -735,7 +735,7 @@ dislocation-fault_info.vtk
 \family default
  files may be used with a number of visualization packages.
  If the problem ran correctly, you should be able to generate a figure such
- as 
+ as Figure 
 \begin_inset LatexCommand vref
 reference "fig:twotet4-disloc"
 

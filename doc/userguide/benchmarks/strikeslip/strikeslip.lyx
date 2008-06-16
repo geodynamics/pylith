@@ -406,7 +406,7 @@ where
  cells before taking the square root and dividing by the volume of the domain.
  CIG has developed a package called 
 \begin_inset LatexCommand htmlurl
-name "CIGMA"
+name "Cigma"
 target "geodynamics.org/cig/software/packages/cs/cigma"
 
 \end_inset
