@@ -1,4 +1,4 @@
-#LyX 1.5.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -562,7 +562,7 @@ Generalized Maxwell Viscoelastic
 \begin_inset Text
 
 \begin_layout Standard
-mu,lambda, density, shear_ratio, maxwell_time
+mu, lambda, density, shear_ratio, maxwell_time
 \end_layout
 
 \end_inset

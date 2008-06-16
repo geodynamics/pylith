@@ -1,4 +1,4 @@
-#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1725,7 +1725,7 @@ The insertion of cohesive cells into the finite-element mesh has the effect
  equations.
  PyLith employs Lagrange multiplier constraints to do this.
  Typically, the additional degrees of freedom associated with the Lagrange
- multipliers results in a complex implementation.
+ multipliers result in a complex implementation.
  However, the use of Lagrange multiplier constraints with cohesive cells
  makes this very easy; we simply add the additional degrees of freedom associate
 d with the Lagrange multipliers to the cohesive cells as shown in Figure
@@ -1786,7 +1786,7 @@ where
 \end_inset
 
 , the matrix on the left-hand side is ill-conditioned.
- In order to improve the conditioning we scale the direction cosines in
+ In order to improve the conditioning, we scale the direction cosines in
  the upper right portion of the matrix by an amount necessary to reduce
  the forces in the solution vector to within a few orders of magnitude of
  the displacements, resulting in
@@ -1818,17 +1818,20 @@ Multiple earthquake ruptures can be specified on a single fault surface.
  slip on another subset (the two subsets may overlap in both time and space).
  A dynamic array of kinematic earthquake rupture components associates a
  name (string) with each kinematic rupture.
- The default dynamic array contains a single earthquake rupture, 
-\begin_inset Quotes eld
-\end_inset
-
-rupture
-\begin_inset Quotes erd
-\end_inset
-
-.
- The eq_srcs is the FaultCohesiveKin facility for thie dynamic array.
- An example of setting the array of kinematic rupture components in a .cfg
+ The default dynamic array contains a single earthquake rupture, ``rupture''.
+ The 
+\family typewriter
+eq_srcs
+\family default
+ is the 
+\family typewriter
+FaultCohesiveKin
+\family default
+ facility for this dynamic array.
+ An example of setting the array of kinematic rupture components in a 
+\family typewriter
+.cfg
+\family default
  file:
 \end_layout
 
@@ -1865,6 +1868,8 @@ eq_srcs
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float table
 placement H
 wide false
@@ -2183,7 +2188,11 @@ The kinematic rupture parameters include the origin time and slip time function.
  sum of the kinematic rupture's origin time and the slip initiation time
  for that point.
  An example of specifying the kinematic earthquake rupture properties and
- components in a .cfg file:
+ components in a 
+\family typewriter
+.cfg
+\family default
+ file:
 \end_layout
 
 \begin_layout LyX-Code
@@ -2276,7 +2285,7 @@ where
 \end_inset
 
  is the slip initiation time (time when rupture reaches the location).
- The slip is specified independently for each of the component of slip,
+ The slip is specified independently for each of the components of slip,
  and the slip and slip starting time may vary over the fault surface.
 \end_layout
 
@@ -2326,7 +2335,8 @@ slip_time.iohandler.filename = sliptime.spatialdb
 
 \begin_layout Standard
 The spatial database files for the slip time function specify the spatial
- variation in the parameters for the slip time function, as shown in 
+ variation in the parameters for the slip time function, as shown in Table
+ 
 \begin_inset LatexCommand ref
 reference "tab:step-function-db-params"
 
@@ -2590,8 +2600,9 @@ where
 \end_inset
 
  is the slip initiation time (time when rupture reaches the location).
- The slip rate is specified independently for each of the component of slip,
- and the slip rate and slip starting time may vary over the fault surface.
+ The slip rate is specified independently for each of the components of
+ slip, and the slip rate and slip starting time may vary over the fault
+ surface.
 \end_layout
 
 \begin_layout Description
@@ -2640,7 +2651,8 @@ slip_time.iohandler.filename = sliptime.spatialdb
 
 \begin_layout Standard
 The spatial database files for the slip time function specify the spatial
- variation in the parameters for the slip time function, as shown in 
+ variation in the parameters for the slip time function, as shown in Table
+ 
 \begin_inset LatexCommand ref
 reference "tab:const-slip-rate-db-params"
 
@@ -2975,7 +2987,8 @@ slip_time.iohandler.filename = sliptime.spatialdb
 
 \begin_layout Standard
 The spatial database files for the slip time function specify the spatial
- variation in the parameters for the slip time function, as shown in 
+ variation in the parameters for the slip time function, as shown in Table
+ 
 \begin_inset LatexCommand ref
 reference "tab:Brune-slip-db-params"
 
@@ -3253,7 +3266,7 @@ Many problems in geophysics require the consideration of gravitational body
  In future releases of PyLith that permit nonlinear bulk rheologies, body
  forces will affect plastic yield criteria and the deformation field for
  large deformation/finite strain problems.
- As described in 
+ As described in Chapter 
 \begin_inset LatexCommand ref
 reference "cha:Governing-Equations"
 
@@ -3301,8 +3314,8 @@ The mass density is a property of every material model, and is thus included
  This is appropriate for three-dimensional problems where the gravity vector
  is aligned with the negative z-axis, as would be the case in a geographic-proje
 cted coordinate system or a generic Cartesian coordinate system.
- For cases in which the curvature of the earth should be considered, the
- spatialdata package provides an earth-centered, earth-fixed (ECEF) coordinate
+ For cases in which the curvature of the Earth should be considered, the
+ spatialdata package provides an Earth-centered, Earth-fixed (ECEF) coordinate
  system and a local georeferenced Cartesian system; in each of these cases
  the orientation vector is computed automatically, although this feature
  has not been tested.

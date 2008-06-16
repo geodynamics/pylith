@@ -192,7 +192,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-1.1.0-linux-i686.tar.gz
+$ tar -xzf pylith-1.2.0-linux-i686.tar.gz
 \end_layout
 
 \end_deeper
@@ -251,7 +251,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-1.1.0-darwin-powerpc.tar.gz
+$ tar -xzf pylith-1.2.0-darwin-powerpc.tar.gz
 \end_layout
 
 \end_deeper
@@ -289,7 +289,7 @@ Installation from Source
 \end_layout
 
 \begin_layout Standard
-PyLith 1.1 depends on a number of other packages (see Figure 
+PyLith 1.2 depends on a number of other packages (see Figure 
 \begin_inset LatexCommand ref
 reference "fig:pylith-dependencies"
 
@@ -832,7 +832,7 @@ petsc-dev
 \family typewriter
 petsc-dev
 \family default
- for PyLith 1.1.0 from 
+ for PyLith 1.2.0 from 
 \begin_inset LatexCommand htmlurl
 name "PyLith PETSc tarball"
 target "www.geodynamics.org/cig/software/packages/short/pylith/petsc-dev-pylith-1_1_0.tgz"
@@ -2429,7 +2429,7 @@ tar
 \end_layout
 
 \begin_layout LyX-Code
-$ tar xzf pylith-1.1.0.tar.gz
+$ tar xzf pylith-1.2.0.tar.gz
 \end_layout
 
 \begin_layout Standard
@@ -2437,7 +2437,7 @@ If you don't have GNU Tar, try the following command instead:
 \end_layout
 
 \begin_layout LyX-Code
-$ gunzip -c pylith-1.1.0.tar.gz | tar xf -
+$ gunzip -c pylith-1.2.0.tar.gz | tar xf -
 \end_layout
 
 \begin_layout Subsubsection
@@ -2501,7 +2501,7 @@ cd
 \newline
 
 \newline
-$ cd pylith-1.1.0
+$ cd pylith-1.2.0
 \end_layout
 
 \begin_layout Enumerate
@@ -2709,7 +2709,7 @@ configure
 \end_layout
 
 \begin_layout Standard
-PyLith 1.1 requires Pythia v0.8.1.6 or later, which 
+PyLith 1.2 requires Pythia v0.8.1.6 or later, which 
 \family typewriter
 configure
 \family default
