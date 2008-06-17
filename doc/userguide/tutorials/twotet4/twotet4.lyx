@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -609,24 +609,17 @@ dislocation_slip.spatialdb
 ) specifies 0.01 m of left-lateral fault slip for the entire fault.
  The data dimension is zero since the same data are applied to all points
  in the set.
- It is also necessary to specify the peak slip rate, which is done in the
- file 
-\family typewriter
-dislocation_sliprate.spatialdb
-\family default
-.
- The peak slip rate of 1.0e6 m/s creates a step function for the slip time
- history.
- Finally, we must provide the time at which slip begins.
- The elastic solution begins at 
+ The default slip time function is a step-function, so we also must provide
+ the time at which slip begins.
+ The elastic solution is associated with advancing from 
 \begin_inset Formula $t=-dt$
 \end_inset
 
-, so this is the value given (
-\begin_inset Formula $t=-1\sec$
+ to 
+\begin_inset Formula $t=0$
 \end_inset
 
-) in 
+, so we set the slip initiation time for the step-function to 0 in 
 \family typewriter
 dislocation_sliptime.spatialdb
 \family default
@@ -654,10 +647,6 @@ dislocation.cfg
 , 
 \family typewriter
 dislocation_slip.spatialdb
-\family default
-, 
-\family typewriter
-dislocation_sliprate.spatialdb
 \family default
 , 
 \family typewriter
