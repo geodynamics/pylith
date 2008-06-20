@@ -1252,6 +1252,28 @@ cdef class DataWriterVTK(DataWriter):
       DataWriterVTK_timeFormat_set(self.thisptr, format)
 
 
+  property timeConstant:
+    def __set__(self, value):
+      """Set time constant."""
+      # create shim for method 'timeConstant
+      #embed{ void DataWriterVTK_timeConstant_set(void* objVptr, double value)
+      try {
+        assert(0 != objVptr);
+        ((pylith::meshio::DataWriterVTK*) objVptr)->timeConstant(value);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      DataWriterVTK_timeConstant_set(self.thisptr, value)
+
+
 # ----------------------------------------------------------------------
 cdef void CellFilter_destructor(void* obj):
   """

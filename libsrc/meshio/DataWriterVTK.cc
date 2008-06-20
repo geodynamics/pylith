@@ -23,6 +23,7 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::DataWriterVTK::DataWriterVTK(void) :
+  _timeConstant(1.0),
   _filename("output.vtk"),
   _timeFormat("%f"),
   _viewer(0),
@@ -44,6 +45,7 @@ pylith::meshio::DataWriterVTK::~DataWriterVTK(void)
 // Copy constructor.
 pylith::meshio::DataWriterVTK::DataWriterVTK(const DataWriterVTK& w) :
   DataWriter(w),
+  _timeConstant(w._timeConstant),
   _filename(w._filename),
   _timeFormat(w._timeFormat),
   _viewer(0),
@@ -51,6 +53,20 @@ pylith::meshio::DataWriterVTK::DataWriterVTK(const DataWriterVTK& w) :
   _wroteCellHeader(w._wroteCellHeader)
 { // copy constructor
 } // copy constructor
+
+// ----------------------------------------------------------------------
+// Set value used to normalize time stamp in name of VTK file.
+void
+pylith::meshio::DataWriterVTK::timeConstant(const double value)
+{ // timeConstant
+  if (value <= 0.0) {
+    std::ostringstream msg;
+    msg << "Time used to normalize time stamp in VTK data files must be "
+	<< "positive.\nCurrent value is " << value << ".";
+    throw std::runtime_error(msg.str());
+  } // if
+  _timeConstant = value;
+} // timeConstant
 
 // ----------------------------------------------------------------------
 // Prepare file for data at a new time step.
@@ -68,26 +84,12 @@ pylith::meshio::DataWriterVTK::openTimeStep(
   try {
     PetscErrorCode err;
 
-    std::ostringstream buffer;
-    const int indexExt = _filename.find(".vtk");
-    if (_numTimeSteps > 0) {
-      // If data with multiple time steps, then add time stamp to filename
-      char sbuffer[256];
-      sprintf(sbuffer, _timeFormat.c_str(), t);
-      std::string timestamp(sbuffer);
-      const int pos = timestamp.find(".");
-      if (pos != timestamp.length())
-	timestamp.erase(pos, 1);
-      buffer
-	<< std::string(_filename, 0, indexExt) << "_t" << timestamp << ".vtk";
-    } else
-      buffer
-	<< std::string(_filename, 0, indexExt) << "_info.vtk";
+    const std::string filename = _vtkFilename(t);
 
     err = PetscViewerCreate(mesh->comm(), &_viewer);
     err = PetscViewerSetType(_viewer, PETSC_VIEWER_ASCII);
     err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);
-    err = PetscViewerFileSetName(_viewer, buffer.str().c_str());
+    err = PetscViewerFileSetName(_viewer, filename.c_str());
     if (err)
       throw std::runtime_error("Could not open VTK file.");
     
@@ -264,6 +266,30 @@ pylith::meshio::DataWriterVTK::writeCellField(
     throw std::runtime_error(msg.str());
   } // try/catch
 } // writeCellField
+
+// ----------------------------------------------------------------------
+// Generate filename for VTK file.
+std::string
+pylith::meshio::DataWriterVTK::_vtkFilename(const double t) const
+{ // _vtkFilename
+  std::ostringstream filename;
+  const int indexExt = _filename.find(".vtk");
+  if (_numTimeSteps > 0) {
+    // If data with multiple time steps, then add time stamp to filename
+    char sbuffer[256];
+    sprintf(sbuffer, _timeFormat.c_str(), t/_timeConstant);
+    std::string timestamp(sbuffer);
+    const int pos = timestamp.find(".");
+    if (pos >0 && pos != timestamp.length())
+      timestamp.erase(pos, 1);
+    filename
+      << std::string(_filename, 0, indexExt) << "_t" << timestamp << ".vtk";
+  } else
+    filename
+      << std::string(_filename, 0, indexExt) << "_info.vtk";
+
+  return std::string(filename.str());
+} // _vtkFilename
 
 
 // End of file 

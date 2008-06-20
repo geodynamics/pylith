@@ -38,7 +38,8 @@ class DataWriterVTK(DataWriter):
     ##
     ## \b Properties
     ## @li \b filename Name of VTK file.
-    ## @li \b timeFormat C style format string for time stamp in filename.
+    ## @li \b time_format C style format string for time stamp in filename.
+    ## @li \b time_constant Value used to normalize time stamp in filename.
     ##
     ## \b Facilities
     ## @li None
@@ -51,6 +52,11 @@ class DataWriterVTK(DataWriter):
     timeFormat = pyre.inventory.str("time_format", default="%f")
     timeFormat.meta['tip'] = "C style format string for time stamp in filename."
 
+    from pyre.units.time import second
+    timeConstant = pyre.inventory.dimensional("time_constant",
+                                              default=1.0*second,
+                              validator=pyre.inventory.greater(0.0*second))
+    timeConstant.meta['tip'] = "Values used to normalize time stamp in filename."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -69,6 +75,7 @@ class DataWriterVTK(DataWriter):
     DataWriter.initialize(self)
     self.cppHandle.filename = self.filename
     self.cppHandle.timeFormat = self.timeFormat
+    self.cppHandle.timeConstant = self.timeConstant.value
     return
   
 
@@ -81,6 +88,7 @@ class DataWriterVTK(DataWriter):
     DataWriter._configure(self)
     self.filename = self.inventory.filename
     self.timeFormat = self.inventory.timeFormat
+    self.timeConstant = self.inventory.timeConstant
     return
 
 

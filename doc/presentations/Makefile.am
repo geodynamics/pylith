@@ -11,6 +11,6 @@
 #
 
 SUBDIRS = \
-	overview
+	pylith1.0
 
 # End of file 

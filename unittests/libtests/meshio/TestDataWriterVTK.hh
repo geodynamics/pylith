@@ -46,6 +46,8 @@ class pylith::meshio::TestDataWriterVTK : public CppUnit::TestFixture
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testFilename );
   CPPUNIT_TEST( testTimeFormat );
+  CPPUNIT_TEST( testTimeConstant );
+  CPPUNIT_TEST( testVtkFilename );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -67,6 +69,9 @@ public :
   /// Test timeFormat()
   void testTimeFormat(void);
 
+  /// Test timeConstant()
+  void testTimeConstant(void);
+
   /// Test openTimeStep() and closeTimeStep()
   void testTimeStep(void);
 
@@ -75,6 +80,9 @@ public :
 
   /// Test writeCellField.
   void testWriteCellField(void);
+
+  /// Test vtkFilename.
+  void testVtkFilename(void);
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
