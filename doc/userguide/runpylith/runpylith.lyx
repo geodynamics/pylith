@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1975,10 +1975,12 @@ PyLith writes legacy (non-XML) VTK files.
  These are simple files with vertex coordinates, the mesh topology, and
  fields over vertices and/or cells.
  Each time step is written to a different file.
- The time stamp (in seconds) is included in the filename with the decimal
- point removed.
+ The time stamp is included in the filename with the decimal point removed.
  This allows automatic generation of animations with many visualization
  packages that use VTK files.
+ The default time stamp is the time in seconds, but this can be changed
+ using the normalization constant to give a time stamp in years, tens of
+ years, or any other value.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1994,10 +1996,15 @@ filename Name of VTK file
 \end_layout
 
 \begin_layout Description
-timeFormat C-style format string for time stamp in filename.
+time_format C-style format string for time stamp in filename.
  The decimal point in the time stamp will be removed for compatibility with
  VTK visualization packages that provide seamless animation of data from
  multiple VTK files.
+\end_layout
+
+\begin_layout Description
+time_constant Value used to normalize time stamp in VTK files (default is
+ 1.0 s).
 \end_layout
 
 \begin_layout Section
