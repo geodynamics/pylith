@@ -270,7 +270,7 @@ AC_CONFIG_FILES([Makefile
 		doc/refguide/Makefile
 		doc/userguide/Makefile
 		doc/presentations/Makefile
-		doc/presentations/overview/Makefile])
+		doc/presentations/pylith1.0/Makefile])
 
 AC_OUTPUT
 

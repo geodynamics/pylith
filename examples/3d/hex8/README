@@ -36,14 +36,23 @@ dislocation.cfg - Simulation parameters for fault slip problem
 
 finalslip.spatialdb - Spatial database for spatial variation of final slip
 
+finalslip_rupture.spatialdb - Spatial database for spatial variation
+of final slip for earthquake rupture in Savage-Prescot type problem.
+
 fixeddisp_shear.spatialdb - Spatial database for spatial variation of
 the displacement field in the Dirichlet (prescribed displacement)
 boundary conditions for the shear problem
 
 geometry.jou - CUBIT journal file (script) to generate solid model geometry
 
-mat_elastic.spatialdb - Spatial database for spatial variation of the
-elastic material properties
+gravity.cfg - Simulation parameters for gravitational body forces problem
+
+mat_elastic.spatialdb - Spatial database specifying the parameters for
+the physical properties of a 3-D elastic, isotropic material.
+
+mat_viscoelastic.spatialdb - Spatial database specifying the parameters for
+the physical properties of a 3-D Maxwell viscoelastic, isotropic
+material.
 
 mesh_hex8_1000m.cub - Native CUBIT file containing finite-element mesh
 
@@ -53,9 +62,12 @@ mesh to an Exodus file
 
 pylithapp.cfg - General simulation parameters for the mesh
 
+savageprescott.cfg - Simulation parameters for Savage-Prescott type problem
+
 shearxy.cfg - Simulation parameters for the shear problem
 
-sliprate.spatialdb - Spatial database for spatial variation of peak slip rate
+sliprate_creep.spatialdb - Spatial database for spatial variation
+of slip rate for creepin portion of fault in Savage-Prescot type problem.
 
 sliptime.spatialdb - Spatial database for spatial variation of slip
 initiation time

@@ -79,6 +79,18 @@ pylith::meshio::TestDataWriterVTK::testTimeFormat(void)
 } // testInterpolate
 
 // ----------------------------------------------------------------------
+// Test timeConstant()
+void
+pylith::meshio::TestDataWriterVTK::testTimeConstant(void)
+{ // testTimeConstant
+  DataWriterVTK writer;
+
+  const double value = 4.5;
+  writer.timeConstant(value);
+  CPPUNIT_ASSERT_EQUAL(value, writer._timeConstant);
+} // testInterpolate
+
+// ----------------------------------------------------------------------
 // Test openTimeStep() and closeTimeStep()
 void
 pylith::meshio::TestDataWriterVTK::testTimeStep(void)
@@ -224,6 +236,33 @@ pylith::meshio::TestDataWriterVTK::testWriteCellField(void)
   
   checkFile(_data->cellFilename, t, _data->timeFormat);
 } // testWriteCellField
+
+// ----------------------------------------------------------------------
+// Test _vtkFilename.
+void pylith::meshio::TestDataWriterVTK::testVtkFilename(void)
+{ // testVtkFilename
+  DataWriterVTK writer;
+
+  // Append info to filename if number of time steps is 0.
+  writer._numTimeSteps = 0;
+  writer._filename = "output.vtk";
+  CPPUNIT_ASSERT_EQUAL(std::string("output_info.vtk"), writer._vtkFilename(0.0));
+		       
+  // Use default normalization of 1.0, remove period from time stamp.
+  writer._numTimeSteps = 100;
+  writer._filename = "output.vtk";
+  writer.timeFormat("%05.2f");
+  CPPUNIT_ASSERT_EQUAL(std::string("output_t0230.vtk"), 
+		       writer._vtkFilename(2.3));
+  
+  // Use normalization of 20.0, remove period from time stamp.
+  writer._numTimeSteps = 100;
+  writer._filename = "output.vtk";
+  writer.timeFormat("%05.2f");
+  writer.timeConstant(20.0);
+  CPPUNIT_ASSERT_EQUAL(std::string("output_t0250.vtk"), 
+		       writer._vtkFilename(50.0));
+} // testVtkFilename
 
 // ----------------------------------------------------------------------
 // Create vertex fields.

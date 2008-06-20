@@ -21,6 +21,8 @@
 
 #include "DataWriter.hh" // ISA DataWriter
 
+#include <string> // USES std::string
+
 namespace pylith {
   namespace meshio {
     class DataWriterVTK;
@@ -59,6 +61,15 @@ public :
    * @param format C style time format for filename.
    */
   void timeFormat(const char* format);
+
+  /** Set value used to normalize time stamp in name of VTK file.
+   *
+   * Time stamp is divided by this value (time in seconds).
+   *
+   * @param value Value (time in seconds) used to normalize time stamp in
+   * filename.
+   */
+  void timeConstant(const double value);
 
   /** Prepare file for data at a new time step.
    *
@@ -107,7 +118,7 @@ public :
 		      const char* name,
 		      const ALE::Obj<real_section_type>& field,
 		      const VectorFieldEnum fieldType,
-              const ALE::Obj<Mesh>& mesh,
+		      const ALE::Obj<Mesh>& mesh,
 		      const char* label =0,
 		      const int labelId =0);
 
@@ -120,6 +131,12 @@ private :
    */
   DataWriterVTK(const DataWriterVTK& w);
 
+  /** Generate filename for VTK file.
+   *
+   * @param t Time in seconds.
+   */
+  std::string _vtkFilename(const double t) const;
+
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
@@ -127,6 +144,9 @@ private :
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
+
+  /// Time value (in seconds) used to normalize time stamp.
+  double _timeConstant;
 
   std::string _filename; ///< Name of VTK file.
   std::string _timeFormat; ///< C style time format for time stamp.
