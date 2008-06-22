@@ -260,6 +260,9 @@ private :
   /// slip or slip increment.
   ALE::Obj<real_section_type> _slip;
 
+  /// Field over the fault mesh vertices of vector field of cumulative slip.
+  ALE::Obj<real_section_type> _cumSlip;
+
   /// Label of cell used to compute Jacobian for each fault vertex (must
   /// prevent overlap so that only 1 cell will contribute for
   /// each vertex).
