@@ -120,6 +120,15 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
   _slip->setFiberDimension(vertices, cs->spaceDim());
   _faultMesh->allocate(_slip);
   assert(!_slip.isNull());
+
+  // Allocate cumulative slip field
+  _cumSlip = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
+  _cumSlip->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), 
+								     vertices->end()), 
+						*std::max_element(vertices->begin(), vertices->end())+1));
+  _cumSlip->setFiberDimension(vertices, cs->spaceDim());
+  _faultMesh->allocate(_cumSlip);
+  assert(!_cumSlip.isNull());
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -182,6 +191,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
       if (t >= src->originTime())
 	src->slip(_slip, t, _faultMesh);
     } // for
+    _cumSlip->zero();
   } else {
     // Compute increment of slip field at current time step
     const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
@@ -194,6 +204,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 	src->slipIncr(_slip, t-_dt, t, _faultMesh);
     } // for
   } // else
+  _cumSlip->add(_cumSlip, _slip);
   
   for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
@@ -475,8 +486,8 @@ pylith::faults::FaultCohesiveKin::vertexField(
 
   if (0 == strcasecmp("slip", name)) {
     *fieldType = VECTOR_FIELD;
-    assert(!_slip.isNull());
-    return _slip;
+    assert(!_cumSlip.isNull());
+    return _cumSlip;
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
     _bufferTmp = _orientation->getFibration(0);
