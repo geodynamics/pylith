@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1199,7 +1199,7 @@ Gravitational Body Force Example
 \end_layout
 
 \begin_layout Standard
-The final example is a simple problem where we simply apply the body forces
+The next example is a simple problem where we simply apply the body forces
  due to gravitational acceleration.
  All sides are fixed in the normal direction, with the exception of the
  upper surface, which is left free.
@@ -1221,7 +1221,7 @@ wherev
 \begin_inset Formula $h$
 \end_inset
 
- is the elevation (negative elevations for points below the upper surface,
+ is the elevation (negative elevations for points below the upper surface),
  and 
 \begin_inset Formula $\nu$
 \end_inset
@@ -1627,6 +1627,8 @@ box_hex8_1000m.exo
  Rather than specifying a spatial database file to define the boundary condition
 s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
  condition, which sets the displacements to zero.
+ We also assign nonzero rates for the y degree of freedom, corresponding
+ to a velocity of -1.0 cm/year.
 \end_layout
 
 \begin_layout Description
@@ -1649,6 +1651,8 @@ box_hex8_1000m.exo
  Rather than specifying a spatial database file to define the boundary condition
 s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
  condition, which sets the displacements to zero.
+ We also assign nonzero rates for the y degree of freedom, corresponding
+ to a velocity of 1.0 cm/year.
 \end_layout
 
 \begin_layout Description
@@ -1673,15 +1677,20 @@ box_hex8_1000m.exo
 ) defining the points on the fault, provides quadrature information, the
  array of kinematic ruptures, and the database names for material properties
  (needed for conditioning), fault slip, and fault slip time.
+ The origin time determines when each earthquake source begins, and the
+ corresponding slip and slip time databases are then applied beginning at
+ that time.
 \end_layout
 
 \begin_layout Description
 pylithapp.problem.formulation.output.output.writer Gives the base filename for
  VTK output over the entire domain (
 \family typewriter
-dislocation.vtk
+savageprescott.vtk
 \family default
 ).
+ To simplify the names of the generated VTK files, the timestamp is created
+ in units of one year.
 \end_layout
 
 \begin_layout Description
@@ -1689,43 +1698,51 @@ pylithapp.problem.formulation.output.subdomain Gives the label of the nodeset
  defining the subdomain and gives the base filename for VTK output over
  the subdomain corresponding to the ground surface (
 \family typewriter
-dislocation-groundsurf.vtk
+savageprescott-groundsurf.vtk
 \family default
 ).
+ To simplify the names of the generated VTK files, the timestamp is created
+ in units of one year.
 \end_layout
 
 \begin_layout Description
 pylithapp.timedependent.interfaces.fault.output.writer Gives the base filename
  for cohesive cell output files (
 \family typewriter
-dislocation-fault.vtk
+savageprescott-fault.vtk
 \family default
 ).
+ To simplify the names of the generated VTK files, the timestamp is created
+ in units of one year.
 \end_layout
 
 \begin_layout Description
 pylithapp.timedependent.materials.elastic.output Gives the base filename for
  state variable output files for the upper elastic material (
 \family typewriter
-dislocation-statevars-elastic.vtk
+savageprescott-statevars-elastic.vtk
 \family default
 ), and causes state variables to be averaged over all quadrature points
  in each cell.
+ To simplify the names of the generated VTK files, the timestamp is created
+ in units of one year.
 \end_layout
 
 \begin_layout Description
 pylithapp.timedependent.materials.viscoelastic.output Gives the base filename
- for state variable output files for the lower elastic material (
+ for state variable output files for the lower viscoelastic material (
 \family typewriter
-dislocation-statevars-viscoelastic.vtk
+savageprescott-statevars-viscoelastic.vtk
 \family default
 ), and causes state variables to be averaged over all quadrature points
  in each cell.
+ To simplify the names of the generated VTK files, the timestamp is created
+ in units of one year.
 \end_layout
 
 \begin_layout Standard
-The multiple earthquake ruptures and fault creep each rquire their own spatial
- database files to specify the slip.
+The multiple earthquake ruptures and fault creep each require their own
+ spatial database files to specify the slip.
  With the depth variation in slip for the creep and earthquake rutpures,
  the data dimension in the slip spatial database files is one since the
  data vary linearly along a vertical line.
@@ -1879,6 +1896,15 @@ savageprescott-fault_info.vtk
 \family default
  provides information such as the normal direction and final slip and slip
  time for each vertex on the fault for each fault rupture.
+ The desierd output fields are specified as 
+\family typewriter
+pylithapp.timedependent.interfaces.fault.output.vertex_info_fields
+\family default
+ in the file 
+\family typewriter
+savageprescott.cfg
+\family default
+.
  All of the 
 \family typewriter
 .vtk
@@ -1905,7 +1931,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename /Users/brad/src/cig/pylith/doc/userguide/tutorials/3dhex8/figs/savageprescott.jpg
+	filename figs/savageprescott-t100.jpg
 	lyxscale 50
 	scale 45
 
@@ -1918,9 +1944,9 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Color contours and vectors of displacement for the multiple kinematic fault
- rupture example using a mesh composed of trilinear hexahedral cells generated
- by CUBIT.
+Color contours and vectors of displacement at t = 100 years for the multiple
+ kinematic fault rupture example using a mesh composed of trilinear hexahedral
+ cells generated by CUBIT.
 \begin_inset LatexCommand label
 name "fig:3dhex:savageprescott"
 
