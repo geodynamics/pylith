@@ -1,4 +1,4 @@
-#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1743,7 +1743,7 @@ savageprescott-statevars-viscoelastic.vtk
 \begin_layout Standard
 The multiple earthquake ruptures and fault creep each require their own
  spatial database files to specify the slip.
- With the depth variation in slip for the creep and earthquake rutpures,
+ With the depth variation in slip for the creep and earthquake ruptures,
  the data dimension in the slip spatial database files is one since the
  data vary linearly along a vertical line.
  Because we use identical, repeating ruptures for the earthquakes, we use
@@ -1826,7 +1826,7 @@ Running the problem produces a number of output files.
 \family typewriter
 savageprescott_tXXXX.vtk
 \family default
- contains the displacement values at the mesh vertices.
+ contain the displacement values at the mesh vertices.
  The files of the form 
 \family typewriter
 savageprescott-statevars-elastic_tXXXX.vtk
@@ -1896,7 +1896,7 @@ savageprescott-fault_info.vtk
 \family default
  provides information such as the normal direction and final slip and slip
  time for each vertex on the fault for each fault rupture.
- The desierd output fields are specified as 
+ The desired output fields are specified as 
 \family typewriter
 pylithapp.timedependent.interfaces.fault.output.vertex_info_fields
 \family default
