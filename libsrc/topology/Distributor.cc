@@ -61,6 +61,12 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
     std::cout << "ERROR: Using default partitioner instead of " << partitioner << std::endl;
   }
   Obj<partition_type> partition = distribution_type::distributeMeshV(origMesh, (*newMesh), renumbering, sendMeshOverlap, recvMeshOverlap);
+  if (origMesh->debug()) {
+    std::cout << "Mesh Renumbering:" << std::endl;
+    for(Mesh::renumbering_type::const_iterator r_iter = renumbering.begin(); r_iter != renumbering.end(); ++r_iter) {
+      std::cout << "  global point " << r_iter->first << " --> " << " local point " << r_iter->second << std::endl;
+    }
+  }
   // Distribute the coordinates
   const Obj<real_section_type>& coordinates         = origMesh->getRealSection("coordinates");
   const Obj<real_section_type>& parallelCoordinates = (*newMesh)->getRealSection("coordinates");
@@ -74,7 +80,7 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
 
     for(std::set<std::string>::const_iterator n_iter = names->begin(); n_iter != names->end(); ++n_iter) {
       if (*n_iter == "coordinates")   continue;
-      if (*n_iter == "replacedCells") continue;
+      if (*n_iter == "replaced_cells") continue;
       std::cout << "ERROR: Did not distribute real section " << *n_iter << std::endl;
       ++n;
     }
