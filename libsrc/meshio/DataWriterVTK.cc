@@ -94,9 +94,9 @@ pylith::meshio::DataWriterVTK::openTimeStep(
       throw std::runtime_error("Could not open VTK file.");
     
     err = VTKViewer::writeHeader(_viewer);
-    std::cout << "Wrote header for " << _filename << std::endl;
+    //std::cout << "Wrote header for " << _filename << std::endl;
     err = VTKViewer::writeVertices(mesh, _viewer);
-    std::cout << "Wrote vertices for " << _filename << std::endl;
+    //std::cout << "Wrote vertices for " << _filename << std::endl;
     if (0 == label)
       err = VTKViewer::writeElements(mesh, _viewer);
     else {
@@ -106,7 +106,7 @@ pylith::meshio::DataWriterVTK::openTimeStep(
     } // if
     if (err)
       throw std::runtime_error("Could not write topology.");
-    std::cout << "Wrote elements for " << _filename << std::endl;
+    //std::cout << "Wrote elements for " << _filename << std::endl;
 
     _wroteVertexHeader = false;
     _wroteCellHeader = false;
