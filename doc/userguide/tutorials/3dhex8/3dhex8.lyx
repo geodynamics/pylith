@@ -1401,6 +1401,8 @@ mat_elastic.spatialdb
 \size default
 , 
 \family typewriter
+
+\newline
 mat_viscoelastic.spatialdb
 \family default
 ) along with the problem-specific file (
@@ -1788,8 +1790,6 @@ mat_elastic.spatialdb
 , and 
 \family typewriter
 \size small
-
-\newline
 mat_viscoelastic.spatialdb
 \family default
 \size default
@@ -1800,6 +1800,8 @@ savageprescott.cfg
 \family default
 , 
 \family typewriter
+
+\newline
 finalslip_rupture.spatialdb
 \family default
 , 

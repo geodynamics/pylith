@@ -1201,8 +1201,6 @@ pylithapp.cfg
 \family default
 , 
 \family typewriter
-
-\newline
 mat_elastic.spatialdb
 \family default
 \size default
