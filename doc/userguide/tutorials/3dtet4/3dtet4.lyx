@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1201,6 +1201,8 @@ pylithapp.cfg
 \family default
 , 
 \family typewriter
+
+\newline
 mat_elastic.spatialdb
 \family default
 \size default
