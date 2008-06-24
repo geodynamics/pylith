@@ -29,8 +29,7 @@ RELEASE NOTES
     meshes. Switching to a more rigid implementation streamlined the
     data structures, resulting in a significant reduction in the
     memory use for storing the mesh. This leads to an overall
-    reduction in memory use of 25-30% in many cases. [IS DISTRIBUTION
-    FIXED?]
+    reduction in memory use of 25-30% in many cases.
 
   * Multiple kinematic ruptures
 
@@ -61,8 +60,6 @@ RELEASE NOTES
     default). The direction and acceleration of gravity may be specified.
 
   * Known issues
-
-      - PyLith still uses much more memory that PyLith 0.8 [UPDATE].
 
       - The preconditioner for explicit time stepping provides
         relatively poor overall performance compared to a direct solve
