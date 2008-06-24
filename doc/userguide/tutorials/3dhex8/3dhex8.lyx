@@ -1787,8 +1787,12 @@ mat_elastic.spatialdb
 \size default
 , and 
 \family typewriter
+\size small
+
+\newline
 mat_viscoelastic.spatialdb
 \family default
+\size default
 ) along with the problem-specific files (
 \family typewriter
 \size small
