@@ -92,7 +92,7 @@ class DirichletBoundary(BoundaryCondition, Constraint):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="dirichletpoints"):
+  def __init__(self, name="dirichletboundary"):
     """
     Constructor.
     """
