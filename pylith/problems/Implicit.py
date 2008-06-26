@@ -140,6 +140,7 @@ class Implicit(Formulation):
     for constraint in self.constraints:
       constraint.setField(t+dt, dispTBctpdt)
 
+    ### NONLINEAR: Might want to move logic into IntegrateJacobian() and set a flag instead
     needNewJacobian = False
     for integrator in self.integrators:
       if integrator.needNewJacobian():
@@ -162,6 +163,8 @@ class Implicit(Formulation):
     import pylith.topology.topology as bindings
     bindings.zeroRealSection(dispIncr)
 
+    ### NONLINEAR: This moves under SNES control as IntegrateResidual()
+    ### NONLINEAR: Also move updateState() from Integrator.poststep() to this function
     self._reformResidual(t+dt, dt)
 
     self._info.log("Solving equations.")

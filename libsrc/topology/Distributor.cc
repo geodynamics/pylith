@@ -62,9 +62,9 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
   }
   Obj<partition_type> partition = distribution_type::distributeMeshV(origMesh, (*newMesh), renumbering, sendMeshOverlap, recvMeshOverlap);
   if (origMesh->debug()) {
-    std::cout << "Mesh Renumbering:" << std::endl;
+    std::cout << "["<<origMesh->commRank()<<"]: Mesh Renumbering:" << std::endl;
     for(Mesh::renumbering_type::const_iterator r_iter = renumbering.begin(); r_iter != renumbering.end(); ++r_iter) {
-      std::cout << "  global point " << r_iter->first << " --> " << " local point " << r_iter->second << std::endl;
+      std::cout << "["<<origMesh->commRank()<<"]:   global point " << r_iter->first << " --> " << " local point " << r_iter->second << std::endl;
     }
   }
   // Distribute the coordinates
