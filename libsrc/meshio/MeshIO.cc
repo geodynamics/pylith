@@ -102,21 +102,59 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
   if (!rank) {
     assert(coordinates.size() == numVertices*spaceDim);
     assert(cells.size() == numCells*numCorners);
-    ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+    /// NEED TO CHANGE TEST DATA if (!_interpolate) {
+    if (0) {
+      // Create the ISieve
+      sieve->setChart(Mesh::sieve_type::chart_type(0, numCells+numVertices));
+      // Set cone and support sizes
+      for(int c = 0; c < numCells; ++c) {sieve->setConeSize(c, numCorners);}
+      sieve->symmetrizeSizes(numCells, numCorners, const_cast<int*>(&cells[0]));
+      // Allocate point storage
+      sieve->allocate();
+      // Fill up cones
+      int *cone = new int[numCorners];
+      for(int c = 0; c < numCells; ++c) {
+        for(int v = 0; v < numCorners; ++v) cone[v] = cells[c*numCorners+v]+numCells;
+        sieve->setCone(cone, c);
+      }
+      delete [] cone;
+      // Symmetrize to fill up supports
+      sieve->symmetrize();
+    } else {
+      // Same old thing
+      ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
 
-    ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, meshDim, 
-                                                numCells, 
-                                                const_cast<int*>(&cells[0]), 
-                                                numVertices, 
-                                                _interpolate,
-                                                numCorners);
-    std::map<Mesh::point_type,Mesh::point_type> renumbering;
-    ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
+      ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, meshDim, 
+                                                  numCells, 
+                                                  const_cast<int*>(&cells[0]), 
+                                                  numVertices, 
+                                                  _interpolate,
+                                                  numCorners);
+      std::map<Mesh::point_type,Mesh::point_type> renumbering;
+      ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
+    }
+    if (!_interpolate) {
+      // Optimized stratification
+      const ALE::Obj<Mesh::label_type>& height = (*_mesh)->createLabel("height");
+      const ALE::Obj<Mesh::label_type>& depth  = (*_mesh)->createLabel("depth");
+      for(int c = 0; c < numCells; ++c) {
+        height->setCone(0, c);
+        depth->setCone(1, c);
+      }
+      for(int v = numCells; v < numCells+numVertices; ++v) {
+        height->setCone(1, v);
+        depth->setCone(0, v);
+      }
+      (*_mesh)->setHeight(1);
+      (*_mesh)->setDepth(1);
+    } else {
+      (*_mesh)->stratify();
+    }
   } else {
     (*_mesh)->getSieve()->setChart(sieve_type::chart_type());
     (*_mesh)->getSieve()->allocate();
+    (*_mesh)->stratify();
   }
-  (*_mesh)->stratify();
   ALE::SieveBuilder<Mesh>::buildCoordinates(*_mesh, spaceDim, &coordinates[0]);
 } // _buildMesh
 
