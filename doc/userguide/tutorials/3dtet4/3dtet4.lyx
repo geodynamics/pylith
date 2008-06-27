@@ -1215,7 +1215,9 @@ finalslip.spatialdb
 \family default
 , 
 \family typewriter
-sliptime.spatialdb
+sliptime
+\newline
+.spatialdb
 \family default
 \size default
 ) provide a complete description of the problem, and we can then run this

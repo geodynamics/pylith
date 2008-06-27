@@ -1113,19 +1113,25 @@ dislocation-groundsurf_t0000000.vtk
 \family default
 ) is analogous to 
 \family typewriter
-dislocation_t0000000.vtk
+dislocation_
+\newline
+t0000000.vtk
 \family default
 , but in this case the results are only given for a subset of the mesh correspon
 ding to the ground surface.
  Also, the cells in this file are one dimension lower than the cells described
  in 
 \family typewriter
-dislocation_t0000000.vtk
+dislocation_t0000000
+\newline
+.vtk
 \family default
 , so they are quadrilaterials rather than hexahedra.
  The seventh file (
 \family typewriter
-dislocation-fault_t0000000.vtk
+dislocation-fault_t0000000.
+\newline
+vtk
 \family default
 ) gives the specified fault slip for each vertex on the fault, along with
  the computed traction change for the cohesive cell.
@@ -1276,7 +1282,9 @@ x
 \family default
 ), providing the label (defined in 
 \family typewriter
-box_hex8_1000m.exo
+box_hex8_
+\newline
+1000m.exo
 \family default
 ) defining the points desired, and assigning a label to the boundary condition
  set.
@@ -1294,7 +1302,9 @@ x
 \family default
 ), providing the label (defined in 
 \family typewriter
-box_hex8_1000m.exo
+box_hex8_
+\newline
+1000m.exo
 \family default
 ) defining the points desired, and assigning a label to the boundary condition
  set.
@@ -1336,7 +1346,9 @@ pylithapp.timedependent.bc.z_neg Specifies the boundary conditions for the
  bottom of the mesh, defining which degrees of freedom are being constrained
  (z), providing the label (defined in 
 \family typewriter
-box_hex8_1000m.exo
+box_hex8_1000m.
+\newline
+exo
 \family default
 ) defining the points desired, and assigning a label to the boundary condition
  set.
@@ -1401,9 +1413,9 @@ mat_elastic.spatialdb
 \size default
 , 
 \family typewriter
-
+mat_
 \newline
-mat_viscoelastic.spatialdb
+viscoelastic.spatialdb
 \family default
 ) along with the problem-specific file (
 \family typewriter
@@ -1516,12 +1528,16 @@ reference "fig:3dhex-gravity"
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Graphics
 	filename figs/hex8-gravity.jpg
 	lyxscale 50
@@ -1662,7 +1678,9 @@ pylithapp.timedependent.bc.z_neg Specifies the boundary conditions for the
  bottom of the mesh, defining which degrees of freedom are being constrained
  (z), providing the label (defined in 
 \family typewriter
-box_hex8_1000m.exo
+box_hex8_1000m.
+\newline
+exo
 \family default
 ) defining the points desired, and assigning a label to the boundary condition
  set.
@@ -1800,9 +1818,9 @@ savageprescott.cfg
 \family default
 , 
 \family typewriter
-
+finalslip_
 \newline
-finalslip_rupture.spatialdb
+rupture.spatialdb
 \family default
 , 
 \family typewriter
@@ -1908,7 +1926,9 @@ pylithapp.timedependent.interfaces.fault.output.vertex_info_fields
 \family default
  in the file 
 \family typewriter
-savageprescott.cfg
+savageprescott.
+\newline
+cfg
 \family default
 .
  All of the 

@@ -129,11 +129,23 @@ A dynamic array of boundary condition components associates a name (string)
  The default boundary condition for each component in the array is the Dirichlet
 Points object.
  Other boundary conditions can be bound to the named items in the array
- via a .cfg file, .pml file, or the command line.
+ via a 
+\family typewriter
+.cfg
+\family default
+ file, 
+\family typewriter
+.pml
+\family default
+ file, or the command line.
  The parameters for the boundary condition are set using the name of the
  boundary condition.
  An example of setting the array of boundary condition components and changing
- the types of boundary conditions in a .cfg file:
+ the types of boundary conditions in a 
+\family typewriter
+.cfg
+\family default
+ file:
 \end_layout
 
 \begin_layout LyX-Code
