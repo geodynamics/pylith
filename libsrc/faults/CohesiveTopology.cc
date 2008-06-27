@@ -387,7 +387,6 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
   std::map<Mesh::point_type,Mesh::point_type> vertexRenumber;
   std::map<Mesh::point_type,Mesh::point_type> cellRenumber;
 
-  // I know how to fix
   for(Mesh::label_sequence::iterator v_iter = fVertices->begin(); v_iter != fVertices->end(); ++v_iter, ++newPoint) {
     vertexRenumber[*v_iter] = newPoint;
     if (debug) std::cout << "Duplicating " << *v_iter << " to " << vertexRenumber[*v_iter] << std::endl;
@@ -395,8 +394,15 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
     // Add shadow and constraint vertices (if they exist) to group
     // associated with fault
     groupField->addPoint(newPoint, 1);
-    if (constraintCell)
+    // OPTIMIZATION
+    mesh->setHeight(newPoint, 1);
+    mesh->setDepth(newPoint, 0);
+    if (constraintCell) {
       groupField->addPoint(newPoint+numFaultVertices, 1);
+      // OPTIMIZATION
+      mesh->setHeight(newPoint+numFaultVertices, 1);
+      mesh->setDepth(newPoint+numFaultVertices, 0);
+    }
 
     // Add shadow vertices to other groups, don't add constraint
     // vertices (if they exist) because we don't want BC, etc to act
@@ -502,6 +508,9 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
       }
     }
     mesh->setValue(material, newPoint, materialId);
+    // OPTIMIZATION
+    mesh->setHeight(newPoint, 0);
+    mesh->setDepth(newPoint, 1);
     sV2.clear();
     cV2.clear();
   } // for
@@ -637,7 +646,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
     rVs.clear();
   }
   if (!(*ifault)->commRank()) delete [] indices;
-  mesh->stratify();
+  /// THIS IS TOO SLOW mesh->stratify();
   const std::string labelName("censored depth");
 
   if (!mesh->hasLabel(labelName)) {

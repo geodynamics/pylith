@@ -76,7 +76,7 @@ class SolverNonlinear(Solver):
 
     self._info.log("Solving nonlinear equations.")
     assert(None != self.cppHandle)
-    self.cppHandle.solve(fieldOut, jacobian, fieldIn)
+    self.cppHandle.solve(fieldOut, fieldIn)
 
     self._logger.eventEnd(logEvent)
     return
