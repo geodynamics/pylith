@@ -335,18 +335,17 @@ cdef class SolverNonlinear(Solver):
     return
 
 
-  def solve(self, fieldOut, jacobian, fieldIn):
+  def solve(self, fieldOut, fieldIn):
     """
     Solve nonlinear system.
     """
     # create shim for method 'solve'
-    #embed{ int SolverNonlinear_solve(void* objVptr, void* fieldOutVptr, void* jacobianVptr, void* fieldInVptr, void* scatterVptr, void* vecInVptr, void* vecOutVptr)
+    #embed{ int SolverNonlinear_solve(void* objVptr, void* fieldOutVptr, void* fieldInVptr, void* scatterVptr, void* vecInVptr, void* vecOutVptr)
     typedef pylith::Mesh::real_section_type real_section_type;
     PetscErrorCode err = 0;
     try {
       assert(0 != objVptr);
       assert(0 != fieldOutVptr);
-      assert(0 != jacobianVptr);
       assert(0 != fieldInVptr);
       assert(0 != scatterVptr);
       assert(0 != vecInVptr);
@@ -355,7 +354,6 @@ cdef class SolverNonlinear(Solver):
       KSP* ksp = (KSP*) objVptr;
       ALE::Obj<real_section_type>* fieldOut =
         (ALE::Obj<real_section_type>*) fieldOutVptr;
-      Mat* jacobian = (Mat*) jacobianVptr;
       ALE::Obj<real_section_type>* fieldIn =
         (ALE::Obj<real_section_type>*) fieldInVptr;
       VecScatter scatter = (VecScatter) scatterVptr;
@@ -371,9 +369,9 @@ cdef class SolverNonlinear(Solver):
       err = VecScatterEnd(scatter, localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD
                           ); CHKERRQ(err);
       err = VecDestroy(localVec); CHKERRQ(err);
-      err = KSPSetOperators(*ksp, *jacobian, *jacobian,
-                            DIFFERENT_NONZERO_PATTERN); CHKERRQ(err);
+
       err = KSPSolve(*ksp, vecIn, vecOut); CHKERRQ(err);
+
       err = VecCreateSeqWithArray(PETSC_COMM_SELF, (*fieldOut)->sizeWithBC(),
                                 (*fieldOut)->restrictSpace(), &localVec);CHKERRQ(err);
       err = VecScatterBegin(scatter, vecOut, localVec, INSERT_VALUES, SCATTER_REVERSE
@@ -395,12 +393,10 @@ cdef class SolverNonlinear(Solver):
     #}embed
 
     cdef void* fieldOutVptr
-    cdef void* jacobianVptr
     cdef void* fieldInVptr
     fieldOutVptr = PyCObject_AsVoidPtr(fieldOut)
-    jacobianVptr = PyCObject_AsVoidPtr(jacobian)
     fieldInVptr = PyCObject_AsVoidPtr(fieldIn)
-    SolverNonlinear_solve(self.thisptr, fieldOutVptr, jacobianVptr,
+    SolverNonlinear_solve(self.thisptr, fieldOutVptr,
                           fieldInVptr, self.vecScatterVptr,
                           self.vecInVptr, self.vecOutVptr)
     return
