@@ -67,6 +67,22 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
       std::cout << "["<<origMesh->commRank()<<"]:   global point " << r_iter->first << " --> " << " local point " << r_iter->second << std::endl;
     }
   }
+  // Check overlap
+  int localSendOverlapSize = 0, sendOverlapSize;
+  int localRecvOverlapSize = 0, recvOverlapSize;
+  for(int p = 0; p < sendMeshOverlap->commSize(); ++p) {
+    localSendOverlapSize += sendMeshOverlap->cone(p)->size();
+    localRecvOverlapSize += recvMeshOverlap->support(p)->size();
+  }
+  MPI_Allreduce(&localSendOverlapSize, &sendOverlapSize, 1, MPI_INT, MPI_SUM, sendMeshOverlap->comm());
+  MPI_Allreduce(&localRecvOverlapSize, &recvOverlapSize, 1, MPI_INT, MPI_SUM, recvMeshOverlap->comm());
+  if(sendOverlapSize != recvOverlapSize) {
+    std::cout <<"["<<sendMeshOverlap->commRank()<<"]: Size mismatch " << sendOverlapSize << " != " << recvOverlapSize << std::endl;
+    sendMeshOverlap->view("Send Overlap");
+    recvMeshOverlap->view("Recv Overlap");
+    throw ALE::Exception("Invalid Overlap");
+  }
+
   // Distribute the coordinates
   const Obj<real_section_type>& coordinates         = origMesh->getRealSection("coordinates");
   const Obj<real_section_type>& parallelCoordinates = (*newMesh)->getRealSection("coordinates");
