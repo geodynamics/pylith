@@ -38,23 +38,13 @@ class TimeDependent(Problem):
     ## Python object for managing TimeDependent facilities and properties.
     ##
     ## \b Properties
-    ## @li \b total_time Time duration for simulation.
-    ## @li \b default_dt Default time step.
+    ## None
     ##
     ## \b Facilities
     ## @li \b formulation Formulation for solving PDE.
     ## @li \b checkpoint Checkpoint manager.
 
     import pyre.inventory
-
-    from pyre.units.time import second
-    totalTime = pyre.inventory.dimensional("total_time", default=0.0*second,
-                          validator=pyre.inventory.greaterEqual(0.0*second))
-    totalTime.meta['tip'] = "Time duration for simulation."
-
-    dt = pyre.inventory.dimensional("default_dt", default=1.0*second,
-                                 validator=pyre.inventory.greater(0.0*second))
-    dt.meta['tip'] = "Default time step for simulation."
 
     from Implicit import Implicit
     formulation = pyre.inventory.facility("formulation",
@@ -121,7 +111,7 @@ class TimeDependent(Problem):
     self._logger.eventBegin(logEvent)
 
     self._info.log("Initializing problem.")
-    self.formulation.initialize(self.dimension, self.totalTime, self.dt)
+    self.formulation.initialize(self.dimension)
 
     self._logger.eventEnd(logEvent)
     return
@@ -137,32 +127,26 @@ class TimeDependent(Problem):
     self._info.log("Solving problem.")
     self.checkpointTimer.toplevel = app # Set handle for saving state
     
-    dt = self.formulation.stableTimeStep()
-    if dt.value == 0.0: # If formulation returns 0.0, use default time step
-      dt = self.dt
-    t = self.formulation.startTime(self.dt)
-    while t.value < self.totalTime.value:
+    t = self.formulation.getStartTime()
+    while t < self.formulation.getTotalTime():
       self._info.log("Main time loop, current time is t=%s" % t)
       
       # Checkpoint if necessary
       self.checkpointTimer.update(t)
 
-      # Get stable time step
-      dt = self.formulation.stableTimeStep()
-      if dt.value == 0.0:
-        # If formulation returns 0.0, use default time step
-        dt = self.dt
+      # Get time step for advancing in time
+      dt = self.formulation.getTimeStep()
 
-      # Do stuff before advancing time step
-      self._prestep(t, dt)
+      self._info.log("Preparing to advance solution from time t=%s to t=%s." % (t, t+dt))
+      self.formulation.prestep(t, dt)
 
-      # Advance in time
-      self._step(t, dt)
+      self._info.log("Advancing solution from t=%s to t=%s." % (t, t+dt))
+      self.formulation.step(t, dt)
 
-      # Do stuff after advancing time step
-      self._poststep(t, dt, self.totalTime)
+      self._info.log("Finishing advancing solution from t=%s to t=%s." % (t, t+dt))
+      self.formulation.poststep(t, dt)
 
-      # Update time step
+      # Update time
       t += dt
 
     self._logger.eventEnd(logEvent)
@@ -203,37 +187,8 @@ class TimeDependent(Problem):
     Set members based using inventory.
     """
     Problem._configure(self)
-    self.totalTime = self.inventory.totalTime
-    self.dt = self.inventory.dt
     self.formulation = self.inventory.formulation
     self.checkpointTimer = self.inventory.checkpointTimer
-    return
-
-
-  def _prestep(self, t, dt):
-    """
-    Hook for doing stuff before advancing time step.
-    """
-    self._info.log("Preparing to advance solution from time t=%s." % t)
-    self.formulation.prestep(t, dt)
-    return
-
-
-  def _step(self, t, dt):
-    """
-    Advance to next time step.
-    """
-    self._info.log("Advancing solution from t=%s to t=%s." % (t, t+dt))    
-    self.formulation.step(t, dt)
-    return
-
-
-  def _poststep(self, t, dt, totalTime):
-    """
-    Hook for doing stuff after advancing time step.
-    """
-    self._info.log("Finishing advancing solution to t=%s." % (t+dt))    
-    self.formulation.poststep(t, dt, totalTime)
     return
 
 

@@ -252,6 +252,7 @@ AC_CONFIG_FILES([Makefile
 		unittests/pytests/materials/data/Makefile
 		unittests/pytests/meshio/Makefile
 		unittests/pytests/meshio/data/Makefile
+		unittests/pytests/problems/Makefile
 		unittests/pytests/topology/Makefile
 		unittests/pytests/topology/data/Makefile
 		unittests/pytests/utils/Makefile
