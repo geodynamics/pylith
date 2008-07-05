@@ -19,6 +19,7 @@
 from pyre.components.Component import Component
 
 from pylith.utils.profiling import resourceUsageString
+from pyre.units.time import second
 
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
@@ -56,10 +57,16 @@ class Formulation(Component):
     ## @li None
     ##
     ## \b Facilities
+    ## @li \b time_step Time step size manager.
     ## @li \b solver Algebraic solver.
     ## @li \b output Output manager associated with solution.
 
     import pyre.inventory
+
+    from TimeStepUniform import TimeStepUniform
+    timeStep = pyre.inventory.facility("time_step", family="time_step",
+                                       factory=TimeStepUniform)
+    timeStep.meta['tip'] = "Time step size manager."
 
     from pylith.solver.SolverLinear import SolverLinear
     solver = pyre.inventory.facility("solver", family="solver",
@@ -83,7 +90,6 @@ class Formulation(Component):
     self.constraints = None
     self.fields = None
     self.solnField = None
-
     return
 
 
@@ -131,14 +137,15 @@ class Formulation(Component):
     return
   
 
-  def initialize(self, dimension, totalTime, dt):
+  def initialize(self, dimension):
     """
     Create integrators for each element family.
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    numTimeSteps = 1.0 + int(totalTime / dt)
+    numTimeSteps = self.timeStep.numTimeSteps()
+    totalTime = self.timeStep.totalTime
 
     from pylith.topology.FieldsManager import FieldsManager
     self.fields = FieldsManager(self.mesh)
@@ -182,16 +189,34 @@ class Formulation(Component):
     return
 
 
-  def stableTimeStep(self):
+  def getStartTime(self):
+    """
+    Get start time for simulation.
+    """
+    return 0.0*second
+
+
+  def getTotalTime(self):
+    """
+    Get total time for simulation.
+    """
+    return self.timeStep.totalTime
+
+
+  def getTimeStep(self):
     """
     Get stable time step for advancing forward in time.
     """
     logEvent = "%stimestep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    self._info.log("WARNING: Formulation::stableTimeStep() not implemented.")
-    from pyre.units.time import second
-    dt = 0.0*second
+    dt = 1.0e+30*second
+    for integrator in self.integrators:
+      stableDt = integrator.stableTimeStep()
+      if dt < stableDt:
+        dt = stableDt
+
+    dt = self.timeStep.timeStep(dt)
 
     self._logger.eventEnd(logEvent)
     return dt
@@ -219,12 +244,14 @@ class Formulation(Component):
     return
 
 
-  def poststep(self, t, dt, totalTime):
+  def poststep(self, t, dt):
     """
     Hook for doing stuff after advancing time step.
     """
     logEvent = "%spoststep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
+
+    totalTime = self.timeStep.totalTime
 
     self._info.log("Writing solution fields.")
     for output in self.output.components():
@@ -266,6 +293,7 @@ class Formulation(Component):
     Set members based using inventory.
     """
     Component._configure(self)
+    self.timeStep = self.inventory.timeStep
     self.solver = self.inventory.solver
     self.output = self.inventory.output
 

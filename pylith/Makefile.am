@@ -98,6 +98,8 @@ nobase_pkgpyexec_PYTHON = \
 	problems/Implicit.py \
 	problems/Problem.py \
 	problems/TimeDependent.py \
+	problems/TimeStep.py \
+	problems/TimeStepUniform.py \
 	solver/__init__.py \
 	solver/Solver.py \
 	solver/SolverLinear.py \

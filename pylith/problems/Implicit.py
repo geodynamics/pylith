@@ -84,14 +84,14 @@ class Implicit(Formulation):
     return ElasticityImplicit()
 
 
-  def initialize(self, dimension, totalTime, dt):
+  def initialize(self, dimension):
     """
     Initialize problem for implicit time integration.
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
     
-    Formulation.initialize(self, dimension, totalTime, dt)
+    Formulation.initialize(self, dimension)
 
     self._info.log("Creating other fields.")
     self._debug.log(resourceUsageString())
@@ -119,10 +119,11 @@ class Implicit(Formulation):
     return
 
 
-  def startTime(self, dt):
+  def getStartTime(self):
     """
     Get time at which time stepping should start.
     """
+    dt = self.timeStep.currentStep()
     return -dt
 
 
@@ -181,7 +182,7 @@ class Implicit(Formulation):
     return
 
 
-  def poststep(self, t, dt, totalTime):
+  def poststep(self, t, dt):
     """
     Hook for doing stuff after advancing time step.
     """
@@ -198,11 +199,11 @@ class Implicit(Formulation):
     disp = self.fields.getSolution()
     bindings.addRealSections(disp, disp, dispIncr)
 
-    Formulation.poststep(self, t, dt, totalTime)
+    Formulation.poststep(self, t, dt)
 
     # If finishing first time step, then switch from solving for total
     # displacements to solving for incremental displacements
-    if self._step0 and (t + dt) < totalTime:
+    if self._step0 and (t + dt) < self.timeStep.totalTime:
       self._info.log("Switching from total field solution to incremental " \
                      "field solution.")
       for constraint in self.constraints:

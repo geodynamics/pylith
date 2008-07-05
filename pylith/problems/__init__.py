@@ -18,7 +18,11 @@ __all__ = ['EqDeformation',
            'Explicit',
            'Implicit',
            'Problem',
-           'TimeDependent']
+           'TimeDependent',
+           'TimeStep',
+           'TimeStepUniform',
+           'TimeStepUser',
+           'TimeStepAdapt']
 
 
 # End of file

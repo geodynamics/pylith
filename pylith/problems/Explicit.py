@@ -59,16 +59,14 @@ class Explicit(Formulation):
     return ElasticityExplicit()
 
 
-  def initialize(self, dimension, totalTime, dt):
+  def initialize(self, dimension):
     """
     Initialize problem for explicit time integration.
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
     
-    from pyre.units.time import second
-    t = 0.0*second
-    Formulation.initialize(self, dimension, totalTime, dt)
+    Formulation.initialize(self, dimension)
 
     self._info.log("Creating other fields and matrices.")
     self.fields.addReal("dispTpdt")
@@ -88,14 +86,6 @@ class Explicit(Formulation):
 
     self._logger.eventEnd(logEvent)
     return
-
-
-  def startTime(self, dt):
-    """
-    Get time at which time stepping should start.
-    """
-    from pyre.units.time import second
-    return 0.0*second
 
 
   def prestep(self, t, dt):
@@ -145,7 +135,7 @@ class Explicit(Formulation):
     return
 
 
-  def poststep(self, t, dt, totalTime):
+  def poststep(self, t, dt):
     """
     Hook for doing stuff after advancing time step.
     """
@@ -158,7 +148,7 @@ class Explicit(Formulation):
       bindings.copyRealSection(self.fields.getReal("dispTpdt"),
                                self.fields.getReal("dispT"))
 
-    Formulation.poststep(self, t, dt, totalTime)
+    Formulation.poststep(self, t, dt)
 
     self._logger.eventEnd(logEvent)    
     return
