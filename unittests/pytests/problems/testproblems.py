@@ -37,9 +37,13 @@ class TestApp(Script):
     """
     Run the application.
     """
+    from pylith.utils.PetscManager import PetscManager
+    petsc = PetscManager()
+    petsc.initialize()
 
     unittest.TextTestRunner(verbosity=2).run(self._suite())
 
+    petsc.finalize()
     return
 
 
@@ -52,8 +56,17 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
+    from TestTimeStep import TestTimeStep
+    suite.addTest(unittest.makeSuite(TestTimeStep))
+
     from TestTimeStepUniform import TestTimeStepUniform
     suite.addTest(unittest.makeSuite(TestTimeStepUniform))
+
+    from TestTimeStepUser import TestTimeStepUser
+    suite.addTest(unittest.makeSuite(TestTimeStepUser))
+
+    from TestTimeStepAdapt import TestTimeStepAdapt
+    suite.addTest(unittest.makeSuite(TestTimeStepAdapt))
 
     return suite
 

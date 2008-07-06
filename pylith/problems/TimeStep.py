@@ -37,6 +37,7 @@ class TimeStep(Component):
     Component.__init__(self, name, facility="time_step")
     from pyre.units.time import second
     self.totalTime = 0.0*second
+    self.dt = 0.0*second
     return
 
 
@@ -93,8 +94,7 @@ class TimeStep(Component):
     """
     Get current time step size.
     """
-    raise NotImplementedError("Please implement currentStep().");
-    return
+    return self.dt
   
 
   # PRIVATE METHODS ////////////////////////////////////////////////////

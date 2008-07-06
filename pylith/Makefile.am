@@ -99,7 +99,9 @@ nobase_pkgpyexec_PYTHON = \
 	problems/Problem.py \
 	problems/TimeDependent.py \
 	problems/TimeStep.py \
+	problems/TimeStepAdapt.py \
 	problems/TimeStepUniform.py \
+	problems/TimeStepUser.py \
 	solver/__init__.py \
 	solver/Solver.py \
 	solver/SolverLinear.py \

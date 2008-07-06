@@ -10,9 +10,10 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/TimeStepUniform.py
+## @file pylith/problems/TimeStepAdapt.py
 ##
-## @brief Python class for marching forward in time with a uniform time step.
+## @brief Python class for marching forward in time with irregular
+## time steps that adapt to the solution.
 ##
 ## Factory: time_step
 
@@ -20,10 +21,11 @@ from TimeStep import TimeStep
 
 from pylith.utils.profiling import resourceUsageString
 
-# TimeStepUniform class
-class TimeStepUniform(TimeStep):
+# TimeStepAdapt class
+class TimeStepAdapt(TimeStep):
   """
-  Python abstract base class for marching format in time with a uniform time step.
+  Python abstract base class for marching format in time with
+  irregular time steps that adapt to the solution.
 
   Factory: time_step.
   """
@@ -32,15 +34,16 @@ class TimeStepUniform(TimeStep):
 
   class Inventory(TimeStep.Inventory):
     """
-    Python object for managing TimeStepUniform facilities and properties.
+    Python object for managing TimeStepAdapt facilities and properties.
     """
 
     ## @class Inventory
-    ## Python object for managing TimeStepUniform facilities and properties.
+    ## Python object for managing TimeStepAdapt facilities and properties.
     ##
     ## \b Properties
     ## @li \b total_time Time duration for simulation.
-    ## @li \b dt Default time step.
+    ## @li \b max_dt Maximum time step.
+    ## @li \b adapt_skip Number of time steps to skip between adjusting value.
     ##
     ## \b Facilities
     ## @li None
@@ -52,17 +55,24 @@ class TimeStepUniform(TimeStep):
                           validator=pyre.inventory.greaterEqual(0.0*second))
     totalTime.meta['tip'] = "Time duration for simulation."
 
-    dt = pyre.inventory.dimensional("dt", default=1.0*second,
+    maxDt = pyre.inventory.dimensional("max_dt", default=1.0*second,
                                     validator=pyre.inventory.greater(0.0*second))
-    dt.meta['tip'] = "Time step for simulation."
+    maxDt.meta['tip'] = "Maximum time step."
+
+    adaptSkip = pyre.inventory.int("adapt_skip", default=10,
+                                   validator=pyre.inventory.greaterEqual(0))
+    adaptSkip.meta['tip'] = "Number of time steps to skip between " \
+        "adjusting value."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="timestepuniform"):
+  def __init__(self, name="timestepadapt"):
     """
     Constructor.
     """
     TimeStep.__init__(self, name)
+    self.skipped = 0
     return
 
 
@@ -70,7 +80,8 @@ class TimeStepUniform(TimeStep):
     """
     Get number of total time steps (or best guess if adaptive).
     """
-    nsteps = 1.0 + int(self.totalTime / self.dt)
+    # Guess using maximum time step
+    nsteps = 1.0 + int(self.totalTime / self.maxDt)
     return nsteps
 
 
@@ -78,6 +89,14 @@ class TimeStepUniform(TimeStep):
     """
     Adjust stable time step for advancing forward in time.
     """
+    from pyre.units.time import second
+    if self.skipped < self.adaptSkip and \
+          self.dt != 0.0*second and \
+          self.dt < dtStable:
+      self.skipped += 1
+    else:
+      self.dt = min(dtStable, self.maxDt)
+      self.skipped = 0
     return self.dt
 
   
@@ -89,7 +108,9 @@ class TimeStepUniform(TimeStep):
     """
     TimeStep._configure(self)
     self.totalTime = self.inventory.totalTime
-    self.dt = self.inventory.dt
+    self.maxDt = self.inventory.maxDt
+    self.adaptSkip = self.inventory.adaptSkip
+    self.dt = self.maxDt
     return
 
 
@@ -97,9 +118,9 @@ class TimeStepUniform(TimeStep):
 
 def time_step():
   """
-  Factory associated with TimeStepUniform.
+  Factory associated with TimeStepAdapt.
   """
-  return TimeStepUniform()
+  return TimeStepAdapt()
 
 
 # End of file 
