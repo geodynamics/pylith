@@ -15,6 +15,7 @@
 ## @brief Unit testing of TimeStepUniform object.
 
 import unittest
+from pylith.problems.TimeStepUniform import TimeStepUniform
 
 from pyre.units.time import second
 
@@ -28,10 +29,9 @@ class TestTimeStepUniform(unittest.TestCase):
     """
     Test numTimeSteps().
     """
-    from pylith.problems.TimeStepUniform import TimeStepUniform
     tstep = TimeStepUniform()
-
     tstep._configure()
+
     self.assertEqual(1, tstep.numTimeSteps())
 
     tstep.totalTime = 4.0*second
@@ -45,10 +45,9 @@ class TestTimeStepUniform(unittest.TestCase):
     """
     Test timeStep().
     """
-    from pylith.problems.TimeStepUniform import TimeStepUniform
     tstep = TimeStepUniform()
-
     tstep._configure()
+
     self.assertEqual(1.0*second, tstep.timeStep(0.5*second))
 
     tstep.dt = 1.0e-4*second
@@ -61,10 +60,9 @@ class TestTimeStepUniform(unittest.TestCase):
     """
     Test currentStep().
     """
-    from pylith.problems.TimeStepUniform import TimeStepUniform
     tstep = TimeStepUniform()
-
     tstep._configure()
+
     self.assertEqual(1.0*second, tstep.currentStep())
 
     tstep.dt = 1.0e-4*second
