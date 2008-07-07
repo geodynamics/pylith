@@ -79,9 +79,7 @@ class TestNeumann(unittest.TestCase):
     """
     (mesh, bc, fields) = self._initialize()
 
-    dt = 0.24*second
-    bc.timeStep(dt)
-    self.assertEqual(dt, bc.stableTimeStep())
+    self.assertEqual(1.0e+30*second, bc.stableTimeStep())
     return
 
   

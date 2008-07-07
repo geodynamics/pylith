@@ -85,6 +85,14 @@ public :
    */
   void timeStep(const double dt);
 
+  /** Get stable time step for advancing from time t to time t+dt.
+   *
+   * Default is current time step.
+   *
+   * @returns Time step
+   */
+  double stableTimeStep(void) const;
+
   /** Set flag for setting constraints for total field solution or
    *  incremental field solution.
    *

@@ -125,6 +125,15 @@ public :
   const double_array&
   calcDerivElastic(const double_array& totalStrain);
 
+  /** Get stable time step for implicit time integration.
+   *
+   * Default is MAXFLOAT (or 1.0e+30 if MAXFLOAT is not defined in math.h).
+   *
+   * @returns Time step
+   */
+  virtual
+  double stableTimeStepImplicit(void) const;
+
   /** Update properties (for next time step).
    *
    * @param totalStrain Total strain tensor at quadrature points
@@ -201,6 +210,14 @@ protected :
 			  const int numProperties,
 			  const double* totalStrain,
 			  const int strainSize) = 0;
+
+  /** Get stable time step for implicit time integration.
+   *
+   * @returns Time step
+   */
+  virtual
+  double _stableTimeStepImplicit(const double* properties,
+				 const int numProperties) const = 0;
 
   /** Update properties (for next time step).
    *

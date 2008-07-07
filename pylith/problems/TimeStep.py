@@ -83,11 +83,12 @@ class TimeStep(Component):
     return 0
 
 
-  def timeStep(self, dtStable):
+  def timeStep(self, integrators):
     """
-    Adjust stable time step for advancing forward in time.
+    Get stable time step for advancing forward in time.
     """
-    return dtStable
+    # Default is to use the current time step.
+    return self.dt
   
 
   def currentStep(self):

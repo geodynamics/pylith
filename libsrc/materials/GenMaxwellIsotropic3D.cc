@@ -25,6 +25,11 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
+#include <math.h> // USES MAXFLOAT
+#if !defined(MAXFLOAT)
+#define MAXFLOAT 1.0e+30
+#endif
+
 // ----------------------------------------------------------------------
 namespace pylith {
   namespace materials {
@@ -534,6 +539,29 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic(
 
   PetscLogFlops(8 + 2 * numMaxwellModels);
 } // _calcElasticConstsViscoelastic
+
+// ----------------------------------------------------------------------
+// Get stable time step for implicit time integration.
+double
+pylith::materials::GenMaxwellIsotropic3D::_stableTimeStepImplicit(const double* properties,
+				 const int numProperties) const
+{ // _stableTimeStepImplicit
+  assert(0 != properties);
+  assert(_totalPropsQuadPt == numProperties);
+
+  double dtStable = MAXFLOAT;
+
+  const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
+  for (int i=0; i < numMaxwellModels; ++i) {
+    const double maxwellTime = 
+      properties[_GenMaxwellIsotropic3D::pidMaxwellTime+i];
+    const double dt = 0.1*maxwellTime;
+    if (dt < dtStable)
+      dtStable = dt;
+  } // for
+
+  return dtStable;
+} // _stableTimeStepImplicit
 
 // ----------------------------------------------------------------------
 // Update state variables.

@@ -216,13 +216,7 @@ class Formulation(Component):
     logEvent = "%stimestep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    dt = 1.0e+30*second
-    for integrator in self.integrators:
-      stableDt = integrator.stableTimeStep()
-      if dt < stableDt:
-        dt = stableDt
-
-    dt = self.timeStep.timeStep(dt)
+    dt = self.timeStep.timeStep(self.integrators)
 
     self._logger.eventEnd(logEvent)
     return dt

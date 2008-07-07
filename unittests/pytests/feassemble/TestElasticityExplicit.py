@@ -102,11 +102,10 @@ class TestElasticityExplicit(unittest.TestCase):
     """
     Test stableTimeStep().
     """
-    from pyre.units.time import second
-    dt = 2.3*second
     (mesh, integrator, fields) = self._initialize()
-    integrator.timeStep(dt)
-    self.assertEqual(dt, integrator.stableTimeStep())
+
+    from pyre.units.time import second
+    self.assertEqual(1.0e+30*second, integrator.stableTimeStep())
     return
 
   

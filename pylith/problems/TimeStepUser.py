@@ -137,17 +137,15 @@ class TimeStepUser(TimeStep):
     return nsteps
 
 
-  def timeStep(self, dtStable):
+  def timeStep(self, integrators):
     """
-    Adjust stable time step for advancing forward in time.
+    Get time step for advancing forward in time.
     """
     self.dt = self.steps[self.index]
-    self.index += 1
-    if self.index >= len(self.steps):
-      if self.loopSteps:
-        self.index = 0
-      else:
-        self.index -= 1
+    if self.index+1 < len(self.steps):
+      self.index += 1
+    elif self.loopSteps:
+      self.index = 0
     return self.dt
 
   

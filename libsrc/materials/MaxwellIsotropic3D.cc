@@ -411,6 +411,22 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsViscoelastic(
 } // _calcElasticConstsViscoelastic
 
 // ----------------------------------------------------------------------
+// Get stable time step for implicit time integration.
+double
+pylith::materials::MaxwellIsotropic3D::_stableTimeStepImplicit(const double* properties,
+				 const int numProperties) const
+{ // _stableTimeStepImplicit
+  assert(0 != properties);
+  assert(_totalPropsQuadPt == numProperties);
+
+  const double maxwellTime = 
+    properties[_MaxwellIsotropic3D::pidMaxwellTime];
+  const double dtStable = 0.1*maxwellTime;
+
+  return dtStable;
+} // _stableTimeStepImplicit
+
+// ----------------------------------------------------------------------
 // Update state variables.
 void
 pylith::materials::MaxwellIsotropic3D::_updatePropertiesElastic(

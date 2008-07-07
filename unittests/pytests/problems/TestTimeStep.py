@@ -89,7 +89,8 @@ class TestTimeStep(unittest.TestCase):
     tstep = TimeStep()
     tstep._configure()
 
-    self.assertEqual(0.5*second, tstep.timeStep(0.5*second))
+    integrators = None
+    self.assertEqual(0.0*second, tstep.timeStep(integrators))
     return
 
 

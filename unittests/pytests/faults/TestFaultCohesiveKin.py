@@ -107,11 +107,10 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     Test stableTimeStep().
     """
-    from pyre.units.time import second
-    dt = 2.4*second
     (mesh, fault, fields) = self._initialize()
-    fault.timeStep(dt)
-    self.assertEqual(dt, fault.stableTimeStep())
+
+    from pyre.units.time import second
+    self.assertEqual(1.0e+30*second, fault.stableTimeStep())
     return
 
   
