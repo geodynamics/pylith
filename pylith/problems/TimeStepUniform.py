@@ -74,7 +74,7 @@ class TimeStepUniform(TimeStep):
     return nsteps
 
 
-  def timeStep(self, dtStable):
+  def timeStep(self, integrators):
     """
     Adjust stable time step for advancing forward in time.
     """

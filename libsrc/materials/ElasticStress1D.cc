@@ -18,6 +18,11 @@
 
 #include <assert.h> // USES assert()
 
+#include <math.h> // USES MAXFLOAT
+#if !defined(MAXFLOAT)
+#define MAXFLOAT 1.0e+30
+#endif
+
 // ----------------------------------------------------------------------
 namespace pylith {
   namespace materials {
@@ -176,6 +181,15 @@ pylith::materials::ElasticStress1D::_calcElasticConsts(
 
   PetscLogFlops(6);
 } // _calcElasticConsts
+
+// ----------------------------------------------------------------------
+// Get stable time step for implicit time integration.
+double
+pylith::materials::ElasticStress1D::_stableTimeStepImplicit(const double* properties,
+				 const int numProperties) const
+{ // _stableTimeStepImplicit
+  return MAXFLOAT;
+} // _stableTimeStepImplicit
 
 
 // End of file 

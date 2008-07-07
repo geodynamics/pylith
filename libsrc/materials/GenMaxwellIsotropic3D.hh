@@ -139,6 +139,13 @@ protected :
 			  const double* totalStrain,
 			  const int strainSize);
 
+  /** Get stable time step for implicit time integration.
+   *
+   * @returns Time step
+   */
+  double _stableTimeStepImplicit(const double* properties,
+				 const int numProperties) const;
+
   /** Update properties (for next time step).
    *
    * @param properties Properties at location.

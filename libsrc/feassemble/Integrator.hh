@@ -85,7 +85,7 @@ public :
 
   /** Get stable time step for advancing from time t to time t+dt.
    *
-   * Default is current time step.
+   * Default is MAXFLOAT (or 1.0e+30 if MAXFLOAT is not defined in math.h).
    *
    * @returns Time step
    */

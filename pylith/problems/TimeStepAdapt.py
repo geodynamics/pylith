@@ -44,6 +44,7 @@ class TimeStepAdapt(TimeStep):
     ## @li \b total_time Time duration for simulation.
     ## @li \b max_dt Maximum time step.
     ## @li \b adapt_skip Number of time steps to skip between adjusting value.
+    ## @li \b stability_factor "Safety factor" for stable time step.
     ##
     ## \b Facilities
     ## @li None
@@ -63,6 +64,10 @@ class TimeStepAdapt(TimeStep):
                                    validator=pyre.inventory.greaterEqual(0))
     adaptSkip.meta['tip'] = "Number of time steps to skip between " \
         "adjusting value."
+
+    stabilityFactor = pyre.inventory.float("stability_factor", default=1.2,
+                                    validator=pyre.inventory.greater(0.0))
+    stabilityFactor.meta['tip'] = "'Safety factor' for stable time step."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -85,17 +90,23 @@ class TimeStepAdapt(TimeStep):
     return nsteps
 
 
-  def timeStep(self, dtStable):
+  def timeStep(self, integrators):
     """
     Adjust stable time step for advancing forward in time.
     """
     from pyre.units.time import second
+    dtStable = 1.0e+30*second
+    for integrator in integrators:
+      dt = integrator.stableTimeStep()
+      if dt < dtStable:
+        dtStable = dt
+    
     if self.skipped < self.adaptSkip and \
           self.dt != 0.0*second and \
           self.dt < dtStable:
       self.skipped += 1
     else:
-      self.dt = min(dtStable, self.maxDt)
+      self.dt = min(dtStable/self.stabilityFactor, self.maxDt)
       self.skipped = 0
     return self.dt
 
@@ -110,6 +121,7 @@ class TimeStepAdapt(TimeStep):
     self.totalTime = self.inventory.totalTime
     self.maxDt = self.inventory.maxDt
     self.adaptSkip = self.inventory.adaptSkip
+    self.stabilityFactor = self.inventory.stabilityFactor
     self.dt = self.maxDt
     return
 

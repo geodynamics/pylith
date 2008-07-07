@@ -83,10 +83,15 @@ pylith::feassemble::TestElasticityImplicit::testStableTimeStep(void)
 { // testStableTimeStep
   ElasticityImplicit integrator;
 
-  const double dt1 = 2.0;
-  integrator.timeStep(dt1);
+  materials::ElasticIsotropic3D material;
+  const int id = 3;
+  const std::string label("my material");
+  material.id(id);
+  material.label(label.c_str());
+  integrator.material(&material);
+
   const double stableTimeStep = integrator.stableTimeStep();
-  CPPUNIT_ASSERT_EQUAL(dt1, stableTimeStep);
+  CPPUNIT_ASSERT_EQUAL(1.0e+30, stableTimeStep);
 } // testStableTimeStep
 
 // ----------------------------------------------------------------------

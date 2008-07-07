@@ -20,6 +20,11 @@
 
 #include <assert.h> // USES assert()
 
+#include <math.h> // USES MAXFLOAT
+#if !defined(MAXFLOAT)
+#define MAXFLOAT 1.0e+30
+#endif
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::Integrator::Integrator(void) :
@@ -61,8 +66,16 @@ void
 pylith::feassemble::Integrator::gravityField(spatialdata::spatialdb::GravityField* const gravityField)
 { // gravityField
   _gravityField = gravityField;
-
 } // gravityField
+
+// ----------------------------------------------------------------------
+// Get stable time step for advancing from time t to time t+dt.
+double
+pylith::feassemble::Integrator::stableTimeStep(void) const
+{ // stableTimeStep
+  // Assume any time step will work.
+  return MAXFLOAT;
+} // stableTimeStep
 
 // ----------------------------------------------------------------------
 // Initialize vector containing result of integration action for cell.

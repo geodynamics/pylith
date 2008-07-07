@@ -57,6 +57,15 @@ pylith::feassemble::ElasticityImplicit::timeStep(const double dt)
 } // timeStep
 
 // ----------------------------------------------------------------------
+// Get stable time step for advancing from time t to time t+dt.
+double
+pylith::feassemble::ElasticityImplicit::stableTimeStep(void) const
+{ // stableTimeStep
+  assert(0 != _material);
+  return _material->stableTimeStepImplicit();
+} // stableTimeStep
+
+// ----------------------------------------------------------------------
 // Set flag for setting constraints for total field solution or
 // incremental field solution.
 void

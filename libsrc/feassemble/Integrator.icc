@@ -21,14 +21,6 @@ pylith::feassemble::Integrator::timeStep(const double dt) {
   _dt = dt;
 } // timeStep
 
-// Get stable time step for advancing from time t to time t+dt.
-inline
-double
-pylith::feassemble::Integrator::stableTimeStep(void) const {
-  // Default is current time step
-  return _dt;
-} // stableTimeStep
-
 // Check whether Jacobian needs to be recomputed.
 inline
 bool

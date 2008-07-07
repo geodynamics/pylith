@@ -20,6 +20,11 @@
 #include <string.h> // USES memcpy()
 #include <assert.h> // USES assert()
 
+#include <math.h> // USES MAXFLOAT
+#if !defined(MAXFLOAT)
+#define MAXFLOAT 1.0e+30
+#endif
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::ElasticMaterial::ElasticMaterial(const int tensorSize,
@@ -100,6 +105,27 @@ pylith::materials::ElasticMaterial::calcDerivElastic(
 
   return _elasticConsts;
 } // calcDerivElastic
+
+// ----------------------------------------------------------------------
+// Get stable time step for implicit time integration.
+double
+pylith::materials::ElasticMaterial::stableTimeStepImplicit(void) const
+{ // stableTimeStepImplicit
+  const int numQuadPts = _numQuadPts;
+  const int totalPropsQuadPt = _totalPropsQuadPt;
+  assert(_propertiesCell.size() == numQuadPts*totalPropsQuadPt);
+
+  double dtStable = MAXFLOAT;
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    const double dt = 
+      _stableTimeStepImplicit(&_propertiesCell[iQuad*totalPropsQuadPt],
+			      totalPropsQuadPt);
+    if (dt < dtStable)
+      dtStable = dt;
+  } // for
+
+  return dtStable;
+} // stableTimeStepImplicit
 
 // ----------------------------------------------------------------------
 // Get cell's property information from material's sections.

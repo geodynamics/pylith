@@ -85,10 +85,8 @@ pylith::feassemble::TestElasticityExplicit::testStableTimeStep(void)
 { // testStableTimeStep
   ElasticityExplicit integrator;
 
-  const double dt1 = 2.0;
-  integrator.timeStep(dt1);
   const double stableTimeStep = integrator.stableTimeStep();
-  CPPUNIT_ASSERT_EQUAL(dt1, stableTimeStep);
+  CPPUNIT_ASSERT_EQUAL(1.0e+30, stableTimeStep);
 } // testStableTimeStep
 
 // ----------------------------------------------------------------------
