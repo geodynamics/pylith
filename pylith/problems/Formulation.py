@@ -101,6 +101,8 @@ class Formulation(Component):
     self._setupLogging()
     logEvent = "%spreinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
+
+    self.timeStep.preinitialize()
     
     self.mesh = mesh
     self.integrators = []
@@ -126,6 +128,8 @@ class Formulation(Component):
     logEvent = "%sverify" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
+    self.timeStep.verifyConfiguration()
+
     for integrator in self.integrators:
       integrator.verifyConfiguration()
     for constraint in self.constraints:
@@ -143,6 +147,8 @@ class Formulation(Component):
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
+
+    self.timeStep.initialize()
 
     numTimeSteps = self.timeStep.numTimeSteps()
     totalTime = self.timeStep.totalTime
