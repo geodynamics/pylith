@@ -65,6 +65,10 @@ class TestTimeStepUser(unittest.TestCase):
 
     self.assertEqual(1, tstep.numTimeSteps())
 
+    tstep.totalTime = 12.0*year
+    self.assertEqual(6, tstep.numTimeSteps())
+
+    tstep.loopSteps = True
     tstep.totalTime = 7.0*year
     self.assertEqual(5, tstep.numTimeSteps())
     return
@@ -81,6 +85,14 @@ class TestTimeStepUser(unittest.TestCase):
     tstep.preinitialize()
     tstep.initialize()
 
+    self.assertEqual(1.0*year, tstep.timeStep(0.5*year))
+    self.assertEqual(2.0*year, tstep.timeStep(0.5*year))
+    self.assertEqual(3.0*year, tstep.timeStep(0.5*year))
+    self.assertEqual(3.0*year, tstep.timeStep(0.5*year))
+    self.assertEqual(3.0*year, tstep.timeStep(0.5*year))
+
+    tstep.index = 0
+    tstep.loopSteps = True
     self.assertEqual(1.0*year, tstep.timeStep(0.5*year))
     self.assertEqual(2.0*year, tstep.timeStep(0.5*year))
     self.assertEqual(3.0*year, tstep.timeStep(0.5*year))
