@@ -66,6 +66,8 @@ class TimeStepUser(TimeStep):
     ## \b Properties
     ## @li \b total_time Time duration for simulation.
     ## @li \b filename Name of file with time step sizes.
+    ## @li \b loop_steps Loop over steps if true, otherwise keep
+    ##   using last time step size.
     ##
     ## \b Facilities
     ## @li None
@@ -79,6 +81,10 @@ class TimeStepUser(TimeStep):
 
     filename = pyre.inventory.str("filename", default="timesteps.txt")
     filename.meta['tip'] = "Name of file with tme step sizes."
+
+    loopSteps = pyre.inventory.bool("loop_steps", default=False)
+    loopSteps.meta['tip'] = "Loop over steps if true, otherwise keep " \
+                            "using last time step size."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -123,7 +129,10 @@ class TimeStepUser(TimeStep):
       t += self.steps[index]
       index += 1
       if index >= len(self.steps):
-        index = 0
+        if self.loopSteps:
+          index = 0
+        else:
+          index -= 1
       nsteps += 1
     return nsteps
 
@@ -135,7 +144,10 @@ class TimeStepUser(TimeStep):
     self.dt = self.steps[self.index]
     self.index += 1
     if self.index >= len(self.steps):
-      self.index = 0
+      if self.loopSteps:
+        self.index = 0
+      else:
+        self.index -= 1
     return self.dt
 
   
@@ -148,6 +160,7 @@ class TimeStepUser(TimeStep):
     TimeStep._configure(self)
     self.totalTime = self.inventory.totalTime
     self.filename = self.inventory.filename
+    self.loopSteps = self.inventory.loopSteps
     return
 
 
