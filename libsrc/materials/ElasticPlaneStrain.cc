@@ -14,16 +14,14 @@
 
 #include "ElasticPlaneStrain.hh" // implementation of object methods
 
+#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+
 #include "petsc.h" // USES PetscLogFlops
 
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
-#include <math.h> // USES MAXFLOAT
-#if !defined(MAXFLOAT)
-#define MAXFLOAT 1.0e+30
-#endif
 
 // ----------------------------------------------------------------------
 namespace pylith {
@@ -211,7 +209,7 @@ double
 pylith::materials::ElasticPlaneStrain::_stableTimeStepImplicit(const double* properties,
 				 const int numProperties) const
 { // _stableTimeStepImplicit
-  return MAXFLOAT;
+  return pylith::MAXDOUBLE;
 } // _stableTimeStepImplicit
 
 

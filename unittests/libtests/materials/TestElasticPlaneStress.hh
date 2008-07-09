@@ -45,6 +45,7 @@ class pylith::materials::TestElasticPlaneStress : public TestElasticMaterial
   CPPUNIT_TEST( test_calcDensity );
   CPPUNIT_TEST( test_calcStress );
   CPPUNIT_TEST( test_calcElasticConsts );
+  CPPUNIT_TEST( test_stableTimeStepImplicit );
 
   CPPUNIT_TEST( testUsesUpdateProperties );
   CPPUNIT_TEST( testUpdateProperties );

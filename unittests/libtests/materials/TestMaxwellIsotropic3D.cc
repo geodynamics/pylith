@@ -259,5 +259,17 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdatePropertiesTimeDep(void)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(parametersE[i], parameters[i], tolerance);
 } // testUpdatePropertiesTimeDep
 
+// ----------------------------------------------------------------------
+// Test _stableTimeStepImplicit()
+void
+pylith::materials::TestMaxwellIsotropic3D::test_stableTimeStepImplicit(void)
+{ // test_stableTimeStepImplicit
+  CPPUNIT_ASSERT(0 != _matElastic);
+
+  delete _dataElastic; _dataElastic = new MaxwellIsotropic3DTimeDepData();
+
+  TestElasticMaterial::test_stableTimeStepImplicit();
+} // test_stableTimeStepImplicit
+
 
 // End of file 

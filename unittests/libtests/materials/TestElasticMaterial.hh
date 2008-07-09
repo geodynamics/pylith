@@ -42,6 +42,7 @@ class pylith::materials::TestElasticMaterial : public TestMaterial
   CPPUNIT_TEST( testCalcDensity );
   CPPUNIT_TEST( testCalcStress );
   CPPUNIT_TEST( testCalcDerivElastic );
+  CPPUNIT_TEST( testStableTimeStepImplicit );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -56,6 +57,9 @@ public :
 
   /// Test calcDerivElastic()
   void testCalcDerivElastic(void);
+
+  /// Test stableTimeStepImplicit().
+  void testStableTimeStepImplicit(void);
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -78,6 +82,9 @@ public :
 
   /// Test _calcElasticConsts().
   void test_calcElasticConsts(void);
+
+  /// Test _stableTimeStepImplicit().
+  void test_stableTimeStepImplicit(void);
 
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////

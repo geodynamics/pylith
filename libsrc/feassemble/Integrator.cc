@@ -15,15 +15,11 @@
 #include "Integrator.hh" // implementation of class methods
 
 #include "Quadrature.hh" // USES Quadrature
+#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include <assert.h> // USES assert()
-
-#include <math.h> // USES MAXFLOAT
-#if !defined(MAXFLOAT)
-#define MAXFLOAT 1.0e+30
-#endif
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -74,7 +70,7 @@ double
 pylith::feassemble::Integrator::stableTimeStep(void) const
 { // stableTimeStep
   // Assume any time step will work.
-  return MAXFLOAT;
+  return pylith::MAXDOUBLE;
 } // stableTimeStep
 
 // ----------------------------------------------------------------------

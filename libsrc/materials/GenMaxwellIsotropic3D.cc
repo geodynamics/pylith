@@ -17,6 +17,7 @@
 #include "ViscoelasticMaxwell.hh" // USES computeVisStrain
 
 #include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/constdefs.h" // USES double_array
 
 #include "petsc.h" // USES PetscLogFlops
 
@@ -24,11 +25,6 @@
 #include <string.h> // USES memcpy()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
-
-#include <math.h> // USES MAXFLOAT
-#if !defined(MAXFLOAT)
-#define MAXFLOAT 1.0e+30
-#endif
 
 // ----------------------------------------------------------------------
 namespace pylith {
@@ -549,7 +545,7 @@ pylith::materials::GenMaxwellIsotropic3D::_stableTimeStepImplicit(const double* 
   assert(0 != properties);
   assert(_totalPropsQuadPt == numProperties);
 
-  double dtStable = MAXFLOAT;
+  double dtStable = pylith::MAXDOUBLE;
 
   const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
   for (int i=0; i < numMaxwellModels; ++i) {

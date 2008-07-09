@@ -234,6 +234,68 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
 } // testCalcDerivElastic
     
 // ----------------------------------------------------------------------
+// Test calcDensity()
+void
+pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
+{ // testStableTimeStepImplicit
+  ALE::Obj<Mesh> mesh;
+  { // create mesh
+    const int cellDim = 1;
+    const int numCorners = 2;
+    const int spaceDim = 1;
+    const int numVertices = 2;
+    const int numCells = 1;
+    const double vertCoords[] = { -1.0, 1.0};
+    const int cells[] = { 0, 1};
+    CPPUNIT_ASSERT(0 != vertCoords);
+    CPPUNIT_ASSERT(0 != cells);
+
+    mesh = new Mesh(PETSC_COMM_WORLD, cellDim);
+    ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
+
+    const bool interpolate = false;
+    ALE::Obj<ALE::Mesh::sieve_type> s = 
+      new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+
+    ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, cellDim, numCells,
+	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
+    std::map<Mesh::point_type,Mesh::point_type> renumbering;
+    ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
+    mesh->setSieve(sieve);
+    mesh->stratify();
+    ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
+  } // create mesh
+
+  // Get cells associated with material
+  const ALE::Obj<real_section_type>& coordinates = 
+    mesh->getRealSection("coordinates");
+  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+
+  ElasticIsotropic3D material;
+  ElasticIsotropic3DData data;
+  const int numQuadPts = 2;
+  const int numParams = data.numParameters;
+  const int numParamsQuadPt = data.numParamsQuadPt;
+  
+  Mesh::label_sequence::iterator c_iter = cells->begin();
+
+  const int fiberDim = numQuadPts * numParamsQuadPt;
+  material._properties = new real_section_type(mesh->comm(), mesh->debug());
+  material._properties->setChart(mesh->getSieve()->getChart());
+  material._properties->setFiberDimension(cells, fiberDim);
+  mesh->allocate(material._properties);
+
+  material._properties->updatePoint(*c_iter, data.parameterData);
+
+  material.getPropertiesCell(*c_iter, numQuadPts);
+  const double dt = material.stableTimeStepImplicit();
+
+  const double tolerance = 1.0e-06;
+  const double dtE = data.dtStableImplicit;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dt/dtE, tolerance);
+} // testStableTimeStepImplicit
+    
+// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::materials::TestElasticMaterial::setUp(void)
@@ -345,6 +407,26 @@ pylith::materials::TestElasticMaterial::test_calcElasticConsts(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(elasticConstsE[i], elasticConsts[i],
 				   tolerance);
 } // _testCalcElasticConsts
+
+
+// ----------------------------------------------------------------------
+// Test _stableTimeStepImplicit()
+void
+pylith::materials::TestElasticMaterial::test_stableTimeStepImplicit(void)
+{ // _testCalcDensity
+  CPPUNIT_ASSERT(0 != _matElastic);
+  CPPUNIT_ASSERT(0 != _dataElastic);
+  const ElasticMaterialData* data = _dataElastic;
+
+  const double dt =
+  _matElastic->_stableTimeStepImplicit(data->parameterData, 
+				       data->numParamsQuadPt);
+
+  const double dtE = data->dtStableImplicit;
+
+  const double tolerance = 1.0e-06;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dt/dtE, tolerance);
+} // _testStableTimeStepImplicit
 
 
 // End of file 

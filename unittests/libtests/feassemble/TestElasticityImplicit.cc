@@ -17,6 +17,7 @@
 #include "pylith/feassemble/ElasticityImplicit.hh" // USES ElasticityImplicit
 #include "data/IntegratorData.hh" // USES IntegratorData
 
+#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
@@ -91,7 +92,7 @@ pylith::feassemble::TestElasticityImplicit::testStableTimeStep(void)
   integrator.material(&material);
 
   const double stableTimeStep = integrator.stableTimeStep();
-  CPPUNIT_ASSERT_EQUAL(1.0e+30, stableTimeStep);
+  CPPUNIT_ASSERT_EQUAL(pylith::MAXDOUBLE, stableTimeStep);
 } // testStableTimeStep
 
 // ----------------------------------------------------------------------

@@ -18,6 +18,7 @@ subpkginclude_HEADERS = \
 	EventLogger.icc \
 	array.hh \
 	arrayfwd.hh \
+	constdefs.h \
 	macrodefs.h \
 	petscfwd.h \
 	sievefwd.hh \

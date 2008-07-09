@@ -103,9 +103,13 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
                                       dtype=numpy.float64)
 
     (self.elasticConsts[0,:], self.stress[0,:]) = \
-                              self._calcStress(strainA, muA, lambdaA, maxwellTimeA, strainTA, visStrainA)
+                              self._calcStress(strainA, muA, lambdaA,
+                                               maxwellTimeA, strainTA, visStrainA)
     (self.elasticConsts[1,:], self.stress[1,:]) = \
-                              self._calcStress(strainB, muB, lambdaB, maxwellTimeB, strainTB, visStrainB)
+                              self._calcStress(strainB, muB, lambdaB,
+                                               maxwellTimeB, strainTB, visStrainB)
+
+    self.dtStableImplicit = 0.1*min(maxwellTimeA, maxwellTimeB)
     return
 
 

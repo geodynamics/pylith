@@ -54,6 +54,7 @@ class pylith::materials::TestMaxwellIsotropic3D : public TestElasticMaterial
   CPPUNIT_TEST( testUsesUpdateProperties );
   CPPUNIT_TEST( testUpdatePropertiesElastic );
   CPPUNIT_TEST( testUpdatePropertiesTimeDep );
+  CPPUNIT_TEST( test_stableTimeStepImplicit );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -89,6 +90,9 @@ public :
 
   /// Test updatePropertiesTimeDep()
   void testUpdatePropertiesTimeDep(void);
+
+  /// Test _stableTimeStepImplicit()
+  void test_stableTimeStepImplicit(void);
 
 }; // class TestMaxwellIsotropic3D
 
