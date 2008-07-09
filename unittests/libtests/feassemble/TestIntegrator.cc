@@ -17,6 +17,8 @@
 #include "pylith/feassemble/ElasticityExplicit.hh" // USES ElasticityExplicit
 #include "pylith/feassemble/ElasticityImplicit.hh" // USES ElasticityImplicit
 #include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
+#include "pylith/utils/constdefs.h" // USES MAXFLOAT
+
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
@@ -24,6 +26,28 @@
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestIntegrator );
+
+// ----------------------------------------------------------------------
+// Test timeStep().
+void
+pylith::feassemble::TestIntegrator::testTimeStep(void)
+{ // testTimeStep
+  ElasticityExplicit integrator;
+  const double dt = 1.2;
+  integrator.timeStep(dt);
+
+  CPPUNIT_ASSERT_EQUAL(dt, integrator._dt);
+} // testTimeStep
+
+// ----------------------------------------------------------------------
+// Test stabletimeStep().
+void
+pylith::feassemble::TestIntegrator::testStableTimeStep(void)
+{ // testStableTimeStep
+  ElasticityExplicit integrator;
+
+  CPPUNIT_ASSERT_EQUAL(pylith::MAXDOUBLE, integrator.stableTimeStep());
+} // testStableTimeStep
 
 // ----------------------------------------------------------------------
 // Test quadrature().

@@ -36,6 +36,7 @@ public:
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
+  double dtStableImplicit; ///< Stable time step for implicit time stepping
   double* density; ///< Density at locations
   double* strain; ///< Strain at locations
   double* stress; ///< Stress at locations

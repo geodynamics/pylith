@@ -45,6 +45,9 @@ class pylith::feassemble::TestIntegrator : public CppUnit::TestFixture
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestIntegrator );
 
+  CPPUNIT_TEST( testTimeStep );
+  CPPUNIT_TEST( testStableTimeStep );  
+
   CPPUNIT_TEST( testQuadrature );
   CPPUNIT_TEST( testGravityField );
   CPPUNIT_TEST( testInitCellVector );
@@ -56,6 +59,12 @@ class pylith::feassemble::TestIntegrator : public CppUnit::TestFixture
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
+
+  /// Test timeStep().
+  void testTimeStep(void);
+
+  /// Test stableTimeStep().
+  void testStableTimeStep(void);
 
   /// Test quadrature()
   void testQuadrature(void);

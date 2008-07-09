@@ -25,6 +25,8 @@ const int pylith::materials::ElasticStress1DData::_numParamsQuadPt = 3;
 
 const int pylith::materials::ElasticStress1DData::_numLocs = 2;
 
+const double pylith::materials::ElasticStress1DData::_dtStableImplicit =   1.00000000e+30;
+
 const int pylith::materials::ElasticStress1DData::_numParamValues[] = {
 1,
 1,
@@ -82,6 +84,7 @@ pylith::materials::ElasticStress1DData::ElasticStress1DData(void)
   numParameters = _numParameters;
   numParamsQuadPt = _numParamsQuadPt;
   numLocs = _numLocs;
+  dtStableImplicit = _dtStableImplicit;
   numParamValues = const_cast<int*>(_numParamValues);
   dbValues = const_cast<char**>(_dbValues);
   dbData = const_cast<double*>(_dbData);

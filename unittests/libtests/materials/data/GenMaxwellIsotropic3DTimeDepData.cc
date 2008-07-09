@@ -25,6 +25,8 @@ const int pylith::materials::GenMaxwellIsotropic3DTimeDepData::_numParamsQuadPt 
 
 const int pylith::materials::GenMaxwellIsotropic3DTimeDepData::_numLocs = 2;
 
+const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_dtStableImplicit =   4.44444444e+06;
+
 const int pylith::materials::GenMaxwellIsotropic3DTimeDepData::_numParamValues[] = {
 1,
 1,
@@ -224,6 +226,7 @@ pylith::materials::GenMaxwellIsotropic3DTimeDepData::GenMaxwellIsotropic3DTimeDe
   numParameters = _numParameters;
   numParamsQuadPt = _numParamsQuadPt;
   numLocs = _numLocs;
+  dtStableImplicit = _dtStableImplicit;
   numParamValues = const_cast<int*>(_numParamValues);
   dbValues = const_cast<char**>(_dbValues);
   dbData = const_cast<double*>(_dbData);

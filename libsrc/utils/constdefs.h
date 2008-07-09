@@ -10,19 +10,22 @@
 // ======================================================================
 //
 
-#include "ElasticMaterialData.hh"
+/**
+ * @file pylith/utils/macrodefs.hh
+ *
+ * @brief Macro definitions for PyLith.
+ */
 
-pylith::materials::ElasticMaterialData::ElasticMaterialData(void) :
-  dtStableImplicit(0.0),
-  density(0),
-  strain(0),
-  stress(0),
-  elasticConsts(0)
-{ // constructor
-} // constructor
+#if !defined(pylith_utils_constdefs_h)
+#define pylith_utils_constdefs_h
 
-pylith::materials::ElasticMaterialData::~ElasticMaterialData(void)
-{}
+namespace pylith {
+  const double MAXDOUBLE = 1.0e+30;
+  const float MAXFLOAT = 1.0e+30;
+}
+    
+
+#endif // pylith_utils_constdefs_h
 
 
 // End of file

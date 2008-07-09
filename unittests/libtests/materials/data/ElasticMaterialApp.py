@@ -73,6 +73,7 @@ class ElasticMaterialApp(Script):
     self.strain = None
     self.stress = None
     self.elasticConsts = None
+    self.dtStableImplicit = 1.0e+30
     return
 
 
@@ -136,6 +137,9 @@ class ElasticMaterialApp(Script):
     self.data.addArray(vtype="double", name="_elasticConsts",
                        values=self.elasticConsts,
                        format="%16.8e", ncols=1)
+    self.data.addScalar(vtype="double", name="_dtStableImplicit",
+                        value=self.dtStableImplicit,
+                        format="%16.8e")
       
     return
 

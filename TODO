@@ -2,14 +2,7 @@
 CURRENT ISSUES
 ======================================================================
 
-Before June workshop
-
-  Fix holding onto memory from before distribution.
-
-  Update examples for step-function slip function.
-
-    No peak slip rate parameter.
-
+Fix memory usage (MATT).
 
 Other
 

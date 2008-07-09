@@ -15,15 +15,11 @@
 #include "ElasticMaterial.hh" // implementation of object methods
 
 #include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 #include "pylith/utils/sievetypes.hh" // USES Mesh
 
 #include <string.h> // USES memcpy()
 #include <assert.h> // USES assert()
-
-#include <math.h> // USES MAXFLOAT
-#if !defined(MAXFLOAT)
-#define MAXFLOAT 1.0e+30
-#endif
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -115,7 +111,7 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(void) const
   const int totalPropsQuadPt = _totalPropsQuadPt;
   assert(_propertiesCell.size() == numQuadPts*totalPropsQuadPt);
 
-  double dtStable = MAXFLOAT;
+  double dtStable = pylith::MAXDOUBLE;
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const double dt = 
       _stableTimeStepImplicit(&_propertiesCell[iQuad*totalPropsQuadPt],
