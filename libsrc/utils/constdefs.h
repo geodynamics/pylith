@@ -20,8 +20,8 @@
 #define pylith_utils_constdefs_h
 
 namespace pylith {
-  const double MAXDOUBLE = 1.0e+30;
-  const float MAXFLOAT = 1.0e+30;
+  static const double MAXDOUBLE = 1.0e+30;
+  //static const float MAXFLOAT = 1.0e+30;
 }
     
 
