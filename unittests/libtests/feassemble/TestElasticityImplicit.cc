@@ -299,7 +299,7 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering, false);
   (*mesh)->setSieve(sieve);
   (*mesh)->stratify();
-  std::cout << "Mesh chart: " << (*mesh)->getSieve()->getChart() << std::endl;
+  //std::cout << "Mesh chart: " << (*mesh)->getSieve()->getChart() << std::endl;
   ALE::SieveBuilder<Mesh>::buildCoordinates((*mesh), _data->spaceDim,
 					    _data->vertices);
   const ALE::Obj<Mesh::label_type>& labelMaterials = 
