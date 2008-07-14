@@ -20,10 +20,10 @@ dist_check_SCRIPTS = testdriver.py
 
 TESTS_ENVIRONMENT = $(PYTHON)
 
-if ENABLE_TETGEN
-  TESTS += testgensimple.py
-  dist_check_SCRIPTS += testgensimple.py
-endif
+#if ENABLE_TETGEN
+#  TESTS += testgensimple.py
+#  dist_check_SCRIPTS += testgensimple.py
+#endif
 
 
 noinst_PYTHON = \
