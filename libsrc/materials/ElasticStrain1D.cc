@@ -188,7 +188,7 @@ double
 pylith::materials::ElasticStrain1D::_stableTimeStepImplicit(const double* properties,
 				 const int numProperties) const
 { // _stableTimeStepImplicit
-  return pylith::MAXDOUBLE;
+  return pylith::PYLITH_MAXDOUBLE;
 } // _stableTimeStepImplicit
 
 
