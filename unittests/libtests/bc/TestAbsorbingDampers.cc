@@ -179,7 +179,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   CPPUNIT_ASSERT(!dispTpdt.isNull());
 
   PetscMat jacobian;
-  mesh->getFactory()->getGlobalOrder(mesh, "default", dispTpdt)->view("Global Order");
+  //mesh->getFactory()->getGlobalOrder(mesh, "default", dispTpdt)->view("Global Order");
   PetscErrorCode err = MeshCreateMatrix(mesh, dispTpdt, MATMPIBAIJ, &jacobian);
   CPPUNIT_ASSERT(0 == err);
 
@@ -217,7 +217,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
     cols[iCol] = iCol;
   MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
 
-#if 1
+#if 0
   std::cout << "JACOBIAN\n";
   for (int iRow=0, i=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol, ++i)

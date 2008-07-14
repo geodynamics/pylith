@@ -221,10 +221,10 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateJacobian(void)
   CPPUNIT_ASSERT(0 == err);
 
   const double t = 1.0;
-  mesh->getSieve()->setDebug(10);
+  //mesh->getSieve()->setDebug(10);
   integrator.integrateJacobian(&jacobian, t, &fields, mesh);
   CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
-  mesh->getSieve()->setDebug(0);
+  //mesh->getSieve()->setDebug(0);
 
   err = MatAssemblyBegin(jacobian, MAT_FINAL_ASSEMBLY);
   CPPUNIT_ASSERT(0 == err);
@@ -347,7 +347,7 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   residual->setFiberDimension((*mesh)->depthStratum(0), _data->spaceDim);
   (*mesh)->allocate(residual);
   residual->zero();
-  residual->view("Residual");
+  //residual->view("Residual");
   fields->copyLayout("residual");
 
   const int fieldSize = _data->spaceDim * _data->numVertices;
