@@ -70,7 +70,7 @@ double
 pylith::feassemble::Integrator::stableTimeStep(void) const
 { // stableTimeStep
   // Assume any time step will work.
-  return pylith::MAXDOUBLE;
+  return pylith::PYLITH_MAXDOUBLE;
 } // stableTimeStep
 
 // ----------------------------------------------------------------------

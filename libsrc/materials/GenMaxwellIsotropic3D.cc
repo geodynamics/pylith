@@ -545,7 +545,7 @@ pylith::materials::GenMaxwellIsotropic3D::_stableTimeStepImplicit(const double* 
   assert(0 != properties);
   assert(_totalPropsQuadPt == numProperties);
 
-  double dtStable = pylith::MAXDOUBLE;
+  double dtStable = pylith::PYLITH_MAXDOUBLE;
 
   const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
   for (int i=0; i < numMaxwellModels; ++i) {

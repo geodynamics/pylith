@@ -111,7 +111,7 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(void) const
   const int totalPropsQuadPt = _totalPropsQuadPt;
   assert(_propertiesCell.size() == numQuadPts*totalPropsQuadPt);
 
-  double dtStable = pylith::MAXDOUBLE;
+  double dtStable = pylith::PYLITH_MAXDOUBLE;
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const double dt = 
       _stableTimeStepImplicit(&_propertiesCell[iQuad*totalPropsQuadPt],
