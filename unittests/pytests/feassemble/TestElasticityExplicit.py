@@ -68,6 +68,7 @@ class TestElasticityExplicit(unittest.TestCase):
     db = SimpleDB()
     db.label = "elastic plane strain"
     db.iohandler = iohandler
+    initialStateDB = None
 
     from pylith.materials.ElasticPlaneStrain import ElasticPlaneStrain
     material = ElasticPlaneStrain()
@@ -75,6 +76,7 @@ class TestElasticityExplicit(unittest.TestCase):
     material.label = "elastic plane strain"
     material.db = db
     material.quadrature = quadrature
+    material.initialStateDB = initialStateDB
     from pylith.meshio.OutputMatElastic import OutputMatElastic
     material.output = OutputMatElastic()
     material.output._configure()
@@ -245,12 +247,14 @@ class TestElasticityExplicit(unittest.TestCase):
     db = SimpleDB()
     db.label = "elastic plane strain"
     db.iohandler = iohandler
+    initialStateDB = None
 
     from pylith.materials.ElasticPlaneStrain import ElasticPlaneStrain
     material = ElasticPlaneStrain()
     material.id = 0
     material.label = "elastic plane strain"
     material.db = db
+    material.initialStateDB = initialStateDB
     material.quadrature = quadrature
     from pylith.meshio.OutputMatElastic import OutputMatElastic
     material.output = OutputMatElastic()
