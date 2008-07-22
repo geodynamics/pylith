@@ -41,6 +41,8 @@ private:
 
   static const int _numDBValues;
 
+  static const int _numInitialStateValues;
+
   static const int _numParameters;
 
   static const int _numParamsQuadPt;
@@ -53,9 +55,15 @@ private:
 
   static const char* _dbValues[];
 
+  static const char* _initialStateDBValues[];
+
   static const double _dbData[];
 
+  static const double _initialStateDBData[];
+
   static const double _parameterData[];
+
+  static const double _initialState[];
 
   static const double _density[];
 

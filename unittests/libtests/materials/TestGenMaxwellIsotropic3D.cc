@@ -120,9 +120,13 @@ pylith::materials::TestGenMaxwellIsotropic3D::testUpdatePropertiesElastic(void)
   const int numParamsQuadPt = data.numParamsQuadPt;
 
   const int tensorSize = 6;
+  const int initialStateSize = 6;
   double_array totalStrain(tensorSize);
-  for (int i=0; i < tensorSize; ++i)
+  double_array initialState(initialStateSize);
+  for (int i=0; i < tensorSize; ++i) {
     totalStrain[i] = i;
+    initialState[i] = 0;
+  } // for
 
   const double meanStrain = 
     (totalStrain[0] + totalStrain[1] + totalStrain[2]) / 3.0;
@@ -154,7 +158,8 @@ pylith::materials::TestGenMaxwellIsotropic3D::testUpdatePropertiesElastic(void)
   } // for
   
   material._updateProperties(&parameters[0], numParamsQuadPt, 
-			&totalStrain[0], tensorSize);
+			&totalStrain[0], tensorSize,
+			&initialState[0], initialStateSize);
 
   const double tolerance = 1.0e-06;
   for (int i=0; i < numParamsQuadPt; ++i)
@@ -204,6 +209,7 @@ pylith::materials::TestGenMaxwellIsotropic3D::testUpdatePropertiesTimeDep(void)
 
   const int numMaxwellModels = 3;
   const int tensorSize = 6;
+  const int initialStateSize = 6;
   const double mu = 3.0e10;
 
   material.useElasticBehavior(false);
@@ -218,12 +224,14 @@ pylith::materials::TestGenMaxwellIsotropic3D::testUpdatePropertiesTimeDep(void)
   double_array totalStrainTpdt(tensorSize);
   double_array totalStrainT(tensorSize);
   double_array visStrainT(numMaxwellModels * tensorSize);
+  double_array initialState(initialStateSize);
   for (int i=0; i < tensorSize; ++i) {
     totalStrainTpdt[i] = i;
     totalStrainT[i] = totalStrainTpdt[i] / 2.0;
     visStrainT[i] = totalStrainTpdt[i] / 4.0;
     visStrainT[i + tensorSize] = totalStrainTpdt[i] / 4.0;
     visStrainT[i + 2 * tensorSize] = totalStrainTpdt[i] / 4.0;
+    initialState[i] = 0;
   } // for
 
   const double meanStrainTpdt = 
@@ -281,7 +289,8 @@ pylith::materials::TestGenMaxwellIsotropic3D::testUpdatePropertiesTimeDep(void)
   } // for
   
   material._updateProperties(&parameters[0], numParamsQuadPt, 
-			&totalStrainTpdt[0], tensorSize);
+			&totalStrainTpdt[0], tensorSize,
+			&initialState[0], initialStateSize);
 
   const double tolerance = 1.0e-06;
   for (int i=0; i < numParamsQuadPt; ++i)

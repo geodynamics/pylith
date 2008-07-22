@@ -29,15 +29,21 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::materials::Material::Material(const char** dbValues,
+pylith::materials::Material::Material(const int tensorSize,
+				      const char** dbValues,
+				      const char** initialStateDBValues,
 				      const int numDBValues,
 				      const PropMetaData* properties,
 				      const int numProperties) :
   _dt(0.0),
   _totalPropsQuadPt(0),
   _dimension(0),
+  _tensorSize(tensorSize),
+  _initialStateSize(tensorSize),
+  _initialStateDBValues(initialStateDBValues),
   _needNewJacobian(false),
   _db(0),
+  _initialStateDB(0),
   _id(0),
   _label(""),
   _propMetaData(properties),
@@ -56,10 +62,11 @@ pylith::materials::Material::~Material(void)
 { // destructor
   // Python db object owns database, so just set pointer to null
   _db = 0;
+  _initialStateDB = 0;
 } // destructor
 
 // ----------------------------------------------------------------------
-// Get physical property parameters from database.
+// Get physical property parameters and initial state (if used) from database.
 void
 pylith::materials::Material::initialize(const ALE::Obj<Mesh>& mesh,
 					const spatialdata::geocoords::CoordSys* cs,
@@ -93,6 +100,34 @@ pylith::materials::Material::initialize(const ALE::Obj<Mesh>& mesh,
   const int fiberDim = totalPropsQuadPt * numQuadPts;
   _properties->setFiberDimension(cells, fiberDim);
   mesh->allocate(_properties);
+
+  // Fiber dimension for initial stresses is number of quadrature points times
+  // initial state size.
+  const int initialStateFiberDim = _initialStateSize * numQuadPts;
+
+  // Container for data returned in query of initial state database
+  const int initialStateSize = _initialStateSize;
+  double_array initialStateQueryData(initialStateSize);
+
+  // Container of initial state values at cell's quadrature points
+  double_array initialStateCellData(initialStateFiberDim);
+
+  // If initial state is being used, create a section to hold it.
+  if (0 == _initialStateDB)
+    _initialState = NULL;
+  else {
+    _initialState = new real_section_type(mesh->comm(), mesh->debug());
+    assert(!_initialState.isNull());
+    _initialState->setChart(real_section_type::chart_type(*std::min_element(cells->begin(), cells->end()),
+							   *std::max_element(cells->begin(), cells->end())+1));
+
+    _initialState->setFiberDimension(cells, initialStateFiberDim);
+    mesh->allocate(_initialState);
+
+    // Setup database for querying
+    _initialStateDB->open();
+    _initialStateDB->queryVals(_initialStateDBValues, initialStateSize);
+  } // if
 
   // Setup database for querying
   const int numValues = _numDBValues;
@@ -132,13 +167,38 @@ pylith::materials::Material::initialize(const ALE::Obj<Mesh>& mesh,
       } // if
       _dbToProperties(&cellData[totalPropsQuadPt*iQuadPt], queryData);
 
+      if (0 != _initialStateDB) {
+	const int err2 = _initialStateDB->query(&initialStateQueryData[0],
+						initialStateSize,
+						&quadPts[index],
+						spaceDim, cs);
+
+	if (err2) {
+	  std::ostringstream msg;
+	  msg << "Could not find initial state values at \n"
+	      << "(";
+	  for (int i=0; i < spaceDim; ++i)
+	    msg << "  " << quadPts[index+i];
+	  msg << ") in material " << _label << "\n"
+	      << "using spatial database '" << _initialStateDB->label() << "'.";
+	  throw std::runtime_error(msg.str());
+	} // if
+	memcpy(&initialStateCellData[initialStateSize * iQuadPt],
+	       &initialStateQueryData[0],
+	       initialStateSize * sizeof(double));
+      } // if
+
     } // for
     // Insert cell contribution into fields
     _properties->updatePoint(*c_iter, &cellData[0]);
+    if (0 != _initialStateDB)
+      _initialState->updatePoint(*c_iter, &initialStateCellData[0]);
   } // for
 
-  // Close database
+  // Close databases
   _db->close();
+  if (0 != _initialStateDB)
+    _initialStateDB->close();
 } // initialize
 
 // ----------------------------------------------------------------------

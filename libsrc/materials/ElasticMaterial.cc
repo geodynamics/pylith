@@ -26,12 +26,12 @@
 pylith::materials::ElasticMaterial::ElasticMaterial(const int tensorSize,
 						    const int numElasticConsts,
 						    const char** dbValues,
+						    const char** initialStateDBValues,
 						    const int numDBValues,
 						    const PropMetaData* properties,
 						    const int numProperties) :
-  Material(dbValues, numDBValues, properties, numProperties),
+  Material(tensorSize, dbValues, initialStateDBValues, numDBValues, properties, numProperties),
   _numQuadPts(0),
-  _tensorSize(tensorSize),
   _numElasticConsts(numElasticConsts)
 { // constructor
 } // constructor
@@ -70,12 +70,14 @@ pylith::materials::ElasticMaterial::calcStress(const double_array& totalStrain,
   assert(_propertiesCell.size() == numQuadPts*totalPropsQuadPt);
   assert(totalStrain.size() == numQuadPts*_tensorSize);
   assert(_stress.size() == numQuadPts*_tensorSize);
+  assert(_initialStateCell.size() == numQuadPts*_initialStateSize);
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
     _calcStress(&_stress[iQuad*_tensorSize], _tensorSize,
 		&_propertiesCell[iQuad*totalPropsQuadPt], totalPropsQuadPt,
 		&totalStrain[iQuad*_tensorSize], _tensorSize, 
-		computeStateVars);
+		&_initialStateCell[iQuad*_initialStateSize],
+		_initialStateSize, computeStateVars);
 
   return _stress;
 } // calcStress
@@ -91,13 +93,16 @@ pylith::materials::ElasticMaterial::calcDerivElastic(
   assert(_propertiesCell.size() == numQuadPts*totalPropsQuadPt);
   assert(totalStrain.size() == numQuadPts*_tensorSize);
   assert(_elasticConsts.size() == numQuadPts*_numElasticConsts);
+  assert(_initialStateCell.size() == numQuadPts*_initialStateSize);
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
     _calcElasticConsts(&_elasticConsts[iQuad*_numElasticConsts], 
 		       _numElasticConsts,
 		       &_propertiesCell[iQuad*totalPropsQuadPt], 
 		       totalPropsQuadPt, 
-		       &totalStrain[iQuad*_tensorSize], _tensorSize);
+		       &totalStrain[iQuad*_tensorSize], _tensorSize,
+		       &_initialStateCell[iQuad*_initialStateSize],
+		       _initialStateSize);
 
   return _elasticConsts;
 } // calcDerivElastic
@@ -138,6 +143,7 @@ pylith::materials::ElasticMaterial::getPropertiesCell(const Mesh::point_type& ce
     _density.resize(numQuadPts*1);
     _stress.resize(numQuadPts*_tensorSize);
     _elasticConsts.resize(numQuadPts*_numElasticConsts);
+    _initialStateCell.resize(numQuadPts*_tensorSize);
   } // if
 
   _getProperties(cell);
@@ -157,7 +163,9 @@ pylith::materials::ElasticMaterial::updateProperties(
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
     _updateProperties(&_propertiesCell[iQuad*totalPropsQuadPt], 
 		      totalPropsQuadPt,
-		      &totalStrain[iQuad*_tensorSize], _tensorSize);
+		      &totalStrain[iQuad*_tensorSize], _tensorSize,
+		      &_initialStateCell[iQuad*_initialStateSize],
+		      _initialStateSize);
   
   _properties->updatePoint(cell, &_propertiesCell[0]);
 } // updateProperties
@@ -173,10 +181,21 @@ pylith::materials::ElasticMaterial::_getProperties(const Mesh::point_type& cell)
   const int totalPropsQuadPt = _totalPropsQuadPt;
   assert(_propertiesCell.size() == numQuadPts*totalPropsQuadPt);  
   assert(_properties->getFiberDimension(cell) == numQuadPts*totalPropsQuadPt);
+  assert(_initialStateCell.size() == numQuadPts*_initialStateSize);  
   const real_section_type::value_type* parameterCell =
     _properties->restrictPoint(cell);
   memcpy(&_propertiesCell[0], parameterCell, 
 		      numQuadPts*totalPropsQuadPt*sizeof(double));
+  if (0 != _initialState) {
+    assert(_initialState->getFiberDimension(cell) == numQuadPts*_initialStateSize);
+    const real_section_type::value_type* initialStateValuesCell =
+      _initialState->restrictPoint(cell);
+    memcpy(&_initialStateCell[0], initialStateValuesCell, 
+	   numQuadPts*_initialStateSize*sizeof(double));
+  } else {
+    for (int iVal=0; iVal < _initialStateSize*numQuadPts; ++iVal)
+      _initialStateCell[iVal] = 0.0;
+  } // if
 } // _getProperties
 
 // ----------------------------------------------------------------------
@@ -185,7 +204,9 @@ void
 pylith::materials::ElasticMaterial::_updateProperties(double* const properties,
 						      const int totalPropsQuadPt,
 						      const double* totalStrain,
-						      const int strainSize)
+						      const int strainSize,
+						      const double* initialState,
+						      const int initialStateSize)
 { // _updateProperties
 } // _updateProperties
 

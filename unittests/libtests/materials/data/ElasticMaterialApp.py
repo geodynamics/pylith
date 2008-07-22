@@ -60,12 +60,16 @@ class ElasticMaterialApp(Script):
     # Material information
     self.dimension = None
     self.numDBValues = None
+    self.numInitialStateValues = None
     self.numParameters = None
     self.numParamsQuadPt = None
     self.numParamValues = None
     self.dbValues = None
+    self.initialStateDBValues = None
     self.dbData = None
+    self.initialStateDBData = None
     self.parameterData = None
+    self.initialState = None
 
     # Elastic material information
     self.numLocs = None
@@ -106,6 +110,9 @@ class ElasticMaterialApp(Script):
     self.data.addScalar(vtype="int", name="_numDBValues",
                         value=self.numDBValues,
                         format="%d")
+    self.data.addScalar(vtype="int", name="_numInitialStateValues",
+                        value=self.numInitialStateValues,
+                        format="%d")
     self.data.addScalar(vtype="int", name="_numParameters",
                         value=self.numParameters,
                         format="%d")
@@ -117,10 +124,19 @@ class ElasticMaterialApp(Script):
                         format="%d", ncols=1)
     self.data.addArray(vtype="char*", name="_dbValues", values=self.dbValues,
                        format="\"%s\"", ncols=1)
+    self.data.addArray(vtype="char*", name="_initialStateDBValues",
+                       values=self.initialStateDBValues,
+		       format="\"%s\"", ncols=1)
     self.data.addArray(vtype="double", name="_dbData", values=self.dbData,
                        format="%16.8e", ncols=1)
+    self.data.addArray(vtype="double", name="_initialStateDBData",
+                       values=self.initialStateDBData,
+		       format="%16.8e", ncols=1)
     self.data.addArray(vtype="double", name="_parameterData",
                        values=self.parameterData,
+                       format="%16.8e", ncols=1)
+    self.data.addArray(vtype="double", name="_initialState",
+                       values=self.initialState,
                        format="%16.8e", ncols=1)
 
     self.data.addScalar(vtype="int", name="_numLocs", value=self.numLocs,

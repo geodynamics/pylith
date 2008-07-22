@@ -64,11 +64,14 @@ pylith::materials::MaxwellIsotropic3D::_calcStress(double* const stress,
 						   const int numParams,
 						   const double* totalStrain,
 						   const int strainSize,
+						   const double* initialState,
+						   const int initialStateSize,
 						   const bool computeStateVars) {
   assert(0 != _calcStressFn);
   CALL_MEMBER_FN(*this, _calcStressFn)(stress, stressSize, 
 				       parameters, numParams,
 				       totalStrain, strainSize,
+				       initialState, initialStateSize,
 				       computeStateVars);
 } // _calcStress
 
@@ -81,11 +84,14 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConsts(
 						 const double* parameters,
 						 const int numParams,
 						 const double* totalStrain,
-						 const int strainSize) {
+						 const int strainSize,
+						 const double* initialState,
+						 const int initialStateSize) {
   assert(0 != _calcElasticConstsFn);
   CALL_MEMBER_FN(*this, _calcElasticConstsFn)(elasticConsts, numElasticConsts,
 					      parameters, numParams,
-					      totalStrain, strainSize);
+					      totalStrain, strainSize,
+					      initialState, initialStateSize);
 } // _calcElasticConsts
 
 // Update state variables after solve.
@@ -94,10 +100,13 @@ void
 pylith::materials::MaxwellIsotropic3D::_updateProperties(double* const parameters,
 						    const int numParams,
 						    const double* totalStrain,
-						    const int strainSize) {
+						    const int strainSize,
+						    const double* initialState,
+						    const int initialStateSize) {
   assert(0 != _updatePropertiesFn);
   CALL_MEMBER_FN(*this, _updatePropertiesFn)(parameters, numParams,
-					     totalStrain, strainSize);
+					     totalStrain, strainSize,
+					     initialState, initialStateSize);
 } // _updateProperties
 
 // End of file 

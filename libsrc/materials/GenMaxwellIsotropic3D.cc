@@ -86,6 +86,12 @@ namespace pylith {
       const int didViscosity2 = 7;
       const int didViscosity3 = 8;
 
+      /// Initial state values expected in spatial database
+      const int numInitialStateDBValues = tensorSize;
+      const char* namesInitialStateDBValues[] = { "stress_xx", "stress_yy",
+                                                  "stress_zz", "stress_xy",
+                                                  "stress_yz", "stress_xz" };
+
     } // _GenMaxwellIsotropic3D
   } // materials
 } // pylith
@@ -96,6 +102,7 @@ pylith::materials::GenMaxwellIsotropic3D::GenMaxwellIsotropic3D(void) :
   ElasticMaterial(_GenMaxwellIsotropic3D::tensorSize,
 		  _GenMaxwellIsotropic3D::numElasticConsts,
 		  _GenMaxwellIsotropic3D::namesDBValues,
+		  _GenMaxwellIsotropic3D::namesInitialStateDBValues,
 		  _GenMaxwellIsotropic3D::numDBValues,
 		  _GenMaxwellIsotropic3D::properties,
 		  _GenMaxwellIsotropic3D::numProperties),
@@ -185,12 +192,15 @@ pylith::materials::GenMaxwellIsotropic3D::_computeStateVars(
 					    const double* properties,
 					    const int numProperties,
 					    const double* totalStrain,
-					    const int strainSize)
+					    const int strainSize,
+					    const double* initialState,
+					    const int initialStateSize)
 { // _computeStateVars
   assert(0 != properties);
   assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_GenMaxwellIsotropic3D::tensorSize == strainSize);
+  assert(_GenMaxwellIsotropic3D::tensorSize == initialStateSize);
 
   const int tensorSize = _GenMaxwellIsotropic3D::tensorSize;
   const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
@@ -264,6 +274,8 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressElastic(
 					    const int numProperties,
 					    const double* totalStrain,
 					    const int strainSize,
+					    const double* initialState,
+					    const int initialStateSize,
 					    const bool computeStateVars)
 { // _calcStressElastic
   assert(0 != stress);
@@ -272,6 +284,7 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressElastic(
   assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_GenMaxwellIsotropic3D::tensorSize == strainSize);
+  assert(_GenMaxwellIsotropic3D::tensorSize == initialStateSize);
 
   const double mu = properties[_GenMaxwellIsotropic3D::pidMuTot];
   const double lambda = properties[_GenMaxwellIsotropic3D::pidLambdaTot];
@@ -287,12 +300,12 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressElastic(
   const double traceStrainTpdt = e11 + e22 + e33;
   const double s123 = lambda * traceStrainTpdt;
 
-  stress[0] = s123 + mu2*e11;
-  stress[1] = s123 + mu2*e22;
-  stress[2] = s123 + mu2*e33;
-  stress[3] = mu2 * e12;
-  stress[4] = mu2 * e23;
-  stress[5] = mu2 * e13;
+  stress[0] = s123 + mu2*e11 + initialState[0];
+  stress[1] = s123 + mu2*e22 + initialState[1];
+  stress[2] = s123 + mu2*e33 + initialState[2];
+  stress[3] = mu2 * e12 + initialState[3];
+  stress[4] = mu2 * e23 + initialState[4];
+  stress[5] = mu2 * e13 + initialState[5];
   // std::cout << " _calcStressElastic: " << std::endl;
   // std::cout << " totalStrain: " << std::endl;
   // for (int iComp=0; iComp < _GenMaxwellIsotropic3D::tensorSize; ++iComp)
@@ -302,7 +315,7 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressElastic(
     // std::cout << "  " << (*stress)[iComp];
   // std::cout << std::endl;
 
-  PetscLogFlops(13);
+  PetscLogFlops(19);
 } // _calcStressElastic
 
 
@@ -317,6 +330,8 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic(
 					    const int numProperties,
 					    const double* totalStrain,
 					    const int strainSize,
+					    const double* initialState,
+					    const int initialStateSize,
 					    const bool computeStateVars)
 { // _calcStressViscoelastic
   assert(0 != stress);
@@ -325,6 +340,7 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic(
   assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_GenMaxwellIsotropic3D::tensorSize == strainSize);
+  assert(_GenMaxwellIsotropic3D::tensorSize == initialStateSize);
 
   const int tensorSize = _GenMaxwellIsotropic3D::tensorSize;
   const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
@@ -375,7 +391,9 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic(
     pylith::materials::GenMaxwellIsotropic3D::_computeStateVars(properties,
 								numProperties,
 								totalStrain,
-								strainSize);
+								strainSize,
+								initialState,
+								initialStateSize);
   } else {
     memcpy(&_visStrain[0], &properties[_GenMaxwellIsotropic3D::pidVisStrain],
 	   numMaxwellModels * tensorSize * sizeof(double));
@@ -398,15 +416,15 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic(
     } // for
 
     devStressTpdt = mu2*devStressTpdt;
-    // Later I will want to put in initial stresses.
-    stress[iComp] =diag[iComp]*meanStressTpdt+devStressTpdt;
+    stress[iComp] =diag[iComp] * meanStressTpdt + devStressTpdt +
+	    initialState[iComp];
     // std::cout << devStressTpdt << "  " << stress[iComp] << std::endl;
 
     // Temporary to get stresses and strains.
     // std::cout << "  " << stress[iComp] << "  " << totalStrain[iComp] << "  " << _visStrain << std:: endl;
   } // for
 
-  PetscLogFlops((3 + 2*numMaxwellModels) * tensorSize);
+  PetscLogFlops((7 + 2*numMaxwellModels) * tensorSize);
 } // _calcStressViscoelastic
 
 // ----------------------------------------------------------------------
@@ -418,7 +436,9 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsElastic(
 					    const double* properties,
 					    const int numProperties,
 					    const double* totalStrain,
-					    const int strainSize)
+					    const int strainSize,
+					    const double* initialState,
+					    const int initialStateSize)
 { // _calcElasticConstsElastic
   assert(0 != elasticConsts);
   assert(_GenMaxwellIsotropic3D::numElasticConsts == numElasticConsts);
@@ -426,6 +446,7 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsElastic(
   assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_GenMaxwellIsotropic3D::tensorSize == strainSize);
+  assert(_GenMaxwellIsotropic3D::tensorSize == initialStateSize);
  
   const double mu = properties[_GenMaxwellIsotropic3D::pidMuTot];
   const double lambda = properties[_GenMaxwellIsotropic3D::pidLambdaTot];
@@ -468,7 +489,9 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic(
 					    const double* properties,
 					    const int numProperties,
 					    const double* totalStrain,
-					    const int strainSize)
+					    const int strainSize,
+					    const double* initialState,
+					    const int initialStateSize)
 { // _calcElasticConstsViscoelastic
   assert(0 != elasticConsts);
   assert(_GenMaxwellIsotropic3D::numElasticConsts == numElasticConsts);
@@ -476,6 +499,7 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic(
   assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_GenMaxwellIsotropic3D::tensorSize == strainSize);
+  assert(_GenMaxwellIsotropic3D::tensorSize == initialStateSize);
  
   const double mu = properties[_GenMaxwellIsotropic3D::pidMuTot];
   const double lambda = properties[_GenMaxwellIsotropic3D::pidLambdaTot];
@@ -566,12 +590,15 @@ pylith::materials::GenMaxwellIsotropic3D::_updatePropertiesElastic(
 					    double* const properties,
 					    const int numProperties,
 					    const double* totalStrain,
-					    const int strainSize)
+					    const int strainSize,
+					    const double* initialState,
+					    const int initialStateSize)
 { // _updatePropertiesElastic
   assert(0 != properties);
   assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_GenMaxwellIsotropic3D::tensorSize == strainSize);
+  assert(_GenMaxwellIsotropic3D::tensorSize == initialStateSize);
 
   const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
 
@@ -610,12 +637,15 @@ pylith::materials::GenMaxwellIsotropic3D::_updatePropertiesViscoelastic(
 					    double* const properties,
 					    const int numProperties,
 					    const double* totalStrain,
-					    const int strainSize)
+					    const int strainSize,
+					    const double* initialState,
+					    const int initialStateSize)
 { // _updatePropertiesViscoelastic
   assert(0 != properties);
   assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_GenMaxwellIsotropic3D::tensorSize == strainSize);
+  assert(_GenMaxwellIsotropic3D::tensorSize == initialStateSize);
 
   const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
   const int tensorSize = _GenMaxwellIsotropic3D::tensorSize;
@@ -623,7 +653,9 @@ pylith::materials::GenMaxwellIsotropic3D::_updatePropertiesViscoelastic(
   pylith::materials::GenMaxwellIsotropic3D::_computeStateVars(properties,
 							      numProperties,
 							      totalStrain,
-							      strainSize);
+							      strainSize,
+							      initialState,
+							      initialStateSize);
 
   memcpy(&properties[_GenMaxwellIsotropic3D::pidVisStrain],
 	 &_visStrain[0], 

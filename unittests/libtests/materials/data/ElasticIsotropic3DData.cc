@@ -19,6 +19,8 @@ const int pylith::materials::ElasticIsotropic3DData::_dimension = 3;
 
 const int pylith::materials::ElasticIsotropic3DData::_numDBValues = 3;
 
+const int pylith::materials::ElasticIsotropic3DData::_numInitialStateValues = 6;
+
 const int pylith::materials::ElasticIsotropic3DData::_numParameters = 3;
 
 const int pylith::materials::ElasticIsotropic3DData::_numParamsQuadPt = 3;
@@ -39,6 +41,15 @@ const char* pylith::materials::ElasticIsotropic3DData::_dbValues[] = {
 "vp",
 };
 
+const char* pylith::materials::ElasticIsotropic3DData::_initialStateDBValues[] = {
+"stress_xx",
+"stress_yy",
+"stress_zz",
+"stress_xy",
+"stress_yz",
+"stress_xz",
+};
+
 const double pylith::materials::ElasticIsotropic3DData::_dbData[] = {
   2.50000000e+03,
   3.00000000e+03,
@@ -48,6 +59,21 @@ const double pylith::materials::ElasticIsotropic3DData::_dbData[] = {
   2.07846097e+03,
 };
 
+const double pylith::materials::ElasticIsotropic3DData::_initialStateDBData[] = {
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+};
+
 const double pylith::materials::ElasticIsotropic3DData::_parameterData[] = {
   2.50000000e+03,
   2.25000000e+10,
@@ -55,6 +81,21 @@ const double pylith::materials::ElasticIsotropic3DData::_parameterData[] = {
   2.00000000e+03,
   2.88000000e+09,
   2.88000000e+09,
+};
+
+const double pylith::materials::ElasticIsotropic3DData::_initialState[] = {
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
 };
 
 const double pylith::materials::ElasticIsotropic3DData::_density[] = {
@@ -141,14 +182,18 @@ pylith::materials::ElasticIsotropic3DData::ElasticIsotropic3DData(void)
 { // constructor
   dimension = _dimension;
   numDBValues = _numDBValues;
+  numInitialStateValues = _numInitialStateValues;
   numParameters = _numParameters;
   numParamsQuadPt = _numParamsQuadPt;
   numLocs = _numLocs;
   dtStableImplicit = _dtStableImplicit;
   numParamValues = const_cast<int*>(_numParamValues);
   dbValues = const_cast<char**>(_dbValues);
+  initialStateDBValues = const_cast<char**>(_initialStateDBValues);
   dbData = const_cast<double*>(_dbData);
+  initialStateDBData = const_cast<double*>(_initialStateDBData);
   parameterData = const_cast<double*>(_parameterData);
+  initialState = const_cast<double*>(_initialState);
   density = const_cast<double*>(_density);
   strain = const_cast<double*>(_strain);
   stress = const_cast<double*>(_stress);

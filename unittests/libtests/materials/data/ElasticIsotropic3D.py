@@ -38,7 +38,10 @@ class ElasticIsotropic3D(ElasticMaterialApp):
     self.dimension = 3
 
     self.numDBValues = 3
+    self.numInitialStateValues = 6
     self.dbValues = ["density", "vs", "vp"]
+    self.initialStateDBValues = ["stress_xx", "stress_yy", "stress_zz",
+		                 "stress_xy", "stress_yz", "stress_xz" ]
     self.numParameters = 3
     self.numParamValues = [1, 1, 1]
     self.parameterNames = ["density", "mu", "lambda"]
@@ -47,11 +50,13 @@ class ElasticIsotropic3D(ElasticMaterialApp):
     vsA = 3000.0
     vpA = vsA*3**0.5
     strainA = [1.1e-4, 2.2e-4, 3.3e-4, 4.4e-4, 5.5e-4, 6.6e-4]
+    initialStateA = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     
     densityB = 2000.0
     vsB = 1200.0
     vpB = vsB*3**0.5
     strainB = [1.2e-4, 2.3e-4, 3.4e-4, 4.5e-4, 5.6e-4, 6.7e-4]
+    initialStateB = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
     self.dbData = numpy.array([ [densityA, vsA, vpA],
                                 [densityB, vsB, vpB] ],
@@ -63,6 +68,11 @@ class ElasticIsotropic3D(ElasticMaterialApp):
     self.parameterData = numpy.array([ [densityA, muA, lambdaA],
                                        [densityB, muB, lambdaB] ],
                                      dtype=numpy.float64)
+
+    self.initialStateDBData = numpy.array([initialStateA, initialStateB],
+                                    dtype=numpy.float64)
+    self.initialState = numpy.array([initialStateA, initialStateB],
+                                    dtype=numpy.float64)
     
     self.numLocs = 2
     numElasticConsts = 21
@@ -71,18 +81,21 @@ class ElasticIsotropic3D(ElasticMaterialApp):
 
     self.strain = numpy.array([strainA, strainB],
                                dtype=numpy.float64)
+    
     self.stress = numpy.zeros( (self.numLocs, 6), dtype=numpy.float64)
     self.elasticConsts = numpy.zeros( (self.numLocs, numElasticConsts),
                                       dtype=numpy.float64)
 
     (self.elasticConsts[0,:], self.stress[0,:]) = \
-                              self._calcStress(strainA, densityA, muA, lambdaA)
+                              self._calcStress(strainA, densityA, muA, lambdaA,
+                                               initialStateA)
     (self.elasticConsts[1,:], self.stress[1,:]) = \
-                              self._calcStress(strainB, densityB, muB, lambdaB)
+                              self._calcStress(strainB, densityB, muB, lambdaB,
+                                               initialStateB)
     return
 
 
-  def _calcStress(self, strainV, densityV, muV, lambdaV):
+  def _calcStress(self, strainV, densityV, muV, lambdaV, initialStateV):
     """
     Compute stress and derivative of elasticity matrix.
     """
@@ -115,6 +128,7 @@ class ElasticIsotropic3D(ElasticMaterialApp):
                                  C1313], dtype=numpy.float64)
 
     strain = numpy.reshape(strainV, (6,1))
+    initialState = numpy.reshape(initialStateV, (6,1))
     elastic = numpy.array([ [C1111, C1122, C1133, C1112, C1123, C1113],
                             [C1122, C2222, C2233, C2212, C2223, C2213],
                             [C1133, C2233, C3333, C3312, C3323, C3313],
@@ -122,7 +136,7 @@ class ElasticIsotropic3D(ElasticMaterialApp):
                             [C1123, C2223, C3323, C1223, C2323, C2313],
                             [C1113, C2213, C3313, C1213, C2313, C1313] ],
                           dtype=numpy.float64)
-    stress = numpy.dot(elastic, strain)
+    stress = numpy.dot(elastic, strain) + initialState
     return (elasticConsts, numpy.ravel(stress))
   
 

@@ -19,6 +19,8 @@ const int pylith::materials::MaxwellIsotropic3DElasticData::_dimension = 3;
 
 const int pylith::materials::MaxwellIsotropic3DElasticData::_numDBValues = 4;
 
+const int pylith::materials::MaxwellIsotropic3DElasticData::_numInitialStateValues = 6;
+
 const int pylith::materials::MaxwellIsotropic3DElasticData::_numParameters = 6;
 
 const int pylith::materials::MaxwellIsotropic3DElasticData::_numParamsQuadPt = 16;
@@ -43,6 +45,15 @@ const char* pylith::materials::MaxwellIsotropic3DElasticData::_dbValues[] = {
 "viscosity",
 };
 
+const char* pylith::materials::MaxwellIsotropic3DElasticData::_initialStateDBValues[] = {
+"stress_xx",
+"stress_yy",
+"stress_zz",
+"stress_xy",
+"stress_yz",
+"stress_xy",
+};
+
 const double pylith::materials::MaxwellIsotropic3DElasticData::_dbData[] = {
   2.50000000e+03,
   3.00000000e+03,
@@ -52,6 +63,21 @@ const double pylith::materials::MaxwellIsotropic3DElasticData::_dbData[] = {
   1.20000000e+03,
   2.07846097e+03,
   1.00000000e+18,
+};
+
+const double pylith::materials::MaxwellIsotropic3DElasticData::_initialStateDBData[] = {
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
 };
 
 const double pylith::materials::MaxwellIsotropic3DElasticData::_parameterData[] = {
@@ -75,6 +101,21 @@ const double pylith::materials::MaxwellIsotropic3DElasticData::_parameterData[] 
   2.88000000e+09,
   2.88000000e+09,
   3.47222222e+08,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+};
+
+const double pylith::materials::MaxwellIsotropic3DElasticData::_initialState[] = {
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -173,14 +214,18 @@ pylith::materials::MaxwellIsotropic3DElasticData::MaxwellIsotropic3DElasticData(
 { // constructor
   dimension = _dimension;
   numDBValues = _numDBValues;
+  numInitialStateValues = _numInitialStateValues;
   numParameters = _numParameters;
   numParamsQuadPt = _numParamsQuadPt;
   numLocs = _numLocs;
   dtStableImplicit = _dtStableImplicit;
   numParamValues = const_cast<int*>(_numParamValues);
   dbValues = const_cast<char**>(_dbValues);
+  initialStateDBValues = const_cast<char**>(_initialStateDBValues);
   dbData = const_cast<double*>(_dbData);
+  initialStateDBData = const_cast<double*>(_initialStateDBData);
   parameterData = const_cast<double*>(_parameterData);
+  initialState = const_cast<double*>(_initialState);
   density = const_cast<double*>(_density);
   strain = const_cast<double*>(_strain);
   stress = const_cast<double*>(_stress);

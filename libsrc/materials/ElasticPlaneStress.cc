@@ -56,6 +56,11 @@ namespace pylith {
       const int didVs = 1;
       const int didVp = 2;
 
+      /// Initial state values expected in spatial database
+      const int numInitialStateDBValues = tensorSize;
+      const char* namesInitialStateDBValues[] = { "stress_xx", "stress_yy",
+						  "stress_xy" };
+
     } // _ElasticPlaneStress
   } // materials
 } // pylith
@@ -66,6 +71,7 @@ pylith::materials::ElasticPlaneStress::ElasticPlaneStress(void) :
   ElasticMaterial(_ElasticPlaneStress::tensorSize,
 		  _ElasticPlaneStress::numElasticConsts,
 		  _ElasticPlaneStress::namesDBValues,
+		  _ElasticPlaneStress::namesInitialStateDBValues,
 		  _ElasticPlaneStress::numDBValues,
 		  _ElasticPlaneStress::properties,
 		  _ElasticPlaneStress::numProperties)
@@ -136,6 +142,8 @@ pylith::materials::ElasticPlaneStress::_calcStress(double* const stress,
 						   const int numProperties,
 						   const double* totalStrain,
 						   const int strainSize,
+						   const double* initialState,
+						   const int initialStateSize,
 						   const bool computeStateVars)
 { // _calcStress
   assert(0 != stress);
@@ -144,6 +152,7 @@ pylith::materials::ElasticPlaneStress::_calcStress(double* const stress,
   assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_ElasticPlaneStress::tensorSize == strainSize);
+  assert(_ElasticPlaneStress::tensorSize == initialStateSize);
 
   const double density = properties[_ElasticPlaneStress::pidDensity];
   const double mu = properties[_ElasticPlaneStress::pidMu];
@@ -157,9 +166,9 @@ pylith::materials::ElasticPlaneStress::_calcStress(double* const stress,
   const double e22 = totalStrain[1];
   const double e12 = totalStrain[2];
 
-  stress[0] = (2.0*mu2*lambdamu * e11 + mu2*lambda * e22) / lambda2mu;
-  stress[1] = (mu2*lambda * e11 + 2.0*mu2*lambdamu * e22) / lambda2mu;
-  stress[2] = mu2 * e12;
+  stress[0] = (2.0*mu2*lambdamu * e11 + mu2*lambda * e22) / lambda2mu + initialState[0];
+  stress[1] = (mu2*lambda * e11 + 2.0*mu2*lambdamu * e22) / lambda2mu + initialState[1];
+  stress[2] = mu2 * e12 + initialState[2];
 
   PetscLogFlops(18);
 } // _calcStress
@@ -173,7 +182,9 @@ pylith::materials::ElasticPlaneStress::_calcElasticConsts(
 						  const double* properties,
 						  const int numProperties,
 						  const double* totalStrain,
-						  const int strainSize)
+						  const int strainSize,
+						  const double* initialState,
+						  const int initialStateSize)
 { // calcElasticConsts
   assert(0 != elasticConsts);
   assert(_ElasticPlaneStress::numElasticConsts == numElasticConsts);
@@ -181,6 +192,7 @@ pylith::materials::ElasticPlaneStress::_calcElasticConsts(
   assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_ElasticPlaneStress::tensorSize == strainSize);
+  assert(_ElasticPlaneStress::tensorSize == initialStateSize);
 
   const double density = properties[_ElasticPlaneStress::pidDensity];
   const double mu = properties[_ElasticPlaneStress::pidMu];
