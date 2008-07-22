@@ -120,9 +120,13 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdatePropertiesElastic(void)
   const int numParamsQuadPt = data.numParamsQuadPt;
 
   const int tensorSize = 6;
+  const int initialStateSize = 6;
   double_array totalStrain(tensorSize);
-  for (int i=0; i < tensorSize; ++i)
+  double_array initialState(initialStateSize);
+  for (int i=0; i < tensorSize; ++i) {
     totalStrain[i] = i;
+    initialState[i] = 0;
+  } // for
 
   const double meanStrain = 
     (totalStrain[0] + totalStrain[1] + totalStrain[2]) / 3.0;
@@ -149,7 +153,8 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdatePropertiesElastic(void)
   } // for
   
   material._updateProperties(&parameters[0], numParamsQuadPt, 
-			&totalStrain[0], tensorSize);
+			&totalStrain[0], tensorSize,
+			&initialState[0], initialStateSize);
 
   const double tolerance = 1.0e-06;
   for (int i=0; i < numParamsQuadPt; ++i)
@@ -205,13 +210,16 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdatePropertiesTimeDep(void)
   const double maxwelltime = viscosity / mu;
     
   const int tensorSize = 6;
+  const int initialStateSize = 6;
   double_array totalStrainTpdt(tensorSize);
   double_array totalStrainT(tensorSize);
   double_array visStrainT(tensorSize);
+  double_array initialState(initialStateSize);
   for (int i=0; i < tensorSize; ++i) {
     totalStrainTpdt[i] = i;
     totalStrainT[i] = totalStrainTpdt[i] / 2.0;
     visStrainT[i] = totalStrainTpdt[i] / 4.0;
+    initialState[i] = 0;
   } // for
 
   const double meanStrainTpdt = 
@@ -252,7 +260,8 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdatePropertiesTimeDep(void)
   } //for
   
   material._updateProperties(&parameters[0], numParamsQuadPt, 
-			&totalStrainTpdt[0], tensorSize);
+			&totalStrainTpdt[0], tensorSize,
+			&initialState[0], initialStateSize);
 
   const double tolerance = 1.0e-06;
   for (int i=0; i < numParamsQuadPt; ++i)

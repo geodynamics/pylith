@@ -19,6 +19,8 @@ const int pylith::materials::GenMaxwellIsotropic3DTimeDepData::_dimension = 3;
 
 const int pylith::materials::GenMaxwellIsotropic3DTimeDepData::_numDBValues = 9;
 
+const int pylith::materials::GenMaxwellIsotropic3DTimeDepData::_numInitialStateValues = 6;
+
 const int pylith::materials::GenMaxwellIsotropic3DTimeDepData::_numParameters = 7;
 
 const int pylith::materials::GenMaxwellIsotropic3DTimeDepData::_numParamsQuadPt = 33;
@@ -49,6 +51,15 @@ const char* pylith::materials::GenMaxwellIsotropic3DTimeDepData::_dbValues[] = {
 "viscosity_3",
 };
 
+const char* pylith::materials::GenMaxwellIsotropic3DTimeDepData::_initialStateDBValues[] = {
+"stress_xx",
+"stress_yy",
+"stress_zz",
+"stress_xy",
+"stress_yz",
+"stress_xy",
+};
+
 const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_dbData[] = {
   2.50000000e+03,
   3.00000000e+03,
@@ -68,6 +79,21 @@ const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_dbData[] = {
   1.00000000e+18,
   1.00000000e+19,
   1.00000000e+20,
+};
+
+const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_initialStateDBData[] = {
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
 };
 
 const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_parameterData[] = {
@@ -137,6 +163,21 @@ const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_parameterData
   4.50000000e-04,
   5.60000000e-04,
   6.70000000e-04,
+};
+
+const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_initialState[] = {
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
 };
 
 const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_density[] = {
@@ -223,14 +264,18 @@ pylith::materials::GenMaxwellIsotropic3DTimeDepData::GenMaxwellIsotropic3DTimeDe
 { // constructor
   dimension = _dimension;
   numDBValues = _numDBValues;
+  numInitialStateValues = _numInitialStateValues;
   numParameters = _numParameters;
   numParamsQuadPt = _numParamsQuadPt;
   numLocs = _numLocs;
   dtStableImplicit = _dtStableImplicit;
   numParamValues = const_cast<int*>(_numParamValues);
   dbValues = const_cast<char**>(_dbValues);
+  initialStateDBValues = const_cast<char**>(_initialStateDBValues);
   dbData = const_cast<double*>(_dbData);
+  initialStateDBData = const_cast<double*>(_initialStateDBData);
   parameterData = const_cast<double*>(_parameterData);
+  initialState = const_cast<double*>(_initialState);
   density = const_cast<double*>(_density);
   strain = const_cast<double*>(_strain);
   stress = const_cast<double*>(_stress);

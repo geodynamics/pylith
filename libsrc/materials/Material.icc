@@ -28,6 +28,13 @@ pylith::materials::Material::db(spatialdata::spatialdb::SpatialDB* value) {
   _db = value;
 }
 
+// Set database for initial state variables.
+inline
+void
+pylith::materials::Material::initialStateDB(spatialdata::spatialdb::SpatialDB* value) {
+  _initialStateDB = value;
+}
+
 // Set identifier of material.
 inline
 void

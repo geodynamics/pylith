@@ -83,6 +83,8 @@ protected :
    * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
+   * @param initialState Initial state values.
+   * @param initialStateSize Size of initial state array.
    * @param computeStateVars Flag indicating to compute updated state vars.
    */
   void _calcStress(double* const stress,
@@ -91,6 +93,8 @@ protected :
 		   const int numProperties,
 		   const double* totalStrain,
 		   const int strainSize,
+		   const double* initialState,
+		   const int initialStateSize,
 		   const bool computeStateVars);
 
   /** Compute derivatives of elasticity matrix from properties.
@@ -101,13 +105,17 @@ protected :
    * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
+   * @param initialState Initial state values.
+   * @param initialStateSize Size of initial state array.
    */
   void _calcElasticConsts(double* const elasticConsts,
 			  const int numElasticConsts,
 			  const double* properties,
 			  const int numProperties,
 			  const double* totalStrain,
-			  const int strainSize);
+			  const int strainSize,
+			  const double* initialState,
+			  const int initialStateSize);
 
   /** Get stable time step for implicit time integration.
    *

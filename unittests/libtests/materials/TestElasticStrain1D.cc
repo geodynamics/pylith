@@ -59,11 +59,16 @@ pylith::materials::TestElasticStrain1D::testUpdateProperties(void)
   } // for
     
   const int tensorSize = 9;
+  const int initialStateSize = 9;
+  double_array initialState(initialStateSize);
   double_array totalStrain(tensorSize);
-  for (int i=0; i < tensorSize; ++i)
+  for (int i=0; i < tensorSize; ++i) {
     totalStrain[i] = i;
+    initialState[i] = 0;
+  } // for
   
-  material._updateProperties(&parameters[0], numParams, &totalStrain[0], tensorSize);
+  material._updateProperties(&parameters[0], numParams, &totalStrain[0],
+		  tensorSize, &initialState[0], initialStateSize);
 
   const double tolerance = 1.0e-06;
   for (int i=0; i < numParams; ++i)

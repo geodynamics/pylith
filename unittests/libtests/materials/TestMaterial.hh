@@ -40,6 +40,7 @@ class pylith::materials::TestMaterial : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestMaterial );
 
   CPPUNIT_TEST( testDB );
+  CPPUNIT_TEST( testInitialStateDB );
   CPPUNIT_TEST( testID );
   CPPUNIT_TEST( testLabel );
   CPPUNIT_TEST( testTimeStep );
@@ -53,6 +54,9 @@ public :
 
   /// Test db()
   void testDB(void);
+
+  /// Test initialStateDB()
+  void testInitialStateDB(void);
 
   /// Test id()
   void testID(void);

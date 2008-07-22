@@ -53,6 +53,10 @@ namespace pylith {
       const int didDensity = 0;
       const int didVs = 1;
       const int didVp = 2;
+
+      /// Initial state values expected in spatial database.
+      const int numInitialStateDBValues = tensorSize;
+      const char* namesInitialStateDBValues[] = { "stress_xx" };
       
     } // _ElasticStrain1D
   } // materials
@@ -65,6 +69,7 @@ pylith::materials::ElasticStrain1D::ElasticStrain1D(void) :
   ElasticMaterial(_ElasticStrain1D::tensorSize,
 		  _ElasticStrain1D::numElasticConsts,
 		  _ElasticStrain1D::namesDBValues,
+		  _ElasticStrain1D::namesInitialStateDBValues,
 		  _ElasticStrain1D::numDBValues,
 		  _ElasticStrain1D::properties,
 		  _ElasticStrain1D::numProperties)
@@ -136,6 +141,8 @@ pylith::materials::ElasticStrain1D::_calcStress(
 				   const int numProperties,
 				   const double* totalStrain,
 				   const int strainSize,
+				   const double* initialState,
+				   const int initialStateSize,
 				   const bool computeStateVars)
 { // _calcStress
   assert(0 != stress);
@@ -144,15 +151,16 @@ pylith::materials::ElasticStrain1D::_calcStress(
   assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_ElasticStrain1D::tensorSize == strainSize);
+  assert(_ElasticStrain1D::tensorSize == initialStateSize);
 
   const double density = properties[_ElasticStrain1D::pidDensity];
   const double lambda = properties[_ElasticStrain1D::pidLambda];
   const double mu = properties[_ElasticStrain1D::pidMu];
 
   const double e11 = totalStrain[0];
-  stress[0] = (lambda + 2.0*mu) * e11;
+  stress[0] = (lambda + 2.0*mu) * e11 + initialState[0];
 
-  PetscLogFlops(3);
+  PetscLogFlops(4);
 } // _calcStress
 
 // ----------------------------------------------------------------------
@@ -164,7 +172,9 @@ pylith::materials::ElasticStrain1D::_calcElasticConsts(
 				   const double* properties,
 				   const int numProperties,
 				   const double* totalStrain,
-				   const int strainSize)
+				   const int strainSize,
+				   const double* initialState,
+				   const int initialStateSize)
 { // _calcElasticConsts
   assert(0 != elasticConsts);
   assert(_ElasticStrain1D::numElasticConsts == numElasticConsts);
@@ -172,6 +182,7 @@ pylith::materials::ElasticStrain1D::_calcElasticConsts(
   assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_ElasticStrain1D::tensorSize == strainSize);
+  assert(_ElasticStrain1D::tensorSize == initialStateSize);
  
   const double density = properties[_ElasticStrain1D::pidDensity];
   const double lambda = properties[_ElasticStrain1D::pidLambda];

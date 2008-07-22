@@ -44,6 +44,7 @@ public :
    * @param tensorSize Number of entries in stress tensor.
    * @param numElasticConsts Number of elastic constants.
    * @param dbValues Array of names of database values for material.
+   * @param InitialStateDBValues Names of initial state database values for material.
    * @param numDBValues Number of database values.
    * @param properties Array of physical property meta data.
    * @param numProperties Number of physical properties for material.
@@ -51,6 +52,7 @@ public :
   ElasticMaterial(const int tensorSize,
 		  const int numElasticConsts,
 		  const char** dbValues,
+		  const char** initialStateDBValues,
 		  const int numDBValues,
 		  const PropMetaData* properties,
 		  const int numProperties);
@@ -183,6 +185,8 @@ protected :
    * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
+   * @param initialState Initial state variable values.
+   * @param initialStateSize Size of initial state array.
    * @param computeStateVars Flag indicating to compute updated state vars.
    */
   virtual
@@ -192,6 +196,8 @@ protected :
 		   const int numProperties,
 		   const double* totalStrain,
 		   const int strainSize,
+		   const double* initialState,
+		   const int initialStateSize,
 		   const bool computeStateVars) = 0;
 
   /** Compute derivatives of elasticity matrix from properties.
@@ -202,6 +208,8 @@ protected :
    * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
+   * @param initialState Initial state variable values.
+   * @param initialStateSize Size of initial state array.
    */
   virtual
   void _calcElasticConsts(double* const elasticConsts,
@@ -209,7 +217,9 @@ protected :
 			  const double* properties,
 			  const int numProperties,
 			  const double* totalStrain,
-			  const int strainSize) = 0;
+			  const int strainSize,
+			  const double* initialState,
+			  const int initialStateSize) = 0;
 
   /** Get stable time step for implicit time integration.
    *
@@ -225,12 +235,16 @@ protected :
    * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
+   * @param initialState Initial state variable values.
+   * @param initialStateSize Size of initial state array.
    */
   virtual
   void _updateProperties(double* const properties,
 			 const int numProperties,
 			 const double* totalStrain,
-			 const int strainSize);
+			 const int strainSize,
+			 const double* initialState,
+			 const int initialStateSize);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -254,7 +268,6 @@ private :
 private :
 
   int _numQuadPts; ///< Number of quadrature points
-  int _tensorSize; ///< Number of entries in stress tensor.
   int _numElasticConsts; ///< Number of elastic constants.
 
   /** Properties at quadrature points for current cell.
@@ -263,6 +276,13 @@ private :
    * index = iQuadPt*iParam*iValue
    */
   double_array _propertiesCell;
+
+  /** Initial state values at quadrature points for current cell.
+   *
+   * size = numQuadPts*initialStateSize
+   * index = iQuadPt*iValue
+   */
+  double_array _initialStateCell;
 
   /** Density value at quadrature points for current cell.
    *

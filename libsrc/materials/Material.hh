@@ -69,12 +69,16 @@ public :
 
   /** Default constructor.
    *
+   * @param tensorSize Array of names of database values for material.
+   * @param initialStateDBValues Names of initial state database values for material.
    * @param dbValues Array of names of database values for material.
    * @param numDBValues Number of database values.
    * @param properties Array of physical property meta data.
    * @param numProperties Number of physical properties for material.
    */
-  Material(const char** dbValues,
+  Material(const int tensorSize,
+	   const char** dbValues,
+	   const char** initialStateDBValues,
 	   const int numDBValues,
 	   const PropMetaData* properties,
 	   const int numProperties);
@@ -94,6 +98,12 @@ public :
    * @param value Pointer to database.
    */
   void db(spatialdata::spatialdb::SpatialDB* value);
+
+  /** Set database for initial state variables.
+   *
+   * @param value Pointer to database.
+   */
+  void initialStateDB(spatialdata::spatialdb::SpatialDB* value);
 
   /** Set identifier of material.
    *
@@ -203,9 +213,14 @@ protected :
 
   /// Section containing physical properties of material.
   ALE::Obj<real_section_type> _properties;
+
+  /// Section containing the initial state variables for the material.
+  ALE::Obj<real_section_type> _initialState;
   
   int _totalPropsQuadPt; ///< Total # of property values per quad point.
   int _dimension; ///< Spatial dimension associated with material.
+  int _tensorSize; ///< Tensor size for material.
+  int _initialStateSize; ///< Initial state size for material.
   bool _needNewJacobian; ///< True if need to reform Jacobian, false otherwise.
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
@@ -213,6 +228,9 @@ private :
 
   /// Database of parameters for physical properties of material
   spatialdata::spatialdb::SpatialDB* _db;
+
+  /// Database of initial state values for the material
+  spatialdata::spatialdb::SpatialDB* _initialStateDB;
 
   int _id; ///< Material identifier
   std::string _label; ///< Label of material
@@ -222,6 +240,8 @@ private :
 
   const char** _dbValues; ///< Names of database values
   const int _numDBValues; ///< Number of database values
+
+  const char** _initialStateDBValues; ///< Names of initial state database values
 
 }; // class Material
 

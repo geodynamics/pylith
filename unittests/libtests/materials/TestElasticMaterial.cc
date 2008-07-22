@@ -143,6 +143,9 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
   const int strainSize = material._tensorSize;
   double_array strain(data.strain, numQuadPts*strainSize);
 
+  material._initialState = NULL;
+  material._initialStateSize = material._tensorSize;
+
   material.getPropertiesCell(*c_iter, numQuadPts);
   const double_array& stress = material.calcStress(strain);
 
@@ -214,6 +217,9 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
   const int strainSize = material._tensorSize;
   double_array strain(data.strain, numQuadPts*strainSize);
 
+  material._initialState = NULL;
+  material._initialStateSize = material._tensorSize;
+
   material.getPropertiesCell(*c_iter, numQuadPts);
   const double_array& elasticConsts = material.calcDerivElastic(strain);
 
@@ -276,6 +282,9 @@ pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
   const int numQuadPts = 2;
   const int numParams = data.numParameters;
   const int numParamsQuadPt = data.numParamsQuadPt;
+
+  material._initialState = NULL;
+  material._initialStateSize = material._tensorSize;
   
   Mesh::label_sequence::iterator c_iter = cells->begin();
 
@@ -349,7 +358,9 @@ pylith::materials::TestElasticMaterial::test_calcStress(void)
   double_array stress(stressSize);
   _matElastic->_calcStress(&stress[0], stress.size(),
 			 data->parameterData, data->numParamsQuadPt,
-			   data->strain, stressSize, computeStateVars);
+			   data->strain, stressSize, 
+			   data->initialState, data->numInitialStateValues,
+			   computeStateVars);
   
   const double* stressE = data->stress;
   CPPUNIT_ASSERT(0 != stressE);
@@ -393,7 +404,9 @@ pylith::materials::TestElasticMaterial::test_calcElasticConsts(void)
   double_array elasticConsts(numConsts);
   _matElastic->_calcElasticConsts(&elasticConsts[0], numConsts,
 				data->parameterData, data->numParamsQuadPt,
-				data->strain, strainSize);
+				data->strain, strainSize,
+				data->initialState,
+				data->numInitialStateValues);
 
   const double* elasticConstsE = data->elasticConsts;
   CPPUNIT_ASSERT(0 != elasticConstsE);

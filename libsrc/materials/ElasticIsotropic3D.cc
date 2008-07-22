@@ -57,6 +57,12 @@ namespace pylith {
       const int didVs = 1;
       const int didVp = 2;
 
+      /// Initial state values expected in spatial database
+      const int numInitialStateDBValues = tensorSize;
+      const char* namesInitialStateDBValues[] = { "stress_xx", "stress_yy",
+						  "stress_zz", "stress_xy",
+						  "stress_yz", "stress_xz" };
+
     } // _ElasticIsotropic3D
   } // materials
 } // pylith
@@ -68,6 +74,7 @@ pylith::materials::ElasticIsotropic3D::ElasticIsotropic3D(void) :
   ElasticMaterial(_ElasticIsotropic3D::tensorSize,
 		  _ElasticIsotropic3D::numElasticConsts,
 		  _ElasticIsotropic3D::namesDBValues,
+		  _ElasticIsotropic3D::namesInitialStateDBValues,
 		  _ElasticIsotropic3D::numDBValues,
 		  _ElasticIsotropic3D::properties,
 		  _ElasticIsotropic3D::numProperties)
@@ -140,6 +147,8 @@ pylith::materials::ElasticIsotropic3D::_calcStress(
 				  const int numProperties,
 				  const double* totalStrain,
 				  const int strainSize,
+				  const double* initialState,
+				  const int initialStateSize,
 				  const bool computeStateVars)
 { // _calcStress
   assert(0 != stress);
@@ -148,6 +157,7 @@ pylith::materials::ElasticIsotropic3D::_calcStress(
   assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_ElasticIsotropic3D::tensorSize == strainSize);
+  assert(_ElasticIsotropic3D::tensorSize == initialStateSize);
 
   const double density = properties[_ElasticIsotropic3D::pidDensity];
   const double mu = properties[_ElasticIsotropic3D::pidMu];
@@ -164,14 +174,14 @@ pylith::materials::ElasticIsotropic3D::_calcStress(
   
   const double s123 = lambda * (e11 + e22 + e33);
 
-  stress[0] = s123 + mu2*e11;
-  stress[1] = s123 + mu2*e22;
-  stress[2] = s123 + mu2*e33;
-  stress[3] = mu2 * e12;
-  stress[4] = mu2 * e23;
-  stress[5] = mu2 * e13;
+  stress[0] = s123 + mu2*e11 + initialState[0];
+  stress[1] = s123 + mu2*e22 + initialState[1];
+  stress[2] = s123 + mu2*e33 + initialState[2];
+  stress[3] = mu2 * e12 + initialState[3];
+  stress[4] = mu2 * e23 + initialState[4];
+  stress[5] = mu2 * e13 + initialState[5];
 
-  PetscLogFlops(13);
+  PetscLogFlops(19);
 } // _calcStress
 
 // ----------------------------------------------------------------------
@@ -183,7 +193,9 @@ pylith::materials::ElasticIsotropic3D::_calcElasticConsts(
 				  const double* properties,
 				  const int numProperties,
 				  const double*  totalStrain,
-				  const int strainSize)
+				  const int strainSize,
+				  const double* initialState,
+				  const int initialStateSize)
 { // _calcElasticConsts
   assert(0 != elasticConsts);
   assert(_ElasticIsotropic3D::numElasticConsts == numElasticConsts);
@@ -191,6 +203,7 @@ pylith::materials::ElasticIsotropic3D::_calcElasticConsts(
   assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_ElasticIsotropic3D::tensorSize == strainSize);
+  assert(_ElasticIsotropic3D::tensorSize == initialStateSize);
  
   const double density = properties[_ElasticIsotropic3D::pidDensity];
   const double mu = properties[_ElasticIsotropic3D::pidMu];

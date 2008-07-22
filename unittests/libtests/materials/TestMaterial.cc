@@ -51,6 +51,22 @@ pylith::materials::TestMaterial::testDB(void)
 } // testDB
 
 // ----------------------------------------------------------------------
+// Test initialStateDB()
+void
+pylith::materials::TestMaterial::testInitialStateDB(void)
+{ // testInitialStateDB
+  const char* label = "my_database";
+  spatialdata::spatialdb::SimpleDB initialStateDB;
+  initialStateDB.label(label);
+  
+  ElasticIsotropic3D material;
+  material.initialStateDB(&initialStateDB);
+  
+  CPPUNIT_ASSERT(0 != material._initialStateDB);
+  CPPUNIT_ASSERT(0 == strcmp(label, material._initialStateDB->label()));
+} // testInitialStateDB
+// ----------------------------------------------------------------------
+
 // Test id()
 void
 pylith::materials::TestMaterial::testID(void)

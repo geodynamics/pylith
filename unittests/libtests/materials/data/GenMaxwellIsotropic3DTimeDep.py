@@ -44,9 +44,12 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
 
     self.numMaxwellModels = 3
     self.numDBValues = 3+2*self.numMaxwellModels
+    self.numInitialStateValues = self.tensorSize
     self.dbValues = ["density", "vs", "vp" ,
                      "shear_ratio_1", "shear_ratio_2", "shear_ratio_3",
                      "viscosity_1", "viscosity_2", "viscosity_3"]
+    self.initialStateDBValues =  ["stress_xx", "stress_yy", "stress_zz",
+                                  "stress_xy", "stress_yz", "stress_xy"]
     self.numParameters = 7
     self.numParamValues = [1, 1, 1,
                            self.numMaxwellModels, self.numMaxwellModels,
@@ -72,6 +75,7 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     matDbA = elasDataA + shearRatioA + viscosityA
     muA = vsA*vsA*densityA
     lambdaA = vpA*vpA*densityA - 2.0*muA
+    initialStateA = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     
     densityB = 2000.0
     vsB = 1200.0
@@ -87,6 +91,7 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     matDbB = elasDataB + shearRatioB + viscosityB
     muB = vsB*vsB*densityB
     lambdaB = vpB*vpB*densityB - 2.0*muB
+    initialStateB = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
     matDb = matDbA + matDbB
     self.dbData = numpy.array(matDb, dtype=numpy.float64)
@@ -125,6 +130,10 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     self.density = numpy.array([densityA, densityB], dtype=numpy.float64)
 
     self.strain = numpy.array([strainA, strainB], dtype=numpy.float64)
+    self.initialStateDBData = numpy.array([initialStateA, initialStateB],
+                                          dtype=numpy.float64)
+    self.initialState = numpy.array([initialStateA, initialStateB],
+                                    dtype=numpy.float64)
     self.stress = numpy.zeros( (self.numLocs, 6), dtype=numpy.float64)
     self.elasticConsts = numpy.zeros( (self.numLocs, numElasticConsts),
                                       dtype=numpy.float64)
@@ -132,18 +141,21 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     (self.elasticConsts[0,:], self.stress[0,:]) = \
                               self._calcStress(strainA, muA, lambdaA,
                                                shearRatioA, maxwellTimeA,
-                                               strainTA, visStrainA)
+                                               strainTA, visStrainA,
+                                               initialStateA)
     (self.elasticConsts[1,:], self.stress[1,:]) = \
                               self._calcStress(strainB, muB, lambdaB,
                                                shearRatioB, maxwellTimeB,
-                                               strainTB, visStrainB)
+                                               strainTB, visStrainB,
+                                               initialStateB)
     self.dtStableImplicit = 0.1*min(min(maxwellTimeA),
                                     min(maxwellTimeB))
     return
 
 
   def _calcStress(self, strainV, muV, lambdaV,
-                  shearRatioV, maxwellTimeV, strainTV, visStrainV):
+                  shearRatioV, maxwellTimeV, strainTV, visStrainV,
+                  initialStateV):
     """
     Compute stress and derivative of elasticity matrix.
     This assumes behavior is always viscoelastic.
@@ -236,7 +248,8 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
                       dq[model] * deltaStrain
           devStressTpdt += shearRatioV[model] * visStrain
       devStressTpdt = elasFac * devStressTpdt
-      stressV[iComp] = diag[iComp]*meanStressTpdt + devStressTpdt
+      stressV[iComp] = diag[iComp]*meanStressTpdt + devStressTpdt + \
+                       initialStateV[iComp]
       
     stress = numpy.reshape(stressV, (6,1))
     return (elasticConsts, numpy.ravel(stress))

@@ -57,6 +57,11 @@ namespace pylith {
       const int didVs = 1;
       const int didVp = 2;
 
+      /// Initial state values expected in spatial database
+      const int numInitialStateDBValues = tensorSize;
+      const char* namesInitialStateDBValues[] = { "stress_xx", "stress_yy",
+						  "stress_xy" };
+
     } // _ElasticPlaneStrain
   } // materials
 } // pylith
@@ -68,6 +73,7 @@ pylith::materials::ElasticPlaneStrain::ElasticPlaneStrain(void) :
   ElasticMaterial(_ElasticPlaneStrain::tensorSize,
 		  _ElasticPlaneStrain::numElasticConsts,
 		  _ElasticPlaneStrain::namesDBValues,
+		  _ElasticPlaneStrain::namesInitialStateDBValues,
 		  _ElasticPlaneStrain::numDBValues,
 		  _ElasticPlaneStrain::properties,
 		  _ElasticPlaneStrain::numProperties)
@@ -140,6 +146,8 @@ pylith::materials::ElasticPlaneStrain::_calcStress(
 				  const int numProperties,
 				  const double* totalStrain,
 				  const int strainSize,
+				  const double* initialState,
+				  const int initialStateSize,
 				  const bool computeStateVars)
 { // _calcStress
   assert(0 != stress);
@@ -148,6 +156,7 @@ pylith::materials::ElasticPlaneStrain::_calcStress(
   assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_ElasticPlaneStrain::tensorSize == strainSize);
+  assert(_ElasticPlaneStrain::tensorSize == initialStateSize);
 
   const double density = properties[_ElasticPlaneStrain::pidDensity];
   const double mu = properties[_ElasticPlaneStrain::pidMu];
@@ -161,15 +170,15 @@ pylith::materials::ElasticPlaneStrain::_calcStress(
 
   const double s12 = lambda * (e11 + e22);
 
-  stress[0] = s12 + mu2*e11;
-  stress[1] = s12 + mu2*e22;
-  stress[2] = mu2 * e12;
+  stress[0] = s12 + mu2*e11 + initialState[0];
+  stress[1] = s12 + mu2*e22 + initialState[1];
+  stress[2] = mu2 * e12 + initialState[2];
 
-  PetscLogFlops(8);
+  PetscLogFlops(11);
 } // _calcStress
 
 // ----------------------------------------------------------------------
-// Compute density at location from properties.
+// Compute elastic constants at location from properties.
 void
 pylith::materials::ElasticPlaneStrain::_calcElasticConsts(
 					       double* const elasticConsts,
@@ -177,7 +186,9 @@ pylith::materials::ElasticPlaneStrain::_calcElasticConsts(
 					       const double* properties,
 					       const int numProperties,
 					       const double* totalStrain,
-					       const int strainSize)
+					       const int strainSize,
+					       const double* initialState,
+					       const int initialStateSize)
 { // calcElasticConsts
   assert(0 != elasticConsts);
   assert(_ElasticPlaneStrain::numElasticConsts == numElasticConsts);
@@ -185,6 +196,7 @@ pylith::materials::ElasticPlaneStrain::_calcElasticConsts(
   assert(_totalPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_ElasticPlaneStrain::tensorSize == strainSize);
+  assert(_ElasticPlaneStrain::tensorSize == initialStateSize);
 
   const double density = properties[_ElasticPlaneStrain::pidDensity];
   const double mu = properties[_ElasticPlaneStrain::pidMu];

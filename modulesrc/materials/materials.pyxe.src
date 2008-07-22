@@ -156,6 +156,40 @@ cdef class Material:
       Material_db_set(self.thisptr, ptrFromHandle(value))
 
 
+  property initialStateDB:
+    def __set__(self, value):
+      """
+      Set database for initial state variables.
+      """
+      # create shim for method 'initialStateDB'
+      #embed{ void Material_initialStateDB_set(void* objVptr, void* isVptr)
+      try {
+        assert(0 != objVptr);
+        spatialdata::spatialdb::SpatialDB* initialStateDB =
+          (spatialdata::spatialdb::SpatialDB*) isVptr;
+        ((pylith::materials::Material*) objVptr)->initialStateDB(initialStateDB);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "spatialdata_spatialdb_SpatialDB":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::spatialdb::SpatialDB'."
+      if None == value:
+        Material_initialStateDB_set(self.thisptr, NULL)
+      else:
+        Material_initialStateDB_set(self.thisptr, ptrFromHandle(value))
+
+
+
   property id:
     def __set__(self, value):
       """
