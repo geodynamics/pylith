@@ -51,9 +51,11 @@ class TestMaterial(unittest.TestCase):
     db = SimpleDB()
     db.label = "material properties"
     db.iohandler = iohandler
+    initialStateDB = None
     material.db = db
     material.label = "my material"
     material.id = 54
+    material.initialStateDB = initialStateDB
 
     from spatialdata.geocoords.CSCart import CSCart
     cs = CSCart()

@@ -51,17 +51,17 @@ class Material(Component):
     ## \b Properties
     ## @li \b id Material identifier (from mesh generator)
     ## @li \b name Name of material
-    ## @li \b useInitialStress Use initial stresses (true) or not (false).
+    ## @li \b useInitialState Use initial state (true) or not (false).
     ##
     ## \b Facilities
     ## @li \b db Database of material property parameters
     ## @li \b quadrature Quadrature object for numerical integration
-    ## @li \b initialStressDB Database for initial stresses.
+    ## @li \b initialStateDB Database for initial state.
 
     import pyre.inventory
 
-    useInitialStress = pyre.inventory.bool("use_initial_stress", default=False)
-    useInitialStress.meta['tip'] = "Use initial stresses for material."
+    useInitialState = pyre.inventory.bool("use_initial_state", default=False)
+    useInitialState.meta['tip'] = "Use initial state for material."
 
     id = pyre.inventory.int("id", default=0)
     id.meta['tip'] = "Material identifier (from mesh generator)."
@@ -74,10 +74,10 @@ class Material(Component):
                                  factory=SimpleDB)
     db.meta['tip'] = "Database of material property parameters."
 
-    initialStressDB = pyre.inventory.facility("initial_stress_db",
+    initialStateDB = pyre.inventory.facility("initial_state_db",
                                               family="spatial_database",
                                               factory=SimpleDB)
-    initialStressDB.meta['tip'] = "Database used for initial stresses."
+    initialStateDB.meta['tip'] = "Database used for initial state."
     
     from pylith.feassemble.quadrature.Quadrature import Quadrature
     quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
@@ -143,10 +143,10 @@ class Material(Component):
     assert(None != self.cppHandle)
     self.db.initialize()
     self.cppHandle.db = self.db.cppHandle
-    if self.initialStressDB != None:
-      self._info.log("Initializing initial stress database.")
-      self.initialStressDB.initialize()
-      self.cppHandle.initialStressDB = self.initialStressDB.cppHandle
+    if self.initialStateDB != None:
+      self._info.log("Initializing initial state database.")
+      self.initialStateDB.initialize()
+      self.cppHandle.initialStateDB = self.initialStateDB.cppHandle
     self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
                               self.quadrature.cppHandle)
 
@@ -172,10 +172,10 @@ class Material(Component):
     self.label = self.inventory.label
     self.db = self.inventory.db
     self.quadrature = self.inventory.quadrature
-    if self.inventory.useInitialStress:
-      self.initialStressDB = self.inventory.initialStressDB
+    if self.inventory.useInitialState:
+      self.initialStateDB = self.inventory.initialStateDB
     else:
-      self.initialStressDB = None
+      self.initialStateDB = None
     return
 
   
