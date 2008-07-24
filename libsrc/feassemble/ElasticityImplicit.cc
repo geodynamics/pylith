@@ -172,6 +172,23 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   const int cellVecSize = numBasis*spaceDim;
   double_array dispTBctpdtCell(cellVecSize);
 
+  // Set up gravity field database for querying
+  if (0 != _gravityField) {
+    _gravityField->open();
+    if (1 == spaceDim){
+      const char* queryNames[] = { "x"};
+      _gravityField->queryVals(queryNames, spaceDim);
+    } else if (2 == spaceDim){
+      const char* queryNames[] = { "x", "y"};
+      _gravityField->queryVals(queryNames, spaceDim);
+    } else if (3 == spaceDim){
+      const char* queryNames[] = { "x", "y", "z"};
+      _gravityField->queryVals(queryNames, spaceDim);
+    } else {
+      assert(0);
+    } // else
+  } // if
+
   // Allocate vector for total strain
   double_array totalStrain(numQuadPts*tensorSize);
   totalStrain = 0.0;
@@ -212,20 +229,6 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
     // Compute body force vector if gravity is being used.
     if (0 != _gravityField) {
-
-      // Make sure coordinate names exist in gravity field.
-      _gravityField->open();
-      if (1 == spaceDim){
-	const char* queryNames[] = { "x"};
-	_gravityField->queryVals(queryNames, spaceDim);
-      } else if (2 == spaceDim){
-	const char* queryNames[] = { "x", "y"};
-	_gravityField->queryVals(queryNames, spaceDim);
-      } else if (3 == spaceDim){
-        const char* queryNames[] = { "x", "y", "z"};
-	_gravityField->queryVals(queryNames, spaceDim);
-      } else
-	assert(0);
 
       // Get density at quadrature points for this cell
       const double_array& density = _material->calcDensity();
