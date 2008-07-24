@@ -1,0 +1,29 @@
+// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
+//
+// This spatial database specifies the initial stresses for the model
+// The stresses increase linearly with depth.
+//
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 6 // number of stress components
+  value-names =  stress_xx stress_yy stress_zz stress_xy stress_yz stress_xz // names of the stress components
+  value-units =  Pa Pa Pa Pa Pa Pa // units (conversions not supported)
+  num-locs = 4 // number of locations
+  data-dim = 1
+  space-dim = 3
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 3
+  }
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) z coordinate (m)
+// (4) density (kg/m^3)
+// (5) vs (m/s)
+// (6) vp (m/s)
+0.0  0.0 -3500.0 -3.064578125e+07 -3.064578125e+07 -8.58081875e+07 0.0 0.0 0.0
+0.0  0.0 -2500.0 -2.188984375e+07 -2.188984375e+07 -6.12915625e+07 0.0 0.0 0.0
+0.0  0.0 -1500.0 -1.313390625e+07 -1.313390625e+07 -3.67749375e+07 0.0 0.0 0.0
+0.0  0.0  -500.0 -4.37796875e+06 -4.37796875e+06 -1.22583125e+07 0.0 0.0 0.0
