@@ -357,6 +357,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
     if (!calcStress) {
       (*field)->updatePoint(*c_iter, &totalStrain[0]);
     } else {
+      _material->getPropertiesCell(*c_iter, numQuadPts);
       const double_array& stress = _material->calcStress(totalStrain);
       (*field)->updatePoint(*c_iter, &stress[0]);	
     } // else
@@ -415,6 +416,7 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
       (*field)->restrictPoint(*c_iter);
     memcpy(&totalStrain[0], strainVals, sizeof(double)*totalStrain.size());
 
+    _material->getPropertiesCell(*c_iter, numQuadPts);
     const double_array& stress = _material->calcStress(totalStrain);
     (*field)->updatePoint(*c_iter, &stress[0]);	
   } // for
