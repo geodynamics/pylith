@@ -139,7 +139,7 @@ class Euler(Application):
     self.numPoints = 0
     self.pointsUTM = []
     self.normals = []
-    self.eulerPole = numpy.array([0.0, 0.0, 0.0], dtype=float)
+    self.eulerPole = numpy.array([0.0, 0.0, 0.0], dtype=float64)
     # Note that we use a mean radius since we are doing rotations on a
     # spherical Earth.
     self.earthRad = 6372795.477598
@@ -199,11 +199,11 @@ class Euler(Application):
     self.eulerPole[2] = self.earthRad * rot * slat
 
     self.upVec = numpy.array([float(self.upDir[0]), float(self.upDir[1]),
-                              float(self.upDir[2])], dtype=float)
+                              float(self.upDir[2])], dtype=float64)
 
     self.normalVec = numpy.array([float(self.normalDir[0]),
                                   float(self.normalDir[1]),
-                                  float(self.normalDir[2])], dtype=float)
+                                  float(self.normalDir[2])], dtype=float64)
 
     self.dipCutoffProj = abs(math.sin(self.dipCutoff.value))
     
@@ -244,12 +244,14 @@ class Euler(Application):
     self.destCoordSys.initialize()
 
     from spatialdata.geocoords.Converter import convert
-    pointsLL = numpy.array(self.pointsUTM, dtype=float).reshape(self.numPoints,
-                                                                self.spaceDim)
+    pointsLL = numpy.array(self.pointsUTM,
+                           dtype=float64).reshape(self.numPoints,
+                                                  self.spaceDim)
     convert(pointsLL, self.destCoordSys, self.srcCoordSys)
 
-    normalsArr = numpy.array(self.normals, dtype=float).reshape(self.numPoints,
-                                                                self.spaceDim)
+    normalsArr = numpy.array(self.normals,
+                             dtype=float64).reshape(self.numPoints,
+                                                    self.spaceDim)
     
     iCount = 0
     velocity = [0.0, 0.0, 0.0]
@@ -355,13 +357,13 @@ class Euler(Application):
     pX = clat * clon
     pY = clat * slon
     pZ = slat
-    pointPole = numpy.array([pX, pY, pZ], dtype=float)
+    pointPole = numpy.array([pX, pY, pZ], dtype=float64)
     velGlobal = numpy.cross(self.eulerPole, pointPole)
     rotMatrix = self._makeRot(latPoint, lonPoint)
     velNED = numpy.dot(rotMatrix, velGlobal)
     # NOTE:  I should rearrange the rotation matrix so this transformation
     # isn't necessary.
-    velENU = numpy.array([velNED[1], velNED[0], -velNED[2]], dtype=float)
+    velENU = numpy.array([velNED[1], velNED[0], -velNED[2]], dtype=float64)
     return velENU
     
       
@@ -376,7 +378,7 @@ class Euler(Application):
     vec1 = [ -slat * clon, -slat * slon,  clat]
     vec2 = [        -slon,         clon,   0.0]
     vec3 = [ -clat * clon, -clat * slon, -slat]
-    rotMatrix = numpy.array([vec1, vec2, vec3], dtype=float)
+    rotMatrix = numpy.array([vec1, vec2, vec3], dtype=float64)
     return rotMatrix
 
 
