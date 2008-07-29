@@ -163,11 +163,11 @@ class Transform(Application):
     self.defaultValues = self.inventory.defaultValues
 
     self.upVec = numpy.array([float(self.upDir[0]), float(self.upDir[1]),
-                              float(self.upDir[2])], dtype=float)
+                              float(self.upDir[2])], dtype=float64)
 
     self.normalVec = numpy.array([float(self.normalDir[0]),
                                   float(self.normalDir[1]),
-                                  float(self.normalDir[2])], dtype=float)
+                                  float(self.normalDir[2])], dtype=float64)
 
     self.dipCutoffProj = abs(math.sin(self.dipCutoff.value))
 
@@ -207,11 +207,12 @@ class Transform(Application):
     spatial DB.
     """
 
-    normalsArr = numpy.array(self.normals, dtype=float).reshape(self.numPoints,
-                                                                self.spaceDim)
+    normalsArr = numpy.array(self.normals,
+                             dtype=float64).reshape(self.numPoints,
+                                                    self.spaceDim)
 
-    points = numpy.array(self.pointsUTM, dtype=float).reshape(self.numPoints,
-                                                              self.spaceDim)
+    points = numpy.array(self.pointsUTM, dtype=float64).reshape(self.numPoints,
+                                                                self.spaceDim)
     
     iCount = 0
     velocity = [0.0, 0.0, 0.0]
@@ -311,23 +312,25 @@ class Transform(Application):
     ts = self.segInfo[iSeg,7]
     dx = sx2 - sx1
     dy = sy2 - sy1
-    asVec = numpy.array([dx, dy, 0.0], dtype=float)
+    asVec = numpy.array([dx, dy, 0.0], dtype=float64)
     mag = math.sqrt(numpy.dot(asVec,asVec))
     asVec /= mag
-    testVec = numpy.cross(asVec, self.normalVec)
-    if testVec[2] > 0.0:
-      asVec *= -1.0
     horPerp = numpy.cross(self.upVec, asVec)
     mag = math.sqrt(numpy.dot(horPerp,horPerp))
     horPerp /= mag
+    if dip > 90.0:
+      horPerp *= -1.0
+    testVec = numpy.cross(asVec, self.normalVec)
+    if testVec[2] > 0.0:
+      asVec *= -1.0
     dipCos = math.sin(math.radians(dip))
     if math.fabs(dipCos) != 1.0:
       r = math.sqrt(1.0/(1.0-dipCos*dipCos))
-      udVec = numpy.array([horPerp[0]/r, horPerp[1]/r, dipCos], dtype=float)
+      udVec = numpy.array([horPerp[0]/r, horPerp[1]/r, dipCos], dtype=float64)
     else:
-      udVec = numpy.array([0.0, 0.0, dipCos], dtype=float)
+      udVec = numpy.array([0.0, 0.0, dipCos], dtype=float64)
     normVec = numpy.cross(asVec, udVec)
-    slipVec = numpy.array([ss, ds,ts], dtype=float)
+    slipVec = numpy.array([ss, ds,ts], dtype=float64)
     rot1 = numpy.vstack((asVec, udVec, normVec))
     rot = rot1.transpose()
     velocity = numpy.dot(rot,slipVec)
@@ -426,7 +429,7 @@ class Transform(Application):
           self.numSegs += 1
         iCount += 1
     f.close() 
-    self.segInfo = numpy.array(segtmp, dtype=float).reshape(self.numSegs, 8)
+    self.segInfo = numpy.array(segtmp, dtype=float64).reshape(self.numSegs, 8)
     return
   
 # ----------------------------------------------------------------------
