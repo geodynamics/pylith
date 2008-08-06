@@ -49,13 +49,13 @@ class ElasticStrain1D(ElasticMaterialApp):
     vsA = 3000.0
     vpA = vsA*3**0.5
     strainA = [1.1e-4]
-    initialStateA = [0.0]
+    initialStateA = [1.2e4]
     
     densityB = 2000.0
     vsB = 1200.0
     vpB = vsB*3**0.5
     strainB = [1.2e-4]
-    initialStateB = [0.0]
+    initialStateB = [2.1e4]
 
     self.dbData = numpy.array([ [densityA, vsA, vpA],
                                 [densityB, vsB, vpB] ],

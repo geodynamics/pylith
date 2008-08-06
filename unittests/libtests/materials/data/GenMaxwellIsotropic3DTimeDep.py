@@ -75,7 +75,7 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     matDbA = elasDataA + shearRatioA + viscosityA
     muA = vsA*vsA*densityA
     lambdaA = vpA*vpA*densityA - 2.0*muA
-    initialStateA = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    initialStateA = [1.2e4, 2.3e4, 3.4e4, 4.5e4, 5.6e4, 6.7e4]
     
     densityB = 2000.0
     vsB = 1200.0
@@ -91,7 +91,7 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     matDbB = elasDataB + shearRatioB + viscosityB
     muB = vsB*vsB*densityB
     lambdaB = vpB*vpB*densityB - 2.0*muB
-    initialStateB = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    initialStateB = [2.1e4, 3.2e4, 4.3e4, 5.4e4, 6.5e4, 7.6e4]
 
     matDb = matDbA + matDbB
     self.dbData = numpy.array(matDb, dtype=numpy.float64)

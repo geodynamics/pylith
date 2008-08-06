@@ -125,7 +125,7 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdatePropertiesElastic(void)
   double_array initialState(initialStateSize);
   for (int i=0; i < tensorSize; ++i) {
     totalStrain[i] = i;
-    initialState[i] = 0;
+    initialState[i] = 0.1*i;
   } // for
 
   const double meanStrain = 
@@ -219,7 +219,7 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdatePropertiesTimeDep(void)
     totalStrainTpdt[i] = i;
     totalStrainT[i] = totalStrainTpdt[i] / 2.0;
     visStrainT[i] = totalStrainTpdt[i] / 4.0;
-    initialState[i] = 0;
+    initialState[i] = 0.1*i;
   } // for
 
   const double meanStrainTpdt = 

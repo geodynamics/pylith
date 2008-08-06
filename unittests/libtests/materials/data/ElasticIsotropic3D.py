@@ -50,13 +50,13 @@ class ElasticIsotropic3D(ElasticMaterialApp):
     vsA = 3000.0
     vpA = vsA*3**0.5
     strainA = [1.1e-4, 2.2e-4, 3.3e-4, 4.4e-4, 5.5e-4, 6.6e-4]
-    initialStateA = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    initialStateA = [1.2e4, 2.3e4, 3.4e4, 4.5e4, 5.6e4, 6.7e4]
     
     densityB = 2000.0
     vsB = 1200.0
     vpB = vsB*3**0.5
     strainB = [1.2e-4, 2.3e-4, 3.4e-4, 4.5e-4, 5.6e-4, 6.7e-4]
-    initialStateB = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    initialStateB = [2.1e4, 3.2e4, 4.3e4, 5.4e4, 6.5e4, 7.6e4]
 
     self.dbData = numpy.array([ [densityA, vsA, vpA],
                                 [densityB, vsB, vpB] ],

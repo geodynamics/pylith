@@ -55,8 +55,8 @@ const double pylith::materials::ElasticStress1DData::_dbData[] = {
 };
 
 const double pylith::materials::ElasticStress1DData::_initialStateDBData[] = {
-  0.00000000e+00,
-  0.00000000e+00,
+  1.20000000e+04,
+  2.10000000e+04,
 };
 
 const double pylith::materials::ElasticStress1DData::_parameterData[] = {
@@ -69,8 +69,8 @@ const double pylith::materials::ElasticStress1DData::_parameterData[] = {
 };
 
 const double pylith::materials::ElasticStress1DData::_initialState[] = {
-  0.00000000e+00,
-  0.00000000e+00,
+  1.20000000e+04,
+  2.10000000e+04,
 };
 
 const double pylith::materials::ElasticStress1DData::_density[] = {
@@ -84,8 +84,8 @@ const double pylith::materials::ElasticStress1DData::_strain[] = {
 };
 
 const double pylith::materials::ElasticStress1DData::_stress[] = {
-  6.18750000e+06,
-  8.64000000e+05,
+  6.19950000e+06,
+  8.85000000e+05,
 };
 
 const double pylith::materials::ElasticStress1DData::_elasticConsts[] = {

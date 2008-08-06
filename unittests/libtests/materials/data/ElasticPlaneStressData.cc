@@ -57,12 +57,12 @@ const double pylith::materials::ElasticPlaneStressData::_dbData[] = {
 };
 
 const double pylith::materials::ElasticPlaneStressData::_initialStateDBData[] = {
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
+  1.20000000e+04,
+  2.30000000e+04,
+  3.20000000e+04,
+  2.10000000e+04,
+  3.20000000e+04,
+  4.30000000e+04,
 };
 
 const double pylith::materials::ElasticPlaneStressData::_parameterData[] = {
@@ -75,12 +75,12 @@ const double pylith::materials::ElasticPlaneStressData::_parameterData[] = {
 };
 
 const double pylith::materials::ElasticPlaneStressData::_initialState[] = {
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
+  1.20000000e+04,
+  2.30000000e+04,
+  3.20000000e+04,
+  2.10000000e+04,
+  3.20000000e+04,
+  4.30000000e+04,
 };
 
 const double pylith::materials::ElasticPlaneStressData::_density[] = {
@@ -98,12 +98,12 @@ const double pylith::materials::ElasticPlaneStressData::_strain[] = {
 };
 
 const double pylith::materials::ElasticPlaneStressData::_stress[] = {
-  9.90000000e+06,
-  1.48500000e+07,
-  1.48500000e+07,
-  1.36320000e+06,
-  1.99680000e+06,
-  1.95840000e+06,
+  9.91200000e+06,
+  1.48730000e+07,
+  1.48820000e+07,
+  1.38420000e+06,
+  2.02880000e+06,
+  2.00140000e+06,
 };
 
 const double pylith::materials::ElasticPlaneStressData::_elasticConsts[] = {
