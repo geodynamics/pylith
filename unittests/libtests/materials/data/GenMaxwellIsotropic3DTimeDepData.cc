@@ -82,18 +82,18 @@ const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_dbData[] = {
 };
 
 const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_initialStateDBData[] = {
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
+  1.20000000e+04,
+  2.30000000e+04,
+  3.40000000e+04,
+  4.50000000e+04,
+  5.60000000e+04,
+  6.70000000e+04,
+  2.10000000e+04,
+  3.20000000e+04,
+  4.30000000e+04,
+  5.40000000e+04,
+  6.50000000e+04,
+  7.60000000e+04,
 };
 
 const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_parameterData[] = {
@@ -166,18 +166,18 @@ const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_parameterData
 };
 
 const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_initialState[] = {
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
+  1.20000000e+04,
+  2.30000000e+04,
+  3.40000000e+04,
+  4.50000000e+04,
+  5.60000000e+04,
+  6.70000000e+04,
+  2.10000000e+04,
+  3.20000000e+04,
+  4.30000000e+04,
+  5.40000000e+04,
+  6.50000000e+04,
+  7.60000000e+04,
 };
 
 const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_density[] = {
@@ -201,18 +201,18 @@ const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_strain[] = {
 };
 
 const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_stress[] = {
-  1.98078741e+07,
-  2.47500000e+07,
-  2.96921259e+07,
-  1.97685037e+07,
-  2.47106296e+07,
-  2.96527555e+07,
-  2.67841620e+06,
-  3.31200000e+06,
-  3.94558380e+06,
-  2.59193371e+06,
-  3.22551751e+06,
-  3.85910131e+06,
+  1.98198741e+07,
+  2.47730000e+07,
+  2.97261259e+07,
+  1.98135037e+07,
+  2.47666296e+07,
+  2.97197555e+07,
+  2.69941620e+06,
+  3.34400000e+06,
+  3.98858380e+06,
+  2.64593371e+06,
+  3.29051751e+06,
+  3.93510131e+06,
 };
 
 const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_elasticConsts[] = {

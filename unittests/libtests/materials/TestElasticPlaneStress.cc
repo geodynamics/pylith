@@ -64,7 +64,7 @@ pylith::materials::TestElasticPlaneStress::testUpdateProperties(void)
   double_array initialState(initialStateSize);
   for (int i=0; i < tensorSize; ++i) {
     totalStrain[i] = i;
-    initialState[i] = 0;
+    initialState[i] = 0.1*i;
   } // for
   
   material._updateProperties(&parameters[0], numParams, &totalStrain[0],

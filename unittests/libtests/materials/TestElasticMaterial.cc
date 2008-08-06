@@ -143,8 +143,14 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
   const int strainSize = material._tensorSize;
   double_array strain(data.strain, numQuadPts*strainSize);
 
-  material._initialState = NULL;
-  material._initialStateSize = material._tensorSize;
+  const int initialStateSize = material._tensorSize;
+  material._initialStateSize = initialStateSize;
+  const int initialStateFiberDim = numQuadPts * initialStateSize;
+  material._initialState = new real_section_type(mesh->comm(), mesh->debug());
+  material._initialState->setChart(mesh->getSieve()->getChart());
+  material._initialState->setFiberDimension(cells, initialStateFiberDim);
+  mesh->allocate(material._initialState);
+  material._initialState->updatePoint(*c_iter, data.initialState);
 
   material.getPropertiesCell(*c_iter, numQuadPts);
   const double_array& stress = material.calcStress(strain);
@@ -217,8 +223,13 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
   const int strainSize = material._tensorSize;
   double_array strain(data.strain, numQuadPts*strainSize);
 
-  material._initialState = NULL;
-  material._initialStateSize = material._tensorSize;
+  const int initialStateSize = material._tensorSize;
+  material._initialStateSize = initialStateSize;
+  const int initialStateFiberDim = numQuadPts * initialStateSize;
+  material._initialState = new real_section_type(mesh->comm(), mesh->debug());
+  material._initialState->setChart(mesh->getSieve()->getChart());
+  material._initialState->setFiberDimension(cells, initialStateFiberDim);
+  mesh->allocate(material._initialState);
 
   material.getPropertiesCell(*c_iter, numQuadPts);
   const double_array& elasticConsts = material.calcDerivElastic(strain);
@@ -283,8 +294,13 @@ pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
   const int numParams = data.numParameters;
   const int numParamsQuadPt = data.numParamsQuadPt;
 
-  material._initialState = NULL;
-  material._initialStateSize = material._tensorSize;
+  const int initialStateSize = material._tensorSize;
+  material._initialStateSize = initialStateSize;
+  const int initialStateFiberDim = numQuadPts * initialStateSize;
+  material._initialState = new real_section_type(mesh->comm(), mesh->debug());
+  material._initialState->setChart(mesh->getSieve()->getChart());
+  material._initialState->setFiberDimension(cells, initialStateFiberDim);
+  mesh->allocate(material._initialState);
   
   Mesh::label_sequence::iterator c_iter = cells->begin();
 
