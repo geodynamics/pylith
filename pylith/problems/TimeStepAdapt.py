@@ -58,7 +58,7 @@ class TimeStepAdapt(TimeStep):
 
     maxDt = pyre.inventory.dimensional("max_dt", default=1.0*second,
                                     validator=pyre.inventory.greater(0.0*second))
-    maxDt.meta['tip'] = "Maximum time step."
+    maxDt.meta['tip'] = "Maximum time step permitted."
 
     adaptSkip = pyre.inventory.int("adapt_skip", default=10,
                                    validator=pyre.inventory.greaterEqual(0))
