@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -192,7 +192,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-1.2.0-linux-i686.tar.gz
+$ tar -xzf pylith-1.3.0-linux-i686.tgz
 \end_layout
 
 \end_deeper
@@ -251,7 +251,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-1.2.0-darwin-powerpc.tar.gz
+$ tar -xzf pylith-1.3.0-darwin-powerpc.tgz
 \end_layout
 
 \end_deeper
@@ -289,7 +289,7 @@ Installation from Source
 \end_layout
 
 \begin_layout Standard
-PyLith 1.2 depends on a number of other packages (see Figure 
+PyLith depends on a number of other packages (see Figure 
 \begin_inset LatexCommand ref
 reference "fig:pylith-dependencies"
 
@@ -2234,7 +2234,7 @@ tar
 \end_layout
 
 \begin_layout LyX-Code
-$ tar xzf spatialdata.tgz
+$ tar xzf spatialdata-0.4.tgz
 \end_layout
 
 \begin_layout Standard
@@ -2242,7 +2242,7 @@ If you don't have GNU Tar, try the following command instead:
 \end_layout
 
 \begin_layout LyX-Code
-$ gunzip -c spatialdata.tgz | tar xf -
+$ gunzip -c spatialdata-0.4.tgz | tar xf -
 \end_layout
 
 \begin_layout Subsubsection
@@ -2429,7 +2429,7 @@ tar
 \end_layout
 
 \begin_layout LyX-Code
-$ tar xzf pylith-1.2.0.tar.gz
+$ tar xzf pylith-1.3.0.tgz
 \end_layout
 
 \begin_layout Standard
@@ -2437,7 +2437,7 @@ If you don't have GNU Tar, try the following command instead:
 \end_layout
 
 \begin_layout LyX-Code
-$ gunzip -c pylith-1.2.0.tar.gz | tar xf -
+$ gunzip -c pylith-1.3.0.tgz | tar xf -
 \end_layout
 
 \begin_layout Subsubsection
@@ -2501,7 +2501,7 @@ cd
 \newline
 
 \newline
-$ cd pylith-1.2.0
+$ cd pylith-1.3.0
 \end_layout
 
 \begin_layout Enumerate
@@ -2709,7 +2709,7 @@ configure
 \end_layout
 
 \begin_layout Standard
-PyLith 1.2 requires Pythia v0.8.1.6 or later, which 
+PyLith requires Pythia v0.8.1.6 or later, which 
 \family typewriter
 configure
 \family default

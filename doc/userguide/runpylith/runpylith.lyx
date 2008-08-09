@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1723,6 +1723,227 @@ For materials, the ``label'' is a string used only for error messages.
  with a specific fault and quadrature rule.
  Because we use the fault ``id'' to tag the cohesive cells in the mesh,
  it must be unique among the faults as well as the materials.
+\end_layout
+
+\begin_layout Section
+Time Stepping
+\end_layout
+
+\begin_layout Standard
+PyLith provides three choices for controlling the time step in time-dependent
+ simulations.
+ These include (1) a uniform, user-specified time step (which is the default),
+ (2) nonuniform, user-specified time steps, and (3) nonuniform, automatically
+ calculated time steps.
+ The procedure for automatically selecting time steps requires that the
+ material models provide a reasonable estimate of the time step for stable
+ time integration.
+ In general, quasi-static simulations should use automatically calculated
+ time steps and dynamic simulations should use a uniform, user-specified
+ time step.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\color red
+Warning:
+\series default
+\color none
+ 
+\color inherit
+Changing the time step requires recomputing the Jacobian of the system,
+ which can greatly increase the runtime if the time step size frequently.
+\end_layout
+
+\begin_layout Subsection
+Uniform, User-Specified Time Step
+\end_layout
+
+\begin_layout Standard
+With a uniform, user-specified time step, the user selects the time step
+ that is used over the entire duration of the simulation.
+ This value is used whether or not it yields a stable solution, so users
+ should be careful when selecting the time step value.
+ The properties for the uniform, user-specified time step are:
+\end_layout
+
+\begin_layout Description
+total_time Time duration for simulation.
+\end_layout
+
+\begin_layout Description
+dt Time step for simulation.
+\end_layout
+
+\begin_layout Standard
+An example of setting a uniform, user-specified time step in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation]
+\end_layout
+
+\begin_layout LyX-Code
+time_step = pylith.problems.TimeStepUniform ; Default value
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.time_step]
+\end_layout
+
+\begin_layout LyX-Code
+total_time = 1000.0*year
+\end_layout
+
+\begin_layout LyX-Code
+dt = 0.5*year
+\end_layout
+
+\begin_layout Subsection
+Nonuniform, User-Specified Time Step
+\end_layout
+
+\begin_layout Standard
+The nonuniform, user-specified time step implementation allows the user
+ to specify the time steps in an ASCII file (see Section ?? for the format
+ specification of the time step file).
+ If the total duration exceeds the time associated with the time steps,
+ then a flag determines whether to cycle through the time steps or to use
+ the last specified time step for the time remaining.
+ The properties for the nonuniform, user-specified time step are:
+\end_layout
+
+\begin_layout Description
+total_time Time duration for simulation.
+\end_layout
+
+\begin_layout Description
+filename Name of file with time step sizes.
+\end_layout
+
+\begin_layout Description
+loop_steps If true, cycle through time steps, otherwise keep using last
+ time step size for any time remaining
+\end_layout
+
+\begin_layout Standard
+An example of setting the properties for nonuniform, user-specified time
+ steps in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation]
+\end_layout
+
+\begin_layout LyX-Code
+time_step = pylith.problems.TimeStepUser ; Change the time step algorithm
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.time_step]
+\end_layout
+
+\begin_layout LyX-Code
+total_time = 1000.0*year
+\end_layout
+
+\begin_layout LyX-Code
+filename = timesteps.txt
+\end_layout
+
+\begin_layout LyX-Code
+loop_steps = false ; Default value
+\end_layout
+
+\begin_layout Subsection
+Nonuniform, Automatic Time Step
+\end_layout
+
+\begin_layout Standard
+This time step implementation automatically calculates a stable time step
+ based on the constitutive model and rate of deformation.
+ As a result, this choice for choosing the time step relies on accurate
+ calculation of a stable time step within each finite-element cell by the
+ constitutive models.
+ In order to provide some control over the time step selection, the user
+ can control the frequency that a new time step is calculated, the time
+ step to use relative to the value determined by the constitutive models,
+ and a maximum value for the time step.
+ The properties for controlling the automatic time step selection are:
+\end_layout
+
+\begin_layout Description
+total_time Time duration for simulation.
+\end_layout
+
+\begin_layout Description
+max_dt Maximum time step permitted.
+\end_layout
+
+\begin_layout Description
+adapt_skip Number of time steps to skip between calculating new stable time
+ step.
+\end_layout
+
+\begin_layout Description
+stability_factor Safety factor for stable time step.
+\end_layout
+
+\begin_layout Standard
+An example of setting the properties for the automatic time step in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation]
+\end_layout
+
+\begin_layout LyX-Code
+time_step = pylith.problems.TimeStepAdapt ; Change the time step algorithm
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.time_step]
+\end_layout
+
+\begin_layout LyX-Code
+total_time = 1000.0*year
+\end_layout
+
+\begin_layout LyX-Code
+max_dt = 10.0*year
+\end_layout
+
+\begin_layout LyX-Code
+adapt_skip = 10 ; Default value
+\end_layout
+
+\begin_layout LyX-Code
+stability_factor = 1.2 ; Default value
 \end_layout
 
 \begin_layout Section
