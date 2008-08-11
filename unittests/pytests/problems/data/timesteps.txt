@@ -1,11 +1,11 @@
-# File with time step sizes.
+// File with time step sizes.
 
-# Units of values
+// Units of values
 units = year
 
-# Values
-1.0 # Comment
+// Values
+1.0 // Comment
 2.0
 3.0
 
-# Another comment
+// Another comment

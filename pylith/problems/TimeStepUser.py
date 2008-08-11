@@ -18,7 +18,7 @@
 ##
 ## Format of file with user specified time steps:
 ##
-## Notes: Whitespace is ignored. Comment lines begin with '#'.
+## Notes: Whitespace is ignored. Comment lines begin with '//'.
 ##
 ## units = VALUE
 ##
@@ -42,7 +42,7 @@ class TimeStepUser(TimeStep):
 
   Format of file with user specified time steps:
 
-  Notes: Whitespace is ignored. Comment lines begin with '#'.
+  Notes: Whitespace is ignored. Comment lines begin with '//'.
 
   units = VALUE
 
@@ -176,7 +176,7 @@ class TimeStepUser(TimeStep):
     self.steps = []
     for line in lines:
       fields = line.split()
-      if line[0] != "#" and len(fields) > 0:
+      if line[0:2] != "//" and len(fields) > 0:
         if line[0:5] != "units":
           try:
             value = float(fields[0])

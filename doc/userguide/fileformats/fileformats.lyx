@@ -1,4 +1,4 @@
-#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -40,6 +40,7 @@
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
+\author "" 
 \author "" 
 \end_header
 
@@ -1313,6 +1314,104 @@ status open
 \begin_layout Standard
 Format for the geographic local Cartesian coordinate system in spatial database
  files.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset LatexCommand label
+name "sec:FileFormat:TimeStepUser"
+
+\end_inset
+
+User-Specified Time Step File
+\end_layout
+
+\begin_layout Standard
+This file lists the time step sizes for nonuniform, user-specified time
+ steps.
+ The files format is a text file that includes the units for the time step
+ sizes and then a list of the time steps.
+ 
+\end_layout
+
+\begin_layout LyX-Code
+// This time step file specifies five time steps with the units in years.
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+// Comments can appear almost anywhere in these files and are
+\end_layout
+
+\begin_layout LyX-Code
+// delimited with two slashes (//) just like in C++.
+ All text and 
+\end_layout
+
+\begin_layout LyX-Code
+// whitespace after the delimiter on a given line is ignored.
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+// Units for the time steps
+\end_layout
+
+\begin_layout LyX-Code
+units = year
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+1.0 // Comment
+\end_layout
+
+\begin_layout LyX-Code
+2.0
+\end_layout
+
+\begin_layout LyX-Code
+3.0
+\end_layout
+
+\begin_layout LyX-Code
+2.5
+\end_layout
+
+\begin_layout LyX-Code
+3.0
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Format of user-specified time step files.
 \end_layout
 
 \end_inset
