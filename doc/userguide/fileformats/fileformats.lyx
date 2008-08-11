@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1338,8 +1338,8 @@ User-Specified Time Step File
 \begin_layout Standard
 This file lists the time step sizes for nonuniform, user-specified time
  steps.
- The files format is a text file that includes the units for the time step
- sizes and then a list of the time steps.
+ The file's format is an ASCII file that includes the units for the time
+ step sizes and then a list of the time steps.
  
 \end_layout
 

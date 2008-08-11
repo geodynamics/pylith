@@ -1,4 +1,4 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -90,7 +90,7 @@ key "Aagaard:etal:2001a,Aagaard:etal:2001b"
 \begin_layout Standard
 The release of PyLith 1.0 has been followed by additional releases that expand
  the number of features as well as improve performance.
- The PyLith 1.x series of releases allow the solution of both quasi-static
+ The PyLith 1.x series of releases allows the solution of both quasi-static
  and dynamic problems in one, two, or three dimensions.
  The code runs in either serial or parallel mode, and the design allows
  for relatively easy scripting using the Python programming language.
