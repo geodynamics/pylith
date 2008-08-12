@@ -114,7 +114,7 @@ pylith::materials::Material::initialize(const ALE::Obj<Mesh>& mesh,
 
   // If initial state is being used, create a section to hold it.
   if (0 == _initialStateDB)
-    _initialState = NULL;
+    assert(_initialState.isNull());
   else {
     _initialState = new real_section_type(mesh->comm(), mesh->debug());
     assert(!_initialState.isNull());

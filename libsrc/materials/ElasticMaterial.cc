@@ -181,21 +181,21 @@ pylith::materials::ElasticMaterial::_getProperties(const Mesh::point_type& cell)
   const int totalPropsQuadPt = _totalPropsQuadPt;
   assert(_propertiesCell.size() == numQuadPts*totalPropsQuadPt);  
   assert(_properties->getFiberDimension(cell) == numQuadPts*totalPropsQuadPt);
-  assert(_initialStateCell.size() == numQuadPts*_initialStateSize);  
+  assert(_initialStateCell.size() == numQuadPts*_initialStateSize);
   const real_section_type::value_type* parameterCell =
     _properties->restrictPoint(cell);
   memcpy(&_propertiesCell[0], parameterCell, 
 		      numQuadPts*totalPropsQuadPt*sizeof(double));
-  if (0 != _initialState) {
+  if (_initialState.isNull())
+    _initialStateCell = 0.0;
+  else {
     assert(_initialState->getFiberDimension(cell) == numQuadPts*_initialStateSize);
     const real_section_type::value_type* initialStateValuesCell =
       _initialState->restrictPoint(cell);
     memcpy(&_initialStateCell[0], initialStateValuesCell, 
 	   numQuadPts*_initialStateSize*sizeof(double));
-  } else {
-    for (int iVal=0; iVal < _initialStateSize*numQuadPts; ++iVal)
-      _initialStateCell[iVal] = 0.0;
-  } // if
+  } // else
+
 } // _getProperties
 
 // ----------------------------------------------------------------------
