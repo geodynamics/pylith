@@ -40,7 +40,7 @@ class TimeStepUniform(TimeStep):
     ##
     ## \b Properties
     ## @li \b total_time Time duration for simulation.
-    ## @li \b dt Default time step.
+    ## @li \b dt Time step for simulation.
     ##
     ## \b Facilities
     ## @li None
