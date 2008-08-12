@@ -102,6 +102,13 @@ class Implicit(Formulation):
 
     self._info.log("Creating Jacobian matrix.")
     self.jacobian = self.mesh.createMatrix(self.fields.getSolution())
+
+    # BEGIN TEMPORARY
+    # Access entries in matrix here to get correct memory usage
+    import pylith.utils.petsc as petsc
+    petsc.mat_setzero(self.jacobian)
+    # END TEMPORARY
+
     self._debug.log(resourceUsageString())
 
     self._info.log("Initializing solver.")
