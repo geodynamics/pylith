@@ -384,7 +384,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     // Get state variables for cell.
     _material->getPropertiesCell(*c_iter, numQuadPts);
 
-    // Reset element vector to zero
+    // Reset element matrix to zero
     _resetCellMatrix();
 
     // Restrict input fields to cell
