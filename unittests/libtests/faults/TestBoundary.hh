@@ -15,7 +15,9 @@
  *
  * @brief C++ TestBoundary object
  *
- * C++ unit testing for Fault.
+ * NOTE: Not sure what this class is testing. It appears to duplicate
+ * TestBoundaryMesh in bc. Did Matt create this in preparation for
+ * creating fault meshes from face information?
  */
 
 #if !defined(pylith_faults_testboundary_hh)
