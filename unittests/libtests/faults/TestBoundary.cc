@@ -77,7 +77,7 @@ pylith::faults::TestBoundary::_testCreateBoundary(const BoundaryData& data)
   iohandler.read(&mesh);
 
   // Extract submesh for "traction"
-  mesh->setDebug(1);
+  //mesh->setDebug(1);
   const ALE::Obj<Mesh> submesh = ALE::Selection<Mesh>::submeshV(mesh, mesh->getIntSection("traction"));
 
   CPPUNIT_ASSERT_EQUAL(data.cellDim, submesh->getDimension());
