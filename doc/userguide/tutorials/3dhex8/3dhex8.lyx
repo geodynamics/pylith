@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -69,6 +69,10 @@ CUBIT mesh format
 
 \begin_layout Itemize
 Gravitational body forces
+\end_layout
+
+\begin_layout Itemize
+Initial stresses
 \end_layout
 
 \begin_layout Itemize
@@ -1533,7 +1537,7 @@ reference "fig:3dhex-gravity"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \noindent
@@ -1562,6 +1566,402 @@ name "fig:3dhex-gravity"
 
 \end_inset
 
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Gravitational Body Forces With Initial Stresses
+\end_layout
+
+\begin_layout Standard
+In the previous example, the application of body forces resulted in large
+ amounts of vertical deformation, which is generally not desirable in a
+ simulation.
+ To avoid this difficulty, initial stresses may be specified to exactly
+ balance the stresses due to gravitational body forces.
+ The problem is identical to the previous problem, except for the use of
+ initial stresses.
+ The stress solution should be identical, but there should be no displacements.
+ Parameter settings that override or augment those in 
+\family typewriter
+pylithapp.cfg
+\family default
+ are contained in the file 
+\family typewriter
+gravity_istress.cfg
+\family default
+.
+ These settings are:
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent Specifies an implicit formulation for the problem,
+ the array of boundary conditions, and the specification of the 
+\family typewriter
+use_gravity
+\family default
+ flag as 
+\family typewriter
+true
+\family default
+.
+ The default values of 
+\family typewriter
+acceleration
+\family default
+ and 
+\family typewriter
+gravity_dir
+\family default
+ are used.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.implicit Specifies an array of two output managers,
+ one for the full domain, and another for a subdomain corresponding to the
+ ground surface.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.bc.x_pos Specifies the boundary conditions for the
+ right side of the mesh, defining which degrees of freedom are being constrained
+ (
+\family typewriter
+x
+\family default
+), providing the label (defined in 
+\family typewriter
+box_hex8_
+\newline
+1000m.exo
+\family default
+) defining the points desired, and assigning a label to the boundary condition
+ set.
+ Rather than specifying a spatial database file to define the boundary condition
+s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
+ condition, which sets the displacements to zero.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.bc.x_neg Specifies the boundary conditions for the
+ left side of the mesh, defining which degrees of freedom are being constrained
+ (
+\family typewriter
+x
+\family default
+), providing the label (defined in 
+\family typewriter
+box_hex8_
+\newline
+1000m.exo
+\family default
+) defining the points desired, and assigning a label to the boundary condition
+ set.
+ Rather than specifying a spatial database file to define the boundary condition
+s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
+ condition, which sets the displacements to zero.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.bc.y_pos Specifies the boundary conditions for the
+ back of the mesh, defining which degrees of freedom are being constrained
+ (y), providing the label (defined in 
+\family typewriter
+box_hex8_1000m.exo
+\family default
+) defining the points desired, and assigning a label to the boundary condition
+ set.
+ Rather than specifying a spatial database file to define the boundary condition
+s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
+ condition, which sets the displacements to zero.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.bc.y_neg Specifies the boundary conditions for the
+ front of the mesh, defining which degrees of freedom are being constrained
+ (y), providing the label (defined in 
+\family typewriter
+box_hex8_1000m.exo
+\family default
+) defining the points desired, and assigning a label to the boundary condition
+ set.
+ Rather than specifying a spatial database file to define the boundary condition
+s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
+ condition, which sets the displacements to zero.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.bc.z_neg Specifies the boundary conditions for the
+ bottom of the mesh, defining which degrees of freedom are being constrained
+ (z), providing the label (defined in 
+\family typewriter
+box_hex8_1000m.
+\newline
+exo
+\family default
+) defining the points desired, and assigning a label to the boundary condition
+ set.
+ Rather than specifying a spatial database file to define the boundary condition
+s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
+ condition, which sets the displacements to zero.
+\end_layout
+
+\begin_layout Description
+pylithapp.problem.formulation.output.domain.writer Gives the base filename for
+ VTK output over the entire domain (
+\family typewriter
+gravity.vtk
+\family default
+).
+\end_layout
+
+\begin_layout Description
+pylithapp.problem.formulation.output.subdomain Gives the label of the nodeset
+ defining the subdomain and gives the base filename for VTK output over
+ the subdomain corresponding to the ground surface (
+\family typewriter
+gravity-groundsurf.vtk
+\family default
+).
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.materials.elastic Sets the 
+\family typewriter
+use_initial_state
+\family default
+ flag to 
+\family typewriter
+True
+\family default
+ and provides the initial state database file (
+\family typewriter
+initial_state.spatialdb
+\family default
+) as the filename for 
+\family typewriter
+initial_state_db.iohandler.filename
+\family default
+.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.materials.viscoelastic Sets the 
+\family typewriter
+use_initial_state
+\family default
+ flag to 
+\family typewriter
+True
+\family default
+ and provides the initial state database file (
+\family typewriter
+initial_state.spatialdb
+\family default
+) as the filename for 
+\family typewriter
+initial_state_db.iohandler.filename
+\family default
+.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.materials.elastic.output Gives the base filename for
+ state variable output files for the upper elastic material (
+\family typewriter
+gravity-statevars-elastic.vtk
+\family default
+), and causes state variables to be averaged over all quadrature points
+ in each cell.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.materials.viscoelastic.output Gives the base filename
+ for state variable output files for the lower elastic material (
+\family typewriter
+gravity-statevars-viscoelastic.vtk
+\family default
+), and causes state variables to be averaged over all quadrature points
+ in each cell.
+\end_layout
+
+\begin_layout Standard
+The files containing common information (
+\family typewriter
+\size small
+box_hex8_1000m.exo
+\family default
+, 
+\family typewriter
+pylithapp.cfg
+\family default
+, 
+\family typewriter
+mat_elastic.spatialdb
+\family default
+\size default
+, 
+\family typewriter
+mat_
+\newline
+viscoelastic.spatialdb
+\family default
+, 
+\family typewriter
+initial_state.spatialdb
+\family default
+) along with the problem-specific file (
+\family typewriter
+\size small
+gravity_istress.cfg
+\family default
+\size default
+) provide a complete description of the problem, and we can then run this
+ example by typing
+\end_layout
+
+\begin_layout LyX-Code
+pylith gravity_istress.cfg
+\end_layout
+
+\begin_layout Standard
+Once the problem has run, six files will be produced.
+ The first file is named 
+\family typewriter
+gravity_istress_t0000000.vtk
+\family default
+.
+ The 
+\family typewriter
+t0000000
+\family default
+ indicates that the output is for the first (and only) time step, corresponding
+ to an elastic solution.
+ This file contains mesh information as well as displacement values at the
+ mesh vertices.
+ The second file is named 
+\family typewriter
+gravity_istress-statevars-elastic_t0000000.vtk
+\family default
+.
+ This file contains the state variables for each cell in the material group
+ 
+\family typewriter
+elastic
+\family default
+.
+ The default fields are the total strain and stress fields.
+ These values are computed at each quadrature point in the cell.
+ There are eight quadrature points for each cell; however, we have requested
+ that these values be averaged, so there is a single set of values per cell.
+ The third file (
+\family typewriter
+gravity_istress-statevars-elastic_info.vtk
+\family default
+) gives the material properties used for the elastic material.
+ Since we have not specified which properties to write, the default properties
+ (
+\family typewriter
+mu
+\family default
+, 
+\family typewriter
+lambda
+\family default
+, 
+\family typewriter
+density
+\family default
+) are written.
+ The files 
+\family typewriter
+for the 
+\family default
+viscoelastic material
+\family typewriter
+ (gravity_istress-statevars-viscoelastic_t0000000.vtk
+\family default
+ and 
+\family typewriter
+gravity_istress-statevars-viscoelastic_info.vtk
+\family default
+) are exactly analogous to the corresponding files for the elastic material.
+ The sixth file (
+\family typewriter
+gravity_istress-groundsurf_t0000000.vtk
+\family default
+) is analogous to 
+\family typewriter
+gravity_istress_t0000000.vtk
+\family default
+, but in this case the results are only given for a subset of the mesh correspon
+ding to the ground surface.
+ Also, the cells in this file are one dimension lower than the cells described
+ in 
+\family typewriter
+gravity_t0000000.vtk
+\family default
+, so they are quadrilaterials rather than hexahedra.
+ All of the 
+\family typewriter
+.vtk
+\family default
+ files may be used with a number of visualization packages.
+ If the problem ran correctly, you should be able to generate a figure such
+ as 
+\begin_inset LatexCommand vref
+reference "fig:3dhex-gravity_istress"
+
+\end_inset
+
+, which was generated using ParaView.
+ Note that the stress values are identical to those for the previous example,
+ while the displacements are zero.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename figs/hex8-gravity_istress.jpg
+	lyxscale 50
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+Color contours of vertical displacement for the gravitational body force
+ example with initial stresses using a mesh composed of trilinear hexahedral
+ cells generated by CUBIT.
+\begin_inset LatexCommand label
+name "fig:3dhex-gravity_istress"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 
 \end_layout
 
