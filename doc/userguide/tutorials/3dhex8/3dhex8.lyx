@@ -1320,7 +1320,11 @@ s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
 \begin_layout Description
 pylithapp.timedependent.bc.y_pos Specifies the boundary conditions for the
  back of the mesh, defining which degrees of freedom are being constrained
- (y), providing the label (defined in 
+ (
+\family typewriter
+y
+\family default
+), providing the label (defined in 
 \family typewriter
 box_hex8_1000m.exo
 \family default
@@ -1334,7 +1338,11 @@ s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
 \begin_layout Description
 pylithapp.timedependent.bc.y_neg Specifies the boundary conditions for the
  front of the mesh, defining which degrees of freedom are being constrained
- (y), providing the label (defined in 
+ (
+\family typewriter
+y
+\family default
+), providing the label (defined in 
 \family typewriter
 box_hex8_1000m.exo
 \family default
@@ -1348,7 +1356,11 @@ s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
 \begin_layout Description
 pylithapp.timedependent.bc.z_neg Specifies the boundary conditions for the
  bottom of the mesh, defining which degrees of freedom are being constrained
- (z), providing the label (defined in 
+ (
+\family typewriter
+z
+\family default
+), providing the label (defined in 
 \family typewriter
 box_hex8_1000m.
 \newline
