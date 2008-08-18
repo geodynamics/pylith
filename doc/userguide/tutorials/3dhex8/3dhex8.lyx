@@ -1,4 +1,4 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1484,9 +1484,9 @@ lambda
 density
 \family default
 ) are written.
- The files 
+ The files for the
 \family typewriter
-for the 
+ 
 \family default
 viscoelastic material
 \family typewriter
@@ -1512,7 +1512,7 @@ ding to the ground surface.
 \family typewriter
 gravity_t0000000.vtk
 \family default
-, so they are quadrilaterials rather than hexahedra.
+, so they are quadrilaterals rather than hexahedra.
  All of the 
 \family typewriter
 .vtk
