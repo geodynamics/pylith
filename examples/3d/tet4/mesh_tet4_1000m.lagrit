@@ -193,6 +193,26 @@ pset / boundary_zm / surface / surf_zm /
 pset / boundary_zp / surface / surf_zp /
 *
 * ----------------------------------------------------------------------
+* MERGE MATERIALS
+* ----------------------------------------------------------------------
+eltset / elastic1 / itetclr / eq / 1
+eltset / elastic2 / itetclr / eq / 2
+eltset / elastic / union / elastic1 elastic2
+cmo / setatt / box / itetclr / eltset,get,elastic / 1
+eltset / elastic1 / delete
+eltset / elastic2 / delete
+eltset / elastic / delete
+
+eltset / visco1 / itetclr / eq / 3
+eltset / visco2 / itetclr / eq / 4
+eltset / visco / union / visco1 visco2
+cmo / setatt / box / itetclr / eltset,get,visco / 2
+eltset / visco1 / delete
+eltset / visco2 / delete
+eltset / visco / delete
+cmo / printatt / box / itetclr / minmax
+
+* ----------------------------------------------------------------------
 * WRITE MESH
 * ----------------------------------------------------------------------
 *
