@@ -99,10 +99,15 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
   (*_mesh)->setSieve(sieve);
 
   MPI_Comm_rank(comm, &rank);
+  // Memory debugging
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.setDebug(_debug);
+
+  logger.stagePush("MeshCreation");
   if (!rank) {
     assert(coordinates.size() == numVertices*spaceDim);
     assert(cells.size() == numCells*numCorners);
-    /// NEED TO CHANGE TEST DATA if (!_interpolate) {
+    //if (!_interpolate) {
     if (0) {
       // Create the ISieve
       sieve->setChart(Mesh::sieve_type::chart_type(0, numCells+numVertices));
@@ -133,6 +138,8 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
       std::map<Mesh::point_type,Mesh::point_type> renumbering;
       ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
     }
+    logger.stagePop();
+    logger.stagePush("MeshStratification");
     if (!_interpolate) {
       // Optimized stratification
       const ALE::Obj<Mesh::label_type>& height = (*_mesh)->createLabel("height");
@@ -150,11 +157,18 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
     } else {
       (*_mesh)->stratify();
     }
+    logger.stagePop();
   } else {
+    logger.stagePush("MeshStratification");
     (*_mesh)->getSieve()->setChart(sieve_type::chart_type());
     (*_mesh)->getSieve()->allocate();
     (*_mesh)->stratify();
+    logger.stagePop();
   }
+  std::cout << std::endl << "MeshCreation " << logger.getNumAllocations("MeshCreation") << " allocations " << logger.getAllocationTotal("MeshCreation") << " bytes" << std::endl;
+  std::cout << std::endl << "MeshCreation " << logger.getNumDeallocations("MeshCreation") << " deallocations " << logger.getDeallocationTotal("MeshCreation") << " bytes" << std::endl;
+  std::cout << std::endl << "MeshStratification " << logger.getNumAllocations("MeshStratification") << " allocations " << logger.getAllocationTotal("MeshStratification") << " bytes" << std::endl;
+  std::cout << std::endl << "MeshStratification " << logger.getNumDeallocations("MeshStratification") << " deallocations " << logger.getDeallocationTotal("MeshStratification") << " bytes" << std::endl;
   ALE::SieveBuilder<Mesh>::buildCoordinates(*_mesh, spaceDim, &coordinates[0]);
 } // _buildMesh
 
