@@ -1,4 +1,4 @@
-We are pleased to announce release of PyLith version 1.2.0.
+We are pleased to announce release of PyLith version 1.3.0.
 
 Please submit bug reports via the World Wide Web at:
     http://geodynamics.org/roundup    
@@ -8,15 +8,14 @@ Please send all questions by electronic mail to:
 
 PyLith is free software.  See the file COPYING for copying conditions.
 
-This release allows the solution of both quasi-static and dynamic  
-problems in one, two, or three dimensions, and represents a complete  
-rewrite of the original PyLith. The code runs in either serial or  
-parallel mode, and the design allows for relatively easy scripting  
-using the Python programming language. Material properties and  
-parameters for boundary and fault conditions are specified using a  
-spatial database, which permits easy prescription of complex spatial  
-variations of properties and parameters. Simulation parameters are  
-generally specified through the use of simple ASCII files or the  
+This release allows the solution of both quasi-static and dynamic
+problems in one, two, or three dimensions. The code runs in either
+serial or parallel mode, and the design allows for relatively easy
+scripting using the Python programming language. Material properties
+and parameters for boundary and fault conditions are specified using a
+spatial database, which permits easy prescription of complex spatial
+variations of properties and parameters. Simulation parameters are
+generally specified through the use of simple ASCII files or the
 command line.
 
 You can download the source code and binaries from
@@ -33,6 +32,15 @@ additional constitutive models for both volume elements and cohesive
 linear elements, and the generation of Green's functions to be used in
 inversions.  Many of these features should be available in late 2008.
 
+
+======================================================================
+MIGRATING FROM VERSION 1.2 TO 1.3
+======================================================================
+
+The implementation of different options for controlling the time step
+requires adjusting input parameters from those used with PyLith
+1.2. The time stepping is not specified under the time-stepping
+formulation rather than the problem (i.e., one level deeper).
 
 ======================================================================
 MIGRATING FROM VERSION 1.1 TO 1.2
@@ -93,6 +101,35 @@ TIPS
     the preconditioner is inappropriate for the type of problem you
     are solving or there is an error in the problem setup.
 
+
+----------------------------------------------------------------------
+Version 1.3
+----------------------------------------------------------------------
+
+  * New time stepping options
+
+    In addition to a uniform, user-specified time step, which is the
+    default, there are two new time-stepping options. The user may
+    supply a file with nonuniform time steps or, for quasi-static
+    simulations, the user can request the code to compute the time
+    step automatically. For the current bulk constitutive models, the
+    automatically determined time step is independent of the
+    deformation rate, so it is uniform.
+
+  * Initial stresses
+
+    Users may optionally supply an initial stress state for each
+    material via a spatial database. The initial stress state can
+    balance the gravitational body forces so that the model is in
+    equilibrium without any deformation. This implementation of an
+    initial stress state is a prelude to specifying an initial state
+    for each material, which will be available in a future release.
+
+  * Bug fixes
+
+    - Fixed labeling of physical properties in output for the Maxwell
+      viscoelastic and generalized Maxwell viscoelastic materials (mu
+      and lambda were switched).
 
 ----------------------------------------------------------------------
 Version 1.2
