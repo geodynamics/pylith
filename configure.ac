@@ -54,6 +54,15 @@ AC_ARG_ENABLE([tetgen],
 	[enable_tetgen=no])
 AM_CONDITIONAL([ENABLE_TETGEN], [test "$enable_tetgen" = yes])
 
+# MEMORY LOGGING
+AC_ARG_ENABLE([memory_logging],
+    [AC_HELP_STRING([--enable-memory-logging],
+        [enable memory logging @<:@default=no@:>@])],
+	[enable_memory_logging=yes
+	CXXFLAGS="-DALE_MEM_LOGGING $CXXFLAGS"; export CXXFLAGS],
+	[enable_memory_logging=no])
+AM_CONDITIONAL([ENABLE_MEMORY_LOGGING], [test "$enable_memory_logging" = yes])
+
 # DOCUMENTATION w/doxygen
 AC_ARG_ENABLE([documentation],
     [AC_HELP_STRING([--enable-documentation],

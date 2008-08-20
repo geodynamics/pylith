@@ -10,9 +10,6 @@
 // ======================================================================
 //
 
-// This turns on memory debugging, see ALE_mem.hh
-#define ALE_MEM_LOGGING
-
 /**
  * @file pylith/utils/sievetypes.hh
  *
