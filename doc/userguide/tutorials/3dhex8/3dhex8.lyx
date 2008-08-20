@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -129,7 +129,7 @@ target "cubit.sandia.gov"
  to create a mesh, as well as describing how to use a CUBIT-generated mesh
  in PyLith.
  In this tutorial, we will walk through the steps necessary to construct,
- run, and view three problems that use the same mesh.
+ run, and view several problems that use the same mesh.
  In addition to this manual, each of the files for the example problems
  includes extensive comments.
 \end_layout
@@ -315,7 +315,7 @@ Additional Common Information
 \end_layout
 
 \begin_layout Standard
-In addition to the mesh, the two example problems share additional information.
+In addition to the mesh, the example problems share additional information.
  For problems of this type, it is generally useful to create a file named
  
 \family typewriter
@@ -624,20 +624,20 @@ shearxy-groundsurf.vtk
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.materials.elastic_upper.output Gives the base filename
- for state variable output files for the upper elastic material (
+pylithapp.timedependent.materials.elastic.output Gives the base filename for
+ state variable output files for the elastic material (
 \family typewriter
-shearxy-statevars-upper.vtk
+shearxy-statevars-elastic.vtk
 \family default
 ), and causes state variables to be averaged over all quadrature points
  in each cell.
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.materials.elastic_lower.output Gives the base filename
- for state variable output files for the lower elastic material (
+pylithapp.timedependent.materials.viscoelastic.output Gives the base filename
+ for state variable output files for the viscoelastic material (
 \family typewriter
-shearxy-statevars-lower.vtk
+shearxy-statevars-viscoelastic.vtk
 \family default
 ), and causes state variables to be averaged over all quadrature points
  in each cell.
@@ -671,6 +671,10 @@ pylithapp.cfg
 , 
 \family typewriter
 mat_elastic.spatialdb
+\family default
+, and 
+\family typewriter
+mat_viscoelastic.spatialdb
 \family default
 ) along with the problem-specific files (
 \family typewriter
@@ -964,7 +968,7 @@ dislocation-fault.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.elastic.output Gives the base filename for
- state variable output files for the upper elastic material (
+ state variable output files for the elastic material (
 \family typewriter
 dislocation-statevars-elastic.vtk
 \family default
@@ -974,7 +978,7 @@ dislocation-statevars-elastic.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.viscoelastic.output Gives the base filename
- for state variable output files for the lower elastic material (
+ for state variable output files for the viscoelastic material (
 \family typewriter
 dislocation-statevars-viscoelastic.vtk
 \family default
@@ -1209,8 +1213,8 @@ Gravitational Body Force Example
 \end_layout
 
 \begin_layout Standard
-The next example is a simple problem where we simply apply the body forces
- due to gravitational acceleration.
+The next example is a simple problem where we apply the body forces due
+ to gravitational acceleration.
  All sides are fixed in the normal direction, with the exception of the
  upper surface, which is left free.
  The resulting stress field is
@@ -1394,7 +1398,7 @@ gravity-groundsurf.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.elastic.output Gives the base filename for
- state variable output files for the upper elastic material (
+ state variable output files for the elastic material (
 \family typewriter
 gravity-statevars-elastic.vtk
 \family default
@@ -1404,7 +1408,7 @@ gravity-statevars-elastic.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.viscoelastic.output Gives the base filename
- for state variable output files for the lower elastic material (
+ for state variable output files for the viscoelastic material (
 \family typewriter
 gravity-statevars-viscoelastic.vtk
 \family default
@@ -1784,7 +1788,7 @@ initial_state_db.iohandler.filename
 
 \begin_layout Description
 pylithapp.timedependent.materials.elastic.output Gives the base filename for
- state variable output files for the upper elastic material (
+ state variable output files for the elastic material (
 \family typewriter
 gravity-statevars-elastic.vtk
 \family default
@@ -1794,7 +1798,7 @@ gravity-statevars-elastic.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.viscoelastic.output Gives the base filename
- for state variable output files for the lower elastic material (
+ for state variable output files for the viscoelastic material (
 \family typewriter
 gravity-statevars-viscoelastic.vtk
 \family default
@@ -1943,6 +1947,7 @@ sideways false
 status open
 
 \begin_layout Standard
+\align center
 \begin_inset Graphics
 	filename figs/hex8-gravity_istress.jpg
 	lyxscale 50
@@ -1970,10 +1975,6 @@ name "fig:3dhex-gravity_istress"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 
 \end_layout
 
@@ -2150,7 +2151,7 @@ savageprescott-fault.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.elastic.output Gives the base filename for
- state variable output files for the upper elastic material (
+ state variable output files for the elastic material (
 \family typewriter
 savageprescott-statevars-elastic.vtk
 \family default
@@ -2162,7 +2163,7 @@ savageprescott-statevars-elastic.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.viscoelastic.output Gives the base filename
- for state variable output files for the lower viscoelastic material (
+ for state variable output files for the viscoelastic material (
 \family typewriter
 savageprescott-statevars-viscoelastic.vtk
 \family default
