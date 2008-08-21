@@ -39,7 +39,7 @@ MIGRATING FROM VERSION 1.2 TO 1.3
 
 The implementation of different options for controlling the time step
 requires adjusting input parameters from those used with PyLith
-1.2. The time stepping is not specified under the time-stepping
+1.2. The time stepping is specified under the time-stepping
 formulation rather than the problem (i.e., one level deeper).
 
 ======================================================================
