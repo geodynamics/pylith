@@ -30,7 +30,9 @@ INSTRUCTIONS FOR VARIOUS PLATFORMS
 ======================================================================
 
 In cases where there are multiple instructions for a given platform,
-simply pick the procedure with which you are most comfortable.
+simply pick the procedure with which you are most comfortable. The
+*.sh files contain the commands to set the environment variables
+within a bash shell for the corresponding platform.
 
 FILE                             PLATFORM
 

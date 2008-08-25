@@ -28,7 +28,6 @@ of Python you will be using. If you don't know the version of python,
 run "python --version".
 
   export TOOLS_DIR=${HOME}/tools
-  export CIG_DIR=$HOME/tools/cig
   export TOOLS_FORMAT=gcc-3.4_64
   export PYTHON_VERSION=2.4
 
@@ -39,7 +38,7 @@ run "python --version".
   export PYTHONPATH=${PYTHONPATH}:${CIG_DIR}/lib64/python${PYTHON_VERSION}/site-packages:${CIG_DIR}/lib/python${PYTHON_VERSION}/site-packages
   PATH=${CIG_DIR}/bin:$PATH
 
-1. Install additional CentOS packages.
+1. Install additional CentOS packages (must be root).
 
   Make sure the Rocks installation procedure installs the following
   packages (these are not usually installed by default).
@@ -51,7 +50,7 @@ run "python --version".
     gdb
     libtool
 
-2. Install the PVFS2 Roll (Optional).
+2. Install the PVFS2 Roll (Optional, must be root).
 
   PyLith does not currently use parallel I/O, but it will likely do so
   in the future. As a result, we include instructions for installing
@@ -118,14 +117,14 @@ run "python --version".
 
   Notes: (i) You need to register to download.
          (ii) Make sure you download the version appropriate for your
-             compiler.
+             compiler (version 3.5.0 for Rocks 4.3).
 
   a. Expand the tarball and run the installation script.
      I install to ${TOOLS_DIR}/acml-3.5.0.
 
   b. Set environment variables.
 
-    export ACML_DIR=${TOOLS_DIR}/acml-3.5.0/gnu64
+    ACML_DIR=${TOOLS_DIR}/acml-3.5.0/gnu64
     export ACML_LIBDIR=${ACML_DIR}/lib
     export ACML_INCDIR=${ACML_DIR}/include
     export LD_LIBRARY_PATH=${ACML_LIBDIR}:${LD_LIBRARY_PATH}
@@ -190,7 +189,11 @@ run "python --version".
     cd ..
     rmdir tmp
 
-  d. Set environment variables.
+  d. Copy parmetis.h to the install location.
+
+    cp parmetis.h ${TOOLS_DIR}/parmetis-3.1/${TOOLS_FORMAT}/include/
+
+  e. Set environment variables.
 
     PARMETIS_DIR=$TOOLS_DIR/parmetis-3.1/${TOOLS_FORMAT}
     export PARMETIS_INCDIR=$PARMETIS_DIR/include
@@ -236,19 +239,19 @@ run "python --version".
   b. Set PETSC_ARCH and PETSC_DIR environment variables.
 
     export PETSC_DIR=${TOOLS_DIR}/petsc-dev
-    export PETSC_ARCH=linux_${TOOLS_FORMAT}_debug
+    export PETSC_ARCH=linux_${TOOLS_FORMAT}_opt
 
   c. Configure PETSc, build, and test.
 
     ARCH_FLAGS="--PETSC_ARCH=linux_${TOOLS_FORMAT}_opt --with-debugging=no"
     LANG_FLAGS="--with-clanguage=c++"
     BUILD_FLAGS="--with-mpi-compilers=0 --with-gnu-compilers=1 --with-shared=1 --with-dynamic=1 --with-64-bit-points=1 --with-large-file-io=1 --CC=gcc --CXX=g++ --FC=g77 --F77=g77"
-    MPI_FLAGS="--with-mpi-dir=${HOME}/tools/mpich2-1.0.4p1/gcc-3.4_64 --with-mpi-shared=0"
+    MPI_FLAGS="--with-mpi-dir=${TOOLS_DIR}/mpich2-1.0.4p1/gcc-3.4_64 --with-mpi-shared=0"
     LIBS="-L${PVFS2_LIBDIR} -lpvfs2 -lssl -lpthread -lrt"
     OPTIONS="--with-lgrind=0 --download-tetgen"
     PART_FLAGS="--with-chaco=1 --download-chaco=1 --with-parmetis=1 --with-parmetis-dir=${TOOLS_DIR}/parmetis-3.1/gcc-3.4_64"
     SIEVE_FLAGS="--with-sieve=1 --with-boost=1 --download-boost=1"
-    config/configure.py ${ARCH_FLAGS} ${LANG_FLAGS} ${BUILD_FLAGS} --with-blas-lapack-lib="-L${TOOLS_DIR}/acml-3.5.0/gnu64/lib -lacml -lacml_mv" ${MPI_FLAGS} --LIBS="-L${PVFS2_LIBDIR} -lpvfs2 -lssl" ${OPTIONS} ${PART_FLAGS} ${SIEVE_FLAGS}
+    config/configure.py ${ARCH_FLAGS} ${LANG_FLAGS} ${BUILD_FLAGS} --with-blas-lapack-lib="-L${ACML_LIBDIR} -lacml -lacml_mv" ${MPI_FLAGS} --LIBS="-L${PVFS2_LIBDIR} -lpvfs2 -lssl" ${OPTIONS} ${PART_FLAGS} ${SIEVE_FLAGS}
     make
     make test
 
