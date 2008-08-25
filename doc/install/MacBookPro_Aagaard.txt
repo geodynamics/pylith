@@ -21,9 +21,9 @@ run "python --version".
 
   export TOOLS_DIR=/sw/tools
   export TOOLS_FORMAT=gcc-4.0
-  export CIG_DIR=$HOME/tools/cig/${TOOLS_FORMAT}
   export PYTHON_VERSION=2.5
 
+  export CIG_DIR=$HOME/tools/cig/${TOOLS_FORMAT}
   export CIG_INCDIR=${CIG_DIR}/include
   export CIG_LIBDIR=${CIG_DIR}/lib
   PATH=$PATH:${CIG_DIR}/bin
@@ -140,8 +140,11 @@ run "python --version".
     cd ..
     rmdir tmp
 
+  d. Copy parmetis.h to the install location.
 
-  d. Set environment variables.
+    cp parmetis.h ${TOOLS_DIR}/parmetis-3.1/${TOOLS_FORMAT}/include/
+
+  e. Set environment variables.
 
     PARMETIS_DIR=$TOOLS_DIR/parmetis-3.1/${TOOLS_FORMAT}
     export PARMETIS_INCDIR=$PARMETIS_DIR/include
@@ -174,7 +177,7 @@ run "python --version".
   b. Set environment variables.
 
     FIAT_DIR=${TOOLS_DIR}/fiat-0.3.1/${TOOLS_FORMAT}
-    PYTHONPATH=${PYTHONPATH}:${FIAT_DIR}/lib/python${PYTHON_VERSION}/site-packages
+    export PYTHONPATH=${PYTHONPATH}:${FIAT_DIR}/lib/python${PYTHON_VERSION}/site-packages
 
 12. Install the development version of PETSc
   (http://www-unix.mcs.anl.gov/petsc/petsc-as/)
@@ -277,8 +280,7 @@ run "python --version".
 
   d. Set environment variables.
 
-    export PROJ4_VERSION=4.5.0
-    PROJ4_DIR=${TOOLS_DIR}/proj-${PROJ4_VERSION}/${TOOLS_FORMAT}
+    PROJ4_DIR=${TOOLS_DIR}/proj-4.5.0/${TOOLS_FORMAT}
     export PROJ4_LIBDIR=${PROJ4_DIR}/lib
     export PROJ4_INCDIR=${PROJ4_DIR}/include
     PATH=${PATH}:${PROJ4_DIR}/bin

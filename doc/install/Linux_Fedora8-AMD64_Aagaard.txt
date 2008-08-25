@@ -29,7 +29,6 @@ of Python you will be using. If you don't know the version of python,
 run "python --version".
 
   export TOOLS_DIR=/tools/common
-  export CIG_DIR=$HOME/tools/cig
   export TOOLS_FORMAT=gcc-4.1.2_64
   export PYTHON_VERSION=2.5
 
@@ -71,7 +70,7 @@ gfortran, etc). in the installation.
 
   Notes: (i) You need to register to download.
          (ii) Make sure you download the version appropriate for your
-             compiler (e.g., acml-4-0-1-gfortran-64bit.tgz for gcc).
+             compiler (e.g., acml-4-0-1-gfortran-64bit.tgz for gcc 4.1).
 
   a. Expand the tarball and run the installation script.
      I install to ${TOOLS_DIR}/acml-4.0.1
@@ -134,7 +133,11 @@ gfortran, etc). in the installation.
     cd ..
     rmdir tmp
 
-  d. Set environment variables.
+  d. Copy parmetis.h to the install location.
+
+    cp parmetis.h ${TOOLS_DIR}/parmetis-3.1/${TOOLS_FORMAT}/include/
+
+  e. Set environment variables.
 
     PARMETIS_DIR=$TOOLS_DIR/parmetis-3.1/${TOOLS_FORMAT}
     export PARMETIS_INCDIR=$PARMETIS_DIR/include
@@ -151,7 +154,7 @@ gfortran, etc). in the installation.
   b. Set environment variables.
 
     FIAT_DIR=${TOOLS_DIR}/fiat-0.3.1/${TOOLS_FORMAT}
-    PYTHONPATH=${PYTHONPATH}:${FIAT_DIR}/lib/python${PYTHON_VERSION}/site-packages
+    export PYTHONPATH=${PYTHONPATH}:${FIAT_DIR}/lib/python${PYTHON_VERSION}/site-packages
 
 7. Install the development version of PETSc
   (http://www-unix.mcs.anl.gov/petsc/petsc-as/)
