@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -505,6 +505,17 @@ axialdisp_txxxx.vtk
 xxxx
 \family default
  is the time for which output has been produced.
+ In 
+\family typewriter
+axialdisp.cfg
+\family default
+ we specify that the time stamp should be normalized by a value of 1.0 years
+ and the time stamp should be of the form 
+\family typewriter
+xxx.x
+\family default
+ (recall that the decimal point is removed in the filename).
+ As a result, the filenames contain the time in tenths of a year.
  These files will contain mesh information as well as displacement values
  at the mesh vertices.
  The second set of files will have names such as 
@@ -515,7 +526,7 @@ axialdisp-statevars_txxxx.vtk
 \family typewriter
 xxxx
 \family default
- is the time in seconds for which output has been produced.
+ is the time in tenths of a year (as above) for which output has been produced.
  These files contain the state variables for each cell at the given time.
  The default fields are the total strain and stress fields; however, we
  have also requested the viscous strains.
@@ -758,7 +769,7 @@ sheardisp_txxxx.vtk
 \family typewriter
 xxxx
 \family default
- is the time for which output has been produced.
+ is the time in tenths of a year (as in the previous example).
  These files will contain mesh information as well as displacement values
  at the mesh vertices.
  The second set of files will have names such as 
@@ -769,7 +780,7 @@ axialdisp-statevars_txxxx.vtk
 \family typewriter
 xxxx
 \family default
- is the time in seconds for which output has been produced.
+ is the time in tenths of a year.
  These files contain the state variables for each cell at the given time.
  The default fields are the total strain and stress fields; however, we
  have also requested the viscous strains.
@@ -820,6 +831,7 @@ sideways false
 status open
 
 \begin_layout Standard
+\align center
 \begin_inset Graphics
 	filename figs/sheardisp.jpg
 	lyxscale 50
@@ -1052,7 +1064,7 @@ dislocation_txxxx.vtk
 \family typewriter
 xxxx
 \family default
- is the time in seconds for which output has been produced.
+ is the time in tenths of a year.
  These files will contain mesh information as well as displacement values
  at the mesh vertices.
  The second set of files will have names such as 
@@ -1063,7 +1075,7 @@ dislocation-statevars_txxxx.vtk
 \family typewriter
 xxxx
 \family default
- is the time for which output has been produced.
+ is the time in tenths of a year.
  These files contain the state variables for each cell at the given time.
  The default fields are the total strain and stress fields; however, we
  have also requested the viscous strains.
