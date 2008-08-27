@@ -40,6 +40,7 @@ class Transform(Application):
     ## @li \b data_dim Dimension of data.
     ## @li \b points_file Filename of file containing point coordinates.
     ## @li \b segs_file Filename of file containing fault segments.
+    ## @li \b slip_scale Scaling factor for fault slip.
     ## @li \b points_spatialdb Filename of output spatial database.
     ## @li \b up_dir Vector defining up direction.
     ## @li \b normal_dir General preferred normal direction.
@@ -163,11 +164,11 @@ class Transform(Application):
     self.defaultValues = self.inventory.defaultValues
 
     self.upVec = numpy.array([float(self.upDir[0]), float(self.upDir[1]),
-                              float(self.upDir[2])], dtype=float64)
+                              float(self.upDir[2])], dtype=numpy.float64)
 
     self.normalVec = numpy.array([float(self.normalDir[0]),
                                   float(self.normalDir[1]),
-                                  float(self.normalDir[2])], dtype=float64)
+                                  float(self.normalDir[2])], dtype=numpy.float64)
 
     self.dipCutoffProj = abs(math.sin(self.dipCutoff.value))
 
@@ -208,10 +209,10 @@ class Transform(Application):
     """
 
     normalsArr = numpy.array(self.normals,
-                             dtype=float64).reshape(self.numPoints,
+                             dtype=numpy.float64).reshape(self.numPoints,
                                                     self.spaceDim)
 
-    points = numpy.array(self.pointsUTM, dtype=float64).reshape(self.numPoints,
+    points = numpy.array(self.pointsUTM, dtype=numpy.float64).reshape(self.numPoints,
                                                                 self.spaceDim)
     
     iCount = 0
@@ -312,7 +313,7 @@ class Transform(Application):
     ts = self.segInfo[iSeg,7]
     dx = sx2 - sx1
     dy = sy2 - sy1
-    asVec = numpy.array([dx, dy, 0.0], dtype=float64)
+    asVec = numpy.array([dx, dy, 0.0], dtype=numpy.float64)
     mag = math.sqrt(numpy.dot(asVec,asVec))
     asVec /= mag
     horPerp = numpy.cross(self.upVec, asVec)
@@ -326,11 +327,11 @@ class Transform(Application):
     dipCos = math.sin(math.radians(dip))
     if math.fabs(dipCos) != 1.0:
       r = math.sqrt(1.0/(1.0-dipCos*dipCos))
-      udVec = numpy.array([horPerp[0]/r, horPerp[1]/r, dipCos], dtype=float64)
+      udVec = numpy.array([horPerp[0]/r, horPerp[1]/r, dipCos], dtype=numpy.float64)
     else:
-      udVec = numpy.array([0.0, 0.0, dipCos], dtype=float64)
+      udVec = numpy.array([0.0, 0.0, dipCos], dtype=numpy.float64)
     normVec = numpy.cross(asVec, udVec)
-    slipVec = numpy.array([ss, ds,ts], dtype=float64)
+    slipVec = numpy.array([ss, ds,ts], dtype=numpy.float64)
     rot1 = numpy.vstack((asVec, udVec, normVec))
     rot = rot1.transpose()
     velocity = numpy.dot(rot,slipVec)
@@ -429,7 +430,7 @@ class Transform(Application):
           self.numSegs += 1
         iCount += 1
     f.close() 
-    self.segInfo = numpy.array(segtmp, dtype=float64).reshape(self.numSegs, 8)
+    self.segInfo = numpy.array(segtmp, dtype=numpy.float64).reshape(self.numSegs, 8)
     return
   
 # ----------------------------------------------------------------------
