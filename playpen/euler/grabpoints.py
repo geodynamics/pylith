@@ -155,17 +155,18 @@ class GrabPoints(Application):
       if vertex == ucdInd:
         data = lines[lineCount].split()
         normals = [float(data[v0]), float(data[v1]), float(data[v2])]
+	if normals[0] != 0.0 or normals[1] != 0.0 or normals[2] != 0.0:
 
-	if self.outputIndex:
-	  o.write(' %i' % vertex)
+	  if self.outputIndex:
+	    o.write(' %i' % vertex)
 
-        for dim in range(3):
-          o.write(' %.12e' % self.pointCoords[coordCount + dim])
+          for dim in range(3):
+            o.write(' %.12e' % self.pointCoords[coordCount + dim])
 
-        for dim in range(3):
-          o.write(' %.12e' % normals[dim])
+          for dim in range(3):
+            o.write(' %.12e' % normals[dim])
 
-        o.write('\n')
+          o.write('\n')
         vertInd += 1
         coordCount += 3
 
