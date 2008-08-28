@@ -165,10 +165,27 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
     (*_mesh)->stratify();
     logger.stagePop();
   }
-  std::cout << std::endl << "MeshCreation " << logger.getNumAllocations("MeshCreation") << " allocations " << logger.getAllocationTotal("MeshCreation") << " bytes" << std::endl;
-  std::cout << std::endl << "MeshCreation " << logger.getNumDeallocations("MeshCreation") << " deallocations " << logger.getDeallocationTotal("MeshCreation") << " bytes" << std::endl;
-  std::cout << std::endl << "MeshStratification " << logger.getNumAllocations("MeshStratification") << " allocations " << logger.getAllocationTotal("MeshStratification") << " bytes" << std::endl;
-  std::cout << std::endl << "MeshStratification " << logger.getNumDeallocations("MeshStratification") << " deallocations " << logger.getDeallocationTotal("MeshStratification") << " bytes" << std::endl;
+
+#if defined(ALE_MEM_LOGGING)
+  std::cout
+    << std::endl
+    << "MeshCreation " << logger.getNumAllocations("MeshCreation")
+    << " allocations " << logger.getAllocationTotal("MeshCreation")
+    << " bytes" << std::endl
+    
+    << "MeshCreation " << logger.getNumDeallocations("MeshCreation")
+    << " deallocations " << logger.getDeallocationTotal("MeshCreation")
+    << " bytes" << std::endl
+    
+    << "MeshStratification " << logger.getNumAllocations("MeshStratification")
+    << " allocations " << logger.getAllocationTotal("MeshStratification")
+    << " bytes" << std::endl
+    
+    << "MeshStratification " << logger.getNumDeallocations("MeshStratification")
+    << " deallocations " << logger.getDeallocationTotal("MeshStratification")
+    << " bytes" << std::endl << std::endl;
+#endif
+
   ALE::SieveBuilder<Mesh>::buildCoordinates(*_mesh, spaceDim, &coordinates[0]);
 } // _buildMesh
 
