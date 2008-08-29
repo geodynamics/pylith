@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -81,7 +81,7 @@ key "Aagaard:etal:2001a,Aagaard:etal:2001b"
  LithoMop.
  LithoMop was the product of major reengineering of Tecton, a finite-element
  code for simulating static and quasi-static crustal deformation.
- The major new features present in Lithomop included dynamic memory allocation
+ The major new features present in LithoMop included dynamic memory allocation
  and the use of the Pyre simulation framework and PETSc solvers.
  EqSim was written by Brad Aagaard to solve problems in earthquake dynamics,
  including rupture propagation and seismic wave propagation.
@@ -95,7 +95,7 @@ The release of PyLith 1.0 has been followed by additional releases that expand
  The code runs in either serial or parallel mode, and the design allows
  for relatively easy scripting using the Python programming language.
  Material properties and values for boundary and fault conditions are specified
- using a spatial database, which permits easy prescription of complex spatial
+ using spatial databases, which permit easy prescription of complex spatial
  variations of properties and parameters.
  Simulation parameters are generally specified through the use of simple
  ASCII files or the command line.
@@ -145,14 +145,10 @@ reference "fig:Workflow-summary"
  Given a geological problem of interest, a scientist must first provide
  a geometrical representation of the desired structure.
  Once the structure has been defined, a computational mesh must be created.
- Since there are a wide variety of mesh formats, this information must then
- be translated into something that the computational physics code can understand.
  PyLith presently provides three mesh importing options: CUBIT Exodus format,
- LaGriT GMV + Pset files, and PyLith mesh ASCII format.
+ LaGriT GMV and Pset files, and PyLith mesh ASCII format.
  The modeling of the physical processes of interest is performed by a code
  such as PyLith.
- Once the computations have been performed, the results must be exported
- into a format that can be used by a visualization code.
  Present output consists of VTK files which can be used by a number of visualiza
 tion codes (e.g., ParaView, Visit, and MayaVi).
  In the near future, PyLith will also use the HDF5 format.
@@ -457,8 +453,8 @@ s finite-element computations.
  Sieve
 \family default
  represents the topology of the domain.
- Zero volume elements are inserted along all fault surfaces which can implement
- both kinematic (prescribed) and dynamic (constitutive model) implementations
+ Zero volume elements are inserted along all fault surfaces to implement
+ kinematic (prescribed) or dynamic (constitutive model) implementations
  of fault slip.
  Material properties and other parameters are represented as sections (scalar
  and vector fields) over the mesh, and values for a vertex or cell can be
@@ -490,7 +486,7 @@ target "www-unix.mcs.anl.gov/petsc/petsc-as"
  PETSc includes solvers that implement a variety of Newton and Krylov subspace
  methods.
  It can also interface with many external packages, including ESSL, MUMPS,
- Matlab, ParMeTis, PVODE, and Hypre, thereby providing additional solvers
+ Matlab, ParMETIS, PVODE, and Hypre, thereby providing additional solvers
  and interaction with other software packages.
 \end_layout
 

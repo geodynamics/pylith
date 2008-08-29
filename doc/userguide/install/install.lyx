@@ -198,6 +198,17 @@ $ tar -xzf pylith-1.3.0-linux-i686.tgz
 \end_deeper
 \begin_layout Enumerate
 Set environment variables.
+ The provided 
+\family typewriter
+setup.sh
+\family default
+ script only works if you are using bash shell.
+ If you are using a different shell, you will need to alter how the environment
+ variables are set in 
+\family typewriter
+setup.sh
+\family default
+.
 \end_layout
 
 \begin_deeper
@@ -257,6 +268,17 @@ $ tar -xzf pylith-1.3.0-darwin-powerpc.tgz
 \end_deeper
 \begin_layout Enumerate
 Set environment variables.
+ The provided 
+\family typewriter
+setup.sh
+\family default
+ script only works if you are using bash shell.
+ If you are using a different shell, you will need to alter how the environment
+ variables are set in 
+\family typewriter
+setup.sh
+\family default
+.
 \end_layout
 
 \begin_deeper
@@ -786,16 +808,19 @@ both
 \emph default
  
 \family typewriter
-configure.log
+\shape italic
+$PETSC_ARCH
+\shape default
+/conf/configure.log
 \family default
  and 
 \family typewriter
-make_log_
-\emph on
+\shape italic
 $PETSC_ARCH
+\shape default
+/conf/make.log 
 \family default
-\emph default
- to 
+to 
 \begin_inset LatexCommand url
 name "PETSc Maintenance Mailing List"
 target "petsc-maint@mcs.anl.gov"
@@ -832,7 +857,7 @@ petsc-dev
 \family typewriter
 petsc-dev
 \family default
- for PyLith 1.2.0 from 
+ for PyLith from 
 \begin_inset LatexCommand htmlurl
 name "PyLith PETSc tarball"
 target "www.geodynamics.org/cig/software/packages/short/pylith/petsc-dev-pylith-1_1_0.tgz"
@@ -848,7 +873,7 @@ tar
 \end_layout
 
 \begin_layout LyX-Code
-$ tar xzf petsc-dev-pylith-1_1_0.tgz
+$ tar xzf petsc-dev-pylith-1.3.0.tgz
 \end_layout
 
 \begin_layout Standard
@@ -856,7 +881,7 @@ If you don't have GNU Tar, try the following command instead:
 \end_layout
 
 \begin_layout LyX-Code
-$ gunzip -c petsc-dev-pylith-1_1_0.tgz | tar xf -
+$ gunzip -c petsc-dev-pylith-1.3.0.tgz | tar xf -
 \end_layout
 
 \begin_layout Standard
@@ -1604,7 +1629,7 @@ As with many other packages, to install Proj.4, first download the source
  package available at the 
 \begin_inset LatexCommand htmlurl
 name "PROJ.4 web page"
-target "www.remotesensing.org/proj"
+target "trac.osgeo.org/proj"
 
 \end_inset
 
@@ -1629,7 +1654,7 @@ Downloading and Unpacking the Proj.4 Source
 Download Proj.4 from the 
 \begin_inset LatexCommand htmlurl
 name "Proj.4 website"
-target "www.remotesensing.org/proj"
+target "trac.osgeo.org/proj"
 
 \end_inset
 
@@ -1666,7 +1691,7 @@ unzip
 \end_layout
 
 \begin_layout LyX-Code
-$ cd proj-4.6.0/nad$ unzip proj-datumgrid-1.3.zip
+$ cd proj-4.6.0/nad$ unzip proj-datumgrid-1.4.zip
 \end_layout
 
 \begin_layout Subsubsection
@@ -2998,7 +3023,7 @@ However, Pyre manages the launching of parallel runs of PyLith under MPI,
 \end_layout
 
 \begin_layout Subsubsection
-Pyre Configuration on a Personal Computer
+Pyre Configuration on a Laptop of Desktop Computer
 \end_layout
 
 \begin_layout Standard

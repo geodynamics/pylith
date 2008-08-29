@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -75,7 +75,7 @@ Mesh information.
  and how the vertices are connected into cells), a material identifier for
  each cell, and sets of vertices associated with boundary conditions, faults,
  and output (for subsets of the mesh).
- This information can be provided using the PyLith mesh ASCII format (See
+ This information can be provided using the PyLith mesh ASCII format (see
  Chapter 
 \begin_inset LatexCommand ref
 reference "cha:Tutorials"
@@ -89,15 +89,13 @@ reference "sec:MeshIOAscii"
 \end_inset
 
  for the format specification) or by importing the information from the
- LaGriT or CUBIT meshing packages (see 
-\family typewriter
-examples/3d/hex8
-\family default
- and 
-\family typewriter
-examples/3d/tet4
-\family default
-).
+ LaGriT or CUBIT meshing packages (see Chapter 
+\begin_inset LatexCommand ref
+reference "cha:Tutorials"
+
+\end_inset
+
+ for examples).
 \end_layout
 
 \begin_layout Enumerate
@@ -566,6 +564,20 @@ status open
 
 \begin_layout Standard
 \align center
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:petsc:options:defaults"
+
+\end_inset
+
+Useful command-line arguments for setting PETSc options.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="3">
 <features>
@@ -778,23 +790,6 @@ Set preconditioner type to block Jacobi.
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "tab:petsc:options:defaults"
-
-\end_inset
-
-Useful command-line arguments for setting PETSc options.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \end_inset
 
 
@@ -806,6 +801,21 @@ status open
 
 \begin_layout Standard
 \align center
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:petsc:options:quasistatic"
+
+\end_inset
+
+PETSc options that often result in improved performance in quasi-static
+ and dynamic elasticity problems.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="3">
 <features>
@@ -978,24 +988,6 @@ Convergence tolerance for relative decrease in residual norm.
 </cell>
 </row>
 </lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "tab:petsc:options:quasistatic"
-
-\end_inset
-
-PETSc options that often result in improved performance in quasi-static
- and dynamic elasticity problems.
-\end_layout
 
 \end_inset
 
@@ -1538,15 +1530,23 @@ UniformDB Spatial Database
 \end_layout
 
 \begin_layout Standard
-The SimpleDB spatial database is quite general.
- When the values are uniform, it is often easier to use the UniformDB spatial
- database and specify the values directly (either on the command line or
- in a parameters settings file).
- However, if the values are used in more than one place, it is easier to
- place the values in a SimpleDB file, because they can then be referred
- to using the filename of the spatial database rather than having to repeatedly
- list all of the values on the command line or in a parameter settings (.cfg)
- file.
+The SimpleDB spatial database is quite general, but when the values are
+ uniform, it is often easier to use the UniformDB spatial database instead.
+ With the UniformDB, you specify the values directly either on the command
+ line or in a parameter settings (
+\family typewriter
+.cfg
+\family default
+) file.
+ On the other hand, if the values are used in more than one place, it is
+ easier to place the values in a SimpleDB file, because they can then be
+ referred to using the filename of the spatial database rather than having
+ to repeatedly list all of the values on the command line or in a parameter
+ settings (
+\family typewriter
+.cfg
+\family default
+) file.
  The Pyre properties for a UniformDB are:
 \end_layout
 
@@ -1651,7 +1651,7 @@ data_dir Directory containing the SCEC CVM-H data files
 \end_layout
 
 \begin_layout Description
-squash Squash topography/bathymetry to sea level (make the Earth's surface
+squash Squash topography/bathymetry to sea level (make the earth's surface
  flat)
 \end_layout
 
@@ -1696,7 +1696,7 @@ squash = True ; Turn on squashing
 squash_limit = -1000.0 ; Only distort the geometry above z = -1 km in flattening
  the 
 \newline
-Earth
+earth
 \end_layout
 
 \begin_layout Section
@@ -1711,18 +1711,28 @@ For materials, the ``label'' is a string used only for error messages.
  material model and quadrature rule.
  For boundary conditions the ``label'' is a string used to associate groups
  of vertices (psets in LaGriT and nodesets in CUBIT) with a boundary condition.
- PyLith 1.0 had an ``id'' for boundary conditions, but we removed it because
- it was not used.
- For faults the ``label'' is a string used to associate groups of vertices
- (psets in LaGriT and nodesets in CUBIT) with vertices on the fault.
  Note that some mesh generators use strings (LaGriT) to identify groups
  of nodes while others use integers (CUBIT Exodus files).
  Although CUBIT permits associated strings with nodesets, they are not included
- in the Exodus files.
+ in the Exodus files, so we must rely on the nodset ID.
+ PyLith 1.0 had an ``id'' for boundary conditions, but we removed it from
+ subsequent releases because it was not used.
+ For faults the ``label'' is used in the same manner as the 
+\begin_inset Quotes eld
+\end_inset
+
+label
+\begin_inset Quotes erd
+\end_inset
+
+ for boundary conditions.
+ That is, it associates a string with a group of vertices (pset in LaGriT
+ and nodeset in CUBIT).
  The fault ``id'' is a integer used to tag the cohesive cells in the mesh
  with a specific fault and quadrature rule.
- Because we use the fault ``id'' to tag the cohesive cells in the mesh,
- it must be unique among the faults as well as the materials.
+ Because we use the fault ``id'' to tag cohesive cells in the mesh the same
+ way we tag normal cells to materials, it must be unique among the faults
+ as well as the materials.
 \end_layout
 
 \begin_layout Section
@@ -1958,8 +1968,8 @@ PyLith Output
 \begin_layout Standard
 PyLith currently supports output to VTK files, which can be imported directly
  into a number of visualization tools, such as ParaView, Visit, and MayaVi.
- PyLith 1.1 significantly expands the information available for output, including
- fault information and state variables.
+ PyLith 1.1 significantly expanded the information available for output,
+ including fault information and state variables.
  Output of solution information for the domain, faults, materials, and boundary
  conditions is controlled by an output manager for each module.
  This allows the user to tailor the output to the problem.
@@ -1970,7 +1980,8 @@ PyLith currently supports output to VTK files, which can be imported directly
  For a fault the fields include the final slip, the slip initiation  time,
  and the fault normal vector.
  For a material the fields include the density and the elastic constants.
- Additional diagnostic can be included by setting the output parameters.
+ Additional diagnostic information can be included by setting the appropriate
+ output parameters.
  See Chapters 
 \begin_inset LatexCommand ref
 reference "cha:material:models"
@@ -2001,7 +2012,7 @@ Output Manager
 \begin_layout Standard
 The OutputManager object controls the type of files written, the fields
  included in the output, and how often output is written.
- PyLith includes some specialized OutputManagers that prescribe while fields
+ PyLith includes some specialized OutputManagers that prescribe what fields
  are output by default.
  In some cases, additional fields are available but not included by default.
  For example, in 3D problems, the along-strike and up-dip directions over
@@ -2140,8 +2151,8 @@ Output Field Filters
 
 \begin_layout Standard
 Output fields may not directly correspond to the information a user desires.
- For example, the state variables of the materials, the default output includes
- the state variables (or physical properties) at each quadrature point.
+ For example, the default output for the state variables includes the physical
+ properties at each quadrature point.
  Most visualization packages cannot handle cell fields with multiple points
  in a cell (the locations of the points within the cell are not included
  in the data file).
