@@ -880,17 +880,23 @@ The generalized form of Hooke's law relating stress and strain for linear
 
 \begin_layout Standard
 \begin_inset Formula \begin{gather}
-\sigma_{ij}=C_{ijkl}\epsilon_{kl}\,.\label{eq:1}\end{gather}
+\sigma_{ij}=C_{ijkl}\left(\epsilon_{kl}-\epsilon_{kl}^{I}\right)+\sigma_{ij}^{I}\,,\label{eq:1}\end{gather}
 
 \end_inset
 
-Due to symmetry considerations, however, the 81 components of the elasticity
+where we have included both initial strains and initial stresses, denoted
+ with the superscript 
+\shape slanted
+I
+\shape default
+.
+ Due to symmetry considerations, however, the 81 components of the elasticity
  matrix are reduced to 21 independent components for the most general case
  of anisotropic elasticity.
  Representing the stress and strain in terms of vectors, the constitutive
  relation may be written
 \begin_inset Formula \begin{gather}
-\overrightarrow{\sigma}=\underline{C}\overrightarrow{\epsilon\,},\label{eq:2}\end{gather}
+\overrightarrow{\sigma}=\underline{C}\left(\vec{\epsilon}-\vec{\epsilon}^{I}\right)+\vec{\sigma}^{I},\label{eq:2}\end{gather}
 
 \end_inset
 
@@ -1091,7 +1097,7 @@ density
 
 \begin_layout Standard
 In 1D we can write Hooke's law as 
-\begin_inset Formula $\sigma_{11}=C_{1111}\epsilon_{11}$
+\begin_inset Formula $\sigma_{11}=C_{1111}\left(\epsilon_{11}-\epsilon_{11}^{I}\right)+\sigma_{11}^{I}$
 \end_inset
 
 .
@@ -1116,13 +1122,13 @@ For purely 1D axial deformation
 
 , so we have
 \begin_inset Formula \begin{equation}
-\sigma_{11}=(\lambda+2\mu)\epsilon_{11},\label{eq:5}\end{equation}
+\sigma_{11}=(\lambda+2\mu)\left(\epsilon_{11}-\epsilon_{11}^{I}\right)+\sigma_{11}^{I},\label{eq:5}\end{equation}
 
 \end_inset
 
 with
 \begin_inset Formula \begin{gather}
-\sigma_{22}=\sigma_{33}=\lambda\epsilon_{11},\nonumber \\
+\sigma_{22}=\sigma_{33}=\lambda\left(\epsilon_{11}-\epsilon_{11}^{I}\right)+\sigma_{22}^{I},\nonumber \\
 \sigma_{12}=\sigma_{23}=\sigma_{13}=0.\label{eq:6}\end{gather}
 
 \end_inset
@@ -1150,13 +1156,13 @@ For deformation where the tractions are confined to the axial direction,
 
 , so we have
 \begin_inset Formula \begin{equation}
-\sigma_{11}=\frac{\mu(3\lambda+2\mu)}{\lambda+\mu}\epsilon_{11},\label{eq:7}\end{equation}
+\sigma_{11}=\frac{\mu(3\lambda+2\mu)}{\lambda+\mu}\left(\epsilon_{11}-\epsilon_{11}^{I}\right)+\sigma_{11}^{I},\label{eq:7}\end{equation}
 
 \end_inset
 
 with
 \begin_inset Formula \begin{gather}
-\epsilon_{22}=\epsilon_{33}=-\frac{\lambda}{2(\lambda+\mu)}\epsilon_{11},\label{eq:8}\\
+\epsilon_{22}=\epsilon_{33}=-\frac{\lambda}{2(\lambda+\mu)}\epsilon_{11}+\epsilon_{22}^{I},\label{eq:8}\\
 \sigma_{22}=\sigma_{33}=\sigma_{12}=\sigma_{23}=\sigma_{13}=0.\nonumber \end{gather}
 
 \end_inset
@@ -1178,9 +1184,12 @@ In 2D we can write Hooke's law as
 C_{1111} & C_{1122} & C_{1112}\\
 C_{1122} & C_{2222} & C_{2212}\\
 C_{1112} & C_{2212} & C_{1212}\end{array}\right]\left[\begin{array}{c}
-\epsilon_{11}\\
-\epsilon_{22}\\
-\epsilon_{12}\end{array}\right]\:.\label{eq:9}\end{gather}
+\epsilon_{11}-\epsilon_{11}^{I}\\
+\epsilon_{22}-\epsilon_{22}^{I}\\
+\epsilon_{12}-\epsilon_{12}^{I}\end{array}\right]+\left[\begin{array}{c}
+\sigma_{11}^{I}\\
+\sigma_{22}^{I}\\
+\sigma_{12}^{I}\end{array}\right]\:.\label{eq:9}\end{gather}
 
 \end_inset
 
@@ -1209,9 +1218,12 @@ If the gradient in deformation with respect to the
 \lambda+2\mu & \lambda & 0\\
 \lambda & \lambda+2\mu & 0\\
 0 & 0 & 2\mu\end{array}\right]\left[\begin{array}{c}
-\epsilon_{11}\\
-\epsilon_{22}\\
-\epsilon_{12}\end{array}\right]\:.\label{eq:10}\end{gather}
+\epsilon_{11}-\epsilon_{11}^{I}\\
+\epsilon_{22}-\epsilon_{22}^{I}\\
+\epsilon_{12}-\epsilon_{12}^{I}\end{array}\right]+\left[\begin{array}{c}
+\sigma_{11}^{I}\\
+\sigma_{22}^{I}\\
+\sigma_{12}^{I}\end{array}\right]\:.\label{eq:10}\end{gather}
 
 \end_inset
 
@@ -1240,15 +1252,18 @@ If the
 \frac{4\mu(\lambda+\mu)}{\lambda+2\mu} & \frac{2\mu\lambda}{\lambda+2\mu} & 0\\
 \frac{2\mu\lambda}{\lambda+2} & \frac{4\mu(\lambda+\mu)}{\lambda+2\mu} & 0\\
 0 & 0 & 2\mu\end{array}\right]\left[\begin{array}{c}
-\epsilon_{11}\\
-\epsilon_{22}\\
-\epsilon_{12}\end{array}\right]\:,\label{eq:11}\end{gather}
+\epsilon_{11}-\epsilon_{11}^{I}\\
+\epsilon_{22}-\epsilon_{22}^{I}\\
+\epsilon_{12}-\epsilon_{12}^{I}\end{array}\right]+\left[\begin{array}{c}
+\sigma_{11}^{I}\\
+\sigma_{22}^{I}\\
+\sigma_{12}^{I}\end{array}\right]\:,\label{eq:11}\end{gather}
 
 \end_inset
 
 where
 \begin_inset Formula \begin{equation}
-\begin{gathered}\epsilon_{33}=-\frac{\lambda}{\lambda+2\mu}(\epsilon_{11}+\epsilon_{22})\\
+\begin{gathered}\epsilon_{33}=-\frac{\lambda}{\lambda+2\mu}(\epsilon_{11}+\epsilon_{22})+\epsilon_{33}^{I}\\
 \epsilon_{13}=\epsilon_{23}=0\,.\end{gathered}
 \label{eq:12}\end{equation}
 
@@ -1585,7 +1600,7 @@ where the
  represent the trace of the stress and strain tensors, respectively.
  We then define the deviatoric components of stress and strain as
 \begin_inset Formula \begin{gather}
-S_{ij}=\sigma_{ij}-P\delta_{ij}\,,\,\,\,\, e_{ij}^{\prime}=\epsilon_{ij}-\theta\delta_{ij}\,,\label{eq:16}\end{gather}
+S_{ij}=\sigma_{ij}-P\delta_{ij}\,,\,\,\,\, e_{ij}=\epsilon_{ij}-\theta\delta_{ij}\,,\label{eq:16}\end{gather}
 
 \end_inset
 
@@ -1857,11 +1872,15 @@ As for all our viscoelastic models, the volumetric strain is completely
  elastic, and the viscoelastic deformation may be expressed purely in terms
  of the deviatoric components:
 \begin_inset Formula \begin{equation}
-\underline{S}=2\mu_{tot}\left(\mu_{0}\underline{e}+\sum_{i=1}^{N}\mu_{i}\underline{q}^{i}\right)\,,\label{eq:19}\end{equation}
+\underline{S}=2\mu_{tot}\left[\mu_{0}\underline{e}+\sum_{i=1}^{N}\mu_{i}\underline{q}^{i}-\underline{e}^{I}\right]+\underline{S}^{I}\,;\; P=3K\left(\theta-\theta^{I}\right)+P^{I}\,,\label{eq:19}\end{equation}
 
 \end_inset
 
 where 
+\shape slanted
+K
+\shape default
+ is the bulk modulus, 
 \begin_inset Formula $N$
 \end_inset
 
@@ -1901,7 +1920,7 @@ An alternative to the differential equation form above is an integral equation
 , is measured.
  For a linear material we obtain:
 \begin_inset Formula \begin{equation}
-\underline{S}\left(t\right)=2\mu\left(t\right)\underline{e}_{0}\,,\label{eq:21}\end{equation}
+\underline{S}\left(t\right)=2\mu\left(t\right)\left(\underline{e}_{0}-\underline{e}^{I}\right)+\underline{S}^{I}\,,\label{eq:21}\end{equation}
 
 \end_inset
 
@@ -1972,7 +1991,7 @@ reference "eq:22"
 
 ,
 \begin_inset Formula \begin{equation}
-\underline{S}\left(t\right)=2\mu\left(t\right)\underline{e}_{0}+2\int_{0}^{t}\mu\left(t-\tau\right)\underline{\dot{e}}\left(\tau\right)\, d\tau\,,\label{eq:28}\end{equation}
+\underline{S}\left(t\right)=2\mu\left(t\right)\left(\underline{e}_{0}-\underline{e}^{I}\right)+\underline{S}^{I}+2\int_{0}^{t}\mu\left(t-\tau\right)\underline{\dot{e}}\left(\tau\right)\, d\tau\,,\label{eq:28}\end{equation}
 
 \end_inset
 
@@ -1994,7 +2013,7 @@ reference "eq:28"
 
 , we obtain
 \begin_inset Formula \begin{equation}
-\underline{S}\left(t\right)=2\mu_{tot}\left[\mu_{0}\underline{e}\left(t\right)+\mu_{1}\exp\frac{-t}{\lambda_{1}}\left(\underline{e}_{0}+\intop_{0}^{t}\exp\frac{t}{\lambda_{1}}\underline{\dot{e}}\left(\tau\right)\, d\tau\right)\right]\,.\label{eq:29}\end{equation}
+\underline{S}\left(t\right)=2\mu_{tot}\left[\mu_{0}\underline{e}\left(t\right)+\mu_{1}\exp\frac{-t}{\lambda_{1}}\left(\underline{e}_{0}+\intop_{0}^{t}\exp\frac{t}{\lambda_{1}}\underline{\dot{e}}\left(\tau\right)\, d\tau\right)-\underline{e}^{I}\right]+\underline{S}^{I}\,.\label{eq:29}\end{equation}
 
 \end_inset
 
@@ -2057,7 +2076,7 @@ The approximation is singular for zero time steps, but a series expansion
 This converges with only a few terms.
  With this formulation, the constitutive relation now has the simple form:
 \begin_inset Formula \begin{equation}
-\underline{S}\left(t\right)=2\mu_{tot}\left(\mu_{0}\underline{e}\left(t\right)+\mu_{1}\underline{h}^{1}\left(t\right)\right)\,.\label{eq:37}\end{equation}
+\underline{S}\left(t\right)=2\mu_{tot}\left(\mu_{0}\underline{e}\left(t\right)+\mu_{1}\underline{h}^{1}\left(t\right)-\underline{e}^{I}\right)+\underline{S}^{I}\,.\label{eq:37}\end{equation}
 
 \end_inset
 
@@ -2148,8 +2167,8 @@ key "Kojic:Bathe:1987"
 
  into deviatoric and volumetric parts:
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left(^{t+\Delta t}\underline{e}^{\prime}-^{t+\Delta t}\underline{e}^{C}\right)+^{I}\underline{S}\label{eq:42}\\
-^{t+\Delta t}P=\frac{E}{1-2\nu}^{t+\Delta t}\theta+^{I}P\:,\nonumber \end{gather}
+^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left(^{t+\Delta t}\underline{e}^{\prime}-^{t+\Delta t}\underline{e}^{C}-\underline{e}^{I}\right)+\underline{S}^{I}\label{eq:42}\\
+^{t+\Delta t}P=\frac{E}{1-2\nu}\left(^{t+\Delta t}\theta-\theta^{I}\right)+P^{I}\:,\nonumber \end{gather}
 
 \end_inset
 
@@ -2162,10 +2181,14 @@ where
 \end_inset
 
  is the total viscous strain, 
+\begin_inset Formula $\underline{e}^{I}$
+\end_inset
+
+ is the initial deviatoric strain, 
 \begin_inset Formula $^{t+\Delta t}P$
 \end_inset
 
- is the pressure, and 
+ is the pressure, 
 \begin_inset Formula $^{t+\Delta t}\theta$
 \end_inset
 
@@ -2173,13 +2196,17 @@ where
 \begin_inset Formula $t+\Delta t$
 \end_inset
 
-.
+ , and 
+\begin_inset Formula $\theta^{I}$
+\end_inset
+
+ is the initial mean strain.
  The initial deviatoric stress and initial pressure are given by 
-\begin_inset Formula $^{I}\underline{S}$
+\begin_inset Formula $\underline{S}^{I}$
 \end_inset
 
  and 
-\begin_inset Formula $^{I}P$
+\begin_inset Formula $P^{I}$
 \end_inset
 
 , respectively.
@@ -2191,13 +2218,13 @@ reference "eq:42"
 
  may also be written as
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{E}{1+\mathrm{\nu}}(^{t+\Delta t}\underline{e}^{\prime\prime}-\underline{\Delta e}^{C})+^{I}\underline{S}\,,\label{eq:43}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{E}{1+\mathrm{\nu}}(^{t+\Delta t}\underline{e}^{\prime\prime}-\underline{\Delta e}^{C})+\underline{S}^{I}\,,\label{eq:43}\end{gather}
 
 \end_inset
 
 where
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{e}^{\prime\prime}=^{t+\Delta t}\underline{e}^{\prime}-^{t}\underline{e}^{C}\,\,,\,\,\,\underline{\Delta e}^{C}=^{t+\Delta t}\underline{e}^{C}-^{t}\underline{e}^{C}\,.\label{eq:44}\end{gather}
+^{t+\Delta t}\underline{e}^{\prime\prime}=^{t+\Delta t}\underline{e}^{\prime}-^{t}\underline{e}^{C}-\underline{e}^{I}\,\,,\,\,\,\underline{\Delta e}^{C}=^{t+\Delta t}\underline{e}^{C}-^{t}\underline{e}^{C}\,.\label{eq:44}\end{gather}
 
 \end_inset
 
@@ -2213,7 +2240,7 @@ where, using the
 
 -method of time integration,
 \begin_inset Formula \begin{gather}
-^{\tau}\underline{S}=(1-\alpha)_{I}^{t}\underline{S}+\alpha_{I}^{t+\Delta t}\underline{S}+^{I}\underline{S}=(1-\alpha)^{t}\underline{S}+\alpha^{t+\Delta t}\underline{S}\,\,,\label{eq:46}\end{gather}
+^{\tau}\underline{S}=(1-\alpha)_{I}^{t}\underline{S}+\alpha_{I}^{t+\Delta t}\underline{S}+\underline{S}^{I}=(1-\alpha)^{t}\underline{S}+\alpha^{t+\Delta t}\underline{S}\,\,,\label{eq:46}\end{gather}
 
 \end_inset
 
@@ -2231,7 +2258,7 @@ where
 
 and
 \begin_inset Formula \begin{gather}
-^{\tau}\overline{\sigma}=(1-\alpha)_{I}^{t}\overline{\sigma}+\alpha_{I}^{t+\Delta t}\overline{\sigma}+^{I}\overline{\sigma}=\sqrt{3^{\tau}J_{2}^{\prime}}\,\,.\label{eq:49}\end{gather}
+^{\tau}\overline{\sigma}=(1-\alpha)_{I}^{t}\overline{\sigma}+\alpha_{I}^{t+\Delta t}\overline{\sigma}+\overline{\sigma}^{I}=\sqrt{3^{\tau}J_{2}^{\prime}}\,\,.\label{eq:49}\end{gather}
 
 \end_inset
 
@@ -2295,7 +2322,7 @@ reference "eq:43"
 
 , we obtain
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left\{ ^{t+\Delta t}\underline{e}^{\prime\prime}-\frac{\Delta t}{2\eta}\left[(1-\alpha)^{t}\underline{S}+\alpha^{t+\Delta t}\underline{S}\right]\right\} +^{I}\underline{S}\,\,.\label{eq:52}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left\{ ^{t+\Delta t}\underline{e}^{\prime\prime}-\frac{\Delta t}{2\eta}\left[(1-\alpha)^{t}\underline{S}+\alpha^{t+\Delta t}\underline{S}\right]\right\} +\underline{S}^{I}\,\,.\label{eq:52}\end{gather}
 
 \end_inset
 
@@ -2305,7 +2332,7 @@ Solving for
 
 ,
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{1}{\frac{1+\mathrm{\nu}}{E}+\frac{\alpha\Delta t}{2\eta}}\left[^{t+\Delta t}\underline{e}^{\prime\prime}-\frac{\Delta t}{2\eta}(1-\alpha)^{t}\underline{S}+\frac{1+\mathrm{\nu}}{E}\,^{I}\underline{S}\right]\,\,.\label{eq:53}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{1}{\frac{1+\mathrm{\nu}}{E}+\frac{\alpha\Delta t}{2\eta}}\left[^{t+\Delta t}\underline{e}^{\prime\prime}-\frac{\Delta t}{2\eta}(1-\alpha)^{t}\underline{S}+\frac{1+\mathrm{\nu}}{E}\underline{S}^{I}\right]\,\,.\label{eq:53}\end{gather}
 
 \end_inset
 
@@ -2313,7 +2340,7 @@ In this case it is possible to solve directly for the deviatoric stresses,
  and the effective stress function approach is not needed.
  To obtain the total stress, we simply use
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\sigma_{ij}=^{t+\Delta t}S_{ij}+\frac{\mathit{E}}{1-2\nu}\,^{t+\Delta t}\theta\delta_{ij}+^{I}P\delta_{ij}\,\,.\label{eq:54}\end{gather}
+^{t+\Delta t}\sigma_{ij}=^{t+\Delta t}S_{ij}+\frac{\mathit{E}}{1-2\nu}\left(\,^{t+\Delta t}\theta-\theta^{I}\right)\delta_{ij}+P^{I}\delta_{ij}\,\,.\label{eq:54}\end{gather}
 
 \end_inset
 
@@ -2527,13 +2554,13 @@ reference "eq:43"
 
 , we obtain:
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left\{ ^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left[\left(1-\alpha\right)^{t}\underline{S}+\alpha{}^{t+\Delta t}\underline{S}\right]\right\} +^{I}\underline{S}\,,\label{eq:67}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left\{ ^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left[\left(1-\alpha\right)^{t}\underline{S}+\alpha{}^{t+\Delta t}\underline{S}\right]\right\} +\underline{S}^{I}\,,\label{eq:67}\end{gather}
 
 \end_inset
 
 which may be rewritten:
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}\left(\frac{1+\nu}{E}+\alpha\Delta t^{\tau}\gamma\right)={}^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}\underline{S}+\frac{1+\nu}{E}\,^{I}\underline{S}\,.\label{eq:68}\end{gather}
+^{t+\Delta t}\underline{S}\left(\frac{1+\nu}{E}+\alpha\Delta t^{\tau}\gamma\right)={}^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}\underline{S}+\frac{1+\nu}{E}\underline{S}^{I}\,.\label{eq:68}\end{gather}
 
 \end_inset
 
@@ -2546,8 +2573,8 @@ a^{2}\,\,{}^{t+\Delta t}J_{2}^{\prime}-b+c^{\tau}\gamma-d^{2}\,^{\tau}\gamma^{2}
 where
 \begin_inset Formula \begin{gather}
 a=\frac{1+\nu}{E}+\alpha\Delta t^{\tau}\gamma\,\,\nonumber \\
-b=\frac{1}{2}{}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot{}^{t+\Delta t}\underline{e}^{\prime\prime}+\frac{1+\nu}{E}{}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot^{I}\underline{S}+\left(\frac{1+\nu}{E}\right)^{2}\,^{I}J_{2}^{\prime}\,.\label{eq:70}\\
-c=\Delta t\left(1-\alpha\right){}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot^{t}\underline{S}+\Delta t\left(1-\alpha\right)\frac{1+\nu}{E}\,^{t}\underline{S}\cdot^{I}\underline{S}\,\,\nonumber \\
+b=\frac{1}{2}{}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot{}^{t+\Delta t}\underline{e}^{\prime\prime}+\frac{1+\nu}{E}{}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot\underline{S}^{I}+\left(\frac{1+\nu}{E}\right)^{2}\,^{I}J_{2}^{\prime}\,.\label{eq:70}\\
+c=\Delta t\left(1-\alpha\right){}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot^{t}\underline{S}+\Delta t\left(1-\alpha\right)\frac{1+\nu}{E}\,^{t}\underline{S}\cdot\underline{S}^{I}\,\,\nonumber \\
 d=\Delta t\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\,\,\nonumber \end{gather}
 
 \end_inset
@@ -2603,7 +2630,7 @@ reference "eq:68"
 
  as
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{1}{\left(a_{E}+\alpha\Delta t^{\tau}\gamma\right)}\left[^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}\underline{S}+a_{E}\,^{I}\underline{S}\right]\,,\label{eq:71}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{1}{\left(a_{E}+\alpha\Delta t^{\tau}\gamma\right)}\left[^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}\underline{S}+a_{E}\underline{S}^{I}\right]\,,\label{eq:71}\end{gather}
 
 \end_inset
 
@@ -2616,7 +2643,7 @@ a_{E}=\frac{1+\nu}{E}\,.\label{eq:72}\end{gather}
 The derivative is then
 \begin_inset Formula \begin{gather}
 \frac{\partial{}^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{1}{a_{E}+\alpha\Delta t^{\tau}\gamma}\nonumber \\
-\left\langle \delta_{ik}-\frac{\partial^{\tau}\gamma}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\left\{ \Delta t\left(1-\alpha\right)^{t}S_{i}+\frac{\alpha\Delta t}{a_{E}+\alpha\Delta t^{\tau}\gamma}\left[^{t+\Delta t}e_{i}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}S_{i}+a_{E}\,^{I}S_{i}\right]\right\} \right\rangle \,.\label{eq:73}\end{gather}
+\left\langle \delta_{ik}-\frac{\partial^{\tau}\gamma}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\left\{ \Delta t\left(1-\alpha\right)^{t}S_{i}+\frac{\alpha\Delta t}{a_{E}+\alpha\Delta t^{\tau}\gamma}\left[^{t+\Delta t}e_{i}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}S_{i}+a_{E}S_{i}^{I}\right]\right\} \right\rangle \,.\label{eq:73}\end{gather}
 
 \end_inset
 
@@ -2653,19 +2680,19 @@ reference "eq:69"
 The derivatives of this function are
 \begin_inset Formula \begin{gather}
 \frac{\partial F}{\partial\sqrt{^{\tau}J_{2}^{\prime}}}=\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)\nonumber \\
-\frac{\partial F}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=-\delta_{ik}\left[\frac{^{t+\Delta t}e_{i}^{\prime\prime}}{2}\right]+a_{E}\,^{I}S_{i}-\Delta t\left(1-\alpha\right)^{t}S_{i}\,^{\tau}\gamma\,.\label{eq:77}\end{gather}
+\frac{\partial F}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=-\delta_{ik}\left[\frac{^{t+\Delta t}e_{i}^{\prime\prime}}{2}\right]+a_{E}S_{i}^{I}-\Delta t\left(1-\alpha\right)^{t}S_{i}\,^{\tau}\gamma\,.\label{eq:77}\end{gather}
 
 \end_inset
 
 Then using the quotient rule for derivatives,
 \begin_inset Formula \begin{gather}
-\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{\delta_{ik}\left[\frac{^{t+\Delta t}e_{i}^{\prime\prime}}{2}+a_{E}\,^{I}S_{i}-\Delta t\left(1-\alpha\right)^{t}S_{i}\,^{\tau}\gamma\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)}\,.\label{eq:78}\end{gather}
+\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{\delta_{ik}\left[\frac{^{t+\Delta t}e_{i}^{\prime\prime}}{2}+a_{E}S_{i}^{I}-\Delta t\left(1-\alpha\right)^{t}S_{i}\,^{\tau}\gamma\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)}\,.\label{eq:78}\end{gather}
 
 \end_inset
 
 This yields
 \begin_inset Formula \begin{gather}
-\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{j}^{\prime\prime}}=\frac{\delta_{ik}K_{1}\left[\frac{^{t+\Delta t}e_{i}^{\prime\prime}}{2}+a_{E}\,^{I}S_{i}-\Delta t\left(1-\alpha\right)^{t}S_{i}\,^{\tau}\gamma\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)}\,.\label{eq:79}\end{gather}
+\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{j}^{\prime\prime}}=\frac{\delta_{ik}K_{1}\left[\frac{^{t+\Delta t}e_{i}^{\prime\prime}}{2}+a_{E}S_{i}^{I}-\Delta t\left(1-\alpha\right)^{t}S_{i}\,^{\tau}\gamma\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)}\,.\label{eq:79}\end{gather}
 
 \end_inset
 
@@ -2756,6 +2783,89 @@ reference "eq:69"
 PyLith does not presently include power-law viscoelasticity, but we plan
  to provide the effective stress function formulation as one possible implementa
 tion of a power-law Maxwell viscoelastic material.
+\end_layout
+
+\begin_layout Section
+Initial State Variables
+\end_layout
+
+\begin_layout Standard
+In many problems of interest, the state variables describing a material
+ model may already have nonzero values prior to the application of any boundary
+ conditions.
+ For problems in geophysics, the most common example is a problem that includes
+ the effects of gravitational body forces.
+ In the real earth, rocks were emplaced and formed under the influence of
+ gravity.
+ When performing numerical simulations, however, it is not possible to represent
+ the entire time history of rock emplacement.
+ Instead, gravity must be 'turned on' at the beginning of the simulation.
+ Unfortunately, this results in unrealistic amounts of deformation at the
+ beginning of a simulation.
+ An alternative is to provide an initial state for the region under consideratio
+n.
+ This allows the specification of a set of state variables that is consistent
+ with the prior application of gravitational body forces.
+ In a more general sense, initial values for state variables may be used
+ to provide values that are consistent with any set of conditions that occurred
+ prior to the beginning of a simulation.
+ In PyLith 1.3, we presently only allow the specification of initial stresses.
+ In future versions, however, we will allow a more general specification
+ of initial state values.
+\end_layout
+
+\begin_layout Subsection
+Specification of Initial State Values
+\end_layout
+
+\begin_layout Standard
+Since state variables are specific to a given material, initial values for
+ state variables are specified as part of the material description.
+ By default, initial state values are not used.
+ To override this behavior, the 
+\family typewriter
+use_initial_state
+\family default
+ flag may be set to true:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.materials.material]
+\end_layout
+
+\begin_layout LyX-Code
+use_initial_state = True
+\end_layout
+
+\begin_layout Standard
+Initial state values are specified using a spatial database, so it is necessary
+ to provide the name of the database as well:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.elastic]
+\end_layout
+
+\begin_layout LyX-Code
+use_initial_state = True
+\end_layout
+
+\begin_layout LyX-Code
+initial_state_db.iohandler.filename = initial_state.spatialdb
+\end_layout
+
+\begin_layout Standard
+The settings above are from an example in the 
+\family typewriter
+3D/hex8
+\family default
+ directory, which is described in 
+\begin_inset LatexCommand ref
+reference "sec:Tutorial-3d-hex8"
+
+\end_inset
+
+.
 \end_layout
 
 \end_body
