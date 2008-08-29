@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -155,16 +155,23 @@ The material property group associates a material model (label for the material,
  are no longer available (or necessary).
  If a set of material groups is not specified, a single material model is
  used for the entire problem.
- The examples in 
-\family typewriter
-examples/3d/hex8
-\family default
+ See Sections 
+\begin_inset LatexCommand ref
+reference "sec:Tutorial-3d-hex8"
+
+\end_inset
+
  and 
+\begin_inset LatexCommand ref
+reference "sec:Tutorial-3d-tet4"
+
+\end_inset
+
+for examples 
 \family typewriter
-examples/3d/tet4
+that
 \family default
- demonstrate how to specify more than one material model for a problem,
- while the remainder of the example problems assume a single material model.
+ demonstrate how to specify more than one material model.
 \end_layout
 
 \begin_layout Subsection
@@ -174,8 +181,6 @@ Material Parameters
 \begin_layout Standard
 For each material group, there is a single component defining the material
  model to be used.
- If no groups are specified, a single material model is assumed for the
- problem.
  The default material model is 
 \family typewriter
 elasticisotropic3d
@@ -186,7 +191,7 @@ elasticisotropic3d
 
 \begin_layout Description
 db Spatial database specifying the spatial variation in the parameters of
- the bulk constitutive model.
+ the bulk constitutive model (default is a SimpleDB).
 \end_layout
 
 \begin_layout Description
@@ -225,7 +230,7 @@ An example of setting these parameters in a
 \end_layout
 
 \begin_layout LyX-Code
-materials = [elastic_upper,elastic_lower]
+materials = [elastic,viscoelastic]
 \end_layout
 
 \begin_layout LyX-Code
@@ -233,11 +238,11 @@ materials = [elastic_upper,elastic_lower]
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.timedependent.materials.elastic_upper]
+[pylithapp.timedependent.materials.elastic]
 \end_layout
 
 \begin_layout LyX-Code
-label = Upper elastic material
+label = Elastic material
 \end_layout
 
 \begin_layout LyX-Code
@@ -265,11 +270,11 @@ quadrature.cell.dimension = 3
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.timedependent.materials.elastic_lower]
+[pylithapp.timedependent.materials.viscoelastic]
 \end_layout
 
 \begin_layout LyX-Code
-label = Lower elastic material
+label = Viscoelastic material
 \end_layout
 
 \begin_layout LyX-Code
@@ -277,7 +282,7 @@ id = 2
 \end_layout
 
 \begin_layout LyX-Code
-db.iohandler.filename = mat_elastic.spatialdb
+db.iohandler.filename = mat_viscoelastic.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
@@ -295,15 +300,25 @@ quadrature.cell.dimension = 3
 \begin_layout Standard
 These settings correspond to the the problem in 
 \family typewriter
-examples/3d/hex8
+Section 
 \family default
+
+\begin_inset LatexCommand ref
+reference "sec:Tutorial-3d-hex8"
+
+\end_inset
+
 .
- The parameters for each bulk constitutive model are specified using the
- same spatial database (
+ The parameters for the bulk constitutive models are specified using the
+ spatial databases 
 \family typewriter
 mat_elastic.spatialdb
 \family default
-).
+ and 
+\family typewriter
+mat_viscoelastic.spatialdb
+\family default
+.
  Refer to the discussion of each material model to find the parameters that
  must be specified in the spatial database.
  Appendix 
@@ -312,7 +327,7 @@ reference "sec:Spatialdata:SimpleIOAscii"
 
 \end_inset
 
- describes the format of the spatial database files.
+ describes the format of the SimpleDB spatial database files.
  In a more realistic problem, a different spatial database, and possibly
  a different material model, would be used for each material group.
 \end_layout
@@ -324,7 +339,7 @@ By default the output manager for a material does not output any information.
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.timedependent.materials.elastic_upper.output]
+[pylithapp.timedependent.materials.elastic.output]
 \end_layout
 
 \begin_layout LyX-Code
@@ -340,7 +355,7 @@ writer.filename = dislocation-statevars-upper.vtk
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.timedependent.materials.elastic_lower.output]
+[pylithapp.timedependent.materials.viscoelastic.output]
 \end_layout
 
 \begin_layout LyX-Code
@@ -354,8 +369,14 @@ writer.filename = dislocation-statevars-lower.vtk
 \begin_layout Standard
 These settings again correspond to the problem in 
 \family typewriter
-examples/3d/hex8
+Section 
 \family default
+
+\begin_inset LatexCommand ref
+reference "sec:Tutorial-3d-hex8"
+
+\end_inset
+
 .
  The specification of a state variable base filename (
 \family typewriter
@@ -391,8 +412,14 @@ writer.filename
  Additional output may be requested for a material model, as in this example
  (
 \family typewriter
-examples/twocells/twohex8
+see Section 
 \family default
+
+\begin_inset LatexCommand ref
+reference "sec:Tutorial-Two-hexahedra"
+
+\end_inset
+
 ):
 \end_layout
 
@@ -443,8 +470,26 @@ status open
 
 \begin_layout Standard
 \align center
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "tab:material-model-output"
+
+\end_inset
+
+Properties and state variables available for output for existing material
+ models.
+ Physical properties are available for output as 
+\family typewriter
+cell_info_fields
+\family default
+ and state variables are available for output as 
+\family typewriter
+cell_data_fields
+\family default
+.
+\end_layout
 
 \end_inset
 
@@ -584,28 +629,6 @@ total_strain, viscous_strain, stress
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Properties and state variables available for output for existing material
- models.
- Physical properties are available for output as 
-\family typewriter
-cell_info_fields
-\family default
- and state variables are available for output as 
-\family typewriter
-cell_data_fields
-\family default
-.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \end_inset
 
 
@@ -617,8 +640,16 @@ status open
 
 \begin_layout Standard
 \align center
+\begin_inset Caption
+
+\begin_layout Standard
 \begin_inset LatexCommand label
 name "tab:material-model-statevars"
+
+\end_inset
+
+Order of components in tensor state-variables for material models.
+\end_layout
 
 \end_inset
 
@@ -833,18 +864,6 @@ stress
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Order of components in tensor state-variables for material models.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \end_inset
 
 
@@ -939,6 +958,16 @@ status open
 \begin_layout Standard
 \noindent
 \align center
+\begin_inset Caption
+
+\begin_layout Standard
+Values in spatial database used as parameters in the elastic material constituti
+ve models.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
 <features>
@@ -1045,19 +1074,6 @@ density
 </cell>
 </row>
 </lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Values in spatial database used as parameters in the elastic material constituti
-ve models.
-\end_layout
 
 \end_inset
 
@@ -1277,9 +1293,8 @@ Viscoelastic Materials
 \end_layout
 
 \begin_layout Standard
-At present, there are two viscoelastic material models available in PyLith
- 1.1, with at least one additional model planned for the near future (Table
- 
+At present, there are two viscoelastic material models available in PyLith,
+ with at least one additional model planned for the near future (Table 
 \begin_inset LatexCommand ref
 reference "tab:Material-models-available"
 
@@ -1310,6 +1325,20 @@ status open
 \begin_layout Standard
 \noindent
 \align center
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:Material-models-available"
+
+\end_inset
+
+Planned and available 3D viscoelastic materials for PyLith.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="3">
 <features>
@@ -1445,23 +1474,6 @@ Isotropic Maxwell material with power-law viscous rheology
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "tab:Material-models-available"
-
-\end_inset
-
-Planned and available 3D viscoelastic materials for PyLith.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \end_inset
 
 
@@ -1477,6 +1489,14 @@ sideways false
 status open
 
 \begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/pylith-materials.ai
+	scale 75
+
+\end_inset
+
+
 \begin_inset Caption
 
 \begin_layout Standard
@@ -1486,8 +1506,8 @@ name "fig:Material-models"
 
 \end_inset
 
-Spring-dashpot 1D representations of the planned and available 3D elastic
- and viscoelastic material models for PyLith.
+Spring-dashpot 1D representations of the available 3D elastic and viscoelastic
+ material models for PyLith.
  The top model is a linear elastic model, the middle model is a Maxwell
  model, and the bottom model is a generalized Maxwell model.
  For the generalized Maxwell model, 
@@ -1504,18 +1524,6 @@ Spring-dashpot 1D representations of the planned and available 3D elastic
 
  is specified for each Maxwell model.
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Graphics
-	filename figs/pylith-materials.ai
-	scale 75
 
 \end_inset
 
@@ -1654,6 +1662,20 @@ status open
 \begin_layout Standard
 \noindent
 \align center
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:Mathematical-notation"
+
+\end_inset
+
+Mathematical notation used in this section.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="3">
 <features>
@@ -1760,23 +1782,6 @@ Second order tensor field a
 </cell>
 </row>
 </lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "tab:Mathematical-notation"
-
-\end_inset
-
-Mathematical notation used in this section.
-\end_layout
 
 \end_inset
 
@@ -2748,7 +2753,7 @@ reference "eq:69"
 \end_layout
 
 \begin_layout Standard
-PyLith 1.1 does not presently include power-law viscoelasticity, but we plan
+PyLith does not presently include power-law viscoelasticity, but we plan
  to provide the effective stress function formulation as one possible implementa
 tion of a power-law Maxwell viscoelastic material.
 \end_layout
