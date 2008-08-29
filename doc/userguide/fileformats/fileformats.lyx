@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -454,7 +454,7 @@ SimpleDB Spatial Database Files
 \end_layout
 
 \begin_layout Standard
-SimplDB spatial database files contain a header describing the set of points
+SimpleDB spatial database files contain a header describing the set of points
  and then the data with each line listing the coordinates of a point followed
  by the values of the fields for that point.
  
@@ -520,7 +520,7 @@ SimpleDB { // start specifying the database parameters
 \end_layout
 
 \begin_layout LyX-Code
-  num-values = 3 // number of values in the databasae
+  num-values = 3 // number of values in the database
 \end_layout
 
 \begin_layout LyX-Code
@@ -702,7 +702,7 @@ proj
  Alternatively, refer to the documentation for the 
 \begin_inset LatexCommand htmlurl
 name "Proj.4 Cartographic Projections library"
-target "proj.maptools.org"
+target "trac.osgeo.org/proj"
 
 \end_inset
 
@@ -763,7 +763,7 @@ Geographic
 \end_layout
 
 \begin_layout Standard
-This coordinate system is for geographic coordinates, such as longtitude
+This coordinate system is for geographic coordinates, such as longitude
  and latitude.
  Specification of the location in three-dimensions is supported.
  The vertical datum can be either the reference ellipsoid or mean sea level.
@@ -811,7 +811,7 @@ proj -le
 \end_layout
 
 \begin_layout LyX-Code
-  ellipspod = WGS84
+  ellipsoid = WGS84
 \end_layout
 
 \begin_layout LyX-Code
@@ -954,7 +954,7 @@ proj -le
 \end_layout
 
 \begin_layout LyX-Code
-  ellipspod = WGS84
+  ellipsoid = WGS84
 \end_layout
 
 \begin_layout LyX-Code
@@ -1179,7 +1179,7 @@ proj -le
 \end_layout
 
 \begin_layout LyX-Code
-  ellipspod = WGS84
+  ellipsoid = WGS84
 \end_layout
 
 \begin_layout LyX-Code
@@ -1248,7 +1248,7 @@ mean sea level
 \end_layout
 
 \begin_layout LyX-Code
-  // roundoff errors it is best to pick a location near the center of
+  // round-off errors it is best to pick a location near the center of
 \end_layout
 
 \begin_layout LyX-Code

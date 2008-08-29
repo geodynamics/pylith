@@ -763,7 +763,7 @@ PyLith requires PETSc -- including PETSc's new Sieve component.
 \end_layout
 
 \begin_layout Standard
-PETSc itself depends upon several other sofware packages.
+PETSc itself depends upon several other software packages.
  Fortunately, PETSc's configuration script can automatically download and
  build these software packages for you.
 \end_layout
@@ -2231,12 +2231,12 @@ target "geodynamics.org/cig/software/packages/short/pylith"
 
 .
  After unpacking the source, run the prepackaged shell script to configure
- Spacialdata for your system.
+ Spatialdata for your system.
  Finally, use the 
 \family typewriter
 make
 \family default
- utility to build and install Spacialdata.
+ utility to build and install Spatialdata.
 \end_layout
 
 \begin_layout Subsubsection
@@ -2244,7 +2244,7 @@ Downloading and Unpacking the Spatialdata Source
 \end_layout
 
 \begin_layout Standard
-Download Spacialdata from the 
+Download Spatialdata from the 
 \begin_inset LatexCommand htmlurl
 name "PyLith web page"
 target "geodynamics.org/cig/software/packages/short/pylith"
@@ -2271,7 +2271,7 @@ $ gunzip -c spatialdata-0.4.tgz | tar xf -
 \end_layout
 
 \begin_layout Subsubsection
-Spacialdata Installation Procedure
+Spatialdata Installation Procedure
 \end_layout
 
 \begin_layout Quote

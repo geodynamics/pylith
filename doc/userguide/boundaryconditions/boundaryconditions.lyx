@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -110,9 +110,9 @@ reference "sec:MeshIOAscii"
  Note also that we currently associate boundary conditions with string identifie
 rs, so even if the mesh generator uses integers, the name is specified as
  the digits of the integer value.
- Finally, note that every vertex set used to specify boundary conditions
- must correspond to a simply-connected surface, meaning that all vertices
- in the set must be connected to each other.
+ Finally, note that every vertex set that ultimately is associated with
+ a boundary condition on a cell face (e.g., Neumann boundary conditions and
+ fault interface conditions) must correspond to a simply-connected surface.
 \end_layout
 
 \begin_layout Subsection
@@ -377,6 +377,20 @@ status open
 \begin_layout Standard
 \noindent
 \align center
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:dirichlet:output"
+
+\end_inset
+
+Fields available in output of DirichletBoundary boundary condition information.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="3">
 <features>
@@ -489,24 +503,6 @@ Rate of change of displacement field in global coordinate system
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Fields available in output of DirichletBoundary boundary condition information.
-\begin_inset LatexCommand label
-name "tab:dirichlet:output"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \end_inset
 
 
@@ -547,6 +543,15 @@ status open
 \begin_layout Standard
 \noindent
 \align center
+\begin_inset Caption
+
+\begin_layout Standard
+Values in spatial database used for Dirichlet boundary conditions.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
 <features>
@@ -648,18 +653,6 @@ dof-2
 </cell>
 </row>
 </lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Values in spatial database used for Dirichlet boundary conditions.
-\end_layout
 
 \end_inset
 
@@ -855,6 +848,20 @@ status open
 \begin_layout Standard
 \noindent
 \align center
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:neumann:output"
+
+\end_inset
+
+Fields available in output of Neumann boundary condition information.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="2" columns="3">
 <features>
@@ -930,24 +937,6 @@ Traction vector in global coordinate system
 </cell>
 </row>
 </lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Fields available in output of Neumann boundary condition information.
-\begin_inset LatexCommand label
-name "tab:neumann:output"
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -1739,9 +1728,9 @@ The insertion of cohesive cells into the finite-element mesh has the effect
  Typically, the additional degrees of freedom associated with the Lagrange
  multipliers result in a complex implementation.
  However, the use of Lagrange multiplier constraints with cohesive cells
- makes this very easy; we simply add the additional degrees of freedom associate
-d with the Lagrange multipliers to the cohesive cells as shown in Figure
- 
+ provides for an easy implementation; we simply add the additional degrees
+ of freedom associated with the Lagrange multipliers to the cohesive cells
+ as shown in Figure 
 \begin_inset LatexCommand ref
 reference "fig:fault:cohesive:quad4:kin"
 
@@ -1891,6 +1880,20 @@ status open
 \begin_layout Standard
 \noindent
 \align center
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:fault:kin:output"
+
+\end_inset
+
+Fields available in output of fault information.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="8" columns="3">
 <features>
@@ -2165,24 +2168,6 @@ Change in fault tractions (in fault coordinate system) in Pa
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Fields available in output of fault information.
-\begin_inset LatexCommand label
-name "tab:fault:kin:output"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \end_inset
 
 
@@ -2247,7 +2232,7 @@ Slip Time Function
 \begin_layout Standard
 The current release of PyLith supports specification of the evolution of
  fault slip using analytical expressions for the slip time history at each
- point where the parameters for the slip time function may vary over the
+ point, where the parameters for the slip time function may vary over the
  fault surface.
  Currently, three slip time functions are available: (1) a step-function
  for quasi-static modeling of earthquake rupture, (2) a constant slip rate
@@ -2369,6 +2354,21 @@ status open
 \begin_layout Standard
 \noindent
 \align center
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:step-function-db-params"
+
+\end_inset
+
+Values in spatial database used as parameters in the step function slip
+ time function.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="3">
 <features>
@@ -2554,25 +2554,6 @@ Slip initiation time (
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Values in spatial database used as parameters in the step function slip
- time function.
-\end_layout
-
-\end_inset
-
-
-\begin_inset LatexCommand label
-name "tab:step-function-db-params"
-
-\end_inset
-
-
-\end_layout
-
 \end_inset
 
 
@@ -2685,6 +2666,21 @@ status open
 \begin_layout Standard
 \noindent
 \align center
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:const-slip-rate-db-params"
+
+\end_inset
+
+Values in spatial database used as parameters in the constant slip rate
+ slip time function.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="3">
 <features>
@@ -2870,25 +2866,6 @@ Slip initiation time (
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Values in spatial database used as parameters in the constant slip rate
- slip time function.
-\end_layout
-
-\end_inset
-
-
-\begin_inset LatexCommand label
-name "tab:const-slip-rate-db-params"
-
-\end_inset
-
-
-\end_layout
-
 \end_inset
 
 
@@ -3021,6 +2998,20 @@ status open
 \begin_layout Standard
 \noindent
 \align center
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:Brune-slip-db-params"
+
+\end_inset
+
+Values in spatial database used as parameters in the Brune slip time function.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="3">
 <features>
@@ -3243,24 +3234,6 @@ Slip initiation time (
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Caption
-
-\begin_layout Standard
-Values in spatial database used as parameters in the Brune slip time function.
-\end_layout
-
-\end_inset
-
-
-\begin_inset LatexCommand label
-name "tab:Brune-slip-db-params"
-
-\end_inset
-
-
-\end_layout
-
 \end_inset
 
 
@@ -3326,8 +3299,8 @@ The mass density is a property of every material model, and is thus included
  This is appropriate for three-dimensional problems where the gravity vector
  is aligned with the negative z-axis, as would be the case in a geographic-proje
 cted coordinate system or a generic Cartesian coordinate system.
- For cases in which the curvature of the Earth should be considered, the
- spatialdata package provides an Earth-centered, Earth-fixed (ECEF) coordinate
+ For cases in which the curvature of the earth should be considered, the
+ spatialdata package provides an earth-centered, earth-fixed (ECEF) coordinate
  system and a local georeferenced Cartesian system; in each of these cases
  the orientation vector is computed automatically, although this feature
  has not been tested.
@@ -3335,7 +3308,7 @@ cted coordinate system or a generic Cartesian coordinate system.
  the vector will need to be explicitly specified.
  For example, in a two-dimensional problem, the vector might be specified
  as (0, -1, 0).
- The vector still has three components, although the extra components are
+ The vector still has three components, although the extra component is
  not used.
 \end_layout
 

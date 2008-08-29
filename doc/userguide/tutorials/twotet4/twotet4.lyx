@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -129,18 +129,6 @@ reference "fig:twotet4-mesh"
 twotet4.mesh
 \family default
 , which is in PyLith mesh ASCII format.
- This file format is described in Appendix 
-\begin_inset LatexCommand ref
-reference "cha:File-Formats"
-
-\end_inset
-
-.
- This file describes the dimensionality of the problem (1D, 2D, or 3D),
- the coordinates of the vertices (nodes), the vertices composing each cell
- (element), and the material ID to be associated with each cell.
- It then provides groups of vertices that may be used to define faults or
- surfaces to which boundary conditions may be applied.
 \end_layout
 
 \begin_layout Standard
@@ -189,91 +177,12 @@ Additional Common Information
 \end_layout
 
 \begin_layout Standard
-In addition to the mesh, the two example problems share additional information.
- For problems of this type, it is generally useful to create a file named
- 
-\family typewriter
-pylithapp.cfg
-\family default
- in the run directory, since this file is read automatically every time
- PyLith is run.
- Settings specific to a particular problem may be placed in other 
-\family typewriter
-.cfg
-\family default
- files, as described later, and then those files are placed on the command
- line.
-  The settings contained in 
-\family typewriter
-pylithapp.cfg
-\family default
- for this problem consist of:
-\end_layout
-
-\begin_layout Description
-pylithapp.journal.info Settings that control the verbosity of the output for
- the different components.
-\end_layout
-
-\begin_layout Description
-pylithapp.mesh_generator Settings that control mesh importing, such as the
- importer type, the filename, and the spatial dimension of the mesh.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent Settings that control the problem, such as the total
- time, time step size, and spatial dimension.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.materials Settings that control the material type,
- specify which material IDs are to be associated with a particular material
- type, and give the name of the spatial database containing material parameters
- for the mesh.
- The quadrature information is also given.
-\end_layout
-
-\begin_layout Description
-pylithapp.petsc PETSc settings to use for the problem, such as the preconditioner
- type.
-\end_layout
-
-\begin_layout Standard
-All of the problems in this directory use the same material database, as
- specified under 
-\end_layout
-
-\begin_layout LyX-Code
-
-\family typewriter
-pylithapp.timedependent.materials
-\family default
- 
-\end_layout
-
-\begin_layout Standard
-in 
+In addition to the mesh, the two example problems share additional information,
+ which we place in 
 \family typewriter
 pylithapp.cfg
 \family default
 .
- This information is contained in the file 
-\family typewriter
-matprops.spatialdb
-\family default
-.
- Although the material model is specified in 
-\family typewriter
-pylithapp.cfg
-\family default
-, the physical properties for the material model are given in 
-\family typewriter
-matprops.spatialdb
-\family default
-.
- For this example, values describing three-dimensional elastic material
- properties are given at a single point, resulting in uniform material propertie
-s.
 \end_layout
 
 \begin_layout Subsection
@@ -292,12 +201,7 @@ pylithapp.cfg
 axialdisp.cfg
 \family default
 .
- These settings are:
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent Specifies an implicit formulation for the problem
- and specifies the array of boundary conditions.
+ These settings include:
 \end_layout
 
 \begin_layout Description
@@ -327,26 +231,6 @@ axialdisp.spatialdb
 ).
 \end_layout
 
-\begin_layout Description
-pylithapp.problem.formulation.output.output.writer Gives the base filename for
- VTK output 
-\newline
-(
-\family typewriter
-axialdisp.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.materials.material.output Gives the base filename for
- state variable output files (
-\family typewriter
-axialdisp-statevars.vtk
-\family default
-).
-\end_layout
-
 \begin_layout Standard
 The values for the Dirichlet boundary conditions are described in the file
  
@@ -358,9 +242,8 @@ axialdisp.spatialdb
 axialdisp.cfg
 \family default
 .
- The format of all spatial database files is similar.
  Because data are being specified using two control points (rather than
- being uniform over the mesh, for example), the data dimension is one.
+ being uniform over the mesh), the data dimension is one.
 \end_layout
 
 \begin_layout Standard
@@ -393,55 +276,7 @@ pylith axialdisp.cfg
 \end_layout
 
 \begin_layout Standard
-Once the problem has run, three files will be produced.
- The first file is named 
-\family typewriter
-axialdisp_t0000000.vtk
-\family default
-.
- The 
-\family typewriter
-t0000000
-\family default
- indicates that the output is for the first (and only) time step, corresponding
- to an elastic solution.
- This file contains mesh information as well as displacement values at the
- mesh vertices.
- The second file is named 
-\family typewriter
-axialdisp-statevars_t0000000.vtk
-\family default
-.
- This file contains the state variables for each cell.
- The default fields are the total strain and stress fields.
- Since the cells are linear tetrahedra, there is a single quadrature point
- for each cell and thus a single set of stress and strain values for each
- cell.
- The final file (
-\family typewriter
-axialdisp-statevars_info.vtk
-\family default
-) gives the material properties used for the problem.
- Since we have not specified which properties to write, the default properties
- (
-\family typewriter
-mu
-\family default
-, 
-\family typewriter
-lambda
-\family default
-, 
-\family typewriter
-density
-\family default
-) are written.
- All of the 
-\family typewriter
-.vtk
-\family default
- files may be used with a number of visualization packages.
- If the problem ran correctly, you should be able to generate a figure such
+If the problem ran correctly, you should be able to generate a figure such
  as Figure 
 \begin_inset LatexCommand ref
 reference "fig:twotet4-axial"
@@ -522,17 +357,7 @@ pylithapp.cfg
 dislocation.cfg
 \family default
 .
- These settings are:
-\end_layout
-
-\begin_layout Description
-pylithapp.journal.info Turns on journaling for 2D quadrature (used for 3D
- faults) and for cohesive kinematic faults.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent Specifies an implicit formulation for the problem,
- the array of boundary conditions, and the array of interfaces.
+ These settings include:
 \end_layout
 
 \begin_layout Description
@@ -568,35 +393,6 @@ twotet4.mesh
 ) defining the points on the fault, provides quadrature information, and
  then gives database names for material properties (needed for conditioning),
  fault slip, peak fault slip rate, and fault slip time.
-\end_layout
-
-\begin_layout Description
-pylithapp.problem.formulation.output.output.writer Gives the base filename for
- VTK output 
-\newline
-(
-\family typewriter
-dislocation.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.interfaces.fault.output.writer Gives the base filename
- for cohesive cell output files (
-\family typewriter
-dislocation-fault.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.materials.material.output Gives the base filename for
- state variable output files (
-\family typewriter
-dislocation-statevars.vtk
-\family default
-).
 \end_layout
 
 \begin_layout Standard
@@ -662,68 +458,7 @@ pylith dislocation.cfg
 \end_layout
 
 \begin_layout Standard
-Once the problem has run, five files are produced.
- The first file is named 
-\family typewriter
-dislocation_t0000000.vtk
-\family default
-.
- The 
-\family typewriter
-t0000000
-\family default
- indicates that the output is for the first (and only) time step, corresponding
- to an elastic solution.
- This file contains mesh information as well as displacement values at the
- mesh vertices.
- The second file is named 
-\family typewriter
-dislocation-statevars_t0000000.vtk
-\family default
-.
- This file contains the state variables for each cell.
- The default fields are the total strain and stress fields.
- Since the cells are linear tetrahedra, there is a single quadrature point
- for each cell and thus a single set of stress and strain values for each
- cell.
- The third file is named 
-\family typewriter
-dislocation-fault_t0000000.vtk
-\family default
-.
- This file gives the specified fault slip for each vertex on the fault,
- along with the computed traction change for the cohesive cell.
- The fourth file (
-\family typewriter
-dislocation-statevars_info.vtk
-\family default
-) gives the material properties used for the problem.
- Since we have not specified which properties to write, the default properties
- (
-\family typewriter
-mu
-\family default
-, 
-\family typewriter
-lambda
-\family default
-, 
-\family typewriter
-density
-\family default
-) are written.
- The final file (
-\family typewriter
-dislocation-fault_info.vtk
-\family default
-) provides information such as the normal direction, final slip, and slip
- time for each vertex on the fault.
- All of the 
-\family typewriter
-.vtk
-\family default
- files may be used with a number of visualization packages.
- If the problem ran correctly, you should be able to generate a figure such
+If the problem ran correctly, you should be able to generate a figure such
  as Figure 
 \begin_inset LatexCommand vref
 reference "fig:twotet4-disloc"

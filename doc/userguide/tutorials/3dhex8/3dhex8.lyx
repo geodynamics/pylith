@@ -316,56 +316,13 @@ Additional Common Information
 
 \begin_layout Standard
 In addition to the mesh, the example problems share additional information.
- For problems of this type, it is generally useful to create a file named
- 
+ As in previous examples, we place this information in 
 \family typewriter
 pylithapp.cfg
 \family default
- in the run directory, since this file is read automatically every time
- PyLith is run.
- Settings specific to a particular problem may be placed in other 
-\family typewriter
-.cfg
-\family default
- files, as described later, and then those files are placed on the command
- line.
-  The settings contained in 
-\family typewriter
-pylithapp.cfg
-\family default
- for this problem consist of:
-\end_layout
-
-\begin_layout Description
-pylithapp.journal.info Settings that control the verbosity of the output for
- the different components.
-\end_layout
-
-\begin_layout Description
-pylithapp.mesh_generator Settings that control mesh importing, such as the
- importer type, the filename, and the spatial dimension of the mesh.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent Settings that control the problem, such as the total
- time, time step size, and spatial dimension.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.materials Settings that control the material type,
- specify which material IDs are to be associated with a particular material
- type, and give the name of the spatial database containing material parameters
- for the mesh.
- The quadrature information is also given.
-\end_layout
-
-\begin_layout Description
-pylithapp.petsc PETSc settings to use for the problem, such as the preconditioner
- type.
-\end_layout
-
-\begin_layout Standard
-Since these examples use CUBIT format, we set the importer to 
+.
+ Since these examples use CUBIT format, in this file we set the importer
+ to 
 \family typewriter
 MeshIOCubit
 \family default
@@ -518,12 +475,7 @@ pylithapp.cfg
 shearxy.cfg
 \family default
 .
- These settings are:
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent Specifies an implicit formulation for the problem
- and specifies the array of boundary conditions.
+ These settings include:
 \end_layout
 
 \begin_layout Description
@@ -605,15 +557,6 @@ fixeddisp_shear.spatialdb
 \end_layout
 
 \begin_layout Description
-pylithapp.problem.formulation.output.domain.writer Gives the base filename for
- VTK output over the entire domain (
-\family typewriter
-shearxy.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
 pylithapp.problem.formulation.output.subdomain Gives the label of the nodeset
  defining the subdomain and gives the base filename for VTK output over
  the subdomain corresponding to the ground surface (
@@ -654,13 +597,7 @@ fixeddisp_shear.spatialdb
 shearxy.cfg
 \family default
 .
- The format of all spatial database files is similar.
- Because data are being specified using two control points (rather than
- being uniform over the mesh, for example), the data dimension is one.
-\end_layout
-
-\begin_layout Standard
-The files containing common information (
+ The files containing common information (
 \family typewriter
 box_hex8_1000m.exo
 \family default
@@ -693,33 +630,17 @@ pylith shearxy.cfg
 \end_layout
 
 \begin_layout Standard
-Once the problem has run, six files will be produced.
- The first file is named 
-\family typewriter
-shearxy_t0000000.vtk
-\family default
-.
- The 
-\family typewriter
-t0000000
-\family default
- indicates that the output is for the first (and only) time step, corresponding
- to an elastic solution.
- This file contains mesh information as well as displacement values at the
- mesh vertices.
- The second file is named 
+The output file 
 \family typewriter
 shearxy-statevars-elastic_t0000000.vtk
 \family default
-.
- This file contains the state variables for each cell in the material group
- 
+ contains the state variables for each cell in the material group 
 \family typewriter
 elastic
 \family default
 .
- The default fields are the total strain and stress fields.
- These values are computed at each quadrature point in the cell.
+ The default fields are the total strain and stress fields and are computed
+ at each quadrature point in the cell.
  There are eight quadrature points for each cell; however, we have requested
  that these values be averaged, so there is a single set of values per cell.
  The third file (
@@ -750,11 +671,11 @@ density
 shearxy-statevars-viscoelastic_info.vtk
 \family default
 ) are exactly analogous to the corresponding files for the elastic material.
- The final file (
+ The file 
 \family typewriter
 shearxy-groundsurf_t0000000.vtk
 \family default
-) is analogous to 
+ is analogous to 
 \family typewriter
 shearxy_t0000000.vtk
 \family default
@@ -765,12 +686,7 @@ ding to the ground surface.
 \family typewriter
 shearxy_t0000000.vtk
 \family default
-, so they are quadrilaterials rather than hexahedra.
- All of the 
-\family typewriter
-.vtk
-\family default
- files may be used with a number of visualization packages.
+, so they are quadrilaterals rather than hexahedra.
  If the problem ran correctly, you should be able to generate a figure such
  as 
 \begin_inset LatexCommand ref
@@ -856,134 +772,7 @@ pylithapp.cfg
 dislocation.cfg
 \family default
 .
- These settings are:
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent Specifies an implicit formulation for the problem,
- the array of boundary conditions, and the array of interfaces.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.implicit Specifies an array of two output managers,
- one for the full domain, and another for a subdomain corresponding to the
- ground surface.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.bc.x_pos Specifies the boundary conditions for the
- right side of the mesh, defining which degrees of freedom are being constrained
- (
-\family typewriter
-x
-\family default
- and 
-\family typewriter
-y
-\family default
-), providing the label (defined in 
-\family typewriter
-box_hex8_1000m.exo
-\family default
-) defining the points desired, and assigning a label to the boundary condition
- set.
- Rather than specifying a spatial database file to define the boundary condition
-s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
- condition, which sets the displacements to zero.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.bc.x_neg Specifies the boundary conditions for the
- left side of the mesh, defining which degrees of freedom are being constrained
- (
-\family typewriter
-x
-\family default
- and 
-\family typewriter
-y
-\family default
-), providing the label (defined in 
-\family typewriter
-box_hex8_1000m.exo
-\family default
-) defining the points desired, and assigning a label to the boundary condition
- set.
- Rather than specifying a spatial database file to define the boundary condition
-s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
- condition, which sets the displacements to zero.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.bc.z_neg Specifies the boundary conditions for the
- bottom of the mesh, defining which degrees of freedom are being constrained
- (z), providing the label (defined in 
-\family typewriter
-box_hex8_1000m.exo
-\family default
-) defining the points desired, and assigning a label to the boundary condition
- set.
- Rather than specifying a spatial database file to define the boundary condition
-s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
- condition, which sets the displacements to zero.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.interfaces Gives the label (defined in 
-\family typewriter
-box_hex8_1000m.exo
-\family default
-) defining the points on the fault, provides quadrature information, and
- then gives database names for material properties (needed for conditioning),
- fault slip, peak fault slip rate, and fault slip time.
-\end_layout
-
-\begin_layout Description
-pylithapp.problem.formulation.output.output.writer Gives the base filename for
- VTK output over the entire domain (
-\family typewriter
-dislocation.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.problem.formulation.output.subdomain Gives the label of the nodeset
- defining the subdomain and gives the base filename for VTK output over
- the subdomain corresponding to the ground surface (
-\family typewriter
-dislocation-groundsurf.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.interfaces.fault.output.writer Gives the base filename
- for cohesive cell output files (
-\family typewriter
-dislocation-fault.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.materials.elastic.output Gives the base filename for
- state variable output files for the elastic material (
-\family typewriter
-dislocation-statevars-elastic.vtk
-\family default
-), and causes state variables to be averaged over all quadrature points
- in each cell.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.materials.viscoelastic.output Gives the base filename
- for state variable output files for the viscoelastic material (
-\family typewriter
-dislocation-statevars-viscoelastic.vtk
-\family default
-), and causes state variables to be averaged over all quadrature points
- in each cell.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1058,103 +847,7 @@ pylith dislocation.cfg
 \end_layout
 
 \begin_layout Standard
-Once the problem has run, eight files will be produced.
- The first file is named 
-\family typewriter
-dislocation_t0000000.vtk
-\family default
-.
- The 
-\family typewriter
-t0000000
-\family default
- indicates that the output is for the first (and only) time step, corresponding
- to an elastic solution.
- This file contains mesh information as well as displacement values at the
- mesh vertices.
- The second file is named 
-\family typewriter
-dislocation-statevars-elastic_t0000000.vtk
-\family default
-.
- This file contains the state variables for each cell in the material group
- 
-\family typewriter
-elastic
-\family default
-.
- The default fields are the total strain and stress fields.
- These values are computed at each quadrature point in the cell.
- There are eight quadrature points for each cell; however, we have requested
- that these values be averaged, so there is a single set of values per cell.
- The third file (
-\family typewriter
-dislocation-statevars-elastic_info.vtk
-\family default
-) gives the material properties used for the elastic material.
- Since we have not specified which properties to write, the default properties
- (
-\family typewriter
-mu
-\family default
-, 
-\family typewriter
-lambda
-\family default
-, 
-\family typewriter
-density
-\family default
-) are written.
- The files are for the viscoelastic material (
-\family typewriter
-dislocation-statevars-viscoelastic_t0000000.vtk
-\family default
- and 
-\family typewriter
-dislocation-statevars-viscoelastic_info.vtk
-\family default
-) are exactly analogous to the corresponding files for the elastic material.
- The sixth file (
-\family typewriter
-dislocation-groundsurf_t0000000.vtk
-\family default
-) is analogous to 
-\family typewriter
-dislocation_
-\newline
-t0000000.vtk
-\family default
-, but in this case the results are only given for a subset of the mesh correspon
-ding to the ground surface.
- Also, the cells in this file are one dimension lower than the cells described
- in 
-\family typewriter
-dislocation_t0000000
-\newline
-.vtk
-\family default
-, so they are quadrilaterials rather than hexahedra.
- The seventh file (
-\family typewriter
-dislocation-fault_t0000000.
-\newline
-vtk
-\family default
-) gives the specified fault slip for each vertex on the fault, along with
- the computed traction change for the cohesive cell.
- The final file (
-\family typewriter
-dislocation-fault_info.vtk
-\family default
-) provides information such as the normal direction, final slip, and slip
- time for each vertex on the fault.
- All of the 
-\family typewriter
-.vtk
-\family default
- files may be used with a number of visualization packages.
- If the problem ran correctly, you should be able to generate a figure such
+If the problem ran correctly, you should be able to generate a figure such
  as Figure 
 \begin_inset LatexCommand vref
 reference "fig:3dhex-disloc"
@@ -1223,7 +916,7 @@ The next example is a simple problem where we apply the body forces due
 
 \end_inset
 
-wherev 
+where 
 \begin_inset Formula $\rho$
 \end_inset
 
@@ -1250,7 +943,7 @@ pylithapp.cfg
 gravity.cfg
 \family default
 .
- These settings are:
+ These settings include:
 \end_layout
 
 \begin_layout Description
@@ -1273,12 +966,6 @@ acceleration
 gravity_dir
 \family default
  are used.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.implicit Specifies an array of two output managers,
- one for the full domain, and another for a subdomain corresponding to the
- ground surface.
 \end_layout
 
 \begin_layout Description
@@ -1377,45 +1064,6 @@ s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
  condition, which sets the displacements to zero.
 \end_layout
 
-\begin_layout Description
-pylithapp.problem.formulation.output.domain.writer Gives the base filename for
- VTK output over the entire domain (
-\family typewriter
-gravity.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.problem.formulation.output.subdomain Gives the label of the nodeset
- defining the subdomain and gives the base filename for VTK output over
- the subdomain corresponding to the ground surface (
-\family typewriter
-gravity-groundsurf.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.materials.elastic.output Gives the base filename for
- state variable output files for the elastic material (
-\family typewriter
-gravity-statevars-elastic.vtk
-\family default
-), and causes state variables to be averaged over all quadrature points
- in each cell.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.materials.viscoelastic.output Gives the base filename
- for state variable output files for the viscoelastic material (
-\family typewriter
-gravity-statevars-viscoelastic.vtk
-\family default
-), and causes state variables to be averaged over all quadrature points
- in each cell.
-\end_layout
-
 \begin_layout Standard
 The files containing common information (
 \family typewriter
@@ -1452,89 +1100,7 @@ pylith gravity.cfg
 \end_layout
 
 \begin_layout Standard
-Once the problem has run, six files will be produced.
- The first file is named 
-\family typewriter
-gravity_t0000000.vtk
-\family default
-.
- The 
-\family typewriter
-t0000000
-\family default
- indicates that the output is for the first (and only) time step, corresponding
- to an elastic solution.
- This file contains mesh information as well as displacement values at the
- mesh vertices.
- The second file is named 
-\family typewriter
-gravity-statevars-elastic_t0000000.vtk
-\family default
-.
- This file contains the state variables for each cell in the material group
- 
-\family typewriter
-elastic
-\family default
-.
- The default fields are the total strain and stress fields.
- These values are computed at each quadrature point in the cell.
- There are eight quadrature points for each cell; however, we have requested
- that these values be averaged, so there is a single set of values per cell.
- The third file (
-\family typewriter
-gravity-statevars-elastic_info.vtk
-\family default
-) gives the material properties used for the elastic material.
- Since we have not specified which properties to write, the default properties
- (
-\family typewriter
-mu
-\family default
-, 
-\family typewriter
-lambda
-\family default
-, 
-\family typewriter
-density
-\family default
-) are written.
- The files for the
-\family typewriter
- 
-\family default
-viscoelastic material
-\family typewriter
- (gravity-statevars-viscoelastic_t0000000.vtk
-\family default
- and 
-\family typewriter
-gravity-statevars-viscoelastic_info.vtk
-\family default
-) are exactly analogous to the corresponding files for the elastic material.
- The sixth file (
-\family typewriter
-gravity-groundsurf_t0000000.vtk
-\family default
-) is analogous to 
-\family typewriter
-gravity_t0000000.vtk
-\family default
-, but in this case the results are only given for a subset of the mesh correspon
-ding to the ground surface.
- Also, the cells in this file are one dimension lower than the cells described
- in 
-\family typewriter
-gravity_t0000000.vtk
-\family default
-, so they are quadrilaterals rather than hexahedra.
- All of the 
-\family typewriter
-.vtk
-\family default
- files may be used with a number of visualization packages.
- If the problem ran correctly, you should be able to generate a figure such
+If the problem ran correctly, you should be able to generate a figure such
  as
 \begin_inset LatexCommand vref
 reference "fig:3dhex-gravity"
@@ -1602,7 +1168,8 @@ In the previous example, the application of body forces resulted in large
  balance the stresses due to gravitational body forces.
  The problem is identical to the previous problem, except for the use of
  initial stresses.
- The stress solution should be identical, but there should be no displacements.
+ The stress solution should be identical, but there should be no displacements
+ or strains.
  Parameter settings that override or augment those in 
 \family typewriter
 pylithapp.cfg
@@ -1612,7 +1179,7 @@ pylithapp.cfg
 gravity_istress.cfg
 \family default
 .
- These settings are:
+ These settings include:
 \end_layout
 
 \begin_layout Description
@@ -1635,115 +1202,6 @@ acceleration
 gravity_dir
 \family default
  are used.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.implicit Specifies an array of two output managers,
- one for the full domain, and another for a subdomain corresponding to the
- ground surface.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.bc.x_pos Specifies the boundary conditions for the
- right side of the mesh, defining which degrees of freedom are being constrained
- (
-\family typewriter
-x
-\family default
-), providing the label (defined in 
-\family typewriter
-box_hex8_
-\newline
-1000m.exo
-\family default
-) defining the points desired, and assigning a label to the boundary condition
- set.
- Rather than specifying a spatial database file to define the boundary condition
-s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
- condition, which sets the displacements to zero.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.bc.x_neg Specifies the boundary conditions for the
- left side of the mesh, defining which degrees of freedom are being constrained
- (
-\family typewriter
-x
-\family default
-), providing the label (defined in 
-\family typewriter
-box_hex8_
-\newline
-1000m.exo
-\family default
-) defining the points desired, and assigning a label to the boundary condition
- set.
- Rather than specifying a spatial database file to define the boundary condition
-s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
- condition, which sets the displacements to zero.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.bc.y_pos Specifies the boundary conditions for the
- back of the mesh, defining which degrees of freedom are being constrained
- (y), providing the label (defined in 
-\family typewriter
-box_hex8_1000m.exo
-\family default
-) defining the points desired, and assigning a label to the boundary condition
- set.
- Rather than specifying a spatial database file to define the boundary condition
-s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
- condition, which sets the displacements to zero.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.bc.y_neg Specifies the boundary conditions for the
- front of the mesh, defining which degrees of freedom are being constrained
- (y), providing the label (defined in 
-\family typewriter
-box_hex8_1000m.exo
-\family default
-) defining the points desired, and assigning a label to the boundary condition
- set.
- Rather than specifying a spatial database file to define the boundary condition
-s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
- condition, which sets the displacements to zero.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.bc.z_neg Specifies the boundary conditions for the
- bottom of the mesh, defining which degrees of freedom are being constrained
- (z), providing the label (defined in 
-\family typewriter
-box_hex8_1000m.
-\newline
-exo
-\family default
-) defining the points desired, and assigning a label to the boundary condition
- set.
- Rather than specifying a spatial database file to define the boundary condition
-s, we use the default spatial database (FixedDOFDB) for the Dirichlet boundary
- condition, which sets the displacements to zero.
-\end_layout
-
-\begin_layout Description
-pylithapp.problem.formulation.output.domain.writer Gives the base filename for
- VTK output over the entire domain (
-\family typewriter
-gravity.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.problem.formulation.output.subdomain Gives the label of the nodeset
- defining the subdomain and gives the base filename for VTK output over
- the subdomain corresponding to the ground surface (
-\family typewriter
-gravity-groundsurf.vtk
-\family default
-).
 \end_layout
 
 \begin_layout Description
@@ -1786,26 +1244,6 @@ initial_state_db.iohandler.filename
 .
 \end_layout
 
-\begin_layout Description
-pylithapp.timedependent.materials.elastic.output Gives the base filename for
- state variable output files for the elastic material (
-\family typewriter
-gravity-statevars-elastic.vtk
-\family default
-), and causes state variables to be averaged over all quadrature points
- in each cell.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.materials.viscoelastic.output Gives the base filename
- for state variable output files for the viscoelastic material (
-\family typewriter
-gravity-statevars-viscoelastic.vtk
-\family default
-), and causes state variables to be averaged over all quadrature points
- in each cell.
-\end_layout
-
 \begin_layout Standard
 The files containing common information (
 \family typewriter
@@ -1846,89 +1284,7 @@ pylith gravity_istress.cfg
 \end_layout
 
 \begin_layout Standard
-Once the problem has run, six files will be produced.
- The first file is named 
-\family typewriter
-gravity_istress_t0000000.vtk
-\family default
-.
- The 
-\family typewriter
-t0000000
-\family default
- indicates that the output is for the first (and only) time step, corresponding
- to an elastic solution.
- This file contains mesh information as well as displacement values at the
- mesh vertices.
- The second file is named 
-\family typewriter
-gravity_istress-statevars-elastic_t0000000.vtk
-\family default
-.
- This file contains the state variables for each cell in the material group
- 
-\family typewriter
-elastic
-\family default
-.
- The default fields are the total strain and stress fields.
- These values are computed at each quadrature point in the cell.
- There are eight quadrature points for each cell; however, we have requested
- that these values be averaged, so there is a single set of values per cell.
- The third file (
-\family typewriter
-gravity_istress-statevars-elastic_info.vtk
-\family default
-) gives the material properties used for the elastic material.
- Since we have not specified which properties to write, the default properties
- (
-\family typewriter
-mu
-\family default
-, 
-\family typewriter
-lambda
-\family default
-, 
-\family typewriter
-density
-\family default
-) are written.
- The files 
-\family typewriter
-for the 
-\family default
-viscoelastic material
-\family typewriter
- (gravity_istress-statevars-viscoelastic_t0000000.vtk
-\family default
- and 
-\family typewriter
-gravity_istress-statevars-viscoelastic_info.vtk
-\family default
-) are exactly analogous to the corresponding files for the elastic material.
- The sixth file (
-\family typewriter
-gravity_istress-groundsurf_t0000000.vtk
-\family default
-) is analogous to 
-\family typewriter
-gravity_istress_t0000000.vtk
-\family default
-, but in this case the results are only given for a subset of the mesh correspon
-ding to the ground surface.
- Also, the cells in this file are one dimension lower than the cells described
- in 
-\family typewriter
-gravity_t0000000.vtk
-\family default
-, so they are quadrilaterials rather than hexahedra.
- All of the 
-\family typewriter
-.vtk
-\family default
- files may be used with a number of visualization packages.
- If the problem ran correctly, you should be able to generate a figure such
+If the problem ran correctly, you should be able to generate a figure such
  as 
 \begin_inset LatexCommand vref
 reference "fig:3dhex-gravity_istress"
@@ -2023,19 +1379,13 @@ pylithapp.cfg
 savageprescott.cfg
 \family default
 .
- These settings are:
+ These settings include:
 \end_layout
 
 \begin_layout Description
 pylithapp.timedependent Specifies an implicit formulation for the problem,
  the array of boundary conditions, and the array of interfaces.
  The total time of the simulation is 700 years with a time step of 10 years.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.implicit Specifies an array of two output managers,
- one for the full domain, and another for a subdomain corresponding to the
- ground surface.
 \end_layout
 
 \begin_layout Description
@@ -2282,21 +1632,7 @@ elastic
 savageprescott-statevars-elastic_info.vtk
 \family default
  gives the material properties used for the elastic material.
- Since we have not specified which properties to write, the default properties
- (
-\family typewriter
-mu
-\family default
-, 
-\family typewriter
-lambda
-\family default
-, 
-\family typewriter
-density
-\family default
-) are written.
- The files are for the viscoelastic material (
+ The files for the viscoelastic material (
 \family typewriter
 savageprescott-statevars-viscoelastic_tXXXX.vtk
 \family default
@@ -2315,12 +1651,6 @@ savageprescott_t0000000.vtk
 \family default
 , but in this case the results are only given for a subset of the mesh correspon
 ding to the ground surface (and are output more frequently).
- Also, the cells in this file are one dimension lower than the cells described
- in 
-\family typewriter
-savageprescott_tXXXX.vtk
-\family default
-, so they are quadrilaterials rather than hexahedra.
  The files of the form 
 \family typewriter
 savageprescott-fault_tXXXX.vtk
@@ -2344,11 +1674,6 @@ savageprescott.
 cfg
 \family default
 .
- All of the 
-\family typewriter
-.vtk
-\family default
- files may be used with a number of visualization packages.
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
 \begin_inset LatexCommand vref

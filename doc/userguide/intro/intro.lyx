@@ -280,7 +280,7 @@ In writing PyLith 1.0, the code was completely redesigned to be object-oriented
 ).
  This permits adding, replacing, and rewriting modules without affecting
  other parts of the code.
- This code structure simplifies code maintenance and developement.
+ This code structure simplifies code maintenance and development.
  Extending the set of code features is also easier, since developers can
  create new modules derived from the existing ones.
 \end_layout

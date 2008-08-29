@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -121,7 +121,7 @@ reference "sub:SCECCVMH-Impl"
 \end_inset
 
 ).
- Using the SCEC SVM-H database is straightforward, requiring only a few
+ Using the SCEC CVM-H database is straightforward, requiring only a few
  modifications to 
 \family typewriter
 pylithapp.cfg
@@ -134,8 +134,9 @@ pylithapp.cfg
  the same.
  PyLith will automatically transform from one geographic coordinate system
  to another using the spatialdata package.
- The spatial databases should all use a Cartesian coordinate system, such
- as a geographic projection to insure interpolation is performed properly.
+ The spatial databases should all use a georeferenced Cartesian coordinate
+ system, such as a geographic projection to insure interpolation is performed
+ properly.
  Since all aspects of this problem other than the material database and
  the coordinate system are identical to the examples in Section 
 \begin_inset LatexCommand ref
@@ -163,18 +164,6 @@ reference "fig:twotet4-geoproj-mesh"
 twotet4.mesh
 \family default
 , which is in PyLith mesh ASCII format.
- This file format is described in Appendix 
-\begin_inset LatexCommand ref
-reference "cha:File-Formats"
-
-\end_inset
-
-.
- This file describes the dimensionality of the problem (1D, 2D, or 3D),
- the coordinates of the vertices (nodes), the vertices composing each cell
- (element), the material ID to be associated with each cell, and then provides
- groups of vertices that may be used to define faults or surfaces to which
- boundary conditions may be applied.
  If you compare this mesh against the one used in 
 \begin_inset LatexCommand ref
 reference "sec:Tutorial-Two-tet4"
@@ -241,61 +230,6 @@ name "fig:twotet4-geoproj-mesh"
 
 \begin_layout Subsection
 Additional Common Information
-\end_layout
-
-\begin_layout Standard
-In addition to the mesh, the three example problems share additional information.
- For problems of this type, it is generally useful to create a file named
- 
-\family typewriter
-pylithapp.cfg
-\family default
- in the run directory, since this file is read automatically every time
- PyLith is run.
- Settings specific to a particular problem may be placed in other 
-\family typewriter
-.cfg
-\family default
- files, as described later, and then those files are placed on the command
- line.
-  The settings contained in 
-\family typewriter
-pylithapp.cfg
-\family default
- for this problem consist of:
-\end_layout
-
-\begin_layout Description
-pylithapp.journal.info Settings that control the verbosity of the output for
- the different components.
-\end_layout
-
-\begin_layout Description
-pylithapp.mesh_generator Settings that control mesh importing, such as the
- importer type, the filename, and the spatial dimension of the mesh.
- These setting are particularly important for this problem, as they define
- the coordinate system used.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent Settings that control the problem, such as the total
- time, time step size, and spatial dimension.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.materials Settings that control the material type,
- specify which material IDs are to be associated with a particular material
- type, and define the database (
-\family typewriter
-SCECCVMH
-\family default
-) used to obtain material parameters for the mesh.
- The quadrature information is also given.
-\end_layout
-
-\begin_layout Description
-pylithapp.petsc PETSc settings to use for the problem, such as the preconditioner
- type.
 \end_layout
 
 \begin_layout Standard
@@ -400,7 +334,7 @@ db
 \family default
  option defines 
 \family typewriter
-SCECCVMHDB
+SCECCVMH
 \family default
  as the spatial database to be used.
  The next line defines the location of the 
@@ -501,80 +435,6 @@ pylithapp.cfg
 dislocation.cfg
 \family default
 .
- These settings are:
-\end_layout
-
-\begin_layout Description
-pylithapp.journal.info Turns on journaling for 2D quadrature (used for 3D
- faults) and for cohesive kinematic faults.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent Specifies an implicit formulation for the problem,
- the array of boundary conditions, and the array of interfaces.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.bc.bc Defines which degrees of freedom are being constraine
-d (
-\family typewriter
-x
-\family default
-, 
-\family typewriter
-y
-\family default
-, and 
-\family typewriter
-z
-\family default
-), gives the label (defined in 
-\family typewriter
-twotet4.mesh
-\family default
-) defining the points desired, and assigns a label to the boundary condition
- set.
- We use the default spatial database (FixedDOFDB) for the Dirichlet boundary
- conditions, which sets the displacements to zero.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.interfaces Gives the label (defined in 
-\family typewriter
-twotet4.mesh
-\family default
-) defining the points on the fault, provides quadrature information, and
- then gives database names for material properties (needed for conditioning),
- fault slip, peak fault slip rate, and fault slip time.
-\end_layout
-
-\begin_layout Description
-pylithapp.problem.formulation.output.output.writer Gives the base filename for
- VTK output 
-\newline
-(
-\family typewriter
-dislocation.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.interfaces.fault.output.writer Gives the base filename
- for cohesive cell output files (
-\family typewriter
-dislocation-fault.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.materials.material.output Gives the base filename for
- state variable output files (
-\family typewriter
-dislocation-statevars.vtk
-\family default
-).
 \end_layout
 
 \begin_layout Standard
@@ -583,32 +443,6 @@ Recall that we condition problems with the kinematic fault interface using
  Since the material properties are being defined using the SCEC CVM-H database,
  this same database should be used as the material database for the faults.
  This also applies to the AbsorbingDampers boundary condition.
-\end_layout
-
-\begin_layout Standard
-The fault example requires three additional database files.
- The first file (
-\family typewriter
-dislocation_slip.spatialdb
-\family default
-) specifies 0.01 m of left-lateral fault slip for the entire fault.
- Since we specify a different amount of slip for every vertex on the fault,
- the data dimension is one.
- The default slip time function is a step-function, so we also must provide
- the time at which slip begins.
- The elastic solution is associated with advancing from 
-\begin_inset Formula $t=-dt$
-\end_inset
-
- to 
-\begin_inset Formula $t=0$
-\end_inset
-
-, so we set the slip initiation time for the step-function to 0 in 
-\family typewriter
-dislocation_sliptime.spatialdb
-\family default
-.
 \end_layout
 
 \begin_layout Standard
@@ -643,68 +477,7 @@ pylith dislocation.cfg
 \end_layout
 
 \begin_layout Standard
-Once the problem has run, five files are produced.
- The first file is named 
-\family typewriter
-dislocation_t0000000.vtk
-\family default
-.
- The 
-\family typewriter
-t0000000
-\family default
- indicates that the output is for the first (and only) time step, corresponding
- to an elastic solution.
- This file contains mesh information as well as displacement values at the
- mesh vertices.
- The second file is named 
-\family typewriter
-dislocation-statevars_t0000000.vtk
-\family default
-.
- This file contains the state variables for each cell.
- The default fields are the total strain and stress fields.
- Since the cells are linear tetrahedra, there is a single quadrature point
- for each cell and thus a single set of stress and strain values for each
- cell.
- The third file is named 
-\family typewriter
-dislocation-fault_t0000000.vtk
-\family default
-.
- This file gives the specified fault slip for each vertex on the fault,
- along with the computed traction change for the cohesive cell.
- The fourth file (
-\family typewriter
-dislocation-statevars_info.vtk
-\family default
-) gives the material properties used for the problem.
- Since we have not specified which properties to write, the default properties
- (
-\family typewriter
-mu
-\family default
-, 
-\family typewriter
-lambda
-\family default
-, 
-\family typewriter
-density
-\family default
-) are written.
- The final file (
-\family typewriter
-dislocation-fault_info.vtk
-\family default
-) provides information such as the normal direction, final slip, and slip
- time for each vertex on the fault.
- All of the 
-\family typewriter
-.vtk
-\family default
- files may be used with a number of visualization packages.
- If the problem ran correctly, you should be able to generate a figure such
+If the problem ran correctly, you should be able to generate a figure such
  as Figure 
 \begin_inset LatexCommand vref
 reference "fig:twotet4-geoproj-disloc"
