@@ -266,9 +266,9 @@ run "python --version".
     delete "-arch ppc" or "-arch intel", which ever one is not for
     your machine.
 
-17. Install PROJ.4 (http://www.remotesensing.org/proj/)
+17. Install PROJ.4 (http://trac.osgeo.org/proj/)
 
-  a. Download the source code AND the datum shifts (proj-datumgrid-1.3.zip).
+  a. Download the source code AND the datum shifts (proj-datumgrid-1.4.zip).
 
   b. Untar the source code and unzip the datum shifts in the nad directory.
 

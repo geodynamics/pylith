@@ -309,7 +309,7 @@ run "python --version".
     make
     make install
 
-16. Install PROJ.4 (http://www.remotesensing.org/proj/)
+16. Install PROJ.4 (http://trac.osgeo.org/proj/)
 
   a. Download the source code AND the datum shifts (proj-datumgrid-1.3.zip).
 
