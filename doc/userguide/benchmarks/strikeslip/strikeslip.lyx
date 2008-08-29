@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -87,7 +87,7 @@ reference "fig:benchmark:strikeslip:geometry"
 
 \end_inset
 
- shows the geometry of the strike-slip fault (red surface) embeded in the
+ shows the geometry of the strike-slip fault (red surface) embedded in the
  cube consisting of an elastic material (yellow block) over a Maxwell viscoelast
 ic material (blue block).
  
@@ -235,7 +235,7 @@ After checking out the benchmark files from the CIG SVN repository, change
 quasistatic/strikeslip
 \family default
  directory.
- Uncompress the gzipped files in the meshes and parameters directories,
+ Decompress the gzipped files in the meshes and parameters directories,
 \end_layout
 
 \begin_layout LyX-Code
@@ -738,7 +738,7 @@ status open
 \begin_layout Standard
 Convergence rate for the strike-slip benchmark problem with tetrahedral
  cells and linear basis functions and with hexahedral cells with trilinear
- basis funtions.
+ basis functions.
 \begin_inset LatexCommand label
 name "fig:benchmark:strikeslip:convergence"
 

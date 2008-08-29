@@ -117,7 +117,7 @@ target "paraview.org/Wiki/ParaView"
 .
  You may use other visualization software, but some adaption from what is
  described here will be necessary.
- Alternatively, you can complete a subset of the tutorial using files provided
+ Furthermore, you can complete a subset of the tutorial using files provided
  (as described below), skipping the steps for which you do not have the
  proper software packages installed.
 \end_layout
@@ -127,7 +127,7 @@ The files needed to work through the tutorials are found in the
 \family typewriter
 examples
 \family default
- directory in the top-level PyLith directory.
+ directory under the top-level PyLith directory.
  There are five examples in 
 \family typewriter
 examples/twocells
@@ -143,7 +143,7 @@ examples/3d
 \family default
 , use external mesh generation software to create the meshes.
  All of the files used in the example problems are extensively documented
- with commented files.
+ with comments.
 \end_layout
 
 \begin_layout Standard
@@ -196,16 +196,20 @@ Additional Examples
 \end_layout
 
 \begin_layout Standard
-The examples directory also contains other examples which are not described
- in this chapter.
+The 
+\family typewriter
+examples
+\family default
+ directory also contains other examples which are not described in this
+ chapter.
  The files associated with these examples contain comments to explain the
  problems they solve.
  Once you understand the examples described in detail in the previous sections
  of this chapter, you should have little trouble understanding these additional
- examples.
- Currently, these problems are very simple examples of using dynamic time
- stepping with absorbing boundaries to simulate shear wave propagation in
- a 2D or 3D bar.
+ ones.
+ Currently, these problems are very simple cases of using dynamic time stepping
+ with absorbing boundaries to simulate shear wave propagation in a 2D or
+ 3D bar.
  More complex examples of wave propagation problems will be included in
  future releases.
  

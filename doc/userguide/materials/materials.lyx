@@ -2809,8 +2809,9 @@ n.
  In a more general sense, initial values for state variables may be used
  to provide values that are consistent with any set of conditions that occurred
  prior to the beginning of a simulation.
- In PyLith 1.3, we presently only allow the specification of initial stresses.
- In future versions, however, we will allow a more general specification
+ The current release of PyLith only allows the specification of initial
+ stresses.
+ In future releases, however, we will allow a more general specification
  of initial state values.
 \end_layout
 
@@ -2826,20 +2827,15 @@ Since state variables are specific to a given material, initial values for
 \family typewriter
 use_initial_state
 \family default
- flag may be set to true:
-\end_layout
+ flag must be set to true and a spatial database with values the initial
+ stress tensor provided as in this example from the tutorial in Section
+ 
+\begin_inset LatexCommand ref
+reference "sec:Tutorial-3d-hex8"
 
-\begin_layout LyX-Code
-[pylithapp.problem.materials.material]
-\end_layout
+\end_inset
 
-\begin_layout LyX-Code
-use_initial_state = True
-\end_layout
-
-\begin_layout Standard
-Initial state values are specified using a spatial database, so it is necessary
- to provide the name of the database as well:
+:
 \end_layout
 
 \begin_layout LyX-Code
@@ -2852,20 +2848,6 @@ use_initial_state = True
 
 \begin_layout LyX-Code
 initial_state_db.iohandler.filename = initial_state.spatialdb
-\end_layout
-
-\begin_layout Standard
-The settings above are from an example in the 
-\family typewriter
-3D/hex8
-\family default
- directory, which is described in 
-\begin_inset LatexCommand ref
-reference "sec:Tutorial-3d-hex8"
-
-\end_inset
-
-.
 \end_layout
 
 \end_body

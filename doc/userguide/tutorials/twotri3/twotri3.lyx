@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -164,7 +164,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Standard
-Mesh composed of two linear trianglular cells used in the example problems.
+Mesh composed of two linear triangular cells used in the example problems.
 \begin_inset LatexCommand label
 name "fig:twotri3-mesh"
 
@@ -498,12 +498,7 @@ pylithapp.cfg
 sheardisp.cfg
 \family default
 .
- These settings are:
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent Specifies an implicit formulation for the problem
- and specifies the array of boundary conditions.
+ These settings include:
 \end_layout
 
 \begin_layout Description
@@ -546,26 +541,6 @@ sheardisp.spatialdb
 ).
 \end_layout
 
-\begin_layout Description
-pylithapp.problem.formulation.output.output.writer Gives the base filename for
- VTK output 
-\newline
-(
-\family typewriter
-sheardisp.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.materials.material.output Gives the base filename for
- state variable output files (
-\family typewriter
-sheardisp-statevars.vtk
-\family default
-).
-\end_layout
-
 \begin_layout Standard
 The files containing common information (
 \family typewriter
@@ -596,54 +571,8 @@ pylith sheardisp.cfg
 \end_layout
 
 \begin_layout Standard
-Once the problem has run, three files will be produced.
- The first file is named 
-\family typewriter
-sheardisp_t0000000.vtk
-\family default
-.
- The 
-\family typewriter
-t0000000
-\family default
- indicates that the output is for the first (and only) time step, corresponding
- to an elastic solution.
- This file contains mesh information as well as displacement values at the
- mesh vertices.
- The second file is named 
-\family typewriter
-sheardisp-statevars_t0000000.vtk
-\family default
-.
- This file contains the state variables for each cell.
- The default fields are the total strain and stress fields.
- Since the cells are linear triangles, there is a single quadrature point
- for each cell and thus a single set of stress and strain values for each
- cell.
- The final file (
-\family typewriter
-sheardisp-statevars_info.vtk
-\family default
-) gives the material properties used for the problem.
- Since we have not specified which properties to write, the default properties
- (
-\family typewriter
-mu
-\family default
-, 
-\family typewriter
-lambda
-\family default
-, 
-\family typewriter
-density
-\family default
-) are written.
- All of the 
-\family typewriter
-.vtk
-\family default
- files may be used with a number of visualization packages.
+Once the problem has run, three files will be produced as in the previous
+ example.
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
 \begin_inset LatexCommand vref
@@ -718,17 +647,12 @@ dislocation.cfg
 .
  The solution corresponds to rigid body rotation of each triangular cell.
  As a result, the tractions on the fault are zero.
- These settings are:
+ These settings include:
 \end_layout
 
 \begin_layout Description
 pylithapp.journal.info Turns on journaling for 1D quadrature (used for 2D
  faults) and for cohesive kinematic faults.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent Specifies an implicit formulation for the problem,
- the array of boundary conditions, and the array of interfaces.
 \end_layout
 
 \begin_layout Description
@@ -756,30 +680,10 @@ twotri3.mesh
 \end_layout
 
 \begin_layout Description
-pylithapp.problem.formulation.output.output.writer Gives the base filename for
- VTK output 
-\newline
-(
-\family typewriter
-dislocation.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
 pylithapp.timedependent.interfaces.fault.output.writer Gives the base filename
  for cohesive cell output files (
 \family typewriter
 dislocation-fault.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.materials.material.output Gives the base filename for
- state variable output files (
-\family typewriter
-dislocation-statevars.vtk
 \family default
 ).
 \end_layout
@@ -854,66 +758,20 @@ pylith dislocation.cfg
 
 \begin_layout Standard
 Once the problem has run, five files are produced.
- The first file is named 
-\family typewriter
-dislocation_t0000000.vtk
-\family default
-.
- The 
-\family typewriter
-t0000000
-\family default
- indicates that the output is for the first (and only) time step, corresponding
- to an elastic solution.
- This file contains mesh information as well as displacement values at the
- mesh vertices.
- The second file is named 
-\family typewriter
-dislocation-statevars_t0000000.vtk
-\family default
-.
- This file contains the state variables for each cell.
- The default fields are the total strain and stress fields.
- Since the cells are linear triangles, there is a single quadrature point
- for each cell and thus a single set of stress and strain values for each
- cell.
- The third file is named 
+ In addition to the files produced in the previous two examples, this examples
+ produces two files associated with the fault interface.
+ The file 
 \family typewriter
 dislocation-fault_t0000000.vtk
 \family default
-.
- This file gives the specified fault slip for each vertex on the fault,
- along with the computed traction change for the cohesive cell.
- The fourth file (
-\family typewriter
-dislocation-statevars_info.vtk
-\family default
-) gives the material properties used for the problem.
- Since we have not specified which properties to write, the default properties
- (
-\family typewriter
-mu
-\family default
-, 
-\family typewriter
-lambda
-\family default
-, 
-\family typewriter
-density
-\family default
-) are written.
- The final file (
+ gives the fault slip for each vertex on the fault along with the computed
+ traction change for the cohesive cell.
+ The file 
 \family typewriter
 dislocation-fault_info.vtk
 \family default
-) provides information such as the normal direction, final slip, and slip
+ provides information such as the normal direction, final slip, and slip
  time for each vertex on the fault.
- All of the 
-\family typewriter
-.vtk
-\family default
- files may be used with a number of visualization packages.
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
 \begin_inset LatexCommand vref
