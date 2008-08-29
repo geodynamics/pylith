@@ -10,8 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-dist_noinst_DATA = \
-	pylith_book-1.1.pdf
+dist_noinst_DATA =
 
 default: userguide.pdf
 
