@@ -21,7 +21,10 @@ dist_check_SCRIPTS = testproblems.py
 TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
-	TestTimeStepUniform.py
+	TestTimeStep.py \
+	TestTimeStepAdapt.py \
+	TestTimeStepUniform.py \
+	TestTimeStepUser.py
 
 
 # End of file 
