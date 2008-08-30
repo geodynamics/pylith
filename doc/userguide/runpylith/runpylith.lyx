@@ -1,4 +1,4 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1533,7 +1533,7 @@ UniformDB Spatial Database
 The SimpleDB spatial database is quite general, but when the values are
  uniform, it is often easier to use the UniformDB spatial database instead.
  With the UniformDB, you specify the values directly either on the command
- line or in a parameter settings (
+ line or in a parameter-setting (
 \family typewriter
 .cfg
 \family default
@@ -1541,8 +1541,8 @@ The SimpleDB spatial database is quite general, but when the values are
  On the other hand, if the values are used in more than one place, it is
  easier to place the values in a SimpleDB file, because they can then be
  referred to using the filename of the spatial database rather than having
- to repeatedly list all of the values on the command line or in a parameter
- settings (
+ to repeatedly list all of the values on the command line or in a parameter-sett
+ing (
 \family typewriter
 .cfg
 \family default
@@ -1714,7 +1714,7 @@ For materials, the ``label'' is a string used only for error messages.
  Note that some mesh generators use strings (LaGriT) to identify groups
  of nodes while others use integers (CUBIT Exodus files).
  Although CUBIT permits associated strings with nodesets, they are not included
- in the Exodus files, so we must rely on the nodset ID.
+ in the Exodus files, so we must rely on the nodeset ID.
  PyLith 1.0 had an ``id'' for boundary conditions, but we removed it from
  subsequent releases because it was not used.
  For faults the ``label'' is used in the same manner as the 
