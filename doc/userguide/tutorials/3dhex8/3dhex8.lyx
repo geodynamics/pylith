@@ -1,4 +1,4 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1219,7 +1219,9 @@ initial_state.spatialdb
 \family default
 ) as the filename for 
 \family typewriter
-initial_state_db.iohandler.filename
+initial_state_db.iohandler.
+\newline
+filename
 \family default
 .
 \end_layout
@@ -1239,7 +1241,9 @@ initial_state.spatialdb
 \family default
 ) as the filename for 
 \family typewriter
-initial_state_db.iohandler.filename
+initial_state_db.
+\newline
+iohandler.filename
 \family default
 .
 \end_layout
@@ -1653,7 +1657,9 @@ savageprescott_t0000000.vtk
 ding to the ground surface (and are output more frequently).
  The files of the form 
 \family typewriter
-savageprescott-fault_tXXXX.vtk
+savageprescott-fault
+\newline
+_tXXXX.vtk
 \family default
  give the fault slip for each vertex on the fault, along with the computed
  traction change for the cohesive cell.
@@ -1669,9 +1675,7 @@ pylithapp.timedependent.interfaces.fault.output.vertex_info_fields
 \family default
  in the file 
 \family typewriter
-savageprescott.
-\newline
-cfg
+savageprescott.cfg
 \family default
 .
  If the problem ran correctly, you should be able to generate a figure such

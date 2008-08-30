@@ -1,4 +1,4 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1088,7 +1088,9 @@ mat_viscoelastic.spatialdb
 ) along with the problem-specific files (
 \family typewriter
 \size small
-dislocation.cfg
+dislocation
+\newline
+.cfg
 \family default
 , 
 \family typewriter
@@ -1096,9 +1098,7 @@ finalslip.spatialdb
 \family default
 , 
 \family typewriter
-sliptime
-\newline
-.spatialdb
+sliptime.spatialdb
 \family default
 \size default
 ) provide a complete description of the problem, and we can then run this
