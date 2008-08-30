@@ -281,7 +281,27 @@ AC_CONFIG_FILES([Makefile
 		doc/refguide/Makefile
 		doc/userguide/Makefile
 		doc/presentations/Makefile
-		doc/presentations/pylith1.0/Makefile])
+		doc/presentations/pylith1.0/Makefile
+		examples/Makefile
+		examples/3d/Makefile
+		examples/bar_shearwave/Makefile
+		examples/twocells/Makefile
+		examples/3d/tet4/Makefile
+		examples/3d/hex8/Makefile
+		examples/bar_shearwave/hex8/Makefile
+		examples/bar_shearwave/hex8/output/Makefile
+		examples/bar_shearwave/quad4/Makefile
+		examples/bar_shearwave/quad4/output/Makefile
+		examples/bar_shearwave/tet4/Makefile
+		examples/bar_shearwave/tet4/output/Makefile
+		examples/bar_shearwave/tri3/Makefile
+		examples/bar_shearwave/tri3/output/Makefile
+		examples/twocells/twohex8/Makefile
+		examples/twocells/twoquad4/Makefile
+		examples/twocells/twotet4/Makefile
+		examples/twocells/twotet4-geoproj/Makefile
+		examples/twocells/twotri3/Makefile
+		])
 
 AC_OUTPUT
 
