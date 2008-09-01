@@ -391,6 +391,53 @@ cdef class FaultCohesive(Fault):
     Fault.__init__(self)
     return
 
+  property useFaultMesh:
+    def __set__(self, flag):
+      """
+      Set use fault mesh flag.
+      """
+      # create shim for method 'useFaultMesh'
+      #embed{ void FaultCohesiveKin_useFaultMesh_set(void* objVptr, int flag)
+      try {
+        assert(0 != objVptr);
+        ((pylith::faults::FaultCohesiveKin*) objVptr)->useFaultMesh(flag);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      FaultCohesiveKin_useFaultMesh_set(self.thisptr, flag)
+
+
+  property faultMeshFilename: # TEMPORARY
+    def __set__(self, filename):
+      """
+      Set filename for fault mesh UCD file.
+      """
+      # create shim for method 'faultMeshFilename'
+      #embed{ void FaultCohesiveKin_faultMeshFilename_set(void* objVptr, char* filename)
+      try {
+        assert(0 != objVptr);
+        ((pylith::faults::FaultCohesiveKin*) objVptr)->faultMeshFilename(filename);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      FaultCohesiveKin_faultMeshFilename_set(self.thisptr, filename)
+
 
 # ----------------------------------------------------------------------
 cdef class FaultCohesiveKin(FaultCohesive):

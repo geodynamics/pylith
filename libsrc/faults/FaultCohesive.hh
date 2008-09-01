@@ -48,6 +48,20 @@ public :
   virtual
   ~FaultCohesive(void);
 
+  /** Set flag for using fault mesh or group of vertices to define
+   * fault surface.
+   *
+   * @param flag True if using fault mesh, false if using vertices.
+   */
+  void useFaultMesh(const bool flag);
+
+  // TEMPORARY
+  /** Set filename of UCD file for fault mesh.
+   *
+   * @param filename Filename for UCD file.
+   */
+  void faultMeshFilename(const char* filename);
+
   /** Adjust mesh topology for fault implementation.
    *
    * @param mesh PETSc mesh
@@ -68,11 +82,17 @@ protected :
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
-  /// Not implemented
-  FaultCohesive(const FaultCohesive& m);
+  FaultCohesive(const FaultCohesive&); ///< Not implemented
+  const FaultCohesive& operator=(const FaultCohesive&); ///< Not implemented
 
-  /// Not implemented
-  const FaultCohesive& operator=(const FaultCohesive& m);
+  // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private :
+
+  /// If true, use fault mesh to define fault; otherwise, use group of
+  /// vertices to define fault.
+  bool _useFaultMesh;
+
+  std::string _faultMeshFilename; /// Filename for fault mesh UCD file.
 
 }; // class FaultCohesive
 

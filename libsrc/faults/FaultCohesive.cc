@@ -25,7 +25,9 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::FaultCohesive::FaultCohesive(void)
+pylith::faults::FaultCohesive::FaultCohesive(void) :
+  _useFaultMesh(false),
+  _faultMeshFilename("fault.inp")
 { // constructor
 } // constructor
 
@@ -34,6 +36,23 @@ pylith::faults::FaultCohesive::FaultCohesive(void)
 pylith::faults::FaultCohesive::~FaultCohesive(void)
 { // destructor
 } // destructor
+
+// ----------------------------------------------------------------------
+// Set flag for using fault mesh or group of vertices to define
+// fault surface.
+void
+pylith::faults::FaultCohesive::useFaultMesh(const bool flag)
+{ // useFaultMesh
+  _useFaultMesh = flag;
+} // useFaultMesh
+
+// ----------------------------------------------------------------------
+// Set filename of UCD file for fault mesh.
+void
+pylith::faults::FaultCohesive::faultMeshFilename(const char* filename)
+{ // faultMeshFilename
+  _faultMeshFilename = filename;
+} // faultMeshFilename
 
 // ----------------------------------------------------------------------
 // Adjust mesh topology for fault implementation.
