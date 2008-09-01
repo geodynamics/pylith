@@ -61,21 +61,27 @@ pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<Mesh>& mesh)
 { // adjustTopology
   assert(std::string("") != label());
 
-  if (!mesh->hasIntSection(label())) {
-    std::ostringstream msg;
-    msg << "Mesh missing group of vertices '" << label()
-	<< " for fault interface condition.";
-    throw std::runtime_error(msg.str());
-  } // if  
-
-  // Get group of vertices associated with fault
-  const ALE::Obj<int_section_type>& groupField = 
-    mesh->getIntSection(label());
-  assert(!groupField.isNull());
-
-  ALE::Obj<Mesh> faultMesh;
-  CohesiveTopology::create(&faultMesh, mesh, groupField, id(),
-                           _useLagrangeConstraints());
+  if (!_useFaultMesh) {
+    // Use group of vertices to define fault.
+    if (!mesh->hasIntSection(label())) {
+      std::ostringstream msg;
+      msg << "Mesh missing group of vertices '" << label()
+	  << " for fault interface condition.";
+      throw std::runtime_error(msg.str());
+    } // if  
+    
+    // Get group of vertices associated with fault
+    const ALE::Obj<int_section_type>& groupField = 
+      mesh->getIntSection(label());
+    assert(!groupField.isNull());
+    
+    ALE::Obj<Mesh> faultMesh;
+    CohesiveTopology::create(&faultMesh, mesh, groupField, id(),
+			     _useLagrangeConstraints());
+  } else {
+    // Use fault mesh to define fault.
+    std::cout << "ADD FAULT MESH ADJUSTING TOPOLOGY STUFF HERE." << std::endl;
+  } // else
 } // adjustTopology
 
 
