@@ -33,4 +33,31 @@ class TestFaultCohesive(unittest.TestCase):
     return
 
 
+  def test_useFaultMesh(self):
+    """
+    Test useFaultMesh().
+    """
+    fault = FaultCohesive()
+    fault._configure()
+    self.assertEqual(False, fault.useFaultMesh)
+
+    fault.useFaultMesh = True;
+    self.assertEqual(True, fault.useFaultMesh)
+    return
+
+
+  def test_faultMeshFilename(self):
+    """
+    Test faultMeshFilename().
+    """
+    fault = FaultCohesive()
+    fault._configure()
+    self.assertEqual("fault.inp", fault.faultMeshFilename)
+
+    filename = "SanAndreas.inp"
+    fault.faultMeshFilename = filename
+    self.assertEqual(filename, fault.faultMeshFilename)
+    return
+
+
 # End of file 

@@ -66,6 +66,30 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesive );
 
 // ----------------------------------------------------------------------
+void
+pylith::faults::TestFaultCohesive::testUseFaultMesh(void)
+{ // testUseFaultMesh
+  FaultCohesiveDyn fault;
+  CPPUNIT_ASSERT(!fault._useFaultMesh);
+  
+  fault.useFaultMesh(true);
+  CPPUNIT_ASSERT(fault._useFaultMesh);
+} // testUseFaultMesh
+
+// ----------------------------------------------------------------------
+// TEMPORARY
+void
+pylith::faults::TestFaultCohesive::testFaultMeshFilename(void)
+{ // testFaultMeshFilename
+  FaultCohesiveDyn fault;
+  CPPUNIT_ASSERT_EQUAL(std::string("fault.inp"), fault._faultMeshFilename);
+  
+  const std::string filename = "SanAndreas.inp";
+  fault.faultMeshFilename(filename.c_str());
+  CPPUNIT_ASSERT_EQUAL(filename, fault._faultMeshFilename);
+} // testUseFaultMesh
+
+// ----------------------------------------------------------------------
 // Test adjustTopology() with 1-D line element.
 void
 pylith::faults::TestFaultCohesive::testAdjustTopologyLine2(void)
