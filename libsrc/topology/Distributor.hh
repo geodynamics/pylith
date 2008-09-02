@@ -28,7 +28,7 @@ namespace pylith {
   } // topology
 
   namespace meshio {
-    class OutputManager;
+    class DataWriter;
   } // meshio
 } // pylith
 
@@ -64,12 +64,12 @@ public :
 
   /** Write partitioning info for distributed mesh.
    *
-   * @param output Output manager for partition information.
+   * @param writer Data writer for partition information.
    * @param mesh Distributed mesh.
    * @param cs Coordinate system for mesh.
    */
   static
-  void write(meshio::OutputManager* const output,
+  void write(meshio::DataWriter* const writer,
 	     const ALE::Obj<Mesh>& mesh,
 	     const spatialdata::geocoords::CoordSys* cs);
 
