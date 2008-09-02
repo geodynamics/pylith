@@ -32,9 +32,9 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.4990664"
      inkscape:cx="60.332964"
-     inkscape:cy="644.93558"
+     inkscape:cy="439.64235"
      inkscape:document-units="px"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer3"
      showgrid="true"
      units="in"
      inkscape:object-paths="true"
@@ -213,7 +213,7 @@
        id="text2562"
        y="30"
        x="130"
-       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ce91ff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#6101af;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Arial;-inkscape-font-specification:Arial Bold"
        xml:space="preserve"><tspan
          sodipodi:role="line"
          id="tspan5210"
@@ -224,7 +224,7 @@
          x="130"
          y="47.5">Jun 2008</tspan></text>
     <rect
-       style="opacity:1;fill:none;fill-opacity:1;stroke:#ce91ff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:6,6;stroke-opacity:1;display:inline;stroke-dashoffset:2"
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#6101af;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:6, 6;stroke-opacity:1;display:inline;stroke-dashoffset:2"
        id="rect5244"
        width="115"
        height="90"
@@ -235,7 +235,7 @@
        id="text5170"
        y="144.59473"
        x="124.19629"
-       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ce91ff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#6101af;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Arial;-inkscape-font-specification:Arial Bold"
        xml:space="preserve"><tspan
          sodipodi:role="line"
          id="tspan5214"
@@ -244,7 +244,7 @@
          sodipodi:role="line"
          id="tspan5216"
          x="124.19629"
-         y="162.09473">Sep 2008</tspan></text>
+         y="162.09473">Aug 2008</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text5176"
@@ -302,19 +302,19 @@
          id="tspan5196"
          sodipodi:role="line">Release 1.7</tspan></text>
     <rect
-       style="opacity:1;fill:none;fill-opacity:1;stroke:#ce91ff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:6, 6;stroke-dashoffset:0;stroke-opacity:1"
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#6101af;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:6, 6;stroke-dashoffset:0;stroke-opacity:1"
        id="rect5265"
        width="115"
-       height="120"
+       height="90"
        x="5"
        y="105" />
     <rect
        style="opacity:1;fill:none;fill-opacity:1;stroke:#ce91ff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:6, 6;stroke-dashoffset:0;stroke-opacity:1;display:inline"
        id="rect5267"
        width="275"
-       height="195"
+       height="225"
        x="5"
-       y="230" />
+       y="200" />
     <rect
        style="opacity:1;fill:none;fill-opacity:1;stroke:#ce91ff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:6, 6;stroke-dashoffset:0;stroke-opacity:1"
        id="rect5269"
@@ -354,7 +354,7 @@
     <path
        sodipodi:nodetypes="ccc"
        id="path3685"
-       d="M 95,211.28363 L 150,211.28363 L 150,255"
+       d="M 95,214.58552 L 150,214.58552 L 150,255"
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline" />
     <path
        sodipodi:nodetypes="ccc"
@@ -1110,7 +1110,7 @@
       </g>
     </g>
     <g
-       transform="translate(-119,-63.432739)"
+       transform="translate(-119,-61)"
        id="g2615">
       <rect
          style="fill:#33bbff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
