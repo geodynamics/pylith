@@ -3,14 +3,12 @@ SimpleDB {
   num-values = 2
   value-names =  left-lateral-slip fault-opening
   value-units =  m  m
-  num-locs = 3
-  data-dim = 1
+  num-locs = 1
+  data-dim = 0
   space-dim = 2
   cs-data = cartesian {
     to-meters = 1.0
     space-dim = 2
   }
 }
-1.0  3.0   1.0  0.4
-1.0  1.0   0.5  0.2
-1.0 -1.0   0.0  0.0
+0.0  0.0   -1.0  0.0
