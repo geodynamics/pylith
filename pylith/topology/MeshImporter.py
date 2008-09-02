@@ -72,11 +72,14 @@ class MeshImporter(MeshGenerator):
     """
     Hook for creating mesh.
     """
+    from pylith.utils.profiling import resourceUsageString
+
     self._setupLogging()
     logEvent = "%screate" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
     
     mesh = self.importer.read(self.debug, self.interpolate)
+    self._debug.log(resourceUsageString())
     self._info.log("Adjusting topology.")
     self._adjustTopology(mesh, faults)
 

@@ -19,73 +19,45 @@
 
 #include <assert.h> // USES assert()
 
-// ----------------------------------------------------------------------
 void
-pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
-					 const ALE::Obj<Mesh>& mesh,
-					 const ALE::Obj<Mesh::int_section_type>& groupField,
-					 const int materialId,
-					 const bool constraintCell)
-{ // create
-  assert(0 != ifault);
-
-  typedef ALE::SieveAlg<ALE::Mesh>  sieveAlg;
+pylith::faults::CohesiveTopology::createFaultSieveFromVertices(const int dim,
+                                                               const int firstCell,
+                                                               const PointSet& faultVertices,
+                                                               const Obj<Mesh>& mesh,
+                                                               const Obj<ALE::Mesh::arrow_section_type>& orientation,
+                                                               const Obj<ALE::Mesh::sieve_type>& faultSieve)
+{
   typedef ALE::Selection<ALE::Mesh> selection;
+  const Obj<sieve_type>&         sieve      = mesh->getSieve();
+  const PointSet::const_iterator fvBegin    = faultVertices.begin();
+  const PointSet::const_iterator fvEnd      = faultVertices.end();
+  int                            curCell    = firstCell;
+  int                            curVertex  = 0;
+  int                            newElement = curCell + dim*faultVertices.size();
+  int                            o          = 1;
+  ALE::Mesh::point_type          f          = firstCell;
+  const int                      debug      = mesh->debug();
+  Obj<PointSet>                  face       = new PointSet();
+  int                            numCorners = 0;    // The number of vertices in a mesh cell
+  int                            faceSize   = 0;    // The number of vertices in a mesh face
+  int                           *indices    = NULL; // The indices of a face vertex set in a cell
+  std::map<int,int*>             curElement;
+  std::map<int,PointArray>       bdVertices;
+  std::map<int,PointArray>       faultFaces;
+  std::map<int,oPointArray>      oFaultFaces;
+  PointSet                       faultCells;
+  PointArray                     origVertices;
+  PointArray                     faceVertices;
 
-  const int_section_type::chart_type& chart = groupField->getChart();
-  PointSet faultVertices; // Vertices on fault
-  const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
-  *ifault = new Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
-  const ALE::Obj<Mesh::sieve_type> ifaultSieve = new Mesh::sieve_type(sieve->comm(), 
-                                                                      sieve->debug());
-  ALE::Obj<ALE::Mesh> fault = new ALE::Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
-  ALE::Obj<ALE::Mesh::sieve_type> faultSieve = new ALE::Mesh::sieve_type(sieve->comm(), 
-                                                                         sieve->debug());
-  const int  depth      = mesh->depth();
-  const int  numCells   = mesh->heightStratum(0)->size();
-  int        numCorners = 0;    // The number of vertices in a mesh cell
-  int        faceSize   = 0;    // The number of vertices in a mesh face
-  int       *indices    = NULL; // The indices of a face vertex set in a cell
-  int        oppositeVertex;    // For simplices, the vertex opposite a given face
-  PointArray origVertices;
-  PointArray faceVertices;
-  PointArray neighborVertices;
-
-  if (!fault->commRank()) {
+  if (!faultSieve->commRank()) {
     numCorners = mesh->getNumCellCorners();
     faceSize   = selection::numFaceVertices(mesh);
     indices    = new int[faceSize];
   }
 
-  // Create set with vertices on fault
-  for(int_section_type::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
-    assert(!mesh->depth(*c_iter));
-    if (groupField->getFiberDimension(*c_iter)) {faultVertices.insert(*c_iter);}
-  } // for
-
-  const PointSet::const_iterator fvBegin = faultVertices.begin();
-  const PointSet::const_iterator fvEnd   = faultVertices.end();
-
-  int f     = sieve->getBaseSize() + sieve->getCapSize();
-  int debug = mesh->debug();
-  ALE::Obj<PointSet> face = new PointSet();
-  PointSet faultCells;
-  
-  // Create a sieve which captures the fault
-  const int fDim = fault->getDimension();
-  const Obj<Mesh::arrow_section_type>& orientation = fault->getArrowSection("orientation");
-  std::map<int,int*>        curElement;
-  std::map<int,PointArray>  bdVertices;
-  std::map<int,PointArray>  faultFaces;
-  std::map<int,oPointArray> oFaultFaces;
-  int                       curCell    = f;
-  int                       curVertex  = 0;
-  int                       newElement = curCell + fDim*faultVertices.size();
-  int                       o          = 1;
-
   curElement[0]   = &curVertex;
-  curElement[fDim] = &curCell;
-  for(int d = 1; d < fDim; d++) {
+  curElement[dim] = &curCell;
+  for(int d = 1; d < dim; d++) {
     curElement[d] = &newElement;
   }
 
@@ -120,17 +92,17 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
       if (face->size() == faceSize) {
         if (debug) std::cout << "  Contains a face on the fault" << std::endl;
         ALE::Obj<sieve_type::supportSet> preFace;
-        if (fDim < 2) {
+        if (dim < 2) {
           preFace = faultSieve->nJoin1(face);
         } else {
-          preFace = faultSieve->nJoin(face, fDim);
+          preFace = faultSieve->nJoin(face, dim);
         }
 
         if (preFace->size() > 1) {
           throw ALE::Exception("Invalid fault sieve: Multiple faces from vertex set");
         } else if (preFace->size() == 1) {
           // Add the other cell neighbor for this face
-          if (fDim == 0) {
+          if (dim == 0) {
             faultSieve->addArrow(*faceVertices.begin(), support[s]);
           } else {
             faultSieve->addArrow(*preFace->begin(), support[s]);
@@ -138,20 +110,20 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
         } else if (preFace->size() == 0) {
           if (debug) std::cout << "  Orienting face " << f << std::endl;
           selection::getOrientedFace(mesh, support[s], face, numCorners, indices, &origVertices, &faceVertices);
-          bdVertices[fDim].clear();
+          bdVertices[dim].clear();
           for(PointArray::const_iterator v_iter = faceVertices.begin(); v_iter != faceVertices.end(); ++v_iter) {
-            bdVertices[fDim].push_back(*v_iter);
+            bdVertices[dim].push_back(*v_iter);
             if (debug) std::cout << "    Boundary vertex " << *v_iter << std::endl;
           }
-          if (fDim == 0) {
+          if (dim == 0) {
             f = *faceVertices.begin();
           }
-          if (faceSize != fDim+1) {
+          if (faceSize != dim+1) {
             if (debug) std::cout << "  Adding hex face " << f << std::endl;
-            ALE::SieveBuilder<ALE::Mesh>::buildHexFaces(faultSieve, orientation, fDim, curElement, bdVertices, oFaultFaces, f, o);
+            ALE::SieveBuilder<ALE::Mesh>::buildHexFaces(faultSieve, orientation, dim, curElement, bdVertices, oFaultFaces, f, o);
           } else {
             if (debug) std::cout << "  Adding simplicial face " << f << std::endl;
-            ALE::SieveBuilder<ALE::Mesh>::buildFaces(faultSieve, orientation, fDim, curElement, bdVertices, oFaultFaces, f, o);
+            ALE::SieveBuilder<ALE::Mesh>::buildFaces(faultSieve, orientation, dim, curElement, bdVertices, oFaultFaces, f, o);
           }
           faultSieve->addArrow(f, support[s]);
           //faultSieve->view("");
@@ -163,31 +135,92 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
     } // for
     sV.clear();
   } // for
-  fault->setSieve(faultSieve);
-  fault->stratify();
-  faultCells.clear();
-  if (debug) fault->view("Fault mesh");
-  const ALE::Obj<ALE::Mesh> faultBd = ALE::Selection<ALE::Mesh>::boundary(fault);
-  if (debug) faultBd->view("Fault boundary mesh");
+  if (!faultSieve->commRank()) delete [] indices;
+}
 
-  // Orient the fault sieve
+void
+pylith::faults::CohesiveTopology::createFaultSieveFromFaces(const int dim,
+                                                            const int firstCell,
+                                                            const int numFaces,
+                                                            const int faultVertices[],
+                                                            const int faultCells[],
+                                                            const Obj<Mesh>& mesh,
+                                                            const Obj<ALE::Mesh::arrow_section_type>& orientation,
+                                                            const Obj<ALE::Mesh::sieve_type>& faultSieve)
+{
+  typedef ALE::Selection<ALE::Mesh> selection;
+  int                       faceSize   = 0; // The number of vertices in a mesh face
+  int                       curCell    = firstCell;
+  int                       curVertex  = 0;
+  int                       newElement = curCell + dim*numFaces;
+  int                       o          = 1;
+  int                       f          = firstCell;
+  const int                 debug      = mesh->debug();
+  std::map<int,int*>        curElement;
+  std::map<int,PointArray>  bdVertices;
+  std::map<int,oPointArray> oFaultFaces;
+
+  if (!faultSieve->commRank()) {
+    faceSize = selection::numFaceVertices(mesh);
+  }
+
+  curElement[0]   = &curVertex;
+  curElement[dim] = &curCell;
+  for(int d = 1; d < dim; d++) {
+    curElement[d] = &newElement;
+  }
+
+  // Loop over fault faces
+  for(int face = 0; face < numFaces; ++face) {
+    // Push oriented vertices of face
+    bdVertices[dim].clear();
+    for(int i = 0; i < faceSize; ++i) {
+      bdVertices[dim].push_back(faultVertices[face*faceSize+i]);
+      if (debug) std::cout << "    Boundary vertex " << faultVertices[face*faceSize+i] << std::endl;
+    }
+    // Create face
+    if (faceSize != dim+1) {
+      if (debug) std::cout << "  Adding hex face " << f << std::endl;
+      ALE::SieveBuilder<ALE::Mesh>::buildHexFaces(faultSieve, orientation, dim, curElement, bdVertices, oFaultFaces, f, o);
+    } else {
+      if (debug) std::cout << "  Adding simplicial face " << f << std::endl;
+      ALE::SieveBuilder<ALE::Mesh>::buildFaces(faultSieve, orientation, dim, curElement, bdVertices, oFaultFaces, f, o);
+    }
+    // Add arrow to cells
+    faultSieve->addArrow(face, faultCells[face*2+0]);
+    faultSieve->addArrow(face, faultCells[face*2+1]);
+  }
+}
+
+void
+pylith::faults::CohesiveTopology::orientFaultSieve(const int dim,
+                                                   const Obj<Mesh>& mesh,
+                                                   const Obj<ALE::Mesh::arrow_section_type>& orientation,
+                                                   const Obj<ALE::Mesh>& fault)
+{
   // Must check the orientation here
-  const Mesh::point_type firstFaultCell = *fault->heightStratum(1)->begin();
-  const ALE::Obj<Mesh::label_sequence>& fFaces = fault->heightStratum(2);
-  const int              numFaultFaces  = fFaces->size();
-  int faultDepth      = fault->depth()-1; // Depth of fault cells
-  int numFaultCorners = 0; // The number of vertices in a fault cell
-  int faultFaceSize   = 0; // The number of vertices in a face between fault cells
-  PointSet flippedCells;   // Incorrectly oriented fault cells
-  PointSet facesSeen;      // Fault faces already considered
-  PointSet cellsSeen;      // Fault cells already matched
-  Obj<PointSet> newCells  = new PointSet();
-  Obj<PointSet> loopCells = new PointSet();
+  typedef ALE::Selection<ALE::Mesh> selection;
+  const Obj<ALE::Mesh::sieve_type>& faultSieve      = fault->getSieve();
+  const Mesh::point_type            firstFaultCell  = *fault->heightStratum(1)->begin();
+  const Obj<Mesh::label_sequence>&  fFaces          = fault->heightStratum(2);
+  const int                         numFaultFaces   = fFaces->size();
+  const int                         faultDepth      = fault->depth()-1; // Depth of fault cells
+  int                               numFaultCorners = 0; // The number of vertices in a fault cell
+  int                               faultFaceSize   = 0; // The number of vertices in a face between fault cells
+  int                               faceSize        = 0; // The number of vertices in a mesh face
+  const int                         debug           = fault->debug();
+  Obj<PointSet>                     newCells        = new PointSet();
+  Obj<PointSet>                     loopCells       = new PointSet();
+  PointSet                          flippedCells;   // Incorrectly oriented fault cells
+  PointSet                          facesSeen;      // Fault faces already considered
+  PointSet                          cellsSeen;      // Fault cells already matched
+  PointArray                        faceVertices;
 
   if (!fault->commRank()) {
+    faceSize        = selection::numFaceVertices(mesh);
     numFaultCorners = faultSieve->nCone(firstFaultCell, faultDepth)->size();
     if (debug) std::cout << "  Fault corners " << numFaultCorners << std::endl;
-    if (fDim == 0) {
+    if (dim == 0) {
       assert(numFaultCorners == faceSize-1);
     } else {
       assert(numFaultCorners == faceSize);
@@ -233,7 +266,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
         if (!seenB) newCells->insert(cellB);
         if (debug) std::cout << "    neighboring cells " << cellA << " and " << cellB << std::endl;
         // In 1D, just check that vertices match
-        if (fDim == 1) {
+        if (dim == 1) {
           const Obj<ALE::Mesh::sieve_type::traits::coneSequence>& coneA = faultSieve->cone(cellA);
           ALE::Mesh::sieve_type::traits::coneSequence::iterator   iterA = coneA->begin();
           const Obj<ALE::Mesh::sieve_type::traits::coneSequence>& coneB = faultSieve->cone(cellB);
@@ -259,7 +292,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
               throw ALE::Exception("Inconsistent mesh orientation: Fault mesh is non-orientable");
             }
           }
-        } else if (fDim == 2) {
+        } else if (dim == 2) {
           // Check orientation
           ALE::MinimalArrow<ALE::Mesh::sieve_type::point_type,ALE::Mesh::sieve_type::point_type> arrowA(*e_iter, cellA);
           const int oA = orientation->restrictPoint(arrowA)[0];
@@ -311,7 +344,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
       faultSieve->addArrow(*v_iter, *f_iter, color++);
     }
 
-    if (fDim > 1) {
+    if (dim > 1) {
       // Here, they are edges, not vertices
       for(PointArray::const_iterator e_iter = faceVertices.begin(); e_iter != faceVertices.end(); ++e_iter) {
         ALE::MinimalArrow<ALE::Mesh::sieve_type::point_type,ALE::Mesh::sieve_type::point_type> arrow(*e_iter, *f_iter);
@@ -337,7 +370,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
 
       if (debug) std::cout << "    neighboring cells " << cellA << " and " << cellB << std::endl;
       // In 1D, just check that vertices match
-      if (fDim == 1) {
+      if (dim == 1) {
         const Obj<ALE::Mesh::sieve_type::traits::coneSequence>& coneA = faultSieve->cone(cellA);
         ALE::Mesh::sieve_type::traits::coneSequence::iterator   iterA = coneA->begin();
         const Obj<ALE::Mesh::sieve_type::traits::coneSequence>& coneB = faultSieve->cone(cellB);
@@ -369,19 +402,109 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
     }
   }
   if (debug) fault->view("Oriented Fault mesh");
+}
+
+// ----------------------------------------------------------------------
+void
+pylith::faults::CohesiveTopology::createFault(Obj<Mesh>& ifault,
+                                              Obj<ALE::Mesh>& faultBd,
+                                              const Obj<Mesh>& mesh,
+                                              const Obj<Mesh::int_section_type>& groupField)
+{ // create
+  typedef ALE::SieveAlg<ALE::Mesh>  sieveAlg;
+  typedef ALE::Selection<ALE::Mesh> selection;
+
+  const Obj<sieve_type>&      sieve       = mesh->getSieve();
+  const Obj<Mesh::sieve_type> ifaultSieve = new Mesh::sieve_type(sieve->comm(), sieve->debug());
+  Obj<ALE::Mesh>              fault       = new ALE::Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
+  Obj<ALE::Mesh::sieve_type>  faultSieve  = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+  const int  depth      = mesh->depth();
+  const int  numCells   = mesh->heightStratum(0)->size();
+  int        numCorners = 0;    // The number of vertices in a mesh cell
+  int        faceSize   = 0;    // The number of vertices in a mesh face
+  int       *indices    = NULL; // The indices of a face vertex set in a cell
+  const int  debug      = mesh->debug();
+  int        oppositeVertex;    // For simplices, the vertex opposite a given face
+  PointArray origVertices;
+  PointArray faceVertices;
+  PointArray neighborVertices;
+
+  if (!fault->commRank()) {
+    numCorners = mesh->getNumCellCorners();
+    faceSize   = selection::numFaceVertices(mesh);
+    indices    = new int[faceSize];
+  }
+
+  // Create set with vertices on fault
+  const int_section_type::chart_type& chart = groupField->getChart();
+  PointSet faultVertices; // Vertices on fault
+
+  for(int_section_type::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
+    assert(!mesh->depth(*c_iter));
+    if (groupField->getFiberDimension(*c_iter)) {faultVertices.insert(*c_iter);}
+  } // for
+
+  // Create a sieve which captures the fault
+  const bool vertexFault    = true;
+  const int  firstFaultCell = sieve->getBaseSize() + sieve->getCapSize();
+
+  createFaultSieveFromVertices(fault->getDimension(), firstFaultCell, faultVertices, mesh, fault->getArrowSection("orientation"), faultSieve);
+  fault->setSieve(faultSieve);
+  fault->stratify();
+  if (debug) fault->view("Fault mesh");
+
+  faultBd = ALE::Selection<ALE::Mesh>::boundary(fault);
+  if (debug) faultBd->view("Fault boundary mesh");
+
+  // Orient the fault sieve
+  orientFaultSieve(fault->getDimension(), mesh, fault->getArrowSection("orientation"), fault);
 
   // Convert fault to an IMesh
-  Mesh::renumbering_type& renumbering = (*ifault)->getRenumbering();
-  (*ifault)->setSieve(ifaultSieve);
-  ALE::ISieveConverter::convertMesh(*fault, *(*ifault), renumbering, false);
+  Mesh::renumbering_type& renumbering = ifault->getRenumbering();
+  ifault->setSieve(ifaultSieve);
+  ALE::ISieveConverter::convertMesh(*fault, *ifault, renumbering, false);
   renumbering.clear();
-  fault      = NULL;
-  faultSieve = NULL;
+};
+
+// ----------------------------------------------------------------------
+void
+pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
+                                         const Obj<ALE::Mesh>& faultBd,
+                                         const Obj<Mesh>& mesh,
+                                         const Obj<Mesh::int_section_type>& groupField,
+                                         const int materialId,
+                                         const bool constraintCell)
+{ // create
+  typedef ALE::SieveAlg<ALE::Mesh>  sieveAlg;
+  typedef ALE::Selection<ALE::Mesh> selection;
+
+  const Obj<sieve_type>& sieve = mesh->getSieve();
+  const Obj<Mesh::sieve_type> ifaultSieve = ifault->getSieve();
+  const int  depth           = mesh->depth();
+  const int  numCells        = mesh->heightStratum(0)->size();
+  int        numCorners      = 0;    // The number of vertices in a mesh cell
+  int        faceSize        = 0;    // The number of vertices in a mesh face
+  int        numFaultCorners = 0; // The number of vertices in a fault cell
+  int       *indices         = NULL; // The indices of a face vertex set in a cell
+  const int  debug           = mesh->debug();
+  int        oppositeVertex;    // For simplices, the vertex opposite a given face
+  PointArray origVertices;
+  PointArray faceVertices;
+  PointArray neighborVertices;
+
+  if (!ifault->commRank()) {
+    const Mesh::point_type p = *ifault->heightStratum(1)->begin();
+
+    numCorners      = mesh->getNumCellCorners();
+    faceSize        = selection::numFaceVertices(mesh);
+    indices         = new int[faceSize];
+    numFaultCorners = ifault->getNumCellCorners(p, ifault->depth(p));
+  }
 
   // Add new shadow vertices and possibly Lagrange multipler vertices
-  const ALE::Obj<Mesh::label_sequence>& fVertices = (*ifault)->depthStratum(0);
-  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-  const ALE::Obj<std::set<std::string> >& groupNames = mesh->getIntSections();
+  const Obj<Mesh::label_sequence>&   fVertices       = ifault->depthStratum(0);
+  const Obj<Mesh::label_sequence>&   vertices        = mesh->depthStratum(0);
+  const Obj<std::set<std::string> >& groupNames      = mesh->getIntSections();
   Mesh::point_type newPoint = sieve->getBaseSize() + sieve->getCapSize();
   const int        numFaultVertices = fVertices->size();
   std::map<Mesh::point_type,Mesh::point_type> vertexRenumber;
@@ -421,14 +544,14 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
   if (constraintCell) newPoint += numFaultVertices;
 
   // Split the mesh along the fault sieve and create cohesive elements
-  const ALE::Obj<Mesh::label_sequence>& faces = (*ifault)->heightStratum(1);
+  const ALE::Obj<Mesh::label_sequence>& faces = ifault->heightStratum(1);
   const ALE::Obj<Mesh::label_type>& material = mesh->getLabel("material-id");
   const int firstCohesiveCell = newPoint;
   PointSet replaceCells;
   PointSet noReplaceCells;
   PointSet replaceVertices;
   ALE::ISieveVisitor::PointRetriever<sieve_type> sV2(std::max(1, ifaultSieve->getMaxSupportSize()));
-  ALE::ISieveVisitor::NConeRetriever<sieve_type> cV2(*ifaultSieve, (size_t) pow(std::max(1, ifaultSieve->getMaxConeSize()), (*ifault)->depth()));
+  ALE::ISieveVisitor::NConeRetriever<sieve_type> cV2(*ifaultSieve, (size_t) pow(std::max(1, ifaultSieve->getMaxConeSize()), ifault->depth()));
 
   for(Mesh::label_sequence::iterator f_iter = faces->begin(); f_iter != faces->end(); ++f_iter, ++newPoint) {
     const Mesh::point_type face = *f_iter;
@@ -523,12 +646,14 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
   faultBdVertices.insert(faultBdVerts->begin(), faultBdVerts->end());
   for(PointSet::const_iterator v_iter = replaceVertices.begin(); v_iter != replaceVertices.end(); ++v_iter) {
     if (faultBdVertices.find(*v_iter) != faultBdVertices.end()) continue;
-    classifyCells(sieve, *v_iter, depth, faceSize, firstCohesiveCell, faultBdVertices, replaceCells, noReplaceCells, debug);
+    classifyCells(sieve, *v_iter, depth, faceSize, firstCohesiveCell, replaceCells, noReplaceCells, debug);
   }
   for(PointSet::const_iterator v_iter = faultBdVertices.begin(); v_iter != faultBdVertices.end(); ++v_iter) {
-    classifyCells(sieve, *v_iter, depth, faceSize, firstCohesiveCell, faultBdVertices, replaceCells, noReplaceCells, debug);
+    classifyCells(sieve, *v_iter, depth, faceSize, firstCohesiveCell, replaceCells, noReplaceCells, debug);
   }
   // Add new arrows for support of replaced vertices
+  ALE::ISieveVisitor::PointRetriever<sieve_type> sV(std::max(1, sieve->getMaxSupportSize()));
+
   for(PointSet::const_iterator v_iter = replaceVertices.begin(); v_iter != replaceVertices.end(); ++v_iter) {
     sieve->support(*v_iter, sV);
     const Mesh::point_type *support = sV.getPoints();
@@ -645,7 +770,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
     }
     rVs.clear();
   }
-  if (!(*ifault)->commRank()) delete [] indices;
+  if (!ifault->commRank()) delete [] indices;
   /// THIS IS TOO SLOW mesh->stratify();
   const std::string labelName("censored depth");
 
@@ -666,7 +791,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* ifault,
   // Fix coordinates
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
-  const ALE::Obj<Mesh::label_sequence>& fVertices2 = (*ifault)->depthStratum(0);
+  const ALE::Obj<Mesh::label_sequence>& fVertices2 = ifault->depthStratum(0);
 
   if (debug) coordinates->view("Coordinates without shadow vertices");
   for(Mesh::label_sequence::iterator v_iter = fVertices2->begin();
@@ -810,7 +935,6 @@ pylith::faults::CohesiveTopology::classifyCells(const ALE::Obj<Mesh::sieve_type>
                                                 const int depth,
                                                 const int faceSize,
                                                 const Mesh::point_type& firstCohesiveCell,
-                                                const PointSet& faultBdVertices,
                                                 PointSet& replaceCells,
                                                 PointSet& noReplaceCells,
                                                 const int debug)

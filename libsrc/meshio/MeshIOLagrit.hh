@@ -111,6 +111,8 @@ public :
    */
   bool isRecordHeader32Bit(void) const;
 
+  static void readFault(const std::string filename, const Obj<Mesh>& fault, Obj<ALE::Mesh>& faultBd);
+
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 

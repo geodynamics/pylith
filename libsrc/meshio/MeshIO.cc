@@ -14,6 +14,8 @@
 
 #include "MeshIO.hh" // implementation of class methods
 
+#include "Selection.hh" // USES boundary()
+
 #include "pylith/utils/array.hh" // USES double_array, int_array
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
@@ -101,26 +103,29 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
   MPI_Comm_rank(comm, &rank);
   // Memory debugging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.setDebug(_debug);
+  logger.setDebug(_debug/2);
 
   logger.stagePush("MeshCreation");
   if (!rank) {
     assert(coordinates.size() == numVertices*spaceDim);
     assert(cells.size() == numCells*numCorners);
-    //if (!_interpolate) {
     if (0) {
+    ///if (!_interpolate) {
       // Create the ISieve
       sieve->setChart(Mesh::sieve_type::chart_type(0, numCells+numVertices));
       // Set cone and support sizes
       for(int c = 0; c < numCells; ++c) {sieve->setConeSize(c, numCorners);}
-      sieve->symmetrizeSizes(numCells, numCorners, const_cast<int*>(&cells[0]));
+      sieve->symmetrizeSizes(numCells, numCorners, const_cast<int*>(&cells[0]), numCells);
       // Allocate point storage
       sieve->allocate();
       // Fill up cones
-      int *cone = new int[numCorners];
+      int *cone  = new int[numCorners];
+      int *coneO = new int[numCorners];
+      for(int v = 0; v < numCorners; ++v) {coneO[v] = 1;}
       for(int c = 0; c < numCells; ++c) {
         for(int v = 0; v < numCorners; ++v) cone[v] = cells[c*numCorners+v]+numCells;
         sieve->setCone(cone, c);
+        sieve->setConeOrientation(coneO, c);
       }
       delete [] cone;
       // Symmetrize to fill up supports
@@ -188,6 +193,98 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
 
   ALE::SieveBuilder<Mesh>::buildCoordinates(*_mesh, spaceDim, &coordinates[0]);
 } // _buildMesh
+
+// ----------------------------------------------------------------------
+// Set vertices in fault mesh.
+void
+pylith::meshio::MeshIO::_buildFaultMesh(const double_array& coordinates,
+				   const int numVertices,
+				   const int spaceDim,
+				   const int_array& cells,
+				   const int numCells,
+				   const int numCorners,
+				   const int_array& faceCells,
+                   const int meshDim,
+                   const Obj<Mesh>& fault,
+                   Obj<ALE::Mesh>& faultBd)
+{ // _buildFaultMesh
+  MPI_Comm comm = PETSC_COMM_WORLD;
+  int      dim  = meshDim;
+  int      rank;
+
+  assert(!fault.isNull());
+
+  ALE::Obj<sieve_type> sieve = new sieve_type(fault->comm());
+  fault->setDebug(fault->debug());
+  fault->setSieve(sieve);
+
+  MPI_Comm_rank(comm, &rank);
+  // Memory debugging
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.setDebug(fault->debug()/2);
+
+  logger.stagePush("FaultCreation");
+  if (!rank) {
+    assert(coordinates.size() == numVertices*spaceDim);
+    assert(cells.size() == numCells*numCorners);
+    {
+      ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+
+      ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, meshDim, 
+                                                  numCells, 
+                                                  const_cast<int*>(&cells[0]), 
+                                                  numVertices, 
+                                                  true,
+                                                  numCorners,
+                                                  0,
+                                                  fault->getArrowSection("orientation"));
+
+      // Add in cells
+      for(int c = 0; c < numCells; ++c) {
+        s->addArrow(c, faceCells[c*2+0]);
+        s->addArrow(c, faceCells[c*2+1]);
+      }
+
+      Mesh::renumbering_type& renumbering = fault->getRenumbering();
+      ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering, false);
+
+      Obj<ALE::Mesh> tmpMesh = new ALE::Mesh(fault->comm(), dim, fault->debug());
+      faultBd = ALE::Selection<ALE::Mesh>::boundary(tmpMesh);
+    }
+    logger.stagePop();
+    logger.stagePush("FaultStratification");
+    fault->stratify();
+    logger.stagePop();
+  } else {
+    logger.stagePush("FaultStratification");
+    fault->getSieve()->setChart(sieve_type::chart_type());
+    fault->getSieve()->allocate();
+    fault->stratify();
+    logger.stagePop();
+  }
+
+#if defined(ALE_MEM_LOGGING)
+  std::cout
+    << std::endl
+    << "FaultCreation " << logger.getNumAllocations("FaultCreation")
+    << " allocations " << logger.getAllocationTotal("FaultCreation")
+    << " bytes" << std::endl
+    
+    << "FaultCreation " << logger.getNumDeallocations("FaultCreation")
+    << " deallocations " << logger.getDeallocationTotal("FaultCreation")
+    << " bytes" << std::endl
+    
+    << "FaultStratification " << logger.getNumAllocations("FaultStratification")
+    << " allocations " << logger.getAllocationTotal("FaultStratification")
+    << " bytes" << std::endl
+    
+    << "FaultStratification " << logger.getNumDeallocations("FaultStratification")
+    << " deallocations " << logger.getDeallocationTotal("FaultStratification")
+    << " bytes" << std::endl << std::endl;
+#endif
+
+  ALE::SieveBuilder<Mesh>::buildCoordinates(fault, spaceDim, &coordinates[0]);
+} // _buildFaultMesh
 
 // ----------------------------------------------------------------------
 // Get coordinates of vertices in mesh.
@@ -278,6 +375,8 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
   assert(0 != _mesh);
   assert(!_mesh->isNull());
 
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("MaterialsCreation");
   const ALE::Obj<Mesh::label_type>& labelMaterials = 
     (*_mesh)->createLabel("material-id");
   if (!(*_mesh)->commRank()) {
@@ -299,6 +398,12 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
         ++e_iter)
       (*_mesh)->setValue(labelMaterials, *e_iter, materialIds[i++]);
   } // if
+  logger.stagePop();
+
+#if defined(ALE_MEM_LOGGING)
+  std::cout << "MaterialsCreation " << logger.getNumAllocations("MaterialsCreation") << " allocations " << logger.getAllocationTotal("MaterialsCreation") << " bytes" << std::endl;
+  std::cout << "MaterialsCreation " << logger.getNumDeallocations("MaterialsCreation") << " deallocations " << logger.getDeallocationTotal("MaterialsCreation") << " bytes" << std::endl;
+#endif
 } // _setMaterials
 
 // ----------------------------------------------------------------------
@@ -339,6 +444,8 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
   assert(0 != _mesh);
   assert(!_mesh->isNull());
 
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("GroupCreation");
   const ALE::Obj<int_section_type>& groupField = (*_mesh)->getIntSection(name);
   assert(!groupField.isNull());
 
@@ -355,6 +462,12 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
       groupField->setFiberDimension(numCells+points[i], 1);
   } // if/else
   (*_mesh)->allocate(groupField);
+  logger.stagePop();
+
+#if defined(ALE_MEM_LOGGING)
+  std::cout << "GroupCreation " << logger.getNumAllocations("GroupCreation") << " allocations " << logger.getAllocationTotal("GroupCreation") << " bytes" << std::endl;
+  std::cout << "GroupCreation " << logger.getNumDeallocations("GroupCreation") << " deallocations " << logger.getDeallocationTotal("GroupCreation") << " bytes" << std::endl;
+#endif
 } // _setGroup
 
 // ----------------------------------------------------------------------

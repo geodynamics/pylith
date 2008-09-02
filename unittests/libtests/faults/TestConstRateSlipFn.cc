@@ -300,9 +300,15 @@ pylith::faults::TestConstRateSlipFn::_initialize(ALE::Obj<Mesh>* faultMesh,
 
   // Create fault mesh
   const bool useLagrangeConstraints = true;
-  CohesiveTopology::create(faultMesh, mesh, 
-			   mesh->getIntSection(faultLabel),
-			   faultId);
+  (*faultMesh)                = new Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
+  ALE::Obj<ALE::Mesh> faultBd = NULL;
+  CohesiveTopology::createFault(*faultMesh, faultBd,
+                                mesh,
+                                mesh->getIntSection(faultLabel));
+  CohesiveTopology::create(*faultMesh, faultBd, mesh,
+                           mesh->getIntSection(faultLabel),
+                           faultId,
+                           useLagrangeConstraints);
   CPPUNIT_ASSERT(!faultMesh->isNull());
   // Need to copy coordinates from mesh to fault mesh since we are not
   // using create() instead of createParallel().
@@ -347,11 +353,16 @@ pylith::faults::TestConstRateSlipFn::_testInitialize(const _TestConstRateSlipFn:
   cs.setSpaceDim(spaceDim);
 
   // Create fault mesh
-  ALE::Obj<Mesh> faultMesh;
+  ALE::Obj<Mesh>      faultMesh = new Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
+  ALE::Obj<ALE::Mesh> faultBd   = NULL;
   const bool useLagrangeConstraints = true;
-  CohesiveTopology::create(&faultMesh, mesh, 
-			   mesh->getIntSection(data.faultLabel),
-			   data.faultId);
+  CohesiveTopology::createFault(faultMesh, faultBd,
+                                mesh,
+                                mesh->getIntSection(data.faultLabel));
+  CohesiveTopology::create(faultMesh, faultBd, mesh,
+                           mesh->getIntSection(data.faultLabel),
+                           data.faultId,
+                           useLagrangeConstraints);
   CPPUNIT_ASSERT(!faultMesh.isNull());
   // Need to copy coordinates from mesh to fault mesh since we are not
   // using create() instead of createParallel().
