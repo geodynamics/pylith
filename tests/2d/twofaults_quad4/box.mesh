@@ -72,6 +72,24 @@ mesh = {
     }
   }
   group = {
+    name = faultT
+    type = vertices
+    count = 2
+    indices = {
+      6
+      7
+    }
+  }
+  group = {
+    name = faultB
+    type = vertices
+    count = 2
+    indices = {
+     10
+     11
+    }
+  }
+  group = {
     name = edge -x
     type = vertices
     count = 4
@@ -90,6 +108,15 @@ mesh = {
       3
       7
      11
+     15
+    }
+  }
+  group = {
+    name = edge +x corners
+    type = vertices
+    count = 2
+    indices = {
+      3
      15
     }
   }
