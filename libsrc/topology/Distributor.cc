@@ -155,7 +155,6 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
   (*newMesh)->setCalculatedOverlap(true);
 } // distribute
 
-#include <iostream>
 // ----------------------------------------------------------------------
 // Write partitioning info for distributed mesh.
 void
