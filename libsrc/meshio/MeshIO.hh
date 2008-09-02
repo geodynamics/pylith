@@ -18,6 +18,8 @@
 
 #include "pylith/utils/sievetypes.hh" // USES Obj, PETSc Mesh
 
+#include "Mesh.hh" // Needs ALE::Mesh
+
 namespace pylith {
   namespace meshio {
     class MeshIO;
@@ -116,6 +118,18 @@ protected :
 		  const int numCells,
 		  const int numCorners,
 		  const int meshDim);
+
+  static void
+  _buildFaultMesh(const double_array& coordinates,
+                  const int numVertices,
+                  const int spaceDim,
+                  const int_array& cells,
+                  const int numCells,
+                  const int numCorners,
+                  const int_array& faceCells,
+                  const int meshDim,
+                  const Obj<Mesh>& fault,
+                  Obj<ALE::Mesh>& faultBd);
 
   /** Get information about vertices in mesh.
    *

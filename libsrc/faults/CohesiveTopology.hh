@@ -160,20 +160,32 @@ protected:
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
-  /** Create cohesive cells.
+  /** Create the fault mesh.
    *
    * @param fault Finite-element mesh of fault (output)
    * @param mesh Finite-element mesh
    * @param faultVertices Vertices assocated with faces of cells defining 
    *   fault surface
+   */
+  static
+  void createFault(Obj<Mesh>& fault,
+                   Obj<ALE::Mesh>& faultBd,
+                   const Obj<Mesh>& mesh,
+                   const Obj<Mesh::int_section_type>& groupField);
+
+  /** Create cohesive cells.
+   *
+   * @param fault Finite-element mesh of fault (output)
+   * @param mesh Finite-element mesh
    * @param materialId Material id for cohesive elements.
    * @param constraintCell True if creating cells constrained with 
    *   Lagrange multipliers that require extra vertices, false otherwise
    */
   static
-  void create(ALE::Obj<Mesh>* fault,
-              const ALE::Obj<Mesh>& mesh,
-              const ALE::Obj<Mesh::int_section_type>& groupField,
+  void create(Obj<Mesh>& fault,
+              const Obj<ALE::Mesh>& faultBd,
+              const Obj<Mesh>& mesh,
+              const Obj<Mesh::int_section_type>& groupField,
               const int materialId,
               const bool constraintCell =false);
 
@@ -259,11 +271,30 @@ private :
                             const int depth,
                             const int faceSize,
                             const Mesh::point_type& firstCohesiveCell,
-                            const PointSet& faultBdVertices,
                             PointSet& replaceCells,
                             PointSet& noReplaceCells,
                             const int debug);
 
+  static void createFaultSieveFromVertices(const int dim,
+                                           const int firstCell,
+                                           const PointSet& faultVertices,
+                                           const Obj<Mesh>& mesh,
+                                           const Obj<ALE::Mesh::arrow_section_type>& orientation,
+                                           const Obj<ALE::Mesh::sieve_type>& faultSieve);
+
+  static void createFaultSieveFromFaces(const int dim,
+                                        const int firstCell,
+                                        const int numFaces,
+                                        const int faultVertices[],
+                                        const int faultCells[],
+                                        const Obj<Mesh>& mesh,
+                                        const Obj<ALE::Mesh::arrow_section_type>& orientation,
+                                        const Obj<ALE::Mesh::sieve_type>& faultSieve);
+
+  static void orientFaultSieve(const int dim,
+                               const Obj<Mesh>& mesh,
+                               const Obj<ALE::Mesh::arrow_section_type>& orientation,
+                               const Obj<ALE::Mesh>& fault);
 }; // class CohesiveTopology
 
 #endif // pylith_faults_cohesivetopology_hh
