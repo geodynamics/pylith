@@ -16,7 +16,7 @@
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 #include "pylith/utils/vectorfields.hh" // USES SCALAR_FIELD
-#include "pylith/meshio/OutputManager.hh" // USES OutputManager
+#include "pylith/meshio/DataWriter.hh" // USES DataWriter
 
 #include <string.h> // USES strlen()
 #include <stdexcept> // USES std::runtime_error
@@ -155,10 +155,11 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
   (*newMesh)->setCalculatedOverlap(true);
 } // distribute
 
+#include <iostream>
 // ----------------------------------------------------------------------
 // Write partitioning info for distributed mesh.
 void
-pylith::topology::Distributor::write(meshio::OutputManager* const output,
+pylith::topology::Distributor::write(meshio::DataWriter* const writer,
 				     const ALE::Obj<Mesh>& mesh,
 				     const spatialdata::geocoords::CoordSys* cs)
 { // write
@@ -169,27 +170,28 @@ pylith::topology::Distributor::write(meshio::OutputManager* const output,
     new real_section_type(mesh->comm(), mesh->debug());
   const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
   assert(!cells.isNull());
+  partition->setChart(real_section_type::chart_type(*std::min_element(cells->begin(), cells->end()),
+						    *std::max_element(cells->begin(), cells->end())+1));
   partition->setFiberDimension(cells, fiberDim);
   mesh->allocate(partition);
 
   const int rank  = mesh->commRank();
   double rankReal = double(rank);
-  const Mesh::label_sequence::iterator  cellsEnd = cells->end();
+  const Mesh::label_sequence::iterator cellsEnd = cells->end();
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
     partition->updatePoint(*c_iter, &rankReal);
   } // for
 
-
-  partition->view("PARTITION");
+  //partition->view("PARTITION");
   const double t = 0.0;
   const int numTimeSteps = 0;
-  output->open(mesh, cs, numTimeSteps);
-  output->openTimeStep(t, mesh, cs);
-  output->appendCellField(t, "partition", partition, SCALAR_FIELD, mesh);
-  output->closeTimeStep();
-  output->close();
+  writer->open(mesh, cs, numTimeSteps);
+  writer->openTimeStep(t, mesh, cs);
+  writer->writeCellField(t, "partition", partition, SCALAR_FIELD, mesh);
+  writer->closeTimeStep();
+  writer->close();
 } // write
 
 
