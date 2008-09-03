@@ -44,7 +44,7 @@ pylith::meshio::MeshIOLagrit::~MeshIOLagrit(void)
 } // destructor
 
 void
-pylith::meshio::MeshIOLagrit::readFault(const std::string filename, const Obj<Mesh>& fault, Obj<ALE::Mesh>& faultBd) {
+pylith::meshio::MeshIOLagrit::readFault(const std::string filename, const Obj<Mesh>& mesh, const Obj<Mesh>& fault, Obj<ALE::Mesh>& faultBd) {
   int faultDim = 2;
   int fSpaceDim = 0;
   int numFVertices = 0;
@@ -159,10 +159,12 @@ pylith::meshio::MeshIOLagrit::readFault(const std::string filename, const Obj<Me
 
     // Renumber vertices and use zero based indices
     // UCD file has one-based indices for both vertexIDs and fCells
+    //   Also, vertex numbers are offset by the number of cells
+    const int numCells = mesh->heightStratum(0)->size();
     for(int c = 0; c < numFCells; ++c)
       for(int corner = 0; corner < numFCorners; ++corner)
         fCells[c*numFCorners+corner] = 
-	  vertexIDs[fCells[c*numFCorners+corner]-1] - 1;
+	  vertexIDs[fCells[c*numFCorners+corner]-1] - 1 + numCells;
 
     // Switch to zero based index for global cell numbering
     for (int c=0; c < numFCells; ++c)
