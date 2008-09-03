@@ -70,7 +70,7 @@ pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<Mesh>& mesh)
 
     //MPI_Bcast(&faultDim, 1, MPI_INT, 0, comm);
     faultMesh = new Mesh(mesh->comm(), faultDim, mesh->debug());
-    pylith::meshio::MeshIOLagrit::readFault(_faultMeshFilename, faultMesh, faultBd);
+    pylith::meshio::MeshIOLagrit::readFault(_faultMeshFilename, mesh, faultMesh, faultBd);
 
     // Get group of vertices associated with fault
     const ALE::Obj<int_section_type>& groupField = 

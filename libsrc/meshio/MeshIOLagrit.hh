@@ -114,6 +114,7 @@ public :
   // TEMPORARY
   static
   void readFault(const std::string filename,
+		 const Obj<Mesh>& mesh,
 		 const Obj<Mesh>& fault,
 		 Obj<ALE::Mesh>& faultBd);
 
