@@ -172,7 +172,8 @@ pylith::meshio::MeshIOLagrit::readFault(const std::string filename, const Obj<Me
 	faceCells[c*2+i] -= 1;
   }
 
-  _buildFaultMesh(fCoordinates, numFVertices, fSpaceDim, fCells, numFCells, numFCorners, faceCells, faultDim, fault, faultBd);
+  const int firstFaultCell = mesh->getSieve()->getBaseSize() + mesh->getSieve()->getCapSize();
+  _buildFaultMesh(fCoordinates, numFVertices, fSpaceDim, fCells, numFCells, numFCorners, firstFaultCell, faceCells, faultDim, fault, faultBd);
 }
 
 // ----------------------------------------------------------------------

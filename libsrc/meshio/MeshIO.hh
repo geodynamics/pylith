@@ -126,6 +126,7 @@ protected :
                   const int_array& cells,
                   const int numCells,
                   const int numCorners,
+                  const int firstCell,
                   const int_array& faceCells,
                   const int meshDim,
                   const Obj<Mesh>& fault,
