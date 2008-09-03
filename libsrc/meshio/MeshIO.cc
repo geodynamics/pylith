@@ -203,6 +203,7 @@ pylith::meshio::MeshIO::_buildFaultMesh(const double_array& coordinates,
 				   const int_array& cells,
 				   const int numCells,
 				   const int numCorners,
+                   const int firstCell,
 				   const int_array& faceCells,
                    const int meshDim,
                    const Obj<Mesh>& fault,
@@ -237,16 +238,18 @@ pylith::meshio::MeshIO::_buildFaultMesh(const double_array& coordinates,
                                                   true,
                                                   numCorners,
                                                   0,
-                                                  fault->getArrowSection("orientation"));
+                                                  fault->getArrowSection("orientation"),
+                                                  firstCell);
 
       // Add in cells
       for(int c = 0; c < numCells; ++c) {
-        s->addArrow(c, faceCells[c*2+0]);
-        s->addArrow(c, faceCells[c*2+1]);
+        s->addArrow(c+firstCell, faceCells[c*2+0]);
+        s->addArrow(c+firstCell, faceCells[c*2+1]);
       }
 
       Mesh::renumbering_type& renumbering = fault->getRenumbering();
       ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering, false);
+      ALE::ISieveConverter::convertOrientation(*s, *sieve, renumbering, fault->getArrowSection("orientation").ptr());
 
       Obj<ALE::Mesh> tmpMesh = new ALE::Mesh(fault->comm(), dim, fault->debug());
       faultBd = ALE::Selection<ALE::Mesh>::boundary(tmpMesh);
@@ -283,7 +286,7 @@ pylith::meshio::MeshIO::_buildFaultMesh(const double_array& coordinates,
     << " bytes" << std::endl << std::endl;
 #endif
 
-  ALE::SieveBuilder<Mesh>::buildCoordinates(fault, spaceDim, &coordinates[0]);
+  //ALE::SieveBuilder<Mesh>::buildCoordinates(fault, spaceDim, &coordinates[0]);
 } // _buildFaultMesh
 
 // ----------------------------------------------------------------------
