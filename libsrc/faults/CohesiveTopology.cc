@@ -552,6 +552,7 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
   PointSet replaceVertices;
   ALE::ISieveVisitor::PointRetriever<sieve_type> sV2(std::max(1, ifaultSieve->getMaxSupportSize()));
   ALE::ISieveVisitor::NConeRetriever<sieve_type> cV2(*ifaultSieve, (size_t) pow(std::max(1, ifaultSieve->getMaxConeSize()), ifault->depth()));
+  std::set<Mesh::point_type> faceSet;
 
   for(Mesh::label_sequence::iterator f_iter = faces->begin(); f_iter != faces->end(); ++f_iter, ++newPoint) {
     const Mesh::point_type face = *f_iter;
@@ -562,8 +563,6 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
     Mesh::point_type otherCell;
 
     if (debug) std::cout << "  Checking orientation against cell " << cell << std::endl;
-    selection::getOrientedFace(mesh, cell, &vertexRenumber, numCorners, indices, &origVertices, &faceVertices);
-
     ALE::ISieveTraversal<sieve_type>::orientedClosure(*ifaultSieve, face, cV2);
     const int               coneSize = cV2.getSize();
     const Mesh::point_type *faceCone = cV2.getPoints();
@@ -571,6 +570,11 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
     //const int               coneSize = cV2.getSize() ? cV2.getSize()   : 1;
     //const Mesh::point_type *faceCone = cV2.getSize() ? cV2.getPoints() : &face;
     bool                    found    = true;
+
+    for(int i = 0; i < coneSize; ++i) faceSet.insert(faceCone[i]);
+    selection::getOrientedFace(mesh, cell, &faceSet, numCorners, indices, &origVertices, &faceVertices);
+    faceSet.clear();
+    ///selection::getOrientedFace(mesh, cell, &vertexRenumber, numCorners, indices, &origVertices, &faceVertices);
 
     if (numFaultCorners == 0) {
       found = false;
@@ -606,6 +610,13 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
             found = false;
             break;
           }
+        }
+      }
+      if (!found) {
+        std::cout << "Considering fault face " << face << std::endl;
+        std::cout << "  bordered by cells " << cell << " and " << otherCell << std::endl;
+        for(int c = 0; c < coneSize; ++c) {
+          std::cout << "    Checking " << faceCone[c] << " against " << faceVertices[c] << std::endl;
         }
       }
       assert(found);
