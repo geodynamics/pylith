@@ -123,10 +123,12 @@ pylith::meshio::MeshIOLagrit::readFault(const std::string filename, const Obj<Me
     // Section 6: <node_id 1> <node_data 1> ... <node_data num_ndata>
     vertexIDs.resize(numFVertices);
     for(int v = 0; v < numFVertices; ++v) {
-      int id, dummy;
+      int id;
+      double dummy;
 
       fin >> id;
-      fin >> vertexIDs[v];
+      fin >> vertexIDs[v]; // global node number
+      fin >> dummy; // components of normal at vertices
       fin >> dummy;
       fin >> dummy;
     }
@@ -151,19 +153,21 @@ pylith::meshio::MeshIOLagrit::readFault(const std::string filename, const Obj<Me
       int id, dummy;
 
       fin >> id;
-      fin >> dummy;
-      fin >> dummy;
-      fin >> faceCells[c*2+0];
+      fin >> faceCells[c*2+0]; // Cell numbers in global mesh on either side of fault
       fin >> faceCells[c*2+1];
-      fin >> dummy;
     }
 
-    // Renumber vertices
-    for(int c = 0; c < numFCells; ++c) {
-      for(int corner = 0; corner < numFCorners; ++corner) {
-        fCells[c*numFCorners+corner] = vertexIDs[fCells[c*numFCorners+corner]];
-      }
-    }
+    // Renumber vertices and use zero based indices
+    // UCD file has one-based indices for both vertexIDs and fCells
+    for(int c = 0; c < numFCells; ++c)
+      for(int corner = 0; corner < numFCorners; ++corner)
+        fCells[c*numFCorners+corner] = 
+	  vertexIDs[fCells[c*numFCorners+corner]-1] - 1;
+
+    // Switch to zero based index for global cell numbering
+    for (int c=0; c < numFCells; ++c)
+      for (int i=0; i < 2; ++i)
+	faceCells[c*2+i] -= 1;
   }
 
   _buildFaultMesh(fCoordinates, numFVertices, fSpaceDim, fCells, numFCells, numFCorners, faceCells, faultDim, fault, faultBd);
