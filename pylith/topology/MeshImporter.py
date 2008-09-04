@@ -79,6 +79,8 @@ class MeshImporter(MeshGenerator):
     self._logger.eventBegin(logEvent)    
     
     mesh = self.importer.read(self.debug, self.interpolate)
+    if self.debug:
+      mesh.view()
     self._debug.log(resourceUsageString())
     self._info.log("Adjusting topology.")
     self._adjustTopology(mesh, faults)
