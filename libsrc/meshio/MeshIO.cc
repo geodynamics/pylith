@@ -90,6 +90,24 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
   int      dim  = meshDim;
   int      rank;
 
+  { // Check to make sure every vertex is in at least one cell.
+    // This is required by Sieve
+    std::vector<bool> vertexInCell(numVertices, false);
+    const int size = cells.size();
+    for (int i=0; i < size; ++i)
+      vertexInCell[cells[i]] = true;
+    int count = 0;
+    for (int i=0; i < numVertices; ++i)
+      if (!vertexInCell[i])
+	++count;
+    if (count > 0) {
+      std::ostringstream msg;
+      msg << "Mesh contains " << count
+	  << " vertices that are not in any cells.";
+      throw std::runtime_error(msg.str());
+    } // if
+  } // check
+
   MPI_Bcast(&dim, 1, MPI_INT, 0, comm);
   // :BUG: This causes a memory leak.
   *_mesh = new Mesh(PETSC_COMM_WORLD, dim);
