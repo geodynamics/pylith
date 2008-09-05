@@ -410,30 +410,12 @@ pylith::faults::CohesiveTopology::createFault(Obj<Mesh>& ifault,
                                               Obj<ALE::Mesh>& faultBd,
                                               const Obj<Mesh>& mesh,
                                               const Obj<Mesh::int_section_type>& groupField)
-{ // create
-  typedef ALE::SieveAlg<ALE::Mesh>  sieveAlg;
-  typedef ALE::Selection<ALE::Mesh> selection;
-
+{
   const Obj<sieve_type>&      sieve       = mesh->getSieve();
   const Obj<Mesh::sieve_type> ifaultSieve = new Mesh::sieve_type(sieve->comm(), sieve->debug());
   Obj<ALE::Mesh>              fault       = new ALE::Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
   Obj<ALE::Mesh::sieve_type>  faultSieve  = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
-  const int  depth      = mesh->depth();
-  const int  numCells   = mesh->heightStratum(0)->size();
-  int        numCorners = 0;    // The number of vertices in a mesh cell
-  int        faceSize   = 0;    // The number of vertices in a mesh face
-  int       *indices    = NULL; // The indices of a face vertex set in a cell
-  const int  debug      = mesh->debug();
-  int        oppositeVertex;    // For simplices, the vertex opposite a given face
-  PointArray origVertices;
-  PointArray faceVertices;
-  PointArray neighborVertices;
-
-  if (!fault->commRank()) {
-    numCorners = mesh->getNumCellCorners();
-    faceSize   = selection::numFaceVertices(mesh);
-    indices    = new int[faceSize];
-  }
+  const int                   debug       = mesh->debug();
 
   // Create set with vertices on fault
   const int_section_type::chart_type& chart = groupField->getChart();
@@ -573,6 +555,24 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
 
     for(int i = 0; i < coneSize; ++i) faceSet.insert(faceCone[i]);
     selection::getOrientedFace(mesh, cell, &faceSet, numCorners, indices, &origVertices, &faceVertices);
+    if (faceVertices.size() != coneSize) {
+      std::cout << "Invalid size for faceVertices " << faceVertices.size() << " should be " << coneSize << std::endl;
+      std::cout << "  firstCohesiveCell " << firstCohesiveCell << " newPoint " << newPoint << " numFaces " << faces->size() << std::endl;
+      std::cout << "  faceSet:" << std::endl;
+      for(std::set<Mesh::point_type>::const_iterator p_iter = faceSet.begin(); p_iter != faceSet.end(); ++p_iter) {
+        std::cout << "    " << *p_iter << std::endl;
+      }
+      std::cout << "  cell cone:" << std::endl;
+      ALE::ISieveVisitor::PointRetriever<sieve_type> cV(std::max(1, sieve->getMaxConeSize()));
+      sieve->cone(cell, cV);
+      const int               coneSize2 = cV.getSize();
+      const Mesh::point_type *cellCone  = cV.getPoints();
+
+      for(int c = 0; c < coneSize2; ++c) {
+        std::cout << "    " << cellCone[c] << std::endl;
+      }
+    }
+    assert(faceVertices.size() == coneSize);
     faceSet.clear();
     ///selection::getOrientedFace(mesh, cell, &vertexRenumber, numCorners, indices, &origVertices, &faceVertices);
 
