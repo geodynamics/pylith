@@ -157,10 +157,15 @@ pylith::meshio::MeshIOLagrit::readFault(const std::string filename, const Obj<Me
       fin >> faceCells[c*2+1];
     }
 
+    // Determine the number of cells
+    //   Only do this once since we add cohesive cells after that
+    static int numCells = -1;
+
+    if (numCells == -1) {numCells = mesh->heightStratum(0)->size();}
+
     // Renumber vertices and use zero based indices
     // UCD file has one-based indices for both vertexIDs and fCells
     //   Also, vertex numbers are offset by the number of cells
-    const int numCells = mesh->heightStratum(0)->size();
     for(int c = 0; c < numFCells; ++c)
       for(int corner = 0; corner < numFCorners; ++corner)
         fCells[c*numFCorners+corner] = 
