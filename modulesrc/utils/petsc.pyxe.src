@@ -138,4 +138,23 @@ def mat_view(mat):
   return
 
 
+def mat_view_binary(mat, filename):
+  """
+  Dump matrix to stdout.
+  """
+  # create shim for 'MatView'
+  #embed{ int Mat_view_binary(void* matVptr, char *filename)
+  Mat* mat = (Mat*) matVptr;
+  PetscViewer viewer;
+  PetscViewerBinaryOpen(PETSC_COMM_WORLD, filename, FILE_MODE_WRITE, &viewer);
+  MatView(*mat, viewer);
+  PetscViewerDestroy(viewer);
+  return 0;
+  #}embed
+  cdef void* matVptr
+  err = Mat_view_binary(PyCObject_AsVoidPtr(mat), filename)
+
+  return
+
+
 # End of file 
