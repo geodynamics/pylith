@@ -72,7 +72,7 @@ class Implicit(Formulation):
     self._loggingPrefix = "TSIm "
     self.solnField = {'name': "dispTBctpdt",
                       'label': "displacements"}
-    self._step0 = None
+    self._stepCount = None
     return
 
 
@@ -116,7 +116,7 @@ class Implicit(Formulation):
     self._debug.log(resourceUsageString())
 
     # Initial time step solves for total displacement field, not increment
-    self._step0 = True
+    self._stepCount = 0
     for constraint in self.constraints:
       constraint.useSolnIncr(False)
     for integrator in self.integrators:
@@ -148,9 +148,21 @@ class Implicit(Formulation):
     for constraint in self.constraints:
       constraint.setField(t+dt, dispTBctpdt)
 
+    # If finishing first time step, then switch from solving for total
+    # displacements to solving for incremental displacements
+    if 1 == self._stepCount:
+      self._info.log("Switching from total field solution to incremental " \
+                     "field solution.")
+      for constraint in self.constraints:
+        constraint.useSolnIncr(True)
+      for integrator in self.integrators:
+        integrator.useSolnIncr(True)
+      self._reformJacobian(t, dt)
+
     ### NONLINEAR: Might want to move logic into IntegrateJacobian() and set a flag instead
     needNewJacobian = False
     for integrator in self.integrators:
+      integrator.timeStep(dt)
       if integrator.needNewJacobian():
         needNewJacobian = True
     if needNewJacobian:
@@ -210,15 +222,16 @@ class Implicit(Formulation):
 
     # If finishing first time step, then switch from solving for total
     # displacements to solving for incremental displacements
-    if self._step0 and (t + dt) < self.timeStep.totalTime:
-      self._info.log("Switching from total field solution to incremental " \
-                     "field solution.")
-      for constraint in self.constraints:
-        constraint.useSolnIncr(True)
-      for integrator in self.integrators:
-        integrator.useSolnIncr(True)
-      self._reformJacobian(t, dt)
-      self._step0 = False
+    #if self._step0 and (t + dt) < self.timeStep.totalTime:
+    #  self._info.log("Switching from total field solution to incremental " \
+    #                 "field solution.")
+    #  for constraint in self.constraints:
+    #    constraint.useSolnIncr(True)
+    #  for integrator in self.integrators:
+    #    integrator.useSolnIncr(True)
+    #  self._reformJacobian(t, dt)
+    #  self._step0 = False
+    self._stepCount += 1
 
     self._logger.eventEnd(logEvent)
     return
