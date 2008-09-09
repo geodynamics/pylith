@@ -93,6 +93,7 @@ class MeshGenerator(Component):
     
     if not interfaces is None:
       for interface in interfaces:
+        self._info.log("Adjusting topology for fault '%s'." % interface.label)
         interface.adjustTopology(mesh)
 
     self._logger.eventEnd(logEvent)
