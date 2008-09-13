@@ -556,7 +556,7 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
     for(int i = 0; i < coneSize; ++i) faceSet.insert(faceCone[i]);
     selection::getOrientedFace(mesh, cell, &faceSet, numCorners, indices, &origVertices, &faceVertices);
     if (faceVertices.size() != coneSize) {
-      std::cout << "Invalid size for faceVertices " << faceVertices.size() << " should be " << coneSize << std::endl;
+      std::cout << "Invalid size for faceVertices " << faceVertices.size() << " of face " << face << "should be " << coneSize << std::endl;
       std::cout << "  firstCohesiveCell " << firstCohesiveCell << " newPoint " << newPoint << " numFaces " << faces->size() << std::endl;
       std::cout << "  faceSet:" << std::endl;
       for(std::set<Mesh::point_type>::const_iterator p_iter = faceSet.begin(); p_iter != faceSet.end(); ++p_iter) {
@@ -570,6 +570,14 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
 
       for(int c = 0; c < coneSize2; ++c) {
         std::cout << "    " << cellCone[c] << std::endl;
+      }
+      std::cout << "  fault cell support:" << std::endl;
+      ALE::ISieveVisitor::PointRetriever<sieve_type> sV(std::max(1, ifaultSieve->getMaxSupportSize()));
+      ifaultSieve->support(face, sV);
+      const int               supportSize2 = sV.getSize();
+      const Mesh::point_type *cellSupport  = sV.getPoints();
+      for(int s = 0; s < supportSize2; ++s) {
+        std::cout << "    " << cellSupport[s] << std::endl;
       }
     }
     assert(faceVertices.size() == coneSize);

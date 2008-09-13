@@ -150,11 +150,12 @@ pylith::meshio::MeshIOLagrit::readFault(const std::string filename, const Obj<Me
     // Section 9: <cell_id 1> <cell_data 1> ... <cell_data num_cdata> 
     faceCells.resize(numFCells*2);
     for(int c = 0; c < numFCells; ++c) {
-      int id, dummy;
+      int id, faultId;
 
       fin >> id;
       fin >> faceCells[c*2+0]; // Cell numbers in global mesh on either side of fault
       fin >> faceCells[c*2+1];
+      fin >> faultId;
     }
 
     // Determine the number of cells
