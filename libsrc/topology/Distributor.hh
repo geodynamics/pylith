@@ -82,6 +82,12 @@ private :
   /// Not implemented
   const Distributor& operator=(const Distributor&);
 
+  template<typename DistributionType>
+  static
+  void
+  distribute_private(ALE::Obj<Mesh>* const newMesh,
+                     const ALE::Obj<Mesh>& origMesh);
+
 }; // Distributor
 
 #endif // pylith_topology_distributor_hh
