@@ -42,9 +42,27 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
 					  const ALE::Obj<Mesh>& origMesh,
 					  const char* partitioner)
 { // distribute
-  typedef Mesh::point_type                  point_type;
-  typedef ALE::DistributionNew<Mesh>        distribution_type;
-  typedef distribution_type::partition_type partition_type;
+  std::string partitionerName(partitioner);
+
+  if (partitioner == "") {
+    distribute_private<ALE::DistributionNew<Mesh> >(newMesh, origMesh);
+  } else if (partitioner == "chaco") {
+    distribute_private<ALE::DistributionNew<Mesh, ALE::Partitioner<ALE::Chaco::Partitioner<> > > >(newMesh, origMesh);
+  } else if (partitioner == "parmetis") {
+    distribute_private<ALE::DistributionNew<Mesh, ALE::Partitioner<ALE::ParMetis::Partitioner<> > > >(newMesh, origMesh);
+  } else {
+    std::cout << "ERROR: Using default partitioner instead of unknown partitioner " << partitioner << std::endl;
+    distribute_private<ALE::DistributionNew<Mesh> >(newMesh, origMesh);
+  }
+}
+
+template<typename DistributionType>
+void
+pylith::topology::Distributor::distribute_private(ALE::Obj<Mesh>* const newMesh,
+                                                  const ALE::Obj<Mesh>& origMesh)
+{ // distribute
+  typedef typename Mesh::point_type                 point_type;
+  typedef typename DistributionType::partition_type partition_type;
 
   const Obj<Mesh::sieve_type>        newSieve        = new Mesh::sieve_type(origMesh->comm(), origMesh->debug());
   const Obj<Mesh::send_overlap_type> sendMeshOverlap = new Mesh::send_overlap_type(origMesh->comm(), origMesh->debug());
@@ -57,10 +75,7 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
   // std::map<point_type,point_type>    renumbering;
   Mesh::renumbering_type&            renumbering     = (*newMesh)->getRenumbering();
   // Distribute the mesh
-  if (strlen(partitioner) != 0) {
-    std::cout << "ERROR: Using default partitioner instead of " << partitioner << std::endl;
-  }
-  Obj<partition_type> partition = distribution_type::distributeMeshV(origMesh, (*newMesh), renumbering, sendMeshOverlap, recvMeshOverlap);
+  Obj<partition_type> partition = DistributionType::distributeMeshV(origMesh, (*newMesh), renumbering, sendMeshOverlap, recvMeshOverlap);
   if (origMesh->debug()) {
     std::cout << "["<<origMesh->commRank()<<"]: Mesh Renumbering:" << std::endl;
     for(Mesh::renumbering_type::const_iterator r_iter = renumbering.begin(); r_iter != renumbering.end(); ++r_iter) {
@@ -88,7 +103,7 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
   const Obj<real_section_type>& parallelCoordinates = (*newMesh)->getRealSection("coordinates");
 
   (*newMesh)->setupCoordinates(parallelCoordinates);
-  distribution_type::distributeSection(coordinates, partition, renumbering, sendMeshOverlap, recvMeshOverlap, parallelCoordinates);
+  DistributionType::distributeSection(coordinates, partition, renumbering, sendMeshOverlap, recvMeshOverlap, parallelCoordinates);
   // Distribute other sections
   if (origMesh->getRealSections()->size() > 1) {
     Obj<std::set<std::string> > names = origMesh->getRealSections();
@@ -111,7 +126,7 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
 
       // We assume all integer sections are complete sections
       newSection->setChart((*newMesh)->getSieve()->getChart());
-      distribution_type::distributeSection(origSection, partition, renumbering, sendMeshOverlap, recvMeshOverlap, newSection);
+      DistributionType::distributeSection(origSection, partition, renumbering, sendMeshOverlap, recvMeshOverlap, newSection);
 #if 0
       std::string serialName("Serial ");
       std::string parallelName("Parallel ");
