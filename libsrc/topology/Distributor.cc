@@ -43,8 +43,6 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
 					  const ALE::Obj<Mesh>& origMesh,
 					  const char* partitioner)
 { // distribute
-  std::string partitionerName(partitioner);
-
   if (0 == strcasecmp(partitioner, "")) {
     distribute_private<ALE::DistributionNew<Mesh> >(newMesh, origMesh);
   } else if (0 == strcasecmp(partitioner, "chaco")) {
