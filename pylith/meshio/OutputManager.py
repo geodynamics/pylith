@@ -166,9 +166,9 @@ class OutputManager(Component):
     self._logger.eventBegin(logEvent)    
 
     nsteps = numTimeSteps
-    if self.outputFreq == "skip" and self.skip > 0:
+    if numTimeSteps > 0 and self.outputFreq == "skip" and self.skip > 0:
       nsteps = numTimeSteps / (1+self.skip)
-    elif self.outputFreq == "time_step":
+    elif numTimeSteps > 0 and self.outputFreq == "time_step":
       nsteps = 1 + int(totalTime / self.dt)
 
     (mesh, label, labelId) = self.dataProvider.getDataMesh()
