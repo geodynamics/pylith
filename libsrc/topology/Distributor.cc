@@ -19,6 +19,7 @@
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 
 #include <string.h> // USES strlen()
+#include <strings.h> // USES strcasecmp()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <assert.h> // USES assert()
@@ -44,11 +45,11 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
 { // distribute
   std::string partitionerName(partitioner);
 
-  if (partitioner == "") {
+  if (0 == strcasecmp(partitioner, "")) {
     distribute_private<ALE::DistributionNew<Mesh> >(newMesh, origMesh);
-  } else if (partitioner == "chaco") {
+  } else if (0 == strcasecmp(partitioner, "chaco")) {
     distribute_private<ALE::DistributionNew<Mesh, ALE::Partitioner<ALE::Chaco::Partitioner<> > > >(newMesh, origMesh);
-  } else if (partitioner == "parmetis") {
+  } else if (0 == strcasecmp(partitioner, "parmetis")) {
     distribute_private<ALE::DistributionNew<Mesh, ALE::Partitioner<ALE::ParMetis::Partitioner<> > > >(newMesh, origMesh);
   } else {
     std::cout << "ERROR: Using default partitioner instead of unknown partitioner " << partitioner << std::endl;
