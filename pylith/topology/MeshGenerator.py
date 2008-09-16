@@ -66,7 +66,7 @@ class MeshGenerator(Component):
 
   def create(self, faults=None):
     """
-    Generate a Mesh from a boundary
+    Generate a Mesh.
     """
     raise NotImplementedError("MeshGenerator.create() not implemented.")
     return

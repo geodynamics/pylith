@@ -94,6 +94,8 @@ libpylith_la_SOURCES = \
 	topology/FieldsManager.cc \
 	topology/Distributor.cc \
 	topology/MeshOps.cc \
+	topology/MeshRefiner.cc \
+	topology/RefineUniform.cc \
 	utils/EventLogger.cc
 
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)

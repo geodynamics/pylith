@@ -112,6 +112,8 @@ nobase_pkgpyexec_PYTHON = \
 	topology/Mesh.py \
 	topology/MeshGenerator.py \
 	topology/MeshImporter.py \
+	topology/MeshRefiner.py \
+	topology/RefineUniform.py \
 	utils/__init__.py \
 	utils/CheckpointTimer.py \
 	utils/CppData.py \

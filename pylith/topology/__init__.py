@@ -20,6 +20,8 @@ __all__ = ['Distributor',
            'MeshGenSimple',
            'MeshGenerator',
            'MeshImporter',
+           'MeshRefiner',
+           'RefineUniform',
            ]
 
 
