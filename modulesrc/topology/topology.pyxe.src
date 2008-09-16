@@ -14,6 +14,8 @@
 #include "pylith/topology/FieldsManager.hh"
 #include "pylith/topology/Distributor.hh"
 #include "pylith/topology/MeshOps.hh"
+#include "pylith/topology/MeshRefiner.hh"
+#include "pylith/topology/RefineUniform.hh"
 #include "pylith/utils/sievetypes.hh"
 #include "pylith/utils/petscfwd.h"
 #include <petscmesh.hh>
@@ -84,7 +86,6 @@ cimport mpi
 import mpi
 
 # ----------------------------------------------------------------------
-
 cdef class Mesh:
 
   cdef void* thisptr # Pointer to C++ object
@@ -583,6 +584,147 @@ cdef class Distributor:
     Distributor_write(ptrFromHandle(writer), ptrFromHandle(mesh),
                       ptrFromHandle(cs))
     return
+
+
+# ----------------------------------------------------------------------
+cdef void MeshRefiner_destructor(void* obj):
+  """
+  Destroy MeshRefiner object.
+  """
+  # create shim for destructor
+  #embed{ void MeshRefiner_destructor_cpp(void* objVptr)
+  pylith::topology::MeshRefiner* pRefiner =
+    (pylith::topology::MeshRefiner*) objVptr;
+  delete pRefiner;
+  #}embed
+  MeshRefiner_destructor_cpp(obj)
+  return
+
+
+cdef class MeshRefiner:
+
+  cdef void* thisptr # Pointer to C++ object
+  cdef readonly object handle # PyCObject holding pointer to C++ object
+  cdef readonly object name # Identifier for object base type
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    self.handle = None
+    self.thisptr = NULL
+    self.name = "pylith_topology_meshrefiner"
+    return
+
+
+  def _createHandle(self):
+    """Wrap pointer to C++ object in PyCObject."""
+    return PyCObject_FromVoidPtr(self.thisptr, MeshRefiner_destructor)
+
+
+  def write(self, writer, mesh, cs):
+    """
+    Write refined mesh to file..
+    """
+    # create shim for method 'write'
+    #embed{ void MeshRefiner_write(void* writerVptr, void* meshVptr, void* csVptr)
+    try {
+      assert(0 != writerVptr);
+      assert(0 != meshVptr);
+      assert(0 != csVptr);
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
+      pylith::meshio::DataWriter* writer =
+        (pylith::meshio::DataWriter*) writerVptr;
+      spatialdata::geocoords::CoordSys* cs =
+        (spatialdata::geocoords::CoordSys*) csVptr;
+      pylith::topology::MeshRefiner::write(writer, *mesh, cs);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if writer.name != "pylith_meshio_DataWriter":
+      raise TypeError, \
+            "Argument 'writer' must be extension module type 'DataWriter'."
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type 'Mesh'."
+    if cs.name != "spatialdata_geocoords_CoordSys":
+      raise TypeError, \
+            "Argument 'cs' must be extension module type 'CoordSys'."
+    MeshRefiner_write(ptrFromHandle(writer), ptrFromHandle(mesh),
+                      ptrFromHandle(cs))
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class RefineUniform(MeshRefiner):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* RefineUniform_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::topology::RefineUniform);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    MeshRefiner.__init__(self)
+    self.thisptr = RefineUniform_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+  def refine(self, mesh, levels):
+    """
+    Refine mesh.
+    """
+    # create shim for method 'refine'
+    #embed{ void RefineUniform_refine(void* objVptr, void* newMeshVptr, void* meshVptr, int levels)
+    try {
+      assert(0 != objVptr);
+      assert(0 != meshVptr);
+      assert(0 != newMeshVptr);
+      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
+      ALE::Obj<pylith::Mesh>* newMesh = (ALE::Obj<pylith::Mesh>*) newMeshVptr;
+      ((pylith::topology::RefineUniform*) objVptr)->refine(newMesh, *mesh, levels);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type 'Mesh'."
+    newMesh = Mesh()
+    RefineUniform_refine(self.thisptr, ptrFromHandle(newMesh),
+                         ptrFromHandle(mesh), levels)
+    return newMesh
+
 
 
 # ----------------------------------------------------------------------

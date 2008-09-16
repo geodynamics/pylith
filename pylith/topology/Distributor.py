@@ -41,7 +41,7 @@ class Distributor(Component):
     ## @li \b debug Write partition information to file.
     ##
     ## \b Facilities
-    ## @li \b output Output manager for partition information
+    ## @li \b writer Data writer for for partition information.
 
     import pyre.inventory
 
@@ -137,7 +137,7 @@ class Distributor(Component):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def mesh_partitioner():
+def mesh_distributor():
   """
   Factory associated with Distributor.
   """

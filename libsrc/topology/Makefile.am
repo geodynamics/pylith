@@ -16,7 +16,9 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	Distributor.hh \
 	FieldsManager.hh \
-	MeshOps.hh
+	MeshOps.hh \
+	MeshRefiner.hh \
+	RefineUniform.hh
 
 noinst_HEADERS =
 

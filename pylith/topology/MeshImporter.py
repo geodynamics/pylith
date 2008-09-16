@@ -42,6 +42,7 @@ class MeshImporter(MeshGenerator):
     ## \b Facilities
     ## @li \b importer Mesh importer.
     ## @li \b partitioner Mesh partitioner.
+    ## @li \b refiner Mesh refiner.
 
     import pyre.inventory
 
@@ -55,7 +56,12 @@ class MeshImporter(MeshGenerator):
                                           family="mesh_distributor",
                                           factory=Distributor)
     distributor.meta['tip'] = "Mesh distributor."
-  
+ 
+    from MeshRefiner import MeshRefiner
+    refiner = pyre.inventory.facility("refiner",
+                                      family="mesh_refiner",
+                                      factory=MeshRefiner)
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -91,6 +97,9 @@ class MeshImporter(MeshGenerator):
       mesh = self.distributor.distribute(mesh)
     #mesh.view()
 
+    # refine mesh (if necessary)
+    mesh = self.refiner.refine(mesh)
+
     self._logger.eventEnd(logEvent)    
     return mesh
 
@@ -104,6 +113,7 @@ class MeshImporter(MeshGenerator):
     MeshGenerator._configure(self)
     self.importer = self.inventory.importer
     self.distributor = self.inventory.distributor
+    self.refiner = self.inventory.refiner
     return
   
 
