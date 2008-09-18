@@ -618,7 +618,7 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
   const int faultDepth = _faultMesh->depth();  // depth of fault cells
   typedef ALE::SieveAlg<Mesh> SieveAlg;
 
-  ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, (size_t) pow(sieve->getMaxConeSize(), _faultMesh->depth()));
+  ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, (size_t) pow(sieve->getMaxConeSize(), std::max(0, _faultMesh->depth())));
 
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
@@ -754,7 +754,7 @@ pylith::faults::FaultCohesiveKin::_calcVertexCellPairs(void)
   const int faultDepth = _faultMesh->depth();  // depth of fault cells
   typedef ALE::SieveAlg<Mesh> SieveAlg;
   
-  ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, (size_t) pow(sieve->getMaxConeSize(), _faultMesh->depth()));
+  ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, (size_t) pow(sieve->getMaxConeSize(), std::max(0, _faultMesh->depth())));
 
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
