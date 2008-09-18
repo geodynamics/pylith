@@ -266,6 +266,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
 
   const ALE::Obj<Mesh::order_type>& globalOrder = mesh->getFactory()->getGlobalOrder(mesh, "default", dispT);
   assert(!globalOrder.isNull());
+  // We would need to request unique points here if we had an interpolated mesh
   visitor_type iV(*dispT, *globalOrder, (int) pow(mesh->getSieve()->getMaxConeSize(), mesh->depth())*spaceDim);
 
   int c_index = 0;
