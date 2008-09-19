@@ -45,10 +45,14 @@ pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
 { // distribute
   if (0 == strcasecmp(partitioner, "")) {
     distribute_private<ALE::DistributionNew<Mesh> >(newMesh, origMesh);
+#if defined(PETSC_HAVE_CHACO)
   } else if (0 == strcasecmp(partitioner, "chaco")) {
     distribute_private<ALE::DistributionNew<Mesh, ALE::Partitioner<ALE::Chaco::Partitioner<> > > >(newMesh, origMesh);
+#endif
+#if defined(PETSC_HAVE_PARMETIS)
   } else if (0 == strcasecmp(partitioner, "parmetis")) {
     distribute_private<ALE::DistributionNew<Mesh, ALE::Partitioner<ALE::ParMetis::Partitioner<> > > >(newMesh, origMesh);
+#endif
   } else {
     std::cout << "ERROR: Using default partitioner instead of unknown partitioner " << partitioner << std::endl;
     distribute_private<ALE::DistributionNew<Mesh> >(newMesh, origMesh);
