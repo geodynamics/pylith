@@ -61,6 +61,7 @@ class MeshImporter(MeshGenerator):
     refiner = pyre.inventory.facility("refiner",
                                       family="mesh_refiner",
                                       factory=MeshRefiner)
+    refiner.meta['tip'] = "Mesh refiner."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////

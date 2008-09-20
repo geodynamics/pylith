@@ -92,7 +92,7 @@ class RefineUniform(MeshRefiner):
     """
     Set members based using inventory.
     """
-    Component._configure(self)
+    MeshRefiner._configure(self)
     self.levels = self.inventory.levels
     return
 
@@ -109,7 +109,7 @@ class RefineUniform(MeshRefiner):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def mesh_distributor():
+def mesh_refiner():
   """
   Factory associated with RefineUniform.
   """
