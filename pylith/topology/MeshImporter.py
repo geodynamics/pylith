@@ -100,6 +100,8 @@ class MeshImporter(MeshGenerator):
 
     # refine mesh (if necessary)
     mesh = self.refiner.refine(mesh)
+    if self.debug:
+      mesh.view()
 
     self._logger.eventEnd(logEvent)    
     return mesh
