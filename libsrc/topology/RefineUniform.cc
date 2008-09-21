@@ -39,69 +39,92 @@ pylith::topology::RefineUniform::refine(ALE::Obj<Mesh>* const newMesh,
 					const ALE::Obj<Mesh>& mesh,
 					const int levels)
 { // refine
-  typedef Mesh::point_type                 point_type;
+  assert(!mesh.isNull());
+
+  typedef Mesh::point_type point_type;
   typedef std::pair<point_type,point_type> edge_type;
 
-  *newMesh = new Mesh(mesh->comm(), mesh->getDimension(), mesh->debug());
-  Obj<Mesh::sieve_type> newSieve = new Mesh::sieve_type(mesh->comm(), mesh->debug());
-  std::map<edge_type, point_type> edge2vertex;
+  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  assert(cells->size() > 0);
+  // Assume number of corners per cell is the same for the entire mesh
+  const int cellNumCorners = mesh->getNumCellCorners(*cells->begin());
 
-  (*newMesh)->setSieve(newSieve);
-  ALE::MeshBuilder<Mesh>::refineTetrahedra(*mesh, *(*newMesh), edge2vertex);
+  if (3 == mesh->getDimension() && 4 == cellNumCorners) {
+    *newMesh = new Mesh(mesh->comm(), mesh->getDimension(), mesh->debug());
+    Obj<Mesh::sieve_type> newSieve =
+      new Mesh::sieve_type(mesh->comm(), mesh->debug());
+    std::map<edge_type, point_type> edge2vertex;
+    
+    (*newMesh)->setSieve(newSieve);
+    ALE::MeshBuilder<Mesh>::refineTetrahedra(*mesh, *(*newMesh), edge2vertex);
 
-  // Fix material ids
-  const int                         numCells     = mesh->heightStratum(0)->size();
-  const ALE::Obj<Mesh::label_type>& materials    = mesh->getLabel("material-id");
-  const ALE::Obj<Mesh::label_type>& newMaterials = (*newMesh)->createLabel("material-id");
+    // Fix material ids
+    const int numCells = mesh->heightStratum(0)->size();
+    const ALE::Obj<Mesh::label_type>& materials =
+      mesh->getLabel("material-id");
+    const ALE::Obj<Mesh::label_type>& newMaterials =
+      (*newMesh)->createLabel("material-id");
 
-  for(int c = 0; c < numCells; ++c) {
-    const int material = mesh->getValue(materials, c);
+    for(int c = 0; c < numCells; ++c) {
+      const int material = mesh->getValue(materials, c);
 
-    for(int i = 0; i < 8; ++i) {(*newMesh)->setValue(newMaterials, c*8+i, material);}
-  }
-  // Fix groups, assuming vertex groups
-  const int                               numNewVertices = (*newMesh)->depthStratum(0)->size();
-  const int                               numNewCells    = (*newMesh)->heightStratum(0)->size();
-  const ALE::Obj<std::set<std::string> >& sectionNames   = mesh->getIntSections();
+      for(int i = 0; i < 8; ++i)
+	(*newMesh)->setValue(newMaterials, c*8+i, material);
+    } // for
 
-  for(std::set<std::string>::const_iterator name = sectionNames->begin(); name != sectionNames->end(); ++name) {
-    const ALE::Obj<Mesh::int_section_type>&   group    = mesh->getIntSection(*name);
-    const ALE::Obj<Mesh::int_section_type>&   newGroup = (*newMesh)->getIntSection(*name);
-    const Mesh::int_section_type::chart_type& chart    = group->getChart();
+    // Fix groups, assuming vertex groups
+    const int numNewVertices = (*newMesh)->depthStratum(0)->size();
+    const int numNewCells = (*newMesh)->heightStratum(0)->size();
+    const ALE::Obj<std::set<std::string> >& sectionNames =
+      mesh->getIntSections();
 
-    group->setChart(Mesh::int_section_type::chart_type(numNewCells, numNewCells + numNewVertices));
-    for(int p = chart.min(); p < chart.max(); ++p) {
-      if (group->getFiberDimension(p)) {
-        newGroup->setFiberDimension(p, 1);
-      }
-    }
-    for(std::map<edge_type, point_type>::const_iterator e_iter = edge2vertex.begin(); e_iter != edge2vertex.end(); ++e_iter) {
-      const point_type vertexA = e_iter->first.first;
-      const point_type vertexB = e_iter->first.second;
+    for(std::set<std::string>::const_iterator name=sectionNames->begin();
+	name != sectionNames->end();
+	++name) {
+      const ALE::Obj<Mesh::int_section_type>& group = mesh->getIntSection(*name);
+      const ALE::Obj<Mesh::int_section_type>& newGroup =
+	(*newMesh)->getIntSection(*name);
+      const Mesh::int_section_type::chart_type& chart = group->getChart();
+      
+      group->setChart(Mesh::int_section_type::chart_type(numNewCells, 
+							 numNewCells + numNewVertices));
+      for(int p = chart.min(); p < chart.max(); ++p) {
+	if (group->getFiberDimension(p))
+	  newGroup->setFiberDimension(p, 1);
+      } // for
+      const std::map<edge_type, point_type>::const_iterator edge2VertexEnd =
+	edge2vertex.end();
+      for(std::map<edge_type, point_type>::const_iterator e_iter=edge2vertex.begin();
+	  e_iter != edge2VertexEnd;
+	  ++e_iter) {
+	const point_type vertexA = e_iter->first.first;
+	const point_type vertexB = e_iter->first.second;
+      
+	if (group->getFiberDimension(vertexA) && group->getFiberDimension(vertexB))
+	  if (group->restrictPoint(vertexA)[0] == group->restrictPoint(vertexB)[0])
+	    newGroup->setFiberDimension(e_iter->second, 1);
+      } // for
 
-      if (group->getFiberDimension(vertexA) && group->getFiberDimension(vertexB)) {
-        if (group->restrictPoint(vertexA)[0] == group->restrictPoint(vertexB)[0]) {
-          newGroup->setFiberDimension(e_iter->second, 1);
-        }
-      }
-    }
-    newGroup->allocatePoint();
-    for(int p = chart.min(); p < chart.max(); ++p) {
-      if (group->getFiberDimension(p)) {
-        newGroup->updatePoint(p, group->restrictPoint(p));
-      }
-    }
-    for(std::map<edge_type, point_type>::const_iterator e_iter = edge2vertex.begin(); e_iter != edge2vertex.end(); ++e_iter) {
-      const point_type vertexA = e_iter->first.first;
-      const point_type vertexB = e_iter->first.second;
-
-      if (group->getFiberDimension(vertexA) && group->getFiberDimension(vertexB)) {
-        if (group->restrictPoint(vertexA)[0] == group->restrictPoint(vertexB)[0]) {
-          newGroup->updatePoint(e_iter->second, group->restrictPoint(vertexA));
-        }
-      }
-    }
-  }
+      newGroup->allocatePoint();
+      const int chartMax = chart.max();
+      for(int p = chart.min(); p < chartMax; ++p)
+	if (group->getFiberDimension(p))
+	  newGroup->updatePoint(p, group->restrictPoint(p));
+      
+      for(std::map<edge_type, point_type>::const_iterator e_iter=edge2vertex.begin();
+	  e_iter != edge2VertexEnd;
+	  ++e_iter) {
+	const point_type vertexA = e_iter->first.first;
+	const point_type vertexB = e_iter->first.second;
+	
+	if (group->getFiberDimension(vertexA) && group->getFiberDimension(vertexB))
+	  if (group->restrictPoint(vertexA)[0] == group->restrictPoint(vertexB)[0])
+	    newGroup->updatePoint(e_iter->second, group->restrictPoint(vertexA));
+      } // for
+    } // for
+  } else {
+    *newMesh = mesh;
+  } // if/else
 } // refine
 
 
