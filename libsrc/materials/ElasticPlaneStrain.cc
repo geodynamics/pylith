@@ -102,6 +102,15 @@ pylith::materials::ElasticPlaneStrain::_dbToProperties(
   const double vs = dbValues[_ElasticPlaneStrain::didVs];
   const double vp = dbValues[_ElasticPlaneStrain::didVp];
  
+  if (density < 0.0 || vs < 0.0 || vp < 0.0) {
+    std::ostringstream msg;
+    msg << "Spatial database returned negative value for physical properties.\n"
+	<< "density: " << density << "\n"
+	<< "vp: " << vp << "\n"
+	<< "vs: " << vs << "\n";
+    throw std::runtime_error(msg.str());
+  } // if
+
   const double mu = density * vs*vs;
   const double lambda = density * vp*vp - 2.0*mu;
 
