@@ -86,11 +86,18 @@ pylith::topology::RefineUniform::refine(ALE::Obj<Mesh>* const newMesh,
 	(*newMesh)->getIntSection(*name);
       const Mesh::int_section_type::chart_type& chart = group->getChart();
       
-      group->setChart(Mesh::int_section_type::chart_type(numNewCells, 
+      newGroup->setChart(Mesh::int_section_type::chart_type(numNewCells, 
 							 numNewCells + numNewVertices));
-      for(int p = chart.min(); p < chart.max(); ++p) {
+      const Mesh::int_section_type::chart_type& newChart = newGroup->getChart();
+      
+
+      // MATT I think this is wrong. The labels of vertices is
+      // different in the refined mesh.
+
+      const int chartMax = chart.max();
+      for(int p=chart.min(), pNew=newChart.min(); p < chartMax; ++p, ++pNew) {
 	if (group->getFiberDimension(p))
-	  newGroup->setFiberDimension(p, 1);
+	  newGroup->setFiberDimension(pNew, 1);
       } // for
       const std::map<edge_type, point_type>::const_iterator edge2VertexEnd =
 	edge2vertex.end();
@@ -106,7 +113,6 @@ pylith::topology::RefineUniform::refine(ALE::Obj<Mesh>* const newMesh,
       } // for
 
       newGroup->allocatePoint();
-      const int chartMax = chart.max();
       for(int p = chart.min(); p < chartMax; ++p)
 	if (group->getFiberDimension(p))
 	  newGroup->updatePoint(p, group->restrictPoint(p));
