@@ -137,6 +137,15 @@ pylith::materials::GenMaxwellIsotropic3D::_dbToProperties(
   const double vp = dbValues[_GenMaxwellIsotropic3D::didVp];
   const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
  
+  if (density < 0.0 || vs < 0.0 || vp < 0.0) {
+    std::ostringstream msg;
+    msg << "Spatial database returned negative value for physical properties.\n"
+	<< "density: " << density << "\n"
+	<< "vp: " << vp << "\n"
+	<< "vs: " << vs << "\n";
+    throw std::runtime_error(msg.str());
+  } // if
+
   const double mu = density * vs*vs;
   const double lambda = density * vp*vp - 2.0*mu;
 
@@ -162,7 +171,17 @@ pylith::materials::GenMaxwellIsotropic3D::_dbToProperties(
     double viscosity = dbValues[_GenMaxwellIsotropic3D::didViscosity1 + model];
     double muFac = muRatio*mu;
     double maxwellTime = 1.0e30;
-    if (muFac > 0.0) maxwellTime = viscosity / muFac;
+    if (muFac > 0.0)
+      maxwellTime = viscosity / muFac;
+    if (muRatio < 0.0 || viscosity < 0.0 || muFac < 0.0 || maxwellTime < 0.0) {
+      std::ostringstream msg;
+      msg << "Found negative value(s) for physical properties.\n"
+	  << "muRatio: " << muRatio << "\n"
+	  << "viscosity: " << viscosity << "\n"
+	  << "muFac: " << muFac << "\n"
+	  << "maxwellTime: " << maxwellTime << "\n";
+      throw std::runtime_error(msg.str());
+    } // if
     propValues[_GenMaxwellIsotropic3D::pidShearRatio + model] = muRatio;
     propValues[_GenMaxwellIsotropic3D::pidMaxwellTime + model] = maxwellTime;
   } // for

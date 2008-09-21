@@ -98,6 +98,15 @@ pylith::materials::ElasticStrain1D::_dbToProperties(
   const double vp = dbValues[_ElasticStrain1D::didVp];
   const double vs = dbValues[_ElasticStrain1D::didVs];
 
+  if (density < 0.0 || vs < 0.0 || vp < 0.0) {
+    std::ostringstream msg;
+    msg << "Spatial database returned negative value for physical properties.\n"
+	<< "density: " << density << "\n"
+	<< "vp: " << vp << "\n"
+	<< "vs: " << vs << "\n";
+    throw std::runtime_error(msg.str());
+  } // if
+
   const double mu = density * vs*vs;
   const double lambda = density * vp*vp - 2.0*mu;
 
