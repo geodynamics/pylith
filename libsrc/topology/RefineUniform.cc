@@ -91,41 +91,38 @@ pylith::topology::RefineUniform::refine(ALE::Obj<Mesh>* const newMesh,
       const Mesh::int_section_type::chart_type& newChart = newGroup->getChart();
       
 
-      // MATT I think this is wrong. The labels of vertices is
-      // different in the refined mesh.
-
       const int chartMax = chart.max();
-      for(int p=chart.min(), pNew=newChart.min(); p < chartMax; ++p, ++pNew) {
-	if (group->getFiberDimension(p))
-	  newGroup->setFiberDimension(pNew, 1);
+      for(int p = chart.min(), pNew = newChart.min(); p < chartMax; ++p, ++pNew) {
+        if (group->getFiberDimension(p))
+          newGroup->setFiberDimension(pNew, 1);
       } // for
       const std::map<edge_type, point_type>::const_iterator edge2VertexEnd =
 	edge2vertex.end();
       for(std::map<edge_type, point_type>::const_iterator e_iter=edge2vertex.begin();
 	  e_iter != edge2VertexEnd;
 	  ++e_iter) {
-	const point_type vertexA = e_iter->first.first;
-	const point_type vertexB = e_iter->first.second;
+        const point_type vertexA = e_iter->first.first;
+        const point_type vertexB = e_iter->first.second;
       
-	if (group->getFiberDimension(vertexA) && group->getFiberDimension(vertexB))
-	  if (group->restrictPoint(vertexA)[0] == group->restrictPoint(vertexB)[0])
-	    newGroup->setFiberDimension(e_iter->second, 1);
+        if (group->getFiberDimension(vertexA) && group->getFiberDimension(vertexB))
+          if (group->restrictPoint(vertexA)[0] == group->restrictPoint(vertexB)[0])
+            newGroup->setFiberDimension(e_iter->second, 1);
       } // for
 
       newGroup->allocatePoint();
-      for(int p = chart.min(); p < chartMax; ++p)
-	if (group->getFiberDimension(p))
-	  newGroup->updatePoint(p, group->restrictPoint(p));
-      
+      for(int p = chart.min(), pNew = newChart.min(); p < chartMax; ++p, ++pNew) {
+        if (group->getFiberDimension(p))
+          newGroup->updatePoint(pNew, group->restrictPoint(p));
+      }
       for(std::map<edge_type, point_type>::const_iterator e_iter=edge2vertex.begin();
 	  e_iter != edge2VertexEnd;
 	  ++e_iter) {
-	const point_type vertexA = e_iter->first.first;
-	const point_type vertexB = e_iter->first.second;
+        const point_type vertexA = e_iter->first.first;
+        const point_type vertexB = e_iter->first.second;
 	
-	if (group->getFiberDimension(vertexA) && group->getFiberDimension(vertexB))
-	  if (group->restrictPoint(vertexA)[0] == group->restrictPoint(vertexB)[0])
-	    newGroup->updatePoint(e_iter->second, group->restrictPoint(vertexA));
+        if (group->getFiberDimension(vertexA) && group->getFiberDimension(vertexB))
+          if (group->restrictPoint(vertexA)[0] == group->restrictPoint(vertexB)[0])
+            newGroup->updatePoint(e_iter->second, group->restrictPoint(vertexA));
       } // for
     } // for
   } else {
