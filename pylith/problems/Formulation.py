@@ -54,7 +54,11 @@ class Formulation(Component):
     ## Python object for managing Formulation facilities and properties.
     ##
     ## \b Properties
-    ## @li None
+    ## @li \b view_jacobian Flag to output Jacobian matrix when it is reformed.
+    ## @li \b jacobian_filename Filename for Jacobian matrix.
+    ## @li \b jacobian_time_width String length of time stamp in Jacobian filename.
+    ## @li \b jacobian_time_constant Value used to normalize time stamp in filename.
+
     ##
     ## \b Facilities
     ## @li \b time_step Time step size manager.
@@ -63,6 +67,21 @@ class Formulation(Component):
 
     import pyre.inventory
 
+    viewJacobian = pyre.inventory.bool("view_jacobian", default=False)
+    viewJacobian.meta['tip'] = "Write Jacobian matrix to binary file."
+    
+    jacobianFilename = pyre.inventory.str("jacobian_filename",
+                                          default="jacobian.mat")
+    jacobianFilename.meta['tip'] = "Filename for Jacobian matrix."
+
+    jacobianTimeWidth = pyre.inventory.int("jacobian_time_width", default=5)
+    jacobianTimeWidth.meta['tip'] = "String length of time stamp in Jacobian filename."
+
+    jacobianTimeConstant = pyre.inventory.dimensional("jacobian_time_constant",
+                                                      default=1.0*second,
+                                                      validator=pyre.inventory.greater(0.0*second))
+    jacobianTimeConstant.meta['tip'] = "Values used to normalize time stamp in Jacobian filename."
+    
     from TimeStepUniform import TimeStepUniform
     timeStep = pyre.inventory.facility("time_step", family="time_step",
                                        factory=TimeStepUniform)
@@ -296,6 +315,10 @@ class Formulation(Component):
     self.timeStep = self.inventory.timeStep
     self.solver = self.inventory.solver
     self.output = self.inventory.output
+    self.viewJacobian = self.inventory.viewJacobian
+    self.jacobianFilename = self.inventory.jacobianFilename
+    self.jacobianTimeWidth = self.inventory.jacobianTimeWidth
+    self.jacobianTimeConstant = self.inventory.jacobianTimeConstant
 
     import journal
     self._debug = journal.debug(self.name)
@@ -396,10 +419,28 @@ class Formulation(Component):
       integrator.timeStep(dt)
       integrator.integrateJacobian(self.jacobian, t+dt, self.fields)
     petsc.mat_assemble(self.jacobian)
+    if self.viewJacobian:
+      filename = self._createJacobianFilename(t+dt)
+      petsc.mat_view_binary(self.jacobian, filename)
     self._debug.log(resourceUsageString())
     return
 
 
+  def _createJacobianFilename(self, t):
+    """
+    Create filename by extracting basename and adding a time stamp.
+    """
+    base = self.jacobianFilename.lstrip().rstrip()
+    baseLen = len(base)
+    if base.endswith(".mat"):
+      basename = base[0:baseLen-4]
+    else:
+      basename = base
+    time = int(t.value/self.jacobianTimeConstant.value)
+    timeStamp = repr(time).rjust(self.jacobianTimeWidth, '0')
+    filename = basename + "_t" + timeStamp + ".mat"
+    return filename
+      
   def _reformResidual(self, t, dt):
     """
     Reform residual vector for operator.
