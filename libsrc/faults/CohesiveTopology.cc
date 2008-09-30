@@ -482,6 +482,7 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
     indices         = new int[faceSize];
     numFaultCorners = ifault->getNumCellCorners(p, ifault->depth(p));
   }
+  ifault->view("Serial fault mesh");
 
   // Add new shadow vertices and possibly Lagrange multipler vertices
   const Obj<Mesh::label_sequence>&   fVertices       = ifault->depthStratum(0);
@@ -855,6 +856,7 @@ pylith::faults::CohesiveTopology::createParallel(
   const ALE::Obj<sieve_type> ifaultSieve = new sieve_type(sieve->comm(), sieve->debug());
   ALE::Obj<ALE::Mesh> fault = new ALE::Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
   ALE::Obj<ALE::Mesh::sieve_type> faultSieve = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+  Mesh::renumbering_type& fRenumbering = (*ifault)->getRenumbering();
   cohesiveToFault->clear();
 
   const ALE::Obj<Mesh::label_sequence>& cohesiveCells = mesh->getLabelStratum("material-id", materialId);
@@ -884,6 +886,7 @@ pylith::faults::CohesiveTopology::createParallel(
       // Use first vertices (negative side of the fault) for fault mesh
       for(int i = 0; i < faceSize; ++i) {
         faultSieve->addArrow(cone[i], face, color++);
+        fRenumbering[cone[i]] = cone[i];
       }
     } else {
       const int faceSize = coneSize / 3;
@@ -892,6 +895,7 @@ pylith::faults::CohesiveTopology::createParallel(
       // Use last vertices (contraints) for fault mesh
       for(int i = 2*faceSize; i < 3*faceSize; ++i) {
         faultSieve->addArrow(cone[i], face, color++);
+        fRenumbering[cone[i]] = cone[i];
       }
     } // if/else
     (*cohesiveToFault)[*c_iter] = face;
@@ -936,15 +940,18 @@ pylith::faults::CohesiveTopology::createParallel(
     fCoordinates->updatePoint(*v_iter, coordinates->restrictPoint(*v_iter));
   }
 #endif
+  (*ifault)->view("Parallel fault mesh");
 
   // Create the parallel overlap
   //   Can I figure this out in a nicer way?
   Obj<Mesh::send_overlap_type> sendParallelMeshOverlap = (*ifault)->getSendOverlap();
   Obj<Mesh::recv_overlap_type> recvParallelMeshOverlap = (*ifault)->getRecvOverlap();
-  ALE::SetFromMap<std::map<Mesh::point_type,Mesh::point_type> > globalPoints((*ifault)->getRenumbering());
+  ALE::SetFromMap<Mesh::renumbering_type> globalPoints(fRenumbering);
 
-  ALE::OverlapBuilder<>::constructOverlap(globalPoints, (*ifault)->getRenumbering(), sendParallelMeshOverlap, recvParallelMeshOverlap);
+  ALE::OverlapBuilder<>::constructOverlap(globalPoints, fRenumbering, sendParallelMeshOverlap, recvParallelMeshOverlap);
   (*ifault)->setCalculatedOverlap(true);
+  sendParallelMeshOverlap->view("Send parallel fault overlap");
+  recvParallelMeshOverlap->view("Recv parallel fault overlap");
 }
 
 // ----------------------------------------------------------------------
