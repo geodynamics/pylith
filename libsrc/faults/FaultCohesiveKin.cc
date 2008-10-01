@@ -85,6 +85,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
 
   CohesiveTopology::createParallel(&_faultMesh, &_cohesiveToFault, mesh, id(),
 				   _useLagrangeConstraints());
+  _faultMesh->getLabel("height")->view("Fault mesh height");
 
   //_faultMesh->view("FAULT MESH");
 
@@ -524,7 +525,7 @@ pylith::faults::FaultCohesiveKin::vertexField(
   } else if (0 == strcasecmp("traction_change", name)) {
     *fieldType = VECTOR_FIELD;
     const ALE::Obj<real_section_type>& solution = fields->getSolution();
-    _calcTractionsChange(&_bufferVertexVector, solution);
+    _calcTractionsChange(&_bufferVertexVector, mesh, solution);
     return _bufferVertexVector;
 
   } else {
@@ -916,9 +917,11 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
 
 // ----------------------------------------------------------------------
 // Compute change in tractions on fault surface using solution.
+//   NOTE: We must convert vertex labels to fault vertex labels
 void
 pylith::faults::FaultCohesiveKin::_calcTractionsChange(
 				 ALE::Obj<real_section_type>* tractions,
+                 const ALE::Obj<Mesh>& mesh,
 				 const ALE::Obj<real_section_type>& solution)
 { // _calcTractionsChange
   assert(0 != tractions);
@@ -927,53 +930,69 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   assert(!_pseudoStiffness.isNull());
   assert(!_area.isNull());
 
-  const ALE::Obj<Mesh::label_sequence>& vertices = 
-    _faultMesh->depthStratum(0);
+  _pseudoStiffness->view("PSEUDOSTIFFNESS");
+  _area->view("AREA");
+
+  const ALE::Obj<Mesh::label_sequence>& vertices    = mesh->depthStratum(0);
   assert(!vertices.isNull());
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
-  const int numVertices = vertices->size();
+  const Mesh::label_sequence::iterator  verticesEnd = vertices->end();
+  const int                             numVertices = vertices->size();
+  Mesh::renumbering_type&               renumbering = _faultMesh->getRenumbering();
 
   const int fiberDim = solution->getFiberDimension(*vertices->begin());
   double_array tractionValues(fiberDim);
 
   // Allocate buffer for tractions field (if nec.).
   if (tractions->isNull() ||
-      fiberDim != (*tractions)->getFiberDimension(*vertices->begin())) {
+      fiberDim != (*tractions)->getFiberDimension(renumbering[*vertices->begin()])) {
     *tractions = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
-    (*tractions)->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
-    (*tractions)->setFiberDimension(vertices, fiberDim);
-    _faultMesh->allocate(*tractions);
+    int minE = _faultMesh->getSieve()->getChart().min();
+    int maxE = _faultMesh->getSieve()->getChart().max();
+
+    for (Mesh::label_sequence::iterator v_iter = vertices->begin(); v_iter != verticesEnd; ++v_iter) {
+      if (renumbering.find(*v_iter) != renumbering.end()) {
+        minE = std::min(minE, renumbering[*v_iter]);
+        maxE = std::max(maxE, renumbering[*v_iter]);
+      }
+    }
+    (*tractions)->setChart(real_section_type::chart_type(minE, maxE+1));
+    for (Mesh::label_sequence::iterator v_iter = vertices->begin(); v_iter != verticesEnd; ++v_iter) {
+      if (renumbering.find(*v_iter) != renumbering.end()) {
+        (*tractions)->setFiberDimension(renumbering[*v_iter], fiberDim);
+      }
+    }
+    (*tractions)->allocatePoint();
   } // if
   
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != verticesEnd;
-       ++v_iter) {
+  for (Mesh::label_sequence::iterator v_iter = vertices->begin(); v_iter != verticesEnd; ++v_iter) {
+    if (renumbering.find(*v_iter) == renumbering.end()) continue;
+    const int fv = renumbering[*v_iter];
     assert(fiberDim == solution->getFiberDimension(*v_iter));
-    assert(fiberDim == (*tractions)->getFiberDimension(*v_iter));
-    assert(1 == _pseudoStiffness->getFiberDimension(*v_iter));
-    assert(1 == _area->getFiberDimension(*v_iter));
+    assert(fiberDim == (*tractions)->getFiberDimension(fv));
+    assert(1        == _pseudoStiffness->getFiberDimension(fv));
+    assert(1        == _area->getFiberDimension(fv));
 
     const real_section_type::value_type* solutionValues =
       solution->restrictPoint(*v_iter);
     assert(0 != solutionValues);
     const real_section_type::value_type* pseudoStiffValue = 
-      _pseudoStiffness->restrictPoint(*v_iter);
+      _pseudoStiffness->restrictPoint(fv);
     assert(0 != _pseudoStiffness);
     const real_section_type::value_type* areaValue = 
-      _area->restrictPoint(*v_iter);
+      _area->restrictPoint(fv);
     assert(0 != _area);
 
     const double scale = pseudoStiffValue[0] / areaValue[0];
     for (int i=0; i < fiberDim; ++i)
       tractionValues[i] = solutionValues[i] * scale;
 
-    (*tractions)->updatePoint(*v_iter, &tractionValues[0]);
+    (*tractions)->updatePoint(fv, &tractionValues[0]);
   } // for
 
   PetscLogFlops(numVertices * (1 + fiberDim) );
 
   //solution->view("SOLUTION");
-  //(*tractions)->view("TRACTIONS");
+  (*tractions)->view("TRACTIONS");
 } // _calcTractionsChange
 
 // ----------------------------------------------------------------------

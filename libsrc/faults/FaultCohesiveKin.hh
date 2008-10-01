@@ -217,6 +217,7 @@ private :
    * @param solution Solution field.
    */
   void _calcTractionsChange(ALE::Obj<real_section_type>* tractions,
+                const ALE::Obj<Mesh>& mesh,
 			    const ALE::Obj<real_section_type>& solution);
 
   /// Allocate scalar field for output of vertex information.

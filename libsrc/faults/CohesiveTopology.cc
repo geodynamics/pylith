@@ -856,7 +856,6 @@ pylith::faults::CohesiveTopology::createParallel(
   const ALE::Obj<sieve_type> ifaultSieve = new sieve_type(sieve->comm(), sieve->debug());
   ALE::Obj<ALE::Mesh> fault = new ALE::Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
   ALE::Obj<ALE::Mesh::sieve_type> faultSieve = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
-  Mesh::renumbering_type& fRenumbering = (*ifault)->getRenumbering();
   cohesiveToFault->clear();
 
   const ALE::Obj<Mesh::label_sequence>& cohesiveCells = mesh->getLabelStratum("material-id", materialId);
@@ -886,7 +885,6 @@ pylith::faults::CohesiveTopology::createParallel(
       // Use first vertices (negative side of the fault) for fault mesh
       for(int i = 0; i < faceSize; ++i) {
         faultSieve->addArrow(cone[i], face, color++);
-        fRenumbering[cone[i]] = cone[i];
       }
     } else {
       const int faceSize = coneSize / 3;
@@ -895,7 +893,6 @@ pylith::faults::CohesiveTopology::createParallel(
       // Use last vertices (contraints) for fault mesh
       for(int i = 2*faceSize; i < 3*faceSize; ++i) {
         faultSieve->addArrow(cone[i], face, color++);
-        fRenumbering[cone[i]] = cone[i];
       }
     } // if/else
     (*cohesiveToFault)[*c_iter] = face;
@@ -906,10 +903,14 @@ pylith::faults::CohesiveTopology::createParallel(
   fault->stratify();
 
   // Convert fault to an IMesh
-  std::map<Mesh::point_type,Mesh::point_type> renumbering;
+  Mesh::renumbering_type& fRenumbering = (*ifault)->getRenumbering();
   (*ifault)->setSieve(ifaultSieve);
-  ALE::ISieveConverter::convertMesh(*fault, *(*ifault), renumbering, false);
-  renumbering.clear();
+  //ALE::ISieveConverter::convertMesh(*fault, *(*ifault), fRenumbering, true);
+  {
+    ALE::ISieveConverter::convertSieve(*fault->getSieve(), *(*ifault)->getSieve(), fRenumbering, true);
+    (*ifault)->stratify();
+    ALE::ISieveConverter::convertOrientation(*fault->getSieve(), *(*ifault)->getSieve(), fRenumbering, fault->getArrowSection("orientation").ptr());
+  }
   fault      = NULL;
   faultSieve = NULL;
 
@@ -919,25 +920,29 @@ pylith::faults::CohesiveTopology::createParallel(
     (*cohesiveToFault)[*c_iter] = *f_iter;
   }
     
-#if 1
+#if 0
   (*ifault)->setRealSection("coordinates", mesh->getRealSection("coordinates"));
 #else
   const ALE::Obj<Mesh::real_section_type>& coordinates  = mesh->getRealSection("coordinates");
-  const ALE::Obj<Mesh::real_section_type>& fCoordinates = (*fault)->getRealSection("coordinates");
-  const ALE::Obj<Mesh::label_sequence>&    vertices     = (*fault)->depthStratum(0);
+  const ALE::Obj<Mesh::real_section_type>& fCoordinates = (*ifault)->getRealSection("coordinates");
+  const ALE::Obj<Mesh::label_sequence>&    vertices     = mesh->depthStratum(0);
   const Mesh::label_sequence::iterator     vBegin       = vertices->begin();
   const Mesh::label_sequence::iterator     vEnd         = vertices->end();
 
+  fCoordinates->setChart(Mesh::real_section_type::chart_type((*ifault)->heightStratum(0)->size(),
+                                                             (*ifault)->getSieve()->getChart().max()));
   for(Mesh::label_sequence::iterator v_iter = vBegin;
       v_iter != vEnd;
       ++v_iter) {
-    fCoordinates->setFiberDimension(*v_iter, coordinates->getFiberDimension(*v_iter));
+    if (fRenumbering.find(*v_iter) == fRenumbering.end()) continue;
+    fCoordinates->setFiberDimension(fRenumbering[*v_iter], coordinates->getFiberDimension(*v_iter));
   }
-  (*fault)->allocate(fCoordinates);
+  fCoordinates->allocatePoint();
   for(Mesh::label_sequence::iterator v_iter = vBegin;
       v_iter != vEnd;
       ++v_iter) {
-    fCoordinates->updatePoint(*v_iter, coordinates->restrictPoint(*v_iter));
+    if (fRenumbering.find(*v_iter) == fRenumbering.end()) continue;
+    fCoordinates->updatePoint(fRenumbering[*v_iter], coordinates->restrictPoint(*v_iter));
   }
 #endif
   (*ifault)->view("Parallel fault mesh");
