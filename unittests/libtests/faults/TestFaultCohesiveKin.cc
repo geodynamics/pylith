@@ -470,7 +470,7 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
   tractions->setFiberDimension(vertices, spaceDim);
   fault._faultMesh->allocate(tractions);
   
-  fault._calcTractionsChange(&tractions, solution);
+  fault._calcTractionsChange(&tractions, mesh, solution);
 
   int iVertex = 0;
   const double tolerance = 1.0e-06;
