@@ -622,13 +622,16 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
     ncV.clear();
   } // for
 
+#if 0
   _orientation->view("ORIENTATION Before complete");
   _orientation->setDebug(2);
+#endif
   // Assemble orientation information
   ALE::Completion::completeSectionAdd(_faultMesh->getSendOverlap(), _faultMesh->getRecvOverlap(), _orientation, _orientation);
-  _orientation->view("ORIENTATION After complete");
 
-  _orientation->view("ORIENTATION");  
+#if 0
+  _orientation->view("ORIENTATION After complete");
+#endif
 
   // Loop over vertices, make orientation information unit magnitude
   double_array vertexDir(orientationSize);
@@ -697,7 +700,7 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
     PetscLogFlops(5 + count * 3);
   } // if
 
-  _orientation->view("ORIENTATION");
+  //_orientation->view("ORIENTATION");
 } // _calcOrientation
 
 // ----------------------------------------------------------------------
@@ -833,7 +836,7 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   // Assemble area information
   ALE::Completion::completeSectionAdd(_faultMesh->getSendOverlap(), _faultMesh->getRecvOverlap(), _area, _area);
 
-  _area->view("AREA");
+  //_area->view("AREA");
 } // _calcArea
 
 // ----------------------------------------------------------------------
@@ -851,8 +854,10 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   assert(!_pseudoStiffness.isNull());
   assert(!_area.isNull());
 
+#if 0
   _pseudoStiffness->view("PSEUDOSTIFFNESS");
   _area->view("AREA");
+#endif
 
   const ALE::Obj<Mesh::label_sequence>& vertices    = mesh->depthStratum(0);
   assert(!vertices.isNull());
@@ -912,10 +917,13 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
 
   PetscLogFlops(numVertices * (1 + fiberDim) );
 
+#if 0
   _faultMesh->view("FAULT MESH");
   solution->view("SOLUTION");
   _area->view("AREA");
+  _pseudoStiffness->view("CONDITIONING");
   (*tractions)->view("TRACTIONS");
+#endif
 } // _calcTractionsChange
 
 // ----------------------------------------------------------------------
