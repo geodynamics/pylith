@@ -35,6 +35,52 @@ pylith::feassemble::Integrator::useSolnIncr(const bool flag) {
   _useSolnIncr = flag;
 } // useSolnIncr
 
+// Integrate contributions to residual term (r) for operator.
+inline
+void
+pylith::feassemble::Integrator::integrateResidual(
+			    const ALE::Obj<real_section_type>& residual,
+			    const double t,
+			    topology::FieldsManager* const fields,
+			    const ALE::Obj<Mesh>& mesh,
+			    const spatialdata::geocoords::CoordSys* cs) {
+} // integrateResidual
+
+// Integrate contributions to Jacobian matrix (A) associated with
+// operator.
+inline
+void
+pylith::feassemble::Integrator::integrateJacobian(
+				       PetscMat* mat,
+				       const double t,
+				       topology::FieldsManager* const fields,
+				       const ALE::Obj<Mesh>& mesh) {
+} // integrateJacobian
+
+// Integrate contributions to residual term (r) for operator that
+// do not require assembly over cells, vertices, or processors.
+inline
+void
+pylith::feassemble::Integrator::integrateResidualAssembled(
+				const ALE::Obj<real_section_type>& residual,
+				const double t,
+				topology::FieldsManager* const fields,
+				const ALE::Obj<Mesh>& mesh,
+				const spatialdata::geocoords::CoordSys* cs) {
+} // integrateResidualAssembled
+
+// Integrate contributions to Jacobian matrix (A) associated with
+// operator that do not require assembly over cells, vertices, or
+// processors
+inline
+void
+pylith::feassemble::Integrator::integrateJacobianAssembled(
+					PetscMat* mat,
+					const double t,
+					topology::FieldsManager* const fields,
+					const ALE::Obj<Mesh>& mesh) {
+} // integrateJacobianAssembled
+
 // Update state variables as needed.
 inline
 void
