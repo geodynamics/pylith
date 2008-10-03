@@ -89,10 +89,6 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
 
   //_faultMesh->view("FAULT MESH");
 
-  // Establish pairing between constraint vertices and first cell they
-  // appear in to prevent overlap in integrating Jacobian
-  _calcVertexCellPairs();
-
   // Setup pseudo-stiffness of cohesive cells to improve conditioning
   // of Jacobian matrix
   _calcConditioning(cs, matDB);
@@ -133,15 +129,16 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
 } // initialize
 
 // ----------------------------------------------------------------------
-// Integrate contribution of cohesive cells to residual term.
+// Integrate contribution of cohesive cells to residual term that do
+// not require assembly across cells, vertices, or processors.
 void
-pylith::faults::FaultCohesiveKin::integrateResidual(
+pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
 				const ALE::Obj<real_section_type>& residual,
 				const double t,
 				topology::FieldsManager* const fields,
 				const ALE::Obj<Mesh>& mesh,
 				const spatialdata::geocoords::CoordSys* cs)
-{ // integrateResidual
+{ // integrateResidualAssembled
   assert(!residual.isNull());
   assert(0 != fields);
   assert(!mesh.isNull());
@@ -158,7 +155,6 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   const int orientationSize = spaceDim*spaceDim;
   const int numConstraintVert = _quadrature->numBasis();
   const int numCorners = 3*numConstraintVert; // cohesive cell
-  int_array cellConstraintCell(numConstraintVert);
   double_array cellOrientation(numConstraintVert*orientationSize);
   double_array cellResidual(numCorners*spaceDim);
   double_array cellSoln(numCorners*spaceDim);
@@ -213,11 +209,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     const Mesh::point_type c_fault = _cohesiveToFault[*c_iter];
 
     cellResidual = 0.0;
-    // Get Lagrange constraint / fault cell pairings.
-    _faultMesh->restrictClosure(_faultVertexCell, c_fault,
-				&cellConstraintCell[0], 
-				cellConstraintCell.size());
-    
+
     // Get orientations at fault cell's vertices.
     _faultMesh->restrictClosure(_orientation, c_fault, &cellOrientation[0], 
 				cellOrientation.size());
@@ -233,10 +225,6 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     mesh->restrictClosure(solution, *c_iter, &cellSoln[0], cellSoln.size());
     
     for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
-      // Skip setting values if they are set by another cell
-      if (cellConstraintCell[iConstraint] != c_fault)
-	continue;
-      
       // Blocks in cell matrix associated with normal cohesive
       // vertices i and j and constraint vertex k
       const int indexI = iConstraint;
@@ -290,20 +278,21 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 #endif
 
     // Assemble cell contribution into field
-    mesh->updateAdd(residual, *c_iter, &cellResidual[0]);
+    mesh->update(residual, *c_iter, &cellResidual[0]);
   } // for
   PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*7);
-} // integrateResidual
+} // integrateResidualAssembled
 
 // ----------------------------------------------------------------------
-// Compute Jacobian matrix (A) associated with operator.
+// Compute Jacobian matrix (A) associated with operator that do not
+// require assembly across cells, vertices, or processors.
 void
-pylith::faults::FaultCohesiveKin::integrateJacobian(
+pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 				    PetscMat* mat,
 				    const double t,
 				    topology::FieldsManager* const fields,
 				    const ALE::Obj<Mesh>& mesh)
-{ // integrateJacobian
+{ // integrateJacobianAssembled
   assert(0 != mat);
   assert(0 != fields);
   assert(!mesh.isNull());
@@ -336,7 +325,6 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
   const int numCorners = 3*numConstraintVert; // cohesive cell
   double_array cellMatrix(numCorners*spaceDim * numCorners*spaceDim);
   double_array cellOrientation(numConstraintVert*orientationSize);
-  int_array cellConstraintCell(numConstraintVert);
   double_array cellStiffness(numConstraintVert);
 
   const ALE::Obj<Mesh::order_type>& globalOrder = mesh->getFactory()->getGlobalOrder(mesh, "default", solution);
@@ -349,11 +337,6 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
     const Mesh::point_type c_fault = _cohesiveToFault[*c_iter];
 
     cellMatrix = 0.0;
-    // Get Lagrange constraint / fault cell pairings.
-    _faultMesh->restrictClosure(_faultVertexCell, c_fault,
-				&cellConstraintCell[0], 
-				cellConstraintCell.size());
-
     // Get orientations at fault cell's vertices.
     _faultMesh->restrictClosure(_orientation, c_fault, &cellOrientation[0], 
 				cellOrientation.size());
@@ -363,10 +346,6 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 				cellStiffness.size());
     
     for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
-      // Skip setting values if they are set by another cell
-      if (cellConstraintCell[iConstraint] != c_fault)
-	continue;
-      
       // Blocks in cell matrix associated with normal cohesive
       // vertices i and j and constraint vertex k
       const int indexI = iConstraint;
@@ -407,18 +386,15 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 	} // for
     } // for
 
-    // Assemble cell contribution into PETSc Matrix
-    // Note: We are not really adding values because we prevent
-    // overlap across cells. We use ADD_VALUES for compatibility with
-    // the other integrators.
-    err = updateOperator(*mat, *mesh->getSieve(), iV, *c_iter, &cellMatrix[0], ADD_VALUES);
+    // Insert cell contribution into PETSc Matrix
+    err = updateOperator(*mat, *mesh->getSieve(), iV, *c_iter, &cellMatrix[0], INSERT_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
     iV.clear();
   } // for
   PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*4);
   _needNewJacobian = false;
-} // integrateJacobian
+} // integrateJacobianAssembled
   
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
@@ -652,6 +628,8 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
   ALE::Completion::completeSectionAdd(_faultMesh->getSendOverlap(), _faultMesh->getRecvOverlap(), _orientation, _orientation);
   _orientation->view("ORIENTATION After complete");
 
+  _orientation->view("ORIENTATION");  
+
   // Loop over vertices, make orientation information unit magnitude
   double_array vertexDir(orientationSize);
   int count = 0;
@@ -721,68 +699,6 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
 
   _orientation->view("ORIENTATION");
 } // _calcOrientation
-
-// ----------------------------------------------------------------------
-// Calculate conditioning field.
-void
-pylith::faults::FaultCohesiveKin::_calcVertexCellPairs(void)
-{ // _calcVertexCellPairs
-  assert(!_faultMesh.isNull());
-
-  // Get vertices in fault mesh
-  const ALE::Obj<Mesh::label_sequence>& vertices = 
-    _faultMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
-  
-  const int noCell = -1;
-  _faultVertexCell = new int_section_type(_faultMesh->comm(), 
-					  _faultMesh->debug());
-  assert(!_faultVertexCell.isNull());
-  _faultVertexCell->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
-  _faultVertexCell->setFiberDimension(vertices, 1);
-  _faultMesh->allocate(_faultVertexCell);
-  
-  // Set values to noCell
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != verticesEnd;
-       ++v_iter)
-    _faultVertexCell->updatePoint(*v_iter, &noCell);
-  
-  const ALE::Obj<Mesh::label_sequence>& cells = 
-    _faultMesh->heightStratum(0);
-  assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
-
-  const ALE::Obj<sieve_type>& sieve = _faultMesh->getSieve();
-  assert(!sieve.isNull());
-  const int faultDepth = _faultMesh->depth();  // depth of fault cells
-  typedef ALE::SieveAlg<Mesh> SieveAlg;
-  
-  ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, (size_t) pow(sieve->getMaxConeSize(), std::max(0, _faultMesh->depth())));
-
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
-       c_iter != cellsEnd;
-       ++c_iter) {
-    ALE::ISieveTraversal<sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
-    const int               coneSize = ncV.getSize();
-    const Mesh::point_type *cone     = ncV.getPoints();
-
-    // If haven't set cell-constraint pair, then set it for current
-    // cell, otherwise move on.
-    for(int v = 0; v < coneSize; ++v) {
-      const int_section_type::value_type* curCell = 
-        _faultVertexCell->restrictPoint(cone[v]);
-      assert(0 != curCell);
-      if (noCell == *curCell) {
-        int point = *c_iter;
-        _faultVertexCell->updatePoint(cone[v], &point);
-      } // if
-    } // for
-    ncV.clear();
-  } // for
-
-  //_faultVertexCell->view("VERTEX/CELL PAIRINGS");
-} // _calcVertexCallPairs
 
 // ----------------------------------------------------------------------
 void
@@ -916,6 +832,8 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
 
   // Assemble area information
   ALE::Completion::completeSectionAdd(_faultMesh->getSendOverlap(), _faultMesh->getRecvOverlap(), _area, _area);
+
+  _area->view("AREA");
 } // _calcArea
 
 // ----------------------------------------------------------------------
@@ -924,7 +842,7 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
 void
 pylith::faults::FaultCohesiveKin::_calcTractionsChange(
 				 ALE::Obj<real_section_type>* tractions,
-                 const ALE::Obj<Mesh>& mesh,
+				 const ALE::Obj<Mesh>& mesh,
 				 const ALE::Obj<real_section_type>& solution)
 { // _calcTractionsChange
   assert(0 != tractions);
@@ -972,8 +890,8 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
     const int fv = renumbering[*v_iter];
     assert(fiberDim == solution->getFiberDimension(*v_iter));
     assert(fiberDim == (*tractions)->getFiberDimension(fv));
-    assert(1        == _pseudoStiffness->getFiberDimension(fv));
-    assert(1        == _area->getFiberDimension(fv));
+    assert(1 == _pseudoStiffness->getFiberDimension(fv));
+    assert(1 == _area->getFiberDimension(fv));
 
     const real_section_type::value_type* solutionValues =
       solution->restrictPoint(*v_iter);
@@ -994,7 +912,9 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
 
   PetscLogFlops(numVertices * (1 + fiberDim) );
 
-  //solution->view("SOLUTION");
+  _faultMesh->view("FAULT MESH");
+  solution->view("SOLUTION");
+  _area->view("AREA");
   (*tractions)->view("TRACTIONS");
 } // _calcTractionsChange
 
