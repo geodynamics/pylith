@@ -602,7 +602,7 @@ cdef class FaultCohesiveKin(FaultCohesive):
     return
 
 
-  def integrateJacobianAssenbked(self, mat, t, fields, mesh):
+  def integrateJacobianAssembled(self, mat, t, fields, mesh):
     """
     Compute contributions to Jacobian matrix (A) associated with
     operator that do not require assembly over cells, vertices, or
