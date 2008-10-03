@@ -902,6 +902,94 @@ cdef class AbsorbingDampers(BoundaryCondition):
     return
 
 
+  def integrateResidualAssembled(self, residual, t, fields, mesh, cs):
+    """
+    Integrate contributions to residual term (r) for operator that do
+    not require assembly over cells, vertices, or processors.
+    """
+    # create shim for method 'integrateResidualAssembled'
+    #embed{ void AbsorbingDampers_integrateResidualAssembled(void* objVptr, void* residualVptr, double t, void* fieldsVptr, void* meshVptr, void* csVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != residualVptr);
+      assert(0 != fieldsVptr);
+      assert(0 != meshVptr);
+      assert(0 != csVptr);
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
+      ALE::Obj<pylith::real_section_type>* residual =
+        (ALE::Obj<pylith::real_section_type>*) residualVptr;
+      pylith::topology::FieldsManager* fields =
+        (pylith::topology::FieldsManager*) fieldsVptr;
+      spatialdata::geocoords::CoordSys* cs =
+        (spatialdata::geocoords::CoordSys*) csVptr;
+      ((pylith::bc::AbsorbingDampers*) objVptr)->integrateResidualAssembled(*residual,
+                                                            t, fields, *mesh, cs);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type 'Mesh'."
+    AbsorbingDampers_integrateResidualAssembled(self.thisptr, 
+                                                PyCObject_AsVoidPtr(residual),
+                                                t,
+                                                ptrFromHandle(fields),
+                                                ptrFromHandle(mesh),
+                                                ptrFromHandle(cs))
+    return
+
+
+  def integrateJacobianAssembled(self, mat, t, fields, mesh):
+    """
+    Compute contributions to Jacobian matrix (A) associated with
+    operator that do not require assembly over cells, vertices, or
+    processors.
+    """
+    # create shim for method 'integrateJacobianAssembled'
+    #embed{ void AbsorbingDampers_integrateJacobianAssembled(void* objVptr, void* matVptr, double t, void* fieldsVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != matVptr);
+      assert(0 != fieldsVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
+      PetscMat* mat = (PetscMat*) matVptr;
+      pylith::topology::FieldsManager* fields =
+        (pylith::topology::FieldsManager*) fieldsVptr;
+      ((pylith::bc::AbsorbingDampers*) objVptr)->integrateJacobianAssembled(
+                                                        mat, t, fields, *mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type 'Mesh'."
+    AbsorbingDampers_integrateJacobianAssembled(self.thisptr,
+                                                PyCObject_AsVoidPtr(mat),
+                                                t,
+                                                ptrFromHandle(fields),
+                                                ptrFromHandle(mesh))
+    return
+
+
   def updateState(self, t, fields, mesh):
     """
     Update state variables as needed.
@@ -1197,6 +1285,94 @@ cdef class Neumann(BoundaryCondition):
                                  t,
                                  ptrFromHandle(fields),
                                  ptrFromHandle(mesh))
+    return
+
+
+  def integrateResidualAssembled(self, residual, t, fields, mesh, cs):
+    """
+    Integrate contributions to residual term (r) for operator that do
+    not require assembly over cells, vertices, or processors.
+    """
+    # create shim for method 'integrateResidualAssembled'
+    #embed{ void Neumann_integrateResidualAssembled(void* objVptr, void* residualVptr, double t, void* fieldsVptr, void* meshVptr, void* csVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != residualVptr);
+      assert(0 != fieldsVptr);
+      assert(0 != meshVptr);
+      assert(0 != csVptr);
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
+      ALE::Obj<pylith::real_section_type>* residual =
+        (ALE::Obj<pylith::real_section_type>*) residualVptr;
+      pylith::topology::FieldsManager* fields =
+        (pylith::topology::FieldsManager*) fieldsVptr;
+      spatialdata::geocoords::CoordSys* cs =
+        (spatialdata::geocoords::CoordSys*) csVptr;
+      ((pylith::bc::Neumann*) objVptr)->integrateResidualAssembled(*residual,
+                                                            t, fields, *mesh, cs);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type 'Mesh'."
+    Neumann_integrateResidualAssembled(self.thisptr, 
+                                       PyCObject_AsVoidPtr(residual),
+                                       t,
+                                       ptrFromHandle(fields),
+                                       ptrFromHandle(mesh),
+                                       ptrFromHandle(cs))
+    return
+
+
+  def integrateJacobianAssembled(self, mat, t, fields, mesh):
+    """
+    Compute contributions to Jacobian matrix (A) associated with
+    operator that do not require assembly over cells, vertices, or
+    processors.
+    """
+    # create shim for method 'integrateJacobianAssembled'
+    #embed{ void Neumann_integrateJacobianAssembled(void* objVptr, void* matVptr, double t, void* fieldsVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != matVptr);
+      assert(0 != fieldsVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<pylith::Mesh>* mesh =
+        (ALE::Obj<pylith::Mesh>*) meshVptr;
+      PetscMat* mat = (PetscMat*) matVptr;
+      pylith::topology::FieldsManager* fields =
+        (pylith::topology::FieldsManager*) fieldsVptr;
+      ((pylith::bc::Neumann*) objVptr)->integrateJacobianAssembled(
+                                                        mat, t, fields, *mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type 'Mesh'."
+    Neumann_integrateJacobianAssembled(self.thisptr,
+                                       PyCObject_AsVoidPtr(mat),
+                                       t,
+                                       ptrFromHandle(fields),
+                                       ptrFromHandle(mesh))
     return
 
 

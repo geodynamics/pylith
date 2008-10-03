@@ -181,19 +181,6 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
 				 tolerance);
   } // for
 
-  // Check pairing of constraint vertices with cells
-  iVertex = 0;
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != verticesEnd;
-       ++v_iter, ++iVertex) {
-    const int fiberDim = fault._faultVertexCell->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(1, fiberDim);
-    const int_section_type::value_type* vertexCell = 
-      fault._faultVertexCell->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != vertexCell);
-    CPPUNIT_ASSERT_EQUAL(_data->constraintCells[iVertex], vertexCell[0]);
-  } // for
-
   // Check pseudoStiffness
   iVertex = 0;
   for (Mesh::label_sequence::iterator v_iter=vertices->begin();
@@ -215,6 +202,202 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
 void
 pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
 { // testIntegrateResidual
+  ALE::Obj<Mesh> mesh;
+  FaultCohesiveKin fault;
+  _initialize(&mesh, &fault);
+
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim((mesh)->getDimension());
+  cs.initialize();
+
+  // Setup fields
+  topology::FieldsManager fields(mesh);
+  fields.addReal("residual");
+  fields.addReal("solution");
+  fields.solutionField("solution");
+  
+  const ALE::Obj<real_section_type>& residual = fields.getReal("residual");
+  CPPUNIT_ASSERT(!residual.isNull());
+  const int spaceDim = _data->spaceDim;
+  residual->setChart(mesh->getSieve()->getChart());
+  residual->setFiberDimension(mesh->depthStratum(0), spaceDim);
+  mesh->allocate(residual);
+  residual->zero();
+  fields.copyLayout("residual");
+
+  const ALE::Obj<real_section_type>& solution = fields.getReal("solution");
+  CPPUNIT_ASSERT(!solution.isNull());
+
+  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const Mesh::label_sequence::iterator vBegin = vertices->begin();
+  const Mesh::label_sequence::iterator vEnd = vertices->end();
+  int iVertex = 0;
+  for (Mesh::label_sequence::iterator v_iter=vBegin;
+       v_iter != vEnd;
+       ++v_iter, ++iVertex) {
+    solution->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
+  } // for
+  
+  const double t = 2.134;
+  const double dt = 0.01;
+  fault.timeStep(dt);
+  { // Integrate residual with solution (as opposed to solution increment).
+    fault.useSolnIncr(false);
+    fault.integrateResidual(residual, t, &fields, mesh, &cs);
+
+    //residual->view("RESIDUAL"); // DEBUGGING
+
+    // Check values
+    const double* valsE = _data->valsResidual;
+    iVertex = 0;
+    const int fiberDimE = spaceDim;
+    const double tolerance = 1.0e-06;
+    for (Mesh::label_sequence::iterator v_iter=vBegin;
+	 v_iter != vEnd;
+	 ++v_iter, ++iVertex) {
+      const int fiberDim = residual->getFiberDimension(*v_iter);
+      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
+      const real_section_type::value_type* vals = 
+	residual->restrictPoint(*v_iter);
+      CPPUNIT_ASSERT(0 != vals);
+      
+      for (int i=0; i < fiberDimE; ++i) {
+	const double valE = 0.0; // no contribution
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+      } // for
+    } // for
+  } // Integrate residual with solution (as opposed to solution increment).
+
+  residual->zero();
+  { // Integrate residual with solution increment.
+    fault.useSolnIncr(true);
+    fault.integrateResidual(residual, t, &fields, mesh, &cs);
+
+    //residual->view("RESIDUAL"); // DEBUGGING
+
+    // Check values
+    const double* valsE = _data->valsResidualIncr;
+    iVertex = 0;
+    const int fiberDimE = spaceDim;
+    const double tolerance = 1.0e-06;
+    for (Mesh::label_sequence::iterator v_iter=vBegin;
+	 v_iter != vEnd;
+	 ++v_iter, ++iVertex) {
+      const int fiberDim = residual->getFiberDimension(*v_iter);
+      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
+      const real_section_type::value_type* vals = 
+	residual->restrictPoint(*v_iter);
+      CPPUNIT_ASSERT(0 != vals);
+      
+      for (int i=0; i < fiberDimE; ++i) {
+	const double valE = 0.0; // no contribution
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+      } // for
+    } // for
+  } // Integrate residual with solution increment.
+} // testIntegrateResidual
+
+// ----------------------------------------------------------------------
+// Test integrateJacobian().
+void
+pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
+{ // testIntegrateJacobian
+  ALE::Obj<Mesh> mesh;
+  FaultCohesiveKin fault;
+  _initialize(&mesh, &fault);
+
+  // Setup fields
+  topology::FieldsManager fields(mesh);
+  fields.addReal("residual");
+  fields.addReal("solution");
+  fields.solutionField("solution");
+  
+  const ALE::Obj<real_section_type>& residual = fields.getReal("residual");
+  CPPUNIT_ASSERT(!residual.isNull());
+  const int spaceDim = _data->spaceDim;
+  residual->setChart(mesh->getSieve()->getChart());
+  residual->setFiberDimension(mesh->depthStratum(0), spaceDim);
+  mesh->allocate(residual);
+  residual->zero();
+  fields.copyLayout("residual");
+
+  const ALE::Obj<real_section_type>& solution = fields.getReal("solution");
+  CPPUNIT_ASSERT(!solution.isNull());
+
+  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const Mesh::label_sequence::iterator vBegin = vertices->begin();
+  const Mesh::label_sequence::iterator vEnd = vertices->end();
+  int iVertex = 0;
+  for (Mesh::label_sequence::iterator v_iter=vBegin;
+       v_iter != vEnd;
+       ++v_iter, ++iVertex) {
+    solution->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
+  } // for
+  
+  PetscMat jacobian;
+  PetscErrorCode err = MeshCreateMatrix(mesh, solution, MATMPIBAIJ, &jacobian);
+  CPPUNIT_ASSERT(0 == err);
+
+  const double t = 2.134;
+  fault.integrateJacobian(&jacobian, t, &fields, mesh);
+  CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
+
+  err = MatAssemblyBegin(jacobian, MAT_FINAL_ASSEMBLY);
+  CPPUNIT_ASSERT(0 == err);
+  err = MatAssemblyEnd(jacobian, MAT_FINAL_ASSEMBLY);
+  CPPUNIT_ASSERT(0 == err);
+
+  //MatView(jacobian, PETSC_VIEWER_STDOUT_WORLD); // DEBUGGING
+
+  const double* valsE = _data->valsJacobian;
+  const int nrowsE = solution->sizeWithBC();
+  const int ncolsE = nrowsE;
+
+  int nrows = 0;
+  int ncols = 0;
+  MatGetSize(jacobian, &nrows, &ncols);
+  CPPUNIT_ASSERT_EQUAL(nrowsE, nrows);
+  CPPUNIT_ASSERT_EQUAL(ncolsE, ncols);
+
+  PetscMat jDense;
+  PetscMat jSparseAIJ;
+  MatConvert(jacobian, MATSEQAIJ, MAT_INITIAL_MATRIX, &jSparseAIJ);
+  MatConvert(jSparseAIJ, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);
+
+  double_array vals(nrows*ncols);
+  int_array rows(nrows);
+  int_array cols(ncols);
+  for (int iRow=0; iRow < nrows; ++iRow)
+    rows[iRow] = iRow;
+  for (int iCol=0; iCol < ncols; ++iCol)
+    cols[iCol] = iCol;
+  MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
+  const double tolerance = 1.0e-06;
+  for (int iRow=0; iRow < nrows; ++iRow)
+    for (int iCol=0; iCol < ncols; ++iCol) {
+      const int index = ncols*iRow+iCol;
+      const double valE = 0.0;
+#if 0 // DEBUGGING
+      if (fabs(valE-vals[index]) > tolerance)
+	std::cout << "ERROR: iRow: " << iRow << ", iCol: " << iCol
+		  << "valE: " << valE
+		  << ", val: " << vals[index]
+		  << std::endl;
+#endif // DEBUGGING
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[index], tolerance);
+    } // for
+  MatDestroy(jDense);
+  MatDestroy(jSparseAIJ);
+  CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
+} // testIntegrateJacobian
+
+// ----------------------------------------------------------------------
+// Test integrateResidualAssembled().
+void
+pylith::faults::TestFaultCohesiveKin::testIntegrateResidualAssembled(void)
+{ // testIntegrateResidualAssembled
   ALE::Obj<Mesh> mesh;
   FaultCohesiveKin fault;
   _initialize(&mesh, &fault);
@@ -323,13 +506,13 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
       } // for
     } // for
   } // Integrate residual with solution increment.
-} // testIntegrateResidual
+} // testIntegrateResidualAssembled
 
 // ----------------------------------------------------------------------
-// Test integrateJacobian().
+// Test integrateJacobianAssembled().
 void
-pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
-{ // testIntegrateJacobian
+pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembled(void)
+{ // testIntegrateJacobianAssembled
   ALE::Obj<Mesh> mesh;
   FaultCohesiveKin fault;
   _initialize(&mesh, &fault);
@@ -423,10 +606,10 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   MatDestroy(jDense);
   MatDestroy(jSparseAIJ);
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
-} // testIntegrateJacobian
+} // testIntegrateJacobianAssembled
 
 // ----------------------------------------------------------------------
-// Test integrateJacobian().
+// Test calcTractionsChange().
 void
 pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
 { // testCalcTractionsChange

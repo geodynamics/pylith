@@ -28,6 +28,8 @@ def implementsIntegrator(obj):
               "useSolnIncr",
               "integrateResidual",
               "integrateJacobian",
+              "integrateResidualAssembled",
+              "integrateJacobianAssembled",
               "preinitialize",
               "verifyConfiguration",
               "initialize",
@@ -137,6 +139,20 @@ class Integrator(object):
     return
   
 
+  def needNewJacobian(self):
+    """
+    Returns true if we need to recompute Jacobian matrix for operator,
+    false otherwise.
+    """
+    logEvent = "%snewJacobian" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+    
+    assert(None != self.cppHandle)
+    flag = self.cppHandle.needNewJacobian
+    self._logger.eventEnd(logEvent)
+    return flag
+
+
   def integrateResidual(self, residual, t, fields):
     """
     Integrate contributions to residual term at time t.
@@ -152,20 +168,6 @@ class Integrator(object):
     return
 
 
-  def needNewJacobian(self):
-    """
-    Returns true if we need to recompute Jacobian matrix for operator,
-    false otherwise.
-    """
-    logEvent = "%snewJacobian" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
-    
-    assert(None != self.cppHandle)
-    flag = self.cppHandle.needNewJacobian
-    self._logger.eventEnd(logEvent)
-    return flag
-
-
   def integrateJacobian(self, jacobian, t, fields):
     """
     Integrate contributions to Jacobian term at time t.
@@ -176,6 +178,39 @@ class Integrator(object):
     assert(None != self.cppHandle)
     self.cppHandle.integrateJacobian(jacobian, t.value, fields.cppHandle,
                                      self.mesh.cppHandle)
+    self._logger.eventEnd(logEvent)
+    return
+
+
+  def integrateResidualAssembled(self, residual, t, fields):
+    """
+    Integrate contributions to residual term at time t that do not
+    require assembly over cells, vertices, or processors.
+    """
+    logEvent = "%sresidualAs" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+    
+    assert(None != self.cppHandle)
+    self.cppHandle.integrateResidualAssembled(residual, t.value,
+                                              fields.cppHandle,
+                                              self.mesh.cppHandle,
+                                              self.mesh.coordsys.cppHandle)
+    self._logger.eventEnd(logEvent)
+    return
+
+
+  def integrateJacobianAssembled(self, jacobian, t, fields):
+    """
+    Integrate contributions to Jacobian term at time t that do not
+    require assembly over cells, vertices, or processors.
+    """
+    logEvent = "%sjacobianAs" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+    
+    assert(None != self.cppHandle)
+    self.cppHandle.integrateJacobianAssembled(jacobian, t.value,
+                                              fields.cppHandle,
+                                              self.mesh.cppHandle)
     self._logger.eventEnd(logEvent)
     return
 
@@ -219,9 +254,11 @@ class Integrator(object):
               "init",
               "timestep",
               "solnIncr",
-              "residual",
               "newJacobian",
+              "residual",
               "jacobian",
+              "residualAs",
+              "jacobianAs",
               "poststep",
               "finalize"]
     for event in events:

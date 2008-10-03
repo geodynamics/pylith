@@ -109,31 +109,33 @@ public :
 		  const double_array& normalDir,
 		  spatialdata::spatialdb::SpatialDB* matDB);
 
-  /** Integrate contributions to residual term (r) for operator.
+  /** Integrate contributions to residual term (r) for operator that
+   * do not require assembly across cells, vertices, or processors.
    *
    * @param residual Field containing values for residual
    * @param t Current time
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
-  void integrateResidual(const ALE::Obj<real_section_type>& residual,
-			 const double t,
-			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh,
-			 const spatialdata::geocoords::CoordSys* cs);
+  void integrateResidualAssembled(const ALE::Obj<real_section_type>& residual,
+				  const double t,
+				  topology::FieldsManager* const fields,
+				  const ALE::Obj<Mesh>& mesh,
+				  const spatialdata::geocoords::CoordSys* cs);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
-   * operator.
+   * operator that do not require assembly across cells, vertices, or
+   * processors.
    *
    * @param mat Sparse matrix
    * @param t Current time
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
-  void integrateJacobian(PetscMat* mat,
-			 const double t,
-			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh);
+  void integrateJacobianAssembled(PetscMat* mat,
+				  const double t,
+				  topology::FieldsManager* const fields,
+				  const ALE::Obj<Mesh>& mesh);
 
   /** Verify configuration is acceptable.
    *
@@ -193,11 +195,6 @@ private :
    */
   void _calcOrientation(const double_array& upDir,
 			const double_array& normalDir);
-
-  /** Calculate pairing between fault vertices and first cell they
-   * appear in to prevent double counting in integrating Jacobian.
-   */
-  void _calcVertexCellPairs(void);
 
   /** Calculate conditioning field.
    *
@@ -263,11 +260,6 @@ private :
 
   /// Field over the fault mesh vertices of vector field of cumulative slip.
   ALE::Obj<real_section_type> _cumSlip;
-
-  /// Label of cell used to compute Jacobian for each fault vertex (must
-  /// prevent overlap so that only 1 cell will contribute for
-  /// each vertex).
-  ALE::Obj<int_section_type> _faultVertexCell;
 
   std::map<Mesh::point_type, Mesh::point_type> _cohesiveToFault;
 

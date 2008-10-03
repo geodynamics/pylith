@@ -120,7 +120,7 @@ public :
 			 const double t,
 			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh,
-			 const spatialdata::geocoords::CoordSys* cs) = 0;
+			 const spatialdata::geocoords::CoordSys* cs);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator.
@@ -130,11 +130,42 @@ public :
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
-  virtual 
+  virtual
   void integrateJacobian(PetscMat* mat,
 			 const double t,
 			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh) = 0;
+			 const ALE::Obj<Mesh>& mesh);
+
+  /** Integrate contributions to residual term (r) for operator that
+   * do not require assembly over cells, vertices, or processors.
+   *
+   * @param residual Field containing values for residual
+   * @param t Current time
+   * @param fields Solution fields
+   * @param mesh Finite-element mesh
+   * @param cs Mesh coordinate system
+   */
+  virtual 
+  void integrateResidualAssembled(const ALE::Obj<real_section_type>& residual,
+				  const double t,
+				  topology::FieldsManager* const fields,
+				  const ALE::Obj<Mesh>& mesh,
+				  const spatialdata::geocoords::CoordSys* cs);
+
+  /** Integrate contributions to Jacobian matrix (A) associated with
+   * operator that do not require assembly over cells, vertices, or
+   * processors
+   *
+   * @param mat Sparse matrix
+   * @param t Current time
+   * @param fields Solution fields
+   * @param mesh Finite-element mesh
+   */
+  virtual
+  void integrateJacobianAssembled(PetscMat* mat,
+				  const double t,
+				  topology::FieldsManager* const fields,
+				  const ALE::Obj<Mesh>& mesh);
 
   /** Update state variables as needed.
    *

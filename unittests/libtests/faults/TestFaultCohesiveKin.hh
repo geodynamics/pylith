@@ -99,6 +99,12 @@ public :
   /// Test integrateJacobian().
   void testIntegrateJacobian(void);
 
+  /// Test integrateResidualAssembled().
+  void testIntegrateResidualAssembled(void);
+
+  /// Test integrateJacobianAssembled().
+  void testIntegrateJacobianAssembled(void);
+
   /// Test _calcTractionsChange().
   void testCalcTractionsChange(void);
 
