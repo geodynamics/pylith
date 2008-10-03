@@ -431,6 +431,9 @@ class Formulation(Component):
       integrator.integrateJacobianAssembled(self.jacobian, t+dt, self.fields)
       self._debug.log(resourceUsageString()) # TEMPORARY
 
+    self._info.log("Assembling Jacobian of operator.")
+    petsc.mat_assemble(self.jacobian)
+
     if self.viewJacobian:
       filename = self._createJacobianFilename(t+dt)
       petsc.mat_view_binary(self.jacobian, filename)
