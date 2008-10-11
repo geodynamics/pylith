@@ -406,6 +406,30 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 
     CALL_MEMBER_FN(*this, elasticityJacobianFn)(elasticConsts);
 
+#if 0
+    for(int i = 0; i < numBasis*spaceDim; ++i) {
+      for(int j = 0; j < numBasis*spaceDim; ++j) {
+        if (_cellMatrix[i*numBasis*spaceDim+j] < 1.0e10) {
+          
+        }
+      }
+    }
+    int     n = numBasis*spaceDim, lwork = 5*n, idummy, lierr;
+    double *elemMat = new double[n*n];
+    double *svalues = new double[n];
+    double *work    = new double[lwork];
+    double  sdummy;
+
+    for(int i = 0; i < n; ++i) {elemMat[i] = _cellMatrix[i];}
+    LAPACKgesvd_("N", "N", &n, &n, elemMat, &n, svalues, &sdummy, &idummy, &sdummy, &idummy, work, &lwork, &lierr);
+    if (lierr) {throw std::runtime_error("Lapack SVD failed");}
+    minSV = svalues[n-1];
+    maxSV = svalues[0];
+    delete [] elemMat;
+    delete [] svalues;
+    delete [] work;
+#endif
+
     // Assemble cell contribution into field.  Not sure if this is correct for
     // global stiffness matrix.
     PetscErrorCode err = updateOperator(*mat, *mesh->getSieve(), iV, *c_iter, _cellMatrix, ADD_VALUES);
