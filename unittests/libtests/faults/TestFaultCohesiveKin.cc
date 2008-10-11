@@ -131,6 +131,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   FaultCohesiveKin fault;
   _initialize(&mesh, &fault);
   
+  Mesh::renumbering_type& renumbering = fault._faultMesh->getRenumbering();
   const ALE::Obj<Mesh::label_sequence>& vertices = 
     fault._faultMesh->depthStratum(0);
   const Mesh::label_sequence::iterator verticesEnd = vertices->end();
@@ -138,7 +139,8 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   for (Mesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++iVertex) {
-    CPPUNIT_ASSERT_EQUAL(_data->constraintVertices[iVertex],
+    CPPUNIT_ASSERT(renumbering.find(_data->constraintVertices[iVertex]) != renumbering.end());
+    CPPUNIT_ASSERT_EQUAL(renumbering[_data->constraintVertices[iVertex]],
 			 *v_iter);
   } // for
   CPPUNIT_ASSERT_EQUAL(_data->numConstraintVert, iVertex);
@@ -646,6 +648,7 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
   ALE::Obj<real_section_type> tractions =
     new real_section_type(fault._faultMesh->comm(), fault._faultMesh->debug());
   CPPUNIT_ASSERT(!tractions.isNull());
+  Mesh::renumbering_type& renumbering = fault._faultMesh->getRenumbering();
   const ALE::Obj<Mesh::label_sequence>& vertices = 
     fault._faultMesh->depthStratum(0);
   const Mesh::label_sequence::iterator verticesEnd = vertices->end();
@@ -660,16 +663,27 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
   for (Mesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++iVertex) {
+    Mesh::point_type meshVertex = -1;
+    bool found = false;
+
+    for(Mesh::renumbering_type::const_iterator r_iter = renumbering.begin(); r_iter != renumbering.end(); ++r_iter) {
+      if (r_iter->second == *v_iter) {
+        meshVertex = r_iter->first;
+        found      = true;
+        break;
+      }
+    }
+    CPPUNIT_ASSERT(found);
     int fiberDim = tractions->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
     const real_section_type::value_type* vertexTractions = 
       tractions->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != vertexTractions);
 
-    fiberDim = solution->getFiberDimension(*v_iter);
+    fiberDim = solution->getFiberDimension(meshVertex);
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
     const real_section_type::value_type* vertexSolution = 
-      solution->restrictPoint(*v_iter);
+      solution->restrictPoint(meshVertex);
     CPPUNIT_ASSERT(0 != vertexSolution);
 
     const double scale = _data->pseudoStiffness / _data->area[iVertex];

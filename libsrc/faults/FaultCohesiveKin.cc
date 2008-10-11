@@ -864,13 +864,19 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   const Mesh::label_sequence::iterator  verticesEnd = vertices->end();
   const int                             numVertices = vertices->size();
   Mesh::renumbering_type&               renumbering = _faultMesh->getRenumbering();
+  Mesh::point_type                      firstFaultVertex = -1;
 
   const int fiberDim = solution->getFiberDimension(*vertices->begin());
   double_array tractionValues(fiberDim);
 
   // Allocate buffer for tractions field (if nec.).
+  for (Mesh::label_sequence::iterator v_iter = vertices->begin(); v_iter != verticesEnd; ++v_iter) {
+    if (renumbering.find(*v_iter) != renumbering.end()) {
+      firstFaultVertex = renumbering[*v_iter];
+    }
+  }
   if (tractions->isNull() ||
-      fiberDim != (*tractions)->getFiberDimension(renumbering[*vertices->begin()])) {
+      fiberDim != (*tractions)->getFiberDimension(firstFaultVertex)) {
     *tractions = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
     int minE = _faultMesh->getSieve()->getChart().min();
     int maxE = _faultMesh->getSieve()->getChart().max();
