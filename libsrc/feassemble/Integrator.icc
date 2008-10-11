@@ -55,6 +55,7 @@ pylith::feassemble::Integrator::integrateJacobian(
 				       const double t,
 				       topology::FieldsManager* const fields,
 				       const ALE::Obj<Mesh>& mesh) {
+  _needNewJacobian = false;
 } // integrateJacobian
 
 // Integrate contributions to residual term (r) for operator that
@@ -67,6 +68,7 @@ pylith::feassemble::Integrator::integrateResidualAssembled(
 				topology::FieldsManager* const fields,
 				const ALE::Obj<Mesh>& mesh,
 				const spatialdata::geocoords::CoordSys* cs) {
+  _needNewJacobian = false;
 } // integrateResidualAssembled
 
 // Integrate contributions to Jacobian matrix (A) associated with
