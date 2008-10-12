@@ -416,21 +416,21 @@ class Formulation(Component):
     import pylith.utils.petsc as petsc
     petsc.mat_setzero(self.jacobian)
 
+    # Add in contributions that do not require assembly
+    self._info.log("Reforming assembled portion of Jacobian of operator.")
+    for integrator in self.integrators:
+      integrator.timeStep(dt)
+      integrator.integrateJacobianAssembled(self.jacobian, t+dt,
+                                            self.fields)
+      self._debug.log(resourceUsageString()) # TEMPORARY
+    self._info.log("Assembling Jacobian of operator.")
+    petsc.mat_assemble(self.jacobian)
+
     # Add in contributions that require assembly
     for integrator in self.integrators:
       integrator.timeStep(dt)
       integrator.integrateJacobian(self.jacobian, t+dt, self.fields)
       self._debug.log(resourceUsageString()) # TEMPORARY
-
-    self._info.log("Assembling Jacobian of operator.")
-    petsc.mat_assemble(self.jacobian)
-
-    self._info.log("Reforming assembled portion of Jacobian of operator.")
-    # Add in contributions that do not require assembly
-    for integrator in self.integrators:
-      integrator.integrateJacobianAssembled(self.jacobian, t+dt, self.fields)
-      self._debug.log(resourceUsageString()) # TEMPORARY
-
     self._info.log("Assembling Jacobian of operator.")
     petsc.mat_assemble(self.jacobian)
 
@@ -470,13 +470,13 @@ class Formulation(Component):
     for integrator in self.integrators:
       integrator.timeStep(dt)
       integrator.integrateResidual(residual, t, self.fields)
-
     self._info.log("Completing residual.")
     bindings.completeSection(self.mesh.cppHandle, residual)
 
-    self._info.log("Integrating assembled residual term in operator.")
     # Add in contributions that do not require assembly
+    self._info.log("Integrating assembled residual term in operator.")
     for integrator in self.integrators:
+      integrator.timeStep(dt)
       integrator.integrateResidualAssembled(residual, t, self.fields)
 
     return
