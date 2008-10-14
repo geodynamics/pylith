@@ -411,7 +411,6 @@ class Formulation(Component):
     """
     Reform Jacobian matrix for operator.
     """
-    self._info.log("Reforming Jacobian of operator.")
     self._debug.log(resourceUsageString())
     import pylith.utils.petsc as petsc
     petsc.mat_setzero(self.jacobian)
@@ -423,16 +422,17 @@ class Formulation(Component):
       integrator.integrateJacobianAssembled(self.jacobian, t+dt,
                                             self.fields)
       self._debug.log(resourceUsageString()) # TEMPORARY
-    self._info.log("Assembling Jacobian of operator.")
-    petsc.mat_assemble(self.jacobian)
+    self._info.log("Flushing assembly of Jacobian of operator.")
+    petsc.mat_assemble(self.jacobian, "flush_assembly")
 
     # Add in contributions that require assembly
+    self._info.log("Reforming unassembled portion of Jacobian of operator.")
     for integrator in self.integrators:
       integrator.timeStep(dt)
       integrator.integrateJacobian(self.jacobian, t+dt, self.fields)
       self._debug.log(resourceUsageString()) # TEMPORARY
-    self._info.log("Assembling Jacobian of operator.")
-    petsc.mat_assemble(self.jacobian)
+    self._info.log("Doing final assembly of Jacobian of operator.")
+    petsc.mat_assemble(self.jacobian, "final_assembly")
 
     if self.viewJacobian:
       filename = self._createJacobianFilename(t+dt)
@@ -470,14 +470,15 @@ class Formulation(Component):
     for integrator in self.integrators:
       integrator.timeStep(dt)
       integrator.integrateResidual(residual, t, self.fields)
-    self._info.log("Completing residual.")
-    bindings.completeSection(self.mesh.cppHandle, residual)
 
     # Add in contributions that do not require assembly
     self._info.log("Integrating assembled residual term in operator.")
     for integrator in self.integrators:
       integrator.timeStep(dt)
       integrator.integrateResidualAssembled(residual, t, self.fields)
+
+    self._info.log("Completing residual.")
+    bindings.completeSection(self.mesh.cppHandle, residual)
 
     return
 

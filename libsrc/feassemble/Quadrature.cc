@@ -300,6 +300,20 @@ pylith::feassemble::Quadrature::precomputeGeometry(
   _basisDerivPre->setFiberDimension(cells, _numQuadPts*_numBasis*_spaceDim);
   _basisDerivPre->allocatePoint();
 
+  const int ncells = cells->size();
+  const int nbytes = 
+    (
+     _numQuadPts*_spaceDim + // quadPts
+    _numQuadPts*_cellDim*_spaceDim + // jacobian
+    //_numQuadPts*_cellDim*_spaceDim + // jacobianInv
+    _numQuadPts + // jacobianDet
+     _numQuadPts*_numBasis*_spaceDim // basisDeriv
+     ) * ncells * sizeof(double);
+    
+  std::cout << "Quadrature::precomputeGeometry() allocating "
+	    << nbytes/(1024*1024) << " MB."
+	    << std::endl;
+
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != end;
       ++c_iter) {
