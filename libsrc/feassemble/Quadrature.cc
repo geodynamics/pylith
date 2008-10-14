@@ -310,9 +310,11 @@ pylith::feassemble::Quadrature::precomputeGeometry(
      _numQuadPts*_numBasis*_spaceDim // basisDeriv
      ) * ncells * sizeof(double);
     
+#if 0
   std::cout << "Quadrature::precomputeGeometry() allocating "
 	    << nbytes/(1024*1024) << " MB."
 	    << std::endl;
+#endif
 
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != end;
