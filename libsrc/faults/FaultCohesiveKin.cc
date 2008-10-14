@@ -85,7 +85,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
 
   CohesiveTopology::createParallel(&_faultMesh, &_cohesiveToFault, mesh, id(),
 				   _useLagrangeConstraints());
-  _faultMesh->getLabel("height")->view("Fault mesh height");
+  //_faultMesh->getLabel("height")->view("Fault mesh height");
 
   //_faultMesh->view("FAULT MESH");
 

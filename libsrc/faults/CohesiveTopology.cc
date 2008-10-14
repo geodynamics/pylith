@@ -482,7 +482,7 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
     indices         = new int[faceSize];
     numFaultCorners = ifault->getNumCellCorners(p, ifault->depth(p));
   }
-  ifault->view("Serial fault mesh");
+  //ifault->view("Serial fault mesh");
 
   // Add new shadow vertices and possibly Lagrange multipler vertices
   const Obj<Mesh::label_sequence>&   fVertices       = ifault->depthStratum(0);
@@ -945,7 +945,7 @@ pylith::faults::CohesiveTopology::createParallel(
     fCoordinates->updatePoint(fRenumbering[*v_iter], coordinates->restrictPoint(*v_iter));
   }
 #endif
-  (*ifault)->view("Parallel fault mesh");
+  //(*ifault)->view("Parallel fault mesh");
 
   // Create the parallel overlap
   //   Can I figure this out in a nicer way?
@@ -965,8 +965,8 @@ pylith::faults::CohesiveTopology::createParallel(
   ALE::SetFromMap<Mesh::renumbering_type> globalPoints(gRenumbering);
   ALE::OverlapBuilder<>::constructOverlap(globalPoints, gRenumbering, sendParallelMeshOverlap, recvParallelMeshOverlap);
   (*ifault)->setCalculatedOverlap(true);
-  sendParallelMeshOverlap->view("Send parallel fault overlap");
-  recvParallelMeshOverlap->view("Recv parallel fault overlap");
+  //sendParallelMeshOverlap->view("Send parallel fault overlap");
+  //recvParallelMeshOverlap->view("Recv parallel fault overlap");
 }
 
 // ----------------------------------------------------------------------
