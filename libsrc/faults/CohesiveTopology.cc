@@ -951,9 +951,19 @@ pylith::faults::CohesiveTopology::createParallel(
   //   Can I figure this out in a nicer way?
   Obj<Mesh::send_overlap_type> sendParallelMeshOverlap = (*ifault)->getSendOverlap();
   Obj<Mesh::recv_overlap_type> recvParallelMeshOverlap = (*ifault)->getRecvOverlap();
-  ALE::SetFromMap<Mesh::renumbering_type> globalPoints(fRenumbering);
 
-  ALE::OverlapBuilder<>::constructOverlap(globalPoints, fRenumbering, sendParallelMeshOverlap, recvParallelMeshOverlap);
+  // Must process the renumbering local --> fault to global --> fault
+  Mesh::renumbering_type& renumbering = mesh->getRenumbering();
+  Mesh::renumbering_type  gRenumbering;
+
+  for(Mesh::renumbering_type::const_iterator r_iter = renumbering.begin(); r_iter != renumbering.end(); ++r_iter) {
+    if (fRenumbering.find(r_iter->second) != fRenumbering.end()) {
+      gRenumbering[r_iter->first] = fRenumbering[r_iter->second];
+    }
+  }
+
+  ALE::SetFromMap<Mesh::renumbering_type> globalPoints(gRenumbering);
+  ALE::OverlapBuilder<>::constructOverlap(globalPoints, gRenumbering, sendParallelMeshOverlap, recvParallelMeshOverlap);
   (*ifault)->setCalculatedOverlap(true);
   sendParallelMeshOverlap->view("Send parallel fault overlap");
   recvParallelMeshOverlap->view("Recv parallel fault overlap");
