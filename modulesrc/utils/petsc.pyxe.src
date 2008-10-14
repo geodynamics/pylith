@@ -13,6 +13,8 @@
 #header{
 #include <petsc.h>
 #include <petscmat.h>
+#include <string.h>
+#include <stdexcept>
 #}header
 
 # ----------------------------------------------------------------------
@@ -82,21 +84,30 @@ def petsc_finalize():
   return
 
 
-def mat_assemble(mat):
+def mat_assemble(mat, mode):
   """
   Assemble matrix.
   """
   # create shim for 'MatAssemblyBegin/MatAssemblyEnd'
-  #embed{ int Mat_assemble(void* matVptr)
+  #embed{ int Mat_assemble(void* matVptr, char* mode)
   Mat* mat = (Mat*) matVptr;
   PetscErrorCode err = 0;
-  err = MatAssemblyBegin(*mat, MAT_FINAL_ASSEMBLY); CHKERRQ(err);
-  err = MatAssemblyEnd(*mat, MAT_FINAL_ASSEMBLY); CHKERRQ(err);
+  if (0 == strcmp(mode, "final_assembly")) {
+    err = MatAssemblyBegin(*mat, MAT_FINAL_ASSEMBLY); CHKERRQ(err);
+    err = MatAssemblyEnd(*mat, MAT_FINAL_ASSEMBLY); CHKERRQ(err);
+  } else if (0 == strcmp(mode, "flush_assembly")) {
+    err = MatAssemblyBegin(*mat, MAT_FLUSH_ASSEMBLY); CHKERRQ(err);
+    err = MatAssemblyEnd(*mat, MAT_FLUSH_ASSEMBLY); CHKERRQ(err);
+  } else {
+    throw std::runtime_error("Unknown mode");
+  }  
   return 0;
   #}embed
   cdef void* matVptr
   matVptr = PyCObject_AsVoidPtr(mat)
-  err = Mat_assemble(matVptr)
+  if mode != "final_assembly" and mode != "flush_assembly":
+    raise ValueError("Unknown mode '%s' for mat_assemble." % mode)
+  err = Mat_assemble(matVptr, mode)
   if err:
     raise RuntimError("Error assembling matrix.")
 
