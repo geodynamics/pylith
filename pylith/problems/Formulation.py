@@ -470,15 +470,14 @@ class Formulation(Component):
     for integrator in self.integrators:
       integrator.timeStep(dt)
       integrator.integrateResidual(residual, t, self.fields)
+    self._info.log("Completing residual.")
+    bindings.completeSection(self.mesh.cppHandle, residual)
 
     # Add in contributions that do not require assembly
     self._info.log("Integrating assembled residual term in operator.")
     for integrator in self.integrators:
       integrator.timeStep(dt)
       integrator.integrateResidualAssembled(residual, t, self.fields)
-
-    self._info.log("Completing residual.")
-    bindings.completeSection(self.mesh.cppHandle, residual)
 
     return
 
