@@ -627,7 +627,11 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
   _orientation->setDebug(2);
 #endif
   // Assemble orientation information
+#if 1
+  ALE::Distribution<pylith::Mesh>::completeSection(*_faultMesh, _orientation);
+#else
   ALE::Completion::completeSectionAdd(_faultMesh->getSendOverlap(), _faultMesh->getRecvOverlap(), _orientation, _orientation);
+#endif
 
 #if 0
   _orientation->view("ORIENTATION After complete");
@@ -833,10 +837,22 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
     PetscLogFlops( numQuadPts*(1+numBasis*2) );
   } // for
 
-  // Assemble area information
-  ALE::Completion::completeSectionAdd(_faultMesh->getSendOverlap(), _faultMesh->getRecvOverlap(), _area, _area);
+#if 0
+  _area->view("AREA");
+#endif
 
-  //_area->view("AREA");
+  // Assemble area information
+#if 1
+  ALE::Distribution<pylith::Mesh>::completeSection(*_faultMesh, _area);
+#else
+  ALE::Completion::completeSectionAdd(_faultMesh->getSendOverlap(), _faultMesh->getRecvOverlap(), _area, _area);
+#endif
+
+#if 0
+  _area->view("AREA");
+  _faultMesh->getSendOverlap()->view("Send fault overlap");
+  _faultMesh->getRecvOverlap()->view("Receive fault overlap");
+#endif
 } // _calcArea
 
 // ----------------------------------------------------------------------
@@ -853,11 +869,6 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   assert(!_faultMesh.isNull());
   assert(!_pseudoStiffness.isNull());
   assert(!_area.isNull());
-
-#if 0
-  _pseudoStiffness->view("PSEUDOSTIFFNESS");
-  _area->view("AREA");
-#endif
 
   const ALE::Obj<Mesh::label_sequence>& vertices    = mesh->depthStratum(0);
   assert(!vertices.isNull());
