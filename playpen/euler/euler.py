@@ -266,15 +266,15 @@ class Euler(Application):
         velocity = self._euler2Velocity(pointsLL[point])
         if self.bcType == 'dislocation':
           vlocal = self._localTrans(velocity, normalsArr[point])
-          velocity = vlocal
+          velocity = self.bcScale * vlocal
       else:
-        velocity[0] = self.defaultValues[0]
-        velocity[1] = self.defaultValues[1]
-        velocity[2] = self.defaultValues[2]
+        velocity[0] = self.bcScale * self.defaultValues[0]
+        velocity[1] = self.bcScale * self.defaultValues[1]
+        velocity[2] = self.bcScale * self.defaultValues[2]
       for dim in range(self.spaceDim):
         f.write(' %.12e' % self.pointsUTM[iCount + dim])
       for dim in range(self.spaceDim):
-        f.write(' %.12e' % self.bcScale * velocity[dim])
+        f.write(' %.12e' % velocity[dim])
       f.write('\n')
       iCount += 3
     return

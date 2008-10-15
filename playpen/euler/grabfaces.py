@@ -13,7 +13,8 @@
 ## @file euler/grabfaces
 
 ## @brief Python application to grab a set of points specified in a UCD
-## face description file and write them to a file.
+## face description file along with the associated normals and write them to a
+## file.
 
 import math
 import numpy
@@ -22,7 +23,7 @@ from pyre.applications.Script import Script as Application
 
 class GrabFaces(Application):
   """
-  Python application to grab a set of point coordinates and values from a UCD
+  Python application to grab a set of point coordinates and normals from a UCD
   face description file.
   """
   
@@ -39,6 +40,7 @@ class GrabFaces(Application):
     ## @li \b fault_id_num ID number (material number) of fault to use.
     ## @li \b point_output_file Filename of output set of points and normals.
     ## @li \b node_values_list List specifying position of desired attributes in UCD face nodal attributes.
+    ## @li \b exclude_zero_normals Flag indicating whether to exclude points if the associated normal has zero magnitude.
     ##
     ## \b Facilities
     ## @li None
@@ -57,6 +59,10 @@ class GrabFaces(Application):
 
     nodeValuesList = pyre.inventory.list("node_values_list", default=[1, 2, 3])
     nodeValuesList.meta['tip'] = "Position of desired values in UCD face nodal attributes."
+
+    excludeZeroNormals = pyre.inventory.bool("exclude_zero_normals",
+                                             default=False)
+    excludeZeroNormals.meta['tip'] = "Whether to exclude points with zero normals."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -84,6 +90,7 @@ class GrabFaces(Application):
     self.faultIDNum = self.inventory.faultIDNum
     self.pointOutputFile = self.inventory.pointOutputFile
     self.nodeValuesList = self.inventory.nodeValuesList
+    self.excludeZeroNormals = self.inventory.excludeZeroNormals
     return
 
 
@@ -144,7 +151,12 @@ class GrabFaces(Application):
       if vertex == ucdInd:
         data = lines[lineCount].split()
         normals = [float(data[v0]), float(data[v1]), float(data[v2])]
-	if normals[0] != 0.0 or normals[1] != 0.0 or normals[2] != 0.0:
+        outputPoint = not self.excludeZeroNormals
+        outputPoint = outputPoint or \
+                      normals[0] != 0.0 or \
+                      normals[1] != 0.0 or \
+                      normals[2] != 0.0
+        if outputPoint:
 
           for dim in range(3):
             o.write(' %.12e' % vertCoords[coordCount + dim])

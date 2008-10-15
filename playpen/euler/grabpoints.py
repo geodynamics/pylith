@@ -13,7 +13,8 @@
 ## @file grabpoints/grabpoints
 
 ## @brief Python application to grab a set of points specified in a pset
-## file from a UCD file and write them to a file.
+## file from a UCD file along with the associated normals and write them to a
+## file.
 
 import math
 import numpy
@@ -23,7 +24,7 @@ from pyre.applications.Script import Script as Application
 class GrabPoints(Application):
   """
   Python application to grab a specified set of point coordinates and
-  values from a UCD file.
+  normals from a UCD file.
   """
   
   class Inventory(Application.Inventory):
@@ -39,6 +40,8 @@ class GrabPoints(Application):
     ## @li \b ucd_file Filename of input UCD file.
     ## @li \b point_output_file Filename of output set of points and normals.
     ## @li \b values_list List specifying position of desired attributes in UCD file.
+    ## @li \b output_index Flag indicating whether to output the vertex indices.
+    ## @li \b exclude_zero_normals Flag indicating whether to exclude points if the associated normal has zero magnitude.
     ##
     ## \b Facilities
     ## @li None
@@ -60,6 +63,10 @@ class GrabPoints(Application):
 
     outputIndex = pyre.inventory.bool("output_index", default=False)
     outputIndex.meta['tip'] = "Whether to output vertex indices."
+
+    excludeZeroNormals = pyre.inventory.bool("exclude_zero_normals",
+                                             default=False)
+    excludeZeroNormals.meta['tip'] = "Whether to exclude points with zero normals."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -92,6 +99,7 @@ class GrabPoints(Application):
     self.pointOutputFile = self.inventory.pointOutputFile
     self.valuesList = self.inventory.valuesList
     self.outputIndex = self.inventory.outputIndex
+    self.excludeZeroNormals = self.inventory.excludeZeroNormals
     return
 
 
@@ -131,10 +139,10 @@ class GrabPoints(Application):
       vertex = self.indices[vertInd]
       if vertex == ucdInd:
         data = lines[lineCount].split()
-	for dim in range(1,4):
+        for dim in range(1,4):
           self.pointCoords.append(float(data[dim]))
         vertInd += 1
-	vertInd = min([vertInd, len(self.indices) - 1])
+        vertInd = min([vertInd, len(self.indices) - 1])
       ucdInd += 1
 
     # Skip elements and then start reading normals/values and write out
@@ -155,18 +163,23 @@ class GrabPoints(Application):
       if vertex == ucdInd:
         data = lines[lineCount].split()
         normals = [float(data[v0]), float(data[v1]), float(data[v2])]
-	if normals[0] != 0.0 or normals[1] != 0.0 or normals[2] != 0.0:
+        outputPoint = not self.excludeZeroNormals
+        outputPoint = outputPoint or \
+                      normals[0] != 0.0 or \
+                      normals[1] != 0.0 or \
+                      normals[2] != 0.0
+        
+        if outputPoint:
+          if self.outputIndex:
+            o.write(' %i' % vertex)
 
-	  if self.outputIndex:
-	    o.write(' %i' % vertex)
+            for dim in range(3):
+              o.write(' %.12e' % self.pointCoords[coordCount + dim])
 
-          for dim in range(3):
-            o.write(' %.12e' % self.pointCoords[coordCount + dim])
+            for dim in range(3):
+              o.write(' %.12e' % normals[dim])
 
-          for dim in range(3):
-            o.write(' %.12e' % normals[dim])
-
-          o.write('\n')
+            o.write('\n')
         vertInd += 1
         coordCount += 3
 
