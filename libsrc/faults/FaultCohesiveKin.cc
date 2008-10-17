@@ -26,7 +26,7 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES CoordSys
 
-#include <Distribution.hh> // USES completeSection
+#include <Completion.hh> // USES completeSection
 #include <Selection.hh> // Algorithms for submeshes
 
 #include <math.h> // USES pow(), sqrt()
