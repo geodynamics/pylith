@@ -1155,7 +1155,11 @@ def completeSection(mesh, section):
       (ALE::Obj<pylith::Mesh>*) meshVptr;
     ALE::Obj<pylith::real_section_type>* section =
       (ALE::Obj<pylith::real_section_type>*) sectionVptr;
+#if 0
     ALE::Completion::completeSectionAdd((*mesh)->getSendOverlap(), (*mesh)->getRecvOverlap(), *section, *section);
+#else
+    ALE::Distribution<pylith::Mesh>::completeSection(*mesh, *section);
+#endif
   } catch (const std::exception& err) {
     PyErr_SetString(PyExc_RuntimeError,
                     const_cast<char*>(err.what()));
