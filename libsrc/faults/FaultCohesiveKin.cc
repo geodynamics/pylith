@@ -627,7 +627,11 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
   _orientation->setDebug(2);
 #endif
   // Assemble orientation information
+#if 0
   ALE::Completion::completeSectionAdd(_faultMesh->getSendOverlap(), _faultMesh->getRecvOverlap(), _orientation, _orientation);
+#else
+  ALE::Distribution<pylith::Mesh>::completeSection(_faultMesh, _orientation);
+#endif
 
 #if 0
   _orientation->view("ORIENTATION After complete");
@@ -838,7 +842,11 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
 #endif
 
   // Assemble area information
+#if 0
   ALE::Completion::completeSectionAdd(_faultMesh->getSendOverlap(), _faultMesh->getRecvOverlap(), _area, _area);
+#else
+  ALE::Distribution<pylith::Mesh>::completeSection(_faultMesh, _area);
+#endif
 
 #if 0
   _area->view("AREA");
