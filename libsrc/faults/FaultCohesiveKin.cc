@@ -842,7 +842,7 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
 #endif
 
   // Assemble area information
-#if 0
+#if 1
   ALE::Completion::completeSectionAdd(_faultMesh->getSendOverlap(), _faultMesh->getRecvOverlap(), _area, _area);
 #else
   ALE::Distribution<pylith::Mesh>::completeSection(_faultMesh, _area);
