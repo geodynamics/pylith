@@ -20,8 +20,7 @@ noinst_PYTHON = \
 	TestDislocation.py
 
 noinst_DATA = \
-	box.exo \
-	twocells.mesh \
+	box_tri3_100m.exo \
 	matprops.spatialdb \
 	axialplanestrain.cfg \
 	axialx.spatialdb \
@@ -32,16 +31,12 @@ noinst_DATA = \
 	dislocation_disp.spatialdb \
 	dislocation_sliprate.spatialdb \
 	dislocation_slip.spatialdb \
-	dislocation_sliptime.spatialdb \
-	explicit.cfg
+	dislocation_sliptime.spatialdb
 
 noinst_TMP = \
-	axialplanestrain_t0.vtk \
-	axialplanestrain_t1.vtk \
-	shearplanestrain_t0.vtk \
-	shearplanestrain_t1.vtk \
-	dislocation_t0.vtk \
-	dislocation_t1.vtk
+	axialplanestrain_t0000000.vtk \
+	axialplanestrain-statevars-elastic_info.vtk \
+	axialplanestrain-statevars-elastic_t0000000.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)
@@ -49,14 +44,16 @@ TESTS_ENVIRONMENT = $(PYTHON)
 
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/tests/2d/tri3
-export-data: $(noinst_DATA)
-	for f in $(noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
+export-data: $(noinst_PYTHON) $(noinst_DATA)
+	for f in $(noinst_PYTHON) $(noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 
 BUILT_SOURCES = export-data
 
 CLEANFILES = \
+	$(export_datadir)/$(noinst_PYTHON) \
 	$(export_datadir)/$(noinst_DATA) \
-	$(export_datadir)/$(noinst_TMP)
+	$(export_datadir)/$(noinst_TMP) \
+	*.pyc
 
 
 # End of file 

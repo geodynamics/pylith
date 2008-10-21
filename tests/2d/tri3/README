@@ -1,12 +1,17 @@
 ======================================================================
-AXIAL COMPRESSION
+DOMAIN
 ======================================================================
-
-2-D axial compression test with linear triangular cells.
 
 -250 <= x <= +250
 -250 <= y <= +250
 
+Mesh is tri3 cells with nominal 100m discretization size.
+
+======================================================================
+AXIAL COMPRESSION
+======================================================================
+
+2-D axial compression test with linear triangular cells.
 
          y=-1.0 m
         ----------
@@ -32,9 +37,6 @@ SHEAR
 ======================================================================
 
 2-D shear test with linear triangular cells.
-
--250 <= x <= +250
--250 <= y <= +250
 
 
          ----------
