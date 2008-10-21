@@ -1155,7 +1155,7 @@ def completeSection(mesh, section):
       (ALE::Obj<pylith::Mesh>*) meshVptr;
     ALE::Obj<pylith::real_section_type>* section =
       (ALE::Obj<pylith::real_section_type>*) sectionVptr;
-#if 0
+#if 1
     ALE::Completion::completeSectionAdd((*mesh)->getSendOverlap(), (*mesh)->getRecvOverlap(), *section, *section);
 #else
     ALE::Distribution<pylith::Mesh>::completeSection(*mesh, *section);
