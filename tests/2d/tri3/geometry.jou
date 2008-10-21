@@ -1,0 +1,34 @@
+## /tools/common/cubit-10.2/bin/clarox
+## Cubit Version 10.2
+## Cubit Build 24
+## Revised 12/15/2006 16:09:40 MST
+## Running 06/18/2007 10:26:50 AM
+## Command Options:
+## -warning = On
+## -information = On
+
+# ----------------------------------------------------------------------
+# Create surface using vertices
+# ----------------------------------------------------------------------
+
+# Block is 500m x 500m
+# -250 m <= x <= 250 km 
+# -250 km <= y <= 250 km
+reset
+create vertex -250.0 -250.0 0.0
+create vertex -250.0 +250.0 0.0
+create vertex +250.0 +250.0 0.0
+create vertex +250.0 -250.0 0.0
+create surface vertex 1 2 3 4
+delete vertex all
+
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+create vertex 0.0 -250.0 0.0
+create vertex 0.0 +250.0 0.0
+split surface 1 across location vertex 9 location vertex 10
+curve 5 name "fault_edge"
+delete vertex all
+surface 2 name "block_neg"
+surface 3 name "block_pos"
