@@ -627,7 +627,7 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
   _orientation->setDebug(2);
 #endif
   // Assemble orientation information
-#if 0
+#if 1
   ALE::Completion::completeSectionAdd(_faultMesh->getSendOverlap(), _faultMesh->getRecvOverlap(), _orientation, _orientation);
 #else
   ALE::Distribution<pylith::Mesh>::completeSection(_faultMesh, _orientation);
