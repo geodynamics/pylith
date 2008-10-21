@@ -280,7 +280,9 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   } // for
 } // integrateResidual
 
-
+extern "C" {
+  EXTERN void dgesvd_(const char*,const char*,PetscBLASInt *,PetscBLASInt*,PetscScalar *,PetscBLASInt*,PetscReal*,PetscScalar*,PetscBLASInt*,PetscScalar*,PetscBLASInt*,PetscScalar*,PetscBLASInt*,PetscBLASInt*);
+}
 // ----------------------------------------------------------------------
 // Compute stiffness matrix.
 void
@@ -406,25 +408,23 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 
     CALL_MEMBER_FN(*this, elasticityJacobianFn)(elasticConsts);
 
-#if 0
-    for(int i = 0; i < numBasis*spaceDim; ++i) {
-      for(int j = 0; j < numBasis*spaceDim; ++j) {
-        if (_cellMatrix[i*numBasis*spaceDim+j] < 1.0e10) {
-          
-        }
-      }
-    }
+#if 1
     int     n = numBasis*spaceDim, lwork = 5*n, idummy, lierr;
     double *elemMat = new double[n*n];
     double *svalues = new double[n];
     double *work    = new double[lwork];
-    double  sdummy;
+    double  minSV, maxSV, sdummy;
 
-    for(int i = 0; i < n; ++i) {elemMat[i] = _cellMatrix[i];}
-    LAPACKgesvd_("N", "N", &n, &n, elemMat, &n, svalues, &sdummy, &idummy, &sdummy, &idummy, work, &lwork, &lierr);
+    for(int i = 0; i < n*n; ++i) {elemMat[i] = _cellMatrix[i];}
+    dgesvd_("N", "N", &n, &n, elemMat, &n, svalues, &sdummy, &idummy, &sdummy, &idummy, work, &lwork, &lierr);
     if (lierr) {throw std::runtime_error("Lapack SVD failed");}
     minSV = svalues[n-1];
     maxSV = svalues[0];
+    std::cout << "Element " << c_index << std::endl;
+    for(int i = 0; i < n; ++i) {
+      std::cout << "    sV["<<i<<"] = " << svalues[i] << std::endl;
+    }
+    std::cout << "  kappa(elemMat) = " << maxSV/minSV << std::endl;
     delete [] elemMat;
     delete [] svalues;
     delete [] work;
