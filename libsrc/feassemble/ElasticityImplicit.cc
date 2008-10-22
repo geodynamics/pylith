@@ -408,7 +408,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 
     CALL_MEMBER_FN(*this, elasticityJacobianFn)(elasticConsts);
 
-#if 1
+#if 0
     int     n = numBasis*spaceDim, lwork = 5*n, idummy, lierr;
     double *elemMat = new double[n*n];
     double *svalues = new double[n];
