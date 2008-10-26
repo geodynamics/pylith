@@ -21,6 +21,7 @@
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 #include "pylith/utils/array.hh" // USES double_array
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
+#include "pylith/utils/blas.h" // USES dgesvd
 
 #include "petscmat.h" // USES PetscMat
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -280,9 +281,6 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   } // for
 } // integrateResidual
 
-extern "C" {
-  EXTERN void dgesvd_(const char*,const char*,PetscBLASInt *,PetscBLASInt*,PetscScalar *,PetscBLASInt*,PetscReal*,PetscScalar*,PetscBLASInt*,PetscScalar*,PetscBLASInt*,PetscScalar*,PetscBLASInt*,PetscBLASInt*);
-}
 // ----------------------------------------------------------------------
 // Compute stiffness matrix.
 void
@@ -408,27 +406,35 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 
     CALL_MEMBER_FN(*this, elasticityJacobianFn)(elasticConsts);
 
-#if 0
-    int     n = numBasis*spaceDim, lwork = 5*n, idummy, lierr;
-    double *elemMat = new double[n*n];
-    double *svalues = new double[n];
-    double *work    = new double[lwork];
-    double  minSV, maxSV, sdummy;
+    if (_quadrature->checkConditioning()) {
+      int n = numBasis*spaceDim;
+      int lwork = 5*n;
+      int idummy = 0;
+      int lierr = 0;
+      double *elemMat = new double[n*n];
+      double *svalues = new double[n];
+      double *work    = new double[lwork];
+      double minSV = 0;
+      double maxSV = 0;
+      double sdummy = 0;
 
-    for(int i = 0; i < n*n; ++i) {elemMat[i] = _cellMatrix[i];}
-    dgesvd_("N", "N", &n, &n, elemMat, &n, svalues, &sdummy, &idummy, &sdummy, &idummy, work, &lwork, &lierr);
-    if (lierr) {throw std::runtime_error("Lapack SVD failed");}
-    minSV = svalues[n-1];
-    maxSV = svalues[0];
-    std::cout << "Element " << c_index << std::endl;
-    for(int i = 0; i < n; ++i) {
-      std::cout << "    sV["<<i<<"] = " << svalues[i] << std::endl;
-    }
-    std::cout << "  kappa(elemMat) = " << maxSV/minSV << std::endl;
-    delete [] elemMat;
-    delete [] svalues;
-    delete [] work;
-#endif
+      const int n2 = n*n;
+      for (int i = 0; i < n2; ++i)
+	elemMat[i] = _cellMatrix[i];
+      dgesvd("N", "N", &n, &n, elemMat, &n, svalues, 
+	     &sdummy, &idummy, &sdummy, &idummy, work, &lwork, &lierr);
+      if (lierr)
+	throw std::runtime_error("Lapack SVD failed");
+      minSV = svalues[n-1];
+      maxSV = svalues[0];
+      std::cout << "Element " << c_index << std::endl;
+      for(int i = 0; i < n; ++i)
+	std::cout << "    sV["<<i<<"] = " << svalues[i] << std::endl;
+      std::cout << "  kappa(elemMat) = " << maxSV/minSV << std::endl;
+      delete [] elemMat;
+      delete [] svalues;
+      delete [] work;
+    } // if
 
     // Assemble cell contribution into field.  Not sure if this is correct for
     // global stiffness matrix.

@@ -16,6 +16,7 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	EventLogger.hh \
 	EventLogger.icc \
+	blas.h \
 	array.hh \
 	arrayfwd.hh \
 	constdefs.h \

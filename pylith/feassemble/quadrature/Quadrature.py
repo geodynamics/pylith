@@ -39,6 +39,8 @@ class Quadrature(Component):
     ##
     ## \b Properties
     ## @li \b min_jacobian Minimum allowable determinant of Jacobian.
+    ## @li \b check_conditoning Check element matrices for 
+    ##   ill-conditioning.
     ##
     ## \b Facilities
     ## @li \b cell Reference cell with basis functions and quadrature rules
@@ -47,6 +49,11 @@ class Quadrature(Component):
 
     minJacobian = pyre.inventory.float("min_jacobian", default=1.0e-06)
     minJacobian.meta['tip'] = "Minimum allowable determinant of Jacobian."
+
+    checkConditioning = pyre.inventory.bool("check_conditioning",
+                                            default=False)
+    checkConditioning.meta['tip'] = \
+        "Check element matrices for ill-conditioning."
 
     from pylith.feassemble.FIATSimplex import FIATSimplex
     cell = pyre.inventory.facility("cell", family="reference_cell",
@@ -74,6 +81,7 @@ class Quadrature(Component):
     self._createCppHandle()
     
     self.cppHandle.minJacobian = self.minJacobian
+    self.cppHandle.checkConditioning = self.checkConditioning
 
     self._info.log("Initializing reference cell.")
     cell = self.cell
@@ -109,6 +117,7 @@ class Quadrature(Component):
     """
     Component._configure(self)
     self.minJacobian = self.inventory.minJacobian
+    self.checkConditioning = self.inventory.checkConditioning
     self.cell = self.inventory.cell
     return
 

@@ -651,6 +651,50 @@ cdef class Quadrature:
       return Quadrature_minJacobian_get(self.thisptr)
 
 
+  property checkConditioning:
+    def __set__(self, flag):
+      """Set minimum allowable Jacobian."""
+      # create shim for method 'checkConditioning'
+      #embed{ void Quadrature_checkConditioning_set(void* objVptr, int flag)
+      try {
+        assert(0 != objVptr);
+        ((pylith::feassemble::Quadrature*) objVptr)->checkConditioning(flag);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      Quadrature_checkConditioning_set(self.thisptr, flag)
+
+    def __get__(self):
+      """Get minimum allowable Jacobian."""
+      # create shim for method 'checkConditioning'
+      #embed{ int Quadrature_checkConditioning_get(void* objVptr)
+      int result = 0;
+      try {
+        assert(0 != objVptr);
+        result = ((pylith::feassemble::Quadrature*) objVptr)->checkConditioning();
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return Quadrature_checkConditioning_get(self.thisptr)
+
+
   property refGeometry:
     def __set__(self, value):
       """

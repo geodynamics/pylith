@@ -30,7 +30,8 @@ pylith::feassemble::Quadrature::Quadrature(void) :
   _numQuadPts(0),
   _spaceDim(0),
   _geometry(0),
-  _precomputed(false)
+  _precomputed(false),
+  _checkConditioning(false)
 { // constructor
   _quadPtsPre     = new real_section_type(PETSC_COMM_WORLD);
   _jacobianPre    = new real_section_type(PETSC_COMM_WORLD);
@@ -64,7 +65,8 @@ pylith::feassemble::Quadrature::Quadrature(const Quadrature& q) :
   _numQuadPts(q._numQuadPts),
   _spaceDim(q._spaceDim),
   _geometry(0),
-  _precomputed(q._precomputed)
+  _precomputed(q._precomputed),
+  _checkConditioning(q._checkConditioning)
 { // copy constructor
   if (0 != q._geometry)
     _geometry = q._geometry->clone();
