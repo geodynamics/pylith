@@ -96,7 +96,8 @@ class MeshImporter(MeshGenerator):
     if mpi.MPI_Comm_size(mpi.MPI_COMM_WORLD) > 1:
       self._info.log("Distributing mesh.")
       mesh = self.distributor.distribute(mesh)
-    #mesh.view()
+    if self.debug:
+      mesh.view()
 
     # refine mesh (if necessary)
     mesh = self.refiner.refine(mesh)
