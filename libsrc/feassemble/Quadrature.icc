@@ -17,7 +17,7 @@
 // Get minimum allowable Jacobian.
 inline
 double
-pylith::feassemble::Quadrature::minJacobian(void) {
+pylith::feassemble::Quadrature::minJacobian(void) const {
   return _minJacobian;
 }
 
@@ -26,6 +26,20 @@ inline
 void
 pylith::feassemble::Quadrature::minJacobian(const double min) {
   _minJacobian = min;
+}
+
+// Set flag for checking ill-conditioning.
+inline
+void
+pylith::feassemble::Quadrature::checkConditioning(const bool flag) {
+  _checkConditioning = flag;
+}
+
+// Get flag for checking ill-conditioning.
+inline
+bool
+pylith::feassemble::Quadrature::checkConditioning(void) const {
+  return _checkConditioning;
 }
 
 // Get coordinates of quadrature points in reference cell.

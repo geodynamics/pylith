@@ -31,6 +31,7 @@ pylith::feassemble::TestQuadrature::testClone(void)
 { // testClone
   // Semi-random values manually set to check cloning
   const double minJacobianE = 1.0;
+  const bool checkConditioning = true;
   const int cellDimE = 1;
   const int numBasisE = 2;
   const int numQuadPtsE = 1;
@@ -48,6 +49,7 @@ pylith::feassemble::TestQuadrature::testClone(void)
   // Set values
   Quadrature1D qOrig;
   qOrig._minJacobian = minJacobianE;
+  qOrig._checkConditioning = checkConditioning;
   qOrig._cellDim = cellDimE;
   qOrig._numBasis = numBasisE;
   qOrig._numQuadPts = numQuadPtsE;
@@ -94,6 +96,7 @@ pylith::feassemble::TestQuadrature::testClone(void)
   CPPUNIT_ASSERT(0 != qCopy);
 
   CPPUNIT_ASSERT_EQUAL(minJacobianE, qCopy->_minJacobian);
+  CPPUNIT_ASSERT_EQUAL(checkConditioning, qCopy->_checkConditioning);
   CPPUNIT_ASSERT_EQUAL(cellDimE, qCopy->cellDim());
   CPPUNIT_ASSERT_EQUAL(numBasisE, qCopy->numBasis());
   CPPUNIT_ASSERT_EQUAL(numQuadPtsE, qCopy->numQuadPts());
@@ -165,6 +168,19 @@ pylith::feassemble::TestQuadrature::testMinJacobian(void)
   q.minJacobian(min);
   CPPUNIT_ASSERT_EQUAL(min, q._minJacobian);
 } // testMinJacobian
+
+// ----------------------------------------------------------------------
+// Test checkConditioning()
+void
+pylith::feassemble::TestQuadrature::testCheckConditioning(void)
+{ // testCheckConditioning
+  Quadrature1D q;
+  CPPUNIT_ASSERT_EQUAL(false, q.checkConditioning());
+  q.checkConditioning(true);
+  CPPUNIT_ASSERT_EQUAL(true, q.checkConditioning());
+  q.checkConditioning(false);
+  CPPUNIT_ASSERT_EQUAL(false, q.checkConditioning());
+} // testCheckConditioning
 
 // ----------------------------------------------------------------------
 // Test refGeometry()

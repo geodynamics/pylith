@@ -127,7 +127,19 @@ public :
    *
    * @returns Minimum allowable value for Jacobian
    */
-  double minJacobian(void);
+  double minJacobian(void) const;
+
+  /** Set flag for checking ill-conditioning.
+   *
+   * @param flag True to check for ill-conditioning, false otherwise.
+   */
+  void checkConditioning(const bool flag);
+
+  /** Get flag for checking ill-conditioning.
+   *
+   * @returns True if checking for ill-conditioning, false otherwise.
+   */
+  bool checkConditioning(void) const;
 
   /** Get coordinates of quadrature points in reference cell.
    *
@@ -367,7 +379,6 @@ protected :
 
   CellGeometry* _geometry; ///< Geometry of reference cell
 
-  bool _precomputed;
   /* Precomputation sections */
   int _qTag, _jTag, _jDTag, _jITag, _bTag;
   Obj<real_section_type> _quadPtsPre;
@@ -375,6 +386,9 @@ protected :
   Obj<real_section_type> _jacobianDetPre;
   Obj<real_section_type> _jacobianInvPre;
   Obj<real_section_type> _basisDerivPre;
+
+  bool _precomputed; ///< True if we have computed geometry info
+  bool _checkConditioning; ///< True if checking for ill-conditioning
 }; // Quadrature
 
 #include "Quadrature.icc" // inline methods
