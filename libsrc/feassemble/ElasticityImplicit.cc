@@ -21,7 +21,7 @@
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 #include "pylith/utils/array.hh" // USES double_array
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
-#include "pylith/utils/blas.h" // USES dgesvd
+#include "pylith/utils/lapack.h" // USES LAPACKdgesvd
 
 #include "petscmat.h" // USES PetscMat
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -421,8 +421,9 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
       const int n2 = n*n;
       for (int i = 0; i < n2; ++i)
 	elemMat[i] = _cellMatrix[i];
-      dgesvd("N", "N", &n, &n, elemMat, &n, svalues, 
-	     &sdummy, &idummy, &sdummy, &idummy, work, &lwork, &lierr);
+      LAPACKdgesvd("N", "N", &n, &n, elemMat, &n, svalues, 
+		   &sdummy, &idummy, &sdummy, &idummy, work,
+		   &lwork, &lierr);
       if (lierr)
 	throw std::runtime_error("Lapack SVD failed");
       minSV = svalues[n-1];
