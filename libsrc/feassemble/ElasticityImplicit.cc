@@ -421,9 +421,9 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
       const int n2 = n*n;
       for (int i = 0; i < n2; ++i)
 	elemMat[i] = _cellMatrix[i];
-      LAPACKdgesvd("N", "N", &n, &n, elemMat, &n, svalues, 
-		   &sdummy, &idummy, &sdummy, &idummy, work,
-		   &lwork, &lierr);
+      lapack_dgesvd("N", "N", &n, &n, elemMat, &n, svalues, 
+		    &sdummy, &idummy, &sdummy, &idummy, work,
+		    &lwork, &lierr);
       if (lierr)
 	throw std::runtime_error("Lapack SVD failed");
       minSV = svalues[n-1];
