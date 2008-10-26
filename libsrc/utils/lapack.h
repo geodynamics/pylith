@@ -20,21 +20,23 @@
 #if !defined(pylith_utils_lapack_h)
 #define pylith_utils_lapack_h
 
+#define lapack_dgesvd dgesvd_
+
 extern "C" {
-  EXTERN void LAPACKdgesvd(const char*,
-			   const char*,
-			   PetscBLASInt*,
-			   PetscBLASInt*,
-			   PetscScalar*,
-			   PetscBLASInt*,
-			   PetscReal*,
-			   PetscScalar*,
-			   PetscBLASInt*,
-			   PetscScalar*,
-			   PetscBLASInt*,
-			   PetscScalar*,
-			   PetscBLASInt*,
-			   PetscBLASInt*);
+  EXTERN void lapack_dgesvd(const char*,
+			    const char*,
+			    PetscBLASInt*,
+			    PetscBLASInt*,
+			    PetscScalar*,
+			    PetscBLASInt*,
+			    PetscReal*,
+			    PetscScalar*,
+			    PetscBLASInt*,
+			    PetscScalar*,
+			    PetscBLASInt*,
+			    PetscScalar*,
+			    PetscBLASInt*,
+			    PetscBLASInt*);
 }
 
 #endif // pylith_utils_lapack_h
