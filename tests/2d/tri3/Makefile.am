@@ -23,20 +23,23 @@ noinst_DATA = \
 	box_tri3_100m.exo \
 	matprops.spatialdb \
 	axialplanestrain.cfg \
-	axialx.spatialdb \
-	axialy.spatialdb \
 	shearplanestrain.cfg \
-	shearxy.spatialdb \
 	dislocation.cfg \
-	dislocation_disp.spatialdb \
-	dislocation_sliprate.spatialdb \
 	dislocation_slip.spatialdb \
 	dislocation_sliptime.spatialdb
 
 noinst_TMP = \
 	axialplanestrain_t0000000.vtk \
 	axialplanestrain-statevars-elastic_info.vtk \
-	axialplanestrain-statevars-elastic_t0000000.vtk
+	axialplanestrain-statevars-elastic_t0000000.vtk \
+	shearplanestrain_t0000000.vtk \
+	shearplanestrain-statevars-elastic_info.vtk \
+	shearplanestrain-statevars-elastic_t0000000.vtk \
+	dislocation_t0000000.vtk \
+	dislocation-statevars-elastic_info.vtk \
+	dislocation-statevars-elastic_t0000000.vtk \
+	dislocation-fault_info.vtk \
+	dislocation-fault_t0000000.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)

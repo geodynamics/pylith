@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/2d/tri3/TestDislocationPlaneStrain.py
+## @file tests/2d/tri3/TestDislocation.py
 ##
 ## @brief Test suite for testing pylith with shear dislocation for 2-D
 ## box.
@@ -20,9 +20,8 @@ import unittest
 # Local application
 from pylith.PyLithApp import PyLithApp
 class DislocationApp(PyLithApp):
-
-  def __init__(self, name="dislocation"):
-    PyLithApp.__init__(self, name)
+  def __init__(self):
+    PyLithApp.__init__(self, name="dislocation")
     return
 
 
@@ -38,7 +37,7 @@ def run_pylith():
   return
 
 
-class TestDislocationPlaneStrain(unittest.TestCase):
+class TestDislocation(unittest.TestCase):
   """
   Test suite for testing pylith with shear dislocation for 2-D box.
   """
