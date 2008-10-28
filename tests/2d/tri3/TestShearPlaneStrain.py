@@ -16,16 +16,22 @@
 ## 2-D box.
 
 import unittest
-import numpy
-import tables
 
+# Local version of PyLithApp
+from pylith.PyLithApp import PyLithApp
+class ShearPlaneStrainApp(PyLithApp):
+  def __init__(self):
+    PyLithApp.__init__(self, name="shearplanestrain")
+    return
+
+
+# Helper function to run PyLith
 def run_pylith():
   """
   Run pylith.
   """
   if not "done" in dir(run_pylith):
-    from pylith.PyLithApp import PyLithApp
-    app = PyLithApp("shearplanestrain")
+    app = ShearPlaneStrainApp()
     app.run()
     run_pylith.done = True
   return
