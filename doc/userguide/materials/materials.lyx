@@ -141,8 +141,8 @@ The material property group associates a material model (label for the material,
  defined the number of groups and associated information for each group.
  This was necessary because previous versions of Pyre did not support dynamic
  arrays of components, and it was necessary to predefine these arrays.
- The current version of Pythia (0.8.1.5) does support this, however, and it
- is now possible to define material property groups using a 
+ More recent versions of Pythia do support this, however, and it is now
+ possible to define material property groups using a 
 \family typewriter
 .cfg
 \family default
@@ -457,6 +457,151 @@ reference "tab:material-model-statevars"
  as described below).
  Similarly, there are three sets of viscous-strain values for the generalized
  Maxwell model.
+\end_layout
+
+\begin_layout Subsection
+Composite Material Databases
+\end_layout
+
+\begin_layout Standard
+In some cases we may want to retrieve material properties from more than
+ one database.
+ The most common example would be when we have separate databases to describe
+ the elastic and inelastic properties.
+ An example would be:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.maxwell_lower]
+\end_layout
+
+\begin_layout LyX-Code
+label = Lower Maxwell material
+\end_layout
+
+\begin_layout LyX-Code
+id = 1
+\end_layout
+
+\begin_layout LyX-Code
+db = spatialdata.spatialdb.CompositeDB
+\end_layout
+
+\begin_layout LyX-Code
+db.db_A = spatialdata.spatialdb.SCECCVMH
+\end_layout
+
+\begin_layout LyX-Code
+db.db_B = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+quadrature = pylith.feassemble.quadrature.Quadrature3D
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell = pylith.feassemble.FIATSimplex
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell.shape = tetrahedron
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.maxwell_lower.db]
+\end_layout
+
+\begin_layout LyX-Code
+values_A = [density,vs,vp]
+\end_layout
+
+\begin_layout LyX-Code
+db_A.label = Elastic properties from CVM-H
+\end_layout
+
+\begin_layout LyX-Code
+db_A.data_dir = /Users/willic3/geoframe/tools/vx53/bin
+\end_layout
+
+\begin_layout LyX-Code
+db_A.squash = False
+\end_layout
+
+\begin_layout LyX-Code
+values_B = [viscosity]
+\end_layout
+
+\begin_layout LyX-Code
+db_B.label = Vertically varying Maxwell material
+\end_layout
+
+\begin_layout LyX-Code
+db_B.iohandler.filename = ../spatialdb/mat_vert_var_maxwell.spatialdb
+\end_layout
+
+\begin_layout Standard
+Here we have specified a 
+\family typewriter
+CompositeDB
+\family default
+ where the elastic properties (
+\family typewriter
+density
+\family default
+, 
+\family typewriter
+vs
+\family default
+, 
+\family typewriter
+vp
+\family default
+) are given by SCEC CVM-H, and 
+\family typewriter
+viscosity
+\family default
+ is described by a 
+\family typewriter
+SimpleDB
+\family default
+ (
+\family typewriter
+mat_vert_var_maxwell.spatialdb
+\family default
+).
+ The user must first specify the db as a 
+\family typewriter
+CompositeDB
+\family default
+, and must then give the two components of this database (
+\family typewriter
+SCECCVMH
+\family default
+ and 
+\family typewriter
+SimpleDB
+\family default
+).
+ It is then necessary to list the values specified in each of the two component
+ databases (
+\family typewriter
+values_A
+\family default
+ and 
+\family typewriter
+values_B
+\family default
+), and then provide the necessary information describing each of these databases.
+ The 
+\family typewriter
+CompositeDB
+\family default
+ provides a flexible mechanism for specifying material properties where
+ the variations come from two different sources.
 \end_layout
 
 \begin_layout Standard
@@ -1822,8 +1967,9 @@ reference "fig:Material-models"
 \end_inset
 
 .
- PyLith 1.1 includes the specific case of a standard Maxwell model as well
- as a model consisting of a spring in parallel with three Maxwell models.
+ PyLith versions greater than 1.1 include the specific case of a standard
+ Maxwell model as well as a model consisting of a spring in parallel with
+ three Maxwell models.
  A number of common material models may be obtained from this model by setting
  the shear moduli of various springs to zero, such as the Maxwell model,
  the Kelvin model, and the standard linear solid.
@@ -2159,6 +2305,8 @@ key "Kojic:Bathe:1987"
 
  may be employed for both a linear Maxwell model and a power-law Maxwell
  model.
+ Note that this formulation is not presently employed for either linear
+ or power-law models in PyLith 1.3, but it may be employed in future versions.
  For the viscoelastic materials considered here, the viscous volumetric
  strains are zero (incompressible flow), and it is convenient to separate
  the general stress-strain relationship at time 
@@ -2489,7 +2637,7 @@ reference "eq:63"
 \end_inset
 
  should thus be used when forming the stiffness matrix.
- We do not presently use this formulation in PyLith 1.1, but it may be included
+ We do not presently use this formulation in PyLith 1.3, but it may be included
  in future versions.
 \end_layout
 
@@ -2780,9 +2928,9 @@ reference "eq:69"
 \end_layout
 
 \begin_layout Standard
-PyLith does not presently include power-law viscoelasticity, but we plan
- to provide the effective stress function formulation as one possible implementa
-tion of a power-law Maxwell viscoelastic material.
+PyLith 1.3 does not include power-law viscoelasticity, but we plan to provide
+ the effective stress function formulation as one possible implementation
+ of a power-law Maxwell viscoelastic material.
 \end_layout
 
 \begin_layout Section
