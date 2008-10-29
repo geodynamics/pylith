@@ -1,4 +1,4 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1697,6 +1697,158 @@ squash_limit = -1000.0 ; Only distort the geometry above z = -1 km in flattening
  the 
 \newline
 earth
+\end_layout
+
+\begin_layout Subsection
+CompositeDB Spatial Database
+\end_layout
+
+\begin_layout Standard
+For some problems, a boundary condition or material property may have subsets
+ with different spatial variations.
+ One example would be when we have separate databases to describe the elastic
+ and inelastic bulk material properties for a region.
+ In this case, it would be useful to have two different spatial databases
+ to describe the different variations.
+ We can use the 
+\family typewriter
+CompositeDB
+\family default
+ spatial database for these sorts of problems.
+ An example would be:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.maxwell_lower]
+\end_layout
+
+\begin_layout LyX-Code
+label = Lower Maxwell material
+\end_layout
+
+\begin_layout LyX-Code
+id = 1
+\end_layout
+
+\begin_layout LyX-Code
+db = spatialdata.spatialdb.CompositeDB
+\end_layout
+
+\begin_layout LyX-Code
+db.db_A = spatialdata.spatialdb.SCECCVMH
+\end_layout
+
+\begin_layout LyX-Code
+db.db_B = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+quadrature = pylith.feassemble.quadrature.Quadrature3D
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell = pylith.feassemble.FIATSimplex
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell.shape = tetrahedron
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.maxwell_lower.db]
+\end_layout
+
+\begin_layout LyX-Code
+values_A = [density,vs,vp]
+\end_layout
+
+\begin_layout LyX-Code
+db_A.label = Elastic properties from CVM-H
+\end_layout
+
+\begin_layout LyX-Code
+db_A.data_dir = /Users/willic3/geoframe/tools/vx53/bin
+\end_layout
+
+\begin_layout LyX-Code
+db_A.squash = False
+\end_layout
+
+\begin_layout LyX-Code
+values_B = [viscosity]
+\end_layout
+
+\begin_layout LyX-Code
+db_B.label = Vertically varying Maxwell material
+\end_layout
+
+\begin_layout LyX-Code
+db_B.iohandler.filename = ../spatialdb/mat_vert_var_maxwell.spatialdb
+\end_layout
+
+\begin_layout Standard
+Here we have specified a 
+\family typewriter
+CompositeDB
+\family default
+ where the elastic properties (
+\family typewriter
+density
+\family default
+, 
+\family typewriter
+vs
+\family default
+, 
+\family typewriter
+vp
+\family default
+) are given by SCEC CVM-H, and 
+\family typewriter
+viscosity
+\family default
+ is described by a 
+\family typewriter
+SimpleDB
+\family default
+ (
+\family typewriter
+mat_vert_var_maxwell.spatialdb
+\family default
+).
+ The user must first specify the db as a 
+\family typewriter
+CompositeDB
+\family default
+, and must then give the two components of this database (
+\family typewriter
+SCECCVMH
+\family default
+ and 
+\family typewriter
+SimpleDB
+\family default
+).
+ It is then necessary to list the values specified in each of the two component
+ databases (
+\family typewriter
+values_A
+\family default
+ and 
+\family typewriter
+values_B
+\family default
+), and then provide the necessary information describing each of these databases.
+ The 
+\family typewriter
+CompositeDB
+\family default
+ provides a flexible mechanism for specifying material properties where
+ the variations come from two different sources.
 \end_layout
 
 \begin_layout Section
