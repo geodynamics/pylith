@@ -89,6 +89,31 @@ public :
    */
   void eventEnd(const int id);
 
+  /** Register stage.
+   *
+   * @prerequisite Must call initialize() before registerStage().
+   * 
+   * @param name Name of stage.
+   * @returns Stage identifier.
+   */
+  int registerStage(const char* name);
+
+  /** Get stage identifier.
+   *
+   * @param name Name of stage.
+   * @returns Stage identifier.
+   */
+  int stageId(const char* name);
+
+  /** Log stage begin.
+   *
+   * @param id Stage identifier.
+   */
+  void stagePush(const int id);
+
+  /// Log stage end.
+  void stagePop(void);
+
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
@@ -106,6 +131,7 @@ private :
   std::string _className; ///< Name of logging class
   int _classId; ///< PETSc logging identifier for class
   map_event_type _events; ///< PETSc logging identifiers for events
+  map_event_type _stages; ///< PETSc logging identifiers for stages
 
 }; // EventLogger
 

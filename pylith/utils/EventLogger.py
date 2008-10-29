@@ -103,6 +103,40 @@ class EventLogger(object):
     return
 
 
+  def registerStage(self, name):
+    """
+    Register stage.
+    """
+    assert(None != self.cppHandle)
+    return self.cppHandle.registerStage(name)
+
+
+  def stageId(self, name):
+    """
+    Get stage identifier.
+    """    
+    assert(None != self.cppHandle)
+    return self.cppHandle.stageId(name)
+
+
+  def stagePush(self, name):
+    """
+    Log stage begin.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.stagePush(self.cppHandle.eventId(name))
+    return
+
+
+  def stagePop(self):
+    """
+    Log stage end.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.stagePop()
+    return
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _createCppHandle(self):
