@@ -285,22 +285,27 @@ pylith::feassemble::Quadrature::precomputeGeometry(
                                                       *std::max_element(cells->begin(), cells->end())+1));
   _quadPtsPre->setFiberDimension(cells, _numQuadPts*_spaceDim);
   _quadPtsPre->allocatePoint();
+  _quadPtsPreV = new ALE::ISieveVisitor::RestrictVisitor<real_section_type>(*_quadPtsPre, _numQuadPts*_spaceDim, &_quadPts[0]);
   _jacobianPre->getAtlas()->setAtlas(_quadPtsPre->getAtlas()->getAtlas());
   _jacobianPre->getAtlas()->allocatePoint();
   _jacobianPre->setFiberDimension(cells, _numQuadPts*_cellDim*_spaceDim);
   _jacobianPre->allocatePoint();
+  _jacobianPreV = new ALE::ISieveVisitor::RestrictVisitor<real_section_type>(*_jacobianPre, _numQuadPts*_cellDim*_spaceDim, &_jacobian[0]);
   _jacobianDetPre->getAtlas()->setAtlas(_quadPtsPre->getAtlas()->getAtlas());
   _jacobianDetPre->getAtlas()->allocatePoint();
   _jacobianDetPre->setFiberDimension(cells, _numQuadPts);
   _jacobianDetPre->allocatePoint();
+  _jacobianDetPreV = new ALE::ISieveVisitor::RestrictVisitor<real_section_type>(*_jacobianDetPre, _numQuadPts, &_jacobianDet[0]);
   _jacobianInvPre->setAtlas(_jacobianPre->getAtlas());
   _jacobianInvPre->setFiberDimension(cells, _numQuadPts*_cellDim*_spaceDim);
   _jacobianInvPre->allocatePoint();
+  _jacobianInvPreV = new ALE::ISieveVisitor::RestrictVisitor<real_section_type>(*_jacobianInvPre, _numQuadPts*_cellDim*_spaceDim, &_jacobianInv[0]);
   //_jITag = _jacobianInvPre->copyCustomAtlas(_jacobianPre, _jTag);
   _basisDerivPre->getAtlas()->setAtlas(_quadPtsPre->getAtlas()->getAtlas());
   _basisDerivPre->getAtlas()->allocatePoint();
   _basisDerivPre->setFiberDimension(cells, _numQuadPts*_numBasis*_spaceDim);
   _basisDerivPre->allocatePoint();
+  _basisDerivPreV = new ALE::ISieveVisitor::RestrictVisitor<real_section_type>(*_basisDerivPre, _numQuadPts*_numBasis*_spaceDim, &_basisDeriv[0]);
 
   const int ncells = cells->size();
   const int nbytes = 
@@ -349,31 +354,20 @@ pylith::feassemble::Quadrature::retrieveGeometry(
 			      const Mesh::point_type& cell,
 			      const int c)
 { // retrieveGeometry
-  const real_section_type::value_type* values =
-    mesh->restrictClosure(_quadPtsPre, cell);
-  int size = _numQuadPts * _spaceDim;
-  assert(size == _quadPtsPre->getFiberDimension(cell));
-  memcpy(&_quadPts[0], &values[0], size*sizeof(double));
+  _quadPtsPreV->clear();
+  mesh->restrictClosure(cell, *_quadPtsPreV);
 
-  values = mesh->restrictClosure(_jacobianPre, cell);
-  size = _numQuadPts * _cellDim * _spaceDim;
-  assert(size == _jacobianPre->getFiberDimension(cell));
-  memcpy(&_jacobian[0], &values[0], size*sizeof(double));
+  _jacobianPreV->clear();
+  mesh->restrictClosure(cell, *_jacobianPreV);
 
-  values = mesh->restrictClosure(_jacobianDetPre, cell);
-  size = _numQuadPts;
-  assert(size == _jacobianDetPre->getFiberDimension(cell));
-  memcpy(&_jacobianDet[0], &values[0], size*sizeof(double));
+  _jacobianDetPreV->clear();
+  mesh->restrictClosure(cell, *_jacobianDetPreV);
 
-  values = mesh->restrictClosure(_jacobianInvPre, cell);
-  size = _numQuadPts * _cellDim * _spaceDim;
-  assert(size == _jacobianInvPre->getFiberDimension(cell));
-  memcpy(&_jacobianInv[0], &values[0], size*sizeof(double));
+  _jacobianInvPreV->clear();
+  mesh->restrictClosure(cell, *_jacobianInvPreV);
 
-  values = mesh->restrictClosure(_basisDerivPre, cell);
-  size = _numQuadPts * _numBasis * _spaceDim;
-  assert(size == _basisDerivPre->getFiberDimension(cell));
-  memcpy(&_basisDeriv[0], &values[0], size*sizeof(double));
+  _basisDerivPreV->clear();
+  mesh->restrictClosure(cell, *_basisDerivPreV);
 } // retrieveGeometry
 
 // End of file 
