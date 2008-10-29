@@ -39,10 +39,23 @@ pylith::utils::EventLogger::eventBegin(const int id) {
 // Log event end.
 inline
 void
-pylith::utils::EventLogger::eventEnd(const int id)
-{ // eventEnd
+pylith::utils::EventLogger::eventEnd(const int id) {
   PetscLogEventEnd(id, 0, 0, 0, 0);
 } // eventEnd
+
+// Log stage begin.
+inline
+void
+pylith::utils::EventLogger::stagePush(const int id) {
+  PetscLogStagePush(id);
+} // stagePush
+  
+// Log stage end.
+inline
+void
+pylith::utils::EventLogger::stagePop(void) {
+  PetscLogStagePop();
+} // stagePop
 
 
 // End of file 

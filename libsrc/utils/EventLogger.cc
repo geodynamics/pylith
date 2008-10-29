@@ -84,5 +84,37 @@ pylith::utils::EventLogger::eventId(const char* name)
   return id->second;
 } // eventId
 
+// ----------------------------------------------------------------------
+// Register stage.
+int
+pylith::utils::EventLogger::registerStage(const char* name)
+{ // registerStage
+  assert(0 != _classId);
+  int id = 0;
+  PetscErrorCode err = PetscLogStageRegister(name, &id);
+  if (err) {
+    std::ostringstream msg;
+    msg << "Could not register logging stage '" << name << "'.";
+    throw std::runtime_error(msg.str());
+  } // if  
+  _stages[name] = id;
+  return id;
+} // registerStage
+
+// ----------------------------------------------------------------------
+// Get stage identifier.
+int
+pylith::utils::EventLogger::stageId(const char* name)
+{ // stageId
+  map_event_type::iterator id = _stages.find(name);
+  if (id == _stages.end()) {
+    std::ostringstream msg;
+    msg << "Could not find logging stage '" << name << "'.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  return id->second;
+} // stagesId
+
 
 // End of file 
