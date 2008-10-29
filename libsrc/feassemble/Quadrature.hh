@@ -382,10 +382,15 @@ protected :
   /* Precomputation sections */
   int _qTag, _jTag, _jDTag, _jITag, _bTag;
   Obj<real_section_type> _quadPtsPre;
+  Obj<ALE::ISieveVisitor::RestrictVisitor<real_section_type> > _quadPtsPreV;
   Obj<real_section_type> _jacobianPre;
+  Obj<ALE::ISieveVisitor::RestrictVisitor<real_section_type> > _jacobianPreV;
   Obj<real_section_type> _jacobianDetPre;
+  Obj<ALE::ISieveVisitor::RestrictVisitor<real_section_type> > _jacobianDetPreV;
   Obj<real_section_type> _jacobianInvPre;
+  Obj<ALE::ISieveVisitor::RestrictVisitor<real_section_type> > _jacobianInvPreV;
   Obj<real_section_type> _basisDerivPre;
+  Obj<ALE::ISieveVisitor::RestrictVisitor<real_section_type> > _basisDerivPreV;
 
   bool _precomputed; ///< True if we have computed geometry info
   bool _checkConditioning; ///< True if checking for ill-conditioning

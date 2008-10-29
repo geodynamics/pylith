@@ -195,6 +195,12 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   totalStrain = 0.0;
   PetscLogEventEnd(setupEvent,0,0,0,0);
 
+  ALE::ISieveVisitor::RestrictVisitor<real_section_type> rV(*dispTBctpdt, cellVecSize, &dispTBctpdtCell[0]);
+  if (mesh->depth() > 1) {
+    //ISieveVisitor::PointRetriever<sieve_type,ISieveVisitor::RestrictVisitor<Section> > pV((int) pow((double) mesh->getSieve()->getMaxConeSize(), this->depth())+1, rV, true);
+    throw ALE::Exception("Need to reorganize to use a different visitor class");
+  }
+
   // Loop over cells
   int c_index = 0;
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
@@ -215,7 +221,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
     // Restrict input fields to cell
     PetscLogEventBegin(restrictEvent,0,0,0,0);
-    mesh->restrictClosure(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
+    mesh->restrictClosure(*c_iter, rV);
     PetscLogEventEnd(restrictEvent,0,0,0,0);
 
     // Get cell geometry information that depends on cell
@@ -278,6 +284,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     PetscLogEventBegin(updateEvent,0,0,0,0);
     mesh->updateAdd(residual, *c_iter, _cellVector);
     PetscLogEventEnd(updateEvent,0,0,0,0);
+    rV.clear();
   } // for
 } // integrateResidual
 
@@ -373,6 +380,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   assert(!globalOrder.isNull());
   // We would need to request unique points here if we had an interpolated mesh
   visitor_type iV(*dispTBctpdt, *globalOrder, (int) pow(mesh->getSieve()->getMaxConeSize(), mesh->depth())*spaceDim);
+  ALE::ISieveVisitor::RestrictVisitor<real_section_type> rV(*dispTBctpdt, cellVecSize, &dispTBctpdtCell[0]);
 
   // Loop over cells
   int c_index = 0;
@@ -389,7 +397,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     _resetCellMatrix();
 
     // Restrict input fields to cell
-    mesh->restrictClosure(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
+    mesh->restrictClosure(*c_iter, rV);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -426,7 +434,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 		    &lwork, &lierr);
       if (lierr)
 	throw std::runtime_error("Lapack SVD failed");
-      minSV = svalues[n-1];
+      minSV = svalues[n-7];
       maxSV = svalues[0];
       std::cout << "Element " << c_index << std::endl;
       for(int i = 0; i < n; ++i)
@@ -443,6 +451,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
     iV.clear();
+    rV.clear();
   } // for
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();
