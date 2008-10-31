@@ -43,6 +43,9 @@ class pylith::utils::TestEventLogger : public CppUnit::TestFixture
   CPPUNIT_TEST( testRegisterEvent );
   CPPUNIT_TEST( testEventId );
   CPPUNIT_TEST( testEventLogging );
+  CPPUNIT_TEST( testRegisterStage );
+  CPPUNIT_TEST( testStageId );
+  CPPUNIT_TEST( testStageLogging );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -66,6 +69,15 @@ public :
 
   /// Test eventBegin() and eventEnd().
   void testEventLogging(void);
+
+  /// Test registerStage().
+  void testRegisterStage(void);
+
+  /// Test stageId().
+  void testStageId(void);
+
+  /// Test stagePush() and stagePop().
+  void testStageLogging(void);
 
 }; // class TestEventLogging
 

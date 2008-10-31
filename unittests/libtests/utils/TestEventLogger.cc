@@ -137,5 +137,89 @@ pylith::utils::TestEventLogger::testEventLogging(void)
   logger.eventEnd(event);
 } // testEventLogging
 
+// ----------------------------------------------------------------------
+// Test registerStage().
+void
+pylith::utils::TestEventLogger::testRegisterStage(void)
+{ // testRegisterStage
+  EventLogger logger;
+  logger.className("my class");
+  logger.initialize();
+
+  const char* stages[] = { "stage A", "stage B", "stage C" };
+  const int numStages = 3;
+  int ids[numStages];
+
+  for (int i=0; i < numStages; ++i)
+    ids[i] = logger.registerStage(stages[i]);
+
+  int i = 0;
+  for (EventLogger::map_event_type::iterator s_iter=logger._stages.begin();
+       s_iter != logger._stages.end();
+       ++s_iter, ++i) {
+    CPPUNIT_ASSERT_EQUAL(std::string(stages[i]), s_iter->first);
+    CPPUNIT_ASSERT_EQUAL(ids[i], s_iter->second);
+  } // for
+} // testRegisterStage
+
+// ----------------------------------------------------------------------
+// Test stageId().
+void
+pylith::utils::TestEventLogger::testStageId(void)
+{ // testStageId
+  EventLogger logger;
+  logger.className("my class");
+  logger.initialize();
+
+  const char* stages[] = { "stage A", "stage B", "stage C" };
+  const int numStages = 3;
+
+  for (int i=0; i < numStages; ++i)
+    logger.registerStage(stages[i]);
+
+  const int order[] = { 1, 0, 2 };
+  int ids[numStages];
+  for (int i=0; i < numStages; ++i)
+    ids[order[i]] = logger.stageId(stages[order[i]]);
+
+  int i = 0;
+  for (EventLogger::map_event_type::iterator s_iter=logger._stages.begin();
+       s_iter != logger._stages.end();
+       ++s_iter, ++i)
+    CPPUNIT_ASSERT_EQUAL(s_iter->second, ids[i]);
+} // testStageId
+
+// ----------------------------------------------------------------------
+// Test statePush() and statePop().
+void
+pylith::utils::TestEventLogger::testStageLogging(void)
+{ // testStageLogging
+  EventLogger logger;
+  logger.className("my class");
+  logger.initialize();
+
+  const char* stages[] = { "stage A", "stage B", "stage C" };
+  const int numStages = 3;
+  int ids[numStages];
+
+  for (int i=0; i < numStages; ++i)
+    ids[i] = logger.registerStage(stages[i]);
+
+  int stage = ids[1];
+  logger.stagePush(stage);
+  logger.stagePop();
+
+  stage = ids[0];
+  logger.stagePush(stage);
+  logger.stagePop();
+
+  stage = ids[2];
+  logger.stagePush(stage);
+  int stage2 = ids[0];
+  logger.stagePush(stage2);
+  logger.stagePop();
+  logger.stagePop();
+} // testStageLogging
+
 
 // End of file 

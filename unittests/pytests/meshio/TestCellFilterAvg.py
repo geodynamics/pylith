@@ -46,6 +46,7 @@ class TestCellFilterAvg(unittest.TestCase):
     cell.order = 2
 
     quadrature = Quadrature1D()
+    quadrature._configure()
     quadrature.cell = cell
     quadrature.preinitialize()
     quadrature.initialize()

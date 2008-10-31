@@ -57,6 +57,7 @@ class TestElasticityImplicit(unittest.TestCase):
     cell.order = 1
     from pylith.feassemble.quadrature.Quadrature2D import Quadrature2D
     quadrature = Quadrature2D()
+    quadrature._configure()
     quadrature.cell = cell
     minJacobian = 4.0e-02;
     quadrature.minJacobian = minJacobian
@@ -233,6 +234,7 @@ class TestElasticityImplicit(unittest.TestCase):
     cell.order = 1
     from pylith.feassemble.quadrature.Quadrature2D import Quadrature2D
     quadrature = Quadrature2D()
+    quadrature._configure()
     quadrature.cell = cell
     
     from spatialdata.spatialdb.SimpleDB import SimpleDB

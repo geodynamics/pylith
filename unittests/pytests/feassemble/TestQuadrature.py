@@ -91,6 +91,7 @@ class TestQuadrature(unittest.TestCase):
       iQuad += 1
 
     quadrature = Quadrature1D()
+    quadrature._configure()
     quadrature.cell = cell
 
     quadrature.preinitialize()

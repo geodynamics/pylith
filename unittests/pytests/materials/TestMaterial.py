@@ -34,6 +34,7 @@ class TestMaterial(unittest.TestCase):
 
     from pylith.feassemble.quadrature.Quadrature1D import Quadrature1D
     quadrature = Quadrature1D()
+    quadrature._configure()
     from pylith.feassemble.FIATSimplex import FIATSimplex
     cell = FIATSimplex()
     cell.shape = "line"
