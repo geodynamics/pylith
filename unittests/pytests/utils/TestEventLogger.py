@@ -99,4 +99,47 @@ class TestEventLogger(unittest.TestCase):
     return
 
 
+  def test_registerStage(self):
+    """
+    Test registerStage().
+    """
+    from pylith.utils.EventLogger import EventLogger
+    logger = EventLogger()
+    logger.setClassName("logging A")
+    logger.initialize()
+
+    stages = ["stage 1" , "stage 2" , "stage 3"]
+    id = {}
+    for stage in stages:
+      id[stage] = logger.registerStage(stage)
+    for stage in stages:
+      self.assertEqual(id[stage], logger.stageId(stage))
+    return
+
+
+  def test_stageLogging(self):
+    """
+    Test stagePush() and stagePop().
+    """
+    from pylith.utils.EventLogger import EventLogger
+    logger = EventLogger()
+    logger.setClassName("logging A")
+    logger.initialize()
+    stages = ["stage 1" , "stage 2" , "stage 3"]
+    for stage in stages:
+      logger.registerStage(stage)
+
+    logger.stagePush("stage 2")
+    logger.stagePop()
+
+    logger.stagePush("stage 1")
+    logger.stagePop()
+
+    logger.stagePush("stage 3")
+    logger.stagePush("stage 1")
+    logger.stagePop()
+    logger.stagePop()
+    return
+
+
 # End of file 

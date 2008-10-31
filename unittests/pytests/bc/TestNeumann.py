@@ -191,6 +191,7 @@ class TestNeumann(unittest.TestCase):
     cell.order = 1
     from pylith.feassemble.quadrature.Quadrature1Din2D import Quadrature1Din2D
     quadrature = Quadrature1Din2D()
+    quadrature._configure()
     quadrature.cell = cell
     bc.quadrature = quadrature
 

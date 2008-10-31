@@ -124,7 +124,7 @@ class EventLogger(object):
     Log stage begin.
     """
     assert(None != self.cppHandle)
-    self.cppHandle.stagePush(self.cppHandle.eventId(name))
+    self.cppHandle.stagePush(self.cppHandle.stageId(name))
     return
 
 
