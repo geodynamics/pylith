@@ -63,6 +63,7 @@ class TimeStepUniform(TimeStep):
     Constructor.
     """
     TimeStep.__init__(self, name)
+    self._loggingPrefix = "DtUn "
     return
 
 

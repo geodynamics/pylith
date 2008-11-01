@@ -94,6 +94,7 @@ class TimeStepUser(TimeStep):
     Constructor.
     """
     TimeStep.__init__(self, name)
+    self._loggingPrefix = "DtUs "
     self.steps = []
     self.index = 0
     return
