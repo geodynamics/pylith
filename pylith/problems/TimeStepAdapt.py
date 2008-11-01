@@ -77,6 +77,7 @@ class TimeStepAdapt(TimeStep):
     Constructor.
     """
     TimeStep.__init__(self, name)
+    self._loggingPrefix = "DtAd "
     self.skipped = 0
     return
 
