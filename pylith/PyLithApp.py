@@ -67,6 +67,7 @@ class PyLithApp(Application):
     Constructor.
     """
     Application.__init__(self, name)
+    self._loggingPrefix = "PyLith "
     return
 
 
@@ -80,17 +81,19 @@ class PyLithApp(Application):
     self._debug.log(resourceUsageString())
 
     self._setupLogging()
-    logEvent = "PyLith main"
-    self._logger.eventBegin(logEvent)
+    self._logger.eventBegin("PyLith main")
 
     # Create mesh (adjust to account for interfaces (faults) if necessary)
+    self._logger.stagePush("Meshing")
     interfaces = None
     if "interfaces" in dir(self.problem):
       interfaces = self.problem.interfaces.components()
     mesh = self.mesher.create(interfaces)
     self._debug.log(resourceUsageString())
+    self._logger.stagePop()
 
     # Setup problem, verify configuration, and then initialize
+    self._logger.stagePush("Setup")
     self.problem.preinitialize(mesh)
     self._debug.log(resourceUsageString())
 
@@ -99,14 +102,20 @@ class PyLithApp(Application):
     self.problem.initialize()
     self._debug.log(resourceUsageString())
 
+    self._logger.stagePop()
+
     # Run problem
+    self._logger.stagePush("Run")
     self.problem.run(self)
     self._debug.log(resourceUsageString())
+    self._logger.stagePop()
 
     # Cleanup
+    self._logger.stagePush("Finalize")
     self.problem.finalize()
+    self._logger.stagePop()
     
-    self._logger.eventEnd(logEvent)
+    self._logger.eventEnd("PyLith main")
     self.petsc.finalize()
     return
   
@@ -135,6 +144,13 @@ class PyLithApp(Application):
     logger.setClassName("PyLith")
     logger.initialize()
     logger.registerEvent("PyLith main")
+
+    stages = ["Meshing",
+              "Setup",
+              "Run",
+              "Finalize"]
+    for stage in stages:
+      logger.registerStage(stage)
 
     self._logger = logger
     return
