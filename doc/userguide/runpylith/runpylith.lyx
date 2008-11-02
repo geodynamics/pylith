@@ -1,4 +1,4 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1708,22 +1708,23 @@ For some problems, a boundary condition or material property may have subsets
  with different spatial variations.
  One example would be when we have separate databases to describe the elastic
  and inelastic bulk material properties for a region.
- In this case, it would be useful to have two different spatial databases
- to describe the different variations.
+ In this case, it would be useful to have two different spatial databases,
+ e.g., a seismic velocity model with Vp, Vs, and density values, and another
+ database with the inelastic physical properties.
  We can use the 
 \family typewriter
 CompositeDB
 \family default
- spatial database for these sorts of problems.
+ spatial database for these cases.
  An example would be:
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.timedependent.materials.maxwell_lower]
+[pylithapp.timedependent.materials.maxwell]
 \end_layout
 
 \begin_layout LyX-Code
-label = Lower Maxwell material
+label = Maxwell material
 \end_layout
 
 \begin_layout LyX-Code
@@ -1759,7 +1760,7 @@ quadrature.cell.shape = tetrahedron
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.timedependent.materials.maxwell_lower.db]
+[pylithapp.timedependent.materials.maxwell.db]
 \end_layout
 
 \begin_layout LyX-Code
@@ -1807,7 +1808,7 @@ vs
 \family typewriter
 vp
 \family default
-) are given by SCEC CVM-H, and 
+) are given by the SCEC CVM-H, and 
 \family typewriter
 viscosity
 \family default
@@ -1833,22 +1834,14 @@ SCECCVMH
 SimpleDB
 \family default
 ).
- It is then necessary to list the values specified in each of the two component
- databases (
-\family typewriter
-values_A
-\family default
- and 
-\family typewriter
-values_B
-\family default
-), and then provide the necessary information describing each of these databases.
+ The values to query in each of these databases is also required.
+ This is followed by the usual parameters for each of the spatial databases.
  The 
 \family typewriter
 CompositeDB
 \family default
- provides a flexible mechanism for specifying material properties where
- the variations come from two different sources.
+ provides a flexible mechanism for specifying material properties or boundary
+ conditions where the variations come from two different sources.
 \end_layout
 
 \begin_layout Section
@@ -2522,6 +2515,42 @@ $ which mpirun
 
 \begin_layout Quote
 If it is not, adjust your PATH environment variable accordingly.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+"merlin.DistributionNotFound: Cheetah" error
+\end_layout
+
+\begin_layout Quote
+This error occurs when trying to use the 32-bit linux binary on 64-bit linux
+ systems.
+ One of the Python packages PyLith uses does not know how to determine the
+ system architecture at runtime.
+ The workaround is:
+\end_layout
+
+\begin_layout Enumerate
+Go to the lib/python2.5/site-packages directory.
+\end_layout
+
+\begin_layout Enumerate
+Unzip merlin-1.5-py2.5.egg (if it is a file and not a directory).
+\end_layout
+
+\begin_layout Enumerate
+Go to the merlin directory.
+\end_layout
+
+\begin_layout Enumerate
+Edit __init__.py.
+ Replace line 308 plat = get_platform() with plat = "linux-i686"
+\end_layout
+
+\begin_layout Enumerate
+If merlin-1.5-py2.5.egg is a file, rezip merlin.
+ Go to the site-packages directory and enter "zip -r merlin-1.5-py2.5.egg merlin".
 \end_layout
 
 \begin_layout Itemize
