@@ -1,4 +1,4 @@
-We are pleased to announce release of PyLith version 1.3.0.
+We are pleased to announce release of PyLith version 1.3.1.
 
 Please submit bug reports via the World Wide Web at:
     http://geodynamics.org/roundup    
@@ -30,7 +30,7 @@ and improvements in the near future. Likely enhancements will include
 additional constitutive models for both volume elements and cohesive
 (fault) elements, automatic generation of higher-order elements from
 linear elements, and the generation of Green's functions to be used in
-inversions.  Many of these features should be available in late 2008.
+inversions.  Many of these features should be available in early 2009.
 
 
 ======================================================================
@@ -103,7 +103,23 @@ TIPS
 
 
 ----------------------------------------------------------------------
-Version 1.3
+Version 1.3.1
+----------------------------------------------------------------------
+
+  * Added stages to PETSc logging (--petsc.log_summary=1) to collect
+    event logging into groups.
+
+  * Bug fixes
+
+    - Fixed partitioning options. Partitioning options were ignored in
+      the 1.3.0 release.
+
+    - Fixed assembling of Jacobian, residual, and fault sections
+      across processors. This bug caused errors in the computation of
+      the change in tractions over the fault surface.
+
+----------------------------------------------------------------------
+Version 1.3.0
 ----------------------------------------------------------------------
 
   * New time stepping options
@@ -132,7 +148,7 @@ Version 1.3
       and lambda were switched).
 
 ----------------------------------------------------------------------
-Version 1.2
+Version 1.2.0
 ----------------------------------------------------------------------
 
   * New Sieve implementation
