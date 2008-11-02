@@ -16,6 +16,8 @@
 ## y-direction for 2-D box.
 
 import unittest
+from pylith.utils.VTKDataReader import has_vtk
+from pylith.utils.VTKDataReader import VTKDataReader
 
 # Local version of PyLithApp
 from pylith.PyLithApp import PyLithApp
@@ -48,12 +50,34 @@ class TestAxialPlaneStrain(unittest.TestCase):
     Setup for test.
     """
     run_pylith()
+    if has_vtk():
+      self.reader = VTKDataReader()
+    else:
+      self.reader = None
+    return
+
+  
+  def test_elastic_info(self):
+    """
+    Check elastic info.
+    """
+    if self.reader is None:
+      return
+
+    data = self.reader.read("axialplanestrain-statevars-elastic_info.vtk")
     return
 
 
-  def test_disp(self):
+  def test_soln(self):
     """
-    Check displacement field.
+    Check solution (displacement) field.
+    """
+    return
+
+
+  def test_elastic_statevars(self):
+    """
+    Check elastic state variables.
     """
     return
 
