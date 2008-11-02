@@ -120,6 +120,7 @@ nobase_pkgpyexec_PYTHON = \
 	utils/EmptyBin.py \
 	utils/EventLogger.py \
 	utils/PetscManager.py \
+	utils/VTKDataReader.py \
 	utils/importing.py \
 	utils/profiling.py \
 	utils/testarray.py
