@@ -1,0 +1,31 @@
+======================================================================
+RELEASE CHECKLIST
+======================================================================
+
+TESTING
+
+  * Check unit tests on all buildbots.
+
+  * Run all examples.
+
+  * Run benchmarks.
+
+MANUAL
+
+  * Increment version number.
+
+SOURCE CODE
+
+  * Increment version number in configure.ac.
+
+  * Add changes to README.
+
+  * Add release notes in doc/releasenotes.
+
+DISTRIBUTIONS
+
+  * Generate binaries on buildbots. Check on various platforms.
+
+  * Get petsc-dev nightly tarball.
+
+  * Get PyLith source code.
