@@ -12,7 +12,11 @@ TESTING
 
 MANUAL
 
-  * Increment version number.
+  * Increment version number on cover.
+
+  * Increment version in userguide.lyx.
+
+  * Updated version numbers in install.lyx.
 
 SOURCE CODE
 
