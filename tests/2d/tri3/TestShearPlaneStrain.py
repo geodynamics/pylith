@@ -16,6 +16,8 @@
 ## 2-D box.
 
 import unittest
+from pylith.utils.VTKDataReader import has_vtk
+from pylith.utils.VTKDataReader import VTKDataReader
 
 # Local version of PyLithApp
 from pylith.PyLithApp import PyLithApp
@@ -47,12 +49,34 @@ class TestShearPlaneStrain(unittest.TestCase):
     Setup for test.
     """
     run_pylith()
+    if has_vtk():
+      self.reader = VTKDataReader()
+    else:
+      self.reader = None
     return
 
 
-  def test_disp(self):
+  def test_elastic_info(self):
     """
-    Check displacement field.
+    Check elastic info.
+    """
+    if self.reader is None:
+      return
+
+    data = self.reader.read("axialplanestrain-statevars-elastic_info.vtk")
+    return
+
+
+  def test_soln(self):
+    """
+    Check solution (displacement) field.
+    """
+    return
+
+
+  def test_elastic_statevars(self):
+    """
+    Check elastic state variables.
     """
     return
 
