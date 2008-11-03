@@ -412,6 +412,7 @@ class Formulation(Component):
     Reform Jacobian matrix for operator.
     """
     self._debug.log(resourceUsageString())
+    self._logger.stagePush("Reform Jacobian")
     import pylith.utils.petsc as petsc
     petsc.mat_setzero(self.jacobian)
 
@@ -433,6 +434,7 @@ class Formulation(Component):
       self._debug.log(resourceUsageString()) # TEMPORARY
     self._info.log("Doing final assembly of Jacobian of operator.")
     petsc.mat_assemble(self.jacobian, "final_assembly")
+    self._logger.stagePop()
 
     if self.viewJacobian:
       filename = self._createJacobianFilename(t+dt)
@@ -462,6 +464,7 @@ class Formulation(Component):
     Reform residual vector for operator.
     """
     self._info.log("Integrating residual term in operator.")
+    self._logger.stagePush("Reform Residual")
     residual = self.fields.getReal("residual")
     import pylith.topology.topology as bindings
     bindings.zeroRealSection(residual)
@@ -479,6 +482,7 @@ class Formulation(Component):
       integrator.timeStep(dt)
       integrator.integrateResidualAssembled(residual, t, self.fields)
 
+    self._logger.stagePop()
     return
 
 
@@ -504,6 +508,12 @@ class Formulation(Component):
               "finalize"]
     for event in events:
       logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+
+    stages = ["Reform Jacobian",
+              "Reform Residual",
+              "Solve"]
+    for stage in stages:
+      logger.registerStage(stage)
 
     self._logger = logger
     return
