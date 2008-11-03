@@ -73,15 +73,15 @@ pylith::utils::EventLogger::registerEvent(const char* name)
 int
 pylith::utils::EventLogger::eventId(const char* name)
 { // eventId
-  map_event_type::iterator id = _events.find(name);
-  if (id == _events.end()) {
+  map_event_type::iterator iter = _events.find(name);
+  if (iter == _events.end()) {
     std::ostringstream msg;
     msg << "Could not find logging event '" << name
 	<< "' in logging class '" << _className << "'.";
     throw std::runtime_error(msg.str());
   } // if
 
-  return id->second;
+  return iter->second;
 } // eventId
 
 // ----------------------------------------------------------------------
@@ -98,6 +98,7 @@ pylith::utils::EventLogger::registerStage(const char* name)
     throw std::runtime_error(msg.str());
   } // if  
   _stages[name] = id;
+
   return id;
 } // registerStage
 
@@ -106,14 +107,14 @@ pylith::utils::EventLogger::registerStage(const char* name)
 int
 pylith::utils::EventLogger::stageId(const char* name)
 { // stageId
-  map_event_type::iterator id = _stages.find(name);
-  if (id == _stages.end()) {
+  map_event_type::iterator iter = _stages.find(name);
+  if (iter == _stages.end()) {
     std::ostringstream msg;
     msg << "Could not find logging stage '" << name << "'.";
     throw std::runtime_error(msg.str());
   } // if
 
-  return id->second;
+  return iter->second;
 } // stagesId
 
 

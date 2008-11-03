@@ -189,7 +189,9 @@ class Implicit(Formulation):
 
     self._info.log("Solving equations.")
     residual = self.fields.getReal("residual")
+    self._logger.stagePush("Solve")
     self.solver.solve(dispIncr, self.jacobian, residual)
+    self._logger.stagePop()
 
     # BEGIN TEMPORARY
     #import pylith.topology.topology as bindings
