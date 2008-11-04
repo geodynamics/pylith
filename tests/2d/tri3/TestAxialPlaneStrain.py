@@ -65,6 +65,23 @@ class TestAxialPlaneStrain(unittest.TestCase):
       return
 
     data = self.reader.read("axialplanestrain-statevars-elastic_info.vtk")
+
+    # Check cells
+    ncellsE = 84
+    ncornersE = 3
+    (ncells, ncorners) = data['cells'].shape
+    self.assertEqual(ncellsE, ncells)
+    self.assertEqual(ncornersE, ncorners)
+
+    # Check vertices
+    nverticesE = 54
+    spaceDimE = 3
+    (nvertices, spaceDim) = data['vertices'].shape
+    self.assertEqual(nverticesE, nvertices)
+    self.assertEqual(spaceDimE, spaceDim)
+
+    # Check displacement solution
+    
     return
 
 
