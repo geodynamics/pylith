@@ -14,6 +14,8 @@
 ##
 ## @brief Object for reading VTK data file.
 
+import numpy
+
 def has_vtk():
   if not "flag" in dir(has_vtk):
     try:
@@ -44,15 +46,42 @@ class VTKDataReader(object):
     reader.file_name = "axialplanestrain-statevars-elastic_info.vtk"
     err = reader.update()
     data = reader.get_output()
-    cells = data.get_cells().to_array()
-
-
-    data = {'vertices': None,
-            'cells': None,
-            'vertex_fields': None,
-            'cell_fields': None,
+    
+    
+    data = {'vertices': self._getVertices(data),
+            'cells': self._getCells(data),
+            'vertex_fields': self._getVertexFields(data),
+            'cell_fields': self._getCellFields(data),
             }
     return data
+
+
+  def _getVertices(self, data):
+    vertices = data.points.to_array()
+    return vertices
+
+
+  def _getCells(self, data):
+    cells = data.get_cells().to_array()
+    cellTypes = data.cell_types_array.to_array()
+    ncells = data.number_of_cells
+    id = cellTypes[0]
+    if numpy.sum(cellTypes-id) != 0:
+      raise ValueError("Expecting cells to all be the same type.")
+    if id == 5:
+      ncorners = 3
+    else:
+      raise ValueError("Unknown VTK cell type '%d'." % id)
+    cells = cells.reshape( (ncells, 1+ncorners) )[:,1:1+ncorners]
+    return cells
+
+
+  def _getVertexFields(self, data):
+    return
+
+
+  def _getCellFields(self, data):
+    return
 
 
 # End of file 
