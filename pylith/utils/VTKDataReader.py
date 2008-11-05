@@ -43,7 +43,11 @@ class VTKDataReader(object):
   def read(self, filename):
     from enthought.tvtk.api import tvtk
     reader = tvtk.UnstructuredGridReader()
-    reader.file_name = "axialplanestrain-statevars-elastic_info.vtk"
+    reader.file_name = filename
+    reader.read_all_scalars = True
+    reader.read_all_vectors = True
+    reader.read_all_tensors = True
+    reader.read_all_fields = True
     err = reader.update()
     data = reader.get_output()
     
@@ -77,11 +81,25 @@ class VTKDataReader(object):
 
 
   def _getVertexFields(self, data):
-    return
+    fields = {}
+    ptdata = data.point_data
+    nfields = ptdata.number_of_arrays
+    for i in xrange(nfields):
+      name = ptdata.get_array_name(i)
+      field = ptdata.get_array(name).to_array()
+      fields[name] = field
+    return fields
 
 
   def _getCellFields(self, data):
-    return
+    fields = {}
+    cdata = data.cell_data
+    nfields = cdata.number_of_arrays
+    for i in xrange(nfields):
+      name = cdata.get_array_name(i)
+      field = cdata.get_array(name).to_array()
+      fields[name] = field
+    return fields
 
 
 # End of file 

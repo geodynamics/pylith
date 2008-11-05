@@ -16,6 +16,7 @@
 ## y-direction for 2-D box.
 
 import unittest
+import numpy
 from pylith.utils.VTKDataReader import has_vtk
 from pylith.utils.VTKDataReader import VTKDataReader
 
@@ -80,8 +81,34 @@ class TestAxialPlaneStrain(unittest.TestCase):
     self.assertEqual(nverticesE, nvertices)
     self.assertEqual(spaceDimE, spaceDim)
 
-    # Check displacement solution
-    
+    # Check physical properties
+    tolerance = 1.0e-5
+    vsE = 3000.0
+    vpE = 5291.502622129181
+    densityE = 2500.0
+
+    # Lame's constant mu (shear modulus)
+    muE = densityE*vsE**2
+    diff = numpy.abs(1.0 - data['cell_fields']['mu']/muE)
+    okay = diff < tolerance
+    if numpy.sum(okay) != ncells:
+      print "Lame's constant mu: ",data['cell_fields']['mu']
+      self.assertEqual(ncells, numpy.sum(okay))    
+
+    # Lame's constant lambda
+    lambdaE = densityE*vpE**2 - 2*muE
+    diff = numpy.abs(1.0 - data['cell_fields']['lambda']/lambdaE)
+    okay = diff < tolerance
+    if numpy.sum(okay) != ncells:
+      print "Lame's constant lambda: ",data['cell_fields']['lambda']
+      self.assertEqual(ncells, numpy.sum(okay))    
+
+    # Density
+    diff = numpy.abs(1.0 - data['cell_fields']['density']/densityE)
+    okay = diff < tolerance
+    if numpy.sum(okay) != ncells:
+      print "Density: ",data['cell_fields']['density']
+      self.assertEqual(ncells, numpy.sum(okay))    
     return
 
 
