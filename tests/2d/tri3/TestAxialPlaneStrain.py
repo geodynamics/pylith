@@ -116,6 +116,56 @@ class TestAxialPlaneStrain(unittest.TestCase):
     """
     Check solution (displacement) field.
     """
+    if self.reader is None:
+      return
+
+    data = self.reader.read("axialplanestrain_t0000000.vtk")
+
+    # Check cells
+    ncellsE = 84
+    ncornersE = 3
+    (ncells, ncorners) = data['cells'].shape
+    self.assertEqual(ncellsE, ncells)
+    self.assertEqual(ncornersE, ncorners)
+
+    # Check vertices
+    nverticesE = 54
+    spaceDimE = 3
+    vertices = data['vertices']
+    (nvertices, spaceDim) = vertices.shape
+    self.assertEqual(nverticesE, nvertices)
+    self.assertEqual(spaceDimE, spaceDim)
+
+    # Check displacement solution
+    tolerance = 1.0e-5
+    dispE = numpy.zeros( (nvertices, spaceDim), dtype=numpy.float64)
+    dispE[:,1] = -0.004 * vertices[:,1]
+
+    disp = data['vertex_fields']['displacements']
+
+    # Check x displacements
+    diff = numpy.abs(disp[:,0] - dispE[:,0])
+    okay = diff < tolerance
+    if numpy.sum(okay) != nvertices:
+      print "Displacement field: ",disp
+      self.assertEqual(nvertices, numpy.sum(okay))    
+    
+    # Check y displacements
+    mask = dispE[:,1] > 0.0
+    diff = mask * numpy.abs(1.0 - disp[:,1] / dispE[:,1]) + \
+        ~mask * numpy.abs(disp[:,1] - dispE[:,1])
+    okay = diff < tolerance
+    if numpy.sum(okay) != nvertices:
+      print "Displacement field: ",disp
+      self.assertEqual(nvertices, numpy.sum(okay))    
+
+    # Check z displacements
+    diff = numpy.abs(disp[:,2] - dispE[:,2])
+    okay = diff < tolerance
+    if numpy.sum(okay) != nvertices:
+      print "Displacement field: ",disp
+      self.assertEqual(nvertices, numpy.sum(okay))    
+    
     return
 
 
