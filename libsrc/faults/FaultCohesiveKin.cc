@@ -327,6 +327,34 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
   double_array cellOrientation(numConstraintVert*orientationSize);
   double_array cellStiffness(numConstraintVert);
 
+#if 0
+  // Check that fault cells match cohesive cells
+  ALE::ISieveVisitor::PointRetriever<sieve_type> cV(std::max(1, mesh->getSieve()->getMaxConeSize()));
+  ALE::ISieveVisitor::PointRetriever<sieve_type> cV2(std::max(1, _faultMesh->getSieve()->getMaxConeSize()));
+  Mesh::renumbering_type& fRenumbering = _faultMesh->getRenumbering();
+  const int rank = mesh->commRank();
+
+  for (Mesh::label_sequence::iterator c_iter = cellsCohesiveBegin; c_iter != cellsCohesiveEnd; ++c_iter) {
+    mesh->getSieve()->cone(*c_iter, cV);
+    const int               coneSize  = cV.getSize();
+    const Mesh::point_type *cone      = cV.getPoints();
+    const int               faceSize  = coneSize / 3;
+    const Mesh::point_type  face      = _cohesiveToFault[*c_iter];
+    _faultMesh->getSieve()->cone(face, cV2);
+    const int               fConeSize = cV2.getSize();
+    const Mesh::point_type *fCone     = cV2.getPoints();
+
+    assert(0 == coneSize % faceSize);
+    assert(faceSize == fConeSize);
+    // Use last vertices (contraints) for fault mesh
+    for(int i = 2*faceSize, j = 0; i < 3*faceSize; ++i, ++j) {
+      assert(fRenumbering[cone[i]] == fCone[j]);
+    }
+    cV.clear();
+    cV2.clear();
+  }
+#endif
+
   const ALE::Obj<Mesh::order_type>& globalOrder = mesh->getFactory()->getGlobalOrder(mesh, "default", solution);
   assert(!globalOrder.isNull());
   visitor_type iV(*solution, *globalOrder, (int) pow(mesh->getSieve()->getMaxConeSize(), mesh->depth())*spaceDim);
@@ -879,6 +907,28 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
 
   const int fiberDim = solution->getFiberDimension(*vertices->begin());
   double_array tractionValues(fiberDim);
+
+#if 0
+  // Check fault mesh and volume mesh coordinates
+  const ALE::Obj<real_section_type>& coordinates  = mesh->getRealSection("coordinates");
+  const ALE::Obj<real_section_type>& fCoordinates = _faultMesh->getRealSection("coordinates");
+
+  for (Mesh::label_sequence::iterator v_iter = vertices->begin(); v_iter != verticesEnd; ++v_iter) {
+    if (renumbering.find(*v_iter) != renumbering.end()) {
+      const int     v    = *v_iter;
+      const int     dim  = coordinates->getFiberDimension(*v_iter);
+      const double *a    = coordinates->restrictPoint(*v_iter);
+      const int     fv   = renumbering[*v_iter];
+      const int     fDim = fCoordinates->getFiberDimension(fv);
+      const double *fa   = fCoordinates->restrictPoint(fv);
+
+      if (dim != fDim) throw ALE::Exception("Coordinate fiber dimensions do not match");
+      for(int d = 0; d < dim; ++d) {
+        if (a[d] != fa[d]) throw ALE::Exception("Coordinate values do not match");
+      }
+    }
+  }
+#endif
 
   // Allocate buffer for tractions field (if nec.).
   for (Mesh::label_sequence::iterator v_iter = vertices->begin(); v_iter != verticesEnd; ++v_iter) {

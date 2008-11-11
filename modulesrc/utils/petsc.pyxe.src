@@ -93,8 +93,8 @@ def mat_assemble(mat, mode):
   Mat* mat = (Mat*) matVptr;
   PetscErrorCode err = 0;
   if (0 == strcmp(mode, "final_assembly")) {
-    err = MatAssemblyBegin(*mat, MAT_FINAL_ASSEMBLY); CHKERRQ(err);
-    err = MatAssemblyEnd(*mat, MAT_FINAL_ASSEMBLY); CHKERRQ(err);
+    err = MatAssemblyBegin(*mat, MAT_FINAL_ASSEMBLY);CHKERRQ(err);
+    err = MatAssemblyEnd(*mat, MAT_FINAL_ASSEMBLY);CHKERRQ(err);
   } else if (0 == strcmp(mode, "flush_assembly")) {
     err = MatAssemblyBegin(*mat, MAT_FLUSH_ASSEMBLY); CHKERRQ(err);
     err = MatAssemblyEnd(*mat, MAT_FLUSH_ASSEMBLY); CHKERRQ(err);
