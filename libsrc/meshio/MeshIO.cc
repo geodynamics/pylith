@@ -127,8 +127,7 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
   if (!rank) {
     assert(coordinates.size() == numVertices*spaceDim);
     assert(cells.size() == numCells*numCorners);
-    if (0) {
-    ///if (!_interpolate) {
+    if (!_interpolate) {
       // Create the ISieve
       sieve->setChart(Mesh::sieve_type::chart_type(0, numCells+numVertices));
       // Set cone and support sizes
