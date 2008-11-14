@@ -88,6 +88,7 @@ class Mesh(Component):
     self.nvertices = 0
     self.ncells = 0
     self.coneSize = 0
+    self.dimension = 0
     return
 
 
@@ -95,14 +96,20 @@ class Mesh(Component):
     """
     Initialize application.
     """
-    info = {'tri3': 3,
-            'quad4': 4,
-            'tet4': 4,
-            'hex8': 8,
-            }
+    coneSize = {'tri3': 3,
+                'quad4': 4,
+                'tet4': 4,
+                'hex8': 8,
+                }
+    dimension = {'tri3': 2,
+                 'quad4': 2,
+                 'tet4': 3,
+                 'hex8': 3,
+                 }
     
     try:
-      self.coneSize = info[self.cellType]
+      self.coneSize = coneSize[self.cellType]
+      self.dimension = dimension[self.cellType]
     except:
       raise ValueError("Unknown cell type '%'." % self.cellType)
     return
@@ -118,10 +125,12 @@ class Mesh(Component):
     ncells = self.ncells
     nvertices = self.nvertices
     coneSize = self.coneSize
+    dimension = self.dimension
 
     # mesh
     nbytes = sizeInt * ( 2 * (coneSize*ncells + nvertices + ncells) + \
                          coneSize*ncells )
+    nbytes += sizeDouble * nvertices * dimension
     memory['mesh'] = nbytes
 
     # stratification
