@@ -121,6 +121,7 @@ class Mesh(Component):
     """
     memory = {'mesh': 0,
               'stratification': 0,
+              'coordinates': 0,
               'materials': 0}
     ncells = self.ncells
     nvertices = self.nvertices
@@ -136,6 +137,10 @@ class Mesh(Component):
     # stratification
     nbytes = 2 * sizeArrow * (nvertices + ncells)
     memory['stratification'] = nbytes
+
+    # coordinates
+    nbytes = dimension * nvertices
+    memory['coordinates'] = nbytes
 
     # materials
     nbytes = 2 * sizeArrow * ncells
@@ -363,13 +368,16 @@ class MemoryUsageApp(Application):
     print "MEMORY USAGE"
     print "  Finite-element mesh"
     memory = self.memory['mesh']
-    print "    Mesh: %d bytes (%.3f MB)" % \
+    print "    Mesh:           %d bytes (%.3f MB)" % \
           (memory['mesh'],
            memory['mesh'] / megabyte)
     print "    Stratification: %d bytes (%.3f MB)" % \
           (memory['stratification'],
            memory['stratification'] / megabyte)
-    print "    Materials: %d bytes (%.3f MB)" % \
+    print "    Coordinates:      %d bytes (%.3f MB)" % \
+          (memory['coordinates'],
+           memory['coordinates'] / megabyte)
+    print "    Materials:      %d bytes (%.3f MB)" % \
           (memory['materials'],
            memory['materials'] / megabyte)
 
@@ -382,7 +390,7 @@ class MemoryUsageApp(Application):
     for (label, nbytes) in self.memory['materials'].items():
       print "    %s: %d bytes (%.3f MB)" % \
             (label, nbytes, nbytes / megabyte)
-    print "  TOTAL: %d bytes (%.3f MB)" % \
+    print "  TOTAL:           %d bytes (%.3f MB)" % \
           (self.memory['total'], self.memory['total'] / megabyte)
 
     return
