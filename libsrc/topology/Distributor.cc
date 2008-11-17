@@ -64,8 +64,9 @@ void
 pylith::topology::Distributor::distribute_private(ALE::Obj<Mesh>* const newMesh,
                                                   const ALE::Obj<Mesh>& origMesh)
 { // distribute
-  typedef typename Mesh::point_type                 point_type;
-  typedef typename DistributionType::partition_type partition_type;
+  typedef typename Mesh::point_type                   point_type;
+  typedef typename DistributionType::partitioner_type partitioner_type;
+  typedef typename DistributionType::partition_type   partition_type;
 
   const Obj<Mesh::sieve_type>        newSieve        = new Mesh::sieve_type(origMesh->comm(), origMesh->debug());
   const Obj<Mesh::send_overlap_type> sendMeshOverlap = new Mesh::send_overlap_type(origMesh->comm(), origMesh->debug());
@@ -148,6 +149,19 @@ pylith::topology::Distributor::distribute_private(ALE::Obj<Mesh>* const newMesh,
 
   for(Mesh::labels_type::const_iterator l_iter = labels.begin(); l_iter != labels.end(); ++l_iter) {
     if ((*newMesh)->hasLabel(l_iter->first)) continue;
+#ifdef IMESH_NEW_LABELS
+    const Obj<Mesh::label_type>& origLabel = l_iter->second;
+    const Obj<Mesh::label_type>& newLabel  = (*newMesh)->createLabel(l_iter->first);
+
+    newLabel->setChart(newSieve->getChart());
+    // Size the local mesh
+    partitioner_type::sizeLocalSieveV(origLabel, partition, renumbering, newLabel);
+    // Create the remote meshes
+    DistributionType::completeConesV(origLabel, newLabel, renumbering, sendMeshOverlap, recvMeshOverlap);
+    // Create the local mesh
+    partitioner_type::createLocalSieveV(origLabel, partition, renumbering, newLabel);
+    newLabel->symmetrize();
+#else
     const Obj<Mesh::label_type>& origLabel = l_iter->second;
     const Obj<Mesh::label_type>& newLabel  = (*newMesh)->createLabel(l_iter->first);
     // Get remote labels
@@ -161,6 +175,7 @@ pylith::topology::Distributor::distribute_private(ALE::Obj<Mesh>* const newMesh,
     parallelName += l_iter->first;
     origLabel->view(serialName.c_str());
     newLabel->view(parallelName.c_str());
+#endif
 #endif
   }
   // Create the parallel overlap

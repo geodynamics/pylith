@@ -202,7 +202,7 @@ pylith::faults::CohesiveTopology::orientFaultSieve(const int dim,
   typedef ALE::Selection<ALE::Mesh> selection;
   const Obj<ALE::Mesh::sieve_type>& faultSieve      = fault->getSieve();
   const Mesh::point_type            firstFaultCell  = *fault->heightStratum(1)->begin();
-  const Obj<Mesh::label_sequence>&  fFaces          = fault->heightStratum(2);
+  const Obj<ALE::Mesh::label_sequence>& fFaces      = fault->heightStratum(2);
   const int                         numFaultFaces   = fFaces->size();
   const int                         faultDepth      = fault->depth()-1; // Depth of fault cells
   int                               numFaultCorners = 0; // The number of vertices in a fault cell
@@ -660,7 +660,7 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
   // This completes the set of cells scheduled to be replaced
   PointSet replaceCellsBase(replaceCells);
 
-  const ALE::Obj<Mesh::label_sequence>& faultBdVerts = faultBd->depthStratum(0);
+  const ALE::Obj<ALE::Mesh::label_sequence>& faultBdVerts = faultBd->depthStratum(0);
   PointSet faultBdVertices;
 
   faultBdVertices.insert(faultBdVerts->begin(), faultBdVerts->end());

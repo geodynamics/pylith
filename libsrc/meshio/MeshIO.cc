@@ -166,6 +166,19 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
       // Optimized stratification
       const ALE::Obj<Mesh::label_type>& height = (*_mesh)->createLabel("height");
       const ALE::Obj<Mesh::label_type>& depth  = (*_mesh)->createLabel("depth");
+
+#ifdef IMESH_NEW_LABELS
+      height->setChart((*_mesh)->getSieve()->getChart());
+      depth->setChart((*_mesh)->getSieve()->getChart());
+      for(int c = 0; c < numCells+numVertices; ++c) {
+        height->setConeSize(c, 1);
+        depth->setConeSize(c, 1);
+      }
+      if (numCells+numVertices) {height->setSupportSize(0, numCells+numVertices);}
+      if (numCells+numVertices) {depth->setSupportSize(0, numCells+numVertices);}
+      height->allocate();
+      depth->allocate();
+#endif
       for(int c = 0; c < numCells; ++c) {
         height->setCone(0, c);
         depth->setCone(1, c);
@@ -174,6 +187,10 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
         height->setCone(1, v);
         depth->setCone(0, v);
       }
+#ifdef IMESH_NEW_LABELS
+      height->recalculateLabel();
+      depth->recalculateLabel();
+#endif
       (*_mesh)->setHeight(1);
       (*_mesh)->setDepth(1);
     } else {
@@ -413,10 +430,21 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
     } // if
     int i = 0;
     const Mesh::label_sequence::iterator end = cells->end();
-    for(Mesh::label_sequence::iterator e_iter = cells->begin();
-        e_iter != end;
-        ++e_iter)
+
+#ifdef IMESH_NEW_LABELS
+    labelMaterials->setChart((*_mesh)->getSieve()->getChart());
+    for(Mesh::label_sequence::iterator e_iter = cells->begin(); e_iter != end; ++e_iter) {
+      labelMaterials->setConeSize(*e_iter, 1);
+    }
+    if (cells->size()) {labelMaterials->setSupportSize(0, cells->size());}
+    labelMaterials->allocate();
+#endif
+    for(Mesh::label_sequence::iterator e_iter = cells->begin(); e_iter != end; ++e_iter) {
       (*_mesh)->setValue(labelMaterials, *e_iter, materialIds[i++]);
+    }
+#ifdef IMESH_NEW_LABELS
+    labelMaterials->recalculateLabel();
+#endif
   } // if
   logger.stagePop();
 

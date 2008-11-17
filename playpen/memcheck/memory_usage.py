@@ -15,7 +15,15 @@ from pyre.applications.Script import Script as Application
 
 sizeInt = 4
 sizeDouble = 8
-sizeArrow = 40
+import distutils.sysconfig
+
+pointerSize = distutils.sysconfig.get_config_var('SIZEOF_VOID_P')
+if pointerSize == 4:
+  sizeArrow = 40 # 32 bit
+elif pointerSize == 8:
+  sizeArrow = 56 # 64 bit
+else:
+  raise RuntimeError('Could not determine the size of a pointer')
 
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
@@ -131,7 +139,6 @@ class Mesh(Component):
     # mesh
     nbytes = sizeInt * ( 2 * (coneSize*ncells + nvertices + ncells) + \
                          coneSize*ncells )
-    nbytes += sizeDouble * nvertices * dimension
     memory['mesh'] = nbytes
 
     # stratification
@@ -139,7 +146,7 @@ class Mesh(Component):
     memory['stratification'] = nbytes
 
     # coordinates
-    nbytes = dimension * nvertices
+    nbytes = sizeDouble * dimension * nvertices
     memory['coordinates'] = nbytes
 
     # materials
@@ -374,7 +381,7 @@ class MemoryUsageApp(Application):
     print "    Stratification: %d bytes (%.3f MB)" % \
           (memory['stratification'],
            memory['stratification'] / megabyte)
-    print "    Coordinates:      %d bytes (%.3f MB)" % \
+    print "    Coordinates:     %d bytes (%.3f MB)" % \
           (memory['coordinates'],
            memory['coordinates'] / megabyte)
     print "    Materials:      %d bytes (%.3f MB)" % \
