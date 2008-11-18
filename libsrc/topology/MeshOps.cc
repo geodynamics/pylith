@@ -81,6 +81,7 @@ pylith::topology::MeshOps::checkMaterialIds(const ALE::Obj<Mesh>& mesh,
 	  << "'.";
       throw std::runtime_error(msg.str());
     } // if
+  } // for
   
 } // checkMaterialIds
 
