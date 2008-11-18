@@ -123,10 +123,6 @@ class Material(Component):
               "Dimension for material '%s': %d" % \
               (self.quadrature.spaceDim, self.label, self.dimension)
     
-    # :TODO: Make sure mesh contains material (need to account for the
-    # fact that any given processor may only have a subset of the
-    # materials)
-
     self._logger.eventEnd(logEvent)
     return
   
