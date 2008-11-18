@@ -71,10 +71,13 @@ pylith::topology::MeshOps::checkMaterialIds(const ALE::Obj<Mesh>& mesh,
   int_array matCellCountsAll(matCellCounts.size());
   MPI_Allreduce(&matCellCounts[0], &matCellCountsAll[0],
 		matCellCounts.size(), MPI_INT, MPI_SUM, mesh->comm());
-  for (int i=0; i < numMaterials; ++i)
-    if (matCellCountsAll[i] <= 0) {
+  for (int i=0; i < numMaterials; ++i) {
+    const int matId = materialIds[i];
+    const int matIndex = materialIndex[matId];
+    assert(0 <= matIndex && matIndex < numMaterials);
+    if (matCellCountsAll[matIndex] <= 0) {
       std::ostringstream msg;
-      msg << "No cells associated with material with id '" << materialIds[i]
+      msg << "No cells associated with material with id '" << matId
 	  << "'.";
       throw std::runtime_error(msg.str());
     } // if
