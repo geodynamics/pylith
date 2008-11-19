@@ -143,7 +143,7 @@ class Problem(Component):
       raise ValueError, \
             "Spatial dimension of problem is '%d' but mesh contains cells " \
             "for spatial dimension '%d'." % \
-            (self.dimension, mesh.dimension)
+            (self.dimension, self.mesh.dimension())
 
     # Check to make sure ids of materials and interfaces are unique
     materialIds = {}
