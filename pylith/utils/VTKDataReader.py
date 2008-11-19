@@ -69,13 +69,15 @@ class VTKDataReader(object):
     cells = data.get_cells().to_array()
     cellTypes = data.cell_types_array.to_array()
     ncells = data.number_of_cells
-    id = cellTypes[0]
-    if numpy.sum(cellTypes-id) != 0:
+    cellId = cellTypes[0]
+    if numpy.sum(cellTypes-cellId) != 0:
       raise ValueError("Expecting cells to all be the same type.")
-    if id == 5:
+    if cellId == 5:
       ncorners = 3
+    elif cellId == 3:
+      ncorners = 2
     else:
-      raise ValueError("Unknown VTK cell type '%d'." % id)
+      raise ValueError("Unknown VTK cell type '%d'." % cellId)
     cells = cells.reshape( (ncells, 1+ncorners) )[:,1:1+ncorners]
     return cells
 
