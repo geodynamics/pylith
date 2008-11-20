@@ -17,7 +17,8 @@ check_SCRIPTS = testpylith.py
 noinst_PYTHON = \
 	TestAxialPlaneStrain.py \
 	TestShearPlaneStrain.py \
-	TestDislocation.py
+	TestDislocation.py \
+	TestDislocation2.py
 
 noinst_DATA = \
 	box_quad4_100m.exo \
@@ -25,7 +26,9 @@ noinst_DATA = \
 	axialplanestrain.cfg \
 	shearplanestrain.cfg \
 	dislocation.cfg \
-	dislocation_slip.spatialdb \
+	dislocation2.cfg \
+	dislocation_slipLL.spatialdb \
+	dislocation_slipRL.spatialdb \
 	dislocation_sliptime.spatialdb
 
 noinst_TMP = \
@@ -39,7 +42,14 @@ noinst_TMP = \
 	dislocation-statevars-elastic_info.vtk \
 	dislocation-statevars-elastic_t0000000.vtk \
 	dislocation-fault_info.vtk \
-	dislocation-fault_t0000000.vtk
+	dislocation-fault_t0000000.vtk \
+	dislocation2_t0000000.vtk \
+	dislocation2-statevars-elastic_info.vtk \
+	dislocation2-statevars-elastic_t0000000.vtk \
+	dislocation2-fault-pos_info.vtk \
+	dislocation2-fault-pos_t0000000.vtk \
+	dislocation2-fault-neg_info.vtk \
+	dislocation2-fault-neg_t0000000.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)

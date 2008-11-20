@@ -12,7 +12,7 @@
 
 ## @file tests/2d/tri3/TestAxialPlaneStrain.py
 ##
-## @brief Test suite for testing pylith with axial extension in
+## @brief Test suite for testing pylith with axial compression in
 ## y-direction for 2-D box.
 
 import unittest

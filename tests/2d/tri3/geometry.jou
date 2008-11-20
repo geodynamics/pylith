@@ -2,24 +2,36 @@
 # Create surface using vertices
 # ----------------------------------------------------------------------
 
-# Block is 500m x 500m
-# -250 m <= x <= 250 km 
-# -250 km <= y <= 250 km
+# Block is 800m x 800m
+# -400 m <= x <= 400 km 
+# -400 km <= y <= 400 km
 reset
-create vertex -250.0 -250.0 0.0
-create vertex -250.0 +250.0 0.0
-create vertex +250.0 +250.0 0.0
-create vertex +250.0 -250.0 0.0
+create vertex -400.0 -400.0 0.0
+create vertex -400.0 +400.0 0.0
+create vertex +400.0 +400.0 0.0
+create vertex +400.0 -400.0 0.0
 create surface vertex 1 2 3 4
 delete vertex all
 
 # ----------------------------------------------------------------------
 # Create interface surfaces
 # ----------------------------------------------------------------------
-create vertex 0.0 -250.0 0.0
-create vertex 0.0 +250.0 0.0
+
+# Fault at x=0
+create vertex 0.0 -400.0 0.0
+create vertex 0.0 +400.0 0.0
 split surface 1 across location vertex 9 location vertex 10
-curve 5 name "fault_edge"
+
+# Fault at y=-100
+create vertex -400.0 -100.0 0.0
+create vertex +400.0 -100.0 0.0
+split surface 2 across location vertex 13 location vertex 14
+split surface 3 across location vertex 13 location vertex 14
+
+# Fault at y=+100
+create vertex -400.0 +100.0 0.0
+create vertex +400.0 +100.0 0.0
+split surface 4 across location vertex 18 location vertex 19
+split surface 6 across location vertex 18 location vertex 19
+
 delete vertex all
-surface 2 name "block_neg"
-surface 3 name "block_pos"
