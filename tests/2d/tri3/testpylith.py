@@ -10,9 +10,9 @@
 # ======================================================================
 #
 
-import unittest
-
 __requires__ = "PyLith"
+
+import unittest
 
 def suite():
   """
@@ -23,11 +23,11 @@ def suite():
   from TestAxialPlaneStrain import TestAxialPlaneStrain
   suite.addTest(unittest.makeSuite(TestAxialPlaneStrain))
 
-  #from TestShearPlaneStrain import TestShearPlaneStrain
-  #suite.addTest(unittest.makeSuite(TestShearPlaneStrain))
+  from TestShearPlaneStrain import TestShearPlaneStrain
+  suite.addTest(unittest.makeSuite(TestShearPlaneStrain))
 
-  #from TestDislocation import TestDislocation
-  #suite.addTest(unittest.makeSuite(TestDislocation))
+  from TestDislocation import TestDislocation
+  suite.addTest(unittest.makeSuite(TestDislocation))
 
   return suite
 
