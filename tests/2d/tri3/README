@@ -57,3 +57,28 @@ Analytical solution
   Ux(x,y) = 0
   Uy(x,y) = -0.004 * x
 
+
+======================================================================
+DISLOCATION
+======================================================================
+
+2-D dislocation test with linear triangular cells.
+
+
+         ----------
+         |    |    |
+y=-0.5 m |    |    | y=+0.5m
+         |    |    |
+         |    |    |
+         ----------
+
+
+Dirichlet boundary conditions
+  Ux(   0,y) =  0.0
+  Uy(   0,y) = -0.5 m
+  Ux(+250,y) =  0.0
+  Uy(+250,y) = +0.5 m
+
+Analytical solution
+  Ux(x<0,y) = -0.5
+  Ux(x>0,y) = +0.5

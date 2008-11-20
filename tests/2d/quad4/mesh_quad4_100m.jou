@@ -11,14 +11,8 @@ surface all size 100
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
-surface all scheme tridelaunay
+surface all scheme submap
 mesh surface all
-
-# ----------------------------------------------------------------------
-# Improve triangle quality with smoothing
-# ----------------------------------------------------------------------
-surface all smooth scheme condition number beta 1.05 cpu 2
-smooth surface all
 
 # ----------------------------------------------------------------------
 # Create blocks for materials
@@ -66,4 +60,4 @@ nodeset 14 name "edge yneg"
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-export mesh "box_tri3_100m.exo" dimension 2 overwrite
+export mesh "box_quad4_100m.exo" dimension 2 overwrite
