@@ -795,6 +795,8 @@ pylith::faults::FaultCohesiveKin::_calcConditioning(
     _pseudoStiffness->updatePoint(*v_iter, &mu);
   } // for
   PetscLogFlops(count * 2);
+
+  matDB->close();
 } // _calcConditioning
 
 // ----------------------------------------------------------------------
