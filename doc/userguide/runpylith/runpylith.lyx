@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1643,11 +1643,21 @@ reference "sec:Tutorial-Two-tet4-geoproj"
  for an example of using the SCEC CVM-H database for physical properties
  of an elastic material.
  The interface is known to work with versions 5.2 and 5.3 of the SCEC CVM-H.
+ Setting a minimum wave speed can be used to replace water and very soft
+ soils that are incompressible or nearly incompressible with stiffer, compressib
+le materials.
  The Pyre properties for the SCEC CVM-H are:
 \end_layout
 
 \begin_layout Description
 data_dir Directory containing the SCEC CVM-H data files
+\end_layout
+
+\begin_layout Description
+min_vs Minimum shear wave speed.
+ Corresponding minimum values for the dilatational wave speed (Vp) and density
+ are computed.
+ Default value is 500 m/s.
 \end_layout
 
 \begin_layout Description
@@ -1686,6 +1696,10 @@ db.data_dir = /home/johndoe/data/sceccvm-h/vx53 ; Directory containing the
  database 
 \newline
 data files
+\end_layout
+
+\begin_layout LyX-Code
+min_vs = 500*m/s
 \end_layout
 
 \begin_layout LyX-Code
@@ -2413,6 +2427,13 @@ Start with a uniform-resolution coarse mesh to debug the problem setup.
 Merge materials using the same material model.
  This will result in only one VTK file for each material model rather than
  several files.
+\end_layout
+
+\begin_layout Itemize
+The rate of convergence in quasi-static (implicit) problems can sometimes
+ be improved by renumbering the vertices in the finite-element mesh to reduce
+ the bandwidth of the sparse matrix.
+ LaGriT contains routines to do this, but CUBIT does not.
 \end_layout
 
 \begin_layout Itemize
