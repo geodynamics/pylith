@@ -195,7 +195,7 @@ class Implicit(Formulation):
 
     # BEGIN TEMPORARY
     #import pylith.topology.topology as bindings
-    #bindings.sectionView(self.fields.getReal("dispIncr"), "SOLUTION");
+    #bindings.sectionView(self.fields.getReal("dispIncr"), "DISPINCR SOLUTION");
     #bindings.sectionView(self.fields.getReal("residual"), "RESIDUAL");
     # END TEMPORARY
 
@@ -217,8 +217,8 @@ class Implicit(Formulation):
     # dispTBctpdt contains the displacement field at time t+dt.
     import pylith.topology.topology as bindings
     dispIncr = self.fields.getReal("dispIncr")
-    disp = self.fields.getSolution()
-    bindings.addRealSections(disp, disp, dispIncr)
+    dispTBctpdt = self.fields.getSolution()
+    bindings.addRealSections(dispTBctpdt, dispTBctpdt, dispIncr)
 
     Formulation.poststep(self, t, dt)
 
