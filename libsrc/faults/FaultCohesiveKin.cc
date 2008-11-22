@@ -122,10 +122,21 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
   _cumSlip = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
   _cumSlip->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), 
 								     vertices->end()), 
-						*std::max_element(vertices->begin(), vertices->end())+1));
+						   *std::max_element(vertices->begin(),
+								     vertices->end())+1));
   _cumSlip->setFiberDimension(vertices, cs->spaceDim());
   _faultMesh->allocate(_cumSlip);
   assert(!_cumSlip.isNull());
+
+  // Allocate cumulative solution field
+  _cumSoln = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
+  _cumSoln->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), 
+								     vertices->end()), 
+						   *std::max_element(vertices->begin(), 
+								     vertices->end())+1));
+  _cumSoln->setFiberDimension(vertices, cs->spaceDim());
+  _faultMesh->allocate(_cumSoln);
+  assert(!_cumSoln.isNull());
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -425,6 +436,47 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 } // integrateJacobianAssembled
   
 // ----------------------------------------------------------------------
+// Update state variables as needed.
+void
+pylith::faults::FaultCohesiveKin::updateState(const double t,
+					      topology::FieldsManager* const fields,
+					      const ALE::Obj<Mesh>& mesh)
+{ // updateState
+  assert(0 != fields);
+  assert(!mesh.isNull());
+  assert(!_faultMesh.isNull());
+  assert(!_cumSoln.isNull());
+
+  // Update cumulateive solution for calculating total change in tractions.
+
+  if (!_useSolnIncr)
+    _cumSoln->zero();
+
+  const ALE::Obj<real_section_type>& solution = fields->getSolution();
+
+  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  Mesh::renumbering_type& renumbering = _faultMesh->getRenumbering();
+  for (Mesh::label_sequence::iterator v_iter=vertices->begin(); 
+       v_iter != verticesEnd;
+       ++v_iter)
+    if (renumbering.find(*v_iter) != renumbering.end()) {
+      const real_section_type::value_type* vertexSoln = 
+	solution->restrictPoint(*v_iter);
+      assert(0 != vertexSoln);
+      const int fv = renumbering[*v_iter];
+      std::cout << "Fault vertex " << fv << " getting value " << vertexSoln[0] << " from domain vertex " << *v_iter << std::endl;
+      _cumSoln->updateAddPoint(fv, vertexSoln);
+    } // if
+
+#if 1
+  _faultMesh->view("FAULT MESH");
+  _cumSoln->view("CUMULATIVE SOLUTION");
+#endif
+} // updateState
+
+// ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::faults::FaultCohesiveKin::verifyConfiguration(const ALE::Obj<Mesh>& mesh) const
@@ -528,8 +580,7 @@ pylith::faults::FaultCohesiveKin::vertexField(
     return _bufferTmp;
   } else if (0 == strcasecmp("traction_change", name)) {
     *fieldType = VECTOR_FIELD;
-    const ALE::Obj<real_section_type>& solution = fields->getSolution();
-    _calcTractionsChange(&_bufferVertexVector, mesh, solution);
+    _calcTractionsChange(&_bufferVertexVector);
     return _bufferVertexVector;
 
   } else {
@@ -755,7 +806,10 @@ pylith::faults::FaultCohesiveKin::_calcConditioning(
   _pseudoStiffness = new real_section_type(_faultMesh->comm(), 
 					   _faultMesh->debug());
   assert(!_pseudoStiffness.isNull());
-  _pseudoStiffness->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
+  _pseudoStiffness->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), 
+									     vertices->end()), 
+							   *std::max_element(vertices->begin(), 
+									     vertices->end())+1));
   _pseudoStiffness->setFiberDimension(vertices, 1);
   _faultMesh->allocate(_pseudoStiffness);
   
@@ -814,7 +868,10 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   _area = new real_section_type(_faultMesh->comm(), 
 				_faultMesh->debug());
   assert(!_area.isNull());
-  _area->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
+  _area->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(),
+								  vertices->end()), 
+						*std::max_element(vertices->begin(), 
+								  vertices->end())+1));
   _area->setFiberDimension(vertices, 1);
   _faultMesh->allocate(_area);
   
@@ -890,27 +947,20 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
 //   NOTE: We must convert vertex labels to fault vertex labels
 void
 pylith::faults::FaultCohesiveKin::_calcTractionsChange(
-				 ALE::Obj<real_section_type>* tractions,
-				 const ALE::Obj<Mesh>& mesh,
-				 const ALE::Obj<real_section_type>& solution)
+					       ALE::Obj<real_section_type>* tractions)
 { // _calcTractionsChange
   assert(0 != tractions);
-  assert(!solution.isNull());
   assert(!_faultMesh.isNull());
+  assert(!_cumSoln.isNull());
   assert(!_pseudoStiffness.isNull());
   assert(!_area.isNull());
 
-  const ALE::Obj<Mesh::label_sequence>& vertices    = mesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const Mesh::label_sequence::iterator  verticesEnd = vertices->end();
-  const int                             numVertices = vertices->size();
-  Mesh::renumbering_type&               renumbering = _faultMesh->getRenumbering();
-  Mesh::point_type                      firstFaultVertex = -1;
+  const ALE::Obj<Mesh::label_sequence>& vertices = 
+    _faultMesh->depthStratum(0);
+  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const int numVertices = vertices->size();
 
-  const int fiberDim = solution->getFiberDimension(*vertices->begin());
-  double_array tractionValues(fiberDim);
-
-#if 0
+#if 0 // MOVE TO SEPARATE CHECK METHOD
   // Check fault mesh and volume mesh coordinates
   const ALE::Obj<real_section_type>& coordinates  = mesh->getRealSection("coordinates");
   const ALE::Obj<real_section_type>& fCoordinates = _faultMesh->getRealSection("coordinates");
@@ -932,63 +982,53 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   }
 #endif
 
-  // Allocate buffer for tractions field (if nec.).
-  for (Mesh::label_sequence::iterator v_iter = vertices->begin(); v_iter != verticesEnd; ++v_iter) {
-    if (renumbering.find(*v_iter) != renumbering.end()) {
-      firstFaultVertex = renumbering[*v_iter];
-    }
-  }
-  if (tractions->isNull() ||
-      fiberDim != (*tractions)->getFiberDimension(firstFaultVertex)) {
-    *tractions = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
-    int minE = _faultMesh->getSieve()->getChart().min();
-    int maxE = _faultMesh->getSieve()->getChart().max();
+  // Fiber dimension of tractions matches fiber dimension of solution
+  const int fiberDim = _cumSoln->getFiberDimension(*vertices->begin());
+  double_array tractionValues(fiberDim);
 
-    for (Mesh::label_sequence::iterator v_iter = vertices->begin(); v_iter != verticesEnd; ++v_iter) {
-      if (renumbering.find(*v_iter) != renumbering.end()) {
-        minE = std::min(minE, renumbering[*v_iter]);
-        maxE = std::max(maxE, renumbering[*v_iter]);
-      }
-    }
-    (*tractions)->setChart(real_section_type::chart_type(minE, maxE+1));
-    for (Mesh::label_sequence::iterator v_iter = vertices->begin(); v_iter != verticesEnd; ++v_iter) {
-      if (renumbering.find(*v_iter) != renumbering.end()) {
-        (*tractions)->setFiberDimension(renumbering[*v_iter], fiberDim);
-      }
-    }
-    (*tractions)->allocatePoint();
+  // Allocate buffer for tractions field (if nec.).
+  if (tractions->isNull() ||
+      fiberDim != (*tractions)->getFiberDimension(*vertices->begin())) {
+    *tractions = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
+    (*tractions)->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), 
+									   vertices->end()), 
+							 *std::max_element(vertices->begin(),
+									   vertices->end())+1));
+    (*tractions)->setFiberDimension(vertices, fiberDim);
+    _faultMesh->allocate(*tractions);
+    assert(!tractions->isNull());
   } // if
   
-  for (Mesh::label_sequence::iterator v_iter = vertices->begin(); v_iter != verticesEnd; ++v_iter) {
-    if (renumbering.find(*v_iter) == renumbering.end()) continue;
-    const int fv = renumbering[*v_iter];
-    assert(fiberDim == solution->getFiberDimension(*v_iter));
-    assert(fiberDim == (*tractions)->getFiberDimension(fv));
-    assert(1 == _pseudoStiffness->getFiberDimension(fv));
-    assert(1 == _area->getFiberDimension(fv));
+  for (Mesh::label_sequence::iterator v_iter = vertices->begin(); 
+       v_iter != verticesEnd;
+       ++v_iter) {
+    assert(fiberDim == _cumSoln->getFiberDimension(*v_iter));
+    assert(fiberDim == (*tractions)->getFiberDimension(*v_iter));
+    assert(1 == _pseudoStiffness->getFiberDimension(*v_iter));
+    assert(1 == _area->getFiberDimension(*v_iter));
 
     const real_section_type::value_type* solutionValues =
-      solution->restrictPoint(*v_iter);
+      _cumSoln->restrictPoint(*v_iter);
     assert(0 != solutionValues);
     const real_section_type::value_type* pseudoStiffValue = 
-      _pseudoStiffness->restrictPoint(fv);
+      _pseudoStiffness->restrictPoint(*v_iter);
     assert(0 != _pseudoStiffness);
     const real_section_type::value_type* areaValue = 
-      _area->restrictPoint(fv);
+      _area->restrictPoint(*v_iter);
     assert(0 != _area);
 
     const double scale = pseudoStiffValue[0] / areaValue[0];
     for (int i=0; i < fiberDim; ++i)
       tractionValues[i] = solutionValues[i] * scale;
 
-    (*tractions)->updatePoint(fv, &tractionValues[0]);
+    (*tractions)->updatePoint(*v_iter, &tractionValues[0]);
   } // for
 
   PetscLogFlops(numVertices * (1 + fiberDim) );
 
-#if 0
+#if 1
   _faultMesh->view("FAULT MESH");
-  solution->view("SOLUTION");
+  _cumSoln->view("CUMULATIVE SOLUTION");
   _area->view("AREA");
   _pseudoStiffness->view("CONDITIONING");
   (*tractions)->view("TRACTIONS");

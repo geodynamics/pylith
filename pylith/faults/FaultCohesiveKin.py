@@ -161,6 +161,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     logEvent = "%spoststep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
+    Integrator.poststep(self, t, dt, totalTime, fields)
     FaultCohesive.poststep(self, t, dt, totalTime, fields)
 
     self._logger.eventEnd(logEvent)
