@@ -454,32 +454,8 @@ pylith::faults::FaultCohesiveKin::updateState(const double t,
 
   // Update cumulative slip
   assert(!_cumSlip.isNull());
-  assert(!_slip.isNull());
-  _slip->zero();
-  if (!_useSolnIncr) {
-    // Compute slip field at current time step
-    const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
-    for (srcs_type::iterator s_iter=_eqSrcs.begin(); 
-	 s_iter != srcsEnd; 
-	 ++s_iter) {
-      EqKinSrc* src = s_iter->second;
-      assert(0 != src);
-      if (t >= src->originTime())
-	src->slip(_slip, t, _faultMesh);
-    } // for
+  if (!_useSolnIncr)
     _cumSlip->zero();
-  } else {
-    // Compute increment of slip field at current time step
-    const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
-    for (srcs_type::iterator s_iter=_eqSrcs.begin(); 
-	 s_iter != srcsEnd; 
-	 ++s_iter) {
-      EqKinSrc* src = s_iter->second;
-      assert(0 != src);
-      if (t >= src->originTime())
-	src->slipIncr(_slip, t-_dt, t, _faultMesh);
-    } // for
-  } // else
   _cumSlip->add(_cumSlip, _slip);
 
   // Update cumulative solution for calculating total change in tractions.
