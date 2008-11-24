@@ -362,9 +362,14 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   // Allocate vector for cell values (if necessary)
   _initCellMatrix();
 
-  const ALE::Obj<Mesh::order_type>& globalOrder = mesh->getFactory()->getGlobalOrder(mesh, "default", dispT);
+  const ALE::Obj<real_section_type>& solution = fields->getSolution();
+  assert(!solution.isNull());  
+  const ALE::Obj<Mesh::order_type>& globalOrder = 
+    mesh->getFactory()->getGlobalOrder(mesh, "default", solution);
   assert(!globalOrder.isNull());
-  visitor_type iV(*dispT, *globalOrder, (int) pow(_boundaryMesh->getSieve()->getMaxConeSize(), _boundaryMesh->depth()));
+  visitor_type iV(*solution, *globalOrder,
+		  (int) pow(mesh->getSieve()->getMaxConeSize(),
+			    mesh->depth())*spaceDim);
 
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
@@ -404,7 +409,8 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
     
     // Assemble cell contribution into PETSc Matrix
-    err = updateOperator(*jacobian, *_boundaryMesh->getSieve(), iV, *c_iter, _cellMatrix, ADD_VALUES);
+    err = updateOperator(*jacobian, *_boundaryMesh->getSieve(), 
+			 iV, *c_iter, _cellMatrix, ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
     iV.clear();
