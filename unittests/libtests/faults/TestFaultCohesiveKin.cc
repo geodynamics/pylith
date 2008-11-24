@@ -611,6 +611,87 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembled(void)
 } // testIntegrateJacobianAssembled
 
 // ----------------------------------------------------------------------
+// Test updateState().
+void
+pylith::faults::TestFaultCohesiveKin::testUpdateState(void)
+{ // testUpdateState
+  ALE::Obj<Mesh> mesh;
+  FaultCohesiveKin fault;
+  _initialize(&mesh, &fault);
+
+  // Setup fields
+  topology::FieldsManager fields(mesh);
+  fields.addReal("solution");
+  fields.solutionField("solution");
+  
+  const int spaceDim = _data->spaceDim;
+  const ALE::Obj<real_section_type>& solution = fields.getReal("solution");
+  { // setup solution
+    CPPUNIT_ASSERT(!solution.isNull());
+    solution->setChart(mesh->getSieve()->getChart());
+    solution->setFiberDimension(mesh->depthStratum(0), spaceDim);
+    mesh->allocate(solution);
+    solution->zero();
+    fields.copyLayout("solution");
+    
+    const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+    CPPUNIT_ASSERT(!vertices.isNull());
+    const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+    int iVertex = 0;
+    for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+	 v_iter != verticesEnd;
+	 ++v_iter, ++iVertex) {
+      solution->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
+    } // for
+  } // setup solution
+
+  const double t = 0;
+  fault.updateState(t, &fields, mesh);
+  
+  const ALE::Obj<Mesh::label_sequence>& vertices = 
+    fault._faultMesh->depthStratum(0);
+  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  Mesh::renumbering_type& renumbering = fault._faultMesh->getRenumbering();
+
+  int iVertex = 0;
+  const double tolerance = 1.0e-06;
+  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != verticesEnd;
+       ++v_iter, ++iVertex) {
+    Mesh::point_type meshVertex = -1;
+    bool found = false;
+
+    for(Mesh::renumbering_type::const_iterator r_iter = renumbering.begin();
+	r_iter != renumbering.end();
+	++r_iter) {
+      if (r_iter->second == *v_iter) {
+        meshVertex = r_iter->first;
+        found = true;
+        break;
+      } // if
+    } // for
+    CPPUNIT_ASSERT(found);
+
+    // Check _sumSoln
+    int fiberDim = fault._cumSoln->getFiberDimension(*v_iter);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
+    const real_section_type::value_type* vertexSolution = 
+      solution->restrictPoint(renumbering[*v_iter]);
+    CPPUNIT_ASSERT(0 != vertexSolution);
+
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      const double solutionE = _data->fieldT[meshVertex*spaceDim+iDim];
+      if (solutionE > 1.0) 
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vertexSolution[iDim]/solutionE,
+				     tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(solutionE, vertexSolution[iDim], 
+				     tolerance);
+    } // for
+  } // for
+} // testUpdateState
+
+// ----------------------------------------------------------------------
 // Test calcTractionsChange().
 void
 pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
@@ -655,8 +736,10 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
   tractions->setChart(mesh->getSieve()->getChart());
   tractions->setFiberDimension(vertices, spaceDim);
   fault._faultMesh->allocate(tractions);
+  const double t = 0;
+  fault.updateState(t, &fields, mesh);
   
-  fault._calcTractionsChange(&tractions, mesh, solution);
+  fault._calcTractionsChange(&tractions);
 
   int iVertex = 0;
   const double tolerance = 1.0e-06;

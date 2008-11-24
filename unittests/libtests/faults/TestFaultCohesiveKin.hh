@@ -105,6 +105,9 @@ public :
   /// Test integrateJacobianAssembled().
   void testIntegrateJacobianAssembled(void);
 
+  /// Test updateState().
+  void testUpdateState(void);
+
   /// Test _calcTractionsChange().
   void testCalcTractionsChange(void);
 
