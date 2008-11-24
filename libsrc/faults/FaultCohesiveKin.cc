@@ -199,7 +199,6 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
       if (t >= src->originTime())
 	src->slip(_slip, t, _faultMesh);
     } // for
-    _cumSlip->zero();
   } else {
     // Compute increment of slip field at current time step
     const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
@@ -212,15 +211,17 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
 	src->slipIncr(_slip, t-_dt, t, _faultMesh);
     } // for
   } // else
-  _cumSlip->add(_cumSlip, _slip);
-  
+
   for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
     const Mesh::point_type c_fault = _cohesiveToFault[*c_iter];
 
-    cellResidual = 0.0;
-
+    // Get residual at fault cell's vertices.  We want to only
+    // overwrite values that need updating.
+    mesh->restrictClosure(residual, *c_iter, &cellResidual[0], 
+			  cellResidual.size());
+    
     // Get orientations at fault cell's vertices.
     _faultMesh->restrictClosure(_orientation, c_fault, &cellOrientation[0], 
 				cellOrientation.size());
@@ -257,22 +258,27 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
 	assert(0 != constraintOrient);
 
 	// Entries associated with constraint forces applied at node i
-	for (int iDim=0; iDim < spaceDim; ++iDim)
+	for (int iDim=0; iDim < spaceDim; ++iDim) {
+	  cellResidual[indexI*spaceDim+iDim] = 0.0; // ?
 	  for (int kDim=0; kDim < spaceDim; ++kDim)
 	    cellResidual[indexI*spaceDim+iDim] -=
 	      cellSoln[indexK*spaceDim+kDim] * 
 	      -constraintOrient[kDim*spaceDim+iDim] * pseudoStiffness;
+	} // for
 	
 	// Entries associated with constraint forces applied at node j
-	for (int jDim=0; jDim < spaceDim; ++jDim)
+	for (int jDim=0; jDim < spaceDim; ++jDim) {
+	  cellResidual[indexJ*spaceDim+jDim] = 0.0; // ?
 	  for (int kDim=0; kDim < spaceDim; ++kDim)
 	    cellResidual[indexJ*spaceDim+jDim] -=
 	      cellSoln[indexK*spaceDim+kDim] * 
 	      constraintOrient[kDim*spaceDim+jDim] * pseudoStiffness;
+	} // for
       } // if
     } // for
 
-#if 0
+    
+#if 0 // DEBUGGING
     std::cout << "Updating fault residual for cell " << *c_iter << std::endl;
     for(int i = 0; i < numConstraintVert; ++i) {
       std::cout << "  stif["<<i<<"]: " << cellStiffness[i] << std::endl;
@@ -445,10 +451,39 @@ pylith::faults::FaultCohesiveKin::updateState(const double t,
   assert(0 != fields);
   assert(!mesh.isNull());
   assert(!_faultMesh.isNull());
+
+  // Update cumulative slip
+  assert(!_cumSlip.isNull());
+  assert(!_slip.isNull());
+  _slip->zero();
+  if (!_useSolnIncr) {
+    // Compute slip field at current time step
+    const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
+    for (srcs_type::iterator s_iter=_eqSrcs.begin(); 
+	 s_iter != srcsEnd; 
+	 ++s_iter) {
+      EqKinSrc* src = s_iter->second;
+      assert(0 != src);
+      if (t >= src->originTime())
+	src->slip(_slip, t, _faultMesh);
+    } // for
+    _cumSlip->zero();
+  } else {
+    // Compute increment of slip field at current time step
+    const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
+    for (srcs_type::iterator s_iter=_eqSrcs.begin(); 
+	 s_iter != srcsEnd; 
+	 ++s_iter) {
+      EqKinSrc* src = s_iter->second;
+      assert(0 != src);
+      if (t >= src->originTime())
+	src->slipIncr(_slip, t-_dt, t, _faultMesh);
+    } // for
+  } // else
+  _cumSlip->add(_cumSlip, _slip);
+
+  // Update cumulative solution for calculating total change in tractions.
   assert(!_cumSoln.isNull());
-
-  // Update cumulateive solution for calculating total change in tractions.
-
   if (!_useSolnIncr)
     _cumSoln->zero();
 
@@ -466,11 +501,10 @@ pylith::faults::FaultCohesiveKin::updateState(const double t,
 	solution->restrictPoint(*v_iter);
       assert(0 != vertexSoln);
       const int fv = renumbering[*v_iter];
-      std::cout << "Fault vertex " << fv << " getting value " << vertexSoln[0] << " from domain vertex " << *v_iter << std::endl;
       _cumSoln->updateAddPoint(fv, vertexSoln);
     } // if
 
-#if 1
+#if 0 // DEBUGGING
   _faultMesh->view("FAULT MESH");
   _cumSoln->view("CUMULATIVE SOLUTION");
 #endif
@@ -701,18 +735,17 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
     ncV.clear();
   } // for
 
-#if 0
+#if 0 // DEBUGGING
   _orientation->view("ORIENTATION Before complete");
   _orientation->setDebug(2);
 #endif
   // Assemble orientation information
-#if 1
-  ALE::Completion::completeSectionAdd(_faultMesh->getSendOverlap(), _faultMesh->getRecvOverlap(), _orientation, _orientation);
-#else
-  ALE::Distribution<pylith::Mesh>::completeSection(_faultMesh, _orientation);
-#endif
 
-#if 0
+  ALE::Completion::completeSectionAdd(_faultMesh->getSendOverlap(),
+				      _faultMesh->getRecvOverlap(),
+				      _orientation, _orientation);
+
+#if 0 // DEBUGGING
   _orientation->view("ORIENTATION After complete");
 #endif
 
@@ -924,18 +957,10 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
     PetscLogFlops( numQuadPts*(1+numBasis*2) );
   } // for
 
-#if 0
-  _area->view("AREA");
-#endif
-
   // Assemble area information
-#if 1
   ALE::Completion::completeSectionAdd(_faultMesh->getSendOverlap(), _faultMesh->getRecvOverlap(), _area, _area);
-#else
-  ALE::Distribution<pylith::Mesh>::completeSection(_faultMesh, _area);
-#endif
 
-#if 0
+#if 0 // DEBUGGING
   _area->view("AREA");
   _faultMesh->getSendOverlap()->view("Send fault overlap");
   _faultMesh->getRecvOverlap()->view("Receive fault overlap");
@@ -1026,7 +1051,7 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
 
   PetscLogFlops(numVertices * (1 + fiberDim) );
 
-#if 1
+#if 0 // DEBUGGING
   _faultMesh->view("FAULT MESH");
   _cumSoln->view("CUMULATIVE SOLUTION");
   _area->view("AREA");
