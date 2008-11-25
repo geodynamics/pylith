@@ -227,6 +227,7 @@ class TestAbsorbingDampers(unittest.TestCase):
     fields.addReal("solution")
     fields.addReal("dispT")
     fields.addReal("dispTmdt")
+    fields.solutionField("solution")
     fields.createHistory(["solution", "dispT", "dispTmdt"])
     fields.setFiberDimension("residual", cs.spaceDim)
     fields.allocate("residual")
