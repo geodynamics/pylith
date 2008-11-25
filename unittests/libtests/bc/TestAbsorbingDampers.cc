@@ -290,6 +290,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(
     fields->addReal("dispTpdt");
     fields->addReal("dispT");
     fields->addReal("dispTmdt");
+    fields->solutionField("dispTpdt");
     const char* history[] = { "dispTpdt", "dispT", "dispTmdt" };
     const int historySize = 3;
     fields->createHistory(history, historySize);
