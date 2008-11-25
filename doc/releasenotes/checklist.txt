@@ -4,7 +4,9 @@ RELEASE CHECKLIST
 
 TESTING
 
-  * Check unit tests on all buildbots.
+  * Check tests on all buildbots.
+
+  * Run valgrind on unit tests.
 
   * Run all examples.
 
@@ -32,4 +34,8 @@ DISTRIBUTIONS
 
   * Get petsc-dev nightly tarball.
 
+    - Check build.
+
   * Get PyLith source code.
+
+    - Check build.
