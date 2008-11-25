@@ -188,7 +188,7 @@ Solution We compute the error in the elastic solution and compare the solution
 placement H
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \align center
@@ -773,14 +773,14 @@ reference "fig:benchmark:strikeslip:summary"
  hexahedral and tetrahedral meshes are the the same, the number of cells
  in the tetrahedral mesh is about six times greater.
  However, we use only one integration point per tetrahedral cell compared
- to eight for the  hexahedral cell.
+ to eight for the hexahedral cell.
  This leads to approximately the same number of integration points for the
  two meshes, but the time required to unpack/pack information for each cell
  from the Sieve data structure is greater than the time required to do the
  calculation for each quadrature point (which can take advantage of the
  very fast, small memory cache in the processor).
- As a result, the runtime for the simulations with hexahedral cells is much
- less than that for the tetrahedral cells at the same resolution.
+ As a result, the runtime for the simulations with hexahedral cells is significa
+ntly less than that for the tetrahedral cells at the same resolution.
  
 \end_layout
 
@@ -791,13 +791,13 @@ reference "fig:benchmark:strikeslip:summary"
 placement H
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/summary.png
-	scale 33
+	filename figs/summary.pdf
+	scale 50
 
 \end_inset
 
@@ -838,32 +838,29 @@ reference "fig:benchmark:strikeslip:scaling"
 
 \end_inset
 
- compares the runtime for the benchmark at 500 m resolution for 1 to 16
- processors.
- The runtime includes both the time required to distribute the mesh over
- the processors as well as write the output to VTK files.
- These are known bottlenecks in the code and future releases will eliminate
- these bottlenecks.
- The runtime minus the time required for distributing the mesh is also included
- in Figure 
+ compares the runtime for the benchmark (elastic solution only) at 500 m
+ resolution for 1 to 16 processors.
+ The total runtime is the time required for the entire simulation, including
+ initialization, distributing the mesh over the processors, solving the
+ problem in parallel, and writing the output to VTK files.
+ Some initialization steps, writing the output to VTK files, and distributing
+ the mesh are essentially serial processes.
+ For simulations with many time steps these steps will generally occupy
+ only a fraction of the runtime, and the runtime will be dominated by the
+ solution of the equations.
+ Figure 
 \begin_inset LatexCommand ref
 reference "fig:benchmark:strikeslip:scaling"
 
 \end_inset
 
-.
- This provides a more accurate representation of the parallel-performance
- of the computational portion of the code.
- As shown in Figure 
-\begin_inset LatexCommand ref
-reference "fig:benchmark:strikeslip:summary"
-
-\end_inset
-
-, the number of iterations required to solve the problem increases with
- problem side.
- Switching to a multi-grid solver will lead to fast convergence with a small
- number of iterations that does not increase with problem size.
+ also shows the total time required to form the Jacobian of the system,
+ form the residual, and solve the system.
+ These steps provide a more accurate representation of the parallel-performance
+ of the computational portion of the code and show excellent performance
+ as evident in the approximately linear slope of 0.7.
+ S linear decrease with a slope of 1 would indicate strong scaling, which
+ is rarely achieved in real applications.
 \end_layout
 
 \begin_layout Standard
@@ -873,13 +870,13 @@ reference "fig:benchmark:strikeslip:summary"
 placement H
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/scaling.png
-	scale 33
+	filename figs/scaling.pdf
+	scale 75
 
 \end_inset
 
@@ -893,10 +890,11 @@ status collapsed
 Parallel performance of PyLith for the strike-slip benchmark problem with
  tetrahedral cells and linear basis functions with a uniform discretization
  size of 500 m.
- The total runtime (total) and the runtime minus the time required to distribute
- the mesh (compute) are shown.
- A linear decrease with a slope of 1 would indicate strong scaling,  which
- is rarely achieved in any real application.
+ The total runtime (total) and the runtime to compute the Jacobian and residual
+ and solve the system (compute) are shown.
+ The compute runtime decreases with a slope of about 0.7; a linear decrease
+ with a slope of 1 would indicate strong scaling,  which is rarely achieved
+ in any real application.
  
 \begin_inset LatexCommand label
 name "fig:benchmark:strikeslip:scaling"
