@@ -128,16 +128,152 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
   _faultMesh->allocate(_cumSlip);
   assert(!_cumSlip.isNull());
 
-  // Allocate cumulative solution field
-  _cumSoln = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
-  _cumSoln->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), 
-								     vertices->end()), 
-						   *std::max_element(vertices->begin(), 
-								     vertices->end())+1));
-  _cumSoln->setFiberDimension(vertices, cs->spaceDim());
-  _faultMesh->allocate(_cumSoln);
-  assert(!_cumSoln.isNull());
 } // initialize
+
+// ----------------------------------------------------------------------
+// Integrate contribution of cohesive cells to residual term that
+// require assembly across processors.
+void
+pylith::faults::FaultCohesiveKin::integrateResidual(
+				const ALE::Obj<real_section_type>& residual,
+				const double t,
+				topology::FieldsManager* const fields,
+				const ALE::Obj<Mesh>& mesh,
+				const spatialdata::geocoords::CoordSys* cs)
+{ // integrateResidual
+  assert(!residual.isNull());
+  assert(0 != fields);
+  assert(!mesh.isNull());
+
+  // Cohesive cells with normal vertices i and j, and constraint
+  // vertex k make 2 contributions to the residual:
+  //
+  //   * DOF i and j: internal forces in soln field associated with 
+  //                  slip
+  //   * DOF k: slip values
+
+  if (!_useSolnIncr)
+    return;
+
+  // Get cell information and setup storage for cell data
+  const int spaceDim = _quadrature->spaceDim();
+  const int orientationSize = spaceDim*spaceDim;
+  const int numBasis = _quadrature->numBasis();
+  const int numConstraintVert = numBasis;
+  const int numCorners = 3*numConstraintVert; // cohesive cell
+  const int numQuadPts = _quadrature->numQuadPts();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
+  const double_array& basis = _quadrature->basis();
+  const double_array& jacobianDet = _quadrature->jacobianDet();
+
+  double_array cellOrientation(numConstraintVert*orientationSize);
+  double_array cellSoln(numCorners*spaceDim);
+  double_array cellStiffness(numConstraintVert);
+  double_array cellResidual(numCorners*spaceDim);
+  double_array cellArea(numConstraintVert);
+  double_array cellAreaAssembled(numConstraintVert);
+
+  // Get cohesive cells
+  const ALE::Obj<Mesh::label_sequence>& cellsCohesive = 
+    mesh->getLabelStratum("material-id", id());
+  assert(!cellsCohesive.isNull());
+  const Mesh::label_sequence::iterator cellsCohesiveBegin =
+    cellsCohesive->begin();
+  const Mesh::label_sequence::iterator cellsCohesiveEnd =
+    cellsCohesive->end();
+  const int cellsCohesiveSize = cellsCohesive->size();
+
+  // Get section information
+  const ALE::Obj<real_section_type>& solution = fields->getSolution();
+  assert(!solution.isNull());  
+
+  for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+       c_iter != cellsCohesiveEnd;
+       ++c_iter) {
+    const Mesh::point_type c_fault = _cohesiveToFault[*c_iter];
+    cellArea = 0.0;
+    cellResidual = 0.0;
+
+    // Compute contributory area for cell (to weight contributions)
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+        const double dArea = wt*basis[iQuad*numBasis+iBasis];
+	cellArea[iBasis] += dArea;
+      } // for
+    } // for
+        
+    // Get orientations at fault cell's vertices.
+    _faultMesh->restrictClosure(_orientation, c_fault, &cellOrientation[0], 
+				cellOrientation.size());
+    
+    // Get pseudo stiffness at fault cell's vertices.
+    _faultMesh->restrictClosure(_pseudoStiffness, c_fault, &cellStiffness[0], 
+				cellStiffness.size());
+    
+    // Get pseudo stiffness at fault cell's vertices.
+    _faultMesh->restrictClosure(_area, c_fault, &cellAreaAssembled[0], 
+				cellAreaAssembled.size());
+    
+    // Get solution at cohesive cell's vertices.
+    mesh->restrictClosure(solution, *c_iter, &cellSoln[0], cellSoln.size());
+    
+    for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
+      // Blocks in cell matrix associated with normal cohesive
+      // vertices i and j and constraint vertex k
+      const int indexI = iConstraint;
+      const int indexJ = iConstraint +   numConstraintVert;
+      const int indexK = iConstraint + 2*numConstraintVert;
+
+      const double pseudoStiffness = cellStiffness[iConstraint];
+      const double wt = pseudoStiffness * 
+	cellArea[iConstraint] / cellAreaAssembled[iConstraint];
+      
+      // Get orientation at constraint vertex
+      const real_section_type::value_type* constraintOrient = 
+	&cellOrientation[iConstraint*orientationSize];
+      assert(0 != constraintOrient);
+      
+      // Entries associated with constraint forces applied at node i
+      for (int iDim=0; iDim < spaceDim; ++iDim) {
+	for (int kDim=0; kDim < spaceDim; ++kDim)
+	  cellResidual[indexI*spaceDim+iDim] -=
+	    cellSoln[indexK*spaceDim+kDim] * 
+	    -constraintOrient[kDim*spaceDim+iDim] * wt;
+      } // for
+      
+	// Entries associated with constraint forces applied at node j
+      for (int jDim=0; jDim < spaceDim; ++jDim) {
+	for (int kDim=0; kDim < spaceDim; ++kDim)
+	  cellResidual[indexJ*spaceDim+jDim] -=
+	    cellSoln[indexK*spaceDim+kDim] * 
+	    constraintOrient[kDim*spaceDim+jDim] * wt;
+      } // for
+    } // for
+
+#if 0 // DEBUGGING
+    std::cout << "Updating fault residual for cell " << *c_iter << std::endl;
+    for(int i = 0; i < numConstraintVert; ++i) {
+      std::cout << "  stif["<<i<<"]: " << cellStiffness[i] << std::endl;
+    }
+    for(int i = 0; i < numConstraintVert*spaceDim; ++i) {
+      std::cout << "  slip["<<i<<"]: " << cellSlip[i] << std::endl;
+    }
+    for(int i = 0; i < numCorners*spaceDim; ++i) {
+      std::cout << "  soln["<<i<<"]: " << cellSoln[i] << std::endl;
+    }
+    for(int i = 0; i < numCorners*spaceDim; ++i) {
+      std::cout << "  v["<<i<<"]: " << cellResidual[i] << std::endl;
+    }
+#endif
+
+    mesh->updateAdd(residual, *c_iter, &cellResidual[0]);
+  } // for
+
+  // FIX THIS
+  PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*7);
+} // integrateResidual
 
 // ----------------------------------------------------------------------
 // Integrate contribution of cohesive cells to residual term that do
@@ -160,31 +296,6 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
   //   * DOF i and j: internal forces in soln field associated with 
   //                  slip
   //   * DOF k: slip values
-
-  // Get cell information and setup storage for cell data
-  const int spaceDim = _quadrature->spaceDim();
-  const int orientationSize = spaceDim*spaceDim;
-  const int numConstraintVert = _quadrature->numBasis();
-  const int numCorners = 3*numConstraintVert; // cohesive cell
-  double_array cellOrientation(numConstraintVert*orientationSize);
-  double_array cellResidual(numCorners*spaceDim);
-  double_array cellSoln(numCorners*spaceDim);
-  double_array cellSlip(numConstraintVert*spaceDim);
-  double_array cellStiffness(numConstraintVert);
-
-  // Get cohesive cells
-  const ALE::Obj<Mesh::label_sequence>& cellsCohesive = 
-    mesh->getLabelStratum("material-id", id());
-  assert(!cellsCohesive.isNull());
-  const Mesh::label_sequence::iterator cellsCohesiveBegin =
-    cellsCohesive->begin();
-  const Mesh::label_sequence::iterator cellsCohesiveEnd =
-    cellsCohesive->end();
-  const int cellsCohesiveSize = cellsCohesive->size();
-
-  // Get section information
-  const ALE::Obj<real_section_type>& solution = fields->getSolution();
-  assert(!solution.isNull());  
 
   assert(!_slip.isNull());
   _slip->zero();
@@ -212,92 +323,24 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
     } // for
   } // else
 
-  for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
-       c_iter != cellsCohesiveEnd;
-       ++c_iter) {
-    const Mesh::point_type c_fault = _cohesiveToFault[*c_iter];
-
-    // Get residual at fault cell's vertices.  We want to only
-    // overwrite values that need updating.
-    mesh->restrictClosure(residual, *c_iter, &cellResidual[0], 
-			  cellResidual.size());
-    
-    // Get orientations at fault cell's vertices.
-    _faultMesh->restrictClosure(_orientation, c_fault, &cellOrientation[0], 
-				cellOrientation.size());
-    
-    // Get pseudo stiffness at fault cell's vertices.
-    _faultMesh->restrictClosure(_pseudoStiffness, c_fault, &cellStiffness[0], 
-				cellStiffness.size());
-    
-    // Get slip at fault cell's vertices.
-    _faultMesh->restrictClosure(_slip, c_fault, &cellSlip[0], cellSlip.size());
-
-    // Get solution at cohesive cell's vertices.
-    mesh->restrictClosure(solution, *c_iter, &cellSoln[0], cellSoln.size());
-    
-    for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
-      // Blocks in cell matrix associated with normal cohesive
-      // vertices i and j and constraint vertex k
-      const int indexI = iConstraint;
-      const int indexJ = iConstraint +   numConstraintVert;
-      const int indexK = iConstraint + 2*numConstraintVert;
-
-      const double pseudoStiffness = cellStiffness[iConstraint];
-
-      // Set slip values in residual vector; contributions are at DOF of
-      // constraint vertices (k) of the cohesive cells
-      for (int iDim=0; iDim < spaceDim; ++iDim)
-	cellResidual[indexK*spaceDim+iDim] = 
-	  cellSlip[iConstraint*spaceDim+iDim];
-      
-      if (_useSolnIncr) {
-	// Get orientation at constraint vertex
-	const real_section_type::value_type* constraintOrient = 
-	  &cellOrientation[iConstraint*orientationSize];
-	assert(0 != constraintOrient);
-
-	// Entries associated with constraint forces applied at node i
-	for (int iDim=0; iDim < spaceDim; ++iDim) {
-	  cellResidual[indexI*spaceDim+iDim] = 0.0; // ?
-	  for (int kDim=0; kDim < spaceDim; ++kDim)
-	    cellResidual[indexI*spaceDim+iDim] -=
-	      cellSoln[indexK*spaceDim+kDim] * 
-	      -constraintOrient[kDim*spaceDim+iDim] * pseudoStiffness;
-	} // for
-	
-	// Entries associated with constraint forces applied at node j
-	for (int jDim=0; jDim < spaceDim; ++jDim) {
-	  cellResidual[indexJ*spaceDim+jDim] = 0.0; // ?
-	  for (int kDim=0; kDim < spaceDim; ++kDim)
-	    cellResidual[indexJ*spaceDim+jDim] -=
-	      cellSoln[indexK*spaceDim+kDim] * 
-	      constraintOrient[kDim*spaceDim+jDim] * pseudoStiffness;
-	} // for
-      } // if
-    } // for
-
-    
-#if 0 // DEBUGGING
-    std::cout << "Updating fault residual for cell " << *c_iter << std::endl;
-    for(int i = 0; i < numConstraintVert; ++i) {
-      std::cout << "  stif["<<i<<"]: " << cellStiffness[i] << std::endl;
-    }
-    for(int i = 0; i < numConstraintVert*spaceDim; ++i) {
-      std::cout << "  slip["<<i<<"]: " << cellSlip[i] << std::endl;
-    }
-    for(int i = 0; i < numCorners*spaceDim; ++i) {
-      std::cout << "  soln["<<i<<"]: " << cellSoln[i] << std::endl;
-    }
-    for(int i = 0; i < numCorners*spaceDim; ++i) {
-      std::cout << "  v["<<i<<"]: " << cellResidual[i] << std::endl;
-    }
-#endif
-
-    // Assemble cell contribution into field
-    mesh->update(residual, *c_iter, &cellResidual[0]);
-  } // for
-  PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*7);
+  const int spaceDim = _quadrature->spaceDim();
+  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  Mesh::renumbering_type& renumbering = _faultMesh->getRenumbering();
+  for (Mesh::label_sequence::iterator v_iter=vertices->begin(); 
+       v_iter != verticesEnd;
+       ++v_iter)
+    if (renumbering.find(*v_iter) != renumbering.end()) {
+      const int vertexFault = renumbering[*v_iter];
+      const int vertexMesh = *v_iter;
+      const real_section_type::value_type* slip = 
+	_slip->restrictPoint(vertexFault);
+      assert(spaceDim == _slip->getFiberDimension(vertexFault));
+      assert(spaceDim == residual->getFiberDimension(vertexMesh));
+      assert(0 != slip);
+      residual->updatePoint(vertexMesh, slip);
+    } // if
 } // integrateResidualAssembled
 
 // ----------------------------------------------------------------------
@@ -457,33 +500,6 @@ pylith::faults::FaultCohesiveKin::updateState(const double t,
   if (!_useSolnIncr)
     _cumSlip->zero();
   _cumSlip->add(_cumSlip, _slip);
-
-  // Update cumulative solution for calculating total change in tractions.
-  assert(!_cumSoln.isNull());
-  if (!_useSolnIncr)
-    _cumSoln->zero();
-
-  const ALE::Obj<real_section_type>& solution = fields->getSolution();
-
-  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
-  Mesh::renumbering_type& renumbering = _faultMesh->getRenumbering();
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin(); 
-       v_iter != verticesEnd;
-       ++v_iter)
-    if (renumbering.find(*v_iter) != renumbering.end()) {
-      const real_section_type::value_type* vertexSoln = 
-	solution->restrictPoint(*v_iter);
-      assert(0 != vertexSoln);
-      const int fv = renumbering[*v_iter];
-      _cumSoln->updateAddPoint(fv, vertexSoln);
-    } // if
-
-#if 0 // DEBUGGING
-  _faultMesh->view("FAULT MESH");
-  _cumSoln->view("CUMULATIVE SOLUTION");
-#endif
 } // updateState
 
 // ----------------------------------------------------------------------
@@ -590,7 +606,8 @@ pylith::faults::FaultCohesiveKin::vertexField(
     return _bufferTmp;
   } else if (0 == strcasecmp("traction_change", name)) {
     *fieldType = VECTOR_FIELD;
-    _calcTractionsChange(&_bufferVertexVector);
+    const ALE::Obj<real_section_type>& solution = fields->getSolution();
+    _calcTractionsChange(&_bufferVertexVector, mesh, solution);
     return _bufferVertexVector;
 
   } else {
@@ -711,19 +728,10 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
     ncV.clear();
   } // for
 
-#if 0 // DEBUGGING
-  _orientation->view("ORIENTATION Before complete");
-  _orientation->setDebug(2);
-#endif
   // Assemble orientation information
-
   ALE::Completion::completeSectionAdd(_faultMesh->getSendOverlap(),
 				      _faultMesh->getRecvOverlap(),
 				      _orientation, _orientation);
-
-#if 0 // DEBUGGING
-  _orientation->view("ORIENTATION After complete");
-#endif
 
   // Loop over vertices, make orientation information unit magnitude
   double_array vertexDir(orientationSize);
@@ -903,8 +911,6 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
   const double_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
-  const int jacobianSize = (cellDim > 0) ? spaceDim * cellDim : 1;
-  double_array jacobian(jacobianSize);
   double jacobianDet = 0;
   double_array cellArea(numBasis);
   double_array cellVertices(numBasis*spaceDim);
@@ -920,7 +926,7 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
     const double_array& basis = _quadrature->basis();
     const double_array& jacobianDet = _quadrature->jacobianDet();
 
-    // Compute action for traction bc terms
+    // Compute area
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const double wt = quadWts[iQuad] * jacobianDet[iQuad];
       for (int iBasis=0; iBasis < numBasis; ++iBasis) {
@@ -948,18 +954,26 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
 //   NOTE: We must convert vertex labels to fault vertex labels
 void
 pylith::faults::FaultCohesiveKin::_calcTractionsChange(
-					       ALE::Obj<real_section_type>* tractions)
+				 ALE::Obj<real_section_type>* tractions,
+				 const ALE::Obj<Mesh>& mesh,
+				 const ALE::Obj<real_section_type>& solution)
 { // _calcTractionsChange
   assert(0 != tractions);
+  assert(!mesh.isNull());
+  assert(!solution.isNull());
   assert(!_faultMesh.isNull());
-  assert(!_cumSoln.isNull());
   assert(!_pseudoStiffness.isNull());
   assert(!_area.isNull());
 
   const ALE::Obj<Mesh::label_sequence>& vertices = 
-    _faultMesh->depthStratum(0);
+    mesh->depthStratum(0);
   const Mesh::label_sequence::iterator verticesEnd = vertices->end();
-  const int numVertices = vertices->size();
+
+  const ALE::Obj<Mesh::label_sequence>& fvertices = 
+    _faultMesh->depthStratum(0);
+  const Mesh::label_sequence::iterator fverticesEnd = fvertices->end();
+  const int numFaultVertices = fvertices->size();
+  Mesh::renumbering_type& renumbering = _faultMesh->getRenumbering();
 
 #if 0 // MOVE TO SEPARATE CHECK METHOD
   // Check fault mesh and volume mesh coordinates
@@ -983,53 +997,55 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   }
 #endif
 
-  // Fiber dimension of tractions matches fiber dimension of solution
-  const int fiberDim = _cumSoln->getFiberDimension(*vertices->begin());
+  // Fiber dimension of tractions matches spatial dimension.
+  const int fiberDim = _quadrature->spaceDim();
   double_array tractionValues(fiberDim);
 
   // Allocate buffer for tractions field (if nec.).
   if (tractions->isNull() ||
-      fiberDim != (*tractions)->getFiberDimension(*vertices->begin())) {
+      fiberDim != (*tractions)->getFiberDimension(*fvertices->begin())) {
     *tractions = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
-    (*tractions)->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), 
-									   vertices->end()), 
-							 *std::max_element(vertices->begin(),
-									   vertices->end())+1));
-    (*tractions)->setFiberDimension(vertices, fiberDim);
+    (*tractions)->setChart(real_section_type::chart_type(*std::min_element(fvertices->begin(), 
+									   fvertices->end()), 
+							 *std::max_element(fvertices->begin(),
+									   fvertices->end())+1));
+    (*tractions)->setFiberDimension(fvertices, fiberDim);
     _faultMesh->allocate(*tractions);
     assert(!tractions->isNull());
   } // if
   
   for (Mesh::label_sequence::iterator v_iter = vertices->begin(); 
        v_iter != verticesEnd;
-       ++v_iter) {
-    assert(fiberDim == _cumSoln->getFiberDimension(*v_iter));
-    assert(fiberDim == (*tractions)->getFiberDimension(*v_iter));
-    assert(1 == _pseudoStiffness->getFiberDimension(*v_iter));
-    assert(1 == _area->getFiberDimension(*v_iter));
+       ++v_iter)
+    if (renumbering.find(*v_iter) != renumbering.end()) {
+      const int vertexMesh = *v_iter;
+      const int vertexFault = renumbering[*v_iter];
+      assert(fiberDim == solution->getFiberDimension(vertexMesh));
+      assert(fiberDim == (*tractions)->getFiberDimension(vertexFault));
+      assert(1 == _pseudoStiffness->getFiberDimension(vertexFault));
+      assert(1 == _area->getFiberDimension(vertexFault));
 
-    const real_section_type::value_type* solutionValues =
-      _cumSoln->restrictPoint(*v_iter);
-    assert(0 != solutionValues);
-    const real_section_type::value_type* pseudoStiffValue = 
-      _pseudoStiffness->restrictPoint(*v_iter);
-    assert(0 != _pseudoStiffness);
-    const real_section_type::value_type* areaValue = 
-      _area->restrictPoint(*v_iter);
-    assert(0 != _area);
+      const real_section_type::value_type* solutionValues =
+	solution->restrictPoint(vertexMesh);
+      assert(0 != solutionValues);
+      const real_section_type::value_type* pseudoStiffValue = 
+	_pseudoStiffness->restrictPoint(vertexFault);
+      assert(0 != _pseudoStiffness);
+      const real_section_type::value_type* areaValue = 
+	_area->restrictPoint(vertexFault);
+      assert(0 != _area);
 
-    const double scale = pseudoStiffValue[0] / areaValue[0];
-    for (int i=0; i < fiberDim; ++i)
-      tractionValues[i] = solutionValues[i] * scale;
+      const double scale = pseudoStiffValue[0] / areaValue[0];
+      for (int i=0; i < fiberDim; ++i)
+	tractionValues[i] = solutionValues[i] * scale;
 
-    (*tractions)->updatePoint(*v_iter, &tractionValues[0]);
-  } // for
+      (*tractions)->updatePoint(vertexFault, &tractionValues[0]);
+    } // if
 
-  PetscLogFlops(numVertices * (1 + fiberDim) );
+  PetscLogFlops(numFaultVertices * (1 + fiberDim) );
 
 #if 0 // DEBUGGING
   _faultMesh->view("FAULT MESH");
-  _cumSoln->view("CUMULATIVE SOLUTION");
   _area->view("AREA");
   _pseudoStiffness->view("CONDITIONING");
   (*tractions)->view("TRACTIONS");

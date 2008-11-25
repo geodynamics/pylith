@@ -110,6 +110,20 @@ public :
 		  spatialdata::spatialdb::SpatialDB* matDB);
 
   /** Integrate contributions to residual term (r) for operator that
+   * require assembly across processors.
+   *
+   * @param residual Field containing values for residual
+   * @param t Current time
+   * @param fields Solution fields
+   * @param mesh Finite-element mesh
+   */
+  void integrateResidual(const ALE::Obj<real_section_type>& residual,
+			 const double t,
+			 topology::FieldsManager* const fields,
+			 const ALE::Obj<Mesh>& mesh,
+			 const spatialdata::geocoords::CoordSys* cs);
+
+  /** Integrate contributions to residual term (r) for operator that
    * do not require assembly across cells, vertices, or processors.
    *
    * @param residual Field containing values for residual
@@ -221,8 +235,12 @@ private :
   /** Compute change in tractions on fault surface using solution.
    *
    * @param tractions Field for tractions.
+   * @param mesh Finite-element mesh for domain
+   * @param solution Solution over domain
    */
-  void _calcTractionsChange(ALE::Obj<real_section_type>* tractions);
+  void _calcTractionsChange(ALE::Obj<real_section_type>* tractions,
+			    const ALE::Obj<Mesh>& mesh,
+			    const ALE::Obj<real_section_type>& solution);
 
   /// Allocate scalar field for output of vertex information.
   void _allocateBufferVertexScalar(void);
@@ -267,10 +285,6 @@ private :
 
   /// Field over the fault mesh vertices of vector field of cumulative slip.
   ALE::Obj<real_section_type> _cumSlip;
-
-  /// Field over the fault mesh vertices of vector field of cumulative
-  /// solution. This permits computing the total change in tractions.
-  ALE::Obj<real_section_type> _cumSoln;
 
   std::map<Mesh::point_type, Mesh::point_type> _cohesiveToFault;
 
