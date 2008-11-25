@@ -25,6 +25,10 @@ RELEASE NOTES
   * Added stages to PETSc logging (--petsc.log_summary=1) to collect
     event logging into groups.
 
+  * Added ability to set the minimum shear wave speed in SCEC CVM-H
+    queries. This prevents using physical properties that correspond
+    to a nearly incompressible elastic material.
+
   * Bug fixes
 
     - Fixed partitioning options. Partitioning options were ignored in
@@ -34,3 +38,6 @@ RELEASE NOTES
       across processors. This bug caused errors in the computation of
       the change in tractions over the fault surface and errors while
       time-stepping in parallel.
+
+    - Fixed bug where fault material property databases were not
+      closed, resulting in memory not being deallocated.
