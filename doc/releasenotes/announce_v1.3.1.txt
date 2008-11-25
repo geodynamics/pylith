@@ -32,5 +32,5 @@ RELEASE NOTES
 
     - Fixed assembling of Jacobian, residual, and fault sections
       across processors. This bug caused errors in the computation of
-      the change in tractions over the fault surface.
-
+      the change in tractions over the fault surface and errors while
+      time-stepping in parallel.
