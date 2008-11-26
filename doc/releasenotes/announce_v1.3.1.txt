@@ -5,7 +5,7 @@ code designed to solve dynamic elastic problems and quasi-static
 viscoelastic problems in tectonic deformation.
 
 This release fixes several bugs associated with running PyLith in
-parallel. These include selection of the partitioner, calculating the
+parallel, including selection of the partitioner, calculating the
 change in tractions on the fault surface, and quasi-static time
 stepping. The PETSc logging has been enhanced by separating the events
 using stages. This release also includes some minor performance
