@@ -5,12 +5,12 @@ code designed to solve dynamic elastic problems and quasi-static
 viscoelastic problems in tectonic deformation.
 
 This release fixes several bugs associated with running PyLith in
-parallel. These include selection of the partitioner and calculating
-the change in tractions on the fault surface. The PETSc logging has
-been enhanced by separating the events using stages. This release also
-includes some minor performance improvements to the Sieve
-implementation. We encourage all users of previous PyLith releases to
-switch to this latest release.
+parallel. These include selection of the partitioner, calculating the
+change in tractions on the fault surface, and quasi-static time
+stepping. The PETSc logging has been enhanced by separating the events
+using stages. This release also includes some minor performance
+improvements to the Sieve implementation. We encourage all users of
+previous PyLith releases to switch to this latest release.
 
 You can download the source code and binaries from
 
@@ -41,3 +41,15 @@ RELEASE NOTES
 
     - Fixed bug where fault material property databases were not
       closed, resulting in memory not being deallocated.
+
+IMPORTANT NOTE ON UNIT TESTS
+
+  Several unit tests in this release will fail, but this release has
+  been thoroughly checked to verify that it produces correct
+  results. The failing unit tests are associated with new vertices
+  being added to the opposite side of the fault during creation of the
+  cohesive cells in some cases compared with previous
+  implementations. Instead of changing the test data in many locations
+  and potentially encountering this issue in the future, we are going
+  to make the unit tests smarter. We will make another release when
+  these unit tests are updated.
