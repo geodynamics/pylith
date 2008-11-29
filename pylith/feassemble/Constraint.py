@@ -80,12 +80,15 @@ class Constraint(object):
     return
 
 
-  def initialize(self, totalTime, numTimeSteps):
+  def initialize(self, totalTime, numTimeSteps, normalizer):
     """
     Do initialization.
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
+
+    assert(None != self.cppHandle)
+    #self.cppHandle.normalizer = normalizer.cppHandle
 
     self._logger.eventEnd(logEvent)
     return

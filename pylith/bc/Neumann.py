@@ -108,17 +108,17 @@ class Neumann(BoundaryCondition, Integrator):
     return
   
 
-  def initialize(self, totalTime, numTimeSteps):
+  def initialize(self, totalTime, numTimeSteps, normalizer):
     """
     Initialize Neumann boundary condition.
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
     
-    Integrator.initialize(self, totalTime, numTimeSteps)
+    Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
     
     self.cppHandle.quadrature = self.quadrature.cppHandle
-    BoundaryCondition.initialize(self, totalTime, numTimeSteps)
+    BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 
     from pylith.topology.Mesh import Mesh
     self.boundaryMesh = Mesh()

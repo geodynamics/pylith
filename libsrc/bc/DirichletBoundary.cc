@@ -16,6 +16,7 @@
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <Selection.hh> // USES submesh algorithms
 
@@ -117,6 +118,11 @@ pylith::bc::DirichletBoundary::initialize(
 
   double_array queryValues(2*numFixedDOF);
 
+  assert(0 != _normalizer);
+  const double lengthScale = _normalizer->lengthScale();
+  const double velocityScale = 
+    _normalizer->lengthScale() / _normalizer->timeScale();
+
   for (Mesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter) {
@@ -133,6 +139,8 @@ pylith::bc::DirichletBoundary::initialize(
       msg << ") using spatial database " << _db->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
+    for (int i=0; i < numFixedDOF; ++i)
+      _normalizer->nondimensionalize(queryValues[i], lengthScale);
 
     err = _dbRate->query(&queryValues[numFixedDOF], numFixedDOF, vCoords, 
 			 spaceDim, cs);
@@ -144,6 +152,8 @@ pylith::bc::DirichletBoundary::initialize(
       msg << ") using spatial database " << _dbRate->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
+    for (int i=0; i < numFixedDOF; ++i)
+      _normalizer->nondimensionalize(queryValues[numFixedDOF+i], velocityScale);
 
     _values->updatePoint(*v_iter, &queryValues[0]);
   } // for
@@ -310,20 +320,64 @@ pylith::bc::DirichletBoundary::vertexField(VectorFieldEnum* fieldType,
 					   const ALE::Obj<Mesh>& mesh,
 					   topology::FieldsManager* const fields)
 { // getVertexField
-  
+  assert(0 != fieldType);
+  assert(0 != name);
+  assert(!_boundaryMesh.isNull());
+  assert(!_values.isNull());  
+  assert(0 != _normalizer);
 
+  const ALE::Obj<Mesh::label_sequence>& vertices = 
+    _boundaryMesh->depthStratum(0);
+  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+
+  ALE::Obj<real_section_type> field = 0;
+  int fiberDim = 0;
+  double scale = 0.0;
   if (0 == strcasecmp(name, "initial")) {
     *fieldType = VECTOR_FIELD;
-    _buffer = _values->getFibration(0);
+    field = _values->getFibration(0);
+    fiberDim = 
+      (vertices->size() > 0) ? field->getFiberDimension(*vertices->begin()) : 0;
+    scale = _normalizer->lengthScale();
   } else if (0 == strcasecmp(name, "rate-of-change")) {
     *fieldType = VECTOR_FIELD;
-    _buffer = _values->getFibration(1);
+    field = _values->getFibration(0);
+    fiberDim = 
+      (vertices->size() > 0) ? field->getFiberDimension(*vertices->begin()) : 0;
+    scale = _normalizer->lengthScale() / _normalizer->timeScale();
   } else {
     std::ostringstream msg;
     msg << "Unknown field '" << name << "' requested for Dirichlet BC '" 
 	<< _label << "'.";
     throw std::runtime_error(msg.str());
   } // else
+
+  // Allocate buffer if necessary
+  if (_buffer.isNull()) {
+    _buffer = new real_section_type(_boundaryMesh->comm(), 
+				    _boundaryMesh->debug());
+    _buffer->setChart(real_section_type::chart_type(
+				    *std::min_element(vertices->begin(),
+						      vertices->end()),
+				    *std::max_element(vertices->begin(),
+						      vertices->end())+1));
+    _buffer->setFiberDimension(vertices, fiberDim);
+    _boundaryMesh->allocate(_buffer);
+  } // if
+
+  // dimensionalize values
+  double_array pointValues(fiberDim);
+  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != verticesEnd;
+       ++v_iter) {
+    assert(fiberDim == field->getFiberDimension(*v_iter));
+    assert(fiberDim == _buffer->getFiberDimension(*v_iter));
+    const real_section_type::value_type* values = 
+      field->restrictPoint(*v_iter);
+    for (int i=0; i < fiberDim; ++i)
+      pointValues[i] = _normalizer->dimensionalize(values[i], scale);
+    _buffer->updatePointAll(*v_iter, &pointValues[0]);
+  } // for
 
   return _buffer;
 } // getVertexField

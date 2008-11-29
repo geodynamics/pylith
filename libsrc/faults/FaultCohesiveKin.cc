@@ -25,6 +25,7 @@
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES CoordSys
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <Completion.hh> // USES completeSection
 #include <Selection.hh> // Algorithms for submeshes
@@ -86,7 +87,6 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
   CohesiveTopology::createParallel(&_faultMesh, &_cohesiveToFault, mesh, id(),
 				   _useLagrangeConstraints());
   //_faultMesh->getLabel("height")->view("Fault mesh height");
-
   //_faultMesh->view("FAULT MESH");
 
   // Setup pseudo-stiffness of cohesive cells to improve conditioning
@@ -105,25 +105,24 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
        ++s_iter) {
     EqKinSrc* src = s_iter->second;
     assert(0 != src);
-    src->initialize(_faultMesh, cs);
+    src->initialize(_faultMesh, cs, *_normalizer);
   } // for
 
   // Allocate slip field
   const ALE::Obj<Mesh::label_sequence>& vertices = _faultMesh->depthStratum(0);
   _slip = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
-  _slip->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), 
-								  vertices->end()), 
-						*std::max_element(vertices->begin(), vertices->end())+1));
+  _slip->setChart(real_section_type::chart_type(
+		     *std::min_element(vertices->begin(), vertices->end()), 
+		     *std::max_element(vertices->begin(), vertices->end())+1));
   _slip->setFiberDimension(vertices, cs->spaceDim());
   _faultMesh->allocate(_slip);
   assert(!_slip.isNull());
 
   // Allocate cumulative slip field
   _cumSlip = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
-  _cumSlip->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), 
-								     vertices->end()), 
-						   *std::max_element(vertices->begin(),
-								     vertices->end())+1));
+  _cumSlip->setChart(real_section_type::chart_type(
+		    *std::min_element(vertices->begin(), vertices->end()), 
+		    *std::max_element(vertices->begin(), vertices->end())+1));
   _cumSlip->setFiberDimension(vertices, cs->spaceDim());
   _faultMesh->allocate(_cumSlip);
   assert(!_cumSlip.isNull());
@@ -840,6 +839,9 @@ pylith::faults::FaultCohesiveKin::_calcConditioning(
     _faultMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
 
+  assert(0 != _normalizer);
+  const double pressureScale = _normalizer->pressureScale();
+
   double_array matprops(numStiffnessVals);
   int count = 0;
   for (Mesh::label_sequence::iterator v_iter=vertices->begin();
@@ -862,8 +864,8 @@ pylith::faults::FaultCohesiveKin::_calcConditioning(
     const double density = matprops[0];
     const double vs = matprops[1];
     const double mu = density * vs*vs;
-    //const double mu = 1.0;
-    _pseudoStiffness->updatePoint(*v_iter, &mu);
+    const double muN = _normalizer->nondimensionalize(mu, pressureScale);
+    _pseudoStiffness->updatePoint(*v_iter, &muN);
   } // for
   PetscLogFlops(count * 2);
 
@@ -1005,10 +1007,9 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   if (tractions->isNull() ||
       fiberDim != (*tractions)->getFiberDimension(*fvertices->begin())) {
     *tractions = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
-    (*tractions)->setChart(real_section_type::chart_type(*std::min_element(fvertices->begin(), 
-									   fvertices->end()), 
-							 *std::max_element(fvertices->begin(),
-									   fvertices->end())+1));
+    (*tractions)->setChart(real_section_type::chart_type(
+		   *std::min_element(fvertices->begin(), fvertices->end()), 
+		   *std::max_element(fvertices->begin(), fvertices->end())+1));
     (*tractions)->setFiberDimension(fvertices, fiberDim);
     _faultMesh->allocate(*tractions);
     assert(!tractions->isNull());
@@ -1063,7 +1064,9 @@ pylith::faults::FaultCohesiveKin::_allocateBufferVertexScalar(void)
 						_faultMesh->debug());
     const ALE::Obj<Mesh::label_sequence>& vertices = 
       _faultMesh->depthStratum(0);
-    _bufferVertexScalar->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
+    _bufferVertexScalar->setChart(real_section_type::chart_type(
+		 *std::min_element(vertices->begin(), vertices->end()),
+		 *std::max_element(vertices->begin(), vertices->end())+1));
     _bufferVertexScalar->setFiberDimension(vertices, fiberDim);
     _faultMesh->allocate(_bufferVertexScalar);
   } // if
@@ -1081,7 +1084,9 @@ pylith::faults::FaultCohesiveKin::_allocateBufferVertexVector(void)
 						_faultMesh->debug());
     const ALE::Obj<Mesh::label_sequence>& vertices = 
       _faultMesh->depthStratum(0);
-    _bufferVertexVector->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
+    _bufferVertexVector->setChart(real_section_type::chart_type(
+		 *std::min_element(vertices->begin(), vertices->end()),
+		 *std::max_element(vertices->begin(), vertices->end())+1));
     _bufferVertexVector->setFiberDimension(vertices, fiberDim);
     _faultMesh->allocate(_bufferVertexVector);
   } // if  

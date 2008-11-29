@@ -17,6 +17,7 @@
 #include "Quadrature.hh" // USES Quadrature
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include <assert.h> // USES assert()
@@ -26,6 +27,7 @@
 pylith::feassemble::Integrator::Integrator(void) :
   _dt(-1.0),
   _quadrature(0),
+  _normalizer(new spatialdata::units::Nondimensional),
   _gravityField(0),
   _cellVector(0),
   _cellMatrix(0),
@@ -39,6 +41,7 @@ pylith::feassemble::Integrator::Integrator(void) :
 pylith::feassemble::Integrator::~Integrator(void)
 { // destructor
   delete _quadrature; _quadrature = 0;
+  delete _normalizer; _normalizer = 0;
   delete[] _cellVector; _cellVector = 0;
   delete[] _cellMatrix; _cellMatrix = 0;
 } // destructor
@@ -55,6 +58,17 @@ pylith::feassemble::Integrator::quadrature(const Quadrature* q)
   delete[] _cellVector; _cellVector = 0;
   delete[] _cellMatrix; _cellMatrix = 0;
 } // quadrature
+
+// ----------------------------------------------------------------------
+// Set manager of scales used to nondimensionalize problem.
+void
+pylith::feassemble::Integrator::normalizer(const spatialdata::units::Nondimensional& dim)
+{ // normalizer
+  if (0 == _normalizer)
+    _normalizer = new spatialdata::units::Nondimensional(dim);
+  else
+    *_normalizer = dim;
+} // normalizer
 
 // ----------------------------------------------------------------------
 // Set gravity field.

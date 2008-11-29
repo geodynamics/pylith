@@ -84,14 +84,14 @@ class Implicit(Formulation):
     return ElasticityImplicit()
 
 
-  def initialize(self, dimension):
+  def initialize(self, dimension, normalizer):
     """
     Initialize problem for implicit time integration.
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
     
-    Formulation.initialize(self, dimension)
+    Formulation.initialize(self, dimension, normalizer)
 
     self._info.log("Creating other fields.")
     self._debug.log(resourceUsageString())

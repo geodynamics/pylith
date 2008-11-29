@@ -70,6 +70,7 @@ class Problem(Component):
     ## @li \b useGravity Gravity on (true) or off (false).
     ##
     ## \b Facilities
+    ## @li \b normalizer Nondimensionalizer for problem.
     ## @li \b materials Materials in problem.
     ## @li \b bc Boundary conditions.
     ## @li \b interfaces Interior surfaces with constraints or
@@ -85,6 +86,12 @@ class Problem(Component):
     dimension = pyre.inventory.int("dimension", default=3,
                                    validator=pyre.inventory.choice([1,2,3]))
     dimension.meta['tip'] = "Spatial dimension of problem space."
+
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = pyre.inventory.facility("normalizer",
+                                         family="nondimensional",
+                                         factory=Nondimensional)
+    normalizer.meta['tip'] = "Nondimensionalizer for problem."
 
     from pylith.materials.Homogeneous import Homogeneous
     materials = pyre.inventory.facilityArray("materials",
@@ -215,6 +222,7 @@ class Problem(Component):
     Set members based using inventory.
     """
     Component._configure(self)
+    self.normalizer = self.inventory.normalizer
     self.dimension = self.inventory.dimension
     self.materials = self.inventory.materials
     self.bc = self.inventory.bc
@@ -257,5 +265,6 @@ def problem():
   Factory associated with Problem.
   """
   return Problem()
+
 
 # End of file 

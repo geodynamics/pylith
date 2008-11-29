@@ -26,6 +26,7 @@
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <math.h> // USES fabs()
 
@@ -326,10 +327,12 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   spatialdata::spatialdb::SimpleDB db;
   db.ioHandler(&iohandler);
   
+  spatialdata::units::Nondimensional normalizer;
+
   _material->id(_data->matId);
   _material->label(_data->matLabel);
   _material->db(&db);
-  _material->initialize(*mesh, &cs, _quadrature);
+  _material->initialize(*mesh, &cs, _quadrature, normalizer);
 
   integrator->quadrature(_quadrature);
   integrator->gravityField(_gravityField);

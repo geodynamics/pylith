@@ -148,7 +148,7 @@ private :
 
   /// Initial values and rate of change of values at DOF.
   ALE::Obj<real_section_type> _values;
-  ALE::Obj<real_section_type> _buffer; ///< Buffer for values.
+  ALE::Obj<real_section_type> _buffer; ///< Buffer for output.
 
   ALE::Obj<Mesh> _boundaryMesh; ///< Boundary mesh.
   int_array _fixedDOF; ///< Indices of fixed degrees of freedom

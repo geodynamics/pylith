@@ -39,10 +39,12 @@ namespace spatialdata {
   namespace spatialdb {
     class SpatialDB;
   } // spatialdb
-
   namespace geocoords {
     class CoordSys;
-  } // geocoords
+  } // geocoord
+  namespace units {
+    class Nondimensional;
+  } // units
 } // spatialdata
 
 /// C++ oject for managing parameters for a kinematic earthquake source.
@@ -81,9 +83,11 @@ public :
    *
    * @param faultMesh Finite-element mesh of fault.
    * @param cs Coordinate system for mesh
+   * @param normalizer Nondimensionalization of scales.
    */
   void initialize(const ALE::Obj<Mesh>& faultMesh,
-		  const spatialdata::geocoords::CoordSys* cs);
+		  const spatialdata::geocoords::CoordSys* cs,
+		  const spatialdata::units::Nondimensional& normalizer);
 
   /** Get slip on fault surface at time t.
    *

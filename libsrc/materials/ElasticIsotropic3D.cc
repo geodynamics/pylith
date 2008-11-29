@@ -17,6 +17,8 @@
 #include "pylith/utils/array.hh" // USES double_array
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 #include "petsc.h" // USES PetscLogFlops
 
 #include <assert.h> // USES assert()
@@ -92,8 +94,8 @@ pylith::materials::ElasticIsotropic3D::~ElasticIsotropic3D(void)
 // Compute properties from values in spatial database.
 void
 pylith::materials::ElasticIsotropic3D::_dbToProperties(
-					    double* const propValues,
-					    const double_array& dbValues) const
+		   double* const propValues,
+		   const double_array& dbValues) const
 { // _dbToProperties
   assert(0 != propValues);
   const int numDBValues = dbValues.size();
@@ -103,7 +105,7 @@ pylith::materials::ElasticIsotropic3D::_dbToProperties(
   const double vs = dbValues[_ElasticIsotropic3D::didVs];
   const double vp = dbValues[_ElasticIsotropic3D::didVp];
  
-  if (density < 0.0 || vs < 0.0 || vp < 0.0) {
+  if (density <= 0.0 || vs <= 0.0 || vp <= 0.0) {
     std::ostringstream msg;
     msg << "Spatial database returned negative value for physical properties.\n"
 	<< "density: " << density << "\n"
@@ -115,9 +117,9 @@ pylith::materials::ElasticIsotropic3D::_dbToProperties(
   const double mu = density * vs*vs;
   const double lambda = density * vp*vp - 2.0*mu;
 
-  if (lambda < 0.0) {
+  if (lambda <= 0.0) {
     std::ostringstream msg;
-    msg << "Attempted to set Lame's constant lambda to negative value.\n"
+    msg << "Attempted to set Lame's constant lambda to nonpositive value.\n"
 	<< "density: " << density << "\n"
 	<< "vp: " << vp << "\n"
 	<< "vs: " << vs << "\n";

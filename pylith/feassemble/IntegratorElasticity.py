@@ -79,7 +79,7 @@ class IntegratorElasticity(Integrator):
     return
 
 
-  def initialize(self, totalTime, numTimeSteps):
+  def initialize(self, totalTime, numTimeSteps, normalizer):
     """
     Initialize material properties.
     """
@@ -89,9 +89,9 @@ class IntegratorElasticity(Integrator):
     self._info.log("Initializing integrator for material '%s'." % \
                    self.material.label)
 
-    Integrator.initialize(self, totalTime, numTimeSteps)
+    Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
 
-    self.material.initialize(self.mesh, totalTime, numTimeSteps)
+    self.material.initialize(self.mesh, totalTime, numTimeSteps, normalizer)
     self.output.initialize(self.quadrature)
     self.output.writeInfo()
     self.output.open(totalTime, numTimeSteps)

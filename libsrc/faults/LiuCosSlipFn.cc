@@ -19,6 +19,7 @@
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -56,9 +57,10 @@ pylith::faults::LiuCosSlipFn::~LiuCosSlipFn(void)
 // Initialize slip time function.
 void
 pylith::faults::LiuCosSlipFn::initialize(
-				 const ALE::Obj<Mesh>& faultMesh,
-				 const spatialdata::geocoords::CoordSys* cs,
-				 const double originTime)
+			   const ALE::Obj<Mesh>& faultMesh,
+			   const spatialdata::geocoords::CoordSys* cs,
+			   const spatialdata::units::Nondimensional& normalizer,
+			   const double originTime)
 { // initialize
   assert(!faultMesh.isNull());
   assert(0 != cs);
@@ -127,8 +129,10 @@ pylith::faults::LiuCosSlipFn::initialize(
     faultMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
 
-  double_array paramsVertex(fiberDim);
+  const double lengthScale = normalizer.lengthScale();
+  const double timeScale = normalizer.timeScale();
 
+  double_array paramsVertex(fiberDim);
   for (Mesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter) {
@@ -148,6 +152,9 @@ pylith::faults::LiuCosSlipFn::initialize(
       msg << ") using spatial database " << _dbFinalSlip->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
+    normalizer.nondimensionalize(&paramsVertex[indexFinalSlip], spaceDim,
+				 lengthScale);
+
     err = _dbRiseTime->query(&paramsVertex[indexRiseTime], 1, 
 			     coordsVertex, spaceDim, cs);
     if (err) {
@@ -158,6 +165,8 @@ pylith::faults::LiuCosSlipFn::initialize(
       msg << ") using spatial database " << _dbRiseTime->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
+    normalizer.nondimensionalize(&paramsVertex[indexRiseTime], spaceDim,
+				 timeScale);
 
     err = _dbSlipTime->query(&paramsVertex[indexSlipTime], 1, 
 			     coordsVertex, spaceDim, cs);
@@ -169,6 +178,8 @@ pylith::faults::LiuCosSlipFn::initialize(
       msg << ") using spatial database " << _dbSlipTime->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
+    normalizer.nondimensionalize(&paramsVertex[indexSlipTime], spaceDim,
+				 timeScale);
     // add origin time to rupture time
     paramsVertex[indexSlipTime] += originTime;
 

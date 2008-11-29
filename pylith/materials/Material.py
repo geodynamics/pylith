@@ -127,7 +127,7 @@ class Material(Component):
     return
   
 
-  def initialize(self, mesh, totalTime, numTimeSteps):
+  def initialize(self, mesh, totalTime, numTimeSteps, normalizer):
     """
     Initialize material property manager.
     """
@@ -144,7 +144,8 @@ class Material(Component):
       self.initialStateDB.initialize()
       self.cppHandle.initialStateDB = self.initialStateDB.cppHandle
     self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
-                              self.quadrature.cppHandle)
+                              self.quadrature.cppHandle,
+                              normalizer.cppHandle)
 
     self._logger.eventEnd(logEvent)
     return

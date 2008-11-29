@@ -20,6 +20,7 @@
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <Selection.hh> // USES submesh algorithms
 
@@ -162,6 +163,11 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<Mesh>& mesh,
     mesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
 
+  assert(0 != _normalizer);
+  const double densityScale = _normalizer->densityScale();
+  const double velocityScale = 
+    _normalizer->lengthScale() / _normalizer->timeScale();
+
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
@@ -184,9 +190,17 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<Mesh>& mesh,
 	    << "using spatial database " << _db->label() << ".";
 	throw std::runtime_error(msg.str());
       } // if
-      const double constTangential = 
-	(3 == numValues) ? queryData[0]*queryData[2] : 0.0;
-      const double constNormal = queryData[0]*queryData[1];
+      // Nondimensionalize damping constants
+      const double densityN = 
+	_normalizer->nondimensionalize(queryData[0], densityScale);
+      const double vpN = 
+	_normalizer->nondimensionalize(queryData[1], velocityScale);
+      const double vsN = (3 == numValues) ?
+	_normalizer->nondimensionalize(queryData[2], velocityScale) :
+	0.0;
+      
+      const double constTangential = densityN * vsN;
+      const double constNormal = densityN * vpN;
       const int numTangential = spaceDim-1;
       for (int iDim=0; iDim < numTangential; ++iDim)
 	dampingConstsLocal[iDim] = constTangential;

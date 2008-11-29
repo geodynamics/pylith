@@ -121,7 +121,7 @@ class DirichletPoints(BoundaryCondition, Constraint):
     return
 
 
-  def initialize(self, totalTime, numTimeSteps):
+  def initialize(self, totalTime, numTimeSteps, normalizer):
     """
     Initialize DirichletPoints boundary condition.
     """
@@ -133,7 +133,7 @@ class DirichletPoints(BoundaryCondition, Constraint):
     self.dbRate.initialize()
     self.cppHandle.dbRate = self.dbRate.cppHandle
 
-    BoundaryCondition.initialize(self, totalTime, numTimeSteps)
+    BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 
     self._logger.eventEnd(logEvent)    
     return
