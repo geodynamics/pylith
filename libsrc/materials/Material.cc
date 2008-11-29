@@ -68,9 +68,11 @@ pylith::materials::Material::~Material(void)
 // ----------------------------------------------------------------------
 // Get physical property parameters and initial state (if used) from database.
 void
-pylith::materials::Material::initialize(const ALE::Obj<Mesh>& mesh,
-					const spatialdata::geocoords::CoordSys* cs,
-					pylith::feassemble::Quadrature* quadrature)
+pylith::materials::Material::initialize(
+			   const ALE::Obj<Mesh>& mesh,
+			   const spatialdata::geocoords::CoordSys* cs,
+			   pylith::feassemble::Quadrature* quadrature,
+			   const spatialdata::units::Nondimensional& normalizer)
 { // initialize
   assert(0 != _db);
   assert(0 != cs);
@@ -152,8 +154,8 @@ pylith::materials::Material::initialize(const ALE::Obj<Mesh>& mesh,
     for (int iQuadPt=0, index=0; 
 	 iQuadPt < numQuadPts; 
 	 ++iQuadPt, index+=spaceDim) {
-      const int err = _db->query(&queryData[0], numValues, &quadPts[index],
-				 spaceDim, cs);
+      int err = _db->query(&queryData[0], numValues, &quadPts[index],
+			   spaceDim, cs);
 
       if (err) {
 	std::ostringstream msg;
@@ -166,26 +168,32 @@ pylith::materials::Material::initialize(const ALE::Obj<Mesh>& mesh,
 	throw std::runtime_error(msg.str());
       } // if
       _dbToProperties(&cellData[totalPropsQuadPt*iQuadPt], queryData);
+#if 0
+      _nondimProperties(&cellData[totalPropsQuadPt*iQuadPt], totalPropsQuadPt);
+#endif
 
       if (0 != _initialStateDB) {
-	const int err2 = _initialStateDB->query(&initialStateQueryData[0],
-						initialStateSize,
-						&quadPts[index],
-						spaceDim, cs);
+	err = _initialStateDB->query(&initialStateQueryData[0], 
+				     initialStateSize, 
+				     &quadPts[index], spaceDim, cs);
 
-	if (err2) {
+	if (err) {
 	  std::ostringstream msg;
-	  msg << "Could not find initial state values at \n"
-	      << "(";
+	  msg << "Could not find initial state values at \n" << "(";
 	  for (int i=0; i < spaceDim; ++i)
 	    msg << "  " << quadPts[index+i];
 	  msg << ") in material " << _label << "\n"
 	      << "using spatial database '" << _initialStateDB->label() << "'.";
 	  throw std::runtime_error(msg.str());
 	} // if
+#if 0 // nondimensionalize initial state
+	_nondimInitialState(&initialStateCellData[initialStateSize*iQuadPt],
+			    &initialStateQueryData[0], initialStateSize);
+#else
 	memcpy(&initialStateCellData[initialStateSize * iQuadPt],
 	       &initialStateQueryData[0],
 	       initialStateSize * sizeof(double));
+#endif
       } // if
 
     } // for
@@ -277,16 +285,21 @@ pylith::materials::Material::propertyField(ALE::Obj<real_section_type>* field,
   double_array fieldCell(fiberDim * numQuadPts);
 
   // Loop over cells
+  const int totalPropsQuadPt = _totalPropsQuadPt;
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
     const real_section_type::value_type* propVals = 
       _properties->restrictPoint(*c_iter);
-    
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
+   
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+#if 0
+      _dimProperties(&propVals[totalPropsQuadPt*iQuad], totalPropsQuadPt);
+#endif
       memcpy(&fieldCell[iQuad*fiberDim], 
-	     &propVals[iQuad*_totalPropsQuadPt+propOffset],
+	     &propVals[iQuad*totalPropsQuadPt+propOffset],
 	     fiberDim*sizeof(double));
+    } // for
 
     (*field)->updatePoint(*c_iter, &fieldCell[0]);
   } // for

@@ -19,6 +19,7 @@
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -53,9 +54,10 @@ pylith::faults::ConstRateSlipFn::~ConstRateSlipFn(void)
 // Initialize slip time function.
 void
 pylith::faults::ConstRateSlipFn::initialize(
-				 const ALE::Obj<Mesh>& faultMesh,
-				 const spatialdata::geocoords::CoordSys* cs,
-				 const double originTime)
+			   const ALE::Obj<Mesh>& faultMesh,
+			   const spatialdata::geocoords::CoordSys* cs,
+			   const spatialdata::units::Nondimensional& normalizer,
+			   const double originTime)
 { // initialize
   assert(!faultMesh.isNull());
   assert(0 != cs);
@@ -116,8 +118,11 @@ pylith::faults::ConstRateSlipFn::initialize(
     faultMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
 
-  double_array paramsVertex(fiberDim);
+  const double timeScale = normalizer.timeScale();
+  const double velocityScale =
+    normalizer.lengthScale() / normalizer.timeScale();
 
+  double_array paramsVertex(fiberDim);
   for (Mesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter) {
@@ -137,6 +142,8 @@ pylith::faults::ConstRateSlipFn::initialize(
       msg << ") using spatial database " << _dbSlipRate->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
+    normalizer.nondimensionalize(&paramsVertex[indexSlipRate], spaceDim,
+				 velocityScale);
 
     err = _dbSlipTime->query(&paramsVertex[indexSlipTime], 1, 
 			     coordsVertex, spaceDim, cs);
@@ -148,6 +155,8 @@ pylith::faults::ConstRateSlipFn::initialize(
       msg << ") using spatial database " << _dbSlipTime->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
+    normalizer.nondimensionalize(&paramsVertex[indexSlipTime], spaceDim,
+				 timeScale);
     // add origin time to rupture time
     paramsVertex[indexSlipTime] += originTime;
 

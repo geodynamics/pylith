@@ -160,7 +160,7 @@ class Formulation(Component):
     return
   
 
-  def initialize(self, dimension):
+  def initialize(self, dimension, normalizer):
     """
     Create integrators for each element family.
     """
@@ -183,12 +183,12 @@ class Formulation(Component):
     self._info.log("Initializing integrators.")
     for integrator in self.integrators:
       integrator.gravityField = self.gravityField
-      integrator.initialize(totalTime, numTimeSteps)
+      integrator.initialize(totalTime, numTimeSteps, normalizer)
     self._debug.log(resourceUsageString())
 
     self._info.log("Initializing constraints.")
     for constraint in self.constraints:
-      constraint.initialize(totalTime, numTimeSteps)
+      constraint.initialize(totalTime, numTimeSteps, normalizer)
     self._debug.log(resourceUsageString())
 
     self._info.log("Setting up solution output.")

@@ -24,6 +24,7 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestEqKinSrc );
@@ -243,6 +244,8 @@ pylith::faults::TestEqKinSrc::_initialize(ALE::Obj<Mesh>* faultMesh,
   ioPeakRate.filename(peakRateFilename);
   dbPeakRate.ioHandler(&ioPeakRate);
 
+  spatialdata::units::Nondimensional normalizer;
+
   // setup EqKinSrc
   slipfn->dbFinalSlip(&dbFinalSlip);
   slipfn->dbSlipTime(&dbSlipTime);
@@ -250,7 +253,7 @@ pylith::faults::TestEqKinSrc::_initialize(ALE::Obj<Mesh>* faultMesh,
   
   eqsrc->originTime(originTime);
   eqsrc->slipfn(slipfn);
-  eqsrc->initialize(*faultMesh, &cs);
+  eqsrc->initialize(*faultMesh, &cs, normalizer);
 } // _initialize
 
 

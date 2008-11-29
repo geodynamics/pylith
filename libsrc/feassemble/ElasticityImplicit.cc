@@ -25,6 +25,7 @@
 
 #include "petscmat.h" // USES PetscMat
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimendional
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include <assert.h> // USES assert()
@@ -240,6 +241,11 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
       // Get density at quadrature points for this cell
       const double_array& density = _material->calcDensity();
 
+      assert(0 != _normalizer);
+      const double gravityScale = 
+	_normalizer->pressureScale() / (_normalizer->lengthScale() *
+					_normalizer->densityScale());
+
       // Compute action for element body forces
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
 	double gravVec[spaceDim];
@@ -250,6 +256,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 				  coords, spaceDim, cs);
 	if (err)
 	  throw std::runtime_error("Unable to get gravity vector for point.");
+	_normalizer->nondimensionalize(gravVec, spaceDim, gravityScale);
 	const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
 	for (int iBasis=0, iQ=iQuad*numBasis;
 	     iBasis < numBasis; ++iBasis) {

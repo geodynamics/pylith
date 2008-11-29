@@ -47,6 +47,9 @@ namespace spatialdata {
   namespace geocoords {
     class CoordSys; // USES CoordSys
   } // geocoords
+  namespace units {
+    class Nondimensional; // USES Nondimensional
+  } // units
 } // spatialdata
 
 class pylith::feassemble::Integrator
@@ -69,6 +72,12 @@ public :
    * @param q Quadrature for integrating.
    */
   void quadrature(const Quadrature* q);
+
+  /** Set manager of scales used to nondimensionalize problem.
+   *
+   * @param dim Nondimensionalizer.
+   */
+  void normalizer(const spatialdata::units::Nondimensional& dim);
 
   /** Set gravity field. Gravity Field should already be initialized.
    *
@@ -216,6 +225,7 @@ protected :
 
   Quadrature* _quadrature; ///< Quadrature for integrating finite-element
 
+  spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer.
   spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 
   /// Vector local to cell containing result of integration action

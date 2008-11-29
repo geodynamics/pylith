@@ -141,6 +141,8 @@ private :
   /// Traction vector in global coordinates at integration points.
   ALE::Obj<real_section_type> _tractions;
 
+  ALE::Obj<real_section_type> _buffer; ///< Buffer for output.
+
 }; // class Neumann
 
 // #include "Neumann.icc" // inline methods

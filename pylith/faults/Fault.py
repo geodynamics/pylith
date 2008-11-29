@@ -176,7 +176,7 @@ class Fault(Component):
     return
   
 
-  def initialize(self, totalTime, numTimeSteps):
+  def initialize(self, totalTime, numTimeSteps, normalizer):
     """
     Initialize fault.
     """

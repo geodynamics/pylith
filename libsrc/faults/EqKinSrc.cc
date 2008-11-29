@@ -16,6 +16,8 @@
 
 #include "SlipTimeFn.hh" // USES SlipTimeFn
 
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 #include <assert.h> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -61,11 +63,13 @@ pylith::faults::EqKinSrc::slipfn(SlipTimeFn* slipfn)
 // Initialize slip time function.
 void
 pylith::faults::EqKinSrc::initialize(
-				  const ALE::Obj<Mesh>& faultMesh,
-				  const spatialdata::geocoords::CoordSys* cs)
+			 const ALE::Obj<Mesh>& faultMesh,
+			 const spatialdata::geocoords::CoordSys* cs,
+			 const spatialdata::units::Nondimensional& normalizer)
 { // initialize
+  normalizer.nondimensionalize(&_originTime, 1, normalizer.timeScale());
   assert(0 != _slipfn);
-  _slipfn->initialize(faultMesh, cs, _originTime);
+  _slipfn->initialize(faultMesh, cs, normalizer, _originTime);
 } // initialize
 
 // ----------------------------------------------------------------------

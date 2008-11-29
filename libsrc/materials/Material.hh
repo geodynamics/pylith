@@ -48,6 +48,9 @@ namespace spatialdata {
   namespace geocoords {
     class CoordSys; // forward declaration
   } // geocoords
+  namespace units {
+    class Nondimensional; // forward declaration
+  } // units
 } // spatialdata
 
 /// C++ abstract base class for Material object.
@@ -148,10 +151,12 @@ public :
    * @param mesh PETSc mesh
    * @param cs Coordinate system associated with mesh
    * @param quadrature Quadrature for finite-element integration
+   * @param normalizer Nondimensionalization of scales.
    */
   void initialize(const ALE::Obj<Mesh>& mesh,
 		  const spatialdata::geocoords::CoordSys* cs,
-		  pylith::feassemble::Quadrature* quadrature);
+		  pylith::feassemble::Quadrature* quadrature,
+		  const spatialdata::units::Nondimensional& normalizer);
   
   /** Get flag indicating whether Jacobian matrix must be reformed for
    * current state.

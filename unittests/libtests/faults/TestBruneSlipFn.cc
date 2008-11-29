@@ -23,6 +23,7 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestBruneSlipFn );
@@ -410,12 +411,14 @@ pylith::faults::TestBruneSlipFn::_initialize(ALE::Obj<Mesh>* faultMesh,
   ioPeakRate.filename(peakRateFilename);
   dbPeakRate.ioHandler(&ioPeakRate);
 
+  spatialdata::units::Nondimensional normalizer;
+
   // setup BruneSlipFn
   slipfn->dbFinalSlip(&dbFinalSlip);
   slipfn->dbSlipTime(&dbSlipTime);
   slipfn->dbPeakRate(&dbPeakRate);
   
-  slipfn->initialize(*faultMesh, &cs, originTime);
+  slipfn->initialize(*faultMesh, &cs, normalizer, originTime);
 } // _initialize
 
 // ----------------------------------------------------------------------
@@ -438,7 +441,8 @@ pylith::faults::TestBruneSlipFn::_testInitialize(const _TestBruneSlipFn::DataStr
   cs.setSpaceDim(spaceDim);
 
   // Create fault mesh
-  ALE::Obj<Mesh>      faultMesh = new Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
+  ALE::Obj<Mesh> faultMesh =
+    new Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
   ALE::Obj<ALE::Mesh> faultBd   = NULL;
   const bool useLagrangeConstraints = true;
   CohesiveTopology::createFault(faultMesh, faultBd,
@@ -449,7 +453,7 @@ pylith::faults::TestBruneSlipFn::_testInitialize(const _TestBruneSlipFn::DataStr
                            data.faultId,
                            useLagrangeConstraints);
   CPPUNIT_ASSERT(!faultMesh.isNull());
-  // Need to copy coordinates from mesh to fault mesh since we are not
+  // Need to copy coordinates from mesh to fault mesh since we are
   // using create() instead of createParallel().
   faultMesh->setRealSection("coordinates", 
 			    mesh->getRealSection("coordinates"));
@@ -470,6 +474,8 @@ pylith::faults::TestBruneSlipFn::_testInitialize(const _TestBruneSlipFn::DataStr
   ioPeakRate.filename(data.peakRateFilename);
   dbPeakRate.ioHandler(&ioPeakRate);
 
+  spatialdata::units::Nondimensional normalizer;
+
   // setup BruneSlipFn
   BruneSlipFn slipfn;
   slipfn.dbFinalSlip(&dbFinalSlip);
@@ -478,7 +484,7 @@ pylith::faults::TestBruneSlipFn::_testInitialize(const _TestBruneSlipFn::DataStr
   
   const double originTime = 5.353;
   
-  slipfn.initialize(faultMesh, &cs, originTime);
+  slipfn.initialize(faultMesh, &cs, normalizer, originTime);
 
   const double tolerance = 1.0e-06;
 

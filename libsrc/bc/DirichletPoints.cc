@@ -16,6 +16,7 @@
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <string.h> // USES strcpy()
 #include <assert.h> // USES assert()
@@ -95,6 +96,11 @@ pylith::bc::DirichletPoints::initialize(
   assert(!coordinates.isNull());
   const int spaceDim = cs->spaceDim();
 
+  assert(0 != _normalizer);
+  const double lengthScale = _normalizer->lengthScale();
+  const double velocityScale = 
+    _normalizer->lengthScale() / _normalizer->timeScale();
+
   _valuesInitial.resize(numPoints*numFixedDOF);
   _valuesRate.resize(numPoints*numFixedDOF);
   double_array queryValues(numFixedDOF);
@@ -113,7 +119,8 @@ pylith::bc::DirichletPoints::initialize(
       throw std::runtime_error(msg.str());
     } // if
     for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
-      _valuesInitial[numFixedDOF*iPoint+iDOF] = queryValues[iDOF];
+      _valuesInitial[numFixedDOF*iPoint+iDOF] = 
+	_normalizer->nondimensionalize(queryValues[iDOF], lengthScale);
 
     err = _dbRate->query(&queryValues[0], numFixedDOF, vCoords, 
 			 spaceDim, cs);
@@ -126,7 +133,8 @@ pylith::bc::DirichletPoints::initialize(
       throw std::runtime_error(msg.str());
     } // if
     for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
-      _valuesRate[numFixedDOF*iPoint+iDOF] = queryValues[iDOF];
+      _valuesRate[numFixedDOF*iPoint+iDOF] =
+	_normalizer->nondimensionalize(queryValues[iDOF], velocityScale);
   } // for
   _db->close();
   _dbRate->close();

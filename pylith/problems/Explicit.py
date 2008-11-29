@@ -59,14 +59,14 @@ class Explicit(Formulation):
     return ElasticityExplicit()
 
 
-  def initialize(self, dimension):
+  def initialize(self, dimension, normalizer):
     """
     Initialize problem for explicit time integration.
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
     
-    Formulation.initialize(self, dimension)
+    Formulation.initialize(self, dimension, normalizer)
 
     self._info.log("Creating other fields and matrices.")
     self.fields.addReal("dispTpdt")

@@ -29,6 +29,11 @@ namespace pylith {
   } // feassemble
 } // pylith
 
+namespace spatialdata {
+  namespace units {
+    class Nondimensional; // USES Nondimensional
+  } // units
+} // spatialdata
 
 /// C++ abstract base class defining interface for constraints applied
 /// to finite-elements.
@@ -45,6 +50,12 @@ public :
   /// Destructor.
   virtual
   ~Constraint(void);
+
+  /** Set manager of scales used to nondimensionalize problem.
+   *
+   * @param dim Nondimensionalizer.
+   */
+  void normalizer(const spatialdata::units::Nondimensional& dim);
 
   /** Set number of degrees of freedom that are constrained at points in field.
    *
@@ -85,6 +96,8 @@ public :
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
+
+  spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer.
 
   /// Flag indicating whether to set constraints for a total field
   /// solution or an incremental field solution

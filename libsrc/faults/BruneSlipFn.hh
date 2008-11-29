@@ -39,6 +39,9 @@ namespace spatialdata {
   namespace spatialdb {
     class SpatialDB;
   } // spatialdb
+  namespace units {
+    class Nondimensional;
+  } // units
 } // spatialdata
 
 /// C++ implementation of Brune slip time function.
@@ -78,10 +81,12 @@ public :
    *
    * @param faultMesh Finite-element mesh of fault.
    * @param cs Coordinate system for mesh.
+   * @param normalizer Nondimensionalization of scales.
    * @param originTime Origin time for earthquake source.
    */
   void initialize(const ALE::Obj<Mesh>& faultMesh,
 		  const spatialdata::geocoords::CoordSys* cs,
+		  const spatialdata::units::Nondimensional& normalizer,
 		  const double originTime =0.0);
 
   /** Get slip on fault surface at time t.

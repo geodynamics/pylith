@@ -86,7 +86,7 @@ class Integrator(object):
     return
 
 
-  def initialize(self, totalTime, numTimeSteps):
+  def initialize(self, totalTime, numTimeSteps, normalizer):
     """
     Do initialization.
     """
@@ -94,6 +94,7 @@ class Integrator(object):
     self._logger.eventBegin(logEvent)
 
     assert(None != self.cppHandle)
+    #self.cppHandle.normalizer = normalizer.cppHandle
     if None != self.gravityField:
       self.cppHandle.gravityField = self.gravityField.cppHandle
     

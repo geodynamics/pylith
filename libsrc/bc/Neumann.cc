@@ -20,6 +20,7 @@
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <Selection.hh> // USES submesh algorithms
 
@@ -100,8 +101,6 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
 
   const Mesh::label_sequence::iterator cellsBegin = cells->begin();
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  // std::cout << "cellsBegin:  " << *cellsBegin << std::endl;
-  // std::cout << "cellsEnd:  " << *cellsEnd << std::endl;
   const int boundaryDepth = _boundaryMesh->depth()-1;  //depth of boundary cells
 
   // Make sure surface cells are compatible with quadrature.
@@ -185,6 +184,9 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
   assert(!coordinates.isNull());
   // coordinates->view("Mesh coordinates from Neumann::initialize");
 
+  assert(0 != _normalizer);
+  const double pressureScale = _normalizer->pressureScale();
+
   // Loop over cells in boundary mesh, compute orientations, and then
   // compute corresponding traction vector in global coordinates
   // (store values in _tractionGlobal).
@@ -196,18 +198,9 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
     const double_array& quadPts = _quadrature->quadPts();
     _boundaryMesh->restrictClosure(coordinates, *c_iter,
 				   &cellVertices[0], cellVertices.size());
-    /* Debugging stuff
-    std::cout << "cellVertices:  " << std::endl;
-    for(int iTest = 0; iTest < numBasis; ++iTest) {
-      for(int iDim = 0; iDim < spaceDim; ++iDim) {
-	std::cout << "  " << cellVertices[iDim+spaceDim*iTest];
-      } // for
-      std::cout << std::endl;
-    } // for
-    */
 
     cellTractionsGlobal = 0.0;
-    for(int iQuad = 0, iRef=0, iSpace=0; iQuad < numQuadPts;
+    for(int iQuad=0, iRef=0, iSpace=0; iQuad < numQuadPts;
 	++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
       // Get traction vector in local coordinate system at quadrature point
       const int err = _db->query(&tractionDataLocal[0], spaceDim,
@@ -222,6 +215,8 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
 	    << "using spatial database " << _db->label() << ".";
 	throw std::runtime_error(msg.str());
       } // if
+      _normalizer->nondimensionalize(&tractionDataLocal[0], spaceDim,
+				     pressureScale);
 
       // Compute Jacobian and determinant at quadrature point, then get
       // orientation.
@@ -362,11 +357,27 @@ pylith::bc::Neumann::cellField(VectorFieldEnum* fieldType,
 	    const ALE::Obj<Mesh>& mesh,
 	    topology::FieldsManager* const fields)
 { // cellField
-  _tractions->view("TRACTIONS");
+  assert(0 != fieldType);
+  assert(0 != name);
+  assert(!_boundaryMesh.isNull());
+  assert(!_tractions.isNull());  
+  assert(0 != _normalizer);
 
+  const ALE::Obj<Mesh::label_sequence>& cells = _boundaryMesh->heightStratum(1);
+  assert(!cells.isNull());
+  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+
+  const int numQuadPts = _quadrature->numQuadPts();
+  const int spaceDim = _quadrature->spaceDim();
+
+  ALE::Obj<real_section_type> field = 0;
+  int fiberDim = 0;
+  double scale = 0.0;
   if (0 == strcasecmp(name, "tractions")) {
     *fieldType = OTHER_FIELD;
-    return _tractions;
+    field = _tractions;
+    fiberDim = spaceDim * numQuadPts;
+    scale = _normalizer->pressureScale();
   } else {
     std::ostringstream msg;
     msg << "Unknown field '" << name << "' requested for Neumann BC '" 
@@ -374,7 +385,32 @@ pylith::bc::Neumann::cellField(VectorFieldEnum* fieldType,
     throw std::runtime_error(msg.str());
   } // else
 
-  return _tractions;
+  // Allocate buffer if necessary
+  if (_buffer.isNull()) {
+  _buffer = new real_section_type(_boundaryMesh->comm(), _boundaryMesh->debug());
+  assert(!_buffer.isNull());
+  _buffer->setChart(real_section_type::chart_type(
+			    *std::min_element(cells->begin(), cells->end()),
+			    *std::max_element(cells->begin(), cells->end())+1));
+  _buffer->setFiberDimension(cells, fiberDim);
+  _boundaryMesh->allocate(_buffer);
+  } // if
+
+  // dimensionalize values
+  double_array cellValues(fiberDim);
+  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+       c_iter != cellsEnd;
+       ++c_iter) {
+    assert(fiberDim == field->getFiberDimension(*c_iter));
+    assert(fiberDim == _buffer->getFiberDimension(*c_iter));
+    const real_section_type::value_type* values = 
+      field->restrictPoint(*c_iter);
+    for (int i=0; i < fiberDim; ++i)
+      cellValues[i] = _normalizer->dimensionalize(values[i], scale);
+    _buffer->updatePointAll(*c_iter, &cellValues[0]);
+  } // for
+
+  return _buffer;
 } // cellField
 
 

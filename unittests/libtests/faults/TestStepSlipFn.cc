@@ -23,6 +23,7 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestStepSlipFn );
@@ -317,11 +318,13 @@ pylith::faults::TestStepSlipFn::_initialize(ALE::Obj<Mesh>* faultMesh,
   ioSlipTime.filename(slipTimeFilename);
   dbSlipTime.ioHandler(&ioSlipTime);
   
+  spatialdata::units::Nondimensional normalizer;
+
   // setup StepSlipFn
   slipfn->dbFinalSlip(&dbFinalSlip);
   slipfn->dbSlipTime(&dbSlipTime);
   
-  slipfn->initialize(*faultMesh, &cs, originTime);
+  slipfn->initialize(*faultMesh, &cs, normalizer, originTime);
 } // _initialize
 
 // ----------------------------------------------------------------------
@@ -376,9 +379,10 @@ pylith::faults::TestStepSlipFn::_testInitialize(const _TestStepSlipFn::DataStruc
   slipfn.dbFinalSlip(&dbFinalSlip);
   slipfn.dbSlipTime(&dbSlipTime);
   
+  spatialdata::units::Nondimensional normalizer;
   const double originTime = 5.353;
   
-  slipfn.initialize(faultMesh, &cs, originTime);
+  slipfn.initialize(faultMesh, &cs, normalizer, originTime);
 
   const double tolerance = 1.0e-06;
 

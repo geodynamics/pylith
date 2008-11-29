@@ -136,7 +136,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     return
 
 
-  def initialize(self, totalTime, numTimeSteps):
+  def initialize(self, totalTime, numTimeSteps, normalizer):
     """
     Initialize cohesive elements.
     """
@@ -144,11 +144,11 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     self._logger.eventBegin(logEvent)
     self._info.log("Initializing fault '%s'." % self.label)
 
-    Integrator.initialize(self, totalTime, numTimeSteps)
+    Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
     
     for eqsrc in self.eqsrcs.components():
       eqsrc.initialize()
-    FaultCohesive.initialize(self, totalTime, numTimeSteps)
+    FaultCohesive.initialize(self, totalTime, numTimeSteps, normalizer)
 
     self._logger.eventEnd(logEvent)
     return

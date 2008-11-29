@@ -71,24 +71,27 @@ cdef class Material:
     return
 
 
-  def initialize(self, mesh, cs, quadrature):
+  def initialize(self, mesh, cs, quadrature, normalizer):
     """
     Initialize material by getting physical property parameters from
     database.
     """
     # create shim for method 'initialize'
-    #embed{ void Material_initialize(void* objVptr, void* meshVptr, void* csVptr, void* qVptr)
+    #embed{ void Material_initialize(void* objVptr, void* meshVptr, void* csVptr, void* qVptr, void* nVptr)
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
       assert(0 != csVptr);
       assert(0 != qVptr);
+      assert(0 != nVptr);
       ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
       spatialdata::geocoords::CoordSys* cs =
         (spatialdata::geocoords::CoordSys*) csVptr;
       pylith::feassemble::Quadrature* quadrature =
         (pylith::feassemble::Quadrature*) qVptr;
-      ((pylith::materials::Material*) objVptr)->initialize(*mesh, cs, quadrature);
+      spatialdata::units::Nondimensional* normalizer =
+        (spatialdata::units::Nondimensional*) nVptr;
+      ((pylith::materials::Material*) objVptr)->initialize(*mesh, cs, quadrature, *normalizer);
       } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -113,8 +116,12 @@ cdef class Material:
       raise TypeError, \
             "Argument must be extension module type " \
             "'pylith::feassemble::Quadrature'."
+    if not normalizer.name == "spatialdata_units_Nondimensional":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'spatialdata::units::Nondimensional'."
     Material_initialize(self.thisptr, ptrFromHandle(mesh), ptrFromHandle(cs),
-                        ptrFromHandle(quadrature))
+                        ptrFromHandle(quadrature), ptrFromHandle(normalizer))
     return
 
 
