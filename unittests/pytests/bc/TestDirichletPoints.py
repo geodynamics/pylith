@@ -183,9 +183,12 @@ class TestDirichletPoints(unittest.TestCase):
     importer.coordsys = cs
     mesh = importer.read(debug=False, interpolate=False)
     
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+
     bc.preinitialize(mesh)
     from pyre.units.time import second
-    bc.initialize(totalTime=0.0*second, numTimeSteps=1)
+    bc.initialize(totalTime=0.0*second, numTimeSteps=1, normalizer=normalizer)
 
     # Setup fields
     from pylith.topology.FieldsManager import FieldsManager

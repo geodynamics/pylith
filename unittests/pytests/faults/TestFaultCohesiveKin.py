@@ -268,6 +268,9 @@ class TestFaultCohesiveKin(unittest.TestCase):
     slipfn.slipTime = dbSlipTime
     slipfn.slipRate = dbPeakRate
 
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+
     ioMatDB = SimpleIOAscii()
     ioMatDB.filename = "data/bulkprops_2d.spatialdb"
     dbMat = SimpleDB()
@@ -293,7 +296,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault.timeStep(dt)
     fault.verifyConfiguration()
     from pyre.units.time import s
-    fault.initialize(totalTime=0.0*s, numTimeSteps=1)
+    fault.initialize(totalTime=0.0*s, numTimeSteps=1, normalizer=normalizer)
 
     # Setup fields
     from pylith.topology.FieldsManager import FieldsManager

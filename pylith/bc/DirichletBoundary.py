@@ -136,7 +136,7 @@ class DirichletBoundary(BoundaryCondition, Constraint):
     return
 
 
-  def initialize(self, totalTime, numTimeSteps):
+  def initialize(self, totalTime, numTimeSteps, normalizer):
     """
     Initialize DirichletBoundary boundary condition.
     """
@@ -148,7 +148,7 @@ class DirichletBoundary(BoundaryCondition, Constraint):
     self.dbRate.initialize()
     self.cppHandle.dbRate = self.dbRate.cppHandle
 
-    BoundaryCondition.initialize(self, totalTime, numTimeSteps)
+    BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 
     from pylith.topology.Mesh import Mesh
     self.boundaryMesh = Mesh()
