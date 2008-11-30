@@ -216,8 +216,11 @@ class TestAbsorbingDampers(unittest.TestCase):
     importer.coordsys = cs
     mesh = importer.read(debug=False, interpolate=False)
     
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+
     bc.preinitialize(mesh)
-    bc.initialize(totalTime=0.0*second, numTimeSteps=1)
+    bc.initialize(totalTime=0.0*second, numTimeSteps=1, normalizer=normalizer)
     bc.timeStep(0.01*second)
 
     # Setup fields

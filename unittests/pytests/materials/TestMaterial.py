@@ -68,11 +68,15 @@ class TestMaterial(unittest.TestCase):
     importer.coordsys = cs
     mesh = importer.read(debug=False, interpolate=False)
     
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer.initialize()
+
     material.preinitialize()
     from pyre.units.time import second
     totalTime = 0.0*second
     numTimeSteps = 1
-    material.initialize(mesh, totalTime, numTimeSteps)
+    material.initialize(mesh, totalTime, numTimeSteps, normalizer)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    

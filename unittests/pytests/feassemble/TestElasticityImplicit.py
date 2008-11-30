@@ -258,11 +258,15 @@ class TestElasticityImplicit(unittest.TestCase):
     material.output._configure()
     material.output.writer._configure()
 
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer.initialize()
+
     # Setup integrator
     integrator = ElasticityImplicit()
     integrator.preinitialize(mesh, material)
     from pyre.units.time import s
-    integrator.initialize(totalTime=0.0*s, numTimeSteps=1)
+    integrator.initialize(totalTime=0.0*s, numTimeSteps=1, normalizer=normalizer)
     integrator.timeStep(dt)
 
     # Setup fields
