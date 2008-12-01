@@ -145,7 +145,7 @@ private :
 private :
 
   /// Mesh of absorbing boundary
-  ALE::Obj<Mesh> _boundaryMesh;
+  ALE::Obj<SubMesh> _boundaryMesh;
 
   /// Damping constants in global coordinates at integration points.
   ALE::Obj<real_section_type> _dampingConsts;

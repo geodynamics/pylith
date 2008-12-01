@@ -115,7 +115,7 @@ public :
    *
    * @return Boundary mesh.
    */
-  const ALE::Obj<Mesh>& boundaryMesh(void) const;
+  const ALE::Obj<SubMesh>& boundaryMesh(void) const;
 
   /** Get vertex field with BC information.
    *
@@ -150,7 +150,7 @@ private :
   ALE::Obj<real_section_type> _values;
   ALE::Obj<real_section_type> _buffer; ///< Buffer for output.
 
-  ALE::Obj<Mesh> _boundaryMesh; ///< Boundary mesh.
+  ALE::Obj<SubMesh> _boundaryMesh; ///< Boundary mesh.
   int_array _fixedDOF; ///< Indices of fixed degrees of freedom
 
   /// Offset in list of fixed DOF at point to get to fixed DOF

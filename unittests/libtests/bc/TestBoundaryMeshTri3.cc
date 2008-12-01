@@ -16,6 +16,8 @@
 
 #include "data/BoundaryMeshDataTri3.hh" // USES BoundaryMeshDataTri3
 
+#include "pylith/faults/CohesiveTopology.hh"
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestBoundaryMeshTri3 );
 
@@ -25,6 +27,7 @@ void
 pylith::bc::TestBoundaryMeshTri3::setUp(void)
 { // setUp
   _data = new BoundaryMeshDataTri3();
+  _flipFault = true;
 } // setUp
 
 

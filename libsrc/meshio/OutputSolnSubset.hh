@@ -75,7 +75,7 @@ private :
 private :
 
   std::string _label; ///< Label of subdomain.
-  ALE::Obj<Mesh> _mesh; ///< Mesh of subdomain.
+  ALE::Obj<SubMesh> _mesh; ///< Mesh of subdomain.
 
 }; // OutputSolnSubset
 

@@ -70,13 +70,13 @@ pylith::bc::TestNeumann::testInitialize(void)
 
   CPPUNIT_ASSERT(0 != _data);
 
-  const ALE::Obj<Mesh>& boundaryMesh = bc._boundaryMesh;
+  const ALE::Obj<SubMesh>& boundaryMesh = bc._boundaryMesh;
 
   // Check boundary mesh
   CPPUNIT_ASSERT(!boundaryMesh.isNull());
 
   const int cellDim = boundaryMesh->getDimension();
-  const ALE::Obj<Mesh::label_sequence>& cells = boundaryMesh->heightStratum(1);
+  const ALE::Obj<SubMesh::label_sequence>& cells = boundaryMesh->heightStratum(1);
   const int numBoundaryVertices = boundaryMesh->depthStratum(0)->size();
   const int numBoundaryCells = cells->size();
 
@@ -100,7 +100,7 @@ pylith::bc::TestNeumann::testInitialize(void)
 
   // check cell vertices
   int iCell = 0;
-  for(Mesh::label_sequence::iterator c_iter = cells->begin();
+  for(SubMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
     const int numCorners = boundaryMesh->getNumCellCorners(*c_iter, boundaryDepth);
@@ -132,7 +132,7 @@ pylith::bc::TestNeumann::testInitialize(void)
   double_array tractionsCell(fiberDim);
   int index = 0;
 
-  for(Mesh::label_sequence::iterator c_iter = cells->begin();
+  for(SubMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
 

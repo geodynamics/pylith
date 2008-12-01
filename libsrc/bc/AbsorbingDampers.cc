@@ -59,7 +59,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<Mesh>& mesh,
 			     "a vector with 3 components.");
 
   // Extract submesh associated with boundary
-  _boundaryMesh = ALE::Selection<Mesh>::submeshV(mesh, mesh->getIntSection(_label));
+  _boundaryMesh = ALE::Selection<Mesh>::submeshV<SubMesh>(mesh, mesh->getIntSection(_label));
   if (_boundaryMesh.isNull()) {
     std::ostringstream msg;
     msg << "Could not construct boundary mesh for absorbing boundary "
@@ -69,9 +69,9 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<Mesh>& mesh,
   _boundaryMesh->setRealSection("coordinates", 
 				mesh->getRealSection("coordinates"));
   // Create the parallel overlap
-  Obj<Mesh::send_overlap_type> sendParallelMeshOverlap = _boundaryMesh->getSendOverlap();
-  Obj<Mesh::recv_overlap_type> recvParallelMeshOverlap = _boundaryMesh->getRecvOverlap();
-  Mesh::renumbering_type&      renumbering             = mesh->getRenumbering();
+  Obj<SubMesh::send_overlap_type> sendParallelMeshOverlap = _boundaryMesh->getSendOverlap();
+  Obj<SubMesh::recv_overlap_type> recvParallelMeshOverlap = _boundaryMesh->getRecvOverlap();
+  Mesh::renumbering_type&         renumbering             = mesh->getRenumbering();
   //   Can I figure this out in a nicer way?
   ALE::SetFromMap<std::map<Mesh::point_type,Mesh::point_type> > globalPoints(renumbering);
 
@@ -92,14 +92,14 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<Mesh>& mesh,
   } // if
   const int numCorners = _quadrature->numBasis();
 
-  const ALE::Obj<Mesh::label_sequence>& cells = 
+  const ALE::Obj<SubMesh::label_sequence>& cells = 
     _boundaryMesh->heightStratum(1);
     
   assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsBegin = cells->begin();
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const SubMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SubMesh::label_sequence::iterator cellsEnd = cells->end();
   const int boundaryDepth = _boundaryMesh->depth()-1; // depth of bndry cells
-  for (Mesh::label_sequence::iterator c_iter=cellsBegin;
+  for (SubMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     const int cellNumCorners = _boundaryMesh->getNumCellCorners(*c_iter, boundaryDepth);
@@ -168,7 +168,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<Mesh>& mesh,
   const double velocityScale = 
     _normalizer->lengthScale() / _normalizer->timeScale();
 
-  for(Mesh::label_sequence::iterator c_iter = cells->begin();
+  for(SubMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
     _quadrature->computeGeometry(_boundaryMesh, coordinates, *c_iter);
@@ -249,10 +249,10 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   PetscErrorCode err = 0;
 
   // Get cell information
-  const ALE::Obj<Mesh::label_sequence>& cells = 
+  const ALE::Obj<SubMesh::label_sequence>& cells = 
     _boundaryMesh->heightStratum(1);
   assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const SubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
   const ALE::Obj<real_section_type>& coordinates = 
@@ -281,7 +281,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   double_array dispTpdtCell(cellVecSize);
   double_array dispTmdtCell(cellVecSize);
 
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  for (SubMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
@@ -345,10 +345,10 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   PetscErrorCode err = 0;
 
   // Get cell information
-  const ALE::Obj<Mesh::label_sequence>& cells = 
+  const ALE::Obj<SubMesh::label_sequence>& cells = 
     _boundaryMesh->heightStratum(1);
   assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const SubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
   const ALE::Obj<real_section_type>& coordinates = 
@@ -385,7 +385,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 		  (int) pow(mesh->getSieve()->getMaxConeSize(),
 			    mesh->depth())*spaceDim);
 
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  for (SubMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell

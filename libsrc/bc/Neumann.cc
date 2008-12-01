@@ -61,7 +61,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
 
   // Extract submesh associated with surface
   _boundaryMesh =
-    ALE::Selection<Mesh>::submeshV(mesh, mesh->getIntSection(_label));
+    ALE::Selection<Mesh>::submeshV<SubMesh>(mesh, mesh->getIntSection(_label));
   if (_boundaryMesh.isNull()) {
     std::ostringstream msg;
     msg << "Could not construct boundary mesh for Neumann traction "
@@ -71,9 +71,9 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
   _boundaryMesh->setRealSection("coordinates", 
 				mesh->getRealSection("coordinates"));
   // Create the parallel overlap
-  Obj<Mesh::send_overlap_type> sendParallelMeshOverlap = _boundaryMesh->getSendOverlap();
-  Obj<Mesh::recv_overlap_type> recvParallelMeshOverlap = _boundaryMesh->getRecvOverlap();
-  Mesh::renumbering_type&      renumbering             = mesh->getRenumbering();
+  Obj<SubMesh::send_overlap_type> sendParallelMeshOverlap = _boundaryMesh->getSendOverlap();
+  Obj<SubMesh::recv_overlap_type> recvParallelMeshOverlap = _boundaryMesh->getRecvOverlap();
+  Mesh::renumbering_type&         renumbering             = mesh->getRenumbering();
   //   Can I figure this out in a nicer way?
   ALE::SetFromMap<std::map<Mesh::point_type,Mesh::point_type> > globalPoints(renumbering);
 
@@ -95,16 +95,16 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
   const int numCorners = _quadrature->numBasis();
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
-  const ALE::Obj<Mesh::label_sequence>& cells = 
+  const ALE::Obj<SubMesh::label_sequence>& cells = 
     _boundaryMesh->heightStratum(1);
   assert(!cells.isNull());
 
-  const Mesh::label_sequence::iterator cellsBegin = cells->begin();
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const SubMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SubMesh::label_sequence::iterator cellsEnd = cells->end();
   const int boundaryDepth = _boundaryMesh->depth()-1;  //depth of boundary cells
 
   // Make sure surface cells are compatible with quadrature.
-  for (Mesh::label_sequence::iterator c_iter=cellsBegin;
+  for (SubMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     const int cellNumCorners = _boundaryMesh->getNumCellCorners(*c_iter, boundaryDepth);
@@ -190,7 +190,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
   // Loop over cells in boundary mesh, compute orientations, and then
   // compute corresponding traction vector in global coordinates
   // (store values in _tractionGlobal).
-  for(Mesh::label_sequence::iterator c_iter = cellsBegin;
+  for(SubMesh::label_sequence::iterator c_iter = cellsBegin;
       c_iter != cellsEnd;
       ++c_iter) {
     // std::cout << "c_iter:  " << *c_iter << std::endl;
@@ -261,11 +261,11 @@ pylith::bc::Neumann::integrateResidual(
   PetscErrorCode err = 0;
 
   // Get cell information
-  const ALE::Obj<Mesh::label_sequence>& cells = 
+  const ALE::Obj<SubMesh::label_sequence>& cells = 
     _boundaryMesh->heightStratum(1);
   assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsBegin = cells->begin();
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const SubMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
   const ALE::Obj<real_section_type>& coordinates = 
@@ -286,7 +286,7 @@ pylith::bc::Neumann::integrateResidual(
   double_array tractionsCell(numQuadPts*spaceDim);
 
   // Loop over faces and integrate contribution from each face
-  for (Mesh::label_sequence::iterator c_iter=cellsBegin;
+  for (SubMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
@@ -343,7 +343,7 @@ pylith::bc::Neumann::verifyConfiguration(const ALE::Obj<Mesh>& mesh) const
 
 // ----------------------------------------------------------------------
 // Get boundary mesh.
-const ALE::Obj<pylith::Mesh>&
+const ALE::Obj<pylith::SubMesh>&
 pylith::bc::Neumann::boundaryMesh(void) const
 { // dataMesh
   return _boundaryMesh;

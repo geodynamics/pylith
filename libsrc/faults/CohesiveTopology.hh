@@ -29,7 +29,7 @@ namespace pylith {
 
 /// C++ object to manage creation of cohesive cells.
 class pylith::faults::CohesiveTopology
-{ // class Fault
+{ // class CohesiveTopology
 public :
   typedef std::set<Mesh::point_type>             PointSet;
   typedef std::vector<sieve_type::point_type>    PointArray;
@@ -159,7 +159,6 @@ protected:
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
-
   /** Create the fault mesh.
    *
    * @param fault Finite-element mesh of fault (output)
@@ -168,7 +167,7 @@ public :
    *   fault surface
    */
   static
-  void createFault(Obj<Mesh>& fault,
+  void createFault(Obj<SubMesh>& ifault,
                    Obj<ALE::Mesh>& faultBd,
                    const Obj<Mesh>& mesh,
                    const Obj<Mesh::int_section_type>& groupField);
@@ -182,12 +181,13 @@ public :
    *   Lagrange multipliers that require extra vertices, false otherwise
    */
   static
-  void create(Obj<Mesh>& fault,
+  void create(Obj<SubMesh>& ifault,
               const Obj<ALE::Mesh>& faultBd,
               const Obj<Mesh>& mesh,
               const Obj<Mesh::int_section_type>& groupField,
               const int materialId,
-              const bool constraintCell =false);
+              const bool constraintCell = false,
+              const bool flipFault = false);
 
   /** Create (distributed) fault mesh from cohesive cells.
    *
@@ -199,7 +199,7 @@ public :
    *   Lagrange multipliers that require extra vertices, false otherwise.
    */
   static
-  void createParallel(ALE::Obj<Mesh>* fault,
+  void createParallel(ALE::Obj<SubMesh>* ifault,
 		      std::map<Mesh::point_type, Mesh::point_type>* cohesiveToFault,
 		      const ALE::Obj<Mesh>& mesh,
 		      const int materialId,

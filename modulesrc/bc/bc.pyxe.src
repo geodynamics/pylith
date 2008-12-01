@@ -687,7 +687,7 @@ cdef class DirichletBoundary(BoundaryCondition):
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
-      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
+      ALE::Obj<pylith::SubMesh>* mesh = (ALE::Obj<pylith::SubMesh>*) meshVptr;
       *mesh = ((pylith::bc::DirichletBoundary*) objVptr)->boundaryMesh();
       } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -1424,7 +1424,7 @@ cdef class Neumann(BoundaryCondition):
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
-      ALE::Obj<pylith::Mesh>* mesh = (ALE::Obj<pylith::Mesh>*) meshVptr;
+      ALE::Obj<pylith::SubMesh>* mesh = (ALE::Obj<pylith::SubMesh>*) meshVptr;
       *mesh = ((pylith::bc::Neumann*) objVptr)->boundaryMesh();
       } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,

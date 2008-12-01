@@ -56,6 +56,8 @@ protected :
 
   BoundaryMeshData* _data; ///< Data for testing
 
+  bool _flipFault;
+
 }; // class TestBoundaryMesh
 
 #endif // pylith_bc_boundarymesh_hh

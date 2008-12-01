@@ -221,9 +221,18 @@ public :
    * @param cell Finite-element cell
    */
   virtual 
-  void computeGeometry(const ALE::Obj<Mesh>& mesh,
-		       const ALE::Obj<real_section_type>& coordinates,
-		       const Mesh::point_type& cell) = 0;
+  void computeGeometry(const real_section_type::value_type* vertCoords,
+                       const int coordDim,
+                       const Mesh::point_type& cell) = 0;
+
+  template<typename mesh_type>
+  void computeGeometry(const ALE::Obj<mesh_type>& mesh,
+                       const ALE::Obj<real_section_type>& coordinates,
+                       const Mesh::point_type& cell) {
+    computeGeometry(mesh->restrictClosure(coordinates, cell),
+                    coordinates->getFiberDimension(*mesh->depthStratum(0)->begin()),
+                    cell);
+  };
 
   /** Reset the precomputation structures. */
   void resetPrecomputation(void);

@@ -53,9 +53,9 @@ public :
    * @param coordinates Section containing vertex coordinates
    * @param cell Finite-element cell
    */
-  void computeGeometry(const ALE::Obj<Mesh>& mesh,
-		       const ALE::Obj<real_section_type>& coordinates,
-		       const Mesh::point_type& cell);
+  void computeGeometry(const real_section_type::value_type* vertCoords,
+                       const int coordDim,
+                       const Mesh::point_type& cell);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
