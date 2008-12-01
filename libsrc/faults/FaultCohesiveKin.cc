@@ -20,6 +20,7 @@
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
+#include "pylith/topology/FieldOps.hh" // USES FieldOps
 #include "pylith/utils/array.hh" // USES double_array
 #include <petscmat.h> // USES PETSc Mat
 
@@ -560,55 +561,78 @@ pylith::faults::FaultCohesiveKin::vertexField(
 { // vertexField
   assert(!_faultMesh.isNull());
   assert(!_orientation.isNull());
+  assert(0 != _normalizer);
 
   const int cohesiveDim = _faultMesh->getDimension();
+  const int spaceDim = _quadrature->spaceDim();
 
   const int slipStrLen = strlen("final_slip");
   const int timeStrLen = strlen("slip_time");
 
+  double scale = 0.0;
+  int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
     *fieldType = VECTOR_FIELD;
     assert(!_cumSlip.isNull());
-    return _cumSlip;
+    _allocateBufferVertexVector();
+    topology::FieldOps::copyValues(_bufferVertexVector, _cumSlip);
+    _bufferTmp = _bufferVertexVector;
+    scale = _normalizer->lengthScale();
+    fiberDim = spaceDim;
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
-    _bufferTmp = _orientation->getFibration(0);
     *fieldType = VECTOR_FIELD;
-    return _bufferTmp;
+    _bufferTmp = _orientation->getFibration(0);
+    scale = 0.0;
+    fiberDim = spaceDim;
 
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
-    _bufferTmp = _orientation->getFibration(1);
     *fieldType = VECTOR_FIELD;
-    return _bufferTmp;
+    _bufferTmp = _orientation->getFibration(1);
+    scale = 0.0;
+    fiberDim = spaceDim;
 
   } else if (0 == strcasecmp("normal_dir", name)) {
+    *fieldType = VECTOR_FIELD;
     const int space = 
       (0 == cohesiveDim) ? 0 : (1 == cohesiveDim) ? 1 : 2;
     _bufferTmp = _orientation->getFibration(space);
-    *fieldType = VECTOR_FIELD;
-    return _bufferTmp;
+    scale = 0.0;
+    fiberDim = spaceDim;
 
   } else if (0 == strncasecmp("final_slip_X", name, slipStrLen)) {
     const std::string value = std::string(name).substr(slipStrLen+1);
 
+    *fieldType = VECTOR_FIELD;
     const srcs_type::const_iterator s_iter = _eqSrcs.find(value);
     assert(s_iter != _eqSrcs.end());
-    _bufferTmp = s_iter->second->finalSlip();
-    *fieldType = VECTOR_FIELD;
-    return _bufferTmp;
+    _allocateBufferVertexVector();
+    topology::FieldOps::copyValues(_bufferVertexVector, 
+				   s_iter->second->finalSlip());
+    _bufferTmp = _bufferVertexVector;
+    scale = _normalizer->lengthScale();
+    fiberDim = spaceDim;
+
   } else if (0 == strncasecmp("slip_time_X", name, timeStrLen)) {
+    *fieldType = SCALAR_FIELD;
     const std::string value = std::string(name).substr(timeStrLen+1);
     const srcs_type::const_iterator s_iter = _eqSrcs.find(value);
     assert(s_iter != _eqSrcs.end());
-    _bufferTmp = s_iter->second->slipTime();
-    *fieldType = SCALAR_FIELD;
-    return _bufferTmp;
+    _allocateBufferVertexScalar();
+    topology::FieldOps::copyValues(_bufferVertexScalar, 
+				   s_iter->second->slipTime());
+    _bufferTmp = _bufferVertexScalar;
+    scale = _normalizer->timeScale();
+    fiberDim = 1;
+
   } else if (0 == strcasecmp("traction_change", name)) {
     *fieldType = VECTOR_FIELD;
     const ALE::Obj<real_section_type>& solution = fields->getSolution();
     _calcTractionsChange(&_bufferVertexVector, mesh, solution);
-    return _bufferVertexVector;
-
+    _bufferTmp = _bufferVertexVector;
+    scale = _normalizer->pressureScale();
+    fiberDim = spaceDim;
+    
   } else {
     std::ostringstream msg;
     msg << "Request for unknown vertex field '" << name
@@ -616,8 +640,25 @@ pylith::faults::FaultCohesiveKin::vertexField(
     throw std::runtime_error(msg.str());
   } // else
 
-  // Return generic section to satisfy member function definition.
-  return _bufferVertexScalar;
+  if (0 != scale) {
+    // dimensionalize values
+    double_array valuesGlobal(fiberDim);
+    const ALE::Obj<Mesh::label_sequence>& vertices = _faultMesh->depthStratum(0);
+    assert(!vertices.isNull());
+    const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+    for (Mesh::label_sequence::iterator v_iter=vertices->begin(); 
+	 v_iter != verticesEnd;
+	 ++v_iter) {
+      assert(fiberDim == _bufferTmp->getFiberDimension(*v_iter));
+      const real_section_type::value_type* valuesNondim = 
+	_bufferTmp->restrictPoint(*v_iter);
+      for (int i=0; i < fiberDim; ++i)
+	valuesGlobal[i] = _normalizer->dimensionalize(valuesNondim[i], scale);
+      _bufferTmp->updatePointAll(*v_iter, &valuesGlobal[0]);
+    } // for
+  } // if
+
+  return _bufferTmp;
 } // vertexField
 
 // ----------------------------------------------------------------------
@@ -953,7 +994,7 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
 
 // ----------------------------------------------------------------------
 // Compute change in tractions on fault surface using solution.
-//   NOTE: We must convert vertex labels to fault vertex labels
+// NOTE: We must convert vertex labels to fault vertex labels
 void
 pylith::faults::FaultCohesiveKin::_calcTractionsChange(
 				 ALE::Obj<real_section_type>* tractions,

@@ -274,57 +274,63 @@ pylith::feassemble::Quadrature::resetPrecomputation()
 // ----------------------------------------------------------------------
 void
 pylith::feassemble::Quadrature::precomputeGeometry(
-			      const ALE::Obj<Mesh>& mesh,
-			      const ALE::Obj<real_section_type>& coordinates,
-			      const ALE::Obj<Mesh::label_sequence>& cells)
+			const ALE::Obj<Mesh>& mesh,
+			const ALE::Obj<real_section_type>& coordinates,
+			const ALE::Obj<Mesh::label_sequence>& cells)
 { // precomputeGeometry
-  if (_precomputed) return;
-  const Mesh::label_sequence::iterator end = cells->end();
+  if (_precomputed)
+    return;
 
-  _quadPtsPre->setChart(real_section_type::chart_type(*std::min_element(cells->begin(), cells->end()),
-                                                      *std::max_element(cells->begin(), cells->end())+1));
+  _quadPtsPre->setChart(real_section_type::chart_type(
+		      *std::min_element(cells->begin(), cells->end()),
+		      *std::max_element(cells->begin(), cells->end())+1));
   _quadPtsPre->setFiberDimension(cells, _numQuadPts*_spaceDim);
   _quadPtsPre->allocatePoint();
-  _quadPtsPreV = new ALE::ISieveVisitor::RestrictVisitor<real_section_type>(*_quadPtsPre, _numQuadPts*_spaceDim, &_quadPts[0]);
+  _quadPtsPreV = new ALE::ISieveVisitor::RestrictVisitor<real_section_type>(
+			  *_quadPtsPre, _numQuadPts*_spaceDim, &_quadPts[0]);
+
   _jacobianPre->getAtlas()->setAtlas(_quadPtsPre->getAtlas()->getAtlas());
   _jacobianPre->getAtlas()->allocatePoint();
   _jacobianPre->setFiberDimension(cells, _numQuadPts*_cellDim*_spaceDim);
   _jacobianPre->allocatePoint();
-  _jacobianPreV = new ALE::ISieveVisitor::RestrictVisitor<real_section_type>(*_jacobianPre, _numQuadPts*_cellDim*_spaceDim, &_jacobian[0]);
+  _jacobianPreV = new ALE::ISieveVisitor::RestrictVisitor<real_section_type>(
+		*_jacobianPre, _numQuadPts*_cellDim*_spaceDim, &_jacobian[0]);
+
   _jacobianDetPre->getAtlas()->setAtlas(_quadPtsPre->getAtlas()->getAtlas());
   _jacobianDetPre->getAtlas()->allocatePoint();
   _jacobianDetPre->setFiberDimension(cells, _numQuadPts);
   _jacobianDetPre->allocatePoint();
   _jacobianDetPreV = new ALE::ISieveVisitor::RestrictVisitor<real_section_type>(*_jacobianDetPre, _numQuadPts, &_jacobianDet[0]);
+
   _jacobianInvPre->setAtlas(_jacobianPre->getAtlas());
   _jacobianInvPre->setFiberDimension(cells, _numQuadPts*_cellDim*_spaceDim);
   _jacobianInvPre->allocatePoint();
   _jacobianInvPreV = new ALE::ISieveVisitor::RestrictVisitor<real_section_type>(*_jacobianInvPre, _numQuadPts*_cellDim*_spaceDim, &_jacobianInv[0]);
   //_jITag = _jacobianInvPre->copyCustomAtlas(_jacobianPre, _jTag);
+
   _basisDerivPre->getAtlas()->setAtlas(_quadPtsPre->getAtlas()->getAtlas());
   _basisDerivPre->getAtlas()->allocatePoint();
   _basisDerivPre->setFiberDimension(cells, _numQuadPts*_numBasis*_spaceDim);
   _basisDerivPre->allocatePoint();
   _basisDerivPreV = new ALE::ISieveVisitor::RestrictVisitor<real_section_type>(*_basisDerivPre, _numQuadPts*_numBasis*_spaceDim, &_basisDeriv[0]);
 
-  const int ncells = cells->size();
-  const int nbytes = 
-    (
-     _numQuadPts*_spaceDim + // quadPts
-    _numQuadPts*_cellDim*_spaceDim + // jacobian
-    //_numQuadPts*_cellDim*_spaceDim + // jacobianInv
-    _numQuadPts + // jacobianDet
-     _numQuadPts*_numBasis*_spaceDim // basisDeriv
-     ) * ncells * sizeof(double);
-    
 #if 0
+  const int ncells = cells->size();
+  const int nbytes = (_numQuadPts*_spaceDim + // quadPts
+		      _numQuadPts*_cellDim*_spaceDim + // jacobian
+		      _numQuadPts*_cellDim*_spaceDim + // jacobianInv
+		      _numQuadPts + // jacobianDet
+		      _numQuadPts*_numBasis*_spaceDim // basisDeriv
+		      ) * ncells * sizeof(double);
+  
   std::cout << "Quadrature::precomputeGeometry() allocating "
 	    << nbytes/(1024*1024) << " MB."
 	    << std::endl;
 #endif
 
+  const Mesh::label_sequence::iterator cellsEnd = cells->end();
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
-      c_iter != end;
+      c_iter != cellsEnd;
       ++c_iter) {
     this->computeGeometry(mesh, coordinates, *c_iter);
 

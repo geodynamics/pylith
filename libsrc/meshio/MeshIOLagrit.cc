@@ -212,7 +212,7 @@ pylith::meshio::MeshIOLagrit::_read(void)
       _orientCellsBinary(&cells, numCells, numCorners, meshDim);
     } // if/else
   }
-  _buildMesh(coordinates, numVertices, spaceDim,
+  _buildMesh(&coordinates, numVertices, spaceDim,
              cells, numCells, numCorners, meshDim);
   _setMaterials(materialIds);
 

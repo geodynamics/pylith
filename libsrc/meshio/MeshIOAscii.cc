@@ -47,7 +47,7 @@ pylith::meshio::MeshIOAscii::~MeshIOAscii(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Unpickle mesh
+// Read mesh.
 void
 pylith::meshio::MeshIOAscii::_read(void)
 { // _read
@@ -134,7 +134,7 @@ pylith::meshio::MeshIOAscii::_read(void)
 
 	if (readDim && readCells && readVertices && !builtMesh) {
 	  // Can now build mesh
-	  _buildMesh(coordinates, numVertices, spaceDim,
+	  _buildMesh(&coordinates, numVertices, spaceDim,
 		     cells, numCells, numCorners, meshDim);
 	  _setMaterials(materialIds);
 	  builtMesh = true;
@@ -161,7 +161,7 @@ pylith::meshio::MeshIOAscii::_read(void)
     } // catch
     filein.close();
   } else {
-    _buildMesh(coordinates, numVertices, spaceDim,
+    _buildMesh(&coordinates, numVertices, spaceDim,
                cells, numCells, numCorners, meshDim);
     _setMaterials(materialIds);
   } // if/else

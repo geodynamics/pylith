@@ -154,6 +154,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<Mesh>& mesh,
   // Container for data returned in query of database
   double_array queryData(numValues);
   double_array quadPtRef(cellDim);
+  double_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Container for damping constants for current cell
   double_array dampingConstsLocal(fiberDim);
@@ -164,6 +165,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<Mesh>& mesh,
   assert(!coordinates.isNull());
 
   assert(0 != _normalizer);
+  const double lengthScale = _normalizer->lengthScale();
   const double densityScale = _normalizer->densityScale();
   const double velocityScale = 
     _normalizer->lengthScale() / _normalizer->timeScale();
@@ -172,20 +174,23 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<Mesh>& mesh,
       c_iter != cells->end();
       ++c_iter) {
     _quadrature->computeGeometry(_boundaryMesh, coordinates, *c_iter);
-    const double_array& quadPts = _quadrature->quadPts();
+    const double_array& quadPtsNondim = _quadrature->quadPts();
     const double_array& quadPtsRef = _quadrature->quadPtsRef();
+    quadPtsGlobal = quadPtsNondim;
+    _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(), 
+				lengthScale);
 
     dampingConstsGlobal = 0.0;
     for(int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
       // Compute damping constants in normal/tangential coordinates
       const int err = _db->query(&queryData[0], numValues, 
-				 &quadPts[iQuad*spaceDim], spaceDim, cs);
+				 &quadPtsGlobal[iQuad*spaceDim], spaceDim, cs);
       if (err) {
 	std::ostringstream msg;
 	msg << "Could not find parameters for physical properties at \n"
 	    << "(";
 	for (int i=0; i < spaceDim; ++i)
-	  msg << "  " << quadPts[iQuad*spaceDim+i];
+	  msg << "  " << quadPtsGlobal[iQuad*spaceDim+i];
 	msg << ") for absorbing boundary condition " << _label << "\n"
 	    << "using spatial database " << _db->label() << ".";
 	throw std::runtime_error(msg.str());

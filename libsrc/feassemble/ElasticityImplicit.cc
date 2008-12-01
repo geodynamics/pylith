@@ -169,10 +169,14 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   // Precompute the geometric and function space information
   _quadrature->precomputeGeometry(mesh, coordinates, cells);
 
-  // Allocate vector for cell values.
+  // Allocate vectors for cell values.
   _initCellVector();
   const int cellVecSize = numBasis*spaceDim;
   double_array dispTBctpdtCell(cellVecSize);
+  double_array totalStrain(numQuadPts*tensorSize);
+  totalStrain = 0.0;
+  double_array gravVec(spaceDim);
+  double_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Set up gravity field database for querying
   if (0 != _gravityField) {
@@ -191,16 +195,19 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     } // else
   } // if
 
-  // Allocate vector for total strain
-  double_array totalStrain(numQuadPts*tensorSize);
-  totalStrain = 0.0;
   PetscLogEventEnd(setupEvent,0,0,0,0);
 
   ALE::ISieveVisitor::RestrictVisitor<real_section_type> rV(*dispTBctpdt, cellVecSize, &dispTBctpdtCell[0]);
   if (mesh->depth() > 1) {
     //ISieveVisitor::PointRetriever<sieve_type,ISieveVisitor::RestrictVisitor<Section> > pV((int) pow((double) mesh->getSieve()->getMaxConeSize(), this->depth())+1, rV, true);
     throw ALE::Exception("Need to reorganize to use a different visitor class");
-  }
+  } // if
+
+  assert(0 != _normalizer);
+  const double lengthScale = _normalizer->lengthScale();
+  const double gravityScale = 
+    _normalizer->pressureScale() / (_normalizer->lengthScale() *
+				    _normalizer->densityScale());
 
   // Loop over cells
   int c_index = 0;
@@ -229,34 +236,30 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     const double_array& basis = _quadrature->basis();
     const double_array& basisDeriv = _quadrature->basisDeriv();
     const double_array& jacobianDet = _quadrature->jacobianDet();
-    const double_array& quadPts = _quadrature->quadPts();
+    const double_array& quadPtsNondim = _quadrature->quadPts();
 
     if (cellDim != spaceDim)
-      throw std::logic_error("Not implemented yet.");
-
+      throw std::logic_error("Integration for cells with spatial dimensions "
+			     "different than the spatial dimension of the "
+			     "domain not implemented yet.");
 
     // Compute body force vector if gravity is being used.
     if (0 != _gravityField) {
-
       // Get density at quadrature points for this cell
       const double_array& density = _material->calcDensity();
 
-      assert(0 != _normalizer);
-      const double gravityScale = 
-	_normalizer->pressureScale() / (_normalizer->lengthScale() *
-					_normalizer->densityScale());
+      quadPtsGlobal = quadPtsNondim;
+      _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
+				  lengthScale);
 
       // Compute action for element body forces
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	double gravVec[spaceDim];
-	double coords[spaceDim];
-	memcpy(coords, &quadPts[iQuad * spaceDim], sizeof(double)*spaceDim);
-
-	const int err = _gravityField->query(gravVec, spaceDim,
-				  coords, spaceDim, cs);
+	const int err = _gravityField->query(&gravVec[0], gravVec.size(),
+					     &quadPtsGlobal[0], spaceDim, cs);
 	if (err)
 	  throw std::runtime_error("Unable to get gravity vector for point.");
-	_normalizer->nondimensionalize(gravVec, spaceDim, gravityScale);
+	_normalizer->nondimensionalize(&gravVec[0], gravVec.size(), 
+				       gravityScale);
 	const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
 	for (int iBasis=0, iQ=iQuad*numBasis;
 	     iBasis < numBasis; ++iBasis) {

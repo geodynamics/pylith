@@ -92,8 +92,9 @@ libpylith_la_SOURCES = \
 	meshio/PsetFileBinary.cc \
 	meshio/VertexFilter.cc \
 	meshio/VertexFilterVecNorm.cc \
-	topology/FieldsManager.cc \
 	topology/Distributor.cc \
+	topology/FieldsManager.cc \
+	topology/FieldOps.cc \
 	topology/MeshOps.cc \
 	topology/MeshRefiner.cc \
 	topology/RefineUniform.cc \

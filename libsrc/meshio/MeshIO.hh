@@ -17,14 +17,19 @@
                                     // string_vector
 
 #include "pylith/utils/sievetypes.hh" // USES Obj, PETSc Mesh
-
-#include "Mesh.hh" // Needs ALE::Mesh
+#include "Mesh.hh" // USES ALE::Mesh
 
 namespace pylith {
   namespace meshio {
     class MeshIO;
   } // meshio
 } // pylith
+
+namespace spatialdata {
+  namespace units {
+    class Nondimensional;
+  } // units
+} // spatialdata
 
 class pylith::meshio::MeshIO
 { // MeshIO
@@ -69,17 +74,23 @@ public :
    */
   bool interpolate(void) const;
 
+  /** Set scales used to nondimensionalize mesh.
+   *
+   * @param dim Nondimensionalizer.
+   */
+  void normalizer(const spatialdata::units::Nondimensional& dim);
+
   /** Read mesh from file.
    *
    * @param mesh Pointer to PETSc mesh object
    */
-  void read(ALE::Obj<pylith::Mesh>* mesh);
+  void read(ALE::Obj<Mesh>* mesh);
 
   /** Write mesh to file.
    *
-   * @param mesh Pointer to PETSc mesh object
+   * @param mesh Pointer to PETSc mesh object.
    */
-  void write(ALE::Obj<pylith::Mesh>* mesh);
+  void write(ALE::Obj<Mesh>* mesh);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
@@ -111,7 +122,7 @@ protected :
    * @param numCorners Number of vertices per cell
    * @param meshDim Dimension of cells in mesh
    */
-  void _buildMesh(const double_array& coordinates,
+  void _buildMesh(double_array* coordinates,
 		  const int numVertices,
 		  const int spaceDim,
 		  const int_array& cells,
@@ -214,10 +225,11 @@ protected :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
+  ALE::Obj<Mesh>* _mesh; ///< Pointer to PETSc mesh object
+  spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer
+
   bool _debug; ///< True to turn of mesh debugging output
   bool _interpolate; ///< True if building intermediate topology elements
-
-  ALE::Obj<pylith::Mesh>* _mesh; ///< Pointer to PETSc mesh object
 
 }; // MeshIO
 

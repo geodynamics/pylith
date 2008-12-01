@@ -173,6 +173,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
   // reference geometry.
   double_array tractionDataLocal(spaceDim);
   double_array quadPtRef(cellDim);
+  double_array quadPtsGlobal(numQuadPts*spaceDim);
   const double_array& quadPtsRef = _quadrature->quadPtsRef();
 
   // Container for cell tractions rotated to global coordinates.
@@ -182,9 +183,9 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
   const ALE::Obj<real_section_type>& coordinates =
     mesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  // coordinates->view("Mesh coordinates from Neumann::initialize");
 
   assert(0 != _normalizer);
+  const double lengthScale = _normalizer->lengthScale();
   const double pressureScale = _normalizer->pressureScale();
 
   // Loop over cells in boundary mesh, compute orientations, and then
@@ -195,7 +196,10 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
       ++c_iter) {
     // std::cout << "c_iter:  " << *c_iter << std::endl;
     _quadrature->computeGeometry(_boundaryMesh, coordinates, *c_iter);
-    const double_array& quadPts = _quadrature->quadPts();
+    const double_array& quadPtsNondim = _quadrature->quadPts();
+    quadPtsGlobal = quadPtsNondim;
+    _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
+				lengthScale);
     _boundaryMesh->restrictClosure(coordinates, *c_iter,
 				   &cellVertices[0], cellVertices.size());
 
@@ -204,13 +208,13 @@ pylith::bc::Neumann::initialize(const ALE::Obj<Mesh>& mesh,
 	++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
       // Get traction vector in local coordinate system at quadrature point
       const int err = _db->query(&tractionDataLocal[0], spaceDim,
-				 &quadPts[iSpace], spaceDim, cs);
+				 &quadPtsGlobal[iSpace], spaceDim, cs);
       if (err) {
 	std::ostringstream msg;
 	msg << "Could not find traction values at \n"
 	    << "(";
 	for (int i=0; i < spaceDim; ++i)
-	  msg << " " << quadPts[i+iSpace];
+	  msg << " " << quadPtsGlobal[i+iSpace];
 	msg << ") for traction boundary condition " << _label << "\n"
 	    << "using spatial database " << _db->label() << ".";
 	throw std::runtime_error(msg.str());

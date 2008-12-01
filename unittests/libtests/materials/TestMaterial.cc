@@ -25,6 +25,7 @@
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/sievetypes.hh" // USES Mesh
 
@@ -187,11 +188,13 @@ pylith::materials::TestMaterial::testInitialize(void)
   db.ioHandler(&iohandler);
   db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
   
+  spatialdata::units::Nondimensional normalizer;
+
   ElasticIsotropic3D material;
   material.db(&db);
   material.id(materialID);
   material.label("my_material");
-  material.initialize(mesh, &cs, &quadrature);
+  material.initialize(mesh, &cs, &quadrature, normalizer);
 
   const double densityA = 2000.0;
   const double vsA = 100.0;

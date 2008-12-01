@@ -75,7 +75,7 @@ pylith::meshio::MeshIOCubit::_read(void)
       _readVertices(ncfile, &coordinates, &numVertices, &spaceDim);
       _readCells(ncfile, &cells, &materialIds, &numCells, &numCorners);
       _orientCells(&cells, numCells, numCorners, meshDim);
-      _buildMesh(coordinates, numVertices, spaceDim,
+      _buildMesh(&coordinates, numVertices, spaceDim,
                  cells, numCells, numCorners, meshDim);
       _setMaterials(materialIds);
 
@@ -92,7 +92,7 @@ pylith::meshio::MeshIOCubit::_read(void)
       throw std::runtime_error(msg.str());
     } // try/catch
   } else {
-    _buildMesh(coordinates, numVertices, spaceDim,
+    _buildMesh(&coordinates, numVertices, spaceDim,
                cells, numCells, numCorners, meshDim);
     _setMaterials(materialIds);
   }
