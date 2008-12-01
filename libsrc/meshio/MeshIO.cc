@@ -14,11 +14,11 @@
 
 #include "MeshIO.hh" // implementation of class methods
 
-#include "Selection.hh" // USES boundary()
-
 #include "pylith/utils/array.hh" // USES double_array, int_array
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
+#include "Selection.hh" // USES boundary()
 
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -27,9 +27,10 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::MeshIO::MeshIO(void) :
+  _mesh(0),
+  _normalizer(new spatialdata::units::Nondimensional),
   _debug(false),
-  _interpolate(false),
-  _mesh(0)
+  _interpolate(false)
 { // constructor
 } // constructor
 
@@ -37,6 +38,7 @@ pylith::meshio::MeshIO::MeshIO(void) :
 // Destructor
 pylith::meshio::MeshIO::~MeshIO(void)
 { // destructor
+  delete _normalizer; _normalizer = 0;
 } // destructor
   
 // ----------------------------------------------------------------------
@@ -75,9 +77,9 @@ pylith::meshio::MeshIO::write(ALE::Obj<Mesh>* mesh)
 } // write
 
 // ----------------------------------------------------------------------
-// Set vertices in mesh.
+// Set vertices and cells in mesh.
 void
-pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
+pylith::meshio::MeshIO::_buildMesh(double_array* coordinates,
 				   const int numVertices,
 				   const int spaceDim,
 				   const int_array& cells,
@@ -86,6 +88,7 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
 				   const int meshDim)
 { // _buildMesh
   assert(0 != _mesh);
+  assert(0 != coordinates);
   MPI_Comm comm = PETSC_COMM_WORLD;
   int      dim  = meshDim;
   int      rank;
@@ -125,7 +128,7 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
 
   logger.stagePush("MeshCreation");
   if (!rank) {
-    assert(coordinates.size() == numVertices*spaceDim);
+    assert(coordinates->size() == numVertices*spaceDim);
     assert(cells.size() == numCells*numCorners);
     if (!_interpolate) {
       // Create the ISieve
@@ -225,23 +228,29 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
     << " bytes" << std::endl << std::endl;
 #endif
 
-  ALE::SieveBuilder<Mesh>::buildCoordinates(*_mesh, spaceDim, &coordinates[0]);
+  assert(0 != _normalizer);
+  const double lengthScale = _normalizer->lengthScale();
+  _normalizer->nondimensionalize(&(*coordinates)[0], coordinates->size(),
+				 lengthScale);
+
+  ALE::SieveBuilder<Mesh>::buildCoordinates(*_mesh, spaceDim, 
+					    &(*coordinates)[0]);
 } // _buildMesh
 
 // ----------------------------------------------------------------------
-// Set vertices in fault mesh.
+// Set vertices and cells for fault mesh.
 void
 pylith::meshio::MeshIO::_buildFaultMesh(const double_array& coordinates,
-				   const int numVertices,
-				   const int spaceDim,
-				   const int_array& cells,
-				   const int numCells,
-				   const int numCorners,
-                   const int firstCell,
-				   const int_array& faceCells,
-                   const int meshDim,
-                   const Obj<Mesh>& fault,
-                   Obj<ALE::Mesh>& faultBd)
+					const int numVertices,
+					const int spaceDim,
+					const int_array& cells,
+					const int numCells,
+					const int numCorners,
+					const int firstCell,
+					const int_array& faceCells,
+					const int meshDim,
+					const Obj<Mesh>& fault,
+					Obj<ALE::Mesh>& faultBd)
 { // _buildFaultMesh
   MPI_Comm comm = PETSC_COMM_WORLD;
   int      dim  = meshDim;
@@ -320,7 +329,6 @@ pylith::meshio::MeshIO::_buildFaultMesh(const double_array& coordinates,
     << " bytes" << std::endl << std::endl;
 #endif
 
-  //ALE::SieveBuilder<Mesh>::buildCoordinates(fault, spaceDim, &coordinates[0]);
 } // _buildFaultMesh
 
 // ----------------------------------------------------------------------
@@ -359,6 +367,11 @@ pylith::meshio::MeshIO::_getVertices(double_array* coordinates,
     for (int iDim=0; iDim < *spaceDim; ++iDim)
       (*coordinates)[i++] = vertexCoords[iDim];
   } // for
+
+  assert(0 != _normalizer);
+  const double lengthScale = _normalizer->lengthScale();
+  _normalizer->dimensionalize(&(*coordinates)[0], coordinates->size(),
+			      lengthScale);
 } // _getVertices
 
 // ----------------------------------------------------------------------

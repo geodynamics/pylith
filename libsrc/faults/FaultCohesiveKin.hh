@@ -286,6 +286,7 @@ private :
   /// Field over the fault mesh vertices of vector field of cumulative slip.
   ALE::Obj<real_section_type> _cumSlip;
 
+  /// Map label of cohesive cell to label of cells in fault mesh.
   std::map<Mesh::point_type, Mesh::point_type> _cohesiveToFault;
 
   /// Scalar field for vertex information over fault mesh.

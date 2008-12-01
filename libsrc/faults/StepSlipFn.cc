@@ -122,22 +122,26 @@ pylith::faults::StepSlipFn::initialize(
   const double timeScale = normalizer.timeScale();
 
   double_array paramsVertex(fiberDim);
+  double_array vCoordsGlobal(spaceDim);  
   for (Mesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter) {
 
-    // Get coordinates of vertex
-    const real_section_type::value_type* coordsVertex = 
+    const real_section_type::value_type* vCoordsNondim = 
       coordinates->restrictPoint(*v_iter);
-    assert(0 != coordsVertex);
-    
+    assert(0 != vCoordsNondim);
+    for (int i=0; i < spaceDim; ++i)
+      vCoordsGlobal[i] = vCoordsNondim[i];
+    normalizer.dimensionalize(&vCoordsGlobal[0], vCoordsGlobal.size(),
+			      lengthScale);
+        
     int err = _dbFinalSlip->query(&paramsVertex[indexFinalSlip], spaceDim, 
-				 coordsVertex, spaceDim, cs);
+				  &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
     if (err) {
       std::ostringstream msg;
       msg << "Could not find final slip at (";
       for (int i=0; i < spaceDim; ++i)
-	msg << "  " << coordsVertex[i];
+	msg << "  " << vCoordsGlobal[i];
       msg << ") using spatial database " << _dbFinalSlip->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
@@ -145,12 +149,12 @@ pylith::faults::StepSlipFn::initialize(
 				 lengthScale);
 
     err = _dbSlipTime->query(&paramsVertex[indexSlipTime], 1, 
-			     coordsVertex, spaceDim, cs);
+			     &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
     if (err) {
       std::ostringstream msg;
       msg << "Could not find slip initiation time at (";
       for (int i=0; i < spaceDim; ++i)
-	msg << "  " << coordsVertex[i];
+	msg << "  " << vCoordsGlobal[i];
       msg << ") using spatial database " << _dbSlipTime->label() << ".";
       throw std::runtime_error(msg.str());
     } // if

@@ -117,6 +117,7 @@ pylith::bc::DirichletBoundary::initialize(
   _boundaryMesh->allocate(_values);
 
   double_array queryValues(2*numFixedDOF);
+  double_array vCoordsGlobal(spaceDim);
 
   assert(0 != _normalizer);
   const double lengthScale = _normalizer->lengthScale();
@@ -127,28 +128,32 @@ pylith::bc::DirichletBoundary::initialize(
        v_iter != verticesEnd;
        ++v_iter) {
     // Get coordinates of vertex
-    const real_section_type::value_type* vCoords = 
+    const real_section_type::value_type* vCoordsNondim = 
       coordinates->restrictPoint(*v_iter);
-    int err = _db->query(&queryValues[0], numFixedDOF, vCoords, 
-				spaceDim, cs);
+    for (int i=0; i < spaceDim; ++i)
+      vCoordsGlobal[i] = vCoordsNondim[i];
+    _normalizer->dimensionalize(&vCoordsGlobal[0], vCoordsGlobal.size(),
+				lengthScale);
+    int err = _db->query(&queryValues[0], numFixedDOF, 
+			 &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
     if (err) {
       std::ostringstream msg;
       msg << "Could not find values at (";
       for (int i=0; i < spaceDim; ++i)
-	msg << "  " << vCoords[i];
+	msg << "  " << vCoordsGlobal[i];
       msg << ") using spatial database " << _db->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
     for (int i=0; i < numFixedDOF; ++i)
       _normalizer->nondimensionalize(queryValues[i], lengthScale);
 
-    err = _dbRate->query(&queryValues[numFixedDOF], numFixedDOF, vCoords, 
-			 spaceDim, cs);
+    err = _dbRate->query(&queryValues[numFixedDOF], numFixedDOF, 
+			 &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
     if (err) {
       std::ostringstream msg;
       msg << "Could not find values at (";
       for (int i=0; i < spaceDim; ++i)
-	msg << "  " << vCoords[i];
+	msg << "  " << vCoordsGlobal[i];
       msg << ") using spatial database " << _dbRate->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
