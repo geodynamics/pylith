@@ -45,19 +45,15 @@ pylith::feassemble::Quadrature3D::Quadrature3D(const Quadrature3D& q) :
 // Compute geometric quantities for a cell at quadrature points.
 void
 pylith::feassemble::Quadrature3D::computeGeometry(
-		       const ALE::Obj<Mesh>& mesh,
-		       const ALE::Obj<real_section_type>& coordinates,
+		       const real_section_type::value_type* vertCoords,
+               const int coordDim,
 		       const Mesh::point_type& cell)
 { // computeGeometry
   assert(3 == _cellDim);
   assert(3 == _spaceDim);
 
   _resetGeometry();
-
-  // Get coordinates of cell's vertices
-  const real_section_type::value_type* vertCoords = 
-    mesh->restrictClosure(coordinates, cell);
-  assert(3 == coordinates->getFiberDimension(*mesh->depthStratum(0)->begin()));
+  assert(3 == coordDim);
 
   // Loop over quadrature points
   for (int iQuadPt=0; iQuadPt < _numQuadPts; ++iQuadPt) {

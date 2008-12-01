@@ -109,7 +109,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
   } // for
 
   // Allocate slip field
-  const ALE::Obj<Mesh::label_sequence>& vertices = _faultMesh->depthStratum(0);
+  const ALE::Obj<SubMesh::label_sequence>& vertices = _faultMesh->depthStratum(0);
   _slip = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
   _slip->setChart(real_section_type::chart_type(
 		     *std::min_element(vertices->begin(), vertices->end()), 
@@ -647,9 +647,9 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
   assert(!_faultMesh.isNull());
 
   // Get vertices in fault mesh
-  const ALE::Obj<Mesh::label_sequence>& vertices = 
+  const ALE::Obj<SubMesh::label_sequence>& vertices = 
     _faultMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const SubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
   // Create orientation section for fault (constraint) vertices
   const int cohesiveDim = _faultMesh->getDimension();
@@ -690,10 +690,10 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
   double_array faceVertices(numBasis*spaceDim);
   
   // Get fault cells (1 dimension lower than top-level cells)
-  const ALE::Obj<Mesh::label_sequence>& cells = 
+  const ALE::Obj<SubMesh::label_sequence>& cells = 
     _faultMesh->heightStratum(0);
   assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const SubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   const ALE::Obj<sieve_type>& sieve = _faultMesh->getSieve();
   assert(!sieve.isNull());
@@ -702,7 +702,7 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
 
   ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, (size_t) pow(sieve->getMaxConeSize(), std::max(0, _faultMesh->depth())));
 
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  for (SubMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
     _faultMesh->restrictClosure(coordinates, *c_iter, 
@@ -735,7 +735,7 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
   // Loop over vertices, make orientation information unit magnitude
   double_array vertexDir(orientationSize);
   int count = 0;
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  for (SubMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++count) {
     const real_section_type::value_type* vertexOrient = 
@@ -775,7 +775,7 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
       normalDir[1]*vertNormalDir[1] +
       normalDir[2]*vertNormalDir[2];
     if (dot < 0.0)
-      for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+      for (SubMesh::label_sequence::iterator v_iter=vertices->begin();
 	   v_iter != verticesEnd;
 	   ++v_iter) {
 	const real_section_type::value_type* vertexOrient = 
@@ -815,9 +815,9 @@ pylith::faults::FaultCohesiveKin::_calcConditioning(
   const int spaceDim = cs->spaceDim();
 
   // Get vertices in fault mesh
-  const ALE::Obj<Mesh::label_sequence>& vertices = 
+  const ALE::Obj<SubMesh::label_sequence>& vertices = 
     _faultMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const SubMesh::label_sequence::iterator verticesEnd = vertices->end();
   
   _pseudoStiffness = new real_section_type(_faultMesh->comm(), 
 					   _faultMesh->debug());
@@ -844,7 +844,7 @@ pylith::faults::FaultCohesiveKin::_calcConditioning(
 
   double_array matprops(numStiffnessVals);
   int count = 0;
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  for (SubMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++count) {
     const real_section_type::value_type* vertexCoords = 
@@ -879,9 +879,9 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   assert(!_faultMesh.isNull());
 
   // Get vertices in fault mesh
-  const ALE::Obj<Mesh::label_sequence>& vertices = 
+  const ALE::Obj<SubMesh::label_sequence>& vertices = 
     _faultMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const SubMesh::label_sequence::iterator verticesEnd = vertices->end();
   const int numVertices = vertices->size();
 
   _area = new real_section_type(_faultMesh->comm(), 
@@ -895,10 +895,10 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   _faultMesh->allocate(_area);
   
   // Get fault cells (1 dimension lower than top-level cells)
-  const ALE::Obj<Mesh::label_sequence>& cells = 
+  const ALE::Obj<SubMesh::label_sequence>& cells = 
     _faultMesh->heightStratum(0);
   assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const SubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get section containing coordinates of vertices
   const ALE::Obj<real_section_type>& coordinates = 
@@ -918,7 +918,7 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   double_array cellVertices(numBasis*spaceDim);
 
   // Loop over cells in fault mesh, compute area
-  for(Mesh::label_sequence::iterator c_iter = cells->begin();
+  for(SubMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cellsEnd;
       ++c_iter) {
     _quadrature->computeGeometry(_faultMesh, coordinates, *c_iter);
@@ -1062,7 +1062,7 @@ pylith::faults::FaultCohesiveKin::_allocateBufferVertexScalar(void)
   if (_bufferVertexScalar.isNull()) {
     _bufferVertexScalar = new real_section_type(_faultMesh->comm(), 
 						_faultMesh->debug());
-    const ALE::Obj<Mesh::label_sequence>& vertices = 
+    const ALE::Obj<SubMesh::label_sequence>& vertices = 
       _faultMesh->depthStratum(0);
     _bufferVertexScalar->setChart(real_section_type::chart_type(
 		 *std::min_element(vertices->begin(), vertices->end()),
@@ -1082,7 +1082,7 @@ pylith::faults::FaultCohesiveKin::_allocateBufferVertexVector(void)
   if (_bufferVertexVector.isNull()) {
     _bufferVertexVector = new real_section_type(_faultMesh->comm(), 
 						_faultMesh->debug());
-    const ALE::Obj<Mesh::label_sequence>& vertices = 
+    const ALE::Obj<SubMesh::label_sequence>& vertices = 
       _faultMesh->depthStratum(0);
     _bufferVertexVector->setChart(real_section_type::chart_type(
 		 *std::min_element(vertices->begin(), vertices->end()),

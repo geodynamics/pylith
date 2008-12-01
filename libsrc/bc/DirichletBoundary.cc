@@ -60,7 +60,7 @@ pylith::bc::DirichletBoundary::initialize(
 
   // Extract submesh associated with boundary
   _boundaryMesh = 
-    ALE::Selection<Mesh>::submeshV(mesh, mesh->getIntSection(_label));
+    ALE::Selection<Mesh>::submeshV<SubMesh>(mesh, mesh->getIntSection(_label));
   if (_boundaryMesh.isNull()) {
     std::ostringstream msg;
     msg << "Could not construct boundary mesh for Dirichlet boundary "
@@ -70,9 +70,9 @@ pylith::bc::DirichletBoundary::initialize(
   _boundaryMesh->setRealSection("coordinates", 
 				mesh->getRealSection("coordinates"));
   // Create the parallel overlap
-  Obj<Mesh::send_overlap_type> sendParallelMeshOverlap = _boundaryMesh->getSendOverlap();
-  Obj<Mesh::recv_overlap_type> recvParallelMeshOverlap = _boundaryMesh->getRecvOverlap();
-  Mesh::renumbering_type&      renumbering             = mesh->getRenumbering();
+  Obj<SubMesh::send_overlap_type> sendParallelMeshOverlap = _boundaryMesh->getSendOverlap();
+  Obj<SubMesh::recv_overlap_type> recvParallelMeshOverlap = _boundaryMesh->getRecvOverlap();
+  Mesh::renumbering_type&         renumbering             = mesh->getRenumbering();
   //   Can I figure this out in a nicer way?
   ALE::SetFromMap<std::map<Mesh::point_type,Mesh::point_type> > globalPoints(renumbering);
 
@@ -97,9 +97,9 @@ pylith::bc::DirichletBoundary::initialize(
   } // for
   delete[] valueNames; valueNames = 0;
 
-  const ALE::Obj<Mesh::label_sequence>& vertices = 
+  const ALE::Obj<SubMesh::label_sequence>& vertices = 
     _boundaryMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const SubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
@@ -123,7 +123,7 @@ pylith::bc::DirichletBoundary::initialize(
   const double velocityScale = 
     _normalizer->lengthScale() / _normalizer->timeScale();
 
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  for (SubMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter) {
     // Get coordinates of vertex
@@ -175,9 +175,9 @@ pylith::bc::DirichletBoundary::setConstraintSizes(
   if (0 == numFixedDOF)
     return;
 
-  const ALE::Obj<Mesh::label_sequence>& vertices = 
+  const ALE::Obj<SubMesh::label_sequence>& vertices = 
     _boundaryMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const SubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
   _offsetLocal = new int_section_type(_boundaryMesh->comm(), 
 				      _boundaryMesh->debug());
@@ -185,7 +185,7 @@ pylith::bc::DirichletBoundary::setConstraintSizes(
   _offsetLocal->setFiberDimension(vertices, 1);
   _boundaryMesh->allocate(_offsetLocal);
 
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  for (SubMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter) {
     const int fiberDim = field->getFiberDimension(*v_iter);
@@ -218,11 +218,11 @@ pylith::bc::DirichletBoundary::setConstraints(
   if (0 == numFixedDOF)
     return;
 
-  const ALE::Obj<Mesh::label_sequence>& vertices = 
+  const ALE::Obj<SubMesh::label_sequence>& vertices = 
     _boundaryMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const SubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  for (SubMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter) {
     // Get list of currently constrained DOF
@@ -285,16 +285,16 @@ pylith::bc::DirichletBoundary::setField(const double t,
   if (0 == numFixedDOF)
     return;
 
-  const ALE::Obj<Mesh::label_sequence>& vertices = 
+  const ALE::Obj<SubMesh::label_sequence>& vertices = 
     _boundaryMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const SubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
   const int fiberDimension = 
     (vertices->size() > 0) ? field->getFiberDimension(*vertices->begin()) : 0;
 
   double_array fieldValues(fiberDimension);
 
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  for (SubMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter) {
     assert(fiberDimension == field->getFiberDimension(*v_iter));

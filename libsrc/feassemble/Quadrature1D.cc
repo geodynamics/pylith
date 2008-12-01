@@ -46,19 +46,15 @@ pylith::feassemble::Quadrature1D::Quadrature1D(const Quadrature1D& q) :
 // Compute geometric quantities for a cell at quadrature points.
 void
 pylith::feassemble::Quadrature1D::computeGeometry(
-			      const ALE::Obj<Mesh>& mesh,
-			      const ALE::Obj<real_section_type>& coordinates,
-			      const Mesh::point_type& cell)
+		       const real_section_type::value_type* vertCoords,
+               const int coordDim,
+               const Mesh::point_type& cell)
 { // computeGeometry
   assert(1 == _cellDim);
   assert(1 == _spaceDim);
 
   _resetGeometry();
-  
-  // Get coordinates of cell's vertices
-  const real_section_type::value_type* vertCoords = 
-    mesh->restrictClosure(coordinates, cell);
-  assert(1 == coordinates->getFiberDimension(*mesh->depthStratum(0)->begin()));
+  assert(1 == coordDim);
   
   // Loop over quadrature points
   for (int iQuadPt=0; iQuadPt < _numQuadPts; ++iQuadPt) {

@@ -43,20 +43,16 @@ pylith::feassemble::Quadrature0D::Quadrature0D(const Quadrature0D& q) :
 // Compute geometric quantities for a cell at quadrature points.
 void
 pylith::feassemble::Quadrature0D::computeGeometry(
-			      const ALE::Obj<Mesh>& mesh,
-			      const ALE::Obj<real_section_type>& coordinates,
-			      const Mesh::point_type& cell)
+		       const real_section_type::value_type* vertCoords,
+               const int coordDim,
+               const Mesh::point_type& cell)
 { // computeGeometry
   assert(0 == _cellDim);
   assert(1 == _numQuadPts);
   assert(1 == _numBasis);
 
   _resetGeometry();
-  
-  // Get coordinates of cell's vertices
-  const real_section_type::value_type* vertCoords = 
-    mesh->restrictClosure(coordinates, cell);
-  assert(1 == coordinates->getFiberDimension(*mesh->depthStratum(0)->begin()));
+  assert(1 == coordDim);
 
   for (int i=0; i < _spaceDim; ++i)
     _quadPts[i] = vertCoords[i];

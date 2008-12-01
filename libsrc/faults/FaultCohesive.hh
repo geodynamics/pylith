@@ -66,7 +66,7 @@ public :
    *
    * @param mesh PETSc mesh
    */
-  void adjustTopology(const ALE::Obj<Mesh>& mesh);
+  void adjustTopology(const ALE::Obj<Mesh>& mesh, const bool flipFault = false);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

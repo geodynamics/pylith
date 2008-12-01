@@ -106,7 +106,7 @@ public :
    *
    * @returns Boundary mesh.
    */
-  const ALE::Obj<Mesh>& boundaryMesh(void) const;
+  const ALE::Obj<SubMesh>& boundaryMesh(void) const;
 
   /** Get cell field with BC information.
    *
@@ -136,7 +136,7 @@ private :
 private :
 
   /// Mesh over which tractions are applied
-  ALE::Obj<Mesh> _boundaryMesh;
+  ALE::Obj<SubMesh> _boundaryMesh;
 
   /// Traction vector in global coordinates at integration points.
   ALE::Obj<real_section_type> _tractions;

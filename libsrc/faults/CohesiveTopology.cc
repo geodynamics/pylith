@@ -406,16 +406,16 @@ pylith::faults::CohesiveTopology::orientFaultSieve(const int dim,
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::CohesiveTopology::createFault(Obj<Mesh>& ifault,
+pylith::faults::CohesiveTopology::createFault(Obj<SubMesh>& ifault,
                                               Obj<ALE::Mesh>& faultBd,
                                               const Obj<Mesh>& mesh,
                                               const Obj<Mesh::int_section_type>& groupField)
 {
-  const Obj<sieve_type>&      sieve       = mesh->getSieve();
-  const Obj<Mesh::sieve_type> ifaultSieve = new Mesh::sieve_type(sieve->comm(), sieve->debug());
-  Obj<ALE::Mesh>              fault       = new ALE::Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
-  Obj<ALE::Mesh::sieve_type>  faultSieve  = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
-  const int                   debug       = mesh->debug();
+  const Obj<sieve_type>&         sieve       = mesh->getSieve();
+  const Obj<SubMesh::sieve_type> ifaultSieve = new Mesh::sieve_type(sieve->comm(), sieve->debug());
+  Obj<ALE::Mesh>                 fault       = new ALE::Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
+  Obj<ALE::Mesh::sieve_type>     faultSieve  = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+  const int                      debug       = mesh->debug();
 
   // Create set with vertices on fault
   const int_section_type::chart_type& chart = groupField->getChart();
@@ -442,7 +442,7 @@ pylith::faults::CohesiveTopology::createFault(Obj<Mesh>& ifault,
   orientFaultSieve(fault->getDimension(), mesh, fault->getArrowSection("orientation"), fault);
 
   // Convert fault to an IMesh
-  Mesh::renumbering_type& renumbering = ifault->getRenumbering();
+  SubMesh::renumbering_type& renumbering = ifault->getRenumbering();
   ifault->setSieve(ifaultSieve);
   ALE::ISieveConverter::convertMesh(*fault, *ifault, renumbering, false);
   renumbering.clear();
@@ -450,18 +450,19 @@ pylith::faults::CohesiveTopology::createFault(Obj<Mesh>& ifault,
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
+pylith::faults::CohesiveTopology::create(Obj<SubMesh>& ifault,
                                          const Obj<ALE::Mesh>& faultBd,
                                          const Obj<Mesh>& mesh,
                                          const Obj<Mesh::int_section_type>& groupField,
                                          const int materialId,
-                                         const bool constraintCell)
+                                         const bool constraintCell,
+                                         const bool flipFault)
 { // create
   typedef ALE::SieveAlg<ALE::Mesh>  sieveAlg;
   typedef ALE::Selection<ALE::Mesh> selection;
 
   const Obj<sieve_type>& sieve = mesh->getSieve();
-  const Obj<Mesh::sieve_type> ifaultSieve = ifault->getSieve();
+  const Obj<SubMesh::sieve_type> ifaultSieve = ifault->getSieve();
   const int  depth           = mesh->depth();
   const int  numCells        = mesh->heightStratum(0)->size();
   int        numCorners      = 0;    // The number of vertices in a mesh cell
@@ -475,7 +476,7 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
   PointArray neighborVertices;
 
   if (!ifault->commRank()) {
-    const Mesh::point_type p = *ifault->heightStratum(1)->begin();
+    const SubMesh::point_type p = *ifault->heightStratum(1)->begin();
 
     numCorners      = mesh->getNumCellCorners();
     faceSize        = selection::numFaceVertices(mesh);
@@ -485,29 +486,23 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
   //ifault->view("Serial fault mesh");
 
   // Add new shadow vertices and possibly Lagrange multipler vertices
-  const Obj<Mesh::label_sequence>&   fVertices       = ifault->depthStratum(0);
-  const Obj<Mesh::label_sequence>&   vertices        = mesh->depthStratum(0);
-  const Obj<std::set<std::string> >& groupNames      = mesh->getIntSections();
+  const Obj<SubMesh::label_sequence>& fVertices       = ifault->depthStratum(0);
+  const Obj<Mesh::label_sequence>&    vertices        = mesh->depthStratum(0);
+  const Obj<std::set<std::string> >&  groupNames      = mesh->getIntSections();
   Mesh::point_type newPoint = sieve->getBaseSize() + sieve->getCapSize();
   const int        numFaultVertices = fVertices->size();
   std::map<Mesh::point_type,Mesh::point_type> vertexRenumber;
   std::map<Mesh::point_type,Mesh::point_type> cellRenumber;
 
-  for(Mesh::label_sequence::iterator v_iter = fVertices->begin(); v_iter != fVertices->end(); ++v_iter, ++newPoint) {
+  for(SubMesh::label_sequence::iterator v_iter = fVertices->begin(); v_iter != fVertices->end(); ++v_iter, ++newPoint) {
     vertexRenumber[*v_iter] = newPoint;
     if (debug) std::cout << "Duplicating " << *v_iter << " to " << vertexRenumber[*v_iter] << std::endl;
 
     // Add shadow and constraint vertices (if they exist) to group
     // associated with fault
     groupField->addPoint(newPoint, 1);
-    // OPTIMIZATION
-    mesh->setHeight(newPoint, 1);
-    mesh->setDepth(newPoint, 0);
     if (constraintCell) {
       groupField->addPoint(newPoint+numFaultVertices, 1);
-      // OPTIMIZATION
-      mesh->setHeight(newPoint+numFaultVertices, 1);
-      mesh->setDepth(newPoint+numFaultVertices, 0);
     }
 
     // Add shadow vertices to other groups, don't add constraint
@@ -524,11 +519,24 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
       name != groupNames->end(); ++name) {
     mesh->reallocate(mesh->getIntSection(*name));
   } // for
+#if 0
+  for(SubMesh::label_sequence::iterator v_iter = fVertices->begin(); v_iter != fVertices->end(); ++v_iter, ++newPoint) {
+    vertexRenumber[*v_iter] = newPoint;
+    // OPTIMIZATION
+    mesh->setHeight(newPoint, 1);
+    mesh->setDepth(newPoint, 0);
+    if (constraintCell) {
+      // OPTIMIZATION
+      mesh->setHeight(newPoint+numFaultVertices, 1);
+      mesh->setDepth(newPoint+numFaultVertices, 0);
+    }
+  }
+#endif
   if (constraintCell) newPoint += numFaultVertices;
 
   // Split the mesh along the fault sieve and create cohesive elements
-  const ALE::Obj<Mesh::label_sequence>& faces = ifault->heightStratum(1);
-  const ALE::Obj<Mesh::label_type>& material = mesh->getLabel("material-id");
+  const ALE::Obj<SubMesh::label_sequence>& faces    = ifault->heightStratum(1);
+  const ALE::Obj<Mesh::label_type>&        material = mesh->getLabel("material-id");
   const int firstCohesiveCell = newPoint;
   PointSet replaceCells;
   PointSet noReplaceCells;
@@ -537,14 +545,18 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
   ALE::ISieveVisitor::NConeRetriever<sieve_type> cV2(*ifaultSieve, (size_t) pow(std::max(1, ifaultSieve->getMaxConeSize()), ifault->depth()));
   std::set<Mesh::point_type> faceSet;
 
-  for(Mesh::label_sequence::iterator f_iter = faces->begin(); f_iter != faces->end(); ++f_iter, ++newPoint) {
+  for(SubMesh::label_sequence::iterator f_iter = faces->begin(); f_iter != faces->end(); ++f_iter, ++newPoint) {
     const Mesh::point_type face = *f_iter;
     if (debug) std::cout << "Considering fault face " << face << std::endl;
     ifaultSieve->support(face, sV2);
     const Mesh::point_type *cells = sV2.getPoints();
-    Mesh::point_type cell = cells[0];
-    Mesh::point_type otherCell;
+    Mesh::point_type cell      = cells[0];
+    Mesh::point_type otherCell = cells[1];
 
+    if (flipFault) {
+      otherCell = cells[0];
+      cell      = cells[1];
+    }
     if (debug) std::cout << "  Checking orientation against cell " << cell << std::endl;
     ALE::ISieveTraversal<sieve_type>::orientedClosure(*ifaultSieve, face, cV2);
     const int               coneSize = cV2.getSize();
@@ -603,10 +615,10 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
     }
     if (found) {
       if (debug) std::cout << "  Choosing other cell" << std::endl;
+      Mesh::point_type tmpCell = otherCell;
       otherCell = cell;
-      cell = cells[1];
+      cell      = tmpCell;
     } else {
-      otherCell = cells[1];
       if (debug) std::cout << "  Verifing reverse orientation" << std::endl;
       found = true;
       int v = 0;
@@ -650,10 +662,13 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
         sieve->addArrow(vertexRenumber[faceCone[c]]+numFaultVertices, newPoint);
       }
     }
+    // TODO: Need to reform the material label when sieve is reallocated
     mesh->setValue(material, newPoint, materialId);
+#if 0
     // OPTIMIZATION
     mesh->setHeight(newPoint, 0);
     mesh->setDepth(newPoint, 1);
+#endif
     sV2.clear();
     cV2.clear();
   } // for
@@ -791,7 +806,9 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
     rVs.clear();
   }
   if (!ifault->commRank()) delete [] indices;
-  /// THIS IS TOO SLOW mesh->stratify();
+#if 1
+  mesh->stratify();
+#endif
   const std::string labelName("censored depth");
 
   if (!mesh->hasLabel(labelName)) {
@@ -811,10 +828,10 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
   // Fix coordinates
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
-  const ALE::Obj<Mesh::label_sequence>& fVertices2 = ifault->depthStratum(0);
+  const ALE::Obj<SubMesh::label_sequence>& fVertices2 = ifault->depthStratum(0);
 
   if (debug) coordinates->view("Coordinates without shadow vertices");
-  for(Mesh::label_sequence::iterator v_iter = fVertices2->begin();
+  for(SubMesh::label_sequence::iterator v_iter = fVertices2->begin();
       v_iter != fVertices2->end();
       ++v_iter) {
     coordinates->addPoint(vertexRenumber[*v_iter],
@@ -825,7 +842,7 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
     }
   } // for
   mesh->reallocate(coordinates);
-  for(Mesh::label_sequence::iterator v_iter = fVertices2->begin();
+  for(SubMesh::label_sequence::iterator v_iter = fVertices2->begin();
       v_iter != fVertices2->end();
       ++v_iter) {
     coordinates->updatePoint(vertexRenumber[*v_iter], 
@@ -842,7 +859,7 @@ pylith::faults::CohesiveTopology::create(Obj<Mesh>& ifault,
 // Form a parallel fault mesh using the cohesive cell information
 void
 pylith::faults::CohesiveTopology::createParallel(
-		ALE::Obj<Mesh>* ifault,
+		ALE::Obj<SubMesh>* ifault,
 		std::map<Mesh::point_type, Mesh::point_type>* cohesiveToFault,
 		const ALE::Obj<Mesh>& mesh,
 		const int materialId,
@@ -852,7 +869,7 @@ pylith::faults::CohesiveTopology::createParallel(
   assert(0 != cohesiveToFault);
 
   const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
-  *ifault = new Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
+  *ifault = new SubMesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
   const ALE::Obj<sieve_type> ifaultSieve = new sieve_type(sieve->comm(), sieve->debug());
   ALE::Obj<ALE::Mesh> fault = new ALE::Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
   ALE::Obj<ALE::Mesh::sieve_type> faultSieve = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
@@ -903,7 +920,7 @@ pylith::faults::CohesiveTopology::createParallel(
   fault->stratify();
 
   // Convert fault to an IMesh
-  Mesh::renumbering_type& fRenumbering = (*ifault)->getRenumbering();
+  SubMesh::renumbering_type& fRenumbering = (*ifault)->getRenumbering();
   (*ifault)->setSieve(ifaultSieve);
   //ALE::ISieveConverter::convertMesh(*fault, *(*ifault), fRenumbering, true);
   {
@@ -914,9 +931,11 @@ pylith::faults::CohesiveTopology::createParallel(
   fault      = NULL;
   faultSieve = NULL;
 
-  const ALE::Obj<Mesh::label_sequence>& faultCells = (*ifault)->heightStratum(0);
+  const ALE::Obj<SubMesh::label_sequence>& faultCells = (*ifault)->heightStratum(0);
   assert(!faultCells.isNull());
-  for(Mesh::label_sequence::iterator c_iter = cBegin, f_iter=faultCells->begin(); c_iter != cEnd; ++c_iter, ++f_iter) {
+  SubMesh::label_sequence::iterator f_iter = faultCells->begin();
+
+  for(Mesh::label_sequence::iterator c_iter = cBegin; c_iter != cEnd; ++c_iter, ++f_iter) {
     (*cohesiveToFault)[*c_iter] = *f_iter;
   }
     
@@ -949,8 +968,8 @@ pylith::faults::CohesiveTopology::createParallel(
 
   // Create the parallel overlap
   //   Can I figure this out in a nicer way?
-  Obj<Mesh::send_overlap_type> sendParallelMeshOverlap = (*ifault)->getSendOverlap();
-  Obj<Mesh::recv_overlap_type> recvParallelMeshOverlap = (*ifault)->getRecvOverlap();
+  Obj<SubMesh::send_overlap_type> sendParallelMeshOverlap = (*ifault)->getSendOverlap();
+  Obj<SubMesh::recv_overlap_type> recvParallelMeshOverlap = (*ifault)->getRecvOverlap();
 
   // Must process the renumbering local --> fault to global --> fault
   Mesh::renumbering_type& renumbering = mesh->getRenumbering();

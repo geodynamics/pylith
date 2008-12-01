@@ -59,17 +59,17 @@ pylith::faults::FaultCohesive::faultMeshFilename(const char* filename)
 // ----------------------------------------------------------------------
 // Adjust mesh topology for fault implementation.
 void
-pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<Mesh>& mesh)
+pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<Mesh>& mesh, const bool flipFault)
 { // adjustTopology
   assert(std::string("") != label());
-  Obj<Mesh>      faultMesh = NULL;
+  Obj<SubMesh>   faultMesh = NULL;
   Obj<ALE::Mesh> faultBd   = NULL;
 
   if (_useFaultMesh) {
     const int faultDim = 2;
 
     //MPI_Bcast(&faultDim, 1, MPI_INT, 0, comm);
-    faultMesh = new Mesh(mesh->comm(), faultDim, mesh->debug());
+    faultMesh = new SubMesh(mesh->comm(), faultDim, mesh->debug());
     pylith::meshio::MeshIOLagrit::readFault(_faultMeshFilename, mesh, faultMesh, faultBd);
 
     // Get group of vertices associated with fault
@@ -77,7 +77,7 @@ pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<Mesh>& mesh)
       mesh->getIntSection(label());
     faultMesh->setRealSection("coordinates", mesh->getRealSection("coordinates"));
 
-    CohesiveTopology::create(faultMesh, faultBd, mesh, groupField, id(), _useLagrangeConstraints());
+    CohesiveTopology::create(faultMesh, faultBd, mesh, groupField, id(), _useLagrangeConstraints(), flipFault);
   } else {
     if (!mesh->hasIntSection(label())) {
       std::ostringstream msg;
@@ -91,7 +91,7 @@ pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<Mesh>& mesh)
       mesh->getIntSection(label());
     assert(!groupField.isNull());
 
-    faultMesh = new Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
+    faultMesh = new SubMesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
 
     CohesiveTopology::createFault(faultMesh, faultBd, mesh, groupField);
 

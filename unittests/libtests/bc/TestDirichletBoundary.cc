@@ -86,14 +86,14 @@ pylith::bc::TestDirichletBoundary::testInitialize(void)
   const int numFixedDOF = _data->numFixedDOF;
   const size_t numBoundary = _data->numConstrainedPts;
   // Check vertices in boundary mesh
-  const ALE::Obj<Mesh::label_sequence>& vertices = 
+  const ALE::Obj<SubMesh::label_sequence>& vertices = 
     bc._boundaryMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const SubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
   const int offset = numCells;
   if (numFixedDOF > 0) {
     int i = 0;
-    for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+    for (SubMesh::label_sequence::iterator v_iter=vertices->begin();
 	 v_iter != verticesEnd;
 	 ++v_iter, ++i) {
       CPPUNIT_ASSERT_EQUAL(_data->constrainedPoints[i]+offset, *v_iter);
@@ -103,7 +103,7 @@ pylith::bc::TestDirichletBoundary::testInitialize(void)
 
   // Check initial and rate values
   int i = 0;
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  for (SubMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter) {
     CPPUNIT_ASSERT_EQUAL(2*numFixedDOF, 

@@ -97,7 +97,7 @@ public :
    * @param mesh PETSc mesh
    */
   virtual
-  void adjustTopology(const ALE::Obj<Mesh>& mesh) = 0;
+  void adjustTopology(const ALE::Obj<Mesh>& mesh, const bool flipFault = false) = 0;
 
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
@@ -124,7 +124,7 @@ public :
    *
    * @returns PETSc mesh object
    */
-  const ALE::Obj<Mesh>& faultMesh(void) const;
+  const ALE::Obj<SubMesh>& faultMesh(void) const;
 
   /** Get vertex field associated with integrator.
    *
@@ -168,7 +168,7 @@ private :
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  ALE::Obj<Mesh> _faultMesh; ///< Mesh over fault surface
+  ALE::Obj<SubMesh> _faultMesh; ///< Mesh over fault surface
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

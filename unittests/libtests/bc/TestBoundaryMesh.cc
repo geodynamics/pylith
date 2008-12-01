@@ -29,6 +29,7 @@ void
 pylith::bc::TestBoundaryMesh::setUp(void)
 { // setUp
   _data = 0;
+  _flipFault = false;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -54,25 +55,25 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
   CPPUNIT_ASSERT(!mesh.isNull());
 
   const char* label = _data->bcLabel;
-  const ALE::Obj<Mesh>& subMesh = 
-    ALE::Selection<Mesh>::submeshV(mesh, mesh->getIntSection(label));
+  const ALE::Obj<SubMesh>& subMesh = 
+    ALE::Selection<Mesh>::submeshV<SubMesh>(mesh, mesh->getIntSection(label));
   CPPUNIT_ASSERT(!subMesh.isNull());
 
   //subMesh->view("SUBMESH WITHOUT FAULT");
 
-  const ALE::Obj<Mesh::label_sequence>& vertices = subMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const ALE::Obj<SubMesh::label_sequence>& vertices = subMesh->depthStratum(0);
+  const SubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
   CPPUNIT_ASSERT_EQUAL(_data->numVerticesNoFault, int(vertices->size()));
 
   int ipt = 0;
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  for (SubMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++ipt)
     CPPUNIT_ASSERT_EQUAL(_data->verticesNoFault[ipt], *v_iter);
 
-  const ALE::Obj<Mesh::label_sequence>& cells = subMesh->heightStratum(1);
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<SubMesh::label_sequence>& cells = subMesh->heightStratum(1);
+  const SubMesh::label_sequence::iterator cellsEnd = cells->end();
   const ALE::Obj<sieve_type>& sieve = subMesh->getSieve();
   assert(!sieve.isNull());
 
@@ -82,7 +83,7 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
 
   int icell = 0;
   int index = 0;
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  for (SubMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter, ++icell) {
     ALE::ISieveTraversal<sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
@@ -114,26 +115,26 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
   faults::FaultCohesiveKin fault;
   fault.label(_data->faultLabel);
   fault.id(_data->faultId);
-  fault.adjustTopology(mesh);
+  fault.adjustTopology(mesh, _flipFault);
 
   const char* label = _data->bcLabel;
-  const ALE::Obj<Mesh>& subMesh = 
-    ALE::Selection<Mesh>::submeshV(mesh, mesh->getIntSection(label));
+  const ALE::Obj<SubMesh>& subMesh = 
+    ALE::Selection<Mesh>::submeshV<SubMesh>(mesh, mesh->getIntSection(label));
   CPPUNIT_ASSERT(!subMesh.isNull());
 
-  const ALE::Obj<Mesh::label_sequence>& vertices = subMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const ALE::Obj<SubMesh::label_sequence>& vertices = subMesh->depthStratum(0);
+  const SubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
   CPPUNIT_ASSERT_EQUAL(_data->numVerticesFault, int(vertices->size()));
 
   int ipt = 0;
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  for (SubMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++ipt)
     CPPUNIT_ASSERT_EQUAL(_data->verticesFault[ipt], *v_iter);
     
-  const ALE::Obj<Mesh::label_sequence>& cells = subMesh->depthStratum(1);
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<SubMesh::label_sequence>& cells = subMesh->depthStratum(1);
+  const SubMesh::label_sequence::iterator cellsEnd = cells->end();
   const ALE::Obj<sieve_type>& sieve = subMesh->getSieve();
   assert(!sieve.isNull());
   const int depth = 1;
@@ -145,7 +146,7 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
 
   int icell = 0;
   int index = 0;
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  for (SubMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter, ++icell) {
     ALE::ISieveTraversal<sieve_type>::orientedClosure(*sieve, *c_iter, ncV);

@@ -70,14 +70,14 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
 
   CPPUNIT_ASSERT(0 != _data);
   
-  const ALE::Obj<Mesh>& boundaryMesh = bc._boundaryMesh;
+  const ALE::Obj<SubMesh>& boundaryMesh = bc._boundaryMesh;
 
   // Check boundary mesh
   CPPUNIT_ASSERT(!boundaryMesh.isNull());
 
   const int cellDim = boundaryMesh->getDimension();
   const ALE::Obj<sieve_type>& sieve = boundaryMesh->getSieve();
-  const ALE::Obj<Mesh::label_sequence>& cells = boundaryMesh->heightStratum(1);
+  const ALE::Obj<SubMesh::label_sequence>& cells = boundaryMesh->heightStratum(1);
   const int numVertices = boundaryMesh->depthStratum(0)->size();
   const int numCells = cells->size();
 
@@ -90,7 +90,7 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
   const int boundaryDepth = boundaryMesh->depth()-1; // depth of bndry cells
   ALE::ISieveVisitor::PointRetriever<Mesh::sieve_type> pV(sieve->getMaxConeSize());
   int dp = 0;
-  for(Mesh::label_sequence::iterator c_iter = cells->begin();
+  for(SubMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
     const int numCorners = boundaryMesh->getNumCellCorners(*c_iter, boundaryDepth);
@@ -257,6 +257,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(
     //iohandler.debug(true);
     iohandler.read(mesh);
     CPPUNIT_ASSERT(!mesh->isNull());
+    (*mesh)->view("Absorbing mesh");
 
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim((*mesh)->getDimension());
