@@ -94,7 +94,7 @@ class Integrator(object):
     self._logger.eventBegin(logEvent)
 
     assert(None != self.cppHandle)
-    #self.cppHandle.normalizer = normalizer.cppHandle
+    self.cppHandle.normalizer = normalizer.cppHandle
     if None != self.gravityField:
       self.cppHandle.gravityField = self.gravityField.cppHandle
     

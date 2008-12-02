@@ -65,6 +65,17 @@ pylith::meshio::MeshIO::read(ALE::Obj<Mesh>* mesh)
 } // read
 
 // ----------------------------------------------------------------------
+// Set scales used to nondimensionalize mesh.
+void
+pylith::meshio::MeshIO::normalizer(const spatialdata::units::Nondimensional& dim)
+{ // normalizer
+  if (0 == _normalizer)
+    _normalizer = new spatialdata::units::Nondimensional(dim);
+  else
+    *_normalizer = dim;
+} // normalizer
+
+// ----------------------------------------------------------------------
 // Write mesh to file.
 void 
 pylith::meshio::MeshIO::write(ALE::Obj<Mesh>* mesh)

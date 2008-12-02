@@ -1065,6 +1065,37 @@ cdef class AbsorbingDampers(BoundaryCondition):
       AbsorbingDampers_quadrature_set(self.thisptr, ptrFromHandle(q))
 
 
+  property normalizer:
+    def __set__(self, value):
+      """
+      Set nondimensionalizer.
+      """
+      # create shim for method 'normalizer'
+      #embed{ void AbsorbingDampers_normalizer_set(void* objVptr, void* dimVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != dimVptr);
+        spatialdata::units::Nondimensional* dim =
+          (spatialdata::units::Nondimensional*) dimVptr;
+        ((pylith::bc::AbsorbingDampers*) objVptr)->normalizer(*dim);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "spatialdata_units_Nondimensional":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::units::Nondimensional'."
+      AbsorbingDampers_normalizer_set(self.thisptr, ptrFromHandle(value))
+
+
   property timeStep:
     def __set__(self, dt):
       """
@@ -1533,6 +1564,37 @@ cdef class Neumann(BoundaryCondition):
         raise TypeError, \
               "Argument must be extension module type 'Quadrature'."
       Neumann_quadrature_set(self.thisptr, ptrFromHandle(q))
+
+
+  property normalizer:
+    def __set__(self, value):
+      """
+      Set nondimensionalizer.
+      """
+      # create shim for method 'normalizer'
+      #embed{ void Neumann_normalizer_set(void* objVptr, void* dimVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != dimVptr);
+        spatialdata::units::Nondimensional* dim =
+          (spatialdata::units::Nondimensional*) dimVptr;
+        ((pylith::bc::Neumann*) objVptr)->normalizer(*dim);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "spatialdata_units_Nondimensional":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::units::Nondimensional'."
+      Neumann_normalizer_set(self.thisptr, ptrFromHandle(value))
 
 
   property timeStep:

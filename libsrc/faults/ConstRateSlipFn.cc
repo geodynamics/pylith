@@ -156,7 +156,7 @@ pylith::faults::ConstRateSlipFn::initialize(
       msg << ") using spatial database " << _dbSlipTime->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
-    normalizer.nondimensionalize(&paramsVertex[indexSlipTime], spaceDim,
+    normalizer.nondimensionalize(&paramsVertex[indexSlipTime], 1,
 				 timeScale);
     // add origin time to rupture time
     paramsVertex[indexSlipTime] += originTime;

@@ -75,7 +75,7 @@ class MeshImporter(MeshGenerator):
     return
 
 
-  def create(self, faults=None):
+  def create(self, normalizer, faults=None):
     """
     Hook for creating mesh.
     """
@@ -84,8 +84,9 @@ class MeshImporter(MeshGenerator):
     self._setupLogging()
     logEvent = "%screate" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
-    
-    mesh = self.importer.read(self.debug, self.interpolate)
+
+    normalizer.initialize()    
+    mesh = self.importer.read(normalizer, self.debug, self.interpolate)
     if self.debug:
       mesh.view()
     self._debug.log(resourceUsageString())

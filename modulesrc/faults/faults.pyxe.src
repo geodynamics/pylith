@@ -717,7 +717,7 @@ cdef class FaultCohesiveKin(FaultCohesive):
 
   def eqsrcs(self, names, srcs):
     """
-    Set quadrature.
+    Set earthquake sources.
     """
     # create shim for method 'eqsrc'
     #embed{ void FaultCohesiveKin_eqsrcs_set(void* objVptr, char** names, void** srcsVptr, int nsrcs)
@@ -794,6 +794,37 @@ cdef class FaultCohesiveKin(FaultCohesive):
         raise TypeError, \
               "Argument must be extension module type 'Quadrature'."
       FaultCohesiveKin_quadrature_set(self.thisptr, ptrFromHandle(q))
+
+
+  property normalizer:
+    def __set__(self, value):
+      """
+      Set nondimensionalizer.
+      """
+      # create shim for method 'normalizer'
+      #embed{ void FaultCohesiveKin_normalizer_set(void* objVptr, void* dimVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != dimVptr);
+        spatialdata::units::Nondimensional* dim =
+          (spatialdata::units::Nondimensional*) dimVptr;
+        ((pylith::faults::FaultCohesiveKin*) objVptr)->normalizer(*dim);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "spatialdata_units_Nondimensional":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::units::Nondimensional'."
+      FaultCohesiveKin_normalizer_set(self.thisptr, ptrFromHandle(value))
 
 
   property timeStep:

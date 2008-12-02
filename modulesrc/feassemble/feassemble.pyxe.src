@@ -1234,6 +1234,7 @@ cdef class Integrator:
       #embed{ void Integrator_quadrature_set(void* objVptr, void* qVptr)
       try {
         assert(0 != objVptr);
+        assert(0 != qVptr);
         pylith::feassemble::Quadrature* quadrature =
           (pylith::feassemble::Quadrature*) qVptr;
         ((pylith::feassemble::Integrator*) objVptr)->quadrature(quadrature);
@@ -1252,6 +1253,37 @@ cdef class Integrator:
         raise TypeError, \
               "Argument must be extension module type 'Quadrature'."
       Integrator_quadrature_set(self.thisptr, ptrFromHandle(q))
+
+
+  property normalizer:
+    def __set__(self, value):
+      """
+      Set nondimensionalizer.
+      """
+      # create shim for method 'normalizer'
+      #embed{ void Integrator_normalizer_set(void* objVptr, void* dimVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != dimVptr);
+        spatialdata::units::Nondimensional* dim =
+          (spatialdata::units::Nondimensional*) dimVptr;
+        ((pylith::feassemble::Integrator*) objVptr)->normalizer(*dim);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "spatialdata_units_Nondimensional":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::units::Nondimensional'."
+      Integrator_normalizer_set(self.thisptr, ptrFromHandle(value))
 
 
   property gravityField:
@@ -1677,6 +1709,37 @@ cdef class Constraint:
     Constraint_setField(self.thisptr, t, PyCObject_AsVoidPtr(field),
                         ptrFromHandle(mesh))
     return
+
+
+  property normalizer:
+    def __set__(self, value):
+      """
+      Set nondimensionalizer.
+      """
+      # create shim for method 'normalizer'
+      #embed{ void Constraint_normalizer_set(void* objVptr, void* dimVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != dimVptr);
+        spatialdata::units::Nondimensional* dim =
+          (spatialdata::units::Nondimensional*) dimVptr;
+        ((pylith::feassemble::Constraint*) objVptr)->normalizer(*dim);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "spatialdata_units_Nondimensional":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::units::Nondimensional'."
+      Constraint_normalizer_set(self.thisptr, ptrFromHandle(value))
 
 
   property useSolnIncr:
