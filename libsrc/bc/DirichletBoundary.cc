@@ -128,10 +128,8 @@ pylith::bc::DirichletBoundary::initialize(
        v_iter != verticesEnd;
        ++v_iter) {
     // Get coordinates of vertex
-    const real_section_type::value_type* vCoordsNondim = 
-      coordinates->restrictPoint(*v_iter);
-    for (int i=0; i < spaceDim; ++i)
-      vCoordsGlobal[i] = vCoordsNondim[i];
+    coordinates->restrictPoint(*v_iter, 
+			       &vCoordsGlobal[0], vCoordsGlobal.size());
     _normalizer->dimensionalize(&vCoordsGlobal[0], vCoordsGlobal.size(),
 				lengthScale);
     int err = _db->query(&queryValues[0], numFixedDOF, 
@@ -371,17 +369,15 @@ pylith::bc::DirichletBoundary::vertexField(VectorFieldEnum* fieldType,
   } // if
 
   // dimensionalize values
-  double_array pointValues(fiberDim);
+  double_array values(fiberDim);
   for (Mesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter) {
     assert(fiberDim == field->getFiberDimension(*v_iter));
     assert(fiberDim == _buffer->getFiberDimension(*v_iter));
-    const real_section_type::value_type* values = 
-      field->restrictPoint(*v_iter);
-    for (int i=0; i < fiberDim; ++i)
-      pointValues[i] = _normalizer->dimensionalize(values[i], scale);
-    _buffer->updatePointAll(*v_iter, &pointValues[0]);
+    field->restrictPoint(*v_iter, &values[0], values.size());
+    _normalizer->dimensionalize(&values[0], values.size(), scale);
+    _buffer->updatePointAll(*v_iter, &values[0]);
   } // for
 
   return _buffer;

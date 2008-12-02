@@ -128,12 +128,8 @@ pylith::faults::ConstRateSlipFn::initialize(
   for (Mesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter) {
-
-    const real_section_type::value_type* vCoordsNondim = 
-      coordinates->restrictPoint(*v_iter);
-    assert(0 != vCoordsNondim);
-    for (int i=0; i < spaceDim; ++i)
-      vCoordsGlobal[i] = vCoordsNondim[i];
+    coordinates->restrictPoint(*v_iter, 
+			       &vCoordsGlobal[0], vCoordsGlobal.size());
     normalizer.dimensionalize(&vCoordsGlobal[0], vCoordsGlobal.size(),
 			      lengthScale);
     

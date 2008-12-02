@@ -107,10 +107,8 @@ pylith::bc::DirichletPoints::initialize(
   double_array vCoordsGlobal(spaceDim);
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     // Get coordinates of vertex
-    const real_section_type::value_type* vCoordsNondim = 
-      coordinates->restrictPoint(_points[iPoint]);
-    for (int i=0; i < spaceDim; ++i)
-      vCoordsGlobal[i] = vCoordsNondim[i];
+    coordinates->restrictPoint(_points[iPoint], 
+			       &vCoordsGlobal[0], vCoordsGlobal.size());
     _normalizer->dimensionalize(&vCoordsGlobal[0], vCoordsGlobal.size(),
 				lengthScale);
     int err = _db->query(&queryValues[0], numFixedDOF, 
