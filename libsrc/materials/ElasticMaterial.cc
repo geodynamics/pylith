@@ -18,8 +18,8 @@
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 #include "pylith/utils/sievetypes.hh" // USES Mesh
 
-#include <string.h> // USES memcpy()
-#include <assert.h> // USES assert()
+#include <cstring> // USES memcpy()
+#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Default constructor.

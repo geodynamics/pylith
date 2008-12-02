@@ -17,12 +17,14 @@
 #include "ViscoelasticMaxwell.hh" // USES computeVisStrain
 
 #include "pylith/utils/array.hh" // USES double_array
-#include "pylith/utils/constdefs.h" // USES double_array
+#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "petsc.h" // USES PetscLogFlops
 
-#include <assert.h> // USES assert()
-#include <string.h> // USES memcpy()
+#include <cassert> // USES assert()
+#include <cstring> // USES memcpy()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
@@ -137,9 +139,10 @@ pylith::materials::GenMaxwellIsotropic3D::_dbToProperties(
   const double vp = dbValues[_GenMaxwellIsotropic3D::didVp];
   const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
  
-  if (density < 0.0 || vs < 0.0 || vp < 0.0) {
+  if (density <= 0.0 || vs <= 0.0 || vp <= 0.0) {
     std::ostringstream msg;
-    msg << "Spatial database returned negative value for physical properties.\n"
+    msg << "Spatial database returned nonpositive value for physical "
+	<< "properties.\n"
 	<< "density: " << density << "\n"
 	<< "vp: " << vp << "\n"
 	<< "vs: " << vs << "\n";
@@ -149,9 +152,9 @@ pylith::materials::GenMaxwellIsotropic3D::_dbToProperties(
   const double mu = density * vs*vs;
   const double lambda = density * vp*vp - 2.0*mu;
 
-  if (lambda < 0.0) {
+  if (lambda <= 0.0) {
     std::ostringstream msg;
-    msg << "Attempted to set Lame's constant lambda to negative value.\n"
+    msg << "Attempted to set Lame's constant lambda to nonpositive value.\n"
 	<< "density: " << density << "\n"
 	<< "vp: " << vp << "\n"
 	<< "vs: " << vs << "\n";
@@ -188,6 +191,96 @@ pylith::materials::GenMaxwellIsotropic3D::_dbToProperties(
 
   PetscLogFlops(6+2*numMaxwellModels);
 } // _dbToProperties
+
+// ----------------------------------------------------------------------
+// Nondimensionalize properties.
+void
+pylith::materials::GenMaxwellIsotropic3D::_nondimProperties(double* const values,
+							 const int nvalues) const
+{ // _nondimProperties
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _totalPropsQuadPt);
+
+  const double densityScale = _normalizer->densityScale();
+  const double pressureScale = _normalizer->pressureScale();
+  const double timeScale = _normalizer->timeScale();
+  values[_GenMaxwellIsotropic3D::pidDensity] = 
+    _normalizer->nondimensionalize(values[_GenMaxwellIsotropic3D::pidDensity],
+				   densityScale);
+  values[_GenMaxwellIsotropic3D::pidMuTot] = 
+    _normalizer->nondimensionalize(values[_GenMaxwellIsotropic3D::pidMuTot],
+				   pressureScale);
+  values[_GenMaxwellIsotropic3D::pidLambdaTot] = 
+    _normalizer->nondimensionalize(values[_GenMaxwellIsotropic3D::pidLambdaTot],
+				   pressureScale);
+  const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
+  _normalizer->nondimensionalize(&values[_GenMaxwellIsotropic3D::pidMaxwellTime],
+				 numMaxwellModels, timeScale);
+
+  PetscLogFlops(3+1*numMaxwellModels);
+} // _nondimProperties
+
+// ----------------------------------------------------------------------
+// Dimensionalize properties.
+void
+pylith::materials::GenMaxwellIsotropic3D::_dimProperties(double* const values,
+						      const int nvalues) const
+{ // _dimProperties
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _totalPropsQuadPt);
+
+  const double densityScale = _normalizer->densityScale();
+  const double pressureScale = _normalizer->pressureScale();
+  const double timeScale = _normalizer->timeScale();
+  values[_GenMaxwellIsotropic3D::pidDensity] = 
+    _normalizer->dimensionalize(values[_GenMaxwellIsotropic3D::pidDensity],
+				densityScale);
+  values[_GenMaxwellIsotropic3D::pidMuTot] = 
+    _normalizer->dimensionalize(values[_GenMaxwellIsotropic3D::pidMuTot],
+				pressureScale);
+  values[_GenMaxwellIsotropic3D::pidLambdaTot] = 
+    _normalizer->dimensionalize(values[_GenMaxwellIsotropic3D::pidLambdaTot],
+				pressureScale);
+  const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
+  _normalizer->dimensionalize(&values[_GenMaxwellIsotropic3D::pidMaxwellTime],
+			      numMaxwellModels, timeScale);
+
+  PetscLogFlops(3+1*numMaxwellModels);
+} // _dimProperties
+
+// ----------------------------------------------------------------------
+// Nondimensionalize initial state.
+void
+pylith::materials::GenMaxwellIsotropic3D::_nondimInitState(double* const values,
+							const int nvalues) const
+{ // _nondimInitState
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _GenMaxwellIsotropic3D::numInitialStateDBValues);
+
+  const double pressureScale = _normalizer->pressureScale();
+  _normalizer->nondimensionalize(values, nvalues, pressureScale);
+
+  PetscLogFlops(nvalues);
+} // _nondimInitState
+
+// ----------------------------------------------------------------------
+// Dimensionalize initial state.
+void
+pylith::materials::GenMaxwellIsotropic3D::_dimInitState(double* const values,
+						     const int nvalues) const
+{ // _dimInitState
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _GenMaxwellIsotropic3D::numInitialStateDBValues);
+  
+  const double pressureScale = _normalizer->pressureScale();
+  _normalizer->dimensionalize(values, nvalues, pressureScale);
+
+  PetscLogFlops(nvalues);
+} // _dimInitState
 
 // ----------------------------------------------------------------------
 // Compute density at location from properties.

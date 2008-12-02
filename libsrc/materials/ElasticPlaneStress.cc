@@ -16,9 +16,11 @@
 
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 #include "petsc.h" // USES PetscLogFlops
 
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
@@ -100,9 +102,10 @@ pylith::materials::ElasticPlaneStress::_dbToProperties(
   const double vs = dbValues[_ElasticPlaneStress::didVs];
   const double vp = dbValues[_ElasticPlaneStress::didVp];
  
-  if (density < 0.0 || vs < 0.0 || vp < 0.0) {
+  if (density <= 0.0 || vs <= 0.0 || vp <= 0.0) {
     std::ostringstream msg;
-    msg << "Spatial database returned negative value for physical properties.\n"
+    msg << "Spatial database returned nonpositive value for physical "
+	<< "properties.\n"
 	<< "density: " << density << "\n"
 	<< "vp: " << vp << "\n"
 	<< "vs: " << vs << "\n";
@@ -112,9 +115,9 @@ pylith::materials::ElasticPlaneStress::_dbToProperties(
   const double mu = density * vs*vs;
   const double lambda = density * vp*vp - 2.0*mu;
 
-  if (lambda < 0.0) {
+  if (lambda <= 0.0) {
     std::ostringstream msg;
-    msg << "Attempted to set Lame's constant lambda to negative value.\n"
+    msg << "Attempted to set Lame's constant lambda to nonpositive value.\n"
 	<< "density: " << density << "\n"
 	<< "vp: " << vp << "\n"
 	<< "vs: " << vs << "\n";
@@ -127,6 +130,88 @@ pylith::materials::ElasticPlaneStress::_dbToProperties(
 
   PetscLogFlops(6);
 } // _dbToProperties
+
+// ----------------------------------------------------------------------
+// Nondimensionalize properties.
+void
+pylith::materials::ElasticPlaneStress::_nondimProperties(double* const values,
+							 const int nvalues) const
+{ // _nondimProperties
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _ElasticPlaneStress::numProperties);
+
+  const double densityScale = _normalizer->densityScale();
+  const double pressureScale = _normalizer->pressureScale();
+  values[_ElasticPlaneStress::pidDensity] = 
+    _normalizer->nondimensionalize(values[_ElasticPlaneStress::pidDensity],
+				   densityScale);
+  values[_ElasticPlaneStress::pidMu] = 
+    _normalizer->nondimensionalize(values[_ElasticPlaneStress::pidMu],
+				   pressureScale);
+  values[_ElasticPlaneStress::pidLambda] = 
+    _normalizer->nondimensionalize(values[_ElasticPlaneStress::pidLambda],
+				   pressureScale);
+
+  PetscLogFlops(3);
+} // _nondimProperties
+
+// ----------------------------------------------------------------------
+// Dimensionalize properties.
+void
+pylith::materials::ElasticPlaneStress::_dimProperties(double* const values,
+						      const int nvalues) const
+{ // _dimProperties
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _ElasticPlaneStress::numProperties);
+
+  const double densityScale = _normalizer->densityScale();
+  const double pressureScale = _normalizer->pressureScale();
+  values[_ElasticPlaneStress::pidDensity] = 
+    _normalizer->dimensionalize(values[_ElasticPlaneStress::pidDensity],
+				   densityScale);
+  values[_ElasticPlaneStress::pidMu] = 
+    _normalizer->dimensionalize(values[_ElasticPlaneStress::pidMu],
+				   pressureScale);
+  values[_ElasticPlaneStress::pidLambda] = 
+    _normalizer->dimensionalize(values[_ElasticPlaneStress::pidLambda],
+				   pressureScale);
+
+  PetscLogFlops(3);
+} // _dimProperties
+
+// ----------------------------------------------------------------------
+// Nondimensionalize initial state.
+void
+pylith::materials::ElasticPlaneStress::_nondimInitState(double* const values,
+							const int nvalues) const
+{ // _nondimInitState
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _ElasticPlaneStress::numInitialStateDBValues);
+
+  const double pressureScale = _normalizer->pressureScale();
+  _normalizer->nondimensionalize(values, nvalues, pressureScale);
+
+  PetscLogFlops(nvalues);
+} // _nondimInitState
+
+// ----------------------------------------------------------------------
+// Dimensionalize initial state.
+void
+pylith::materials::ElasticPlaneStress::_dimInitState(double* const values,
+						     const int nvalues) const
+{ // _dimInitState
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _ElasticPlaneStress::numInitialStateDBValues);
+  
+  const double pressureScale = _normalizer->pressureScale();
+  _normalizer->dimensionalize(values, nvalues, pressureScale);
+
+  PetscLogFlops(nvalues);
+} // _dimInitState
 
 // ----------------------------------------------------------------------
 // Compute density at location from properties.

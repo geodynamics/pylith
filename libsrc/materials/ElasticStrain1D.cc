@@ -16,9 +16,11 @@
 
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 #include "petsc.h" // USES PetscLogFlops
 
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 namespace pylith {
@@ -98,9 +100,10 @@ pylith::materials::ElasticStrain1D::_dbToProperties(
   const double vp = dbValues[_ElasticStrain1D::didVp];
   const double vs = dbValues[_ElasticStrain1D::didVs];
 
-  if (density < 0.0 || vs < 0.0 || vp < 0.0) {
+  if (density <= 0.0 || vs <= 0.0 || vp <= 0.0) {
     std::ostringstream msg;
-    msg << "Spatial database returned negative value for physical properties.\n"
+    msg << "Spatial database returned nonpositive value for physical "
+	<< "properties.\n"
 	<< "density: " << density << "\n"
 	<< "vp: " << vp << "\n"
 	<< "vs: " << vs << "\n";
@@ -110,9 +113,9 @@ pylith::materials::ElasticStrain1D::_dbToProperties(
   const double mu = density * vs*vs;
   const double lambda = density * vp*vp - 2.0*mu;
 
-  if (lambda < 0.0) {
+  if (lambda <= 0.0) {
     std::ostringstream msg;
-    msg << "Attempted to set Lame's constant lambda to negative value.\n"
+    msg << "Attempted to set Lame's constant lambda to nonpositive value.\n"
 	<< "density: " << density << "\n"
 	<< "vp: " << vp << "\n"
 	<< "vs: " << vs << "\n";
@@ -125,6 +128,88 @@ pylith::materials::ElasticStrain1D::_dbToProperties(
 
   PetscLogFlops(6);
 } // _dbToProperties
+
+// ----------------------------------------------------------------------
+// Nondimensionalize properties.
+void
+pylith::materials::ElasticStrain1D::_nondimProperties(double* const values,
+							 const int nvalues) const
+{ // _nondimProperties
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _ElasticStrain1D::numProperties);
+
+  const double densityScale = _normalizer->densityScale();
+  const double pressureScale = _normalizer->pressureScale();
+  values[_ElasticStrain1D::pidDensity] = 
+    _normalizer->nondimensionalize(values[_ElasticStrain1D::pidDensity],
+				   densityScale);
+  values[_ElasticStrain1D::pidMu] = 
+    _normalizer->nondimensionalize(values[_ElasticStrain1D::pidMu],
+				   pressureScale);
+  values[_ElasticStrain1D::pidLambda] = 
+    _normalizer->nondimensionalize(values[_ElasticStrain1D::pidLambda],
+				   pressureScale);
+
+  PetscLogFlops(3);
+} // _nondimProperties
+
+// ----------------------------------------------------------------------
+// Dimensionalize properties.
+void
+pylith::materials::ElasticStrain1D::_dimProperties(double* const values,
+						      const int nvalues) const
+{ // _dimProperties
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _ElasticStrain1D::numProperties);
+
+  const double densityScale = _normalizer->densityScale();
+  const double pressureScale = _normalizer->pressureScale();
+  values[_ElasticStrain1D::pidDensity] = 
+    _normalizer->dimensionalize(values[_ElasticStrain1D::pidDensity],
+				   densityScale);
+  values[_ElasticStrain1D::pidMu] = 
+    _normalizer->dimensionalize(values[_ElasticStrain1D::pidMu],
+				   pressureScale);
+  values[_ElasticStrain1D::pidLambda] = 
+    _normalizer->dimensionalize(values[_ElasticStrain1D::pidLambda],
+				   pressureScale);
+
+  PetscLogFlops(3);
+} // _dimProperties
+
+// ----------------------------------------------------------------------
+// Nondimensionalize initial state.
+void
+pylith::materials::ElasticStrain1D::_nondimInitState(double* const values,
+							const int nvalues) const
+{ // _nondimInitState
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _ElasticStrain1D::numInitialStateDBValues);
+
+  const double pressureScale = _normalizer->pressureScale();
+  _normalizer->nondimensionalize(values, nvalues, pressureScale);
+
+  PetscLogFlops(nvalues);
+} // _nondimInitState
+
+// ----------------------------------------------------------------------
+// Dimensionalize initial state.
+void
+pylith::materials::ElasticStrain1D::_dimInitState(double* const values,
+						     const int nvalues) const
+{ // _dimInitState
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _ElasticStrain1D::numInitialStateDBValues);
+  
+  const double pressureScale = _normalizer->pressureScale();
+  _normalizer->dimensionalize(values, nvalues, pressureScale);
+
+  PetscLogFlops(nvalues);
+} // _dimInitState
 
 // ----------------------------------------------------------------------
 // Compute density at location from properties.
