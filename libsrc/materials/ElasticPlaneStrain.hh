@@ -63,6 +63,38 @@ protected :
   void _dbToProperties(double* const propValues,
 		       const double_array& dbValues) const;
 
+  /** Nondimensionalize properties.
+   *
+   * @param values Array of property values.
+   * @param nvalues Number of values.
+   */
+  void _nondimProperties(double* const values,
+			 const int nvalues) const;
+
+  /** Dimensionalize properties.
+   *
+   * @param values Array of property values.
+   * @param nvalues Number of values.
+   */
+  void _dimProperties(double* const values,
+		      const int nvalues) const;
+
+  /** Nondimensionalize initial state.
+   *
+   * @param values Array of initial state values.
+   * @param nvalues Number of values.
+   */
+  void _nondimInitState(double* const values,
+			const int nvalues) const;
+
+  /** Dimensionalize initial state.
+   *
+   * @param values Array of initial state values.
+   * @param nvalues Number of values.
+   */
+  void _dimInitState(double* const values,
+		     const int nvalues) const;
+
   /** Compute density from properties.
    *
    * @param density Array for density.

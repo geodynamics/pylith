@@ -21,7 +21,7 @@
 
 #include "petsc.h" // USES PetscLogFlops
 
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
@@ -107,7 +107,8 @@ pylith::materials::ElasticIsotropic3D::_dbToProperties(
  
   if (density <= 0.0 || vs <= 0.0 || vp <= 0.0) {
     std::ostringstream msg;
-    msg << "Spatial database returned negative value for physical properties.\n"
+    msg << "Spatial database returned nonpositive value for physical "
+	<< "properties.\n"
 	<< "density: " << density << "\n"
 	<< "vp: " << vp << "\n"
 	<< "vs: " << vs << "\n";
@@ -132,6 +133,88 @@ pylith::materials::ElasticIsotropic3D::_dbToProperties(
 
   PetscLogFlops(6);
 } // _dbToProperties
+
+// ----------------------------------------------------------------------
+// Nondimensionalize properties.
+void
+pylith::materials::ElasticIsotropic3D::_nondimProperties(double* const values,
+							 const int nvalues) const
+{ // _nondimProperties
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _ElasticIsotropic3D::numProperties);
+
+  const double densityScale = _normalizer->densityScale();
+  const double pressureScale = _normalizer->pressureScale();
+  values[_ElasticIsotropic3D::pidDensity] = 
+    _normalizer->nondimensionalize(values[_ElasticIsotropic3D::pidDensity],
+				   densityScale);
+  values[_ElasticIsotropic3D::pidMu] = 
+    _normalizer->nondimensionalize(values[_ElasticIsotropic3D::pidMu],
+				   pressureScale);
+  values[_ElasticIsotropic3D::pidLambda] = 
+    _normalizer->nondimensionalize(values[_ElasticIsotropic3D::pidLambda],
+				   pressureScale);
+
+  PetscLogFlops(3);
+} // _nondimProperties
+
+// ----------------------------------------------------------------------
+// Dimensionalize properties.
+void
+pylith::materials::ElasticIsotropic3D::_dimProperties(double* const values,
+						      const int nvalues) const
+{ // _dimProperties
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _ElasticIsotropic3D::numProperties);
+
+  const double densityScale = _normalizer->densityScale();
+  const double pressureScale = _normalizer->pressureScale();
+  values[_ElasticIsotropic3D::pidDensity] = 
+    _normalizer->dimensionalize(values[_ElasticIsotropic3D::pidDensity],
+				   densityScale);
+  values[_ElasticIsotropic3D::pidMu] = 
+    _normalizer->dimensionalize(values[_ElasticIsotropic3D::pidMu],
+				   pressureScale);
+  values[_ElasticIsotropic3D::pidLambda] = 
+    _normalizer->dimensionalize(values[_ElasticIsotropic3D::pidLambda],
+				   pressureScale);
+
+  PetscLogFlops(3);
+} // _dimProperties
+
+// ----------------------------------------------------------------------
+// Nondimensionalize initial state.
+void
+pylith::materials::ElasticIsotropic3D::_nondimInitState(double* const values,
+							const int nvalues) const
+{ // _nondimInitState
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _ElasticIsotropic3D::numInitialStateDBValues);
+
+  const double pressureScale = _normalizer->pressureScale();
+  _normalizer->nondimensionalize(values, nvalues, pressureScale);
+
+  PetscLogFlops(nvalues);
+} // _nondimInitState
+
+// ----------------------------------------------------------------------
+// Dimensionalize initial state.
+void
+pylith::materials::ElasticIsotropic3D::_dimInitState(double* const values,
+						     const int nvalues) const
+{ // _dimInitState
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _ElasticIsotropic3D::numInitialStateDBValues);
+  
+  const double pressureScale = _normalizer->pressureScale();
+  _normalizer->dimensionalize(values, nvalues, pressureScale);
+
+  PetscLogFlops(nvalues);
+} // _dimInitState
 
 // ----------------------------------------------------------------------
 // Compute density at location from properties.

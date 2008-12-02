@@ -145,18 +145,22 @@ public :
    */
   double timeStep(void) const;
 
+  /** Set scales used to nondimensionalize physical properties.
+   *
+   * @param dim Nondimensionalizer
+   */
+  void normalizer(const spatialdata::units::Nondimensional& dim);
+
   /** Initialize material by getting physical property parameters from
    * database.
    *
    * @param mesh PETSc mesh
    * @param cs Coordinate system associated with mesh
    * @param quadrature Quadrature for finite-element integration
-   * @param normalizer Nondimensionalization of scales.
    */
   void initialize(const ALE::Obj<Mesh>& mesh,
 		  const spatialdata::geocoords::CoordSys* cs,
-		  pylith::feassemble::Quadrature* quadrature,
-		  const spatialdata::units::Nondimensional& normalizer);
+		  pylith::feassemble::Quadrature* quadrature);
   
   /** Get flag indicating whether Jacobian matrix must be reformed for
    * current state.
@@ -202,6 +206,42 @@ protected :
   void _dbToProperties(double* const propValues,
 		       const double_array& dbValues) const = 0;
 
+  /** Nondimensionalize properties.
+   *
+   * @param values Array of property values.
+   * @param nvalues Number of values.
+   */
+  virtual
+  void _nondimProperties(double* const values,
+			 const int nvalues) const = 0;
+
+  /** Dimensionalize properties.
+   *
+   * @param values Array of property values.
+   * @param nvalues Number of values.
+   */
+  virtual
+  void _dimProperties(double* const values,
+		      const int nvalues) const = 0;
+
+  /** Nondimensionalize initial state.
+   *
+   * @param values Array of initial state values.
+   * @param nvalues Number of values.
+   */
+  virtual
+  void _nondimInitState(double* const values,
+			const int nvalues) const = 0;
+
+  /** Dimensionalize initial state.
+   *
+   * @param values Array of initial state values.
+   * @param nvalues Number of values.
+   */
+  virtual
+  void _dimInitState(double* const values,
+		     const int nvalues) const = 0;
+
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
@@ -221,6 +261,8 @@ protected :
 
   /// Section containing the initial state variables for the material.
   ALE::Obj<real_section_type> _initialState;
+
+  spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer
   
   int _totalPropsQuadPt; ///< Total # of property values per quad point.
   int _dimension; ///< Spatial dimension associated with material.
