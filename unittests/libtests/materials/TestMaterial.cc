@@ -194,7 +194,8 @@ pylith::materials::TestMaterial::testInitialize(void)
   material.db(&db);
   material.id(materialID);
   material.label("my_material");
-  material.initialize(mesh, &cs, &quadrature, normalizer);
+  material.normalizer(normalizer);
+  material.initialize(mesh, &cs, &quadrature);
 
   const double densityA = 2000.0;
   const double vsA = 100.0;

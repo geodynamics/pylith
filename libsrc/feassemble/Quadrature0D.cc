@@ -18,7 +18,7 @@
 
 #include "petsc.h" // USES PetscLogFlops()
 
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Constructor

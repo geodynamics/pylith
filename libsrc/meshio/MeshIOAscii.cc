@@ -23,7 +23,7 @@
 
 #include <iomanip> // USES setw(), setiosflags(), resetiosflags()
 #include <strings.h> // USES strcasecmp()
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 #include <fstream> // USES std::ifstream, std::ofstream
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream

@@ -16,8 +16,8 @@
 
 #include "CellGeometry.hh" // USES CellGeometry
 
-#include <string.h> // USES memcpy()
-#include <assert.h> // USES assert()
+#include <cstring> // USES memcpy()
+#include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 

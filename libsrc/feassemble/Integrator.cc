@@ -20,7 +20,7 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Constructor

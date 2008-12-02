@@ -28,7 +28,7 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimendional
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------

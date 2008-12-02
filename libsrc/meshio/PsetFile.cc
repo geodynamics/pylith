@@ -18,7 +18,7 @@
 
 #include <fstream> // uses std::fstream
 #include <sstream> // uses std::ostringstream
-#include <string.h> // uses strcmp()
+#include <cstring> // uses strcmp()
 #include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------

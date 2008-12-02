@@ -15,7 +15,7 @@
 
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Constructor

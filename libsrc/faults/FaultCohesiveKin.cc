@@ -31,11 +31,11 @@
 #include <Completion.hh> // USES completeSection
 #include <Selection.hh> // Algorithms for submeshes
 
-#include <math.h> // USES pow(), sqrt()
+#include <cmath> // USES pow(), sqrt()
 #include <strings.h> // USES strcasecmp()
-#include <string.h> // USES strlen()
-#include <stdlib.h> // USES atoi()
-#include <assert.h> // USES assert()
+#include <cstring> // USES strlen()
+#include <cstdlib> // USES atoi()
+#include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 

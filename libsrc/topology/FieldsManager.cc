@@ -17,7 +17,7 @@
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <strings.h> // USES strcasecmp()
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Constructor

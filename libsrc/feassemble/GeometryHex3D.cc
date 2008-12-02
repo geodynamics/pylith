@@ -20,7 +20,7 @@
 
 #include "pylith/utils/array.hh" // USES double_array
 
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Default constructor.

@@ -24,9 +24,9 @@
 
 #include <Selection.hh> // USES submesh algorithms
 
-#include <string.h> // USES memcpy()
+#include <cstring> // USES memcpy()
 #include <strings.h> // USES strcasecmp()
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 

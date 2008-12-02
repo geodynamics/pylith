@@ -23,7 +23,7 @@
 
 #include <petsc.h> // USES MPI_Comm
 
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 #include <stdexcept> // TEMPORARY
 
 // ----------------------------------------------------------------------

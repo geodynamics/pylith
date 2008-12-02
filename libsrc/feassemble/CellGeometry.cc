@@ -16,7 +16,7 @@
 
 #include "petsc.h" // USES PetscLogFlops
 
-#include <string.h> // USES memcpy()
+#include <cstring> // USES memcpy()
 
 #include <iostream> // USES std::cerr
 

@@ -21,7 +21,7 @@
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 #include "pylith/utils/array.hh" // USES double_array
 
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 

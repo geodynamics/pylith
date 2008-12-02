@@ -17,7 +17,7 @@
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 
 void
 pylith::faults::CohesiveTopology::createFaultSieveFromVertices(const int dim,

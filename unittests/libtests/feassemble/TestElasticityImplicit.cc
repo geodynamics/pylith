@@ -332,7 +332,8 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   _material->id(_data->matId);
   _material->label(_data->matLabel);
   _material->db(&db);
-  _material->initialize(*mesh, &cs, _quadrature, normalizer);
+  _material->normalizer(normalizer);
+  _material->initialize(*mesh, &cs, _quadrature);
 
   integrator->quadrature(_quadrature);
   integrator->gravityField(_gravityField);

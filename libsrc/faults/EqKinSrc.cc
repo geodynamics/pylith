@@ -18,7 +18,7 @@
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Default constructor.
