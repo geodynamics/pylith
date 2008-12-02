@@ -88,7 +88,7 @@ class Constraint(object):
     self._logger.eventBegin(logEvent)
 
     assert(None != self.cppHandle)
-    #self.cppHandle.normalizer = normalizer.cppHandle
+    self.cppHandle.normalizer = normalizer.cppHandle
 
     self._logger.eventEnd(logEvent)
     return

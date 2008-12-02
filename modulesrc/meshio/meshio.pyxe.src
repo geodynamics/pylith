@@ -138,6 +138,35 @@ cdef class MeshIO:
     return PyCObject_FromVoidPtr(self.thisptr, MeshIO_destructor)
 
 
+  property normalizer:
+    def __set__(self, value):
+      """Set normalizer."""
+      # create shim for method 'normalizer'
+      #embed{ void MeshIO_normalizer_set(void* objVptr, void* dimVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != dimVptr);
+        spatialdata::units::Nondimensional* dim =
+          (spatialdata::units::Nondimensional*) dimVptr;
+        ((pylith::meshio::MeshIO*) objVptr)->normalizer(*dim);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "spatialdata_units_Nondimensional":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::units::Nondimensional'."
+      MeshIO_normalizer_set(self.thisptr, ptrFromHandle(value))
+
+
   property interpolate:
     def __set__(self, flag):
       """Set interpolate."""

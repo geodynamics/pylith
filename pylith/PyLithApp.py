@@ -88,7 +88,7 @@ class PyLithApp(Application):
     interfaces = None
     if "interfaces" in dir(self.problem):
       interfaces = self.problem.interfaces.components()
-    mesh = self.mesher.create(interfaces)
+    mesh = self.mesher.create(self.problem.normalizer, interfaces)
     self._debug.log(resourceUsageString())
     self._logger.stagePop()
 

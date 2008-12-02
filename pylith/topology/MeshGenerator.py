@@ -64,7 +64,7 @@ class MeshGenerator(Component):
     return
 
 
-  def create(self, faults=None):
+  def create(self, normalizer, faults=None):
     """
     Generate a Mesh.
     """

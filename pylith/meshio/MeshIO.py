@@ -36,7 +36,7 @@ class MeshIO(Component):
     return
 
 
-  def read(self, debug, interpolate):
+  def read(self, normalizer, debug, interpolate):
     """
     Read finite-element mesh and store in Sieve mesh object.
 
@@ -46,6 +46,7 @@ class MeshIO(Component):
 
     # Set flags
     self._sync()
+    self.cppHandle.normalizer = normalizer.cppHandle
     self.cppHandle.debug = debug
     self.cppHandle.interpolate = interpolate
 
