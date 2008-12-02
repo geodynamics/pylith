@@ -18,7 +18,7 @@
 
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 
 #include <algorithm> // USES std::sort, std::find
 #include <map> // USES std::map

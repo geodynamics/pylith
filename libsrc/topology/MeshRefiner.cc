@@ -17,11 +17,11 @@
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 
-#include <string.h> // USES strlen()
+#include <cstring> // USES strlen()
 #include <strings.h> // USES strcasecmp()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Constructor

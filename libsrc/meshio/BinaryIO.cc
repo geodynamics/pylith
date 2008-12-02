@@ -15,7 +15,7 @@
 #include "BinaryIO.hh" // implementation of class methods
 
 #include <fstream> // USES std::ifstream
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Read fixed length string from file.

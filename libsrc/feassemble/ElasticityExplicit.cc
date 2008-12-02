@@ -25,7 +25,7 @@
 #include "petscmat.h" // USES PetscMat
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
-#include <assert.h> // USES assert()
+#include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------

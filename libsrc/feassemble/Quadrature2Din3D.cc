@@ -18,8 +18,8 @@
 
 #include "petsc.h" // USES PetscLogFlops
 
-#include <math.h> // USES fabs()
-#include <assert.h> // USES assert()
+#include <cmath> // USES fabs()
+#include <cassert> // USES assert()
 #include <stdexcept> // USES internal_error
 
 #define ISOPARAMETRIC
