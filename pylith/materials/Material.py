@@ -139,13 +139,13 @@ class Material(Component):
     assert(None != self.cppHandle)
     self.db.initialize()
     self.cppHandle.db = self.db.cppHandle
+    self.cppHandle.normalizer = normalizer.cppHandle
     if self.initialStateDB != None:
       self._info.log("Initializing initial state database.")
       self.initialStateDB.initialize()
       self.cppHandle.initialStateDB = self.initialStateDB.cppHandle
     self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
-                              self.quadrature.cppHandle,
-                              normalizer.cppHandle)
+                              self.quadrature.cppHandle)
 
     self._logger.eventEnd(logEvent)
     return
