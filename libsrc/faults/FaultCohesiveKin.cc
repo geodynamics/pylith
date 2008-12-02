@@ -642,7 +642,7 @@ pylith::faults::FaultCohesiveKin::vertexField(
 
   if (0 != scale) {
     // dimensionalize values
-    double_array valuesGlobal(fiberDim);
+    double_array values(fiberDim);
     const ALE::Obj<Mesh::label_sequence>& vertices = _faultMesh->depthStratum(0);
     assert(!vertices.isNull());
     const Mesh::label_sequence::iterator verticesEnd = vertices->end();
@@ -650,11 +650,9 @@ pylith::faults::FaultCohesiveKin::vertexField(
 	 v_iter != verticesEnd;
 	 ++v_iter) {
       assert(fiberDim == _bufferTmp->getFiberDimension(*v_iter));
-      const real_section_type::value_type* valuesNondim = 
-	_bufferTmp->restrictPoint(*v_iter);
-      for (int i=0; i < fiberDim; ++i)
-	valuesGlobal[i] = _normalizer->dimensionalize(valuesNondim[i], scale);
-      _bufferTmp->updatePointAll(*v_iter, &valuesGlobal[0]);
+      _bufferTmp->restrictPoint(*v_iter, &values[0], values.size());
+      _normalizer->dimensionalize(&values[0], values.size(), scale);
+      _bufferTmp->updatePointAll(*v_iter, &values[0]);
     } // for
   } // if
 
@@ -882,22 +880,24 @@ pylith::faults::FaultCohesiveKin::_calcConditioning(
 
   assert(0 != _normalizer);
   const double pressureScale = _normalizer->pressureScale();
+  const double lengthScale = _normalizer->lengthScale();
 
   double_array matprops(numStiffnessVals);
+  double_array vCoords(spaceDim);
   int count = 0;
+  
   for (SubMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++count) {
-    const real_section_type::value_type* vertexCoords = 
-      coordinates->restrictPoint(*v_iter);
-    assert(0 != vertexCoords);
-    int err = matDB->query(&matprops[0], numStiffnessVals, vertexCoords, 
-			   spaceDim, cs);
+    coordinates->restrictPoint(*v_iter, &vCoords[0], vCoords.size());
+    _normalizer->dimensionalize(&vCoords[0], vCoords.size(), lengthScale);
+    int err = matDB->query(&matprops[0], numStiffnessVals, &vCoords[0], 
+			   vCoords.size(), cs);
     if (err) {
       std::ostringstream msg;
       msg << "Could not find material properties at (";
       for (int i=0; i < spaceDim; ++i)
-	msg << "  " << vertexCoords[i];
+	msg << "  " << vCoords[i];
       msg << ") using spatial database " << matDB->label() << ".";
       throw std::runtime_error(msg.str());
     } // if

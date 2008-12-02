@@ -401,17 +401,15 @@ pylith::bc::Neumann::cellField(VectorFieldEnum* fieldType,
   } // if
 
   // dimensionalize values
-  double_array cellValues(fiberDim);
+  double_array values(fiberDim);
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
     assert(fiberDim == field->getFiberDimension(*c_iter));
     assert(fiberDim == _buffer->getFiberDimension(*c_iter));
-    const real_section_type::value_type* values = 
-      field->restrictPoint(*c_iter);
-    for (int i=0; i < fiberDim; ++i)
-      cellValues[i] = _normalizer->dimensionalize(values[i], scale);
-    _buffer->updatePointAll(*c_iter, &cellValues[0]);
+    field->restrictPoint(*c_iter, &values[0], values.size());
+    _normalizer->dimensionalize(&values[0], values.size(), scale);
+    _buffer->updatePointAll(*c_iter, &values[0]);
   } // for
 
   return _buffer;

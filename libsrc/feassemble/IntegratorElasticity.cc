@@ -412,10 +412,7 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
-    const real_section_type::value_type* strainVals = 
-      (*field)->restrictPoint(*c_iter);
-    memcpy(&totalStrain[0], strainVals, sizeof(double)*totalStrain.size());
-
+    (*field)->restrictPoint(*c_iter, &totalStrain[0], totalStrain.size());
     _material->getPropertiesCell(*c_iter, numQuadPts);
     const double_array& stress = _material->calcStress(totalStrain);
     (*field)->updatePoint(*c_iter, &stress[0]);	
