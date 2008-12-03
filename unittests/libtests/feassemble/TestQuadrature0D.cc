@@ -82,7 +82,7 @@ pylith::feassemble::TestQuadrature0D::testPoint(void)
   const ALE::Obj<Mesh::real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
   CPPUNIT_ASSERT(!coordinates.isNull());
-  quadrature.computeGeometry(mesh, coordinates, *e_iter);
+  quadrature.Quadrature::computeGeometry(mesh, coordinates, *e_iter);
 
   CPPUNIT_ASSERT(1 == numCells);
 
