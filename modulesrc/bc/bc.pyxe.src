@@ -12,8 +12,6 @@
 
 #header{
 #include "pylith/bc/BoundaryCondition.hh"
-#include "pylith/feassemble/Constraint.hh"
-#include "pylith/feassemble/Integrator.hh"
 #include "pylith/bc/AbsorbingDampers.hh"
 #include "pylith/bc/DirichletPoints.hh"
 #include "pylith/bc/DirichletBoundary.hh"
@@ -332,6 +330,37 @@ cdef class DirichletPoints(BoundaryCondition):
       free(fixedDOF)
 
 
+  property normalizer:
+    def __set__(self, value):
+      """
+      Set nondimensionalizer.
+      """
+      # create shim for method 'normalizer'
+      #embed{ void DirichletPoints_normalizer_set(void* objVptr, void* dimVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != dimVptr);
+        spatialdata::units::Nondimensional* dim =
+          (spatialdata::units::Nondimensional*) dimVptr;
+        ((pylith::bc::DirichletPoints*) objVptr)->normalizer(*dim);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "spatialdata_units_Nondimensional":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::units::Nondimensional'."
+      DirichletPoints_normalizer_set(self.thisptr, ptrFromHandle(value))
+
+
   def setConstraintSizes(self, field, mesh):
     """
     Set number of degrees of freedom that are constrained at points in field.
@@ -575,6 +604,37 @@ cdef class DirichletBoundary(BoundaryCondition):
         fixedDOF[i] = value[i]
       DirichletBoundary_fixedDOF_set(self.thisptr, fixedDOF, numFixedDOF)
       free(fixedDOF)
+
+
+  property normalizer:
+    def __set__(self, value):
+      """
+      Set nondimensionalizer.
+      """
+      # create shim for method 'normalizer'
+      #embed{ void DirichletBoundary_normalizer_set(void* objVptr, void* dimVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != dimVptr);
+        spatialdata::units::Nondimensional* dim =
+          (spatialdata::units::Nondimensional*) dimVptr;
+        ((pylith::bc::DirichletBoundary*) objVptr)->normalizer(*dim);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "spatialdata_units_Nondimensional":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::units::Nondimensional'."
+      DirichletBoundary_normalizer_set(self.thisptr, ptrFromHandle(value))
 
 
   def setConstraintSizes(self, field, mesh):

@@ -19,6 +19,9 @@
 
 #include "pylith/materials/ElasticMaterial.hh" // USES ElasticMaterial
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
+
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 #include "pylith/utils/array.hh" // USES double_array
 
 #include <cstring> // USES memcpy()
@@ -309,6 +312,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
+  const ALE::Obj<real_section_type>& disp = fields->getSolution();
   
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
@@ -322,6 +326,10 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   const int totalFiberDim = numQuadPts * tensorSize;
   double_array totalStrain(totalFiberDim);
   totalStrain = 0.0;
+  double_array stress(totalFiberDim);
+
+  assert(0 != _normalizer);
+  const double pressureScale = _normalizer->pressureScale();
   
   // Allocate buffer for property field.
   if (field->isNull() || 
@@ -333,8 +341,6 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
     mesh->allocate(*field);
   } // if
   
-  const ALE::Obj<real_section_type>& disp = fields->getSolution();
-  /// const int dispAtlasTag = fields->getSolutionAtlasTag(materialId);
   
   // Loop over cells
   int c_index = 0;
@@ -358,7 +364,9 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
       (*field)->updatePoint(*c_iter, &totalStrain[0]);
     } else {
       _material->getPropertiesCell(*c_iter, numQuadPts);
-      const double_array& stress = _material->calcStress(totalStrain);
+      stress = _material->calcStress(totalStrain);
+      _normalizer->dimensionalize(&stress[0], stress.size(),
+				  pressureScale);
       (*field)->updatePoint(*c_iter, &stress[0]);	
     } // else
   } // for
@@ -395,8 +403,13 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
   const int numQuadPts = _quadrature->numQuadPts();
   
   // Allocate vector for total strain
-  double_array totalStrain(numQuadPts*tensorSize);
+  const int totalFiberDim = numQuadPts*tensorSize;
+  double_array totalStrain(totalFiberDim);
   totalStrain = 0.0;
+  double_array stress(totalFiberDim);
+  
+  assert(0 != _normalizer);
+  const double pressureScale = _normalizer->pressureScale();
   
   // Allocate buffer for tensor field.
   if (field->isNull()) {
@@ -414,7 +427,9 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
        ++c_iter) {
     (*field)->restrictPoint(*c_iter, &totalStrain[0], totalStrain.size());
     _material->getPropertiesCell(*c_iter, numQuadPts);
-    const double_array& stress = _material->calcStress(totalStrain);
+    stress = _material->calcStress(totalStrain);
+    _normalizer->dimensionalize(&stress[0], stress.size(),
+				pressureScale);
     (*field)->updatePoint(*c_iter, &stress[0]);	
   } // for
 } // _calcStressFromStrain
