@@ -118,8 +118,7 @@ class TestDirichletBoundary(unittest.TestCase):
     bc.setConstraintSizes(field)
     mesh.allocateRealSection(field)
     bc.setConstraints(field)
-    from pyre.units.time import second
-    t = 1.0*second
+    t = 1.0
     bc.setField(t, field)
 
     # We should really add something here to check to make sure things
@@ -178,18 +177,18 @@ class TestDirichletBoundary(unittest.TestCase):
     cs = CSCart()
     cs.spaceDim = 2
 
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer.initialize()
+
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
     importer.filename = "data/tri3.mesh"
     importer.coordsys = cs
-    mesh = importer.read(debug=False, interpolate=False)
+    mesh = importer.read(normalizer, debug=False, interpolate=False)
     
-    from spatialdata.units.Nondimensional import Nondimensional
-    normalizer = Nondimensional()
-
     bc.preinitialize(mesh)
-    from pyre.units.time import second
-    bc.initialize(totalTime=0.0*second, numTimeSteps=1, normalizer=normalizer)
+    bc.initialize(totalTime=0.0, numTimeSteps=1, normalizer=normalizer)
 
     # Setup fields
     from pylith.topology.FieldsManager import FieldsManager

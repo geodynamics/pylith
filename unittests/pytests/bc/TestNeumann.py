@@ -18,8 +18,6 @@ import unittest
 
 from pylith.bc.Neumann import Neumann
 
-from pyre.units.time import second
-
 # ----------------------------------------------------------------------
 class TestNeumann(unittest.TestCase):
   """
@@ -68,7 +66,7 @@ class TestNeumann(unittest.TestCase):
     """
     (mesh, bc, fields) = self._initialize()
 
-    dt = 0.25*second
+    dt = 0.25
     bc.timeStep(dt)
     return
 
@@ -79,7 +77,7 @@ class TestNeumann(unittest.TestCase):
     """
     (mesh, bc, fields) = self._initialize()
 
-    self.assertEqual(1.0e+30*second, bc.stableTimeStep())
+    self.assertEqual(1.0e+30, bc.stableTimeStep())
     return
 
   
@@ -111,7 +109,7 @@ class TestNeumann(unittest.TestCase):
     (mesh, bc, fields) = self._initialize()
 
     residual = fields.getReal("residual")
-    t = 0.02*second
+    t = 0.02
     bc.integrateResidual(residual, t, fields)
 
     # We should really add something here to check to make sure things
@@ -131,7 +129,7 @@ class TestNeumann(unittest.TestCase):
     jacobian = mesh.createMatrix(fields.getReal("residual"))
     import pylith.utils.petsc as petsc
     petsc.mat_setzero(jacobian)
-    t = 0.24*second
+    t = 0.24
     bc.integrateJacobian(jacobian, t, fields)
 
     return
@@ -146,9 +144,9 @@ class TestNeumann(unittest.TestCase):
     """
     (mesh, bc, fields) = self._initialize()
 
-    t = 0.50*second
-    dt = 0.1*second
-    totalTime = 5*second
+    t = 0.50
+    dt = 0.1
+    totalTime = 5
     bc.poststep(t, dt, totalTime, fields)
 
     # We should really add something here to check to make sure things
@@ -207,18 +205,19 @@ class TestNeumann(unittest.TestCase):
     cs = CSCart()
     cs.spaceDim = 2
 
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer.initialize()
+
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
     importer.filename = "data/tri3.mesh"
     importer.coordsys = cs
-    mesh = importer.read(debug=False, interpolate=False)
+    mesh = importer.read(normalizer, debug=False, interpolate=False)
     
-    from spatialdata.units.Nondimensional import Nondimensional
-    normalizer = Nondimensional()
-
     bc.preinitialize(mesh)
-    bc.initialize(totalTime=0.0*second, numTimeSteps=1, normalizer=normalizer)
-    bc.timeStep(0.01*second)
+    bc.initialize(totalTime=0.0, numTimeSteps=1, normalizer=normalizer)
+    bc.timeStep(0.01)
 
     # Setup fields
     from pylith.topology.FieldsManager import FieldsManager

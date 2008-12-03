@@ -38,10 +38,14 @@ class TestProvider(object):
     iohandler = MeshIOAscii()
     filename = "data/twohex8.txt"
     
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer.initialize()
+
     from spatialdata.geocoords.CSCart import CSCart
     iohandler.filename = filename
     iohandler.coordsys = CSCart()
-    mesh = iohandler.read(debug=False, interpolate=False)
+    mesh = iohandler.read(normalizer, debug=False, interpolate=False)
 
     from pylith.topology.FieldsManager import FieldsManager
     fields = FieldsManager(mesh)
@@ -107,6 +111,13 @@ class TestOutputManager(unittest.TestCase):
   Unit testing of Python OutputManager object.
   """
 
+  def setUp(self):
+    from spatialdata.units.Nondimensional import Nondimensional
+    self.normalizer = Nondimensional()
+    self.normalizer.initialize()
+    return
+  
+
   def test_constructor(self):
     """
     Test constructor.
@@ -124,7 +135,7 @@ class TestOutputManager(unittest.TestCase):
     output = OutputManager()
     output._configure()
     output.writer._configure()
-    output.writer.initialize()
+    output.writer.initialize(self.normalizer)
     output._sync()
     self.assertNotEqual(None, output.cppHandle)
     return
@@ -169,7 +180,7 @@ class TestOutputManager(unittest.TestCase):
     output.writer.filename = "test.vtk"
     dataProvider = TestProvider()
     output.preinitialize(dataProvider)
-    output.initialize()
+    output.initialize(self.normalizer)
     self.assertNotEqual(None, output.cppHandle)
 
     # With quadrature
@@ -189,7 +200,7 @@ class TestOutputManager(unittest.TestCase):
     output.writer.filename = "test.vtk"
     dataProvider = TestProvider()
     output.preinitialize(dataProvider)
-    output.initialize(quadrature)
+    output.initialize(self.normalizer, quadrature)
     self.assertNotEqual(None, output.cppHandle)
     return
 
@@ -204,10 +215,9 @@ class TestOutputManager(unittest.TestCase):
     output.writer.filename = "output.vtk"
     dataProvider = TestProvider()
     output.preinitialize(dataProvider)
-    output.initialize()
+    output.initialize(self.normalizer)
 
-    from pyre.units.time import s
-    output.open(totalTime=5.0*s, numTimeSteps=2)
+    output.open(totalTime=5.0, numTimeSteps=2)
     output.close()
     return
 
@@ -225,10 +235,9 @@ class TestOutputManager(unittest.TestCase):
     
     dataProvider = TestProvider()
     output.preinitialize(dataProvider)
-    output.initialize()
+    output.initialize(self.normalizer)
     
-    from pyre.units.time import s
-    output.open(totalTime=5.0*s, numTimeSteps=2)
+    output.open(totalTime=5.0, numTimeSteps=2)
     output.writeInfo()
     output.close()
     return
@@ -249,11 +258,10 @@ class TestOutputManager(unittest.TestCase):
     
     dataProvider = TestProvider()
     output.preinitialize(dataProvider)
-    output.initialize()
+    output.initialize(self.normalizer)
 
-    from pyre.units.time import s
-    output.open(totalTime=5.0*s, numTimeSteps=2)
-    output.writeData(2.0*s, dataProvider.fields)
+    output.open(totalTime=5.0, numTimeSteps=2)
+    output.writeData(2.0, dataProvider.fields)
     output.close()
     return
 
@@ -262,19 +270,26 @@ class TestOutputManager(unittest.TestCase):
     """
     Test _checkWrite().
     """
-    from pyre.units.time import s
+    dataProvider = TestProvider()
 
     # Default values should be true
     output = OutputManager()
     output._configure()
-    self.assertEqual(True, output._checkWrite(0.0*s))
-    self.assertEqual(True, output._checkWrite(3.234e+8*s))
+    output.writer._configure()
+    output.preinitialize(dataProvider)
+    output.initialize(self.normalizer)
+    self.assertEqual(True, output._checkWrite(0.0))
+    self.assertEqual(True, output._checkWrite(3.234e+8))
 
     # Check writing based on time
     output = OutputManager()
     output._configure()
+    output.writer._configure()
+    output.preinitialize(dataProvider)
+    output.initialize(self.normalizer)
+
     output.outputFreq = "time_step"
-    t = 0.0*s
+    t = 0.0
     dt = output.dt
     self.assertEqual(True, output._checkWrite(t))
     self.assertEqual(False, output._checkWrite(t))
@@ -287,10 +302,13 @@ class TestOutputManager(unittest.TestCase):
     # Check writing based on number of steps
     output = OutputManager()
     output._configure()
+    output.writer._configure()
+    output.preinitialize(dataProvider)
+    output.initialize(self.normalizer)
     output.outputFreq = "skip"
     output.skip = 1
-    t = 0.0*s
-    dt = 1.0*s
+    t = 0.0
+    dt = 1.0
     self.assertEqual(True, output._checkWrite(t))
     t += dt
     self.assertEqual(False, output._checkWrite(t))
