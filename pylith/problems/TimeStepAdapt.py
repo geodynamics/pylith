@@ -82,6 +82,23 @@ class TimeStepAdapt(TimeStep):
     return
 
 
+  def initialize(self, normalizer):
+    """
+    Initialize time step algorithm.
+    """
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
+    TimeStep.initialize(self, normalizer)
+
+    # Nondimensionalize time scales
+    timeScale = normalizer.timeScale()
+    self.maxDt = normalizer.nondimensionalize(self.maxDt, timeScale)
+
+    self._logger.eventEnd(logEvent)
+    return
+
+
   def numTimeSteps(self):
     """
     Get number of total time steps (or best guess if adaptive).
@@ -95,15 +112,14 @@ class TimeStepAdapt(TimeStep):
     """
     Adjust stable time step for advancing forward in time.
     """
-    from pyre.units.time import second
-    dtStable = 1.0e+30*second
+    dtStable = 1.0e+30
     for integrator in integrators:
       dt = integrator.stableTimeStep()
       if dt < dtStable:
         dtStable = dt
     
     if self.skipped < self.adaptSkip and \
-          self.dt != 0.0*second and \
+          self.dt != 0.0 and \
           self.dt < dtStable:
       self.skipped += 1
     else:

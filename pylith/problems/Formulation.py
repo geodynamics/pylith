@@ -167,7 +167,7 @@ class Formulation(Component):
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    self.timeStep.initialize()
+    self.timeStep.initialize(normalizer)
 
     numTimeSteps = self.timeStep.numTimeSteps()
     totalTime = self.timeStep.totalTime
@@ -193,7 +193,7 @@ class Formulation(Component):
 
     self._info.log("Setting up solution output.")
     for output in self.output.components():
-      output.initialize(self.mesh)
+      output.initialize(self.mesh, normalizer)
       output.writeInfo()
       output.open(totalTime, numTimeSteps)
     self._debug.log(resourceUsageString())

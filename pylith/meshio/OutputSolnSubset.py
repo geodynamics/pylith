@@ -94,7 +94,7 @@ class OutputSolnSubset(OutputManager):
     return
 
 
-  def initialize(self, mesh):
+  def initialize(self, mesh, normalizer):
     """
     Initialize output manager.
     """
@@ -107,7 +107,7 @@ class OutputSolnSubset(OutputManager):
     assert(None != self.cppHandle)
     self.cppHandle.mesh(self.mesh.cppHandle, mesh.cppHandle)
 
-    OutputManager.initialize(self)
+    OutputManager.initialize(self, normalizer)
 
     self._logger.eventEnd(logEvent)
     return

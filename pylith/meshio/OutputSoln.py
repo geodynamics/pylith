@@ -79,7 +79,7 @@ class OutputSoln(OutputManager):
     return
   
 
-  def initialize(self, mesh):
+  def initialize(self, mesh, normalizer):
     """
     Initialize output manager.
     """
@@ -87,7 +87,7 @@ class OutputSoln(OutputManager):
     self._logger.eventBegin(logEvent)    
 
     self.mesh = mesh
-    OutputManager.initialize(self)
+    OutputManager.initialize(self, normalizer)
 
     self._logger.eventEnd(logEvent)
     return

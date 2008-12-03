@@ -112,6 +112,7 @@ class TimeDependent(Problem):
 
     self._info.log("Initializing problem.")
     self.normalizer.initialize()
+    self.checkpointTimer.initialize(self.normalizer)
     self.formulation.initialize(self.dimension, self.normalizer)
 
     self._logger.eventEnd(logEvent)
@@ -129,22 +130,28 @@ class TimeDependent(Problem):
     self.checkpointTimer.toplevel = app # Set handle for saving state
     
     t = self.formulation.getStartTime()
+    timeScale = self.normalizer.timeScale()
     while t < self.formulation.getTotalTime():
-      self._info.log("Main time loop, current time is t=%s" % t)
+      tsec = self.normalizer.dimensionalize(t, timeScale)
+      self._info.log("Main time loop, current time is t=%s" % tsec)
       
       # Checkpoint if necessary
       self.checkpointTimer.update(t)
 
       # Get time step for advancing in time
       dt = self.formulation.getTimeStep()
+      dtsec = self.normalizer.dimensionalize(dt, timeScale)
 
-      self._info.log("Preparing to advance solution from time t=%s to t=%s." % (t, t+dt))
+      self._info.log("Preparing to advance solution from time t=%s to t=%s." %\
+                     (tsec, tsec+dtsec))
       self.formulation.prestep(t, dt)
 
-      self._info.log("Advancing solution from t=%s to t=%s." % (t, t+dt))
+      self._info.log("Advancing solution from t=%s to t=%s." % \
+                     (tsec, tsec+dtsec))
       self.formulation.step(t, dt)
 
-      self._info.log("Finishing advancing solution from t=%s to t=%s." % (t, t+dt))
+      self._info.log("Finishing advancing solution from t=%s to t=%s." % \
+                     (tsec, tsec+dtsec))
       self.formulation.poststep(t, dt)
 
       # Update time

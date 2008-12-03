@@ -99,7 +99,7 @@ class Constraint(object):
     Set time step for advancing from time t to time t+dt.
     """
     assert(None != self.cppHandle)
-    self.cppHandle.timeStep = dt.value
+    self.cppHandle.timeStep = dt
     return
 
 
@@ -153,7 +153,7 @@ class Constraint(object):
     self._logger.eventBegin(logEvent)
 
     assert(None != self.cppHandle)
-    self.cppHandle.setField(t.value, field, self.mesh.cppHandle)
+    self.cppHandle.setField(t, field, self.mesh.cppHandle)
 
     self._logger.eventEnd(logEvent)
     return

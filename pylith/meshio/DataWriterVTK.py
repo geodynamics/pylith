@@ -68,14 +68,20 @@ class DataWriterVTK(DataWriter):
     return
 
 
-  def initialize(self):
+  def initialize(self, normalizer):
     """
     Initialize writer.
     """
-    DataWriter.initialize(self)
+    DataWriter.initialize(self, normalizer)
+
+    # Nondimensionalize
+    timeScale = normalizer.timeScale()
+    self.timeConstant = normalizer.nondimensionalize(self.timeConstant,
+                                                     timeScale)
+    
     self.cppHandle.filename = self.filename
     self.cppHandle.timeFormat = self.timeFormat
-    self.cppHandle.timeConstant = self.timeConstant.value
+    self.cppHandle.timeConstant = self.timeConstant
     return
   
 

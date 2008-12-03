@@ -64,12 +64,17 @@ class TimeStep(Component):
     return
   
 
-  def initialize(self):
+  def initialize(self, normalizer):
     """
     Initialize time step algorithm.
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
+
+    # Nondimensionalize time scales
+    timeScale = normalizer.timeScale()
+    self.totalTime = normalizer.nondimensionalize(self.totalTime, timeScale)
+    self.dt = normalizer.nondimensionalize(self.dt, timeScale)
 
     self._logger.eventEnd(logEvent)
     return
