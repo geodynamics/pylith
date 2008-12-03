@@ -18,7 +18,6 @@ import unittest
 from pylith.feassemble.ElasticityExplicit import ElasticityExplicit
 
 from spatialdata.geocoords.CSCart import CSCart
-from pyre.units.time import second
 
 # ----------------------------------------------------------------------
 class TestElasticityExplicit(unittest.TestCase):
@@ -40,6 +39,10 @@ class TestElasticityExplicit(unittest.TestCase):
     """
     Test preiniitlaize().
     """
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer.initialize()
+
     # Setup mesh
     cs = CSCart()
     cs.spaceDim = 2
@@ -47,7 +50,7 @@ class TestElasticityExplicit(unittest.TestCase):
     importer = MeshIOAscii()
     importer.filename = "data/tri3.mesh"
     importer.coordsys = cs
-    mesh = importer.read(debug=False, interpolate=False)
+    mesh = importer.read(normalizer, debug=False, interpolate=False)
 
     # Setup material
     from pylith.feassemble.FIATSimplex import FIATSimplex
@@ -94,8 +97,7 @@ class TestElasticityExplicit(unittest.TestCase):
     """
     Test timeStep().
     """
-    from pyre.units.time import second
-    dt = 2.3*second
+    dt = 2.3
     (mesh, integrator, fields) = self._initialize()
     integrator.timeStep(dt)
     return
@@ -107,8 +109,7 @@ class TestElasticityExplicit(unittest.TestCase):
     """
     (mesh, integrator, fields) = self._initialize()
 
-    from pyre.units.time import second
-    self.assertEqual(1.0e+30*second, integrator.stableTimeStep())
+    self.assertEqual(1.0e+30, integrator.stableTimeStep())
     return
 
   
@@ -145,7 +146,7 @@ class TestElasticityExplicit(unittest.TestCase):
 
     residual = fields.getReal("residual")
 
-    t = 0.45*second
+    t = 0.45
     integrator.integrateResidual(residual, t, fields)
 
     # We should really add something here to check to make sure things
@@ -165,7 +166,7 @@ class TestElasticityExplicit(unittest.TestCase):
     jacobian = mesh.createMatrix(fields.getReal("residual"))
     import pylith.utils.petsc as petsc
     petsc.mat_setzero(jacobian)
-    t = 0.145*second
+    t = 0.145
     integrator.integrateJacobian(jacobian, t, fields)
     self.assertEqual(False, integrator.needNewJacobian())
 
@@ -183,13 +184,13 @@ class TestElasticityExplicit(unittest.TestCase):
     """
     (mesh, integrator, fields) = self._initialize()
 
-    t = 3.45*second
+    t = 3.45
 
     residual = fields.getReal("residual")
     integrator.integrateResidual(residual, t, fields)
 
-    dt = 0.02*second
-    totalTime = 5.0*second
+    dt = 0.02
+    totalTime = 5.0
     integrator.poststep(t, dt, totalTime, fields)
 
     # We should really add something here to check to make sure things
@@ -219,9 +220,12 @@ class TestElasticityExplicit(unittest.TestCase):
     """
     Initialize integrator.
     """
-    from pyre.units.time import second
-    dt = 2.3*second
+    dt = 2.3
     
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer.initialize()
+
     # Setup mesh
     cs = CSCart()
     cs.spaceDim = 2
@@ -229,7 +233,7 @@ class TestElasticityExplicit(unittest.TestCase):
     importer = MeshIOAscii()
     importer.filename = "data/tri3.mesh"
     importer.coordsys = cs
-    mesh = importer.read(debug=False, interpolate=False)
+    mesh = importer.read(normalizer, debug=False, interpolate=False)
 
     # Setup material
     from pylith.feassemble.FIATSimplex import FIATSimplex
@@ -262,10 +266,6 @@ class TestElasticityExplicit(unittest.TestCase):
     material.output = OutputMatElastic()
     material.output._configure()
     material.output.writer._configure()
-
-    from spatialdata.units.Nondimensional import Nondimensional
-    normalizer = Nondimensional()
-    normalizer.initialize()
 
     # Setup integrator
     integrator = ElasticityExplicit()

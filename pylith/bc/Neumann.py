@@ -126,7 +126,7 @@ class Neumann(BoundaryCondition, Integrator):
     self.cppHandle.boundaryMesh(self.boundaryMesh.cppHandle)
 
     if None != self.output:
-      self.output.initialize(self.quadrature)
+      self.output.initialize(normalizer, self.quadrature)
       self.output.writeInfo()
 
     self._logger.eventEnd(logEvent)

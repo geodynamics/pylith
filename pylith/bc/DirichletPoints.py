@@ -127,9 +127,12 @@ class DirichletPoints(BoundaryCondition, Constraint):
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
+
+    timeScale = normalizer.timeScale()
+    self.tRef = normalizer.nondimensionalize(self.tRef, timeScale)
     
     assert(None != self.cppHandle)
-    self.cppHandle.referenceTime = self.tRef.value
+    self.cppHandle.referenceTime = self.tRef
     self.dbRate.initialize()
     self.cppHandle.dbRate = self.dbRate.cppHandle
     self.cppHandle.normalizer = normalizer.cppHandle

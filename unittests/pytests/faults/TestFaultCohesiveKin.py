@@ -59,11 +59,15 @@ class TestFaultCohesiveKin(unittest.TestCase):
     cs = CSCart()
     cs.spaceDim = 2
     
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer.initialize()
+
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
     importer.filename = "data/tri3.mesh"
     importer.coordsys = cs
-    mesh = importer.read(debug=False, interpolate=False)
+    mesh = importer.read(normalizer, debug=False, interpolate=False)
 
     fault = FaultCohesiveKin()
     fault._configure()
@@ -95,8 +99,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     Test timeStep().
     """
-    from pyre.units.time import second
-    dt = 2.4*second
+    dt = 2.4
     (mesh, fault, fields) = self._initialize()
     fault.timeStep = dt
     self.assertEqual(dt, fault.timeStep)
@@ -109,8 +112,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     (mesh, fault, fields) = self._initialize()
 
-    from pyre.units.time import second
-    self.assertEqual(1.0e+30*second, fault.stableTimeStep())
+    self.assertEqual(1.0e+30, fault.stableTimeStep())
     return
 
   
@@ -145,7 +147,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     (mesh, fault, fields) = self._initialize()
 
     residual = fields.getReal("residual")
-    t = 1.0*second
+    t = 1.0
     fault.integrateResidual(residual, t, fields)
 
     # We should really add something here to check to make sure things
@@ -165,7 +167,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     jacobian = mesh.createMatrix(fields.getReal("residual"))
     import pylith.utils.petsc as petsc
     petsc.mat_setzero(jacobian)
-    t = 1.0*second
+    t = 1.0
     fault.integrateJacobian(jacobian, t, fields)
     self.assertEqual(False, fault.needNewJacobian())
 
@@ -183,12 +185,12 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     (mesh, fault, fields) = self._initialize()
 
-    t = 0.50*second
+    t = 0.50
     residual = fields.getReal("residual")
     fault.integrateResidual(residual, t, fields)
 
-    dt = 0.1*second
-    totalTime = 5*second
+    dt = 0.1
+    totalTime = 5
     fault.poststep(t, dt, totalTime, fields)
 
     # We should really add something here to check to make sure things
@@ -218,9 +220,12 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     Initialize fault.
     """
-    from pyre.units.time import second
-    dt = 2.4*second
+    dt = 2.4
     
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer.initialize()
+
     # Setup mesh
     cs = CSCart()
     cs.spaceDim = 2
@@ -228,7 +233,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     importer = MeshIOAscii()
     importer.filename = "data/tri3.mesh"
     importer.coordsys = cs
-    mesh = importer.read(debug=False, interpolate=False)
+    mesh = importer.read(normalizer, debug=False, interpolate=False)
 
     # Setup quadrature
     from pylith.feassemble.FIATSimplex import FIATSimplex
@@ -267,9 +272,6 @@ class TestFaultCohesiveKin(unittest.TestCase):
     slipfn.slip = dbFinalSlip
     slipfn.slipTime = dbSlipTime
     slipfn.slipRate = dbPeakRate
-
-    from spatialdata.units.Nondimensional import Nondimensional
-    normalizer = Nondimensional()
 
     ioMatDB = SimpleIOAscii()
     ioMatDB.filename = "data/bulkprops_2d.spatialdb"

@@ -67,10 +67,14 @@ class TestMeshIOLagrit(unittest.TestCase):
     filenameOut = "data/cube2_test.txt"
     filenameE = "data/cube2.txt"
     
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer.initialize()
+
     iohandler.filenameGmv = filenameGmvIn
     iohandler.filenamePset = filenamePsetIn
     iohandler.coordsys = CSCart()
-    mesh = iohandler.read(debug=False, interpolate=False)
+    mesh = iohandler.read(normalizer, debug=False, interpolate=False)
     self.assertEqual(3, mesh.dimension())
 
     testhandler = MeshIOAscii()

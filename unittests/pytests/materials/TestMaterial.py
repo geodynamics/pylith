@@ -62,16 +62,16 @@ class TestMaterial(unittest.TestCase):
     cs = CSCart()
     cs.spaceDim = 1
 
-    from pylith.meshio.MeshIOAscii import MeshIOAscii
-    importer = MeshIOAscii()
-    importer.filename = "data/twoelems.mesh"
-    importer.coordsys = cs
-    mesh = importer.read(debug=False, interpolate=False)
-    
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
     normalizer.initialize()
 
+    from pylith.meshio.MeshIOAscii import MeshIOAscii
+    importer = MeshIOAscii()
+    importer.filename = "data/twoelems.mesh"
+    importer.coordsys = cs
+    mesh = importer.read(normalizer, debug=False, interpolate=False)
+    
     material.preinitialize()
     from pyre.units.time import second
     totalTime = 0.0*second

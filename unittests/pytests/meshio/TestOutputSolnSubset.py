@@ -29,10 +29,14 @@ class TestOutputSolnSubset(unittest.TestCase):
     iohandler = MeshIOAscii()
     filename = "data/twohex8.txt"
     
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer.initialize()
+
     from spatialdata.geocoords.CSCart import CSCart
     iohandler.filename = filename
     iohandler.coordsys = CSCart()
-    mesh = iohandler.read(debug=False, interpolate=False)
+    mesh = iohandler.read(normalizer, debug=False, interpolate=False)
 
     from pylith.topology.FieldsManager import FieldsManager
     fields = FieldsManager(mesh)
@@ -45,6 +49,7 @@ class TestOutputSolnSubset(unittest.TestCase):
 
     self.mesh = mesh
     self.fields = fields
+    self.normalizer = normalizer
     return
 
 
@@ -96,7 +101,7 @@ class TestOutputSolnSubset(unittest.TestCase):
     output.writer.filename = "test.vtk"
 
     output.preinitialize()
-    output.initialize(self.mesh)
+    output.initialize(self.mesh, self.normalizer)
     self.assertNotEqual(None, output.cppHandle)
     return
 
@@ -112,7 +117,7 @@ class TestOutputSolnSubset(unittest.TestCase):
     output.writer.filename = "test.vtk"
 
     output.preinitialize()
-    output.initialize(self.mesh)
+    output.initialize(self.mesh, self.normalizer)
 
     from pyre.units.time import s
     output.open(totalTime=5.0*s, numTimeSteps=2)
@@ -131,10 +136,9 @@ class TestOutputSolnSubset(unittest.TestCase):
     output.writer.filename = "output_sub.vtk"
 
     output.preinitialize()
-    output.initialize(self.mesh)
+    output.initialize(self.mesh, self.normalizer)
     
-    from pyre.units.time import s
-    output.open(totalTime=5.0*s, numTimeSteps=2)
+    output.open(totalTime=5.0, numTimeSteps=2)
     output.writeInfo()
     output.close()
     return
@@ -153,11 +157,10 @@ class TestOutputSolnSubset(unittest.TestCase):
     output.vertexDataFields = ["displacements"]
 
     output.preinitialize()
-    output.initialize(self.mesh)
+    output.initialize(self.mesh, self.normalizer)
 
-    from pyre.units.time import s
-    output.open(totalTime=5.0*s, numTimeSteps=2)
-    output.writeData(2.0*s, self.fields)
+    output.open(totalTime=5.0, numTimeSteps=2)
+    output.writeData(2.0, self.fields)
     output.close()
     return
 

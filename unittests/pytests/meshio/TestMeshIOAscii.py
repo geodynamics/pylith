@@ -54,10 +54,14 @@ class TestMeshIOAscii(unittest.TestCase):
     filenameIn = "data/mesh2Din3D.txt"
     filenameOut = "data/mesh2Din3D_test.txt"
     
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer.initialize()
+
     from spatialdata.geocoords.CSCart import CSCart
     iohandler.filename = filenameIn
     iohandler.coordsys = CSCart()
-    mesh = iohandler.read(debug=False, interpolate=False)
+    mesh = iohandler.read(normalizer, debug=False, interpolate=False)
 
     self.assertEqual(2, mesh.dimension())
 
