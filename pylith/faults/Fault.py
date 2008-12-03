@@ -197,7 +197,7 @@ class Fault(Component):
     self.cppHandle.faultMesh(self.faultMesh.cppHandle)
 
     if None != self.output:
-      self.output.initialize(self.quadrature.cppHandle)
+      self.output.initialize(normalizer, self.quadrature)
       self.output.writeInfo()
       self.output.open(totalTime, numTimeSteps)
 

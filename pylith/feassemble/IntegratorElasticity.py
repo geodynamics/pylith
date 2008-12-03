@@ -92,7 +92,7 @@ class IntegratorElasticity(Integrator):
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
 
     self.material.initialize(self.mesh, totalTime, numTimeSteps, normalizer)
-    self.output.initialize(self.quadrature)
+    self.output.initialize(normalizer, self.quadrature)
     self.output.writeInfo()
     self.output.open(totalTime, numTimeSteps)
 

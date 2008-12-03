@@ -79,11 +79,13 @@ class CheckpointTimer(Component):
     return
 
 
-  def initialize(self, toplevel):
+  def initialize(self, normalizer):
     """
     Initialize checkpoint timer.
     """
-    self.toplevel = toplevel
+    timeScale = normalizer.timeScale()
+    self.t = normalizer.nondimensionalize(self.t, timeScale)
+    self.dt = normalizer.nondimensionalize(self.dt, timeScale)
     return
   
 
@@ -92,8 +94,8 @@ class CheckpointTimer(Component):
     CheckpointTimer if necessary.
     """
 
-    if t.value > self.t.value + self.dt.value:
-      if app is None:
+    if t > self.t + self.dt:
+      if self.toplevel is None:
         raise ValueError, "Atttempting to checkpoint without " \
               "setting toplevel attribute in CheckpointTimer."
       self.toplevel.checkpoint()

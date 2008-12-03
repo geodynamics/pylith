@@ -132,6 +132,7 @@ class DirichletPoints(BoundaryCondition, Constraint):
     self.cppHandle.referenceTime = self.tRef.value
     self.dbRate.initialize()
     self.cppHandle.dbRate = self.dbRate.cppHandle
+    self.cppHandle.normalizer = normalizer.cppHandle
 
     BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 

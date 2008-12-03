@@ -61,7 +61,7 @@ class DataWriter(Component):
     return
 
 
-  def initialize(self):
+  def initialize(self, normalizer):
     """
     Initialize writer.
     """

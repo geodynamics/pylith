@@ -100,7 +100,7 @@ class TimeStepUser(TimeStep):
     return
 
 
-  def initialize(self):
+  def initialize(self, normalizer):
     """
     Initialize time step algorithm.
     """
@@ -112,6 +112,13 @@ class TimeStepUser(TimeStep):
     self._readSteps()
     assert(len(self.steps) > 0)
     assert(self.index == 0)
+
+    # Nondimensionalize time steps
+    timeScale = normalizer.timeScale()
+    for i in xrange(len(self.steps)):
+      self.steps[i] = normalizer.nondimensional(self.step, timeScale)
+
+    # Set current time step
     self.dt = self.steps[self.index]
 
     self._logger.eventEnd(logEvent)
@@ -123,7 +130,7 @@ class TimeStepUser(TimeStep):
     Get number of total time steps (or best guess if adaptive).
     """
     from pyre.units.time import second
-    t = 0.0*second
+    t = 0.0
     nsteps = 0
     index = 0
     while t <= self.totalTime:

@@ -107,7 +107,7 @@ class Integrator(object):
     Set time step for advancing from time t to time t+dt.
     """
     assert(None != self.cppHandle)
-    self.cppHandle.timeStep = dt.value
+    self.cppHandle.timeStep = dt
     return
 
 
@@ -119,8 +119,7 @@ class Integrator(object):
     self._logger.eventBegin(logEvent)
     
     assert(None != self.cppHandle)
-    from pyre.units.time import second
-    dt = self.cppHandle.stableTimeStep*second
+    dt = self.cppHandle.stableTimeStep
 
     self._logger.eventEnd(logEvent)
     return dt
@@ -162,7 +161,7 @@ class Integrator(object):
     self._logger.eventBegin(logEvent)
     
     assert(None != self.cppHandle)
-    self.cppHandle.integrateResidual(residual, t.value, fields.cppHandle,
+    self.cppHandle.integrateResidual(residual, t, fields.cppHandle,
                                      self.mesh.cppHandle,
 				     self.mesh.coordsys.cppHandle)
     self._logger.eventEnd(logEvent)
@@ -177,7 +176,7 @@ class Integrator(object):
     self._logger.eventBegin(logEvent)
     
     assert(None != self.cppHandle)
-    self.cppHandle.integrateJacobian(jacobian, t.value, fields.cppHandle,
+    self.cppHandle.integrateJacobian(jacobian, t, fields.cppHandle,
                                      self.mesh.cppHandle)
     self._logger.eventEnd(logEvent)
     return
@@ -192,7 +191,7 @@ class Integrator(object):
     self._logger.eventBegin(logEvent)
     
     assert(None != self.cppHandle)
-    self.cppHandle.integrateResidualAssembled(residual, t.value,
+    self.cppHandle.integrateResidualAssembled(residual, t,
                                               fields.cppHandle,
                                               self.mesh.cppHandle,
                                               self.mesh.coordsys.cppHandle)
@@ -209,7 +208,7 @@ class Integrator(object):
     self._logger.eventBegin(logEvent)
     
     assert(None != self.cppHandle)
-    self.cppHandle.integrateJacobianAssembled(jacobian, t.value,
+    self.cppHandle.integrateJacobianAssembled(jacobian, t,
                                               fields.cppHandle,
                                               self.mesh.cppHandle)
     self._logger.eventEnd(logEvent)
@@ -224,7 +223,7 @@ class Integrator(object):
     self._logger.eventBegin(logEvent)
 
     assert(None != self.cppHandle)
-    self.cppHandle.updateState(t.value, fields.cppHandle, self.mesh.cppHandle)
+    self.cppHandle.updateState(t, fields.cppHandle, self.mesh.cppHandle)
 
     self._logger.eventEnd(logEvent)
     return

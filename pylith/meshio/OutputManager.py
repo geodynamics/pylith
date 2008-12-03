@@ -138,12 +138,16 @@ class OutputManager(Component):
     return
 
 
-  def initialize(self, quadrature=None):
+  def initialize(self, normalizer, quadrature=None):
     """
     Initialize output manager.
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
+
+    # Nondimensionalize time step
+    lengthScale = normalizer.timeScale()
+    self.dt = normalizer.nondimensionalize(self.dt, lengthScale)
 
     # Initialize coordinate system
     if self.coordsys is None:
@@ -151,7 +155,7 @@ class OutputManager(Component):
     self.coordsys.initialize()
 
     self.cellFilter.initialize(quadrature)
-    self.writer.initialize()
+    self.writer.initialize(normalizer)
     self._sync()
 
     self._logger.eventEnd(logEvent)
@@ -205,22 +209,21 @@ class OutputManager(Component):
     self._logger.eventBegin(logEvent)    
 
     if len(self.vertexInfoFields) > 0 or len(self.cellInfoFields) > 0:
-      from pyre.units.time import s
-      t = 0.0*s
-      self.open(totalTime=0.0*s, numTimeSteps=0)
+      t = 0.0
+      self.open(totalTime=0.0, numTimeSteps=0)
       (mesh, label, labelId) = self.dataProvider.getDataMesh()
-      self.cppHandle.openTimeStep(t.value,
+      self.cppHandle.openTimeStep(t,
                                   mesh.cppHandle, mesh.coordsys.cppHandle,
                                   label, labelId)
 
       for name in self.vertexInfoFields:
         (field, fieldType) = self.dataProvider.getVertexField(name)
-        self.cppHandle.appendVertexField(t.value, name, field, fieldType, 
+        self.cppHandle.appendVertexField(t, name, field, fieldType, 
                                          mesh.cppHandle)
 
       for name in self.cellInfoFields:
         (field, fieldType) = self.dataProvider.getCellField(name)
-        self.cppHandle.appendCellField(t.value, name, field, fieldType, 
+        self.cppHandle.appendCellField(t, name, field, fieldType, 
                                        mesh.cppHandle, label, labelId)
 
       self.cppHandle.closeTimeStep()
@@ -242,18 +245,18 @@ class OutputManager(Component):
              len(self.cellDataFields) ) > 0:
 
       (mesh, label, labelId) = self.dataProvider.getDataMesh()
-      self.cppHandle.openTimeStep(t.value,
+      self.cppHandle.openTimeStep(t,
                                   mesh.cppHandle, mesh.coordsys.cppHandle,
                                   label, labelId)
 
       for name in self.vertexDataFields:
         (field, fieldType) = self.dataProvider.getVertexField(name, fields)
-        self.cppHandle.appendVertexField(t.value, name, field, fieldType, 
+        self.cppHandle.appendVertexField(t, name, field, fieldType, 
                                          mesh.cppHandle)
 
       for name in self.cellDataFields:
         (field, fieldType) = self.dataProvider.getCellField(name, fields)
-        self.cppHandle.appendCellField(t.value, name, field, fieldType, 
+        self.cppHandle.appendCellField(t, name, field, fieldType, 
                                        mesh.cppHandle, label, labelId)
 
       self.cppHandle.closeTimeStep()
