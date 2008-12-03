@@ -1,13 +1,31 @@
 ======================================================================
-CURRENT ISSUES
+CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-Fix memory usage (MATT).
+0. Add flag to flip which side of fault vertices are replaced when
+   creating cohesive cells [Matt]
+
+     Update unit tests.
+
+1. Reduce memory use (new labels) [Matt]
+
+2. Nondimensionalize [Brad]
+
+3. Clean-up interface for materials [Brad]
+
+4. Power-law nonlinear rheology [Charles]
+
+5. Savage-Presscott benchmark [Charles]
+
+6. Interface with PETSc nonlinear solvers [Brad and Matt]
+
+7. Modularize output? [Matt]
+
+-- Release (v1.4) --
+
+8. Fault friction
 
 Other
-
-  simple strike-slip propagating rupture (performance benchmark 
-    500m resolution)
 
   1. Reverse-slip benchmark.
     a. Create BC for CUBIT mesh.
@@ -15,6 +33,7 @@ Other
     c. Run benchmarks.
     d. Generate analytic solutions.
     e. Tabulate results.
+
 
 ======================================================================
 KNOWN DEFICIENCIES
@@ -70,42 +89,10 @@ PLANNED RELEASES
 ======================================================================
 
 ----------------------------------------------------------------------
-Release 1.3
-----------------------------------------------------------------------
-
-  1. Initial stress state
-
-  2. Adaptive time steppping
-
-  3. HDF5 output
-
-       HDF5 files
-
-         Would prefer to include multiple materials
-
-         Datasets contain entire time histories (makes it possible to
-         slice along time or space)
-
-       Point locations (arbitrary location such as instrument site)
-
-         Interpolate solution to desired location
-         Solution field (time history)
-
-----------------------------------------------------------------------
 Release 1.4
 ----------------------------------------------------------------------
 
   1. Interface w/PETSc nonlinear solvers
-
-  2. Replace Pyrex/pyrexembed with SWIG
-
-    PyLith Mesh
-      Sieve mesh
-      coordinate system
-
-    PyLith Field
-      Sieve real section
-      type of field (scalar, vector, tensor, vector at quad, tensor at quad)
 
   3. Nonlinear bulk rheologies
 
@@ -162,6 +149,39 @@ Release 1.7
 
   3. Uniform global refinement.
 
+----------------------------------------------------------------------
+LONG TERM WISH LIST
+----------------------------------------------------------------------
+
+  1. Replace Pyrex/pyrexembed with SWIG
+
+  2. PyLith Mesh
+      Sieve mesh
+      coordinate system
+
+  3. Fields and SolutionFields objects (containers for fields over same mesh)
+       PyLith Field and FieldUniform
+         Sieve real section
+         type of field (scalar, vector, tensor, vector at quad, tensor at quad)
+         name
+         spaceDim
+         scale
+         isTemporary
+       FieldUniform::create()
+
+  4. HDF5 output
+
+       HDF5 files
+
+         Would prefer to include multiple materials
+
+         Datasets contain entire time histories (makes it possible to
+         slice along time or space)
+
+       Point locations (arbitrary location such as instrument site)
+
+         Interpolate solution to desired location
+         Solution field (time history)
 
 ======================================================================
 THINGS WE NEED SIEVE TO DO (Matt)
