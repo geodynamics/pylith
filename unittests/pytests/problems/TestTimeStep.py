@@ -26,6 +26,21 @@ class TestTimeStep(unittest.TestCase):
   Unit testing of TimeStep object.
   """
 
+  def setUp(self):
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer._configure()
+    normalizer._time = 2.0*second
+    normalizer.initialize()    
+
+    tstep = TimeStep()
+    tstep._configure()
+    tstep.preinitialize()
+    tstep.initialize(normalizer)
+    self.tstep = tstep
+    return
+  
+
   def test_constructor(self):
     """
     Test constructor.
@@ -60,10 +75,7 @@ class TestTimeStep(unittest.TestCase):
     """
     Test initialize().
     """
-    tstep = TimeStep()
-    tstep._configure()
-    tstep.preinitialize()
-    tstep.initialize()
+    tstep = self.tstep
     return
 
 
@@ -72,8 +84,7 @@ class TestTimeStep(unittest.TestCase):
     """
     Test numTimeSteps().
     """
-    tstep = TimeStep()
-    tstep._configure()
+    tstep = self.tstep
     try:
       tstep.numTimeSteps()
     except NotImplementedError:
@@ -86,11 +97,11 @@ class TestTimeStep(unittest.TestCase):
     """
     Test timeStep().
     """
-    tstep = TimeStep()
+    tstep = self.tstep
     tstep._configure()
 
     integrators = None
-    self.assertEqual(0.0*second, tstep.timeStep(integrators))
+    self.assertEqual(0.0, tstep.timeStep(integrators))
     return
 
 
@@ -98,13 +109,12 @@ class TestTimeStep(unittest.TestCase):
     """
     Test currentStep().
     """
-    tstep = TimeStep()
-    tstep._configure()
+    tstep = self.tstep
 
-    self.assertEqual(0.0*second, tstep.currentStep())
+    self.assertEqual(0.0, tstep.currentStep())
 
-    tstep.dt = 1.0e-4*second
-    self.assertEqual(1.0e-4*second, tstep.currentStep())
+    tstep.dt = 1.0e-4
+    self.assertEqual(1.0e-4, tstep.currentStep())
 
     return
 

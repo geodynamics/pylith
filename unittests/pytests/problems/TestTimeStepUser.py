@@ -27,6 +27,22 @@ class TestTimeStepUser(unittest.TestCase):
   Unit testing of TimeStepUser object.
   """
 
+  def setUp(self):
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer._configure()
+    normalizer._time = 2.0*second
+    normalizer.initialize()    
+
+    tstep = TimeStepUser()
+    tstep._configure()
+    tstep.filename = "data/timesteps.txt"
+    tstep.preinitialize()
+    tstep.initialize(normalizer)
+    self.tstep = tstep
+    return
+  
+
   def test_constructor(self):
     """
     Test constructor.
@@ -40,15 +56,11 @@ class TestTimeStepUser(unittest.TestCase):
     """
     Test initialize().
     """
-    tstep = TimeStepUser()
-    tstep._configure()
-
-    tstep.filename = "data/timesteps.txt"
-    tstep.preinitialize()
-    tstep.initialize()
+    tstep = self.tstep
 
     for stepE, step in zip(stepsE, tstep.steps):
-      self.assertEqual(stepE, step)
+      valueE = stepE.value / 2.0 # Nondimensionalize
+      self.assertEqual(valueE, step)
     return
 
 
@@ -56,20 +68,15 @@ class TestTimeStepUser(unittest.TestCase):
     """
     Test numTimeSteps().
     """
-    tstep = TimeStepUser()
-    tstep._configure()
-
-    tstep.filename = "data/timesteps.txt"
-    tstep.preinitialize()
-    tstep.initialize()
+    tstep = self.tstep
 
     self.assertEqual(1, tstep.numTimeSteps())
 
-    tstep.totalTime = 12.0*year
+    tstep.totalTime = (12.0*year).value / 2.0 # nondimensionalize
     self.assertEqual(6, tstep.numTimeSteps())
 
     tstep.loopSteps = True
-    tstep.totalTime = 7.0*year
+    tstep.totalTime = (7.0*year).value / 2.0 # nondimensionalize
     self.assertEqual(5, tstep.numTimeSteps())
     return
 
@@ -78,26 +85,25 @@ class TestTimeStepUser(unittest.TestCase):
     """
     Test timeStep().
     """
-    tstep = TimeStepUser()
-    tstep._configure()
+    tstep = self.tstep
 
-    tstep.filename = "data/timesteps.txt"
-    tstep.preinitialize()
-    tstep.initialize()
+    step1 = (1.0*year).value / 2.0 # nondimensionalize
+    step2 = (2.0*year).value / 2.0 # nondimensionalize
+    step3 = (3.0*year).value / 2.0 # nondimensionalize
 
-    self.assertEqual(1.0*year, tstep.timeStep(0.5*year))
-    self.assertEqual(2.0*year, tstep.timeStep(0.5*year))
-    self.assertEqual(3.0*year, tstep.timeStep(0.5*year))
-    self.assertEqual(3.0*year, tstep.timeStep(0.5*year))
-    self.assertEqual(3.0*year, tstep.timeStep(0.5*year))
+    self.assertEqual(step1, tstep.timeStep(0.5))
+    self.assertEqual(step2, tstep.timeStep(0.5))
+    self.assertEqual(step3, tstep.timeStep(0.5))
+    self.assertEqual(step3, tstep.timeStep(0.5))
+    self.assertEqual(step3, tstep.timeStep(0.5))
 
     tstep.index = 0
     tstep.loopSteps = True
-    self.assertEqual(1.0*year, tstep.timeStep(0.5*year))
-    self.assertEqual(2.0*year, tstep.timeStep(0.5*year))
-    self.assertEqual(3.0*year, tstep.timeStep(0.5*year))
-    self.assertEqual(1.0*year, tstep.timeStep(0.5*year))
-    self.assertEqual(2.0*year, tstep.timeStep(0.5*year))
+    self.assertEqual(step1, tstep.timeStep(0.5))
+    self.assertEqual(step2, tstep.timeStep(0.5))
+    self.assertEqual(step3, tstep.timeStep(0.5))
+    self.assertEqual(step1, tstep.timeStep(0.5))
+    self.assertEqual(step2, tstep.timeStep(0.5))
     return
 
 
@@ -105,15 +111,12 @@ class TestTimeStepUser(unittest.TestCase):
     """
     Test currentStep().
     """
-    tstep = TimeStepUser()
-    tstep._configure()
+    tstep = self.tstep
 
-    tstep.filename = "data/timesteps.txt"
-    tstep.preinitialize()
-    tstep.initialize()
-
-    tstep.timeStep(0.0*second)
-    self.assertEqual(1.0*year, tstep.currentStep())
+    tstep.timeStep(0.0)
+    stepE = 1.0*year
+    valueE = stepE.value / 2.0 # nondimensionalize
+    self.assertEqual(valueE, tstep.currentStep())
     return
 
 

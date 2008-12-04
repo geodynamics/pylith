@@ -107,7 +107,7 @@ class TimeStepUser(TimeStep):
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    TimeStep.initialize(self)
+    TimeStep.initialize(self, normalizer)
 
     self._readSteps()
     assert(len(self.steps) > 0)
@@ -116,7 +116,7 @@ class TimeStepUser(TimeStep):
     # Nondimensionalize time steps
     timeScale = normalizer.timeScale()
     for i in xrange(len(self.steps)):
-      self.steps[i] = normalizer.nondimensional(self.step, timeScale)
+      self.steps[i] = normalizer.nondimensionalize(self.steps[i], timeScale)
 
     # Set current time step
     self.dt = self.steps[self.index]
