@@ -36,17 +36,42 @@ class TestTimeStepAdapt(unittest.TestCase):
   Unit testing of TimeStepAdapt object.
   """
 
+  def setUp(self):
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer._configure()
+    normalizer._time = 2.0*second
+    normalizer.initialize()    
+
+    tstep = TimeStepAdapt()
+    tstep._configure()
+    tstep.preinitialize()
+    tstep.initialize(normalizer)
+    self.tstep = tstep
+    return
+  
+
+  def test_initialize(self):
+    """
+    Test initialize().
+    """
+    tstep = self.tstep
+
+    self.assertEqual(0.0, tstep.totalTime)
+    self.assertEqual(0.5, tstep.maxDt)
+    return
+  
+
   def test_numTimeSteps(self):
     """
     Test numTimeSteps().
     """
-    tstep = TimeStepAdapt()
-    tstep._configure()
+    tstep = self.tstep
 
     self.assertEqual(1, tstep.numTimeSteps())
 
-    tstep.totalTime = 4.0*second
-    tstep.maxDt = 2.0*second
+    tstep.totalTime = 4.0
+    tstep.maxDt = 2.0
     self.assertEqual(3, tstep.numTimeSteps())
 
     return
@@ -56,28 +81,27 @@ class TestTimeStepAdapt(unittest.TestCase):
     """
     Test timeStep().
     """
-    tstep = TimeStepAdapt()
-    tstep._configure()
+    tstep = self.tstep
 
     tstep.adaptSkip = 2
-    integrators = [Integrator(2.0*second),
-                   Integrator(0.5*second)]
+    integrators = [Integrator(2.0),
+                   Integrator(0.5)]
 
     # Set time step
-    dt = 0.5*second / 1.2
+    dt = 0.5 / 1.2
     self.assertEqual(dt, tstep.timeStep(integrators))
 
     # Increase stable time step, but time step should not change (skipped)
-    integrators[1].dt = 0.8*second
+    integrators[1].dt = 0.8
     self.assertEqual(dt, tstep.timeStep(integrators))
 
     # Reduce time step even if though should have skipped
-    integrators[1].dt = 0.2*second
-    dt = 0.2*second / 1.2
+    integrators[1].dt = 0.2
+    dt = 0.2 / 1.2
     self.assertEqual(dt, tstep.timeStep(integrators))
 
     # Skip adjusting time step
-    integrators[1].dt = 0.8*second
+    integrators[1].dt = 0.8
     self.assertEqual(dt, tstep.timeStep(integrators))
 
     # Skip adjusting time step
@@ -85,18 +109,18 @@ class TestTimeStepAdapt(unittest.TestCase):
 
     # Adjust time step and stability factor
     tstep.stabilityFactor = 2.0
-    dt = 0.8*second / 2.0
+    dt = 0.8 / 2.0
     self.assertEqual(dt, tstep.timeStep(integrators))
 
     # Skip adjusting time step
-    integrators[1].dt = 2.0*second
+    integrators[1].dt = 2.0
     self.assertEqual(dt, tstep.timeStep(integrators))
 
     # Skip adjusting time step
     self.assertEqual(dt, tstep.timeStep(integrators))
 
     # Adjust time step with value bigger than max
-    dt = 1.0*second
+    dt = 0.5
     self.assertEqual(dt, tstep.timeStep(integrators))
 
     return
@@ -106,17 +130,16 @@ class TestTimeStepAdapt(unittest.TestCase):
     """
     Test currentStep().
     """
-    tstep = TimeStepAdapt()
-    tstep._configure()
-    tstep.maxDt = 10.0*second
+    tstep = self.tstep
+    tstep.maxDt = 10.0
     tstep.dt = tstep.maxDt
     
-    self.assertEqual(10.0*second, tstep.currentStep())
+    self.assertEqual(10.0, tstep.currentStep())
 
     
-    integrators = [Integrator(3.0*second),
-                   Integrator(2.4*second)]
-    dt = 2.4*second / 1.2
+    integrators = [Integrator(3.0),
+                   Integrator(2.4)]
+    dt = 2.4 / 1.2
     tstep.timeStep(integrators)
     self.assertEqual(dt, tstep.currentStep())
 
