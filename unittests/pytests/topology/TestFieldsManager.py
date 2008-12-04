@@ -294,38 +294,6 @@ class TestFieldsManager(unittest.TestCase):
     return
 
 
-  def test_createCustomAtlas(self):
-    """
-    Test createCustomAtlas().
-
-    WARNING: This is not a rigorous test of createCustomAtlas() because we
-    don't verify the results.
-    """
-    mesh = self._initialize()
-    from pylith.topology.FieldsManager import FieldsManager
-    manager = FieldsManager(mesh)
-    
-    fields = ["field A", "field B", "field C"]
-    for field in fields:
-      manager.addReal(field)
-      
-    manager.setFiberDimension("field A", 3, "vertices")
-    manager.allocate("field A")
-
-    manager.setFiberDimension("field B", 4, "vertices")
-    manager.allocate("field B")
-
-    manager.setFiberDimension("field C", 5, "vertices")
-    manager.allocate("field C")
-
-    manager.createCustomAtlas("material-id", 4)
-    manager.createCustomAtlas("material-id", 3)
-
-    # We should really add something here to check to make sure things
-    # actually initialized correctly.
-    return
-
-
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _initialize(self):
@@ -336,11 +304,15 @@ class TestFieldsManager(unittest.TestCase):
     cs = CSCart()
     cs.spaceDim = 2
 
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer.initialize()    
+
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
     importer.filename = "data/tri3.mesh"
     importer.coordsys = cs
-    mesh = importer.read(debug=False, interpolate=False)
+    mesh = importer.read(normalizer, debug=False, interpolate=False)
     
     return mesh
 

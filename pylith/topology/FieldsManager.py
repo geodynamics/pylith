@@ -132,12 +132,4 @@ class FieldsManager(object):
     return self.cppHandle.getFieldByHistory(index)
 
 
-  def createCustomAtlas(self, label, id):
-    """
-    Calculate custom atlas for fields in FieldsManager.
-    """
-    assert(None != self.cppHandle)
-    return self.cppHandle.createCustomAtlas(label, id)
-
-
 # End of file 
