@@ -10,6 +10,20 @@ CURRENT ISSUES/PRIORITIES
 1. Reduce memory use (new labels) [Matt]
 
 2. Nondimensionalize [Brad]
+    Not working
+      coordinates in output (nondimensional instead of dimensioned)
+      solution in output (nondimensional instead of dimensioned)
+      const slip rate in output (slip rate not slip)          
+
+    Need unit tests
+      FieldOps::copyValues (obsolete?)
+      MeshIO::normalizer()
+      Material::normalizer()
+      Material::_nodimProperties()
+      Material::_dimProperties()
+      Constraint::normalizer()
+      Integrator::normalizer()
+      DataWriter::normalizer()
 
 3. Clean-up interface for materials [Brad]
 
@@ -155,10 +169,6 @@ LONG TERM WISH LIST
 
   1. Replace Pyrex/pyrexembed with SWIG
 
-  2. PyLith Mesh
-      Sieve mesh
-      coordinate system
-
   3. Fields and SolutionFields objects (containers for fields over same mesh)
        PyLith Field and FieldUniform
          Sieve real section
@@ -182,6 +192,8 @@ LONG TERM WISH LIST
 
          Interpolate solution to desired location
          Solution field (time history)
+
+  5. Use shared pointers for objects where both Python and C++ hold pointers.
 
 ======================================================================
 THINGS WE NEED SIEVE TO DO (Matt)

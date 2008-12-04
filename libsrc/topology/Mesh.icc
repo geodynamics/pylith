@@ -1,0 +1,42 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_topology_mesh_hh)
+#error "Mesh.icc must be included only from Mesh.hh"
+#else
+
+// Get Sieve mesh.
+inline
+const ALE::Obj<pylith::SieveMesh>&
+pylith::topology::Mesh::sieveMesh(void) const {
+  return _mesh;
+}
+
+// Get Sieve mesh.
+inline
+ALE::Obj<pylith::SieveMesh>&
+pylith::topology::Mesh::sieveMesh(void) {
+  return _mesh;
+}
+
+// Get coordinate system.
+inline
+const spatialdata::geocoords::CoordSys*
+pylith::topology::Mesh::coordsys(void) const {
+  return _coordsys;
+}
+
+
+#endif
+
+
+// End of file

@@ -21,12 +21,16 @@ check_PROGRAMS = testtopology
 
 # Primary source files
 testtopology_SOURCES = \
+	TestField.cc \
 	TestFieldsManager.cc \
+	TestMesh.cc \
 	TestMeshOps.cc \
 	test_topology.cc
 
 noinst_HEADERS = \
+	TestField.hh \
 	TestFieldsManager.hh \
+	TestMesh.hh \
 	TestMeshOps.hh
 
 # Source files associated with testing data
