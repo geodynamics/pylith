@@ -147,11 +147,15 @@ class TestMesh(unittest.TestCase):
     cs = CSCart()
     cs.spaceDim = 2
 
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer.initialize()    
+
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
     importer.filename = "data/tri3.mesh"
     importer.coordsys = cs
-    mesh = importer.read(debug=False, interpolate=False)
+    mesh = importer.read(normalizer, debug=False, interpolate=False)
     
     return mesh
   
