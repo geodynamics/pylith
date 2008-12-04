@@ -16,7 +16,7 @@
 
 // Get Sieve section.
 inline
-const ALE::Obj<pylith::SieveMesh::real_section_type>&
+const ALE::Obj<pylith::SieveRealSection>&
 pylith::topology::Field::section(void) const {
   return _section;
 }
@@ -90,7 +90,6 @@ bool
 pylith::topology::Field::addDimensionOkay(void) const {
   return _dimensionsOkay;
 }
-
 
 #endif
 

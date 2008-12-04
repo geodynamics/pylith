@@ -22,6 +22,7 @@ check_PROGRAMS = testtopology
 # Primary source files
 testtopology_SOURCES = \
 	TestField.cc \
+	TestFieldUniform.cc \
 	TestFieldsManager.cc \
 	TestMesh.cc \
 	TestMeshOps.cc \
@@ -29,6 +30,7 @@ testtopology_SOURCES = \
 
 noinst_HEADERS = \
 	TestField.hh \
+	TestFieldUniform.hh \
 	TestFieldsManager.hh \
 	TestMesh.hh \
 	TestMeshOps.hh

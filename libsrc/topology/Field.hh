@@ -70,7 +70,7 @@ public :
    *
    * @returns Sieve section.
    */
-  const ALE::Obj<SieveMesh::real_section_type>& section(void) const;
+  const ALE::Obj<SieveRealSection>& section(void) const;
 
   /** Set name of field.
    *
@@ -132,16 +132,33 @@ public :
    */
   bool addDimensionOkay(void) const;
 
+  /** Create section with same layout (fiber dimension and
+   * constraints) as another section. This allows the layout data
+   * structures to be reused across multiple fields, reducing memory
+   * usage.
+   *
+   * @param sec Section defining layout.
+   */
+  void copyLayout(const Field& src);
+
+  /// Clear variables associated with section.
+  void clear(void);
+
   /** Dimensionalize field. Throws runtime_error if field is not
    * allowed to be dimensionalized.
    */
   void dimensionalize(void);
 
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
+
+  const ALE::Obj<SieveMesh>& _mesh; ///< Mesh associated with section
+  ALE::Obj<SieveRealSection> _section; ///< Real section with data
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
   double _scale; ///< Dimensional scale associated with field
-  ALE::Obj<SieveMesh::real_section_type> _section; ///< Real section with data
   std::string _name; ///< Name of field
   int _spaceDim; ///< Spatial dimension of domain
   VectorFieldEnum _vecFieldType; ///< Type of vector field

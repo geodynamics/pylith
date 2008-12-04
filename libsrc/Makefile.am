@@ -94,6 +94,7 @@ libpylith_la_SOURCES = \
 	meshio/VertexFilterVecNorm.cc \
 	topology/Distributor.cc \
 	topology/Field.cc \
+	topology/FieldUniform.cc \
 	topology/FieldsManager.cc \
 	topology/FieldOps.cc \
 	topology/Mesh.cc \
