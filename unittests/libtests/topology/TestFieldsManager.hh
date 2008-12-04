@@ -54,10 +54,6 @@ class pylith::topology::TestFieldsManager : public CppUnit::TestFixture
   CPPUNIT_TEST( testCreateHistory );
   CPPUNIT_TEST( testShiftHistory );
   CPPUNIT_TEST( testGetFieldByHistory );
-  CPPUNIT_TEST( testCreateCustomAtlas );
-  CPPUNIT_TEST( testGetFieldAtlasTag );
-  CPPUNIT_TEST( testGetFieldAtlasTagByHistory );
-  CPPUNIT_TEST( testGetSolutionAtlasTag );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -102,18 +98,6 @@ public :
 
   /// Test getFieldByHistory().
   void testGetFieldByHistory(void);
-
-  /// Test createCustomAtlas().
-  void testCreateCustomAtlas(void);
-
-  /// Test getFieldAtlasTag().
-  void testGetFieldAtlasTag(void);
-
-  /// Test getFieldAtlasTagByHistory().
-  void testGetFieldAtlasTagByHistory(void);
-
-  /// Test getSolutionAtlasTag().
-  void testGetSolutionAtlasTag(void);
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
