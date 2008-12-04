@@ -26,7 +26,7 @@ namespace pylith {
 #if NEWPYLITHMESH // For use with pylith::topology::Mesh
   typedef ALE::IMesh<> SieveMesh;
   typedef ALE::IMesh<ALE::LabelSifter<int, SieveMesh::point_type> > SieveSubMesh;
-  typedef ALE::Obj<SieveMesh::real_section_type> SieveRealGenSection;
+  typedef SieveMesh::real_section_type SieveRealSection;
 
 #else
   typedef ALE::IMesh<> Mesh;

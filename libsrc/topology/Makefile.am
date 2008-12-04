@@ -17,6 +17,7 @@ subpkginclude_HEADERS = \
 	Distributor.hh \
 	Field.hh \
 	Field.icc \
+	FieldUniform.hh \
 	FieldsManager.hh \
 	FieldOps.hh \
 	Mesh.hh \

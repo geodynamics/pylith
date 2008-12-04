@@ -29,6 +29,7 @@ namespace pylith {
     class TestField;
 
     class Field;
+    class Mesh;
   } // topology
 } // pylith
 
@@ -47,6 +48,8 @@ class pylith::topology::TestField : public CppUnit::TestFixture
   CPPUNIT_TEST( testSpaceDim );
   CPPUNIT_TEST( testScale );
   CPPUNIT_TEST( testAddDimensionOkay );
+  CPPUNIT_TEST( testCopyLayout );
+  CPPUNIT_TEST( testClear );
   CPPUNIT_TEST( testDimensionalize );
 
   CPPUNIT_TEST_SUITE_END();
@@ -75,8 +78,23 @@ public :
   /// Test addDimensionOkay().
   void testAddDimensionOkay(void);
 
+  /// Test copyLayout().
+  void testCopyLayout(void);
+
+  /// Test clear().
+  void testClear(void);
+
   /// Test dimensionalize().
   void testDimensionalize(void);
+
+// PRIVATE METHODS /////////////////////////////////////////////////////
+private :
+
+  /** Build mesh.
+   *
+   * @param mesh Finite-element mesh.
+   */
+  void _buildMesh(Mesh* mesh);
 
 }; // class TestField
 

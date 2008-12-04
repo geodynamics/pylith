@@ -26,6 +26,7 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::topology::Field::Field(const ALE::Obj<SieveMesh>& mesh) :
+  _mesh(mesh),
   _scale(1.0),
   _name("unknown"),
   _spaceDim(0),
@@ -34,7 +35,7 @@ pylith::topology::Field::Field(const ALE::Obj<SieveMesh>& mesh) :
 { // constructor
   assert(!mesh.isNull());
 
-  _section = new SieveMesh::real_section_type(mesh->comm(), mesh->debug());
+  _section = new SieveRealSection(mesh->comm(), mesh->debug());
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -42,6 +43,35 @@ pylith::topology::Field::Field(const ALE::Obj<SieveMesh>& mesh) :
 pylith::topology::Field::~Field(void)
 { // destructor
 } // destructor
+
+// ----------------------------------------------------------------------
+// Create section given atlas.
+void
+pylith::topology::Field::copyLayout(const Field& src)
+{ // createSection
+  _spaceDim = src._spaceDim;
+  _vecFieldType = src._vecFieldType;
+
+  const ALE::Obj<SieveRealSection>& srcSection = src.section();
+  assert(!_section.isNull());
+
+  _section->setAtlas(srcSection->getAtlas());
+  _section->allocateStorage();
+  _section->setBC(srcSection->getBC());
+} // createSection
+
+// ----------------------------------------------------------------------
+// Clear variables associated with section.
+void
+pylith::topology::Field::clear(void)
+{ // clear
+  assert(!_section.isNull());
+  _section->clear();
+
+  _scale = 1.0;
+  _vecFieldType = OTHER;
+  _dimensionsOkay = false;
+} // clear
 
 // ----------------------------------------------------------------------
 // Dimensionalize field.
@@ -55,11 +85,9 @@ pylith::topology::Field::dimensionalize(void)
     throw std::runtime_error(msg.str());
   } // if
 
-  typedef SieveMesh::real_section_type::chart_type chart_type;
-
   assert(!_section.isNull());
-  const chart_type& chart = _section->getChart();
-  const chart_type::const_iterator chartEnd = chart.end();
+  const SieveRealSection::chart_type& chart = _section->getChart();
+  const SieveRealSection::chart_type::const_iterator chartEnd = chart.end();
 
   // Assume fiber dimension is uniform
   const int fiberDim = _section->getFiberDimension(*chart.begin());
@@ -67,7 +95,7 @@ pylith::topology::Field::dimensionalize(void)
 
   spatialdata::units::Nondimensional normalizer;
 
-  for (chart_type::const_iterator c_iter = chart.begin();
+  for (SieveRealSection::chart_type::const_iterator c_iter = chart.begin();
        c_iter != chartEnd;
        ++c_iter) {
     assert(fiberDim == _section->getFiberDimension(*c_iter));
