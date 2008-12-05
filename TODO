@@ -25,19 +25,23 @@ CURRENT ISSUES/PRIORITIES
       Integrator::normalizer()
       DataWriter::normalizer()
 
-3. Clean-up interface for materials [Brad]
+3. Mesh, Field, and FieldUniform objects [Brad]
+    Change name of FieldsManager to SolutionFields
+      (more accurate description).
 
-4. Power-law nonlinear rheology [Charles]
+4. Clean-up interface for materials [Brad]
 
-5. Savage-Presscott benchmark [Charles]
+5. Power-law nonlinear rheology [Charles]
 
-6. Interface with PETSc nonlinear solvers [Brad and Matt]
+6. Savage-Presscott benchmark [Charles]
 
-7. Modularize output? [Matt]
+7. Interface with PETSc nonlinear solvers [Brad and Matt]
+
+8. Modularize output? [Matt]
 
 -- Release (v1.4) --
 
-8. Fault friction
+9. Fault friction
 
 Other
 
@@ -168,16 +172,6 @@ LONG TERM WISH LIST
 ----------------------------------------------------------------------
 
   1. Replace Pyrex/pyrexembed with SWIG
-
-  3. Fields and SolutionFields objects (containers for fields over same mesh)
-       PyLith Field and FieldUniform
-         Sieve real section
-         type of field (scalar, vector, tensor, vector at quad, tensor at quad)
-         name
-         spaceDim
-         scale
-         isTemporary
-       FieldUniform::create()
 
   4. HDF5 output
 
