@@ -44,14 +44,14 @@ class pylith::topology::Field
 public :
 
   enum VectorFieldEnum {
-    SCALAR, ///< Scalar.
-    VECTOR, ///< Vector.
-    TENSOR, ///< Tensor.
-    OTHER, ///< Not a scalar, vector, or tensor.
-    MULTI_SCALAR, ///< Scalar at multiple points.
-    MULTI_VECTOR, ///< Vector at multiple points.
-    MULTI_TENSOR, ///< Tensor at multiple points.
-    MULTI_OTHER, ///< Not a scalar, vector, or tensor at multiple points.
+    SCALAR=0, ///< Scalar.
+    VECTOR=1, ///< Vector.
+    TENSOR=2, ///< Tensor.
+    OTHER=3, ///< Not a scalar, vector, or tensor.
+    MULTI_SCALAR=4, ///< Scalar at multiple points.
+    MULTI_VECTOR=5, ///< Vector at multiple points.
+    MULTI_TENSOR=6, ///< Tensor at multiple points.
+    MULTI_OTHER=7, ///< Not a scalar, vector, or tensor at multiple points.
   }; // VectorFieldEnum
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
@@ -144,10 +144,34 @@ public :
   /// Clear variables associated with section.
   void clear(void);
 
+  /// Zero section values.
+  void zero(void);
+
+  /// Complete section by assembling across processors.
+  void complete(void);
+
+  /** Copy field values and metadata.
+   *
+   * @param field Field to copy.
+   */
+  void copy(const Field& field);
+
+  /** Add two fields, storing the result in one of the fields.
+   *
+   * @param field Field to add.
+   */
+  void operator+=(const Field& field);
+
   /** Dimensionalize field. Throws runtime_error if field is not
    * allowed to be dimensionalized.
    */
   void dimensionalize(void);
+
+  /** Print section to standard out.
+   *
+   * @param label Label for output.
+   */
+  void view(const char* label);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :

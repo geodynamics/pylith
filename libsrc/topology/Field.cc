@@ -74,6 +74,119 @@ pylith::topology::Field::clear(void)
 } // clear
 
 // ----------------------------------------------------------------------
+// Zero section values.
+void
+pylith::topology::Field::zero(void)
+{ // zero
+  assert(!_section.isNull());
+  _section->zero();
+} // zero
+
+// ----------------------------------------------------------------------
+// Complete section by assembling across processors.
+void
+pylith::topology::Field::complete(void)
+{ // complete
+  assert(!_section.isNull());
+  ALE::Completion::completeSectionAdd(_mesh->getSendOverlap(),
+				      _mesh->getRecvOverlap(), 
+				      _section, _section);
+} // complete
+
+// ----------------------------------------------------------------------
+// Copy field values and metadata.
+void
+pylith::topology::Field::copy(const Field& field)
+{ // copy
+  // Check compatibility of sections
+  assert(!_section.isNull());
+  assert(!field._section.isNull());
+  const int srcSize = field._section->size();
+  const int dstSize = _section->size();
+  if (field._spaceDim != _spaceDim ||
+      field._vecFieldType != _vecFieldType ||
+      field._scale != _scale ||
+      srcSize != dstSize) {
+    std::ostringstream msg;
+
+    msg << "Cannot copy values from section '" << field._name 
+	<< "' to section '" << _name << "'. Sections are incompatible.\n"
+	<< "  Source section:\n"
+	<< "    space dim: " << field._spaceDim << "\n"
+	<< "    vector field type: " << field._vecFieldType << "\n"
+	<< "    scale: " << field._scale << "\n"
+	<< "    size: " << srcSize
+	<< "  Destination section:\n"
+	<< "    space dim: " << _spaceDim << "\n"
+	<< "    vector field type: " << _vecFieldType << "\n"
+	<< "    scale: " << _scale << "\n"
+	<< "    size: " << dstSize;
+    throw std::runtime_error(msg.str());
+  } // if
+
+  // Copy values from field
+  const SieveRealSection::chart_type& chart = _section->getChart();
+  const SieveRealSection::chart_type::const_iterator chartEnd = chart.end();
+
+  for (SieveRealSection::chart_type::const_iterator c_iter = chart.begin();
+       c_iter != chartEnd;
+       ++c_iter) {
+    assert(field._section->getFiberDimension(*c_iter) ==
+	   _section->getFiberDimension(*c_iter));
+    _section->updatePoint(*c_iter, field._section->restrictPoint(*c_iter));
+  } // for
+} // copy
+
+// ----------------------------------------------------------------------
+// Add two fields, storing the result in one of the fields.
+void
+pylith::topology::Field::operator+=(const Field& field)
+{ // operator+=
+  // Check compatibility of sections
+  assert(!_section.isNull());
+  assert(!field._section.isNull());
+  const int srcSize = field._section->size();
+  const int dstSize = _section->size();
+  if (field._spaceDim != _spaceDim ||
+      field._vecFieldType != _vecFieldType ||
+      field._scale != _scale ||
+      srcSize != dstSize) {
+    std::ostringstream msg;
+
+    msg << "Cannot add values from section '" << field._name 
+	<< "' to section '" << _name << "'. Sections are incompatible.\n"
+	<< "  Source section:\n"
+	<< "    space dim: " << field._spaceDim << "\n"
+	<< "    vector field type: " << field._vecFieldType << "\n"
+	<< "    scale: " << field._scale << "\n"
+	<< "    size: " << srcSize
+	<< "  Destination section:\n"
+	<< "    space dim: " << _spaceDim << "\n"
+	<< "    vector field type: " << _vecFieldType << "\n"
+	<< "    scale: " << _scale << "\n"
+	<< "    size: " << dstSize;
+    throw std::runtime_error(msg.str());
+  } // if
+
+  // Add values from field
+  const SieveRealSection::chart_type& chart = _section->getChart();
+  const SieveRealSection::chart_type::const_iterator chartEnd = chart.end();
+
+  // Assume fiber dimension is uniform
+  const int fiberDim = _section->getFiberDimension(*chart.begin());
+  double_array values(fiberDim);
+
+  for (SieveRealSection::chart_type::const_iterator c_iter = chart.begin();
+       c_iter != chartEnd;
+       ++c_iter) {
+    assert(fiberDim == field._section->getFiberDimension(*c_iter));
+    assert(fiberDim == _section->getFiberDimension(*c_iter));
+    field._section->restrictPoint(*c_iter, &values[0], values.size());
+    _section->updateAddPoint(*c_iter, &values[0]);
+  } // for
+} // operator+=
+
+// ----------------------------------------------------------------------
 // Dimensionalize field.
 void
 pylith::topology::Field::dimensionalize(void)

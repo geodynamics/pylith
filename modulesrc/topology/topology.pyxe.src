@@ -42,17 +42,6 @@ cdef extern from "stdlib.h":
   void* malloc(size_t size)
   void free(void* mem)
 
-cdef void MeshPtr_destructor(void* obj):
-  """
-  Destroy Petsc Mesh.
-  """
-  #embed{ void MeshPtr_destructor_cpp(void* objVptr)
-  ALE::Obj<pylith::Mesh>* pMesh = (ALE::Obj<pylith::Mesh>*) objVptr;
-  delete pMesh;
-  #}embed
-  MeshPtr_destructor_cpp(obj)
-  return
-
 cdef void PetscMat_destructor(void* obj):
   """
   Destroy PetscMat.
@@ -69,23 +58,23 @@ cdef void PetscMat_destructor(void* obj):
   PetscMat_destructor_cpp(obj)
   return
 
-cdef void FieldsManager_destructor(void* obj):
-  """
-  Destroy FieldsManager.
-  """
-  #embed{ void FieldsManager_destructor_cpp(void* objVptr)
-  pylith::topology::FieldsManager* manager = (pylith::topology::FieldsManager*) objVptr;
-  delete manager;
-  #}embed
-  FieldsManager_destructor_cpp(obj)
-  return
-
 # ----------------------------------------------------------------------
 
 cimport mpi
 import mpi
 
 # ----------------------------------------------------------------------
+cdef void MeshPtr_destructor(void* obj):
+  """
+  Destroy Petsc Mesh.
+  """
+  #embed{ void MeshPtr_destructor_cpp(void* objVptr)
+  ALE::Obj<pylith::Mesh>* pMesh = (ALE::Obj<pylith::Mesh>*) objVptr;
+  delete pMesh;
+  #}embed
+  MeshPtr_destructor_cpp(obj)
+  return
+
 cdef class Mesh:
 
   cdef void* thisptr # Pointer to C++ object
@@ -728,6 +717,17 @@ cdef class RefineUniform(MeshRefiner):
 
 
 # ----------------------------------------------------------------------
+cdef void FieldsManager_destructor(void* obj):
+  """
+  Destroy FieldsManager.
+  """
+  #embed{ void FieldsManager_destructor_cpp(void* objVptr)
+  pylith::topology::FieldsManager* manager = (pylith::topology::FieldsManager*) objVptr;
+  delete manager;
+  #}embed
+  FieldsManager_destructor_cpp(obj)
+  return
+
 cdef class FieldsManager:
 
   cdef void* thisptr # Pointer to C++ object
