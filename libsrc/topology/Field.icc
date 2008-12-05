@@ -49,20 +49,6 @@ pylith::topology::Field::vectorFieldType(void) const {
   return _vecFieldType;
 }
 
-// Set spatial dimension of domain.
-inline
-void
-pylith::topology::Field::spaceDim(const int value) {
-  _spaceDim = value;
-}
-
-// Get spatial dimension of domain.
-inline
-int
-pylith::topology::Field::spaceDim(void) const {
-  return _spaceDim;
-}
-
 // Set scale for dimensionalizing field.
 inline
 void

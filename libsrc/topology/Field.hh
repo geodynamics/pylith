@@ -96,12 +96,6 @@ public :
    */
   VectorFieldEnum vectorFieldType(void) const;
 
-  /** Set spatial dimension of domain.
-   *
-   * @param value Spatial dimension of domain.
-   */
-  void spaceDim(const int value);
-
   /** Get spatial dimension of domain.
    *
    * @returns Spatial dimension of domain.
@@ -131,6 +125,9 @@ public :
    * @param value True if it is okay to dimensionalize field.
    */
   bool addDimensionOkay(void) const;
+
+  /// Create sieve section.
+  void newSection(void);
 
   /** Create section with same layout (fiber dimension and
    * constraints) as another section. This allows the layout data
@@ -167,7 +164,7 @@ public :
    */
   void dimensionalize(void);
 
-  /** Print section to standard out.
+  /** Print field to standard out.
    *
    * @param label Label for output.
    */
@@ -184,7 +181,6 @@ private :
 
   double _scale; ///< Dimensional scale associated with field
   std::string _name; ///< Name of field
-  int _spaceDim; ///< Spatial dimension of domain
   VectorFieldEnum _vecFieldType; ///< Type of vector field
   bool _dimensionsOkay; ///< Flag indicating it is okay to dimensionalize
 
