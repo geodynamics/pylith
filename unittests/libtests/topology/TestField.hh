@@ -50,7 +50,12 @@ class pylith::topology::TestField : public CppUnit::TestFixture
   CPPUNIT_TEST( testAddDimensionOkay );
   CPPUNIT_TEST( testCopyLayout );
   CPPUNIT_TEST( testClear );
+  CPPUNIT_TEST( testZero );
+  CPPUNIT_TEST( testComplete );
+  CPPUNIT_TEST( testCopy );
+  CPPUNIT_TEST( testOperatorAdd );
   CPPUNIT_TEST( testDimensionalize );
+  CPPUNIT_TEST( testView );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -60,7 +65,7 @@ public :
   /// Test constructor.
   void testConstructor(void);
 
-  /// Test section().
+  /// Test newSection() and section().
   void testSection(void);
 
   /// Test name().
@@ -84,8 +89,23 @@ public :
   /// Test clear().
   void testClear(void);
 
+  /// Test zero().
+  void testZero(void);
+
+  /// Test complete().
+  void testComplete(void);
+
+  /// Test copy().
+  void testCopy(void);
+
+  /// Test operator+=().
+  void testOperatorAdd(void);
+
   /// Test dimensionalize().
   void testDimensionalize(void);
+
+  /// Test view().
+  void testView(void);
 
 // PRIVATE METHODS /////////////////////////////////////////////////////
 private :

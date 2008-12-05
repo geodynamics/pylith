@@ -39,7 +39,8 @@ void
 pylith::topology::FieldUniform::createSection(
 			const ALE::Obj<SieveMesh::label_sequence>& points)
 { // createSection
-  assert(!_section.isNull());
+  if (_section.isNull())
+    newSection();
 
   const SieveMesh::point_type pointMin = 
     *std::min_element(points->begin(), points->end());
@@ -56,7 +57,8 @@ void
 pylith::topology::FieldUniform::createSection(
 			const SieveRealSection::chart_type& chart)
 { // createSection
-  assert(!_section.isNull());
+  if (_section.isNull())
+    newSection();
 
   _section->setChart(chart);
 
