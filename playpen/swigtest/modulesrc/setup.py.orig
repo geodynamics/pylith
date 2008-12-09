@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+
+"""
+setup.py file for SWIG example
+"""
+
+from distutils.core import setup, Extension
+
+
+foo_module = Extension('_foo',
+                       sources=['foo_wrap.cxx'],
+                       include_dirs=['../libsrc'],
+                       library_dirs=['../libsrc'],
+                       libraries=['foo'],
+                       )
+
+setup (name='foo',
+       version='0.1',
+       author="SWIG Docs",
+       description = """Simple swig example from docs""",
+       ext_modules = [foo_module],
+       py_modules = ["foo"],
+       )
