@@ -35,6 +35,10 @@ main(int argc,
   scene.sphere(&sphere);
   scene.view();
 
+  const double data[] = { 1.1, 2.2, 3.3, 4.4 };
+  const int size = 4;
+  scene.printData(data, size);
+
   return 0;
 }
 

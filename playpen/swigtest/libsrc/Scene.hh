@@ -33,6 +33,9 @@ public :
   void sphere(Sphere* const value);
   const Sphere* sphere(void) const;
 
+  void printData(const double* values,
+		 const int size) const;
+
   void view(void) const;
 
 private :
