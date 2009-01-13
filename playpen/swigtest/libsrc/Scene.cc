@@ -44,6 +44,14 @@ geometry::Scene::sphere(void) const {
 }
 
 void
+geometry::Scene::printData(const double* values,
+			   const int size) const {
+  std::cout << "Data\n";
+  for (int i=0; i < size; ++i)
+    std::cout << "  " << values[i] << "\n";
+}
+
+void
 geometry::Scene::view(void) const {
   std::cout << "Scene:\n";
   if (0 != _bar)
