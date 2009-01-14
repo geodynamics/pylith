@@ -25,6 +25,7 @@ void
 pylith::bc::TestBoundaryMeshQuad4::setUp(void)
 { // setUp
   _data = new BoundaryMeshDataQuad4();
+  _flipFault = true;
 } // setUp
 
 

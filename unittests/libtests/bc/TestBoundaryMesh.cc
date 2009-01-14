@@ -122,6 +122,7 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
     ALE::Selection<Mesh>::submeshV<SubMesh>(mesh, mesh->getIntSection(label));
   CPPUNIT_ASSERT(!subMesh.isNull());
 
+  subMesh->view("Fault");
   const ALE::Obj<SubMesh::label_sequence>& vertices = subMesh->depthStratum(0);
   const SubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
