@@ -18,6 +18,8 @@
   }
 }
 
+%include "array.i"
+
 %include "Shape.i"
 %include "Bar.i"
 %include "Sphere.i"

@@ -38,7 +38,7 @@ _geometrymodule_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
-INCLUDES = -I$(top_srcdir)/libsrc -I$(PYTHON_INCDIR)
+INCLUDES = -I$(top_srcdir)/libsrc -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR)
 
 $(srcdir)/geometry_wrap.cxx $(srcdir)/geometry.py: $(swig_sources)
 	$(SWIG) -Wall -c++ -python $<
