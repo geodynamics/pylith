@@ -12,6 +12,7 @@ CURRENT ISSUES/PRIORITIES
 2. Nondimensionalize [Brad]
     Not working
       coordinates in output (nondimensional instead of dimensioned)
+        create dimensionalized copy (NAME_dimensioned)
       solution in output (nondimensional instead of dimensioned)
       const slip rate in output (slip rate not slip)          
 
