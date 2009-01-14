@@ -95,7 +95,7 @@ pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<Mesh>& mesh, const 
 
     CohesiveTopology::createFault(faultMesh, faultBd, mesh, groupField);
 
-    CohesiveTopology::create(faultMesh, faultBd, mesh, groupField, id(), _useLagrangeConstraints());
+    CohesiveTopology::create(faultMesh, faultBd, mesh, groupField, id(), _useLagrangeConstraints(), flipFault);
   }
 } // adjustTopology
 
