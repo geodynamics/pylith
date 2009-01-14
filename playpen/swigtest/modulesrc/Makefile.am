@@ -19,6 +19,7 @@ pkgpyexec_PYTHON = geometry.py
 
 swig_sources = \
 	geometry.i \
+	numpy.i \
 	Bar.i \
 	Shape.i \
 	Sphere.i \
