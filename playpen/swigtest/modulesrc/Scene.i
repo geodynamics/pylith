@@ -30,6 +30,10 @@ public :
 
   void view(void) const;
 
+  %apply(double* IN_ARRAY1, int DIM1) {(const double* values, const int size)};
+  void printData(const double* values,
+		 const int size) const;  
+  %clear (const double* values, const int size);
 }; // Scene
 
 } // namespace geometry

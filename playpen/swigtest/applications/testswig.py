@@ -46,25 +46,11 @@ class TestApp(Application):
     """
     Run the application.
     """
-    import swigtest.geometry as geometry
-
-    bar = geometry.Bar()
-    bar.length(4.0)
-    bar.width(2.0)
-    bar.color("yellow")
-    bar.id(0)
-
-    sphere = geometry.Sphere()
-    sphere.radius(3.0);
-    sphere.color("green");
-    sphere.id(1);
-
-    scene = geometry.Scene()
-    scene.bar(bar);
-    scene.sphere(sphere);
-    scene.view();
-
     self.scene.view()
+
+    import numpy
+    x = numpy.array([1.1, 2.2, 3.3, 4.4], dtype=numpy.float32)
+    self.scene.printData(x)
     return
   
 
