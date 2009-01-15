@@ -25,6 +25,7 @@ void
 pylith::bc::TestBoundaryMeshHex8::setUp(void)
 { // setUp
   _data = new BoundaryMeshDataHex8();
+  _flipFault = true;
 } // setUp
 
 

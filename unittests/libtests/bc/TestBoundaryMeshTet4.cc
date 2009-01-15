@@ -25,6 +25,7 @@ void
 pylith::bc::TestBoundaryMeshTet4::setUp(void)
 { // setUp
   _data = new BoundaryMeshDataTet4();
+  _flipFault = false;
 } // setUp
 
 

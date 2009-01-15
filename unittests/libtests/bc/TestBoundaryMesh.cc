@@ -29,7 +29,6 @@ void
 pylith::bc::TestBoundaryMesh::setUp(void)
 { // setUp
   _data = 0;
-  _flipFault = false;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -122,7 +121,7 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
     ALE::Selection<Mesh>::submeshV<SubMesh>(mesh, mesh->getIntSection(label));
   CPPUNIT_ASSERT(!subMesh.isNull());
 
-  subMesh->view("Fault");
+  //subMesh->view("Submesh for mesh w/fault");
   const ALE::Obj<SubMesh::label_sequence>& vertices = subMesh->depthStratum(0);
   const SubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
