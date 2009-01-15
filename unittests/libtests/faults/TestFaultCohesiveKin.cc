@@ -46,6 +46,8 @@ pylith::faults::TestFaultCohesiveKin::setUp(void)
   _eqsrcs[0] = new EqKinSrc();
   _slipfns.resize(nsrcs);
   _slipfns[0] = new BruneSlipFn();
+
+  _flipFault = false;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -130,6 +132,8 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   ALE::Obj<Mesh> mesh;
   FaultCohesiveKin fault;
   _initialize(&mesh, &fault);
+
+  //mesh->view(_data->meshFilename);
   
   Mesh::renumbering_type& renumbering = fault._faultMesh->getRenumbering();
   const ALE::Obj<Mesh::label_sequence>& vertices = 
@@ -909,7 +913,7 @@ pylith::faults::TestFaultCohesiveKin::_initialize(ALE::Obj<Mesh>* mesh,
     fault->quadrature(_quadrature);
     
     fault->eqsrcs(const_cast<const char**>(names), sources, nsrcs);
-    fault->adjustTopology(*mesh);
+    fault->adjustTopology(*mesh, _flipFault);
 
     const double upDirVals[] = { 0.0, 0.0, 1.0 };
     double_array upDir(upDirVals, 3);

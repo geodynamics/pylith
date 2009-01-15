@@ -96,7 +96,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyLine2(void)
 { // testAdjustTopologyLine2
   CohesiveDataLine2 data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyLine2
 
 // ----------------------------------------------------------------------
@@ -106,7 +106,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTri3(void)
 { // testAdjustTopologyTri3
   CohesiveDataTri3 data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyTri3
 
 // ----------------------------------------------------------------------
@@ -116,7 +116,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTri3b(void)
 { // testAdjustTopologyTri3b
   CohesiveDataTri3b data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyTri3b
 
 // ----------------------------------------------------------------------
@@ -126,7 +126,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTri3c(void)
 { // testAdjustTopologyTri3c
   CohesiveDataTri3c data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyTri3c
 
 // ----------------------------------------------------------------------
@@ -136,7 +136,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTri3d(void)
 { // testAdjustTopologyTri3d
   CohesiveDataTri3d data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyTri3d
 
 // ----------------------------------------------------------------------
@@ -146,7 +146,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTri3e(void)
 { // testAdjustTopologyTri3e
   CohesiveDataTri3e data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyTri3e
 
 // ----------------------------------------------------------------------
@@ -156,7 +156,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTri3f(void)
 { // testAdjustTopologyTri3f
   CohesiveDataTri3f data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyTri3f
 
 // ----------------------------------------------------------------------
@@ -166,7 +166,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4(void)
 { // testAdjustTopologyQuad4
   CohesiveDataQuad4 data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyQuad4
 
 // ----------------------------------------------------------------------
@@ -176,7 +176,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4b(void)
 { // testAdjustTopologyQuad4b
   CohesiveDataQuad4b data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyQuad4b
 
 // ----------------------------------------------------------------------
@@ -186,7 +186,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4c(void)
 { // testAdjustTopologyQuad4c
   CohesiveDataQuad4c data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyQuad4c
 
 // ----------------------------------------------------------------------
@@ -196,7 +196,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4d(void)
 { // testAdjustTopologyQuad4d
   CohesiveDataQuad4d data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyQuad4d
 
 // ----------------------------------------------------------------------
@@ -206,7 +206,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4e(void)
 { // testAdjustTopologyQuad4e
   CohesiveDataQuad4e data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyQuad4e
 
 // ----------------------------------------------------------------------
@@ -216,7 +216,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4f(void)
 { // testAdjustTopologyQuad4f
   CohesiveDataQuad4f data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyQuad4f
 
 // ----------------------------------------------------------------------
@@ -226,7 +226,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4g(void)
 { // testAdjustTopologyQuad4g
   CohesiveDataQuad4g data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyQuad4g
 
 // ----------------------------------------------------------------------
@@ -237,7 +237,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4h(void)
   CohesiveDataQuad4h data;
   FaultCohesiveDyn faultA;
   FaultCohesiveDyn faultB;
-  _testAdjustTopology(&faultA, &faultB, data);
+  _testAdjustTopology(&faultA, &faultB, data, false, false);
 } // testAdjustTopologyQuad4h
 
 // ----------------------------------------------------------------------
@@ -247,7 +247,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4(void)
 { // testAdjustTopologyTet4
   CohesiveDataTet4 data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyTet4
 
 // ----------------------------------------------------------------------
@@ -257,7 +257,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4b(void)
 { // testAdjustTopologyTet4b
   CohesiveDataTet4b data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyTet4b
 
 // ----------------------------------------------------------------------
@@ -267,7 +267,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4c(void)
 { // testAdjustTopologyTet4c
   CohesiveDataTet4c data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyTet4c
 
 // ----------------------------------------------------------------------
@@ -277,7 +277,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4d(void)
 { // testAdjustTopologyTet4d
   CohesiveDataTet4d data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyTet4d
 
 // ----------------------------------------------------------------------
@@ -287,7 +287,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4f(void)
 { // testAdjustTopologyTet4f
   CohesiveDataTet4f data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyTet4f
 
 // ----------------------------------------------------------------------
@@ -297,7 +297,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4g(void)
 { // testAdjustTopologyTet4g
   CohesiveDataTet4g data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyTet4g
 
 // ----------------------------------------------------------------------
@@ -307,7 +307,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4h(void)
 { // testAdjustTopologyTet4h
   CohesiveDataTet4h data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyTet4h
 
 // ----------------------------------------------------------------------
@@ -317,7 +317,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4i(void)
 { // testAdjustTopologyTet4i
   CohesiveDataTet4i data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyTet4i
 
 // ----------------------------------------------------------------------
@@ -327,7 +327,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4j(void)
 { // testAdjustTopologyTet4j
   CohesiveDataTet4j data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyTet4j
 
 // ----------------------------------------------------------------------
@@ -337,7 +337,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8(void)
 { // testAdjustTopologyHex8
   CohesiveDataHex8 data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyHex8
 
 // ----------------------------------------------------------------------
@@ -347,7 +347,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8b(void)
 { // testAdjustTopologyHex8b
   CohesiveDataHex8b data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyHex8b
 
 // ----------------------------------------------------------------------
@@ -357,7 +357,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8c(void)
 { // testAdjustTopologyHex8c
   CohesiveDataHex8c data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyHex8c
 
 // ----------------------------------------------------------------------
@@ -367,7 +367,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8d(void)
 { // testAdjustTopologyHex8d
   CohesiveDataHex8d data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyHex8d
 
 // ----------------------------------------------------------------------
@@ -377,7 +377,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8e(void)
 { // testAdjustTopologyHex8e
   CohesiveDataHex8e data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyHex8e
 
 // ----------------------------------------------------------------------
@@ -387,7 +387,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8f(void)
 { // testAdjustTopologyHex8f
   CohesiveDataHex8f data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyHex8f
 
 // ----------------------------------------------------------------------
@@ -397,7 +397,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8g(void)
 { // testAdjustTopologyHex8g
   CohesiveDataHex8g data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyHex8g
 
 // ----------------------------------------------------------------------
@@ -407,7 +407,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8h(void)
 { // testAdjustTopologyHex8h
   CohesiveDataHex8h data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyHex8h
 
 // ----------------------------------------------------------------------
@@ -417,7 +417,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8i(void)
 { // testAdjustTopologyHex8i
   CohesiveDataHex8i data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyHex8i
 
 // ----------------------------------------------------------------------
@@ -428,7 +428,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyLine2Lagrange(void)
 { // testAdjustTopologyLine2Lagrange
   CohesiveDataLine2Lagrange data;
   FaultCohesiveKin fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyLine2Lagrange
 
 // ----------------------------------------------------------------------
@@ -439,7 +439,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTri3Lagrange(void)
 { // testAdjustTopologyTri3Lagrange
   CohesiveDataTri3Lagrange data;
   FaultCohesiveKin fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyTri3Lagrange
 
 // ----------------------------------------------------------------------
@@ -450,7 +450,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4Lagrange(void)
 { // testAdjustTopologyQuad4Lagrange
   CohesiveDataQuad4Lagrange data;
   FaultCohesiveKin fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyQuad4Lagrange
 
 // ----------------------------------------------------------------------
@@ -461,7 +461,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4Lagrange(void)
 { // testAdjustTopologyTet4Lagrange
   CohesiveDataTet4Lagrange data;
   FaultCohesiveKin fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyTet4Lagrange
 
 // ----------------------------------------------------------------------
@@ -472,14 +472,15 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8Lagrange(void)
 { // testAdjustTopologyHex8Lagrange
   CohesiveDataHex8Lagrange data;
   FaultCohesiveKin fault;
-  _testAdjustTopology(&fault, data);
+  _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyHex8Lagrange
 
 // ----------------------------------------------------------------------
 // Test adjustTopology().
 void
 pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
-						      const CohesiveData& data)
+						       const CohesiveData& data,
+						       const bool flipFault)
 { // _testAdjustTopology
   ALE::Obj<Mesh> mesh;
   meshio::MeshIOAscii iohandler;
@@ -491,7 +492,8 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   CPPUNIT_ASSERT(0 != fault);
   fault->id(1);
   fault->label("fault");
-  fault->adjustTopology(mesh);
+  mesh->setDebug(true);
+  fault->adjustTopology(mesh, flipFault);
 
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh->getDimension());
 
@@ -531,7 +533,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   ALE::ISieveVisitor::PointRetriever<Mesh::sieve_type> pV(sieve->getMaxConeSize());
   int iCell = 0;
   i = 0;
-  //mesh->view(data.filename);
+  mesh->view(data.filename);
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
@@ -597,7 +599,9 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
 void
 pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
 						       Fault* faultB,
-						      const CohesiveData& data)
+						       const CohesiveData& data,
+						       const bool flipFaultA,
+						       const bool flipFaultB)
 { // _testAdjustTopology
   ALE::Obj<Mesh> mesh;
   meshio::MeshIOAscii iohandler;
@@ -609,12 +613,12 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
   CPPUNIT_ASSERT(0 != faultA);
   faultA->id(1);
   faultA->label("faultA");
-  faultA->adjustTopology(mesh);
+  faultA->adjustTopology(mesh, flipFaultA);
 
   CPPUNIT_ASSERT(0 != faultB);
   faultB->id(1);
   faultB->label("faultB");
-  faultB->adjustTopology(mesh);
+  faultB->adjustTopology(mesh, flipFaultB);
 
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh->getDimension());
 

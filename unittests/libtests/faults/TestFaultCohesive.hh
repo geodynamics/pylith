@@ -221,19 +221,25 @@ public :
    *
    * @param fault Fault for cohesive elements.
    * @param data Cohesive element data.
+   * @param flipFault If true, add vertices to opposite side of fault.
    */
   void _testAdjustTopology(Fault* fault,
-			   const CohesiveData& data);
+			   const CohesiveData& data,
+			   const bool flipFault);
 
   /** Test adjustTopology().
    *
    * @param faultA First fault for cohesive elements.
    * @param faultB Second fault for cohesive elements.
    * @param data Cohesive element data.
+   * @param flipFaultA If true, add vertices to opposite side of fault A.
+   * @param flipFaultB If true, add vertices to opposite side of fault B.
    */
   void _testAdjustTopology(Fault* faultA,
 			   Fault* faultB,
-			   const CohesiveData& data);
+			   const CohesiveData& data,
+			   const bool flipFaultA,
+			   const bool flipFaultB);
 
 }; // class TestFaultCohesive
 
