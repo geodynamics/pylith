@@ -19,6 +19,7 @@
 
 #include <cassert> // USES assert()
 
+// ----------------------------------------------------------------------
 void
 pylith::faults::CohesiveTopology::createFaultSieveFromVertices(const int dim,
                                                                const int firstCell,
@@ -138,6 +139,7 @@ pylith::faults::CohesiveTopology::createFaultSieveFromVertices(const int dim,
   if (!faultSieve->commRank()) delete [] indices;
 }
 
+// ----------------------------------------------------------------------
 void
 pylith::faults::CohesiveTopology::createFaultSieveFromFaces(const int dim,
                                                             const int firstCell,
@@ -192,6 +194,7 @@ pylith::faults::CohesiveTopology::createFaultSieveFromFaces(const int dim,
   }
 }
 
+// ----------------------------------------------------------------------
 void
 pylith::faults::CohesiveTopology::orientFaultSieve(const int dim,
                                                    const Obj<Mesh>& mesh,
@@ -553,10 +556,6 @@ pylith::faults::CohesiveTopology::create(Obj<SubMesh>& ifault,
     Mesh::point_type cell      = cells[0];
     Mesh::point_type otherCell = cells[1];
 
-    if (flipFault) {
-      otherCell = cells[0];
-      cell      = cells[1];
-    }
     if (debug) std::cout << "  Checking orientation against cell " << cell << std::endl;
     ALE::ISieveTraversal<sieve_type>::orientedClosure(*ifaultSieve, face, cV2);
     const int               coneSize = cV2.getSize();
@@ -613,6 +612,12 @@ pylith::faults::CohesiveTopology::create(Obj<SubMesh>& ifault,
         }
       }
     }
+
+    if (flipFault) {
+      Mesh::point_type tmpCell = otherCell;
+      otherCell = cell;
+      cell      = tmpCell;
+    } // if
     if (found) {
       if (debug) std::cout << "  Choosing other cell" << std::endl;
       Mesh::point_type tmpCell = otherCell;
@@ -630,18 +635,18 @@ pylith::faults::CohesiveTopology::create(Obj<SubMesh>& ifault,
           if (faceVertices[v%numFaultCorners] != faceCone[c]) {
             found = false;
             break;
-          }
-        }
-      }
+          } // if
+        } // for
+      } // if
       if (!found) {
         std::cout << "Considering fault face " << face << std::endl;
         std::cout << "  bordered by cells " << cell << " and " << otherCell << std::endl;
         for(int c = 0; c < coneSize; ++c) {
           std::cout << "    Checking " << faceCone[c] << " against " << faceVertices[c] << std::endl;
-        }
-      }
+        } // for
+      } // if
       assert(found);
-    }
+    } // else
     noReplaceCells.insert(otherCell);
     replaceCells.insert(cell);
     replaceVertices.insert(faceCone, &faceCone[coneSize]);

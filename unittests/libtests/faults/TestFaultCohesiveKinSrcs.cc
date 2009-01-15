@@ -47,6 +47,8 @@ pylith::faults::TestFaultCohesiveKinSrcs::setUp(void)
   _slipfns.resize(nsrcs);
   _slipfns[0] = new BruneSlipFn();
   _slipfns[1] = new BruneSlipFn();
+
+  _flipFault = false;
 } // setUp
 
 

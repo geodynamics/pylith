@@ -186,8 +186,8 @@ public :
               const Obj<Mesh>& mesh,
               const Obj<Mesh::int_section_type>& groupField,
               const int materialId,
-              const bool constraintCell = false,
-              const bool flipFault = false);
+              const bool constraintCell =false,
+              const bool flipFault =false);
 
   /** Create (distributed) fault mesh from cohesive cells.
    *
@@ -217,7 +217,7 @@ private :
   static
   unsigned int _numFaceVertices(const Mesh::point_type& cell,
                                 const ALE::Obj<Mesh>& mesh,
-                                const int depth = -1);
+                                const int depth =-1);
 
   /** Determine a face orientation
    *    We should really have an interpolated mesh, instead of
