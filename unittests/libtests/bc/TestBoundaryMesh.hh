@@ -55,9 +55,7 @@ public :
 protected :
 
   BoundaryMeshData* _data; ///< Data for testing
-
-  /// Switch for flipping which side of fault new vertices are added
-  bool _flipFault;
+  bool _flipFault; ///< If true, flip fault orientation.
 
 }; // class TestBoundaryMesh
 
