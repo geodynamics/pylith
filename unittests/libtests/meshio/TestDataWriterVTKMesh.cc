@@ -35,7 +35,7 @@ pylith::meshio::TestDataWriterVTKMesh::_initialize(void)
     faults::FaultCohesiveKin fault;
     fault.label(_data->faultLabel);
     fault.id(_data->faultId);
-    fault.adjustTopology(_mesh);
+    fault.adjustTopology(_mesh, _flipFault);
   } // if
 } // _initialize
 

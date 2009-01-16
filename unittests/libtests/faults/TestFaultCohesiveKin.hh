@@ -65,7 +65,7 @@ protected :
   feassemble::Quadrature* _quadrature; ///< Data used in testing
   std::vector<EqKinSrc*> _eqsrcs; ///< Array of Kinematic earthquake sources.
   std::vector<BruneSlipFn*> _slipfns; ///< Slip time function.
-  bool _flipFault; ///< If true, dd new vertices to opposite side of fault
+  bool _flipFault; ///< If true, flip fault orientation.
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :

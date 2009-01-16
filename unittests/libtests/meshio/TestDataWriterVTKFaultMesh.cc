@@ -37,7 +37,7 @@ pylith::meshio::TestDataWriterVTKFaultMesh::_initialize(void)
   faults::FaultCohesiveKin fault;
   fault.label(_data->faultLabel);
   fault.id(_data->faultId);
-  fault.adjustTopology(_meshDomain);
+  fault.adjustTopology(_meshDomain, _flipFault);
   const bool constraintCell = true;
   std::map<Mesh::point_type, Mesh::point_type> cohesiveToFault;
   faults::CohesiveTopology::createParallel(&_mesh, &cohesiveToFault,

@@ -40,7 +40,7 @@ pylith::meshio::TestDataWriterVTKBCMesh::_initialize(void)
     faults::FaultCohesiveKin fault;
     fault.label(_data->faultLabel);
     fault.id(_data->faultId);
-    fault.adjustTopology(_meshDomain);
+    fault.adjustTopology(_meshDomain, _flipFault);
   } // if
 
   const char* label = _data->bcLabel;

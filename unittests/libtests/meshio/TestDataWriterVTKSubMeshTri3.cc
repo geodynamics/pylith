@@ -26,6 +26,8 @@ pylith::meshio::TestDataWriterVTKSubMeshTri3::setUp(void)
 { // setUp
   TestDataWriterVTKMesh::setUp();
   _data = new DataWriterVTKDataSubMeshTri3;
+  _flipFault = true;
+
   _initialize();
 } // setUp
 
