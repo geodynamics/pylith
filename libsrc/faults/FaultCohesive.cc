@@ -59,7 +59,8 @@ pylith::faults::FaultCohesive::faultMeshFilename(const char* filename)
 // ----------------------------------------------------------------------
 // Adjust mesh topology for fault implementation.
 void
-pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<Mesh>& mesh, const bool flipFault)
+pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<Mesh>& mesh,
+					      const bool flipFault)
 { // adjustTopology
   assert(std::string("") != label());
   Obj<SubMesh>   faultMesh = NULL;
@@ -70,14 +71,17 @@ pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<Mesh>& mesh, const 
 
     //MPI_Bcast(&faultDim, 1, MPI_INT, 0, comm);
     faultMesh = new SubMesh(mesh->comm(), faultDim, mesh->debug());
-    pylith::meshio::MeshIOLagrit::readFault(_faultMeshFilename, mesh, faultMesh, faultBd);
+    pylith::meshio::MeshIOLagrit::readFault(_faultMeshFilename, mesh, 
+					    faultMesh, faultBd);
 
     // Get group of vertices associated with fault
     const ALE::Obj<int_section_type>& groupField = 
       mesh->getIntSection(label());
-    faultMesh->setRealSection("coordinates", mesh->getRealSection("coordinates"));
+    faultMesh->setRealSection("coordinates", 
+			      mesh->getRealSection("coordinates"));
 
-    CohesiveTopology::create(faultMesh, faultBd, mesh, groupField, id(), _useLagrangeConstraints(), flipFault);
+    CohesiveTopology::create(faultMesh, faultBd, mesh, groupField, id(),
+			     _useLagrangeConstraints());
   } else {
     if (!mesh->hasIntSection(label())) {
       std::ostringstream msg;
@@ -91,12 +95,15 @@ pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<Mesh>& mesh, const 
       mesh->getIntSection(label());
     assert(!groupField.isNull());
 
-    faultMesh = new SubMesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
+    faultMesh = 
+      new SubMesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
 
-    CohesiveTopology::createFault(faultMesh, faultBd, mesh, groupField);
+    CohesiveTopology::createFault(faultMesh, faultBd, mesh, groupField, 
+				  flipFault);
 
-    CohesiveTopology::create(faultMesh, faultBd, mesh, groupField, id(), _useLagrangeConstraints(), flipFault);
-  }
+    CohesiveTopology::create(faultMesh, faultBd, mesh, groupField, id(), 
+			     _useLagrangeConstraints());
+  } // if/else
 } // adjustTopology
 
 

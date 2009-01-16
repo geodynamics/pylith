@@ -35,6 +35,7 @@ public :
   typedef std::vector<sieve_type::point_type>    PointArray;
   typedef std::pair<sieve_type::point_type, int> oPoint_type;
   typedef std::vector<oPoint_type>               oPointArray;
+
 protected:
   template<typename Sieve, typename Renumbering>
   class ReplaceVisitor {
@@ -170,7 +171,8 @@ public :
   void createFault(Obj<SubMesh>& ifault,
                    Obj<ALE::Mesh>& faultBd,
                    const Obj<Mesh>& mesh,
-                   const Obj<Mesh::int_section_type>& groupField);
+                   const Obj<Mesh::int_section_type>& groupField,
+		   const bool flipFault =false);
 
   /** Create cohesive cells.
    *
@@ -186,8 +188,7 @@ public :
               const Obj<Mesh>& mesh,
               const Obj<Mesh::int_section_type>& groupField,
               const int materialId,
-              const bool constraintCell =false,
-              const bool flipFault =false);
+              const bool constraintCell =false);
 
   /** Create (distributed) fault mesh from cohesive cells.
    *
@@ -266,35 +267,40 @@ private :
                              const ALE::Obj<Mesh::sieve_type>& sieve,
                              const Mesh::point_type& firstCohesiveCell);
 
-  static void classifyCells(const ALE::Obj<Mesh::sieve_type>& sieve,
-                            const Mesh::point_type& vertex,
-                            const int depth,
-                            const int faceSize,
-                            const Mesh::point_type& firstCohesiveCell,
-                            PointSet& replaceCells,
-                            PointSet& noReplaceCells,
-                            const int debug);
+  static
+  void classifyCells(const ALE::Obj<Mesh::sieve_type>& sieve,
+		     const Mesh::point_type& vertex,
+		     const int depth,
+		     const int faceSize,
+		     const Mesh::point_type& firstCohesiveCell,
+		     PointSet& replaceCells,
+		     PointSet& noReplaceCells,
+		     const int debug);
 
-  static void createFaultSieveFromVertices(const int dim,
-                                           const int firstCell,
-                                           const PointSet& faultVertices,
-                                           const Obj<Mesh>& mesh,
-                                           const Obj<ALE::Mesh::arrow_section_type>& orientation,
-                                           const Obj<ALE::Mesh::sieve_type>& faultSieve);
+  static
+  void createFaultSieveFromVertices(const int dim,
+				    const int firstCell,
+				    const PointSet& faultVertices,
+				    const Obj<Mesh>& mesh,
+				    const Obj<ALE::Mesh::arrow_section_type>& orientation,
+				    const Obj<ALE::Mesh::sieve_type>& faultSieve,
+				    const bool flipFault);
 
-  static void createFaultSieveFromFaces(const int dim,
-                                        const int firstCell,
-                                        const int numFaces,
-                                        const int faultVertices[],
-                                        const int faultCells[],
-                                        const Obj<Mesh>& mesh,
-                                        const Obj<ALE::Mesh::arrow_section_type>& orientation,
-                                        const Obj<ALE::Mesh::sieve_type>& faultSieve);
+  static
+  void createFaultSieveFromFaces(const int dim,
+				 const int firstCell,
+				 const int numFaces,
+				 const int faultVertices[],
+				 const int faultCells[],
+				 const Obj<Mesh>& mesh,
+				 const Obj<ALE::Mesh::arrow_section_type>& orientation,
+				 const Obj<ALE::Mesh::sieve_type>& faultSieve);
 
-  static void orientFaultSieve(const int dim,
-                               const Obj<Mesh>& mesh,
-                               const Obj<ALE::Mesh::arrow_section_type>& orientation,
-                               const Obj<ALE::Mesh>& fault);
+  static
+  void orientFaultSieve(const int dim,
+			const Obj<Mesh>& mesh,
+			const Obj<ALE::Mesh::arrow_section_type>& orientation,
+			const Obj<ALE::Mesh>& fault);
 }; // class CohesiveTopology
 
 #endif // pylith_faults_cohesivetopology_hh

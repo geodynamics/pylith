@@ -26,7 +26,8 @@ pylith::faults::CohesiveTopology::createFaultSieveFromVertices(const int dim,
                                                                const PointSet& faultVertices,
                                                                const Obj<Mesh>& mesh,
                                                                const Obj<ALE::Mesh::arrow_section_type>& orientation,
-                                                               const Obj<ALE::Mesh::sieve_type>& faultSieve)
+                                                               const Obj<ALE::Mesh::sieve_type>& faultSieve,
+							       const bool flipFault)
 {
   typedef ALE::Selection<ALE::Mesh> selection;
   const Obj<sieve_type>&         sieve      = mesh->getSieve();
@@ -71,7 +72,9 @@ pylith::faults::CohesiveTopology::createFaultSieveFromVertices(const int dim,
     const Mesh::point_type *support = sV.getPoints();
 
     if (debug) std::cout << "Checking fault vertex " << *fv_iter << std::endl;
-    for(int s = 0; s < sV.getSize(); ++s) {
+    const int sVsize = sV.getSize();
+    for (int i=0; i < sVsize; ++i) {
+      const int s = (!flipFault) ? i : sVsize - i - 1;
       sieve->cone(support[s], cV);
       const Mesh::point_type *cone = cV.getPoints();
 
@@ -412,7 +415,8 @@ void
 pylith::faults::CohesiveTopology::createFault(Obj<SubMesh>& ifault,
                                               Obj<ALE::Mesh>& faultBd,
                                               const Obj<Mesh>& mesh,
-                                              const Obj<Mesh::int_section_type>& groupField)
+                                              const Obj<Mesh::int_section_type>& groupField,
+					      const bool flipFault)
 {
   const Obj<sieve_type>&         sieve       = mesh->getSieve();
   const Obj<SubMesh::sieve_type> ifaultSieve = new Mesh::sieve_type(sieve->comm(), sieve->debug());
@@ -433,7 +437,10 @@ pylith::faults::CohesiveTopology::createFault(Obj<SubMesh>& ifault,
   const bool vertexFault    = true;
   const int  firstFaultCell = sieve->getBaseSize() + sieve->getCapSize();
 
-  createFaultSieveFromVertices(fault->getDimension(), firstFaultCell, faultVertices, mesh, fault->getArrowSection("orientation"), faultSieve);
+  createFaultSieveFromVertices(fault->getDimension(), firstFaultCell, 
+			       faultVertices, mesh, 
+			       fault->getArrowSection("orientation"), 
+			       faultSieve, flipFault);
   fault->setSieve(faultSieve);
   fault->stratify();
   if (debug) fault->view("Fault mesh");
@@ -458,8 +465,7 @@ pylith::faults::CohesiveTopology::create(Obj<SubMesh>& ifault,
                                          const Obj<Mesh>& mesh,
                                          const Obj<Mesh::int_section_type>& groupField,
                                          const int materialId,
-                                         const bool constraintCell,
-                                         const bool flipFault)
+                                         const bool constraintCell)
 { // create
   typedef ALE::SieveAlg<ALE::Mesh>  sieveAlg;
   typedef ALE::Selection<ALE::Mesh> selection;
@@ -613,11 +619,6 @@ pylith::faults::CohesiveTopology::create(Obj<SubMesh>& ifault,
       }
     }
 
-    if (flipFault) {
-      Mesh::point_type tmpCell = otherCell;
-      otherCell = cell;
-      cell      = tmpCell;
-    } // if
     if (found) {
       if (debug) std::cout << "  Choosing other cell" << std::endl;
       Mesh::point_type tmpCell = otherCell;

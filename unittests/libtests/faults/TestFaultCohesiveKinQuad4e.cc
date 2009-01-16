@@ -33,6 +33,8 @@ pylith::faults::TestFaultCohesiveKinQuad4e::setUp(void)
   CPPUNIT_ASSERT(0 != _quadrature);
   feassemble::GeometryLine2D geometry;
   _quadrature->refGeometry(&geometry);
+  
+  _flipFault = true;
 } // setUp
 
 
