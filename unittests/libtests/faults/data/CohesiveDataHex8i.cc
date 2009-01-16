@@ -85,7 +85,7 @@ const int pylith::faults::CohesiveDataHex8i::_cells[] = {
    27, 28, 38, 37, 32, 33, 41, 40,
    15, 14, 13, 24, 19, 18, 17, 26,
    24, 23, 20, 21, 41, 40, 37, 38,
-   25, 24, 21, 22, 42, 41, 38, 39
+   21, 22, 25, 24, 38, 39, 42, 41,
 };
 
 const int pylith::faults::CohesiveDataHex8i::_materialIds[] = {

@@ -237,7 +237,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4h(void)
   CohesiveDataQuad4h data;
   FaultCohesiveDyn faultA;
   FaultCohesiveDyn faultB;
-  _testAdjustTopology(&faultA, &faultB, data, false, false);
+  _testAdjustTopology(&faultA, &faultB, data, true, true);
 } // testAdjustTopologyQuad4h
 
 // ----------------------------------------------------------------------
@@ -307,7 +307,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4h(void)
 { // testAdjustTopologyTet4h
   CohesiveDataTet4h data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data, false);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyTet4h
 
 // ----------------------------------------------------------------------
@@ -317,7 +317,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4i(void)
 { // testAdjustTopologyTet4i
   CohesiveDataTet4i data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data, false);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyTet4i
 
 // ----------------------------------------------------------------------
@@ -327,7 +327,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4j(void)
 { // testAdjustTopologyTet4j
   CohesiveDataTet4j data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data, false);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyTet4j
 
 // ----------------------------------------------------------------------
@@ -337,7 +337,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8(void)
 { // testAdjustTopologyHex8
   CohesiveDataHex8 data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data, false);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyHex8
 
 // ----------------------------------------------------------------------
@@ -347,7 +347,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8b(void)
 { // testAdjustTopologyHex8b
   CohesiveDataHex8b data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data, false);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyHex8b
 
 // ----------------------------------------------------------------------
@@ -387,7 +387,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8f(void)
 { // testAdjustTopologyHex8f
   CohesiveDataHex8f data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data, false);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyHex8f
 
 // ----------------------------------------------------------------------
@@ -397,7 +397,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8g(void)
 { // testAdjustTopologyHex8g
   CohesiveDataHex8g data;
   FaultCohesiveDyn fault;
-  _testAdjustTopology(&fault, data, false);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyHex8g
 
 // ----------------------------------------------------------------------
@@ -472,7 +472,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8Lagrange(void)
 { // testAdjustTopologyHex8Lagrange
   CohesiveDataHex8Lagrange data;
   FaultCohesiveKin fault;
-  _testAdjustTopology(&fault, data, false);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyHex8Lagrange
 
 // ----------------------------------------------------------------------
@@ -492,8 +492,8 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   CPPUNIT_ASSERT(0 != fault);
   fault->id(1);
   fault->label("fault");
-  mesh->setDebug(true);
   fault->adjustTopology(mesh, flipFault);
+  //mesh->view(data.filename);
 
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh->getDimension());
 
@@ -533,7 +533,6 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   ALE::ISieveVisitor::PointRetriever<Mesh::sieve_type> pV(sieve->getMaxConeSize());
   int iCell = 0;
   i = 0;
-  mesh->view(data.filename);
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
@@ -616,10 +615,11 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
   faultA->adjustTopology(mesh, flipFaultA);
 
   CPPUNIT_ASSERT(0 != faultB);
-  faultB->id(1);
+  faultB->id(2);
   faultB->label("faultB");
   faultB->adjustTopology(mesh, flipFaultB);
 
+  //mesh->view(data.filename);
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh->getDimension());
 
   // Check vertices

@@ -46,7 +46,7 @@
  * |      |      |  |      |
  * |      |      |  |      |
  *30 ----31-----27-19 ----20
- * |  32  |      |/        |
+ * |  32  |      |         |
  *17 ----18      |         |
  * |      |   7  |     8   |
  * |  6   |      |         |
@@ -113,8 +113,8 @@ const int pylith::faults::CohesiveDataQuad4h::_cells[] = {
   14, 31, 27, 26,
   15, 19, 20, 16,
   17, 21, 22, 18,
-  18, 22, 23, 27,
-  19, 23, 24, 20,
+  31, 22, 23, 27,
+  27, 23, 24, 20,
   11, 15, 25, 26,
   15, 19, 26, 27,
   18, 17, 31, 30,
@@ -122,7 +122,7 @@ const int pylith::faults::CohesiveDataQuad4h::_cells[] = {
 
 const int pylith::faults::CohesiveDataQuad4h::_materialIds[] = {
   10, 10, 11, 10, 10, 11, 12, 12, 11,
-  1, 1, 1, 2, 2,
+  1, 1, 2,
 };
 
 const int pylith::faults::CohesiveDataQuad4h::_numGroups = 2;
