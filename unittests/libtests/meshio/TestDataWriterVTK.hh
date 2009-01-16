@@ -103,6 +103,7 @@ protected :
 
   DataWriterVTKData* _data; ///< Data for testing
   ALE::Obj<Mesh> _mesh; ///< Mesh for data
+  bool _flipFault; ///< If true, flip fault orientation.
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

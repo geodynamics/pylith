@@ -31,6 +31,7 @@ void
 pylith::meshio::TestDataWriterVTK::setUp(void)
 { // setUp
   _data = 0;
+  _flipFault = false;
 } // setUp
 
 // ----------------------------------------------------------------------
