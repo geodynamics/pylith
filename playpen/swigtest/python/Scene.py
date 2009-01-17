@@ -39,7 +39,7 @@ class Scene(Component, ModuleScene):
     Constructor.
     """
     Component.__init__(self, name)
-    ModuleScene.__init__(self)
+    self._createModuleObj()
     return
 
 
@@ -53,6 +53,11 @@ class Scene(Component, ModuleScene):
 
     self.bar(self.inventory.bar)
     self.sphere(self.inventory.sphere)
+    return
+
+
+  def _createModuleObj(self):
+    ModuleScene.__init__(self)
     return
 
 

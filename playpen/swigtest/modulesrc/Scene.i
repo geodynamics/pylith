@@ -34,6 +34,7 @@ public :
   void printData(const double* values,
 		 const int size) const;  
   %clear (const double* values, const int size);
+
 }; // Scene
 
 } // namespace geometry

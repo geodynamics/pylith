@@ -37,7 +37,6 @@ class Bar(Shape, ModuleBar):
     Constructor.
     """
     Shape.__init__(self, name)
-    ModuleBar.__init__(self)
     return
 
 
@@ -51,6 +50,11 @@ class Bar(Shape, ModuleBar):
 
     self.length(self.inventory.length)
     self.width(self.inventory.width)
+    return
+
+
+  def _createModuleObj(self):
+    ModuleBar.__init__(self)
     return
 
 

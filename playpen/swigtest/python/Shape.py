@@ -36,6 +36,7 @@ class Shape(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="shape")
+    self._createModuleObj()
     return
 
 
@@ -51,5 +52,10 @@ class Shape(Component):
     self.id(self.inventory.id)
     return
 
+
+  def _createModuleObj(self):
+    raise NotImplementedError("_createModuleObj() not implemented.")
+    return
+  
 
 # End of file 
