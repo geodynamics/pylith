@@ -1,6 +1,16 @@
-// SWIG interface
-%module(directors="1") geometry
-%feature("director"); 
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+%module geometry
 
 // Header files for module C++ code
 %{

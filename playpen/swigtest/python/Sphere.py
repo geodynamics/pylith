@@ -34,7 +34,6 @@ class Sphere(Shape, ModuleSphere):
     Constructor.
     """
     Shape.__init__(self, name)
-    ModuleSphere.__init__(self)
     return
 
 
@@ -50,6 +49,11 @@ class Sphere(Shape, ModuleSphere):
     return
 
 
+  def _createModuleObj(self):
+    ModuleSphere.__init__(self)
+    return
+  
+    
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def shape():

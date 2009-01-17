@@ -32,7 +32,7 @@ public :
   void id(const int value);
   int id(void) const;
 
-  virtual void view(void) const;
+  virtual void view(void) const = 0;
 
 protected :
 

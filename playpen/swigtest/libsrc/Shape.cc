@@ -39,10 +39,5 @@ geometry::Shape::id(void) const {
   return _id;
 }
 
-void
-geometry::Shape::view(void) const {
-  throw std::runtime_error("Not implemented.");
-}
-
 
 // End of file
