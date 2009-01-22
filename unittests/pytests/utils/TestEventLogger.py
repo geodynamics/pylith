@@ -35,13 +35,13 @@ class TestEventLogger(unittest.TestCase):
 
   def test_className(self):
     """
-    Test setClassName() and getClassName.
+    Test className().
     """
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
     name = "my class"
-    logger.setClassName(name)
-    self.assertEqual(name, logger.getClassName())
+    logger.className(name)
+    self.assertEqual(name, logger.className())
     return
 
 
@@ -51,7 +51,7 @@ class TestEventLogger(unittest.TestCase):
     """
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("logging A")
+    logger.className("logging A")
     logger.initialize()
     return
 
@@ -62,7 +62,7 @@ class TestEventLogger(unittest.TestCase):
     """
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("logging A")
+    logger.className("logging A")
     logger.initialize()
 
     events = ["event 1" , "event 2" , "event 3"]
@@ -80,7 +80,7 @@ class TestEventLogger(unittest.TestCase):
     """
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("logging A")
+    logger.className("logging A")
     logger.initialize()
     events = ["event 1" , "event 2" , "event 3"]
     for event in events:
@@ -105,7 +105,7 @@ class TestEventLogger(unittest.TestCase):
     """
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("logging A")
+    logger.className("logging A")
     logger.initialize()
 
     stages = ["stage 1" , "stage 2" , "stage 3"]
@@ -123,7 +123,7 @@ class TestEventLogger(unittest.TestCase):
     """
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("logging A")
+    logger.className("logging A")
     logger.initialize()
     stages = ["stage 1" , "stage 2" , "stage 3"]
     for stage in stages:
