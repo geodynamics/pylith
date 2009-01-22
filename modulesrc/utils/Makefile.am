@@ -13,64 +13,84 @@
 subpackage = utils
 include $(top_srcdir)/subpackage.am
 
-subpkgpyexec_LTLIBRARIES = petscmodule.la utilsmodule.la
+subpkgpyexec_LTLIBRARIES = \
+	_petscmodule.la \
+	_utilsmodule.la
 
-petscmodule_la_LDFLAGS = -module -avoid-version \
+subpkgpyexec_PYTHON = \
+	petsc.py \
+	utils.py
+
+petsc_swig_sources = \
+	petsc.i \
+	petsc_general.i
+
+petsc_swig_generated = \
+	petsc_wrap.cxx \
+	petsc.py
+
+utils_swig_sources = \
+	utils.i \
+	EventLogger.i
+
+utils_swig_generated = \
+	utils_wrap.cxx \
+	utils.py
+
+swig_sources = $(petsc_swig_sources) $(utils_swig_sources)
+
+swig_generated = $(petsc_swig_generated) $(utils_swig_generated)
+
+# PETSc module
+_petscmodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
-dist_petscmodule_la_SOURCES = petsc.pyxe.src
-nodist_petscmodule_la_SOURCES = \
-	petsc.pyxe \
-	petsc.c petsc_embed.cpp petsc_embed.h
-petscmodule_la_LIBADD = \
+
+dist__petscmodule_la_SOURCES = $(petsc_swig_sources) $(petsc_swig_generated)
+
+_petscmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
-	$(PETSC_LIB)
-if ENABLE_CUBIT
-  petscmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
-endif
+	-lspatialdata \
+	$(PETSC_LIBS)
 if NO_UNDEFINED
-  petscmodule_la_LIBADD += $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+_petscmodule_la_LIBADD += \
+	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
-
-utilsmodule_la_LDFLAGS = -module -avoid-version \
+# utils module
+_utilsmodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
-dist_utilsmodule_la_SOURCES = utils.pyxe.src
-nodist_utilsmodule_la_SOURCES = \
-	utils.pyxe \
-	utils.c utils_embed.cpp utils_embed.h
-utilsmodule_la_LIBADD = \
+
+dist__utilsmodule_la_SOURCES = $(utils_swig_sources) $(utils_swig_generated)
+
+_utilsmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
-	$(PETSC_LIB)
-if ENABLE_CUBIT
-  utilsmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
-endif
+	-lspatialdata \
+	$(PETSC_LIBS)
 if NO_UNDEFINED
-  utilsmodule_la_LIBADD += $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+_utilsmodule_la_LIBADD += \
+	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
 
+INCLUDES += -I$(PYTHON_INCDIR)
 
-INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
+$(srcdir)/petsc_wrap.cxx $(srcdir)/petsc.py: $(petsc_swig_sources)
+	$(SWIG) -Wall -c++ -python $<
 
-petsc.pyx petsc_embed.cpp  petsc_embed.h: petsc.pyxe
-	pyrexembed petsc.pyxe
-petsc.pyxe: $(srcdir)/petsc.pyxe.src
-	cp $(srcdir)/petsc.pyxe.src $@
-petsc_embed.cpp: petsc_embed.h
-petsc_embed.h: petsc.pyx
+$(srcdir)/utils_wrap.cxx $(srcdir)/utils.py: $(utils_swig_sources)
+	$(SWIG) -Wall -c++ -python $<
 
-utils.pyx utils_embed.cpp  utils_embed.h: utils.pyxe
-	pyrexembed utils.pyxe
-utils.pyxe: $(srcdir)/utils.pyxe.src
-	cp $(srcdir)/utils.pyxe.src $@
-utils_embed.cpp: utils_embed.h
-utils_embed.h: utils.pyx
 
-.pyx.c:
-	pyrexc $< $(PYREX_INCLUDES)
+MAINTAINERCLEANFILES = \
+	$(srcdir)/petsc_wrap.cxx \
+	$(srcdir)/petsc.py \
+	$(srcdir)/utils_wrap.cxx \
+	$(srcdir)/utils.py
 
-CLEANFILES = *_embed.* \
-	petsc.pyxe petsc.pyx petsc.c \
-	utils.pyxe utils.pyx utils.c
+
+# End of file 
+
+
+
 
 # End of file 
