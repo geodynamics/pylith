@@ -107,21 +107,8 @@ CIT_CHECK_LIB_PETSC_SIEVE
 # Check for Python modules and packages.
 CIT_PYTHON_EGG_SETUP
 
-# PYREX/PYREXEMBED
-AC_CHECK_PROG([have_pyrex],
-  [pyrexc],
-  [yes],
-  [no])
-if test "$have_pyrex" = "no"; then
-  AC_MSG_ERROR([Pyrex not found in current path.])
-fi
-AC_CHECK_PROG([have_pyrexembed],
-  [pyrexembed],
-  [yes],
-  [no])
-if test "$have_pyrexembed" = "no"; then
-  AC_MSG_ERROR([Pyrexembed not found in current path.])
-fi
+# SWIG
+AC_PROG_SWIG(1.3.33)
 
 # CPPUNIT
 if test "$enable_testing" = "yes" ; then
