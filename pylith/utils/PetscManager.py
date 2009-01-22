@@ -20,6 +20,7 @@
 ## Factory: petsc_manager
 
 from pyre.components.Component import Component
+import pylith.utils.petsc as petsc
 
 # PetscManager class
 class PetscManager(Component):
@@ -45,14 +46,13 @@ class PetscManager(Component):
     Initialize PETSc.
     """
     self._info.log("Initializing PETSc.")
-    import pylith.utils.petsc as bindings
     import sys
     args = [sys.executable]
     options = self._getOptions()
     if len(options) > 0:
       for arg in options:
         args.append(arg)
-    bindings.petsc_initialize(args)
+    petsc.initialize(args)
     return
 
 
@@ -61,8 +61,7 @@ class PetscManager(Component):
     Finalize PETSc.
     """
     self._info.log("Finalizing PETSc.")
-    import pylith.utils.petsc as bindings
-    bindings.petsc_finalize()
+    petsc.finalize()
     return
   
 
