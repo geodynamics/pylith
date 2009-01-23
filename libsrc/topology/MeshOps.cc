@@ -14,6 +14,7 @@
 
 #include "MeshOps.hh" // implementation of class methods
 
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/array.hh" // USES int_array
 
 #include <stdexcept> // USES std::runtime_error
@@ -26,8 +27,8 @@
 
 // ----------------------------------------------------------------------
 void
-pylith::topology::MeshOps::checkMaterialIds(const ALE::Obj<Mesh>& mesh,
-					    int* materialIds,
+pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
+					    int* const materialIds,
 					    const int numMaterials)
 { // checkMaterialIds
   assert( (0 == numMaterials && 0 == materialIds) ||
@@ -41,19 +42,22 @@ pylith::topology::MeshOps::checkMaterialIds(const ALE::Obj<Mesh>& mesh,
   int_array matCellCounts(numMaterials);
   matCellCounts = 0;
 
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->heightStratum(0);
   assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  const ALE::Obj<Mesh::label_type>& materialsLabel = mesh->getLabel("material-id");
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<SieveMesh::label_type>& materialsLabel = 
+    sieveMesh->getLabel("material-id");
 
   int* matBegin = materialIds;
   int* matEnd = materialIds + numMaterials;
   std::sort(matBegin, matEnd);
 
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
-    const int cellId = mesh->getValue(materialsLabel, *c_iter);
+    const int cellId = sieveMesh->getValue(materialsLabel, *c_iter);
     const int* result = std::find(matBegin, matEnd, cellId);
     if (result == matEnd) {
       std::ostringstream msg;
@@ -70,7 +74,7 @@ pylith::topology::MeshOps::checkMaterialIds(const ALE::Obj<Mesh>& mesh,
   // Make sure each material has 
   int_array matCellCountsAll(matCellCounts.size());
   MPI_Allreduce(&matCellCounts[0], &matCellCountsAll[0],
-		matCellCounts.size(), MPI_INT, MPI_SUM, mesh->comm());
+		matCellCounts.size(), MPI_INT, MPI_SUM, mesh.comm());
   for (int i=0; i < numMaterials; ++i) {
     const int matId = materialIds[i];
     const int matIndex = materialIndex[matId];

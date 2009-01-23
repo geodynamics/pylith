@@ -47,6 +47,15 @@ class Mesh(ModuleMesh):
     # module.
     from pylith.mpi.Communicator import Communicator
     return Communicator(ModuleMesh.comm(self))
+
+
+  def checkMaterialIds(self, materialIds):
+    """
+    Check material ids for consistency with mesh.
+    """
+    from topology import MeshOps_checkMaterialIds
+    MeshOps_checkMaterialIds(self, materialIds)
+    return
   
 
 # End of file

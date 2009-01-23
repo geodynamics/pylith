@@ -2,10 +2,9 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-0. Add flag to flip which side of fault vertices are replaced when
-   creating cohesive cells [Matt]
-
-     Update unit tests.
+0. SWIG conversion
+  TestMesh.test_view()
+  TestMesh.test_checkMaterialIds()
 
 1. Reduce memory use (new labels) [Matt]
 
@@ -20,7 +19,7 @@ CURRENT ISSUES/PRIORITIES
       FieldOps::copyValues (obsolete?)
       MeshIO::normalizer()
       Material::normalizer()
-      Material::_nodimProperties()
+      Material::_nondimProperties()
       Material::_dimProperties()
       Constraint::normalizer()
       Integrator::normalizer()

@@ -13,23 +13,29 @@
 /**
  * @file pylith/topology/MeshOps.hh
  *
- * @brief Temporary object for doing operations on a PETSc
- * mesh. Object will be replaced by a PyLith Mesh object that inherits
- * or templates over the PETSc mesh object.
+ * @brief Simple operations on a Mesh object.
  */
 
 #if !defined(pylith_topology_meshops_hh)
 #define pylith_topology_meshops_hh
 
+// Include directives ---------------------------------------------------
+#define NEWPYLITHMESH 1 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
+// Forward declarations -------------------------------------------------
 namespace pylith {
   namespace topology {
     class MeshOps;
-    class TestMeshOps;
+
+    class Mesh; // USES Mesh
+
+    class TestMeshOps; // unit testing
   } // topology
 } // pylith
 
+
+// MeshOps --------------------------------------------------------------
 class pylith::topology::MeshOps
 { // MeshOps
   friend class TestMeshOps; // unit testing
@@ -41,12 +47,13 @@ public :
    *  one of the materials.
    *
    * @param mesh PETSc mesh.
-   * @param materialIds Array of ids for all materials and cohesive cell interfaces.
+   * @param materialIds Array of ids for all materials and cohesive
+   * cell interfaces.
    * @param numMaterials Size of array.
    */
   static
-  void checkMaterialIds(const ALE::Obj<Mesh>& mesh,
-			int* materialIds,
+  void checkMaterialIds(const Mesh& mesh,
+			int* const materialIds,
 			const int numMaterials);
 
 

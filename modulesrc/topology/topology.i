@@ -16,6 +16,7 @@
 // Header files for module C++ code
 %{
 #include "pylith/topology/Mesh.hh"
+#include "pylith/topology/MeshOps.hh"
 %}
 
 %include "exception.i"
@@ -29,8 +30,19 @@
 
 %include "typemaps.i"
 
+// Numpy interface stuff
+%{
+#define SWIG_FILE_WITH_INIT
+%}
+%include "../include/numpy.i"
+%init %{
+import_array();
+%}
+
 // Interfaces
 %include "Mesh.i"
+%include "MeshOps.i"
+
 
 // End of file
 

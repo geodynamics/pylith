@@ -19,7 +19,8 @@ subpkgpyexec_PYTHON = topology.py
 
 swig_sources = \
 	topology.i \
-	Mesh.i
+	Mesh.i \
+	MeshOps.i
 
 swig_generated = \
 	topology_wrap.cxx \
@@ -42,7 +43,7 @@ _topologymodule_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
-INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
+INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 $(srcdir)/topology_wrap.cxx $(srcdir)/topology.py: $(swig_sources)
 	$(SWIG) -Wall -c++ -python $<
