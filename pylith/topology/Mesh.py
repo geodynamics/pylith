@@ -18,8 +18,6 @@
 
 from topology import Mesh as ModuleMesh
 
-from topology import mpi_communicator
-
 # Mesh class
 class Mesh(ModuleMesh):
   """
@@ -33,16 +31,11 @@ class Mesh(ModuleMesh):
     Constructor.
     """
     if comm is None and dim is None:
-      print "A"
       ModuleMesh.__init__(self)
     elif dim is None:
-      print "B"
-      commInt = mpi_communicator(comm)
-      print commInt
-      ModuleMesh.__init__(self, comm)
+      ModuleMesh.__init__(self, comm.handle)
     else:
-      print "C"
-      ModuleMesh.__init__(self, comm, dim)
+      ModuleMesh.__init__(self, comm.handle, dim)
     return
 
 

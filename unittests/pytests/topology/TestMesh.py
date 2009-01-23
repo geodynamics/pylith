@@ -36,10 +36,17 @@ class TestMesh(unittest.TestCase):
     """
     Test constructor.
     """
-    import mpi
-    comm = mpi.MPI_COMM_SELF
-    print comm
-    mesh = Mesh(comm=mpi.MPI_COMM_SELF)
+    from pylith.mpi.Communicator import mpi_comm_self
+    mesh = Mesh(comm=mpi_comm_self())
+    return
+
+
+  def test_constructorC(self):
+    """
+    Test constructor.
+    """
+    from pylith.mpi.Communicator import mpi_comm_self
+    mesh = Mesh(comm=mpi_comm_self(), dim=2)
     return
 
 

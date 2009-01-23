@@ -19,7 +19,6 @@ subpkgpyexec_PYTHON = topology.py
 
 swig_sources = \
 	topology.i \
-	../include/mpi.i \
 	Mesh.i
 
 swig_generated = \

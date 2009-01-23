@@ -28,7 +28,6 @@
  } // exception
 
 %include "typemaps.i"
-%include "../include/mpi.i"
 
 // Interfaces
 %include "Mesh.i"
