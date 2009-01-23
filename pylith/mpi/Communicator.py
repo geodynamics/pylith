@@ -45,7 +45,7 @@ class Communicator(object):
 
 
 # ----------------------------------------------------------------------
-def petsc_world():
+def petsc_comm_world():
   """
   Python wrapper around PETSC_COMM_WORLD.
   """
@@ -56,7 +56,7 @@ def petsc_world():
 
 
 # ----------------------------------------------------------------------
-def petsc_self():
+def petsc_comm_self():
   """
   Python wrapper around PETSC_COMM_SELF.
   """
@@ -67,7 +67,7 @@ def petsc_self():
 
 
 # ----------------------------------------------------------------------
-def mpi_world():
+def mpi_comm_world():
   """
   Python wrapper around MPI_COMM_WORLD.
   """
@@ -78,13 +78,13 @@ def mpi_world():
 
 
 # ----------------------------------------------------------------------
-def mpi_self():
+def mpi_comm_self():
   """
   Python wrapper around MPI_COMM_SELF.
   """
   global _mpi_self
   if _mpi_self is None:
-      _mpi_self = Communicator(mpimodule.MPI_COMM_SELF)
+      _mpi_self = Communicator(mpimodule.mpi_comm_self())
   return _mpi_self
 
 
