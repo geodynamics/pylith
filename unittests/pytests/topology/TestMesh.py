@@ -89,6 +89,18 @@ class TestMesh(unittest.TestCase):
     return
 
 
+  def test_comm(self):
+    """
+    Test comm().
+    """
+    from pylith.mpi.Communicator import petsc_comm_world
+    mesh = Mesh(comm=petsc_comm_world())
+    comm = mesh.comm()
+    self.assertEqual(0, comm.rank)
+    self.assertEqual(1, comm.size)
+    return
+
+
   def test_initialize(self):
     """
     Test initialize().

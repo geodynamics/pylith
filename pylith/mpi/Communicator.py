@@ -15,6 +15,12 @@
 ## @brief Python MPI communicator object.
 ##
 ## Provides SWIG friendly interface to MPI communicator object.
+##
+## The communicator requires special treatment because we do not have
+## a normal SWIG interface definition. SWIG treats the communicator in
+## the same way it treats a pointer to an object, even if it is an
+## integer.
+
 
 import pylith.mpi.mpi as mpimodule
 
@@ -26,15 +32,27 @@ class Communicator(object):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, cppComm):
+  def __init__(self, handle):
     """
     Constructor.
     """
-    self.handle = cppComm
+    # Transfer responsibility of memory management from module to this
+    # class.
+    handle.disown()
+    
+    self.handle = handle
     self.rank = mpimodule.rank(self.handle)
     self.size = mpimodule.size(self.handle)
     return
 
+
+  def __del__(self):
+    del self.rank
+    del self.size
+    mpimodule.destroy_comm(self.handle)
+    del self.handle
+    return
+  
 
   def barrier(self):
     """

@@ -39,4 +39,14 @@ class Mesh(ModuleMesh):
     return
 
 
+  def comm(self):
+    """
+    Get communicator.
+    """
+    # Use Communicator object to wrap C++ MPI_Comm* returned by
+    # module.
+    from pylith.mpi.Communicator import Communicator
+    return Communicator(ModuleMesh.comm(self))
+  
+
 # End of file
