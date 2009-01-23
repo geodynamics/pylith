@@ -10,7 +10,7 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/utils/TestPescManager.py
+## @file unittests/pytests/utils/TestEventLogger.py
 
 ## @brief Unit testing of EventLogger object.
 
