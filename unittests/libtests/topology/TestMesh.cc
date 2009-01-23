@@ -58,6 +58,40 @@ pylith::topology::TestMesh::testCoordsys(void)
 } // testCoordsys
 
 // ----------------------------------------------------------------------
+// Test debug().
+void
+pylith::topology::TestMesh::testDebug(void)
+{ // testDebug
+  Mesh mesh;
+
+  CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
+
+  mesh.debug(true);
+  CPPUNIT_ASSERT_EQUAL(true, mesh.debug());
+} // testDebug
+
+// ----------------------------------------------------------------------
+// Test dimension().
+void
+pylith::topology::TestMesh::testDimension(void)
+{ // testDimension
+  const int dim = 2;
+  Mesh mesh(PETSC_COMM_WORLD, dim);
+
+  CPPUNIT_ASSERT_EQUAL(dim, mesh.dimension());
+} // testDimension
+
+// ----------------------------------------------------------------------
+// Test comm().
+void
+pylith::topology::TestMesh::testComm(void)
+{ // testComm
+  Mesh mesh(PETSC_COMM_SELF);
+
+  CPPUNIT_ASSERT_EQUAL(PETSC_COMM_SELF, mesh.comm());
+} // testComm
+
+// ----------------------------------------------------------------------
 // Test initialize().
 void
 pylith::topology::TestMesh::testInitialize(void)

@@ -93,6 +93,8 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/SingleOutput.py \
 	meshio/VertexFilter.py \
 	meshio/VertexFilterVecNorm.py \
+	mpi/__init__.py \
+	mpi/Communicator.py \
 	problems/__init__.py \
 	problems/Explicit.py \
 	problems/Formulation.py \

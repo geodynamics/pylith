@@ -16,6 +16,7 @@ SUBDIRS = \
 	feassemble \
 	materials \
 	meshio \
+	mpi \
 	solver \
 	topology \
 	utils

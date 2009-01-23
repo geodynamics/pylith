@@ -10,48 +10,47 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = topology
+subpackage = mpi
 include $(top_srcdir)/subpackage.am
 
-subpkgpyexec_LTLIBRARIES = _topologymodule.la
+subpkgpyexec_LTLIBRARIES = _mpimodule.la
 
-subpkgpyexec_PYTHON = topology.py
+subpkgpyexec_PYTHON = mpi.py
 
 swig_sources = \
-	topology.i \
-	../include/mpi.i \
-	Mesh.i
+	mpi.i \
+	mpi_comm.i
 
 swig_generated = \
-	topology_wrap.cxx \
-	topology.py
+	mpi_wrap.cxx \
+	mpi.py
 
-_topologymodule_la_LDFLAGS = -module -avoid-version \
+_mpimodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist__topologymodule_la_SOURCES = $(swig_sources) $(swig_generated)
+dist__mpimodule_la_SOURCES = $(swig_sources) $(swig_generated)
 
-_topologymodule_la_LIBADD = \
+_mpimodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIBS)
 if ENABLE_CUBIT
-  _topologymodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+  _mpimodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
 endif
 if NO_UNDEFINED
-_topologymodule_la_LIBADD += \
+_mpimodule_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
 INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
-$(srcdir)/topology_wrap.cxx $(srcdir)/topology.py: $(swig_sources)
+$(srcdir)/mpi_wrap.cxx $(srcdir)/mpi.py: $(swig_sources)
 	$(SWIG) -Wall -c++ -python $<
 
 
 MAINTAINERCLEANFILES = \
-	$(srcdir)/topology_wrap.cxx \
-	$(srcdir)/topology.py
+	$(srcdir)/mpi_wrap.cxx \
+	$(srcdir)/mpi.py
 
 
 # End of file 

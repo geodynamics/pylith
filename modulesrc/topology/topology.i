@@ -11,12 +11,11 @@
 //
 
 // SWIG interface
-%module petsc
+%module topology
 
 // Header files for module C++ code
 %{
-#include <petsc.h>
-#include <petscmat.h>
+#include "pylith/topology/Mesh.hh"
 %}
 
 %include "exception.i"
@@ -29,11 +28,10 @@
  } // exception
 
 %include "typemaps.i"
-%include "../include/chararray.i"
+%include "../include/mpi.i"
 
 // Interfaces
-%include "petsc_general.i"
-%include "petsc_mat.i"
+%include "Mesh.i"
 
 // End of file
 

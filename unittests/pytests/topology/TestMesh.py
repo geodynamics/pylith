@@ -24,11 +24,61 @@ class TestMesh(unittest.TestCase):
   Unit testing of Mesh object.
   """
 
-  def test_constructor(self):
+  def test_constructorA(self):
     """
     Test constructor.
     """
     mesh = Mesh()
+    return
+
+
+  def test_constructorB(self):
+    """
+    Test constructor.
+    """
+    import mpi
+    comm = mpi.MPI_COMM_SELF
+    print comm
+    mesh = Mesh(comm=mpi.MPI_COMM_SELF)
+    return
+
+
+  def test_coordsys(self):
+    """
+    Test coordsys().
+    """
+    from spatialdata.geocoords.CSCart import CSCart
+    cs = CSCart()
+    cs.inventory.spaceDim = 2
+    cs._configure()
+
+    mesh = Mesh()
+    mesh.coordsys(cs)
+    self.assertEqual(cs.spaceDim(), mesh.coordsys().spaceDim())
+    return
+
+
+  def test_debug(self):
+    """
+    Test debug().
+    """
+    mesh = Mesh()
+
+    self.assertEqual(False, mesh.debug())
+
+    mesh.debug(True)
+    self.assertEqual(True, mesh.debug())
+    return
+
+
+  def test_dimension(self):
+    """
+    Test debug().
+    """
+    mesh = Mesh()
+    
+    dim = 3
+    self.assertEqual(dim, mesh.dimension())
     return
 
 
@@ -40,102 +90,10 @@ class TestMesh(unittest.TestCase):
     cs = CSCart()
 
     mesh = Mesh()
-    mesh.initialize(cs)
-    self.assertNotEqual(None, mesh.cppHandle)
-    self.assertEqual(cs, mesh.coordsys)
+    mesh.coordsys(cs)
+    mesh.initialize()
     return
 
-
-  def test_comm(self):
-    """
-    Test comm().
-    """
-    mesh = self._getMesh()
-    comm = mesh.comm()
-    import mpi
-    self.assertEqual(mpi.MPI_COMM_WORLD, comm)
-    return
-
-
-  def test_getRealSection(self):
-    """
-    Test createRealSection().
-
-    WARNING: This is not a rigorous test of createRealSection()
-    because we don't verify the results.
-    """
-    mesh = self._getMesh()
-    field = mesh.getRealSection("field")
-
-    # We should really add something here to check to make sure things
-    # actually initialized correctly.
-    return
-
-
-  def test_createRealSection(self):
-    """
-    Test createRealSection().
-
-    WARNING: This is not a rigorous test of createRealSection()
-    because we don't verify the results.
-    """
-    mesh = self._getMesh()
-    field = mesh.createRealSection("field", fiberDim=2)
-
-    # We should really add something here to check to make sure things
-    # actually initialized correctly.
-    return
-
-
-  def test_allocateRealSection(self):
-    """
-    Test createRealSection().
-
-    WARNING: This is not a rigorous test of createRealSection()
-    because we don't verify the results.
-    """
-    mesh = self._getMesh()
-    field = mesh.createRealSection("field", fiberDim=2)
-    mesh.allocateRealSection(field)
-
-    # We should really add something here to check to make sure things
-    # actually initialized correctly.
-    return
-
-
-  def test_createMatrix(self):
-    """
-    Test createRealSection().
-
-    WARNING: This is not a rigorous test of createRealSection()
-    because we don't verify the results.
-    """
-    mesh = self._getMesh()
-    field = mesh.createRealSection("field", fiberDim=2)
-    mesh.allocateRealSection(field)
-    matrix = mesh.createMatrix(field)
-
-    # We should really add something here to check to make sure things
-    # actually initialized correctly.
-    return
-
-
-  def test_checkMaterialIds(self):
-    """
-    Test createRealSection().
-    """
-    mesh = self._getMesh()
-    materialIds = [4, 3]
-    mesh.checkMaterialIds(materialIds)
-
-    materialIds[0] = -2
-    caughtError = False
-    try:
-      mesh.checkMaterialIds(materialIds)
-    except RuntimeError:
-      caughtError = True
-    self.assertTrue(caughtError)
-    return
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -145,16 +103,18 @@ class TestMesh(unittest.TestCase):
     """
     from spatialdata.geocoords.CSCart import CSCart
     cs = CSCart()
-    cs.spaceDim = 2
+    cs.inventory.spaceDim = 2
+    cs._configure()
 
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
-    normalizer.initialize()    
+    normalizer._configure()    
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
-    importer.filename = "data/tri3.mesh"
-    importer.coordsys = cs
+    importer.inventory.filename = "data/tri3.mesh"
+    importer.inventory.coordsys = cs
+    importer._configure()
     mesh = importer.read(normalizer, debug=False, interpolate=False)
     
     return mesh

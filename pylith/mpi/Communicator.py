@@ -26,11 +26,11 @@ class Communicator(object):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, group):
+  def __init__(self, cppComm):
     """
     Constructor.
     """
-    self.handle = mpimodule.create_communicator(group)
+    self.handle = cppComm
     self.rank = mpimodule.rank(self.handle)
     self.size = mpimodule.size(self.handle)
     return
@@ -51,7 +51,7 @@ def petsc_world():
   """
   global _petsc_world
   if _petsc_world is None:
-      _petsc_world = Communicator(mpimodule.PETSC_COMM_WORLD)
+      _petsc_world = Communicator(mpimodule.petsc_comm_world())
   return _petsc_world
 
 
@@ -62,7 +62,7 @@ def petsc_self():
   """
   global _petsc_self
   if _petsc_self is None:
-      _petsc_self = Communicator(mpimodule.PETSC_COMM_SELF)
+      _petsc_self = Communicator(mpimodule.petsc_comm_self())
   return _petsc_self
 
 
@@ -73,7 +73,7 @@ def mpi_world():
   """
   global _mpi_world
   if _mpi_world is None:
-      _mpi_world = Communicator(mpimodule.MPI_COMM_WORLD)
+      _mpi_world = Communicator(mpimodule.mpi_comm_world())
   return _mpi_world
 
 

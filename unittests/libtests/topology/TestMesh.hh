@@ -43,6 +43,9 @@ class pylith::topology::TestMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testSieveMesh );
   CPPUNIT_TEST( testCoordsys );
+  CPPUNIT_TEST( testDebug );
+  CPPUNIT_TEST( testDimension );
+  CPPUNIT_TEST( testComm );
   CPPUNIT_TEST( testInitialize );
 
   CPPUNIT_TEST_SUITE_END();
@@ -58,6 +61,15 @@ public :
 
   /// Test coordsys().
   void testCoordsys(void);
+
+  /// Test debug().
+  void testDebug(void);
+
+  /// Test dimension().
+  void testDimension(void);
+
+  /// Test comm().
+  void testComm(void);
 
   /// Test initialize().
   void testInitialize(void);

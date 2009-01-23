@@ -23,13 +23,14 @@
 #define pylith_topology_mesh_hh
 
 // Include directives ---------------------------------------------------
-#define NEWPYLITHMESH 1
+#define NEWPYLITHMESH 1 
 #include "pylith/utils/sievetypes.hh"
 
 // Forward declarations -------------------------------------------------
 namespace pylith {
   namespace topology {
     class Mesh;
+    class TestMesh; // unit testing
   } // topology
 } // pylith
 
@@ -42,6 +43,7 @@ namespace spatialdata {
 // Mesh -----------------------------------------------------------------
 class pylith::topology::Mesh
 { // Mesh
+  friend class TestMesh; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -81,8 +83,38 @@ public :
    */
   const spatialdata::geocoords::CoordSys* coordsys(void) const;
 
+  /** Set debug flag.
+   *
+   * @param value Turn on debugging if true.
+   */
+   void debug(const bool value);
+
+  /** Get debug flag.
+   *
+   * @param Get debugging flag.
+   */
+   bool debug(void) const;
+
+  /** Get dimension of mesh.
+   *
+   * @returns Dimension of mesh.
+   */
+  int dimension(void) const;
+
+  /** Get MPI communicator associated with mesh.
+   *
+   * @returns MPI communicator.
+   */
+  const MPI_Comm comm(void) const;
+    
   /// Initialize the finite-element mesh.
   void initialize(void);
+
+  /** Print mesh to stdout.
+   *
+   * @param label Label for mesh.
+   */
+  void view(const char* label);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

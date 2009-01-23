@@ -23,7 +23,8 @@ subpkgpyexec_PYTHON = \
 
 petsc_swig_sources = \
 	petsc.i \
-	petsc_general.i
+	petsc_general.i \
+	petsc_mat.i
 
 petsc_swig_generated = \
 	petsc_wrap.cxx \
@@ -72,7 +73,7 @@ _utilsmodule_la_LIBADD += \
 endif
 
 
-INCLUDES += -I$(PYTHON_INCDIR)
+INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 $(srcdir)/petsc_wrap.cxx $(srcdir)/petsc.py: $(petsc_swig_sources)
 	$(SWIG) -Wall -c++ -python $<
@@ -86,11 +87,6 @@ MAINTAINERCLEANFILES = \
 	$(srcdir)/petsc.py \
 	$(srcdir)/utils_wrap.cxx \
 	$(srcdir)/utils.py
-
-
-# End of file 
-
-
 
 
 # End of file 

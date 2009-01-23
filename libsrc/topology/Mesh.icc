@@ -35,6 +35,41 @@ pylith::topology::Mesh::coordsys(void) const {
   return _coordsys;
 }
 
+// Set debug flag.
+inline
+void
+pylith::topology::Mesh::debug(const bool value) {
+  _mesh->setDebug(value);
+}
+
+// Get debug flag.
+inline
+bool
+pylith::topology::Mesh::debug(void) const {
+  return _mesh->debug();
+}
+
+// Get dimension of mesh.
+inline
+int
+pylith::topology::Mesh::dimension(void) const {
+  return _mesh->getDimension();
+}
+
+// Get MPI communicator associated with mesh.
+inline
+const MPI_Comm
+pylith::topology::Mesh::comm(void) const {
+  return _mesh->comm();
+}
+    
+// Print mesh to stdout.
+inline
+void
+pylith::topology::Mesh::view(const char* label) {
+  _mesh->view(label);
+}
+
 
 #endif
 
