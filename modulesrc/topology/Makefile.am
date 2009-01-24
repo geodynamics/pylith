@@ -35,9 +35,6 @@ _topologymodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIBS)
-if ENABLE_CUBIT
-  _topologymodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
-endif
 if NO_UNDEFINED
 _topologymodule_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
