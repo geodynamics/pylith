@@ -23,10 +23,11 @@ check_PROGRAMS = testtopology
 testtopology_SOURCES = \
 	TestField.cc \
 	TestFieldUniform.cc \
-	TestFieldsManager.cc \
 	TestMesh.cc \
 	TestMeshOps.cc \
 	test_topology.cc
+
+#	TestFieldsManager.cc
 
 noinst_HEADERS = \
 	TestField.hh \

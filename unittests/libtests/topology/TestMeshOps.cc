@@ -16,8 +16,8 @@
 
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestMeshOps );
@@ -27,12 +27,12 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestMeshOps );
 void
 pylith::topology::TestMeshOps::testCheckMaterialIds(void)
 { // testCheckMaterialIds
-  ALE::Obj<Mesh> mesh;
+  const int dim = 2;
+  Mesh mesh(PETSC_COMM_WORLD, dim);
 
   meshio::MeshIOAscii iohandler;
   iohandler.filename("data/tri3.mesh");
   iohandler.read(&mesh);
-  CPPUNIT_ASSERT(!mesh.isNull());
 
   const int numMaterials = 2;
   int materialIds[numMaterials];
