@@ -28,10 +28,7 @@ class TestMeshIOAscii(unittest.TestCase):
     """
     Test constructor.
     """
-    iohandler = MeshIOAscii()
-    iohandler._configure()
-    iohandler._sync()
-    self.assertNotEqual(None, iohandler.cppHandle)
+    io = MeshIOAscii()
     return
 
 
@@ -39,10 +36,11 @@ class TestMeshIOAscii(unittest.TestCase):
     """
     Test filename().
     """
-    iohandler = MeshIOAscii()
     value = "hi.txt"
-    iohandler.filename = value
-    self.assertEqual(value, iohandler.filename)
+
+    io = MeshIOAscii()
+    io.filename(value)
+    self.assertEqual(value, io.filename())
     return
 
 
@@ -50,24 +48,28 @@ class TestMeshIOAscii(unittest.TestCase):
     """
     Test write() and read().
     """
-    iohandler = MeshIOAscii()
     filenameIn = "data/mesh2Din3D.txt"
     filenameOut = "data/mesh2Din3D_test.txt"
+    dim = 2
+
+    from spatialdata.geocoords.CSCart import CSCart
+    cs = CSCart()
+    cs._configure()
+
+    io = MeshIOAscii()
+    io.inventory.filename = filenameIn
+    io.inventory.coordsys = cs
+    io._configure()
     
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
-    normalizer.initialize()
 
-    from spatialdata.geocoords.CSCart import CSCart
-    iohandler.filename = filenameIn
-    iohandler.coordsys = CSCart()
-    mesh = iohandler.read(normalizer, debug=False, interpolate=False)
+    mesh = io.read(dim, normalizer, debug=False, interpolate=False)
 
     self.assertEqual(2, mesh.dimension())
 
-    iohandler.filename = filenameOut
-    iohandler.write(mesh)
-
+    io.filename(filenameOut)
+    io.write(mesh)
 
     fileE = open(filenameIn, "r")
     linesE = fileE.readlines()

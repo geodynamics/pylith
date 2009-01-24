@@ -5,6 +5,8 @@ CURRENT ISSUES/PRIORITIES
 0. SWIG conversion
   TestMesh.test_view()
   TestMesh.test_checkMaterialIds()
+  TestSolutionFields
+
 
 1. Reduce memory use (new labels) [Matt]
 

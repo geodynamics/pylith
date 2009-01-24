@@ -30,8 +30,8 @@ noinst_PYTHON = \
 	TestOutputSolnSubset.py
 
 if ENABLE_CUBIT
-  TESTS += testdriver_cubit.py
-  dist_check_SCRIPTS += testdriver_cubit.py
+#  TESTS += testdriver_cubit.py
+#  dist_check_SCRIPTS += testdriver_cubit.py
 endif	
 
 noinst_tmp = \

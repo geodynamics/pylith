@@ -40,7 +40,9 @@ class TestApp(Script):
     from pylith.utils.PetscManager import PetscManager
     manager = PetscManager()
     manager.initialize()
+
     unittest.TextTestRunner(verbosity=2).run(self._suite())
+
     manager.finalize()
     return
 
@@ -57,20 +59,20 @@ class TestApp(Script):
     from TestMeshIOAscii import TestMeshIOAscii
     suite.addTest(unittest.makeSuite(TestMeshIOAscii))
 
-    from TestMeshIOLagrit import TestMeshIOLagrit
-    suite.addTest(unittest.makeSuite(TestMeshIOLagrit))
+    #from TestMeshIOLagrit import TestMeshIOLagrit
+    #suite.addTest(unittest.makeSuite(TestMeshIOLagrit))
 
-    from TestVertexFilterVecNorm import TestVertexFilterVecNorm
-    suite.addTest(unittest.makeSuite(TestVertexFilterVecNorm))
+    #from TestVertexFilterVecNorm import TestVertexFilterVecNorm
+    #suite.addTest(unittest.makeSuite(TestVertexFilterVecNorm))
 
-    from TestCellFilterAvg import TestCellFilterAvg
-    suite.addTest(unittest.makeSuite(TestCellFilterAvg))
+    #from TestCellFilterAvg import TestCellFilterAvg
+    #suite.addTest(unittest.makeSuite(TestCellFilterAvg))
 
-    from TestOutputManager import TestOutputManager
-    suite.addTest(unittest.makeSuite(TestOutputManager))
+    #from TestOutputManager import TestOutputManager
+    #suite.addTest(unittest.makeSuite(TestOutputManager))
 
-    from TestOutputSolnSubset import TestOutputSolnSubset
-    suite.addTest(unittest.makeSuite(TestOutputSolnSubset))
+    #from TestOutputSolnSubset import TestOutputSolnSubset
+    #suite.addTest(unittest.makeSuite(TestOutputSolnSubset))
 
     return suite
 

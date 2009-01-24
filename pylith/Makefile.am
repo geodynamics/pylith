@@ -79,7 +79,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/CellFilterAvg.py \
 	meshio/DataWriter.py \
 	meshio/DataWriterVTK.py \
-	meshio/MeshIO.py \
+	meshio/MeshIOObj.py \
 	meshio/MeshIOAscii.py \
 	meshio/MeshIOCubit.py \
 	meshio/MeshIOLagrit.py \

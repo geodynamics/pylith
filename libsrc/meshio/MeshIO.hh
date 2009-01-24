@@ -92,13 +92,13 @@ public :
    *
    * @param mesh PyLith finite-element mesh.
    */
-  void read(topology::Mesh* mesh);
+  void read(pylith::topology::Mesh* mesh);
 
   /** Write mesh to file.
    *
    * @param mesh PyLith finite-element mesh.
    */
-  void write(topology::Mesh* const mesh);
+  void write(pylith::topology::Mesh* const mesh);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :

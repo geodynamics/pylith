@@ -10,16 +10,17 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/meshio/MeshIO.py
+## @file pyre/meshio/MeshIOObj.py
 ##
 ## @brief Python abstract base class for finite-element mesh I/O.
 ##
 ## Factory: mesh_io
 
 from pyre.components.Component import Component
+from meshio import MeshIO as ModuleMeshIO
 
-# MeshIO class
-class MeshIO(Component):
+# MeshIOObj class
+class MeshIOObj(Component, ModuleMeshIO):
   """
   Python abstract base class for finite-element mesh I/O.
   """
@@ -31,12 +32,12 @@ class MeshIO(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="mesh_io")
-    self.cppHandle = None
     self.coordsys = None
+    self._createModuleObj()
     return
 
 
-  def read(self, normalizer, debug, interpolate):
+  def read(self, dim, normalizer, debug, interpolate):
     """
     Read finite-element mesh and store in Sieve mesh object.
 
@@ -45,22 +46,22 @@ class MeshIO(Component):
     self._info.log("Reading finite-element mesh")
 
     # Set flags
-    self._sync()
-    self.cppHandle.normalizer = normalizer.cppHandle
-    self.cppHandle.debug = debug
-    self.cppHandle.interpolate = interpolate
+    self.normalizer(normalizer)
+    self.debug(debug)
+    self.interpolate(interpolate)
 
     # Initialize coordinate system
     if self.coordsys is None:
       raise ValueError, "Coordinate system for mesh is unknown."
-    self.coordsys.initialize()
 
-    from pylith.topology.Mesh import Mesh
-    mesh = Mesh()
-    mesh.initialize(self.coordsys)
+    from pylith.mpi.Communicator import petsc_comm_world
+    from pylith.topology.Mesh import Mesh    
+    mesh = Mesh(petsc_comm_world(), dim)
+    mesh.coordsys(self.coordsys)
+    mesh.initialize()
 
     # Read mesh
-    self.cppHandle.read(mesh.cppHandle)
+    ModuleMeshIO.read(self, mesh)
     return mesh
 
 
@@ -71,8 +72,7 @@ class MeshIO(Component):
     @param mesh PETSc mesh object containing finite-element mesh
     """
     self._info.log("Writing finite-element mesh")
-    self._sync()
-    self.cppHandle.write(mesh.cppHandle)
+    ModuleMeshIO.write(self, mesh)
     return
 
 
@@ -86,10 +86,11 @@ class MeshIO(Component):
     return
 
 
-  def _sync(self):
+  def _createModuleObj(self):
     """
-    Force synchronization between Python and C++.
+    Create C++ MeshIO object.
     """
+    raise NotImplementedError("MeshIO is an abstract base class.")
     return
 
 

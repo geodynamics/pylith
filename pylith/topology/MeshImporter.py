@@ -40,16 +40,16 @@ class MeshImporter(MeshGenerator):
     ## @li None
     ##
     ## \b Facilities
-    ## @li \b importer Mesh importer.
+    ## @li \b reader Mesh reader.
     ## @li \b partitioner Mesh partitioner.
     ## @li \b refiner Mesh refiner.
 
     import pyre.inventory
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
-    importer = pyre.inventory.facility("importer", family="mesh_io",
+    reader = pyre.inventory.facility("reader", family="mesh_io",
                                        factory=MeshIOAscii)
-    importer.meta['tip'] = "Mesh importer."
+    reader.meta['tip'] = "Mesh reader."
 
     from Distributor import Distributor
     distributor = pyre.inventory.facility("distributor",
@@ -75,7 +75,7 @@ class MeshImporter(MeshGenerator):
     return
 
 
-  def create(self, normalizer, faults=None):
+  def create(self, dim, normalizer, faults=None):
     """
     Hook for creating mesh.
     """
@@ -85,8 +85,7 @@ class MeshImporter(MeshGenerator):
     logEvent = "%screate" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    normalizer.initialize()    
-    mesh = self.importer.read(normalizer, self.debug, self.interpolate)
+    mesh = self.reader.read(dim, normalizer, self.debug, self.interpolate)
     if self.debug:
       mesh.view()
     self._debug.log(resourceUsageString())
@@ -116,7 +115,7 @@ class MeshImporter(MeshGenerator):
     Set members based on inventory.
     """
     MeshGenerator._configure(self)
-    self.importer = self.inventory.importer
+    self.reader = self.inventory.reader
     self.distributor = self.inventory.distributor
     self.refiner = self.inventory.refiner
     return

@@ -13,42 +13,45 @@
 subpackage = meshio
 include $(top_srcdir)/subpackage.am
 
-subpkgpyexec_LTLIBRARIES = meshiomodule.la
+subpkgpyexec_LTLIBRARIES = _meshiomodule.la
 
-meshiomodule_la_LDFLAGS = -module -avoid-version \
+subpkgpyexec_PYTHON = meshio.py
+
+swig_sources = \
+	meshio.i \
+	MeshIOObj.i \
+	MeshIOAscii.i
+
+swig_generated = \
+	meshio_wrap.cxx \
+	meshio.py
+
+_meshiomodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist_meshiomodule_la_SOURCES = meshio.pyxe.src
-nodist_meshiomodule_la_SOURCES = \
-	meshio.pyxe \
-	meshio.c meshio_embed.cpp meshio_embed.h
+dist__meshiomodule_la_SOURCES = $(swig_sources) $(swig_generated)
 
-meshiomodule_la_LIBADD = \
+_meshiomodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB)
-
+	$(PETSC_LIBS)
 if ENABLE_CUBIT
-  meshiomodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+  _meshiomodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
 endif
 if NO_UNDEFINED
-  meshiomodule_la_LIBADD += $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+_meshiomodule_la_LIBADD += \
+	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
-INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
+INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
-PYREX_INCLUDES = -I$(top_srcdir)/modulesrc/topology
+$(srcdir)/meshio_wrap.cxx $(srcdir)/meshio.py: $(swig_sources)
+	$(SWIG) -Wall -c++ -python $<
 
-meshio.pyx meshio_embed.cpp  meshio_embed.h: meshio.pyxe
-	pyrexembed meshio.pyxe
-meshio.pyxe: $(srcdir)/meshio.pyxe.src
-	cp $(srcdir)/meshio.pyxe.src $@
-meshio_embed.cpp: meshio_embed.h
-meshio_embed.h: meshio.pyx
 
-.pyx.c:
-	pyrexc $< $(PYREX_INCLUDES)
+MAINTAINERCLEANFILES = \
+	$(srcdir)/meshio_wrap.cxx \
+	$(srcdir)/meshio.py
 
-CLEANFILES = meshio.pyxe meshio.pyx meshio.c *_embed.*
 
 # End of file 
