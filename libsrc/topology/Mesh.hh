@@ -11,9 +11,9 @@
 //
 
 /**
- * @file pylith/topology/Mesh.hh
+ * @file libsrc/topology/Mesh.hh
  *
- * @brief PyLith finite-element mesh.
+ * @brief C++ PyLith finite-element mesh.
  *
  * Extends Sieve mesh to include coordinate system associated with
  * domain.

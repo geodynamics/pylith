@@ -19,17 +19,12 @@
 #if !defined(pylith_topology_meshops_hh)
 #define pylith_topology_meshops_hh
 
-// Include directives ---------------------------------------------------
-#define NEWPYLITHMESH 1 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
-
 // Forward declarations -------------------------------------------------
 namespace pylith {
   namespace topology {
     class MeshOps;
 
     class Mesh; // USES Mesh
-
     class TestMeshOps; // unit testing
   } // topology
 } // pylith
