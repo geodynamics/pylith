@@ -85,6 +85,7 @@ libpylith_la_SOURCES = \
 	meshio/MeshIO.cc \
 	meshio/MeshIOAscii.cc \
 	meshio/MeshIOLagrit.cc \
+	meshio/MeshBuilder.cc \
 	meshio/OutputManager.cc \
 	meshio/OutputSolnSubset.cc \
 	meshio/PsetFile.cc \
@@ -92,6 +93,7 @@ libpylith_la_SOURCES = \
 	meshio/PsetFileBinary.cc \
 	meshio/VertexFilter.cc \
 	meshio/VertexFilterVecNorm.cc \
+	meshio/UCDFaultFile.cc \
 	topology/Distributor.cc \
 	topology/Field.cc \
 	topology/FieldUniform.cc \
