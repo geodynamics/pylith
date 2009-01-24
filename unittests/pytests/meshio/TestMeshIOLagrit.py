@@ -29,10 +29,7 @@ class TestMeshIOLagrit(unittest.TestCase):
     """
     Test constructor.
     """
-    iohandler = MeshIOLagrit()
-    iohandler._configure()
-    iohandler._sync()
-    self.assertNotEqual(None, iohandler.cppHandle)
+    io = MeshIOLagrit()
     return
 
 
@@ -40,14 +37,14 @@ class TestMeshIOLagrit(unittest.TestCase):
     """
     Test filename().
     """
-    iohandler = MeshIOLagrit()
-    iohandler._configure()
     valueGmv = "hi.txt"
     valuePset = "hi2.txt"
-    iohandler.filenameGmv = valueGmv
-    iohandler.filenamePset = valuePset
-    self.assertEqual(valueGmv, iohandler.filenameGmv)
-    self.assertEqual(valuePset, iohandler.filenamePset)
+
+    io = MeshIOLagrit()
+    io.filenameGmv(valueGmv)
+    io.filenamePset(valuePset)
+    self.assertEqual(valueGmv, io.filenameGmv())
+    self.assertEqual(valuePset, io.filenamePset())
     return
 
 
@@ -55,31 +52,32 @@ class TestMeshIOLagrit(unittest.TestCase):
     """
     Test read().
     """
-    from spatialdata.geocoords.CSCart import CSCart
-
-    # For now, we only test reading the file. We would like to write
-    # the file and compare against the original.
-    iohandler = MeshIOLagrit()
-    iohandler._configure()
-
     filenameGmvIn = "data/cube2_ascii.gmv"
     filenamePsetIn = "data/cube2_ascii.pset"
     filenameOut = "data/cube2_test.txt"
     filenameE = "data/cube2.txt"
-    
+    dim = 3
+
+    from spatialdata.geocoords.CSCart import CSCart
+    cs = CSCart()
+    cs._configure()
+
+    # For now, we only test reading the file. We would like to write
+    # the file and compare against the original.
+    io = MeshIOLagrit()
+    io.inventory.filenameGmv = filenameGmvIn
+    io.inventory.filenamePset = filenamePsetIn
+    io._configure()
+
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
-    normalizer.initialize()
 
-    iohandler.filenameGmv = filenameGmvIn
-    iohandler.filenamePset = filenamePsetIn
-    iohandler.coordsys = CSCart()
-    mesh = iohandler.read(normalizer, debug=False, interpolate=False)
+    mesh = io.read(dim, normalizer, debug=False, interpolate=False)
     self.assertEqual(3, mesh.dimension())
 
     testhandler = MeshIOAscii()
-    testhandler.filename = filenameOut
-    testhandler.coordsys = CSCart()
+    testhandler.filename(filenameOut)
+    testhandler.coordsys = cs
     testhandler.write(mesh)
 
     fileE = open(filenameE, "r")

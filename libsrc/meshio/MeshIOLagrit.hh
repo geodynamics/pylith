@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/meshio/MeshIOLagrit.hh
+ * @file libsrc/meshio/MeshIOLagrit.hh
  *
  * @brief Input/output manager for LaGriT GMV and Pset files.
  */

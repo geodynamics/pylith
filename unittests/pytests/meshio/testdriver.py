@@ -59,8 +59,8 @@ class TestApp(Script):
     from TestMeshIOAscii import TestMeshIOAscii
     suite.addTest(unittest.makeSuite(TestMeshIOAscii))
 
-    #from TestMeshIOLagrit import TestMeshIOLagrit
-    #suite.addTest(unittest.makeSuite(TestMeshIOLagrit))
+    from TestMeshIOLagrit import TestMeshIOLagrit
+    suite.addTest(unittest.makeSuite(TestMeshIOLagrit))
 
     #from TestVertexFilterVecNorm import TestVertexFilterVecNorm
     #suite.addTest(unittest.makeSuite(TestVertexFilterVecNorm))

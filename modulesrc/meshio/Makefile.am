@@ -20,7 +20,8 @@ subpkgpyexec_PYTHON = meshio.py
 swig_sources = \
 	meshio.i \
 	MeshIOObj.i \
-	MeshIOAscii.i
+	MeshIOAscii.i \
+	MeshIOLagrit.i
 
 swig_generated = \
 	meshio_wrap.cxx \

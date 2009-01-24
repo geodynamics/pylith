@@ -65,7 +65,6 @@ class TestMeshIOAscii(unittest.TestCase):
     normalizer = Nondimensional()
 
     mesh = io.read(dim, normalizer, debug=False, interpolate=False)
-
     self.assertEqual(2, mesh.dimension())
 
     io.filename(filenameOut)
