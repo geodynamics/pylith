@@ -16,7 +16,9 @@
 
 #include "CohesiveTopology.hh" // USES CohesiveTopology::create()
 
-#include "pylith/meshio/MeshIOLagrit.hh" // USES MeshIOLagrit::readFault()
+#if defined(NEWPYLITHMEHS)
+#include "pylith/meshio/UCDFaultFile.hh" // USES UCDFaultFile::read()
+#endif
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 #include "pylith/utils/array.hh" // USES double_array
@@ -71,8 +73,10 @@ pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<Mesh>& mesh,
 
     //MPI_Bcast(&faultDim, 1, MPI_INT, 0, comm);
     faultMesh = new SubMesh(mesh->comm(), faultDim, mesh->debug());
-    pylith::meshio::MeshIOLagrit::readFault(_faultMeshFilename, mesh, 
-					    faultMesh, faultBd);
+#if defined(NEWPYLITHMESH)
+    meshio::UCDFaultFile::readFault(_faultMeshFilename, mesh, 
+				    faultMesh, faultBd);
+#endif
 
     // Get group of vertices associated with fault
     const ALE::Obj<int_section_type>& groupField = 

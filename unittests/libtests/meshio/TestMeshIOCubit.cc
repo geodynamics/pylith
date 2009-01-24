@@ -16,7 +16,7 @@
 
 #include "pylith/meshio/MeshIOCubit.hh"
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/array.hh" // USES int_array
 
 #include "data/MeshDataCubitTri.hh"
@@ -117,7 +117,7 @@ pylith::meshio::TestMeshIOCubit::_testRead(const MeshData& data,
   iohandler.filename(filename);
 
   // Read mesh
-  ALE::Obj<Mesh> mesh;
+  topology::Mesh mesh(PETSC_COMM_WORLD, data.cellDim);
   iohandler.read(&mesh);
 
   // Make sure meshIn matches data

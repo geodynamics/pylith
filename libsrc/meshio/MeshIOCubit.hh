@@ -10,13 +10,21 @@
 // ======================================================================
 //
 
+/**
+ * @file pylith/meshio/MeshIOCubit.hh
+ *
+ * @brief C++ input/output manager for CUBIT Exodus II files.
+ */
+
 #if !defined(pylith_meshio_meshiocubit_hh)
 #define pylith_meshio_meshiocubit_hh
 
+// Include directives ---------------------------------------------------
+#include "MeshIO.hh" // ISA MeshIO
+
 #include <string> // HASA std::string
 
-#include "MeshIO.hh"
-
+// Forward declarations -------------------------------------------------
 namespace pylith {
   namespace meshio {
     class MeshIOCubit;
@@ -27,9 +35,10 @@ namespace pylith {
 
 class NcFile; // netcdf file
 
+// MeshIOCubit ----------------------------------------------------------
 class pylith::meshio::MeshIOCubit : public MeshIO
 { // MeshIOCubit
-  friend class TestMeshIOCubit;
+  friend class TestMeshIOCubit; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :

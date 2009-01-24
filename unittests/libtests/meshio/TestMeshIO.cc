@@ -14,8 +14,9 @@
 
 #include "TestMeshIO.hh" // Implementation of class methods
 
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/meshio/MeshIO.hh" // USES MeshIO
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+
 #include "pylith/utils/array.hh" // USES int_array
 
 #include "data/MeshData.hh"
@@ -25,7 +26,7 @@
 
 // ----------------------------------------------------------------------
 // Get simple mesh for testing I/O.
-ALE::Obj<pylith::Mesh>*
+pylith::topology::Mesh*
 pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
 { // _createMesh
   // buildTopology() requires zero based index
@@ -41,45 +42,49 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
     CPPUNIT_ASSERT(0 != data.groupTypes);
   } // if
 
-  ALE::Obj<Mesh>* mesh = new ALE::Obj<Mesh>;
+  topology::Mesh* mesh = new topology::Mesh(PETSC_COMM_WORLD, data.cellDim);
   CPPUNIT_ASSERT(0 != mesh);
-  *mesh = new Mesh(PETSC_COMM_WORLD, data.cellDim);
-  CPPUNIT_ASSERT(!mesh->isNull());
-  ALE::Obj<sieve_type> sieve = new sieve_type((*mesh)->comm());
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  ALE::Obj<SieveMesh::sieve_type> sieve = 
+    new SieveMesh::sieve_type(mesh->comm());
   CPPUNIT_ASSERT(!sieve.isNull());
 
   // Cells and vertices
   const bool interpolate = false;
-  ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
-
+  ALE::Obj<ALE::Mesh::sieve_type> s = 
+    new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+  
   ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, data.cellDim, data.numCells,
-                                              const_cast<int*>(data.cells), data.numVertices,
+                                              const_cast<int*>(data.cells), 
+					      data.numVertices,
                                               interpolate, data.numCorners);
-  std::map<Mesh::point_type,Mesh::point_type> renumbering;
+  std::map<ALE::Mesh::point_type,ALE::Mesh::point_type> renumbering;
   ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
-  (*mesh)->setSieve(sieve);
-  (*mesh)->stratify();
-  ALE::SieveBuilder<Mesh>::buildCoordinates(*mesh, data.spaceDim, 
-					    data.vertices);
+  sieveMesh->setSieve(sieve);
+  sieveMesh->stratify();
+  ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, data.spaceDim, 
+						 data.vertices);
 
   // Material ids
-  const ALE::Obj<Mesh::label_sequence>& cells = (*mesh)->heightStratum(0);
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->heightStratum(0);
   CPPUNIT_ASSERT(!cells.isNull());
-  const ALE::Obj<Mesh::label_type>& labelMaterials = 
-    (*mesh)->createLabel("material-id");
+  const ALE::Obj<SieveMesh::label_type>& labelMaterials = 
+    sieveMesh->createLabel("material-id");
   CPPUNIT_ASSERT(!labelMaterials.isNull());
   int i = 0;
-  for(Mesh::label_sequence::iterator e_iter=cells->begin(); 
+  for(SieveMesh::label_sequence::iterator e_iter=cells->begin(); 
       e_iter != cells->end();
       ++e_iter)
-    (*mesh)->setValue(labelMaterials, *e_iter, data.materialIds[i++]);
+    sieveMesh->setValue(labelMaterials, *e_iter, data.materialIds[i++]);
 
   // Groups
   for (int iGroup=0, index=0; iGroup < data.numGroups; ++iGroup) {
-    const ALE::Obj<int_section_type>& groupField = 
-      (*mesh)->getIntSection(data.groupNames[iGroup]);
+    const ALE::Obj<SieveMesh::int_section_type>& groupField = 
+      sieveMesh->getIntSection(data.groupNames[iGroup]);
     CPPUNIT_ASSERT(!groupField.isNull());
-    groupField->setChart((*mesh)->getSieve()->getChart());
+    groupField->setChart(sieveMesh->getSieve()->getChart());
 
     MeshIO::GroupPtType type;
     const int numPoints = data.groupSizes[iGroup];
@@ -89,14 +94,14 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
         groupField->setFiberDimension(data.groups[index++], 1);
     } else if (0 == strcasecmp("vertex", data.groupTypes[iGroup])) {
       type = MeshIO::VERTEX;
-      const int numCells = (*mesh)->heightStratum(0)->size();
+      const int numCells = sieveMesh->heightStratum(0)->size();
       for(int i=0; i < numPoints; ++i)
         groupField->setFiberDimension(data.groups[index++]+numCells, 1);
     } else
       throw std::logic_error("Could not parse group type.");
-    (*mesh)->allocate(groupField);
+    sieveMesh->allocate(groupField);
   } // for
-  (*mesh)->getFactory()->clear();
+  sieveMesh->getFactory()->clear();
  
   return mesh;
 } // _createMesh
@@ -104,16 +109,22 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
 // ----------------------------------------------------------------------
 // Check values in mesh against data.
 void
-pylith::meshio::TestMeshIO::_checkVals(const ALE::Obj<Mesh>& mesh,
+pylith::meshio::TestMeshIO::_checkVals(const topology::Mesh& mesh,
 				       const MeshData& data)
 { // _checkVals
+  typedef SieveMesh::int_section_type::chart_type chart_type;
+
   // Check mesh dimension
-  CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh->getDimension());
+  CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh.dimension());
+
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
 
   // Check vertices
-  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-  const ALE::Obj<Mesh::real_section_type>& coordsField =
-    mesh->getRealSection("coordinates");
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  const ALE::Obj<SieveMesh::real_section_type>& coordsField =
+    sieveMesh->getRealSection("coordinates");
   const int numVertices = vertices->size();
   CPPUNIT_ASSERT(!vertices.isNull());
   CPPUNIT_ASSERT(!coordsField.isNull());
@@ -122,41 +133,41 @@ pylith::meshio::TestMeshIO::_checkVals(const ALE::Obj<Mesh>& mesh,
 		       coordsField->getFiberDimension(*vertices->begin()));
   int i = 0;
   const int spaceDim = data.spaceDim;
-  for(Mesh::label_sequence::iterator v_iter = 
+  for(SieveMesh::label_sequence::iterator v_iter = 
 	vertices->begin();
       v_iter != vertices->end();
       ++v_iter) {
-    const Mesh::real_section_type::value_type *vertexCoords = 
+    const SieveMesh::real_section_type::value_type *vertexCoords = 
       coordsField->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != vertexCoords);
     const double tolerance = 1.0e-06;
     for (int iDim=0; iDim < spaceDim; ++iDim)
       if (data.vertices[i] < 1.0) {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(data.vertices[i++], vertexCoords[iDim],
-				   tolerance);
+				     tolerance);
       } else {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vertexCoords[iDim]/data.vertices[i++],
-				   tolerance);
+				     tolerance);
       }
   } // for
 
   // check cells
-  const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
+  const ALE::Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
 
   const int numCells = cells->size();
   CPPUNIT_ASSERT_EQUAL(data.numCells, numCells);
-  const int numCorners = mesh->getNumCellCorners();
+  const int numCorners = sieveMesh->getNumCellCorners();
   CPPUNIT_ASSERT_EQUAL(data.numCorners, numCorners);
 
-  ALE::ISieveVisitor::PointRetriever<Mesh::sieve_type> pV(sieve->getMaxConeSize());
+  ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> pV(sieve->getMaxConeSize());
   const int offset = numCells;
   i = 0;
-  for(Mesh::label_sequence::iterator e_iter = cells->begin();
+  for(SieveMesh::label_sequence::iterator e_iter = cells->begin();
       e_iter != cells->end();
       ++e_iter) {
     sieve->cone(*e_iter, pV);
-    const Mesh::point_type *cone = pV.getPoints();
+    const SieveMesh::point_type *cone = pV.getPoints();
     for(int p = 0; p < pV.getSize(); ++p, ++i) {
       CPPUNIT_ASSERT_EQUAL(data.cells[i], cone[p]-offset);
     }
@@ -164,23 +175,23 @@ pylith::meshio::TestMeshIO::_checkVals(const ALE::Obj<Mesh>& mesh,
   } // for
 
   // check materials
-  const ALE::Obj<Mesh::label_type>& labelMaterials = 
-    mesh->getLabel("material-id");
+  const ALE::Obj<SieveMesh::label_type>& labelMaterials = 
+    sieveMesh->getLabel("material-id");
   const int idDefault = -999;
   const int size = numCells;
   int_array materialIds(size);
   i = 0;
-  for(Mesh::label_sequence::iterator e_iter = cells->begin();
+  for(SieveMesh::label_sequence::iterator e_iter = cells->begin();
       e_iter != cells->end();
       ++e_iter)
-    materialIds[i++] = mesh->getValue(labelMaterials, *e_iter, idDefault);
+    materialIds[i++] = sieveMesh->getValue(labelMaterials, *e_iter, idDefault);
   
   for (int iCell=0; iCell < numCells; ++iCell)
     CPPUNIT_ASSERT_EQUAL(data.materialIds[iCell], materialIds[iCell]);
 
   // Check groups
   const ALE::Obj<std::set<std::string> >& groupNames = 
-    mesh->getIntSections();
+    sieveMesh->getIntSections();
   if (data.numGroups > 0) {
     CPPUNIT_ASSERT(!groupNames.isNull());
     CPPUNIT_ASSERT_EQUAL(data.numGroups, int(groupNames->size()));
@@ -190,22 +201,30 @@ pylith::meshio::TestMeshIO::_checkVals(const ALE::Obj<Mesh>& mesh,
   for (std::set<std::string>::const_iterator name=groupNames->begin();
        name != groupNames->end();
        ++name, ++iGroup) {
-    const ALE::Obj<int_section_type>& groupField = mesh->getIntSection(*name);
+    const ALE::Obj<SieveMesh::int_section_type>& groupField = 
+      sieveMesh->getIntSection(*name);
     CPPUNIT_ASSERT(!groupField.isNull());
-    const int_section_type::chart_type& chart = groupField->getChart();
-    Mesh::point_type firstPoint;
-    for(int_section_type::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
-      if (groupField->getFiberDimension(*c_iter)) {firstPoint = *c_iter; break;}
-    }
+    const chart_type& chart = groupField->getChart();
+    SieveMesh::point_type firstPoint;
+    for(chart_type::const_iterator c_iter = chart.begin();
+	c_iter != chart.end();
+	++c_iter) {
+      if (groupField->getFiberDimension(*c_iter)) {
+	firstPoint = *c_iter;
+	break;
+      } // if
+    } // for
     std::string groupType = 
-      (mesh->height(firstPoint) == 0) ? "cell" : "vertex";
+      (sieveMesh->height(firstPoint) == 0) ? "cell" : "vertex";
     const int numPoints = groupField->size();
     int_array points(numPoints);
     int i = 0;
     const int offset = ("vertex" == groupType) ? numCells : 0;
-    for(int_section_type::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
-      if (groupField->getFiberDimension(*c_iter)) points[i++] = *c_iter - offset;
-    }
+    for(chart_type::const_iterator c_iter = chart.begin();
+	c_iter != chart.end();
+	++c_iter)
+      if (groupField->getFiberDimension(*c_iter))
+	points[i++] = *c_iter - offset;
     
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[iGroup]), *name);
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[iGroup]), groupType);

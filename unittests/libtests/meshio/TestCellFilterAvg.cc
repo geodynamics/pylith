@@ -17,6 +17,7 @@
 #include "pylith/meshio/CellFilterAvg.hh"
 
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/feassemble/Quadrature2D.hh" // USES Quadrature
 
 // ----------------------------------------------------------------------
@@ -76,25 +77,29 @@ pylith::meshio::TestCellFilterAvg::testFilter(void)
   };
 
   MeshIOAscii iohandler;
-  ALE::Obj<Mesh> mesh;
+  topology::Mesh(PETSC_COMM_WORLD, cellDim);
   iohandler.filename(filename);
   iohandler.read(&mesh);
   CPPUNIT_ASSERT(!mesh.isNull());
 
-  // Set cell field
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
 
-  ALE::Obj<real_section_type> field = 
-    new real_section_type(mesh->comm(), mesh->debug());
-  field->setChart(real_section_type::chart_type(0, cells->size()));
+  // Set cell field
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->heightStratum(0);
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  ALE::Obj<SieveMesh::real_section_type> field = 
+    new SieveMesh::real_section_type(mesh.comm(), mesh.debug());
+  field->setChart(SieveMesh::real_section_type::chart_type(0, cells->size()));
   field->setFiberDimension(cells, fiberDim);
-  mesh->allocate(field);
+  sieveMesh->allocate(field);
 
   CPPUNIT_ASSERT_EQUAL(ncells, int(cells->size()));
 
   int ipt = 0;
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter, ++ipt) {
     const double* values = &fieldValues[ipt*fiberDim];
@@ -110,11 +115,11 @@ pylith::meshio::TestCellFilterAvg::testFilter(void)
 
   VectorFieldEnum fieldTypeF = SCALAR_FIELD;
   const ALE::Obj<real_section_type>& fieldF =
-    filter.filter(&fieldTypeF, field, mesh);
+    filter.filter(&fieldTypeF, field, meshMesh);
 
   CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldTypeF);
   ipt = 0;
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter, ++ipt) {
     CPPUNIT_ASSERT_EQUAL(fiberDimE, fieldF->getFiberDimension(*c_iter));

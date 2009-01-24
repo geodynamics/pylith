@@ -13,24 +13,28 @@
 #if !defined(pylith_meshio_meshio_hh)
 #define pylith_meshio_meshio_hh
 
+// Include directives ---------------------------------------------------
 #include "pylith/utils/arrayfwd.hh" // USES double_array, int_array,
                                     // string_vector
 
-#include "pylith/utils/sievetypes.hh" // USES Obj, PETSc Mesh
-#include "Mesh.hh" // USES ALE::Mesh
-
+// Forward declarations -------------------------------------------------
 namespace pylith {
   namespace meshio {
     class MeshIO;
   } // meshio
+
+  namespace topology {
+    class Mesh; // USES Mesh
+  } // topology
 } // pylith
 
 namespace spatialdata {
   namespace units {
-    class Nondimensional;
+    class Nondimensional; // USES Nondimensional
   } // units
 } // spatialdata
 
+// MeshIO ---------------------------------------------------------------
 class pylith::meshio::MeshIO
 { // MeshIO
 
@@ -38,7 +42,10 @@ class pylith::meshio::MeshIO
 public :
 
   /// Type of points in a group.
-  typedef enum { VERTEX, CELL } GroupPtType;
+  enum GroupPtType {
+    VERTEX=0,
+    CELL=1,
+  }; // GroupPtType
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -46,7 +53,8 @@ public :
   MeshIO(void);
 
   /// Destructor
-  virtual ~MeshIO(void);
+  virtual
+  ~MeshIO(void);
 
   /** Set debug flag for mesh.
    *
@@ -82,15 +90,15 @@ public :
 
   /** Read mesh from file.
    *
-   * @param mesh Pointer to PETSc mesh object
+   * @param mesh PyLith finite-element mesh.
    */
-  void read(ALE::Obj<Mesh>* mesh);
+  void read(topology::Mesh* mesh);
 
   /** Write mesh to file.
    *
-   * @param mesh Pointer to PETSc mesh object.
+   * @param mesh PyLith finite-element mesh.
    */
-  void write(ALE::Obj<Mesh>* mesh);
+  void write(topology::Mesh* const mesh);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
@@ -108,40 +116,6 @@ protected :
    * @returns Spatial dimension of mesh
    */
   int getMeshDim(void) const;
-
-  /** Build mesh topology and set vertex coordinates.
-   *
-   * All mesh information must use zero based indices. In other words,
-   * the lowest index MUST be 0 not 1.
-   *
-   * @param coordinates Array of coordinates of vertices
-   * @param numVertices Number of vertices
-   * @param spaceDim Dimension of vector space for vertex coordinates
-   * @param cells Array of indices of vertices in cells (first index is 0 or 1)
-   * @param numCells Number of cells
-   * @param numCorners Number of vertices per cell
-   * @param meshDim Dimension of cells in mesh
-   */
-  void _buildMesh(double_array* coordinates,
-		  const int numVertices,
-		  const int spaceDim,
-		  const int_array& cells,
-		  const int numCells,
-		  const int numCorners,
-		  const int meshDim);
-
-  static void
-  _buildFaultMesh(const double_array& coordinates,
-                  const int numVertices,
-                  const int spaceDim,
-                  const int_array& cells,
-                  const int numCells,
-                  const int numCorners,
-                  const int firstCell,
-                  const int_array& faceCells,
-                  const int meshDim,
-                  const Obj<Mesh>& fault,
-                  Obj<ALE::Mesh>& faultBd);
 
   /** Get information about vertices in mesh.
    *
@@ -218,23 +192,23 @@ protected :
 		 GroupPtType* type,
 		 const char *name) const;
 
-  /** Create empty groups on other processes
-   */
+  /// Create empty groups on other processes
   void _distributeGroups();
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
 
-  ALE::Obj<Mesh>* _mesh; ///< Pointer to PETSc mesh object
-  spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer
+  topology::Mesh* _mesh; ///< Pointer to finite-element mesh.
+  spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer.
 
-  bool _debug; ///< True to turn of mesh debugging output
-  bool _interpolate; ///< True if building intermediate topology elements
+  bool _debug; ///< True to turn of mesh debugging output.
+  bool _interpolate; ///< True if building intermediate topology elements.
 
 }; // MeshIO
 
 #include "MeshIO.icc" // inline methods
 
 #endif // pylith_meshio_meshio_hh
+
 
 // End of file 

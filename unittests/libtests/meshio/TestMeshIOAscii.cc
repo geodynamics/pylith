@@ -16,7 +16,7 @@
 
 #include "pylith/meshio/MeshIOAscii.hh"
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "data/MeshData1D.hh"
 #include "data/MeshData1Din2D.hh"
@@ -155,7 +155,7 @@ void
 pylith::meshio::TestMeshIOAscii::_testWriteRead(const MeshData& data,
 						const char* filename)
 { // _testWriteRead
-  ALE::Obj<Mesh>* meshOut = _createMesh(data);
+  topology::Mesh* meshOut = _createMesh(data);
 
   // Write mesh
   MeshIOAscii iohandler;
@@ -164,7 +164,7 @@ pylith::meshio::TestMeshIOAscii::_testWriteRead(const MeshData& data,
   delete meshOut; meshOut = 0;
 
   // Read mesh
-  ALE::Obj<Mesh> meshIn;
+  topology::Mesh meshIn(PETSC_COMM_WORLD, data.cellDim);
   iohandler.read(&meshIn);
 
   // Make sure meshIn matches data
@@ -178,7 +178,7 @@ pylith::meshio::TestMeshIOAscii::_testRead(const MeshData& data,
 					   const char* filename)
 { // _testWriteRead
   // Read mesh
-  ALE::Obj<Mesh> mesh;
+  topology::Mesh mesh(PETSC_COMM_WORLD, data.cellDim);
   MeshIOAscii iohandler;
   iohandler.filename(filename);
   iohandler.read(&mesh);

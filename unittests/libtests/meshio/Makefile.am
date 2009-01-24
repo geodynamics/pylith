@@ -21,36 +21,38 @@ check_PROGRAMS = testmeshio
 
 # Primary source files
 testmeshio_SOURCES = \
-	TestCellFilterAvg.cc \
-	TestDataWriterVTK.cc \
-	TestDataWriterVTKMesh.cc \
-	TestDataWriterVTKMeshLine2.cc \
-	TestDataWriterVTKMeshTri3.cc \
-	TestDataWriterVTKMeshQuad4.cc \
-	TestDataWriterVTKMeshTet4.cc \
-	TestDataWriterVTKMeshHex8.cc \
-	TestDataWriterVTKSubMeshLine2.cc \
-	TestDataWriterVTKSubMeshTri3.cc \
-	TestDataWriterVTKSubMeshQuad4.cc \
-	TestDataWriterVTKSubMeshTet4.cc \
-	TestDataWriterVTKSubMeshHex8.cc \
-	TestDataWriterVTKFaultMesh.cc \
-	TestDataWriterVTKFaultMeshTri3.cc \
-	TestDataWriterVTKFaultMeshQuad4.cc \
-	TestDataWriterVTKFaultMeshTet4.cc \
-	TestDataWriterVTKFaultMeshHex8.cc \
-	TestDataWriterVTKBCMesh.cc \
-	TestDataWriterVTKBCMeshTri3.cc \
-	TestDataWriterVTKBCMeshQuad4.cc \
-	TestDataWriterVTKBCMeshTet4.cc \
-	TestDataWriterVTKBCMeshHex8.cc \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
 	TestMeshIOLagrit.cc \
-	TestOutputManager.cc \
-	TestOutputSolnSubset.cc \
-	TestVertexFilterVecNorm.cc \
 	test_meshio.cc
+
+#	TestCellFilterAvg.cc \
+# 	TestDataWriterVTK.cc \
+# 	TestDataWriterVTKMesh.cc \
+# 	TestDataWriterVTKMeshLine2.cc \
+# 	TestDataWriterVTKMeshTri3.cc \
+# 	TestDataWriterVTKMeshQuad4.cc \
+# 	TestDataWriterVTKMeshTet4.cc \
+# 	TestDataWriterVTKMeshHex8.cc \
+# 	TestDataWriterVTKSubMeshLine2.cc \
+# 	TestDataWriterVTKSubMeshTri3.cc \
+# 	TestDataWriterVTKSubMeshQuad4.cc \
+# 	TestDataWriterVTKSubMeshTet4.cc \
+# 	TestDataWriterVTKSubMeshHex8.cc \
+# 	TestDataWriterVTKFaultMesh.cc \
+# 	TestDataWriterVTKFaultMeshTri3.cc \
+# 	TestDataWriterVTKFaultMeshQuad4.cc \
+# 	TestDataWriterVTKFaultMeshTet4.cc \
+# 	TestDataWriterVTKFaultMeshHex8.cc \
+# 	TestDataWriterVTKBCMesh.cc \
+# 	TestDataWriterVTKBCMeshTri3.cc \
+# 	TestDataWriterVTKBCMeshQuad4.cc \
+# 	TestDataWriterVTKBCMeshTet4.cc \
+# 	TestDataWriterVTKBCMeshHex8.cc
+
+# 	TestOutputManager.cc \
+# 	TestOutputSolnSubset.cc \
+# 	TestVertexFilterVecNorm.cc
 
 
 noinst_HEADERS = \

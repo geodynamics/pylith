@@ -14,12 +14,13 @@
 
 #include "MeshIOAscii.hh" // implementation of class methods
 
+#include "MeshBuilder.hh" // USES MeshBuilder
+#include "pylith/topology/Mesh.hh" // USES Mesh
+
 #include "pylith/utils/array.hh" // USES double_array, int_array, string_vector
 #include "spatialdata/utils/LineParser.hh" // USES LineParser
 
 #include "journal/info.h" // USES journal::info_t
-
-#include <petsc.h> // USES MPI
 
 #include <iomanip> // USES setw(), setiosflags(), resetiosflags()
 #include <strings.h> // USES strcasecmp()
@@ -29,8 +30,10 @@
 #include <sstream> // USES std::ostringstream
 
 // ----------------------------------------------------------------------
-const char* pylith::meshio::MeshIOAscii::groupTypeNames[] = 
-  {"vertices", "cells"};
+const char* pylith::meshio::MeshIOAscii::groupTypeNames[] = {
+  "vertices",
+  "cells",
+};
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -51,8 +54,10 @@ pylith::meshio::MeshIOAscii::~MeshIOAscii(void)
 void
 pylith::meshio::MeshIOAscii::_read(void)
 { // _read
-  MPI_Comm comm = PETSC_COMM_WORLD;
-  int rank;
+  assert(0 != _normalizer);
+
+  MPI_Comm comm = _mesh->comm();
+  int rank = 0;
   int meshDim = 0;
   int spaceDim = 0;
   int numVertices = 0;
@@ -63,7 +68,7 @@ pylith::meshio::MeshIOAscii::_read(void)
   int_array materialIds;
 
   MPI_Comm_rank(comm, &rank);
-  if (!rank) {
+  if (0 == rank) {
     std::ifstream filein(_filename.c_str());
     if (!filein.is_open() || !filein.good()) {
       std::ostringstream msg;
@@ -74,11 +79,11 @@ pylith::meshio::MeshIOAscii::_read(void)
 
     spatialdata::utils::LineParser parser(filein, "//");
     parser.eatwhitespace(true);
-
+    
     std::string token;
     std::istringstream buffer;
     const int maxIgnore = 1024;
-
+    
     buffer.str(parser.next());
     buffer >> token;
     if (0 != strcasecmp(token.c_str(), "mesh")) {
@@ -134,8 +139,9 @@ pylith::meshio::MeshIOAscii::_read(void)
 
 	if (readDim && readCells && readVertices && !builtMesh) {
 	  // Can now build mesh
-	  _buildMesh(&coordinates, numVertices, spaceDim,
-		     cells, numCells, numCorners, meshDim);
+	  MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim,
+				 cells, numCells, numCorners, meshDim,
+				 _interpolate, *_normalizer);
 	  _setMaterials(materialIds);
 	  builtMesh = true;
 	} // if
@@ -161,8 +167,9 @@ pylith::meshio::MeshIOAscii::_read(void)
     } // catch
     filein.close();
   } else {
-    _buildMesh(&coordinates, numVertices, spaceDim,
-               cells, numCells, numCorners, meshDim);
+    MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim,
+			   cells, numCells, numCorners, meshDim,
+			   _interpolate, *_normalizer);
     _setMaterials(materialIds);
   } // if/else
   _distributeGroups();

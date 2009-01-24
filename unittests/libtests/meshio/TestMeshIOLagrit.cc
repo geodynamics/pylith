@@ -16,7 +16,7 @@
 
 #include "pylith/meshio/MeshIOLagrit.hh"
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/array.hh" // USES int_array
 
 #include "data/MeshDataLagritTet.hh"
@@ -146,7 +146,7 @@ pylith::meshio::TestMeshIOLagrit::_testRead(const MeshData& data,
 #endif
 
   // Read mesh
-  ALE::Obj<Mesh> mesh;
+  topology::Mesh mesh(PETSC_COMM_WORLD, data.cellDim);
   iohandler.read(&mesh);
 
   // Make sure meshIn matches data

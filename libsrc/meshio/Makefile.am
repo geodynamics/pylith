@@ -19,6 +19,7 @@ subpkginclude_HEADERS = \
 	DataWriter.hh \
 	DataWriterVTK.hh \
 	DataWriterVTK.icc \
+	MeshBuilder.hh \
 	MeshIO.hh \
 	MeshIO.icc \
 	MeshIOAscii.hh \
@@ -28,7 +29,8 @@ subpkginclude_HEADERS = \
 	OutputManager.hh \
 	OutputSolnSubset.hh \
 	VertexFilter.hh \
-	VertexFilterVecNorm.hh
+	VertexFilterVecNorm.hh \
+	UCDFaultFile.cc
 
 if ENABLE_CUBIT
   subpkginclude_HEADERS += \
