@@ -18,6 +18,7 @@
 #include "pylith/meshio/MeshIO.hh"
 #include "pylith/meshio/MeshIOAscii.hh"
 #include "pylith/meshio/MeshIOLagrit.hh"
+#include "pylith/meshio/MeshIOCubit.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 %}
@@ -37,6 +38,7 @@
 %include "MeshIOObj.i"
 %include "MeshIOAscii.i"
 %include "MeshIOLagrit.i"
+%include "MeshIOCubit.i"
 
 
 // End of file

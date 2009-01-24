@@ -101,7 +101,7 @@ class MeshIOLagrit(MeshIOObj, ModuleMeshIOLagrit):
 
   def _createModuleObj(self):
     """
-    Create C++ MeshIOAscii object.
+    Create C++ MeshIOLagrit object.
     """
     ModuleMeshIOLagrit.__init__(self)
     return

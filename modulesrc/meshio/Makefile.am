@@ -21,7 +21,8 @@ swig_sources = \
 	meshio.i \
 	MeshIOObj.i \
 	MeshIOAscii.i \
-	MeshIOLagrit.i
+	MeshIOLagrit.i \
+	MeshIOCubit.i
 
 swig_generated = \
 	meshio_wrap.cxx \

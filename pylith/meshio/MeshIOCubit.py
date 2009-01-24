@@ -17,10 +17,11 @@
 ##
 ## Factory: mesh_io
 
-from MeshIO import MeshIO
+from MeshIOObj import MeshIOObj
+from meshio import MeshIOCubit as ModuleMeshIOCubit
 
 # MeshIOCubit class
-class MeshIOCubit(MeshIO):
+class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
   """
   Python object for reading/writing finite-element mesh from Cubit.
 
@@ -29,7 +30,7 @@ class MeshIOCubit(MeshIO):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(MeshIO.Inventory):
+  class Inventory(MeshIOObj.Inventory):
     """
     Python object for managing MeshIOCubit facilities and properties.
     """
@@ -60,7 +61,7 @@ class MeshIOCubit(MeshIO):
     """
     Constructor.
     """
-    MeshIO.__init__(self, name)
+    MeshIOObj.__init__(self, name)
     return
 
 
@@ -70,22 +71,17 @@ class MeshIOCubit(MeshIO):
     """
     Set members based using inventory.
     """
-    MeshIO._configure(self)
-    self.filename = self.inventory.filename
+    MeshIOObj._configure(self)
     self.coordsys = self.inventory.coordsys
+    self.filename(self.inventory.filename)
     return
 
 
-  def _sync(self):
+  def _createModuleObj(self):
     """
-    Force synchronization between Python and C++.
+    Create C++ MeshIOCubit object.
     """
-    if None == self.cppHandle:
-      import pylith.meshio.meshio as bindings
-      self.cppHandle = bindings.MeshIOCubit()
-
-    MeshIO._sync(self)
-    self.cppHandle.filename = self.filename
+    ModuleMeshIOCubit.__init__(self)
     return
   
 

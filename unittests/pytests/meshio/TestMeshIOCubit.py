@@ -29,10 +29,7 @@ class TestMeshIOCubit(unittest.TestCase):
     """
     Test constructor.
     """
-    iohandler = MeshIOCubit()
-    iohandler._configure()
-    iohandler._sync()
-    self.assertNotEqual(None, iohandler.cppHandle)
+    io = MeshIOCubit()
     return
 
 
@@ -40,10 +37,11 @@ class TestMeshIOCubit(unittest.TestCase):
     """
     Test filename().
     """
-    iohandler = MeshIOCubit()
     value = "hi.txt"
-    iohandler.filename = value
-    self.assertEqual(value, iohandler.filename)
+
+    io = MeshIOCubit()
+    io.filename(value)
+    self.assertEqual(value, io.filename())
     return
 
 
@@ -51,27 +49,29 @@ class TestMeshIOCubit(unittest.TestCase):
     """
     Test read().
     """
-    from spatialdata.geocoords.CSCart import CSCart
-
-    # For now, we only test reading the file.
-    iohandler = MeshIOCubit()
-
     filenameIn = "data/twohex8.exo"
     filenameOut = "data/twohex8_test.txt"
     filenameE = "data/twohex8.txt"
+    dim = 3
+
+    from spatialdata.geocoords.CSCart import CSCart
+    cs = CSCart()
+    cs._configure()
+
+    # For now, we only test reading the file.
+    io = MeshIOCubit()
+    io.inventory.filename = filenameIn
+    io._configure()
     
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
-    normalizer.initialize()
 
-    iohandler.filename = filenameIn
-    iohandler.coordsys = CSCart()
-    mesh = iohandler.read(normalizer, debug=False, interpolate=False)
+    mesh = io.read(dim, normalizer, debug=False, interpolate=False)
     self.assertEqual(3, mesh.dimension())
 
     testhandler = MeshIOAscii()
-    testhandler.filename = filenameOut
-    testhandler.coordsys = CSCart()
+    testhandler.filename(filenameOut)
+    testhandler.coordsys = cs
     testhandler.write(mesh)
 
     fileE = open(filenameE, "r")
