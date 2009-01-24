@@ -13,7 +13,8 @@
 /**
  * @file pylith/topology/Field.hh
  *
- * @brief Vector field over the vertices or cells of a finite-element mesh.
+ * @brief Vector field over the vertices or cells of a finite-element
+ * mesh.
  *
  * Extends Sieve real general section by adding metadata.
  */
