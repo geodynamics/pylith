@@ -29,6 +29,8 @@ class TestMesh(unittest.TestCase):
     Test constructor.
     """
     mesh = Mesh()
+    self.assertEqual(0, mesh.dimension())
+    self.assertEqual(False, mesh.debug())
     return
 
 
@@ -36,8 +38,10 @@ class TestMesh(unittest.TestCase):
     """
     Test constructor.
     """
-    from pylith.mpi.Communicator import mpi_comm_self
-    mesh = Mesh(comm=mpi_comm_self())
+    dim = 2
+    mesh = Mesh(dim=dim)
+    self.assertEqual(dim, mesh.dimension())
+    self.assertEqual(False, mesh.debug())
     return
 
 
@@ -45,8 +49,26 @@ class TestMesh(unittest.TestCase):
     """
     Test constructor.
     """
+    dim = 2
     from pylith.mpi.Communicator import mpi_comm_self
-    mesh = Mesh(comm=mpi_comm_self(), dim=2)
+    mesh = Mesh(dim=dim, comm=mpi_comm_self())
+    self.assertEqual(dim, mesh.dimension())
+    self.assertEqual(False, mesh.debug())
+    return
+
+
+  def test_createSieveMesh(self):
+    """
+    Test createSeiveMesh().
+    """
+    mesh = Mesh()
+
+    mesh.createSieveMesh()
+    self.assertEqual(3, mesh.dimension())
+
+    dim = 2
+    mesh.createSieveMesh(dim)
+    self.assertEqual(dim, mesh.dimension())
     return
 
 
@@ -83,9 +105,7 @@ class TestMesh(unittest.TestCase):
     Test debug().
     """
     mesh = Mesh()
-    
-    dim = 3
-    self.assertEqual(dim, mesh.dimension())
+    self.assertEqual(0, mesh.dimension())
     return
 
 
@@ -93,9 +113,10 @@ class TestMesh(unittest.TestCase):
     """
     Test comm().
     """
-    from pylith.mpi.Communicator import petsc_comm_world
-    mesh = Mesh(comm=petsc_comm_world())
-    comm = mesh.comm()
+    from pylith.mpi.Communicator import petsc_comm_self
+    mesh = Mesh()
+    mesh.setComm(petsc_comm_self())
+    comm = mesh.getComm()
     self.assertEqual(0, comm.rank)
     self.assertEqual(1, comm.size)
     return

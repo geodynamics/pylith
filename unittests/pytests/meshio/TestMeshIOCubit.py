@@ -52,7 +52,6 @@ class TestMeshIOCubit(unittest.TestCase):
     filenameIn = "data/twohex8.exo"
     filenameOut = "data/twohex8_test.txt"
     filenameE = "data/twohex8.txt"
-    dim = 3
 
     from spatialdata.geocoords.CSCart import CSCart
     cs = CSCart()
@@ -66,8 +65,7 @@ class TestMeshIOCubit(unittest.TestCase):
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
 
-    mesh = io.read(dim, normalizer, debug=False, interpolate=False)
-    self.assertEqual(3, mesh.dimension())
+    mesh = io.read(normalizer, debug=False, interpolate=False)
 
     testhandler = MeshIOAscii()
     testhandler.filename(filenameOut)
