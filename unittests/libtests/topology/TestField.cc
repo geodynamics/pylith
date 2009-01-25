@@ -48,6 +48,7 @@ void
 pylith::topology::TestField::testConstructor(void)
 { // testConstructor
   Mesh mesh;
+  mesh.createSieveMesh();
   Field field(mesh.sieveMesh());
 
   CPPUNIT_ASSERT(!field._mesh.isNull());
@@ -59,6 +60,7 @@ void
 pylith::topology::TestField::testSection(void)
 { // testSection
   Mesh mesh;
+  mesh.createSieveMesh();
   Field field(mesh.sieveMesh());
 
   const ALE::Obj<SieveMesh::real_section_type>& section = field.section();
@@ -74,6 +76,7 @@ void
 pylith::topology::TestField::testName(void)
 { // testName
   Mesh mesh;
+  mesh.createSieveMesh();
   Field field(mesh.sieveMesh());
 
   CPPUNIT_ASSERT_EQUAL(std::string("unknown"), std::string(field.name()));
@@ -89,6 +92,7 @@ void
 pylith::topology::TestField::testVectorFieldType(void)
 { // testVectorFieldType
   Mesh mesh;
+  mesh.createSieveMesh();
   Field field(mesh.sieveMesh());
 
   CPPUNIT_ASSERT_EQUAL(Field::OTHER, field.vectorFieldType());
@@ -103,7 +107,7 @@ pylith::topology::TestField::testVectorFieldType(void)
 void
 pylith::topology::TestField::testSpaceDim(void)
 { // testSpaceDim
-  Mesh mesh(PETSC_COMM_WORLD, _TestField::cellDim);
+  Mesh mesh;
   _buildMesh(&mesh);
   Field field(mesh.sieveMesh());
 
@@ -118,6 +122,7 @@ void
 pylith::topology::TestField::testScale(void)
 { // testScale
   Mesh mesh;
+  mesh.createSieveMesh();
   Field field(mesh.sieveMesh());
 
   CPPUNIT_ASSERT_EQUAL(1.0, field.scale());
@@ -133,6 +138,7 @@ void
 pylith::topology::TestField::testAddDimensionOkay(void)
 { // testAddDimensionOkay
   Mesh mesh;
+  mesh.createSieveMesh();
   Field field(mesh.sieveMesh());
 
   CPPUNIT_ASSERT_EQUAL(false, field.addDimensionOkay());
@@ -155,7 +161,7 @@ pylith::topology::TestField::testCopyLayout(void)
     0, 1, 2,  // 3
   };
     
-  Mesh mesh(PETSC_COMM_WORLD, _TestField::cellDim);
+  Mesh mesh;
   _buildMesh(&mesh);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
@@ -198,7 +204,7 @@ pylith::topology::TestField::testCopyLayout(void)
 void
 pylith::topology::TestField::testClear(void)
 { // testClear
-  Mesh mesh(PETSC_COMM_WORLD, _TestField::cellDim);
+  Mesh mesh(_TestField::cellDim);
   Field field(mesh.sieveMesh());
 
   field.scale(2.0);
@@ -226,7 +232,7 @@ pylith::topology::TestField::testZero(void)
     1.4, 2.5, 3.6,
   };
 
-  Mesh mesh(PETSC_COMM_WORLD, _TestField::cellDim);
+  Mesh mesh;
   _buildMesh(&mesh);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
@@ -280,7 +286,7 @@ pylith::topology::TestField::testComplete(void)
     1.4, 2.5, 3.6,
   };
 
-  Mesh mesh(PETSC_COMM_WORLD, _TestField::cellDim);
+  Mesh mesh;
   _buildMesh(&mesh);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
@@ -336,7 +342,7 @@ pylith::topology::TestField::testCopy(void)
     1.4, 2.5, 3.6,
   };
 
-  Mesh mesh(PETSC_COMM_WORLD, _TestField::cellDim);
+  Mesh mesh;
   _buildMesh(&mesh);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
@@ -413,7 +419,7 @@ pylith::topology::TestField::testOperatorAdd(void)
     10.4, 20.5, 30.6,
   };
 
-  Mesh mesh(PETSC_COMM_WORLD, _TestField::cellDim);
+  Mesh mesh;
   _buildMesh(&mesh);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
@@ -496,7 +502,7 @@ pylith::topology::TestField::testDimensionalize(void)
     1.4, 2.5, 3.6,
   };
 
-  Mesh mesh(PETSC_COMM_WORLD, _TestField::cellDim);
+  Mesh mesh;
   _buildMesh(&mesh);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   Field field(sieveMesh);
@@ -554,7 +560,7 @@ pylith::topology::TestField::testView(void)
     1.4, 2.5, 3.6,
   };
 
-  Mesh mesh(PETSC_COMM_WORLD, _TestField::cellDim);
+  Mesh mesh;
   _buildMesh(&mesh);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
@@ -590,6 +596,7 @@ pylith::topology::TestField::_buildMesh(Mesh* mesh)
 { // _buildMesh
   assert(0 != mesh);
 
+  mesh->createSieveMesh(_TestField::cellDim);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
 
   ALE::Obj<SieveMesh::sieve_type> sieve = 

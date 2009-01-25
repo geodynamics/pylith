@@ -27,8 +27,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestMeshOps );
 void
 pylith::topology::TestMeshOps::testCheckMaterialIds(void)
 { // testCheckMaterialIds
-  const int dim = 2;
-  Mesh mesh(PETSC_COMM_WORLD, dim);
+  Mesh mesh;
 
   meshio::MeshIOAscii iohandler;
   iohandler.filename("data/tri3.mesh");

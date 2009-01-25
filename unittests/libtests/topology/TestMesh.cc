@@ -26,7 +26,40 @@ void
 pylith::topology::TestMesh::testConstructor(void)
 { // testConstructor
   Mesh mesh;
+  CPPUNIT_ASSERT(mesh._mesh.isNull());
+  CPPUNIT_ASSERT_EQUAL(0, mesh.dimension());
+  CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
+  CPPUNIT_ASSERT_EQUAL(PETSC_COMM_WORLD, mesh.comm());
+  
+  Mesh mesh2(2);
+  CPPUNIT_ASSERT(!mesh2._mesh.isNull());
+  CPPUNIT_ASSERT_EQUAL(2, mesh2.dimension());
+  CPPUNIT_ASSERT_EQUAL(PETSC_COMM_WORLD, mesh2.comm());
+
+  Mesh mesh3(1, PETSC_COMM_SELF);
+  CPPUNIT_ASSERT(!mesh3._mesh.isNull());
+  CPPUNIT_ASSERT_EQUAL(1, mesh3.dimension());
+  CPPUNIT_ASSERT_EQUAL(PETSC_COMM_SELF, mesh3.comm());
 } // testConstructor
+
+// ----------------------------------------------------------------------
+// Test constructor.
+void
+pylith::topology::TestMesh::testCreateSieveMesh(void)
+{ // testCreateSieveMesh
+  Mesh mesh;
+  CPPUNIT_ASSERT(mesh._mesh.isNull());
+
+  int dim = 2;
+  mesh.createSieveMesh(dim);
+  CPPUNIT_ASSERT(!mesh._mesh.isNull());
+  CPPUNIT_ASSERT_EQUAL(dim, mesh.dimension());
+
+  dim = 1;
+  mesh.createSieveMesh(dim);
+  CPPUNIT_ASSERT(!mesh._mesh.isNull());
+  CPPUNIT_ASSERT_EQUAL(dim, mesh.dimension());
+} // testCreateMeshSieve
 
 // ----------------------------------------------------------------------
 // Test sieveMesh().
@@ -34,8 +67,7 @@ void
 pylith::topology::TestMesh::testSieveMesh(void)
 { // testSieveMesh
   const int dim = 2;
-
-  Mesh mesh(PETSC_COMM_WORLD, dim);
+  Mesh mesh(dim);
   
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
@@ -63,7 +95,6 @@ void
 pylith::topology::TestMesh::testDebug(void)
 { // testDebug
   Mesh mesh;
-
   CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
 
   mesh.debug(true);
@@ -75,10 +106,12 @@ pylith::topology::TestMesh::testDebug(void)
 void
 pylith::topology::TestMesh::testDimension(void)
 { // testDimension
-  const int dim = 2;
-  Mesh mesh(PETSC_COMM_WORLD, dim);
+  Mesh mesh;
+  CPPUNIT_ASSERT_EQUAL(0, mesh.dimension());
 
-  CPPUNIT_ASSERT_EQUAL(dim, mesh.dimension());
+  const int dim = 2;
+  Mesh mesh2(dim);
+  CPPUNIT_ASSERT_EQUAL(dim, mesh2.dimension());
 } // testDimension
 
 // ----------------------------------------------------------------------
@@ -86,8 +119,10 @@ pylith::topology::TestMesh::testDimension(void)
 void
 pylith::topology::TestMesh::testComm(void)
 { // testComm
-  Mesh mesh(PETSC_COMM_SELF);
+  Mesh mesh;
+  CPPUNIT_ASSERT_EQUAL(PETSC_COMM_WORLD, mesh.comm());
 
+  mesh.comm(PETSC_COMM_SELF);
   CPPUNIT_ASSERT_EQUAL(PETSC_COMM_SELF, mesh.comm());
 } // testComm
 
