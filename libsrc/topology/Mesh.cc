@@ -18,10 +18,21 @@
 
 // ----------------------------------------------------------------------
 // Default constructor
-pylith::topology::Mesh::Mesh(const MPI_Comm& comm,
-			     const int dim) :
+pylith::topology::Mesh::Mesh(void) :
+  _coordsys(0),
+  _comm(PETSC_COMM_WORLD),
+  _debug(false)
+{ // constructor
+} // constructor
+
+// ----------------------------------------------------------------------
+// Default constructor
+pylith::topology::Mesh::Mesh(const int dim,
+			     const MPI_Comm& comm) :
   _mesh(new SieveMesh(comm, dim)),
-  _coordsys(0)
+  _coordsys(0),
+  _comm(comm),
+  _debug(false)
 { // constructor
 } // constructor
 
@@ -31,6 +42,16 @@ pylith::topology::Mesh::~Mesh(void)
 { // destructor
   delete _coordsys; _coordsys = 0;
 } // destructor
+
+// ----------------------------------------------------------------------
+// Create Sieve mesh.
+void
+pylith::topology::Mesh::createSieveMesh(const int dim)
+{ // createSieveMesh
+  _mesh.destroy();
+  _mesh = new SieveMesh(_comm, dim);
+  _mesh->setDebug(_debug);
+} // createSieveMesh
 
 // ----------------------------------------------------------------------
 // Set coordinate system.

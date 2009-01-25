@@ -48,16 +48,25 @@ class pylith::topology::Mesh
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
-  /** Default constructor.
+  /// Default constructor.
+  Mesh(void);
+
+  /** Constructor with dimension and communicator.
    *
-   * @param comm MPI communicator for mesh.
    * @param dim Dimension associated with mesh cells.
+   * @param comm MPI communicator for mesh.
    */
-  Mesh(const MPI_Comm& comm =PETSC_COMM_WORLD,
-       const int dim =3); 
+  Mesh(const int dim,
+       const MPI_Comm& comm =PETSC_COMM_WORLD); 
 
   /// Default destructor
   ~Mesh(void);
+
+  /** Create Sieve mesh.
+   *
+   * @param dim Dimension associated with mesh cells.
+   */
+  void createSieveMesh(const int dim=3); 
 
   /** Get Sieve mesh.
    *
@@ -101,6 +110,12 @@ public :
    */
   int dimension(void) const;
 
+  /** Set MPI communicator associated with mesh.
+   *
+   * @param value MPI communicator.
+   */
+  void comm(const MPI_Comm value);
+    
   /** Get MPI communicator associated with mesh.
    *
    * @returns MPI communicator.
@@ -119,9 +134,11 @@ public :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  ALE::Obj<SieveMesh> _mesh; ///< Sieve mesh
-  spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system
-
+  ALE::Obj<SieveMesh> _mesh; ///< Sieve mesh.
+  spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system.
+  MPI_Comm _comm; ///< MPI communicator for mesh.
+  bool _debug; ///< Debugging flag for mesh.
+  
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
