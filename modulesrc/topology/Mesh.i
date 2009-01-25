@@ -26,17 +26,26 @@ namespace pylith {
       // PUBLIC METHODS /////////////////////////////////////////////////
     public :
 
-      /** Default constructor.
+      /// Default constructor.
+      Mesh(void);
+
+      /** Constructor with dimension and communicator.
        *
-       * @param comm MPI communicator for mesh.
        * @param dim Dimension associated with mesh cells.
+       * @param comm MPI communicator for mesh.
        */
-      Mesh(const MPI_Comm& comm =PETSC_COMM_WORLD,
-	   const int dim =3); 
+      Mesh(const int dim,
+	   const MPI_Comm& comm =PETSC_COMM_WORLD); 
 
       /// Default destructor
       ~Mesh(void);
-
+      
+      /** Create Sieve mesh.
+       *
+       * @param dim Dimension associated with mesh cells.
+       */
+      void createSieveMesh(const int dim=3); 
+      
       /** Set coordinate system.
        *
        * @param cs Coordinate system.
@@ -67,6 +76,12 @@ namespace pylith {
        */
       int dimension(void) const;
       
+      /** Set MPI communicator associated with mesh.
+       *
+       * @param value MPI communicator.
+       */
+      void comm(const MPI_Comm value);
+    
       /** Get MPI communicator associated with mesh.
        *
        * @returns MPI communicator.
