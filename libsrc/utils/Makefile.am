@@ -28,8 +28,7 @@ subpkginclude_HEADERS = \
 
 noinst_HEADERS = 
 
-#
-   export
+# export
 clean-local: clean-subpkgincludeHEADERS
 BUILT_SOURCES = export-subpkgincludeHEADERS
 CLEANFILES = export-subpkgincludeHEADERS
