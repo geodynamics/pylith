@@ -65,6 +65,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   } // check
 
   MPI_Bcast(&dim, 1, MPI_INT, 0, comm);
+  mesh->createSieveMesh(dim);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
   assert(!sieveMesh.isNull());
 
