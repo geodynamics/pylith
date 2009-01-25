@@ -32,14 +32,22 @@ class Mesh(ModuleMesh):
     """
     if comm is None and dim is None:
       ModuleMesh.__init__(self)
-    elif dim is None:
-      ModuleMesh.__init__(self, comm.handle)
+    elif comm is None:
+      ModuleMesh.__init__(self, dim)
     else:
-      ModuleMesh.__init__(self, comm.handle, dim)
+      ModuleMesh.__init__(self, dim, comm.handle)
     return
 
 
-  def comm(self):
+  def setComm(self, comm):
+    """
+    Set communicator.
+    """
+    ModuleMesh.comm(self, comm.handle)
+    return
+
+
+  def getComm(self):
     """
     Get communicator.
     """

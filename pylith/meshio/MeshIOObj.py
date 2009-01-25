@@ -37,7 +37,7 @@ class MeshIOObj(Component, ModuleMeshIO):
     return
 
 
-  def read(self, dim, normalizer, debug, interpolate):
+  def read(self, normalizer, debug, interpolate):
     """
     Read finite-element mesh and store in Sieve mesh object.
 
@@ -56,7 +56,8 @@ class MeshIOObj(Component, ModuleMeshIO):
 
     from pylith.mpi.Communicator import petsc_comm_world
     from pylith.topology.Mesh import Mesh    
-    mesh = Mesh(petsc_comm_world(), dim)
+    mesh = Mesh()
+    mesh.setComm(petsc_comm_world())
     mesh.coordsys(self.coordsys)
     mesh.initialize()
 
