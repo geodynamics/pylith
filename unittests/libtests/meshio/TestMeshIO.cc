@@ -42,7 +42,7 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
     CPPUNIT_ASSERT(0 != data.groupTypes);
   } // if
 
-  topology::Mesh* mesh = new topology::Mesh(PETSC_COMM_WORLD, data.cellDim);
+  topology::Mesh* mesh = new topology::Mesh(data.cellDim);
   CPPUNIT_ASSERT(0 != mesh);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());

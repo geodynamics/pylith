@@ -164,7 +164,7 @@ pylith::meshio::TestMeshIOAscii::_testWriteRead(const MeshData& data,
   delete meshOut; meshOut = 0;
 
   // Read mesh
-  topology::Mesh meshIn(PETSC_COMM_WORLD, data.cellDim);
+  topology::Mesh meshIn;
   iohandler.read(&meshIn);
 
   // Make sure meshIn matches data
@@ -178,7 +178,7 @@ pylith::meshio::TestMeshIOAscii::_testRead(const MeshData& data,
 					   const char* filename)
 { // _testWriteRead
   // Read mesh
-  topology::Mesh mesh(PETSC_COMM_WORLD, data.cellDim);
+  topology::Mesh mesh;
   MeshIOAscii iohandler;
   iohandler.filename(filename);
   iohandler.read(&mesh);

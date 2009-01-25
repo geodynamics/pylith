@@ -117,7 +117,7 @@ pylith::meshio::TestMeshIOCubit::_testRead(const MeshData& data,
   iohandler.filename(filename);
 
   // Read mesh
-  topology::Mesh mesh(PETSC_COMM_WORLD, data.cellDim);
+  topology::Mesh mesh;
   iohandler.read(&mesh);
 
   // Make sure meshIn matches data
