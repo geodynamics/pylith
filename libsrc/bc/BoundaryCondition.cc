@@ -14,6 +14,10 @@
 
 #include "BoundaryCondition.hh" // implementation of object methods
 
+#include "pylith/topology/Mesh.hh" // USES Mesh
+
+#include <stdexcept> // USES std::runtime_error()
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::BoundaryCondition::BoundaryCondition(void) :
@@ -32,11 +36,12 @@ pylith::bc::BoundaryCondition::~BoundaryCondition(void)
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::bc::BoundaryCondition::verifyConfiguration(const ALE::Obj<Mesh>& mesh) const
+pylith::bc::BoundaryCondition::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
-  assert(!mesh.isNull());
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
 
-  if (!mesh->hasIntSection(_label)) {
+  if (!sieveMesh->hasIntSection(_label)) {
     std::ostringstream msg;
     msg << "Mesh missing group of vertices '" << _label
 	<< " for boundary condition.";

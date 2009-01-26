@@ -55,7 +55,7 @@ pylith::topology::TestField::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
-// Test section().
+// Test section() and newSection().
 void
 pylith::topology::TestField::testSection(void)
 { // testSection
@@ -69,6 +69,26 @@ pylith::topology::TestField::testSection(void)
   field.newSection();
   CPPUNIT_ASSERT(!section.isNull());
 } // testSection
+
+// ----------------------------------------------------------------------
+// Test section() and newSection(points).
+void
+pylith::topology::TestField::testSectionPoints(void)
+{ // testSectionPoints
+  Mesh mesh;
+  _buildMesh(&mesh);
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+
+  Field field(sieveMesh);
+
+  const ALE::Obj<SieveMesh::real_section_type>& section = field.section();
+  CPPUNIT_ASSERT(section.isNull());
+
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  field.newSection();
+  CPPUNIT_ASSERT(!section.isNull());
+} // testSectionPoints
 
 // ----------------------------------------------------------------------
 // Test name().

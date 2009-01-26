@@ -12,19 +12,19 @@
 
 #include <portinfo>
 
-#include "TestDirichletPointsLine2b.hh" // Implementation of class methods
+#include "TestDirichletBCMultiTet4.hh" // Implementation of class methods
 
-#include "data/DirichletDataLine2b.hh" // USES DirichletDataLine2b
+#include "data/DirichletDataMultiTet4.hh" // USES DirichletDataMultiTet4
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletPointsLine2b );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletBCMultiTet4 );
 
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::bc::TestDirichletPointsLine2b::setUp(void)
+pylith::bc::TestDirichletBCMultiTet4::setUp(void)
 { // setUp
-  _data = new DirichletDataLine2b();
+  _data = new DirichletDataMultiTet4();
 } // setUp
 
 

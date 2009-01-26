@@ -11,33 +11,35 @@
 //
 
 /**
- * @file unittests/libtests/bc/TestDirichletPointsMulti.hh
+ * @file unittests/libtests/bc/TestDirichletBCMulti.hh
  *
- * @brief C++ TestDirichletPointsMulti object.
+ * @brief C++ TestDirichletBCMulti object.
  *
- * C++ unit testing for DirichletPointsMulti.
+ * C++ unit testing for DirichletBCMulti.
  */
 
-#if !defined(pylith_bc_testdirichletpointsmulti_hh)
-#define pylith_bc_testdirichletpointsmulti_hh
+#if !defined(pylith_bc_testdirichletbcmulti_hh)
+#define pylith_bc_testdirichletbcmulti_hh
 
 #include <cppunit/extensions/HelperMacros.h>
-
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
 /// Namespace for pylith package
 namespace pylith {
   namespace bc {
-    class TestDirichletPointsMulti;
+    class TestDirichletBCMulti;
 
-    class DirichletPoints;
+    class DirichletBC;
     class DirichletDataMulti;
   } // bc
+
+  namespace topology {
+    class Mesh;
+  } // topology
 } // pylith
 
-/// C++ unit testing for DirichletPointsMulti.
-class pylith::bc::TestDirichletPointsMulti : public CppUnit::TestFixture
-{ // class TestDirichletPointsMulti
+/// C++ unit testing for DirichletBCMulti.
+class pylith::bc::TestDirichletBCMulti : public CppUnit::TestFixture
+{ // class TestDirichletBCMulti
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -65,21 +67,21 @@ protected :
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
-  /** Initialize DirichletPointsMulti boundary condition.
+  /** Initialize DirichletBCMulti boundary condition.
    *
-   * @param mesh PETSc mesh to initialize
-   * @param bcA DirichletPoints boundary condition A to initialize.
-   * @param bcB DirichletPoints boundary condition B to initialize.
-   * @param bcC DirichletPoints boundary condition C to initialize.
+   * @param mesh Finite-element mesh to initialize.
+   * @param bcA DirichletBC boundary condition A to initialize.
+   * @param bcB DirichletBC boundary condition B to initialize.
+   * @param bcC DirichletBC boundary condition C to initialize.
    */
-  void _initialize(ALE::Obj<Mesh>* mesh,
-		   DirichletPoints* const bcA,
-		   DirichletPoints* const bcB,
-		   DirichletPoints* const bcC) const;
+  void _initialize(topology::Mesh* mesh,
+		   DirichletBC* const bcA,
+		   DirichletBC* const bcB,
+		   DirichletBC* const bcC) const;
 
-}; // class TestDirichletPointsMulti
+}; // class TestDirichletBCMulti
 
-#endif // pylith_bc_dirichletpointsmulti_hh
+#endif // pylith_bc_dirichletbcmulti_hh
 
 
 // End of file 

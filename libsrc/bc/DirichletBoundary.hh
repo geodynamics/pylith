@@ -19,13 +19,10 @@
 #if !defined(pylith_bc_dirichletboundary_hh)
 #define pylith_bc_dirichletboundary_hh
 
-#include "BoundaryCondition.hh" // ISA BoundaryCondition
-#include "pylith/feassemble/Constraint.hh" // ISA Constraint
+// Include directives ---------------------------------------------------
+#include "DirichletBC.hh" // ISA DirichletBC
 
-#include "pylith/utils/array.hh" // USES std::vector, double_array, int_array
-#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
-
-/// Namespace for pylith package
+// Forward declarations -------------------------------------------------
 namespace pylith {
   namespace bc {
     class DirichletBoundary;
@@ -33,14 +30,13 @@ namespace pylith {
   } // bc
 
   namespace topology {
-    class FieldsManager; // forward declaration
+    class FieldUniform; // USES FieldUniform
+    class SolutionFields; // USES SolutionFields
   } // topology
 } // pylith
 
-
-/// C++ implementation of DirichletBoundary boundary conditions.
-class pylith::bc::DirichletBoundary : public BoundaryCondition, 
-				    public feassemble::Constraint
+// DirichletBoundary ----------------------------------------------------
+class pylith::bc::DirichletBoundary : public DirichletBC
 { // class DirichletBoundary
   friend class TestDirichletBoundary; // unit testing
 
@@ -53,69 +49,19 @@ public :
   /// Destructor.
   ~DirichletBoundary(void);
 
-  /** Set database for rate of change of values.
-   *
-   * @param db Spatial database
-   */
-  void dbRate(spatialdata::spatialdb::SpatialDB* const db);
-
-  /** Set indices of fixed degrees of freedom. 
-   *
-   * Note: all points associated with boundary condition has same
-   * degrees of freedom fixed.
-   *
-   * Example: [0, 1] to fix x and y degrees of freedom in Cartesian system.
-   *
-   * @param flags Indices of fixed degrees of freedom.
-   */
-  void fixedDOF(const int_array& flags);
-
-  /** Set time at which rate of change begins.
-   *
-   * @param t Reference time.
-   */
-  void referenceTime(const double t);
-
   /** Initialize boundary condition.
    *
-   * @param mesh PETSc mesh
-   * @param cs Coordinate system for mesh
+   * @param mesh Finite-element mesh.
+   * @param upDir Vertical direction (somtimes used in 3-D problems).
    */
-  void initialize(const ALE::Obj<Mesh>& mesh,
-		  const spatialdata::geocoords::CoordSys* cs,
-		  const double_array& upDir);
-
-  /** Set number of degrees of freedom that are constrained at points in field.
-   *
-   * @param field Solution field
-   * @param mesh PETSc mesh
-   */
-  void setConstraintSizes(const ALE::Obj<real_section_type>& field,
-			  const ALE::Obj<Mesh>& mesh);
-
-  /** Set which degrees of freedom are constrained at points in field.
-   *
-   * @param field Solution field
-   * @param mesh PETSc mesh
-   */
-  void setConstraints(const ALE::Obj<real_section_type>& field,
-		      const ALE::Obj<Mesh>& mesh);
-
-  /** Set values in field.
-   *
-   * @param t Current time
-   * @param field Solution field
-   * @param mesh PETSc mesh
-   */
-  void setField(const double t,
-		const ALE::Obj<real_section_type>& field,
-		const ALE::Obj<Mesh>& mesh);
+  void initialize(const topology::Mesh& mesh,
+		  const double upDir[3]);
 
   /** Get boundary mesh.
    *
    * @return Boundary mesh.
    */
-  const ALE::Obj<SubMesh>& boundaryMesh(void) const;
+  const ALE::Obj<SieveSubMesh>& boundaryMesh(void) const;
 
   /** Get vertex field with BC information.
    *
@@ -126,11 +72,19 @@ public :
    *
    * @returns Field over vertices.
    */
-  const ALE::Obj<real_section_type>&
-  vertexField(VectorFieldEnum* fieldType,
-	      const char* name,
-	      const ALE::Obj<Mesh>& mesh,
-	      topology::FieldsManager* const fields);
+  const topology::Field&
+  vertexField(const char* name,
+	      const topology::Mesh& mesh,
+	      const topology::SolutionFields& fields);
+
+  // PRIVATE METHODS ////////////////////////////////////////////////////
+private :
+
+  /** Extract submesh associated with boundary.
+   *
+   * @param mesh Finite-element mesh.
+   */
+  void _createBoundaryMesh(const topology::Mesh& mesh);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -144,22 +98,8 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  double _tRef; /// Time when rate of change for values begins
-
-  /// Initial values and rate of change of values at DOF.
-  ALE::Obj<real_section_type> _values;
-  ALE::Obj<real_section_type> _buffer; ///< Buffer for output.
-
-  ALE::Obj<SubMesh> _boundaryMesh; ///< Boundary mesh.
-  int_array _fixedDOF; ///< Indices of fixed degrees of freedom
-
-  /// Offset in list of fixed DOF at point to get to fixed DOF
-  /// associated with this DirichletBoundary boundary condition.
-  ALE::Obj<int_section_type> _offsetLocal;
-
-  /// Spatial database with parameters for rate of change values.
-  spatialdata::spatialdb::SpatialDB* _dbRate;
-
+  ALE::Obj<SieveSubMesh> _boundaryMesh; ///< Boundary mesh.
+  topology::FieldUniform* _tmpField; ///< Temporary field for output.
 
 }; // class DirichletBoundary
 

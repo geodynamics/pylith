@@ -130,6 +130,15 @@ public :
   /// Create sieve section.
   void newSection(void);
 
+  /** Create sieve section and set chart and fiber dimesion.
+
+   *
+   * @param points Mesh points over which to define section.
+   * @param dim Fiber dimension for section.
+   */
+  void newSection(const ALE::Obj<SieveMesh::label_sequence>& points,
+		  const int fiberDim);
+
   /** Create section with same layout (fiber dimension and
    * constraints) as another section. This allows the layout data
    * structures to be reused across multiple fields, reducing memory

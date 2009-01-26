@@ -11,36 +11,38 @@
 //
 
 /**
- * @file unittests/libtests/bc/TestDirichletPoints.hh
+ * @file unittests/libtests/bc/TestDirichletBC.hh
  *
- * @brief C++ TestDirichletPoints object.
+ * @brief C++ TestDirichletBC object.
  *
- * C++ unit testing for DirichletPoints.
+ * C++ unit testing for DirichletBC.
  */
 
-#if !defined(pylith_bc_testdirichletpoints_hh)
-#define pylith_bc_testdirichletpoints_hh
+#if !defined(pylith_bc_testdirichletbc_hh)
+#define pylith_bc_testdirichletbc_hh
 
 #include <cppunit/extensions/HelperMacros.h>
-
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
 /// Namespace for pylith package
 namespace pylith {
   namespace bc {
-    class TestDirichletPoints;
+    class TestDirichletBC;
 
-    class DirichletPoints;
+    class DirichletBC;
     class DirichletData;
   } // bc
+
+  namespace topology {
+    class Mesh;
+  } // topology
 } // pylith
 
-/// C++ unit testing for DirichletPoints.
-class pylith::bc::TestDirichletPoints : public CppUnit::TestFixture
-{ // class TestDirichletPoints
+/// C++ unit testing for DirichletBC.
+class pylith::bc::TestDirichletBC : public CppUnit::TestFixture
+{ // class TestDirichletBC
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestDirichletPoints );
+  CPPUNIT_TEST_SUITE( TestDirichletBC );
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testFixedDOF );
   CPPUNIT_TEST_SUITE_END();
@@ -80,17 +82,17 @@ protected :
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
-  /** Initialize DirichletPoints boundary condition.
+  /** Initialize DirichletBC boundary condition.
    *
-   * @param mesh PETSc mesh to initialize
-   * @param bc DirichletPoints boundary condition to initialize.
+   * @param mesh Finite-element mesh to initialize.
+   * @param bc DirichletBC boundary condition to initialize.
    */
-  void _initialize(ALE::Obj<Mesh>* mesh,
-		   DirichletPoints* const bc) const;
+  void _initialize(topology::Mesh* mesh,
+		   DirichletBC* const bc) const;
 
-}; // class TestDirichletPoints
+}; // class TestDirichletBC
 
-#endif // pylith_bc_dirichletpoints_hh
+#endif // pylith_bc_dirichletbc_hh
 
 
 // End of file 

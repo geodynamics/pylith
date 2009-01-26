@@ -20,21 +20,23 @@
 #if !defined(pylith_bc_boundarycondition_hh)
 #define pylith_bc_boundarycondition_hh
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh, real_section_type
-#include "pylith/utils/petscfwd.h" // USES PETScMat
-#include "pylith/utils/array.hh" // USES double_array
+// Include directives ---------------------------------------------------
+#include "pylith/utils/arrayfwd.hh" // USES double_array
 
 #include <string> // HASA std::string
 
-/// Namespace for pylith package
+// Forward declarations -------------------------------------------------
 namespace pylith {
   namespace bc {
     class BoundaryCondition;
     class TestBoundaryCondition; // unit testing
   } // bc
+
+  namespace topology {
+    class Mesh; // USES Mesh
+  } // bc
 } // pylith
 
-/// Namespace for spatialdata package
 namespace spatialdata {
   namespace geocoords {
     class CoordSys;
@@ -45,7 +47,7 @@ namespace spatialdata {
   } // spatialdb
 } // spatialdata
 
-/// C++ abstract base class for BoundaryCondition object.
+// BoundaryCondition ----------------------------------------------------
 class pylith::bc::BoundaryCondition
 { // class BoundaryCondition
   friend class TestBoundaryCondition; // unit testing
@@ -70,7 +72,7 @@ public :
    *
    * @returns Label of surface (from mesh generator).
    */
-  const std::string& label(void) const;
+  const char* label(void) const;
 
   /** Set database for boundary condition parameters.
    *
@@ -80,20 +82,19 @@ public :
 
   /** Verify configuration.
    *
-   * @param mesh PETSc mesh
+   * @param mesh Finite-element mesh.
    */
   virtual
-  void verifyConfiguration(const ALE::Obj<Mesh>& mesh) const;
+  void verifyConfiguration(const topology::Mesh& mesh) const;
 
   /** Initialize boundary condition.
    *
-   * @param mesh PETSc mesh
-   * @param cs Coordinate system for mesh
+   * @param mesh Finite-element mesh.
+   * @param upDir Vertical direction (somtimes used in 3-D problems).
    */
   virtual
-  void initialize(const ALE::Obj<Mesh>& mesh,
-		  const spatialdata::geocoords::CoordSys* cs,
-		  const double_array& upDir) = 0;
+  void initialize(const topology::Mesh& mesh,
+		  const double upDir[3]) = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

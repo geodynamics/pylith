@@ -1,0 +1,32 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_bc_dirichletbc_hh)
+#error "DirichletBC.icc can only be included from DirichletBC.hh"
+#endif
+
+// Set database for boundary condition parameters.
+inline
+void
+pylith::bc::DirichletBC::dbRate(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbRate = db;
+}
+
+// Set time at which rate of change begins.
+inline
+void 
+pylith::bc::DirichletBC::referenceTime(const double t) {
+  _tRef = t;
+} // referenceTime
+
+
+// End of file 

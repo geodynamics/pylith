@@ -10,25 +10,25 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/bc/TestDirichletPoints.py
+## @file unittests/pytests/bc/TestDirichletBC.py
 
-## @brief Unit testing of DirichletPoints object.
+## @brief Unit testing of DirichletBC object.
 
 import unittest
 
-from pylith.bc.DirichletPoints import DirichletPoints
+from pylith.bc.DirichletBC import DirichletBC
 
 # ----------------------------------------------------------------------
-class TestDirichletPoints(unittest.TestCase):
+class TestDirichletBC(unittest.TestCase):
   """
-  Unit testing of DirichletPoints object.
+  Unit testing of DirichletBC object.
   """
 
   def test_implementsConstraint(self):
     """
-    Test to make sure DirichletPoints satisfies constraint requirements.
+    Test to make sure DirichletBC satisfies constraint requirements.
     """
-    bc = DirichletPoints()
+    bc = DirichletBC()
     from pylith.feassemble.Constraint import implementsConstraint
     self.failUnless(implementsConstraint(bc))
     return
@@ -38,8 +38,8 @@ class TestDirichletPoints(unittest.TestCase):
     """
     Test constructor.
     """
-    from pylith.bc.DirichletPoints import DirichletPoints
-    bc = DirichletPoints()
+    from pylith.bc.DirichletBC import DirichletBC
+    bc = DirichletBC()
     return
 
 
@@ -145,10 +145,10 @@ class TestDirichletPoints(unittest.TestCase):
 
   def _initialize(self):
     """
-    Initialize DirichletPoints boundary condition.
+    Initialize DirichletBC boundary condition.
     """
-    from pylith.bc.DirichletPoints import DirichletPoints
-    bc = DirichletPoints()
+    from pylith.bc.DirichletBC import DirichletBC
+    bc = DirichletBC()
     bc._configure()
     bc.id = 0
     bc.label = "bc"
@@ -160,7 +160,7 @@ class TestDirichletPoints(unittest.TestCase):
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     db = SimpleDB()
     db._configure()
-    db.label = "TestDirichletPoints tri3"
+    db.label = "TestDirichletBC tri3"
     db.iohandler.filename = "data/tri3.spatialdb"
     db.initialize()
     bc.db = db
@@ -168,7 +168,7 @@ class TestDirichletPoints(unittest.TestCase):
     from pylith.bc.FixedDOFDB import FixedDOFDB
     dbRate = FixedDOFDB()
     dbRate._configure()
-    dbRate.label = "TestDirichletPoints rate tri3"
+    dbRate.label = "TestDirichletBC rate tri3"
     dbRate.initialize()
     bc.dbRate = dbRate
 

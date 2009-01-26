@@ -23,6 +23,7 @@
 ## Factory: boundary_condition
 
 from pyre.components.Component import Component
+from bc import BoundaryCondition as ModuleBoundaryCondition
 
 # Validator for direction
 def validateDir(value):
@@ -42,7 +43,7 @@ def validateDir(value):
 
 
 # BoundaryCondition class
-class BoundaryCondition(Component):
+class BoundaryCondition(Component, ModuleBoundaryCondition):
   """
   Python abstract base class for managing a boundary condition.
 
@@ -92,8 +93,6 @@ class BoundaryCondition(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="boundary_condition")
-    self.cppHandle = None
-    self.upDir = [0, 0, 1]
     return
 
 
@@ -101,30 +100,18 @@ class BoundaryCondition(Component):
     """
     Setup boundary condition.
     """
-    self._createCppHandle()
-    self.cppHandle.label = self.label
+    self._createModuleObj()
+    self.label(self.inventory.label)
+    self.db(self.inventory.db)
     self.mesh = mesh
-    return
-
-
-  def verifyConfiguration(self):
-    """
-    Verify compatibility of configuration.
-    """
-    assert(None != self.cppHandle)
-    self.cppHandle.verifyConfiguration(self.mesh.cppHandle)
     return
 
 
   def initialize(self, totalTime, numTimeSteps, normalizer):
     """
     Initialize boundary condition.
-    """    
-    self.db.initialize()
-    self.cppHandle.db = self.db.cppHandle    
-    self.cppHandle.initialize(self.mesh.cppHandle,
-                              self.mesh.coordsys.cppHandle,
-			      self.upDir)
+    """
+    ModuleBoundaryCondition.initialize(self, self.mesh, self.upDir)
     return
 
 
@@ -135,18 +122,15 @@ class BoundaryCondition(Component):
     Setup members using inventory.
     """
     Component._configure(self)
-    self.label = self.inventory.label
     self.upDir = map(float, self.inventory.upDir)
-    self.db = self.inventory.db
     return
 
 
-  def _createCppHandle(self):
+  def _createModuleObj(self):
     """
     Create handle to corresponding C++ object.
     """
-    raise NotImplementedError("Please implement _createCppHandle() in " \
-                              "derived class.")
+    raise NotImplementedError("BoundaryCondition is an abstract base class.")  
   
-  
+
 # End of file 

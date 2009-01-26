@@ -60,6 +60,32 @@ pylith::topology::Field::newSection(void)
 } // newSection
 
 // ----------------------------------------------------------------------
+// Create sieve section and set chart and fiber dimesion.
+void
+pylith::topology::Field::newSection(
+			    const ALE::Obj<SieveMesh::label_sequence>& points,
+			    const int fiberDim)
+{ // newSection
+  if (fiberDim < 0) {
+    std::ostringstream msg;
+    msg
+      << "Fiber dimension (" << fiberDim << ") for Field '" << _name
+      << "' must be nonnegative.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  assert(!_mesh.isNull());
+  _section = new SieveRealSection(_mesh->comm(), _mesh->debug());
+
+  const SieveMesh::point_type pointMin = 
+    *std::min_element(points->begin(), points->end());
+  const SieveMesh::point_type pointMax = 
+    *std::max_element(points->begin(), points->end());
+  _section->setChart(SieveRealSection::chart_type(pointMin, pointMax+1));
+  _section->setFiberDimension(points, fiberDim);  
+} // newSection
+
+// ----------------------------------------------------------------------
 // Create section given atlas.
 void
 pylith::topology::Field::copyLayout(const Field& src)

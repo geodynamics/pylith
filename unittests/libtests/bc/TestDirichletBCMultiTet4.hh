@@ -11,32 +11,31 @@
 //
 
 /**
- * @file unittests/libtests/bc/TestDirichletPointsTet4.hh
+ * @file unittests/libtests/bc/TestDirichletBCMultiTet4.hh
  *
- * @brief C++ TestDirichletPoints object.
+ * @brief C++ TestDirichletBC object.
  *
- * C++ unit testing for DirichletPoints for mesh with 1-D line cells.
+ * C++ unit testing for DirichletBC for mesh with 1-D line cells.
  */
 
-#if !defined(pylith_bc_testdirichletpointstet4_hh)
-#define pylith_bc_testdirichletpointset4_hh
+#if !defined(pylith_bc_testdirichletbcmultitet4_hh)
+#define pylith_bc_testdirichletbcmultitet4_hh
 
-#include "TestDirichletPoints.hh" // ISA TestDirichletPoints
+#include "TestDirichletBCMulti.hh" // ISA TestDirichletBC
 
 /// Namespace for pylith package
 namespace pylith {
   namespace bc {
-    class TestDirichletPointsTet4;
+    class TestDirichletBCMultiTet4;
   } // bc
 } // pylith
 
-/// C++ unit testing for DirichletPoints for mesh with 3-D tet cells.
-class pylith::bc::TestDirichletPointsTet4 : public TestDirichletPoints
-{ // class TestDirichletPoints
+/// C++ unit testing for DirichletBC for mesh with 2-D tri cells.
+class pylith::bc::TestDirichletBCMultiTet4 : public TestDirichletBCMulti
+{ // class TestDirichletBC
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUB_SUITE( TestDirichletPointsTet4, TestDirichletPoints );
-  CPPUNIT_TEST( testInitialize );
+  CPPUNIT_TEST_SUITE( TestDirichletBCMultiTet4 );
   CPPUNIT_TEST( testSetConstraintSizes );
   CPPUNIT_TEST( testSetConstraints );
   CPPUNIT_TEST( testSetField );
@@ -48,9 +47,9 @@ public :
   /// Setup testing data.
   void setUp(void);
 
-}; // class TestDirichletPointsTet4
+}; // class TestDirichletBCMultiTet4
 
-#endif // pylith_bc_dirichletpointstet4_hh
+#endif // pylith_bc_dirichletbcmultitet4_hh
 
 
 // End of file 

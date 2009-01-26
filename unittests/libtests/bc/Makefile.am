@@ -21,43 +21,46 @@ check_PROGRAMS = testbc
 
 # Primary source files
 testbc_SOURCES = \
-	TestAbsorbingDampers.cc \
-	TestAbsorbingDampersLine2.cc \
-	TestAbsorbingDampersTri3.cc \
-	TestAbsorbingDampersQuad4.cc \
-	TestAbsorbingDampersTet4.cc \
-	TestAbsorbingDampersHex8.cc \
 	TestBoundaryCondition.cc \
-	TestBoundaryMesh.cc \
-	TestBoundaryMeshTri3.cc \
-	TestBoundaryMeshQuad4.cc \
-	TestBoundaryMeshTet4.cc \
-	TestBoundaryMeshHex8.cc \
-	TestDirichletBoundary.cc \
-	TestDirichletBoundaryTri3.cc \
-	TestDirichletBoundaryQuad4.cc \
-	TestDirichletBoundaryTet4.cc \
-	TestDirichletBoundaryHex8.cc \
-	TestDirichletBoundaryMulti.cc \
-	TestDirichletBoundaryMultiTri3.cc \
-	TestDirichletBoundaryMultiTet4.cc \
-	TestDirichletPoints.cc \
-	TestDirichletPointsLine2.cc \
-	TestDirichletPointsLine2b.cc \
-	TestDirichletPointsTri3.cc \
-	TestDirichletPointsQuad4.cc \
-	TestDirichletPointsTet4.cc \
-	TestDirichletPointsHex8.cc \
-	TestDirichletPointsMulti.cc \
-	TestDirichletPointsMultiTri3.cc \
-	TestDirichletPointsMultiTet4.cc \
-	TestNeumann.cc \
-	TestNeumannLine2.cc \
-	TestNeumannTri3.cc \
-	TestNeumannQuad4.cc \
-	TestNeumannTet4.cc \
-	TestNeumannHex8.cc \
+	TestDirichletBC.cc \
+	TestDirichletBCLine2.cc \
+	TestDirichletBCLine2b.cc \
+	TestDirichletBCTri3.cc \
+	TestDirichletBCQuad4.cc \
+	TestDirichletBCTet4.cc \
+	TestDirichletBCHex8.cc \
+	TestDirichletBCMulti.cc \
+	TestDirichletBCMultiTri3.cc \
+	TestDirichletBCMultiTet4.cc \
 	test_bc.cc
+
+#	TestDirichletBoundary.cc \
+#	TestDirichletBoundaryTri3.cc
+#	TestDirichletBoundaryQuad4.cc \
+#	TestDirichletBoundaryTet4.cc \
+#	TestDirichletBoundaryHex8.cc \
+#	TestDirichletBoundaryMulti.cc \
+#	TestDirichletBoundaryMultiTri3.cc \
+#	TestDirichletBoundaryMultiTet4.cc 
+
+#	TestAbsorbingDampers.cc \
+#	TestAbsorbingDampersLine2.cc \
+#	TestAbsorbingDampersTri3.cc \
+#	TestAbsorbingDampersQuad4.cc \
+#	TestAbsorbingDampersTet4.cc \
+#	TestAbsorbingDampersHex8.cc \
+#	TestNeumann.cc \
+#	TestNeumannLine2.cc \
+#	TestNeumannTri3.cc \
+#	TestNeumannQuad4.cc \
+#	TestNeumannTet4.cc \
+#	TestNeumannHex8.cc 
+
+#	TestBoundaryMesh.cc \
+#	TestBoundaryMeshTri3.cc \
+#	TestBoundaryMeshQuad4.cc \
+#	TestBoundaryMeshTet4.cc \
+#	TestBoundaryMeshHex8.cc
 
 noinst_HEADERS = \
 	TestAbsorbingDampers.hh \
@@ -80,16 +83,16 @@ noinst_HEADERS = \
 	TestDirichletBoundaryMulti.hh \
 	TestDirichletBoundaryMultiTri3.hh \
 	TestDirichletBoundaryMultiTet4.hh \
-	TestDirichletPoints.hh \
-	TestDirichletPointsLine2.hh \
-	TestDirichletPointsLine2b.hh \
-	TestDirichletPointsTri3.hh \
-	TestDirichletPointsQuad4.hh \
-	TestDirichletPointsTet4.hh \
-	TestDirichletPointsHex8.hh \
-	TestDirichletPointsMulti.hh \
-	TestDirichletPointsMultiTri3.hh \
-	TestDirichletPointsMultiTet4.hh \
+	TestDirichletBC.hh \
+	TestDirichletBCLine2.hh \
+	TestDirichletBCLine2b.hh \
+	TestDirichletBCTri3.hh \
+	TestDirichletBCQuad4.hh \
+	TestDirichletBCTet4.hh \
+	TestDirichletBCHex8.hh \
+	TestDirichletBCMulti.hh \
+	TestDirichletBCMultiTri3.hh \
+	TestDirichletBCMultiTet4.hh \
 	TestNeumann.hh \
 	TestNeumannLine2.hh \
 	TestNeumannTri3.hh \

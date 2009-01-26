@@ -22,11 +22,9 @@ SUBDIRS = \
 lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
-	bc/AbsorbingDampers.cc \
 	bc/BoundaryCondition.cc \
+	bc/DirichletBC.cc \
 	bc/DirichletBoundary.cc \
-	bc/DirichletPoints.cc \
-	bc/Neumann.cc \
 	faults/BruneSlipFn.cc \
 	faults/ConstRateSlipFn.cc \
 	faults/CohesiveTopology.cc \
@@ -104,6 +102,9 @@ libpylith_la_SOURCES = \
 	topology/MeshRefiner.cc \
 	topology/RefineUniform.cc \
 	utils/EventLogger.cc
+
+#	bc/Neumann.cc
+#	bc/AbsorbingDampers.cc
 
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 libpylith_la_LIBADD = \

@@ -12,11 +12,14 @@
 
 #include <portinfo>
 
-#include "TestDirichletPoints.hh" // Implementation of class methods
+#include "TestDirichletBC.hh" // Implementation of class methods
 
-#include "pylith/bc/DirichletPoints.hh" // USES DirichletPoints
+#include "pylith/bc/DirichletBC.hh" // USES DirichletBC
 
 #include "data/DirichletData.hh" // USES DirichletData
+
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/FieldUniform.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
@@ -26,12 +29,12 @@
 #include "spatialdata/spatialdb/UniformDB.hh" // USES UniformDB
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletPoints );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletBC );
 
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::bc::TestDirichletPoints::setUp(void)
+pylith::bc::TestDirichletBC::setUp(void)
 { // setUp
   _data = 0;
 } // setUp
@@ -39,7 +42,7 @@ pylith::bc::TestDirichletPoints::setUp(void)
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::bc::TestDirichletPoints::tearDown(void)
+pylith::bc::TestDirichletBC::tearDown(void)
 { // tearDown
   delete _data; _data = 0;
 } // tearDown
@@ -47,22 +50,21 @@ pylith::bc::TestDirichletPoints::tearDown(void)
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::bc::TestDirichletPoints::testConstructor(void)
+pylith::bc::TestDirichletBC::testConstructor(void)
 { // testConstructor
-  DirichletPoints bc;
+  DirichletBC bc;
 } // testConstructor
 
 // ----------------------------------------------------------------------
 // Test fixedDOF()
 void
-pylith::bc::TestDirichletPoints::testFixedDOF(void)
+pylith::bc::TestDirichletBC::testFixedDOF(void)
 { // testfixedDOF
-  DirichletPoints bc;
+  DirichletBC bc;
   
   const size_t numDOF = 4;
-  const int dof[] = { 0, 2, 3, 5 };
-  int_array fixedDOF(dof, numDOF);
-  bc.fixedDOF(fixedDOF);
+  const int fixedDOF[] = { 0, 2, 3, 5 };
+  bc.fixedDOF(fixedDOF, numDOF);
 
   CPPUNIT_ASSERT_EQUAL(numDOF, bc._fixedDOF.size());
   for (int i=0; i < numDOF; ++i)
@@ -72,16 +74,17 @@ pylith::bc::TestDirichletPoints::testFixedDOF(void)
 // ----------------------------------------------------------------------
 // Test initialize().
 void
-pylith::bc::TestDirichletPoints::testInitialize(void)
+pylith::bc::TestDirichletBC::testInitialize(void)
 { // testInitialize
-  ALE::Obj<Mesh> mesh;
-  DirichletPoints bc;
+  topology::Mesh mesh;
+  DirichletBC bc;
   _initialize(&mesh, &bc);
-
   CPPUNIT_ASSERT(0 != _data);
 
-  const int numCells = mesh->heightStratum(0)->size();
-
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  
+  const int numCells = sieveMesh->heightStratum(0)->size();
   const int numFixedDOF = _data->numFixedDOF;
   const size_t numPoints = _data->numConstrainedPts;
 
@@ -110,33 +113,43 @@ pylith::bc::TestDirichletPoints::testInitialize(void)
 // ----------------------------------------------------------------------
 // Test setConstraintSizes().
 void
-pylith::bc::TestDirichletPoints::testSetConstraintSizes(void)
+pylith::bc::TestDirichletBC::testSetConstraintSizes(void)
 { // testSetConstraintSizes
-  ALE::Obj<Mesh> mesh;
-  DirichletPoints bc;
+  topology::Mesh mesh;
+  DirichletBC bc;
   _initialize(&mesh, &bc);
-
-  const ALE::Obj<real_section_type>& field = mesh->getRealSection("field");
-  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-  field->setChart(mesh->getSieve()->getChart());
-  field->setFiberDimension(vertices, _data->numDOF);
-  bc.setConstraintSizes(field, mesh);
-
   CPPUNIT_ASSERT(0 != _data);
 
-  const int numCells = mesh->heightStratum(0)->size();
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
+		 sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  
+  const int fiberDim = _data->numDOF;
+  topology::Field field(sieveMesh);
+  field.newSection(vertices, fiberDim);
+  const ALE::Obj<SieveRealSection>& fieldSection = field.section();
+  CPPUNIT_ASSERT(!fieldSection.isNull());
+
+  bc.setConstraintSizes(field, mesh);
+
+  const int numCells = sieveMesh->heightStratum(0)->size();
   const int offset = numCells;
   int iConstraint = 0;
-  for (Mesh::label_sequence::iterator v_iter = vertices->begin();
+  for (SieveMesh::label_sequence::iterator v_iter = vertices->begin();
        v_iter != vertices->end();
        ++v_iter) {
     if (*v_iter != _data->constrainedPoints[iConstraint] + offset) {
-      CPPUNIT_ASSERT_EQUAL(_data->numDOF, field->getFiberDimension(*v_iter));
-      CPPUNIT_ASSERT_EQUAL(0, field->getConstraintDimension(*v_iter));
+      CPPUNIT_ASSERT_EQUAL(_data->numDOF,
+			   fieldSection->getFiberDimension(*v_iter));
+      CPPUNIT_ASSERT_EQUAL(0,
+			   fieldSection->getConstraintDimension(*v_iter));
     } else {
-      CPPUNIT_ASSERT_EQUAL(_data->numDOF, field->getFiberDimension(*v_iter));
+      CPPUNIT_ASSERT_EQUAL(_data->numDOF,
+			   fieldSection->getFiberDimension(*v_iter));
       CPPUNIT_ASSERT_EQUAL(_data->numFixedDOF, 
-			   field->getConstraintDimension(*v_iter));
+			   fieldSection->getConstraintDimension(*v_iter));
       ++iConstraint;
     } // if/else
   } // for
@@ -145,36 +158,43 @@ pylith::bc::TestDirichletPoints::testSetConstraintSizes(void)
 // ----------------------------------------------------------------------
 // Test setConstraints().
 void
-pylith::bc::TestDirichletPoints::testSetConstraints(void)
+pylith::bc::TestDirichletBC::testSetConstraints(void)
 { // testSetConstraints
-  ALE::Obj<Mesh> mesh;
-  DirichletPoints bc;
+  topology::Mesh mesh;
+  DirichletBC bc;
   _initialize(&mesh, &bc);
-
-  const ALE::Obj<real_section_type>& field = mesh->getRealSection("field");
-  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-  field->setChart(mesh->getSieve()->getChart());
-  field->setFiberDimension(vertices, _data->numDOF);
-  bc.setConstraintSizes(field, mesh);
-  mesh->allocate(field);
-  bc.setConstraints(field, mesh);
-
   CPPUNIT_ASSERT(0 != _data);
 
-  const int numCells = mesh->heightStratum(0)->size();
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
+		 sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  
+  const int fiberDim = _data->numDOF;
+  topology::Field field(sieveMesh);
+  field.newSection(vertices, fiberDim);
+  const ALE::Obj<SieveRealSection>& fieldSection = field.section();
+  CPPUNIT_ASSERT(!fieldSection.isNull());
+
+  bc.setConstraintSizes(field, mesh);
+  sieveMesh->allocate(fieldSection);
+  bc.setConstraints(field, mesh);
+
+  const int numCells = sieveMesh->heightStratum(0)->size();
   const int offset = numCells;
   int iConstraint = 0;
-  for (Mesh::label_sequence::iterator v_iter = vertices->begin();
+  for (SieveMesh::label_sequence::iterator v_iter = vertices->begin();
        v_iter != vertices->end();
        ++v_iter) {
-    const int* fixedDOF = field->getConstraintDof(*v_iter);
+    const int* fixedDOF = fieldSection->getConstraintDof(*v_iter);
     if (*v_iter != _data->constrainedPoints[iConstraint] + offset) {
-      CPPUNIT_ASSERT_EQUAL(0, field->getConstraintDimension(*v_iter));
+      CPPUNIT_ASSERT_EQUAL(0, fieldSection->getConstraintDimension(*v_iter));
       //CPPUNIT_ASSERT(0 == fixedDOF);
     } else {
       CPPUNIT_ASSERT(0 != fixedDOF);
       CPPUNIT_ASSERT_EQUAL(_data->numFixedDOF, 
-			   field->getConstraintDimension(*v_iter));
+			   fieldSection->getConstraintDimension(*v_iter));
       for (int iDOF=0; iDOF < _data->numFixedDOF; ++iDOF)
 	CPPUNIT_ASSERT_EQUAL(_data->fixedDOF[iDOF], fixedDOF[iDOF]);
       ++iConstraint;
@@ -185,31 +205,39 @@ pylith::bc::TestDirichletPoints::testSetConstraints(void)
 // ----------------------------------------------------------------------
 // Test setField().
 void
-pylith::bc::TestDirichletPoints::testSetField(void)
+pylith::bc::TestDirichletBC::testSetField(void)
 { // testSetField
-  ALE::Obj<Mesh> mesh;
-  DirichletPoints bc;
+  topology::Mesh mesh;
+  DirichletBC bc;
   _initialize(&mesh, &bc);
+  CPPUNIT_ASSERT(0 != _data);
 
-  const ALE::Obj<real_section_type>& field = mesh->getRealSection("field");
-  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-  field->setChart(mesh->getSieve()->getChart());
-  field->setFiberDimension(vertices, _data->numDOF);
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
+		 sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  
+  const int fiberDim = _data->numDOF;
+  topology::Field field(sieveMesh);
+  field.newSection(vertices, fiberDim);
+  const ALE::Obj<SieveRealSection>& fieldSection = field.section();
+  CPPUNIT_ASSERT(!fieldSection.isNull());
+
   bc.setConstraintSizes(field, mesh);
-  mesh->allocate(field);
+  sieveMesh->allocate(fieldSection);
   bc.setConstraints(field, mesh);
 
-  CPPUNIT_ASSERT(0 != _data);
   const double tolerance = 1.0e-06;
 
   // All values should be zero.
-  field->zero();
-  for (Mesh::label_sequence::iterator v_iter = vertices->begin();
+  field.zero();
+  for (SieveMesh::label_sequence::iterator v_iter = vertices->begin();
        v_iter != vertices->end();
        ++v_iter) {
-    const int fiberDim = field->getFiberDimension(*v_iter);
-    const real_section_type::value_type* values = 
-      mesh->restrictClosure(field, *v_iter);
+    const int fiberDim = fieldSection->getFiberDimension(*v_iter);
+    const SieveRealSection::value_type* values = 
+      sieveMesh->restrictClosure(fieldSection, *v_iter);
     for (int i=0; i < fiberDim; ++i)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, values[i], tolerance);
   } // for
@@ -231,16 +259,16 @@ pylith::bc::TestDirichletPoints::testSetField(void)
       freeDOF[index] = iDOF;
   } // for
 
-  const int numCells = mesh->heightStratum(0)->size();
+  const int numCells = sieveMesh->heightStratum(0)->size();
   const int offset = numCells;
   const int numFixedDOF = _data->numFixedDOF;
   int iConstraint = 0;
-  for (Mesh::label_sequence::iterator v_iter = vertices->begin();
+  for (SieveMesh::label_sequence::iterator v_iter = vertices->begin();
        v_iter != vertices->end();
        ++v_iter) {
-    const int fiberDim = field->getFiberDimension(*v_iter);
-    const real_section_type::value_type* values = 
-      mesh->restrictClosure(field, *v_iter);
+    const int fiberDim = fieldSection->getFiberDimension(*v_iter);
+    const SieveRealSection::value_type* values = 
+      sieveMesh->restrictClosure(fieldSection, *v_iter);
 
     if (*v_iter != _data->constrainedPoints[iConstraint] + offset) {
       // unconstrained point
@@ -269,8 +297,8 @@ pylith::bc::TestDirichletPoints::testSetField(void)
 
 // ----------------------------------------------------------------------
 void
-pylith::bc::TestDirichletPoints::_initialize(ALE::Obj<Mesh>* mesh,
-				       DirichletPoints* const bc) const
+pylith::bc::TestDirichletBC::_initialize(topology::Mesh* mesh,
+					 DirichletBC* const bc) const
 { // _initialize
   CPPUNIT_ASSERT(0 != _data);
   CPPUNIT_ASSERT(0 != bc);
@@ -278,19 +306,19 @@ pylith::bc::TestDirichletPoints::_initialize(ALE::Obj<Mesh>* mesh,
   meshio::MeshIOAscii iohandler;
   iohandler.filename(_data->meshFilename);
   iohandler.read(mesh);
-  CPPUNIT_ASSERT(!mesh->isNull());
 
   spatialdata::geocoords::CSCart cs;
-  cs.setSpaceDim((*mesh)->getDimension());
+  cs.setSpaceDim(mesh->dimension());
   cs.initialize();
+  mesh->coordsys(&cs);
 
-  spatialdata::spatialdb::SimpleDB db("TestDirichletPoints initial");
+  spatialdata::spatialdb::SimpleDB db("TestDirichletBC initial");
   spatialdata::spatialdb::SimpleIOAscii dbIO;
   dbIO.filename(_data->dbFilename);
   db.ioHandler(&dbIO);
   db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
 
-  spatialdata::spatialdb::UniformDB dbRate("TestDirichletPoints rate");
+  spatialdata::spatialdb::UniformDB dbRate("TestDirichletBC rate");
   const char* names[] = { "dof-0", "dof-1", "dof-2" };
   const double values[] = { _data->valueRate,
 			    _data->valueRate,
@@ -298,16 +326,14 @@ pylith::bc::TestDirichletPoints::_initialize(ALE::Obj<Mesh>* mesh,
   const int numValues = 3;
   dbRate.setData(names, values, numValues);
 
-  int_array fixedDOF(_data->fixedDOF, _data->numFixedDOF);
-  const double upDirVals[] = { 0.0, 0.0, 1.0 };
-  double_array upDir(upDirVals, 3);
+  const double upDir[] = { 0.0, 0.0, 1.0 };
 
   bc->label(_data->label);
   bc->db(&db);
   bc->dbRate(&dbRate);
   bc->referenceTime(_data->tRef);
-  bc->fixedDOF(fixedDOF);
-  bc->initialize(*mesh, &cs, upDir);
+  bc->fixedDOF(_data->fixedDOF, _data->numFixedDOF);
+  bc->initialize(*mesh, upDir);
 } // _initialize
 
 

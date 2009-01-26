@@ -19,13 +19,18 @@
 #if !defined(pylith_feassemble_constraint_hh)
 #define pylith_feassemble_constraint_hh
 
-#include "pylith/utils/sievetypes.hh" // USES real_section_type
+// Include directives ---------------------------------------------------
 
-/// Namespace for pylith package
+// Forward declarations -------------------------------------------------
 namespace pylith {
   namespace feassemble {
     class Constraint;
     class TestConstraint; // unit testing
+  } // feassemble
+
+  namespace topology {
+    class Field; // USES Field'
+    class Mesh; // USES Mesh
   } // feassemble
 } // pylith
 
@@ -35,8 +40,7 @@ namespace spatialdata {
   } // units
 } // spatialdata
 
-/// C++ abstract base class defining interface for constraints applied
-/// to finite-elements.
+// Constraint -----------------------------------------------------------
 class pylith::feassemble::Constraint
 { // class Constraint
   friend class TestConstraint; // unit testing
@@ -60,20 +64,20 @@ public :
   /** Set number of degrees of freedom that are constrained at points in field.
    *
    * @param field Solution field
-   * @param mesh PETSc mesh
+   * @param mesh Finite-element mesh.
    */
   virtual
-  void setConstraintSizes(const ALE::Obj<real_section_type>& field,
-			  const ALE::Obj<Mesh>& mesh) = 0;
+  void setConstraintSizes(const topology::Field& field,
+			  const topology::Mesh& mesh) = 0;
 
   /** Set which degrees of freedom are constrained at points in field.
    *
    * @param field Solution field
-   * @param mesh PETSc mesh
+   * @param mesh Finite-element mesh.
    */
   virtual
-  void setConstraints(const ALE::Obj<real_section_type>& field,
-		      const ALE::Obj<Mesh>& mesh) = 0;
+  void setConstraints(const topology::Field& field,
+		      const topology::Mesh& mesh) = 0;
 
   /** Set flag for setting constraints for total field solution or
    *  incremental field solution.
@@ -87,12 +91,12 @@ public :
    *
    * @param t Current time
    * @param field Solution field
-   * @param mesh PETSc mesh
+   * @param mesh Finite-element mesh.
    */
   virtual
   void setField(const double t,
-		const ALE::Obj<real_section_type>& field,
-		const ALE::Obj<Mesh>& mesh) = 0;
+		const topology::Field& field,
+		const topology::Mesh& mesh) = 0;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :

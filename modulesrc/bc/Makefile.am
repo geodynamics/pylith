@@ -13,40 +13,46 @@
 subpackage = bc
 include $(top_srcdir)/subpackage.am
 
-subpkgpyexec_LTLIBRARIES = bcmodule.la
+subpkgpyexec_LTLIBRARIES = _bcmodule.la
 
-bcmodule_la_LDFLAGS = -module -avoid-version \
+subpkgpyexec_PYTHON = bc.py
+
+swig_sources = \
+	bc.i \
+	BoundaryCondition.i \
+	DirichletBC.i \
+	DirichletBoundary.i
+
+swig_generated = \
+	bc_wrap.cxx \
+	bc.py
+
+_bcmodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist_bcmodule_la_SOURCES = bc.pyxe.src
-nodist_bcmodule_la_SOURCES = \
-	bc.pyxe \
-	bc.c bc_embed.cpp bc_embed.h
+dist__bcmodule_la_SOURCES = $(swig_sources) $(swig_generated)
 
-bcmodule_la_LIBADD = \
+_bcmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB)
-
+	$(PETSC_LIBS)
 if ENABLE_CUBIT
-  bcmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+  _bcmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
 endif
 if NO_UNDEFINED
-  bcmodule_la_LIBADD += $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+_bcmodule_la_LIBADD += \
+	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
-INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
+INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
-bc.pyx bc_embed.cpp  bc_embed.h: bc.pyxe
-	pyrexembed bc.pyxe
-bc.pyxe: $(srcdir)/bc.pyxe.src
-	cp $(srcdir)/bc.pyxe.src $@
-bc_embed.cpp: bc_embed.h
-bc_embed.h: bc.pyx
+$(srcdir)/bc_wrap.cxx $(srcdir)/bc.py: $(swig_sources)
+	$(SWIG) -Wall -c++ -python $<
 
-.pyx.c:
-	pyrexc $<
 
-CLEANFILES = bc.pyxe bc.pyx bc.c *_embed.*
+MAINTAINERCLEANFILES = \
+	$(srcdir)/bc_wrap.cxx \
+	$(srcdir)/bc.py
+
 
 # End of file 

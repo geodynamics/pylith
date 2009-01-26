@@ -14,39 +14,12 @@
 #error "DirichletBoundary.icc can only be included from DirichletBoundary.hh"
 #endif
 
-// Set database for boundary condition parameters.
+// Get boundary mesh.
 inline
-void
-pylith::bc::DirichletBoundary::dbRate(
-			      spatialdata::spatialdb::SpatialDB* const db) {
-  _dbRate = db;
-}
-
-// Set indices of fixed degrees of freedom. 
-inline
-void
-pylith::bc::DirichletBoundary::fixedDOF(const int_array& flags) {
-  const size_t size = flags.size();
-  _fixedDOF.resize(size);
-  _fixedDOF = flags;
-} // fixedDOF
-
-// Set time at which rate of change begins.
-inline
-void 
-pylith::bc::DirichletBoundary::referenceTime(const double t) {
-  _tRef = t;
-} // referenceTime
-
-  /** Get data mesh.
-   *
-   * @return Boundary mesh.
-   */
-inline
-const ALE::Obj<pylith::SubMesh>&
+const ALE::Obj<pylith::SieveSubMesh>&
 pylith::bc::DirichletBoundary::boundaryMesh(void) const {
   return _boundaryMesh;
-} // dataMesh
+} // boundaryMesh
 
 
 // End of file 

@@ -25,6 +25,7 @@ pylith::topology::FieldUniform::FieldUniform(const ALE::Obj<SieveMesh>& mesh,
   Field(mesh),
   _fiberDim(fiberDim)
 { // constructor
+  assert(fiberDim >= 0);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -39,15 +40,7 @@ void
 pylith::topology::FieldUniform::createSection(
 			const ALE::Obj<SieveMesh::label_sequence>& points)
 { // createSection
-  if (_section.isNull())
-    newSection();
-
-  const SieveMesh::point_type pointMin = 
-    *std::min_element(points->begin(), points->end());
-  const SieveMesh::point_type pointMax = 
-    *std::max_element(points->begin(), points->end());
-  _section->setChart(SieveRealSection::chart_type(pointMin, pointMax+1));
-  _section->setFiberDimension(points, _fiberDim);
+  newSection(points, _fiberDim);
   _mesh->allocate(_section);
 } // createSection
 
