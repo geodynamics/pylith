@@ -75,19 +75,23 @@ pylith::topology::TestField::testSection(void)
 void
 pylith::topology::TestField::testSectionPoints(void)
 { // testSectionPoints
+  const int fiberDim = 2;
+
   Mesh mesh;
   _buildMesh(&mesh);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
 
-  Field field(sieveMesh);
-
-  const ALE::Obj<SieveMesh::real_section_type>& section = field.section();
-  CPPUNIT_ASSERT(section.isNull());
-
+  Field fieldA(sieveMesh);
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
-  field.newSection();
-  CPPUNIT_ASSERT(!section.isNull());
+  fieldA.newSection(vertices, fiberDim);
+  const ALE::Obj<SieveMesh::real_section_type>& sectionA = fieldA.section();
+  CPPUNIT_ASSERT(!sectionA.isNull());
+
+  Field fieldB(sieveMesh);
+  fieldB.newSection(Field::VERTICES_FIELD, fiberDim);
+  const ALE::Obj<SieveMesh::real_section_type>& sectionB = fieldB.section();
+  CPPUNIT_ASSERT(!sectionB.isNull());
 } // testSectionPoints
 
 // ----------------------------------------------------------------------
@@ -183,6 +187,8 @@ pylith::topology::TestField::testCopyLayout(void)
     
   Mesh mesh;
   _buildMesh(&mesh);
+  
+
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
@@ -190,19 +196,14 @@ pylith::topology::TestField::testCopyLayout(void)
   // Create field with atlas to use to create new field
   Field fieldSrc(sieveMesh);
   { // Setup source field
-    fieldSrc.newSection();
+    fieldSrc.newSection(Field::VERTICES_FIELD, fiberDim);
     const ALE::Obj<SieveRealSection>& section = fieldSrc.section();
-    const int spaceDim = _TestField::cellDim;
-    section->setChart(SieveMesh::real_section_type::chart_type(
-		  *std::min_element(vertices->begin(), vertices->end()),
-		  *std::max_element(vertices->begin(), vertices->end())+1));
-    section->setFiberDimension(vertices, fiberDim);
     int iV=0;
     for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
 	 v_iter != vertices->end();
 	 ++v_iter)
       section->addConstraintDimension(*v_iter, nconstraints[iV++]);
-    sieveMesh->allocate(section);
+    fieldSrc.allocate();
   } // Setup source field
 
   Field field(sieveMesh);
@@ -239,6 +240,53 @@ pylith::topology::TestField::testClear(void)
 } // testClear
 
 // ----------------------------------------------------------------------
+// Test allocate().
+void
+pylith::topology::TestField::testAllocate(void)
+{ // testZero
+  const int fiberDim = 3;
+  const double scale = 2.0;
+  const double valuesNondim[] = {
+    1.1, 2.2, 3.3,
+    1.2, 2.3, 3.4,
+    1.3, 2.4, 3.5,
+    1.4, 2.5, 3.6,
+  };
+
+  Mesh mesh;
+  _buildMesh(&mesh);
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+
+  Field field(sieveMesh);
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
+  field.allocate();
+  const ALE::Obj<SieveRealSection>& section = field.section();
+
+  double_array values(fiberDim);
+  int i = 0;
+  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter) {
+    for (int iDim=0; iDim < fiberDim; ++iDim)
+      values[iDim] = valuesNondim[i++];
+    section->updatePoint(*v_iter, &values[0]);
+  } // for
+
+  const double tolerance = 1.0e-6;
+  i = 0;
+  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter) {
+    section->restrictPoint(*v_iter, &values[0], values.size());
+    for (int iDim=0; iDim < fiberDim; ++iDim) {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesNondim[i++], values[iDim], tolerance);
+    } // for
+  } // for
+} // testZero
+
+// ----------------------------------------------------------------------
 // Test zero().
 void
 pylith::topology::TestField::testZero(void)
@@ -259,15 +307,9 @@ pylith::topology::TestField::testZero(void)
     sieveMesh->depthStratum(0);
 
   Field field(sieveMesh);
-  field.newSection();
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
+  field.allocate();
   const ALE::Obj<SieveRealSection>& section = field.section();
-  const int spaceDim = _TestField::cellDim;
-    
-  section->setChart(SieveMesh::real_section_type::chart_type(
-		  *std::min_element(vertices->begin(), vertices->end()),
-		  *std::max_element(vertices->begin(), vertices->end())+1));
-  section->setFiberDimension(vertices, fiberDim);
-  sieveMesh->allocate(section);
 
   double_array values(fiberDim);
   int i = 0;
@@ -313,15 +355,9 @@ pylith::topology::TestField::testComplete(void)
     sieveMesh->depthStratum(0);
 
   Field field(sieveMesh);
-  field.newSection();
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
+  field.allocate();
   const ALE::Obj<SieveRealSection>& section = field.section();
-  const int spaceDim = _TestField::cellDim;
-    
-  section->setChart(SieveMesh::real_section_type::chart_type(
-		  *std::min_element(vertices->begin(), vertices->end()),
-		  *std::max_element(vertices->begin(), vertices->end())+1));
-  section->setFiberDimension(vertices, fiberDim);
-  sieveMesh->allocate(section);
 
   double_array values(fiberDim);
   int i = 0;
@@ -370,16 +406,10 @@ pylith::topology::TestField::testCopy(void)
 
   Field fieldSrc(sieveMesh);
   { // Setup source field
-    fieldSrc.newSection();
+    fieldSrc.newSection(Field::VERTICES_FIELD, fiberDim);
+    fieldSrc.allocate();
     const ALE::Obj<SieveRealSection>& section = fieldSrc.section();
-    const int spaceDim = _TestField::cellDim;
     
-    section->setChart(SieveMesh::real_section_type::chart_type(
-		  *std::min_element(vertices->begin(), vertices->end()),
-		  *std::max_element(vertices->begin(), vertices->end())+1));
-    section->setFiberDimension(vertices, fiberDim);
-    sieveMesh->allocate(section);
-
     double_array values(fiberDim);
     int i = 0;
     for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
@@ -392,17 +422,9 @@ pylith::topology::TestField::testCopy(void)
   } // Setup source field
 
   Field field(sieveMesh);
-  field.newSection();
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
+  field.allocate();
   const ALE::Obj<SieveRealSection>& section = field.section();
-  { // Setup destination field
-    const int spaceDim = _TestField::cellDim;
-    
-    section->setChart(SieveMesh::real_section_type::chart_type(
-		  *std::min_element(vertices->begin(), vertices->end()),
-		  *std::max_element(vertices->begin(), vertices->end())+1));
-    section->setFiberDimension(vertices, fiberDim);
-    sieveMesh->allocate(section);
-  } // Setup destination field
 
   field.copy(fieldSrc);
 
@@ -447,16 +469,10 @@ pylith::topology::TestField::testOperatorAdd(void)
 
   Field fieldSrc(sieveMesh);
   { // Setup source field
-    fieldSrc.newSection();
+    fieldSrc.newSection(Field::VERTICES_FIELD, fiberDim);
+    fieldSrc.allocate();
     const ALE::Obj<SieveRealSection>& section = fieldSrc.section();
-    const int spaceDim = _TestField::cellDim;
     
-    section->setChart(SieveMesh::real_section_type::chart_type(
-		  *std::min_element(vertices->begin(), vertices->end()),
-		  *std::max_element(vertices->begin(), vertices->end())+1));
-    section->setFiberDimension(vertices, fiberDim);
-    sieveMesh->allocate(section);
-
     double_array values(fiberDim);
     int i = 0;
     for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
@@ -469,16 +485,10 @@ pylith::topology::TestField::testOperatorAdd(void)
   } // Setup source field
 
   Field field(sieveMesh);
-  field.newSection();
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
+  field.allocate();
   const ALE::Obj<SieveRealSection>& section = field.section();
   { // Setup destination field
-    const int spaceDim = _TestField::cellDim;
-    
-    section->setChart(SieveMesh::real_section_type::chart_type(
-		  *std::min_element(vertices->begin(), vertices->end()),
-		  *std::max_element(vertices->begin(), vertices->end())+1));
-    section->setFiberDimension(vertices, fiberDim);
-    sieveMesh->allocate(section);
 
     double_array values(fiberDim);
     int i = 0;
@@ -526,17 +536,11 @@ pylith::topology::TestField::testDimensionalize(void)
   _buildMesh(&mesh);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   Field field(sieveMesh);
-  field.newSection();
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
+  field.allocate();
   const ALE::Obj<SieveRealSection>& section = field.section();
-  const int spaceDim = _TestField::cellDim;
-
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
-  section->setChart(SieveMesh::real_section_type::chart_type(
-		  *std::min_element(vertices->begin(), vertices->end()),
-		  *std::max_element(vertices->begin(), vertices->end())+1));
-  section->setFiberDimension(vertices, fiberDim);
-  sieveMesh->allocate(section);
 
   double_array values(fiberDim);
   int i = 0;
@@ -583,19 +587,12 @@ pylith::topology::TestField::testView(void)
   Mesh mesh;
   _buildMesh(&mesh);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  Field field(sieveMesh);
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
+  field.allocate();
+  const ALE::Obj<SieveRealSection>& section = field.section();
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
-
-  Field field(sieveMesh);
-  field.newSection();
-  const ALE::Obj<SieveRealSection>& section = field.section();
-  const int spaceDim = _TestField::cellDim;
-    
-  section->setChart(SieveMesh::real_section_type::chart_type(
-		  *std::min_element(vertices->begin(), vertices->end()),
-		  *std::max_element(vertices->begin(), vertices->end())+1));
-  section->setFiberDimension(vertices, fiberDim);
-  sieveMesh->allocate(section);
 
   double_array values(fiberDim);
   int i = 0;

@@ -63,8 +63,8 @@ pylith::topology::Field::newSection(void)
 // Create sieve section and set chart and fiber dimesion.
 void
 pylith::topology::Field::newSection(
-			    const ALE::Obj<SieveMesh::label_sequence>& points,
-			    const int fiberDim)
+			  const ALE::Obj<SieveMesh::label_sequence>& points,
+			  const int fiberDim)
 { // newSection
   if (fiberDim < 0) {
     std::ostringstream msg;
@@ -83,6 +83,25 @@ pylith::topology::Field::newSection(
     *std::max_element(points->begin(), points->end());
   _section->setChart(SieveRealSection::chart_type(pointMin, pointMax+1));
   _section->setFiberDimension(points, fiberDim);  
+} // newSection
+
+// ----------------------------------------------------------------------
+// Create sieve section and set chart and fiber dimesion.
+void
+pylith::topology::Field::newSection(const DomainEnum domain,
+				    const int fiberDim)
+{ // newSection
+  ALE::Obj<SieveMesh::label_sequence> points;
+  if (VERTICES_FIELD == domain)
+    points = _mesh->depthStratum(0);
+  else if (CELLS_FIELD == domain)
+    points = _mesh->heightStratum(1);
+  else {
+    std::cerr << "Unknown value for DomainEnum: " << domain << std::endl;
+    assert(0);
+  } // else
+
+  newSection(points, fiberDim);
 } // newSection
 
 // ----------------------------------------------------------------------
@@ -115,6 +134,16 @@ pylith::topology::Field::clear(void)
   _vecFieldType = OTHER;
   _dimensionsOkay = false;
 } // clear
+
+// ----------------------------------------------------------------------
+// Allocate Sieve section.
+void
+pylith::topology::Field::allocate(void)
+{ // allocate
+  assert(!_section.isNull());
+
+  _mesh->allocate(_section);
+} // allocate
 
 // ----------------------------------------------------------------------
 // Zero section values.

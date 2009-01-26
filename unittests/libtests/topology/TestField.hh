@@ -51,6 +51,7 @@ class pylith::topology::TestField : public CppUnit::TestFixture
   CPPUNIT_TEST( testAddDimensionOkay );
   CPPUNIT_TEST( testCopyLayout );
   CPPUNIT_TEST( testClear );
+  CPPUNIT_TEST( testAllocate );
   CPPUNIT_TEST( testZero );
   CPPUNIT_TEST( testComplete );
   CPPUNIT_TEST( testCopy );
@@ -92,6 +93,9 @@ public :
 
   /// Test clear().
   void testClear(void);
+
+  /// Test allocate().
+  void testAllocate(void);
 
   /// Test zero().
   void testZero(void);

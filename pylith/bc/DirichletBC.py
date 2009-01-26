@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/bc/DirichletPoints.py
+## @file pylith/bc/DirichletBC.py
 ##
 ## @brief Python object for managing a Dirichlet (prescribed
 ## displacements) boundary condition with a set of points.
@@ -19,6 +19,7 @@
 
 from BoundaryCondition import BoundaryCondition
 from pylith.feassemble.Constraint import Constraint
+from bc import DirichletBC as ModuleDirichletBC
 
 def validateDOF(value):
   """
@@ -37,10 +38,10 @@ def validateDOF(value):
   return num
   
 
-# DirichletPoints class
-class DirichletPoints(BoundaryCondition, Constraint):
+# DirichletBC class
+class DirichletBC(BoundaryCondition, Constraint, ModuleDirichletBC):
   """
-  Python object for managing a DirichletPoints (prescribed displacements)
+  Python object for managing a DirichletBC (prescribed displacements)
   boundary condition.
 
   Factory: boundary_condition
@@ -93,7 +94,6 @@ class DirichletPoints(BoundaryCondition, Constraint):
     BoundaryCondition.__init__(self, name)
     Constraint.__init__(self)
     self._loggingPrefix = "DiBC "
-    self.fixedDOF = []
     return
 
 
@@ -103,7 +103,8 @@ class DirichletPoints(BoundaryCondition, Constraint):
     """
     BoundaryCondition.preinitialize(self, mesh)
     Constraint.preinitialize(self, mesh)
-    self.cppHandle.fixedDOF = self.fixedDOF    
+    self.dbRate(self.inventory.dbRate)
+    self.fixedDOF(self.inventory.fixedDOF)
     return
 
 
@@ -123,19 +124,16 @@ class DirichletPoints(BoundaryCondition, Constraint):
 
   def initialize(self, totalTime, numTimeSteps, normalizer):
     """
-    Initialize DirichletPoints boundary condition.
+    Initialize DirichletBC boundary condition.
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
     timeScale = normalizer.timeScale()
-    self.tRef = normalizer.nondimensionalize(self.tRef, timeScale)
+    tRef = normalizer.nondimensionalize(self.inventory.tRef, timeScale)
+    self.referenceTime(tRef)
     
-    assert(None != self.cppHandle)
-    self.cppHandle.referenceTime = self.tRef
-    self.dbRate.initialize()
-    self.cppHandle.dbRate = self.dbRate.cppHandle
-    self.cppHandle.normalizer = normalizer.cppHandle
+    self.normalizer(normalizer)
 
     BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 
@@ -150,19 +148,15 @@ class DirichletPoints(BoundaryCondition, Constraint):
     Setup members using inventory.
     """
     BoundaryCondition._configure(self)
-    self.tRef = self.inventory.tRef
-    self.fixedDOF = self.inventory.fixedDOF
-    self.dbRate = self.inventory.dbRate
     return
 
 
-  def _createCppHandle(self):
+  def _createModuleObj(self):
     """
     Create handle to corresponding C++ object.
     """
-    if None == self.cppHandle:
-      import pylith.bc.bc as bindings
-      self.cppHandle = bindings.DirichletPoints()    
+    if None == self.this:
+      ModuleDirichletBC.__init__(self)
     return
   
 
@@ -170,9 +164,9 @@ class DirichletPoints(BoundaryCondition, Constraint):
 
 def boundary_condition():
   """
-  Factory associated with DirichletPoints.
+  Factory associated with DirichletBC.
   """
-  return DirichletPoints()
+  return DirichletBC()
 
   
 # End of file 

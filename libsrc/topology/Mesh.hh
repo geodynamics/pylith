@@ -131,6 +131,12 @@ public :
    */
   void view(const char* label);
 
+  /** Create boundary mesh from mesh and label.
+   *
+   * @param label Label for group of vertices forming boundary.
+   */
+  Mesh createBoundaryMesh(const char* label);
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 

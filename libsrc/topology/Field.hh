@@ -55,6 +55,11 @@ public :
     MULTI_OTHER=7, ///< Not a scalar, vector, or tensor at multiple points.
   }; // VectorFieldEnum
 
+  enum DomainEnum {
+    VERTICES_FIELD=0, ///< Field over vertices.
+    CELLS_FIELD=1, ///< Field over cells.
+  }; // omainEnum
+
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
@@ -133,10 +138,19 @@ public :
   /** Create sieve section and set chart and fiber dimesion.
 
    *
-   * @param points Mesh points over which to define section.
+   * @param points Points over which to define section.
    * @param dim Fiber dimension for section.
    */
   void newSection(const ALE::Obj<SieveMesh::label_sequence>& points,
+		  const int fiberDim);
+
+  /** Create sieve section and set chart and fiber dimesion.
+
+   *
+   * @param domain Type of points over which to define section.
+   * @param dim Fiber dimension for section.
+   */
+  void newSection(const DomainEnum domain,
 		  const int fiberDim);
 
   /** Create section with same layout (fiber dimension and
@@ -150,6 +164,9 @@ public :
 
   /// Clear variables associated with section.
   void clear(void);
+
+  /// Allocate field.
+  void allocate(void);
 
   /// Zero section values.
   void zero(void);

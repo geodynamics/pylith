@@ -16,8 +16,8 @@
 
 __all__ = ['AbsorbingDampers',
            'BoundaryCondition',
+           'DirichletBC',
            'DirichletBoundary',
-           'DirichletPoints',
            'FixedDOFDB',
            'Neumann',
            ]

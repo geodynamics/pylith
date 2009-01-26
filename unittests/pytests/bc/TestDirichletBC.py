@@ -24,16 +24,6 @@ class TestDirichletBC(unittest.TestCase):
   Unit testing of DirichletBC object.
   """
 
-  def test_implementsConstraint(self):
-    """
-    Test to make sure DirichletBC satisfies constraint requirements.
-    """
-    bc = DirichletBC()
-    from pylith.feassemble.Constraint import implementsConstraint
-    self.failUnless(implementsConstraint(bc))
-    return
-    
-
   def test_constructor(self):
     """
     Test constructor.
@@ -51,9 +41,7 @@ class TestDirichletBC(unittest.TestCase):
     don't verify the results.
     """
 
-    (mesh, bc, fields) = self._initialize()
-
-    self.assertNotEqual(None, bc.cppHandle)
+    (mesh, bc, field) = self._initialize()
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
@@ -68,8 +56,8 @@ class TestDirichletBC(unittest.TestCase):
     don't verify the results.
     """
 
-    (mesh, bc, fields) = self._initialize()
-    field = fields.getReal("field")
+    (mesh, bc, field) = self._initialize()
+
     bc.setConstraintSizes(field)
 
     # We should really add something here to check to make sure things
@@ -85,8 +73,7 @@ class TestDirichletBC(unittest.TestCase):
     don't verify the results.
     """
 
-    (mesh, bc, fields) = self._initialize()
-    field = fields.getReal("field")
+    (mesh, bc, field) = self._initialize()
     bc.setConstraintSizes(field)
     mesh.allocateRealSection(field)
     bc.setConstraints(field)
@@ -100,7 +87,7 @@ class TestDirichletBC(unittest.TestCase):
     """
     Test useSolnIncr().
     """
-    (mesh, bc, fields) = self._initialize()
+    (mesh, bc, field) = self._initialize()
     bc.useSolnIncr(True)
     return
 
@@ -113,8 +100,7 @@ class TestDirichletBC(unittest.TestCase):
     don't verify the results.
     """
 
-    (mesh, bc, fields) = self._initialize()
-    field = fields.getReal("field")
+    (mesh, bc, field) = self._initialize()
     bc.setConstraintSizes(field)
     mesh.allocateRealSection(field)
     bc.setConstraints(field)
@@ -133,7 +119,7 @@ class TestDirichletBC(unittest.TestCase):
     WARNING: This is not a rigorous test of finalize() because we
     neither set the input fields or verify the results.
     """
-    (mesh, bc, fields) = self._initialize()
+    (mesh, bc, field) = self._initialize()
     bc.finalize()
 
     # We should really add something here to check to make sure things
@@ -147,34 +133,33 @@ class TestDirichletBC(unittest.TestCase):
     """
     Initialize DirichletBC boundary condition.
     """
-    from pylith.bc.DirichletBC import DirichletBC
-    bc = DirichletBC()
-    bc._configure()
-    bc.id = 0
-    bc.label = "bc"
-    bc.fixedDOF = [1]
-
-    from pyre.units.time import second
-    bc.tRef = -1.0*second
-
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     db = SimpleDB()
     db._configure()
-    db.label = "TestDirichletBC tri3"
-    db.iohandler.filename = "data/tri3.spatialdb"
-    db.initialize()
-    bc.db = db
+    db.inventory.label = "TestDirichletBC tri3"
+    db.inventory.iohandler.inventory.filename = "data/tri3.spatialdb"
+    db.inventory.iohandler._configure()
+    db._configure()
 
     from pylith.bc.FixedDOFDB import FixedDOFDB
     dbRate = FixedDOFDB()
+    dbRate.inventory.label = "TestDirichletBC rate tri3"
     dbRate._configure()
-    dbRate.label = "TestDirichletBC rate tri3"
-    dbRate.initialize()
-    bc.dbRate = dbRate
+
+    from pylith.bc.DirichletBC import DirichletBC
+    bc = DirichletBC()
+    bc.inventory.label = "bc"
+    bc.inventory.fixedDOF = [1]
+    from pyre.units.time import second
+    bc.inventory.tRef = -1.0*second
+    bc.inventory.db = db
+    bc.inventory.dbRate = dbRate
+    bc._configure()
 
     from spatialdata.geocoords.CSCart import CSCart
     cs = CSCart()
-    cs.spaceDim = 2
+    cs.inventory.spaceDim = 2
+    cs._configure()
 
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
@@ -182,24 +167,23 @@ class TestDirichletBC(unittest.TestCase):
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
-    importer.filename = "data/tri3.mesh"
-    importer.coordsys = cs
+    importer.inventory.filename = "data/tri3.mesh"
+    importer.inventory.coordsys = cs
+    importer._configure()
     mesh = importer.read(normalizer, debug=False, interpolate=False)
     
     bc.preinitialize(mesh)
     bc.initialize(totalTime=0.0, numTimeSteps=1, normalizer=normalizer)
 
-    # Setup fields
-    from pylith.topology.FieldsManager import FieldsManager
-    fields = FieldsManager(mesh)
-    fields.addReal("field")
-    fields.setFiberDimension("field", cs.spaceDim)
-    fields.allocate("field")
+    # Setup field
+    from pylith.topology.Field import Field
+    field = Field()
+    field.fiberDimension(cs.spaceDim())
+    field.newSection()
 
-    import pylith.topology.topology as bindings
-    bindings.zeroRealSection(fields.getReal("field"))
+    field.zero()
     
-    return (mesh, bc, fields)
+    return (mesh, bc, field)
 
 
 # End of file 
