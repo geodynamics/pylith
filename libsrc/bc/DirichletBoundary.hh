@@ -26,11 +26,13 @@
 namespace pylith {
   namespace bc {
     class DirichletBoundary;
+
     class TestDirichletBoundary; // unit testing
   } // bc
 
   namespace topology {
-    class FieldUniform; // USES FieldUniform
+    class SubMesh; // HASA SubMesh
+    class FieldSubMesh; // HASA FieldSubMesh
     class SolutionFields; // USES SolutionFields
   } // topology
 } // pylith
@@ -61,7 +63,7 @@ public :
    *
    * @return Boundary mesh.
    */
-  const ALE::Obj<SieveSubMesh>& boundaryMesh(void) const;
+  const topology::SubMesh& boundaryMesh(void) const;
 
   /** Get vertex field with BC information.
    *
@@ -72,19 +74,10 @@ public :
    *
    * @returns Field over vertices.
    */
-  const topology::Field&
+  const topology::FieldSubMesh&
   vertexField(const char* name,
 	      const topology::Mesh& mesh,
 	      const topology::SolutionFields& fields);
-
-  // PRIVATE METHODS ////////////////////////////////////////////////////
-private :
-
-  /** Extract submesh associated with boundary.
-   *
-   * @param mesh Finite-element mesh.
-   */
-  void _createBoundaryMesh(const topology::Mesh& mesh);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -98,8 +91,8 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  ALE::Obj<SieveSubMesh> _boundaryMesh; ///< Boundary mesh.
-  topology::FieldUniform* _tmpField; ///< Temporary field for output.
+  topology::SubMesh* _boundaryMesh; ///< Boundary mesh.
+  topology::FieldSubMesh* _tmpField; ///< Temporary field for output.
 
 }; // class DirichletBoundary
 

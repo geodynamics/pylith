@@ -38,7 +38,7 @@ namespace pylith {
 
 // DirichletBC ------------------------------------------------------
 class pylith::bc::DirichletBC : public BoundaryCondition, 
-				    public feassemble::Constraint
+				public feassemble::Constraint
 { // class DirichletBC
   friend class TestDirichletBC; // unit testing
 

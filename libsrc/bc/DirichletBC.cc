@@ -79,7 +79,7 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field& field,
   if (0 == numFixedDOF)
     return;
 
-  const ALE::Obj<SieveRealSection>& section = field.section();
+  const ALE::Obj<MeshRealSection>& section = field.section();
   assert(!section.isNull());
 
   const int numPoints = _points.size();
@@ -113,7 +113,7 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field& field,
   if (0 == numFixedDOF)
     return;
 
-  const ALE::Obj<SieveRealSection>& section = field.section();
+  const ALE::Obj<MeshRealSection>& section = field.section();
   assert(!section.isNull());
 
   const int numPoints = _points.size();
@@ -176,7 +176,7 @@ pylith::bc::DirichletBC::setField(const double t,
   if (0 == numFixedDOF)
     return;
 
-  const ALE::Obj<SieveRealSection>& section = field.section();
+  const ALE::Obj<MeshRealSection>& section = field.section();
   assert(!section.isNull());
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
@@ -271,7 +271,7 @@ pylith::bc::DirichletBC::_queryDatabases(const topology::Mesh& mesh)
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
 
-  const ALE::Obj<SieveRealSection>& coordinates = 
+  const ALE::Obj<MeshRealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
 

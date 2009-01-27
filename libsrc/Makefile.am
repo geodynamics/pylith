@@ -93,14 +93,16 @@ libpylith_la_SOURCES = \
 	meshio/VertexFilterVecNorm.cc \
 	meshio/UCDFaultFile.cc \
 	topology/Distributor.cc \
+	topology/FieldBase.cc \
 	topology/Field.cc \
-	topology/FieldUniform.cc \
+	topology/FieldSubMesh.cc \
 	topology/FieldsManager.cc \
 	topology/FieldOps.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
 	topology/MeshRefiner.cc \
 	topology/RefineUniform.cc \
+	topology/SubMesh.cc \
 	utils/EventLogger.cc
 
 #	bc/Neumann.cc

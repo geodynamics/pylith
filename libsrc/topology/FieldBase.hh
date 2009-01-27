@@ -11,16 +11,24 @@
 //
 
 /**
- * @file pylith/topology/Field.hh
+ * @file pylith/topology/FieldBase.hh
  *
  * @brief Vector field over the vertices or cells of a finite-element
- * mesh.
+ * mesh or subset of a finite-element mesh.
  *
  * Extends Sieve real general section by adding metadata.
+ *
+ * We could replace FieldBase, Field, and FieldSubMesh (which
+ * implement a field over a finite-element and subset of the
+ * finite-element mesh) by templating Field over the mesh, but this
+ * would not permit as much insulation against the underlying Sieve
+ * implementation. Separation into Field and FieldSubMesh results in
+ * complete insulation of objects using Field and FieldSubMesh from
+ * the Sieve implementation.
  */
 
-#if !defined(pylith_topology_field_hh)
-#define pylith_topology_field_hh
+#if !defined(pylith_topology_fieldbase_hh)
+#define pylith_topology_fieldbase_hh
 
 // Include directives ---------------------------------------------------
 #define NEWPYLITHMESH 1
@@ -31,15 +39,15 @@
 // Forward declarations -------------------------------------------------
 namespace pylith {
   namespace topology {
-    class Field;
-    class TestField;
+    class FieldBase;
+    class TestFieldBase;
   } // topology
 } // pylith
 
-// Field ----------------------------------------------------------------
-class pylith::topology::Field
-{ // Field
-  friend class TestField; // unit testing
+// FieldBase ----------------------------------------------------------------
+class pylith::topology::FieldBase
+{ // FieldBase
+  friend class TestFieldBase; // unit testing
 
 // PUBLIC ENUMS /////////////////////////////////////////////////////////
 public :
@@ -56,27 +64,18 @@ public :
   }; // VectorFieldEnum
 
   enum DomainEnum {
-    VERTICES_FIELD=0, ///< Field over vertices.
-    CELLS_FIELD=1, ///< Field over cells.
+    VERTICES_FIELD=0, ///< FieldBase over vertices.
+    CELLS_FIELD=1, ///< FieldBase over cells.
   }; // omainEnum
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
-  /** Default constructor.
-   *
-   * @param mesh Sieve mesh.
-   */
-  Field(const ALE::Obj<SieveMesh>& mesh);
+  /// Default constructor.
+  FieldBase(void);
 
   /// Destructor.
-  ~Field(void);
-
-  /** Get Sieve section.
-   *
-   * @returns Sieve section.
-   */
-  const ALE::Obj<SieveRealSection>& section(void) const;
+  ~FieldBase(void);
 
   /** Set name of field.
    *
@@ -102,12 +101,6 @@ public :
    */
   VectorFieldEnum vectorFieldType(void) const;
 
-  /** Get spatial dimension of domain.
-   *
-   * @returns Spatial dimension of domain.
-   */
-  int spaceDim(void) const;
-
   /** Set scale for dimensionalizing field.
    *
    * @param value Scale associated with field.
@@ -132,79 +125,8 @@ public :
    */
   bool addDimensionOkay(void) const;
 
-  /// Create sieve section.
-  void newSection(void);
-
-  /** Create sieve section and set chart and fiber dimesion.
-
-   *
-   * @param points Points over which to define section.
-   * @param dim Fiber dimension for section.
-   */
-  void newSection(const ALE::Obj<SieveMesh::label_sequence>& points,
-		  const int fiberDim);
-
-  /** Create sieve section and set chart and fiber dimesion.
-
-   *
-   * @param domain Type of points over which to define section.
-   * @param dim Fiber dimension for section.
-   */
-  void newSection(const DomainEnum domain,
-		  const int fiberDim);
-
-  /** Create section with same layout (fiber dimension and
-   * constraints) as another section. This allows the layout data
-   * structures to be reused across multiple fields, reducing memory
-   * usage.
-   *
-   * @param sec Section defining layout.
-   */
-  void copyLayout(const Field& src);
-
-  /// Clear variables associated with section.
-  void clear(void);
-
-  /// Allocate field.
-  void allocate(void);
-
-  /// Zero section values.
-  void zero(void);
-
-  /// Complete section by assembling across processors.
-  void complete(void);
-
-  /** Copy field values and metadata.
-   *
-   * @param field Field to copy.
-   */
-  void copy(const Field& field);
-
-  /** Add two fields, storing the result in one of the fields.
-   *
-   * @param field Field to add.
-   */
-  void operator+=(const Field& field);
-
-  /** Dimensionalize field. Throws runtime_error if field is not
-   * allowed to be dimensionalized.
-   */
-  void dimensionalize(void);
-
-  /** Print field to standard out.
-   *
-   * @param label Label for output.
-   */
-  void view(const char* label);
-
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
-
-  const ALE::Obj<SieveMesh>& _mesh; ///< Mesh associated with section
-  ALE::Obj<SieveRealSection> _section; ///< Real section with data
-
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
 
   double _scale; ///< Dimensional scale associated with field
   std::string _name; ///< Name of field
@@ -214,14 +136,14 @@ private :
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
-  Field(const Field&); ///< Not implemented
-  const Field& operator=(const Field&); ///< Not implemented
+  FieldBase(const FieldBase&); ///< Not implemented
+  const FieldBase& operator=(const FieldBase&); ///< Not implemented
 
-}; // Field
+}; // FieldBase
 
-#include "Field.icc"
+#include "FieldBase.icc"
 
-#endif // pylith_topology_field_hh
+#endif // pylith_topology_fieldbase_hh
 
 
 // End of file 

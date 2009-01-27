@@ -10,35 +10,35 @@
 // ======================================================================
 //
 
-#if !defined(pylith_topology_mesh_hh)
-#error "Mesh.icc must be included only from Mesh.hh"
+#if !defined(pylith_topology_submesh_hh)
+#error "SubMesh.icc must be included only from SubMesh.hh"
 #else
 
 // Get Sieve mesh.
 inline
-const ALE::Obj<pylith::SieveMesh>&
-pylith::topology::Mesh::sieveMesh(void) const {
+const ALE::Obj<pylith::SieveSubMesh>&
+pylith::topology::SubMesh::sieveMesh(void) const {
   return _mesh;
 }
 
 // Get Sieve mesh.
 inline
-ALE::Obj<pylith::SieveMesh>&
-pylith::topology::Mesh::sieveMesh(void) {
+ALE::Obj<pylith::SieveSubMesh>&
+pylith::topology::SubMesh::sieveMesh(void) {
   return _mesh;
 }
 
 // Get coordinate system.
 inline
 const spatialdata::geocoords::CoordSys*
-pylith::topology::Mesh::coordsys(void) const {
+pylith::topology::SubMesh::coordsys(void) const {
   return _coordsys;
 }
 
 // Set debug flag.
 inline
 void
-pylith::topology::Mesh::debug(const bool value) {
+pylith::topology::SubMesh::debug(const bool value) {
   _debug = value;
   if (!_mesh.isNull())
     _mesh->setDebug(value);
@@ -47,35 +47,28 @@ pylith::topology::Mesh::debug(const bool value) {
 // Get debug flag.
 inline
 bool
-pylith::topology::Mesh::debug(void) const {
+pylith::topology::SubMesh::debug(void) const {
   return _debug;
 }
 
 // Get dimension of mesh.
 inline
 int
-pylith::topology::Mesh::dimension(void) const {
+pylith::topology::SubMesh::dimension(void) const {
   return (!_mesh.isNull()) ? _mesh->getDimension() : 0;
 }
 
-// Set MPI communicator associated with mesh.
-inline
-void
-pylith::topology::Mesh::comm(const MPI_Comm value) {
-  _comm = value;
-}
-    
 // Get MPI communicator associated with mesh.
 inline
 const MPI_Comm
-pylith::topology::Mesh::comm(void) const {
-  return _comm;
+pylith::topology::SubMesh::comm(void) const {
+  return (!_mesh.isNull()) ? _mesh->comm() : 0;
 }
     
 // Print mesh to stdout.
 inline
 void
-pylith::topology::Mesh::view(const char* label) {
+pylith::topology::SubMesh::view(const char* label) {
   _mesh->view(label);
 }
 

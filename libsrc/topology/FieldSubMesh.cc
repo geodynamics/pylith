@@ -12,8 +12,9 @@
 
 #include <portinfo>
 
-#include "Field.hh" // implementation of class methods
+#include "FieldSubMesh.hh" // implementation of class methods
 
+#include "SubMesh.hh" // HASA SubMesh
 #include "pylith/utils/array.hh" // USES double_array
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -25,77 +26,73 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::topology::Field::Field(const ALE::Obj<SieveMesh>& mesh) :
-  _mesh(mesh),
-  _scale(1.0),
-  _name("unknown"),
-  _vecFieldType(OTHER),
-  _dimensionsOkay(false)
+pylith::topology::FieldSubMesh::FieldSubMesh(const SubMesh& mesh) :
+  _mesh(mesh)
 { // constructor
-  assert(!mesh.isNull());
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::topology::Field::~Field(void)
+pylith::topology::FieldSubMesh::~FieldSubMesh(void)
 { // destructor
 } // destructor
 
 // ----------------------------------------------------------------------
 // Get spatial dimension of domain.
 int
-pylith::topology::Field::spaceDim(void) const
+pylith::topology::FieldSubMesh::spaceDim(void) const
 { // spaceDim
-  assert(!_mesh.isNull());
-  return _mesh->getDimension();
+  const spatialdata::geocoords::CoordSys* cs = _mesh.coordsys();
+  return (0 != cs) ? cs->spaceDim() : 0;
 } // spaceDim
 
 // ----------------------------------------------------------------------
 // Create seive section.
 void
-pylith::topology::Field::newSection(void)
+pylith::topology::FieldSubMesh::newSection(void)
 { // newSection
-  assert(!_mesh.isNull());
-  _section = new SieveRealSection(_mesh->comm(), _mesh->debug());  
+  _section = new SubMeshRealSection(_mesh.comm(), _mesh.debug());  
 } // newSection
 
 // ----------------------------------------------------------------------
 // Create sieve section and set chart and fiber dimesion.
 void
-pylith::topology::Field::newSection(
-			  const ALE::Obj<SieveMesh::label_sequence>& points,
+pylith::topology::FieldSubMesh::newSection(
+			  const ALE::Obj<SieveSubMesh::label_sequence>& points,
 			  const int fiberDim)
 { // newSection
   if (fiberDim < 0) {
     std::ostringstream msg;
     msg
-      << "Fiber dimension (" << fiberDim << ") for Field '" << _name
+      << "Fiber dimension (" << fiberDim << ") for field '" << _name
       << "' must be nonnegative.";
     throw std::runtime_error(msg.str());
   } // if
 
-  assert(!_mesh.isNull());
-  _section = new SieveRealSection(_mesh->comm(), _mesh->debug());
+  _section = new SubMeshRealSection(_mesh.comm(), _mesh.debug());
 
-  const SieveMesh::point_type pointMin = 
+  const SieveSubMesh::point_type pointMin = 
     *std::min_element(points->begin(), points->end());
-  const SieveMesh::point_type pointMax = 
+  const SieveSubMesh::point_type pointMax = 
     *std::max_element(points->begin(), points->end());
-  _section->setChart(SieveRealSection::chart_type(pointMin, pointMax+1));
+  _section->setChart(SubMeshRealSection::chart_type(pointMin, pointMax+1));
   _section->setFiberDimension(points, fiberDim);  
 } // newSection
 
 // ----------------------------------------------------------------------
 // Create sieve section and set chart and fiber dimesion.
 void
-pylith::topology::Field::newSection(const DomainEnum domain,
-				    const int fiberDim)
+pylith::topology::FieldSubMesh::newSection(const DomainEnum domain,
+					   const int fiberDim)
 { // newSection
-  ALE::Obj<SieveMesh::label_sequence> points;
+  const ALE::Obj<SieveSubMesh>& sieveMesh = _mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+
+  ALE::Obj<SieveSubMesh::label_sequence> points;
   if (VERTICES_FIELD == domain)
-    points = _mesh->depthStratum(0);
+    points = sieveMesh->depthStratum(0);
   else if (CELLS_FIELD == domain)
-    points = _mesh->heightStratum(1);
+    points = sieveMesh->heightStratum(1);
   else {
     std::cerr << "Unknown value for DomainEnum: " << domain << std::endl;
     assert(0);
@@ -105,13 +102,33 @@ pylith::topology::Field::newSection(const DomainEnum domain,
 } // newSection
 
 // ----------------------------------------------------------------------
-// Create section given atlas.
+// Create section given chart.
 void
-pylith::topology::Field::copyLayout(const Field& src)
-{ // createSection
+pylith::topology::FieldSubMesh::newSection(
+			const SubMeshRealSection::chart_type& chart,
+			const int fiberDim)
+{ // newSection
+  if (_section.isNull())
+    FieldSubMesh::newSection();
+
+  _section->setChart(chart);
+
+  const SubMeshRealSection::chart_type::const_iterator chartEnd = chart.end();
+  for (SubMeshRealSection::chart_type::const_iterator c_iter = chart.begin();
+       c_iter != chartEnd;
+       ++c_iter)
+    _section->setFiberDimension(*c_iter, fiberDim);
+  allocate();
+} // newSection
+
+// ----------------------------------------------------------------------
+// Create section with same layout as another section.
+void
+pylith::topology::FieldSubMesh::newSection(const FieldSubMesh& src)
+{ // newSection
   _vecFieldType = src._vecFieldType;
 
-  const ALE::Obj<SieveRealSection>& srcSection = src.section();
+  const ALE::Obj<SubMeshRealSection>& srcSection = src.section();
   if (!srcSection.isNull() && _section.isNull())
     newSection();
 
@@ -120,12 +137,12 @@ pylith::topology::Field::copyLayout(const Field& src)
     _section->allocateStorage();
     _section->setBC(srcSection->getBC());
   } // if
-} // createSection
+} // newSection
 
 // ----------------------------------------------------------------------
 // Clear variables associated with section.
 void
-pylith::topology::Field::clear(void)
+pylith::topology::FieldSubMesh::clear(void)
 { // clear
   if (!_section.isNull())
     _section->clear();
@@ -138,17 +155,19 @@ pylith::topology::Field::clear(void)
 // ----------------------------------------------------------------------
 // Allocate Sieve section.
 void
-pylith::topology::Field::allocate(void)
+pylith::topology::FieldSubMesh::allocate(void)
 { // allocate
   assert(!_section.isNull());
 
-  _mesh->allocate(_section);
+  const ALE::Obj<SieveSubMesh>& sieveMesh = _mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  sieveMesh->allocate(_section);
 } // allocate
 
 // ----------------------------------------------------------------------
 // Zero section values.
 void
-pylith::topology::Field::zero(void)
+pylith::topology::FieldSubMesh::zero(void)
 { // zero
   if (!_section.isNull())
     _section->zero();
@@ -157,18 +176,21 @@ pylith::topology::Field::zero(void)
 // ----------------------------------------------------------------------
 // Complete section by assembling across processors.
 void
-pylith::topology::Field::complete(void)
+pylith::topology::FieldSubMesh::complete(void)
 { // complete
+  const ALE::Obj<SieveSubMesh>& sieveMesh = _mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+
   if (!_section.isNull())
-    ALE::Completion::completeSectionAdd(_mesh->getSendOverlap(),
-					_mesh->getRecvOverlap(), 
+    ALE::Completion::completeSectionAdd(sieveMesh->getSendOverlap(),
+					sieveMesh->getRecvOverlap(), 
 					_section, _section);
 } // complete
 
 // ----------------------------------------------------------------------
 // Copy field values and metadata.
 void
-pylith::topology::Field::copy(const Field& field)
+pylith::topology::FieldSubMesh::copy(const FieldSubMesh& field)
 { // copy
   // Check compatibility of sections
   const int srcSize = (!field._section.isNull()) ? field._section->size() : 0;
@@ -198,10 +220,10 @@ pylith::topology::Field::copy(const Field& field)
 
   if (!_section.isNull()) {
     // Copy values from field
-    const SieveRealSection::chart_type& chart = _section->getChart();
-    const SieveRealSection::chart_type::const_iterator chartEnd = chart.end();
+    const SubMeshRealSection::chart_type& chart = _section->getChart();
+    const SubMeshRealSection::chart_type::const_iterator chartEnd = chart.end();
 
-    for (SieveRealSection::chart_type::const_iterator c_iter = chart.begin();
+    for (SubMeshRealSection::chart_type::const_iterator c_iter = chart.begin();
 	 c_iter != chartEnd;
 	 ++c_iter) {
       assert(field._section->getFiberDimension(*c_iter) ==
@@ -214,7 +236,7 @@ pylith::topology::Field::copy(const Field& field)
 // ----------------------------------------------------------------------
 // Add two fields, storing the result in one of the fields.
 void
-pylith::topology::Field::operator+=(const Field& field)
+pylith::topology::FieldSubMesh::operator+=(const FieldSubMesh& field)
 { // operator+=
   // Check compatibility of sections
   const int srcSize = (!field._section.isNull()) ? field._section->size() : 0;
@@ -244,14 +266,14 @@ pylith::topology::Field::operator+=(const Field& field)
 
   if (!_section.isNull()) {
     // Add values from field
-    const SieveRealSection::chart_type& chart = _section->getChart();
-    const SieveRealSection::chart_type::const_iterator chartEnd = chart.end();
+    const SubMeshRealSection::chart_type& chart = _section->getChart();
+    const SubMeshRealSection::chart_type::const_iterator chartEnd = chart.end();
 
     // Assume fiber dimension is uniform
     const int fiberDim = _section->getFiberDimension(*chart.begin());
     double_array values(fiberDim);
 
-    for (SieveRealSection::chart_type::const_iterator c_iter = chart.begin();
+    for (SubMeshRealSection::chart_type::const_iterator c_iter = chart.begin();
 	 c_iter != chartEnd;
 	 ++c_iter) {
       assert(fiberDim == field._section->getFiberDimension(*c_iter));
@@ -265,7 +287,7 @@ pylith::topology::Field::operator+=(const Field& field)
 // ----------------------------------------------------------------------
 // Dimensionalize field.
 void
-pylith::topology::Field::dimensionalize(void)
+pylith::topology::FieldSubMesh::dimensionalize(void)
 { // dimensionalize
   if (!_dimensionsOkay) {
     std::ostringstream msg;
@@ -275,8 +297,8 @@ pylith::topology::Field::dimensionalize(void)
   } // if
 
   if (!_section.isNull()) {
-    const SieveRealSection::chart_type& chart = _section->getChart();
-    const SieveRealSection::chart_type::const_iterator chartEnd = chart.end();
+    const SubMeshRealSection::chart_type& chart = _section->getChart();
+    const SubMeshRealSection::chart_type::const_iterator chartEnd = chart.end();
 
     // Assume fiber dimension is uniform
     const int fiberDim = _section->getFiberDimension(*chart.begin());
@@ -284,7 +306,7 @@ pylith::topology::Field::dimensionalize(void)
 
     spatialdata::units::Nondimensional normalizer;
 
-    for (SieveRealSection::chart_type::const_iterator c_iter = chart.begin();
+    for (SubMeshRealSection::chart_type::const_iterator c_iter = chart.begin();
 	 c_iter != chartEnd;
 	 ++c_iter) {
       assert(fiberDim == _section->getFiberDimension(*c_iter));
@@ -299,34 +321,34 @@ pylith::topology::Field::dimensionalize(void)
 // ----------------------------------------------------------------------
 // Print field to standard out.
 void
-pylith::topology::Field::view(const char* label)
+pylith::topology::FieldSubMesh::view(const char* label)
 { // view
-  std::string vecFieldString;
+  std::string vecFieldSubMeshString;
   switch(_vecFieldType)
     { // switch
     case SCALAR:
-      vecFieldString = "scalar";
+      vecFieldSubMeshString = "scalar";
       break;
     case VECTOR:
-      vecFieldString = "vector";
+      vecFieldSubMeshString = "vector";
       break;
     case TENSOR:
-      vecFieldString = "tensor";
+      vecFieldSubMeshString = "tensor";
       break;
     case OTHER:
-      vecFieldString = "other";
+      vecFieldSubMeshString = "other";
       break;
     case MULTI_SCALAR:
-      vecFieldString = "multiple scalars";
+      vecFieldSubMeshString = "multiple scalars";
       break;
     case MULTI_VECTOR:
-      vecFieldString = "multiple vectors";
+      vecFieldSubMeshString = "multiple vectors";
       break;
     case MULTI_TENSOR:
-      vecFieldString = "multiple tensors";
+      vecFieldSubMeshString = "multiple tensors";
       break;
     case MULTI_OTHER:
-      vecFieldString = "multiple other values";
+      vecFieldSubMeshString = "multiple other values";
       break;
     default :
       std::cerr << "Unknown vector field value '" << _vecFieldType
@@ -335,7 +357,7 @@ pylith::topology::Field::view(const char* label)
     } // switch
 
   std::cout << "Viewing field '" << _name << "' "<< label << ".\n"
-	    << "  vector field type: " << vecFieldString << "\n"
+	    << "  vector field type: " << vecFieldSubMeshString << "\n"
 	    << "  scale: " << _scale << "\n"
 	    << "  dimensionalize flag: " << _dimensionsOkay << std::endl;
   if (!_section.isNull())

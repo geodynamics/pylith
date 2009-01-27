@@ -16,9 +16,9 @@
 
 // Get boundary mesh.
 inline
-const ALE::Obj<pylith::SieveSubMesh>&
+const pylith::topology::SubMesh&
 pylith::bc::DirichletBoundary::boundaryMesh(void) const {
-  return _boundaryMesh;
+  return *_boundaryMesh;
 } // boundaryMesh
 
 

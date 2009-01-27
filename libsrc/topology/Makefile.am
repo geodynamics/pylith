@@ -15,16 +15,21 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	Distributor.hh \
+	FieldBase.hh \
+	FieldBase.icc \
 	Field.hh \
 	Field.icc \
-	FieldUniform.hh \
+	FieldSubMesh.hh \
+	FieldSubMesh.icc \
 	FieldsManager.hh \
 	FieldOps.hh \
 	Mesh.hh \
 	Mesh.icc \
 	MeshOps.hh \
 	MeshRefiner.hh \
-	RefineUniform.hh
+	RefineUniform.hh \
+	SubMesh.hh \
+	SubMesh.icc
 
 noinst_HEADERS =
 
