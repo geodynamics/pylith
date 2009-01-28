@@ -1,0 +1,27 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_topology_field_hh)
+#error "Field.icc must be included only from Field.hh"
+#else
+
+// Get Sieve section.
+inline
+const ALE::Obj<pylith::MeshRealSection>&
+pylith::topology::Field::section(void) const {
+  return _section;
+}
+
+#endif
+
+
+// End of file
