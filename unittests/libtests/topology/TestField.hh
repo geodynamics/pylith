@@ -43,12 +43,8 @@ class pylith::topology::TestField : public CppUnit::TestFixture
 
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testSection );
-  CPPUNIT_TEST( testSectionPoints );
-  CPPUNIT_TEST( testName );
-  CPPUNIT_TEST( testVectorFieldType );
+  CPPUNIT_TEST( testNewSection );
   CPPUNIT_TEST( testSpaceDim );
-  CPPUNIT_TEST( testScale );
-  CPPUNIT_TEST( testAddDimensionOkay );
   CPPUNIT_TEST( testCopyLayout );
   CPPUNIT_TEST( testClear );
   CPPUNIT_TEST( testAllocate );
@@ -67,26 +63,14 @@ public :
   /// Test constructor.
   void testConstructor(void);
 
-  /// Test newSection() and section().
+  /// Test section().
   void testSection(void);
 
-  /// Test newSection(points) and section().
-  void testSectionPoints(void);
-
-  /// Test name().
-  void testName(void);
-
-  /// Test vectorFieldType().
-  void testVectorFieldType(void);
+  /// Test newSection().
+  void testNewSection(void);
 
   /// Test spaceDim().
   void testSpaceDim(void);
-
-  /// Test scale().
-  void testScale(void);
-
-  /// Test addDimensionOkay().
-  void testAddDimensionOkay(void);
 
   /// Test copyLayout().
   void testCopyLayout(void);
