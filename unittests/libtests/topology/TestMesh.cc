@@ -43,7 +43,7 @@ pylith::topology::TestMesh::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
-// Test constructor.
+// Test createSieveMesh().
 void
 pylith::topology::TestMesh::testCreateSieveMesh(void)
 { // testCreateSieveMesh
