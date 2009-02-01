@@ -89,6 +89,7 @@ private :
    *
    * @param mesh Finite-element mesh.
    */
+  static
   void _buildMesh(Mesh* mesh);
 
 }; // class TestSubMesh

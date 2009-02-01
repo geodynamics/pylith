@@ -11,13 +11,13 @@
 //
 
 /**
- * @file unittests/libtests/topology/TestField.hh
+ * @file unittests/libtests/topology/TestfieldsubmeshSubMesh.hh
  *
  * @brief C++ unit testing for Field.
  */
 
-#if !defined(pylith_topology_testfield_hh)
-#define pylith_topology_testfield_hh
+#if !defined(pylith_topology_testfieldsubmesh_hh)
+#define pylith_topology_testfieldsubmesh_hh
 
 // Include directives ---------------------------------------------------
 #include <cppunit/extensions/HelperMacros.h>
@@ -26,20 +26,20 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace topology {
-    class TestField;
+    class TestFieldSubMesh;
 
-    class Field;
     class Mesh;
+    class SubMesh;
   } // topology
 } // pylith
 
-// TestField -------------------------------------------------------------
+// TestFieldSubMesh -----------------------------------------------------
 /// C++ unit testing for Field.
-class pylith::topology::TestField : public CppUnit::TestFixture
-{ // class TestField
+class pylith::topology::TestFieldSubMesh : public CppUnit::TestFixture
+{ // class TestFieldSubMesh
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestField );
+  CPPUNIT_TEST_SUITE( TestFieldSubMesh );
 
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testSection );
@@ -117,13 +117,15 @@ private :
   /** Build mesh.
    *
    * @param mesh Finite-element mesh.
+   * @param submesh Boundary mesh.
    */
   static
-  void _buildMesh(Mesh* mesh);
+  void _buildMesh(Mesh* mesh,
+		  SubMesh* submesh);
 
-}; // class TestField
+}; // class TestFieldSubMesh
 
-#endif // pylith_topology_testfield_hh
+#endif // pylith_topology_testfieldsubmesh_hh
 
 
 // End of file 
