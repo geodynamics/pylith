@@ -32,13 +32,13 @@ testbc_SOURCES = \
 	TestDirichletBCMulti.cc \
 	TestDirichletBCMultiTri3.cc \
 	TestDirichletBCMultiTet4.cc \
+	TestDirichletBoundary.cc \
+	TestDirichletBoundaryTri3.cc \
+	TestDirichletBoundaryQuad4.cc \
+	TestDirichletBoundaryTet4.cc \
+	TestDirichletBoundaryHex8.cc \
 	test_bc.cc
 
-#	TestDirichletBoundary.cc \
-#	TestDirichletBoundaryTri3.cc
-#	TestDirichletBoundaryQuad4.cc \
-#	TestDirichletBoundaryTet4.cc \
-#	TestDirichletBoundaryHex8.cc \
 #	TestDirichletBoundaryMulti.cc \
 #	TestDirichletBoundaryMultiTri3.cc \
 #	TestDirichletBoundaryMultiTet4.cc 

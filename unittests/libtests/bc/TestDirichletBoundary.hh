@@ -23,8 +23,6 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
-
 /// Namespace for pylith package
 namespace pylith {
   namespace bc {
@@ -33,6 +31,10 @@ namespace pylith {
     class DirichletBoundary;
     class DirichletData;
   } // bc
+
+  namespace topology {
+    class Mesh; // USES Mesh
+  } // topology
 } // pylith
 
 /// C++ unit testing for DirichletBoundary.
@@ -42,7 +44,6 @@ class pylith::bc::TestDirichletBoundary : public CppUnit::TestFixture
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestDirichletBoundary );
   CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testFixedDOF );
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -57,20 +58,8 @@ public :
   /// Test constructor.
   void testConstructor(void);
 
-  /// Test fixedDOF().
-  void testFixedDOF(void);
-
   /// Test initialize().
   void testInitialize(void);
-
-  /// Test setConstraintSizes().
-  void testSetConstraintSizes(void);
-
-  /// Test setConstraints().
-  void testSetConstraints(void);
-
-  /// Test setField().
-  void testSetField(void);
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
@@ -85,7 +74,7 @@ private :
    * @param mesh PETSc mesh to initialize
    * @param bc DirichletBoundary boundary condition to initialize.
    */
-  void _initialize(ALE::Obj<Mesh>* mesh,
+  void _initialize(topology::Mesh* mesh,
 		   DirichletBoundary* const bc) const;
 
 }; // class TestDirichletBoundary

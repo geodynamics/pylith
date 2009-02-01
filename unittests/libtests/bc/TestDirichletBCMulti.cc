@@ -19,7 +19,7 @@
 #include "data/DirichletDataMulti.hh" // USES DirichletData
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/FieldUniform.hh" // USES Field
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
@@ -63,9 +63,9 @@ pylith::bc::TestDirichletBCMulti::testSetConstraintSizes(void)
   CPPUNIT_ASSERT(!vertices.isNull());
   
   const int fiberDim = _data->numDOF;
-  topology::Field field(sieveMesh);
+  topology::Field field(mesh);
   field.newSection(vertices, fiberDim);
-  const ALE::Obj<SieveRealSection>& fieldSection = field.section();
+  const ALE::Obj<MeshRealSection>& fieldSection = field.section();
   CPPUNIT_ASSERT(!fieldSection.isNull());
 
   bcA.setConstraintSizes(field, mesh);
@@ -104,9 +104,9 @@ pylith::bc::TestDirichletBCMulti::testSetConstraints(void)
   CPPUNIT_ASSERT(!vertices.isNull());
   
   const int fiberDim = _data->numDOF;
-  topology::Field field(sieveMesh);
+  topology::Field field(mesh);
   field.newSection(vertices, fiberDim);
-  const ALE::Obj<SieveRealSection>& fieldSection = field.section();
+  const ALE::Obj<MeshRealSection>& fieldSection = field.section();
   CPPUNIT_ASSERT(!fieldSection.isNull());
 
   bcA.setConstraintSizes(field, mesh);
@@ -151,15 +151,15 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
   CPPUNIT_ASSERT(!vertices.isNull());
   
   const int fiberDim = _data->numDOF;
-  topology::Field field(sieveMesh);
+  topology::Field field(mesh);
   field.newSection(vertices, fiberDim);
-  const ALE::Obj<SieveRealSection>& fieldSection = field.section();
+  const ALE::Obj<MeshRealSection>& fieldSection = field.section();
   CPPUNIT_ASSERT(!fieldSection.isNull());
 
   bcA.setConstraintSizes(field, mesh);
   bcB.setConstraintSizes(field, mesh);
   bcC.setConstraintSizes(field, mesh);
-  sieveMesh->allocate(fieldSection);
+  field.allocate();
   bcA.setConstraints(field, mesh);
   bcB.setConstraints(field, mesh);
   bcC.setConstraints(field, mesh);
@@ -172,7 +172,7 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
        v_iter != vertices->end();
        ++v_iter) {
     const int fiberDim = fieldSection->getFiberDimension(*v_iter);
-    const SieveRealSection::value_type* values = 
+    const MeshRealSection::value_type* values = 
       sieveMesh->restrictClosure(fieldSection, *v_iter);
     for (int i=0; i < fiberDim; ++i)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, values[i], tolerance);
@@ -190,7 +190,7 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
        v_iter != vertices->end();
        ++v_iter) {
     const int fiberDim = fieldSection->getFiberDimension(*v_iter);
-    const SieveRealSection::value_type* values = 
+    const MeshRealSection::value_type* values = 
       sieveMesh->restrictClosure(fieldSection, *v_iter);
     for (int iDOF=0; iDOF < fiberDim; ++iDOF)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->field[i++], values[iDOF], tolerance);
