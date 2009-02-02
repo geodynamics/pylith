@@ -75,7 +75,7 @@ class TestDirichletBC(unittest.TestCase):
 
     (mesh, bc, field) = self._initialize()
     bc.setConstraintSizes(field)
-    mesh.allocateRealSection(field)
+    field.allocate()
     bc.setConstraints(field)
 
     # We should really add something here to check to make sure things
@@ -102,7 +102,7 @@ class TestDirichletBC(unittest.TestCase):
 
     (mesh, bc, field) = self._initialize()
     bc.setConstraintSizes(field)
-    mesh.allocateRealSection(field)
+    field.allocate()
     bc.setConstraints(field)
     t = 1.0
     bc.setField(t, field)
@@ -163,7 +163,7 @@ class TestDirichletBC(unittest.TestCase):
 
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
-    normalizer.initialize()
+    normalizer._configure()
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
@@ -177,9 +177,8 @@ class TestDirichletBC(unittest.TestCase):
 
     # Setup field
     from pylith.topology.Field import Field
-    field = Field()
-    field.fiberDimension(cs.spaceDim())
-    field.newSection()
+    field = Field(mesh)
+    field.newSection(Field.VERTICES_FIELD, cs.spaceDim())
 
     field.zero()
     

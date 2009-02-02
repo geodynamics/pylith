@@ -131,7 +131,7 @@ pylith::bc::TestDirichletBC::testSetConstraintSizes(void)
   const ALE::Obj<MeshRealSection>& fieldSection = field.section();
   CPPUNIT_ASSERT(!fieldSection.isNull());
 
-  bc.setConstraintSizes(field, mesh);
+  bc.setConstraintSizes(field);
 
   const int numCells = sieveMesh->heightStratum(0)->size();
   const int offset = numCells;
@@ -176,9 +176,9 @@ pylith::bc::TestDirichletBC::testSetConstraints(void)
   const ALE::Obj<MeshRealSection>& fieldSection = field.section();
   CPPUNIT_ASSERT(!fieldSection.isNull());
 
-  bc.setConstraintSizes(field, mesh);
+  bc.setConstraintSizes(field);
   field.allocate();
-  bc.setConstraints(field, mesh);
+  bc.setConstraints(field);
 
   const int numCells = sieveMesh->heightStratum(0)->size();
   const int offset = numCells;
@@ -223,9 +223,9 @@ pylith::bc::TestDirichletBC::testSetField(void)
   const ALE::Obj<MeshRealSection>& fieldSection = field.section();
   CPPUNIT_ASSERT(!fieldSection.isNull());
 
-  bc.setConstraintSizes(field, mesh);
+  bc.setConstraintSizes(field);
   field.allocate();
-  bc.setConstraints(field, mesh);
+  bc.setConstraints(field);
 
   const double tolerance = 1.0e-06;
 
@@ -243,7 +243,7 @@ pylith::bc::TestDirichletBC::testSetField(void)
 
   // Only unconstrained values should be zero.
   const double t = 1.0;
-  bc.setField(t, field, mesh);
+  bc.setField(t, field);
 
   // Create list of unconstrained DOF at constrained DOF
   const int numFreeDOF = _data->numDOF - _data->numFixedDOF;

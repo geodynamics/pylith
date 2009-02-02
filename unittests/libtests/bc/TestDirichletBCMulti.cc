@@ -68,9 +68,9 @@ pylith::bc::TestDirichletBCMulti::testSetConstraintSizes(void)
   const ALE::Obj<MeshRealSection>& fieldSection = field.section();
   CPPUNIT_ASSERT(!fieldSection.isNull());
 
-  bcA.setConstraintSizes(field, mesh);
-  bcB.setConstraintSizes(field, mesh);
-  bcC.setConstraintSizes(field, mesh);
+  bcA.setConstraintSizes(field);
+  bcB.setConstraintSizes(field);
+  bcC.setConstraintSizes(field);
 
   const int numCells = sieveMesh->heightStratum(0)->size();
   const int offset = numCells;
@@ -109,13 +109,13 @@ pylith::bc::TestDirichletBCMulti::testSetConstraints(void)
   const ALE::Obj<MeshRealSection>& fieldSection = field.section();
   CPPUNIT_ASSERT(!fieldSection.isNull());
 
-  bcA.setConstraintSizes(field, mesh);
-  bcB.setConstraintSizes(field, mesh);
-  bcC.setConstraintSizes(field, mesh);
-  sieveMesh->allocate(fieldSection);
-  bcA.setConstraints(field, mesh);
-  bcB.setConstraints(field, mesh);
-  bcC.setConstraints(field, mesh);
+  bcA.setConstraintSizes(field);
+  bcB.setConstraintSizes(field);
+  bcC.setConstraintSizes(field);
+  field.allocate();
+  bcA.setConstraints(field);
+  bcB.setConstraints(field);
+  bcC.setConstraints(field);
 
   const int numCells = sieveMesh->heightStratum(0)->size();
   const int offset = numCells;
@@ -156,13 +156,13 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
   const ALE::Obj<MeshRealSection>& fieldSection = field.section();
   CPPUNIT_ASSERT(!fieldSection.isNull());
 
-  bcA.setConstraintSizes(field, mesh);
-  bcB.setConstraintSizes(field, mesh);
-  bcC.setConstraintSizes(field, mesh);
+  bcA.setConstraintSizes(field);
+  bcB.setConstraintSizes(field);
+  bcC.setConstraintSizes(field);
   field.allocate();
-  bcA.setConstraints(field, mesh);
-  bcB.setConstraints(field, mesh);
-  bcC.setConstraints(field, mesh);
+  bcA.setConstraints(field);
+  bcB.setConstraints(field);
+  bcC.setConstraints(field);
 
   const double tolerance = 1.0e-06;
 
@@ -181,9 +181,9 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
   // Only unconstrained values should be zero.
   // Expected values set in _data->field
   const double t = 10.0;
-  bcA.setField(t, field, mesh);
-  bcB.setField(t, field, mesh);
-  bcC.setField(t, field, mesh);
+  bcA.setField(t, field);
+  bcB.setField(t, field);
+  bcC.setField(t, field);
 
   int i = 0;
   for (SieveMesh::label_sequence::iterator v_iter = vertices->begin();

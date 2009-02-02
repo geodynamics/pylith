@@ -114,6 +114,8 @@ nobase_pkgpyexec_PYTHON = \
 	topology/FieldsManager.py \
 	topology/Mesh.py \
 	topology/SubMesh.py \
+	topology/Field.py \
+	topology/FieldSubMesh.py \
 	topology/MeshGenerator.py \
 	topology/MeshImporter.py \
 	topology/MeshRefiner.py \

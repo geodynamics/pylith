@@ -87,28 +87,22 @@ public :
   /** Set number of degrees of freedom that are constrained at points in field.
    *
    * @param field Solution field
-   * @param mesh PETSc mesh
    */
-  void setConstraintSizes(const topology::Field& field,
-			  const topology::Mesh& mesh);
+  void setConstraintSizes(const topology::Field& field);
 
   /** Set which degrees of freedom are constrained at points in field.
    *
    * @param field Solution field
-   * @param mesh PETSc mesh
    */
-  void setConstraints(const topology::Field& field,
-		      const topology::Mesh& mesh);
+  void setConstraints(const topology::Field& field);
 
   /** Set values in field.
    *
    * @param t Current time
    * @param field Solution field
-   * @param mesh PETSc mesh
    */
   void setField(const double t,
-		const topology::Field& field,
-		const topology::Mesh& mesh);
+		const topology::Field& field);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

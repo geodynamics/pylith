@@ -18,7 +18,7 @@
 ## Factory: boundary_condition
 
 from DirichletBC import DirichletBC
-from DicihletBC import validateDOF
+from DirichletBC import validateDOF
 from bc import DirichletBoundary as ModuleDirichletBoundary
 
 # DirichletBoundary class
@@ -32,13 +32,13 @@ class DirichletBoundary(DirichletBC, ModuleDirichletBoundary):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(BoundaryCondition.Inventory):
+  class Inventory(DirichletBC.Inventory):
     """
-    Python object for managing BoundaryCondition facilities and properties.
+    Python object for managing DirichletBoundary facilities and properties.
     """
     
     ## @class Inventory
-    ## Python object for managing BoundaryCondition facilities and properties.
+    ## Python object for managing DirichletBoundary facilities and properties.
     ##
     ## \b Properties
     ## @li None
@@ -88,7 +88,7 @@ class DirichletBoundary(DirichletBC, ModuleDirichletBoundary):
     logEvent = "%sverify" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    DichletBC.verifyConfiguration(self)
+    DirichletBC.verifyConfiguration(self)
     self.output.verifyConfiguration(self.mesh)
 
     self._logger.eventEnd(logEvent)
@@ -137,7 +137,7 @@ class DirichletBoundary(DirichletBC, ModuleDirichletBoundary):
     """
     Setup members using inventory.
     """
-    BoundaryCondition._configure(self)
+    DirichletBC._configure(self)
     self.output = self.inventory.output
     return
 

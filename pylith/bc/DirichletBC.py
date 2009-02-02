@@ -104,7 +104,9 @@ class DirichletBC(BoundaryCondition, Constraint, ModuleDirichletBC):
     BoundaryCondition.preinitialize(self, mesh)
     Constraint.preinitialize(self, mesh)
     self.dbRate(self.inventory.dbRate)
-    self.fixedDOF(self.inventory.fixedDOF)
+    import numpy
+    fixedDOF = numpy.array(self.inventory.fixedDOF, dtype=numpy.int32)
+    self.fixedDOF(fixedDOF)
     return
 
 

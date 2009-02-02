@@ -62,7 +62,6 @@ pylith::bc::DirichletBoundary::initialize(const topology::Mesh& mesh,
 // Get vertex field of BC initial or rate of change of values.
 const pylith::topology::FieldSubMesh&
 pylith::bc::DirichletBoundary::vertexField(const char* name,
-					   const topology::Mesh& mesh,
 					   const topology::SolutionFields& fields)
 { // getVertexField
   assert(0 != name);
@@ -77,7 +76,7 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
   assert(!vertices.isNull());
   const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
 
-  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
+  const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
   assert(0 != cs);
   const int fiberDim = cs->spaceDim();
   double_array values(fiberDim);
@@ -93,6 +92,7 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
   } // if
 
   // ERROR: NEED TO TRANSLATE LABELS FROM MESH INTO SUBMESH
+  std::cerr << "TODO: Translate labels from mesh into submesh." << std::endl;
   assert(0);
 
   if (0 == strcasecmp(name, "initial")) {

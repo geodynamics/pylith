@@ -72,8 +72,7 @@ pylith::bc::DirichletBC::initialize(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Set number of degrees of freedom that are constrained at points in field.
 void
-pylith::bc::DirichletBC::setConstraintSizes(const topology::Field& field,
-					    const topology::Mesh& mesh)
+pylith::bc::DirichletBC::setConstraintSizes(const topology::Field& field)
 { // setConstraintSizes
   const int numFixedDOF = _fixedDOF.size();
   if (0 == numFixedDOF)
@@ -106,8 +105,7 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field& field,
 // ----------------------------------------------------------------------
 // Set which degrees of freedom are constrained at points in field.
 void
-pylith::bc::DirichletBC::setConstraints(const topology::Field& field,
-					const topology::Mesh& mesh)
+pylith::bc::DirichletBC::setConstraints(const topology::Field& field)
 { // setConstraints
   const int numFixedDOF = _fixedDOF.size();
   if (0 == numFixedDOF)
@@ -169,8 +167,7 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field& field,
 // Set values in field.
 void
 pylith::bc::DirichletBC::setField(const double t,
-				  const topology::Field& field,
-				  const topology::Mesh& mesh)
+				  const topology::Field& field)
 { // setField
   const int numFixedDOF = _fixedDOF.size();
   if (0 == numFixedDOF)
@@ -178,7 +175,7 @@ pylith::bc::DirichletBC::setField(const double t,
 
   const ALE::Obj<MeshRealSection>& section = field.section();
   assert(!section.isNull());
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
   assert(!sieveMesh.isNull());
 
   const int numPoints = _points.size();

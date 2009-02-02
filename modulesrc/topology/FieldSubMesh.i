@@ -34,6 +34,12 @@ namespace pylith {
       /// Destructor.
       ~FieldSubMesh(void);
 
+      /** Get mesh associated with field.
+       *
+       * @returns Lower-dimension finite-element mesh.
+       */
+      const SubMesh& mesh(void) const;
+
       /** Get spatial dimension of domain.
        *
        * @returns Spatial dimension of domain.

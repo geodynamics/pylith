@@ -16,6 +16,10 @@
  */
 
 namespace pylith {
+  namespace feassemble {
+    class Constraint;
+  } // feassemble
+
   namespace bc {
 
     class DirichletBC : public BoundaryCondition, 
@@ -73,28 +77,22 @@ namespace pylith {
        * points in field.
        *
        * @param field Solution field
-       * @param mesh PETSc mesh
        */
-      void setConstraintSizes(const pylith::topology::Field& field,
-			      const pylith::topology::Mesh& mesh);
+      void setConstraintSizes(const pylith::topology::Field& field);
       
       /** Set which degrees of freedom are constrained at points in field.
        *
        * @param field Solution field
-       * @param mesh PETSc mesh
        */
-      void setConstraints(const pylith::topology::Field& field,
-			  const pylith::topology::Mesh& mesh);
+      void setConstraints(const pylith::topology::Field& field);
       
       /** Set values in field.
        *
        * @param t Current time
        * @param field Solution field
-       * @param mesh PETSc mesh
        */
       void setField(const double t,
-		    const pylith::topology::Field& field,
-		    const pylith::topology::Mesh& mesh);
+		    const pylith::topology::Field& field);
       
     }; // class DirichletBC
     

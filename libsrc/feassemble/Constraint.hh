@@ -29,7 +29,7 @@ namespace pylith {
   } // feassemble
 
   namespace topology {
-    class Field; // USES Field'
+    class Field; // USES Field
     class Mesh; // USES Mesh
   } // feassemble
 } // pylith
@@ -64,20 +64,16 @@ public :
   /** Set number of degrees of freedom that are constrained at points in field.
    *
    * @param field Solution field
-   * @param mesh Finite-element mesh.
    */
   virtual
-  void setConstraintSizes(const topology::Field& field,
-			  const topology::Mesh& mesh) = 0;
+  void setConstraintSizes(const topology::Field& field) = 0;
 
   /** Set which degrees of freedom are constrained at points in field.
    *
    * @param field Solution field
-   * @param mesh Finite-element mesh.
    */
   virtual
-  void setConstraints(const topology::Field& field,
-		      const topology::Mesh& mesh) = 0;
+  void setConstraints(const topology::Field& field) = 0;
 
   /** Set flag for setting constraints for total field solution or
    *  incremental field solution.
@@ -91,12 +87,10 @@ public :
    *
    * @param t Current time
    * @param field Solution field
-   * @param mesh Finite-element mesh.
    */
   virtual
   void setField(const double t,
-		const topology::Field& field,
-		const topology::Mesh& mesh) = 0;
+		const topology::Field& field) = 0;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :

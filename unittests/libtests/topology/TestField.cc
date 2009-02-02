@@ -52,7 +52,7 @@ pylith::topology::TestField::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
-// Test newSection().
+// Test section().
 void
 pylith::topology::TestField::testSection(void)
 { // testSection
@@ -63,6 +63,19 @@ pylith::topology::TestField::testSection(void)
   const ALE::Obj<SieveMesh::real_section_type>& section = field.section();
   CPPUNIT_ASSERT(section.isNull());
 } // testSection
+
+// ----------------------------------------------------------------------
+// Test mesh().
+void
+pylith::topology::TestField::testMesh(void)
+{ // testMesh
+  Mesh mesh;
+  _buildMesh(&mesh);
+  Field field(mesh);
+
+  const Mesh& mesh2 = field.mesh();
+  CPPUNIT_ASSERT_EQUAL(_TestField::cellDim, mesh2.dimension());  
+} // testMesh
 
 // ----------------------------------------------------------------------
 // Test spaceDim().

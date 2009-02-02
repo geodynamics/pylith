@@ -93,6 +93,7 @@ class BoundaryCondition(Component, ModuleBoundaryCondition):
     Constructor.
     """
     Component.__init__(self, name, facility="boundary_condition")
+    self.this = None
     return
 
 

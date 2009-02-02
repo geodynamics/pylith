@@ -81,6 +81,20 @@ pylith::topology::TestFieldSubMesh::testSection(void)
 } // testSection
 
 // ----------------------------------------------------------------------
+// Test mesh().
+void
+pylith::topology::TestFieldSubMesh::testMesh(void)
+{ // testMesh
+  Mesh mesh;
+  SubMesh submesh;
+  _buildMesh(&mesh, &submesh);
+  FieldSubMesh field(submesh);
+
+  const SubMesh& mesh2 = field.mesh();
+  CPPUNIT_ASSERT_EQUAL(_TestFieldSubMesh::cellDim-1, mesh2.dimension());  
+} // testMesh
+
+// ----------------------------------------------------------------------
 // Test spaceDim().
 void
 pylith::topology::TestFieldSubMesh::testSpaceDim(void)

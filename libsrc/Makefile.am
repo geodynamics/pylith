@@ -101,10 +101,10 @@ libpylith_la_SOURCES = \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
 	topology/MeshRefiner.cc \
-	topology/RefineUniform.cc \
 	topology/SubMesh.cc \
 	utils/EventLogger.cc
 
+#	topology/RefineUniform.cc \
 #	bc/Neumann.cc
 #	bc/AbsorbingDampers.cc
 

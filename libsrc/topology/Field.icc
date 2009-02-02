@@ -21,6 +21,14 @@ pylith::topology::Field::section(void) const {
   return _section;
 }
 
+// Get mesh associated with field.
+inline
+const
+pylith::topology::Mesh&
+pylith::topology::Field::mesh(void) const {
+  return _mesh;
+}
+
 #endif
 
 

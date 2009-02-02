@@ -67,16 +67,13 @@ public :
 
   /** Get vertex field with BC information.
    *
-   * @param fieldType Type of field.
    * @param name Name of field.
-   * @param mesh Finite-element mesh.
    * @param fields Solution fields.
    *
    * @returns Field over vertices.
    */
   const topology::FieldSubMesh&
   vertexField(const char* name,
-	      const topology::Mesh& mesh,
 	      const topology::SolutionFields& fields);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////

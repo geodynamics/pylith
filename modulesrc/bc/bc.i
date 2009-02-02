@@ -44,6 +44,8 @@ import_array();
 %}
 
 // Interfaces
+%include "../feassemble/Constraint.i" // DirichletBC isa Constraint
+
 %include "BoundaryCondition.i"
 %include "DirichletBC.i"
 %include "DirichletBoundary.i"
