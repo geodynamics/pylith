@@ -5,10 +5,9 @@ CURRENT ISSUES/PRIORITIES
 0. SWIG conversion
   TestMesh.test_view()
   TestMesh.test_checkMaterialIds()
-
-  meshio
-    lib
-    module
+  
+  libtests/bc/TestDirichletBoundary::testVertexField()
+  libtests/bc/TestDirichletBoundary::testBoundaryMesh()
 
   FieldsManager (change to SolutionFields)
 
@@ -34,7 +33,7 @@ CURRENT ISSUES/PRIORITIES
       Integrator::normalizer()
       DataWriter::normalizer()
 
-3. Mesh, Field, and FieldUniform objects [Brad]
+3. Mesh and Field objects [Brad]
     Change name of FieldsManager to SolutionFields
       (more accurate description).
 

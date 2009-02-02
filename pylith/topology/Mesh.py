@@ -13,8 +13,6 @@
 ## @file pylith/topology/Mesh.py
 ##
 ## @brief Python Mesh for finite-element topology information.
-##
-## Factory: finite_element_mesh
 
 from topology import Mesh as ModuleMesh
 

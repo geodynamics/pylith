@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/topology/FieldSubMesh.hh
+ * @file libsrc/topology/FieldSubMesh.hh
  *
  * @brief Vector field over the vertices or cells of a lower dimension
  * portion of a finite-element mesh.

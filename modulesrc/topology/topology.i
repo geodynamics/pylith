@@ -16,7 +16,11 @@
 // Header files for module C++ code
 %{
 #include "pylith/topology/Mesh.hh"
+#include "pylith/topology/SubMesh.hh"
 #include "pylith/topology/MeshOps.hh"
+#include "pylith/topology/FieldBase.hh"
+#include "pylith/topology/Field.hh"
+#include "pylith/topology/FieldSubMesh.hh"
 %}
 
 %include "exception.i"
@@ -41,7 +45,11 @@ import_array();
 
 // Interfaces
 %include "Mesh.i"
+%include "SubMesh.i"
 %include "MeshOps.i"
+%include "FieldBase.i"
+%include "Field.i"
+%include "FieldSubMesh.i"
 
 
 // End of file

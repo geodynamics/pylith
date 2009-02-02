@@ -39,9 +39,6 @@ testbc_SOURCES = \
 	TestDirichletBoundaryHex8.cc \
 	test_bc.cc
 
-#	TestDirichletBoundaryMulti.cc \
-#	TestDirichletBoundaryMultiTri3.cc \
-#	TestDirichletBoundaryMultiTet4.cc 
 
 #	TestAbsorbingDampers.cc \
 #	TestAbsorbingDampersLine2.cc \
@@ -80,9 +77,6 @@ noinst_HEADERS = \
 	TestDirichletBoundaryQuad4.hh \
 	TestDirichletBoundaryTet4.hh \
 	TestDirichletBoundaryHex8.hh \
-	TestDirichletBoundaryMulti.hh \
-	TestDirichletBoundaryMultiTri3.hh \
-	TestDirichletBoundaryMultiTet4.hh \
 	TestDirichletBC.hh \
 	TestDirichletBCLine2.hh \
 	TestDirichletBCLine2b.hh \

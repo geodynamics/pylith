@@ -28,6 +28,7 @@ TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
 	TestMesh.py \
+	TestSubMesh.py \
 	TestFieldsManager.py \
 	TestMeshGenerator.py \
 	TestMeshGenSimple.py \

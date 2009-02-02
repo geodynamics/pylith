@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/topology/FieldBase.hh
+ * @file libsrc/topology/FieldBase.hh
  *
  * @brief Vector field over the vertices or cells of a finite-element
  * mesh or subset of a finite-element mesh.
