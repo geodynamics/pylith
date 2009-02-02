@@ -20,6 +20,19 @@
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
+template<typename Point>
+class Edge : public std::pair<Point, Point> {
+public:
+  Edge() : std::pair<Point, Point>() {};
+  Edge(const Point l) : std::pair<Point, Point>(l, l) {};
+  Edge(const Point l, const Point r) : std::pair<Point, Point>(l, r) {};
+  ~Edge() {};
+  friend std::ostream& operator<<(std::ostream& stream, const Edge& edge) {
+    stream << "(" << edge.first << ", " << edge.second << ")";
+    return stream;
+  };
+};
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::topology::RefineUniform::RefineUniform(void)
@@ -42,7 +55,7 @@ pylith::topology::RefineUniform::refine(ALE::Obj<Mesh>* const newMesh,
   assert(!mesh.isNull());
 
   typedef Mesh::point_type point_type;
-  typedef std::pair<point_type,point_type> edge_type;
+  typedef Edge<point_type> edge_type;
 
   const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
   assert(cells->size() > 0);
