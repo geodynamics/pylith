@@ -62,6 +62,13 @@ class Constraint(object):
     return
 
 
+  def finalize(self):
+    """
+    Cleanup.
+    """
+    return
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _setupLogging(self):

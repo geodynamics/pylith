@@ -125,9 +125,9 @@ class DirichletBoundary(DirichletBC, ModuleDirichletBoundary):
     Get vertex field.
     """
     if None == fields:
-      field = self.vertexField(name, self.mesh)
+      field = self.vertexField(name)
     else:
-      field = self.vertexField(name, self.mesh, fields)
+      field = self.vertexField(name, fields)
     return field
 
 

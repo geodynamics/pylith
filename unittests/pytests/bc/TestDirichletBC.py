@@ -179,6 +179,7 @@ class TestDirichletBC(unittest.TestCase):
     from pylith.topology.Field import Field
     field = Field(mesh)
     field.newSection(Field.VERTICES_FIELD, cs.spaceDim())
+    field.allocate()
 
     field.zero()
     

@@ -46,7 +46,6 @@ namespace pylith {
       
       /** Get vertex field with BC information.
        *
-       * @param fieldType Type of field.
        * @param name Name of field.
        * @param fields Solution fields.
        *

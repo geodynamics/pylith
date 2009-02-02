@@ -41,20 +41,16 @@ namespace pylith {
        * points in field.
        *
        * @param field Solution field
-       * @param mesh Finite-element mesh.
        */
       virtual
-      void setConstraintSizes(const pylith::topology::Field& field,
-			      const pylith::topology::Mesh& mesh) = 0;
+      void setConstraintSizes(const pylith::topology::Field& field) = 0;
 
       /** Set which degrees of freedom are constrained at points in field.
        *
        * @param field Solution field
-       * @param mesh Finite-element mesh.
        */
       virtual
-      void setConstraints(const pylith::topology::Field& field,
-			  const pylith::topology::Mesh& mesh) = 0;
+      void setConstraints(const pylith::topology::Field& field) = 0;
 
       /** Set flag for setting constraints for total field solution or
        *  incremental field solution.
@@ -68,12 +64,10 @@ namespace pylith {
        *
        * @param t Current time
        * @param field Solution field
-       * @param mesh Finite-element mesh.
        */
       virtual
       void setField(const double t,
-		    const pylith::topology::Field& field,
-		    const pylith::topology::Mesh& mesh) = 0;
+		    const pylith::topology::Field& field) = 0;
       
     }; // class Constraint
 

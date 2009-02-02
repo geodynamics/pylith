@@ -21,7 +21,8 @@ swig_sources = \
 	bc.i \
 	BoundaryCondition.i \
 	DirichletBC.i \
-	DirichletBoundary.i
+	DirichletBoundary.i \
+	../feassemble/Constraint.i
 
 swig_generated = \
 	bc_wrap.cxx \
