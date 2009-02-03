@@ -1,0 +1,191 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#include <portinfo>
+
+#include "TestFieldsSubMesh.hh" // Implementation of class methods
+
+#include "pylith/topology/Fields.hh" // USES Fields
+
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/FieldSubMesh.hh" // USES FieldSubMesh
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+
+typedef pylith::topology::Fields<pylith::topology::FieldSubMesh,
+				 pylith::topology::SubMesh> FieldsSubMesh;
+
+// ----------------------------------------------------------------------
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldsSubMesh );
+
+// ----------------------------------------------------------------------
+void
+pylith::topology::TestFieldsSubMesh::setUp(void)
+{ // setUp
+  _mesh = new Mesh;
+  meshio::MeshIOAscii importer;
+  importer.filename("data/tri3.mesh");
+  importer.read(_mesh);
+
+  _submesh = new SubMesh(*_mesh, "bc");
+} // setUp
+
+// ----------------------------------------------------------------------
+void
+pylith::topology::TestFieldsSubMesh::tearDown(void)
+{ // tearDown
+  delete _mesh; _mesh = 0;
+  delete _submesh; _submesh = 0;
+} // tearDown
+
+// ----------------------------------------------------------------------
+// Test constructor.
+void
+pylith::topology::TestFieldsSubMesh::testConstructor(void)
+{ // testConstructor
+  CPPUNIT_ASSERT(0 != _submesh);
+  FieldsSubMesh fields(*_submesh);
+} // testConstructor
+ 
+// ----------------------------------------------------------------------
+// Test add().
+void
+pylith::topology::TestFieldsSubMesh::testAdd(void)
+{ // testAdd
+  CPPUNIT_ASSERT(0 != _submesh);
+  FieldsSubMesh fields(*_submesh);
+  
+  const char* label = "field";
+  fields.add(label);
+  const size_t size = 1;
+  CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
+} // testAdd
+
+// ----------------------------------------------------------------------
+// Test add(domain).
+void
+pylith::topology::TestFieldsSubMesh::testAddDomain(void)
+{ // testAddDomain
+  const int fiberDim = 3;
+
+  CPPUNIT_ASSERT(0 != _submesh);
+  FieldsSubMesh fields(*_submesh);
+  
+  const char* label = "field";
+  fields.add(label, FieldSubMesh::VERTICES_FIELD, fiberDim);
+  const size_t size = 1;
+  CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
+
+  FieldSubMesh& field = fields.get(label);
+  const ALE::Obj<MeshRealSection>& section = field.section();
+  CPPUNIT_ASSERT(!section.isNull());
+  const ALE::Obj<SieveMesh>& sieveMesh = _submesh->sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  field.allocate();
+  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter)
+    CPPUNIT_ASSERT_EQUAL(fiberDim, section->getFiberDimension(*v_iter));
+} // testAddDomain
+
+// ----------------------------------------------------------------------
+// Test del().
+void
+pylith::topology::TestFieldsSubMesh::testDelete(void)
+{ // testDelete
+  CPPUNIT_ASSERT(0 != _submesh);
+  FieldsSubMesh fields(*_submesh);
+
+  const char* labelA = "field A";
+  fields.add(labelA);
+
+  const char* labelB = "field B";
+  fields.add(labelB);
+
+  size_t size = 2;
+  CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
+  fields.del(labelA);
+  size = 1;
+  CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
+  const FieldSubMesh& field = fields.get(labelB);
+} // testDelete
+
+// ----------------------------------------------------------------------
+// Test get().
+void
+pylith::topology::TestFieldsSubMesh::testGet(void)
+{ // testGet
+  CPPUNIT_ASSERT(0 != _submesh);
+  FieldsSubMesh fields(*_submesh);
+
+  const char* label = "field";
+  fields.add(label);
+  const FieldSubMesh& field = fields.get(label);
+} // testGet
+
+// ----------------------------------------------------------------------
+// Test get() const.
+void
+pylith::topology::TestFieldsSubMesh::testGetConst(void)
+{ // testGetConst
+  CPPUNIT_ASSERT(0 != _submesh);
+  FieldsSubMesh fields(*_submesh);
+
+  const char* label = "field";
+  fields.add(label);
+
+  const FieldsSubMesh* fieldsPtr = &fields;
+  CPPUNIT_ASSERT(0 != fieldsPtr);
+  const FieldSubMesh& field = fieldsPtr->get(label);
+} // testGetConst
+
+// ----------------------------------------------------------------------
+// Test copyLayout().
+void
+pylith::topology::TestFieldsSubMesh::testCopyLayout(void)
+{ // testCopyLayout
+  const int fiberDim = 3;
+
+  CPPUNIT_ASSERT(0 != _submesh);
+  FieldsSubMesh fields(*_submesh);
+  
+  const char* labelA = "field A";
+  fields.add(labelA, FieldSubMesh::VERTICES_FIELD, fiberDim);
+
+  const char* labelB = "field B";
+  fields.add(labelB);
+  FieldSubMesh& fieldA = fields.get(labelA);
+  fieldA.allocate();
+
+  fields.copyLayout(labelA);
+
+  const size_t size = 2;
+  CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
+  const FieldSubMesh& field = fields.get(labelB);
+  const ALE::Obj<MeshRealSection>& section = field.section();
+  CPPUNIT_ASSERT(!section.isNull());
+  const ALE::Obj<SieveMesh>& sieveMesh = _submesh->sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices
+    = sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter)
+    CPPUNIT_ASSERT_EQUAL(fiberDim, section->getFiberDimension(*v_iter));
+} // testCopyLayout
+
+
+// End of file 

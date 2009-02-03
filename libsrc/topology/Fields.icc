@@ -1,0 +1,141 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_topology_fields_hh)
+#error "Fields.icc must be included only from Fields.hh"
+#endif
+
+
+// ----------------------------------------------------------------------
+// Default constructor.
+template<typename field_type, typename mesh_type>
+pylith::topology::Fields<field_type, mesh_type>::Fields(const mesh_type& mesh) :
+  _mesh(mesh)
+{ // constructor
+} // constructor
+
+// ----------------------------------------------------------------------
+// Destructor.
+template<typename field_type, typename mesh_type>
+pylith::topology::Fields<field_type, mesh_type>::~Fields(void)
+{ // destructor
+} // destructor
+
+// ----------------------------------------------------------------------
+// Add field.
+template<typename field_type, typename mesh_type>
+void
+pylith::topology::Fields<field_type, mesh_type>::add(const char* name)
+{ // add
+  typename map_type::iterator iter = _fields.find(name);
+  if (iter != _fields.end()) {
+    std::ostringstream msg;
+    msg << "Could not add field '" << name
+	<< "' to fields manager, because it already exists.";
+    throw std::runtime_error(msg.str());
+  } // if
+  
+  _fields[name] = new field_type(_mesh);
+} // add
+
+// ----------------------------------------------------------------------
+// Add field.
+template<typename field_type, typename mesh_type>
+void 
+pylith::topology::Fields<field_type, mesh_type>::add(const char* name,
+						     const FieldBase::DomainEnum domain,
+						     const int fiberDim)
+{ // add
+  typename map_type::iterator iter = _fields.find(name);
+  if (iter != _fields.end()) {
+    std::ostringstream msg;
+    msg << "Could not add field '" << name
+	<< "' to fields manager, because it already exists.";
+    throw std::runtime_error(msg.str());
+  } // if
+  
+  _fields[name] = new field_type(_mesh);
+  _fields[name]->newSection(domain, fiberDim);
+} // add
+
+// ----------------------------------------------------------------------
+// Delete field.
+template<typename field_type, typename mesh_type>
+void
+pylith::topology::Fields<field_type, mesh_type>::del(const char* name)
+{ // del
+  typename map_type::iterator iter = _fields.find(name);
+  if (iter == _fields.end()) {
+    std::ostringstream msg;
+    msg << "Could not find field '" << name
+	<< "' in fields manager to delete.";
+    throw std::runtime_error(msg.str());
+  } // if
+  delete iter->second; iter->second = 0;
+  _fields.erase(name);
+} // del
+
+// ----------------------------------------------------------------------
+// Get field.
+template<typename field_type, typename mesh_type>
+const field_type&
+pylith::topology::Fields<field_type, mesh_type>::get(const char* name) const
+{ // get
+  typename map_type::const_iterator iter = _fields.find(name);
+  if (iter == _fields.end()) {
+    std::ostringstream msg;
+    msg << "Could not find field '" << name
+	<< "' in fields manager for retrieval.";
+    throw std::runtime_error(msg.str());
+  } // if
+  return *iter->second;
+} // get
+	   
+// ----------------------------------------------------------------------
+// Get field.
+template<typename field_type, typename mesh_type>
+field_type&
+pylith::topology::Fields<field_type, mesh_type>::get(const char* name)
+{ // get
+  typename map_type::iterator iter = _fields.find(name);
+  if (iter == _fields.end()) {
+    std::ostringstream msg;
+    msg << "Could not find field '" << name
+	<< "' in fields manager for retrieval.";
+    throw std::runtime_error(msg.str());
+  } // if
+  return *iter->second;
+} // get
+
+// ----------------------------------------------------------------------
+// Copy layout to other fields.
+template<typename field_type, typename mesh_type>
+void
+pylith::topology::Fields<field_type, mesh_type>::copyLayout(const char* name)
+{ // copyLayout
+  typename map_type::const_iterator src = _fields.find(name);
+  if (src == _fields.end()) {
+    std::ostringstream msg;
+    msg << "Could not find field '" << name
+	<< "' in fields manager for retrieval.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  const typename map_type::iterator begin = _fields.begin();
+  const typename map_type::iterator end = _fields.end();
+  for (typename map_type::iterator iter=begin; iter != end; ++iter)
+    if (iter != src)
+      iter->second->newSection(*src->second);
+} // copyLayout
+
+
+// End of file 

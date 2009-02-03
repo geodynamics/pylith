@@ -27,9 +27,9 @@ testtopology_SOURCES = \
 	TestFieldBase.cc \
 	TestField.cc \
 	TestFieldSubMesh.cc \
+	TestFieldsMesh.cc \
+	TestFieldsSubMesh.cc \
 	test_topology.cc
-
-#	TestFieldsManager.cc
 
 noinst_HEADERS = \
 	TestMesh.hh \
@@ -38,7 +38,9 @@ noinst_HEADERS = \
 	TestFieldBase.hh \
 	TestField.hh \
 	TestFieldSubMesh.hh \
-	TestFieldsManager.hh
+	TestFieldsMesh.hh \
+	TestFieldsSubMesh.hh
+
 
 # Source files associated with testing data
 testtopology_SOURCES += 

@@ -21,8 +21,8 @@ subpkginclude_HEADERS = \
 	Field.icc \
 	FieldSubMesh.hh \
 	FieldSubMesh.icc \
-	FieldsManager.hh \
-	FieldOps.hh \
+	Fields.hh \
+	Fields.icc \
 	Mesh.hh \
 	Mesh.icc \
 	MeshOps.hh \
