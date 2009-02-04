@@ -22,21 +22,6 @@
 // Include directives ---------------------------------------------------
 #include "DirichletBC.hh" // ISA DirichletBC
 
-// Forward declarations -------------------------------------------------
-namespace pylith {
-  namespace bc {
-    class DirichletBoundary;
-
-    class TestDirichletBoundary; // unit testing
-  } // bc
-
-  namespace topology {
-    class SubMesh; // HASA SubMesh
-    class FieldSubMesh; // HASA FieldSubMesh
-    class SolutionFields; // USES SolutionFields
-  } // topology
-} // pylith
-
 // DirichletBoundary ----------------------------------------------------
 class pylith::bc::DirichletBoundary : public DirichletBC
 { // class DirichletBoundary

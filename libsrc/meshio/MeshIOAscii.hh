@@ -22,23 +22,10 @@
 // Include directives ---------------------------------------------------
 #include "MeshIO.hh" // ISA MeshIO
 
+#include "spatialdata/utils/utilsfwd.hh" // USES LineParser
+
 #include <iosfwd> // USES std::istream, std::ostream
 #include <string> // HASA std::string
-
-// Forward declarations -------------------------------------------------
-namespace pylith {
-  namespace meshio {
-    class MeshIOAscii;
-
-    class TestMeshIOAscii; // unit testing
-  } // meshio
-} // pylith
-
-namespace spatialdata {
-  namespace utils {
-    class LineParser;
-  } // utils
-} // pylith
 
 // MeshIOAscii ----------------------------------------------------------
 class pylith::meshio::MeshIOAscii : public MeshIO

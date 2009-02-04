@@ -31,18 +31,12 @@
 #define pylith_topology_fieldbase_hh
 
 // Include directives ---------------------------------------------------
+#include "topologyfwd.hh" // forward declarations
+
 #define NEWPYLITHMESH 1
 #include "pylith/utils/sievetypes.hh" // HASA PETSc real_section_type
 
 #include <string> // HASA std::string
-
-// Forward declarations -------------------------------------------------
-namespace pylith {
-  namespace topology {
-    class FieldBase;
-    class TestFieldBase;
-  } // topology
-} // pylith
 
 // FieldBase ----------------------------------------------------------------
 class pylith::topology::FieldBase

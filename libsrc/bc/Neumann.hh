@@ -19,31 +19,13 @@
 #if !defined(pylith_bc_neumann_hh)
 #define pylith_bc_neumann_hh
 
+// Include directives ---------------------------------------------------
 #include "BoundaryCondition.hh" // ISA BoundaryCondition
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 #include "pylith/utils/array.hh" // USES std::vector, double_array, int_array
-#include "pylith/utils/sievetypes.hh" // USES real_section_type
-#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
 
-/// Namespace for pylith package
-namespace pylith {
-  namespace bc {
-    class Neumann;
-    class TestNeumann; // unit testing
-  } // bc
-} // pylith
-
-/*
-namespace spatialdata {
-  namespace geocoords {
-    class CoordSys; // USES CoordSys
-  } // geocoords
-} // spatialdata
-*/
-
-
-/// C++ implementation of Neumann boundary conditions.
+// Neumann --------------------------------------------------------------
 class pylith::bc::Neumann : public BoundaryCondition, 
 			    public feassemble::Integrator
 { // class Neumann
@@ -60,53 +42,45 @@ public :
 
   /** Initialize boundary condition.
    *
-   * @param mesh PETSc mesh
-   * @param cs Coordinate system for mesh
+   * @param mesh Finite-element mesh.
    * @param upDir Direction perpendicular to horizontal surface tangent 
    *   direction that is not collinear with surface normal.
    */
-  void initialize(const ALE::Obj<Mesh>& mesh,
-		  const spatialdata::geocoords::CoordSys* cs,
-		  const double_array& upDir);
+  void initialize(const topology::Mesh& mesh,
+		  const double upDir[3]);
 
   /** Integrate contributions to residual term (r) for operator.
    *
-   * @param residual Field containing values for residual
-   * @param t Current time
-   * @param fields Solution fields
-   * @param mesh Finite-element mesh
-   * @param cs Mesh coordinate system
+   * @param residual Field containing values for residual.
+   * @param t Current time.
+   * @param fields Solution fields.
    */
-  void integrateResidual(const ALE::Obj<real_section_type>& residual,
+  void integrateResidual(const topology::Field& residual,
 			 const double t,
-			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh,
-			 const spatialdata::geocoords::CoordSys* cs);
+			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator.
    *
-   * @param mat Sparse matrix
+   * @param jacobian Sparse matrix for Jacobian of system.
    * @param t Current time
    * @param fields Solution fields
-   * @param mesh Finite-element mesh
    */
-  void integrateJacobian(PetscMat* mat,
+  void integrateJacobian(PetscMat* jacobian,
 			 const double t,
-			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh);
+			 topology::SolutionFields* const fields);
 
   /** Verify configuration is acceptable.
    *
    * @param mesh Finite-element mesh
    */
-  void verifyConfiguration(const ALE::Obj<Mesh>& mesh) const;
+  void verifyConfiguration(const topology::Mesh& mesh) const;
 
   /** Get boundary mesh.
    *
    * @returns Boundary mesh.
    */
-  const ALE::Obj<SubMesh>& boundaryMesh(void) const;
+  const topology::SubMesh& boundaryMesh(void) const;
 
   /** Get cell field with BC information.
    *
@@ -117,11 +91,9 @@ public :
    *
    * @returns Traction vector at integration points.
    */
-  const ALE::Obj<real_section_type>&
-  cellField(VectorFieldEnum* fieldType,
-	    const char* name,
-	    const ALE::Obj<Mesh>& mesh,
-	    topology::FieldsManager* const fields);
+  const topology::Field&
+  cellField(const char* name,
+	    topology::SolutionFields* const fields);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -136,16 +108,12 @@ private :
 private :
 
   /// Mesh over which tractions are applied
-  ALE::Obj<SubMesh> _boundaryMesh;
+  topology::SubMesh* _boundaryMesh;
 
   /// Traction vector in global coordinates at integration points.
-  ALE::Obj<real_section_type> _tractions;
-
-  ALE::Obj<real_section_type> _buffer; ///< Buffer for output.
+  topology::FieldSubMesh* _tractions;
 
 }; // class Neumann
-
-// #include "Neumann.icc" // inline methods
 
 #endif // pylith_bc_neumann_hh
 

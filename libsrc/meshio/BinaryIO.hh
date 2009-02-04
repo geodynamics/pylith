@@ -10,17 +10,21 @@
 // ======================================================================
 //
 
+/**
+ * @file pylith/meshio/MeshIOCubit.hh
+ *
+ * @brief C++ object for general binary input/output operations.
+ */
+
 #if !defined(pylith_meshio_binaryio_hh)
 #define pylith_meshio_binaryio_hh
 
+// Include directives ---------------------------------------------------
+#include "meshiofwd.hh" // forward declarations
+
 #include <iosfwd>
 
-namespace pylith {
-  namespace meshio {
-    class BinaryIO;
-  } // meshio
-} // pylith
-
+// BinaryIO -------------------------------------------------------------
 class pylith::meshio::BinaryIO
 { // BinaryIO
 

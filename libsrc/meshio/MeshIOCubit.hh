@@ -25,14 +25,6 @@
 #include <string> // HASA std::string
 
 // Forward declarations -------------------------------------------------
-namespace pylith {
-  namespace meshio {
-    class MeshIOCubit;
-
-    class TestMeshIOCubit; // unit testing
-  } // meshio
-} // pylith
-
 class NcFile; // netcdf file
 
 // MeshIOCubit ----------------------------------------------------------

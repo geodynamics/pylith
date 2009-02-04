@@ -23,22 +23,11 @@
 #define pylith_topology_mesh_hh
 
 // Include directives ---------------------------------------------------
+#include "topologyfwd.hh" // forward declarations
+#include "spatialdata/geocoords/geocoordsfwd.hh" // forward declarations
+
 #define NEWPYLITHMESH 1 
 #include "pylith/utils/sievetypes.hh"
-
-// Forward declarations -------------------------------------------------
-namespace pylith {
-  namespace topology {
-    class Mesh;
-    class TestMesh; // unit testing
-  } // topology
-} // pylith
-
-namespace spatialdata {
-  namespace geocoords {
-    class CoordSys;
-  } // geocoords
-} // spatialdata
 
 // Mesh -----------------------------------------------------------------
 class pylith::topology::Mesh

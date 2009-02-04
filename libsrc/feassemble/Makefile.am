@@ -50,7 +50,8 @@ subpkginclude_HEADERS = \
 	Quadrature2Din3D.hh \
 	Quadrature2Din3D.icc \
 	Quadrature3D.hh \
-	Quadrature3D.icc
+	Quadrature3D.icc \
+	feassemblefwd.hh
 
 noinst_HEADERS =
 

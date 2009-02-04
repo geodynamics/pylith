@@ -14,28 +14,15 @@
 #define pylith_meshio_meshbuilder_hh
 
 // Include directives ---------------------------------------------------
+#include "meshiofwd.hh" // forward declarations
+
+#include "pylith/topology/topologyfwd.hh" // USES Mesh
 #include "pylith/utils/arrayfwd.hh" // USES double_array, int_array,
                                     // string_vector
+#include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
 #define NEWPYLITHMESH 1 
 #include "pylith/utils/sievetypes.hh" // USES Obj, PETSc Mesh
-
-// Forward declarations -------------------------------------------------
-namespace pylith {
-  namespace meshio {
-    class MeshBuilder;
-  } // meshio
-
-  namespace topology {
-    class Mesh;
-  } // meshio
-} // pylith
-
-namespace spatialdata {
-  namespace units {
-    class Nondimensional; // USES Nondimensional
-  } // units
-} // spatialdata
 
 // MeshBuilder ----------------------------------------------------------
 class pylith::meshio::MeshBuilder

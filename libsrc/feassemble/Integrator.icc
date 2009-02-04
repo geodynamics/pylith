@@ -39,11 +39,9 @@ pylith::feassemble::Integrator::useSolnIncr(const bool flag) {
 inline
 void
 pylith::feassemble::Integrator::integrateResidual(
-			    const ALE::Obj<real_section_type>& residual,
-			    const double t,
-			    topology::FieldsManager* const fields,
-			    const ALE::Obj<Mesh>& mesh,
-			    const spatialdata::geocoords::CoordSys* cs) {
+			           const topology::Field& residual,
+				   const double t,
+			           topology::SolutionFields* const fields) {
 } // integrateResidual
 
 // Integrate contributions to Jacobian matrix (A) associated with
@@ -53,8 +51,7 @@ void
 pylith::feassemble::Integrator::integrateJacobian(
 				       PetscMat* mat,
 				       const double t,
-				       topology::FieldsManager* const fields,
-				       const ALE::Obj<Mesh>& mesh) {
+				       topology::SolutionFields* const fields) {
   _needNewJacobian = false;
 } // integrateJacobian
 
@@ -63,11 +60,9 @@ pylith::feassemble::Integrator::integrateJacobian(
 inline
 void
 pylith::feassemble::Integrator::integrateResidualAssembled(
-				const ALE::Obj<real_section_type>& residual,
-				const double t,
-				topology::FieldsManager* const fields,
-				const ALE::Obj<Mesh>& mesh,
-				const spatialdata::geocoords::CoordSys* cs) {
+				   const topology::Field& residual,
+				   const double t,
+				   topology::SolutionFields* const fields) {
   _needNewJacobian = false;
 } // integrateResidualAssembled
 
@@ -79,8 +74,7 @@ void
 pylith::feassemble::Integrator::integrateJacobianAssembled(
 					PetscMat* mat,
 					const double t,
-					topology::FieldsManager* const fields,
-					const ALE::Obj<Mesh>& mesh) {
+					topology::SolutionFields* const fields) {
 } // integrateJacobianAssembled
 
 // Update state variables as needed.
@@ -88,8 +82,7 @@ inline
 void
 pylith::feassemble::Integrator::updateState(
 				     const double t,
-				     topology::FieldsManager* const fields,
-				     const ALE::Obj<Mesh>& mesh) {
+				     topology::SolutionFields* const fields) {
 } // updateState
 
 

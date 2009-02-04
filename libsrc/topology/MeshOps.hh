@@ -19,16 +19,8 @@
 #if !defined(pylith_topology_meshops_hh)
 #define pylith_topology_meshops_hh
 
-// Forward declarations -------------------------------------------------
-namespace pylith {
-  namespace topology {
-    class MeshOps;
-
-    class Mesh; // USES Mesh
-    class TestMeshOps; // unit testing
-  } // topology
-} // pylith
-
+// Include directives ---------------------------------------------------
+#include "topologyfwd.hh" // forward declarations
 
 // MeshOps --------------------------------------------------------------
 class pylith::topology::MeshOps

@@ -26,7 +26,6 @@
 #include "pylith/utils/array.hh" // USES double_array
 #include <string> // HASA std::string
 #include "pylith/utils/sievetypes.hh" // USES real_section_type
-#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
 
 /// Namespace for pylith package
 namespace pylith {
@@ -154,12 +153,10 @@ public :
   /** Initialize material by getting physical property parameters from
    * database.
    *
-   * @param mesh PETSc mesh
-   * @param cs Coordinate system associated with mesh
+   * @param mesh Finite-element mesh.
    * @param quadrature Quadrature for finite-element integration
    */
-  void initialize(const ALE::Obj<Mesh>& mesh,
-		  const spatialdata::geocoords::CoordSys* cs,
+  void initialize(const topology::Mesh& mesh,
 		  pylith::feassemble::Quadrature* quadrature);
   
   /** Get flag indicating whether Jacobian matrix must be reformed for
@@ -186,12 +183,12 @@ public :
    *
    * @param field Proeprty field.
    * @param name Name of physical property.
-   * @param mesh PETSc mesh.
+   * @param mesh Finite-element mesh.
    * @param numQuadPoints Number of quadrature points.
    */
   void propertyField(ALE::Obj<real_section_type>* field,
 		     const char* name,
-		     const ALE::Obj<Mesh>& mesh,
+		     const topology::Mesh& mesh,
 		     const int numQuadPts) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////

@@ -21,31 +21,15 @@
 #define pylith_bc_boundarycondition_hh
 
 // Include directives ---------------------------------------------------
+#include "bcfwd.hh" // forward declarations
+
+#include "pylith/topology/topologyfwd.hh" // USES Mesh
 #include "pylith/utils/arrayfwd.hh" // USES double_array
 
+#include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
+
 #include <string> // HASA std::string
-
-// Forward declarations -------------------------------------------------
-namespace pylith {
-  namespace bc {
-    class BoundaryCondition;
-    class TestBoundaryCondition; // unit testing
-  } // bc
-
-  namespace topology {
-    class Mesh; // USES Mesh
-  } // bc
-} // pylith
-
-namespace spatialdata {
-  namespace geocoords {
-    class CoordSys;
-  } // geocoords
-
-  namespace spatialdb {
-    class SpatialDB;
-  } // spatialdb
-} // spatialdata
 
 // BoundaryCondition ----------------------------------------------------
 class pylith::bc::BoundaryCondition

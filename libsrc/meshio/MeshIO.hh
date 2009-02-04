@@ -10,29 +10,23 @@
 // ======================================================================
 //
 
+/**
+ * @file libsrc/topology/MeshIO.hh
+ *
+ * @brief C++ object for managing mesh input/output.
+ */
+
 #if !defined(pylith_meshio_meshio_hh)
 #define pylith_meshio_meshio_hh
 
 // Include directives ---------------------------------------------------
+#include "meshiofwd.hh" // forward declarations
+
+#include "pylith/topology/topologyfwd.hh" // forward declarations
+#include "spatialdata/units/unitsfwd.hh" // forward declarations
+
 #include "pylith/utils/arrayfwd.hh" // USES double_array, int_array,
                                     // string_vector
-
-// Forward declarations -------------------------------------------------
-namespace pylith {
-  namespace meshio {
-    class MeshIO;
-  } // meshio
-
-  namespace topology {
-    class Mesh; // USES Mesh
-  } // topology
-} // pylith
-
-namespace spatialdata {
-  namespace units {
-    class Nondimensional; // USES Nondimensional
-  } // units
-} // spatialdata
 
 // MeshIO ---------------------------------------------------------------
 class pylith::meshio::MeshIO

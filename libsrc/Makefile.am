@@ -25,6 +25,7 @@ libpylith_la_SOURCES = \
 	bc/BoundaryCondition.cc \
 	bc/DirichletBC.cc \
 	bc/DirichletBoundary.cc \
+	bc/Neumann.cc \
 	faults/BruneSlipFn.cc \
 	faults/ConstRateSlipFn.cc \
 	faults/CohesiveTopology.cc \
@@ -105,7 +106,6 @@ libpylith_la_SOURCES = \
 	utils/EventLogger.cc
 
 #	topology/RefineUniform.cc \
-#	bc/Neumann.cc
 #	bc/AbsorbingDampers.cc
 
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)

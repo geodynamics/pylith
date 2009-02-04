@@ -20,25 +20,10 @@
 #define pylith_feassemble_constraint_hh
 
 // Include directives ---------------------------------------------------
+#include "feassemblefwd.hh"
 
-// Forward declarations -------------------------------------------------
-namespace pylith {
-  namespace feassemble {
-    class Constraint;
-    class TestConstraint; // unit testing
-  } // feassemble
-
-  namespace topology {
-    class Field; // USES Field
-    class Mesh; // USES Mesh
-  } // feassemble
-} // pylith
-
-namespace spatialdata {
-  namespace units {
-    class Nondimensional; // USES Nondimensional
-  } // units
-} // spatialdata
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
+#include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
 // Constraint -----------------------------------------------------------
 class pylith::feassemble::Constraint

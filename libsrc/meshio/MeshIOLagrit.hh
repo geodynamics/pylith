@@ -24,15 +24,6 @@
 
 #include <string> // HASA std::string
 
-// Forward declarations -------------------------------------------------
-namespace pylith {
-  namespace meshio {
-    class MeshIOLagrit;
-
-    class TestMeshIOLagrit; // unit testing
-  } // meshio
-} // pylith
-
 // MeshIOLagrit ---------------------------------------------------------
 class pylith::meshio::MeshIOLagrit : public MeshIO
 { // MeshIOLagrit

@@ -24,34 +24,17 @@
 #if !defined(pylith_feassemble_integrator_hh)
 #define pylith_feassemble_integrator_hh
 
-#include "pylith/utils/sievetypes.hh" // USES real_section_type
+// Include directives ---------------------------------------------------
+#include "feassemblefwd.hh" // forward declarations
+
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, Field, SolutionFields
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
+#include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
+
 #include "pylith/utils/petscfwd.h" // USES PetscMat
+#include "pylith/utils/array.hh" // HASA double_array
 
-namespace pylith {
-  namespace feassemble {
-    class Integrator;
-    class TestIntegrator;
-
-    class Quadrature; // HOLDSA Quadrature
-  } // feassemble
-
-  namespace topology {
-    class FieldsManager;
-  } // topology
-} // pylith
-
-namespace spatialdata {
-  namespace spatialdb {
-    class GravityField; // HOLDSA GravityField
-  } // spatialdb
-  namespace geocoords {
-    class CoordSys; // USES CoordSys
-  } // geocoords
-  namespace units {
-    class Nondimensional; // USES Nondimensional
-  } // units
-} // spatialdata
-
+// Integrator -----------------------------------------------------------
 class pylith::feassemble::Integrator
 { // Integrator
   friend class TestIntegrator; // unit testing
@@ -121,29 +104,23 @@ public :
    * @param residual Field containing values for residual
    * @param t Current time
    * @param fields Solution fields
-   * @param mesh Finite-element mesh
-   * @param cs Mesh coordinate system
    */
   virtual 
-  void integrateResidual(const ALE::Obj<real_section_type>& residual,
+  void integrateResidual(const topology::Field& residual,
 			 const double t,
-			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh,
-			 const spatialdata::geocoords::CoordSys* cs);
+			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator.
    *
-   * @param mat Sparse matrix
+   * @param jacobian Sparse matrix for Jacobian of system.
    * @param t Current time
    * @param fields Solution fields
-   * @param mesh Finite-element mesh
    */
   virtual
-  void integrateJacobian(PetscMat* mat,
+  void integrateJacobian(PetscMat* jacobian,
 			 const double t,
-			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh);
+			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to residual term (r) for operator that
    * do not require assembly over cells, vertices, or processors.
@@ -151,30 +128,24 @@ public :
    * @param residual Field containing values for residual
    * @param t Current time
    * @param fields Solution fields
-   * @param mesh Finite-element mesh
-   * @param cs Mesh coordinate system
    */
   virtual 
-  void integrateResidualAssembled(const ALE::Obj<real_section_type>& residual,
+  void integrateResidualAssembled(const topology::Field& residual,
 				  const double t,
-				  topology::FieldsManager* const fields,
-				  const ALE::Obj<Mesh>& mesh,
-				  const spatialdata::geocoords::CoordSys* cs);
+				  topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator that do not require assembly over cells, vertices, or
    * processors
    *
-   * @param mat Sparse matrix
+   * @param jacobian Sparse matrix for Jacobian of system.
    * @param t Current time
    * @param fields Solution fields
-   * @param mesh Finite-element mesh
    */
   virtual
-  void integrateJacobianAssembled(PetscMat* mat,
+  void integrateJacobianAssembled(PetscMat* jacobian,
 				  const double t,
-				  topology::FieldsManager* const fields,
-				  const ALE::Obj<Mesh>& mesh);
+				  topology::SolutionFields* const fields);
 
   /** Update state variables as needed.
    *
@@ -184,15 +155,14 @@ public :
    */
   virtual
   void updateState(const double t,
-		   topology::FieldsManager* const fields,
-		   const ALE::Obj<Mesh>& mesh);
+		   topology::SolutionFields* const fields);
 
   /** Verify configuration is acceptable.
    *
    * @param mesh Finite-element mesh
    */
   virtual
-  void verifyConfiguration(const ALE::Obj<Mesh>& mesh) const = 0;
+  void verifyConfiguration(const topology::Mesh& mesh) const = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -229,10 +199,10 @@ protected :
   spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 
   /// Vector local to cell containing result of integration action
-  real_section_type::value_type* _cellVector;
+  double_array _cellVector;
 
   /// Matrix local to cell containing result of integration
-  real_section_type::value_type* _cellMatrix;
+  double_array _cellMatrix;
 
   /// True if we need to recompute Jacobian for operator, false otherwise.
   /// Default is false;

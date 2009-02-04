@@ -19,24 +19,11 @@
  * Extends Sieve real general section by adding metadata.
  */
 
-#include "FieldBase.hh" // ISA FieldBase
-
 #if !defined(pylith_topology_field_hh)
 #define pylith_topology_field_hh
 
 // Include directives ---------------------------------------------------
-#define NEWPYLITHMESH 1
-#include "pylith/utils/sievetypes.hh" // HASA PETSc real_section_type
-
-// Forward declarations -------------------------------------------------
-namespace pylith {
-  namespace topology {
-    class Field;
-    class TestField;
-
-    class Mesh; // HASA Mesh
-  } // topology
-} // pylith
+#include "FieldBase.hh" // ISA FieldBase
 
 // Field ----------------------------------------------------------------
 class pylith::topology::Field : public FieldBase

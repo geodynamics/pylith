@@ -10,20 +10,22 @@
 // ======================================================================
 //
 
+/**
+ * @file libsrc/topology/GMVFileAscii.hh
+ *
+ * @brief C++ object for input/output of LaGriT ASCII GMV files.
+ */
+
 #if !defined(pylith_meshio_gmvfilebinary_hh)
 #define pylith_meshio_gmvfilebinary_hh
 
+// Include directives ---------------------------------------------------
 #include "GMVFile.hh" // ISA GMVFile
 
 #include "pylith/utils/arrayfwd.hh" // USES int_array, double_array
 #include <iosfwd>
 
-namespace pylith {
-  namespace meshio {
-    class GMVFileBinary;
-  } // meshio
-} // pylith
-
+// GMVFileBinary --------------------------------------------------------
 class pylith::meshio::GMVFileBinary : public GMVFile
 { // GMVFileBinary
 

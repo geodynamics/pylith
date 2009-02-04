@@ -27,15 +27,6 @@
 #define NEWPYLITHMESH 1
 #include "pylith/utils/sievetypes.hh" // HASA SieveMesh::point_type
 
-// Forward declarations -------------------------------------------------
-namespace pylith {
-  namespace bc {
-    class DirichletBC;
-    class TestDirichletBC; // unit testing
-  } // bc
-} // pylith
-
-
 // DirichletBC ------------------------------------------------------
 class pylith::bc::DirichletBC : public BoundaryCondition, 
 				public feassemble::Constraint

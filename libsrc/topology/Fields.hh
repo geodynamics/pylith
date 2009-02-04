@@ -20,17 +20,9 @@
 #define pylith_topology_fields_hh
 
 // Include directives ---------------------------------------------------
+#include "topologyfwd.hh" // forward declarations
+
 #include "FieldBase.hh" // USES FieldBase::DomainEnum
-
-// Forward declarations -------------------------------------------------
-namespace pylith {
-  namespace topology {
-    template<typename field_type, typename mesh_type> class Fields;
-
-    class TestFieldsMesh; // unit testing
-    class TestFieldsSubMesh; // unit testing
-  } // topology
-} // pylith
 
 // Fields ---------------------------------------------------------------
 template<typename field_type, typename mesh_type>

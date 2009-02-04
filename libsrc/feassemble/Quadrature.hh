@@ -32,7 +32,9 @@
 #define pylith_feassemble_quadrature_hh
 
 #include "pylith/utils/array.hh" // HASA double_array
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+
+#define NEWPYLITHMESH 1
+#include "pylith/utils/sievetypes.hh" // USES SieveMesh
 
 namespace pylith {
   namespace feassemble {
@@ -223,12 +225,12 @@ public :
   virtual 
   void computeGeometry(const real_section_type::value_type* vertCoords,
                        const int coordDim,
-                       const Mesh::point_type& cell) = 0;
+                       const SieveMesh::point_type& cell) = 0;
 
   template<typename mesh_type>
   void computeGeometry(const ALE::Obj<mesh_type>& mesh,
                        const ALE::Obj<real_section_type>& coordinates,
-                       const Mesh::point_type& cell) {
+                       const SieveMesh::point_type& cell) {
     computeGeometry(mesh->restrictClosure(coordinates, cell),
                     coordinates->getFiberDimension(*mesh->depthStratum(0)->begin()),
                     cell);
@@ -242,9 +244,9 @@ public :
    * @param mesh Finite-element mesh
    * @param coordinates Section containing vertex coordinates
    */
-  void precomputeGeometry(const ALE::Obj<Mesh>& mesh,
-                          const ALE::Obj<real_section_type>& coordinates,
-                          const ALE::Obj<Mesh::label_sequence>& cells);
+  void precomputeGeometry(const topology::Mesh& mesh,
+                          const ALE::Obj<MeshRealSection>& coordinates,
+                          const ALE::Obj<SieveMesh::label_sequence>& cells);
 
   /** Retrieve precomputed geometric quantities for a cell.
    *
@@ -252,9 +254,9 @@ public :
    * @param coordinates Section containing vertex coordinates
    * @param cell Finite-element cell
    */
-  void retrieveGeometry(const ALE::Obj<Mesh>& mesh,
-                        const ALE::Obj<real_section_type>& coordinates,
-                        const Mesh::point_type& cell,
+  void retrieveGeometry(const ALE::Obj<SieveMesh>& mesh,
+                        const ALE::Obj<MeshRealSection>& coordinates,
+                        const SieveMesh::point_type& cell,
                         const int c);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
@@ -272,7 +274,7 @@ protected :
    * @param cell Finite-element cell
    */
   void _checkJacobianDet(const double det,
-			 const Mesh::point_type& cell) const;
+			 const SieveMesh::point_type& cell) const;
 
   /// Set entries in geometry arrays to zero.
   void _resetGeometry(void);
@@ -390,16 +392,16 @@ protected :
 
   /* Precomputation sections */
   int _qTag, _jTag, _jDTag, _jITag, _bTag;
-  Obj<real_section_type> _quadPtsPre;
-  Obj<ALE::ISieveVisitor::RestrictVisitor<real_section_type> > _quadPtsPreV;
-  Obj<real_section_type> _jacobianPre;
-  Obj<ALE::ISieveVisitor::RestrictVisitor<real_section_type> > _jacobianPreV;
-  Obj<real_section_type> _jacobianDetPre;
-  Obj<ALE::ISieveVisitor::RestrictVisitor<real_section_type> > _jacobianDetPreV;
-  Obj<real_section_type> _jacobianInvPre;
-  Obj<ALE::ISieveVisitor::RestrictVisitor<real_section_type> > _jacobianInvPreV;
-  Obj<real_section_type> _basisDerivPre;
-  Obj<ALE::ISieveVisitor::RestrictVisitor<real_section_type> > _basisDerivPreV;
+  ALE::Obj<MeshRealSection> _quadPtsPre;
+  ALE::Obj<ALE::ISieveVisitor::RestrictVisitor<MeshRealSection> > _quadPtsPreV;
+  ALE::Obj<MeshRealSection> _jacobianPre;
+  ALE::Obj<ALE::ISieveVisitor::RestrictVisitor<MeshRealSection> > _jacobianPreV;
+  ALE::Obj<MeshRealSection> _jacobianDetPre;
+  ALE::Obj<ALE::ISieveVisitor::RestrictVisitor<MeshRealSection> > _jacobianDetPreV;
+  ALE::Obj<MeshRealSection> _jacobianInvPre;
+  ALE::Obj<ALE::ISieveVisitor::RestrictVisitor<MeshRealSection> > _jacobianInvPreV;
+  ALE::Obj<MeshRealSection> _basisDerivPre;
+  ALE::Obj<ALE::ISieveVisitor::RestrictVisitor<MeshRealSection> > _basisDerivPreV;
 
   bool _precomputed; ///< True if we have computed geometry info
   bool _checkConditioning; ///< True if checking for ill-conditioning

@@ -29,7 +29,8 @@ subpkginclude_HEADERS = \
 	MeshRefiner.hh \
 	RefineUniform.hh \
 	SubMesh.hh \
-	SubMesh.icc
+	SubMesh.icc \
+	topologyfwd.hh
 
 noinst_HEADERS =
 

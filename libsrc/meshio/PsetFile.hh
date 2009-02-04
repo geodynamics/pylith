@@ -10,18 +10,22 @@
 // ======================================================================
 //
 
+/**
+ * @file libsrc/topology/PsetFile.hh
+ *
+ * @brief C++ base class for input/output of LaGriT Pset files.
+ */
+
 #if !defined(pylith_meshio_psetfile_hh)
 #define pylith_meshio_psetfile_hh
 
-#include "pylith/utils/array.hh" // USES int_array
+// Include directives ---------------------------------------------------
+#include "meshiofwd.hh" // forward declarations
+
+#include "pylith/utils/array.hh" // HASA int_array
 #include <string> // HASA std::string
 
-namespace pylith {
-  namespace meshio {
-  class PsetFile;
-  } // meshio
-} // pylith
-
+// PsetFile -------------------------------------------------------------
 class pylith::meshio::PsetFile
 { // PsetFile
 

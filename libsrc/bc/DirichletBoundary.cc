@@ -53,6 +53,8 @@ pylith::bc::DirichletBoundary::initialize(const topology::Mesh& mesh,
     return;
 
   _boundaryMesh = new topology::SubMesh(mesh, _label.c_str());
+  assert(0 != _boundaryMesh);
+
   _getPoints(mesh);
   _setupQueryDatabases();
   _queryDatabases(mesh);
