@@ -42,7 +42,7 @@ class Savpres_ss(Application):
     ## @li \b recurrence_time Earthquake recurrence time.
     ## @li \b viscosity Viscosity of viscoelastic half-space.
     ## @li \b shear_modulus Shear modulus of layer and half-space.
-    ## @li \b plate_velocity Relative plate velocity across fault.
+    ## @li \b plate_velocity Relative plate velocity (left-lateral) across fault.
     ## @li \b number_cycles Number of earthquake cycles to compute.
     ## @li \b number_steps Number of time steps to compute for each cycle.
     ## @li \b number_terms Number of terms to compute for series solution.
@@ -51,6 +51,8 @@ class Savpres_ss(Application):
     ## @li \b x_epsilon Offset for computation point closest to the fault.
     ## @li \b vtk_basename Base name for VTK output files.
     ## @li \b csv_filename Filename for CSV output.
+    ## @li \b time_units Time units to use for output filenames.
+    ## @li \b time_stamp_width Width of time stamp in output filenames.
     ## @li \b title Title to appear at the top of VTK files.
 
     import pyre.inventory
@@ -81,7 +83,7 @@ class Savpres_ss(Application):
 
     plateVelocity = pyre.inventory.dimensional("plate_velocity",
                                                default=2.0*cm/year)
-    plateVelocity.meta['tip'] = "Relative velocity across the fault."
+    plateVelocity.meta['tip'] = "Relative velocity (left-lateral) across the fault."
 
     numberCycles = pyre.inventory.int("number_cycles", default=10)
     numberCycles.meta['tip'] = "Number of earthquake cycles."
@@ -106,6 +108,12 @@ class Savpres_ss(Application):
 
     CSVFileName = pyre.inventory.str("csv_filename", default="savpres_ss.csv")
     CSVFileName.meta['tip'] = "Filename for CSV output."
+
+    timeUnits = pyre.inventory.dimensional("time_units", default=1.0*year)
+    timeUnits.meta['tip'] = "Time units to use for output filenames."
+
+    timeStampWidth = pyre.inventory.int("time_stamp_width", default=4)
+    timeStampWidth.meta['tip'] = "Number digits in output filename time stamp."
 
     title = pyre.inventory.str("title",
                                default="Savage & Prescott strike-slip solution")
@@ -149,6 +157,8 @@ class Savpres_ss(Application):
     self.xEpsilon = self.inventory.xEpsilon.value
     self.VTKBaseName = self.inventory.VTKBaseName
     self.CSVFileName = self.inventory.CSVFileName
+    self.timeUnits = self.inventory.timeUnits.value
+    self.timeStampWidth = self.inventory.timeStampWidth
     self.title = self.inventory.title
 
     self.deltaT = self.recurrenceTime/self.numberSteps
@@ -307,7 +317,9 @@ class Savpres_ss(Application):
       time = 0.0
 
       for step in range(self.numberSteps + 1):
-        VTKFile = fileBaseCycle + str(time) + ".vtk"
+        timeStampInt = int(time/self.timeUnits)
+        timeStampString = repr(timeStampInt).rjust(self.timeStampWidth, '0')
+        VTKFile = fileBaseCycle + timeStampString + ".vtk"
         f = open(VTKFile, 'w')
         self._writeVTK(f, cycle, step)
         f.close()
@@ -355,7 +367,9 @@ class Savpres_ss(Application):
       time = 0.0
 
       for step in range(self.numberSteps + 1):
-        head += "," + cycleHead + str(time)
+        timeStampInt = int(time/self.timeUnits)
+        timeStampString = repr(timeStampInt).rjust(self.timeStampWidth, '0')
+        head += "," + cycleHead + timeStampString
         time += self.deltaT
 
     f.write('%s\n' % head)
