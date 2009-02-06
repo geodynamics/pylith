@@ -31,6 +31,8 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
 					    int* const materialIds,
 					    const int numMaterials)
 { // checkMaterialIds
+  typedef Mesh::SieveMesh SieveMesh;
+
   assert( (0 == numMaterials && 0 == materialIds) ||
 	  (0 < numMaterials && 0 != materialIds) );
 

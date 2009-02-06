@@ -24,8 +24,6 @@
 #include "pylith/feassemble/Constraint.hh" // ISA Constraint
 
 #include "pylith/utils/array.hh" // HASA std::vector, double_array, int_array
-#define NEWPYLITHMESH 1
-#include "pylith/utils/sievetypes.hh" // HASA SieveMesh::point_type
 
 // DirichletBC ------------------------------------------------------
 class pylith::bc::DirichletBC : public BoundaryCondition, 
@@ -79,13 +77,13 @@ public :
    *
    * @param field Solution field
    */
-  void setConstraintSizes(const topology::Field& field);
+  void setConstraintSizes(const topology::Field<topology::Mesh>& field);
 
   /** Set which degrees of freedom are constrained at points in field.
    *
    * @param field Solution field
    */
-  void setConstraints(const topology::Field& field);
+  void setConstraints(const topology::Field<topology::Mesh>& field);
 
   /** Set values in field.
    *
@@ -93,7 +91,7 @@ public :
    * @param field Solution field
    */
   void setField(const double t,
-		const topology::Field& field);
+		const topology::Field<topology::Mesh>& field);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -129,7 +127,7 @@ protected :
   double_array _valuesInitial; ///< Initial values at points.
   double_array _valuesRate; ///< Rate of change of values at points.
 
-  std::vector<SieveMesh::point_type> _points; ///< Points for BC
+  int_array _points; ///< Points for BC
   int_array _fixedDOF; ///< Indices of fixed degrees of freedom
 
   /// Offset in list of fixed DOF at point to get to fixed DOF

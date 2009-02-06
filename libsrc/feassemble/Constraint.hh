@@ -51,14 +51,14 @@ public :
    * @param field Solution field
    */
   virtual
-  void setConstraintSizes(const topology::Field& field) = 0;
+  void setConstraintSizes(const topology::Field<topology::Mesh>& field) = 0;
 
   /** Set which degrees of freedom are constrained at points in field.
    *
    * @param field Solution field
    */
   virtual
-  void setConstraints(const topology::Field& field) = 0;
+  void setConstraints(const topology::Field<topology::Mesh>& field) = 0;
 
   /** Set flag for setting constraints for total field solution or
    *  incremental field solution.
@@ -75,7 +75,7 @@ public :
    */
   virtual
   void setField(const double t,
-		const topology::Field& field) = 0;
+		const topology::Field<topology::Mesh>& field) = 0;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :

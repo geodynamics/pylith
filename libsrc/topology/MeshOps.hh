@@ -33,7 +33,7 @@ public :
   /** Check to make sure material id of every cell matches the id of
    *  one of the materials.
    *
-   * @param mesh PETSc mesh.
+   * @param mesh Finite-element mesh.
    * @param materialIds Array of ids for all materials and cohesive
    * cell interfaces.
    * @param numMaterials Size of array.
@@ -47,11 +47,9 @@ public :
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
-  /// Not implemented
-  MeshOps(const MeshOps&);
-
-  /// Not implemented
-  const MeshOps& operator=(const MeshOps&);
+  MeshOps(void); ///< Not Implemented
+  MeshOps(const MeshOps&); ///< Not implemented
+  const MeshOps& operator=(const MeshOps&); ///< Not implemented
 
 
 }; // MeshOps

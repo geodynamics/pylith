@@ -16,7 +16,7 @@
 
 import unittest
 
-from pylith.topology.MeshField import MeshField
+from pylith.topology.Field import MeshField
 
 # ----------------------------------------------------------------------
 class TestMeshField(unittest.TestCase):

@@ -106,7 +106,7 @@ public :
    * @param fields Solution fields
    */
   virtual 
-  void integrateResidual(const topology::Field& residual,
+  void integrateResidual(const topology::Field<topology::Mesh>& residual,
 			 const double t,
 			 topology::SolutionFields* const fields);
 
@@ -130,7 +130,7 @@ public :
    * @param fields Solution fields
    */
   virtual 
-  void integrateResidualAssembled(const topology::Field& residual,
+  void integrateResidualAssembled(const topology::Field<topology::Mesh>& residual,
 				  const double t,
 				  topology::SolutionFields* const fields);
 

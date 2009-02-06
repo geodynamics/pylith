@@ -26,6 +26,10 @@
 #include <sstream> // USES std::ostringstream
 
 // ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
+
+// ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::DirichletBC::DirichletBC(void) :
   _tRef(0.0),
@@ -72,13 +76,13 @@ pylith::bc::DirichletBC::initialize(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Set number of degrees of freedom that are constrained at points in field.
 void
-pylith::bc::DirichletBC::setConstraintSizes(const topology::Field& field)
+pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh>& field)
 { // setConstraintSizes
   const int numFixedDOF = _fixedDOF.size();
   if (0 == numFixedDOF)
     return;
 
-  const ALE::Obj<MeshRealSection>& section = field.section();
+  const ALE::Obj<RealSection>& section = field.section();
   assert(!section.isNull());
 
   const int numPoints = _points.size();
@@ -105,13 +109,13 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field& field)
 // ----------------------------------------------------------------------
 // Set which degrees of freedom are constrained at points in field.
 void
-pylith::bc::DirichletBC::setConstraints(const topology::Field& field)
+pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& field)
 { // setConstraints
   const int numFixedDOF = _fixedDOF.size();
   if (0 == numFixedDOF)
     return;
 
-  const ALE::Obj<MeshRealSection>& section = field.section();
+  const ALE::Obj<RealSection>& section = field.section();
   assert(!section.isNull());
 
   const int numPoints = _points.size();
@@ -167,13 +171,13 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field& field)
 // Set values in field.
 void
 pylith::bc::DirichletBC::setField(const double t,
-				  const topology::Field& field)
+				  const topology::Field<topology::Mesh>& field)
 { // setField
   const int numFixedDOF = _fixedDOF.size();
   if (0 == numFixedDOF)
     return;
 
-  const ALE::Obj<MeshRealSection>& section = field.section();
+  const ALE::Obj<RealSection>& section = field.section();
   assert(!section.isNull());
   const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
   assert(!sieveMesh.isNull());
@@ -201,7 +205,7 @@ pylith::bc::DirichletBC::setField(const double t,
 void
 pylith::bc::DirichletBC::_getPoints(const topology::Mesh& mesh)
 { // _getPoints
-  typedef SieveMesh::int_section_type::chart_type chart_type;
+  typedef topology::Mesh::IntSection::chart_type chart_type;
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
@@ -268,7 +272,7 @@ pylith::bc::DirichletBC::_queryDatabases(const topology::Mesh& mesh)
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
 
-  const ALE::Obj<MeshRealSection>& coordinates = 
+  const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
 

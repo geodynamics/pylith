@@ -38,7 +38,7 @@ pylith::bc::BoundaryCondition::~BoundaryCondition(void)
 void
 pylith::bc::BoundaryCondition::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
 
   if (!sieveMesh->hasIntSection(_label)) {

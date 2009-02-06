@@ -25,7 +25,7 @@
 #include "FieldBase.hh" // USES FieldBase::DomainEnum
 
 // Fields ---------------------------------------------------------------
-template<typename field_type, typename mesh_type>
+template<typename field_type>
 class pylith::topology::Fields
 { // Fields
   friend class TestFieldsMesh; // unit testing
@@ -38,7 +38,7 @@ public :
    *
    * @param mesh Finite-element mesh.
    */
-  Fields(const mesh_type& mesh);
+  Fields(const typename field_type::Mesh& mesh);
 
   /// Destructor.
   ~Fields(void);
@@ -92,7 +92,7 @@ private :
 private :
 
   map_type _fields;
-  const mesh_type& _mesh;
+  const typename field_type::Mesh& _mesh;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

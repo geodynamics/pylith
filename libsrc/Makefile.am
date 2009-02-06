@@ -22,6 +22,10 @@ SUBDIRS = \
 lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
+	bc/BoundaryCondition.cc \
+	bc/DirichletBC.cc \
+	bc/DirichletBoundary.cc \
+	feassemble/Constraint.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \
 	meshio/GMVFileAscii.cc \
@@ -35,11 +39,10 @@ libpylith_la_SOURCES = \
 	meshio/PsetFileBinary.cc \
 	topology/Mesh.cc \
 	topology/SubMesh.cc \
+	topology/MeshOps.cc \
 	utils/EventLogger.cc
 
-# 	bc/BoundaryCondition.cc \
-# 	bc/DirichletBC.cc \
-# 	bc/DirichletBoundary.cc \
+#	feassemble/Integrator.cc \
 # 	bc/Neumann.cc \
 # 	faults/BruneSlipFn.cc \
 # 	faults/ConstRateSlipFn.cc \
@@ -53,7 +56,6 @@ libpylith_la_SOURCES = \
 # 	faults/SlipTimeFn.cc \
 # 	faults/StepSlipFn.cc \
 # 	feassemble/CellGeometry.cc \
-# 	feassemble/Constraint.cc \
 # 	feassemble/ElasticityExplicit.cc \
 # 	feassemble/ElasticityImplicit.cc \
 # 	feassemble/GeometryPoint1D.cc \
@@ -68,7 +70,6 @@ libpylith_la_SOURCES = \
 # 	feassemble/GeometryQuad2D.cc \
 # 	feassemble/GeometryQuad3D.cc \
 # 	feassemble/GeometryHex3D.cc \
-# 	feassemble/Integrator.cc \
 # 	feassemble/IntegratorElasticity.cc \
 # 	feassemble/Quadrature.cc \
 # 	feassemble/Quadrature0D.cc \
@@ -99,10 +100,7 @@ libpylith_la_SOURCES = \
 # 	meshio/UCDFaultFile.cc \
 # 	topology/Distributor.cc \
 # 	topology/FieldsManager.cc \
-# 	topology/FieldOps.cc \
-# 	topology/MeshOps.cc \
-# 	topology/MeshRefiner.cc \
-# 	topology/SubMesh.cc
+# 	topology/MeshRefiner.cc 
 
 #	topology/RefineUniform.cc \
 #	bc/AbsorbingDampers.cc

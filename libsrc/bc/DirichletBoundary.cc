@@ -17,7 +17,6 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldSubMesh.hh" // USES FieldSubMesh
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -62,15 +61,18 @@ pylith::bc::DirichletBoundary::initialize(const topology::Mesh& mesh,
 
 // ----------------------------------------------------------------------
 // Get vertex field of BC initial or rate of change of values.
-const pylith::topology::FieldSubMesh&
+const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::bc::DirichletBoundary::vertexField(const char* name,
 					   const topology::SolutionFields& fields)
 { // getVertexField
+  typedef topology::SubMesh::SieveMesh SieveMesh;
+  typedef topology::SubMesh::RealSection RealSection;
+
   assert(0 != name);
   assert(0 != _boundaryMesh);
   assert(0 != _normalizer);
 
-  const ALE::Obj<SieveSubMesh>& sieveMesh = _boundaryMesh->sieveMesh();
+  const ALE::Obj<SieveMesh>& sieveMesh = _boundaryMesh->sieveMesh();
   assert(!sieveMesh.isNull());
 
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
@@ -87,7 +89,7 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
   const int numFixedDOF = _fixedDOF.size();
 
   if (0 == _tmpField) {
-    _tmpField = new topology::FieldSubMesh(*_boundaryMesh);
+    _tmpField = new topology::Field<topology::SubMesh>(*_boundaryMesh);
     assert(0 != _tmpField);
     _tmpField->newSection(vertices, fiberDim);
     _tmpField->allocate();
@@ -99,14 +101,14 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
 
   if (0 == strcasecmp(name, "initial")) {
     _tmpField->name("displacement");
-    _tmpField->vectorFieldType(topology::Field::VECTOR);
+    _tmpField->vectorFieldType(topology::Field<topology::SubMesh>::VECTOR);
     _tmpField->scale(_normalizer->lengthScale());
     _tmpField->addDimensionOkay(true);
     _tmpField->zero();
-    const ALE::Obj<SubMeshRealSection>& section = _tmpField->section();
+    const ALE::Obj<RealSection>& section = _tmpField->section();
 
     for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-      const SieveSubMesh::point_type point = _points[iPoint];
+      const SieveMesh::point_type point = _points[iPoint];
       assert(fiberDim == section->getFiberDimension(point));
       for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
 	values[_fixedDOF[iDOF]] = _valuesInitial[iPoint*numFixedDOF+iDOF];
@@ -114,11 +116,11 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
     } // for
   } else if (0 == strcasecmp(name, "rate-of-change")) {
     _tmpField->name("velocity");
-    _tmpField->vectorFieldType(topology::Field::VECTOR);
+    _tmpField->vectorFieldType(topology::Field<topology::SubMesh>::VECTOR);
     _tmpField->scale(_normalizer->lengthScale());
     _tmpField->addDimensionOkay(true);
     _tmpField->zero();
-    const ALE::Obj<SubMeshRealSection>& section = _tmpField->section();
+    const ALE::Obj<RealSection>& section = _tmpField->section();
 
     for (int iPoint=0; iPoint < numPoints; ++iPoint) {
       const SieveMesh::point_type point = _points[iPoint];

@@ -19,7 +19,6 @@
 #if !defined(pylith_utils_sievefwd_hh)
 #define pylith_utils_sievefwd_hh
 
-#include <ALE.hh>
 
 /// Namespace for Sieve package.
 namespace ALE {

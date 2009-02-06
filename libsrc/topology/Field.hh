@@ -25,6 +25,8 @@
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 
+#include <petscmesh.hh>
+
 // Field ----------------------------------------------------------------
 template<typename mesh_type>
 class pylith::topology::Field
@@ -49,7 +51,13 @@ public :
   enum DomainEnum {
     VERTICES_FIELD=0, ///< FieldBase over vertices.
     CELLS_FIELD=1, ///< FieldBase over cells.
-  }; // omainEnum
+  }; // DomainEnum
+
+// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
+public:
+
+  // Convenience typedefs
+  typedef mesh_type Mesh;
 
 // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
 private:

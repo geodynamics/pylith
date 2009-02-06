@@ -57,7 +57,7 @@ public :
    *
    * @returns Field over vertices.
    */
-  const topology::FieldSubMesh&
+  const topology::Field<topology::SubMesh>&
   vertexField(const char* name,
 	      const topology::SolutionFields& fields);
 
@@ -74,7 +74,7 @@ private :
 private :
 
   topology::SubMesh* _boundaryMesh; ///< Boundary mesh.
-  topology::FieldSubMesh* _tmpField; ///< Temporary field for output.
+  topology::Field<topology::SubMesh>* _tmpField; ///< Temporary field for output.
 
 }; // class DirichletBoundary
 
