@@ -1,0 +1,82 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_feassemble_quadraturebase_hh)
+#error "QuadratureBase.icc must be included only from QuadratureBase.hh"
+#else
+
+// Get minimum allowable Jacobian.
+inline
+double
+pylith::feassemble::QuadratureBase::minJacobian(void) const {
+  return _minJacobian;
+}
+
+// Set minimum allowable Jacobian.
+inline
+void
+pylith::feassemble::QuadratureBase::minJacobian(const double min) {
+  _minJacobian = min;
+}
+
+// Get coordinates of quadrature points in reference cell.
+inline
+const pylith::double_array&
+pylith::feassemble::QuadratureBase::quadPtsRef(void) const {
+  return _quadPtsRef;
+}
+
+// Get weights of quadrature points.
+inline
+const pylith::double_array&
+pylith::feassemble::QuadratureBase::quadWts(void) const {
+  return _quadWts;
+}
+
+// Get basis fns evaluated at quadrature points.
+inline
+const pylith::double_array&
+pylith::feassemble::QuadratureBase::basis(void) const {
+  return _basis;
+}
+
+// Get number of dimensions in reference cell.
+inline
+int
+pylith::feassemble::QuadratureBase::cellDim(void) const {
+  return _cellDim;
+}
+
+// Get number of basis functions for cell.
+inline
+int
+pylith::feassemble::QuadratureBase::numBasis(void) const {
+  return _numBasis;
+}
+
+// Get number of quadrature points.
+inline
+int
+pylith::feassemble::QuadratureBase::numQuadPts(void) const {
+  return _numQuadPts;
+}
+
+// Get number of dimensions in coordinates of cell vertices.
+inline
+int
+pylith::feassemble::QuadratureBase::spaceDim(void) const {
+  return _spaceDim;
+}
+
+#endif
+
+// End of file

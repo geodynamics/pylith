@@ -38,17 +38,18 @@ namespace pylith {
     class GeometryTet3D;
     class GeometryHex3D;
 
-    class Quadrature;
-    class Quadrature0D;
-    class Quadrature1D;
-    class Quadrature1Din2D;
-    class Quadrature1Din3D;
-    class Quadrature2D;
-    class Quadrature2Din3D;
-    class Quadrature3D;
+    class QuadratureBase;
+    template<typename mesh_type> class Quadrature;
+    template<typename mesh_type> class Quadrature0D;
+    template<typename mesh_type> class Quadrature1D;
+    template<typename mesh_type> class Quadrature1Din2D;
+    template<typename mesh_type> class Quadrature1Din3D;
+    template<typename mesh_type> class Quadrature2D;
+    template<typename mesh_type> class Quadrature2Din3D;
+    template<typename mesh_type> class Quadrature3D;
 
     class Constraint;
-    class Integrator;
+    template<typename quadrature_type> class Integrator;
 
     class IntegratorElasticity;
     class ElasticityImplicit;
