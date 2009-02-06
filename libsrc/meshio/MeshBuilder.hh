@@ -21,8 +21,7 @@
                                     // string_vector
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
-#define NEWPYLITHMESH 1 
-#include "pylith/utils/sievetypes.hh" // USES Obj, PETSc Mesh
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 // MeshBuilder ----------------------------------------------------------
 class pylith::meshio::MeshBuilder
@@ -76,7 +75,7 @@ public :
    * @param meshDim Dimension of cells in mesh.
    */
   static
-  void buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
+  void buildFaultMesh(const ALE::Obj<topology::Mesh::SieveMesh>& fault,
 		      ALE::Obj<ALE::Mesh>& faultBd,
 		      const double_array& coordinates,
 		      const int numVertices,

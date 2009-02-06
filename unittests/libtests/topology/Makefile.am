@@ -23,20 +23,22 @@ check_PROGRAMS = testtopology
 testtopology_SOURCES = \
 	TestMesh.cc \
 	TestSubMesh.cc \
-	TestMeshOps.cc \
-	TestFieldBase.cc \
-	TestField.cc \
-	TestFieldSubMesh.cc \
-	TestFieldsMesh.cc \
-	TestFieldsSubMesh.cc \
+	TestFieldMesh.cc \
 	test_topology.cc
+
+#	TestMeshOps.cc \
+#	TestFieldBase.cc \
+#	TestField.cc \
+#	TestFieldSubMesh.cc \
+#	TestFieldsMesh.cc \
+#	TestFieldsSubMesh.cc
 
 noinst_HEADERS = \
 	TestMesh.hh \
 	TestSubMesh.hh \
 	TestMeshOps.hh \
 	TestFieldBase.hh \
-	TestField.hh \
+	TestFieldMesh.hh \
 	TestFieldSubMesh.hh \
 	TestFieldsMesh.hh \
 	TestFieldsSubMesh.hh

@@ -12,16 +12,14 @@
 
 #include <portinfo>
 
-#include "SubMesh.hh" // implementation of class methods
-
-#include "Mesh.hh" // USES Mesh
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include <Selection.hh> // USES ALE::Selection
 
 // ----------------------------------------------------------------------
 // Default constructor
-pylith::topology::SubMesh::SubMesh(void) :
+template<typename mesh_type>
+pylith::topology::SubMesh<mesh_type>::SubMesh(void) :
   _coordsys(0),
   _debug(false)
 { // constructor
@@ -29,8 +27,9 @@ pylith::topology::SubMesh::SubMesh(void) :
 
 // ----------------------------------------------------------------------
 // Constructor with mesh and label for vertices marking boundary.
-pylith::topology::SubMesh::SubMesh(const Mesh& mesh,
-				   const char* label) :
+template<typename mesh_type>
+pylith::topology::SubMesh<mesh_type>::SubMesh(const mesh_type& mesh,
+					      const char* label) :
   _coordsys(0),
   _debug(false)
 { // constructor
@@ -39,32 +38,42 @@ pylith::topology::SubMesh::SubMesh(const Mesh& mesh,
 
 // ----------------------------------------------------------------------
 // Default destructor
-pylith::topology::SubMesh::~SubMesh(void)
+template<typename mesh_type>
+pylith::topology::SubMesh<mesh_type>::~SubMesh(void)
 { // destructor
   delete _coordsys; _coordsys = 0;
 } // destructor
 
 // ----------------------------------------------------------------------
 // Create Sieve mesh.
+template<typename mesh_type>
 void
-pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
-					 const char* label)
+pylith::topology::SubMesh<mesh_type>::createSubMesh(const mesh_type& mesh,
+						    const char* label)
 { // createSieveMesh
   _mesh.destroy();
 
-  const ALE::Obj<SieveMesh>& meshSieveMesh = mesh.sieveMesh();
+  const ALE::Obj<DomainSieveMesh>& meshSieveMesh = mesh.sieveMesh();
   assert(!meshSieveMesh.isNull());
 
-  const ALE::Obj<SieveMesh::int_section_type>& groupField = 
-    meshSieveMesh->getIntSection(label);
+  const ALE::Obj<IntSection>& groupField = meshSieveMesh->getIntSection(label);
   if (groupField.isNull()) {
     std::ostringstream msg;
     msg << "Could not find group of points '" << label << "' in mesh.";
     throw std::runtime_error(msg.str());
   } // if
+#if 0
+  // QUESTION FOR MATT
+  // Why doesn't this work?
+  // SieveMesh and SieveSubMesh are typedefs in SubMesh.hh
   _mesh = 
-    ALE::Selection<SieveMesh>::submeshV<SieveSubMesh>(meshSieveMesh,
-						      groupField);
+    ALE::Selection<DomainSieveMesh>::submeshV<SieveMesh>(meshSieveMesh,
+							 groupField);
+#else
+  _mesh = 
+    ALE::Selection<ALE::IMesh<> >::submeshV<SieveMesh>(meshSieveMesh,
+						       groupField);
+#endif
   if (_mesh.isNull()) {
     std::ostringstream msg;
     msg << "Could not construct boundary mesh for boundary '"
@@ -75,13 +84,15 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
 			meshSieveMesh->getRealSection("coordinates"));
 
   // Create the parallel overlap
-  ALE::Obj<SieveSubMesh::send_overlap_type> sendParallelMeshOverlap =
+  ALE::Obj<typename SieveMesh::send_overlap_type> sendParallelMeshOverlap =
     _mesh->getSendOverlap();
-  ALE::Obj<SieveSubMesh::recv_overlap_type> recvParallelMeshOverlap =
+  ALE::Obj<typename SieveMesh::recv_overlap_type> recvParallelMeshOverlap =
     _mesh->getRecvOverlap();
-  SieveMesh::renumbering_type& renumbering = meshSieveMesh->getRenumbering();
+  typename DomainSieveMesh::renumbering_type& renumbering = 
+    meshSieveMesh->getRenumbering();
   //   Can I figure this out in a nicer way?
-  ALE::SetFromMap<std::map<SieveMesh::point_type,SieveMesh::point_type> > globalPoints(renumbering);
+  ALE::SetFromMap<std::map<typename DomainSieveMesh::point_type,
+    typename DomainSieveMesh::point_type> > globalPoints(renumbering);
 
   ALE::OverlapBuilder<>::constructOverlap(globalPoints, renumbering,
 					  sendParallelMeshOverlap,
@@ -98,8 +109,9 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
 
 // ----------------------------------------------------------------------
 // Initialize the finite-element mesh.
+template<typename mesh_type>
 void 
-pylith::topology::SubMesh::initialize(void)
+pylith::topology::SubMesh<mesh_type>::initialize(void)
 { // initialize
   if (0 != _coordsys)
     _coordsys->initialize();

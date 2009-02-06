@@ -15,18 +15,84 @@
 #else
 
 // Get Sieve section.
+template<typename mesh_type>
 inline
-const ALE::Obj<pylith::MeshRealSection>&
-pylith::topology::Field::section(void) const {
+const ALE::Obj<typename mesh_type::RealSection>&
+pylith::topology::Field<mesh_type>::section(void) const {
   return _section;
 }
 
 // Get mesh associated with field.
+template<typename mesh_type>
 inline
 const
-pylith::topology::Mesh&
-pylith::topology::Field::mesh(void) const {
+mesh_type&
+pylith::topology::Field<mesh_type>::mesh(void) const {
   return _mesh;
+}
+
+// Set name of field.
+template<typename mesh_type>
+inline
+void
+pylith::topology::Field<mesh_type>::name(const char* value) {
+  _name = value;
+}
+
+// Get name of field.
+template<typename mesh_type>
+inline
+const char*
+pylith::topology::Field<mesh_type>::name(void) const {
+  return _name.c_str();
+}
+
+// Set vector field type
+template<typename mesh_type>
+inline
+void
+pylith::topology::Field<mesh_type>::vectorFieldType(const VectorFieldEnum value) {
+  _vecFieldType = value;
+}
+
+// Get vector field type
+template<typename mesh_type>
+inline
+typename pylith::topology::Field<mesh_type>::VectorFieldEnum
+pylith::topology::Field<mesh_type>::vectorFieldType(void) const {
+  return _vecFieldType;
+}
+
+// Set scale for dimensionalizing field.
+template<typename mesh_type>
+inline
+void
+pylith::topology::Field<mesh_type>::scale(const double value) {
+  _scale = value;
+}
+
+// Get scale for dimensionalizing field.
+template<typename mesh_type>
+inline
+double
+pylith::topology::Field<mesh_type>::scale(void) const {
+  return _scale;
+}
+
+// Set flag indicating whether it is okay to dimensionalize field.
+template<typename mesh_type>
+inline
+void
+pylith::topology::Field<mesh_type>::addDimensionOkay(const bool value) {
+  _dimensionsOkay = value;
+}
+
+// Set flag indicating whether it is okay to dimensionalize field.
+template<typename mesh_type>
+inline
+bool
+pylith::topology::Field<mesh_type>::addDimensionOkay(void) const {
+  return _dimensionsOkay;
 }
 
 #endif

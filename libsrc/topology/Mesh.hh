@@ -26,13 +26,29 @@
 #include "topologyfwd.hh" // forward declarations
 #include "spatialdata/geocoords/geocoordsfwd.hh" // forward declarations
 
-#define NEWPYLITHMESH 1 
-#include "pylith/utils/sievetypes.hh"
+#include <petscmesh.hh> // HASA ALE::IMesh
 
 // Mesh -----------------------------------------------------------------
 class pylith::topology::Mesh
 { // Mesh
   friend class TestMesh; // unit testing
+
+// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
+public :
+
+  // Typedefs for basic types associated with Sieve mesh.
+  // All other PyLith mesh and submesh objects should define:
+  //   (1) SieveMesh - Sieve mesh
+  //   (2) RealSection - Section of doubles
+  //   (3) IntSection - Section of ints
+  // because these are used in templated code.
+  // 
+  // All other mesh objects for the domain should also define
+  //   (1) SieveSubMesh - SubMesh object
+  typedef ALE::IMesh<> SieveMesh;
+  typedef SieveMesh::real_section_type RealSection;
+  typedef SieveMesh::int_section_type IntSection;
+  typedef ALE::IMesh<ALE::LabelSifter<int, SieveMesh::point_type> > SieveSubMesh;
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :

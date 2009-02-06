@@ -15,60 +15,68 @@
 #else
 
 // Get Sieve mesh.
+template<typename mesh_type>
 inline
-const ALE::Obj<pylith::SieveSubMesh>&
-pylith::topology::SubMesh::sieveMesh(void) const {
+const ALE::Obj<typename mesh_type::SieveSubMesh>&
+pylith::topology::SubMesh<mesh_type>::sieveMesh(void) const {
   return _mesh;
 }
 
 // Get Sieve mesh.
+template<typename mesh_type>
 inline
-ALE::Obj<pylith::SieveSubMesh>&
-pylith::topology::SubMesh::sieveMesh(void) {
+ALE::Obj<typename mesh_type::SieveSubMesh>&
+pylith::topology::SubMesh<mesh_type>::sieveMesh(void) {
   return _mesh;
 }
 
 // Get coordinate system.
+template<typename mesh_type>
 inline
 const spatialdata::geocoords::CoordSys*
-pylith::topology::SubMesh::coordsys(void) const {
+pylith::topology::SubMesh<mesh_type>::coordsys(void) const {
   return _coordsys;
 }
 
 // Set debug flag.
+template<typename mesh_type>
 inline
 void
-pylith::topology::SubMesh::debug(const bool value) {
+pylith::topology::SubMesh<mesh_type>::debug(const bool value) {
   _debug = value;
   if (!_mesh.isNull())
     _mesh->setDebug(value);
 }
 
 // Get debug flag.
+template<typename mesh_type>
 inline
 bool
-pylith::topology::SubMesh::debug(void) const {
+pylith::topology::SubMesh<mesh_type>::debug(void) const {
   return _debug;
 }
 
 // Get dimension of mesh.
+template<typename mesh_type>
 inline
 int
-pylith::topology::SubMesh::dimension(void) const {
+pylith::topology::SubMesh<mesh_type>::dimension(void) const {
   return (!_mesh.isNull()) ? _mesh->getDimension() : 0;
 }
 
 // Get MPI communicator associated with mesh.
+template<typename mesh_type>
 inline
 const MPI_Comm
-pylith::topology::SubMesh::comm(void) const {
+pylith::topology::SubMesh<mesh_type>::comm(void) const {
   return (!_mesh.isNull()) ? _mesh->comm() : 0;
 }
     
 // Print mesh to stdout.
+template<typename mesh_type>
 inline
 void
-pylith::topology::SubMesh::view(const char* label) {
+pylith::topology::SubMesh<mesh_type>::view(const char* label) {
   _mesh->view(label);
 }
 

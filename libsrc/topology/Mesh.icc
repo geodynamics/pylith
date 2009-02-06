@@ -16,14 +16,14 @@
 
 // Get Sieve mesh.
 inline
-const ALE::Obj<pylith::SieveMesh>&
+const ALE::Obj<pylith::topology::Mesh::SieveMesh>&
 pylith::topology::Mesh::sieveMesh(void) const {
   return _mesh;
 }
 
 // Get Sieve mesh.
 inline
-ALE::Obj<pylith::SieveMesh>&
+ALE::Obj<pylith::topology::Mesh::SieveMesh>&
 pylith::topology::Mesh::sieveMesh(void) {
   return _mesh;
 }

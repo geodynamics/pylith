@@ -25,21 +25,22 @@ namespace pylith {
   namespace topology {
 
     class Mesh;
-    class SubMesh;
+    template<typename mesh_type> class SubMesh;
+    template<typename mesh_type> class Field;
+
+#if 0
     class MeshOps;
 
-    class FieldBase;
-    class Field;
-    class FieldSubMesh;
-    template<typename field_type, typename mesh_type> class Fields;
-    typedef Fields<Field, Mesh> FieldsMesh;
-    typedef Fields<FieldSubMesh, SubMesh> FieldsSubMesh;
+    template<typename field_type> class Fields;
+    typedef Fields<Field<Mesh> > FieldsMesh;
+    typedef Fields<Field<SubMesh> > FieldsSubMesh;
     class SolutionFields;
 
     class Distributor;
 
     class MeshRefiner;
     class RefineUniform;
+#endif
 
   } // topology
 } // pylith

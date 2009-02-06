@@ -24,19 +24,17 @@
 // Include directives ---------------------------------------------------
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "pylith/topology/topologyfwd.hh" // USES Mesh
+#include "pylith/meshio/meshiofwd.hh" // USES MeshIO
+
 // Forward declarations -------------------------------------------------
 /// Namespace for pylith package
 namespace pylith {
   namespace meshio {
     class TestMeshIO;
-    class MeshIO; // USES MeshIO
 
     class MeshData; // test data
   } // meshio
-
-  namespace topology {
-    class Mesh; // USES Mesh
-  } // topology
 } // pylith
 
 // MeshIO ---------------------------------------------------------------

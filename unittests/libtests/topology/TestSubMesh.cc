@@ -13,8 +13,9 @@
 #include <portinfo>
 
 #include "TestSubMesh.hh" // Implementation of class methods
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
+
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
@@ -56,7 +57,7 @@ namespace pylith {
 void
 pylith::topology::TestSubMesh::testConstructor(void)
 { // testConstructor
-  SubMesh mesh;
+  SubMesh<Mesh> mesh;
   CPPUNIT_ASSERT(mesh._mesh.isNull());
   CPPUNIT_ASSERT_EQUAL(0, mesh.dimension());
   CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
@@ -71,19 +72,19 @@ pylith::topology::TestSubMesh::testConstructorMesh(void)
   Mesh mesh2D;
   _buildMesh(&mesh2D);
   
-  SubMesh mesh(mesh2D, _TestSubMesh::label);
+  SubMesh<Mesh> mesh(mesh2D, _TestSubMesh::label);
   CPPUNIT_ASSERT(!mesh._mesh.isNull());
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, mesh.dimension());
   CPPUNIT_ASSERT_EQUAL(PETSC_COMM_WORLD, mesh.comm());
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
+  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
   CPPUNIT_ASSERT(!vertices.isNull());
   const int nvertices = _TestSubMesh::groupSize;
   CPPUNIT_ASSERT_EQUAL(size_t(nvertices), vertices->size());
   int iV = 0;
-  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+  for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
        ++v_iter)
     CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshVertices[iV++], *v_iter);
@@ -97,9 +98,9 @@ pylith::topology::TestSubMesh::testSieveMesh(void)
   Mesh mesh2D;
   _buildMesh(&mesh2D);
 
-  SubMesh mesh(mesh2D, _TestSubMesh::label);
+  SubMesh<Mesh> mesh(mesh2D, _TestSubMesh::label);
   
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, mesh.dimension());
 } // testSieveMesh
@@ -112,20 +113,20 @@ pylith::topology::TestSubMesh::testCreateSubMesh(void)
   Mesh mesh2D;
   _buildMesh(&mesh2D);
   
-  SubMesh mesh;
+  SubMesh<Mesh> mesh;
   mesh.createSubMesh(mesh2D, _TestSubMesh::label);
   CPPUNIT_ASSERT(!mesh._mesh.isNull());
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, mesh.dimension());
   CPPUNIT_ASSERT_EQUAL(PETSC_COMM_WORLD, mesh.comm());
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
+  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
   CPPUNIT_ASSERT(!vertices.isNull());
   const int nvertices = _TestSubMesh::groupSize;
   CPPUNIT_ASSERT_EQUAL(size_t(nvertices), vertices->size());
   int iV = 0;
-  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+  for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
        ++v_iter)
     CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshVertices[iV++], *v_iter);
@@ -139,7 +140,7 @@ pylith::topology::TestSubMesh::testCoordsys(void)
   Mesh mesh2D;
   _buildMesh(&mesh2D);
 
-  SubMesh mesh(mesh2D, _TestSubMesh::label);
+  SubMesh<Mesh> mesh(mesh2D, _TestSubMesh::label);
 
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim, mesh.coordsys()->spaceDim());
 } // testCoordsys
@@ -149,7 +150,7 @@ pylith::topology::TestSubMesh::testCoordsys(void)
 void
 pylith::topology::TestSubMesh::testDebug(void)
 { // testDebug
-  SubMesh mesh;
+  SubMesh<Mesh> mesh;
   CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
 
   mesh.debug(true);
@@ -161,12 +162,12 @@ pylith::topology::TestSubMesh::testDebug(void)
 void
 pylith::topology::TestSubMesh::testDimension(void)
 { // testDimension
-  SubMesh mesh;
+  SubMesh<Mesh> mesh;
   CPPUNIT_ASSERT_EQUAL(0, mesh.dimension());
 
   Mesh mesh2D;
   _buildMesh(&mesh2D);
-  SubMesh mesh2(mesh2D, _TestSubMesh::label);
+  SubMesh<Mesh> mesh2(mesh2D, _TestSubMesh::label);
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, mesh2.dimension());
 } // testDimension
 
@@ -175,7 +176,7 @@ pylith::topology::TestSubMesh::testDimension(void)
 void
 pylith::topology::TestSubMesh::testComm(void)
 { // testComm
-  SubMesh mesh;
+  SubMesh<Mesh> mesh;
   CPPUNIT_ASSERT_EQUAL(0, mesh.comm());
 
   Mesh mesh2D;
@@ -192,7 +193,7 @@ pylith::topology::TestSubMesh::testInitialize(void)
 { // testInitialize
   Mesh mesh2D;
   _buildMesh(&mesh2D);
-  SubMesh mesh(mesh2D, _TestSubMesh::label);
+  SubMesh<Mesh> mesh(mesh2D, _TestSubMesh::label);
 
   mesh.initialize();
 } // testInitialize
@@ -204,10 +205,10 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
   assert(0 != mesh);
 
   mesh->createSieveMesh(_TestSubMesh::cellDim);
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh->sieveMesh();
 
-  ALE::Obj<SieveMesh::sieve_type> sieve = 
-    new SieveMesh::sieve_type(sieveMesh->comm());
+  ALE::Obj<Mesh::SieveMesh::sieve_type> sieve = 
+    new Mesh::SieveMesh::sieve_type(sieveMesh->comm());
   CPPUNIT_ASSERT(!sieve.isNull());
 
   ALE::Obj<ALE::Mesh::sieve_type> s = 
@@ -224,20 +225,20 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
   ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, cellDim, ncells, (int*) cells,
 					      nvertices, interpolate, 
 					      ncorners);
-  std::map<SieveMesh::point_type,SieveMesh::point_type> renumbering;
+  std::map<Mesh::SieveMesh::point_type,Mesh::SieveMesh::point_type> renumbering;
   ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
   sieveMesh->setSieve(sieve);
   sieveMesh->stratify();
-  ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
-						 coordinates);
+  ALE::SieveBuilder<Mesh::SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
+						       coordinates);
 
   spatialdata::geocoords::CSCart cs;
   cs.setSpaceDim(spaceDim);
   cs.initialize();
   mesh->coordsys(&cs);
 
-  typedef SieveMesh::int_section_type::chart_type chart_type;
-  const ALE::Obj<SieveMesh::int_section_type>& groupField = 
+  typedef Mesh::IntSection::chart_type chart_type;
+  const ALE::Obj<Mesh::IntSection>& groupField = 
     sieveMesh->getIntSection(_TestSubMesh::label);
   assert(!groupField.isNull());
 

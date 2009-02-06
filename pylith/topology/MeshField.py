@@ -10,15 +10,15 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/topology/Field.py
+## @file pylith/topology/MeshField.py
 ##
 ## @brief Python object for managing a vector field over vertices or
 ## cells of a finite-element mesh.
 
-from topology import Field as ModuleField
+from topology import MeshField as ModuleField
 
-# Field class
-class Field(ModuleField):
+# MeshField class
+class MeshField(ModuleField):
   """
   Python object for managing a vector field over vertices or cells of
   a finite-element mesh.

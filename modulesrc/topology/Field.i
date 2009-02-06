@@ -19,9 +19,38 @@
 namespace pylith {
   namespace topology {
 
-    class Field : public FieldBase
+    template<typename mesh_type>
+    class Field
     { // Field
 
+      // PUBLIC ENUMS ///////////////////////////////////////////////////
+    public :
+
+      enum VectorFieldEnum {
+	SCALAR=0, ///< Scalar.
+	VECTOR=1, ///< Vector.
+	TENSOR=2, ///< Tensor.
+	OTHER=3, ///< Not a scalar, vector, or tensor.
+	MULTI_SCALAR=4, ///< Scalar at multiple points.
+	MULTI_VECTOR=5, ///< Vector at multiple points.
+	MULTI_TENSOR=6, ///< Tensor at multiple points.
+	MULTI_OTHER=7, ///< Not a scalar, vector, or tensor at multiple points.
+      }; // VectorFieldEnum
+
+      enum DomainEnum {
+	VERTICES_FIELD=0, ///< FieldBase over vertices.
+	CELLS_FIELD=1, ///< FieldBase over cells.
+      }; // omainEnum
+
+      // PRIVATE TYPEDEFS ///////////////////////////////////////////////
+    private:
+
+      // Convenience typedefs
+      typedef typename mesh_type::RealSection RealSection;
+      typedef typename mesh_type::SieveMesh SieveMesh;
+      typedef typename SieveMesh::label_sequence label_sequence;
+      typedef typename RealSection::chart_type chart_type;
+      
       // PUBLIC MEMBERS /////////////////////////////////////////////////
     public :
 
@@ -29,7 +58,7 @@ namespace pylith {
        *
        * @param mesh Finite-element mesh.
        */
-      Field(const Mesh& mesh);
+      Field(const mesh_type& mesh);
 
       /// Destructor.
       ~Field(void);
@@ -38,14 +67,62 @@ namespace pylith {
        *
        * @returns Finite-element mesh.
        */
-      const Mesh& mesh(void) const;
+      const mesh_type& mesh(void) const;
 
+      /** Set name of field.
+       *
+       * @param value Name of field.
+       */
+      void name(const char* value);
+
+      /** Get name of field.
+       *
+       * @returns Name of field.
+       */
+      const char* name(void) const;
+      
+      /** Set vector field type
+       *
+       * @param value Type of vector field.
+       */
+      void vectorFieldType(const VectorFieldEnum value);
+
+      /** Get vector field type
+       *
+       * @returns Type of vector field.
+       */
+      VectorFieldEnum vectorFieldType(void) const;
+
+      /** Set scale for dimensionalizing field.
+       *
+       * @param value Scale associated with field.
+       */
+      void scale(const double value);
+
+      /** Get scale for dimensionalizing field.
+       *
+       * @returns Scale associated with field.
+       */
+      double scale(void) const;
+      
+      /** Set flag indicating whether it is okay to dimensionalize field.
+       *
+       * @param value True if it is okay to dimensionalize field.
+       */
+      void addDimensionOkay(const bool value);
+      
+      /** Set flag indicating whether it is okay to dimensionalize field.
+       *
+       * @param value True if it is okay to dimensionalize field.
+       */
+      bool addDimensionOkay(void) const;
+      
       /** Get spatial dimension of domain.
        *
        * @returns Spatial dimension of domain.
        */
       int spaceDim(void) const;
-
+      
       /// Create sieve section.
       void newSection(void);
 
@@ -56,7 +133,7 @@ namespace pylith {
        */
       void newSection(const DomainEnum domain,
 		      const int fiberDim);
-      
+
       /** Create section with same layout (fiber dimension and
        * constraints) as another section. This allows the layout data
        * structures to be reused across multiple fields, reducing memory
@@ -65,10 +142,10 @@ namespace pylith {
        * @param sec Section defining layout.
        */
       void newSection(const Field& src);
-      
+
       /// Clear variables associated with section.
       void clear(void);
-      
+
       /// Allocate field.
       void allocate(void);
       
@@ -77,7 +154,7 @@ namespace pylith {
       
       /// Complete section by assembling across processors.
       void complete(void);
-      
+
       /** Copy field values and metadata.
        *
        * @param field Field to copy.
@@ -100,9 +177,9 @@ namespace pylith {
        * @param label Label for output.
        */
       void view(const char* label);
-      
+
     }; // Field
-    
+
   } // topology
 } // pylith
 

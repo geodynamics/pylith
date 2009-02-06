@@ -23,12 +23,42 @@
 #define pylith_topology_field_hh
 
 // Include directives ---------------------------------------------------
-#include "FieldBase.hh" // ISA FieldBase
+#include "topologyfwd.hh" // forward declarations
 
 // Field ----------------------------------------------------------------
-class pylith::topology::Field : public FieldBase
+template<typename mesh_type>
+class pylith::topology::Field
 { // Field
-  friend class TestField; // unit testing
+  friend class TestFieldMesh; // unit testing
+  friend class TestFieldSubMesh; // unit testing
+
+// PUBLIC ENUMS /////////////////////////////////////////////////////////
+public :
+
+  enum VectorFieldEnum {
+    SCALAR=0, ///< Scalar.
+    VECTOR=1, ///< Vector.
+    TENSOR=2, ///< Tensor.
+    OTHER=3, ///< Not a scalar, vector, or tensor.
+    MULTI_SCALAR=4, ///< Scalar at multiple points.
+    MULTI_VECTOR=5, ///< Vector at multiple points.
+    MULTI_TENSOR=6, ///< Tensor at multiple points.
+    MULTI_OTHER=7, ///< Not a scalar, vector, or tensor at multiple points.
+  }; // VectorFieldEnum
+
+  enum DomainEnum {
+    VERTICES_FIELD=0, ///< FieldBase over vertices.
+    CELLS_FIELD=1, ///< FieldBase over cells.
+  }; // omainEnum
+
+// PRIVATE TYPEDEFS /////////////////////////////////////////////////////
+private:
+
+  // Convenience typedefs
+  typedef typename mesh_type::RealSection RealSection;
+  typedef typename mesh_type::SieveMesh SieveMesh;
+  typedef typename SieveMesh::label_sequence label_sequence;
+  typedef typename RealSection::chart_type chart_type;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -37,7 +67,7 @@ public :
    *
    * @param mesh Finite-element mesh.
    */
-  Field(const Mesh& mesh);
+  Field(const mesh_type& mesh);
 
   /// Destructor.
   ~Field(void);
@@ -46,13 +76,61 @@ public :
    *
    * @returns Sieve section.
    */
-  const ALE::Obj<MeshRealSection>& section(void) const;
+  const ALE::Obj<RealSection>& section(void) const;
 
   /** Get mesh associated with field.
    *
    * @returns Finite-element mesh.
    */
-  const Mesh& mesh(void) const;
+  const mesh_type& mesh(void) const;
+
+  /** Set name of field.
+   *
+   * @param value Name of field.
+   */
+  void name(const char* value);
+
+  /** Get name of field.
+   *
+   * @returns Name of field.
+   */
+  const char* name(void) const;
+
+  /** Set vector field type
+   *
+   * @param value Type of vector field.
+   */
+  void vectorFieldType(const VectorFieldEnum value);
+
+  /** Get vector field type
+   *
+   * @returns Type of vector field.
+   */
+  VectorFieldEnum vectorFieldType(void) const;
+
+  /** Set scale for dimensionalizing field.
+   *
+   * @param value Scale associated with field.
+   */
+  void scale(const double value);
+
+  /** Get scale for dimensionalizing field.
+   *
+   * @returns Scale associated with field.
+   */
+  double scale(void) const;
+
+  /** Set flag indicating whether it is okay to dimensionalize field.
+   *
+   * @param value True if it is okay to dimensionalize field.
+   */
+  void addDimensionOkay(const bool value);
+
+  /** Set flag indicating whether it is okay to dimensionalize field.
+   *
+   * @param value True if it is okay to dimensionalize field.
+   */
+  bool addDimensionOkay(void) const;
 
   /** Get spatial dimension of domain.
    *
@@ -68,7 +146,7 @@ public :
    * @param points Points over which to define section.
    * @param dim Fiber dimension for section.
    */
-  void newSection(const ALE::Obj<SieveMesh::label_sequence>& points,
+  void newSection(const ALE::Obj<label_sequence>& points,
 		  const int fiberDim);
 
   /** Create sieve section and set chart and fiber dimesion.
@@ -85,7 +163,7 @@ public :
    * @param chart Chart defining points over which section is defined.
    * @param fiberDim Fiber dimension.
    */
-  void newSection(const MeshRealSection::chart_type& chart,
+  void newSection(const chart_type& chart,
 		  const int fiberDim);
 
   /** Create section with same layout (fiber dimension and
@@ -132,11 +210,16 @@ public :
    */
   void view(const char* label);
 
-// PROTECTED MEMBERS ////////////////////////////////////////////////////
-protected :
+// PRIVATE MEMBERS //////////////////////////////////////////////////////
+private :
 
-  const Mesh& _mesh; ///< Mesh associated with section
-  ALE::Obj<MeshRealSection> _section; ///< Real section with data
+  double _scale; ///< Dimensional scale associated with field
+  std::string _name; ///< Name of field
+  const mesh_type& _mesh; ///< Mesh associated with section
+  ALE::Obj<RealSection> _section; ///< Real section with data
+  VectorFieldEnum _vecFieldType; ///< Type of vector field
+  bool _dimensionsOkay; ///< Flag indicating it is okay to dimensionalize
+
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
@@ -147,6 +230,7 @@ private :
 }; // Field
 
 #include "Field.icc"
+#include "Field.cc"
 
 #endif // pylith_topology_field_hh
 

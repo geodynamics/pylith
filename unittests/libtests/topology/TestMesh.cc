@@ -69,7 +69,7 @@ pylith::topology::TestMesh::testSieveMesh(void)
   const int dim = 2;
   Mesh mesh(dim);
   
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
   CPPUNIT_ASSERT_EQUAL(dim, sieveMesh->getDimension());
 } // testSieveMesh

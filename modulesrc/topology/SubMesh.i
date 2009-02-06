@@ -19,6 +19,7 @@
 namespace pylith {
   namespace topology {
 
+    template<typename mesh_type>
     class SubMesh
     { // SubMesh
 
@@ -33,7 +34,7 @@ namespace pylith {
        * @param mesh Finite-element mesh over domain.
        * @param label Label for vertices marking boundary.
        */
-      SubMesh(const Mesh& mesh,
+      SubMesh(const mesh_type& mesh,
 	      const char* label);
 
       /// Default destructor
@@ -44,7 +45,7 @@ namespace pylith {
        * @param mesh Finite-element mesh over domain.
        * @param label Label for vertices marking boundary.
        */
-      void createSubMesh(const Mesh& mesh,
+      void createSubMesh(const mesh_type& mesh,
 			 const char* label); 
 
       /** Get coordinate system.

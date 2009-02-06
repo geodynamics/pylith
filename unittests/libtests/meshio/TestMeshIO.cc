@@ -25,6 +25,9 @@
 #include <stdexcept> // USES std::logic_error
 
 // ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+
+// ----------------------------------------------------------------------
 // Get simple mesh for testing I/O.
 pylith::topology::Mesh*
 pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)

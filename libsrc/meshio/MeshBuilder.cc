@@ -26,6 +26,9 @@
 #include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+
+// ----------------------------------------------------------------------
 // Set vertices and cells in mesh.
 void
 pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,

@@ -60,6 +60,9 @@ class TestApp(Script):
     from TestSubMesh import TestSubMesh
     suite.addTest(unittest.makeSuite(TestSubMesh))
 
+    from TestMeshField import TestMeshField
+    suite.addTest(unittest.makeSuite(TestMeshField))
+
     from TestMeshGenerator import TestMeshGenerator
     suite.addTest(unittest.makeSuite(TestMeshGenerator))
 

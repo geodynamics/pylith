@@ -15,7 +15,7 @@
 ## @brief Python Mesh for lower-dimension finite-element topology
 ## information.
 
-from topology import SubMesh as ModuleSubMesh
+from topology import MeshSubMesh as ModuleSubMesh
 
 # SubMesh class
 class SubMesh(ModuleSubMesh):

@@ -26,6 +26,11 @@
 #include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
+typedef pylith::topology::Mesh::IntSection IntSection;
+
+// ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::MeshIO::MeshIO(void) :
   _mesh(0),
@@ -105,7 +110,7 @@ pylith::meshio::MeshIO::_getVertices(double_array* coordinates,
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
-  const ALE::Obj<SieveMesh::real_section_type>& coordsField =
+  const ALE::Obj<RealSection>& coordsField =
     sieveMesh->getRealSection("coordinates");
   assert(!coordsField.isNull());
 
@@ -123,7 +128,7 @@ pylith::meshio::MeshIO::_getVertices(double_array* coordinates,
   for(SieveMesh::label_sequence::iterator v_iter=vertices->begin();
       v_iter != verticesEnd;
       ++v_iter) {
-    const SieveMesh::real_section_type::value_type *vertexCoords = 
+    const RealSection::value_type *vertexCoords = 
       coordsField->restrictPoint(*v_iter);
     for (int iDim=0; iDim < *spaceDim; ++iDim)
       (*coordinates)[i++] = vertexCoords[iDim];
@@ -143,6 +148,7 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
 				  int* numCorners,
 				  int* meshDim) const
 { // _getCells
+
   assert(0 != cells);
   assert(0 != numCells);
   assert(0 != meshDim);
@@ -287,8 +293,6 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
 				  const GroupPtType type,
 				  const int_array& points)
 { // _setGroup
-  typedef SieveMesh::int_section_type::chart_type chart_type;
-
   assert(0 != _mesh);
 
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
@@ -296,19 +300,19 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("GroupCreation");
-  const ALE::Obj<SieveMesh::int_section_type>& groupField = 
-    sieveMesh->getIntSection(name);
+  const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(name);
   assert(!groupField.isNull());
 
   const int numPoints   = points.size();
   const int numVertices = sieveMesh->depthStratum(0)->size();
   const int numCells    = sieveMesh->heightStratum(0)->size();
   if (CELL == type) {
-    groupField->setChart(chart_type(0,numCells));
+    groupField->setChart(IntSection::chart_type(0,numCells));
     for(int i=0; i < numPoints; ++i)
       groupField->setFiberDimension(points[i], 1);
   } else if (VERTEX == type) {
-    groupField->setChart(chart_type(numCells, numCells+numVertices));
+    groupField->setChart(IntSection::chart_type(numCells, 
+						numCells+numVertices));
     for(int i=0; i < numPoints; ++i)
       groupField->setFiberDimension(numCells+points[i], 1);
   } // if/else
@@ -366,8 +370,7 @@ pylith::meshio::MeshIO::_distributeGroups()
       name = new char[len+1];
       MPI_Bcast(name, len, MPI_CHAR, 0, sieveMesh->comm());
       name[len] = 0;
-      const ALE::Obj<SieveMesh::int_section_type>& groupField = 
-	sieveMesh->getIntSection(name);
+      const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(name);
       assert(!groupField.isNull());
       sieveMesh->allocate(groupField);
       delete [] name;
@@ -406,8 +409,6 @@ pylith::meshio::MeshIO::_getGroup(int_array* points,
 				  GroupPtType* type,
 				  const char *name) const
 { // _getGroup
-  typedef SieveMesh::int_section_type::chart_type chart_type;
-
   assert(0 != points);
   assert(0 != type);
   assert(0 != _mesh);
@@ -415,13 +416,12 @@ pylith::meshio::MeshIO::_getGroup(int_array* points,
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   assert(!sieveMesh.isNull());
 
-  const ALE::Obj<SieveMesh::int_section_type>& groupField = 
-    sieveMesh->getIntSection(name);
+  const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(name);
   assert(!groupField.isNull());
-  const chart_type& chart = groupField->getChart();
+  const IntSection::chart_type& chart = groupField->getChart();
   SieveMesh::point_type firstPoint;
-  chart_type::const_iterator chartEnd = chart.end();
-  for(chart_type::const_iterator c_iter=chart.begin();
+  IntSection::chart_type::const_iterator chartEnd = chart.end();
+  for(IntSection::chart_type::const_iterator c_iter=chart.begin();
       c_iter != chartEnd;
       ++c_iter) {
     if (groupField->getFiberDimension(*c_iter)) {
@@ -443,7 +443,7 @@ pylith::meshio::MeshIO::_getGroup(int_array* points,
   points->resize(numPoints);
   int i = 0;
 
-  for(chart_type::const_iterator c_iter=chart.begin();
+  for(IntSection::chart_type::const_iterator c_iter=chart.begin();
       c_iter != chartEnd;
       ++c_iter) {
     assert(!numbering.isNull());
@@ -454,4 +454,3 @@ pylith::meshio::MeshIO::_getGroup(int_array* points,
 
 
 // End of file
-

@@ -10,27 +10,27 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/topology/FieldSubMesh.py
+## @file pylith/topology/SubMeshField.py
 ##
 ## @brief Python object for managing a vector field over vertices or
-## cells of a lower-dimension portion of a finite-element mesh.
+## cells of a finite-element mesh.
 
-from topology import FieldSubMesh as ModuleFieldSubMesh
+from topology import SubMeshField as ModuleField
 
-# FieldSubMesh class
-class Field(ModuleFieldSubMesh):
+# SubMeshField class
+class SubMeshField(ModuleField):
   """
   Python object for managing a vector field over vertices or cells of
-  a lower-dimension portion of a finite-element mesh.
+  a lower-dimension finite-element mesh.
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, submesh):
+  def __init__(self, mesh):
     """
     Constructor.
     """
-    ModuleFieldSubMesh.__init__(self, submesh)
+    ModuleField.__init__(self, mesh)
     return
     
 

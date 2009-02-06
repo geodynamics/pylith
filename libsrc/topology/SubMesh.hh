@@ -26,13 +26,23 @@
 #include "topologyfwd.hh" // forward declarations
 #include "spatialdata/geocoords/geocoordsfwd.hh" // forward declarations
 
-#define NEWPYLITHMESH 1 
-#include "pylith/utils/sievetypes.hh"
-
 // SubMesh -----------------------------------------------------------------
+template<typename mesh_type>
 class pylith::topology::SubMesh
 { // SubMesh
   friend class TestSubMesh; // unit testing
+
+// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
+public:
+
+  // Typedefs for basic types associated with Sieve mesh.
+  // SieveMesh, RealSection, and IntSection are used in templated code.
+  typedef typename mesh_type::SieveSubMesh SieveMesh;
+  typedef typename mesh_type::RealSection  RealSection;
+  typedef typename mesh_type::IntSection IntSection;
+
+  // Sieve mesh for higher level domain (mesh, not submesh)
+  typedef typename mesh_type::SieveMesh DomainSieveMesh;
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -45,7 +55,7 @@ public :
    * @param mesh Finite-element mesh over domain.
    * @param label Label for vertices marking boundary.
    */
-  SubMesh(const Mesh& mesh,
+  SubMesh(const mesh_type& mesh,
 	  const char* label);
 
   /// Default destructor
@@ -56,20 +66,20 @@ public :
    * @param mesh Finite-element mesh over domain.
    * @param label Label for vertices marking boundary.
    */
-  void createSubMesh(const Mesh& mesh,
+  void createSubMesh(const mesh_type& mesh,
 		     const char* label); 
 
   /** Get Sieve mesh.
    *
    * @returns Sieve mesh.
    */
-  const ALE::Obj<SieveSubMesh>& sieveMesh(void) const;
+  const ALE::Obj<SieveMesh>& sieveMesh(void) const;
 
   /** Get Sieve mesh.
    *
    * @returns Sieve mesh.
    */
-  ALE::Obj<SieveSubMesh>& sieveMesh(void);
+  ALE::Obj<SieveMesh>& sieveMesh(void);
 
   /** Get coordinate system.
    *
@@ -113,7 +123,7 @@ public :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  ALE::Obj<SieveSubMesh> _mesh; ///< Sieve mesh.
+  ALE::Obj<SieveMesh> _mesh; ///< Sieve mesh.
   spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system.
   bool _debug; ///< Debugging flag for mesh.
   
@@ -126,6 +136,7 @@ private :
 }; // SubMesh
 
 #include "SubMesh.icc"
+#include "SubMesh.cc"
 
 #endif // pylith_topology_submesh_hh
 
