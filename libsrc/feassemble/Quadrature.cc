@@ -248,7 +248,7 @@ pylith::feassemble::Quadrature::_resetGeometry(void)
 // Check determinant of Jacobian against minimum allowable value
 void
 pylith::feassemble::Quadrature::_checkJacobianDet(const double det,
-					   const Mesh::point_type& cell) const
+						  const int cell) const
 { // _checkJacobianDet
   if (det < _minJacobian) {
     std::ostringstream msg;
@@ -354,11 +354,8 @@ pylith::feassemble::Quadrature::precomputeGeometry(
 
 // ----------------------------------------------------------------------
 void
-pylith::feassemble::Quadrature::retrieveGeometry(
-			      const ALE::Obj<Mesh>& mesh,
-			      const ALE::Obj<real_section_type>& coordinates,
-			      const Mesh::point_type& cell,
-			      const int c)
+pylith::feassemble::Quadrature::retrieveGeometry(const ALE::Obj<SieveMesh>& mesh,
+						 const SieveMesh::point_type& cell)
 { // retrieveGeometry
   _quadPtsPreV->clear();
   mesh->restrictClosure(cell, *_quadPtsPreV);

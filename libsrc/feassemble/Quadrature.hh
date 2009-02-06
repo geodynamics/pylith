@@ -223,14 +223,14 @@ public :
    * @param cell Finite-element cell
    */
   virtual 
-  void computeGeometry(const real_section_type::value_type* vertCoords,
+  void computeGeometry(const double* vertCoords,
                        const int coordDim,
                        const SieveMesh::point_type& cell) = 0;
 
   template<typename mesh_type>
   void computeGeometry(const ALE::Obj<mesh_type>& mesh,
-                       const ALE::Obj<real_section_type>& coordinates,
-                       const SieveMesh::point_type& cell) {
+                       const ALE::Obj<mesh_type::real_section_type>& coordinates,
+                       const mesh_type::point_type& cell) {
     computeGeometry(mesh->restrictClosure(coordinates, cell),
                     coordinates->getFiberDimension(*mesh->depthStratum(0)->begin()),
                     cell);
@@ -271,10 +271,10 @@ protected :
   /* Check determinant of Jacobian against minimum allowable value.
    *
    * @param det Value of determinant of Jacobian
-   * @param cell Finite-element cell
+   * @param cell Label of finite-element cell
    */
   void _checkJacobianDet(const double det,
-			 const SieveMesh::point_type& cell) const;
+			 const int cell) const;
 
   /// Set entries in geometry arrays to zero.
   void _resetGeometry(void);

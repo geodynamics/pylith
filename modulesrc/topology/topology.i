@@ -53,7 +53,6 @@ import_array();
 
 
 // Template instatiation
-%template(MeshSubMesh) pylith::topology::SubMesh<pylith::topology::Mesh>;
 %template(MeshField) pylith::topology::Field<pylith::topology::Mesh>;
 %template(SubMeshField) pylith::topology::Field<pylith::topology::SubMesh<pylith::topology::Mesh> >;
 

@@ -26,8 +26,9 @@
 #include "topologyfwd.hh" // forward declarations
 #include "spatialdata/geocoords/geocoordsfwd.hh" // forward declarations
 
+#include "Mesh.hh" // USES Mesh
+
 // SubMesh -----------------------------------------------------------------
-template<typename mesh_type>
 class pylith::topology::SubMesh
 { // SubMesh
   friend class TestSubMesh; // unit testing
@@ -37,12 +38,12 @@ public:
 
   // Typedefs for basic types associated with Sieve mesh.
   // SieveMesh, RealSection, and IntSection are used in templated code.
-  typedef typename mesh_type::SieveSubMesh SieveMesh;
-  typedef typename mesh_type::RealSection  RealSection;
-  typedef typename mesh_type::IntSection IntSection;
+  typedef Mesh::SieveSubMesh SieveMesh;
+  typedef Mesh::RealSection  RealSection;
+  typedef Mesh::IntSection IntSection;
 
   // Sieve mesh for higher level domain (mesh, not submesh)
-  typedef typename mesh_type::SieveMesh DomainSieveMesh;
+  typedef Mesh::SieveMesh DomainSieveMesh;
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -55,7 +56,7 @@ public :
    * @param mesh Finite-element mesh over domain.
    * @param label Label for vertices marking boundary.
    */
-  SubMesh(const mesh_type& mesh,
+  SubMesh(const Mesh& mesh,
 	  const char* label);
 
   /// Default destructor
@@ -66,7 +67,7 @@ public :
    * @param mesh Finite-element mesh over domain.
    * @param label Label for vertices marking boundary.
    */
-  void createSubMesh(const mesh_type& mesh,
+  void createSubMesh(const Mesh& mesh,
 		     const char* label); 
 
   /** Get Sieve mesh.
@@ -136,7 +137,6 @@ private :
 }; // SubMesh
 
 #include "SubMesh.icc"
-#include "SubMesh.cc"
 
 #endif // pylith_topology_submesh_hh
 

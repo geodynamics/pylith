@@ -57,7 +57,7 @@ namespace pylith {
 void
 pylith::topology::TestSubMesh::testConstructor(void)
 { // testConstructor
-  SubMesh<Mesh> mesh;
+  SubMesh mesh;
   CPPUNIT_ASSERT(mesh._mesh.isNull());
   CPPUNIT_ASSERT_EQUAL(0, mesh.dimension());
   CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
@@ -72,7 +72,7 @@ pylith::topology::TestSubMesh::testConstructorMesh(void)
   Mesh mesh2D;
   _buildMesh(&mesh2D);
   
-  SubMesh<Mesh> mesh(mesh2D, _TestSubMesh::label);
+  SubMesh mesh(mesh2D, _TestSubMesh::label);
   CPPUNIT_ASSERT(!mesh._mesh.isNull());
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, mesh.dimension());
   CPPUNIT_ASSERT_EQUAL(PETSC_COMM_WORLD, mesh.comm());
@@ -98,7 +98,7 @@ pylith::topology::TestSubMesh::testSieveMesh(void)
   Mesh mesh2D;
   _buildMesh(&mesh2D);
 
-  SubMesh<Mesh> mesh(mesh2D, _TestSubMesh::label);
+  SubMesh mesh(mesh2D, _TestSubMesh::label);
   
   const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
@@ -113,7 +113,7 @@ pylith::topology::TestSubMesh::testCreateSubMesh(void)
   Mesh mesh2D;
   _buildMesh(&mesh2D);
   
-  SubMesh<Mesh> mesh;
+  SubMesh mesh;
   mesh.createSubMesh(mesh2D, _TestSubMesh::label);
   CPPUNIT_ASSERT(!mesh._mesh.isNull());
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, mesh.dimension());
@@ -140,7 +140,7 @@ pylith::topology::TestSubMesh::testCoordsys(void)
   Mesh mesh2D;
   _buildMesh(&mesh2D);
 
-  SubMesh<Mesh> mesh(mesh2D, _TestSubMesh::label);
+  SubMesh mesh(mesh2D, _TestSubMesh::label);
 
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim, mesh.coordsys()->spaceDim());
 } // testCoordsys
@@ -150,7 +150,7 @@ pylith::topology::TestSubMesh::testCoordsys(void)
 void
 pylith::topology::TestSubMesh::testDebug(void)
 { // testDebug
-  SubMesh<Mesh> mesh;
+  SubMesh mesh;
   CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
 
   mesh.debug(true);
@@ -162,12 +162,12 @@ pylith::topology::TestSubMesh::testDebug(void)
 void
 pylith::topology::TestSubMesh::testDimension(void)
 { // testDimension
-  SubMesh<Mesh> mesh;
+  SubMesh mesh;
   CPPUNIT_ASSERT_EQUAL(0, mesh.dimension());
 
   Mesh mesh2D;
   _buildMesh(&mesh2D);
-  SubMesh<Mesh> mesh2(mesh2D, _TestSubMesh::label);
+  SubMesh mesh2(mesh2D, _TestSubMesh::label);
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, mesh2.dimension());
 } // testDimension
 
@@ -176,7 +176,7 @@ pylith::topology::TestSubMesh::testDimension(void)
 void
 pylith::topology::TestSubMesh::testComm(void)
 { // testComm
-  SubMesh<Mesh> mesh;
+  SubMesh mesh;
   CPPUNIT_ASSERT_EQUAL(0, mesh.comm());
 
   Mesh mesh2D;
@@ -193,7 +193,7 @@ pylith::topology::TestSubMesh::testInitialize(void)
 { // testInitialize
   Mesh mesh2D;
   _buildMesh(&mesh2D);
-  SubMesh<Mesh> mesh(mesh2D, _TestSubMesh::label);
+  SubMesh mesh(mesh2D, _TestSubMesh::label);
 
   mesh.initialize();
 } // testInitialize

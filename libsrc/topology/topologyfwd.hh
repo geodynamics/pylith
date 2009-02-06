@@ -25,7 +25,7 @@ namespace pylith {
   namespace topology {
 
     class Mesh;
-    template<typename mesh_type> class SubMesh;
+    class SubMesh;
     template<typename mesh_type> class Field;
 
 #if 0

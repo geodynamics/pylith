@@ -34,6 +34,7 @@ libpylith_la_SOURCES = \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \
 	topology/Mesh.cc \
+	topology/SubMesh.cc \
 	utils/EventLogger.cc
 
 # 	bc/BoundaryCondition.cc \
