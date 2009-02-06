@@ -33,9 +33,6 @@
 
 #include "pylith/utils/array.hh" // HASA double_array
 
-#define NEWPYLITHMESH 1
-#include "pylith/utils/sievetypes.hh" // USES SieveMesh
-
 namespace pylith {
   namespace feassemble {
     class Quadrature;

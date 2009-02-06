@@ -23,18 +23,15 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "pylith/bc/bcfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
+
 /// Namespace for pylith package
 namespace pylith {
   namespace bc {
     class TestDirichletBCMulti;
-
-    class DirichletBC;
     class DirichletDataMulti;
   } // bc
-
-  namespace topology {
-    class Mesh;
-  } // topology
 } // pylith
 
 /// C++ unit testing for DirichletBCMulti.

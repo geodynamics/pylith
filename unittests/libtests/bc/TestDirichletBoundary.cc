@@ -19,9 +19,7 @@
 #include "data/DirichletData.hh" // USES DirichletData
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
-#include "pylith/topology/FieldSubMesh.hh" // USES FieldSubMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -31,6 +29,9 @@
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletBoundary );
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::SubMesh::SieveMesh SieveMesh;
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -72,15 +73,15 @@ pylith::bc::TestDirichletBoundary::testInitialize(void)
   const int numFixedDOF = _data->numFixedDOF;
   const size_t numBoundary = _data->numConstrainedPts;
   // Check vertices in boundary mesh
-  const ALE::Obj<SieveSubMesh>& sieveMesh = bc._boundaryMesh->sieveMesh();
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
+  const ALE::Obj<SieveMesh>& sieveMesh = bc._boundaryMesh->sieveMesh();
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
     sieveMesh->depthStratum(0);
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
 
   const int offset = numCells;
   if (numFixedDOF > 0) {
     int i = 0;
-    for (SieveSubMesh::label_sequence::iterator v_iter=vertices->begin();
+    for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
 	 v_iter != verticesEnd;
 	 ++v_iter, ++i) {
       CPPUNIT_ASSERT_EQUAL(_data->constrainedPoints[i]+offset, *v_iter);

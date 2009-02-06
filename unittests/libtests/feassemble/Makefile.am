@@ -22,26 +22,6 @@ check_PROGRAMS = testfeassemble
 # Primary source files
 testfeassemble_SOURCES = \
 	TestCellGeometry.cc \
-	TestElasticityExplicit.cc \
-	TestElasticityExplicit1DLinear.cc \
-	TestElasticityExplicit1DQuadratic.cc \
-	TestElasticityExplicit2DLinear.cc \
-	TestElasticityExplicit2DQuadratic.cc \
-	TestElasticityExplicit3DLinear.cc \
-	TestElasticityExplicit3DQuadratic.cc \
-	TestElasticityImplicit.cc \
-	TestElasticityImplicit1DLinear.cc \
-	TestElasticityImplicit1DQuadratic.cc \
-	TestElasticityImplicit2DLinear.cc \
-	TestElasticityImplicit2DQuadratic.cc \
-	TestElasticityImplicit3DLinear.cc \
-	TestElasticityImplicit3DQuadratic.cc \
-	TestElasticityImplicitGrav1DLinear.cc \
-	TestElasticityImplicitGrav1DQuadratic.cc \
-	TestElasticityImplicitGrav2DLinear.cc \
-	TestElasticityImplicitGrav2DQuadratic.cc \
-	TestElasticityImplicitGrav3DLinear.cc \
-	TestElasticityImplicitGrav3DQuadratic.cc \
 	TestGeometryPoint1D.cc \
 	TestGeometryPoint2D.cc \
 	TestGeometryPoint3D.cc \
@@ -54,16 +34,38 @@ testfeassemble_SOURCES = \
 	TestGeometryQuad3D.cc \
 	TestGeometryTet3D.cc \
 	TestGeometryHex3D.cc \
-	TestIntegrator.cc \
-	TestIntegratorElasticity.cc \
-	TestQuadrature.cc \
-	TestQuadrature0D.cc \
-	TestQuadrature1D.cc \
-	TestQuadrature1Din2D.cc \
-	TestQuadrature2D.cc \
-	TestQuadrature2Din3D.cc \
-	TestQuadrature3D.cc \
 	test_feassemble.cc
+
+# 	TestIntegrator.cc \
+# 	TestIntegratorElasticity.cc \
+# 	TestQuadrature.cc \
+# 	TestQuadrature0D.cc \
+# 	TestQuadrature1D.cc \
+# 	TestQuadrature1Din2D.cc \
+# 	TestQuadrature2D.cc \
+# 	TestQuadrature2Din3D.cc \
+# 	TestQuadrature3D.cc \
+# 	TestElasticityExplicit.cc \
+# 	TestElasticityExplicit1DLinear.cc \
+# 	TestElasticityExplicit1DQuadratic.cc \
+# 	TestElasticityExplicit2DLinear.cc \
+# 	TestElasticityExplicit2DQuadratic.cc \
+# 	TestElasticityExplicit3DLinear.cc \
+# 	TestElasticityExplicit3DQuadratic.cc \
+# 	TestElasticityImplicit.cc \
+# 	TestElasticityImplicit1DLinear.cc \
+# 	TestElasticityImplicit1DQuadratic.cc \
+# 	TestElasticityImplicit2DLinear.cc \
+# 	TestElasticityImplicit2DQuadratic.cc \
+# 	TestElasticityImplicit3DLinear.cc \
+# 	TestElasticityImplicit3DQuadratic.cc \
+# 	TestElasticityImplicitGrav1DLinear.cc \
+# 	TestElasticityImplicitGrav1DQuadratic.cc \
+# 	TestElasticityImplicitGrav2DLinear.cc \
+# 	TestElasticityImplicitGrav2DQuadratic.cc \
+# 	TestElasticityImplicitGrav3DLinear.cc \
+# 	TestElasticityImplicitGrav3DQuadratic.cc
+
 
 noinst_HEADERS = \
 	TestCellGeometry.hh \

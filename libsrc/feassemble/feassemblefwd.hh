@@ -27,7 +27,7 @@ namespace pylith {
     class CellGeometry;
     class GeometryPoint1D;
     class GeometryPoint2D;
-    class geometryPoint3D;
+    class GeometryPoint3D;
     class GeometryLine1D;
     class GeometryLine2D;
     class GeometryLine3D;

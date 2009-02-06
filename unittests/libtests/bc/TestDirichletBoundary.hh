@@ -23,12 +23,13 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "pylith/bc/bcfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
+
 /// Namespace for pylith package
 namespace pylith {
   namespace bc {
     class TestDirichletBoundary;
-
-    class DirichletBoundary;
     class DirichletData;
   } // bc
 

@@ -25,7 +25,20 @@ libpylith_la_SOURCES = \
 	bc/BoundaryCondition.cc \
 	bc/DirichletBC.cc \
 	bc/DirichletBoundary.cc \
+	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
+	feassemble/GeometryPoint1D.cc \
+	feassemble/GeometryPoint2D.cc \
+	feassemble/GeometryPoint3D.cc \
+	feassemble/GeometryLine1D.cc \
+	feassemble/GeometryLine2D.cc \
+	feassemble/GeometryLine3D.cc \
+	feassemble/GeometryTri2D.cc \
+	feassemble/GeometryTri3D.cc \
+	feassemble/GeometryTet3D.cc \
+	feassemble/GeometryQuad2D.cc \
+	feassemble/GeometryQuad3D.cc \
+	feassemble/GeometryHex3D.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \
 	meshio/GMVFileAscii.cc \
@@ -55,21 +68,8 @@ libpylith_la_SOURCES = \
 # 	faults/LiuCosSlipFn.cc \
 # 	faults/SlipTimeFn.cc \
 # 	faults/StepSlipFn.cc \
-# 	feassemble/CellGeometry.cc \
 # 	feassemble/ElasticityExplicit.cc \
 # 	feassemble/ElasticityImplicit.cc \
-# 	feassemble/GeometryPoint1D.cc \
-# 	feassemble/GeometryPoint2D.cc \
-# 	feassemble/GeometryPoint3D.cc \
-# 	feassemble/GeometryLine1D.cc \
-# 	feassemble/GeometryLine2D.cc \
-# 	feassemble/GeometryLine3D.cc \
-# 	feassemble/GeometryTri2D.cc \
-# 	feassemble/GeometryTri3D.cc \
-# 	feassemble/GeometryTet3D.cc \
-# 	feassemble/GeometryQuad2D.cc \
-# 	feassemble/GeometryQuad3D.cc \
-# 	feassemble/GeometryHex3D.cc \
 # 	feassemble/IntegratorElasticity.cc \
 # 	feassemble/Quadrature.cc \
 # 	feassemble/Quadrature0D.cc \

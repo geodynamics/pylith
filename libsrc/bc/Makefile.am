@@ -21,7 +21,8 @@ subpkginclude_HEADERS = \
 	DirichletBC.icc \
 	DirichletBoundary.hh \
 	DirichletBoundary.icc \
-	Neumann.hh
+	Neumann.hh \
+	bcfwd.hh
 
 noinst_HEADERS =
 
