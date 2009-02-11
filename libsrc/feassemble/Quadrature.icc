@@ -14,116 +14,52 @@
 #error "Quadrature.icc must be included only from Quadrature.hh"
 #else
 
-// Get minimum allowable Jacobian.
-inline
-double
-pylith::feassemble::Quadrature::minJacobian(void) const {
-  return _minJacobian;
-}
-
-// Set minimum allowable Jacobian.
-inline
-void
-pylith::feassemble::Quadrature::minJacobian(const double min) {
-  _minJacobian = min;
-}
-
 // Set flag for checking ill-conditioning.
+template<typename mesh_type>
 inline
 void
-pylith::feassemble::Quadrature::checkConditioning(const bool flag) {
+pylith::feassemble::Quadrature<mesh_type>::checkConditioning(const bool flag) {
   _checkConditioning = flag;
 }
 
 // Get flag for checking ill-conditioning.
+template<typename mesh_type>
 inline
 bool
-pylith::feassemble::Quadrature::checkConditioning(void) const {
+pylith::feassemble::Quadrature<mesh_type>::checkConditioning(void) const {
   return _checkConditioning;
 }
 
-// Get coordinates of quadrature points in reference cell.
-inline
-const pylith::double_array&
-pylith::feassemble::Quadrature::quadPtsRef(void) const {
-  return _quadPtsRef;
-}
-
 // Get coordinates of quadrature points in cell (NOT reference cell).
+template<typename mesh_type>
 inline
 const pylith::double_array&
-pylith::feassemble::Quadrature::quadPts(void) const {
+pylith::feassemble::Quadrature<mesh_type>::quadPts(void) const {
   return _quadPts;
 }
 
-// Get weights of quadrature points.
-inline
-const pylith::double_array&
-pylith::feassemble::Quadrature::quadWts(void) const {
-  return _quadWts;
-}
-
-// Get basis fns evaluated at quadrature points.
-inline
-const pylith::double_array&
-pylith::feassemble::Quadrature::basis(void) const {
-  return _basis;
-}
-
 // Get derivatives of basis fns evaluated at quadrature points.
+template<typename mesh_type>
 inline
 const pylith::double_array&
-pylith::feassemble::Quadrature::basisDeriv(void) const {
+pylith::feassemble::Quadrature<mesh_type>::basisDeriv(void) const {
   return _basisDeriv;
 }
 
 // Get Jacobians evaluated at quadrature points.
+template<typename mesh_type>
 inline
 const pylith::double_array&
-pylith::feassemble::Quadrature::jacobian(void) const {
+pylith::feassemble::Quadrature<mesh_type>::jacobian(void) const {
   return _jacobian;
 }
 
 // Get determinants of Jacobian evaluated at quadrature points.
+template<typename mesh_type>
 inline
 const pylith::double_array&
-pylith::feassemble::Quadrature::jacobianDet(void) const {
+pylith::feassemble::Quadrature<mesh_type>::jacobianDet(void) const {
   return _jacobianDet;
-}
-
-// Get Jacobian inverses evaluated at quadrature points.
-inline
-const pylith::double_array&
-pylith::feassemble::Quadrature::jacobianInv(void) const {
-  return _jacobianInv;
-}
-
-// Get number of dimensions in reference cell.
-inline
-int
-pylith::feassemble::Quadrature::cellDim(void) const {
-  return _cellDim;
-}
-
-// Get number of basis functions for cell.
-inline
-int
-pylith::feassemble::Quadrature::numBasis(void) const {
-  return _numBasis;
-}
-
-// Get number of quadrature points.
-inline
-int
-pylith::feassemble::Quadrature::numQuadPts(void) const {
-  return _numQuadPts;
-}
-
-// Get number of dimensions in coordinates of cell vertices.
-inline
-int
-pylith::feassemble::Quadrature::spaceDim(void) const {
-  return _spaceDim;
 }
 
 #endif

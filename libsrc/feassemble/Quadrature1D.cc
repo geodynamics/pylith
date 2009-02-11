@@ -12,9 +12,8 @@
 
 #include <portinfo>
 
-#include "Quadrature1D.hh" // implementation of class methods
+//#include "Quadrature1D.hh" // implementation of class methods
 
-#include "pylith/utils/array.hh" // USES double_array
 #include "CellGeometry.hh" // USES CellGeometry
 
 #include "petsc.h" // USES PetscLogFlops
@@ -25,30 +24,35 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::Quadrature1D::Quadrature1D(void) : Quadrature()
+template<typename mesh_type>
+pylith::feassemble::Quadrature1D<mesh_type>::Quadrature1D(void)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::feassemble::Quadrature1D::~Quadrature1D(void)
+template<typename mesh_type>
+pylith::feassemble::Quadrature1D<mesh_type>::~Quadrature1D(void)
 { // destructor
 } // destructor
   
 // ----------------------------------------------------------------------
 // Copy constructor.
-pylith::feassemble::Quadrature1D::Quadrature1D(const Quadrature1D& q) :
-  Quadrature(q)
+template<typename mesh_type>
+pylith::feassemble::Quadrature1D<mesh_type>::Quadrature1D(const Quadrature1D& q) :
+  Quadrature<mesh_type>(q)
 { // copy constructor
 } // copy constructor
 
+#if 0
 // ----------------------------------------------------------------------
 // Compute geometric quantities for a cell at quadrature points.
+template<typename mesh_type>
 void
-pylith::feassemble::Quadrature1D::computeGeometry(
-		       const real_section_type::value_type* vertCoords,
-               const int coordDim,
-               const Mesh::point_type& cell)
+pylith::feassemble::Quadrature1D<mesh_type>::computeGeometry(
+					      const double* vertCoords,
+					      const int coordDim,
+					      const int cell)
 { // computeGeometry
   assert(1 == _cellDim);
   assert(1 == _spaceDim);
@@ -110,6 +114,6 @@ pylith::feassemble::Quadrature1D::computeGeometry(
 
   PetscLogFlops(_numQuadPts * (1 + _numBasis * 4));
 } // computeGeometry
-
+#endif
 
 // End of file 

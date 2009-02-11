@@ -164,6 +164,14 @@ protected :
    */
   QuadratureBase(const QuadratureBase& q);
 
+  /* Check determinant of Jacobian against minimum allowable value.
+   *
+   * @param det Value of determinant of Jacobian
+   * @param cell Label of finite-element cell
+   */
+  void _checkJacobianDet(const double det,
+			 const int cell) const;
+
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 

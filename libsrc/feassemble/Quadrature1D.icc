@@ -15,10 +15,11 @@
 #else
 
 // Create a copy of this object.
+template<typename mesh_type>
 inline
-pylith::feassemble::Quadrature*
-pylith::feassemble::Quadrature1D::clone(void) const {
-  return new Quadrature1D(*this);
+pylith::feassemble::Quadrature<mesh_type>*
+pylith::feassemble::Quadrature1D<mesh_type>::clone(void) const {
+  return new Quadrature1D<mesh_type>(*this);
 } // clone
 
 #endif

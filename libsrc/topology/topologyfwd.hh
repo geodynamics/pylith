@@ -31,6 +31,7 @@ namespace pylith {
     typedef Fields<Field<Mesh> > FieldsMesh;
     typedef Fields<Field<SubMesh> > FieldsSubMesh;
     class SolutionFields;
+    template<typename field_type> class RestrictVisitor;
 
     class MeshOps;
 

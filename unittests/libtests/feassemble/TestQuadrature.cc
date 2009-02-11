@@ -12,6 +12,7 @@
 
 #include <portinfo>
 
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "TestQuadrature.hh" // Implementation of class methods
 
 #include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
@@ -47,7 +48,7 @@ pylith::feassemble::TestQuadrature::testClone(void)
   GeometryLine1D geometry;
 
   // Set values
-  Quadrature1D qOrig;
+  Quadrature1D<topology::Mesh> qOrig;
   qOrig._minJacobian = minJacobianE;
   qOrig._checkConditioning = checkConditioning;
   qOrig._cellDim = cellDimE;
@@ -90,7 +91,7 @@ pylith::feassemble::TestQuadrature::testClone(void)
   qOrig._geometry = geometry.clone();
 
   // Clone
-  const Quadrature* qCopy = qOrig.clone();
+  const Quadrature<topology::Mesh>* qCopy = qOrig.clone();
 
   // Check clone
   CPPUNIT_ASSERT(0 != qCopy);
@@ -156,25 +157,14 @@ pylith::feassemble::TestQuadrature::testClone(void)
   CPPUNIT_ASSERT_EQUAL(geometry.numCorners(), qCopy->_geometry->numCorners());
 
   delete qCopy; qCopy = 0;
-} // testCopy
-
-// ----------------------------------------------------------------------
-// Test minJacobian()
-void
-pylith::feassemble::TestQuadrature::testMinJacobian(void)
-{ // testMinJacobian
-  Quadrature1D q;
-  const double min = 1.0;
-  q.minJacobian(min);
-  CPPUNIT_ASSERT_EQUAL(min, q._minJacobian);
-} // testMinJacobian
+} // testClone
 
 // ----------------------------------------------------------------------
 // Test checkConditioning()
 void
 pylith::feassemble::TestQuadrature::testCheckConditioning(void)
 { // testCheckConditioning
-  Quadrature1D q;
+  Quadrature1D<topology::Mesh> q;
   CPPUNIT_ASSERT_EQUAL(false, q.checkConditioning());
   q.checkConditioning(true);
   CPPUNIT_ASSERT_EQUAL(true, q.checkConditioning());
@@ -182,80 +172,11 @@ pylith::feassemble::TestQuadrature::testCheckConditioning(void)
   CPPUNIT_ASSERT_EQUAL(false, q.checkConditioning());
 } // testCheckConditioning
 
+#if 0
 // ----------------------------------------------------------------------
-// Test refGeometry()
+// Test computeGeometry() and retrieveGeometry() for meshes.
 void
-pylith::feassemble::TestQuadrature::testRefGeometry(void)
-{ // testRefGeometry
-  GeometryLine1D geometry;
-  Quadrature1D quadrature;
-  quadrature.refGeometry(&geometry);
-  const CellGeometry& test = quadrature.refGeometry();
-
-  CPPUNIT_ASSERT_EQUAL(geometry.cellDim(), test.cellDim());
-  CPPUNIT_ASSERT_EQUAL(geometry.spaceDim(), test.spaceDim());
-  CPPUNIT_ASSERT_EQUAL(geometry.numCorners(), test.numCorners());
-} // testRefGeometry
-
-// ----------------------------------------------------------------------
-// Test initialize()
-void
-pylith::feassemble::TestQuadrature::testInitialize(void)
-{ // initialize
-  
-  const int cellDim = 1;
-  const int numBasis = 2;
-  const int numQuadPts = 1;
-  const int spaceDim = 1;
-  const double basis[] = { 0.5, 0.5 };
-  const double basisDerivRef[] = { -0.5, 0.5 };
-  const double quadPtsRef[] = { 0.0 };
-  const double quadWts[] = { 2.0 };
-  const double minJacobian = 1.0;
-
-  Quadrature1D q;
-  q.initialize(basis, basisDerivRef, quadPtsRef, quadWts,
-	       cellDim, numBasis, numQuadPts, spaceDim);
-  
-  CPPUNIT_ASSERT_EQUAL(cellDim, q._cellDim);
-  CPPUNIT_ASSERT_EQUAL(numBasis, q._numBasis);
-  CPPUNIT_ASSERT_EQUAL(numQuadPts, q._numQuadPts);
-  CPPUNIT_ASSERT_EQUAL(spaceDim, q._spaceDim);
-
-  size_t size = numBasis * numQuadPts;
-  for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(basis[i], q._basis[i]);
-
-  size = numBasis * numQuadPts * spaceDim;
-  for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(basisDerivRef[i], q._basisDerivRef[i]);
-
-  size = numQuadPts * cellDim;
-  for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(quadPtsRef[i], q._quadPtsRef[i]);
-
-  size = numQuadPts;
-  for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(quadWts[i], q._quadWts[i]);
-
-  // Make sure Jacobian stuff has been allocated
-  size = numQuadPts*cellDim*spaceDim;
-  CPPUNIT_ASSERT_EQUAL(size, q._jacobian.size());
-  
-  size = numQuadPts*spaceDim*cellDim;
-  CPPUNIT_ASSERT_EQUAL(size, q._jacobianInv.size());
-  
-  size = numQuadPts;
-  CPPUNIT_ASSERT_EQUAL(size, q._jacobianDet.size());
-  
-  size = numQuadPts*spaceDim;
-  CPPUNIT_ASSERT_EQUAL(size, q._quadPts.size());
-} // initialize
-
-// ----------------------------------------------------------------------
-// Test initialize() & computeGeometry()
-void
-pylith::feassemble::TestQuadrature::_testComputeGeometry(Quadrature* pQuad,
+pylith::feassemble::TestQuadrature::_testComputeGeometry(Quadrature<topology::Mesh>* pQuad,
 					      const QuadratureData& data) const
 { // testComputeGeometry
   const int cellDim = data.cellDim;
@@ -337,6 +258,6 @@ pylith::feassemble::TestQuadrature::_testComputeGeometry(Quadrature* pQuad,
 				 tolerance);
 
 } // testComputeGeometry
-
+#endif
 
 // End of file 

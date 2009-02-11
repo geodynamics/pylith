@@ -181,5 +181,20 @@ pylith::feassemble::QuadratureBase::refGeometry(void) const
   return *_geometry;
 } // refGeometry
 
+// ----------------------------------------------------------------------
+// Check determinant of Jacobian against minimum allowable value
+void
+pylith::feassemble::QuadratureBase::_checkJacobianDet(const double det,
+						      const int cell) const
+{ // _checkJacobianDet
+  if (det < _minJacobian) {
+    std::ostringstream msg;
+    msg << "Determinant of Jacobian (" << det << ") for cell " << cell
+	<< " is smaller than minimum permissible value (" << _minJacobian
+	<< ")!\n";
+    throw std::runtime_error(msg.str());
+  } // if
+} // _checkJacobianDet
+
 
 // End of file 

@@ -33,12 +33,13 @@
 #include "QuadratureBase.hh" // ISA QuadratureBase
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/utils/array.hh" // HASA double_array
 
 // Quadrature -----------------------------------------------------------
 template<typename mesh_type>
-class pylith::feassemble::Quadrature
+class pylith::feassemble::Quadrature : public QuadratureBase
 { // Quadrature
   friend class TestQuadrature; // unit testing
 
@@ -93,24 +94,23 @@ public :
    */
   const double_array& jacobianDet(void) const;
 
-  /// Reset the precomputation structures.
-  void resetPrecomputation(void);
-
   /** Precompute geometric quantities for each cell.
    *
    * @param mesh Finite-element mesh
    * @param cells Finite-element cells for geometry.
    */
-  void precomputeGeometry(const mesh_type& mesh,
-             const ALE::Obj<mesh_type::SieveMesh::label_sequence>& cells);
+  void computeGeometry(const mesh_type& mesh,
+             const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& cells);
 
   /** Retrieve precomputed geometric quantities for a cell.
    *
    * @param mesh Finite-element mesh
    * @param cell Finite-element cell
    */
-  void retrieveGeometry(const ALE::Obj<mesh_type::SieveMesh>& mesh,
-                        const mesh_type::SieveMesh::point_type& cell);
+  void retrieveGeometry(const typename mesh_type::SieveMesh::point_type& cell);
+
+  /// Deallocate temporary storage.
+  void clear(void);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -120,14 +120,6 @@ protected :
    * @param q Quadrature to copy
    */
   Quadrature(const Quadrature& q);
-
-  /* Check determinant of Jacobian against minimum allowable value.
-   *
-   * @param det Value of determinant of Jacobian
-   * @param cell Label of finite-element cell
-   */
-  void _checkJacobianDet(const double det,
-			 const mesh_type::SieveMesh::point_type& cell) const;
 
   /// Set entries in geometry arrays to zero.
   void _resetGeometry(void);
@@ -141,29 +133,27 @@ protected :
   virtual 
   void _computeGeometry(const double* coordsVertices,
 			const int spaceDim,
-			const mesh_type::SieveMesh::point_type& cell) = 0;
+			const int cell) = 0;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
+  /** Buffers for cell data */
+  double_array _quadPts; ///< Coordinates of quad pts.
+  double_array _jacobian; ///< Jacobian at quad pts;
+  double_array _jacobianDet; ///< |J| at quad pts.
+  double_array _jacobianInv; /// Inverse of Jacobian at quad pts.
+  double_array _basisDeriv; ///< Deriv. of basis fns at quad pts.
+
   /** Fields and visitors for precomputing geometry information for
    * cells associated with this quadrature.
    */
-  /** :OPTIMIZATION:
-   * Need to check speed of retrieving geometry using Fields and Visitors.
-   * Can switch to Sieve sections and visitors if too slow.
-   */
-  Field<mesh_type>* _quadPtsField; ///< Coordinates of quad pts.
-  Visitor<Field<mesh_type> >* _quadPtsVisitor; ///< Visitor for quad pts.
+  topology::Field<mesh_type>* _quadPtsField; ///< Coordinates of quad pts.
+  topology::Field<mesh_type>* _jacobianField; ///< Jacobian at quad pts.
+  topology::Field<mesh_type>* _jacobianDetField; ///< |J| at quad pts.
 
-  Field<mesh_type>* _jacobianField; ///< Jacobian at quad pts.
-  Visitor<Field<mesh_type> >* _jacobianVisitor; ///< Visitor for Jacobian.
-
-  Field<mesh_type>* _jacobianDetField; ///< |J| at quad pts.
-  Visitor<Field<mesh_type> >* _jacobianDetVisitor; ///< Visitor for |J|.
-
-  Field<mesh_type>* _basisDerivField; ///< Deriv. of basis fns at quad pts.
-  Visitor<Field<mesh_type> >* _basisDerivVisitor; ///< Visitor for derivatives.
+  /// Derivatives of basis fns at quad pts.
+  topology::Field<mesh_type>* _basisDerivField;
 
   bool _checkConditioning; ///< True if checking for ill-conditioning.
 

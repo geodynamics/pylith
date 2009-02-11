@@ -12,7 +12,7 @@
 
 #include <portinfo>
 
-#include "Quadrature3D.hh" // implementation of class methods
+//#include "Quadrature3D.hh" // implementation of class methods
 
 #include "CellGeometry.hh" // USES CellGeometry
 
@@ -24,30 +24,34 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::Quadrature3D::Quadrature3D(void) : pylith::feassemble::Quadrature::Quadrature()
+template<typename mesh_type>
+pylith::feassemble::Quadrature3D<mesh_type>::Quadrature3D(void) : pylith::feassemble::Quadrature::Quadrature()
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::feassemble::Quadrature3D::~Quadrature3D(void)
+template<typename mesh_type>
+pylith::feassemble::Quadrature3D<mesh_type>::~Quadrature3D(void)
 { // destructor
 } // destructor
   
 // ----------------------------------------------------------------------
 // Copy constructor.
-pylith::feassemble::Quadrature3D::Quadrature3D(const Quadrature3D& q) :
+template<typename mesh_type>
+pylith::feassemble::Quadrature3D<mesh_type>::Quadrature3D(const Quadrature3D& q) :
   Quadrature(q)
 { // copy constructor
 } // copy constructor
 
 // ----------------------------------------------------------------------
 // Compute geometric quantities for a cell at quadrature points.
+template<typename mesh_type>
 void
-pylith::feassemble::Quadrature3D::computeGeometry(
-		       const real_section_type::value_type* vertCoords,
-               const int coordDim,
-		       const Mesh::point_type& cell)
+pylith::feassemble::Quadrature3D<mesh_type>::computeGeometry(
+					           const double* vertCoords,
+						   const int coordDim,
+						   const int cell)
 { // computeGeometry
   assert(3 == _cellDim);
   assert(3 == _spaceDim);

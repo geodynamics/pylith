@@ -19,16 +19,10 @@
 #if !defined(pylith_feassemble_quadrature3d_hh)
 #define pylith_feassemble_quadrature3d_hh
 
-#include "Quadrature.hh"
+#include "Quadrature.hh" // ISA Quadrature
 
-namespace pylith {
-  namespace feassemble {
-    class Quadrature3D;
-    class TestQuadrature3D;
-  } // feassemble
-} // pylith
-
-class pylith::feassemble::Quadrature3D : public Quadrature
+template<typename mesh_type>
+class pylith::feassemble::Quadrature3D : public Quadrature<mesh_type>
 { // Quadrature3D
   friend class TestQuadrature3D; // unit testing
 
@@ -50,9 +44,9 @@ public :
    * @param coordinates Section containing vertex coordinates
    * @param cell Finite-element cell
    */
-  void computeGeometry(const real_section_type::value_type* vertCoords,
+  void computeGeometry(const double* vertCoords,
                        const int coordDim,
-                       const Mesh::point_type& cell);
+                       const int cell);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -72,6 +66,7 @@ private :
 }; // Quadrature3D
 
 #include "Quadrature3D.icc" // inline methods
+#include "Quadrature3D.cc" // template methods
 
 #endif // pylith_feassemble_quadrature3d_hh
 
