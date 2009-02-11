@@ -101,7 +101,6 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
 
   // Allocate field and cell buffer for quadrature points
   int fiberDim = _numQuadPts * _spaceDim;
-  _quadPts.resize(fiberDim);
   _quadPtsField = new topology::Field<mesh_type>(mesh);
   assert(0 != _quadPtsField);
   _quadPtsField->newSection(cells, fiberDim);
@@ -114,8 +113,6 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
 
   // Allocate field and cell buffer for Jacobian at quadrature points
   fiberDim = _numQuadPts * _cellDim * _spaceDim;
-  _jacobian.resize(fiberDim);
-  _jacobianInv.resize(fiberDim);
   _jacobianField = new topology::Field<mesh_type>(mesh);
   assert(0 != _jacobianField);
   _jacobianField->newSection(chart, fiberDim);
@@ -123,7 +120,6 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   
   // Allocate field and cell buffer for determinant of Jacobian at quad pts
   fiberDim = _numQuadPts;
-  _jacobianDet.resize(fiberDim);
   _jacobianDetField = new topology::Field<mesh_type>(mesh);
   assert(0 != _jacobianDetField);
   _jacobianDetField->newSection(chart, fiberDim);
@@ -131,7 +127,6 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   
   // Allocate field for derivatives of basis functions at quad pts
   fiberDim = _numQuadPts * _numBasis * _spaceDim;
-  _basisDeriv.resize(fiberDim);
   _basisDerivField = new topology::Field<mesh_type>(mesh);
   assert(0 != _basisDerivField);
   _basisDerivField->newSection(chart, fiberDim);
@@ -177,6 +172,7 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
     const double* cellVertexCoords = coordsVisitor.getValues();
     assert(0 != cellVertexCoords);
+    _resetGeometry();
     computeGeometry(cellVertexCoords, _spaceDim, *c_iter);
 
     // Update fields with cell data

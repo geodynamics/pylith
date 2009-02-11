@@ -39,6 +39,7 @@ namespace pylith {
     class GeometryHex3D;
 
     class QuadratureBase;
+    class QuadratureEngine;
     template<typename mesh_type> class Quadrature;
     template<typename mesh_type> class Quadrature0D;
     template<typename mesh_type> class Quadrature1D;

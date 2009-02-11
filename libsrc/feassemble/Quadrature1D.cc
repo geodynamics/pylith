@@ -44,20 +44,21 @@ pylith::feassemble::Quadrature1D<mesh_type>::Quadrature1D(const Quadrature1D& q)
 { // copy constructor
 } // copy constructor
 
-#if 0
+#if 1
 // ----------------------------------------------------------------------
 // Compute geometric quantities for a cell at quadrature points.
 template<typename mesh_type>
 void
-pylith::feassemble::Quadrature1D<mesh_type>::computeGeometry(
+pylith::feassemble::Quadrature1D<mesh_type>::_computeGeometry(
 					      const double* vertCoords,
 					      const int coordDim,
 					      const int cell)
 { // computeGeometry
-  assert(1 == _cellDim);
-  assert(1 == _spaceDim);
+  const int cellDim = this->_cellDim;
+  const int spaceDim = this->_spaceDim;
 
-  _resetGeometry();
+  assert(1 == this->_cellDim);
+  assert(1 == this->_spaceDim);
   assert(1 == coordDim);
   
   // Loop over quadrature points

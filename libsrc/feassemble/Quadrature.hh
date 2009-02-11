@@ -121,29 +121,8 @@ protected :
    */
   Quadrature(const Quadrature& q);
 
-  /// Set entries in geometry arrays to zero.
-  void _resetGeometry(void);
-
-  /** Compute geometric quantities for a cell at quadrature points.
-   *
-   * @param coordsVertices Coordinates of vertices of cell.
-   * @param spaceDim Number of coordinates per vertex.
-   * @param cell Finite-element cell
-   */
-  virtual 
-  void _computeGeometry(const double* coordsVertices,
-			const int spaceDim,
-			const int cell) = 0;
-
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
-
-  /** Buffers for cell data */
-  double_array _quadPts; ///< Coordinates of quad pts.
-  double_array _jacobian; ///< Jacobian at quad pts;
-  double_array _jacobianDet; ///< |J| at quad pts.
-  double_array _jacobianInv; /// Inverse of Jacobian at quad pts.
-  double_array _basisDeriv; ///< Deriv. of basis fns at quad pts.
 
   /** Fields and visitors for precomputing geometry information for
    * cells associated with this quadrature.

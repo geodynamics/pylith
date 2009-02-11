@@ -38,16 +38,6 @@ public :
   /// Create a copy of this object.
   Quadrature<mesh_type>* clone(void) const;
 
-  /** Compute geometric quantities for a cell at quadrature points.
-   *
-   * @param mesh Finite-element mesh
-   * @param coordinates Section containing vertex coordinates
-   * @param cell Finite-element cell
-   */
-  void computeGeometry(const double* vertCoords,
-                       const int coordDim,
-                       const int cell);
-
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
@@ -56,6 +46,16 @@ protected :
    * @param q Quadrature to copy
    */
   Quadrature1D(const Quadrature1D& q);
+
+  /** Compute geometric quantities for a cell at quadrature points.
+   *
+   * @param mesh Finite-element mesh
+   * @param coordinates Section containing vertex coordinates
+   * @param cell Finite-element cell
+   */
+  void _computeGeometry(const double* vertCoords,
+			const int coordDim,
+			const int cell);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :

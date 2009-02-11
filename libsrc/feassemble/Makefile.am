@@ -37,6 +37,8 @@ subpkginclude_HEADERS = \
 	GeometryHex3D.hh \
 	QuadratureBase.hh \
 	QuadratureBase.icc \
+	QuadratureEngine.hh \
+	QuadratureEnginer.icc \
 	Quadrature.hh \
 	Quadrature.icc \
 	Quadrature.cc \
