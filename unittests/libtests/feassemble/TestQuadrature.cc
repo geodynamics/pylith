@@ -262,6 +262,7 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
   CPPUNIT_ASSERT(0 == quadrature._basisDerivField);
   CPPUNIT_ASSERT(0 == quadrature._engine);
 
+  // Make sure caling clear without data doesn't generate errors 
   quadrature.clear();
 } // testComputeGeometry
 
