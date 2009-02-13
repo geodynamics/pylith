@@ -28,8 +28,11 @@ class pylith::feassemble::Quadrature3D : public QuadratureEngine
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
-  /// Constructor
-  Quadrature3D(void);
+  /** Constructor.
+   *
+   * @param q Quadrature information for reference cell.
+   */
+  Quadrature3D(const QuadratureRefCell& q);
 
   /// Destructor
   ~Quadrature3D(void);
@@ -39,8 +42,8 @@ public :
 
   /** Compute geometric quantities for a cell at quadrature points.
    *
-   * @param mesh Finite-element mesh
-   * @param coordinates Section containing vertex coordinates
+   * @param vertCoords Coordinates of vertices of finite-element cell.
+   * @param coordDim Spatial dimension of coordinate system.
    * @param cell Finite-element cell
    */
   void computeGeometry(const double* vertCoords,

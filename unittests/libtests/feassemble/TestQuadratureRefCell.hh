@@ -11,32 +11,32 @@
 //
 
 /**
- * @file unittests/libtests/feassemble/TestQuadratureBase.hh
+ * @file unittests/libtests/feassemble/TestQuadratureRefCell.hh
  *
- * @brief C++ TestQuadratureBase object
+ * @brief C++ TestQuadratureRefCell object
  *
- * C++ unit testing for QuadratureBase.
+ * C++ unit testing for QuadratureRefCell.
  */
 
-#if !defined(pylith_feassemble_testquadraturebase_hh)
-#define pylith_feassemble_testquadraturebase_hh
+#if !defined(pylith_feassemble_testquadraturerefcell_hh)
+#define pylith_feassemble_testquadraturerefcell_hh
 
 #include <cppunit/extensions/HelperMacros.h>
 
 /// Namespace for pylith package
 namespace pylith {
   namespace feassemble {
-    class TestQuadratureBase;
-    class QuadratureBaseData;
+    class TestQuadratureRefCell;
+    class QuadratureRefCellData;
   } // feassemble
 } // pylith
 
-/// C++ unit testing for QuadratureBase
-class pylith::feassemble::TestQuadratureBase : public CppUnit::TestFixture
-{ // class TestQuadratureBase
+/// C++ unit testing for QuadratureRefCell
+class pylith::feassemble::TestQuadratureRefCell : public CppUnit::TestFixture
+{ // class TestQuadratureRefCell
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestQuadratureBase );
+  CPPUNIT_TEST_SUITE( TestQuadratureRefCell );
 
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testMinJacobian );
@@ -60,8 +60,8 @@ public :
   /// Test initialize()
   void testInitialize(void);
 
-}; // class TestQuadratureBase
+}; // class TestQuadratureRefCell
 
-#endif // pylith_feassemble_testquadraturebase_hh
+#endif // pylith_feassemble_testquadraturerefcell_hh
 
 // End of file 

@@ -15,6 +15,7 @@
 #include "TestQuadrature0D.hh" // Implementation of class methods
 
 #include "pylith/feassemble/Quadrature0D.hh"
+#include "pylith/feassemble/QuadratureRefCell.hh"
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature0D );
@@ -24,7 +25,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature0D );
 void
 pylith::feassemble::TestQuadrature0D::testConstructor(void)
 { // testConstructor
-  Quadrature0D quadrature;
+  QuadratureRefCell refCell;
+  Quadrature0D quadrature(refCell);
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -52,48 +54,24 @@ pylith::feassemble::TestQuadrature0D::testPoint(void)
 
   const double minJacobian = 1.0e-06;
   
-  Quadrature0D quadrature;
+  QuadratureRefCell refCell;
+  refCell.minJacobian(minJacobian);
+  refCell.initialize(basis, basisDeriv, quadPtsRef, quadWts,
+		     cellDim, numBasis, numQuadPts, spaceDim);
 
-  quadrature.minJacobian(minJacobian);
-  quadrature.initialize(basis, basisDeriv, quadPtsRef, quadWts,
-			cellDim, numBasis, numQuadPts, spaceDim);
+  Quadrature0D engine(refCell);
 
-  // Create mesh with test cell
-  ALE::Obj<Mesh> mesh = new Mesh(PETSC_COMM_WORLD, cellDim);
-  CPPUNIT_ASSERT(!mesh.isNull());
-  ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
-  CPPUNIT_ASSERT(!sieve.isNull());
-
-  const bool interpolate = false;
-  ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
-
-  ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, cellDim, numCells,
-		     (int*) cells, numVertices, interpolate, numBasis);
-  std::map<Mesh::point_type,Mesh::point_type> renumbering;
-  ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
-  mesh->setSieve(sieve);
-  mesh->stratify();
-  ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
-  
-  // Check values from computeGeometry()
-  const ALE::Obj<Mesh::label_sequence>& cellsMesh = mesh->heightStratum(0);
-  CPPUNIT_ASSERT(!cellsMesh.isNull());
-  const Mesh::label_sequence::iterator e_iter = cellsMesh->begin(); 
-  const ALE::Obj<Mesh::real_section_type>& coordinates = 
-    mesh->getRealSection("coordinates");
-  CPPUNIT_ASSERT(!coordinates.isNull());
-  quadrature.Quadrature::computeGeometry(mesh, coordinates, *e_iter);
-
-  CPPUNIT_ASSERT(1 == numCells);
+  engine.initialize();
+  engine.computeGeometry(vertCoords, spaceDim, 0);
 
   const double tolerance = 1.0e-06;
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(quadPts[0], quadrature._quadPts[0], 
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(quadPts[0], engine._quadPts[0], 
 			       tolerance);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobian[0], quadrature._jacobian[0], 
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobian[0], engine._jacobian[0], 
 			       tolerance);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianInv[0], quadrature._jacobianInv[0], 
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianInv[0], engine._jacobianInv[0], 
 			       tolerance);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianDet[0], quadrature._jacobianDet[0], 
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianDet[0], engine._jacobianDet[0], 
 			       tolerance);
 } // testPoint
 

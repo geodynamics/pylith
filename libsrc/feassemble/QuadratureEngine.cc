@@ -17,6 +17,9 @@
 #include "CellGeometry.hh" // USES CellGeometry
 #include "QuadratureRefCell.hh" // QuadratureRefCell
 
+#include <sstream> // USES std::ostringstream
+#include <stdexcept> // USES std::runtime_error
+
 // ----------------------------------------------------------------------
 // Constructor.
 pylith::feassemble::QuadratureEngine::QuadratureEngine(const QuadratureRefCell& q) :
@@ -40,11 +43,19 @@ pylith::feassemble::QuadratureEngine::initialize(void)
   const int cellDim = _quadRefCell.cellDim();
   const int spaceDim = _quadRefCell.spaceDim();
 
-  _quadPts.resize(numQuadPts*spaceDim);
-  _jacobian.resize(numQuadPts*cellDim*spaceDim);
-  _jacobianInv.resize(numQuadPts*cellDim*spaceDim);
-  _jacobianDet.resize(numQuadPts);
-  _basisDeriv.resize(numQuadPts*numBasis*spaceDim);
+  if (cellDim > 0) {
+    _quadPts.resize(numQuadPts*spaceDim);
+    _jacobian.resize(numQuadPts*cellDim*spaceDim);
+    _jacobianInv.resize(numQuadPts*cellDim*spaceDim);
+    _jacobianDet.resize(numQuadPts);
+    _basisDeriv.resize(numQuadPts*numBasis*spaceDim);
+  } else {
+    _quadPts.resize(numQuadPts*spaceDim);
+    _jacobian.resize(1);
+    _jacobianInv.resize(1);
+    _jacobianDet.resize(1);
+    _basisDeriv.resize(numQuadPts*numBasis*spaceDim);
+  } // if/else
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -70,6 +81,22 @@ pylith::feassemble::QuadratureEngine::QuadratureEngine(const QuadratureEngine& q
   _quadRefCell(q._quadRefCell)
 { // copy constructor
 } // copy constructor
+
+// ----------------------------------------------------------------------
+// Check determinant of Jacobian against minimum allowable value
+void
+pylith::feassemble::QuadratureEngine::_checkJacobianDet(const double det,
+							const int cell) const
+{ // _checkJacobianDet
+  const double minJacobian = _quadRefCell.minJacobian();
+  if (det < minJacobian) {
+    std::ostringstream msg;
+    msg << "Determinant of Jacobian (" << det << ") for cell " << cell
+	<< " is smaller than minimum permissible value (" << minJacobian
+	<< ")!\n";
+    throw std::runtime_error(msg.str());
+  } // if
+} // _checkJacobianDet
 
 
 // End of file 

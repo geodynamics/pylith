@@ -14,6 +14,7 @@
 
 #include "Quadrature3D.hh" // implementation of class methods
 
+#include "QuadratureRefCell.hh" // USES QuadratureRefCell
 #include "CellGeometry.hh" // USES CellGeometry
 
 #include "petsc.h" // USES PetscLogFlops
@@ -24,7 +25,8 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::Quadrature3D::Quadrature3D(void)
+pylith::feassemble::Quadrature3D::Quadrature3D(const QuadratureRefCell& q) :
+  QuadratureEngine(q)
 { // constructor
 } // constructor
 
@@ -37,7 +39,7 @@ pylith::feassemble::Quadrature3D::~Quadrature3D(void)
 // ----------------------------------------------------------------------
 // Copy constructor.
 pylith::feassemble::Quadrature3D::Quadrature3D(const Quadrature3D& q) :
-  Quadrature(q)
+  QuadratureEngine(q)
 { // copy constructor
 } // copy constructor
 
@@ -48,21 +50,23 @@ pylith::feassemble::Quadrature3D::computeGeometry(const double* vertCoords,
 						  const int coordDim,
 						  const int cell)
 { // computeGeometry
+  assert(0 != vertCoords);
+  assert(3 == coordDim);
+
   const int cellDim = _quadRefCell.cellDim();
   const int spaceDim = _quadRefCell.spaceDim();
   const int numQuadPts = _quadRefCell.numQuadPts();
   const int numBasis = _quadRefCell.numBasis();
 
   const double_array& basis = _quadRefCell.basis();
-  const double_array& quadPtsRef = _quadRefCell.quadPts();
-  const CellGeometry* geometry = _quadRefCell.cellGeometry();
+  const double_array& quadPtsRef = _quadRefCell.quadPtsRef();
+  const double_array& basisDerivRef = _quadRefCell.basisDerivRef();
+  const CellGeometry& geometry = _quadRefCell.refGeometry();
 
   assert(3 == cellDim);
   assert(3 == spaceDim);
-
-  _resetGeometry();
-  assert(3 == coordDim);
-
+  zero();
+  
   // Loop over quadrature points
   for (int iQuadPt=0; iQuadPt < numQuadPts; ++iQuadPt) {
     
@@ -72,16 +76,15 @@ pylith::feassemble::Quadrature3D::computeGeometry(const double* vertCoords,
     // y = sum[i=0,n-1] (Ni * yi)
     // z = sum[i=0,n-1] (Ni * zi)
     for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-      const double basis = basis[iQuadPt*_numBasis+iBasis];
-      for (int iDim=0; iDim < _spaceDim; ++iDim)
-	_quadPts[iQuadPt*_spaceDim+iDim] += 
-	  basis * vertCoords[iBasis*spaceDim+iDim];
+      const double valueBasis = basis[iQuadPt*numBasis+iBasis];
+      for (int iDim=0; iDim < spaceDim; ++iDim)
+	_quadPts[iQuadPt*spaceDim+iDim] += 
+	  valueBasis * vertCoords[iBasis*spaceDim+iDim];
     } // for
 #else
-    assert(0 != geometry);
-    geometry->coordsRefToGlobal(&quadPts[iQuadPt*spaceDim],
-				&_quadPtsRef[iQuadPt*cellDim],
-				vertCoords, spaceDim);
+    geometry.coordsRefToGlobal(&quadPts[iQuadPt*spaceDim],
+			       &quadPtsRef[iQuadPt*cellDim],
+			       vertCoords, spaceDim);
 #endif
     
 #if defined(ISOPARAMETRIC)
@@ -98,29 +101,29 @@ pylith::feassemble::Quadrature3D::computeGeometry(const double* vertCoords,
     // dz/dp = sum[i=0,n-1] (dNi/dp * zi)
     // dz/dq = sum[i=0,n-1] (dNi/dq * zi)
     // dz/dr = sum[i=0,n-1] (dNi/dr * zi)
-    for (int iBasis=0; iBasis < _numBasis; ++iBasis)
-      for (int iCol=0; iCol < _cellDim; ++iCol) {
+    for (int iBasis=0; iBasis < numBasis; ++iBasis)
+      for (int iCol=0; iCol < cellDim; ++iCol) {
 	const double deriv = 
-	  _basisDerivRef[iQuadPt*_numBasis*_spaceDim+iBasis*_cellDim+iCol];
-	for (int iRow=0; iRow < _spaceDim; ++iRow)
-	  _jacobian[iQuadPt*_cellDim*_spaceDim+iRow*_cellDim+iCol] += 
-	    deriv * vertCoords[iBasis*_spaceDim+iRow];
+	  basisDerivRef[iQuadPt*numBasis*spaceDim+iBasis*cellDim+iCol];
+	for (int iRow=0; iRow < spaceDim; ++iRow)
+	  _jacobian[iQuadPt*cellDim*spaceDim+iRow*cellDim+iCol] += 
+	    deriv * vertCoords[iBasis*spaceDim+iRow];
       } // for
 
     // Compute determinant of Jacobian at quadrature point
     // |J| = j00*(j11*j22-j12*j21) +
     //      -j01*(j10*j22-j12*j20) +
     //       j02*(j10*j21-j11*j20)
-    const int iJ = iQuadPt*_cellDim*_spaceDim;
-    const int i00 = iJ + 0*_spaceDim + 0;
-    const int i01 = iJ + 0*_spaceDim + 1;
-    const int i02 = iJ + 0*_spaceDim + 2;
-    const int i10 = iJ + 1*_spaceDim + 0;
-    const int i11 = iJ + 1*_spaceDim + 1;
-    const int i12 = iJ + 1*_spaceDim + 2;
-    const int i20 = iJ + 2*_spaceDim + 0;
-    const int i21 = iJ + 2*_spaceDim + 1;
-    const int i22 = iJ + 2*_spaceDim + 2;
+    const int iJ = iQuadPt*cellDim*spaceDim;
+    const int i00 = iJ + 0*spaceDim + 0;
+    const int i01 = iJ + 0*spaceDim + 1;
+    const int i02 = iJ + 0*spaceDim + 2;
+    const int i10 = iJ + 1*spaceDim + 0;
+    const int i11 = iJ + 1*spaceDim + 1;
+    const int i12 = iJ + 1*spaceDim + 2;
+    const int i20 = iJ + 2*spaceDim + 0;
+    const int i21 = iJ + 2*spaceDim + 1;
+    const int i22 = iJ + 2*spaceDim + 2;
     const double det = 
       _jacobian[i00]*(_jacobian[i11]*_jacobian[i22] -
 		      _jacobian[i12]*_jacobian[i21]) -
@@ -132,22 +135,21 @@ pylith::feassemble::Quadrature3D::computeGeometry(const double* vertCoords,
     _jacobianDet[iQuadPt] = det;
 #else
     // Compute Jacobian and determinant of Jacobian at quadrature point
-    assert(0 != _geometry);
-    _geometry->jacobian(&_jacobian[iQuadPt*_cellDim*_spaceDim],
-			&_jacobianDet[iQuadPt],
-			vertCoords, &_quadPtsRef[iQuadPt*_cellDim], _spaceDim);
+    geometry.jacobian(&_jacobian[iQuadPt*cellDim*spaceDim],
+		      &_jacobianDet[iQuadPt],
+		      vertCoords, &quadPtsRef[iQuadPt*cellDim], spaceDim);
     _checkJacobianDet(_jacobianDet[iQuadPt], cell);
 
-    const int iJ = iQuadPt*_cellDim*_spaceDim;
-    const int i00 = iJ + 0*_spaceDim + 0;
-    const int i01 = iJ + 0*_spaceDim + 1;
-    const int i02 = iJ + 0*_spaceDim + 2;
-    const int i10 = iJ + 1*_spaceDim + 0;
-    const int i11 = iJ + 1*_spaceDim + 1;
-    const int i12 = iJ + 1*_spaceDim + 2;
-    const int i20 = iJ + 2*_spaceDim + 0;
-    const int i21 = iJ + 2*_spaceDim + 1;
-    const int i22 = iJ + 2*_spaceDim + 2;
+    const int iJ = iQuadPt*cellDim*spaceDim;
+    const int i00 = iJ + 0*spaceDim + 0;
+    const int i01 = iJ + 0*spaceDim + 1;
+    const int i02 = iJ + 0*spaceDim + 2;
+    const int i10 = iJ + 1*spaceDim + 0;
+    const int i11 = iJ + 1*spaceDim + 1;
+    const int i12 = iJ + 1*spaceDim + 2;
+    const int i20 = iJ + 2*spaceDim + 0;
+    const int i21 = iJ + 2*spaceDim + 1;
+    const int i22 = iJ + 2*spaceDim + 2;
     const double det = _jacobianDet[iQuadPt];
 #endif
     
@@ -174,16 +176,16 @@ pylith::feassemble::Quadrature3D::computeGeometry(const double* vertCoords,
     // Compute derivatives of basis functions with respect to global
     // coordinates
     // dNi/dx = dNi/dp dp/dx + dNi/dq dq/dx + dNi/dr dr/dx
-    for (int iBasis=0; iBasis < _numBasis; ++iBasis)
-      for (int iDim=0; iDim < _spaceDim; ++iDim)
-	for (int jDim=0; jDim < _cellDim; ++jDim)
-	  _basisDeriv[iQuadPt*_numBasis*_spaceDim+iBasis*_spaceDim+iDim] +=
-	    _basisDerivRef[iQuadPt*_numBasis*_cellDim+iBasis*_cellDim+jDim] *
-	    _jacobianInv[iQuadPt*_cellDim*_spaceDim+jDim*_spaceDim+iDim];
+    for (int iBasis=0; iBasis < numBasis; ++iBasis)
+      for (int iDim=0; iDim < spaceDim; ++iDim)
+	for (int jDim=0; jDim < cellDim; ++jDim)
+	  _basisDeriv[iQuadPt*numBasis*spaceDim+iBasis*spaceDim+iDim] +=
+	    basisDerivRef[iQuadPt*numBasis*cellDim+iBasis*cellDim+jDim] *
+	    _jacobianInv[iQuadPt*cellDim*spaceDim+jDim*spaceDim+iDim];
   } // for
-
-  PetscLogFlops(_numQuadPts*(2+36 + 
-				    _numBasis*_spaceDim*_cellDim*4));
+  
+  PetscLogFlops(numQuadPts*(2+36 + 
+			    numBasis*spaceDim*cellDim*4));
 } // computeGeometry
 
 

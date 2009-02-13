@@ -41,7 +41,7 @@ class pylith::feassemble::TestQuadratureEngine : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestQuadratureEngine );
 
   CPPUNIT_TEST( testCopyConstructor );
-  CPPUNIT_TEST( testCheckConditioning );
+  CPPUNIT_TEST( testInitialize );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -51,8 +51,8 @@ public :
   /// Test copy constructor.
   void testCopyConstructor(void);
 
-  /// Test checkConditioning()
-  void testCheckConditioning(void);
+  /// Test initialize().
+  void testInitialize(void);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -60,9 +60,11 @@ protected :
   /** Test computeGeometry() and retrieveGeometry().
    *
    * @param engine Quadrature engine.
+   * @param refCell Quadrature reference cell information.
    * @param data Data for testing quadrature
    */
   void _testComputeGeometry(QuadratureEngine* engine,
+			    QuadratureRefCell* refCell,
 			    const QuadratureData& data) const;
 
 }; // class TestQuadratureEngine

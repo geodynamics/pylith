@@ -41,6 +41,13 @@ libpylith_la_SOURCES = \
 	feassemble/GeometryHex3D.cc \
 	feassemble/QuadratureRefCell.cc \
 	feassemble/QuadratureEngine.cc \
+	feassemble/Quadrature0D.cc \
+	feassemble/Quadrature1D.cc \
+	feassemble/Quadrature1Din2D.cc \
+	feassemble/Quadrature1Din3D.cc \
+	feassemble/Quadrature2D.cc \
+	feassemble/Quadrature2Din3D.cc \
+	feassemble/Quadrature3D.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \
 	meshio/GMVFileAscii.cc \

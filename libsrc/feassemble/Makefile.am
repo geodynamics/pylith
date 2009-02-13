@@ -46,7 +46,6 @@ subpkginclude_HEADERS = \
 	Quadrature0D.icc \
 	Quadrature1D.hh \
 	Quadrature1D.icc \
-	Quadrature1D.cc \
 	Quadrature1Din2D.hh \
 	Quadrature1Din2D.icc \
 	Quadrature1Din3D.hh \
@@ -57,7 +56,6 @@ subpkginclude_HEADERS = \
 	Quadrature2Din3D.icc \
 	Quadrature3D.hh \
 	Quadrature3D.icc \
-	Quadrature3D.cc \
 	feassemblefwd.hh
 
 noinst_HEADERS =

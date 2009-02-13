@@ -34,18 +34,19 @@ testfeassemble_SOURCES = \
 	TestGeometryQuad3D.cc \
 	TestGeometryTet3D.cc \
 	TestGeometryHex3D.cc \
-	TestQuadratureBase.cc \
-	TestQuadrature.cc \
+	TestQuadratureRefCell.cc \
+	TestQuadratureEngine.cc \
+	TestQuadrature0D.cc \
+	TestQuadrature1D.cc \
+	TestQuadrature1Din2D.cc \
+	TestQuadrature1Din3D.cc \
+	TestQuadrature2D.cc \
+	TestQuadrature2Din3D.cc \
 	TestQuadrature3D.cc \
 	test_feassemble.cc
 
 # 	TestIntegrator.cc \
 # 	TestIntegratorElasticity.cc \
-# 	TestQuadrature0D.cc \
-# 	TestQuadrature1D.cc \
-# 	TestQuadrature1Din2D.cc \
-# 	TestQuadrature2D.cc \
-# 	TestQuadrature2Din3D.cc \
 # 	TestElasticityExplicit.cc \
 # 	TestElasticityExplicit1DLinear.cc \
 # 	TestElasticityExplicit1DQuadratic.cc \

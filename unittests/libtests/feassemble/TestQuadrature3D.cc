@@ -15,6 +15,7 @@
 #include "TestQuadrature3D.hh" // Implementation of class methods
 
 #include "pylith/feassemble/Quadrature3D.hh"
+#include "pylith/feassemble/QuadratureRefCell.hh"
 #include "pylith/feassemble/GeometryTet3D.hh"
 
 #include "data/QuadratureData3DLinear.hh"
@@ -28,7 +29,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature3D );
 void
 pylith::feassemble::TestQuadrature3D::testConstructor(void)
 { // testConstructor
-  Quadrature3D quadrature;
+  QuadratureRefCell refCell;
+  Quadrature3D quadrature(refCell);
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -36,12 +38,14 @@ pylith::feassemble::TestQuadrature3D::testConstructor(void)
 void
 pylith::feassemble::TestQuadrature3D::testLinear(void)
 { // testLinear
-  Quadrature3D q;
   GeometryTet3D geometry;
-  q.refGeometry(&geometry);
+  QuadratureRefCell refCell;
+  refCell.refGeometry(&geometry);
+
+  Quadrature3D q(refCell);
   QuadratureData3DLinear data;
 
-  _testComputeGeometry(&q, data);
+  _testComputeGeometry(&q, &refCell, data);
 } // testLinear
 
 // ----------------------------------------------------------------------
@@ -49,12 +53,15 @@ pylith::feassemble::TestQuadrature3D::testLinear(void)
 void
 pylith::feassemble::TestQuadrature3D::testQuadratic(void)
 { // testQuadratic
-  Quadrature3D q;
   GeometryTet3D geometry;
-  q.refGeometry(&geometry);
+  QuadratureRefCell refCell;
+  refCell.refGeometry(&geometry);
+
+  Quadrature3D q(refCell);
   QuadratureData3DQuadratic data;
 
-  _testComputeGeometry(&q, data);
+  _testComputeGeometry(&q, &refCell, data);
 } // testQuadratic
+
 
 // End of file 

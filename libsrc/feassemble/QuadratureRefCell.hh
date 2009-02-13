@@ -131,6 +131,12 @@ public :
    */
   const double_array& basis(void) const;
 
+  /** Get derivates of basis fns evaluated at quadrature points.
+   *
+   * @returns Array of derivates of basis fns evaluated at quadrature points
+   */
+  const double_array& basisDerivRef(void) const;
+
   /** Get number of dimensions in reference cell.
    *
    * @returns Number of dimensions in reference cell
@@ -163,14 +169,6 @@ protected :
    * @param q Quadrature to copy
    */
   QuadratureRefCell(const QuadratureRefCell& q);
-
-  /* Check determinant of Jacobian against minimum allowable value.
-   *
-   * @param det Value of determinant of Jacobian
-   * @param cell Label of finite-element cell
-   */
-  void _checkJacobianDet(const double det,
-			 const int cell) const;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :

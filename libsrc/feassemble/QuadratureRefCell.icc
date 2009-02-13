@@ -49,6 +49,13 @@ pylith::feassemble::QuadratureRefCell::basis(void) const {
   return _basis;
 }
 
+// Get derivates of basis fns evaluated at quadrature points.
+inline
+const pylith::double_array&
+pylith::feassemble::QuadratureRefCell::basisDerivRef(void) const {
+  return _basisDerivRef;
+}
+
 // Get number of dimensions in reference cell.
 inline
 int

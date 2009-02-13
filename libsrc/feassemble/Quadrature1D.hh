@@ -19,27 +19,39 @@
 #if !defined(pylith_feassemble_quadrature1d_hh)
 #define pylith_feassemble_quadrature1d_hh
 
-#include "Quadrature.hh" // ISA Quadrature
+#include "QuadratureEngine.hh" // ISA Quadrature
 
-template<typename mesh_type>
-class pylith::feassemble::Quadrature1D : public Quadrature<mesh_type>
+class pylith::feassemble::Quadrature1D : public QuadratureEngine
 { // Quadrature1D
   friend class TestQuadrature1D; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
-  /// Constructor
-  Quadrature1D(void);
+  /** Constructor.
+   *
+   * @param q Quadrature information for reference cell.
+   */
+  Quadrature1D(const QuadratureRefCell& q);
 
   /// Destructor
   ~Quadrature1D(void);
 
   /// Create a copy of this object.
-  Quadrature<mesh_type>* clone(void) const;
+  QuadratureEngine* clone(void) const;
 
-// PROTECTED METHODS ////////////////////////////////////////////////////
-protected :
+  /** Compute geometric quantities for a cell at quadrature points.
+   *
+   * @param vertCoords Coordinates of vertices of finite-element cell.
+   * @param coordDim Spatial dimension of coordinate system.
+   * @param cell Finite-element cell
+   */
+  void computeGeometry(const double* vertCoords,
+		       const int coordDim,
+		       const int cell);
+
+// PRIVATE METHODS //////////////////////////////////////////////////////
+private :
 
   /** Copy constructor.
    *
@@ -47,17 +59,7 @@ protected :
    */
   Quadrature1D(const Quadrature1D& q);
 
-  /** Compute geometric quantities for a cell at quadrature points.
-   *
-   * @param mesh Finite-element mesh
-   * @param coordinates Section containing vertex coordinates
-   * @param cell Finite-element cell
-   */
-  void _computeGeometry(const double* vertCoords,
-			const int coordDim,
-			const int cell);
-
-// PRIVATE METHODS //////////////////////////////////////////////////////
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
   const Quadrature1D& operator=(const Quadrature1D&); ///< Not implemented
@@ -65,8 +67,8 @@ private :
 }; // Quadrature1D
 
 #include "Quadrature1D.icc" // inline methods
-#include "Quadrature1D.cc" // template methods
 
 #endif // pylith_feassemble_quadrature1d_hh
+
 
 // End of file 

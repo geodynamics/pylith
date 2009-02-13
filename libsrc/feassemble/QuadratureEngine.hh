@@ -24,6 +24,7 @@
 
 class pylith::feassemble::QuadratureEngine
 { // QuadratureEngine
+  friend class TestQuadratureEngine;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -95,8 +96,16 @@ protected :
    */
   QuadratureEngine(const QuadratureEngine& q);
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
+  /* Check determinant of Jacobian against minimum allowable value.
+   *
+   * @param det Value of determinant of Jacobian
+   * @param cell Label of finite-element cell
+   */
+  void _checkJacobianDet(const double det,
+			 const int cell) const;
+
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
 
   /** Buffers for cell data */
   double_array _quadPts; ///< Coordinates of quad pts.

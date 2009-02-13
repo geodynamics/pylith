@@ -12,9 +12,9 @@
 
 #include <portinfo>
 
-#include "TestQuadratureBase.hh" // Implementation of class methods
+#include "TestQuadratureRefCell.hh" // Implementation of class methods
 
-#include "pylith/feassemble/QuadratureBase.hh" // USES QuadratureBase
+#include "pylith/feassemble/QuadratureRefCell.hh" // USES QuadratureRefCell
 #include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
 
 #include "data/QuadratureData.hh" // USES QuadratureData
@@ -22,22 +22,22 @@
 #include <string.h> // USES memcpy()
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadratureBase );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadratureRefCell );
 
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::feassemble::TestQuadratureBase::testConstructor(void)
+pylith::feassemble::TestQuadratureRefCell::testConstructor(void)
 { // testConstructor
-  QuadratureBase q;
+  QuadratureRefCell q;
 } // testMinJacobian
 
 // ----------------------------------------------------------------------
 // Test minJacobian()
 void
-pylith::feassemble::TestQuadratureBase::testMinJacobian(void)
+pylith::feassemble::TestQuadratureRefCell::testMinJacobian(void)
 { // testMinJacobian
-  QuadratureBase q;
+  QuadratureRefCell q;
 
   const double min = 1.0;
   q.minJacobian(min);
@@ -47,10 +47,10 @@ pylith::feassemble::TestQuadratureBase::testMinJacobian(void)
 // ----------------------------------------------------------------------
 // Test refGeometry()
 void
-pylith::feassemble::TestQuadratureBase::testRefGeometry(void)
+pylith::feassemble::TestQuadratureRefCell::testRefGeometry(void)
 { // testRefGeometry
   GeometryLine1D geometry;
-  QuadratureBase quadrature;
+  QuadratureRefCell quadrature;
 
   quadrature.refGeometry(&geometry);
   const CellGeometry& test = quadrature.refGeometry();
@@ -63,7 +63,7 @@ pylith::feassemble::TestQuadratureBase::testRefGeometry(void)
 // ----------------------------------------------------------------------
 // Test initialize()
 void
-pylith::feassemble::TestQuadratureBase::testInitialize(void)
+pylith::feassemble::TestQuadratureRefCell::testInitialize(void)
 { // initialize
   
   const int cellDim = 1;
@@ -76,7 +76,7 @@ pylith::feassemble::TestQuadratureBase::testInitialize(void)
   const double quadWts[] = { 2.0 };
   const double minJacobian = 1.0;
 
-  QuadratureBase q;
+  QuadratureRefCell q;
   q.initialize(basis, basisDerivRef, quadPtsRef, quadWts,
 	       cellDim, numBasis, numQuadPts, spaceDim);
   
