@@ -19,10 +19,9 @@
 #if !defined(pylith_feassemble_quadrature3d_hh)
 #define pylith_feassemble_quadrature3d_hh
 
-#include "Quadrature.hh" // ISA Quadrature
+#include "QuadratureEngine.hh" // ISA QuadratureEngine
 
-template<typename mesh_type>
-class pylith::feassemble::Quadrature3D : public Quadrature<mesh_type>
+class pylith::feassemble::Quadrature3D : public QuadratureEngine
 { // Quadrature3D
   friend class TestQuadrature3D; // unit testing
 
@@ -36,7 +35,7 @@ public :
   ~Quadrature3D(void);
 
   /// Create a copy of this object.
-  Quadrature* clone(void) const;
+  QuadratureEngine* clone(void) const;
 
   /** Compute geometric quantities for a cell at quadrature points.
    *
@@ -66,8 +65,8 @@ private :
 }; // Quadrature3D
 
 #include "Quadrature3D.icc" // inline methods
-#include "Quadrature3D.cc" // template methods
 
 #endif // pylith_feassemble_quadrature3d_hh
+
 
 // End of file 

@@ -38,7 +38,7 @@ subpkginclude_HEADERS = \
 	QuadratureBase.hh \
 	QuadratureBase.icc \
 	QuadratureEngine.hh \
-	QuadratureEnginer.icc \
+	QuadratureEngine.icc \
 	Quadrature.hh \
 	Quadrature.icc \
 	Quadrature.cc \

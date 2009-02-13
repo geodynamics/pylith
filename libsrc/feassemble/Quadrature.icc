@@ -14,6 +14,8 @@
 #error "Quadrature.icc must be included only from Quadrature.hh"
 #else
 
+#include <cassert> // USES assert()
+
 // Set flag for checking ill-conditioning.
 template<typename mesh_type>
 inline
@@ -35,7 +37,8 @@ template<typename mesh_type>
 inline
 const pylith::double_array&
 pylith::feassemble::Quadrature<mesh_type>::quadPts(void) const {
-  return _quadPts;
+  assert(0 != _engine);
+  return _engine->_quadPts;
 }
 
 // Get derivatives of basis fns evaluated at quadrature points.
@@ -43,7 +46,8 @@ template<typename mesh_type>
 inline
 const pylith::double_array&
 pylith::feassemble::Quadrature<mesh_type>::basisDeriv(void) const {
-  return _basisDeriv;
+  assert(0 != _engine);
+  return _engine->_basisDeriv;
 }
 
 // Get Jacobians evaluated at quadrature points.
@@ -51,7 +55,8 @@ template<typename mesh_type>
 inline
 const pylith::double_array&
 pylith::feassemble::Quadrature<mesh_type>::jacobian(void) const {
-  return _jacobian;
+  assert(0 != _engine);
+  return _engine->_jacobian;
 }
 
 // Get determinants of Jacobian evaluated at quadrature points.
@@ -59,7 +64,8 @@ template<typename mesh_type>
 inline
 const pylith::double_array&
 pylith::feassemble::Quadrature<mesh_type>::jacobianDet(void) const {
-  return _jacobianDet;
+  assert(0 != _engine);
+  return _engine->_jacobianDet;
 }
 
 #endif

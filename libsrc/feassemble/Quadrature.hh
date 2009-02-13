@@ -50,12 +50,13 @@ public :
   Quadrature(void);
 
   /// Destructor
-  virtual
   ~Quadrature(void);
 
-  /// Create a copy of this object.
-  virtual
-  Quadrature* clone(void) const = 0;
+  /** Copy constructor.
+   *
+   * @param q Quadrature to copy
+   */
+  Quadrature(const Quadrature& q);
 
   /** Set flag for checking ill-conditioning.
    *
@@ -112,17 +113,14 @@ public :
   /// Deallocate temporary storage.
   void clear(void);
 
-// PROTECTED METHODS ////////////////////////////////////////////////////
-protected :
+// PRIVATE METHODS //////////////////////////////////////////////////////
+private :
 
-  /** Copy constructor.
-   *
-   * @param q Quadrature to copy
-   */
-  Quadrature(const Quadrature& q);
+  /// Setup quadrature engine.
+  void _setupEngine(void);
 
-// PROTECTED MEMBERS ////////////////////////////////////////////////////
-protected :
+// PRIVATE MEMBERS //////////////////////////////////////////////////////
+private :
 
   /** Fields and visitors for precomputing geometry information for
    * cells associated with this quadrature.

@@ -16,11 +16,12 @@
 
 // Create a copy of this object.
 inline
-pylith::feassemble::Quadrature*
+pylith::feassemble::QuadratureEngine*
 pylith::feassemble::Quadrature3D::clone(void) const {
   return new Quadrature3D(*this);
 } // clone
 
 #endif
+
 
 // End of file

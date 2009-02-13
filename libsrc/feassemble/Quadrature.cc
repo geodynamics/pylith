@@ -12,9 +12,20 @@
 
 #include <portinfo>
 
-#include "Quadrature.hh" // implementation of class methods
+//#include "Quadrature.hh" // implementation of class methods
 
 #include "CellGeometry.hh" // USES CellGeometry
+
+#if 0
+#include "Quadrature0D.hh"
+#include "Quadrature1D.hh"
+#include "Quadrature1Din2D.hh"
+#include "Quadrature1Din3D.hh"
+#include "Quadrature2D.hh"
+#include "Quadrature2Din3D.hh"
+#include "Quadrature3D.hh"
+#endif
+
 #include "pylith/topology/Field.hh" // HOLDSA Field
 
 #include <cstring> // USES memcpy()
@@ -26,6 +37,7 @@
 // Constructor
 template<typename mesh_type>
 pylith::feassemble::Quadrature<mesh_type>::Quadrature(void) :
+  _engine(0),
   _quadPtsField(0),
   _jacobianField(0),
   _jacobianDetField(0),
@@ -39,6 +51,7 @@ pylith::feassemble::Quadrature<mesh_type>::Quadrature(void) :
 template<typename mesh_type>
 pylith::feassemble::Quadrature<mesh_type>::~Quadrature(void)
 { // destructor
+  delete _engine; _engine = 0;
   delete _quadPtsField; _quadPtsField = 0;
   delete _jacobianField; _jacobianField = 0;
   delete _jacobianDetField; _jacobianDetField = 0;
@@ -50,39 +63,16 @@ pylith::feassemble::Quadrature<mesh_type>::~Quadrature(void)
 template<typename mesh_type>
 pylith::feassemble::Quadrature<mesh_type>::Quadrature(const Quadrature& q) :
   QuadratureBase(q),
+  _engine(0),
   _quadPtsField(0),
   _jacobianField(0),
   _jacobianDetField(0),
   _basisDerivField(0),
   _checkConditioning(q._checkConditioning)
 { // copy constructor
+  if (0 != q._engine)
+    _engine = q._engine->clone();
 } // copy constructor
-
-// ----------------------------------------------------------------------
-// Deallocate temporary storage;
-template<typename mesh_type>
-void
-pylith::feassemble::Quadrature<mesh_type>::clear(void)
-{ // clear
-  // Clear storage for fields
-  delete _quadPtsField; _quadPtsField = 0;
-  delete _jacobianField; _jacobianField = 0;
-  delete _jacobianDetField; _jacobianDetField = 0;
-  delete _basisDerivField; _basisDerivField = 0;
-} // clear
-
-// ----------------------------------------------------------------------
-// Set entries in geometry arrays to zero.
-template<typename mesh_type>
-void
-pylith::feassemble::Quadrature<mesh_type>::_resetGeometry(void)
-{ // _resetGeometry
-  _quadPts = 0.0;
-  _jacobian = 0.0;
-  _jacobianDet = 0.0;
-  _jacobianInv = 0.0;
-  _basisDeriv = 0.0;
-} // _resetGeometry
 
 // ----------------------------------------------------------------------
 template<typename mesh_type>
@@ -92,6 +82,8 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
        const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& cells)
 { // precomputeGeometry
   typedef typename mesh_type::RealSection RealSection;
+
+  _setupEngine();
 
   const char* loggingStage = "QuadratureCreation";
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
@@ -209,6 +201,75 @@ pylith::feassemble::Quadrature<mesh_type>::retrieveGeometry(const typename mesh_
   const ALE::Obj<RealSection>& basisDerivSection = _basisDerivField->section();
   basisDerivSection->restrictPoint(cell, &_basisDeriv[0], _basisDeriv.size());
 } // retrieveGeometry
+
+// ----------------------------------------------------------------------
+// Deallocate temporary storage;
+template<typename mesh_type>
+void
+pylith::feassemble::Quadrature<mesh_type>::clear(void)
+{ // clear
+  delete _engine; _engine = 0;
+
+  // Clear storage for fields
+  delete _quadPtsField; _quadPtsField = 0;
+  delete _jacobianField; _jacobianField = 0;
+  delete _jacobianDetField; _jacobianDetField = 0;
+  delete _basisDerivField; _basisDerivField = 0;
+} // clear
+
+// ----------------------------------------------------------------------
+// Setup quadrature engine.
+template<typename mesh_type>
+void
+pylith::feassemble::Quadrature<mesh_type>::_setupEngine(void)
+{ // clear
+  delete _engine; _engine = 0;
+
+  const int cellDim = _cellDim;
+  const int spaceDim = _spaceDim;
+
+#if 0
+  if (1 == spaceDim)
+    if (1 == cellDim)
+      _engine = new Quadrature1D(*this);
+    else if (0 == cellDim)
+      _engine = new Quadrature0D(*this);
+    else {
+      std::cerr << "Unknown quadrature case with cellDim '" 
+		<< cellDim << "' and spaceDim '" << spaceDim << "'" 
+		<< std::endl;
+      assert(0);
+    } // if/else
+  else if (2 == spaceDim) {
+    if (2 == cellDim)
+      _engine = new Quadrature2D(*this);
+    else if (1 == cellDim)
+      _engine = new Quadrature1Din2D(*this);
+    else if (0 == cellDim)
+      _engine = new Quadrature0D(*this);
+    else {
+      std::cerr << "Unknown quadrature case with cellDim '" 
+		<< cellDim << "' and spaceDim '" << spaceDim << "'" 
+		<< std::endl;
+      assert(0);
+    } // if/else
+  else if (3 == spaceDim) {
+    if (3 == cellDim)
+      _engine = new Quadrature3D(*this);
+    else if (2 == cellDim)
+      _engine = new Quadrature2Din3D(*this);
+    else if (1 == cellDim)
+      _engine = new Quadrature1Din3D(*this);
+    else if (0 == cellDim)
+      _engine = new Quadrature0D(*this);
+    else {
+      std::cerr << "Unknown quadrature case with cellDim '" 
+		<< cellDim << "' and spaceDim '" << spaceDim << "'" 
+		<< std::endl;
+      assert(0);
+    } // if/else
+#endif
+} // _setupEngine
 
 
 // End of file 

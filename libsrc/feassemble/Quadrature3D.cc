@@ -12,7 +12,7 @@
 
 #include <portinfo>
 
-//#include "Quadrature3D.hh" // implementation of class methods
+#include "Quadrature3D.hh" // implementation of class methods
 
 #include "CellGeometry.hh" // USES CellGeometry
 
@@ -24,60 +24,64 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-template<typename mesh_type>
-pylith::feassemble::Quadrature3D<mesh_type>::Quadrature3D(void) : pylith::feassemble::Quadrature::Quadrature()
+pylith::feassemble::Quadrature3D::Quadrature3D(void)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-template<typename mesh_type>
-pylith::feassemble::Quadrature3D<mesh_type>::~Quadrature3D(void)
+pylith::feassemble::Quadrature3D::~Quadrature3D(void)
 { // destructor
 } // destructor
   
 // ----------------------------------------------------------------------
 // Copy constructor.
-template<typename mesh_type>
-pylith::feassemble::Quadrature3D<mesh_type>::Quadrature3D(const Quadrature3D& q) :
+pylith::feassemble::Quadrature3D::Quadrature3D(const Quadrature3D& q) :
   Quadrature(q)
 { // copy constructor
 } // copy constructor
 
 // ----------------------------------------------------------------------
 // Compute geometric quantities for a cell at quadrature points.
-template<typename mesh_type>
 void
-pylith::feassemble::Quadrature3D<mesh_type>::computeGeometry(
-					           const double* vertCoords,
-						   const int coordDim,
-						   const int cell)
+pylith::feassemble::Quadrature3D::computeGeometry(const double* vertCoords,
+						  const int coordDim,
+						  const int cell)
 { // computeGeometry
-  assert(3 == _cellDim);
-  assert(3 == _spaceDim);
+  const int cellDim = _quadRefCell.cellDim();
+  const int spaceDim = _quadRefCell.spaceDim();
+  const int numQuadPts = _quadRefCell.numQuadPts();
+  const int numBasis = _quadRefCell.numBasis();
+
+  const double_array& basis = _quadRefCell.basis();
+  const double_array& quadPtsRef = _quadRefCell.quadPts();
+  const CellGeometry* geometry = _quadRefCell.cellGeometry();
+
+  assert(3 == cellDim);
+  assert(3 == spaceDim);
 
   _resetGeometry();
   assert(3 == coordDim);
 
   // Loop over quadrature points
-  for (int iQuadPt=0; iQuadPt < _numQuadPts; ++iQuadPt) {
+  for (int iQuadPt=0; iQuadPt < numQuadPts; ++iQuadPt) {
     
     // Compute coordinates of quadrature point in cell
 #if defined(ISOPARAMETRIC)
     // x = sum[i=0,n-1] (Ni * xi)
     // y = sum[i=0,n-1] (Ni * yi)
     // z = sum[i=0,n-1] (Ni * zi)
-    for (int iBasis=0; iBasis < _numBasis; ++iBasis) {
-      const double basis = _basis[iQuadPt*_numBasis+iBasis];
+    for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+      const double basis = basis[iQuadPt*_numBasis+iBasis];
       for (int iDim=0; iDim < _spaceDim; ++iDim)
 	_quadPts[iQuadPt*_spaceDim+iDim] += 
-	  basis * vertCoords[iBasis*_spaceDim+iDim];
+	  basis * vertCoords[iBasis*spaceDim+iDim];
     } // for
 #else
-    assert(0 != _geometry);
-    _geometry->coordsRefToGlobal(&_quadPts[iQuadPt*_spaceDim],
-				 &_quadPtsRef[iQuadPt*_cellDim],
-				 vertCoords, _spaceDim);
+    assert(0 != geometry);
+    geometry->coordsRefToGlobal(&quadPts[iQuadPt*spaceDim],
+				&_quadPtsRef[iQuadPt*cellDim],
+				vertCoords, spaceDim);
 #endif
     
 #if defined(ISOPARAMETRIC)
