@@ -12,11 +12,9 @@
 
 #include <portinfo>
 
-//#include "Quadrature.hh" // implementation of class methods
-
 #include "CellGeometry.hh" // USES CellGeometry
 
-#if 0
+#include "QuadratureEngine.hh" // USES QuadratureEngine
 #include "Quadrature0D.hh"
 #include "Quadrature1D.hh"
 #include "Quadrature1Din2D.hh"
@@ -24,7 +22,6 @@
 #include "Quadrature2D.hh"
 #include "Quadrature2Din3D.hh"
 #include "Quadrature3D.hh"
-#endif
 
 #include "pylith/topology/Field.hh" // HOLDSA Field
 
@@ -62,7 +59,7 @@ pylith::feassemble::Quadrature<mesh_type>::~Quadrature(void)
 // Copy constructor
 template<typename mesh_type>
 pylith::feassemble::Quadrature<mesh_type>::Quadrature(const Quadrature& q) :
-  QuadratureBase(q),
+  QuadratureRefCell(q),
   _engine(0),
   _quadPtsField(0),
   _jacobianField(0),
@@ -82,14 +79,16 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
        const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& cells)
 { // precomputeGeometry
   typedef typename mesh_type::RealSection RealSection;
-
-  _setupEngine();
+  typedef typename mesh_type::SieveMesh::label_sequence label_sequence;
+  typedef typename mesh_type::RestrictVisitor RestrictVisitor;
 
   const char* loggingStage = "QuadratureCreation";
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush(loggingStage);
 
   clear();
+  _setupEngine();
+  assert(0 != _engine);
 
   // Allocate field and cell buffer for quadrature points
   int fiberDim = _numQuadPts * _spaceDim;
@@ -140,9 +139,6 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
     << std::endl;
 #endif
 
-  typedef typename mesh_type::SieveMesh::label_sequence label_sequence;
-  typedef ALE::ISieveVisitor::RestrictVisitor<RealSection> RealSectionVisitor;
-
   const typename label_sequence::iterator cellsEnd = cells->end();
   assert(0 != _geometry);
   const int numCorners = _geometry->numCorners();
@@ -150,7 +146,7 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   assert(!sieveMesh.isNull());
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
-  RealSectionVisitor coordsVisitor(coordinates, numCorners*_spaceDim);
+  RestrictVisitor coordsVisitor(*coordinates, numCorners*_spaceDim);
 
   const ALE::Obj<RealSection>& quadPtsSection = _quadPtsField->section();
   const ALE::Obj<RealSection>& jacobianSection = _jacobianField->section();
@@ -158,20 +154,24 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
     _jacobianDetField->section();
   const ALE::Obj<RealSection>& basisDerivSection = _basisDerivField->section();
 
+  const double_array& quadPts = _engine->quadPts();
+  const double_array& jacobian = _engine->jacobian();
+  const double_array& jacobianDet = _engine->jacobianDet();
+  const double_array& basisDeriv = _engine->basisDeriv();
+
   for(typename label_sequence::iterator c_iter = cells->begin();
       c_iter != cellsEnd;
       ++c_iter) {
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
     const double* cellVertexCoords = coordsVisitor.getValues();
     assert(0 != cellVertexCoords);
-    _resetGeometry();
-    computeGeometry(cellVertexCoords, _spaceDim, *c_iter);
+    _engine->computeGeometry(cellVertexCoords, _spaceDim, *c_iter);
 
     // Update fields with cell data
-    quadPtsSection->updatePoint(*c_iter, &_quadPts[0]);
-    jacobianSection->updatePoint(*c_iter, &_jacobian[0]);
-    jacobianDetSection->updatePoint(*c_iter, &_jacobianDet[0]);
-    basisDerivSection->updatePoint(*c_iter, &_basisDeriv[0]);
+    quadPtsSection->updatePoint(*c_iter, &quadPts[0]);
+    jacobianSection->updatePoint(*c_iter, &jacobian[0]);
+    jacobianDetSection->updatePoint(*c_iter, &jacobianDet[0]);
+    basisDerivSection->updatePoint(*c_iter, &basisDeriv[0]);
   } // for
 } // computeGeometry
 
@@ -186,20 +186,29 @@ pylith::feassemble::Quadrature<mesh_type>::retrieveGeometry(const typename mesh_
   assert(0 != _jacobianField);
   assert(0 != _jacobianDetField);
   assert(0 != _basisDerivField);
+  assert(0 != _engine);
+
+  const double_array& quadPts = _engine->quadPts();
+  const double_array& jacobian = _engine->jacobian();
+  const double_array& jacobianDet = _engine->jacobianDet();
+  const double_array& basisDeriv = _engine->basisDeriv();
 
   const ALE::Obj<RealSection>& quadPtsSection = _quadPtsField->section();
-  quadPtsSection->restrictPoint(cell, &_quadPts[0], _quadPts.size());
+  quadPtsSection->restrictPoint(cell, const_cast<double*>(&quadPts[0]),
+				quadPts.size());
 
   const ALE::Obj<RealSection>& jacobianSection = _jacobianField->section();
-  jacobianSection->restrictPoint(cell, &_jacobian[0], _jacobian.size());
+  jacobianSection->restrictPoint(cell, const_cast<double*>(&jacobian[0]),
+				 jacobian.size());
 
   const ALE::Obj<RealSection>& jacobianDetSection = 
     _jacobianDetField->section();
-  jacobianDetSection->restrictPoint(cell, 
-				    &_jacobianDet[0], _jacobianDet.size());
+  jacobianDetSection->restrictPoint(cell, const_cast<double*>(&jacobianDet[0]),
+				    jacobianDet.size());
 
   const ALE::Obj<RealSection>& basisDerivSection = _basisDerivField->section();
-  basisDerivSection->restrictPoint(cell, &_basisDeriv[0], _basisDeriv.size());
+  basisDerivSection->restrictPoint(cell, const_cast<double*>(&basisDeriv[0]),
+				   basisDeriv.size());
 } // retrieveGeometry
 
 // ----------------------------------------------------------------------
@@ -228,7 +237,6 @@ pylith::feassemble::Quadrature<mesh_type>::_setupEngine(void)
   const int cellDim = _cellDim;
   const int spaceDim = _spaceDim;
 
-#if 0
   if (1 == spaceDim)
     if (1 == cellDim)
       _engine = new Quadrature1D(*this);
@@ -240,7 +248,7 @@ pylith::feassemble::Quadrature<mesh_type>::_setupEngine(void)
 		<< std::endl;
       assert(0);
     } // if/else
-  else if (2 == spaceDim) {
+  else if (2 == spaceDim)
     if (2 == cellDim)
       _engine = new Quadrature2D(*this);
     else if (1 == cellDim)
@@ -253,7 +261,7 @@ pylith::feassemble::Quadrature<mesh_type>::_setupEngine(void)
 		<< std::endl;
       assert(0);
     } // if/else
-  else if (3 == spaceDim) {
+  else if (3 == spaceDim)
     if (3 == cellDim)
       _engine = new Quadrature3D(*this);
     else if (2 == cellDim)
@@ -268,7 +276,15 @@ pylith::feassemble::Quadrature<mesh_type>::_setupEngine(void)
 		<< std::endl;
       assert(0);
     } // if/else
-#endif
+  else {
+    std::cerr << "Unknown quadrature case with cellDim '" 
+	      << cellDim << "' and spaceDim '" << spaceDim << "'" 
+	      << std::endl;
+    assert(0);
+  } // if/else
+
+  assert(0 != _engine);
+  _engine->initialize();
 } // _setupEngine
 
 

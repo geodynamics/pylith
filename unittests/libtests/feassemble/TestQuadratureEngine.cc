@@ -129,6 +129,9 @@ pylith::feassemble::TestQuadratureEngine::testInitialize(void)
 
   size = numQuadPts;
   CPPUNIT_ASSERT_EQUAL(size, engine.jacobianDet().size());
+
+  size = numQuadPts * numBasis * spaceDim;
+  CPPUNIT_ASSERT_EQUAL(size, engine.basisDeriv().size());
 } // testInitialize
 
 // ----------------------------------------------------------------------

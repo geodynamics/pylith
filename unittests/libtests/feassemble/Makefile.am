@@ -43,6 +43,7 @@ testfeassemble_SOURCES = \
 	TestQuadrature2D.cc \
 	TestQuadrature2Din3D.cc \
 	TestQuadrature3D.cc \
+	TestQuadrature.cc \
 	test_feassemble.cc
 
 # 	TestIntegrator.cc \

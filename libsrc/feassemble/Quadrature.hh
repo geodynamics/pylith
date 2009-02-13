@@ -18,7 +18,7 @@
  *
  * This object contains the informatio needed to perform numerical
  * quadrature over a finite-element cell. It inherits quadrature
- * information over the reference cell from the QuadratureBase object.
+ * information over the reference cell from the QuadratureRefCell object.
 
  * Given a cell this object will compute the cell's Jacobian, the
  * determinant of the Jacobian, the inverse of the Jacobian, and the
@@ -120,6 +120,8 @@ private :
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
+
+  QuadratureEngine* _engine; ///< Quadrature geometry engine.
 
   /** Fields and visitors for precomputing geometry information for
    * cells associated with this quadrature.
