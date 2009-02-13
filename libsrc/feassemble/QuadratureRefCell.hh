@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/QuadratureBase.hh
+ * @file pylith/feassemble/QuadratureRefCell.hh
  *
  * @brief Object with basic quadrature information for the reference cell.
  *
@@ -23,8 +23,8 @@
  * numerical quadrature.
  */
 
-#if !defined(pylith_feassemble_quadraturebase_hh)
-#define pylith_feassemble_quadraturebase_hh
+#if !defined(pylith_feassemble_quadraturerefcell_hh)
+#define pylith_feassemble_quadraturerefcell_hh
 
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
@@ -32,18 +32,18 @@
 #include "pylith/utils/array.hh" // HASA double_array
 
 // Quadrature -----------------------------------------------------------
-class pylith::feassemble::QuadratureBase
+class pylith::feassemble::QuadratureRefCell
 { // Quadrature
-  friend class TestQuadratureBase; // unit testing
+  friend class TestQuadratureRefCell; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
-  QuadratureBase(void);
+  QuadratureRefCell(void);
 
   /// Destructor
-  ~QuadratureBase(void);
+  ~QuadratureRefCell(void);
 
   /** Set basis functions and their derivatives, and coordinates and
    *  weights of the quadrature points.
@@ -162,7 +162,7 @@ protected :
    *
    * @param q Quadrature to copy
    */
-  QuadratureBase(const QuadratureBase& q);
+  QuadratureRefCell(const QuadratureRefCell& q);
 
   /* Check determinant of Jacobian against minimum allowable value.
    *
@@ -229,13 +229,13 @@ protected :
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
-  const QuadratureBase& operator=(const QuadratureBase&); ///< Not implemented
+  const QuadratureRefCell& operator=(const QuadratureRefCell&); ///< Not implemented
 
-}; // QuadratureBase
+}; // QuadratureRefCell
 
-#include "QuadratureBase.icc" // inline methods
+#include "QuadratureRefCell.icc" // inline methods
 
-#endif // pylith_feassemble_quadraturebase_hh
+#endif // pylith_feassemble_quadraturerefcell_hh
 
 
 // End of file 

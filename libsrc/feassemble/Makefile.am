@@ -35,8 +35,8 @@ subpkginclude_HEADERS = \
 	GeometryQuad2D.hh \
 	GeometryQuad3D.hh \
 	GeometryHex3D.hh \
-	QuadratureBase.hh \
-	QuadratureBase.icc \
+	QuadratureRefCell.hh \
+	QuadratureRefCell.icc \
 	QuadratureEngine.hh \
 	QuadratureEngine.icc \
 	Quadrature.hh \

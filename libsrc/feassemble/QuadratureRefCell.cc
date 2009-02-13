@@ -12,7 +12,7 @@
 
 #include <portinfo>
 
-#include "QuadratureBase.hh" // implementation of class methods
+#include "QuadratureRefCell.hh" // implementation of class methods
 
 #include "CellGeometry.hh" // USES CellGeometry
 
@@ -23,7 +23,7 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::QuadratureBase::QuadratureBase(void) :
+pylith::feassemble::QuadratureRefCell::QuadratureRefCell(void) :
   _minJacobian(0),
   _cellDim(0),
   _numBasis(0),
@@ -35,14 +35,14 @@ pylith::feassemble::QuadratureBase::QuadratureBase(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::feassemble::QuadratureBase::~QuadratureBase(void)
+pylith::feassemble::QuadratureRefCell::~QuadratureRefCell(void)
 { // destructor
   delete _geometry; _geometry = 0;
 } // destructor
   
 // ----------------------------------------------------------------------
 // Copy constructor
-pylith::feassemble::QuadratureBase::QuadratureBase(const QuadratureBase& q) :
+pylith::feassemble::QuadratureRefCell::QuadratureRefCell(const QuadratureRefCell& q) :
   _minJacobian(q._minJacobian),
   _quadPtsRef(q._quadPtsRef),
   _quadWts(q._quadWts),
@@ -62,7 +62,7 @@ pylith::feassemble::QuadratureBase::QuadratureBase(const QuadratureBase& q) :
 // Set basis functions and their derivatives and coordinates and
 //   weights of the quadrature points.
 void
-pylith::feassemble::QuadratureBase::initialize(const double* basis,
+pylith::feassemble::QuadratureRefCell::initialize(const double* basis,
 					       const double* basisDerivRef,
 					       const double* quadPtsRef,
 					       const double* quadWts,
@@ -167,7 +167,7 @@ pylith::feassemble::QuadratureBase::initialize(const double* basis,
 // ----------------------------------------------------------------------
 // Set geometry associated with reference cell.
 void
-pylith::feassemble::QuadratureBase::refGeometry(CellGeometry* const geometry)
+pylith::feassemble::QuadratureRefCell::refGeometry(CellGeometry* const geometry)
 { // refGeometry
   delete _geometry; _geometry = (0 != geometry) ? geometry->clone() : 0;
 } // refGeometry
@@ -175,7 +175,7 @@ pylith::feassemble::QuadratureBase::refGeometry(CellGeometry* const geometry)
 // ----------------------------------------------------------------------
 // Get geometry associated with reference cell.
 const pylith::feassemble::CellGeometry&
-pylith::feassemble::QuadratureBase::refGeometry(void) const
+pylith::feassemble::QuadratureRefCell::refGeometry(void) const
 { // refGeometry
   assert(0 != _geometry);
   return *_geometry;
@@ -184,8 +184,8 @@ pylith::feassemble::QuadratureBase::refGeometry(void) const
 // ----------------------------------------------------------------------
 // Check determinant of Jacobian against minimum allowable value
 void
-pylith::feassemble::QuadratureBase::_checkJacobianDet(const double det,
-						      const int cell) const
+pylith::feassemble::QuadratureRefCell::_checkJacobianDet(const double det,
+							 const int cell) const
 { // _checkJacobianDet
   if (det < _minJacobian) {
     std::ostringstream msg;

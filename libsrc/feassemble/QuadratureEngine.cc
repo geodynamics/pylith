@@ -15,11 +15,11 @@
 #include "QuadratureEngine.hh" // implementation of class methods
 
 #include "CellGeometry.hh" // USES CellGeometry
-#include "QuadratureBase.hh" // QuadratureBase
+#include "QuadratureRefCell.hh" // QuadratureRefCell
 
 // ----------------------------------------------------------------------
 // Constructor.
-pylith::feassemble::QuadratureEngine::QuadratureEngine(const QuadratureBase& q) :
+pylith::feassemble::QuadratureEngine::QuadratureEngine(const QuadratureRefCell& q) :
   _quadRefCell(q)
 { // constructor
 } // constructor

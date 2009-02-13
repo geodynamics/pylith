@@ -30,16 +30,15 @@
 #define pylith_feassemble_quadrature_hh
 
 // Include directives ---------------------------------------------------
-#include "QuadratureBase.hh" // ISA QuadratureBase
+#include "QuadratureRefCell.hh" // ISA QuadratureRefCell
 
-#include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/utils/array.hh" // HASA double_array
 
 // Quadrature -----------------------------------------------------------
 template<typename mesh_type>
-class pylith::feassemble::Quadrature : public QuadratureBase
+class pylith::feassemble::Quadrature : public QuadratureRefCell
 { // Quadrature
   friend class TestQuadrature; // unit testing
 

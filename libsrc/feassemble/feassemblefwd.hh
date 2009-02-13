@@ -38,7 +38,7 @@ namespace pylith {
     class GeometryTet3D;
     class GeometryHex3D;
 
-    class QuadratureBase;
+    class QuadratureRefCell;
     class QuadratureEngine;
     class Quadrature0D;
     class Quadrature1D;

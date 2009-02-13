@@ -32,7 +32,7 @@ public :
    *
    * @param q Quadrature information for reference cell.
    */
-  QuadratureEngine(const QuadratureBase& q);
+  QuadratureEngine(const QuadratureRefCell& q);
 
   /// Destructor
   ~QuadratureEngine(void);
@@ -105,7 +105,7 @@ private :
   double_array _jacobianInv; /// Inverse of Jacobian at quad pts.
   double_array _basisDeriv; ///< Deriv. of basis fns at quad pts.
 
-  const QuadratureBase& _quadRefCell;
+  const QuadratureRefCell& _quadRefCell;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
