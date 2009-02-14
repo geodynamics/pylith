@@ -13,6 +13,7 @@
 #include <portinfo>
 
 #include "TestFieldMesh.hh" // Implementation of class methods
+
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 

@@ -19,9 +19,9 @@
 #include "data/NeumannData.hh" // USES NeumannData
 
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
+#include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "pylith/topology/Mesh.hh" // USES PETSc Mesh
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
@@ -63,32 +63,32 @@ pylith::bc::TestNeumann::testConstructor(void)
 void
 pylith::bc::TestNeumann::testInitialize(void)
 { // testInitialize
-  ALE::Obj<Mesh> mesh;
+  topology::Mesh mesh;
   Neumann bc;
-  topology::FieldsManager fields(mesh);
+  topology::SolutionFields fields(mesh);
   _initialize(&mesh, &bc, &fields);
 
   CPPUNIT_ASSERT(0 != _data);
 
-  const ALE::Obj<SubMesh>& boundaryMesh = bc._boundaryMesh;
+  const topology::SubMesh& boundaryMesh = bc._boundaryMesh;
+  const ALE::Obj<SieveSubMesh>& submesh = boundaryMesh.sieveMesh();
 
   // Check boundary mesh
-  CPPUNIT_ASSERT(!boundaryMesh.isNull());
+  CPPUNIT_ASSERT(!submesh.isNull());
 
-  const int cellDim = boundaryMesh->getDimension();
-  const ALE::Obj<SubMesh::label_sequence>& cells = boundaryMesh->heightStratum(1);
-  const int numBoundaryVertices = boundaryMesh->depthStratum(0)->size();
+  const int cellDim = boundaryMesh.dimension();
+  const ALE::Obj<SubMesh::label_sequence>& cells = submesh->heightStratum(1);
+  const int numBoundaryVertices = submesh->depthStratum(0)->size();
   const int numBoundaryCells = cells->size();
 
   CPPUNIT_ASSERT_EQUAL(_data->cellDim, cellDim);
   CPPUNIT_ASSERT_EQUAL(_data->numBoundaryVertices, numBoundaryVertices);
   CPPUNIT_ASSERT_EQUAL(_data->numBoundaryCells, numBoundaryCells);
 
-  // boundaryMesh->view("BOUNDARY MESH");
-
-  const int boundaryDepth = boundaryMesh->depth()-1; // depth of boundary cells
-  const ALE::Obj<real_section_type>& coordinates =
+  const int boundaryDepth = submesh->depth()-1; // depth of boundary cells
+  const ALE::Obj<RealSection>& coordinates =
     mesh->getRealSection("coordinates");
+  RestrictVisitor coordsVisitor(*coordinates, numCorners*spaceDim);
   // coordinates->view("Mesh coordinates from TestNeumann::testInitialize");
 
   const int spaceDim = _data->spaceDim;
@@ -103,13 +103,14 @@ pylith::bc::TestNeumann::testInitialize(void)
   for(SubMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
-    const int numCorners = boundaryMesh->getNumCellCorners(*c_iter, boundaryDepth);
+    const int numCorners = submesh->getNumCellCorners(*c_iter, boundaryDepth);
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
 
-    boundaryMesh->restrictClosure(coordinates, *c_iter, &cellVertices[0],
-			   cellVertices.size());
+    coordsVisitor.clear(); //??
+    boundaryMesh->restrictClosure(coordinates, coordsVisitor);
     double vert =0.0;
     double vertE =0.0;
+    const double* cellVertices = coordsVisitor.getValues();
     // std::cout << "c_iter " << *c_iter << " vertex coords:" << std::endl;
     for(int iVert = 0; iVert < numCorners; ++iVert) {
       for(int iDim = 0; iDim < spaceDim; ++iDim) {
@@ -131,31 +132,26 @@ pylith::bc::TestNeumann::testInitialize(void)
   const int fiberDim = numQuadPts * spaceDim;
   double_array tractionsCell(fiberDim);
   int index = 0;
+  const ALE::Obj<RealSection>& tractionSection = bc._tractions->section();
 
   for(SubMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
-
-    bc._boundaryMesh->restrictClosure(bc._tractions, *c_iter,
-			       &tractionsCell[0], tractionsCell.size());
-
-    // std::cout << "Tractions at quadrature points: " << std::endl;
-    // std::cout << "Computed    Expected" << std::endl;
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    tractionSection->restrictPoint(*c_iter,
+				   &tractionsCell[0], tractionsCell.size());
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
       for (int iDim =0; iDim < spaceDim; ++iDim) {
 	const double tractionsCellData = _data->tractionsCell[index];
-        // std::cout << "  " << tractionsCell[iQuad*spaceDim+iDim] << "   " << tractionsCellData << std::endl;
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(tractionsCellData,
 				     tractionsCell[iQuad*spaceDim+iDim],
 				     tolerance);
 	++index;
       } // for
-      // std::cout << std::endl;
-    } // for
   } // for
 
 } // testInitialize
 
+#if 0
 // ----------------------------------------------------------------------
 // Test integrateResidual().
 void
@@ -263,6 +259,6 @@ pylith::bc::TestNeumann::_initialize(ALE::Obj<Mesh>* mesh,
     throw std::runtime_error(err.msg());
   } // catch
 } // _initialize
-
+#endif
 
 // End of file 

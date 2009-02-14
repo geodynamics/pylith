@@ -37,6 +37,7 @@ testbc_SOURCES = \
 	TestDirichletBoundaryQuad4.cc \
 	TestDirichletBoundaryTet4.cc \
 	TestDirichletBoundaryHex8.cc \
+	TestNeumann.cc \
 	test_bc.cc
 
 
@@ -46,7 +47,6 @@ testbc_SOURCES = \
 #	TestAbsorbingDampersQuad4.cc \
 #	TestAbsorbingDampersTet4.cc \
 #	TestAbsorbingDampersHex8.cc \
-#	TestNeumann.cc \
 #	TestNeumannLine2.cc \
 #	TestNeumannTri3.cc \
 #	TestNeumannQuad4.cc \
