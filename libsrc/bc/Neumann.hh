@@ -21,6 +21,9 @@
 
 // Include directives ---------------------------------------------------
 #include "BoundaryCondition.hh" // ISA BoundaryCondition
+
+#include "pylith/topology/SubMesh.hh" // ISA Quadrature<SubMesh>
+#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 #include "pylith/utils/array.hh" // USES std::vector, double_array, int_array

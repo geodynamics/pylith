@@ -14,8 +14,8 @@
 
 #include "TestFieldMesh.hh" // Implementation of class methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "pylith/utils/array.hh" // USES double_array
 

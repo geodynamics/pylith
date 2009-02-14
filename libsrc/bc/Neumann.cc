@@ -12,9 +12,6 @@
 
 #include <portinfo>
 
-#include "pylith/topology/SubMesh.hh" // HOLDSA SubMesh
-#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-
 #include "Neumann.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // HOLDSA Field
