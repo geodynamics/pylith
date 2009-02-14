@@ -15,72 +15,80 @@
 #else
 
 // Set time step for advancing from time t to time t+dt.
+template<typename quadrature_type>
 inline
 void
-pylith::feassemble::Integrator::timeStep(const double dt) {
+pylith::feassemble::Integrator<quadrature_type>::timeStep(const double dt) {
   _dt = dt;
 } // timeStep
 
 // Check whether Jacobian needs to be recomputed.
+template<typename quadrature_type>
 inline
 bool
-pylith::feassemble::Integrator::needNewJacobian(void) const {
+pylith::feassemble::Integrator<quadrature_type>::needNewJacobian(void) const {
   return _needNewJacobian;
 } // needNewJacobian
 
 // Set flag for setting constraints for total field solution or
+template<typename quadrature_type>
 inline
 void
-pylith::feassemble::Integrator::useSolnIncr(const bool flag) {
+pylith::feassemble::Integrator<quadrature_type>::useSolnIncr(const bool flag) {
   _useSolnIncr = flag;
 } // useSolnIncr
 
 // Integrate contributions to residual term (r) for operator.
+template<typename quadrature_type>
 inline
 void
-pylith::feassemble::Integrator::integrateResidual(
-			           const topology::Field& residual,
-				   const double t,
-			           topology::SolutionFields* const fields) {
+pylith::feassemble::Integrator<quadrature_type>::integrateResidual(
+			     const topology::Field<topology::Mesh>& residual,
+			     const double t,
+			     topology::SolutionFields* const fields) {
 } // integrateResidual
 
 // Integrate contributions to Jacobian matrix (A) associated with
 // operator.
+template<typename quadrature_type>
 inline
 void
-pylith::feassemble::Integrator::integrateJacobian(
-				       PetscMat* mat,
-				       const double t,
-				       topology::SolutionFields* const fields) {
+pylith::feassemble::Integrator<quadrature_type>::integrateJacobian(
+				     PetscMat* mat,
+				     const double t,
+				     topology::SolutionFields* const fields) {
   _needNewJacobian = false;
 } // integrateJacobian
 
 // Integrate contributions to residual term (r) for operator that
 // do not require assembly over cells, vertices, or processors.
+template<typename quadrature_type>
 inline
 void
-pylith::feassemble::Integrator::integrateResidualAssembled(
-				   const topology::Field& residual,
-				   const double t,
-				   topology::SolutionFields* const fields) {
+pylith::feassemble::Integrator<quadrature_type>::integrateResidualAssembled(
+			     const topology::Field<topology::Mesh>& residual,
+			     const double t,
+			     topology::SolutionFields* const fields) {
   _needNewJacobian = false;
 } // integrateResidualAssembled
 
 // Integrate contributions to Jacobian matrix (A) associated with
 // operator that do not require assembly over cells, vertices, or
 // processors
+template<typename quadrature_type>
 inline
 void
-pylith::feassemble::Integrator::integrateJacobianAssembled(
-					PetscMat* mat,
-					const double t,
-					topology::SolutionFields* const fields) {
+pylith::feassemble::Integrator<quadrature_type>::integrateJacobianAssembled(
+				      PetscMat* mat,
+				      const double t,
+				      topology::SolutionFields* const fields) {
 } // integrateJacobianAssembled
 
 // Update state variables as needed.
+template<typename quadrature_type>
 inline
 void
-pylith::feassemble::Integrator::updateState(
+pylith::feassemble::Integrator<quadrature_type>::updateState(
 				     const double t,
 				     topology::SolutionFields* const fields) {
 } // updateState

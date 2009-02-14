@@ -27,16 +27,8 @@
 namespace pylith {
   namespace feassemble {
     class TestIntegrator;
-
-    class Quadrature1D; // USES Quadrature1D
   } // feassemble
 } // pylith
-
-namespace spatialdata {
-  namespace spatialdb {
-    class GravityField; // USES GravityField
-  } // spatialdb
-} // spatialdata
 
 /// C++ unit testing for Integrator
 class pylith::feassemble::TestIntegrator : public CppUnit::TestFixture
@@ -83,15 +75,6 @@ public :
 
   /// Test _resetCellMatrix()
   void testResetCellMatrix(void);
-
-  // PRIVATE METHODS ////////////////////////////////////////////////////
-private :
-
-  /** Initialize 1-D quadrature object.
-   *
-   * @param quadrature Quadrature object
-   */
-  void _initQuadrature(Quadrature1D* quadrature);
 
 }; // class TestIntegrator
 

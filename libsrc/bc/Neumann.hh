@@ -27,7 +27,7 @@
 
 // Neumann --------------------------------------------------------------
 class pylith::bc::Neumann : public BoundaryCondition, 
-			    public feassemble::Integrator
+			    public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
 { // class Neumann
   friend class TestNeumann; // unit testing
 
@@ -55,7 +55,7 @@ public :
    * @param t Current time.
    * @param fields Solution fields.
    */
-  void integrateResidual(const topology::Field& residual,
+  void integrateResidual(const topology::Field<topology::Mesh>& residual,
 			 const double t,
 			 topology::SolutionFields* const fields);
 
@@ -91,7 +91,7 @@ public :
    *
    * @returns Traction vector at integration points.
    */
-  const topology::Field&
+  const topology::Field<topology::SubMesh>&
   cellField(const char* name,
 	    topology::SolutionFields* const fields);
 
@@ -111,7 +111,7 @@ private :
   topology::SubMesh* _boundaryMesh;
 
   /// Traction vector in global coordinates at integration points.
-  topology::FieldSubMesh* _tractions;
+  topology::Field<topology::SubMesh>* _tractions;
 
 }; // class Neumann
 

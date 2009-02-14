@@ -35,6 +35,7 @@
 #include "pylith/utils/array.hh" // HASA double_array
 
 // Integrator -----------------------------------------------------------
+template<typename quadrature_type>
 class pylith::feassemble::Integrator
 { // Integrator
   friend class TestIntegrator; // unit testing
@@ -54,7 +55,7 @@ public :
    *
    * @param q Quadrature for integrating.
    */
-  void quadrature(const Quadrature* q);
+  void quadrature(const quadrature_type* q);
 
   /** Set manager of scales used to nondimensionalize problem.
    *
@@ -62,7 +63,7 @@ public :
    */
   void normalizer(const spatialdata::units::Nondimensional& dim);
 
-  /** Set gravity field. Gravity Field should already be initialized.
+  /** Set gravity field.
    *
    * @param g Gravity field.
    */
@@ -179,21 +180,12 @@ protected :
   /// Zero out matrix containing result of integration for cell.
   void _resetCellMatrix(void);
 
-// PRIVATE METHODS //////////////////////////////////////////////////////
-private :
-
-  // Not implemented.
-  Integrator(const Integrator& i);
-
-  /// Not implemented
-  const Integrator& operator=(const Integrator&);
-
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
   double _dt; ///< Time step for t -> t+dt
 
-  Quadrature* _quadrature; ///< Quadrature for integrating finite-element
+  quadrature_type* _quadrature; ///< Quadrature for integrating finite-element
 
   spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer.
   spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
@@ -212,10 +204,18 @@ protected :
   /// solution or an incremental field solution
   bool _useSolnIncr;
 
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
+private :
+
+  Integrator(const Integrator& i); ///< Not implemented
+  const Integrator& operator=(const Integrator&); ///< Not implemented
+
 }; // Integrator
 
 #include "Integrator.icc" // inline methods
+#include "Integrator.cc" // template methods
 
 #endif // pylith_feassemble_integrator_hh
+
 
 // End of file 

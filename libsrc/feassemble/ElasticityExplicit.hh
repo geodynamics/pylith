@@ -61,7 +61,6 @@
 namespace pylith {
   namespace feassemble {
     class ElasticityExplicit;
-    class TestElasticityExplicit;
   } // feassemble
 } // pylith
 

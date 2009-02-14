@@ -25,6 +25,7 @@ libpylith_la_SOURCES = \
 	bc/BoundaryCondition.cc \
 	bc/DirichletBC.cc \
 	bc/DirichletBoundary.cc \
+	bc/Neumann.cc \
 	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
 	feassemble/GeometryPoint1D.cc \
@@ -64,8 +65,6 @@ libpylith_la_SOURCES = \
 	topology/MeshOps.cc \
 	utils/EventLogger.cc
 
-#	feassemble/Integrator.cc \
-# 	bc/Neumann.cc \
 # 	faults/BruneSlipFn.cc \
 # 	faults/ConstRateSlipFn.cc \
 # 	faults/CohesiveTopology.cc \

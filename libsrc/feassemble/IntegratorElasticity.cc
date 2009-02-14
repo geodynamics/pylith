@@ -79,9 +79,8 @@ pylith::feassemble::IntegratorElasticity::useSolnIncr(const bool flag)
 // Update state variables as needed.
 void
 pylith::feassemble::IntegratorElasticity::updateState(
-				   const double t,
-				   topology::FieldsManager* const fields,
-				   const ALE::Obj<Mesh>& mesh)
+					    const double t,
+					    topology::Solution* const fields)
 { // updateState
   assert(0 != _quadrature);
   assert(0 != _material);
@@ -112,7 +111,7 @@ pylith::feassemble::IntegratorElasticity::updateState(
 
   // Get cell information
   const int materialId = _material->id();
-  const ALE::Obj<Mesh::label_sequence>& cells = 
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
     mesh->getLabelStratum("material-id", materialId);
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
@@ -135,7 +134,6 @@ pylith::feassemble::IntegratorElasticity::updateState(
   totalStrain = 0.0;
 
   const ALE::Obj<real_section_type>& disp = fields->getSolution();
-  /// const int dispAtlasTag = fields->getSolutionAtlasTag(materialId);
   
   // Loop over cells
   int c_index = 0;
@@ -143,7 +141,7 @@ pylith::feassemble::IntegratorElasticity::updateState(
        c_iter != cellsEnd;
        ++c_iter, ++c_index) {
     // Compute geometry information for current cell
-    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c_index);
+    _quadrature->retrieveGeometry(*c_iter);
 
     // Restrict input fields to cell
     mesh->restrictClosure(disp, *c_iter, &dispCell[0], cellVecSize);
@@ -163,7 +161,7 @@ pylith::feassemble::IntegratorElasticity::updateState(
 // Verify configuration is acceptable.
 void
 pylith::feassemble::IntegratorElasticity::verifyConfiguration(
-						 const ALE::Obj<Mesh>& mesh) const
+					   const topology::Mesh& mesh) const
 { // verifyConfiguration
   assert(0 != _quadrature);
   assert(0 != _material);

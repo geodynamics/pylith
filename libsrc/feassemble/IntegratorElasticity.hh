@@ -21,21 +21,17 @@
 #define pylith_feassemble_integratorelasticity_hh
 
 #include "Integrator.hh" // ISA Integrator
+#include "pylith/topology/Mesh.hh" // ISA Integrator<Mesh>
+
 #include "pylith/utils/array.hh" // USES std::vector, double_array
-#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
 
 namespace pylith {
-  namespace feassemble {
-    class IntegratorElasticity;
-    class TestIntegratorElasticity;
-  } // feassemble
-
   namespace materials {
     class ElasticMaterial;
   } // feassemble
 } // pylith
 
-class pylith::feassemble::IntegratorElasticity : public Integrator
+class pylith::feassemble::IntegratorElasticity : public Integrator<topology::Mesh>
 { // IntegratorElasticity
   friend class TestIntegratorElasticity; // unit testing
 
@@ -84,14 +80,13 @@ public :
    * @param mesh Finite-element mesh
    */
   void updateState(const double t,
-		   topology::FieldsManager* const fields,
-		   const ALE::Obj<Mesh>& mesh);
+		   topology::SolutionFields* const fields);
 
   /** Verify configuration is acceptable.
    *
    * @param mesh Finite-element mesh
    */
-  void verifyConfiguration(const ALE::Obj<Mesh>& mesh) const;
+  void verifyConfiguration(const topology::Mesh& mesh) const;
 
   /** Get cell field associated with integrator.
    *
@@ -101,11 +96,9 @@ public :
    * @param fields Fields manager.
    * @returns Cell field.
    */
-  const ALE::Obj<real_section_type>&
-  cellField(VectorFieldEnum* fieldType,
-	    const char* name,
-	    const ALE::Obj<Mesh>& mesh,
-	    topology::FieldsManager* const fields);
+  const topology::Field<topology::Mesh>&
+  cellField(const char* name,
+	    topology::SolutionFields* const fields);
 
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
@@ -231,16 +224,16 @@ protected :
   materials::ElasticMaterial* _material;
 
   /// Buffer for storing scalar cell field.
-  ALE::Obj<real_section_type> _bufferCellScalar;
+  Field<topology::Mesh>* _bufferCellScalar;
 
   /// Buffer for storing vector cell field.
-  ALE::Obj<real_section_type> _bufferCellVector;
+  Field<topology::Mesh>* _bufferCellVector;
 
   /// Buffer for storing cell tensor field.
-  ALE::Obj<real_section_type> _bufferCellTensor;
+  Field<topology::Mesh>* _bufferCellTensor;
 
   /// Buffer for storing other cell fields.
-  ALE::Obj<real_section_type> _bufferCellOther;
+  Field<topology::Mesh>* _bufferCellOther;
 
 }; // IntegratorElasticity
 
