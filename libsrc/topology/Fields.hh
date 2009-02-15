@@ -22,8 +22,6 @@
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 
-#include "FieldBase.hh" // USES FieldBase::DomainEnum
-
 // Fields ---------------------------------------------------------------
 template<typename field_type>
 class pylith::topology::Fields
@@ -56,7 +54,7 @@ public :
    * @param fiberDim Fiber dimension for field.
    */
   void add(const char* name,
-	   const FieldBase::DomainEnum domain,
+	   const typename field_type::DomainEnum domain,
 	   const int fiberDim);
 
   /** Delete field.

@@ -26,10 +26,10 @@ testtopology_SOURCES = \
 	TestSubMesh.cc \
 	TestFieldMesh.cc \
 	TestFieldSubMesh.cc \
+	TestFieldsMesh.cc \
+	TestFieldsSubMesh.cc \
 	test_topology.cc
 
-#	TestFieldsMesh.cc \
-#	TestFieldsSubMesh.cc
 
 noinst_HEADERS = \
 	TestMesh.hh \

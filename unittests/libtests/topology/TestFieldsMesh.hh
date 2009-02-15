@@ -22,13 +22,13 @@
 // Include directives ---------------------------------------------------
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "pylith/topology/topologyfwd.hh" // forward declarations
+
 // Forward declarations -------------------------------------------------
 /// Namespace for pylith package
 namespace pylith {
   namespace topology {
     class TestFieldsMesh;
-
-    class Mesh;
   } // topology
 } // pylith
 

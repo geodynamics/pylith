@@ -18,7 +18,7 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 template<typename field_type>
-pylith::topology::Fields<field_type>::Fields(const field_type::Mesh& mesh) :
+pylith::topology::Fields<field_type>::Fields(const typename field_type::Mesh& mesh) :
   _mesh(mesh)
 { // constructor
 } // constructor
@@ -51,9 +51,10 @@ pylith::topology::Fields<field_type>::add(const char* name)
 // Add field.
 template<typename field_type>
 void 
-pylith::topology::Fields<field_type>::add(const char* name,
-						     const FieldBase::DomainEnum domain,
-						     const int fiberDim)
+pylith::topology::Fields<field_type>::add(
+			       const char* name,
+			       const typename field_type::DomainEnum domain,
+			       const int fiberDim)
 { // add
   typename map_type::iterator iter = _fields.find(name);
   if (iter != _fields.end()) {

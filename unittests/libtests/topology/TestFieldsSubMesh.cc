@@ -14,18 +14,19 @@
 
 #include "TestFieldsSubMesh.hh" // Implementation of class methods
 
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
-#include "pylith/topology/FieldSubMesh.hh" // USES FieldSubMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-
-typedef pylith::topology::Fields<pylith::topology::FieldSubMesh,
-				 pylith::topology::SubMesh> FieldsSubMesh;
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldsSubMesh );
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> > FieldsSubMesh;
+typedef pylith::topology::SubMesh::RealSection RealSection;
+typedef pylith::topology::SubMesh::SieveMesh SieveMesh;
 
 // ----------------------------------------------------------------------
 void
@@ -81,12 +82,12 @@ pylith::topology::TestFieldsSubMesh::testAddDomain(void)
   FieldsSubMesh fields(*_submesh);
   
   const char* label = "field";
-  fields.add(label, FieldSubMesh::VERTICES_FIELD, fiberDim);
+  fields.add(label, Field<SubMesh>::VERTICES_FIELD, fiberDim);
   const size_t size = 1;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
 
-  FieldSubMesh& field = fields.get(label);
-  const ALE::Obj<MeshRealSection>& section = field.section();
+  Field<SubMesh>& field = fields.get(label);
+  const ALE::Obj<RealSection>& section = field.section();
   CPPUNIT_ASSERT(!section.isNull());
   const ALE::Obj<SieveMesh>& sieveMesh = _submesh->sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
@@ -119,7 +120,7 @@ pylith::topology::TestFieldsSubMesh::testDelete(void)
   fields.del(labelA);
   size = 1;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
-  const FieldSubMesh& field = fields.get(labelB);
+  const Field<SubMesh>& field = fields.get(labelB);
 } // testDelete
 
 // ----------------------------------------------------------------------
@@ -132,7 +133,7 @@ pylith::topology::TestFieldsSubMesh::testGet(void)
 
   const char* label = "field";
   fields.add(label);
-  const FieldSubMesh& field = fields.get(label);
+  const Field<SubMesh>& field = fields.get(label);
 } // testGet
 
 // ----------------------------------------------------------------------
@@ -148,7 +149,7 @@ pylith::topology::TestFieldsSubMesh::testGetConst(void)
 
   const FieldsSubMesh* fieldsPtr = &fields;
   CPPUNIT_ASSERT(0 != fieldsPtr);
-  const FieldSubMesh& field = fieldsPtr->get(label);
+  const Field<SubMesh>& field = fieldsPtr->get(label);
 } // testGetConst
 
 // ----------------------------------------------------------------------
@@ -162,19 +163,19 @@ pylith::topology::TestFieldsSubMesh::testCopyLayout(void)
   FieldsSubMesh fields(*_submesh);
   
   const char* labelA = "field A";
-  fields.add(labelA, FieldSubMesh::VERTICES_FIELD, fiberDim);
+  fields.add(labelA, Field<SubMesh>::VERTICES_FIELD, fiberDim);
 
   const char* labelB = "field B";
   fields.add(labelB);
-  FieldSubMesh& fieldA = fields.get(labelA);
+  Field<SubMesh>& fieldA = fields.get(labelA);
   fieldA.allocate();
 
   fields.copyLayout(labelA);
 
   const size_t size = 2;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
-  const FieldSubMesh& field = fields.get(labelB);
-  const ALE::Obj<MeshRealSection>& section = field.section();
+  const Field<SubMesh>& field = fields.get(labelB);
+  const ALE::Obj<RealSection>& section = field.section();
   CPPUNIT_ASSERT(!section.isNull());
   const ALE::Obj<SieveMesh>& sieveMesh = _submesh->sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
