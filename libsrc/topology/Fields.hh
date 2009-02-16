@@ -22,6 +22,8 @@
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 
+#include <string> // USES std::string
+
 // Fields ---------------------------------------------------------------
 template<typename field_type>
 class pylith::topology::Fields
@@ -81,13 +83,13 @@ public :
    */
   void copyLayout(const char* name);
 
-// PRIVATE TYPEDEFS /////////////////////////////////////////////////////
-private :
+// PROTECTED TYPEDEFS ///////////////////////////////////////////////////
+protected :
 
   typedef std::map< std::string, field_type* > map_type;
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
 
   map_type _fields;
   const typename field_type::Mesh& _mesh;
