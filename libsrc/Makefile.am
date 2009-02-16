@@ -61,8 +61,9 @@ libpylith_la_SOURCES = \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \
 	topology/Mesh.cc \
-	topology/SubMesh.cc \
 	topology/MeshOps.cc \
+	topology/SubMesh.cc \
+	topology/SolutionFields.cc \
 	utils/EventLogger.cc
 
 # 	faults/BruneSlipFn.cc \

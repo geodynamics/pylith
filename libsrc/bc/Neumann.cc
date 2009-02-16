@@ -251,7 +251,6 @@ pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& re
   assert(0 != _quadrature);
   assert(0 != _boundaryMesh);
   assert(0 != _tractions);
-  assert(0 != fields);
 
   PetscErrorCode err = 0;
 
