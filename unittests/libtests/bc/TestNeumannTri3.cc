@@ -16,7 +16,8 @@
 
 #include "data/NeumannDataTri3.hh" // USES NeumannDataTri3
 
-#include "pylith/feassemble/Quadrature1Din2D.hh" // USES Quadrature1Din2D
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/GeometryLine2D.hh" // USES GeometryLine2D
 
 // ----------------------------------------------------------------------
@@ -27,10 +28,10 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestNeumannTri3 );
 void
 pylith::bc::TestNeumannTri3::setUp(void)
 { // setUp
+  TestNeumann::setUp();
   _data = new NeumannDataTri3();
-  _quadrature = new feassemble::Quadrature1Din2D();
-  CPPUNIT_ASSERT(0 != _quadrature);
   feassemble::GeometryLine2D geometry;
+  CPPUNIT_ASSERT(0 != _quadrature);
   _quadrature->refGeometry(&geometry);
 } // setUp
 

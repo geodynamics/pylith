@@ -16,7 +16,8 @@
 
 #include "data/NeumannDataTet4.hh" // USES NeumannDataTet4
 
-#include "pylith/feassemble/Quadrature2Din3D.hh" // USES Quadrature2Din3D
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/GeometryTri3D.hh" // USES GeometryTri3D
 
 // ----------------------------------------------------------------------
@@ -27,10 +28,10 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestNeumannTet4 );
 void
 pylith::bc::TestNeumannTet4::setUp(void)
 { // setUp
+  TestNeumann::setUp();
   _data = new NeumannDataTet4();
-  _quadrature = new feassemble::Quadrature2Din3D();
-  CPPUNIT_ASSERT(0 != _quadrature);
   feassemble::GeometryTri3D geometry;
+  CPPUNIT_ASSERT(0 != _quadrature);
   _quadrature->refGeometry(&geometry);
 } // setUp
 

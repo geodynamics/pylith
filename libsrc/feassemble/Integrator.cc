@@ -49,7 +49,7 @@ void
 pylith::feassemble::Integrator<quadrature_type>::quadrature(const quadrature_type* q)
 { // quadrature
   delete _quadrature;
-  _quadrature = (0 != q) ? q->clone() : 0;
+  _quadrature = (0 != q) ? new quadrature_type(*q) : 0;
 
   // Deallocate cell vector and matrix since size may change
   _cellVector.resize(0);

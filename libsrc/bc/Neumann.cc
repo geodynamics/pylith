@@ -105,7 +105,7 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
 
   // Create section for traction vector in global coordinates
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
-  const int cellDim = _quadrature->cellDim();
+  const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
   const int numBasis = _quadrature->numBasis();
   const int numQuadPts = _quadrature->numQuadPts();
   const int spaceDim = cellGeometry.spaceDim();
@@ -118,7 +118,7 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
 
   // Containers for orientation information
   const int orientationSize = spaceDim * spaceDim;
-  const int jacobianSize = (cellDim > 0) ? spaceDim * cellDim : 1;
+  const int jacobianSize = spaceDim * cellDim;
   double_array jacobian(jacobianSize);
   double jacobianDet = 0;
   double_array orientation(orientationSize);
@@ -173,8 +173,7 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
   const ALE::Obj<SubRealSection>& tractSection = _tractions->section();
   assert(!tractSection.isNull());
 
-  const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
-  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
+  const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
 
   assert(0 != _normalizer);
   const double lengthScale = _normalizer->lengthScale();
@@ -194,8 +193,8 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
     quadPtsGlobal = quadPtsNondim;
     _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
 				lengthScale);
-
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    coordsVisitor.clear();
+    submesh->restrictClosure(*c_iter, coordsVisitor);
     
     cellTractionsGlobal = 0.0;
     for(int iQuad=0, iRef=0, iSpace=0; iQuad < numQuadPts;
@@ -273,7 +272,6 @@ pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& re
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
 
   // Allocate vectors for cell values.
   _initCellVector();

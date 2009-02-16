@@ -103,7 +103,9 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   const typename RealSection::chart_type& chart = section->getChart();
 
   // Allocate field and cell buffer for Jacobian at quadrature points
-  fiberDim = _numQuadPts * _cellDim * _spaceDim;
+  fiberDim = (_cellDim > 0) ?
+    _numQuadPts * _cellDim * _spaceDim :
+    _numQuadPts * 1 * _spaceDim;
   _jacobianField = new topology::Field<mesh_type>(mesh);
   assert(0 != _jacobianField);
   _jacobianField->newSection(chart, fiberDim);
@@ -162,6 +164,7 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   for(typename label_sequence::iterator c_iter = cells->begin();
       c_iter != cellsEnd;
       ++c_iter) {
+    coordsVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
     const double* cellVertexCoords = coordsVisitor.getValues();
     assert(0 != cellVertexCoords);

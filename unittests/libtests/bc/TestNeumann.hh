@@ -25,7 +25,7 @@
 
 #include "pylith/bc/bcfwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // forward declarations
-#include "pylith/topology/feassemblefwd.hh" // forward declarations
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 
 /// Namespace for pylith package
 namespace pylith {
@@ -66,7 +66,7 @@ public :
 protected :
 
   NeumannData* _data; ///< Data for testing
-  feassemble::Quadrature<topology::Mesh>* _quadrature; ///< Used in testing.
+  feassemble::Quadrature<topology::SubMesh>* _quadrature; ///< Used in testing.
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
