@@ -205,8 +205,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   CPPUNIT_ASSERT(!solutionSection.isNull());
 
   PetscMat jacobian;
-  mesh.view("MESH AAAA");
-  sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection)->view("Global Order");
+  //sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection)->view("Global Order");
   PetscErrorCode err = MeshCreateMatrix(sieveMesh, solutionSection, 
 					MATMPIBAIJ, &jacobian);
   CPPUNIT_ASSERT(0 == err);
@@ -221,8 +220,6 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   CPPUNIT_ASSERT(0 == err);
 
   CPPUNIT_ASSERT(!sieveMesh->depthStratum(0).isNull());
-
-  MatView(jacobian, PETSC_VIEWER_STDOUT_WORLD);
 
   const double* valsE = _data->valsJacobian;
   const int totalNumVertices = sieveMesh->depthStratum(0)->size();
@@ -249,7 +246,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
     cols[iCol] = iCol;
   MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
 
-#if 1
+#if 0
   std::cout << "JACOBIAN\n";
   for (int iRow=0, i=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol, ++i)

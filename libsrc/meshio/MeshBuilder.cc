@@ -199,6 +199,8 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
 
   ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
 						 &(*coordinates)[0]);
+
+  sieveMesh->getFactory()->clear();
 } // buildMesh
 
 // ----------------------------------------------------------------------

@@ -264,11 +264,6 @@ pylith::bc::TestNeumann::_initialize(topology::Mesh* mesh,
     residual.zero();
 
     fields->copyLayout("residual");
-
-    topology::Field<topology::Mesh>& solution = fields->getSolution();
-    const ALE::Obj<RealSection>& solutionSection = solution.section();
-    CPPUNIT_ASSERT(!solutionSection.isNull());
-    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection)->view("Global Order");
   } catch (const ALE::Exception& err) {
     throw std::runtime_error(err.msg());
   } // catch
