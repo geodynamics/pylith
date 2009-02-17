@@ -90,7 +90,8 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
       sieve->setChart(SieveMesh::sieve_type::chart_type(0, 
 							numCells+numVertices));
       // Set cone and support sizes
-      for(int c = 0; c < numCells; ++c) {sieve->setConeSize(c, numCorners);}
+      for (int c = 0; c < numCells; ++c)
+	sieve->setConeSize(c, numCorners);
       sieve->symmetrizeSizes(numCells, numCorners, 
 			     const_cast<int*>(&cells[0]), numCells);
       // Allocate point storage
@@ -98,14 +99,15 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
       // Fill up cones
       int *cone  = new int[numCorners];
       int *coneO = new int[numCorners];
-      for(int v = 0; v < numCorners; ++v) {coneO[v] = 1;}
-      for(int c = 0; c < numCells; ++c) {
-        for(int v = 0; v < numCorners; ++v)
+      for (int v = 0; v < numCorners; ++v)
+	coneO[v] = 1;
+      for (int c = 0; c < numCells; ++c) {
+        for (int v = 0; v < numCorners; ++v)
 	  cone[v] = cells[c*numCorners+v]+numCells;
         sieve->setCone(cone, c);
         sieve->setConeOrientation(coneO, c);
       } // for
-      delete [] cone;
+      delete [] cone; cone = 0;
       // Symmetrize to fill up supports
       sieve->symmetrize();
     } else {

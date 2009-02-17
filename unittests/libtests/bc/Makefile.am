@@ -43,15 +43,15 @@ testbc_SOURCES = \
 	TestNeumannQuad4.cc \
 	TestNeumannTet4.cc \
 	TestNeumannHex8.cc \
+	TestAbsorbingDampers.cc \
+	TestAbsorbingDampersLine2.cc \
+	TestAbsorbingDampersTri3.cc \
+	TestAbsorbingDampersQuad4.cc \
+	TestAbsorbingDampersTet4.cc \
+	TestAbsorbingDampersHex8.cc \
 	test_bc.cc
 
 
-#	TestAbsorbingDampers.cc \
-#	TestAbsorbingDampersLine2.cc \
-#	TestAbsorbingDampersTri3.cc \
-#	TestAbsorbingDampersQuad4.cc \
-#	TestAbsorbingDampersTet4.cc \
-#	TestAbsorbingDampersHex8.cc \
 #	TestBoundaryMesh.cc \
 #	TestBoundaryMeshTri3.cc \
 #	TestBoundaryMeshQuad4.cc \

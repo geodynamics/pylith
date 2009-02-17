@@ -73,7 +73,7 @@ private :
 
   /** Initialize Neumann boundary condition.
    *
-   * @param mesh PETSc mesh to initialize
+   * @param mesh Finite-element mesh to initialize
    * @param bc Neumann boundary condition to initialize.
    * @param fields Solution fields.
    */

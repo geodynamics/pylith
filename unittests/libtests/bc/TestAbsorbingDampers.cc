@@ -18,19 +18,27 @@
 
 #include "data/AbsorbingDampersData.hh" // USES AbsorbingDampersData
 
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
 
-#include <stdexcept> // USES std::runtime_error
+#include <stdexcept> // USES std::runtime_erro
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestAbsorbingDampers );
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::SubMesh::SieveMesh SieveMesh;
+typedef pylith::topology::SubMesh::RealSection RealSection;
+typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
+typedef pylith::topology::SubMesh::RealSection SubRealSection;
+typedef pylith::topology::SubMesh::RestrictVisitor RestrictVisitor;
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -38,7 +46,8 @@ void
 pylith::bc::TestAbsorbingDampers::setUp(void)
 { // setUp
   _data = 0;
-  _quadrature = 0;
+  _quadrature = new feassemble::Quadrature<topology::SubMesh>();
+  CPPUNIT_ASSERT(0 != _quadrature);
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -63,41 +72,42 @@ pylith::bc::TestAbsorbingDampers::testConstructor(void)
 void
 pylith::bc::TestAbsorbingDampers::testInitialize(void)
 { // testInitialize
-  ALE::Obj<Mesh> mesh;
+  topology::Mesh mesh;
   AbsorbingDampers bc;
-  topology::FieldsManager fields(mesh);
+  topology::SolutionFields fields(mesh);
   _initialize(&mesh, &bc, &fields);
 
   CPPUNIT_ASSERT(0 != _data);
-  
-  const ALE::Obj<SubMesh>& boundaryMesh = bc._boundaryMesh;
+
+  const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
+  const ALE::Obj<SieveSubMesh>& submesh = boundaryMesh.sieveMesh();
 
   // Check boundary mesh
-  CPPUNIT_ASSERT(!boundaryMesh.isNull());
+  CPPUNIT_ASSERT(!submesh.isNull());
 
-  const int cellDim = boundaryMesh->getDimension();
-  const ALE::Obj<sieve_type>& sieve = boundaryMesh->getSieve();
-  const ALE::Obj<SubMesh::label_sequence>& cells = boundaryMesh->heightStratum(1);
-  const int numVertices = boundaryMesh->depthStratum(0)->size();
+  const int cellDim = boundaryMesh.dimension();
+  const int numCorners = _data->numCorners;
+  const int spaceDim = _data->spaceDim;
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells = submesh->heightStratum(1);
+  const int numVertices = submesh->depthStratum(0)->size();
   const int numCells = cells->size();
+  const int boundaryDepth = submesh->depth()-1; // depth of boundary cells
 
   CPPUNIT_ASSERT_EQUAL(_data->cellDim, cellDim);
   CPPUNIT_ASSERT_EQUAL(_data->numVertices, numVertices);
   CPPUNIT_ASSERT_EQUAL(_data->numCells, numCells);
 
-  //boundaryMesh->view("BOUNDARY MESH");
-
-  const int boundaryDepth = boundaryMesh->depth()-1; // depth of bndry cells
-  ALE::ISieveVisitor::PointRetriever<Mesh::sieve_type> pV(sieve->getMaxConeSize());
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = submesh->getSieve();
+  ALE::ISieveVisitor::PointRetriever<SieveSubMesh::sieve_type> pV(sieve->getMaxConeSize());
   int dp = 0;
-  for(SubMesh::label_sequence::iterator c_iter = cells->begin();
+  for(SieveSubMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
-    const int numCorners = boundaryMesh->getNumCellCorners(*c_iter, boundaryDepth);
+    const int numCorners = submesh->getNumCellCorners(*c_iter, boundaryDepth);
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
 
     sieve->cone(*c_iter, pV);
-    const Mesh::point_type *cone = pV.getPoints();
+    const SieveSubMesh::point_type *cone = pV.getPoints();
     for(int p = 0; p < pV.getSize(); ++p, ++dp) {
       CPPUNIT_ASSERT_EQUAL(_data->cells[dp], cone[p]);
     }
@@ -105,21 +115,27 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
   } // for
 
   // Check damping constants
-  const int sizeE = _data->numCells * _data->numQuadPts * _data->spaceDim;
-  const double* valsE = _data->dampingConsts;
+  const int numQuadPts = _data->numQuadPts;
+  const int fiberDim = numQuadPts * spaceDim;
+  double_array dampersCell(fiberDim);
+  int index = 0;
+  const ALE::Obj<SubRealSection>& dampersSection = bc._dampingConsts->section();
 
-  const int size = bc._dampingConsts->sizeWithBC();
-  const double* vals = bc._dampingConsts->restrictSpace();
-
-  //bc._dampingConsts->view("DAMPING CONSTS");
-
-  CPPUNIT_ASSERT_EQUAL(sizeE, size);
   const double tolerance = 1.0e-06;
-  for (int i=0; i < size; ++i)
-    if (fabs(valsE[i]) > 1.0)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
-    else
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+  for(SieveSubMesh::label_sequence::iterator c_iter = cells->begin();
+      c_iter != cells->end();
+      ++c_iter) {
+    dampersSection->restrictPoint(*c_iter,
+				  &dampersCell[0], dampersCell.size());
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
+      for (int iDim =0; iDim < spaceDim; ++iDim) {
+	const double dampersCellData = _data->dampingConsts[index];
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
+				     dampersCell[iQuad*spaceDim+iDim]/dampersCellData,
+				     tolerance);
+	++index;
+      } // for
+  } // for
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -129,26 +145,31 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
 { // testIntegrateResidual
   CPPUNIT_ASSERT(0 != _data);
 
-  ALE::Obj<Mesh> mesh;
+  topology::Mesh mesh;
   AbsorbingDampers bc;
-  topology::FieldsManager fields(mesh);
+  topology::SolutionFields fields(mesh);
   _initialize(&mesh, &bc, &fields);
 
-  spatialdata::geocoords::CSCart cs;
-  cs.setSpaceDim((mesh)->getDimension());
-  cs.initialize();
+  const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
+  const ALE::Obj<SieveSubMesh>& submesh = boundaryMesh.sieveMesh();
 
-  const ALE::Obj<real_section_type>& residual = fields.getReal("residual");
-  CPPUNIT_ASSERT(!residual.isNull());
-  const double t = 1.0;
-  bc.integrateResidual(residual, t, &fields, mesh, &cs);
+  topology::Field<topology::Mesh>& residual = fields.get("residual");
+  const double t = 0.0;
+  bc.integrateResidual(residual, t, &fields);
+
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  CPPUNIT_ASSERT(!sieveMesh->depthStratum(0).isNull());
 
   const double* valsE = _data->valsResidual;
-  const int totalNumVertices = mesh->depthStratum(0)->size();
+  const int totalNumVertices = sieveMesh->depthStratum(0)->size();
   const int sizeE = _data->spaceDim * totalNumVertices;
 
-  const double* vals = residual->restrictSpace();
-  const int size = residual->sizeWithBC();
+  const ALE::Obj<RealSection>& residualSection = residual.section();
+  CPPUNIT_ASSERT(!residualSection.isNull());
+
+  const double* vals = residualSection->restrictSpace();
+  const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
   //residual->view("RESIDUAL");
@@ -168,23 +189,30 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
 { // testIntegrateJacobian
   CPPUNIT_ASSERT(0 != _data);
 
-  ALE::Obj<Mesh> mesh;
+  topology::Mesh mesh;
   AbsorbingDampers bc;
-  topology::FieldsManager fields(mesh);
+  topology::SolutionFields fields(mesh);
   _initialize(&mesh, &bc, &fields);
-  bc._needNewJacobian = true;
 
-  const ALE::Obj<pylith::real_section_type>& dispTpdt = 
-    fields.getReal("dispTpdt");
-  CPPUNIT_ASSERT(!dispTpdt.isNull());
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+
+  const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
+  const ALE::Obj<SieveSubMesh>& submesh = boundaryMesh.sieveMesh();
+
+  topology::Field<topology::Mesh>& solution = fields.getSolution();
+  const ALE::Obj<RealSection>& solutionSection = solution.section();
+  CPPUNIT_ASSERT(!solutionSection.isNull());
 
   PetscMat jacobian;
-  //mesh->getFactory()->getGlobalOrder(mesh, "default", dispTpdt)->view("Global Order");
-  PetscErrorCode err = MeshCreateMatrix(mesh, dispTpdt, MATMPIBAIJ, &jacobian);
+  mesh.view("MESH AAAA");
+  sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection)->view("Global Order");
+  PetscErrorCode err = MeshCreateMatrix(sieveMesh, solutionSection, 
+					MATMPIBAIJ, &jacobian);
   CPPUNIT_ASSERT(0 == err);
 
   const double t = 1.0;
-  bc.integrateJacobian(&jacobian, t, &fields, mesh);
+  bc.integrateJacobian(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, bc.needNewJacobian());
 
   err = MatAssemblyBegin(jacobian, MAT_FINAL_ASSEMBLY);
@@ -192,8 +220,12 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   err = MatAssemblyEnd(jacobian, MAT_FINAL_ASSEMBLY);
   CPPUNIT_ASSERT(0 == err);
 
+  CPPUNIT_ASSERT(!sieveMesh->depthStratum(0).isNull());
+
+  MatView(jacobian, PETSC_VIEWER_STDOUT_WORLD);
+
   const double* valsE = _data->valsJacobian;
-  const int totalNumVertices = mesh->depthStratum(0)->size();
+  const int totalNumVertices = sieveMesh->depthStratum(0)->size();
   const int nrowsE = totalNumVertices * _data->spaceDim;
   const int ncolsE = totalNumVertices * _data->spaceDim;
 
@@ -217,7 +249,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
     cols[iCol] = iCol;
   MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
 
-#if 0
+#if 1
   std::cout << "JACOBIAN\n";
   for (int iRow=0, i=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol, ++i)
@@ -239,10 +271,9 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
 
 // ----------------------------------------------------------------------
 void
-pylith::bc::TestAbsorbingDampers::_initialize(
-					ALE::Obj<Mesh>* mesh,
-					AbsorbingDampers* const bc,
-					topology::FieldsManager* fields) const
+pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
+					      AbsorbingDampers* const bc,
+					      topology::SolutionFields* fields) const
 { // _initialize
   CPPUNIT_ASSERT(0 != mesh);
   CPPUNIT_ASSERT(0 != bc);
@@ -254,73 +285,78 @@ pylith::bc::TestAbsorbingDampers::_initialize(
     // Setup mesh
     meshio::MeshIOAscii iohandler;
     iohandler.filename(_data->meshFilename);
-    //iohandler.debug(true);
     iohandler.read(mesh);
-    CPPUNIT_ASSERT(!mesh->isNull());
-    (*mesh)->view("Absorbing mesh");
 
+    // Set up coordinates
     spatialdata::geocoords::CSCart cs;
-    cs.setSpaceDim((*mesh)->getDimension());
+    cs.setSpaceDim(mesh->dimension());
     cs.initialize();
+    mesh->coordsys(&cs);
 
-    // Setup quadrature
+    // Set up quadrature
     _quadrature->initialize(_data->basis, _data->basisDerivRef, _data->quadPts,
 			    _data->quadWts, _data->cellDim, _data->numBasis,
 			    _data->numQuadPts, _data->spaceDim);
 
+    // Set up database
     spatialdata::spatialdb::SimpleDB db("TestAbsorbingDampers");
     spatialdata::spatialdb::SimpleIOAscii dbIO;
     dbIO.filename(_data->spatialDBFilename);
     db.ioHandler(&dbIO);
     db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
 
-    const double upDirVals[] = { 0.0, 0.0, 1.0 };
-    double_array upDir(upDirVals, 3);
+    const double upDir[] = { 0.0, 0.0, 1.0 };
 
     bc->quadrature(_quadrature);
     bc->timeStep(_data->dt);
     bc->label(_data->label);
     bc->db(&db);
-    bc->initialize(*mesh, &cs, upDir);
+    bc->initialize(*mesh, upDir);
 
     //bc->_boundaryMesh->view("BOUNDARY MESH");
 
     // Setup fields
     CPPUNIT_ASSERT(0 != fields);
-    fields->addReal("residual");
-    fields->addReal("dispTpdt");
-    fields->addReal("dispT");
-    fields->addReal("dispTmdt");
-    fields->solutionField("dispTpdt");
-    const char* history[] = { "dispTpdt", "dispT", "dispTmdt" };
+    fields->add("residual");
+    fields->add("disp t+dt");
+    fields->add("disp t");
+    fields->add("disp t-dt");
+    fields->solutionField("disp t+dt");
+    const char* history[] = { "disp t+dt", "disp t", "disp t-dt" };
     const int historySize = 3;
     fields->createHistory(history, historySize);
   
-    const ALE::Obj<real_section_type>& residual = fields->getReal("residual");
-    CPPUNIT_ASSERT(!residual.isNull());
-    residual->setChart((*mesh)->getSieve()->getChart());
-    residual->setFiberDimension((*mesh)->depthStratum(0), _data->spaceDim);
-    (*mesh)->allocate(residual);
-    residual->zero();
+    topology::Field<topology::Mesh>& residual = fields->get("residual");
+    const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
+    CPPUNIT_ASSERT(!sieveMesh.isNull());
+    const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+      sieveMesh->depthStratum(0);
+    CPPUNIT_ASSERT(!vertices.isNull());
+    residual.newSection(vertices, _data->spaceDim);
+    residual.allocate();
+    residual.zero();
     fields->copyLayout("residual");
-    
-    const int totalNumVertices = (*mesh)->depthStratum(0)->size();
-    const int numMeshCells = (*mesh)->heightStratum(0)->size();
+
+    const int totalNumVertices = sieveMesh->depthStratum(0)->size();
+    const int numMeshCells = sieveMesh->heightStratum(0)->size();
     const int fieldSize = _data->spaceDim * totalNumVertices;
-    const ALE::Obj<real_section_type>& dispTpdt = fields->getReal("dispTpdt");
-    const ALE::Obj<real_section_type>& dispT = fields->getReal("dispT");
-    const ALE::Obj<real_section_type>& dispTmdt = fields->getReal("dispTmdt");
-    CPPUNIT_ASSERT(!dispTpdt.isNull());
-    CPPUNIT_ASSERT(!dispT.isNull());
-    CPPUNIT_ASSERT(!dispTmdt.isNull());
+    const ALE::Obj<RealSection>& dispTpdtSection = 
+      fields->get("disp t+dt").section();
+    const ALE::Obj<RealSection>& dispTSection = 
+      fields->get("disp t").section();
+    const ALE::Obj<RealSection>& dispTmdtSection = 
+      fields->get("disp t-dt").section();
+    CPPUNIT_ASSERT(!dispTpdtSection.isNull());
+    CPPUNIT_ASSERT(!dispTSection.isNull());
+    CPPUNIT_ASSERT(!dispTmdtSection.isNull());
     const int offset = numMeshCells;
     for (int iVertex=0; iVertex < totalNumVertices; ++iVertex) {
-      dispTpdt->updatePoint(iVertex+offset, 
-			    &_data->fieldTpdt[iVertex*_data->spaceDim]);
-      dispT->updatePoint(iVertex+offset, 
-			 &_data->fieldT[iVertex*_data->spaceDim]);
-      dispTmdt->updatePoint(iVertex+offset, 
-			    &_data->fieldTmdt[iVertex*_data->spaceDim]);
+      dispTpdtSection->updatePoint(iVertex+offset, 
+				   &_data->fieldTpdt[iVertex*_data->spaceDim]);
+      dispTSection->updatePoint(iVertex+offset, 
+				&_data->fieldT[iVertex*_data->spaceDim]);
+      dispTmdtSection->updatePoint(iVertex+offset, 
+				   &_data->fieldTmdt[iVertex*_data->spaceDim]);
     } // for
   } catch (const ALE::Exception& err) {
     throw std::runtime_error(err.msg());
