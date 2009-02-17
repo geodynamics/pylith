@@ -26,6 +26,7 @@ libpylith_la_SOURCES = \
 	bc/DirichletBC.cc \
 	bc/DirichletBoundary.cc \
 	bc/Neumann.cc \
+	bc/AbsorbingDampers.cc \
 	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
 	feassemble/GeometryPoint1D.cc \
@@ -111,8 +112,7 @@ libpylith_la_SOURCES = \
 # 	topology/FieldsManager.cc \
 # 	topology/MeshRefiner.cc 
 
-#	topology/RefineUniform.cc \
-#	bc/AbsorbingDampers.cc
+#	topology/RefineUniform.cc
 
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 libpylith_la_LIBADD = \

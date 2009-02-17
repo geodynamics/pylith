@@ -52,13 +52,16 @@
 
 // Include directives ---------------------------------------------------
 #include "BoundaryCondition.hh" // ISA BoundaryCondition
+
+#include "pylith/topology/SubMesh.hh" // ISA Quadrature<SubMesh>
+#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 #include "pylith/utils/array.hh" // USES std::vector, double_array, int_array
 
 // AbsorbingDampers ------------------------------------------------------
 class pylith::bc::AbsorbingDampers : public BoundaryCondition, 
-				     public feassemble::Integrator
+				     public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
 { // class AbsorbingDampers
   friend class TestAbsorbingDampers; // unit testing
 
@@ -78,7 +81,7 @@ public :
    *   direction that is not collinear with surface normal.
    */
   void initialize(const topology::Mesh& mesh,
-		  const double_array& upDir);
+		  const double upDir[3]);
 
   /** Integrate contributions to residual term (r) for operator.
    *
@@ -86,7 +89,7 @@ public :
    * @param t Current time
    * @param fields Solution fields
    */
-  void integrateResidual(const topology::Field& residual,
+  void integrateResidual(const topology::Field<topology::Mesh>& residual,
 			 const double t,
 			 topology::SolutionFields* const fields);
 
@@ -120,10 +123,10 @@ private :
 private :
 
   /// Mesh of absorbing boundary
-  SubMesh* _boundaryMesh;
+  topology::SubMesh* _boundaryMesh;
 
   /// Damping constants in global coordinates at integration points.
-  FieldSubMesh* _dampingConsts;
+  topology::Field<topology::SubMesh>* _dampingConsts;
 
 }; // class AbsorbingDampers
 

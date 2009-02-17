@@ -28,7 +28,7 @@ namespace pylith {
     class DirichletBC;
     class DirichletBoundary;
     class Neumann;
-    class AbosrbingDampers;
+    class AbsorbingDampers;
 
   } // bc
 } // pylith

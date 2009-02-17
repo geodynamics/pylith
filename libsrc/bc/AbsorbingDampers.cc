@@ -14,9 +14,9 @@
 
 #include "AbsorbingDampers.hh" // implementation of object methods
 
-#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
+#include "pylith/topology/Field.hh" // HOLDSA Field
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -26,6 +26,12 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
+typedef pylith::topology::SubMesh::RealSection SubRealSection;
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -54,10 +60,12 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   assert(0 != _db);
 
   delete _boundaryMesh; _boundaryMesh = 0;
-  delete _dampingConst; _dampingConsts = 0;
+  delete _dampingConsts; _dampingConsts = 0;
 
   _boundaryMesh = new topology::SubMesh(mesh, _label.c_str());
   assert(0 != _boundaryMesh);
+
+  double_array up(upDir, 3);
 
   // check compatibility of quadrature and boundary mesh
   if (_quadrature->cellDim() != _boundaryMesh->dimension()) {
@@ -74,16 +82,18 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   // Get 'surface' cells (1 dimension lower than top-level cells)
   const ALE::Obj<SieveSubMesh>& submesh = _boundaryMesh->sieveMesh();
   assert(!submesh.isNull());
-  const ALE::Obj<SubMesh::label_sequence>& cells = submesh->heightStratum(1);
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
+    submesh->heightStratum(1);
   assert(!cells.isNull());
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
   const int boundaryDepth = submesh->depth()-1; // depth of bndry cells
+
+  // Make sure surface cells are compatible with quadrature.
   for (SieveSubMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
     const int cellNumCorners = 
       submesh->getNumCellCorners(*c_iter, boundaryDepth);
-
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell for absorbing boundary "
@@ -97,24 +107,25 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 
   // Get damping constants at each quadrature point and rotate to
   // global coordinate frame using orientation information
-  const int cellDim = _quadrature->cellDim();
+  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
+  const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
   const int numBasis = _quadrature->numBasis();
   const int numQuadPts = _quadrature->numQuadPts();
-  const int spaceDim = cs->spaceDim();
+  const int spaceDim = cellGeometry.spaceDim();
   const int fiberDim = numQuadPts * spaceDim;
-  _dampingConsts = new FieldSubMesh(*_boundaryMesh);
+
+  _dampingConsts = new topology::Field<topology::SubMesh>(*_boundaryMesh);
   assert(0 != _dampingConsts);
   _dampingConsts->newSection(cells, fiberDim);
   _dampingConsts->allocate();
 
   // Containers for orientation information
-  const int orientationSize = spaceDim*spaceDim;
-  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
-  const int jacobianSize = (cellDim > 0) ? spaceDim * cellDim : 1;
+  const int orientationSize = spaceDim * spaceDim;
+  const int jacobianSize = spaceDim * cellDim;
   double_array jacobian(jacobianSize);
   double jacobianDet = 0;
   double_array orientation(orientationSize);
-  double_array cellVertices(numBasis*spaceDim);
+  double_array cellVertices(numCorners*spaceDim);
 
   // open database with material property information
   _db->open();
@@ -138,9 +149,11 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   double_array dampingConstsLocal(fiberDim);
   double_array dampingConstsGlobal(fiberDim);
 
-  const ALE::Obj<MeshRealSection>& coordinates =
-    mesh->getRealSection("coordinates");
+  const ALE::Obj<RealSection>& coordinates = 
+    submesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						numCorners*spaceDim);
 
   assert(0 != _normalizer);
   const double lengthScale = _normalizer->lengthScale();
@@ -148,19 +161,25 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   const double velocityScale = 
     _normalizer->lengthScale() / _normalizer->timeScale();
 
-  const ALE::Obj<SubMeshRealSection>& constsSection = 
-    _dampingConsts->section();
-  assert(!constsSection.isNull());
+  const ALE::Obj<SubRealSection>& dampersSection = _dampingConsts->section();
+  assert(!dampersSection.isNull());
+
+  const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
+
+  // Compute quadrature information
+  _quadrature->computeGeometry(*_boundaryMesh, cells);
 
   for(SieveSubMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cellsEnd;
       ++c_iter) {
-    _quadrature->computeGeometry(submesh, coordinates, *c_iter);
+    _quadrature->retrieveGeometry(*c_iter);
     const double_array& quadPtsNondim = _quadrature->quadPts();
     const double_array& quadPtsRef = _quadrature->quadPtsRef();
     quadPtsGlobal = quadPtsNondim;
     _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(), 
 				lengthScale);
+    coordsVisitor.clear();
+    submesh->restrictClosure(*c_iter, coordsVisitor);
 
     dampingConstsGlobal = 0.0;
     for(int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
@@ -197,9 +216,10 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
       submesh->restrictClosure(coordinates, *c_iter, 
 			       &cellVertices[0], cellVertices.size());
       memcpy(&quadPtRef[0], &quadPtsRef[iQuad*cellDim], cellDim*sizeof(double));
+      memcpy(&cellVertices[0], coordsVisitor.getValues(), 
+	     cellVertices.size()*sizeof(double));
       cellGeometry.jacobian(&jacobian, &jacobianDet, cellVertices, quadPtRef);
-      cellGeometry.orientation(&orientation, jacobian, jacobianDet, 
-			       upDir);
+      cellGeometry.orientation(&orientation, jacobian, jacobianDet, up);
       orientation /= jacobianDet;
 
       for (int iDim=0; iDim < spaceDim; ++iDim) {
@@ -211,7 +231,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 	  fabs(dampingConstsGlobal[iQuad*spaceDim+iDim]);
       } // for
     } // for
-    constsSection->updatePoint(*c_iter, &dampingConstsGlobal[0]);
+    dampersSection->updatePoint(*c_iter, &dampingConstsGlobal[0]);
   } // for
 
   _db->close();
@@ -220,36 +240,16 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Integrate contributions to residual term (r) for operator.
 void
-pylith::bc::AbsorbingDampers::integrateResidual(
-				   const topology::Field& residual,
-				 const double t,
-				 topology::SolutionFields* const fields)
+pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::Mesh>& residual,
+						const double t,
+						topology::SolutionFields* const fields)
 { // integrateResidual
   assert(0 != _quadrature);
   assert(0 != _boundaryMesh);
+  assert(0 != _dampingConsts);
   assert(0 != fields);
 
   PetscErrorCode err = 0;
-
-  // Get cell information
-  const ALE::Obj<SieveSubMesh>& submesh = _boundaryMesh->sieveMesh();
-  assert(!submesh.isNull());
-  const ALE::Obj<SubMesh::label_sequence>& cells = submesh->heightStratum(1);
-  assert(!cells.isNull());
-  const SubMesh::label_sequence::iterator cellsEnd = cells->end();
-
-  // Get sections
-  const ALE::Obj<MeshRealSection>& coordinates = 
-    mesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  const ALE::Obj<MeshRealSection>& dispTpdt = fields->getField("disp t+dt");
-  const ALE::Obj<MeshRealSection>& dispTmdt = fields->getField("disp t-dt");
-  assert(!dispTpdt.isNull());
-  assert(!dispTmdt.isNull());
-
-  // Get parameters used in integration.
-  const double dt = _dt;
-  assert(dt > 0);
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
@@ -257,31 +257,62 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
+
+  // Get cell information
+  const ALE::Obj<SieveSubMesh>& submesh = _boundaryMesh->sieveMesh();
+  assert(!submesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
+    submesh->heightStratum(1);
+  assert(!cells.isNull());
+  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  // Get sections
+  const ALE::Obj<SubRealSection>& dampersSection = _dampingConsts->section();
+  assert(!dampersSection.isNull());
+
+  const ALE::Obj<RealSection>& residualSection = residual.section();
+  assert(!residualSection.isNull());
+
+  const topology::Field<topology::Mesh>& dispTpdt = 
+    fields->get("disp t+dt");
+  const ALE::Obj<RealSection>& dispTpdtSection = dispTpdt.section();
+  assert(!dispTpdtSection.isNull());
+  topology::Mesh::RestrictVisitor dispTpdtVisitor(*dispTpdtSection, 
+						  numBasis*spaceDim);
+  const topology::Field<topology::Mesh>& dispTmdt = 
+    fields->get("disp t-dt");
+  const ALE::Obj<RealSection>& dispTmdtSection = dispTmdt.section();
+  assert(!dispTmdtSection.isNull());
+  topology::Mesh::RestrictVisitor dispTmdtVisitor(*dispTmdtSection, 
+						  numBasis*spaceDim);
+
+  // Get parameters used in integration.
+  const double dt = _dt;
+  assert(dt > 0);
 
   // Allocate vectors for cell values.
   _initCellVector();
-  const int cellVecSize = numBasis*spaceDim;
-  double_array dispTpdtCell(cellVecSize);
-  double_array dispTmdtCell(cellVecSize);
 
   for (SieveSubMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
-    // Compute geometry information for current cell
-    _quadrature->computeGeometry(submesh, coordinates, *c_iter);
+    // Get geometry information for current cell
+    _quadrature->retrieveGeometry(*c_iter);
 
     // Reset element vector to zero
     _resetCellVector();
 
     // Restrict input fields to cell
-    submesh->restrictClosure(dispTpdt, *c_iter, 
-			     &dispTpdtCell[0], cellVecSize);
-    submesh->restrictClosure(dispTmdt, *c_iter, 
-			     &dispTmdtCell[0], cellVecSize);
-    assert(numQuadPts*spaceDim == _dampingConsts->getFiberDimension(*c_iter));
-    const real_section_type::value_type* dampingConstsCell = 
-      _dampingConsts->restrictPoint(*c_iter);
+    dispTpdtVisitor.clear();
+    submesh->restrictClosure(*c_iter, dispTpdtVisitor);
+    const double* dispTpdtCell = dispTpdtVisitor.getValues();
+
+    dispTmdtVisitor.clear();
+    submesh->restrictClosure(*c_iter, dispTmdtVisitor);
+    const double* dispTmdtCell = dispTmdtVisitor.getValues();
+
+    assert(numQuadPts*spaceDim == dampersSection->getFiberDimension(*c_iter));
+    const double* dampingConstsCell = dampersSection->restrictPoint(*c_iter);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -307,7 +338,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
     PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(5*spaceDim))));
 
     // Assemble cell contribution into field
-    submesh->updateAdd(residual, *c_iter, _cellVector);
+    submesh->updateAdd(residualSection, *c_iter, &_cellVector[0]);
   } // for
 } // integrateResidual
 
@@ -324,8 +355,16 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   assert(0 != jacobian);
   assert(0 != fields);
 
-  typedef ALE::ISieveVisitor::IndicesVisitor<MeshRealSection,SieveMesh::order_type,PetscInt> visitor_type;
+  typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> visitor_type;
+
   PetscErrorCode err = 0;
+
+  // Get cell geometry information that doesn't depend on cell
+  const int numQuadPts = _quadrature->numQuadPts();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
 
   // Get cell information
   const ALE::Obj<SieveSubMesh>& submesh = _boundaryMesh->sieveMesh();
@@ -336,45 +375,33 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  const ALE::Obj<MeshRealSection>& coordinates = 
-    mesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  const ALE::Obj<MeshRealSection>& dispT = fields->getField("disp t");
-  assert(!dispT.isNull());
+  const ALE::Obj<SubRealSection>& dampersSection = _dampingConsts->section();
+  assert(!dampersSection.isNull());
+
+  const topology::Field<topology::Mesh>& solution = fields->getSolution();
+  const ALE::Obj<SieveMesh>& sieveMesh = solution.mesh().sieveMesh();
+  const ALE::Obj<RealSection>& solutionSection = solution.section();
+  assert(!solutionSection.isNull());
+  const ALE::Obj<SieveMesh::order_type>& globalOrder = 
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
+					    solutionSection);
+  assert(!globalOrder.isNull());
+  visitor_type iV(*solutionSection, *globalOrder,
+		  (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
+			    sieveMesh->depth())*spaceDim);
 
   // Get parameters used in integration.
   const double dt = _dt;
   assert(dt > 0);
 
-  // Get cell geometry information that doesn't depend on cell
-  const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
-
-  // Allocate vectors for cell values.
-  _initCellVector();
-  const int cellVecSize = numBasis*spaceDim;
-
-  // Allocate vector for cell values (if necessary)
+  // Allocate matrix for cell values.
   _initCellMatrix();
-
-  const ALE::Obj<MeshRealSection>& solution = fields->getSolution();
-  assert(!solution.isNull());  
-  const ALE::Obj<SieveMesh::order_type>& globalOrder = 
-    mesh->getFactory()->getGlobalOrder(mesh, "default", solution);
-  assert(!globalOrder.isNull());
-  visitor_type iV(*solution, *globalOrder,
-		  (int) pow(mesh->getSieve()->getMaxConeSize(),
-			    mesh->depth())*spaceDim);
 
   for (SieveSubMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
-    // Compute geometry information for current cell
-    _quadrature->computeGeometry(_boundaryMesh, coordinates, *c_iter);
+    // Get geometry information for current cell
+    _quadrature->retrieveGeometry(*c_iter);
 
     // Reset element vector to zero
     _resetCellMatrix();
@@ -383,10 +410,8 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     const double_array& basis = _quadrature->basis();
     const double_array& jacobianDet = _quadrature->jacobianDet();
 
-    // Restrict input fields to cell
-    assert(numQuadPts*spaceDim == _dampingConsts->getFiberDimension(*c_iter));
-    const MeshRealSection::value_type* dampingConstsCell = 
-      _dampingConsts->restrictPoint(*c_iter);
+    assert(numQuadPts*spaceDim == dampersSection->getFiberDimension(*c_iter));
+    const double* dampingConstsCell = dampersSection->restrictPoint(*c_iter);
 
     // Compute Jacobian for absorbing bc terms
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
@@ -408,8 +433,8 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
     
     // Assemble cell contribution into PETSc Matrix
-    err = updateOperator(*jacobian, submesh->getSieve(), 
-			 iV, *c_iter, _cellMatrix, ADD_VALUES);
+    err = updateOperator(*jacobian, *submesh->getSieve(), 
+			 iV, *c_iter, &_cellMatrix[0], ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
     iV.clear();
