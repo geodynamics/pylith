@@ -15,36 +15,42 @@
 #endif
 
 // Get names of properties.
+inline
 const pylith::string_vector&
 pylith::materials::Metadata::properties(void) const {
   return _propertyNames;
 }
 
 // Get names of state variables.
+inline
 const pylith::string_vector&
 pylith::materials::Metadata::stateVars(void) const {
   return _stateVarNames;
 }
 
 // Get names of database values for physical properties.
+inline
 const char* const*
 pylith::materials::Metadata::dbProperties(void) const {
   return _dbProperties;
 }
 
 // Get number of database values for physical properties.
+inline
 int
 pylith::materials::Metadata::numDBProperties(void) const {
   return _numDBProperties;
 }
 
 // Get names of database values for state variables.
+inline
 const char* const*
 pylith::materials::Metadata::dbStateVars(void) const {
   return _dbStateVars;
 }
 
 // Get number of database values for state variables.
+inline
 int
 pylith::materials::Metadata::numDBStateVars(void) const {
   return _numDBStateVars;
