@@ -23,35 +23,16 @@
 #define pylith_topology_field_hh
 
 // Include directives ---------------------------------------------------
-#include "topologyfwd.hh" // forward declarations
+#include "FieldBase.hh" // ISA FieldBase
 
 #include <petscmesh.hh>
 
 // Field ----------------------------------------------------------------
 template<typename mesh_type>
-class pylith::topology::Field
+class pylith::topology::Field : public FieldBase
 { // Field
   friend class TestFieldMesh; // unit testing
   friend class TestFieldSubMesh; // unit testing
-
-// PUBLIC ENUMS /////////////////////////////////////////////////////////
-public :
-
-  enum VectorFieldEnum {
-    SCALAR=0, ///< Scalar.
-    VECTOR=1, ///< Vector.
-    TENSOR=2, ///< Tensor.
-    OTHER=3, ///< Not a scalar, vector, or tensor.
-    MULTI_SCALAR=4, ///< Scalar at multiple points.
-    MULTI_VECTOR=5, ///< Vector at multiple points.
-    MULTI_TENSOR=6, ///< Tensor at multiple points.
-    MULTI_OTHER=7, ///< Not a scalar, vector, or tensor at multiple points.
-  }; // VectorFieldEnum
-
-  enum DomainEnum {
-    VERTICES_FIELD=0, ///< FieldBase over vertices.
-    CELLS_FIELD=1, ///< FieldBase over cells.
-  }; // DomainEnum
 
 // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
 public:

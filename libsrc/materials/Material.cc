@@ -14,6 +14,7 @@
 
 #include "Material.hh" // implementation of object methods
 
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/utils/array.hh" // USES double_array, std::vector
 
@@ -29,33 +30,42 @@
 #include <sstream> // USES std::ostringstream
 
 // ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
+
+// ----------------------------------------------------------------------
 // Default constructor.
-pylith::materials::Material::Material(const int tensorSize,
-				      const char** dbValues,
-				      const char** initialStateDBValues,
-				      const int numDBValues,
-				      const PropMetaData* properties,
-				      const int numProperties) :
+pylith::materials::Material::Material(const int dimension,
+				      const int tensorSize,
+				      const Metadata& metadata) :
   _dt(0.0),
+  _properties(0),
+  _stateVars(0),
   _normalizer(new spatialdata::units::Nondimensional),
-  _totalPropsQuadPt(0),
-  _dimension(0),
+  _numPropsQuadPt(0),
+  _numVarsQuadPt(0),
+  _dimension(dimension),
   _tensorSize(tensorSize),
-  _initialStateSize(tensorSize),
-  _initialStateDBValues(initialStateDBValues),
   _needNewJacobian(false),
-  _db(0),
-  _initialStateDB(0),
+  _dbProperties(0),
+  _dbInitialState(0),
   _id(0),
   _label(""),
-  _propMetaData(properties),
-  _numProperties(numProperties),
-  _dbValues(dbValues),
-  _numDBValues(numDBValues)
+  _metadata(metadata)
 { // constructor
+  const string_vector& properties = metadata.properties();
+  const int numProperties = properties.size();
   for (int i=0; i < numProperties; ++i)
-    _totalPropsQuadPt += properties[i].fiberDim;
-  assert(_totalPropsQuadPt >= 0);
+    _numPropsQuadPt += metadata.fiberDim(properties[i].c_str(),
+					 Metadata::PROPERTY);
+  assert(_numPropsQuadPt >= 0);
+
+  const string_vector& stateVars = metadata.stateVars();
+  const int numStateVars = stateVars.size();
+  for (int i=0; i < numStateVars; ++i)
+    _numVarsQuadPt += metadata.fiberDim(stateVars[i].c_str(),
+					Metadata::STATEVAR);
+  assert(_numVarsQuadPt >= 0);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -64,9 +74,10 @@ pylith::materials::Material::~Material(void)
 { // destructor
   delete _normalizer; _normalizer = 0;
 
-  // Python db object owns database, so just set pointer to null
-  _db = 0;
-  _initialStateDB = 0;
+  // Python db object owns databases, so just set pointer to null
+  // :KLUDGE: Should use shared pointer
+  _dbProperties = 0;
+  _dbInitialState = 0;
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -84,78 +95,83 @@ pylith::materials::Material::normalizer(const spatialdata::units::Nondimensional
 // Get physical property parameters and initial state (if used) from database.
 void
 pylith::materials::Material::initialize(
-			   const ALE::Obj<Mesh>& mesh,
-			   const spatialdata::geocoords::CoordSys* cs,
-			   pylith::feassemble::Quadrature* quadrature)
+		     const topology::Mesh& mesh,
+		     feassemble::Quadrature<topology::Mesh>* quadrature)
 { // initialize
-  assert(0 != _db);
-  assert(0 != cs);
+  assert(0 != _dbProperties);
   assert(0 != quadrature);
-  assert(!mesh.isNull());
 
-  // Get cells associated with material
-  const ALE::Obj<real_section_type>& coordinates = 
-    mesh->getRealSection("coordinates");
-  const ALE::Obj<Mesh::label_sequence>& cells = 
-    mesh->getLabelStratum("material-id", _id);
-  assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
-
-  // Create sections to hold physical properties and state variables.
-  _properties = new real_section_type(mesh->comm(), mesh->debug());
-  assert(!_properties.isNull());
-  _properties->setChart(real_section_type::chart_type(*std::min_element(cells->begin(), cells->end()),
-                                                      *std::max_element(cells->begin(), cells->end())+1));
-
+  // Get quadrature information
   const int numQuadPts = quadrature->numQuadPts();
   const int spaceDim = quadrature->spaceDim();
+
+  // Get cells associated with material
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", _id);
+  assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
+
+  // Create sections to hold physical properties
+  delete _properties; _properties = new topology::Field<topology::Mesh>(mesh);
+  assert(0 != _properties);
+  int fiberDim = numQuadPts * _numPropsQuadPt;
+  _properties->newSection(cells, fiberDim);
+  _properties->allocate();
+  const ALE::Obj<RealSection>& propertiesSection = _properties->section();
+  assert(!propertiesSection.isNull());
+
+  // Create arrays for querying
+  const int numDBProperties = _metadata.numDBProperties();
   double_array quadPtsGlobal(numQuadPts*spaceDim);
-  
-  // Fiber dimension is number of quadrature points times number of
-  // values per parameter
-  const int totalPropsQuadPt = _totalPropsQuadPt;
-  const int fiberDim = totalPropsQuadPt * numQuadPts;
-  _properties->setFiberDimension(cells, fiberDim);
-  mesh->allocate(_properties);
+  double_array propertiesQuery(numDBProperties);
+  double_array propertiesCell(numQuadPts*numDBProperties);
 
-  const int initialStateSize = _initialStateSize;
-  const int initialStateFiberDim = initialStateSize * numQuadPts;
-  double_array initialStateQueryData(initialStateSize);
-  double_array initialStateCellData(initialStateFiberDim);
+  // Setup database for quering for physical properties
+  _dbProperties->open();
+  _dbProperties->queryVals(_metadata.dbProperties(),
+			   _metadata.numDBProperties());
 
-  // If initial state is being used, create a section to hold it.
-  if (0 == _initialStateDB)
-    assert(_initialState.isNull());
-  else {
-    _initialState = new real_section_type(mesh->comm(), mesh->debug());
-    assert(!_initialState.isNull());
-    _initialState->setChart(real_section_type::chart_type(
-		 *std::min_element(cells->begin(), cells->end()),
-		 *std::max_element(cells->begin(), cells->end())+1));
-    _initialState->setFiberDimension(cells, initialStateFiberDim);
-    mesh->allocate(_initialState);
-
-    // Setup database for querying
-    _initialStateDB->open();
-    _initialStateDB->queryVals(_initialStateDBValues, initialStateSize);
+  // Create sections to hold state variables
+  delete _stateVars; _stateVars = new topology::Field<topology::Mesh>(mesh);
+  assert(0 != _stateVars);
+  fiberDim = numQuadPts * _numVarsQuadPt;
+  if (fiberDim > 0) {
+    const ALE::Obj<RealSection::chart_type>& chart = 
+      propertiesSection->getChart();
+    assert(!chart.isNull());
+    _stateVars->newSection(*chart, fiberDim);
+    _stateVars->allocate();
   } // if
+  const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
+  assert(!stateVarsSection.isNull());
 
-  // Setup database for querying
-  const int numValues = _numDBValues;
-  _db->open();
-  _db->queryVals(_dbValues, numValues);
+  // Create arrays for querying
+  const int numDBStateVars = _metadata.numDBStateVars();
+  double_array stateVarsQuery;
+  double_array stateVarsCell;
+  if (0 != _dbInitialState) {
+    assert(numDBStateVars > 0);
+    assert(_numVarsQuadPt > 0);
+    stateVarsQuery.resize(numDBStateVars);
+    stateVarsCell.resize(numQuadPts*numDBStateVars);
+    
+    // Setup database for querying for initial state variables
+    _dbInitialState->open();
+    _dbInitialState->queryVals(_metadata.dbStateVars(),
+			       _metadata.numDBStateVars());
+  } // if
 
   assert(0 != _normalizer);
   const double lengthScale = _normalizer->lengthScale();
-  
-  double_array queryData(numValues); // data returned in query  
-  double_array cellData(fiberDim); // Parameters at cell's quad pts
-
+    
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
-    quadrature->computeGeometry(mesh, coordinates, *c_iter);
+    quadrature->retrieveGeometry(*c_iter);
 
     const double_array& quadPtsNonDim = quadrature->quadPts();
     quadPtsGlobal = quadPtsNonDim;
@@ -166,8 +182,8 @@ pylith::materials::Material::initialize(
     for (int iQuadPt=0, index=0; 
 	 iQuadPt < numQuadPts; 
 	 ++iQuadPt, index+=spaceDim) {
-      int err = _db->query(&queryData[0], numValues, &quadPtsGlobal[index],
-			   spaceDim, cs);
+      int err = _dbProperties->query(&propertiesQuery[0], numDBProperties,
+				     &quadPtsGlobal[index], spaceDim, cs);
       if (err) {
 	std::ostringstream msg;
 	msg << "Could not find parameters for physical properties at \n"
@@ -175,15 +191,16 @@ pylith::materials::Material::initialize(
 	for (int i=0; i < spaceDim; ++i)
 	  msg << "  " << quadPtsGlobal[index+i];
 	msg << ") in material " << _label << "\n"
-	    << "using spatial database '" << _db->label() << "'.";
+	    << "using spatial database '" << _dbProperties->label() << "'.";
 	throw std::runtime_error(msg.str());
       } // if
-      _dbToProperties(&cellData[totalPropsQuadPt*iQuadPt], queryData);
-      _nondimProperties(&cellData[totalPropsQuadPt*iQuadPt], totalPropsQuadPt);
+      _dbToProperties(&propertiesCell[iQuadPt*_numPropsQuadPt], 
+		      propertiesQuery);
+      _nondimProperties(&propertiesCell[iQuadPt*_numPropsQuadPt],
+			_numPropsQuadPt);
 
-      if (0 != _initialStateDB) {
-	err = _initialStateDB->query(&initialStateQueryData[0], 
-				     initialStateSize, 
+      if (0 != _dbInitialState) {
+	err = _dbInitialState->query(&stateVarsQuery[0], numDBStateVars,
 				     &quadPtsGlobal[index], spaceDim, cs);
 	if (err) {
 	  std::ostringstream msg;
@@ -191,55 +208,30 @@ pylith::materials::Material::initialize(
 	  for (int i=0; i < spaceDim; ++i)
 	    msg << "  " << quadPtsGlobal[index+i];
 	  msg << ") in material " << _label << "\n"
-	      << "using spatial database '" << _initialStateDB->label() << "'.";
+	      << "using spatial database '" << _dbInitialState->label()
+	      << "'.";
 	  throw std::runtime_error(msg.str());
 	} // if
-	// nondimensionalize initial state
-	_nondimInitState(&initialStateQueryData[0], initialStateSize);
-	memcpy(&initialStateCellData[iQuadPt*initialStateSize],
-	       &initialStateQueryData[0],
-	       initialStateSize*sizeof(double));
+	_dbToStateVars(&stateVarsCell[iQuadPt*_numVarsQuadPt], 
+		       stateVarsQuery);
+	_nondimStateVars(&stateVarsCell[iQuadPt*_numVarsQuadPt],
+			 _numVarsQuadPt);
       } // if
 
     } // for
     // Insert cell contribution into fields
-    _properties->updatePoint(*c_iter, &cellData[0]);
-    if (0 != _initialStateDB)
-      _initialState->updatePoint(*c_iter, &initialStateCellData[0]);
+    propertiesSection->updatePoint(*c_iter, &propertiesCell[0]);
+    if (0 != _dbInitialState)
+      stateVarsSection->updatePoint(*c_iter, &stateVarsCell[0]);
   } // for
 
   // Close databases
-  _db->close();
-  if (0 != _initialStateDB)
-    _initialStateDB->close();
+  _dbProperties->close();
+  if (0 != _dbInitialState)
+    _dbInitialState->close();
 } // initialize
 
-// ----------------------------------------------------------------------
-// Get type of field associated with physical property.
-pylith::VectorFieldEnum
-pylith::materials::Material::propertyFieldType(const char* name) const
-{ // propertyFieldType
-  VectorFieldEnum fieldType = OTHER_FIELD;
-
-  // Find property in list of physical properties.
-  int i=0;
-  while (i < _numProperties)
-    if (0 == strcasecmp(name, _propMetaData[i].name))
-      break;
-    else
-      ++i;
-  if (i < _numProperties)
-    fieldType = _propMetaData[i].fieldType;
-  else {
-    std::ostringstream msg;
-    msg << "Unknown physical property '" << name << "' for material '"
-	<< _label << "'.";
-    throw std::runtime_error(msg.str());
-  } // else
- 
-  return fieldType;
-} // propertyFieldType
-
+#if 0
 // ----------------------------------------------------------------------
 // Get physical property field.
 void
@@ -310,6 +302,7 @@ pylith::materials::Material::propertyField(ALE::Obj<real_section_type>* field,
     (*field)->updatePoint(*c_iter, &fieldCell[0]);
   } // for
 } // propertyField
+#endif
   
 
 // End of file 

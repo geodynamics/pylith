@@ -24,15 +24,15 @@ pylith::materials::Material::dimension(void) const {
 // Set database for material parameters.
 inline
 void
-pylith::materials::Material::db(spatialdata::spatialdb::SpatialDB* value) {
-  _db = value;
+pylith::materials::Material::dbProperties(spatialdata::spatialdb::SpatialDB* value) {
+  _dbProperties = value;
 }
 
 // Set database for initial state variables.
 inline
 void
-pylith::materials::Material::initialStateDB(spatialdata::spatialdb::SpatialDB* value) {
-  _initialStateDB = value;
+pylith::materials::Material::dbInitialState(spatialdata::spatialdb::SpatialDB* value) {
+  _dbInitialState = value;
 }
 
 // Set identifier of material.
@@ -77,9 +77,8 @@ pylith::materials::Material::timeStep(void) const {
   return _dt;
 } // timeStep
 
-/* Get flag indicating whether Jacobian matrix must be reformed for
- * current state.
- */
+// Get flag indicating whether Jacobian matrix must be reformed for
+// current state.
 inline
 bool
 pylith::materials::Material::needNewJacobian(void) const {

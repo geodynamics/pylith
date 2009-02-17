@@ -15,6 +15,7 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	Distributor.hh \
+	FieldBase.hh \
 	Field.hh \
 	Field.icc \
 	Field.cc \
@@ -29,8 +30,6 @@ subpkginclude_HEADERS = \
 	SubMesh.hh \
 	SubMesh.icc \
 	SubMesh.cc \
-	RestrictVisitor.hh \
-	RestrictVisitor.icc \
 	topologyfwd.hh
 
 noinst_HEADERS =

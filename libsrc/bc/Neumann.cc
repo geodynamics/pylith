@@ -244,15 +244,27 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Integrate contributions to residual term (r) for operator.
 void
-pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& residual,
-				       const double t,
-				       topology::SolutionFields* const fields)
+pylith::bc::Neumann::integrateResidual(
+			     const topology::Field<topology::Mesh>& residual,
+			     const double t,
+			     topology::SolutionFields* const fields)
 { // integrateResidual
   assert(0 != _quadrature);
   assert(0 != _boundaryMesh);
   assert(0 != _tractions);
 
   PetscErrorCode err = 0;
+
+  // Get cell geometry information that doesn't depend on cell
+  const int numQuadPts = _quadrature->numQuadPts();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+
+  // Allocate vectors for cell values.
+  _initCellVector();
+  double_array tractionsCell(numQuadPts*spaceDim);
 
   // Get cell information
   const ALE::Obj<SieveSubMesh>& submesh = _boundaryMesh->sieveMesh();
@@ -266,18 +278,8 @@ pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& re
   const ALE::Obj<SubRealSection>& tractSection = _tractions->section();
   assert(!tractSection.isNull());
   const ALE::Obj<RealSection>& residualSection = residual.section();
-
-  // Get cell geometry information that doesn't depend on cell
-  const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-
-  // Allocate vectors for cell values.
-  _initCellVector();
-  const int cellVecSize = numBasis*spaceDim;
-  double_array tractionsCell(numQuadPts*spaceDim);
+  topology::SubMesh::UpdateAddVisitor residualVisitor(*residualSection,
+						      &_cellVector[0]);
 
   // Loop over faces and integrate contribution from each face
   for (SieveSubMesh::label_sequence::iterator c_iter=cells->begin();
@@ -311,8 +313,8 @@ pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& re
       } // for
     } // for
     // Assemble cell contribution into field
-    // :TODO: Use an UpdateAddVisitor?
-    submesh->updateAdd(residualSection, *c_iter, &_cellVector[0]);
+    residualVisitor.clear();
+    submesh->updateAdd(*c_iter, residualVisitor);
 
     PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*(1+2*spaceDim))));
   } // for

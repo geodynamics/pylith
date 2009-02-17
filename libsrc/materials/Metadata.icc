@@ -1,0 +1,54 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_materials_metadata_hh)
+#error "Metadata.icc can only be included from Metadata.hh"
+#endif
+
+// Get names of properties.
+const pylith::string_vector&
+pylith::materials::Metadata::properties(void) const {
+  return _propertyNames;
+}
+
+// Get names of state variables.
+const pylith::string_vector&
+pylith::materials::Metadata::stateVars(void) const {
+  return _stateVarNames;
+}
+
+// Get names of database values for physical properties.
+const char* const*
+pylith::materials::Metadata::dbProperties(void) const {
+  return _dbProperties;
+}
+
+// Get number of database values for physical properties.
+int
+pylith::materials::Metadata::numDBProperties(void) const {
+  return _numDBProperties;
+}
+
+// Get names of database values for state variables.
+const char* const*
+pylith::materials::Metadata::dbStateVars(void) const {
+  return _dbStateVars;
+}
+
+// Get number of database values for state variables.
+int
+pylith::materials::Metadata::numDBStateVars(void) const {
+  return _numDBStateVars;
+}
+
+
+// End of file 

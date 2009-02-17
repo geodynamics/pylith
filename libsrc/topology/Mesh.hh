@@ -50,6 +50,7 @@ public :
   typedef SieveMesh::int_section_type IntSection;
   typedef ALE::IMesh<ALE::LabelSifter<int, SieveMesh::point_type> > SieveSubMesh;
   typedef ALE::ISieveVisitor::RestrictVisitor<RealSection> RestrictVisitor;
+  typedef ALE::ISieveVisitor::UpdateAddVisitor<RealSection> UpdateAddVisitor;
 
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////

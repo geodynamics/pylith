@@ -15,75 +15,42 @@
  * @brief C++ abstract base class for Material object.
  *
  * Interface definition for a material. The physical properties for
- * the material include BOTH parameters for the physical properties
- * AND state variables associated with the material constitutive
+ * the material are associated with the constants in the constitutive
  * model.
  */
 
 #if !defined(pylith_materials_material_hh)
 #define pylith_materials_material_hh
 
-#include "pylith/utils/array.hh" // USES double_array
+// Include directives ---------------------------------------------------
+#include "materialsfwd.hh" // forward declarations
+
+#include "pylith/topology/topologyfwd.hh" // forward declarations
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // forward declarations
+#include "spatialdata/units/unitsfwd.hh" // forward declarations
+
+#include "Metadata.hh" // HASA Metadata
+
 #include <string> // HASA std::string
-#include "pylith/utils/sievetypes.hh" // USES real_section_type
 
-/// Namespace for pylith package
-namespace pylith {
-  namespace materials {
-    class Material;
-    class TestMaterial; // unit testing
-  } // materials
-
-  namespace feassemble {
-    class Quadrature; // USES Quadrature
-  } // feassemble
-} // pylith
-
-/// Namespace for spatialdata package
-namespace spatialdata {
-  namespace spatialdb {
-    class SpatialDB; // forward declaration
-  } // spatialdb
-  namespace geocoords {
-    class CoordSys; // forward declaration
-  } // geocoords
-  namespace units {
-    class Nondimensional; // forward declaration
-  } // units
-} // spatialdata
-
-/// C++ abstract base class for Material object.
+// Material -------------------------------------------------------------
 class pylith::materials::Material
 { // class Material
   friend class TestMaterial; // unit testing
-
-  // PUBLIC STRUCTURES //////////////////////////////////////////////////
-public :
-
-  struct PropMetaData {
-    const char* name;
-    int fiberDim;
-    VectorFieldEnum fieldType;
-  }; // PropMetaData
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
   /** Default constructor.
    *
+   * @param dimension Spatial dimension associated with material.
    * @param tensorSize Array of names of database values for material.
-   * @param initialStateDBValues Names of initial state database values for material.
-   * @param dbValues Array of names of database values for material.
-   * @param numDBValues Number of database values.
-   * @param properties Array of physical property meta data.
-   * @param numProperties Number of physical properties for material.
+   * @param metadata Metadata for physical properties and state variables.
    */
-  Material(const int tensorSize,
-	   const char** dbValues,
-	   const char** initialStateDBValues,
-	   const int numDBValues,
-	   const PropMetaData* properties,
-	   const int numProperties);
+  Material(const int dimension,
+	   const int tensorSize,
+	   const Metadata& metadata);
 
   /// Destructor.
   virtual
@@ -99,13 +66,13 @@ public :
    *
    * @param value Pointer to database.
    */
-  void db(spatialdata::spatialdb::SpatialDB* value);
+  void dbProperties(spatialdata::spatialdb::SpatialDB* value);
 
   /** Set database for initial state variables.
    *
    * @param value Pointer to database.
    */
-  void initialStateDB(spatialdata::spatialdb::SpatialDB* value);
+  void dbInitialState(spatialdata::spatialdb::SpatialDB* value);
 
   /** Set identifier of material.
    *
@@ -157,7 +124,7 @@ public :
    * @param quadrature Quadrature for finite-element integration
    */
   void initialize(const topology::Mesh& mesh,
-		  pylith::feassemble::Quadrature* quadrature);
+		  feassemble::Quadrature<topology::Mesh>* quadrature);
   
   /** Get flag indicating whether Jacobian matrix must be reformed for
    * current state.
@@ -170,14 +137,7 @@ public :
   /// current state.
   void resetNeedNewJacobian(void);
 
-  /** Get type of field associated with physical property.
-   *
-   * @param name Name of physical property.
-   *
-   * @returns Type of vector field associated with property.
-   */
-  VectorFieldEnum propertyFieldType(const char* name) const;
-
+#if 0
   /** Get physical property field. Data is returned via the
    * argument.
    *
@@ -190,13 +150,14 @@ public :
 		     const char* name,
 		     const topology::Mesh& mesh,
 		     const int numQuadPts) const;
+#endif
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
   /** Compute properties from values in spatial database.
    *
-   * @param propVals Array of property values.
+   * @param propValues Array of property values.
    * @param dbValues Array of database values.
    */
   virtual
@@ -221,71 +182,71 @@ protected :
   void _dimProperties(double* const values,
 		      const int nvalues) const = 0;
 
-  /** Nondimensionalize initial state.
+  /** Compute initial state variables from values in spatial database.
+   *
+   * @param stateValues Array of state variable values.
+   * @param dbValues Array of database values.
+   */
+  virtual
+  void _dbToStateVars(double* const stateValues,
+		      const double_array& dbValues) const = 0;
+
+  /** Nondimensionalize state variables.
    *
    * @param values Array of initial state values.
    * @param nvalues Number of values.
    */
   virtual
-  void _nondimInitState(double* const values,
+  void _nondimStateVars(double* const values,
+			   const int nvalues) const = 0;
+  
+  /** Dimensionalize state variables.
+   *
+   * @param values Array of initial state values.
+   * @param nvalues Number of values.
+   */
+  virtual
+  void _dimStateVars(double* const values,
 			const int nvalues) const = 0;
-
-  /** Dimensionalize initial state.
-   *
-   * @param values Array of initial state values.
-   * @param nvalues Number of values.
-   */
-  virtual
-  void _dimInitState(double* const values,
-		     const int nvalues) const = 0;
-
-  // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private :
-
-  /// Not implemented
-  Material(const Material& m);
-
-  /// Not implemented
-  const Material& operator=(const Material& m);
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
   double _dt; ///< Current time step
 
-  /// Section containing physical properties of material.
-  ALE::Obj<real_section_type> _properties;
+  /// Field containing physical properties of material.
+  topology::Field<topology::Mesh>* _properties;
 
-  /// Section containing the initial state variables for the material.
-  ALE::Obj<real_section_type> _initialState;
+  /// Field containing the state variables for the material.
+  topology::Field<topology::Mesh>* _stateVars;
 
   spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer
   
-  int _totalPropsQuadPt; ///< Total # of property values per quad point.
-  int _dimension; ///< Spatial dimension associated with material.
-  int _tensorSize; ///< Tensor size for material.
-  int _initialStateSize; ///< Initial state size for material.
+  int _numPropsQuadPt; ///< Number of properties per quad point.
+  int _numVarsQuadPt; ///< Number of state variables per quad point.
+  const int _dimension; ///< Spatial dimension associated with material.
+  const int _tensorSize; ///< Tensor size for material.
   bool _needNewJacobian; ///< True if need to reform Jacobian, false otherwise.
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  /// Database of parameters for physical properties of material
-  spatialdata::spatialdb::SpatialDB* _db;
+  /// Database of parameters for physical properties of material.
+  spatialdata::spatialdb::SpatialDB* _dbProperties;
 
-  /// Database of initial state values for the material
-  spatialdata::spatialdb::SpatialDB* _initialStateDB;
+  /// Database of initial state variables for the material.
+  spatialdata::spatialdb::SpatialDB* _dbInitialState;
 
-  int _id; ///< Material identifier
-  std::string _label; ///< Label of material
+  int _id; ///< Material identifier.
+  std::string _label; ///< Label of material.
 
-  const PropMetaData* _propMetaData; ///< Property meta data.
-  const int _numProperties; ///< Number of properties
+  const Metadata& _metadata; ///< Property and state variable metadata.
 
-  const char** _dbValues; ///< Names of database values
-  const int _numDBValues; ///< Number of database values
+  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private :
 
-  const char** _initialStateDBValues; ///< Names of initial state database values
+  Material(const Material&); ///< Not implemented.
+  const Material& operator=(const Material&); ///< Not implemented
 
 }; // class Material
 

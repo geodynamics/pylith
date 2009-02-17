@@ -42,6 +42,7 @@ public:
   typedef Mesh::RealSection  RealSection;
   typedef Mesh::IntSection IntSection;
   typedef Mesh::RestrictVisitor RestrictVisitor;
+  typedef Mesh::UpdateAddVisitor UpdateAddVisitor;
 
   // Sieve mesh for higher level domain (mesh, not submesh)
   typedef Mesh::SieveMesh DomainSieveMesh;

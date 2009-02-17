@@ -50,6 +50,8 @@ libpylith_la_SOURCES = \
 	feassemble/Quadrature2D.cc \
 	feassemble/Quadrature2Din3D.cc \
 	feassemble/Quadrature3D.cc \
+	materials/Metadata.cc \
+	materials/Material.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \
 	meshio/GMVFileAscii.cc \
@@ -61,6 +63,7 @@ libpylith_la_SOURCES = \
 	meshio/PsetFile.cc \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \
+	topology/FieldBase.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
 	topology/SubMesh.cc \
@@ -89,7 +92,6 @@ libpylith_la_SOURCES = \
 # 	feassemble/Quadrature2D.cc \
 # 	feassemble/Quadrature2Din3D.cc \
 # 	feassemble/Quadrature3D.cc \
-# 	materials/Material.cc \
 # 	materials/ElasticStress1D.cc \
 # 	materials/ElasticStrain1D.cc \
 # 	materials/ElasticIsotropic3D.cc \

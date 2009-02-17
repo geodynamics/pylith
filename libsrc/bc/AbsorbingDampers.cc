@@ -215,7 +215,8 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
       // Compute normal/tangential orientation
       submesh->restrictClosure(coordinates, *c_iter, 
 			       &cellVertices[0], cellVertices.size());
-      memcpy(&quadPtRef[0], &quadPtsRef[iQuad*cellDim], cellDim*sizeof(double));
+      memcpy(&quadPtRef[0], &quadPtsRef[iQuad*cellDim], 
+	     cellDim*sizeof(double));
       memcpy(&cellVertices[0], coordsVisitor.getValues(), 
 	     cellVertices.size()*sizeof(double));
       cellGeometry.jacobian(&jacobian, &jacobianDet, cellVertices, quadPtRef);
@@ -240,9 +241,10 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Integrate contributions to residual term (r) for operator.
 void
-pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::Mesh>& residual,
-						const double t,
-						topology::SolutionFields* const fields)
+pylith::bc::AbsorbingDampers::integrateResidual(
+			     const topology::Field<topology::Mesh>& residual,
+			     const double t,
+			     topology::SolutionFields* const fields)
 { // integrateResidual
   assert(0 != _quadrature);
   assert(0 != _boundaryMesh);
@@ -258,6 +260,10 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
+  // Allocate vectors for cell values.
+  _initCellVector();
+  double_array dampersCell(numQuadPts*spaceDim);
+
   // Get cell information
   const ALE::Obj<SieveSubMesh>& submesh = _boundaryMesh->sieveMesh();
   assert(!submesh.isNull());
@@ -272,6 +278,8 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
 
   const ALE::Obj<RealSection>& residualSection = residual.section();
   assert(!residualSection.isNull());
+  topology::SubMesh::UpdateAddVisitor residualVisitor(*residualSection,
+						      &_cellVector[0]);
 
   const topology::Field<topology::Mesh>& dispTpdt = 
     fields->get("disp t+dt");
@@ -289,9 +297,6 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
   // Get parameters used in integration.
   const double dt = _dt;
   assert(dt > 0);
-
-  // Allocate vectors for cell values.
-  _initCellVector();
 
   for (SieveSubMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
@@ -311,8 +316,8 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
     submesh->restrictClosure(*c_iter, dispTmdtVisitor);
     const double* dispTmdtCell = dispTmdtVisitor.getValues();
 
-    assert(numQuadPts*spaceDim == dampersSection->getFiberDimension(*c_iter));
-    const double* dampingConstsCell = dampersSection->restrictPoint(*c_iter);
+    dampersSection->restrictPoint(*c_iter, 
+				  &dampersCell[0], dampersCell.size());
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -329,7 +334,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
           const double valIJ = valI * basis[iQuad*numBasis+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis*spaceDim+iDim] += 
-	      dampingConstsCell[iQuad*spaceDim+iDim] *
+	      dampersCell[iQuad*spaceDim+iDim] *
 	      valIJ * (dispTmdtCell[jBasis*spaceDim+iDim]);
         } // for
       } // for
@@ -338,7 +343,8 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
     PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(5*spaceDim))));
 
     // Assemble cell contribution into field
-    submesh->updateAdd(residualSection, *c_iter, &_cellVector[0]);
+    residualVisitor.clear();
+    submesh->updateAdd(*c_iter, residualVisitor);
   } // for
 } // integrateResidual
 
@@ -346,9 +352,9 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
 // Integrate contributions to Jacobian matrix (A) associated with
 void
 pylith::bc::AbsorbingDampers::integrateJacobian(
-					 PetscMat* jacobian,
-					 const double t,
-					 topology::SolutionFields* const fields)
+				      PetscMat* jacobian,
+				      const double t,
+				      topology::SolutionFields* const fields)
 { // integrateJacobian
   assert(0 != _quadrature);
   assert(0 != _boundaryMesh);

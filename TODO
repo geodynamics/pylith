@@ -9,10 +9,11 @@ CURRENT ISSUES/PRIORITIES
   libtests/bc/TestDirichletBoundary::testVertexField()
   libtests/bc/TestDirichletBoundary::testBoundaryMesh()
 
-  FieldsManager (change to SolutionFields)
-
   DirichletPoints (Python) - rate == None -> dbRate == 0
   DirichletBoundary (Python) - rate == None -> dbRate == 0
+
+  materials::Metadata
+    Need array of names of properties and state variables?
 
 1. Reduce memory use (new labels) [Matt]
 
@@ -33,23 +34,19 @@ CURRENT ISSUES/PRIORITIES
       Integrator::normalizer()
       DataWriter::normalizer()
 
-3. Mesh and Field objects [Brad]
-    Change name of FieldsManager to SolutionFields
-      (more accurate description).
+3. Clean-up interface for materials [Brad]
 
-4. Clean-up interface for materials [Brad]
+4. Power-law nonlinear rheology [Charles]
 
-5. Power-law nonlinear rheology [Charles]
+5. Savage-Presscott benchmark [Charles]
 
-6. Savage-Presscott benchmark [Charles]
+6. Interface with PETSc nonlinear solvers [Brad and Matt]
 
-7. Interface with PETSc nonlinear solvers [Brad and Matt]
-
-8. Modularize output? [Matt]
+7. Modularize output? [Matt]
 
 -- Release (v1.4) --
 
-9. Fault friction
+8. Fault friction
 
 Other
 

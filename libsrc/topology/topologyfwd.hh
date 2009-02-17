@@ -26,12 +26,13 @@ namespace pylith {
 
     class Mesh;
     class SubMesh;
+
+    class FieldBase;
     template<typename mesh_type> class Field;
     template<typename field_type> class Fields;
     typedef Fields<Field<Mesh> > FieldsMesh;
     typedef Fields<Field<SubMesh> > FieldsSubMesh;
     class SolutionFields;
-    template<typename field_type> class RestrictVisitor;
 
     class MeshOps;
 
