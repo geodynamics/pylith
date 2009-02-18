@@ -123,6 +123,7 @@ public :
    * @param mesh Finite-element mesh.
    * @param quadrature Quadrature for finite-element integration
    */
+  virtual
   void initialize(const topology::Mesh& mesh,
 		  feassemble::Quadrature<topology::Mesh>* quadrature);
   

@@ -14,6 +14,20 @@
 #error "ElasticMaterial.icc can only be included from ElasticMaterial.hh"
 #endif
 
+// Set database for initial stress state.
+inline
+void
+pylith::materials::ElasticMaterial::dbInitialStress(const spatialdata::spatialdb::SpatialDB* db) {
+  _dbInitialStress = db;
+}
+
+// Set database for initial strain state.
+inline
+void
+pylith::materials::ElasticMaterial::dbInitialStrain(const spatialdata::spatialdb::SpatialDB* db) {
+  _dbInitialStrain = db;
+}
+
 // Set whether elastic or inelastic constitutive relations are used.
 inline
 void

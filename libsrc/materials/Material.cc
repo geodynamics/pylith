@@ -21,8 +21,6 @@
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include "pylith/utils/sievetypes.hh" // USES Mesh
-
 #include <cstring> // USES memcpy()
 #include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
@@ -114,16 +112,17 @@ pylith::materials::Material::initialize(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
 
-  // Create sections to hold physical properties
+  // Create field to hold physical properties.
   delete _properties; _properties = new topology::Field<topology::Mesh>(mesh);
   assert(0 != _properties);
   int fiberDim = numQuadPts * _numPropsQuadPt;
   _properties->newSection(cells, fiberDim);
   _properties->allocate();
+  _properties->zero();
   const ALE::Obj<RealSection>& propertiesSection = _properties->section();
   assert(!propertiesSection.isNull());
 
-  // Create arrays for querying
+  // Create arrays for querying.
   const int numDBProperties = _metadata.numDBProperties();
   double_array quadPtsGlobal(numQuadPts*spaceDim);
   double_array propertiesQuery(numDBProperties);
@@ -134,25 +133,29 @@ pylith::materials::Material::initialize(
   _dbProperties->queryVals(_metadata.dbProperties(),
 			   _metadata.numDBProperties());
 
-  // Create sections to hold state variables
+  // Create field to hold state variables. We create the field even
+  // if there is no initial state, because this we will use this field
+  // to hold the state variables.
   delete _stateVars; _stateVars = new topology::Field<topology::Mesh>(mesh);
-  assert(0 != _stateVars);
   fiberDim = numQuadPts * _numVarsQuadPt;
   if (fiberDim > 0) {
+    assert(0 != _stateVars);
     const ALE::Obj<RealSection::chart_type>& chart = 
       propertiesSection->getChart();
     assert(!chart.isNull());
     _stateVars->newSection(*chart, fiberDim);
     _stateVars->allocate();
+    _stateVars->zero();
   } // if
-  const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
-  assert(!stateVarsSection.isNull());
+  const ALE::Obj<RealSection>& stateVarsSection = 
+    (fiberDim > 0) ? _stateVars->section() : 0;
 
   // Create arrays for querying
   const int numDBStateVars = _metadata.numDBStateVars();
   double_array stateVarsQuery;
   double_array stateVarsCell;
   if (0 != _dbInitialState) {
+    assert(!stateVarsSection.isNull());
     assert(numDBStateVars > 0);
     assert(_numVarsQuadPt > 0);
     stateVarsQuery.resize(numDBStateVars);
