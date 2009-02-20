@@ -93,5 +93,26 @@ pylith::materials::Material::resetNeedNewJacobian(void) {
   _needNewJacobian = false;
 } // resetNeedNewJacobian
 
+// Compute initial state variables from values in spatial database.
+inline
+void
+pylith::materials::Material::_dbToStateVars(double* const stateValues,
+					    const double_array& dbValues) const
+{}
+
+// Nondimensionalize state variables.
+inline
+void
+pylith::materials::Material::_nondimStateVars(double* const values,
+					      const int nvalues) const
+{}
+  
+// Dimensionalize state variables.
+inline
+void
+pylith::materials::Material::_dimStateVars(double* const values,
+					   const int nvalues) const
+{}
+
 
 // End of file 

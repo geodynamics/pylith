@@ -52,6 +52,8 @@ libpylith_la_SOURCES = \
 	feassemble/Quadrature3D.cc \
 	materials/Metadata.cc \
 	materials/Material.cc \
+	materials/ElasticMaterial.cc \
+	materials/ElasticIsotropic3D.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \
 	meshio/GMVFileAscii.cc \
@@ -94,7 +96,6 @@ libpylith_la_SOURCES = \
 # 	feassemble/Quadrature3D.cc \
 # 	materials/ElasticStress1D.cc \
 # 	materials/ElasticStrain1D.cc \
-# 	materials/ElasticIsotropic3D.cc \
 # 	materials/ElasticMaterial.cc \
 # 	materials/ElasticPlaneStrain.cc \
 # 	materials/ElasticPlaneStress.cc \

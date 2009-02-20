@@ -57,23 +57,23 @@ public :
 
   /** Constructor.
    *
-   * @param numProperties Number of physical properties for material.
    * @param properties Array of property descriptions.
-   * @param numDBProperties Number of database values for physical properties.
+   * @param numProperties Number of physical properties for material.
    * @param dbProperties Array of names for database values for properties.
-   * @param numStateVars Number of state variables for material.
+   * @param numDBProperties Number of database values for physical properties.
    * @param stateVars Array of state variable descriptions.
-   * @param numDBStateVars Number of database values for state variables.
+   * @param numStateVars Number of state variables for material.
    * @param dbStateVars Array of names for database values for state variables.
+   * @param numDBStateVars Number of database values for state variables.
    */
-  Metadata(const int numProperties,
-	   const ParamDescription* properties,
-	   const int numDBProperties,
+  Metadata(const ParamDescription* properties,
+	   const int numProperties,
 	   const char* dbProperties[],
-	   const int numStateVars,
+	   const int numDBProperties,
 	   const ParamDescription* stateVars,
-	   const int numDBStateVars,
-	   const char* dbStateVars[]);
+	   const int numStateVars,
+	   const char* dbStateVars[],
+	   const int numDBStateVars);
 
   /// Default destructor
   ~Metadata(void);

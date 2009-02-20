@@ -14,6 +14,8 @@
 
 #include "ElasticIsotropic3D.hh" // implementation of object methods
 
+#include "Metadata.hh" // USES Metadata
+
 #include "pylith/utils/array.hh" // USES double_array
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
@@ -30,58 +32,64 @@ namespace pylith {
   namespace materials {
     namespace _ElasticIsotropic3D {
 
-      /// Number of entries in stress tensor.
+      // Dimension of material.
+      const int dimension = 3;
+
+      // Number of entries in stress tensor.
       const int tensorSize = 6;
 
-      /// Number of elastic constants (for general 3-D elastic material)
+      // Number of elastic constants (for general 3-D elastic material)
       const int numElasticConsts = 21;
 
-      /// Number of physical properties.
+      // Number of physical properties.
       const int numProperties = 3;
 
-      /// Physical properties.
-      const Material::PropMetaData properties[] = {
-	{ "density", 1, OTHER_FIELD },
-	{ "mu", 1, OTHER_FIELD },
-	{ "lambda", 1, OTHER_FIELD },
+      // Physical properties.
+      const Metadata::ParamDescription properties[] = {
+	{ "density", 1, pylith::topology::FieldBase::SCALAR },
+	{ "mu", 1, pylith::topology::FieldBase::SCALAR },
+	{ "lambda", 1, pylith::topology::FieldBase::SCALAR },
       };
-      /// Indices of physical properties
-      const int pidDensity = 0;
-      const int pidMu = pidDensity + 1;
-      const int pidLambda = pidMu + 1;
 
-      /// Values expected in spatial database
-      const int numDBValues = 3;
-      const char* namesDBValues[] = { "density", "vs", "vp" };      
+      // Values expected in spatial database
+      const int numDBProperties = 3;
+      const char* dbProperties[] = { "density", "vs", "vp" };      
       
-      /// Indices of database values
-      const int didDensity = 0;
-      const int didVs = 1;
-      const int didVp = 2;
-
-      /// Initial state values expected in spatial database
-      const int numInitialStateDBValues = tensorSize;
-      const char* namesInitialStateDBValues[] = { "stress_xx", "stress_yy",
-						  "stress_zz", "stress_xy",
-						  "stress_yz", "stress_xz" };
-
     } // _ElasticIsotropic3D
   } // materials
 } // pylith
 
+// Indices of physical properties
+const int pylith::materials::ElasticIsotropic3D::p_density = 0;
+
+const int pylith::materials::ElasticIsotropic3D::p_mu = 
+  pylith::materials::ElasticIsotropic3D::p_density + 1;
+
+const int pylith::materials::ElasticIsotropic3D::p_lambda = 
+  pylith::materials::ElasticIsotropic3D::p_mu + 1;
+
+// Indices of database values (order must match dbProperties)
+const int pylith::materials::ElasticIsotropic3D::db_density = 0;
+
+const int pylith::materials::ElasticIsotropic3D::db_vs = 
+  pylith::materials::ElasticIsotropic3D::db_density + 1;
+
+const int pylith::materials::ElasticIsotropic3D::db_vp = 
+  pylith::materials::ElasticIsotropic3D::db_vs + 1;
 
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::ElasticIsotropic3D::ElasticIsotropic3D(void) :
-  ElasticMaterial(_ElasticIsotropic3D::tensorSize,
+  ElasticMaterial(_ElasticIsotropic3D::dimension,
+		  _ElasticIsotropic3D::tensorSize,
 		  _ElasticIsotropic3D::numElasticConsts,
-		  _ElasticIsotropic3D::namesDBValues,
-		  _ElasticIsotropic3D::namesInitialStateDBValues,
-		  _ElasticIsotropic3D::numDBValues,
-		  _ElasticIsotropic3D::properties,
-		  _ElasticIsotropic3D::numProperties)
+		  Metadata(_ElasticIsotropic3D::properties,
+			   _ElasticIsotropic3D::numProperties,
+			   _ElasticIsotropic3D::dbProperties,
+			   _ElasticIsotropic3D::numDBProperties,
+			   0, 0,
+			   0, 0))
 { // constructor
-  _dimension = 3;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -94,16 +102,16 @@ pylith::materials::ElasticIsotropic3D::~ElasticIsotropic3D(void)
 // Compute properties from values in spatial database.
 void
 pylith::materials::ElasticIsotropic3D::_dbToProperties(
-		   double* const propValues,
-		   const double_array& dbValues) const
+					   double* const propValues,
+					   const double_array& dbValues) const
 { // _dbToProperties
   assert(0 != propValues);
   const int numDBValues = dbValues.size();
-  assert(_ElasticIsotropic3D::numDBValues == numDBValues);
+  assert(_ElasticIsotropic3D::numDBProperties == numDBValues);
 
-  const double density = dbValues[_ElasticIsotropic3D::didDensity];
-  const double vs = dbValues[_ElasticIsotropic3D::didVs];
-  const double vp = dbValues[_ElasticIsotropic3D::didVp];
+  const double density = dbValues[db_density];
+  const double vs = dbValues[db_vs];
+  const double vp = dbValues[db_vp];
  
   if (density <= 0.0 || vs <= 0.0 || vp <= 0.0) {
     std::ostringstream msg;
@@ -127,9 +135,9 @@ pylith::materials::ElasticIsotropic3D::_dbToProperties(
     throw std::runtime_error(msg.str());
   } // if
 
-  propValues[_ElasticIsotropic3D::pidDensity] = density;
-  propValues[_ElasticIsotropic3D::pidMu] = mu;
-  propValues[_ElasticIsotropic3D::pidLambda] = lambda;
+  propValues[p_density] = density;
+  propValues[p_mu] = mu;
+  propValues[p_lambda] = lambda;
 
   PetscLogFlops(6);
 } // _dbToProperties
@@ -146,15 +154,13 @@ pylith::materials::ElasticIsotropic3D::_nondimProperties(double* const values,
 
   const double densityScale = _normalizer->densityScale();
   const double pressureScale = _normalizer->pressureScale();
-  values[_ElasticIsotropic3D::pidDensity] = 
-    _normalizer->nondimensionalize(values[_ElasticIsotropic3D::pidDensity],
-				   densityScale);
-  values[_ElasticIsotropic3D::pidMu] = 
-    _normalizer->nondimensionalize(values[_ElasticIsotropic3D::pidMu],
-				   pressureScale);
-  values[_ElasticIsotropic3D::pidLambda] = 
-    _normalizer->nondimensionalize(values[_ElasticIsotropic3D::pidLambda],
-				   pressureScale);
+
+  values[p_density] = 
+    _normalizer->nondimensionalize(values[p_density], densityScale);
+  values[p_mu] = 
+    _normalizer->nondimensionalize(values[p_mu], pressureScale);
+  values[p_lambda] = 
+    _normalizer->nondimensionalize(values[p_lambda], pressureScale);
 
   PetscLogFlops(3);
 } // _nondimProperties
@@ -171,137 +177,120 @@ pylith::materials::ElasticIsotropic3D::_dimProperties(double* const values,
 
   const double densityScale = _normalizer->densityScale();
   const double pressureScale = _normalizer->pressureScale();
-  values[_ElasticIsotropic3D::pidDensity] = 
-    _normalizer->dimensionalize(values[_ElasticIsotropic3D::pidDensity],
-				   densityScale);
-  values[_ElasticIsotropic3D::pidMu] = 
-    _normalizer->dimensionalize(values[_ElasticIsotropic3D::pidMu],
-				   pressureScale);
-  values[_ElasticIsotropic3D::pidLambda] = 
-    _normalizer->dimensionalize(values[_ElasticIsotropic3D::pidLambda],
-				   pressureScale);
+
+  values[p_density] = 
+    _normalizer->dimensionalize(values[p_density], densityScale);
+  values[p_mu] = 
+    _normalizer->dimensionalize(values[p_mu], pressureScale);
+  values[p_lambda] = 
+    _normalizer->dimensionalize(values[p_lambda], pressureScale);
 
   PetscLogFlops(3);
 } // _dimProperties
 
 // ----------------------------------------------------------------------
-// Nondimensionalize initial state.
-void
-pylith::materials::ElasticIsotropic3D::_nondimInitState(double* const values,
-							const int nvalues) const
-{ // _nondimInitState
-  assert(0 != _normalizer);
-  assert(0 != values);
-  assert(nvalues == _ElasticIsotropic3D::numInitialStateDBValues);
-
-  const double pressureScale = _normalizer->pressureScale();
-  _normalizer->nondimensionalize(values, nvalues, pressureScale);
-
-  PetscLogFlops(nvalues);
-} // _nondimInitState
-
-// ----------------------------------------------------------------------
-// Dimensionalize initial state.
-void
-pylith::materials::ElasticIsotropic3D::_dimInitState(double* const values,
-						     const int nvalues) const
-{ // _dimInitState
-  assert(0 != _normalizer);
-  assert(0 != values);
-  assert(nvalues == _ElasticIsotropic3D::numInitialStateDBValues);
-  
-  const double pressureScale = _normalizer->pressureScale();
-  _normalizer->dimensionalize(values, nvalues, pressureScale);
-
-  PetscLogFlops(nvalues);
-} // _dimInitState
-
-// ----------------------------------------------------------------------
 // Compute density at location from properties.
 void
-pylith::materials::ElasticIsotropic3D::_calcDensity(
-				  double* const density,
-				  const double* properties,
-				  const int numProperties)
+pylith::materials::ElasticIsotropic3D::_calcDensity(double* const density,
+						    const double* properties,
+						    const int numProperties,
+						    const double* stateVars,
+						    const int numStateVars)
 { // _calcDensity
   assert(0 != density);
   assert(0 != properties);
-  assert(_totalPropsQuadPt == numProperties);
+  assert(_numPropsQuadPt == numProperties);
+  assert(0 == numStateVars);
 
-  density[0] = properties[_ElasticIsotropic3D::pidDensity];
+  density[0] = properties[p_density];
 } // _calcDensity
 
 // ----------------------------------------------------------------------
 // Compute stress tensor at location from properties.
 void
-pylith::materials::ElasticIsotropic3D::_calcStress(
-				  double* const stress,
-				  const int stressSize,
-				  const double* properties,
-				  const int numProperties,
-				  const double* totalStrain,
-				  const int strainSize,
-				  const double* initialState,
-				  const int initialStateSize,
-				  const bool computeStateVars)
+pylith::materials::ElasticIsotropic3D::_calcStress(double* const stress,
+						   const int stressSize,
+						   const double* properties,
+						   const int numProperties,
+						   const double* stateVars,
+						   const int numStateVars,
+						   const double* totalStrain,
+						   const int strainSize,
+						   const double* initialStress,
+						   const int initialStressSize,
+						   const double* initialStrain,
+						   const int initialStrainSize,
+						   const bool computeStateVars)
 { // _calcStress
   assert(0 != stress);
   assert(_ElasticIsotropic3D::tensorSize == stressSize);
   assert(0 != properties);
-  assert(_totalPropsQuadPt == numProperties);
+  assert(_numPropsQuadPt == numProperties);
+  assert(0 == numStateVars);
   assert(0 != totalStrain);
   assert(_ElasticIsotropic3D::tensorSize == strainSize);
-  assert(_ElasticIsotropic3D::tensorSize == initialStateSize);
+  assert(0 != initialStress);
+  assert(_ElasticIsotropic3D::tensorSize == initialStressSize);
+  assert(0 != initialStrain);
+  assert(_ElasticIsotropic3D::tensorSize == initialStrainSize);
 
-  const double density = properties[_ElasticIsotropic3D::pidDensity];
-  const double mu = properties[_ElasticIsotropic3D::pidMu];
-  const double lambda = properties[_ElasticIsotropic3D::pidLambda];
+  const double density = properties[p_density];
+  const double mu = properties[p_mu];
+  const double lambda = properties[p_lambda];
 
   const double mu2 = 2.0*mu;
 
-  const double e11 = totalStrain[0];
-  const double e22 = totalStrain[1];
-  const double e33 = totalStrain[2];
-  const double e12 = totalStrain[3];
-  const double e23 = totalStrain[4];
-  const double e13 = totalStrain[5];
+  const double e11 = totalStrain[0] + initialStrain[0];
+  const double e22 = totalStrain[1] + initialStrain[1];
+  const double e33 = totalStrain[2] + initialStrain[2];
+  const double e12 = totalStrain[3] + initialStrain[3];
+  const double e23 = totalStrain[4] + initialStrain[4];
+  const double e13 = totalStrain[5] + initialStrain[5];
   
   const double s123 = lambda * (e11 + e22 + e33);
 
-  stress[0] = s123 + mu2*e11 + initialState[0];
-  stress[1] = s123 + mu2*e22 + initialState[1];
-  stress[2] = s123 + mu2*e33 + initialState[2];
-  stress[3] = mu2 * e12 + initialState[3];
-  stress[4] = mu2 * e23 + initialState[4];
-  stress[5] = mu2 * e13 + initialState[5];
+  stress[0] = s123 + mu2*e11 + initialStress[0];
+  stress[1] = s123 + mu2*e22 + initialStress[1];
+  stress[2] = s123 + mu2*e33 + initialStress[2];
+  stress[3] = mu2 * e12 + initialStress[3];
+  stress[4] = mu2 * e23 + initialStress[4];
+  stress[5] = mu2 * e13 + initialStress[5];
 
-  PetscLogFlops(19);
+  PetscLogFlops(25);
 } // _calcStress
 
 // ----------------------------------------------------------------------
 // Compute derivative of elasticity matrix at location from properties.
 void
 pylith::materials::ElasticIsotropic3D::_calcElasticConsts(
-				  double* const elasticConsts,
-				  const int numElasticConsts,
-				  const double* properties,
-				  const int numProperties,
-				  const double*  totalStrain,
-				  const int strainSize,
-				  const double* initialState,
-				  const int initialStateSize)
+					     double* const elasticConsts,
+					     const int numElasticConsts,
+					     const double* properties,
+					     const int numProperties,
+					     const double* stateVars,
+					     const int numStateVars,
+					     const double* totalStrain,
+					     const int strainSize,
+					     const double* initialStress,
+					     const int initialStressSize,
+					     const double* initialStrain,
+					     const int initialStrainSize)
 { // _calcElasticConsts
   assert(0 != elasticConsts);
   assert(_ElasticIsotropic3D::numElasticConsts == numElasticConsts);
   assert(0 != properties);
-  assert(_totalPropsQuadPt == numProperties);
+  assert(_numPropsQuadPt == numProperties);
+  assert(0 == numStateVars);
   assert(0 != totalStrain);
   assert(_ElasticIsotropic3D::tensorSize == strainSize);
-  assert(_ElasticIsotropic3D::tensorSize == initialStateSize);
+  assert(0 != initialStress);
+  assert(_ElasticIsotropic3D::tensorSize == initialStressSize);
+  assert(0 != initialStrain);
+  assert(_ElasticIsotropic3D::tensorSize == initialStrainSize);
  
-  const double density = properties[_ElasticIsotropic3D::pidDensity];
-  const double mu = properties[_ElasticIsotropic3D::pidMu];
-  const double lambda = properties[_ElasticIsotropic3D::pidLambda];
+  const double density = properties[p_density];
+  const double mu = properties[p_mu];
+  const double lambda = properties[p_lambda];
 
   const double mu2 = 2.0 * mu;
   const double lambda2mu = lambda + mu2;
@@ -334,8 +323,11 @@ pylith::materials::ElasticIsotropic3D::_calcElasticConsts(
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
 double
-pylith::materials::ElasticIsotropic3D::_stableTimeStepImplicit(const double* properties,
-				 const int numProperties) const
+pylith::materials::ElasticIsotropic3D::_stableTimeStepImplicit(
+				     const double* properties,
+				     const int numProperties,
+				     const double* stateVars,
+				     const int numStateVars) const
 { // _stableTimeStepImplicit
   return pylith::PYLITH_MAXDOUBLE;
 } // _stableTimeStepImplicit

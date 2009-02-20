@@ -20,14 +20,14 @@
 
 // ----------------------------------------------------------------------
 // Constructor.
-pylith::materials::Metadata::Metadata(const int numProps,
-				      const ParamDescription* props,
-				      const int numDBProps,
+pylith::materials::Metadata::Metadata(const ParamDescription* props,
+				      const int numProps,
 				      const char* dbProps[],
-				      const int numVars,
+				      const int numDBProps,
 				      const ParamDescription* vars,
-				      const int numDBVars,
-				      const char* dbVars[]) :
+				      const int numVars,
+				      const char* dbVars[],
+				      const int numDBVars) :
   _numDBProperties(numDBProps),
   _dbProperties(dbProps),
   _numDBStateVars(numDBVars),

@@ -170,7 +170,7 @@ pylith::materials::Material::initialize(
   assert(0 != _normalizer);
   const double lengthScale = _normalizer->lengthScale();
     
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
@@ -207,7 +207,7 @@ pylith::materials::Material::initialize(
 				     &quadPtsGlobal[index], spaceDim, cs);
 	if (err) {
 	  std::ostringstream msg;
-	  msg << "Could not find initial state values at \n" << "(";
+	  msg << "Could not find initial state variables at \n" << "(";
 	  for (int i=0; i < spaceDim; ++i)
 	    msg << "  " << quadPtsGlobal[index+i];
 	  msg << ") in material " << _label << "\n"

@@ -17,14 +17,14 @@
 // Set database for initial stress state.
 inline
 void
-pylith::materials::ElasticMaterial::dbInitialStress(const spatialdata::spatialdb::SpatialDB* db) {
+pylith::materials::ElasticMaterial::dbInitialStress(spatialdata::spatialdb::SpatialDB* db) {
   _dbInitialStress = db;
 }
 
 // Set database for initial strain state.
 inline
 void
-pylith::materials::ElasticMaterial::dbInitialStrain(const spatialdata::spatialdb::SpatialDB* db) {
+pylith::materials::ElasticMaterial::dbInitialStrain(spatialdata::spatialdb::SpatialDB* db) {
   _dbInitialStrain = db;
 }
 
@@ -38,8 +38,8 @@ pylith::materials::ElasticMaterial::useElasticBehavior(const bool flag) {
 // _updateProperties() method.
 inline
 bool
-pylith::materials::ElasticMaterial::usesUpdateProperties(void) const {
-  return false;
+pylith::materials::ElasticMaterial::hasStateVars(void) const {
+  return _numVarsQuadPt > 0;
 } // usesUpdateProperties
 
 

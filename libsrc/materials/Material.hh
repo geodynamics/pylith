@@ -156,6 +156,8 @@ public :
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
+  /// These methods should be implemented by every constitutive model.
+
   /** Compute properties from values in spatial database.
    *
    * @param propValues Array of property values.
@@ -190,7 +192,7 @@ protected :
    */
   virtual
   void _dbToStateVars(double* const stateValues,
-		      const double_array& dbValues) const = 0;
+		      const double_array& dbValues) const;
 
   /** Nondimensionalize state variables.
    *
@@ -199,7 +201,7 @@ protected :
    */
   virtual
   void _nondimStateVars(double* const values,
-			   const int nvalues) const = 0;
+			   const int nvalues) const;
   
   /** Dimensionalize state variables.
    *
@@ -208,7 +210,7 @@ protected :
    */
   virtual
   void _dimStateVars(double* const values,
-			const int nvalues) const = 0;
+			const int nvalues) const;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :

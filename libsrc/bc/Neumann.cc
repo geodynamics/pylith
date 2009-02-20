@@ -205,8 +205,7 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
 				 &quadPtsGlobal[iSpace], spaceDim, cs);
       if (err) {
 	std::ostringstream msg;
-	msg << "Could not find traction values at \n"
-	    << "(";
+	msg << "Could not find traction values at (";
 	for (int i=0; i < spaceDim; ++i)
 	  msg << " " << quadPtsGlobal[i+iSpace];
 	msg << ") for traction boundary condition " << _label << "\n"
