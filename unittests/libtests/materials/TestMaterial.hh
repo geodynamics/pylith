@@ -23,10 +23,11 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "pylith/materials/materialsfwd.hh" // forward declarations
+
 /// Namespace for pylith package
 namespace pylith {
   namespace materials {
-    class Material;
     class TestMaterial;
     class MaterialData;
   } // materials

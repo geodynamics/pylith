@@ -25,6 +25,46 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticMaterial );
 
 // ----------------------------------------------------------------------
+// Test dbInitialStress()
+void
+pylith::materials::TestElasticMaterial::testDBInitialStress(void)
+{ // testDBInitialStress
+  const std::string& label = "my_database";
+  spatialdata::spatialdb::SimpleDB db;
+  db.label(label.c_str());
+  
+  ElasticIsotropic3D material;
+  material.dbInitialStress(&db);
+  
+  CPPUNIT_ASSERT(0 != material._dbInitialStress);
+  CPPUNIT_ASSERT_EQUAL(label, std::string(material._dbInitialStress->label()));
+} // testDBInitialStress
+
+// ----------------------------------------------------------------------
+// Test dbInitialStrain()
+void
+pylith::materials::TestElasticMaterial::testDBInitialStrain(void)
+{ // testDBInitialStrain
+  const std::string& label = "my_database";
+  spatialdata::spatialdb::SimpleDB db;
+  db.label(label.c_str());
+  
+  ElasticIsotropic3D material;
+  material.dbInitialStrain(&db);
+  
+  CPPUNIT_ASSERT(0 != material._dbInitialStrain);
+  CPPUNIT_ASSERT_EQUAL(label, std::string(material._dbInitialStrain->label()));
+} // testDBInitialStrain
+
+// ----------------------------------------------------------------------
+// Test initialize()
+void
+pylith::materials::TestElasticMaterial::testInitialize(void)
+{ // testInitialize
+  CPPUNIT_ASSERT(false);
+} // testInitialize
+
+// ----------------------------------------------------------------------
 // Test calcDensity()
 void
 pylith::materials::TestElasticMaterial::testCalcDensity(void)
@@ -251,7 +291,15 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
 } // testCalcDerivElastic
     
 // ----------------------------------------------------------------------
-// Test calcDensity()
+// Test updateStateVars()
+void
+pylith::materials::TestElasticMaterial::testUpdateStateVars(void)
+{ // testUpdateStateVars
+  CPPUNIT_ASSERT(false);
+} // testUpdateStateVars
+
+// ----------------------------------------------------------------------
+// Test calcStableTimeStepImplicit()
 void
 pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
 { // testStableTimeStepImplicit
@@ -320,6 +368,22 @@ pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dt/dtE, tolerance);
 } // testStableTimeStepImplicit
     
+// ----------------------------------------------------------------------
+// Test useElasticBehavior()
+void
+pylith::materials::TestElasticMaterial::testUseElasticBehavior(void)
+{ // testUseElasticBehavior
+  ElasticIsotropic3D material;
+
+  bool flag = false;
+  material.useElasticBehavior(flag);
+  CPPUNIT_ASSERT_EQUAL(flag, material._useElasticBehavior);
+
+  bool flag = true;
+  material.useElasticBehavior(flag);
+  CPPUNIT_ASSERT_EQUAL(flag, material._useElasticBehavior);
+} // testUseElasticBehavior
+
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
@@ -437,6 +501,13 @@ pylith::materials::TestElasticMaterial::test_calcElasticConsts(void)
 				   tolerance);
 } // _testCalcElasticConsts
 
+// ----------------------------------------------------------------------
+// Test _updateStateVars()
+void
+pylith::materials::TestElasticMaterial::test_updateStateVars(void)
+{ // test_updateStateVars
+  CPPUNIT_ASSERT(false);
+} // test_updateStateVars
 
 // ----------------------------------------------------------------------
 // Test _stableTimeStepImplicit()
