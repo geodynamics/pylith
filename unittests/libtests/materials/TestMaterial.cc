@@ -36,38 +36,6 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestMaterial );
 
 // ----------------------------------------------------------------------
-// Test db()
-void
-pylith::materials::TestMaterial::testDB(void)
-{ // testDB
-  const char* label = "my_database";
-  spatialdata::spatialdb::SimpleDB db;
-  db.label(label);
-  
-  ElasticIsotropic3D material;
-  material.db(&db);
-  
-  CPPUNIT_ASSERT(0 != material._db);
-  CPPUNIT_ASSERT(0 == strcmp(label, material._db->label()));
-} // testDB
-
-// ----------------------------------------------------------------------
-// Test initialStateDB()
-void
-pylith::materials::TestMaterial::testInitialStateDB(void)
-{ // testInitialStateDB
-  const char* label = "my_database";
-  spatialdata::spatialdb::SimpleDB initialStateDB;
-  initialStateDB.label(label);
-  
-  ElasticIsotropic3D material;
-  material.initialStateDB(&initialStateDB);
-  
-  CPPUNIT_ASSERT(0 != material._initialStateDB);
-  CPPUNIT_ASSERT(0 == strcmp(label, material._initialStateDB->label()));
-} // testInitialStateDB
-// ----------------------------------------------------------------------
-
 // Test id()
 void
 pylith::materials::TestMaterial::testID(void)
@@ -84,11 +52,11 @@ pylith::materials::TestMaterial::testID(void)
 void
 pylith::materials::TestMaterial::testLabel(void)
 { // testLabel
-  const char* label = "the_database";
+  const std::string& label = "the database";
   ElasticIsotropic3D material;
-  material.label(label);
+  material.label(label.c_str());
   
-  CPPUNIT_ASSERT(0 == strcmp(label, material.label().c_str()));
+  CPPUNIT_ASSERT_EQUAL(label, material.label());
 } // testLabel
     
 // ----------------------------------------------------------------------
@@ -102,6 +70,54 @@ pylith::materials::TestMaterial::testTimeStep(void)
   
   CPPUNIT_ASSERT_EQUAL(dt, material.timeStep());
 } // testTimeStep
+
+// ----------------------------------------------------------------------
+// Test dbProperties()
+void
+pylith::materials::TestMaterial::testDBProperties(void)
+{ // testDBProperties
+  const std::string& label = "my_database";
+  spatialdata::spatialdb::SimpleDB db;
+  db.label(label.c_str());
+  
+  ElasticIsotropic3D material;
+  material.dbProperties(&db);
+  
+  CPPUNIT_ASSERT(0 != material._dbProperties);
+  CPPUNIT_ASSERT_EQUAL(label, std::string(material._dbProperties->label()));
+} // testDBProperties
+
+// ----------------------------------------------------------------------
+// Test dbStateVars()
+void
+pylith::materials::TestMaterial::testDBStateVars(void)
+{ // testDBStateVars
+  const std::string& label = "my_database";
+  spatialdata::spatialdb::SimpleDB db;
+  db.label(label.c_str());
+  
+  ElasticIsotropic3D material;
+  material.dbInitialState(&db);
+  
+  CPPUNIT_ASSERT(0 != material._dbInitialState);
+  CPPUNIT_ASSERT_EQUAL(label, std::string(material._dbInitialState->label()));
+} // testDBStateVars
+
+// ----------------------------------------------------------------------
+// Test normalizer()
+void
+pylith::materials::TestMaterial::testNormalizer(void)
+{ // testNormalizer
+  spatialdata::units::Nondimensional normalizer;
+  const double lengthScale = 2.0;
+  normalizer.lengthScale(lengthScale);
+
+  ElasticIsotropic3D material;
+  material.normalizer(normalizer);
+  
+  CPPUNIT_ASSERT(0 != material._normalizer);
+  CPPUNIT_ASSERT_EQUAL(lengthScale, material._normalizer->lengthScale());
+} // testNormalizer
 
 // ----------------------------------------------------------------------
 // Test needNewJacobian()
@@ -119,12 +135,13 @@ pylith::materials::TestMaterial::testNeedNewJacobian(void)
   CPPUNIT_ASSERT_EQUAL(flag, material.needNewJacobian());
 } // testNeedNewJacobian
 
+#if 0
 // ----------------------------------------------------------------------
 // Test initialize()
 void
 pylith::materials::TestMaterial::testInitialize(void)
 { // testInitialize
-  ALE::Obj<Mesh> mesh;
+  topology::Mesh mesh;
   const int materialID = 24;
   { // create mesh
     const int cellDim = 1;
@@ -243,6 +260,7 @@ pylith::materials::TestMaterial::testInitialize(void)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, paramsCell[index]/lambdaE[i], tolerance);
   } // for
 } // testInitialize
+#endif
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -263,7 +281,15 @@ pylith::materials::TestMaterial::tearDown(void)
 } // tearDown
 
 // ----------------------------------------------------------------------
-// Test DBToProperties
+// Test dimension()
+void
+pylith::materials::TestMaterial::testDimension(void)
+{ // testDimension
+  CPPUNIT_ASSERT_EQUAL(_data->dimension, _material->dimension());
+} // testDimension
+
+// ----------------------------------------------------------------------
+// Test _dbToProperties().
 void
 pylith::materials::TestMaterial::testDBToProperties(void)
 { // testDBToProperties
@@ -271,63 +297,194 @@ pylith::materials::TestMaterial::testDBToProperties(void)
   CPPUNIT_ASSERT(0 != _data);
   
   const int numLocs = _data->numLocs;
-  const int numDBValues = _data->numDBValues;
-  double_array dbData(numDBValues);
+  const int numDBProperties = _data->numDBProperties;
+  double_array dbValues(numDBProperties);
+
+  const int propertiesSize = _data->numPropsQuadPt;
+  double_array properties(propertiesSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
-    for (int i=0; i < numDBValues; ++i)
-      dbData[i] = _data->dbData[iLoc*numDBValues+i];
+    for (int i=0; i < numDBProperties; ++i)
+      dbValues[i] = _data->dbProperties[iLoc*numDBProperties+i];
 
-    const int numProperties = _data->numParameters;
-    int numParamEntries = 0;
-    for (int iParam=0; iParam < numProperties; ++iParam)
-      numParamEntries += _data->numParamValues[iParam];
-
-    double_array parameterData(numParamEntries);
-
-    double* const parameterDataE = &_data->parameterData[iLoc*numParamEntries];
-    _material->_dbToProperties(&parameterData[0], dbData);
-
+    _material->_dbToProperties(&properties[0], dbValues);
+    
+    const double* const propertiesE = &_data->properties[iLoc*propertiesSize];
     const double tolerance = 1.0e-06;
-    for (int i=0; i < numParamEntries; ++i) {
-      if (fabs(parameterDataE[i]) > tolerance)
+    for (int i=0; i < propertiesSize; ++i) {
+      if (fabs(propertiesE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				     parameterData[i]/parameterDataE[i],
+				     properties[i]/propertiesE[i],
 				     tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(parameterDataE[i], parameterData[i],
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[i], properties[i],
 				     tolerance);
     } // for
   } // for
 } // testDBToProperties
 
 // ----------------------------------------------------------------------
-// Test _dbValues and _numDBValues.
+// Test _nondimProperties().
 void
-pylith::materials::TestMaterial::testDBValues(void)
-{ // testDBValues
+pylith::materials::TestMaterial::testNonDimProperties(void)
+{ // testNonDimProperties
   CPPUNIT_ASSERT(0 != _material);
   CPPUNIT_ASSERT(0 != _data);
+  
+  const int numLocs = _data->numLocs;
+  const int propertiesSize = _data->numPropsQuadPt;
+  double_array propertiesNondim(propertiesSize);
 
-  const int numDBValues = _data->numDBValues;
-  CPPUNIT_ASSERT_EQUAL(numDBValues, _material->_numDBValues);
+  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
 
-  char** const dbValuesE = _data->dbValues;
-  for (int i=0; i < numDBValues; ++i)
-    CPPUNIT_ASSERT(0 == strcmp(dbValuesE[i], _material->_dbValues[i]));
-} // testDBValues
+    _material->_nondimProperties(&_data->properties[0], propertiesSize);
+    
+    const double* const propertiesNondimE =
+      &_data->propertiesNondim[iLoc*propertiesSize];
+
+    const double tolerance = 1.0e-06;
+    for (int i=0; i < propertiesSize; ++i) {
+      if (fabs(propertiesNondimE[i]) > tolerance)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
+				     propertiesNondim[i]/propertiesNondimE[i],
+				     tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesNondimE[i], propertiesNondim[i],
+				     tolerance);
+    } // for
+  } // for
+} // testNonDimProperties
 
 // ----------------------------------------------------------------------
-// Test _numProperties.
+// Test _dimProperties().
 void
-pylith::materials::TestMaterial::testProperties(void)
-{ // testProperties
+pylith::materials::TestMaterial::testDimProperties(void)
+{ // testDimProperties
   CPPUNIT_ASSERT(0 != _material);
   CPPUNIT_ASSERT(0 != _data);
+  
+  const int numLocs = _data->numLocs;
+  const int propertiesSize = _data->numPropsQuadPt;
+  double_array properties(propertiesSize);
 
-  const int numProperties = _data->numParameters;
-  CPPUNIT_ASSERT_EQUAL(numProperties, _material->_numProperties);
-} // testProperties
+  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
+
+    _material->_dimProperties(&_data->propertiesNondim[0], propertiesSize);
+    
+    const double* const propertiesE =
+      &_data->properties[iLoc*propertiesSize];
+
+    const double tolerance = 1.0e-06;
+    for (int i=0; i < propertiesSize; ++i) {
+      if (fabs(propertiesE[i]) > tolerance)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
+				     properties[i]/propertiesE[i],
+				     tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[i], properties[i],
+				     tolerance);
+    } // for
+  } // for
+} // testDimProperties
+
+// ----------------------------------------------------------------------
+// Test _dbToStateVars().
+void
+pylith::materials::TestMaterial::testDBToStateVars(void)
+{ // testDBToStateVars
+  CPPUNIT_ASSERT(0 != _material);
+  CPPUNIT_ASSERT(0 != _data);
+  
+  const int numLocs = _data->numLocs;
+  const int numDBStateVars = _data->numDBStateVars;
+  double_array dbValues(numDBStateVars);
+
+  const int stateVarsSize = _data->numPropsQuadPt;
+  double_array stateVars(stateVarsSize);
+
+  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
+    for (int i=0; i < numDBStateVars; ++i)
+      dbValues[i] = _data->dbStateVars[iLoc*numDBStateVars+i];
+
+    _material->_dbToStateVars(&stateVars[0], dbValues);
+    
+    const double* const stateVarsE = &_data->stateVars[iLoc*stateVarsSize];
+    const double tolerance = 1.0e-06;
+    for (int i=0; i < stateVarsSize; ++i) {
+      if (fabs(stateVarsE[i]) > tolerance)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
+				     stateVars[i]/stateVarsE[i],
+				     tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i],
+				     tolerance);
+    } // for
+  } // for
+} // testDBToStateVars
+
+// ----------------------------------------------------------------------
+// Test _nondimStateVars().
+void
+pylith::materials::TestMaterial::testNonDimStateVars(void)
+{ // testNonDimStateVars
+  CPPUNIT_ASSERT(0 != _material);
+  CPPUNIT_ASSERT(0 != _data);
+  
+  const int numLocs = _data->numLocs;
+  const int stateVarsSize = _data->numPropsQuadPt;
+  double_array stateVarsNondim(stateVarsSize);
+
+  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
+
+    _material->_nondimStateVars(&_data->stateVars[0], stateVarsSize);
+    
+    const double* const stateVarsNondimE =
+      &_data->stateVarsNondim[iLoc*stateVarsSize];
+
+    const double tolerance = 1.0e-06;
+    for (int i=0; i < stateVarsSize; ++i) {
+      if (fabs(stateVarsNondimE[i]) > tolerance)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
+				     stateVarsNondim[i]/stateVarsNondimE[i],
+				     tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsNondimE[i], stateVarsNondim[i],
+				     tolerance);
+    } // for
+  } // for
+} // testNonDimStateVars
+
+// ----------------------------------------------------------------------
+// Test _dimStateVars().
+void
+pylith::materials::TestMaterial::testDimStateVars(void)
+{ // testDimStateVars
+  CPPUNIT_ASSERT(0 != _material);
+  CPPUNIT_ASSERT(0 != _data);
+  
+  const int numLocs = _data->numLocs;
+  const int stateVarsSize = _data->numPropsQuadPt;
+  double_array stateVars(stateVarsSize);
+
+  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
+
+    _material->_dimStateVars(&_data->stateVarsNondim[0], stateVarsSize);
+    
+    const double* const stateVarsE =
+      &_data->stateVars[iLoc*stateVarsSize];
+
+    const double tolerance = 1.0e-06;
+    for (int i=0; i < stateVarsSize; ++i) {
+      if (fabs(stateVarsE[i]) > tolerance)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
+				     stateVars[i]/stateVarsE[i],
+				     tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i],
+				     tolerance);
+    } // for
+  } // for
+} // testDimStateVars
 
 
 // End of file 

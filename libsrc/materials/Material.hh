@@ -62,18 +62,6 @@ public :
    */
   int dimension(void) const;
 
-  /** Set database for physical property parameters.
-   *
-   * @param value Pointer to database.
-   */
-  void dbProperties(spatialdata::spatialdb::SpatialDB* value);
-
-  /** Set database for initial state variables.
-   *
-   * @param value Pointer to database.
-   */
-  void dbInitialState(spatialdata::spatialdb::SpatialDB* value);
-
   /** Set identifier of material.
    *
    * @param value Material identifier
@@ -110,6 +98,18 @@ public :
    * @returns Current time step.
    */
   double timeStep(void) const;
+
+  /** Set database for physical property parameters.
+   *
+   * @param value Pointer to database.
+   */
+  void dbProperties(spatialdata::spatialdb::SpatialDB* value);
+
+  /** Set database for initial state variables.
+   *
+   * @param value Pointer to database.
+   */
+  void dbInitialState(spatialdata::spatialdb::SpatialDB* value);
 
   /** Set scales used to nondimensionalize physical properties.
    *

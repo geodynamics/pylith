@@ -310,6 +310,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
     case 1: {
       const char* stressDBValues[] = { "stress" };
       _dbInitialStress->queryVals(stressDBValues, tensorSize);
+      break;
     } // case 1
     case 2 : {
       const char* stressDBValues[] = { 
@@ -318,7 +319,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
 	"stress-xy",
       };
       _dbInitialStress->queryVals(stressDBValues, tensorSize);
-    } // case 3
+      break;
+    } // case 2
     case 3 : {
       const char* stressDBValues[] = { 
 	"stress-xx",
@@ -329,6 +331,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
 	"stress-xz",
       };
       _dbInitialStress->queryVals(stressDBValues, tensorSize);
+      break;
     } // case 3
     default :
       assert(0);
@@ -432,6 +435,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
     case 1: {
       const char* strainDBValues[] = { "strain" };
       _dbInitialStrain->queryVals(strainDBValues, tensorSize);
+      break;
     } // case 1
     case 2 : {
       const char* strainDBValues[] = { 
@@ -440,7 +444,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
 	"strain-xy",
       };
       _dbInitialStrain->queryVals(strainDBValues, tensorSize);
-    } // case 3
+      break;
+    } // case 2
     case 3 : {
       const char* strainDBValues[] = { 
 	"strain-xx",
@@ -451,6 +456,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
 	"strain-xz",
       };
       _dbInitialStrain->queryVals(strainDBValues, tensorSize);
+      break;
     } // case 3
     default :
       assert(0);

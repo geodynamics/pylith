@@ -82,6 +82,7 @@ pylith::materials::Metadata::fiberDim(const char* name,
 	throw std::runtime_error(msg.str());
       } // if
       fiberDim = iter->second.fiberDim;
+      break;
     } // PROPERTY
 
     case STATEVAR : {
@@ -93,6 +94,7 @@ pylith::materials::Metadata::fiberDim(const char* name,
 	throw std::runtime_error(msg.str());
       } // if
       fiberDim = iter->second.fiberDim;
+      break;
     } // STATEVAR
 
     default :
@@ -122,6 +124,7 @@ pylith::materials::Metadata::fieldType(const char* name,
 	throw std::runtime_error(msg.str());
       } // if
       fieldType = iter->second.fieldType;
+      break;
     } // PROPERTY
 
     case STATEVAR : {
@@ -133,6 +136,7 @@ pylith::materials::Metadata::fieldType(const char* name,
 	throw std::runtime_error(msg.str());
       } // if
       fieldType = iter->second.fieldType;
+      break;
     } // STATEVAR
       
     default :

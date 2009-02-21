@@ -39,26 +39,23 @@ class pylith::materials::TestMaterial : public CppUnit::TestFixture
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestMaterial );
 
-  CPPUNIT_TEST( testDB );
-  CPPUNIT_TEST( testInitialStateDB );
   CPPUNIT_TEST( testID );
   CPPUNIT_TEST( testLabel );
   CPPUNIT_TEST( testTimeStep );
+  CPPUNIT_TEST( testDBProperties );
+  CPPUNIT_TEST( testDBStateVars );
+  CPPUNIT_TEST( testNormalizer );
   CPPUNIT_TEST( testNeedNewJacobian );
+#if 0
   CPPUNIT_TEST( testInitialize );
+#endif
 
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
-  /// Test db()
-  void testDB(void);
-
-  /// Test initialStateDB()
-  void testInitialStateDB(void);
-
-  /// Test id()
+  /// Test id().
   void testID(void);
 
   /// Test label()
@@ -67,11 +64,22 @@ public :
   /// Test timeStep()
   void testTimeStep(void);
 
+  /// Test dbProperties()
+  void testDBProperties(void);
+
+  /// Test dbStateVars().
+  void testDBStateVars(void);
+
+  /// Test normalizer().
+  void testNormalizer(void);
+
   /// Test needNewJacobian()
   void testNeedNewJacobian(void);
 
+#if 0
   /// Test initialize()
   void testInitialize(void);
+#endif
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -86,14 +94,26 @@ public :
   virtual
   void tearDown(void);
 
-  /// Test dbToProperties().
+  /// Test dimension().
+  void testDimension();
+
+  /// Test _dbToProperties().
   void testDBToProperties(void);
 
-  /// Test dbValues().
-  void testDBValues(void);
+  /// Test _nondimProperties().
+  void testNonDimProperties(void);
 
-  /// Test _numProperties.
-  void testProperties(void);
+  /// Test _dimProperties().
+  void testDimProperties(void);
+
+  /// Test _dbToStateVars().
+  void testDBToStateVars(void);
+
+  /// Test _nondimStateVars().
+  void testNonDimStateVars(void);
+
+  /// Test _dimStateVars().
+  void testDimStateVars(void);
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
