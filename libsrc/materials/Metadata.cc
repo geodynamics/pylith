@@ -57,6 +57,20 @@ pylith::materials::Metadata::Metadata(const ParamDescription* props,
 } // constructor
 
 // ----------------------------------------------------------------------
+// Copy constructor.
+pylith::materials::Metadata::Metadata(const Metadata& m) :
+  _properties(m._properties),
+  _stateVars(m._stateVars),
+  _propertyNames(m._propertyNames),
+  _stateVarNames(m._stateVarNames),
+  _dbProperties(m._dbProperties),
+  _dbStateVars(m._dbStateVars),
+  _numDBProperties(m._numDBProperties),
+  _numDBStateVars(m._numDBStateVars)
+{ // copy constructor
+} // copy constructor
+
+// ----------------------------------------------------------------------
 // Default destructor
 pylith::materials::Metadata::~Metadata(void)
 { // destructor

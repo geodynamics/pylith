@@ -75,6 +75,12 @@ public :
 	   const char* dbStateVars[],
 	   const int numDBStateVars);
 
+  /** Copy constructor.
+   *
+   * @parameter m Metadataw to copy.
+   */
+  Metadata(const Metadata& m);
+
   /// Default destructor
   ~Metadata(void);
 
@@ -162,7 +168,6 @@ private :
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
-  Metadata(const Metadata&); ///< Not implemented
   const Metadata& operator=(const Metadata&); ///< Not implemented
 
 }; // Metadata

@@ -21,6 +21,7 @@ check_PROGRAMS = testmaterials
 
 # Primary source files
 testmaterials_SOURCES = \
+	TestMetadata.cc \
 	TestMaterial.cc \
 	test_materials.cc
 
