@@ -22,6 +22,7 @@
 #define pylith_materials_testelasticmaterial_hh
 
 #include "TestMaterial.hh"
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 /// Namespace for pylith package
 namespace pylith {
@@ -40,6 +41,7 @@ class pylith::materials::TestElasticMaterial : public TestMaterial
 
   CPPUNIT_TEST( testDBInitialStress );
   CPPUNIT_TEST( testDBInitialStrain );
+#if 0
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TETS( testRetrievePropsAndVars );
   CPPUNIT_TEST( testCalcDensity );
@@ -47,7 +49,7 @@ class pylith::materials::TestElasticMaterial : public TestMaterial
   CPPUNIT_TEST( testCalcDerivElastic );
   CPPUNIT_TEST( testUpdateStateVars );
   CPPUNIT_TEST( testStableTimeStepImplicit );
-  CPPUNIT_TEST( testUseElasticBehavior );
+#endif
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -80,9 +82,6 @@ public :
 
   /// Test stableTimeStepImplicit().
   void testStableTimeStepImplicit(void);
-
-  /// Test useElasticBehavior().
-  void testUseElasticBehavior(void);
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -119,6 +118,20 @@ protected :
   ElasticMaterial* _matElastic; ///< Test subject.
   ElasticMaterialData* _dataElastic; ///< Data for tests.
 
+  // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private :
+
+#if 0
+  /** Setup mesh and material.
+   *
+   * @param mesh Finite-element mesh.
+   * @param material Elastic material.
+   * @param data Data with properties for elastic material.
+   */
+  void _initialize(topology::Mesh* mesh,
+		   ElasticMaterial* material,
+		   const ElasticMaterialData* data);
+#endif
 }; // class TestElasticMaterial
 
 #endif // pylith_materials_testelasticmaterial_hh

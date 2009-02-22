@@ -58,26 +58,34 @@ class ElasticMaterialApp(Script):
     Script.__init__(self, name)
 
     # Material information
-    self.dimension = None
-    self.numDBValues = None
-    self.numInitialStateValues = None
-    self.numParameters = None
-    self.numParamsQuadPt = None
-    self.numParamValues = None
-    self.dbValues = None
-    self.initialStateDBValues = None
-    self.dbData = None
-    self.initialStateDBData = None
-    self.parameterData = None
-    self.initialState = None
+    self.dimension = 0
+    self.numLocs = 0
+    self.numProperties = 0;
+    self.numStateVars = 0;
+    self.numDBProperties = 0;
+    self.numDBStateVars = 0;
+    self.numPropsQuadPt = 0;
+    self.numVarsQuadPt = 0;
+    self.numPropertyValues = None;
+    self.numStateVarValues = None;
+    self.dbPropertyValues = None;
+    self.dbStateVarValues = None;
+    self.dbProperties = None;
+    self.dbStateVars = None;
+    self.properties = None;
+    self.stateVars = None;
+    self.propertiesNondim = 0;
+    self.stateVarsNondim = 0;
 
     # Elastic material information
-    self.numLocs = None
+    self.dtStableImplicit = 1.0e+30
     self.density = None
     self.strain = None
     self.stress = None
     self.elasticConsts = None
-    self.dtStableImplicit = 1.0e+30
+    self.initialStress = None
+    self.initialStrain = None
+    self.stateVarsUpdated = None
     return
 
 
@@ -102,45 +110,74 @@ class ElasticMaterialApp(Script):
 
 
   def _initData(self):
-    self.numParamsQuadPt = numpy.sum(self.numParamValues)
+    self.numDBProperties = len(self.dbPropertyValues)
+    if not self.dbStateVarValues is None:
+      self.numDBStateVars = len(self.dbStateVarValues)
+    self.numPropsQuadPt = numpy.sum(self.numPropertyValues)
+    if not self.numStateVarValues is None:
+      self.numVarsQuadPt = numpy.sum(self.numStateVarValues)
+    self.numProperties = self.numPropertyValues.shape[0]
+    if not self.numStateVarValues is None:
+      self.numStateVars = self.numStateVarValues.shape[0]
 
     self.data.addScalar(vtype="int", name="_dimension",
                         value=self.dimension,
                         format="%d")
-    self.data.addScalar(vtype="int", name="_numDBValues",
-                        value=self.numDBValues,
+    self.data.addScalar(vtype="int", name="_numLocs",
+                        value=self.numLocs,
                         format="%d")
-    self.data.addScalar(vtype="int", name="_numInitialStateValues",
-                        value=self.numInitialStateValues,
+    self.data.addScalar(vtype="int", name="_numProperties",
+                        value=self.numProperties,
                         format="%d")
-    self.data.addScalar(vtype="int", name="_numParameters",
-                        value=self.numParameters,
+    self.data.addScalar(vtype="int", name="_numStateVars",
+                        value=self.numStateVars,
                         format="%d")
-    self.data.addScalar(vtype="int", name="_numParamsQuadPt",
-                        value=self.numParamsQuadPt,
+    self.data.addScalar(vtype="int", name="_numDBProperties",
+                        value=self.numDBProperties,
                         format="%d")
-    self.data.addArray(vtype="int", name="_numParamValues",
-                        values=self.numParamValues,
+    self.data.addScalar(vtype="int", name="_numDBStateVars",
+                        value=self.numDBStateVars,
+                        format="%d")
+    self.data.addScalar(vtype="int", name="_numPropsQuadPt",
+                        value=self.numPropsQuadPt,
+                        format="%d")
+    self.data.addScalar(vtype="int", name="_numVarsQuadPt",
+                        value=self.numVarsQuadPt,
+                        format="%d")
+    self.data.addArray(vtype="int", name="_numPropertyValues",
+                        values=self.numPropertyValues,
                         format="%d", ncols=1)
-    self.data.addArray(vtype="char*", name="_dbValues", values=self.dbValues,
+    self.data.addArray(vtype="int", name="_numStateVarValues",
+                        values=self.numStateVarValues,
+                        format="%d", ncols=1)
+    self.data.addArray(vtype="char*", name="_dbPropertyValues",
+                       values=self.dbPropertyValues,
                        format="\"%s\"", ncols=1)
-    self.data.addArray(vtype="char*", name="_initialStateDBValues",
-                       values=self.initialStateDBValues,
+    self.data.addArray(vtype="char*", name="_dbStateVarValues",
+                       values=self.dbStateVarValues,
 		       format="\"%s\"", ncols=1)
-    self.data.addArray(vtype="double", name="_dbData", values=self.dbData,
+    self.data.addArray(vtype="double", name="_dbProperties",
+                       values=self.dbProperties,
                        format="%16.8e", ncols=1)
-    self.data.addArray(vtype="double", name="_initialStateDBData",
-                       values=self.initialStateDBData,
+    self.data.addArray(vtype="double", name="_dbStateVars",
+                       values=self.dbStateVars,
 		       format="%16.8e", ncols=1)
-    self.data.addArray(vtype="double", name="_parameterData",
-                       values=self.parameterData,
+    self.data.addArray(vtype="double", name="_properties",
+                       values=self.properties,
                        format="%16.8e", ncols=1)
-    self.data.addArray(vtype="double", name="_initialState",
-                       values=self.initialState,
+    self.data.addArray(vtype="double", name="_stateVars",
+                       values=self.stateVars,
+                       format="%16.8e", ncols=1)
+    self.data.addArray(vtype="double", name="_propertiesNondim",
+                       values=self.propertiesNondim,
+                       format="%16.8e", ncols=1)
+    self.data.addArray(vtype="double", name="_stateVarsNondim",
+                       values=self.stateVarsNondim,
                        format="%16.8e", ncols=1)
 
-    self.data.addScalar(vtype="int", name="_numLocs", value=self.numLocs,
-                        format="%d")
+    self.data.addScalar(vtype="double", name="_dtStableImplicit",
+                        value=self.dtStableImplicit,
+                        format="%16.8e")
     self.data.addArray(vtype="double", name="_density",
                        values=self.density,
                        format="%16.8e", ncols=1)
@@ -153,9 +190,15 @@ class ElasticMaterialApp(Script):
     self.data.addArray(vtype="double", name="_elasticConsts",
                        values=self.elasticConsts,
                        format="%16.8e", ncols=1)
-    self.data.addScalar(vtype="double", name="_dtStableImplicit",
-                        value=self.dtStableImplicit,
-                        format="%16.8e")
+    self.data.addArray(vtype="double", name="_initialStress",
+                       values=self.initialStress,
+                       format="%16.8e", ncols=1)
+    self.data.addArray(vtype="double", name="_initialStrain",
+                       values=self.initialStrain,
+                       format="%16.8e", ncols=1)
+    self.data.addArray(vtype="double", name="_stateVarsUpdated",
+                       values=self.stateVarsUpdated,
+                       format="%16.8e", ncols=1)
       
     return
 

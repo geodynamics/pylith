@@ -27,10 +27,8 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include "pylith/utils/sievetypes.hh" // USES Mesh
-
-#include <string.h> // USES strcmp()
-#include <math.h> // USES assert()
+#include <cstring> // USES strcmp()
+#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestMaterial );
@@ -141,51 +139,20 @@ pylith::materials::TestMaterial::testNeedNewJacobian(void)
 void
 pylith::materials::TestMaterial::testInitialize(void)
 { // testInitialize
+  // Setup mesh
   topology::Mesh mesh;
-  const int materialID = 24;
-  { // create mesh
-    const int cellDim = 1;
-    const int numCorners = 3;
-    const int spaceDim = 1;
-    const int numVertices = 3;
-    const int numCells = 1;
-    const double vertCoords[] = { -1.0, 0.0, 1.0};
-    const int cells[] = { 0, 1, 2 };
-    CPPUNIT_ASSERT(0 != vertCoords);
-    CPPUNIT_ASSERT(0 != cells);
+  meshio::MeshIOAscii iohandler;
+  iohandler.filename("");
+  iohandler.read(&mesh);
 
-    mesh = new Mesh(PETSC_COMM_WORLD, cellDim);
-    ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
-
-    const bool interpolate = false;
-    ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
-
-    ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, cellDim, numCells,
-                                                const_cast<int*>(cells), numVertices,
-                                                interpolate, numCorners);
-    std::map<Mesh::point_type,Mesh::point_type> renumbering;
-    ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
-    mesh->setSieve(sieve);
-    mesh->stratify();
-    ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
-
-  } // create mesh
-
-  { // set material ids
-    const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
-    const ALE::Obj<Mesh::label_type>& labelMaterials = mesh->createLabel("material-id");
-    int i = 0;
-    for(Mesh::label_sequence::iterator e_iter = cells->begin();
-	e_iter != cells->end();
-	++e_iter)
-      mesh->setValue(labelMaterials, *e_iter, materialID);
-  } // set material ids
-
+  // Set up coordinates
   spatialdata::geocoords::CSCart cs;
-  cs.setSpaceDim(1);
+  cs.setSpaceDim(mesh.dimension());
   cs.initialize();
+  mesh.coordsys(&cs);
 
-  feassemble::Quadrature1D quadrature;
+  // Setup quadrature
+  feassemble::Quadrature<topology::Mesh> quadrature;
   feassemble::GeometryLine1D geometry;
   quadrature.refGeometry(&geometry);
   const int cellDim = 1;
@@ -199,6 +166,7 @@ pylith::materials::TestMaterial::testInitialize(void)
   quadrature.initialize(basis, basisDeriv, quadPtsRef, quadWts,
 			cellDim, numCorners, numQuadPts, spaceDim);
 
+
   spatialdata::spatialdb::SimpleDB db;
   spatialdata::spatialdb::SimpleIOAscii iohandler;
   iohandler.filename("data/matinitialize.spatialdb");
@@ -207,12 +175,13 @@ pylith::materials::TestMaterial::testInitialize(void)
   
   spatialdata::units::Nondimensional normalizer;
 
-  ElasticIsotropic3D material;
-  material.db(&db);
+  const int materialID = 24;
+  ElasticStrain1D material;
+  material.dbProperties(&db);
   material.id(materialID);
   material.label("my_material");
   material.normalizer(normalizer);
-  material.initialize(mesh, &cs, &quadrature);
+  material.initialize(mesh, &quadrature);
 
   const double densityA = 2000.0;
   const double vsA = 100.0;
@@ -334,22 +303,26 @@ pylith::materials::TestMaterial::testNonDimProperties(void)
   const int numLocs = _data->numLocs;
   const int propertiesSize = _data->numPropsQuadPt;
   double_array propertiesNondim(propertiesSize);
+  double_array properties(propertiesSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
 
-    _material->_nondimProperties(&_data->properties[0], propertiesSize);
+    memcpy(&properties[iLoc*propertiesSize], _data->properties,
+	   propertiesSize*sizeof(double));
+    _material->_nondimProperties(&properties[0], properties.size());
     
     const double* const propertiesNondimE =
       &_data->propertiesNondim[iLoc*propertiesSize];
+    CPPUNIT_ASSERT(0 != propertiesNondimE);
 
     const double tolerance = 1.0e-06;
     for (int i=0; i < propertiesSize; ++i) {
       if (fabs(propertiesNondimE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				     propertiesNondim[i]/propertiesNondimE[i],
+				     properties[i]/propertiesNondimE[i],
 				     tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesNondimE[i], propertiesNondim[i],
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesNondimE[i], properties[i],
 				     tolerance);
     } // for
   } // for
@@ -369,10 +342,13 @@ pylith::materials::TestMaterial::testDimProperties(void)
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
 
-    _material->_dimProperties(&_data->propertiesNondim[0], propertiesSize);
+    memcpy(&properties[iLoc*propertiesSize], _data->propertiesNondim, 
+	   propertiesSize*sizeof(double));
+    _material->_dimProperties(&properties[0], properties.size());
     
     const double* const propertiesE =
       &_data->properties[iLoc*propertiesSize];
+    CPPUNIT_ASSERT(0 != propertiesE);
 
     const double tolerance = 1.0e-06;
     for (int i=0; i < propertiesSize; ++i) {
@@ -399,7 +375,7 @@ pylith::materials::TestMaterial::testDBToStateVars(void)
   const int numDBStateVars = _data->numDBStateVars;
   double_array dbValues(numDBStateVars);
 
-  const int stateVarsSize = _data->numPropsQuadPt;
+  const int stateVarsSize = _data->numVarsQuadPt;
   double_array stateVars(stateVarsSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
@@ -408,7 +384,10 @@ pylith::materials::TestMaterial::testDBToStateVars(void)
 
     _material->_dbToStateVars(&stateVars[0], dbValues);
     
-    const double* const stateVarsE = &_data->stateVars[iLoc*stateVarsSize];
+    const double* const stateVarsE = 
+      (stateVarsSize > 0) ? &_data->stateVars[iLoc*stateVarsSize] : 0;
+    CPPUNIT_ASSERT( (0 < stateVarsSize && 0 != stateVarsE) ||
+		    (0 == stateVarsSize && 0 == stateVarsE) );
     const double tolerance = 1.0e-06;
     for (int i=0; i < stateVarsSize; ++i) {
       if (fabs(stateVarsE[i]) > tolerance)
@@ -431,24 +410,28 @@ pylith::materials::TestMaterial::testNonDimStateVars(void)
   CPPUNIT_ASSERT(0 != _data);
   
   const int numLocs = _data->numLocs;
-  const int stateVarsSize = _data->numPropsQuadPt;
-  double_array stateVarsNondim(stateVarsSize);
+  const int stateVarsSize = _data->numVarsQuadPt;
+  double_array stateVars(stateVarsSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
 
-    _material->_nondimStateVars(&_data->stateVars[0], stateVarsSize);
+    memcpy(&stateVars[iLoc*stateVarsSize], _data->stateVars,
+	   stateVarsSize*sizeof(double));
+    _material->_nondimStateVars(&stateVars[0], stateVars.size());
     
     const double* const stateVarsNondimE =
-      &_data->stateVarsNondim[iLoc*stateVarsSize];
+      (stateVarsSize > 0) ? &_data->stateVarsNondim[iLoc*stateVarsSize] : 0;
+    CPPUNIT_ASSERT( (0 < stateVarsSize && 0 != stateVarsNondimE) ||
+		    (0 == stateVarsSize && 0 == stateVarsNondimE) );
 
     const double tolerance = 1.0e-06;
     for (int i=0; i < stateVarsSize; ++i) {
       if (fabs(stateVarsNondimE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				     stateVarsNondim[i]/stateVarsNondimE[i],
+				     stateVars[i]/stateVarsNondimE[i],
 				     tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsNondimE[i], stateVarsNondim[i],
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsNondimE[i], stateVars[i],
 				     tolerance);
     } // for
   } // for
@@ -463,15 +446,19 @@ pylith::materials::TestMaterial::testDimStateVars(void)
   CPPUNIT_ASSERT(0 != _data);
   
   const int numLocs = _data->numLocs;
-  const int stateVarsSize = _data->numPropsQuadPt;
+  const int stateVarsSize = _data->numVarsQuadPt;
   double_array stateVars(stateVarsSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
 
-    _material->_dimStateVars(&_data->stateVarsNondim[0], stateVarsSize);
+    memcpy(&stateVars[iLoc*stateVarsSize], _data->stateVarsNondim,
+	   stateVarsSize*sizeof(double));
+    _material->_dimStateVars(&stateVars[0], stateVars.size());
     
     const double* const stateVarsE =
-      &_data->stateVars[iLoc*stateVarsSize];
+      (stateVarsSize > 0) ? &_data->stateVars[iLoc*stateVarsSize] : 0;
+    CPPUNIT_ASSERT( (0 < stateVarsSize && 0 != stateVarsE) ||
+		    (0 == stateVarsSize && 0 == stateVarsE) );
 
     const double tolerance = 1.0e-06;
     for (int i=0; i < stateVarsSize; ++i) {

@@ -23,10 +23,10 @@ check_PROGRAMS = testmaterials
 testmaterials_SOURCES = \
 	TestMetadata.cc \
 	TestMaterial.cc \
+	TestElasticMaterial.cc \
+	TestElasticIsotropic3D.cc \
 	test_materials.cc
 
-#	TestElasticMaterial.cc \
-#	TestElasticIsotropic3D.cc \
 #	TestElasticPlaneStrain.cc \
 #	TestElasticPlaneStress.cc \
 #	TestElasticStrain1D.cc \
@@ -49,10 +49,10 @@ noinst_HEADERS = \
 
 # Source files associated with testing data
 testmaterials_SOURCES += \
-	data/MaterialData.cc 
+	data/MaterialData.cc \
+	data/ElasticMaterialData.cc \
+	data/ElasticIsotropic3DData.cc 
 
-#	data/ElasticMaterialData.cc \
-#	data/ElasticIsotropic3DData.cc \
 #	data/ElasticPlaneStrainData.cc \
 #	data/ElasticPlaneStressData.cc \
 #	data/ElasticStrain1DData.cc \

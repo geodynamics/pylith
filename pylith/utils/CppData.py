@@ -201,7 +201,11 @@ class CppData(Component):
 
     # Write array information
     for array in self.arrays:
-      fileOut.write("  static const %s %s[];\n\n" % \
+      if array['values'] is None:
+        fileOut.write("  static const %s* %s;\n\n" % \
+                        (array['type'], array['name']))
+      else:
+        fileOut.write("  static const %s %s[];\n\n" % \
                     (array['type'], array['name']))
 
 
@@ -237,20 +241,27 @@ class CppData(Component):
 
     # Write array information
     for array in self.arrays:
-      cppformat = "const %s %s::%s::%s[] = {\n"
-      fileOut.write(cppformat % \
-                    (array['type'],
-                     string.join(self.namespace, "::"), self.objname,
-                     array['name']))
-      icol = 0
-      for value in numpy.ravel(array['values']):
-        cppformat = "%s," % array['format']
-        fileOut.write(cppformat % value)
-        icol += 1
-        if icol == array['ncols']:
-          fileOut.write("\n")
-          icol = 0
-      fileOut.write("};\n\n")
+      if array['values'] is None:
+        cppformat = "const %s* %s::%s::%s = 0;\n\n"
+        fileOut.write(cppformat % \
+                        (array['type'],
+                         string.join(self.namespace, "::"), self.objname,
+                         array['name']))
+      else:
+        cppformat = "const %s %s::%s::%s[] = {\n"
+        fileOut.write(cppformat % \
+                        (array['type'],
+                         string.join(self.namespace, "::"), self.objname,
+                         array['name']))
+        icol = 0
+        for value in numpy.ravel(array['values']):
+          cppformat = "%s," % array['format']
+          fileOut.write(cppformat % value)
+          icol += 1
+          if icol == array['ncols']:
+            fileOut.write("\n")
+            icol = 0
+        fileOut.write("};\n\n")
 
     if self.parent != "":
       self._writeLifecycle(fileOut)
