@@ -17,6 +17,8 @@
 #include "pylith/materials/Metadata.hh" // USES Metadata
 #include "pylith/utils/array.hh" // USES double_array
 
+#include <cstring> // USES strcmp()
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestMetadata );
 
