@@ -60,22 +60,26 @@ class ElasticMaterialApp(Script):
     # Material information
     self.dimension = 0
     self.numLocs = 0
-    self.numProperties = 0;
-    self.numStateVars = 0;
-    self.numDBProperties = 0;
-    self.numDBStateVars = 0;
-    self.numPropsQuadPt = 0;
-    self.numVarsQuadPt = 0;
-    self.numPropertyValues = None;
-    self.numStateVarValues = None;
-    self.dbPropertyValues = None;
-    self.dbStateVarValues = None;
-    self.dbProperties = None;
-    self.dbStateVars = None;
-    self.properties = None;
-    self.stateVars = None;
-    self.propertiesNondim = 0;
-    self.stateVarsNondim = 0;
+    self.numProperties = 0
+    self.numStateVars = 0
+    self.numDBProperties = 0
+    self.numDBStateVars = 0
+    self.numPropsQuadPt = 0
+    self.numVarsQuadPt = 0
+    self.numPropertyValues = None
+    self.numStateVarValues = None
+    self.dbPropertyValues = None
+    self.dbStateVarValues = None
+    self.dbProperties = None
+    self.dbStateVars = None
+    self.properties = None
+    self.stateVars = None
+    self.propertiesNondim = None
+    self.stateVarsNondim = None
+    self.lengthScale = 0
+    self.timeScale = 0
+    self.pressureScale = 0
+    self.densityScale = 0
 
     # Elastic material information
     self.dtStableImplicit = 1.0e+30
@@ -174,6 +178,18 @@ class ElasticMaterialApp(Script):
     self.data.addArray(vtype="double", name="_stateVarsNondim",
                        values=self.stateVarsNondim,
                        format="%16.8e", ncols=1)
+    self.data.addScalar(vtype="double", name="_lengthScale",
+                        value=self.lengthScale,
+                        format="%16.8e")
+    self.data.addScalar(vtype="double", name="_timeScale",
+                        value=self.timeScale,
+                        format="%16.8e")
+    self.data.addScalar(vtype="double", name="_pressureScale",
+                        value=self.pressureScale,
+                        format="%16.8e")
+    self.data.addScalar(vtype="double", name="_densityScale",
+                        value=self.densityScale,
+                        format="%16.8e")
 
     self.data.addScalar(vtype="double", name="_dtStableImplicit",
                         value=self.dtStableImplicit,

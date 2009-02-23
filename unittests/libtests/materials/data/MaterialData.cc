@@ -30,7 +30,11 @@ pylith::materials::MaterialData::MaterialData(void) :
   dbProperties(0),
   dbStateVars(0),
   properties(0),
-  stateVars(0)
+  stateVars(0),
+  lengthScale(0),
+  timeScale(0),
+  pressureScale(0),
+  densityScale(0)
 { // constructor
 } // constructor
 

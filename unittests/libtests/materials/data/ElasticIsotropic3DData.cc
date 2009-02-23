@@ -31,6 +31,14 @@ const int pylith::materials::ElasticIsotropic3DData::_numPropsQuadPt = 3;
 
 const int pylith::materials::ElasticIsotropic3DData::_numVarsQuadPt = 0;
 
+const double pylith::materials::ElasticIsotropic3DData::_lengthScale =   1.00000000e+03;
+
+const double pylith::materials::ElasticIsotropic3DData::_timeScale =   1.00000000e+00;
+
+const double pylith::materials::ElasticIsotropic3DData::_pressureScale =   2.25000000e+10;
+
+const double pylith::materials::ElasticIsotropic3DData::_densityScale =   1.00000000e+03;
+
 const double pylith::materials::ElasticIsotropic3DData::_dtStableImplicit =   1.00000000e+30;
 
 const int pylith::materials::ElasticIsotropic3DData::_numPropertyValues[] = {
@@ -72,12 +80,15 @@ const double pylith::materials::ElasticIsotropic3DData::_properties[] = {
 const double* pylith::materials::ElasticIsotropic3DData::_stateVars = 0;
 
 const double pylith::materials::ElasticIsotropic3DData::_propertiesNondim[] = {
-  0.00000000e+00,
+  2.50000000e+00,
+  1.00000000e+00,
+  1.00000000e+00,
+  2.00000000e+00,
+  1.28000000e-01,
+  1.28000000e-01,
 };
 
-const double pylith::materials::ElasticIsotropic3DData::_stateVarsNondim[] = {
-  0.00000000e+00,
-};
+const double* pylith::materials::ElasticIsotropic3DData::_stateVarsNondim = 0;
 
 const double pylith::materials::ElasticIsotropic3DData::_density[] = {
   2.50000000e+03,
@@ -201,6 +212,10 @@ pylith::materials::ElasticIsotropic3DData::ElasticIsotropic3DData(void)
   numDBStateVars = _numDBStateVars;
   numPropsQuadPt = _numPropsQuadPt;
   numVarsQuadPt = _numVarsQuadPt;
+  lengthScale = _lengthScale;
+  timeScale = _timeScale;
+  pressureScale = _pressureScale;
+  densityScale = _densityScale;
   dtStableImplicit = _dtStableImplicit;
   numPropertyValues = const_cast<int*>(_numPropertyValues);
   numStateVarValues = const_cast<int*>(_numStateVarValues);

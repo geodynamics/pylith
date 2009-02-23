@@ -54,6 +54,8 @@ class ElasticIsotropic3D(ElasticMaterialApp):
     strainA = [1.1e-4, 1.2e-4, 1.3e-4, 1.4e-4, 1.5e-4, 1.6e-4]
     initialStressA = [2.1e4, 2.2e4, 2.3e4, 2.4e4, 2.5e4, 2.6e4]
     initialStrainA = [3.1e-4, 3.2e-4, 3.3e-4, 3.4e-4, 3.5e-6, 3.6e-4]
+    muA = vsA*vsA*densityA
+    lambdaA = vpA*vpA*densityA - 2.0*muA
     
     densityB = 2000.0
     vsB = 1200.0
@@ -61,16 +63,26 @@ class ElasticIsotropic3D(ElasticMaterialApp):
     strainB = [4.1e-4, 4.2e-4, 4.3e-4, 4.4e-4, 4.5e-4, 4.6e-4]
     initialStressB = [5.1e4, 5.2e4, 5.3e4, 5.4e4, 5.5e4, 5.6e4]
     initialStrainB = [6.1e-4, 6.2e-4, 6.3e-4, 6.4e-4, 6.5e-6, 6.6e-4]
+    muB = vsB*vsB*densityB
+    lambdaB = vpB*vpB*densityB - 2.0*muB
+
+    self.lengthScale = 1.0e+3
+    self.pressureScale = muA
+    self.timeScale = 1.0
+    self.densityScale = 1.0e+3
     
     self.dbProperties = numpy.array([ [densityA, vsA, vpA],
                                       [densityB, vsB, vpB] ], 
                                     dtype=numpy.float64)
-    muA = vsA*vsA*densityA
-    lambdaA = vpA*vpA*densityA - 2.0*muA
-    muB = vsB*vsB*densityB
-    lambdaB = vpB*vpB*densityB - 2.0*muB
     self.properties = numpy.array([ [densityA, muA, lambdaA],                                                       [densityB, muB, lambdaB] ],
                                      dtype=numpy.float64)
+
+    mu0 = self.pressureScale
+    density0 = self.densityScale
+    self.propertiesNondim = \
+        numpy.array([ [densityA/density0, muA/mu0, lambdaA/mu0],
+                      [densityB/density0, muB/mu0, lambdaB/mu0] ],
+                    dtype=numpy.float64)
 
     self.initialStress = numpy.array([initialStressA,
                                       initialStressB],

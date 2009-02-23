@@ -390,11 +390,10 @@ pylith::materials::TestElasticMaterial::test_calcDensity(void)
 			      &properties[0], properties.size(),
 			      &stateVars[0], stateVars.size());
     
-    const double* densityE = data->density;
-    CPPUNIT_ASSERT(0 != densityE);
+    const double densityE = data->density[iLoc];
     
     const double tolerance = 1.0e-06;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, density/densityE[0], tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, density/densityE, tolerance);
   } // for
 } // _testCalcDensity
 
@@ -441,7 +440,7 @@ pylith::materials::TestElasticMaterial::test_calcStress(void)
 			     &initialStrain[0], initialStrain.size(),
 			     computeStateVars);
   
-    const double* stressE = data->stress;
+    const double* stressE = &data->stress[iLoc*tensorSize];
     CPPUNIT_ASSERT(0 != stressE);
 
     const double tolerance = 1.0e-06;
@@ -511,7 +510,7 @@ pylith::materials::TestElasticMaterial::test_calcElasticConsts(void)
 				    &initialStress[0], initialStress.size(),
 				    &initialStrain[0], initialStrain.size());
 
-    const double* elasticConstsE = data->elasticConsts;
+    const double* elasticConstsE = &data->elasticConsts[iLoc*numConsts];
     CPPUNIT_ASSERT(0 != elasticConstsE);
     
     const double tolerance = 1.0e-06;
@@ -566,7 +565,7 @@ pylith::materials::TestElasticMaterial::test_updateStateVars(void)
 				  &initialStrain[0], initialStrain.size());
     
     const double* stateVarsE = 
-      (numVarsQuadPt > 0) ? data->stateVarsUpdated : 0;
+      (numVarsQuadPt > 0) ? &data->stateVarsUpdated[iLoc*numVarsQuadPt] : 0;
     CPPUNIT_ASSERT( (0 < numVarsQuadPt && 0 != stateVarsE) ||
 		    (0 == numVarsQuadPt && 0 == stateVarsE) );
 

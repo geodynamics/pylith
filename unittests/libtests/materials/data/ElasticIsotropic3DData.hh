@@ -53,6 +53,14 @@ private:
 
   static const int _numVarsQuadPt;
 
+  static const double _lengthScale;
+
+  static const double _timeScale;
+
+  static const double _pressureScale;
+
+  static const double _densityScale;
+
   static const double _dtStableImplicit;
 
   static const int _numPropertyValues[];
@@ -73,7 +81,7 @@ private:
 
   static const double _propertiesNondim[];
 
-  static const double _stateVarsNondim[];
+  static const double* _stateVarsNondim;
 
   static const double _density[];
 

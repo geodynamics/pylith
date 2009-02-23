@@ -58,6 +58,11 @@ public:
   double* propertiesNondim; ///< Nondimensional properties at locations.
   double* stateVarsNondim; ///< Nondimensional state variables at locations.
 
+  double lengthScale; ///< Length scale for nondimensionalization.
+  double timeScale; ///< Time scale for nondimensionalization.
+  double pressureScale; ///< Pressure scale for nondimensionalization.
+  double densityScale; ///< Density scale for nondimensionalization.
+
 };
 
 #endif // pylith_materials_materialdata_hh

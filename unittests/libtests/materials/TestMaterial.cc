@@ -307,7 +307,7 @@ pylith::materials::TestMaterial::testNonDimProperties(void)
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
 
-    memcpy(&properties[iLoc*propertiesSize], _data->properties,
+    memcpy(&properties[0], &_data->properties[iLoc*propertiesSize],
 	   propertiesSize*sizeof(double));
     _material->_nondimProperties(&properties[0], properties.size());
     
@@ -342,7 +342,7 @@ pylith::materials::TestMaterial::testDimProperties(void)
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
 
-    memcpy(&properties[iLoc*propertiesSize], _data->propertiesNondim, 
+    memcpy(&properties[0], &_data->propertiesNondim[iLoc*propertiesSize], 
 	   propertiesSize*sizeof(double));
     _material->_dimProperties(&properties[0], properties.size());
     
@@ -415,7 +415,7 @@ pylith::materials::TestMaterial::testNonDimStateVars(void)
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
 
-    memcpy(&stateVars[iLoc*stateVarsSize], _data->stateVars,
+    memcpy(&stateVars[0], &_data->stateVars[iLoc*stateVarsSize],
 	   stateVarsSize*sizeof(double));
     _material->_nondimStateVars(&stateVars[0], stateVars.size());
     
@@ -451,7 +451,7 @@ pylith::materials::TestMaterial::testDimStateVars(void)
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
 
-    memcpy(&stateVars[iLoc*stateVarsSize], _data->stateVarsNondim,
+    memcpy(&stateVars[0], &_data->stateVarsNondim[iLoc*stateVarsSize],
 	   stateVarsSize*sizeof(double));
     _material->_dimStateVars(&stateVars[0], stateVars.size());
     
