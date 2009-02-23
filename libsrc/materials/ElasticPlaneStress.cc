@@ -14,6 +14,9 @@
 
 #include "ElasticPlaneStress.hh" // implementation of object methods
 
+#include "Metadata.hh" // USES Metadata
+
+#include "pylith/utils/array.hh" // USES double_array
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -29,56 +32,64 @@ namespace pylith {
   namespace materials {
     namespace _ElasticPlaneStress {
 
-      /// Number of entries in stress tensor.
+      // Dimension of material.
+      const int dimension = 2;
+
+      // Number of entries in stress tensor.
       const int tensorSize = 3;
 
-      /// Number of elastic constants (for general 3-D elastic material)
+      // Number of elastic constants (for general 3-D elastic material)
       const int numElasticConsts = 6;
 
-      /// Number of physical properties.
+      // Number of physical properties.
       const int numProperties = 3;
 
-      /// Physical properties.
-      const Material::PropMetaData properties[] = {
-	{ "density", 1, OTHER_FIELD },
-	{ "mu", 1, OTHER_FIELD },
-	{ "lambda", 1, OTHER_FIELD },
+      // Physical properties.
+      const Metadata::ParamDescription properties[] = {
+	{ "density", 1, pylith::topology::FieldBase::SCALAR },
+	{ "mu", 1, pylith::topology::FieldBase::SCALAR },
+	{ "lambda", 1, pylith::topology::FieldBase::SCALAR },
       };
-      /// Indices of physical properties
-      const int pidDensity = 0;
-      const int pidMu = pidDensity + 1;
-      const int pidLambda = pidMu + 1;
 
-      /// Values expected in spatial database
-      const int numDBValues = 3;
-      const char* namesDBValues[] = { "density", "vs", "vp" };      
+      // Values expected in spatial database
+      const int numDBProperties = 3;
+      const char* dbProperties[] = { "density", "vs", "vp" };      
       
-      /// Indices of database values
-      const int didDensity = 0;
-      const int didVs = 1;
-      const int didVp = 2;
-
-      /// Initial state values expected in spatial database
-      const int numInitialStateDBValues = tensorSize;
-      const char* namesInitialStateDBValues[] = { "stress_xx", "stress_yy",
-						  "stress_xy" };
-
     } // _ElasticPlaneStress
   } // materials
 } // pylith
 
+// Indices of physical properties
+const int pylith::materials::ElasticPlaneStress::p_density = 0;
+
+const int pylith::materials::ElasticPlaneStress::p_mu = 
+  pylith::materials::ElasticPlaneStress::p_density + 1;
+
+const int pylith::materials::ElasticPlaneStress::p_lambda = 
+  pylith::materials::ElasticPlaneStress::p_mu + 1;
+
+// Indices of database values (order must match dbProperties)
+const int pylith::materials::ElasticPlaneStress::db_density = 0;
+
+const int pylith::materials::ElasticPlaneStress::db_vs = 
+  pylith::materials::ElasticPlaneStress::db_density + 1;
+
+const int pylith::materials::ElasticPlaneStress::db_vp = 
+  pylith::materials::ElasticPlaneStress::db_vs + 1;
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::ElasticPlaneStress::ElasticPlaneStress(void) :
-  ElasticMaterial(_ElasticPlaneStress::tensorSize,
+  ElasticMaterial(_ElasticPlaneStress::dimension,
+		  _ElasticPlaneStress::tensorSize,
 		  _ElasticPlaneStress::numElasticConsts,
-		  _ElasticPlaneStress::namesDBValues,
-		  _ElasticPlaneStress::namesInitialStateDBValues,
-		  _ElasticPlaneStress::numDBValues,
-		  _ElasticPlaneStress::properties,
-		  _ElasticPlaneStress::numProperties)
+		  Metadata(_ElasticPlaneStress::properties,
+			   _ElasticPlaneStress::numProperties,
+			   _ElasticPlaneStress::dbProperties,
+			   _ElasticPlaneStress::numDBProperties,
+			   0, 0,
+			   0, 0))
 { // constructor
-  _dimension = 2;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -96,11 +107,11 @@ pylith::materials::ElasticPlaneStress::_dbToProperties(
 { // _dbToProperties
   assert(0 != propValues);
   const int numDBValues = dbValues.size();
-  assert(_ElasticPlaneStress::numDBValues == numDBValues);
+  assert(_ElasticPlaneStress::numDBProperties == numDBValues);
 
-  const double density = dbValues[_ElasticPlaneStress::didDensity];
-  const double vs = dbValues[_ElasticPlaneStress::didVs];
-  const double vp = dbValues[_ElasticPlaneStress::didVp];
+  const double density = dbValues[db_density];
+  const double vs = dbValues[db_vs];
+  const double vp = dbValues[db_vp];
  
   if (density <= 0.0 || vs <= 0.0 || vp <= 0.0) {
     std::ostringstream msg;
@@ -124,9 +135,9 @@ pylith::materials::ElasticPlaneStress::_dbToProperties(
     throw std::runtime_error(msg.str());
   } // if
 
-  propValues[_ElasticPlaneStress::pidDensity] = density;
-  propValues[_ElasticPlaneStress::pidMu] = mu;
-  propValues[_ElasticPlaneStress::pidLambda] = lambda;
+  propValues[p_density] = density;
+  propValues[p_mu] = mu;
+  propValues[p_lambda] = lambda;
 
   PetscLogFlops(6);
 } // _dbToProperties
@@ -143,15 +154,13 @@ pylith::materials::ElasticPlaneStress::_nondimProperties(double* const values,
 
   const double densityScale = _normalizer->densityScale();
   const double pressureScale = _normalizer->pressureScale();
-  values[_ElasticPlaneStress::pidDensity] = 
-    _normalizer->nondimensionalize(values[_ElasticPlaneStress::pidDensity],
-				   densityScale);
-  values[_ElasticPlaneStress::pidMu] = 
-    _normalizer->nondimensionalize(values[_ElasticPlaneStress::pidMu],
-				   pressureScale);
-  values[_ElasticPlaneStress::pidLambda] = 
-    _normalizer->nondimensionalize(values[_ElasticPlaneStress::pidLambda],
-				   pressureScale);
+
+  values[p_density] = 
+    _normalizer->nondimensionalize(values[p_density], densityScale);
+  values[p_mu] = 
+    _normalizer->nondimensionalize(values[p_mu], pressureScale);
+  values[p_lambda] = 
+    _normalizer->nondimensionalize(values[p_lambda], pressureScale);
 
   PetscLogFlops(3);
 } // _nondimProperties
@@ -168,63 +177,32 @@ pylith::materials::ElasticPlaneStress::_dimProperties(double* const values,
 
   const double densityScale = _normalizer->densityScale();
   const double pressureScale = _normalizer->pressureScale();
-  values[_ElasticPlaneStress::pidDensity] = 
-    _normalizer->dimensionalize(values[_ElasticPlaneStress::pidDensity],
-				   densityScale);
-  values[_ElasticPlaneStress::pidMu] = 
-    _normalizer->dimensionalize(values[_ElasticPlaneStress::pidMu],
-				   pressureScale);
-  values[_ElasticPlaneStress::pidLambda] = 
-    _normalizer->dimensionalize(values[_ElasticPlaneStress::pidLambda],
-				   pressureScale);
+
+  values[p_density] = 
+    _normalizer->dimensionalize(values[p_density], densityScale);
+  values[p_mu] = 
+    _normalizer->dimensionalize(values[p_mu], pressureScale);
+  values[p_lambda] = 
+    _normalizer->dimensionalize(values[p_lambda], pressureScale);
 
   PetscLogFlops(3);
 } // _dimProperties
-
-// ----------------------------------------------------------------------
-// Nondimensionalize initial state.
-void
-pylith::materials::ElasticPlaneStress::_nondimInitState(double* const values,
-							const int nvalues) const
-{ // _nondimInitState
-  assert(0 != _normalizer);
-  assert(0 != values);
-  assert(nvalues == _ElasticPlaneStress::numInitialStateDBValues);
-
-  const double pressureScale = _normalizer->pressureScale();
-  _normalizer->nondimensionalize(values, nvalues, pressureScale);
-
-  PetscLogFlops(nvalues);
-} // _nondimInitState
-
-// ----------------------------------------------------------------------
-// Dimensionalize initial state.
-void
-pylith::materials::ElasticPlaneStress::_dimInitState(double* const values,
-						     const int nvalues) const
-{ // _dimInitState
-  assert(0 != _normalizer);
-  assert(0 != values);
-  assert(nvalues == _ElasticPlaneStress::numInitialStateDBValues);
-  
-  const double pressureScale = _normalizer->pressureScale();
-  _normalizer->dimensionalize(values, nvalues, pressureScale);
-
-  PetscLogFlops(nvalues);
-} // _dimInitState
 
 // ----------------------------------------------------------------------
 // Compute density at location from properties.
 void
 pylith::materials::ElasticPlaneStress::_calcDensity(double* const density,
 						    const double* properties,
-						    const int numProperties)
+						    const int numProperties,
+						    const double* stateVars,
+						    const int numStateVars)
 { // calcDensity
   assert(0 != density);
   assert(0 != properties);
-  assert(_totalPropsQuadPt == numProperties);
+  assert(_numPropsQuadPt == numProperties);
+  assert(0 == numStateVars);
 
-  density[0] = properties[_ElasticPlaneStress::pidDensity];
+  density[0] = properties[p_density];
 } // calcDensity
 
 // ----------------------------------------------------------------------
@@ -234,64 +212,82 @@ pylith::materials::ElasticPlaneStress::_calcStress(double* const stress,
 						   const int stressSize,
 						   const double* properties,
 						   const int numProperties,
+						   const double* stateVars,
+						   const int numStateVars,
 						   const double* totalStrain,
 						   const int strainSize,
-						   const double* initialState,
-						   const int initialStateSize,
+						   const double* initialStress,
+						   const int initialStressSize,
+						   const double* initialStrain,
+						   const int initialStrainSize,
 						   const bool computeStateVars)
 { // _calcStress
   assert(0 != stress);
   assert(_ElasticPlaneStress::tensorSize == stressSize);
   assert(0 != properties);
-  assert(_totalPropsQuadPt == numProperties);
+  assert(_numPropsQuadPt == numProperties);
+  assert(0 == numStateVars);
   assert(0 != totalStrain);
   assert(_ElasticPlaneStress::tensorSize == strainSize);
-  assert(_ElasticPlaneStress::tensorSize == initialStateSize);
+  assert(0 != initialStress);
+  assert(_ElasticPlaneStress::tensorSize == initialStressSize);
+  assert(0 != initialStrain);
+  assert(_ElasticPlaneStress::tensorSize == initialStrainSize);
 
-  const double density = properties[_ElasticPlaneStress::pidDensity];
-  const double mu = properties[_ElasticPlaneStress::pidMu];
-  const double lambda = properties[_ElasticPlaneStress::pidLambda];
+  const double density = properties[p_density];
+  const double mu = properties[p_mu];
+  const double lambda = properties[p_lambda];
 
   const double mu2 = 2.0 * mu;
   const double lambda2mu = lambda + mu2;
   const double lambdamu = lambda + mu;
   
-  const double e11 = totalStrain[0];
-  const double e22 = totalStrain[1];
-  const double e12 = totalStrain[2];
+  const double e11 = totalStrain[0] + initialStrain[0];
+  const double e22 = totalStrain[1] + initialStrain[1];
+  const double e12 = totalStrain[2] + initialStrain[2];
 
-  stress[0] = (2.0*mu2*lambdamu * e11 + mu2*lambda * e22) / lambda2mu + initialState[0];
-  stress[1] = (mu2*lambda * e11 + 2.0*mu2*lambdamu * e22) / lambda2mu + initialState[1];
-  stress[2] = mu2 * e12 + initialState[2];
+  stress[0] = 
+    (2.0*mu2*lambdamu * e11 + mu2*lambda * e22) / lambda2mu + initialStress[0];
+  stress[1] =
+    (mu2*lambda * e11 + 2.0*mu2*lambdamu * e22) / lambda2mu + initialStress[1];
+  stress[2] = mu2 * e12 + initialStress[2];
 
-  PetscLogFlops(18);
+  PetscLogFlops(21);
 } // _calcStress
 
 // ----------------------------------------------------------------------
 // Compute density at location from properties.
 void
 pylith::materials::ElasticPlaneStress::_calcElasticConsts(
-						  double* const elasticConsts,
-						  const int numElasticConsts,
-						  const double* properties,
-						  const int numProperties,
-						  const double* totalStrain,
-						  const int strainSize,
-						  const double* initialState,
-						  const int initialStateSize)
+					     double* const elasticConsts,
+					     const int numElasticConsts,
+					     const double* properties,
+					     const int numProperties,
+					     const double* stateVars,
+					     const int numStateVars,
+					     const double* totalStrain,
+					     const int strainSize,
+					     const double* initialStress,
+					     const int initialStressSize,
+					     const double* initialStrain,
+					     const int initialStrainSize)
 { // calcElasticConsts
   assert(0 != elasticConsts);
   assert(_ElasticPlaneStress::numElasticConsts == numElasticConsts);
   assert(0 != properties);
-  assert(_totalPropsQuadPt == numProperties);
+  assert(_numPropsQuadPt == numProperties);
+  assert(0 == numStateVars);
   assert(0 != totalStrain);
   assert(_ElasticPlaneStress::tensorSize == strainSize);
-  assert(_ElasticPlaneStress::tensorSize == initialStateSize);
+  assert(0 != initialStress);
+  assert(_ElasticPlaneStress::tensorSize == initialStressSize);
+  assert(0 != initialStrain);
+  assert(_ElasticPlaneStress::tensorSize == initialStrainSize);
+ 
+  const double density = properties[p_density];
+  const double mu = properties[p_mu];
+  const double lambda = properties[p_lambda];
 
-  const double density = properties[_ElasticPlaneStress::pidDensity];
-  const double mu = properties[_ElasticPlaneStress::pidMu];
-  const double lambda = properties[_ElasticPlaneStress::pidLambda];
-  
   const double mu2 = 2.0 * mu;
   const double lambda2mu = lambda + mu2;
   const double c11 = 2.0 * mu2 * (lambda + mu) / lambda2mu;
@@ -309,8 +305,11 @@ pylith::materials::ElasticPlaneStress::_calcElasticConsts(
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
 double
-pylith::materials::ElasticPlaneStress::_stableTimeStepImplicit(const double* properties,
-				 const int numProperties) const
+pylith::materials::ElasticPlaneStress::_stableTimeStepImplicit(
+				     const double* properties,
+				     const int numProperties,
+				     const double* stateVars,
+				     const int numStateVars) const
 { // _stableTimeStepImplicit
   return pylith::PYLITH_MAXDOUBLE;
 } // _stableTimeStepImplicit

@@ -26,9 +26,7 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace materials {
-    class ElasticIsotropic3D;
     class TestElasticIsotropic3D;
-    class ElasticIsotropic3DData;
   } // materials
 } // pylith
 

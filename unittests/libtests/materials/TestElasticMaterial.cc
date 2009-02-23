@@ -599,5 +599,19 @@ pylith::materials::TestElasticMaterial::test_stableTimeStepImplicit(void)
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dt/dtE, tolerance);
 } // _testStableTimeStepImplicit
 
+// ----------------------------------------------------------------------
+// Setup nondimensionalization.
+void
+pylith::materials::TestElasticMaterial::setupNormalizer(void)
+{ // setupNormalizer
+  spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(_data->lengthScale);
+  normalizer.pressureScale(_data->pressureScale);
+  normalizer.timeScale(_data->timeScale);
+  normalizer.densityScale(_data->densityScale);
+  _material->normalizer(normalizer);
+  _matElastic->normalizer(normalizer);
+} // setupNormalizer
+
 
 // End of file 

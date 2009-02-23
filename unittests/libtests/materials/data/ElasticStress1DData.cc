@@ -17,35 +17,47 @@
 
 const int pylith::materials::ElasticStress1DData::_dimension = 1;
 
-const int pylith::materials::ElasticStress1DData::_numDBValues = 3;
-
-const int pylith::materials::ElasticStress1DData::_numInitialStateValues = 1;
-
-const int pylith::materials::ElasticStress1DData::_numParameters = 3;
-
-const int pylith::materials::ElasticStress1DData::_numParamsQuadPt = 3;
-
 const int pylith::materials::ElasticStress1DData::_numLocs = 2;
+
+const int pylith::materials::ElasticStress1DData::_numProperties = 3;
+
+const int pylith::materials::ElasticStress1DData::_numStateVars = 0;
+
+const int pylith::materials::ElasticStress1DData::_numDBProperties = 3;
+
+const int pylith::materials::ElasticStress1DData::_numDBStateVars = 0;
+
+const int pylith::materials::ElasticStress1DData::_numPropsQuadPt = 3;
+
+const int pylith::materials::ElasticStress1DData::_numVarsQuadPt = 0;
+
+const double pylith::materials::ElasticStress1DData::_lengthScale =   1.00000000e+03;
+
+const double pylith::materials::ElasticStress1DData::_timeScale =   1.00000000e+00;
+
+const double pylith::materials::ElasticStress1DData::_pressureScale =   2.25000000e+10;
+
+const double pylith::materials::ElasticStress1DData::_densityScale =   1.00000000e+03;
 
 const double pylith::materials::ElasticStress1DData::_dtStableImplicit =   1.00000000e+30;
 
-const int pylith::materials::ElasticStress1DData::_numParamValues[] = {
+const int pylith::materials::ElasticStress1DData::_numPropertyValues[] = {
 1,
 1,
 1,
 };
 
-const char* pylith::materials::ElasticStress1DData::_dbValues[] = {
+const int* pylith::materials::ElasticStress1DData::_numStateVarValues = 0;
+
+const char* pylith::materials::ElasticStress1DData::_dbPropertyValues[] = {
 "density",
 "vs",
 "vp",
 };
 
-const char* pylith::materials::ElasticStress1DData::_initialStateDBValues[] = {
-"stress_xx",
-};
+const char** pylith::materials::ElasticStress1DData::_dbStateVarValues = 0;
 
-const double pylith::materials::ElasticStress1DData::_dbData[] = {
+const double pylith::materials::ElasticStress1DData::_dbProperties[] = {
   2.50000000e+03,
   3.00000000e+03,
   5.19615242e+03,
@@ -54,12 +66,9 @@ const double pylith::materials::ElasticStress1DData::_dbData[] = {
   2.07846097e+03,
 };
 
-const double pylith::materials::ElasticStress1DData::_initialStateDBData[] = {
-  1.20000000e+04,
-  2.10000000e+04,
-};
+const double* pylith::materials::ElasticStress1DData::_dbStateVars = 0;
 
-const double pylith::materials::ElasticStress1DData::_parameterData[] = {
+const double pylith::materials::ElasticStress1DData::_properties[] = {
   2.50000000e+03,
   2.25000000e+10,
   2.25000000e+10,
@@ -68,10 +77,18 @@ const double pylith::materials::ElasticStress1DData::_parameterData[] = {
   2.88000000e+09,
 };
 
-const double pylith::materials::ElasticStress1DData::_initialState[] = {
-  1.20000000e+04,
-  2.10000000e+04,
+const double* pylith::materials::ElasticStress1DData::_stateVars = 0;
+
+const double pylith::materials::ElasticStress1DData::_propertiesNondim[] = {
+  2.50000000e+00,
+  1.00000000e+00,
+  1.00000000e+00,
+  2.00000000e+00,
+  1.28000000e-01,
+  1.28000000e-01,
 };
+
+const double* pylith::materials::ElasticStress1DData::_stateVarsNondim = 0;
 
 const double pylith::materials::ElasticStress1DData::_density[] = {
   2.50000000e+03,
@@ -80,12 +97,12 @@ const double pylith::materials::ElasticStress1DData::_density[] = {
 
 const double pylith::materials::ElasticStress1DData::_strain[] = {
   1.10000000e-04,
-  1.20000000e-04,
+  4.10000000e-04,
 };
 
 const double pylith::materials::ElasticStress1DData::_stress[] = {
-  6.19950000e+06,
-  8.85000000e+05,
+  2.36460000e+07,
+  7.39500000e+06,
 };
 
 const double pylith::materials::ElasticStress1DData::_elasticConsts[] = {
@@ -93,26 +110,50 @@ const double pylith::materials::ElasticStress1DData::_elasticConsts[] = {
   7.20000000e+09,
 };
 
+const double pylith::materials::ElasticStress1DData::_initialStress[] = {
+  2.10000000e+04,
+  5.10000000e+04,
+};
+
+const double pylith::materials::ElasticStress1DData::_initialStrain[] = {
+  3.10000000e-04,
+  6.10000000e-04,
+};
+
+const double* pylith::materials::ElasticStress1DData::_stateVarsUpdated = 0;
+
 pylith::materials::ElasticStress1DData::ElasticStress1DData(void)
 { // constructor
   dimension = _dimension;
-  numDBValues = _numDBValues;
-  numInitialStateValues = _numInitialStateValues;
-  numParameters = _numParameters;
-  numParamsQuadPt = _numParamsQuadPt;
   numLocs = _numLocs;
+  numProperties = _numProperties;
+  numStateVars = _numStateVars;
+  numDBProperties = _numDBProperties;
+  numDBStateVars = _numDBStateVars;
+  numPropsQuadPt = _numPropsQuadPt;
+  numVarsQuadPt = _numVarsQuadPt;
+  lengthScale = _lengthScale;
+  timeScale = _timeScale;
+  pressureScale = _pressureScale;
+  densityScale = _densityScale;
   dtStableImplicit = _dtStableImplicit;
-  numParamValues = const_cast<int*>(_numParamValues);
-  dbValues = const_cast<char**>(_dbValues);
-  initialStateDBValues = const_cast<char**>(_initialStateDBValues);
-  dbData = const_cast<double*>(_dbData);
-  initialStateDBData = const_cast<double*>(_initialStateDBData);
-  parameterData = const_cast<double*>(_parameterData);
-  initialState = const_cast<double*>(_initialState);
+  numPropertyValues = const_cast<int*>(_numPropertyValues);
+  numStateVarValues = const_cast<int*>(_numStateVarValues);
+  dbPropertyValues = const_cast<char**>(_dbPropertyValues);
+  dbStateVarValues = const_cast<char**>(_dbStateVarValues);
+  dbProperties = const_cast<double*>(_dbProperties);
+  dbStateVars = const_cast<double*>(_dbStateVars);
+  properties = const_cast<double*>(_properties);
+  stateVars = const_cast<double*>(_stateVars);
+  propertiesNondim = const_cast<double*>(_propertiesNondim);
+  stateVarsNondim = const_cast<double*>(_stateVarsNondim);
   density = const_cast<double*>(_density);
   strain = const_cast<double*>(_strain);
   stress = const_cast<double*>(_stress);
   elasticConsts = const_cast<double*>(_elasticConsts);
+  initialStress = const_cast<double*>(_initialStress);
+  initialStrain = const_cast<double*>(_initialStrain);
+  stateVarsUpdated = const_cast<double*>(_stateVarsUpdated);
 } // constructor
 
 pylith::materials::ElasticStress1DData::~ElasticStress1DData(void)

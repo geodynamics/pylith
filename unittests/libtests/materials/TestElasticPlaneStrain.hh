@@ -26,9 +26,7 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace materials {
-    class ElasticPlaneStrain;
     class TestElasticPlaneStrain;
-    class ElasticPlaneStrainData;
   } // materials
 } // pylith
 
@@ -40,15 +38,16 @@ class pylith::materials::TestElasticPlaneStrain : public TestElasticMaterial
   CPPUNIT_TEST_SUITE( TestElasticPlaneStrain );
 
   CPPUNIT_TEST( testDBToProperties );
-  CPPUNIT_TEST( testDBValues );
-  CPPUNIT_TEST( testProperties );
+  CPPUNIT_TEST( testNonDimProperties );
+  CPPUNIT_TEST( testDimProperties );
+  CPPUNIT_TEST( testDBToStateVars );
+  CPPUNIT_TEST( testNonDimStateVars );
+  CPPUNIT_TEST( testDimStateVars );
   CPPUNIT_TEST( test_calcDensity );
   CPPUNIT_TEST( test_calcStress );
   CPPUNIT_TEST( test_calcElasticConsts );
+  CPPUNIT_TEST( test_updateStateVars );
   CPPUNIT_TEST( test_stableTimeStepImplicit );
-
-  CPPUNIT_TEST( testUsesUpdateProperties );
-  CPPUNIT_TEST( testUpdateProperties );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -57,12 +56,6 @@ public :
 
   /// Setup testing data.
   void setUp(void);
-
-  /// Test usesUpdateProperties().
-  void testUsesUpdateProperties(void);
-
-  /// Test updateProperties()
-  void testUpdateProperties(void);
 
 }; // class TestElasticPlaneStrain
 

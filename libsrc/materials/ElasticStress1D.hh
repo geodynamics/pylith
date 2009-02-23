@@ -25,17 +25,10 @@
 #if !defined(pylith_materials_elasticstress1d_hh)
 #define pylith_materials_elasticstress1d_hh
 
-#include "ElasticMaterial.hh"
+// Include directives ---------------------------------------------------
+#include "ElasticMaterial.hh" // ISA ElasticMaterial
 
-/// Namespace for pylith package
-namespace pylith {
-  namespace materials {
-    class ElasticStress1D;
-    class TestElasticStress1D; // unit testing
-  } // materials
-} // pylith
-
-/// 1-D, linear elastic material with axial stres.
+// ElasticStress1D ------------------------------------------------------
 class pylith::materials::ElasticStress1D : public ElasticMaterial
 { // class ElasticStress1D
   friend class TestElasticStress1D; // unit testing
@@ -79,22 +72,6 @@ protected :
   void _dimProperties(double* const values,
 		      const int nvalues) const;
 
-  /** Nondimensionalize initial state.
-   *
-   * @param values Array of initial state values.
-   * @param nvalues Number of values.
-   */
-  void _nondimInitState(double* const values,
-			const int nvalues) const;
-
-  /** Dimensionalize initial state.
-   *
-   * @param values Array of initial state values.
-   * @param nvalues Number of values.
-   */
-  void _dimInitState(double* const values,
-		     const int nvalues) const;
-
   /** Compute density from properties.
    *
    * @param density Array for density.
@@ -103,31 +80,42 @@ protected :
    */
   void _calcDensity(double* const density,
 		    const double* properties,
-		    const int numProperties);
+		    const int numProperties,
+		    const double* stateVars,
+		    const int numStateVars);
 
-  /** Compute stress tensor from properties. If the state variables
-   * are from the previous time step, then the computeStateVars flag
-   * should be set to true so that the state variables are updated
-   * (but not stored) when computing the stresses.
+  /** Compute stress tensor from properties and state variables. If
+   * the state variables are from the previous time step, then the
+   * computeStateVars flag should be set to true so that the state
+   * variables are updated (but not stored) when computing the
+   * stresses.
    *
    * @param stress Array for stress tensor.
    * @param stressSize Size of stress tensor.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialState Initial state values.
-   * @param initialStateSize Size of initial state array.
-   * @param computeStateVars Flag indicating to compute updated state vars.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain tensor at location.
+   * @param initialStrainSize Size of initial strain array.
+   * @param computeStateVars Flag indicating to compute updated state variables.
    */
   void _calcStress(double* const stress,
 		   const int stressSize,
 		   const double* properties,
 		   const int numProperties,
+		   const double* stateVars,
+		   const int numStateVars,
 		   const double* totalStrain,
 		   const int strainSize,
-		   const double* initialState,
-		   const int initialStateSize,
+		   const double* initialStress,
+		   const int initialStressSize,
+		   const double* initialStrain,
+		   const int initialStrainSize,
 		   const bool computeStateVars);
 
   /** Compute derivatives of elasticity matrix from properties.
@@ -136,26 +124,51 @@ protected :
    * @param numElasticConsts Number of elastic constants.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialState Initial state values.
-   * @param initialStateSize Size of initial state array.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain tensor at location.
+   * @param initialStrainSize Size of initial strain array.
    */
   void _calcElasticConsts(double* const elasticConsts,
 			  const int numElasticConsts,
 			  const double* properties,
 			  const int numProperties,
+			  const double* stateVars,
+			  const int numStateVars,
 			  const double* totalStrain,
 			  const int strainSize,
-		          const double* initialState,
-		          const int initialStateSize);
+			  const double* initialStress,
+			  const int initialStressSize,
+			  const double* initialStrain,
+			  const int initialStrainSize);
 
   /** Get stable time step for implicit time integration.
+   *
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
    *
    * @returns Time step
    */
   double _stableTimeStepImplicit(const double* properties,
-				 const int numProperties) const;
+				 const int numProperties,
+				 const double* stateVars,
+				 const int numStateVars) const;
+
+  // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private :
+
+  static const int p_density;
+  static const int p_mu;
+  static const int p_lambda;
+  static const int db_density;
+  static const int db_vs;
+  static const int db_vp;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

@@ -111,6 +111,11 @@ public :
   /// Test _stableTimeStepImplicit().
   void test_stableTimeStepImplicit(void);
 
+  // PROTECTED METHODS //////////////////////////////////////////////////
+protected :
+
+  /// Setup nondimensionalization.
+  void setupNormalizer(void);
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :

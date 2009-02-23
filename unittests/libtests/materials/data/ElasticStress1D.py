@@ -20,6 +20,10 @@ from ElasticMaterialApp import ElasticMaterialApp
 import numpy
 
 # ----------------------------------------------------------------------
+dimension = 1
+numElasticConsts = 1
+tensorSize = 1
+
 # ElasticStress1D class
 class ElasticStress1D(ElasticMaterialApp):
   """
@@ -35,65 +39,84 @@ class ElasticStress1D(ElasticMaterialApp):
     """
     ElasticMaterialApp.__init__(self, name)
 
-    self.dimension = 1
+    numLocs = 2
 
-    self.numDBValues = 3
-    self.numInitialStateValues = 1
-    self.dbValues = ["density", "vs", "vp"]
-    self.initialStateDBValues = ["stress_xx"]
-    self.numParameters = 3
-    self.numParamValues = [1, 1, 1]
-    self.parameterNames = ["density", "mu", "lambda"]
+    self.dimension = dimension
+    self.numLocs = numLocs
+    
+    self.dbPropertyValues = ["density", "vs", "vp"]    
+    self.propertyValues = ["density", "mu", "lambda"]
+    self.numPropertyValues = numpy.array([1, 1, 1], dtype=numpy.int32)
 
     densityA = 2500.0
     vsA = 3000.0
     vpA = vsA*3**0.5
     strainA = [1.1e-4]
-    initialStateA = [1.2e4]
+    initialStressA = [2.1e4]
+    initialStrainA = [3.1e-4]
+    muA = vsA*vsA*densityA
+    lambdaA = vpA*vpA*densityA - 2.0*muA
     
     densityB = 2000.0
     vsB = 1200.0
     vpB = vsB*3**0.5
-    strainB = [1.2e-4]
-    initialStateB = [2.1e4]
-
-    self.dbData = numpy.array([ [densityA, vsA, vpA],
-                                [densityB, vsB, vpB] ],
-                              dtype=numpy.float64)
-    muA = vsA*vsA*densityA
-    lambdaA = vpA*vpA*densityA - 2.0*muA
+    strainB = [4.1e-4]
+    initialStressB = [5.1e4]
+    initialStrainB = [6.1e-4]
     muB = vsB*vsB*densityB
     lambdaB = vpB*vpB*densityB - 2.0*muB
-    self.parameterData = numpy.array([ [densityA, muA, lambdaA],
-                                       [densityB, muB, lambdaB] ],
+
+    self.lengthScale = 1.0e+3
+    self.pressureScale = muA
+    self.timeScale = 1.0
+    self.densityScale = 1.0e+3
+    
+    self.dbProperties = numpy.array([ [densityA, vsA, vpA],
+                                      [densityB, vsB, vpB] ], 
+                                    dtype=numpy.float64)
+    self.properties = numpy.array([ [densityA, muA, lambdaA],                                                       [densityB, muB, lambdaB] ],
                                      dtype=numpy.float64)
 
-    self.initialStateDBData = numpy.array([initialStateA, initialStateB],
-                                          dtype=numpy.float64)
-    self.initialState = numpy.array([initialStateA, initialStateB],
+    mu0 = self.pressureScale
+    density0 = self.densityScale
+    self.propertiesNondim = \
+        numpy.array([ [densityA/density0, muA/mu0, lambdaA/mu0],
+                      [densityB/density0, muB/mu0, lambdaB/mu0] ],
+                    dtype=numpy.float64)
+
+    self.initialStress = numpy.array([initialStressA,
+                                      initialStressB],
+                                    dtype=numpy.float64)
+    self.initialStrain = numpy.array([initialStrainA,
+                                      initialStrainB],
                                     dtype=numpy.float64)
     
-    self.numLocs = 2
-    numElasticConsts = 1
-    self.density = numpy.array([densityA, densityB],
+    self.density = numpy.array([densityA,
+                                densityB],
                                dtype=numpy.float64)
 
-    self.strain = numpy.array([strainA, strainB],
+    self.strain = numpy.array([strainA,
+                               strainB],
                                dtype=numpy.float64)
-    self.stress = numpy.zeros( (self.numLocs, 1), dtype=numpy.float64)
-    self.elasticConsts = numpy.zeros( (self.numLocs, numElasticConsts),
-                                      dtype=numpy.float64)
+    
+    stress = numpy.zeros( (numLocs, tensorSize), dtype=numpy.float64)
+    elasticConsts = numpy.zeros( (numLocs, numElasticConsts),
+                                 dtype=numpy.float64)
 
-    (self.elasticConsts[0,:], self.stress[0,:]) = \
-                              self._calcStress(strainA, densityA, muA, lambdaA,
-                                               initialStateA)
-    (self.elasticConsts[1,:], self.stress[1,:]) = \
-                              self._calcStress(strainB, densityB, muB, lambdaB,
-                                               initialStateB)
+    (elasticConsts[0,:], stress[0,:]) = \
+        self._calcStress(strainA, densityA, muA, lambdaA,
+                         initialStressA, initialStrainA)
+    (elasticConsts[1,:], stress[1,:]) = \
+        self._calcStress(strainB, densityB, muB, lambdaB,
+                         initialStressB, initialStrainB)
+
+    self.stress = stress
+    self.elasticConsts = elasticConsts
     return
 
 
-  def _calcStress(self, strainV, densityV, muV, lambdaV, initialStateV):
+  def _calcStress(self, strainV, densityV, muV, lambdaV, 
+                  initialStressV, initialStrainV):
     """
     Compute stress and derivative of elasticity matrix.
     """
@@ -101,10 +124,11 @@ class ElasticStress1D(ElasticMaterialApp):
     elasticConsts = numpy.array([C1111], dtype=numpy.float64)
 
     strain = numpy.reshape(strainV, (1,1))
-    initialState = numpy.reshape(initialStateV, (1,1))
+    initialStress = numpy.reshape(initialStressV, (1,1))
+    initialStrain = numpy.reshape(initialStrainV, (1,1))
     elastic = numpy.array([ [C1111] ],
                           dtype=numpy.float64)
-    stress = numpy.dot(elastic, strain) + initialState
+    stress = initialStress + numpy.dot(elastic, initialStrain+strain)
     return (elasticConsts, numpy.ravel(stress))
   
 

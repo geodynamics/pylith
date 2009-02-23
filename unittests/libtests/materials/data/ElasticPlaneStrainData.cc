@@ -17,37 +17,47 @@
 
 const int pylith::materials::ElasticPlaneStrainData::_dimension = 2;
 
-const int pylith::materials::ElasticPlaneStrainData::_numDBValues = 3;
-
-const int pylith::materials::ElasticPlaneStrainData::_numInitialStateValues = 3;
-
-const int pylith::materials::ElasticPlaneStrainData::_numParameters = 3;
-
-const int pylith::materials::ElasticPlaneStrainData::_numParamsQuadPt = 3;
-
 const int pylith::materials::ElasticPlaneStrainData::_numLocs = 2;
+
+const int pylith::materials::ElasticPlaneStrainData::_numProperties = 3;
+
+const int pylith::materials::ElasticPlaneStrainData::_numStateVars = 0;
+
+const int pylith::materials::ElasticPlaneStrainData::_numDBProperties = 3;
+
+const int pylith::materials::ElasticPlaneStrainData::_numDBStateVars = 0;
+
+const int pylith::materials::ElasticPlaneStrainData::_numPropsQuadPt = 3;
+
+const int pylith::materials::ElasticPlaneStrainData::_numVarsQuadPt = 0;
+
+const double pylith::materials::ElasticPlaneStrainData::_lengthScale =   1.00000000e+03;
+
+const double pylith::materials::ElasticPlaneStrainData::_timeScale =   1.00000000e+00;
+
+const double pylith::materials::ElasticPlaneStrainData::_pressureScale =   2.25000000e+10;
+
+const double pylith::materials::ElasticPlaneStrainData::_densityScale =   1.00000000e+03;
 
 const double pylith::materials::ElasticPlaneStrainData::_dtStableImplicit =   1.00000000e+30;
 
-const int pylith::materials::ElasticPlaneStrainData::_numParamValues[] = {
+const int pylith::materials::ElasticPlaneStrainData::_numPropertyValues[] = {
 1,
 1,
 1,
 };
 
-const char* pylith::materials::ElasticPlaneStrainData::_dbValues[] = {
+const int* pylith::materials::ElasticPlaneStrainData::_numStateVarValues = 0;
+
+const char* pylith::materials::ElasticPlaneStrainData::_dbPropertyValues[] = {
 "density",
 "vs",
 "vp",
 };
 
-const char* pylith::materials::ElasticPlaneStrainData::_initialStateDBValues[] = {
-"stress_xx",
-"stress_yy",
-"stress_xy",
-};
+const char** pylith::materials::ElasticPlaneStrainData::_dbStateVarValues = 0;
 
-const double pylith::materials::ElasticPlaneStrainData::_dbData[] = {
+const double pylith::materials::ElasticPlaneStrainData::_dbProperties[] = {
   2.50000000e+03,
   3.00000000e+03,
   5.19615242e+03,
@@ -56,16 +66,9 @@ const double pylith::materials::ElasticPlaneStrainData::_dbData[] = {
   2.07846097e+03,
 };
 
-const double pylith::materials::ElasticPlaneStrainData::_initialStateDBData[] = {
-  1.20000000e+04,
-  2.10000000e+04,
-  3.20000000e+04,
-  2.10000000e+04,
-  3.20000000e+04,
-  4.30000000e+04,
-};
+const double* pylith::materials::ElasticPlaneStrainData::_dbStateVars = 0;
 
-const double pylith::materials::ElasticPlaneStrainData::_parameterData[] = {
+const double pylith::materials::ElasticPlaneStrainData::_properties[] = {
   2.50000000e+03,
   2.25000000e+10,
   2.25000000e+10,
@@ -74,14 +77,18 @@ const double pylith::materials::ElasticPlaneStrainData::_parameterData[] = {
   2.88000000e+09,
 };
 
-const double pylith::materials::ElasticPlaneStrainData::_initialState[] = {
-  1.20000000e+04,
-  2.10000000e+04,
-  3.20000000e+04,
-  2.10000000e+04,
-  3.20000000e+04,
-  4.30000000e+04,
+const double* pylith::materials::ElasticPlaneStrainData::_stateVars = 0;
+
+const double pylith::materials::ElasticPlaneStrainData::_propertiesNondim[] = {
+  2.50000000e+00,
+  1.00000000e+00,
+  1.00000000e+00,
+  2.00000000e+00,
+  1.28000000e-01,
+  1.28000000e-01,
 };
+
+const double* pylith::materials::ElasticPlaneStrainData::_stateVarsNondim = 0;
 
 const double pylith::materials::ElasticPlaneStrainData::_density[] = {
   2.50000000e+03,
@@ -90,20 +97,20 @@ const double pylith::materials::ElasticPlaneStrainData::_density[] = {
 
 const double pylith::materials::ElasticPlaneStrainData::_strain[] = {
   1.10000000e-04,
-  2.20000000e-04,
-  3.30000000e-04,
   1.20000000e-04,
-  2.30000000e-04,
-  3.40000000e-04,
+  1.30000000e-04,
+  4.10000000e-04,
+  4.20000000e-04,
+  4.30000000e-04,
 };
 
 const double pylith::materials::ElasticPlaneStrainData::_stress[] = {
-  1.23870000e+07,
-  1.73460000e+07,
-  1.48820000e+07,
-  1.72020000e+06,
-  2.36480000e+06,
-  2.00140000e+06,
+  3.82710000e+07,
+  3.91720000e+07,
+  2.07230000e+07,
+  1.18590000e+07,
+  1.19752000e+07,
+  6.15860000e+06,
 };
 
 const double pylith::materials::ElasticPlaneStrainData::_elasticConsts[] = {
@@ -121,26 +128,58 @@ const double pylith::materials::ElasticPlaneStrainData::_elasticConsts[] = {
   5.76000000e+09,
 };
 
+const double pylith::materials::ElasticPlaneStrainData::_initialStress[] = {
+  2.10000000e+04,
+  2.20000000e+04,
+  2.30000000e+04,
+  5.10000000e+04,
+  5.20000000e+04,
+  5.30000000e+04,
+};
+
+const double pylith::materials::ElasticPlaneStrainData::_initialStrain[] = {
+  3.10000000e-04,
+  3.20000000e-04,
+  3.30000000e-04,
+  6.10000000e-04,
+  6.20000000e-04,
+  6.30000000e-04,
+};
+
+const double* pylith::materials::ElasticPlaneStrainData::_stateVarsUpdated = 0;
+
 pylith::materials::ElasticPlaneStrainData::ElasticPlaneStrainData(void)
 { // constructor
   dimension = _dimension;
-  numDBValues = _numDBValues;
-  numInitialStateValues = _numInitialStateValues;
-  numParameters = _numParameters;
-  numParamsQuadPt = _numParamsQuadPt;
   numLocs = _numLocs;
+  numProperties = _numProperties;
+  numStateVars = _numStateVars;
+  numDBProperties = _numDBProperties;
+  numDBStateVars = _numDBStateVars;
+  numPropsQuadPt = _numPropsQuadPt;
+  numVarsQuadPt = _numVarsQuadPt;
+  lengthScale = _lengthScale;
+  timeScale = _timeScale;
+  pressureScale = _pressureScale;
+  densityScale = _densityScale;
   dtStableImplicit = _dtStableImplicit;
-  numParamValues = const_cast<int*>(_numParamValues);
-  dbValues = const_cast<char**>(_dbValues);
-  initialStateDBValues = const_cast<char**>(_initialStateDBValues);
-  dbData = const_cast<double*>(_dbData);
-  initialStateDBData = const_cast<double*>(_initialStateDBData);
-  parameterData = const_cast<double*>(_parameterData);
-  initialState = const_cast<double*>(_initialState);
+  numPropertyValues = const_cast<int*>(_numPropertyValues);
+  numStateVarValues = const_cast<int*>(_numStateVarValues);
+  dbPropertyValues = const_cast<char**>(_dbPropertyValues);
+  dbStateVarValues = const_cast<char**>(_dbStateVarValues);
+  dbProperties = const_cast<double*>(_dbProperties);
+  dbStateVars = const_cast<double*>(_dbStateVars);
+  properties = const_cast<double*>(_properties);
+  stateVars = const_cast<double*>(_stateVars);
+  propertiesNondim = const_cast<double*>(_propertiesNondim);
+  stateVarsNondim = const_cast<double*>(_stateVarsNondim);
   density = const_cast<double*>(_density);
   strain = const_cast<double*>(_strain);
   stress = const_cast<double*>(_stress);
   elasticConsts = const_cast<double*>(_elasticConsts);
+  initialStress = const_cast<double*>(_initialStress);
+  initialStrain = const_cast<double*>(_initialStrain);
+  stateVarsUpdated = const_cast<double*>(_stateVarsUpdated);
 } // constructor
 
 pylith::materials::ElasticPlaneStrainData::~ElasticPlaneStrainData(void)
