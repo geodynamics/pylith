@@ -265,7 +265,7 @@ protected :
   virtual
   void _updateStateVars(double* const stateVars,
 			const int numStateVars,
-			double* const properties,
+			const double* properties,
 			const int numProperties,
 			const double* totalStrain,
 			const int strainSize,

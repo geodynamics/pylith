@@ -58,6 +58,8 @@ libpylith_la_SOURCES = \
 	materials/ElasticPlaneStrain.cc \
 	materials/ElasticPlaneStress.cc \
 	materials/ElasticIsotropic3D.cc \
+	materials/ViscoelasticMaxwell.cc \
+	materials/MaxwellIsotropic3D.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \
 	meshio/GMVFileAscii.cc \
@@ -90,9 +92,7 @@ libpylith_la_SOURCES = \
 # 	feassemble/ElasticityExplicit.cc \
 # 	feassemble/ElasticityImplicit.cc \
 # 	feassemble/IntegratorElasticity.cc \
-# 	materials/MaxwellIsotropic3D.cc \
 # 	materials/GenMaxwellIsotropic3D.cc \
-# 	materials/ViscoelasticMaxwell.cc \
 # 	meshio/CellFilter.cc \
 # 	meshio/CellFilterAvg.cc \
 # 	meshio/DataWriter.cc \

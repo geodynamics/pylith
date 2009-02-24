@@ -38,10 +38,13 @@ public :
 
   /** Compute viscous strain parameter.
    *
+   * @param dt Time step.
+   * @param maxwellTime Maxwell time.
+   *
    * @returns Viscous strain parameter.
    */
-  static double computeVisStrain(const double dt,
-				 const double maxwelltime);
+  static double viscousStrainParam(const double dt,
+				   const double maxwellTime);
 
 }; // class ViscoelasticMaxwell
 
