@@ -120,6 +120,9 @@ public :
   /** Initialize material by getting physical property parameters from
    * database.
    *
+   * @pre Must call Quadrature::computeGeometry() before calling
+   * initialize().
+   *
    * @param mesh Finite-element mesh.
    * @param quadrature Quadrature for finite-element integration
    */
@@ -243,7 +246,7 @@ private :
   int _id; ///< Material identifier.
   std::string _label; ///< Label of material.
 
-  const Metadata& _metadata; ///< Property and state variable metadata.
+  const Metadata _metadata; ///< Property and state variable metadata.
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

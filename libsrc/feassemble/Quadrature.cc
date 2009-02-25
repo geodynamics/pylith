@@ -143,12 +143,12 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
 
   const typename label_sequence::iterator cellsEnd = cells->end();
   assert(0 != _geometry);
-  const int numCorners = _geometry->numCorners();
+  const int numBasis = _numBasis;
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
-  RestrictVisitor coordsVisitor(*coordinates, numCorners*_spaceDim);
+  RestrictVisitor coordsVisitor(*coordinates, numBasis*_spaceDim);
 
   const ALE::Obj<RealSection>& quadPtsSection = _quadPtsField->section();
   const ALE::Obj<RealSection>& jacobianSection = _jacobianField->section();

@@ -47,9 +47,7 @@ class pylith::materials::TestMaterial : public CppUnit::TestFixture
   CPPUNIT_TEST( testDBStateVars );
   CPPUNIT_TEST( testNormalizer );
   CPPUNIT_TEST( testNeedNewJacobian );
-#if 0
   CPPUNIT_TEST( testInitialize );
-#endif
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -77,10 +75,8 @@ public :
   /// Test needNewJacobian()
   void testNeedNewJacobian(void);
 
-#if 0
   /// Test initialize()
   void testInitialize(void);
-#endif
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :

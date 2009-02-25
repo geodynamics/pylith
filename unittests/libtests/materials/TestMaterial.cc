@@ -16,11 +16,15 @@
 
 #include "data/MaterialData.hh" // USES MaterialData
 
-#include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "pylith/utils/array.hh" // USES double_array
-#include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
+
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
+#include "pylith/materials/ElasticStrain1D.hh" // USES ElasticStrain1D
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
-#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
@@ -32,6 +36,10 @@
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestMaterial );
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
 // Test id()
@@ -133,7 +141,6 @@ pylith::materials::TestMaterial::testNeedNewJacobian(void)
   CPPUNIT_ASSERT_EQUAL(flag, material.needNewJacobian());
 } // testNeedNewJacobian
 
-#if 0
 // ----------------------------------------------------------------------
 // Test initialize()
 void
@@ -142,7 +149,7 @@ pylith::materials::TestMaterial::testInitialize(void)
   // Setup mesh
   topology::Mesh mesh;
   meshio::MeshIOAscii iohandler;
-  iohandler.filename("");
+  iohandler.filename("data/line3.mesh");
   iohandler.read(&mesh);
 
   // Set up coordinates
@@ -159,26 +166,42 @@ pylith::materials::TestMaterial::testInitialize(void)
   const int numCorners = 3;
   const int numQuadPts = 2;
   const int spaceDim = 1;
-  const double basis[] = { 0.455, 0.667, -0.122, -0.122, 0.667, 0.455 };
-  const double basisDeriv[] = { -1.077, 1.155, -0.077, 0.077, -1.155, 1.077 };
+  const double basis[] = { 0.455, -0.122, 0.667, -0.122, 0.455, 0.667 };
+  const double basisDeriv[] = { 
+    -1.07735027e+00,
+    -7.73502692e-02,
+    1.15470054e+00,
+    7.73502692e-02,
+    1.07735027e+00,
+    -1.15470054e+00,
+  };
   const double quadPtsRef[] = { -0.577350269, 0.577350269 };
   const double quadWts[] = { 1.0, 1.0  };
   quadrature.initialize(basis, basisDeriv, quadPtsRef, quadWts,
 			cellDim, numCorners, numQuadPts, spaceDim);
 
 
+  // Get cells associated with material
+  const int materialId = 24;
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
+
+  // Compute geometry for cells
+  quadrature.computeGeometry(mesh, cells);
+
   spatialdata::spatialdb::SimpleDB db;
-  spatialdata::spatialdb::SimpleIOAscii iohandler;
-  iohandler.filename("data/matinitialize.spatialdb");
-  db.ioHandler(&iohandler);
+  spatialdata::spatialdb::SimpleIOAscii dbIO;
+  dbIO.filename("data/matinitialize.spatialdb");
+  db.ioHandler(&dbIO);
   db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
   
   spatialdata::units::Nondimensional normalizer;
 
-  const int materialID = 24;
   ElasticStrain1D material;
   material.dbProperties(&db);
-  material.id(materialID);
+  material.id(materialId);
   material.label("my_material");
   material.normalizer(normalizer);
   material.initialize(mesh, &quadrature);
@@ -197,39 +220,39 @@ pylith::materials::TestMaterial::testInitialize(void)
   const double muE[] = { muA, muB };
   const double lambdaE[] = { lambdaA, lambdaB };
 
-  // Get cells associated with material
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
-
-  Mesh::label_sequence::iterator c_iter = cells->begin();
+  SieveMesh::label_sequence::iterator c_iter = cells->begin();
   const double tolerance = 1.0e-06;
 
-  const real_section_type::value_type* paramsCell =
-    material._properties->restrictPoint(*c_iter);
-  CPPUNIT_ASSERT(0 != paramsCell);
+  CPPUNIT_ASSERT(0 != material._properties);
+  const Obj<RealSection>& propertiesSection = material._properties->section();
+  CPPUNIT_ASSERT(!propertiesSection.isNull());
+  const double* propertiesCell = propertiesSection->restrictPoint(*c_iter);
+  CPPUNIT_ASSERT(0 != propertiesCell);
 
-  const int pidDensity = 0;
-  const int pidMu = 1;
-  const int pidLambda = 2;
+  const int p_density = 0;
+  const int p_mu = 1;
+  const int p_lambda = 2;
 
   // density
   for (int i=0; i < numQuadPts; ++i) {
-    const int index = i*material._totalPropsQuadPt + pidDensity;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, paramsCell[index]/densityE[i], tolerance);
+    const int index = i*material._numPropsQuadPt + p_density;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesCell[index]/densityE[i],
+				 tolerance);
   } // for
   
   // mu
   for (int i=0; i < numQuadPts; ++i) {
-    const int index = i*material._totalPropsQuadPt + pidMu;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, paramsCell[index]/muE[i], tolerance);
+    const int index = i*material._numPropsQuadPt + p_mu;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesCell[index]/muE[i], tolerance);
   } // for
   
   // lambda
   for (int i=0; i < numQuadPts; ++i) {
-    const int index = i*material._totalPropsQuadPt + pidLambda;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, paramsCell[index]/lambdaE[i], tolerance);
+    const int index = i*material._numPropsQuadPt + p_lambda;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesCell[index]/lambdaE[i], 
+				 tolerance);
   } // for
 } // testInitialize
-#endif
 
 // ----------------------------------------------------------------------
 // Setup testing data.
