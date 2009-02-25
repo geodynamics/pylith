@@ -137,7 +137,7 @@ class ElasticPlaneStrain(ElasticMaterialApp):
                           dtype=numpy.float64)
     initialStress = numpy.reshape(initialStressV, (tensorSize,1))
     initialStrain = numpy.reshape(initialStrainV, (tensorSize,1))
-    stress = numpy.dot(elastic, strain+initialStrain) + initialStress
+    stress = numpy.dot(elastic,strain-initialStrain) + initialStress
     return (elasticConsts, numpy.ravel(stress))
   
 

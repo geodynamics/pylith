@@ -101,8 +101,8 @@ const double pylith::materials::ElasticStrain1DData::_strain[] = {
 };
 
 const double pylith::materials::ElasticStrain1DData::_stress[] = {
-  2.83710000e+07,
-  8.86380000e+06,
+ -1.34790000e+07,
+ -1.67700000e+06,
 };
 
 const double pylith::materials::ElasticStrain1DData::_elasticConsts[] = {

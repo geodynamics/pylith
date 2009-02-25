@@ -137,7 +137,7 @@ class ElasticPlaneStrain(ElasticMaterialApp):
                             [C1122, C2222, C2212],
                             [C1112, C2212, C1212] ],
                           dtype=numpy.float64)
-    stress = numpy.dot(elastic, strain+initialStrain) + initialStress
+    stress = numpy.dot(elastic,strain-initialStrain) + initialStress
     return (elasticConsts, numpy.ravel(stress))
   
 

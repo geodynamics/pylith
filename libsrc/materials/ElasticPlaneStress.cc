@@ -242,9 +242,9 @@ pylith::materials::ElasticPlaneStress::_calcStress(double* const stress,
   const double lambda2mu = lambda + mu2;
   const double lambdamu = lambda + mu;
   
-  const double e11 = totalStrain[0] + initialStrain[0];
-  const double e22 = totalStrain[1] + initialStrain[1];
-  const double e12 = totalStrain[2] + initialStrain[2];
+  const double e11 = totalStrain[0] - initialStrain[0];
+  const double e22 = totalStrain[1] - initialStrain[1];
+  const double e12 = totalStrain[2] - initialStrain[2];
 
   stress[0] = 
     (2.0*mu2*lambdamu * e11 + mu2*lambda * e22) / lambda2mu + initialStress[0];

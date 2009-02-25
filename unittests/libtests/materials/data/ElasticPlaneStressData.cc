@@ -105,12 +105,12 @@ const double pylith::materials::ElasticPlaneStressData::_strain[] = {
 };
 
 const double pylith::materials::ElasticPlaneStressData::_stress[] = {
-  3.18210000e+07,
-  3.27220000e+07,
-  2.07230000e+07,
-  9.88140000e+06,
-  9.99760000e+06,
-  6.15860000e+06,
+ -1.49790000e+07,
+ -1.49780000e+07,
+ -8.97700000e+06,
+ -1.86900000e+06,
+ -1.86800000e+06,
+ -1.09900000e+06,
 };
 
 const double pylith::materials::ElasticPlaneStressData::_elasticConsts[] = {

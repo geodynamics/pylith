@@ -238,7 +238,7 @@ pylith::materials::ElasticStrain1D::_calcStress(double* const stress,
   const double mu = properties[p_mu];
   const double lambda = properties[p_lambda];
 
-  const double e11 = totalStrain[0] + initialStrain[0];
+  const double e11 = totalStrain[0] - initialStrain[0];
   stress[0] = (lambda + 2.0*mu) * e11 + initialStress[0];
 
   PetscLogFlops(5);

@@ -28,9 +28,6 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
-// :QUESTION: Do we ignore initialStrain and only use initialStress
-// and state variables totalStrain and viscousStrain?
-
 // ----------------------------------------------------------------------
 namespace pylith {
   namespace materials {
@@ -519,8 +516,6 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
   for (int iComp=0; iComp < tensorSize; ++iComp) {
     devStressTpdt = mu2 * _viscousStrain[iComp];
 
-    // :QUESTION: ASK CHARLES ABOUT COMMENT ON NEXT LINE
-    // Later I will want to put in initial stresses.
     stress[iComp] = diag[iComp] * meanStressTpdt + devStressTpdt +
 	    initialStress[iComp];
   } // for
@@ -693,6 +688,8 @@ pylith::materials::MaxwellIsotropic3D::_updateStateVarsElastic(
 
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 
+  // :TODO: Need to account for initial values for state variables
+  // and the initial strain??
   for (int iComp=0; iComp < tensorSize; ++iComp) {
     stateVars[s_totalStrain+iComp] = totalStrain[iComp];
     stateVars[s_viscousStrain+iComp] =

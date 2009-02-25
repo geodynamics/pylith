@@ -128,7 +128,7 @@ class ElasticStrain1D(ElasticMaterialApp):
     initialStrain = numpy.reshape(initialStrainV, (1,1))
     elastic = numpy.array([ [C1111] ],
                           dtype=numpy.float64)
-    stress = numpy.dot(elastic, strain+initialStrain) + initialStress
+    stress = numpy.dot(elastic,strain-initialStrain) + initialStress
     return (elasticConsts, numpy.ravel(stress))
   
 

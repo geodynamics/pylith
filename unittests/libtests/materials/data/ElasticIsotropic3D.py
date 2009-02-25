@@ -158,7 +158,7 @@ class ElasticIsotropic3D(ElasticMaterialApp):
                             [C1123, C2223, C3323, C1223, C2323, C2313],
                             [C1113, C2213, C3313, C1213, C2313, C1313] ],
                           dtype=numpy.float64)
-    stress = initialStress + numpy.dot(elastic, initialStrain + strain)
+    stress = numpy.dot(elastic,strain-initialStrain) + initialStress
     return (elasticConsts, numpy.ravel(stress))
   
 

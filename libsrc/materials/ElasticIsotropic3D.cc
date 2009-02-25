@@ -240,12 +240,12 @@ pylith::materials::ElasticIsotropic3D::_calcStress(double* const stress,
 
   const double mu2 = 2.0*mu;
 
-  const double e11 = totalStrain[0] + initialStrain[0];
-  const double e22 = totalStrain[1] + initialStrain[1];
-  const double e33 = totalStrain[2] + initialStrain[2];
-  const double e12 = totalStrain[3] + initialStrain[3];
-  const double e23 = totalStrain[4] + initialStrain[4];
-  const double e13 = totalStrain[5] + initialStrain[5];
+  const double e11 = totalStrain[0] - initialStrain[0];
+  const double e22 = totalStrain[1] - initialStrain[1];
+  const double e33 = totalStrain[2] - initialStrain[2];
+  const double e12 = totalStrain[3] - initialStrain[3];
+  const double e23 = totalStrain[4] - initialStrain[4];
+  const double e13 = totalStrain[5] - initialStrain[5];
   
   const double s123 = lambda * (e11 + e22 + e33);
 

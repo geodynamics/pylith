@@ -111,18 +111,18 @@ const double pylith::materials::ElasticIsotropic3DData::_strain[] = {
 };
 
 const double pylith::materials::ElasticIsotropic3DData::_stress[] = {
-  4.86210000e+07,
-  4.95220000e+07,
-  5.04230000e+07,
-  2.16240000e+07,
-  6.93250000e+06,
-  2.34260000e+07,
-  1.49118000e+07,
-  1.50280000e+07,
-  1.51442000e+07,
-  6.27480000e+06,
-  2.68444000e+06,
-  6.50720000e+06,
+ -2.24790000e+07,
+ -2.24780000e+07,
+ -2.24770000e+07,
+ -8.97600000e+06,
+  6.61750000e+06,
+ -8.97400000e+06,
+ -2.82900000e+06,
+ -2.82800000e+06,
+ -2.82700000e+06,
+ -1.09800000e+06,
+  2.60956000e+06,
+ -1.09600000e+06,
 };
 
 const double pylith::materials::ElasticIsotropic3DData::_elasticConsts[] = {
