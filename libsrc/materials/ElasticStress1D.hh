@@ -20,6 +20,12 @@
  * internally using density, mu, and lambda, which are directly
  * related to the elasticity constants used in the finite-element
  * integration.
+ *
+ * $\sigma - \sigma_0 = 
+ *   \frac{\mu*(3+\lambda+2*\mu)}{\lambda+\mu} * (\epsilon - \epsilon_0)$
+ *
+ * This implies that when $\epsilon = \epsilon_0$, $\sigma =
+ * \sigma_0$.
  */
 
 #if !defined(pylith_materials_elasticstress1d_hh)

@@ -20,6 +20,11 @@
  * internally using density, lambda, and mu, which are directly
  * related to the elasticity constants used in the finite-element
  * integration.
+ *
+ * $\sigma - \sigma_0 = C (\epsilon - \epsilon_0)
+ *
+ * This implies that when $\epsilon = \epsilon_0$, $\sigma =
+ * \sigma_0$.
  */
 
 #if !defined(pylith_materials_elasticisotropic3d_hh)
