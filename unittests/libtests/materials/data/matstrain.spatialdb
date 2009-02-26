@@ -1,0 +1,15 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 1
+  value-names =  strain
+  value-units =  Pa
+  num-locs = 2
+  data-dim = 1
+  space-dim = 1
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 1
+  }
+}
+-0.5  3.10e-04
++0.5  6.10e-04
