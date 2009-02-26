@@ -23,12 +23,14 @@
 
 #include "TestMaterial.hh"
 #include "pylith/materials/materialsfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 
 /// Namespace for pylith package
 namespace pylith {
   namespace materials {
     class TestElasticMaterial;
     class ElasticMaterialData;
+    class ElasticStrain1DData;
   } // materials
 } // pylith
 
@@ -41,15 +43,13 @@ class pylith::materials::TestElasticMaterial : public TestMaterial
 
   CPPUNIT_TEST( testDBInitialStress );
   CPPUNIT_TEST( testDBInitialStrain );
-#if 0
   CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TETS( testRetrievePropsAndVars );
+  CPPUNIT_TEST( testRetrievePropsAndVars );
   CPPUNIT_TEST( testCalcDensity );
   CPPUNIT_TEST( testCalcStress );
   CPPUNIT_TEST( testCalcDerivElastic );
   CPPUNIT_TEST( testUpdateStateVars );
   CPPUNIT_TEST( testStableTimeStepImplicit );
-#endif
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -126,7 +126,6 @@ protected :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-#if 0
   /** Setup mesh and material.
    *
    * @param mesh Finite-element mesh.
@@ -134,9 +133,9 @@ private :
    * @param data Data with properties for elastic material.
    */
   void _initialize(topology::Mesh* mesh,
-		   ElasticMaterial* material,
-		   const ElasticMaterialData* data);
-#endif
+		   ElasticStrain1D* material,
+		   const ElasticStrain1DData* data);
+
 }; // class TestElasticMaterial
 
 #endif // pylith_materials_testelasticmaterial_hh

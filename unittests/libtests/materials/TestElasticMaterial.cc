@@ -15,9 +15,16 @@
 #include "TestElasticMaterial.hh" // Implementation of class methods
 
 #include "data/ElasticMaterialData.hh" // USES ElasticMaterialData
-//#include "data/ElasticIsotropic3DData.hh" // USES ElasticIsotropic3DData
+#include "data/ElasticStrain1DData.hh" // USES ElasticStrain1DData
 
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
+#include "pylith/materials/ElasticStrain1D.hh" // USES ElasticStrain1D
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
+#include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
+
 #include "pylith/utils/array.hh" // USES double_array
 
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
@@ -29,6 +36,10 @@
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticMaterial );
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
 // Test dbInitialStress()
@@ -62,20 +73,164 @@ pylith::materials::TestElasticMaterial::testDBInitialStrain(void)
   CPPUNIT_ASSERT_EQUAL(label, std::string(material._dbInitialStrain->label()));
 } // testDBInitialStrain
 
-#if 0
 // ----------------------------------------------------------------------
 // Test initialize()
 void
 pylith::materials::TestElasticMaterial::testInitialize(void)
 { // testInitialize
   topology::Mesh mesh;
-  Quadrature<topology::Mesh> quadrature;
   ElasticStrain1D material;
   ElasticStrain1DData data;
-  _initialize(&mesh, &quadrature, &material, &data);
+  _initialize(&mesh, &material, &data);
 
-  CPPUNIT_ASSERT(false);
+  // Get cells associated with material
+  const int materialId = 24;
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
+  SieveMesh::point_type cell = *cells->begin();
+
+  const double tolerance = 1.0e-06;
+  const int tensorSize = material._tensorSize;
+  const int numQuadPts = data.numLocs;
+
+  // Test initialStress field
+  CPPUNIT_ASSERT(0 != material._initialStress);
+  const ALE::Obj<RealSection>& stressSection = 
+    material._initialStress->section();
+  CPPUNIT_ASSERT(!stressSection.isNull());
+  int fiberDim = numQuadPts * tensorSize;
+  CPPUNIT_ASSERT_EQUAL(fiberDim, stressSection->getFiberDimension(cell));
+  const double* initialStress = stressSection->restrictPoint(cell);
+  CPPUNIT_ASSERT(0 != initialStress);
+  const double* initialStressE = data.initialStress;
+  CPPUNIT_ASSERT(0 != initialStressE);
+  for (int i=0; i < fiberDim; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStress[i]/initialStressE[i],
+				 tolerance);
+
+  // Test initialStrain field
+  CPPUNIT_ASSERT(0 != material._initialStrain);
+  const ALE::Obj<RealSection>& strainSection = 
+    material._initialStrain->section();
+  CPPUNIT_ASSERT(!strainSection.isNull());
+  fiberDim = numQuadPts * tensorSize;
+  CPPUNIT_ASSERT_EQUAL(fiberDim, strainSection->getFiberDimension(cell));
+  const double* initialStrain = strainSection->restrictPoint(cell);
+  CPPUNIT_ASSERT(0 != initialStrain);
+  const double* initialStrainE = data.initialStrain;
+  CPPUNIT_ASSERT(0 != initialStrainE);
+  for (int i=0; i < fiberDim; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStrain[i]/initialStrainE[i],
+				 tolerance);
+
+  // Test cell arrays
+  size_t size = data.numLocs*data.numPropsQuadPt;
+  CPPUNIT_ASSERT_EQUAL(size, material._propertiesCell.size());
+
+  size = data.numLocs*data.numVarsQuadPt;
+  CPPUNIT_ASSERT_EQUAL(size, material._stateVarsCell.size());
+
+  size = data.numLocs*tensorSize;
+  CPPUNIT_ASSERT_EQUAL(size, material._initialStressCell.size());
+
+  size = data.numLocs*tensorSize;
+  CPPUNIT_ASSERT_EQUAL(size, material._initialStrainCell.size());
+
+  size = data.numLocs;
+  CPPUNIT_ASSERT_EQUAL(size, material._densityCell.size());
+
+  size = data.numLocs*tensorSize;
+  CPPUNIT_ASSERT_EQUAL(size, material._stressCell.size());
+
+  int numElasticConsts = 0;
+  switch (data.dimension)
+    { // switch
+    case 1 :
+      numElasticConsts = 1;
+      break;
+    case 2 :
+      numElasticConsts = 6;
+      break;
+    case 3 :
+      numElasticConsts = 21;
+      break;
+    default :
+      assert(0);
+    } // switch
+  size = data.numLocs*numElasticConsts;
+  CPPUNIT_ASSERT_EQUAL(size, material._elasticConstsCell.size());
 } // testInitialize
+
+// ----------------------------------------------------------------------
+// Test retrievePropsAndVars().
+void
+pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
+{ // testRetrievePropsAndVars
+  topology::Mesh mesh;
+  ElasticStrain1D material;
+  ElasticStrain1DData data;
+  _initialize(&mesh, &material, &data);
+
+  // Get cells associated with material
+  const int materialId = 24;
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
+  SieveMesh::point_type cell = *cells->begin();
+
+  material.retrievePropsAndVars(cell);
+
+  const double tolerance = 1.0e-06;
+  const int tensorSize = material._tensorSize;
+  const int numQuadPts = data.numLocs;
+  const int numVarsQuadPt = data.numVarsQuadPt;
+
+  // Test cell arrays
+  const double* propertiesE = data.properties;
+  CPPUNIT_ASSERT(0 != propertiesE);
+  const double_array& properties = material._propertiesCell;
+  size_t size = data.numLocs*data.numPropsQuadPt;
+  CPPUNIT_ASSERT_EQUAL(size, properties.size());
+  for (size_t i=0; i < size; ++i)
+    {
+      std::cout << "propertyE: " << propertiesE[i]
+		<< ", property: " << properties[i]
+		<< std::endl;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, properties[i]/propertiesE[i],
+				 tolerance);
+    }
+
+  const double* stateVarsE = data.stateVars;
+  CPPUNIT_ASSERT( (0 < numVarsQuadPt && 0 != stateVarsE) ||
+		  (0 == numVarsQuadPt && 0 == stateVarsE) );
+  const double_array& stateVars = material._stateVarsCell;
+  size = data.numLocs*numVarsQuadPt;
+  CPPUNIT_ASSERT_EQUAL(size, stateVars.size());
+  for (size_t i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsE[i],
+				 tolerance);
+
+  const double* initialStressE = data.initialStress;
+  CPPUNIT_ASSERT(0 != initialStressE);
+  const double_array& initialStress = material._initialStressCell;
+  size = data.numLocs*tensorSize;
+  CPPUNIT_ASSERT_EQUAL(size, initialStress.size());
+  for (size_t i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStress[i]/initialStressE[i],
+				 tolerance);
+
+  const double* initialStrainE = data.initialStrain;
+  CPPUNIT_ASSERT(0 != initialStrainE);
+  const double_array& initialStrain = material._initialStrainCell;
+  size = data.numLocs*tensorSize;
+  CPPUNIT_ASSERT_EQUAL(size, initialStrain.size());
+  for (size_t i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStrain[i]/initialStrainE[i],
+				 tolerance);
+} // testRetrievePropsAndVars
 
 // ----------------------------------------------------------------------
 // Test calcDensity()
@@ -83,24 +238,30 @@ void
 pylith::materials::TestElasticMaterial::testCalcDensity(void)
 { // testCalcDensity
   topology::Mesh mesh;
-  Quadrature<topology::Mesh> quadrature;
   ElasticStrain1D material;
   ElasticStrain1DData data;
-  _initialize(&mesh, &quadrature, &material, &data);
+  _initialize(&mesh, &material, &data);
 
   // Get cells associated with material
-  const ALE::Obj<SieveMesh::label_sequence>& cells = mesh->heightStratum(0);
-  SieveMesh::label_sequence::iterator c_iter = cells->begin();
-  material.retrievePropsAndVars(*c_iter);
+  const int materialId = 24;
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
+  SieveMesh::point_type cell = *cells->begin();
+
+  material.retrievePropsAndVars(cell);
   const double_array& density = material.calcDensity();
 
-  CPPUNIT_ASSERT_EQUAL(data._numQuadPts, density.size());
+  const int tensorSize = material._tensorSize;
+  const int numQuadPts = data.numLocs;
 
-  const double tolerance = 1.0e-06;
   const double* densityE = data.density;
   CPPUNIT_ASSERT(0 != densityE);
-  const double size = data._numQuadPts;
-  for (int i=0; i < size; ++i)
+  const size_t size = numQuadPts;
+  CPPUNIT_ASSERT_EQUAL(size, density.size());
+  const double tolerance = 1.0e-06;
+  for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, density[i]/densityE[i], tolerance);
 } // testCalcDensity
     
@@ -108,80 +269,36 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
 // Test calcStress()
 void
 pylith::materials::TestElasticMaterial::testCalcStress(void)
-{ // testCalcProperties
-  ALE::Obj<Mesh> mesh;
-  { // create mesh
-    const int cellDim = 1;
-    const int numCorners = 2;
-    const int spaceDim = 1;
-    const int numVertices = 2;
-    const int numCells = 1;
-    const double vertCoords[] = { -1.0, 1.0};
-    const int cells[] = { 0, 1};
-    CPPUNIT_ASSERT(0 != vertCoords);
-    CPPUNIT_ASSERT(0 != cells);
-
-    mesh = new Mesh(PETSC_COMM_WORLD, cellDim);
-    ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
-
-    const bool interpolate = false;
-    ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
-
-    ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, cellDim, numCells,
-	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
-    std::map<Mesh::point_type,Mesh::point_type> renumbering;
-    ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
-    mesh->setSieve(sieve);
-    mesh->stratify();
-    ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
-  } // create mesh
+{ // testCalcStress
+  topology::Mesh mesh;
+  ElasticStrain1D material;
+  ElasticStrain1DData data;
+  _initialize(&mesh, &material, &data);
 
   // Get cells associated with material
-  const ALE::Obj<real_section_type>& coordinates = 
-    mesh->getRealSection("coordinates");
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  const int materialId = 24;
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
+  SieveMesh::point_type cell = *cells->begin();
 
-  ElasticIsotropic3D material;
-  ElasticIsotropic3DData data;
-  const int numQuadPts = 2;
-  const int numParams = data.numParameters;
-  const int numParamsQuadPt = data.numParamsQuadPt;
+  const int tensorSize = material._tensorSize;
+  const int numQuadPts = data.numLocs;
 
-  Mesh::label_sequence::iterator c_iter = cells->begin();
+  // Setup total strain
+  double_array strain(data.strain, numQuadPts*tensorSize);
 
-  const int fiberDim = numQuadPts * numParamsQuadPt;
-  material._properties = new real_section_type(mesh->comm(), mesh->debug());
-  material._properties->setChart(mesh->getSieve()->getChart());
-  material._properties->setFiberDimension(cells, fiberDim);
-  mesh->allocate(material._properties);
-
-  material._properties->updatePoint(*c_iter, data.parameterData);
-  const int strainSize = material._tensorSize;
-  double_array strain(data.strain, numQuadPts*strainSize);
-
-  const int initialStateSize = material._tensorSize;
-  material._initialStateSize = initialStateSize;
-  const int initialStateFiberDim = numQuadPts * initialStateSize;
-  material._initialState = new real_section_type(mesh->comm(), mesh->debug());
-  material._initialState->setChart(mesh->getSieve()->getChart());
-  material._initialState->setFiberDimension(cells, initialStateFiberDim);
-  mesh->allocate(material._initialState);
-  material._initialState->updatePoint(*c_iter, data.initialState);
-
-  material.getPropertiesCell(*c_iter, numQuadPts);
+  material.retrievePropsAndVars(cell);
   const double_array& stress = material.calcStress(strain);
 
-  const double tolerance = 1.0e-06;
   const double* stressE = data.stress;
   CPPUNIT_ASSERT(0 != stressE);
-  
-  const int size = numQuadPts * strainSize;;
-  CPPUNIT_ASSERT_EQUAL(size, int(stress.size()));
-  for (int i=0; i < size; ++i)
-    if (fabs(stressE[i]) > tolerance)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stress[i]/stressE[i], tolerance);
-    else
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(stressE[i], stress[i], tolerance);
+  const size_t size = numQuadPts * tensorSize;
+  CPPUNIT_ASSERT_EQUAL(size, stress.size());
+  const double tolerance = 1.0e-06;
+  for (size_t i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stress[i]/stressE[i], tolerance);
 } // testCalcStress
     
 // ----------------------------------------------------------------------
@@ -189,81 +306,52 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
 void
 pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
 { // testCalcDerivElastic
-  ALE::Obj<Mesh> mesh;
-  { // create mesh
-    const int cellDim = 1;
-    const int numCorners = 2;
-    const int spaceDim = 1;
-    const int numVertices = 2;
-    const int numCells = 1;
-    const double vertCoords[] = { -1.0, 1.0};
-    const int cells[] = { 0, 1};
-    CPPUNIT_ASSERT(0 != vertCoords);
-    CPPUNIT_ASSERT(0 != cells);
-
-    mesh = new Mesh(PETSC_COMM_WORLD, cellDim);
-    ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
-
-    const bool interpolate = false;
-    ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
-
-    ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, cellDim, numCells,
-	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
-    std::map<Mesh::point_type,Mesh::point_type> renumbering;
-    ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
-    mesh->setSieve(sieve);
-    mesh->stratify();
-    ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
-  } // create mesh
+  topology::Mesh mesh;
+  ElasticStrain1D material;
+  ElasticStrain1DData data;
+  _initialize(&mesh, &material, &data);
 
   // Get cells associated with material
-  const ALE::Obj<real_section_type>& coordinates = 
-    mesh->getRealSection("coordinates");
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  const int materialId = 24;
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
+  SieveMesh::point_type cell = *cells->begin();
 
-  ElasticIsotropic3D material;
-  ElasticIsotropic3DData data;
-  const int numQuadPts = 2;
-  const int numParams = data.numParameters;
-  const int numParamsQuadPt = data.numParamsQuadPt;
+  const int tensorSize = material._tensorSize;
+  const int numQuadPts = data.numLocs;
 
-  Mesh::label_sequence::iterator c_iter = cells->begin();
+  // Setup total strain
+  double_array strain(data.strain, numQuadPts*tensorSize);
 
-  const int fiberDim = numQuadPts * numParamsQuadPt;
-  material._properties = new real_section_type(mesh->comm(), mesh->debug());
-  material._properties->setChart(mesh->getSieve()->getChart());
-  material._properties->setFiberDimension(cells, fiberDim);
-  mesh->allocate(material._properties);
-
-  material._properties->updatePoint(*c_iter, data.parameterData);
-  const int strainSize = material._tensorSize;
-  double_array strain(data.strain, numQuadPts*strainSize);
-
-  const int initialStateSize = material._tensorSize;
-  material._initialStateSize = initialStateSize;
-  const int initialStateFiberDim = numQuadPts * initialStateSize;
-  material._initialState = new real_section_type(mesh->comm(), mesh->debug());
-  material._initialState->setChart(mesh->getSieve()->getChart());
-  material._initialState->setFiberDimension(cells, initialStateFiberDim);
-  mesh->allocate(material._initialState);
-
-  material.getPropertiesCell(*c_iter, numQuadPts);
+  material.retrievePropsAndVars(cell);
   const double_array& elasticConsts = material.calcDerivElastic(strain);
 
-  const double tolerance = 1.0e-06;
+  int numElasticConsts = 0;
+  switch (data.dimension)
+    { // switch
+    case 1 :
+      numElasticConsts = 1;
+      break;
+    case 2 :
+      numElasticConsts = 6;
+      break;
+    case 3 :
+      numElasticConsts = 21;
+      break;
+    default :
+      assert(0);
+    } // switch
+
   const double* elasticConstsE = data.elasticConsts;
   CPPUNIT_ASSERT(0 != elasticConstsE);
-
-  const int size = elasticConsts.size();
-  for (int i=0; i < size; ++i)
-    if (fabs(elasticConstsE[i]) > tolerance)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				   elasticConsts[i]/elasticConstsE[i], 
-				   tolerance);
-    else
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(elasticConstsE[i], 
-				   elasticConsts[i],
-				   tolerance);
+  const size_t size = numQuadPts * numElasticConsts;
+  CPPUNIT_ASSERT_EQUAL(size, elasticConsts.size());
+  const double tolerance = 1.0e-06;
+  for (size_t i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, elasticConsts[i]/elasticConstsE[i],
+				 tolerance);
 } // testCalcDerivElastic
     
 // ----------------------------------------------------------------------
@@ -279,71 +367,26 @@ pylith::materials::TestElasticMaterial::testUpdateStateVars(void)
 void
 pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
 { // testStableTimeStepImplicit
-  ALE::Obj<Mesh> mesh;
-  { // create mesh
-    const int cellDim = 1;
-    const int numCorners = 2;
-    const int spaceDim = 1;
-    const int numVertices = 2;
-    const int numCells = 1;
-    const double vertCoords[] = { -1.0, 1.0};
-    const int cells[] = { 0, 1};
-    CPPUNIT_ASSERT(0 != vertCoords);
-    CPPUNIT_ASSERT(0 != cells);
-
-    mesh = new Mesh(PETSC_COMM_WORLD, cellDim);
-    ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
-
-    const bool interpolate = false;
-    ALE::Obj<ALE::Mesh::sieve_type> s = 
-      new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
-
-    ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, cellDim, numCells,
-	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
-    std::map<Mesh::point_type,Mesh::point_type> renumbering;
-    ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
-    mesh->setSieve(sieve);
-    mesh->stratify();
-    ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
-  } // create mesh
+  topology::Mesh mesh;
+  ElasticStrain1D material;
+  ElasticStrain1DData data;
+  _initialize(&mesh, &material, &data);
 
   // Get cells associated with material
-  const ALE::Obj<real_section_type>& coordinates = 
-    mesh->getRealSection("coordinates");
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  const int materialId = 24;
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
+  SieveMesh::point_type cell = *cells->begin();
 
-  ElasticIsotropic3D material;
-  ElasticIsotropic3DData data;
-  const int numQuadPts = 2;
-  const int numParams = data.numParameters;
-  const int numParamsQuadPt = data.numParamsQuadPt;
-
-  const int initialStateSize = material._tensorSize;
-  material._initialStateSize = initialStateSize;
-  const int initialStateFiberDim = numQuadPts * initialStateSize;
-  material._initialState = new real_section_type(mesh->comm(), mesh->debug());
-  material._initialState->setChart(mesh->getSieve()->getChart());
-  material._initialState->setFiberDimension(cells, initialStateFiberDim);
-  mesh->allocate(material._initialState);
-  
-  Mesh::label_sequence::iterator c_iter = cells->begin();
-
-  const int fiberDim = numQuadPts * numParamsQuadPt;
-  material._properties = new real_section_type(mesh->comm(), mesh->debug());
-  material._properties->setChart(mesh->getSieve()->getChart());
-  material._properties->setFiberDimension(cells, fiberDim);
-  mesh->allocate(material._properties);
-
-  material._properties->updatePoint(*c_iter, data.parameterData);
-
-  material.getPropertiesCell(*c_iter, numQuadPts);
+  material.retrievePropsAndVars(cell);
   const double dt = material.stableTimeStepImplicit();
 
   const double tolerance = 1.0e-06;
   const double dtE = data.dtStableImplicit;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dt/dtE, tolerance);
 } // testStableTimeStepImplicit
-#endif    
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -614,6 +657,91 @@ pylith::materials::TestElasticMaterial::setupNormalizer(void)
   _material->normalizer(normalizer);
   _matElastic->normalizer(normalizer);
 } // setupNormalizer
+
+// ----------------------------------------------------------------------
+// Setup mesh and material.
+void
+pylith::materials::TestElasticMaterial::_initialize(
+					  topology::Mesh* mesh,
+					  ElasticStrain1D* material,
+					  const ElasticStrain1DData* data)
+{ // _initialize
+  CPPUNIT_ASSERT(0 != mesh);
+  CPPUNIT_ASSERT(0 != material);
+  CPPUNIT_ASSERT(0 != data);
+
+  meshio::MeshIOAscii iohandler;
+  iohandler.filename("data/line3.mesh");
+  iohandler.read(mesh);
+
+  // Set up coordinates
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(mesh->dimension());
+  cs.initialize();
+  mesh->coordsys(&cs);
+
+  // Setup quadrature
+  feassemble::Quadrature<topology::Mesh> quadrature;
+  feassemble::GeometryLine1D geometry;
+  quadrature.refGeometry(&geometry);
+  const int cellDim = 1;
+  const int numCorners = 3;
+  const int numQuadPts = 2;
+  const int spaceDim = 1;
+  const double basis[] = { 0.455, -0.122, 0.667, -0.122, 0.455, 0.667 };
+  const double basisDeriv[] = { 
+    -1.07735027e+00,
+    -7.73502692e-02,
+    1.15470054e+00,
+    7.73502692e-02,
+    1.07735027e+00,
+    -1.15470054e+00,
+  };
+  const double quadPtsRef[] = { -0.577350269, 0.577350269 };
+  const double quadWts[] = { 1.0, 1.0  };
+  quadrature.initialize(basis, basisDeriv, quadPtsRef, quadWts,
+			cellDim, numCorners, numQuadPts, spaceDim);
+
+
+  // Get cells associated with material
+  const int materialId = 24;
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
+
+  // Compute geometry for cells
+  quadrature.computeGeometry(*mesh, cells);
+
+  spatialdata::spatialdb::SimpleDB db;
+  spatialdata::spatialdb::SimpleIOAscii dbIO;
+  dbIO.filename("data/matinitialize.spatialdb");
+  db.ioHandler(&dbIO);
+  db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
+  
+  spatialdata::spatialdb::SimpleDB dbStress;
+  spatialdata::spatialdb::SimpleIOAscii dbIOStress;
+  dbIOStress.filename("data/matstress.spatialdb");
+  dbStress.ioHandler(&dbIOStress);
+  dbStress.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
+  
+  spatialdata::spatialdb::SimpleDB dbStrain;
+  spatialdata::spatialdb::SimpleIOAscii dbIOStrain;
+  dbIOStrain.filename("data/matstrain.spatialdb");
+  dbStrain.ioHandler(&dbIOStrain);
+  dbStrain.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
+  
+  spatialdata::units::Nondimensional normalizer;
+
+  material->dbProperties(&db);
+  material->id(materialId);
+  material->label("my_material");
+  material->normalizer(normalizer);
+  material->dbInitialStress(&dbStress);
+  material->dbInitialStrain(&dbStrain);
+  
+  material->initialize(*mesh, &quadrature);
+} // _initialize
 
 
 // End of file 

@@ -77,6 +77,9 @@ public :
 
   /** Compute density for cell at quadrature points.
    *
+   * @pre Must call retrievePropsAndVars for cell before calling
+   * calcDensity().
+   *
    * @returns Array of density values at cell's quadrature points.
    */
   const double_array& calcDensity(void);
@@ -85,6 +88,9 @@ public :
    * are from the previous time step, then the computeStateVars flag
    * should be set to true so that the state variables are updated
    * (but not stored) when computing the stresses.
+   *
+   * @pre Must call retrievePropsAndVars for cell before calling
+   * calcStress().
    *
    * Size of array of stress tensors = [numQuadPts][tensorSize].
    *
@@ -108,6 +114,9 @@ public :
 	     const bool computeStateVars =false);
 
   /** Compute derivative of elasticity matrix for cell at quadrature points.
+   *
+   * @pre Must call retrievePropsAndVars for cell before calling
+   * calcDerivElastic().
    *
    * Size of array of elasticity constants = [numQuadPts][numElasticConsts]
    *
@@ -150,6 +159,9 @@ public :
   bool hasStateVars(void) const;
 
   /** Get stable time step for implicit time integration.
+   *
+   * @pre Must call retrievePropsAndVars for cell before calling
+   * stableTimeStep().
    *
    * Default is MAXFLOAT (or 1.0e+30 if MAXFLOAT is not defined in math.h).
    *

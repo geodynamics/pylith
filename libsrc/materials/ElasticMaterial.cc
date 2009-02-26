@@ -91,11 +91,30 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
   assert(!propertiesSection.isNull());
   propertiesSection->restrictPoint(cell, &_propertiesCell[0],
 				   _propertiesCell.size());
-  
-  const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
-  assert(!stateVarsSection.isNull());
-  stateVarsSection->restrictPoint(cell, &_stateVarsCell[0],
-				  _stateVarsCell.size());
+
+  if (hasStateVars()) {
+    const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
+    assert(!stateVarsSection.isNull());
+    stateVarsSection->restrictPoint(cell, &_stateVarsCell[0],
+				    _stateVarsCell.size());
+  } // if
+
+  if (0 == _initialStress)
+    _initialStressCell = 0.0;
+  else {
+    const ALE::Obj<RealSection>& stressSection = _initialStress->section();
+    assert(!stressSection.isNull());
+    stressSection->restrictPoint(cell, &_initialStressCell[0],
+				 _initialStressCell.size());
+  } // if/else
+  if (0 == _initialStrain)
+    _initialStrainCell = 0.0;
+  else {
+    const ALE::Obj<RealSection>& strainSection = _initialStrain->section();
+    assert(!strainSection.isNull());
+    strainSection->restrictPoint(cell, &_initialStrainCell[0],
+				 _initialStrainCell.size());
+  } // if/else
 } // retrievePropsAndVars
 
 // ----------------------------------------------------------------------

@@ -33,6 +33,7 @@
 
 #include <cstring> // USES strcmp()
 #include <cassert> // USES assert()
+#include <cmath> // USES sqrt()
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestMaterial );
@@ -206,27 +207,27 @@ pylith::materials::TestMaterial::testInitialize(void)
   material.normalizer(normalizer);
   material.initialize(mesh, &quadrature);
 
-  const double densityA = 2000.0;
-  const double vsA = 100.0;
-  const double vpA = 180.0;
+  const double densityA = 2500.0;
+  const double vsA = 3000.0;
+  const double vpA = vsA*sqrt(3.0);
   const double muA = vsA*vsA*densityA;
   const double lambdaA = vpA*vpA*densityA - 2.0*muA;
-  const double densityB = 3000.0;
-  const double vsB = 200.0;
-  const double vpB = 400.0;
+  const double densityB = 2000.0;
+  const double vsB = 1200.0;
+  const double vpB = vsB*sqrt(3.0);
   const double muB = vsB*vsB*densityB;
   const double lambdaB = vpB*vpB*densityB - 2.0*muB;
   const double densityE[] = { densityA, densityB };
   const double muE[] = { muA, muB };
   const double lambdaE[] = { lambdaA, lambdaB };
 
-  SieveMesh::label_sequence::iterator c_iter = cells->begin();
+  SieveMesh::point_type cell = *cells->begin();
   const double tolerance = 1.0e-06;
 
   CPPUNIT_ASSERT(0 != material._properties);
   const Obj<RealSection>& propertiesSection = material._properties->section();
   CPPUNIT_ASSERT(!propertiesSection.isNull());
-  const double* propertiesCell = propertiesSection->restrictPoint(*c_iter);
+  const double* propertiesCell = propertiesSection->restrictPoint(cell);
   CPPUNIT_ASSERT(0 != propertiesCell);
 
   const int p_density = 0;
