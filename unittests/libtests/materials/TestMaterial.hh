@@ -94,6 +94,9 @@ public :
   /// Test dimension().
   void testDimension();
 
+  /// Test tensorSize().
+  void testTensorSize();
+
   /// Test _dbToProperties().
   void testDBToProperties(void);
 

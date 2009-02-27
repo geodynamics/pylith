@@ -282,6 +282,32 @@ pylith::materials::TestMaterial::testDimension(void)
 } // testDimension
 
 // ----------------------------------------------------------------------
+// Test dimension()
+void
+pylith::materials::TestMaterial::testTensorSize(void)
+{ // testTensorSize
+  int tensorSize = 0;
+  const int dimension = _data->dimension;
+  switch(dimension)
+    { // switch
+    case 1 :
+      tensorSize = 1;
+      break;
+    case 2 :
+      tensorSize = 3;
+      break;
+    case 3 :
+      tensorSize = 6;
+      break;
+    default :
+      assert(0);
+    } // switch
+  CPPUNIT_ASSERT(tensorSize > 0);
+
+  CPPUNIT_ASSERT_EQUAL(tensorSize, _material->tensorSize());
+} // testTensorSize
+
+// ----------------------------------------------------------------------
 // Test _dbToProperties().
 void
 pylith::materials::TestMaterial::testDBToProperties(void)

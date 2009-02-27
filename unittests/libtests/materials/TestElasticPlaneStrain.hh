@@ -37,6 +37,8 @@ class pylith::materials::TestElasticPlaneStrain : public TestElasticMaterial
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestElasticPlaneStrain );
 
+  CPPUNIT_TEST( testDimension );
+  CPPUNIT_TEST( testTensorSize );
   CPPUNIT_TEST( testDBToProperties );
   CPPUNIT_TEST( testNonDimProperties );
   CPPUNIT_TEST( testDimProperties );

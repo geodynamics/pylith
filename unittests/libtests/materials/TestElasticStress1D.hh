@@ -37,6 +37,8 @@ class pylith::materials::TestElasticStress1D : public TestElasticMaterial
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestElasticStress1D );
 
+  CPPUNIT_TEST( testDimension );
+  CPPUNIT_TEST( testTensorSize );
   CPPUNIT_TEST( testDBToProperties );
   CPPUNIT_TEST( testNonDimProperties );
   CPPUNIT_TEST( testDimProperties );

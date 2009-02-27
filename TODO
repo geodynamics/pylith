@@ -4,8 +4,6 @@ CURRENT ISSUES/PRIORITIES
 
 0. SWIG conversion
 
-  TestMaterial::testTensorSize()
-
   TestMesh.test_view()
   TestMesh.test_checkMaterialIds()
   
