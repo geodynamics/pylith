@@ -77,6 +77,13 @@ pylith::materials::Material::timeStep(void) const {
   return _dt;
 } // timeStep
 
+// Get size of stress/strain tensor associated with material.
+inline
+int
+pylith::materials::Material::tensorSize(void) const {
+  return _tensorSize;
+}
+
 // Get flag indicating whether Jacobian matrix must be reformed for
 // current state.
 inline

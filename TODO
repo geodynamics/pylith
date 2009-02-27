@@ -3,6 +3,9 @@ CURRENT ISSUES/PRIORITIES
 ======================================================================
 
 0. SWIG conversion
+
+  TestMaterial::testTensorSize()
+
   TestMesh.test_view()
   TestMesh.test_checkMaterialIds()
   
@@ -11,9 +14,6 @@ CURRENT ISSUES/PRIORITIES
 
   DirichletPoints (Python) - rate == None -> dbRate == 0
   DirichletBoundary (Python) - rate == None -> dbRate == 0
-
-  materials::Metadata
-    Need array of names of properties and state variables?
 
 1. Reduce memory use (new labels) [Matt]
 
@@ -28,25 +28,26 @@ CURRENT ISSUES/PRIORITIES
       FieldOps::copyValues (obsolete?)
       MeshIO::normalizer()
       Material::normalizer()
-      Material::_nondimProperties()
-      Material::_dimProperties()
       Constraint::normalizer()
       Integrator::normalizer()
       DataWriter::normalizer()
 
-3. Clean-up interface for materials [Brad]
+3. Power-law nonlinear rheology [Charles]
 
-4. Power-law nonlinear rheology [Charles]
+4. Savage-Presscott benchmark [Charles]
 
-5. Savage-Presscott benchmark [Charles]
+5. Interface with PETSc nonlinear solvers [Brad and Matt]
 
-6. Interface with PETSc nonlinear solvers [Brad and Matt]
+6. Modularize output? [Matt]
 
-7. Modularize output? [Matt]
+7. Update manual for version 1.4
+
+  * Reduce memory use with ordering elements by material
+  * Nondimensionalization
 
 -- Release (v1.4) --
 
-8. Fault friction
+7. Fault friction
 
 Other
 

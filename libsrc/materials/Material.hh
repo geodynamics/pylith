@@ -130,6 +130,12 @@ public :
   void initialize(const topology::Mesh& mesh,
 		  feassemble::Quadrature<topology::Mesh>* quadrature);
   
+  /** Get size of stress/strain tensor associated with material.
+   *
+   * @returns Size of array holding stress/strain tensor.
+   */
+  int tensorSize(void) const;
+
   /** Get flag indicating whether Jacobian matrix must be reformed for
    * current state.
    *
@@ -147,13 +153,9 @@ public :
    *
    * @param field Proeprty field.
    * @param name Name of physical property.
-   * @param mesh Finite-element mesh.
-   * @param numQuadPoints Number of quadrature points.
    */
   void propertyField(ALE::Obj<real_section_type>* field,
-		     const char* name,
-		     const topology::Mesh& mesh,
-		     const int numQuadPts) const;
+		     const char* name) const;
 #endif
 
   // PROTECTED METHODS //////////////////////////////////////////////////

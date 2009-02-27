@@ -20,18 +20,20 @@
 #if !defined(pylith_feassemble_integratorelasticity_hh)
 #define pylith_feassemble_integratorelasticity_hh
 
-#include "Integrator.hh" // ISA Integrator
+// Include directives ---------------------------------------------------
+#include "feassemblefwd.hh" // forward declarations
+
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
+#include "pylith/materials/materialsfwd.hh" // HOLDSA Material
+
 #include "pylith/topology/Mesh.hh" // ISA Integrator<Mesh>
+#include "Integrator.hh" // ISA Integrator
 
-#include "pylith/utils/array.hh" // USES std::vector, double_array
+#include "pylith/utils/arrayfwd.hh" // USES std::vector, double_array
 
-namespace pylith {
-  namespace materials {
-    class ElasticMaterial;
-  } // feassemble
-} // pylith
-
-class pylith::feassemble::IntegratorElasticity : public Integrator<topology::Mesh>
+// IntegratorElasticity -------------------------------------------------
+class pylith::feassemble::IntegratorElasticity :
+  public Integrator<topology::Mesh>
 { // IntegratorElasticity
   friend class TestIntegratorElasticity; // unit testing
 
@@ -79,8 +81,8 @@ public :
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
-  void updateState(const double t,
-		   topology::SolutionFields* const fields);
+  void updateStateVars(const double t,
+		       topology::SolutionFields* const fields);
 
   /** Verify configuration is acceptable.
    *
@@ -100,7 +102,6 @@ public :
   cellField(const char* name,
 	    topology::SolutionFields* const fields);
 
-
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
@@ -108,22 +109,18 @@ protected :
    *
    * @param field Field in which to store stress or strain.
    * @param name Name of field to compute ('total-strain' or 'stress')
-   * @param mesh PETSc mesh for problem.
-   * @param fields Fields manager with solution.
+   * @param fields Manager for solution fields.
    */
-  void _calcStrainStressField(ALE::Obj<real_section_type>* field,
+  void _calcStrainStressField(topology::Field<topology::Mesh>* field,
 			      const char* name,
-			      const ALE::Obj<Mesh>& mesh,
-			      topology::FieldsManager* const fields);
+			      topology::SolutionFields* const fields);
 
   /** Calculate stress field from total strain field. Stress field
    * replaces strain field in section.
    *
    * @param field Field in which to store stress.
-   * @param mesh PETSc mesh for problem.
    */
-  void _calcStressFromStrain(ALE::Obj<real_section_type>* field,
-			     const ALE::Obj<Mesh>& mesh);
+  void _calcStressFromStrain(topology::Field<topology::Mesh>* field);
 			      
 
   /** Integrate elasticity term in residual for 1-D cells.
@@ -208,15 +205,6 @@ protected :
 			  const int numBasis,
 			  const int numQuadPts);
 
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
-private :
-
-  /// Not implemented.
-  IntegratorElasticity(const IntegratorElasticity& i);
-
-  /// Not implemented
-  const IntegratorElasticity& operator=(const IntegratorElasticity&);
-
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
@@ -224,16 +212,25 @@ protected :
   materials::ElasticMaterial* _material;
 
   /// Buffer for storing scalar cell field.
-  Field<topology::Mesh>* _bufferCellScalar;
+  topology::Field<topology::Mesh>* _bufferCellScalar;
 
   /// Buffer for storing vector cell field.
-  Field<topology::Mesh>* _bufferCellVector;
+  topology::Field<topology::Mesh>* _bufferCellVector;
 
   /// Buffer for storing cell tensor field.
-  Field<topology::Mesh>* _bufferCellTensor;
+  topology::Field<topology::Mesh>* _bufferCellTensor;
 
   /// Buffer for storing other cell fields.
-  Field<topology::Mesh>* _bufferCellOther;
+  topology::Field<topology::Mesh>* _bufferCellOther;
+
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
+private :
+
+  /// Not implemented.
+  IntegratorElasticity(const IntegratorElasticity&);
+
+  /// Not implemented
+  const IntegratorElasticity& operator=(const IntegratorElasticity&);
 
 }; // IntegratorElasticity
 
