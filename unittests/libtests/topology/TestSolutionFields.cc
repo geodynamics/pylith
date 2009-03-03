@@ -32,25 +32,25 @@ pylith::topology::TestSolutionFields::testConstructor(void)
 } // testConstructor
  
 // ----------------------------------------------------------------------
-// Test solutionField().
+// Test solutionName().
 void
-pylith::topology::TestSolutionFields::testSolutionField(void)
-{ // testSolutionField
+pylith::topology::TestSolutionFields::testSolutionName(void)
+{ // testSolutionName
   Mesh mesh;
   _initialize(&mesh);
   SolutionFields manager(mesh);
 
   const std::string& name = "my solution";
   manager.add(name.c_str());
-  manager.solutionField(name.c_str());
+  manager.solutionName(name.c_str());
   CPPUNIT_ASSERT_EQUAL(name, manager._solutionName);
-} // testSolutionField
+} // testSolutionName
 
 // ----------------------------------------------------------------------
-// Test getSolution().
+// Test solution().
 void
-pylith::topology::TestSolutionFields::testGetSolution(void)
-{ // testGetSolution
+pylith::topology::TestSolutionFields::testSolution(void)
+{ // testSolution
   Mesh mesh;
   _initialize(&mesh);
   SolutionFields manager(mesh);
@@ -77,12 +77,12 @@ pylith::topology::TestSolutionFields::testGetSolution(void)
   fieldB.newSection(chart, fiberDimB);
   fieldC.newSection(chart, fiberDimC);
 
-  manager.solutionField(labels[1]);
-  const Field<Mesh>& solution = manager.getSolution();
+  manager.solutionName(labels[1]);
+  const Field<Mesh>& solution = manager.solution();
   const ALE::Obj<Mesh::RealSection>& sectionSoln = solution.section();
   CPPUNIT_ASSERT_EQUAL(fiberDimB,
 		       sectionSoln->getFiberDimension(*(vertices->begin())));
-} // testGetSolution
+} // testSolution
 
 // ----------------------------------------------------------------------
 // Test createHistory().

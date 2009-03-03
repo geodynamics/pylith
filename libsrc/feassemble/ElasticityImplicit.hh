@@ -47,25 +47,10 @@
 #if !defined(pylith_feassemble_elasticityimplicit_hh)
 #define pylith_feassemble_elasticityimplicit_hh
 
+// Include directives ---------------------------------------------------
 #include "IntegratorElasticity.hh" // ISA IntegratorElasticity
-#include "pylith/utils/array.hh" // USES std::vector, double_array
 
-namespace pylith {
-  namespace feassemble {
-    class ElasticityImplicit;
-    class TestElasticityImplicit;
-  } // feassemble
-} // pylith
-
-namespace spatialdata {
-  namespace spatialdb {
-    class SpatialDB; // USES SpatialDB
-  } // spatialdb
-  namespace geocoords {
-    class CoordSys; // USES CoordSys
-  } // geocoords
-} // spatialdata
-
+// ElasticityImplicit ---------------------------------------------------
 class pylith::feassemble::ElasticityImplicit : public IntegratorElasticity
 { // ElasticityImplicit
   friend class TestElasticityImplicit; // unit testing

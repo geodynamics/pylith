@@ -83,6 +83,12 @@ public :
    */
   void copyLayout(const char* name);
 
+  /** Get mesh associated with fields.
+   *
+   * @returns Finite-element mesh.
+   */
+  const typename field_type::Mesh& mesh(void) const;
+
 // PROTECTED TYPEDEFS ///////////////////////////////////////////////////
 protected :
 

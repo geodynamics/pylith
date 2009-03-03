@@ -384,7 +384,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   const ALE::Obj<SubRealSection>& dampersSection = _dampingConsts->section();
   assert(!dampersSection.isNull());
 
-  const topology::Field<topology::Mesh>& solution = fields->getSolution();
+  const topology::Field<topology::Mesh>& solution = fields->solution();
   const ALE::Obj<SieveMesh>& sieveMesh = solution.mesh().sieveMesh();
   const ALE::Obj<RealSection>& solutionSection = solution.section();
   assert(!solutionSection.isNull());

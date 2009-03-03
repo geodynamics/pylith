@@ -31,8 +31,8 @@ pylith::topology::SolutionFields::~SolutionFields(void)
 // ----------------------------------------------------------------------
 // Set name of solution field.
 void
-pylith::topology::SolutionFields::solutionField(const char* name)
-{ // solutionField
+pylith::topology::SolutionFields::solutionName(const char* name)
+{ // solutionName
   map_type::const_iterator iter = _fields.find(name);
   if (iter == _fields.end()) {
     std::ostringstream msg;
@@ -41,29 +41,29 @@ pylith::topology::SolutionFields::solutionField(const char* name)
     throw std::runtime_error(msg.str());
   } // if
   _solutionName = name;
-} // solutionField
+} // solutionName
 
 // ----------------------------------------------------------------------
 // Get solution field.
 const pylith::topology::Field<pylith::topology::Mesh>&
-pylith::topology::SolutionFields::getSolution(void) const
-{ // getSolution
+pylith::topology::SolutionFields::solution(void) const
+{ // solution
   if (_solutionName == "")
     throw std::runtime_error("Cannot retrieve solution. Name of solution " \
 			     "field has not been specified.");
   return get(_solutionName.c_str());
-} // getSolution
+} // solution
 
 // ----------------------------------------------------------------------
 // Get solution field.
 pylith::topology::Field<pylith::topology::Mesh>&
-pylith::topology::SolutionFields::getSolution(void)
-{ // getSolution
+pylith::topology::SolutionFields::solution(void)
+{ // solution
   if (_solutionName == "")
     throw std::runtime_error("Cannot retrieve solution. Name of solution " \
 			     "field has not been specified.");
   return get(_solutionName.c_str());
-} // getSolution
+} // solution
 
 // ----------------------------------------------------------------------
 // Create history manager for a subset of the managed fields.

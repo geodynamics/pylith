@@ -76,7 +76,7 @@ pylith::feassemble::IntegratorElasticity::needNewJacobian(void)
 void
 pylith::feassemble::IntegratorElasticity::useSolnIncr(const bool flag)
 { // useSolnIncr
-  Integrator::useSolnIncr(flag);
+  Integrator<Quadrature<topology::Mesh> >::useSolnIncr(flag);
   
   assert(0 != _material);
   _material->useElasticBehavior(!flag);
@@ -131,15 +131,14 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get fields
-  const topology::Field<topology::Mesh>* solution = fields->solution();
-  assert(0 != solution);
-  const ALE::Obj<RealSection>& disp = solution->section();
+  const topology::Field<topology::Mesh>& solution = fields->solution();
+  const ALE::Obj<RealSection>& disp = solution.section();
   assert(!disp.isNull());
   topology::Mesh::RestrictVisitor dispVisitor(*disp, 
 					      dispCell.size(), &dispCell[0]);
 
   // Loop over cells
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
     // Retrieve geometry information for current cell
@@ -195,8 +194,8 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(
   } // if
   const int numCorners = _quadrature->refGeometry().numCorners();
 
-  const ALE::ObjSieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sievemesh.isNull());
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", _material->id());
   assert(!cells.isNull());
@@ -236,19 +235,25 @@ pylith::feassemble::IntegratorElasticity::cellField(
        0 == strcasecmp(name, "stress") )) {
     assert(0 != fields);
     _allocateTensorField(fields->mesh());
-    _calcStrainStressField(&_bufferFieldTensor, name, fields);
-    return _bufferFieldTensor;
+    _calcStrainStressField(_bufferFieldTensor, name, fields);
+    return *_bufferFieldTensor;
   } else if (0 == strcasecmp(name, "stress")) {
     assert(0 != fields);
     _allocateTensorField(fields->mesh());
-    _calcStressFromStrain(&_bufferFieldTensor, name);
-    return _bufferFieldTensor;
+#if 0 // TEMPORARY
+    _material->propertyField(_bufferFieldTensor, "total_strain");
+#endif
+    _calcStressFromStrain(_bufferFieldTensor);
+    return *_bufferFieldTensor;
   } else
-    return _material->getField(name);
+#if 0 // TEMPORARY
+    return _material->field(name);
+#endif
+    assert(0);
   
   // Return tensor section to satisfy member function definition. Code
   // should never get here.
-  return _bufferTensorField;
+  return *_bufferFieldTensor;
 } // cellField
 
 // ----------------------------------------------------------------------
@@ -272,12 +277,12 @@ pylith::feassemble::IntegratorElasticity::_allocateTensorField(
   const int spaceDim = _quadrature->spaceDim();
   const int tensorSize = _material->tensorSize();
   
-  if (0 == _bufferTensorField) {
-    _bufferTensorField = new topology::Field<topology::Mesh>(mesh);
-    assert(0 != _bufferTensorField);
-    _bufferTensorField.vectorFieldType(topology::FieldBase::MULTI_TENSOR);
-    _bufferTensorField.newSection(cells, numQuadPts*tensorSize);
-    _bufferTensorField.allocate();
+  if (0 == _bufferFieldTensor) {
+    _bufferFieldTensor = new topology::Field<topology::Mesh>(mesh);
+    assert(0 != _bufferFieldTensor);
+    _bufferFieldTensor->vectorFieldType(topology::FieldBase::MULTI_TENSOR);
+    _bufferFieldTensor->newSection(cells, numQuadPts*tensorSize);
+    _bufferFieldTensor->allocate();
   } // if
 } // _allocateTensorField
 
@@ -334,9 +339,8 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get field
-  const topology::Field<topology::Mesh>* solution = fields->solution();
-  assert(0 != solution);
-  const ALE::Obj<RealSection>& disp = solution->section();
+  const topology::Field<topology::Mesh>& solution = fields->solution();
+  const ALE::Obj<RealSection>& disp = solution.section();
   assert(!disp.isNull());
   topology::Mesh::RestrictVisitor dispVisitor(*disp, 
 					      dispCell.size(), &dispCell[0]);
@@ -359,7 +363,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
     const double_array& basisDeriv = _quadrature->basisDeriv();
     
     // Compute strains
-    calcTotalStrainFn(&totalStrain, basisDeriv, dispCell, 
+    calcTotalStrainFn(&strainCell, basisDeriv, dispCell, 
 		      numBasis, numQuadPts);
     
     if (!calcStress) 
@@ -377,62 +381,51 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
 // ----------------------------------------------------------------------
 void
 pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
-				 ALE::Obj<real_section_type>* field,
-				 const ALE::Obj<Mesh>& mesh)
+				   topology::Field<topology::Mesh>* field)
 { // _calcStressFromStrain
+  assert(0 != field);
   assert(0 != _quadrature);
   assert(0 != _material);
 
   const int cellDim = _quadrature->cellDim();
-  int tensorSize = 0;
-  if (1 == cellDim) {
-    tensorSize = 1;
-  } else if (2 == cellDim) {
-    tensorSize = 3;
-  } else if (3 == cellDim) {
-    tensorSize = 6;
-  } else
-    assert(0);
-  
-  // Get cell information
-  const int materialId = _material->id();
-  const ALE::Obj<Mesh::label_sequence>& cells = 
-    mesh->getLabelStratum("material-id", materialId);
-  assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  
-  // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const int tensorSize = _material->tensorSize();
   
-  // Allocate vector for total strain
-  const int totalFiberDim = numQuadPts*tensorSize;
-  double_array totalStrain(totalFiberDim);
-  totalStrain = 0.0;
-  double_array stress(totalFiberDim);
-  
+  // Allocate arrays for cell data.
+  double_array strainCell(numQuadPts*tensorSize);
+  strainCell = 0.0;
+  double_array stressCell(numQuadPts*tensorSize);
+  stressCell = 0.0;
+
+  // Get normalizer
   assert(0 != _normalizer);
   const double pressureScale = _normalizer->pressureScale();
   
-  // Allocate buffer for tensor field.
-  if (field->isNull()) {
-    const int fiberDim = numQuadPts * tensorSize;
-    *field = new real_section_type(mesh->comm(), mesh->debug());
-    (*field)->setChart(real_section_type::chart_type(*std::min_element(cells->begin(), cells->end()),
-                                                     *std::max_element(cells->begin(), cells->end())+1));
-    (*field)->setFiberDimension(cells, fiberDim);
-    mesh->allocate(*field);
-  } // if
-  
+  // Get cell information
+  const ALE::Obj<SieveMesh>& sieveMesh = field->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const int materialId = _material->id();
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
+  assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  // Get field
+  const ALE::Obj<RealSection>& fieldSection = field->section();
+  assert(!fieldSection.isNull());
+
   // Loop over cells
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
-    (*field)->restrictPoint(*c_iter, &totalStrain[0], totalStrain.size());
-    _material->getPropertiesCell(*c_iter, numQuadPts);
-    stress = _material->calcStress(totalStrain);
-    _normalizer->dimensionalize(&stress[0], stress.size(),
+    fieldSection->restrictPoint(*c_iter, &strainCell[0], strainCell.size());
+    _material->retrievePropsAndVars(*c_iter);
+    stressCell = _material->calcStress(strainCell);
+    _normalizer->dimensionalize(&stressCell[0], stressCell.size(),
 				pressureScale);
-    (*field)->updatePoint(*c_iter, &stress[0]);	
+    fieldSection->updatePoint(*c_iter, &stressCell[0]);
   } // for
 } // _calcStressFromStrain
 

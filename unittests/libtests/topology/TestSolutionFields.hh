@@ -40,8 +40,8 @@ class pylith::topology::TestSolutionFields : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestSolutionFields );
 
   CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testSolutionField );
-  CPPUNIT_TEST( testGetSolution );
+  CPPUNIT_TEST( testSolutionName );
+  CPPUNIT_TEST( testSolution );
   CPPUNIT_TEST( testCreateHistory );
   CPPUNIT_TEST( testShiftHistory );
 
@@ -53,11 +53,11 @@ public :
   /// Test constructor.
   void testConstructor(void);
 
-  /// Test solutionField().
-  void testSolutionField(void);
+  /// Test solutionName().
+  void testSolutionName(void);
 
-  /// Test getSolution().
-  void testGetSolution(void);
+  /// Test solution().
+  void testSolution(void);
 
   /// Test createHistory().
   void testCreateHistory(void);

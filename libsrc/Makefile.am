@@ -50,6 +50,7 @@ libpylith_la_SOURCES = \
 	feassemble/Quadrature2D.cc \
 	feassemble/Quadrature2Din3D.cc \
 	feassemble/Quadrature3D.cc \
+	feassemble/IntegratorElasticity.cc \
 	materials/Metadata.cc \
 	materials/Material.cc \
 	materials/ElasticMaterial.cc \
@@ -91,7 +92,6 @@ libpylith_la_SOURCES = \
 # 	faults/StepSlipFn.cc \
 # 	feassemble/ElasticityExplicit.cc \
 # 	feassemble/ElasticityImplicit.cc \
-# 	feassemble/IntegratorElasticity.cc \
 # 	materials/GenMaxwellIsotropic3D.cc \
 # 	meshio/CellFilter.cc \
 # 	meshio/CellFilterAvg.cc \

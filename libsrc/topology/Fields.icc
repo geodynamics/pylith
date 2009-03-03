@@ -140,5 +140,14 @@ pylith::topology::Fields<field_type>::copyLayout(const char* name)
       iter->second->newSection(*src->second);
 } // copyLayout
 
+// ----------------------------------------------------------------------
+// Get mesh associated with fields.
+template<typename field_type>
+const typename field_type::Mesh&
+pylith::topology::Fields<field_type>::mesh(void) const
+{ // mesh
+  return _mesh;
+} // mesh
+
 
 // End of file 

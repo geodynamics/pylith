@@ -50,19 +50,19 @@ public :
    *
    * @param name Name of field that is the solution.
    */
-  void solutionField(const char* name);
+  void solutionName(const char* name);
 
   /** Get solution field.
    *
    * @returns Solution field.
    */
-  const Field<Mesh>& getSolution(void) const;
+  const Field<Mesh>& solution(void) const;
 
   /** Get solution field.
    *
    * @returns Solution field.
    */
-  Field<Mesh>& getSolution(void);
+  Field<Mesh>& solution(void);
 
   /** Create history manager for a subset of the managed fields.
    *

@@ -200,7 +200,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
   const ALE::Obj<SieveSubMesh>& submesh = boundaryMesh.sieveMesh();
 
-  topology::Field<topology::Mesh>& solution = fields.getSolution();
+  topology::Field<topology::Mesh>& solution = fields.solution();
   const ALE::Obj<RealSection>& solutionSection = solution.section();
   CPPUNIT_ASSERT(!solutionSection.isNull());
 
@@ -318,7 +318,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     fields->add("disp t+dt");
     fields->add("disp t");
     fields->add("disp t-dt");
-    fields->solutionField("disp t+dt");
+    fields->solutionName("disp t+dt");
     const char* history[] = { "disp t+dt", "disp t", "disp t-dt" };
     const int historySize = 3;
     fields->createHistory(history, historySize);

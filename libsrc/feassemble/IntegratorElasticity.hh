@@ -33,7 +33,7 @@
 
 // IntegratorElasticity -------------------------------------------------
 class pylith::feassemble::IntegratorElasticity :
-  public Integrator<topology::Mesh>
+  public Integrator<Quadrature<topology::Mesh> >
 { // IntegratorElasticity
   friend class TestIntegratorElasticity; // unit testing
 
@@ -104,6 +104,12 @@ public :
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
+
+  /** Allocate buffer for tensor field at quadrature points.
+   *
+   * @param mesh Finite-element mesh.
+   */
+  void _allocateTensorField(const topology::Mesh& mesh);
 
   /** Calculate stress or strain field from solution field.
    *
@@ -211,17 +217,8 @@ protected :
   /// Elastic material associated with integrator
   materials::ElasticMaterial* _material;
 
-  /// Buffer for storing scalar cell field.
-  topology::Field<topology::Mesh>* _bufferCellScalar;
-
-  /// Buffer for storing vector cell field.
-  topology::Field<topology::Mesh>* _bufferCellVector;
-
   /// Buffer for storing cell tensor field.
-  topology::Field<topology::Mesh>* _bufferCellTensor;
-
-  /// Buffer for storing other cell fields.
-  topology::Field<topology::Mesh>* _bufferCellOther;
+  topology::Field<topology::Mesh>* _bufferFieldTensor;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
