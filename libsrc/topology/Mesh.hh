@@ -51,6 +51,7 @@ public :
   typedef ALE::IMesh<ALE::LabelSifter<int, SieveMesh::point_type> > SieveSubMesh;
   typedef ALE::ISieveVisitor::RestrictVisitor<RealSection> RestrictVisitor;
   typedef ALE::ISieveVisitor::UpdateAddVisitor<RealSection> UpdateAddVisitor;
+  typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> IndicesVisitor;
 
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////

@@ -101,6 +101,7 @@ class Explicit(Formulation):
 
     needNewJacobian = False
     for integrator in self.integrators:
+      integrator.timeStep(dt)
       if integrator.needNewJacobian():
         needNewJacobian = True
     if needNewJacobian:

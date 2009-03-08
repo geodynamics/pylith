@@ -95,35 +95,30 @@ public :
    * external loads due to body forces plus the
    * element internal forces for the current stress state.
    *
-   * @param residual Residual field (output)
+   * @param residual Field containing values for residual
    * @param t Current time
    * @param fields Solution fields
-   * @param mesh Mesh object
-   * @param cs Coordinate system
    */
-  void integrateResidual(const ALE::Obj<real_section_type>& residual,
+  void integrateResidual(const topology::Field<topology::Mesh>& residual,
 			 const double t,
-			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh,
-			 const spatialdata::geocoords::CoordSys* cs);
+			 topology::SolutionFields* const fields);
 
-  /** Compute Jacobian matrix (A) associated with operator.
+  /** Integrate contributions to Jacobian matrix (A) associated with
+   * operator.
    *
-   * @param mat Sparse matrix
+   * @param jacobian Sparse matrix for Jacobian of system.
    * @param t Current time
    * @param fields Solution fields
-   * @param mesh Mesh object
    */
-  void integrateJacobian(PetscMat* mat,
+  void integrateJacobian(PetscMat* jacobian,
 			 const double t,
-			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh);
+			 topology::SolutionFields* const fields);
   
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
   /// Not implemented.
-  ElasticityImplicit(const ElasticityImplicit& i);
+  ElasticityImplicit(const ElasticityImplicit&);
 
   /// Not implemented
   const ElasticityImplicit& operator=(const ElasticityImplicit&);

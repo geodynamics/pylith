@@ -13,6 +13,7 @@
 #include <portinfo>
 
 #include "Quadrature.hh" // USES Quadrature
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -28,6 +29,7 @@ pylith::feassemble::Integrator<quadrature_type>::Integrator(void) :
   _quadrature(0),
   _normalizer(new spatialdata::units::Nondimensional),
   _gravityField(0),
+  _logger(0),
   _needNewJacobian(true),
   _useSolnIncr(false)
 { // constructor
@@ -40,6 +42,8 @@ pylith::feassemble::Integrator<quadrature_type>::~Integrator(void)
 { // destructor
   delete _quadrature; _quadrature = 0;
   delete _normalizer; _normalizer = 0;
+  delete _logger; _logger = 0;
+  _gravityField = 0; /// Memory managed elsewhere :TODO: use shared pointer
 } // destructor
   
 // ----------------------------------------------------------------------

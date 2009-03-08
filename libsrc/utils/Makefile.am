@@ -24,7 +24,8 @@ subpkginclude_HEADERS = \
 	petscfwd.h \
 	sievefwd.hh \
 	sievetypes.hh \
-	vectorfields.hh
+	vectorfields.hh \
+	utilsfwd.hh
 
 noinst_HEADERS = 
 

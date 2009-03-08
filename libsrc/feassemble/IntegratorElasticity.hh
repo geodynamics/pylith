@@ -75,6 +75,12 @@ public :
    */
   void useSolnIncr(const bool flag);
 
+  /** Initialize integrator.
+   *
+   * @param mesh Finite-element mesh.
+   */
+  void initialize(const topology::Mesh& mesh);
+  
   /** Update state variables as needed.
    *
    * @param t Current time

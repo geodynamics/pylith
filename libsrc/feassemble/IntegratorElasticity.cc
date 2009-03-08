@@ -20,6 +20,7 @@
 #include "pylith/materials/ElasticMaterial.hh" // USES ElasticMaterial
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -81,6 +82,70 @@ pylith::feassemble::IntegratorElasticity::useSolnIncr(const bool flag)
   assert(0 != _material);
   _material->useElasticBehavior(!flag);
 } // useSolnIncr
+
+// ----------------------------------------------------------------------
+// Initialize integrator.
+void
+pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
+{ // initialize
+  assert(0 != _quadrature);
+  assert(0 != _material);
+
+  // Get cell information
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const int materialId = _material->id();
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
+
+  // Compute geometry for quadrature operations.
+  _quadrature->computeGeometry(mesh, cells);
+
+  // Initialize material.
+  _material->initialize(mesh, _quadrature);
+
+  // Allocate vectors and matrices for cell values.
+  _initCellVector();
+  _initCellMatrix();
+
+  // Setup event logger.
+  _logger = new utils::EventLogger;
+  assert(0 != _logger);
+  _logger->className("ElasticityIntegrator");
+  _logger->initialize();
+  _logger->registerEvent("ElIR setup");
+  _logger->registerEvent("ElIR geometry");
+  _logger->registerEvent("ElIR compute");
+  _logger->registerEvent("ElIR restrict");
+  _logger->registerEvent("ElIR stateVars");
+  _logger->registerEvent("ElIR stress");
+  _logger->registerEvent("ElIR update");
+ 
+  _logger->registerEvent("ElIJ setup");
+  _logger->registerEvent("ElIJ geometry");
+  _logger->registerEvent("ElIJ compute");
+  _logger->registerEvent("ElIJ restrict");
+  _logger->registerEvent("ElIJ stateVars");
+  _logger->registerEvent("ElIJ update");
+  
+  // Set up gravity field database for querying
+  if (0 != _gravityField) {
+    const int spaceDim = _quadrature->spaceDim();
+    _gravityField->open();
+    if (1 == spaceDim){
+      const char* queryNames[] = { "x"};
+      _gravityField->queryVals(queryNames, spaceDim);
+    } else if (2 == spaceDim){
+      const char* queryNames[] = { "x", "y"};
+      _gravityField->queryVals(queryNames, spaceDim);
+    } else if (3 == spaceDim){
+      const char* queryNames[] = { "x", "y", "z"};
+      _gravityField->queryVals(queryNames, spaceDim);
+    } else {
+      assert(0);
+    } // else
+  } // if
+} // initialize
 
 // ----------------------------------------------------------------------
 // Update state variables as needed.

@@ -28,6 +28,8 @@
 #include "feassemblefwd.hh" // forward declarations
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field, SolutionFields
+#include "pylith/utils/utilsfwd.hh" // HOLDSA EventLogger
+
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
@@ -100,6 +102,13 @@ public :
   virtual
   void useSolnIncr(const bool flag);
 
+  /** Initialize integrator.
+   *
+   * @param mesh Finite-element mesh.
+   */
+  virtual
+  void initialize(const topology::Mesh& mesh);
+  
   /** Integrate contributions to residual term (r) for operator.
    *
    * @param residual Field containing values for residual
@@ -189,6 +198,8 @@ protected :
 
   spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer.
   spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
+
+  utils::EventLogger* _logger; ///< Event logger.
 
   /// Vector local to cell containing result of integration action
   double_array _cellVector;

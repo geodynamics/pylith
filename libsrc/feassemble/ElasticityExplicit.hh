@@ -55,24 +55,10 @@
 #if !defined(pylith_feassemble_elasticityexplicit_hh)
 #define pylith_feassemble_elasticityexplicit_hh
 
+// Include directives ---------------------------------------------------
 #include "IntegratorElasticity.hh" // ISA IntegratorElasticity
-#include "pylith/utils/array.hh" // USES std::vector, double_array
 
-namespace pylith {
-  namespace feassemble {
-    class ElasticityExplicit;
-  } // feassemble
-} // pylith
-
-namespace spatialdata {
-  namespace spatialdb {
-    class SpatialDB; // USES SpatialDB
-  } // spatialdb
-  namespace geocoords {
-    class CoordSys; // USES CoordSys
-  } // geocoords
-} // spatialdata
-
+// ElasticityExplicit ---------------------------------------------------
 class pylith::feassemble::ElasticityExplicit : public IntegratorElasticity
 { // ElasticityExplicit
   friend class TestElasticityExplicit; // unit testing
@@ -104,32 +90,27 @@ public :
    * @param residual Field containing values for residual
    * @param t Current time
    * @param fields Solution fields
-   * @param mesh Finite-element mesh
    */
-  void integrateResidual(const ALE::Obj<real_section_type>& residual,
+  void integrateResidual(const topology::Field<topology::Mesh>& residual,
 			 const double t,
-			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh,
-			 const spatialdata::geocoords::CoordSys* cs);
+			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator.
    *
-   * @param jacobian Sparse matrix to hold Jacobian of operator.
+   * @param jacobian Sparse matrix for Jacobian of system.
    * @param t Current time
-   * @param fields Solution fields.
-   * @param mesh Finite-element mesh.
+   * @param fields Solution fields
    */
   void integrateJacobian(PetscMat* jacobian,
 			 const double t,
-			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh);
+			 topology::SolutionFields* const fields);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
   /// Not implemented.
-  ElasticityExplicit(const ElasticityExplicit& i);
+  ElasticityExplicit(const ElasticityExplicit&);
 
   /// Not implemented
   const ElasticityExplicit& operator=(const ElasticityExplicit&);
