@@ -214,6 +214,7 @@ AC_CONFIG_FILES([Makefile
 		libsrc/faults/Makefile
                 libsrc/materials/Makefile
                 libsrc/meshio/Makefile
+                libsrc/problems/Makefile
 		libsrc/topology/Makefile
 		libsrc/utils/Makefile
                 modulesrc/Makefile

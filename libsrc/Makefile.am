@@ -14,10 +14,11 @@ SUBDIRS = \
 	utils \
 	topology \
 	meshio \
-	feassemble \
-	bc \
-	faults \
 	materials
+	bc \
+	feassemble \
+	faults \
+	problems
 
 lib_LTLIBRARIES = libpylith.la
 
@@ -74,6 +75,7 @@ libpylith_la_SOURCES = \
 	meshio/PsetFile.cc \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \
+	problems/Formulation.cc \
 	topology/FieldBase.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
