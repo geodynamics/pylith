@@ -40,29 +40,8 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/Integrator.py \
 	feassemble/IntegratorElasticity.py \
 	feassemble/ReferenceCell.py \
-	feassemble/quadrature/__init__.py \
-	feassemble/quadrature/Quadrature.py \
-	feassemble/quadrature/Quadrature0D.py \
-	feassemble/quadrature/Quadrature1D.py \
-	feassemble/quadrature/Quadrature1Din2D.py \
-	feassemble/quadrature/Quadrature1Din3D.py \
-	feassemble/quadrature/Quadrature2D.py \
-	feassemble/quadrature/Quadrature2Din3D.py \
-	feassemble/quadrature/Quadrature3D.py \
-	feassemble/geometry/__init__.py \
-	feassemble/geometry/CellGeometry.py \
-	feassemble/geometry/GeometryPoint1D.py \
-	feassemble/geometry/GeometryPoint2D.py \
-	feassemble/geometry/GeometryPoint3D.py \
-	feassemble/geometry/GeometryLine1D.py \
-	feassemble/geometry/GeometryLine2D.py \
-	feassemble/geometry/GeometryLine3D.py \
-	feassemble/geometry/GeometryTri2D.py \
-	feassemble/geometry/GeometryTri3D.py \
-	feassemble/geometry/GeometryQuad2D.py \
-	feassemble/geometry/GeometryQuad3D.py \
-	feassemble/geometry/GeometryTet3D.py \
-	feassemble/geometry/GeometryHex3D.py \
+	feassemble/Quadrature.py \
+	feassemble/CellGeometry.py \
 	materials/__init__.py \
 	materials/ElasticMaterial.py \
 	materials/ElasticIsotropic3D.py \

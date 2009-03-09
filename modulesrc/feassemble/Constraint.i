@@ -43,14 +43,14 @@ namespace pylith {
        * @param field Solution field
        */
       virtual
-      void setConstraintSizes(const pylith::topology::Field& field) = 0;
+      void setConstraintSizes(const pylith::topology::Field<pylith::topology::Mesh>& field) = 0;
 
       /** Set which degrees of freedom are constrained at points in field.
        *
        * @param field Solution field
        */
       virtual
-      void setConstraints(const pylith::topology::Field& field) = 0;
+      void setConstraints(const pylith::topology::Field<pylith::topology::Mesh>& field) = 0;
 
       /** Set flag for setting constraints for total field solution or
        *  incremental field solution.
@@ -67,7 +67,7 @@ namespace pylith {
        */
       virtual
       void setField(const double t,
-		    const pylith::topology::Field& field) = 0;
+		    const pylith::topology::Field<pylith::topology::Mesh>& field) = 0;
       
     }; // class Constraint
 

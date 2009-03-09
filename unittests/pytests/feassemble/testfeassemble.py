@@ -63,17 +63,17 @@ class TestApp(Script):
     from TestFIATLagrange import TestFIATLagrange
     suite.addTest(unittest.makeSuite(TestFIATLagrange))
 
-    from TestQuadrature import TestQuadrature
-    suite.addTest(unittest.makeSuite(TestQuadrature))
+    #from TestQuadrature import TestQuadrature
+    #suite.addTest(unittest.makeSuite(TestQuadrature))
 
-    from TestIntegrator import TestIntegrator
-    suite.addTest(unittest.makeSuite(TestIntegrator))
+    #from TestIntegrator import TestIntegrator
+    #suite.addTest(unittest.makeSuite(TestIntegrator))
 
-    from TestElasticityExplicit import TestElasticityExplicit
-    suite.addTest(unittest.makeSuite(TestElasticityExplicit))
+    #from TestElasticityExplicit import TestElasticityExplicit
+    #suite.addTest(unittest.makeSuite(TestElasticityExplicit))
 
-    from TestElasticityImplicit import TestElasticityImplicit
-    suite.addTest(unittest.makeSuite(TestElasticityImplicit))
+    #from TestElasticityImplicit import TestElasticityImplicit
+    #suite.addTest(unittest.makeSuite(TestElasticityImplicit))
 
     return suite
 

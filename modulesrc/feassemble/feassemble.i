@@ -11,13 +11,12 @@
 //
 
 // SWIG interface
-%module bc
+%module feassemble
 
 // Header files for module C++ code
 %{
-#include "pylith/bc/BoundaryCondition.hh"
-#include "pylith/bc/DirichletBC.hh"
-#include "pylith/bc/DirichletBoundary.hh"
+#include "pylith/feassemble/CellGeometry.hh"
+#include "pylith/feassemble/GeometryPoint1D.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 %}
@@ -43,15 +42,9 @@
 import_array();
 %}
 
-// Interfaces
-%include "../feassemble/Constraint.i" // ISA Constraint
-%include "../feassemble/Quadrature.i" // ISA Quadrature
-%include "../feassemble/Integrator.i" // ISA Integrator
+%include "CellGeometry.i"
+%include "GeometryPoint1D.i"
 
-%include "BoundaryCondition.i"
-%include "DirichletBC.i"
-%include "DirichletBoundary.i"
-%include "AbsorbingDampers.i"
 
 // End of file
 
