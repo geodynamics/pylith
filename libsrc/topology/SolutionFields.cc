@@ -68,7 +68,7 @@ pylith::topology::SolutionFields::solution(void)
 // ----------------------------------------------------------------------
 // Create history manager for a subset of the managed fields.
 void
-pylith::topology::SolutionFields::createHistory(const char** fields,
+pylith::topology::SolutionFields::createHistory(const char* const* fields,
 						const int size)
 { // createHistory
   if (size > 0 && 0 != fields) {

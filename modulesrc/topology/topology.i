@@ -17,10 +17,11 @@
 %{
 #include "pylith/topology/Mesh.hh"
 #include "pylith/topology/SubMesh.hh"
-// #include "pylith/topology/MeshOps.hh"
-// #include "pylith/topology/FieldBase.hh"
+#include "pylith/topology/MeshOps.hh"
+#include "pylith/topology/FieldBase.hh"
 #include "pylith/topology/Field.hh"
-// #include "pylith/topology/FieldSubMesh.hh"
+#include "pylith/topology/Fields.hh"
+#include "pylith/topology/SolutionFields.hh"
 %}
 
 %include "exception.i"
@@ -33,6 +34,7 @@
  } // exception
 
 %include "typemaps.i"
+%include "../include/chararray.i"
 
 // Numpy interface stuff
 %{
@@ -46,15 +48,17 @@ import_array();
 // Interfaces
 %include "Mesh.i"
 %include "SubMesh.i"
-// %include "MeshOps.i"
-// %include "FieldBase.i"
+%include "MeshOps.i"
+%include "FieldBase.i"
 %include "Field.i"
-// %include "FieldSubMesh.i"
-
+%include "Fields.i"
+%include "SolutionFields.i"
 
 // Template instatiation
 %template(MeshField) pylith::topology::Field<pylith::topology::Mesh>;
 %template(SubMeshField) pylith::topology::Field<pylith::topology::SubMesh>;
+%template(MeshFields) pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >;
+%template(SubMeshFields) pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >;
 
 // End of file
 

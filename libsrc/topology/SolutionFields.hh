@@ -69,7 +69,7 @@ public :
    * @param fields Fields in history (first is most recent).
    * @param size Number of fields in history.
    */
-  void createHistory(const char** fields,
+  void createHistory(const char* const* fields,
 		     const int size);
 
   /** Shift fields in history. Handles to fields are shifted so that

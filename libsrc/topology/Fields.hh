@@ -56,7 +56,7 @@ public :
    * @param fiberDim Fiber dimension for field.
    */
   void add(const char* name,
-	   const typename field_type::DomainEnum domain,
+	   const pylith::topology::FieldBase::DomainEnum domain,
 	   const int fiberDim);
 
   /** Delete field.
@@ -64,6 +64,12 @@ public :
    * @param name Name of field.
    */
   void del(const char* name);
+
+  /** Delete field (without conflict with Python del).
+   *
+   * @param name Name of field.
+   */
+  void delField(const char* name);
 
   /** Get field.
    *

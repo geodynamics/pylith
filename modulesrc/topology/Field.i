@@ -20,27 +20,8 @@ namespace pylith {
   namespace topology {
 
     template<typename mesh_type>
-    class Field
+    class Field : public FieldBase
     { // Field
-
-      // PUBLIC ENUMS ///////////////////////////////////////////////////
-    public :
-
-      enum VectorFieldEnum {
-	SCALAR=0, ///< Scalar.
-	VECTOR=1, ///< Vector.
-	TENSOR=2, ///< Tensor.
-	OTHER=3, ///< Not a scalar, vector, or tensor.
-	MULTI_SCALAR=4, ///< Scalar at multiple points.
-	MULTI_VECTOR=5, ///< Vector at multiple points.
-	MULTI_TENSOR=6, ///< Tensor at multiple points.
-	MULTI_OTHER=7, ///< Not a scalar, vector, or tensor at multiple points.
-      }; // VectorFieldEnum
-
-      enum DomainEnum {
-	VERTICES_FIELD=0, ///< FieldBase over vertices.
-	CELLS_FIELD=1, ///< FieldBase over cells.
-      }; // omainEnum
 
       // PRIVATE TYPEDEFS ///////////////////////////////////////////////
     private:
@@ -85,13 +66,13 @@ namespace pylith {
        *
        * @param value Type of vector field.
        */
-      void vectorFieldType(const VectorFieldEnum value);
+      void vectorFieldType(const pylith::topology::FieldBase::VectorFieldEnum value);
 
       /** Get vector field type
        *
        * @returns Type of vector field.
        */
-      VectorFieldEnum vectorFieldType(void) const;
+      pylith::topology::FieldBase::VectorFieldEnum vectorFieldType(void) const;
 
       /** Set scale for dimensionalizing field.
        *
@@ -131,7 +112,7 @@ namespace pylith {
        * @param domain Type of points over which to define section.
        * @param dim Fiber dimension for section.
        */
-      void newSection(const DomainEnum domain,
+      void newSection(const pylith::topology::FieldBase::DomainEnum domain,
 		      const int fiberDim);
 
       /** Create section with same layout (fiber dimension and

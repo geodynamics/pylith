@@ -19,9 +19,10 @@
 
 from BoundaryCondition import BoundaryCondition
 from pylith.feassemble.Integrator import Integrator
+from bc import AbsorbingDampers as ModuleAbsorbingDampers
 
 # AbsorbingDampers class
-class AbsorbingDampers(BoundaryCondition, Integrator):
+class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
   """
   Python object for managing absorbing boundary condition using simple
   dashpots.
@@ -102,9 +103,8 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
-    
-    self.cppHandle.quadrature = self.quadrature.cppHandle
+    ModuleAbsorbingDampers.quadrature(self.quadrature)
+    Integrator.initialize(self, totalTime, numTimeSteps, normalizer)    
     BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 
     self._logger.eventEnd(logEvent)
@@ -122,13 +122,12 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     return
 
 
-  def _createCppHandle(self):
+  def _createModuleObj(self):
     """
     Create handle to corresponding C++ object.
     """
     if None == self.cppHandle:
-      import pylith.bc.bc as bindings
-      self.cppHandle = bindings.AbsorbingDampers()    
+      ModuleAbsorbingDampers.__init__(self)
     return
   
 

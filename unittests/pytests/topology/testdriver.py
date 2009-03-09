@@ -60,17 +60,23 @@ class TestApp(Script):
     from TestSubMesh import TestSubMesh
     suite.addTest(unittest.makeSuite(TestSubMesh))
 
+    from TestFieldBase import TestFieldBase
+    suite.addTest(unittest.makeSuite(TestFieldBase))
+
     from TestMeshField import TestMeshField
     suite.addTest(unittest.makeSuite(TestMeshField))
+
+    from TestMeshFields import TestMeshFields
+    suite.addTest(unittest.makeSuite(TestMeshFields))
+
+    from TestSolutionFields import TestSolutionFields
+    suite.addTest(unittest.makeSuite(TestSolutionFields))
 
     from TestMeshGenerator import TestMeshGenerator
     suite.addTest(unittest.makeSuite(TestMeshGenerator))
 
     from TestMeshImporter import TestMeshImporter
     suite.addTest(unittest.makeSuite(TestMeshImporter))
-
-    #from TestFieldsManager import TestFieldsManager
-    #suite.addTest(unittest.makeSuite(TestFieldsManager))
 
     return suite
 

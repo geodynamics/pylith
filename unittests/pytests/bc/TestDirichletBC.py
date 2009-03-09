@@ -135,7 +135,6 @@ class TestDirichletBC(unittest.TestCase):
     """
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     db = SimpleDB()
-    db._configure()
     db.inventory.label = "TestDirichletBC tri3"
     db.inventory.iohandler.inventory.filename = "data/tri3.spatialdb"
     db.inventory.iohandler._configure()

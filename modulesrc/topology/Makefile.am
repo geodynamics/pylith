@@ -24,7 +24,8 @@ swig_sources = \
 	MeshOps.i \
 	FieldBase.i \
 	Field.i \
-	FieldSubMesh.i
+	Fields.i \
+	SolutionFields.i
 
 swig_generated = \
 	topology_wrap.cxx \

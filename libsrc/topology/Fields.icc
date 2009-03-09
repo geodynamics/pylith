@@ -54,9 +54,9 @@ pylith::topology::Fields<field_type>::add(const char* name)
 template<typename field_type>
 void 
 pylith::topology::Fields<field_type>::add(
-			       const char* name,
-			       const typename field_type::DomainEnum domain,
-			       const int fiberDim)
+			const char* name,
+			const pylith::topology::FieldBase::DomainEnum domain,
+			const int fiberDim)
 { // add
   typename map_type::iterator iter = _fields.find(name);
   if (iter != _fields.end()) {
@@ -86,6 +86,16 @@ pylith::topology::Fields<field_type>::del(const char* name)
   delete iter->second; iter->second = 0;
   _fields.erase(name);
 } // del
+
+// ----------------------------------------------------------------------
+// Delete field.
+template<typename field_type>
+inline
+void
+pylith::topology::Fields<field_type>::delField(const char* name)
+{ // delField
+  del(name);
+} // delField
 
 // ----------------------------------------------------------------------
 // Get field.

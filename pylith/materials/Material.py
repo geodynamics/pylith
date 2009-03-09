@@ -14,7 +14,7 @@
 ##
 
 ## @brief Python abstract base class for managing physical properties
-## of a material.
+## and state variables of a material.
 ##
 ## This implementation of a material associates both physical
 ## properties and a quadrature scheme with the material. Thus,
@@ -24,10 +24,11 @@
 ##
 ## Factory: material
 
+from materials import ModuleMaterial
 from pyre.components.Component import Component
 
 # Material class
-class Material(Component):
+class Material(Component, ModuleMaterial):
   """
   Python material property manager.
 
@@ -56,7 +57,7 @@ class Material(Component):
     ## \b Facilities
     ## @li \b db Database of material property parameters
     ## @li \b quadrature Quadrature object for numerical integration
-    ## @li \b initialStateDB Database for initial state.
+    ## @li \b dbInitialState Database for initial state.
 
     import pyre.inventory
 
@@ -70,15 +71,16 @@ class Material(Component):
     label.meta['tip'] = "Name of material."
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
-    db = pyre.inventory.facility("db", family="spatial_database",
-                                 factory=SimpleDB)
-    db.meta['tip'] = "Database of material property parameters."
+    dbProperties = pyre.inventory.facility("properties_db",
+                                           family="spatial_database",
+                                           factory=SimpleDB)
+    dbProperties.meta['tip'] = "Database for physical property parameters."
 
-    initialStateDB = pyre.inventory.facility("initial_state_db",
-                                              family="spatial_database",
-                                              factory=SimpleDB)
-    initialStateDB.meta['tip'] = "Database used for initial state."
-    
+    dbInitialState = pyre.inventory.facility("initial_state_db",
+                                           family="spatial_database",
+                                           factory=SimpleDB)
+    dbInitialState.meta['tip'] = "Database for initial state variables."
+
     from pylith.feassemble.quadrature.Quadrature import Quadrature
     quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
     quadrature.meta['tip'] = "Quadrature object for numerical integration."
@@ -91,8 +93,7 @@ class Material(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="material")
-    self.cppHandle = None
-    self.dimension = None
+    ModuleMaterial.__init__(self)
     self.output = None
     return
 
@@ -101,9 +102,6 @@ class Material(Component):
     """
     Do pre-initialization setup.
     """
-    self._createCppHandle()
-    self.cppHandle.id = self.id
-    self.cppHandle.label = self.label
     self.quadrature.preinitialize()
     self._setupLogging()
     return
@@ -127,35 +125,11 @@ class Material(Component):
     return
   
 
-  def initialize(self, mesh, totalTime, numTimeSteps, normalizer):
-    """
-    Initialize material property manager.
-    """
-    logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
-
-    self._info.log("Initializing material '%s'." % self.label)
-    self.mesh = mesh
-    assert(None != self.cppHandle)
-    self.db.initialize()
-    self.cppHandle.db = self.db.cppHandle
-    self.cppHandle.normalizer = normalizer.cppHandle
-    if self.initialStateDB != None:
-      self._info.log("Initializing initial state database.")
-      self.initialStateDB.initialize()
-      self.cppHandle.initialStateDB = self.initialStateDB.cppHandle
-    self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
-                              self.quadrature.cppHandle)
-
-    self._logger.eventEnd(logEvent)
-    return
-
-
   def getDataMesh(self):
     """
     Get mesh associated with data fields.
     """
-    return (self.mesh, "material-id", self.id)
+    return (self.mesh, "material-id", self.id())
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -165,14 +139,13 @@ class Material(Component):
     Setup members using inventory.
     """
     Component._configure(self)
-    self.id = self.inventory.id
-    self.label = self.inventory.label
-    self.db = self.inventory.db
-    self.quadrature = self.inventory.quadrature
+    self.id(self.inventory.id)
+    self.label(self.inventory.label)
+    self.dbProperties(self.inventory.dbProperties)
     if self.inventory.useInitialState:
-      self.initialStateDB = self.inventory.initialStateDB
-    else:
-      self.initialStateDB = None
+      self.dbInitialState(self.inventory.dbInitialState)
+
+    self.quadrature = self.inventory.quadrature
     return
 
   

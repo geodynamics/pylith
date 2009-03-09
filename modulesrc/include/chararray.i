@@ -10,8 +10,8 @@
 // ======================================================================
 //
 
-// Treat const char** as a special case.
-%typemap(in) (const char** string_list) {
+// Treat const char* const* as a special case.
+%typemap(in) (const char* const* string_list) {
   // Check to make sure input is a list.
   if (PyList_Check($input)) {
     const int size = PyList_Size($input);
@@ -38,8 +38,8 @@
 }
 
 
-// Treat const char** as a special case.
-%typemap(in) (const char** string_list, const int list_len) {
+// Treat const char* const* as a special case.
+%typemap(in) (const char* const* string_list, const int list_len) {
   // Check to make sure input is a list.
   if (PyList_Check($input)) {
     const int size = PyList_Size($input);

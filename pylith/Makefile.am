@@ -111,10 +111,11 @@ nobase_pkgpyexec_PYTHON = \
 	solver/SolverNonlinear.py \
 	topology/__init__.py \
 	topology/Distributor.py \
-	topology/FieldsManager.py \
 	topology/Mesh.py \
 	topology/SubMesh.py \
 	topology/Field.py \
+	topology/Fields.py \
+	topology/SolutionFields.py \
 	topology/MeshGenerator.py \
 	topology/MeshImporter.py \
 	topology/MeshRefiner.py \
