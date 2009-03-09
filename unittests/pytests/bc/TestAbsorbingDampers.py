@@ -233,12 +233,13 @@ class TestAbsorbingDampers(unittest.TestCase):
     fields.add("disp t-dt")
     fields.solutionName("solution")
     fields.createHistory(["solution", "disp t", "disp t-dt"])
-    fields.setFiberDimension("residual", cs.spaceDim)
-    fields.allocate("residual")
-    fields.copyLayout("residual")
 
-    import pylith.topology.topology as bindings
-    bindings.zeroRealSection(fields.getReal("residual"))
+    residual = fields.get("residual")
+    residual.newSection(residual.VERTICES_FIELD, cs.spaceDim())
+    residual.allocate()
+    residual.zero()
+
+    fields.copyLayout("residual")
     
     return (mesh, bc, fields)
 
