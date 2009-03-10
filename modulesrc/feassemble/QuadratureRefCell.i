@@ -102,26 +102,26 @@ namespace pylith {
        *
        * @returns Array of coordinates of quadrature points in reference cell.
        */
-      const double_array& quadPtsRef(void) const;
+      const pylith::double_array& quadPtsRef(void) const;
       
       /** Get weights of quadrature points.
        *
        * @returns Weights of quadrature points
        */
-      const double_array& quadWts(void) const;
+      const pylith::double_array& quadWts(void) const;
       
       /** Get basis fns evaluated at quadrature points.
        *
        * @returns Array of basis fns evaluated at quadrature points
        */
-      const double_array& basis(void) const;
+      const pylith::double_array& basis(void) const;
       
       /** Get derivates of basis fns evaluated at quadrature points.
        *
        * @returns Array of derivates of basis fns evaluated at
        * quadrature points
        */
-      const double_array& basisDerivRef(void) const;
+      const pylith::double_array& basisDerivRef(void) const;
       
       /** Get number of dimensions in reference cell.
        *

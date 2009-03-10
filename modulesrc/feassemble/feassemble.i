@@ -28,8 +28,12 @@
 #include "pylith/feassemble/GeometryQuad3D.hh"
 #include "pylith/feassemble/GeometryTet3D.hh"
 #include "pylith/feassemble/GeometryHex3D.hh"
+#include "pylith/feassemble/QuadratureRefCell.hh"
 
-#include "pylith/utils/arrayfwd.hh"
+#include "pylith/topology/Mesh.hh"
+#include "pylith/topology/SubMesh.hh"
+#include "pylith/feassemble/Quadrature.hh"
+
 %}
 
 %include "exception.i"
@@ -66,6 +70,13 @@ import_array();
 %include "GeometryQuad3D.i"
 %include "GeometryTet3D.i"
 %include "GeometryHex3D.i"
+%include "QuadratureRefCell.i"
+
+%include "Quadrature.i"
+
+// Template instatiation
+%template(MeshQuadrature) pylith::feassemble::Quadrature<pylith::topology::Mesh>;
+%template(SubMeshQuadrature) pylith::feassemble::Quadrature<pylith::topology::SubMesh>;
 
 
 // End of file
