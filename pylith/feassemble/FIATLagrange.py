@@ -681,38 +681,30 @@ class FIATLagrange(ReferenceCell):
     """
     Setup reference cell geometry object.
     """
+    import CellGeometry
     self.geometry = None
     if 3 == self.cellDim:
       if 3 == spaceDim:
-        from geometry.GeometryHex3D import GeometryHex3D
-        self.geometry = GeometryHex3D()
+        self.geometry = CellGeometry.GeometryHex3D()
     elif 2 == self.cellDim:
       if 2 == spaceDim:
-        from geometry.GeometryQuad2D import GeometryQuad2D
-        self.geometry = GeometryQuad2D()
+        self.geometry = CellGeometry.GeometryQuad2D()
       elif 3 == spaceDim:
-        from geometry.GeometryQuad3D import GeometryQuad3D
-        self.geometry = GeometryQuad3D()
+        self.geometry = CellGeometry.GeometryQuad3D()
     elif 1 == self.cellDim:
       if 1 == spaceDim:
-        from geometry.GeometryLine1D import GeometryLine1D
-        self.geometry = GeometryLine1D()
+        self.geometry = CellGeometry.GeometryLine1D()
       elif 2 == spaceDim:
-        from geometry.GeometryLine2D import GeometryLine2D
-        self.geometry = GeometryLine2D()
+        self.geometry = CellGeometry.GeometryLine2D()
       elif 3 == spaceDim:
-        from geometry.GeometryLine3D import GeometryLine3D
-        self.geometry = GeometryLine3D()
+        self.geometry = CellGeometry.GeometryLine3D()
     elif 0 == self.cellDim:
       if 1 == spaceDim:
-        from geometry.GeometryPoint1D import GeometryPoint1D
-        self.geometry = GeometryPoint1D()
+        self.geometry = CellGeometry.GeometryPoint1D()
       elif 2 == spaceDim:
-        from geometry.GeometryPoint2D import GeometryPoint2D
-        self.geometry = GeometryPoint2D()
+        self.geometry = CellGeometry.GeometryPoint2D()
       elif 3 == spaceDim:
-        from geometry.GeometryPoint3D import GeometryPoint3D
-        self.geometry = GeometryPoint3D()
+        self.geometry = CellGeometry.GeometryPoint3D()
     if None == self.geometry:
       raise ValueError("Could not set shape of cell for '%s' in spatial " \
                        "dimension '%s'." % (self.name, spaceDim))

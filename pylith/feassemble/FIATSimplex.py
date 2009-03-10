@@ -158,39 +158,32 @@ class FIATSimplex(ReferenceCell):
     """
     Setup reference cell geometry object.
     """
+    import CellGeometry
+
     self.geometry = None
     name = self.shape.lower()
     if "tetrahedron" == name:
       if 3 == spaceDim:
-        from geometry.GeometryTet3D import GeometryTet3D
-        self.geometry = GeometryTet3D()
+        self.geometry = CellGeometry.GeometryTet3D()
     elif "triangle" == name:
       if 2 == spaceDim:
-        from geometry.GeometryTri2D import GeometryTri2D
-        self.geometry = GeometryTri2D()
+        self.geometry = CellGeometry.GeometryTri2D()
       elif 3 == spaceDim:
-        from geometry.GeometryTri3D import GeometryTri3D
-        self.geometry = GeometryTri3D()
+        self.geometry = CellGeometry.GeometryTri3D()
     elif "line" == name:
       if 1 == spaceDim:
-        from geometry.GeometryLine1D import GeometryLine1D
-        self.geometry = GeometryLine1D()
+        self.geometry = CellGeometry.GeometryLine1D()
       elif 2 == spaceDim:
-        from geometry.GeometryLine2D import GeometryLine2D
-        self.geometry = GeometryLine2D()
+        self.geometry = CellGeometry.GeometryLine2D()
       elif 3 == spaceDim:
-        from geometry.GeometryLine3D import GeometryLine3D
-        self.geometry = GeometryLine3D()
+        self.geometry = CellGeometry.GeometryLine3D()
     elif "point" == name:
       if 1 == spaceDim:
-        from geometry.GeometryPoint1D import GeometryPoint1D
-        self.geometry = GeometryPoint1D()
+        self.geometry = CellGeometry.GeometryPoint1D()
       elif 2 == spaceDim:
-        from geometry.GeometryPoint2D import GeometryPoint2D
-        self.geometry = GeometryPoint2D()
+        self.geometry = CellGeometry.GeometryPoint2D()
       elif 3 == spaceDim:
-        from geometry.GeometryPoint3D import GeometryPoint3D
-        self.geometry = GeometryPoint3D()
+        self.geometry = CellGeometry.GeometryPoint3D()
     if None == self.geometry:
       raise ValueError("Could not set shape of cell for '%s' in spatial " \
                        "dimension '%s'." % (self.name, spaceDim))

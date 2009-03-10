@@ -369,7 +369,7 @@ class TestFIATLagrange(unittest.TestCase):
 
     cellE = Line2()
     self._checkVals(cellE, cell)
-    from pylith.feassemble.geometry.GeometryLine1D import GeometryLine1D
+    from pylith.feassemble.CellGeometry import GeometryLine1D
     self.failUnless(isinstance(cell.geometry, GeometryLine1D))
     return
 
@@ -387,7 +387,7 @@ class TestFIATLagrange(unittest.TestCase):
 
     cellE = Line3()
     self._checkVals(cellE, cell)
-    from pylith.feassemble.geometry.GeometryLine2D import GeometryLine2D
+    from pylith.feassemble.CellGeometry import GeometryLine2D
     self.failUnless(isinstance(cell.geometry, GeometryLine2D))
     return
 
@@ -405,7 +405,7 @@ class TestFIATLagrange(unittest.TestCase):
 
     cellE = Quad4()
     self._checkVals(cellE, cell)
-    from pylith.feassemble.geometry.GeometryQuad2D import GeometryQuad2D
+    from pylith.feassemble.CellGeometry import GeometryQuad2D
     self.failUnless(isinstance(cell.geometry, GeometryQuad2D))
     return
 
@@ -423,7 +423,7 @@ class TestFIATLagrange(unittest.TestCase):
 
     cellE = Hex8()
     self._checkVals(cellE, cell)
-    from pylith.feassemble.geometry.GeometryHex3D import GeometryHex3D
+    from pylith.feassemble.CellGeometry import GeometryHex3D
     self.failUnless(isinstance(cell.geometry, GeometryHex3D))
     return
 
