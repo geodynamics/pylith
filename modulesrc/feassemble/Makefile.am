@@ -27,7 +27,9 @@ swig_sources = \
 	GeometryLine2D.i \
 	GeometryLine3D.i \
 	GeometryTri2D.i \
-	GeometryTri3D.i
+	GeometryTri3D.i \
+	QuadratureRefCell.i \
+	Quadrature.i
 
 swig_generated = \
 	feassemble_wrap.cxx \

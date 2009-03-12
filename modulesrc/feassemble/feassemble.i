@@ -33,6 +33,7 @@
 #include "pylith/topology/Mesh.hh"
 #include "pylith/topology/SubMesh.hh"
 #include "pylith/feassemble/Quadrature.hh"
+#include "pylith/feassemble/Integrator.hh"
 
 %}
 
@@ -73,6 +74,7 @@ import_array();
 %include "QuadratureRefCell.i"
 
 %include "Quadrature.i"
+%include "Integrator.i"
 
 // Template instatiation
 %template(MeshQuadrature) pylith::feassemble::Quadrature<pylith::topology::Mesh>;

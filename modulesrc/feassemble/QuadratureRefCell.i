@@ -65,7 +65,30 @@ namespace pylith {
        * @param numQuadPts Number of quadrature points
        * @param spaceDim Number of dimensions in coordinates of cell vertices
        */
+      %apply(double* IN_ARRAY2, int DIM1, int DIM2) {
+	(const double* basis,
+	 const int numQuadPts,
+	 const int numBasis)
+	  };
+      %apply(double* IN_ARRAY3, int DIM1, int DIM2, int DIM3) {
+	(const double* basisDerivRef,
+	 const int numQuadPts,
+	 const int numBasis,
+	 const int spaceDim)
+	  };
+      %apply(double* IN_ARRAY2, int DIM1, int DIM2) {
+	(const double* quadPtsRef,
+	 const int numQuadPts,
+	 const int cellDim)
+	  };
+      %apply(double* IN_ARRAY1, int DIM1) {
+	(const double* quadWts,
+	 const int numQuadPts)
+	  };
       void initialize(const double* basis,
+		      const int numQuadPts1,
+		      const int numBasis1,
+		      const double
 		      const double* basisDerivRef,
 		      const double* quadPtsRef,
 		      const double* quadWts,
@@ -73,6 +96,10 @@ namespace pylith {
 		      const int numBasis,
 		      const int numQuadPts,
 		      const int spaceDim);
+      %clear(const double* basis, const int numQuadPts, const int numBasis);
+      %clear(const double* basisDerivRef, const int numQuadPts, const int numBasis, const int spaceDim);
+      %clear(const double* quadPtsRef, const int numQuadPts, const int cellDim);
+      %clear(const double* quadWts, const int numQuadPts);
       
       /** Set geometry associated with reference cell.
        *

@@ -63,8 +63,8 @@ class TestApp(Script):
     from TestFIATLagrange import TestFIATLagrange
     suite.addTest(unittest.makeSuite(TestFIATLagrange))
 
-    #from TestQuadrature import TestQuadrature
-    #suite.addTest(unittest.makeSuite(TestQuadrature))
+    from TestMeshQuadrature import TestMeshQuadrature
+    suite.addTest(unittest.makeSuite(TestMeshQuadrature))
 
     #from TestIntegrator import TestIntegrator
     #suite.addTest(unittest.makeSuite(TestIntegrator))

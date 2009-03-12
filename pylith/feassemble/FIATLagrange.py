@@ -56,10 +56,6 @@ class FIATLagrange(ReferenceCell):
 
     import pyre.inventory
 
-    dimension = pyre.inventory.int("dimension", default=3,
-                                   validator=validateDimension)
-    dimension.meta['tip'] = "Dimension of finite-element cell."
-
     degree = pyre.inventory.int("degree", default=1)
     degree.meta['tip'] = "Degree of finite-element cell."
 
@@ -86,8 +82,8 @@ class FIATLagrange(ReferenceCell):
 
     if  self.cellDim > 0:
       quadrature = self._setupQuadrature()
-      element    = self._setupElement()
-      dim        = self.cellDim
+      element = self._setupElement()
+      dim = self.cellDim
     
       # Get coordinates of vertices (dual basis)
       vertices = numpy.array(self._setupVertices(element))
@@ -668,7 +664,6 @@ class FIATLagrange(ReferenceCell):
     import FIAT.shapes
 
     ReferenceCell._configure(self)
-    self.cellDim = self.inventory.dimension
     self.degree = self.inventory.degree
     self.order = self.inventory.order
 

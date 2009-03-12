@@ -1,0 +1,167 @@
+#!/usr/bin/env python
+#
+# ======================================================================
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# {LicenseText}
+#
+# ======================================================================
+#
+
+## @file unittests/pytests/feassemble/TestQuadrature.py
+
+## @brief Unit testing of Python Quadrature object.
+
+import unittest
+import numpy
+
+from pylith.feassemble.Quadrature import MeshQuadrature
+from pylith.feassemble.FIATSimplex import FIATSimplex
+from pylith.feassemble.FIATLagrange import FIATLagrange
+
+# ----------------------------------------------------------------------
+def N0(p):
+  return -0.5*p*(1.0-p)
+
+def N0p(p):
+  return -0.5*(1.0-p) + 0.5*p
+
+def N1(p):
+  return 0.5*p*(1.0+p)
+
+def N1p(p):
+  return +0.5*(1.0+p) + 0.5*p
+
+def N2(p):
+  return (1.0-p**2)
+
+def N2p(p):
+  return -2.0*p
+
+# ----------------------------------------------------------------------
+class TestMeshQuadrature(unittest.TestCase):
+  """
+  Unit testing of Python Quadrature object.
+  """
+
+  def test_minJacobian(self):
+    """
+    Test minJacobian().
+    """
+    minJacobian = 4.0e-02;
+    q = MeshQuadrature()
+    q.minJacobian(minJacobian)
+    self.assertEqual(minJacobian, q.minJacobian())
+    return
+    
+
+  def test_checkConditioning(self):
+    """
+    Test checkConditioning().
+    """
+    q = MeshQuadrature()
+
+    flag = False # default
+    self.assertEqual(flag, q.checkConditioning())
+
+    flag = True
+    q.checkConditioning(flag)
+    self.assertEqual(flag, q.checkConditioning())
+    
+    flag = False
+    q.checkConditioning(flag)
+    self.assertEqual(flag, q.checkConditioning())
+    
+    return
+    
+
+  def test_initialize(self):
+    """
+    Test initialize().
+    """
+    cell = FIATSimplex()
+    cell.inventory.shape = "line"
+    cell.inventory.degree = 2
+    cell.inventory.order = 2
+    cell._configure()
+
+    verticesE = numpy.array([ [-1.0], [1.0], [0.0] ])
+    quadPtsE = numpy.array( [[-1.0/3**0.5],
+                             [+1.0/3**0.5]],
+                            dtype=numpy.float64 )
+    quadWtsE = numpy.array( [1.0, 1.0], dtype=numpy.float64 )
+
+    # Compute basis functions and derivatives at quadrature points
+    basisE = numpy.zeros( (2, 3), dtype=numpy.float64)
+    basisDerivE = numpy.zeros( (2, 3, 1), dtype=numpy.float64)
+    iQuad = 0
+    for q in quadPtsE:
+      basisE[iQuad] = numpy.array([N0(q), N1(q), N2(q)],
+                                  dtype=numpy.float64).reshape( (3,) )
+      deriv = numpy.array([[N0p(q)], [N1p(q)], [N2p(q)]],
+                          dtype=numpy.float64)      
+      basisDerivE[iQuad] = deriv.reshape((3, 1))
+      iQuad += 1
+
+    quadrature = MeshQuadrature()
+    quadrature.inventory.cell = cell
+    quadrature._configure()
+
+    quadrature.preinitialize(spaceDim=1)
+    quadrature.initialize()
+
+    self.assertEqual(1, quadrature.cellDim())
+    self.assertEqual(1, quadrature.spaceDim())
+    self.assertEqual(3, quadrature.numBasis())
+    self.assertEqual(2, quadrature.numQuadPts())
+
+    from pylith.utils.testarray import test_double
+    #import pylith.feassemble.testfeassemble as testmodule
+
+    #vertices = testmodule.vertices(quadrature.cppHandle)
+    #test_double(self, verticesE, numpy.array(vertices))
+
+    #basis = testmodule.basis(quadrature.cppHandle)
+    #test_double(self, basisE, numpy.array(basis))
+
+    #basisDeriv = testmodule.basisDeriv(quadrature.cppHandle)
+    #test_double(self, basisDerivE, numpy.array(basisDeriv))
+
+    #quadWts = testmodule.quadWts(quadrature.cppHandle)
+    #test_double(self, quadWtsE, numpy.array(quadWts))
+    
+    #quadPts = testmodule.quadPtsRef(quadrature.cppHandle)
+    #test_double(self, quadPtsE, numpy.array(quadPts))
+
+    from pylith.feassemble.CellGeometry import GeometryLine1D
+    self.failUnless(isinstance(quadrature.refGeometry(), GeometryLine1D))
+    
+    return
+
+
+  def test_simplex1D(self):
+    """
+    Test setup of quadrature for simplex cells for a 1-D problem.
+    """
+    spaceDim = 1
+
+    cell = FIATSimplex()
+    cell.inventory.shape = "line"
+    cell.inventory.degree = 1
+    cell._configure()
+    
+    quadrature = MeshQuadrature()
+    quadrature.inventory.cell = cell
+    quadrature._configure()
+
+    quadrature.preinitialize(spaceDim)
+    self.assertEqual(1, quadrature.cellDim())
+    self.assertEqual(spaceDim, quadrature.spaceDim())
+    self.assertEqual(2, quadrature.numBasis())
+    
+    return
+
+
+# End of file 
