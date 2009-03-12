@@ -39,7 +39,7 @@ pylith::feassemble::TestQuadrature0D::testPoint(void)
   const int numQuadPts = 1;
   const int spaceDim = 1;
   const double basis[] = { 1.0 };
-  const double basisDeriv[] = { 1.0 };
+  const double basisDerivRef[] = { 1.0 };
   const double quadPtsRef[] = { 0.0 };
   const double quadWts[] = { 1.0 };
 
@@ -56,8 +56,11 @@ pylith::feassemble::TestQuadrature0D::testPoint(void)
   
   QuadratureRefCell refCell;
   refCell.minJacobian(minJacobian);
-  refCell.initialize(basis, basisDeriv, quadPtsRef, quadWts,
-		     cellDim, numBasis, numQuadPts, spaceDim);
+  refCell.initialize(basis, numQuadPts, numBasis,
+		     basisDerivRef, numQuadPts, numBasis, cellDim,
+		     quadPtsRef, numQuadPts, cellDim,
+		     quadWts, numQuadPts,
+		     spaceDim);
 
   Quadrature0D engine(refCell);
 

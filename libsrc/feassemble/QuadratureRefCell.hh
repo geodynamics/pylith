@@ -54,6 +54,8 @@ public :
    *   ...
    *   size = numQuadPts * numBasis
    *   index = iQuadPt*numBasis + iBasis
+   * @param numQuadPts1 Dimension of basis.
+   * @param numBasis1 Dimension of basis.
    *
    * @param basisDerivRef Array of basis function derivaties evaluated at
    * quadrature pts, where derivatives are with respect to cell's
@@ -63,30 +65,38 @@ public :
    *   ...
    *   size = numQuadPts * numBasis * cellDim
    *   index = iQuadPt*numBasis*cellDim + iBasis*cellDim + iDim
+   * @param numQuadPts2 Dimension of basisDerivRef.
+   * @param numBasis2 Dimension of basisDerivRef.
+   * @param cellDim2 Dimension of basisDerivRef.
    *
-   * @param quadPts Array of coordinates of quadrature points in 
+   * @param quadPtsRef Array of coordinates of quadrature points in 
    *   reference cell
    *   Qp0p, Qp0q, Qp0r
    *   Qp1p, Qp1q, Qp1r
-   *   size = numQuadPts * numDims
+   *   size = numQuadPts * cellDim
    *   index = iQuadPt*numDims + iDim
+   * @param numQuadPts3 Dimension of quadPtsRef.
+   * @param cellDim3 Dimension of quadPtsRef.
    *
    * @param quadWts Array of weights of quadrature points
    *   WtQp0, WtQp1, ...
    *   index = iQuadPt
+   * @param numQuadPts4 Dimension of quadWts.
    *
-   * @param cellDim Number of dimensions in reference cell
-   * @param numBasis Number of basis functions for a cell
-   * @param numQuadPts Number of quadrature points
    * @param spaceDim Number of dimensions in coordinates of cell vertices
    */
   void initialize(const double* basis,
+		  const int numQuadPts1,
+		  const int numBasis1,
 		  const double* basisDerivRef,
+		  const int numQuadPts2,
+		  const int numBasis2,
+		  const int cellDim2,
 		  const double* quadPtsRef,
+		  const int numQuadPts3,
+		  const int cellDim3,
 		  const double* quadWts,
-		  const int cellDim,
-		  const int numBasis,
-		  const int numQuadPts,
+		  const int numQuadPts4,
 		  const int spaceDim);
 
   /** Set geometry associated with reference cell.

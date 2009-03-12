@@ -110,8 +110,11 @@ pylith::feassemble::TestQuadratureEngine::testInitialize(void)
   const double quadWts[] = { 4.0 };
 
   QuadratureRefCell refCell;
-  refCell.initialize(basis, basisDerivRef, quadPtsRef, quadWts,
-		     cellDim, numBasis, numQuadPts, spaceDim);
+  refCell.initialize(basis, numQuadPts, numBasis,
+		     basisDerivRef, numQuadPts, numBasis, cellDim,
+		     quadPtsRef, numQuadPts, cellDim,
+		     quadWts, numQuadPts,
+		     spaceDim);
 
   Quadrature1D engine(refCell);
   engine.initialize();
@@ -167,8 +170,11 @@ pylith::feassemble::TestQuadratureEngine::_testComputeGeometry(
 
   const double minJacobian = 1.0e-06;
   refCell->minJacobian(minJacobian);
-  refCell->initialize(basis, basisDerivRef, quadPtsRef, quadWts,
-		      cellDim, numBasis, numQuadPts, spaceDim);
+  refCell->initialize(basis, numQuadPts, numBasis,
+		      basisDerivRef, numQuadPts, numBasis, cellDim,
+		      quadPtsRef, numQuadPts, cellDim,
+		      quadWts, numQuadPts,
+		      spaceDim);
 
   // Check values from computeGeometry()
   engine->initialize();

@@ -54,8 +54,11 @@ pylith::feassemble::TestQuadrature::testCopyConstructor(void)
   qOrig.refGeometry(&geometry);
   qOrig.minJacobian(minJacobianE);
   qOrig.checkConditioning(checkConditioning);
-  qOrig.initialize(basisE, basisDerivE, quadPtsRefE, quadWtsE, 
-		   cellDimE, numBasisE, numQuadPtsE, spaceDimE);
+  qOrig.initialize(basisE, numQuadPtsE, numBasisE,
+		   basisDerivE, numQuadPtsE, numBasisE, cellDimE,
+		   quadPtsRefE, numQuadPtsE, cellDimE,
+		   quadWtsE, numQuadPtsE,
+		   spaceDimE);
 
   // Copy
   Quadrature<topology::Mesh> qCopy(qOrig);
@@ -135,8 +138,11 @@ pylith::feassemble::TestQuadrature::testEngineAccessors(void)
   const double quadWts[] = { 4.0 };
 
   QuadratureRefCell refCell;
-  refCell.initialize(basis, basisDerivRef, quadPtsRef, quadWts,
-		     cellDim, numBasis, numQuadPts, spaceDim);
+  refCell.initialize(basis, numQuadPts, numBasis,
+		     basisDerivRef, numQuadPts, numBasis, cellDim,
+		     quadPtsRef, numQuadPts, cellDim,
+		     quadWts, numQuadPts,
+		     spaceDim);
 
   Quadrature1D engine(refCell);
   engine.initialize();
@@ -210,9 +216,11 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
   Quadrature<topology::Mesh> quadrature;
   quadrature.refGeometry(&geometry);
   quadrature.minJacobian(minJacobian);
-  quadrature.initialize(data.basis, data.basisDerivRef, 
-			data.quadPtsRef, data.quadWts,
-			cellDim, numBasis, numQuadPts, spaceDim);
+  quadrature.initialize(data.basis, numQuadPts, numBasis,
+			data.basisDerivRef, numQuadPts, numBasis, cellDim,
+			data.quadPtsRef, numQuadPts, cellDim,
+			data.quadWts, numQuadPts,
+			spaceDim);
 
   const ALE::Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
   CPPUNIT_ASSERT(!cells.isNull());

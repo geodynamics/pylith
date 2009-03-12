@@ -56,6 +56,10 @@ class FIATLagrange(ReferenceCell):
 
     import pyre.inventory
 
+    dimension = pyre.inventory.int("dimension", default=3,
+                                   validator=validateDimension)
+    dimension.meta['tip'] = "Dimension of finite-element cell."
+
     degree = pyre.inventory.int("degree", default=1)
     degree.meta['tip'] = "Degree of finite-element cell."
 
@@ -664,6 +668,7 @@ class FIATLagrange(ReferenceCell):
     import FIAT.shapes
 
     ReferenceCell._configure(self)
+    self.cellDim = self.inventory.dimension
     self.degree = self.inventory.degree
     self.order = self.inventory.order
 

@@ -63,14 +63,29 @@ pylith::feassemble::QuadratureRefCell::QuadratureRefCell(const QuadratureRefCell
 //   weights of the quadrature points.
 void
 pylith::feassemble::QuadratureRefCell::initialize(const double* basis,
-					       const double* basisDerivRef,
-					       const double* quadPtsRef,
-					       const double* quadWts,
-					       const int cellDim,
-					       const int numBasis,
-					       const int numQuadPts,
-					       const int spaceDim)
+						  const int numQuadPts1,
+						  const int numBasis1,
+						  const double* basisDerivRef,
+						  const int numQuadPts2,
+						  const int numBasis2,
+						  const int cellDim2,
+						  const double* quadPtsRef,
+						  const int numQuadPts3,
+						  const int cellDim3,
+						  const double* quadWts,
+						  const int numQuadPts4,
+						  const int spaceDim)
 { // initialize
+  const int numQuadPts = numQuadPts1;
+  const int numBasis = numBasis1;
+  const int cellDim = cellDim2;
+
+  assert(numQuadPts == numQuadPts2);
+  assert(numQuadPts == numQuadPts3);
+  assert(numQuadPts == numQuadPts4);
+  assert(numBasis == numBasis2);
+  assert(cellDim == cellDim3);
+
   if (0 == basis ||
       0 == basisDerivRef ||
       0 == quadPtsRef ||

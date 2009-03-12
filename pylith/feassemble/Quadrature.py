@@ -131,14 +131,41 @@ class MeshQuadrature(QuadratureBase, ModuleMeshQuadrature):
     """
     Initialize C++ quadrature object.
     """
-    print "cell.basis shape: ", cell.basis.shape
-    print "cell.basisDeriv shape: ", cell.basisDeriv.shape
-    print "cell.quadPts shape: ", cell.quadPts.shape
-    print "cell.quadWts shape: ", cell.quadWts.shape
-    print "cell.geometry.spaceDim: ", cell.geometry.spaceDim()
     ModuleMeshQuadrature.initialize(self, cell.basis, cell.basisDeriv,
                                     cell.quadPts, cell.quadWts,
                                     cell.geometry.spaceDim())
+    return
+
+
+# ----------------------------------------------------------------------
+from feassemble import SubMeshQuadrature as ModuleSubMeshQuadrature
+
+# SubMeshQuadrature class
+class SubMeshQuadrature(QuadratureBase, ModuleSubMeshQuadrature):
+  """
+  Python object for integrating over finite-elements using quadrature.
+  """
+
+  # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  def __init__(self, name="submeshquadrature"):
+    """
+    Constructor.
+    """
+    QuadratureBase.__init__(self, name)
+    ModuleSubMeshQuadrature.__init__(self)
+    return
+
+
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _initialize(self, cell):
+    """
+    Initialize C++ quadrature object.
+    """
+    ModuleSubMeshQuadrature.initialize(self, cell.basis, cell.basisDeriv,
+                                       cell.quadPts, cell.quadWts,
+                                       cell.geometry.spaceDim())
     return
 
 

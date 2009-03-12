@@ -67,23 +67,23 @@ namespace pylith {
        */
       %apply(double* IN_ARRAY2, int DIM1, int DIM2) {
 	(const double* basis,
-	 const int numQuadPts,
-	 const int numBasis)
+	 const int numQuadPts1,
+	 const int numBasis1)
 	  };
       %apply(double* IN_ARRAY3, int DIM1, int DIM2, int DIM3) {
 	(const double* basisDerivRef,
-	 const int numQuadPts,
-	 const int numBasis,
-	 const int spaceDim)
+	 const int numQuadPts2,
+	 const int numBasis2,
+	 const int cellDim2)
 	  };
       %apply(double* IN_ARRAY2, int DIM1, int DIM2) {
 	(const double* quadPtsRef,
-	 const int numQuadPts,
-	 const int cellDim)
+	 const int numQuadPts3,
+	 const int cellDim3)
 	  };
       %apply(double* IN_ARRAY1, int DIM1) {
 	(const double* quadWts,
-	 const int numQuadPts)
+	 const int numQuadPts4)
 	  };
       void initialize(const double* basis,
 		      const int numQuadPts1,
@@ -96,7 +96,7 @@ namespace pylith {
 		      const int numQuadPts3,
 		      const int cellDim3,
 		      const double* quadWts,
-		      const int numQuadPts,
+		      const int numQuadPts4,
 		      const int spaceDim);
       %clear(const double* basis, const int numQuadPts, const int numBasis);
       %clear(const double* basisDerivRef, const int numQuadPts, const int numBasis, const int spaceDim);

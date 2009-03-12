@@ -77,8 +77,11 @@ pylith::feassemble::TestQuadratureRefCell::testInitialize(void)
   const double minJacobian = 1.0;
 
   QuadratureRefCell q;
-  q.initialize(basis, basisDerivRef, quadPtsRef, quadWts,
-	       cellDim, numBasis, numQuadPts, spaceDim);
+  q.initialize(basis, numQuadPts, numBasis,
+	       basisDerivRef, numQuadPts, numBasis, cellDim,
+	       quadPtsRef, numQuadPts, cellDim,
+	       quadWts, numQuadPts,
+	       spaceDim);
   
   CPPUNIT_ASSERT_EQUAL(cellDim, q._cellDim);
   CPPUNIT_ASSERT_EQUAL(numBasis, q._numBasis);

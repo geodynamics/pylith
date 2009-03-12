@@ -118,6 +118,7 @@ class TestMeshQuadrature(unittest.TestCase):
     self.assertEqual(2, quadrature.numQuadPts())
 
     from pylith.utils.testarray import test_double
+    self.failIf(True)
     #import pylith.feassemble.testfeassemble as testmodule
 
     #vertices = testmodule.vertices(quadrature.cppHandle)
@@ -135,9 +136,6 @@ class TestMeshQuadrature(unittest.TestCase):
     #quadPts = testmodule.quadPtsRef(quadrature.cppHandle)
     #test_double(self, quadPtsE, numpy.array(quadPts))
 
-    from pylith.feassemble.CellGeometry import GeometryLine1D
-    self.failUnless(isinstance(quadrature.refGeometry(), GeometryLine1D))
-    
     return
 
 
@@ -149,7 +147,6 @@ class TestMeshQuadrature(unittest.TestCase):
 
     cell = FIATSimplex()
     cell.inventory.shape = "line"
-    cell.inventory.degree = 1
     cell._configure()
     
     quadrature = MeshQuadrature()
@@ -160,7 +157,111 @@ class TestMeshQuadrature(unittest.TestCase):
     self.assertEqual(1, quadrature.cellDim())
     self.assertEqual(spaceDim, quadrature.spaceDim())
     self.assertEqual(2, quadrature.numBasis())
+    return
+
+
+  def test_simplex2D(self):
+    """
+    Test setup of quadrature for simplex cells for a 2-D problem.
+    """
+    spaceDim = 2
+
+    cell = FIATSimplex()
+    cell.inventory.shape = "triangle"
+    cell._configure()
     
+    quadrature = MeshQuadrature()
+    quadrature.inventory.cell = cell
+    quadrature._configure()
+
+    quadrature.preinitialize(spaceDim)
+    self.assertEqual(2, quadrature.cellDim())
+    self.assertEqual(spaceDim, quadrature.spaceDim())
+    self.assertEqual(3, quadrature.numBasis())
+    return
+
+
+  def test_simplex3D(self):
+    """
+    Test setup of quadrature for simplex cells for a 3-D problem.
+    """
+    spaceDim = 3
+
+    cell = FIATSimplex()
+    cell.inventory.shape = "tetrahedron"
+    cell._configure()
+    
+    quadrature = MeshQuadrature()
+    quadrature.inventory.cell = cell
+    quadrature._configure()
+
+    quadrature.preinitialize(spaceDim)
+    self.assertEqual(3, quadrature.cellDim())
+    self.assertEqual(spaceDim, quadrature.spaceDim())
+    self.assertEqual(4, quadrature.numBasis())
+    return
+
+
+  def test_lagrange1D(self):
+    """
+    Test setup of quadrature for Lagrange cells for a 1-D problem.
+    """
+    spaceDim = 1
+
+    cell = FIATLagrange()
+    cell.inventory.dimension = 1
+    cell._configure()
+    
+    quadrature = MeshQuadrature()
+    quadrature.inventory.cell = cell
+    quadrature._configure()
+
+    quadrature.preinitialize(spaceDim)
+    self.assertEqual(1, quadrature.cellDim())
+    self.assertEqual(spaceDim, quadrature.spaceDim())
+    self.assertEqual(2, quadrature.numBasis())
+    return
+
+
+  def test_lagrange2D(self):
+    """
+    Test setup of quadrature for Lagrange cells for a 2-D problem.
+    """
+    spaceDim = 2
+
+    cell = FIATLagrange()
+    cell.inventory.dimension = 2
+    cell._configure()
+    
+    quadrature = MeshQuadrature()
+    quadrature.inventory.cell = cell
+    quadrature._configure()
+
+    quadrature.preinitialize(spaceDim)
+    self.assertEqual(2, quadrature.cellDim())
+    self.assertEqual(spaceDim, quadrature.spaceDim())
+    self.assertEqual(4, quadrature.numBasis())
+    return
+
+
+  def test_lagrange3D(self):
+    """
+    Test setup of quadrature for Lagrange cells for a 3-D problem.
+    """
+    spaceDim = 3
+
+    cell = FIATLagrange()
+    cell.inventory.dimension = 3
+    cell._configure()
+    
+    quadrature = MeshQuadrature()
+    quadrature.inventory.cell = cell
+    quadrature._configure()
+
+    quadrature.preinitialize(spaceDim)
+    self.assertEqual(3, quadrature.cellDim())
+    self.assertEqual(spaceDim, quadrature.spaceDim())
+    self.assertEqual(8, quadrature.numBasis())
     return
 
 
