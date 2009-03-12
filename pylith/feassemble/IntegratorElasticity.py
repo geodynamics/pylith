@@ -33,8 +33,6 @@ class IntegratorElasticity(Integrator):
     Constructor.
     """
     Integrator.__init__(self)
-    import journal
-    self._info = journal.info(name)
     self.output = None
     self.availableFields = None
     self.name = "Integrator Elasticity"
@@ -45,21 +43,16 @@ class IntegratorElasticity(Integrator):
     """
     Setup integrator.
     """
-    Integrator.preinitialize(self, mesh)
-    
-    assert(None != self.cppHandle)
     self.mesh = mesh
-
-    material.preinitialize()
-
-    self.quadrature = material.quadrature
-    self.cppHandle.quadrature = self.quadrature.cppHandle
-
-    self.material = material
-    self.cppHandle.material = self.material.cppHandle
     self.output = material.output
     self.availableFields = material.availableFields
+    self.quadrature(material.quadrature)
+    self.material(material)
+
+    Integrator.preinitialize(self, mesh)
+    material.preinitialize()
     self.output.preinitialize(self)
+
     return
 
 
@@ -71,9 +64,7 @@ class IntegratorElasticity(Integrator):
     self._logger.eventBegin(logEvent)
 
     Integrator.verifyConfiguration(self)
-    self.material.verifyConfiguration()
     self.output.verifyConfiguration(self.mesh)
-
 
     self._logger.eventEnd(logEvent)    
     return
@@ -91,7 +82,6 @@ class IntegratorElasticity(Integrator):
 
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
 
-    self.material.initialize(self.mesh, totalTime, numTimeSteps, normalizer)
     self.output.initialize(normalizer, self.quadrature)
     self.output.writeInfo()
     self.output.open(totalTime, numTimeSteps)
@@ -128,10 +118,9 @@ class IntegratorElasticity(Integrator):
     Get cell field.
     """
     if None == fields:
-      (field, fieldType) = self.cppHandle.cellField(name, self.mesh.cppHandle)
+      (field, fieldType) = self.cellField(name)
     else:
-      (field, fieldType) = self.cppHandle.cellField(name, self.mesh.cppHandle,
-                                                   fields.cppHandle)
+      (field, fieldType) = self.cellField(name, fields)
     return (field, fieldType)
 
 

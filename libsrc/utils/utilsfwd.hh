@@ -26,6 +26,8 @@ namespace pylith {
 
     class EventLogger;
 
+    class TestArray;
+
   } // utils
 } // pylith
 

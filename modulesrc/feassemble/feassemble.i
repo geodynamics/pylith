@@ -33,7 +33,8 @@
 #include "pylith/topology/Mesh.hh"
 #include "pylith/topology/SubMesh.hh"
 #include "pylith/feassemble/Quadrature.hh"
-#include "pylith/feassemble/Integrator.hh"
+#include "pylith/feassemble/ElasticityImplicit.hh"
+#include "pylith/feassemble/ElasticityExplicit.hh"
 
 %}
 
@@ -75,6 +76,8 @@ import_array();
 
 %include "Quadrature.i"
 %include "Integrator.i"
+%include "IntegratorElasticity.i"
+%include "ElasticityImplicit.i"
 
 // Template instatiation
 %template(MeshQuadrature) pylith::feassemble::Quadrature<pylith::topology::Mesh>;

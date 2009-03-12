@@ -32,7 +32,8 @@ petsc_swig_generated = \
 
 utils_swig_sources = \
 	utils.i \
-	EventLogger.i
+	EventLogger.i \
+	TestArray.i
 
 utils_swig_generated = \
 	utils_wrap.cxx \
@@ -73,7 +74,7 @@ _utilsmodule_la_LIBADD += \
 endif
 
 
-INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
+INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 $(srcdir)/petsc_wrap.cxx $(srcdir)/petsc.py: $(petsc_swig_sources)
 	$(SWIG) -Wall -c++ -python $<

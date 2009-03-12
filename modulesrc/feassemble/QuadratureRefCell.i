@@ -99,8 +99,10 @@ namespace pylith {
 		      const int numQuadPts4,
 		      const int spaceDim);
       %clear(const double* basis, const int numQuadPts, const int numBasis);
-      %clear(const double* basisDerivRef, const int numQuadPts, const int numBasis, const int spaceDim);
-      %clear(const double* quadPtsRef, const int numQuadPts, const int cellDim);
+      %clear(const double* basisDerivRef, const int numQuadPts,
+	     const int numBasis, const int spaceDim);
+      %clear(const double* quadPtsRef, const int numQuadPts,
+	     const int cellDim);
       %clear(const double* quadWts, const int numQuadPts);
       
       /** Set geometry associated with reference cell.

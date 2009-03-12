@@ -29,7 +29,9 @@ swig_sources = \
 	GeometryTri2D.i \
 	GeometryTri3D.i \
 	QuadratureRefCell.i \
-	Quadrature.i
+	Quadrature.i \
+	Integrator.i \
+	IntegratorElasticity.i
 
 swig_generated = \
 	feassemble_wrap.cxx \

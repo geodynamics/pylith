@@ -10,14 +10,14 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/feassemble/TestMeshQuadrature.py
+## @file unittests/pytests/feassemble/TestSubMeshQuadrature.py
 
-## @brief Unit testing of Python MeshQuadrature object.
+## @brief Unit testing of Python SubMeshQuadrature object.
 
 import unittest
 import numpy
 
-from pylith.feassemble.Quadrature import MeshQuadrature
+from pylith.feassemble.Quadrature import SubMeshQuadrature
 from pylith.feassemble.FIATSimplex import FIATSimplex
 from pylith.feassemble.FIATLagrange import FIATLagrange
 
@@ -41,9 +41,9 @@ def N2p(p):
   return -2.0*p
 
 # ----------------------------------------------------------------------
-class TestMeshQuadrature(unittest.TestCase):
+class TestSubMeshQuadrature(unittest.TestCase):
   """
-  Unit testing of Python MeshQuadrature object.
+  Unit testing of Python SubMeshQuadrature object.
   """
 
   def test_minJacobian(self):
@@ -51,7 +51,7 @@ class TestMeshQuadrature(unittest.TestCase):
     Test minJacobian().
     """
     minJacobian = 4.0e-02;
-    q = MeshQuadrature()
+    q = SubMeshQuadrature()
     q.minJacobian(minJacobian)
     self.assertEqual(minJacobian, q.minJacobian())
     return
@@ -61,7 +61,7 @@ class TestMeshQuadrature(unittest.TestCase):
     """
     Test checkConditioning().
     """
-    q = MeshQuadrature()
+    q = SubMeshQuadrature()
 
     flag = False # default
     self.assertEqual(flag, q.checkConditioning())
@@ -105,15 +105,15 @@ class TestMeshQuadrature(unittest.TestCase):
       basisDerivE[iQuad] = deriv.reshape((3, 1))
       iQuad += 1
 
-    quadrature = MeshQuadrature()
+    quadrature = SubMeshQuadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
 
-    quadrature.preinitialize(spaceDim=1)
+    quadrature.preinitialize(spaceDim=2)
     quadrature.initialize()
 
     self.assertEqual(1, quadrature.cellDim())
-    self.assertEqual(1, quadrature.spaceDim())
+    self.assertEqual(2, quadrature.spaceDim())
     self.assertEqual(3, quadrature.numBasis())
     self.assertEqual(2, quadrature.numQuadPts())
 
@@ -133,15 +133,15 @@ class TestMeshQuadrature(unittest.TestCase):
 
   def test_simplex1D(self):
     """
-    Test setup of quadrature for simplex cells for a 1-D problem.
+    Test setup of quadrature for simplex cells for a 1-D problem in 2-D space.
     """
-    spaceDim = 1
+    spaceDim = 2
 
     cell = FIATSimplex()
     cell.inventory.shape = "line"
     cell._configure()
     
-    quadrature = MeshQuadrature()
+    quadrature = SubMeshQuadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
 
@@ -154,15 +154,15 @@ class TestMeshQuadrature(unittest.TestCase):
 
   def test_simplex2D(self):
     """
-    Test setup of quadrature for simplex cells for a 2-D problem.
+    Test setup of quadrature for simplex cells for a 2-D problem in 3-D space.
     """
-    spaceDim = 2
+    spaceDim = 3
 
     cell = FIATSimplex()
     cell.inventory.shape = "triangle"
     cell._configure()
     
-    quadrature = MeshQuadrature()
+    quadrature = SubMeshQuadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
 
@@ -173,38 +173,17 @@ class TestMeshQuadrature(unittest.TestCase):
     return
 
 
-  def test_simplex3D(self):
-    """
-    Test setup of quadrature for simplex cells for a 3-D problem.
-    """
-    spaceDim = 3
-
-    cell = FIATSimplex()
-    cell.inventory.shape = "tetrahedron"
-    cell._configure()
-    
-    quadrature = MeshQuadrature()
-    quadrature.inventory.cell = cell
-    quadrature._configure()
-
-    quadrature.preinitialize(spaceDim)
-    self.assertEqual(3, quadrature.cellDim())
-    self.assertEqual(spaceDim, quadrature.spaceDim())
-    self.assertEqual(4, quadrature.numBasis())
-    return
-
-
   def test_lagrange1D(self):
     """
-    Test setup of quadrature for Lagrange cells for a 1-D problem.
+    Test setup of quadrature for Lagrange cells for a 1-D problem in 2-D space.
     """
-    spaceDim = 1
+    spaceDim = 2
 
     cell = FIATLagrange()
     cell.inventory.dimension = 1
     cell._configure()
     
-    quadrature = MeshQuadrature()
+    quadrature = SubMeshQuadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
 
@@ -217,15 +196,15 @@ class TestMeshQuadrature(unittest.TestCase):
 
   def test_lagrange2D(self):
     """
-    Test setup of quadrature for Lagrange cells for a 2-D problem.
+    Test setup of quadrature for Lagrange cells for a 2-D problem in 3-D space.
     """
-    spaceDim = 2
+    spaceDim = 3
 
     cell = FIATLagrange()
     cell.inventory.dimension = 2
     cell._configure()
     
-    quadrature = MeshQuadrature()
+    quadrature = SubMeshQuadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
 
@@ -233,27 +212,6 @@ class TestMeshQuadrature(unittest.TestCase):
     self.assertEqual(2, quadrature.cellDim())
     self.assertEqual(spaceDim, quadrature.spaceDim())
     self.assertEqual(4, quadrature.numBasis())
-    return
-
-
-  def test_lagrange3D(self):
-    """
-    Test setup of quadrature for Lagrange cells for a 3-D problem.
-    """
-    spaceDim = 3
-
-    cell = FIATLagrange()
-    cell.inventory.dimension = 3
-    cell._configure()
-    
-    quadrature = MeshQuadrature()
-    quadrature.inventory.cell = cell
-    quadrature._configure()
-
-    quadrature.preinitialize(spaceDim)
-    self.assertEqual(3, quadrature.cellDim())
-    self.assertEqual(spaceDim, quadrature.spaceDim())
-    self.assertEqual(8, quadrature.numBasis())
     return
 
 

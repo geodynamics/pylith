@@ -18,11 +18,12 @@
 ## Factory: integrator
 
 from IntegratorElasticity import IntegratorElasticity
+from feassemble import ElasticityImplicit as ModuleElasticityImplicit
 
 # ElasticityImplicit class
-class ElasticityImplicit(IntegratorElasticity):
+class ElasticityImplicit(IntegratorElasticity, ModuleElasticityImplicit):
   """
-  Python object for implicit time integration of dynamic elasticity
+  Python object for implicit time integration of elasticity
   equation using finite-elements.
   """
 
@@ -33,10 +34,8 @@ class ElasticityImplicit(IntegratorElasticity):
     Constructor.
     """
     IntegratorElasticity.__init__(self, name)
+    ModuleElasticityImplicit.__init__(self)
     self._loggingPrefix = "ElIm "
-
-    import pylith.feassemble.feassemble as bindings
-    self.cppHandle = bindings.ElasticityImplicit()
     return
 
 

@@ -24,7 +24,7 @@ noinst_PYTHON = \
 	TestFIATLagrange.py \
 	TestFIATSimplex.py \
 	TestCellGeometry.py \
-	TestQuadrature.py \
+	TestMeshQuadrature.py \
 	TestIntegrator.py \
 	TestElasticityExplicit.py \
 	TestElasticityImplicit.py

@@ -66,14 +66,14 @@ class TestApp(Script):
     from TestMeshQuadrature import TestMeshQuadrature
     suite.addTest(unittest.makeSuite(TestMeshQuadrature))
 
-    #from TestIntegrator import TestIntegrator
-    #suite.addTest(unittest.makeSuite(TestIntegrator))
+    from TestSubMeshQuadrature import TestSubMeshQuadrature
+    suite.addTest(unittest.makeSuite(TestSubMeshQuadrature))
+
+    from TestElasticityImplicit import TestElasticityImplicit
+    suite.addTest(unittest.makeSuite(TestElasticityImplicit))
 
     #from TestElasticityExplicit import TestElasticityExplicit
     #suite.addTest(unittest.makeSuite(TestElasticityExplicit))
-
-    #from TestElasticityImplicit import TestElasticityImplicit
-    #suite.addTest(unittest.makeSuite(TestElasticityImplicit))
 
     return suite
 

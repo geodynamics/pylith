@@ -4,6 +4,10 @@ CURRENT ISSUES/PRIORITIES
 
 0. SWIG conversion
 
+  Cleanup logging. Constraints and Integrators should log at the C++
+  level using the C++ EventLogger. Add finer grain logging at C++
+  level as in ElasticityImplicit.
+
   TestMesh.test_view()
   TestMesh.test_checkMaterialIds()
   

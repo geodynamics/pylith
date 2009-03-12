@@ -81,7 +81,8 @@ libpylith_la_SOURCES = \
 	topology/MeshOps.cc \
 	topology/SubMesh.cc \
 	topology/SolutionFields.cc \
-	utils/EventLogger.cc
+	utils/EventLogger.cc \
+	utils/TestArray.cc
 
 # 	faults/BruneSlipFn.cc \
 # 	faults/ConstRateSlipFn.cc \
