@@ -22,7 +22,10 @@ swig_sources = \
 	BoundaryCondition.i \
 	DirichletBC.i \
 	DirichletBoundary.i \
-	../feassemble/Constraint.i
+	AbsorbingDampers.i \
+	../feassemble/Constraint.i \
+	../feassemble/Quadrature.i \
+	../feassemble/Integrator.i
 
 swig_generated = \
 	bc_wrap.cxx \

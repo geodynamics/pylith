@@ -178,8 +178,11 @@ pylith::materials::TestMaterial::testInitialize(void)
   };
   const double quadPtsRef[] = { -0.577350269, 0.577350269 };
   const double quadWts[] = { 1.0, 1.0  };
-  quadrature.initialize(basis, basisDeriv, quadPtsRef, quadWts,
-			cellDim, numCorners, numQuadPts, spaceDim);
+  quadrature.initialize(basis, numQuadPts, numCorners,
+			basisDeriv, numQuadPts, numCorners, cellDim,
+			quadPtsRef, numQuadPts, cellDim,
+			quadWts, numQuadPts,
+			spaceDim);
 
 
   // Get cells associated with material

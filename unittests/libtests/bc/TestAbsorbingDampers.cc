@@ -291,9 +291,12 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     mesh->coordsys(&cs);
 
     // Set up quadrature
-    _quadrature->initialize(_data->basis, _data->basisDerivRef, _data->quadPts,
-			    _data->quadWts, _data->cellDim, _data->numBasis,
-			    _data->numQuadPts, _data->spaceDim);
+    _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,
+			    _data->basisDerivRef, _data->numQuadPts, 
+			    _data->numBasis, _data->cellDim,
+			    _data->quadPts, _data->numQuadPts, _data->cellDim,
+			    _data->quadWts, _data->numQuadPts,
+			    _data->spaceDim);
 
     // Set up database
     spatialdata::spatialdb::SimpleDB db("TestAbsorbingDampers");

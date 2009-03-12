@@ -18,8 +18,7 @@
 #include "pylith/bc/BoundaryCondition.hh"
 #include "pylith/bc/DirichletBC.hh"
 #include "pylith/bc/DirichletBoundary.hh"
-
-#include "pylith/utils/arrayfwd.hh"
+#include "pylith/bc/AbsorbingDampers.hh"
 %}
 
 %include "exception.i"

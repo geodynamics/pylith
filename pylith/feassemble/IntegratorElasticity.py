@@ -46,8 +46,10 @@ class IntegratorElasticity(Integrator):
     self.mesh = mesh
     self.output = material.output
     self.availableFields = material.availableFields
-    self.quadrature(material.quadrature)
+    self.matQuadrature = material.quadrature
     self.material(material)
+
+    ModuleElasticity
 
     Integrator.preinitialize(self, mesh)
     material.preinitialize()
@@ -82,7 +84,7 @@ class IntegratorElasticity(Integrator):
 
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
 
-    self.output.initialize(normalizer, self.quadrature)
+    self.output.initialize(normalizer, self.matQuadrature)
     self.output.writeInfo()
     self.output.open(totalTime, numTimeSteps)
 

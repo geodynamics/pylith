@@ -61,6 +61,7 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
     """
     BoundaryCondition.__init__(self, name)
     Integrator.__init__(self)
+    ModuleAbssorbingDampers.__init__(self)
     self._loggingPrefix = "AbBC "
     return
 
@@ -71,7 +72,8 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
     """
     BoundaryCondition.preinitialize(self, mesh)
     Integrator.preinitialize(self, mesh)
-    self.quadrature.preinitialize()
+    self.bcQuadrature.preinitialize(mesh.coordsys().spaceDim())
+    self.quadrature(self.bcQuadrature)
     return
 
 
@@ -84,12 +86,12 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
 
     BoundaryCondition.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
-    if self.quadrature.cellDim != self.mesh.dimension()-1:
+    if self.bcQuadrature.cellDim() != self.mesh.dimension()-1:
         raise ValueError, \
               "Quadrature scheme and mesh are incompatible.\n" \
               "Dimension for quadrature: %d\n" \
               "Dimension of mesh boundary '%s': %d" % \
-              (self.quadrature.cellDim,
+              (self.bcQuadrature.cellDim,
                self.label, self.mesh.dimension()-1)    
 
     self._logger.eventEnd(logEvent)
@@ -103,7 +105,6 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    ModuleAbsorbingDampers.quadrature(self.quadrature)
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)    
     BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 
@@ -118,18 +119,9 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
     Setup members using inventory.
     """
     BoundaryCondition._configure(self)
-    self.quadrature = self.inventory.quadrature
+    self.bcQuadrature = self.inventory.quadrature
     return
 
-
-  def _createModuleObj(self):
-    """
-    Create handle to corresponding C++ object.
-    """
-    if None == self.cppHandle:
-      ModuleAbsorbingDampers.__init__(self)
-    return
-  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

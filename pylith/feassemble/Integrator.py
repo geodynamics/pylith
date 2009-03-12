@@ -57,8 +57,8 @@ class Integrator(object):
     """
     Constructor.
     """
-    self.gravityField = None
     self.mesh = None
+    self.gravityField = None
     return
 
 
