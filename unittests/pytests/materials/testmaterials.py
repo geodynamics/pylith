@@ -56,17 +56,8 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
-    from TestMaterial import TestMaterial
-    suite.addTest(unittest.makeSuite(TestMaterial))
-
-    from TestElasticIsotropic3D import TestElasticIsotropic3D
-    suite.addTest(unittest.makeSuite(TestElasticIsotropic3D))
-
-    from TestElasticPlaneStrain import TestElasticPlaneStrain
-    suite.addTest(unittest.makeSuite(TestElasticPlaneStrain))
-
-    from TestElasticPlaneStress import TestElasticPlaneStress
-    suite.addTest(unittest.makeSuite(TestElasticPlaneStress))
+    #from TestMaterial import TestMaterial
+    #suite.addTest(unittest.makeSuite(TestMaterial))
 
     from TestElasticStrain1D import TestElasticStrain1D
     suite.addTest(unittest.makeSuite(TestElasticStrain1D))
@@ -74,14 +65,23 @@ class TestApp(Script):
     from TestElasticStress1D import TestElasticStress1D
     suite.addTest(unittest.makeSuite(TestElasticStress1D))
 
-    from TestMaxwellIsotropic3D import TestMaxwellIsotropic3D
-    suite.addTest(unittest.makeSuite(TestMaxwellIsotropic3D))
+    from TestElasticPlaneStrain import TestElasticPlaneStrain
+    suite.addTest(unittest.makeSuite(TestElasticPlaneStrain))
 
-    from TestGenMaxwellIsotropic3D import TestGenMaxwellIsotropic3D
-    suite.addTest(unittest.makeSuite(TestGenMaxwellIsotropic3D))
+    from TestElasticPlaneStress import TestElasticPlaneStress
+    suite.addTest(unittest.makeSuite(TestElasticPlaneStress))
 
-    from TestHomogeneous import TestHomogeneous
-    suite.addTest(unittest.makeSuite(TestHomogeneous))
+    from TestElasticIsotropic3D import TestElasticIsotropic3D
+    suite.addTest(unittest.makeSuite(TestElasticIsotropic3D))
+
+    #from TestMaxwellIsotropic3D import TestMaxwellIsotropic3D
+    #suite.addTest(unittest.makeSuite(TestMaxwellIsotropic3D))
+
+    #from TestGenMaxwellIsotropic3D import TestGenMaxwellIsotropic3D
+    #suite.addTest(unittest.makeSuite(TestGenMaxwellIsotropic3D))
+
+    #from TestHomogeneous import TestHomogeneous
+    #suite.addTest(unittest.makeSuite(TestHomogeneous))
 
     return suite
 

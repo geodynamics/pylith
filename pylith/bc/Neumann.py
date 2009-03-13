@@ -168,8 +168,7 @@ class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
     """
     Create handle to corresponding C++ object.
     """
-    if None == self.this:
-      ModuleNeumann.__init__(self)
+    ModuleNeumann.__init__(self)
     return
   
 

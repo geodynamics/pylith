@@ -22,6 +22,10 @@
 
 #include "pylith/materials/ElasticMaterial.hh"
 #include "pylith/materials/ElasticStrain1D.hh"
+#include "pylith/materials/ElasticStress1D.hh"
+#include "pylith/materials/ElasticPlaneStrain.hh"
+#include "pylith/materials/ElasticPlaneStress.hh"
+#include "pylith/materials/ElasticIsotropic3D.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 %}
@@ -51,6 +55,10 @@ import_array();
 %include "Material.i"
 %include "ElasticMaterial.i"
 %include "ElasticStrain1D.i"
+%include "ElasticStress1D.i"
+%include "ElasticPlaneStrain.i"
+%include "ElasticPlaneStress.i"
+%include "ElasticIsotropic3D.i"
 
 
 // End of file

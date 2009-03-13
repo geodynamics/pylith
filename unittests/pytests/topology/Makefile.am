@@ -15,8 +15,8 @@ include $(top_srcdir)/subpackage.am
 
 SUBDIRS = data
 
-TESTS = testdriver.py
-dist_check_SCRIPTS = testdriver.py
+TESTS = testtopology.py
+dist_check_SCRIPTS = testtopology.py
 
 TESTS_ENVIRONMENT = $(PYTHON)
 

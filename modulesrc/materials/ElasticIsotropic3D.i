@@ -10,26 +10,26 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file modulesrc/materials/ElasticStrain1D.i
+/** @file modulesrc/materials/ElasticIsotropic3D.i
  *
- * Python interface to C++ ElasticStrain1D object.
+ * Python interface to C++ ElasticIsotropic3D object.
  */
 
 namespace pylith {
   namespace materials {
 
-    class ElasticStrain1D : public ElasticMaterial
-    { // class ElasticStrain1D
+    class ElasticIsotropic3D : public ElasticMaterial
+    { // class ElasticIsotropic3D
 
       // PUBLIC METHODS /////////////////////////////////////////////////
     public :
 
       /// Default constructor
-      ElasticStrain1D(void);
+      ElasticIsotropic3D(void);
       
       /// Destructor
-      ~ElasticStrain1D(void);
-
+      ~ElasticIsotropic3D(void);
+      
       // PROTECTED METHODS //////////////////////////////////////////////
     protected :
 
@@ -43,7 +43,7 @@ namespace pylith {
        */
       void _dbToProperties(double* const propValues,
 			   const double_array& dbValues) const;
-      
+
       /** Nondimensionalize properties.
        *
        * @param values Array of property values.
@@ -51,7 +51,7 @@ namespace pylith {
        */
       void _nondimProperties(double* const values,
 			     const int nvalues) const;
-      
+
       /** Dimensionalize properties.
        *
        * @param values Array of property values.
@@ -59,7 +59,7 @@ namespace pylith {
        */
       void _dimProperties(double* const values,
 			  const int nvalues) const;
-      
+
       /** Compute density from properties.
        *
        * @param density Array for density.
@@ -71,7 +71,7 @@ namespace pylith {
 			const int numProperties,
 			const double* stateVars,
 			const int numStateVars);
-      
+
       /** Compute stress tensor from properties and state variables. If
        * the state variables are from the previous time step, then the
        * computeStateVars flag should be set to true so that the state
@@ -106,7 +106,7 @@ namespace pylith {
 		       const double* initialStrain,
 		       const int initialStrainSize,
 		       const bool computeStateVars);
-      
+
       /** Compute derivatives of elasticity matrix from properties.
        *
        * @param elasticConsts Array for elastic constants.
@@ -134,7 +134,7 @@ namespace pylith {
 			      const int initialStressSize,
 			      const double* initialStrain,
 			      const int initialStrainSize);
-      
+
       /** Get stable time step for implicit time integration.
        *
        * @param properties Properties at location.
@@ -149,10 +149,10 @@ namespace pylith {
 				     const double* stateVars,
 				     const int numStateVars) const;
 
-    }; // class ElasticStrain1D
+    }; // class ElasticIsotropic3D
 
   } // materials
 } // pylith
 
 
-// End of file
+// End of file 

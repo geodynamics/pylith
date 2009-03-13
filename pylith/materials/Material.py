@@ -24,11 +24,10 @@
 ##
 ## Factory: material
 
-from materials import ModuleMaterial
 from pyre.components.Component import Component
 
 # Material class
-class Material(Component, ModuleMaterial):
+class Material(Component):
   """
   Python material property manager.
 
@@ -81,8 +80,8 @@ class Material(Component, ModuleMaterial):
                                            factory=SimpleDB)
     dbInitialState.meta['tip'] = "Database for initial state variables."
 
-    from pylith.feassemble.quadrature.Quadrature import Quadrature
-    quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
+    from pylith.feassemble.Quadrature import MeshQuadrature
+    quadrature = pyre.inventory.facility("quadrature", factory=MeshQuadrature)
     quadrature.meta['tip'] = "Quadrature object for numerical integration."
 
 
@@ -93,17 +92,19 @@ class Material(Component, ModuleMaterial):
     Constructor.
     """
     Component.__init__(self, name, facility="material")
-    ModuleMaterial.__init__(self)
+    self._createModuleObj()
     self.output = None
     return
 
 
-  def preinitialize(self):
+  def preinitialize(self, mesh):
     """
     Do pre-initialization setup.
     """
-    self.quadrature.preinitialize()
     self._setupLogging()
+    self.mesh = mesh
+    self.quadrature(self.matQuadrature)
+    self.matQuadrature.preinitialize(self.mesh.coordsys().dimension())
     return
 
 
@@ -114,12 +115,17 @@ class Material(Component, ModuleMaterial):
     logEvent = "%sverify" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    if self.quadrature.spaceDim != self.dimension:
+    if self.matQuadrature.cellDim != self.mesh.dimension() or \
+       self.matQuadrature.spaceDim != self.mesh.coordsys.spaceDim():
         raise ValueError, \
-              "Quadrature scheme and material are incompatible.\n" \
-              "Dimension for quadrature: %d\n" \
-              "Dimension for material '%s': %d" % \
-              (self.quadrature.spaceDim, self.label, self.dimension)
+              "Quadrature scheme for material '%s' and mesh are incompatible.\n" \
+              "Quadrature cell dimension: %d\n" \
+              "Quadrature spatial dimension: %d\n" \
+              "Mesh cell dimension: %d\n" \
+              "Mesh spatial dimension: %d" % \
+              (self.label,
+               self.matQuadrature.cellDim, self.matQuadrature.spaceDim,
+               self.mesh.dimension(), self.mesh.coordsys().spaceDim())
     
     self._logger.eventEnd(logEvent)
     return
@@ -145,18 +151,18 @@ class Material(Component, ModuleMaterial):
     if self.inventory.useInitialState:
       self.dbInitialState(self.inventory.dbInitialState)
 
-    self.quadrature = self.inventory.quadrature
+    self.matQuadrature = self.inventory.quadrature
     return
 
   
-  def _createCppHandle(self):
+  def _createModuleObj(self):
     """
-    Create handle to corresponding C++ object.
+    Call constructor for module object for access to C++ object.
     """
-    raise NotImplementedError("Please implement _createCppHandle() in " \
-                              "derived class.")
-  
-  
+    raise NotImplementedError, \
+          "Please implement _createModuleOb() in derived class."
+
+
   def _setupLogging(self):
     """
     Setup event logging.
@@ -166,7 +172,7 @@ class Material(Component, ModuleMaterial):
 
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("FE Material")
+    logger.className("FE Material")
     logger.initialize()
 
     events = ["verify",

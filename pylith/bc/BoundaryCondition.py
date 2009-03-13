@@ -93,7 +93,6 @@ class BoundaryCondition(Component, ModuleBoundaryCondition):
     Constructor.
     """
     Component.__init__(self, name, facility="boundary_condition")
-    self.this = None
     self._createModuleObj()
     return
 
@@ -125,6 +124,14 @@ class BoundaryCondition(Component, ModuleBoundaryCondition):
     Component._configure(self)
     self.upDir = map(float, self.inventory.upDir)
     return
+
+
+  def _createModuleObj(self):
+    """
+    Call constructor for module object for access to C++ object.
+    """
+    raise NotImplementedError, \
+          "Please implement _createModuleOb() in derived class."
 
 
 # End of file 

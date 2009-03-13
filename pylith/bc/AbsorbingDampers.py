@@ -127,8 +127,7 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
     """
     Create handle to corresponding C++ object.
     """
-    if None == self.this:
-      ModuleAbsorbingDampers.__init__(self)
+    ModuleAbsorbingDampers.__init__(self)
     return
   
 

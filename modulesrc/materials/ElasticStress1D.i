@@ -10,25 +10,25 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file modulesrc/materials/ElasticStrain1D.i
+/** @file modulesrc/materials/ElasticStress1D.i
  *
- * Python interface to C++ ElasticStrain1D object.
+ * Python interface to C++ ElasticStress1D object.
  */
 
 namespace pylith {
   namespace materials {
 
-    class ElasticStrain1D : public ElasticMaterial
-    { // class ElasticStrain1D
+    class ElasticStress1D : public ElasticMaterial
+    { // class ElasticStress1D
 
       // PUBLIC METHODS /////////////////////////////////////////////////
     public :
 
       /// Default constructor
-      ElasticStrain1D(void);
+      ElasticStress1D(void);
       
       /// Destructor
-      ~ElasticStrain1D(void);
+      ~ElasticStress1D(void);
 
       // PROTECTED METHODS //////////////////////////////////////////////
     protected :
@@ -149,7 +149,7 @@ namespace pylith {
 				     const double* stateVars,
 				     const int numStateVars) const;
 
-    }; // class ElasticStrain1D
+    }; // class ElasticStress1D
 
   } // materials
 } // pylith

@@ -157,8 +157,7 @@ class DirichletBC(BoundaryCondition, Constraint, ModuleDirichletBC):
     """
     Create handle to corresponding C++ object.
     """
-    if None == self.this:
-      ModuleDirichletBC.__init__(self)
+    ModuleDirichletBC.__init__(self)
     return
   
 

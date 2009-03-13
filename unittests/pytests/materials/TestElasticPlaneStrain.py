@@ -29,18 +29,8 @@ class TestElasticPlaneStrain(unittest.TestCase):
     Test constructor.
     """
     material = ElasticPlaneStrain()
-    material._createCppHandle()
-    self.assertNotEqual(None, material.cppHandle)
-    return
 
-
-  def test_dimension(self):
-    """
-    Test dimension().
-    """
-    material = ElasticPlaneStrain()
-    material._createCppHandle()
-    self.assertEqual(2, material.dimension)
+    self.assertEqual(2, material.dimension())
     return
 
 
@@ -49,7 +39,6 @@ class TestElasticPlaneStrain(unittest.TestCase):
     Test useElasticBehavior().
     """
     material = ElasticPlaneStrain()
-    material._createCppHandle()
     material.useElasticBehavior(False)
     return
 

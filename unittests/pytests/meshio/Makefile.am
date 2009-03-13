@@ -15,8 +15,8 @@ include $(top_srcdir)/subpackage.am
 
 SUBDIRS = data
 
-TESTS = testdriver.py
-dist_check_SCRIPTS = testdriver.py 
+TESTS = testmeshio.py
+dist_check_SCRIPTS = testmeshio.py 
 
 TESTS_ENVIRONMENT = $(PYTHON)
 
@@ -30,8 +30,8 @@ noinst_PYTHON = \
 	TestOutputSolnSubset.py
 
 if ENABLE_CUBIT
-  TESTS += testdriver_cubit.py
-  dist_check_SCRIPTS += testdriver_cubit.py
+  TESTS += testcubit.py
+  dist_check_SCRIPTS += testcubit.py
 endif	
 
 noinst_tmp = \

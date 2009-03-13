@@ -29,18 +29,8 @@ class TestElasticStrain1D(unittest.TestCase):
     Test constructor.
     """
     material = ElasticStrain1D()
-    material._createCppHandle()
-    self.assertNotEqual(None, material.cppHandle)
-    return
 
-
-  def test_dimension(self):
-    """
-    Test dimension().
-    """
-    material = ElasticStrain1D()
-    material._createCppHandle()
-    self.assertEqual(1, material.dimension)
+    self.assertEqual(1, material.dimension())
     return
 
 
@@ -49,7 +39,6 @@ class TestElasticStrain1D(unittest.TestCase):
     Test useElasticBehavior().
     """
     material = ElasticStrain1D()
-    material._createCppHandle()
     material.useElasticBehavior(False)
     return
 

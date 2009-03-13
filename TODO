@@ -17,6 +17,9 @@ CURRENT ISSUES/PRIORITIES
   libtests/bc/TestDirichletBoundary::testVertexField()
   libtests/bc/TestDirichletBoundary::testBoundaryMesh()
 
+  pytests/bc/TestDirichletBoundary
+  pytests/bc/TestNeumann (output)
+
   DirichletPoints (Python) - rate == None -> dbRate == 0
   DirichletBoundary (Python) - rate == None -> dbRate == 0
 
