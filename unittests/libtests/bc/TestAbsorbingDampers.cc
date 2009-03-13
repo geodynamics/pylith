@@ -23,6 +23,7 @@
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/topology/Jacobian.hh" // USES Jacobian
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
@@ -204,20 +205,12 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   const ALE::Obj<RealSection>& solutionSection = solution.section();
   CPPUNIT_ASSERT(!solutionSection.isNull());
 
-  PetscMat jacobian;
-  //sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection)->view("Global Order");
-  PetscErrorCode err = MeshCreateMatrix(sieveMesh, solutionSection, 
-					MATMPIBAIJ, &jacobian);
-  CPPUNIT_ASSERT(0 == err);
+  topology::Jacobian jacobian(fields);
 
   const double t = 1.0;
   bc.integrateJacobian(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, bc.needNewJacobian());
-
-  err = MatAssemblyBegin(jacobian, MAT_FINAL_ASSEMBLY);
-  CPPUNIT_ASSERT(0 == err);
-  err = MatAssemblyEnd(jacobian, MAT_FINAL_ASSEMBLY);
-  CPPUNIT_ASSERT(0 == err);
+  jacobian.assemble("final_assembly");
 
   CPPUNIT_ASSERT(!sieveMesh->depthStratum(0).isNull());
 
@@ -226,15 +219,16 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   const int nrowsE = totalNumVertices * _data->spaceDim;
   const int ncolsE = totalNumVertices * _data->spaceDim;
 
+  const PetscMat* jacobianMat = jacobian.matrix();
   int nrows = 0;
   int ncols = 0;
-  MatGetSize(jacobian, &nrows, &ncols);
+  MatGetSize(*jacobianMat, &nrows, &ncols);
   CPPUNIT_ASSERT_EQUAL(nrowsE, nrows);
   CPPUNIT_ASSERT_EQUAL(ncolsE, ncols);
 
   PetscMat jDense;
   PetscMat jSparseAIJ;
-  MatConvert(jacobian, MATSEQAIJ, MAT_INITIAL_MATRIX, &jSparseAIJ);
+  MatConvert(*jacobianMat, MATSEQAIJ, MAT_INITIAL_MATRIX, &jSparseAIJ);
   MatConvert(jSparseAIJ, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);
 
   double_array vals(nrows*ncols);

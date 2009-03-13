@@ -33,7 +33,6 @@
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
-#include "pylith/utils/petscfwd.h" // USES PetscMat
 #include "pylith/utils/array.hh" // HASA double_array
 
 // Integrator -----------------------------------------------------------

@@ -53,10 +53,7 @@ class TestNeumann(unittest.TestCase):
 
     (mesh, bc, fields) = self._initialize()
 
-    self.assertNotEqual(None, bc.cppHandle)
-
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
+    # No testing of result.
     return
 
 
@@ -108,12 +105,11 @@ class TestNeumann(unittest.TestCase):
     """
     (mesh, bc, fields) = self._initialize()
 
-    residual = fields.getReal("residual")
+    residual = fields.get("residual")
     t = 0.02
     bc.integrateResidual(residual, t, fields)
 
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
+    # No testing of result.
     return
 
 
@@ -126,12 +122,14 @@ class TestNeumann(unittest.TestCase):
 
     (mesh, bc, fields) = self._initialize()
 
-    jacobian = mesh.createMatrix(fields.getReal("residual"))
-    import pylith.utils.petsc as petsc
-    petsc.mat_setzero(jacobian)
+    from pylith.topology.Jacobian import Jacobian
+    jacobian = Jacobian(fields)
+    jacobian.zero()
     t = 0.24
     bc.integrateJacobian(jacobian, t, fields)
+    self.assertEqual(False, bc.needNewJacobian())
 
+    # No testing of result.
     return
 
 
@@ -149,8 +147,7 @@ class TestNeumann(unittest.TestCase):
     totalTime = 5
     bc.poststep(t, dt, totalTime, fields)
 
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
+    # No testing of result.
     return
   
 
@@ -164,8 +161,7 @@ class TestNeumann(unittest.TestCase):
     (mesh, bc, fields) = self._initialize()
     bc.finalize()
 
-    # We should really add something here to check to make sure things
-    # actually initialized correctly.
+    # No testing of result.
     return
 
 
@@ -175,44 +171,49 @@ class TestNeumann(unittest.TestCase):
     """
     Initialize Neumann boundary condition.
     """
-    from pylith.bc.Neumann import Neumann
-    bc = Neumann()
-    bc._configure()
-    bc.output._configure()
-    bc.output.writer._configure()
-    bc.label = "bc"
-
-    from pylith.feassemble.FIATSimplex import FIATSimplex
-    cell = FIATSimplex()
-    cell.shape = "line"
-    cell.degree = 1
-    cell.order = 1
-    from pylith.feassemble.quadrature.Quadrature1Din2D import Quadrature1Din2D
-    quadrature = Quadrature1Din2D()
-    quadrature._configure()
-    quadrature.cell = cell
-    bc.quadrature = quadrature
-
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     db = SimpleDB()
     db._configure()
-    db.label = "TestNeumann tri3"
-    db.iohandler.filename = "data/tri3-tractions.spatialdb"
-    db.initialize()
-    bc.db = db
+    db.inventory.label = "TestNeumann tri3"
+    db.inventory.iohandler.inventory.filename = "data/tri3-tractions.spatialdb"
+    db.inventory.iohandler._configure()
+    db._configure()
+
+    from pylith.feassemble.FIATSimplex import FIATSimplex
+    cell = FIATSimplex()
+    cell.inventory.shape = "line"
+    cell.inventory.degree = 1
+    cell.inventory.order = 1
+    cell._configure()
+    from pylith.feassemble.Quadrature import SubMeshQuadrature
+    quadrature = SubMeshQuadrature()
+    quadrature.inventory.cell = cell
+    quadrature._configure()
+    
+    from pylith.bc.Neumann import Neumann
+    bc = Neumann()
+    bc.inventory.quadrature = quadrature
+    bc.inventory.db = db
+    bc.inventory.label = "bc"
+    bc.inventory.output.inventory.writer._configure()
+    bc.inventory.output._configure()
+    bc._configure()
+
 
     from spatialdata.geocoords.CSCart import CSCart
     cs = CSCart()
-    cs.spaceDim = 2
+    cs.inventory.spaceDim = 2
+    cs._configure()
 
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
-    normalizer.initialize()
+    normalizer._configure()
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
-    importer.filename = "data/tri3.mesh"
-    importer.coordsys = cs
+    importer.inventory.filename = "data/tri3.mesh"
+    importer.inventory.coordsys = cs
+    importer._configure()
     mesh = importer.read(normalizer, debug=False, interpolate=False)
     
     bc.preinitialize(mesh)
@@ -220,17 +221,19 @@ class TestNeumann(unittest.TestCase):
     bc.timeStep(0.01)
 
     # Setup fields
-    from pylith.topology.FieldsManager import FieldsManager
-    fields = FieldsManager(mesh)
-    fields.addReal("residual")
-    fields.addReal("dispTBctpdt")
-    fields.addReal("dispIncr")
-    fields.setFiberDimension("residual", cs.spaceDim)
-    fields.allocate("residual")
-    fields.copyLayout("residual")
+    from pylith.topology.SolutionFields import SolutionFields
+    fields = SolutionFields(mesh)
+    fields.add("residual")
+    fields.add("disp(t), bc(t+dt)")
+    fields.add("dispIncr")
+    fields.solutionName("dispIncr")
 
-    import pylith.topology.topology as bindings
-    bindings.zeroRealSection(fields.getReal("dispIncr"))
+    residual = fields.get("residual")
+    residual.newSection(residual.VERTICES_FIELD, cs.spaceDim())
+    residual.allocate()
+    residual.zero()
+
+    fields.copyLayout("residual")
     
     return (mesh, bc, fields)
 

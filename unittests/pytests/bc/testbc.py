@@ -65,8 +65,8 @@ class TestApp(Script):
     from TestAbsorbingDampers import TestAbsorbingDampers
     suite.addTest(unittest.makeSuite(TestAbsorbingDampers))
 
-    #from TestNeumann import TestNeumann
-    #suite.addTest(unittest.makeSuite(TestNeumann))
+    from TestNeumann import TestNeumann
+    suite.addTest(unittest.makeSuite(TestNeumann))
 
     return suite
 

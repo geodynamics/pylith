@@ -39,6 +39,7 @@ class TestDirichletBC(unittest.TestCase):
     """
     bc = DirichletBC()
     from pylith.feassemble.Constraint import implementsConstraint
+    print dir(bc)
     self.failUnless(implementsConstraint(bc))
     return
     

@@ -18,9 +18,10 @@
 
 from BoundaryCondition import BoundaryCondition
 from pylith.feassemble.Integrator import Integrator
+from bc import Neumann as ModuleNeumann
 
 # Neumann class
-class Neumann(BoundaryCondition, Integrator):
+class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
   """
   Python object for managing traction boundary conditions.
 
@@ -46,8 +47,9 @@ class Neumann(BoundaryCondition, Integrator):
 
     import pyre.inventory
 
-    from pylith.feassemble.quadrature.Quadrature import Quadrature
-    quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
+    from pylith.feassemble.Quadrature import SubMeshQuadrature
+    quadrature = pyre.inventory.facility("quadrature",
+                                         factory=SubMeshQuadrature)
     quadrature.meta['tip'] = "Quadrature object for numerical integration."
 
     from pylith.meshio.OutputNeumann import OutputNeumann
@@ -81,7 +83,8 @@ class Neumann(BoundaryCondition, Integrator):
     """
     BoundaryCondition.preinitialize(self, mesh)
     Integrator.preinitialize(self, mesh)
-    self.quadrature.preinitialize()
+    self.bcQuadrature.preinitialize(mesh.coordsys().spaceDim())
+    self.quadrature(self.bcQuadrature)
     self.output.preinitialize(self)
     return
 
@@ -95,12 +98,12 @@ class Neumann(BoundaryCondition, Integrator):
 
     BoundaryCondition.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
-    if self.quadrature.cellDim != self.mesh.dimension()-1:
+    if self.bcQuadrature.cellDim != self.mesh.dimension()-1:
         raise ValueError, \
               "Quadrature scheme and mesh are incompatible.\n" \
               "Dimension for quadrature: %d\n" \
               "Dimension of mesh boundary '%s': %d" % \
-              (self.quadrature.cellDim,
+              (self.bcQuadrature.cellDim,
                self.label, self.mesh.dimension()-1)    
     self.output.verifyConfiguration(self.mesh)
 
@@ -116,18 +119,16 @@ class Neumann(BoundaryCondition, Integrator):
     self._logger.eventBegin(logEvent)
     
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
-    
-    self.cppHandle.quadrature = self.quadrature.cppHandle
     BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 
-    from pylith.topology.Mesh import Mesh
-    self.boundaryMesh = Mesh()
-    self.boundaryMesh.initialize(self.mesh.coordsys)
-    self.cppHandle.boundaryMesh(self.boundaryMesh.cppHandle)
+    #from pylith.topology.Mesh import Mesh
+    #self.boundaryMesh = Mesh()
+    #self.boundaryMesh.initialize(self.mesh.coordsys)
+    #self.cppHandle.boundaryMesh(self.boundaryMesh.cppHandle)
 
-    if None != self.output:
-      self.output.initialize(normalizer, self.quadrature)
-      self.output.writeInfo()
+    #if None != self.output:
+    #  self.output.initialize(normalizer, self.quadrature)
+    #  self.output.writeInfo()
 
     self._logger.eventEnd(logEvent)
     return
@@ -145,10 +146,9 @@ class Neumann(BoundaryCondition, Integrator):
     Get vertex field.
     """
     if None == fields:
-      (field, fieldType) = self.cppHandle.cellField(name, self.mesh.cppHandle)
+      (field, fieldType) = self.cellField(name)
     else:
-      (field, fieldType) = self.cppHandle.cellField(name, self.mesh.cppHandle,
-                                                    fields.cppHandle)
+      (field, fieldType) = self.cellField(name, fields)
     return (field, fieldType)
 
 
@@ -159,18 +159,17 @@ class Neumann(BoundaryCondition, Integrator):
     Setup members using inventory.
     """
     BoundaryCondition._configure(self)
-    self.quadrature = self.inventory.quadrature
+    self.bcQuadrature = self.inventory.quadrature
     self.output = self.inventory.output
     return
 
 
-  def _createCppHandle(self):
+  def _createModuleObj(self):
     """
     Create handle to corresponding C++ object.
     """
-    if None == self.cppHandle:
-      import pylith.bc.bc as bindings
-      self.cppHandle = bindings.Neumann()    
+    if None == self.this:
+      ModuleNeumann.__init__(self)
     return
   
 

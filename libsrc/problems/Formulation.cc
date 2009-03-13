@@ -18,6 +18,7 @@
 #include "pylith/topology/SubMesh.hh" // USES Quadrature<SubMesh>
 #include "pylith/feassemble/Quadrature.hh" // USES Integrator<Quadrature>
 #include "pylith/feassemble/Integrator.hh" // USES Integrator
+#include "pylith/topology/Jacobian.hh" // USES Jacobian
 
 #include <cassert> // USES assert()
 
@@ -128,7 +129,7 @@ pylith::problems::Formulation::reformResidual(
 // Reform system Jacobian.
 void
 pylith::problems::Formulation::reformJacobian(
-				     PetscMat* jacobian,
+				     topology::Jacobian* jacobian,
 				     topology::SolutionFields* const fields,
 				     const double t,
 				     const double dt)
@@ -137,7 +138,7 @@ pylith::problems::Formulation::reformJacobian(
   assert(0 != fields);
 
   // Set residual to zero.
-  MatZeroEntries(*jacobian);
+  jacobian->zero();
 
   // Add in contributions that do not require assembly.
   int numIntegrators = _meshIntegrators.size();
@@ -148,13 +149,7 @@ pylith::problems::Formulation::reformJacobian(
     _submeshIntegrators[i]->integrateJacobianAssembled(jacobian, t, fields);
 
   // Assemble residual.
-  PetscErrorCode err = 0;
-  err = MatAssemblyBegin(*jacobian, MAT_FLUSH_ASSEMBLY);
-  if (0 != err)
-    throw std::runtime_error("Assembly of matrix failed.");
-  err = MatAssemblyEnd(*jacobian, MAT_FLUSH_ASSEMBLY);
-  if (0 != err)
-    throw std::runtime_error("Assembly of matrix failed.");
+  jacobian->assemble("flush_assembly");
 
   // Add in contributions that require assembly.
   numIntegrators = _meshIntegrators.size();
@@ -165,12 +160,7 @@ pylith::problems::Formulation::reformJacobian(
     _submeshIntegrators[i]->integrateJacobian(jacobian, t, fields);
   
   // Assemble residual.
-  err = MatAssemblyBegin(*jacobian, MAT_FINAL_ASSEMBLY);
-  if (0 != err)
-    throw std::runtime_error("Assembly of matrix failed.");
-  err = MatAssemblyEnd(*jacobian, MAT_FINAL_ASSEMBLY);
-  if (0 != err)
-    throw std::runtime_error("Assembly of matrix failed.");
+  jacobian->assemble("final_assembly");
 } // reformJacobian
 
 

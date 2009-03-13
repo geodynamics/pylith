@@ -76,7 +76,7 @@ namespace pylith {
        * @param t Current time
        * @param fields Solution fields
        */
-      void integrateJacobian(PetscMat* jacobian,
+      void integrateJacobian(pylith::topology::Jacobian* jacobian,
 			     const double t,
 			     pylith::topology::SolutionFields* const fields);
   

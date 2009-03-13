@@ -326,6 +326,7 @@ pylith::bc::Neumann::integrateJacobian(topology::Jacobian* jacobian,
  				       const double t,
  				       topology::SolutionFields* const fields)
 { // integrateJacobian
+  _needNewJacobian = false;
 } // integrateJacobian
 
 // ----------------------------------------------------------------------

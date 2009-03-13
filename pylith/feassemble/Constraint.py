@@ -24,7 +24,6 @@ def implementsConstraint(obj):
   required = ["preinitialize",
               "verifyConfiguration",
               "initialize",
-              "timeStep",
               "setConstraintSizes",
               "setConstraints",
               "useSolnIncr",
@@ -33,6 +32,7 @@ def implementsConstraint(obj):
               "finalize"]
   for attr in required:
     if not attr in available:
+      print "Missing method '%s'." % attr
       result = False
   return result
 
@@ -61,6 +61,13 @@ class Constraint(object):
     self._setupLogging()
     return
 
+
+  def poststep(self, t, dt, totalTime, fields):
+    """
+    Hook for doing stuff after advancing time step.
+    """
+    return
+  
 
   def finalize(self):
     """

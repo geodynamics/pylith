@@ -24,15 +24,6 @@ class TestAbsorbingDampers(unittest.TestCase):
   Unit testing of AbsorbingDampers object.
   """
 
-  def test_constructor(self):
-    """
-    Test constructor.
-    """
-    from pylith.bc.AbsorbingDampers import AbsorbingDampers
-    bc = AbsorbingDampers()
-    return
-
-
   def test_implementsIntegrator(self):
     """
     Test to make sure AbsorbingDampers satisfies integrator requirements.
@@ -42,6 +33,15 @@ class TestAbsorbingDampers(unittest.TestCase):
     self.failUnless(implementsIntegrator(bc))
     return
     
+
+  def test_constructor(self):
+    """
+    Test constructor.
+    """
+    from pylith.bc.AbsorbingDampers import AbsorbingDampers
+    bc = AbsorbingDampers()
+    return
+
 
   def test_initialize(self):
     """
@@ -123,9 +123,9 @@ class TestAbsorbingDampers(unittest.TestCase):
 
     (mesh, bc, fields) = self._initialize()
 
-    jacobian = mesh.createMatrix(fields.get("residual"))
-    import pylith.utils.petsc as petsc
-    petsc.mat_setzero(jacobian)
+    from pylith.topology.Jacobian import Jacobian
+    jacobian = Jacobian(fields)
+    jacobian.zero()
     t = 0.24
     bc.integrateJacobian(jacobian, t, fields)
     self.assertEqual(False, bc.needNewJacobian())

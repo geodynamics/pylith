@@ -19,6 +19,7 @@
 #include "pylith/bc/DirichletBC.hh"
 #include "pylith/bc/DirichletBoundary.hh"
 #include "pylith/bc/AbsorbingDampers.hh"
+#include "pylith/bc/Neumann.hh"
 %}
 
 %include "exception.i"
@@ -51,6 +52,7 @@ import_array();
 %include "DirichletBC.i"
 %include "DirichletBoundary.i"
 %include "AbsorbingDampers.i"
+%include "Neumann.i"
 
 // End of file
 

@@ -382,7 +382,7 @@ class OutputManager(Component):
 
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("FE Output")
+    logger.className("FE Output")
     logger.initialize()
 
     events = ["init",

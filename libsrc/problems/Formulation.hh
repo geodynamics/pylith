@@ -25,7 +25,6 @@
 #include "pylith/feassemble/feassemblefwd.hh" // USES Integrator
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field, SolutionFields
 #include "pylith/utils/array.hh" // USES std::vector
-#include "pylith/utils/petscfwd.h" // USES PetscMat
 
 // Formulation ----------------------------------------------------------
 class pylith::problems::Formulation
@@ -45,7 +44,7 @@ public :
   
   struct ArgsJacobian {
     Formulation* object;
-    PetscMat* jacobian;
+    topology::Jacobian* jacobian;
     topology::SolutionFields* const fields;
     double t;
     double dt;
@@ -117,7 +116,7 @@ public :
    * @param t Current time.
    * @param dt Current time step (t -> t+dt).
    */
-  void reformJacobian(PetscMat* jacobian,
+  void reformJacobian(topology::Jacobian* jacobian,
 		      topology::SolutionFields* const fields,
 		      const double t,
 		      const double dt);

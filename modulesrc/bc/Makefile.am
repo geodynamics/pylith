@@ -23,6 +23,7 @@ swig_sources = \
 	DirichletBC.i \
 	DirichletBoundary.i \
 	AbsorbingDampers.i \
+	Neumann.i \
 	../feassemble/Constraint.i \
 	../feassemble/Quadrature.i \
 	../feassemble/Integrator.i

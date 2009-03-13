@@ -108,7 +108,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       virtual
-      void integrateJacobian(PetscMat* jacobian,
+      void integrateJacobian(pylith::topology::Jacobian* jacobian,
 			     const double t,
 			     pylith::topology::SolutionFields* const fields);
 
@@ -133,7 +133,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       virtual
-      void integrateJacobianAssembled(PetscMat* jacobian,
+      void integrateJacobianAssembled(pylith::topology::Jacobian* jacobian,
 				      const double t,
 				      pylith::topology::SolutionFields* const fields);
 
