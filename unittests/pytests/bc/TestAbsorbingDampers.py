@@ -35,7 +35,7 @@ class TestAbsorbingDampers(unittest.TestCase):
 
   def test_implementsIntegrator(self):
     """
-    Test to make sure AbsorbingDampers satisfies constraint requirements.
+    Test to make sure AbsorbingDampers satisfies integrator requirements.
     """
     bc = AbsorbingDampers()
     from pylith.feassemble.Integrator import implementsIntegrator
@@ -53,8 +53,7 @@ class TestAbsorbingDampers(unittest.TestCase):
 
     (mesh, bc, fields) = self._initialize()
 
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
+    # No testing of result.
     return
 
 
@@ -110,8 +109,7 @@ class TestAbsorbingDampers(unittest.TestCase):
     t = 0.02
     bc.integrateResidual(residual, t, fields)
 
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
+    # No testing of result.
     return
 
 
@@ -132,8 +130,7 @@ class TestAbsorbingDampers(unittest.TestCase):
     bc.integrateJacobian(jacobian, t, fields)
     self.assertEqual(False, bc.needNewJacobian())
 
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
+    # No testing of result.
     return
 
 
@@ -151,8 +148,7 @@ class TestAbsorbingDampers(unittest.TestCase):
     totalTime = 5
     bc.poststep(t, dt, totalTime, fields)
 
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
+    # No testing of result.
     return
   
 
@@ -166,8 +162,7 @@ class TestAbsorbingDampers(unittest.TestCase):
     (mesh, bc, fields) = self._initialize()
     bc.finalize()
 
-    # We should really add something here to check to make sure things
-    # actually initialized correctly.
+    # No testing of result.
     return
 
 
@@ -191,8 +186,8 @@ class TestAbsorbingDampers(unittest.TestCase):
     cell.inventory.degree = 1
     cell.inventory.order = 1
     cell._configure()
-    from pylith.feassemble.quadrature.Quadrature import Quadrature
-    quadrature = Quadrature()
+    from pylith.feassemble.Quadrature import SubMeshQuadrature
+    quadrature = SubMeshQuadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
 
@@ -228,11 +223,11 @@ class TestAbsorbingDampers(unittest.TestCase):
     from pylith.topology.SolutionFields import SolutionFields
     fields = SolutionFields(mesh)
     fields.add("residual")
-    fields.add("solution")
+    fields.add("disp t+dt")
     fields.add("disp t")
     fields.add("disp t-dt")
-    fields.solutionName("solution")
-    fields.createHistory(["solution", "disp t", "disp t-dt"])
+    fields.solutionName("disp t+dt")
+    fields.createHistory(["disp t+dt", "disp t", "disp t-dt"])
 
     residual = fields.get("residual")
     residual.newSection(residual.VERTICES_FIELD, cs.spaceDim())

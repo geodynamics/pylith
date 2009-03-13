@@ -33,6 +33,16 @@ class TestDirichletBC(unittest.TestCase):
     return
 
 
+  def test_implementsConstraint(self):
+    """
+    Test to make sure DirichletBC satisfies constraint requirements.
+    """
+    bc = DirichletBC()
+    from pylith.feassemble.Constraint import implementsConstraint
+    self.failUnless(implementsConstraint(bc))
+    return
+    
+
   def test_initialize(self):
     """
     Test initialize().

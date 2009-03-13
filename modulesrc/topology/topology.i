@@ -22,6 +22,7 @@
 #include "pylith/topology/Field.hh"
 #include "pylith/topology/Fields.hh"
 #include "pylith/topology/SolutionFields.hh"
+#include "pylith/topology/Jacobian.hh"
 %}
 
 %include "exception.i"
@@ -53,6 +54,7 @@ import_array();
 %include "Field.i"
 %include "Fields.i"
 %include "SolutionFields.i"
+%include "Jacobian.i"
 
 // Template instatiation
 %template(MeshField) pylith::topology::Field<pylith::topology::Mesh>;

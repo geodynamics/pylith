@@ -77,6 +77,7 @@ libpylith_la_SOURCES = \
 	meshio/PsetFileBinary.cc \
 	problems/Formulation.cc \
 	topology/FieldBase.cc \
+	topology/Jacobian.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
 	topology/SubMesh.cc \

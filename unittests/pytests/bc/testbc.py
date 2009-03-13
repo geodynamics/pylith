@@ -62,8 +62,8 @@ class TestApp(Script):
     #from TestDirichletBoundary import TestDirichletBoundary
     #suite.addTest(unittest.makeSuite(TestDirichletBoundary))
 
-    #from TestAbsorbingDampers import TestAbsorbingDampers
-    #suite.addTest(unittest.makeSuite(TestAbsorbingDampers))
+    from TestAbsorbingDampers import TestAbsorbingDampers
+    suite.addTest(unittest.makeSuite(TestAbsorbingDampers))
 
     #from TestNeumann import TestNeumann
     #suite.addTest(unittest.makeSuite(TestNeumann))

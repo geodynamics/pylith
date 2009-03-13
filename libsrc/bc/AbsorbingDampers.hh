@@ -96,11 +96,11 @@ public :
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator.
    *
-   * @param mat Sparse matrix
+   * @param jacobian Jacobian of system.
    * @param t Current time
    * @param fields Solution fields
    */
-  void integrateJacobian(PetscMat* mat,
+  void integrateJacobian(topology::Jacobian* jacobian,
 			 const double t,
 			 topology::SolutionFields* const fields);
 

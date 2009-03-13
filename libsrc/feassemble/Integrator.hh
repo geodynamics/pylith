@@ -128,7 +128,7 @@ public :
    * @param fields Solution fields
    */
   virtual
-  void integrateJacobian(PetscMat* jacobian,
+  void integrateJacobian(topology::Jacobian* jacobian,
 			 const double t,
 			 topology::SolutionFields* const fields);
 
@@ -153,7 +153,7 @@ public :
    * @param fields Solution fields
    */
   virtual
-  void integrateJacobianAssembled(PetscMat* jacobian,
+  void integrateJacobianAssembled(topology::Jacobian* jacobian,
 				  const double t,
 				  topology::SolutionFields* const fields);
 

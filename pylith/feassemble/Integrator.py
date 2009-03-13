@@ -66,6 +66,7 @@ class Integrator(object):
     """
     Do pre-initialization setup.
     """
+    self._setupLogging()
     return
 
 
@@ -115,7 +116,7 @@ class Integrator(object):
 
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("FE Integrator")
+    logger.className("FE Integrator")
     logger.initialize()
 
     events = ["preinit",

@@ -95,6 +95,7 @@ nobase_pkgpyexec_PYTHON = \
 	topology/Field.py \
 	topology/Fields.py \
 	topology/SolutionFields.py \
+	topology/Jacobian.py \
 	topology/MeshGenerator.py \
 	topology/MeshImporter.py \
 	topology/MeshRefiner.py \

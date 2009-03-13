@@ -16,6 +16,7 @@
 
 #include "pylith/topology/Field.hh" // HOLDSA Field
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
@@ -352,7 +353,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
 // Integrate contributions to Jacobian matrix (A) associated with
 void
 pylith::bc::AbsorbingDampers::integrateJacobian(
-				      PetscMat* jacobian,
+				      topology::Jacobian* jacobian,
 				      const double t,
 				      topology::SolutionFields* const fields)
 { // integrateJacobian
@@ -395,6 +396,10 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   visitor_type iV(*solutionSection, *globalOrder,
 		  (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
 			    sieveMesh->depth())*spaceDim);
+
+  // Get sparse matrix
+  const PetscMat* jacobianMat = jacobian->matrix();
+  assert(0 != jacobianMat);
 
   // Get parameters used in integration.
   const double dt = _dt;
@@ -439,7 +444,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
     
     // Assemble cell contribution into PETSc Matrix
-    err = updateOperator(*jacobian, *submesh->getSieve(), 
+    err = updateOperator(*jacobianMat, *submesh->getSieve(), 
 			 iV, *c_iter, &_cellMatrix[0], ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");

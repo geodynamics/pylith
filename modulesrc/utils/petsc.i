@@ -16,7 +16,6 @@
 // Header files for module C++ code
 %{
 #include <petsc.h>
-#include <petscmat.h>
 %}
 
 %include "exception.i"
@@ -33,7 +32,6 @@
 
 // Interfaces
 %include "petsc_general.i"
-%include "petsc_mat.i"
 
 // End of file
 

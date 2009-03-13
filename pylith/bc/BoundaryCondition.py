@@ -94,6 +94,7 @@ class BoundaryCondition(Component, ModuleBoundaryCondition):
     """
     Component.__init__(self, name, facility="boundary_condition")
     self.this = None
+    self._createModuleObj()
     return
 
 
@@ -101,7 +102,6 @@ class BoundaryCondition(Component, ModuleBoundaryCondition):
     """
     Setup boundary condition.
     """
-    self._createModuleObj()
     self.label(self.inventory.label)
     self.db(self.inventory.db)
     self.mesh = mesh
@@ -126,12 +126,5 @@ class BoundaryCondition(Component, ModuleBoundaryCondition):
     self.upDir = map(float, self.inventory.upDir)
     return
 
-
-  def _createModuleObj(self):
-    """
-    Create handle to corresponding C++ object.
-    """
-    raise NotImplementedError("BoundaryCondition is an abstract base class.")  
-  
 
 # End of file 

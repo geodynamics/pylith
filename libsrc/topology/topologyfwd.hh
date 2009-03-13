@@ -26,6 +26,7 @@ namespace pylith {
 
     class Mesh;
     class SubMesh;
+    class MeshOps;
 
     class FieldBase;
     template<typename mesh_type> class Field;
@@ -34,7 +35,7 @@ namespace pylith {
     typedef Fields<Field<SubMesh> > FieldsSubMesh;
     class SolutionFields;
 
-    class MeshOps;
+    class Jacobian;
 
     class Distributor;
 

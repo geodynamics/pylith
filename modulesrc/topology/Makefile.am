@@ -25,7 +25,8 @@ swig_sources = \
 	FieldBase.i \
 	Field.i \
 	Fields.i \
-	SolutionFields.i
+	SolutionFields.i \
+	Jacobian.i
 
 swig_generated = \
 	topology_wrap.cxx \

@@ -35,4 +35,11 @@ noinst_PYTHON = \
 	TestMeshImporter.py
 
 
+noinst_tmp = \
+	jacobian.mat \
+	jacobian.mat.info
+
+CLEANFILES = $(noinst_tmp)
+
+
 # End of file 

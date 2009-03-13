@@ -8,6 +8,12 @@ CURRENT ISSUES/PRIORITIES
   level using the C++ EventLogger. Add finer grain logging at C++
   level as in ElasticityImplicit.
 
+  Cleanup error checking on PETSc calls. Use PetscError as in
+  Jacobian.
+
+  C++ testing of Jacobian
+  Python testing of Jacobian
+
   TestMesh.test_view()
   TestMesh.test_checkMaterialIds()
   

@@ -20,6 +20,7 @@
 #include "pylith/materials/ElasticMaterial.hh" // USES ElasticMaterial
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/topology/Jacobian.hh" // USES Jacobian
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/array.hh" // USES double_array
@@ -273,7 +274,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 // Compute stiffness matrix.
 void
 pylith::feassemble::ElasticityImplicit::integrateJacobian(
-					PetscMat* jacobian,
+					topology::Jacobian* jacobian,
 					const double t,
 					topology::SolutionFields* fields)
 { // integrateJacobian
@@ -351,6 +352,10 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   topology::Mesh::RestrictVisitor dispTBctpdtVisitor(*dispTBctpdtSection,
 						     numBasis*spaceDim, 
 						     &dispTBctpdtCell[0]);
+
+  // Get sparse matrix
+  const PetscMat* jacobianMat = jacobian->matrix();
+  assert(0 != jacobianMat);
 
   // Get parameters used in integration.
   const double dt = _dt;
@@ -442,7 +447,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     // Assemble cell contribution into PETSc matrix.
     _logger->eventBegin(updateEvent);
     jacobianVisitor.clear();
-    PetscErrorCode err = updateOperator(*jacobian, *sieveMesh->getSieve(),
+    PetscErrorCode err = updateOperator(*jacobianMat, *sieveMesh->getSieve(),
 					jacobianVisitor, *c_iter,
 					&_cellMatrix[0], ADD_VALUES);
     if (err)

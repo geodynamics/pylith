@@ -25,7 +25,6 @@ noinst_PYTHON = \
 	TestFIATSimplex.py \
 	TestCellGeometry.py \
 	TestMeshQuadrature.py \
-	TestIntegrator.py \
 	TestElasticityExplicit.py \
 	TestElasticityImplicit.py
 

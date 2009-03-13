@@ -110,7 +110,7 @@ public :
    * @param t Current time
    * @param fields Solution fields
    */
-  void integrateJacobian(PetscMat* jacobian,
+  void integrateJacobian(topology::Jacobian* jacobian,
 			 const double t,
 			 topology::SolutionFields* const fields);
   

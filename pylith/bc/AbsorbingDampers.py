@@ -48,8 +48,9 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
 
     import pyre.inventory
 
-    from pylith.feassemble.quadrature.Quadrature import Quadrature
-    quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
+    from pylith.feassemble.Quadrature import SubMeshQuadrature
+    quadrature = pyre.inventory.facility("quadrature",
+                                         factory=SubMeshQuadrature)
     quadrature.meta['tip'] = "Quadrature object for numerical integration."
 
 
@@ -61,7 +62,6 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
     """
     BoundaryCondition.__init__(self, name)
     Integrator.__init__(self)
-    ModuleAbssorbingDampers.__init__(self)
     self._loggingPrefix = "AbBC "
     return
 
@@ -122,6 +122,15 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
     self.bcQuadrature = self.inventory.quadrature
     return
 
+
+  def _createModuleObj(self):
+    """
+    Create handle to corresponding C++ object.
+    """
+    if None == self.this:
+      ModuleAbsorbingDampers.__init__(self)
+    return
+  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

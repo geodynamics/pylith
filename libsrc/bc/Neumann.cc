@@ -322,7 +322,7 @@ pylith::bc::Neumann::integrateResidual(
 // ----------------------------------------------------------------------
 // Integrate contributions to Jacobian matrix (A) associated with
 void
-pylith::bc::Neumann::integrateJacobian(PetscMat* jacobian,
+pylith::bc::Neumann::integrateJacobian(topology::Jacobian* jacobian,
  				       const double t,
  				       topology::SolutionFields* const fields)
 { // integrateJacobian
