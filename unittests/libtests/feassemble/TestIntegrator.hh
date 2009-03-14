@@ -23,6 +23,9 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "pylith/topology/topologyfwd.hh" // USES Mesh
+#include "pylith/feassemble/feassemblefwd.hh" // USES Quadrature
+
 /// Namespace for pylith package
 namespace pylith {
   namespace feassemble {
@@ -41,6 +44,7 @@ class pylith::feassemble::TestIntegrator : public CppUnit::TestFixture
   CPPUNIT_TEST( testStableTimeStep );  
 
   CPPUNIT_TEST( testQuadrature );
+  CPPUNIT_TEST( testNormalizer );
   CPPUNIT_TEST( testGravityField );
   CPPUNIT_TEST( testInitCellVector );
   CPPUNIT_TEST( testResetCellVector );
@@ -58,23 +62,35 @@ public :
   /// Test stableTimeStep().
   void testStableTimeStep(void);
 
-  /// Test quadrature()
+  /// Test quadrature().
   void testQuadrature(void);
 
-  /// Test gravityField()
+  /// Test normalizer().
+  void testNormalizer(void);
+
+  /// Test gravityField().
   void testGravityField(void);
 
-  /// Test _initCellVector()
+  /// Test _initCellVector().
   void testInitCellVector(void);
 
-  /// Test _resetCellVector()
+  /// Test _resetCellVector().
   void testResetCellVector(void);
 
-  /// Test _initCellMatrix()
+  /// Test _initCellMatrix().
   void testInitCellMatrix(void);
 
-  /// Test _resetCellMatrix()
+  /// Test _resetCellMatrix().
   void testResetCellMatrix(void);
+
+  // PRIVATE METHODS /////////////////////////////////////////////////////
+private :
+
+  /** Initialize quadrature.
+   *
+   * @param quadrature Quadrature to initiqlize.
+   */
+  void _initQuadrature(Quadrature<topology::Mesh>* quadrature);
 
 }; // class TestIntegrator
 

@@ -23,34 +23,18 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, SolutionFields
+#include "pylith/materials/materialsfwd.hh" // USES ElasticMaterial
 
-#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
 
 /// Namespace for pylith package
 namespace pylith {
   namespace feassemble {
     class TestElasticityExplicit;
-
-    class ElasticityExplicit; // USES ElasticityExplicit
-    class IntegratorData; // HOLDSA IntegratorData
-    class Quadrature; // HOLDSA Quadrature
   } // feassemble
-
-  namespace materials {
-    class ElasticMaterial; // HOLDSA ElasticMaterial
-  } // materials
-
-  namespace topology {
-    class FieldsManager; // USES FieldsManager
-  } // topology
 } // pylith
-
-namespace spatialdata {
-  namespace spatialdb {
-    class GravityField; // HOLDSA GravityField
-  } // spatialdb
-} // spatialdata
 
 /// C++ unit testing for ElasticityExplicit
 class pylith::feassemble::TestElasticityExplicit : public CppUnit::TestFixture
@@ -117,13 +101,13 @@ private :
 
   /** Initialize elasticity integrator.
    *
-   * @param mesh PETSc mesh to initialize.
+   * @param mesh Finite-element mesh to initialize.
    * @param integrator ElasticityIntegrator to initialize.
    * @param fields Solution fields.
    */
-  void _initialize(ALE::Obj<Mesh>* mesh,
+  void _initialize(topology::Mesh* mesh,
 		   ElasticityExplicit* const integrator,
-		   topology::FieldsManager* const fields);
+		   topology::SolutionFields* const fields);
 
 }; // class TestElasticityExplicit
 

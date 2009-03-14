@@ -163,8 +163,8 @@ public :
    * @param mesh Finite-element mesh
    */
   virtual
-  void updateState(const double t,
-		   topology::SolutionFields* const fields);
+  void updateStateVars(const double t,
+		       topology::SolutionFields* const fields);
 
   /** Verify configuration is acceptable.
    *

@@ -19,7 +19,8 @@
 
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
@@ -156,7 +157,7 @@ pylith::feassemble::TestElasticityExplicit::testUpdateState(void)
 
   ALE::Obj<Mesh> mesh;
   ElasticityExplicit integrator;
-  topology::FieldsManager fields(mesh);
+  topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
   const ALE::Obj<real_section_type>& dispT = fields.getReal("dispT");
@@ -174,7 +175,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidual(void)
 
   ALE::Obj<Mesh> mesh;
   ElasticityExplicit integrator;
-  topology::FieldsManager fields(mesh);
+  topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
   spatialdata::geocoords::CSCart cs;
@@ -210,7 +211,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobian(void)
 
   ALE::Obj<Mesh> mesh;
   ElasticityExplicit integrator;
-  topology::FieldsManager fields(mesh);
+  topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
   integrator._needNewJacobian = true;
 
@@ -273,7 +274,7 @@ void
 pylith::feassemble::TestElasticityExplicit::_initialize(
 					 ALE::Obj<Mesh>* mesh,
 					 ElasticityExplicit* const integrator,
-					 topology::FieldsManager* fields)
+					 topology::SolutionFields* fields)
 { // _initialize
   CPPUNIT_ASSERT(0 != mesh);
   CPPUNIT_ASSERT(0 != integrator);

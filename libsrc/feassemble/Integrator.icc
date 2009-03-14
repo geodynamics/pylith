@@ -95,7 +95,7 @@ pylith::feassemble::Integrator<quadrature_type>::integrateJacobianAssembled(
 template<typename quadrature_type>
 inline
 void
-pylith::feassemble::Integrator<quadrature_type>::updateState(
+pylith::feassemble::Integrator<quadrature_type>::updateStateVars(
 				     const double t,
 				     topology::SolutionFields* const fields) {
 } // updateState

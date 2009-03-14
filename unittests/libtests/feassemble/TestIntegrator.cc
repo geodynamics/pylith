@@ -16,13 +16,11 @@
 
 #include "pylith/feassemble/ElasticityExplicit.hh" // USES ElasticityExplicit
 #include "pylith/feassemble/ElasticityImplicit.hh" // USES ElasticityImplicit
-#include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-
-#include <petscmat.h>
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestIntegrator );
@@ -57,7 +55,7 @@ pylith::feassemble::TestIntegrator::testQuadrature(void)
   // Since quadrature is cloned, test setting quadrature by testing
   // value of minJacobian
 
-  Quadrature1D quadrature;
+  Quadrature<topology::Mesh> quadrature;
   const double minJacobian = 4.0;
   quadrature.minJacobian(minJacobian);
   
@@ -68,32 +66,33 @@ pylith::feassemble::TestIntegrator::testQuadrature(void)
 } // testQuadrature
 
 // ----------------------------------------------------------------------
+// Test normalizer().
+void
+pylith::feassemble::TestIntegrator::testNormalizer(void)
+{ // testNormalizer
+  const double lengthScale = 2.0;
+
+  spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(lengthScale);
+  
+  ElasticityExplicit integrator;
+  integrator.normalizer(normalizer);
+
+  CPPUNIT_ASSERT_EQUAL(lengthScale, integrator._normalizer->lengthScale());
+} // testNormalizer
+
+// ----------------------------------------------------------------------
 // Test gravityField().
 void
 pylith::feassemble::TestIntegrator::testGravityField(void)
 { // testGravityField
-  // Test gravity field by testing value of gravity vector.
-  const int spaceDim = 3;
-  const double gravityE[] = { 0.0, 0.0, -9.80665 };
-
   ElasticityImplicit integrator;
   spatialdata::spatialdb::GravityField gravityField;
+
+  CPPUNIT_ASSERT(0 == integrator._gravityField);
+
   integrator.gravityField(&gravityField);
-
-  spatialdata::geocoords::CSCart cs;
-  cs.setSpaceDim(spaceDim);
-
-  integrator._gravityField->open();
-  double gravity[spaceDim];
-  const double coords[] = { 1.0, 2.0, 3.0 };
-  const int err = integrator._gravityField->query(gravity, spaceDim,
-						  coords, spaceDim, &cs);
-  CPPUNIT_ASSERT_EQUAL(0, err);
-  integrator._gravityField->close();
-
-  const double tolerance = 1.0e-06;
-  for (int i=0; i < spaceDim; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(gravityE[i], gravity[i], tolerance);
+  CPPUNIT_ASSERT(0 != integrator._gravityField);
 } // testGravityField
 
 // ----------------------------------------------------------------------
@@ -101,7 +100,7 @@ pylith::feassemble::TestIntegrator::testGravityField(void)
 void
 pylith::feassemble::TestIntegrator::testInitCellVector(void)
 { // testInitCellVector
-  Quadrature1D quadrature;
+  Quadrature<topology::Mesh> quadrature;
   _initQuadrature(&quadrature);
 
   ElasticityExplicit integrator;
@@ -109,10 +108,10 @@ pylith::feassemble::TestIntegrator::testInitCellVector(void)
 
   integrator._initCellVector();
   
-  CPPUNIT_ASSERT(0 != integrator._cellVector);
-  const int size = 
+  const size_t size = 
     quadrature.spaceDim() * quadrature.numBasis();
-  for (int i=0; i < size; ++i)
+  CPPUNIT_ASSERT_EQUAL(size, integrator._cellVector.size());
+  for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(0.0, integrator._cellVector[i]);
 } // testInitCellVector
 
@@ -121,7 +120,7 @@ pylith::feassemble::TestIntegrator::testInitCellVector(void)
 void
 pylith::feassemble::TestIntegrator::testResetCellVector(void)
 { // testResetCellVector
-  Quadrature1D quadrature;
+  Quadrature<topology::Mesh> quadrature;
   _initQuadrature(&quadrature);
 
   ElasticityExplicit integrator;
@@ -129,13 +128,13 @@ pylith::feassemble::TestIntegrator::testResetCellVector(void)
 
   integrator._initCellVector();
   
-  CPPUNIT_ASSERT(0 != integrator._cellVector);
-  const int size = 
+  const size_t size = 
     quadrature.spaceDim() * quadrature.numBasis();
-  for (int i=0; i < size; ++i)
+  CPPUNIT_ASSERT_EQUAL(size, integrator._cellVector.size());
+  for (size_t i=0; i < size; ++i)
     integrator._cellVector[i] = 1.4+2*i;
   integrator._resetCellVector();
-  for (int i=0; i < size; ++i)
+  for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(0.0, integrator._cellVector[i]);
 } // testResetCellVector
 
@@ -144,7 +143,7 @@ pylith::feassemble::TestIntegrator::testResetCellVector(void)
 void
 pylith::feassemble::TestIntegrator::testInitCellMatrix(void)
 { // testInitCellMatrix
-  Quadrature1D quadrature;
+  Quadrature<topology::Mesh> quadrature;
   _initQuadrature(&quadrature);
 
   ElasticityExplicit integrator;
@@ -152,11 +151,11 @@ pylith::feassemble::TestIntegrator::testInitCellMatrix(void)
 
   integrator._initCellMatrix();
   
-  CPPUNIT_ASSERT(0 != integrator._cellMatrix);
-  const int size = 
+  const size_t size = 
     quadrature.spaceDim() * quadrature.numBasis() *
     quadrature.spaceDim() * quadrature.numBasis();
-  for (int i=0; i < size; ++i)
+  CPPUNIT_ASSERT_EQUAL(size, integrator._cellMatrix.size());
+  for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(0.0, integrator._cellMatrix[i]);
 } // testInitCellMatrix
 
@@ -165,7 +164,7 @@ pylith::feassemble::TestIntegrator::testInitCellMatrix(void)
 void
 pylith::feassemble::TestIntegrator::testResetCellMatrix(void)
 { // testResetCellMatrix
-  Quadrature1D quadrature;
+  Quadrature<topology::Mesh> quadrature;
   _initQuadrature(&quadrature);
 
   ElasticityExplicit integrator;
@@ -173,21 +172,22 @@ pylith::feassemble::TestIntegrator::testResetCellMatrix(void)
 
   integrator._initCellMatrix();
   
-  CPPUNIT_ASSERT(0 != integrator._cellMatrix);
-  const int size = 
+  const size_t size = 
     quadrature.spaceDim() * quadrature.numBasis() *
     quadrature.spaceDim() * quadrature.numBasis();
-  for (int i=0; i < size; ++i)
+  CPPUNIT_ASSERT_EQUAL(size, integrator._cellMatrix.size());
+  for (size_t i=0; i < size; ++i)
     integrator._cellMatrix[i] = 1.23 + 1.2*i;
   integrator._resetCellMatrix();
-  for (int i=0; i < size; ++i)
+  for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(0.0, integrator._cellMatrix[i]);
 } // testResetCellMatrix
 
 // ----------------------------------------------------------------------
 // Set quadrature information.
 void
-pylith::feassemble::TestIntegrator::_initQuadrature(Quadrature1D* quadrature)
+pylith::feassemble::TestIntegrator::_initQuadrature(
+				  Quadrature<topology::Mesh>* quadrature)
 { // _initQuadrature
   CPPUNIT_ASSERT(0 != quadrature);
 
@@ -201,8 +201,11 @@ pylith::feassemble::TestIntegrator::_initQuadrature(Quadrature1D* quadrature)
   const double quadWts[] = { 2.0 };
   const double minJacobian = 1.0;
 
-  quadrature->initialize(basis, basisDeriv, quadPtsRef, quadWts,
-			 cellDim, numBasis, numQuadPts, spaceDim);
+  quadrature->initialize(basis, numQuadPts, numBasis,
+			 basisDeriv, numQuadPts, numBasis, cellDim,
+			 quadPtsRef, numQuadPts, cellDim,
+			 quadWts, numQuadPts,
+			 spaceDim);
 } // _initQuadrature
 
 

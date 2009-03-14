@@ -44,10 +44,10 @@ testfeassemble_SOURCES = \
 	TestQuadrature2Din3D.cc \
 	TestQuadrature3D.cc \
 	TestQuadrature.cc \
+	TestIntegrator.cc \
+	TestIntegratorElasticity.cc \
 	test_feassemble.cc
 
-# 	TestIntegrator.cc \
-# 	TestIntegratorElasticity.cc \
 # 	TestElasticityExplicit.cc \
 # 	TestElasticityExplicit1DLinear.cc \
 # 	TestElasticityExplicit1DQuadratic.cc \
