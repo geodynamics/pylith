@@ -14,7 +14,7 @@ SUBDIRS = \
 	utils \
 	topology \
 	meshio \
-	materials
+	materials \
 	bc \
 	feassemble \
 	faults \

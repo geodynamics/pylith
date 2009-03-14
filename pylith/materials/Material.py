@@ -103,8 +103,7 @@ class Material(Component):
     """
     self._setupLogging()
     self.mesh = mesh
-    self.quadrature(self.matQuadrature)
-    self.matQuadrature.preinitialize(self.mesh.coordsys().dimension())
+    self.quadrature.preinitialize(self.mesh.coordsys().spaceDim())
     return
 
 
@@ -115,8 +114,8 @@ class Material(Component):
     logEvent = "%sverify" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    if self.matQuadrature.cellDim != self.mesh.dimension() or \
-       self.matQuadrature.spaceDim != self.mesh.coordsys.spaceDim():
+    if self.quadrature.cellDim != self.mesh.dimension() or \
+       self.quadrature.spaceDim != self.mesh.coordsys.spaceDim():
         raise ValueError, \
               "Quadrature scheme for material '%s' and mesh are incompatible.\n" \
               "Quadrature cell dimension: %d\n" \
@@ -124,7 +123,7 @@ class Material(Component):
               "Mesh cell dimension: %d\n" \
               "Mesh spatial dimension: %d" % \
               (self.matLabel,
-               self.matQuadrature.cellDim, self.matQuadrature.spaceDim,
+               self.quadrature.cellDim, self.quadrature.spaceDim,
                self.mesh.dimension(), self.mesh.coordsys().spaceDim())
     
     self._logger.eventEnd(logEvent)
@@ -152,7 +151,7 @@ class Material(Component):
       self.dbInitialState(self.inventory.dbInitialState)
 
     self.matLabel = self.inventory.label
-    self.matQuadrature = self.inventory.quadrature
+    self.quadrature = self.inventory.quadrature
     return
 
   

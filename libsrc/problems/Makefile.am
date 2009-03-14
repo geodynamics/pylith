@@ -15,7 +15,6 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	Formulation.hh \
-	Formulation.icc \
 	problemsfwd.hh
 
 noinst_HEADERS =

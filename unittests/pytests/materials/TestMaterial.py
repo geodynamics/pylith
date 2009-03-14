@@ -171,10 +171,9 @@ class TestMaterial(unittest.TestCase):
     importer._configure()
     mesh = importer.read(normalizer, debug=False, interpolate=False)
     
-    material.preinitialize()
+    material.preinitialize(mesh)
 
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
+    # No test of result.
     return
 
 
