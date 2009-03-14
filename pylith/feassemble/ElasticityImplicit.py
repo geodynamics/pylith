@@ -39,6 +39,23 @@ class ElasticityImplicit(IntegratorElasticity, ModuleElasticityImplicit):
     return
 
 
+  def initialize(self, totalTime, numTimeSteps, normalizer):
+    """
+    Do initialization.
+    """
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
+    print "AAA"
+    IntegratorElasticity.initialize(self, totalTime, numTimeSteps, normalizer)
+    print "BBB"
+    ModuleElasticityImplicit.initialize(self, self.mesh)
+    print "CCC"
+    
+    self._logger.eventEnd(logEvent)
+    return
+
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def integrator():

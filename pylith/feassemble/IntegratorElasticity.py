@@ -36,6 +36,10 @@ class IntegratorElasticity(Integrator):
     self.output = None
     self.availableFields = None
     self.name = "Integrator Elasticity"
+
+    # Setup journal (not a Component, so not setup already)
+    import journal
+    self._info = journal.info(name)
     return
 
 
@@ -47,14 +51,14 @@ class IntegratorElasticity(Integrator):
     self.output = material.output
     self.availableFields = material.availableFields
     self.matQuadrature = material.quadrature
-    self.material(material)
-
-    ModuleElasticity
+    self.matLabel = material.matLabel
 
     Integrator.preinitialize(self, mesh)
-    material.preinitialize()
-    self.output.preinitialize(self)
+    material.preinitialize(mesh)
+    #self.output.preinitialize(self)
 
+    self.quadrature(material.quadrature)
+    self.material(material)
     return
 
 
@@ -66,7 +70,7 @@ class IntegratorElasticity(Integrator):
     self._logger.eventBegin(logEvent)
 
     Integrator.verifyConfiguration(self)
-    self.output.verifyConfiguration(self.mesh)
+    #self.output.verifyConfiguration(self.mesh)
 
     self._logger.eventEnd(logEvent)    
     return
@@ -80,13 +84,15 @@ class IntegratorElasticity(Integrator):
     self._logger.eventBegin(logEvent)
 
     self._info.log("Initializing integrator for material '%s'." % \
-                   self.material.label)
+                   self.matLabel)
 
+    print "DDD"
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
+    print "EEE"
 
-    self.output.initialize(normalizer, self.matQuadrature)
-    self.output.writeInfo()
-    self.output.open(totalTime, numTimeSteps)
+    #self.output.initialize(normalizer, self.matQuadrature)
+    #self.output.writeInfo()
+    #self.output.open(totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)
     return
@@ -102,7 +108,7 @@ class IntegratorElasticity(Integrator):
     Integrator.poststep(self, t, dt, totalTime, fields)
 
     self._info.log("Writing material data.")
-    self.output.writeData(t+dt, fields)
+    #self.output.writeData(t+dt, fields)
 
     self._logger.eventEnd(logEvent)
     return

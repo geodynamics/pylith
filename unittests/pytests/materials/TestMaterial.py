@@ -150,7 +150,7 @@ class TestMaterial(unittest.TestCase):
     from pylith.materials.ElasticStrain1D import ElasticStrain1D
     material = ElasticStrain1D()
     material.inventory.quadrature = quadrature
-    material.inventory.db = db
+    material.inventory.dbProperties = db
     material.inventory.label = "my material"
     material.inventory.id = 54
     material._configure()

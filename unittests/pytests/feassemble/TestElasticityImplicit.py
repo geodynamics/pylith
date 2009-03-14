@@ -38,8 +38,153 @@ class TestElasticityImplicit(unittest.TestCase):
   def test_preinitialize(self):
     """
     Test preiniitlaize().
+
+    WARNING: This is not a rigorous test of preinitialize() because we
+    neither set the input fields or verify the results.
     """
-    self._preinitialize()
+    (mesh, integrator) = self._preinitialize()
+
+    # No test of result.
+    return
+
+
+  def test_verifyConfiguration(self):
+    """
+    Test verifyConfiguration().
+
+    WARNING: This is not a rigorous test of verifyConfiguration()
+    because we neither set the input fields or verify the results.
+    """
+    (mesh, integrator) = self._preinitialize()
+    integrator.verifyConfiguration()
+
+    # No test of result.
+    return
+
+
+  def test_initialize(self):
+    """
+    Test initialize().
+
+    WARNING: This is not a rigorous test of initialize() because we
+    neither set the input fields or verify the results.
+    """
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
+
+    # No test of result.
+    return
+
+
+  def test_timeStep(self):
+    """
+    Test timeStep().
+
+    WARNING: This is not a rigorous test of timeStep() because we
+    neither set the input fields or verify the results.
+    """
+    dt = 2.3
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
+    integrator.timeStep(dt)
+
+    # No test of result.
+    return
+
+
+  def test_stableTimeStep(self):
+    """
+    Test stableTimeStep().
+    """
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
+
+    self.assertEqual(1.0e+30, integrator.stableTimeStep())
+    return
+
+
+  def test_needNewJacobian(self):
+    """
+    Test needNewJacobian().
+    """
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
+
+    self.assertEqual(True, integrator.needNewJacobian())
+    return
+
+
+  def test_useSolnIncr(self):
+    """
+    Test useSolnIncr().
+
+    WARNING: This is not a rigorous test of useSolnIncr() because we
+    neither set the input fields or verify the results.
+    """
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
+
+    integrator.useSolnIncr(True)
+
+    # No test of result.
+    return
+
+
+  def test_integrateResidual(self):
+    """
+    Test integrateResidual().
+
+    WARNING: This is not a rigorous test of integrateResidual()
+    because we neither set the input fields or verify the results.
+    """
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
+
+    residual = fields.get("residual")
+    t = 3.4
+    integrator.integrateResidual(residual, t, fields)
+
+    # No test of result.
+    return
+
+
+  def test_integrateJacobian(self):
+    """
+    Test integrateJacobian().
+
+    WARNING: This is not a rigorous test of integrateJacobian()
+    because we neither set the input fields or verify the results.
+    """
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
+
+    from pylith.topology.Jacobian import Jacobian
+    jacobian = Jacobian(fields)
+    jacobian.zero()
+    t = 7.3
+    integrator.integrateJacobian(jacobian, t, fields)
+    self.assertEqual(False, integrator.needNewJacobian())
+    
+    # No test of result.
+    return
+
+
+  def test_poststep(self):
+    """
+    Test poststep().
+
+    WARNING: This is not a rigorous test of poststep() because we
+    neither set the input fields or verify the results.
+    """
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
+
+    t = 7.3
+    dt = 0.1
+    totalTime = 23.0
+    integrator.poststep(t, dt, totalTime, fields)
+
+    # No test of result
     return
 
 
@@ -90,7 +235,7 @@ class TestElasticityImplicit(unittest.TestCase):
     material = ElasticPlaneStrain()
     material.inventory.label = "elastic plane strain"
     material.inventory.id = 0
-    material.inventory.db = db
+    material.inventory.dbProperties = db
     material.inventory.quadrature = quadrature
     material._configure()
     
@@ -111,9 +256,16 @@ class TestElasticityImplicit(unittest.TestCase):
     """
     dt = 2.3
     
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer._configure()
+
     from pyre.units.time import s
+    print "AA"
     integrator.initialize(totalTime=0.0*s, numTimeSteps=1, normalizer=normalizer)
+    print "BB"
     integrator.timeStep(dt)
+    print "CC"
 
     # Setup fields
     from pylith.topology.SolutionFields import SolutionFields
@@ -128,7 +280,7 @@ class TestElasticityImplicit(unittest.TestCase):
     fields.copyLayout("residual")
 
     residual.zero()
-    return
+    return fields
 
 
 # End of file 

@@ -23,6 +23,8 @@ CURRENT ISSUES/PRIORITIES
   DirichletPoints (Python) - rate == None -> dbRate == 0
   DirichletBoundary (Python) - rate == None -> dbRate == 0
 
+  Maxwell materials
+
 1. Reduce memory use (new labels) [Matt]
 
 2. Nondimensionalize [Brad]

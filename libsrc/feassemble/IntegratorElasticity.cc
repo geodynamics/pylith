@@ -98,8 +98,12 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", materialId);
 
+  std::cout << "Before compute geometry." << std::endl;
+
   // Compute geometry for quadrature operations.
   _quadrature->computeGeometry(mesh, cells);
+
+  std::cout << "Before material initialize" << std::endl;
 
   // Initialize material.
   _material->initialize(mesh, _quadrature);
@@ -108,8 +112,10 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
   _initCellVector();
   _initCellMatrix();
 
+  std::cout << "Before setting up logger" << std::endl;
+
   // Setup event logger.
-  _logger = new utils::EventLogger;
+  delete _logger; _logger = new utils::EventLogger;
   assert(0 != _logger);
   _logger->className("ElasticityIntegrator");
   _logger->initialize();
