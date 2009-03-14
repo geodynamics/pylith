@@ -56,9 +56,6 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
-    #from TestMaterial import TestMaterial
-    #suite.addTest(unittest.makeSuite(TestMaterial))
-
     from TestElasticStrain1D import TestElasticStrain1D
     suite.addTest(unittest.makeSuite(TestElasticStrain1D))
 
@@ -80,8 +77,14 @@ class TestApp(Script):
     #from TestGenMaxwellIsotropic3D import TestGenMaxwellIsotropic3D
     #suite.addTest(unittest.makeSuite(TestGenMaxwellIsotropic3D))
 
-    #from TestHomogeneous import TestHomogeneous
-    #suite.addTest(unittest.makeSuite(TestHomogeneous))
+    from TestMaterial import TestMaterial
+    suite.addTest(unittest.makeSuite(TestMaterial))
+
+    from TestElasticMaterial import TestElasticMaterial
+    suite.addTest(unittest.makeSuite(TestElasticMaterial))
+
+    from TestHomogeneous import TestHomogeneous
+    suite.addTest(unittest.makeSuite(TestHomogeneous))
 
     return suite
 

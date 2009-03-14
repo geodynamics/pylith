@@ -11,6 +11,9 @@ CURRENT ISSUES/PRIORITIES
   Cleanup error checking on PETSc calls. Use PetscError as in
   Jacobian.
 
+  pytests/materials/TestElasticXXXXXX
+    continue adding methods (see ElasticStrain1D)
+
   TestMesh.test_view()
   TestMesh.test_checkMaterialIds()
   
