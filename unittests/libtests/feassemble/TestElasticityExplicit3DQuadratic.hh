@@ -38,9 +38,10 @@ class pylith::feassemble::TestElasticityExplicit3DQuadratic :
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestElasticityExplicit3DQuadratic );
 
-  CPPUNIT_TEST( testUpdateState );
+  CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST( testIntegrateJacobian );
+  CPPUNIT_TEST( testUpdateStateVars );
 
   CPPUNIT_TEST_SUITE_END();
 

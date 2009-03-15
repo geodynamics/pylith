@@ -312,11 +312,11 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     // Setup fields
     CPPUNIT_ASSERT(0 != fields);
     fields->add("residual");
-    fields->add("disp t+dt");
-    fields->add("disp t");
-    fields->add("disp t-dt");
-    fields->solutionName("disp t+dt");
-    const char* history[] = { "disp t+dt", "disp t", "disp t-dt" };
+    fields->add("disp(t+dt)");
+    fields->add("disp(t)");
+    fields->add("disp(t-dt)");
+    fields->solutionName("disp(t+dt)");
+    const char* history[] = { "disp(t+dt)", "disp(t)", "disp(t-dt)" };
     const int historySize = 3;
     fields->createHistory(history, historySize);
   
@@ -335,11 +335,11 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     const int numMeshCells = sieveMesh->heightStratum(0)->size();
     const int fieldSize = _data->spaceDim * totalNumVertices;
     const ALE::Obj<RealSection>& dispTpdtSection = 
-      fields->get("disp t+dt").section();
+      fields->get("disp(t+dt)").section();
     const ALE::Obj<RealSection>& dispTSection = 
-      fields->get("disp t").section();
+      fields->get("disp(t)").section();
     const ALE::Obj<RealSection>& dispTmdtSection = 
-      fields->get("disp t-dt").section();
+      fields->get("disp(t-dt)").section();
     CPPUNIT_ASSERT(!dispTpdtSection.isNull());
     CPPUNIT_ASSERT(!dispTSection.isNull());
     CPPUNIT_ASSERT(!dispTmdtSection.isNull());

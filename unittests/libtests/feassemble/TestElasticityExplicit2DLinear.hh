@@ -38,9 +38,10 @@ class pylith::feassemble::TestElasticityExplicit2DLinear :
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestElasticityExplicit2DLinear );
 
-  CPPUNIT_TEST( testUpdateState );
+  CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST( testIntegrateJacobian );
+  CPPUNIT_TEST( testUpdateStateVars );
 
   CPPUNIT_TEST_SUITE_END();
 

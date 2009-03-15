@@ -165,7 +165,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
   // Get sections
   const ALE::Obj<RealSection>& dispTBctpdtSection = 
-    fields->get("dispTBctpdt").section();
+    fields->get("disp(T), bc(t+dt)").section();
   assert(!dispTBctpdtSection.isNull());
   topology::Mesh::RestrictVisitor dispTBctpdtVisitor(*dispTBctpdtSection,
 						     numBasis*spaceDim, 
@@ -347,7 +347,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 
   // Get sections
   const ALE::Obj<RealSection>& dispTBctpdtSection = 
-    fields->get("dispTBctpdt").section();
+    fields->get("disp(t), bc(t+dt)").section();
   assert(!dispTBctpdtSection.isNull());
   topology::Mesh::RestrictVisitor dispTBctpdtVisitor(*dispTBctpdtSection,
 						     numBasis*spaceDim, 

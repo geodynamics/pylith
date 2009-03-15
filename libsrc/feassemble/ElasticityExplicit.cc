@@ -163,13 +163,13 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  const ALE::Obj<RealSection>& dispTSection = fields->get("disp t").section();
+  const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
   topology::Mesh::RestrictVisitor dispTVisitor(*dispTSection,
 					       numBasis*spaceDim, 
 					       &dispTCell[0]);
   const ALE::Obj<RealSection>& dispTmdtSection = 
-    fields->get("disp t-dt").section();
+    fields->get("disp(t-dt)").section();
   assert(!dispTmdtSection.isNull());
   topology::Mesh::RestrictVisitor dispTmdtVisitor(*dispTmdtSection,
 					       numBasis*spaceDim, 
@@ -309,7 +309,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
 
   // Get sections
   const ALE::Obj<RealSection>& dispTSection = 
-    fields->get("disp t").section();
+    fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
 
   // Get sparse matrix

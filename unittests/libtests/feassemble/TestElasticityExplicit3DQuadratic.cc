@@ -16,7 +16,8 @@
 
 #include "data/ElasticityExplicitData3DQuadratic.hh"
 
-#include "pylith/feassemble/Quadrature3D.hh" // USES Quadrature3D
+#include "pylith/topology/Mesh.hh" // USES Quadrature<Mesh>
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/GeometryTet3D.hh" // USES GeometryTet3D
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 
@@ -28,8 +29,9 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicit3DQua
 void
 pylith::feassemble::TestElasticityExplicit3DQuadratic::setUp(void)
 { // setUp
+  TestElasticityExplicit::setUp();
+
   _data = new ElasticityExplicitData3DQuadratic();
-  _quadrature = new Quadrature3D();
   CPPUNIT_ASSERT(0 != _quadrature);
   GeometryTet3D geometry;
   _quadrature->refGeometry(&geometry);

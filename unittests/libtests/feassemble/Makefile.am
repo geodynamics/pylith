@@ -46,15 +46,15 @@ testfeassemble_SOURCES = \
 	TestQuadrature.cc \
 	TestIntegrator.cc \
 	TestIntegratorElasticity.cc \
+	TestElasticityExplicit.cc \
+	TestElasticityExplicit1DLinear.cc \
+	TestElasticityExplicit1DQuadratic.cc \
+	TestElasticityExplicit2DLinear.cc \
+	TestElasticityExplicit2DQuadratic.cc \
+	TestElasticityExplicit3DLinear.cc \
+	TestElasticityExplicit3DQuadratic.cc \
 	test_feassemble.cc
 
-# 	TestElasticityExplicit.cc \
-# 	TestElasticityExplicit1DLinear.cc \
-# 	TestElasticityExplicit1DQuadratic.cc \
-# 	TestElasticityExplicit2DLinear.cc \
-# 	TestElasticityExplicit2DQuadratic.cc \
-# 	TestElasticityExplicit3DLinear.cc \
-# 	TestElasticityExplicit3DQuadratic.cc \
 # 	TestElasticityImplicit.cc \
 # 	TestElasticityImplicit1DLinear.cc \
 # 	TestElasticityImplicit1DQuadratic.cc \

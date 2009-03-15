@@ -253,8 +253,8 @@ pylith::bc::TestNeumann::_initialize(topology::Mesh* mesh,
     // Set up fields
     CPPUNIT_ASSERT(0 != fields);
     fields->add("residual");
-    fields->add("dispTBctpdt");
-    fields->solutionName("dispTBctpdt");
+    fields->add("disp(t), bc(t+dt)");
+    fields->solutionName("disp(t), bc(t+dt)");
 
     topology::Field<topology::Mesh>& residual = fields->get("residual");
     const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();

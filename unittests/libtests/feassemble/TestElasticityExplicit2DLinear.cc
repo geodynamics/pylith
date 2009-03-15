@@ -16,7 +16,8 @@
 
 #include "data/ElasticityExplicitData2DLinear.hh"
 
-#include "pylith/feassemble/Quadrature2D.hh" // USES Quadrature2D
+#include "pylith/topology/Mesh.hh" // USES Quadrature<Mesh>
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/GeometryTri2D.hh" // USES GeometryTri2D
 #include "pylith/materials/ElasticPlaneStrain.hh" // USES ElasticPlaneStrain
 
@@ -28,8 +29,9 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicit2DLin
 void
 pylith::feassemble::TestElasticityExplicit2DLinear::setUp(void)
 { // setUp
+  TestElasticityExplicit::setUp();
+
   _data = new ElasticityExplicitData2DLinear();
-  _quadrature = new Quadrature2D();
   CPPUNIT_ASSERT(0 != _quadrature);
   GeometryTri2D geometry;
   _quadrature->refGeometry(&geometry);

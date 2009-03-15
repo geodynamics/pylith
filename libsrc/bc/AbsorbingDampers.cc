@@ -283,13 +283,13 @@ pylith::bc::AbsorbingDampers::integrateResidual(
 						      &_cellVector[0]);
 
   const topology::Field<topology::Mesh>& dispTpdt = 
-    fields->get("disp t+dt");
+    fields->get("disp(t+dt)");
   const ALE::Obj<RealSection>& dispTpdtSection = dispTpdt.section();
   assert(!dispTpdtSection.isNull());
   topology::Mesh::RestrictVisitor dispTpdtVisitor(*dispTpdtSection, 
 						  numBasis*spaceDim);
   const topology::Field<topology::Mesh>& dispTmdt = 
-    fields->get("disp t-dt");
+    fields->get("disp(t-dt)");
   const ALE::Obj<RealSection>& dispTmdtSection = dispTmdt.section();
   assert(!dispTmdtSection.isNull());
   topology::Mesh::RestrictVisitor dispTmdtVisitor(*dispTmdtSection, 

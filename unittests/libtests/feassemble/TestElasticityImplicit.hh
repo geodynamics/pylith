@@ -65,6 +65,8 @@ class pylith::feassemble::TestElasticityImplicit : public CppUnit::TestFixture
   CPPUNIT_TEST( testMaterial );
   CPPUNIT_TEST( testNeedNewJacobian );
   CPPUNIT_TEST( testUseSolnIncr );
+  CPPUNIT_TEST( testIntegrateResidual );
+  CPPUNIT_TEST( testIntegrateJacobian );
 
   CPPUNIT_TEST_SUITE_END();
 

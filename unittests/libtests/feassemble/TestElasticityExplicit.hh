@@ -33,6 +33,7 @@
 namespace pylith {
   namespace feassemble {
     class TestElasticityExplicit;
+    class IntegratorData;
   } // feassemble
 } // pylith
 
@@ -49,6 +50,10 @@ class pylith::feassemble::TestElasticityExplicit : public CppUnit::TestFixture
   CPPUNIT_TEST( testMaterial );
   CPPUNIT_TEST( testNeedNewJacobian );
   CPPUNIT_TEST( testUseSolnIncr );
+
+  // Testing of initialize(), integrateResidual(),
+  // integrateJacobian(), and updateStateVars() handled by derived
+  // classes.
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -79,8 +84,8 @@ public :
   /// Test useSolnIncr().
   void testUseSolnIncr(void);
 
-  /// Test updateState().
-  void testUpdateState(void);
+  /// Test initialize().
+  void testInitialize(void);
 
   /// Test integrateResidual().
   void testIntegrateResidual(void);
@@ -88,12 +93,15 @@ public :
   /// Test integrateJacobian().
   void testIntegrateJacobian(void);
 
+  /// Test updateStateVars().
+  void testUpdateStateVars(void);
+
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
   IntegratorData* _data; ///< Data for testing.
   materials::ElasticMaterial* _material; ///< Elastic material.
-  Quadrature* _quadrature; ///< Quadrature information.
+  Quadrature<topology::Mesh>* _quadrature; ///< Quadrature information.
   spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
