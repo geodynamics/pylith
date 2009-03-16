@@ -144,8 +144,8 @@ namespace pylith {
        * @param mesh Finite-element mesh
        */
       virtual
-      void updateState(const double t,
-		       pylith::topology::SolutionFields* const fields);
+      void updateStateVars(const double t,
+			   pylith::topology::SolutionFields* const fields);
 
       /** Verify configuration is acceptable.
        *
