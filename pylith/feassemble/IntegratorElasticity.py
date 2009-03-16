@@ -86,9 +86,7 @@ class IntegratorElasticity(Integrator):
     self._info.log("Initializing integrator for material '%s'." % \
                    self.materialObj.label)
 
-    print "DDD"
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
-    print "EEE"
 
     #self.output.initialize(normalizer, self.materialObj.quadrature)
     #self.output.writeInfo()

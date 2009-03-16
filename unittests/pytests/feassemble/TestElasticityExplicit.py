@@ -38,100 +38,99 @@ class TestElasticityExplicit(unittest.TestCase):
   def test_preinitialize(self):
     """
     Test preiniitlaize().
+
+    WARNING: This is not a rigorous test of preinitialize() because we
+    neither set the input fields or verify the results.
     """
-    from spatialdata.units.Nondimensional import Nondimensional
-    normalizer = Nondimensional()
-    normalizer.initialize()
+    (mesh, integrator) = self._preinitialize()
 
-    # Setup mesh
-    cs = CSCart()
-    cs.spaceDim = 2
-    from pylith.meshio.MeshIOAscii import MeshIOAscii
-    importer = MeshIOAscii()
-    importer.filename = "data/tri3.mesh"
-    importer.coordsys = cs
-    mesh = importer.read(normalizer, debug=False, interpolate=False)
-
-    # Setup material
-    from pylith.feassemble.FIATSimplex import FIATSimplex
-    cell = FIATSimplex()
-    cell.shape = "triangle"
-    cell.degree = 1
-    cell.order = 1
-    from pylith.feassemble.quadrature.Quadrature2D import Quadrature2D
-    quadrature = Quadrature2D()
-    quadrature._configure()
-    quadrature.cell = cell
-    minJacobian = 4.0e-02;
-    quadrature.minJacobian = minJacobian
-    
-    from spatialdata.spatialdb.SimpleDB import SimpleDB
-    from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
-    iohandler = SimpleIOAscii()
-    iohandler.filename = "data/elasticplanestrain.spatialdb"
-    db = SimpleDB()
-    db.label = "elastic plane strain"
-    db.iohandler = iohandler
-    initialStateDB = None
-
-    from pylith.materials.ElasticPlaneStrain import ElasticPlaneStrain
-    material = ElasticPlaneStrain()
-    material.id = 0
-    material.label = "elastic plane strain"
-    material.db = db
-    material.quadrature = quadrature
-    material.initialStateDB = initialStateDB
-    from pylith.meshio.OutputMatElastic import OutputMatElastic
-    material.output = OutputMatElastic()
-    material.output._configure()
-    material.output.writer._configure()
-
-    integrator = ElasticityExplicit()
-    integrator.preinitialize(mesh, material)
-    self.assertEqual(mesh, integrator.mesh)
-    self.assertEqual(minJacobian, integrator.quadrature.minJacobian)
+    # No test of result.
     return
-    
+
+
+  def test_verifyConfiguration(self):
+    """
+    Test verifyConfiguration().
+
+    WARNING: This is not a rigorous test of verifyConfiguration()
+    because we neither set the input fields or verify the results.
+    """
+    (mesh, integrator) = self._preinitialize()
+    integrator.verifyConfiguration()
+
+    # No test of result.
+    return
+
+
+  def test_initialize(self):
+    """
+    Test initialize().
+
+    WARNING: This is not a rigorous test of initialize() because we
+    neither set the input fields or verify the results.
+    """
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
+
+    # No test of result.
+    return
+
 
   def test_timeStep(self):
     """
     Test timeStep().
+
+    WARNING: This is not a rigorous test of timeStep() because we
+    neither set the input fields or verify the results.
     """
     dt = 2.3
-    (mesh, integrator, fields) = self._initialize()
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
     integrator.timeStep(dt)
+
+    # No test of result.
     return
 
-  
+
   def test_stableTimeStep(self):
     """
     Test stableTimeStep().
     """
-    (mesh, integrator, fields) = self._initialize()
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
 
     self.assertEqual(1.0e+30, integrator.stableTimeStep())
     return
 
-  
+
   def test_needNewJacobian(self):
     """
     Test needNewJacobian().
     """
-    (mesh, integrator, fields) = self._initialize()
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
+
     self.assertEqual(True, integrator.needNewJacobian())
     return
 
-  
+
   def test_useSolnIncr(self):
     """
     Test useSolnIncr().
+
+    WARNING: This is not a rigorous test of useSolnIncr() because we
+    neither set the input fields or verify the results.
     """
-    (mesh, integrator, fields) = self._initialize()
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
+
     try:
       integrator.useSolnIncr(True)
       self.failIf(True)
     except:
       self.failIf(False)
+
+    # No test of result.
     return
 
 
@@ -139,42 +138,42 @@ class TestElasticityExplicit(unittest.TestCase):
     """
     Test integrateResidual().
 
-    WARNING: This is not a rigorous test of integrateResidual() because we
-    neither set the input fields or verify the results.
+    WARNING: This is not a rigorous test of integrateResidual()
+    because we neither set the input fields or verify the results.
     """
-    (mesh, integrator, fields) = self._initialize()
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
 
-    residual = fields.getReal("residual")
-
-    t = 0.45
+    residual = fields.get("residual")
+    t = 3.4
     integrator.integrateResidual(residual, t, fields)
 
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
+    # No test of result.
     return
 
-  
+
   def test_integrateJacobian(self):
     """
     Test integrateJacobian().
 
-    WARNING: This is not a rigorous test of integrateJacobian() because we
-    neither set the input fields or verify the results.
+    WARNING: This is not a rigorous test of integrateJacobian()
+    because we neither set the input fields or verify the results.
     """
-    (mesh, integrator, fields) = self._initialize()
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
 
-    jacobian = mesh.createMatrix(fields.getReal("residual"))
-    import pylith.utils.petsc as petsc
-    petsc.mat_setzero(jacobian)
-    t = 0.145
+    from pylith.topology.Jacobian import Jacobian
+    jacobian = Jacobian(fields)
+    jacobian.zero()
+    t = 7.3
+    self.assertEqual(True, integrator.needNewJacobian())
     integrator.integrateJacobian(jacobian, t, fields)
     self.assertEqual(False, integrator.needNewJacobian())
-
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
+    
+    # No test of result.
     return
 
-  
+
   def test_poststep(self):
     """
     Test poststep().
@@ -182,86 +181,69 @@ class TestElasticityExplicit(unittest.TestCase):
     WARNING: This is not a rigorous test of poststep() because we
     neither set the input fields or verify the results.
     """
-    (mesh, integrator, fields) = self._initialize()
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
 
-    t = 3.45
-
-    residual = fields.getReal("residual")
-    integrator.integrateResidual(residual, t, fields)
-
-    dt = 0.02
-    totalTime = 5.0
+    t = 7.3
+    dt = 0.1
+    totalTime = 23.0
     integrator.poststep(t, dt, totalTime, fields)
 
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
-    return
-  
-
-  def test_finalize(self):
-    """
-    Test finalize().
-
-    WARNING: This is not a rigorous test of finalize() because we
-    neither set the input fields or verify the results.
-    """
-    (mesh, integrator, fields) = self._initialize()
-
-    integrator.finalize()
-
-    # We should really add something here to check to make sure things
-    # actually initialized correctly.
+    # No test of result
     return
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
-  def _initialize(self):
+  def _preinitialize(self):
     """
-    Initialize integrator.
+    Setup mesh and integrator and preinitialize integrator.
     """
-    dt = 2.3
-    
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
-    normalizer.initialize()
+    normalizer._configure()
 
     # Setup mesh
     cs = CSCart()
-    cs.spaceDim = 2
+    cs.inventory.spaceDim = 2
+    cs._configure()
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
-    importer.filename = "data/tri3.mesh"
-    importer.coordsys = cs
+    importer.inventory.filename = "data/tri3.mesh"
+    importer.inventory.coordsys = cs
+    importer._configure()
     mesh = importer.read(normalizer, debug=False, interpolate=False)
 
     # Setup material
     from pylith.feassemble.FIATSimplex import FIATSimplex
     cell = FIATSimplex()
-    cell.shape = "triangle"
-    cell.degree = 1
-    cell.order = 1
-    from pylith.feassemble.quadrature.Quadrature2D import Quadrature2D
-    quadrature = Quadrature2D()
+    cell.inventory.shape = "triangle"
+    cell.inventory.degree = 1
+    cell.inventory.order = 1
+    cell._configure()
+    from pylith.feassemble.Quadrature import MeshQuadrature
+    quadrature = MeshQuadrature()
+    quadrature.inventory.cell = cell
     quadrature._configure()
-    quadrature.cell = cell
     
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
     iohandler = SimpleIOAscii()
-    iohandler.filename = "data/elasticplanestrain.spatialdb"
+    iohandler.inventory.filename = "data/elasticplanestrain.spatialdb"
+    iohandler._configure()
     db = SimpleDB()
-    db.label = "elastic plane strain"
-    db.iohandler = iohandler
-    initialStateDB = None
+    db.inventory.label = "elastic plane strain"
+    db.inventory.iohandler = iohandler
+    db._configure()
 
     from pylith.materials.ElasticPlaneStrain import ElasticPlaneStrain
     material = ElasticPlaneStrain()
-    material.id = 0
-    material.label = "elastic plane strain"
-    material.db = db
-    material.initialStateDB = initialStateDB
-    material.quadrature = quadrature
+    material.inventory.label = "elastic plane strain"
+    material.inventory.id = 0
+    material.inventory.dbProperties = db
+    material.inventory.quadrature = quadrature
+    material._configure()
+    
     from pylith.meshio.OutputMatElastic import OutputMatElastic
     material.output = OutputMatElastic()
     material.output._configure()
@@ -270,27 +252,40 @@ class TestElasticityExplicit(unittest.TestCase):
     # Setup integrator
     integrator = ElasticityExplicit()
     integrator.preinitialize(mesh, material)
+    return (mesh, integrator)
+
+
+  def _initialize(self, mesh, integrator):
+    """
+    Initialize integrator.
+    """
+    dt = 2.3
+    
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer._configure()
+
     from pyre.units.time import s
-    integrator.initialize(totalTime=0.0*s, numTimeSteps=1, normalizer=normalizer)
+    integrator.initialize(totalTime=0.0*s, numTimeSteps=1,
+                          normalizer=normalizer)
     integrator.timeStep(dt)
 
     # Setup fields
-    from pylith.topology.FieldsManager import FieldsManager
-    fields = FieldsManager(mesh)
-    fields.addReal("residual")
-    fields.addReal("solution")
-    fields.addReal("dispT")
-    fields.addReal("dispTmdt")
-    fields.createHistory(["solution", "dispT", "dispTmdt"])
-    fields.solutionField("solution")
-    fields.setFiberDimension("residual", cs.spaceDim)
-    fields.allocate("residual")
+    from pylith.topology.SolutionFields import SolutionFields
+    fields = SolutionFields(mesh)
+    fields.add("residual")
+    fields.add("disp(t+dt)")
+    fields.add("disp(t)")
+    fields.add("disp(t-dt)")
+    fields.solutionName("disp(t+dt)")
+
+    residual = fields.get("residual")
+    residual.newSection(residual.VERTICES_FIELD, mesh.coordsys().spaceDim())
+    residual.allocate()
     fields.copyLayout("residual")
 
-    import pylith.topology.topology as bindings
-    bindings.zeroRealSection(fields.getReal("residual"))
-    
-    return (mesh, integrator, fields)
+    residual.zero()
+    return fields
 
 
 # End of file 

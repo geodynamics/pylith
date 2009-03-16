@@ -162,6 +162,7 @@ class TestElasticityImplicit(unittest.TestCase):
     jacobian = Jacobian(fields)
     jacobian.zero()
     t = 7.3
+    self.assertEqual(True, integrator.needNewJacobian())
     integrator.integrateJacobian(jacobian, t, fields)
     self.assertEqual(False, integrator.needNewJacobian())
     
@@ -261,11 +262,9 @@ class TestElasticityImplicit(unittest.TestCase):
     normalizer._configure()
 
     from pyre.units.time import s
-    print "AA"
-    integrator.initialize(totalTime=0.0*s, numTimeSteps=1, normalizer=normalizer)
-    print "BB"
+    integrator.initialize(totalTime=0.0*s, numTimeSteps=1,
+                          normalizer=normalizer)
     integrator.timeStep(dt)
-    print "CC"
 
     # Setup fields
     from pylith.topology.SolutionFields import SolutionFields

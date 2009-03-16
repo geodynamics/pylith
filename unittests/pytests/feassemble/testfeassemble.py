@@ -72,8 +72,8 @@ class TestApp(Script):
     from TestElasticityImplicit import TestElasticityImplicit
     suite.addTest(unittest.makeSuite(TestElasticityImplicit))
 
-    #from TestElasticityExplicit import TestElasticityExplicit
-    #suite.addTest(unittest.makeSuite(TestElasticityExplicit))
+    from TestElasticityExplicit import TestElasticityExplicit
+    suite.addTest(unittest.makeSuite(TestElasticityExplicit))
 
     return suite
 

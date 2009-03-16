@@ -18,9 +18,10 @@
 ## Factory: integrator
 
 from IntegratorElasticity import IntegratorElasticity
+from feassemble import ElasticityExplicit as ModuleElasticityExplicit
 
 # ElasticityExplicit class
-class ElasticityExplicit(IntegratorElasticity):
+class ElasticityExplicit(IntegratorElasticity, ModuleElasticityExplicit):
   """
   Python object for explicit time integration of dynamic elasticity
   equation using finite-elements.
@@ -33,10 +34,22 @@ class ElasticityExplicit(IntegratorElasticity):
     Constructor.
     """
     IntegratorElasticity.__init__(self, name)
+    ModuleElasticityExplicit.__init__(self)
     self._loggingPrefix = "ElEx "
+    return
 
-    import pylith.feassemble.feassemble as bindings
-    self.cppHandle = bindings.ElasticityExplicit()
+
+  def initialize(self, totalTime, numTimeSteps, normalizer):
+    """
+    Do initialization.
+    """
+    logEvent = "%sinit" % self._loggingPrefix
+    self._logger.eventBegin(logEvent)
+
+    IntegratorElasticity.initialize(self, totalTime, numTimeSteps, normalizer)
+    ModuleElasticityExplicit.initialize(self, self.mesh)
+    
+    self._logger.eventEnd(logEvent)
     return
 
 

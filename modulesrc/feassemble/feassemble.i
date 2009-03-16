@@ -78,6 +78,7 @@ import_array();
 %include "Integrator.i"
 %include "IntegratorElasticity.i"
 %include "ElasticityImplicit.i"
+%include "ElasticityExplicit.i"
 
 // Template instatiation
 %template(MeshQuadrature) pylith::feassemble::Quadrature<pylith::topology::Mesh>;

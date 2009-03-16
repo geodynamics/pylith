@@ -31,7 +31,9 @@ swig_sources = \
 	QuadratureRefCell.i \
 	Quadrature.i \
 	Integrator.i \
-	IntegratorElasticity.i
+	IntegratorElasticity.i \
+	ElasticityImplicit.i \
+	ElasticityExplicit.i
 
 swig_generated = \
 	feassemble_wrap.cxx \
