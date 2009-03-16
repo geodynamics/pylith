@@ -225,8 +225,8 @@ class TestNeumann(unittest.TestCase):
     fields = SolutionFields(mesh)
     fields.add("residual")
     fields.add("disp(t), bc(t+dt)")
-    fields.add("dispIncr")
-    fields.solutionName("dispIncr")
+    fields.add("dispIncr(t->t+dt)")
+    fields.solutionName("dispIncr(t->t+dt)")
 
     residual = fields.get("residual")
     residual.newSection(residual.VERTICES_FIELD, cs.spaceDim())
