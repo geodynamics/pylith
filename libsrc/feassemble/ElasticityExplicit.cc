@@ -30,6 +30,7 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimendional
 
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
@@ -381,8 +382,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     PetscErrorCode err = updateOperator(*jacobianMat, *sieveMesh->getSieve(),
 					jacobianVisitor, *c_iter,
 					&_cellMatrix[0], ADD_VALUES);
-    if (err)
-      throw std::runtime_error("Update to PETSc Mat failed.");
+    CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
     _logger->eventEnd(updateEvent);
   } // for
 

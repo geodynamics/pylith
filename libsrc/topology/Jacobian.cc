@@ -18,6 +18,8 @@
 #include "SolutionFields.hh" // USES SolutionFields
 #include "Field.hh" // USES Field
 
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::topology::Jacobian::Jacobian(const SolutionFields& fields) :
@@ -31,13 +33,8 @@ pylith::topology::Jacobian::Jacobian(const SolutionFields& fields) :
   assert(0 != _matrix);
   PetscErrorCode err = MeshCreateMatrix(sieveMesh, solnSection, 
 					MATAIJ, _matrix);
-  if (err) {
-    PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
-    throw std::runtime_error("Could not create PETSc sparse matrix "
-			     "associated with system Jacobian.");
-  } // if
-  
-
+  CHECK_PETSC_ERROR_MSG(err, "Could not create PETSc sparse matrix "
+			"associated with system Jacobian.");
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -71,31 +68,15 @@ pylith::topology::Jacobian::assemble(const char* mode)
 { // assemble
   PetscErrorCode err = 0;
   if (0 == strcmp(mode, "final_assembly")) {
-    err = MatAssemblyBegin(*_matrix, MAT_FINAL_ASSEMBLY);
-    if (err) {
-      PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
-      throw std::runtime_error("Error beginning final assembly of sparse "
-			       "matrix associated with system Jacobian.");
-    } // if
+    err = MatAssemblyBegin(*_matrix, MAT_FINAL_ASSEMBLY); 
+    CHECK_PETSC_ERROR(err);
     err = MatAssemblyEnd(*_matrix, MAT_FINAL_ASSEMBLY);
-    if (err) {
-      PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
-      throw std::runtime_error("Error ending final assembly of sparse "
-			       "matrix associated with system Jacobian.");
-    } // if
+    CHECK_PETSC_ERROR(err);
   } else if (0 == strcmp(mode, "flush_assembly")) {
     err = MatAssemblyBegin(*_matrix, MAT_FLUSH_ASSEMBLY);
-    if (err) {
-      PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
-      throw std::runtime_error("Error beginning flush assembly of sparse "
-			       "matrix associated with system Jacobian.");
-    } // if
+    CHECK_PETSC_ERROR(err);
     err = MatAssemblyEnd(*_matrix, MAT_FLUSH_ASSEMBLY);
-    if (err) {
-      PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
-      throw std::runtime_error("Error ending flush assembly of sparse "
-			       "matrix associated with system Jacobian.");
-    } // if
+    CHECK_PETSC_ERROR(err);
   } else
     throw std::runtime_error("Unknown mode for assembly of sparse matrix "
 			     "associated with system Jacobian.");
@@ -107,11 +88,7 @@ void
 pylith::topology::Jacobian::zero(void)
 { // zero
   PetscErrorCode err = MatZeroEntries(*_matrix);
-  if (err) {
-    PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
-    throw std::runtime_error("Error zeroing entries of sparse matrix "
-			     "associated with system Jacobian.");
-  } // if
+  CHECK_PETSC_ERROR(err);
 } // zero
 
 // ----------------------------------------------------------------------
@@ -120,11 +97,7 @@ void
 pylith::topology::Jacobian::view(void)
 { // view
   PetscErrorCode err = MatView(*_matrix, PETSC_VIEWER_STDOUT_WORLD);
-  if (err) {
-    PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
-    throw std::runtime_error("Error viewing sparse matrix associatd "
-			     "with system Jacobian.");
-  } // if
+  CHECK_PETSC_ERROR(err);
 } // view
 
 // ----------------------------------------------------------------------
@@ -137,28 +110,11 @@ pylith::topology::Jacobian::write(const char* filename)
   const MPI_Comm comm = _fields.mesh().comm();
 
   PetscErrorCode err = 
-    PetscViewerBinaryOpen(comm, filename,
-			  FILE_MODE_WRITE, &viewer);
-  if (err) {
-    PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
-    throw std::runtime_error("Could not create PETSc binary viewer for "
-			     "sparse matrix associated with system Jacobian.");
-  } // if
+    PetscViewerBinaryOpen(comm, filename, FILE_MODE_WRITE, &viewer);
+  CHECK_PETSC_ERROR(err);
 
-  err = MatView(*_matrix, viewer);
-  if (err) {
-    PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
-    throw std::runtime_error("Could not view PETSc sparse matrix associated "
-			     "with system Jacobian.");
-  } // if
-
-  err = PetscViewerDestroy(viewer);
-  if (err) {
-    PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
-    throw std::runtime_error("Could not destroy PETSc binary viewer for "
-			     "sparse matrix associated with system Jacobian.");
-  } // if
-
+  err = MatView(*_matrix, viewer); CHECK_PETSC_ERROR(err);
+  err = PetscViewerDestroy(viewer); CHECK_PETSC_ERROR(err);
 } // write
 
 

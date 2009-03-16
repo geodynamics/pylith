@@ -252,8 +252,6 @@ pylith::bc::Neumann::integrateResidual(
   assert(0 != _boundaryMesh);
   assert(0 != _tractions);
 
-  PetscErrorCode err = 0;
-
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const double_array& quadWts = _quadrature->quadWts();

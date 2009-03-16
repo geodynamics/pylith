@@ -252,8 +252,6 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   assert(0 != _dampingConsts);
   assert(0 != fields);
 
-  PetscErrorCode err = 0;
-
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const double_array& quadWts = _quadrature->quadWts();
@@ -364,8 +362,6 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 
   typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> visitor_type;
 
-  PetscErrorCode err = 0;
-
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const double_array& quadWts = _quadrature->quadWts();
@@ -444,10 +440,10 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
     
     // Assemble cell contribution into PETSc Matrix
-    err = updateOperator(*jacobianMat, *submesh->getSieve(), 
-			 iV, *c_iter, &_cellMatrix[0], ADD_VALUES);
-    if (err)
-      throw std::runtime_error("Update to PETSc Mat failed.");
+    PetscErrorCode err = updateOperator(*jacobianMat, *submesh->getSieve(), 
+					iV, *c_iter, &_cellMatrix[0], 
+					ADD_VALUES);
+    CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
     iV.clear();
   } // for
 
