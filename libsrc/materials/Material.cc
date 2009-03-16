@@ -103,10 +103,6 @@ pylith::materials::Material::initialize(
   const int numQuadPts = quadrature->numQuadPts();
   const int spaceDim = quadrature->spaceDim();
 
-  std::cout << "numQuadPts: " << numQuadPts
-	    << ", spaceDim: " << spaceDim
-	    << std::endl;
-
   // Get cells associated with material
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
@@ -116,8 +112,6 @@ pylith::materials::Material::initialize(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
   assert(0 != cs);
-
-  std::cout << "Creating fields" << std::endl;
 
   // Create field to hold physical properties.
   delete _properties; _properties = new topology::Field<topology::Mesh>(mesh);
@@ -129,15 +123,11 @@ pylith::materials::Material::initialize(
   const ALE::Obj<RealSection>& propertiesSection = _properties->section();
   assert(!propertiesSection.isNull());
 
-  std::cout << "Creating arrays" << std::endl;
-
   // Create arrays for querying.
   const int numDBProperties = _metadata.numDBProperties();
   double_array quadPtsGlobal(numQuadPts*spaceDim);
   double_array propertiesQuery(numDBProperties);
   double_array propertiesCell(numQuadPts*numDBProperties);
-
-  std::cout << "Setting up dbProperties" << std::endl;
 
   // Setup database for quering for physical properties
   assert(0 != _dbProperties);
