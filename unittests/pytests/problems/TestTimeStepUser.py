@@ -31,8 +31,7 @@ class TestTimeStepUser(unittest.TestCase):
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
     normalizer._configure()
-    normalizer._time = 2.0*second
-    normalizer.initialize()    
+    normalizer.setTimeScale(2.0*second)
 
     tstep = TimeStepUser()
     tstep._configure()

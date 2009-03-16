@@ -122,7 +122,7 @@ class TimeStep(Component):
 
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("PDE TimeStep")
+    logger.className("PDE TimeStep")
     logger.initialize()
 
     events = ["preinit",

@@ -15,11 +15,18 @@ CURRENT ISSUES/PRIORITIES
   TestMesh.test_view()
   TestMesh.test_checkMaterialIds()
   
+  libsrc/materials
+    Maxwell materials
+
   libtests/bc/TestDirichletBoundary::testVertexField()
   libtests/bc/TestDirichletBoundary::testBoundaryMesh()
+  libtests/bc/TestBoundaryMesh
+    requires faults to be working
 
   pytests/bc/TestDirichletBoundary
   pytests/bc/TestNeumann (output)
+
+
 
   libtests/feassemble/ElasticityExplict
     testVerifyConfiguration()
@@ -30,8 +37,6 @@ CURRENT ISSUES/PRIORITIES
 
   DirichletPoints (Python) - rate == None -> dbRate == 0
   DirichletBoundary (Python) - rate == None -> dbRate == 0
-
-  Maxwell materials
 
 1. Reduce memory use (new labels) [Matt]
 
