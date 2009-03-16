@@ -29,9 +29,11 @@ typedef struct _p_Vec* PetscVec;
 /// forward declaration for PETSc ISLocalToGlobalMapping
 typedef struct _p_ISLocalToGlobalMapping* PetscISLocalToGlobalMapping;
 
+/// forward declaration for PETSc SNES
+typedef struct _p_SNES* PetscSNES;
+
 /// forward declaration for PETSc PetscErrorCode
 typedef int PetscErrorCode;
-
 
 #endif // pylith_utils_petscfwd_h
 
