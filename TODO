@@ -20,6 +20,13 @@ CURRENT ISSUES/PRIORITIES
   pytests/bc/TestDirichletBoundary
   pytests/bc/TestNeumann (output)
 
+  libtests/feassemble/ElasticityExplict
+    testVerifyConfiguration()
+    testCellField()
+  libtests/feassemble/ElasticityImplict
+    testVerifyConfiguration()
+    testCellField()
+
   DirichletPoints (Python) - rate == None -> dbRate == 0
   DirichletBoundary (Python) - rate == None -> dbRate == 0
 
