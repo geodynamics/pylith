@@ -50,13 +50,13 @@ class IntegratorElasticity(Integrator):
     self.mesh = mesh
     self.output = material.output
     self.availableFields = material.availableFields
-    self.matQuadrature = material.quadrature
-    self.matLabel = material.matLabel
+    self.materialObj = material
 
     Integrator.preinitialize(self, mesh)
     material.preinitialize(mesh)
     #self.output.preinitialize(self)
 
+    # Set integrator's quadrature using quadrature from material
     self.quadrature(material.quadrature)
     self.material(material)
     return
@@ -84,13 +84,13 @@ class IntegratorElasticity(Integrator):
     self._logger.eventBegin(logEvent)
 
     self._info.log("Initializing integrator for material '%s'." % \
-                   self.matLabel)
+                   self.materialObj.label)
 
     print "DDD"
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
     print "EEE"
 
-    #self.output.initialize(normalizer, self.matQuadrature)
+    #self.output.initialize(normalizer, self.materialObj.quadrature)
     #self.output.writeInfo()
     #self.output.open(totalTime, numTimeSteps)
 
@@ -118,7 +118,7 @@ class IntegratorElasticity(Integrator):
     """
     Get mesh associated with data fields.
     """
-    return self.material.getDataMesh()
+    return self.materialObj.getDataMesh()
 
 
   def getCellField(self, name, fields=None):

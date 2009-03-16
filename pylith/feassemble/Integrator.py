@@ -70,6 +70,13 @@ class Integrator(object):
     return
 
 
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    return
+
+
   def initialize(self, totalTime, numTimeSteps, normalizer):
     """
     Do initialization.
@@ -92,7 +99,7 @@ class Integrator(object):
     logEvent = "%spoststep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    self.updateState(t, fields)
+    self.updateStateVars(t, fields)
 
     self._logger.eventEnd(logEvent)
     return
@@ -120,6 +127,7 @@ class Integrator(object):
     logger.initialize()
 
     events = ["preinit",
+              "verify",
               "init",
               "poststep",
               "finalize"]
