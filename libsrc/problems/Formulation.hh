@@ -24,7 +24,11 @@
 
 #include "pylith/feassemble/feassemblefwd.hh" // USES Integrator
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field, SolutionFields
-#include "pylith/utils/array.hh" // USES std::vector
+
+#include "pylith/utils/petscfwd.h" // USES PetscVec, PetscMat, PetscSNES
+
+#include "pylith/utils/array.hh" // HASA std::vector
+
 
 // Formulation ----------------------------------------------------------
 class pylith::problems::Formulation
@@ -68,18 +72,34 @@ public :
   /** Generic C interface for reformResidual for integration with
    * PETSc SNES solvers.
    *
+   * @param snes PETSc scalable nonlinear equation solver.
+   * @param solutionVec PETSc vector for solution.
+   * @param residualVec PETSc vector for residual.
    * @param context ArgsResidual structure with arguments.
    */
   static
-  void reformResidual(void* context);
+  void reformResidual(PetscSNES snes,
+		      PetscVec solutionVec,
+		      PetscVec residualVec,
+		      void* context);
 
   /** Generic C interface for reformJacobian for integration with
    * PETSc SNES solvers.
    *
+   * @param snes PETSc scalable nonlinear equation solver.
+   * @param solutionVec PETSc vector for solution.
+   * @param jacobianMat PETSc sparse matrix for system Jacobian.
+   * @param preconditionerMat PETSc sparse matrix for preconditioner.
+   * @param Flag indicating layout of preconditioner matrix.
    * @param context ArgsJacobian structure with arguments.
    */
   static
-  void reformJacobian(void* context);
+  void reformJacobian(PetscSNES snes,
+		      PetscVec solutionVec,
+		      PetscMat jacobianMat,
+		      PetscMat preconditionerMat,
+		      int* preconditionerLayout,
+		      void* context);
 
   /** Set integrators over the mesh.
    *

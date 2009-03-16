@@ -19,7 +19,9 @@
 #include "pylith/feassemble/Quadrature.hh" // USES Integrator<Quadrature>
 #include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
+#include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -38,20 +40,67 @@ pylith::problems::Formulation::~Formulation(void)
 // Generic C interface for reformResidual for integration with
 // PETSc SNES solvers.
 void
-pylith::problems::Formulation::reformResidual(void* context)
+pylith::problems::Formulation::reformResidual(PetscSNES snes,
+					      PetscVec solutionVec,
+					      PetscVec residualVec,
+					      void* context)
 { // reformResidual
   assert(0 != context);
   ArgsResidual* args = (ArgsResidual*) context;
   assert(0 != args);
   assert(0 != args->object);
-  args->object->reformResidual(args->residual, args->fields, args->t, args->dt);  
+  assert(0 != args->fields);
+
+  PetscVec localVec;
+  PetscErrorCode err = 0;
+
+#if 0
+  PetscVecScatter scatter = fields->scatter();
+#else
+  VecScatter scatter = 0;
+#endif
+
+  // Copy solution information from PETSc vector into field
+  const ALE::Obj<topology::Mesh::RealSection>& solutionSection = 
+    args->fields->solution().section();
+  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
+			      solutionSection->sizeWithBC(),
+			      solutionSection->restrictSpace(),
+			      &localVec); CHECK_PETSC_ERROR(err);
+  err = VecScatterBegin(scatter, solutionVec, localVec, INSERT_VALUES,
+			SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
+  err = VecScatterEnd(scatter, solutionVec, localVec, INSERT_VALUES,
+		      SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
+  err = VecDestroy(localVec); CHECK_PETSC_ERROR(err);
+
+  // Reform residual
+  args->object->reformResidual(args->residual, args->fields, 
+			       args->t, args->dt);  
+
+  // Copy residual information from field into PETSc vector
+  const ALE::Obj<topology::Mesh::RealSection>& residualSection = 
+    args->fields->get("residual").section();
+  err = VecCreateSeqWithArray(PETSC_COMM_SELF, 
+			      residualSection->sizeWithBC(),
+			      residualSection->restrictSpace(), 
+			      &localVec); CHECK_PETSC_ERROR(err);
+  err = VecScatterBegin(scatter, localVec, residualVec, INSERT_VALUES,
+			SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
+  err = VecScatterEnd(scatter, localVec, residualVec, INSERT_VALUES,
+		      SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
+  err = VecDestroy(localVec); CHECK_PETSC_ERROR(err);
 } // reformResidual
 
 // ----------------------------------------------------------------------
 // Generic C interface for reformJacobian for integration with
 // PETSc SNES solvers.
 void
-pylith::problems::Formulation::reformJacobian(void* context)
+pylith::problems::Formulation::reformJacobian(PetscSNES snes,
+					      PetscVec solutionVec,
+					      PetscMat jacobianMat,
+					      PetscMat preconditionerMat,
+					      int* preconditionerLayout,
+					      void* context)
 { // reformJacobian
   assert(0 != context);
   ArgsJacobian* args = (ArgsJacobian*) context;
