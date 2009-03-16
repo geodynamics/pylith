@@ -218,7 +218,6 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobian(void)
   const double t = 1.0;
   integrator.integrateJacobian(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
-
   jacobian.assemble("final_assembly");
 
   const double* valsE = _data->valsJacobian;
@@ -289,6 +288,7 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
   CPPUNIT_ASSERT(0 != _quadrature);
   CPPUNIT_ASSERT(0 != _material);
 
+  // Setup mesh
   spatialdata::geocoords::CSCart cs;
   cs.setSpaceDim(_data->spaceDim);
   cs.initialize();

@@ -16,7 +16,8 @@
 
 #include "data/ElasticityImplicitGravData1DQuadratic.hh"
 
-#include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
+#include "pylith/topology/Mesh.hh" // USES Quadrature<Mesh>
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
 #include "pylith/materials/ElasticStrain1D.hh" // USES ElasticStrain1D
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
@@ -29,8 +30,9 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicitGrav1
 void
 pylith::feassemble::TestElasticityImplicitGrav1DQuadratic::setUp(void)
 { // setUp
+  TestElasticityImplicit::setUp();
+
   _data = new ElasticityImplicitGravData1DQuadratic();
-  _quadrature = new Quadrature1D();
   _gravityField = new spatialdata::spatialdb::GravityField();
   CPPUNIT_ASSERT(0 != _quadrature);
   CPPUNIT_ASSERT(0 != _gravityField);

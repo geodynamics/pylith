@@ -16,7 +16,8 @@
 
 #include "data/ElasticityImplicitData3DLinear.hh"
 
-#include "pylith/feassemble/Quadrature3D.hh" // USES Quadrature3D
+#include "pylith/topology/Mesh.hh" // USES Quadrature<Mesh>
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/GeometryTet3D.hh" // USES GeometryTet3D
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 
@@ -28,8 +29,9 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicit3DLin
 void
 pylith::feassemble::TestElasticityImplicit3DLinear::setUp(void)
 { // setUp
+  TestElasticityImplicit::setUp();
+
   _data = new ElasticityImplicitData3DLinear();
-  _quadrature = new Quadrature3D();
   _gravityField = 0;
   CPPUNIT_ASSERT(0 != _quadrature);
   GeometryTet3D geometry;

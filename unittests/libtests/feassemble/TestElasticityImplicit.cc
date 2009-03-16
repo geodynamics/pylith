@@ -20,7 +20,9 @@
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/topology/Jacobian.hh" // USES Jacobian
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
@@ -34,12 +36,16 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicit );
 
 // ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
+
+// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::feassemble::TestElasticityImplicit::setUp(void)
 { // setUp
+  _quadrature = new Quadrature<topology::Mesh>();
   _data = 0;
-  _quadrature = 0;
   _material = 0;
   _gravityField = 0;
 } // setUp
@@ -146,23 +152,18 @@ pylith::feassemble::TestElasticityImplicit::testUseSolnIncr(void)
 } // testUseSolnIncr
 
 // ----------------------------------------------------------------------
-// Test updateState().
+// Test initialize().
 void 
-pylith::feassemble::TestElasticityImplicit::testUpdateState(void)
-{ // testUpdateState
+pylith::feassemble::TestElasticityImplicit::testInitialize(void)
+{ // testInitialize
   CPPUNIT_ASSERT(0 != _data);
 
-  ALE::Obj<Mesh> mesh;
+  topology::Mesh mesh;
   ElasticityImplicit integrator;
-  topology::FieldsManager fields(mesh);
+  topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
-  const ALE::Obj<real_section_type>& dispTBctpdt = 
-    fields.getReal("dispTBctpdt");
-  CPPUNIT_ASSERT(!dispTBctpdt.isNull());
-  const double t = 1.0;
-  integrator.updateState(t, &fields, mesh);
-} // testUpdateState
+} // testInitialize
 
 // ----------------------------------------------------------------------
 // Test integrateResidual().
@@ -171,25 +172,22 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateResidual(void)
 { // testIntegrateResidual
   CPPUNIT_ASSERT(0 != _data);
 
-  ALE::Obj<Mesh> mesh;
+  topology::Mesh mesh;
   ElasticityImplicit integrator;
-  topology::FieldsManager fields(mesh);
+  topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
-  spatialdata::geocoords::CSCart cs;
-  cs.setSpaceDim((mesh)->getDimension());
-  cs.initialize();
-
-  const ALE::Obj<real_section_type>& residual = fields.getReal("residual");
-  CPPUNIT_ASSERT(!residual.isNull());
+  topology::Field<topology::Mesh>& residual = fields.get("residual");
   const double t = 1.0;
-  integrator.integrateResidual(residual, t, &fields, mesh, &cs);
+  integrator.integrateResidual(residual, t, &fields);
 
   const double* valsE = _data->valsResidual;
   const int sizeE = _data->spaceDim * _data->numVertices;
 
-  const double* vals = residual->restrictSpace();
-  const int size = residual->sizeWithBC();
+  const ALE::Obj<RealSection>& residualSection = residual.section();
+  CPPUNIT_ASSERT(!residualSection.isNull());
+  const double* vals = residualSection->restrictSpace();
+  const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
   const double tolerance = 1.0e-06;
@@ -207,44 +205,36 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateJacobian(void)
 { // testIntegrateJacobian
   CPPUNIT_ASSERT(0 != _data);
 
-  ALE::Obj<Mesh> mesh;
+  topology::Mesh mesh;
   ElasticityImplicit integrator;
-  topology::FieldsManager fields(mesh);
+  topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
   integrator._needNewJacobian = true;
 
-  const ALE::Obj<pylith::real_section_type>& dispTBctpdt = 
-    fields.getReal("dispTBctpdt");
-  CPPUNIT_ASSERT(!dispTBctpdt.isNull());
-
-  PetscMat jacobian;
-  PetscErrorCode err = MeshCreateMatrix(mesh, dispTBctpdt, MATMPIBAIJ, &jacobian);
-  CPPUNIT_ASSERT(0 == err);
+  topology::Jacobian jacobian(fields);
 
   const double t = 1.0;
   //mesh->getSieve()->setDebug(10);
-  integrator.integrateJacobian(&jacobian, t, &fields, mesh);
+  integrator.integrateJacobian(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
   //mesh->getSieve()->setDebug(0);
-
-  err = MatAssemblyBegin(jacobian, MAT_FINAL_ASSEMBLY);
-  CPPUNIT_ASSERT(0 == err);
-  err = MatAssemblyEnd(jacobian, MAT_FINAL_ASSEMBLY);
-  CPPUNIT_ASSERT(0 == err);
+  jacobian.assemble("final_assembly");
 
   const double* valsE = _data->valsJacobian;
   const int nrowsE = _data->numVertices * _data->spaceDim;
   const int ncolsE = _data->numVertices * _data->spaceDim;
 
+  const PetscMat* jacobianMat = jacobian.matrix();
+
   int nrows = 0;
   int ncols = 0;
-  MatGetSize(jacobian, &nrows, &ncols);
+  MatGetSize(*jacobianMat, &nrows, &ncols);
   CPPUNIT_ASSERT_EQUAL(nrowsE, nrows);
   CPPUNIT_ASSERT_EQUAL(ncolsE, ncols);
 
   PetscMat jDense;
   PetscMat jSparseAIJ;
-  MatConvert(jacobian, MATSEQAIJ, MAT_INITIAL_MATRIX, &jSparseAIJ);
+  MatConvert(*jacobianMat, MATSEQAIJ, MAT_INITIAL_MATRIX, &jSparseAIJ);
   MatConvert(jSparseAIJ, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);
 
   double_array vals(nrows*ncols);
@@ -269,12 +259,28 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateJacobian(void)
 } // testIntegrateJacobian
 
 // ----------------------------------------------------------------------
+// Test updateStateVars().
+void 
+pylith::feassemble::TestElasticityImplicit::testUpdateStateVars(void)
+{ // testUpdateStateVars
+  CPPUNIT_ASSERT(0 != _data);
+
+  topology::Mesh mesh;
+  ElasticityImplicit integrator;
+  topology::SolutionFields fields(mesh);
+  _initialize(&mesh, &integrator, &fields);
+
+  const double t = 1.0;
+  integrator.updateStateVars(t, &fields);
+} // testUpdateStateVars
+
+// ----------------------------------------------------------------------
 // Initialize elasticity integrator.
 void
 pylith::feassemble::TestElasticityImplicit::_initialize(
-					 ALE::Obj<Mesh>* mesh,
+					 topology::Mesh* mesh,
 					 ElasticityImplicit* const integrator,
-					 topology::FieldsManager* fields)
+					 topology::SolutionFields* fields)
 { // _initialize
   CPPUNIT_ASSERT(0 != mesh);
   CPPUNIT_ASSERT(0 != integrator);
@@ -286,82 +292,94 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   spatialdata::geocoords::CSCart cs;
   cs.setSpaceDim(_data->spaceDim);
   cs.initialize();
-  *mesh = new Mesh(PETSC_COMM_WORLD, _data->cellDim);
-  CPPUNIT_ASSERT(!mesh->isNull());
-  ALE::Obj<sieve_type> sieve = new sieve_type((*mesh)->comm());
+  mesh->coordsys(&cs);
+  mesh->createSieveMesh(_data->cellDim);
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  ALE::Obj<SieveMesh::sieve_type> sieve = 
+    new SieveMesh::sieve_type(mesh->comm());
   CPPUNIT_ASSERT(!sieve.isNull());
-  const bool interpolate = false;
-  ALE::Obj<ALE::Mesh::sieve_type> s = new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
 
-  ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, _data->cellDim, 
-	       _data->numCells, const_cast<int*>(_data->cells), 
-	       _data->numVertices, interpolate, _data->numBasis);
-  std::map<Mesh::point_type,Mesh::point_type> renumbering;
-  ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering, false);
-  (*mesh)->setSieve(sieve);
-  (*mesh)->stratify();
-  //std::cout << "Mesh chart: " << (*mesh)->getSieve()->getChart() << std::endl;
-  ALE::SieveBuilder<Mesh>::buildCoordinates((*mesh), _data->spaceDim,
-					    _data->vertices);
-  const ALE::Obj<Mesh::label_type>& labelMaterials = 
-    (*mesh)->createLabel("material-id");  
-  int i = 0;
-  const ALE::Obj<Mesh::label_sequence>& cells = (*mesh)->heightStratum(0);
+  // Cells and vertices
+  const bool interpolate = false;
+  ALE::Obj<ALE::Mesh::sieve_type> s = 
+    new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+  
+  ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, 
+					      _data->cellDim, _data->numCells,
+                                              const_cast<int*>(_data->cells), 
+					      _data->numVertices,
+                                              interpolate, _data->numBasis);
+  std::map<ALE::Mesh::point_type,ALE::Mesh::point_type> renumbering;
+  ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
+  sieveMesh->setSieve(sieve);
+  sieveMesh->stratify();
+  ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, _data->spaceDim, 
+						 _data->vertices);
+
+  // Material ids
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->heightStratum(0);
   CPPUNIT_ASSERT(!cells.isNull());
-  for(Mesh::label_sequence::iterator c_iter = cells->begin();
-      c_iter != cells->end();
-      ++c_iter)
-    (*mesh)->setValue(labelMaterials, *c_iter, _data->matId);
-  (*mesh)->getFactory()->clear(); // clear numberings
+  const ALE::Obj<SieveMesh::label_type>& labelMaterials = 
+    sieveMesh->createLabel("material-id");
+  CPPUNIT_ASSERT(!labelMaterials.isNull());
+  int i = 0;
+  for(SieveMesh::label_sequence::iterator e_iter=cells->begin(); 
+      e_iter != cells->end();
+      ++e_iter)
+    sieveMesh->setValue(labelMaterials, *e_iter, _data->matId);
+  sieveMesh->getFactory()->clear(); // clear numberings
 
   // Setup quadrature
-  _quadrature->initialize(_data->basis, _data->basisDerivRef, _data->quadPts,
-			  _data->quadWts, _data->cellDim, _data->numBasis,
-			  _data->numQuadPts, _data->spaceDim);
-  // Setup gravityField
-  // _gravityField = 0;
+  _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,
+			  _data->basisDerivRef, _data->numQuadPts,
+			  _data->numBasis, _data->cellDim,
+			  _data->quadPts, _data->numQuadPts, _data->cellDim,
+			  _data->quadWts, _data->numQuadPts,
+			  _data->spaceDim);
 
   // Setup material
   spatialdata::spatialdb::SimpleIOAscii iohandler;
   iohandler.filename(_data->matDBFilename);
-  spatialdata::spatialdb::SimpleDB db;
-  db.ioHandler(&iohandler);
+  spatialdata::spatialdb::SimpleDB dbProperties;
+  dbProperties.ioHandler(&iohandler);
   
   spatialdata::units::Nondimensional normalizer;
 
   _material->id(_data->matId);
   _material->label(_data->matLabel);
-  _material->db(&db);
+  _material->dbProperties(&dbProperties);
   _material->normalizer(normalizer);
-  _material->initialize(*mesh, &cs, _quadrature);
 
   integrator->quadrature(_quadrature);
   integrator->gravityField(_gravityField);
   integrator->timeStep(_data->dt);
   integrator->material(_material);
+  integrator->initialize(*mesh);
 
   // Setup fields
   CPPUNIT_ASSERT(0 != fields);
-  fields->addReal("residual");
-  fields->addReal("dispTBctpdt");
+  fields->add("residual");
+  fields->add("disp(t), bc(t+dt)");
+  fields->add("dispIncr(t->t+dt)");
+  fields->solutionName("dispIncr(t->t+dt)");
   
-  const ALE::Obj<real_section_type>& residual = fields->getReal("residual");
-  CPPUNIT_ASSERT(!residual.isNull());
-  residual->setChart((*mesh)->getSieve()->getChart());
-  residual->setFiberDimension((*mesh)->depthStratum(0), _data->spaceDim);
-  (*mesh)->allocate(residual);
-  residual->zero();
-  //residual->view("Residual");
+  topology::Field<topology::Mesh>& residual = fields->get("residual");
+  residual.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
+  residual.allocate();
+  residual.zero();
   fields->copyLayout("residual");
 
   const int fieldSize = _data->spaceDim * _data->numVertices;
-  const ALE::Obj<real_section_type>& dispTBctpdt = 
-    fields->getReal("dispTBctpdt");
-  CPPUNIT_ASSERT(!dispTBctpdt.isNull());
+  topology::Field<topology::Mesh>& dispTBctpdt = 
+    fields->get("disp(t), bc(t+dt)");
+  const ALE::Obj<RealSection>& dispTBctpdtSection = dispTBctpdt.section();
+  CPPUNIT_ASSERT(!dispTBctpdtSection.isNull());
   const int offset = _data->numCells;
   for (int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
-    dispTBctpdt->updatePoint(iVertex+offset, 
-			     &_data->fieldTpdt[iVertex*_data->spaceDim]);
+    dispTBctpdtSection->updatePoint(iVertex+offset, 
+				    &_data->fieldTpdt[iVertex*_data->spaceDim]);
   } // for
 } // _initialize
 

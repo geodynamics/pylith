@@ -16,7 +16,8 @@
 
 #include "data/ElasticityImplicitData2DQuadratic.hh"
 
-#include "pylith/feassemble/Quadrature2D.hh" // USES Quadrature2D
+#include "pylith/topology/Mesh.hh" // USES Quadrature<Mesh>
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/GeometryTri2D.hh" // USES GeometryTri2D
 #include "pylith/materials/ElasticPlaneStrain.hh" // USES ElasticPlaneStrain
 
@@ -28,8 +29,9 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicit2DQua
 void
 pylith::feassemble::TestElasticityImplicit2DQuadratic::setUp(void)
 { // setUp
+  TestElasticityImplicit::setUp();
+
   _data = new ElasticityImplicitData2DQuadratic();
-  _quadrature = new Quadrature2D();
   _gravityField = 0;
   CPPUNIT_ASSERT(0 != _quadrature);
   GeometryTri2D geometry;

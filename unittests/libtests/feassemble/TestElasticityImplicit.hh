@@ -23,34 +23,19 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, SolutionFields
+#include "pylith/materials/materialsfwd.hh" // USES ElasticMaterial
 
-#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
 
 /// Namespace for pylith package
 namespace pylith {
   namespace feassemble {
     class TestElasticityImplicit;
-
-    class ElasticityImplicit; // USES ElasticityImplicit
-    class IntegratorData; // HOLDSA IntegratorData
-    class Quadrature; // HOLDSA Quadrature
+    class IntegratorData;
   } // feassemble
-
-  namespace materials {
-    class ElasticMaterial; // HOLDSA ElasticMaterial
-  } // materials
-
-  namespace topology {
-    class FieldsManager; // USES FieldsManager
-  } // topology
 } // pylith
-
-namespace spatialdata {
-  namespace spatialdb {
-    class GravityField; // HOLDSA GravityField
-  } // spatialdb
-} // spatialdata
 
 /// C++ unit testing for ElasticityImplicit
 class pylith::feassemble::TestElasticityImplicit : public CppUnit::TestFixture
@@ -65,8 +50,10 @@ class pylith::feassemble::TestElasticityImplicit : public CppUnit::TestFixture
   CPPUNIT_TEST( testMaterial );
   CPPUNIT_TEST( testNeedNewJacobian );
   CPPUNIT_TEST( testUseSolnIncr );
-  CPPUNIT_TEST( testIntegrateResidual );
-  CPPUNIT_TEST( testIntegrateJacobian );
+
+  // Testing of initialize(), integrateResidual(),
+  // integrateJacobian(), and updateStateVars() handled by derived
+  // classes.
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -97,8 +84,8 @@ public :
   /// Test useSolnIncr().
   void testUseSolnIncr(void);
 
-  /// Test updateState().
-  void testUpdateState(void);
+  /// Test initialize().
+  void testInitialize(void);
 
   /// Test integrateResidual().
   void testIntegrateResidual(void);
@@ -106,12 +93,15 @@ public :
   /// Test integrateJacobian().
   void testIntegrateJacobian(void);
 
+  /// Test updateStateVars().
+  void testUpdateStateVars(void);
+
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
   IntegratorData* _data; ///< Data for testing.
   materials::ElasticMaterial* _material; ///< Elastic material.
-  Quadrature* _quadrature; ///< Quadrature information.
+  Quadrature<topology::Mesh>* _quadrature; ///< Quadrature information.
   spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
@@ -119,13 +109,13 @@ private :
 
   /** Initialize elasticity integrator.
    *
-   * @param mesh PETSc mesh to initialize.
+   * @param mesh Finite-element mesh to initialize.
    * @param integrator ElasticityIntegrator to initialize.
    * @param fields Solution fields.
    */
-  void _initialize(ALE::Obj<Mesh>* mesh,
+  void _initialize(topology::Mesh* mesh,
 		   ElasticityImplicit* const integrator,
-		   topology::FieldsManager* const fields);
+		   topology::SolutionFields* const fields);
 
 }; // class TestElasticityImplicit
 
