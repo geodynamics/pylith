@@ -23,6 +23,7 @@ subpkginclude_HEADERS = \
 	lapack.h \
 	macrodefs.h \
 	petscfwd.h \
+	petscerror.h \
 	sievefwd.hh \
 	sievetypes.hh \
 	vectorfields.hh \
