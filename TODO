@@ -4,10 +4,6 @@ CURRENT ISSUES/PRIORITIES
 
 0. SWIG conversion
 
-  SolutionFields
-    createScatter()
-    scatter()
-
   libtests/topology/Field
     createVector()
     vector()

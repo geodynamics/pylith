@@ -32,6 +32,9 @@ typedef struct _p_VecScatter* PetscVecScatter;
 /// forward declaration for PETSc ISLocalToGlobalMapping
 typedef struct _p_ISLocalToGlobalMapping* PetscISLocalToGlobalMapping;
 
+/// forward declaration for PETSc KSP
+typedef struct _p_KSP* PetscKSP;
+
 /// forward declaration for PETSc SNES
 typedef struct _p_SNES* PetscSNES;
 

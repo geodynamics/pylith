@@ -14,6 +14,8 @@
 
 #include "SolutionFields.hh" // implementation of class methods
 
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::topology::SolutionFields::SolutionFields(const Mesh& mesh) :
@@ -104,6 +106,15 @@ pylith::topology::SolutionFields::shiftHistory(void)
 void
 pylith::topology::SolutionFields::createScatter(void)
 { // createScatter
+  PetscErrorCode err = 0;
+  if (0 != _scatter) {
+    err = VecScatterDestroy(_scatter); _scatter = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
+  
+  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), 
+				solution().section(), &_scatter);
+  CHECK_PETSC_ERROR(err);
 } // createScatter
 
 // ----------------------------------------------------------------------
@@ -111,6 +122,7 @@ pylith::topology::SolutionFields::createScatter(void)
 const PetscVecScatter
 pylith::topology::SolutionFields::scatter(void) const
 { // scatter
+  return _scatter;
 } // scatter
 
 // ----------------------------------------------------------------------
@@ -118,6 +130,7 @@ pylith::topology::SolutionFields::scatter(void) const
 PetscVecScatter
 pylith::topology::SolutionFields::scatter(void)
 { // scatter
+  return _scatter;
 } // scatter
 
 
