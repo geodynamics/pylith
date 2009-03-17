@@ -54,11 +54,7 @@ pylith::problems::Formulation::reformResidual(PetscSNES snes,
   PetscVec localVec;
   PetscErrorCode err = 0;
 
-#if 0
-  PetscVecScatter scatter = fields->scatter();
-#else
-  VecScatter scatter = 0;
-#endif
+  PetscVecScatter scatter = args->fields->scatter();
 
   // Copy solution information from PETSc vector into field
   const ALE::Obj<topology::Mesh::RealSection>& solutionSection = 

@@ -16,12 +16,9 @@
 
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 
-#include <petscksp.h> // USES PetscKSP
-
 // ----------------------------------------------------------------------
 // Constructor
-pylith::problems::Solver::Solver(void) :
-  _ksp(0)
+pylith::problems::Solver::Solver(void)
 { // constructor
 } // constructor
 
@@ -29,10 +26,6 @@ pylith::problems::Solver::Solver(void) :
 // Destructor
 pylith::problems::Solver::~Solver(void)
 { // destructor
-  if (0 != _ksp) {
-    PetscErrorCode err = KSPDestroy(_ksp); _ksp = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -49,16 +42,6 @@ pylith::problems::Solver::initialize(topology::SolutionFields* fields)
 
   topology::Field<topology::Mesh>& residual = fields->get("residual");
   residual.createVector();
-
-  PetscErrorCode err = 0;
-
-  if (0 != _ksp) {
-    err = KSPDestroy(_ksp); _ksp = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if    
-  err = KSPCreate(fields->mesh().comm(), &_ksp); CHECK_PETSC_ERROR(err);
-
-  err = KSPSetFromOptions(_ksp); CHECK_PETSC_ERROR(err);
 } // initialize
 
 

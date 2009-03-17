@@ -49,6 +49,13 @@ public :
    */
   void initialGuessNonzero(bool flag);
 
+  /** Initialize solver.
+   *
+   * @param fields Solution fields.
+   */
+  void
+  initialize(topology::SolutionFields* fields);
+
   /** Solve the system.
    *
    * @param solution Solution field.
