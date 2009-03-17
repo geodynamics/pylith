@@ -99,5 +99,26 @@ pylith::topology::SolutionFields::shiftHistory(void)
   _fields[_history[0]] = tmp;
 } // shiftHistory
 
+// ----------------------------------------------------------------------
+// Create vector scatter associated with solution fields.
+void
+pylith::topology::SolutionFields::createScatter(void)
+{ // createScatter
+} // createScatter
+
+// ----------------------------------------------------------------------
+// Get vector scatter associated with solution fields.
+const PetscVecScatter
+pylith::topology::SolutionFields::scatter(void) const
+{ // scatter
+} // scatter
+
+// ----------------------------------------------------------------------
+// Get vector scatter associated with solution fields.
+PetscVecScatter
+pylith::topology::SolutionFields::scatter(void)
+{ // scatter
+} // scatter
+
 
 // End of file 

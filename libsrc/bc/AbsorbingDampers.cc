@@ -395,7 +395,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 			    sieveMesh->depth())*spaceDim);
 
   // Get sparse matrix
-  const PetscMat* jacobianMat = jacobian->matrix();
+  const PetscMat jacobianMat = jacobian->matrix();
   assert(0 != jacobianMat);
 
   // Get parameters used in integration.
@@ -441,7 +441,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
     
     // Assemble cell contribution into PETSc Matrix
-    PetscErrorCode err = updateOperator(*jacobianMat, *submesh->getSieve(), 
+    PetscErrorCode err = updateOperator(jacobianMat, *submesh->getSieve(), 
 					iV, *c_iter, &_cellMatrix[0], 
 					ADD_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");

@@ -46,7 +46,7 @@ pylith::topology::TestJacobian::testMatrix(void)
   _initialize(&mesh, &fields);
   Jacobian jacobian(fields);
 
-  const PetscMat* matrix = jacobian.matrix();
+  const PetscMat matrix = jacobian.matrix();
   CPPUNIT_ASSERT(0 != matrix);
 } // testMatrix
 

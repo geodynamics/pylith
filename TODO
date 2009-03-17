@@ -4,6 +4,17 @@ CURRENT ISSUES/PRIORITIES
 
 0. SWIG conversion
 
+  SolutionFields
+    createScatter()
+    scatter()
+
+  libtests/topology/Field
+    createVector()
+    vector()
+  libtests/topology/SolutionFields
+    createScatter()
+    scatter()
+
   Cleanup logging. Constraints and Integrators should log at the C++
   level using the C++ EventLogger. Add finer grain logging at C++
   level as in ElasticityImplicit.

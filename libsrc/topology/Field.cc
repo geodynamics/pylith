@@ -19,6 +19,7 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
@@ -30,6 +31,7 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh) :
   _scale(1.0),
   _name("unknown"),
   _mesh(mesh),
+  _vector(0),
   _vecFieldType(OTHER),
   _dimensionsOkay(false)
 { // constructor
@@ -40,6 +42,10 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh) :
 template<typename mesh_type>
 pylith::topology::Field<mesh_type>::~Field(void)
 { // destructor
+  if (0 != _vector) {
+    PetscErrorCode err = VecDestroy(_vector); _vector = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -383,6 +389,35 @@ pylith::topology::Field<mesh_type>::view(const char* label)
   if (!_section.isNull())
     _section->view(label);
 } // view
+
+// ----------------------------------------------------------------------
+// Create PETSc vector for field.
+template<typename mesh_type>
+void
+pylith::topology::Field<mesh_type>::createVector(void)
+{ // createVector
+  PetscErrorCode err = 0;
+
+  if (0 != _vector) {
+    err = VecDestroy(_vector); _vector = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
+
+  const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = _mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, 
+					    _section->getName(), _section);
+  assert(!order.isNull());
+
+  err = VecCreate(_mesh.comm(), &_vector);
+  CHECK_PETSC_ERROR(err);
+
+  err = VecSetSizes(_vector, order->getLocalSize(), order->getGlobalSize());
+  CHECK_PETSC_ERROR(err);
+
+  err = VecSetFromOptions(_vector); CHECK_PETSC_ERROR(err);  
+} // createVector
 
 
 // End of file 

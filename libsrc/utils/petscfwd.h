@@ -26,6 +26,9 @@ typedef struct _p_Mat* PetscMat;
 /// forward declaration for PETSc Vec
 typedef struct _p_Vec* PetscVec;
 
+/// forward declaration for PETSc VecScatter
+typedef struct _p_VecScatter* PetscVecScatter;
+
 /// forward declaration for PETSc ISLocalToGlobalMapping
 typedef struct _p_ISLocalToGlobalMapping* PetscISLocalToGlobalMapping;
 

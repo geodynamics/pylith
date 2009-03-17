@@ -15,6 +15,9 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	Formulation.hh \
+	Solver.hh \
+	SolverLinear.hh \
+	SolverNonlinear.hh \
 	problemsfwd.hh
 
 noinst_HEADERS =

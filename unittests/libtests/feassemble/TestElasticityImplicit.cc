@@ -224,17 +224,17 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateJacobian(void)
   const int nrowsE = _data->numVertices * _data->spaceDim;
   const int ncolsE = _data->numVertices * _data->spaceDim;
 
-  const PetscMat* jacobianMat = jacobian.matrix();
+  const PetscMat jacobianMat = jacobian.matrix();
 
   int nrows = 0;
   int ncols = 0;
-  MatGetSize(*jacobianMat, &nrows, &ncols);
+  MatGetSize(jacobianMat, &nrows, &ncols);
   CPPUNIT_ASSERT_EQUAL(nrowsE, nrows);
   CPPUNIT_ASSERT_EQUAL(ncolsE, ncols);
 
   PetscMat jDense;
   PetscMat jSparseAIJ;
-  MatConvert(*jacobianMat, MATSEQAIJ, MAT_INITIAL_MATRIX, &jSparseAIJ);
+  MatConvert(jacobianMat, MATSEQAIJ, MAT_INITIAL_MATRIX, &jSparseAIJ);
   MatConvert(jSparseAIJ, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);
 
   double_array vals(nrows*ncols);

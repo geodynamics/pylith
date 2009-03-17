@@ -25,6 +25,8 @@
 // Include directives ---------------------------------------------------
 #include "FieldBase.hh" // ISA FieldBase
 
+#include "pylith/utils/petscfwd.h" // HASA PetscVec
+
 #include <petscmesh.hh>
 
 // Field ----------------------------------------------------------------
@@ -199,6 +201,21 @@ public :
    */
   void view(const char* label);
 
+  /// Create PETSc vector for field.
+  void createVector(void);
+
+  /** Get PETSc vector associated with field.
+   *
+   * @returns PETSc vector.
+   */
+  PetscVec vector(void);
+
+  /** Get PETSc vector associated with field.
+   *
+   * @returns PETSc vector.
+   */
+  const PetscVec vector(void) const;
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
@@ -206,6 +223,7 @@ private :
   std::string _name; ///< Name of field
   const mesh_type& _mesh; ///< Mesh associated with section
   ALE::Obj<RealSection> _section; ///< Real section with data
+  PetscVec _vector;
   VectorFieldEnum _vecFieldType; ///< Type of vector field
   bool _dimensionsOkay; ///< Flag indicating it is okay to dimensionalize
 

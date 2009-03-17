@@ -29,10 +29,8 @@ pylith::topology::Jacobian::Jacobian(const SolutionFields& fields) :
   const ALE::Obj<Mesh::SieveMesh>& sieveMesh = fields.mesh().sieveMesh();
   const ALE::Obj<Mesh::RealSection>& solnSection = fields.solution().section();
 
-  _matrix = new PetscMat;
-  assert(0 != _matrix);
   PetscErrorCode err = MeshCreateMatrix(sieveMesh, solnSection, 
-					MATAIJ, _matrix);
+					MATAIJ, &_matrix);
   CHECK_PETSC_ERROR_MSG(err, "Could not create PETSc sparse matrix "
 			"associated with system Jacobian.");
 } // constructor
@@ -41,13 +39,12 @@ pylith::topology::Jacobian::Jacobian(const SolutionFields& fields) :
 // Destructor.
 pylith::topology::Jacobian::~Jacobian(void)
 { // destructor
-  MatDestroy(*_matrix);
-  delete _matrix; _matrix = 0;
+  MatDestroy(_matrix); _matrix = 0;
 } // destructor
 
 // ----------------------------------------------------------------------
 // Get PETSc matrix.
-const PetscMat*
+const PetscMat
 pylith::topology::Jacobian::matrix(void) const
 { // matrix
   return _matrix;
@@ -55,7 +52,7 @@ pylith::topology::Jacobian::matrix(void) const
 
 // ----------------------------------------------------------------------
 // Get PETSc matrix.
-PetscMat*
+PetscMat
 pylith::topology::Jacobian::matrix(void)
 { // matrix
   return _matrix;
@@ -68,14 +65,14 @@ pylith::topology::Jacobian::assemble(const char* mode)
 { // assemble
   PetscErrorCode err = 0;
   if (0 == strcmp(mode, "final_assembly")) {
-    err = MatAssemblyBegin(*_matrix, MAT_FINAL_ASSEMBLY); 
+    err = MatAssemblyBegin(_matrix, MAT_FINAL_ASSEMBLY); 
     CHECK_PETSC_ERROR(err);
-    err = MatAssemblyEnd(*_matrix, MAT_FINAL_ASSEMBLY);
+    err = MatAssemblyEnd(_matrix, MAT_FINAL_ASSEMBLY);
     CHECK_PETSC_ERROR(err);
   } else if (0 == strcmp(mode, "flush_assembly")) {
-    err = MatAssemblyBegin(*_matrix, MAT_FLUSH_ASSEMBLY);
+    err = MatAssemblyBegin(_matrix, MAT_FLUSH_ASSEMBLY);
     CHECK_PETSC_ERROR(err);
-    err = MatAssemblyEnd(*_matrix, MAT_FLUSH_ASSEMBLY);
+    err = MatAssemblyEnd(_matrix, MAT_FLUSH_ASSEMBLY);
     CHECK_PETSC_ERROR(err);
   } else
     throw std::runtime_error("Unknown mode for assembly of sparse matrix "
@@ -87,7 +84,7 @@ pylith::topology::Jacobian::assemble(const char* mode)
 void
 pylith::topology::Jacobian::zero(void)
 { // zero
-  PetscErrorCode err = MatZeroEntries(*_matrix);
+  PetscErrorCode err = MatZeroEntries(_matrix);
   CHECK_PETSC_ERROR(err);
 } // zero
 
@@ -96,7 +93,7 @@ pylith::topology::Jacobian::zero(void)
 void
 pylith::topology::Jacobian::view(void)
 { // view
-  PetscErrorCode err = MatView(*_matrix, PETSC_VIEWER_STDOUT_WORLD);
+  PetscErrorCode err = MatView(_matrix, PETSC_VIEWER_STDOUT_WORLD);
   CHECK_PETSC_ERROR(err);
 } // view
 
@@ -113,7 +110,7 @@ pylith::topology::Jacobian::write(const char* filename)
     PetscViewerBinaryOpen(comm, filename, FILE_MODE_WRITE, &viewer);
   CHECK_PETSC_ERROR(err);
 
-  err = MatView(*_matrix, viewer); CHECK_PETSC_ERROR(err);
+  err = MatView(_matrix, viewer); CHECK_PETSC_ERROR(err);
   err = PetscViewerDestroy(viewer); CHECK_PETSC_ERROR(err);
 } // write
 

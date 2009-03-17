@@ -26,6 +26,10 @@ namespace pylith {
 
     class Formulation;
 
+    class Solver;
+    class SolverLinear;
+    class SolverNonlinear;
+
   } // problems
 } // pylith
 

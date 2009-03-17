@@ -78,8 +78,25 @@ public :
    */
   void shiftHistory(void);
 
+  /// Create vector scatter associated with solution fields.
+  void createScatter(void);
+
+  /** Get vector scatter associated with solution fields.
+   *
+   * @returns PETSc vector scatter.
+   */
+  const PetscVecScatter scatter(void) const;
+
+  /** Get vector scatter associated with solution fields.
+   *
+   * @returns PETSc vector scatter.
+   */
+  PetscVecScatter scatter(void);
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
+
+  PetscVecScatter _scatter; /// Petsc vector scatter.
 
   /// Name of field that corresponds to the solution.
   std::string _solutionName;

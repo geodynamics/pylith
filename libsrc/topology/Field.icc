@@ -95,6 +95,22 @@ pylith::topology::Field<mesh_type>::addDimensionOkay(void) const {
   return _dimensionsOkay;
 }
 
+// Get PETSc vector associated with field.
+template<typename mesh_type>
+inline
+PetscVec
+pylith::topology::Field<mesh_type>::vector(void) {
+  return _vector;
+}
+
+// Get PETSc vector associated with field.
+template<typename mesh_type>
+inline
+const PetscVec
+pylith::topology::Field<mesh_type>::vector(void) const {
+  return _vector;
+}
+
 #endif
 
 

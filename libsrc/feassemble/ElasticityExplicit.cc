@@ -314,7 +314,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   assert(!dispTSection.isNull());
 
   // Get sparse matrix
-  const PetscMat* jacobianMat = jacobian->matrix();
+  const PetscMat jacobianMat = jacobian->matrix();
   assert(0 != jacobianMat);
 
   // Get parameters used in integration.
@@ -379,7 +379,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     // Assemble cell contribution into PETSc matrix.
     _logger->eventBegin(updateEvent);
     jacobianVisitor.clear();
-    PetscErrorCode err = updateOperator(*jacobianMat, *sieveMesh->getSieve(),
+    PetscErrorCode err = updateOperator(jacobianMat, *sieveMesh->getSieve(),
 					jacobianVisitor, *c_iter,
 					&_cellMatrix[0], ADD_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");

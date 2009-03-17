@@ -45,13 +45,13 @@ public :
    *
    * @returns PETSc sparse matrix.
    */
-  const PetscMat* matrix(void) const;
+  const PetscMat matrix(void) const;
 
   /** Get PETSc matrix.
    *
    * @returns PETSc sparse matrix.
    */
-  PetscMat* matrix(void);
+  PetscMat matrix(void);
 
   /** Assemble matrix.
    *
@@ -75,7 +75,7 @@ public :
 private :
 
   const SolutionFields& _fields; ///< Solution fields associated with problem.
-  PetscMat* _matrix; ///< Sparse matrix for Jacobian of problem.
+  PetscMat _matrix; ///< Sparse matrix for Jacobian of problem.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
