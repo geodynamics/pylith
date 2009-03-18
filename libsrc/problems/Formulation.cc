@@ -50,41 +50,17 @@ pylith::problems::Formulation::reformResidual(PetscSNES snes,
   assert(0 != args);
   assert(0 != args->object);
   assert(0 != args->fields);
-
-  PetscVec localVec;
-  PetscErrorCode err = 0;
-
-  PetscVecScatter scatter = args->fields->scatter();
+  assert(0 != args->residual);
 
   // Copy solution information from PETSc vector into field
-  const ALE::Obj<topology::Mesh::RealSection>& solutionSection = 
-    args->fields->solution().section();
-  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
-			      solutionSection->sizeWithBC(),
-			      solutionSection->restrictSpace(),
-			      &localVec); CHECK_PETSC_ERROR(err);
-  err = VecScatterBegin(scatter, solutionVec, localVec, INSERT_VALUES,
-			SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
-  err = VecScatterEnd(scatter, solutionVec, localVec, INSERT_VALUES,
-		      SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
-  err = VecDestroy(localVec); CHECK_PETSC_ERROR(err);
+  args->fields->solution().scatterVectorToSection();
 
   // Reform residual
   args->object->reformResidual(args->residual, args->fields, 
 			       args->t, args->dt);  
 
   // Copy residual information from field into PETSc vector
-  const ALE::Obj<topology::Mesh::RealSection>& residualSection = 
-    args->fields->get("residual").section();
-  err = VecCreateSeqWithArray(PETSC_COMM_SELF, 
-			      residualSection->sizeWithBC(),
-			      residualSection->restrictSpace(), 
-			      &localVec); CHECK_PETSC_ERROR(err);
-  err = VecScatterBegin(scatter, localVec, residualVec, INSERT_VALUES,
-			SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
-  err = VecScatterEnd(scatter, localVec, residualVec, INSERT_VALUES,
-		      SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
-  err = VecDestroy(localVec); CHECK_PETSC_ERROR(err);
+  args->residual->scatterSectionToVector();
 } // reformResidual
 
 // ----------------------------------------------------------------------

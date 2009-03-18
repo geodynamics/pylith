@@ -216,6 +216,19 @@ public :
    */
   const PetscVec vector(void) const;
 
+  /// Create PETSc vector scatter for field. This is used to transfer
+  /// information from the "global" PETSc vector view to the "local"
+  /// Sieve section view.
+  void createScatter(void);
+
+  /// Scatter section information across processors to update the
+  ///  PETSc vector view of the field.
+  void scatterSectionToVector(void);
+
+  /// Scatter PETSc vector information across processors to update the
+  /// section view of the field.
+  void scatterVectorToSection(void);
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
@@ -223,7 +236,8 @@ private :
   std::string _name; ///< Name of field
   const mesh_type& _mesh; ///< Mesh associated with section
   ALE::Obj<RealSection> _section; ///< Real section with data
-  PetscVec _vector;
+  PetscVec _vector; ///< PETSc vector associated with field.
+  PetscVecScatter _scatter; ///< PETSc scatter associated with field.
   VectorFieldEnum _vecFieldType; ///< Type of vector field
   bool _dimensionsOkay; ///< Flag indicating it is okay to dimensionalize
 

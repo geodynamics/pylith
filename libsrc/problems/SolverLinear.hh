@@ -44,10 +44,10 @@ public :
 
   /** Set initial guess nonzero flag.
    *
-   * True = use previous solution as initial guess, False = use zero
-   * as initial guess.
+   * @param value true means use previous solution as initial guess, false
+   * means use zero as initial guess.
    */
-  void initialGuessNonzero(bool flag);
+  void initialGuessNonzero(const bool value);
 
   /** Initialize solver.
    *

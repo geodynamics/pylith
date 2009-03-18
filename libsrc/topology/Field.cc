@@ -419,5 +419,69 @@ pylith::topology::Field<mesh_type>::createVector(void)
   err = VecSetFromOptions(_vector); CHECK_PETSC_ERROR(err);  
 } // createVector
 
+// ----------------------------------------------------------------------
+// Create PETSc vector scatter for field. This is used to transfer
+// information from the "global" PETSc vector view to the "local"
+// Sieve section view.
+template<typename mesh_type>
+void
+pylith::topology::Field<mesh_type>::createScatter(void)
+{ // createScatter
+  PetscErrorCode err = 0;
+  if (0 != _scatter) {
+    err = VecScatterDestroy(_scatter); _scatter = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
+  
+  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, &_scatter);
+  CHECK_PETSC_ERROR(err);
+} // createScatter
+
+// ----------------------------------------------------------------------
+// Scatter section information across processors to update the
+//  PETSc vector view of the field.
+template<typename mesh_type>
+void
+pylith::topology::Field<mesh_type>::scatterSectionToVector(void)
+{ // scatterSectionToVector
+  assert(0 != _scatter);
+  assert(!_section.isNull());
+  assert(0 != _vector);
+
+  PetscErrorCode err = 0;
+  PetscVec localVec = 0;
+  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
+			      _section->sizeWithBC(), _section->restrictSpace(),
+			      &localVec); CHECK_PETSC_ERROR(err);
+  err = VecScatterBegin(_scatter, _vector, localVec, 
+			INSERT_VALUES, SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
+  err = VecScatterEnd(_scatter, _vector, localVec,
+		      INSERT_VALUES, SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
+  err = VecDestroy(localVec); CHECK_PETSC_ERROR(err);
+} // scatterSectionToVector
+
+// ----------------------------------------------------------------------
+// Scatter PETSc vector information across processors to update the
+// section view of the field.
+template<typename mesh_type>
+void
+pylith::topology::Field<mesh_type>::scatterVectorToSection(void)
+{ // scatterVectorToSection
+  assert(0 != _scatter);
+  assert(!_section.isNull());
+  assert(0 != _vector);
+
+  PetscErrorCode err = 0;
+  PetscVec localVec = 0;
+  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
+			      _section->sizeWithBC(), _section->restrictSpace(),
+			      &localVec); CHECK_PETSC_ERROR(err);
+  err = VecScatterBegin(_scatter, localVec, _vector,
+			INSERT_VALUES, SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
+  err = VecScatterEnd(_scatter, localVec, _vector,
+		      INSERT_VALUES, SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
+  err = VecDestroy(localVec); CHECK_PETSC_ERROR(err);
+} // scatterVectorToSection
+
 
 // End of file 

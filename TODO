@@ -4,12 +4,15 @@ CURRENT ISSUES/PRIORITIES
 
 0. SWIG conversion
 
-  libtests/topology/Field
-    createVector()
-    vector()
-  libtests/topology/SolutionFields
-    createScatter()
-    scatter()
+    libsrc/topology/Field
+      createScatter() [use ALE::Obj<PetscVecScatter> to share scatter]
+      When copying layout, copy VecScatter. [Fields]
+      scatterSectionToVector()
+      scatterVectorToSection()
+
+    libtests/topology/Field
+      createVector()
+      vector()
 
   Cleanup logging. Constraints and Integrators should log at the C++
   level using the C++ EventLogger. Add finer grain logging at C++

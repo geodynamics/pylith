@@ -38,9 +38,12 @@ pylith::problems::SolverLinear::~SolverLinear(void)
 // ----------------------------------------------------------------------
 // Set initial guess nonzero flag.
 void
-pylith::problems::SolverLinear::initialGuessNonzero(bool flag)
+pylith::problems::SolverLinear::initialGuessNonzero(const bool value)
 { // initialGuessNonzero
-  
+  assert(0 != _ksp);
+
+  PetscTruth flag = (value) ? PETSC_TRUE : PETSC_FALSE;
+  KSPSetInitialGuessNonzero(_ksp, flag);
 } // initialGuessNonzero
 
 // ----------------------------------------------------------------------
@@ -68,6 +71,22 @@ pylith::problems::SolverLinear::solve(topology::Field<topology::Mesh>* solution,
 				      const topology::Jacobian& jacobian,
 				      const topology::Field<topology::Mesh>& residual)
 { // solve
+  assert(0 != solution);
+
+  PetscErrorCode err = 0;
+
+  // Update PetscVector view of field.
+  residual->scatterSectionToVector();
+
+  err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, 
+			DIFFERENT_NONZERO_PATTERN); CHECK_PETSC_ERROR(err);
+
+  const PetscVec residualVec = residual.vector();
+  const PetscVec solutionVec = solution->vector();
+  err = KSPSolve(_ksp, residualVec, solutionVec); CHECK_PETSC_ERROR(err);
+
+  // Update section view of field.
+  solution->scatterVectorToSection();
 } // solve
 
 
