@@ -231,6 +231,15 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
 	 ++v_iter)
       section->addConstraintDimension(*v_iter, nconstraints[iV++]);
     fieldSrc.allocate();
+
+    int index = 0;
+    int i = 0;
+    for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+	 v_iter != vertices->end();
+	 ++v_iter, index += nconstraints[i++])
+      section->setConstraintDof(*v_iter, &constraints[index]);
+    fieldSrc.zero();
+    fieldSrc.view("ZERO FIELD"); // TEMPORARY
     fieldSrc.createScatter();
   } // Setup source field
 

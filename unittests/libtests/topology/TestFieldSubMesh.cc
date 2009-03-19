@@ -829,6 +829,7 @@ pylith::topology::TestFieldSubMesh::testScatterVectorToSection(void)
   _buildMesh(&mesh, &submesh);
   Field<SubMesh> field(submesh);
   const ALE::Obj<SubMesh::SieveMesh>& sieveMesh = submesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
   field.newSection(FieldBase::VERTICES_FIELD, fiberDim);
   field.allocate();
   const ALE::Obj<SubMesh::RealSection>& section = field.section();
