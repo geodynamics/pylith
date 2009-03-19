@@ -32,6 +32,7 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh) :
   _name("unknown"),
   _mesh(mesh),
   _vector(0),
+  _scatter(0),
   _vecFieldType(OTHER),
   _dimensionsOkay(false)
 { // constructor
@@ -42,8 +43,14 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh) :
 template<typename mesh_type>
 pylith::topology::Field<mesh_type>::~Field(void)
 { // destructor
+  PetscErrorCode err = 0;
   if (0 != _vector) {
-    PetscErrorCode err = VecDestroy(_vector); _vector = 0;
+    err = VecDestroy(_vector); _vector = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
+
+  if (0 != _scatter) {
+    err = VecScatterDestroy(_scatter); _scatter = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 } // destructor
@@ -154,6 +161,12 @@ pylith::topology::Field<mesh_type>::newSection(const Field& src)
     _section->setAtlas(srcSection->getAtlas());
     _section->allocateStorage();
     _section->setBC(srcSection->getBC());
+
+    if (0 != src._scatter) {
+      _scatter = src._scatter;
+      PetscErrorCode err = PetscObjectReference((PetscObject) _scatter);
+      CHECK_PETSC_ERROR(err);
+    } // if
   } // if
 } // newSection
 
@@ -427,6 +440,9 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::createScatter(void)
 { // createScatter
+  assert(!_section.isNull());
+  assert(!_mesh.sieveMesh().isNull());
+
   PetscErrorCode err = 0;
   if (0 != _scatter) {
     err = VecScatterDestroy(_scatter); _scatter = 0;
@@ -444,19 +460,32 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::scatterSectionToVector(void)
 { // scatterSectionToVector
-  assert(0 != _scatter);
   assert(!_section.isNull());
-  assert(0 != _vector);
+
+  if (0 == _scatter)
+    createScatter();
+  if (0 == _vector)
+    createVector();
 
   PetscErrorCode err = 0;
   PetscVec localVec = 0;
   err = VecCreateSeqWithArray(PETSC_COMM_SELF,
 			      _section->sizeWithBC(), _section->restrictSpace(),
 			      &localVec); CHECK_PETSC_ERROR(err);
+  std::cout << "BEFORE LOCALVEC: " << std::endl;
+  VecView(localVec, PETSC_VIEWER_STDOUT_SELF);
+  std::cout << "BEFORE _VECTOR: " << std::endl;
+  VecView(_vector, PETSC_VIEWER_STDOUT_SELF);
   err = VecScatterBegin(_scatter, _vector, localVec, 
 			INSERT_VALUES, SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
   err = VecScatterEnd(_scatter, _vector, localVec,
 		      INSERT_VALUES, SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
+
+  std::cout << "AFTER LOCALVEC: " << std::endl;
+  VecView(localVec, PETSC_VIEWER_STDOUT_SELF);
+  std::cout << "AFTER _VECTOR: " << std::endl;
+  VecView(_vector, PETSC_VIEWER_STDOUT_SELF);
+
   err = VecDestroy(localVec); CHECK_PETSC_ERROR(err);
 } // scatterSectionToVector
 
@@ -467,9 +496,12 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::scatterVectorToSection(void)
 { // scatterVectorToSection
-  assert(0 != _scatter);
   assert(!_section.isNull());
-  assert(0 != _vector);
+
+  if (0 == _scatter)
+    createScatter();
+  if (0 == _vector)
+    createVector();
 
   PetscErrorCode err = 0;
   PetscVec localVec = 0;

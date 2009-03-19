@@ -222,11 +222,11 @@ public :
   void createScatter(void);
 
   /// Scatter section information across processors to update the
-  ///  PETSc vector view of the field.
+  /// PETSc vector view of the field.
   void scatterSectionToVector(void);
 
   /// Scatter PETSc vector information across processors to update the
-  /// section view of the field.
+  /// Sieve section view of the field.
   void scatterVectorToSection(void);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
