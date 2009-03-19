@@ -472,20 +472,10 @@ pylith::topology::Field<mesh_type>::scatterSectionToVector(void)
   err = VecCreateSeqWithArray(PETSC_COMM_SELF,
 			      _section->sizeWithBC(), _section->restrictSpace(),
 			      &localVec); CHECK_PETSC_ERROR(err);
-  std::cout << "BEFORE LOCALVEC: " << std::endl;
-  VecView(localVec, PETSC_VIEWER_STDOUT_SELF);
-  std::cout << "BEFORE _VECTOR: " << std::endl;
-  VecView(_vector, PETSC_VIEWER_STDOUT_SELF);
-  err = VecScatterBegin(_scatter, _vector, localVec, 
-			INSERT_VALUES, SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
-  err = VecScatterEnd(_scatter, _vector, localVec,
-		      INSERT_VALUES, SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
-
-  std::cout << "AFTER LOCALVEC: " << std::endl;
-  VecView(localVec, PETSC_VIEWER_STDOUT_SELF);
-  std::cout << "AFTER _VECTOR: " << std::endl;
-  VecView(_vector, PETSC_VIEWER_STDOUT_SELF);
-
+  err = VecScatterBegin(_scatter, localVec, _vector,
+			INSERT_VALUES, SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
+  err = VecScatterEnd(_scatter, localVec, _vector,
+		      INSERT_VALUES, SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
   err = VecDestroy(localVec); CHECK_PETSC_ERROR(err);
 } // scatterSectionToVector
 
@@ -508,10 +498,10 @@ pylith::topology::Field<mesh_type>::scatterVectorToSection(void)
   err = VecCreateSeqWithArray(PETSC_COMM_SELF,
 			      _section->sizeWithBC(), _section->restrictSpace(),
 			      &localVec); CHECK_PETSC_ERROR(err);
-  err = VecScatterBegin(_scatter, localVec, _vector,
-			INSERT_VALUES, SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
-  err = VecScatterEnd(_scatter, localVec, _vector,
-		      INSERT_VALUES, SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
+  err = VecScatterBegin(_scatter, _vector, localVec,
+			INSERT_VALUES, SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
+  err = VecScatterEnd(_scatter, _vector, localVec,
+		      INSERT_VALUES, SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
   err = VecDestroy(localVec); CHECK_PETSC_ERROR(err);
 } // scatterVectorToSection
 

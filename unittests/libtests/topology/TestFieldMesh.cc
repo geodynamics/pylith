@@ -768,11 +768,9 @@ pylith::topology::TestFieldMesh::testScatterSectionToVector(void)
   } // for
 
   field.scatterSectionToVector();
-  CPPUNIT_ASSERT(0 != field._vector);
   CPPUNIT_ASSERT(0 != field._scatter);
   const PetscVec vec = field.vector();
-  std::cout << "VEC: " << std::endl;
-  VecView(vec, PETSC_VIEWER_STDOUT_SELF);
+  CPPUNIT_ASSERT(0 != vec);
   int size = 0;
   VecGetSize(vec, &size);
   double* valuesVec = 0;
@@ -791,6 +789,52 @@ pylith::topology::TestFieldMesh::testScatterSectionToVector(void)
 void
 pylith::topology::TestFieldMesh::testScatterVectorToSection(void)
 { // testScatterVectorToSection
+  const int fiberDim = 3;
+  const double valuesE[] = {
+    1.1, 2.2, 3.3,
+    1.2, 2.3, 3.4,
+    1.3, 2.4, 3.5,
+    1.4, 2.5, 3.6,
+  };
+
+  Mesh mesh;
+  _buildMesh(&mesh);
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
+  Field<Mesh> field(mesh);
+  field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+  field.allocate();
+  const ALE::Obj<Mesh::RealSection>& section = field.section();
+  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+
+  field.createVector();
+  const PetscVec vec = field.vector();
+  CPPUNIT_ASSERT(0 != vec);
+  int size = 0;
+  VecGetSize(vec, &size);
+  double* valuesVec = 0;
+  VecGetArray(vec, &valuesVec);
+
+  const double tolerance = 1.0e-06;
+  const int sizeE = vertices->size() * fiberDim;
+  CPPUNIT_ASSERT_EQUAL(sizeE, size);
+  for (int i=0; i < sizeE; ++i)
+    valuesVec[i] = valuesE[i];
+  VecRestoreArray(vec, &valuesVec);
+
+  field.scatterVectorToSection();
+  CPPUNIT_ASSERT(0 != field._scatter);
+
+  double_array values(fiberDim);
+  int i = 0;
+  for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter) {
+    section->restrictPoint(*v_iter, &values[0], fiberDim);
+    for (int iDim=0; iDim < fiberDim; ++iDim)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[i++], values[iDim], tolerance);
+  } // for
+
 } // testScatterVectorToSection
 
 // ----------------------------------------------------------------------
