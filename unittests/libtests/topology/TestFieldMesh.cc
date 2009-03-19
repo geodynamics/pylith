@@ -226,15 +226,13 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
     const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
     CPPUNIT_ASSERT(!section.isNull());
     int iV=0;
-
-    CPPUNIT_ASSERT(!vertices.isNull());
     for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
 	 v_iter != vertices->end();
 	 ++v_iter)
       section->addConstraintDimension(*v_iter, nconstraints[iV++]);
     fieldSrc.allocate();
+    fieldSrc.createScatter();
   } // Setup source field
-
 
   Field<Mesh> field(mesh);
   field.newSection(fieldSrc);
@@ -248,6 +246,9 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
     CPPUNIT_ASSERT_EQUAL(nconstraints[iV++], 
 			 section->getConstraintDimension(*v_iter));
   } // for
+
+  // Verify vector scatter was also copied.
+  CPPUNIT_ASSERT_EQUAL(fieldSrc._scatter, field._scatter);
 } // testNewSectionField
 
 // ----------------------------------------------------------------------
@@ -732,6 +733,10 @@ pylith::topology::TestFieldMesh::testCreateScatter(void)
   // Make sure we can do multiple calls to createScatter().
   field.createScatter();
   CPPUNIT_ASSERT(0 != field._scatter);
+
+  Field<Mesh> fieldB(mesh);
+  fieldB.newSection(field);
+  CPPUNIT_ASSERT_EQUAL(fieldB._scatter, field._scatter);
 } // testCreateScatter
 
 // ----------------------------------------------------------------------

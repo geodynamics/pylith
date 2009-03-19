@@ -107,7 +107,8 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
         sieve->setCone(cone, c);
         sieve->setConeOrientation(coneO, c);
       } // for
-      delete [] cone; cone = 0;
+      delete[] cone; cone = 0;
+      delete[] coneO; coneO = 0;
       // Symmetrize to fill up supports
       sieve->symmetrize();
     } else {

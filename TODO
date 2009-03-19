@@ -8,13 +8,6 @@ CURRENT ISSUES/PRIORITIES
       createScatter()
       When copying layout, copy VecScatter. [Fields]
 
-    libtests/topology/Field
-      createVector()
-      vector()
-      createScatter()
-      scatterVectorToSection()
-      scatterSectionToVector()
-
   Cleanup logging. Constraints and Integrators should log at the C++
   level using the C++ EventLogger. Add finer grain logging at C++
   level as in ElasticityImplicit.
