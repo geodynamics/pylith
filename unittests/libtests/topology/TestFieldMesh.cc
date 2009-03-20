@@ -239,7 +239,7 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
 	 ++v_iter, index += nconstraints[i++])
       section->setConstraintDof(*v_iter, &constraints[index]);
     fieldSrc.zero();
-    fieldSrc.view("ZERO FIELD"); // TEMPORARY
+    //fieldSrc.view("ZERO FIELD"); // TEMPORARY
     fieldSrc.createScatter();
   } // Setup source field
 
