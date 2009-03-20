@@ -19,6 +19,13 @@
 #if !defined(pylith_utils_petscerror_h)
 #define pylith_utils_petscerror_h
 
+#undef __FUNCT__
+#if defined(__FUNCTION_NAME__)
+#define __FUNCT__ __FUNCTION_NAME__
+#else
+#define __FUNCT__ "<unknown>"
+#endif
+
 #define CHECK_PETSC_ERROR(err) \
   if (err) { \
     PetscError(__LINE__, __FUNCT__, __FILE__, __SDIR__, err, 0, " "); \

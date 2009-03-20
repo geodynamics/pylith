@@ -202,6 +202,9 @@ if test "$enable_documentation" = "yes" ; then
   fi
 fi
 
+# Check whether compiler sets variable with function names.
+CIT_FUNCTIONSTRING
+
 # ENDIANNESS
 AC_C_BIGENDIAN
 
