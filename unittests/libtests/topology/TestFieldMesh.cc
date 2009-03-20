@@ -166,7 +166,7 @@ pylith::topology::TestFieldMesh::testNewSectionChart(void)
   const int nconstraints[] = { 0, 2, 1, 3 };
   const int constraints[] = {
               // 0
-    0, 3,     // 1
+    0, 2,     // 1
     2,        // 2
     0, 1, 2,  // 3
   };
@@ -205,7 +205,7 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
   const int nconstraints[] = { 0, 2, 1, 3 };
   const int constraints[] = {
               // 0
-    0, 3,     // 1
+    0, 2,     // 1
     2,        // 2
     0, 1, 2,  // 3
   };
@@ -239,12 +239,12 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
 	 ++v_iter, index += nconstraints[i++])
       section->setConstraintDof(*v_iter, &constraints[index]);
     fieldSrc.zero();
-    //fieldSrc.view("ZERO FIELD"); // TEMPORARY
-    fieldSrc.createScatter();
+    fieldSrc.view("ZERO FIELD"); // TEMPORARY
+    fieldSrc.createScatter(); // ERROR (including this line causes error)
   } // Setup source field
 
   Field<Mesh> field(mesh);
-  field.newSection(fieldSrc);
+  field.newSection(fieldSrc); // ERROR REALLY HERE?
   const ALE::Obj<Mesh::RealSection>& section = field.section();
   CPPUNIT_ASSERT(!section.isNull());
   int iV = 0;

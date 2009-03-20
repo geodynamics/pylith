@@ -184,13 +184,6 @@ void
 pylith::topology::TestFieldSubMesh::testNewSectionChart(void)
 { // testNewSectionChart
   const int fiberDim = 3;
-  const int nconstraints[] = { 0, 2, 1, 3 };
-  const int constraints[] = {
-              // 0
-    0, 3,     // 1
-    2,        // 2
-    0, 1, 2,  // 3
-  };
     
   Mesh mesh;
   SubMesh submesh;
@@ -227,7 +220,7 @@ pylith::topology::TestFieldSubMesh::testNewSectionField(void)
   const int nconstraints[] = { 0, 2, 1, 3 };
   const int constraints[] = {
               // 0
-    0, 3,     // 1
+    0, 2,     // 1
     2,        // 2
     0, 1, 2,  // 3
   };
@@ -849,12 +842,12 @@ pylith::topology::TestFieldSubMesh::testScatterVectorToSection(void)
   CPPUNIT_ASSERT(0 != vec);
   int size = 0;
   VecGetSize(vec, &size);
-  double* valuesVec = 0;
-  VecGetArray(vec, &valuesVec);
+  const int sizeE = vertices->size() * fiberDim;
+  CPPUNIT_ASSERT_EQUAL(sizeE, size); // ERROR: sizeE=9, size=12
 
   const double tolerance = 1.0e-06;
-  const int sizeE = vertices->size() * fiberDim;
-  CPPUNIT_ASSERT_EQUAL(sizeE, size);
+  double* valuesVec = 0;
+  VecGetArray(vec, &valuesVec);
   for (int i=0; i < sizeE; ++i)
     valuesVec[i] = valuesE[i];
   VecRestoreArray(vec, &valuesVec);
@@ -871,7 +864,6 @@ pylith::topology::TestFieldSubMesh::testScatterVectorToSection(void)
     for (int iDim=0; iDim < fiberDim; ++iDim)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[i++], values[iDim], tolerance);
   } // for
-
 } // testScatterVectorToSection
 
 // ----------------------------------------------------------------------
