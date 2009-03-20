@@ -163,13 +163,6 @@ void
 pylith::topology::TestFieldMesh::testNewSectionChart(void)
 { // testNewSectionChart
   const int fiberDim = 3;
-  const int nconstraints[] = { 0, 2, 1, 3 };
-  const int constraints[] = {
-              // 0
-    0, 2,     // 1
-    2,        // 2
-    0, 1, 2,  // 3
-  };
     
   Mesh mesh;
   _buildMesh(&mesh);
@@ -239,12 +232,11 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
 	 ++v_iter, index += nconstraints[i++])
       section->setConstraintDof(*v_iter, &constraints[index]);
     fieldSrc.zero();
-    fieldSrc.view("ZERO FIELD"); // TEMPORARY
-    fieldSrc.createScatter(); // ERROR (including this line causes error)
+    fieldSrc.createScatter();
   } // Setup source field
 
   Field<Mesh> field(mesh);
-  field.newSection(fieldSrc); // ERROR REALLY HERE?
+  field.newSection(fieldSrc);
   const ALE::Obj<Mesh::RealSection>& section = field.section();
   CPPUNIT_ASSERT(!section.isNull());
   int iV = 0;
@@ -679,12 +671,12 @@ pylith::topology::TestFieldMesh::testCreateVector(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
   Field<Mesh> field(mesh);
   field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
   field.allocate();
   
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
   const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
   CPPUNIT_ASSERT(!vertices.isNull());
@@ -718,8 +710,19 @@ pylith::topology::TestFieldMesh::testVector(void)
   CPPUNIT_ASSERT(0 == field._vector);
   field.createVector();
   CPPUNIT_ASSERT(0 != field._vector);
-  const PetscVec vector = field.vector();
-  CPPUNIT_ASSERT_EQUAL(field._vector, vector);
+
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  
+  const PetscVec vec = field.vector();
+  CPPUNIT_ASSERT_EQUAL(field._vector, vec);
+  int size = 0;
+  VecGetSize(vec, &size);
+  const int sizeE = vertices->size() * fiberDim;
+  CPPUNIT_ASSERT_EQUAL(sizeE, size);
 } // testVector
 
 // ----------------------------------------------------------------------
@@ -763,13 +766,16 @@ pylith::topology::TestFieldMesh::testScatterSectionToVector(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
   Field<Mesh> field(mesh);
   field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
   field.allocate();
   const ALE::Obj<Mesh::RealSection>& section = field.section();
+  CPPUNIT_ASSERT(!section.isNull());
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
   const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
 
   double_array values(fiberDim);
   int i = 0;
