@@ -808,6 +808,8 @@ pylith::topology::TestFieldSubMesh::testScatterSectionToVector(void)
     section->updatePoint(*v_iter, &values[0]);
   } // for
 
+  field.createVector();
+  field.createScatter();
   field.scatterSectionToVector();
   CPPUNIT_ASSERT(0 != field._scatter);
   const PetscVec vec = field.vector();
@@ -866,6 +868,7 @@ pylith::topology::TestFieldSubMesh::testScatterVectorToSection(void)
     valuesVec[i] = valuesE[i];
   VecRestoreArray(vec, &valuesVec);
 
+  field.createScatter();
   field.scatterVectorToSection();
   CPPUNIT_ASSERT(0 != field._scatter);
 

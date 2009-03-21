@@ -459,14 +459,11 @@ pylith::topology::Field<mesh_type>::createScatter(void)
 //  PETSc vector view of the field.
 template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::scatterSectionToVector(void)
+pylith::topology::Field<mesh_type>::scatterSectionToVector(void) const
 { // scatterSectionToVector
   assert(!_section.isNull());
-
-  if (0 == _scatter)
-    createScatter();
-  if (0 == _vector)
-    createVector();
+  assert(0 != _scatter);
+  assert(0 != _vector);
 
   PetscErrorCode err = 0;
   PetscVec localVec = 0;
@@ -485,14 +482,11 @@ pylith::topology::Field<mesh_type>::scatterSectionToVector(void)
 // section view of the field.
 template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::scatterVectorToSection(void)
+pylith::topology::Field<mesh_type>::scatterVectorToSection(void) const
 { // scatterVectorToSection
   assert(!_section.isNull());
-
-  if (0 == _scatter)
-    createScatter();
-  if (0 == _vector)
-    createVector();
+  assert(0 != _scatter);
+  assert(0 != _vector);
 
   PetscErrorCode err = 0;
   PetscVec localVec = 0;

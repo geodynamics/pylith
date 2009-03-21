@@ -223,11 +223,11 @@ public :
 
   /// Scatter section information across processors to update the
   /// PETSc vector view of the field.
-  void scatterSectionToVector(void);
+  void scatterSectionToVector(void) const;
 
   /// Scatter PETSc vector information across processors to update the
   /// Sieve section view of the field.
-  void scatterVectorToSection(void);
+  void scatterVectorToSection(void) const;
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

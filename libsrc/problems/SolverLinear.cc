@@ -15,8 +15,11 @@
 #include "SolverLinear.hh" // implementation of class methods
 
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/topology/Jacobian.hh" // USES Jacobian
 
 #include <petscksp.h> // USES PetscKSP
+
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -43,7 +46,8 @@ pylith::problems::SolverLinear::initialGuessNonzero(const bool value)
   assert(0 != _ksp);
 
   PetscTruth flag = (value) ? PETSC_TRUE : PETSC_FALSE;
-  KSPSetInitialGuessNonzero(_ksp, flag);
+  PetscErrorCode err = KSPSetInitialGuessNonzero(_ksp, flag);
+  CHECK_PETSC_ERROR(err);
 } // initialGuessNonzero
 
 // ----------------------------------------------------------------------
@@ -76,8 +80,9 @@ pylith::problems::SolverLinear::solve(topology::Field<topology::Mesh>* solution,
   PetscErrorCode err = 0;
 
   // Update PetscVector view of field.
-  residual->scatterSectionToVector();
+  residual.scatterSectionToVector();
 
+  const PetscMat jacobianMat = jacobian.matrix();
   err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, 
 			DIFFERENT_NONZERO_PATTERN); CHECK_PETSC_ERROR(err);
 

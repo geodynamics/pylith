@@ -23,13 +23,12 @@
 #define pylith_problems_solverlinear_hh
 
 // Include directives ---------------------------------------------------
-#include "problemsfwd.hh" // forward declarations
+#include "Solver.hh" // ISA Solver
 
-#include "pylith/feassemble/feassemblefwd.hh" // USES Integrator
-#include "pylith/topology/topologyfwd.hh" // USES Mesh, Field, SolutionFields
+#include "pylith/utils/petscfwd.h" // HASA PetscKSP
 
 // SolverLinear ---------------------------------------------------------
-class pylith::problems::SolverLinear
+class pylith::problems::SolverLinear : Solver
 { // Integrator
   friend class TestSolverLinear; // unit testing
 
@@ -69,6 +68,7 @@ public :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
+  PetscKSP _ksp; ///< PETSc KSP linear solver.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
