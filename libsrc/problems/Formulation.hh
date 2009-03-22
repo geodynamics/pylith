@@ -117,6 +117,10 @@ public :
   void submeshIntegrators(IntegratorSubMesh** integrators,
 			  const int numIntegrators);
 
+  /** Initialize solver for formulation.
+   *
+   * @param 
+
   /** Reform system residual.
    *
    * @param residual Field containing values for residual
