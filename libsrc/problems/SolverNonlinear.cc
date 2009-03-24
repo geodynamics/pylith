@@ -14,6 +14,7 @@
 
 #include "SolverNonlinear.hh" // implementation of class methods
 
+#include "Formulation.hh" // USES Formulation
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 
@@ -42,33 +43,31 @@ pylith::problems::SolverNonlinear::~SolverNonlinear(void)
 // Initialize solver.
 void
 pylith::problems::SolverNonlinear::initialize(
-			             topology::SolutionFields* fields,
+			             const topology::SolutionFields& fields,
 				     const topology::Jacobian& jacobian,
-				     Formulation::ResidualFn* residualFn,
-				     Formulation::ArgsResidual* argsResidual,
-				     Formulation::JacobianFn* jacobianFn,
-				     Formulation::ArgsJacobian* argsJacobian)
+				     Formulation* formulation)
 { // initialize
-  assert(0 != fields);
+  assert(0 != formulation);
 
-  Solver::initialize(fields);
+  Solver::initialize(fields, jacobian, formulation);
 
   PetscErrorCode err = 0;
   if (0 != _snes) {
     err = SNESDestroy(_snes); _snes = 0;
     CHECK_PETSC_ERROR(err);
   } // if    
-  err = SNESCreate(fields->mesh().comm(), &_snes); CHECK_PETSC_ERROR(err);
+  err = SNESCreate(fields.mesh().comm(), &_snes); CHECK_PETSC_ERROR(err);
   err = SNESSetFromOptions(_snes); CHECK_PETSC_ERROR(err);
 
-  const topology::Field<topology::Mesh>& residual = fields->residual();
+  const topology::Field<topology::Mesh>& residual = fields.get("residual");
   const PetscVec residualVec = residual.vector();
-  err = SNESSetFunction(_snes, residualVec, residualFn, argsResidual);
+  err = SNESSetFunction(_snes, residualVec, reformResidual,
+			(void*) formulation);
   CHECK_PETSC_ERROR(err);
 
-  const PetscMat jacobianMat = jacobian.matrix();
-  err = SNESSetJacobian(_snes, jacobianMat, jacobianMat,
-			jacobianFn, argsJacobian);
+  PetscMat jacobianMat = jacobian.matrix();
+  err = SNESSetJacobian(_snes, jacobianMat, jacobianMat, reformJacobian,
+			(void*) formulation);
   CHECK_PETSC_ERROR(err);
 } // initialize
 
@@ -84,15 +83,52 @@ pylith::problems::SolverNonlinear::solve(
 
   PetscErrorCode err = 0;
 
-  // Update PetscVector view of field.
-  residual.scatterSectionToVector();
-
+  const PetscVec residualVec = residual.vector();
   const PetscVec solutionVec = solution->vector();
-  err = SNESSolve(_ksp, residualVec, solutionVec); CHECK_PETSC_ERROR(err);
+  err = SNESSolve(_snes, residualVec, solutionVec); CHECK_PETSC_ERROR(err);
 
   // Update section view of field.
   solution->scatterVectorToSection();
 } // solve
+
+// ----------------------------------------------------------------------
+// Generic C interface for reformResidual for integration with
+// PETSc SNES solvers.
+PetscErrorCode
+pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
+						  PetscVec solutionVec,
+						  PetscVec residualVec,
+						  void* context)
+{ // reformResidual
+  assert(0 != context);
+  Formulation* formulation = (Formulation*) context;
+  assert(0 != formulation);
+
+  // Reform residual
+  formulation->reformResidual();
+
+  return 0;
+} // reformResidual
+
+// ----------------------------------------------------------------------
+// Generic C interface for reformJacobian for integration with
+// PETSc SNES solvers.
+PetscErrorCode
+pylith::problems::SolverNonlinear::reformJacobian(PetscSNES snes,
+						  PetscVec solutionVec,
+						  PetscMat* jacobianMat,
+						  PetscMat* preconditionerMat,
+						  MatStructure* preconditionerLayout,
+						  void* context)
+{ // reformJacobian
+  assert(0 != context);
+  Formulation* formulation = (Formulation*) context;
+  assert(0 != formulation);
+
+  formulation->reformJacobian();
+
+  return 0;
+} // reformJacobian
 
 
 // End of file

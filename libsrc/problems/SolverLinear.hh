@@ -51,9 +51,13 @@ public :
   /** Initialize solver.
    *
    * @param fields Solution fields.
+   * @param jacobian Jacobian of system.
+   * @param formulation Formulation of system of equations.
    */
   void
-  initialize(topology::SolutionFields* fields);
+  initialize(const topology::SolutionFields& fields,
+	     const topology::Jacobian& jacobian,
+	     Formulation* const formulation);
 
   /** Solve the system.
    *

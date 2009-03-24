@@ -26,8 +26,6 @@ CURRENT ISSUES/PRIORITIES
   pytests/bc/TestDirichletBoundary
   pytests/bc/TestNeumann (output)
 
-
-
   libtests/feassemble/ElasticityExplict
     testVerifyConfiguration()
     testCellField()

@@ -27,9 +27,10 @@
 #include "Solver.hh" // ISA Solver
 
 #include "pylith/utils/petscfwd.h" // HASA PetscSNES
+#include <petscmat.h> // USES MatStructure
 
 // SolverNonlinear ---------------------------------------------------------
-class pylith::problems::SolverNonlinear
+class pylith::problems::SolverNonlinear : public Solver
 { // Integrator
   friend class TestSolverNonlinear; // unit testing
 
@@ -45,51 +46,13 @@ public :
   /** Initialize solver.
    *
    * @param fields Solution fields.
-   * @param jacobian Jacobian of the system.
-   * @param residualFn Function for reforming residual.
-   * @param argsResidual Structure holding args for reforming residual.
-   * @param jacobianFn Function for reforming residual.
-   * @param argsJacobian Structure holding args for reforming residual.
+   * @param jacobian Jacobian of system.
+   * @param formulation Formulation of system of equations.
    */
   void
-  initialize(topology::SolutionFields* fields,
+  initialize(const topology::SolutionFields& fields,
 	     const topology::Jacobian& jacobian,
-	     Formulation::ResidualFn* residualFn,
-	     Formulation::ArgsResidual* argsResidual,
-	     Formulation::JacobianFn* jacobianFn,
-	     Formulation::ArgsJacobian* argsJacobian);
-
-  /** Generic C interface for reformResidual for integration with
-   * PETSc SNES solvers.
-   *
-   * @param snes PETSc scalable nonlinear equation solver.
-   * @param solutionVec PETSc vector for solution.
-   * @param residualVec PETSc vector for residual.
-   * @param context ArgsResidual structure with arguments.
-   */
-  static
-  void reformResidual(PetscSNES snes,
-		      PetscVec solutionVec,
-		      PetscVec residualVec,
-		      void* context);
-
-  /** Generic C interface for reformJacobian for integration with
-   * PETSc SNES solvers.
-   *
-   * @param snes PETSc scalable nonlinear equation solver.
-   * @param solutionVec PETSc vector for solution.
-   * @param jacobianMat PETSc sparse matrix for system Jacobian.
-   * @param preconditionerMat PETSc sparse matrix for preconditioner.
-   * @param Flag indicating layout of preconditioner matrix.
-   * @param context ArgsJacobian structure with arguments.
-   */
-  static
-  void reformJacobian(PetscSNES snes,
-		      PetscVec solutionVec,
-		      PetscMat jacobianMat,
-		      PetscMat preconditionerMat,
-		      int* preconditionerLayout,
-		      void* context);
+	     Formulation* const formulation);
 
   /** Solve the system.
    *
@@ -100,6 +63,40 @@ public :
   void solve(topology::Field<topology::Mesh>* solution,
 	     const topology::Jacobian& jacobian,
 	     const topology::Field<topology::Mesh>& residual);
+
+  /** Generic C interface for reformResidual for integration with
+   * PETSc SNES solvers.
+   *
+   * @param snes PETSc scalable nonlinear equation solver.
+   * @param solutionVec PETSc vector for solution.
+   * @param residualVec PETSc vector for residual.
+   * @param context ArgsResidual structure with arguments.
+   * @returns PETSc error code.
+   */
+  static
+  PetscErrorCode reformResidual(PetscSNES snes,
+				PetscVec solutionVec,
+				PetscVec residualVec,
+				void* context);
+
+  /** Generic C interface for reformJacobian for integration with
+   * PETSc SNES solvers.
+   *
+   * @param snes PETSc scalable nonlinear equation solver.
+   * @param solutionVec PETSc vector for solution.
+   * @param jacobianMat PETSc sparse matrix for system Jacobian.
+   * @param preconditionerMat PETSc sparse matrix for preconditioner.
+   * @param Flag indicating layout of preconditioner matrix.
+   * @param context ArgsJacobian structure with arguments.
+   * @returns PETSc error code.
+   */
+  static
+  PetscErrorCode reformJacobian(PetscSNES snes,
+				PetscVec solutionVec,
+				PetscMat* jacobianMat,
+				PetscMat* preconditionerMat,
+				MatStructure* preconditionerLayout,
+				void* context);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

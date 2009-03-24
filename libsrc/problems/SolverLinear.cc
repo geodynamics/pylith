@@ -53,27 +53,31 @@ pylith::problems::SolverLinear::initialGuessNonzero(const bool value)
 // ----------------------------------------------------------------------
 // Initialize solver.
 void
-pylith::problems::SolverLinear::initialize(topology::SolutionFields* fields)
+pylith::problems::SolverLinear::initialize(
+				   const topology::SolutionFields& fields,
+				   const topology::Jacobian& jacobian,
+				   Formulation* formulation)
 { // initialize
-  assert(0 != fields);
+  assert(0 != formulation);
 
-  Solver::initialize(fields);
+  Solver::initialize(fields, jacobian, formulation);
 
   PetscErrorCode err = 0;
   if (0 != _ksp) {
     err = KSPDestroy(_ksp); _ksp = 0;
     CHECK_PETSC_ERROR(err);
   } // if    
-  err = KSPCreate(fields->mesh().comm(), &_ksp); CHECK_PETSC_ERROR(err);
+  err = KSPCreate(fields.mesh().comm(), &_ksp); CHECK_PETSC_ERROR(err);
   err = KSPSetFromOptions(_ksp); CHECK_PETSC_ERROR(err);
 } // initialize
 
 // ----------------------------------------------------------------------
 // Solve the system.
 void
-pylith::problems::SolverLinear::solve(topology::Field<topology::Mesh>* solution,
-				      const topology::Jacobian& jacobian,
-				      const topology::Field<topology::Mesh>& residual)
+pylith::problems::SolverLinear::solve(
+			      topology::Field<topology::Mesh>* solution,
+			      const topology::Jacobian& jacobian,
+			      const topology::Field<topology::Mesh>& residual)
 { // solve
   assert(0 != solution);
 

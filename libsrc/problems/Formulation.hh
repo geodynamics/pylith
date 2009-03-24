@@ -13,7 +13,8 @@
 /**
  * @file pylith/problems/Formulation.hh
  *
- * @brief Object for managing forming Jacobian and residual for the problem.
+ * @brief C++ Object that manages reforming the Jacobian and residual for
+ * the problem.
  */
 
 #if !defined(pylith_problems_formulation_hh)
@@ -66,52 +67,32 @@ public :
   void submeshIntegrators(IntegratorSubMesh** integrators,
 			  const int numIntegrators);
 
-  /** Set handle to solution fields.
+  /** Update handles and parameters for reforming the Jacobian and
+   *  residual.
    *
-   * @param fields Solution fields.
-   */
-  void solutionFields(SolutionFields* fields);
-
-  /** Update current time and time step for advancing from t to t+dt.
-   *
+   * @param jacobian Handle to sparse matrix for Jacobian of system.
+   * @param fields Handle to solution fields.
    * @param t Current time (nondimensional).
    * @param dt Time step (nondimension).
    */
-  void updateTime(const double t,
-		  const double dt);
+  void updateSettings(topology::Jacobian* jacobian,
+		      topology::SolutionFields* fields,
+		      const double t,
+		      const double dt);
 
-  /** Initialize solver for formulation.
-   *
-   * @param solver Solver for system.
-   */
-  void initializeSolver(Solver* solver);
-
-  /** Reform system residual.
-   *
-   * @param residual Field containing values for residual
-   * @param fields Solution fields
-   * @param t Current time.
-   * @param dt Current time step (t -> t+dt).
-   */
+  /// Reform system residual.
   void reformResidual(void);
   
-  /** Reform system Jacobian.
-   *
-   * @param jacobian Sparse matrix for Jacobian of system.
-   * @param fields Solution fields
-   * @param t Current time.
-   * @param dt Current time step (t -> t+dt).
-   */
+  /// Reform system Jacobian.
   void reformJacobian(void);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  double t; ///< Current time (nondimensional).
-  double dt; ///< Current time step (nondimensional).
-
-  topology::Jacobian* _jacobian; ///< Jacobian of system.
-  topology::SolutionFields* _fields; ///< Solution fields for system.
+  double _t; ///< Current time (nondimensional).
+  double _dt; ///< Current time step (nondimensional).
+  topology::Jacobian* _jacobian; ///< Handle to Jacobian of system.
+  topology::SolutionFields* _fields; ///< Handle to solution fields for system.
 
   /// Integrators over subdomains of the mesh.
   std::vector<IntegratorMesh*> _meshIntegrators;
