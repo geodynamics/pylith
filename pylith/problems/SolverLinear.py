@@ -15,9 +15,10 @@
 ## @brief Python PyLith linear algebraic solver.
 
 from Solver import Solver
+from problems import SolverLinear as ModuleSolverLinear
 
 # SolverLinear class
-class SolverLinear(Solver):
+class SolverLinear(Solver, ModuleSolverLinear):
   """
   Python PyLith linear algebraic solver.
   """
@@ -33,13 +34,16 @@ class SolverLinear(Solver):
     ## Python object for managing SolverLinear facilities and properties.
     ##
     ## \b Properties
-    ## @li None
+    ## @li \b initial_guess_zero Use zero for initial guess.
     ##
     ## \b Facilities
     ## @li None
 
     import pyre.inventory
 
+    guessZero = pyre.inventory.bool("initial_guess_zero", default=True)
+    guessZero.meta['tip'] = "Use zero for initial guess."
+    
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -48,40 +52,9 @@ class SolverLinear(Solver):
     Constructor.
     """
     Solver.__init__(self, name)
-    self._loggingPrefix = "SoLi "
+    ModuleSolverLinear.__init__(self)
     return
 
-
-  def initialize(self, mesh, field):
-    """
-    Initialize solver.
-    """
-    self._setupLogging()
-    logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
-
-    self._createCppHandle()
-    Solver.initialize(self, mesh, field)
-    self.cppHandle.initialize(mesh.cppHandle, field)
-
-    self._logger.eventEnd(logEvent)
-    return
-
-
-  def solve(self, fieldOut, jacobian, fieldIn):
-    """
-    Solve linear system.
-    """
-    logEvent = "%ssolve" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
-
-    self._info.log("Solving linear equations.")
-    assert(None != self.cppHandle)
-    self.cppHandle.solve(fieldOut, jacobian, fieldIn)
-
-    self._logger.eventEnd(logEvent)
-    return
-  
 
   # PRIVATE METHODS /////////////////////////////////////////////////////
 
@@ -90,18 +63,9 @@ class SolverLinear(Solver):
     Set members based using inventory.
     """
     Solver._configure(self)
+    self.initialGuessZero(self.inventory.guessZero)
     return
 
-
-  def _createCppHandle(self):
-    """
-    Create handle to corresponding C++ object.
-    """
-    if None == self.cppHandle:
-      import pylith.solver.solver as bindings
-      self.cppHandle = bindings.SolverLinear()
-    return
-  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

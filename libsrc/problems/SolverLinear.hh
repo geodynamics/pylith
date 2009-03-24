@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/problems/SolverLinear.hh
+ * @file libsrc/problems/SolverLinear.hh
  *
  * @brief Object for using PETSc scalable linear equation solvers (KSP).
  *
@@ -29,7 +29,7 @@
 
 // SolverLinear ---------------------------------------------------------
 class pylith::problems::SolverLinear : Solver
-{ // Integrator
+{ // SolverLinear
   friend class TestSolverLinear; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
@@ -41,12 +41,12 @@ public :
   /// Destructor
   ~SolverLinear(void);
 
-  /** Set initial guess nonzero flag.
+  /** Set initial guess zero flag.
    *
-   * @param value true means use previous solution as initial guess, false
-   * means use zero as initial guess.
+   * @param value True means use zero as initial guess, false means
+   * use previous solution as initial guess.
    */
-  void initialGuessNonzero(const bool value);
+  void initialGuessZero(const bool value);
 
   /** Initialize solver.
    *

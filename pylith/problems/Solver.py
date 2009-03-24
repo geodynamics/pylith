@@ -37,7 +37,7 @@ class Solver(Component):
     ## Python object for managing Solver facilities and properties.
     ##
     ## \b Properties
-    ## @li \b initial_guess_zero Use zero for initial guess.
+    ## @li None
     ##
     ## \b Facilities
     ## @li None
@@ -55,16 +55,6 @@ class Solver(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="solver")
-    self.cppHandle = None
-    return
-
-
-  def initialize(self, mesh, field):
-    """
-    Initialize solver.
-    """
-    assert(None != self.cppHandle)
-    self.cppHandle.setInitialGuessNonzero(not self.guessZero)
     return
 
 
@@ -75,30 +65,8 @@ class Solver(Component):
     Set members based using inventory.
     """
     Component._configure(self)
-    self.guessZero = self.inventory.guessZero
     return
 
-
-  def _setupLogging(self):
-    """
-    Setup event logging.
-    """
-    if not "_loggingPrefix" in dir(self):
-      self._loggingPrefix = ""
-
-    from pylith.utils.EventLogger import EventLogger
-    logger = EventLogger()
-    logger.setClassName("FE Solver")
-    logger.initialize()
-
-    events = ["init",
-              "solve"]
-    for event in events:
-      logger.registerEvent("%s%s" % (self._loggingPrefix, event))
-
-    self._logger = logger
-    return
-  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

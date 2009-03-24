@@ -159,6 +159,34 @@ namespace pylith {
        */
       void view(const char* label);
 
+      /// Create PETSc vector for field.
+      void createVector(void);
+      
+      /** Get PETSc vector associated with field.
+       *
+       * @returns PETSc vector.
+       */
+      PetscVec vector(void);
+      
+      /** Get PETSc vector associated with field.
+       *
+       * @returns PETSc vector.
+       */
+      const PetscVec vector(void) const;
+      
+      /// Create PETSc vector scatter for field. This is used to transfer
+      /// information from the "global" PETSc vector view to the "local"
+      /// Sieve section view.
+      void createScatter(void);
+      
+      /// Scatter section information across processors to update the
+      /// PETSc vector view of the field.
+      void scatterSectionToVector(void) const;
+      
+      /// Scatter PETSc vector information across processors to update the
+      /// Sieve section view of the field.
+      void scatterVectorToSection(void) const;
+
     }; // Field
 
   } // topology

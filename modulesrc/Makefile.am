@@ -17,7 +17,7 @@ SUBDIRS = \
 	materials \
 	meshio \
 	mpi \
-	solver \
+	problems \
 	topology \
 	utils
 

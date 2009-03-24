@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/problems/Solver.hh
+ * @file libsrc/problems/Solver.hh
  *
  * @brief Abstract C++ base class for using PETSc linear and nonlinear
  * solvers.
@@ -28,7 +28,7 @@
 
 // Solver ---------------------------------------------------------
 class pylith::problems::Solver
-{ // Integrator
+{ // Solver
   friend class TestSolver; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////

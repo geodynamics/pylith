@@ -39,16 +39,16 @@ pylith::problems::SolverLinear::~SolverLinear(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Set initial guess nonzero flag.
+// Set initial guess zero flag.
 void
-pylith::problems::SolverLinear::initialGuessNonzero(const bool value)
-{ // initialGuessNonzero
+pylith::problems::SolverLinear::initialGuessZero(const bool value)
+{ // initialGuessZero
   assert(0 != _ksp);
 
-  PetscTruth flag = (value) ? PETSC_TRUE : PETSC_FALSE;
+  PetscTruth flag = (value) ? PETSC_FALSE : PETSC_TRUE;
   PetscErrorCode err = KSPSetInitialGuessNonzero(_ksp, flag);
   CHECK_PETSC_ERROR(err);
-} // initialGuessNonzero
+} // initialGuessZero
 
 // ----------------------------------------------------------------------
 // Initialize solver.

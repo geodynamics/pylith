@@ -227,7 +227,7 @@ AC_CONFIG_FILES([Makefile
                 modulesrc/materials/Makefile
                 modulesrc/meshio/Makefile
                 modulesrc/mpi/Makefile
-                modulesrc/solver/Makefile
+                modulesrc/problems/Makefile
 		modulesrc/topology/Makefile
 		modulesrc/utils/Makefile
 		applications/Makefile

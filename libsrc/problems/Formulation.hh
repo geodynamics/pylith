@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/problems/Formulation.hh
+ * @file libsrc/problems/Formulation.hh
  *
  * @brief C++ Object that manages reforming the Jacobian and residual for
  * the problem.
@@ -33,7 +33,7 @@
 
 // Formulation ----------------------------------------------------------
 class pylith::problems::Formulation
-{ // Integrator
+{ // Formulation
   friend class TestFormulation; // unit testing
 
 // PRIVATE TYPEDEFS /////////////////////////////////////////////////////

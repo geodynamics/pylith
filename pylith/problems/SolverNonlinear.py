@@ -15,6 +15,7 @@
 ## @brief Python PyLith nonlinear algebraic solver.
 
 from Solver import Solver
+from problems import SolverNonlinear as ModuleSolverNonlinear
 
 # SolverNonlinear class
 class SolverNonlinear(Solver):
@@ -48,39 +49,9 @@ class SolverNonlinear(Solver):
     Constructor.
     """
     Solver.__init__(self, name)
-    self._loggingPrefix = "SoNL "
+    ModuleSolverNonlinear.__init__(self)
     return
 
-
-  def initialize(self, mesh, field):
-    """
-    Initialize solver.
-    """
-    self._setupLogging()
-    logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
-
-    self._createCppHandle()
-    self.cppHandle.initialize(mesh.cppHandle, field)
-
-    self._logger.eventEnd(logEvent)
-    return
-
-
-  def solve(self, fieldOut, jacobian, fieldIn):
-    """
-    Solve nonlinear system.
-    """
-    logEvent = "%ssolve" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
-
-    self._info.log("Solving nonlinear equations.")
-    assert(None != self.cppHandle)
-    self.cppHandle.solve(fieldOut, fieldIn)
-
-    self._logger.eventEnd(logEvent)
-    return
-  
 
   # PRIVATE METHODS /////////////////////////////////////////////////////
 
@@ -91,16 +62,6 @@ class SolverNonlinear(Solver):
     Solver._configure(self)
     return
 
-
-  def _createCppHandle(self):
-    """
-    Create handle to corresponding C++ object.
-    """
-    if None == self.cppHandle:
-      import pylith.solver.solver as bindings
-      self.cppHandle = bindings.SolverNonlinear()
-    return
-  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

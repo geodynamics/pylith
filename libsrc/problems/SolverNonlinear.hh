@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/problems/SolverNonlinear.hh
+ * @file libsrc/problems/SolverNonlinear.hh
  *
  * @brief Object for using PETSc scalable nonlinear equation solvers
  * (SNES).
@@ -31,7 +31,7 @@
 
 // SolverNonlinear ---------------------------------------------------------
 class pylith::problems::SolverNonlinear : public Solver
-{ // Integrator
+{ // SolverNonlinear
   friend class TestSolverNonlinear; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////

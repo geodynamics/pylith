@@ -79,15 +79,14 @@ nobase_pkgpyexec_PYTHON = \
 	problems/Formulation.py \
 	problems/Implicit.py \
 	problems/Problem.py \
+	problems/Solver.py \
+	problems/SolverLinear.py \
+	problems/SolverNonlinear.py \
 	problems/TimeDependent.py \
 	problems/TimeStep.py \
 	problems/TimeStepAdapt.py \
 	problems/TimeStepUniform.py \
 	problems/TimeStepUser.py \
-	solver/__init__.py \
-	solver/Solver.py \
-	solver/SolverLinear.py \
-	solver/SolverNonlinear.py \
 	topology/__init__.py \
 	topology/Distributor.py \
 	topology/Mesh.py \
