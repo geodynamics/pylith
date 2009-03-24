@@ -29,8 +29,10 @@ pylith::problems::Solver::~Solver(void)
 // ----------------------------------------------------------------------
 // Initialize solver.
 void
-pylith::problems::Solver::initialize(topology::SolutionFields* fields)
+pylith::problems::Solver::initialize(topology::SolutionFields* fields,
+				     Formulation* const formulation)
 { // initialize
+  _formulation = formulation;
 } // initialize
 
 

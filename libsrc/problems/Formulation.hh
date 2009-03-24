@@ -35,25 +35,6 @@ class pylith::problems::Formulation
 { // Integrator
   friend class TestFormulation; // unit testing
 
-// PUBLIC STRUCTS ///////////////////////////////////////////////////////
-public :
-
-  struct ArgsResidual {
-    Formulation* object;
-    topology::Field<topology::Mesh>* const residual;
-    topology::SolutionFields* const fields;
-    double t;
-    double dt;
-  }; // ArgsResidual
-  
-  struct ArgsJacobian {
-    Formulation* object;
-    topology::Jacobian* jacobian;
-    topology::SolutionFields* const fields;
-    double t;
-    double dt;
-  }; // ArgsJacobian
-
 // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
 private :
 
@@ -69,39 +50,7 @@ public :
   /// Destructor
   ~Formulation(void);
 
-  /** Generic C interface for reformResidual for integration with
-   * PETSc SNES solvers.
-   *
-   * @param snes PETSc scalable nonlinear equation solver.
-   * @param solutionVec PETSc vector for solution.
-   * @param residualVec PETSc vector for residual.
-   * @param context ArgsResidual structure with arguments.
-   */
-  static
-  void reformResidual(PetscSNES snes,
-		      PetscVec solutionVec,
-		      PetscVec residualVec,
-		      void* context);
-
-  /** Generic C interface for reformJacobian for integration with
-   * PETSc SNES solvers.
-   *
-   * @param snes PETSc scalable nonlinear equation solver.
-   * @param solutionVec PETSc vector for solution.
-   * @param jacobianMat PETSc sparse matrix for system Jacobian.
-   * @param preconditionerMat PETSc sparse matrix for preconditioner.
-   * @param Flag indicating layout of preconditioner matrix.
-   * @param context ArgsJacobian structure with arguments.
-   */
-  static
-  void reformJacobian(PetscSNES snes,
-		      PetscVec solutionVec,
-		      PetscMat jacobianMat,
-		      PetscMat preconditionerMat,
-		      int* preconditionerLayout,
-		      void* context);
-
-  /** Set integrators over the mesh.
+  /** Set handles to integrators over the mesh.
    *
    * @param integrators Integrators over the mesh.
    * @param numIntegrators Number of integrators.
@@ -109,7 +58,7 @@ public :
   void meshIntegrators(IntegratorMesh** integrators,
 		       const int numIntegrators);
   
-  /** Set integrators over lower-dimension meshes.
+  /** Set handles to integrators over lower-dimension meshes.
    *
    * @param integrators Integrators over lower-dimension meshes.
    * @param numIntegrators Number of integrators.
@@ -117,9 +66,25 @@ public :
   void submeshIntegrators(IntegratorSubMesh** integrators,
 			  const int numIntegrators);
 
+  /** Set handle to solution fields.
+   *
+   * @param fields Solution fields.
+   */
+  void solutionFields(SolutionFields* fields);
+
+  /** Update current time and time step for advancing from t to t+dt.
+   *
+   * @param t Current time (nondimensional).
+   * @param dt Time step (nondimension).
+   */
+  void updateTime(const double t,
+		  const double dt);
+
   /** Initialize solver for formulation.
    *
-   * @param 
+   * @param solver Solver for system.
+   */
+  void initializeSolver(Solver* solver);
 
   /** Reform system residual.
    *
@@ -128,10 +93,7 @@ public :
    * @param t Current time.
    * @param dt Current time step (t -> t+dt).
    */
-  void reformResidual(topology::Field<topology::Mesh>* const residual,
-		      topology::SolutionFields* const fields,
-		      const double t,
-		      const double dt);
+  void reformResidual(void);
   
   /** Reform system Jacobian.
    *
@@ -140,15 +102,21 @@ public :
    * @param t Current time.
    * @param dt Current time step (t -> t+dt).
    */
-  void reformJacobian(topology::Jacobian* jacobian,
-		      topology::SolutionFields* const fields,
-		      const double t,
-		      const double dt);
+  void reformJacobian(void);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
+  double t; ///< Current time (nondimensional).
+  double dt; ///< Current time step (nondimensional).
+
+  topology::Jacobian* _jacobian; ///< Jacobian of system.
+  topology::SolutionFields* _fields; ///< Solution fields for system.
+
+  /// Integrators over subdomains of the mesh.
   std::vector<IntegratorMesh*> _meshIntegrators;
+
+  ///< Integrators over lower-dimensional subdomains of the mesh.
   std::vector<IntegratorSubMesh*> _submeshIntegrators;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

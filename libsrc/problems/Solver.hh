@@ -24,7 +24,6 @@
 #include "problemsfwd.hh" // forward declarations
 
 #include "pylith/topology/topologyfwd.hh" // USES SolutionFields
-#include "pylith/utils/petscfwd.h" // USES PetscVec
 
 
 // Solver ---------------------------------------------------------
@@ -35,7 +34,7 @@ class pylith::problems::Solver
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
-  /// Constructor
+  /// Constructor.
   Solver(void);
 
   /// Destructor
@@ -44,15 +43,17 @@ public :
   /** Initialize solver.
    *
    * @param fields Solution fields.
+   * @param formulation Formulation of system of equations.
    */
   virtual
   void
-  initialize(topology::SolutionFields* fields);
+  initialize(topology::SolutionFields* fields,
+	     Formulation* const formulation);
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
 
-  PetscKSP _ksp; ///< PETSc KSP linear solver.
+  Formulation* _formulation; ///< Handle to formulation for system of eqns.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
