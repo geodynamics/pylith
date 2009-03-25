@@ -11,8 +11,8 @@
 #
 
 nobase_pkgpyexec_PYTHON = \
-	PyLithApp.py \
 	__init__.py \
+	apps/PyLithApp.py \
 	bc/__init__.py \
 	bc/AbsorbingDampers.py \
 	bc/BoundaryCondition.py \

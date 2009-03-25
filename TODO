@@ -36,6 +36,8 @@ CURRENT ISSUES/PRIORITIES
   DirichletPoints (Python) - rate == None -> dbRate == 0
   DirichletBoundary (Python) - rate == None -> dbRate == 0
 
+  Add check before calling newSection() when want to enforce at least 1 value.
+
 1. Reduce memory use (new labels) [Matt]
 
 2. Nondimensionalize [Brad]
