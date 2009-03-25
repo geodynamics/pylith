@@ -122,7 +122,7 @@ class Material(Component):
               "Quadrature spatial dimension: %d\n" \
               "Mesh cell dimension: %d\n" \
               "Mesh spatial dimension: %d" % \
-              (self.matLabel,
+              (self.label(),
                self.quadrature.cellDim, self.quadrature.spaceDim,
                self.mesh.dimension(), self.mesh.coordsys().spaceDim())
     
@@ -150,7 +150,6 @@ class Material(Component):
     if self.inventory.useInitialState:
       self.dbInitialState(self.inventory.dbInitialState)
 
-    self.matLabel = self.inventory.label
     self.quadrature = self.inventory.quadrature
     return
 

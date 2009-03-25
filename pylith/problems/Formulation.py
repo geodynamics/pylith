@@ -35,7 +35,7 @@ def outputFactory(name):
 
 
 # Formulation class
-class Formulation(Component):
+class Formulation(Component, ModuleFormulation):
   """
   Python abstract base class for formulations of solving equations.
 
@@ -74,7 +74,7 @@ class Formulation(Component):
                                        factory=TimeStepUniform)
     timeStep.meta['tip'] = "Time step size manager."
 
-    from pylith.solver.SolverLinear import SolverLinear
+    from SolverLinear import SolverLinear
     solver = pyre.inventory.facility("solver", family="solver",
                                      factory=SolverLinear)
     solver.meta['tip'] = "Algebraic solver."
@@ -194,14 +194,16 @@ class Formulation(Component):
 
     self._info.log("Creating solution field.")
     solnName = self.solnField['name']
-    self.fields.addReal(solnName)
+    self.fields.add(solnName)
     self.fields.solutionName(solnName)
-    self.fields.setFiberDimension(solnName, dimension)
+    solution = self.fields.solution()
+    solution.newSection(solution.VERTICES_FIELD, dimension)
     for constraint in self.constraints:
-      constraint.setConstraintSizes(self.fields.getSolution())
-    self.fields.allocate(solnName)
+      constraint.setConstraintSizes(solution)
+    solution.allocate()
     for constraint in self.constraints:
-      constraint.setConstraints(self.fields.getSolution())
+      constraint.setConstraints(solution)
+    solution.createScatter()
     self._debug.log(resourceUsageString())
 
     self._logger.eventEnd(logEvent)
@@ -406,7 +408,7 @@ class Formulation(Component):
     self._debug.log(resourceUsageString())
     self._logger.stagePush("Reform Jacobian")
 
-    self.updateSettings(fields, jacobian, t, dt)
+    self.updateSettings(self.jacobian, self.fields, t, dt)
     self.reformJacobian()
 
     self._logger.stagePop()
@@ -425,7 +427,7 @@ class Formulation(Component):
     self._info.log("Integrating residual term in operator.")
     self._logger.stagePush("Reform Residual")
 
-    self.updateSettings(fields, jacobian, t, dt)
+    self.updateSettings(self.jacobian, self.fields, t, dt)
     self.reformResidual()
 
     self._logger.stagePop()
@@ -442,7 +444,7 @@ class Formulation(Component):
 
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("PDE Formulation")
+    logger.className("PDE Formulation")
     logger.initialize()
 
     events = ["preinit",

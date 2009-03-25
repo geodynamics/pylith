@@ -47,8 +47,7 @@ class TestMaterial(unittest.TestCase):
     """
     label = "material abc"
     self.material.label(label)
-
-    # No test of result.
+    self.assertEqual(label, self.material.label())
     return
 
 

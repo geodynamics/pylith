@@ -131,7 +131,7 @@ class BoundaryCondition(Component, ModuleBoundaryCondition):
     Call constructor for module object for access to C++ object.
     """
     raise NotImplementedError, \
-          "Please implement _createModuleOb() in derived class."
+          "Please implement _createModuleObj() in derived class."
 
 
 # End of file 

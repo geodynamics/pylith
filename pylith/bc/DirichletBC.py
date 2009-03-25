@@ -87,7 +87,7 @@ class DirichletBC(BoundaryCondition, Constraint, ModuleDirichletBC):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="dirichletpoints"):
+  def __init__(self, name="dirichletbc"):
     """
     Constructor.
     """
@@ -117,8 +117,7 @@ class DirichletBC(BoundaryCondition, Constraint, ModuleDirichletBC):
     logEvent = "%sverify" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    BoundaryCondition.verifyConfiguration(self)
-    Constraint.verifyConfiguration(self)
+    BoundaryCondition.verifyConfiguration(self, self.mesh)
 
     self._logger.eventEnd(logEvent)
     return

@@ -16,10 +16,9 @@
  * @brief Python interface to C++ MeshOps.
  */
 
-//  %apply(int* INPLACE_ARRAY1, int DIM1) {
-//     (int* const materialIds,
-//      const int numMaterials)
-//  };
+%apply(int* IN_ARRAY1, int DIM1) {
+  (int* const materialIds, const int numMaterials)
+  };
 %inline %{
   /** Check to make sure material id of every cell matches the id of
    *  one of the materials.
@@ -37,7 +36,7 @@
 						materialIds, numMaterials);
   } // checkMaterialIds
 %}
-//%clear(int* const materialIds, const int numMaterials);
+%clear(int* const materialIds, const int numMaterials);
 
 
 // End of file 

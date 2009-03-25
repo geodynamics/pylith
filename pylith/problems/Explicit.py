@@ -46,7 +46,7 @@ class Explicit(Formulation):
     """
     Formulation.__init__(self, name)
     self._loggingPrefix = "TSEx "
-    self.solnField = {'name': "dispT",
+    self.solnField = {'name': "disp(t)",
                       'label': "displacements"}
     return
 
@@ -69,14 +69,28 @@ class Explicit(Formulation):
     Formulation.initialize(self, dimension, normalizer)
 
     self._info.log("Creating other fields and matrices.")
-    self.fields.addReal("dispTpdt")
-    self.fields.addReal("dispTmdt")
-    self.fields.addReal("residual")
-    self.fields.createHistory(["dispTpdt", "dispT", "dispTmdt"])    
-    self.fields.copyLayout("dispT")
-    self.jacobian = self.mesh.createMatrix(self.fields.getSolution())
+    self.fields.add("disp(t+dt)")
+    self.fields.add("disp(t-dt)")
+    self.fields.add("residual")
+    self.fields.createHistory(["disp(t+dt), disp(t), disp(t-dt)"])    
+    self.fields.copyLayout("disp(t)")
+    self._debug.log(resourceUsageString())
 
-    self.solver.initialize(self.mesh, self.fields.getSolution())
+    # Create Petsc vectors for fields involved in solve
+    dispTpdt = self.fields.get("disp(t+dt)")
+    dispTpdt.createVector()
+    residual = self.fields.get("residual")
+    residual.createVector()
+
+    self._info.log("Creating Jacobian matrix.")
+    from pylith.topology.Jacobian import Jacobian
+    self.jacobian = Jacobian(self.fields)
+    self.jacobian.zero() # TEMPORARY, to get correct memory usage
+    self._debug.log(resourceUsageString())
+
+    self._info.log("Initializing solver.")
+    self.solver.initialize(self.fields, self.jacobian, self)
+    self._debug.log(resourceUsageString())
 
     # Solve for total displacement field
     for constraint in self.constraints:
@@ -95,7 +109,7 @@ class Explicit(Formulation):
     logEvent = "%sprestep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
     
-    dispTpdt = self.fields.getReal("dispTpdt")
+    dispTpdt = self.fields.get("disp(t+dt)")
     for constraint in self.constraints:
       constraint.setField(t+dt, dispTpdt)
 
@@ -121,17 +135,10 @@ class Explicit(Formulation):
     self._reformResidual(t, dt)
     
     self._info.log("Solving equations.")
-    residual = self.fields.getReal("residual")
-    self.solver.solve(self.fields.getReal("dispTpdt"), self.jacobian, residual)
+    residual = self.fields.get("residual")
+    dispTpdt = self.fields.get("disp(t+dt)")
+    self.solver.solve(dispTpdt, self.jacobian, residual)
 
-    # BEGIN TEMPORARY
-    #import pylith.topology.topology as bindings
-    #bindings.sectionView(residual, "RHS");
-    #bindings.sectionView(self.fields.getReal("dispTpdt"), "SOLUTION");
-    #import pylith.utils.petsc as petscbindings
-    #print "JACOBIAN"
-    #petscbindings.mat_view(self.jacobian)
-    # END TEMPORARY
     self._logger.eventEnd(logEvent)
     return
 
@@ -144,10 +151,10 @@ class Explicit(Formulation):
     self._logger.eventBegin(logEvent)
     
     self.fields.shiftHistory()
-    if not self.solver.guessZero:
-      import pylith.topology.topology as bindings
-      bindings.copyRealSection(self.fields.getReal("dispTpdt"),
-                               self.fields.getReal("dispT"))
+    if not self.solver.guessZero: # only works for KSP solver
+      dispTpdt = self.fields.get("disp(t+dt)")
+      dispT = self.fields.get("disp(t)")
+      dispTpdt.copy(dispT)
 
     Formulation.poststep(self, t, dt)
 

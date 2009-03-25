@@ -70,7 +70,7 @@ class Implicit(Formulation):
     """
     Formulation.__init__(self, name)
     self._loggingPrefix = "TSIm "
-    self.solnField = {'name': "dispTBctpdt",
+    self.solnField = {'name': "disp(t), bc(t+dt)",
                       'label': "displacements"}
     self._stepCount = None
     return
@@ -94,25 +94,25 @@ class Implicit(Formulation):
     Formulation.initialize(self, dimension, normalizer)
 
     self._info.log("Creating other fields.")
-    self._debug.log(resourceUsageString())
-    self.fields.addReal("dispIncr")
-    self.fields.addReal("residual")
-    self.fields.copyLayout("dispTBctpdt")
+    self.fields.add("dispIncr(t)")
+    self.fields.add("residual")
+    self.fields.copyLayout("disp(t), bc(t+dt)")
     self._debug.log(resourceUsageString())
 
     self._info.log("Creating Jacobian matrix.")
-    self.jacobian = self.mesh.createMatrix(self.fields.getSolution())
-
-    # BEGIN TEMPORARY
-    # Access entries in matrix here to get correct memory usage
-    import pylith.utils.petsc as petsc
-    petsc.mat_setzero(self.jacobian)
-    # END TEMPORARY
-
+    from pylith.topology.Jacobian import Jacobian
+    self.jacobian = Jacobian(self.fields)
+    self.jacobian.zero() # TEMPORARY, to get correct memory usage
     self._debug.log(resourceUsageString())
 
+    # Create Petsc vectors for fields involved in solve
+    dispIncr = self.fields.get("dispIncr(t)")
+    dispIncr.createVector()
+    residual = self.fields.get("residual")
+    residual.createVector()
+
     self._info.log("Initializing solver.")
-    self.solver.initialize(self.mesh, self.fields.getSolution())
+    self.solver.initialize(self.fields, self.jacobian, self)
     self._debug.log(resourceUsageString())
 
     # Initial time step solves for total displacement field, not increment
@@ -144,7 +144,7 @@ class Implicit(Formulation):
     # Set dispTBctpdt to the BC t time t+dt. Unconstrained DOF are
     # unaffected and will be equal to their values at time t.
     self._info.log("Setting constraints.")
-    dispTBctpdt = self.fields.getReal("dispTBctpdt")
+    dispTBctpdt = self.fields.get("disp(t), bc(t+dt)")
     for constraint in self.constraints:
       constraint.setField(t+dt, dispTBctpdt)
 
@@ -179,24 +179,22 @@ class Implicit(Formulation):
     logEvent = "%sstep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    dispIncr = self.fields.getReal("dispIncr")
-    import pylith.topology.topology as bindings
-    bindings.zeroRealSection(dispIncr)
+    dispIncr = self.fields.get("dispIncr(t)")
+    dispIncr.zero()
 
     ### NONLINEAR: This moves under SNES control as IntegrateResidual()
     ### NONLINEAR: Also move updateState() from Integrator.poststep() to this function
     self._reformResidual(t+dt, dt)
 
     self._info.log("Solving equations.")
-    residual = self.fields.getReal("residual")
+    residual = self.fields.get("residual")
     self._logger.stagePush("Solve")
     self.solver.solve(dispIncr, self.jacobian, residual)
     self._logger.stagePop()
 
     # BEGIN TEMPORARY
-    #import pylith.topology.topology as bindings
-    #bindings.sectionView(self.fields.getReal("dispIncr"), "DISPINCR SOLUTION");
-    #bindings.sectionView(self.fields.getReal("residual"), "RESIDUAL");
+    #dispIncr.view("DISPINCR SOLUTION")
+    #residual.view("RESIDUAL")
     # END TEMPORARY
 
     self._logger.eventEnd(logEvent)
@@ -215,10 +213,9 @@ class Implicit(Formulation):
     # constrained DOF. We add in the displacement increments (only
     # nonzero at unconstrained DOF) so that after poststep(),
     # dispTBctpdt contains the displacement field at time t+dt.
-    import pylith.topology.topology as bindings
-    dispIncr = self.fields.getReal("dispIncr")
-    dispTBctpdt = self.fields.getSolution()
-    bindings.addRealSections(dispTBctpdt, dispTBctpdt, dispIncr)
+    dispIncr = self.fields.get("dispIncr(t)")
+    dispTBctpdt = self.fields.solution()
+    dispTBctpdt += dispIncr
 
     Formulation.poststep(self, t, dt)
 

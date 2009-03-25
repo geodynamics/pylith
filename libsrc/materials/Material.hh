@@ -84,7 +84,7 @@ public :
    *
    * @returns Label of material
    */
-  const std::string& label(void) const;
+  const char* label(void) const;
 
   /** Set current time step.
    *

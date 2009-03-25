@@ -56,6 +56,15 @@ class SolverLinear(Solver, ModuleSolverLinear):
     return
 
 
+  def initialize(self, fields, jacobian, formulation):
+    """
+    Initialize linear solver.
+    """
+    ModuleSolverLinear.initialize(self, fields, jacobian, formulation)
+    self.initialGuessZero(self.guessZero)
+    return
+
+
   # PRIVATE METHODS /////////////////////////////////////////////////////
 
   def _configure(self):
@@ -63,7 +72,7 @@ class SolverLinear(Solver, ModuleSolverLinear):
     Set members based using inventory.
     """
     Solver._configure(self)
-    self.initialGuessZero(self.inventory.guessZero)
+    self.guessZero = self.inventory.guessZero
     return
 
 

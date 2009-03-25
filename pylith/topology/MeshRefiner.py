@@ -95,7 +95,7 @@ class MeshRefiner(Component):
     self._loggingPrefix = "Refin "
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("FE Refinement")
+    logger.className("FE Refinement")
     logger.initialize()
     events = ["refine"]
     for event in events:

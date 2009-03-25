@@ -63,7 +63,7 @@ pylith::materials::TestMaterial::testLabel(void)
   ElasticIsotropic3D material;
   material.label(label.c_str());
   
-  CPPUNIT_ASSERT_EQUAL(label, material.label());
+  CPPUNIT_ASSERT_EQUAL(label, std::string(material.label()));
 } // testLabel
     
 // ----------------------------------------------------------------------

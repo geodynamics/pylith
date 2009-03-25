@@ -75,7 +75,7 @@ class MeshImporter(MeshGenerator):
     return
 
 
-  def create(self, dim, normalizer, faults=None):
+  def create(self, normalizer, faults=None):
     """
     Hook for creating mesh.
     """
@@ -85,9 +85,9 @@ class MeshImporter(MeshGenerator):
     logEvent = "%screate" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    mesh = self.reader.read(dim, normalizer, self.debug, self.interpolate)
+    mesh = self.reader.read(normalizer, self.debug, self.interpolate)
     if self.debug:
-      mesh.view()
+      mesh.view("Finite-element mesh.")
     self._debug.log(resourceUsageString())
     self._info.log("Adjusting topology.")
     self._adjustTopology(mesh, faults)
@@ -96,13 +96,11 @@ class MeshImporter(MeshGenerator):
     if mpi.MPI_Comm_size(mpi.MPI_COMM_WORLD) > 1:
       self._info.log("Distributing mesh.")
       mesh = self.distributor.distribute(mesh)
-    if self.debug:
-      mesh.view()
+      if self.debug:
+        mesh.view("Distributed mesh.")
 
     # refine mesh (if necessary)
     mesh = self.refiner.refine(mesh)
-    if self.debug:
-      mesh.view()
 
     self._logger.eventEnd(logEvent)    
     return mesh

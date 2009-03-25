@@ -125,7 +125,7 @@ class Distributor(Component):
     self._loggingPrefix = "Dist "
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("FE Distribution")
+    logger.className("FE Distribution")
     logger.initialize()
     events = ["distribute"]
     for event in events:

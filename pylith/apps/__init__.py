@@ -1,4 +1,4 @@
-# -*- Makefile -*-
+#!/usr/bin/env python
 #
 # ----------------------------------------------------------------------
 #
@@ -10,14 +10,12 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	bc \
-	feassemble \
-	materials \
-	meshio \
-	topology \
-	utils
+## @file pylith/apps/__init__.py
 
-#	faults 
+## @brief Python PyLith apps module initialization.
 
-# End of file 
+__all__ = ['PyLithApp',
+           ]
+
+
+# End of file

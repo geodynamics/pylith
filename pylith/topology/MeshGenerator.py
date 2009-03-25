@@ -64,7 +64,7 @@ class MeshGenerator(Component):
     return
 
 
-  def create(self, dim, normalizer, faults=None):
+  def create(self, normalizer, faults=None):
     """
     Generate a Mesh.
     """
@@ -109,7 +109,7 @@ class MeshGenerator(Component):
 
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("Mesh Generator")
+    logger.className("Mesh Generator")
     logger.initialize()
 
     events = ["create",

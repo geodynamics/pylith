@@ -58,9 +58,9 @@ pylith::materials::Material::label(const char* value) {
 
 // Get label of material.
 inline
-const std::string&
+const char*
 pylith::materials::Material::label(void) const {
-  return _label;
+  return _label.c_str();
 }
 
 // Set current time step.
