@@ -12,6 +12,7 @@
 
 nobase_pkgpyexec_PYTHON = \
 	__init__.py \
+	apps/__init__.py \
 	apps/PyLithApp.py \
 	bc/__init__.py \
 	bc/AbsorbingDampers.py \
@@ -95,6 +96,7 @@ nobase_pkgpyexec_PYTHON = \
 	topology/Fields.py \
 	topology/SolutionFields.py \
 	topology/Jacobian.py \
+	topology/JacobianViewer.py \
 	topology/MeshGenerator.py \
 	topology/MeshImporter.py \
 	topology/MeshRefiner.py \
