@@ -94,7 +94,7 @@ pylith::topology::Field<mesh_type>::newSection(
 
   _section = new RealSection(_mesh.comm(), _mesh.debug());
 
-  if (points.size() > 0) {
+  if (points->size() > 0) {
     const point_type pointMin = 
       *std::min_element(points->begin(), points->end());
     const point_type pointMax = 
