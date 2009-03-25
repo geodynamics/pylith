@@ -21,7 +21,7 @@ from pylith.utils.VTKDataReader import VTKDataReader
 
 
 # Local version of PyLithApp
-from pylith.PyLithApp import PyLithApp
+from pylith.apps.PyLithApp import PyLithApp
 class AxialPlaneStrainApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="axialextension")
