@@ -94,12 +94,18 @@ pylith::topology::Field<mesh_type>::newSection(
 
   _section = new RealSection(_mesh.comm(), _mesh.debug());
 
-  const point_type pointMin = 
-    *std::min_element(points->begin(), points->end());
-  const point_type pointMax = 
-    *std::max_element(points->begin(), points->end());
-  _section->setChart(chart_type(pointMin, pointMax+1));
-  _section->setFiberDimension(points, fiberDim);  
+  if (points.size() > 0) {
+    const point_type pointMin = 
+      *std::min_element(points->begin(), points->end());
+    const point_type pointMax = 
+      *std::max_element(points->begin(), points->end());
+    _section->setChart(chart_type(pointMin, pointMax+1));
+    _section->setFiberDimension(points, fiberDim);  
+  } else {
+    // Create empty chart
+    _section->setChart(chart_type(0, 0));
+    _section->setFiberDimension(points, fiberDim);  
+  } // if/else
 } // newSection
 
 // ----------------------------------------------------------------------
