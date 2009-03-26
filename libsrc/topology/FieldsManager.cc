@@ -99,11 +99,21 @@ pylith::topology::FieldsManager::setFiberDimension(const char* name,
   assert(!_real[name].isNull());
   if (0 == strcasecmp(points, "vertices")) {
     const ALE::Obj<Mesh::label_sequence>& vertices = _mesh->depthStratum(0);
-    _real[name]->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(),vertices->end()),*std::max_element(vertices->begin(),vertices->end())+1));
+
+    if (vertices->size() > 0) {
+      _real[name]->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(),vertices->end()),*std::max_element(vertices->begin(),vertices->end())+1));
+    } else {
+      _real[name]->setChart(real_section_type::chart_type(0,0));
+    }
     _real[name]->setFiberDimension(vertices, fiberDim);
   } else if (0 == strcasecmp(points, "cells")) {
     const ALE::Obj<Mesh::label_sequence>& cells = _mesh->heightStratum(0);
-    _real[name]->setChart(real_section_type::chart_type(*std::min_element(cells->begin(),cells->end()),*std::max_element(cells->begin(),cells->end())+1));
+
+    if (cells->size() > 0) {
+      _real[name]->setChart(real_section_type::chart_type(*std::min_element(cells->begin(),cells->end()),*std::max_element(cells->begin(),cells->end())+1));
+    } else {
+      _real[name]->setChart(real_section_type::chart_type(0,0));
+    }
     _real[name]->setFiberDimension(cells, fiberDim);
   } else {
     std::ostringstream msg;

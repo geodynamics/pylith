@@ -893,7 +893,7 @@ pylith::faults::CohesiveTopology::createParallel(
   MPI_Scan((void *) &numFaces, (void *) &globalFaceOffset, 1, MPI_INT, MPI_SUM, sieve->comm());
   int face = globalSieveEnd + globalFaceOffset - numFaces;
 
-  ALE::ISieveVisitor::PointRetriever<sieve_type> cV(sieve->getMaxConeSize());
+  ALE::ISieveVisitor::PointRetriever<sieve_type> cV(std::max(sieve->getMaxConeSize(), 1));
 
   for(Mesh::label_sequence::iterator c_iter = cBegin; c_iter != cEnd; ++c_iter) {
     sieve->cone(*c_iter, cV);

@@ -35,10 +35,12 @@ CURRENT ISSUES/PRIORITIES
 5. Power-law nonlinear rheology [Charles]
 
 6. Savage-Presscott benchmark [Charles]
+   2D viscoelastic models for plane strain
 
 7. Interface with PETSc nonlinear solvers [Brad and Matt]
 
 8. Modularize output? [Matt]
+   HDF5 output
 
 -- Release (v1.4) --
 
