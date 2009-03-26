@@ -207,6 +207,7 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
   _buildMesh(&mesh);
   const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
+  sieveMesh->view("Sieve");
 
   const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
@@ -787,10 +788,10 @@ pylith::topology::TestFieldMesh::testScatterSectionToVector(void)
     section->updatePoint(*v_iter, &values[0]);
   } // for
 
-  field.createVector();
   field.createScatter();
-  field.scatterSectionToVector();
   CPPUNIT_ASSERT(0 != field._scatter);
+  field.createVector();
+  field.scatterSectionToVector();
   const PetscVec vec = field.vector();
   CPPUNIT_ASSERT(0 != vec);
   int size = 0;
@@ -829,6 +830,8 @@ pylith::topology::TestFieldMesh::testScatterVectorToSection(void)
   const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
 
+  field.createScatter();
+  CPPUNIT_ASSERT(0 != field._scatter);
   field.createVector();
   const PetscVec vec = field.vector();
   CPPUNIT_ASSERT(0 != vec);
