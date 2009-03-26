@@ -26,11 +26,11 @@ def suite():
   from TestShearPlaneStrain import TestShearPlaneStrain
   suite.addTest(unittest.makeSuite(TestShearPlaneStrain))
 
-  from TestDislocation import TestDislocation
-  suite.addTest(unittest.makeSuite(TestDislocation))
+  #from TestDislocation import TestDislocation
+  #suite.addTest(unittest.makeSuite(TestDislocation))
 
-  from TestDislocation2 import TestDislocation2
-  suite.addTest(unittest.makeSuite(TestDislocation2))
+  #from TestDislocation2 import TestDislocation2
+  #suite.addTest(unittest.makeSuite(TestDislocation2))
 
   return suite
 

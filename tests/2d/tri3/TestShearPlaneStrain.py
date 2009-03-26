@@ -20,7 +20,7 @@ from pylith.utils.VTKDataReader import has_vtk
 from pylith.utils.VTKDataReader import VTKDataReader
 
 # Local version of PyLithApp
-from pylith.PyLithApp import PyLithApp
+from pylith.apps.PyLithApp import PyLithApp
 class ShearPlaneStrainApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="shearplanestrain")
