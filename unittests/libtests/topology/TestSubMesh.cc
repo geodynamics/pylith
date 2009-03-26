@@ -231,7 +231,6 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
   sieveMesh->stratify();
   ALE::SieveBuilder<Mesh::SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
 						       coordinates);
-  sieveMesh->getFactory()->clear(); // clear numberings
 
   spatialdata::geocoords::CSCart cs;
   cs.setSpaceDim(spaceDim);

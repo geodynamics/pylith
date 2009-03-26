@@ -210,7 +210,6 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
   sieveMesh->stratify();
   ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
 						 data.vertices);
-  sieveMesh->getFactory()->clear(); // clear numberings
 
   // Setup quadrature and compute geometry
   GeometryTri2D geometry;

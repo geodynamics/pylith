@@ -922,7 +922,6 @@ pylith::topology::TestFieldSubMesh::_buildMesh(Mesh* mesh,
   sieveMesh->stratify();
   ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
 						 coordinates);
-  sieveMesh->getFactory()->clear(); // clear numberings
 
   typedef Mesh::SieveMesh::int_section_type::chart_type chart_type;
   const ALE::Obj<SieveMesh::int_section_type>& groupField = 
@@ -942,8 +941,6 @@ pylith::topology::TestFieldSubMesh::_buildMesh(Mesh* mesh,
   cs.setSpaceDim(spaceDim);
   cs.initialize();
   mesh->coordsys(&cs);
-
-  sieveMesh->getFactory()->clear();
 
   submesh->createSubMesh(*mesh, _TestFieldSubMesh::label);
 } // _buildMesh

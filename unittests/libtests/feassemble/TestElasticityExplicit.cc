@@ -329,7 +329,6 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
       e_iter != cells->end();
       ++e_iter)
     sieveMesh->setValue(labelMaterials, *e_iter, _data->matId);
-  sieveMesh->getFactory()->clear(); // clear numberings
 
   // Setup quadrature
   _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,

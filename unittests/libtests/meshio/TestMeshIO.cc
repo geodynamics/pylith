@@ -104,7 +104,6 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
       throw std::logic_error("Could not parse group type.");
     sieveMesh->allocate(groupField);
   } // for
-  sieveMesh->getFactory()->clear();
  
   return mesh;
 } // _createMesh

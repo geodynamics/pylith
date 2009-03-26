@@ -207,7 +207,6 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
   _buildMesh(&mesh);
   const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
-  sieveMesh->view("Sieve");
 
   const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
@@ -896,7 +895,6 @@ pylith::topology::TestFieldMesh::_buildMesh(Mesh* mesh)
   sieveMesh->stratify();
   ALE::SieveBuilder<Mesh::SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
 						       coordinates);
-  sieveMesh->getFactory()->clear(); // clear numberings
 
   spatialdata::geocoords::CSCart cs;
   cs.setSpaceDim(spaceDim);
