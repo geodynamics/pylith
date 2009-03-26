@@ -12,9 +12,6 @@ CURRENT ISSUES/PRIORITIES
     FaultCohesiveKin
     DataWriterVTK
 
-  TestMesh.test_view()
-  TestMesh.test_checkMaterialIds()
-  
   libsrc/materials
     Maxwell materials
 

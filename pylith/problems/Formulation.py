@@ -99,7 +99,8 @@ class Formulation(Component, ModuleFormulation):
     """
     Component.__init__(self, name, facility="pde_formulation")
     ModuleFormulation.__init__(self)
-    self.integrators = None
+    self.integratorsMesh = None
+    self.integratorsSubMesh = None
     self.constraints = None
     self.fields = None
     self.solnName = None
@@ -118,7 +119,8 @@ class Formulation(Component, ModuleFormulation):
     self.timeStep.preinitialize()
     
     self.mesh = mesh
-    self.integrators = []
+    self.integratorsMesh = []
+    self.integratorsSubMesh = []
     self.constraints = []
     self.gravityField = gravityField
 
@@ -143,7 +145,7 @@ class Formulation(Component, ModuleFormulation):
 
     self.timeStep.verifyConfiguration()
 
-    for integrator in self.integrators:
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.verifyConfiguration()
     for constraint in self.constraints:
       constraint.verifyConfiguration()
@@ -175,9 +177,11 @@ class Formulation(Component, ModuleFormulation):
       self.gravityField.initialize()
 
     self._info.log("Initializing integrators.")
-    for integrator in self.integrators:
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.gravityField = self.gravityField
       integrator.initialize(totalTime, numTimeSteps, normalizer)
+    ModuleFormulation.meshIntegrators(self, self.integratorsMesh)
+    ModuleFormulation.submeshIntegrators(self, self.integratorsSubMesh)
     self._debug.log(resourceUsageString())
 
     self._info.log("Initializing constraints.")
@@ -231,7 +235,7 @@ class Formulation(Component, ModuleFormulation):
     logEvent = "%stimestep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    dt = self.timeStep.timeStep(self.integrators)
+    dt = self.timeStep.timeStep(self.integratorsMesh + self.integratorsSubMesh)
 
     self._logger.eventEnd(logEvent)
     return dt
@@ -271,7 +275,7 @@ class Formulation(Component, ModuleFormulation):
     self._info.log("Writing solution fields.")
     #for output in self.output.components():
     #  output.writeData(t+dt, self.fields)
-    for integrator in self.integrators:
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.poststep(t, dt, totalTime, self.fields)
     for constraint in self.constraints:
       constraint.poststep(t, dt, totalTime, self.fields)
@@ -289,7 +293,7 @@ class Formulation(Component, ModuleFormulation):
 
     self._info.log("Formulation finalize.")
     self._debug.log(resourceUsageString())
-    for integrator in self.integrators:
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.finalize()
     for constraint in self.constraints:
       constraint.finalize()
@@ -334,7 +338,7 @@ class Formulation(Component, ModuleFormulation):
               "Could not use '%s' as an integrator for material '%s'. " \
               "Functionality missing." % (integrator.name, material.label)
       integrator.preinitialize(self.mesh, material)
-      self.integrators.append(integrator)
+      self.integratorsMesh.append(integrator)
       self._debug.log(resourceUsageString())
 
       self._info.log("Added elasticity integrator for material '%s'." % \
@@ -356,7 +360,7 @@ class Formulation(Component, ModuleFormulation):
       foundType = False
       if implementsIntegrator(bc):
         foundType = True
-        self.integrators.append(bc)
+        self.integratorsSubMesh.append(bc)
         self._info.log("Added boundary condition '%s' as an integrator." % \
                        bc.label)
       if implementsConstraint(bc):
@@ -385,7 +389,7 @@ class Formulation(Component, ModuleFormulation):
       foundType = False
       if implementsIntegrator(ic):
         foundType = True
-        self.integrators.append(ic)
+        self.integratorsSubMesh.append(ic)
         self._info.log("Added interface condition '%s' as an integrator." % \
                        ic.label)
       if implementsConstraint(ic):
@@ -406,6 +410,7 @@ class Formulation(Component, ModuleFormulation):
     Reform Jacobian matrix for operator.
     """
     self._debug.log(resourceUsageString())
+    self._info.log("Integrating Jacobian operator.")
     self._logger.stagePush("Reform Jacobian")
 
     self.updateSettings(self.jacobian, self.fields, t, dt)

@@ -95,7 +95,7 @@ class Explicit(Formulation):
     # Solve for total displacement field
     for constraint in self.constraints:
       constraint.useSolnIncr(False)
-    for integrator in self.integrators:
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.useSolnIncr(False)
 
     self._logger.eventEnd(logEvent)
@@ -114,7 +114,7 @@ class Explicit(Formulation):
       constraint.setField(t+dt, dispTpdt)
 
     needNewJacobian = False
-    for integrator in self.integrators:
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.timeStep(dt)
       if integrator.needNewJacobian():
         needNewJacobian = True

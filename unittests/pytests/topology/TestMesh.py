@@ -135,6 +135,25 @@ class TestMesh(unittest.TestCase):
     return
 
 
+  def test_view(self):
+    """
+    Test view().
+    """
+    mesh = self._getMesh()
+
+    mesh.view("Testing view")
+    return
+
+
+  def test_checkMaterialIds(self):
+    """
+    Test checkMaterialIds().
+    """
+    mesh = self._getMesh()
+    mesh.checkMaterialIds([3, 4])
+    return
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _getMesh(self):

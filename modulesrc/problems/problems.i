@@ -36,6 +36,8 @@
   } // try/catch
  } // exception
 
+%include "typemaps.i"
+%include "../include/integratorarray.i"
 
 // Interfaces
 %include "Formulation.i"

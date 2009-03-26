@@ -119,7 +119,7 @@ class Implicit(Formulation):
     self._stepCount = 0
     for constraint in self.constraints:
       constraint.useSolnIncr(False)
-    for integrator in self.integrators:
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.useSolnIncr(False)
 
     self._logger.eventEnd(logEvent)
@@ -155,13 +155,13 @@ class Implicit(Formulation):
                      "field solution.")
       for constraint in self.constraints:
         constraint.useSolnIncr(True)
-      for integrator in self.integrators:
+      for integrator in self.integratorsMesh + self.integratorsSubMesh:
         integrator.useSolnIncr(True)
       self._reformJacobian(t, dt)
 
     ### NONLINEAR: Might want to move logic into IntegrateJacobian() and set a flag instead
     needNewJacobian = False
-    for integrator in self.integrators:
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.timeStep(dt)
       if integrator.needNewJacobian():
         needNewJacobian = True
@@ -189,6 +189,8 @@ class Implicit(Formulation):
     self._info.log("Solving equations.")
     residual = self.fields.get("residual")
     self._logger.stagePush("Solve")
+    residual.view("RESIDUAL BEFORE SOLVE")
+    self.jacobian.view()
     self.solver.solve(dispIncr, self.jacobian, residual)
     self._logger.stagePop()
 

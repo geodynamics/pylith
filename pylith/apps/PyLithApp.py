@@ -89,6 +89,7 @@ class PyLithApp(Application):
     if "interfaces" in dir(self.problem):
       interfaces = self.problem.interfaces.components()
     mesh = self.mesher.create(self.problem.normalizer, interfaces)
+    del self.mesher
     self._debug.log(resourceUsageString())
     self._logger.stagePop()
 
@@ -114,9 +115,15 @@ class PyLithApp(Application):
     self._logger.stagePush("Finalize")
     self.problem.finalize()
     self._logger.stagePop()
-    
+
+    del mesh
+    del self.problem
+    import gc
+    print gc.collect()
+
     self._logger.eventEnd("PyLith main")
-    self.petsc.finalize()
+    print "TEMPORARY PetscFinalized() commented out in PyLithApp.py"
+    #self.petsc.finalize()
     return
   
 

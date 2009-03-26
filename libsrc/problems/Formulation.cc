@@ -100,6 +100,7 @@ pylith::problems::Formulation::reformResidual(void)
 
   // Add in contributions that require assembly.
   int numIntegrators = _meshIntegrators.size();
+  assert(numIntegrators > 0); // must have at least 1 bulk integrator
   for (int i=0; i < numIntegrators; ++i) {
     _meshIntegrators[i]->timeStep(_dt);
     _meshIntegrators[i]->integrateResidual(residual, _t, _fields);

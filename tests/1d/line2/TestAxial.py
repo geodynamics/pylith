@@ -168,11 +168,11 @@ class TestAxial(unittest.TestCase):
     return
 
 
-  def test_elastic_statevars(self):
-    """
-    Check elastic state variables.
-    """
-    return
+  #def test_elastic_statevars(self):
+  #  """
+  #  Check elastic state variables.
+  #  """
+  #  return
 
 
 # End of file 
