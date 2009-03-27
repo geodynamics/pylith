@@ -29,7 +29,7 @@
 template<typename mesh_type>
 pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh) :
   _scale(1.0),
-  _name("unknown"),
+  _label("unknown"),
   _mesh(mesh),
   _vector(0),
   _scatter(0),
@@ -87,7 +87,7 @@ pylith::topology::Field<mesh_type>::newSection(
   if (fiberDim < 0) {
     std::ostringstream msg;
     msg
-      << "Fiber dimension (" << fiberDim << ") for field '" << _name
+      << "Fiber dimension (" << fiberDim << ") for field '" << _label
       << "' must be nonnegative.";
     throw std::runtime_error(msg.str());
   } // if
@@ -244,8 +244,8 @@ pylith::topology::Field<mesh_type>::copy(const Field& field)
       srcSize != dstSize) {
     std::ostringstream msg;
 
-    msg << "Cannot copy values from section '" << field._name 
-	<< "' to section '" << _name << "'. Sections are incompatible.\n"
+    msg << "Cannot copy values from section '" << field._label 
+	<< "' to section '" << _label << "'. Sections are incompatible.\n"
 	<< "  Source section:\n"
 	<< "    space dim: " << field.spaceDim() << "\n"
 	<< "    vector field type: " << field._vecFieldType << "\n"
@@ -291,8 +291,8 @@ pylith::topology::Field<mesh_type>::operator+=(const Field& field)
       srcSize != dstSize) {
     std::ostringstream msg;
 
-    msg << "Cannot add values from section '" << field._name 
-	<< "' to section '" << _name << "'. Sections are incompatible.\n"
+    msg << "Cannot add values from section '" << field._label 
+	<< "' to section '" << _label << "'. Sections are incompatible.\n"
 	<< "  Source section:\n"
 	<< "    space dim: " << field.spaceDim() << "\n"
 	<< "    vector field type: " << field._vecFieldType << "\n"
@@ -336,7 +336,7 @@ pylith::topology::Field<mesh_type>::dimensionalize(void)
 { // dimensionalize
   if (!_dimensionsOkay) {
     std::ostringstream msg;
-    msg << "Cannot dimensionalize field '" << _name << "' because the flag "
+    msg << "Cannot dimensionalize field '" << _label << "' because the flag "
 	<< "has been set to keep field nondimensional.";
     throw std::runtime_error(msg.str());
   } // if
@@ -402,7 +402,7 @@ pylith::topology::Field<mesh_type>::view(const char* label)
       assert(0);
     } // switch
 
-  std::cout << "Viewing field '" << _name << "' "<< label << ".\n"
+  std::cout << "Viewing field '" << _label << "' "<< label << ".\n"
 	    << "  vector field type: " << vecFieldString << "\n"
 	    << "  scale: " << _scale << "\n"
 	    << "  dimensionalize flag: " << _dimensionsOkay << std::endl;

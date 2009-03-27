@@ -222,10 +222,10 @@ class TestAbsorbingDampers(unittest.TestCase):
     # Setup fields
     from pylith.topology.SolutionFields import SolutionFields
     fields = SolutionFields(mesh)
-    fields.add("residual")
-    fields.add("disp(t+dt)")
-    fields.add("disp(t)")
-    fields.add("disp(t-dt)")
+    fields.add("residual", "residual")
+    fields.add("disp(t+dt)", "displacement")
+    fields.add("disp(t)", "displacement")
+    fields.add("disp(t-dt)", "displacement")
     fields.solutionName("disp(t+dt)")
     fields.createHistory(["disp(t+dt)", "disp(t)", "disp(t-dt)"])
 

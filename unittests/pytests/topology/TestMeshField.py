@@ -65,14 +65,14 @@ class TestMeshField(unittest.TestCase):
     return
 
 
-  def test_name(self):
+  def test_label(self):
     """
-    Test name().
+    Test label().
     """
-    name = "field A"
+    label = "field A"
 
-    self.field.name(name)
-    self.assertEqual(name, self.field.name())
+    self.field.label(label)
+    self.assertEqual(label, self.field.label())
     return
 
 

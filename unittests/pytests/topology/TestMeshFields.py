@@ -66,7 +66,7 @@ class TestMeshFields(unittest.TestCase):
 
 
   def test_add(self):
-    self.fields.add("field")
+    self.fields.add("field", "displacement")
     field = self.fields.get("field")
     field.newSection()
 
@@ -76,7 +76,7 @@ class TestMeshFields(unittest.TestCase):
 
   def test_addFiberDim(self):
     from pylith.topology.topology import FieldBase
-    self.fields.add("field", )
+    self.fields.add("field", "displacement")
     field = self.fields.get("field")
     field.newSection(FieldBase.VERTICES_FIELD, 4)
 
@@ -85,8 +85,8 @@ class TestMeshFields(unittest.TestCase):
 
 
   def test_del(self):
-    self.fields.add("field A")
-    self.fields.add("field B")
+    self.fields.add("field A", "A")
+    self.fields.add("field B", "B")
     self.fields.delField("field A")
     field = self.fields.get("field B")
     return
@@ -94,11 +94,11 @@ class TestMeshFields(unittest.TestCase):
 
   def test_copyLayout(self):
     from pylith.topology.topology import FieldBase
-    self.fields.add("field A")
+    self.fields.add("field A", "A")
     field = self.fields.get("field A")
     field.newSection(FieldBase.VERTICES_FIELD, 4)
 
-    self.fields.add("field B")
+    self.fields.add("field B", "B")
     self.fields.copyLayout("field A")
 
     # No test of result

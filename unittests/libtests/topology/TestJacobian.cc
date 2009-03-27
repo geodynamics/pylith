@@ -118,7 +118,7 @@ pylith::topology::TestJacobian::_initialize(Mesh* mesh,
   iohandler.filename("data/tri3.mesh");
   iohandler.read(mesh);
 
-  fields->add("disp t+dt");
+  fields->add("disp t+dt", "displacement");
   fields->solutionName("disp t+dt");
   Field<Mesh>& solution = fields->solution();
   solution.newSection(FieldBase::VERTICES_FIELD, mesh->dimension());

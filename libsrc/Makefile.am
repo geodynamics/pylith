@@ -102,7 +102,7 @@ libpylith_la_SOURCES = \
 # 	materials/GenMaxwellIsotropic3D.cc \
 # 	meshio/CellFilter.cc \
 # 	meshio/CellFilterAvg.cc \
-# 	meshio/DataWriter.cc \
+#	meshio/DataWriter.cc \
 # 	meshio/DataWriterVTK.cc \
 # 	meshio/OutputManager.cc \
 # 	meshio/OutputSolnSubset.cc \

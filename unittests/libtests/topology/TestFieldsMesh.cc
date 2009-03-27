@@ -63,7 +63,7 @@ pylith::topology::TestFieldsMesh::testAdd(void)
   FieldsMesh fields(*_mesh);
   
   const char* label = "field";
-  fields.add(label);
+  fields.add(label, "displacement");
   const size_t size = 1;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
 } // testAdd
@@ -79,7 +79,7 @@ pylith::topology::TestFieldsMesh::testAddDomain(void)
   FieldsMesh fields(*_mesh);
   
   const char* label = "field";
-  fields.add(label, Field<Mesh>::VERTICES_FIELD, fiberDim);
+  fields.add(label, "velocity", Field<Mesh>::VERTICES_FIELD, fiberDim);
   const size_t size = 1;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
 
@@ -107,10 +107,10 @@ pylith::topology::TestFieldsMesh::testDelete(void)
   FieldsMesh fields(*_mesh);
 
   const char* labelA = "field A";
-  fields.add(labelA);
+  fields.add(labelA, "displacement");
 
   const char* labelB = "field B";
-  fields.add(labelB);
+  fields.add(labelB, "velocity");
 
   size_t size = 2;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
@@ -118,6 +118,7 @@ pylith::topology::TestFieldsMesh::testDelete(void)
   size = 1;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
   const Field<Mesh>& field = fields.get(labelB);
+  CPPUNIT_ASSERT_EQUAL(std::string("velocity"), std::string(field.label()));
 } // testDelete
 
 // ----------------------------------------------------------------------
@@ -129,7 +130,7 @@ pylith::topology::TestFieldsMesh::testGet(void)
   FieldsMesh fields(*_mesh);
 
   const char* label = "field";
-  fields.add(label);
+  fields.add(label, "velocity");
   const Field<Mesh>& field = fields.get(label);
 } // testGet
 
@@ -142,7 +143,7 @@ pylith::topology::TestFieldsMesh::testGetConst(void)
   FieldsMesh fields(*_mesh);
 
   const char* label = "field";
-  fields.add(label);
+  fields.add(label, "velocity");
 
   const FieldsMesh* fieldsPtr = &fields;
   CPPUNIT_ASSERT(0 != fieldsPtr);
@@ -160,10 +161,10 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void)
   FieldsMesh fields(*_mesh);
   
   const char* labelA = "field A";
-  fields.add(labelA, Field<Mesh>::VERTICES_FIELD, fiberDim);
+  fields.add(labelA, "displacement", Field<Mesh>::VERTICES_FIELD, fiberDim);
 
   const char* labelB = "field B";
-  fields.add(labelB);
+  fields.add(labelB, "velocity");
   Field<Mesh>& fieldA = fields.get(labelA);
   fieldA.allocate();
 

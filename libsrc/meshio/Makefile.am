@@ -17,8 +17,10 @@ subpkginclude_HEADERS = \
 	CellFilter.hh \
 	CellFilterAvg.hh \
 	DataWriter.hh \
+	DataWriter.cc \
 	DataWriterVTK.hh \
 	DataWriterVTK.icc \
+	DataWriterVTK.cc \
 	MeshBuilder.hh \
 	MeshIO.hh \
 	MeshIO.icc \
@@ -27,6 +29,7 @@ subpkginclude_HEADERS = \
 	MeshIOLagrit.hh \
 	MeshIOLagrit.icc \
 	OutputManager.hh \
+	OutputManager.cc \
 	OutputSolnSubset.hh \
 	UCDFaultFile.hh \
 	VertexFilter.hh \

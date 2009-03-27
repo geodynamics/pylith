@@ -47,7 +47,7 @@ class TestJacobian(unittest.TestCase):
 
     from pylith.topology.SolutionFields import SolutionFields
     fields = SolutionFields(self.mesh)
-    fields.add("disp t+dt")
+    fields.add("disp t+dt", "displacement")
     fields.solutionName("disp t+dt")
     solution = fields.solution()
     solution.newSection(solution.VERTICES_FIELD, self.mesh.dimension())

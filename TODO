@@ -63,7 +63,17 @@ CURRENT ISSUES/PRIORITIES
 7. Update manual for version 1.4
 
   * Reduce memory use with ordering elements by material
+
   * Nondimensionalization
+
+  * Material
+    * initial stress/strain
+
+  * Incompatibilities
+    importer -> reader
+    material
+     db -> properties_db
+    no need to set Quadrature type
 
 -- Release (v1.4) --
 

@@ -31,20 +31,20 @@ pylith::topology::Field<mesh_type>::mesh(void) const {
   return _mesh;
 }
 
-// Set name of field.
+// Set label for field.
 template<typename mesh_type>
 inline
 void
-pylith::topology::Field<mesh_type>::name(const char* value) {
-  _name = value;
+pylith::topology::Field<mesh_type>::label(const char* value) {
+  _label = value;
 }
 
-// Get name of field.
+// Get label for field.
 template<typename mesh_type>
 inline
 const char*
-pylith::topology::Field<mesh_type>::name(void) const {
-  return _name.c_str();
+pylith::topology::Field<mesh_type>::label(void) const {
+  return _label.c_str();
 }
 
 // Set vector field type

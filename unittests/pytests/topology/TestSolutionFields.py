@@ -60,9 +60,9 @@ class TestSolutionFields(unittest.TestCase):
     Test mesh().
     """
     fields = self.fields
-    fields.add("field A");
-    fields.add("field B");
-    fields.add("field C");
+    fields.add("field A", "A");
+    fields.add("field B", "B");
+    fields.add("field C", "C");
     
     fields.solutionName("field B")
     return
@@ -73,9 +73,9 @@ class TestSolutionFields(unittest.TestCase):
     Test solution().
     """
     fields = self.fields
-    fields.add("field A");
-    fields.add("field B");
-    fields.add("field C");
+    fields.add("field A", "A");
+    fields.add("field B", "B");
+    fields.add("field C", "C");
     
     fields.solutionName("field B")
     solution = self.fields.solution()
@@ -87,9 +87,9 @@ class TestSolutionFields(unittest.TestCase):
     Test createHistory().
     """
     fields = self.fields
-    fields.add("field A");
-    fields.add("field B");
-    fields.add("field C");
+    fields.add("field A", "A");
+    fields.add("field B", "B");
+    fields.add("field C", "C");
     
     fields.createHistory(["field B", "field A", "field C"])
     return
@@ -100,9 +100,9 @@ class TestSolutionFields(unittest.TestCase):
     Test shiftHistory().
     """
     fields = self.fields
-    fields.add("field A");
-    fields.add("field B");
-    fields.add("field C");
+    fields.add("field A", "A");
+    fields.add("field B", "B");
+    fields.add("field C", "C");
     
     fields.createHistory(["field B", "field A", "field C"])
     fields.shiftHistory()

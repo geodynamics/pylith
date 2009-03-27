@@ -38,8 +38,9 @@ namespace pylith {
     class PsetFileAscii;
     class PsetFileBinary;
     
-    class DataWriter;
-    class DataWriterVTK;
+    template<typename mesh_type> class OutputManager;
+    template<typename mesh_type> class DataWriter;
+    template<typename mesh_type> class DataWriterVTK;
 
     class CellFilter;
     class CellFilterAvg;

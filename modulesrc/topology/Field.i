@@ -50,17 +50,17 @@ namespace pylith {
        */
       const mesh_type& mesh(void) const;
 
-      /** Set name of field.
+      /** Set label for field.
        *
-       * @param value Name of field.
+       * @param value Label for field.
        */
-      void name(const char* value);
+      void label(const char* value);
 
-      /** Get name of field.
+      /** Get label for field.
        *
-       * @returns Name of field.
+       * @returns Label for field.
        */
-      const char* name(void) const;
+      const char* label(void) const;
       
       /** Set vector field type
        *

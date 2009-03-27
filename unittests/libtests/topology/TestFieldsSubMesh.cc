@@ -66,7 +66,7 @@ pylith::topology::TestFieldsSubMesh::testAdd(void)
   FieldsSubMesh fields(*_submesh);
   
   const char* label = "field";
-  fields.add(label);
+  fields.add(label, "displacement");
   const size_t size = 1;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
 } // testAdd
@@ -82,7 +82,7 @@ pylith::topology::TestFieldsSubMesh::testAddDomain(void)
   FieldsSubMesh fields(*_submesh);
   
   const char* label = "field";
-  fields.add(label, Field<SubMesh>::VERTICES_FIELD, fiberDim);
+  fields.add(label, "velocity", Field<SubMesh>::VERTICES_FIELD, fiberDim);
   const size_t size = 1;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
 
@@ -110,10 +110,10 @@ pylith::topology::TestFieldsSubMesh::testDelete(void)
   FieldsSubMesh fields(*_submesh);
 
   const char* labelA = "field A";
-  fields.add(labelA);
+  fields.add(labelA, "displacement");
 
   const char* labelB = "field B";
-  fields.add(labelB);
+  fields.add(labelB, "velocity");
 
   size_t size = 2;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
@@ -132,7 +132,7 @@ pylith::topology::TestFieldsSubMesh::testGet(void)
   FieldsSubMesh fields(*_submesh);
 
   const char* label = "field";
-  fields.add(label);
+  fields.add(label, "displacement");
   const Field<SubMesh>& field = fields.get(label);
 } // testGet
 
@@ -145,7 +145,7 @@ pylith::topology::TestFieldsSubMesh::testGetConst(void)
   FieldsSubMesh fields(*_submesh);
 
   const char* label = "field";
-  fields.add(label);
+  fields.add(label, "displacement");
 
   const FieldsSubMesh* fieldsPtr = &fields;
   CPPUNIT_ASSERT(0 != fieldsPtr);
@@ -163,10 +163,10 @@ pylith::topology::TestFieldsSubMesh::testCopyLayout(void)
   FieldsSubMesh fields(*_submesh);
   
   const char* labelA = "field A";
-  fields.add(labelA, Field<SubMesh>::VERTICES_FIELD, fiberDim);
+  fields.add(labelA, "velocity", Field<SubMesh>::VERTICES_FIELD, fiberDim);
 
   const char* labelB = "field B";
-  fields.add(labelB);
+  fields.add(labelB, "displacement");
   Field<SubMesh>& fieldA = fields.get(labelA);
   fieldA.allocate();
 

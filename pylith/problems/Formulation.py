@@ -198,7 +198,7 @@ class Formulation(Component, ModuleFormulation):
 
     self._info.log("Creating solution field.")
     solnName = self.solnField['name']
-    self.fields.add(solnName)
+    self.fields.add(solnName, self.solnField['label'])
     self.fields.solutionName(solnName)
     solution = self.fields.solution()
     solution.newSection(solution.VERTICES_FIELD, dimension)

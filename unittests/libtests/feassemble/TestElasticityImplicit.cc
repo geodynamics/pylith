@@ -359,9 +359,9 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
 
   // Setup fields
   CPPUNIT_ASSERT(0 != fields);
-  fields->add("residual");
-  fields->add("disp(t), bc(t+dt)");
-  fields->add("dispIncr(t->t+dt)");
+  fields->add("residual", "residual");
+  fields->add("disp(t), bc(t+dt)", "displacement");
+  fields->add("dispIncr(t->t+dt)", "displacement increment");
   fields->solutionName("dispIncr(t->t+dt)");
   
   topology::Field<topology::Mesh>& residual = fields->get("residual");

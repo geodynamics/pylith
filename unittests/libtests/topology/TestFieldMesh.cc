@@ -79,6 +79,42 @@ pylith::topology::TestFieldMesh::testMesh(void)
 } // testMesh
 
 // ----------------------------------------------------------------------
+// Test label().
+void
+pylith::topology::TestFieldMesh::testLabel(void)
+{ // testLabel
+  const std::string label = "velocity";
+
+  Mesh mesh;
+  _buildMesh(&mesh);
+  Field<Mesh> field(mesh);
+
+  field.label(label.c_str());
+  CPPUNIT_ASSERT_EQUAL(label, std::string(field.label()));
+} // testLabel
+
+// ----------------------------------------------------------------------
+// Test vectorFieldType().
+void
+pylith::topology::TestFieldMesh::testVectorFieldType(void)
+{ // testVectorFieldType
+} // testVectorFieldType
+
+// ----------------------------------------------------------------------
+// Test scale().
+void
+pylith::topology::TestFieldMesh::testScale(void)
+{ // testScale
+} // testScale
+
+// ----------------------------------------------------------------------
+// Test addDimensionsOkay().
+void
+pylith::topology::TestFieldMesh::testAddDimensionsOkay(void)
+{ // testAddDimensionsOkay
+} // testAddDimensionsOkay
+
+// ----------------------------------------------------------------------
 // Test spaceDim().
 void
 pylith::topology::TestFieldMesh::testSpaceDim(void)

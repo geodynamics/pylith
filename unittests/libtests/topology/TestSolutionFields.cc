@@ -41,7 +41,7 @@ pylith::topology::TestSolutionFields::testSolutionName(void)
   SolutionFields manager(mesh);
 
   const std::string& name = "my solution";
-  manager.add(name.c_str());
+  manager.add(name.c_str(), "displacement");
   manager.solutionName(name.c_str());
   CPPUNIT_ASSERT_EQUAL(name, manager._solutionName);
 } // testSolutionName
@@ -62,7 +62,7 @@ pylith::topology::TestSolutionFields::testSolution(void)
   const int fiberDimC = 4;
 
   for (int i=0; i < size; ++i)
-    manager.add(labels[i]);
+    manager.add(labels[i], "displacement");
 
   const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
   const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
@@ -99,7 +99,7 @@ pylith::topology::TestSolutionFields::testCreateHistory(void)
 
   // Add fields
   for (int i=0; i < totalSize; ++i)
-    manager.add(labels[i]);
+    manager.add(labels[i], "displacement");
 
   manager.createHistory(labels, historySize);
   for (int i=0; i < historySize; ++i)
@@ -121,7 +121,7 @@ pylith::topology::TestSolutionFields::testShiftHistory(void)
   const int fiberDimB = 3;
 
   for (int i=0; i < numFields; ++i)
-    manager.add(fieldNames[i]);
+    manager.add(fieldNames[i], "displacement");
   manager.createHistory(fieldNames, numFields);
 
   const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();

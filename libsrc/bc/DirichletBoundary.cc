@@ -100,7 +100,7 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
   assert(0);
 
   if (0 == strcasecmp(name, "initial")) {
-    _tmpField->name("displacement");
+    _tmpField->label("displacement");
     _tmpField->vectorFieldType(topology::Field<topology::SubMesh>::VECTOR);
     _tmpField->scale(_normalizer->lengthScale());
     _tmpField->addDimensionOkay(true);
@@ -115,7 +115,7 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
       section->updatePointAll(_points[iPoint], &values[0]);
     } // for
   } else if (0 == strcasecmp(name, "rate-of-change")) {
-    _tmpField->name("velocity");
+    _tmpField->label("velocity");
     _tmpField->vectorFieldType(topology::Field<topology::SubMesh>::VECTOR);
     _tmpField->scale(_normalizer->lengthScale());
     _tmpField->addDimensionOkay(true);

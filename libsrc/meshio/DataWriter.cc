@@ -12,63 +12,64 @@
 
 #include <portinfo>
 
-#include "DataWriter.hh" // implementation of class methods
-
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshio::DataWriter::DataWriter(void) :
+template<typename mesh_type>
+pylith::meshio::DataWriter<mesh_type>::DataWriter(void) :
   _numTimeSteps(0)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::DataWriter::~DataWriter(void)
+template<typename mesh_type>
+pylith::meshio::DataWriter<mesh_type>::~DataWriter(void)
 { // destructor
 } // destructor  
 
 // ----------------------------------------------------------------------
 // Prepare for writing files.
+template<typename mesh_type>
 void
-pylith::meshio::DataWriter::open(
-			       const ALE::Obj<Mesh>& mesh,
-			       const spatialdata::geocoords::CoordSys* csMesh,
-			       const int numTimeSteps,
-			       const char* label,
-			       const int labelId)
+pylith::meshio::DataWriter<mesh_type>::open(const mesh_type& mesh,
+					    const int numTimeSteps,
+					    const char* label,
+					    const int labelId)
 { // open
   _numTimeSteps = numTimeSteps;
 } // open
 
 // ----------------------------------------------------------------------
 // Close output files.
+template<typename mesh_type>
 void
-pylith::meshio::DataWriter::close(void)
+pylith::meshio::DataWriter<mesh_type>::close(void)
 { // close
 } // close
 
 // ----------------------------------------------------------------------
 // Prepare file for data at a new time step.
+template<typename mesh_type>
 void
-pylith::meshio::DataWriter::openTimeStep(
-			       const double t,
-			       const ALE::Obj<Mesh>& mesh,
-			       const spatialdata::geocoords::CoordSys* csMesh,
-			       const char* label,
-			       const int labelId)
+pylith::meshio::DataWriter<mesh_type>::openTimeStep(const double t,
+						    const mesh_type& mesh,
+						    const char* label,
+						    const int labelId)
 { // openTimeStep
 } // openTimeStep
 
 // ----------------------------------------------------------------------
 // Cleanup after writing data for a time step.
+template<typename mesh_type>
 void
-pylith::meshio::DataWriter::closeTimeStep(void)
+pylith::meshio::DataWriter<mesh_type>::closeTimeStep(void)
 { // closeTimeStep
 } // closeTimeStep
 
 // ----------------------------------------------------------------------
 // Copy constructor.
-pylith::meshio::DataWriter::DataWriter(const DataWriter& w)
+template<typename mesh_type>
+pylith::meshio::DataWriter<mesh_type>::DataWriter(const DataWriter& w)
 { // copy constructor
 } // copy constructor
 

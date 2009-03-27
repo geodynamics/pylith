@@ -12,8 +12,6 @@
 
 #include <portinfo>
 
-#include "DataWriterVTK.hh" // implementation of class methods
-
 #include <petscmesh_viewers.hh> // USES VTKViewer
 
 #include <cassert> // USES assert()
@@ -22,7 +20,8 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshio::DataWriterVTK::DataWriterVTK(void) :
+template<typename mesh_type>
+pylith::meshio::DataWriterVTK<mesh_type>::DataWriterVTK(void) :
   _timeConstant(1.0),
   _filename("output.vtk"),
   _timeFormat("%f"),
@@ -34,7 +33,8 @@ pylith::meshio::DataWriterVTK::DataWriterVTK(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::DataWriterVTK::~DataWriterVTK(void)
+template<typename mesh_type>
+pylith::meshio::DataWriterVTK<mesh_type>::~DataWriterVTK(void)
 { // destructor
   if (0 != _viewer)
     PetscViewerDestroy(_viewer);
@@ -43,7 +43,8 @@ pylith::meshio::DataWriterVTK::~DataWriterVTK(void)
 
 // ----------------------------------------------------------------------
 // Copy constructor.
-pylith::meshio::DataWriterVTK::DataWriterVTK(const DataWriterVTK& w) :
+template<typename mesh_type>
+pylith::meshio::DataWriterVTK<mesh_type>::DataWriterVTK(const DataWriterVTK& w) :
   DataWriter(w),
   _timeConstant(w._timeConstant),
   _filename(w._filename),
@@ -56,8 +57,9 @@ pylith::meshio::DataWriterVTK::DataWriterVTK(const DataWriterVTK& w) :
 
 // ----------------------------------------------------------------------
 // Set value used to normalize time stamp in name of VTK file.
+template<typename mesh_type>
 void
-pylith::meshio::DataWriterVTK::timeConstant(const double value)
+pylith::meshio::DataWriterVTK<mesh_type>::timeConstant(const double value)
 { // timeConstant
   if (value <= 0.0) {
     std::ostringstream msg;
@@ -70,42 +72,43 @@ pylith::meshio::DataWriterVTK::timeConstant(const double value)
 
 // ----------------------------------------------------------------------
 // Prepare file for data at a new time step.
+template<typename mesh_type>
 void
-pylith::meshio::DataWriterVTK::openTimeStep(
-			       const double t,
-			       const ALE::Obj<Mesh>& mesh,
-			       const spatialdata::geocoords::CoordSys* csMesh,
-			       const char* label,
-			       const int labelId)
+pylith::meshio::DataWriterVTK<mesh_type>::openTimeStep(const double t,
+						       const mesh_type& mesh,
+						       const char* label,
+						       const int labelId)
 { // openTimeStep
-  assert(!mesh.isNull());
-  assert(0 != csMesh);
 
   try {
-    PetscErrorCode err;
+    PetscErrorCode err = 0;
 
     const std::string& filename = _vtkFilename(t);
 
     err = PetscViewerCreate(mesh->comm(), &_viewer);
+    CHECK_PETSC_ERROR(err);
     err = PetscViewerSetType(_viewer, PETSC_VIEWER_ASCII);
+    CHECK_PETSC_ERROR(err);
     err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);
+    CHECK_PETSC_ERROR(err);
     err = PetscViewerFileSetName(_viewer, filename.c_str());
-    if (err)
-      throw std::runtime_error("Could not open VTK file.");
+    CHECK_PETSC_ERROR_MSF(err);
     
     err = VTKViewer::writeHeader(_viewer);
+    CHECK_PETSC_ERROR(err);
     //std::cout << "Wrote header for " << filename << std::endl;
     err = VTKViewer::writeVertices(mesh, _viewer);
+    CHECK_PETSC_ERROR(err);
     //std::cout << "Wrote vertices for " << filename << std::endl;
-    if (0 == label)
+    if (0 == label) {
       err = VTKViewer::writeElements(mesh, _viewer);
-    else {
+      CHECK_PETSC_ERROR(err);
+    } else {
       const std::string labelName = 
 	(mesh->hasLabel("censored depth")) ? "censored depth" : "depth";
       err = VTKViewer::writeElements(mesh, label, labelId, labelName, 0, _viewer);      
+      CHECK_PETSC_ERROR(err);
     } // if
-    if (err)
-      throw std::runtime_error("Could not write topology.");
     //std::cout << "Wrote elements for " << filename << std::endl;
 
     _wroteVertexHeader = false;
@@ -130,8 +133,9 @@ pylith::meshio::DataWriterVTK::openTimeStep(
 
 // ----------------------------------------------------------------------
 /// Cleanup after writing data for a time step.
+template<typename mesh_type>
 void
-pylith::meshio::DataWriterVTK::closeTimeStep(void)
+pylith::meshio::DataWriterVTK<mesh_type>::closeTimeStep(void)
 { // closeTimeStep
   PetscViewerDestroy(_viewer); _viewer = 0;
   _wroteVertexHeader = false;
@@ -140,18 +144,13 @@ pylith::meshio::DataWriterVTK::closeTimeStep(void)
 
 // ----------------------------------------------------------------------
 // Write field over vertices to file.
+template<typename mesh_type>
 void
-pylith::meshio::DataWriterVTK::writeVertexField(
+pylith::meshio::DataWriterVTK<mesh_type>::writeVertexField(
 				       const double t,
-				       const char* name,
-				       const ALE::Obj<real_section_type>& field,
-				       const VectorFieldEnum fieldType,
-				       const ALE::Obj<Mesh>& mesh)
+				       const topology::Field<mesh_type>& field)
 { // writeVertexField
-  assert(0 != name);
-  assert(!mesh.isNull());
-  assert(!field.isNull());
-
+#if 0
   try {
     const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
     assert(!vertices.isNull());
@@ -198,24 +197,20 @@ pylith::meshio::DataWriterVTK::writeVertexField(
 	<< t << " to VTK file '" << _filename << "'.\n";
     throw std::runtime_error(msg.str());
   } // try/catch
+#endif
 } // writeVertexField
 
 // ----------------------------------------------------------------------
 // Write field over cells to file.
+template<typename mesh_type>
 void
-pylith::meshio::DataWriterVTK::writeCellField(
+pylith::meshio::DataWriterVTK<mesh_type>::writeCellField(
 				       const double t,
-				       const char* name,
-				       const ALE::Obj<real_section_type>& field,
-				       const VectorFieldEnum fieldType,
-				       const ALE::Obj<Mesh>& mesh,
+				       const topology::Field<mesh_type>& field,
 				       const char* label,
 				       const int labelId)
 { // writeCellField
-  assert(0 != name);
-  assert(!mesh.isNull());
-  assert(!field.isNull());
-
+#if 0
   try {
     const ALE::Obj<Mesh::label_sequence>& cells = (0 == label) ?
       mesh->heightStratum(0) :
@@ -265,12 +260,14 @@ pylith::meshio::DataWriterVTK::writeCellField(
 	<< t << " to VTK file '" << _filename << "'.\n";
     throw std::runtime_error(msg.str());
   } // try/catch
+#endif
 } // writeCellField
 
 // ----------------------------------------------------------------------
 // Generate filename for VTK file.
+template<typename mesh_type>
 std::string
-pylith::meshio::DataWriterVTK::_vtkFilename(const double t) const
+pylith::meshio::DataWriterVTK<mesh_type>::_vtkFilename(const double t) const
 { // _vtkFilename
   std::ostringstream filename;
   const int indexExt = _filename.find(".vtk");

@@ -71,7 +71,7 @@ class Implicit(Formulation):
     Formulation.__init__(self, name)
     self._loggingPrefix = "TSIm "
     self.solnField = {'name': "disp(t), bc(t+dt)",
-                      'label': "displacements"}
+                      'label': "displacement"}
     self._stepCount = None
     return
 
@@ -94,8 +94,8 @@ class Implicit(Formulation):
     Formulation.initialize(self, dimension, normalizer)
 
     self._info.log("Creating other fields.")
-    self.fields.add("dispIncr(t)")
-    self.fields.add("residual")
+    self.fields.add("dispIncr(t)", "displacement increment")
+    self.fields.add("residual", "residual")
     self.fields.copyLayout("disp(t), bc(t+dt)")
     self._debug.log(resourceUsageString())
 

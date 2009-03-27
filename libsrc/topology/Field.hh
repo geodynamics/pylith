@@ -75,17 +75,17 @@ public :
    */
   const mesh_type& mesh(void) const;
 
-  /** Set name of field.
+  /** Set label for field.
    *
-   * @param value Name of field.
+   * @param value Label for field.
    */
-  void name(const char* value);
+  void label(const char* value);
 
-  /** Get name of field.
+  /** Get label for field.
    *
-   * @returns Name of field.
+   * @returns Label for field.
    */
-  const char* name(void) const;
+  const char* label(void) const;
 
   /** Set vector field type
    *
@@ -232,14 +232,14 @@ public :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  double _scale; ///< Dimensional scale associated with field
-  std::string _name; ///< Name of field
-  const mesh_type& _mesh; ///< Mesh associated with section
-  ALE::Obj<RealSection> _section; ///< Real section with data
+  double _scale; ///< Dimensional scale associated with field.
+  std::string _label; ///< Label for field.
+  const mesh_type& _mesh; ///< Mesh associated with section.
+  ALE::Obj<RealSection> _section; ///< Real section with data.
   PetscVec _vector; ///< PETSc vector associated with field.
   PetscVecScatter _scatter; ///< PETSc scatter associated with field.
-  VectorFieldEnum _vecFieldType; ///< Type of vector field
-  bool _dimensionsOkay; ///< Flag indicating it is okay to dimensionalize
+  VectorFieldEnum _vecFieldType; ///< Type of vector field.
+  bool _dimensionsOkay; ///< Flag indicating it is okay to dimensionalize.
 
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
