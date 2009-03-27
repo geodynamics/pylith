@@ -252,8 +252,8 @@ pylith::bc::TestNeumann::_initialize(topology::Mesh* mesh,
 
     // Set up fields
     CPPUNIT_ASSERT(0 != fields);
-    fields->add("residual");
-    fields->add("disp(t), bc(t+dt)");
+    fields->add("residual", "residual");
+    fields->add("disp(t), bc(t+dt)", "displacement");
     fields->solutionName("disp(t), bc(t+dt)");
 
     topology::Field<topology::Mesh>& residual = fields->get("residual");

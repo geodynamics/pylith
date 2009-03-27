@@ -311,10 +311,10 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
 
     // Setup fields
     CPPUNIT_ASSERT(0 != fields);
-    fields->add("residual");
-    fields->add("disp(t+dt)");
-    fields->add("disp(t)");
-    fields->add("disp(t-dt)");
+    fields->add("residual", "residual");
+    fields->add("disp(t+dt)", "displacement");
+    fields->add("disp(t)", "displacement");
+    fields->add("disp(t-dt)", "displacement");
     fields->solutionName("disp(t+dt)");
     const char* history[] = { "disp(t+dt)", "disp(t)", "disp(t-dt)" };
     const int historySize = 3;
