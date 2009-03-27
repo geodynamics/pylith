@@ -32,12 +32,21 @@ pylith::problems::SolverLinear::SolverLinear(void) :
 // Destructor
 pylith::problems::SolverLinear::~SolverLinear(void)
 { // destructor
+  deallocate();
+} // destructor
+
+// ----------------------------------------------------------------------
+// Deallocate data structures.
+void
+pylith::problems::SolverLinear::deallocate(void)
+{ // deallocate
   if (0 != _ksp) {
     PetscErrorCode err = KSPDestroy(_ksp); _ksp = 0;
     CHECK_PETSC_ERROR(err);
+    std::cout << "DESTROYED KSP." << std::endl;
   } // if
-} // destructor
-
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Set initial guess zero flag.
 void

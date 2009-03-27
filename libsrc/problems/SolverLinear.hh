@@ -41,6 +41,9 @@ public :
   /// Destructor
   ~SolverLinear(void);
 
+  /// Deallocate data structures.
+  void deallocate(void);
+  
   /** Set initial guess zero flag.
    *
    * @param value True means use zero as initial guess, false means
