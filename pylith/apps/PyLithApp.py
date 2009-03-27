@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/PyLithApp.py
+## @file pylith/apps/PyLithApp.py
 ##
 ## @brief Python PyLith application
 
