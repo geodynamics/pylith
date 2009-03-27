@@ -20,7 +20,8 @@ class PetscApplication(Application):
 
   def main(self, *args, **kwds):
     """
-    Run simulation in parallel on compute nodes.
+    Run simulation in parallel on compute nodes. Would be
+    onComputeNodes() in a real Pyre mpi application.
     """
     print "Call PetscInitialize()."
     self.fake_main(*args, **kwds)
@@ -142,7 +143,8 @@ class FooApp(PetscApplication):
 
   def fake_main(self, *args, **kwds):
     """
-    Run the application.
+    Run the application. Would be called the usual main() in a real
+    application.
     """
     print "Doing some stuff in main."
     print "Foo:"
