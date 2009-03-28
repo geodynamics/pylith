@@ -55,7 +55,7 @@ class PetscApplication(Application):
     self.petsc.initialize()
     self.main(*args, **kwds)
     self.cleanup()
-    self.petc.finalize()
+    self.petsc.finalize()
     return
   
 
@@ -63,6 +63,7 @@ class PetscApplication(Application):
     """
     Deallocate data structures.
     """
+    from pylith.utils.PetscComponent import PetscComponent
     for component in self.components():
       if isinstance(component, PetscComponent):
         component.cleanup()

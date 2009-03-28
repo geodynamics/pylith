@@ -15,6 +15,7 @@
 ## @brief Python PyLith apps module initialization.
 
 __all__ = ['PyLithApp',
+           'PetscApplication',
            ]
 
 

@@ -14,6 +14,7 @@ nobase_pkgpyexec_PYTHON = \
 	__init__.py \
 	apps/__init__.py \
 	apps/PyLithApp.py \
+	apps/PetscApplication.py \
 	bc/__init__.py \
 	bc/AbsorbingDampers.py \
 	bc/BoundaryCondition.py \
@@ -106,6 +107,7 @@ nobase_pkgpyexec_PYTHON = \
 	utils/CppData.py \
 	utils/EmptyBin.py \
 	utils/EventLogger.py \
+	utils/PetscComponent.py \
 	utils/PetscManager.py \
 	utils/VTKDataReader.py \
 	utils/importing.py \

@@ -1,0 +1,3 @@
+Test PetscApplication and PetscComponent, which provides
+initialization and finalization of PETSc as well as cleanup() for
+deallocating PETSc and other data structures.

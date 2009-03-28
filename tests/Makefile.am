@@ -11,6 +11,7 @@
 #
 
 SUBDIRS = \
+	petsc \
 	1d \
 	2d \
 	3d

@@ -264,6 +264,7 @@ AC_CONFIG_FILES([Makefile
 		unittests/pytests/topology/data/Makefile
 		unittests/pytests/utils/Makefile
 		tests/Makefile
+		tests/petsc/Makefile
 		tests/1d/Makefile
 		tests/1d/line2/Makefile
 		tests/2d/Makefile
