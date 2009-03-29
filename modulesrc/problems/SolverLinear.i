@@ -31,7 +31,7 @@ namespace pylith {
       /// Destructor
       ~SolverLinear(void);
 
-      /// Deallocate data structures.
+      /// Deallocate PETSc and local data structures.
       void deallocate(void);
 
       /** Set initial guess zero flag.

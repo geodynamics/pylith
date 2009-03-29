@@ -39,8 +39,19 @@ pylith::topology::Jacobian::Jacobian(const SolutionFields& fields) :
 // Destructor.
 pylith::topology::Jacobian::~Jacobian(void)
 { // destructor
-  MatDestroy(_matrix); _matrix = 0;
+  deallocate();
 } // destructor
+
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::topology::Jacobian::deallocate(void)
+{ // deallocate
+  if (0 != _matrix) {
+    PetscErrorCode err = MatDestroy(_matrix); _matrix = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
+} // deallocate
 
 // ----------------------------------------------------------------------
 // Get PETSc matrix.

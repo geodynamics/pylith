@@ -16,10 +16,10 @@
 ##
 ## Factory: solver
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # Solver class
-class Solver(Component):
+class Solver(PetscComponent):
   """
   Python abstract base class for solver.
 
@@ -28,7 +28,7 @@ class Solver(Component):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
+  class Inventory(PetscComponent.Inventory):
     """
     Python object for managing Solver facilities and properties.
     """
@@ -54,7 +54,7 @@ class Solver(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="solver")
+    PetscComponent.__init__(self, name, facility="solver")
     return
 
 
@@ -64,7 +64,7 @@ class Solver(Component):
     """
     Set members based using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
     return
 
 

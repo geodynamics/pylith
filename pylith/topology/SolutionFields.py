@@ -34,4 +34,12 @@ class SolutionFields(ModuleSolutionFields):
     return
     
 
+  def cleanup(self):
+    """
+    Deallocate PETSc and local data structures.
+    """
+    self.deallocate()
+    return
+    
+
 # End of file

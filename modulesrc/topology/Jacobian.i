@@ -34,6 +34,9 @@ namespace pylith {
       /// Destructor.
       ~Jacobian(void);
       
+      /// Deallocate PETSc and local data structures.
+      void deallocate(void);
+
       /** Get PETSc matrix.
        *
        * @returns PETSc sparse matrix.

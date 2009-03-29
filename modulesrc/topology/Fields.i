@@ -35,6 +35,9 @@ namespace pylith {
       /// Destructor.
       ~Fields(void);
 
+      /// Deallocate PETSc and local data structures.
+      void deallocate(void);
+
       /** Add field.
        *
        * @param name Name of field.

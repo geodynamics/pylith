@@ -44,6 +44,9 @@ namespace pylith {
       /// Destructor.
       ~Field(void);
       
+      /// Deallocate PETSc and local data structures.
+      void deallocate(void);
+
       /** Get mesh associated with field.
        *
        * @returns Finite-element mesh.

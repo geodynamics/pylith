@@ -16,7 +16,7 @@
 ##
 ## Factory: problem.
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
@@ -48,7 +48,7 @@ def faultFactory(name):
 
 
 # Problem class
-class Problem(Component):
+class Problem(PetscComponent):
   """
   Python abstract base class for crustal dynamics problems.
 
@@ -57,7 +57,7 @@ class Problem(Component):
   
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
+  class Inventory(PetscComponent.Inventory):
     """
     Python object for managing Problem facilities and properties.
     """
@@ -124,7 +124,7 @@ class Problem(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="problem")
+    PetscComponent.__init__(self, name, facility="problem")
     self.mesh = None
     return
 
@@ -223,7 +223,7 @@ class Problem(Component):
     """
     Set members based using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
     self.normalizer = self.inventory.normalizer
     self.dimension = self.inventory.dimension
     self.materials = self.inventory.materials

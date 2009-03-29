@@ -43,6 +43,15 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh) :
 template<typename mesh_type>
 pylith::topology::Field<mesh_type>::~Field(void)
 { // destructor
+  deallocate();
+} // destructor
+
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+template<typename mesh_type>
+void
+pylith::topology::Field<mesh_type>::deallocate(void)
+{ // deallocate
   PetscErrorCode err = 0;
   if (0 != _vector) {
     err = VecDestroy(_vector); _vector = 0;
@@ -53,7 +62,7 @@ pylith::topology::Field<mesh_type>::~Field(void)
     err = VecScatterDestroy(_scatter); _scatter = 0;
     CHECK_PETSC_ERROR(err);
   } // if
-} // destructor
+} // deallocate
 
 // ----------------------------------------------------------------------
 // Get spatial dimension of domain.

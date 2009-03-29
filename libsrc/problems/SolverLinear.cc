@@ -43,7 +43,6 @@ pylith::problems::SolverLinear::deallocate(void)
   if (0 != _ksp) {
     PetscErrorCode err = KSPDestroy(_ksp); _ksp = 0;
     CHECK_PETSC_ERROR(err);
-    std::cout << "DESTROYED KSP." << std::endl;
   } // if
 } // deallocate
   

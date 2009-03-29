@@ -17,7 +17,7 @@
 ##
 ## Factory: pde_formulation
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 from problems import Formulation as ModuleFormulation
 
 from pylith.utils.profiling import resourceUsageString
@@ -35,7 +35,7 @@ def outputFactory(name):
 
 
 # Formulation class
-class Formulation(Component, ModuleFormulation):
+class Formulation(PetscComponent, ModuleFormulation):
   """
   Python abstract base class for formulations of solving equations.
 
@@ -47,7 +47,7 @@ class Formulation(Component, ModuleFormulation):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
+  class Inventory(PetscComponent.Inventory):
     """
     Python object for managing Formulation facilities and properties.
     """
@@ -97,11 +97,12 @@ class Formulation(Component, ModuleFormulation):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="pde_formulation")
+    PetscComponent.__init__(self, name, facility="pde_formulation")
     ModuleFormulation.__init__(self)
     self.integratorsMesh = None
     self.integratorsSubMesh = None
     self.constraints = None
+    self.jacobian = None
     self.fields = None
     self.solnName = None
     return
@@ -311,7 +312,7 @@ class Formulation(Component, ModuleFormulation):
     """
     Set members based using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
     self.timeStep = self.inventory.timeStep
     self.solver = self.inventory.solver
     self.output = self.inventory.output
@@ -472,6 +473,17 @@ class Formulation(Component, ModuleFormulation):
     self._logger = logger
     return
   
+
+  def _cleanup(self):
+    """
+    Deallocate PETSc and local data structures.
+    """
+    if not self.jacobian is None:
+      self.jacobian.cleanup()
+    if not self.fields is None:
+      self.fields.cleanup()
+    return
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

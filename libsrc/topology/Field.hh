@@ -63,6 +63,9 @@ public :
   /// Destructor.
   ~Field(void);
 
+  /// Deallocate PETSc and local data structures.
+  void deallocate(void);
+  
   /** Get Sieve section.
    *
    * @returns Sieve section.

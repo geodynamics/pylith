@@ -36,6 +36,14 @@ class MeshFields(ModuleMeshFields):
     return
     
 
+  def cleanup(self):
+    """
+    Deallocate PETSc and local data structures.
+    """
+    self.deallocate()
+    return
+    
+
 # ----------------------------------------------------------------------
 # SubMeshFields class
 class SubMeshFields(ModuleSubMeshFields):
@@ -51,6 +59,14 @@ class SubMeshFields(ModuleSubMeshFields):
     Constructor.
     """
     ModuleSubMeshFields.__init__(self, mesh)
+    return
+    
+
+  def cleanup(self):
+    """
+    Deallocate PETSc and local data structures.
+    """
+    self.deallocate()
     return
     
 

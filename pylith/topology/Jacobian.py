@@ -35,4 +35,12 @@ class Jacobian(ModuleJacobian):
     return
     
 
+  def cleanup(self):
+    """
+    Dellocate PETSC and local data structures.
+    """
+    self.deallocate()
+    return
+
+
 # End of file

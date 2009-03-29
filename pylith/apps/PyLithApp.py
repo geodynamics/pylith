@@ -14,17 +14,17 @@
 ##
 ## @brief Python PyLith application
 
-from mpi import Application
+from PetscApplication import PetscApplication
 
 # PyLithApp class
-class PyLithApp(Application):
+class PyLithApp(PetscApplication):
   """
   Python PyLithApp application.
   """
   
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Application.Inventory):
+  class Inventory(PetscApplication.Inventory):
     """
     Python object for managing PyLithApp facilities and properties.
     """
@@ -33,8 +33,7 @@ class PyLithApp(Application):
     ## Python object for managing PyLithApp facilities and properties.
     ##
     ## \b Properties
- 
-   ## @li None
+    ## @li None
     ##
     ## \b Facilities
     ## @li \b mesher Generates or imports the computational mesh.
@@ -53,12 +52,6 @@ class PyLithApp(Application):
                                       factory=TimeDependent)
     problem.meta['tip'] = "Computational problem to solve."
 
-    # Dummy facility for passing options to PETSc
-    from pylith.utils.PetscManager import PetscManager
-    petsc = pyre.inventory.facility("petsc", family="petsc_manager",
-                                    factory=PetscManager)
-    petsc.meta['tip'] = "Manager for PETSc options."
-
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -66,7 +59,7 @@ class PyLithApp(Application):
     """
     Constructor.
     """
-    Application.__init__(self, name)
+    PetscApplication.__init__(self, name)
     self._loggingPrefix = "PyLith "
     return
 
@@ -77,7 +70,6 @@ class PyLithApp(Application):
     """
     from pylith.utils.profiling import resourceUsageString
     
-    self.petsc.initialize()
     self._debug.log(resourceUsageString())
 
     self._setupLogging()
@@ -119,12 +111,8 @@ class PyLithApp(Application):
 
     del mesh
     del self.problem
-    import gc
-    print gc.collect()
 
     self._logger.eventEnd("PyLith main")
-    print "TEMPORARY PetscFinalized() commented out in PyLithApp.py"
-    #self.petsc.finalize()
     return
   
 
@@ -134,10 +122,9 @@ class PyLithApp(Application):
     """
     Setup members using inventory.
     """
-    Application._configure(self)
+    PetscApplication._configure(self)
     self.mesher = self.inventory.mesher
     self.problem = self.inventory.problem
-    self.petsc = self.inventory.petsc
 
     import journal
     self._debug = journal.debug(self.name)
