@@ -28,7 +28,6 @@ def has_vtk():
           "(https://svn.enthought.com/enthought/wiki/MayaVi)"
       print "         in order to enable verification of output."
       has_vtk.flag = False
-  has_vtk.flag = False
   return has_vtk.flag
     
 

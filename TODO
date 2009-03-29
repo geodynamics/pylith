@@ -35,6 +35,10 @@ CURRENT ISSUES/PRIORITIES
 
   Add check before calling newSection() when want to enforce at least 1 value.
 
+  Switch Components to PetscComponents.
+  Add _cleanup() to components to deallocate local data structures.
+  Add cleanup() to non-components to deallocate local data structures.
+
 1. Reduce memory use (new labels) [Matt]
 
 2. Nondimensionalize [Brad]
