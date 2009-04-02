@@ -39,6 +39,8 @@ CURRENT ISSUES/PRIORITIES
   Add _cleanup() to components to deallocate local data structures.
   Add cleanup() to non-components to deallocate local data structures.
 
+  Remove Inventory class from Pyre
+
 1. Reduce memory use (new labels) [Matt]
 
 2. Nondimensionalize [Brad]
@@ -57,6 +59,8 @@ CURRENT ISSUES/PRIORITIES
       DataWriter::normalizer()
 
 3. Power-law nonlinear rheology [Charles]
+
+
 
 4. Savage-Presscott benchmark [Charles]
 

@@ -15,7 +15,9 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	CellFilter.hh \
+	CellFilter.cc \
 	CellFilterAvg.hh \
+	CellFilterAvg.cc \
 	DataWriter.hh \
 	DataWriter.cc \
 	DataWriterVTK.hh \
@@ -33,7 +35,9 @@ subpkginclude_HEADERS = \
 	OutputSolnSubset.hh \
 	UCDFaultFile.hh \
 	VertexFilter.hh \
+	VertexFilter.cc \
 	VertexFilterVecNorm.hh \
+	VertexFilterVecNorm.cc \
 	meshiofwd.hh
 
 if ENABLE_CUBIT

@@ -20,21 +20,25 @@
 #if !defined(pylith_meshio_cellfilter_hh)
 #define pylith_meshio_cellfilter_hh
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh, real_section_type
-#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
+// Include directives ---------------------------------------------------
+#include "meshiofwd.hh" // forward declarations
 
-namespace pylith {
-  namespace meshio {
-    class CellFilter;
-  } // meshio
+#include "pylith/feassemble/topologyfwd.hh" // HOLDSA Quadrature<Mesh>
+#include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Quadrature<Mesh>
 
-  namespace feassemble {
-    class Quadrature;
-  } // meshio  
-} // pylith
-
+// CellFilter -----------------------------------------------------------
+template<typename mesh_type>
 class pylith::meshio::CellFilter
 { // CellFilter
+
+// PROTECTED TYPEDEFS ///////////////////////////////////////////////////
+protected:
+
+  // Convenience typedefs
+  typedef typename mesh_type::RealSection RealSection;
+  typedef typename mesh_type::SieveMesh SieveMesh;
+  typedef typename SieveMesh::label_sequence label_sequence;
+  typedef typename RealSection::chart_type chart_type;
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -56,23 +60,19 @@ public :
    *
    * @param q Quadrature for cells.
    */
-  void quadrature(const feassemble::Quadrature* q);
+  void quadrature(const feassemble::Quadrature<mesh_type>* q);
 
   /** Filter field. Field type of filtered field is returned via an argument.
    *
-   * @param fieldType Field type of filtered field.
    * @param fieldIn Field to filter.
-   * @param mesh PETSc mesh.
-   * @param label Label identifying cells.
-   * @param Value of label of cells to filter.
+   * @param label Value of label of cells to filter.
+   * @param labelId Id associated with label of cells to filter.
    *
    * @returns Averaged field.
    */
   virtual
-  const ALE::Obj<real_section_type>&
-  filter(VectorFieldEnum* fieldType,
-	 const ALE::Obj<real_section_type>& fieldIn,
-	 const ALE::Obj<Mesh>& mesh,
+  const topology::Field<mesh_type>&
+  filter(const topology::Field<mesh_type>& fieldIn,
 	 const char* label =0,
 	 const int labelId =0) = 0;
 
@@ -95,9 +95,12 @@ private :
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  feassemble::Quadrature* _quadrature; ///< Quadrature associated with cells.
+  /// Quadrature associated with cells.
+  feassemble::Quadrature<mesh_type>* _quadrature;
 
 }; // CellFilter
+
+#include "CellFilter.cc" // template definitions
 
 #endif // pylith_meshio_cellfilter_hh
 
