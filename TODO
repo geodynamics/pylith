@@ -2,15 +2,40 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-0. SWIG conversion
+0. SWIG conversion [Brad]
 
-  Cleanup logging. Constraints and Integrators should log at the C++
-  level using the C++ EventLogger. Add finer grain logging at C++
-  level as in ElasticityImplicit.
+  (1) Output
 
-  Cleanup error checking on PETSc calls.
-    FaultCohesiveKin
-    DataWriterVTK
+  (2) Full-scale tests (few 1-D, 2-D, and 3-D)
+
+    Analytical solutions, time stepping, multiple faults
+
+  (3) SolverNonlinear (get it to run then turn it over to Matt)
+
+  (4) Faults
+
+  (5) Add missing unit tests
+
+  (6) Tidy up
+
+    Cleanup logging. Constraints and Integrators should log at the C++
+    level using the C++ EventLogger. Add finer grain logging at C++
+    level as in ElasticityImplicit.
+
+    Update journaling.
+
+    Eliminate use of Inventory class.
+
+    Cleanup error checking on PETSc calls.
+      FaultCohesiveKin
+      DataWriterVTK
+
+    Switch Components to PetscComponents.
+      Add _cleanup() to components to deallocate local data structures.
+      Add cleanup() to non-components to deallocate local data structures.
+
+    Add check before calling newSection() when want to enforce at
+    least 1 value.
 
   libsrc/materials
     Maxwell materials
@@ -33,15 +58,7 @@ CURRENT ISSUES/PRIORITIES
   DirichletPoints (Python) - rate == None -> dbRate == 0
   DirichletBoundary (Python) - rate == None -> dbRate == 0
 
-  Add check before calling newSection() when want to enforce at least 1 value.
-
-  Switch Components to PetscComponents.
-  Add _cleanup() to components to deallocate local data structures.
-  Add cleanup() to non-components to deallocate local data structures.
-
-  Remove Inventory class from Pyre
-
-1. Reduce memory use (new labels) [Matt]
+1. Memory model [Matt]
 
 2. Nondimensionalize [Brad]
     Not working
@@ -58,24 +75,40 @@ CURRENT ISSUES/PRIORITIES
       Integrator::normalizer()
       DataWriter::normalizer()
 
-3. Power-law nonlinear rheology [Charles]
+3. 3-D Power-law rheology [Charles]
 
+4. 2-D Plane strain Maxwell viscoelastic rheology [Charles]
 
+5. 2-D Plane strain Generalized Maxwell viscoelastic rheology [Charles]
 
-4. Savage-Presscott benchmark [Charles]
+6. 2-D Power-law rheology [Charles]
 
-5. Interface with PETSc nonlinear solvers [Brad and Matt]
+7. Initial stress, strain, state variables for inelastic models [Charles]
 
-6. Modularize output? [Matt]
+8. Savage-Presscott benchmark [Charles]
 
-7. Update manual for version 1.4
+9. Analytic BC for reverse-slip benchmark [Charles or Brad]
+    a. Create BC for CUBIT mesh.
+    b. Create BC for LaGriT mesh.
+    c. Run benchmarks.
+    d. Generate analytic solutions.
+    e. Tabulate results.
+
+10. PETSc SNES nonlinear solvers [Matt]
+
+11. Add call to unitparser in SpatialData utils
+
+12. Add ability to use symmetric matrix, set block size (default is 1)
+
+13. Update manual for version 1.4 [Brad and Charles]
 
   * Reduce memory use with ordering elements by material
 
   * Nondimensionalization
 
   * Material
-    * initial stress/strain
+    * initial stress, strain, and state variables
+    * Cleanup notation and discussion of inelastic materials
 
   * Incompatibilities
     importer -> reader
@@ -85,17 +118,13 @@ CURRENT ISSUES/PRIORITIES
 
 -- Release (v1.4) --
 
-7. Fault friction
+Modularize output? [Matt]
 
-Other
+Fault friction
 
-  1. Reverse-slip benchmark.
-    a. Create BC for CUBIT mesh.
-    b. Create BC for LaGriT mesh.
-    c. Run benchmarks.
-    d. Generate analytic solutions.
-    e. Tabulate results.
+Uniform refinement (debug, check, all cell types)
 
+Cuthill-McKee ordering of vertices
 
 ======================================================================
 KNOWN DEFICIENCIES
@@ -214,8 +243,6 @@ Release 1.7
 ----------------------------------------------------------------------
 LONG TERM WISH LIST
 ----------------------------------------------------------------------
-
-  1. Replace Pyrex/pyrexembed with SWIG
 
   4. HDF5 output
 
