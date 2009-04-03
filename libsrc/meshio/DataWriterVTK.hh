@@ -138,7 +138,7 @@ private :
 }; // DataWriterVTK
 
 #include "DataWriterVTK.icc" // inline methods
-#include "DataWriterVTK.cc"
+#include "DataWriterVTK.cc" // template definitions
 
 #endif // pylith_meshio_datawritervtk_hh
 
