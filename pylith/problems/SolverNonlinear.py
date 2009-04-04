@@ -18,7 +18,7 @@ from Solver import Solver
 from problems import SolverNonlinear as ModuleSolverNonlinear
 
 # SolverNonlinear class
-class SolverNonlinear(Solver):
+class SolverNonlinear(Solver, ModuleSolverNonlinear):
   """
   Python PyLith nonlinear algebraic solver.
   """
@@ -60,6 +60,14 @@ class SolverNonlinear(Solver):
     Set members based using inventory.
     """
     Solver._configure(self)
+    return
+
+
+  def _cleanup(self):
+    """
+    Deallocate PETSc and local data structures.
+    """
+    self.deallocate()
     return
 
 

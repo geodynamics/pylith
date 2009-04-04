@@ -43,6 +43,9 @@ public :
   /// Destructor
   ~SolverNonlinear(void);
 
+  /// Deallocate PETSc and local data structures.
+  void deallocate(void);
+  
   /** Initialize solver.
    *
    * @param fields Solution fields.
