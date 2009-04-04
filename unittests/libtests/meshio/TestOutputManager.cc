@@ -37,7 +37,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestOutputManager );
 void
 pylith::meshio::TestOutputManager::testConstructor(void)
 { // testConstructor
-  OutputManager manager;
+  OutputManager<topology::Mesh> manager;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -45,7 +45,7 @@ pylith::meshio::TestOutputManager::testConstructor(void)
 void
 pylith::meshio::TestOutputManager::testCoordsys(void)
 { // testCoordsys
-  OutputManager manager;
+  OutputManager<topology::Mesh> manager;
 
   CPPUNIT_ASSERT(0 == manager._coordsys);
 
@@ -59,11 +59,11 @@ pylith::meshio::TestOutputManager::testCoordsys(void)
 void
 pylith::meshio::TestOutputManager::testWriter(void)
 { // testWriter
-  OutputManager manager;
+  OutputManager<topology::Mesh> manager;
 
   CPPUNIT_ASSERT(0 == manager._writer);
 
-  DataWriterVTK writer;
+  DataWriterVTK<topology::Mesh> writer;
   manager.writer(&writer);
   CPPUNIT_ASSERT(0 != manager._writer);
 } // testWriter
@@ -73,12 +73,12 @@ pylith::meshio::TestOutputManager::testWriter(void)
 void
 pylith::meshio::TestOutputManager::testVertexFilter(void)
 { // testVertexFilter
-  OutputManager manager;
+  OutputManager<topology::Mesh> manager;
 
   CPPUNIT_ASSERT(0 == manager._vertexFilter);
   CPPUNIT_ASSERT(0 == manager._cellFilter);
 
-  VertexFilterVecNorm filter;
+  VertexFilterVecNorm<topology::Mesh> filter;
   manager.vertexFilter(&filter);
   CPPUNIT_ASSERT(0 != manager._vertexFilter);
   CPPUNIT_ASSERT(0 == manager._cellFilter);
@@ -89,12 +89,12 @@ pylith::meshio::TestOutputManager::testVertexFilter(void)
 void
 pylith::meshio::TestOutputManager::testCellFilter(void)
 { // testCellFilter
-  OutputManager manager;
+  OutputManager<topology::Mesh> manager;
 
   CPPUNIT_ASSERT(0 == manager._vertexFilter);
   CPPUNIT_ASSERT(0 == manager._cellFilter);
 
-  CellFilterAvg filter;
+  CellFilterAvg<topology::Mesh> filter;
   manager.cellFilter(&filter);
   CPPUNIT_ASSERT(0 != manager._cellFilter);
   CPPUNIT_ASSERT(0 == manager._vertexFilter);
@@ -105,7 +105,7 @@ pylith::meshio::TestOutputManager::testCellFilter(void)
 void
 pylith::meshio::TestOutputManager::testOpenClose(void)
 { // testOpenClose
-  OutputManager manager;
+  OutputManager<topology::Mesh> manager;
 
   MeshIOAscii iohandler;
   ALE::Obj<Mesh> mesh;
@@ -118,7 +118,7 @@ pylith::meshio::TestOutputManager::testOpenClose(void)
 
   // TODO Replace DataVTKWriter with writer that has nontrivial
   // open()/close().
-  DataWriterVTK writer;
+  DataWriterVTK<topology::Mesh> writer;
   manager.writer(&writer);
 
   manager.open(mesh, &cs, numTimeSteps);
@@ -130,7 +130,7 @@ pylith::meshio::TestOutputManager::testOpenClose(void)
 void
 pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
 { // testOpenCloseTimeStep
-  OutputManager manager;
+  OutputManager<topology::Mesh> manager;
 
   MeshIOAscii iohandler;
   ALE::Obj<Mesh> mesh;
@@ -144,7 +144,7 @@ pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
   const char* filenameRoot = "output.vtk";
   const char* timeFormat = "%3.1f";
 
-  DataWriterVTK writer;
+  DataWriterVTK<topology::Mesh> writer;
   writer.filename(filenameRoot);
   writer.timeFormat(timeFormat);
   manager.writer(&writer);
@@ -162,13 +162,14 @@ pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
 void
 pylith::meshio::TestOutputManager::testAppendVertexField(void)
 { // testAppendVertexField
-  OutputManager manager;
+  OutputManager<topology::Mesh> manager;
 
   const char* meshFilename = "data/tri3.mesh";
   const int fiberDim = 2;
   const int nvertices = 4;
-  const char* fieldName = "field data";
-  const VectorFieldEnum fieldType = VECTOR_FIELD;
+  const char* label = "field data";
+  const topology::FieldBase::VectorFieldEnum fieldType = 
+    topology::FieldBase::VECTOR;
   const double fieldValues[] = {
     1.1, 1.2,
     2.1, 2.2,
@@ -180,7 +181,6 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
   ALE::Obj<Mesh> mesh;
   iohandler.filename(meshFilename);
   iohandler.read(&mesh);
-  CPPUNIT_ASSERT(!mesh.isNull());
 
   // Set vertex field
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
@@ -247,7 +247,7 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
   const int fiberDim = 2;
   const int ncells = 2;
   const char* fieldName = "field data";
-  const VectorFieldEnum fieldType = OTHER_FIELD;
+  const topology::FieldBase::VectorFieldEnum fieldType = OTHER_FIELD;
   const double fieldValues[] = {
     1.1, 1.2,
     2.1, 2.2,

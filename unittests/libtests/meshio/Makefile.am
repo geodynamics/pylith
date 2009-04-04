@@ -51,9 +51,9 @@ testmeshio_SOURCES = \
 # 	TestDataWriterVTKBCMeshQuad4.cc \
 # 	TestDataWriterVTKBCMeshTet4.cc \
 # 	TestDataWriterVTKBCMeshHex8.cc
+#	TestOutputManager.cc \
+#	TestOutputSolnSubset.cc
 
-# 	TestOutputManager.cc \
-# 	TestOutputSolnSubset.cc
 
 
 noinst_HEADERS = \

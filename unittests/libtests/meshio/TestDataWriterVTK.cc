@@ -18,8 +18,6 @@
 
 #include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
 
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-
 #include <string.h> // USES strcmp()
 
 // ----------------------------------------------------------------------
@@ -30,6 +28,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTK );
 void
 pylith::meshio::TestDataWriterVTK::setUp(void)
 { // setUp
+  _mesh = 0;
   _data = 0;
   _flipFault = false;
 } // setUp
@@ -48,7 +47,7 @@ pylith::meshio::TestDataWriterVTK::tearDown(void)
 void
 pylith::meshio::TestDataWriterVTK::testConstructor(void)
 { // testConstructor
-  DataWriterVTK writer;
+  DataWriterVTK<topology::Mesh> writer;
 
   CPPUNIT_ASSERT(0 == writer._viewer);
   CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
@@ -60,7 +59,7 @@ pylith::meshio::TestDataWriterVTK::testConstructor(void)
 void
 pylith::meshio::TestDataWriterVTK::testFilename(void)
 { // testDebug
-  DataWriterVTK writer;
+  DataWriterVTK<topology::Mesh> writer;
 
   const char* filename = "data.vtk";
   writer.filename(filename);
@@ -72,7 +71,7 @@ pylith::meshio::TestDataWriterVTK::testFilename(void)
 void
 pylith::meshio::TestDataWriterVTK::testTimeFormat(void)
 { // testTimeFormat
-  DataWriterVTK writer;
+  DataWriterVTK<topology::Mesh> writer;
 
   const char* format = "%4.1f";
   writer.timeFormat(format);
@@ -84,7 +83,7 @@ pylith::meshio::TestDataWriterVTK::testTimeFormat(void)
 void
 pylith::meshio::TestDataWriterVTK::testTimeConstant(void)
 { // testTimeConstant
-  DataWriterVTK writer;
+  DataWriterVTK<topology::Mesh> writer;
 
   const double value = 4.5;
   writer.timeConstant(value);
@@ -96,13 +95,10 @@ pylith::meshio::TestDataWriterVTK::testTimeConstant(void)
 void
 pylith::meshio::TestDataWriterVTK::testTimeStep(void)
 { // testTimeStep
-  CPPUNIT_ASSERT(!_mesh.isNull());
+  CPPUNIT_ASSERT(0 != _mesh);
   CPPUNIT_ASSERT(0 != _data);
 
-  DataWriterVTK writer;
-
-  spatialdata::geocoords::CSCart cs;
-  cs.setSpaceDim(_mesh->getDimension());
+  DataWriterVTK<topology::Mesh> writer;
 
   writer.filename(_data->timestepFilename);
   writer.timeFormat(_data->timeFormat);
@@ -113,13 +109,13 @@ pylith::meshio::TestDataWriterVTK::testTimeStep(void)
   const double t = _data->time;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
-    writer.open(_mesh, &cs, numTimeSteps);
-    writer.openTimeStep(t, _mesh, &cs);
+    writer.open(*_mesh, numTimeSteps);
+    writer.openTimeStep(t, *_mesh);
   } else {
     const char* label = _data->cellsLabel;
     const int id = _data->labelId;
-    writer.open(_mesh, &cs, numTimeSteps, label, id);
-    writer.openTimeStep(t, _mesh, &cs, label, id);
+    writer.open(*_mesh, numTimeSteps, label, id);
+    writer.openTimeStep(t, *_mesh, label, id);
   } // else
 
   CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
@@ -139,15 +135,12 @@ pylith::meshio::TestDataWriterVTK::testTimeStep(void)
 void
 pylith::meshio::TestDataWriterVTK::testWriteVertexField(void)
 { // testWriteVertexField
-  CPPUNIT_ASSERT(!_mesh.isNull());
+  CPPUNIT_ASSERT(0 != _mesh);
   CPPUNIT_ASSERT(0 != _data);
 
-  DataWriterVTK writer;
+  DataWriterVTK<topology::Mesh> writer;
 
-  spatialdata::geocoords::CSCart cs;
-  cs.setSpaceDim(_mesh->getDimension());
-
-  std::vector< ALE::Obj<real_section_type> > vertexFields;
+  topology::Fields<topology::Mesh> vertexFields(*_mesh);
   _createVertexFields(&vertexFields);
 
   writer.filename(_data->vertexFilename);
@@ -158,13 +151,13 @@ pylith::meshio::TestDataWriterVTK::testWriteVertexField(void)
   const double t = _data->time;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
-    writer.open(_mesh, &cs, numTimeSteps);
-    writer.openTimeStep(t, _mesh, &cs);
+    writer.open(*_mesh, numTimeSteps);
+    writer.openTimeStep(t, *_mesh);
   } else {
     const char* label = _data->cellsLabel;
     const int id = _data->labelId;
-    writer.open(_mesh, &cs, numTimeSteps, label, id);
-    writer.openTimeStep(t, _mesh, &cs, label, id);
+    writer.open(*_mesh, numTimeSteps, label, id);
+    writer.openTimeStep(t, *_mesh, label, id);
   } // else
   for (int i=0; i < nfields; ++i) {
     writer.writeVertexField(t, _data->vertexFieldsInfo[i].name,
@@ -187,15 +180,12 @@ pylith::meshio::TestDataWriterVTK::testWriteVertexField(void)
 void
 pylith::meshio::TestDataWriterVTK::testWriteCellField(void)
 { // testWriteCellField
-  CPPUNIT_ASSERT(!_mesh.isNull());
+  CPPUNIT_ASSERT(0 != _mesh);
   CPPUNIT_ASSERT(0 != _data);
 
-  DataWriterVTK writer;
+  DataWriterVTK<topology::Mesh> writer;
 
-  spatialdata::geocoords::CSCart cs;
-  cs.setSpaceDim(_mesh->getDimension());
-
-  std::vector< ALE::Obj<real_section_type> > cellFields;
+  std::vector<topology::Field<topology::Mesh> > cellFields;
   _createCellFields(&cellFields);
 
   writer.filename(_data->cellFilename);
@@ -206,8 +196,8 @@ pylith::meshio::TestDataWriterVTK::testWriteCellField(void)
   const double t = _data->time;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
-    writer.open(_mesh, &cs, numTimeSteps);
-    writer.openTimeStep(t, _mesh, &cs);
+    writer.open(*_mesh, numTimeSteps);
+    writer.openTimeStep(t, *_mesh);
     for (int i=0; i < nfields; ++i) {
       writer.writeCellField(t, _data->cellFieldsInfo[i].name,
                             cellFields[i], 
@@ -219,7 +209,7 @@ pylith::meshio::TestDataWriterVTK::testWriteCellField(void)
   } else {
     const char* label = _data->cellsLabel;
     const int id = _data->labelId;
-    writer.open(_mesh, &cs, numTimeSteps, label, id);
+    writer.open(*_mesh, numTimeSteps, label, id);
     writer.openTimeStep(t, _mesh, &cs, label, id);
     for (int i=0; i < nfields; ++i) {
       writer.writeCellField(t, _data->cellFieldsInfo[i].name,
@@ -242,7 +232,7 @@ pylith::meshio::TestDataWriterVTK::testWriteCellField(void)
 // Test _vtkFilename.
 void pylith::meshio::TestDataWriterVTK::testVtkFilename(void)
 { // testVtkFilename
-  DataWriterVTK writer;
+  DataWriterVTK<topology::Mesh> writer;
 
   // Append info to filename if number of time steps is 0.
   writer._numTimeSteps = 0;
@@ -269,34 +259,38 @@ void pylith::meshio::TestDataWriterVTK::testVtkFilename(void)
 // Create vertex fields.
 void
 pylith::meshio::TestDataWriterVTK::_createVertexFields(
-		      std::vector< ALE::Obj<real_section_type> >* fields) const
+	     topology::Fields<topology::Mesh> >* fields) const
 { // _createVertexFields
   CPPUNIT_ASSERT(0 != fields);
-  CPPUNIT_ASSERT(!_mesh.isNull());
+  CPPUNIT_ASSERT(0 != _mesh);
   CPPUNIT_ASSERT(0 != _data);
 
   try {
     const int nfields = _data->numVertexFields;
 
-    const ALE::Obj<Mesh::label_sequence>& vertices = 
-      _mesh->depthStratum(0);
-    const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+    const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
+    CPPUNIT_ASSERT(!sieveMesh.isNull());
+    const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
+    CPPUNIT_ASSERT(!vertices.isNull());
+    const label_sequence::iterator verticesEnd = vertices->end();
 
     // Set vertex fields
-    fields->resize(nfields);
     for (int i=0; i < nfields; ++i) {
-      (*fields)[i] = new real_section_type(_mesh->comm(), _mesh->debug());
-      (*fields)[i]->setChart(_mesh->getSieve()->getChart());
+      const char* name = _data->VertexFieldsInfo[i].label;
       const int fiberDim = _data->vertexFieldsInfo[i].fiber_dim;
-      (*fields)[i]->setFiberDimension(vertices, fiberDim);
-      _mesh->allocate((*fields)[i]);
+      fields->add(name);
+      topology::Field<topology::Mesh>& field = fields->get(name);
+      field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+      field.allocate();
 
+      const ALE::Obj<RealSection>& section = field.section();
+      CPPUNIT_ASSERT(!section.isNull());
       int ipt = 0;
-      for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+      for (label_sequence::iterator v_iter=vertices->begin();
 	   v_iter != verticesEnd;
 	   ++v_iter, ++ipt) {
 	const double* values = &_data->vertexFields[i][ipt*fiberDim];
-	(*fields)[i]->updatePoint(*v_iter, values);
+	section->updatePoint(*v_iter, values);
       } // for
       CPPUNIT_ASSERT_EQUAL(_data->numVertices, ipt);
     } // for
@@ -309,10 +303,10 @@ pylith::meshio::TestDataWriterVTK::_createVertexFields(
 // Create cell fields.
 void
 pylith::meshio::TestDataWriterVTK::_createCellFields(
-		      std::vector< ALE::Obj<real_section_type> >* fields) const
+                       topology::Fields<topology::Mesh> >* fields) const
 { // _createCellFields
   CPPUNIT_ASSERT(0 != fields);
-  CPPUNIT_ASSERT(!_mesh.isNull());
+  CPPUNIT_ASSERT(0 != _mesh);
   CPPUNIT_ASSERT(0 != _data);
 
   try {

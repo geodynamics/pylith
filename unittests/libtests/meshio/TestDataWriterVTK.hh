@@ -102,7 +102,7 @@ public :
 protected :
 
   DataWriterVTKData* _data; ///< Data for testing
-  ALE::Obj<Mesh> _mesh; ///< Mesh for data
+  topology::Mesh* _mesh; ///< Mesh for data
   bool _flipFault; ///< If true, flip fault orientation.
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
@@ -113,14 +113,14 @@ private :
    * @param fields Vertex fields.
    */
   void
-  _createVertexFields(std::vector< ALE::Obj<real_section_type> >* fields) const;
+  _createVertexFields(topology::Fields<topology::Mesh>* fields) const;
 
   /** Create cell fields.
    *
    * @param fields Cell fields.
    */
   void
-  _createCellFields(std::vector< ALE::Obj<real_section_type> >* fields) const;
+  _createCellFields(topology::Fields<topology::Mesh>* fields) const;
 
 }; // class TestDataWriterVTK
 
