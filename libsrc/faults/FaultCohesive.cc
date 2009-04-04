@@ -16,11 +16,7 @@
 
 #include "CohesiveTopology.hh" // USES CohesiveTopology::create()
 
-#if defined(NEWPYLITHMEHS)
 #include "pylith/meshio/UCDFaultFile.hh" // USES UCDFaultFile::read()
-#endif
-
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 #include "pylith/utils/array.hh" // USES double_array
 
 #include <cassert> // USES assert()
@@ -61,33 +57,33 @@ pylith::faults::FaultCohesive::faultMeshFilename(const char* filename)
 // ----------------------------------------------------------------------
 // Adjust mesh topology for fault implementation.
 void
-pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<Mesh>& mesh,
+pylith::faults::FaultCohesive::adjustTopology(const topology::Mesh& mesh,
 					      const bool flipFault)
 { // adjustTopology
   assert(std::string("") != label());
+  SubMesh faultMesh;
+  Mesh fault
   Obj<SubMesh>   faultMesh = NULL;
   Obj<ALE::Mesh> faultBd   = NULL;
 
   if (_useFaultMesh) {
     const int faultDim = 2;
+    assert(3 == mesh.dimension());
 
     //MPI_Bcast(&faultDim, 1, MPI_INT, 0, comm);
     faultMesh = new SubMesh(mesh->comm(), faultDim, mesh->debug());
-#if defined(NEWPYLITHMESH)
     meshio::UCDFaultFile::readFault(_faultMeshFilename, mesh, 
 				    faultMesh, faultBd);
-#endif
 
     // Get group of vertices associated with fault
-    const ALE::Obj<int_section_type>& groupField = 
-      mesh->getIntSection(label());
+    const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(label());
     faultMesh->setRealSection("coordinates", 
 			      mesh->getRealSection("coordinates"));
 
     CohesiveTopology::create(faultMesh, faultBd, mesh, groupField, id(),
 			     _useLagrangeConstraints());
   } else {
-    if (!mesh->hasIntSection(label())) {
+    if (!sieveMesh->hasIntSection(label())) {
       std::ostringstream msg;
       msg << "Mesh missing group of vertices '" << label()
           << " for fault interface condition.";
@@ -95,8 +91,7 @@ pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<Mesh>& mesh,
     } // if  
 
     // Get group of vertices associated with fault
-    const ALE::Obj<int_section_type>& groupField = 
-      mesh->getIntSection(label());
+    const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(label());
     assert(!groupField.isNull());
 
     faultMesh = 

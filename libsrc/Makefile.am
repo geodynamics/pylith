@@ -28,6 +28,10 @@ libpylith_la_SOURCES = \
 	bc/DirichletBoundary.cc \
 	bc/Neumann.cc \
 	bc/AbsorbingDampers.cc \
+	faults/Fault.cc \
+	faults/SlipTimeFn.cc \
+	faults/StepSlipFn.cc \
+	faults/ConstRateSlipFn.cc \
 	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
 	feassemble/GeometryPoint1D.cc \
@@ -89,16 +93,14 @@ libpylith_la_SOURCES = \
 	utils/EventLogger.cc \
 	utils/TestArray.cc
 
+#	faults/TopologyOps.cc \
 # 	faults/BruneSlipFn.cc \
-# 	faults/ConstRateSlipFn.cc \
 # 	faults/CohesiveTopology.cc \
 # 	faults/EqKinSrc.cc \
-# 	faults/Fault.cc \
 # 	faults/FaultCohesive.cc \
 # 	faults/FaultCohesiveKin.cc \
 # 	faults/FaultCohesiveDyn.cc \
 # 	faults/LiuCosSlipFn.cc \
-# 	faults/SlipTimeFn.cc \
 # 	faults/StepSlipFn.cc \
 # 	materials/GenMaxwellIsotropic3D.cc \
 # 	meshio/CellFilter.cc \

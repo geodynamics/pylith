@@ -37,9 +37,9 @@ pylith::faults::Fault::label(const char* value) {
 
 // Get label of fault.
 inline
-const std::string&
+const char*
 pylith::faults::Fault::label(void) const {
-  return _label;
+  return _label.c_str();
 }
 
 

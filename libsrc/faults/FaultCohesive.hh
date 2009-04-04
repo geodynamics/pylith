@@ -19,21 +19,10 @@
 #if !defined(pylith_faults_faultcohesive_hh)
 #define pylith_faults_faultcohesive_hh
 
+// Include directives ---------------------------------------------------
 #include "Fault.hh" // ISA Fault
 
-#include "pylith/utils/sievefwd.hh" // HOLDSA PETSc Mesh
-#include "pylith/utils/petscfwd.h" // USES PetscMat
-
-/// Namespace for pylith package
-namespace pylith {
-  namespace faults {
-    class FaultCohesive;
-    class TestFaultCohesive; // unit testing
-  } // faults
-} // pylith
-
-/// C++ abstract base class for a fault surface implemented with
-/// cohesive elements.
+// FaultCohesive --------------------------------------------------------
 class pylith::faults::FaultCohesive : public Fault
 { // class FaultCohesive
   friend class TestFaultCohesive; // unit testing
@@ -64,9 +53,11 @@ public :
 
   /** Adjust mesh topology for fault implementation.
    *
-   * @param mesh PETSc mesh
+   * @param mesh PETSc mesh.
+   * @param flipFault Flip fault orientation.
    */
-  void adjustTopology(const ALE::Obj<Mesh>& mesh, const bool flipFault = false);
+  void adjustTopology(const topology::Mesh& mesh,
+		      const bool flipFault =false);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

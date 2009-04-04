@@ -20,27 +20,12 @@
 #if !defined(pylith_faults_sliptimefn_hh)
 #define pylith_faults_sliptimefn_hh
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+// Include directives ---------------------------------------------------
+#include "Fault.hh" // ISA Fault
 
-/// Namespace for pylith package
-namespace pylith {
-  namespace faults {
-    class SlipTimeFn;
-    class TestSlipTimeFn; // unit testing
-  } // faults
-} // pylith
+#include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
-/// Namespace for spatialdata package
-namespace spatialdata {
-  namespace geocoords {
-    class CoordSys;
-  } // geocoords
-  namespace units {
-    class Nondimensional;
-  } // units
-} // spatialdata
-
-/// C++ abstract base class for Fault object.
+// SlipTimeFn -----------------------------------------------------------
 class pylith::faults::SlipTimeFn
 { // class SlipTimeFn
   friend class TestSlipTimeFn; // unit testing
@@ -63,8 +48,7 @@ public :
    * @param originTime Origin time for earthquake source.
    */
   virtual
-  void initialize(const ALE::Obj<Mesh>& faultMesh,
-		  const spatialdata::geocoords::CoordSys* cs,
+  void initialize(const topology::SubMesh& faultMesh,
 		  const spatialdata::units::Nondimensional& normalizer,
 		  const double originTime =0.0) = 0;
 
@@ -72,52 +56,45 @@ public :
    *
    * @param slipField Slip field over fault surface.
    * @param t Time t.
-   * @param faultMesh Mesh over fault surface.
    *
    * @returns Slip vector as left-lateral/reverse/normal.
    */
   virtual
-  void slip(const ALE::Obj<real_section_type>& slipField,
-	    const double t,
-	    const ALE::Obj<Mesh>& faultMesh) = 0;
+  void slip(topology::Field<topology::SubMesh>* const slipField,
+	    const double t) = 0;
   
   /** Get slip increment on fault surface between time t0 and t1.
    *
    * @param slipField Slip field over fault surface.
    * @param t0 Time t.
    * @param t1 Time t+dt.
-   * @param faultMesh Mesh over fault surface.
    * 
    * @returns Increment in slip vector as left-lateral/reverse/normal.
    */
   virtual
-  void slipIncr(const ALE::Obj<real_section_type>& slipField,
+  void slipIncr(topology::Field<topology::SubMesh>* slipField,
 		const double t0,
-		const double t1,
-		const ALE::Obj<Mesh>& faultMesh) = 0;
+		const double t1) = 0;
 
   /** Get final slip.
    *
    * @returns Final slip.
    */
   virtual
-  ALE::Obj<real_section_type> finalSlip(void) = 0;
+  const topology::Field<topology::SubMesh>& finalSlip(void) = 0;
 
   /** Get time when slip begins at each point.
    *
    * @returns Time when slip begins.
    */
   virtual
-  ALE::Obj<real_section_type> slipTime(void) = 0;
+  const topology::Field<topology::SubMesh>& slipTime(void) = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
-  /// Not implemented.
-  SlipTimeFn(const SlipTimeFn& f);
-
-  /// Not implemented
-  const SlipTimeFn& operator=(const SlipTimeFn& f);
+  SlipTimeFn(const SlipTimeFn&); ///< Not implemented
+  const SlipTimeFn& operator=(const SlipTimeFn&); ///< Not implemented
 
 }; // class SlipTimeFn
 

@@ -14,8 +14,9 @@
 
 #include "ConstRateSlipFn.hh" // implementation of object methods
 
-#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/Field.hh" // USES Field
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -25,20 +26,18 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
-namespace pylith {
-  namespace faults {
-    namespace _ConstRateSlipFn {
-      const int offsetSlipTime = 0;
-    } // _ConstRateSlipFn
-  } // faults
-} // pylith
+// ----------------------------------------------------------------------
+typedef pylith::topology::SubMesh::SieveMesh SieveMesh;
+typedef pylith::topology::SubMesh::SieveMesh::label_sequence label_sequence;
+typedef pylith::topology::SubMesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::ConstRateSlipFn::ConstRateSlipFn(void) :
+  _slipTimeVertex(0),
+  _parameters(0),
   _dbSlipRate(0),
-  _dbSlipTime(0),
-  _spaceDim(0)
+  _dbSlipTime(0)
 { // constructor
 } // constructor
 
@@ -46,6 +45,7 @@ pylith::faults::ConstRateSlipFn::ConstRateSlipFn(void) :
 // Destructor.
 pylith::faults::ConstRateSlipFn::~ConstRateSlipFn(void)
 { // destructor
+  delete _parameters; _parameters = 0;
   _dbSlipRate = 0;
   _dbSlipTime = 0;
 } // destructor
@@ -54,36 +54,48 @@ pylith::faults::ConstRateSlipFn::~ConstRateSlipFn(void)
 // Initialize slip time function.
 void
 pylith::faults::ConstRateSlipFn::initialize(
-			   const ALE::Obj<Mesh>& faultMesh,
-			   const spatialdata::geocoords::CoordSys* cs,
-			   const spatialdata::units::Nondimensional& normalizer,
-			   const double originTime)
+			    const topology::SubMesh& faultMesh,
+			    const spatialdata::units::Nondimensional& normalizer,
+			    const double originTime)
 { // initialize
-  assert(!faultMesh.isNull());
-  assert(0 != cs);
   assert(0 != _dbSlipRate);
   assert(0 != _dbSlipTime);
 
-  _spaceDim = cs->spaceDim();
-  const int spaceDim = _spaceDim;
-  const int indexSlipRate = 0;
-  const int indexSlipTime = spaceDim + _ConstRateSlipFn::offsetSlipTime;
+  const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();
+  assert(0 != cs);
+  const int spaceDim = cs->spaceDim();
+
+  const double lengthScale = normalizer.lengthScale();
+  const double timeScale = normalizer.timeScale();
+  const double velocityScale =
+    normalizer.lengthScale() / normalizer.timeScale();
 
   // Get vertices in fault mesh
-  const ALE::Obj<Mesh::label_sequence>& vertices = faultMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const ALE::Obj<SieveMesh>& sieveMesh = faultMesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const label_sequence::iterator verticesEnd = vertices->end();
 
-  const int fiberDim = spaceDim + 1;
-  _parameters = new real_section_type(faultMesh->comm(), faultMesh->debug());
-  _parameters->addSpace(); // slip rate
-  _parameters->addSpace(); // slip time
-  assert(2 == _parameters->getNumSpaces());
-  _parameters->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), vertices->end()), *std::max_element(vertices->begin(), vertices->end())+1));
-  _parameters->setFiberDimension(vertices, fiberDim);
-  _parameters->setFiberDimension(vertices, spaceDim, 0); // slip rate
-  _parameters->setFiberDimension(vertices, 1, 1); // slip time
-  faultMesh->allocate(_parameters);
-  assert(!_parameters.isNull());
+  delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
+  assert(0 != _parameters);
+  _parameters->add("slip rate", "slip rate");
+  topology::Field<topology::SubMesh>& slipRate = _parameters->get("slip rate");
+  slipRate.newSection(vertices, spaceDim);
+  slipRate.allocate();
+  slipRate.scale(velocityScale);
+  slipRate.vectorFieldType(topology::FieldBase::VECTOR);
+  const ALE::Obj<RealSection>& slipRateSection = slipRate.section();
+  assert(!slipRateSection.isNull());  
+
+  _parameters->add("slip time", "slip time");
+  topology::Field<topology::SubMesh>& slipTime = _parameters->get("slip time");
+  slipTime.newSection(slipRateSection->getChart(), 1);
+  slipTime.allocate();
+  slipTime.scale(timeScale);
+  slipTime.vectorFieldType(topology::FieldBase::SCALAR);
+  const ALE::Obj<RealSection>& slipTimeSection = slipTime.section();
+  assert(!slipTimeSection.isNull());
 
   // Open databases and set query values
   _dbSlipRate->open();
@@ -114,18 +126,13 @@ pylith::faults::ConstRateSlipFn::initialize(
   _dbSlipTime->queryVals(slipTimeValues, 1);
 
   // Get coordinates of vertices
-  const ALE::Obj<real_section_type>& coordinates = 
-    faultMesh->getRealSection("coordinates");
+  const ALE::Obj<RealSection>& coordinates = 
+    sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
 
-  const double lengthScale = normalizer.lengthScale();
-  const double timeScale = normalizer.timeScale();
-  const double velocityScale =
-    normalizer.lengthScale() / normalizer.timeScale();
-
-  double_array paramsVertex(fiberDim);
+  _slipRateVertex.resize(spaceDim);
   double_array vCoordsGlobal(spaceDim);
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  for (label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter) {
     coordinates->restrictPoint(*v_iter, 
@@ -133,7 +140,7 @@ pylith::faults::ConstRateSlipFn::initialize(
     normalizer.dimensionalize(&vCoordsGlobal[0], vCoordsGlobal.size(),
 			      lengthScale);
     
-    int err = _dbSlipRate->query(&paramsVertex[indexSlipRate], spaceDim, 
+    int err = _dbSlipRate->query(&_slipRateVertex[0], _slipRateVertex.size(), 
 				 &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
     if (err) {
       std::ostringstream msg;
@@ -143,10 +150,10 @@ pylith::faults::ConstRateSlipFn::initialize(
       msg << ") using spatial database " << _dbSlipRate->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
-    normalizer.nondimensionalize(&paramsVertex[indexSlipRate], spaceDim,
+    normalizer.nondimensionalize(&_slipRateVertex[0], _slipRateVertex.size(),
 				 velocityScale);
 
-    err = _dbSlipTime->query(&paramsVertex[indexSlipTime], 1, 
+    err = _dbSlipTime->query(&_slipTimeVertex, 1, 
 			     &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
     if (err) {
       std::ostringstream msg;
@@ -156,12 +163,12 @@ pylith::faults::ConstRateSlipFn::initialize(
       msg << ") using spatial database " << _dbSlipTime->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
-    normalizer.nondimensionalize(&paramsVertex[indexSlipTime], 1,
-				 timeScale);
+    normalizer.nondimensionalize(&_slipTimeVertex, 1, timeScale);
     // add origin time to rupture time
-    paramsVertex[indexSlipTime] += originTime;
+    _slipTimeVertex += originTime;
 
-    _parameters->updatePoint(*v_iter, &paramsVertex[0]);
+    slipRateSection->updatePoint(*v_iter, &_slipRateVertex[0]);
+    slipTimeSection->updatePoint(*v_iter, &_slipTimeVertex);
   } // for
 
   // Close databases
@@ -172,114 +179,117 @@ pylith::faults::ConstRateSlipFn::initialize(
 // ----------------------------------------------------------------------
 // Get slip on fault surface at time t.
 void
-pylith::faults::ConstRateSlipFn::slip(const ALE::Obj<pylith::real_section_type>& slipField,
-				      const double t,
-				      const ALE::Obj<Mesh>& faultMesh)
+pylith::faults::ConstRateSlipFn::slip(topology::Field<topology::SubMesh>* slip,
+				      const double t)
 { // slip
-  assert(!_parameters.isNull());
-  assert(!slipField.isNull());
-  assert(!faultMesh.isNull());
+  assert(0 != slip);
+  assert(0 != _parameters);
 
-  const int spaceDim = _spaceDim;
-  const int indexSlipRate = 0;
-  const int indexSlipTime = spaceDim + _ConstRateSlipFn::offsetSlipTime;
-
-  double_array slipValues(spaceDim);
-  
   // Get vertices in fault mesh
-  const ALE::Obj<Mesh::label_sequence>& vertices = faultMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
-  const int numVertices = vertices->size();
+  const ALE::Obj<SieveMesh>& sieveMesh = slip->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const label_sequence::iterator verticesEnd = vertices->end();
 
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  // Get sections
+  const topology::Field<topology::SubMesh>& slipRate = 
+    _parameters->get("final slip");
+  const ALE::Obj<RealSection>& slipRateSection = slipRate.section();
+  assert(!slipRateSection.isNull());
+  const topology::Field<topology::SubMesh>& slipTime =
+    _parameters->get("slip time");
+  const ALE::Obj<RealSection>& slipTimeSection = slipTime.section();
+  assert(!slipTimeSection.isNull());
+  const ALE::Obj<RealSection>& slipSection = slip->section();
+  assert(!slipSection.isNull());
+
+  for (label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter) {
-    const real_section_type::value_type* paramsVertex = 
-      _parameters->restrictPoint(*v_iter);
-    assert(0 != paramsVertex);
+    slipRateSection->restrictPoint(*v_iter, &_slipRateVertex[0],
+				   _slipRateVertex.size());
+    slipTimeSection->restrictPoint(*v_iter, &_slipTimeVertex, 1);
 
-    const double* slipRate = &paramsVertex[indexSlipRate];
-    const double slipTime = paramsVertex[indexSlipTime];
-    slipValues = 0.0;
-    
-    const double relTime = t - slipTime;
-    if (relTime > 0)
-      for (int i=0; i < spaceDim; ++i)
-	slipValues[i] = slipRate[i] * relTime;
+    const double relTime = t - _slipTimeVertex;
+    const double elapsedTime = (relTime > 0) ? relTime : 0.0;
+    _slipRateVertex *= elapsedTime; // Convert slip rate to slip
     
     // Update field
-    slipField->updateAddPoint(*v_iter, &slipValues[0]);
+    slipSection->updateAddPoint(*v_iter, &_slipRateVertex[0]);
   } // for
 
-  PetscLogFlops(numVertices * (1+1 + 4*spaceDim));
+  PetscLogFlops(vertices->size() * (1 + _slipRateVertex.size()));
 } // slip
 
 // ----------------------------------------------------------------------
 // Get increment of slip on fault surface between time t0 and t1.
 void
-pylith::faults::ConstRateSlipFn::slipIncr(const ALE::Obj<pylith::real_section_type>& slipField,
-					  const double t0,
-					  const double t1,
-					  const ALE::Obj<Mesh>& faultMesh)
+pylith::faults::ConstRateSlipFn::slipIncr(
+				      topology::Field<topology::SubMesh>* slip,
+				      const double t0,
+				      const double t1)
 { // slipIncr
-  assert(!_parameters.isNull());
-  assert(!slipField.isNull());
-  assert(!faultMesh.isNull());
+  assert(0 != slip);
+  assert(0 != _parameters);
 
-  const int spaceDim = _spaceDim;
-  const int indexSlipRate = 0;
-  const int indexSlipTime = spaceDim + _ConstRateSlipFn::offsetSlipTime;
-
-  double_array slipValues(spaceDim);
-  
   // Get vertices in fault mesh
-  const ALE::Obj<Mesh::label_sequence>& vertices = faultMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
-  const int numVertices = vertices->size();
+  const ALE::Obj<SieveMesh>& sieveMesh = slip->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const label_sequence::iterator verticesEnd = vertices->end();
 
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  // Get sections
+  const topology::Field<topology::SubMesh>& slipRate = 
+    _parameters->get("final slip");
+  const ALE::Obj<RealSection>& slipRateSection = slipRate.section();
+  assert(!slipRateSection.isNull());
+  const topology::Field<topology::SubMesh>& slipTime =
+    _parameters->get("slip time");
+  const ALE::Obj<RealSection>& slipTimeSection = slipTime.section();
+  assert(!slipTimeSection.isNull());
+  const ALE::Obj<RealSection>& slipSection = slip->section();
+  assert(!slipSection.isNull());
+
+  for (label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter) {
-    const real_section_type::value_type* paramsVertex = 
-      _parameters->restrictPoint(*v_iter);
-    assert(0 != paramsVertex);
+    slipRateSection->restrictPoint(*v_iter, &_slipRateVertex[0],
+				   _slipRateVertex.size());
+    slipTimeSection->restrictPoint(*v_iter, &_slipTimeVertex, 1);
 
-    const double* slipRate = &paramsVertex[indexSlipRate];
-    const double slipTime = paramsVertex[indexSlipTime];
-    slipValues = 0.0;
-
-    const double relTime0 = t0 - slipTime;
-    const double relTime1 = t1 - slipTime;
+    const double relTime0 = t0 - _slipTimeVertex;
+    const double relTime1 = t1 - _slipTimeVertex;
     double elapsedTime = 0.0;
     if (relTime0 > 0)
       elapsedTime = t1 - t0;
     else if (relTime1 > 0)
-      elapsedTime = t1 - slipTime;
-    for (int i=0; i < spaceDim; ++i)
-      slipValues[i] = slipRate[i] * elapsedTime;
+      elapsedTime = t1 - _slipTimeVertex;
+    _slipRateVertex *= elapsedTime; // Convert slip rate to slip
     
     // Update field
-    slipField->updateAddPoint(*v_iter, &slipValues[0]);
+    slipSection->updateAddPoint(*v_iter, &_slipRateVertex[0]);
   } // for
 
-  PetscLogFlops(numVertices * (2 + spaceDim));
+  PetscLogFlops(vertices->size() * (4 + _slipRateVertex.size()));
 } // slipIncr
 
 // ----------------------------------------------------------------------
-// Get final slip (slip rate in this case).
-ALE::Obj<pylith::real_section_type>
+// Get final slip.
+const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::ConstRateSlipFn::finalSlip(void)
 { // finalSlip
-  // This is actually slip rate.
-  return _parameters->getFibration(0);
+  // Slip rate is parameter instead of final slip.
+  return _parameters->get("slip rate");
 } // finalSlip
 
 // ----------------------------------------------------------------------
 // Get time when slip begins at each point.
-ALE::Obj<pylith::real_section_type>
+const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::ConstRateSlipFn::slipTime(void)
 { // slipTime
-  return _parameters->getFibration(1);
+  return _parameters->get("slip time");
 } // slipTime
 
 

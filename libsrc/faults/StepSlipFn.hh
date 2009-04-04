@@ -22,27 +22,14 @@
 #if !defined(pylith_faults_stepslipfn_hh)
 #define pylith_faults_stepslipfn_hh
 
+// Include directives ---------------------------------------------------
 #include "SlipTimeFn.hh"
 
-/// Namespace for pylith package
-namespace pylith {
-  namespace faults {
-    class StepSlipFn;
-    class TestStepSlipFn; // unit testing
-  } // faults
-} // pylith
+#include "pylith/topology/topologyfwd.hh" // USES Fields<Field<SubMesh> >
 
-/// Namespace for spatialdata package
-namespace spatialdata {
-  namespace spatialdb {
-    class SpatialDB;
-  } // spatialdb
-  namespace units {
-    class Nondimensional;
-  } // units
-} // spatialdata
+#include "pylith/utils/array.hh" // HASA double_array
 
-/// C++ implementation of Step slip time function.
+// SlipTimeFn -----------------------------------------------------------
 class pylith::faults::StepSlipFn : public SlipTimeFn
 { // class StepSlipFn
   friend class TestStepSlipFn; // unit testing
@@ -71,12 +58,11 @@ public :
   /** Initialize slip time function.
    *
    * @param faultMesh Finite-element mesh of fault.
-   * @param cs Coordinate system for mesh.
+   * @param cs Coordinate system for mesh
    * @param normalizer Nondimensionalization of scales.
    * @param originTime Origin time for earthquake source.
    */
-  void initialize(const ALE::Obj<Mesh>& faultMesh,
-		  const spatialdata::geocoords::CoordSys* cs,
+  void initialize(const topology::SubMesh& faultMesh,
 		  const spatialdata::units::Nondimensional& normalizer,
 		  const double originTime =0.0);
 
@@ -84,63 +70,57 @@ public :
    *
    * @param slipField Slip field over fault surface.
    * @param t Time t.
-   * @param faultMesh Mesh over fault surface.
    *
    * @returns Slip vector as left-lateral/reverse/normal.
    */
-  void slip(const ALE::Obj<real_section_type>& slipField,
-	    const double t,
-	    const ALE::Obj<Mesh>& faultMesh);
+  void slip(topology::Field<topology::SubMesh>* const slipField,
+	    const double t);
   
   /** Get slip increment on fault surface between time t0 and t1.
    *
    * @param slipField Slip field over fault surface.
    * @param t0 Time t.
    * @param t1 Time t+dt.
-   * @param faultMesh Mesh over fault surface.
    * 
    * @returns Increment in slip vector as left-lateral/reverse/normal.
    */
-  void slipIncr(const ALE::Obj<real_section_type>& slipField,
+  void slipIncr(topology::Field<topology::SubMesh>* slipField,
 		const double t0,
-		const double t1,
-		const ALE::Obj<Mesh>& faultMesh);
+		const double t1);
 
   /** Get final slip.
    *
    * @returns Final slip.
    */
-  ALE::Obj<real_section_type> finalSlip(void);
+  const topology::Field<topology::SubMesh>& finalSlip(void);
 
   /** Get time when slip begins at each point.
    *
    * @returns Time when slip begins.
    */
-  ALE::Obj<real_section_type> slipTime(void);
+  const topology::Field<topology::SubMesh>& slipTime(void);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
-  /// Not implemented
-  StepSlipFn(const StepSlipFn& m);
-
-  /// Not implemented
-  const StepSlipFn& operator=(const StepSlipFn& f);
+  StepSlipFn(const StepSlipFn&); ///< Not implemented.
+  const StepSlipFn& operator=(const StepSlipFn&); ///< Not implemented
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  /// Parameters for Step slip time function.
-  /// Final slip (vector), slip time (scalar).
-  ALE::Obj<real_section_type> _parameters;
+  double _slipTimeVertex; ///< Slip time at a vertex.
+  double_array _slipVertex; ///< Final slip at a vertex.
+
+  /// Parameters for step slip time function, final slip (vector) and
+  /// slip time (scalar).
+  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
 
   /// Spatial database for final slip
   spatialdata::spatialdb::SpatialDB* _dbFinalSlip;
 
   /// Spatial database for slip time
   spatialdata::spatialdb::SpatialDB* _dbSlipTime;
-
-  int _spaceDim; ///< Spatial dimension for slip field.
 
 }; // class StepSlipFn
 

@@ -31,11 +31,11 @@ pylith::faults::BruneSlipFn::dbSlipTime(spatialdata::spatialdb::SpatialDB* const
   _dbSlipTime = db;
 } // dbSlipTime
 
-// Set spatial database for peak slip rate.
+// Set spatial database for rise time.
 inline
 void
-pylith::faults::BruneSlipFn::dbPeakRate(spatialdata::spatialdb::SpatialDB* const db) {
-  _dbPeakRate = db;
+pylith::faults::BruneSlipFn::dbRiseTime(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbRiseTime = db;
 } // dbPeakRate
 
 // Compute slip using slip time function.
@@ -43,10 +43,11 @@ inline
 double
 pylith::faults::BruneSlipFn::_slipFn(const double t,
 				     const double finalSlip,
-				     const double peakRate) {
+				     const double riseTime) {
   double slip = 0.0;
   if (t > 0.0) {
-    assert(peakRate > 0.0);
+    assert(riseTime > 0.0);
+    const double peakRate = finalSlip / riseTime * 1.745;
     const double tau = 
       // prevent 0 == tau when 0 == finalSlip 
       (finalSlip > 0.0) ? finalSlip / (exp(1.0) * peakRate) : 0.1;

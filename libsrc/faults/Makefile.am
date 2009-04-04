@@ -33,7 +33,10 @@ subpkginclude_HEADERS = \
 	StepSlipFn.hh \
 	StepSlipFn.icc
 
-noinst_HEADERS =
+noinst_HEADERS = \
+	TopologyOps.hh \
+	TopologyVisitors.hh \
+	TopologyVisitors.cc
 
 # export
 clean-local: clean-subpkgincludeHEADERS

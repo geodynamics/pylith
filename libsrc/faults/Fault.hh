@@ -24,36 +24,17 @@
 #if !defined(pylith_faults_fault_hh)
 #define pylith_faults_fault_hh
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh, real_section_type
+// Include directives ---------------------------------------------------
+#include "faultsfwd.hh" // forward declarations
+
+#include "pylith/topology/topologyfwd.hh" // USES Field<SubMesh>, SubMesh
 #include "pylith/utils/arrayfwd.hh" // USES double_array
-#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
+
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 
 #include <string> // HASA std::string
 
-/// Namespace for pylith package
-namespace pylith {
-  namespace faults {
-    class Fault;
-    class TestFault; // unit testing
-  } // faults
-
-  namespace topology {
-    class FieldsManager;
-  } // topology
-} // pylith
-
-/// Namespace for spatialdata package
-namespace spatialdata {
-  namespace geocoords {
-    class CoordSys;
-  } // geocoords
-
-  namespace spatialdb {
-    class SpatialDB; // USES SpatialDB
-  } // spatialdb
-} // spatialdata
-
-/// C++ abstract base class for Fault object.
+// Fault ----------------------------------------------------------------
 class pylith::faults::Fault
 { // class Fault
   friend class TestFault; // unit testing
@@ -90,14 +71,15 @@ public :
    *
    * @returns Label of fault
    */
-  const std::string& label(void) const;
+  const char* label(void) const;
 
   /** Adjust mesh topology for fault implementation.
    *
    * @param mesh PETSc mesh
    */
   virtual
-  void adjustTopology(const ALE::Obj<Mesh>& mesh, const bool flipFault = false) = 0;
+  void adjustTopology(const topology::Mesh& mesh,
+		      const bool flipFault =false) = 0;
 
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
@@ -114,8 +96,7 @@ public :
    *   (used to improve conditioning of Jacobian matrix)
    */
   virtual
-  void initialize(const ALE::Obj<Mesh>& mesh,
-		  const spatialdata::geocoords::CoordSys* cs,
+  void initialize(const topology::Mesh& mesh,
 		  const double_array& upDir,
 		  const double_array& normalDir,
 		  spatialdata::spatialdb::SpatialDB* matDB) = 0;
@@ -124,51 +105,40 @@ public :
    *
    * @returns PETSc mesh object
    */
-  const ALE::Obj<SubMesh>& faultMesh(void) const;
+  const topology::SubMesh& faultMesh(void) const;
 
   /** Get vertex field associated with integrator.
    *
-   * @param fieldType Type of field.
    * @param name Name of vertex field.
-   * @param mesh PETSc mesh for problem.
-   * @param fields Fields manager.
+   * @param fields Solution fields.
    * @returns Vertex field.
    */
   virtual
-  const ALE::Obj<real_section_type>&
-  vertexField(VectorFieldEnum* fieldType,
-	      const char* name,
-	      const ALE::Obj<Mesh>& mesh,
-	      topology::FieldsManager* const fields) = 0;
+  const topology::Field<topology::SubMesh>&
+  vertexField(const char* name,
+	      const topology::SolutionFields& fields) = 0;
 
   /** Get cell field associated with integrator.
    *
-   * @param fieldType Type of field.
    * @param name Name of cell field.
-   * @param mesh PETSc mesh for problem.
-   * @param fields Fields manager.
+   * @param fields Solution fields.
    * @returns Cell field.
    */
   virtual
-  const ALE::Obj<real_section_type>&
-  cellField(VectorFieldEnum* fieldType,
-	    const char* name,
-	    const ALE::Obj<Mesh>& mesh,
-	    topology::FieldsManager* const fields) = 0;
+  const topology::Field<topology::SubMesh>&
+  cellField(const char* name,
+	    topology::SolutionFields& fields) = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
-  /// Not implemented
-  Fault(const Fault& m);
-
-  /// Not implemented
-  const Fault& operator=(const Fault& m);
+  Fault(const Fault&); ///< Not implemented
+  const Fault& operator=(const Fault&); ///< Not implemented
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  ALE::Obj<SubMesh> _faultMesh; ///< Mesh over fault surface
+  topology::SubMesh* _faultMesh; ///< Mesh over fault surface
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

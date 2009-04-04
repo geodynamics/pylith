@@ -24,27 +24,14 @@
 #if !defined(pylith_faults_bruneslipfn_hh)
 #define pylith_faults_bruneslipfn_hh
 
+// Include directives ---------------------------------------------------
 #include "SlipTimeFn.hh"
 
-/// Namespace for pylith package
-namespace pylith {
-  namespace faults {
-    class BruneSlipFn;
-    class TestBruneSlipFn; // unit testing
-  } // faults
-} // pylith
+#include "pylith/topology/topologyfwd.hh" // USES Fields<Field<SubMesh> >
 
-/// Namespace for spatialdata package
-namespace spatialdata {
-  namespace spatialdb {
-    class SpatialDB;
-  } // spatialdb
-  namespace units {
-    class Nondimensional;
-  } // units
-} // spatialdata
+#include "pylith/utils/array.hh" // HASA double_array
 
-/// C++ implementation of Brune slip time function.
+// SlipTimeFn -----------------------------------------------------------
 class pylith::faults::BruneSlipFn : public SlipTimeFn
 { // class BruneSlipFn
   friend class TestBruneSlipFn; // unit testing
@@ -71,21 +58,20 @@ public :
    */
   void dbSlipTime(spatialdata::spatialdb::SpatialDB* const db);
 
-  /** Set spatial database for peak slip rate.
+  /** Set spatial database for rise time (0 -> 0.95 final slip).
    *
    * @param db Spatial database
    */
-  void dbPeakRate(spatialdata::spatialdb::SpatialDB* const db);
+  void dbRiseTime(spatialdata::spatialdb::SpatialDB* const db);
 
   /** Initialize slip time function.
    *
    * @param faultMesh Finite-element mesh of fault.
-   * @param cs Coordinate system for mesh.
+   * @param cs Coordinate system for mesh
    * @param normalizer Nondimensionalization of scales.
    * @param originTime Origin time for earthquake source.
    */
-  void initialize(const ALE::Obj<Mesh>& faultMesh,
-		  const spatialdata::geocoords::CoordSys* cs,
+  void initialize(const topology::SubMesh& faultMesh,
 		  const spatialdata::units::Nondimensional& normalizer,
 		  const double originTime =0.0);
 
@@ -93,83 +79,77 @@ public :
    *
    * @param slipField Slip field over fault surface.
    * @param t Time t.
-   * @param faultMesh Mesh over fault surface.
    *
    * @returns Slip vector as left-lateral/reverse/normal.
    */
-  void slip(const ALE::Obj<real_section_type>& slipField,
-	    const double t,
-	    const ALE::Obj<Mesh>& faultMesh);
+  void slip(topology::Field<topology::SubMesh>* const slipField,
+	    const double t);
   
   /** Get slip increment on fault surface between time t0 and t1.
    *
    * @param slipField Slip field over fault surface.
    * @param t0 Time t.
    * @param t1 Time t+dt.
-   * @param faultMesh Mesh over fault surface.
    * 
    * @returns Increment in slip vector as left-lateral/reverse/normal.
    */
-  void slipIncr(const ALE::Obj<real_section_type>& slipField,
+  void slipIncr(topology::Field<topology::SubMesh>* slipField,
 		const double t0,
-		const double t1,
-		const ALE::Obj<Mesh>& faultMesh);
-
+		const double t1);
 
   /** Get final slip.
    *
    * @returns Final slip.
    */
-  ALE::Obj<real_section_type> finalSlip(void);
+  const topology::Field<topology::SubMesh>& finalSlip(void);
 
   /** Get time when slip begins at each point.
    *
    * @returns Time when slip begins.
    */
-  ALE::Obj<real_section_type> slipTime(void);
+  const topology::Field<topology::SubMesh>& slipTime(void);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
-  /// Not implemented
-  BruneSlipFn(const BruneSlipFn& m);
-
-  /// Not implemented
-  const BruneSlipFn& operator=(const BruneSlipFn& f);
+  BruneSlipFn(const BruneSlipFn&); ///< Not implemented
+  const BruneSlipFn& operator=(const BruneSlipFn&); ///< Not implemented
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
   /** Compute slip using slip time function.
    *
-   * @param t Time relative to slip starting time at point
-   * @param finalSlip Final slip at point
-   * @param peakRate Peak slip rate at point
+   * @param t Time relative to slip starting time at point.
+   * @param finalSlip Final slip at point.
+   * @param riseTime Peak slip rate at point.
    *
    * @returns Slip at point at time t
    */
   static
   double _slipFn(const double t,
 		 const double finalSlip,
-		 const double peakRate);
+		 const double riseTime);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  /// Parameters for Brune slip time function.
-  /// Final slip (vector), peak slip rate (scalar), slip time (scalar).
-  ALE::Obj<real_section_type> _parameters;
+  double _slipTimeVertex; ///< Slip time at a vertex.
+  double _riseTimeVertex; ///< Rise time at a vertex.
+  double_array _finalSlipVertex; ///< Final slip at a vertex.
 
-  /// Spatial database for final slip
+  /// Parameters for Brune slip time function, final slip (vector),
+  /// rise time (scalar), slip time (scalar).
+  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
+
+  /// Spatial database for final slip.
   spatialdata::spatialdb::SpatialDB* _dbFinalSlip;
 
-  /// Spatial database for slip time
+  /// Spatial database for slip time.
   spatialdata::spatialdb::SpatialDB* _dbSlipTime;
 
-   /// Spatial database for peak slip rate
-  spatialdata::spatialdb::SpatialDB* _dbPeakRate;
-
-  int _spaceDim; ///< Spatial dimension for slip field.
+   /// Spatial database for rise time (0 -> 0.95 final slip).
+  spatialdata::spatialdb::SpatialDB* _dbRiseTime;
 
 }; // class BruneSlipFn
 

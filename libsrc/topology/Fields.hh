@@ -22,6 +22,8 @@
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 
+#include "pylith/topology/FieldBase.hh" // USES FieldBase::DomainEnum
+
 #include <string> // USES std::string
 
 // Fields ---------------------------------------------------------------
