@@ -122,16 +122,17 @@ pylith::topology::Field<mesh_type>::newSection(
 template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::newSection(const DomainEnum domain,
-				    const int fiberDim)
+					       const int fiberDim,
+					       const int stratum)
 { // newSection
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh.sieveMesh();
   assert(!sieveMesh.isNull());
 
   ALE::Obj<label_sequence> points;
   if (VERTICES_FIELD == domain)
-    points = sieveMesh->depthStratum(0);
+    points = sieveMesh->depthStratum(stratum);
   else if (CELLS_FIELD == domain)
-    points = sieveMesh->heightStratum(1);
+    points = sieveMesh->heightStratum(stratum);
   else {
     std::cerr << "Unknown value for DomainEnum: " << domain << std::endl;
     assert(0);

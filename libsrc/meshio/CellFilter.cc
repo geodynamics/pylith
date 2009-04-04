@@ -37,16 +37,17 @@ pylith::meshio::CellFilter<mesh_type>::CellFilter(const CellFilter& f) :
   _quadrature(0)
 { // copy constructor
   if (0 != f._quadrature)
-    _quadrature = f._quadrature->clone();
+    _quadrature = new feassemble::Quadrature<mesh_type>(*f._quadrature);
 } // copy constructor
 
 // ----------------------------------------------------------------------
 // Set quadrature associated with cells.
 template<typename mesh_type>
 void
-pylith::meshio::CellFilter<mesh_type>::quadrature(const feassemble::Quadrature* q)
+pylith::meshio::CellFilter<mesh_type>::quadrature(const feassemble::Quadrature<mesh_type>* q)
 { // quadrature
-    delete _quadrature; _quadrature = (0 != q) ? q->clone() : 0;
+  delete _quadrature; 
+  _quadrature = (0 != q) ? new feassemble::Quadrature<mesh_type>(*q) : 0;
 } // quadrature
 
 

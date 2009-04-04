@@ -24,10 +24,11 @@ testmeshio_SOURCES = \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
 	TestMeshIOLagrit.cc \
+	TestCellFilterAvg.cc \
+	TestVertexFilterVecNorm.cc \
 	test_meshio.cc
 
 
-#	TestCellFilterAvg.cc \
 # 	TestDataWriterVTK.cc \
 # 	TestDataWriterVTKMesh.cc \
 # 	TestDataWriterVTKMeshLine2.cc \
@@ -52,8 +53,7 @@ testmeshio_SOURCES = \
 # 	TestDataWriterVTKBCMeshHex8.cc
 
 # 	TestOutputManager.cc \
-# 	TestOutputSolnSubset.cc \
-# 	TestVertexFilterVecNorm.cc
+# 	TestOutputSolnSubset.cc
 
 
 noinst_HEADERS = \

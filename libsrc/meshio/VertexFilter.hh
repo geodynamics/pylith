@@ -23,8 +23,7 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include "pylith/feassemble/topologyfwd.hh" // HOLDSA Quadrature<Mesh>
-#include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Quadrature<Mesh>
+#include "pylith/topology/topologyfwd.hh" // USES Field
 
 // VertexFilter ---------------------------------------------------------
 template<typename mesh_type>
@@ -65,6 +64,7 @@ protected :
    */
   VertexFilter(const VertexFilter& f);
 
+private :
   /** operator=.
   *
   * @param f Filter to copy.

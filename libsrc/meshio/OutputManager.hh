@@ -19,17 +19,14 @@
 #if !defined(pylith_meshio_outputmanager_hh)
 #define pylith_meshio_outputmanager_hh
 
-
-
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh, real_section_type
-#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
-
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include "DataWriter.hh" // USES DataWriter in templated methods
+#include "pylith/topology/topologyfwd.hh" // USES Field
+#include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
 
 // OutputManager --------------------------------------------------------
+template<typename mesh_type>
 class pylith::meshio::OutputManager
 { // OutputManager
   friend class TestOutputManager; // unit testing
@@ -61,13 +58,13 @@ public :
    *
    * @param filter Filter to apply to vertex data before writing.
    */
-  void vertexFilter(const VertexFilter* filter);
+  void vertexFilter(const VertexFilter<mesh_type>* filter);
 
   /** Set filter for cell data.
    *
    * @param filter Filter to apply to cell data before writing.
    */
-  void cellFilter(const CellFilter* filter);
+  void cellFilter(const CellFilter<mesh_type>* filter);
 
   /** Prepare for output.
    *
@@ -77,7 +74,6 @@ public :
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
-  template<typename mesh_type>
   void open(const mesh_type& mesh,
 	    const int numTimeSteps,
 	    const char* label =0,
@@ -94,7 +90,6 @@ public :
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
-  template<typename mesh_type>
   void openTimeStep(const double t,
 		    const mesh_type& mesh,
 		    const char* label =0,
@@ -108,24 +103,18 @@ public :
    * @param t Time associated with field.
    * @param field Vertex field.
    */
-  template<typename mesh_type>
   void appendVertexField(const double t,
 			 const topology::Field<mesh_type>& field);
 
   /** Append finite-element cell field to file.
    *
    * @param t Time associated with field.
-   * @param name Name of field.
    * @param field Cell field.
-   * @param fieldType Type of field.
-   * @param mesh PETSc mesh object.
    * @param label Name of label defining cells to include in output
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
-  template<typename mesh_type>
   void appendCellField(const double t,
-		       const char* name,
 		       const topology::Field<mesh_type>& field,
 		       const char* label =0,
 		       const int labelId =0);
@@ -139,14 +128,16 @@ private :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system for output.
+  /// Coordinate system for output.
+  spatialdata::geocoords::CoordSys* _coordsys;
+
   DataWriter<mesh_type>* _writer; ///< Writer for data.
-  VertexFilter* _vertexFilter; ///< Filter applied to vertex data.
-  CellFilter* _cellFilter; ///< Filter applied to cell data.
+  VertexFilter<mesh_type>* _vertexFilter; ///< Filter applied to vertex data.
+  CellFilter<mesh_type>* _cellFilter; ///< Filter applied to cell data.
 
 }; // OutputManager
 
-#include "OutputManager.icc" // template methods
+#include "OutputManager.cc" // template methods
 
 #endif // pylith_meshio_outputmanager_hh
 

@@ -20,15 +20,12 @@
 #if !defined(pylith_meshio_cellfiltervecnorm_hh)
 #define pylith_meshio_cellfiltervecnorm_hh
 
+// Include directives ---------------------------------------------------
 #include "VertexFilter.hh" // ISA VertexFilter
 
-namespace pylith {
-  namespace meshio {
-    class VertexFilterVecNorm;
-  } // meshio
-} // pylith
-
-class pylith::meshio::VertexFilterVecNorm : public VertexFilter
+// CellFilter -----------------------------------------------------------
+template<typename mesh_type>
+class pylith::meshio::VertexFilterVecNorm : public VertexFilter<mesh_type>
 { // VertexFilterVecNorm
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
@@ -44,18 +41,14 @@ public :
    *
    * @returns Copy of filter.
    */
-  VertexFilter* clone(void) const;
+  VertexFilter<mesh_type>* clone(void) const;
 
-  /** Filter field. Field type of filtered field is returned via an argument.
+  /** Filter vertex field.
    *
-   * @param fieldType Field type of filtered field.
    * @param fieldIn Field to filter.
-   * @param mesh PETSc mesh.
    */
-  const ALE::Obj<real_section_type>&
-  filter(VectorFieldEnum* fieldType,
-	 const ALE::Obj<real_section_type>& fieldIn,
-	 const ALE::Obj<Mesh>& mesh);
+  const topology::Field<mesh_type>&
+  filter(const topology::Field<mesh_type>& fieldIn);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -71,14 +64,16 @@ protected :
 private :
 
   /// Not implemented.
-  const VertexFilter& operator=(const VertexFilter&);
+  const VertexFilterVecNorm& operator=(const VertexFilterVecNorm&);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  ALE::Obj<real_section_type> _fieldVecNorm; ///< Filtered vertex field
+  topology::Field<mesh_type>* _fieldVecNorm; ///< Filtered vertex field
 
 }; // VertexFilterVecNorm
+
+#include "VertexFilterVecNorm.cc" // template definitions
 
 #endif // pylith_meshio_cellfiltervecnorm_hh
 

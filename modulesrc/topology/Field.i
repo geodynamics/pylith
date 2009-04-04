@@ -114,9 +114,11 @@ namespace pylith {
        *
        * @param domain Type of points over which to define section.
        * @param dim Fiber dimension for section.
+       * @param stratum Stratum depth (for vertices) and height (for cells).
        */
       void newSection(const pylith::topology::FieldBase::DomainEnum domain,
-		      const int fiberDim);
+		      const int fiberDim,
+		      const int stratum =0);
 
       /** Create section with same layout (fiber dimension and
        * constraints) as another section. This allows the layout data

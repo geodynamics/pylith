@@ -12,6 +12,7 @@
 
 #include <portinfo>
 
+#include "DataWriter.hh" // USES DataWriter
 #include "VertexFilter.hh" // USES VertexFilter
 #include "CellFilter.hh" // USES CellFilter
 
@@ -43,7 +44,8 @@ pylith::meshio::OutputManager<mesh_type>::~OutputManager(void)
 // Set coordinate system in output. The vertex fields in the output
 template<typename mesh_type>
 void
-pylith::meshio::OutputManager<mesh_type>::coordsys(const spatialdata::geocoords::CoordSys* cs)
+pylith::meshio::OutputManager<mesh_type>::coordsys(
+				  const spatialdata::geocoords::CoordSys* cs)
 { // coordsys
   delete _coordsys; _coordsys = (0 != cs) ? cs->clone() : 0;
 } // coordsys
@@ -52,7 +54,8 @@ pylith::meshio::OutputManager<mesh_type>::coordsys(const spatialdata::geocoords:
 // Set writer to write data to file.
 template<typename mesh_type>
 void
-pylith::meshio::OutputManager<mesh_type>::writer(const DataWriter* datawriter)
+pylith::meshio::OutputManager<mesh_type>::writer(
+				       const DataWriter<mesh_type>* datawriter)
 { // writer
   delete _writer; _writer = (0 != datawriter) ? datawriter->clone() : 0;
 } // writer
@@ -61,7 +64,8 @@ pylith::meshio::OutputManager<mesh_type>::writer(const DataWriter* datawriter)
 // Set filter for vertex data.
 template<typename mesh_type>
 void
-pylith::meshio::OutputManager<mesh_type>::vertexFilter(const VertexFilter* filter)
+pylith::meshio::OutputManager<mesh_type>::vertexFilter(
+					const VertexFilter<mesh_type>* filter)
 { // vertexFilter
   delete _vertexFilter; _vertexFilter = (0 != filter) ? filter->clone() : 0;
 } // vertexFilter
@@ -70,7 +74,8 @@ pylith::meshio::OutputManager<mesh_type>::vertexFilter(const VertexFilter* filte
 // Set filter for cell data.
 template<typename mesh_type>
 void
-pylith::meshio::OutputManager<mesh_type>::cellFilter(const CellFilter* filter)
+pylith::meshio::OutputManager<mesh_type>::cellFilter(
+				         const CellFilter<mesh_type>* filter)
 { // cellFilter
   delete _cellFilter; _cellFilter = (0 != filter) ? filter->clone() : 0;
 } // cellFilter

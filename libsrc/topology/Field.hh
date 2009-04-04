@@ -147,9 +147,11 @@ public :
    *
    * @param domain Type of points over which to define section.
    * @param dim Fiber dimension for section.
+   * @param stratum Stratum depth (for vertices) and height (for cells).
    */
   void newSection(const DomainEnum domain,
-		  const int fiberDim);
+		  const int fiberDim,
+		  const int stratum =0);
 
   /** Create section given chart. This allows a chart to be reused
    * across multiple fields, reducing memory usage.

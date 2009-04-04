@@ -22,6 +22,8 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
+#include "pylith/topology/topologyfwd.hh" // USES Field
+
 // DataWriter -----------------------------------------------------------
 template<typename mesh_type>
 class pylith::meshio::DataWriter

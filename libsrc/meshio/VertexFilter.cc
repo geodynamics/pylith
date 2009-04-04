@@ -36,7 +36,7 @@ pylith::meshio::VertexFilter<mesh_type>::VertexFilter(const VertexFilter& f)
 // ----------------------------------------------------------------------
 // operator=.
 template<typename mesh_type>
-const pylith::meshio::VertexFilter&
+const pylith::meshio::VertexFilter<mesh_type>&
 pylith::meshio::VertexFilter<mesh_type>::operator=(const VertexFilter& f)
 { // operator=
 } // operator=

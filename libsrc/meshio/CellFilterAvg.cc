@@ -17,7 +17,8 @@
 // ----------------------------------------------------------------------
 // Constructor
 template<typename mesh_type>
-pylith::meshio::CellFilterAvg<mesh_type>::CellFilterAvg(void)
+pylith::meshio::CellFilterAvg<mesh_type>::CellFilterAvg(void) :
+  _fieldAvg(0)
 { // constructor
 } // constructor
 
@@ -26,13 +27,15 @@ pylith::meshio::CellFilterAvg<mesh_type>::CellFilterAvg(void)
 template<typename mesh_type>
 pylith::meshio::CellFilterAvg<mesh_type>::~CellFilterAvg(void)
 { // destructor
+  delete _fieldAvg; _fieldAvg = 0;
 } // destructor  
 
 // ----------------------------------------------------------------------
 // Copy constructor.
 template<typename mesh_type>
 pylith::meshio::CellFilterAvg<mesh_type>::CellFilterAvg(const CellFilterAvg& f) :
-  CellFilter(f)
+  CellFilter<mesh_type>(f),
+  _fieldAvg(0)
 { // copy constructor
 } // copy constructor
 
@@ -54,19 +57,23 @@ pylith::meshio::CellFilterAvg<mesh_type>::filter(
 				  const char* label,
 				  const int labelId)
 { // filter
-  assert(0 != _quadrature);
+  typedef typename mesh_type::RealSection RealSection;
+  typedef typename mesh_type::SieveMesh SieveMesh;
+  typedef typename SieveMesh::label_sequence label_sequence;
 
-  const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& wts = _quadrature->quadWts();
+  assert(0 != CellFilter<mesh_type>::_quadrature);
+
+  const int numQuadPts = CellFilter<mesh_type>::_quadrature->numQuadPts();
+  const double_array& wts = CellFilter<mesh_type>::_quadrature->quadWts();
   
   const ALE::Obj<SieveMesh>& sieveMesh = fieldIn.mesh().sieveMesh();
   assert(!sieveMesh.isNull());
 
-  const ALE::Obj<SieveMesh::label_sequence>& cells = (0 == label) ?
-    mesh->heightStratum(0) :
-    mesh->getLabelStratum(label, labelId);
+  const ALE::Obj<label_sequence>& cells = (0 == label) ?
+    sieveMesh->heightStratum(0) :
+    sieveMesh->getLabelStratum(label, labelId);
   assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  const typename label_sequence::iterator cellsEnd = cells->end();
 
   // Only processors with cells for output get the correct fiber dimension.
   const ALE::Obj<RealSection>& sectionIn = fieldIn.section();
@@ -79,28 +86,28 @@ pylith::meshio::CellFilterAvg<mesh_type>::filter(
   if (0 == _fieldAvg) {
     _fieldAvg = new topology::Field<mesh_type>(fieldIn.mesh());
     assert(0 != _fieldAvg);
-    _fieldAvg->newSection(fieldIn->getChart(), fiberDim);
+    _fieldAvg->newSection(sectionIn->getChart(), fiberDim);
     _fieldAvg->allocate();
 
     _fieldAvg->label(fieldIn.label());
     switch (fieldIn.vectorFieldType())
       { // switch
-      case FieldBase::MULTI_SCALAR:
-	_fieldAvg->vectorFieldType(FieldBase::SCALAR);
+      case topology::FieldBase::MULTI_SCALAR:
+	_fieldAvg->vectorFieldType(topology::FieldBase::SCALAR);
 	break;
-      case FieldBase::MULTI_VECTOR:
-	_fieldAvg->vectorFieldType(FieldBase::VECTOR);
+      case topology::FieldBase::MULTI_VECTOR:
+	_fieldAvg->vectorFieldType(topology::FieldBase::VECTOR);
 	break;
-      case FieldBase::MULTI_TENSOR:
-	_fieldAvg->vectorFieldType(FieldBase::TENSOR);
+      case topology::FieldBase::MULTI_TENSOR:
+	_fieldAvg->vectorFieldType(topology::FieldBase::TENSOR);
 	break;
-      case FieldBase::MULTI_OTHER:
-	_fieldAvg->vectorFieldType(FieldBase::OTHER);
+      case topology::FieldBase::MULTI_OTHER:
+	_fieldAvg->vectorFieldType(topology::FieldBase::OTHER);
 	break;
-      case FieldBase::SCALAR:
-      case FieldBase::VECTOR:
-      case FieldBase::TENSOR:
-      case FieldBase::OTHER:
+      case topology::FieldBase::SCALAR:
+      case topology::FieldBase::VECTOR:
+      case topology::FieldBase::TENSOR:
+      case topology::FieldBase::OTHER:
       default :
 	std::cerr << "Bad vector field type for CellFilterAvg." << std::endl;
 	assert(0);
@@ -115,7 +122,7 @@ pylith::meshio::CellFilterAvg<mesh_type>::filter(
     scalar += wts[iQuad];
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+  for (typename label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
     const double* values = sectionIn->restrictPoint(*c_iter);
@@ -125,7 +132,7 @@ pylith::meshio::CellFilterAvg<mesh_type>::filter(
       for (int i=0; i < fiberDim; ++i)
 	fieldAvgCell[i] += wts[iQuad] / scalar * values[iQuad*fiberDim+i];
 
-    _sectionAvg->updatePoint(*c_iter, &fieldAvgCell[0]);
+    sectionAvg->updatePoint(*c_iter, &fieldAvgCell[0]);
     PetscLogFlops( numQuadPts*fiberDim*3 );
   } // for
 

@@ -19,12 +19,13 @@
 
 #if !defined(pylith_meshio_cellfilteravg_hh)
 #define pylith_meshio_cellfilteravg_hh
+
 // Include directives ---------------------------------------------------
 #include "CellFilter.hh" // ISA CellFilter
 
 // CellFilter -----------------------------------------------------------
 template<typename mesh_type>
-class pylith::meshio::CellFilterAvg : public CellFilter
+class pylith::meshio::CellFilterAvg : public CellFilter<mesh_type>
 { // CellFilterAvg
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
@@ -40,7 +41,7 @@ public :
    *
    * @returns Copy of filter.
    */
-  CellFilter* clone(void) const;
+  CellFilter<mesh_type>* clone(void) const;
 
   /** Filter field over cells.
    *
@@ -69,7 +70,7 @@ protected :
 private :
 
   /// Not implemented.
-  const CellFilter& operator=(const CellFilter&);
+  const CellFilterAvg& operator=(const CellFilterAvg&);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
