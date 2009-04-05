@@ -14,15 +14,12 @@
 
 #include "FaultCohesiveDyn.hh" // implementation of object methods
 
-#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
-#include "pylith/utils/array.hh" // USES double_array
-
-#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -39,8 +36,7 @@ pylith::faults::FaultCohesiveDyn::~FaultCohesiveDyn(void)
 // ----------------------------------------------------------------------
 // Initialize fault. Determine orientation and setup boundary
 void
-pylith::faults::FaultCohesiveDyn::initialize(const ALE::Obj<Mesh>& mesh,
-					     const spatialdata::geocoords::CoordSys* cs,
+pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
 					     const double_array& upDir,
 					     const double_array& normalDir,
 					     spatialdata::spatialdb::SpatialDB* matDB)
@@ -52,11 +48,9 @@ pylith::faults::FaultCohesiveDyn::initialize(const ALE::Obj<Mesh>& mesh,
 // Integrate contribution of cohesive cells to residual term.
 void
 pylith::faults::FaultCohesiveDyn::integrateResidual(
-				const ALE::Obj<real_section_type>& residual,
-				const double t,
-				topology::FieldsManager* const fields,
-				const ALE::Obj<Mesh>& mesh,
-				const spatialdata::geocoords::CoordSys* cs)
+			   const topology::Field<topology::Mesh>& residual,
+			   const double t,
+			   topology::SolutionFields* const fields)
 { // integrateResidual
   throw std::logic_error("FaultCohesiveDyn::integrateResidual() not implemented.");
 } // integrateResidual
@@ -65,24 +59,25 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 // Compute Jacobian matrix (A) associated with operator.
 void
 pylith::faults::FaultCohesiveDyn::integrateJacobian(
-				    PetscMat* mat,
-				    const double t,
-				    topology::FieldsManager* const fields,
-				    const ALE::Obj<Mesh>& mesh)
+				   topology::Jacobian* jacobian,
+				   const double t,
+				   topology::SolutionFields* const fields)
 { // integrateJacobian
   throw std::logic_error("FaultCohesiveDyn::integrateJacobian() not implemented.");
 } // integrateJacobian
   
-
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::faults::FaultCohesiveDyn::verifyConfiguration(
-					      const ALE::Obj<Mesh>& mesh) const
+					    const topology::Mesh& mesh) const
 { // verifyConfiguration
   assert(0 != _quadrature);
 
-  if (!mesh->hasIntSection(label())) {
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+
+  if (!sieveMesh->hasIntSection(label())) {
     std::ostringstream msg;
     msg << "Mesh missing group of vertices '" << label()
 	<< " for boundary condition.";
@@ -90,7 +85,7 @@ pylith::faults::FaultCohesiveDyn::verifyConfiguration(
   } // if  
 
   // check compatibility of mesh and quadrature scheme
-  const int dimension = mesh->getDimension()-1;
+  const int dimension = mesh.dimension()-1;
   if (_quadrature->cellDim() != dimension) {
     std::ostringstream msg;
     msg << "Dimension of reference cell in quadrature scheme (" 
@@ -101,15 +96,15 @@ pylith::faults::FaultCohesiveDyn::verifyConfiguration(
     throw std::runtime_error(msg.str());
   } // if
   const int numCorners = _quadrature->numBasis();
-  const ALE::Obj<Mesh::label_sequence>& cells = 
-    mesh->getLabelStratum("material-id", id());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", id());
   assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsBegin = cells->begin();
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  for (Mesh::label_sequence::iterator c_iter=cellsBegin;
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
-    const int cellNumCorners = mesh->getNumCellCorners(*c_iter);
+    const int cellNumCorners = sieveMesh->getNumCellCorners(*c_iter);
     if (3*numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Number of vertices in reference cell (" << numCorners 
@@ -123,38 +118,22 @@ pylith::faults::FaultCohesiveDyn::verifyConfiguration(
 
 // ----------------------------------------------------------------------
 // Get vertex field associated with integrator.
-const ALE::Obj<pylith::real_section_type>&
-pylith::faults::FaultCohesiveDyn::vertexField(VectorFieldEnum* fieldType,
-					      const char* name,
-					      const ALE::Obj<Mesh>& mesh,
-					      topology::FieldsManager* fields)
+const pylith::topology::Field<pylith::topology::SubMesh>&
+pylith::faults::FaultCohesiveDyn::vertexField(
+				       const char* name,
+				       const topology::SolutionFields& fields)
 { // vertexField
-  // Should not reach this point if requested field was found
-  std::ostringstream msg;
-  msg << "Request for unknown vertex field '" << name
-      << "' for fault '" << label() << ".";
-  throw std::runtime_error(msg.str());
-
-  // Return generic section to satisfy member function definition.
-  //return _outputVertxScalar;
+  throw std::logic_error("FaultCohesiveDyn::vertexField() not implemented.");
 } // vertexField
 
 // ----------------------------------------------------------------------
 // Get cell field associated with integrator.
-const ALE::Obj<pylith::real_section_type>&
-pylith::faults::FaultCohesiveDyn::cellField(VectorFieldEnum* fieldType,
-					    const char* name,
-					    const ALE::Obj<Mesh>& mesh,
-					    topology::FieldsManager* fields)
+const pylith::topology::Field<pylith::topology::SubMesh>&
+pylith::faults::FaultCohesiveDyn::cellField(
+				      const char* name,
+				      const topology::SolutionFields& fields)
 { // cellField
-  // Should not reach this point if requested field was found
-  std::ostringstream msg;
-  msg << "Request for unknown cell field '" << name
-      << "' for fault '" << label() << ".";
-  throw std::runtime_error(msg.str());
-
-  // Return generic section to satisfy member function definition.
-  //return _outputCellVector;
+  throw std::logic_error("FaultCohesiveDyn::vertexField() not implemented.");
 } // cellField
 
 

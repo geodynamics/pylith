@@ -23,30 +23,16 @@
 #if !defined(pylith_faults_faultcohesivedyn_hh)
 #define pylith_faults_faultcohesivedyn_hh
 
+// Include directives ---------------------------------------------------
 #include "FaultCohesive.hh" // ISA FaultCohesive
-#include "pylith/feassemble/Integrator.hh" // ISA Constraint
 
-/// Namespace for pylith package
-namespace pylith {
-  namespace faults {
-    class FaultCohesiveDyn;
-    class TestFaultCohesiveDyn; // unit testing
-  } // faults
-} // pylith
+#include "pylith/topology/SubMesh.hh" // ISA Integrator<Quadrature<SubMesh> >
+#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
+#include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
-/*
-namespace spatialdata {
-  namespace geocoords {
-    class CoordSys; // USES CoordSys
-  } // geocoords
-} // spatialdata
-*/
-
-
-/// @brief C++ implementation for a fault surface with spontaneous
-/// (dynamic) slip implemented with cohesive elements.
+// FaultCohesiveDyn -----------------------------------------------------
 class pylith::faults::FaultCohesiveDyn : public FaultCohesive,
-					 public feassemble::Integrator
+					 public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
 { // class FaultCohesiveDyn
   friend class TestFaultCohesiveDyn; // unit testing
 
@@ -63,8 +49,7 @@ public :
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
    *
-   * @param mesh PETSc mesh
-   * @param cs Coordinate system for mesh
+   * @param mesh Finite-element mesh.
    * @param upDir Direction perpendicular to along-strike direction that is 
    *   not collinear with fault normal (usually "up" direction but could 
    *   be up-dip direction; only applies to fault surfaces in a 3-D domain).
@@ -74,73 +59,59 @@ public :
    * @param matDB Database of bulk elastic properties for fault region
    *   (used to improve conditioning of Jacobian matrix)
    */
-  void initialize(const ALE::Obj<Mesh>& mesh,
-		  const spatialdata::geocoords::CoordSys* cs,
+  void initialize(const topology::Mesh& mesh,
 		  const double_array& upDir,
 		  const double_array& normalDir,
 		  spatialdata::spatialdb::SpatialDB* matDB);
 
   /** Integrate contribution of cohesive cells to residual term.
    *
-   * @param residual Residual field (output)
+   * @param residual Field containing values for residual
    * @param t Current time
    * @param fields Solution fields
-   * @param mesh Finite-element mesh
-   * @param cs Mesh coordinate system
    */
-  void integrateResidual(const ALE::Obj<real_section_type>& residual,
+  void integrateResidual(const topology::Field<topology::Mesh>& residual,
 			 const double t,
-			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh,
-			 const spatialdata::geocoords::CoordSys* cs);
+			 topology::SolutionFields* const fields);
 
-  /** Compute Jacobian matrix (A) associated with operator.
+  /** Integrate contributions to Jacobian matrix (A) associated with
+   * operator.
    *
-   * @param mat Sparse matrix
+   * @param jacobian Sparse matrix for Jacobian of system.
    * @param t Current time
    * @param fields Solution fields
-   * @param mesh Finite-element mesh
    */
-  void integrateJacobian(PetscMat* mat,
+  void integrateJacobian(topology::Jacobian* jacobian,
 			 const double t,
-			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh);
+			 topology::SolutionFields* const fields);
   
   /** Verify configuration is acceptable.
    *
    * @param mesh Finite-element mesh
    */
-  void verifyConfiguration(const ALE::Obj<Mesh>& mesh) const;
+  void verifyConfiguration(const topology::Mesh& mesh) const;
 
   /** Get vertex field associated with integrator.
    *
-   * @param fieldType Type of field.
    * @param name Name of vertex field.
-   * @param mesh PETSc mesh for problem.
-   * @param fields Fields manager.
+   * @param fields Solution fields.
    *
    * @returns Vertex field.
    */
-  const ALE::Obj<real_section_type>&
-  vertexField(VectorFieldEnum* fieldType,
-	      const char* name,
-	      const ALE::Obj<Mesh>& mesh,
-	      topology::FieldsManager* const fields);
+  const topology::Field<topology::SubMesh>&
+  vertexField(const char* name,
+	      const topology::SolutionFields& fields);
   
   /** Get cell field associated with integrator.
    *
-   * @param fieldType Type of field.
-   * @param name Name of vertex field.
-   * @param mesh PETSc mesh for problem.
-   * @param fields Fields manager.
+   * @param name Name of cell field.
+   * @param fields Solution fields.
    *
    * @returns Cell field.
    */
-  const ALE::Obj<real_section_type>&
-  cellField(VectorFieldEnum* fieldType,
-	    const char* name,
-	    const ALE::Obj<Mesh>& mesh,
-	    topology::FieldsManager* const fields);
+  const topology::Field<topology::SubMesh>&
+  cellField(const char* name,
+	    const topology::SolutionFields& fields);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -156,17 +127,17 @@ protected :
 private :
 
   /// Not implemented
-  FaultCohesiveDyn(const FaultCohesiveDyn& m);
+  FaultCohesiveDyn(const FaultCohesiveDyn&);
 
   /// Not implemented
-  const FaultCohesiveDyn& operator=(const FaultCohesiveDyn& m);
+  const FaultCohesiveDyn& operator=(const FaultCohesiveDyn&);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
   /// Orientation of fault surface at vertices (fiber dimension is
   /// nonzero only at constraint vertices)
-  ALE::Obj<real_section_type> _orientation;
+  topology::Field<topology::SubMesh>*  _orientation;
 
 }; // class FaultCohesiveDyn
 

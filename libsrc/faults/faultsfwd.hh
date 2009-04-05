@@ -27,6 +27,7 @@ namespace pylith {
     class CohesiveTopology;
 
     class Fault;
+    class FaultCohesive;
     class FaultCohesiveDyn;
     class FaultCohesiveKin;
 

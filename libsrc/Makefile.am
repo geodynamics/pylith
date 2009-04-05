@@ -35,6 +35,9 @@ libpylith_la_SOURCES = \
 	faults/BruneSlipFn.cc \
 	faults/LiuCosSlipFn.cc \
 	faults/EqKinSrc.cc \
+	faults/FaultCohesive.cc \
+	faults/FaultCohesiveKin.cc \
+	faults/FaultCohesiveDyn.cc \
 	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
 	feassemble/GeometryPoint1D.cc \
@@ -98,9 +101,6 @@ libpylith_la_SOURCES = \
 
 #	faults/TopologyOps.cc \
 # 	faults/CohesiveTopology.cc \
-# 	faults/FaultCohesive.cc \
-# 	faults/FaultCohesiveKin.cc \
-# 	faults/FaultCohesiveDyn.cc \
 # 	materials/GenMaxwellIsotropic3D.cc \
 # 	meshio/UCDFaultFile.cc \
 # 	topology/Distributor.cc \

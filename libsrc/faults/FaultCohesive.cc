@@ -14,9 +14,9 @@
 
 #include "FaultCohesive.hh" // implementation of object methods
 
-#include "CohesiveTopology.hh" // USES CohesiveTopology::create()
+//#include "CohesiveTopology.hh" // USES CohesiveTopology::create()
 
-#include "pylith/meshio/UCDFaultFile.hh" // USES UCDFaultFile::read()
+//#include "pylith/meshio/UCDFaultFile.hh" // USES UCDFaultFile::read()
 #include "pylith/utils/array.hh" // USES double_array
 
 #include <cassert> // USES assert()
@@ -60,6 +60,7 @@ void
 pylith::faults::FaultCohesive::adjustTopology(const topology::Mesh& mesh,
 					      const bool flipFault)
 { // adjustTopology
+#if 0
   assert(std::string("") != label());
   SubMesh faultMesh;
   Mesh fault
@@ -103,6 +104,7 @@ pylith::faults::FaultCohesive::adjustTopology(const topology::Mesh& mesh,
     CohesiveTopology::create(faultMesh, faultBd, mesh, groupField, id(), 
 			     _useLagrangeConstraints());
   } // if/else
+#endif
 } // adjustTopology
 
 
