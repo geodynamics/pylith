@@ -21,9 +21,12 @@
 #define pylith_faults_sliptimefn_hh
 
 // Include directives ---------------------------------------------------
-#include "Fault.hh" // ISA Fault
+#include "faultsfwd.hh" // forward declarations
+
+#include "pylith/topology/topologyfwd.hh" // USES Field<SubMesh>
 
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 
 // SlipTimeFn -----------------------------------------------------------
 class pylith::faults::SlipTimeFn

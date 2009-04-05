@@ -29,7 +29,7 @@
 
 #include "pylith/utils/array.hh" // HASA double_array
 
-// SlipTimeFn -----------------------------------------------------------
+// StepSlipFn -----------------------------------------------------------
 class pylith::faults::StepSlipFn : public SlipTimeFn
 { // class StepSlipFn
   friend class TestStepSlipFn; // unit testing

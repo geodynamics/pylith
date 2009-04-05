@@ -32,6 +32,9 @@ libpylith_la_SOURCES = \
 	faults/SlipTimeFn.cc \
 	faults/StepSlipFn.cc \
 	faults/ConstRateSlipFn.cc \
+	faults/BruneSlipFn.cc \
+	faults/LiuCosSlipFn.cc \
+	faults/EqKinSrc.cc \
 	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
 	feassemble/GeometryPoint1D.cc \
@@ -94,22 +97,11 @@ libpylith_la_SOURCES = \
 	utils/TestArray.cc
 
 #	faults/TopologyOps.cc \
-# 	faults/BruneSlipFn.cc \
 # 	faults/CohesiveTopology.cc \
-# 	faults/EqKinSrc.cc \
 # 	faults/FaultCohesive.cc \
 # 	faults/FaultCohesiveKin.cc \
 # 	faults/FaultCohesiveDyn.cc \
-# 	faults/LiuCosSlipFn.cc \
-# 	faults/StepSlipFn.cc \
 # 	materials/GenMaxwellIsotropic3D.cc \
-# 	meshio/CellFilter.cc \
-# 	meshio/CellFilterAvg.cc \
-#	meshio/DataWriter.cc \
-# 	meshio/DataWriterVTK.cc \
-# 	meshio/OutputManager.cc \
-# 	meshio/VertexFilter.cc \
-# 	meshio/VertexFilterVecNorm.cc \
 # 	meshio/UCDFaultFile.cc \
 # 	topology/Distributor.cc \
 # 	topology/MeshRefiner.cc \

@@ -30,9 +30,9 @@ namespace pylith {
     class FaultCohesiveDyn;
     class FaultCohesiveKin;
 
-    class EqSinSrc;
+    class EqKinSrc;
     class SlipTimeFn;
-    class BrundSlipFn;
+    class BruneSlipFn;
     class ConstRateSlipFn;
     class LiuCosSlipFn;
     class StepSlipFn;

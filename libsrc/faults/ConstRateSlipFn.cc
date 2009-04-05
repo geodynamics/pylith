@@ -46,8 +46,8 @@ pylith::faults::ConstRateSlipFn::ConstRateSlipFn(void) :
 pylith::faults::ConstRateSlipFn::~ConstRateSlipFn(void)
 { // destructor
   delete _parameters; _parameters = 0;
-  _dbSlipRate = 0;
-  _dbSlipTime = 0;
+  _dbSlipRate = 0; // :TODO: Use shared pointer.
+  _dbSlipTime = 0; // :TODO: Use shared pointer.
 } // destructor
 
 // ----------------------------------------------------------------------

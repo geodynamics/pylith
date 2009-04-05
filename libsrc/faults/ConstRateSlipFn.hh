@@ -30,7 +30,7 @@
 
 #include "pylith/utils/array.hh" // HASA double_array
 
-// SlipTimeFn -----------------------------------------------------------
+// ConstRateTimeFn ------------------------------------------------------
 class pylith::faults::ConstRateSlipFn : public SlipTimeFn
 { // class ConstRateSlipFn
   friend class TestConstRateSlipFn; // unit testing
@@ -42,7 +42,6 @@ public :
   ConstRateSlipFn(void);
 
   /// Destructor.
-  virtual
   ~ConstRateSlipFn(void);
 
   /** Set spatial database for slip rate.
