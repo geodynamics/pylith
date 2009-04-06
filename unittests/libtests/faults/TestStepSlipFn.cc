@@ -17,8 +17,9 @@
 #include "pylith/faults/StepSlipFn.hh" // USES StepSlipFn
 
 #include "pylith/faults/CohesiveTopology.hh" // USES CohesiveTopology
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
@@ -46,6 +47,11 @@ namespace pylith {
     } // _TestStepSlipFn
   } // faults
 } // pylith
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::SieveSubMesh SieveSubMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
 // Test constructor.
@@ -105,14 +111,14 @@ pylith::faults::TestStepSlipFn::testInitialize1D(void)
   const int numConstraintPts = 1;
 
   _TestStepSlipFn::DataStruct data = {meshFilename,
-					   faultLabel,
-					   faultId,
-					   finalSlipFilename,
-					   slipTimeFilename,
-					   constraintPts,
-					   finalSlipE,
-					   slipTimeE,
-					   numConstraintPts};
+				      faultLabel,
+				      faultId,
+				      finalSlipFilename,
+				      slipTimeFilename,
+				      constraintPts,
+				      finalSlipE,
+				      slipTimeE,
+				      numConstraintPts};
   _testInitialize(data);
 } // testInitialize1D
 
@@ -133,14 +139,14 @@ pylith::faults::TestStepSlipFn::testInitialize2D(void)
   const int numConstraintPts = 2;
 
   _TestStepSlipFn::DataStruct data = {meshFilename,
-					   faultLabel,
-					   faultId,
-					   finalSlipFilename,
-					   slipTimeFilename,
-					   constraintPts,
-					   finalSlipE,
-					   slipTimeE,
-					   numConstraintPts};
+				      faultLabel,
+				      faultId,
+				      finalSlipFilename,
+				      slipTimeFilename,
+				      constraintPts,
+				      finalSlipE,
+				      slipTimeE,
+				      numConstraintPts};
   _testInitialize(data);
 } // testInitialize2D
 
@@ -162,14 +168,14 @@ pylith::faults::TestStepSlipFn::testInitialize3D(void)
   const int numConstraintPts = 3;
 
   _TestStepSlipFn::DataStruct data = {meshFilename,
-					   faultLabel,
-					   faultId,
-					   finalSlipFilename,
-					   slipTimeFilename,
-					   constraintPts,
-					   finalSlipE,
-					   slipTimeE,
-					   numConstraintPts};
+				      faultLabel,
+				      faultId,
+				      finalSlipFilename,
+				      slipTimeFilename,
+				      constraintPts,
+				      finalSlipE,
+				      slipTimeE,
+				      numConstraintPts};
   _testInitialize(data);
 } // testInitialize3D
 
@@ -182,7 +188,8 @@ pylith::faults::TestStepSlipFn::testSlip(void)
 			   0.0, 0.0};
   const double originTime = 5.064;
 
-  ALE::Obj<Mesh> faultMesh;
+  topology::Mesh mesh;
+  topology::SubMesh faultMesh;
   StepSlipFn slipfn;
   _initialize(&faultMesh, &slipfn, originTime);
   

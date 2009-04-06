@@ -21,19 +21,16 @@
 #if !defined(pylith_faults_teststepslipfn_hh)
 #define pylith_faults_teststepslipfn_hh
 
-#include "pylith/utils/sievetypes.hh" // USES Mesh
-
 #include <cppunit/extensions/HelperMacros.h>
 
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
     class TestStepSlipFn;
-    class StepSlipFn;
 
     namespace _TestStepSlipFn {
       struct DataStruct;
-    } // _StepSlipTimeFn
+    } // _BruneSlipTimeFn
   } // faults
 } // pylith
 
@@ -87,12 +84,14 @@ private :
 
   /** Initialize StepSlipFn.
    *
-   * @param faultMesh Fault mesh.
+   * @param mesh Finite-element mesh of domain.
+   * @param faultMesh Finite-element mesh of fault.
    * @param slipfn Step slip function.
    * @param originTime Origin time for earthquake rupture.
    */
   static
-  void _initialize(ALE::Obj<Mesh>* faultMesh,
+  void _initialize(topology::Mesh* mesh,
+		   topology::SubMesh* faultMesh,
 		   StepSlipFn* slipfn,
 		   const double originTime);
 
