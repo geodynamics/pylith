@@ -90,11 +90,19 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
 
   // Set data from mesh.
   _mesh->setDebug(mesh.debug());
+  coordsys(mesh);
+} // createSubMesh
+
+// ----------------------------------------------------------------------
+// Set coordinate system using mesh.
+void
+pylith::topology::SubMesh::coordsys(const Mesh& mesh)
+{ // coordsys
   delete _coordsys; _coordsys = 0;
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
   if (0 != cs)
     _coordsys = cs->clone();
-} // createSubMesh
+} // coordsys
 
 // ----------------------------------------------------------------------
 // Initialize the finite-element mesh.

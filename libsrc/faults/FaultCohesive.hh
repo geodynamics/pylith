@@ -56,7 +56,7 @@ public :
    * @param mesh PETSc mesh.
    * @param flipFault Flip fault orientation.
    */
-  void adjustTopology(const topology::Mesh& mesh,
+  void adjustTopology(topology::Mesh* const mesh,
 		      const bool flipFault =false);
 
   // PROTECTED METHODS //////////////////////////////////////////////////

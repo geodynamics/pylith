@@ -21,30 +21,31 @@ check_PROGRAMS = testfaults
 
 # Primary source files
 testfaults_SOURCES = \
-	TestBruneSlipFn.cc \
-	TestLiuCosSlipFn.cc \
-	TestConstRateSlipFn.cc \
-	TestStepSlipFn.cc \
-	TestEqKinSrc.cc \
-	TestFault.cc \
 	TestFaultCohesive.cc \
-	TestFaultCohesiveKin.cc \
-	TestFaultCohesiveKinLine2.cc \
-	TestFaultCohesiveKinTri3.cc \
-	TestFaultCohesiveKinTri3d.cc \
-	TestFaultCohesiveKinQuad4.cc \
-	TestFaultCohesiveKinQuad4e.cc \
-	TestFaultCohesiveKinTet4.cc \
-	TestFaultCohesiveKinTet4e.cc \
-	TestFaultCohesiveKinTet4f.cc \
-	TestFaultCohesiveKinHex8.cc \
-	TestFaultCohesiveKinSrcs.cc \
-	TestFaultCohesiveKinSrcsLine2.cc \
-	TestFaultCohesiveKinSrcsTri3.cc \
-	TestFaultCohesiveKinSrcsQuad4.cc \
-	TestFaultCohesiveKinSrcsTet4.cc \
-	TestFaultCohesiveKinSrcsHex8.cc \
+	TestEqKinSrc.cc \
 	test_faults.cc
+
+#	TestBruneSlipFn.cc \
+#	TestLiuCosSlipFn.cc \
+#	TestConstRateSlipFn.cc \
+#	TestStepSlipFn.cc \
+#	TestFault.cc \
+#	TestFaultCohesiveKin.cc \
+#	TestFaultCohesiveKinLine2.cc \
+#	TestFaultCohesiveKinTri3.cc \
+#	TestFaultCohesiveKinTri3d.cc \
+#	TestFaultCohesiveKinQuad4.cc \
+#	TestFaultCohesiveKinQuad4e.cc \
+#	TestFaultCohesiveKinTet4.cc \
+#	TestFaultCohesiveKinTet4e.cc \
+#	TestFaultCohesiveKinTet4f.cc \
+#	TestFaultCohesiveKinHex8.cc \
+#	TestFaultCohesiveKinSrcs.cc \
+#	TestFaultCohesiveKinSrcsLine2.cc \
+#	TestFaultCohesiveKinSrcsTri3.cc \
+#	TestFaultCohesiveKinSrcsQuad4.cc \
+#	TestFaultCohesiveKinSrcsTet4.cc \
+#	TestFaultCohesiveKinSrcsHex8.cc
 
 
 

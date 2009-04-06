@@ -26,7 +26,6 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
-    class Fault;
     class TestFault;
   } // faults
 } // pylith

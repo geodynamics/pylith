@@ -12,12 +12,12 @@
 
 SUBDIRS = \
 	bc \
+	faults \
 	feassemble \
 	materials \
 	meshio \
 	topology \
 	utils
 
-#	faults 
 
 # End of file 

@@ -25,6 +25,7 @@ CURRENT ISSUES/PRIORITIES
   (3) SolverNonlinear (get it to run then turn it over to Matt)
 
   (4) Faults
+    Use visitors in FaultCohesiveKin
 
   (5) Add missing unit tests
 

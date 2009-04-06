@@ -31,7 +31,8 @@ subpkginclude_HEADERS = \
 	LiuCosSlipFn.icc \
 	SlipTimeFn.hh \
 	StepSlipFn.hh \
-	StepSlipFn.icc
+	StepSlipFn.icc \
+	faultsfwd.hh
 
 noinst_HEADERS = \
 	TopologyOps.hh \

@@ -26,19 +26,13 @@
 #define pylith_meshio_ucdfaultfile_hh
 
 // Include directives ---------------------------------------------------
-#define NEWPYLITHMESH 1 
-#include "pylith/utils/sievetypes.hh" // USES SieveMesh, ALE::Mesh
+#include "meshiofwd.hh" // forward declarations
 
-// Forward declarations -------------------------------------------------
-namespace pylith {
-  namespace meshio {
-    class UCDFaultFile;
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
 
-    class TestFaultFile; // unit testing
-  } // meshio
-} // pylith
+#include "pylith/utils/sievetypes.hh" // USES ALE::Obj, ALE::Mesh
 
-// MeshIOLagrit ---------------------------------------------------------
+// UCDFaultFile ---------------------------------------------------------
 class pylith::meshio::UCDFaultFile
 { // UCDFaultFile
   friend class TestUCDFaultFile; // unit testing
@@ -48,9 +42,9 @@ public :
 
   static
   void read(const char* filename,
-	    const ALE::Obj<SieveMesh>& mesh,
-	    const ALE::Obj<SieveMesh>& fault,
-	    ALE::Obj<ALE::Mesh>& faultBd);
+	    topology::SubMesh* faultMesh,
+	    ALE::Obj<ALE::Mesh>& faultBoundary,
+	    const topology::Mesh& mesh);
 
 }; // UCDFaultFile
 

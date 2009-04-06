@@ -24,7 +24,7 @@
 // ReplaceVisitor -------------------------------------------------------
 template<typename Sieve, typename Renumbering>
 class pylith::faults::ReplaceVisitor {
-public:
+private:
   typedef typename Sieve::point_type point_type;
 protected:
   Renumbering& renumbering;
@@ -50,6 +50,7 @@ template<typename Sieve>
 class pylith::faults::ClassifyVisitor {
 public:
   typedef typename Sieve::point_type point_type;
+  typedef std::set<point_type> PointSet;
 protected:
   const Sieve&     sieve;
   const PointSet&  replaceCells;
@@ -75,12 +76,13 @@ public:
   void visitArrow(const typename Sieve::arrow_type&);
   const PointSet& getReplaceCells() const;
   const PointSet& getNoReplaceCells() const;
-  const bool      getModified() const;
-  const int       getSize() const;
-  void            setMode(const bool isSetup);
-  void            reset();
+  bool getModified() const;
+  int getSize() const;
+  void setMode(const bool isSetup);
+  void reset();
 };
 
+#include "TopologyVisitors.cc" // template definitions
 
 #endif // pylith_faults_topologyvisitors_hh
 

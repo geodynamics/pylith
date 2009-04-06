@@ -17,7 +17,7 @@ template<typename Sieve, typename Renumbering>
 pylith::faults::ReplaceVisitor<Sieve,Renumbering>::ReplaceVisitor(
 							  Renumbering& r,
 							  const int size,
-							  const int debug = 0) :
+							  const int debug) :
   renumbering(r),
   size(size),
   i(0),
@@ -65,7 +65,7 @@ pylith::faults::ReplaceVisitor<Sieve,Renumbering>::visitArrow(
 // ----------------------------------------------------------------------
 template<typename Sieve, typename Renumbering>
 inline
-const point_type*
+const typename Sieve::point_type*
 pylith::faults::ReplaceVisitor<Sieve,Renumbering>::getPoints(void)
 { // getPoints
   return this->points;
@@ -97,7 +97,7 @@ pylith::faults::ClassifyVisitor<Sieve>::ClassifyVisitor(const Sieve& s,
 							const PointSet& nrC,
 							const point_type& fC,
 							const int fS,
-							const int debug =0) :
+							const int debug) :
   sieve(s),
   replaceCells(rC),
   noReplaceCells(nrC),
@@ -152,7 +152,7 @@ pylith::faults::ClassifyVisitor<Sieve>::visitPoint(const point_type& point)
     return;
   } // if
     // If neighbor shares a face with anyone in replaceCells, then add
-  for(PointSet::const_iterator c_iter = vReplaceCells.begin();
+  for (typename PointSet::const_iterator c_iter = vReplaceCells.begin();
       c_iter != vReplaceCells.end();
       ++c_iter) {
     sieve.meet(*c_iter, point, pR);
@@ -172,7 +172,7 @@ pylith::faults::ClassifyVisitor<Sieve>::visitPoint(const point_type& point)
   if (classified)
     return;
   // It is unclear whether taking out the noReplace cells will speed this up
-  for(PointSet::const_iterator c_iter = vNoReplaceCells.begin();
+  for (typename PointSet::const_iterator c_iter = vNoReplaceCells.begin();
       c_iter != vNoReplaceCells.end();
       ++c_iter) {
     sieve.meet(*c_iter, point, pR);
@@ -202,7 +202,7 @@ pylith::faults::ClassifyVisitor<Sieve>::visitArrow(const typename Sieve::arrow_t
 // ----------------------------------------------------------------------
 template<typename Sieve>
 inline
-const PointSet&
+const std::set<typename Sieve::point_type>&
 pylith::faults::ClassifyVisitor<Sieve>::getReplaceCells(void) const
 { // getReplaceCells
   return this->vReplaceCells;
@@ -211,7 +211,7 @@ pylith::faults::ClassifyVisitor<Sieve>::getReplaceCells(void) const
 // ----------------------------------------------------------------------
 template<typename Sieve>
 inline
-const PointSet&
+const std::set<typename Sieve::point_type>&
 pylith::faults::ClassifyVisitor<Sieve>::getNoReplaceCells() const
 { // getNoReplaceCells
   return this->vNoReplaceCells;

@@ -13,28 +13,29 @@
 #include <portinfo>
 
 #include "TopologyOps.hh" // implementation of object methods
-//#include <Selection.hh> // Algorithms for submeshes
 
-//#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "TopologyVisitors.hh" // USES ClassifyVisitor
+
+#include <Selection.hh> // Algorithms for submeshes
 
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 template<class InputPoints>
 bool
-pylith::faults::CohesiveTopology::compatibleOrientation(const ALE::Obj<Mesh>& mesh,
-							const Mesh::point_type& p,
-							const Mesh::point_type& q,
+pylith::faults::TopologyOps::compatibleOrientation(const ALE::Obj<SieveMesh>& mesh,
+							const SieveMesh::point_type& p,
+							const SieveMesh::point_type& q,
 							const int numFaultCorners,
 							const int faultFaceSize,
 							const int faultDepth,
-							const Obj<InputPoints>& points,
+						   const ALE::Obj<InputPoints>& points,
 							int indices[],
 							PointArray *origVertices,
 							PointArray *faceVertices,
 							PointArray *neighborVertices)
 {
-  typedef ALE::Selection<Mesh> selection;
+  typedef ALE::Selection<SieveMesh> selection;
   const int debug = mesh->debug();
   bool compatible;
 
@@ -59,16 +60,16 @@ pylith::faults::CohesiveTopology::compatibleOrientation(const ALE::Obj<Mesh>& me
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::CohesiveTopology::computeCensoredDepth(const ALE::Obj<Mesh::label_type>& depth,
-						       const ALE::Obj<Mesh::sieve_type>& sieve,
-						       const Mesh::point_type& firstCohesiveCell)
+pylith::faults::TopologyOps::computeCensoredDepth(const ALE::Obj<SieveMesh::label_type>& depth,
+						       const ALE::Obj<SieveMesh::sieve_type>& sieve,
+						       const SieveMesh::point_type& firstCohesiveCell)
 {
-  Mesh::DepthVisitor d(*sieve, firstCohesiveCell, *depth);
+  SieveMesh::DepthVisitor d(*sieve, firstCohesiveCell, *depth);
 
   sieve->roots(d);
   while(d.isModified()) {
     // FIX: Avoid the copy here somehow by fixing the traversal
-    std::vector<Mesh::point_type> modifiedPoints(d.getModifiedPoints().begin(), d.getModifiedPoints().end());
+    std::vector<SieveMesh::point_type> modifiedPoints(d.getModifiedPoints().begin(), d.getModifiedPoints().end());
 
     d.clear();
     sieve->support(modifiedPoints, d);
@@ -77,17 +78,18 @@ pylith::faults::CohesiveTopology::computeCensoredDepth(const ALE::Obj<Mesh::labe
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::CohesiveTopology::classifyCells(const ALE::Obj<Mesh::sieve_type>& sieve,
-                                                const Mesh::point_type& vertex,
+pylith::faults::TopologyOps::classifyCells(const ALE::Obj<SieveMesh::sieve_type>& sieve,
+                                                const SieveMesh::point_type& vertex,
                                                 const int depth,
                                                 const int faceSize,
-                                                const Mesh::point_type& firstCohesiveCell,
+                                                const SieveMesh::point_type& firstCohesiveCell,
                                                 PointSet& replaceCells,
                                                 PointSet& noReplaceCells,
                                                 const int debug)
 {
   // Replace all cells on a given side of the fault with a vertex on the fault
-  ClassifyVisitor<Mesh::sieve_type> cV(*sieve, replaceCells, noReplaceCells, firstCohesiveCell, faceSize, debug);
+  ClassifyVisitor<SieveMesh::sieve_type> cV(*sieve, replaceCells, noReplaceCells,
+					    firstCohesiveCell, faceSize, debug);
   const PointSet& vReplaceCells   = cV.getReplaceCells();
   const PointSet& vNoReplaceCells = cV.getNoReplaceCells();
 
@@ -117,16 +119,16 @@ pylith::faults::CohesiveTopology::classifyCells(const ALE::Obj<Mesh::sieve_type>
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::CohesiveTopology::createFaultSieveFromVertices(const int dim,
+pylith::faults::TopologyOps::createFaultSieveFromVertices(const int dim,
                                                                const int firstCell,
                                                                const PointSet& faultVertices,
-                                                               const Obj<Mesh>& mesh,
-                                                               const Obj<ALE::Mesh::arrow_section_type>& orientation,
-                                                               const Obj<ALE::Mesh::sieve_type>& faultSieve,
+                                                               const ALE::Obj<SieveMesh>& mesh,
+                                                               const ALE::Obj<ALE::Mesh::arrow_section_type>& orientation,
+                                                               const ALE::Obj<ALE::Mesh::sieve_type>& faultSieve,
 							       const bool flipFault)
 {
   typedef ALE::Selection<ALE::Mesh> selection;
-  const Obj<sieve_type>&         sieve      = mesh->getSieve();
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = mesh->getSieve();
   const PointSet::const_iterator fvBegin    = faultVertices.begin();
   const PointSet::const_iterator fvEnd      = faultVertices.end();
   int                            curCell    = firstCell;
@@ -135,7 +137,7 @@ pylith::faults::CohesiveTopology::createFaultSieveFromVertices(const int dim,
   int                            o          = 1;
   ALE::Mesh::point_type          f          = firstCell;
   const int                      debug      = mesh->debug();
-  Obj<PointSet>                  face       = new PointSet();
+  ALE::Obj<PointSet>                  face       = new PointSet();
   int                            numCorners = 0;    // The number of vertices in a mesh cell
   int                            faceSize   = 0;    // The number of vertices in a mesh face
   int                           *indices    = NULL; // The indices of a face vertex set in a cell
@@ -161,18 +163,18 @@ pylith::faults::CohesiveTopology::createFaultSieveFromVertices(const int dim,
 
   // This only works for uninterpolated meshes
   assert((mesh->depth() == 1) || (mesh->depth() == -1));
-  ALE::ISieveVisitor::PointRetriever<sieve_type> sV(std::max(1, sieve->getMaxSupportSize()));
-  ALE::ISieveVisitor::PointRetriever<sieve_type> cV(std::max(1, sieve->getMaxConeSize()));
+  ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> sV(std::max(1, sieve->getMaxSupportSize()));
+  ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> cV(std::max(1, sieve->getMaxConeSize()));
   for(PointSet::const_iterator fv_iter = fvBegin; fv_iter != fvEnd; ++fv_iter) {
     sieve->support(*fv_iter, sV);
-    const Mesh::point_type *support = sV.getPoints();
+    const SieveMesh::point_type *support = sV.getPoints();
 
     if (debug) std::cout << "Checking fault vertex " << *fv_iter << std::endl;
     const int sVsize = sV.getSize();
     for (int i=0; i < sVsize; ++i) {
       const int s = (!flipFault) ? i : sVsize - i - 1;
       sieve->cone(support[s], cV);
-      const Mesh::point_type *cone = cV.getPoints();
+      const SieveMesh::point_type *cone = cV.getPoints();
 
       if (debug) std::cout << "  Checking cell " << support[s] << std::endl;
       if (faultCells.find(support[s]) != faultCells.end()) {
@@ -191,7 +193,7 @@ pylith::faults::CohesiveTopology::createFaultSieveFromVertices(const int dim,
                              "element on the fault");
       if (face->size() == faceSize) {
         if (debug) std::cout << "  Contains a face on the fault" << std::endl;
-        ALE::Obj<sieve_type::supportSet> preFace;
+        ALE::Obj<SieveMesh::sieve_type::supportSet> preFace;
         if (dim < 2) {
           preFace = faultSieve->nJoin1(face);
         } else {
@@ -240,14 +242,14 @@ pylith::faults::CohesiveTopology::createFaultSieveFromVertices(const int dim,
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::CohesiveTopology::createFaultSieveFromFaces(const int dim,
+pylith::faults::TopologyOps::createFaultSieveFromFaces(const int dim,
                                                             const int firstCell,
                                                             const int numFaces,
                                                             const int faultVertices[],
                                                             const int faultCells[],
-                                                            const Obj<Mesh>& mesh,
-                                                            const Obj<ALE::Mesh::arrow_section_type>& orientation,
-                                                            const Obj<ALE::Mesh::sieve_type>& faultSieve)
+                                                            const ALE::Obj<SieveMesh>& mesh,
+                                                            const ALE::Obj<ALE::Mesh::arrow_section_type>& orientation,
+                                                            const ALE::Obj<ALE::Mesh::sieve_type>& faultSieve)
 {
   typedef ALE::Selection<ALE::Mesh> selection;
   int                       faceSize   = 0; // The number of vertices in a mesh face
@@ -295,24 +297,24 @@ pylith::faults::CohesiveTopology::createFaultSieveFromFaces(const int dim,
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::CohesiveTopology::orientFaultSieve(const int dim,
-                                                   const Obj<Mesh>& mesh,
-                                                   const Obj<ALE::Mesh::arrow_section_type>& orientation,
-                                                   const Obj<ALE::Mesh>& fault)
+pylith::faults::TopologyOps::orientFaultSieve(const int dim,
+                                                   const ALE::Obj<SieveMesh>& mesh,
+                                                   const ALE::Obj<ALE::Mesh::arrow_section_type>& orientation,
+                                                   const ALE::Obj<ALE::Mesh>& fault)
 {
   // Must check the orientation here
   typedef ALE::Selection<ALE::Mesh> selection;
-  const Obj<ALE::Mesh::sieve_type>& faultSieve      = fault->getSieve();
-  const Mesh::point_type            firstFaultCell  = *fault->heightStratum(1)->begin();
-  const Obj<ALE::Mesh::label_sequence>& fFaces      = fault->heightStratum(2);
+  const ALE::Obj<ALE::Mesh::sieve_type>& faultSieve      = fault->getSieve();
+  const SieveMesh::point_type            firstFaultCell  = *fault->heightStratum(1)->begin();
+  const ALE::Obj<ALE::Mesh::label_sequence>& fFaces      = fault->heightStratum(2);
   const int                         numFaultFaces   = fFaces->size();
   const int                         faultDepth      = fault->depth()-1; // Depth of fault cells
   int                               numFaultCorners = 0; // The number of vertices in a fault cell
   int                               faultFaceSize   = 0; // The number of vertices in a face between fault cells
   int                               faceSize        = 0; // The number of vertices in a mesh face
   const int                         debug           = fault->debug();
-  Obj<PointSet>                     newCells        = new PointSet();
-  Obj<PointSet>                     loopCells       = new PointSet();
+  ALE::Obj<PointSet>                     newCells        = new PointSet();
+  ALE::Obj<PointSet>                     loopCells       = new PointSet();
   PointSet                          flippedCells;   // Incorrectly oriented fault cells
   PointSet                          facesSeen;      // Fault faces already considered
   PointSet                          cellsSeen;      // Fault cells already matched
@@ -337,14 +339,14 @@ pylith::faults::CohesiveTopology::orientFaultSieve(const int dim,
 
   newCells->insert(firstFaultCell);
   while(facesSeen.size() != numFaultFaces) {
-    Obj<PointSet> tmp = newCells; newCells = loopCells; loopCells = tmp;
+    ALE::Obj<PointSet> tmp = newCells; newCells = loopCells; loopCells = tmp;
         
     newCells->clear();
     if (!loopCells->size()) {throw ALE::Exception("Fault surface not a single connected component.");}
     // Loop over new cells
     for(PointSet::iterator c_iter = loopCells->begin(); c_iter != loopCells->end(); ++c_iter) {
       // Loop over edges of this cell
-      const Obj<ALE::Mesh::sieve_type::traits::coneSequence>&     cone   = faultSieve->cone(*c_iter);
+      const ALE::Obj<ALE::Mesh::sieve_type::traits::coneSequence>&     cone   = faultSieve->cone(*c_iter);
       const ALE::Mesh::sieve_type::traits::coneSequence::iterator eBegin = cone->begin();
       const ALE::Mesh::sieve_type::traits::coneSequence::iterator eEnd   = cone->end();
 
@@ -352,7 +354,7 @@ pylith::faults::CohesiveTopology::orientFaultSieve(const int dim,
         if (facesSeen.find(*e_iter) != facesSeen.end()) continue;
         facesSeen.insert(*e_iter);
         if (debug) std::cout << "  Checking orientation of fault face " << *e_iter << std::endl;
-        const Obj<ALE::Mesh::sieve_type::traits::supportSequence>& support = faultSieve->support(*e_iter);
+        const ALE::Obj<ALE::Mesh::sieve_type::traits::supportSequence>& support = faultSieve->support(*e_iter);
         ALE::Mesh::sieve_type::traits::supportSequence::iterator   s_iter  = support->begin();
 
         // Throw out boundary fault faces
@@ -369,9 +371,9 @@ pylith::faults::CohesiveTopology::orientFaultSieve(const int dim,
         if (debug) std::cout << "    neighboring cells " << cellA << " and " << cellB << std::endl;
         // In 1D, just check that vertices match
         if (dim == 1) {
-          const Obj<ALE::Mesh::sieve_type::traits::coneSequence>& coneA = faultSieve->cone(cellA);
+          const ALE::Obj<ALE::Mesh::sieve_type::traits::coneSequence>& coneA = faultSieve->cone(cellA);
           ALE::Mesh::sieve_type::traits::coneSequence::iterator   iterA = coneA->begin();
-          const Obj<ALE::Mesh::sieve_type::traits::coneSequence>& coneB = faultSieve->cone(cellB);
+          const ALE::Obj<ALE::Mesh::sieve_type::traits::coneSequence>& coneB = faultSieve->cone(cellB);
           ALE::Mesh::sieve_type::traits::coneSequence::iterator   iterB = coneB->begin();
           int posA, posB;
 
@@ -462,7 +464,7 @@ pylith::faults::CohesiveTopology::orientFaultSieve(const int dim,
   for(ALE::Mesh::label_sequence::iterator e_iter = fFaces->begin(); e_iter != fFaces->end(); ++e_iter) {
     if (debug) std::cout << "  Checking orientation of fault face " << *e_iter << std::endl;
     // for each face get the support (2 fault cells)
-    const Obj<ALE::Mesh::sieve_type::traits::supportSequence>& support = faultSieve->support(*e_iter);
+    const ALE::Obj<ALE::Mesh::sieve_type::traits::supportSequence>& support = faultSieve->support(*e_iter);
     ALE::Mesh::sieve_type::traits::supportSequence::iterator   s_iter  = support->begin();
 
     // Throw out boundary fault faces
@@ -473,9 +475,9 @@ pylith::faults::CohesiveTopology::orientFaultSieve(const int dim,
       if (debug) std::cout << "    neighboring cells " << cellA << " and " << cellB << std::endl;
       // In 1D, just check that vertices match
       if (dim == 1) {
-        const Obj<ALE::Mesh::sieve_type::traits::coneSequence>& coneA = faultSieve->cone(cellA);
+        const ALE::Obj<ALE::Mesh::sieve_type::traits::coneSequence>& coneA = faultSieve->cone(cellA);
         ALE::Mesh::sieve_type::traits::coneSequence::iterator   iterA = coneA->begin();
-        const Obj<ALE::Mesh::sieve_type::traits::coneSequence>& coneB = faultSieve->cone(cellB);
+        const ALE::Obj<ALE::Mesh::sieve_type::traits::coneSequence>& coneB = faultSieve->cone(cellB);
         ALE::Mesh::sieve_type::traits::coneSequence::iterator   iterB = coneB->begin();
         int posA, posB;
 

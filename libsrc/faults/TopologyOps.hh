@@ -21,13 +21,18 @@
 // Include directives ---------------------------------------------------
 #include "faultsfwd.hh" // forward declarations
 
+#include "pylith/topology/Mesh.hh" // USES Mesh
+
 // TopologyOps ----------------------------------------------------------
 class pylith::faults::TopologyOps
 { // class TopologyOps
+
+  // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
 public :
+  typedef pylith::topology::Mesh::SieveMesh SieveMesh;
   typedef std::set<SieveMesh::point_type> PointSet;
-  typedef std::vector<sieve_type::point_type> PointArray;
-  typedef std::pair<sieve_type::point_type, int> oPoint_type;
+  typedef std::vector<SieveMesh::sieve_type::point_type> PointArray;
+  typedef std::pair<SieveMesh::sieve_type::point_type, int> oPoint_type;
   typedef std::vector<oPoint_type>  oPointArray;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -35,7 +40,7 @@ public :
 
   template<class InputPoints>
   static
-  bool compatibleOrientation(const topology::& mesh,
+  bool compatibleOrientation(const ALE::Obj<SieveMesh>& mesh,
 			     const SieveMesh::point_type& p,
 			     const SieveMesh::point_type& q,
 			     const int numFaultCorners,
@@ -48,16 +53,16 @@ public :
 			     PointArray *neighborVertices);
 
   static
-  void computeCensoredDepth(const ALE::Obj<Mesh::label_type>& depth,
-			    const ALE::Obj<Mesh::sieve_type>& sieve,
-			    const Mesh::point_type& firstCohesiveCell);
+  void computeCensoredDepth(const ALE::Obj<SieveMesh::label_type>& depth,
+			    const ALE::Obj<SieveMesh::sieve_type>& sieve,
+			    const SieveMesh::point_type& firstCohesiveCell);
   
   static
-  void classifyCells(const ALE::Obj<Mesh::sieve_type>& sieve,
-		     const Mesh::point_type& vertex,
+  void classifyCells(const ALE::Obj<SieveMesh::sieve_type>& sieve,
+		     const SieveMesh::point_type& vertex,
 		     const int depth,
 		     const int faceSize,
-		     const Mesh::point_type& firstCohesiveCell,
+		     const SieveMesh::point_type& firstCohesiveCell,
 		     PointSet& replaceCells,
 		     PointSet& noReplaceCells,
 		     const int debug);
@@ -66,7 +71,7 @@ public :
   void createFaultSieveFromVertices(const int dim,
 				    const int firstCell,
 				    const PointSet& faultVertices,
-				    const ALE::Obj<Mesh>& mesh,
+				    const ALE::Obj<SieveMesh>& mesh,
 				    const ALE::Obj<ALE::Mesh::arrow_section_type>& orientation,
 				    const ALE::Obj<ALE::Mesh::sieve_type>& faultSieve,
 				    const bool flipFault);
@@ -77,13 +82,13 @@ public :
 				 const int numFaces,
 				 const int faultVertices[],
 				 const int faultCells[],
-				 const ALE::Obj<Mesh>& mesh,
+				 const ALE::Obj<SieveMesh>& mesh,
 				 const ALE::Obj<ALE::Mesh::arrow_section_type>& orientation,
 				 const ALE::Obj<ALE::Mesh::sieve_type>& faultSieve);
 
   static
   void orientFaultSieve(const int dim,
-			const ALE::Obj<Mesh>& mesh,
+			const ALE::Obj<SieveMesh>& mesh,
 			const ALE::Obj<ALE::Mesh::arrow_section_type>& orientation,
 			const ALE::Obj<ALE::Mesh>& fault);
 }; // class CohesiveTopology

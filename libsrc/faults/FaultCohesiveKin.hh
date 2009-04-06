@@ -207,12 +207,6 @@ private :
   void _calcTractionsChange(topology::Field<topology::SubMesh>* tractions,
 			    const topology::Field<topology::Mesh>& solution);
 
-  /// Allocate scalar field for output of vertex information.
-  void _allocateBufferVertexScalar(void);
-
-  /// Allocate vector field for output of vertex information.
-  void _allocateBufferVertexVector(void);
-
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 

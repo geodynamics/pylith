@@ -30,7 +30,7 @@ pylith::faults::TestFault::testID(void)
   FaultCohesiveKin fault;
   fault.id(id);
   
-  CPPUNIT_ASSERT(id == fault.id());
+  CPPUNIT_ASSERT_EQUAL(id, fault.id());
 } // testID
 
 // ----------------------------------------------------------------------

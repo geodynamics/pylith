@@ -36,8 +36,9 @@ libpylith_la_SOURCES = \
 	faults/LiuCosSlipFn.cc \
 	faults/EqKinSrc.cc \
 	faults/FaultCohesive.cc \
-	faults/FaultCohesiveKin.cc \
 	faults/FaultCohesiveDyn.cc \
+	faults/TopologyOps.cc \
+	faults/CohesiveTopology.cc \
 	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
 	feassemble/GeometryPoint1D.cc \
@@ -86,6 +87,7 @@ libpylith_la_SOURCES = \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \
 	meshio/OutputSolnSubset.cc \
+	meshio/UCDFaultFile.cc \
 	problems/Formulation.cc \
 	problems/Solver.cc \
 	problems/SolverLinear.cc \
@@ -99,10 +101,8 @@ libpylith_la_SOURCES = \
 	utils/EventLogger.cc \
 	utils/TestArray.cc
 
-#	faults/TopologyOps.cc \
-# 	faults/CohesiveTopology.cc \
+#	faults/FaultCohesiveKin.cc \
 # 	materials/GenMaxwellIsotropic3D.cc \
-# 	meshio/UCDFaultFile.cc \
 # 	topology/Distributor.cc \
 # 	topology/MeshRefiner.cc \
 #	topology/RefineUniform.cc

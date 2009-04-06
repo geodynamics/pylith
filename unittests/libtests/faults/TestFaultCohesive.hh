@@ -23,12 +23,11 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "pylith/utils/sievefwd.hh" // USES PETSc Mesh
+#include "pylith/faults/faultsfwd.hh" // USES PETSc Mesh
 
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
-    class Fault;
     class TestFaultCohesive;
     class CohesiveData;
   } // faults
@@ -78,11 +77,13 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyHex8h );
   CPPUNIT_TEST( testAdjustTopologyHex8i );
 
+#if 0
   CPPUNIT_TEST( testAdjustTopologyLine2Lagrange );
   CPPUNIT_TEST( testAdjustTopologyTri3Lagrange );
   CPPUNIT_TEST( testAdjustTopologyQuad4Lagrange );
   CPPUNIT_TEST( testAdjustTopologyTet4Lagrange );
   CPPUNIT_TEST( testAdjustTopologyHex8Lagrange );
+#endif
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -194,6 +195,7 @@ public :
   /// Test adjustTopology() with 3-D hexahedral element (edge/vertex on fault).
   void testAdjustTopologyHex8i(void);
 
+#if 0
   /// Test adjustTopology() with 1-D line element for Lagrange
   /// multipliers.
   void testAdjustTopologyLine2Lagrange(void);
@@ -213,6 +215,7 @@ public :
   /// Test adjustTopology() with 3-D hexahedral element for Lagrange
   /// multipliers.
   void testAdjustTopologyHex8Lagrange(void);
+#endif
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 public :

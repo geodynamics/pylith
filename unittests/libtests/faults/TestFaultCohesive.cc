@@ -14,13 +14,12 @@
 
 #include "TestFaultCohesive.hh" // Implementation of class methods
 
-#include "pylith/faults/FaultCohesiveKin.hh" // USES FaultsCohesiveKin
+//#include "pylith/faults/FaultCohesiveKin.hh" // USES FaultsCohesiveKin
 #include "pylith/faults/FaultCohesiveDyn.hh" // USES FaultsCohesiveDyn
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/array.hh" // USES int_array, double_array
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/feassemble/Quadrature2Din3D.hh" // USES Quadrature2Din3D
 
 #include "data/CohesiveDataLine2.hh" // USES CohesiveDataLine2
 #include "data/CohesiveDataTri3.hh" // USES CohesiveDataTri3
@@ -64,6 +63,9 @@
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesive );
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 
 // ----------------------------------------------------------------------
 void
@@ -420,6 +422,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8i(void)
   _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyHex8i
 
+#if 0
 // ----------------------------------------------------------------------
 // Test adjustTopology() with 1-D line element for Lagrange
 // multipliers.
@@ -474,6 +477,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8Lagrange(void)
   FaultCohesiveKin fault;
   _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyHex8Lagrange
+#endif
 
 // ----------------------------------------------------------------------
 // Test adjustTopology().
@@ -482,7 +486,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
 						       const CohesiveData& data,
 						       const bool flipFault)
 { // _testAdjustTopology
-  ALE::Obj<Mesh> mesh;
+  topology::Mesh mesh;
   meshio::MeshIOAscii iohandler;
   iohandler.filename(data.filename);
   iohandler.debug(false);
@@ -492,27 +496,31 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   CPPUNIT_ASSERT(0 != fault);
   fault->id(1);
   fault->label("fault");
-  fault->adjustTopology(mesh, flipFault);
+  fault->adjustTopology(&mesh, flipFault);
   //mesh->view(data.filename);
 
-  CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh->getDimension());
+  CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh.dimension());
 
   // Check vertices
-  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-  const ALE::Obj<Mesh::real_section_type>& coordsField =
-    mesh->getRealSection("coordinates");
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const ALE::Obj<topology::Mesh::RealSection>& coordsSection =
+    sieveMesh->getRealSection("coordinates");
+  CPPUNIT_ASSERT(!coordsSection.isNull());
   const int numVertices = vertices->size();
   CPPUNIT_ASSERT_EQUAL(data.numVertices, numVertices);
   CPPUNIT_ASSERT_EQUAL(data.spaceDim, 
-		       coordsField->getFiberDimension(*vertices->begin()));
+		       coordsSection->getFiberDimension(*vertices->begin()));
   int i = 0;
   const int spaceDim = data.spaceDim;
-  for(Mesh::label_sequence::iterator v_iter = 
+  for (SieveMesh::label_sequence::iterator v_iter = 
 	vertices->begin();
       v_iter != vertices->end();
       ++v_iter) {
-    const Mesh::real_section_type::value_type *vertexCoords = 
-      coordsField->restrictPoint(*v_iter);
+    const double* vertexCoords = coordsSection->restrictPoint(*v_iter);
     const double tolerance = 1.0e-06;
     for (int iDim=0; iDim < spaceDim; ++iDim)
       if (data.vertices[i] < 1.0)
@@ -524,22 +532,24 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   } // for
 
   // check cells
-  const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
+  CPPUNIT_ASSERT(!sieve.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
+  CPPUNIT_ASSERT(!cells.isNull());
 
   const int numCells = cells->size();
   CPPUNIT_ASSERT_EQUAL(data.numCells, numCells);
 
-  ALE::ISieveVisitor::PointRetriever<Mesh::sieve_type> pV(sieve->getMaxConeSize());
+  ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> pV(sieve->getMaxConeSize());
   int iCell = 0;
   i = 0;
-  for(Mesh::label_sequence::iterator c_iter = cells->begin();
+  for(SieveMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
-    const int numCorners = mesh->getNumCellCorners(*c_iter);
+    const int numCorners = sieveMesh->getNumCellCorners(*c_iter);
     CPPUNIT_ASSERT_EQUAL(data.numCorners[iCell++], numCorners);
     sieve->cone(*c_iter, pV);
-    const Mesh::point_type *cone = pV.getPoints();
+    const SieveMesh::point_type *cone = pV.getPoints();
     for(int p = 0; p < pV.getSize(); ++p, ++i) {
       CPPUNIT_ASSERT_EQUAL(data.cells[i], cone[p]);
     }
@@ -547,41 +557,44 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   } // for
 
   // check materials
-  const ALE::Obj<Mesh::label_type>& labelMaterials = 
-    mesh->getLabel("material-id");
+  const ALE::Obj<SieveMesh::label_type>& labelMaterials = 
+    sieveMesh->getLabel("material-id");
+  CPPUNIT_ASSERT(!labelMaterials.isNull());
   const int idDefault = -999;
   const int size = numCells;
   int_array materialIds(size);
   i = 0;
-  for(Mesh::label_sequence::iterator c_iter = cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter)
-    materialIds[i++] = mesh->getValue(labelMaterials, *c_iter, idDefault);
+    materialIds[i++] = sieveMesh->getValue(labelMaterials, *c_iter, idDefault);
   
   for (int iCell=0; iCell < numCells; ++iCell)
     CPPUNIT_ASSERT_EQUAL(data.materialIds[iCell], materialIds[iCell]);
 
   // Check groups
   const ALE::Obj<std::set<std::string> >& groupNames = 
-    mesh->getIntSections();
+    sieveMesh->getIntSections();
+  CPPUNIT_ASSERT(!groupNames.isNull());
   int iGroup = 0;
   int index = 0;
   for (std::set<std::string>::const_iterator name=groupNames->begin();
        name != groupNames->end();
        ++name, ++iGroup) {
-    const ALE::Obj<int_section_type>& groupField = mesh->getIntSection(*name);
+    const ALE::Obj<topology::Mesh::IntSection>& groupField =
+      sieveMesh->getIntSection(*name);
     CPPUNIT_ASSERT(!groupField.isNull());
-    const int_section_type::chart_type& chart = groupField->getChart();
-    Mesh::point_type firstPoint;
-    for(int_section_type::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
+    const topology::Mesh::IntSection::chart_type& chart = groupField->getChart();
+    SieveMesh::point_type firstPoint;
+    for (topology::Mesh::IntSection::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
       if (groupField->getFiberDimension(*c_iter)) {firstPoint = *c_iter; break;}
     }
     std::string groupType = 
-      (mesh->height(firstPoint) == 0) ? "cell" : "vertex";
+      (sieveMesh->height(firstPoint) == 0) ? "cell" : "vertex";
     const int numPoints = groupField->size();
     int_array points(numPoints);
     int i = 0;
-    for(int_section_type::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
+    for (topology::Mesh::IntSection::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
       if (groupField->getFiberDimension(*c_iter)) points[i++] = *c_iter;
     }
 
@@ -602,7 +615,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
 						       const bool flipFaultA,
 						       const bool flipFaultB)
 { // _testAdjustTopology
-  ALE::Obj<Mesh> mesh;
+  topology::Mesh mesh;
   meshio::MeshIOAscii iohandler;
   iohandler.filename(data.filename);
   iohandler.debug(false);
@@ -612,60 +625,67 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
   CPPUNIT_ASSERT(0 != faultA);
   faultA->id(1);
   faultA->label("faultA");
-  faultA->adjustTopology(mesh, flipFaultA);
+  faultA->adjustTopology(&mesh, flipFaultA);
 
   CPPUNIT_ASSERT(0 != faultB);
   faultB->id(2);
   faultB->label("faultB");
-  faultB->adjustTopology(mesh, flipFaultB);
+  faultB->adjustTopology(&mesh, flipFaultB);
 
-  //mesh->view(data.filename);
-  CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh->getDimension());
+  //sieveMesh->view(data.filename);
+  CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh.dimension());
 
   // Check vertices
-  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-  const ALE::Obj<Mesh::real_section_type>& coordsField =
-    mesh->getRealSection("coordinates");
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const ALE::Obj<topology::Mesh::RealSection>& coordsSection =
+    sieveMesh->getRealSection("coordinates");
+  CPPUNIT_ASSERT(!coordsSection.isNull());
   const int numVertices = vertices->size();
   CPPUNIT_ASSERT_EQUAL(data.numVertices, numVertices);
   CPPUNIT_ASSERT_EQUAL(data.spaceDim, 
-		       coordsField->getFiberDimension(*vertices->begin()));
+		       coordsSection->getFiberDimension(*vertices->begin()));
   int i = 0;
   const int spaceDim = data.spaceDim;
-  for(Mesh::label_sequence::iterator v_iter = 
+  for(SieveMesh::label_sequence::iterator v_iter = 
 	vertices->begin();
       v_iter != vertices->end();
       ++v_iter) {
-    const Mesh::real_section_type::value_type *vertexCoords = 
-      coordsField->restrictPoint(*v_iter);
+    const double* coordsVertex = coordsSection->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(0 != coordsVertex);
     const double tolerance = 1.0e-06;
     for (int iDim=0; iDim < spaceDim; ++iDim)
       if (data.vertices[i] < 1.0)
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(data.vertices[i++], vertexCoords[iDim],
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(data.vertices[i++], coordsVertex[iDim],
 				   tolerance);
       else
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vertexCoords[iDim]/data.vertices[i++],
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, coordsVertex[iDim]/data.vertices[i++],
 				   tolerance);
   } // for
 
   // check cells
-  const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
+  CPPUNIT_ASSERT(!sieve.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
+  CPPUNIT_ASSERT(!cells.isNull());
 
   const int numCells = cells->size();
   CPPUNIT_ASSERT_EQUAL(data.numCells, numCells);
 
-  ALE::ISieveVisitor::PointRetriever<Mesh::sieve_type> pV(sieve->getMaxConeSize());
+  ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> pV(sieve->getMaxConeSize());
   int iCell = 0;
   i = 0;
-  //mesh->view(data.filename);
-  for(Mesh::label_sequence::iterator c_iter = cells->begin();
+  //sieveMesh->view(data.filename);
+  for(SieveMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
-    const int numCorners = mesh->getNumCellCorners(*c_iter);
+    const int numCorners = sieveMesh->getNumCellCorners(*c_iter);
     CPPUNIT_ASSERT_EQUAL(data.numCorners[iCell++], numCorners);
     sieve->cone(*c_iter, pV);
-    const Mesh::point_type *cone = pV.getPoints();
+    const SieveMesh::point_type *cone = pV.getPoints();
     for(int p = 0; p < pV.getSize(); ++p, ++i) {
       CPPUNIT_ASSERT_EQUAL(data.cells[i], cone[p]);
     }
@@ -673,41 +693,44 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
   } // for
 
   // check materials
-  const ALE::Obj<Mesh::label_type>& labelMaterials = 
-    mesh->getLabel("material-id");
+  const ALE::Obj<SieveMesh::label_type>& labelMaterials = 
+    sieveMesh->getLabel("material-id");
+  CPPUNIT_ASSERT(!labelMaterials.isNull());
   const int idDefault = -999;
   const int size = numCells;
   int_array materialIds(size);
   i = 0;
-  for(Mesh::label_sequence::iterator c_iter = cells->begin();
+  for(SieveMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter)
-    materialIds[i++] = mesh->getValue(labelMaterials, *c_iter, idDefault);
+    materialIds[i++] = sieveMesh->getValue(labelMaterials, *c_iter, idDefault);
   
   for (int iCell=0; iCell < numCells; ++iCell)
     CPPUNIT_ASSERT_EQUAL(data.materialIds[iCell], materialIds[iCell]);
 
   // Check groups
   const ALE::Obj<std::set<std::string> >& groupNames = 
-    mesh->getIntSections();
+    sieveMesh->getIntSections();
+  CPPUNIT_ASSERT(!groupNames.isNull());
   int iGroup = 0;
   int index = 0;
   for (std::set<std::string>::const_iterator name=groupNames->begin();
        name != groupNames->end();
        ++name, ++iGroup) {
-    const ALE::Obj<int_section_type>& groupField = mesh->getIntSection(*name);
+    const ALE::Obj<topology::Mesh::IntSection>& groupField = 
+      sieveMesh->getIntSection(*name);
     CPPUNIT_ASSERT(!groupField.isNull());
-    const int_section_type::chart_type& chart = groupField->getChart();
-    Mesh::point_type firstPoint;
-    for(int_section_type::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
+    const topology::Mesh::IntSection::chart_type& chart = groupField->getChart();
+    SieveMesh::point_type firstPoint;
+    for(topology::Mesh::IntSection::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
       if (groupField->getFiberDimension(*c_iter)) {firstPoint = *c_iter; break;}
     }
     std::string groupType = 
-      (mesh->height(firstPoint) == 0) ? "cell" : "vertex";
+      (sieveMesh->height(firstPoint) == 0) ? "cell" : "vertex";
     const int numPoints = groupField->size();
     int_array points(numPoints);
     int i = 0;
-    for(int_section_type::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
+    for(topology::Mesh::IntSection::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
       if (groupField->getFiberDimension(*c_iter)) points[i++] = *c_iter;
     }
 

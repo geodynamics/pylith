@@ -138,7 +138,7 @@ pylith::faults::LiuCosSlipFn::initialize(
 
   _dbRiseTime->open();
   const char* riseTimeValues[] = {"rise-time"};
-  _dbSlipTime->queryVals(slipTimeValues, 1);
+  _dbRiseTime->queryVals(riseTimeValues, 1);
 
   // Get coordinates of vertices
   const ALE::Obj<RealSection>& coordinates = 

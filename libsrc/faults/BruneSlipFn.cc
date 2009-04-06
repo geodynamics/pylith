@@ -36,6 +36,7 @@ typedef pylith::topology::SubMesh::RealSection RealSection;
 pylith::faults::BruneSlipFn::BruneSlipFn(void) :
   _slipTimeVertex(0),
   _riseTimeVertex(0),
+  _parameters(0),
   _dbFinalSlip(0),
   _dbSlipTime(0),
   _dbRiseTime(0)
@@ -138,7 +139,7 @@ pylith::faults::BruneSlipFn::initialize(
 
   _dbRiseTime->open();
   const char* riseTimeValues[] = {"rise-time"};
-  _dbSlipTime->queryVals(slipTimeValues, 1);
+  _dbRiseTime->queryVals(riseTimeValues, 1);
 
   // Get coordinates of vertices
   const ALE::Obj<RealSection>& coordinates = 

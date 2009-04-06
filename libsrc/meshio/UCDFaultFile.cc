@@ -16,6 +16,7 @@
 
 #include "MeshBuilder.hh" // USES MeshBuilder
 
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/utils/array.hh" // USES double_array, int_array
 
 #include <petsc.h> // USES MPI_Comm
@@ -26,10 +27,12 @@
 // ----------------------------------------------------------------------
 void
 pylith::meshio::UCDFaultFile::read(const char* filename,
-				   const ALE::Obj<SieveMesh>& mesh, 
-				   const ALE::Obj<SieveMesh>& fault, 
-				   ALE::Obj<ALE::Mesh>& faultBd)
+				   topology::SubMesh* faultMesh,
+				   ALE::Obj<ALE::Mesh>& faultBoundary,
+				   const topology::Mesh& mesh)
 { // read
+  assert(0 != faultMesh);
+
   int faultDim = 2;
   int fSpaceDim = 0;
   int numFVertices = 0;
@@ -40,16 +43,23 @@ pylith::meshio::UCDFaultFile::read(const char* filename,
   int_array fMaterialIds;
   int_array faceCells;
   int_array vertexIDs;
-  
-  if (!fault->commRank()) {
+
+  const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+
+  int rank = 0;
+  MPI_Comm_rank(mesh.comm(), &rank);
+  if (0 == rank) {
     std::ifstream fin(filename, std::ios::in);
     if (!(fin.is_open() && fin.good())) {
       std::ostringstream msg;
       msg << "Could not open ASCII INP file '" << filename << "' for reading.";
       throw std::runtime_error(msg.str());
     } // if
-    int numNodeData, numCellData, numModelData;
-
+    int numNodeData = 0;
+    int numCellData = 0;
+    int numModelData = 0;
+    
     fSpaceDim = 3;
 
     // Section 1: <num_nodes> <num_cells> <num_ndata> <num_cdata> <num_mdata>
@@ -91,7 +101,8 @@ pylith::meshio::UCDFaultFile::read(const char* filename,
     } // for
 
     // Section 4: <num_comp for node data> <size comp 1> <size comp 2>...<size comp n>
-    int numComponents, totalSize;
+    int numComponents = 0;
+    int totalSize = 0;
 
     fin >> numComponents;
     totalSize = 0;
@@ -153,7 +164,8 @@ pylith::meshio::UCDFaultFile::read(const char* filename,
     //   Only do this once since we add cohesive cells after that
     static int numCells = -1;
 
-    if (numCells == -1) {numCells = mesh->heightStratum(0)->size();}
+    assert(!sieveMesh->heightStratum(0).isNull());
+    if (numCells == -1) {numCells = sieveMesh->heightStratum(0)->size();}
 
     // Renumber vertices and use zero based indices
     // UCD file has one-based indices for both vertexIDs and fCells
@@ -162,16 +174,17 @@ pylith::meshio::UCDFaultFile::read(const char* filename,
       for(int corner = 0; corner < numFCorners; ++corner)
         fCells[c*numFCorners+corner] = 
 	  vertexIDs[fCells[c*numFCorners+corner]-1] - 1 + numCells;
-
+    
     // Switch to zero based index for global cell numbering
     for (int c=0; c < numFCells; ++c)
       for (int i=0; i < 2; ++i)
 	faceCells[c*2+i] -= 1;
   } // if
-
+  
+  assert(!sieveMesh->getSieve().isNull());
   const int firstFaultCell = 
-    mesh->getSieve()->getBaseSize() + mesh->getSieve()->getCapSize();
-  MeshBuilder::buildFaultMesh(fault, faultBd, 
+    sieveMesh->getSieve()->getBaseSize() + sieveMesh->getSieve()->getCapSize();
+  MeshBuilder::buildFaultMesh(faultMesh->sieveMesh(), faultBoundary, 
 			      fCoordinates, numFVertices, fSpaceDim, fCells, 
 			      numFCells, numFCorners, firstFaultCell, 
 			      faceCells, faultDim);

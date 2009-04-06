@@ -41,7 +41,8 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void)
+pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
+  _fields(0)
 { // constructor
 } // constructor
 
@@ -49,7 +50,8 @@ pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void)
 // Destructor.
 pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void)
 { // destructor
-  // Don't manage memory for eq source pointers
+  delete _fields; _fields = 0;
+  // :TODO: Use shared pointers for earthquake sources
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -59,24 +61,27 @@ pylith::faults::FaultCohesiveKin::eqsrcs(const char** names,
 					 EqKinSrc** sources,
 					 const int numSources)
 { // eqsrcs
+  // :TODO: Use shared pointers for earthquake sources
   _eqSrcs.clear();
   for (int i=0; i < numSources; ++i) {
     if (0 == sources[i])
       throw std::runtime_error("Null earthquake source.");
-    _eqSrcs[std::string(names[i])] = sources[i]; // Don't manage memory for eq source
+    _eqSrcs[std::string(names[i])] = sources[i];
   } // for
 } // eqsrcs
 
 // ----------------------------------------------------------------------
 // Initialize fault. Determine orientation and setup boundary
 void
-pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
-					     const spatialdata::geocoords::CoordSys* cs,
+pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
 					     const double_array& upDir,
 					     const double_array& normalDir,
 					     spatialdata::spatialdb::SpatialDB* matDB)
 { // initialize
   assert(0 != _quadrature);
+
+  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
+  assert(0 != cs);
   
   if (3 != upDir.size())
     throw std::runtime_error("Up direction for fault orientation must be "
@@ -89,6 +94,9 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
 				   _useLagrangeConstraints());
   //_faultMesh->getLabel("height")->view("Fault mesh height");
   //_faultMesh->view("FAULT MESH");
+
+  delete _fields; 
+  _fields = new topology::Fields<topology::Field<topology::SubMesh> >;
 
   // Setup pseudo-stiffness of cohesive cells to improve conditioning
   // of Jacobian matrix
@@ -106,28 +114,24 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
        ++s_iter) {
     EqKinSrc* src = s_iter->second;
     assert(0 != src);
-    src->initialize(_faultMesh, cs, *_normalizer);
+    src->initialize(_faultMesh, *_normalizer);
   } // for
 
   // Allocate slip field
-  const ALE::Obj<SubMesh::label_sequence>& vertices = _faultMesh->depthStratum(0);
-  _slip = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
-  _slip->setChart(real_section_type::chart_type(
-		     *std::min_element(vertices->begin(), vertices->end()), 
-		     *std::max_element(vertices->begin(), vertices->end())+1));
-  _slip->setFiberDimension(vertices, cs->spaceDim());
-  _faultMesh->allocate(_slip);
-  assert(!_slip.isNull());
+  const ALE::Obj<SubMesh::SieveMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  const ALE::Obj<SubMesh::label_sequence>& vertices =
+    _faultSieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  _fields->add("slip");
+  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
+  slip.newSection(vertices, cs->spaceDim());
+  slip.allocate();
 
   // Allocate cumulative slip field
-  _cumSlip = new real_section_type(_faultMesh->comm(), _faultMesh->debug());
-  _cumSlip->setChart(real_section_type::chart_type(
-		    *std::min_element(vertices->begin(), vertices->end()), 
-		    *std::max_element(vertices->begin(), vertices->end())+1));
-  _cumSlip->setFiberDimension(vertices, cs->spaceDim());
-  _faultMesh->allocate(_cumSlip);
-  assert(!_cumSlip.isNull());
-
+  _fields->add("cumulative slip");
+  topology::Field<topology::SubMesh>& cumSlip = _fields->get("cumulative slip");
+  cumSlip.newSection(slip);
+  cumSlip.allocate();
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -135,15 +139,11 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<Mesh>& mesh,
 // require assembly across processors.
 void
 pylith::faults::FaultCohesiveKin::integrateResidual(
-				const ALE::Obj<real_section_type>& residual,
-				const double t,
-				topology::FieldsManager* const fields,
-				const ALE::Obj<Mesh>& mesh,
-				const spatialdata::geocoords::CoordSys* cs)
+			     const topology::Field<topology::Mesh>& residual,
+			     const double t,
+			     topology::SolutionFields* const fields)
 { // integrateResidual
-  assert(!residual.isNull());
   assert(0 != fields);
-  assert(!mesh.isNull());
 
   // Cohesive cells with normal vertices i and j, and constraint
   // vertex k make 2 contributions to the residual:
@@ -175,23 +175,26 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   double_array cellAreaAssembled(numConstraintVert);
 
   // Get cohesive cells
-  const ALE::Obj<Mesh::label_sequence>& cellsCohesive = 
-    mesh->getLabelStratum("material-id", id());
+  const ALE::Obj<SieveMesh>& sieveMesh = residual.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cellsCohesive = 
+    sieveMesh->getLabelStratum("material-id", id());
   assert(!cellsCohesive.isNull());
-  const Mesh::label_sequence::iterator cellsCohesiveBegin =
+  const SieveMesh::label_sequence::iterator cellsCohesiveBegin =
     cellsCohesive->begin();
-  const Mesh::label_sequence::iterator cellsCohesiveEnd =
+  const SieveMesh::label_sequence::iterator cellsCohesiveEnd =
     cellsCohesive->end();
   const int cellsCohesiveSize = cellsCohesive->size();
 
   // Get section information
-  const ALE::Obj<real_section_type>& solution = fields->getSolution();
-  assert(!solution.isNull());  
+  topology::Field<topology::Mesh>& solution = fields->solution();
+  const ALE::Obj<Mesh::RealSection>& solutionSection = solution.section();
+  assert(!solutionSection.isNull());  
 
-  for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+  for (Mesh::SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
-    const Mesh::point_type c_fault = _cohesiveToFault[*c_iter];
+    const Mesh::SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
     cellArea = 0.0;
     cellResidual = 0.0;
 
@@ -487,30 +490,32 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 // ----------------------------------------------------------------------
 // Update state variables as needed.
 void
-pylith::faults::FaultCohesiveKin::updateState(const double t,
-					      topology::FieldsManager* const fields,
-					      const ALE::Obj<Mesh>& mesh)
-{ // updateState
+pylith::faults::FaultCohesiveKin::updateStateVars(const double t,
+		       topology::SolutionFields* const fields)
+{ // updateStateVars
   assert(0 != fields);
-  assert(!mesh.isNull());
-  assert(!_faultMesh.isNull());
+  assert(0 != _fields);
 
   // Update cumulative slip
-  assert(!_cumSlip.isNull());
+  topology::Field<topology::SubMesh>& cumSlip = fields->get("cumulative slip");
+  topology::Field<topology::SubMesh>& slip = fields->get("slip");
   if (!_useSolnIncr)
-    _cumSlip->zero();
-  _cumSlip->add(_cumSlip, _slip);
-} // updateState
+    cumSlip.zero();
+  cumSlip += slip;
+} // updateStateVars
 
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::faults::FaultCohesiveKin::verifyConfiguration(const ALE::Obj<Mesh>& mesh) const
+pylith::faults::FaultCohesiveKin::verifyConfiguration(
+					 const topology::Mesh& mesh) const
 { // verifyConfiguration
-  assert(!mesh.isNull());
   assert(0 != _quadrature);
 
-  if (!mesh->hasIntSection(label())) {
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+
+  if (!sieveMesh->hasIntSection(label())) {
     std::ostringstream msg;
     msg << "Mesh missing group of vertices '" << label()
 	<< " for boundary condition.";
@@ -518,7 +523,7 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const ALE::Obj<Mesh>& mesh
   } // if  
 
   // check compatibility of mesh and quadrature scheme
-  const int dimension = mesh->getDimension()-1;
+  const int dimension = mesh.dimension()-1;
   if (_quadrature->cellDim() != dimension) {
     std::ostringstream msg;
     msg << "Dimension of reference cell in quadrature scheme (" 
@@ -530,8 +535,8 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const ALE::Obj<Mesh>& mesh
   } // if
 
   const int numCorners = _quadrature->refGeometry().numCorners();
-  const ALE::Obj<Mesh::label_sequence>& cells = 
-    mesh->getLabelStratum("material-id", id());
+  const ALE::Obj<Mesh::SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", id());
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsBegin = cells->begin();
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
@@ -1093,45 +1098,6 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   (*tractions)->view("TRACTIONS");
 #endif
 } // _calcTractionsChange
-
-// ----------------------------------------------------------------------
-// Allocate scalar field for output of vertex information.
-void
-pylith::faults::FaultCohesiveKin::_allocateBufferVertexScalar(void)
-{ // _allocateBufferVertexScalar
-  const int fiberDim = 1;
-  if (_bufferVertexScalar.isNull()) {
-    _bufferVertexScalar = new real_section_type(_faultMesh->comm(), 
-						_faultMesh->debug());
-    const ALE::Obj<SubMesh::label_sequence>& vertices = 
-      _faultMesh->depthStratum(0);
-    _bufferVertexScalar->setChart(real_section_type::chart_type(
-		 *std::min_element(vertices->begin(), vertices->end()),
-		 *std::max_element(vertices->begin(), vertices->end())+1));
-    _bufferVertexScalar->setFiberDimension(vertices, fiberDim);
-    _faultMesh->allocate(_bufferVertexScalar);
-  } // if
-} // _allocateBufferVertexScalar
-
-// ----------------------------------------------------------------------
-// Allocate vector field for output of vertex information.
-void
-pylith::faults::FaultCohesiveKin::_allocateBufferVertexVector(void)
-{ // _allocateBufferVertexVector
-  assert(0 != _quadrature);
-  const int fiberDim = _quadrature->spaceDim();
-  if (_bufferVertexVector.isNull()) {
-    _bufferVertexVector = new real_section_type(_faultMesh->comm(), 
-						_faultMesh->debug());
-    const ALE::Obj<SubMesh::label_sequence>& vertices = 
-      _faultMesh->depthStratum(0);
-    _bufferVertexVector->setChart(real_section_type::chart_type(
-		 *std::min_element(vertices->begin(), vertices->end()),
-		 *std::max_element(vertices->begin(), vertices->end())+1));
-    _bufferVertexVector->setFiberDimension(vertices, fiberDim);
-    _faultMesh->allocate(_bufferVertexVector);
-  } // if  
-} // _allocateBufferVertexVector
 
 
 // End of file 

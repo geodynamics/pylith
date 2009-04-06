@@ -21,29 +21,32 @@
 // Include directives ---------------------------------------------------
 #include "faultsfwd.hh" // forward declarations
 
+#include "pylith/topology/Mesh.hh" // USES Mesh::IntSection
+#include "pylith/utils/sievetypes.hh" // USE ALE::Obj
+
 // CohesiveTopology -----------------------------------------------------
 class pylith::faults::CohesiveTopology
 { // class CohesiveTopology
-public :
-  typedef std::set<SieveMesh::point_type> PointSet;
-  typedef std::vector<sieve_type::point_type> PointArray;
-  typedef std::pair<sieve_type::point_type, int> oPoint_type;
-  typedef std::vector<oPoint_type>  oPointArray;
+
+private :
+  typedef pylith::topology::Mesh::SieveMesh::point_type point_type;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
+
   /** Create the fault mesh.
    *
-   * @param fault Finite-element mesh of fault (output)
-   * @param mesh Finite-element mesh
+   * @param faultMesh Finite-element mesh of fault (output).
+   * @param faultBoundary Finite-element mesh of fault boundary (output).
+   * @param mesh Finite-element mesh of domain.
    * @param faultVertices Vertices assocated with faces of cells defining 
    *   fault surface
    */
   static
-  void createFault(topology::SubMesh* ifault,
-                   ALE::Obj<ALE::Mesh>& faultBd,
-                   const topology::Mesh& mesh,
-                   const ALE::Obj<topology::Mesh::IntSection>& groupField,
+  void createFault(topology::SubMesh* faultMesh,
+		   ALE::Obj<ALE::Mesh>& faultBoundary,
+		   const topology::Mesh& mesh,
+		   const ALE::Obj<topology::Mesh::IntSection>& groupField,
 		   const bool flipFault =false);
 
   /** Create cohesive cells.
@@ -55,28 +58,29 @@ public :
    *   Lagrange multipliers that require extra vertices, false otherwise
    */
   static
-  void create(topology::SubMesh* ifault,
-              const ALE::Obj<ALE::Mesh>& faultBd,
-              const topology::Mesh& mesh,
+  void create(topology::Mesh* mesh,
+	      const topology::SubMesh& faultMesh,
+              const ALE::Obj<ALE::Mesh>& faultBoundary,
               const ALE::Obj<topology::Mesh::IntSection>& groupField,
               const int materialId,
               const bool constraintCell =false);
 
   /** Create (distributed) fault mesh from cohesive cells.
    *
-   * @param fault Finite-element mesh of fault (output).
-   * @param cohesiveToFault Mapping of cohesive cell to fault mesh cell.
+   * @param faultMesh Finite-element mesh of fault (output).
+   * @param cohesiveToFault Mapping of cohesive cell to fault mesh
+   *   cell (output).
    * @param mesh Finite-element mesh.
    * @param materialId Material id for cohesive elements.
    * @param constraintCell True if creating cells constrained with 
    *   Lagrange multipliers that require extra vertices, false otherwise.
    */
   static
-  void createParallel(topology::SubMesh* ifault,
-		      std::map<Mesh::point_type, Mesh::point_type>* cohesiveToFault,
-		      const topology::Mesh& mesh,
-		      const int materialId,
-		      const bool constraintCell =false);
+  void createFaultParallel(topology::SubMesh* faultMesh,
+			   std::map<point_type, point_type>* cohesiveToFault,
+			   const topology::Mesh& mesh,
+			   const int materialId,
+			   const bool constraintCell =false);
 
 }; // class CohesiveTopology
 

@@ -21,7 +21,8 @@
 #if !defined(pylith_faults_testeqkinsrc_hh)
 #define pylith_faults_testeqkinsrc_hh
 
-#include "pylith/utils/sievetypes.hh" // USES Mesh
+#include "pylith/faults/faultsfwd.hh" // USES EqKinSrc, BruneSlipFn
+#include "pylith/topology/topologyfwd.hh" // USES Mesh
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -29,12 +30,6 @@
 namespace pylith {
   namespace faults {
     class TestEqKinSrc;
-    class EqKinSrc;
-    class BruneSlipFn;
-
-    namespace _TestEqKinSrc {
-      struct DataStruct;
-    } // _TestEqKinSrc
   } // faults
 } // pylith
 
@@ -79,13 +74,15 @@ private :
 
   /** Initialize EqKinSrc.
    *
-   * @param faultMesh Fault mesh.
+   * @param mesh Finite-element mesh of domain.
+   * @param faultMesh Finite-element mesh of fault.
    * @param eqsrc Earthquake source.
    * @param slipfn Slip time function.
    * @param originTime Origin time for earthquake rupture.
    */
   static
-  void _initialize(ALE::Obj<Mesh>* faultMesh,
+  void _initialize(topology::Mesh* mesh,
+		   topology::SubMesh* faultMesh,
 		   EqKinSrc* eqsrc,
 		   BruneSlipFn* slipfn,
 		   const double originTime);

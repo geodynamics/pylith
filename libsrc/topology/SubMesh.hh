@@ -70,7 +70,7 @@ public :
    * @param label Label for vertices marking boundary.
    */
   void createSubMesh(const Mesh& mesh,
-		     const char* label); 
+		     const char* label);
 
   /** Get Sieve mesh.
    *
@@ -83,6 +83,12 @@ public :
    * @returns Sieve mesh.
    */
   ALE::Obj<SieveMesh>& sieveMesh(void);
+
+  /** Set coordinate system using mesh.
+   *
+   * @param mesh Finite-element mesh over domain.
+   */
+  void coordsys(const Mesh& mesh);
 
   /** Get coordinate system.
    *

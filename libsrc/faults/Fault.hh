@@ -78,7 +78,7 @@ public :
    * @param mesh PETSc mesh
    */
   virtual
-  void adjustTopology(const topology::Mesh& mesh,
+  void adjustTopology(topology::Mesh* mesh,
 		      const bool flipFault =false) = 0;
 
   /** Initialize fault. Determine orientation and setup boundary
@@ -127,7 +127,7 @@ public :
   virtual
   const topology::Field<topology::SubMesh>&
   cellField(const char* name,
-	    topology::SolutionFields& fields) = 0;
+	    const topology::SolutionFields& fields) = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
