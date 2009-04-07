@@ -21,6 +21,9 @@
 #if !defined(pylith_faults_teststepslipfn_hh)
 #define pylith_faults_teststepslipfn_hh
 
+#include "pylith/faults/faultsfwd.hh" // USES StepSlipFn
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
+
 #include <cppunit/extensions/HelperMacros.h>
 
 /// Namespace for pylith package

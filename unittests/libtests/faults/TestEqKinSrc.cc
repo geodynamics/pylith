@@ -21,6 +21,7 @@
 #include "pylith/faults/CohesiveTopology.hh" // USES CohesiveTopology
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -211,6 +212,7 @@ pylith::faults::TestEqKinSrc::_initialize(topology::Mesh* mesh,
 					  BruneSlipFn* slipfn,
 					  const double originTime)
 { // _initialize
+  CPPUNIT_ASSERT(0 != mesh);
   CPPUNIT_ASSERT(0 != faultMesh);
   CPPUNIT_ASSERT(0 != eqsrc);
   CPPUNIT_ASSERT(0 != slipfn);
