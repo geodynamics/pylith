@@ -26,7 +26,6 @@ CURRENT ISSUES/PRIORITIES
 
   (4) Faults
     Use visitors in FaultCohesiveKin
-    TestFaultCohesive (FaultCohesiveKin cases)
 
   (5) Add missing unit tests
 

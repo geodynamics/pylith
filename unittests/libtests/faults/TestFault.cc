@@ -42,7 +42,7 @@ pylith::faults::TestFault::testLabel(void)
   FaultCohesiveKin fault;
   fault.label(label.c_str());
   
-  CPPUNIT_ASSERT_EQUAL(label, fault.label());
+  CPPUNIT_ASSERT_EQUAL(label, std::string(fault.label()));
 } // testLabel
     
 

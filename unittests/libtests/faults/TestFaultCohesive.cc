@@ -14,7 +14,7 @@
 
 #include "TestFaultCohesive.hh" // Implementation of class methods
 
-//#include "pylith/faults/FaultCohesiveKin.hh" // USES FaultsCohesiveKin
+#include "pylith/faults/FaultCohesiveKin.hh" // USES FaultsCohesiveKin
 #include "pylith/faults/FaultCohesiveDyn.hh" // USES FaultsCohesiveDyn
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
@@ -422,7 +422,6 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8i(void)
   _testAdjustTopology(&fault, data, false);
 } // testAdjustTopologyHex8i
 
-#if 0
 // ----------------------------------------------------------------------
 // Test adjustTopology() with 1-D line element for Lagrange
 // multipliers.
@@ -477,7 +476,6 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8Lagrange(void)
   FaultCohesiveKin fault;
   _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyHex8Lagrange
-#endif
 
 // ----------------------------------------------------------------------
 // Test adjustTopology().
