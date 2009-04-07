@@ -21,9 +21,7 @@
 #if !defined(pylith_meshio_testdatawritervtk_hh)
 #define pylith_meshio_testdatawritervtk_hh
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
-
-#include <vector> // USES std::vector
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -113,14 +111,14 @@ private :
    * @param fields Vertex fields.
    */
   void
-  _createVertexFields(topology::Fields<topology::Mesh>* fields) const;
+  _createVertexFields(topology::Fields<topology::Field<topology::Mesh> >* fields) const;
 
   /** Create cell fields.
    *
    * @param fields Cell fields.
    */
   void
-  _createCellFields(topology::Fields<topology::Mesh>* fields) const;
+  _createCellFields(topology::Fields<topology::Field<topology::Mesh> >* fields) const;
 
 }; // class TestDataWriterVTK
 

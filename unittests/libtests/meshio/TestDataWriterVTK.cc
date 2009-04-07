@@ -16,6 +16,9 @@
 
 #include "data/DataWriterVTKData.hh" // USES DataWriterVTKData
 
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
 
 #include <string.h> // USES strcmp()
@@ -140,7 +143,7 @@ pylith::meshio::TestDataWriterVTK::testWriteVertexField(void)
 
   DataWriterVTK<topology::Mesh> writer;
 
-  topology::Fields<topology::Mesh> vertexFields(*_mesh);
+  topology::Fields<topology::Field<topology::Mesh> > vertexFields(*_mesh);
   _createVertexFields(&vertexFields);
 
   writer.filename(_data->vertexFilename);
@@ -160,10 +163,9 @@ pylith::meshio::TestDataWriterVTK::testWriteVertexField(void)
     writer.openTimeStep(t, *_mesh, label, id);
   } // else
   for (int i=0; i < nfields; ++i) {
-    writer.writeVertexField(t, _data->vertexFieldsInfo[i].name,
-			    vertexFields[i], 
-			    _data->vertexFieldsInfo[i].field_type,
-			    _mesh);
+    const topology::Field<topology::Mesh>& field = 
+      vertexFields.get(_data->vertexFieldsInfo[i].name);
+    writer.writeVertexField(t, field);
     CPPUNIT_ASSERT(writer._wroteVertexHeader);
     CPPUNIT_ASSERT(false == writer._wroteCellHeader);
   } // for
@@ -185,7 +187,7 @@ pylith::meshio::TestDataWriterVTK::testWriteCellField(void)
 
   DataWriterVTK<topology::Mesh> writer;
 
-  std::vector<topology::Field<topology::Mesh> > cellFields;
+  topology::Fields<topology::Field<topology::Mesh> > cellFields(*_mesh);
   _createCellFields(&cellFields);
 
   writer.filename(_data->cellFilename);
@@ -199,10 +201,9 @@ pylith::meshio::TestDataWriterVTK::testWriteCellField(void)
     writer.open(*_mesh, numTimeSteps);
     writer.openTimeStep(t, *_mesh);
     for (int i=0; i < nfields; ++i) {
-      writer.writeCellField(t, _data->cellFieldsInfo[i].name,
-                            cellFields[i], 
-                            _data->cellFieldsInfo[i].field_type,
-                            _mesh);
+      const topology::Field<topology::Mesh>& field = 
+	cellFields.get(_data->cellFieldsInfo[i].name);
+      writer.writeCellField(t, field);
       CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
       CPPUNIT_ASSERT(writer._wroteCellHeader);
     } // for
@@ -210,12 +211,11 @@ pylith::meshio::TestDataWriterVTK::testWriteCellField(void)
     const char* label = _data->cellsLabel;
     const int id = _data->labelId;
     writer.open(*_mesh, numTimeSteps, label, id);
-    writer.openTimeStep(t, _mesh, &cs, label, id);
+    writer.openTimeStep(t, *_mesh, label, id);
     for (int i=0; i < nfields; ++i) {
-      writer.writeCellField(t, _data->cellFieldsInfo[i].name,
-                            cellFields[i], 
-                            _data->cellFieldsInfo[i].field_type,
-                            _mesh, label, id);
+      const topology::Field<topology::Mesh>& field = 
+	cellFields.get(_data->cellFieldsInfo[i].name);
+      writer.writeCellField(t, field, label, id);
       CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
       CPPUNIT_ASSERT(writer._wroteCellHeader);
     } // for
@@ -259,7 +259,7 @@ void pylith::meshio::TestDataWriterVTK::testVtkFilename(void)
 // Create vertex fields.
 void
 pylith::meshio::TestDataWriterVTK::_createVertexFields(
-	     topology::Fields<topology::Mesh> >* fields) const
+	    topology::Fields<topology::Field<topology::Mesh> >* fields) const
 { // _createVertexFields
   CPPUNIT_ASSERT(0 != fields);
   CPPUNIT_ASSERT(0 != _mesh);
@@ -268,25 +268,27 @@ pylith::meshio::TestDataWriterVTK::_createVertexFields(
   try {
     const int nfields = _data->numVertexFields;
 
-    const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
+    const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = _mesh->sieveMesh();
     CPPUNIT_ASSERT(!sieveMesh.isNull());
-    const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
+    const ALE::Obj<topology::Mesh::SieveMesh::label_sequence>& vertices =
+      sieveMesh->depthStratum(0);
     CPPUNIT_ASSERT(!vertices.isNull());
-    const label_sequence::iterator verticesEnd = vertices->end();
+    const topology::Mesh::SieveMesh::label_sequence::iterator verticesEnd =
+      vertices->end();
 
     // Set vertex fields
     for (int i=0; i < nfields; ++i) {
-      const char* name = _data->VertexFieldsInfo[i].label;
+      const char* name = _data->vertexFieldsInfo[i].name;
       const int fiberDim = _data->vertexFieldsInfo[i].fiber_dim;
-      fields->add(name);
+      fields->add(name, name);
       topology::Field<topology::Mesh>& field = fields->get(name);
       field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
       field.allocate();
 
-      const ALE::Obj<RealSection>& section = field.section();
+      const ALE::Obj<topology::Mesh::RealSection>& section = field.section();
       CPPUNIT_ASSERT(!section.isNull());
       int ipt = 0;
-      for (label_sequence::iterator v_iter=vertices->begin();
+      for (topology::Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
 	   v_iter != verticesEnd;
 	   ++v_iter, ++ipt) {
 	const double* values = &_data->vertexFields[i][ipt*fiberDim];
@@ -303,7 +305,7 @@ pylith::meshio::TestDataWriterVTK::_createVertexFields(
 // Create cell fields.
 void
 pylith::meshio::TestDataWriterVTK::_createCellFields(
-                       topology::Fields<topology::Mesh> >* fields) const
+	     topology::Fields<topology::Field<topology::Mesh> >* fields) const
 { // _createCellFields
   CPPUNIT_ASSERT(0 != fields);
   CPPUNIT_ASSERT(0 != _mesh);
@@ -312,27 +314,32 @@ pylith::meshio::TestDataWriterVTK::_createCellFields(
   try {
     const int nfields = _data->numCellFields;
 
-    const ALE::Obj<Mesh::label_sequence>& cells = 
+    const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = _mesh->sieveMesh();
+    CPPUNIT_ASSERT(!sieveMesh.isNull());
+    const ALE::Obj<topology::Mesh::SieveMesh::label_sequence>& cells = 
       (0 == _data->cellsLabel) ? 
-      _mesh->depthStratum(1) :
-      _mesh->getLabelStratum(_data->cellsLabel, _data->labelId);
-    const Mesh::label_sequence::iterator cellsEnd = cells->end();
+      sieveMesh->depthStratum(1) :
+      sieveMesh->getLabelStratum(_data->cellsLabel, _data->labelId);
+    const topology::Mesh::SieveMesh::label_sequence::iterator cellsEnd = 
+      cells->end();
 
     // Set cell fields
-    fields->resize(nfields);
     for (int i=0; i < nfields; ++i) {
-      (*fields)[i] = new real_section_type(_mesh->comm(), _mesh->debug());
-      (*fields)[i]->setChart(_mesh->getSieve()->getChart());
+      const char* name = _data->cellFieldsInfo[i].name;
       const int fiberDim = _data->cellFieldsInfo[i].fiber_dim;
-      (*fields)[i]->setFiberDimension(cells, fiberDim);
-      _mesh->allocate((*fields)[i]);
+      fields->add(name, name);
+      topology::Field<topology::Mesh>& field = fields->get(name);
+      field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
+      field.allocate();
 
+      const ALE::Obj<topology::Mesh::RealSection>& section = field.section();
+      CPPUNIT_ASSERT(!section.isNull());
       int icell = 0;
-      for (Mesh::label_sequence::iterator c_iter=cells->begin();
+      for (topology::Mesh::SieveMesh::label_sequence::iterator c_iter=cells->begin();
 	   c_iter != cellsEnd;
 	   ++c_iter, ++icell) {
 	const double* values = &_data->cellFields[i][icell*fiberDim];
-	(*fields)[i]->updatePoint(*c_iter, values);
+	section->updatePoint(*c_iter, values);
       } // for
       CPPUNIT_ASSERT_EQUAL(_data->numCells, icell);
     } // for

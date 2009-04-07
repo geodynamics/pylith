@@ -23,6 +23,7 @@ pylith::meshio::DataWriterVTK<mesh_type>::clone(void) const {
 }
 
 // Set filename for VTK file.
+template<typename mesh_type>
 inline
 void
 pylith::meshio::DataWriterVTK<mesh_type>::filename(const char* filename) {
@@ -30,6 +31,7 @@ pylith::meshio::DataWriterVTK<mesh_type>::filename(const char* filename) {
 }
 
 // Set time format for time stamp in name of VTK file.
+template<typename mesh_type>
 inline
 void
 pylith::meshio::DataWriterVTK<mesh_type>::timeFormat(const char* format) {

@@ -44,8 +44,8 @@ pylith::meshio::DataWriterVTK<mesh_type>::~DataWriterVTK(void)
 // ----------------------------------------------------------------------
 // Copy constructor.
 template<typename mesh_type>
-pylith::meshio::DataWriterVTK<mesh_type>::DataWriterVTK(const DataWriterVTK& w) :
-  DataWriter(w),
+pylith::meshio::DataWriterVTK<mesh_type>::DataWriterVTK(const DataWriterVTK<mesh_type>& w) :
+  DataWriter<mesh_type>(w),
   _timeConstant(w._timeConstant),
   _filename(w._filename),
   _timeFormat(w._timeFormat),
@@ -85,28 +85,31 @@ pylith::meshio::DataWriterVTK<mesh_type>::openTimeStep(const double t,
 
     const std::string& filename = _vtkFilename(t);
 
-    err = PetscViewerCreate(mesh->comm(), &_viewer);
+    err = PetscViewerCreate(mesh.comm(), &_viewer);
     CHECK_PETSC_ERROR(err);
     err = PetscViewerSetType(_viewer, PETSC_VIEWER_ASCII);
     CHECK_PETSC_ERROR(err);
     err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);
     CHECK_PETSC_ERROR(err);
     err = PetscViewerFileSetName(_viewer, filename.c_str());
-    CHECK_PETSC_ERROR_MSF(err);
+    CHECK_PETSC_ERROR(err);
+
+    const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
     
     err = VTKViewer::writeHeader(_viewer);
     CHECK_PETSC_ERROR(err);
     //std::cout << "Wrote header for " << filename << std::endl;
-    err = VTKViewer::writeVertices(mesh, _viewer);
+    err = VTKViewer::writeVertices(sieveMesh, _viewer);
     CHECK_PETSC_ERROR(err);
     //std::cout << "Wrote vertices for " << filename << std::endl;
     if (0 == label) {
-      err = VTKViewer::writeElements(mesh, _viewer);
+      err = VTKViewer::writeElements(sieveMesh, _viewer);
       CHECK_PETSC_ERROR(err);
     } else {
       const std::string labelName = 
-	(mesh->hasLabel("censored depth")) ? "censored depth" : "depth";
-      err = VTKViewer::writeElements(mesh, label, labelId, labelName, 0, _viewer);      
+	(sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
+      err = VTKViewer::writeElements(sieveMesh, label, labelId, labelName,
+				     0, _viewer);      
       CHECK_PETSC_ERROR(err);
     } // if
     //std::cout << "Wrote elements for " << filename << std::endl;
@@ -150,17 +153,21 @@ pylith::meshio::DataWriterVTK<mesh_type>::writeVertexField(
 				       const double t,
 				       const topology::Field<mesh_type>& field)
 { // writeVertexField
+  typedef typename mesh_type::SieveMesh SieveMesh;
+  typedef typename mesh_type::RealSection RealSection;
+
   try {
-    const ALE::Obj<SieveMesh>& sievemesh = field.mesh().sieveMesh();
+    const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
     assert(!sieveMesh.isNull());
-    const ALE::Obj<SieveMesh::label_sequence>& vertices = sievMesh->depthStratum(0);
+    const ALE::Obj<typename SieveMesh::label_sequence>& vertices = 
+      sieveMesh->depthStratum(0);
     assert(!vertices.isNull());
     int rank = 0;
-    MPI_Comm_rank(field.mesh.comm(), &rank);
+    MPI_Comm_rank(field.mesh().comm(), &rank);
 
     const std::string labelName = 
       (sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
-    const ALE::Obj<SieveMesh::numbering_type>& numbering =
+    const ALE::Obj<typename SieveMesh::numbering_type>& numbering =
       sieveMesh->getFactory()->getNumbering(sieveMesh, labelName, 0);
     assert(!numbering.isNull());
 
@@ -170,16 +177,16 @@ pylith::meshio::DataWriterVTK<mesh_type>::writeVertexField(
     const int localFiberDim = 
       section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, 0)->begin());
     int fiberDim = 0;
-    MPI_Allreduce((void *) &localFiberDim, (void *) &fiberDim, 1, MPI_INT, MPI_MAX,
-		  field.mesh.comm());
+    MPI_Allreduce((void *) &localFiberDim, (void *) &fiberDim, 1, 
+		  MPI_INT, MPI_MAX, field.mesh().comm());
     assert(fiberDim > 0);
     const int enforceDim =
-      (field.vectorFieldType() != FieldBase::VECTOR) ? fiberDim : 3;
+      (field.vectorFieldType() != topology::FieldBase::VECTOR) ? fiberDim : 3;
 
     PetscErrorCode err = 0;
     if (!_wroteVertexHeader) {
       err = PetscViewerASCIIPrintf(_viewer, "POINT_DATA %d\n", 
-						  numbering->getGlobalSize());
+				   numbering->getGlobalSize());
       CHECK_PETSC_ERROR(err);
       _wroteVertexHeader = true;
     } // if
@@ -210,10 +217,13 @@ pylith::meshio::DataWriterVTK<mesh_type>::writeCellField(
 				       const char* label,
 				       const int labelId)
 { // writeCellField
+  typedef typename mesh_type::SieveMesh SieveMesh;
+  typedef typename mesh_type::RealSection RealSection;
+
   try {
-    const ALE::Obj<SieveMesh>& sievemesh = field.mesh().sieveMesh();
+    const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
     assert(!sieveMesh.isNull());
-    const ALE::Obj<SieveMesh::label_sequence>& cells = (0 == label) ?
+    const ALE::Obj<typename SieveMesh::label_sequence>& cells = (0 == label) ?
       sieveMesh->heightStratum(0) :
       sieveMesh->getLabelStratum(label, labelId);
     assert(!cells.isNull());
@@ -227,9 +237,9 @@ pylith::meshio::DataWriterVTK<mesh_type>::writeCellField(
     const std::string labelName = (0 == label) ?
       ((sieveMesh->hasLabel("censored depth")) ?
        "censored depth" : "depth") : label;
-    assert(!sieveMesh->getFactor().isNull());
-    const ALE::Obj<SieveMesh::numbering_type>& numbering = 
-      sieveMesh->getFactory()->getNumbering(mesh, labelName, depth);
+    assert(!sieveMesh->getFactory().isNull());
+    const ALE::Obj<typename SieveMesh::numbering_type>& numbering = 
+      sieveMesh->getFactory()->getNumbering(sieveMesh, labelName, depth);
     assert(!numbering.isNull());
     assert(!sieveMesh->getLabelStratum(labelName, depth).isNull());
     const ALE::Obj<RealSection>& section = field.section();
@@ -237,17 +247,17 @@ pylith::meshio::DataWriterVTK<mesh_type>::writeCellField(
     const int localFiberDim = 
       section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, depth)->begin());
     int fiberDim = 0;
-    MPI_Allreduce((void *) &localFiberDim, (void *) &fiberDim, 1, MPI_INT, MPI_MAX, 
-		  field.mesh()->comm());
+    MPI_Allreduce((void *) &localFiberDim, (void *) &fiberDim, 1, 
+		  MPI_INT, MPI_MAX, field.mesh().comm());
     assert(fiberDim > 0);
     const int enforceDim =
-      (field.vectorFieldType() != FieldBase::VECTOR) ? fiberDim : 3;
+      (field.vectorFieldType() != topology::FieldBase::VECTOR) ? fiberDim : 3;
 
     PetscErrorCode err = 0;
     if (!_wroteCellHeader) {
       err = PetscViewerASCIIPrintf(_viewer, "CELL_DATA %d\n", 
 				   numbering->getGlobalSize());
-      CHECK_PETSC_ERROR(err)l
+      CHECK_PETSC_ERROR(err);
       _wroteCellHeader = true;
     } // if
 
@@ -274,7 +284,7 @@ pylith::meshio::DataWriterVTK<mesh_type>::_vtkFilename(const double t) const
 { // _vtkFilename
   std::ostringstream filename;
   const int indexExt = _filename.find(".vtk");
-  if (_numTimeSteps > 0) {
+  if (DataWriter<mesh_type>::_numTimeSteps > 0) {
     // If data with multiple time steps, then add time stamp to filename
     char sbuffer[256];
     sprintf(sbuffer, _timeFormat.c_str(), t/_timeConstant);

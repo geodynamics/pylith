@@ -20,11 +20,11 @@
 #define pylith_meshio_datawritervtk_hh
 
 // Include directives ---------------------------------------------------
-#include "meshiofwd.hh" // forward declarations
+#include "DataWriter.hh" // ISA DataWriter
 
 // DataWriterVTK --------------------------------------------------------
 template<typename mesh_type>
-class pylith::meshio::DataWriterVTK : public DataWriter
+class pylith::meshio::DataWriterVTK : public DataWriter<mesh_type>
 { // DataWriterVTK
   friend class TestDataWriterVTK; // unit testing
 
@@ -41,7 +41,7 @@ public :
    *
    * @returns Copy of this.
    */
-  DataWriter* clone(void) const;
+  DataWriter<mesh_type>* clone(void) const;
 
   /** Set filename for VTK file.
    *
