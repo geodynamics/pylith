@@ -23,12 +23,12 @@ check_PROGRAMS = testfaults
 testfaults_SOURCES = \
 	TestFaultCohesive.cc \
 	TestStepSlipFn.cc \
+	TestConstRateSlipFn.cc \
+	TestBruneSlipFn.cc \
+	TestLiuCosSlipFn.cc \
 	TestEqKinSrc.cc \
 	test_faults.cc
 
-#	TestBruneSlipFn.cc \
-#	TestLiuCosSlipFn.cc \
-#	TestConstRateSlipFn.cc \
 #	TestFault.cc \
 #	TestFaultCohesiveKin.cc \
 #	TestFaultCohesiveKinLine2.cc \

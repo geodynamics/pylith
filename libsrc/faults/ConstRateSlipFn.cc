@@ -194,7 +194,7 @@ pylith::faults::ConstRateSlipFn::slip(topology::Field<topology::SubMesh>* slip,
 
   // Get sections
   const topology::Field<topology::SubMesh>& slipRate = 
-    _parameters->get("final slip");
+    _parameters->get("slip rate");
   const ALE::Obj<RealSection>& slipRateSection = slipRate.section();
   assert(!slipRateSection.isNull());
   const topology::Field<topology::SubMesh>& slipTime =
@@ -242,7 +242,7 @@ pylith::faults::ConstRateSlipFn::slipIncr(
 
   // Get sections
   const topology::Field<topology::SubMesh>& slipRate = 
-    _parameters->get("final slip");
+    _parameters->get("slip rate");
   const ALE::Obj<RealSection>& slipRateSection = slipRate.section();
   assert(!slipRateSection.isNull());
   const topology::Field<topology::SubMesh>& slipTime =

@@ -36,6 +36,7 @@ typedef pylith::topology::SubMesh::RealSection RealSection;
 pylith::faults::LiuCosSlipFn::LiuCosSlipFn(void) :
   _slipTimeVertex(0),
   _riseTimeVertex(0),
+  _parameters(0),
   _dbFinalSlip(0),
   _dbSlipTime(0),
   _dbRiseTime(0)

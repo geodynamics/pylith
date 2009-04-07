@@ -213,7 +213,6 @@ pylith::faults::TestStepSlipFn::testSlip(void)
 
   const double tolerance = 1.0e-06;
   int iPoint = 0;
-
   const ALE::Obj<RealSection>& slipSection = slip.section();
   CPPUNIT_ASSERT(!slipSection.isNull());
   for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
