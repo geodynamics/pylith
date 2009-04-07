@@ -159,7 +159,7 @@ public :
    */
   const topology::Field<topology::SubMesh>&
   cellField(const char* name,
-	      const topology::SolutionFields& fields);
+	    const topology::SolutionFields& fields);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -229,7 +229,8 @@ private :
   topology::Fields<topology::Field<topology::SubMesh> >* _fields;
 
   /// Map label of cohesive cell to label of cells in fault mesh.
-  std::map<Mesh::point_type, Mesh::point_type> _cohesiveToFault;
+  std::map<topology::Mesh::SieveMesh::point_type, 
+	   topology::SubMesh::SieveMesh::point_type> _cohesiveToFault;
 
 }; // class FaultCohesiveKin
 

@@ -278,7 +278,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     iohandler.filename(_data->meshFilename);
     iohandler.read(mesh);
 
-    // Set up coordinates
+    // Set coordinate system
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim(mesh->dimension());
     cs.initialize();

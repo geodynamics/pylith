@@ -19,17 +19,16 @@
 
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
-#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
-#include "pylith/topology/FieldOps.hh" // USES FieldOps
-#include "pylith/utils/array.hh" // USES double_array
-#include <petscmat.h> // USES PETSc Mat
+
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/spatialdb/SpatialDB.hh" // USES CoordSys
+#include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
-
-#include <Completion.hh> // USES completeSection
-#include <Selection.hh> // Algorithms for submeshes
 
 #include <cmath> // USES pow(), sqrt()
 #include <strings.h> // USES strcasecmp()
@@ -38,6 +37,11 @@
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
+typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -90,13 +94,38 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
     throw std::runtime_error("Normal direction for fault orientation must be "
 			     "a vector with 3 components.");
 
-  CohesiveTopology::createParallel(&_faultMesh, &_cohesiveToFault, mesh, id(),
-				   _useLagrangeConstraints());
+  CohesiveTopology::createFaultParallel(_faultMesh, &_cohesiveToFault, 
+					mesh, id(), _useLagrangeConstraints());
   //_faultMesh->getLabel("height")->view("Fault mesh height");
   //_faultMesh->view("FAULT MESH");
 
   delete _fields; 
-  _fields = new topology::Fields<topology::Field<topology::SubMesh> >;
+  _fields = new topology::Fields<topology::Field<topology::SubMesh> >(*_faultMesh);
+
+  const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
+  for (srcs_type::iterator s_iter=_eqSrcs.begin(); 
+       s_iter != srcsEnd; 
+       ++s_iter) {
+    EqKinSrc* src = s_iter->second;
+    assert(0 != src);
+    src->initialize(*_faultMesh, *_normalizer);
+  } // for
+
+  // Allocate slip field
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
+    faultSieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  _fields->add("slip", "slip");
+  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
+  slip.newSection(vertices, cs->spaceDim());
+  slip.allocate();
+
+  // Allocate cumulative slip field
+  _fields->add("cumulative slip", "cumulative_slip");
+  topology::Field<topology::SubMesh>& cumSlip = _fields->get("cumulative slip");
+  cumSlip.newSection(slip);
+  cumSlip.allocate();
 
   // Setup pseudo-stiffness of cohesive cells to improve conditioning
   // of Jacobian matrix
@@ -107,31 +136,6 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
 
   // Compute tributary area for each vertex in fault mesh.
   _calcArea();
-
-  const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
-  for (srcs_type::iterator s_iter=_eqSrcs.begin(); 
-       s_iter != srcsEnd; 
-       ++s_iter) {
-    EqKinSrc* src = s_iter->second;
-    assert(0 != src);
-    src->initialize(_faultMesh, *_normalizer);
-  } // for
-
-  // Allocate slip field
-  const ALE::Obj<SubMesh::SieveMesh>& faultSieveMesh = _faultMesh->sieveMesh();
-  const ALE::Obj<SubMesh::label_sequence>& vertices =
-    _faultSieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  _fields->add("slip");
-  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  slip.newSection(vertices, cs->spaceDim());
-  slip.allocate();
-
-  // Allocate cumulative slip field
-  _fields->add("cumulative slip");
-  topology::Field<topology::SubMesh>& cumSlip = _fields->get("cumulative slip");
-  cumSlip.newSection(slip);
-  cumSlip.allocate();
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -143,6 +147,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 			     const double t,
 			     topology::SolutionFields* const fields)
 { // integrateResidual
+#if 0
   assert(0 != fields);
 
   // Cohesive cells with normal vertices i and j, and constraint
@@ -276,6 +281,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 
   // FIX THIS
   PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*7);
+#endif
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -283,12 +289,11 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 // not require assembly across cells, vertices, or processors.
 void
 pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
-				const ALE::Obj<real_section_type>& residual,
-				const double t,
-				topology::FieldsManager* const fields,
-				const ALE::Obj<Mesh>& mesh,
-				const spatialdata::geocoords::CoordSys* cs)
+			    const topology::Field<topology::Mesh>& residual,
+			    const double t,
+			    topology::SolutionFields* const fields)
 { // integrateResidualAssembled
+#if 0
   assert(!residual.isNull());
   assert(0 != fields);
   assert(!mesh.isNull());
@@ -344,6 +349,7 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
       assert(0 != slip);
       residual->updatePoint(vertexMesh, slip);
     } // if
+#endif
 } // integrateResidualAssembled
 
 // ----------------------------------------------------------------------
@@ -351,11 +357,11 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
 // require assembly across cells, vertices, or processors.
 void
 pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
-				    PetscMat* mat,
-				    const double t,
-				    topology::FieldsManager* const fields,
-				    const ALE::Obj<Mesh>& mesh)
+				       topology::Jacobian* jacobian,
+				       const double t,
+				       topology::SolutionFields* const fields)
 { // integrateJacobianAssembled
+#if 0
   assert(0 != mat);
   assert(0 != fields);
   assert(!mesh.isNull());
@@ -485,6 +491,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
   } // for
   PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*4);
   _needNewJacobian = false;
+#endif
 } // integrateJacobianAssembled
   
 // ----------------------------------------------------------------------
@@ -497,8 +504,8 @@ pylith::faults::FaultCohesiveKin::updateStateVars(const double t,
   assert(0 != _fields);
 
   // Update cumulative slip
-  topology::Field<topology::SubMesh>& cumSlip = fields->get("cumulative slip");
-  topology::Field<topology::SubMesh>& slip = fields->get("slip");
+  topology::Field<topology::SubMesh>& cumSlip = _fields->get("cumulative slip");
+  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
   if (!_useSolnIncr)
     cumSlip.zero();
   cumSlip += slip;
@@ -535,15 +542,14 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(
   } // if
 
   const int numCorners = _quadrature->refGeometry().numCorners();
-  const ALE::Obj<Mesh::SieveMesh::label_sequence>& cells = 
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", id());
   assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsBegin = cells->begin();
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  for (Mesh::label_sequence::iterator c_iter=cellsBegin;
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
-    const int cellNumCorners = mesh->getNumCellCorners(*c_iter);
+    const int cellNumCorners = sieveMesh->getNumCellCorners(*c_iter);
     if (3*numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Number of vertices in reference cell (" << numCorners 
@@ -557,13 +563,12 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(
 
 // ----------------------------------------------------------------------
 // Get vertex field associated with integrator.
-const ALE::Obj<pylith::real_section_type>&
+const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveKin::vertexField(
-				    VectorFieldEnum* fieldType,
-				    const char* name,
-				    const ALE::Obj<Mesh>& mesh,
-				    topology::FieldsManager* fields)
+				  const char* name,
+				  const topology::SolutionFields& fields)
 { // vertexField
+#if 0
   assert(!_faultMesh.isNull());
   assert(!_orientation.isNull());
   assert(0 != _normalizer);
@@ -662,16 +667,17 @@ pylith::faults::FaultCohesiveKin::vertexField(
   } // if
 
   return _bufferTmp;
+#endif
 } // vertexField
 
 // ----------------------------------------------------------------------
 // Get cell field associated with integrator.
-const ALE::Obj<pylith::real_section_type>&
-pylith::faults::FaultCohesiveKin::cellField(VectorFieldEnum* fieldType,
-					    const char* name,
-					    const ALE::Obj<Mesh>& mesh,
-					    topology::FieldsManager* fields)
+const pylith::topology::Field<pylith::topology::SubMesh>&
+pylith::faults::FaultCohesiveKin::cellField(
+				      const char* name,
+				      const topology::SolutionFields& fields)
 { // cellField
+#if 0
   // Should not reach this point if requested field was found
   std::ostringstream msg;
   msg << "Request for unknown cell field '" << name
@@ -680,6 +686,7 @@ pylith::faults::FaultCohesiveKin::cellField(VectorFieldEnum* fieldType,
 
   // Return generic section to satisfy member function definition.
   //return _outputCellVector;
+#endif
 } // cellField
 
 // ----------------------------------------------------------------------
@@ -688,6 +695,7 @@ void
 pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
 						   const double_array& normalDir)
 { // _calcOrientation
+#if 0
   assert(!_faultMesh.isNull());
 
   // Get vertices in fault mesh
@@ -844,6 +852,7 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
   } // if
 
   //_orientation->view("ORIENTATION");
+#endif
 } // _calcOrientation
 
 // ----------------------------------------------------------------------
@@ -852,6 +861,7 @@ pylith::faults::FaultCohesiveKin::_calcConditioning(
 				 const spatialdata::geocoords::CoordSys* cs,
 				 spatialdata::spatialdb::SpatialDB* matDB)
 { // _calcConditioning
+#if 0
   assert(0 != cs);
   assert(0 != matDB);
   assert(!_faultMesh.isNull());
@@ -916,12 +926,14 @@ pylith::faults::FaultCohesiveKin::_calcConditioning(
   PetscLogFlops(count * 2);
 
   matDB->close();
+#endif
 } // _calcConditioning
 
 // ----------------------------------------------------------------------
 void
 pylith::faults::FaultCohesiveKin::_calcArea(void)
 { // _calcArea
+#if 0
   assert(!_faultMesh.isNull());
 
   // Get vertices in fault mesh
@@ -995,6 +1007,7 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   _faultMesh->getSendOverlap()->view("Send fault overlap");
   _faultMesh->getRecvOverlap()->view("Receive fault overlap");
 #endif
+#endif
 } // _calcArea
 
 // ----------------------------------------------------------------------
@@ -1002,10 +1015,10 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
 // NOTE: We must convert vertex labels to fault vertex labels
 void
 pylith::faults::FaultCohesiveKin::_calcTractionsChange(
-				 ALE::Obj<real_section_type>* tractions,
-				 const ALE::Obj<Mesh>& mesh,
-				 const ALE::Obj<real_section_type>& solution)
+			     topology::Field<topology::SubMesh>* tractions,
+			     const topology::Field<topology::Mesh>& solution)
 { // _calcTractionsChange
+#if 0
   assert(0 != tractions);
   assert(!mesh.isNull());
   assert(!solution.isNull());
@@ -1096,6 +1109,7 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   _area->view("AREA");
   _pseudoStiffness->view("CONDITIONING");
   (*tractions)->view("TRACTIONS");
+#endif
 #endif
 } // _calcTractionsChange
 

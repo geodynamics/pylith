@@ -56,8 +56,6 @@ CURRENT ISSUES/PRIORITIES
 
   libtests/bc/TestDirichletBoundary::testVertexField()
   libtests/bc/TestDirichletBoundary::testBoundaryMesh()
-  libtests/bc/TestBoundaryMesh
-    requires faults to be working
 
   pytests/bc/TestDirichletBoundary
   pytests/bc/TestNeumann (output)

@@ -49,14 +49,14 @@ testbc_SOURCES = \
 	TestAbsorbingDampersQuad4.cc \
 	TestAbsorbingDampersTet4.cc \
 	TestAbsorbingDampersHex8.cc \
+	TestBoundaryMesh.cc \
+	TestBoundaryMeshTri3.cc \
+	TestBoundaryMeshQuad4.cc \
+	TestBoundaryMeshTet4.cc \
+	TestBoundaryMeshHex8.cc \
 	test_bc.cc
 
 
-#	TestBoundaryMesh.cc \
-#	TestBoundaryMeshTri3.cc \
-#	TestBoundaryMeshQuad4.cc \
-#	TestBoundaryMeshTet4.cc \
-#	TestBoundaryMeshHex8.cc
 
 noinst_HEADERS = \
 	TestAbsorbingDampers.hh \
