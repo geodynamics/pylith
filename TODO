@@ -50,6 +50,8 @@ CURRENT ISSUES/PRIORITIES
     Add check before calling newSection() when want to enforce at
     least 1 value.
 
+    Distribution debug (dump VTK) needs Nondimensional
+
   libsrc/materials
     Maxwell materials
 
@@ -136,6 +138,8 @@ Fault friction
 Uniform refinement (debug, check, all cell types)
 
 Cuthill-McKee ordering of vertices
+
+Cleanup SlipTimeFn tests (refactor test/initialize stuff)
 
 ======================================================================
 KNOWN DEFICIENCIES

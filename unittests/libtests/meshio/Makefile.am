@@ -27,11 +27,11 @@ testmeshio_SOURCES = \
 	TestCellFilterAvg.cc \
 	TestVertexFilterVecNorm.cc \
 	TestDataWriterVTK.cc \
+	TestDataWriterVTKMesh.cc \
+	TestDataWriterVTKMeshLine2.cc \
 	test_meshio.cc
 
 
-#	TestDataWriterVTKMesh.cc \
-#	TestDataWriterVTKMeshLine2.cc \
 #	TestDataWriterVTKMeshTri3.cc \
 #	TestDataWriterVTKMeshQuad4.cc \
 #	TestDataWriterVTKMeshTet4.cc \

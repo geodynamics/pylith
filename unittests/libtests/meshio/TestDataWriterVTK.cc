@@ -41,7 +41,7 @@ pylith::meshio::TestDataWriterVTK::setUp(void)
 void
 pylith::meshio::TestDataWriterVTK::tearDown(void)
 { // tearDown
-  _mesh = 0;
+  delete _mesh; _mesh = 0;
   delete _data; _data = 0;
 } // tearDown
 
