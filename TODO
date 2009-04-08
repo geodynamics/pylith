@@ -107,7 +107,7 @@ CURRENT ISSUES/PRIORITIES
 
 10. PETSc SNES nonlinear solvers [Matt]
 
-11. Add call to unitparser in SpatialData utils
+11. Create spatialdata/units/UnitsParser (call Pyre units parser).
 
 12. Add ability to use symmetric matrix, set block size (default is 1)
 
