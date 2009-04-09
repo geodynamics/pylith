@@ -1,0 +1,112 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_materials_maxwellplanestrain_hh)
+#error "MaxwellPlaneStrain.icc can only be included from MaxwellPlaneStrain.hh"
+#endif
+
+#include <assert.h> // USES assert()
+#include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
+
+// Set current time step.
+inline
+void
+pylith::materials::MaxwellPlaneStrain::timeStep(const double dt) {
+  // Jacobian needs to be reformed if the time step size changes.
+  if (_dt > 0.0 && dt != _dt)
+    _needNewJacobian = true;
+  _dt = dt;
+} // timeStep
+
+// Set whether elastic or inelastic constitutive relations are used.
+inline
+void
+pylith::materials::MaxwellPlaneStrain::useElasticBehavior(const bool flag) {
+  if (flag) {
+    _calcStressFn = 
+      &pylith::materials::MaxwellPlaneStrain::_calcStressElastic;
+    _calcElasticConstsFn = 
+      &pylith::materials::MaxwellPlaneStrain::_calcElasticConstsElastic;
+    _updatePropertiesFn = 
+      &pylith::materials::MaxwellPlaneStrain::_updatePropertiesElastic;
+  } else {
+    _calcStressFn = 
+      &pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic;
+    _calcElasticConstsFn = 
+      &pylith::materials::MaxwellPlaneStrain::_calcElasticConstsViscoelastic;
+    _updatePropertiesFn = 
+      &pylith::materials::MaxwellPlaneStrain::_updatePropertiesViscoelastic;
+  } // if/else
+} // useElasticBehavior
+
+// Get flag indicating whether material implements an empty
+inline
+bool
+pylith::materials::MaxwellPlaneStrain::usesUpdateProperties(void) const {
+  return true;
+} // usesUpdateProperties
+
+// Compute stress tensor from parameters.
+inline
+void
+pylith::materials::MaxwellPlaneStrain::_calcStress(double* const stress,
+						   const int stressSize,
+						   const double* parameters,
+						   const int numParams,
+						   const double* totalStrain,
+						   const int strainSize,
+						   const double* initialState,
+						   const int initialStateSize,
+						   const bool computeStateVars) {
+  assert(0 != _calcStressFn);
+  CALL_MEMBER_FN(*this, _calcStressFn)(stress, stressSize, 
+				       parameters, numParams,
+				       totalStrain, strainSize,
+				       initialState, initialStateSize,
+				       computeStateVars);
+} // _calcStress
+
+// Compute derivatives of elasticity matrix from parameters.
+inline
+void
+pylith::materials::MaxwellPlaneStrain::_calcElasticConsts(
+						 double* const elasticConsts,
+						 const int numElasticConsts,
+						 const double* parameters,
+						 const int numParams,
+						 const double* totalStrain,
+						 const int strainSize,
+						 const double* initialState,
+						 const int initialStateSize) {
+  assert(0 != _calcElasticConstsFn);
+  CALL_MEMBER_FN(*this, _calcElasticConstsFn)(elasticConsts, numElasticConsts,
+					      parameters, numParams,
+					      totalStrain, strainSize,
+					      initialState, initialStateSize);
+} // _calcElasticConsts
+
+// Update state variables after solve.
+inline
+void
+pylith::materials::MaxwellPlaneStrain::_updateProperties(double* const parameters,
+						    const int numParams,
+						    const double* totalStrain,
+						    const int strainSize,
+						    const double* initialState,
+						    const int initialStateSize) {
+  assert(0 != _updatePropertiesFn);
+  CALL_MEMBER_FN(*this, _updatePropertiesFn)(parameters, numParams,
+					     totalStrain, strainSize,
+					     initialState, initialStateSize);
+} // _updateProperties
+
+// End of file 
