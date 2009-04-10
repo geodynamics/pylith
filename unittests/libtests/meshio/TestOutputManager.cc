@@ -14,16 +14,18 @@
 
 #include "TestOutputManager.hh" // Implementation of class methods
 
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/meshio/OutputManager.hh"
 
 #include "TestDataWriterVTK.hh" // USES TestDataWriterVTK::checkFile()
 
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/CellFilterAvg.hh" // USES CellFilterAvg
 #include "pylith/meshio/VertexFilterVecNorm.hh" // USES VertexFilterVecNorm
 #include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
 
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/feassemble/Quadrature2D.hh" // USES Quadrature
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
@@ -31,6 +33,10 @@
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestOutputManager );
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
 // Test constructor
@@ -107,11 +113,10 @@ pylith::meshio::TestOutputManager::testOpenClose(void)
 { // testOpenClose
   OutputManager<topology::Mesh> manager;
 
+  topology::Mesh mesh;
   MeshIOAscii iohandler;
-  ALE::Obj<Mesh> mesh;
   iohandler.filename("data/tri3.mesh");
   iohandler.read(&mesh);
-  CPPUNIT_ASSERT(!mesh.isNull());
 
   spatialdata::geocoords::CSCart cs;
   const int numTimeSteps = 1;
@@ -121,7 +126,7 @@ pylith::meshio::TestOutputManager::testOpenClose(void)
   DataWriterVTK<topology::Mesh> writer;
   manager.writer(&writer);
 
-  manager.open(mesh, &cs, numTimeSteps);
+  manager.open(mesh, numTimeSteps);
   manager.close();
 } // testOpenClose
 
@@ -132,11 +137,10 @@ pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
 { // testOpenCloseTimeStep
   OutputManager<topology::Mesh> manager;
 
+  topology::Mesh mesh;
   MeshIOAscii iohandler;
-  ALE::Obj<Mesh> mesh;
   iohandler.filename("data/tri3.mesh");
   iohandler.read(&mesh);
-  CPPUNIT_ASSERT(!mesh.isNull());
 
   spatialdata::geocoords::CSCart cs;
   const int numTimeSteps = 1;
@@ -149,8 +153,8 @@ pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
   writer.timeFormat(timeFormat);
   manager.writer(&writer);
   
-  manager.open(mesh, &cs, numTimeSteps);
-  manager.openTimeStep(t, mesh, &cs);
+  manager.open(mesh, numTimeSteps);
+  manager.openTimeStep(t, mesh);
   manager.closeTimeStep();
   manager.close();
 
@@ -162,8 +166,6 @@ pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
 void
 pylith::meshio::TestOutputManager::testAppendVertexField(void)
 { // testAppendVertexField
-  OutputManager<topology::Mesh> manager;
-
   const char* meshFilename = "data/tri3.mesh";
   const int fiberDim = 2;
   const int nvertices = 4;
@@ -177,29 +179,34 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
     4.1, 4.2
   };
 
+  topology::Mesh mesh;
   MeshIOAscii iohandler;
-  ALE::Obj<Mesh> mesh;
   iohandler.filename(meshFilename);
   iohandler.read(&mesh);
 
   // Set vertex field
-  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
 
-  ALE::Obj<real_section_type> field = 
-    new real_section_type(mesh->comm(), mesh->debug());
-  field->setChart(mesh->getSieve()->getChart());
-  field->setFiberDimension(vertices, fiberDim);
-  mesh->allocate(field);
+  topology::Field<topology::Mesh> field(mesh);
+  field.newSection(vertices, fiberDim);
+  field.allocate();
+  field.label(label);
+  field.vectorFieldType(fieldType);
+  const ALE::Obj<RealSection>& section = field.section();
+  CPPUNIT_ASSERT(!section.isNull());
 
   CPPUNIT_ASSERT_EQUAL(nvertices, int(vertices->size()));
-
   int ipt = 0;
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++ipt) {
     const double* values = &fieldValues[ipt*fiberDim];
-    field->updatePoint(*v_iter, values);
+    section->updatePoint(*v_iter, values);
   } // for
 
   spatialdata::geocoords::CSCart cs;
@@ -209,27 +216,28 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
   const char* filenameRootF = "output_vertex_filter.vtk";
   const char* timeFormat = "%3.1f";
 
-  DataWriterVTK writer;
+  DataWriterVTK<topology::Mesh> writer;
   writer.filename(filenameRoot);
   writer.timeFormat(timeFormat);
+
+  OutputManager<topology::Mesh> manager;
   manager.writer(&writer);
-  
-  manager.open(mesh, &cs, numTimeSteps);
-  manager.openTimeStep(t, mesh, &cs);
-  manager.appendVertexField(t, fieldName, field, fieldType, mesh);
+  manager.open(mesh, numTimeSteps);
+  manager.openTimeStep(t, mesh);
+  manager.appendVertexField(t, field);
   manager.closeTimeStep();
   manager.close();
 
   TestDataWriterVTK::checkFile(filenameRoot, t, timeFormat);
 
-  VertexFilterVecNorm filter;
+  VertexFilterVecNorm<topology::Mesh> filter;
   manager.vertexFilter(&filter);
   writer.filename(filenameRootF);
   manager.writer(&writer);
   
-  manager.open(mesh, &cs, numTimeSteps);
-  manager.openTimeStep(t, mesh, &cs);
-  manager.appendVertexField(t, fieldName, field, fieldType, mesh);
+  manager.open(mesh, numTimeSteps);
+  manager.openTimeStep(t, mesh);
+  manager.appendVertexField(t, field);
   manager.closeTimeStep();
   manager.close();
 
@@ -241,42 +249,46 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
 void
 pylith::meshio::TestOutputManager::testAppendCellField(void)
 { // testAppendCellField
-  OutputManager manager;
 
   const char* meshFilename = "data/tri3.mesh";
   const int fiberDim = 2;
   const int ncells = 2;
-  const char* fieldName = "field data";
-  const topology::FieldBase::VectorFieldEnum fieldType = OTHER_FIELD;
+  const char* label = "field data";
+  const topology::FieldBase::VectorFieldEnum fieldType = 
+    topology::FieldBase::MULTI_SCALAR;
   const double fieldValues[] = {
     1.1, 1.2,
     2.1, 2.2,
   };
 
+  topology::Mesh mesh;
   MeshIOAscii iohandler;
-  ALE::Obj<Mesh> mesh;
   iohandler.filename(meshFilename);
   iohandler.read(&mesh);
-  CPPUNIT_ASSERT(!mesh.isNull());
 
   // Set cell field
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->heightStratum(0);
+  CPPUNIT_ASSERT(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
-  ALE::Obj<real_section_type> field = 
-    new real_section_type(mesh->comm(), mesh->debug());
-  field->setChart(mesh->getSieve()->getChart());
-  field->setFiberDimension(cells, fiberDim);
-  mesh->allocate(field);
+  topology::Field<topology::Mesh> field(mesh);
+  field.newSection(cells, fiberDim);
+  field.allocate();
+  field.label(label);
+  field.vectorFieldType(fieldType);
+  const ALE::Obj<RealSection>& section = field.section();
+  CPPUNIT_ASSERT(!section.isNull());
 
   CPPUNIT_ASSERT_EQUAL(ncells, int(cells->size()));
-
   int ipt = 0;
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter, ++ipt) {
     const double* values = &fieldValues[ipt*fiberDim];
-    field->updatePoint(*c_iter, values);
+    section->updatePoint(*c_iter, values);
   } // for
 
   spatialdata::geocoords::CSCart cs;
@@ -286,14 +298,15 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
   const char* filenameRootF = "output_cell_filter.vtk";
   const char* timeFormat = "%3.1f";
 
-  DataWriterVTK writer;
+  DataWriterVTK<topology::Mesh> writer;
   writer.filename(filenameRoot);
   writer.timeFormat(timeFormat);
-  manager.writer(&writer);
 
-  manager.open(mesh, &cs, numTimeSteps);
-  manager.openTimeStep(t, mesh, &cs);
-  manager.appendCellField(t, fieldName, field, fieldType, mesh);
+  OutputManager<topology::Mesh> manager;
+  manager.writer(&writer);
+  manager.open(mesh, numTimeSteps);
+  manager.openTimeStep(t, mesh);
+  manager.appendCellField(t, field);
   manager.closeTimeStep();
   manager.close();
 
@@ -321,20 +334,22 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
   const double quadWts[] = { 1.5, 0.5 };
   const double minJacobian = 1.0;
 
-  feassemble::Quadrature2D quadrature;
-  quadrature.initialize(basis, basisDerivRef, quadPtsRef, quadWts,
-			cellDim, numBasis, numQuadPts, spaceDim);
+  feassemble::Quadrature<topology::Mesh> quadrature;
+  quadrature.initialize(basis, numQuadPts, numBasis, 
+			basisDerivRef, numQuadPts, numBasis, cellDim,
+			quadPtsRef, numQuadPts, cellDim,
+			quadWts, numQuadPts,
+			spaceDim);
 
-
-  CellFilterAvg filter;
+  CellFilterAvg<topology::Mesh> filter;
   filter.quadrature(&quadrature);
   manager.cellFilter(&filter);
   writer.filename(filenameRootF);
   manager.writer(&writer);
   
-  manager.open(mesh, &cs, numTimeSteps);
-  manager.openTimeStep(t, mesh, &cs);
-  manager.appendCellField(t, fieldName, field, fieldType, mesh);
+  manager.open(mesh, numTimeSteps);
+  manager.openTimeStep(t, mesh);
+  manager.appendCellField(t, field);
   manager.closeTimeStep();
   manager.close();
 

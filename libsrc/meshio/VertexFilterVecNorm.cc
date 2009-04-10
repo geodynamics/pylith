@@ -34,7 +34,8 @@ pylith::meshio::VertexFilterVecNorm<mesh_type>::~VertexFilterVecNorm(void)
 // Copy constructor.
 template<typename mesh_type>
 pylith::meshio::VertexFilterVecNorm<mesh_type>::VertexFilterVecNorm(const VertexFilterVecNorm& f) :
-  VertexFilter<mesh_type>(f)
+  VertexFilter<mesh_type>(f),
+  _fieldVecNorm(0)
 { // copy constructor
 } // copy constructor
 
