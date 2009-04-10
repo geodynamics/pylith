@@ -29,13 +29,13 @@ testmeshio_SOURCES = \
 	TestDataWriterVTK.cc \
 	TestDataWriterVTKMesh.cc \
 	TestDataWriterVTKMeshLine2.cc \
+	TestDataWriterVTKMeshTri3.cc \
+	TestDataWriterVTKMeshQuad4.cc \
+	TestDataWriterVTKMeshTet4.cc \
+	TestDataWriterVTKMeshHex8.cc \
 	test_meshio.cc
 
 
-#	TestDataWriterVTKMeshTri3.cc \
-#	TestDataWriterVTKMeshQuad4.cc \
-#	TestDataWriterVTKMeshTet4.cc \
-#	TestDataWriterVTKMeshHex8.cc \
 #	TestDataWriterVTKSubMeshLine2.cc \
 #	TestDataWriterVTKSubMeshTri3.cc \
 #	TestDataWriterVTKSubMeshQuad4.cc \

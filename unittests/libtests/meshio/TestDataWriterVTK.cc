@@ -284,6 +284,7 @@ pylith::meshio::TestDataWriterVTK::_createVertexFields(
       topology::Field<topology::Mesh>& field = fields->get(name);
       field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
       field.allocate();
+      field.vectorFieldType(_data->vertexFieldsInfo[i].field_type);
 
       const ALE::Obj<topology::Mesh::RealSection>& section = field.section();
       CPPUNIT_ASSERT(!section.isNull());
@@ -331,6 +332,7 @@ pylith::meshio::TestDataWriterVTK::_createCellFields(
       topology::Field<topology::Mesh>& field = fields->get(name);
       field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
       field.allocate();
+      field.vectorFieldType(_data->cellFieldsInfo[i].field_type);
 
       const ALE::Obj<topology::Mesh::RealSection>& section = field.section();
       CPPUNIT_ASSERT(!section.isNull());

@@ -44,9 +44,9 @@ const int pylith::meshio::DataWriterVTKDataSubMeshTet4::_numVertices = 11;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataSubMeshTet4::_vertexFields[] = {
-  { "displacements", VECTOR_FIELD, 3 },
-  { "pressure", SCALAR_FIELD, 1 },
-  { "other", OTHER_FIELD, 2 },
+  { "displacements", topology::FieldBase::VECTOR, 3 },
+  { "pressure", topology::FieldBase::SCALAR, 1 },
+  { "other", topology::FieldBase::OTHER, 2 },
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshTet4::_vertexField0[] = {
   1.1, 2.2, 3.3,
@@ -83,9 +83,9 @@ const int pylith::meshio::DataWriterVTKDataSubMeshTet4::_numCells = 2;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataSubMeshTet4::_cellFields[] = {
-  { "traction", VECTOR_FIELD, 3 },
-  { "pressure", SCALAR_FIELD, 1 },
-  { "other", TENSOR_FIELD, 6 },
+  { "traction", topology::FieldBase::VECTOR, 3 },
+  { "pressure", topology::FieldBase::SCALAR, 1 },
+  { "other", topology::FieldBase::TENSOR, 6 },
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshTet4::_cellField0[] = {
   1.1, 2.2, 3.3,
