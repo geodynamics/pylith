@@ -22,7 +22,12 @@ swig_sources = \
 	MeshIOObj.i \
 	MeshIOAscii.i \
 	MeshIOLagrit.i \
-	MeshIOCubit.i
+	MeshIOCubit.i \
+	VertexFilter.i \
+	VertexFilterVecNorm.i \
+	DataWriter.i \
+	DataWriterVTK.i \
+	OutputManager.i
 
 swig_generated = \
 	meshio_wrap.cxx \

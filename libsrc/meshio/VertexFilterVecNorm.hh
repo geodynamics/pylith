@@ -23,7 +23,7 @@
 // Include directives ---------------------------------------------------
 #include "VertexFilter.hh" // ISA VertexFilter
 
-// CellFilter -----------------------------------------------------------
+// VertexFilterVecNorm --------------------------------------------------
 template<typename mesh_type>
 class pylith::meshio::VertexFilterVecNorm : public VertexFilter<mesh_type>
 { // VertexFilterVecNorm

@@ -20,6 +20,15 @@
 #include "pylith/meshio/MeshIOLagrit.hh"
 #include "pylith/meshio/MeshIOCubit.hh"
 
+#include "pylith/meshio/VertexFilter.hh"
+#include "pylith/meshio/VertexFilterVecNorm.hh"
+#include "pylith/meshio/CellFilter.hh"
+#include "pylith/meshio/CellFilterAvg.hh"
+#include "pylith/meshio/DataWriter.hh"
+#include "pylith/meshio/DataWriterVTK.hh"
+#include "pylith/meshio/OutputManager.hh"
+#include "pylith/meshio/OutputSolnSubset.hh"
+
 #include "pylith/utils/arrayfwd.hh"
 %}
 
@@ -40,6 +49,32 @@
 %include "MeshIOLagrit.i"
 %include "MeshIOCubit.i"
 
+%include "VertexFilter.i"
+%include "VertexFilterVecNorm.i"
+%include "CellFilter.i"
+%include "CellFilterAvg.i"
+%include "DataWriter.i"
+%include "DataWriterVTK.i"
+%include "OutputManager.i"
+%include "OutputSolnSubset.i"
 
+// Template instatiation
+%template(MeshVertexFilter) pylith::meshio::VertexFilter<pylith::topology::Mesh>;
+%template(SubMeshVertexFilter) pylith::meshio::VertexFilter<pylith::topology::SubMesh>;
+%template(MeshVertexFilterVecNorm) pylith::meshio::VertexFilterVecNorm<pylith::topology::Mesh>;
+%template(SubMeshVertexFilterVecNorm) pylith::meshio::VertexFilterVecNorm<pylith::topology::SubMesh>;
+
+%template(MeshCellFilter) pylith::meshio::CellFilter<pylith::topology::Mesh>;
+%template(SubMeshCellFilter) pylith::meshio::CellFilter<pylith::topology::SubMesh>;
+%template(MeshCellFilterAvg) pylith::meshio::CellFilterAvg<pylith::topology::Mesh>;
+%template(SubMeshCellFilterAvg) pylith::meshio::CellFilterAvg<pylith::topology::SubMesh>;
+
+%template(MeshDataWriter) pylith::meshio::DataWriter<pylith::topology::Mesh>;
+%template(SubMeshDataWriter) pylith::meshio::DataWriter<pylith::topology::SubMesh>;
+%template(MeshDataWriterVTK) pylith::meshio::DataWriterVTK<pylith::topology::Mesh>;
+%template(SubMeshDataWriterVTK) pylith::meshio::DataWriterVTK<pylith::topology::SubMesh>;
+
+%template(MeshOutputManager) pylith::meshio::OutputManager<pylith::topology::Mesh>;
+%template(SubMeshOutputManager) pylith::meshio::OutputManager<pylith::topology::SubMesh>;
 // End of file
 
