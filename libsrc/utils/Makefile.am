@@ -26,7 +26,6 @@ subpkginclude_HEADERS = \
 	petscerror.h \
 	sievefwd.hh \
 	sievetypes.hh \
-	vectorfields.hh \
 	utilsfwd.hh
 
 noinst_HEADERS = 
