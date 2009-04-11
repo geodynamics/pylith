@@ -39,6 +39,8 @@ CURRENT ISSUES/PRIORITIES
 
     Eliminate use of Inventory class.
 
+    add test_factory() methods to Python unit tests
+
     Cleanup error checking on PETSc calls.
       FaultCohesiveKin
       DataWriterVTK
@@ -46,6 +48,9 @@ CURRENT ISSUES/PRIORITIES
     Switch Components to PetscComponents.
       Add _cleanup() to components to deallocate local data structures.
       Add cleanup() to non-components to deallocate local data structures.
+
+    Create createModuleObj() methods to Python objects as standard way
+    of creating handle to C++ object.
 
     Add check before calling newSection() when want to enforce at
     least 1 value.

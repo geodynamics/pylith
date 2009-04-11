@@ -18,6 +18,7 @@
 ## Factory: output_manager
 
 from OutputManager import OutputManager
+from meshio import OutputSolnSubset as ModuleOutputSolnSubset
 
 # OutputSolnSubset class
 class OutputSolnSubset(OutputManager):
@@ -25,34 +26,29 @@ class OutputSolnSubset(OutputManager):
   Python object for managing output of finite-element solution
   information over a subdomain.
 
+  @class Inventory
+  Python object for managing OutputSolnSubset facilities and properties.
+  
+  \b Properties
+  @li \b vertex_data_fields Names of vertex data fields to output.
+  @li \b label Name identifier for subdomain.
+  
+  \b Facilities
+  @li None
+
   Factory: output_manager
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(OutputManager.Inventory):
-    """
-    Python object for managing OutputSolnSubset facilities and properties.
-    """
+  import pyre.inventory
 
-    ## @class Inventory
-    ## Python object for managing OutputSolnSubset facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b vertex_data_fields Names of vertex data fields to output.
-    ## @li \b label Name identifier for subdomain.
-    ##
-    ## \b Facilities
-    ## @li None
-
-    import pyre.inventory
-
-    vertexDataFields = pyre.inventory.list("vertex_data_fields", 
-                                           default=["displacements"])
-    vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
-
-    label = pyre.inventory.str("label", default="")
-    label.meta['tip'] = "Label identifier for subdomain."
+  vertexDataFields = pyre.inventory.list("vertex_data_fields", 
+                                         default=["displacements"])
+  vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
+  
+  label = pyre.inventory.str("label", default="")
+  label.meta['tip'] = "Label identifier for subdomain."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -78,9 +74,6 @@ class OutputSolnSubset(OutputManager):
     Do
     """
     OutputManager.preinitialize(self, dataProvider=self)
-    import meshio as bindings
-    self.cppHandle = bindings.OutputSolnSubset()
-    self.cppHandle.label = self.label
     return
   
 
@@ -89,8 +82,7 @@ class OutputSolnSubset(OutputManager):
     Verify compatibility of configuration.
     """
     OutputManager.verifyConfiguration(self, mesh)
-    assert(None != self.cppHandle);
-    self.cppHandle.verifyConfiguration(mesh.cppHandle)
+    ModuleOutputSolnSubset(self, mesh)
     return
 
 
@@ -101,12 +93,7 @@ class OutputSolnSubset(OutputManager):
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    from pylith.topology.Mesh import Mesh
-    self.mesh = Mesh()
-    self.mesh.initialize(mesh.coordsys)
-    assert(None != self.cppHandle)
-    self.cppHandle.mesh(self.mesh.cppHandle, mesh.cppHandle)
-
+    self.submesh = seld.subdomainMesh(mesh)
     OutputManager.initialize(self, normalizer)
 
     self._logger.eventEnd(logEvent)
@@ -127,11 +114,10 @@ class OutputSolnSubset(OutputManager):
     field = None
     fieldType = None
     if name == "displacements":
-      field = fields.getSolution()
-      fieldType = 1 # vector field
+      field = fields.solution()
     else:
       raise ValueError, "Vertex field '%s' not available." % name
-    return (field, fieldType)
+    return field
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -141,8 +127,15 @@ class OutputSolnSubset(OutputManager):
     Set members based using inventory.
     """
     OutputManager._configure(self)
-    self.vertexDataFields = self.inventory.vertexDataFields
-    self.label = self.inventory.label
+    ModuleOutputSolnSubset.label(self, self.label)
+    return
+
+
+  def _createModuleObj(self):
+    """
+    Create handle to C++ object.
+    """
+    ModuleOutputSolnSubset.___init__(self)
     return
 
 

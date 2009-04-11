@@ -18,6 +18,8 @@
 ## Factory: output_manager
 
 from pyre.components.Component import Component
+from meshio import MeshOutputManager as ModuleMeshObject
+from meshio import SubMeshOutputManager as ModuleSubMeshObject
 
 # OutputManager class
 class OutputManager(Component):
@@ -25,69 +27,33 @@ class OutputManager(Component):
   Python abstract base class for managing output of finite-element
   information.
 
-  Factory: output_manager
+  \b Properties
+  @li \b output_freq Flag indicating whether to use 'time_step' or 'skip'
+  to set frequency of solution output.
+  @li \b time_step Time step between solution output.
+  @li \b skip Number of time steps to skip between solution output.
+  
+  \b Facilities
+  @li \b coordsys Coordinate system for output.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
-    """
-    Python object for managing OutputManager facilities and properties.
-    """
+  import pyre.inventory
 
-    ## @class Inventory
-    ## Python object for managing OutputManager facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b output_freq Flag indicating whether to use 'time_step' or 'skip'
-    ##   to set frequency of solution output.
-    ## @li \b time_step Time step between solution output.
-    ## @li \b skip Number of time steps to skip between solution output.
-    ##
-    ## \b Facilities
-    ## @li \b writer Writer for data.
-    ## @li \b coordsys Coordinate system for output.
-    ## @li \b vertex_filter Filter for vertex data.
-    ## @li \b cell_filter Filter for cell data.
-
-    import pyre.inventory
-
-    outputFreq = pyre.inventory.str("output_freq", default="skip",
-             validator=pyre.inventory.choice(["skip", "time_step"]))
-    outputFreq.meta['tip'] = "Flag indicating whether to use 'time_step' " \
-                             "or 'skip' to set frequency of output."
-
-    from pyre.units.time import s
-    dt = pyre.inventory.dimensional("time_step", default=1.0*s)
-    dt.meta['tip'] = "Time step between output."
-
-    skip = pyre.inventory.int("skip", default=0,
-                              validator=pyre.inventory.greaterEqual(0))
-    skip.meta['tip'] = "Number of time steps to skip between output."
-
-    from DataWriterVTK import DataWriterVTK
-    writer = pyre.inventory.facility("writer", factory=DataWriterVTK,
-                                     family="data_writer")
-    writer.meta['tip'] = "Writer for data."
-
-    from spatialdata.geocoords.CSCart import CSCart
-    coordsys = pyre.inventory.facility("coordsys", family="coordsys",
-                                       factory=CSCart)
-    coordsys.meta['tip'] = "Coordinate system for output."
+  outputFreq = pyre.inventory.str("output_freq", default="skip",
+                                  validator=pyre.inventory.choice(["skip", "time_step"]))
+  outputFreq.meta['tip'] = "Flag indicating whether to use 'time_step' " \
+      "or 'skip' to set frequency of output."
   
-    from VertexFilter import VertexFilter
-    vertexFilter = pyre.inventory.facility("vertex_filter",
-                                           factory=VertexFilter,
-                                           family="output_vertex_filter")
-    vertexFilter.meta['tip'] = "Filter for vertex data."
-                                     
-    from CellFilter import CellFilter
-    cellFilter = pyre.inventory.facility("cell_filter",
-                                           factory=CellFilter,
-                                           family="output_cell_filter")
-    cellFilter.meta['tip'] = "Filter for cell data."
-                                     
-
+  from pyre.units.time import s
+  dt = pyre.inventory.dimensional("time_step", default=1.0*s)
+  dt.meta['tip'] = "Time step between output."
+  
+  skip = pyre.inventory.int("skip", default=0,
+                            validator=pyre.inventory.greaterEqual(0))
+  skip.meta['tip'] = "Number of time steps to skip between output."
+  
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="outputmanager"):
@@ -96,7 +62,6 @@ class OutputManager(Component):
     """
     Component.__init__(self, name, facility="outputmanager")
     self._loggingPrefix = "OutM "
-    self.cppHandle = None
     self._stepCur = 0
     self._stepWrite = None
     self._tWrite = None
@@ -105,12 +70,14 @@ class OutputManager(Component):
     self.vertexDataFields = []
     self.cellInfoFields = []
     self.cellDataFields = []
+
+    self._createModuleObj()
     return
 
 
   def preinitialize(self, dataProvider):
     """
-    Do
+    Setup output manager.
     """
     self._setupLogging()
     self.dataProvider = dataProvider
@@ -156,7 +123,6 @@ class OutputManager(Component):
 
     self.cellFilter.initialize(quadrature)
     self.writer.initialize(normalizer)
-    self._sync()
 
     self._logger.eventEnd(logEvent)
     return
@@ -176,12 +142,8 @@ class OutputManager(Component):
       nsteps = 1 + int(totalTime / self.dt)
 
     (mesh, label, labelId) = self.dataProvider.getDataMesh()
-    
-    assert(None != self.cppHandle)
-    assert(None != mesh.cppHandle)
-    assert(None != mesh.coordsys.cppHandle)
-    self.cppHandle.open(mesh.cppHandle, mesh.coordsys.cppHandle,
-                        nsteps, label, labelId)
+
+    ModuleOutputManager.open(self, mesh, nsteps, label, labelId)
 
     self._logger.eventEnd(logEvent)    
     return
@@ -194,8 +156,7 @@ class OutputManager(Component):
     logEvent = "%sclose" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    assert(None != self.cppHandle)
-    self.cppHandle.close()
+    ModuleOutputManager.close(self)
 
     self._logger.eventEnd(logEvent)    
     return
@@ -212,21 +173,17 @@ class OutputManager(Component):
       t = 0.0
       self.open(totalTime=0.0, numTimeSteps=0)
       (mesh, label, labelId) = self.dataProvider.getDataMesh()
-      self.cppHandle.openTimeStep(t,
-                                  mesh.cppHandle, mesh.coordsys.cppHandle,
-                                  label, labelId)
+      ModuleOutputManager.openTimeStep(self, t, mesh, label, labelId)
 
       for name in self.vertexInfoFields:
         (field, fieldType) = self.dataProvider.getVertexField(name)
-        self.cppHandle.appendVertexField(t, name, field, fieldType, 
-                                         mesh.cppHandle)
+        ModuleOutputManager.appendVertexField(self, t, field)
 
       for name in self.cellInfoFields:
         (field, fieldType) = self.dataProvider.getCellField(name)
-        self.cppHandle.appendCellField(t, name, field, fieldType, 
-                                       mesh.cppHandle, label, labelId)
+        ModuleOutputManager.appendCellField(self, t, field, label, labelId)
 
-      self.cppHandle.closeTimeStep()
+      ModuleOutputManager.closeTimeStep(self)
       self.close()
 
     self._logger.eventEnd(logEvent)
@@ -245,21 +202,17 @@ class OutputManager(Component):
              len(self.cellDataFields) ) > 0:
 
       (mesh, label, labelId) = self.dataProvider.getDataMesh()
-      self.cppHandle.openTimeStep(t,
-                                  mesh.cppHandle, mesh.coordsys.cppHandle,
-                                  label, labelId)
+      ModuleOutputManager.openTimeStep(self, t, mesh, label, labelId)
 
       for name in self.vertexDataFields:
         (field, fieldType) = self.dataProvider.getVertexField(name, fields)
-        self.cppHandle.appendVertexField(t, name, field, fieldType, 
-                                         mesh.cppHandle)
+        ModuleOutputManager.appendVertexField(self, t, field)
 
       for name in self.cellDataFields:
         (field, fieldType) = self.dataProvider.getCellField(name, fields)
-        self.cppHandle.appendCellField(t, name, field, fieldType, 
-                                       mesh.cppHandle, label, labelId)
+        ModuleOutputManager.appendCellField(self, t, field)
 
-      self.cppHandle.closeTimeStep()
+      ModuleOutputManager.closeTimeStep(self)
 
     self._logger.eventEnd(logEvent)
     return
@@ -271,32 +224,16 @@ class OutputManager(Component):
     """
     Set members based using inventory.
     """
-    Component._configure(self)
-    self.outputFreq = self.inventory.outputFreq
-    self.dt = self.inventory.dt
-    self.skip = self.inventory.skip
-    self.coordsys = self.inventory.coordsys
-    self.writer = self.inventory.writer
-    self.vertexFilter = self.inventory.vertexFilter
-    self.cellFilter = self.inventory.cellFilter
+    PetscComponent._configure(self)
+    ModuleOutputManager.coordsys(self, self.coordsys)
     return
 
 
-  def _sync(self):
+  def _createModuleObj(self):
     """
-    Force synchronization between Python and C++.
+    Create handle to C++ object.
     """
-    if None == self.cppHandle:
-      import pylith.meshio.meshio as bindings
-      self.cppHandle = bindings.OutputManager()
-
-    assert(self.coordsys.cppHandle != None)
-    assert(self.writer.cppHandle != None)
-      
-    self.cppHandle.coordsys = self.coordsys.cppHandle
-    self.cppHandle.writer = self.writer.cppHandle
-    self.cppHandle.vertexFilter = self.vertexFilter.cppHandle
-    self.cppHandle.cellFilter = self.cellFilter.cppHandle
+    ModuleOutputManager.__init__(self)
     return
 
 
@@ -399,13 +336,162 @@ class OutputManager(Component):
     return
   
 
+# MeshOutputManager class
+class MeshOutputManager(OutputManager, ModuleMeshObject):
+  """
+  Python abstract base class for managing output of finite-element
+  information.
+
+  \b Properties
+  @li None
+  
+  \b Facilities
+  @li \b writer Writer for data.
+  @li \b vertex_filter Filter for vertex data.
+  @li \b cell_filter Filter for cell data.
+
+  Factory: mesh_output_manager
+  """
+
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  import pyre.inventory
+
+  from DataWriterVTK import MeshDataWriterVTK
+  writer = pyre.inventory.facility("writer", factory=MeshDataWriterVTK,
+                                 family="mesh_data_writer")
+  writer.meta['tip'] = "Writer for data."
+
+  from VertexFilter import MeshVertexFilter
+  vertexFilter = pyre.inventory.facility("vertex_filter",
+                                         factory=MeshVertexFilter,
+                                         family="mesh_output_vertex_filter")
+  vertexFilter.meta['tip'] = "Filter for vertex data."
+  
+  from CellFilter import MeshCellFilter
+  cellFilter = pyre.inventory.facility("cell_filter",
+                                       factory=MeshCellFilter,
+                                       family="mesh_output_cell_filter")
+  cellFilter.meta['tip'] = "Filter for cell data."
+  
+
+  # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  def __init__(self, name="outputmanager"):
+    """
+    Constructor.
+    """
+    OutputManager.__init__(self, name, facility="meshoutputmanager")
+    self._createModuleObj()
+    return
+
+
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _configure(self):
+    """
+    Set members based using inventory.
+    """
+    OutputManager._configure(self)
+    ModuleMeshObject.writer(self.writer)
+    ModuleMeshObject.vertexFilter(self.vertexFilter)
+    ModuleMeshObject.cellFilter(self.cellFilter)
+    return
+
+
+  def _createModuleObj(self):
+    """
+    Create handle to C++ object.
+    """
+    ModuleMeshObject.__init__(self)
+    return
+
+
+# SubMeshOutputManager class
+class SubMeshOutputManager(OutputManager, ModuleSubMeshObject):
+  """
+  Python abstract base class for managing output of finite-element
+  information.
+
+  \b Properties
+  @li None
+  
+  \b Facilities
+  @li \b writer Writer for data.
+  @li \b vertex_filter Filter for vertex data.
+  @li \b cell_filter Filter for cell data.
+
+  Factory: mesh_output_manager
+  """
+
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  import pyre.inventory
+
+  from DataWriterVTK import SubMeshDataWriterVTK
+  writer = pyre.inventory.facility("writer", factory=SubMeshDataWriterVTK,
+                                 family="mesh_data_writer")
+  writer.meta['tip'] = "Writer for data."
+
+  from VertexFilter import SubMeshVertexFilter
+  vertexFilter = pyre.inventory.facility("vertex_filter",
+                                         factory=SubMeshVertexFilter,
+                                         family="mesh_output_vertex_filter")
+  vertexFilter.meta['tip'] = "Filter for vertex data."
+  
+  from CellFilter import SubMeshCellFilter
+  cellFilter = pyre.inventory.facility("cell_filter",
+                                       factory=SubMeshCellFilter,
+                                       family="mesh_output_cell_filter")
+  cellFilter.meta['tip'] = "Filter for cell data."
+  
+
+  # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  def __init__(self, name="outputmanager"):
+    """
+    Constructor.
+    """
+    OutputManager.__init__(self, name, facility="meshoutputmanager")
+    self._createModuleObj()
+    return
+
+
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _configure(self):
+    """
+    Set members based using inventory.
+    """
+    OutputManager._configure(self)
+    ModuleSubMeshObject.writer(self.writer)
+    ModuleSubMeshObject.vertexFilter(self.vertexFilter)
+    ModuleSubMeshObject.cellFilter(self.cellFilter)
+    return
+
+
+  def _createModuleObj(self):
+    """
+    Create handle to C++ object.
+    """
+    ModuleSubMeshObject.__init__(self)
+    return
+
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def output_manager():
+def mesh_output_manager():
   """
-  Factory associated with OutputManager.
+  Factory associated with MeshOutputManager.
   """
-  return OutputManager()
+  return MeshOutputManager()
+
+
+def submesh_output_manager():
+  """
+  Factory associated with SubMeshOutputManager.
+  """
+  return SubMeshOutputManager()
 
 
 # End of file 

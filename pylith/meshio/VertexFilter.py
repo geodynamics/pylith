@@ -17,10 +17,10 @@
 ##
 ## Factory: output_vertex_filter
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # VertexFilter class
-class VertexFilter(Component):
+class VertexFilter(PetscComponent):
   """
   Python abstract base class for filtering cell fields when writing
   finite-element data.
@@ -30,22 +30,7 @@ class VertexFilter(Component):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
-    """
-    Python object for managing VertexFilter facilities and properties.
-    """
-
-    ## @class Inventory
-    ## Python object for managing VertexFilter facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li None
-
-    import pyre.inventory
-
+  # None
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -53,8 +38,7 @@ class VertexFilter(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="vertexfilter")
-    self.cppHandle = None
+    PetscComponent.__init__(self, name, facility="vertexfilter")
     return
 
 
@@ -69,26 +53,8 @@ class VertexFilter(Component):
     """
     Initialize output manager.
     """
-    self._createCppHandle()
     return
 
-
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _configure(self):
-    """
-    Set members based using inventory.
-    """
-    Component._configure(self)
-    return
-
-
-  def _createCppHandle(self):
-    """
-    Create handle to C++ object.
-    """
-    return
-  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

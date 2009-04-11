@@ -18,9 +18,11 @@
 ## Factory: output_vertex_filter
 
 from VertexFilter import VertexFilter
+from meshio import MeshVertexFilterVecNorm as ModuleMeshObject
+from meshio import SubMeshVertexFilterVecNorm as ModuleSubMeshObject
 
-# VertexFilterVecNorm class
-class VertexFilterVecNorm(VertexFilter):
+# MeshVertexFilterVecNorm class
+class MeshVertexFilterVecNorm(VertexFilter, ModuleMeshObject):
   """
   Python class for computing vector norm for each vertex for field
   over vertices when writing finite-element data.
@@ -30,33 +32,58 @@ class VertexFilterVecNorm(VertexFilter):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="vertexfiltervecnorm"):
+  def __init__(self, name="meshvertexfiltervecnorm"):
     """
     Constructor.
     """
     VertexFilter.__init__(self, name)
+    ModuleMeshObject.__init__(self)
     return
 
-
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _createCppHandle(self):
-    """
-    Create handle to C++ object.
-    """
-    if None == self.cppHandle:
-      import meshio as bindings
-      self.cppHandle = bindings.VertexFilterVecNorm()
-    return
-  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def output_vertex_filter():
+def mesh_output_vertex_filter():
   """
   Factory associated with VertexFilter.
   """
-  return VertexFilterVecNorm()
+  return MeshVertexFilterVecNorm()
+
+
+# SubMeshVertexFilterVecNorm class
+class SubMeshVertexFilterVecNorm(VertexFilter, ModuleSubMeshObject):
+  """
+  Python class for computing vector norm for each vertex for field
+  over vertices when writing finite-element data.
+
+  Factory: output_vertex_filter
+  """
+
+  # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  def __init__(self, name="meshvertexfiltervecnorm"):
+    """
+    Constructor.
+    """
+    VertexFilter.__init__(self, name)
+    ModuleSubMeshObject.__init__(self)
+    return
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def mesh_output_vertex_filter():
+  """
+  Factory associated with VertexFilter.
+  """
+  return MeshVertexFilterVecNorm()
+
+
+def submesh_output_vertex_filter():
+  """
+  Factory associated with VertexFilter.
+  """
+  return SubMeshVertexFilterVecNorm()
 
 
 # End of file 

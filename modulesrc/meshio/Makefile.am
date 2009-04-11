@@ -27,7 +27,8 @@ swig_sources = \
 	VertexFilterVecNorm.i \
 	DataWriter.i \
 	DataWriterVTK.i \
-	OutputManager.i
+	OutputManager.i \
+	OutputSolnSubset.i
 
 swig_generated = \
 	meshio_wrap.cxx \

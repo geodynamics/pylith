@@ -13,54 +13,46 @@
 ## @file pyre/meshio/DataWriterVTK.py
 ##
 ## @brief Python object for writing finite-element data to VTK file.
-##
-## Factory: output_data_writer
 
 from DataWriter import DataWriter
+from meshio import MeshDataWriterVTK as ModuleMeshObject
+from meshio import SubMeshDataWriterVTK as ModuleSubMeshObject
 
 # DataWriterVTK class
 class DataWriterVTK(DataWriter):
   """
   Python object for writing finite-element data to VTK file.
 
-  Factory: output_data_writer
+  Inventory
+
+  \b Properties
+  @li \b filename Name of VTK file.
+  @li \b time_format C style format string for time stamp in filename.
+  @li \b time_constant Value used to normalize time stamp in filename.
+  
+  \b Facilities
+  @li None
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(DataWriter.Inventory):
-    """
-    Python object for managing DataWriterVTK facilities and properties.
-    """
+  import pyre.inventory
 
-    ## @class Inventory
-    ## Python object for managing DataWriterVTK facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b filename Name of VTK file.
-    ## @li \b time_format C style format string for time stamp in filename.
-    ## @li \b time_constant Value used to normalize time stamp in filename.
-    ##
-    ## \b Facilities
-    ## @li None
+  filename = pyre.inventory.str("filename", default="output.vtk")
+  filename.meta['tip'] = "Name of VTK file."
 
-    import pyre.inventory
+  timeFormat = pyre.inventory.str("time_format", default="%f")
+  timeFormat.meta['tip'] = "C style format string for time stamp in filename."
 
-    filename = pyre.inventory.str("filename", default="output.vtk")
-    filename.meta['tip'] = "Name of VTK file."
-
-    timeFormat = pyre.inventory.str("time_format", default="%f")
-    timeFormat.meta['tip'] = "C style format string for time stamp in filename."
-
-    from pyre.units.time import second
-    timeConstant = pyre.inventory.dimensional("time_constant",
-                                              default=1.0*second,
-                              validator=pyre.inventory.greater(0.0*second))
-    timeConstant.meta['tip'] = "Values used to normalize time stamp in filename."
+  from pyre.units.time import second
+  timeConstant = pyre.inventory.dimensional("time_constant",
+                                            default=1.0*second,
+                                            validator=pyre.inventory.greater(0.0*second))
+  timeConstant.meta['tip'] = "Values used to normalize time stamp in filename."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="solutioniovtk"):
+  def __init__(self, name="datawritervtk"):
     """
     Constructor.
     """
@@ -78,43 +70,89 @@ class DataWriterVTK(DataWriter):
     timeScale = normalizer.timeScale()
     self.timeConstant = normalizer.nondimensionalize(self.timeConstant,
                                                      timeScale)
-    
-    self.cppHandle.filename = self.filename
-    self.cppHandle.timeFormat = self.timeFormat
-    self.cppHandle.timeConstant = self.timeConstant
     return
   
 
-  # PRIVATE METHODS ////////////////////////////////////////////////////
+# MeshDataWriterVTK class
+class MeshDataWriterVTK(DataWriterVTK, ModuleMeshObject):
+  """
+  Python object for writing finite-element data to VTK file.
 
-  def _configure(self):
+  Inventory
+
+  Factory: mesh_output_data_writer
+  """
+
+  # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  def __init__(self, name="meshdatawritervtk"):
     """
-    Set members based using inventory.
+    Constructor.
     """
-    DataWriter._configure(self)
-    self.filename = self.inventory.filename
-    self.timeFormat = self.inventory.timeFormat
-    self.timeConstant = self.inventory.timeConstant
+    DataWriterVTK.__init__(self, name)
+    ModuleMeshObject.__init__(self)
     return
 
 
-  def _createCppHandle(self):
+  def initialize(self, normalizer):
     """
-    Create handle to corresponding C++ object.
+    Initialize writer.
     """
-    if None == self.cppHandle:
-      import pylith.meshio.meshio as bindings
-      self.cppHandle = bindings.DataWriterVTK()
+    DataWriterVTK.initialize(self, normalizer)
+
+    ModuleMeshObject.filename(self, self.filename)
+    ModuleMeshObject.timeFormat(self, self.timeFormat)
+    ModuleMeshObject.timeConstant(self, self.timeConstant.value)
+    return
+  
+
+# SubMeshDataWriterVTK class
+class SubMeshDataWriterVTK(DataWriterVTK, ModuleSubMeshObject):
+  """
+  Python object for writing finite-element data to VTK file.
+
+  Inventory
+
+  Factory: submesh_output_data_writer
+  """
+
+  # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  def __init__(self, name="submeshdatawritervtk"):
+    """
+    Constructor.
+    """
+    DataWriterVTK.__init__(self, name)
+    ModuleSubMeshObject.__init__(self)
+    return
+
+
+  def initialize(self, normalizer):
+    """
+    Initialize writer.
+    """
+    DataWriterVTK.initialize(self, normalizer)
+
+    ModuleSubMeshObject.filename(self, self.filename)
+    ModuleSubMeshObject.timeFormat(self, self.timeFormat)
+    ModuleSubMeshObject.timeConstant(self, self.timeConstant.value)
     return
   
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def output_data_writer():
+def mesh_output_data_writer():
   """
-  Factory associated with DataWriterVTK.
+  Factory associated with MeshDataWriterVTK.
   """
-  return DataWriterVTK()
+  return MeshDataWriterVTK()
+
+
+def submesh_output_data_writer():
+  """
+  Factory associated with SubMeshDataWriterVTK.
+  """
+  return SubMeshDataWriterVTK()
 
 
 # End of file 

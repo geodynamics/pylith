@@ -18,45 +18,79 @@
 ## Factory: output_cell_filter
 
 from CellFilter import CellFilter
+from meshio import MeshCellFilterAvg as ModuleMeshObject
+from meshio import SubMeshCellFilterAvg as ModuleSubMeshObject
 
-# CellFilterAvg class
-class CellFilterAvg(CellFilter):
+# MeshCellFilterAvg class
+class MeshCellFilterAvg(CellFilter, ModuleMeshObject):
   """
   Python class for average cell fields over each cell's quadrature
   points when writing finite-element data.
 
-  Factory: output_cell_filter
+  Factory: mesh_output_cell_filter
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="cellfilteravg"):
+  def __init__(self, name="meshcellfilteravg"):
     """
     Constructor.
     """
     CellFilter.__init__(self, name)
+    ModuleMeshObject.__init__(self)
     return
 
 
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _createCppHandle(self):
+  def initialize(self, quadrature):
     """
-    Create handle to C++ object.
+    Initialize output manager.
     """
-    if None == self.cppHandle:
-      import meshio as bindings
-      self.cppHandle = bindings.CellFilterAvg()
+    self.quadrature(quadrature)
     return
-  
+
+
+# SubMeshCellFilterAvg class
+class SubMeshCellFilterAvg(CellFilter, ModuleSubMeshObject):
+  """
+  Python class for average cell fields over each cell's quadrature
+  points when writing finite-element data.
+
+  Factory: submesh_output_cell_filter
+  """
+
+  # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  def __init__(self, name="submeshcellfilteravg"):
+    """
+    Constructor.
+    """
+    CellFilter.__init__(self, name)
+    ModuleSubMeshObject.__init__(self)
+    return
+
+
+  def initialize(self, quadrature):
+    """
+    Initialize output manager.
+    """
+    self.quadrature(quadrature)
+    return
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def output_cell_filter():
+def mesh_output_cell_filter():
   """
   Factory associated with CellFilter.
   """
-  return CellFilterAvg()
+  return MeshCellFilterAvg()
+
+
+def submesh_output_cell_filter():
+  """
+  Factory associated with CellFilter.
+  """
+  return SubMeshCellFilterAvg()
 
 
 # End of file 

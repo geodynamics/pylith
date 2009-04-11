@@ -10,26 +10,26 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/meshio/TestVertexFilterVecNorm.py
+## @file unittests/pytests/meshio/TestDataWriterVTK.py
 
-## @brief Unit testing of Python VertexFilterVecNorm object.
+## @brief Unit testing of Python DataWriterVTK object.
 
 import unittest
 
-from pylith.meshio.VertexFilterVecNorm import MeshVertexFilterVecNorm
-from pylith.meshio.VertexFilterVecNorm import SubMeshVertexFilterVecNorm
+from pylith.meshio.DataWriterVTK import MeshDataWriterVTK
+from pylith.meshio.DataWriterVTK import SubMeshDataWriterVTK
 
 # ----------------------------------------------------------------------
-class TestMeshVertexFilterVecNorm(unittest.TestCase):
+class TestMeshDataWriterVTK(unittest.TestCase):
   """
-  Unit testing of Python VertexFilterVecNorm object.
+  Unit testing of Python DataWriterVTK object.
   """
 
   def test_constructor(self):
     """
     Test constructor.
     """
-    filter = MeshVertexFilterVecNorm()
+    filter = MeshDataWriterVTK()
     filter._configure()
     return
 
@@ -38,9 +38,12 @@ class TestMeshVertexFilterVecNorm(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = MeshVertexFilterVecNorm()
+    filter = MeshDataWriterVTK()
     filter._configure()
-    filter.initialize()
+
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    filter.initialize(normalizer)
     return
 
 
@@ -48,22 +51,22 @@ class TestMeshVertexFilterVecNorm(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.VertexFilterVecNorm import mesh_output_vertex_filter
-    filter = mesh_output_vertex_filter()
+    from pylith.meshio.DataWriterVTK import mesh_output_data_writer
+    filter = mesh_output_data_writer()
     return
 
 
 # ----------------------------------------------------------------------
-class TestSubMeshVertexFilterVecNorm(unittest.TestCase):
+class TestSubMeshDataWriterVTK(unittest.TestCase):
   """
-  Unit testing of Python VertexFilterVecNorm object.
+  Unit testing of Python DataWriterVTK object.
   """
 
   def test_constructor(self):
     """
     Test constructor.
     """
-    filter = SubMeshVertexFilterVecNorm()
+    filter = SubMeshDataWriterVTK()
     filter._configure()
     return
 
@@ -72,9 +75,12 @@ class TestSubMeshVertexFilterVecNorm(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = SubMeshVertexFilterVecNorm()
+    filter = SubMeshDataWriterVTK()
     filter._configure()
-    filter.initialize()
+
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    filter.initialize(normalizer)
     return
 
 
@@ -82,8 +88,8 @@ class TestSubMeshVertexFilterVecNorm(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.VertexFilterVecNorm import submesh_output_vertex_filter
-    filter = submesh_output_vertex_filter()
+    from pylith.meshio.DataWriterVTK import submesh_output_data_writer
+    filter = submesh_output_data_writer()
     return
 
 
