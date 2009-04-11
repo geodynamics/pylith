@@ -60,6 +60,14 @@ public :
    */
   const topology::SubMesh& subdomainMesh(const topology::Mesh& mesh);
   
+  /** Append finite-element vertex field to file.
+   *
+   * @param t Time associated with field.
+   * @param field Vertex field.
+   */
+  void appendVertexField(const double t,
+			 const topology::Field<topology::Mesh>& field);
+
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

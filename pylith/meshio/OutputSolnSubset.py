@@ -15,13 +15,13 @@
 ## @brief Python object for managing output of finite-element solution
 ## information over a subdomain.
 ##
-## Factory: output_manager
+## Factory: submesh_output_manager
 
 from OutputManager import OutputManager
 from meshio import OutputSolnSubset as ModuleOutputSolnSubset
 
 # OutputSolnSubset class
-class OutputSolnSubset(OutputManager):
+class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
   """
   Python object for managing output of finite-element solution
   information over a subdomain.
@@ -34,9 +34,9 @@ class OutputSolnSubset(OutputManager):
   @li \b label Name identifier for subdomain.
   
   \b Facilities
-  @li None
+  @li \b writer Writer for data.
 
-  Factory: output_manager
+  Factory: submesh_output_manager
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -44,11 +44,16 @@ class OutputSolnSubset(OutputManager):
   import pyre.inventory
 
   vertexDataFields = pyre.inventory.list("vertex_data_fields", 
-                                         default=["displacements"])
+                                         default=["displacement"])
   vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
   
   label = pyre.inventory.str("label", default="")
   label.meta['tip'] = "Label identifier for subdomain."
+
+  from DataWriterVTK import SubMeshDataWriterVTK
+  writer = pyre.inventory.facility("writer", factory=SubMeshDataWriterVTK,
+                                 family="mesh_data_writer")
+  writer.meta['tip'] = "Writer for data."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -58,11 +63,10 @@ class OutputSolnSubset(OutputManager):
     Constructor.
     """
     OutputManager.__init__(self, name)
-    self.cppHandle = None
     self.availableFields = \
         {'vertex': \
            {'info': [],
-            'data': ["displacements"]},
+            'data': ["displacement"]},
          'cell': \
            {'info': [],
             'data': []}}
@@ -82,7 +86,7 @@ class OutputSolnSubset(OutputManager):
     Verify compatibility of configuration.
     """
     OutputManager.verifyConfiguration(self, mesh)
-    ModuleOutputSolnSubset(self, mesh)
+    ModuleOutputSolnSubset.verifyConfiguration(self, mesh)
     return
 
 
@@ -93,7 +97,7 @@ class OutputSolnSubset(OutputManager):
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    self.submesh = seld.subdomainMesh(mesh)
+    self.submesh = self.subdomainMesh(mesh)
     OutputManager.initialize(self, normalizer)
 
     self._logger.eventEnd(logEvent)
@@ -104,7 +108,7 @@ class OutputSolnSubset(OutputManager):
     """
     Get mesh associated with data fields.
     """
-    return (self.mesh, None, None)
+    return (self.submesh, None, None)
 
 
   def getVertexField(self, name, fields):
@@ -113,7 +117,7 @@ class OutputSolnSubset(OutputManager):
     """
     field = None
     fieldType = None
-    if name == "displacements":
+    if name == "displacement":
       field = fields.solution()
     else:
       raise ValueError, "Vertex field '%s' not available." % name
@@ -128,6 +132,12 @@ class OutputSolnSubset(OutputManager):
     """
     OutputManager._configure(self)
     ModuleOutputSolnSubset.label(self, self.label)
+    ModuleOutputSolnSubset.coordsys(self, self.inventory.coordsys)
+    ModuleOutputSolnSubset.writer(self, self.inventory.writer)
+    if None != self.vertexFilter.filter:
+      ModuleOutputSolnSubset.vertexFilter(self, self.inventory.vertexFilter)
+    if None != self.cellFilter.filter:
+      ModuleOutputSolnSubset.cellFilter(self, self.inventory.cellFilter)
     return
 
 
@@ -135,13 +145,66 @@ class OutputSolnSubset(OutputManager):
     """
     Create handle to C++ object.
     """
-    ModuleOutputSolnSubset.___init__(self)
+    ModuleOutputSolnSubset.__init__(self)
+    return
+
+
+  def _open(self, mesh, nsteps, label, labelId):
+    """
+    Call C++ open();
+    """
+    if label != None and labelId != None:
+      ModuleOutputSolnSubset.open(self, mesh, nsteps, label, labelId)
+    else:
+      ModuleOutputSolnSubset.open(self, mesh, nsteps)
+    return
+
+
+  def _openTimeStep(self, t, mesh, label, labelId):
+    """
+    Call C++ openTimeStep();
+    """
+    if label != None and labelId != None:
+      ModuleOutputSolnSubset.openTimeStep(self, t, mesh, label, labelId)
+    else:
+      ModuleOutputSolnSubset.openTimeStep(self, t, mesh)
+    return
+
+
+  def _appendVertexField(self, t, field):
+    """
+    Call C++ appendVertexField();
+    """
+    ModuleOutputSolnSubset.appendVertexField(self, t, field)
+    return
+
+  def _appendCellField(self, t, field):
+    """
+    Call C++ appendCellField();
+    """
+    ModuleOutputSolnSubset.appendCellField(self, t, field)
+    return
+
+
+  def _closeTimeStep(self):
+    """
+    Call C++ closeTimeStep().
+    """
+    ModuleOutputSolnSubset.closeTimeStep(self)
+    return
+
+
+  def _close(self):
+    """
+    Call C++ close().
+    """
+    ModuleOutputSolnSubset.close(self)
     return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def output_manager():
+def submesh_output_manager():
   """
   Factory associated with OutputSolnSubset.
   """

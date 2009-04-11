@@ -65,5 +65,14 @@ pylith::meshio::OutputSolnSubset::subdomainMesh(const topology::Mesh& mesh)
   return *_submesh;
 } // subdomainMesh
 
+// ----------------------------------------------------------------------
+// Append finite-element vertex field to file.
+void
+pylith::meshio::OutputSolnSubset::appendVertexField(const double t,
+						    const topology::Field<topology::Mesh>& field)
+{ // appendVertexField
+  // How do we call DataWriter<SubMesh>::appendVertexField() with a Field<Mesh>?
+} // appendVertexField
+
 
 // End of file 

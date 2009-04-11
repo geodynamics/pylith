@@ -231,7 +231,7 @@ class OutputManager(PetscComponent):
         field = self.dataProvider.getCellField(name, fields)
         self._appendCellField(t, field, label, labelId)
 
-      self._closeTimeStep(self)
+      self._closeTimeStep()
 
     self._logger.eventEnd(logEvent)
     return
@@ -402,7 +402,6 @@ class MeshOutputManager(OutputManager, ModuleMeshObject):
     Constructor.
     """
     OutputManager.__init__(self, name)
-    self._createModuleObj()
     return
 
 
@@ -514,7 +513,6 @@ class SubMeshOutputManager(OutputManager, ModuleSubMeshObject):
     Constructor.
     """
     OutputManager.__init__(self, name)
-    self._createModuleObj()
     return
 
 

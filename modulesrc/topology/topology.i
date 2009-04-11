@@ -36,6 +36,7 @@
 
 %include "typemaps.i"
 %include "../include/chararray.i"
+%include "../include/submeshfield.i"
 
 // Numpy interface stuff
 %{

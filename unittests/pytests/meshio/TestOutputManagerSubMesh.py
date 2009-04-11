@@ -10,13 +10,13 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/meshio/TestOutputManager.py
+## @file unittests/pytests/meshio/TestOutputManagerSubMesh.py
 
-## @brief Unit testing of Python OutputManager object.
+## @brief Unit testing of Python SubMeshOutputManager object.
 
 import unittest
 
-from pylith.meshio.OutputManager import MeshOutputManager
+from pylith.meshio.OutputManager import SubMeshOutputManager
 
 # ----------------------------------------------------------------------
 class TestProvider(object):
@@ -48,10 +48,14 @@ class TestProvider(object):
     normalizer._configure()
     mesh = iohandler.read(normalizer, debug=False, interpolate=False)
 
-    from pylith.topology.Fields import MeshFields
-    fields = MeshFields(mesh)
+    from pylith.topology.SubMesh import SubMesh
+    submesh = SubMesh(mesh, "4")
+
+    from pylith.topology.Fields import SubMeshFields
+    fields = SubMeshFields(submesh)
     
     self.mesh = mesh
+    self.submesh = submesh
     self.fields = fields
     return
 
@@ -60,7 +64,7 @@ class TestProvider(object):
     """
     Get mesh.
     """
-    return (self.mesh, None, None)
+    return (self.submesh, None, None)
 
 
   def getVertexField(self, name, fields=None):
@@ -113,7 +117,7 @@ class TestProvider(object):
 
 
 # ----------------------------------------------------------------------
-class TestMeshOutputManager(unittest.TestCase):
+class TestOutputManager(unittest.TestCase):
   """
   Unit testing of Python MeshOutputManager object.
   """
@@ -129,7 +133,7 @@ class TestMeshOutputManager(unittest.TestCase):
     """
     Test constructor.
     """
-    output = MeshOutputManager()
+    output = SubMeshOutputManager()
     output.inventory.writer._configure()
     output._configure()
     return
@@ -140,7 +144,7 @@ class TestMeshOutputManager(unittest.TestCase):
     Test preinitialize().
     """
     dataProvider = TestProvider()
-    output = MeshOutputManager()
+    output = SubMeshOutputManager()
     output.preinitialize(dataProvider)
     
     self.assertEqual(dataProvider, output.dataProvider)
@@ -152,7 +156,7 @@ class TestMeshOutputManager(unittest.TestCase):
     Test verifyConfiguration().
     """
     dataProvider = TestProvider()
-    output = MeshOutputManager()
+    output = SubMeshOutputManager()
     output.preinitialize(dataProvider)
 
     output.vertexInfoFields = ["vertex info"]
@@ -168,7 +172,7 @@ class TestMeshOutputManager(unittest.TestCase):
     Test initialize().
     """
     # No quadrature
-    output = MeshOutputManager()
+    output = SubMeshOutputManager()
     output.inventory.writer.inventory.filename = "test.vtk"
     output.inventory.writer._configure()
     output._configure()
@@ -177,19 +181,19 @@ class TestMeshOutputManager(unittest.TestCase):
     output.initialize(self.normalizer)
 
     # With quadrature
-    from pylith.feassemble.FIATSimplex import FIATSimplex
-    from pylith.feassemble.Quadrature import MeshQuadrature
-    cell = FIATSimplex()
-    cell.inventory.shape = "line"
+    from pylith.feassemble.FIATLagrange import FIATLagrange
+    from pylith.feassemble.Quadrature import SubMeshQuadrature
+    cell = FIATLagrange()
+    cell.inventory.dimension = 2
     cell.inventory.degree = 2
     cell.inventory.order = 2
     cell._configure()
 
-    quadrature = MeshQuadrature()
+    quadrature = SubMeshQuadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
     
-    output = MeshOutputManager()
+    output = SubMeshOutputManager()
     output.inventory.writer.inventory.filename = "test.vtk"
     output.inventory.writer._configure()
     output._configure()
@@ -203,7 +207,7 @@ class TestMeshOutputManager(unittest.TestCase):
     """
     Test open() and close().
     """
-    output = MeshOutputManager()
+    output = SubMeshOutputManager()
     output.inventory.writer.inventory.filename = "output.vtk"
     output.inventory.writer._configure()
     output._configure()
@@ -220,7 +224,7 @@ class TestMeshOutputManager(unittest.TestCase):
     """
     Test writeInfo().
     """
-    output = MeshOutputManager()
+    output = SubMeshOutputManager()
     output.inventory.writer.inventory.filename = "output.vtk"
     output.inventory.writer._configure()
     output.inventory.vertexInfoFields = ["vertex info"]
@@ -241,7 +245,7 @@ class TestMeshOutputManager(unittest.TestCase):
     """
     Test writeData().
     """
-    output = MeshOutputManager()
+    output = SubMeshOutputManager()
     output.inventory.writer.inventory.filename = "output.vtk"
     output.inventory.writer.inventory.timeFormat = "%3.1f"
     output.inventory.writer._configure()
@@ -267,7 +271,7 @@ class TestMeshOutputManager(unittest.TestCase):
     dataProvider = TestProvider()
 
     # Default values should be true
-    output = MeshOutputManager()
+    output = SubMeshOutputManager()
     output.inventory.writer._configure()
     output._configure()
     output.preinitialize(dataProvider)
@@ -276,7 +280,7 @@ class TestMeshOutputManager(unittest.TestCase):
     self.assertEqual(True, output._checkWrite(3.234e+8))
 
     # Check writing based on time
-    output = MeshOutputManager()
+    output = SubMeshOutputManager()
     output._configure()
     output.writer._configure()
     output.preinitialize(dataProvider)
@@ -294,7 +298,7 @@ class TestMeshOutputManager(unittest.TestCase):
     self.assertEqual(True, output._checkWrite(t))
     
     # Check writing based on number of steps
-    output = MeshOutputManager()
+    output = SubMeshOutputManager()
     output._configure()
     output.writer._configure()
     output.preinitialize(dataProvider)
