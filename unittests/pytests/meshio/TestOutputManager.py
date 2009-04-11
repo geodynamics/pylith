@@ -16,7 +16,7 @@
 
 import unittest
 
-from pylith.meshio.OutputManager import OutputManager
+from pylith.meshio.OutputManager import MeshOutputManager
 
 # ----------------------------------------------------------------------
 class TestProvider(object):
@@ -34,21 +34,22 @@ class TestProvider(object):
            {'info': ["cell info"],
             'data': ["cell data"]}}
 
-    from pylith.meshio.MeshIOAscii import MeshIOAscii
-    iohandler = MeshIOAscii()
     filename = "data/twohex8.txt"
     
+    from pylith.meshio.MeshIOAscii import MeshIOAscii
+    iohandler = MeshIOAscii()
+    iohandler.inventory.filename = filename
+    from spatialdata.geocoords.CSCart import CSCart
+    iohandler.inventory.coordsys = CSCart()
+    iohandler._configure()
+
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
-    normalizer.initialize()
-
-    from spatialdata.geocoords.CSCart import CSCart
-    iohandler.filename = filename
-    iohandler.coordsys = CSCart()
+    normalizer._configure()
     mesh = iohandler.read(normalizer, debug=False, interpolate=False)
 
-    from pylith.topology.FieldsManager import FieldsManager
-    fields = FieldsManager(mesh)
+    from pylith.topology.Fields import MeshFields
+    fields = MeshFields(mesh)
     
     self.mesh = mesh
     self.fields = fields
@@ -66,23 +67,28 @@ class TestProvider(object):
     """
     Get vertex field.
     """
+    from pylith.field.field.FieldBase import SCALAR,VECTOR,OTHER
     if name == "vertex info":
-      fieldType = 0
+      fieldType = FieldBase.SCALAR
       fiberDim = 1
     elif name == "vertex data 1":
-      fieldType = 1
+      fieldType = FieldBase.VECTOR
       fiberDim = self.mesh.dimension()
     elif name == "vertex data 2":
-      fieldType = 3
+      fieldType = FieldBase.OTHER
       fiberDim = 5
     else:
       raise ValueError("Unknown field '%s'." % name)
 
-    self.fields.addReal(name)
+    self.fields.add(name, name)
+    field = self.fields.get(name)
+    field.newSection(field.VERTICES_FIELD, fiberDim)
+    field.allocate()
+    field.vectorFieldType(fieldType)
     self.fields.setFiberDimension(name, fiberDim)
     self.fields.allocate(name)
     field = self.fields.getReal(name)
-    return (field, fieldType)
+    return field
 
 
   def getCellField(self, name, fields=None):
@@ -90,31 +96,32 @@ class TestProvider(object):
     Get cell field.
     """
     if name == "cell info":
-      fieldType = 0
+      fieldType = FieldBase.SCALAR
       fiberDim = 1
     elif name == "cell data":
-      fieldType = 1
+      fieldType = FieldBase.VECTOR
       fiberDim = self.mesh.dimension()
     else:
       raise ValueError("Unknown field '%s'." % name)
 
-    self.fields.addReal(name)
-    self.fields.setFiberDimension(name, fiberDim, "cells")
-    self.fields.allocate(name)
-    field = self.fields.getReal(name)
-    return (field, fieldType)
+    self.fields.add(name, name)
+    field = self.fields.get(name)
+    field.newSection(field.CELLS_FIELD, fiberDim)
+    field.allocate()
+    field.vectorFieldType(fieldType)
+    return field
 
 
 # ----------------------------------------------------------------------
-class TestOutputManager(unittest.TestCase):
+class TestMeshOutputManager(unittest.TestCase):
   """
-  Unit testing of Python OutputManager object.
+  Unit testing of Python MeshOutputManager object.
   """
 
   def setUp(self):
     from spatialdata.units.Nondimensional import Nondimensional
     self.normalizer = Nondimensional()
-    self.normalizer.initialize()
+    self.normalizer._configure()
     return
   
 
@@ -122,31 +129,18 @@ class TestOutputManager(unittest.TestCase):
     """
     Test constructor.
     """
-    output = OutputManager()
+    output = MeshOutputManager()
+    output.inventory.writer._configure()
     output._configure()
-    output.writer._configure()
     return
 
-
-  def test_sync(self):
-    """
-    Test _sync().
-    """
-    output = OutputManager()
-    output._configure()
-    output.writer._configure()
-    output.writer.initialize(self.normalizer)
-    output._sync()
-    self.assertNotEqual(None, output.cppHandle)
-    return
-  
 
   def test_preinitialize(self):
     """
     Test preinitialize().
     """
-    output = OutputManager()
     dataProvider = TestProvider()
+    output = MeshOutputManager()
     output.preinitialize(dataProvider)
     
     self.assertEqual(dataProvider, output.dataProvider)
@@ -157,8 +151,8 @@ class TestOutputManager(unittest.TestCase):
     """
     Test verifyConfiguration().
     """
-    output = OutputManager()
     dataProvider = TestProvider()
+    output = MeshOutputManager()
     output.preinitialize(dataProvider)
 
     output.vertexInfoFields = ["vertex info"]
@@ -174,34 +168,34 @@ class TestOutputManager(unittest.TestCase):
     Test initialize().
     """
     # No quadrature
-    output = OutputManager()
+    output = MeshOutputManager()
+    output.inventory.writer.inventory.filename = "test.vtk"
+    output.inventory.writer._configure()
     output._configure()
-    output.writer._configure()
-    output.writer.filename = "test.vtk"
     dataProvider = TestProvider()
     output.preinitialize(dataProvider)
     output.initialize(self.normalizer)
-    self.assertNotEqual(None, output.cppHandle)
 
     # With quadrature
     from pylith.feassemble.FIATSimplex import FIATSimplex
-    from pylith.feassemble.quadrature.Quadrature1D import Quadrature1D
+    from pylith.feassemble.Quadrature import MeshQuadrature
     cell = FIATSimplex()
-    cell.shape = "line"
-    cell.degree = 2
-    cell.order = 2
+    cell.inventory.shape = "line"
+    cell.inventory.degree = 2
+    cell.inventory.order = 2
+    cell._configure()
 
-    quadrature = Quadrature1D()
-    quadrature.cell = cell
+    quadrature = MeshQuadrature()
+    quadrature.inventory.cell = cell
+    quadrature._configure()
     
-    output = OutputManager()
+    output = MeshOutputManager()
+    output.inventory.writer.inventory.filename = "test.vtk"
+    output.inventory.writer._configure()
     output._configure()
-    output.writer._configure()
-    output.writer.filename = "test.vtk"
     dataProvider = TestProvider()
     output.preinitialize(dataProvider)
     output.initialize(self.normalizer, quadrature)
-    self.assertNotEqual(None, output.cppHandle)
     return
 
 
@@ -209,10 +203,10 @@ class TestOutputManager(unittest.TestCase):
     """
     Test open() and close().
     """
-    output = OutputManager()
+    output = MeshOutputManager()
+    output.inventory.writer.inventory.filename = "output.vtk"
+    output.inventory.writer._configure()
     output._configure()
-    output.writer._configure()
-    output.writer.filename = "output.vtk"
     dataProvider = TestProvider()
     output.preinitialize(dataProvider)
     output.initialize(self.normalizer)
@@ -226,12 +220,12 @@ class TestOutputManager(unittest.TestCase):
     """
     Test writeInfo().
     """
-    output = OutputManager()
+    output = MeshOutputManager()
+    output.inventory.writer.inventory.filename = "output.vtk"
+    output.inventory.writer._configure()
+    output.inventory.vertexInfoFields = ["vertex info"]
+    output.inventory.cellInfoFields = ["cell info"]
     output._configure()
-    output.writer._configure()
-    output.writer.filename = "output.vtk"
-    output.vertexInfoFields = ["vertex info"]
-    output.cellInfoFields = ["cell info"]
     
     dataProvider = TestProvider()
     output.preinitialize(dataProvider)
@@ -247,14 +241,14 @@ class TestOutputManager(unittest.TestCase):
     """
     Test writeData().
     """
-    output = OutputManager()
+    output = MeshOutputManager()
+    output.inventory.writer.inventory.filename = "output.vtk"
+    output.inventory.writer.inventory.timeFormat = "%3.1f"
+    output.inventory.writer._configure()
+    output.inventory.vertexDataFields = ["vertex data 2",
+                                         "vertex data 1"]
+    output.inventory.cellDataFields = ["cell data"]
     output._configure()
-    output.writer._configure()
-    output.writer.filename = "output.vtk"
-    output.writer.timeFormat = "%3.1f"
-    output.vertexDataFields = ["vertex data 2",
-                               "vertex data 1"]
-    output.cellDataFields = ["cell data"]
     
     dataProvider = TestProvider()
     output.preinitialize(dataProvider)
@@ -273,16 +267,16 @@ class TestOutputManager(unittest.TestCase):
     dataProvider = TestProvider()
 
     # Default values should be true
-    output = OutputManager()
+    output = MeshOutputManager()
+    output.inventory.writer._configure()
     output._configure()
-    output.writer._configure()
     output.preinitialize(dataProvider)
     output.initialize(self.normalizer)
     self.assertEqual(True, output._checkWrite(0.0))
     self.assertEqual(True, output._checkWrite(3.234e+8))
 
     # Check writing based on time
-    output = OutputManager()
+    output = MeshOutputManager()
     output._configure()
     output.writer._configure()
     output.preinitialize(dataProvider)
@@ -300,7 +294,7 @@ class TestOutputManager(unittest.TestCase):
     self.assertEqual(True, output._checkWrite(t))
     
     # Check writing based on number of steps
-    output = OutputManager()
+    output = MeshOutputManager()
     output._configure()
     output.writer._configure()
     output.preinitialize(dataProvider)

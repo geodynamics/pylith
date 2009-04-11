@@ -80,8 +80,11 @@ class TestApp(Script):
     from TestDataWriterVTK import TestSubMeshDataWriterVTK
     suite.addTest(unittest.makeSuite(TestSubMeshDataWriterVTK))
 
-    #from TestOutputManager import TestOutputManager
-    #suite.addTest(unittest.makeSuite(TestOutputManager))
+    from TestOutputManager import TestMeshOutputManager
+    suite.addTest(unittest.makeSuite(TestMeshOutputManager))
+
+    #from TestOutputManager import TestSubMeshOutputManager
+    #suite.addTest(unittest.makeSuite(TestSubMeshOutputManager))
 
     #from TestOutputSolnSubset import TestOutputSolnSubset
     #suite.addTest(unittest.makeSuite(TestOutputSolnSubset))

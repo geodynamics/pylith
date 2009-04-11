@@ -50,7 +50,8 @@ CURRENT ISSUES/PRIORITIES
       Add cleanup() to non-components to deallocate local data structures.
 
     Create createModuleObj() methods to Python objects as standard way
-    of creating handle to C++ object.
+    of creating handle to C++ object (not necessary in abstract base
+    classes).
 
     Add check before calling newSection() when want to enforce at
     least 1 value.

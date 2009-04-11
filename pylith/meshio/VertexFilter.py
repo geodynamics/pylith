@@ -39,6 +39,7 @@ class VertexFilter(PetscComponent):
     Constructor.
     """
     PetscComponent.__init__(self, name, facility="vertexfilter")
+    self.filter = None
     return
 
 

@@ -17,12 +17,12 @@
 ##
 ## Factory: output_manager
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 from meshio import MeshOutputManager as ModuleMeshObject
 from meshio import SubMeshOutputManager as ModuleSubMeshObject
 
 # OutputManager class
-class OutputManager(Component):
+class OutputManager(PetscComponent):
   """
   Python abstract base class for managing output of finite-element
   information.
@@ -35,6 +35,8 @@ class OutputManager(Component):
   
   \b Facilities
   @li \b coordsys Coordinate system for output.
+  @li \b vertex_filter Filter for vertex data.
+  @li \b cell_filter Filter for cell data.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -54,13 +56,31 @@ class OutputManager(Component):
                             validator=pyre.inventory.greaterEqual(0))
   skip.meta['tip'] = "Number of time steps to skip between output."
   
+  from spatialdata.geocoords.CSCart import CSCart
+  coordsys = pyre.inventory.facility("coordsys", family="coordsys",
+                                     factory=CSCart)
+  coordsys.meta['tip'] = "Coordinate system for output."
+  
+  from VertexFilter import VertexFilter
+  vertexFilter = pyre.inventory.facility("vertex_filter",
+                                         factory=VertexFilter,
+                                         family="output_vertex_filter")
+  vertexFilter.meta['tip'] = "Filter for vertex data."
+  
+  from CellFilter import CellFilter
+  cellFilter = pyre.inventory.facility("cell_filter",
+                                       factory=CellFilter,
+                                       family="output_cell_filter")
+  cellFilter.meta['tip'] = "Filter for cell data."
+  
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="outputmanager"):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="outputmanager")
+    PetscComponent.__init__(self, name, facility="outputmanager")
     self._loggingPrefix = "OutM "
     self._stepCur = 0
     self._stepWrite = None
@@ -142,8 +162,7 @@ class OutputManager(Component):
       nsteps = 1 + int(totalTime / self.dt)
 
     (mesh, label, labelId) = self.dataProvider.getDataMesh()
-
-    ModuleOutputManager.open(self, mesh, nsteps, label, labelId)
+    self._open(mesh, nsteps, label, labelId)
 
     self._logger.eventEnd(logEvent)    
     return
@@ -156,7 +175,7 @@ class OutputManager(Component):
     logEvent = "%sclose" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    ModuleOutputManager.close(self)
+    self._close()
 
     self._logger.eventEnd(logEvent)    
     return
@@ -173,18 +192,18 @@ class OutputManager(Component):
       t = 0.0
       self.open(totalTime=0.0, numTimeSteps=0)
       (mesh, label, labelId) = self.dataProvider.getDataMesh()
-      ModuleOutputManager.openTimeStep(self, t, mesh, label, labelId)
+      self._openTimeStep(t, mesh, label, labelId)
 
       for name in self.vertexInfoFields:
-        (field, fieldType) = self.dataProvider.getVertexField(name)
-        ModuleOutputManager.appendVertexField(self, t, field)
+        field = self.dataProvider.getVertexField(name)
+        self._appendVertexField(t, field)
 
       for name in self.cellInfoFields:
-        (field, fieldType) = self.dataProvider.getCellField(name)
-        ModuleOutputManager.appendCellField(self, t, field, label, labelId)
+        field = self.dataProvider.getCellField(name)
+        self._appendCellField(t, field, label, labelId)
 
-      ModuleOutputManager.closeTimeStep(self)
-      self.close()
+      self._closeTimeStep()
+      self._close()
 
     self._logger.eventEnd(logEvent)
     return
@@ -202,17 +221,17 @@ class OutputManager(Component):
              len(self.cellDataFields) ) > 0:
 
       (mesh, label, labelId) = self.dataProvider.getDataMesh()
-      ModuleOutputManager.openTimeStep(self, t, mesh, label, labelId)
+      self._openTimeStep(t, mesh, label, labelId)
 
       for name in self.vertexDataFields:
-        (field, fieldType) = self.dataProvider.getVertexField(name, fields)
-        ModuleOutputManager.appendVertexField(self, t, field)
+        field = self.dataProvider.getVertexField(name, fields)
+        self._appendVertexField(t, field)
 
       for name in self.cellDataFields:
-        (field, fieldType) = self.dataProvider.getCellField(name, fields)
-        ModuleOutputManager.appendCellField(self, t, field)
+        field = self.dataProvider.getCellField(name, fields)
+        self._appendCellField(t, field, label, labelId)
 
-      ModuleOutputManager.closeTimeStep(self)
+      self._closeTimeStep(self)
 
     self._logger.eventEnd(logEvent)
     return
@@ -225,15 +244,6 @@ class OutputManager(Component):
     Set members based using inventory.
     """
     PetscComponent._configure(self)
-    ModuleOutputManager.coordsys(self, self.coordsys)
-    return
-
-
-  def _createModuleObj(self):
-    """
-    Create handle to C++ object.
-    """
-    ModuleOutputManager.__init__(self)
     return
 
 
@@ -336,6 +346,30 @@ class OutputManager(Component):
     return
   
 
+  def _open(self):
+    raise NotImplementedError("Implement _open() in derived class.")
+
+
+  def _openTimeStep(self):
+    raise NotImplementedError("Implement _openTimeStep() in derived class.")
+
+
+  def _appendVertexField(self):
+    raise NotImplementedError("Implement _appendVertexField() in derived class.")
+
+
+  def _appendCellField(self):
+    raise NotImplementedError("Implement _appendCellField() in derived class.")
+
+
+  def _closeTimeStep(self):
+    raise NotImplementedError("Implement _closeTimeStep() in derived class.")
+
+
+  def _close(self):
+    raise NotImplementedError("Implement _close() in derived class.")
+
+
 # MeshOutputManager class
 class MeshOutputManager(OutputManager, ModuleMeshObject):
   """
@@ -347,8 +381,6 @@ class MeshOutputManager(OutputManager, ModuleMeshObject):
   
   \b Facilities
   @li \b writer Writer for data.
-  @li \b vertex_filter Filter for vertex data.
-  @li \b cell_filter Filter for cell data.
 
   Factory: mesh_output_manager
   """
@@ -362,26 +394,14 @@ class MeshOutputManager(OutputManager, ModuleMeshObject):
                                  family="mesh_data_writer")
   writer.meta['tip'] = "Writer for data."
 
-  from VertexFilter import MeshVertexFilter
-  vertexFilter = pyre.inventory.facility("vertex_filter",
-                                         factory=MeshVertexFilter,
-                                         family="mesh_output_vertex_filter")
-  vertexFilter.meta['tip'] = "Filter for vertex data."
-  
-  from CellFilter import MeshCellFilter
-  cellFilter = pyre.inventory.facility("cell_filter",
-                                       factory=MeshCellFilter,
-                                       family="mesh_output_cell_filter")
-  cellFilter.meta['tip'] = "Filter for cell data."
-  
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="outputmanager"):
+  def __init__(self, name="meshoutputmanager"):
     """
     Constructor.
     """
-    OutputManager.__init__(self, name, facility="meshoutputmanager")
+    OutputManager.__init__(self, name)
     self._createModuleObj()
     return
 
@@ -393,9 +413,12 @@ class MeshOutputManager(OutputManager, ModuleMeshObject):
     Set members based using inventory.
     """
     OutputManager._configure(self)
-    ModuleMeshObject.writer(self.writer)
-    ModuleMeshObject.vertexFilter(self.vertexFilter)
-    ModuleMeshObject.cellFilter(self.cellFilter)
+    ModuleMeshObject.coordsys(self, self.inventory.coordsys)
+    ModuleMeshObject.writer(self, self.inventory.writer)
+    if None != self.vertexFilter.filter:
+      ModuleMeshObject.vertexFilter(self, self.inventory.vertexFilter)
+    if None != self.cellFilter.filter:
+      ModuleMeshObject.cellFilter(self, self.inventory.cellFilter)
     return
 
 
@@ -404,6 +427,59 @@ class MeshOutputManager(OutputManager, ModuleMeshObject):
     Create handle to C++ object.
     """
     ModuleMeshObject.__init__(self)
+    return
+
+
+  def _open(self, mesh, nsteps, label, labelId):
+    """
+    Call C++ open();
+    """
+    if label != None and labelId != None:
+      ModuleMeshObject.open(self, mesh, nsteps, label, labelId)
+    else:
+      ModuleMeshObject.open(self, mesh, nsteps)
+    return
+
+
+  def _openTimeStep(self, t, mesh, label, labelId):
+    """
+    Call C++ openTimeStep();
+    """
+    if label != None and labelId != None:
+      ModuleMeshObject.openTimeStep(self, t, mesh, label, labelId)
+    else:
+      ModuleMeshObject.openTimeStep(self, t, mesh)
+    return
+
+
+  def _appendVertexField(self, t, field):
+    """
+    Call C++ appendVertexField();
+    """
+    ModuleMeshObject.appendVertexField(self, t, field)
+    return
+
+  def _appendCellField(self, t, field, label, labelId):
+    """
+    Call C++ appendCellField();
+    """
+    ModuleMeshObject.appendCellField(self, t, field)
+    return
+
+
+  def _closeTimeStep(self):
+    """
+    Call C++ closeTimeStep().
+    """
+    ModuleMeshObject.closeTimeStep(self)
+    return
+
+
+  def _close(self):
+    """
+    Call C++ close().
+    """
+    ModuleMeshObject.close(self)
     return
 
 
@@ -418,8 +494,6 @@ class SubMeshOutputManager(OutputManager, ModuleSubMeshObject):
   
   \b Facilities
   @li \b writer Writer for data.
-  @li \b vertex_filter Filter for vertex data.
-  @li \b cell_filter Filter for cell data.
 
   Factory: mesh_output_manager
   """
@@ -433,26 +507,13 @@ class SubMeshOutputManager(OutputManager, ModuleSubMeshObject):
                                  family="mesh_data_writer")
   writer.meta['tip'] = "Writer for data."
 
-  from VertexFilter import SubMeshVertexFilter
-  vertexFilter = pyre.inventory.facility("vertex_filter",
-                                         factory=SubMeshVertexFilter,
-                                         family="mesh_output_vertex_filter")
-  vertexFilter.meta['tip'] = "Filter for vertex data."
-  
-  from CellFilter import SubMeshCellFilter
-  cellFilter = pyre.inventory.facility("cell_filter",
-                                       factory=SubMeshCellFilter,
-                                       family="mesh_output_cell_filter")
-  cellFilter.meta['tip'] = "Filter for cell data."
-  
-
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="outputmanager"):
+  def __init__(self, name="submeshoutputmanager"):
     """
     Constructor.
     """
-    OutputManager.__init__(self, name, facility="meshoutputmanager")
+    OutputManager.__init__(self, name)
     self._createModuleObj()
     return
 
@@ -464,9 +525,12 @@ class SubMeshOutputManager(OutputManager, ModuleSubMeshObject):
     Set members based using inventory.
     """
     OutputManager._configure(self)
-    ModuleSubMeshObject.writer(self.writer)
-    ModuleSubMeshObject.vertexFilter(self.vertexFilter)
-    ModuleSubMeshObject.cellFilter(self.cellFilter)
+    ModuleSubMeshObject.coordsys(self, self.inventory.coordsys)
+    ModuleSubMeshObject.writer(self, self.inventory.writer)
+    if None != self.vertexFilter.filter:
+      ModuleSubMeshObject.vertexFilter(self, self.inventory.vertexFilter)
+    if None != self.cellFilter.filter:
+      ModuleSubMeshObject.cellFilter(self, self.inventory.cellFilter)
     return
 
 
@@ -475,6 +539,59 @@ class SubMeshOutputManager(OutputManager, ModuleSubMeshObject):
     Create handle to C++ object.
     """
     ModuleSubMeshObject.__init__(self)
+    return
+
+
+  def _open(self, mesh, nsteps, label, labelId):
+    """
+    Call C++ open();
+    """
+    if label != None and labelId != None:
+      ModuleSubMeshObject.open(self, mesh, nsteps, label, labelId)
+    else:
+      ModuleSubMeshObject.open(self, mesh, nsteps)
+    return
+
+
+  def _openTimeStep(self, t, mesh, label, labelId):
+    """
+    Call C++ openTimeStep();
+    """
+    if label != None and labelId != None:
+      ModuleSubMeshObject.openTimeStep(self, t, mesh, label, labelId)
+    else:
+      ModuleSubMeshObject.openTimeStep(self, t, mesh)
+    return
+
+
+  def _appendVertexField(self, t, field):
+    """
+    Call C++ appendVertexField();
+    """
+    ModuleSubMeshObject.appendVertexField(self, t, field)
+    return
+
+  def _appendCellField(self, t, field):
+    """
+    Call C++ appendCellField();
+    """
+    ModuleSubMeshObject.appendCellField(self, t, field)
+    return
+
+
+  def _closeTimeStep(self):
+    """
+    Call C++ closeTimeStep().
+    """
+    ModuleSubMeshObject.closeTimeStep(self)
+    return
+
+
+  def _close(self):
+    """
+    Call C++ close().
+    """
+    ModuleSubMeshObject.close(self)
     return
 
 
