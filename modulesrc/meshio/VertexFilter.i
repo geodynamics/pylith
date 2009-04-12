@@ -19,7 +19,7 @@
 namespace pylith {
   namespace meshio {
 
-    template<typename mesh_type>
+    template<typename field_type>
     class pylith::meshio::VertexFilter
     { // VertexFilter
 
@@ -44,8 +44,7 @@ namespace pylith {
        * @param fieldIn Field to filter.
        */
       virtual
-      const pylith::topology::Field<mesh_type>&
-      filter(const pylith::topology::Field<mesh_type>& fieldIn) = 0;
+      const field_type& filter(const field_type& fieldIn) = 0;
 
     }; // VertexFilter
 

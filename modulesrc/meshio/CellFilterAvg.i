@@ -19,8 +19,9 @@
 namespace pylith {
   namespace meshio {
 
-    template<typename mesh_type>
-    class pylith::meshio::CellFilterAvg : public CellFilter<mesh_type>
+    template<typename mesh_type, typename field_type>
+    class pylith::meshio::CellFilterAvg :
+      public CellFilter<mesh_type, field_type>
     { // CellFilterAvg
 
       // PUBLIC METHODS /////////////////////////////////////////////////
@@ -36,7 +37,7 @@ namespace pylith {
        *
        * @returns Copy of filter.
        */
-      CellFilter<mesh_type>* clone(void) const;
+      CellFilter<mesh_type, field_type>* clone(void) const;
       
       /** Filter field over cells.
        *
@@ -46,10 +47,9 @@ namespace pylith {
        *
        * @returns Averaged field.
        */
-      const pylith::topology::Field<mesh_type>&
-      filter(const pylith::topology::Field<mesh_type>& fieldIn,
-	     const char* label =0,
-	     const int labelId =0);
+      const field_type& filter(const field_type& fieldIn,
+			       const char* label =0,
+			       const int labelId =0);
 
     }; // CellFilterAvg
 

@@ -59,22 +59,25 @@
 %include "OutputSolnSubset.i"
 
 // Template instatiation
-%template(MeshVertexFilter) pylith::meshio::VertexFilter<pylith::topology::Mesh>;
-%template(SubMeshVertexFilter) pylith::meshio::VertexFilter<pylith::topology::SubMesh>;
-%template(MeshVertexFilterVecNorm) pylith::meshio::VertexFilterVecNorm<pylith::topology::Mesh>;
-%template(SubMeshVertexFilterVecNorm) pylith::meshio::VertexFilterVecNorm<pylith::topology::SubMesh>;
+%template(MeshVertexFilter) pylith::meshio::VertexFilter<pylith::topology::Field<pylith::topology::Mesh> >;
+%template(SubMeshVertexFilter) pylith::meshio::VertexFilter<pylith::topology::Field<pylith::topology::SubMesh> >;
+%template(MeshVertexFilterVecNorm) pylith::meshio::VertexFilterVecNorm<pylith::topology::Field<pylith::topology::Mesh> >;
+%template(SubMeshVertexFilterVecNorm) pylith::meshio::VertexFilterVecNorm<pylith::topology::Field<pylith::topology::SubMesh> >;
 
-%template(MeshCellFilter) pylith::meshio::CellFilter<pylith::topology::Mesh>;
-%template(SubMeshCellFilter) pylith::meshio::CellFilter<pylith::topology::SubMesh>;
-%template(MeshCellFilterAvg) pylith::meshio::CellFilterAvg<pylith::topology::Mesh>;
-%template(SubMeshCellFilterAvg) pylith::meshio::CellFilterAvg<pylith::topology::SubMesh>;
+%template(MeshCellFilter) pylith::meshio::CellFilter<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
+%template(SubMeshCellFilter) pylith::meshio::CellFilter<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::SubMesh> >;
+%template(MeshCellFilterAvg) pylith::meshio::CellFilterAvg<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
+%template(SubMeshCellFilterAvg) pylith::meshio::CellFilterAvg<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::SubMesh> >;
 
-%template(MeshDataWriter) pylith::meshio::DataWriter<pylith::topology::Mesh>;
-%template(SubMeshDataWriter) pylith::meshio::DataWriter<pylith::topology::SubMesh>;
-%template(MeshDataWriterVTK) pylith::meshio::DataWriterVTK<pylith::topology::Mesh>;
-%template(SubMeshDataWriterVTK) pylith::meshio::DataWriterVTK<pylith::topology::SubMesh>;
+%template(MeshDataWriter) pylith::meshio::DataWriter<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
+%template(SubMeshDataWriter) pylith::meshio::DataWriter<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::Mesh> >;
+%template(SubSubMeshDataWriter) pylith::meshio::DataWriter<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::SubMesh> >;
 
-%template(MeshOutputManager) pylith::meshio::OutputManager<pylith::topology::Mesh>;
-%template(SubMeshOutputManager) pylith::meshio::OutputManager<pylith::topology::SubMesh>;
+%template(MeshDataWriterVTK) pylith::meshio::DataWriterVTK<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
+%template(SubMeshDataWriterVTK) pylith::meshio::DataWriterVTK<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::Mesh> >;
+%template(SubSubMeshDataWriterVTK) pylith::meshio::DataWriterVTK<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::SubMesh> >;
+
+%template(MeshOutputManager) pylith::meshio::OutputManager<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
+
 // End of file
 

@@ -19,8 +19,8 @@
 namespace pylith {
   namespace meshio {
 
-    template<typename mesh_type>
-    class pylith::meshio::VertexFilterVecNorm : public VertexFilter<mesh_type>
+    template<typename field_type>
+    class pylith::meshio::VertexFilterVecNorm : public VertexFilter<field_type>
     { // VertexFilterVecNorm
 
       // PUBLIC METHODS /////////////////////////////////////////////////
@@ -36,14 +36,13 @@ namespace pylith {
        *
        * @returns Copy of filter.
        */
-      VertexFilter<mesh_type>* clone(void) const;
+      VertexFilter<field_type>* clone(void) const;
       
       /** Filter vertex field.
        *
        * @param fieldIn Field to filter.
        */
-      const pylith::topology::Field<mesh_type>&
-      filter(const pylith::topology::Field<mesh_type>& fieldIn);
+      const field_type& filter(const field_type& fieldIn);
       
     }; // VertexFilterVecNorm
 

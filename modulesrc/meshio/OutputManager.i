@@ -19,7 +19,7 @@
 namespace pylith {
   namespace meshio {
 
-    template<typename mesh_type>
+    template<typename mesh_type, typename field_type>
     class pylith::meshio::OutputManager
     { // OutputManager
 
@@ -44,19 +44,19 @@ namespace pylith {
        *
        * @param datawriter Writer for data.
        */
-      void writer(DataWriter<mesh_type>* const datawriter);
+      void writer(DataWriter<mesh_type, field_type>* const datawriter);
       
       /** Set filter for vertex data.
        *
        * @param filter Filter to apply to vertex data before writing.
        */
-      void vertexFilter(VertexFilter<mesh_type>* const filter);
+      void vertexFilter(VertexFilter<field_type>* const filter);
       
       /** Set filter for cell data.
        *
        * @param filter Filter to apply to cell data before writing.
        */
-      void cellFilter(CellFilter<mesh_type>* const filter);
+      void cellFilter(CellFilter<mesh_type, field_type>* const filter);
       
       /** Prepare for output.
        *
@@ -96,7 +96,7 @@ namespace pylith {
        * @param field Vertex field.
        */
       void appendVertexField(const double t,
-			     const pylith::topology::Field<mesh_type>& field);
+			     const field_type& field);
       
       /** Append finite-element cell field to file.
        *
@@ -107,7 +107,7 @@ namespace pylith {
        * @param labelId Value of label defining which cells to include.
        */
       void appendCellField(const double t,
-			   const pylith::topology::Field<mesh_type>& field,
+			   const field_type& field,
 			   const char* label =0,
 			   const int labelId =0);
 

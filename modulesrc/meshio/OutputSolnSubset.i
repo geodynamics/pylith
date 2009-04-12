@@ -16,12 +16,12 @@
  * @brief Python interface to C++ OutputSolnSubset object.
  */
 
-%template(_SubMeshOutputManager) pylith::meshio::OutputManager<pylith::topology::SubMesh>;
+%template(_SubMeshOutputManager) pylith::meshio::OutputManager<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::Mesh> >;
 
 namespace pylith {
   namespace meshio {
 
-    class pylith::meshio::OutputSolnSubset : public OutputManager<pylith::topology::SubMesh>
+    class pylith::meshio::OutputSolnSubset : public OutputManager<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::Mesh> >
     { // OutputSolnSubset
 
       // PUBLIC METHODS /////////////////////////////////////////////////

@@ -19,7 +19,7 @@
 namespace pylith {
   namespace meshio {
 
-    template<typename mesh_type>
+    template<typename mesh_type, typename field_type>
     class pylith::meshio::DataWriter
     { // DataWriter
 
@@ -83,7 +83,7 @@ namespace pylith {
        */
       virtual
       void writeVertexField(const double t,
-			    const pylith::topology::Field<mesh_type>& field) = 0;
+			    const field_type& field) = 0;
       
       /** Write field over cells to file.
        *
@@ -95,7 +95,7 @@ namespace pylith {
        */
       virtual
       void writeCellField(const double t,
-			  const pylith::topology::Field<mesh_type>& field,
+			  const field_type& field,
 			  const char* label =0,
 			  const int labelId =0) = 0;
 

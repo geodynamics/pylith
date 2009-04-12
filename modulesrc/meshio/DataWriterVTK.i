@@ -19,8 +19,9 @@
 namespace pylith {
   namespace meshio {
 
-    template<typename mesh_type>
-    class pylith::meshio::DataWriterVTK : public DataWriter<mesh_type>
+    template<typename mesh_type, typenam field_type>
+    class pylith::meshio::DataWriterVTK :
+      public DataWriter<mesh_type, field_type>
     { // DataWriterVTK  
       
       // PUBLIC METHODS /////////////////////////////////////////////////
@@ -36,7 +37,7 @@ namespace pylith {
        *
        * @returns Copy of this.
        */
-      DataWriter<mesh_type>* clone(void) const;
+      DataWriter<mesh_type, field_type>* clone(void) const;
       
       /** Set filename for VTK file.
        *
@@ -81,7 +82,7 @@ namespace pylith {
        * @param field Field over vertices.
        */
       void writeVertexField(const double t,
-			    const pylith::topology::Field<mesh_type>& field);
+			    const field_type& field);
       
       /** Write field over cells to file.
        *
@@ -92,7 +93,7 @@ namespace pylith {
        * @param labelId Value of label defining which cells to include.
        */
       void writeCellField(const double t,
-			  const pylith::topology::Field<mesh_type>& field,
+			  const field_type& field,
 			  const char* label =0,
 			  const int labelId =0);
       
