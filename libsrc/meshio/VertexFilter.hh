@@ -26,7 +26,7 @@
 #include "pylith/topology/topologyfwd.hh" // USES Field
 
 // VertexFilter ---------------------------------------------------------
-template<typename mesh_type>
+template<typename field_type>
 class pylith::meshio::VertexFilter
 { // VertexFilter
 
@@ -51,8 +51,8 @@ public :
    * @param fieldIn Field to filter.
    */
   virtual
-  const topology::Field<mesh_type>&
-  filter(const topology::Field<mesh_type>& fieldIn) = 0;
+  const field_type&
+  filter(const field_type& fieldIn) = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :

@@ -16,47 +16,47 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-template<typename mesh_type>
-pylith::meshio::VertexFilterVecNorm<mesh_type>::VertexFilterVecNorm(void) :
+template<typename field_type>
+pylith::meshio::VertexFilterVecNorm<field_type>::VertexFilterVecNorm(void) :
   _fieldVecNorm(0)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-template<typename mesh_type>
-pylith::meshio::VertexFilterVecNorm<mesh_type>::~VertexFilterVecNorm(void)
+template<typename field_type>
+pylith::meshio::VertexFilterVecNorm<field_type>::~VertexFilterVecNorm(void)
 { // destructor
   delete _fieldVecNorm; _fieldVecNorm = 0;
 } // destructor  
 
 // ----------------------------------------------------------------------
 // Copy constructor.
-template<typename mesh_type>
-pylith::meshio::VertexFilterVecNorm<mesh_type>::VertexFilterVecNorm(const VertexFilterVecNorm& f) :
-  VertexFilter<mesh_type>(f),
+template<typename field_type>
+pylith::meshio::VertexFilterVecNorm<field_type>::VertexFilterVecNorm(const VertexFilterVecNorm& f) :
+  VertexFilter<field_type>(f),
   _fieldVecNorm(0)
 { // copy constructor
 } // copy constructor
 
 // ----------------------------------------------------------------------
 // Create copy of filter.
-template<typename mesh_type>
-pylith::meshio::VertexFilter<mesh_type>*
-pylith::meshio::VertexFilterVecNorm<mesh_type>::clone(void) const
+template<typename field_type>
+pylith::meshio::VertexFilter<field_type>*
+pylith::meshio::VertexFilterVecNorm<field_type>::clone(void) const
 { // clone
   return new VertexFilterVecNorm(*this);
 } // clone
 
 // ----------------------------------------------------------------------
 // Filter field.
-template<typename mesh_type>
-const pylith::topology::Field<mesh_type>&
-pylith::meshio::VertexFilterVecNorm<mesh_type>::filter(
-				   const topology::Field<mesh_type>& fieldIn)
+template<typename field_type>
+const field_type&
+pylith::meshio::VertexFilterVecNorm<field_type>::filter(
+				   const field_type& fieldIn)
 { // filter
-  typedef typename mesh_type::RealSection RealSection;
-  typedef typename mesh_type::SieveMesh SieveMesh;
+  typedef typename field_type::Mesh::RealSection RealSection;
+  typedef typename field_type::Mesh::SieveMesh SieveMesh;
   typedef typename SieveMesh::label_sequence label_sequence;
 
   const ALE::Obj<SieveMesh>& sieveMesh = fieldIn.mesh().sieveMesh();
@@ -73,7 +73,7 @@ pylith::meshio::VertexFilterVecNorm<mesh_type>::filter(
 
   // Allocation field if necessary
   if (0 == _fieldVecNorm) {
-    _fieldVecNorm = new topology::Field<mesh_type>(fieldIn.mesh());
+    _fieldVecNorm = new field_type(fieldIn.mesh());
     _fieldVecNorm->newSection(sectionIn->getChart(), fiberDimNorm);
     _fieldVecNorm->allocate();
 

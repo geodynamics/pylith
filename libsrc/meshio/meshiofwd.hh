@@ -38,13 +38,13 @@ namespace pylith {
     class PsetFileAscii;
     class PsetFileBinary;
     
-    template<typename mesh_type> class OutputManager;
-    template<typename mesh_type> class DataWriter;
-    template<typename mesh_type> class DataWriterVTK;
-    template<typename mesh_type> class CellFilter;
-    template<typename mesh_type> class CellFilterAvg;
-    template<typename mesh_type> class VertexFilter;
-    template<typename mesh_type> class VertexFilterVecNorm;
+    template<typename mesh_type, typename field_type> class OutputManager;
+    template<typename mesh_type, typename field_type> class DataWriter;
+    template<typename mesh_type, typename field_type> class DataWriterVTK;
+    template<typename mesh_type, typename field_type> class CellFilter;
+    template<typename mesh_type, typename field_type> class CellFilterAvg;
+    template<typename field_type> class VertexFilter;
+    template<typename field_type> class VertexFilterVecNorm;
     class OutputSolnSubset;
 
     class UCDFaultFile;

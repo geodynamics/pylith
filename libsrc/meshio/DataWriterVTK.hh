@@ -23,10 +23,13 @@
 #include "DataWriter.hh" // ISA DataWriter
 
 // DataWriterVTK --------------------------------------------------------
-template<typename mesh_type>
-class pylith::meshio::DataWriterVTK : public DataWriter<mesh_type>
+template<typename mesh_type, typename field_type>
+class pylith::meshio::DataWriterVTK : public DataWriter<mesh_type,field_type>
 { // DataWriterVTK
-  friend class TestDataWriterVTK; // unit testing
+  friend class TestDataWriterVTKMesh; // unit testing
+  friend class TestDataWriterVTKSubMesh; // unit testing
+  friend class TestDataWriterVTKBCMesh; // unit testing
+  friend class TestDataWriterVTKFaultMesh; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -41,7 +44,7 @@ public :
    *
    * @returns Copy of this.
    */
-  DataWriter<mesh_type>* clone(void) const;
+  DataWriter<mesh_type, field_type>* clone(void) const;
 
   /** Set filename for VTK file.
    *
@@ -86,7 +89,7 @@ public :
    * @param field Field over vertices.
    */
   void writeVertexField(const double t,
-			const topology::Field<mesh_type>& field);
+			const field_type& field);
 
   /** Write field over cells to file.
    *
@@ -97,7 +100,7 @@ public :
    * @param labelId Value of label defining which cells to include.
    */
   void writeCellField(const double t,
-		      const topology::Field<mesh_type>& field,
+		      const field_type& field,
 		      const char* label =0,
 		      const int labelId =0);
 

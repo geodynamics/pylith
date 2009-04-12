@@ -16,55 +16,58 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-template<typename mesh_type>
-pylith::meshio::CellFilterAvg<mesh_type>::CellFilterAvg(void) :
+template<typename mesh_type, typename field_type>
+pylith::meshio::CellFilterAvg<mesh_type, field_type>::CellFilterAvg(void) :
   _fieldAvg(0)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-template<typename mesh_type>
-pylith::meshio::CellFilterAvg<mesh_type>::~CellFilterAvg(void)
+template<typename mesh_type, typename field_type>
+pylith::meshio::CellFilterAvg<mesh_type, field_type>::~CellFilterAvg(void)
 { // destructor
   delete _fieldAvg; _fieldAvg = 0;
 } // destructor  
 
 // ----------------------------------------------------------------------
 // Copy constructor.
-template<typename mesh_type>
-pylith::meshio::CellFilterAvg<mesh_type>::CellFilterAvg(const CellFilterAvg& f) :
-  CellFilter<mesh_type>(f),
+template<typename mesh_type, typename field_type>
+pylith::meshio::CellFilterAvg<mesh_type, field_type>::CellFilterAvg(
+					       const CellFilterAvg& f) :
+  CellFilter<mesh_type, field_type>(f),
   _fieldAvg(0)
 { // copy constructor
 } // copy constructor
 
 // ----------------------------------------------------------------------
 // Create copy of filter.
-template<typename mesh_type>
-pylith::meshio::CellFilter<mesh_type>*
-pylith::meshio::CellFilterAvg<mesh_type>::clone(void) const
+template<typename mesh_type, typename field_type>
+pylith::meshio::CellFilter<mesh_type, field_type>*
+pylith::meshio::CellFilterAvg<mesh_type, field_type>::clone(void) const
 { // clone
-  return new CellFilterAvg<mesh_type>(*this);
+  return new CellFilterAvg<mesh_type,field_type>(*this);
 } // clone
 
 // ----------------------------------------------------------------------
 // Filter field.
-template<typename mesh_type>
-const pylith::topology::Field<mesh_type>&
-pylith::meshio::CellFilterAvg<mesh_type>::filter(
-				  const topology::Field<mesh_type>& fieldIn,
-				  const char* label,
-				  const int labelId)
+template<typename mesh_type, typename field_type>
+const field_type&
+pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
+						const field_type& fieldIn,
+						const char* label,
+						const int labelId)
 { // filter
-  typedef typename mesh_type::RealSection RealSection;
   typedef typename mesh_type::SieveMesh SieveMesh;
   typedef typename SieveMesh::label_sequence label_sequence;
+  typedef typename field_type::Mesh::RealSection RealSection;
 
-  assert(0 != CellFilter<mesh_type>::_quadrature);
+  const feassemble::Quadrature<mesh_type>* quadrature = 
+    CellFilter<mesh_type, field_type>::_quadrature;
+  assert(0 != quadrature);
 
-  const int numQuadPts = CellFilter<mesh_type>::_quadrature->numQuadPts();
-  const double_array& wts = CellFilter<mesh_type>::_quadrature->quadWts();
+  const int numQuadPts = quadrature->numQuadPts();
+  const double_array& wts = quadrature->quadWts();
   
   const ALE::Obj<SieveMesh>& sieveMesh = fieldIn.mesh().sieveMesh();
   assert(!sieveMesh.isNull());
@@ -84,7 +87,7 @@ pylith::meshio::CellFilterAvg<mesh_type>::filter(
 
   // Allocate field if necessary
   if (0 == _fieldAvg) {
-    _fieldAvg = new topology::Field<mesh_type>(fieldIn.mesh());
+    _fieldAvg = new field_type(fieldIn.mesh());
     assert(0 != _fieldAvg);
     _fieldAvg->newSection(sectionIn->getChart(), fiberDim);
     _fieldAvg->allocate();

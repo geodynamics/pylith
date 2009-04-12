@@ -24,11 +24,14 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestCellFilterAvg );
 
 // ----------------------------------------------------------------------
+typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
+
+// ----------------------------------------------------------------------
 // Test constructor
 void
 pylith::meshio::TestCellFilterAvg::testConstructor(void)
 { // testConstructor
-  CellFilterAvg<topology::Mesh> filter;
+  CellFilterAvg<topology::Mesh, MeshField> filter;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -85,7 +88,7 @@ pylith::meshio::TestCellFilterAvg::testFilter(void)
   iohandler.read(&mesh);
 
   // Set cell field
-  topology::Field<topology::Mesh> field(mesh);
+  MeshField field(mesh);
   field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
   field.allocate();
   field.vectorFieldType(fieldType);
@@ -116,7 +119,7 @@ pylith::meshio::TestCellFilterAvg::testFilter(void)
 			quadWts, numQuadPts,
 			spaceDim);
 
-  CellFilterAvg<topology::Mesh> filter;
+  CellFilterAvg<topology::Mesh, MeshField> filter;
   filter.quadrature(&quadrature);
 
   const topology::Field<topology::Mesh>& fieldF = filter.filter(field);

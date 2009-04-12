@@ -25,7 +25,7 @@
 #include "pylith/topology/topologyfwd.hh" // USES Field
 
 // DataWriter -----------------------------------------------------------
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 class pylith::meshio::DataWriter
 { // DataWriter
 
@@ -89,7 +89,7 @@ public :
    */
   virtual
   void writeVertexField(const double t,
-			const topology::Field<mesh_type>& field) = 0;
+			const field_type& field) = 0;
 
   /** Write field over cells to file.
    *
@@ -101,7 +101,7 @@ public :
    */
   virtual
   void writeCellField(const double t,
-		      const topology::Field<mesh_type>& field,
+		      const field_type& field,
 		      const char* label =0,
 		      const int labelId =0) = 0;
 

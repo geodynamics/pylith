@@ -26,7 +26,7 @@
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
 
 // OutputManager --------------------------------------------------------
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 class pylith::meshio::OutputManager
 { // OutputManager
   friend class TestOutputManager; // unit testing
@@ -52,19 +52,19 @@ public :
    *
    * @param datawriter Writer for data.
    */
-  void writer(DataWriter<mesh_type>* const datawriter);
+  void writer(DataWriter<mesh_type, field_type>* const datawriter);
 
   /** Set filter for vertex data.
    *
    * @param filter Filter to apply to vertex data before writing.
    */
-  void vertexFilter(VertexFilter<mesh_type>* const filter);
+  void vertexFilter(VertexFilter<field_type>* const filter);
 
   /** Set filter for cell data.
    *
    * @param filter Filter to apply to cell data before writing.
    */
-  void cellFilter(CellFilter<mesh_type>* const filter);
+  void cellFilter(CellFilter<mesh_type, field_type>* const filter);
 
   /** Prepare for output.
    *
@@ -104,7 +104,7 @@ public :
    * @param field Vertex field.
    */
   void appendVertexField(const double t,
-			 const topology::Field<mesh_type>& field);
+			 const field_type& field);
 
   /** Append finite-element cell field to file.
    *
@@ -115,7 +115,7 @@ public :
    * @param labelId Value of label defining which cells to include.
    */
   void appendCellField(const double t,
-		       const topology::Field<mesh_type>& field,
+		       const field_type& field,
 		       const char* label =0,
 		       const int labelId =0);
 
@@ -131,9 +131,9 @@ private :
   /// Coordinate system for output.
   spatialdata::geocoords::CoordSys* _coordsys;
 
-  DataWriter<mesh_type>* _writer; ///< Writer for data.
-  VertexFilter<mesh_type>* _vertexFilter; ///< Filter applied to vertex data.
-  CellFilter<mesh_type>* _cellFilter; ///< Filter applied to cell data.
+  DataWriter<mesh_type, field_type>* _writer; ///< Writer for data.
+  VertexFilter<field_type>* _vertexFilter; ///< Filter applied to vertex data.
+  CellFilter<mesh_type, field_type>* _cellFilter; ///< Filter applied to cell data.
 
 }; // OutputManager
 

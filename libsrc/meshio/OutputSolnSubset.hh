@@ -24,12 +24,15 @@
 #include "meshiofwd.hh" // forward declarations
 
 #include "pylith/topology/SubMesh.hh" // ISA OutputManager<SubMesh>
+#include "pylith/topology/Mesh.hh" // ISA OutputManager<Field<Mesh>>
+#include "pylith/topology/Field.hh" // ISA OutputManager<Field<Mesh>>
 #include "OutputManager.hh" // ISA OutputManager
 
 #include <string> // HASA std::string
 
 // OutputSolnSubset -----------------------------------------------------
-class pylith::meshio::OutputSolnSubset : public OutputManager<topology::SubMesh>
+class pylith::meshio::OutputSolnSubset : 
+  public OutputManager<topology::SubMesh, topology::Field<topology::Mesh> >
 { // OutputSolnSubset
   friend class TestOutputSolnSubset; // unit testing
 
@@ -60,15 +63,6 @@ public :
    */
   const topology::SubMesh& subdomainMesh(const topology::Mesh& mesh);
   
-  /** Append finite-element vertex field to file.
-   *
-   * @param t Time associated with field.
-   * @param field Vertex field.
-   */
-  void appendVertexField(const double t,
-			 const topology::Field<topology::Mesh>& field);
-
-
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 

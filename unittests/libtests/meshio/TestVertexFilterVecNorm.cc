@@ -24,11 +24,14 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestVertexFilterVecNorm );
 
 // ----------------------------------------------------------------------
+typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
+
+// ----------------------------------------------------------------------
 // Test constructor
 void
 pylith::meshio::TestVertexFilterVecNorm::testConstructor(void)
 { // testConstructor
-  VertexFilterVecNorm<topology::Mesh> filter;
+  VertexFilterVecNorm<MeshField> filter;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -67,7 +70,7 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
   iohandler.read(&mesh);
 
   // Set vertex field
-  topology::Field<topology::Mesh> field(mesh);
+  MeshField field(mesh);
   field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
   field.allocate();
   field.vectorFieldType(fieldType);
@@ -91,8 +94,8 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
     section->updatePoint(*v_iter, values);
   } // for
 
-  VertexFilterVecNorm<topology::Mesh> filter;
-  const topology::Field<topology::Mesh>& fieldF = filter.filter(field);
+  VertexFilterVecNorm<MeshField> filter;
+  const MeshField& fieldF = filter.filter(field);
   const ALE::Obj<RealSection>& sectionF = fieldF.section();
   CPPUNIT_ASSERT(!sectionF.isNull());
 

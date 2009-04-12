@@ -20,8 +20,8 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-template<typename mesh_type>
-pylith::meshio::DataWriterVTK<mesh_type>::DataWriterVTK(void) :
+template<typename mesh_type, typename field_type>
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::DataWriterVTK(void) :
   _timeConstant(1.0),
   _filename("output.vtk"),
   _timeFormat("%f"),
@@ -33,8 +33,8 @@ pylith::meshio::DataWriterVTK<mesh_type>::DataWriterVTK(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-template<typename mesh_type>
-pylith::meshio::DataWriterVTK<mesh_type>::~DataWriterVTK(void)
+template<typename mesh_type, typename field_type>
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::~DataWriterVTK(void)
 { // destructor
   if (0 != _viewer)
     PetscViewerDestroy(_viewer);
@@ -43,9 +43,9 @@ pylith::meshio::DataWriterVTK<mesh_type>::~DataWriterVTK(void)
 
 // ----------------------------------------------------------------------
 // Copy constructor.
-template<typename mesh_type>
-pylith::meshio::DataWriterVTK<mesh_type>::DataWriterVTK(const DataWriterVTK<mesh_type>& w) :
-  DataWriter<mesh_type>(w),
+template<typename mesh_type, typename field_type>
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::DataWriterVTK(const DataWriterVTK<mesh_type, field_type>& w) :
+  DataWriter<mesh_type, field_type>(w),
   _timeConstant(w._timeConstant),
   _filename(w._filename),
   _timeFormat(w._timeFormat),
@@ -57,9 +57,9 @@ pylith::meshio::DataWriterVTK<mesh_type>::DataWriterVTK(const DataWriterVTK<mesh
 
 // ----------------------------------------------------------------------
 // Set value used to normalize time stamp in name of VTK file.
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type>::timeConstant(const double value)
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::timeConstant(const double value)
 { // timeConstant
   if (value <= 0.0) {
     std::ostringstream msg;
@@ -72,9 +72,9 @@ pylith::meshio::DataWriterVTK<mesh_type>::timeConstant(const double value)
 
 // ----------------------------------------------------------------------
 // Prepare file for data at a new time step.
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type>::openTimeStep(const double t,
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const double t,
 						       const mesh_type& mesh,
 						       const char* label,
 						       const int labelId)
@@ -136,9 +136,9 @@ pylith::meshio::DataWriterVTK<mesh_type>::openTimeStep(const double t,
 
 // ----------------------------------------------------------------------
 /// Cleanup after writing data for a time step.
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type>::closeTimeStep(void)
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::closeTimeStep(void)
 { // closeTimeStep
   PetscViewerDestroy(_viewer); _viewer = 0;
   _wroteVertexHeader = false;
@@ -147,14 +147,14 @@ pylith::meshio::DataWriterVTK<mesh_type>::closeTimeStep(void)
 
 // ----------------------------------------------------------------------
 // Write field over vertices to file.
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type>::writeVertexField(
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
 				       const double t,
-				       const topology::Field<mesh_type>& field)
+				       const field_type& field)
 { // writeVertexField
-  typedef typename mesh_type::SieveMesh SieveMesh;
-  typedef typename mesh_type::RealSection RealSection;
+  typedef typename field_type::Mesh::SieveMesh SieveMesh;
+  typedef typename field_type::Mesh::RealSection RealSection;
 
   try {
     const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
@@ -209,16 +209,16 @@ pylith::meshio::DataWriterVTK<mesh_type>::writeVertexField(
 
 // ----------------------------------------------------------------------
 // Write field over cells to file.
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type>::writeCellField(
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
 				       const double t,
-				       const topology::Field<mesh_type>& field,
+				       const field_type& field,
 				       const char* label,
 				       const int labelId)
 { // writeCellField
-  typedef typename mesh_type::SieveMesh SieveMesh;
-  typedef typename mesh_type::RealSection RealSection;
+  typedef typename field_type::Mesh::SieveMesh SieveMesh;
+  typedef typename field_type::Mesh::RealSection RealSection;
 
   try {
     const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
@@ -278,13 +278,14 @@ pylith::meshio::DataWriterVTK<mesh_type>::writeCellField(
 
 // ----------------------------------------------------------------------
 // Generate filename for VTK file.
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 std::string
-pylith::meshio::DataWriterVTK<mesh_type>::_vtkFilename(const double t) const
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::_vtkFilename(const double t) const
 { // _vtkFilename
   std::ostringstream filename;
   const int indexExt = _filename.find(".vtk");
-  if (DataWriter<mesh_type>::_numTimeSteps > 0) {
+  const int numTimeSteps = DataWriter<mesh_type, field_type>::_numTimeSteps;
+  if (numTimeSteps > 0) {
     // If data with multiple time steps, then add time stamp to filename
     char sbuffer[256];
     sprintf(sbuffer, _timeFormat.c_str(), t/_timeConstant);

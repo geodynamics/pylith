@@ -20,8 +20,8 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-template<typename mesh_type>
-pylith::meshio::OutputManager<mesh_type>::OutputManager(void) :
+template<typename mesh_type, typename field_type>
+pylith::meshio::OutputManager<mesh_type, field_type>::OutputManager(void) :
   _coordsys(0),
   _writer(0),
   _vertexFilter(0),
@@ -31,8 +31,8 @@ pylith::meshio::OutputManager<mesh_type>::OutputManager(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-template<typename mesh_type>
-pylith::meshio::OutputManager<mesh_type>::~OutputManager(void)
+template<typename mesh_type, typename field_type>
+pylith::meshio::OutputManager<mesh_type, field_type>::~OutputManager(void)
 { // destructor
   _writer = 0; // :TODO: Use shared pointer
   _vertexFilter = 0; // :TODO: Use shared pointer
@@ -42,9 +42,9 @@ pylith::meshio::OutputManager<mesh_type>::~OutputManager(void)
 
 // ----------------------------------------------------------------------
 // Set coordinate system in output. The vertex fields in the output
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type>::coordsys(
+pylith::meshio::OutputManager<mesh_type, field_type>::coordsys(
 				  const spatialdata::geocoords::CoordSys* cs)
 { // coordsys
   delete _coordsys; _coordsys = (0 != cs) ? cs->clone() : 0;
@@ -52,42 +52,43 @@ pylith::meshio::OutputManager<mesh_type>::coordsys(
 
 // ----------------------------------------------------------------------
 // Set writer to write data to file.
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type>::writer(
-				       DataWriter<mesh_type>* const datawriter)
+pylith::meshio::OutputManager<mesh_type, field_type>::writer(
+			 DataWriter<mesh_type, field_type>* const datawriter)
 { // writer
   _writer = datawriter; // :TODO: Use shared pointer
 } // writer
 
 // ----------------------------------------------------------------------
 // Set filter for vertex data.
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type>::vertexFilter(
-					VertexFilter<mesh_type>* const filter)
+pylith::meshio::OutputManager<mesh_type, field_type>::vertexFilter(
+					VertexFilter<field_type>* const filter)
 { // vertexFilter
   _vertexFilter = filter; // :TODO: Use shared pointer
 } // vertexFilter
 
 // ----------------------------------------------------------------------
 // Set filter for cell data.
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type>::cellFilter(
-				         CellFilter<mesh_type>* const filter)
+pylith::meshio::OutputManager<mesh_type, field_type>::cellFilter(
+			     CellFilter<mesh_type, field_type>* const filter)
 { // cellFilter
   _cellFilter = filter; // :TODO: Use shared pointer
 } // cellFilter
 
 // ----------------------------------------------------------------------
 // Prepare for output.
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type>::open(const mesh_type& mesh,
-					       const int numTimeSteps,
-					       const char* label,
-					       const int labelId)
+pylith::meshio::OutputManager<mesh_type, field_type>::open(
+						   const mesh_type& mesh,
+						   const int numTimeSteps,
+						   const char* label,
+						   const int labelId)
 { // open
   assert(0 != _writer);
 
@@ -96,9 +97,9 @@ pylith::meshio::OutputManager<mesh_type>::open(const mesh_type& mesh,
 
 // ----------------------------------------------------------------------
 /// Close output files.
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type>::close(void)
+pylith::meshio::OutputManager<mesh_type, field_type>::close(void)
 { // close
   assert(0 != _writer);
   _writer->close();
@@ -106,9 +107,10 @@ pylith::meshio::OutputManager<mesh_type>::close(void)
 
 // ----------------------------------------------------------------------
 // Setup file for writing fields at time step.
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type>::openTimeStep(const double t,
+pylith::meshio::OutputManager<mesh_type, field_type>::openTimeStep(
+						       const double t,
 						       const mesh_type& mesh,
 						       const char* label,
 						       const int labelId)
@@ -119,9 +121,9 @@ pylith::meshio::OutputManager<mesh_type>::openTimeStep(const double t,
 
 // ----------------------------------------------------------------------
 // End writing fields at time step.
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type>::closeTimeStep(void)
+pylith::meshio::OutputManager<mesh_type, field_type>::closeTimeStep(void)
 { // closeTimeStep
   assert(0 != _writer);
   _writer->closeTimeStep();
@@ -129,13 +131,13 @@ pylith::meshio::OutputManager<mesh_type>::closeTimeStep(void)
 
 // ----------------------------------------------------------------------
 // Append finite-element vertex field to file.
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type>::appendVertexField(
-			       const double t,
-			       const topology::Field<mesh_type>& field)
+pylith::meshio::OutputManager<mesh_type, field_type>::appendVertexField(
+			                                const double t,
+							const field_type& field)
 { // appendVertexField
-  const topology::Field<mesh_type>& fieldFiltered = 
+  const field_type& fieldFiltered = 
     (0 == _vertexFilter) ? field : _vertexFilter->filter(field);
 
   _writer->writeVertexField(t, fieldFiltered);
@@ -143,15 +145,15 @@ pylith::meshio::OutputManager<mesh_type>::appendVertexField(
 
 // ----------------------------------------------------------------------
 // Append finite-element cell field to file.
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type>::appendCellField(
-				const double t,
-				const topology::Field<mesh_type>& field,
-				const char* label,
-				const int labelId)
+pylith::meshio::OutputManager<mesh_type, field_type>::appendCellField(
+				                     const double t,
+						     const field_type& field,
+						     const char* label,
+						     const int labelId)
 { // appendCellField
-  const topology::Field<mesh_type>& fieldFiltered = 
+  const field_type& fieldFiltered = 
     (0 == _cellFilter) ? field : _cellFilter->filter(field, label, labelId);
 
   _writer->writeCellField(t, fieldFiltered, label, labelId);

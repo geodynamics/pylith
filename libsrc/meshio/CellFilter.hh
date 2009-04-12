@@ -27,7 +27,7 @@
 #include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Quadrature<Mesh>
 
 // CellFilter -----------------------------------------------------------
-template<typename mesh_type>
+template<typename mesh_type, typename field_type>
 class pylith::meshio::CellFilter
 { // CellFilter
 
@@ -35,9 +35,9 @@ class pylith::meshio::CellFilter
 protected:
 
   // Convenience typedefs
-  typedef typename mesh_type::RealSection RealSection;
   typedef typename mesh_type::SieveMesh SieveMesh;
   typedef typename SieveMesh::label_sequence label_sequence;
+  typedef typename field_type::Mesh::RealSection RealSection;
   typedef typename RealSection::chart_type chart_type;
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
@@ -71,8 +71,8 @@ public :
    * @returns Averaged field.
    */
   virtual
-  const topology::Field<mesh_type>&
-  filter(const topology::Field<mesh_type>& fieldIn,
+  const field_type&
+  filter(const field_type& fieldIn,
 	 const char* label =0,
 	 const int labelId =0) = 0;
 

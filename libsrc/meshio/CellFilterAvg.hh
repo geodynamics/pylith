@@ -24,8 +24,8 @@
 #include "CellFilter.hh" // ISA CellFilter
 
 // CellFilter -----------------------------------------------------------
-template<typename mesh_type>
-class pylith::meshio::CellFilterAvg : public CellFilter<mesh_type>
+template<typename mesh_type, typename field_type>
+class pylith::meshio::CellFilterAvg : public CellFilter<mesh_type, field_type>
 { // CellFilterAvg
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ public :
    *
    * @returns Copy of filter.
    */
-  CellFilter<mesh_type>* clone(void) const;
+  CellFilter<mesh_type,field_type>* clone(void) const;
 
   /** Filter field over cells.
    *
@@ -51,8 +51,8 @@ public :
    *
    * @returns Averaged field.
    */
-  const topology::Field<mesh_type>&
-  filter(const topology::Field<mesh_type>& fieldIn,
+  const field_type&
+  filter(const field_type& fieldIn,
 	 const char* label =0,
 	 const int labelId =0);
 
@@ -75,7 +75,7 @@ private :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  topology::Field<mesh_type>* _fieldAvg; ///< Averaged cell field
+  field_type* _fieldAvg; ///< Averaged cell field
 
 }; // CellFilterAvg
 
