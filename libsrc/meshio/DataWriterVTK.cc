@@ -82,7 +82,7 @@ pylith::meshio::DataWriterVTK<mesh_type>::openTimeStep(const double t,
 
   try {
     PetscErrorCode err = 0;
-
+    
     const std::string& filename = _vtkFilename(t);
 
     err = PetscViewerCreate(mesh.comm(), &_viewer);

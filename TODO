@@ -7,16 +7,7 @@ CURRENT ISSUES/PRIORITIES
 0. SWIG conversion [Brad]
 
   (1) Output
-    module
-      DataWriterVTK
-      DataWriter
-      OutputManager
-      OutputSolnSubset
-      CellFilter
-      CellFilterAvg
-      VertexFilter
-      VertexFilterVecNorm
-    TestDataWriterVTK
+    TestDataWriterVTK (bc, fault)
 
   (2) Full-scale tests (few 1-D, 2-D, and 3-D)
 
@@ -73,9 +64,18 @@ CURRENT ISSUES/PRIORITIES
   libtests/feassemble/ElasticityImplict
     testVerifyConfiguration()
     testCellField()
+  libtests/materials/Material
+    propertyField()
+    stateVarField()
 
   DirichletPoints (Python) - rate == None -> dbRate == 0
   DirichletBoundary (Python) - rate == None -> dbRate == 0
+
+  pytests.meshio.TestOutputSoln
+  pytests.meshio.TestOutputDirichlet
+  pytests.meshio.TestOutputFaultKin
+  pytests.meshio.TestOutputMatElastic
+  pytests.meshio.TestOutputNeumann
 
 1. Memory model [Matt]
 

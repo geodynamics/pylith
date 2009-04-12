@@ -54,7 +54,7 @@ class IntegratorElasticity(Integrator):
 
     Integrator.preinitialize(self, mesh)
     material.preinitialize(mesh)
-    #self.output.preinitialize(self)
+    self.output.preinitialize(self)
 
     # Set integrator's quadrature using quadrature from material
     self.quadrature(material.quadrature)
@@ -70,7 +70,7 @@ class IntegratorElasticity(Integrator):
     self._logger.eventBegin(logEvent)
 
     Integrator.verifyConfiguration(self)
-    #self.output.verifyConfiguration(self.mesh)
+    self.output.verifyConfiguration(self.mesh)
 
     self._logger.eventEnd(logEvent)    
     return
@@ -88,9 +88,9 @@ class IntegratorElasticity(Integrator):
 
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
 
-    #self.output.initialize(normalizer, self.materialObj.quadrature)
-    #self.output.writeInfo()
-    #self.output.open(totalTime, numTimeSteps)
+    self.output.initialize(normalizer, self.materialObj.quadrature)
+    self.output.writeInfo()
+    self.output.open(totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)
     return
@@ -106,7 +106,7 @@ class IntegratorElasticity(Integrator):
     Integrator.poststep(self, t, dt, totalTime, fields)
 
     self._info.log("Writing material data.")
-    #self.output.writeData(t+dt, fields)
+    self.output.writeData(t+dt, fields)
 
     self._logger.eventEnd(logEvent)
     return
@@ -124,10 +124,10 @@ class IntegratorElasticity(Integrator):
     Get cell field.
     """
     if None == fields:
-      (field, fieldType) = self.cellField(name)
+      field = self.cellField(name)
     else:
-      (field, fieldType) = self.cellField(name, fields)
-    return (field, fieldType)
+      field = self.cellField(name, fields)
+    return field
 
 
 # End of file 

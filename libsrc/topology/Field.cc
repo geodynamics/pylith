@@ -174,7 +174,6 @@ pylith::topology::Field<mesh_type>::newSection(const Field& src)
     newSection();
 
   if (!_section.isNull()) {
-    // ERROR? ARE THESE LINES CORRECT?
     _section->setAtlas(srcSection->getAtlas());
     _section->allocateStorage();
     _section->setBC(srcSection->getBC());

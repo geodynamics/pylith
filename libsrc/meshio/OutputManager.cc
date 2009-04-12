@@ -34,9 +34,9 @@ pylith::meshio::OutputManager<mesh_type>::OutputManager(void) :
 template<typename mesh_type>
 pylith::meshio::OutputManager<mesh_type>::~OutputManager(void)
 { // destructor
-  delete _writer; _writer = 0;
-  delete _vertexFilter; _vertexFilter = 0;
-  delete _cellFilter; _cellFilter = 0;
+  _writer = 0; // :TODO: Use shared pointer
+  _vertexFilter = 0; // :TODO: Use shared pointer
+  _cellFilter = 0; // :TODO: Use shared pointer
   delete _coordsys; _coordsys = 0;
 } // destructor  
 
@@ -55,9 +55,9 @@ pylith::meshio::OutputManager<mesh_type>::coordsys(
 template<typename mesh_type>
 void
 pylith::meshio::OutputManager<mesh_type>::writer(
-				       const DataWriter<mesh_type>* datawriter)
+				       DataWriter<mesh_type>* const datawriter)
 { // writer
-  delete _writer; _writer = (0 != datawriter) ? datawriter->clone() : 0;
+  _writer = datawriter; // :TODO: Use shared pointer
 } // writer
 
 // ----------------------------------------------------------------------
@@ -65,9 +65,9 @@ pylith::meshio::OutputManager<mesh_type>::writer(
 template<typename mesh_type>
 void
 pylith::meshio::OutputManager<mesh_type>::vertexFilter(
-					const VertexFilter<mesh_type>* filter)
+					VertexFilter<mesh_type>* const filter)
 { // vertexFilter
-  delete _vertexFilter; _vertexFilter = (0 != filter) ? filter->clone() : 0;
+  _vertexFilter = filter; // :TODO: Use shared pointer
 } // vertexFilter
 
 // ----------------------------------------------------------------------
@@ -75,9 +75,9 @@ pylith::meshio::OutputManager<mesh_type>::vertexFilter(
 template<typename mesh_type>
 void
 pylith::meshio::OutputManager<mesh_type>::cellFilter(
-				         const CellFilter<mesh_type>* filter)
+				         CellFilter<mesh_type>* const filter)
 { // cellFilter
-  delete _cellFilter; _cellFilter = (0 != filter) ? filter->clone() : 0;
+  _cellFilter = filter; // :TODO: Use shared pointer
 } // cellFilter
 
 // ----------------------------------------------------------------------

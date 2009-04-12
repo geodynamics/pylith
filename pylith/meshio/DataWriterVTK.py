@@ -99,7 +99,8 @@ class MeshDataWriterVTK(DataWriterVTK, ModuleMeshObject):
     Initialize writer.
     """
     DataWriterVTK.initialize(self, normalizer)
-
+    
+    print "FILENAME",self.filename
     ModuleMeshObject.filename(self, self.filename)
     ModuleMeshObject.timeFormat(self, self.timeFormat)
     ModuleMeshObject.timeConstant(self, self.timeConstant.value)

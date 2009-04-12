@@ -147,16 +147,22 @@ public :
   /// current state.
   void resetNeedNewJacobian(void);
 
-#if 0
   /** Get physical property field. Data is returned via the
    * argument.
    *
-   * @param field Proeprty field.
+   * @param field Property field.
    * @param name Name of physical property.
    */
-  void propertyField(ALE::Obj<real_section_type>* field,
+  void propertyField(topology::Field<topology::Mesh>* field,
 		     const char* name) const;
-#endif
+
+  /** Get state variable field. Data is returned via the argument.
+   *
+   * @param field State variable field.
+   * @param name Name of physical property.
+   */
+  void stateVarField(topology::Field<topology::Mesh>* field,
+		     const char* name) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

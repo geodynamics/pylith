@@ -157,7 +157,7 @@ class OutputManager(PetscComponent):
 
     nsteps = numTimeSteps
     if numTimeSteps > 0 and self.outputFreq == "skip" and self.skip > 0:
-      nsteps = numTimeSteps / (1+self.skip)
+      nsteps = int(numTimeSteps / (1+self.skip))
     elif numTimeSteps > 0 and self.outputFreq == "time_step":
       nsteps = 1 + int(totalTime / self.dt)
 

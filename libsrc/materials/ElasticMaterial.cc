@@ -217,7 +217,7 @@ pylith::materials::ElasticMaterial::updateStateVars(
   assert(!stateVarsSection.isNull());
   stateVarsSection->restrictPoint(cell, &_stateVarsCell[0],
 				  _stateVarsCell.size());
-
+  
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
     _updateStateVars(&_stateVarsCell[iQuad*numVarsQuadPt], numVarsQuadPt,
 		     &_propertiesCell[iQuad*numPropsQuadPt], 
@@ -257,6 +257,30 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(void) const
   
   return dtStable;
 } // stableTimeStepImplicit
+
+// ----------------------------------------------------------------------
+// Get initial stress field.
+const pylith::topology::Field<pylith::topology::Mesh>&
+pylith::materials::ElasticMaterial::initialStressField(void) const
+{ // initialStressField
+  if (0 == _initialStress)
+    throw std::runtime_error("Request for initial stress field, but field "
+			     "does not exist.");
+
+  return *_initialStress;
+} // initialStressField
+
+// ----------------------------------------------------------------------
+// Get initial strain field.
+const pylith::topology::Field<pylith::topology::Mesh>&
+pylith::materials::ElasticMaterial::initialStrainField(void) const
+{ // initialStrainField
+  if (0 == _initialStrain)
+    throw std::runtime_error("Request for initial strain field, but field "
+			     "does not exist.");
+
+  return *_initialStrain;
+} // initialStrainField
 
 // ----------------------------------------------------------------------
 // Allocate cell arrays.

@@ -71,7 +71,7 @@ class TimeStepUniform(TimeStep):
     """
     Get number of total time steps (or best guess if adaptive).
     """
-    nsteps = 1.0 + int(self.totalTime / self.dt)
+    nsteps = 1 + int(self.totalTime / self.dt)
     return nsteps
 
 

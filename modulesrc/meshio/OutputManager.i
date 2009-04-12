@@ -44,19 +44,19 @@ namespace pylith {
        *
        * @param datawriter Writer for data.
        */
-      void writer(const DataWriter<mesh_type>* datawriter);
+      void writer(DataWriter<mesh_type>* const datawriter);
       
       /** Set filter for vertex data.
        *
        * @param filter Filter to apply to vertex data before writing.
        */
-      void vertexFilter(const VertexFilter<mesh_type>* filter);
+      void vertexFilter(VertexFilter<mesh_type>* const filter);
       
       /** Set filter for cell data.
        *
        * @param filter Filter to apply to cell data before writing.
        */
-      void cellFilter(const CellFilter<mesh_type>* filter);
+      void cellFilter(CellFilter<mesh_type>* const filter);
       
       /** Prepare for output.
        *

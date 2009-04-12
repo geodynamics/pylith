@@ -17,42 +17,37 @@
 ##
 ## Factory: output_manager
 
-from OutputManager import OutputManager
+from OutputManager import MeshOutputManager
 
 # OutputSoln class
-class OutputSoln(OutputManager):
+class OutputSoln(MeshOutputManager):
   """
   Python object for managing output of finite-element solution
   information.
 
-  Factory: output_manager
+  @class Inventory
+  Python object for managing OutputSoln facilities and properties.
+  
+  \b Properties
+  @li \b vertex_data_fields Names of vertex data fields to output.
+  @li \b cell_info_fields Names of cell info fields to output.
+  
+  \b Facilities
+  @li None
+
+  Factory: mesh_output_manager
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(OutputManager.Inventory):
-    """
-    Python object for managing OutputSoln facilities and properties.
-    """
+  import pyre.inventory
 
-    ## @class Inventory
-    ## Python object for managing OutputSoln facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b vertex_data_fields Names of vertex data fields to output.
-    ## @li \b cell_info_fields Names of cell info fields to output.
-    ##
-    ## \b Facilities
-    ## @li None
-
-    import pyre.inventory
-
-    vertexDataFields = pyre.inventory.list("vertex_data_fields", 
-                                           default=["displacements"])
-    vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
-
-    cellInfoFields = pyre.inventory.list("cell_info_fields", default=[])
-    cellInfoFields.meta['tip'] = "Names of cell info fields to output."
+  vertexDataFields = pyre.inventory.list("vertex_data_fields", 
+                                         default=["displacement"])
+  vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
+  
+  cellInfoFields = pyre.inventory.list("cell_info_fields", default=[])
+  cellInfoFields.meta['tip'] = "Names of cell info fields to output."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -60,13 +55,13 @@ class OutputSoln(OutputManager):
     """
     Constructor.
     """
-    OutputManager.__init__(self, name)
+    MeshOutputManager.__init__(self, name)
     self.availableFields = \
         {'vertex': \
            {'info': [],
-            'data': ["displacements"]},
+            'data': ["displacement"]},
          'cell': \
-           {'info': ["replaced_cells"],
+           {'info': [],
             'data': []}}
     return
 
@@ -75,7 +70,7 @@ class OutputSoln(OutputManager):
     """
     Do
     """
-    OutputManager.preinitialize(self, dataProvider=self)
+    MeshOutputManager.preinitialize(self, dataProvider=self)
     return
   
 
@@ -87,7 +82,7 @@ class OutputSoln(OutputManager):
     self._logger.eventBegin(logEvent)    
 
     self.mesh = mesh
-    OutputManager.initialize(self, normalizer)
+    MeshOutputManager.initialize(self, normalizer)
 
     self._logger.eventEnd(logEvent)
     return
@@ -105,27 +100,11 @@ class OutputSoln(OutputManager):
     Get vertex field.
     """
     field = None
-    fieldType = None
-    if name == "displacements":
-      field = fields.getSolution()
-      fieldType = 1 # vector field
+    if name == "displacement":
+      field = fields.solution()
     else:
       raise ValueError, "Vertex field '%s' not available." % name
-    return (field, fieldType)
-
-
-  def getCellField(self, name):
-    """
-    Get vertex field.
-    """
-    field = None
-    fieldType = None
-    if name == "replaced_cells":
-      field = self.mesh.getRealSection("replaced_cells")
-      fieldType = 0 # scalar field
-    else:
-      raise ValueError, "Vertex field '%s' not available." % name
-    return (field, fieldType)
+    return field
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -134,7 +113,7 @@ class OutputSoln(OutputManager):
     """
     Set members based using inventory.
     """
-    OutputManager._configure(self)
+    MeshOutputManager._configure(self)
     self.vertexDataFields = self.inventory.vertexDataFields
     self.cellInfoFields = self.inventory.cellInfoFields
     return
@@ -142,7 +121,7 @@ class OutputSoln(OutputManager):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def output_manager():
+def mesh_output_manager():
   """
   Factory associated with OutputSoln.
   """

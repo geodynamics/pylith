@@ -129,9 +129,9 @@ class Formulation(PetscComponent, ModuleFormulation):
     self._setupBC(boundaryConditions)
     self._setupInterfaces(interfaceConditions)
     
-    #self._info.log("Pre-initializing output.")
-    #for output in self.output.components():
-    #  output.preinitialize()
+    self._info.log("Pre-initializing output.")
+    for output in self.output.components():
+      output.preinitialize()
 
     self._logger.eventEnd(logEvent)
     return
@@ -150,8 +150,8 @@ class Formulation(PetscComponent, ModuleFormulation):
       integrator.verifyConfiguration()
     for constraint in self.constraints:
       constraint.verifyConfiguration()
-    #for output in self.output.components():
-    #  output.verifyConfiguration(self.mesh)
+    for output in self.output.components():
+      output.verifyConfiguration(self.mesh)
 
     self._logger.eventEnd(logEvent)
     return
@@ -190,18 +190,19 @@ class Formulation(PetscComponent, ModuleFormulation):
       constraint.initialize(totalTime, numTimeSteps, normalizer)
     self._debug.log(resourceUsageString())
 
-    #self._info.log("Setting up solution output.")
-    #for output in self.output.components():
-    #  output.initialize(self.mesh, normalizer)
-    #  output.writeInfo()
-    #  output.open(totalTime, numTimeSteps)
-    #self._debug.log(resourceUsageString())
+    self._info.log("Setting up solution output.")
+    for output in self.output.components():
+      output.initialize(self.mesh, normalizer)
+      output.writeInfo()
+      output.open(totalTime, numTimeSteps)
+    self._debug.log(resourceUsageString())
 
     self._info.log("Creating solution field.")
     solnName = self.solnField['name']
     self.fields.add(solnName, self.solnField['label'])
     self.fields.solutionName(solnName)
     solution = self.fields.solution()
+    solution.vectorFieldType(solution.VECTOR)
     solution.newSection(solution.VERTICES_FIELD, dimension)
     for constraint in self.constraints:
       constraint.setConstraintSizes(solution)
@@ -274,8 +275,8 @@ class Formulation(PetscComponent, ModuleFormulation):
     totalTime = self.timeStep.totalTime
 
     self._info.log("Writing solution fields.")
-    #for output in self.output.components():
-    #  output.writeData(t+dt, self.fields)
+    for output in self.output.components():
+      output.writeData(t+dt, self.fields)
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.poststep(t, dt, totalTime, self.fields)
     for constraint in self.constraints:
@@ -298,8 +299,8 @@ class Formulation(PetscComponent, ModuleFormulation):
       integrator.finalize()
     for constraint in self.constraints:
       constraint.finalize()
-    #for output in self.output.components():
-    #  output.close()
+    for output in self.output.components():
+      output.close()
     self._debug.log(resourceUsageString())
 
     self._logger.eventEnd(logEvent)

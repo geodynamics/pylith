@@ -39,7 +39,8 @@ typedef pylith::topology::Mesh::RealSection RealSection;
 // Constructor
 pylith::feassemble::IntegratorElasticity::IntegratorElasticity(void) :
   _material(0),
-  _bufferFieldTensor(0)
+  _bufferFieldTensor(0),
+  _bufferFieldOther(0)
 { // constructor
 } // constructor
 
@@ -49,6 +50,7 @@ pylith::feassemble::IntegratorElasticity::~IntegratorElasticity(void)
 { // destructor
   _material = 0; // Don't manage memory for material
   delete _bufferFieldTensor; _bufferFieldTensor = 0;
+  delete _bufferFieldOther; _bufferFieldOther = 0;
 } // destructor
   
 // ----------------------------------------------------------------------
@@ -288,33 +290,33 @@ pylith::feassemble::IntegratorElasticity::cellField(
 					   const char* name,
 					   topology::SolutionFields* fields)
 { // cellField
+  assert(0 != fields);
   assert(0 != _material);
 
   // We assume the material stores the total-strain field if
   // hasStateVars() is TRUE.
 
-  const int numQuadPts = _quadrature->numQuadPts();
+  const topology::Mesh& mesh = fields->mesh();
 
   if (!_material->hasStateVars() &&
       (0 == strcasecmp(name, "total_strain") ||
        0 == strcasecmp(name, "stress") )) {
     assert(0 != fields);
-    _allocateTensorField(fields->mesh());
+    _allocateTensorField(mesh);
     _calcStrainStressField(_bufferFieldTensor, name, fields);
     return *_bufferFieldTensor;
   } else if (0 == strcasecmp(name, "stress")) {
     assert(0 != fields);
-    _allocateTensorField(fields->mesh());
-#if 0 // TEMPORARY
+    _allocateTensorField(mesh);
     _material->propertyField(_bufferFieldTensor, "total_strain");
-#endif
     _calcStressFromStrain(_bufferFieldTensor);
     return *_bufferFieldTensor;
-  } else
-#if 0 // TEMPORARY
-    return _material->field(name);
-#endif
-    assert(0);
+  } else {
+    if (0 == _bufferFieldOther)
+      _bufferFieldOther = new topology::Field<topology::Mesh>(mesh);
+    _material->stateVarField(_bufferFieldOther, name);
+    return *_bufferFieldOther;
+  } // if/else
   
   // Return tensor section to satisfy member function definition. Code
   // should never get here.

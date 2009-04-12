@@ -226,6 +226,9 @@ protected :
   /// Buffer for storing cell tensor field.
   topology::Field<topology::Mesh>* _bufferFieldTensor;
 
+  /// Buffer for storing cell state-variable field.
+  topology::Field<topology::Mesh>* _bufferFieldOther;
+
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 

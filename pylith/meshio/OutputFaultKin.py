@@ -17,10 +17,10 @@
 ##
 ## Factory: output_manager
 
-from OutputManager import OutputManager
+from OutputManager import SubMeshOutputManager
 
 # OutputFaultKin class
-class OutputFaultKin(OutputManager):
+class OutputFaultKin(SubMeshOutputManager):
   """
   Python object for managing output of finite-element information for
   faults with kinematic ruptures.
@@ -30,7 +30,7 @@ class OutputFaultKin(OutputManager):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(OutputManager.Inventory):
+  class Inventory(SubMeshOutputManager.Inventory):
     """
     Python object for managing OutputFaultKin facilities and properties.
     """
@@ -64,7 +64,7 @@ class OutputFaultKin(OutputManager):
     """
     Constructor.
     """
-    OutputManager.__init__(self, name)
+    SubMeshOutputManager.__init__(self, name)
     return
 
     
@@ -74,7 +74,7 @@ class OutputFaultKin(OutputManager):
     """
     Set members based using inventory.
     """
-    OutputManager._configure(self)
+    SubMeshOutputManager._configure(self)
     self.vertexInfoFields = self.inventory.vertexInfoFields
     self.vertexDataFields = self.inventory.vertexDataFields
     return
@@ -82,7 +82,7 @@ class OutputFaultKin(OutputManager):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def output_manager():
+def submesh_output_manager():
   """
   Factory associated with OutputFaultKin.
   """
