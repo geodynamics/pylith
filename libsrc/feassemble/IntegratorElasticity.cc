@@ -302,12 +302,14 @@ pylith::feassemble::IntegratorElasticity::cellField(
     assert(0 != fields);
     _allocateTensorField(mesh);
     _calcStrainStressField(_bufferFieldTensor, name, fields);
+    _bufferFieldTensor->label(name);
     return *_bufferFieldTensor;
   } else if (0 == strcasecmp(name, "stress")) {
     assert(0 != fields);
     _allocateTensorField(mesh);
     _material->getField(_bufferFieldTensor, "total_strain");
     _calcStressFromStrain(_bufferFieldTensor);
+    _bufferFieldTensor->label(name);
     return *_bufferFieldTensor;
   } else {
     if (0 == _bufferFieldOther)
@@ -345,9 +347,9 @@ pylith::feassemble::IntegratorElasticity::_allocateTensorField(
   if (0 == _bufferFieldTensor) {
     _bufferFieldTensor = new topology::Field<topology::Mesh>(mesh);
     assert(0 != _bufferFieldTensor);
-    _bufferFieldTensor->vectorFieldType(topology::FieldBase::MULTI_TENSOR);
     _bufferFieldTensor->newSection(cells, numQuadPts*tensorSize);
     _bufferFieldTensor->allocate();
+    _bufferFieldTensor->vectorFieldType(topology::FieldBase::MULTI_TENSOR);
   } // if
 } // _allocateTensorField
 

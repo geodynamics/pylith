@@ -91,6 +91,7 @@ class TestAxial(unittest.TestCase):
     diff = numpy.abs(1.0 - data['cell_fields']['mu']/muE)
     okay = diff < tolerance
     if numpy.sum(okay) != ncells:
+      print "Expected Lame's constant mu: ",muE
       print "Lame's constant mu: ",data['cell_fields']['mu']
       self.assertEqual(ncells, numpy.sum(okay))    
 
@@ -99,6 +100,7 @@ class TestAxial(unittest.TestCase):
     diff = numpy.abs(1.0 - data['cell_fields']['lambda']/lambdaE)
     okay = diff < tolerance
     if numpy.sum(okay) != ncells:
+      print "Expected Lame's constant lambda: ",lambdaE
       print "Lame's constant lambda: ",data['cell_fields']['lambda']
       self.assertEqual(ncells, numpy.sum(okay))    
 
@@ -106,6 +108,7 @@ class TestAxial(unittest.TestCase):
     diff = numpy.abs(1.0 - data['cell_fields']['density']/densityE)
     okay = diff < tolerance
     if numpy.sum(okay) != ncells:
+      print "Expected density: ",densityE
       print "Density: ",data['cell_fields']['density']
       self.assertEqual(ncells, numpy.sum(okay))    
     return
