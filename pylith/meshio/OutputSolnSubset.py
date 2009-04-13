@@ -15,7 +15,7 @@
 ## @brief Python object for managing output of finite-element solution
 ## information over a subdomain.
 ##
-## Factory: submesh_output_manager
+## Factory: output_manager
 
 from OutputManager import OutputManager
 from meshio import OutputSolnSubset as ModuleOutputSolnSubset
@@ -36,7 +36,7 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
   \b Facilities
   @li \b writer Writer for data.
 
-  Factory: submesh_output_manager
+  Factory: output_manager
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -50,9 +50,9 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
   label = pyre.inventory.str("label", default="")
   label.meta['tip'] = "Label identifier for subdomain."
 
-  from DataWriterVTK import SubMeshDataWriterVTK
-  writer = pyre.inventory.facility("writer", factory=SubMeshDataWriterVTK,
-                                 family="mesh_data_writer")
+  from DataWriterVTKSubMesh import DataWriterVTKSubMesh
+  writer = pyre.inventory.facility("writer", factory=DataWriterVTKSubMesh,
+                                 family="data_writer")
   writer.meta['tip'] = "Writer for data."
 
 
@@ -204,9 +204,9 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def submesh_output_manager():
+def output_manager():
   """
-  Factory associated with OutputSolnSubset.
+  Factory associated with OutputManager.
   """
   return OutputSolnSubset()
 

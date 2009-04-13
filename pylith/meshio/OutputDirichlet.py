@@ -17,10 +17,10 @@
 ##
 ## Factory: output_manager
 
-from OutputManager import SubMeshOutputManager
+from OutputManager import OutputManagerSubMesh
 
 # OutputDirichlet class
-class OutputDirichlet(SubMeshOutputManager):
+class OutputDirichlet(OutputManagerSubMesh):
   """
   Python object for managing output of finite-element information for
   Dirichlet boundary conditions.
@@ -30,7 +30,7 @@ class OutputDirichlet(SubMeshOutputManager):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(SubMeshOutputManager.Inventory):
+  class Inventory(OutputManagerSubMesh.Inventory):
     """
     Python object for managing OutputDirichlet facilities and properties.
     """
@@ -57,7 +57,7 @@ class OutputDirichlet(SubMeshOutputManager):
     """
     Constructor.
     """
-    SubMeshOutputManager.__init__(self, name)
+    OutputManagerSubMesh.__init__(self, name)
     return
 
     
@@ -67,7 +67,7 @@ class OutputDirichlet(SubMeshOutputManager):
     """
     Set members based using inventory.
     """
-    SubMeshOutputManager._configure(self)
+    OutputManagerSubMesh._configure(self)
     self.vertexInfoFields = self.inventory.vertexInfoFields
     self.vertexDataFields = []
     self.cellInfoFields = []
@@ -77,9 +77,9 @@ class OutputDirichlet(SubMeshOutputManager):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def submesh_output_manager():
+def output_manager():
   """
-  Factory associated with OutputDirichlet.
+  Factory associated with OutputManager.
   """
   return OutputDirichlet()
 

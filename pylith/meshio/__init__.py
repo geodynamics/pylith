@@ -15,9 +15,13 @@
 ## @brief Python PyLith meshio module initialization
 
 __all__ = ['CellFilter',
-           'CellFilterAvg',
+           'CellFilterAvgMesh',
+           'CellFilterAvgSubMesh',
            'DataWriter',
            'DataWriterVTK',
+           'DataWriterVTKMesh',
+           'DataWriterVTKSubMesh',
+           'DataWriterVTKSubSubMesh',
            'MeshIOObj',
            'MeshIOAscii',
            'MeshIOCubit',
@@ -25,13 +29,16 @@ __all__ = ['CellFilter',
            'OutputDirichlet',
            'OutputFaultKin',
            'OutputManager',
+           'OutputManagerMesh',
+           'OutputManagerSubMesh',
            'OutputMatElastic',
            'OutputNeumann'
            'OutputSoln',
            'OutputSolnSubset',
            'SingleOutput',
            'VertexFilter',
-           'VertexFilterVecNorm',
+           'VertexFilterVecNormMesh',
+           'VertexFilterVecNormSubMesh',
            ]
 
 

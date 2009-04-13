@@ -17,10 +17,10 @@
 ##
 ## Factory: output_manager
 
-from OutputManager import SubMeshOutputManager
+from OutputManagerSubMesh import OutputManagerSubMesh
 
 # OutputNeumann class
-class OutputNeumann(SubMeshOutputManager):
+class OutputNeumann(OutputManagerSubMesh):
   """
   Python object for managing output of finite-element information for
   Neumann boundary conditions.
@@ -30,7 +30,7 @@ class OutputNeumann(SubMeshOutputManager):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(SubMeshOutputManager.Inventory):
+  class Inventory(OutputManagerSubMesh.Inventory):
     """
     Python object for managing OutputNeumann facilities and properties.
     """
@@ -57,7 +57,7 @@ class OutputNeumann(SubMeshOutputManager):
     """
     Constructor.
     """
-    SubMeshOutputManager.__init__(self, name)
+    OutputManagerSubMesh.__init__(self, name)
     return
 
     
@@ -67,7 +67,7 @@ class OutputNeumann(SubMeshOutputManager):
     """
     Set members based using inventory.
     """
-    SubMeshOutputManager._configure(self)
+    OutputManagerSubMesh._configure(self)
     self.vertexInfoFields = []
     self.vertexDataFields = []
     self.cellInfoFields = self.inventory.cellInfoFields
@@ -77,9 +77,9 @@ class OutputNeumann(SubMeshOutputManager):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def submesh_output_manager():
+def output_manager():
   """
-  Factory associated with OutputNeumann.
+  Factory associated with OutputManager.
   """
   return OutputNeumann()
 

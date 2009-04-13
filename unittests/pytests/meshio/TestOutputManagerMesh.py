@@ -12,11 +12,11 @@
 
 ## @file unittests/pytests/meshio/TestOutputManagerMesh.py
 
-## @brief Unit testing of Python MeshOutputManager object.
+## @brief Unit testing of Python OutputManagerMesh object.
 
 import unittest
 
-from pylith.meshio.OutputManager import MeshOutputManager
+from pylith.meshio.OutputManagerMesh import OutputManagerMesh
 
 # ----------------------------------------------------------------------
 class TestProvider(object):
@@ -113,9 +113,9 @@ class TestProvider(object):
 
 
 # ----------------------------------------------------------------------
-class TestOutputManager(unittest.TestCase):
+class TestOutputManagerMesh(unittest.TestCase):
   """
-  Unit testing of Python MeshOutputManager object.
+  Unit testing of Python OutputManagerMesh object.
   """
 
   def setUp(self):
@@ -129,7 +129,7 @@ class TestOutputManager(unittest.TestCase):
     """
     Test constructor.
     """
-    output = MeshOutputManager()
+    output = OutputManagerMesh()
     output.inventory.writer._configure()
     output._configure()
     return
@@ -140,7 +140,7 @@ class TestOutputManager(unittest.TestCase):
     Test preinitialize().
     """
     dataProvider = TestProvider()
-    output = MeshOutputManager()
+    output = OutputManagerMesh()
     output.preinitialize(dataProvider)
     
     self.assertEqual(dataProvider, output.dataProvider)
@@ -152,7 +152,7 @@ class TestOutputManager(unittest.TestCase):
     Test verifyConfiguration().
     """
     dataProvider = TestProvider()
-    output = MeshOutputManager()
+    output = OutputManagerMesh()
     output.preinitialize(dataProvider)
 
     output.vertexInfoFields = ["vertex info"]
@@ -168,7 +168,7 @@ class TestOutputManager(unittest.TestCase):
     Test initialize().
     """
     # No quadrature
-    output = MeshOutputManager()
+    output = OutputManagerMesh()
     output.inventory.writer.inventory.filename = "test.vtk"
     output.inventory.writer._configure()
     output._configure()
@@ -189,7 +189,7 @@ class TestOutputManager(unittest.TestCase):
     quadrature.inventory.cell = cell
     quadrature._configure()
     
-    output = MeshOutputManager()
+    output = OutputManagerMesh()
     output.inventory.writer.inventory.filename = "test.vtk"
     output.inventory.writer._configure()
     output._configure()
@@ -203,7 +203,7 @@ class TestOutputManager(unittest.TestCase):
     """
     Test open() and close().
     """
-    output = MeshOutputManager()
+    output = OutputManagerMesh()
     output.inventory.writer.inventory.filename = "output.vtk"
     output.inventory.writer._configure()
     output._configure()
@@ -220,7 +220,7 @@ class TestOutputManager(unittest.TestCase):
     """
     Test writeInfo().
     """
-    output = MeshOutputManager()
+    output = OutputManagerMesh()
     output.inventory.writer.inventory.filename = "output.vtk"
     output.inventory.writer._configure()
     output.inventory.vertexInfoFields = ["vertex info"]
@@ -241,7 +241,7 @@ class TestOutputManager(unittest.TestCase):
     """
     Test writeData().
     """
-    output = MeshOutputManager()
+    output = OutputManagerMesh()
     output.inventory.writer.inventory.filename = "output.vtk"
     output.inventory.writer.inventory.timeFormat = "%3.1f"
     output.inventory.writer._configure()
@@ -267,7 +267,7 @@ class TestOutputManager(unittest.TestCase):
     dataProvider = TestProvider()
 
     # Default values should be true
-    output = MeshOutputManager()
+    output = OutputManagerMesh()
     output.inventory.writer._configure()
     output._configure()
     output.preinitialize(dataProvider)
@@ -276,7 +276,7 @@ class TestOutputManager(unittest.TestCase):
     self.assertEqual(True, output._checkWrite(3.234e+8))
 
     # Check writing based on time
-    output = MeshOutputManager()
+    output = OutputManagerMesh()
     output._configure()
     output.writer._configure()
     output.preinitialize(dataProvider)
@@ -294,7 +294,7 @@ class TestOutputManager(unittest.TestCase):
     self.assertEqual(True, output._checkWrite(t))
     
     # Check writing based on number of steps
-    output = MeshOutputManager()
+    output = OutputManagerMesh()
     output._configure()
     output.writer._configure()
     output.preinitialize(dataProvider)

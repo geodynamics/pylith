@@ -15,8 +15,6 @@
 ## @brief Python object for writing finite-element data to VTK file.
 
 from DataWriter import DataWriter
-from meshio import MeshDataWriterVTK as ModuleMeshObject
-from meshio import SubMeshDataWriterVTK as ModuleSubMeshObject
 
 # DataWriterVTK class
 class DataWriterVTK(DataWriter):
@@ -71,89 +69,6 @@ class DataWriterVTK(DataWriter):
     self.timeConstant = normalizer.nondimensionalize(self.timeConstant,
                                                      timeScale)
     return
-  
-
-# MeshDataWriterVTK class
-class MeshDataWriterVTK(DataWriterVTK, ModuleMeshObject):
-  """
-  Python object for writing finite-element data to VTK file.
-
-  Inventory
-
-  Factory: mesh_output_data_writer
-  """
-
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="meshdatawritervtk"):
-    """
-    Constructor.
-    """
-    DataWriterVTK.__init__(self, name)
-    ModuleMeshObject.__init__(self)
-    return
-
-
-  def initialize(self, normalizer):
-    """
-    Initialize writer.
-    """
-    DataWriterVTK.initialize(self, normalizer)
-    
-    print "FILENAME",self.filename
-    ModuleMeshObject.filename(self, self.filename)
-    ModuleMeshObject.timeFormat(self, self.timeFormat)
-    ModuleMeshObject.timeConstant(self, self.timeConstant.value)
-    return
-  
-
-# SubMeshDataWriterVTK class
-class SubMeshDataWriterVTK(DataWriterVTK, ModuleSubMeshObject):
-  """
-  Python object for writing finite-element data to VTK file.
-
-  Inventory
-
-  Factory: submesh_output_data_writer
-  """
-
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="submeshdatawritervtk"):
-    """
-    Constructor.
-    """
-    DataWriterVTK.__init__(self, name)
-    ModuleSubMeshObject.__init__(self)
-    return
-
-
-  def initialize(self, normalizer):
-    """
-    Initialize writer.
-    """
-    DataWriterVTK.initialize(self, normalizer)
-
-    ModuleSubMeshObject.filename(self, self.filename)
-    ModuleSubMeshObject.timeFormat(self, self.timeFormat)
-    ModuleSubMeshObject.timeConstant(self, self.timeConstant.value)
-    return
-  
-
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def mesh_output_data_writer():
-  """
-  Factory associated with MeshDataWriterVTK.
-  """
-  return MeshDataWriterVTK()
-
-
-def submesh_output_data_writer():
-  """
-  Factory associated with SubMeshDataWriterVTK.
-  """
-  return SubMeshDataWriterVTK()
 
 
 # End of file 

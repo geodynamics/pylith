@@ -17,10 +17,10 @@
 ##
 ## Factory: output_manager
 
-from OutputManager import MeshOutputManager
+from OutputManagerMesh import OutputManagerMesh
 
 # OutputSoln class
-class OutputSoln(MeshOutputManager):
+class OutputSoln(OutputManagerMesh):
   """
   Python object for managing output of finite-element solution
   information.
@@ -55,7 +55,7 @@ class OutputSoln(MeshOutputManager):
     """
     Constructor.
     """
-    MeshOutputManager.__init__(self, name)
+    OutputManagerMesh.__init__(self, name)
     self.availableFields = \
         {'vertex': \
            {'info': [],
@@ -70,7 +70,7 @@ class OutputSoln(MeshOutputManager):
     """
     Do
     """
-    MeshOutputManager.preinitialize(self, dataProvider=self)
+    OutputManagerMesh.preinitialize(self, dataProvider=self)
     return
   
 
@@ -82,7 +82,7 @@ class OutputSoln(MeshOutputManager):
     self._logger.eventBegin(logEvent)    
 
     self.mesh = mesh
-    MeshOutputManager.initialize(self, normalizer)
+    OutputManagerMesh.initialize(self, normalizer)
 
     self._logger.eventEnd(logEvent)
     return
@@ -113,7 +113,7 @@ class OutputSoln(MeshOutputManager):
     """
     Set members based using inventory.
     """
-    MeshOutputManager._configure(self)
+    OutputManagerMesh._configure(self)
     self.vertexDataFields = self.inventory.vertexDataFields
     self.cellInfoFields = self.inventory.cellInfoFields
     return
@@ -121,9 +121,9 @@ class OutputSoln(MeshOutputManager):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def mesh_output_manager():
+def output_manager():
   """
-  Factory associated with OutputSoln.
+  Factory associated with OutputManager.
   """
   return OutputSoln()
 

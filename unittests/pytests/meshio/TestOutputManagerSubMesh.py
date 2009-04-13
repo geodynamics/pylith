@@ -12,11 +12,11 @@
 
 ## @file unittests/pytests/meshio/TestOutputManagerSubMesh.py
 
-## @brief Unit testing of Python SubMeshOutputManager object.
+## @brief Unit testing of Python OutputManagerSubMesh object.
 
 import unittest
 
-from pylith.meshio.OutputManager import SubMeshOutputManager
+from pylith.meshio.OutputManagerSubMesh import OutputManagerSubMesh
 
 # ----------------------------------------------------------------------
 class TestProvider(object):
@@ -117,7 +117,7 @@ class TestProvider(object):
 
 
 # ----------------------------------------------------------------------
-class TestOutputManager(unittest.TestCase):
+class TestOutputManagerSubMesh(unittest.TestCase):
   """
   Unit testing of Python MeshOutputManager object.
   """
@@ -133,7 +133,7 @@ class TestOutputManager(unittest.TestCase):
     """
     Test constructor.
     """
-    output = SubMeshOutputManager()
+    output = OutputManagerSubMesh()
     output.inventory.writer._configure()
     output._configure()
     return
@@ -144,7 +144,7 @@ class TestOutputManager(unittest.TestCase):
     Test preinitialize().
     """
     dataProvider = TestProvider()
-    output = SubMeshOutputManager()
+    output = OutputManagerSubMesh()
     output.preinitialize(dataProvider)
     
     self.assertEqual(dataProvider, output.dataProvider)
@@ -156,7 +156,7 @@ class TestOutputManager(unittest.TestCase):
     Test verifyConfiguration().
     """
     dataProvider = TestProvider()
-    output = SubMeshOutputManager()
+    output = OutputManagerSubMesh()
     output.preinitialize(dataProvider)
 
     output.vertexInfoFields = ["vertex info"]
@@ -172,7 +172,7 @@ class TestOutputManager(unittest.TestCase):
     Test initialize().
     """
     # No quadrature
-    output = SubMeshOutputManager()
+    output = OutputManagerSubMesh()
     output.inventory.writer.inventory.filename = "test.vtk"
     output.inventory.writer._configure()
     output._configure()
@@ -193,7 +193,7 @@ class TestOutputManager(unittest.TestCase):
     quadrature.inventory.cell = cell
     quadrature._configure()
     
-    output = SubMeshOutputManager()
+    output = OutputManagerSubMesh()
     output.inventory.writer.inventory.filename = "test.vtk"
     output.inventory.writer._configure()
     output._configure()
@@ -207,7 +207,7 @@ class TestOutputManager(unittest.TestCase):
     """
     Test open() and close().
     """
-    output = SubMeshOutputManager()
+    output = OutputManagerSubMesh()
     output.inventory.writer.inventory.filename = "output.vtk"
     output.inventory.writer._configure()
     output._configure()
@@ -224,7 +224,7 @@ class TestOutputManager(unittest.TestCase):
     """
     Test writeInfo().
     """
-    output = SubMeshOutputManager()
+    output = OutputManagerSubMesh()
     output.inventory.writer.inventory.filename = "output.vtk"
     output.inventory.writer._configure()
     output.inventory.vertexInfoFields = ["vertex info"]
@@ -245,7 +245,7 @@ class TestOutputManager(unittest.TestCase):
     """
     Test writeData().
     """
-    output = SubMeshOutputManager()
+    output = OutputManagerSubMesh()
     output.inventory.writer.inventory.filename = "output.vtk"
     output.inventory.writer.inventory.timeFormat = "%3.1f"
     output.inventory.writer._configure()
@@ -271,7 +271,7 @@ class TestOutputManager(unittest.TestCase):
     dataProvider = TestProvider()
 
     # Default values should be true
-    output = SubMeshOutputManager()
+    output = OutputManagerSubMesh()
     output.inventory.writer._configure()
     output._configure()
     output.preinitialize(dataProvider)
@@ -280,7 +280,7 @@ class TestOutputManager(unittest.TestCase):
     self.assertEqual(True, output._checkWrite(3.234e+8))
 
     # Check writing based on time
-    output = SubMeshOutputManager()
+    output = OutputManagerSubMesh()
     output._configure()
     output.writer._configure()
     output.preinitialize(dataProvider)
@@ -298,7 +298,7 @@ class TestOutputManager(unittest.TestCase):
     self.assertEqual(True, output._checkWrite(t))
     
     # Check writing based on number of steps
-    output = SubMeshOutputManager()
+    output = OutputManagerSubMesh()
     output._configure()
     output.writer._configure()
     output.preinitialize(dataProvider)

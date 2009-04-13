@@ -16,11 +16,11 @@
 
 import unittest
 
-from pylith.meshio.CellFilterAvg import MeshCellFilterAvg
-from pylith.meshio.CellFilterAvg import SubMeshCellFilterAvg
+from pylith.meshio.CellFilterAvgMesh import CellFilterAvgMesh
+from pylith.meshio.CellFilterAvgSubMesh import CellFilterAvgSubMesh
 
 # ----------------------------------------------------------------------
-class TestMeshCellFilterAvg(unittest.TestCase):
+class TestCellFilterAvgMesh(unittest.TestCase):
   """
   Unit testing of Python CellFilterAvg object.
   """
@@ -29,7 +29,7 @@ class TestMeshCellFilterAvg(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = MeshCellFilterAvg()
+    filter = CellFilterAvgMesh()
     filter._configure()
     return
 
@@ -54,7 +54,7 @@ class TestMeshCellFilterAvg(unittest.TestCase):
     quadrature.preinitialize(spaceDim)
     quadrature.initialize()
 
-    filter = MeshCellFilterAvg()
+    filter = CellFilterAvgMesh()
     filter._configure()
     filter.initialize(quadrature)
     return
@@ -64,13 +64,13 @@ class TestMeshCellFilterAvg(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.CellFilterAvg import mesh_output_cell_filter
-    filter = mesh_output_cell_filter()
+    from pylith.meshio.CellFilterAvgMesh import output_cell_filter
+    filter = output_cell_filter()
     return
 
 
 # ----------------------------------------------------------------------
-class TestSubMeshCellFilterAvg(unittest.TestCase):
+class TestCellFilterAvgSubMesh(unittest.TestCase):
   """
   Unit testing of Python CellFilterAvg object.
   """
@@ -79,7 +79,7 @@ class TestSubMeshCellFilterAvg(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = SubMeshCellFilterAvg()
+    filter = CellFilterAvgSubMesh()
     filter._configure()
     return
 
@@ -104,7 +104,7 @@ class TestSubMeshCellFilterAvg(unittest.TestCase):
     quadrature.preinitialize(spaceDim)
     quadrature.initialize()
 
-    filter = SubMeshCellFilterAvg()
+    filter = CellFilterAvgSubMesh()
     filter._configure()
     filter.initialize(quadrature)
     return
@@ -114,8 +114,8 @@ class TestSubMeshCellFilterAvg(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.CellFilterAvg import mesh_output_cell_filter
-    filter = mesh_output_cell_filter()
+    from pylith.meshio.CellFilterAvgSubMesh import output_cell_filter
+    filter = output_cell_filter()
     return
 
 

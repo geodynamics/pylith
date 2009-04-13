@@ -62,32 +62,41 @@ class TestApp(Script):
     from TestMeshIOLagrit import TestMeshIOLagrit
     suite.addTest(unittest.makeSuite(TestMeshIOLagrit))
 
-    from TestVertexFilterVecNorm import TestMeshVertexFilterVecNorm
-    suite.addTest(unittest.makeSuite(TestMeshVertexFilterVecNorm))
+    from TestVertexFilterVecNorm import TestVertexFilterVecNormMesh
+    suite.addTest(unittest.makeSuite(TestVertexFilterVecNormMesh))
 
-    from TestVertexFilterVecNorm import TestSubMeshVertexFilterVecNorm
-    suite.addTest(unittest.makeSuite(TestSubMeshVertexFilterVecNorm))
+    from TestVertexFilterVecNorm import TestVertexFilterVecNormSubMesh
+    suite.addTest(unittest.makeSuite(TestVertexFilterVecNormSubMesh))
 
-    from TestCellFilterAvg import TestMeshCellFilterAvg
-    suite.addTest(unittest.makeSuite(TestMeshCellFilterAvg))
+    from TestCellFilterAvg import TestCellFilterAvgMesh
+    suite.addTest(unittest.makeSuite(TestCellFilterAvgMesh))
 
-    from TestCellFilterAvg import TestSubMeshCellFilterAvg
-    suite.addTest(unittest.makeSuite(TestSubMeshCellFilterAvg))
+    from TestCellFilterAvg import TestCellFilterAvgSubMesh
+    suite.addTest(unittest.makeSuite(TestCellFilterAvgSubMesh))
 
-    from TestDataWriterVTK import TestMeshDataWriterVTK
-    suite.addTest(unittest.makeSuite(TestMeshDataWriterVTK))
+    from TestDataWriterVTK import TestDataWriterVTKMesh
+    suite.addTest(unittest.makeSuite(TestDataWriterVTKMesh))
 
-    from TestDataWriterVTK import TestSubMeshDataWriterVTK
-    suite.addTest(unittest.makeSuite(TestSubMeshDataWriterVTK))
+    from TestDataWriterVTK import TestDataWriterVTKSubMesh
+    suite.addTest(unittest.makeSuite(TestDataWriterVTKSubMesh))
 
-    from TestOutputManagerMesh import TestOutputManager
-    suite.addTest(unittest.makeSuite(TestOutputManager))
+    from TestDataWriterVTK import TestDataWriterVTKSubSubMesh
+    suite.addTest(unittest.makeSuite(TestDataWriterVTKSubSubMesh))
 
-    from TestOutputManagerSubMesh import TestOutputManager
-    suite.addTest(unittest.makeSuite(TestOutputManager))
+    from TestOutputManagerMesh import TestOutputManagerMesh
+    suite.addTest(unittest.makeSuite(TestOutputManagerMesh))
+
+    from TestOutputManagerSubMesh import TestOutputManagerSubMesh
+    suite.addTest(unittest.makeSuite(TestOutputManagerSubMesh))
 
     from TestOutputSolnSubset import TestOutputSolnSubset
     suite.addTest(unittest.makeSuite(TestOutputSolnSubset))
+
+    #TestOutputNeumann
+
+    #TestOutputFaultKin
+
+    #TestOutputDirichlet
 
     return suite
 

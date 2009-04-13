@@ -16,20 +16,21 @@
 
 import unittest
 
-from pylith.meshio.DataWriterVTK import MeshDataWriterVTK
-from pylith.meshio.DataWriterVTK import SubMeshDataWriterVTK
+from pylith.meshio.DataWriterVTKMesh import DataWriterVTKMesh
+from pylith.meshio.DataWriterVTKSubMesh import DataWriterVTKSubMesh
+from pylith.meshio.DataWriterVTKSubSubMesh import DataWriterVTKSubSubMesh
 
 # ----------------------------------------------------------------------
-class TestMeshDataWriterVTK(unittest.TestCase):
+class TestDataWriterVTKMesh(unittest.TestCase):
   """
-  Unit testing of Python DataWriterVTK object.
+  Unit testing of Python DataWriterVTKMesh object.
   """
 
   def test_constructor(self):
     """
     Test constructor.
     """
-    filter = MeshDataWriterVTK()
+    filter = DataWriterVTKMesh()
     filter._configure()
     return
 
@@ -38,7 +39,7 @@ class TestMeshDataWriterVTK(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = MeshDataWriterVTK()
+    filter = DataWriterVTKMesh()
     filter._configure()
 
     from spatialdata.units.Nondimensional import Nondimensional
@@ -51,13 +52,13 @@ class TestMeshDataWriterVTK(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.DataWriterVTK import mesh_output_data_writer
-    filter = mesh_output_data_writer()
+    from pylith.meshio.DataWriterVTKMesh import output_data_writer
+    filter = output_data_writer()
     return
 
 
 # ----------------------------------------------------------------------
-class TestSubMeshDataWriterVTK(unittest.TestCase):
+class TestDataWriterVTKSubMesh(unittest.TestCase):
   """
   Unit testing of Python DataWriterVTK object.
   """
@@ -66,7 +67,7 @@ class TestSubMeshDataWriterVTK(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = SubMeshDataWriterVTK()
+    filter = DataWriterVTKSubMesh()
     filter._configure()
     return
 
@@ -75,7 +76,7 @@ class TestSubMeshDataWriterVTK(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = SubMeshDataWriterVTK()
+    filter = DataWriterVTKSubMesh()
     filter._configure()
 
     from spatialdata.units.Nondimensional import Nondimensional
@@ -88,8 +89,45 @@ class TestSubMeshDataWriterVTK(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.DataWriterVTK import submesh_output_data_writer
-    filter = submesh_output_data_writer()
+    from pylith.meshio.DataWriterVTKSubMesh import output_data_writer
+    filter = output_data_writer()
+    return
+
+
+# ----------------------------------------------------------------------
+class TestDataWriterVTKSubSubMesh(unittest.TestCase):
+  """
+  Unit testing of Python DataWriterVTK object.
+  """
+
+  def test_constructor(self):
+    """
+    Test constructor.
+    """
+    filter = DataWriterVTKSubSubMesh()
+    filter._configure()
+    return
+
+
+  def test_initialize(self):
+    """
+    Test constructor.
+    """
+    filter = DataWriterVTKSubSubMesh()
+    filter._configure()
+
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    filter.initialize(normalizer)
+    return
+
+
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.meshio.DataWriterVTKSubSubMesh import output_data_writer
+    filter = output_data_writer()
     return
 
 

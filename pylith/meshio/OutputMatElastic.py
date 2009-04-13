@@ -17,10 +17,10 @@
 ##
 ## Factory: output_manager
 
-from OutputManager import MeshOutputManager
+from OutputManagerMesh import OutputManagerMesh
 
 # OutputMatElastic class
-class OutputMatElastic(MeshOutputManager):
+class OutputMatElastic(OutputManagerMesh):
   """
   Python object for managing output of finite-element information for
   material state variables.
@@ -30,7 +30,7 @@ class OutputMatElastic(MeshOutputManager):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(MeshOutputManager.Inventory):
+  class Inventory(OutputManagerMesh.Inventory):
     """
     Python object for managing OutputMatElastic facilities and properties.
     """
@@ -64,7 +64,7 @@ class OutputMatElastic(MeshOutputManager):
     """
     Constructor.
     """
-    MeshOutputManager.__init__(self, name)
+    OutputManagerMesh.__init__(self, name)
     return
 
     
@@ -74,7 +74,7 @@ class OutputMatElastic(MeshOutputManager):
     """
     Set members based using inventory.
     """
-    MeshOutputManager._configure(self)
+    OutputManagerMesh._configure(self)
     self.vertexInfoFields = []
     self.vertexDataFields = []
     self.cellInfoFields = self.inventory.cellInfoFields
@@ -84,9 +84,9 @@ class OutputMatElastic(MeshOutputManager):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def mesh_output_manager():
+def output_manager():
   """
-  Factory associated with OutputMatElastic.
+  Factory associated with OutputManager.
   """
   return OutputMatElastic()
 

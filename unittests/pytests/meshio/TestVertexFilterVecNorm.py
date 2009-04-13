@@ -16,11 +16,11 @@
 
 import unittest
 
-from pylith.meshio.VertexFilterVecNorm import MeshVertexFilterVecNorm
-from pylith.meshio.VertexFilterVecNorm import SubMeshVertexFilterVecNorm
+from pylith.meshio.VertexFilterVecNormMesh import VertexFilterVecNormMesh
+from pylith.meshio.VertexFilterVecNormSubMesh import VertexFilterVecNormSubMesh
 
 # ----------------------------------------------------------------------
-class TestMeshVertexFilterVecNorm(unittest.TestCase):
+class TestVertexFilterVecNormMesh(unittest.TestCase):
   """
   Unit testing of Python VertexFilterVecNorm object.
   """
@@ -29,7 +29,7 @@ class TestMeshVertexFilterVecNorm(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = MeshVertexFilterVecNorm()
+    filter = VertexFilterVecNormMesh()
     filter._configure()
     return
 
@@ -38,7 +38,7 @@ class TestMeshVertexFilterVecNorm(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = MeshVertexFilterVecNorm()
+    filter = VertexFilterVecNormMesh()
     filter._configure()
     filter.initialize()
     return
@@ -48,13 +48,13 @@ class TestMeshVertexFilterVecNorm(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.VertexFilterVecNorm import mesh_output_vertex_filter
-    filter = mesh_output_vertex_filter()
+    from pylith.meshio.VertexFilterVecNormMesh import output_vertex_filter
+    filter = output_vertex_filter()
     return
 
 
 # ----------------------------------------------------------------------
-class TestSubMeshVertexFilterVecNorm(unittest.TestCase):
+class TestVertexFilterVecNormSubMesh(unittest.TestCase):
   """
   Unit testing of Python VertexFilterVecNorm object.
   """
@@ -63,7 +63,7 @@ class TestSubMeshVertexFilterVecNorm(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = SubMeshVertexFilterVecNorm()
+    filter = VertexFilterVecNormSubMesh()
     filter._configure()
     return
 
@@ -72,7 +72,7 @@ class TestSubMeshVertexFilterVecNorm(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = SubMeshVertexFilterVecNorm()
+    filter = VertexFilterVecNormSubMesh()
     filter._configure()
     filter.initialize()
     return
@@ -82,8 +82,8 @@ class TestSubMeshVertexFilterVecNorm(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.VertexFilterVecNorm import submesh_output_vertex_filter
-    filter = submesh_output_vertex_filter()
+    from pylith.meshio.VertexFilterVecNormSubMesh import output_vertex_filter
+    filter = output_vertex_filter()
     return
 
 

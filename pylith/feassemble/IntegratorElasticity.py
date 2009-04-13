@@ -89,7 +89,7 @@ class IntegratorElasticity(Integrator):
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
 
     self.output.initialize(normalizer, self.materialObj.quadrature)
-    self.output.writeInfo()
+    #self.output.writeInfo()
     self.output.open(totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)
@@ -106,7 +106,7 @@ class IntegratorElasticity(Integrator):
     Integrator.poststep(self, t, dt, totalTime, fields)
 
     self._info.log("Writing material data.")
-    self.output.writeData(t+dt, fields)
+    #self.output.writeData(t+dt, fields)
 
     self._logger.eventEnd(logEvent)
     return
