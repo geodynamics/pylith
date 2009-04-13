@@ -73,6 +73,18 @@ namespace pylith {
        */
       void verifyConfiguration(const pylith::topology::Mesh& mesh) const;
       
+      /** Get cell field associated with integrator.
+       *
+       * @param name Name of vertex field.
+       * @param mesh Finite-element mesh for problem.
+       * @param fields Fields manager.
+       * @returns Cell field.
+       */
+      const pylith::topology::Field<pylith::topology::Mesh>&
+      cellField(const char* name,
+		const pylith::topology::Mesh& mesh,
+		pylith::topology::SolutionFields* const fields =0);
+      
     }; // IntegratorElasticity
 
   } // feassemble

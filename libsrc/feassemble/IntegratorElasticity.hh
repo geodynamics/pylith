@@ -98,15 +98,15 @@ public :
 
   /** Get cell field associated with integrator.
    *
-   * @param fieldType Type of field.
    * @param name Name of vertex field.
-   * @param mesh PETSc mesh for problem.
+   * @param mesh Finite-element mesh for problem.
    * @param fields Fields manager.
    * @returns Cell field.
    */
   const topology::Field<topology::Mesh>&
   cellField(const char* name,
-	    topology::SolutionFields* const fields);
+	    const topology::Mesh& mesh,
+	    topology::SolutionFields* const fields =0);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :

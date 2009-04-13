@@ -147,22 +147,14 @@ public :
   /// current state.
   void resetNeedNewJacobian(void);
 
-  /** Get physical property field. Data is returned via the
-   * argument.
+  /** Get physical property or state variable field. Data is returned
+   * via the argument.
    *
-   * @param field Property field.
-   * @param name Name of physical property.
+   * @param field Field over material cells.
+   * @param name Name of field to retrieve.
    */
-  void propertyField(topology::Field<topology::Mesh>* field,
-		     const char* name) const;
-
-  /** Get state variable field. Data is returned via the argument.
-   *
-   * @param field State variable field.
-   * @param name Name of physical property.
-   */
-  void stateVarField(topology::Field<topology::Mesh>* field,
-		     const char* name) const;
+  void getField(topology::Field<topology::Mesh>* field,
+		const char* name) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -241,6 +233,21 @@ protected :
   const int _dimension; ///< Spatial dimension associated with material.
   const int _tensorSize; ///< Tensor size for material.
   bool _needNewJacobian; ///< True if need to reform Jacobian, false otherwise.
+
+  // PRIVATE METHODS ////////////////////////////////////////////////////
+private :
+  
+  /** Get indices for physical property or state variable field. Index
+   * of physical property or state variable is set, unknown values are
+   * -1.
+   *
+   * @param propertyIndex Index of field in properties array.
+   * @param stateVarIndex Index of field in state variables array.
+   * @param name Name of field.
+   */
+  void _findField(int* propertyIndex,
+		  int* stateVarIndex,
+		  const char* name) const;
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

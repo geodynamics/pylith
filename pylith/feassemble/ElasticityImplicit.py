@@ -48,6 +48,7 @@ class ElasticityImplicit(IntegratorElasticity, ModuleElasticityImplicit):
 
     IntegratorElasticity.initialize(self, totalTime, numTimeSteps, normalizer)
     ModuleElasticityImplicit.initialize(self, self.mesh)
+    self._initializeOutput(totalTime, numTimeSteps, normalizer)
     
     self._logger.eventEnd(logEvent)
     return

@@ -238,162 +238,175 @@ pylith::materials::Material::initialize(
 } // initialize
 
 // ----------------------------------------------------------------------
-// Get physical property field.
+// Get physical property or state variable field.
 void
-pylith::materials::Material::propertyField(topology::Field<topology::Mesh>* field,
-					   const char* name) const
-{ // propertyField
+pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
+				      const char* name) const
+{ // getField
   assert(0 != field);
+  assert(0 != _properties);
+  assert(0 != _stateVars);
 
-  // Find property in list of physical properties.
-  int i=0;
-  int propOffset = 0;
-  const string_vector& properties = _metadata.properties();
-  const int numProperties = properties.size();
-  const std::string nameString = std::string(name);
-  bool found = false;
-  for (int i=0; i < numProperties; ++i)
-    if (nameString == properties[i]) {
-      found = true;
-      break;
-    } else
+  int propertyIndex = -1;
+  int stateVarIndex = -1;
+  _findField(&propertyIndex, &stateVarIndex, name);
+
+  // Get cell information
+  const ALE::Obj<SieveMesh>& sieveMesh = field->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", _id);
+  assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  
+  if (propertyIndex >= 0) { // If field is a property
+    int propOffset = 0;
+    const string_vector& properties = _metadata.properties();
+    assert(propertyIndex < properties.size());
+    for (int i=0; i < propertyIndex; ++i)
       propOffset += 
 	_metadata.fiberDim(properties[i].c_str(), Metadata::PROPERTY);
-  if (!found) {
-    std::ostringstream msg;
-    msg << "Unknown physical property '" << name << "' for material '"
-	<< _label << "'.";
-    throw std::runtime_error(msg.str());
-  } // else
-  const int fiberDim = _metadata.fiberDim(name, Metadata::PROPERTY);
+    const int fiberDim = _metadata.fiberDim(name, Metadata::PROPERTY);
 
-  // Get cell information
-  const ALE::Obj<SieveMesh>& sieveMesh = field->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", _id);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
-  
-  // Get properties section
-  const ALE::Obj<RealSection>& propertiesSection = _properties->section();
-  assert(!propertiesSection.isNull());
-  const int totalPropsFiberDim = 
-    propertiesSection->getFiberDimension(*cells->begin());
-  const int numPropsQuadPt = _numPropsQuadPt;
-  const int numQuadPts = totalPropsFiberDim / numPropsQuadPt;
-  assert(totalPropsFiberDim == numQuadPts * numPropsQuadPt);
-  const int totalFiberDim = numQuadPts * fiberDim;
+    // :TODO: Get scale information
 
-  // Allocate buffer for property field.
-  const ALE::Obj<RealSection>& fieldSection = field->section();
-  if (totalFiberDim != fieldSection->getFiberDimension(*cells->begin())) {
-    field->newSection(cells, totalFiberDim);
-    field->allocate();
+    // Get properties section
+    const ALE::Obj<RealSection>& propertiesSection = _properties->section();
+    assert(!propertiesSection.isNull());
+    const int totalPropsFiberDim = 
+      propertiesSection->getFiberDimension(*cells->begin());
+    const int numPropsQuadPt = _numPropsQuadPt;
+    const int numQuadPts = totalPropsFiberDim / numPropsQuadPt;
+    assert(totalPropsFiberDim == numQuadPts * numPropsQuadPt);
+    const int totalFiberDim = numQuadPts * fiberDim;
+
+    // Allocate buffer for property field.
+    const ALE::Obj<RealSection>& fieldSection = field->section();
+    if (fieldSection.isNull() ||
+      totalFiberDim != fieldSection->getFiberDimension(*cells->begin())) {
+      field->newSection(cells, totalFiberDim);
+      field->allocate();
+    } // if
+    assert(!fieldSection.isNull());
     field->vectorFieldType(_metadata.fieldType(name, Metadata::PROPERTY));
-  } // if
+    field->label(name);
   
-  // Buffer for property at cell's quadrature points
-  double_array fieldCell(numQuadPts*fiberDim);
-  double_array propertiesCell(numQuadPts*numPropsQuadPt);
+    // Buffer for property at cell's quadrature points
+    double_array fieldCell(numQuadPts*fiberDim);
+    double_array propertiesCell(numQuadPts*numPropsQuadPt);
 
-  // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
-       c_iter != cellsEnd;
-       ++c_iter) {
-    propertiesSection->restrictPoint(*c_iter, 
-				     &propertiesCell[0], propertiesCell.size());
+    // Loop over cells
+    for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+	 c_iter != cellsEnd;
+	 ++c_iter) {
+      propertiesSection->restrictPoint(*c_iter, 
+				       &propertiesCell[0], propertiesCell.size());
    
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      _dimProperties(&propertiesCell[iQuad*numPropsQuadPt], 
-		     numPropsQuadPt);
-      memcpy(&fieldCell[iQuad*fiberDim], 
-	     &propertiesCell[iQuad*numPropsQuadPt+propOffset],
-	     fiberDim*sizeof(double));
+      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+	_dimProperties(&propertiesCell[iQuad*numPropsQuadPt], 
+		       numPropsQuadPt);
+	memcpy(&fieldCell[iQuad*fiberDim], 
+	       &propertiesCell[iQuad*numPropsQuadPt+propOffset],
+	       fiberDim*sizeof(double));
+      } // for
+
+      fieldSection->updatePoint(*c_iter, &fieldCell[0]);
     } // for
+  } else { // field is a state variable
+    assert(stateVarIndex >= 0);
 
-    fieldSection->updatePoint(*c_iter, &fieldCell[0]);
-  } // for
-} // propertyField
-  
-// ----------------------------------------------------------------------
-// Get state variable field.
-void
-pylith::materials::Material::stateVarField(topology::Field<topology::Mesh>* field,
-					   const char* name) const
-{ // stateVarField
-  assert(0 != field);
-
-  // Find state variable in list of state variables.
-  int i=0;
-  int varOffset = 0;
-  const string_vector& stateVars = _metadata.stateVars();
-  const int numStateVars = stateVars.size();
-  const std::string nameString = std::string(name);
-  bool found = false;
-  for (int i=0; i < numStateVars; ++i)
-    if (nameString == stateVars[i]) {
-      found = true;
-      break;
-    } else
+    int varOffset = 0;
+    const string_vector& stateVars = _metadata.stateVars();
+    assert(stateVarIndex < stateVars.size());
+    for (int i=0; i < stateVarIndex; ++i)
       varOffset += 
 	_metadata.fiberDim(stateVars[i].c_str(), Metadata::STATEVAR);
-  if (!found) {
+    const int fiberDim = _metadata.fiberDim(name, Metadata::STATEVAR);
+
+    // :TODO: Get scale information
+
+    // Get state variables section
+    const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
+    assert(!stateVarsSection.isNull());
+    const int totalVarsFiberDim = 
+      stateVarsSection->getFiberDimension(*cells->begin());
+    const int numVarsQuadPt = _numVarsQuadPt;
+    const int numQuadPts = totalVarsFiberDim / numVarsQuadPt;
+    assert(totalVarsFiberDim == numQuadPts * numVarsQuadPt);
+    const int totalFiberDim = numQuadPts * fiberDim;
+
+    // Allocate buffer for state variable field.
+    const ALE::Obj<RealSection>& fieldSection = field->section();
+    if (fieldSection.isNull() ||
+	totalFiberDim != fieldSection->getFiberDimension(*cells->begin())) {
+      field->newSection(cells, totalFiberDim);
+      field->allocate();
+    } // if
+    assert(!fieldSection.isNull());
+    field->vectorFieldType(_metadata.fieldType(name, Metadata::STATEVAR));
+    field->label(name);
+  
+    // Buffer for state variable at cell's quadrature points
+    double_array fieldCell(numQuadPts*fiberDim);
+    double_array stateVarsCell(numQuadPts*numVarsQuadPt);
+    
+    // Loop over cells
+    for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+	 c_iter != cellsEnd;
+	 ++c_iter) {
+      stateVarsSection->restrictPoint(*c_iter, 
+				      &stateVarsCell[0], stateVarsCell.size());
+      
+      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+	_dimStateVars(&stateVarsCell[iQuad*numVarsQuadPt], 
+		      numVarsQuadPt);
+	memcpy(&fieldCell[iQuad*fiberDim], 
+	       &stateVarsCell[iQuad*numVarsQuadPt+varOffset],
+	       fiberDim*sizeof(double));
+      } // for
+
+      fieldSection->updatePoint(*c_iter, &fieldCell[0]);
+    } // for
+  } // if/else
+} // getField
+  
+// ----------------------------------------------------------------------
+// Get indices for physical property or state variable field.
+void
+pylith::materials::Material::_findField(int* propertyIndex,
+					int* stateVarIndex,
+					const char* name) const
+{ // _findField
+  assert(0 != propertyIndex);
+  assert(0 != stateVarIndex);
+
+  *propertyIndex = -1;
+  *stateVarIndex = -1;
+
+  const std::string nameString = name;
+  const string_vector& properties = _metadata.properties();
+  const int numProperties = properties.size();
+  for (int i=0; i < numProperties; ++i)
+    if (nameString == properties[i]) {
+      *propertyIndex = i;
+      return;
+    } // if
+
+  const string_vector& stateVars = _metadata.stateVars();
+  const int numStateVars = stateVars.size();
+  for (int i=0; i < numStateVars; ++i)
+    if (nameString == stateVars[i]) {
+      *stateVarIndex = i;
+      return;
+    } // if
+
+  if (propertyIndex < 0 && stateVarIndex < 0) {
     std::ostringstream msg;
-    msg << "Unknown state variable '" << name << "' for material '"
-	<< _label << "'.";
+    msg << "Unknown physical property or state variable '" << name
+	<< "' for material '" << _label << "'.";
     throw std::runtime_error(msg.str());
   } // else
-  const int fiberDim = _metadata.fiberDim(name, Metadata::STATEVAR);
-
-  // Get cell information
-  const ALE::Obj<SieveMesh>& sieveMesh = field->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", _id);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
-  
-  // Get state variables section
-  const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
-  assert(!stateVarsSection.isNull());
-  const int totalVarsFiberDim = 
-    stateVarsSection->getFiberDimension(*cells->begin());
-  const int numVarsQuadPt = _numVarsQuadPt;
-  const int numQuadPts = totalVarsFiberDim / numVarsQuadPt;
-  assert(totalVarsFiberDim == numQuadPts * numVarsQuadPt);
-  const int totalFiberDim = numQuadPts * fiberDim;
-
-  // Allocate buffer for state variable field.
-  const ALE::Obj<RealSection>& fieldSection = field->section();
-  if (totalFiberDim != fieldSection->getFiberDimension(*cells->begin())) {
-    field->newSection(cells, totalFiberDim);
-    field->allocate();
-    field->vectorFieldType(_metadata.fieldType(name, Metadata::STATEVAR));
-  } // if
-  
-  // Buffer for state variable at cell's quadrature points
-  double_array fieldCell(numQuadPts*fiberDim);
-  double_array stateVarsCell(numQuadPts*numVarsQuadPt);
-
-  // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
-       c_iter != cellsEnd;
-       ++c_iter) {
-    stateVarsSection->restrictPoint(*c_iter, 
-				     &stateVarsCell[0], stateVarsCell.size());
-   
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      _dimStateVars(&stateVarsCell[iQuad*numVarsQuadPt], 
-		     numVarsQuadPt);
-      memcpy(&fieldCell[iQuad*fiberDim], 
-	     &stateVarsCell[iQuad*numVarsQuadPt+varOffset],
-	     fiberDim*sizeof(double));
-    } // for
-
-    fieldSection->updatePoint(*c_iter, &fieldCell[0]);
-  } // for
-} // stateVarsField
+} // _findField
   
 
 // End of file 

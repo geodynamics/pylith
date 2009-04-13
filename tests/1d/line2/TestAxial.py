@@ -75,7 +75,7 @@ class TestAxial(unittest.TestCase):
 
     # Check vertices
     nverticesE = 5
-    spaceDimE = 2
+    spaceDimE = 3
     (nvertices, spaceDim) = data['vertices'].shape
     self.assertEqual(nverticesE, nvertices)
     self.assertEqual(spaceDimE, spaceDim)

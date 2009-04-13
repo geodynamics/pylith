@@ -116,6 +116,15 @@ namespace pylith {
       /// current state.
       void resetNeedNewJacobian(void);
       
+      /** Get physical property or state variable field. Data is returned
+       * via the argument.
+       *
+       * @param field Field over material cells.
+       * @param name Name of field to retrieve.
+       */
+      void getField(pylith::topology::Field<pylith::topology::Mesh>* field,
+		    const char* name) const;
+
       // PROTECTED METHODS //////////////////////////////////////////////
     protected :
       

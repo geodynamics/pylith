@@ -288,15 +288,13 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(
 const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::feassemble::IntegratorElasticity::cellField(
 					   const char* name,
+					   const topology::Mesh& mesh,
 					   topology::SolutionFields* fields)
 { // cellField
-  assert(0 != fields);
   assert(0 != _material);
 
   // We assume the material stores the total-strain field if
   // hasStateVars() is TRUE.
-
-  const topology::Mesh& mesh = fields->mesh();
 
   if (!_material->hasStateVars() &&
       (0 == strcasecmp(name, "total_strain") ||
@@ -308,13 +306,13 @@ pylith::feassemble::IntegratorElasticity::cellField(
   } else if (0 == strcasecmp(name, "stress")) {
     assert(0 != fields);
     _allocateTensorField(mesh);
-    _material->propertyField(_bufferFieldTensor, "total_strain");
+    _material->getField(_bufferFieldTensor, "total_strain");
     _calcStressFromStrain(_bufferFieldTensor);
     return *_bufferFieldTensor;
   } else {
     if (0 == _bufferFieldOther)
       _bufferFieldOther = new topology::Field<topology::Mesh>(mesh);
-    _material->stateVarField(_bufferFieldOther, name);
+    _material->getField(_bufferFieldOther, name);
     return *_bufferFieldOther;
   } // if/else
   

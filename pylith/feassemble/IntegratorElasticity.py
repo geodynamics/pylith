@@ -85,12 +85,7 @@ class IntegratorElasticity(Integrator):
 
     self._info.log("Initializing integrator for material '%s'." % \
                    self.materialObj.label)
-
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
-
-    self.output.initialize(normalizer, self.materialObj.quadrature)
-    #self.output.writeInfo()
-    self.output.open(totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)
     return
@@ -106,7 +101,7 @@ class IntegratorElasticity(Integrator):
     Integrator.poststep(self, t, dt, totalTime, fields)
 
     self._info.log("Writing material data.")
-    #self.output.writeData(t+dt, fields)
+    self.output.writeData(t+dt, fields)
 
     self._logger.eventEnd(logEvent)
     return
@@ -124,10 +119,20 @@ class IntegratorElasticity(Integrator):
     Get cell field.
     """
     if None == fields:
-      field = self.cellField(name)
+      field = self.cellField(name, self.mesh)
     else:
-      field = self.cellField(name, fields)
+      field = self.cellField(name, self.mesh, fields)
     return field
+
+
+  def _initializeOutput(self, totalTime, numTimeSteps, normalizer):
+    """
+    Initialize output.
+    """
+    self.output.initialize(normalizer, self.materialObj.quadrature)
+    self.output.writeInfo()
+    self.output.open(totalTime, numTimeSteps)
+    return
 
 
 # End of file 
