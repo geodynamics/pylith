@@ -84,11 +84,11 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   // Get 'surface' cells (1 dimension lower than top-level cells)
   const ALE::Obj<SieveSubMesh>& submesh = _boundaryMesh->sieveMesh();
   assert(!submesh.isNull());
+  const int boundaryDepth = submesh->depth()-1; // depth of bndry cells
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    submesh->heightStratum(1);
+    submesh->depthStratum(boundaryDepth);
   assert(!cells.isNull());
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
-  const int boundaryDepth = submesh->depth()-1; // depth of bndry cells
 
   // Make sure surface cells are compatible with quadrature.
   for (SieveSubMesh::label_sequence::iterator c_iter=cells->begin();
@@ -267,8 +267,9 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   // Get cell information
   const ALE::Obj<SieveSubMesh>& submesh = _boundaryMesh->sieveMesh();
   assert(!submesh.isNull());
+  const int boundaryDepth = submesh->depth()-1; // depth of bndry cells
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    submesh->heightStratum(1);
+    submesh->depthStratum(boundaryDepth);
   assert(!cells.isNull());
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
@@ -373,8 +374,9 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   // Get cell information
   const ALE::Obj<SieveSubMesh>& submesh = _boundaryMesh->sieveMesh();
   assert(!submesh.isNull());
+  const int boundaryDepth = submesh->depth()-1; // depth of bndry cells
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    submesh->heightStratum(1);
+    submesh->depthStratum(boundaryDepth);
   assert(!cells.isNull());
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 

@@ -742,14 +742,14 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double_array& upDir,
   double_array faceVertices(numBasis*spaceDim);
   
   // Get fault cells (1 dimension lower than top-level cells)
+  const int faultDepth = _faultMesh->depth()-1; // depth of fault cells
   const ALE::Obj<SubMesh::label_sequence>& cells = 
-    _faultMesh->heightStratum(0);
+    _faultMesh->depthStratum(faultDepth);
   assert(!cells.isNull());
   const SubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   const ALE::Obj<sieve_type>& sieve = _faultMesh->getSieve();
   assert(!sieve.isNull());
-  const int faultDepth = _faultMesh->depth();  // depth of fault cells
   typedef ALE::SieveAlg<Mesh> SieveAlg;
 
   ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, (size_t) pow(sieve->getMaxConeSize(), std::max(0, _faultMesh->depth())));
@@ -953,8 +953,9 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   _faultMesh->allocate(_area);
   
   // Get fault cells (1 dimension lower than top-level cells)
+  const int faultDepth = submesh->depth()-1; // depth of bndry cells
   const ALE::Obj<SubMesh::label_sequence>& cells = 
-    _faultMesh->heightStratum(0);
+    _faultMesh->depthStratum(faultDepth);
   assert(!cells.isNull());
   const SubMesh::label_sequence::iterator cellsEnd = cells->end();
 

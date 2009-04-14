@@ -16,6 +16,15 @@
 //    \  |   |  /
 //       4-6-1 
 //
+// Mesh with fault (Sieve labels)
+//       7-9-4
+//    /  |   |  \
+//   /   |   |   \
+//  2  0 |   | 1  5
+//   \   |   |   /
+//    \  |   |  /
+//       6-8-3 
+//
 mesh = {
   dimension = 2
   use-index-zero = true

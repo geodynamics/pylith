@@ -288,8 +288,9 @@ pylith::meshio::TestDataWriterVTKBCMesh::_createCellFields(
     const ALE::Obj<topology::SubMesh::SieveMesh>& sieveSubMesh =
       _submesh->sieveMesh();
     CPPUNIT_ASSERT(!sieveSubMesh.isNull());
+    const int cellDepth = sieveSubMesh->depth()-1;
     const ALE::Obj<topology::SubMesh::SieveMesh::label_sequence>& cells = 
-      sieveSubMesh->heightStratum(1);
+      sieveSubMesh->depthStratum(cellDepth);
     assert(!cells.isNull());
     const topology::SubMesh::SieveMesh::label_sequence::iterator cellsEnd = 
       cells->end();
@@ -303,7 +304,6 @@ pylith::meshio::TestDataWriterVTKBCMesh::_createCellFields(
       field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
       field.allocate();
       field.vectorFieldType(_data->cellFieldsInfo[i].field_type);
-      field.view(name);
 
       const ALE::Obj<topology::SubMesh::RealSection>& section = field.section();
       CPPUNIT_ASSERT(!section.isNull());
@@ -313,7 +313,6 @@ pylith::meshio::TestDataWriterVTKBCMesh::_createCellFields(
 	   ++c_iter, ++icell) {
 	const double* values = &_data->cellFields[i][icell*fiberDim];
 	section->updatePoint(*c_iter, values);
-	std::cout << "c_iter: " << *c_iter << std::endl;
       } // for
       CPPUNIT_ASSERT_EQUAL(_data->numCells, icell);
     } // for
