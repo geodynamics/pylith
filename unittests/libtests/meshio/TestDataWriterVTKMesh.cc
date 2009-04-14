@@ -262,7 +262,7 @@ pylith::meshio::TestDataWriterVTKMesh::_initialize(void)
 { // _initialize
   CPPUNIT_ASSERT(0 != _data);
 
-  _mesh = new topology::Mesh;
+  delete _mesh; _mesh = new topology::Mesh;
   MeshIOAscii iohandler;
   iohandler.filename(_data->meshFilename);
   iohandler.read(_mesh);

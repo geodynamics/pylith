@@ -25,7 +25,6 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
-
 /// Namespace for pylith package
 namespace pylith {
   namespace meshio {

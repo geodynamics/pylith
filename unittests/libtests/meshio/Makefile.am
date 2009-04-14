@@ -33,6 +33,11 @@ testmeshio_SOURCES = \
 	TestDataWriterVTKMeshQuad4.cc \
 	TestDataWriterVTKMeshTet4.cc \
 	TestDataWriterVTKMeshHex8.cc \
+	TestDataWriterVTKBCMesh.cc \
+	TestDataWriterVTKBCMeshTri3.cc \
+	TestDataWriterVTKBCMeshQuad4.cc \
+	TestDataWriterVTKBCMeshTet4.cc \
+	TestDataWriterVTKBCMeshHex8.cc \
 	TestOutputManager.cc \
 	TestOutputSolnSubset.cc \
 	test_meshio.cc
@@ -47,12 +52,7 @@ testmeshio_SOURCES = \
 #	TestDataWriterVTKFaultMeshTri3.cc \
 #	TestDataWriterVTKFaultMeshQuad4.cc \
 #	TestDataWriterVTKFaultMeshTet4.cc \
-#	TestDataWriterVTKFaultMeshHex8.cc \
-#	TestDataWriterVTKBCMesh.cc \
-#	TestDataWriterVTKBCMeshTri3.cc \
-#	TestDataWriterVTKBCMeshQuad4.cc \
-#	TestDataWriterVTKBCMeshTet4.cc \
-#	TestDataWriterVTKBCMeshHex8.cc
+#	TestDataWriterVTKFaultMeshHex8.cc 
 
 
 
