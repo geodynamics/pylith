@@ -87,12 +87,19 @@ pylith::problems::Formulation::updateSettings(topology::Jacobian* jacobian,
   _dt = dt;
 } // updateSettings
 
+
 // ----------------------------------------------------------------------
 // Reform system residual.
 void
-pylith::problems::Formulation::reformResidual(void)
+pylith::problems::Formulation::reformResidual(Vec solutionVec, Vec residualVec)
 { // reformResidual
   assert(0 != _fields);
+
+  // Need to pass these Vecs for updating
+
+  // Update section view of field.
+  topology::Field<topology::Mesh>& solution = _fields->get("solution");
+  solution.scatterVectorToSection(solutionVec);
 
   // Set residual to zero.
   topology::Field<topology::Mesh>& residual = _fields->get("residual");
@@ -123,16 +130,32 @@ pylith::problems::Formulation::reformResidual(void)
     _submeshIntegrators[i]->integrateResidual(residual, _t, _fields);
 
   // Update PETSc view of residual
-  residual.scatterSectionToVector();
+  residual.scatterSectionToVector(residualVec);
+
+  // TODO: Move this to SolverLinear
+  VecScale(residualVec, -1.0);
 } // reformResidual
 
 // ----------------------------------------------------------------------
 // Reform system Jacobian.
 void
-pylith::problems::Formulation::reformJacobian()
+pylith::problems::Formulation::reformJacobian(void)
+{ // reformJacobian
+  reformJacobian(NULL);
+} // reformJacobian
+void
+pylith::problems::Formulation::reformJacobian(Vec solutionVec)
 { // reformJacobian
   assert(0 != _jacobian);
   assert(0 != _fields);
+
+  // Need to pass these Vecs for updating
+
+  // Update section view of field.
+  if (solutionVec != NULL) {
+    topology::Field<topology::Mesh>& solution = _fields->get("solution");
+    solution.scatterVectorToSection(solutionVec);
+  }
 
   // Set residual to zero.
   _jacobian->zero();

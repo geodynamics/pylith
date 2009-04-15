@@ -81,10 +81,11 @@ public :
 		      const double dt);
 
   /// Reform system residual.
-  void reformResidual(void);
+  void reformResidual(PetscVec solutionVec, PetscVec residualVec);
   
   /// Reform system Jacobian.
   void reformJacobian(void);
+  void reformJacobian(PetscVec solutionVec);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
@@ -93,6 +94,7 @@ private :
   double _dt; ///< Current time step (nondimensional).
   topology::Jacobian* _jacobian; ///< Handle to Jacobian of system.
   topology::SolutionFields* _fields; ///< Handle to solution fields for system.
+  topology::Field<topology::Mesh>* _solution;
 
   /// Integrators over subdomains of the mesh.
   std::vector<IntegratorMesh*> _meshIntegrators;

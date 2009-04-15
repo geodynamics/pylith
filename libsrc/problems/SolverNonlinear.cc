@@ -93,10 +93,12 @@ pylith::problems::SolverNonlinear::solve(
 
   const PetscVec residualVec = residual.vector();
   const PetscVec solutionVec = solution->vector();
-  err = SNESSolve(_snes, residualVec, solutionVec); CHECK_PETSC_ERROR(err);
+  MatView(jacobian.matrix(), PETSC_VIEWER_STDOUT_WORLD);
+  err = SNESSolve(_snes, PETSC_NULL, solutionVec); CHECK_PETSC_ERROR(err);
+  VecView(solutionVec, PETSC_VIEWER_STDOUT_WORLD);
 
   // Update section view of field.
-  solution->scatterVectorToSection();
+  solution->scatterVectorToSection(solutionVec);
 } // solve
 
 // ----------------------------------------------------------------------
@@ -113,7 +115,8 @@ pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
   assert(0 != formulation);
 
   // Reform residual
-  formulation->reformResidual();
+  formulation->reformResidual(solutionVec, residualVec);
+  VecView(residualVec, PETSC_VIEWER_STDOUT_WORLD);
 
   return 0;
 } // reformResidual
@@ -133,7 +136,7 @@ pylith::problems::SolverNonlinear::reformJacobian(PetscSNES snes,
   Formulation* formulation = (Formulation*) context;
   assert(0 != formulation);
 
-  formulation->reformJacobian();
+  formulation->reformJacobian(solutionVec);
 
   return 0;
 } // reformJacobian

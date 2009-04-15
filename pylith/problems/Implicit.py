@@ -184,7 +184,7 @@ class Implicit(Formulation):
 
     ### NONLINEAR: This moves under SNES control as IntegrateResidual()
     ### NONLINEAR: Also move updateState() from Integrator.poststep() to this function
-    self._reformResidual(t+dt, dt)
+    ### self._reformResidual(t+dt, dt)
 
     self._info.log("Solving equations.")
     residual = self.fields.get("residual")
