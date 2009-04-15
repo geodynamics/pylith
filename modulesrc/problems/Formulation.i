@@ -61,7 +61,7 @@ namespace pylith {
 			  const double dt);
       
       /// Reform system residual.
-      void reformResidual(PetscVec solutionVec, PetscVec residualVec);
+      void reformResidual(void);
       
       /// Reform system Jacobian.
       void reformJacobian(void);

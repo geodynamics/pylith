@@ -115,7 +115,7 @@ pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
   assert(0 != formulation);
 
   // Reform residual
-  formulation->reformResidual(solutionVec, residualVec);
+  formulation->reformResidual();
   VecView(residualVec, PETSC_VIEWER_STDOUT_WORLD);
 
   return 0;
@@ -136,7 +136,7 @@ pylith::problems::SolverNonlinear::reformJacobian(PetscSNES snes,
   Formulation* formulation = (Formulation*) context;
   assert(0 != formulation);
 
-  formulation->reformJacobian(solutionVec);
+  formulation->reformJacobian();
 
   return 0;
 } // reformJacobian

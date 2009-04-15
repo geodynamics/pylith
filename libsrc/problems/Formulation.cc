@@ -87,22 +87,16 @@ pylith::problems::Formulation::updateSettings(topology::Jacobian* jacobian,
   _dt = dt;
 } // updateSettings
 
-
 // ----------------------------------------------------------------------
 // Reform system residual.
 void
-pylith::problems::Formulation::reformResidual(Vec solutionVec, Vec residualVec)
+pylith::problems::Formulation::reformResidual(void)
 { // reformResidual
   assert(0 != _fields);
 
-  // Need to pass these Vecs for updating
-
   // Update section view of field.
   topology::Field<topology::Mesh>& solution = _fields->solution();
-  std::cout << "solutionVec: " << solutionVec
-	    << ", solution.vector: " << solution.vector()
-	    << std::endl;
-  solution.scatterVectorToSection(solutionVec);
+  solution.scatterVectorToSection();
 
   // Set residual to zero.
   topology::Field<topology::Mesh>& residual = _fields->get("residual");
@@ -133,10 +127,10 @@ pylith::problems::Formulation::reformResidual(Vec solutionVec, Vec residualVec)
     _submeshIntegrators[i]->integrateResidual(residual, _t, _fields);
 
   // Update PETSc view of residual
-  residual.scatterSectionToVector(residualVec);
+  residual.scatterSectionToVector();
 
   // TODO: Move this to SolverLinear
-  VecScale(residualVec, -1.0);
+  VecScale(residual.vector(), -1.0);
 } // reformResidual
 
 // ----------------------------------------------------------------------
@@ -144,21 +138,12 @@ pylith::problems::Formulation::reformResidual(Vec solutionVec, Vec residualVec)
 void
 pylith::problems::Formulation::reformJacobian(void)
 { // reformJacobian
-  reformJacobian(NULL);
-} // reformJacobian
-void
-pylith::problems::Formulation::reformJacobian(Vec solutionVec)
-{ // reformJacobian
   assert(0 != _jacobian);
   assert(0 != _fields);
 
-  // Need to pass these Vecs for updating
-
   // Update section view of field.
-  if (solutionVec != NULL) {
-    topology::Field<topology::Mesh>& solution = _fields->solution();
-    solution.scatterVectorToSection(solutionVec);
-  }
+  topology::Field<topology::Mesh>& solution = _fields->solution();
+  solution.scatterVectorToSection();
 
   // Set residual to zero.
   _jacobian->zero();
