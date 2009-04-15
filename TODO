@@ -21,6 +21,9 @@ CURRENT ISSUES/PRIORITIES
 
   (6) Tidy up
 
+    Check use of label_sequence.
+    label_sequence - iterators are cached, so use sequence or cache begin/end to maintain access
+
     Cleanup logging. Constraints and Integrators should log at the C++
     level using the C++ EventLogger. Add finer grain logging at C++
     level as in ElasticityImplicit.

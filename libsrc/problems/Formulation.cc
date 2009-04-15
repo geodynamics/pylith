@@ -98,7 +98,10 @@ pylith::problems::Formulation::reformResidual(Vec solutionVec, Vec residualVec)
   // Need to pass these Vecs for updating
 
   // Update section view of field.
-  topology::Field<topology::Mesh>& solution = _fields->get("solution");
+  topology::Field<topology::Mesh>& solution = _fields->solution();
+  std::cout << "solutionVec: " << solutionVec
+	    << ", solution.vector: " << solution.vector()
+	    << std::endl;
   solution.scatterVectorToSection(solutionVec);
 
   // Set residual to zero.
@@ -153,7 +156,7 @@ pylith::problems::Formulation::reformJacobian(Vec solutionVec)
 
   // Update section view of field.
   if (solutionVec != NULL) {
-    topology::Field<topology::Mesh>& solution = _fields->get("solution");
+    topology::Field<topology::Mesh>& solution = _fields->solution();
     solution.scatterVectorToSection(solutionVec);
   }
 

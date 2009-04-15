@@ -98,7 +98,7 @@ pylith::problems::SolverNonlinear::solve(
   VecView(solutionVec, PETSC_VIEWER_STDOUT_WORLD);
 
   // Update section view of field.
-  solution->scatterVectorToSection(solutionVec);
+  solution->scatterVectorToSection();
 } // solve
 
 // ----------------------------------------------------------------------
