@@ -288,10 +288,11 @@ pylith::meshio::TestDataWriterVTKBCMesh::_createCellFields(
     const ALE::Obj<topology::SubMesh::SieveMesh>& sieveSubMesh =
       _submesh->sieveMesh();
     CPPUNIT_ASSERT(!sieveSubMesh.isNull());
-    const int cellDepth = sieveSubMesh->depth()-1;
     const ALE::Obj<topology::SubMesh::SieveMesh::label_sequence>& cells = 
-      sieveSubMesh->depthStratum(cellDepth);
+      sieveSubMesh->heightStratum(1);
     assert(!cells.isNull());
+    const topology::SubMesh::SieveMesh::label_sequence::iterator cellsBegin = 
+      cells->begin();
     const topology::SubMesh::SieveMesh::label_sequence::iterator cellsEnd = 
       cells->end();
 
@@ -308,7 +309,7 @@ pylith::meshio::TestDataWriterVTKBCMesh::_createCellFields(
       const ALE::Obj<topology::SubMesh::RealSection>& section = field.section();
       CPPUNIT_ASSERT(!section.isNull());
       int icell = 0;
-      for (topology::SubMesh::SieveMesh::label_sequence::iterator c_iter=cells->begin();
+      for (topology::SubMesh::SieveMesh::label_sequence::iterator c_iter=cellsBegin;
 	   c_iter != cellsEnd;
 	   ++c_iter, ++icell) {
 	const double* values = &_data->cellFields[i][icell*fiberDim];

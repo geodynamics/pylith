@@ -77,6 +77,7 @@ CURRENT ISSUES/PRIORITIES
   pytests.meshio.TestOutputNeumann
 
 1. Memory model [Matt]
+   playpen/memcheck/*
 
 2. Nondimensionalize [Brad]
     Not working
@@ -114,11 +115,9 @@ CURRENT ISSUES/PRIORITIES
 
 10. PETSc SNES nonlinear solvers [Matt]
 
-11. Create spatialdata/units/UnitsParser (call Pyre units parser).
+11. Add ability to use symmetric matrix, set block size (default is 1)
 
-12. Add ability to use symmetric matrix, set block size (default is 1)
-
-13. Update manual for version 1.4 [Brad and Charles]
+12. Update manual for version 1.4 [Brad and Charles]
 
   * Reduce memory use with ordering elements by material
 
@@ -137,6 +136,7 @@ CURRENT ISSUES/PRIORITIES
 -- Release (v1.4) --
 
 Modularize output? [Matt]
+  "field_dimensioned" is prefered to "field"
 
 Fault friction
 
