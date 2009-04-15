@@ -221,17 +221,13 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
   typedef typename field_type::Mesh::RealSection RealSection;
 
   try {
-    const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
-    assert(!sieveMesh.isNull());
-    const ALE::Obj<typename SieveMesh::label_sequence>& cells = (0 == label) ?
-      sieveMesh->heightStratum(0) :
-      sieveMesh->getLabelStratum(label, labelId);
-    assert(!cells.isNull());
     int rank = 0;
     MPI_Comm_rank(field.mesh().comm(), &rank);
 
     // Correctly handle boundary and fault meshes
     //   Cannot just use mesh->depth() because boundaries report the wrong thing
+    const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
+    assert(!sieveMesh.isNull());
     const int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
     const int depth = (0 == label) ? cellDepth : labelId;
     const std::string labelName = (0 == label) ?

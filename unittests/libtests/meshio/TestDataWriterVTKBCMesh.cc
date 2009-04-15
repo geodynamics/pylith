@@ -302,7 +302,7 @@ pylith::meshio::TestDataWriterVTKBCMesh::_createCellFields(
       const int fiberDim = _data->cellFieldsInfo[i].fiber_dim;
       fields->add(name, name);
       SubMeshField& field = fields->get(name);
-      field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
+      field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim, 1);
       field.allocate();
       field.vectorFieldType(_data->cellFieldsInfo[i].field_type);
 
