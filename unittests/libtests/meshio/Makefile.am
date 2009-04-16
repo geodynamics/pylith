@@ -38,16 +38,16 @@ testmeshio_SOURCES = \
 	TestDataWriterVTKBCMeshQuad4.cc \
 	TestDataWriterVTKBCMeshTet4.cc \
 	TestDataWriterVTKBCMeshHex8.cc \
+	TestDataWriterVTKSubMesh.cc \
+	TestDataWriterVTKSubMeshLine2.cc \
+	TestDataWriterVTKSubMeshTri3.cc \
+	TestDataWriterVTKSubMeshQuad4.cc \
+	TestDataWriterVTKSubMeshTet4.cc \
+	TestDataWriterVTKSubMeshHex8.cc \
 	TestOutputManager.cc \
 	TestOutputSolnSubset.cc \
 	test_meshio.cc
 
-
-#	TestDataWriterVTKSubMeshLine2.cc \
-#	TestDataWriterVTKSubMeshTri3.cc \
-#	TestDataWriterVTKSubMeshQuad4.cc \
-#	TestDataWriterVTKSubMeshTet4.cc \
-#	TestDataWriterVTKSubMeshHex8.cc \
 #	TestDataWriterVTKFaultMesh.cc \
 #	TestDataWriterVTKFaultMeshTri3.cc \
 #	TestDataWriterVTKFaultMeshQuad4.cc \
