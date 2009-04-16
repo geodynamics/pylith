@@ -17,7 +17,7 @@
 #include "data/DataWriterVTKDataBCMeshTet4.hh" // USES DataWriterVTKDataBCMeshTet4
 
 // ----------------------------------------------------------------------
-//CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKBCMeshTet4 );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKBCMeshTet4 );
 
 // ----------------------------------------------------------------------
 // Setup testing data.
