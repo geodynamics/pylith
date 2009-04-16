@@ -80,11 +80,19 @@ public :
 		      const double t,
 		      const double dt);
 
-  /// Reform system residual.
-  void reformResidual(void);
+  /** Reform system residual.
+   *
+   * @param tmpResidualVec Temporary PETSc vector for residual.
+   * @param tmpSolveSolnVec Temporary PETSc vector for solution.
+   */
+  void reformResidual(const PetscVec tmpResidualVec =0,
+		      const PetscVec tmpSolveSolnVec =0);
   
-  /// Reform system Jacobian.
-  void reformJacobian(void);
+  /* Reform system Jacobian.
+   *
+   * @param tmpSolveSolnVec Temporary PETSc vector for solution.
+   */
+  void reformJacobian(const PetscVec tmpSolveSolnVec =0);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

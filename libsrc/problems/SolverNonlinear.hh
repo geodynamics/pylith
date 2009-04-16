@@ -59,11 +59,11 @@ public :
 
   /** Solve the system.
    *
-   * @param solution Solution field.
+   * @param solveSoln Field to solve for.
    * @param jacobian Jacobian of the system.
    * @param residual Residual field.
    */
-  void solve(topology::Field<topology::Mesh>* solution,
+  void solve(topology::Field<topology::Mesh>* solveSoln,
 	     const topology::Jacobian& jacobian,
 	     const topology::Field<topology::Mesh>& residual);
 
@@ -71,22 +71,22 @@ public :
    * PETSc SNES solvers.
    *
    * @param snes PETSc scalable nonlinear equation solver.
-   * @param solutionVec PETSc vector for solution.
-   * @param residualVec PETSc vector for residual.
+   * @param tmpSolveSolnVec Temporary PETSc vector for solution.
+   * @param tmpResidualVec Temporary PETSc vector for residual.
    * @param context ArgsResidual structure with arguments.
    * @returns PETSc error code.
    */
   static
   PetscErrorCode reformResidual(PetscSNES snes,
-				PetscVec solutionVec,
-				PetscVec residualVec,
+				PetscVec tmpSolveSolnVec,
+				PetscVec tmpResidualVec,
 				void* context);
 
   /** Generic C interface for reformJacobian for integration with
    * PETSc SNES solvers.
    *
    * @param snes PETSc scalable nonlinear equation solver.
-   * @param solutionVec PETSc vector for solution.
+   * @param tmpSolveSolnVec Temporary PETSc vector for solution.
    * @param jacobianMat PETSc sparse matrix for system Jacobian.
    * @param preconditionerMat PETSc sparse matrix for preconditioner.
    * @param Flag indicating layout of preconditioner matrix.
@@ -95,7 +95,7 @@ public :
    */
   static
   PetscErrorCode reformJacobian(PetscSNES snes,
-				PetscVec solutionVec,
+				PetscVec tmpSolveSolnVec,
 				PetscMat* jacobianMat,
 				PetscMat* preconditionerMat,
 				MatStructure* preconditionerLayout,

@@ -83,22 +83,19 @@ pylith::problems::SolverNonlinear::initialize(
 // Solve the system.
 void
 pylith::problems::SolverNonlinear::solve(
-			      topology::Field<topology::Mesh>* solution,
+			      topology::Field<topology::Mesh>* solveSoln,
 			      const topology::Jacobian& jacobian,
 			      const topology::Field<topology::Mesh>& residual)
 { // solve
-  assert(0 != solution);
+  assert(0 != solveSoln);
 
   PetscErrorCode err = 0;
 
-  const PetscVec residualVec = residual.vector();
-  const PetscVec solutionVec = solution->vector();
-  MatView(jacobian.matrix(), PETSC_VIEWER_STDOUT_WORLD);
-  err = SNESSolve(_snes, PETSC_NULL, solutionVec); CHECK_PETSC_ERROR(err);
-  VecView(solutionVec, PETSC_VIEWER_STDOUT_WORLD);
-
+  const PetscVec solveSolnVec = solveSoln->vector();
+  err = SNESSolve(_snes, PETSC_NULL, solveSolnVec); CHECK_PETSC_ERROR(err);
+  
   // Update section view of field.
-  solution->scatterVectorToSection();
+  solveSoln->scatterVectorToSection();
 } // solve
 
 // ----------------------------------------------------------------------
@@ -106,8 +103,8 @@ pylith::problems::SolverNonlinear::solve(
 // PETSc SNES solvers.
 PetscErrorCode
 pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
-						  PetscVec solutionVec,
-						  PetscVec residualVec,
+						  PetscVec tmpSolutionVec,
+						  PetscVec tmpResidualVec,
 						  void* context)
 { // reformResidual
   assert(0 != context);
@@ -115,8 +112,7 @@ pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
   assert(0 != formulation);
 
   // Reform residual
-  formulation->reformResidual();
-  VecView(residualVec, PETSC_VIEWER_STDOUT_WORLD);
+  formulation->reformResidual(tmpResidualVec, tmpSolutionVec);
 
   return 0;
 } // reformResidual
@@ -126,7 +122,7 @@ pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
 // PETSc SNES solvers.
 PetscErrorCode
 pylith::problems::SolverNonlinear::reformJacobian(PetscSNES snes,
-						  PetscVec solutionVec,
+						  PetscVec tmpSolutionVec,
 						  PetscMat* jacobianMat,
 						  PetscMat* preconditionerMat,
 						  MatStructure* preconditionerLayout,
@@ -136,7 +132,7 @@ pylith::problems::SolverNonlinear::reformJacobian(PetscSNES snes,
   Formulation* formulation = (Formulation*) context;
   assert(0 != formulation);
 
-  formulation->reformJacobian();
+  formulation->reformJacobian(tmpSolutionVec);
 
   return 0;
 } // reformJacobian

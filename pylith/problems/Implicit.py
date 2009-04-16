@@ -97,6 +97,7 @@ class Implicit(Formulation):
     self.fields.add("dispIncr(t)", "displacement increment")
     self.fields.add("residual", "residual")
     self.fields.copyLayout("disp(t), bc(t+dt)")
+    self.fields.solveSolnName("dispIncr(t)")
     self._debug.log(resourceUsageString())
 
     self._info.log("Creating Jacobian matrix.")
@@ -179,7 +180,7 @@ class Implicit(Formulation):
     logEvent = "%sstep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    dispIncr = self.fields.get("dispIncr(t)")
+    dispIncr = self.fields.solveSoln()
     dispIncr.zero()
 
     ### NONLINEAR: This moves under SNES control as IntegrateResidual()

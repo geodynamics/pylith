@@ -54,6 +54,24 @@ namespace pylith {
        */
       Field<Mesh>& solution(void);
       
+      /** Set name of field that will be used in the solve.
+       *
+       * @param name Name of field used in the solve.
+       */
+      void solveSolnName(const char* name);
+      
+      /** Get field used in the solve.
+       *
+       * @returns Field used in the solve.
+       */
+      const Field<Mesh>& solveSoln(void) const;
+      
+      /** Get field used in the solve.
+       *
+       * @returns Field used in the solve.
+       */
+      Field<Mesh>& solveSoln(void);
+
       /** Create history manager for a subset of the managed fields.
        *
        * @param fields Fields in history (first is most recent).

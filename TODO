@@ -14,6 +14,11 @@ CURRENT ISSUES/PRIORITIES
 
     Analytical solutions, time stepping, multiple faults
 
+  (3) SNES
+    Reformulate implicit time stepping to use displacement increment.
+    Solution fields should be disp(t) and dispIncr(t).
+    If solnIncr is true, Dirichlet BC set increment values in dispIncr(t).
+
   (4) Faults
     Use visitors in FaultCohesiveKin
 

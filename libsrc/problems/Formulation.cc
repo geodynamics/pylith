@@ -90,13 +90,16 @@ pylith::problems::Formulation::updateSettings(topology::Jacobian* jacobian,
 // ----------------------------------------------------------------------
 // Reform system residual.
 void
-pylith::problems::Formulation::reformResidual(void)
+pylith::problems::Formulation::reformResidual(const PetscVec tmpResidualVec,
+					      const PetscVec tmpSolveSolnVec)
 { // reformResidual
   assert(0 != _fields);
 
   // Update section view of field.
-  topology::Field<topology::Mesh>& solution = _fields->solution();
-  solution.scatterVectorToSection();
+  if (0 != tmpSolveSolnVec) {
+    topology::Field<topology::Mesh>& solveSoln = _fields->solveSoln();
+    solveSoln.scatterVectorToSection(tmpSolveSolnVec);
+  } // if
 
   // Set residual to zero.
   topology::Field<topology::Mesh>& residual = _fields->get("residual");
@@ -124,26 +127,33 @@ pylith::problems::Formulation::reformResidual(void)
     _meshIntegrators[i]->integrateResidualAssembled(residual, _t, _fields);
   numIntegrators = _submeshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i)
-    _submeshIntegrators[i]->integrateResidual(residual, _t, _fields);
+    _submeshIntegrators[i]->integrateResidualAssembled(residual, _t, _fields);
 
   // Update PETSc view of residual
-  residual.scatterSectionToVector();
+  if (0 != tmpResidualVec)
+    residual.scatterSectionToVector(tmpResidualVec);
+  else
+    residual.scatterSectionToVector();
 
-  // TODO: Move this to SolverLinear
-  VecScale(residual.vector(), -1.0);
+  // TODO: Move this to SolverLinear 
+  //residual *= -1.0;
+  if (0 != tmpResidualVec)
+    VecScale(tmpResidualVec, -1.0);
 } // reformResidual
 
 // ----------------------------------------------------------------------
 // Reform system Jacobian.
 void
-pylith::problems::Formulation::reformJacobian(void)
+pylith::problems::Formulation::reformJacobian(const PetscVec tmpSolveSolnVec)
 { // reformJacobian
   assert(0 != _jacobian);
   assert(0 != _fields);
 
   // Update section view of field.
-  topology::Field<topology::Mesh>& solution = _fields->solution();
-  solution.scatterVectorToSection();
+  if (0 != tmpSolveSolnVec) {
+    topology::Field<topology::Mesh>& solveSoln = _fields->solveSoln();
+    solveSoln.scatterVectorToSection(tmpSolveSolnVec);
+  } // if
 
   // Set residual to zero.
   _jacobian->zero();

@@ -74,6 +74,7 @@ class Explicit(Formulation):
     self.fields.add("residual")
     self.fields.createHistory(["disp(t+dt), disp(t), disp(t-dt)"])    
     self.fields.copyLayout("disp(t)")
+    self.fields.solveSolnName("disp(t+dt)")
     self._debug.log(resourceUsageString())
 
     # Create Petsc vectors for fields involved in solve
@@ -136,7 +137,7 @@ class Explicit(Formulation):
     
     self._info.log("Solving equations.")
     residual = self.fields.get("residual")
-    dispTpdt = self.fields.get("disp(t+dt)")
+    dispTpdt = self.fields.solveSoln()
     self.solver.solve(dispTpdt, self.jacobian, residual)
 
     self._logger.eventEnd(logEvent)
