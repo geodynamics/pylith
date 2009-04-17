@@ -1,0 +1,33 @@
+// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
+//
+// This spatial database specifies the distribution of material
+// properties for a Generalized Maxwell viscoelastic material. In
+// this case, the material properties are uniform.
+//
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 9 // number of material property values
+  value-names =  density vs vp shear_ratio_1 shear_ratio_2 shear_ratio_3 viscosity_1 viscosity_2 viscosity_3 // names of the material property values
+  value-units =  kg/m^3  m/s  m/s None None None Pa*s Pa*s Pa*s // units (conversions not supported)
+  num-locs = 1 // number of locations
+  data-dim = 0
+  space-dim = 3
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 3
+  }
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) z coordinate (m)
+// (4) density (kg/m^3)
+// (5) vs (m/s)
+// (6) vp (m/s)
+// (7) shear ratio 1 (dimensionless)
+// (8) shear ratio 2 (dimensionless)
+// (9) shear ratio 3 (dimensionless)
+// (10) viscosity 1 (Pa-s)
+// (11) viscosity 2 (Pa-S)
+// (12) viscosity 3 (Pa-s)
+0.0  0.0  0.0   2700.0  1054.09255338946   1825.741858350554    0.5  0.5  0.0  1.0e19  1.0e18  1.0e20
