@@ -147,8 +147,8 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 			     const double t,
 			     topology::SolutionFields* const fields)
 { // integrateResidual
-#if 0
   assert(0 != fields);
+  assert(0 != _quadrature);
 
   // Cohesive cells with normal vertices i and j, and constraint
   // vertex k make 2 contributions to the residual:
@@ -172,15 +172,16 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   const double_array& basis = _quadrature->basis();
   const double_array& jacobianDet = _quadrature->jacobianDet();
 
-  double_array cellOrientation(numConstraintVert*orientationSize);
-  double_array cellSoln(numCorners*spaceDim);
-  double_array cellStiffness(numConstraintVert);
-  double_array cellResidual(numCorners*spaceDim);
-  double_array cellArea(numConstraintVert);
-  double_array cellAreaAssembled(numConstraintVert);
+  // Allocate vectors for cell values
+  double_array orientationCell(numConstraintVert*orientationSize);
+  double_array stiffnessCell(numConstraintVert);
+  double_array solutionCell(numCorners*spaceDim);
+  double_array residualCell(numCorners*spaceDim);
+  double_array areaCell(numConstraintVert);
+  double_array areaAssembledCell(numConstraintVert);
 
   // Get cohesive cells
-  const ALE::Obj<SieveMesh>& sieveMesh = residual.sieveMesh();
+  const ALE::Obj<SieveMesh>& sieveMesh = residual.mesh().sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<SieveMesh::label_sequence>& cellsCohesive = 
     sieveMesh->getLabelStratum("material-id", id());
@@ -191,41 +192,73 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     cellsCohesive->end();
   const int cellsCohesiveSize = cellsCohesive->size();
 
-  // Get section information
-  topology::Field<topology::Mesh>& solution = fields->solution();
-  const ALE::Obj<Mesh::RealSection>& solutionSection = solution.section();
-  assert(!solutionSection.isNull());  
+  // Get fault Sieve mesh
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
 
-  for (Mesh::SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+  // Get section information
+  const ALE::Obj<RealSection>& orientationSection = 
+    _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
+  topology::Mesh::RestrictVisitor orientationVisitor(*orientationSection,
+						     orientationCell.size(),
+						     &orientationCell[0]);
+
+  const ALE::Obj<RealSection>& stiffnessSection = 
+    _fields->get("pseudostiffness").section();
+  assert(!stiffnessSection.isNull());
+  topology::Mesh::RestrictVisitor stiffnessVisitor(*stiffnessSection,
+						   stiffnessCell.size(),
+						   &stiffnessCell[0]);
+
+  const ALE::Obj<RealSection>& areaSection = 
+    _fields->get("area").section();
+  assert(!areaSection.isNull());
+  topology::Mesh::RestrictVisitor areaVisitor(*areaSection,
+					      areaCell.size(), &areaCell[0]);
+
+  topology::Field<topology::Mesh>& solution = fields->solution();
+  const ALE::Obj<RealSection>& solutionSection = solution.section();
+  assert(!solutionSection.isNull());  
+  topology::Mesh::RestrictVisitor solutionVisitor(*solutionSection,
+						  solutionCell.size(),
+						  &solutionCell[0]);
+
+  const ALE::Obj<RealSection>& residualSection = residual.section();
+  topology::Mesh::UpdateAddVisitor residualVisitor(*residualSection,
+						   &residualCell[0]);
+
+  for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
-    const Mesh::SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
-    cellArea = 0.0;
-    cellResidual = 0.0;
+    const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
+    areaCell = 0.0;
+    residualCell = 0.0;
 
     // Compute contributory area for cell (to weight contributions)
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const double wt = quadWts[iQuad] * jacobianDet[iQuad];
       for (int iBasis=0; iBasis < numBasis; ++iBasis) {
         const double dArea = wt*basis[iQuad*numBasis+iBasis];
-	cellArea[iBasis] += dArea;
+	areaCell[iBasis] += dArea;
       } // for
     } // for
         
     // Get orientations at fault cell's vertices.
-    _faultMesh->restrictClosure(_orientation, c_fault, &cellOrientation[0], 
-				cellOrientation.size());
+    orientationVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, orientationVisitor);
     
     // Get pseudo stiffness at fault cell's vertices.
-    _faultMesh->restrictClosure(_pseudoStiffness, c_fault, &cellStiffness[0], 
-				cellStiffness.size());
+    stiffnessVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, stiffnessVisitor);
     
     // Get pseudo stiffness at fault cell's vertices.
-    _faultMesh->restrictClosure(_area, c_fault, &cellAreaAssembled[0], 
-				cellAreaAssembled.size());
+    areaVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, areaVisitor);
     
     // Get solution at cohesive cell's vertices.
-    mesh->restrictClosure(solution, *c_iter, &cellSoln[0], cellSoln.size());
+    solutionVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, solutionVisitor);
     
     for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
       // Blocks in cell matrix associated with normal cohesive
@@ -234,54 +267,54 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
       const int indexJ = iConstraint +   numConstraintVert;
       const int indexK = iConstraint + 2*numConstraintVert;
 
-      const double pseudoStiffness = cellStiffness[iConstraint];
+      const double pseudoStiffness = stiffnessCell[iConstraint];
       const double wt = pseudoStiffness * 
-	cellArea[iConstraint] / cellAreaAssembled[iConstraint];
+	areaCell[iConstraint] / areaAssembledCell[iConstraint];
       
       // Get orientation at constraint vertex
-      const real_section_type::value_type* constraintOrient = 
-	&cellOrientation[iConstraint*orientationSize];
-      assert(0 != constraintOrient);
+      const double* orientationVertex = 
+	&orientationCell[iConstraint*orientationSize];
+      assert(0 != orientationVertex);
       
       // Entries associated with constraint forces applied at node i
       for (int iDim=0; iDim < spaceDim; ++iDim) {
 	for (int kDim=0; kDim < spaceDim; ++kDim)
-	  cellResidual[indexI*spaceDim+iDim] -=
-	    cellSoln[indexK*spaceDim+kDim] * 
-	    -constraintOrient[kDim*spaceDim+iDim] * wt;
+	  residualCell[indexI*spaceDim+iDim] -=
+	    solutionCell[indexK*spaceDim+kDim] * 
+	    -orientationVertex[kDim*spaceDim+iDim] * wt;
       } // for
       
 	// Entries associated with constraint forces applied at node j
       for (int jDim=0; jDim < spaceDim; ++jDim) {
 	for (int kDim=0; kDim < spaceDim; ++kDim)
-	  cellResidual[indexJ*spaceDim+jDim] -=
-	    cellSoln[indexK*spaceDim+kDim] * 
-	    constraintOrient[kDim*spaceDim+jDim] * wt;
+	  residualCell[indexJ*spaceDim+jDim] -=
+	    solutionCell[indexK*spaceDim+kDim] * 
+	    orientationVertex[kDim*spaceDim+jDim] * wt;
       } // for
     } // for
 
 #if 0 // DEBUGGING
     std::cout << "Updating fault residual for cell " << *c_iter << std::endl;
     for(int i = 0; i < numConstraintVert; ++i) {
-      std::cout << "  stif["<<i<<"]: " << cellStiffness[i] << std::endl;
+      std::cout << "  stif["<<i<<"]: " << stiffnessCell[i] << std::endl;
     }
     for(int i = 0; i < numConstraintVert*spaceDim; ++i) {
       std::cout << "  slip["<<i<<"]: " << cellSlip[i] << std::endl;
     }
     for(int i = 0; i < numCorners*spaceDim; ++i) {
-      std::cout << "  soln["<<i<<"]: " << cellSoln[i] << std::endl;
+      std::cout << "  soln["<<i<<"]: " << solutionCell[i] << std::endl;
     }
     for(int i = 0; i < numCorners*spaceDim; ++i) {
-      std::cout << "  v["<<i<<"]: " << cellResidual[i] << std::endl;
+      std::cout << "  v["<<i<<"]: " << residualCell[i] << std::endl;
     }
 #endif
 
-    mesh->updateAdd(residual, *c_iter, &cellResidual[0]);
+    residualVisitor.clear();
+    sieveMesh->updateAdd(*c_iter, residualVisitor);
   } // for
 
   // FIX THIS
   PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*7);
-#endif
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -394,7 +427,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
   const int numCorners = 3*numConstraintVert; // cohesive cell
   double_array cellMatrix(numCorners*spaceDim * numCorners*spaceDim);
   double_array cellOrientation(numConstraintVert*orientationSize);
-  double_array cellStiffness(numConstraintVert);
+  double_array stiffnessCell(numConstraintVert);
 
 #if 0
   // Check that fault cells match cohesive cells
@@ -439,8 +472,8 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 				cellOrientation.size());
 
     // Get pseudo stiffness at fault cell's vertices.
-    _faultMesh->restrictClosure(_pseudoStiffness, c_fault, &cellStiffness[0], 
-				cellStiffness.size());
+    _faultMesh->restrictClosure(_pseudoStiffness, c_fault, &stiffnessCell[0], 
+				stiffnessCell.size());
     
     for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
       // Blocks in cell matrix associated with normal cohesive
@@ -450,11 +483,11 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
       const int indexK = iConstraint + 2*numConstraintVert;
 
       // Get orientation at constraint vertex
-      const real_section_type::value_type* constraintOrient = 
+      const real_section_type::value_type* orientationVertex = 
 	&cellOrientation[iConstraint*orientationSize];
-      assert(0 != constraintOrient);
+      assert(0 != orientationVertex);
 
-      const double pseudoStiffness = cellStiffness[iConstraint];
+      const double pseudoStiffness = stiffnessCell[iConstraint];
 
       // Scale orientation information by pseudo-stiffness to bring
       // constraint forces in solution vector to the same order of
@@ -466,9 +499,9 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 	  const int row = indexI*spaceDim+iDim;
 	  const int col = indexK*spaceDim+kDim;
 	  cellMatrix[row*numCorners*spaceDim+col] =
-	    -constraintOrient[kDim*spaceDim+iDim]*pseudoStiffness;
+	    -orientationVertex[kDim*spaceDim+iDim]*pseudoStiffness;
 	  cellMatrix[col*numCorners*spaceDim+row] =
-	    -constraintOrient[kDim*spaceDim+iDim];
+	    -orientationVertex[kDim*spaceDim+iDim];
 	} // for
 
       // Entries associated with constraint forces applied at node j
@@ -477,9 +510,9 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 	  const int row = indexJ*spaceDim+jDim;
 	  const int col = indexK*spaceDim+kDim;
 	  cellMatrix[row*numCorners*spaceDim+col] =
-	    constraintOrient[kDim*spaceDim+jDim]*pseudoStiffness;
+	    orientationVertex[kDim*spaceDim+jDim]*pseudoStiffness;
 	  cellMatrix[col*numCorners*spaceDim+row] =
-	    constraintOrient[kDim*spaceDim+jDim];
+	    orientationVertex[kDim*spaceDim+jDim];
 	} // for
     } // for
 
@@ -973,7 +1006,7 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   const double_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   double jacobianDet = 0;
-  double_array cellArea(numBasis);
+  double_array areaCell(numBasis);
   double_array cellVertices(numBasis*spaceDim);
 
   // Loop over cells in fault mesh, compute area
@@ -981,7 +1014,7 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
       c_iter != cellsEnd;
       ++c_iter) {
     _quadrature->computeGeometry(_faultMesh, coordinates, *c_iter);
-    cellArea = 0.0;
+    areaCell = 0.0;
     
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -992,10 +1025,10 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
       const double wt = quadWts[iQuad] * jacobianDet[iQuad];
       for (int iBasis=0; iBasis < numBasis; ++iBasis) {
         const double dArea = wt*basis[iQuad*numBasis+iBasis];
-	cellArea[iBasis] += dArea;
+	areaCell[iBasis] += dArea;
       } // for
     } // for
-    _faultMesh->updateAdd(_area, *c_iter, &cellArea[0]);
+    _faultMesh->updateAdd(_area, *c_iter, &areaCell[0]);
 
     PetscLogFlops( numQuadPts*(1+numBasis*2) );
   } // for

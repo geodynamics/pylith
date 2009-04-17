@@ -6,21 +6,20 @@ CURRENT ISSUES/PRIORITIES
 
 0. SWIG conversion [Brad]
 
-  (1) Output
-    TestDataWriterVTKBCMesh (test suite commented out)
+  (1) Faults
+    Use visitors in FaultCohesiveKin
+
+  (2) Output
     TestDataWriterVTKFaultMesh
 
-  (2) Full-scale tests (few 1-D, 2-D, and 3-D)
+  (3) Full-scale tests (few 1-D, 2-D, and 3-D)
 
     Analytical solutions, time stepping, multiple faults
 
-  (3) SNES
+  (4) SNES
     Reformulate implicit time stepping to use displacement increment.
     Solution fields should be disp(t) and dispIncr(t).
     If solnIncr is true, Dirichlet BC set increment values in dispIncr(t).
-
-  (4) Faults
-    Use visitors in FaultCohesiveKin
 
   (5) Add missing unit tests
 
