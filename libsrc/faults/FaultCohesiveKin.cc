@@ -24,6 +24,7 @@
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -149,6 +150,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 { // integrateResidual
   assert(0 != fields);
   assert(0 != _quadrature);
+  assert(0 != _fields);
 
   // Cohesive cells with normal vertices i and j, and constraint
   // vertex k make 2 contributions to the residual:
@@ -252,7 +254,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     stiffnessVisitor.clear();
     faultSieveMesh->restrictClosure(c_fault, stiffnessVisitor);
     
-    // Get pseudo stiffness at fault cell's vertices.
+    // Get area at fault cell's vertices.
     areaVisitor.clear();
     faultSieveMesh->restrictClosure(c_fault, areaVisitor);
     
@@ -326,10 +328,8 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
 			    const double t,
 			    topology::SolutionFields* const fields)
 { // integrateResidualAssembled
-#if 0
-  assert(!residual.isNull());
   assert(0 != fields);
-  assert(!mesh.isNull());
+  assert(0 != _fields);
 
   // Cohesive cells with normal vertices i and j, and constraint
   // vertex k make 2 contributions to the residual:
@@ -338,8 +338,8 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
   //                  slip
   //   * DOF k: slip values
 
-  assert(!_slip.isNull());
-  _slip->zero();
+  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
+  slip.zero();
   if (!_useSolnIncr) {
     // Compute slip field at current time step
     const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
@@ -349,7 +349,7 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
       EqKinSrc* src = s_iter->second;
       assert(0 != src);
       if (t >= src->originTime())
-	src->slip(_slip, t, _faultMesh);
+	src->slip(&slip, t);
     } // for
   } else {
     // Compute increment of slip field at current time step
@@ -360,29 +360,39 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
       EqKinSrc* src = s_iter->second;
       assert(0 != src);
       if (t >= src->originTime())
-	src->slipIncr(_slip, t-_dt, t, _faultMesh);
+	src->slipIncr(&slip, t-_dt, t);
     } // for
   } // else
 
   const int spaceDim = _quadrature->spaceDim();
-  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+
+  // Get sections
+  const ALE::Obj<SieveMesh>& sieveMesh = residual.mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+  const ALE::Obj<RealSection>& slipSection = slip.section();
+  assert(!slipSection.isNull());
+  const ALE::Obj<RealSection>& residualSection = residual.section();
+  assert(!residualSection.isNull());
+
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
-  Mesh::renumbering_type& renumbering = _faultMesh->getRenumbering();
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin(); 
+  const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  SieveSubMesh::renumbering_type& renumbering = faultSieveMesh->getRenumbering();
+  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin; 
        v_iter != verticesEnd;
        ++v_iter)
     if (renumbering.find(*v_iter) != renumbering.end()) {
       const int vertexFault = renumbering[*v_iter];
       const int vertexMesh = *v_iter;
-      const real_section_type::value_type* slip = 
-	_slip->restrictPoint(vertexFault);
-      assert(spaceDim == _slip->getFiberDimension(vertexFault));
-      assert(spaceDim == residual->getFiberDimension(vertexMesh));
-      assert(0 != slip);
-      residual->updatePoint(vertexMesh, slip);
+      const double* slipVertex = slipSection->restrictPoint(vertexFault);
+      assert(spaceDim == slipSection->getFiberDimension(vertexFault));
+      assert(spaceDim == residualSection->getFiberDimension(vertexMesh));
+      assert(0 != slipVertex);
+      residualSection->updatePoint(vertexMesh, slipVertex);
     } // if
-#endif
 } // integrateResidualAssembled
 
 // ----------------------------------------------------------------------
@@ -394,11 +404,11 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 				       const double t,
 				       topology::SolutionFields* const fields)
 { // integrateJacobianAssembled
-#if 0
-  assert(0 != mat);
+  assert(0 != jacobian);
   assert(0 != fields);
-  assert(!mesh.isNull());
-  typedef ALE::ISieveVisitor::IndicesVisitor<Mesh::real_section_type,Mesh::order_type,PetscInt> visitor_type;
+  assert(0 != _fields);
+
+  typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> visitor_type;
 
   // Add constraint information to Jacobian matrix; these are the
   // direction cosines. Entries are associated with vertices ik, jk,
@@ -407,27 +417,44 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
   PetscErrorCode err = 0;
 
   // Get cohesive cells
-  const ALE::Obj<Mesh::label_sequence>& cellsCohesive = 
-    mesh->getLabelStratum("material-id", id());
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cellsCohesive = 
+    sieveMesh->getLabelStratum("material-id", id());
   assert(!cellsCohesive.isNull());
-  const Mesh::label_sequence::iterator cellsCohesiveBegin =
+  const SieveMesh::label_sequence::iterator cellsCohesiveBegin =
     cellsCohesive->begin();
-  const Mesh::label_sequence::iterator cellsCohesiveEnd =
+  const SieveMesh::label_sequence::iterator cellsCohesiveEnd =
     cellsCohesive->end();
   const int cellsCohesiveSize = cellsCohesive->size();
-
-  // Get section information
-  const ALE::Obj<real_section_type>& solution = fields->getSolution();
-  assert(!solution.isNull());  
 
   const int spaceDim = _quadrature->spaceDim();
   const int orientationSize = spaceDim*spaceDim;
 
   const int numConstraintVert = _quadrature->numBasis();
   const int numCorners = 3*numConstraintVert; // cohesive cell
-  double_array cellMatrix(numCorners*spaceDim * numCorners*spaceDim);
-  double_array cellOrientation(numConstraintVert*orientationSize);
+  double_array matrixCell(numCorners*spaceDim * numCorners*spaceDim);
+  double_array orientationCell(numConstraintVert*orientationSize);
   double_array stiffnessCell(numConstraintVert);
+
+  // Get section information
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+  const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
+  assert(!solutionSection.isNull());  
+  const ALE::Obj<RealSection>& orientationSection = 
+    _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
+  topology::Mesh::RestrictVisitor orientationVisitor(*orientationSection,
+						     orientationCell.size(),
+						     &orientationCell[0]);
+
+  const ALE::Obj<RealSection>& stiffnessSection = 
+    _fields->get("pseudostiffness").section();
+  assert(!stiffnessSection.isNull());
+  topology::Mesh::RestrictVisitor stiffnessVisitor(*stiffnessSection,
+						   stiffnessCell.size(),
+						   &stiffnessCell[0]);
 
 #if 0
   // Check that fault cells match cohesive cells
@@ -457,23 +484,26 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
   }
 #endif
 
-  const ALE::Obj<Mesh::order_type>& globalOrder = mesh->getFactory()->getGlobalOrder(mesh, "default", solution);
+  const PetscMat jacobianMatrix = jacobian->matrix();
+  assert(0 != jacobianMatrix);
+  const ALE::Obj<SieveMesh::order_type>& globalOrder = 
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection);
   assert(!globalOrder.isNull());
-  visitor_type iV(*solution, *globalOrder, (int) pow(mesh->getSieve()->getMaxConeSize(), mesh->depth())*spaceDim);
+  visitor_type iV(*solutionSection, *globalOrder, (int) pow(sieveMesh->getSieve()->getMaxConeSize(), sieveMesh->depth())*spaceDim);
 
-  for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+  for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
-    const Mesh::point_type c_fault = _cohesiveToFault[*c_iter];
+    const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
 
-    cellMatrix = 0.0;
+    matrixCell = 0.0;
     // Get orientations at fault cell's vertices.
-    _faultMesh->restrictClosure(_orientation, c_fault, &cellOrientation[0], 
-				cellOrientation.size());
+    orientationVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, orientationVisitor);
 
     // Get pseudo stiffness at fault cell's vertices.
-    _faultMesh->restrictClosure(_pseudoStiffness, c_fault, &stiffnessCell[0], 
-				stiffnessCell.size());
+    stiffnessVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, stiffnessVisitor);
     
     for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
       // Blocks in cell matrix associated with normal cohesive
@@ -483,11 +513,11 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
       const int indexK = iConstraint + 2*numConstraintVert;
 
       // Get orientation at constraint vertex
-      const real_section_type::value_type* orientationVertex = 
-	&cellOrientation[iConstraint*orientationSize];
+      const double* orientationVertex = 
+	&orientationCell[iConstraint*orientationSize];
       assert(0 != orientationVertex);
 
-      const double pseudoStiffness = stiffnessCell[iConstraint];
+      const double stiffnessVertex = stiffnessCell[iConstraint];
 
       // Scale orientation information by pseudo-stiffness to bring
       // constraint forces in solution vector to the same order of
@@ -498,9 +528,9 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 	for (int kDim=0; kDim < spaceDim; ++kDim) {
 	  const int row = indexI*spaceDim+iDim;
 	  const int col = indexK*spaceDim+kDim;
-	  cellMatrix[row*numCorners*spaceDim+col] =
-	    -orientationVertex[kDim*spaceDim+iDim]*pseudoStiffness;
-	  cellMatrix[col*numCorners*spaceDim+row] =
+	  matrixCell[row*numCorners*spaceDim+col] =
+	    -orientationVertex[kDim*spaceDim+iDim]*stiffnessVertex;
+	  matrixCell[col*numCorners*spaceDim+row] =
 	    -orientationVertex[kDim*spaceDim+iDim];
 	} // for
 
@@ -509,22 +539,21 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 	for (int kDim=0; kDim < spaceDim; ++kDim) {
 	  const int row = indexJ*spaceDim+jDim;
 	  const int col = indexK*spaceDim+kDim;
-	  cellMatrix[row*numCorners*spaceDim+col] =
-	    orientationVertex[kDim*spaceDim+jDim]*pseudoStiffness;
-	  cellMatrix[col*numCorners*spaceDim+row] =
+	  matrixCell[row*numCorners*spaceDim+col] =
+	    orientationVertex[kDim*spaceDim+jDim]*stiffnessVertex;
+	  matrixCell[col*numCorners*spaceDim+row] =
 	    orientationVertex[kDim*spaceDim+jDim];
 	} // for
     } // for
 
     // Insert cell contribution into PETSc Matrix
-    err = updateOperator(*mat, *mesh->getSieve(), iV, *c_iter, &cellMatrix[0], INSERT_VALUES);
+    err = updateOperator(*jacobianMatrix, *sieveMesh->getSieve(), iV, *c_iter, &matrixCell[0], INSERT_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
     iV.clear();
   } // for
   PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*4);
   _needNewJacobian = false;
-#endif
 } // integrateJacobianAssembled
   
 // ----------------------------------------------------------------------
