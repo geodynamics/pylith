@@ -10,8 +10,8 @@
 // ----------------------------------------------------------------------
 //
 
-#if !defined(pylith_materials_maxwellisotropic3d_hh)
-#error "MaxwellIsotropic3D.icc can only be included from MaxwellIsotropic3D.hh"
+#if !defined(pylith_materials_powerlaw3d_hh)
+#error "PowerLaw3D.icc can only be included from PowerLaw3D.hh"
 #endif
 
 #include <assert.h> // USES assert()
@@ -20,45 +20,51 @@
 // Set current time step.
 inline
 void
-pylith::materials::MaxwellIsotropic3D::timeStep(const double dt) {
-  // Jacobian needs to be reformed if the time step size changes.
-  if (_dt > 0.0 && dt != _dt)
-    _needNewJacobian = true;
+pylith::materials::PowerLaw3D::timeStep(const double dt) {
+  // Not sure what to do here.  If we are using full Newton the Jacobian will
+  // always need reforming, but SNES may opt not to reform it sometimes.
+  _needNewJacobian = true;
   _dt = dt;
 } // timeStep
 
 // Set whether elastic or inelastic constitutive relations are used.
 inline
 void
-pylith::materials::MaxwellIsotropic3D::useElasticBehavior(const bool flag) {
+pylith::materials::PowerLaw3D::useElasticBehavior(const bool flag,
+						  const int iteration) {
   if (flag) {
     _calcStressFn = 
-      &pylith::materials::MaxwellIsotropic3D::_calcStressElastic;
+      &pylith::materials::PowerLaw3D::_calcStressElastic;
     _calcElasticConstsFn = 
-      &pylith::materials::MaxwellIsotropic3D::_calcElasticConstsElastic;
+      &pylith::materials::PowerLaw3D::_calcElasticConstsElastic;
     _updatePropertiesFn = 
-      &pylith::materials::MaxwellIsotropic3D::_updatePropertiesElastic;
+      &pylith::materials::PowerLaw3D::_updatePropertiesElastic;
   } else {
     _calcStressFn = 
-      &pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic;
-    _calcElasticConstsFn = 
-      &pylith::materials::MaxwellIsotropic3D::_calcElasticConstsViscoelastic;
+      &pylith::materials::PowerLaw3D::_calcStressViscoelastic;
+    if (iteration == 0) {
+      _calcElasticConstsFn = 
+	&pylith::materials::PowerLaw3D::_calcElasticConstsViscoelasticInitial;
+    } else {
+      _calcElasticConstsFn = 
+	&pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic;
+    }
     _updatePropertiesFn = 
-      &pylith::materials::MaxwellIsotropic3D::_updatePropertiesViscoelastic;
+      &pylith::materials::PowerLaw3D::_updatePropertiesViscoelastic;
   } // if/else
 } // useElasticBehavior
 
 // Get flag indicating whether material implements an empty
 inline
 bool
-pylith::materials::MaxwellIsotropic3D::usesUpdateProperties(void) const {
+pylith::materials::PowerLaw3D::usesUpdateProperties(void) const {
   return true;
 } // usesUpdateProperties
 
 // Compute stress tensor from parameters.
 inline
 void
-pylith::materials::MaxwellIsotropic3D::_calcStress(double* const stress,
+pylith::materials::PowerLaw3D::_calcStress(double* const stress,
 						   const int stressSize,
 						   const double* parameters,
 						   const int numParams,
@@ -78,7 +84,7 @@ pylith::materials::MaxwellIsotropic3D::_calcStress(double* const stress,
 // Compute derivatives of elasticity matrix from parameters.
 inline
 void
-pylith::materials::MaxwellIsotropic3D::_calcElasticConsts(
+pylith::materials::PowerLaw3D::_calcElasticConsts(
 						 double* const elasticConsts,
 						 const int numElasticConsts,
 						 const double* parameters,
@@ -97,7 +103,7 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConsts(
 // Update state variables after solve.
 inline
 void
-pylith::materials::MaxwellIsotropic3D::_updateProperties(double* const parameters,
+pylith::materials::PowerLaw3D::_updateProperties(double* const parameters,
 						    const int numParams,
 						    const double* totalStrain,
 						    const int strainSize,
@@ -108,5 +114,20 @@ pylith::materials::MaxwellIsotropic3D::_updateProperties(double* const parameter
 					     totalStrain, strainSize,
 					     initialState, initialStateSize);
 } // _updateProperties
+
+// Compute scalar product, assuming vector form of a tensor.
+inline
+double
+pylith::materials::PowerLaw3D::_scalarProduct(const double* tensor1,
+					      const double* tensor2)
+{
+  const double scalarProduct = tensor1[0] * tensor2[0] +
+    tensor1[1] * tensor2[1] +
+    tensor1[2] * tensor2[2] +
+    2.0 * (tensor1[3] * tensor2[3] +
+	   tensor1[4] * tensor2[4] +
+	   tensor1[5] * tensor2[5]);
+  return scalarProduct;
+} // _scalarProduct
 
 // End of file 

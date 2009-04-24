@@ -10,44 +10,45 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/MaxwellIsotropic3D.h
+/** @file libsrc/materials/PowerLaw3D.h
  *
- * @brief C++ MaxwellIsotropic3D object
+ * @brief C++ PowerLaw3D object
  *
- * 3-D, isotropic, linear Maxwell viscoelastic material. The
+ * 3-D, isotropic, power-law Maxwell viscoelastic material. The
  * physical properties are specified using density, shear-wave speed,
- * viscosity, and compressional-wave speed. The physical properties are
- * stored internally using density, lambda, mu, which are directly
- * related to the elasticity constants used in the finite-element
- * integration. The viscosity is stored using Maxwell Time (viscosity/mu).
+ * viscosity coefficient, power-law exponent, and compressional-wave speed.
+ * The physical properties are stored internally using density, lambda, mu,
+ * which are directly related to the elasticity constants used in the
+ * finite-element integration. The viscosity information is retained as
+ * specified.
  */
 
-#if !defined(pylith_materials_maxwellisotropic3d_hh)
-#define pylith_materials_maxwellisotropic3d_hh
+#if !defined(pylith_materials_powerlaw3d_hh)
+#define pylith_materials_powerlaw3d_hh
 
 #include "ElasticMaterial.hh"
 
 /// Namespace for pylith package
 namespace pylith {
   namespace materials {
-    class MaxwellIsotropic3D;
-    class TestMaxwellIsotropic3D; // unit testing
+    class PowerLaw3D;
+    class TestPowerLaw3D; // unit testing
   } // materials
 } // pylith
 
 /// 3-D, isotropic, linear Maxwell viscoelastic material.
-class pylith::materials::MaxwellIsotropic3D : public ElasticMaterial
-{ // class MaxwellIsotropic3D
-  friend class TestMaxwellIsotropic3D; // unit testing
+class pylith::materials::PowerLaw3D : public ElasticMaterial
+{ // class PowerLaw3D
+  friend class TestPowerLaw3D; // unit testing
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
   /// Default constructor
-  MaxwellIsotropic3D(void);
+  PowerLaw3D(void);
 
   /// Destructor
-  ~MaxwellIsotropic3D(void);
+  ~PowerLaw3D(void);
 
   /** Set current time step.
    *
@@ -195,7 +196,7 @@ protected :
 private :
 
   /// Member prototype for _calcStress()
-  typedef void (pylith::materials::MaxwellIsotropic3D::*calcStress_fn_type)
+  typedef void (pylith::materials::PowerLaw3D::*calcStress_fn_type)
     (double* const,
      const int,
      const double*,
@@ -207,7 +208,7 @@ private :
      const bool);
 
   /// Member prototype for _calcElasticConsts()
-  typedef void (pylith::materials::MaxwellIsotropic3D::*calcElasticConsts_fn_type)
+  typedef void (pylith::materials::PowerLaw3D::*calcElasticConsts_fn_type)
     (double* const,
      const int,
      const double*,
@@ -218,7 +219,7 @@ private :
      const int);
 
   /// Member prototype for _updateProperties()
-  typedef void (pylith::materials::MaxwellIsotropic3D::*updateProperties_fn_type)
+  typedef void (pylith::materials::PowerLaw3D::*updateProperties_fn_type)
     (double* const,
      const int,
      const double*,
@@ -367,10 +368,10 @@ private :
 private :
 
   /// Not implemented
-  MaxwellIsotropic3D(const MaxwellIsotropic3D& m);
+  PowerLaw3D(const PowerLaw3D& m);
 
   /// Not implemented
-  const MaxwellIsotropic3D& operator=(const MaxwellIsotropic3D& m);
+  const PowerLaw3D& operator=(const PowerLaw3D& m);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
@@ -387,11 +388,11 @@ private :
   /// Method to use for _updateProperties().
   updateProperties_fn_type _updatePropertiesFn;
 
-}; // class MaxwellIsotropic3D
+}; // class PowerLaw3D
 
-#include "MaxwellIsotropic3D.icc" // inline methods
+#include "PowerLaw3D.icc" // inline methods
 
-#endif // pylith_materials_maxwellisotropic3d_hh
+#endif // pylith_materials_powerlaw3d_hh
 
 
 // End of file 
