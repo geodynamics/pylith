@@ -87,8 +87,8 @@ public :
    *   (used to improve conditioning of Jacobian matrix)
    */
   void initialize(const topology::Mesh& mesh,
-		  const double_array& upDir,
-		  const double_array& normalDir,
+		  const double upDir[3],
+		  const double normalDir[3],
 		  spatialdata::spatialdb::SpatialDB* matDB);
 
   /** Integrate contributions to residual term (r) for operator that
@@ -183,8 +183,8 @@ private :
    *   (used to pick which of two possible normal directions for
    *   interface; only applies to fault surfaces in a 3-D domain).
    */
-  void _calcOrientation(const double_array& upDir,
-			const double_array& normalDir);
+  void _calcOrientation(const double upDir[3],
+			const double normalDir[3]);
 
   /** Calculate conditioning field.
    *

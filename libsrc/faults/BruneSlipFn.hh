@@ -121,7 +121,7 @@ private :
    *
    * @param t Time relative to slip starting time at point.
    * @param finalSlip Final slip at point.
-   * @param riseTime Peak slip rate at point.
+   * @param riseTime Rise time at point.
    *
    * @returns Slip at point at time t
    */

@@ -28,9 +28,9 @@ testfaults_SOURCES = \
 	TestBruneSlipFn.cc \
 	TestLiuCosSlipFn.cc \
 	TestEqKinSrc.cc \
+	TestFaultCohesiveKin.cc \
 	test_faults.cc
 
-#	TestFaultCohesiveKin.cc \
 #	TestFaultCohesiveKinLine2.cc \
 #	TestFaultCohesiveKinTri3.cc \
 #	TestFaultCohesiveKinTri3d.cc \

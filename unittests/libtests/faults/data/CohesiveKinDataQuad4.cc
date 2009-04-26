@@ -86,8 +86,8 @@ const char* pylith::faults::CohesiveKinDataQuad4::_finalSlipFilename =
 const char* pylith::faults::CohesiveKinDataQuad4::_slipTimeFilename = 
   "data/quad4_sliptime.spatialdb";
 
-const char* pylith::faults::CohesiveKinDataQuad4::_peakRateFilename = 
-  "data/quad4_peakrate.spatialdb";
+const char* pylith::faults::CohesiveKinDataQuad4::_riseTimeFilename = 
+  "data/quad4_risetime.spatialdb";
 
 const char* pylith::faults::CohesiveKinDataQuad4::_matPropsFilename = 
   "data/bulkprops_2d.spatialdb";
@@ -372,7 +372,7 @@ pylith::faults::CohesiveKinDataQuad4::CohesiveKinDataQuad4(void)
   label = const_cast<char*>(_label);
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
-  peakRateFilename = const_cast<char*>(_peakRateFilename);
+  riseTimeFilename = const_cast<char*>(_riseTimeFilename);
   matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);

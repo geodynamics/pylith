@@ -60,8 +60,8 @@ public :
    *   (used to improve conditioning of Jacobian matrix)
    */
   void initialize(const topology::Mesh& mesh,
-		  const double_array& upDir,
-		  const double_array& normalDir,
+		  const double upDir[3],
+		  const double normalDir[3],
 		  spatialdata::spatialdb::SpatialDB* matDB);
 
   /** Integrate contribution of cohesive cells to residual term.

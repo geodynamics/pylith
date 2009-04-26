@@ -37,8 +37,8 @@ pylith::faults::FaultCohesiveDyn::~FaultCohesiveDyn(void)
 // Initialize fault. Determine orientation and setup boundary
 void
 pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
-					     const double_array& upDir,
-					     const double_array& normalDir,
+					     const double upDir[3],
+					     const double normalDir[3],
 					     spatialdata::spatialdb::SpatialDB* matDB)
 { // initialize
   throw std::logic_error("FaultCohesiveDyn::initialize() not implemented.");

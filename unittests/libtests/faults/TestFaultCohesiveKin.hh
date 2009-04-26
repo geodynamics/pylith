@@ -23,7 +23,9 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "pylith/faults/faultsfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
+#include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Quadrature
 
 #include <vector> // HASA std::vector
 
@@ -32,15 +34,8 @@ namespace pylith {
   namespace faults {
     class TestFaultCohesiveKin;
 
-    class FaultCohesiveKin; // USES FaultCohesiveKin
-    class CohesiveKinData; // HOLDSA CohesiveKinData
-    class EqKinSrc; // HOLDSA EqKinSrc
-    class BruneSlipFn; // HOLDSA BruneSlipFn
+    class CohesiveKinData;
   } // faults
-
-  namespace feassemble {
-    class Quadrature; // HOLDSA Quadrature
-  } // feassemble
 } // pylith
 
 /// C++ unit testing for FaultCohesiveKin
@@ -62,7 +57,7 @@ class pylith::faults::TestFaultCohesiveKin : public CppUnit::TestFixture
 protected :
 
   CohesiveKinData* _data; ///< Data for testing
-  feassemble::Quadrature* _quadrature; ///< Data used in testing
+  feassemble::Quadrature<topology::SubMesh>* _quadrature; ///< Fault quad.
   std::vector<EqKinSrc*> _eqsrcs; ///< Array of Kinematic earthquake sources.
   std::vector<BruneSlipFn*> _slipfns; ///< Slip time function.
   bool _flipFault; ///< If true, flip fault orientation.
@@ -120,7 +115,7 @@ private :
    * @param mesh PETSc mesh to initialize
    * @param fault Cohesive fault interface condition to initialize.
    */
-  void _initialize(ALE::Obj<Mesh>* mesh,
+  void _initialize(topology::Mesh* mesh,
 		   FaultCohesiveKin* const fault) const;
 
   /** Determine if vertex is a Lagrange multiplier constraint vertex.
