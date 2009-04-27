@@ -127,6 +127,7 @@ pylith::materials::PowerLaw3D::_scalarProduct(const double* tensor1,
     2.0 * (tensor1[3] * tensor2[3] +
 	   tensor1[4] * tensor2[4] +
 	   tensor1[5] * tensor2[5]);
+  PetscLogFlops(12);
   return scalarProduct;
 } // _scalarProduct
 
