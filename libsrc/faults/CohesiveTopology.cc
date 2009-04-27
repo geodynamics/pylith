@@ -121,7 +121,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
   assert(!faultSieveMesh.isNull());  
 
-  const ALE::Obj<sieve_type>& sieve = sieveMesh->getSieve();
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
   assert(!sieve.isNull());
   const ALE::Obj<SieveSubMesh::sieve_type> ifaultSieve = 
     faultSieveMesh->getSieve();
@@ -229,8 +229,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   TopologyOps::PointSet replaceCells;
   TopologyOps::PointSet noReplaceCells;
   TopologyOps::PointSet replaceVertices;
-  ALE::ISieveVisitor::PointRetriever<sieve_type> sV2(std::max(1, ifaultSieve->getMaxSupportSize()));
-  ALE::ISieveVisitor::NConeRetriever<sieve_type> cV2(*ifaultSieve, (size_t) pow(std::max(1, ifaultSieve->getMaxConeSize()), faultSieveMesh->depth()));
+  ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> sV2(std::max(1, ifaultSieve->getMaxSupportSize()));
+  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> cV2(*ifaultSieve, (size_t) pow(std::max(1, ifaultSieve->getMaxConeSize()), faultSieveMesh->depth()));
   std::set<Mesh::point_type> faceSet;
 
   const SieveSubMesh::label_sequence::const_iterator facesEnd = faces->end();
@@ -280,7 +280,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       for(int c = 0; c < coneSize2; ++c)
         std::cout << "    " << cellCone[c] << std::endl;
       std::cout << "  fault cell support:" << std::endl;
-      ALE::ISieveVisitor::PointRetriever<sieve_type> sV(std::max(1, ifaultSieve->getMaxSupportSize()));
+      ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> sV(std::max(1, ifaultSieve->getMaxSupportSize()));
       ifaultSieve->support(face, sV);
       const int supportSize2 = sV.getSize();
       const point_type *cellSupport  = sV.getPoints();
@@ -530,7 +530,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       } // if/else
     } // if/else
   } // for
-  ReplaceVisitor<sieve_type,std::map<Mesh::point_type,Mesh::point_type> > rVc(vertexRenumber, std::max(1, sieve->getMaxConeSize()), debug);
+  ReplaceVisitor<SieveMesh::sieve_type,std::map<Mesh::point_type,Mesh::point_type> > rVc(vertexRenumber, std::max(1, sieve->getMaxConeSize()), debug);
   
   rCellsEnd = replaceCells.end();
   for (TopologyOps::PointSet::const_iterator c_iter = replaceCells.begin();
@@ -544,7 +544,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     } // if
     rVc.clear();
   } // for
-  ReplaceVisitor<sieve_type,std::map<Mesh::point_type,Mesh::point_type> > rVs(cellRenumber, std::max(1, sieve->getMaxSupportSize()), debug);
+  ReplaceVisitor<SieveMesh::sieve_type,std::map<Mesh::point_type,Mesh::point_type> > rVs(cellRenumber, std::max(1, sieve->getMaxSupportSize()), debug);
 
   rVerticesEnd = replaceVertices.end();
   for (TopologyOps::PointSet::const_iterator v_iter = replaceVertices.begin();
@@ -642,9 +642,9 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh->sieveMesh();
-  assert(!faultSieveMesh.isNull());
+  faultSieveMesh.destroy();
 
-  const ALE::Obj<sieve_type>& sieve = sieveMesh->getSieve();
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
   assert(!sieve.isNull());
   faultSieveMesh = 
     new SieveSubMesh(mesh.comm(), mesh.dimension()-1, mesh.debug());
@@ -675,7 +675,7 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 	   MPI_INT, MPI_SUM, sieve->comm());
   int face = globalSieveEnd + globalFaceOffset - numFaces;
 
-  ALE::ISieveVisitor::PointRetriever<sieve_type> cV(sieve->getMaxConeSize());
+  ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> cV(sieve->getMaxConeSize());
 
   for(SieveMesh::label_sequence::iterator c_iter = cBegin;
       c_iter != cEnd;

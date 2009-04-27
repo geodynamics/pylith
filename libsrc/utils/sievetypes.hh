@@ -25,9 +25,6 @@ namespace pylith {
 
   typedef ALE::IMesh<> Mesh;
   typedef ALE::IMesh<ALE::LabelSifter<int, Mesh::point_type> > SubMesh;
-  typedef Mesh::sieve_type sieve_type;
-  typedef Mesh::real_section_type real_section_type; 
-  typedef Mesh::int_section_type int_section_type;
 
 } // pylith
 

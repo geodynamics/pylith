@@ -101,8 +101,8 @@ public :
   /// Test integrateJacobianAssembled().
   void testIntegrateJacobianAssembled(void);
 
-  /// Test updateState().
-  void testUpdateState(void);
+  /// Test updateStateVars().
+  void testUpdateStateVars(void);
 
   /// Test _calcTractionsChange().
   void testCalcTractionsChange(void);
@@ -114,9 +114,11 @@ private :
    *
    * @param mesh PETSc mesh to initialize
    * @param fault Cohesive fault interface condition to initialize.
+   * @param fields Solution fields.
    */
-  void _initialize(topology::Mesh* mesh,
-		   FaultCohesiveKin* const fault) const;
+  void _initialize(topology::Mesh* const mesh,
+		   FaultCohesiveKin* const fault,
+		   topology::SolutionFields* const fields) const;
 
   /** Determine if vertex is a Lagrange multiplier constraint vertex.
    *

@@ -29,10 +29,10 @@ testfaults_SOURCES = \
 	TestLiuCosSlipFn.cc \
 	TestEqKinSrc.cc \
 	TestFaultCohesiveKin.cc \
+	TestFaultCohesiveKinLine2.cc \
+	TestFaultCohesiveKinTri3.cc \
 	test_faults.cc
 
-#	TestFaultCohesiveKinLine2.cc \
-#	TestFaultCohesiveKinTri3.cc \
 #	TestFaultCohesiveKinTri3d.cc \
 #	TestFaultCohesiveKinQuad4.cc \
 #	TestFaultCohesiveKinQuad4e.cc \
