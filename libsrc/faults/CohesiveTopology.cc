@@ -642,7 +642,6 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh->sieveMesh();
-  faultSieveMesh.destroy();
 
   const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
   assert(!sieve.isNull());
@@ -710,6 +709,8 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   // Convert fault to an IMesh
   SieveSubMesh::renumbering_type& fRenumbering =
     faultSieveMesh->getRenumbering();
+  const SieveSubMesh::renumbering_type::const_iterator fRenumberingEnd = 
+    fRenumbering.end();
   faultSieveMesh->setSieve(ifaultSieve);
   //ALE::ISieveConverter::convertMesh(*fault, *faultSieveMesh, fRenumbering, true);
   {
@@ -735,10 +736,6 @@ pylith::faults::CohesiveTopology::createFaultParallel(
       ++c_iter, ++f_iter)
     (*cohesiveToFault)[*c_iter] = *f_iter;
     
-#if 0
-  faultSieveMesh->setRealSection("coordinates", 
-				 sieveMesh->getRealSection("coordinates"));
-#else
   const ALE::Obj<topology::Mesh::RealSection>& coordinates =
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -755,7 +752,7 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   for (SieveMesh::label_sequence::iterator v_iter = vBegin;
       v_iter != vEnd;
       ++v_iter) {
-    if (fRenumbering.find(*v_iter) == fRenumbering.end())
+    if (fRenumbering.find(*v_iter) == fRenumberingEnd)
       continue;
     fCoordinates->setFiberDimension(fRenumbering[*v_iter],
 				    coordinates->getFiberDimension(*v_iter));
@@ -764,11 +761,11 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   for(SieveMesh::label_sequence::iterator v_iter = vBegin;
       v_iter != vEnd;
       ++v_iter) {
-    if (fRenumbering.find(*v_iter) == fRenumbering.end()) continue;
+    if (fRenumbering.find(*v_iter) == fRenumberingEnd)
+      continue;
     fCoordinates->updatePoint(fRenumbering[*v_iter], 
 			      coordinates->restrictPoint(*v_iter));
   }
-#endif
   //faultSieveMesh->view("Parallel fault mesh");
 
   // Create the parallel overlap
@@ -799,7 +796,7 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   faultSieveMesh->setCalculatedOverlap(true);
   //sendParallelMeshOverlap->view("Send parallel fault overlap");
   //recvParallelMeshOverlap->view("Recv parallel fault overlap");
-}
+} // createFaultParallel
 
 
 // End of file

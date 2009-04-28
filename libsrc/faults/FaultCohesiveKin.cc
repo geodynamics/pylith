@@ -93,8 +93,12 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
   delete _faultMesh; _faultMesh = new topology::SubMesh();
   CohesiveTopology::createFaultParallel(_faultMesh, &_cohesiveToFault, 
 					mesh, id(), _useLagrangeConstraints());
-  //_faultMesh->getLabel("height")->view("Fault mesh height");
-  //_faultMesh->view("FAULT MESH");
+
+  { // TEMPORARY
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  faultSieveMesh->getLabel("height")->view("Fault mesh height");
+  faultSieveMesh->view("FAULT MESH");
+  } // TEMPORARY
 
   delete _fields; 
   _fields = new topology::Fields<topology::Field<topology::SubMesh> >(*_faultMesh);
@@ -110,6 +114,7 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
 
   // Allocate slip field
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
   const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
     faultSieveMesh->depthStratum(0);
   assert(!vertices.isNull());
@@ -127,6 +132,13 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
   // Setup pseudo-stiffness of cohesive cells to improve conditioning
   // of Jacobian matrix
   _calcConditioning(cs, matDB);
+
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
+    faultSieveMesh->heightStratum(0);
+  assert(!cells.isNull());
+  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+  _quadrature->computeGeometry(*_faultMesh, cells);
 
   // Compute orientation at vertices in fault mesh.
   _calcOrientation(upDir, normalDir);
@@ -808,7 +820,7 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double upDir[3],
   
   // Get fault cells (1 dimension lower than top-level cells)
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    faultSieveMesh->heightStratum(1);
+    faultSieveMesh->heightStratum(0);
   assert(!cells.isNull());
   const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
@@ -1062,14 +1074,11 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   double_array areaCell(numBasis);
   double_array verticesCell(numBasis*spaceDim);
 
-  // Get fault cells (1 dimension lower than top-level cells)
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    faultSieveMesh->heightStratum(1);
+    faultSieveMesh->heightStratum(0);
   assert(!cells.isNull());
   const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
-
-  _quadrature->computeGeometry(*_faultMesh, cells);
 
   // Loop over cells in fault mesh, compute area
   for(SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
@@ -1098,10 +1107,10 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   // Assemble area information
   area.complete();
 
-#if 0 // DEBUGGING
+#if 1 // DEBUGGING
   area.view("AREA");
-  _faultMesh->getSendOverlap()->view("Send fault overlap");
-  _faultMesh->getRecvOverlap()->view("Receive fault overlap");
+  //_faultMesh->getSendOverlap()->view("Send fault overlap");
+  //_faultMesh->getRecvOverlap()->view("Receive fault overlap");
 #endif
 } // _calcArea
 
