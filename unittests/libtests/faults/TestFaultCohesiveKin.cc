@@ -142,9 +142,6 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
 
-  mesh.view(_data->meshFilename);
-  fault._faultMesh->view("FAULT MESH");
-  
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
   SieveSubMesh::renumbering_type& renumbering = 
@@ -303,7 +300,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     fault.useSolnIncr(true);
     fault.integrateResidual(residual, t, &fields);
 
-    //residual->view("RESIDUAL"); // DEBUGGING
+    residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->valsResidualIncr;
@@ -729,19 +726,21 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
   const int spaceDim = _data->spaceDim;
   const ALE::Obj<RealSection>& solutionSection = fields.get("solution").section();
   CPPUNIT_ASSERT(!solutionSection.isNull());
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-    sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-  int iVertex = 0;
-  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter, ++iVertex) {
-    solutionSection->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
-  } // for
+  { // setup solution
+    const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+    CPPUNIT_ASSERT(!sieveMesh.isNull());
+    const ALE::Obj<SieveMesh::label_sequence>& vertices =
+      sieveMesh->depthStratum(0);
+    CPPUNIT_ASSERT(!vertices.isNull());
+    const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
+    const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+    int iVertex = 0;
+    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+	 v_iter != verticesEnd;
+	 ++v_iter, ++iVertex) {
+      solutionSection->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
+    } // for
+  } // setup solution
 
   CPPUNIT_ASSERT(0 != fault._faultMesh);
   topology::Field<topology::SubMesh> tractions(*fault._faultMesh);
@@ -755,20 +754,30 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
   fault.updateStateVars(t, &fields);  
   fault._calcTractionsChange(&tractions, fields.get("solution"));
 
-  iVertex = 0;
+  int iVertex = 0;
   const double tolerance = 1.0e-06;
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-  SieveSubMesh::renumbering_type& renumbering = faultSieveMesh->getRenumbering();
-  const SieveMesh::renumbering_type::const_iterator rEnd = renumbering.end();
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
+    faultSieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const SieveSubMesh::label_sequence::iterator verticesBegin = 
+    vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  SieveSubMesh::renumbering_type& renumbering = 
+    faultSieveMesh->getRenumbering();
+  const SieveMesh::renumbering_type::const_iterator renumberingBegin = 
+    renumbering.begin();
+  const SieveMesh::renumbering_type::const_iterator renumberingEnd = 
+    renumbering.end();
   for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter, ++iVertex) {
     SieveMesh::point_type meshVertex = -1;
     bool found = false;
 
-    for (SieveMesh::renumbering_type::const_iterator r_iter = renumbering.begin();
-	 r_iter != rEnd;
+    for (SieveMesh::renumbering_type::const_iterator r_iter = renumberingBegin;
+	 r_iter != renumberingEnd;
 	 ++r_iter) {
       if (r_iter->second == *v_iter) {
         meshVertex = r_iter->first;

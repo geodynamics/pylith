@@ -31,22 +31,20 @@ testfaults_SOURCES = \
 	TestFaultCohesiveKin.cc \
 	TestFaultCohesiveKinLine2.cc \
 	TestFaultCohesiveKinTri3.cc \
+	TestFaultCohesiveKinTri3d.cc \
+	TestFaultCohesiveKinQuad4.cc \
+	TestFaultCohesiveKinQuad4e.cc \
+	TestFaultCohesiveKinTet4.cc \
+	TestFaultCohesiveKinTet4e.cc \
+	TestFaultCohesiveKinTet4f.cc \
+	TestFaultCohesiveKinHex8.cc \
+	TestFaultCohesiveKinSrcs.cc \
+	TestFaultCohesiveKinSrcsLine2.cc \
+	TestFaultCohesiveKinSrcsTri3.cc \
+	TestFaultCohesiveKinSrcsQuad4.cc \
+	TestFaultCohesiveKinSrcsTet4.cc \
+	TestFaultCohesiveKinSrcsHex8.cc \
 	test_faults.cc
-
-#	TestFaultCohesiveKinTri3d.cc \
-#	TestFaultCohesiveKinQuad4.cc \
-#	TestFaultCohesiveKinQuad4e.cc \
-#	TestFaultCohesiveKinTet4.cc \
-#	TestFaultCohesiveKinTet4e.cc \
-#	TestFaultCohesiveKinTet4f.cc \
-#	TestFaultCohesiveKinHex8.cc \
-#	TestFaultCohesiveKinSrcs.cc \
-#	TestFaultCohesiveKinSrcsLine2.cc \
-#	TestFaultCohesiveKinSrcsTri3.cc \
-#	TestFaultCohesiveKinSrcsQuad4.cc \
-#	TestFaultCohesiveKinSrcsTet4.cc \
-#	TestFaultCohesiveKinSrcsHex8.cc
-
 
 
 noinst_HEADERS = \

@@ -16,7 +16,8 @@
 
 #include "data/CohesiveKinSrcsDataQuad4.hh" // USES CohesiveKinDataQuad4
 
-#include "pylith/feassemble/Quadrature1Din2D.hh" // USES Quadrature1Din2D
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature<SubMesh>
 #include "pylith/feassemble/GeometryLine2D.hh" // USES GeometryLine2D
 
 // ----------------------------------------------------------------------
@@ -29,7 +30,7 @@ pylith::faults::TestFaultCohesiveKinSrcsQuad4::setUp(void)
 { // setUp
   TestFaultCohesiveKinSrcs::setUp();
   _data = new CohesiveKinSrcsDataQuad4();
-  _quadrature = new feassemble::Quadrature1Din2D();
+
   CPPUNIT_ASSERT(0 != _quadrature);
   feassemble::GeometryLine2D geometry;
   _quadrature->refGeometry(&geometry);

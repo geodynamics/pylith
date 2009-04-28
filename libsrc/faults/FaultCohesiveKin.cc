@@ -94,12 +94,6 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
   CohesiveTopology::createFaultParallel(_faultMesh, &_cohesiveToFault, 
 					mesh, id(), _useLagrangeConstraints());
 
-  { // TEMPORARY
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
-  faultSieveMesh->getLabel("height")->view("Fault mesh height");
-  faultSieveMesh->view("FAULT MESH");
-  } // TEMPORARY
-
   delete _fields; 
   _fields = new topology::Fields<topology::Field<topology::SubMesh> >(*_faultMesh);
 
@@ -228,7 +222,8 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     _fields->get("area").section();
   assert(!areaSection.isNull());
   topology::Mesh::RestrictVisitor areaVisitor(*areaSection,
-					      areaCell.size(), &areaCell[0]);
+					      areaAssembledCell.size(),
+					      &areaAssembledCell[0]);
 
   topology::Field<topology::Mesh>& solution = fields->solution();
   const ALE::Obj<RealSection>& solutionSection = solution.section();
@@ -281,6 +276,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
       const int indexK = iConstraint + 2*numConstraintVert;
 
       const double pseudoStiffness = stiffnessCell[iConstraint];
+      assert(areaAssembledCell[iConstraint] > 0);
       const double wt = pseudoStiffness * 
 	areaCell[iConstraint] / areaAssembledCell[iConstraint];
       
@@ -387,11 +383,14 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
   const ALE::Obj<RealSection>& residualSection = residual.section();
   assert(!residualSection.isNull());
 
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
-  const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesBegin = 
+    vertices->begin();
   const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
-  SieveSubMesh::renumbering_type& renumbering = faultSieveMesh->getRenumbering();
+  SieveSubMesh::renumbering_type& renumbering = 
+    faultSieveMesh->getRenumbering();
   const SieveSubMesh::renumbering_type::const_iterator renumberingEnd =
     renumbering.end();
   for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin; 
@@ -867,22 +866,6 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double upDir[3],
       cellGeometry.jacobian(&jacobian, &jacobianDet, coordinatesCell,
 			    refCoordsVertex);
 
-      for (int ii=0; ii < numBasis; ++ii) {
-	std::cout << "  vertex " << ii << ": ";
-	for (int jj=0; jj < spaceDim; ++jj)
-	  std::cout << "  " << coordinatesCell[ii*spaceDim+jj];
-	std::cout << std::endl;
-      } // for
-      std::cout << "  location vertex: ";
-      for (int jj=0; jj < cohesiveDim; ++jj)
-	std::cout << "  " << refCoordsVertex[jj];
-      std::cout << std::endl;
-      std::cout << "  jacobian: ";
-      for (int jj=0; jj < jacobianSize; ++jj)
-	std::cout << "  " << jacobian[jj];
-      std::cout << std::endl;
-      
-
       // Compute orientation
       cellGeometry.orientation(&orientationVertex, jacobian, jacobianDet, 
 			       upDirArray);
@@ -892,7 +875,7 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double upDir[3],
     } // for
   } // for
 
-  orientation.view("ORIENTATION BEFORE COMPLETE");
+  //orientation.view("ORIENTATION BEFORE COMPLETE");
 
   // Assemble orientation information
   orientation.complete();
@@ -955,7 +938,7 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double upDir[3],
     PetscLogFlops(5 + count * 3);
   } // if
 
-  orientation.view("ORIENTATION");
+  //orientation.view("ORIENTATION");
 } // _calcOrientation
 
 // ----------------------------------------------------------------------
@@ -1034,8 +1017,6 @@ pylith::faults::FaultCohesiveKin::_calcConditioning(
   PetscLogFlops(count * 2);
 
   matDB->close();
-
-  stiffness.view("PSEUDO STIFFNESS");
 } // _calcConditioning
 
 // ----------------------------------------------------------------------
@@ -1044,6 +1025,18 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
 { // _calcArea
   assert(0 != _faultMesh);
   assert(0 != _fields);
+
+  // Containers for area information
+  const int cellDim = _quadrature->cellDim();
+  const int numBasis = _quadrature->numBasis();
+  const int numQuadPts = _quadrature->numQuadPts();
+  const int spaceDim = _quadrature->spaceDim();
+  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
+  double jacobianDet = 0;
+  double_array areaCell(numBasis);
+  double_array verticesCell(numBasis*spaceDim);
 
   // Get vertices in fault mesh.
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
@@ -1061,19 +1054,8 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   area.zero();
   const ALE::Obj<RealSection>& areaSection = area.section();
   assert(!areaSection.isNull());
+  topology::Mesh::UpdateAddVisitor areaVisitor(*areaSection, &areaCell[0]);  
   
-  // Containers for area information
-  const int cellDim = _quadrature->cellDim();
-  const int numBasis = _quadrature->numBasis();
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int spaceDim = _quadrature->spaceDim();
-  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
-  const double_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
-  double jacobianDet = 0;
-  double_array areaCell(numBasis);
-  double_array verticesCell(numBasis*spaceDim);
-
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
     faultSieveMesh->heightStratum(0);
   assert(!cells.isNull());
@@ -1099,7 +1081,7 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
 	areaCell[iBasis] += dArea;
       } // for
     } // for
-    areaSection->updateAddPoint(*c_iter, &areaCell[0]);
+    faultSieveMesh->updateAdd(*c_iter, areaVisitor);
 
     PetscLogFlops( numQuadPts*(1+numBasis*2) );
   } // for
@@ -1107,10 +1089,10 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   // Assemble area information
   area.complete();
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   area.view("AREA");
-  //_faultMesh->getSendOverlap()->view("Send fault overlap");
-  //_faultMesh->getRecvOverlap()->view("Receive fault overlap");
+  _faultMesh->getSendOverlap()->view("Send fault overlap");
+  _faultMesh->getRecvOverlap()->view("Receive fault overlap");
 #endif
 } // _calcArea
 

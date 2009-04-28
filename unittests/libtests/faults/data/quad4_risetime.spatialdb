@@ -1,8 +1,8 @@
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 1
-  value-names =  slip-rate
-  value-units =  m/s
+  value-names =  rise-time
+  value-units =  s
   num-locs = 2
   data-dim = 1
   space-dim = 2
