@@ -162,6 +162,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   CPPUNIT_ASSERT_EQUAL(_data->numConstraintVert, iVertex);
 
   // Check orientation
+  fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
   const ALE::Obj<RealSection>& orientationSection = 
     fault._fields->get("orientation").section();
   CPPUNIT_ASSERT(!orientationSection.isNull());
