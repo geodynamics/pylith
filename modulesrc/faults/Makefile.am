@@ -13,40 +13,54 @@
 subpackage = faults
 include $(top_srcdir)/subpackage.am
 
-subpkgpyexec_LTLIBRARIES = faultsmodule.la
+subpkgpyexec_LTLIBRARIES = _faultsmodule.la
 
-faultsmodule_la_LDFLAGS = -module -avoid-version \
+subpkgpyexec_PYTHON = faults.py
+
+swig_sources = \
+	faults.i \
+	SlipTimeFn.i \
+	ConstRateSlipFn.i \
+	StepSlipFn.i \
+	BruneSlipFn.i \
+	LiuCosSlipFn.i \
+	EqKinSrc.i \
+	Fault.i \
+	FaultCohesive.i \
+	FaultCohesiveDyn.i \
+	FaultCohesiveKin.i \
+	../feassemble/Integrator.i
+
+swig_generated = \
+	faults_wrap.cxx \
+	faults.py
+
+_faultsmodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist_faultsmodule_la_SOURCES = faults.pyxe.src
-nodist_faultsmodule_la_SOURCES = \
-	faults.pyxe \
-	faults.c faults_embed.cpp faults_embed.h
+dist__faultsmodule_la_SOURCES = $(swig_sources) $(swig_generated)
 
-faultsmodule_la_LIBADD = \
+_faultsmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB)
-
+	$(PETSC_LIBS)
 if ENABLE_CUBIT
-  faultsmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+  _faultsmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
 endif
 if NO_UNDEFINED
-  faultsmodule_la_LIBADD += $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+_faultsmodule_la_LIBADD += \
+	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
-INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
+INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
-faults.pyx faults_embed.cpp  faults_embed.h: faults.pyxe
-	pyrexembed faults.pyxe
-faults.pyxe: $(srcdir)/faults.pyxe.src
-	cp $(srcdir)/faults.pyxe.src $@
-faults_embed.cpp: faults_embed.h
-faults_embed.h: faults.pyx
+$(srcdir)/faults_wrap.cxx $(srcdir)/faults.py: $(swig_sources)
+	$(SWIG) -Wall -c++ -python $<
 
-.pyx.c:
-	pyrexc $<
 
-CLEANFILES = faults.pyxe faults.pyx faults.c *_embed.*
+MAINTAINERCLEANFILES = \
+	$(srcdir)/faults_wrap.cxx \
+	$(srcdir)/faults.py
+
 
 # End of file 
