@@ -276,7 +276,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
       const int indexK = iConstraint + 2*numConstraintVert;
 
       const double pseudoStiffness = stiffnessCell[iConstraint];
-      assert(areaAssembledCell[iConstraint] > 0);
+      //assert(areaAssembledCell[iConstraint] > 0);
       const double wt = pseudoStiffness * 
 	areaCell[iConstraint] / areaAssembledCell[iConstraint];
       
@@ -924,7 +924,7 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double upDir[3],
       for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
 	   v_iter != verticesEnd;
 	   ++v_iter) {
-	orientationSection->restrictPoint(*vertices->begin(), &orientationVertex[0],
+	orientationSection->restrictPoint(*v_iter, &orientationVertex[0],
 					  orientationVertex.size());
 	assert(9 == orientationSection->getFiberDimension(*v_iter));
 	// Flip up-dip direction
@@ -1081,6 +1081,7 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
 	areaCell[iBasis] += dArea;
       } // for
     } // for
+    areaVisitor.clear();
     faultSieveMesh->updateAdd(*c_iter, areaVisitor);
 
     PetscLogFlops( numQuadPts*(1+numBasis*2) );
@@ -1091,8 +1092,8 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
 
 #if 0 // DEBUGGING
   area.view("AREA");
-  _faultMesh->getSendOverlap()->view("Send fault overlap");
-  _faultMesh->getRecvOverlap()->view("Receive fault overlap");
+  //_faultMesh->getSendOverlap()->view("Send fault overlap");
+  //_faultMesh->getRecvOverlap()->view("Receive fault overlap");
 #endif
 } // _calcArea
 

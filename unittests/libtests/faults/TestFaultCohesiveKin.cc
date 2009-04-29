@@ -162,7 +162,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   CPPUNIT_ASSERT_EQUAL(_data->numConstraintVert, iVertex);
 
   // Check orientation
-  fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
+  //fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
   const ALE::Obj<RealSection>& orientationSection = 
     fault._fields->get("orientation").section();
   CPPUNIT_ASSERT(!orientationSection.isNull());
@@ -301,7 +301,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     fault.useSolnIncr(true);
     fault.integrateResidual(residual, t, &fields);
 
-    residual.view("RESIDUAL"); // DEBUGGING
+    //residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->valsResidualIncr;

@@ -7,7 +7,6 @@ CURRENT ISSUES/PRIORITIES
 0. SWIG conversion [Brad]
 
   (1) Faults
-    Use visitors in FaultCohesiveKin
 
   (2) Output
     TestDataWriterVTKFaultMesh
@@ -25,8 +24,8 @@ CURRENT ISSUES/PRIORITIES
 
   (6) Tidy up
 
-    Check use of label_sequence.
-    label_sequence - iterators are cached, so use sequence or cache begin/end to maintain access
+    Check use of label_sequence.  label_sequence - iterators are
+    cached, so use sequence or cache begin/end to maintain access
 
     Cleanup use of heightStratum() and depthStratum().
 
