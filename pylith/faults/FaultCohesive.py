@@ -46,8 +46,8 @@ class FaultCohesive(Fault, ModuleFaultCohesive):
 
   import pyre.inventory
 
-  useFaultMesh = pyre.inventory.bool("use_fault_mesh", default=False)
-  useFaultMesh.meta['tip'] = "If true, use fault mesh to define fault; " \
+  useMesh = pyre.inventory.bool("use_fault_mesh", default=False)
+  useMesh.meta['tip'] = "If true, use fault mesh to define fault; " \
       "otherwise, use group of vertices to define fault."
 
   # Future, improved implementation
@@ -58,9 +58,9 @@ class FaultCohesive(Fault, ModuleFaultCohesive):
   #faultMeshImporter.meta['tip'] = "Importer for fault mesh."
 
   # Current kludge
-  faultMeshFilename = pyre.inventory.str("fault_mesh_filename",
-                                         default="fault.inp")
-  faultMeshFilename.meta['tip'] = "Filename for fault mesh UCD file."
+  meshFilename = pyre.inventory.str("fault_mesh_filename",
+                                    default="fault.inp")
+  meshFilename.meta['tip'] = "Filename for fault mesh UCD file."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -80,12 +80,12 @@ class FaultCohesive(Fault, ModuleFaultCohesive):
     Setup members using inventory.
     """
     Fault._configure(self)
-    ModuleFaultCohesive.useFaultMesh(self, self.inventory.useFaultMesh)
+    ModuleFaultCohesive.useFaultMesh(self, self.inventory.useMesh)
     #ModuleFaultCohesive.faultMeshImporter(self, 
     #                                      self.inventory.faultMeshImporter)
     # TEMPORARY
     ModuleFaultCohesive.faultMeshFilename(self, 
-                                          self.inventory.faultMeshFilename)
+                                          self.inventory.meshFilename)
     return
 
   

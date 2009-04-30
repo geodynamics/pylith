@@ -174,9 +174,9 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
     Get vertex field.
     """
     if None == fields:
-      field = ModuleFaultCohesiveKin.vertexField(name)
+      field = ModuleFaultCohesiveKin.vertexField(self, name)
     else:
-      field = ModuleFaultCohesiveKin.vertexField(name, fields)
+      field = ModuleFaultCohesiveKin.vertexField(self, name, fields)
     return field
 
 
@@ -185,9 +185,9 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
     Get cell field.
     """
     if None == fields:
-      field = ModuleFaultCohesiveKin.cellField(name)
+      field = ModuleFaultCohesiveKin.cellField(self, name)
     else:
-      field = ModuleFaultCohesiveKin.cellField(name, fields)
+      field = ModuleFaultCohesiveKin.cellField(self, name, fields)
     return field
 
 

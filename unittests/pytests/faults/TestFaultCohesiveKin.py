@@ -58,12 +58,12 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     Test useFaultMesh().
     """
-    fault = FaultCohesive()
+    fault = FaultCohesiveKin()
     fault._configure()
-    self.assertEqual(False, fault.useFaultMesh)
 
-    fault.useFaultMesh = True;
-    self.assertEqual(True, fault.useFaultMesh)
+    fault.useFaultMesh(True);
+
+    # No test of result
     return
 
 
@@ -71,13 +71,13 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     Test faultMeshFilename().
     """
-    fault = FaultCohesive()
+    fault = FaultCohesiveKin()
     fault._configure()
-    self.assertEqual("fault.inp", fault.faultMeshFilename)
 
     filename = "SanAndreas.inp"
-    fault.faultMeshFilename = filename
-    self.assertEqual(filename, fault.faultMeshFilename)
+    fault.faultMeshFilename(filename)
+
+    # No test of result
     return
 
 
@@ -89,17 +89,18 @@ class TestFaultCohesiveKin(unittest.TestCase):
     neither set the input fields or verify the results.
     """
     cs = CSCart()
-    cs.spaceDim = 2
+    cs.inventory.spaceDim = 2
+    cs._configure()
     
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
-    normalizer.initialize()
+    normalizer._configure()
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
     importer.inventory.filename = "data/tri3.mesh"
     importer.inventory.coordsys = cs
-    improter._configure()
+    importer._configure()
     mesh = importer.read(normalizer, debug=False, interpolate=False)
 
     fault = FaultCohesiveKin()
@@ -135,7 +136,8 @@ class TestFaultCohesiveKin(unittest.TestCase):
     dt = 2.4
     (mesh, fault, fields) = self._initialize()
     fault.timeStep(dt)
-    self.assertEqual(dt, fault.timeStep())
+
+    # No test of result
     return
 
   
@@ -261,7 +263,9 @@ class TestFaultCohesiveKin(unittest.TestCase):
 
     # Setup mesh
     cs = CSCart()
-    cs.spaceDim = 2
+    cs.inventory.spaceDim = 2
+    cs._configure()
+
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
     importer.inventory.filename = "data/tri3.mesh"
@@ -285,16 +289,20 @@ class TestFaultCohesiveKin(unittest.TestCase):
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
     ioFinalSlip = SimpleIOAscii()
-    ioFinalSlip.filename = "data/tri3_finalslip.spatialdb"
+    ioFinalSlip.inventory.filename = "data/tri3_finalslip.spatialdb"
+    ioFinalSlip._configure()
     dbFinalSlip = SimpleDB()
-    dbFinalSlip.iohandler = ioFinalSlip
-    dbFinalSlip.label = "final slip"
+    dbFinalSlip.inventory.iohandler = ioFinalSlip
+    dbFinalSlip.inventory.label = "final slip"
+    dbFinalSlip._configure()
     
     ioSlipTime = SimpleIOAscii()
-    ioSlipTime.filename = "data/tri3_sliptime.spatialdb"
+    ioSlipTime.inventory.filename = "data/tri3_sliptime.spatialdb"
+    ioSlipTime._configure()
     dbSlipTime = SimpleDB()
-    dbSlipTime.iohandler = ioSlipTime
-    dbSlipTime.label = "slip time"
+    dbSlipTime.inventory.iohandler = ioSlipTime
+    dbSlipTime.inventory.label = "slip time"
+    dbSlipTime._configure()
     
     from pylith.faults.StepSlipFn import StepSlipFn
     slipfn = StepSlipFn()
@@ -336,12 +344,12 @@ class TestFaultCohesiveKin(unittest.TestCase):
     # Setup fields
     from pylith.topology.SolutionFields import SolutionFields
     fields = SolutionFields(mesh)
-    fields.add("residual")
-    fields.add("solution")
-    fields.add("disp")
+    fields.add("residual", "residual")
+    fields.add("solution", "displacement")
+    fields.add("disp", "displacement")
     fields.solutionName("solution")
     residual = fields.get("residual")
-    residual.newSection(residual.VERTICES_FIELD, cs.spaceDim)
+    residual.newSection(residual.VERTICES_FIELD, cs.spaceDim())
     residual.allocate()
     residual.zero()
     fields.copyLayout("residual")

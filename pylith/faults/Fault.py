@@ -161,10 +161,10 @@ class Fault(PetscComponent, ModuleFault):
     ModuleFault.initialize(self, 
                            self.mesh, self.upDir, self.normalDir, self.matDB)
 
-    if None != self.output:
-      self.output.initialize(normalizer, self.faultQuadrature)
-      self.output.writeInfo()
-      self.output.open(totalTime, numTimeSteps)
+    #if None != self.output:
+    #  self.output.initialize(normalizer, self.faultQuadrature)
+    #  self.output.writeInfo()
+    #  self.output.open(totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)
     return
@@ -178,7 +178,7 @@ class Fault(PetscComponent, ModuleFault):
     self._logger.eventBegin(logEvent)
 
     self._info.log("Writing fault data.")
-    self.output.writeData(t+dt, fields)
+    #self.output.writeData(t+dt, fields)
 
     self._logger.eventEnd(logEvent)
     return
