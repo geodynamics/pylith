@@ -25,6 +25,10 @@
 #include "pylith/faults/FaultCohesive.hh"
 #include "pylith/faults/FaultCohesiveDyn.hh"
 #include "pylith/faults/FaultCohesiveKin.hh"
+
+#include "pylith/topology/SubMesh.hh"
+#include "pylith/feassemble/Quadrature.hh"
+#include "pylith/feassemble/Integrator.hh"
 %}
 
 %include "exception.i"
@@ -38,6 +42,8 @@
 
 %include "typemaps.i"
 %include "../include/doublearray.i"
+%include "../include/chararray.i"
+%include "../include/eqkinsrcarray.i"
 
 // Numpy interface stuff
 %{
@@ -49,8 +55,12 @@ import_array();
 %}
 
 // Interfaces
-%include "../feassemble/Quadrature.i" // ISA Quadrature
-%include "../feassemble/Integrator.i" // ISA Integrator
+%include "../topology/SubMesh.i" // ISA Integrator<Quadrature<SubMesh> >
+%include "../feassemble/Quadrature.i" // ISA Integrator<Quadrature<SubMesh> >
+%include "../feassemble/Integrator.i" // ISA Integrator<Quadrature<SubMesh> >
+
+// Template instatiation
+%template(SubMeshIntegrator) pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::SubMesh > >;
 
 %include "SlipTimeFn.i"
 %include "StepSlipFn.i"
@@ -62,7 +72,6 @@ import_array();
 %include "FaultCohesive.i"
 %include "FaultCohesiveDyn.i"
 %include "FaultCohesiveKin.i"
-
 
 // End of file
 

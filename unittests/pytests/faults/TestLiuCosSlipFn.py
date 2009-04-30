@@ -10,25 +10,25 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/faults/TestBruneSlipFn.py
+## @file unittests/pytests/faults/TestLiuCosSlipFn.py
 
-## @brief Unit testing of BruneSlipFn object.
+## @brief Unit testing of LiuCosSlipFn object.
 
 import unittest
 
-from pylith.faults.BruneSlipFn import BruneSlipFn
+from pylith.faults.LiuCosSlipFn import LiuCosSlipFn
 
 # ----------------------------------------------------------------------
-class TestBruneSlipFn(unittest.TestCase):
+class TestLiuCosSlipFn(unittest.TestCase):
   """
-  Unit testing of BruneSlipFn object.
+  Unit testing of LiuCosSlipFn object.
   """
 
   def test_constructor(self):
     """
     Test constructor.
     """
-    slipFn = BruneSlipFn()
+    slipFn = LiuCosSlipFn()
     return
 
 
@@ -36,7 +36,7 @@ class TestBruneSlipFn(unittest.TestCase):
     """
     Test constructor.
     """
-    slipFn = BruneSlipFn()
+    slipFn = LiuCosSlipFn()
     slipFn._configure()
     return
 
@@ -72,7 +72,7 @@ class TestBruneSlipFn(unittest.TestCase):
     dbRiseTime.inventory.label = "rise time"
     dbRiseTime._configure()
     
-    slipFn = BruneSlipFn()
+    slipFn = LiuCosSlipFn()
     slipFn.inventory.dbslip = dbFinalSlip
     slipFn.inventory.dbSlipTime = dbSlipTime
     slipFn.inventory.dbRiseTime = dbRiseTime

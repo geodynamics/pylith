@@ -121,7 +121,7 @@ pylith::faults::FaultCohesiveDyn::verifyConfiguration(
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveDyn::vertexField(
 				       const char* name,
-				       const topology::SolutionFields& fields)
+				       const topology::SolutionFields* fields)
 { // vertexField
   throw std::logic_error("FaultCohesiveDyn::vertexField() not implemented.");
 } // vertexField
@@ -131,7 +131,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveDyn::cellField(
 				      const char* name,
-				      const topology::SolutionFields& fields)
+				      const topology::SolutionFields* fields)
 { // cellField
   throw std::logic_error("FaultCohesiveDyn::vertexField() not implemented.");
 } // cellField

@@ -48,6 +48,9 @@ import_array();
 %include "../feassemble/Quadrature.i" // ISA Quadrature
 %include "../feassemble/Integrator.i" // ISA Integrator
 
+// template instantiation
+%template(SubMeshIntegrator) pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::SubMesh> >;
+
 %include "BoundaryCondition.i"
 %include "DirichletBC.i"
 %include "DirichletBoundary.i"

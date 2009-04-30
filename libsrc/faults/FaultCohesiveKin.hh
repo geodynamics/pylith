@@ -66,10 +66,12 @@ public :
   /** Set kinematic earthquake sources.
    *
    * @param names Array of kinematic earthquake source names.
+   * @param numNames Number of earthquake sources.
    * @param sources Array of kinematic earthquake sources.
-   * @param numSources Number of earthquake sources
+   * @param numSources Number of earthquake sources.
    */
-  void eqsrcs(const char** names,
+  void eqsrcs(const char* const* names,
+	      const int numNames,
 	      EqKinSrc** sources,
 	      const int numSources);
 
@@ -149,7 +151,7 @@ public :
    */
   const topology::Field<topology::SubMesh>&
   vertexField(const char* name,
-	      const topology::SolutionFields& fields);
+	      const topology::SolutionFields* fields =0);
 
   /** Get cell field associated with integrator.
    *
@@ -159,7 +161,7 @@ public :
    */
   const topology::Field<topology::SubMesh>&
   cellField(const char* name,
-	    const topology::SolutionFields& fields);
+	    const topology::SolutionFields* fields =0);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -225,9 +227,16 @@ private :
 private :
 
   srcs_type _eqSrcs; ///< Array of kinematic earthquake sources.
-  
+
+  /// Fields for fault information.
   topology::Fields<topology::Field<topology::SubMesh> >* _fields;
 
+  /// Buffer for vector field over fault vertices.
+  topology::Field<topology::SubMesh>* _bufferVectorField;
+  
+  /// Buffer for scalar field over fault vertices.
+  topology::Field<topology::SubMesh>* _bufferScalarField;
+  
   /// Map label of cohesive cell to label of cells in fault mesh.
   std::map<topology::Mesh::SieveMesh::point_type, 
 	   topology::SubMesh::SieveMesh::point_type> _cohesiveToFault;

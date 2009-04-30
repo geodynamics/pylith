@@ -20,6 +20,7 @@
 
 from FaultCohesive import FaultCohesive
 from pylith.feassemble.Integrator import Integrator
+from faults import FaultCohesiveKin as ModuleFaultCohesiveKin
 
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
@@ -33,44 +34,40 @@ def eqsrcFactory(name):
 
 
 # FaultCohesiveKin class
-class FaultCohesiveKin(FaultCohesive, Integrator):
+class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
   """
   Python object for a fault surface with kinematic (prescribed) slip
   implemented with cohesive elements.
+
+  Inventory
+
+  @class Inventory
+  Python object for managing FaultCohesiveKin facilities and properties.
+  
+  \b Properties
+  @li None
+  
+  \b Facilities
+  @li \b eq_srcs Kinematic earthquake sources information.
+  @li \b output Output manager associated with fault data.
 
   Factory: fault
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(FaultCohesive.Inventory):
-    """
-    Python object for managing FaultCohesiveKin facilities and properties.
-    """
-    
-    ## @class Inventory
-    ## Python object for managing FaultCohesiveKin facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li \b eq_srcs Kinematic earthquake sources information.
-    ## @li \b output Output manager associated with fault data.
+  import pyre.inventory
 
-    import pyre.inventory
-
-    from SingleRupture import SingleRupture
-    eqsrcs = pyre.inventory.facilityArray("eq_srcs", itemFactory=eqsrcFactory,
-                                          factory=SingleRupture)
-    eqsrcs.meta['tip'] = "Kinematic earthquake sources information."
-
-    from pylith.meshio.OutputFaultKin import OutputFaultKin
-    output = pyre.inventory.facility("output", family="output_manager",
-                                     factory=OutputFaultKin)
-    output.meta['tip'] = "Output manager associated with fault data."
-
-
+  from SingleRupture import SingleRupture
+  eqsrcs = pyre.inventory.facilityArray("eq_srcs", itemFactory=eqsrcFactory,
+                                        factory=SingleRupture)
+  eqsrcs.meta['tip'] = "Kinematic earthquake sources information."
+  
+  from pylith.meshio.OutputFaultKin import OutputFaultKin
+  output = pyre.inventory.facility("output", family="output_manager",
+                                   factory=OutputFaultKin)
+  output.meta['tip'] = "Output manager associated with fault data."
+  
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -102,11 +99,13 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     self._info.log("Pre-initializing fault '%s'." % self.label)
     FaultCohesive.preinitialize(self, mesh)
     Integrator.preinitialize(self, mesh)
-    assert(None != self.cppHandle)
+
+    ModuleFaultCohesiveKin.quadrature(self, self.faultQuadrature)
+
     for eqsrc in self.eqsrcs.components():
       eqsrc.preinitialize()
-    self.cppHandle.eqsrcs(self.eqsrcs.inventory.facilityNames(),
-                          self.eqsrcs.components())
+    ModuleFaultCohesiveKin.eqsrcs(self, self.eqsrcs.inventory.facilityNames(),
+                                  self.eqsrcs.components())
 
     for name in self.eqsrcs.inventory.facilityNames():
       self.availableFields['vertex']['info'] += ["final_slip_%s" % name]
@@ -129,6 +128,8 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
 
     FaultCohesive.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
+    ModuleFaultCohesiveKin.verifyConfiguration(self, self.mesh)
+
     for eqsrc in self.eqsrcs.components():
       eqsrc.verifyConfiguration()
     
@@ -173,13 +174,10 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     Get vertex field.
     """
     if None == fields:
-      (field, fieldType) = self.cppHandle.vertexField(name,
-                                                      self.mesh.cppHandle)
+      field = ModuleFaultCohesiveKin.vertexField(name)
     else:
-      (field, fieldType) = self.cppHandle.vertexField(name,
-                                                     self.mesh.cppHandle,
-                                                     fields.cppHandle)
-    return (field, fieldType)
+      field = ModuleFaultCohesiveKin.vertexField(name, fields)
+    return field
 
 
   def getCellField(self, name, fields=None):
@@ -187,11 +185,10 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     Get cell field.
     """
     if None == fields:
-      (field, fieldType) = self.cppHandle.cellField(name, self.mesh.cppHandle)
+      field = ModuleFaultCohesiveKin.cellField(name)
     else:
-      (field, fieldType) = self.cppHandle.cellField(name, self.mesh.cppHandle,
-                                                    fields.cppHandle)
-    return (field, fieldType)
+      field = ModuleFaultCohesiveKin.cellField(name, fields)
+    return field
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -206,13 +203,11 @@ class FaultCohesiveKin(FaultCohesive, Integrator):
     return
 
 
-  def _createCppHandle(self):
+  def _createModuleObj(self):
     """
     Create handle to C++ FaultCohesiveKin.
     """
-    if None == self.cppHandle:
-      import pylith.faults.faults as bindings
-      self.cppHandle = bindings.FaultCohesiveKin()
+    ModuleFaultCohesiveKin.__init__(self)
     return
     
   

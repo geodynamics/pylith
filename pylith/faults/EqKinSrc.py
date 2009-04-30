@@ -21,43 +21,38 @@
 ##
 ## Factory: eq_kinematic_src
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
+from faults import EqKinSrc as ModuleEqKinSrc
 
 # EqKinSrc class
-class EqKinSrc(Component):
+class EqKinSrc(PetscComponent, ModuleEqKinSrc):
   """
   Python object for managing parameters for a kinematic earthquake sources.
+
+  Inventory
+
+  \b Properties
+  @li \b origin_time Origin time for earthquake rupture.
+  
+  \b Facilities
+  @li \b slip_function Slip time history function.
 
   Factory: eq_kinematic_src
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
-    """
-    Python object for managing EqKinSrc facilities and properties.
-    """
-    
-    ## @class Inventory
-    ## Python object for managing EqKinSrc facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b origin_time Origin time for earthquake rupture.
-    ##
-    ## \b Facilities
-    ## @li \b slip_function Slip time history function.
-
-    import pyre.inventory
-
-    from pyre.units.time import second
-    originTime = pyre.inventory.dimensional("origin_time", default=0.0*second)
-    originTime.meta['tip'] = "Origin time for earthquake rupture."
-
-    from StepSlipFn import StepSlipFn
-    slipfn = pyre.inventory.facility("slip_function", family="slip_time_fn",
-                                     factory=StepSlipFn)
-    slipfn.meta['tip'] = "Slip time history function."
-
+  import pyre.inventory
+  
+  from pyre.units.time import second
+  originTime = pyre.inventory.dimensional("origin_time", default=0.0*second)
+  originTime.meta['tip'] = "Origin time for earthquake rupture."
+  
+  from StepSlipFn import StepSlipFn
+  slipfn = pyre.inventory.facility("slip_function", family="slip_time_fn",
+                                   factory=StepSlipFn)
+  slipfn.meta['tip'] = "Slip time history function."
+  
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -65,8 +60,8 @@ class EqKinSrc(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="eqkinsrc")
-    self.cppHandle = None
+    PetscComponent.__init__(self, name, facility="eqkinsrc")
+    self._createModuleObj()
     self._loggingPrefix = "EqKi "
     return
 
@@ -76,10 +71,7 @@ class EqKinSrc(Component):
     Do pre-initialization setup.
     """
     self._setupLogging()
-    self._createCppHandle()
-    self.cppHandle.originTime = self.originTime.value
     self.slipfn.preinitialize()
-    self.cppHandle.slipfn = self.slipfn.cppHandle
     return
   
 
@@ -115,19 +107,17 @@ class EqKinSrc(Component):
     """
     Setup members using inventory.
     """
-    Component._configure(self)
-    self.originTime = self.inventory.originTime
-    self.slipfn = self.inventory.slipfn
+    PetscComponent._configure(self)
+    ModuleEqKinSrc.originTime(self, self.inventory.originTime.value)
+    ModuleEqKinSrc.slipfn(self, self.inventory.slipfn)
     return
 
   
-  def _createCppHandle(self):
+  def _createModuleObj(self):
     """
     Create handle to corresponding C++ object.
     """
-    if None == self.cppHandle:
-      import pylith.faults.faults as bindings
-      self.cppHandle = bindings.EqKinSrc()
+    ModuleEqKinSrc.__init__(self)
     return
   
 
@@ -140,7 +130,7 @@ class EqKinSrc(Component):
 
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("FE Constraint")
+    logger.className("Kinematic Earthquake Source")
     logger.initialize()
 
     events = ["verify",

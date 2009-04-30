@@ -60,7 +60,7 @@ namespace pylith {
        * @param mesh PETSc mesh
        */
       virtual
-      void adjustTopology(pylith::topology::Mesh* mesh,
+      void adjustTopology(pylith::topology::Mesh* const mesh,
 			  const bool flipFault =false) = 0;
       
       /** Initialize fault. Determine orientation and setup boundary
@@ -98,7 +98,7 @@ namespace pylith {
       virtual
       const pylith::topology::Field<pylith::topology::SubMesh>&
       vertexField(const char* name,
-		  const pylith::topology::SolutionFields& fields) = 0;
+		  const pylith::topology::SolutionFields* fields =0) = 0;
       
       /** Get cell field associated with integrator.
        *
@@ -109,7 +109,7 @@ namespace pylith {
       virtual
       const pylith::topology::Field<pylith::topology::SubMesh>&
       cellField(const char* name,
-		const pylith::topology::SolutionFields& fields) = 0;
+		const pylith::topology::SolutionFields* fields =0) = 0;
       
     }; // class Fault
     

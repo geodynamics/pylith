@@ -78,7 +78,7 @@ public :
    * @param mesh PETSc mesh
    */
   virtual
-  void adjustTopology(topology::Mesh* mesh,
+  void adjustTopology(topology::Mesh* const mesh,
 		      const bool flipFault =false) = 0;
 
   /** Initialize fault. Determine orientation and setup boundary
@@ -116,7 +116,7 @@ public :
   virtual
   const topology::Field<topology::SubMesh>&
   vertexField(const char* name,
-	      const topology::SolutionFields& fields) = 0;
+	      const topology::SolutionFields* fields =0) = 0;
 
   /** Get cell field associated with integrator.
    *
@@ -127,7 +127,7 @@ public :
   virtual
   const topology::Field<topology::SubMesh>&
   cellField(const char* name,
-	    const topology::SolutionFields& fields) = 0;
+	    const topology::SolutionFields* fields =0) = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

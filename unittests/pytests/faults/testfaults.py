@@ -56,23 +56,20 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
-    from TestBruneSlipFn import TestBruneSlipFn
-    suite.addTest(unittest.makeSuite(TestBruneSlipFn))
+    from TestStepSlipFn import TestStepSlipFn
+    suite.addTest(unittest.makeSuite(TestStepSlipFn))
 
     from TestConstRateSlipFn import TestConstRateSlipFn
     suite.addTest(unittest.makeSuite(TestConstRateSlipFn))
 
-    from TestStepSlipFn import TestStepSlipFn
-    suite.addTest(unittest.makeSuite(TestStepSlipFn))
+    from TestBruneSlipFn import TestBruneSlipFn
+    suite.addTest(unittest.makeSuite(TestBruneSlipFn))
+
+    from TestLiuCosSlipFn import TestLiuCosSlipFn
+    suite.addTest(unittest.makeSuite(TestLiuCosSlipFn))
 
     from TestEqKinSrc import TestEqKinSrc
     suite.addTest(unittest.makeSuite(TestEqKinSrc))
-
-    from TestFault import TestFault
-    suite.addTest(unittest.makeSuite(TestFault))
-
-    from TestFaultCohesive import TestFaultCohesive
-    suite.addTest(unittest.makeSuite(TestFaultCohesive))
 
     from TestFaultCohesiveKin import TestFaultCohesiveKin
     suite.addTest(unittest.makeSuite(TestFaultCohesiveKin))

@@ -29,6 +29,8 @@ swig_sources = \
 	FaultCohesive.i \
 	FaultCohesiveDyn.i \
 	FaultCohesiveKin.i \
+	../topology/SubMesh.i \
+	../feassemble/Quadrature.i \
 	../feassemble/Integrator.i
 
 swig_generated = \

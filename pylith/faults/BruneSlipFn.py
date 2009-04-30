@@ -18,49 +18,44 @@
 ## Factory: slip_time_fn
 
 from SlipTimeFn import SlipTimeFn
+from faults import BruneSlipFn as ModuleBruneSlipFn
 
 # BruneSlipFn class
-class BruneSlipFn(SlipTimeFn):
+class BruneSlipFn(SlipTimeFn, ModuleBruneSlipFn):
   """
   Python object for slip time function that follows the integral of
   Brune's (1970) far-field time function.
+
+  Inventory
+
+  \b Properties
+  @li None
+  
+  \b Facilities
+  @li \b slip Spatial database of final slip
+  @li \b slip_time Spatial database of slip initiation time
+  @li \b rise_time Spatial database of rise time
 
   Factory: slip_time_fn
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(SlipTimeFn.Inventory):
-    """
-    Python object for managing BruneSlipFn facilities and properties.
-    """
-    
-    ## @class Inventory
-    ## Python object for managing BruneSlipFn facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li \b slip Spatial database of final slip
-    ## @li \b slip_time Spatial database of slip initiation time
-    ## @li \b slip_rate Spatial database of peak slip rate
+  import pyre.inventory
 
-    import pyre.inventory
-
-    from spatialdata.spatialdb.SimpleDB import SimpleDB
-
-    slip = pyre.inventory.facility("slip", family="spatial_database",
+  from spatialdata.spatialdb.SimpleDB import SimpleDB
+  
+  dbSlip = pyre.inventory.facility("slip", family="spatial_database",
                                    factory=SimpleDB)
-    slip.meta['tip'] = "Spatial database of slip."
-
-    slipTime = pyre.inventory.facility("slip_time", family="spatial_database",
+  dbSlip.meta['tip'] = "Spatial database of slip."
+  
+  dbSlipTime = pyre.inventory.facility("slip_time", family="spatial_database",
                                        factory=SimpleDB)
-    slipTime.meta['tip'] = "Spatial database of slip initiation time."
-
-    slipRate = pyre.inventory.facility("slip_rate", family="spatial_database",
+  dbSlipTime.meta['tip'] = "Spatial database of slip initiation time."
+  
+  dbRiseTime = pyre.inventory.facility("rise_time", family="spatial_database",
                                        factory=SimpleDB)
-    slipRate.meta['tip'] = "Spatial database of peak slip rate."
+  dbRiseTime.meta['tip'] = "Spatial database of rise time."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -70,27 +65,8 @@ class BruneSlipFn(SlipTimeFn):
     Constructor.
     """
     SlipTimeFn.__init__(self, name)
+    ModuleBruneSlipFn.__init__(self)
     self._loggingPrefix = "BrSF "
-    return
-
-
-  def initialize(self):
-    """
-    Initialize.
-    """
-    logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
-
-    self.slip.initialize()
-    self.slipTime.initialize()
-    self.slipRate.initialize()
-    assert(None != self.cppHandle)
-
-    self.cppHandle.dbFinalSlip = self.slip.cppHandle
-    self.cppHandle.dbSlipTime = self.slipTime.cppHandle
-    self.cppHandle.dbPeakRate = self.slipRate.cppHandle
-
-    self._logger.eventEnd(logEvent)
     return
 
 
@@ -101,22 +77,12 @@ class BruneSlipFn(SlipTimeFn):
     Setup members using inventory.
     """
     SlipTimeFn._configure(self)
-    self.slip = self.inventory.slip
-    self.slipTime = self.inventory.slipTime
-    self.slipRate = self.inventory.slipRate
+    ModuleBruneSlipFn.dbFinalSlip(self, self.inventory.dbSlip)
+    ModuleBruneSlipFn.dbSlipTime(self, self.inventory.dbSlipTime)
+    ModuleBruneSlipFn.dbRiseTime(self, self.inventory.dbRiseTime)
     return
 
 
-  def _createCppHandle(self):
-    """
-    Create handle to C++ object.
-    """
-    if None == self.cppHandle:
-      import pylith.faults.faults as bindings
-      self.cppHandle = bindings.BruneSlipFn()
-    return
-  
-  
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def slip_time_fn():

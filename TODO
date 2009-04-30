@@ -43,6 +43,9 @@ CURRENT ISSUES/PRIORITIES
       FaultCohesiveKin
       DataWriterVTK
 
+    pytests
+      test_configure
+
     Switch Components to PetscComponents.
       Add _cleanup() to components to deallocate local data structures.
       Add cleanup() to non-components to deallocate local data structures.

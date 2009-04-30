@@ -17,7 +17,7 @@
 ##
 ## Factory: output_manager
 
-from OutputManager import OutputManagerSubMesh
+from OutputManagerSubMesh import OutputManagerSubMesh
 
 # OutputFaultKin class
 class OutputFaultKin(OutputManagerSubMesh):

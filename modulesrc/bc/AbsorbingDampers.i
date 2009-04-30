@@ -15,8 +15,6 @@
  * @brief Python interface to C++ AbsorbingDampers object.
  */
 
-%template(SubMeshIntegrator) pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::SubMesh> >;
-
 namespace pylith {
   namespace bc {
 

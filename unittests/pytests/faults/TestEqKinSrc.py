@@ -29,8 +29,15 @@ class TestEqKinSrc(unittest.TestCase):
     Test constructor.
     """
     eqsrc = EqKinSrc()
-    eqsrc._createCppHandle()
-    self.failIfEqual(None, eqsrc.cppHandle)
+    return
+
+
+  def test_configure(self):
+    """
+    Test constructor.
+    """
+    eqsrc = EqKinSrc()
+    eqsrc._configure()
     return
 
 
@@ -43,33 +50,33 @@ class TestEqKinSrc(unittest.TestCase):
     from pyre.units.time import second
 
     ioFinalSlip = SimpleIOAscii()
-    ioFinalSlip.filename = "finalslip.spatialdb"
+    ioFinalSlip.inventory.filename = "finalslip.spatialdb"
+    ioFinalSlip._configure()
     dbFinalSlip = SimpleDB()
-    dbFinalSlip.iohandler = ioFinalSlip
-    dbFinalSlip.label = "final slip"
+    dbFinalSlip.inventory.iohandler = ioFinalSlip
+    dbFinalSlip.inventory.label = "final slip"
+    dbFinalSlip._configure()
     
     ioSlipTime = SimpleIOAscii()
-    ioSlipTime.filename = "sliptime.spatialdb"
+    ioSlipTime.inventory.filename = "sliptime.spatialdb"
+    ioSlipTime._configure()
     dbSlipTime = SimpleDB()
-    dbSlipTime.iohandler = ioSlipTime
-    dbSlipTime.label = "slip time"
+    dbSlipTime.inventory.iohandler = ioSlipTime
+    dbSlipTime.inventory.label = "slip time"
+    dbSlipTime._configure()
     
-    ioPeakRate = SimpleIOAscii()
-    ioPeakRate.filename = "peakrate.spatialdb"
-    dbPeakRate = SimpleDB()
-    dbPeakRate.iohandler = ioPeakRate
-    dbPeakRate.label = "peak rate"
-    
-    from pylith.faults.BruneSlipFn import BruneSlipFn
-    slipfn = BruneSlipFn()
-    slipfn.slip = dbFinalSlip
-    slipfn.slipTime = dbSlipTime
-    slipfn.slipRate = dbPeakRate
+    from pylith.faults.StepSlipFn import StepSlipFn
+    slipfn = StepSlipFn()
+    slipfn.inventory.dbSlip = dbFinalSlip
+    slipfn.inventory.dbSlipTime = dbSlipTime
+    slipfn._configure()
 
     eqsrc = EqKinSrc()
-    eqsrc.originTime = 5.3*second
-    eqsrc.slipfn = slipfn
+    eqsrc.inventory.originTime = 5.3*second
+    eqsrc.inventory.slipfn = slipfn
+    eqsrc._configure()
     eqsrc.preinitialize()
+    eqsrc.verifyConfiguration()
     eqsrc.initialize()
     return
 

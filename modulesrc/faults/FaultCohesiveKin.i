@@ -35,10 +35,16 @@ namespace pylith {
       /** Set kinematic earthquake sources.
        *
        * @param names Array of kinematic earthquake source names.
+       * @param numNames Number of earthquake sources.
        * @param sources Array of kinematic earthquake sources.
-       * @param numSources Number of earthquake sources
+       * @param numSources Number of earthquake sources.
        */
-      void eqsrcs(const char** names,
+      %apply(const char* const* string_list, const int list_len){
+	(const char* const* names,
+	 const int numNames)
+	  };
+      void eqsrcs(const char* const* names,
+		  const int numNames,
 		  EqKinSrc** sources,
 		  const int numSources);
       
@@ -118,7 +124,7 @@ namespace pylith {
        */
       const pylith::topology::Field<pylith::topology::SubMesh>&
       vertexField(const char* name,
-		  const pylith::topology::SolutionFields& fields);
+		  const pylith::topology::SolutionFields* fields =0);
       
       /** Get cell field associated with integrator.
        *
@@ -128,7 +134,17 @@ namespace pylith {
        */
       const pylith::topology::Field<pylith::topology::SubMesh>&
       cellField(const char* name,
-		const pylith::topology::SolutionFields& fields);
+		const pylith::topology::SolutionFields* fields =0);
+
+      // PROTECTED METHODS //////////////////////////////////////////////
+    protected :
+
+      /** Cohesive cells use Lagrange multiplier constraints?
+       *
+       * @returns True if implementation using Lagrange multiplier
+       * constraints, false otherwise.
+       */
+      bool _useLagrangeConstraints(void) const;
 
     }; // class FaultCohesiveKin
 

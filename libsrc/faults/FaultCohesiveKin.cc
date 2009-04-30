@@ -47,7 +47,9 @@ typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
-  _fields(0)
+  _fields(0),
+  _bufferVectorField(0),
+  _bufferScalarField(0)
 { // constructor
 } // constructor
 
@@ -56,16 +58,21 @@ pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
 pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void)
 { // destructor
   delete _fields; _fields = 0;
+  delete _bufferVectorField; _bufferVectorField = 0;
+  delete _bufferScalarField; _bufferScalarField = 0;
   // :TODO: Use shared pointers for earthquake sources
 } // destructor
 
 // ----------------------------------------------------------------------
 // Set kinematic earthquake source.
 void
-pylith::faults::FaultCohesiveKin::eqsrcs(const char** names,
+pylith::faults::FaultCohesiveKin::eqsrcs(const char* const* names,
+					 const int numNames,
 					 EqKinSrc** sources,
 					 const int numSources)
 { // eqsrcs
+  assert(numNames == numSources);
+
   // :TODO: Use shared pointers for earthquake sources
   _eqSrcs.clear();
   for (int i=0; i < numSources; ++i) {
@@ -644,14 +651,13 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveKin::vertexField(
 				  const char* name,
-				  const topology::SolutionFields& fields)
+				  const topology::SolutionFields* fields)
 { // vertexField
 #if 0
-  assert(!_faultMesh.isNull());
-  assert(!_orientation.isNull());
+  assert(0 != fields);
   assert(0 != _normalizer);
 
-  const int cohesiveDim = _faultMesh->getDimension();
+  const int cohesiveDim = _faultMesh.dimension();
   const int spaceDim = _quadrature->spaceDim();
 
   const int slipStrLen = strlen("final_slip");
@@ -660,17 +666,20 @@ pylith::faults::FaultCohesiveKin::vertexField(
   double scale = 0.0;
   int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
-    *fieldType = VECTOR_FIELD;
-    assert(!_cumSlip.isNull());
-    _allocateBufferVertexVector();
-    topology::FieldOps::copyValues(_bufferVertexVector, _cumSlip);
-    _bufferTmp = _bufferVertexVector;
-    scale = _normalizer->lengthScale();
-    fiberDim = spaceDim;
+    const topology::Field<topology::SubMesh>& cumSlip = 
+      fields->get("cumulative slip");
+    return cumSlip;
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
-    *fieldType = VECTOR_FIELD;
-    _bufferTmp = _orientation->getFibration(0);
+    const ALE::Obj<RealSection>& orientationSection =
+      fields->get("orientation").section();
+    assert(!orientationSection.isNull());
+    strikeSection = orientationSection->getFibration(0);
+    _allocateBufferVectorField();
+    assert(0 != _bufferVectorField);
+    const ALE::Obj<RealSection>& bufferSection =
+      _bufferVectorField->section();
+    bufferSection.values(strikeSection.values());
     scale = 0.0;
     fiberDim = spaceDim;
 
@@ -753,9 +762,8 @@ pylith::faults::FaultCohesiveKin::vertexField(
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveKin::cellField(
 				      const char* name,
-				      const topology::SolutionFields& fields)
+				      const topology::SolutionFields* fields)
 { // cellField
-#if 0
   // Should not reach this point if requested field was found
   std::ostringstream msg;
   msg << "Request for unknown cell field '" << name
@@ -763,8 +771,7 @@ pylith::faults::FaultCohesiveKin::cellField(
   throw std::runtime_error(msg.str());
 
   // Return generic section to satisfy member function definition.
-  //return _outputCellVector;
-#endif
+  return *_bufferVectorField;
 } // cellField
 
 // ----------------------------------------------------------------------

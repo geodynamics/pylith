@@ -33,7 +33,7 @@ namespace pylith {
        * @param mesh Finite-element mesh over domain.
        * @param label Label for vertices marking boundary.
        */
-      SubMesh(const Mesh& mesh,
+      SubMesh(const pylith::topology::Mesh& mesh,
 	      const char* label);
 
       /// Default destructor
@@ -44,7 +44,7 @@ namespace pylith {
        * @param mesh Finite-element mesh over domain.
        * @param label Label for vertices marking boundary.
        */
-      void createSubMesh(const Mesh& mesh,
+      void createSubMesh(const pylith::topology::Mesh& mesh,
 			 const char* label); 
 
       /** Get coordinate system.

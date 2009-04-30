@@ -100,7 +100,7 @@ public :
    */
   const topology::Field<topology::SubMesh>&
   vertexField(const char* name,
-	      const topology::SolutionFields& fields);
+	      const topology::SolutionFields* fields =0);
   
   /** Get cell field associated with integrator.
    *
@@ -111,7 +111,7 @@ public :
    */
   const topology::Field<topology::SubMesh>&
   cellField(const char* name,
-	    const topology::SolutionFields& fields);
+	    const topology::SolutionFields* fields =0);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
