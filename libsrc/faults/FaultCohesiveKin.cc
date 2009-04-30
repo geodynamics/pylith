@@ -653,11 +653,12 @@ pylith::faults::FaultCohesiveKin::vertexField(
 				  const char* name,
 				  const topology::SolutionFields* fields)
 { // vertexField
-#if 0
-  assert(0 != fields);
+  assert(0 != _faultMesh);
+  assert(0 != _quadrature);
   assert(0 != _normalizer);
+  assert(0 != _fields);
 
-  const int cohesiveDim = _faultMesh.dimension();
+  const int cohesiveDim = _faultMesh->dimension();
   const int spaceDim = _quadrature->spaceDim();
 
   const int slipStrLen = strlen("final_slip");
@@ -667,68 +668,64 @@ pylith::faults::FaultCohesiveKin::vertexField(
   int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
     const topology::Field<topology::SubMesh>& cumSlip = 
-      fields->get("cumulative slip");
+      _fields->get("cumulative slip");
     return cumSlip;
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
     const ALE::Obj<RealSection>& orientationSection =
-      fields->get("orientation").section();
+      _fields->get("orientation").section();
     assert(!orientationSection.isNull());
-    strikeSection = orientationSection->getFibration(0);
+    const ALE::Obj<RealSection>& dirSection =
+      orientationSection->getFibration(0);
+    assert(!dirSection.isNull());
     _allocateBufferVectorField();
     assert(0 != _bufferVectorField);
-    const ALE::Obj<RealSection>& bufferSection =
-      _bufferVectorField->section();
-    bufferSection.values(strikeSection.values());
-    scale = 0.0;
-    fiberDim = spaceDim;
+    _bufferVectorField->copy(dirSection);
+    return *_bufferVectorField;
 
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
-    *fieldType = VECTOR_FIELD;
-    _bufferTmp = _orientation->getFibration(1);
-    scale = 0.0;
-    fiberDim = spaceDim;
+    const ALE::Obj<RealSection>& orientationSection =
+      _fields->get("orientation").section();
+    assert(!orientationSection.isNull());
+    const ALE::Obj<RealSection>& dirSection =
+      orientationSection->getFibration(1);
+    _allocateBufferVectorField();
+    assert(0 != _bufferVectorField);
+    _bufferVectorField->copy(dirSection);
+    return *_bufferVectorField;
 
   } else if (0 == strcasecmp("normal_dir", name)) {
-    *fieldType = VECTOR_FIELD;
+    const ALE::Obj<RealSection>& orientationSection =
+      _fields->get("orientation").section();
+    assert(!orientationSection.isNull());
     const int space = 
       (0 == cohesiveDim) ? 0 : (1 == cohesiveDim) ? 1 : 2;
-    _bufferTmp = _orientation->getFibration(space);
-    scale = 0.0;
-    fiberDim = spaceDim;
+    const ALE::Obj<RealSection>& dirSection =
+      orientationSection->getFibration(space);
+    assert(!dirSection.isNull());
+    _allocateBufferVectorField();
+    assert(0 != _bufferVectorField);
+    _bufferVectorField->copy(dirSection);
+    return *_bufferVectorField;
 
   } else if (0 == strncasecmp("final_slip_X", name, slipStrLen)) {
     const std::string value = std::string(name).substr(slipStrLen+1);
 
-    *fieldType = VECTOR_FIELD;
     const srcs_type::const_iterator s_iter = _eqSrcs.find(value);
     assert(s_iter != _eqSrcs.end());
-    _allocateBufferVertexVector();
-    topology::FieldOps::copyValues(_bufferVertexVector, 
-				   s_iter->second->finalSlip());
-    _bufferTmp = _bufferVertexVector;
-    scale = _normalizer->lengthScale();
-    fiberDim = spaceDim;
+    return s_iter->second->finalSlip();
 
   } else if (0 == strncasecmp("slip_time_X", name, timeStrLen)) {
-    *fieldType = SCALAR_FIELD;
     const std::string value = std::string(name).substr(timeStrLen+1);
     const srcs_type::const_iterator s_iter = _eqSrcs.find(value);
     assert(s_iter != _eqSrcs.end());
-    _allocateBufferVertexScalar();
-    topology::FieldOps::copyValues(_bufferVertexScalar, 
-				   s_iter->second->slipTime());
-    _bufferTmp = _bufferVertexScalar;
-    scale = _normalizer->timeScale();
-    fiberDim = 1;
+    return s_iter->second->slipTime();
 
   } else if (0 == strcasecmp("traction_change", name)) {
-    *fieldType = VECTOR_FIELD;
-    const ALE::Obj<RealSection>& solution = fields->getSolution();
-    _calcTractionsChange(&_bufferVertexVector, mesh, solution);
-    _bufferTmp = _bufferVertexVector;
-    scale = _normalizer->pressureScale();
-    fiberDim = spaceDim;
+    assert(0 != fields);
+    const topology::Field<topology::Mesh>& solution = fields->solution();
+    _allocateBufferVectorField();
+    _calcTractionsChange(_bufferVectorField, solution);
     
   } else {
     std::ostringstream msg;
@@ -737,24 +734,8 @@ pylith::faults::FaultCohesiveKin::vertexField(
     throw std::runtime_error(msg.str());
   } // else
 
-  if (0 != scale) {
-    // dimensionalize values
-    double_array values(fiberDim);
-    const ALE::Obj<Mesh::label_sequence>& vertices = _faultMesh->depthStratum(0);
-    assert(!vertices.isNull());
-    const Mesh::label_sequence::iterator verticesEnd = vertices->end();
-    for (Mesh::label_sequence::iterator v_iter=vertices->begin(); 
-	 v_iter != verticesEnd;
-	 ++v_iter) {
-      assert(fiberDim == _bufferTmp->getFiberDimension(*v_iter));
-      _bufferTmp->restrictPoint(*v_iter, &values[0], values.size());
-      _normalizer->dimensionalize(&values[0], values.size(), scale);
-      _bufferTmp->updatePointAll(*v_iter, &values[0]);
-    } // for
-  } // if
-
-  return _bufferTmp;
-#endif
+  assert(0 != _bufferScalarField);
+  return *_bufferScalarField;
 } // vertexField
 
 // ----------------------------------------------------------------------
@@ -771,7 +752,8 @@ pylith::faults::FaultCohesiveKin::cellField(
   throw std::runtime_error(msg.str());
 
   // Return generic section to satisfy member function definition.
-  return *_bufferVectorField;
+  assert(0 != _bufferScalarField);
+  return *_bufferScalarField;
 } // cellField
 
 // ----------------------------------------------------------------------
@@ -1217,6 +1199,43 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   (*tractions)->view("TRACTIONS");
 #endif
 } // _calcTractionsChange
+
+// ----------------------------------------------------------------------
+// Allocate buffer for vector field.
+void
+pylith::faults::FaultCohesiveKin::_allocateBufferVectorField(void)
+{ // _allocateBufferVectorField
+  if (0 != _bufferVectorField)
+    return;
+
+  // Create vector field; use same shape/chart as cumulative slip field.
+  assert(0 != _faultMesh);
+  assert(0 != _fields);
+  _bufferVectorField = new topology::Field<topology::SubMesh>(*_faultMesh);
+  const topology::Field<topology::SubMesh>& slip = 
+    _fields->get("cumulative slip");
+  _bufferVectorField->newSection(slip);
+  _bufferVectorField->allocate();
+  _bufferVectorField->zero();
+} // _allocateBufferVectorField
+
+// ----------------------------------------------------------------------
+// Allocate buffer for scalar field.
+void
+pylith::faults::FaultCohesiveKin::_allocateBufferScalarField(void)
+{ // _allocateBufferScalarField
+  if (0 != _bufferScalarField)
+    return;
+
+  // Create vector field; use same shape/chart as area field.
+  assert(0 != _faultMesh);
+  assert(0 != _fields);
+  _bufferScalarField = new topology::Field<topology::SubMesh>(*_faultMesh);
+  const topology::Field<topology::SubMesh>& area = _fields->get("area");
+  _bufferScalarField->newSection(area);
+  _bufferScalarField->allocate();
+  _bufferScalarField->zero();
+} // _allocateBufferScalarField
 
 
 // End of file 

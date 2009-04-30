@@ -209,6 +209,12 @@ private :
   void _calcTractionsChange(topology::Field<topology::SubMesh>* tractions,
 			    const topology::Field<topology::Mesh>& solution);
 
+  /// Allocate buffer for vector field.
+  void _allocateBufferVectorField(void);
+
+  /// Allocate buffer for scalar field.
+  void _allocateBufferScalarField(void);
+
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 

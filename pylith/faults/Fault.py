@@ -161,10 +161,10 @@ class Fault(PetscComponent, ModuleFault):
     ModuleFault.initialize(self, 
                            self.mesh, self.upDir, self.normalDir, self.matDB)
 
-    #if None != self.output:
-    #  self.output.initialize(normalizer, self.faultQuadrature)
-    #  self.output.writeInfo()
-    #  self.output.open(totalTime, numTimeSteps)
+    if None != self.output:
+      self.output.initialize(normalizer, self.faultQuadrature)
+      self.output.writeInfo()
+      self.output.open(totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)
     return

@@ -189,6 +189,12 @@ public :
    */
   void copy(const Field& field);
 
+  /** Copy field values.
+   *
+   * @param field Field to copy.
+   */
+  void copy(const ALE::Obj<typename mesh_type::RealSection>& field);
+
   /** Add two fields, storing the result in one of the fields.
    *
    * @param field Field to add.

@@ -286,6 +286,47 @@ pylith::topology::Field<mesh_type>::copy(const Field& field)
 } // copy
 
 // ----------------------------------------------------------------------
+// Copy field values.
+template<typename mesh_type>
+void
+pylith::topology::Field<mesh_type>::copy(const ALE::Obj<typename mesh_type::RealSection>& osection)
+{ // copy
+  // Check compatibility of sections
+  const int srcSize = (!osection.isNull()) ? osection->size() : 0;
+  const int dstSize = (!_section.isNull()) ? _section->size() : 0;
+  if (srcSize != dstSize) {
+    std::ostringstream msg;
+
+    msg << "Cannot copy values from Sieve section "
+	<< _label << "'. Sections are incompatible.\n"
+	<< "  Source section:\n"
+	<< "    size: " << srcSize
+	<< "  Destination section:\n"
+	<< "    space dim: " << spaceDim() << "\n"
+	<< "    vector field type: " << _vecFieldType << "\n"
+	<< "    scale: " << _scale << "\n"
+	<< "    size: " << dstSize;
+    throw std::runtime_error(msg.str());
+  } // if
+  assert( (_section.isNull() && osection.isNull()) ||
+	  (!_section.isNull() && !osection.isNull()) );
+
+  if (!_section.isNull()) {
+    // Copy values from field
+    const chart_type& chart = _section->getChart();
+    const typename chart_type::const_iterator chartEnd = chart.end();
+
+    for (typename chart_type::const_iterator c_iter = chart.begin();
+	 c_iter != chartEnd;
+	 ++c_iter) {
+      assert(osection->getFiberDimension(*c_iter) ==
+	     _section->getFiberDimension(*c_iter));
+      _section->updatePoint(*c_iter, osection->restrictPoint(*c_iter));
+    } // for
+  } // if
+} // copy
+
+// ----------------------------------------------------------------------
 // Add two fields, storing the result in one of the fields.
 template<typename mesh_type>
 void
