@@ -141,8 +141,8 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     totalStrainB = strainB
     viscousStrainA = numpy.array(strainA) - diag*meanStrainA
     viscousStrainB = numpy.array(strainB) - diag*meanStrainB
-    self.stateVars = numpy.array([ [viscousStrainA, totalStrainA],
-                                   [viscousStrainB, totalStrainB] ],
+    self.stateVars = numpy.array([ [totalStrainA, viscousStrainA],
+                                   [totalStrainB, viscousStrainB] ],
                                  dtype=numpy.float64)
     self.stateVarsNondim = self.stateVars # no scaling
     
@@ -153,13 +153,13 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
                                       dtype=numpy.float64)
 
     (self.elasticConsts[0,:], self.stress[0,:]) = \
-                              self._calcStress(strainA, muA, lambdaA,
-                                               maxwellTimeA, 
+                              self._calcStress(strainA, 
+                                               muA, lambdaA, maxwellTimeA,
                                                totalStrainA, viscousStrainA,
                                                initialStressA, initialStrainA)
     (self.elasticConsts[1,:], self.stress[1,:]) = \
-                              self._calcStress(strainB, muB, lambdaB,
-                                               maxwellTimeB, 
+                              self._calcStress(strainB, 
+                                               muB, lambdaB, maxwellTimeB, 
                                                totalStrainB, viscousStrainB,
                                                initialStressB, initialStrainB)
 
@@ -179,7 +179,7 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     diag = [1.0, 1.0, 1.0, 0.0, 0.0, 0.0]
 
     totalStrainR = numpy.array(totalStrainV) - numpy.array(initialStrainV)
-    print totalStrainV
+    print strainV
     print initialStrainV
     print totalStrainR
 

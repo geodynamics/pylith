@@ -195,13 +195,8 @@ pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
   size_t size = data.numLocs*data.numPropsQuadPt;
   CPPUNIT_ASSERT_EQUAL(size, properties.size());
   for (size_t i=0; i < size; ++i)
-    {
-      std::cout << "propertyE: " << propertiesE[i]
-		<< ", property: " << properties[i]
-		<< std::endl;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, properties[i]/propertiesE[i],
 				 tolerance);
-    }
 
   const double* stateVarsE = data.stateVars;
   CPPUNIT_ASSERT( (0 < numVarsQuadPt && 0 != stateVarsE) ||
@@ -359,7 +354,8 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
 void
 pylith::materials::TestElasticMaterial::testUpdateStateVars(void)
 { // testUpdateStateVars
-  std::cout << "\n\nNeed to implement using material with state variables.\n\n";
+  std::cout << "\n\nWARNING!! WARNING!! WARNING!!\n"
+    "Need to implement using material with state variables.\n\n";
 } // testUpdateStateVars
 
 // ----------------------------------------------------------------------
@@ -417,18 +413,18 @@ pylith::materials::TestElasticMaterial::test_calcDensity(void)
   CPPUNIT_ASSERT(0 != _dataElastic);
   const ElasticMaterialData* data = _dataElastic;
 
-  const int numLocs = _data->numLocs;
-  const int numPropsQuadPt = _data->numPropsQuadPt;
-  const int numVarsQuadPt = _data->numVarsQuadPt;
+  const int numLocs = data->numLocs;
+  const int numPropsQuadPt = data->numPropsQuadPt;
+  const int numVarsQuadPt = data->numVarsQuadPt;
   
   double density = 0;
   double_array properties(numPropsQuadPt);
   double_array stateVars(numVarsQuadPt);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
-    memcpy(&properties[0], &_data->properties[iLoc*numPropsQuadPt],
+    memcpy(&properties[0], &data->properties[iLoc*numPropsQuadPt],
 	   numPropsQuadPt*sizeof(double));
-    memcpy(&stateVars[0], &_data->stateVars[iLoc*numVarsQuadPt],
+    memcpy(&stateVars[0], &data->stateVars[iLoc*numVarsQuadPt],
 	   numVarsQuadPt*sizeof(double));
 
     _matElastic->_calcDensity(&density, 
@@ -453,9 +449,9 @@ pylith::materials::TestElasticMaterial::test_calcStress(void)
 
   const bool computeStateVars = true;
 
-  const int numLocs = _data->numLocs;
-  const int numPropsQuadPt = _data->numPropsQuadPt;
-  const int numVarsQuadPt = _data->numVarsQuadPt;
+  const int numLocs = data->numLocs;
+  const int numPropsQuadPt = data->numPropsQuadPt;
+  const int numVarsQuadPt = data->numVarsQuadPt;
   const int tensorSize = _matElastic->_tensorSize;
   
   double_array stress(tensorSize);
@@ -467,15 +463,15 @@ pylith::materials::TestElasticMaterial::test_calcStress(void)
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
     memcpy(&properties[0], &data->properties[iLoc*numPropsQuadPt],
-	   numPropsQuadPt*sizeof(double));
+	   properties.size()*sizeof(double));
     memcpy(&stateVars[0], &data->stateVars[iLoc*numVarsQuadPt],
-	   numVarsQuadPt*sizeof(double));
+	   stateVars.size()*sizeof(double));
     memcpy(&strain[0], &data->strain[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
+	   strain.size()*sizeof(double));
     memcpy(&initialStress[0], &data->initialStress[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
+	   initialStress.size()*sizeof(double));
     memcpy(&initialStrain[0], &data->initialStrain[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
+	   initialStrain.size()*sizeof(double));
 
     _matElastic->_calcStress(&stress[0], stress.size(),
 			     &properties[0], properties.size(),
@@ -484,23 +480,18 @@ pylith::materials::TestElasticMaterial::test_calcStress(void)
 			     &initialStress[0], initialStress.size(),
 			     &initialStrain[0], initialStrain.size(),
 			     computeStateVars);
-  
+
     const double* stressE = &data->stress[iLoc*tensorSize];
     CPPUNIT_ASSERT(0 != stressE);
 
     const double tolerance = 1.0e-06;
     for (int i=0; i < tensorSize; ++i)
-      {
-	std::cout << "stress: " << stress[i]
-		  << ", stressE: " << stressE[i]
-		  << std::endl;
       if (fabs(stressE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stress[i]/stressE[i], 
 				     tolerance);
       else
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(stressE[i], stress[i],
 				     tolerance);
-      }
   } // for
 } // _testCalcStress
 
@@ -530,9 +521,9 @@ pylith::materials::TestElasticMaterial::test_calcElasticConsts(void)
       tensorSize = 6;
       break;
     } // switch
-  const int numLocs = _data->numLocs;
-  const int numPropsQuadPt = _data->numPropsQuadPt;
-  const int numVarsQuadPt = _data->numVarsQuadPt;
+  const int numLocs = data->numLocs;
+  const int numPropsQuadPt = data->numPropsQuadPt;
+  const int numVarsQuadPt = data->numVarsQuadPt;
   
   double_array elasticConsts(numConsts);
   double_array properties(numPropsQuadPt);
@@ -585,9 +576,9 @@ pylith::materials::TestElasticMaterial::test_updateStateVars(void)
 
   const bool computeStateVars = true;
 
-  const int numLocs = _data->numLocs;
-  const int numPropsQuadPt = _data->numPropsQuadPt;
-  const int numVarsQuadPt = _data->numVarsQuadPt;
+  const int numLocs = data->numLocs;
+  const int numPropsQuadPt = data->numPropsQuadPt;
+  const int numVarsQuadPt = data->numVarsQuadPt;
   const int tensorSize = _matElastic->_tensorSize;
   
   double_array properties(numPropsQuadPt);

@@ -72,6 +72,8 @@ pylith::materials::Material::Material(const int dimension,
 pylith::materials::Material::~Material(void)
 { // destructor
   delete _normalizer; _normalizer = 0;
+  delete _properties; _properties = 0;
+  delete _stateVars; _stateVars = 0;
 
   // Python db object owns databases, so just set pointer to null
   // :KLUDGE: Should use shared pointer

@@ -32,7 +32,7 @@ testmaterials_SOURCES = \
 	TestMaxwellIsotropic3D.cc \
 	test_materials.cc
 
-	TestGenMaxwellIsotropic3D.cc 
+#	TestGenMaxwellIsotropic3D.cc 
 
 
 

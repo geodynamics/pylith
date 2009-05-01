@@ -499,9 +499,9 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
   const double e22 = totalStrain[1] - initialStrain[1];
   const double e33 = totalStrain[2] - initialStrain[2];
   
-  const double traceStrainTpdt = e11 + e22 + e33;
-  const double meanStrainTpdt = traceStrainTpdt / 3.0;
-  const double meanStressTpdt = bulkModulus * traceStrainTpdt;
+  const double e123 = e11 + e22 + e33;
+  const double meanStrainTpdt = e123 / 3.0;
+  const double meanStressTpdt = bulkModulus * e123;
 
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 

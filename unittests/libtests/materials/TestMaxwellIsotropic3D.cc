@@ -116,6 +116,11 @@ pylith::materials::TestMaxwellIsotropic3D::test_calcElasticConstsElastic(void)
 void
 pylith::materials::TestMaxwellIsotropic3D::test_updateStateVarsElastic(void)
 { // test_updateStateVarsElastic
+  // :TODO: Use TestElasticMaterial::test_updateStateVars
+  // instead. This requires moving the calculation of the expected
+  // state vars below to the Python code (where it belongs) and
+  // setting the stateVarsUpdate attribute in the Python object.
+
   MaxwellIsotropic3D material;
   material.useElasticBehavior(true);
 
@@ -208,6 +213,11 @@ pylith::materials::TestMaxwellIsotropic3D::test_calcElasticConstsTimeDep(void)
 void
 pylith::materials::TestMaxwellIsotropic3D::test_updateStateVarsTimeDep(void)
 { // test_updateStateVarsTimeDep
+  // :TODO: Use TestElasticMaterial::test_updateStateVars
+  // instead. This requires moving the calculation of the expected
+  // state vars below to the Python code (where it belongs) and
+  // setting the stateVarsUpdate attribute in the Python object.
+
   MaxwellIsotropic3D material;
   material.useElasticBehavior(false);
   const double dt = 2.0e+5;
