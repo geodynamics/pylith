@@ -46,14 +46,12 @@ testmeshio_SOURCES = \
 	TestDataWriterVTKSubMeshHex8.cc \
 	TestOutputManager.cc \
 	TestOutputSolnSubset.cc \
+	TestDataWriterVTKFaultMesh.cc \
+	TestDataWriterVTKFaultMeshTri3.cc \
+	TestDataWriterVTKFaultMeshQuad4.cc \
+	TestDataWriterVTKFaultMeshTet4.cc \
+	TestDataWriterVTKFaultMeshHex8.cc \
 	test_meshio.cc
-
-#	TestDataWriterVTKFaultMesh.cc \
-#	TestDataWriterVTKFaultMeshTri3.cc \
-#	TestDataWriterVTKFaultMeshQuad4.cc \
-#	TestDataWriterVTKFaultMeshTet4.cc \
-#	TestDataWriterVTKFaultMeshHex8.cc 
-
 
 
 noinst_HEADERS = \

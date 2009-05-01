@@ -200,7 +200,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       ++name) {
     sieveMesh->reallocate(sieveMesh->getIntSection(*name));
   } // for
-#if 0
+#if 0 // TEST OF OPTIMIZATION?? [MATT: WHY IS THIS COMMENTED OUT?]
   for(SieveSubMesh::label_sequence::iterator v_iter = fVertices->begin();
       v_iter != fVerticesEnd;
       ++v_iter, ++newPoint) {
@@ -372,7 +372,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     } // if
     // TODO: Need to reform the material label when sieve is reallocated
     sieveMesh->setValue(material, newPoint, materialId);
-#if 0
+#if 0 // TEST OF OPTIMIZATION?? [MATT: WHY IS THIS COMMENTED OUT?]
     // OPTIMIZATION
     sieveMesh->setHeight(newPoint, 0);
     sieveMesh->setDepth(newPoint, 1);

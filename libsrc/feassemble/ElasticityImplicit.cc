@@ -257,7 +257,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell);
     _logger->eventEnd(computeEvent);
 
-#if 0
+#if 0 // DEBUGGING
     std::cout << "Updating residual for cell " << *c_iter << std::endl;
     for(int i = 0; i < _quadrature->spaceDim() * _quadrature->numBasis(); ++i) {
       std::cout << "  v["<<i<<"]: " << _cellVector[i] << std::endl;

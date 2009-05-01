@@ -475,7 +475,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 						   stiffnessCell.size(),
 						   &stiffnessCell[0]);
 
-#if 0
+#if 0 // DEBUGGING
   // Check that fault cells match cohesive cells
   ALE::ISieveVisitor::PointRetriever<sieve_type> cV(std::max(1, mesh->getSieve()->getMaxConeSize()));
   ALE::ISieveVisitor::PointRetriever<sieve_type> cV2(std::max(1, _faultMesh->getSieve()->getMaxConeSize()));
@@ -1130,7 +1130,7 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   const SieveSubMesh::renumbering_type::const_iterator renumberingEnd =
     renumbering.end();
 
-#if 0 // MOVE TO SEPARATE CHECK METHOD
+#if 0 // DEBUGGING, MOVE TO SEPARATE CHECK METHOD
   // Check fault mesh and volume mesh coordinates
   const ALE::Obj<RealSection>& coordinates  = mesh->getRealSection("coordinates");
   const ALE::Obj<RealSection>& fCoordinates = _faultMesh->getRealSection("coordinates");

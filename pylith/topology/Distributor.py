@@ -16,47 +16,42 @@
 ##
 ## Factory: mesh_distributor.
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
+from topology import Distributor as ModuleDistributor
 
 # Distributor class
-class Distributor(Component):
+class Distributor(PetscComponent, ModuleDistributor):
   """
   Python manager for distributing mesh among processors.
+
+  Inventory
+
+  \b Properties
+  @li \b partitioner Name of mesh partitioner {"parmetis", "chaco"}.
+  @li \b debug Write partition information to file.
+  
+  \b Facilities
+  @li \b writer Data writer for for partition information.
 
   Factory: mesh_distributor
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
-    """
-    Python object for managing Distributor facilities and properties.
-    """
-
-    ## @class Inventory
-    ## Python object for managing Distributor facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b partitioner Name of mesh partitioner {"parmetis", "chaco"}.
-    ## @li \b debug Write partition information to file.
-    ##
-    ## \b Facilities
-    ## @li \b writer Data writer for for partition information.
-
-    import pyre.inventory
-
-    partitioner = pyre.inventory.str("partitioner", default="chaco",
-                                     validator=pyre.inventory.choice(["chaco",
-                                                                      "parmetis"]))
-    partitioner.meta['tip'] = "Name of mesh partitioner."
-
-    debug = pyre.inventory.bool("debug", default=False)
-    debug.meta['tip'] = "Write partition information to file."
-
-    from pylith.meshio.DataWriterVTK import DataWriterVTK
-    dataWriter = pyre.inventory.facility("data_writer", factory=DataWriterVTK,
-                                         family="output_data_writer")
-    dataWriter.meta['tip'] = "Data writer for partition information."
+  import pyre.inventory
+    
+  partitioner = pyre.inventory.str("partitioner", default="chaco",
+                                   validator=pyre.inventory.choice(["chaco",
+                                                                    "parmetis"]))
+  partitioner.meta['tip'] = "Name of mesh partitioner."
+  
+  debug = pyre.inventory.bool("debug", default=False)
+  debug.meta['tip'] = "Write partition information to file."
+  
+  from pylith.meshio.DataWriterVTKMesh import DataWriterVTKMesh
+  dataWriter = pyre.inventory.facility("data_writer", factory=DataWriterVTKMesh,
+                                       family="output_data_writer")
+  dataWriter.meta['tip'] = "Data writer for partition information."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -64,13 +59,12 @@ class Distributor(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="partitioner")
-    self.cppHandle = None
-    self.debug = False
+    PetscComponent.__init__(self, name, facility="partitioner")
+    ModuleDistributor.__init__(self)
     return
 
 
-  def distribute(self, mesh):
+  def distribute(self, mesh, normalizer):
     """
     Distribute a Mesh
     """
@@ -78,18 +72,13 @@ class Distributor(Component):
     logEvent = "%sdistribute" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    self._createCppHandle()
-    
-    from Mesh import Mesh
+    from pylith.topology.Mesh import Mesh
     newMesh = Mesh()
-    newMesh.cppHandle = self.cppHandle.distribute(mesh.cppHandle,
-                                                  self.partitioner)
-    newMesh.coordsys = mesh.coordsys
+    ModuleDistributor.distribute(newMesh, mesh, self.partitioner)
 
     if self.debug:
-      self.dataWriter.initialize()
-      self.cppHandle.write(self.dataWriter.cppHandle,
-                           newMesh.cppHandle, newMesh.coordsys.cppHandle)
+      self.dataWriter.initialize(normalizer)
+      ModuleDistributor.write(self.dataWriter, newMesh)
 
     self._logger.eventEnd(logEvent)
     return newMesh
@@ -101,22 +90,12 @@ class Distributor(Component):
     """
     Set members based using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
     self.partitioner = self.inventory.partitioner
     self.debug = self.inventory.debug
     self.dataWriter = self.inventory.dataWriter
     return
 
-
-  def _createCppHandle(self):
-    """
-    Create handle to C++ object.
-    """
-    if None == self.cppHandle:
-      import pylith.topology.topology as bindings
-      self.cppHandle = bindings.Distributor()
-    return
-  
 
   def _setupLogging(self):
     """

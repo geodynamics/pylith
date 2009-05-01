@@ -99,11 +99,11 @@ libpylith_la_SOURCES = \
 	topology/MeshOps.cc \
 	topology/SubMesh.cc \
 	topology/SolutionFields.cc \
+	topology/Distributor.cc \
 	utils/EventLogger.cc \
 	utils/TestArray.cc
 
 # 	materials/GenMaxwellIsotropic3D.cc \
-# 	topology/Distributor.cc \
 # 	topology/MeshRefiner.cc \
 #	topology/RefineUniform.cc
 

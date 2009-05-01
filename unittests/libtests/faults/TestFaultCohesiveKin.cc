@@ -95,7 +95,7 @@ pylith::faults::TestFaultCohesiveKin::testEqsrc(void)
   const char* names[] = {"one", "two"};
   sources[0] = &eqsrcA;
   sources[1] = &eqsrcB;
-  fault.eqsrcs(names, sources, nsrcs);
+  fault.eqsrcs(names, nsrcs, sources, nsrcs);
   CPPUNIT_ASSERT(&eqsrcA == fault._eqSrcs["one"]);
   CPPUNIT_ASSERT(&eqsrcB == fault._eqSrcs["two"]);
   delete[] sources; sources = 0;
@@ -878,7 +878,7 @@ pylith::faults::TestFaultCohesiveKin::_initialize(
   fault->label(_data->label);
   fault->quadrature(_quadrature);
   
-  fault->eqsrcs(const_cast<const char**>(names), sources, nsrcs);
+  fault->eqsrcs(const_cast<const char**>(names), nsrcs, sources, nsrcs);
   fault->adjustTopology(mesh, _flipFault);
   
   const double upDir[] = { 0.0, 0.0, 1.0 };

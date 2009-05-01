@@ -6,11 +6,6 @@ CURRENT ISSUES/PRIORITIES
 
 0. SWIG conversion [Brad]
 
-  (1) Faults
-
-  (2) Output
-    TestDataWriterVTKFaultMesh
-
   (3) Full-scale tests (few 1-D, 2-D, and 3-D)
 
     Analytical solutions, time stepping, multiple faults
