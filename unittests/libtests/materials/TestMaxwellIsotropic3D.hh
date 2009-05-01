@@ -39,27 +39,28 @@ class pylith::materials::TestMaxwellIsotropic3D : public TestElasticMaterial
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestMaxwellIsotropic3D );
 
+  CPPUNIT_TEST( testDimension );
+  CPPUNIT_TEST( testTensorSize );
   CPPUNIT_TEST( testDBToProperties );
   CPPUNIT_TEST( testNonDimProperties );
   CPPUNIT_TEST( testDimProperties );
   CPPUNIT_TEST( testDBToStateVars );
   CPPUNIT_TEST( testNonDimStateVars );
   CPPUNIT_TEST( testDimStateVars );
-
   CPPUNIT_TEST( test_calcDensity );
-
-  CPPUNIT_TEST( testCalcStressElastic );
-  CPPUNIT_TEST( testCalcStressTimeDep );
-  CPPUNIT_TEST( testCalcElasticConstsElastic );
-  CPPUNIT_TEST( testCalcElasticConstsTimeDep );
-  CPPUNIT_TEST( testUpdatePropertiesElastic );
-  CPPUNIT_TEST( testUpdatePropertiesTimeDep );
   CPPUNIT_TEST( test_stableTimeStepImplicit );
 
+  // Need to test Maxwell viscoelastic specific behavior.
   CPPUNIT_TEST( testTimeStep );
   CPPUNIT_TEST( testUseElasticBehavior );
   CPPUNIT_TEST( testHasStateVars );
 
+  CPPUNIT_TEST( test_calcStressElastic );
+  CPPUNIT_TEST( test_calcStressTimeDep );
+  CPPUNIT_TEST( test_calcElasticConstsElastic );
+  CPPUNIT_TEST( test_calcElasticConstsTimeDep );
+  CPPUNIT_TEST( test_updateStateVarsElastic );
+  CPPUNIT_TEST( test_updateStateVarsTimeDep );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -75,26 +76,26 @@ public :
   /// Test useElasticBehavior()
   void testUseElasticBehavior(void);
 
-  /// Test usesUpdateProperties()
-  void testUsesUpdateProperties(void);
+  /// Test hasStateVars()
+  void testHasStateVars(void);
 
-  /// Test calcStressElastic()
-  void testCalcStressElastic(void);
+  /// Test _calcStressElastic()
+  void test_calcStressElastic(void);
 
-  /// Test calcStressTimeDep()
-  void testCalcStressTimeDep(void);
+  /// Test _calcElasticConstsElastic()
+  void test_calcElasticConstsElastic(void);
 
-  /// Test calcElasticConstsElastic()
-  void testCalcElasticConstsElastic(void);
+  /// Test _updateStateVarsElastic()
+  void test_updateStateVarsElastic(void);
 
-  /// Test calcElasticConstsTimeDep()
-  void testCalcElasticConstsTimeDep(void);
+  /// Test _calcStressTimeDep()
+  void test_calcStressTimeDep(void);
 
-  /// Test updatePropertiesElastic()
-  void testUpdatePropertiesElastic(void);
+  /// Test _calcElasticConstsTimeDep()
+  void test_calcElasticConstsTimeDep(void);
 
-  /// Test updatePropertiesTimeDep()
-  void testUpdatePropertiesTimeDep(void);
+  /// Test _updateStatevarsTimeDep()
+  void test_updateStateVarsTimeDep(void);
 
   /// Test _stableTimeStepImplicit()
   void test_stableTimeStepImplicit(void);

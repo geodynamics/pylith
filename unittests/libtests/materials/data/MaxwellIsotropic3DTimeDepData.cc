@@ -17,44 +17,65 @@
 
 const int pylith::materials::MaxwellIsotropic3DTimeDepData::_dimension = 3;
 
-const int pylith::materials::MaxwellIsotropic3DTimeDepData::_numDBValues = 4;
-
-const int pylith::materials::MaxwellIsotropic3DTimeDepData::_numInitialStateValues = 6;
-
-const int pylith::materials::MaxwellIsotropic3DTimeDepData::_numParameters = 6;
-
-const int pylith::materials::MaxwellIsotropic3DTimeDepData::_numParamsQuadPt = 16;
-
 const int pylith::materials::MaxwellIsotropic3DTimeDepData::_numLocs = 2;
+
+const int pylith::materials::MaxwellIsotropic3DTimeDepData::_numProperties = 4;
+
+const int pylith::materials::MaxwellIsotropic3DTimeDepData::_numStateVars = 2;
+
+const int pylith::materials::MaxwellIsotropic3DTimeDepData::_numDBProperties = 4;
+
+const int pylith::materials::MaxwellIsotropic3DTimeDepData::_numDBStateVars = 12;
+
+const int pylith::materials::MaxwellIsotropic3DTimeDepData::_numPropsQuadPt = 4;
+
+const int pylith::materials::MaxwellIsotropic3DTimeDepData::_numVarsQuadPt = 12;
+
+const double pylith::materials::MaxwellIsotropic3DTimeDepData::_lengthScale =   1.00000000e+03;
+
+const double pylith::materials::MaxwellIsotropic3DTimeDepData::_timeScale =   1.00000000e+00;
+
+const double pylith::materials::MaxwellIsotropic3DTimeDepData::_pressureScale =   2.25000000e+10;
+
+const double pylith::materials::MaxwellIsotropic3DTimeDepData::_densityScale =   1.00000000e+03;
 
 const double pylith::materials::MaxwellIsotropic3DTimeDepData::_dtStableImplicit =   4.44444444e+06;
 
-const int pylith::materials::MaxwellIsotropic3DTimeDepData::_numParamValues[] = {
+const int pylith::materials::MaxwellIsotropic3DTimeDepData::_numPropertyValues[] = {
 1,
 1,
 1,
 1,
+};
+
+const int pylith::materials::MaxwellIsotropic3DTimeDepData::_numStateVarValues[] = {
 6,
 6,
 };
 
-const char* pylith::materials::MaxwellIsotropic3DTimeDepData::_dbValues[] = {
+const char* pylith::materials::MaxwellIsotropic3DTimeDepData::_dbPropertyValues[] = {
 "density",
 "vs",
 "vp",
 "viscosity",
 };
 
-const char* pylith::materials::MaxwellIsotropic3DTimeDepData::_initialStateDBValues[] = {
-"stress_xx",
-"stress_yy",
-"stress_zz",
-"stress_xy",
-"stress_yz",
-"stress_xy",
+const char* pylith::materials::MaxwellIsotropic3DTimeDepData::_dbStateVarValues[] = {
+"total-strain-xx",
+"total-strain-yy",
+"total-strain-zz",
+"total-strain-xy",
+"total-strain-yz",
+"total-strain-xz",
+"viscous-strain-xx",
+"viscous-strain-yy",
+"viscous-strain-zz",
+"viscous-strain-xy",
+"viscous-strain-yz",
+"viscous-strain-xz",
 };
 
-const double pylith::materials::MaxwellIsotropic3DTimeDepData::_dbData[] = {
+const double pylith::materials::MaxwellIsotropic3DTimeDepData::_dbProperties[] = {
   2.50000000e+03,
   3.00000000e+03,
   5.19615242e+03,
@@ -65,69 +86,95 @@ const double pylith::materials::MaxwellIsotropic3DTimeDepData::_dbData[] = {
   1.00000000e+19,
 };
 
-const double pylith::materials::MaxwellIsotropic3DTimeDepData::_initialStateDBData[] = {
-  1.20000000e+04,
-  2.30000000e+04,
-  3.40000000e+04,
-  4.50000000e+04,
-  5.60000000e+04,
-  6.70000000e+04,
-  2.10000000e+04,
-  3.20000000e+04,
-  4.30000000e+04,
-  5.40000000e+04,
-  6.50000000e+04,
-  7.60000000e+04,
+const double pylith::materials::MaxwellIsotropic3DTimeDepData::_dbStateVars[] = {
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
 };
 
-const double pylith::materials::MaxwellIsotropic3DTimeDepData::_parameterData[] = {
+const double pylith::materials::MaxwellIsotropic3DTimeDepData::_properties[] = {
   2.50000000e+03,
   2.25000000e+10,
   2.25000000e+10,
   4.44444444e+07,
-  1.10000000e-04,
-  2.20000000e-04,
-  3.30000000e-04,
-  4.40000000e-04,
-  5.50000000e-04,
-  6.60000000e-04,
- -2.20000000e-04,
- -1.10000000e-04,
-  0.00000000e+00,
-  4.40000000e-04,
-  5.50000000e-04,
-  6.60000000e-04,
   2.00000000e+03,
   2.88000000e+09,
   2.88000000e+09,
   3.47222222e+09,
-  1.20000000e-04,
-  2.30000000e-04,
-  3.40000000e-04,
-  4.50000000e-04,
-  5.60000000e-04,
-  6.70000000e-04,
- -2.20000000e-04,
- -1.10000000e-04,
-  0.00000000e+00,
-  4.50000000e-04,
-  5.60000000e-04,
-  6.70000000e-04,
 };
 
-const double pylith::materials::MaxwellIsotropic3DTimeDepData::_initialState[] = {
-  1.20000000e+04,
-  2.30000000e+04,
-  3.40000000e+04,
-  4.50000000e+04,
-  5.60000000e+04,
-  6.70000000e+04,
-  2.10000000e+04,
-  3.20000000e+04,
-  4.30000000e+04,
-  5.40000000e+04,
-  6.50000000e+04,
-  7.60000000e+04,
+const double pylith::materials::MaxwellIsotropic3DTimeDepData::_stateVars[] = {
+ -2.00000000e-05,
+ -1.00000000e-05,
+  0.00000000e+00,
+  1.40000000e-04,
+  1.50000000e-04,
+  1.60000000e-04,
+  1.10000000e-04,
+  1.20000000e-04,
+  1.30000000e-04,
+  1.40000000e-04,
+  1.50000000e-04,
+  1.60000000e-04,
+ -2.00000000e-05,
+ -1.00000000e-05,
+ -5.42101086e-20,
+  4.40000000e-04,
+  4.50000000e-04,
+  4.60000000e-04,
+  4.10000000e-04,
+  4.20000000e-04,
+  4.30000000e-04,
+  4.40000000e-04,
+  4.50000000e-04,
+  4.60000000e-04,
+};
+
+const double pylith::materials::MaxwellIsotropic3DTimeDepData::_propertiesNondim[] = {
+  2.50000000e+00,
+  1.00000000e+00,
+  1.00000000e+00,
+  4.44444444e+07,
+  2.00000000e+00,
+  1.28000000e-01,
+  1.28000000e-01,
+  3.47222222e+09,
+};
+
+const double pylith::materials::MaxwellIsotropic3DTimeDepData::_stateVarsNondim[] = {
+ -2.00000000e-05,
+ -1.00000000e-05,
+  0.00000000e+00,
+  1.40000000e-04,
+  1.50000000e-04,
+  1.60000000e-04,
+  1.10000000e-04,
+  1.20000000e-04,
+  1.30000000e-04,
+  1.40000000e-04,
+  1.50000000e-04,
+  1.60000000e-04,
+ -2.00000000e-05,
+ -1.00000000e-05,
+ -5.42101086e-20,
+  4.40000000e-04,
+  4.50000000e-04,
+  4.60000000e-04,
+  4.10000000e-04,
+  4.20000000e-04,
+  4.30000000e-04,
+  4.40000000e-04,
+  4.50000000e-04,
+  4.60000000e-04,
 };
 
 const double pylith::materials::MaxwellIsotropic3DTimeDepData::_density[] = {
@@ -137,32 +184,32 @@ const double pylith::materials::MaxwellIsotropic3DTimeDepData::_density[] = {
 
 const double pylith::materials::MaxwellIsotropic3DTimeDepData::_strain[] = {
   1.10000000e-04,
-  2.20000000e-04,
-  3.30000000e-04,
-  4.40000000e-04,
-  5.50000000e-04,
-  6.60000000e-04,
   1.20000000e-04,
-  2.30000000e-04,
-  3.40000000e-04,
+  1.30000000e-04,
+  1.40000000e-04,
+  1.50000000e-04,
+  1.60000000e-04,
+  4.10000000e-04,
+  4.20000000e-04,
+  4.30000000e-04,
+  4.40000000e-04,
   4.50000000e-04,
-  5.60000000e-04,
-  6.70000000e-04,
+  4.60000000e-04,
 };
 
 const double pylith::materials::MaxwellIsotropic3DTimeDepData::_stress[] = {
-  1.49064499e+07,
-  1.98452250e+07,
-  2.47840000e+07,
-  1.97561002e+07,
-  2.46948752e+07,
-  2.96336503e+07,
-  2.06587299e+06,
-  2.71043649e+06,
-  3.35500000e+06,
-  2.64585071e+06,
-  3.29041421e+06,
-  3.93497772e+06,
+  1.26250409e+07,
+  1.30740205e+07,
+  1.35230000e+07,
+  6.29571369e+06,
+  6.74469324e+06,
+  7.19367279e+06,
+  5.98380664e+06,
+  6.04240332e+06,
+  6.10100000e+06,
+  2.58825402e+06,
+  2.64685071e+06,
+  2.70544739e+06,
 };
 
 const double pylith::materials::MaxwellIsotropic3DTimeDepData::_elasticConsts[] = {
@@ -210,26 +257,70 @@ const double pylith::materials::MaxwellIsotropic3DTimeDepData::_elasticConsts[] 
   5.75983412e+09,
 };
 
+const double pylith::materials::MaxwellIsotropic3DTimeDepData::_initialStress[] = {
+  2.10000000e+04,
+  2.20000000e+04,
+  2.30000000e+04,
+  2.40000000e+04,
+  2.50000000e+04,
+  2.60000000e+04,
+  5.10000000e+04,
+  5.20000000e+04,
+  5.30000000e+04,
+  5.40000000e+04,
+  5.50000000e+04,
+  5.60000000e+04,
+};
+
+const double pylith::materials::MaxwellIsotropic3DTimeDepData::_initialStrain[] = {
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+};
+
+const double* pylith::materials::MaxwellIsotropic3DTimeDepData::_stateVarsUpdated = 0;
+
 pylith::materials::MaxwellIsotropic3DTimeDepData::MaxwellIsotropic3DTimeDepData(void)
 { // constructor
   dimension = _dimension;
-  numDBValues = _numDBValues;
-  numInitialStateValues = _numInitialStateValues;
-  numParameters = _numParameters;
-  numParamsQuadPt = _numParamsQuadPt;
   numLocs = _numLocs;
+  numProperties = _numProperties;
+  numStateVars = _numStateVars;
+  numDBProperties = _numDBProperties;
+  numDBStateVars = _numDBStateVars;
+  numPropsQuadPt = _numPropsQuadPt;
+  numVarsQuadPt = _numVarsQuadPt;
+  lengthScale = _lengthScale;
+  timeScale = _timeScale;
+  pressureScale = _pressureScale;
+  densityScale = _densityScale;
   dtStableImplicit = _dtStableImplicit;
-  numParamValues = const_cast<int*>(_numParamValues);
-  dbValues = const_cast<char**>(_dbValues);
-  initialStateDBValues = const_cast<char**>(_initialStateDBValues);
-  dbData = const_cast<double*>(_dbData);
-  initialStateDBData = const_cast<double*>(_initialStateDBData);
-  parameterData = const_cast<double*>(_parameterData);
-  initialState = const_cast<double*>(_initialState);
+  numPropertyValues = const_cast<int*>(_numPropertyValues);
+  numStateVarValues = const_cast<int*>(_numStateVarValues);
+  dbPropertyValues = const_cast<char**>(_dbPropertyValues);
+  dbStateVarValues = const_cast<char**>(_dbStateVarValues);
+  dbProperties = const_cast<double*>(_dbProperties);
+  dbStateVars = const_cast<double*>(_dbStateVars);
+  properties = const_cast<double*>(_properties);
+  stateVars = const_cast<double*>(_stateVars);
+  propertiesNondim = const_cast<double*>(_propertiesNondim);
+  stateVarsNondim = const_cast<double*>(_stateVarsNondim);
   density = const_cast<double*>(_density);
   strain = const_cast<double*>(_strain);
   stress = const_cast<double*>(_stress);
   elasticConsts = const_cast<double*>(_elasticConsts);
+  initialStress = const_cast<double*>(_initialStress);
+  initialStrain = const_cast<double*>(_initialStrain);
+  stateVarsUpdated = const_cast<double*>(_stateVarsUpdated);
 } // constructor
 
 pylith::materials::MaxwellIsotropic3DTimeDepData::~MaxwellIsotropic3DTimeDepData(void)

@@ -490,12 +490,17 @@ pylith::materials::TestElasticMaterial::test_calcStress(void)
 
     const double tolerance = 1.0e-06;
     for (int i=0; i < tensorSize; ++i)
+      {
+	std::cout << "stress: " << stress[i]
+		  << ", stressE: " << stressE[i]
+		  << std::endl;
       if (fabs(stressE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stress[i]/stressE[i], 
 				     tolerance);
       else
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(stressE[i], stress[i],
 				     tolerance);
+      }
   } // for
 } // _testCalcStress
 

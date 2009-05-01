@@ -74,7 +74,8 @@ class ElasticIsotropic3D(ElasticMaterialApp):
     self.dbProperties = numpy.array([ [densityA, vsA, vpA],
                                       [densityB, vsB, vpB] ], 
                                     dtype=numpy.float64)
-    self.properties = numpy.array([ [densityA, muA, lambdaA],                                                       [densityB, muB, lambdaB] ],
+    self.properties = numpy.array([ [densityA, muA, lambdaA],
+                                    [densityB, muB, lambdaB] ],
                                      dtype=numpy.float64)
 
     mu0 = self.pressureScale

@@ -71,8 +71,8 @@ class TestApp(Script):
     from TestElasticIsotropic3D import TestElasticIsotropic3D
     suite.addTest(unittest.makeSuite(TestElasticIsotropic3D))
 
-    #from TestMaxwellIsotropic3D import TestMaxwellIsotropic3D
-    #suite.addTest(unittest.makeSuite(TestMaxwellIsotropic3D))
+    from TestMaxwellIsotropic3D import TestMaxwellIsotropic3D
+    suite.addTest(unittest.makeSuite(TestMaxwellIsotropic3D))
 
     #from TestGenMaxwellIsotropic3D import TestGenMaxwellIsotropic3D
     #suite.addTest(unittest.makeSuite(TestGenMaxwellIsotropic3D))

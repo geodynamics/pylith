@@ -26,6 +26,8 @@
 #include "pylith/materials/ElasticPlaneStrain.hh"
 #include "pylith/materials/ElasticPlaneStress.hh"
 #include "pylith/materials/ElasticIsotropic3D.hh"
+#include "pylith/materials/MaxwellIsotropic3D.hh"
+//#include "pylith/materials/GenMaxwellIsotropic3D.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 %}
@@ -59,6 +61,8 @@ import_array();
 %include "ElasticPlaneStrain.i"
 %include "ElasticPlaneStress.i"
 %include "ElasticIsotropic3D.i"
+%include "MaxwellIsotropic3D.i"
+//%include "GenMaxwellIsotropic3D.i"
 
 
 // End of file

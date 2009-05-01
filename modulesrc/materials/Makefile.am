@@ -25,7 +25,8 @@ swig_sources = \
 	ElasticStress1D.i \
 	ElasticPlaneStrain.i \
 	ElasticPlaneStress.i \
-	ElasticIsotropic3D.i
+	ElasticIsotropic3D.i \
+	MaxwellIsotropic3D.i
 
 swig_generated = \
 	materials_wrap.cxx \
