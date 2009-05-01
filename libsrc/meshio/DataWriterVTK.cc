@@ -157,14 +157,11 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
   typedef typename field_type::Mesh::RealSection RealSection;
 
   try {
-    const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
-    assert(!sieveMesh.isNull());
-    const ALE::Obj<typename SieveMesh::label_sequence>& vertices = 
-      sieveMesh->depthStratum(0);
-    assert(!vertices.isNull());
     int rank = 0;
     MPI_Comm_rank(field.mesh().comm(), &rank);
 
+    const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
+    assert(!sieveMesh.isNull());
     const std::string labelName = 
       (sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
     const ALE::Obj<typename SieveMesh::numbering_type>& numbering =

@@ -293,7 +293,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
 { // cellField
   assert(0 != _material);
 
-  // We assume the material stores the total-strain field if
+  // We assume the material stores the total_strain field if
   // hasStateVars() is TRUE.
 
   if (!_material->hasStateVars() &&

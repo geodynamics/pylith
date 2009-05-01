@@ -73,12 +73,29 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
 			meshSieveMesh->getRealSection("coordinates"));
 
   // Create the parallel overlap
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = _mesh->getSieve();
+  assert(!sieve.isNull());
   ALE::Obj<SieveMesh::send_overlap_type> sendParallelMeshOverlap =
     _mesh->getSendOverlap();
   ALE::Obj<SieveMesh::recv_overlap_type> recvParallelMeshOverlap =
     _mesh->getRecvOverlap();
-  DomainSieveMesh::renumbering_type& renumbering = 
+
+  SieveMesh::renumbering_type& renumbering = _mesh->getRenumbering();
+
+  DomainSieveMesh::renumbering_type& oldRenumbering = 
     meshSieveMesh->getRenumbering();
+  const SieveMesh::renumbering_type::const_iterator oldBegin = 
+    oldRenumbering.begin();
+  const SieveMesh::renumbering_type::const_iterator oldEnd = 
+    oldRenumbering.end();
+  for (SieveMesh::renumbering_type::const_iterator r_iter = oldBegin;
+       r_iter != oldEnd;
+       ++r_iter)
+    if (sieve->getChart().hasPoint(r_iter->second) && 
+	(sieve->getConeSize(r_iter->second) || 
+	 sieve->getSupportSize(r_iter->second)))
+      renumbering[r_iter->first] = r_iter->second;
+  
   //   Can I figure this out in a nicer way?
   ALE::SetFromMap<std::map<DomainSieveMesh::point_type,
     DomainSieveMesh::point_type> > globalPoints(renumbering);

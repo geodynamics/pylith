@@ -284,8 +284,8 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
 
     // Allocate buffer for property field.
     const ALE::Obj<RealSection>& fieldSection = field->section();
-    if (fieldSection.isNull() ||
-      totalFiberDim != fieldSection->getFiberDimension(*cells->begin())) {
+    if ((fieldSection.isNull() && cells->size() > 0) ||
+	totalFiberDim != fieldSection->getFiberDimension(*cells->begin())) {
       field->newSection(cells, totalFiberDim);
       field->allocate();
     } // if
@@ -316,7 +316,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
     } // for
   } else { // field is a state variable
     assert(stateVarIndex >= 0);
-
+    
     int varOffset = 0;
     const string_vector& stateVars = _metadata.stateVars();
     assert(stateVarIndex < stateVars.size());

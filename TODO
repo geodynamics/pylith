@@ -55,7 +55,10 @@ CURRENT ISSUES/PRIORITIES
     Distribution debug (dump VTK) needs Nondimensional
 
   libsrc/materials
-    Maxwell materials
+    Generalized Maxwell materials
+
+  libtests/materials
+    Cleanup testUpdateStateVars for Maxwell models
 
   libtests/bc/TestDirichletBoundary::testVertexField()
   libtests/bc/TestDirichletBoundary::testBoundaryMesh()
