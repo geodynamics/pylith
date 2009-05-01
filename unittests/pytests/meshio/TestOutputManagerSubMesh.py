@@ -281,14 +281,14 @@ class TestOutputManagerSubMesh(unittest.TestCase):
 
     # Check writing based on time
     output = OutputManagerSubMesh()
+    output.inventory.writer._configure()
     output._configure()
-    output.writer._configure()
     output.preinitialize(dataProvider)
     output.initialize(self.normalizer)
 
-    output.outputFreq = "time_step"
+    output.inventory.outputFreq = "time_step"
     t = 0.0
-    dt = output.dt
+    dt = output.dtN
     self.assertEqual(True, output._checkWrite(t))
     self.assertEqual(False, output._checkWrite(t))
     self.assertEqual(False, output._checkWrite(t + 0.8*dt))
@@ -299,12 +299,12 @@ class TestOutputManagerSubMesh(unittest.TestCase):
     
     # Check writing based on number of steps
     output = OutputManagerSubMesh()
+    output.inventory.writer._configure()
+    output.inventory.outputFreq = "skip"
+    output.inventory.skip = 1
     output._configure()
-    output.writer._configure()
     output.preinitialize(dataProvider)
     output.initialize(self.normalizer)
-    output.outputFreq = "skip"
-    output.skip = 1
     t = 0.0
     dt = 1.0
     self.assertEqual(True, output._checkWrite(t))
@@ -312,7 +312,7 @@ class TestOutputManagerSubMesh(unittest.TestCase):
     self.assertEqual(False, output._checkWrite(t))
     t += dt
     self.assertEqual(True, output._checkWrite(t))
-    output.skip = 2
+    output.inventory.skip = 2
     t += dt
     self.assertEqual(False, output._checkWrite(t))
     t += dt

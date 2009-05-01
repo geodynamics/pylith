@@ -18,8 +18,6 @@
 ## Factory: output_manager
 
 from pylith.utils.PetscComponent import PetscComponent
-from meshio import MeshOutputManager as ModuleMeshObject
-from meshio import SubMeshOutputManager as ModuleSubMeshObject
 
 # OutputManager class
 class OutputManager(PetscComponent):
@@ -133,8 +131,8 @@ class OutputManager(PetscComponent):
     self._logger.eventBegin(logEvent)    
 
     # Nondimensionalize time step
-    lengthScale = normalizer.timeScale()
-    self.dt = normalizer.nondimensionalize(self.dt, lengthScale)
+    timeScale = normalizer.timeScale()
+    self.dtN = normalizer.nondimensionalize(self.dt, timeScale)
 
     # Initialize coordinate system
     if self.coordsys is None:
@@ -159,7 +157,7 @@ class OutputManager(PetscComponent):
     if numTimeSteps > 0 and self.outputFreq == "skip" and self.skip > 0:
       nsteps = int(numTimeSteps / (1+self.skip))
     elif numTimeSteps > 0 and self.outputFreq == "time_step":
-      nsteps = 1 + int(totalTime / self.dt)
+      nsteps = 1 + int(totalTime / self.dtN)
 
     (mesh, label, labelId) = self.dataProvider.getDataMesh()
     self._open(mesh, nsteps, label, labelId)
@@ -246,6 +244,13 @@ class OutputManager(PetscComponent):
     PetscComponent._configure(self)
     return
 
+  def _createModuleObj(self):
+    """
+    Create handle to C++ object.
+    """
+    raise NotImplementedError, \
+        "Please implement _createModuleObj() in derived class."
+
 
   def _checkWrite(self, t):
     """
@@ -265,7 +270,7 @@ class OutputManager(PetscComponent):
         self._stepWrite = self._stepCur
 
     elif self.outputFreq == "time_step":
-      if t >= self._tWrite + self.dt:
+      if t >= self._tWrite + self.dtN:
        write = True
        self._tWrite = t
 
