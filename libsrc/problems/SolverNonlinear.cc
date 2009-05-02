@@ -112,7 +112,7 @@ pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
   assert(0 != formulation);
 
   // Reform residual
-  formulation->reformResidual(tmpResidualVec, tmpSolutionVec);
+  formulation->reformResidual(&tmpResidualVec, &tmpSolutionVec);
 
   return 0;
 } // reformResidual
@@ -132,7 +132,7 @@ pylith::problems::SolverNonlinear::reformJacobian(PetscSNES snes,
   Formulation* formulation = (Formulation*) context;
   assert(0 != formulation);
 
-  formulation->reformJacobian(tmpSolutionVec);
+  formulation->reformJacobian(&tmpSolutionVec);
 
   return 0;
 } // reformJacobian

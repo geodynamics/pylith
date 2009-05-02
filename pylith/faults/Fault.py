@@ -72,12 +72,12 @@ class Fault(PetscComponent, ModuleFault):
 
   import pyre.inventory
   
-  id = pyre.inventory.int("id", default=100)
-  id.meta['tip'] = "Fault identifier (must be unique across all faults " \
+  matId = pyre.inventory.int("id", default=100)
+  matId.meta['tip'] = "Fault identifier (must be unique across all faults " \
       "and materials)."
   
-  label = pyre.inventory.str("label", default="")
-  label.meta['tip'] = "Name of fault."
+  faultLabel = pyre.inventory.str("label", default="")
+  faultLabel.meta['tip'] = "Name of fault."
   
   upDir = pyre.inventory.list("up_dir", default=[0, 0, 1],
                               validator=validateDir)
@@ -178,7 +178,7 @@ class Fault(PetscComponent, ModuleFault):
     self._logger.eventBegin(logEvent)
 
     self._info.log("Writing fault data.")
-    #self.output.writeData(t+dt, fields)
+    self.output.writeData(t+dt, fields)
 
     self._logger.eventEnd(logEvent)
     return
@@ -218,8 +218,8 @@ class Fault(PetscComponent, ModuleFault):
     self.upDir = map(float, self.inventory.upDir)
     self.normalDir = map(float, self.inventory.normalDir)
     self.matDB = self.inventory.matDB
-    ModuleFault.id(self, self.inventory.id)
-    ModuleFault.label(self, self.inventory.label)
+    ModuleFault.id(self, self.inventory.matId)
+    ModuleFault.label(self, self.inventory.faultLabel)
     return
 
   

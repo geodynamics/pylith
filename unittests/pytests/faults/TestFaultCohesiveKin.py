@@ -104,8 +104,8 @@ class TestFaultCohesiveKin(unittest.TestCase):
     mesh = importer.read(normalizer, debug=False, interpolate=False)
 
     fault = FaultCohesiveKin()
-    fault.inventory.id = 10
-    fault.inventory.label = "fault"
+    fault.inventory.matId = 10
+    fault.inventory.faultLabel = "fault"
     fault._configure()
 
     fault.adjustTopology(mesh)
@@ -322,8 +322,8 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault = FaultCohesiveKin()
     fault.inventory.output.inventory.writer._configure()
     fault.inventory.output._configure()
-    fault.inventory.id = 10
-    fault.inventory.label = "fault"
+    fault.inventory.matId = 10
+    fault.inventory.faultLabel = "fault"
     fault.inventory.upDir = [0, 0, 1]
     fault.inventory.normalDir = [1, 0, 0]
     fault.inventory.quadrature = quadrature

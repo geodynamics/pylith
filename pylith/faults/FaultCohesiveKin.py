@@ -96,7 +96,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
     """
     Do pre-initialization setup.
     """
-    self._info.log("Pre-initializing fault '%s'." % self.label)
+    self._info.log("Pre-initializing fault '%s'." % self.label())
     FaultCohesive.preinitialize(self, mesh)
     Integrator.preinitialize(self, mesh)
 
@@ -143,7 +143,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
-    self._info.log("Initializing fault '%s'." % self.label)
+    self._info.log("Initializing fault '%s'." % self.label())
 
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
     

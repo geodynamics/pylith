@@ -141,6 +141,7 @@ CURRENT ISSUES/PRIORITIES
     material
      db -> properties_db
     no need to set Quadrature type
+    CellFilterAvg Mesh/SubMesh
 
 -- Release (v1.4) --
 

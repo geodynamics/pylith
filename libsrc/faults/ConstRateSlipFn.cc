@@ -79,7 +79,7 @@ pylith::faults::ConstRateSlipFn::initialize(
 
   delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
   assert(0 != _parameters);
-  _parameters->add("slip rate", "slip rate");
+  _parameters->add("slip rate", "slip_rate");
   topology::Field<topology::SubMesh>& slipRate = _parameters->get("slip rate");
   slipRate.newSection(vertices, spaceDim);
   slipRate.allocate();
@@ -88,7 +88,7 @@ pylith::faults::ConstRateSlipFn::initialize(
   const ALE::Obj<RealSection>& slipRateSection = slipRate.section();
   assert(!slipRateSection.isNull());  
 
-  _parameters->add("slip time", "slip time");
+  _parameters->add("slip time", "slip_time");
   topology::Field<topology::SubMesh>& slipTime = _parameters->get("slip time");
   slipTime.newSection(slipRateSection->getChart(), 1);
   slipTime.allocate();

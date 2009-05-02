@@ -681,6 +681,7 @@ pylith::faults::FaultCohesiveKin::vertexField(
     _allocateBufferVectorField();
     assert(0 != _bufferVectorField);
     _bufferVectorField->copy(dirSection);
+    _bufferVectorField->label("strike_dir");
     return *_bufferVectorField;
 
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
@@ -692,6 +693,7 @@ pylith::faults::FaultCohesiveKin::vertexField(
     _allocateBufferVectorField();
     assert(0 != _bufferVectorField);
     _bufferVectorField->copy(dirSection);
+    _bufferVectorField->label("dip_dir");
     return *_bufferVectorField;
 
   } else if (0 == strcasecmp("normal_dir", name)) {
@@ -706,6 +708,7 @@ pylith::faults::FaultCohesiveKin::vertexField(
     _allocateBufferVectorField();
     assert(0 != _bufferVectorField);
     _bufferVectorField->copy(dirSection);
+    _bufferVectorField->label("normal_dir");
     return *_bufferVectorField;
 
   } else if (0 == strncasecmp("final_slip_X", name, slipStrLen)) {
@@ -726,7 +729,9 @@ pylith::faults::FaultCohesiveKin::vertexField(
     const topology::Field<topology::Mesh>& solution = fields->solution();
     _allocateBufferVectorField();
     _calcTractionsChange(_bufferVectorField, solution);
-    
+    _bufferVectorField->label("traction_change");
+    return *_bufferVectorField;
+
   } else {
     std::ostringstream msg;
     msg << "Request for unknown vertex field '" << name

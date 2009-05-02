@@ -77,7 +77,7 @@ pylith::faults::StepSlipFn::initialize(
 
   delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
   assert(0 != _parameters);
-  _parameters->add("final slip", "final slip");
+  _parameters->add("final slip", "final_slip");
   topology::Field<topology::SubMesh>& finalSlip = _parameters->get("final slip");
   finalSlip.newSection(vertices, spaceDim);
   finalSlip.allocate();
@@ -86,7 +86,7 @@ pylith::faults::StepSlipFn::initialize(
   const ALE::Obj<RealSection>& finalSlipSection = finalSlip.section();
   assert(!finalSlipSection.isNull());  
 
-  _parameters->add("slip time", "slip time");
+  _parameters->add("slip time", "slip_time");
   topology::Field<topology::SubMesh>& slipTime = _parameters->get("slip time");
   slipTime.newSection(finalSlipSection->getChart(), 1);
   slipTime.allocate();

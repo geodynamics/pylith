@@ -90,15 +90,15 @@ pylith::problems::Formulation::updateSettings(topology::Jacobian* jacobian,
 // ----------------------------------------------------------------------
 // Reform system residual.
 void
-pylith::problems::Formulation::reformResidual(const PetscVec tmpResidualVec,
-					      const PetscVec tmpSolveSolnVec)
+pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
+					      const PetscVec* tmpSolveSolnVec)
 { // reformResidual
   assert(0 != _fields);
 
   // Update section view of field.
   if (0 != tmpSolveSolnVec) {
     topology::Field<topology::Mesh>& solveSoln = _fields->solveSoln();
-    solveSoln.scatterVectorToSection(tmpSolveSolnVec);
+    solveSoln.scatterVectorToSection(*tmpSolveSolnVec);
   } // if
 
   // Set residual to zero.
@@ -131,20 +131,20 @@ pylith::problems::Formulation::reformResidual(const PetscVec tmpResidualVec,
 
   // Update PETSc view of residual
   if (0 != tmpResidualVec)
-    residual.scatterSectionToVector(tmpResidualVec);
+    residual.scatterSectionToVector(*tmpResidualVec);
   else
     residual.scatterSectionToVector();
 
   // TODO: Move this to SolverLinear 
   //residual *= -1.0;
   if (0 != tmpResidualVec)
-    VecScale(tmpResidualVec, -1.0);
+    VecScale(*tmpResidualVec, -1.0);
 } // reformResidual
 
 // ----------------------------------------------------------------------
 // Reform system Jacobian.
 void
-pylith::problems::Formulation::reformJacobian(const PetscVec tmpSolveSolnVec)
+pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolveSolnVec)
 { // reformJacobian
   assert(0 != _jacobian);
   assert(0 != _fields);
@@ -152,7 +152,7 @@ pylith::problems::Formulation::reformJacobian(const PetscVec tmpSolveSolnVec)
   // Update section view of field.
   if (0 != tmpSolveSolnVec) {
     topology::Field<topology::Mesh>& solveSoln = _fields->solveSoln();
-    solveSoln.scatterVectorToSection(tmpSolveSolnVec);
+    solveSoln.scatterVectorToSection(*tmpSolveSolnVec);
   } // if
 
   // Set residual to zero.
