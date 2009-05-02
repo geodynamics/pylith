@@ -112,7 +112,10 @@ class OutputManagerSubMesh(OutputManager, ModuleOutputManager):
     """
     Call C++ appendCellField();
     """
-    ModuleOutputManager.appendCellField(self, t, field)
+    if label != None and labelId != None:
+      ModuleOutputManager.appendCellField(self, t, field, label, labelId)
+    else:
+      ModuleOutputManager.appendCellField(self, t, field)
     return
 
 
