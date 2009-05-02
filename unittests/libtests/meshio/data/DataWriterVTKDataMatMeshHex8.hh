@@ -10,33 +10,35 @@
 // ======================================================================
 //
 
-#if !defined(pylith_meshio_datawritervtkdatasubmeshquad4_hh)
-#define pylith_meshio_datawritervtkdatasubmeshquad4_hh
+#if !defined(pylith_meshio_datawritervtkdatamatmeshhex8_hh)
+#define pylith_meshio_datawritervtkdatamatmeshhex8_hh
 
 #include "DataWriterVTKData.hh" // ISA DataWriterVTKData
 
 namespace pylith {
   namespace meshio {
-     class DataWriterVTKDataSubMeshQuad4;
+     class DataWriterVTKDataMatMeshHex8;
   } // meshio
 } // pylith
 
-class pylith::meshio::DataWriterVTKDataSubMeshQuad4 : public DataWriterVTKData
-{ // DataWriterVTKDataSubMeshQuad4
+class pylith::meshio::DataWriterVTKDataMatMeshHex8 : public DataWriterVTKData
+{ // DataWriterVTKDataMatMeshHex8
 
 public: 
 
   /// Constructor
-  DataWriterVTKDataSubMeshQuad4(void);
+  DataWriterVTKDataMatMeshHex8(void);
 
   /// Destructor
-  ~DataWriterVTKDataSubMeshQuad4(void);
+  ~DataWriterVTKDataMatMeshHex8(void);
 
 private:
 
   static const char* _meshFilename; ///< Name of mesh file.
   static const char* _cellsLabel; ///< Label defining subset of cells.
   static const int _labelId; /// Value for label defining subset of cells.
+  static const char* _faultLabel; ///< Name of group of vertices for fault.
+  static const int _faultId; ///< Material identifier for fault.
 
   static const char* _timestepFilename; ///< Name of VTK file without fields.
   static const char* _vertexFilename; ///< Name of VTK file for vertex fields.
@@ -67,8 +69,8 @@ private:
   static const double _cellField2[]; ///< Values for cell field 2.
   //@}
 
-}; // DataWriterVTKDataSubMeshQuad4
+}; // DataWriterVTKDataMatMeshHex8
 
-#endif // pylith_meshio_datawritervtkdatasubmeshquad4_hh
+#endif // pylith_meshio_datawritervtkdatamatmeshhex8_hh
 
 // End of file

@@ -33,17 +33,17 @@ testmeshio_SOURCES = \
 	TestDataWriterVTKMeshQuad4.cc \
 	TestDataWriterVTKMeshTet4.cc \
 	TestDataWriterVTKMeshHex8.cc \
+	TestDataWriterVTKMatMeshLine2.cc \
+	TestDataWriterVTKMatMeshTri3.cc \
+	TestDataWriterVTKMatMeshQuad4.cc \
+	TestDataWriterVTKMatMeshTet4.cc \
+	TestDataWriterVTKMatMeshHex8.cc \
 	TestDataWriterVTKBCMesh.cc \
 	TestDataWriterVTKBCMeshTri3.cc \
 	TestDataWriterVTKBCMeshQuad4.cc \
 	TestDataWriterVTKBCMeshTet4.cc \
 	TestDataWriterVTKBCMeshHex8.cc \
 	TestDataWriterVTKSubMesh.cc \
-	TestDataWriterVTKSubMeshLine2.cc \
-	TestDataWriterVTKSubMeshTri3.cc \
-	TestDataWriterVTKSubMeshQuad4.cc \
-	TestDataWriterVTKSubMeshTet4.cc \
-	TestDataWriterVTKSubMeshHex8.cc \
 	TestOutputManager.cc \
 	TestOutputSolnSubset.cc \
 	TestDataWriterVTKFaultMesh.cc \
@@ -52,6 +52,12 @@ testmeshio_SOURCES = \
 	TestDataWriterVTKFaultMeshTet4.cc \
 	TestDataWriterVTKFaultMeshHex8.cc \
 	test_meshio.cc
+
+#	TestDataWriterVTKSubMeshLine2.cc \
+#	TestDataWriterVTKSubMeshTri3.cc \
+#	TestDataWriterVTKSubMeshQuad4.cc \
+#	TestDataWriterVTKSubMeshTet4.cc \
+#	TestDataWriterVTKSubMeshHex8.cc 
 
 
 noinst_HEADERS = \
@@ -63,6 +69,11 @@ noinst_HEADERS = \
 	TestDataWriterVTKMeshQuad4.hh \
 	TestDataWriterVTKMeshTet4.hh \
 	TestDataWriterVTKMeshHex8.hh \
+	TestDataWriterVTKMatMeshLine2.hh \
+	TestDataWriterVTKMatMeshTri3.hh \
+	TestDataWriterVTKMatMeshQuad4.hh \
+	TestDataWriterVTKMatMeshTet4.hh \
+	TestDataWriterVTKMatMeshHex8.hh \
 	TestDataWriterVTKSubMeshLine2.hh \
 	TestDataWriterVTKSubMeshTri3.hh \
 	TestDataWriterVTKSubMeshQuad4.hh \
@@ -94,11 +105,11 @@ testmeshio_SOURCES += \
 	data/DataWriterVTKDataMeshQuad4.cc \
 	data/DataWriterVTKDataMeshTet4.cc \
 	data/DataWriterVTKDataMeshHex8.cc \
-	data/DataWriterVTKDataSubMeshLine2.cc \
-	data/DataWriterVTKDataSubMeshTri3.cc \
-	data/DataWriterVTKDataSubMeshQuad4.cc \
-	data/DataWriterVTKDataSubMeshTet4.cc \
-	data/DataWriterVTKDataSubMeshHex8.cc \
+	data/DataWriterVTKDataMatMeshLine2.cc \
+	data/DataWriterVTKDataMatMeshTri3.cc \
+	data/DataWriterVTKDataMatMeshQuad4.cc \
+	data/DataWriterVTKDataMatMeshTet4.cc \
+	data/DataWriterVTKDataMatMeshHex8.cc \
 	data/DataWriterVTKDataFaultMeshTri3.cc \
 	data/DataWriterVTKDataFaultMeshQuad4.cc \
 	data/DataWriterVTKDataFaultMeshTet4.cc \
@@ -121,6 +132,12 @@ testmeshio_SOURCES += \
 	data/MeshDataCubitHex.cc \
 	data/MeshDataLagritTet.cc
 
+#	data/DataWriterVTKDataSubMeshLine2.cc \
+#	data/DataWriterVTKDataSubMeshTri3.cc \
+#	data/DataWriterVTKDataSubMeshQuad4.cc \
+#	data/DataWriterVTKDataSubMeshTet4.cc \
+#	data/DataWriterVTKDataSubMeshHex8.cc 
+
 noinst_HEADERS += \
 	data/DataWriterVTKData.hh \
 	data/DataWriterVTKDataMeshLine2.hh \
@@ -128,11 +145,11 @@ noinst_HEADERS += \
 	data/DataWriterVTKDataMeshQuad4.hh \
 	data/DataWriterVTKDataMeshTet4.hh \
 	data/DataWriterVTKDataMeshHex8.hh \
-	data/DataWriterVTKDataSubMeshLine2.hh \
-	data/DataWriterVTKDataSubMeshTri3.hh \
-	data/DataWriterVTKDataSubMeshQuad4.hh \
-	data/DataWriterVTKDataSubMeshTet4.hh \
-	data/DataWriterVTKDataSubMeshHex8.hh \
+	data/DataWriterVTKDataMatMeshLine2.hh \
+	data/DataWriterVTKDataMatMeshTri3.hh \
+	data/DataWriterVTKDataMatMeshQuad4.hh \
+	data/DataWriterVTKDataMatMeshTet4.hh \
+	data/DataWriterVTKDataMatMeshHex8.hh \
 	data/DataWriterVTKDataFaultMeshTri3.hh \
 	data/DataWriterVTKDataFaultMeshQuad4.hh \
 	data/DataWriterVTKDataFaultMeshTet4.hh \
@@ -154,6 +171,13 @@ noinst_HEADERS += \
 	data/MeshDataCubitTet.hh \
 	data/MeshDataCubitHex.hh \
 	data/MeshDataLagritTet.hh
+
+
+#	data/DataWriterVTKDataSubMeshLine2.hh \
+#	data/DataWriterVTKDataSubMeshTri3.hh \
+#	data/DataWriterVTKDataSubMeshQuad4.hh \
+#	data/DataWriterVTKDataSubMeshTet4.hh \
+#	data/DataWriterVTKDataSubMeshHex8.hh 
 
 AM_CPPFLAGS = \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE) \

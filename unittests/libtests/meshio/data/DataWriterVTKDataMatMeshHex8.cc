@@ -10,45 +10,45 @@
 // ======================================================================
 //
 
-#include "DataWriterVTKDataSubMeshHex8.hh"
+#include "DataWriterVTKDataMatMeshHex8.hh"
 
 #include <assert.h> // USES assert()
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_meshFilename = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshHex8::_meshFilename = 
   "data/hex8.mesh";
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_cellsLabel = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshHex8::_cellsLabel = 
   "material-id";
-const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_labelId = 0;
+const int pylith::meshio::DataWriterVTKDataMatMeshHex8::_labelId = 0;
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_faultLabel = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshHex8::_faultLabel = 
   "fault";
-const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_faultId = 100;
+const int pylith::meshio::DataWriterVTKDataMatMeshHex8::_faultId = 100;
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_timestepFilename = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshHex8::_timestepFilename = 
   "hex8_sub.vtk";
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexFilename = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexFilename = 
   "hex8_sub_vertex.vtk";
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_cellFilename = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshHex8::_cellFilename = 
   "hex8_sub_cell.vtk";
 
-const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_time = 1.0;
+const double pylith::meshio::DataWriterVTKDataMatMeshHex8::_time = 1.0;
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_timeFormat = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshHex8::_timeFormat = 
   "%3.1f";
 
-const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_numVertexFields = 3;
-const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_numVertices = 20;
+const int pylith::meshio::DataWriterVTKDataMatMeshHex8::_numVertexFields = 3;
+const int pylith::meshio::DataWriterVTKDataMatMeshHex8::_numVertices = 20;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
-pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexFields[] = {
+pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexFields[] = {
   { "displacements", topology::FieldBase::VECTOR, 3 },
   { "pressure", topology::FieldBase::SCALAR, 1 },
   { "other", topology::FieldBase::OTHER, 2 },
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexField0[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexField0[] = {
   1.1, 2.2, 3.3,
   4.4, 5.5, 6.6,
   7.7, 8.8, 9.9,
@@ -70,12 +70,12 @@ const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexField0[] = {
   31.1, 32.2, 33.3,
   34.4, 35.5, 36.6
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexField1[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexField1[] = {
   2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8,
   10.0, 12.1, 11.1, 13.1, 14.1, 15.1, 16.1, 17.1,
   18.1, 19.1, 20.1, 21.1
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexField2[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexField2[] = {
   1.2, 2.3,
   3.4, 4.5,
   5.6, 6.7,
@@ -98,26 +98,26 @@ const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexField2[] = {
   4.1, 4.2,
 };
 
-const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_numCellFields = 3;
-const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_numCells = 1;
+const int pylith::meshio::DataWriterVTKDataMatMeshHex8::_numCellFields = 3;
+const int pylith::meshio::DataWriterVTKDataMatMeshHex8::_numCells = 1;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
-pylith::meshio::DataWriterVTKDataSubMeshHex8::_cellFields[] = {
+pylith::meshio::DataWriterVTKDataMatMeshHex8::_cellFields[] = {
   { "traction", topology::FieldBase::VECTOR, 3 },
   { "pressure", topology::FieldBase::SCALAR, 1 },
   { "other", topology::FieldBase::TENSOR, 6 },
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_cellField0[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshHex8::_cellField0[] = {
   1.1, 2.2, 3.3,
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_cellField1[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshHex8::_cellField1[] = {
   2.1,
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_cellField2[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshHex8::_cellField2[] = {
   1.2, 2.3, 3.4, 4.5, 5.6, 6.7,
 };
 
-pylith::meshio::DataWriterVTKDataSubMeshHex8::DataWriterVTKDataSubMeshHex8(void)
+pylith::meshio::DataWriterVTKDataMatMeshHex8::DataWriterVTKDataMatMeshHex8(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
   cellsLabel = const_cast<char*>(_cellsLabel);
@@ -149,7 +149,7 @@ pylith::meshio::DataWriterVTKDataSubMeshHex8::DataWriterVTKDataSubMeshHex8(void)
   cellFields[2] = const_cast<double*>(_cellField2);
 } // constructor
 
-pylith::meshio::DataWriterVTKDataSubMeshHex8::~DataWriterVTKDataSubMeshHex8(void)
+pylith::meshio::DataWriterVTKDataMatMeshHex8::~DataWriterVTKDataMatMeshHex8(void)
 {}
 
 

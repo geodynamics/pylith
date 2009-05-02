@@ -10,51 +10,51 @@
 // ======================================================================
 //
 
-#include "DataWriterVTKDataSubMeshLine2.hh"
+#include "DataWriterVTKDataMatMeshLine2.hh"
 
 #include <assert.h> // USES assert()
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshLine2::_meshFilename = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshLine2::_meshFilename = 
   "data/line2.mesh";
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshLine2::_cellsLabel = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshLine2::_cellsLabel = 
   "material-id";
-const int pylith::meshio::DataWriterVTKDataSubMeshLine2::_labelId = 0;
+const int pylith::meshio::DataWriterVTKDataMatMeshLine2::_labelId = 0;
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshLine2::_faultLabel = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshLine2::_faultLabel = 
   "fault";
-const int pylith::meshio::DataWriterVTKDataSubMeshLine2::_faultId = 100;
+const int pylith::meshio::DataWriterVTKDataMatMeshLine2::_faultId = 100;
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshLine2::_timestepFilename = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshLine2::_timestepFilename = 
   "line2_sub.vtk";
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshLine2::_vertexFilename = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshLine2::_vertexFilename = 
   "line2_sub_vertex.vtk";
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshLine2::_cellFilename = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshLine2::_cellFilename = 
   "line2_sub_cell.vtk";
 
-const double pylith::meshio::DataWriterVTKDataSubMeshLine2::_time = 1.0;
+const double pylith::meshio::DataWriterVTKDataMatMeshLine2::_time = 1.0;
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshLine2::_timeFormat = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshLine2::_timeFormat = 
   "%3.1f";
 
-const int pylith::meshio::DataWriterVTKDataSubMeshLine2::_numVertexFields = 3;
-const int pylith::meshio::DataWriterVTKDataSubMeshLine2::_numVertices = 5;
+const int pylith::meshio::DataWriterVTKDataMatMeshLine2::_numVertexFields = 3;
+const int pylith::meshio::DataWriterVTKDataMatMeshLine2::_numVertices = 5;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
-pylith::meshio::DataWriterVTKDataSubMeshLine2::_vertexFields[] = {
+pylith::meshio::DataWriterVTKDataMatMeshLine2::_vertexFields[] = {
   { "displacements", topology::FieldBase::VECTOR, 1 },
   { "pressure", topology::FieldBase::SCALAR, 1 },
   { "other", topology::FieldBase::OTHER, 2 },
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshLine2::_vertexField0[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshLine2::_vertexField0[] = {
   1.1, 2.2, 3.3, 4.4, 5.5
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshLine2::_vertexField1[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshLine2::_vertexField1[] = {
   2.1, 3.2, 4.3, 5.4, 6.5
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshLine2::_vertexField2[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshLine2::_vertexField2[] = {
   1.2, 2.3, 
   3.4, 4.5,
   5.6, 6.7,
@@ -62,26 +62,26 @@ const double pylith::meshio::DataWriterVTKDataSubMeshLine2::_vertexField2[] = {
   9.1, 10.2
 };
 
-const int pylith::meshio::DataWriterVTKDataSubMeshLine2::_numCellFields = 3;
-const int pylith::meshio::DataWriterVTKDataSubMeshLine2::_numCells = 1;
+const int pylith::meshio::DataWriterVTKDataMatMeshLine2::_numCellFields = 3;
+const int pylith::meshio::DataWriterVTKDataMatMeshLine2::_numCells = 1;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
-pylith::meshio::DataWriterVTKDataSubMeshLine2::_cellFields[] = {
+pylith::meshio::DataWriterVTKDataMatMeshLine2::_cellFields[] = {
   { "traction", topology::FieldBase::VECTOR, 1 },
   { "pressure", topology::FieldBase::SCALAR, 1 },
   { "other", topology::FieldBase::TENSOR, 1 },
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshLine2::_cellField0[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshLine2::_cellField0[] = {
   1.1,
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshLine2::_cellField1[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshLine2::_cellField1[] = {
   2.1,
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshLine2::_cellField2[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshLine2::_cellField2[] = {
   1.2,
 };
 
-pylith::meshio::DataWriterVTKDataSubMeshLine2::DataWriterVTKDataSubMeshLine2(void)
+pylith::meshio::DataWriterVTKDataMatMeshLine2::DataWriterVTKDataMatMeshLine2(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
   cellsLabel = const_cast<char*>(_cellsLabel);
@@ -113,7 +113,7 @@ pylith::meshio::DataWriterVTKDataSubMeshLine2::DataWriterVTKDataSubMeshLine2(voi
   cellFields[2] = const_cast<double*>(_cellField2);
 } // constructor
 
-pylith::meshio::DataWriterVTKDataSubMeshLine2::~DataWriterVTKDataSubMeshLine2(void)
+pylith::meshio::DataWriterVTKDataMatMeshLine2::~DataWriterVTKDataMatMeshLine2(void)
 {}
 
 

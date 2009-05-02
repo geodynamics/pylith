@@ -24,7 +24,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMeshQuad4 )
 void
 pylith::meshio::TestDataWriterVTKSubMeshQuad4::setUp(void)
 { // setUp
-  TestDataWriterVTKMesh::setUp();
+  TestDataWriterVTKSubMesh::setUp();
   _data = new DataWriterVTKDataSubMeshQuad4;
   _initialize();
 } // setUp

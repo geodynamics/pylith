@@ -10,27 +10,27 @@
 // ======================================================================
 //
 
-#if !defined(pylith_meshio_datawritervtkdatasubmeshtet4_hh)
-#define pylith_meshio_datawritervtkdatasubmeshtet4_hh
+#if !defined(pylith_meshio_datawritervtkdatamatmeshline2_hh)
+#define pylith_meshio_datawritervtkdatamatmeshline2_hh
 
 #include "DataWriterVTKData.hh" // ISA DataWriterVTKData
 
 namespace pylith {
   namespace meshio {
-     class DataWriterVTKDataSubMeshTet4;
+     class DataWriterVTKDataMatMeshLine2;
   } // meshio
 } // pylith
 
-class pylith::meshio::DataWriterVTKDataSubMeshTet4 : public DataWriterVTKData
-{ // DataWriterVTKDataSubMeshTet4
+class pylith::meshio::DataWriterVTKDataMatMeshLine2 : public DataWriterVTKData
+{ // DataWriterVTKDataMatMeshLine2
 
 public: 
 
   /// Constructor
-  DataWriterVTKDataSubMeshTet4(void);
+  DataWriterVTKDataMatMeshLine2(void);
 
   /// Destructor
-  ~DataWriterVTKDataSubMeshTet4(void);
+  ~DataWriterVTKDataMatMeshLine2(void);
 
 private:
 
@@ -69,8 +69,8 @@ private:
   static const double _cellField2[]; ///< Values for cell field 2.
   //@}
 
-}; // DataWriterVTKDataSubMeshTet4
+}; // DataWriterVTKDataMatMeshLine2
 
-#endif // pylith_meshio_datawritervtkdatasubmeshtet4_hh
+#endif // pylith_meshio_datawritervtkdatamatmeshline2_hh
 
 // End of file

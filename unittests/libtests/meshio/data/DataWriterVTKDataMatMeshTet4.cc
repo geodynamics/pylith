@@ -10,45 +10,45 @@
 // ======================================================================
 //
 
-#include "DataWriterVTKDataSubMeshTet4.hh"
+#include "DataWriterVTKDataMatMeshTet4.hh"
 
 #include <assert.h> // USES assert()
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshTet4::_meshFilename = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshTet4::_meshFilename = 
   "data/tet4.mesh";
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshTet4::_cellsLabel = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshTet4::_cellsLabel = 
   "material-id";
-const int pylith::meshio::DataWriterVTKDataSubMeshTet4::_labelId = 1;
+const int pylith::meshio::DataWriterVTKDataMatMeshTet4::_labelId = 1;
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshTet4::_faultLabel = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshTet4::_faultLabel = 
   "fault";
-const int pylith::meshio::DataWriterVTKDataSubMeshTet4::_faultId = 100;
+const int pylith::meshio::DataWriterVTKDataMatMeshTet4::_faultId = 100;
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshTet4::_timestepFilename = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshTet4::_timestepFilename = 
   "tet4_sub.vtk";
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshTet4::_vertexFilename = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshTet4::_vertexFilename = 
   "tet4_sub_vertex.vtk";
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshTet4::_cellFilename = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshTet4::_cellFilename = 
   "tet4_sub_cell.vtk";
 
-const double pylith::meshio::DataWriterVTKDataSubMeshTet4::_time = 1.0;
+const double pylith::meshio::DataWriterVTKDataMatMeshTet4::_time = 1.0;
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshTet4::_timeFormat = 
+const char* pylith::meshio::DataWriterVTKDataMatMeshTet4::_timeFormat = 
   "%3.1f";
 
-const int pylith::meshio::DataWriterVTKDataSubMeshTet4::_numVertexFields = 3;
-const int pylith::meshio::DataWriterVTKDataSubMeshTet4::_numVertices = 11;
+const int pylith::meshio::DataWriterVTKDataMatMeshTet4::_numVertexFields = 3;
+const int pylith::meshio::DataWriterVTKDataMatMeshTet4::_numVertices = 11;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
-pylith::meshio::DataWriterVTKDataSubMeshTet4::_vertexFields[] = {
+pylith::meshio::DataWriterVTKDataMatMeshTet4::_vertexFields[] = {
   { "displacements", topology::FieldBase::VECTOR, 3 },
   { "pressure", topology::FieldBase::SCALAR, 1 },
   { "other", topology::FieldBase::OTHER, 2 },
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshTet4::_vertexField0[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshTet4::_vertexField0[] = {
   1.1, 2.2, 3.3,
   4.4, 5.5, 6.6,
   7.7, 8.8, 9.9,
@@ -61,10 +61,10 @@ const double pylith::meshio::DataWriterVTKDataSubMeshTet4::_vertexField0[] = {
   28.8, 29.9, 30.0,
   31.1, 32.2, 33.3,
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshTet4::_vertexField1[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshTet4::_vertexField1[] = {
   2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8, 10.9, 11.0, 12.1
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshTet4::_vertexField2[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshTet4::_vertexField2[] = {
   1.2, 2.3,
   3.4, 4.5,
   5.6, 6.7,
@@ -78,28 +78,28 @@ const double pylith::meshio::DataWriterVTKDataSubMeshTet4::_vertexField2[] = {
   21.2, 22.3
 };
 
-const int pylith::meshio::DataWriterVTKDataSubMeshTet4::_numCellFields = 3;
-const int pylith::meshio::DataWriterVTKDataSubMeshTet4::_numCells = 2;
+const int pylith::meshio::DataWriterVTKDataMatMeshTet4::_numCellFields = 3;
+const int pylith::meshio::DataWriterVTKDataMatMeshTet4::_numCells = 2;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
-pylith::meshio::DataWriterVTKDataSubMeshTet4::_cellFields[] = {
+pylith::meshio::DataWriterVTKDataMatMeshTet4::_cellFields[] = {
   { "traction", topology::FieldBase::VECTOR, 3 },
   { "pressure", topology::FieldBase::SCALAR, 1 },
   { "other", topology::FieldBase::TENSOR, 6 },
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshTet4::_cellField0[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshTet4::_cellField0[] = {
   1.1, 2.2, 3.3,
   4.4, 5.5, 6.6,
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshTet4::_cellField1[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshTet4::_cellField1[] = {
   2.1, 3.2
 };
-const double pylith::meshio::DataWriterVTKDataSubMeshTet4::_cellField2[] = {
+const double pylith::meshio::DataWriterVTKDataMatMeshTet4::_cellField2[] = {
   1.2, 2.3, 3.4, 4.5, 5.6, 6.7,
   7.8, 8.9, 9.0, 10.1, 11.2, 12.3,
 };
 
-pylith::meshio::DataWriterVTKDataSubMeshTet4::DataWriterVTKDataSubMeshTet4(void)
+pylith::meshio::DataWriterVTKDataMatMeshTet4::DataWriterVTKDataMatMeshTet4(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
   cellsLabel = const_cast<char*>(_cellsLabel);
@@ -131,7 +131,7 @@ pylith::meshio::DataWriterVTKDataSubMeshTet4::DataWriterVTKDataSubMeshTet4(void)
   cellFields[2] = const_cast<double*>(_cellField2);
 } // constructor
 
-pylith::meshio::DataWriterVTKDataSubMeshTet4::~DataWriterVTKDataSubMeshTet4(void)
+pylith::meshio::DataWriterVTKDataMatMeshTet4::~DataWriterVTKDataMatMeshTet4(void)
 {}
 
 

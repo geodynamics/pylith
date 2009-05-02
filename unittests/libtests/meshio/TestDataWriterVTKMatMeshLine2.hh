@@ -11,31 +11,31 @@
 //
 
 /**
- * @file unittests/libtests/meshio/TestDataWriterVTKSubMeshHex8.hh
+ * @file unittests/libtests/meshio/TestDataWriterVTKMatMeshLine2.hh
  *
- * @brief C++ TestDataWriterVTKSubMeshHex8 object
+ * @brief C++ TestDataWriterVTKMatMeshLine2 object
  *
- * C++ unit testing for DataWriterVTKSubMeshHex8.
+ * C++ unit testing for DataWriterVTKMatMeshLine2.
  */
 
-#if !defined(pylith_meshio_testdatawritervtksubmeshhex8_hh)
-#define pylith_meshio_testdatawritervtksubmeshhex8_hh
+#if !defined(pylith_meshio_testdatawritervtksubmeshline2_hh)
+#define pylith_meshio_testdatawritervtksubmeshline2_hh
 
-#include "TestDataWriterVTKSubMesh.hh"
+#include "TestDataWriterVTKMesh.hh"
 
 /// Namespace for pylith package
 namespace pylith {
   namespace meshio {
-    class TestDataWriterVTKSubMeshHex8;
+    class TestDataWriterVTKMatMeshLine2;
   } // meshio
 } // pylith
 
 /// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKSubMeshHex8 : public TestDataWriterVTKSubMesh
-{ // class TestDataWriterVTKSubMeshHex8
+class pylith::meshio::TestDataWriterVTKMatMeshLine2 : public TestDataWriterVTKMesh
+{ // class TestDataWriterVTKMatMeshLine2
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestDataWriterVTKSubMeshHex8 );
+  CPPUNIT_TEST_SUITE( TestDataWriterVTKMatMeshLine2 );
 
   CPPUNIT_TEST( testTimeStep );
   CPPUNIT_TEST( testWriteVertexField );
@@ -49,9 +49,9 @@ public :
   /// Setup testing data.
   void setUp(void);
 
-}; // class TestDataWriterVTKSubMeshHex8
+}; // class TestDataWriterVTKMatMeshLine2
 
-#endif // pylith_meshio_testdatawritervtksubmeshhex8_hh
+#endif // pylith_meshio_testdatawritervtksubmeshline2_hh
 
 
 // End of file 

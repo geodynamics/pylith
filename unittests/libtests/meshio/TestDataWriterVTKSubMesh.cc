@@ -214,6 +214,7 @@ pylith::meshio::TestDataWriterVTKSubMesh::_initialize(void)
     fault.adjustTopology(_mesh, _flipFault);
   } // if
 
+  CPPUNIT_ASSERT(0 != _data->bcLabel);
   delete _submesh; _submesh = new topology::SubMesh(*_mesh, _data->bcLabel);
   const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = _mesh->sieveMesh();
   assert(!sieveMesh.isNull());

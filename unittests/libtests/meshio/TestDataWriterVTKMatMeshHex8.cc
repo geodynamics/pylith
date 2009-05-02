@@ -12,20 +12,22 @@
 
 #include <portinfo>
 
-#include "TestDataWriterVTKSubMeshTet4.hh" // Implementation of class methods
+#include "TestDataWriterVTKMatMeshHex8.hh" // Implementation of class methods
 
-#include "data/DataWriterVTKDataSubMeshTet4.hh" // USES DataWriterVTKDataMeshTet4
+#include "data/DataWriterVTKDataMatMeshHex8.hh" // USES DataWriterVTKDataMatMeshHex8
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMeshTet4 );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKMatMeshHex8 );
 
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::meshio::TestDataWriterVTKSubMeshTet4::setUp(void)
+pylith::meshio::TestDataWriterVTKMatMeshHex8::setUp(void)
 { // setUp
-  TestDataWriterVTKSubMesh::setUp();
-  _data = new DataWriterVTKDataSubMeshTet4;
+  TestDataWriterVTKMesh::setUp();
+  _data = new DataWriterVTKDataMatMeshHex8;
+  _flipFault = true;
+
   _initialize();
 } // setUp
 

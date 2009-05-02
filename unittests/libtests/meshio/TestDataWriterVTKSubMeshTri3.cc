@@ -24,7 +24,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMeshTri3 );
 void
 pylith::meshio::TestDataWriterVTKSubMeshTri3::setUp(void)
 { // setUp
-  TestDataWriterVTKMesh::setUp();
+  TestDataWriterVTKSubMesh::setUp();
   _data = new DataWriterVTKDataSubMeshTri3;
   _flipFault = true;
 
