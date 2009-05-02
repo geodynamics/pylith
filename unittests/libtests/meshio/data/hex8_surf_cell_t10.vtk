@@ -2,17 +2,15 @@
 Simplicial Mesh Example
 ASCII
 DATASET UNSTRUCTURED_GRID
-POINTS 8 double
+POINTS 6 double
 -1 -1 1
 -1 1 1
 0 -1 1
 0 1 1
 1 -1 1
 1 1 1
-0 -1 1
-0 1 1
 CELLS 2 10
-4  6 7 1 0
+4  2 3 1 0
 4  4 5 3 2
 CELL_TYPES 2
 9
