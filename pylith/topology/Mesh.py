@@ -24,7 +24,7 @@ class Mesh(ModuleMesh):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, comm=None, dim=None):
+  def __init__(self, dim=None, comm=None):
     """
     Constructor.
     """
@@ -33,7 +33,7 @@ class Mesh(ModuleMesh):
     elif comm is None:
       ModuleMesh.__init__(self, dim)
     else:
-      ModuleMesh.__init__(self, dim, comm.handle)
+      ModuleMesh.__init__(self, dim, comm)
     return
 
 

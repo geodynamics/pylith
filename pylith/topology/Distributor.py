@@ -73,7 +73,7 @@ class Distributor(PetscComponent, ModuleDistributor):
     self._logger.eventBegin(logEvent)
 
     from pylith.topology.Mesh import Mesh
-    newMesh = Mesh()
+    newMesh = Mesh(mesh.dimension())
     ModuleDistributor.distribute(newMesh, mesh, self.partitioner)
 
     if self.debug:
