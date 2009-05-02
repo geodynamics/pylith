@@ -60,6 +60,21 @@ dist_noinst_DATA = \
 	hex8_mat_t10.vtk \
 	hex8_mat_vertex_t10.vtk \
 	hex8_mat_cell_t10.vtk \
+	line2_surf_t10.vtk \
+	line2_surf_vertex_t10.vtk \
+	line2_surf_cell_t10.vtk \
+	tri3_surf_t10.vtk \
+	tri3_surf_vertex_t10.vtk \
+	tri3_surf_cell_t10.vtk \
+	quad4_surf_t10.vtk \
+	quad4_surf_vertex_t10.vtk \
+	quad4_surf_cell_t10.vtk \
+	tet4_surf_t10.vtk \
+	tet4_surf_vertex_t10.vtk \
+	tet4_surf_cell_t10.vtk \
+	hex8_surf_t10.vtk \
+	hex8_surf_vertex_t10.vtk \
+	hex8_surf_cell_t10.vtk \
 	tri3_fault_t10.vtk \
 	tri3_fault_vertex_t10.vtk \
 	tri3_fault_cell_t10.vtk \

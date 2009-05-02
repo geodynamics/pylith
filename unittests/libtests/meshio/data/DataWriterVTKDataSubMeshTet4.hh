@@ -10,8 +10,8 @@
 // ======================================================================
 //
 
-#if !defined(pylith_meshio_datawritervtkdatabcmeshtet4_hh)
-#define pylith_meshio_datawritervtkdatabcmeshtet4_hh
+#if !defined(pylith_meshio_datawritervtkdatasubmeshtet4_hh)
+#define pylith_meshio_datawritervtkdatasubmeshtet4_hh
 
 #include "DataWriterVTKData.hh" // ISA DataWriterVTKData
 
@@ -70,6 +70,6 @@ private:
 
 }; // DataWriterVTKDataSubMeshTet4
 
-#endif // pylith_meshio_datawritervtkdatabcmeshtet4_hh
+#endif // pylith_meshio_datawritervtkdatasubmeshtet4_hh
 
 // End of file

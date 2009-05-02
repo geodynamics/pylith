@@ -239,11 +239,11 @@ pylith::meshio::TestDataWriterVTKSubMesh::_createVertexFields(
   try {
     const int nfields = _data->numVertexFields;
 
-    const ALE::Obj<topology::SubMesh::SieveMesh>& sieveSubMesh = 
-      _submesh->sieveMesh();
-    CPPUNIT_ASSERT(!sieveSubMesh.isNull());
+    const ALE::Obj<topology::SubMesh::SieveMesh>& sieveMesh = 
+      _mesh->sieveMesh();
+    CPPUNIT_ASSERT(!sieveMesh.isNull());
     const ALE::Obj<topology::SubMesh::SieveMesh::label_sequence>& vertices =
-      sieveSubMesh->depthStratum(0);
+      sieveMesh->depthStratum(0);
     CPPUNIT_ASSERT(!vertices.isNull());
     const topology::SubMesh::SieveMesh::label_sequence::iterator verticesEnd =
       vertices->end();

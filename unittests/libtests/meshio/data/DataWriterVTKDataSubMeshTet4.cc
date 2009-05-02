@@ -20,18 +20,17 @@ const char* pylith::meshio::DataWriterVTKDataSubMeshTet4::_meshFilename =
 const char* pylith::meshio::DataWriterVTKDataSubMeshTet4::_bcLabel = 
   "boundary";
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshTet4::_faultLabel = 
-  "fault";
-const int pylith::meshio::DataWriterVTKDataSubMeshTet4::_faultId = 100;
+const char* pylith::meshio::DataWriterVTKDataSubMeshTet4::_faultLabel =  0;
+const int pylith::meshio::DataWriterVTKDataSubMeshTet4::_faultId = 0;
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshTet4::_timestepFilename = 
-  "tet4_bc.vtk";
+  "tet4_surf.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshTet4::_vertexFilename = 
-  "tet4_bc_vertex.vtk";
+  "tet4_surf_vertex.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshTet4::_cellFilename = 
-  "tet4_bc_cell.vtk";
+  "tet4_surf_cell.vtk";
 
 const double pylith::meshio::DataWriterVTKDataSubMeshTet4::_time = 1.0;
 
@@ -39,7 +38,7 @@ const char* pylith::meshio::DataWriterVTKDataSubMeshTet4::_timeFormat =
   "%3.1f";
 
 const int pylith::meshio::DataWriterVTKDataSubMeshTet4::_numVertexFields = 3;
-const int pylith::meshio::DataWriterVTKDataSubMeshTet4::_numVertices = 6;
+const int pylith::meshio::DataWriterVTKDataSubMeshTet4::_numVertices = 5;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataSubMeshTet4::_vertexFields[] = {
@@ -53,10 +52,9 @@ const double pylith::meshio::DataWriterVTKDataSubMeshTet4::_vertexField0[] = {
   7.7, 8.8, 9.9,
   10.0, 11.1, 12.2,
   13.3, 14.4, 15.5,
-  16.6, 17.7, 18.8,
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshTet4::_vertexField1[] = {
-  2.1, 3.2, 4.3, 5.4, 6.5, 7.6,
+  2.1, 3.2, 4.3, 5.4, 6.5,
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshTet4::_vertexField2[] = {
   1.2, 2.3,
@@ -64,7 +62,6 @@ const double pylith::meshio::DataWriterVTKDataSubMeshTet4::_vertexField2[] = {
   5.6, 6.7,
   7.8, 8.9,
   9.0, 10.1,
-  11.2, 12.3,
 };
 
 const int pylith::meshio::DataWriterVTKDataSubMeshTet4::_numCellFields = 3;

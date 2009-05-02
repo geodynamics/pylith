@@ -44,6 +44,11 @@ testmeshio_SOURCES = \
 	TestDataWriterVTKBCMeshTet4.cc \
 	TestDataWriterVTKBCMeshHex8.cc \
 	TestDataWriterVTKSubMesh.cc \
+	TestDataWriterVTKSubMeshLine2.cc \
+	TestDataWriterVTKSubMeshTri3.cc \
+	TestDataWriterVTKSubMeshQuad4.cc \
+	TestDataWriterVTKSubMeshTet4.cc \
+	TestDataWriterVTKSubMeshHex8.cc \
 	TestOutputManager.cc \
 	TestOutputSolnSubset.cc \
 	TestDataWriterVTKFaultMesh.cc \
@@ -52,12 +57,6 @@ testmeshio_SOURCES = \
 	TestDataWriterVTKFaultMeshTet4.cc \
 	TestDataWriterVTKFaultMeshHex8.cc \
 	test_meshio.cc
-
-#	TestDataWriterVTKSubMeshLine2.cc \
-#	TestDataWriterVTKSubMeshTri3.cc \
-#	TestDataWriterVTKSubMeshQuad4.cc \
-#	TestDataWriterVTKSubMeshTet4.cc \
-#	TestDataWriterVTKSubMeshHex8.cc 
 
 
 noinst_HEADERS = \
@@ -110,6 +109,11 @@ testmeshio_SOURCES += \
 	data/DataWriterVTKDataMatMeshQuad4.cc \
 	data/DataWriterVTKDataMatMeshTet4.cc \
 	data/DataWriterVTKDataMatMeshHex8.cc \
+	data/DataWriterVTKDataSubMeshLine2.cc \
+	data/DataWriterVTKDataSubMeshTri3.cc \
+	data/DataWriterVTKDataSubMeshQuad4.cc \
+	data/DataWriterVTKDataSubMeshTet4.cc \
+	data/DataWriterVTKDataSubMeshHex8.cc \
 	data/DataWriterVTKDataFaultMeshTri3.cc \
 	data/DataWriterVTKDataFaultMeshQuad4.cc \
 	data/DataWriterVTKDataFaultMeshTet4.cc \
@@ -132,11 +136,6 @@ testmeshio_SOURCES += \
 	data/MeshDataCubitHex.cc \
 	data/MeshDataLagritTet.cc
 
-#	data/DataWriterVTKDataSubMeshLine2.cc \
-#	data/DataWriterVTKDataSubMeshTri3.cc \
-#	data/DataWriterVTKDataSubMeshQuad4.cc \
-#	data/DataWriterVTKDataSubMeshTet4.cc \
-#	data/DataWriterVTKDataSubMeshHex8.cc 
 
 noinst_HEADERS += \
 	data/DataWriterVTKData.hh \
@@ -150,6 +149,11 @@ noinst_HEADERS += \
 	data/DataWriterVTKDataMatMeshQuad4.hh \
 	data/DataWriterVTKDataMatMeshTet4.hh \
 	data/DataWriterVTKDataMatMeshHex8.hh \
+	data/DataWriterVTKDataSubMeshLine2.hh \
+	data/DataWriterVTKDataSubMeshTri3.hh \
+	data/DataWriterVTKDataSubMeshQuad4.hh \
+	data/DataWriterVTKDataSubMeshTet4.hh \
+	data/DataWriterVTKDataSubMeshHex8.hh \
 	data/DataWriterVTKDataFaultMeshTri3.hh \
 	data/DataWriterVTKDataFaultMeshQuad4.hh \
 	data/DataWriterVTKDataFaultMeshTet4.hh \
@@ -172,12 +176,6 @@ noinst_HEADERS += \
 	data/MeshDataCubitHex.hh \
 	data/MeshDataLagritTet.hh
 
-
-#	data/DataWriterVTKDataSubMeshLine2.hh \
-#	data/DataWriterVTKDataSubMeshTri3.hh \
-#	data/DataWriterVTKDataSubMeshQuad4.hh \
-#	data/DataWriterVTKDataSubMeshTet4.hh \
-#	data/DataWriterVTKDataSubMeshHex8.hh 
 
 AM_CPPFLAGS = \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE) \
@@ -236,6 +234,21 @@ noinst_tmp = \
 	hex8_mat_t10.vtk \
 	hex8_mat_vertex_t10.vtk \
 	hex8_mat_cell_t10.vtk \
+	line2_surf_t10.vtk \
+	line2_surf_vertex_t10.vtk \
+	line2_surf_cell_t10.vtk \
+	tri3_surf_t10.vtk \
+	tri3_surf_vertex_t10.vtk \
+	tri3_surf_cell_t10.vtk \
+	quad4_surf_t10.vtk \
+	quad4_surf_vertex_t10.vtk \
+	quad4_surf_cell_t10.vtk \
+	tet4_surf_t10.vtk \
+	tet4_surf_vertex_t10.vtk \
+	tet4_surf_cell_t10.vtk \
+	hex8_surf_t10.vtk \
+	hex8_surf_vertex_t10.vtk \
+	hex8_surf_cell_t10.vtk \
 	tri3_fault_t10.vtk \
 	tri3_fault_vertex_t10.vtk \
 	tri3_fault_cell_t10.vtk \

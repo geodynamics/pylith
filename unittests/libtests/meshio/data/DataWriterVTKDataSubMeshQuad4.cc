@@ -21,13 +21,13 @@ const char* pylith::meshio::DataWriterVTKDataSubMeshQuad4::_bcLabel =
   "bc3";
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshQuad4::_timestepFilename = 
-  "quad4_bc.vtk";
+  "quad4_surf.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshQuad4::_vertexFilename = 
-  "quad4_bc_vertex.vtk";
+  "quad4_surf_vertex.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshQuad4::_cellFilename = 
-  "quad4_bc_cell.vtk";
+  "quad4_surf_cell.vtk";
 
 const double pylith::meshio::DataWriterVTKDataSubMeshQuad4::_time = 1.0;
 
@@ -35,7 +35,7 @@ const char* pylith::meshio::DataWriterVTKDataSubMeshQuad4::_timeFormat =
   "%3.1f";
 
 const int pylith::meshio::DataWriterVTKDataSubMeshQuad4::_numVertexFields = 3;
-const int pylith::meshio::DataWriterVTKDataSubMeshQuad4::_numVertices = 3;
+const int pylith::meshio::DataWriterVTKDataSubMeshQuad4::_numVertices = 6;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataSubMeshQuad4::_vertexFields[] = {
@@ -47,14 +47,20 @@ const double pylith::meshio::DataWriterVTKDataSubMeshQuad4::_vertexField0[] = {
   1.1, 2.2,
   3.3, 4.4,
   5.5, 6.6,
+  7.7, 8.8,
+  9.9, 10.0,
+  11.1, 12.2,
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshQuad4::_vertexField1[] = {
-  2.1, 3.2, 4.3,
+  2.1, 3.2, 4.3, 5.4, 6.5, 7.6,
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshQuad4::_vertexField2[] = {
   1.2, 2.3,
   3.4, 4.5,
   5.6, 6.7,
+  7.8, 8.9,
+  9.1, 10.2,
+  11.3, 12.4,
 };
 
 const int pylith::meshio::DataWriterVTKDataSubMeshQuad4::_numCellFields = 3;
