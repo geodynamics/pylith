@@ -26,13 +26,13 @@ const char* pylith::meshio::DataWriterVTKDataMatMeshLine2::_faultLabel =
 const int pylith::meshio::DataWriterVTKDataMatMeshLine2::_faultId = 100;
 
 const char* pylith::meshio::DataWriterVTKDataMatMeshLine2::_timestepFilename = 
-  "line2_sub.vtk";
+  "line2_mat.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataMatMeshLine2::_vertexFilename = 
-  "line2_sub_vertex.vtk";
+  "line2_mat_vertex.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataMatMeshLine2::_cellFilename = 
-  "line2_sub_cell.vtk";
+  "line2_mat_cell.vtk";
 
 const double pylith::meshio::DataWriterVTKDataMatMeshLine2::_time = 1.0;
 

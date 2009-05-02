@@ -221,21 +221,21 @@ noinst_tmp = \
 	hex8_t10.vtk \
 	hex8_vertex_t10.vtk \
 	hex8_cell_t10.vtk \
-	line2_sub_t10.vtk \
-	line2_sub_vertex_t10.vtk \
-	line2_sub_cell_t10.vtk \
-	tri3_sub_t10.vtk \
-	tri3_sub_vertex_t10.vtk \
-	tri3_sub_cell_t10.vtk \
-	quad4_sub_t10.vtk \
-	quad4_sub_vertex_t10.vtk \
-	quad4_sub_cell_t10.vtk \
-	tet4_sub_t10.vtk \
-	tet4_sub_vertex_t10.vtk \
-	tet4_sub_cell_t10.vtk \
-	hex8_sub_t10.vtk \
-	hex8_sub_vertex_t10.vtk \
-	hex8_sub_cell_t10.vtk \
+	line2_mat_t10.vtk \
+	line2_mat_vertex_t10.vtk \
+	line2_mat_cell_t10.vtk \
+	tri3_mat_t10.vtk \
+	tri3_mat_vertex_t10.vtk \
+	tri3_mat_cell_t10.vtk \
+	quad4_mat_t10.vtk \
+	quad4_mat_vertex_t10.vtk \
+	quad4_mat_cell_t10.vtk \
+	tet4_mat_t10.vtk \
+	tet4_mat_vertex_t10.vtk \
+	tet4_mat_cell_t10.vtk \
+	hex8_mat_t10.vtk \
+	hex8_mat_vertex_t10.vtk \
+	hex8_mat_cell_t10.vtk \
 	tri3_fault_t10.vtk \
 	tri3_fault_vertex_t10.vtk \
 	tri3_fault_cell_t10.vtk \

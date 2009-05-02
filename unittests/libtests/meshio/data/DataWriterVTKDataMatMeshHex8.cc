@@ -26,13 +26,13 @@ const char* pylith::meshio::DataWriterVTKDataMatMeshHex8::_faultLabel =
 const int pylith::meshio::DataWriterVTKDataMatMeshHex8::_faultId = 100;
 
 const char* pylith::meshio::DataWriterVTKDataMatMeshHex8::_timestepFilename = 
-  "hex8_sub.vtk";
+  "hex8_mat.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexFilename = 
-  "hex8_sub_vertex.vtk";
+  "hex8_mat_vertex.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataMatMeshHex8::_cellFilename = 
-  "hex8_sub_cell.vtk";
+  "hex8_mat_cell.vtk";
 
 const double pylith::meshio::DataWriterVTKDataMatMeshHex8::_time = 1.0;
 

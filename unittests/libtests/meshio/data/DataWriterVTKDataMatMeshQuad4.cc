@@ -22,13 +22,13 @@ const char* pylith::meshio::DataWriterVTKDataMatMeshQuad4::_cellsLabel =
 const int pylith::meshio::DataWriterVTKDataMatMeshQuad4::_labelId = 2;
 
 const char* pylith::meshio::DataWriterVTKDataMatMeshQuad4::_timestepFilename = 
-  "quad4_sub.vtk";
+  "quad4_mat.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataMatMeshQuad4::_vertexFilename = 
-  "quad4_sub_vertex.vtk";
+  "quad4_mat_vertex.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataMatMeshQuad4::_cellFilename = 
-  "quad4_sub_cell.vtk";
+  "quad4_mat_cell.vtk";
 
 const double pylith::meshio::DataWriterVTKDataMatMeshQuad4::_time = 1.0;
 

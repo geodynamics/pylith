@@ -26,13 +26,13 @@ const char* pylith::meshio::DataWriterVTKDataMatMeshTet4::_faultLabel =
 const int pylith::meshio::DataWriterVTKDataMatMeshTet4::_faultId = 100;
 
 const char* pylith::meshio::DataWriterVTKDataMatMeshTet4::_timestepFilename = 
-  "tet4_sub.vtk";
+  "tet4_mat.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataMatMeshTet4::_vertexFilename = 
-  "tet4_sub_vertex.vtk";
+  "tet4_mat_vertex.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataMatMeshTet4::_cellFilename = 
-  "tet4_sub_cell.vtk";
+  "tet4_mat_cell.vtk";
 
 const double pylith::meshio::DataWriterVTKDataMatMeshTet4::_time = 1.0;
 

@@ -26,13 +26,13 @@ const char* pylith::meshio::DataWriterVTKDataMatMeshTri3::_faultLabel =
 const int pylith::meshio::DataWriterVTKDataMatMeshTri3::_faultId = 100;
 
 const char* pylith::meshio::DataWriterVTKDataMatMeshTri3::_timestepFilename = 
-  "tri3_sub.vtk";
+  "tri3_mat.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataMatMeshTri3::_vertexFilename = 
-  "tri3_sub_vertex.vtk";
+  "tri3_mat_vertex.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataMatMeshTri3::_cellFilename = 
-  "tri3_sub_cell.vtk";
+  "tri3_mat_cell.vtk";
 
 const double pylith::meshio::DataWriterVTKDataMatMeshTri3::_time = 1.0;
 
