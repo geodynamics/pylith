@@ -33,7 +33,7 @@ class Mesh(ModuleMesh):
     elif comm is None:
       ModuleMesh.__init__(self, dim)
     else:
-      ModuleMesh.__init__(self, dim, comm)
+      ModuleMesh.__init__(self, dim, comm.handle)
     return
 
 

@@ -237,7 +237,8 @@ class Formulation(PetscComponent, ModuleFormulation):
     logEvent = "%stimestep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    dt = self.timeStep.timeStep(self.integratorsMesh + self.integratorsSubMesh)
+    dt = self.timeStep.timeStep(self.mesh,
+                                self.integratorsMesh + self.integratorsSubMesh)
 
     self._logger.eventEnd(logEvent)
     return dt

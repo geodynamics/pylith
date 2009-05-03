@@ -100,7 +100,8 @@ class TestTimeStep(unittest.TestCase):
     tstep._configure()
 
     integrators = None
-    self.assertEqual(0.0, tstep.timeStep(integrators))
+    mesh = None
+    self.assertEqual(0.0, tstep.timeStep(mesh, integrators))
     return
 
 

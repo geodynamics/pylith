@@ -43,8 +43,9 @@ void
 pylith::feassemble::TestIntegrator::testStableTimeStep(void)
 { // testStableTimeStep
   ElasticityExplicit integrator;
+  topology::Mesh mesh;
 
-  CPPUNIT_ASSERT_EQUAL(pylith::PYLITH_MAXDOUBLE, integrator.stableTimeStep());
+  CPPUNIT_ASSERT_EQUAL(pylith::PYLITH_MAXDOUBLE, integrator.stableTimeStep(mesh));
 } // testStableTimeStep
 
 // ----------------------------------------------------------------------

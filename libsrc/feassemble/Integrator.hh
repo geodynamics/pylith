@@ -81,10 +81,11 @@ public :
    *
    * Default is MAXFLOAT (or 1.0e+30 if MAXFLOAT is not defined in math.h).
    *
+   * @param mesh Finite-element mesh.
    * @returns Time step
    */
   virtual
-  double stableTimeStep(void) const;
+  double stableTimeStep(const topology::Mesh& mesh);
 
   /** Check whether Jacobian needs to be recomputed.
    *

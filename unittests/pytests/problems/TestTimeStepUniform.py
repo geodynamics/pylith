@@ -48,10 +48,13 @@ class TestTimeStepUniform(unittest.TestCase):
     tstep = TimeStepUniform()
     tstep._configure()
 
-    self.assertEqual(1.0*second, tstep.timeStep(0.5*second))
+    integrators = None
+    mesh = None
+
+    self.assertEqual(1.0*second, tstep.timeStep(mesh, integrators))
 
     tstep.dt = 1.0e-4*second
-    self.assertEqual(1.0e-4*second, tstep.timeStep(0.5*second))
+    self.assertEqual(1.0e-4*second, tstep.timeStep(mesh, integrators))
 
     return
 

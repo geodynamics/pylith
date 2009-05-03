@@ -70,10 +70,10 @@ pylith::feassemble::ElasticityImplicit::timeStep(const double dt)
 // ----------------------------------------------------------------------
 // Get stable time step for advancing from time t to time t+dt.
 double
-pylith::feassemble::ElasticityImplicit::stableTimeStep(void) const
+pylith::feassemble::ElasticityImplicit::stableTimeStep(const topology::Mesh& mesh) const
 { // stableTimeStep
   assert(0 != _material);
-  return _material->stableTimeStepImplicit();
+  return _material->stableTimeStepImplicit(mesh);
 } // stableTimeStep
 
 // ----------------------------------------------------------------------

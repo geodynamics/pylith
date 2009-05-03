@@ -232,7 +232,7 @@ pylith::materials::ElasticMaterial::updateStateVars(
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
 double
-pylith::materials::ElasticMaterial::stableTimeStepImplicit(void) const
+pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh& mesh)
 { // stableTimeStepImplicit
   const int numQuadPts = _numQuadPts;
   const int numPropsQuadPt = _numPropsQuadPt;
@@ -245,14 +245,30 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(void) const
   assert(_initialStrainCell.size() == numQuadPts*_tensorSize);
 
   double dtStable = pylith::PYLITH_MAXDOUBLE;
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    const double dt = 
-      _stableTimeStepImplicit(&_propertiesCell[iQuad*numPropsQuadPt],
-			      numPropsQuadPt,
-			      &_stateVarsCell[iQuad*numVarsQuadPt],
-			      numVarsQuadPt);
-    if (dt < dtStable)
-      dtStable = dt;
+
+  // Get cells associated with material
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", id());
+  assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+       c_iter != cellsEnd;
+       ++c_iter) {
+    retrievePropsAndVars(*c_iter);
+
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      const double dt = 
+	_stableTimeStepImplicit(&_propertiesCell[iQuad*numPropsQuadPt],
+				numPropsQuadPt,
+				&_stateVarsCell[iQuad*numVarsQuadPt],
+				numVarsQuadPt);
+      if (dt < dtStable)
+	dtStable = dt;
+    } // for
   } // for
   
   return dtStable;

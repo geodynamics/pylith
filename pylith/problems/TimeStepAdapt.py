@@ -104,17 +104,17 @@ class TimeStepAdapt(TimeStep):
     Get number of total time steps (or best guess if adaptive).
     """
     # Guess using maximum time step
-    nsteps = 1.0 + int(self.totalTime / self.maxDt)
+    nsteps = int(1.0 + self.totalTime / self.maxDt)
     return nsteps
 
 
-  def timeStep(self, integrators):
+  def timeStep(self, mesh, integrators):
     """
     Adjust stable time step for advancing forward in time.
     """
     dtStable = 1.0e+30
     for integrator in integrators:
-      dt = integrator.stableTimeStep()
+      dt = integrator.stableTimeStep(mesh)
       if dt < dtStable:
         dtStable = dt
     

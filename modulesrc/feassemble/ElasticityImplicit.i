@@ -40,9 +40,10 @@ namespace pylith {
        *
        * Default is current time step.
        *
+       * @param mesh Finite-element mesh.
        * @returns Time step
        */
-      double stableTimeStep(void) const;
+      double stableTimeStep(const pylith::topology::Mesh& mesh);
       
       /** Set flag for setting constraints for total field solution or
        *  incremental field solution.

@@ -165,10 +165,11 @@ public :
    *
    * Default is MAXFLOAT (or 1.0e+30 if MAXFLOAT is not defined in math.h).
    *
+   * @param mesh Finite-element mesh.
    * @returns Time step
    */
   virtual
-  double stableTimeStepImplicit(void) const;
+  double stableTimeStepImplicit(const topology::Mesh& mesh);
 
   /** Set whether elastic or inelastic constitutive relations are used.
    *

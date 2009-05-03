@@ -86,17 +86,6 @@ pylith::feassemble::TestElasticityExplicit::testTimeStep(void)
 } // testTimeStep
 
 // ----------------------------------------------------------------------
-// Test StableTimeStep().
-void
-pylith::feassemble::TestElasticityExplicit::testStableTimeStep(void)
-{ // testStableTimeStep
-  ElasticityExplicit integrator;
-
-  const double stableTimeStep = integrator.stableTimeStep();
-  CPPUNIT_ASSERT_EQUAL(1.0e+30, stableTimeStep);
-} // testStableTimeStep
-
-// ----------------------------------------------------------------------
 // Test material().
 void
 pylith::feassemble::TestElasticityExplicit::testMaterial(void)
@@ -273,6 +262,20 @@ pylith::feassemble::TestElasticityExplicit::testUpdateStateVars(void)
   const double t = 1.0;
   integrator.updateStateVars(t, &fields);
 } // testUpdateStateVars
+
+// ----------------------------------------------------------------------
+// Test StableTimeStep().
+void
+pylith::feassemble::TestElasticityExplicit::testStableTimeStep(void)
+{ // testStableTimeStep
+  topology::Mesh mesh;
+  ElasticityExplicit integrator;
+  topology::SolutionFields fields(mesh);
+  _initialize(&mesh, &integrator, &fields);
+
+  const double stableTimeStep = integrator.stableTimeStep(mesh);
+  CPPUNIT_ASSERT_EQUAL(1.0e+30, stableTimeStep);
+} // testStableTimeStep
 
 // ----------------------------------------------------------------------
 // Initialize elasticity integrator.

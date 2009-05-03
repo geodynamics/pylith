@@ -147,7 +147,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     (mesh, fault, fields) = self._initialize()
 
-    self.assertEqual(1.0e+30, fault.stableTimeStep())
+    self.assertEqual(1.0e+30, fault.stableTimeStep(mesh))
     return
 
   

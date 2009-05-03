@@ -377,7 +377,7 @@ pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
   SieveMesh::point_type cell = *cells->begin();
 
   material.retrievePropsAndVars(cell);
-  const double dt = material.stableTimeStepImplicit();
+  const double dt = material.stableTimeStepImplicit(mesh);
 
   const double tolerance = 1.0e-06;
   const double dtE = data.dtStableImplicit;

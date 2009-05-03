@@ -53,12 +53,6 @@ class TestElasticStrain1D(unittest.TestCase):
     return
 
 
-  def testStableTimeStepImplicit(self):
-    maxfloat = 1.0e+30
-    self.assertEqual(maxfloat, self.material.stableTimeStepImplicit())
-    return
-
-
   def testTensorSize(self):
     self.assertEqual(1, self.material.tensorSize())
     return

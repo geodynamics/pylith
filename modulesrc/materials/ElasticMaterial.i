@@ -69,7 +69,7 @@ namespace pylith {
        * @returns Time step
        */
       virtual
-      double stableTimeStepImplicit(void) const;
+      double stableTimeStepImplicit(const pylith::topology::Mesh& mesh);
 
       /** Set whether elastic or inelastic constitutive relations are used.
        *

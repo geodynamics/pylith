@@ -53,12 +53,6 @@ class TestElasticIsotropic3D(unittest.TestCase):
     return
 
 
-  def testStableTimeStepImplicit(self):
-    maxfloat = 1.0e+30
-    self.assertEqual(maxfloat, self.material.stableTimeStepImplicit())
-    return
-
-
   def testTensorSize(self):
     self.assertEqual(6, self.material.tensorSize())
     return

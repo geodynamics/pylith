@@ -85,7 +85,7 @@ pylith::feassemble::Integrator<quadrature_type>::gravityField(spatialdata::spati
 // Get stable time step for advancing from time t to time t+dt.
 template<typename quadrature_type>
 double
-pylith::feassemble::Integrator<quadrature_type>::stableTimeStep(void) const
+pylith::feassemble::Integrator<quadrature_type>::stableTimeStep(const topology::Mesh& mesh)
 { // stableTimeStep
   // Assume any time step will work.
   return pylith::PYLITH_MAXDOUBLE;

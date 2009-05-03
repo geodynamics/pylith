@@ -90,19 +90,22 @@ class TestTimeStepUser(unittest.TestCase):
     step2 = (2.0*year).value / 2.0 # nondimensionalize
     step3 = (3.0*year).value / 2.0 # nondimensionalize
 
-    self.assertEqual(step1, tstep.timeStep(0.5))
-    self.assertEqual(step2, tstep.timeStep(0.5))
-    self.assertEqual(step3, tstep.timeStep(0.5))
-    self.assertEqual(step3, tstep.timeStep(0.5))
-    self.assertEqual(step3, tstep.timeStep(0.5))
+    integrators = None
+    mesh = None
+
+    self.assertEqual(step1, tstep.timeStep(mesh, integrators))
+    self.assertEqual(step2, tstep.timeStep(mesh, integrators))
+    self.assertEqual(step3, tstep.timeStep(mesh, integrators))
+    self.assertEqual(step3, tstep.timeStep(mesh, integrators))
+    self.assertEqual(step3, tstep.timeStep(mesh, integrators))
 
     tstep.index = 0
     tstep.loopSteps = True
-    self.assertEqual(step1, tstep.timeStep(0.5))
-    self.assertEqual(step2, tstep.timeStep(0.5))
-    self.assertEqual(step3, tstep.timeStep(0.5))
-    self.assertEqual(step1, tstep.timeStep(0.5))
-    self.assertEqual(step2, tstep.timeStep(0.5))
+    self.assertEqual(step1, tstep.timeStep(mesh, integrators))
+    self.assertEqual(step2, tstep.timeStep(mesh, integrators))
+    self.assertEqual(step3, tstep.timeStep(mesh, integrators))
+    self.assertEqual(step1, tstep.timeStep(mesh, integrators))
+    self.assertEqual(step2, tstep.timeStep(mesh, integrators))
     return
 
 
@@ -112,7 +115,10 @@ class TestTimeStepUser(unittest.TestCase):
     """
     tstep = self.tstep
 
-    tstep.timeStep(0.0)
+    integrators = None
+    mesh = None
+
+    tstep.timeStep(mesh, integrators)
     stepE = 1.0*year
     valueE = stepE.value / 2.0 # nondimensionalize
     self.assertEqual(valueE, tstep.currentStep())

@@ -99,7 +99,7 @@ class TestElasticityImplicit(unittest.TestCase):
     (mesh, integrator) = self._preinitialize()
     fields = self._initialize(mesh, integrator)
 
-    self.assertEqual(1.0e+30, integrator.stableTimeStep())
+    self.assertEqual(1.0e+30, integrator.stableTimeStep(mesh))
     return
 
 

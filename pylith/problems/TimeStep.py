@@ -88,7 +88,7 @@ class TimeStep(Component):
     return 0
 
 
-  def timeStep(self, integrators):
+  def timeStep(self, mesh, integrators):
     """
     Get stable time step for advancing forward in time.
     """

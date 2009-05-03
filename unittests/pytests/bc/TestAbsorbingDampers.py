@@ -74,7 +74,7 @@ class TestAbsorbingDampers(unittest.TestCase):
     """
     (mesh, bc, fields) = self._initialize()
 
-    self.assertEqual(1.0e+30, bc.stableTimeStep())
+    self.assertEqual(1.0e+30, bc.stableTimeStep(mesh))
     return
 
   

@@ -157,7 +157,7 @@ class OutputManager(PetscComponent):
     if numTimeSteps > 0 and self.outputFreq == "skip" and self.skip > 0:
       nsteps = int(numTimeSteps / (1+self.skip))
     elif numTimeSteps > 0 and self.outputFreq == "time_step":
-      nsteps = 1 + int(totalTime / self.dtN)
+      nsteps = int(1 + totalTime / self.dtN)
 
     (mesh, label, labelId) = self.dataProvider.getDataMesh()
     self._open(mesh, nsteps, label, labelId)

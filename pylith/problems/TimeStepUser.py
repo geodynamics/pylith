@@ -145,7 +145,7 @@ class TimeStepUser(TimeStep):
     return nsteps
 
 
-  def timeStep(self, integrators):
+  def timeStep(self, mesh, integrators):
     """
     Get time step for advancing forward in time.
     """

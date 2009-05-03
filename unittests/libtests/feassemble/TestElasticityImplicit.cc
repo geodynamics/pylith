@@ -85,24 +85,6 @@ pylith::feassemble::TestElasticityImplicit::testTimeStep(void)
 } // testTimeStep
 
 // ----------------------------------------------------------------------
-// Test StableTimeStep().
-void
-pylith::feassemble::TestElasticityImplicit::testStableTimeStep(void)
-{ // testStableTimeStep
-  ElasticityImplicit integrator;
-
-  materials::ElasticIsotropic3D material;
-  const int id = 3;
-  const std::string label("my material");
-  material.id(id);
-  material.label(label.c_str());
-  integrator.material(&material);
-
-  const double stableTimeStep = integrator.stableTimeStep();
-  CPPUNIT_ASSERT_EQUAL(pylith::PYLITH_MAXDOUBLE, stableTimeStep);
-} // testStableTimeStep
-
-// ----------------------------------------------------------------------
 // Test material().
 void
 pylith::feassemble::TestElasticityImplicit::testMaterial(void)
@@ -273,6 +255,21 @@ pylith::feassemble::TestElasticityImplicit::testUpdateStateVars(void)
   const double t = 1.0;
   integrator.updateStateVars(t, &fields);
 } // testUpdateStateVars
+
+// ----------------------------------------------------------------------
+// Test StableTimeStep().
+void
+pylith::feassemble::TestElasticityImplicit::testStableTimeStep(void)
+{ // testStableTimeStep
+
+  topology::Mesh mesh;
+  ElasticityImplicit integrator;
+  topology::SolutionFields fields(mesh);
+  _initialize(&mesh, &integrator, &fields);
+
+  const double stableTimeStep = integrator.stableTimeStep(mesh);
+  CPPUNIT_ASSERT_EQUAL(pylith::PYLITH_MAXDOUBLE, stableTimeStep);
+} // testStableTimeStep
 
 // ----------------------------------------------------------------------
 // Initialize elasticity integrator.

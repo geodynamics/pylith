@@ -46,7 +46,6 @@ class pylith::feassemble::TestElasticityImplicit : public CppUnit::TestFixture
 
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testTimeStep );
-  CPPUNIT_TEST( testStableTimeStep );
   CPPUNIT_TEST( testMaterial );
   CPPUNIT_TEST( testNeedNewJacobian );
   CPPUNIT_TEST( testUseSolnIncr );
