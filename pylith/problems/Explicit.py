@@ -161,8 +161,8 @@ class Explicit(Formulation):
     self.fields.shiftHistory()
 
     # :KLUDGE: only works for KSP solver
+    dispTpdt = self.fields.get("disp(t+dt)")
     if not self.solver.guessZero:
-      dispTpdt = self.fields.get("disp(t+dt)")
       dispT = self.fields.get("disp(t)")
       dispTpdt.copy(dispT)
     else:
