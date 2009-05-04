@@ -572,7 +572,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
     // Insert cell contribution into PETSc Matrix
     jacobianVisitor.clear();
     err = updateOperator(jacobianMatrix, *sieveMesh->getSieve(),
-			 jacobianVisitor, *c_iter, &matrixCell[0], ADD_VALUES);
+			 jacobianVisitor, *c_iter, &matrixCell[0], INSERT_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
   } // for
   PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*4);

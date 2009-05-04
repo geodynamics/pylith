@@ -190,8 +190,8 @@ class Implicit(Formulation):
     self._info.log("Solving equations.")
     residual = self.fields.get("residual")
     self._logger.stagePush("Solve")
-    residual.view("RESIDUAL BEFORE SOLVE")
-    self.jacobian.view()
+    #residual.view("RESIDUAL BEFORE SOLVE")
+    #self.jacobian.view()
     self.solver.solve(dispIncr, self.jacobian, residual)
     self._logger.stagePop()
 

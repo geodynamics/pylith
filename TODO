@@ -6,6 +6,9 @@ CURRENT ISSUES/PRIORITIES
 
 0. SWIG conversion [Brad]
 
+  (1) Bugs
+    time step values (adaptive)
+
   (3) Full-scale tests (few 1-D, 2-D, and 3-D)
 
     Analytical solutions, time stepping, multiple faults
@@ -18,6 +21,8 @@ CURRENT ISSUES/PRIORITIES
   (5) Add missing unit tests
 
   (6) Tidy up
+
+    Add simple stableTimeStep() for elastic materials.
 
     Check use of label_sequence.  label_sequence - iterators are
     cached, so use sequence or cache begin/end to maintain access

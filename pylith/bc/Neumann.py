@@ -96,16 +96,17 @@ class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
     logEvent = "%sverify" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    BoundaryCondition.verifyConfiguration(self)
+    BoundaryCondition.verifyConfiguration(self, self.mesh)
     Integrator.verifyConfiguration(self)
-    if self.bcQuadrature.cellDim != self.mesh.dimension()-1:
+    if self.bcQuadrature.cellDim() != self.mesh.dimension()-1:
         raise ValueError, \
               "Quadrature scheme and mesh are incompatible.\n" \
               "Dimension for quadrature: %d\n" \
               "Dimension of mesh boundary '%s': %d" % \
-              (self.bcQuadrature.cellDim,
-               self.label, self.mesh.dimension()-1)    
+              (self.bcQuadrature.cellDim(),
+               self.label(), self.mesh.dimension()-1)    
     self.output.verifyConfiguration(self.mesh)
+    ModuleNeumann.verifyConfiguration(self, self.mesh)
 
     self._logger.eventEnd(logEvent)
     return

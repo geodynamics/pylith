@@ -32,7 +32,6 @@ def implementsConstraint(obj):
               "finalize"]
   for attr in required:
     if not attr in available:
-      print "Missing method '%s'." % attr
       result = False
   return result
 
