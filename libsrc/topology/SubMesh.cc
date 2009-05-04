@@ -117,8 +117,11 @@ pylith::topology::SubMesh::coordsys(const Mesh& mesh)
 { // coordsys
   delete _coordsys; _coordsys = 0;
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
-  if (0 != cs)
+  if (0 != cs) {
     _coordsys = cs->clone();
+    assert(0 != _coordsys);
+    _coordsys->initialize();
+  } // if
 } // coordsys
 
 // ----------------------------------------------------------------------

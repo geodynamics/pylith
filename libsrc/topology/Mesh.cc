@@ -63,6 +63,8 @@ void
 pylith::topology::Mesh::coordsys(const spatialdata::geocoords::CoordSys* cs)
 { // coordsys
   delete _coordsys; _coordsys = (0 != cs) ? cs->clone() : 0;
+  if (0 != _coordsys)
+    _coordsys->initialize();
 } // coordsys
 
 // ----------------------------------------------------------------------
@@ -70,8 +72,6 @@ pylith::topology::Mesh::coordsys(const spatialdata::geocoords::CoordSys* cs)
 void 
 pylith::topology::Mesh::initialize(void)
 { // initialize
-  if (0 != _coordsys)
-    _coordsys->initialize();
 } // initialize
 
 
