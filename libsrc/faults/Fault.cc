@@ -14,6 +14,8 @@
 
 #include "Fault.hh" // implementation of object methods
 
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::Fault::Fault(void) :
@@ -27,14 +29,15 @@ pylith::faults::Fault::Fault(void) :
 // Destructor.
 pylith::faults::Fault::~Fault(void)
 { // destructor
+  delete _faultMesh; _faultMesh = 0;
 } // destructor
 
 // ----------------------------------------------------------------------
 // Get mesh associated with fault fields.
-const ALE::Obj<pylith::SubMesh>&
+const pylith::topology::SubMesh&
 pylith::faults::Fault:: faultMesh(void) const
 { // faultMesh
-  return _faultMesh;
+  return *_faultMesh;
 } // faultMesh
 
 

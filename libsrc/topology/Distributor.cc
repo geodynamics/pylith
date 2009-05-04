@@ -14,8 +14,8 @@
 
 #include "Distributor.hh" // implementation of class methods
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
-#include "pylith/utils/vectorfields.hh" // USES SCALAR_FIELD
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field<Mesh>
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 
 #include <cstring> // USES strlen()
@@ -23,6 +23,11 @@
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
+typedef pylith::topology::Mesh::IntSection IntSection;
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -39,99 +44,199 @@ pylith::topology::Distributor::~Distributor(void)
 // ----------------------------------------------------------------------
 // Distribute mesh among processors.
 void
-pylith::topology::Distributor::distribute(ALE::Obj<Mesh>* const newMesh,
-					  const ALE::Obj<Mesh>& origMesh,
+pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
+					  const topology::Mesh& origMesh,
 					  const char* partitioner)
 { // distribute
-  if (0 == strcasecmp(partitioner, "")) {
-    distribute_private<ALE::DistributionNew<Mesh> >(newMesh, origMesh);
+  assert(0 != newMesh);
+
+  newMesh->coordsys(origMesh.coordsys());
+  
+  if (0 == strcasecmp(partitioner, ""))
+    _distribute<ALE::DistributionNew<SieveMesh> >(newMesh, origMesh);
 #if defined(PETSC_HAVE_CHACO)
-  } else if (0 == strcasecmp(partitioner, "chaco")) {
-    distribute_private<ALE::DistributionNew<Mesh, ALE::Partitioner<ALE::Chaco::Partitioner<> > > >(newMesh, origMesh);
+  else if (0 == strcasecmp(partitioner, "chaco"))
+    _distribute<ALE::DistributionNew<SieveMesh, ALE::Partitioner<ALE::Chaco::Partitioner<> > > >(newMesh, origMesh);
 #endif
 #if defined(PETSC_HAVE_PARMETIS)
-  } else if (0 == strcasecmp(partitioner, "parmetis")) {
-    distribute_private<ALE::DistributionNew<Mesh, ALE::Partitioner<ALE::ParMetis::Partitioner<> > > >(newMesh, origMesh);
+  else if (0 == strcasecmp(partitioner, "parmetis")) 
+   _distribute<ALE::DistributionNew<SieveMesh, ALE::Partitioner<ALE::ParMetis::Partitioner<> > > >(newMesh, origMesh);
 #endif
-  } else {
-    std::cout << "ERROR: Using default partitioner instead of unknown partitioner " << partitioner << std::endl;
-    distribute_private<ALE::DistributionNew<Mesh> >(newMesh, origMesh);
-  }
-}
+  else {
+    std::cerr << "ERROR: Using default partitioner instead of unknown "
+      "partitioner '" << partitioner << "'." << std::endl;
+    _distribute<ALE::DistributionNew<SieveMesh> >(newMesh, origMesh);
+  } // else
+} // distribute
 
+// ----------------------------------------------------------------------
+// Write partitioning info for distributed mesh.
+void
+pylith::topology::Distributor::write(meshio::DataWriter<topology::Mesh, topology::Field<topology::Mesh> >* const writer,
+				     const topology::Mesh& mesh)
+{ // write
+  
+  // Setup and allocate field
+  const int fiberDim = 1;
+  topology::Field<topology::Mesh> partition(mesh);
+  partition.scale(1.0);
+  partition.label("partition");
+  partition.vectorFieldType(topology::FieldBase::SCALAR);
+  partition.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
+  partition.allocate();
+  const ALE::Obj<RealSection>& partitionSection = partition.section();
+  assert(!partitionSection.isNull());
+
+  const ALE::Obj<SieveMesh> sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  double rankReal = double(sieveMesh->commRank());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->heightStratum(0);
+  assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
+       c_iter != cellsEnd;
+       ++c_iter) {
+    partitionSection->updatePoint(*c_iter, &rankReal);
+  } // for
+
+  //partition->view("PARTITION");
+  const double t = 0.0;
+  const int numTimeSteps = 0;
+  writer->open(mesh, numTimeSteps);
+  writer->openTimeStep(t, mesh);
+  writer->writeCellField(t, partition);
+  writer->closeTimeStep();
+  writer->close();
+} // write
+
+// ----------------------------------------------------------------------
 template<typename DistributionType>
 void
-pylith::topology::Distributor::distribute_private(ALE::Obj<Mesh>* const newMesh,
-                                                  const ALE::Obj<Mesh>& origMesh)
+pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
+					   const topology::Mesh& origMesh)
 { // distribute
-  typedef typename Mesh::point_type                   point_type;
+  typedef typename SieveMesh::point_type point_type;
   typedef typename DistributionType::partitioner_type partitioner_type;
   typedef typename DistributionType::partition_type   partition_type;
 
-  const Obj<Mesh::sieve_type>        newSieve        = new Mesh::sieve_type(origMesh->comm(), origMesh->debug());
-  const Obj<Mesh::send_overlap_type> sendMeshOverlap = new Mesh::send_overlap_type(origMesh->comm(), origMesh->debug());
-  const Obj<Mesh::recv_overlap_type> recvMeshOverlap = new Mesh::recv_overlap_type(origMesh->comm(), origMesh->debug());
+  ALE::Obj<SieveMesh>& newSieveMesh = newMesh->sieveMesh();
+  assert(!newSieveMesh.isNull());
+  const ALE::Obj<SieveMesh>& origSieveMesh = origMesh.sieveMesh();
+  assert(!origSieveMesh.isNull());
 
-  *newMesh = new Mesh(origMesh->comm(), origMesh->getDimension(), origMesh->debug());
-  (*newMesh)->setSieve(newSieve);
-  // IMESH_TODO
-  //   This might be unnecessary, since the overlap for submeshes is just the restriction of the overlaps
-  // std::map<point_type,point_type>    renumbering;
-  Mesh::renumbering_type&            renumbering     = (*newMesh)->getRenumbering();
+  const ALE::Obj<SieveMesh::sieve_type> newSieve =
+    new SieveMesh::sieve_type(origSieveMesh->comm(), origSieveMesh->debug());
+  assert(!newSieve.isNull());
+  const ALE::Obj<SieveMesh::send_overlap_type> sendMeshOverlap = 
+    new SieveMesh::send_overlap_type(origSieveMesh->comm(), 
+				     origSieveMesh->debug());
+  assert(!sendMeshOverlap.isNull());
+  const ALE::Obj<SieveMesh::recv_overlap_type> recvMeshOverlap = 
+    new SieveMesh::recv_overlap_type(origSieveMesh->comm(), 
+				     origSieveMesh->debug());
+  assert(!recvMeshOverlap.isNull());
+
+  newSieveMesh = new SieveMesh(origSieveMesh->comm(), 
+			       origSieveMesh->getDimension(), 
+			       origSieveMesh->debug());
+  assert(!newSieveMesh.isNull());
+  newSieveMesh->setSieve(newSieve);
+  // IMESH_TODO This might be unnecessary, since the overlap for
+  //   submeshes is just the restriction of the overlaps
+  //   std::map<point_type,point_type> renumbering;
+  SieveMesh::renumbering_type& renumbering = newSieveMesh->getRenumbering();
   // Distribute the mesh
-  Obj<partition_type> partition = DistributionType::distributeMeshV(origMesh, (*newMesh), renumbering, sendMeshOverlap, recvMeshOverlap);
-  if (origMesh->debug()) {
-    std::cout << "["<<origMesh->commRank()<<"]: Mesh Renumbering:" << std::endl;
-    for(Mesh::renumbering_type::const_iterator r_iter = renumbering.begin(); r_iter != renumbering.end(); ++r_iter) {
-      std::cout << "["<<origMesh->commRank()<<"]:   global point " << r_iter->first << " --> " << " local point " << r_iter->second << std::endl;
-    }
-  }
+  ALE::Obj<partition_type> partition = 
+    DistributionType::distributeMeshV(origSieveMesh, newSieveMesh, 
+				      renumbering, 
+				      sendMeshOverlap, recvMeshOverlap);
+  if (origSieveMesh->debug()) {
+    std::cout << "["<<origSieveMesh->commRank()<<"]: Mesh Renumbering:"
+	      << std::endl;
+    for (SieveMesh::renumbering_type::const_iterator r_iter = renumbering.begin();
+	 r_iter != renumbering.end();
+	 ++r_iter) {
+      std::cout << "["<<origSieveMesh->commRank()<<"]:   global point " 
+		<< r_iter->first << " --> " << " local point " 
+		<< r_iter->second << std::endl;
+    } // for
+  } // if
   // Check overlap
   int localSendOverlapSize = 0, sendOverlapSize;
   int localRecvOverlapSize = 0, recvOverlapSize;
-  for(int p = 0; p < sendMeshOverlap->commSize(); ++p) {
+  const int commSize = sendMeshOverlap->commSize();
+  for (int p = 0; p < commSize; ++p) {
     localSendOverlapSize += sendMeshOverlap->cone(p)->size();
     localRecvOverlapSize += recvMeshOverlap->support(p)->size();
-  }
-  MPI_Allreduce(&localSendOverlapSize, &sendOverlapSize, 1, MPI_INT, MPI_SUM, sendMeshOverlap->comm());
-  MPI_Allreduce(&localRecvOverlapSize, &recvOverlapSize, 1, MPI_INT, MPI_SUM, recvMeshOverlap->comm());
-  if(sendOverlapSize != recvOverlapSize) {
-    std::cout <<"["<<sendMeshOverlap->commRank()<<"]: Size mismatch " << sendOverlapSize << " != " << recvOverlapSize << std::endl;
+  } // for
+  MPI_Allreduce(&localSendOverlapSize, &sendOverlapSize, 1, MPI_INT, MPI_SUM,
+		sendMeshOverlap->comm());
+  MPI_Allreduce(&localRecvOverlapSize, &recvOverlapSize, 1, MPI_INT, MPI_SUM,
+		recvMeshOverlap->comm());
+  if (sendOverlapSize != recvOverlapSize) {
+    std::cout <<"["<<sendMeshOverlap->commRank()<<"]: Size mismatch " << 
+      sendOverlapSize << " != " << recvOverlapSize << std::endl;
     sendMeshOverlap->view("Send Overlap");
     recvMeshOverlap->view("Recv Overlap");
     throw ALE::Exception("Invalid Overlap");
-  }
+  } // if
 
   // Distribute the coordinates
-  const Obj<real_section_type>& coordinates         = origMesh->getRealSection("coordinates");
-  const Obj<real_section_type>& parallelCoordinates = (*newMesh)->getRealSection("coordinates");
+  const ALE::Obj<RealSection>& coordinates = 
+    origSieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  const ALE::Obj<RealSection>& parallelCoordinates = 
+    newSieveMesh->getRealSection("coordinates");
+  assert(!parallelCoordinates.isNull());
 
-  (*newMesh)->setupCoordinates(parallelCoordinates);
-  DistributionType::distributeSection(coordinates, partition, renumbering, sendMeshOverlap, recvMeshOverlap, parallelCoordinates);
+  newSieveMesh->setupCoordinates(parallelCoordinates);
+  DistributionType::distributeSection(coordinates, partition, renumbering, 
+				      sendMeshOverlap, recvMeshOverlap, 
+				      parallelCoordinates);
   // Distribute other sections
-  if (origMesh->getRealSections()->size() > 1) {
-    Obj<std::set<std::string> > names = origMesh->getRealSections();
-    int                         n     = 0;
+  if (origSieveMesh->getRealSections()->size() > 1) {
+    ALE::Obj<std::set<std::string> > names = origSieveMesh->getRealSections();
+    assert(!names.isNull());
+    int n = 0;
 
-    for(std::set<std::string>::const_iterator n_iter = names->begin(); n_iter != names->end(); ++n_iter) {
-      if (*n_iter == "coordinates")   continue;
-      if (*n_iter == "replaced_cells") continue;
-      std::cout << "ERROR: Did not distribute real section " << *n_iter << std::endl;
+    const std::set<std::string>::const_iterator namesBegin = names->begin();
+    const std::set<std::string>::const_iterator namesEnd = names->end();
+    for (std::set<std::string>::const_iterator n_iter = namesBegin; 
+	 n_iter != namesEnd;
+	 ++n_iter) {
+      if (*n_iter == "coordinates") continue; // already copied
+      if (*n_iter == "replaced_cells") continue; // ignore
+      std::cerr << "ERROR: Did not distribute real section '" << *n_iter
+		<< "'." << std::endl;
       ++n;
-    }
-    if (n) {throw ALE::Exception("Need to distribute more real sections");}
+    } // if
+    if (n)
+      throw std::logic_error("Need to distribute more real sections");
   }
-  if (origMesh->getIntSections()->size() > 0) {
-    Obj<std::set<std::string> > names = origMesh->getIntSections();
+  if (origSieveMesh->getIntSections()->size() > 0) {
+    ALE::Obj<std::set<std::string> > names = origSieveMesh->getIntSections();
+    assert(!names.isNull());
 
-    for(std::set<std::string>::const_iterator n_iter = names->begin(); n_iter != names->end(); ++n_iter) {
-      const Obj<Mesh::int_section_type>& origSection = origMesh->getIntSection(*n_iter);
-      const Obj<Mesh::int_section_type>& newSection  = (*newMesh)->getIntSection(*n_iter);
+    std::set<std::string>::const_iterator namesBegin = names->begin();
+    std::set<std::string>::const_iterator namesEnd = names->end();
+    for (std::set<std::string>::const_iterator n_iter = namesBegin;
+	 n_iter != namesEnd;
+	 ++n_iter) {
+      const ALE::Obj<IntSection>& origSection = 
+	origSieveMesh->getIntSection(*n_iter);
+      assert(!origSection.isNull());
+      const ALE::Obj<IntSection>& newSection  = 
+	newSieveMesh->getIntSection(*n_iter);
+      assert(!newSection.isNull());
 
       // We assume all integer sections are complete sections
-      newSection->setChart((*newMesh)->getSieve()->getChart());
-      DistributionType::distributeSection(origSection, partition, renumbering, sendMeshOverlap, recvMeshOverlap, newSection);
-#if 0
+      newSection->setChart(newSieveMesh->getSieve()->getChart());
+      DistributionType::distributeSection(origSection, partition, renumbering,
+					  sendMeshOverlap, recvMeshOverlap, 
+					  newSection);
+#if 0 // DEBUGGING
       std::string serialName("Serial ");
       std::string parallelName("Parallel ");
       serialName   += *n_iter;
@@ -139,36 +244,44 @@ pylith::topology::Distributor::distribute_private(ALE::Obj<Mesh>* const newMesh,
       origSection->view(serialName.c_str());
       newSection->view(parallelName.c_str());
 #endif
-    }
-  }
-  if (origMesh->getArrowSections()->size() > 1) {
-    throw ALE::Exception("Need to distribute more arrow sections");
-  }
+    } // for
+  } // if
+  if (origSieveMesh->getArrowSections()->size() > 1)
+    throw std::logic_error("Need to distribute more arrow sections");
+  
   // Distribute labels
-  const Mesh::labels_type& labels = origMesh->getLabels();
+  const SieveMesh::labels_type& labels = origSieveMesh->getLabels();
+  const SieveMesh::labels_type::const_iterator labelsBegin = labels.begin();
+  const SieveMesh::labels_type::const_iterator labelsEnd = labels.end();
 
-  for(Mesh::labels_type::const_iterator l_iter = labels.begin(); l_iter != labels.end(); ++l_iter) {
-    if ((*newMesh)->hasLabel(l_iter->first)) continue;
+  for (SieveMesh::labels_type::const_iterator l_iter = labelsBegin;
+       l_iter != labelsEnd;
+       ++l_iter) {
+    if (newSieveMesh->hasLabel(l_iter->first)) continue;
+    const ALE::Obj<SieveMesh::label_type>& origLabel = l_iter->second;
+    assert(!origLabel.isNull());
+    const ALE::Obj<SieveMesh::label_type>& newLabel  = 
+      newSieveMesh->createLabel(l_iter->first);
+    assert(!newLabel.isNull());
+
 #ifdef IMESH_NEW_LABELS
-    const Obj<Mesh::label_type>& origLabel = l_iter->second;
-    const Obj<Mesh::label_type>& newLabel  = (*newMesh)->createLabel(l_iter->first);
-
     newLabel->setChart(newSieve->getChart());
     // Size the local mesh
-    partitioner_type::sizeLocalSieveV(origLabel, partition, renumbering, newLabel);
+    partitioner_type::sizeLocalSieveV(origLabel, partition, renumbering, 
+				      newLabel);
     // Create the remote meshes
-    DistributionType::completeConesV(origLabel, newLabel, renumbering, sendMeshOverlap, recvMeshOverlap);
+    DistributionType::completeConesV(origLabel, newLabel, renumbering, 
+				     sendMeshOverlap, recvMeshOverlap);
     // Create the local mesh
-    partitioner_type::createLocalSieveV(origLabel, partition, renumbering, newLabel);
+    partitioner_type::createLocalSieveV(origLabel, partition, renumbering, 
+					newLabel);
     newLabel->symmetrize();
 #else
-    const Obj<Mesh::label_type>& origLabel = l_iter->second;
-    const Obj<Mesh::label_type>& newLabel  = (*newMesh)->createLabel(l_iter->first);
     // Get remote labels
-    ALE::New::Completion<Mesh,Mesh::point_type>::scatterCones(origLabel, newLabel, sendMeshOverlap, recvMeshOverlap, renumbering);
+    ALE::New::Completion<SieveMesh,SieveMesh::point_type>::scatterCones(origLabel, newLabel, sendMeshOverlap, recvMeshOverlap, renumbering);
     // Create local label
-    newLabel->add(origLabel, (*newMesh)->getSieve(), renumbering);
-#if 0
+    newLabel->add(origLabel, newSieveMesh->getSieve(), renumbering);
+#if 0 // DEBUGGING
     std::string serialName("Serial ");
     std::string parallelName("Parallel ");
     serialName   += l_iter->first;
@@ -177,54 +290,23 @@ pylith::topology::Distributor::distribute_private(ALE::Obj<Mesh>* const newMesh,
     newLabel->view(parallelName.c_str());
 #endif
 #endif
-  }
-  // Create the parallel overlap
-  Obj<Mesh::send_overlap_type> sendParallelMeshOverlap = (*newMesh)->getSendOverlap();
-  Obj<Mesh::recv_overlap_type> recvParallelMeshOverlap = (*newMesh)->getRecvOverlap();
-  //   Can I figure this out in a nicer way?
-  ALE::SetFromMap<std::map<point_type,point_type> > globalPoints(renumbering);
-
-  ALE::OverlapBuilder<>::constructOverlap(globalPoints, renumbering, sendParallelMeshOverlap, recvParallelMeshOverlap);
-  (*newMesh)->setCalculatedOverlap(true);
-} // distribute
-
-// ----------------------------------------------------------------------
-// Write partitioning info for distributed mesh.
-void
-pylith::topology::Distributor::write(meshio::DataWriter* const writer,
-				     const ALE::Obj<Mesh>& mesh,
-				     const spatialdata::geocoords::CoordSys* cs)
-{ // write
-  
-  // Setup and allocate field
-  const int fiberDim = 1;
-  ALE::Obj<real_section_type> partition = 
-    new real_section_type(mesh->comm(), mesh->debug());
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
-  assert(!cells.isNull());
-  partition->setChart(real_section_type::chart_type(*std::min_element(cells->begin(), cells->end()),
-						    *std::max_element(cells->begin(), cells->end())+1));
-  partition->setFiberDimension(cells, fiberDim);
-  mesh->allocate(partition);
-
-  const int rank  = mesh->commRank();
-  double rankReal = double(rank);
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
-       c_iter != cellsEnd;
-       ++c_iter) {
-    partition->updatePoint(*c_iter, &rankReal);
   } // for
 
-  //partition->view("PARTITION");
-  const double t = 0.0;
-  const int numTimeSteps = 0;
-  writer->open(mesh, cs, numTimeSteps);
-  writer->openTimeStep(t, mesh, cs);
-  writer->writeCellField(t, "partition", partition, SCALAR_FIELD, mesh);
-  writer->closeTimeStep();
-  writer->close();
-} // write
+  // Create the parallel overlap
+  ALE::Obj<SieveMesh::send_overlap_type> sendParallelMeshOverlap = 
+    newSieveMesh->getSendOverlap();
+  assert(!sendParallelMeshOverlap.isNull());
+  ALE::Obj<SieveMesh::recv_overlap_type> recvParallelMeshOverlap = 
+    newSieveMesh->getRecvOverlap();
+  assert(!recvParallelMeshOverlap.isNull());
+
+  //   Can I figure this out in a nicer way?
+  ALE::SetFromMap<std::map<point_type,point_type> > globalPoints(renumbering);
+  ALE::OverlapBuilder<>::constructOverlap(globalPoints, renumbering, 
+					  sendParallelMeshOverlap, 
+					  recvParallelMeshOverlap);
+  newSieveMesh->setCalculatedOverlap(true);
+} // distribute
 
 
 // End of file 

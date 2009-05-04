@@ -30,8 +30,7 @@ class TestTimeStep(unittest.TestCase):
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
     normalizer._configure()
-    normalizer._time = 2.0*second
-    normalizer.initialize()    
+    normalizer.setTimeScale(2.0*second)
 
     tstep = TimeStep()
     tstep._configure()
@@ -101,7 +100,8 @@ class TestTimeStep(unittest.TestCase):
     tstep._configure()
 
     integrators = None
-    self.assertEqual(0.0, tstep.timeStep(integrators))
+    mesh = None
+    self.assertEqual(0.0, tstep.timeStep(mesh, integrators))
     return
 
 
@@ -113,7 +113,7 @@ class TestTimeStep(unittest.TestCase):
 
     self.assertEqual(0.0, tstep.currentStep())
 
-    tstep.dt = 1.0e-4
+    tstep.dtN = 1.0e-4
     self.assertEqual(1.0e-4, tstep.currentStep())
 
     return

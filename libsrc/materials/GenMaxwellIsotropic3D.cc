@@ -659,7 +659,7 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic(
   elasticConsts[19] = 0; // C2313
   elasticConsts[20] = elasticConsts[15]; // C1313
 
-#if 0
+#if 0 // DEBUGGING
   std::cout << "_calcElasticConstsViscoelastic" << std::endl;
   std::cout << elasticConsts[0] << "  " << elasticConsts[1] << "  " << elasticConsts[2] << std::endl;
   std::cout << elasticConsts[6] << "  " << elasticConsts[7] << std::endl;

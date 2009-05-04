@@ -16,32 +16,17 @@
 ##
 ## Factory: output_data_writer
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # DataWriter class
-class DataWriter(Component):
+class DataWriter(PetscComponent):
   """
   Python abstract base class for writing finite-element data.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(Component.Inventory):
-    """
-    Python object for managing DataWriter facilities and properties.
-    """
-
-    ## @class Inventory
-    ## Python object for managing DataWriter facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li None
-
-    import pyre.inventory
-
+  
+  # None
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -49,8 +34,7 @@ class DataWriter(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="datawriter")
-    self.cppHandle = None
+    PetscComponent.__init__(self, name, facility="datawriter")
     return
 
 
@@ -65,27 +49,7 @@ class DataWriter(Component):
     """
     Initialize writer.
     """
-    self._createCppHandle()
-
     return
 
 
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _configure(self):
-    """
-    Set members based using inventory.
-    """
-    Component._configure(self)
-    return
-
-
-  def _createCppHandle(self):
-    """
-    Create handle to corresponding C++ object.
-    """
-    raise NotImplementedError("Please implement _createCppHandle() in " \
-                              "derived class.")
-  
-  
 # End of file

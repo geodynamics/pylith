@@ -16,7 +16,7 @@
 
 // Create a copy of this object.
 inline
-pylith::feassemble::Quadrature*
+pylith::feassemble::QuadratureEngine*
 pylith::feassemble::Quadrature1Din2D::clone(void) const {
   return new Quadrature1Din2D(*this);
 } // clone

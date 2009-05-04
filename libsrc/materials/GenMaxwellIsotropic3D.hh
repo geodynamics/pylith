@@ -32,6 +32,10 @@
  * model.
  */
 
+// :TODO: Rewrite as template over the number of Maxwell models?
+// We could instatiate for 2 and 3 models and provide example for how to
+// instantiate over other numbers of Maxwell models.
+
 #if !defined(pylith_materials_genmaxwellisotropic3d_hh)
 #define pylith_materials_genmaxwellisotropic3d_hh
 

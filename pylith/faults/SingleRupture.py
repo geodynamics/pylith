@@ -14,36 +14,34 @@
 ##
 ## @brief Python kinematic rupture container with one rupture.
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # SingleRupture class
-class SingleRupture(Component):
+class SingleRupture(PetscComponent):
   """
   Python kinematic rupture container with one rupture.
+
+  Inventory
+
+  @class Inventory
+  Python object for managing SingleRupture facilities and properties.
+  
+  \b Properties
+  @li None
+  
+  \b Facilities
+  @li \b rupture Kinematic earthquake rupture in problem
+
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
-    """
-    Python object for managing SingleRupture facilities and properties.
-    """
-    
-    ## @class Inventory
-    ## Python object for managing SingleRupture facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li \b rupture Kinematic earthquake rupture in problem
+  import pyre.inventory
 
-    import pyre.inventory
-
-    from EqKinSrc import EqKinSrc
-    rupture = pyre.inventory.facility("rupture", family="eq_kinematic_src",
-                                       factory=EqKinSrc)
-    rupture.meta['tip'] = "Kinematic earthquake rupture in problem."
+  from EqKinSrc import EqKinSrc
+  rupture = pyre.inventory.facility("rupture", family="eq_kinematic_src",
+                                    factory=EqKinSrc)
+  rupture.meta['tip'] = "Kinematic earthquake rupture in problem."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -52,7 +50,7 @@ class SingleRupture(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name)
+    PetscComponent.__init__(self, name, facility="rupture")
     return
 
 

@@ -26,12 +26,20 @@ typedef struct _p_Mat* PetscMat;
 /// forward declaration for PETSc Vec
 typedef struct _p_Vec* PetscVec;
 
+/// forward declaration for PETSc VecScatter
+typedef struct _p_VecScatter* PetscVecScatter;
+
 /// forward declaration for PETSc ISLocalToGlobalMapping
 typedef struct _p_ISLocalToGlobalMapping* PetscISLocalToGlobalMapping;
 
+/// forward declaration for PETSc KSP
+typedef struct _p_KSP* PetscKSP;
+
+/// forward declaration for PETSc SNES
+typedef struct _p_SNES* PetscSNES;
+
 /// forward declaration for PETSc PetscErrorCode
 typedef int PetscErrorCode;
-
 
 #endif // pylith_utils_petscfwd_h
 

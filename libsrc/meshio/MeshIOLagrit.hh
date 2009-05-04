@@ -10,21 +10,21 @@
 // ======================================================================
 //
 
+/**
+ * @file libsrc/meshio/MeshIOLagrit.hh
+ *
+ * @brief Input/output manager for LaGriT GMV and Pset files.
+ */
+
 #if !defined(pylith_meshio_meshiolagrit_hh)
 #define pylith_meshio_meshiolagrit_hh
 
+// Include directives ---------------------------------------------------
 #include "MeshIO.hh" // ISA MeshIO
 
 #include <string> // HASA std::string
 
-namespace pylith {
-  namespace meshio {
-    class MeshIOLagrit;
-
-    class TestMeshIOLagrit; // unit testing
-  } // meshio
-} // pylith
-
+// MeshIOLagrit ---------------------------------------------------------
 class pylith::meshio::MeshIOLagrit : public MeshIO
 { // MeshIOLagrit
   friend class TestMeshIOLagrit; // unit testing
@@ -110,13 +110,6 @@ public :
    *   false if 64-bit.
    */
   bool isRecordHeader32Bit(void) const;
-
-  // TEMPORARY
-  static
-  void readFault(const std::string filename,
-		 const Obj<Mesh>& mesh,
-		 const Obj<Mesh>& fault,
-		 Obj<ALE::Mesh>& faultBd);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :

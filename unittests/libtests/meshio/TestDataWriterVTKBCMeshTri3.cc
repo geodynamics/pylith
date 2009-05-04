@@ -17,7 +17,7 @@
 #include "data/DataWriterVTKDataBCMeshTri3.hh" // USES DataWriterVTKDataBCMeshTri3
 
 // ----------------------------------------------------------------------
-//CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKBCMeshTri3 );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKBCMeshTri3 );
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -26,6 +26,7 @@ pylith::meshio::TestDataWriterVTKBCMeshTri3::setUp(void)
 { // setUp
   TestDataWriterVTKBCMesh::setUp();
   _data = new DataWriterVTKDataBCMeshTri3;
+  _flipFault = true;
   _initialize();
 } // setUp
 

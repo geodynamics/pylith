@@ -74,8 +74,8 @@ const char* pylith::faults::CohesiveKinDataTet4e::_finalSlipFilename =
 const char* pylith::faults::CohesiveKinDataTet4e::_slipTimeFilename = 
   "data/tet4e_sliptime.spatialdb";
 
-const char* pylith::faults::CohesiveKinDataTet4e::_peakRateFilename = 
-  "data/tet4e_peakrate.spatialdb";
+const char* pylith::faults::CohesiveKinDataTet4e::_riseTimeFilename = 
+  "data/tet4e_risetime.spatialdb";
 
 const char* pylith::faults::CohesiveKinDataTet4e::_matPropsFilename = 
   "data/bulkprops_3d.spatialdb";
@@ -764,7 +764,7 @@ pylith::faults::CohesiveKinDataTet4e::CohesiveKinDataTet4e(void)
   label = const_cast<char*>(_label);
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
-  peakRateFilename = const_cast<char*>(_peakRateFilename);
+  riseTimeFilename = const_cast<char*>(_riseTimeFilename);
   matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);

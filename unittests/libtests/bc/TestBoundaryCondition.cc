@@ -14,7 +14,7 @@
 
 #include "TestBoundaryCondition.hh" // Implementation of class methods
 
-#include "pylith/bc/DirichletPoints.hh" // USES DirichletPoints
+#include "pylith/bc/DirichletBC.hh" // USES DirichletBC
 
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 
@@ -28,11 +28,11 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestBoundaryCondition );
 void
 pylith::bc::TestBoundaryCondition::testLabel(void)
 { // testLabel
-  const std::string label = "the_database";
-  DirichletPoints bc;
+  const std::string& label = "the_database";
+  DirichletBC bc;
   bc.label(label.c_str());
   
-  CPPUNIT_ASSERT_EQUAL(label, bc.label());
+  CPPUNIT_ASSERT_EQUAL(label, std::string(bc.label()));
 } // testLabel
     
 // ----------------------------------------------------------------------
@@ -40,9 +40,9 @@ pylith::bc::TestBoundaryCondition::testLabel(void)
 void
 pylith::bc::TestBoundaryCondition::testDB(void)
 { // testDB
-  const std::string label = "my db";
+  const std::string& label = "my db";
   spatialdata::spatialdb::SimpleDB db(label.c_str());
-  DirichletPoints bc;
+  DirichletBC bc;
   bc.db(&db);
   
   CPPUNIT_ASSERT(0 != bc._db);

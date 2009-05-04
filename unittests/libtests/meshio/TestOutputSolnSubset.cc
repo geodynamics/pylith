@@ -16,12 +16,20 @@
 
 #include "pylith/meshio/OutputSolnSubset.hh"
 
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include <string.h> // USES strcmp()
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestOutputSolnSubset );
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
+typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 
 // ----------------------------------------------------------------------
 // Test constructor
@@ -57,40 +65,43 @@ pylith::meshio::TestOutputSolnSubset::testSubdomainMesh(void)
   const int ncorners = 2;
   const int cellsE[] = { 2, 4, 4, 6 };
 
+  topology::Mesh mesh;
   MeshIOAscii iohandler;
-  ALE::Obj<Mesh> mesh;
   iohandler.filename("data/quad4.mesh");
   iohandler.read(&mesh);
-  CPPUNIT_ASSERT(!mesh.isNull());
 
   OutputSolnSubset output;
   output.label(label);
-  const ALE::Obj<Mesh> submesh = output.subdomainMesh(mesh);
+  const topology::SubMesh& submesh = output.subdomainMesh(mesh);
+  const ALE::Obj<SieveMesh>& sieveSubMesh = submesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveSubMesh.isNull());
 
   // Check vertices
-  const ALE::Obj<Mesh::label_sequence>& vertices = submesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+    sieveSubMesh->depthStratum(0);
+  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
   CPPUNIT_ASSERT_EQUAL(nvertices, int(vertices->size()));
   int ipt = 0;
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++ipt)
     CPPUNIT_ASSERT_EQUAL(verticesE[ipt], *v_iter);
 
   // Check cells
-  const ALE::Obj<Mesh::label_sequence>& cells = submesh->heightStratum(1);
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  const ALE::Obj<sieve_type>& sieve = submesh->getSieve();
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveSubMesh->heightStratum(1);
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<SieveSubMesh::sieve_type>& sieve = sieveSubMesh->getSieve();
   assert(!sieve.isNull());
   typedef ALE::SieveAlg<Mesh> SieveAlg;
 
   CPPUNIT_ASSERT_EQUAL(ncells, int(cells->size()));
 
-  ALE::ISieveVisitor::PointRetriever<Mesh::sieve_type> pV(sieve->getMaxConeSize());
+  ALE::ISieveVisitor::PointRetriever<SieveSubMesh::sieve_type> pV(sieve->getMaxConeSize());
   int i = 0;
-  for (Mesh::label_sequence::iterator c_iter=cells->begin(); c_iter != cellsEnd; ++c_iter) {
+  for (SieveMesh::label_sequence::iterator c_iter=cells->begin(); c_iter != cellsEnd; ++c_iter) {
     sieve->cone(*c_iter, pV);
-    const Mesh::point_type *cone = pV.getPoints();
+    const SieveSubMesh::point_type *cone = pV.getPoints();
     CPPUNIT_ASSERT_EQUAL(ncorners, (int) pV.getSize());
     for(int p = 0; p < pV.getSize(); ++p, ++i) {
       CPPUNIT_ASSERT_EQUAL(cellsE[i], cone[p]);

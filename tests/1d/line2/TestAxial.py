@@ -21,7 +21,7 @@ from pylith.utils.VTKDataReader import VTKDataReader
 
 
 # Local version of PyLithApp
-from pylith.PyLithApp import PyLithApp
+from pylith.apps.PyLithApp import PyLithApp
 class AxialPlaneStrainApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="axialextension")
@@ -75,7 +75,7 @@ class TestAxial(unittest.TestCase):
 
     # Check vertices
     nverticesE = 5
-    spaceDimE = 2
+    spaceDimE = 3
     (nvertices, spaceDim) = data['vertices'].shape
     self.assertEqual(nverticesE, nvertices)
     self.assertEqual(spaceDimE, spaceDim)
@@ -91,6 +91,7 @@ class TestAxial(unittest.TestCase):
     diff = numpy.abs(1.0 - data['cell_fields']['mu']/muE)
     okay = diff < tolerance
     if numpy.sum(okay) != ncells:
+      print "Expected Lame's constant mu: ",muE
       print "Lame's constant mu: ",data['cell_fields']['mu']
       self.assertEqual(ncells, numpy.sum(okay))    
 
@@ -99,6 +100,7 @@ class TestAxial(unittest.TestCase):
     diff = numpy.abs(1.0 - data['cell_fields']['lambda']/lambdaE)
     okay = diff < tolerance
     if numpy.sum(okay) != ncells:
+      print "Expected Lame's constant lambda: ",lambdaE
       print "Lame's constant lambda: ",data['cell_fields']['lambda']
       self.assertEqual(ncells, numpy.sum(okay))    
 
@@ -106,6 +108,7 @@ class TestAxial(unittest.TestCase):
     diff = numpy.abs(1.0 - data['cell_fields']['density']/densityE)
     okay = diff < tolerance
     if numpy.sum(okay) != ncells:
+      print "Expected density: ",densityE
       print "Density: ",data['cell_fields']['density']
       self.assertEqual(ncells, numpy.sum(okay))    
     return
@@ -140,21 +143,21 @@ class TestAxial(unittest.TestCase):
     dispE = numpy.zeros( (nvertices, spaceDim), dtype=numpy.float64)
     dispE[:,0] = -0.2 + 0.1 * vertices[:,0]
 
-    disp = data['vertex_fields']['displacements']
+    disp = data['vertex_fields']['displacement']
 
     # Check x displacements
     diff = numpy.abs(disp[:,0] - dispE[:,0])
     okay = diff < tolerance
     if numpy.sum(okay) != nvertices:
+      print "Displacement field expected: ",dispE
       print "Displacement field: ",disp
       self.assertEqual(nvertices, numpy.sum(okay))    
     
     # Check y displacements
-    mask = dispE[:,1] > 0.0
-    diff = mask * numpy.abs(1.0 - disp[:,1] / dispE[:,1]) + \
-        ~mask * numpy.abs(disp[:,1] - dispE[:,1])
+    diff = numpy.abs(disp[:,1] - dispE[:,1])
     okay = diff < tolerance
     if numpy.sum(okay) != nvertices:
+      print "Displacement field expected: ",dispE
       print "Displacement field: ",disp
       self.assertEqual(nvertices, numpy.sum(okay))    
 
@@ -162,17 +165,18 @@ class TestAxial(unittest.TestCase):
     diff = numpy.abs(disp[:,2] - dispE[:,2])
     okay = diff < tolerance
     if numpy.sum(okay) != nvertices:
+      print "Displacement field expected: ",dispE
       print "Displacement field: ",disp
       self.assertEqual(nvertices, numpy.sum(okay))    
     
     return
 
 
-  def test_elastic_statevars(self):
-    """
-    Check elastic state variables.
-    """
-    return
+  #def test_elastic_statevars(self):
+  #  """
+  #  Check elastic state variables.
+  #  """
+  #  return
 
 
 # End of file 

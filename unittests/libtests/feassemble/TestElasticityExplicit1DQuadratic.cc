@@ -16,7 +16,8 @@
 
 #include "data/ElasticityExplicitData1DQuadratic.hh"
 
-#include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
+#include "pylith/topology/Mesh.hh" // USES Quadrature<Mesh>
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature1D
 #include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
 #include "pylith/materials/ElasticStrain1D.hh" // USES ElasticStrain1D
 
@@ -28,8 +29,9 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicit1DQua
 void
 pylith::feassemble::TestElasticityExplicit1DQuadratic::setUp(void)
 { // setUp
+  TestElasticityExplicit::setUp();
+
   _data = new ElasticityExplicitData1DQuadratic();
-  _quadrature = new Quadrature1D();
   GeometryLine1D geometry;
   CPPUNIT_ASSERT(0 != _quadrature);
   _quadrature->refGeometry(&geometry);

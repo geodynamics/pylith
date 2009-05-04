@@ -50,32 +50,18 @@
 #if !defined(pylith_bc_absorbingdampers_hh)
 #define pylith_bc_absorbingdampers_hh
 
+// Include directives ---------------------------------------------------
 #include "BoundaryCondition.hh" // ISA BoundaryCondition
+
+#include "pylith/topology/SubMesh.hh" // ISA Quadrature<SubMesh>
+#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 #include "pylith/utils/array.hh" // USES std::vector, double_array, int_array
-#include "pylith/utils/sievetypes.hh" // USES real_section_type
 
-/// Namespace for pylith package
-namespace pylith {
-  namespace bc {
-    class AbsorbingDampers;
-    class TestAbsorbingDampers; // unit testing
-  } // bc
-} // pylith
-
-/*
-namespace spatialdata {
-  namespace geocoords {
-    class CoordSys; // USES CoordSys
-  } // geocoords
-} // spatialdata
-*/
-
-
-/// C++ implementation of AbsorbingDampers boundary conditions.
+// AbsorbingDampers ------------------------------------------------------
 class pylith::bc::AbsorbingDampers : public BoundaryCondition, 
-				     public feassemble::Integrator
+				     public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
 { // class AbsorbingDampers
   friend class TestAbsorbingDampers; // unit testing
 
@@ -90,47 +76,39 @@ public :
 
   /** Initialize boundary condition.
    *
-   * @param mesh PETSc mesh
-   * @param cs Coordinate system for mesh
+   * @param mesh Finite-element mesh.
    * @param upDir Direction perpendicular to horizontal surface tangent 
    *   direction that is not collinear with surface normal.
    */
-  void initialize(const ALE::Obj<Mesh>& mesh,
-		  const spatialdata::geocoords::CoordSys* cs,
-		  const double_array& upDir);
+  void initialize(const topology::Mesh& mesh,
+		  const double upDir[3]);
 
   /** Integrate contributions to residual term (r) for operator.
    *
    * @param residual Field containing values for residual
    * @param t Current time
    * @param fields Solution fields
-   * @param mesh Finite-element mesh
-   * @param cs Mesh coordinate system
    */
-  void integrateResidual(const ALE::Obj<real_section_type>& residual,
+  void integrateResidual(const topology::Field<topology::Mesh>& residual,
 			 const double t,
-			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh,
-			 const spatialdata::geocoords::CoordSys* cs);
+			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator.
    *
-   * @param mat Sparse matrix
+   * @param jacobian Jacobian of system.
    * @param t Current time
    * @param fields Solution fields
-   * @param mesh Finite-element mesh
    */
-  void integrateJacobian(PetscMat* mat,
+  void integrateJacobian(topology::Jacobian* jacobian,
 			 const double t,
-			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh);
+			 topology::SolutionFields* const fields);
 
   /** Verify configuration is acceptable.
    *
    * @param mesh Finite-element mesh
    */
-  void verifyConfiguration(const ALE::Obj<Mesh>& mesh) const;
+  void verifyConfiguration(const topology::Mesh& mesh) const;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -145,10 +123,10 @@ private :
 private :
 
   /// Mesh of absorbing boundary
-  ALE::Obj<SubMesh> _boundaryMesh;
+  topology::SubMesh* _boundaryMesh;
 
   /// Damping constants in global coordinates at integration points.
-  ALE::Obj<real_section_type> _dampingConsts;
+  topology::Field<topology::SubMesh>* _dampingConsts;
 
 }; // class AbsorbingDampers
 

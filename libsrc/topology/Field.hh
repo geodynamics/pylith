@@ -11,9 +11,10 @@
 //
 
 /**
- * @file pylith/topology/Field.hh
+ * @file libsrc/topology/Field.hh
  *
- * @brief Vector field over the vertices or cells of a finite-element mesh.
+ * @brief Vector field over the vertices or cells of a finite-element
+ * mesh.
  *
  * Extends Sieve real general section by adding metadata.
  */
@@ -22,67 +23,72 @@
 #define pylith_topology_field_hh
 
 // Include directives ---------------------------------------------------
-#define NEWPYLITHMESH 1
-#include "pylith/utils/sievetypes.hh" // HASA PETSc real_section_type
+#include "FieldBase.hh" // ISA FieldBase
 
-#include <string> // HASA std::string
+#include "pylith/utils/petscfwd.h" // HASA PetscVec
 
-// Forward declarations -------------------------------------------------
-namespace pylith {
-  namespace topology {
-    class Field;
-    class TestField;
-  } // topology
-} // pylith
+#include <petscmesh.hh>
 
 // Field ----------------------------------------------------------------
-class pylith::topology::Field
+template<typename mesh_type>
+class pylith::topology::Field : public FieldBase
 { // Field
-  friend class TestField; // unit testing
+  friend class TestFieldMesh; // unit testing
+  friend class TestFieldSubMesh; // unit testing
 
-// PUBLIC ENUMS /////////////////////////////////////////////////////////
-public :
+// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
+public:
 
-  enum VectorFieldEnum {
-    SCALAR=0, ///< Scalar.
-    VECTOR=1, ///< Vector.
-    TENSOR=2, ///< Tensor.
-    OTHER=3, ///< Not a scalar, vector, or tensor.
-    MULTI_SCALAR=4, ///< Scalar at multiple points.
-    MULTI_VECTOR=5, ///< Vector at multiple points.
-    MULTI_TENSOR=6, ///< Tensor at multiple points.
-    MULTI_OTHER=7, ///< Not a scalar, vector, or tensor at multiple points.
-  }; // VectorFieldEnum
+  // Convenience typedefs
+  typedef mesh_type Mesh;
+
+// PRIVATE TYPEDEFS /////////////////////////////////////////////////////
+private:
+
+  // Convenience typedefs
+  typedef typename mesh_type::RealSection RealSection;
+  typedef typename mesh_type::SieveMesh SieveMesh;
+  typedef typename SieveMesh::label_sequence label_sequence;
+  typedef typename RealSection::chart_type chart_type;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
   /** Default constructor.
    *
-   * @param mesh Sieve mesh.
+   * @param mesh Finite-element mesh.
    */
-  Field(const ALE::Obj<SieveMesh>& mesh);
+  Field(const mesh_type& mesh);
 
   /// Destructor.
   ~Field(void);
 
+  /// Deallocate PETSc and local data structures.
+  void deallocate(void);
+  
   /** Get Sieve section.
    *
    * @returns Sieve section.
    */
-  const ALE::Obj<SieveRealSection>& section(void) const;
+  const ALE::Obj<RealSection>& section(void) const;
 
-  /** Set name of field.
+  /** Get mesh associated with field.
    *
-   * @param value Name of field.
+   * @returns Finite-element mesh.
    */
-  void name(const char* value);
+  const mesh_type& mesh(void) const;
 
-  /** Get name of field.
+  /** Set label for field.
    *
-   * @returns Name of field.
+   * @param value Label for field.
    */
-  const char* name(void) const;
+  void label(const char* value);
+
+  /** Get label for field.
+   *
+   * @returns Label for field.
+   */
+  const char* label(void) const;
 
   /** Set vector field type
    *
@@ -95,12 +101,6 @@ public :
    * @returns Type of vector field.
    */
   VectorFieldEnum vectorFieldType(void) const;
-
-  /** Get spatial dimension of domain.
-   *
-   * @returns Spatial dimension of domain.
-   */
-  int spaceDim(void) const;
 
   /** Set scale for dimensionalizing field.
    *
@@ -126,8 +126,41 @@ public :
    */
   bool addDimensionOkay(void) const;
 
+  /** Get spatial dimension of domain.
+   *
+   * @returns Spatial dimension of domain.
+   */
+  int spaceDim(void) const;
+
   /// Create sieve section.
   void newSection(void);
+
+  /** Create sieve section and set chart and fiber dimesion.
+   *
+   * @param points Points over which to define section.
+   * @param dim Fiber dimension for section.
+   */
+  void newSection(const ALE::Obj<label_sequence>& points,
+		  const int fiberDim);
+
+  /** Create sieve section and set chart and fiber dimesion.
+   *
+   * @param domain Type of points over which to define section.
+   * @param dim Fiber dimension for section.
+   * @param stratum Stratum depth (for vertices) and height (for cells).
+   */
+  void newSection(const DomainEnum domain,
+		  const int fiberDim,
+		  const int stratum =0);
+
+  /** Create section given chart. This allows a chart to be reused
+   * across multiple fields, reducing memory usage.
+   *
+   * @param chart Chart defining points over which section is defined.
+   * @param fiberDim Fiber dimension.
+   */
+  void newSection(const chart_type& chart,
+		  const int fiberDim);
 
   /** Create section with same layout (fiber dimension and
    * constraints) as another section. This allows the layout data
@@ -136,10 +169,13 @@ public :
    *
    * @param sec Section defining layout.
    */
-  void copyLayout(const Field& src);
+  void newSection(const Field& src);
 
   /// Clear variables associated with section.
   void clear(void);
+
+  /// Allocate field.
+  void allocate(void);
 
   /// Zero section values.
   void zero(void);
@@ -152,6 +188,12 @@ public :
    * @param field Field to copy.
    */
   void copy(const Field& field);
+
+  /** Copy field values.
+   *
+   * @param field Field to copy.
+   */
+  void copy(const ALE::Obj<typename mesh_type::RealSection>& field);
 
   /** Add two fields, storing the result in one of the fields.
    *
@@ -170,19 +212,60 @@ public :
    */
   void view(const char* label);
 
-// PROTECTED MEMBERS ////////////////////////////////////////////////////
-protected :
+  /// Create PETSc vector for field.
+  void createVector(void);
 
-  const ALE::Obj<SieveMesh>& _mesh; ///< Mesh associated with section
-  ALE::Obj<SieveRealSection> _section; ///< Real section with data
+  /** Get PETSc vector associated with field.
+   *
+   * @returns PETSc vector.
+   */
+  PetscVec vector(void);
+
+  /** Get PETSc vector associated with field.
+   *
+   * @returns PETSc vector.
+   */
+  const PetscVec vector(void) const;
+
+  /// Create PETSc vector scatter for field. This is used to transfer
+  /// information from the "global" PETSc vector view to the "local"
+  /// Sieve section view.
+  void createScatter(void);
+
+  /// Scatter section information across processors to update the
+  /// PETSc vector view of the field.
+  void scatterSectionToVector(void) const;
+
+  /** Scatter section information across processors to update the
+   * PETSc vector view of the field.
+   *
+   * @param vector PETSc vector to update.
+   */
+  void scatterSectionToVector(const PetscVec vector) const;
+
+  /// Scatter PETSc vector information across processors to update the
+  /// Sieve section view of the field.
+  void scatterVectorToSection(void) const;
+
+  /** Scatter section information across processors to update the
+   * PETSc vector view of the field.
+   *
+   * @param vector PETSc vector used in update.
+   */
+  void scatterVectorToSection(const PetscVec vector) const;
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  double _scale; ///< Dimensional scale associated with field
-  std::string _name; ///< Name of field
-  VectorFieldEnum _vecFieldType; ///< Type of vector field
-  bool _dimensionsOkay; ///< Flag indicating it is okay to dimensionalize
+  double _scale; ///< Dimensional scale associated with field.
+  std::string _label; ///< Label for field.
+  const mesh_type& _mesh; ///< Mesh associated with section.
+  ALE::Obj<RealSection> _section; ///< Real section with data.
+  PetscVec _vector; ///< PETSc vector associated with field.
+  PetscVecScatter _scatter; ///< PETSc scatter associated with field.
+  VectorFieldEnum _vecFieldType; ///< Type of vector field.
+  bool _dimensionsOkay; ///< Flag indicating it is okay to dimensionalize.
+
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
@@ -193,6 +276,7 @@ private :
 }; // Field
 
 #include "Field.icc"
+#include "Field.cc"
 
 #endif // pylith_topology_field_hh
 

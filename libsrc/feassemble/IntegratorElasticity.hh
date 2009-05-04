@@ -20,22 +20,20 @@
 #if !defined(pylith_feassemble_integratorelasticity_hh)
 #define pylith_feassemble_integratorelasticity_hh
 
+// Include directives ---------------------------------------------------
+#include "feassemblefwd.hh" // forward declarations
+
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
+#include "pylith/materials/materialsfwd.hh" // HOLDSA Material
+
+#include "pylith/topology/Mesh.hh" // ISA Integrator<Mesh>
 #include "Integrator.hh" // ISA Integrator
-#include "pylith/utils/array.hh" // USES std::vector, double_array
-#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
 
-namespace pylith {
-  namespace feassemble {
-    class IntegratorElasticity;
-    class TestIntegratorElasticity;
-  } // feassemble
+#include "pylith/utils/arrayfwd.hh" // USES std::vector, double_array
 
-  namespace materials {
-    class ElasticMaterial;
-  } // feassemble
-} // pylith
-
-class pylith::feassemble::IntegratorElasticity : public Integrator
+// IntegratorElasticity -------------------------------------------------
+class pylith::feassemble::IntegratorElasticity :
+  public Integrator<Quadrature<topology::Mesh> >
 { // IntegratorElasticity
   friend class TestIntegratorElasticity; // unit testing
 
@@ -77,60 +75,64 @@ public :
    */
   void useSolnIncr(const bool flag);
 
+  /** Initialize integrator.
+   *
+   * @param mesh Finite-element mesh.
+   */
+  void initialize(const topology::Mesh& mesh);
+  
   /** Update state variables as needed.
    *
    * @param t Current time
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
-  void updateState(const double t,
-		   topology::FieldsManager* const fields,
-		   const ALE::Obj<Mesh>& mesh);
+  void updateStateVars(const double t,
+		       topology::SolutionFields* const fields);
 
   /** Verify configuration is acceptable.
    *
    * @param mesh Finite-element mesh
    */
-  void verifyConfiguration(const ALE::Obj<Mesh>& mesh) const;
+  void verifyConfiguration(const topology::Mesh& mesh) const;
 
   /** Get cell field associated with integrator.
    *
-   * @param fieldType Type of field.
    * @param name Name of vertex field.
-   * @param mesh PETSc mesh for problem.
+   * @param mesh Finite-element mesh for problem.
    * @param fields Fields manager.
    * @returns Cell field.
    */
-  const ALE::Obj<real_section_type>&
-  cellField(VectorFieldEnum* fieldType,
-	    const char* name,
-	    const ALE::Obj<Mesh>& mesh,
-	    topology::FieldsManager* const fields);
-
+  const topology::Field<topology::Mesh>&
+  cellField(const char* name,
+	    const topology::Mesh& mesh,
+	    topology::SolutionFields* const fields =0);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
+
+  /** Allocate buffer for tensor field at quadrature points.
+   *
+   * @param mesh Finite-element mesh.
+   */
+  void _allocateTensorField(const topology::Mesh& mesh);
 
   /** Calculate stress or strain field from solution field.
    *
    * @param field Field in which to store stress or strain.
    * @param name Name of field to compute ('total-strain' or 'stress')
-   * @param mesh PETSc mesh for problem.
-   * @param fields Fields manager with solution.
+   * @param fields Manager for solution fields.
    */
-  void _calcStrainStressField(ALE::Obj<real_section_type>* field,
+  void _calcStrainStressField(topology::Field<topology::Mesh>* field,
 			      const char* name,
-			      const ALE::Obj<Mesh>& mesh,
-			      topology::FieldsManager* const fields);
+			      topology::SolutionFields* const fields);
 
   /** Calculate stress field from total strain field. Stress field
    * replaces strain field in section.
    *
    * @param field Field in which to store stress.
-   * @param mesh PETSc mesh for problem.
    */
-  void _calcStressFromStrain(ALE::Obj<real_section_type>* field,
-			     const ALE::Obj<Mesh>& mesh);
+  void _calcStressFromStrain(topology::Field<topology::Mesh>* field);
 			      
 
   /** Integrate elasticity term in residual for 1-D cells.
@@ -215,32 +217,26 @@ protected :
 			  const int numBasis,
 			  const int numQuadPts);
 
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
-private :
-
-  /// Not implemented.
-  IntegratorElasticity(const IntegratorElasticity& i);
-
-  /// Not implemented
-  const IntegratorElasticity& operator=(const IntegratorElasticity&);
-
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
   /// Elastic material associated with integrator
   materials::ElasticMaterial* _material;
 
-  /// Buffer for storing scalar cell field.
-  ALE::Obj<real_section_type> _bufferCellScalar;
-
-  /// Buffer for storing vector cell field.
-  ALE::Obj<real_section_type> _bufferCellVector;
-
   /// Buffer for storing cell tensor field.
-  ALE::Obj<real_section_type> _bufferCellTensor;
+  topology::Field<topology::Mesh>* _bufferFieldTensor;
 
-  /// Buffer for storing other cell fields.
-  ALE::Obj<real_section_type> _bufferCellOther;
+  /// Buffer for storing cell state-variable field.
+  topology::Field<topology::Mesh>* _bufferFieldOther;
+
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
+private :
+
+  /// Not implemented.
+  IntegratorElasticity(const IntegratorElasticity&);
+
+  /// Not implemented
+  const IntegratorElasticity& operator=(const IntegratorElasticity&);
 
 }; // IntegratorElasticity
 

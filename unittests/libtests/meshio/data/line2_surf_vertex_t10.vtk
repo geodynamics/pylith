@@ -1,0 +1,19 @@
+# vtk DataFile Version 2.0
+Simplicial Mesh Example
+ASCII
+DATASET UNSTRUCTURED_GRID
+POINTS 1 double
+-1 0.0 0.0
+CELLS 1 2
+1  0
+CELL_TYPES 1
+-1
+POINT_DATA 1
+VECTORS displacements double
+1.1 2.2 0.0
+SCALARS pressure double 1
+LOOKUP_TABLE default
+2.1
+SCALARS other double 2
+LOOKUP_TABLE default
+1.2 2.3

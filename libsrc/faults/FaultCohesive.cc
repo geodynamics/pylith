@@ -14,12 +14,9 @@
 
 #include "FaultCohesive.hh" // implementation of object methods
 
-#include "CohesiveTopology.hh" // USES CohesiveTopology::create()
-
-#include "pylith/meshio/MeshIOLagrit.hh" // USES MeshIOLagrit::readFault()
-
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
-#include "pylith/utils/array.hh" // USES double_array
+#include "CohesiveTopology.hh" // USES CohesiveTopology
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/meshio/UCDFaultFile.hh" // USES UCDFaultFile
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -59,49 +56,50 @@ pylith::faults::FaultCohesive::faultMeshFilename(const char* filename)
 // ----------------------------------------------------------------------
 // Adjust mesh topology for fault implementation.
 void
-pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<Mesh>& mesh,
+pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
 					      const bool flipFault)
 { // adjustTopology
+  assert(0 != mesh);
   assert(std::string("") != label());
-  Obj<SubMesh>   faultMesh = NULL;
-  Obj<ALE::Mesh> faultBd   = NULL;
+
+  topology::SubMesh faultMesh;
+  ALE::Obj<ALE::Mesh> faultBoundary;
+
+  // Get group of vertices associated with fault
+  const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = mesh->sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<topology::Mesh::IntSection>& groupField = 
+    sieveMesh->getIntSection(label());
+  assert(!groupField.isNull());
 
   if (_useFaultMesh) {
     const int faultDim = 2;
+    assert(3 == mesh->dimension());
 
-    //MPI_Bcast(&faultDim, 1, MPI_INT, 0, comm);
-    faultMesh = new SubMesh(mesh->comm(), faultDim, mesh->debug());
-    pylith::meshio::MeshIOLagrit::readFault(_faultMeshFilename, mesh, 
-					    faultMesh, faultBd);
+    meshio::UCDFaultFile::read(_faultMeshFilename.c_str(),
+			       &faultMesh, faultBoundary, *mesh);
 
-    // Get group of vertices associated with fault
-    const ALE::Obj<int_section_type>& groupField = 
-      mesh->getIntSection(label());
-    faultMesh->setRealSection("coordinates", 
-			      mesh->getRealSection("coordinates"));
+    // Set coordinates in fault mesh
+    const ALE::Obj<topology::SubMesh::SieveMesh>& faultSieveMesh = 
+      faultMesh.sieveMesh();
+    assert(!faultSieveMesh.isNull());
+    faultSieveMesh->setRealSection("coordinates", 
+				   sieveMesh->getRealSection("coordinates"));
 
-    CohesiveTopology::create(faultMesh, faultBd, mesh, groupField, id(),
+    CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(),
 			     _useLagrangeConstraints());
   } else {
-    if (!mesh->hasIntSection(label())) {
+    if (!sieveMesh->hasIntSection(label())) {
       std::ostringstream msg;
       msg << "Mesh missing group of vertices '" << label()
           << " for fault interface condition.";
       throw std::runtime_error(msg.str());
     } // if  
 
-    // Get group of vertices associated with fault
-    const ALE::Obj<int_section_type>& groupField = 
-      mesh->getIntSection(label());
-    assert(!groupField.isNull());
-
-    faultMesh = 
-      new SubMesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
-
-    CohesiveTopology::createFault(faultMesh, faultBd, mesh, groupField, 
+    CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField, 
 				  flipFault);
 
-    CohesiveTopology::create(faultMesh, faultBd, mesh, groupField, id(), 
+    CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(), 
 			     _useLagrangeConstraints());
   } // if/else
 } // adjustTopology

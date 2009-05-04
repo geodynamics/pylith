@@ -25,9 +25,13 @@ subpkginclude_HEADERS = \
 	GenMaxwellIsotropic3D.icc \
 	MaxwellIsotropic3D.hh \
 	MaxwellIsotropic3D.icc \
+	Metadata.hh \
+	Metadata.icc \
 	Material.hh \
 	Material.icc \
-	ViscoelasticMaxwell.hh
+	ViscoelasticMaxwell.hh \
+	materialsfwd.hh
+
 
 noinst_HEADERS =
 

@@ -13,23 +13,16 @@
 /**
  * @file pylith/topology/MeshOps.hh
  *
- * @brief Temporary object for doing operations on a PETSc
- * mesh. Object will be replaced by a PyLith Mesh object that inherits
- * or templates over the PETSc mesh object.
+ * @brief Simple operations on a Mesh object.
  */
 
 #if !defined(pylith_topology_meshops_hh)
 #define pylith_topology_meshops_hh
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+// Include directives ---------------------------------------------------
+#include "topologyfwd.hh" // forward declarations
 
-namespace pylith {
-  namespace topology {
-    class MeshOps;
-    class TestMeshOps;
-  } // topology
-} // pylith
-
+// MeshOps --------------------------------------------------------------
 class pylith::topology::MeshOps
 { // MeshOps
   friend class TestMeshOps; // unit testing
@@ -40,24 +33,23 @@ public :
   /** Check to make sure material id of every cell matches the id of
    *  one of the materials.
    *
-   * @param mesh PETSc mesh.
-   * @param materialIds Array of ids for all materials and cohesive cell interfaces.
+   * @param mesh Finite-element mesh.
+   * @param materialIds Array of ids for all materials and cohesive
+   * cell interfaces.
    * @param numMaterials Size of array.
    */
   static
-  void checkMaterialIds(const ALE::Obj<Mesh>& mesh,
-			int* materialIds,
+  void checkMaterialIds(const Mesh& mesh,
+			int* const materialIds,
 			const int numMaterials);
 
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
-  /// Not implemented
-  MeshOps(const MeshOps&);
-
-  /// Not implemented
-  const MeshOps& operator=(const MeshOps&);
+  MeshOps(void); ///< Not Implemented
+  MeshOps(const MeshOps&); ///< Not implemented
+  const MeshOps& operator=(const MeshOps&); ///< Not implemented
 
 
 }; // MeshOps

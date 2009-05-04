@@ -27,7 +27,6 @@ pylith::faults::TestFaultCohesiveKinSrcs::setUp(void)
 { // setUp
   TestFaultCohesiveKin::setUp();
   _data = 0;
-  _quadrature = 0;
 
   // Cleanup previous allocation
   int nsrcs = _eqsrcs.size();

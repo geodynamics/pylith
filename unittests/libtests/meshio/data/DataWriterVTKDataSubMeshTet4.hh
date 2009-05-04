@@ -35,8 +35,7 @@ public:
 private:
 
   static const char* _meshFilename; ///< Name of mesh file.
-  static const char* _cellsLabel; ///< Label defining subset of cells.
-  static const int _labelId; /// Value for label defining subset of cells.
+  static const char* _bcLabel; ///< Label defining boundary vertices.
   static const char* _faultLabel; ///< Name of group of vertices for fault.
   static const int _faultId; ///< Material identifier for fault.
 

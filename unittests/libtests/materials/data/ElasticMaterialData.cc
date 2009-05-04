@@ -17,7 +17,10 @@ pylith::materials::ElasticMaterialData::ElasticMaterialData(void) :
   density(0),
   strain(0),
   stress(0),
-  elasticConsts(0)
+  elasticConsts(0),
+  initialStress(0),
+  initialStrain(0),
+  stateVarsUpdated(0)
 { // constructor
 } // constructor
 

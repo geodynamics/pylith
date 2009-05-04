@@ -39,31 +39,49 @@ private:
 
   static const int _dimension;
 
-  static const int _numDBValues;
-
-  static const int _numInitialStateValues;
-
-  static const int _numParameters;
-
-  static const int _numParamsQuadPt;
-
   static const int _numLocs;
+
+  static const int _numProperties;
+
+  static const int _numStateVars;
+
+  static const int _numDBProperties;
+
+  static const int _numDBStateVars;
+
+  static const int _numPropsQuadPt;
+
+  static const int _numVarsQuadPt;
+
+  static const double _lengthScale;
+
+  static const double _timeScale;
+
+  static const double _pressureScale;
+
+  static const double _densityScale;
 
   static const double _dtStableImplicit;
 
-  static const int _numParamValues[];
+  static const int _numPropertyValues[];
 
-  static const char* _dbValues[];
+  static const int _numStateVarValues[];
 
-  static const char* _initialStateDBValues[];
+  static const char* _dbPropertyValues[];
 
-  static const double _dbData[];
+  static const char* _dbStateVarValues[];
 
-  static const double _initialStateDBData[];
+  static const double _dbProperties[];
 
-  static const double _parameterData[];
+  static const double _dbStateVars[];
 
-  static const double _initialState[];
+  static const double _properties[];
+
+  static const double _stateVars[];
+
+  static const double _propertiesNondim[];
+
+  static const double _stateVarsNondim[];
 
   static const double _density[];
 
@@ -72,6 +90,12 @@ private:
   static const double _stress[];
 
   static const double _elasticConsts[];
+
+  static const double _initialStress[];
+
+  static const double _initialStrain[];
+
+  static const double* _stateVarsUpdated;
 
 };
 

@@ -111,7 +111,6 @@ class TimeDependent(Problem):
     self._logger.eventBegin(logEvent)
 
     self._info.log("Initializing problem.")
-    self.normalizer.initialize()
     self.checkpointTimer.initialize(self.normalizer)
     self.formulation.initialize(self.dimension, self.normalizer)
 

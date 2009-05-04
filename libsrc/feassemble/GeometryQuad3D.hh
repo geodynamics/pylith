@@ -33,14 +33,10 @@
 #if !defined(pylith_feassemble_geometryquad3d_hh)
 #define pylith_feassemble_geometryquad3d_hh
 
+// Include directives ---------------------------------------------------
 #include "CellGeometry.hh" // ISA CellGeometry
 
-namespace pylith {
-  namespace feassemble {
-    class GeometryQuad3D;
-  } // feassemble
-} // pylith
-
+// GeometryQuad3D -------------------------------------------------------
 class pylith::feassemble::GeometryQuad3D : public CellGeometry
 { // GeometryQuad3D
 

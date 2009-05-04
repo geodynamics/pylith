@@ -12,75 +12,112 @@
 
 #include <portinfo>
 
-#include "CellFilterAvg.hh" // implementation of class methods
-
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshio::CellFilterAvg::CellFilterAvg(void)
+template<typename mesh_type, typename field_type>
+pylith::meshio::CellFilterAvg<mesh_type, field_type>::CellFilterAvg(void) :
+  _fieldAvg(0)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::CellFilterAvg::~CellFilterAvg(void)
+template<typename mesh_type, typename field_type>
+pylith::meshio::CellFilterAvg<mesh_type, field_type>::~CellFilterAvg(void)
 { // destructor
+  delete _fieldAvg; _fieldAvg = 0;
 } // destructor  
 
 // ----------------------------------------------------------------------
 // Copy constructor.
-pylith::meshio::CellFilterAvg::CellFilterAvg(const CellFilterAvg& f) :
-  CellFilter(f)
+template<typename mesh_type, typename field_type>
+pylith::meshio::CellFilterAvg<mesh_type, field_type>::CellFilterAvg(
+					       const CellFilterAvg& f) :
+  CellFilter<mesh_type, field_type>(f),
+  _fieldAvg(0)
 { // copy constructor
 } // copy constructor
 
 // ----------------------------------------------------------------------
 // Create copy of filter.
-pylith::meshio::CellFilter*
-pylith::meshio::CellFilterAvg::clone(void) const
+template<typename mesh_type, typename field_type>
+pylith::meshio::CellFilter<mesh_type, field_type>*
+pylith::meshio::CellFilterAvg<mesh_type, field_type>::clone(void) const
 { // clone
-  return new CellFilterAvg(*this);
+  return new CellFilterAvg<mesh_type,field_type>(*this);
 } // clone
 
 // ----------------------------------------------------------------------
 // Filter field.
-const ALE::Obj<pylith::real_section_type>&
-pylith::meshio::CellFilterAvg::filter(
-				  VectorFieldEnum* fieldType,
-				  const ALE::Obj<real_section_type>& fieldIn,
-				  const ALE::Obj<Mesh>& mesh,
-				  const char* label,
-				  const int labelId)
+template<typename mesh_type, typename field_type>
+const field_type&
+pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
+						const field_type& fieldIn,
+						const char* label,
+						const int labelId)
 { // filter
-  assert(0 != fieldType);
-  assert(0 != _quadrature);
+  typedef typename mesh_type::SieveMesh SieveMesh;
+  typedef typename SieveMesh::label_sequence label_sequence;
+  typedef typename field_type::Mesh::RealSection RealSection;
 
-  const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& wts = _quadrature->quadWts();
+  const feassemble::Quadrature<mesh_type>* quadrature = 
+    CellFilter<mesh_type, field_type>::_quadrature;
+  assert(0 != quadrature);
+
+  const int numQuadPts = quadrature->numQuadPts();
+  const double_array& wts = quadrature->quadWts();
   
-  const ALE::Obj<Mesh::label_sequence>& cells = (0 == label) ?
-    mesh->heightStratum(0) :
-    mesh->getLabelStratum(label, labelId);
+  const ALE::Obj<SieveMesh>& sieveMesh = fieldIn.mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+
+  const ALE::Obj<label_sequence>& cells = (0 == label) ?
+    sieveMesh->heightStratum(0) :
+    sieveMesh->getLabelStratum(label, labelId);
   assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const typename label_sequence::iterator cellsEnd = cells->end();
 
   // Only processors with cells for output get the correct fiber dimension.
-  const int totalFiberDim = fieldIn->getFiberDimension(*cells->begin());
+  const ALE::Obj<RealSection>& sectionIn = fieldIn.section();
+  assert(!sectionIn.isNull());
+  const int totalFiberDim = sectionIn->getFiberDimension(*cells->begin());
   const int fiberDim = totalFiberDim / numQuadPts;
   assert(fiberDim * numQuadPts == totalFiberDim);
 
-  *fieldType = OTHER_FIELD; // Don't know field type
-  
-  // Allocation field if necessary
-  if (_fieldAvg.isNull() ||
-      fiberDim != _fieldAvg->getFiberDimension(*cells->begin())) {
-    _fieldAvg = new real_section_type(mesh->comm(), mesh->debug());
-    _fieldAvg->setChart(real_section_type::chart_type(*std::min_element(cells->begin(), cells->end()),
-                                                      *std::max_element(cells->begin(), cells->end())+1));
-    _fieldAvg->setFiberDimension(cells, fiberDim);
-    mesh->allocate(_fieldAvg);
+  // Allocate field if necessary
+  if (0 == _fieldAvg) {
+    _fieldAvg = new field_type(fieldIn.mesh());
+    assert(0 != _fieldAvg);
+    _fieldAvg->newSection(sectionIn->getChart(), fiberDim);
+    _fieldAvg->allocate();
+
+    _fieldAvg->label(fieldIn.label());
+    switch (fieldIn.vectorFieldType())
+      { // switch
+      case topology::FieldBase::MULTI_SCALAR:
+	_fieldAvg->vectorFieldType(topology::FieldBase::SCALAR);
+	break;
+      case topology::FieldBase::MULTI_VECTOR:
+	_fieldAvg->vectorFieldType(topology::FieldBase::VECTOR);
+	break;
+      case topology::FieldBase::MULTI_TENSOR:
+	_fieldAvg->vectorFieldType(topology::FieldBase::TENSOR);
+	break;
+      case topology::FieldBase::MULTI_OTHER:
+	_fieldAvg->vectorFieldType(topology::FieldBase::OTHER);
+	break;
+      case topology::FieldBase::SCALAR:
+      case topology::FieldBase::VECTOR:
+      case topology::FieldBase::TENSOR:
+      case topology::FieldBase::OTHER:
+      default :
+	std::cerr << "Bad vector field type for CellFilterAvg." << std::endl;
+	assert(0);
+      } // switch
   } // if
+  assert(0 != _fieldAvg);
+  const ALE::Obj<RealSection>& sectionAvg = _fieldAvg->section();
 
   double_array fieldAvgCell(fiberDim);
   double scalar = 0.0;
@@ -88,22 +125,21 @@ pylith::meshio::CellFilterAvg::filter(
     scalar += wts[iQuad];
 
   // Loop over cells
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  for (typename label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
-    const real_section_type::value_type* values = 
-      fieldIn->restrictPoint(*c_iter);
+    const double* values = sectionIn->restrictPoint(*c_iter);
     
     fieldAvgCell = 0.0;
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
       for (int i=0; i < fiberDim; ++i)
 	fieldAvgCell[i] += wts[iQuad] / scalar * values[iQuad*fiberDim+i];
 
-    _fieldAvg->updatePoint(*c_iter, &fieldAvgCell[0]);
+    sectionAvg->updatePoint(*c_iter, &fieldAvgCell[0]);
     PetscLogFlops( numQuadPts*fiberDim*3 );
   } // for
 
-  return _fieldAvg;
+  return *_fieldAvg;
 } // filter
 
 

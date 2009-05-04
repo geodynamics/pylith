@@ -32,7 +32,7 @@ pylith::faults::EqKinSrc::EqKinSrc(void) :
 // Destructor.
 pylith::faults::EqKinSrc::~EqKinSrc(void)
 { // destructor
-  _slipfn = 0; // Don't manage memory for slip fn
+  _slipfn = 0; // :TODO: Use shared pointer.
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -56,49 +56,49 @@ pylith::faults::EqKinSrc::originTime(void) const
 void
 pylith::faults::EqKinSrc::slipfn(SlipTimeFn* slipfn)
 { // slipfn
-  _slipfn = slipfn; // Don't manage memory for slip fn
+  _slipfn = slipfn; // :TODO: Use shared pointer.
 } // slipfn
 
 // ----------------------------------------------------------------------
 // Initialize slip time function.
 void
 pylith::faults::EqKinSrc::initialize(
-			 const ALE::Obj<Mesh>& faultMesh,
-			 const spatialdata::geocoords::CoordSys* cs,
-			 const spatialdata::units::Nondimensional& normalizer)
+			   const topology::SubMesh& faultMesh,
+			   const spatialdata::units::Nondimensional& normalizer)
 { // initialize
+  // :TODO: Normalize slip time in Python?
   normalizer.nondimensionalize(&_originTime, 1, normalizer.timeScale());
   assert(0 != _slipfn);
-  _slipfn->initialize(faultMesh, cs, normalizer, _originTime);
+  _slipfn->initialize(faultMesh, normalizer, _originTime);
 } // initialize
 
 // ----------------------------------------------------------------------
 // Get slip on fault surface at time t.
 void
-pylith::faults::EqKinSrc::slip(const ALE::Obj<pylith::real_section_type>& slipField,
-			       const double t,
-			       const ALE::Obj<Mesh>& faultMesh)
+pylith::faults::EqKinSrc::slip(
+			   topology::Field<topology::SubMesh>* const slipField,
+			   const double t)
 { // slip
   assert(0 != _slipfn);
-  _slipfn->slip(slipField, t, faultMesh);
+  _slipfn->slip(slipField, t);
 } // slip
 
 // ----------------------------------------------------------------------
 // Get slip increment on fault surface from time t0 to 1.
 void
-pylith::faults::EqKinSrc::slipIncr(const ALE::Obj<pylith::real_section_type>& slipField,
-				   const double t0,
-				   const double t1,
-				   const ALE::Obj<Mesh>& faultMesh)
+pylith::faults::EqKinSrc::slipIncr(
+			   topology::Field<topology::SubMesh>* const slipField,
+			   const double t0,
+			   const double t1)
 { // slip
   assert(0 != _slipfn);
-  _slipfn->slipIncr(slipField, t0, t1, faultMesh);
+  _slipfn->slipIncr(slipField, t0, t1);
 } // slip
 
 // ----------------------------------------------------------------------
 // Get final slip.
-ALE::Obj<pylith::real_section_type>
-pylith::faults::EqKinSrc::finalSlip(void)
+const pylith::topology::Field<pylith::topology::SubMesh>&
+pylith::faults::EqKinSrc::finalSlip(void) const
 { // finalSlip
   assert(0 != _slipfn);
   return _slipfn->finalSlip();
@@ -106,8 +106,8 @@ pylith::faults::EqKinSrc::finalSlip(void)
 
 // ----------------------------------------------------------------------
 // Get time when slip begins at each point.
-ALE::Obj<pylith::real_section_type>
-pylith::faults::EqKinSrc::slipTime(void)
+const pylith::topology::Field<pylith::topology::SubMesh>&
+pylith::faults::EqKinSrc::slipTime(void) const
 { // slipTime
   assert(0 != _slipfn);
   return _slipfn->slipTime();

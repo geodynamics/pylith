@@ -24,7 +24,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMeshHex8 );
 void
 pylith::meshio::TestDataWriterVTKSubMeshHex8::setUp(void)
 { // setUp
-  TestDataWriterVTKMesh::setUp();
+  TestDataWriterVTKSubMesh::setUp();
   _data = new DataWriterVTKDataSubMeshHex8;
   _flipFault = true;
 

@@ -33,11 +33,13 @@ class IntegratorElasticity(Integrator):
     Constructor.
     """
     Integrator.__init__(self)
-    import journal
-    self._info = journal.info(name)
     self.output = None
     self.availableFields = None
     self.name = "Integrator Elasticity"
+
+    # Setup journal (not a Component, so not setup already)
+    import journal
+    self._info = journal.info(name)
     return
 
 
@@ -45,21 +47,18 @@ class IntegratorElasticity(Integrator):
     """
     Setup integrator.
     """
-    Integrator.preinitialize(self, mesh)
-    
-    assert(None != self.cppHandle)
     self.mesh = mesh
-
-    material.preinitialize()
-
-    self.quadrature = material.quadrature
-    self.cppHandle.quadrature = self.quadrature.cppHandle
-
-    self.material = material
-    self.cppHandle.material = self.material.cppHandle
     self.output = material.output
     self.availableFields = material.availableFields
+    self.materialObj = material
+
+    Integrator.preinitialize(self, mesh)
+    material.preinitialize(mesh)
     self.output.preinitialize(self)
+
+    # Set integrator's quadrature using quadrature from material
+    self.quadrature(material.quadrature)
+    self.material(material)
     return
 
 
@@ -71,9 +70,7 @@ class IntegratorElasticity(Integrator):
     self._logger.eventBegin(logEvent)
 
     Integrator.verifyConfiguration(self)
-    self.material.verifyConfiguration()
     self.output.verifyConfiguration(self.mesh)
-
 
     self._logger.eventEnd(logEvent)    
     return
@@ -87,14 +84,8 @@ class IntegratorElasticity(Integrator):
     self._logger.eventBegin(logEvent)
 
     self._info.log("Initializing integrator for material '%s'." % \
-                   self.material.label)
-
+                   self.materialObj.label)
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
-
-    self.material.initialize(self.mesh, totalTime, numTimeSteps, normalizer)
-    self.output.initialize(normalizer, self.quadrature)
-    self.output.writeInfo()
-    self.output.open(totalTime, numTimeSteps)
 
     self._logger.eventEnd(logEvent)
     return
@@ -120,7 +111,7 @@ class IntegratorElasticity(Integrator):
     """
     Get mesh associated with data fields.
     """
-    return self.material.getDataMesh()
+    return self.materialObj.getDataMesh()
 
 
   def getCellField(self, name, fields=None):
@@ -128,11 +119,20 @@ class IntegratorElasticity(Integrator):
     Get cell field.
     """
     if None == fields:
-      (field, fieldType) = self.cppHandle.cellField(name, self.mesh.cppHandle)
+      field = self.cellField(name, self.mesh)
     else:
-      (field, fieldType) = self.cppHandle.cellField(name, self.mesh.cppHandle,
-                                                   fields.cppHandle)
-    return (field, fieldType)
+      field = self.cellField(name, self.mesh, fields)
+    return field
+
+
+  def _initializeOutput(self, totalTime, numTimeSteps, normalizer):
+    """
+    Initialize output.
+    """
+    self.output.initialize(normalizer, self.materialObj.quadrature)
+    self.output.writeInfo()
+    self.output.open(totalTime, numTimeSteps)
+    return
 
 
 # End of file 

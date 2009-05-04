@@ -17,22 +17,21 @@
 const char* pylith::meshio::DataWriterVTKDataSubMeshTri3::_meshFilename = 
   "data/tri3.mesh";
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshTri3::_cellsLabel = 
-  "material-id";
-const int pylith::meshio::DataWriterVTKDataSubMeshTri3::_labelId = 0;
+const char* pylith::meshio::DataWriterVTKDataSubMeshTri3::_bcLabel = 
+  "bc";
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshTri3::_faultLabel = 
   "fault";
 const int pylith::meshio::DataWriterVTKDataSubMeshTri3::_faultId = 100;
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshTri3::_timestepFilename = 
-  "tri3_sub.vtk";
+  "tri3_surf.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshTri3::_vertexFilename = 
-  "tri3_sub_vertex.vtk";
+  "tri3_surf_vertex.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshTri3::_cellFilename = 
-  "tri3_sub_cell.vtk";
+  "tri3_surf_cell.vtk";
 
 const double pylith::meshio::DataWriterVTKDataSubMeshTri3::_time = 1.0;
 
@@ -44,9 +43,9 @@ const int pylith::meshio::DataWriterVTKDataSubMeshTri3::_numVertices = 8;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataSubMeshTri3::_vertexFields[] = {
-  { "displacements", VECTOR_FIELD, 2 },
-  { "pressure", SCALAR_FIELD, 1 },
-  { "other", OTHER_FIELD, 2 },
+  { "displacements", topology::FieldBase::VECTOR, 2 },
+  { "pressure", topology::FieldBase::SCALAR, 1 },
+  { "other", topology::FieldBase::OTHER, 2 },
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshTri3::_vertexField0[] = {
   1.1, 2.2,
@@ -59,7 +58,7 @@ const double pylith::meshio::DataWriterVTKDataSubMeshTri3::_vertexField0[] = {
   15.5, 16.6,
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshTri3::_vertexField1[] = {
-  2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8
+  2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8,
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshTri3::_vertexField2[] = {
   1.2, 2.3,
@@ -69,7 +68,7 @@ const double pylith::meshio::DataWriterVTKDataSubMeshTri3::_vertexField2[] = {
   9.0, 10.1,
   11.2, 12.3,
   13.4, 14.5,
-  15.6, 16.7
+  15.6, 16.7,
 };
 
 const int pylith::meshio::DataWriterVTKDataSubMeshTri3::_numCellFields = 3;
@@ -77,9 +76,9 @@ const int pylith::meshio::DataWriterVTKDataSubMeshTri3::_numCells = 1;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataSubMeshTri3::_cellFields[] = {
-  { "traction", VECTOR_FIELD, 2 },
-  { "pressure", SCALAR_FIELD, 1 },
-  { "other", TENSOR_FIELD, 3 },
+  { "traction", topology::FieldBase::VECTOR, 2 },
+  { "pressure", topology::FieldBase::SCALAR, 1 },
+  { "other", topology::FieldBase::TENSOR, 3 },
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshTri3::_cellField0[] = {
   1.1, 2.2,
@@ -94,8 +93,7 @@ const double pylith::meshio::DataWriterVTKDataSubMeshTri3::_cellField2[] = {
 pylith::meshio::DataWriterVTKDataSubMeshTri3::DataWriterVTKDataSubMeshTri3(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
-  cellsLabel = const_cast<char*>(_cellsLabel);
-  labelId = _labelId;
+  bcLabel = const_cast<char*>(_bcLabel);
   faultLabel = const_cast<char*>(_faultLabel);
   faultId = _faultId;
 

@@ -10,32 +10,30 @@
 // ======================================================================
 //
 
+/**
+ * @file libsrc/meshio/MeshIOAscii.hh
+ *
+ * @brief C++ input/output manager for PyLith ASCII mesh files.
+ */
+
 #if !defined(pylith_meshio_meshioascii_hh)
 #define pylith_meshio_meshioascii_hh
+
+// Include directives ---------------------------------------------------
+#include "MeshIO.hh" // ISA MeshIO
+
+#include "spatialdata/utils/utilsfwd.hh" // USES LineParser
 
 #include <iosfwd> // USES std::istream, std::ostream
 #include <string> // HASA std::string
 
-#include "MeshIO.hh"
-
-namespace pylith {
-  namespace meshio {
-    class MeshIOAscii;
-  } // meshio
-} // pylith
-
-namespace spatialdata {
-  namespace utils {
-    class LineParser;
-  } // utils
-} // pylith
-
+// MeshIOAscii ----------------------------------------------------------
 class pylith::meshio::MeshIOAscii : public MeshIO
 { // MeshIOAscii
+  friend class TestMeshIOAscii; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
-  static const char *groupTypeNames[];
 
   /// Constructor
   MeshIOAscii(void);
@@ -131,6 +129,9 @@ private :
 
   std::string _filename; ///< Name of file
   bool _useIndexZero; ///< Flag indicating if indicates start at 0 (T) or 1 (F)
+
+  static
+  const char *groupTypeNames[]; ///< Types of mesh groups.
 
 }; // MeshIOAscii
 

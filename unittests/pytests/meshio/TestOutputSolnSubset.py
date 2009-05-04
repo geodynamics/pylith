@@ -31,21 +31,23 @@ class TestOutputSolnSubset(unittest.TestCase):
     
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
-    normalizer.initialize()
+    normalizer._configure()
 
     from spatialdata.geocoords.CSCart import CSCart
-    iohandler.filename = filename
-    iohandler.coordsys = CSCart()
+    iohandler.inventory.filename = filename
+    iohandler.inventory.coordsys = CSCart()
+    iohandler._configure()
     mesh = iohandler.read(normalizer, debug=False, interpolate=False)
 
-    from pylith.topology.FieldsManager import FieldsManager
-    fields = FieldsManager(mesh)
+    from pylith.topology.SolutionFields import SolutionFields
+    fields = SolutionFields(mesh)
 
-    name = "solution"
-    fields.addReal(name)
-    fields.setFiberDimension(name, mesh.dimension())
-    fields.allocate(name)
-    fields.solutionField(name)
+    name = "disp(t)"
+    fields.add(name, "displacement")
+    fields.solutionName(name)
+    field = fields.get(name)
+    field.newSection(field.VERTICES_FIELD, mesh.dimension())
+    field.allocate()
 
     self.mesh = mesh
     self.fields = fields
@@ -58,8 +60,8 @@ class TestOutputSolnSubset(unittest.TestCase):
     Test constructor.
     """
     output = OutputSolnSubset()
+    output.inventory.writer._configure()
     output._configure()
-    output.writer._configure()
     return
 
 
@@ -68,8 +70,8 @@ class TestOutputSolnSubset(unittest.TestCase):
     Test preinitialize().
     """
     output = OutputSolnSubset()
+    output.inventory.label = "label"
     output._configure()
-    output.label = "label"
     output.preinitialize()
     
     self.assertEqual(output, output.dataProvider)
@@ -81,11 +83,11 @@ class TestOutputSolnSubset(unittest.TestCase):
     Test verifyConfiguration().
     """
     output = OutputSolnSubset()
+    output.inventory.label = "2"
     output._configure()
-    output.label = "2"
     output.preinitialize()
 
-    output.vertexDataFields = ["displacements"]
+    output.vertexDataFields = ["displacement"]
     output.verifyConfiguration(self.mesh)
     return
   
@@ -95,14 +97,13 @@ class TestOutputSolnSubset(unittest.TestCase):
     Test initialize().
     """
     output = OutputSolnSubset()
+    output.inventory.label = "2"
+    output.inventory.writer.inventory.filename = "test.vtk"
+    output.inventory.writer._configure()
     output._configure()
-    output.label = "2"
-    output.writer._configure()
-    output.writer.filename = "test.vtk"
 
     output.preinitialize()
     output.initialize(self.mesh, self.normalizer)
-    self.assertNotEqual(None, output.cppHandle)
     return
 
 
@@ -111,10 +112,10 @@ class TestOutputSolnSubset(unittest.TestCase):
     Test open() and close().
     """
     output = OutputSolnSubset()
+    output.inventory.label = "2"
+    output.inventory.writer.inventory.filename = "test.vtk"
+    output.inventory.writer._configure()
     output._configure()
-    output.label = "2"
-    output.writer._configure()
-    output.writer.filename = "test.vtk"
 
     output.preinitialize()
     output.initialize(self.mesh, self.normalizer)
@@ -130,10 +131,10 @@ class TestOutputSolnSubset(unittest.TestCase):
     Test writeInfo().
     """
     output = OutputSolnSubset()
+    output.inventory.label = "2"
+    output.inventory.writer.inventory.filename = "output_sub.vtk"
+    output.inventory.writer._configure()
     output._configure()
-    output.label = "2"
-    output.writer._configure()
-    output.writer.filename = "output_sub.vtk"
 
     output.preinitialize()
     output.initialize(self.mesh, self.normalizer)
@@ -149,12 +150,12 @@ class TestOutputSolnSubset(unittest.TestCase):
     Test writeData().
     """
     output = OutputSolnSubset()
+    output.inventory.label = "2"
+    output.inventory.writer.inventory.filename = "outputsub.vtk"
+    output.inventory.writer.inventory.timeFormat = "%3.1f"
+    output.inventory.writer._configure()
+    output.inventory.vertexDataFields = ["displacement"]
     output._configure()
-    output.label = "2"
-    output.writer._configure()
-    output.writer.filename = "outputsub.vtk"
-    output.writer.timeFormat = "%3.1f"
-    output.vertexDataFields = ["displacements"]
 
     output.preinitialize()
     output.initialize(self.mesh, self.normalizer)

@@ -23,24 +23,16 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "pylith/bc/bcfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 
 /// Namespace for pylith package
 namespace pylith {
   namespace bc {
     class TestAbsorbingDampers;
-
-    class AbsorbingDampers;
     class AbsorbingDampersData;
   } // bc
-
-  namespace feassemble {
-    class Quadrature; // HOLDSA Quadrature
-  } // feassemble
-
-  namespace topology {
-    class FieldsManager; // USES FieldsManager
-  } // topology
 } // pylith
 
 /// C++ unit testing for AbsorbingDampers.
@@ -77,21 +69,20 @@ public :
 protected :
 
   AbsorbingDampersData* _data; ///< Data for testing
-  feassemble::Quadrature* _quadrature; ///< Data used in testing
+  feassemble::Quadrature<topology::SubMesh>* _quadrature; ///< Used in testing.
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
   /** Initialize AbsorbingDampers boundary condition.
    *
-   * @param mesh PETSc mesh to initialize
-   * @param bc AbsorbingDampers boundary condition to initialize.
-   * @param cs Mesh coordinate system.
+   * @param mesh Finite-element mesh to initialize
+   * @param bc Neumann boundary condition to initialize.
    * @param fields Solution fields.
    */
-  void _initialize(ALE::Obj<Mesh>* mesh,
+  void _initialize(topology::Mesh* mesh,
 		   AbsorbingDampers* const bc,
-		   topology::FieldsManager* fields) const;
+		   topology::SolutionFields* fields) const;
 
 }; // class TestAbsorbingDampers
 

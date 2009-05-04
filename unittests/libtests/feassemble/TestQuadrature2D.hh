@@ -21,7 +21,7 @@
 #if !defined(pylith_feassemble_testquadrature2d_hh)
 #define pylith_feassemble_testquadrature2d_hh
 
-#include "TestQuadrature.hh"
+#include "TestQuadratureEngine.hh"
 
 /// Namespace for pylith package
 namespace pylith {
@@ -31,14 +31,16 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for Quadrature2D
-class pylith::feassemble::TestQuadrature2D : public TestQuadrature
+class pylith::feassemble::TestQuadrature2D : public TestQuadratureEngine
 { // class TestQuadrature2D
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestQuadrature2D );
+
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testLinear );
   CPPUNIT_TEST( testQuadratic );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -53,8 +55,9 @@ public :
   /// Test initialize() & computeGeometry() w/quadratic basis fns
   void testQuadratic(void);
 
-}; // class TestQuadrature
+}; // class TestQuadrature2D
 
 #endif // pylith_feassemble_testquadrature2d_hh
+
 
 // End of file 

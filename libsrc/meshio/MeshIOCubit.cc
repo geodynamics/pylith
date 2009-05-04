@@ -14,6 +14,8 @@
 
 #include "MeshIOCubit.hh" // implementation of class methods
 
+#include "MeshBuilder.hh" // USES MeshBuilder
+
 #include "pylith/utils/array.hh" // USES double_array, int_array, string_vector
 
 #include "journal/info.h" // USES journal::info_t
@@ -45,7 +47,7 @@ void
 pylith::meshio::MeshIOCubit::_read(void)
 { // _read
   MPI_Comm comm = PETSC_COMM_WORLD;
-  int rank;
+  int rank = 0;
   int meshDim = 0;
   int spaceDim = 0;
   int numVertices = 0;
@@ -56,7 +58,7 @@ pylith::meshio::MeshIOCubit::_read(void)
   int_array materialIds;
 
   MPI_Comm_rank(comm, &rank);
-  if (!rank) {
+  if (0 == rank) {
     try {
       NcFile ncfile(_filename.c_str());
       if (!ncfile.is_valid()) {
@@ -75,10 +77,11 @@ pylith::meshio::MeshIOCubit::_read(void)
       _readVertices(ncfile, &coordinates, &numVertices, &spaceDim);
       _readCells(ncfile, &cells, &materialIds, &numCells, &numCorners);
       _orientCells(&cells, numCells, numCorners, meshDim);
-      _buildMesh(&coordinates, numVertices, spaceDim,
-                 cells, numCells, numCorners, meshDim);
+      MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim,
+			     cells, numCells, numCorners, meshDim,
+			     _interpolate, *_normalizer);
       _setMaterials(materialIds);
-
+      
       _readGroups(ncfile);
     } catch (std::exception& err) {
       std::ostringstream msg;
@@ -92,8 +95,9 @@ pylith::meshio::MeshIOCubit::_read(void)
       throw std::runtime_error(msg.str());
     } // try/catch
   } else {
-    _buildMesh(&coordinates, numVertices, spaceDim,
-               cells, numCells, numCorners, meshDim);
+    MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim,
+			   cells, numCells, numCorners, meshDim,
+			   _interpolate, *_normalizer);
     _setMaterials(materialIds);
   }
   _distributeGroups();
@@ -219,7 +223,8 @@ pylith::meshio::MeshIOCubit::_readCells(NcFile& ncfile,
       std::ostringstream msg;
       msg << "All materials must have the same number of vertices per cell.\n"
 	  << "Expected " << *numCorners << " vertices per cell, but block "
-	  << blockIds[iMaterial] << " has " << num_nod_per_el->size() << " vertices.";
+	  << blockIds[iMaterial] << " has " << num_nod_per_el->size()
+	  << " vertices.";
       throw std::runtime_error(msg.str());
     } // if
 
@@ -342,7 +347,7 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
   assert(cells->size() == numCells*numCorners);
 
   if (2 == meshDim && 4 == numCorners) // QUAD
-#if 0
+#if 0 // OLD
     // 0 1 2 3 -> 0 1 3 2
     for (int iCell=0; iCell < numCells; ++iCell) {
       const int i2 = iCell*numCorners+2;
@@ -355,7 +360,7 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
   ; // do nothing
 #endif
   else if (3 == meshDim && 8 == numCorners) // HEX
-#if 0
+#if 0 // OLD
     // 0 1 2 3 4 5 6 7 -> 0 1 3 2 4 5 7 6
     for (int iCell=0; iCell < numCells; ++iCell) {
       const int i2 = iCell*numCorners+2;

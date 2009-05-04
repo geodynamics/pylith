@@ -18,11 +18,24 @@
 
 // ----------------------------------------------------------------------
 // Default constructor
-pylith::topology::Mesh::Mesh(const MPI_Comm& comm,
-			     const int dim) :
-  _mesh(new SieveMesh(comm, dim)),
-  _coordsys(0)
+pylith::topology::Mesh::Mesh(void) :
+  _coordsys(0),
+  _comm(PETSC_COMM_WORLD),
+  _debug(false)
 { // constructor
+} // constructor
+
+// ----------------------------------------------------------------------
+// Default constructor
+pylith::topology::Mesh::Mesh(const int dim,
+			     const MPI_Comm& comm) :
+  _mesh(new SieveMesh(comm, dim)),
+  _coordsys(0),
+  _comm(comm),
+  _debug(false)
+{ // constructor
+  assert(!_mesh->getFactory().isNull());
+  _mesh->getFactory()->clear();
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -33,11 +46,25 @@ pylith::topology::Mesh::~Mesh(void)
 } // destructor
 
 // ----------------------------------------------------------------------
+// Create Sieve mesh.
+void
+pylith::topology::Mesh::createSieveMesh(const int dim)
+{ // createSieveMesh
+  _mesh.destroy();
+  _mesh = new SieveMesh(_comm, dim);
+  _mesh->setDebug(_debug);
+  assert(!_mesh->getFactory().isNull());
+  _mesh->getFactory()->clear();
+} // createSieveMesh
+
+// ----------------------------------------------------------------------
 // Set coordinate system.
 void
 pylith::topology::Mesh::coordsys(const spatialdata::geocoords::CoordSys* cs)
 { // coordsys
   delete _coordsys; _coordsys = (0 != cs) ? cs->clone() : 0;
+  if (0 != _coordsys)
+    _coordsys->initialize();
 } // coordsys
 
 // ----------------------------------------------------------------------
@@ -45,8 +72,6 @@ pylith::topology::Mesh::coordsys(const spatialdata::geocoords::CoordSys* cs)
 void 
 pylith::topology::Mesh::initialize(void)
 { // initialize
-  if (0 != _coordsys)
-    _coordsys->initialize();
 } // initialize
 
 

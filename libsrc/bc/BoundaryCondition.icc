@@ -23,9 +23,9 @@ pylith::bc::BoundaryCondition::label(const char* value) {
 
 // Get label of boundary condition surface.
 inline
-const std::string&
+const char*
 pylith::bc::BoundaryCondition::label(void) const {
-  return _label;
+  return _label.c_str();
 }
 
 // Set database for boundary condition parameters.

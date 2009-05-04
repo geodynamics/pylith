@@ -15,10 +15,15 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	CellFilter.hh \
+	CellFilter.cc \
 	CellFilterAvg.hh \
+	CellFilterAvg.cc \
 	DataWriter.hh \
+	DataWriter.cc \
 	DataWriterVTK.hh \
 	DataWriterVTK.icc \
+	DataWriterVTK.cc \
+	MeshBuilder.hh \
 	MeshIO.hh \
 	MeshIO.icc \
 	MeshIOAscii.hh \
@@ -26,9 +31,14 @@ subpkginclude_HEADERS = \
 	MeshIOLagrit.hh \
 	MeshIOLagrit.icc \
 	OutputManager.hh \
+	OutputManager.cc \
 	OutputSolnSubset.hh \
+	UCDFaultFile.hh \
 	VertexFilter.hh \
-	VertexFilterVecNorm.hh
+	VertexFilter.cc \
+	VertexFilterVecNorm.hh \
+	VertexFilterVecNorm.cc \
+	meshiofwd.hh
 
 if ENABLE_CUBIT
   subpkginclude_HEADERS += \

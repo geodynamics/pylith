@@ -19,40 +19,42 @@
 #if !defined(pylith_feassemble_quadrature1din3d_hh)
 #define pylith_feassemble_quadrature1din3d_hh
 
-#include "Quadrature.hh"
+#include "QuadratureEngine.hh"
 
 namespace pylith {
   namespace feassemble {
     class Quadrature1Din3D;
-    class TestQuadrature1Din3D;
   } // feassemble
 } // pylith
 
-class pylith::feassemble::Quadrature1Din3D : public Quadrature
+class pylith::feassemble::Quadrature1Din3D : public QuadratureEngine
 { // Quadrature1Din3D
   friend class TestQuadrature1Din3D; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
-  /// Constructor
-  Quadrature1Din3D(void);
+  /** Constructor.
+   *
+   * @param q Quadrature information for reference cell.
+   */
+  Quadrature1Din3D(const QuadratureRefCell& q);
 
   /// Destructor
   ~Quadrature1Din3D(void);
 
   /// Create a copy of this object.
-  Quadrature* clone(void) const;
+  QuadratureEngine* clone(void) const;
 
   /** Compute geometric quantities for a cell at quadrature points.
    *
-   * @param mesh Finite-element mesh
-   * @param coordinates Section containing vertex coordinates
+   * @param vertCoords Coordinates of vertices of finite-element cell.
+   * @param coordDim Spatial dimension of coordinate system.
    * @param cell Finite-element cell
    */
-  void computeGeometry(const real_section_type::value_type* vertCoords,
-                       const int coordDim,
-                       const Mesh::point_type& cell);
+  void computeGeometry(const double* vertCoords,
+		       const int coordDim,
+		       const int cell);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -74,5 +76,6 @@ private :
 #include "Quadrature1Din3D.icc" // inline methods
 
 #endif // pylith_feassemble_quadrature1din3d_hh
+
 
 // End of file 

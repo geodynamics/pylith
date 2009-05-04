@@ -14,9 +14,6 @@
 #error "StepSlipFn.icc can only be included from StepSlipFn.hh"
 #endif
 
-#include <math.h> // USES exp()
-#include <assert.h> // USES assert()
-
 // Set spatial database for final slip.
 inline
 void

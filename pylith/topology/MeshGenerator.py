@@ -109,7 +109,7 @@ class MeshGenerator(Component):
 
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("Mesh Generator")
+    logger.className("Mesh Generator")
     logger.initialize()
 
     events = ["create",

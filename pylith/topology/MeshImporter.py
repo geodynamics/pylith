@@ -40,16 +40,16 @@ class MeshImporter(MeshGenerator):
     ## @li None
     ##
     ## \b Facilities
-    ## @li \b importer Mesh importer.
+    ## @li \b reader Mesh reader.
     ## @li \b partitioner Mesh partitioner.
     ## @li \b refiner Mesh refiner.
 
     import pyre.inventory
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
-    importer = pyre.inventory.facility("importer", family="mesh_io",
+    reader = pyre.inventory.facility("reader", family="mesh_io",
                                        factory=MeshIOAscii)
-    importer.meta['tip'] = "Mesh importer."
+    reader.meta['tip'] = "Mesh reader."
 
     from Distributor import Distributor
     distributor = pyre.inventory.facility("distributor",
@@ -85,10 +85,9 @@ class MeshImporter(MeshGenerator):
     logEvent = "%screate" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    normalizer.initialize()    
-    mesh = self.importer.read(normalizer, self.debug, self.interpolate)
+    mesh = self.reader.read(normalizer, self.debug, self.interpolate)
     if self.debug:
-      mesh.view()
+      mesh.view("Finite-element mesh.")
     self._debug.log(resourceUsageString())
     self._info.log("Adjusting topology.")
     self._adjustTopology(mesh, faults)
@@ -96,14 +95,12 @@ class MeshImporter(MeshGenerator):
     import mpi
     if mpi.MPI_Comm_size(mpi.MPI_COMM_WORLD) > 1:
       self._info.log("Distributing mesh.")
-      mesh = self.distributor.distribute(mesh)
-    if self.debug:
-      mesh.view()
+      mesh = self.distributor.distribute(mesh, normalizer)
+      if self.debug:
+        mesh.view("Distributed mesh.")
 
     # refine mesh (if necessary)
     mesh = self.refiner.refine(mesh)
-    if self.debug:
-      mesh.view()
 
     self._logger.eventEnd(logEvent)    
     return mesh
@@ -116,7 +113,7 @@ class MeshImporter(MeshGenerator):
     Set members based on inventory.
     """
     MeshGenerator._configure(self)
-    self.importer = self.inventory.importer
+    self.reader = self.inventory.reader
     self.distributor = self.inventory.distributor
     self.refiner = self.inventory.refiner
     return

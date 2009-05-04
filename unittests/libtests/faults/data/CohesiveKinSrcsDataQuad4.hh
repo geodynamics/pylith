@@ -53,7 +53,7 @@ private:
   static const char* _label; ///< Label for fault
   static const char* _finalSlipFilename; ///< Name of db for final slip
   static const char* _slipTimeFilename; ///< Name of db for slip time
-  static const char* _peakRateFilename; ///< Name of db for peak rate
+  static const char* _riseTimeFilename; ///< Name of db for rise time
   static const char* _matPropsFilename; ///< Name of db for bulk mat properties.
   //@}
 

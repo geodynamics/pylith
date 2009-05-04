@@ -18,41 +18,42 @@
 ## Factory: output_manager
 
 from OutputManager import OutputManager
+from meshio import OutputSolnSubset as ModuleOutputSolnSubset
 
 # OutputSolnSubset class
-class OutputSolnSubset(OutputManager):
+class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
   """
   Python object for managing output of finite-element solution
   information over a subdomain.
+
+  @class Inventory
+  Python object for managing OutputSolnSubset facilities and properties.
+  
+  \b Properties
+  @li \b vertex_data_fields Names of vertex data fields to output.
+  @li \b label Name identifier for subdomain.
+  
+  \b Facilities
+  @li \b writer Writer for data.
 
   Factory: output_manager
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(OutputManager.Inventory):
-    """
-    Python object for managing OutputSolnSubset facilities and properties.
-    """
+  import pyre.inventory
 
-    ## @class Inventory
-    ## Python object for managing OutputSolnSubset facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b vertex_data_fields Names of vertex data fields to output.
-    ## @li \b label Name identifier for subdomain.
-    ##
-    ## \b Facilities
-    ## @li None
+  vertexDataFields = pyre.inventory.list("vertex_data_fields", 
+                                         default=["displacement"])
+  vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
+  
+  label = pyre.inventory.str("label", default="")
+  label.meta['tip'] = "Label identifier for subdomain."
 
-    import pyre.inventory
-
-    vertexDataFields = pyre.inventory.list("vertex_data_fields", 
-                                           default=["displacements"])
-    vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
-
-    label = pyre.inventory.str("label", default="")
-    label.meta['tip'] = "Label identifier for subdomain."
+  from DataWriterVTKSubMesh import DataWriterVTKSubMesh
+  writer = pyre.inventory.facility("writer", factory=DataWriterVTKSubMesh,
+                                 family="data_writer")
+  writer.meta['tip'] = "Writer for data."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -62,11 +63,10 @@ class OutputSolnSubset(OutputManager):
     Constructor.
     """
     OutputManager.__init__(self, name)
-    self.cppHandle = None
     self.availableFields = \
         {'vertex': \
            {'info': [],
-            'data': ["displacements"]},
+            'data': ["displacement"]},
          'cell': \
            {'info': [],
             'data': []}}
@@ -78,9 +78,6 @@ class OutputSolnSubset(OutputManager):
     Do
     """
     OutputManager.preinitialize(self, dataProvider=self)
-    import meshio as bindings
-    self.cppHandle = bindings.OutputSolnSubset()
-    self.cppHandle.label = self.label
     return
   
 
@@ -89,8 +86,7 @@ class OutputSolnSubset(OutputManager):
     Verify compatibility of configuration.
     """
     OutputManager.verifyConfiguration(self, mesh)
-    assert(None != self.cppHandle);
-    self.cppHandle.verifyConfiguration(mesh.cppHandle)
+    ModuleOutputSolnSubset.verifyConfiguration(self, mesh)
     return
 
 
@@ -101,12 +97,7 @@ class OutputSolnSubset(OutputManager):
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    from pylith.topology.Mesh import Mesh
-    self.mesh = Mesh()
-    self.mesh.initialize(mesh.coordsys)
-    assert(None != self.cppHandle)
-    self.cppHandle.mesh(self.mesh.cppHandle, mesh.cppHandle)
-
+    self.submesh = self.subdomainMesh(mesh)
     OutputManager.initialize(self, normalizer)
 
     self._logger.eventEnd(logEvent)
@@ -117,7 +108,7 @@ class OutputSolnSubset(OutputManager):
     """
     Get mesh associated with data fields.
     """
-    return (self.mesh, None, None)
+    return (self.submesh, None, None)
 
 
   def getVertexField(self, name, fields):
@@ -126,12 +117,11 @@ class OutputSolnSubset(OutputManager):
     """
     field = None
     fieldType = None
-    if name == "displacements":
-      field = fields.getSolution()
-      fieldType = 1 # vector field
+    if name == "displacement":
+      field = fields.solution()
     else:
       raise ValueError, "Vertex field '%s' not available." % name
-    return (field, fieldType)
+    return field
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -141,8 +131,74 @@ class OutputSolnSubset(OutputManager):
     Set members based using inventory.
     """
     OutputManager._configure(self)
-    self.vertexDataFields = self.inventory.vertexDataFields
-    self.label = self.inventory.label
+    ModuleOutputSolnSubset.label(self, self.label)
+    ModuleOutputSolnSubset.coordsys(self, self.inventory.coordsys)
+    ModuleOutputSolnSubset.writer(self, self.inventory.writer)
+    if None != self.vertexFilter.filter:
+      ModuleOutputSolnSubset.vertexFilter(self, self.inventory.vertexFilter)
+    if None != self.cellFilter.filter:
+      ModuleOutputSolnSubset.cellFilter(self, self.inventory.cellFilter)
+    return
+
+
+  def _createModuleObj(self):
+    """
+    Create handle to C++ object.
+    """
+    ModuleOutputSolnSubset.__init__(self)
+    return
+
+
+  def _open(self, mesh, nsteps, label, labelId):
+    """
+    Call C++ open();
+    """
+    if label != None and labelId != None:
+      ModuleOutputSolnSubset.open(self, mesh, nsteps, label, labelId)
+    else:
+      ModuleOutputSolnSubset.open(self, mesh, nsteps)
+    return
+
+
+  def _openTimeStep(self, t, mesh, label, labelId):
+    """
+    Call C++ openTimeStep();
+    """
+    if label != None and labelId != None:
+      ModuleOutputSolnSubset.openTimeStep(self, t, mesh, label, labelId)
+    else:
+      ModuleOutputSolnSubset.openTimeStep(self, t, mesh)
+    return
+
+
+  def _appendVertexField(self, t, field):
+    """
+    Call C++ appendVertexField();
+    """
+    ModuleOutputSolnSubset.appendVertexField(self, t, field)
+    return
+
+  def _appendCellField(self, t, field):
+    """
+    Call C++ appendCellField();
+    """
+    ModuleOutputSolnSubset.appendCellField(self, t, field)
+    return
+
+
+  def _closeTimeStep(self):
+    """
+    Call C++ closeTimeStep().
+    """
+    ModuleOutputSolnSubset.closeTimeStep(self)
+    return
+
+
+  def _close(self):
+    """
+    Call C++ close().
+    """
+    ModuleOutputSolnSubset.close(self)
     return
 
 
@@ -150,7 +206,7 @@ class OutputSolnSubset(OutputManager):
 
 def output_manager():
   """
-  Factory associated with OutputSolnSubset.
+  Factory associated with OutputManager.
   """
   return OutputSolnSubset()
 

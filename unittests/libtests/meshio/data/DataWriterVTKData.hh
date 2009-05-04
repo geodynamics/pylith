@@ -13,7 +13,7 @@
 #if !defined(pylith_meshio_datawritervtkdata_hh)
 #define pylith_meshio_datawritervtkdata_hh
 
-#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
+#include "pylith/topology/FieldBase.hh" // USES VectorFieldEnum
 
 namespace pylith {
   namespace meshio {
@@ -39,7 +39,7 @@ public:
 
   struct FieldStruct {
     char* name; ///< Name of field
-    VectorFieldEnum field_type; ///< Type of field.
+    topology::FieldBase::VectorFieldEnum field_type; ///< Type of field.
     int fiber_dim; ///< Fiber dimension for field.
   }; // FieldStruct
 

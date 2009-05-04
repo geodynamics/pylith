@@ -23,6 +23,8 @@
 
 #include "TestDataWriterVTK.hh"
 
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh, Field
+
 /// Namespace for pylith package
 namespace pylith {
   namespace meshio {
@@ -34,6 +36,34 @@ namespace pylith {
 class pylith::meshio::TestDataWriterVTKBCMesh : public TestDataWriterVTK
 { // class TestDataWriterVTKBCMesh
 
+  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+  CPPUNIT_TEST_SUITE( TestDataWriterVTKBCMesh );
+
+  CPPUNIT_TEST( testConstructor );
+
+  CPPUNIT_TEST_SUITE_END();
+
+  // PUBLIC METHODS /////////////////////////////////////////////////////
+public :
+
+  /// Setup testing data.
+  void setUp(void);
+
+  /// Tear down testing data.
+  void tearDown(void);
+
+  /// Test constructor
+  void testConstructor(void);
+
+  /// Test openTimeStep() and closeTimeStep()
+  void testTimeStep(void);
+
+  /// Test writeVertexField.
+  void testWriteVertexField(void);
+
+  /// Test writeCellField.
+  void testWriteCellField(void);
+
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
@@ -43,7 +73,26 @@ protected :
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
-  ALE::Obj<Mesh> _meshDomain; ///< Mesh for domain.
+  topology::Mesh* _mesh; ///< Mesh for domain
+  topology::SubMesh* _submesh; ///< Mesh for subdomain.
+  bool _flipFault; ///< If true, flip fault orientation.
+
+  // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private :
+
+  /** Create vertex fields.
+   *
+   * @param fields Vertex fields.
+   */
+  void
+  _createVertexFields(topology::Fields<topology::Field<topology::SubMesh> >* fields) const;
+
+  /** Create cell fields.
+   *
+   * @param fields Cell fields.
+   */
+  void
+  _createCellFields(topology::Fields<topology::Field<topology::SubMesh> >* fields) const;
 
 }; // class TestDataWriterVTKBCMesh
 

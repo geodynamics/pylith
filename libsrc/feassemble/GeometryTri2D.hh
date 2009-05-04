@@ -27,14 +27,10 @@
 #if !defined(pylith_feassemble_geometrytri2d_hh)
 #define pylith_feassemble_geometrytri2d_hh
 
+// Include directives ---------------------------------------------------
 #include "CellGeometry.hh" // ISA CellGeometry
 
-namespace pylith {
-  namespace feassemble {
-    class GeometryTri2D;
-  } // feassemble
-} // pylith
-
+// GeometryTri2D --------------------------------------------------------
 class pylith::feassemble::GeometryTri2D : public CellGeometry
 { // GeometryTri2D
 

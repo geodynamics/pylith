@@ -29,8 +29,8 @@ class TestDirichletBoundary(unittest.TestCase):
     Test to make sure DirichletBoundary satisfies constraint requirements.
     """
     bc = DirichletBoundary()
-    from pylith.feassemble.Constraint import implementsConstraint
-    self.failUnless(implementsConstraint(bc))
+    from pylith.feassemble.Constraint import Constraint
+    self.failUnless(isinstance(bc, Constraint))
     return
     
 
@@ -51,9 +51,7 @@ class TestDirichletBoundary(unittest.TestCase):
     don't verify the results.
     """
 
-    (mesh, bc, fields) = self._initialize()
-
-    self.assertNotEqual(None, bc.cppHandle)
+    (mesh, bc, field) = self._initialize()
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
@@ -68,8 +66,7 @@ class TestDirichletBoundary(unittest.TestCase):
     don't verify the results.
     """
 
-    (mesh, bc, fields) = self._initialize()
-    field = fields.getReal("field")
+    (mesh, bc, field) = self._initialize()
     bc.setConstraintSizes(field)
 
     # We should really add something here to check to make sure things
@@ -85,10 +82,9 @@ class TestDirichletBoundary(unittest.TestCase):
     don't verify the results.
     """
 
-    (mesh, bc, fields) = self._initialize()
-    field = fields.getReal("field")
+    (mesh, bc, field) = self._initialize()
     bc.setConstraintSizes(field)
-    mesh.allocateRealSection(field)
+    field.allocate()
     bc.setConstraints(field)
 
     # We should really add something here to check to make sure things
@@ -100,7 +96,7 @@ class TestDirichletBoundary(unittest.TestCase):
     """
     Test useSolnIncr().
     """
-    (mesh, bc, fields) = self._initialize()
+    (mesh, bc, field) = self._initialize()
     bc.useSolnIncr(True)
     return
 
@@ -113,10 +109,9 @@ class TestDirichletBoundary(unittest.TestCase):
     don't verify the results.
     """
 
-    (mesh, bc, fields) = self._initialize()
-    field = fields.getReal("field")
+    (mesh, bc, field) = self._initialize()
     bc.setConstraintSizes(field)
-    mesh.allocateRealSection(field)
+    field.allocate()
     bc.setConstraints(field)
     t = 1.0
     bc.setField(t, field)
@@ -133,7 +128,7 @@ class TestDirichletBoundary(unittest.TestCase):
     WARNING: This is not a rigorous test of finalize() because we
     neither set the input fields or verify the results.
     """
-    (mesh, bc, fields) = self._initialize()
+    (mesh, bc, field) = self._initialize()
     bc.finalize()
 
     # We should really add something here to check to make sure things
@@ -147,46 +142,48 @@ class TestDirichletBoundary(unittest.TestCase):
     """
     Initialize DirichletBoundary boundary condition.
     """
-    from pylith.bc.DirichletBoundary import DirichletBoundary
-    bc = DirichletBoundary()
-    bc._configure()
-    bc.output._configure()
-    bc.output.writer._configure()
-    bc.label = "bc"
-    bc.fixedDOF = [1]
-
-    from pyre.units.time import second
-    bc.tRef = -1.0*second
-
-    from spatialdata.spatialdb.SimpleDB import SimpleDB
-    db = SimpleDB()
-    db._configure()
-    db.label = "TestDirichletBoundary tri3"
-    db.iohandler.filename = "data/tri3.spatialdb"
-    db.initialize()
-    bc.db = db
-
-    from pylith.bc.FixedDOFDB import FixedDOFDB
-    dbRate = FixedDOFDB()
-    dbRate._configure()
-    dbRate.label = "TestDirichletBoundary rate tri3"
-    dbRate.initialize()
-    bc.dbRate = dbRate
-
     from spatialdata.geocoords.CSCart import CSCart
     cs = CSCart()
     cs.spaceDim = 2
+
+    from pylith.meshio.MeshIOAscii import MeshIOAscii
+    importer = MeshIOAscii()
+    importer.inventory.filename = "data/tri3.mesh"
+    importer.inventory.coordsys = cs
+    importer._configure()
+    mesh = importer.read(normalizer, debug=False, interpolate=False)
+    
+    from spatialdata.spatialdb.SimpleDB import SimpleDB
+    db = SimpleDB()
+    db.inventory.label = "TestDirichletBoundary tri3"
+    db.inventory.iohandler.inventory.filename = "data/tri3.spatialdb"
+    db.inventory.iohandler._configure()
+    db._configure()
+
+    from pylith.bc.FixedDOFDB import FixedDOFDB
+    dbRate = FixedDOFDB()
+    dbRate.inventory.label = "TestDirichletBoundary rate tri3"
+    dbRate._configure()
+
+    bc.inventory.db = db
+    bc.inventory.dbRate = dbRate
+
+
+    from pylith.bc.DirichletBoundary import DirichletBoundary
+    bc = DirichletBoundary()
+    bc.inventory.output._configure()
+    bc.output.writer._configure()
+    bc.label = "bc"
+    bc.fixedDOF = [1]
+    bc._configure()
+
+    from pyre.units.time import second
+    bc.tRef = -1.0*second
 
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
     normalizer.initialize()
 
-    from pylith.meshio.MeshIOAscii import MeshIOAscii
-    importer = MeshIOAscii()
-    importer.filename = "data/tri3.mesh"
-    importer.coordsys = cs
-    mesh = importer.read(normalizer, debug=False, interpolate=False)
-    
     bc.preinitialize(mesh)
     bc.initialize(totalTime=0.0, numTimeSteps=1, normalizer=normalizer)
 
@@ -200,7 +197,7 @@ class TestDirichletBoundary(unittest.TestCase):
     import pylith.topology.topology as bindings
     bindings.zeroRealSection(fields.getReal("field"))
     
-    return (mesh, bc, fields)
+    return (mesh, bc, field)
 
 
 # End of file 

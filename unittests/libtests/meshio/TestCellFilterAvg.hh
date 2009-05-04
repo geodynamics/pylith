@@ -21,16 +21,17 @@
 #if !defined(pylith_meshio_testcellfilteravg_hh)
 #define pylith_meshio_testcellfilteravg_hh
 
+// Include directives ---------------------------------------------------
 #include <cppunit/extensions/HelperMacros.h>
 
-/// Namespace for pylith package
+// Forward declarations -------------------------------------------------
 namespace pylith {
   namespace meshio {
     class TestCellFilterAvg;
   } // meshio
 } // pylith
 
-/// C++ unit testing for CellFilterAvg
+// TestCellFilterAvg ----------------------------------------------------
 class pylith::meshio::TestCellFilterAvg : public CppUnit::TestFixture
 { // class TestCellFilterAvg
 
@@ -54,5 +55,6 @@ public :
 }; // class TestCellFilterAvg
 
 #endif // pylith_meshio_testcellfilteravg_hh
+
 
 // End of file 

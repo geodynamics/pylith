@@ -29,8 +29,15 @@ class TestBruneSlipFn(unittest.TestCase):
     Test constructor.
     """
     slipFn = BruneSlipFn()
-    slipFn._createCppHandle()
-    self.failIfEqual(None, slipFn.cppHandle)
+    return
+
+
+  def test_configure(self):
+    """
+    Test constructor.
+    """
+    slipFn = BruneSlipFn()
+    slipFn._configure()
     return
 
 
@@ -42,28 +49,36 @@ class TestBruneSlipFn(unittest.TestCase):
     from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
 
     ioFinalSlip = SimpleIOAscii()
-    ioFinalSlip.filename = "finalslip.spatialdb"
+    ioFinalSlip.inventory.filename = "finalslip.spatialdb"
+    ioFinalSlip._configure()
     dbFinalSlip = SimpleDB()
-    dbFinalSlip.iohandler = ioFinalSlip
-    dbFinalSlip.label = "final slip"
+    dbFinalSlip.inventory.iohandler = ioFinalSlip
+    dbFinalSlip.inventory.label = "final slip"
+    dbFinalSlip._configure()
     
     ioSlipTime = SimpleIOAscii()
-    ioSlipTime.filename = "sliptime.spatialdb"
+    ioSlipTime.inventory.filename = "sliptime.spatialdb"
+    ioSlipTime._configure()
     dbSlipTime = SimpleDB()
-    dbSlipTime.iohandler = ioSlipTime
-    dbSlipTime.label = "slip time"
+    dbSlipTime.inventory.iohandler = ioSlipTime
+    dbSlipTime.inventory.label = "slip time"
+    dbSlipTime._configure()
     
-    ioPeakRate = SimpleIOAscii()
-    ioPeakRate.filename = "peakrate.spatialdb"
-    dbPeakRate = SimpleDB()
-    dbPeakRate.iohandler = ioPeakRate
-    dbPeakRate.label = "peak rate"
+    ioRiseTime = SimpleIOAscii()
+    ioRiseTime.inventory.filename = "risetime.spatialdb"
+    ioRiseTime._configure()
+    dbRiseTime = SimpleDB()
+    dbRiseTime.inventory.iohandler = ioRiseTime
+    dbRiseTime.inventory.label = "rise time"
+    dbRiseTime._configure()
     
     slipFn = BruneSlipFn()
-    slipFn.slip = dbFinalSlip
-    slipFn.slipTime = dbSlipTime
-    slipFn.slipRate = dbPeakRate
+    slipFn.inventory.dbslip = dbFinalSlip
+    slipFn.inventory.dbSlipTime = dbSlipTime
+    slipFn.inventory.dbRiseTime = dbRiseTime
+    slipFn._configure()
     slipFn.preinitialize()
+    slipFn.verifyConfiguration()
     slipFn.initialize()
     return
 

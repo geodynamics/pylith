@@ -20,20 +20,19 @@
 #if !defined(pylith_meshio_outputsolnsubset_hh)
 #define pylith_meshio_outputsolnsubset_hh
 
+// Include directives ---------------------------------------------------
+#include "meshiofwd.hh" // forward declarations
+
+#include "pylith/topology/SubMesh.hh" // ISA OutputManager<SubMesh>
+#include "pylith/topology/Mesh.hh" // ISA OutputManager<Field<Mesh>>
+#include "pylith/topology/Field.hh" // ISA OutputManager<Field<Mesh>>
 #include "OutputManager.hh" // ISA OutputManager
 
-#include "pylith/utils/sievetypes.hh" // HASA PETSc Mesh
 #include <string> // HASA std::string
 
-namespace pylith {
-  namespace meshio {
-    class OutputSolnSubset;
-
-    class TestOutputSolnSubset; // unit testing
-  } // meshio
-} // pylith
-
-class pylith::meshio::OutputSolnSubset : public OutputManager
+// OutputSolnSubset -----------------------------------------------------
+class pylith::meshio::OutputSolnSubset : 
+  public OutputManager<topology::SubMesh, topology::Field<topology::Mesh> >
 { // OutputSolnSubset
   friend class TestOutputSolnSubset; // unit testing
 
@@ -56,15 +55,14 @@ public :
    *
    * @param mesh PETSc mesh
    */
-  void verifyConfiguration(const ALE::Obj<Mesh>& mesh) const;
+  void verifyConfiguration(const topology::Mesh& mesh) const;
 
   /** Get mesh associated with subdomain.
    *
    * @returns Mesh associated with subdomain.
    */
-  const ALE::Obj<Mesh>& subdomainMesh(const ALE::Obj<Mesh>& mesh);
+  const topology::SubMesh& subdomainMesh(const topology::Mesh& mesh);
   
-
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
@@ -75,7 +73,7 @@ private :
 private :
 
   std::string _label; ///< Label of subdomain.
-  ALE::Obj<SubMesh> _mesh; ///< Mesh of subdomain.
+  topology::SubMesh* _submesh; ///< Mesh of subdomain.
 
 }; // OutputSolnSubset
 

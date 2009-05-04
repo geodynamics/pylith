@@ -18,9 +18,10 @@
 ## Factory: material.
 
 from ElasticMaterial import ElasticMaterial
+from materials import ElasticPlaneStress as ModuleElasticPlaneStress
 
 # ElasticPlaneStress class
-class ElasticPlaneStress(ElasticMaterial):
+class ElasticPlaneStress(ElasticMaterial, ModuleElasticPlaneStress):
   """
   Python object implementing 2-D isotropic linear elastic material for
   plane stress.
@@ -46,14 +47,13 @@ class ElasticPlaneStress(ElasticMaterial):
     return
 
 
-  def _createCppHandle(self):
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _createModuleObj(self):
     """
-    Create handle to corresponding C++ object.
+    Call constructor for module object for access to C++ object.
     """
-    if None == self.cppHandle:
-      import pylith.materials.materials as bindings
-      self.cppHandle = bindings.ElasticPlaneStress()
-      self.dimension = self.cppHandle.dimension
+    ModuleElasticPlaneStress.__init__(self)
     return
   
 

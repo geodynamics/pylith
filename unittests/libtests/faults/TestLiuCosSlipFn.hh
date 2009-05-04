@@ -21,7 +21,8 @@
 #if !defined(pylith_faults_testliucosslipfn_hh)
 #define pylith_faults_testliucosslipfn_hh
 
-#include "pylith/utils/sievetypes.hh" // USES Mesh
+#include "pylith/faults/faultsfwd.hh" // USES LiuCosSlipFn
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -29,7 +30,6 @@
 namespace pylith {
   namespace faults {
     class TestLiuCosSlipFn;
-    class LiuCosSlipFn;
 
     namespace _TestLiuCosSlipFn {
       struct DataStruct;
@@ -95,12 +95,14 @@ private :
 
   /** Initialize LiuCosSlipFn.
    *
-   * @param faultMesh Fault mesh.
-   * @param slipfn LiuCos slip function.
+   * @param mesh Finite-element mesh of domain.
+   * @param faultMesh Finite-element mesh of fault.
+   * @param slipfn Step slip function.
    * @param originTime Origin time for earthquake rupture.
    */
   static
-  void _initialize(ALE::Obj<Mesh>* faultMesh,
+  void _initialize(topology::Mesh* mesh,
+		   topology::SubMesh* faultMesh,
 		   LiuCosSlipFn* slipfn,
 		   const double originTime);
 

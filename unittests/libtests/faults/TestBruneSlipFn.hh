@@ -21,7 +21,8 @@
 #if !defined(pylith_faults_testbruneslipfn_hh)
 #define pylith_faults_testbruneslipfn_hh
 
-#include "pylith/utils/sievetypes.hh" // USES Mesh
+#include "pylith/faults/faultsfwd.hh" // USES BruneSlipFn
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -29,7 +30,6 @@
 namespace pylith {
   namespace faults {
     class TestBruneSlipFn;
-    class BruneSlipFn;
 
     namespace _TestBruneSlipFn {
       struct DataStruct;
@@ -47,7 +47,7 @@ class pylith::faults::TestBruneSlipFn : public CppUnit::TestFixture
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testDbFinalSlip );
   CPPUNIT_TEST( testDbSlipTime );
-  CPPUNIT_TEST( testDbPeakRate );
+  CPPUNIT_TEST( testDbRiseTime );
   CPPUNIT_TEST( testInitialize1D );
   CPPUNIT_TEST( testInitialize2D );
   CPPUNIT_TEST( testInitialize3D );
@@ -69,8 +69,8 @@ public :
   /// Test dbSlipTime().
   void testDbSlipTime(void);
 
-  /// Test dbPeakRate().
-  void testDbPeakRate(void);
+  /// Test dbRiseTime().
+  void testDbRiseTime(void);
 
   /// Test initialize() in 1-D.
   void testInitialize1D(void);
@@ -95,12 +95,14 @@ private :
 
   /** Initialize BruneSlipFn.
    *
-   * @param faultMesh Fault mesh.
-   * @param slipfn Brune slip function.
+   * @param mesh Finite-element mesh of domain.
+   * @param faultMesh Finite-element mesh of fault.
+   * @param slipfn Step slip function.
    * @param originTime Origin time for earthquake rupture.
    */
   static
-  void _initialize(ALE::Obj<Mesh>* faultMesh,
+  void _initialize(topology::Mesh* mesh,
+		   topology::SubMesh* faultMesh,
 		   BruneSlipFn* slipfn,
 		   const double originTime);
 

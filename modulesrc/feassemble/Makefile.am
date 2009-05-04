@@ -13,40 +13,58 @@
 subpackage = feassemble
 include $(top_srcdir)/subpackage.am
 
-subpkgpyexec_LTLIBRARIES = feassemblemodule.la
+subpkgpyexec_LTLIBRARIES = _feassemblemodule.la
 
-feassemblemodule_la_LDFLAGS = -module -avoid-version \
+subpkgpyexec_PYTHON = feassemble.py
+
+swig_sources = \
+	feassemble.i \
+	CellGeometry.i \
+	GeometryPoint1D.i \
+	GeometryPoint2D.i \
+	GeometryPoint3D.i \
+	GeometryLine1D.i \
+	GeometryLine2D.i \
+	GeometryLine3D.i \
+	GeometryTri2D.i \
+	GeometryTri3D.i \
+	QuadratureRefCell.i \
+	Quadrature.i \
+	Integrator.i \
+	IntegratorElasticity.i \
+	ElasticityImplicit.i \
+	ElasticityExplicit.i
+
+swig_generated = \
+	feassemble_wrap.cxx \
+	feassemble.py
+
+_feassemblemodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist_feassemblemodule_la_SOURCES = feassemble.pyxe.src
-nodist_feassemblemodule_la_SOURCES = \
-	feassemble.pyxe \
-	feassemble.c feassemble_embed.cpp feassemble_embed.h
+dist__feassemblemodule_la_SOURCES = $(swig_sources) $(swig_generated)
 
-feassemblemodule_la_LIBADD = \
+_feassemblemodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB)
-
+	$(PETSC_LIBS)
 if ENABLE_CUBIT
-  feassemblemodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+  _feassemblemodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
 endif
 if NO_UNDEFINED
-  feassemblemodule_la_LIBADD += $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+_feassemblemodule_la_LIBADD += \
+	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
-INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
+INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
-feassemble.pyx feassemble_embed.cpp  feassemble_embed.h: feassemble.pyxe
-	pyrexembed feassemble.pyxe
-feassemble.pyxe: $(srcdir)/feassemble.pyxe.src
-	cp $(srcdir)/feassemble.pyxe.src $@
-feassemble_embed.cpp: feassemble_embed.h
-feassemble_embed.h: feassemble.pyx
+$(srcdir)/feassemble_wrap.cxx $(srcdir)/feassemble.py: $(swig_sources)
+	$(SWIG) -Wall -c++ -python $<
 
-.pyx.c:
-	pyrexc $<
 
-CLEANFILES = feassemble.pyxe feassemble.pyx feassemble.c *_embed.*
+MAINTAINERCLEANFILES = \
+	$(srcdir)/feassemble_wrap.cxx \
+	$(srcdir)/feassemble.py
+
 
 # End of file 

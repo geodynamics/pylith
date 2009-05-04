@@ -118,7 +118,7 @@ pylith::meshio::GMVFileBinary::write(const double_array& coordinates,
   assert(cells.size() == numCells * numCorners);
   assert(materialIds.size() == numCells);
 
-#if 0
+#if 0 // NOT YET IMPLEMENTED
   _writeHeader();
   _writeVertices(coordinates);
   _writeCells(cells);

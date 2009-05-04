@@ -21,21 +21,23 @@
 #if !defined(pylith_meshio_testmeshio_hh)
 #define pylith_meshio_testmeshio_hh
 
+// Include directives ---------------------------------------------------
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "pylith/topology/topologyfwd.hh" // USES Mesh
+#include "pylith/meshio/meshiofwd.hh" // USES MeshIO
 
+// Forward declarations -------------------------------------------------
 /// Namespace for pylith package
 namespace pylith {
   namespace meshio {
     class TestMeshIO;
-    class MeshIO;
 
-    class MeshData;
+    class MeshData; // test data
   } // meshio
 } // pylith
 
-/// C++ unit testing for TestMeshIO
+// MeshIO ---------------------------------------------------------------
 class pylith::meshio::TestMeshIO : public CppUnit::TestFixture
 { // class TestMeshIO
 
@@ -46,16 +48,16 @@ protected :
    *
    * @param data Mesh data
    *
-   * @returns PETSc mesh
+   * @returns PyLith mesh
    */
-  ALE::Obj<pylith::Mesh>* _createMesh(const MeshData& data);
+  topology::Mesh* _createMesh(const MeshData& data);
 
   /** Check values in mesh against data.
    *
-   * @param mesh PETSc mesh
+   * @param mesh PyLith mesh
    * @param data Mesh data
    */
-  void _checkVals(const ALE::Obj<Mesh>& mesh,
+  void _checkVals(const topology::Mesh& mesh,
 		  const MeshData& data);
 
   /** Test debug().
@@ -73,5 +75,6 @@ protected :
 }; // class TestMeshIO
 
 #endif // pylith_meshio_testmeshio_hh
+
 
 // End of file 

@@ -19,9 +19,10 @@
 
 from BoundaryCondition import BoundaryCondition
 from pylith.feassemble.Integrator import Integrator
+from bc import AbsorbingDampers as ModuleAbsorbingDampers
 
 # AbsorbingDampers class
-class AbsorbingDampers(BoundaryCondition, Integrator):
+class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
   """
   Python object for managing absorbing boundary condition using simple
   dashpots.
@@ -47,8 +48,9 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
 
     import pyre.inventory
 
-    from pylith.feassemble.quadrature.Quadrature import Quadrature
-    quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
+    from pylith.feassemble.Quadrature import SubMeshQuadrature
+    quadrature = pyre.inventory.facility("quadrature",
+                                         factory=SubMeshQuadrature)
     quadrature.meta['tip'] = "Quadrature object for numerical integration."
 
 
@@ -70,7 +72,8 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     """
     BoundaryCondition.preinitialize(self, mesh)
     Integrator.preinitialize(self, mesh)
-    self.quadrature.preinitialize()
+    self.bcQuadrature.preinitialize(mesh.coordsys().spaceDim())
+    self.quadrature(self.bcQuadrature)
     return
 
 
@@ -81,14 +84,14 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     logEvent = "%sverify" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    BoundaryCondition.verifyConfiguration(self)
+    BoundaryCondition.verifyConfiguration(self, self.mesh)
     Integrator.verifyConfiguration(self)
-    if self.quadrature.cellDim != self.mesh.dimension()-1:
+    if self.bcQuadrature.cellDim() != self.mesh.dimension()-1:
         raise ValueError, \
               "Quadrature scheme and mesh are incompatible.\n" \
               "Dimension for quadrature: %d\n" \
               "Dimension of mesh boundary '%s': %d" % \
-              (self.quadrature.cellDim,
+              (self.bcQuadrature.cellDim,
                self.label, self.mesh.dimension()-1)    
 
     self._logger.eventEnd(logEvent)
@@ -102,9 +105,7 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
-    
-    self.cppHandle.quadrature = self.quadrature.cppHandle
+    Integrator.initialize(self, totalTime, numTimeSteps, normalizer)    
     BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 
     self._logger.eventEnd(logEvent)
@@ -118,17 +119,15 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     Setup members using inventory.
     """
     BoundaryCondition._configure(self)
-    self.quadrature = self.inventory.quadrature
+    self.bcQuadrature = self.inventory.quadrature
     return
 
 
-  def _createCppHandle(self):
+  def _createModuleObj(self):
     """
     Create handle to corresponding C++ object.
     """
-    if None == self.cppHandle:
-      import pylith.bc.bc as bindings
-      self.cppHandle = bindings.AbsorbingDampers()    
+    ModuleAbsorbingDampers.__init__(self)
     return
   
 

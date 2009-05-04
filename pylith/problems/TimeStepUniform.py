@@ -71,15 +71,15 @@ class TimeStepUniform(TimeStep):
     """
     Get number of total time steps (or best guess if adaptive).
     """
-    nsteps = 1.0 + int(self.totalTime / self.dt)
+    nsteps = int(1 + self.totalTimeN / self.dtN)
     return nsteps
 
 
-  def timeStep(self, integrators):
+  def timeStep(self, mesh, integrators):
     """
     Adjust stable time step for advancing forward in time.
     """
-    return self.dt
+    return self.dtN
 
   
   # PRIVATE METHODS ////////////////////////////////////////////////////

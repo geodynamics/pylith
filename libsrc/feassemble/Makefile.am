@@ -22,6 +22,7 @@ subpkginclude_HEADERS = \
 	ElasticityImplicit.hh \
 	Integrator.hh \
 	Integrator.icc \
+	Integrator.cc \
 	IntegratorElasticity.hh \
 	GeometryPoint1D.hh \
 	GeometryPoint2D.hh \
@@ -35,8 +36,13 @@ subpkginclude_HEADERS = \
 	GeometryQuad2D.hh \
 	GeometryQuad3D.hh \
 	GeometryHex3D.hh \
+	QuadratureRefCell.hh \
+	QuadratureRefCell.icc \
+	QuadratureEngine.hh \
+	QuadratureEngine.icc \
 	Quadrature.hh \
 	Quadrature.icc \
+	Quadrature.cc \
 	Quadrature0D.hh \
 	Quadrature0D.icc \
 	Quadrature1D.hh \
@@ -50,7 +56,8 @@ subpkginclude_HEADERS = \
 	Quadrature2Din3D.hh \
 	Quadrature2Din3D.icc \
 	Quadrature3D.hh \
-	Quadrature3D.icc
+	Quadrature3D.icc \
+	feassemblefwd.hh
 
 noinst_HEADERS =
 

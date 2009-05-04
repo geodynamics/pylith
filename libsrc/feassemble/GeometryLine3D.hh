@@ -20,14 +20,10 @@
 #if !defined(pylith_feassemble_geometryline3d_hh)
 #define pylith_feassemble_geometryline3d_hh
 
+// Include directives ---------------------------------------------------
 #include "CellGeometry.hh" // ISA CellGeometry
 
-namespace pylith {
-  namespace feassemble {
-    class GeometryLine3D;
-  } // feassemble
-} // pylith
-
+// GeometryLine3D -------------------------------------------------------
 class pylith::feassemble::GeometryLine3D : public CellGeometry
 { // GeometryLine3D
 

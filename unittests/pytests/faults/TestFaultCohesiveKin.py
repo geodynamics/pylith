@@ -27,25 +27,57 @@ class TestFaultCohesiveKin(unittest.TestCase):
   Unit testing of Fault object.
   """
 
-  def test_implementsIntegrator(self):
-    """
-    Test to make sure FaultCohesiveKin satisfies integrator requirements.
-    """
-    fault = FaultCohesiveKin()
-    fault._configure()
-    from pylith.feassemble.Integrator import implementsIntegrator
-    self.failUnless(implementsIntegrator(fault))
-    return
-    
-
   def test_constructor(self):
     """
     Test constructor.
     """
     fault = FaultCohesiveKin()
+    return
+
+
+  def test_configure(self):
+    """
+    Test _configure().
+    """
+    fault = FaultCohesiveKin()
     fault._configure()
-    fault._createCppHandle()
-    self.failIfEqual(None, fault.cppHandle)
+    return
+
+
+  def test_implementsIntegrator(self):
+    """
+    Test to make sure FaultCohesiveKin satisfies integrator requirements.
+    """
+    fault = FaultCohesiveKin()
+    from pylith.feassemble.Integrator import implementsIntegrator
+    self.failUnless(implementsIntegrator(fault))
+    return
+    
+
+  def test_useFaultMesh(self):
+    """
+    Test useFaultMesh().
+    """
+    fault = FaultCohesiveKin()
+    fault._configure()
+
+    fault.useFaultMesh(True);
+
+    # No test of result
+    return
+
+
+  def test_faultMeshFilename(self):
+    """
+    Test faultMeshFilename().
+    """
+    fault = FaultCohesiveKin()
+    fault._configure()
+
+    filename = "SanAndreas.inp"
+    fault.faultMeshFilename(filename)
+
+    # No test of result
     return
 
 
@@ -57,22 +89,24 @@ class TestFaultCohesiveKin(unittest.TestCase):
     neither set the input fields or verify the results.
     """
     cs = CSCart()
-    cs.spaceDim = 2
+    cs.inventory.spaceDim = 2
+    cs._configure()
     
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
-    normalizer.initialize()
+    normalizer._configure()
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
-    importer.filename = "data/tri3.mesh"
-    importer.coordsys = cs
+    importer.inventory.filename = "data/tri3.mesh"
+    importer.inventory.coordsys = cs
+    importer._configure()
     mesh = importer.read(normalizer, debug=False, interpolate=False)
 
     fault = FaultCohesiveKin()
+    fault.inventory.matId = 10
+    fault.inventory.faultLabel = "fault"
     fault._configure()
-    fault.id = 10
-    fault.label = "fault"
 
     fault.adjustTopology(mesh)
 
@@ -101,8 +135,9 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     dt = 2.4
     (mesh, fault, fields) = self._initialize()
-    fault.timeStep = dt
-    self.assertEqual(dt, fault.timeStep)
+    fault.timeStep(dt)
+
+    # No test of result
     return
 
   
@@ -112,7 +147,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     (mesh, fault, fields) = self._initialize()
 
-    self.assertEqual(1.0e+30, fault.stableTimeStep())
+    self.assertEqual(1.0e+30, fault.stableTimeStep(mesh))
     return
 
   
@@ -146,7 +181,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     (mesh, fault, fields) = self._initialize()
 
-    residual = fields.getReal("residual")
+    residual = fields.get("residual")
     t = 1.0
     fault.integrateResidual(residual, t, fields)
 
@@ -164,9 +199,9 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     (mesh, fault, fields) = self._initialize()
 
-    jacobian = mesh.createMatrix(fields.getReal("residual"))
-    import pylith.utils.petsc as petsc
-    petsc.mat_setzero(jacobian)
+    from pylith.topology.Jacobian import Jacobian
+    jacobian = Jacobian(fields)
+    jacobian.zero()
     t = 1.0
     fault.integrateJacobian(jacobian, t, fields)
     self.assertEqual(False, fault.needNewJacobian())
@@ -186,7 +221,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     (mesh, fault, fields) = self._initialize()
 
     t = 0.50
-    residual = fields.getReal("residual")
+    residual = fields.get("residual")
     fault.integrateResidual(residual, t, fields)
 
     dt = 0.1
@@ -224,75 +259,81 @@ class TestFaultCohesiveKin(unittest.TestCase):
     
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
-    normalizer.initialize()
+    normalizer._configure()
 
     # Setup mesh
     cs = CSCart()
-    cs.spaceDim = 2
+    cs.inventory.spaceDim = 2
+    cs._configure()
+
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
-    importer.filename = "data/tri3.mesh"
-    importer.coordsys = cs
+    importer.inventory.filename = "data/tri3.mesh"
+    importer.inventory.coordsys = cs
+    importer._configure()
     mesh = importer.read(normalizer, debug=False, interpolate=False)
 
     # Setup quadrature
     from pylith.feassemble.FIATSimplex import FIATSimplex
     cell = FIATSimplex()
-    cell.shape = "line"
-    cell.degree = 1
-    cell.order = 1
-    from pylith.feassemble.quadrature.Quadrature1Din2D import Quadrature1Din2D
-    quadrature = Quadrature1Din2D()
+    cell.inventory.shape = "line"
+    cell.inventory.degree = 1
+    cell.inventory.order = 1
+    cell._configure()
+    from pylith.feassemble.Quadrature import SubMeshQuadrature
+    quadrature = SubMeshQuadrature()
+    quadrature.inventory.cell = cell
     quadrature._configure()
-    quadrature.cell = cell
 
     # Setup earthquake source
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
     ioFinalSlip = SimpleIOAscii()
-    ioFinalSlip.filename = "data/tri3_finalslip.spatialdb"
+    ioFinalSlip.inventory.filename = "data/tri3_finalslip.spatialdb"
+    ioFinalSlip._configure()
     dbFinalSlip = SimpleDB()
-    dbFinalSlip.iohandler = ioFinalSlip
-    dbFinalSlip.label = "final slip"
+    dbFinalSlip.inventory.iohandler = ioFinalSlip
+    dbFinalSlip.inventory.label = "final slip"
+    dbFinalSlip._configure()
     
     ioSlipTime = SimpleIOAscii()
-    ioSlipTime.filename = "data/tri3_sliptime.spatialdb"
+    ioSlipTime.inventory.filename = "data/tri3_sliptime.spatialdb"
+    ioSlipTime._configure()
     dbSlipTime = SimpleDB()
-    dbSlipTime.iohandler = ioSlipTime
-    dbSlipTime.label = "slip time"
+    dbSlipTime.inventory.iohandler = ioSlipTime
+    dbSlipTime.inventory.label = "slip time"
+    dbSlipTime._configure()
     
-    ioPeakRate = SimpleIOAscii()
-    ioPeakRate.filename = "data/tri3_peakrate.spatialdb"
-    dbPeakRate = SimpleDB()
-    dbPeakRate.iohandler = ioPeakRate
-    dbPeakRate.label = "peak rate"
-    
-    from pylith.faults.BruneSlipFn import BruneSlipFn
-    slipfn = BruneSlipFn()
-    slipfn.slip = dbFinalSlip
-    slipfn.slipTime = dbSlipTime
-    slipfn.slipRate = dbPeakRate
+    from pylith.faults.StepSlipFn import StepSlipFn
+    slipfn = StepSlipFn()
+    slipfn.inventory.dbSlip = dbFinalSlip
+    slipfn.inventory.dbSlipTime = dbSlipTime
+    slipfn._configure()
 
     ioMatDB = SimpleIOAscii()
-    ioMatDB.filename = "data/bulkprops_2d.spatialdb"
+    ioMatDB.inventory.filename = "data/bulkprops_2d.spatialdb"
+    ioMatDB._configure()
     dbMat = SimpleDB()
-    dbMat.iohandler = ioMatDB
-    dbMat.label = "bulk properties"
+    dbMat.inventory.iohandler = ioMatDB
+    dbMat.inventory.label = "bulk properties"
+    dbMat._configure()
     
     # Setup fault
     fault = FaultCohesiveKin()
+    fault.inventory.output.inventory.writer._configure()
+    fault.inventory.output._configure()
+    fault.inventory.matId = 10
+    fault.inventory.faultLabel = "fault"
+    fault.inventory.upDir = [0, 0, 1]
+    fault.inventory.normalDir = [1, 0, 0]
+    fault.inventory.quadrature = quadrature
+    fault.inventory.matDB = dbMat
     fault._configure()
-    fault.output._configure()
-    fault.output.writer._configure()
-    fault.id = 10
-    fault.label = "fault"
-    fault.upDir = [0, 0, 1]
-    fault.normalDir = [1, 0, 0]
-    fault.quadrature = quadrature
     eqsrc = fault.eqsrcs.components()[0]
-    eqsrc.originTime = 1.23*second
-    eqsrc.slipfn = slipfn
-    fault.matDB = dbMat
+    eqsrc.inventory.originTime = 1.23*second
+    eqsrc.inventory.slipfn = slipfn
+    eqsrc._configure()
+
     fault.adjustTopology(mesh)
     fault.preinitialize(mesh)
     fault.timeStep(dt)
@@ -301,18 +342,17 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault.initialize(totalTime=0.0*s, numTimeSteps=1, normalizer=normalizer)
 
     # Setup fields
-    from pylith.topology.FieldsManager import FieldsManager
-    fields = FieldsManager(mesh)
-    fields.addReal("residual")
-    fields.addReal("solution")
-    fields.addReal("disp")
-    fields.solutionField("solution")
-    fields.setFiberDimension("residual", cs.spaceDim)
-    fields.allocate("residual")
+    from pylith.topology.SolutionFields import SolutionFields
+    fields = SolutionFields(mesh)
+    fields.add("residual", "residual")
+    fields.add("solution", "displacement")
+    fields.add("disp", "displacement")
+    fields.solutionName("solution")
+    residual = fields.get("residual")
+    residual.newSection(residual.VERTICES_FIELD, cs.spaceDim())
+    residual.allocate()
+    residual.zero()
     fields.copyLayout("residual")
-
-    import pylith.topology.topology as bindings
-    bindings.zeroRealSection(fields.getReal("residual"))
     
     return (mesh, fault, fields)
 

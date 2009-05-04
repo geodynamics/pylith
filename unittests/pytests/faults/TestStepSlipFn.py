@@ -29,8 +29,15 @@ class TestStepSlipFn(unittest.TestCase):
     Test constructor.
     """
     slipFn = StepSlipFn()
-    slipFn._createCppHandle()
-    self.failIfEqual(None, slipFn.cppHandle)
+    return
+
+
+  def test_configure(self):
+    """
+    Test constructor.
+    """
+    slipFn = StepSlipFn()
+    slipFn._configure()
     return
 
 
@@ -42,21 +49,27 @@ class TestStepSlipFn(unittest.TestCase):
     from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
 
     ioFinalSlip = SimpleIOAscii()
-    ioFinalSlip.filename = "finalslip.spatialdb"
+    ioFinalSlip.inventory.filename = "finalslip.spatialdb"
+    ioFinalSlip._configure()
     dbFinalSlip = SimpleDB()
-    dbFinalSlip.iohandler = ioFinalSlip
-    dbFinalSlip.label = "final slip"
+    dbFinalSlip.inventory.iohandler = ioFinalSlip
+    dbFinalSlip.inventory.label = "final slip"
+    dbFinalSlip._configure()
     
     ioSlipTime = SimpleIOAscii()
-    ioSlipTime.filename = "sliptime.spatialdb"
+    ioSlipTime.inventory.filename = "sliptime.spatialdb"
+    ioSlipTime._configure()
     dbSlipTime = SimpleDB()
-    dbSlipTime.iohandler = ioSlipTime
-    dbSlipTime.label = "slip time"
+    dbSlipTime.inventory.iohandler = ioSlipTime
+    dbSlipTime.inventory.label = "slip time"
+    dbSlipTime._configure()
     
     slipFn = StepSlipFn()
-    slipFn.slip = dbFinalSlip
-    slipFn.slipTime = dbSlipTime
+    slipFn.inventory.dbSlip = dbFinalSlip
+    slipFn.inventory.dbSlipTime = dbSlipTime
+    slipFn._configure()
     slipFn.preinitialize()
+    slipFn.verifyConfiguration()
     slipFn.initialize()
     return
 

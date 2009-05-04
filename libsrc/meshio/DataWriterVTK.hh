@@ -19,21 +19,17 @@
 #if !defined(pylith_meshio_datawritervtk_hh)
 #define pylith_meshio_datawritervtk_hh
 
+// Include directives ---------------------------------------------------
 #include "DataWriter.hh" // ISA DataWriter
 
-#include <string> // USES std::string
-
-namespace pylith {
-  namespace meshio {
-    class DataWriterVTK;
-
-    class TestDataWriterVTK; // unit testing
-  } // meshio
-} // pylith
-
-class pylith::meshio::DataWriterVTK : public DataWriter
+// DataWriterVTK --------------------------------------------------------
+template<typename mesh_type, typename field_type>
+class pylith::meshio::DataWriterVTK : public DataWriter<mesh_type,field_type>
 { // DataWriterVTK
-  friend class TestDataWriterVTK; // unit testing
+  friend class TestDataWriterVTKMesh; // unit testing
+  friend class TestDataWriterVTKSubMesh; // unit testing
+  friend class TestDataWriterVTKBCMesh; // unit testing
+  friend class TestDataWriterVTKFaultMesh; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -48,7 +44,7 @@ public :
    *
    * @returns Copy of this.
    */
-  DataWriter* clone(void) const;
+  DataWriter<mesh_type, field_type>* clone(void) const;
 
   /** Set filename for VTK file.
    *
@@ -74,15 +70,13 @@ public :
   /** Prepare file for data at a new time step.
    *
    * @param t Time stamp for new data
-   * @param mesh PETSc mesh object
-   * @param csMesh Coordinate system of mesh geometry
+   * @param mesh Finite-element mesh.
    * @param label Name of label defining cells to include in output
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
   void openTimeStep(const double t,
-		    const ALE::Obj<Mesh>& mesh,
-		    const spatialdata::geocoords::CoordSys* csMesh,
+		    const mesh_type& mesh,
 		    const char* label =0,
 		    const int labelId =0);
 
@@ -92,33 +86,21 @@ public :
   /** Write field over vertices to file.
    *
    * @param t Time associated with field.
-   * @param name Name of field.
-   * @param field PETSc field over vertices.
-   * @param fieldType Type of field.
-   * @param mesh Finite-element mesh
+   * @param field Field over vertices.
    */
   void writeVertexField(const double t,
-			const char* name,
-			const ALE::Obj<real_section_type>& field,
-			const VectorFieldEnum fieldType,
-			const ALE::Obj<Mesh>& mesh);
+			const field_type& field);
 
   /** Write field over cells to file.
    *
    * @param t Time associated with field.
-   * @param name Name of field.
-   * @param field PETSc field over cells.
-   * @param fieldType Type of field.
-   * @param mesh PETSc mesh object.
+   * @param field Field over cells.
    * @param label Name of label defining cells to include in output
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
   void writeCellField(const double t,
-		      const char* name,
-		      const ALE::Obj<real_section_type>& field,
-		      const VectorFieldEnum fieldType,
-		      const ALE::Obj<Mesh>& mesh,
+		      const field_type& field,
 		      const char* label =0,
 		      const int labelId =0);
 
@@ -159,6 +141,7 @@ private :
 }; // DataWriterVTK
 
 #include "DataWriterVTK.icc" // inline methods
+#include "DataWriterVTK.cc" // template definitions
 
 #endif // pylith_meshio_datawritervtk_hh
 

@@ -10,20 +10,21 @@
 // ======================================================================
 //
 
+/**
+ * @file libsrc/topology/PsetFile.hh
+ *
+ * @brief C++ object for input/output of LaGriT binary Pset files.
+ */
+
 #if !defined(pylith_meshio_psetfilebinary_hh)
 #define pylith_meshio_psetfilebinary_hh
 
+// Include directives ---------------------------------------------------
 #include "PsetFile.hh" // ISA PsetFile
 
-#include "pylith/utils/array.hh" // USES int_array, string_array, std::vector
 #include <iosfwd>
 
-namespace pylith {
-  namespace meshio {
-    class PsetFileBinary;
-  } // meshio
-} // pylith
-
+// PsetFileBinary -------------------------------------------------------
 class pylith::meshio::PsetFileBinary : public PsetFile
 { // PsetFileBinary
 
