@@ -220,7 +220,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     """
     Get start time for simulation.
     """
-    return 0.0*second
+    return 0.0
 
 
   def getTotalTime(self):

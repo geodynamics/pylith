@@ -84,7 +84,7 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
     logEvent = "%sverify" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    BoundaryCondition.verifyConfiguration(self)
+    BoundaryCondition.verifyConfiguration(self, self.mesh)
     Integrator.verifyConfiguration(self)
     if self.bcQuadrature.cellDim() != self.mesh.dimension()-1:
         raise ValueError, \

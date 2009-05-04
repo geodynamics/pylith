@@ -18,6 +18,7 @@
 ## Factory: pde_formulation
 
 from Formulation import Formulation
+from pylith.utils.profiling import resourceUsageString
 
 # Explicit class
 class Explicit(Formulation):
@@ -47,7 +48,7 @@ class Explicit(Formulation):
     Formulation.__init__(self, name)
     self._loggingPrefix = "TSEx "
     self.solnField = {'name': "disp(t)",
-                      'label': "displacements"}
+                      'label': "displacement"}
     return
 
 
@@ -69,17 +70,23 @@ class Explicit(Formulation):
     Formulation.initialize(self, dimension, normalizer)
 
     self._info.log("Creating other fields and matrices.")
-    self.fields.add("disp(t+dt)")
-    self.fields.add("disp(t-dt)")
-    self.fields.add("residual")
-    self.fields.createHistory(["disp(t+dt), disp(t), disp(t-dt)"])    
+    self.fields.add("disp(t+dt)", "displacement")
+    self.fields.add("disp(t-dt)", "displacement")
+    self.fields.add("residual", "residual")
+    self.fields.createHistory(["disp(t+dt)", "disp(t)", "disp(t-dt)"])    
     self.fields.copyLayout("disp(t)")
     self.fields.solveSolnName("disp(t+dt)")
     self._debug.log(resourceUsageString())
 
-    # Create Petsc vectors for fields involved in solve
+    # Create Petsc vectors for fields involved in solve. Since we
+    # shift fields through the time history, all fields need a PETSc
+    # vector.
     dispTpdt = self.fields.get("disp(t+dt)")
     dispTpdt.createVector()
+    dispT = self.fields.get("disp(t)")
+    dispT.createVector()
+    dispTmdt = self.fields.get("disp(t-dt)")
+    dispTmdt.createVector()
     residual = self.fields.get("residual")
     residual.createVector()
 
@@ -152,10 +159,14 @@ class Explicit(Formulation):
     self._logger.eventBegin(logEvent)
     
     self.fields.shiftHistory()
-    if not self.solver.guessZero: # only works for KSP solver
+
+    # :KLUDGE: only works for KSP solver
+    if not self.solver.guessZero:
       dispTpdt = self.fields.get("disp(t+dt)")
       dispT = self.fields.get("disp(t)")
       dispTpdt.copy(dispT)
+    else:
+      dispTpdt.zero()
 
     Formulation.poststep(self, t, dt)
 
