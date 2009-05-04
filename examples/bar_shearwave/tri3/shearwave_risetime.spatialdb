@@ -1,11 +1,11 @@
 #SPATIAL.ascii 1
 SimpleDB {
-  // number of values for peak slip rate
+  // number of values for rise time
   num-values = 1
 
-  // Name and units for peak slip rate
-  value-names =  slip-rate
-  value-units =  m/s
+  // Name and units for rise time
+  value-names =  rise-time
+  value-units =  s
 
   // Number of locations where physical properties are given
   // 1 location -> data is uniform -> data dimension is 0
@@ -21,5 +21,5 @@ SimpleDB {
     space-dim = 2
   }
 }
-// Columns are x, y, slip-rate
-0.0  0.0    1.0
+// Columns are x, y, rise-time
+0.0  0.0    2.0
