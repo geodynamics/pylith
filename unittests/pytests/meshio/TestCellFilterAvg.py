@@ -16,10 +16,11 @@
 
 import unittest
 
-from pylith.meshio.CellFilterAvg import CellFilterAvg
+from pylith.meshio.CellFilterAvgMesh import CellFilterAvgMesh
+from pylith.meshio.CellFilterAvgSubMesh import CellFilterAvgSubMesh
 
 # ----------------------------------------------------------------------
-class TestCellFilterAvg(unittest.TestCase):
+class TestCellFilterAvgMesh(unittest.TestCase):
   """
   Unit testing of Python CellFilterAvg object.
   """
@@ -28,7 +29,7 @@ class TestCellFilterAvg(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = CellFilterAvg()
+    filter = CellFilterAvgMesh()
     filter._configure()
     return
 
@@ -37,24 +38,25 @@ class TestCellFilterAvg(unittest.TestCase):
     """
     Test constructor.
     """
-    from pylith.feassemble.quadrature.Quadrature1D import Quadrature1D
+    spaceDim = 1
     
     from pylith.feassemble.FIATSimplex import FIATSimplex
     cell = FIATSimplex()
-    cell.shape = "line"
-    cell.degree = 2
-    cell.order = 2
+    cell.inventory.shape = "line"
+    cell.inventory.degree = 2
+    cell.inventory.order = 2
+    cell._configure()
 
-    quadrature = Quadrature1D()
+    from pylith.feassemble.Quadrature import MeshQuadrature
+    quadrature = MeshQuadrature()
+    quadrature.inventory.cell = cell
     quadrature._configure()
-    quadrature.cell = cell
-    quadrature.preinitialize()
+    quadrature.preinitialize(spaceDim)
     quadrature.initialize()
 
-    filter = CellFilterAvg()
+    filter = CellFilterAvgMesh()
     filter._configure()
     filter.initialize(quadrature)
-    self.assertNotEqual(None, filter.cppHandle)    
     return
 
 
@@ -62,7 +64,57 @@ class TestCellFilterAvg(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.CellFilterAvg import output_cell_filter
+    from pylith.meshio.CellFilterAvgMesh import output_cell_filter
+    filter = output_cell_filter()
+    return
+
+
+# ----------------------------------------------------------------------
+class TestCellFilterAvgSubMesh(unittest.TestCase):
+  """
+  Unit testing of Python CellFilterAvg object.
+  """
+
+  def test_constructor(self):
+    """
+    Test constructor.
+    """
+    filter = CellFilterAvgSubMesh()
+    filter._configure()
+    return
+
+
+  def test_initialize(self):
+    """
+    Test constructor.
+    """
+    spaceDim = 2
+    
+    from pylith.feassemble.FIATSimplex import FIATSimplex
+    cell = FIATSimplex()
+    cell.inventory.shape = "line"
+    cell.inventory.degree = 2
+    cell.inventory.order = 2
+    cell._configure()
+
+    from pylith.feassemble.Quadrature import SubMeshQuadrature
+    quadrature = SubMeshQuadrature()
+    quadrature.inventory.cell = cell
+    quadrature._configure()
+    quadrature.preinitialize(spaceDim)
+    quadrature.initialize()
+
+    filter = CellFilterAvgSubMesh()
+    filter._configure()
+    filter.initialize(quadrature)
+    return
+
+
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.meshio.CellFilterAvgSubMesh import output_cell_filter
     filter = output_cell_filter()
     return
 

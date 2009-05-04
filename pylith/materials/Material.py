@@ -14,7 +14,7 @@
 ##
 
 ## @brief Python abstract base class for managing physical properties
-## of a material.
+## and state variables of a material.
 ##
 ## This implementation of a material associates both physical
 ## properties and a quadrature scheme with the material. Thus,
@@ -56,7 +56,7 @@ class Material(Component):
     ## \b Facilities
     ## @li \b db Database of material property parameters
     ## @li \b quadrature Quadrature object for numerical integration
-    ## @li \b initialStateDB Database for initial state.
+    ## @li \b dbInitialState Database for initial state.
 
     import pyre.inventory
 
@@ -70,17 +70,18 @@ class Material(Component):
     label.meta['tip'] = "Name of material."
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
-    db = pyre.inventory.facility("db", family="spatial_database",
-                                 factory=SimpleDB)
-    db.meta['tip'] = "Database of material property parameters."
+    dbProperties = pyre.inventory.facility("properties_db",
+                                           family="spatial_database",
+                                           factory=SimpleDB)
+    dbProperties.meta['tip'] = "Database for physical property parameters."
 
-    initialStateDB = pyre.inventory.facility("initial_state_db",
-                                              family="spatial_database",
-                                              factory=SimpleDB)
-    initialStateDB.meta['tip'] = "Database used for initial state."
-    
-    from pylith.feassemble.quadrature.Quadrature import Quadrature
-    quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
+    dbInitialState = pyre.inventory.facility("initial_state_db",
+                                           family="spatial_database",
+                                           factory=SimpleDB)
+    dbInitialState.meta['tip'] = "Database for initial state variables."
+
+    from pylith.feassemble.Quadrature import MeshQuadrature
+    quadrature = pyre.inventory.facility("quadrature", factory=MeshQuadrature)
     quadrature.meta['tip'] = "Quadrature object for numerical integration."
 
 
@@ -91,21 +92,18 @@ class Material(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="material")
-    self.cppHandle = None
-    self.dimension = None
+    self._createModuleObj()
     self.output = None
     return
 
 
-  def preinitialize(self):
+  def preinitialize(self, mesh):
     """
     Do pre-initialization setup.
     """
-    self._createCppHandle()
-    self.cppHandle.id = self.id
-    self.cppHandle.label = self.label
-    self.quadrature.preinitialize()
     self._setupLogging()
+    self.mesh = mesh
+    self.quadrature.preinitialize(self.mesh.coordsys().spaceDim())
     return
 
 
@@ -116,46 +114,27 @@ class Material(Component):
     logEvent = "%sverify" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    if self.quadrature.spaceDim != self.dimension:
+    if self.quadrature.cellDim != self.mesh.dimension() or \
+       self.quadrature.spaceDim != self.mesh.coordsys.spaceDim():
         raise ValueError, \
-              "Quadrature scheme and material are incompatible.\n" \
-              "Dimension for quadrature: %d\n" \
-              "Dimension for material '%s': %d" % \
-              (self.quadrature.spaceDim, self.label, self.dimension)
+              "Quadrature scheme for material '%s' and mesh are incompatible.\n" \
+              "Quadrature cell dimension: %d\n" \
+              "Quadrature spatial dimension: %d\n" \
+              "Mesh cell dimension: %d\n" \
+              "Mesh spatial dimension: %d" % \
+              (self.label(),
+               self.quadrature.cellDim, self.quadrature.spaceDim,
+               self.mesh.dimension(), self.mesh.coordsys().spaceDim())
     
     self._logger.eventEnd(logEvent)
     return
   
 
-  def initialize(self, mesh, totalTime, numTimeSteps, normalizer):
-    """
-    Initialize material property manager.
-    """
-    logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
-
-    self._info.log("Initializing material '%s'." % self.label)
-    self.mesh = mesh
-    assert(None != self.cppHandle)
-    self.db.initialize()
-    self.cppHandle.db = self.db.cppHandle
-    self.cppHandle.normalizer = normalizer.cppHandle
-    if self.initialStateDB != None:
-      self._info.log("Initializing initial state database.")
-      self.initialStateDB.initialize()
-      self.cppHandle.initialStateDB = self.initialStateDB.cppHandle
-    self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
-                              self.quadrature.cppHandle)
-
-    self._logger.eventEnd(logEvent)
-    return
-
-
   def getDataMesh(self):
     """
     Get mesh associated with data fields.
     """
-    return (self.mesh, "material-id", self.id)
+    return (self.mesh, "material-id", self.id())
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -165,25 +144,24 @@ class Material(Component):
     Setup members using inventory.
     """
     Component._configure(self)
-    self.id = self.inventory.id
-    self.label = self.inventory.label
-    self.db = self.inventory.db
-    self.quadrature = self.inventory.quadrature
+    self.id(self.inventory.id)
+    self.label(self.inventory.label)
+    self.dbProperties(self.inventory.dbProperties)
     if self.inventory.useInitialState:
-      self.initialStateDB = self.inventory.initialStateDB
-    else:
-      self.initialStateDB = None
+      self.dbInitialState(self.inventory.dbInitialState)
+
+    self.quadrature = self.inventory.quadrature
     return
 
   
-  def _createCppHandle(self):
+  def _createModuleObj(self):
     """
-    Create handle to corresponding C++ object.
+    Call constructor for module object for access to C++ object.
     """
-    raise NotImplementedError("Please implement _createCppHandle() in " \
-                              "derived class.")
-  
-  
+    raise NotImplementedError, \
+          "Please implement _createModuleOb() in derived class."
+
+
   def _setupLogging(self):
     """
     Setup event logging.
@@ -193,7 +171,7 @@ class Material(Component):
 
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("FE Material")
+    logger.className("FE Material")
     logger.initialize()
 
     events = ["verify",

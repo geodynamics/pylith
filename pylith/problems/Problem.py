@@ -16,7 +16,7 @@
 ##
 ## Factory: problem.
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
@@ -34,8 +34,8 @@ def bcFactory(name):
   Factory for boundary condition items.
   """
   from pyre.inventory import facility
-  from pylith.bc.DirichletPoints import DirichletPoints
-  return facility(name, family="boundary_condition", factory=DirichletPoints)
+  from pylith.bc.DirichletBC import DirichletBC
+  return facility(name, family="boundary_condition", factory=DirichletBC)
 
 
 def faultFactory(name):
@@ -48,7 +48,7 @@ def faultFactory(name):
 
 
 # Problem class
-class Problem(Component):
+class Problem(PetscComponent):
   """
   Python abstract base class for crustal dynamics problems.
 
@@ -57,7 +57,7 @@ class Problem(Component):
   
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
+  class Inventory(PetscComponent.Inventory):
     """
     Python object for managing Problem facilities and properties.
     """
@@ -124,7 +124,7 @@ class Problem(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="problem")
+    PetscComponent.__init__(self, name, facility="problem")
     self.mesh = None
     return
 
@@ -155,28 +155,30 @@ class Problem(Component):
     # Check to make sure ids of materials and interfaces are unique
     materialIds = {}
     for material in self.materials.components():
-      if material.quadrature.spaceDim != self.dimension:
+      if material.quadrature.spaceDim() != self.dimension:
         raise ValueError, \
               "Spatial dimension of problem is '%d' but quadrature " \
               "for material '%s' is for spatial dimension '%d'." % \
-              (self.dimension, material.label, material.quadrature.spaceDim)
-      if material.id in materialIds.keys():
+              (self.dimension, material.label(), material.quadrature.spaceDim())
+      if material.id() in materialIds.keys():
         raise ValueError, \
             "ID values for materials '%s' and '%s' are both '%d'. " \
             "Material id values must be unique." % \
-            (material.label, materialIds[material.id], material.id)
-      materialIds[material.id] = material.label
+            (material.label(), materialIds[material.id()], material.id())
+      materialIds[material.id()] = material.label()
     
     for interface in self.interfaces.components():
-      if interface.id in materialIds.keys():
+      if interface.id() in materialIds.keys():
         raise ValueError, \
             "ID values for material '%s' and interface '%s' are both '%d'. " \
             "Material and interface id values must be unique." % \
-            (materialIds[interface.id], interface.label, interface.id)
-      materialIds[interface.id] = interface.label
+            (materialIds[interface.id()], interface.label(), interface.id())
+      materialIds[interface.id()] = interface.label()
 
     # Check to make sure material-id for each cell matches the id of a material
-    self.mesh.checkMaterialIds(materialIds.keys())
+    import numpy
+    idValues = numpy.array(materialIds.keys(), dtype=numpy.int32)
+    self.mesh.checkMaterialIds(idValues)
 
     self._logger.eventEnd(logEvent)
     return
@@ -221,7 +223,7 @@ class Problem(Component):
     """
     Set members based using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
     self.normalizer = self.inventory.normalizer
     self.dimension = self.inventory.dimension
     self.materials = self.inventory.materials
@@ -243,7 +245,7 @@ class Problem(Component):
 
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("Problem")
+    logger.className("Problem")
     logger.initialize()
 
     events = ["preinit",

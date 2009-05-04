@@ -11,8 +11,7 @@
 #
 
 SUBDIRS = \
-	line2 \
-	line3
+	line2
 
 
 # End of file 

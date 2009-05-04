@@ -11,12 +11,14 @@
 #
 
 nobase_pkgpyexec_PYTHON = \
-	PyLithApp.py \
 	__init__.py \
+	apps/__init__.py \
+	apps/PyLithApp.py \
+	apps/PetscApplication.py \
 	bc/__init__.py \
 	bc/AbsorbingDampers.py \
 	bc/BoundaryCondition.py \
-	bc/DirichletPoints.py \
+	bc/DirichletBC.py \
 	bc/DirichletBoundary.py \
 	bc/FixedDOFDB.py \
 	bc/Neumann.py \
@@ -40,29 +42,8 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/Integrator.py \
 	feassemble/IntegratorElasticity.py \
 	feassemble/ReferenceCell.py \
-	feassemble/quadrature/__init__.py \
-	feassemble/quadrature/Quadrature.py \
-	feassemble/quadrature/Quadrature0D.py \
-	feassemble/quadrature/Quadrature1D.py \
-	feassemble/quadrature/Quadrature1Din2D.py \
-	feassemble/quadrature/Quadrature1Din3D.py \
-	feassemble/quadrature/Quadrature2D.py \
-	feassemble/quadrature/Quadrature2Din3D.py \
-	feassemble/quadrature/Quadrature3D.py \
-	feassemble/geometry/__init__.py \
-	feassemble/geometry/CellGeometry.py \
-	feassemble/geometry/GeometryPoint1D.py \
-	feassemble/geometry/GeometryPoint2D.py \
-	feassemble/geometry/GeometryPoint3D.py \
-	feassemble/geometry/GeometryLine1D.py \
-	feassemble/geometry/GeometryLine2D.py \
-	feassemble/geometry/GeometryLine3D.py \
-	feassemble/geometry/GeometryTri2D.py \
-	feassemble/geometry/GeometryTri3D.py \
-	feassemble/geometry/GeometryQuad2D.py \
-	feassemble/geometry/GeometryQuad3D.py \
-	feassemble/geometry/GeometryTet3D.py \
-	feassemble/geometry/GeometryHex3D.py \
+	feassemble/Quadrature.py \
+	feassemble/CellGeometry.py \
 	materials/__init__.py \
 	materials/ElasticMaterial.py \
 	materials/ElasticIsotropic3D.py \
@@ -76,15 +57,21 @@ nobase_pkgpyexec_PYTHON = \
 	materials/MaxwellIsotropic3D.py \
 	meshio/__init__.py \
 	meshio/CellFilter.py \
-	meshio/CellFilterAvg.py \
+	meshio/CellFilterAvgMesh.py \
+	meshio/CellFilterAvgSubMesh.py \
 	meshio/DataWriter.py \
 	meshio/DataWriterVTK.py \
-	meshio/MeshIO.py \
+	meshio/DataWriterVTKMesh.py \
+	meshio/DataWriterVTKSubMesh.py \
+	meshio/DataWriterVTKSubSubMesh.py \
+	meshio/MeshIOObj.py \
 	meshio/MeshIOAscii.py \
 	meshio/MeshIOCubit.py \
 	meshio/MeshIOLagrit.py \
 	meshio/OutputDirichlet.py \
 	meshio/OutputManager.py \
+	meshio/OutputManagerMesh.py \
+	meshio/OutputManagerSubMesh.py \
 	meshio/OutputSoln.py \
 	meshio/OutputFaultKin.py \
 	meshio/OutputMatElastic.py \
@@ -92,25 +79,32 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/OutputSolnSubset.py \
 	meshio/SingleOutput.py \
 	meshio/VertexFilter.py \
-	meshio/VertexFilterVecNorm.py \
+	meshio/VertexFilterVecNormMesh.py \
+	meshio/VertexFilterVecNormSubMesh.py \
+	mpi/__init__.py \
+	mpi/Communicator.py \
 	problems/__init__.py \
 	problems/Explicit.py \
 	problems/Formulation.py \
 	problems/Implicit.py \
 	problems/Problem.py \
+	problems/Solver.py \
+	problems/SolverLinear.py \
+	problems/SolverNonlinear.py \
 	problems/TimeDependent.py \
 	problems/TimeStep.py \
 	problems/TimeStepAdapt.py \
 	problems/TimeStepUniform.py \
 	problems/TimeStepUser.py \
-	solver/__init__.py \
-	solver/Solver.py \
-	solver/SolverLinear.py \
-	solver/SolverNonlinear.py \
 	topology/__init__.py \
 	topology/Distributor.py \
-	topology/FieldsManager.py \
 	topology/Mesh.py \
+	topology/SubMesh.py \
+	topology/Field.py \
+	topology/Fields.py \
+	topology/SolutionFields.py \
+	topology/Jacobian.py \
+	topology/JacobianViewer.py \
 	topology/MeshGenerator.py \
 	topology/MeshImporter.py \
 	topology/MeshRefiner.py \
@@ -120,6 +114,7 @@ nobase_pkgpyexec_PYTHON = \
 	utils/CppData.py \
 	utils/EmptyBin.py \
 	utils/EventLogger.py \
+	utils/PetscComponent.py \
 	utils/PetscManager.py \
 	utils/VTKDataReader.py \
 	utils/importing.py \

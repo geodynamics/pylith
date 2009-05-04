@@ -11,7 +11,10 @@
 #
 
 dist_noinst_DATA = \
-	matinitialize.spatialdb
+	matinitialize.spatialdb \
+	matstress.spatialdb \
+	matstrain.spatialdb \
+	line3.mesh
 
 noinst_TMP =
 

@@ -21,7 +21,7 @@
 #if !defined(pylith_meshio_testdatawritervtksubmeshtri3_hh)
 #define pylith_meshio_testdatawritervtksubmeshtri3_hh
 
-#include "TestDataWriterVTKMesh.hh"
+#include "TestDataWriterVTKSubMesh.hh"
 
 /// Namespace for pylith package
 namespace pylith {
@@ -31,7 +31,7 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKSubMeshTri3 : public TestDataWriterVTKMesh
+class pylith::meshio::TestDataWriterVTKSubMeshTri3 : public TestDataWriterVTKSubMesh
 { // class TestDataWriterVTKSubMeshTri3
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////

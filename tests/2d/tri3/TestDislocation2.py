@@ -18,7 +18,7 @@
 import unittest
 
 # Local application
-from pylith.PyLithApp import PyLithApp
+from pylith.apps.PyLithApp import PyLithApp
 class DislocationApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="dislocation2")

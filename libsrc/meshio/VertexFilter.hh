@@ -20,16 +20,13 @@
 #if !defined(pylith_meshio_vertexfilter_hh)
 #define pylith_meshio_vertexfilter_hh
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh, real_section_type
-#include "pylith/utils/vectorfields.hh" // USES VectorFieldEnum
+// Include directives ---------------------------------------------------
+#include "meshiofwd.hh" // forward declarations
 
-namespace pylith {
-  namespace meshio {
-    class VertexFilter;
-  } // meshio
+#include "pylith/topology/topologyfwd.hh" // USES Field
 
-} // pylith
-
+// VertexFilter ---------------------------------------------------------
+template<typename field_type>
 class pylith::meshio::VertexFilter
 { // VertexFilter
 
@@ -49,17 +46,13 @@ public :
   virtual
   VertexFilter* clone(void) const = 0;
 
-  /** Filter field. Field type of filtered field is returned via an argument.
+  /** Filter field over vertices of a mesh.
    *
-   * @param fieldType Field type of filtered field.
    * @param fieldIn Field to filter.
-   * @param mesh PETSc mesh.
    */
   virtual
-  const ALE::Obj<real_section_type>&
-  filter(VectorFieldEnum* fieldType,
-	 const ALE::Obj<real_section_type>& fieldIn,
-	 const ALE::Obj<Mesh>& mesh) = 0;
+  const field_type&
+  filter(const field_type& fieldIn) = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -71,6 +64,7 @@ protected :
    */
   VertexFilter(const VertexFilter& f);
 
+private :
   /** operator=.
   *
   * @param f Filter to copy.
@@ -79,6 +73,8 @@ protected :
   const VertexFilter& operator=(const VertexFilter& f);
 
 }; // VertexFilter
+
+#include "VertexFilter.cc" // template definitions
 
 #endif // pylith_meshio_vertexfilter_hh
 

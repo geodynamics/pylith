@@ -20,18 +20,10 @@
 #if !defined(pylith_materials_elasticmaterial_hh)
 #define pylith_materials_elasticmaterial_hh
 
+// Include directives ---------------------------------------------------
 #include "Material.hh" // ISA Material
 
-/// Namespace for pylith package
-namespace pylith {
-  namespace materials {
-    class ElasticMaterial;
-
-    class TestElasticMaterial; // unit testing
-  } // materials
-} // pylith
-
-/// C++ object for material constitutive model.
+// ElasticMaterial ------------------------------------------------------
 class pylith::materials::ElasticMaterial : public Material
 { // class ElasticMaterial
   friend class TestElasticMaterial; ///< unit testing
@@ -41,35 +33,52 @@ public :
 
   /** Default constructor.
    *
-   * @param tensorSize Number of entries in stress tensor.
+   * @param dimension Spatial dimension associated with material.
+   * @param tensorSize Array of names of database values for material.
    * @param numElasticConsts Number of elastic constants.
-   * @param dbValues Array of names of database values for material.
-   * @param InitialStateDBValues Names of initial state database values for material.
-   * @param numDBValues Number of database values.
-   * @param properties Array of physical property meta data.
-   * @param numProperties Number of physical properties for material.
+   * @param metadata Metadata for physical properties and state variables.
    */
-  ElasticMaterial(const int tensorSize,
+  ElasticMaterial(const int dimension,
+		  const int tensorSize,
 		  const int numElasticConsts,
-		  const char** dbValues,
-		  const char** initialStateDBValues,
-		  const int numDBValues,
-		  const PropMetaData* properties,
-		  const int numProperties);
+		  const Metadata& metadata);
 
   /// Destructor.
   virtual
   ~ElasticMaterial(void);
 
-  /** Get cell's property information from material's section.
+  /** Set database for initial stress state.
    *
-   * @param cell Finite element cell
-   * @param numQuadPts Number of quadrature points
+   * @param db Spatial database.
    */
-  void getPropertiesCell(const Mesh::point_type& cell,
-			 const int numQuadPts);
+  void dbInitialStress(spatialdata::spatialdb::SpatialDB* db);
+
+  /** Set database for initial strain state.
+   *
+   * @param db Spatial database.
+   */
+  void dbInitialStrain(spatialdata::spatialdb::SpatialDB* db);
+
+  /** Initialize material by getting physical property parameters from
+   * database.
+   *
+   * @param mesh Finite-element mesh.
+   * @param quadrature Quadrature for finite-element integration
+   */
+  void initialize(const topology::Mesh& mesh,
+		  feassemble::Quadrature<topology::Mesh>* quadrature);
+  
+  /** Retrieve parameters for physical properties and state variables
+   * for cell.
+   *
+   * @param cell Finite-element cell
+   */
+  void retrievePropsAndVars(const int cell);
 
   /** Compute density for cell at quadrature points.
+   *
+   * @pre Must call retrievePropsAndVars for cell before calling
+   * calcDensity().
    *
    * @returns Array of density values at cell's quadrature points.
    */
@@ -79,6 +88,9 @@ public :
    * are from the previous time step, then the computeStateVars flag
    * should be set to true so that the state variables are updated
    * (but not stored) when computing the stresses.
+   *
+   * @pre Must call retrievePropsAndVars for cell before calling
+   * calcStress().
    *
    * Size of array of stress tensors = [numQuadPts][tensorSize].
    *
@@ -102,6 +114,9 @@ public :
 	     const bool computeStateVars =false);
 
   /** Compute derivative of elasticity matrix for cell at quadrature points.
+   *
+   * @pre Must call retrievePropsAndVars for cell before calling
+   * calcDerivElastic().
    *
    * Size of array of elasticity constants = [numQuadPts][numElasticConsts]
    *
@@ -127,23 +142,34 @@ public :
   const double_array&
   calcDerivElastic(const double_array& totalStrain);
 
-  /** Get stable time step for implicit time integration.
-   *
-   * Default is MAXFLOAT (or 1.0e+30 if MAXFLOAT is not defined in math.h).
-   *
-   * @returns Time step
-   */
-  virtual
-  double stableTimeStepImplicit(void) const;
-
-  /** Update properties (for next time step).
+  /** Update state variables (for next time step).
    *
    * @param totalStrain Total strain tensor at quadrature points
    *    [numQuadPts][tensorSize]
    * @param cell Finite element cell
    */
-  void updateProperties(const double_array& totalStrain,
-			const Mesh::point_type& cell);
+  void updateStateVars(const double_array& totalStrain,
+		       const int cell);
+
+  /** Get flag indicating whether material implements an empty
+   * _updateProperties() method.
+   *
+   * @returns False if _updateProperties() is empty, true otherwise.
+   */
+  bool hasStateVars(void) const;
+
+  /** Get stable time step for implicit time integration.
+   *
+   * @pre Must call retrievePropsAndVars for cell before calling
+   * stableTimeStep().
+   *
+   * Default is MAXFLOAT (or 1.0e+30 if MAXFLOAT is not defined in math.h).
+   *
+   * @param mesh Finite-element mesh.
+   * @returns Time step
+   */
+  virtual
+  double stableTimeStepImplicit(const topology::Mesh& mesh);
 
   /** Set whether elastic or inelastic constitutive relations are used.
    *
@@ -152,16 +178,23 @@ public :
   virtual
   void useElasticBehavior(const bool flag);
 
-  /** Get flag indicating whether material implements an empty
-   * _updateProperties() method.
+  /** Get initial stress field.
    *
-   * @returns False if _updateProperties() is empty, true otherwise.
+   * @returns Initial stress field.
    */
-  virtual
-  bool usesUpdateProperties(void) const;
+  const topology::Field<topology::Mesh>& initialStressField(void) const;
+
+  /** Get initial strain field.
+   *
+   * @returns Initial strain field.
+   */
+  const topology::Field<topology::Mesh>& initialStrainField(void) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
+
+  /// These methods must be implemented by every elasticity
+  /// constitutive model.
 
   /** Compute density from properties.
    *
@@ -172,32 +205,43 @@ protected :
   virtual
   void _calcDensity(double* const density,
 		    const double* properties,
-		    const int numProperties) = 0;
+		    const int numProperties,
+		    const double* stateVars,
+		    const int numStateVars) = 0;
 
-  /** Compute stress tensor from properties. If the state variables
-   * are from the previous time step, then the computeStateVars flag
-   * should be set to true so that the state variables are updated
-   * (but not stored) when computing the stresses.
+  /** Compute stress tensor from properties and state variables. If
+   * the state variables are from the previous time step, then the
+   * computeStateVars flag should be set to true so that the state
+   * variables are updated (but not stored) when computing the
+   * stresses.
    *
    * @param stress Array for stress tensor.
    * @param stressSize Size of stress tensor.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialState Initial state variable values.
-   * @param initialStateSize Size of initial state array.
-   * @param computeStateVars Flag indicating to compute updated state vars.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain tensor at location.
+   * @param initialStrainSize Size of initial strain array.
+   * @param computeStateVars Flag indicating to compute updated state variables.
    */
   virtual
   void _calcStress(double* const stress,
 		   const int stressSize,
 		   const double* properties,
 		   const int numProperties,
+		   const double* stateVars,
+		   const int numStateVars,
 		   const double* totalStrain,
 		   const int strainSize,
-		   const double* initialState,
-		   const int initialStateSize,
+		   const double* initialStress,
+		   const int initialStressSize,
+		   const double* initialStrain,
+		   const int initialStrainSize,
 		   const bool computeStateVars) = 0;
 
   /** Compute derivatives of elasticity matrix from properties.
@@ -206,104 +250,166 @@ protected :
    * @param numElasticConsts Number of elastic constants.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialState Initial state variable values.
-   * @param initialStateSize Size of initial state array.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain tensor at location.
+   * @param initialStrainSize Size of initial strain array.
    */
   virtual
   void _calcElasticConsts(double* const elasticConsts,
 			  const int numElasticConsts,
 			  const double* properties,
 			  const int numProperties,
+			  const double* stateVars,
+			  const int numStateVars,
 			  const double* totalStrain,
 			  const int strainSize,
-			  const double* initialState,
-			  const int initialStateSize) = 0;
+			  const double* initialStress,
+			  const int initialStressSize,
+			  const double* initialStrain,
+			  const int initialStrainSize) = 0;
+
+  /** Update state variables (for next time step).
+   *
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
+   * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain tensor at location.
+   * @param initialStrainSize Size of initial strain array.
+   */
+  virtual
+  void _updateStateVars(double* const stateVars,
+			const int numStateVars,
+			const double* properties,
+			const int numProperties,
+			const double* totalStrain,
+			const int strainSize,
+			const double* initialStress,
+			const int initialStressSize,
+			const double* initialStrain,
+			const int initialStrainSize);
 
   /** Get stable time step for implicit time integration.
+   *
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
    *
    * @returns Time step
    */
   virtual
   double _stableTimeStepImplicit(const double* properties,
-				 const int numProperties) const = 0;
-
-  /** Update properties (for next time step).
-   *
-   * @param properties Properties at location.
-   * @param numProperties Number of properties.
-   * @param totalStrain Total strain at location.
-   * @param strainSize Size of strain tensor.
-   * @param initialState Initial state variable values.
-   * @param initialStateSize Size of initial state array.
-   */
-  virtual
-  void _updateProperties(double* const properties,
-			 const int numProperties,
-			 const double* totalStrain,
-			 const int strainSize,
-			 const double* initialState,
-			 const int initialStateSize);
-
-  // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private :
-
-  /// Not implemented
-  ElasticMaterial(const ElasticMaterial& m);
-
-  /// Not implemented
-  const ElasticMaterial& operator=(const ElasticMaterial& m);
+				 const int numProperties,
+				 const double* stateVars,
+				 const int numStateVars) const = 0;
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
-  /** Get properties for cell.
+  /** Allocate cell arrays.
    *
-   * @param cell Finite-element cell
+   * @param numQuadPts Number of quadrature points.
    */
-  void _getProperties(const Mesh::point_type& cell);
+  void _allocateCellArrays(void);
+
+  /** Initialize initial stress field.
+   *
+   * @param mesh Finite-element mesh.
+   * @param quadrature Quadrature for finite-element integration
+   */
+  void _initializeInitialStress(const topology::Mesh& mesh,
+				feassemble::Quadrature<topology::Mesh>* quadrature);
+
+  /** Initialize initial strain field.
+   *
+   * @param mesh Finite-element mesh.
+   * @param quadrature Quadrature for finite-element integration
+   */
+  void _initializeInitialStrain(const topology::Mesh& mesh,
+				feassemble::Quadrature<topology::Mesh>* quadrature);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  int _numQuadPts; ///< Number of quadrature points
-  int _numElasticConsts; ///< Number of elastic constants.
+  /// Database for initial stress tensor;
+  spatialdata::spatialdb::SpatialDB* _dbInitialStress;
 
+  /// Database for initial strain tensor;
+  spatialdata::spatialdb::SpatialDB* _dbInitialStrain;
+
+  /// Initial stress field.
+  topology::Field<topology::Mesh>* _initialStress;
+  
+  /// Initial strain field.
+  topology::Field<topology::Mesh>* _initialStrain;
+  
   /** Properties at quadrature points for current cell.
    *
-   * size = numQuadPts*numPropsQuadPt
-   * index = iQuadPt*iParam*iValue
+   * size = numQuadPts * numPropsQuadPt
+   * index = iQuadPt * numPropsQuadPt + iPropQuadPt
    */
   double_array _propertiesCell;
 
-  /** Initial state values at quadrature points for current cell.
+  /** State variables at quadrature points for current cell.
    *
-   * size = numQuadPts*initialStateSize
-   * index = iQuadPt*iValue
+   * size = numQuadPts * numVarsQuadPt
+   * index = iQuadPt * numVarsQuadPt + iStateVar
    */
-  double_array _initialStateCell;
+  double_array _stateVarsCell;
+
+  /** Initial stress state for current cell.
+   *
+   * size = numQuadPts * tensorSize
+   * index = iQuadPt * tensorSize + iComponent
+   */
+  double_array _initialStressCell;
+
+  /** Initial strain state for current cell.
+   *
+   * size = numQuadPts * tensorSize
+   * index = iQuadPt * tensorSize + iComponent
+   */
+  double_array _initialStrainCell;
 
   /** Density value at quadrature points for current cell.
    *
    * size = numQuadPts
    * index = iQuadPt
    */
-  double_array _density;
+  double_array _densityCell;
 
   /** Stress tensor at quadrature points for current cell.
    *
-   * size = numQuadPts*tensorSize
-   * index = *iQuadPt*tensorSize + iStress
+   * size = numQuadPts * tensorSize
+   * index = iQuadPt * tensorSize + iStress
    */
-  double_array _stress;
+  double_array _stressCell;
 
   /** Elasticity matrix at quadrature points for current cell.
    *
-   * size = numQuadPts*numElasticConsts
-   * index = iQuadPt*numElasticConsts+iConstant
+   * size = numQuadPts * numElasticConsts
+   * index = iQuadPt * numElasticConsts + iConstant
    */
-  double_array _elasticConsts;
+  double_array _elasticConstsCell;
+
+  int _numQuadPts; ///< Number of quadrature points
+  const int _numElasticConsts; ///< Number of elastic constants.
+
+  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private :
+
+  ElasticMaterial(const ElasticMaterial&); ///< Not implemented.
+  const ElasticMaterial& operator=(const ElasticMaterial&); ///< Not implemented
 
 }; // class ElasticMaterial
 

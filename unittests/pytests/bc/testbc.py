@@ -56,11 +56,11 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
-    from TestDirichletBoundary import TestDirichletBoundary
-    suite.addTest(unittest.makeSuite(TestDirichletBoundary))
+    from TestDirichletBC import TestDirichletBC
+    suite.addTest(unittest.makeSuite(TestDirichletBC))
 
-    from TestDirichletPoints import TestDirichletPoints
-    suite.addTest(unittest.makeSuite(TestDirichletPoints))
+    #from TestDirichletBoundary import TestDirichletBoundary
+    #suite.addTest(unittest.makeSuite(TestDirichletBoundary))
 
     from TestAbsorbingDampers import TestAbsorbingDampers
     suite.addTest(unittest.makeSuite(TestAbsorbingDampers))

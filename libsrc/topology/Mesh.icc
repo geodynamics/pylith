@@ -16,14 +16,14 @@
 
 // Get Sieve mesh.
 inline
-const ALE::Obj<pylith::SieveMesh>&
+const ALE::Obj<pylith::topology::Mesh::SieveMesh>&
 pylith::topology::Mesh::sieveMesh(void) const {
   return _mesh;
 }
 
 // Get Sieve mesh.
 inline
-ALE::Obj<pylith::SieveMesh>&
+ALE::Obj<pylith::topology::Mesh::SieveMesh>&
 pylith::topology::Mesh::sieveMesh(void) {
   return _mesh;
 }
@@ -33,6 +33,50 @@ inline
 const spatialdata::geocoords::CoordSys*
 pylith::topology::Mesh::coordsys(void) const {
   return _coordsys;
+}
+
+// Set debug flag.
+inline
+void
+pylith::topology::Mesh::debug(const bool value) {
+  _debug = value;
+  if (!_mesh.isNull())
+    _mesh->setDebug(value);
+}
+
+// Get debug flag.
+inline
+bool
+pylith::topology::Mesh::debug(void) const {
+  return _debug;
+}
+
+// Get dimension of mesh.
+inline
+int
+pylith::topology::Mesh::dimension(void) const {
+  return (!_mesh.isNull()) ? _mesh->getDimension() : 0;
+}
+
+// Set MPI communicator associated with mesh.
+inline
+void
+pylith::topology::Mesh::comm(const MPI_Comm value) {
+  _comm = value;
+}
+    
+// Get MPI communicator associated with mesh.
+inline
+const MPI_Comm
+pylith::topology::Mesh::comm(void) const {
+  return _comm;
+}
+    
+// Print mesh to stdout.
+inline
+void
+pylith::topology::Mesh::view(const char* label) {
+  _mesh->view(label);
 }
 
 

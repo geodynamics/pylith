@@ -17,7 +17,6 @@ dist_noinst_DATA = \
 	line2.mesh \
 	line2_finalslip.spatialdb \
 	line2_sliptime.spatialdb \
-	line2_peakrate.spatialdb \
 	line2_sliprate.spatialdb \
 	line2_risetime.spatialdb \
 	tri3.mesh \
@@ -29,12 +28,11 @@ dist_noinst_DATA = \
 	tri3_finalslip.spatialdb \
 	tri3_finalslipB.spatialdb \
 	tri3_sliptime.spatialdb \
-	tri3_peakrate.spatialdb \
 	tri3_sliprate.spatialdb \
 	tri3_risetime.spatialdb \
 	tri3d_finalslip.spatialdb \
 	tri3d_sliptime.spatialdb \
-	tri3d_peakrate.spatialdb \
+	tri3d_risetime.spatialdb \
 	quad4.mesh \
 	quad4b.mesh \
 	quad4c.mesh \
@@ -45,10 +43,10 @@ dist_noinst_DATA = \
 	quad4h.mesh \
 	quad4_finalslip.spatialdb \
 	quad4_sliptime.spatialdb \
-	quad4_peakrate.spatialdb \
+	quad4_risetime.spatialdb \
 	quad4e_finalslip.spatialdb \
 	quad4e_sliptime.spatialdb \
-	quad4e_peakrate.spatialdb \
+	quad4e_risetime.spatialdb \
 	tet4.mesh \
 	tet4b.mesh \
 	tet4c.mesh \
@@ -61,12 +59,11 @@ dist_noinst_DATA = \
 	tet4j.mesh \
 	tet4_finalslip.spatialdb \
 	tet4_sliptime.spatialdb \
-	tet4_peakrate.spatialdb \
-	tet4_sliprate.spatialdb \
 	tet4_risetime.spatialdb \
+	tet4_sliprate.spatialdb \
 	tet4e_finalslip.spatialdb \
 	tet4e_sliptime.spatialdb \
-	tet4e_peakrate.spatialdb \
+	tet4e_risetime.spatialdb \
 	hex8.mesh \
 	hex8b.mesh \
 	hex8c.mesh \
@@ -78,7 +75,7 @@ dist_noinst_DATA = \
 	hex8i.mesh \
 	hex8_finalslip.spatialdb \
 	hex8_sliptime.spatialdb \
-	hex8_peakrate.spatialdb \
+	hex8_risetime.spatialdb \
 	tri3traction.mesh \
 	quad4traction.mesh \
 	tet4traction.mesh \

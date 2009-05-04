@@ -24,15 +24,15 @@ pylith::materials::Material::dimension(void) const {
 // Set database for material parameters.
 inline
 void
-pylith::materials::Material::db(spatialdata::spatialdb::SpatialDB* value) {
-  _db = value;
+pylith::materials::Material::dbProperties(spatialdata::spatialdb::SpatialDB* value) {
+  _dbProperties = value;
 }
 
 // Set database for initial state variables.
 inline
 void
-pylith::materials::Material::initialStateDB(spatialdata::spatialdb::SpatialDB* value) {
-  _initialStateDB = value;
+pylith::materials::Material::dbInitialState(spatialdata::spatialdb::SpatialDB* value) {
+  _dbInitialState = value;
 }
 
 // Set identifier of material.
@@ -58,9 +58,9 @@ pylith::materials::Material::label(const char* value) {
 
 // Get label of material.
 inline
-const std::string&
+const char*
 pylith::materials::Material::label(void) const {
-  return _label;
+  return _label.c_str();
 }
 
 // Set current time step.
@@ -77,9 +77,15 @@ pylith::materials::Material::timeStep(void) const {
   return _dt;
 } // timeStep
 
-/* Get flag indicating whether Jacobian matrix must be reformed for
- * current state.
- */
+// Get size of stress/strain tensor associated with material.
+inline
+int
+pylith::materials::Material::tensorSize(void) const {
+  return _tensorSize;
+}
+
+// Get flag indicating whether Jacobian matrix must be reformed for
+// current state.
 inline
 bool
 pylith::materials::Material::needNewJacobian(void) const {
@@ -93,6 +99,27 @@ void
 pylith::materials::Material::resetNeedNewJacobian(void) {
   _needNewJacobian = false;
 } // resetNeedNewJacobian
+
+// Compute initial state variables from values in spatial database.
+inline
+void
+pylith::materials::Material::_dbToStateVars(double* const stateValues,
+					    const double_array& dbValues) const
+{}
+
+// Nondimensionalize state variables.
+inline
+void
+pylith::materials::Material::_nondimStateVars(double* const values,
+					      const int nvalues) const
+{}
+  
+// Dimensionalize state variables.
+inline
+void
+pylith::materials::Material::_dimStateVars(double* const values,
+					   const int nvalues) const
+{}
 
 
 // End of file 

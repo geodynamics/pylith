@@ -32,14 +32,10 @@
 #if !defined(pylith_feassemble_geometryhex3d_hh)
 #define pylith_feassemble_geometryhex3d_hh
 
+// Include directives ---------------------------------------------------
 #include "CellGeometry.hh" // ISA CellGeometry
 
-namespace pylith {
-  namespace feassemble {
-    class GeometryHex3D;
-  } // feassemble
-} // pylith
-
+// GeometryHex3D --------------------------------------------------------
 class pylith::feassemble::GeometryHex3D : public CellGeometry
 { // GeometryHex3D
 

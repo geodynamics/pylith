@@ -19,43 +19,39 @@
 #if !defined(pylith_feassemble_quadrature1d_hh)
 #define pylith_feassemble_quadrature1d_hh
 
-#include "Quadrature.hh"
+#include "QuadratureEngine.hh" // ISA Quadrature
 
-namespace pylith {
-  namespace feassemble {
-    class Quadrature1D;
-    class TestQuadrature1D;
-  } // feassemble
-} // pylith
-
-class pylith::feassemble::Quadrature1D : public Quadrature
+class pylith::feassemble::Quadrature1D : public QuadratureEngine
 { // Quadrature1D
   friend class TestQuadrature1D; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
-  /// Constructor
-  Quadrature1D(void);
+  /** Constructor.
+   *
+   * @param q Quadrature information for reference cell.
+   */
+  Quadrature1D(const QuadratureRefCell& q);
 
   /// Destructor
   ~Quadrature1D(void);
 
   /// Create a copy of this object.
-  Quadrature* clone(void) const;
+  QuadratureEngine* clone(void) const;
 
   /** Compute geometric quantities for a cell at quadrature points.
    *
-   * @param mesh Finite-element mesh
-   * @param coordinates Section containing vertex coordinates
+   * @param vertCoords Coordinates of vertices of finite-element cell.
+   * @param coordDim Spatial dimension of coordinate system.
    * @param cell Finite-element cell
    */
-  void computeGeometry(const real_section_type::value_type* vertCoords,
-                       const int coordDim,
-                       const Mesh::point_type& cell);
+  void computeGeometry(const double* vertCoords,
+		       const int coordDim,
+		       const int cell);
 
-// PROTECTED METHODS ////////////////////////////////////////////////////
-protected :
+// PRIVATE METHODS //////////////////////////////////////////////////////
+private :
 
   /** Copy constructor.
    *
@@ -63,7 +59,7 @@ protected :
    */
   Quadrature1D(const Quadrature1D& q);
 
-// PRIVATE METHODS //////////////////////////////////////////////////////
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
   const Quadrature1D& operator=(const Quadrature1D&); ///< Not implemented
@@ -73,5 +69,6 @@ private :
 #include "Quadrature1D.icc" // inline methods
 
 #endif // pylith_feassemble_quadrature1d_hh
+
 
 // End of file 

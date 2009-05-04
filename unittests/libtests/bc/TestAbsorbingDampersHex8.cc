@@ -16,7 +16,8 @@
 
 #include "data/AbsorbingDampersDataHex8.hh" // USES AbsorbingDampersDataHex8
 
-#include "pylith/feassemble/Quadrature2Din3D.hh" // USES Quadrature2Din3D
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/GeometryQuad3D.hh" // USES GeometryQuad3D
 
 // ----------------------------------------------------------------------
@@ -27,10 +28,10 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestAbsorbingDampersHex8 );
 void
 pylith::bc::TestAbsorbingDampersHex8::setUp(void)
 { // setUp
+  TestAbsorbingDampers::setUp();
   _data = new AbsorbingDampersDataHex8();
-  _quadrature = new feassemble::Quadrature2Din3D();
-  CPPUNIT_ASSERT(0 != _quadrature);
   feassemble::GeometryQuad3D geometry;
+  CPPUNIT_ASSERT(0 != _quadrature);
   _quadrature->refGeometry(&geometry);
 } // setUp
 

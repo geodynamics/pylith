@@ -16,12 +16,16 @@
 
 #include "data/BoundaryMeshData.hh" // USES BoundaryMeshData
 
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultsCohesiveKin
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
-#include <Selection.hh> // USES submesh algorithms
+// ----------------------------------------------------------------------
+typedef pylith::topology::SubMesh::SieveMesh SieveMesh;
+typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -46,49 +50,52 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
 { // testSubmesh
   CPPUNIT_ASSERT(0 != _data);
 
-  ALE::Obj<Mesh> mesh;
-
+  topology::Mesh mesh;
   meshio::MeshIOAscii iohandler;
   iohandler.filename(_data->filename);
   iohandler.read(&mesh);
-  CPPUNIT_ASSERT(!mesh.isNull());
 
-  const char* label = _data->bcLabel;
-  const ALE::Obj<SubMesh>& subMesh = 
-    ALE::Selection<Mesh>::submeshV<SubMesh>(mesh, mesh->getIntSection(label));
-  CPPUNIT_ASSERT(!subMesh.isNull());
+  // Set coordinate system
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(mesh.dimension());
+  cs.initialize();
+  mesh.coordsys(&cs);
 
-  //subMesh->view("SUBMESH WITHOUT FAULT");
+  // Create submesh
+  topology::SubMesh submesh(mesh, _data->bcLabel);
+  CPPUNIT_ASSERT(!submesh.sieveMesh().isNull());
 
-  const ALE::Obj<SubMesh::label_sequence>& vertices = subMesh->depthStratum(0);
-  const SubMesh::label_sequence::iterator verticesEnd = vertices->end();
-
+  // Check vertices
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = 
+    submesh.sieveMesh()->depthStratum(0);
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
   CPPUNIT_ASSERT_EQUAL(_data->numVerticesNoFault, int(vertices->size()));
 
   int ipt = 0;
-  for (SubMesh::label_sequence::iterator v_iter=vertices->begin();
+  for (SieveSubMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++ipt)
     CPPUNIT_ASSERT_EQUAL(_data->verticesNoFault[ipt], *v_iter);
 
-  const ALE::Obj<SubMesh::label_sequence>& cells = subMesh->heightStratum(1);
-  const SubMesh::label_sequence::iterator cellsEnd = cells->end();
-  const ALE::Obj<sieve_type>& sieve = subMesh->getSieve();
+  // Check cells
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
+    submesh.sieveMesh()->heightStratum(1);
+  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<SieveSubMesh::sieve_type>& sieve = 
+    submesh.sieveMesh()->getSieve();
   assert(!sieve.isNull());
+  CPPUNIT_ASSERT_EQUAL(_data->numCells, int(cells->size()));
 
-  CPPUNIT_ASSERT_EQUAL(_data->numCells, (int) cells->size());
-
-  ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, (int) pow(sieve->getMaxConeSize(), subMesh->depth()));
+  ALE::ISieveVisitor::NConeRetriever<SieveSubMesh::sieve_type> ncV(*sieve, (int) pow(sieve->getMaxConeSize(), submesh.sieveMesh()->depth()));
 
   int icell = 0;
   int index = 0;
-  for (SubMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveSubMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter, ++icell) {
-    ALE::ISieveTraversal<sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
-    const int               coneSize = ncV.getSize();
-    const Mesh::point_type *cone     = ncV.getPoints();
-
+    ALE::ISieveTraversal<SieveSubMesh::sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
+    const int coneSize = ncV.getSize();
+    const SieveSubMesh::point_type *cone = ncV.getPoints();
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, coneSize);
 
     for(int v = 0; v < coneSize; ++v, ++index)
@@ -104,55 +111,58 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
 { // testSubmeshFault
   CPPUNIT_ASSERT(0 != _data);
 
-  ALE::Obj<Mesh> mesh;
-
+  topology::Mesh mesh;
   meshio::MeshIOAscii iohandler;
   iohandler.filename(_data->filename);
   iohandler.read(&mesh);
-  CPPUNIT_ASSERT(!mesh.isNull());
 
+  // Set coordinate system
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(mesh.dimension());
+  cs.initialize();
+  mesh.coordsys(&cs);
+
+  // Adjust topology
   faults::FaultCohesiveKin fault;
   fault.label(_data->faultLabel);
   fault.id(_data->faultId);
-  fault.adjustTopology(mesh, _flipFault);
+  fault.adjustTopology(&mesh, _flipFault);
 
-  const char* label = _data->bcLabel;
-  const ALE::Obj<SubMesh>& subMesh = 
-    ALE::Selection<Mesh>::submeshV<SubMesh>(mesh, mesh->getIntSection(label));
-  CPPUNIT_ASSERT(!subMesh.isNull());
+  // Create submesh
+  topology::SubMesh submesh(mesh, _data->bcLabel);
+  CPPUNIT_ASSERT(!submesh.sieveMesh().isNull());
 
-  //subMesh->view("Submesh for mesh w/fault");
-  const ALE::Obj<SubMesh::label_sequence>& vertices = subMesh->depthStratum(0);
-  const SubMesh::label_sequence::iterator verticesEnd = vertices->end();
-
+  // Check vertices
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = 
+    submesh.sieveMesh()->depthStratum(0);
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
   CPPUNIT_ASSERT_EQUAL(_data->numVerticesFault, int(vertices->size()));
 
   int ipt = 0;
-  for (SubMesh::label_sequence::iterator v_iter=vertices->begin();
+  for (SieveSubMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++ipt)
     CPPUNIT_ASSERT_EQUAL(_data->verticesFault[ipt], *v_iter);
-    
-  const ALE::Obj<SubMesh::label_sequence>& cells = subMesh->depthStratum(1);
-  const SubMesh::label_sequence::iterator cellsEnd = cells->end();
-  const ALE::Obj<sieve_type>& sieve = subMesh->getSieve();
-  assert(!sieve.isNull());
-  const int depth = 1;
-  typedef ALE::SieveAlg<Mesh> SieveAlg;
 
+  // Check cells
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
+    submesh.sieveMesh()->heightStratum(1);
+  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<SieveSubMesh::sieve_type>& sieve = 
+    submesh.sieveMesh()->getSieve();
+  assert(!sieve.isNull());
   CPPUNIT_ASSERT_EQUAL(_data->numCells, int(cells->size()));
 
-  ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, (int) pow(sieve->getMaxConeSize(), subMesh->depth()));
+  ALE::ISieveVisitor::NConeRetriever<SieveSubMesh::sieve_type> ncV(*sieve, (int) pow(sieve->getMaxConeSize(), submesh.sieveMesh()->depth()));
 
   int icell = 0;
   int index = 0;
-  for (SubMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveSubMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter, ++icell) {
-    ALE::ISieveTraversal<sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
-    const int               coneSize = ncV.getSize();
-    const Mesh::point_type *cone     = ncV.getPoints();
-
+    ALE::ISieveTraversal<SieveSubMesh::sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
+    const int coneSize = ncV.getSize();
+    const SieveSubMesh::point_type *cone = ncV.getPoints();
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, coneSize);
 
     for(int v = 0; v < coneSize; ++v, ++index)

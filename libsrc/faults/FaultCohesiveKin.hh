@@ -37,35 +37,19 @@
 #if !defined(pylith_faults_faultcohesivekin_hh)
 #define pylith_faults_faultcohesivekin_hh
 
+// Include directives ---------------------------------------------------
 #include "FaultCohesive.hh" // ISA FaultCohesive
+
+#include "pylith/topology/SubMesh.hh" // ISA Integrator<Quadrature<SubMesh> >
+#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 #include <map> // HASA std::map
 #include <string> // HASA std::string
 
-/// Namespace for pylith package
-namespace pylith {
-  namespace faults {
-    class FaultCohesiveKin;
-    class TestFaultCohesiveKin; // unit testing
-
-    class EqKinSrc; // HOLDSA EqKinSrc
-  } // faults
-} // pylith
-
-/*
-namespace spatialdata {
-  namespace geocoords {
-    class CoordSys; // USES CoordSys
-  } // geocoords
-} // spatialdata
-*/
-
-
-/// C++ implementation for a fault surface with kinematic (prescribed)
-/// slip implemented with cohesive elements.
+// FaultCohesiveKin -----------------------------------------------------
 class pylith::faults::FaultCohesiveKin : public FaultCohesive,
-					 public feassemble::Integrator
+					 public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
 { // class FaultCohesiveKin
   friend class TestFaultCohesiveKin; // unit testing
 
@@ -82,18 +66,19 @@ public :
   /** Set kinematic earthquake sources.
    *
    * @param names Array of kinematic earthquake source names.
+   * @param numNames Number of earthquake sources.
    * @param sources Array of kinematic earthquake sources.
-   * @param numSources Number of earthquake sources
+   * @param numSources Number of earthquake sources.
    */
-  void eqsrcs(const char** names,
+  void eqsrcs(const char* const* names,
+	      const int numNames,
 	      EqKinSrc** sources,
 	      const int numSources);
 
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
    *
-   * @param mesh PETSc mesh
-   * @param cs Coordinate system for mesh
+   * @param mesh Finite-element mesh.
    * @param upDir Direction perpendicular to along-strike direction that is 
    *   not collinear with fault normal (usually "up" direction but could 
    *   be up-dip direction; only applies to fault surfaces in a 3-D domain).
@@ -103,10 +88,9 @@ public :
    * @param matDB Database of bulk elastic properties for fault region
    *   (used to improve conditioning of Jacobian matrix)
    */
-  void initialize(const ALE::Obj<Mesh>& mesh,
-		  const spatialdata::geocoords::CoordSys* cs,
-		  const double_array& upDir,
-		  const double_array& normalDir,
+  void initialize(const topology::Mesh& mesh,
+		  const double upDir[3],
+		  const double normalDir[3],
 		  spatialdata::spatialdb::SpatialDB* matDB);
 
   /** Integrate contributions to residual term (r) for operator that
@@ -115,13 +99,10 @@ public :
    * @param residual Field containing values for residual
    * @param t Current time
    * @param fields Solution fields
-   * @param mesh Finite-element mesh
    */
-  void integrateResidual(const ALE::Obj<real_section_type>& residual,
+  void integrateResidual(const topology::Field<topology::Mesh>& residual,
 			 const double t,
-			 topology::FieldsManager* const fields,
-			 const ALE::Obj<Mesh>& mesh,
-			 const spatialdata::geocoords::CoordSys* cs);
+			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to residual term (r) for operator that
    * do not require assembly across cells, vertices, or processors.
@@ -129,13 +110,10 @@ public :
    * @param residual Field containing values for residual
    * @param t Current time
    * @param fields Solution fields
-   * @param mesh Finite-element mesh
    */
-  void integrateResidualAssembled(const ALE::Obj<real_section_type>& residual,
+  void integrateResidualAssembled(const topology::Field<topology::Mesh>& residual,
 				  const double t,
-				  topology::FieldsManager* const fields,
-				  const ALE::Obj<Mesh>& mesh,
-				  const spatialdata::geocoords::CoordSys* cs);
+				  topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator that do not require assembly across cells, vertices, or
@@ -146,10 +124,9 @@ public :
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
-  void integrateJacobianAssembled(PetscMat* mat,
+  void integrateJacobianAssembled(topology::Jacobian* jacobian,
 				  const double t,
-				  topology::FieldsManager* const fields,
-				  const ALE::Obj<Mesh>& mesh);
+				  topology::SolutionFields* const fields);
 
   /** Update state variables as needed.
    *
@@ -157,43 +134,34 @@ public :
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
-  void updateState(const double t,
-		   topology::FieldsManager* const fields,
-		   const ALE::Obj<Mesh>& mesh);
+  void updateStateVars(const double t,
+		       topology::SolutionFields* const fields);
 
   /** Verify configuration is acceptable.
    *
    * @param mesh Finite-element mesh
    */
-  void verifyConfiguration(const ALE::Obj<Mesh>& mesh) const;
+  void verifyConfiguration(const topology::Mesh& mesh) const;
 
   /** Get vertex field associated with integrator.
    *
-   * @param fieldType Type of field.
-   * @param name Name of vertex field.
-   * @param mesh PETSc mesh for problem. 
-   * @param fields Fields manager.
+   * @param name Name of cell field.
+   * @param fields Solution fields.
    * @returns Vertex field.
    */
-  const ALE::Obj<real_section_type>&
-  vertexField(VectorFieldEnum* fieldType,
-	      const char* name,
-	      const ALE::Obj<Mesh>& mesh,
-	      topology::FieldsManager* const fields);
+  const topology::Field<topology::SubMesh>&
+  vertexField(const char* name,
+	      const topology::SolutionFields* fields =0);
 
   /** Get cell field associated with integrator.
    *
-   * @param fieldType Type of field.
-   * @param name Name of vertex field.
-   * @param mesh PETSc mesh for problem.
-   * @param fields Fields manager.
+   * @param name Name of cell field.
+   * @param fields Solution fields.
    * @returns Cell field.
    */
-  const ALE::Obj<real_section_type>&
-  cellField(VectorFieldEnum* fieldType,
-	    const char* name,
-	    const ALE::Obj<Mesh>& mesh,
-	    topology::FieldsManager* const fields);
+  const topology::Field<topology::SubMesh>&
+  cellField(const char* name,
+	    const topology::SolutionFields* fields =0);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -217,8 +185,8 @@ private :
    *   (used to pick which of two possible normal directions for
    *   interface; only applies to fault surfaces in a 3-D domain).
    */
-  void _calcOrientation(const double_array& upDir,
-			const double_array& normalDir);
+  void _calcOrientation(const double upDir[3],
+			const double normalDir[3]);
 
   /** Calculate conditioning field.
    *
@@ -238,24 +206,23 @@ private :
    * @param mesh Finite-element mesh for domain
    * @param solution Solution over domain
    */
-  void _calcTractionsChange(ALE::Obj<real_section_type>* tractions,
-			    const ALE::Obj<Mesh>& mesh,
-			    const ALE::Obj<real_section_type>& solution);
+  void _calcTractionsChange(topology::Field<topology::SubMesh>* tractions,
+			    const topology::Field<topology::Mesh>& solution);
 
-  /// Allocate scalar field for output of vertex information.
-  void _allocateBufferVertexScalar(void);
+  /// Allocate buffer for vector field.
+  void _allocateBufferVectorField(void);
 
-  /// Allocate vector field for output of vertex information.
-  void _allocateBufferVertexVector(void);
+  /// Allocate buffer for scalar field.
+  void _allocateBufferScalarField(void);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
   /// Not implemented
-  FaultCohesiveKin(const FaultCohesiveKin& m);
+  FaultCohesiveKin(const FaultCohesiveKin&);
 
   /// Not implemented
-  const FaultCohesiveKin& operator=(const FaultCohesiveKin& m);
+  const FaultCohesiveKin& operator=(const FaultCohesiveKin&);
 
   // PRIVATE TYPEDEFS ///////////////////////////////////////////////////
 private :
@@ -266,37 +233,19 @@ private :
 private :
 
   srcs_type _eqSrcs; ///< Array of kinematic earthquake sources.
+
+  /// Fields for fault information.
+  topology::Fields<topology::Field<topology::SubMesh> >* _fields;
+
+  /// Buffer for vector field over fault vertices.
+  topology::Field<topology::SubMesh>* _bufferVectorField;
   
-  /// Field over fault mesh vertices of pseudo-stiffness values for
-  /// scaling constraint information to improve conditioning of
-  /// Jacobian matrix.
-  ALE::Obj<real_section_type> _pseudoStiffness;
-
-  /// Field over fault mesh vertices of area associated with each vertex.
-  ALE::Obj<real_section_type> _area;
-
-  /// Field over the fault mesh vertices of orientation of fault
-  /// surface.
-  ALE::Obj<real_section_type> _orientation;
-
-  /// Field over the fault mesh vertices of vector field of current
-  /// slip or slip increment.
-  ALE::Obj<real_section_type> _slip;
-
-  /// Field over the fault mesh vertices of vector field of cumulative slip.
-  ALE::Obj<real_section_type> _cumSlip;
-
+  /// Buffer for scalar field over fault vertices.
+  topology::Field<topology::SubMesh>* _bufferScalarField;
+  
   /// Map label of cohesive cell to label of cells in fault mesh.
-  std::map<Mesh::point_type, Mesh::point_type> _cohesiveToFault;
-
-  /// Scalar field for vertex information over fault mesh.
-  ALE::Obj<real_section_type> _bufferVertexScalar;
-
-  /// Vector field for vertex information over fault mesh.
-  ALE::Obj<real_section_type> _bufferVertexVector;
-
-  /// Handle to field managed elsewhere for data over fault mesh.
-  ALE::Obj<real_section_type> _bufferTmp;
+  std::map<topology::Mesh::SieveMesh::point_type, 
+	   topology::SubMesh::SieveMesh::point_type> _cohesiveToFault;
 
 }; // class FaultCohesiveKin
 

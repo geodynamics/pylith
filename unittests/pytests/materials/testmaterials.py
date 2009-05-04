@@ -56,11 +56,11 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
-    from TestMaterial import TestMaterial
-    suite.addTest(unittest.makeSuite(TestMaterial))
+    from TestElasticStrain1D import TestElasticStrain1D
+    suite.addTest(unittest.makeSuite(TestElasticStrain1D))
 
-    from TestElasticIsotropic3D import TestElasticIsotropic3D
-    suite.addTest(unittest.makeSuite(TestElasticIsotropic3D))
+    from TestElasticStress1D import TestElasticStress1D
+    suite.addTest(unittest.makeSuite(TestElasticStress1D))
 
     from TestElasticPlaneStrain import TestElasticPlaneStrain
     suite.addTest(unittest.makeSuite(TestElasticPlaneStrain))
@@ -68,17 +68,20 @@ class TestApp(Script):
     from TestElasticPlaneStress import TestElasticPlaneStress
     suite.addTest(unittest.makeSuite(TestElasticPlaneStress))
 
-    from TestElasticStrain1D import TestElasticStrain1D
-    suite.addTest(unittest.makeSuite(TestElasticStrain1D))
-
-    from TestElasticStress1D import TestElasticStress1D
-    suite.addTest(unittest.makeSuite(TestElasticStress1D))
+    from TestElasticIsotropic3D import TestElasticIsotropic3D
+    suite.addTest(unittest.makeSuite(TestElasticIsotropic3D))
 
     from TestMaxwellIsotropic3D import TestMaxwellIsotropic3D
     suite.addTest(unittest.makeSuite(TestMaxwellIsotropic3D))
 
-    from TestGenMaxwellIsotropic3D import TestGenMaxwellIsotropic3D
-    suite.addTest(unittest.makeSuite(TestGenMaxwellIsotropic3D))
+    #from TestGenMaxwellIsotropic3D import TestGenMaxwellIsotropic3D
+    #suite.addTest(unittest.makeSuite(TestGenMaxwellIsotropic3D))
+
+    from TestMaterial import TestMaterial
+    suite.addTest(unittest.makeSuite(TestMaterial))
+
+    from TestElasticMaterial import TestElasticMaterial
+    suite.addTest(unittest.makeSuite(TestElasticMaterial))
 
     from TestHomogeneous import TestHomogeneous
     suite.addTest(unittest.makeSuite(TestHomogeneous))

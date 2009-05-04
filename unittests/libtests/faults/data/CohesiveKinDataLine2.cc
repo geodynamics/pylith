@@ -63,8 +63,8 @@ const char* pylith::faults::CohesiveKinDataLine2::_finalSlipFilename =
 const char* pylith::faults::CohesiveKinDataLine2::_slipTimeFilename = 
   "data/line2_sliptime.spatialdb";
 
-const char* pylith::faults::CohesiveKinDataLine2::_peakRateFilename = 
-  "data/line2_peakrate.spatialdb";
+const char* pylith::faults::CohesiveKinDataLine2::_riseTimeFilename = 
+  "data/line2_risetime.spatialdb";
 
 const char* pylith::faults::CohesiveKinDataLine2::_matPropsFilename = 
   "data/bulkprops_1d.spatialdb";
@@ -138,7 +138,7 @@ pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)
   label = const_cast<char*>(_label);
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
-  peakRateFilename = const_cast<char*>(_peakRateFilename);
+  riseTimeFilename = const_cast<char*>(_riseTimeFilename);
   matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);

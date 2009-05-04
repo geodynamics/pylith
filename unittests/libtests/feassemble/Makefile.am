@@ -22,6 +22,30 @@ check_PROGRAMS = testfeassemble
 # Primary source files
 testfeassemble_SOURCES = \
 	TestCellGeometry.cc \
+	TestGeometryPoint1D.cc \
+	TestGeometryPoint2D.cc \
+	TestGeometryPoint3D.cc \
+	TestGeometryLine1D.cc \
+	TestGeometryLine2D.cc \
+	TestGeometryLine3D.cc \
+	TestGeometryTri2D.cc \
+	TestGeometryTri3D.cc \
+	TestGeometryQuad2D.cc \
+	TestGeometryQuad3D.cc \
+	TestGeometryTet3D.cc \
+	TestGeometryHex3D.cc \
+	TestQuadratureRefCell.cc \
+	TestQuadratureEngine.cc \
+	TestQuadrature0D.cc \
+	TestQuadrature1D.cc \
+	TestQuadrature1Din2D.cc \
+	TestQuadrature1Din3D.cc \
+	TestQuadrature2D.cc \
+	TestQuadrature2Din3D.cc \
+	TestQuadrature3D.cc \
+	TestQuadrature.cc \
+	TestIntegrator.cc \
+	TestIntegratorElasticity.cc \
 	TestElasticityExplicit.cc \
 	TestElasticityExplicit1DLinear.cc \
 	TestElasticityExplicit1DQuadratic.cc \
@@ -42,28 +66,9 @@ testfeassemble_SOURCES = \
 	TestElasticityImplicitGrav2DQuadratic.cc \
 	TestElasticityImplicitGrav3DLinear.cc \
 	TestElasticityImplicitGrav3DQuadratic.cc \
-	TestGeometryPoint1D.cc \
-	TestGeometryPoint2D.cc \
-	TestGeometryPoint3D.cc \
-	TestGeometryLine1D.cc \
-	TestGeometryLine2D.cc \
-	TestGeometryLine3D.cc \
-	TestGeometryTri2D.cc \
-	TestGeometryTri3D.cc \
-	TestGeometryQuad2D.cc \
-	TestGeometryQuad3D.cc \
-	TestGeometryTet3D.cc \
-	TestGeometryHex3D.cc \
-	TestIntegrator.cc \
-	TestIntegratorElasticity.cc \
-	TestQuadrature.cc \
-	TestQuadrature0D.cc \
-	TestQuadrature1D.cc \
-	TestQuadrature1Din2D.cc \
-	TestQuadrature2D.cc \
-	TestQuadrature2Din3D.cc \
-	TestQuadrature3D.cc \
 	test_feassemble.cc
+
+
 
 noinst_HEADERS = \
 	TestCellGeometry.hh \

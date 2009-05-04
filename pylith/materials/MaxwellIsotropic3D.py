@@ -12,16 +12,19 @@
 
 ## @file pylith/materials/MaxwellIsotropic3D.py
 ##
-## @brief Python object implementing 3-D isotropic linear Maxwell viscoelastic material.
+## @brief Python object implementing 3-D isotropic linear Maxwell
+## viscoelastic material.
 ##
 ## Factory: material.
 
 from ElasticMaterial import ElasticMaterial
+from materials import MaxwellIsotropic3D as ModuleMaxwellIsotropic3D
 
 # MaxwellIsotropic3D class
-class MaxwellIsotropic3D(ElasticMaterial):
+class MaxwellIsotropic3D(ElasticMaterial, ModuleMaxwellIsotropic3D):
   """
-  Python object implementing 3-D isotropic linear Maxwell viscoelastic material.
+  Python object implementing 3-D isotropic linear Maxwell viscoelastic
+  material.
 
   Factory: material.
   """
@@ -44,14 +47,11 @@ class MaxwellIsotropic3D(ElasticMaterial):
     return
 
 
-  def _createCppHandle(self):
+  def _createModuleObj(self):
     """
-    Create handle to corresponding C++ object.
+    Call constructor for module object for access to C++ object.
     """
-    if None == self.cppHandle:
-      import pylith.materials.materials as bindings
-      self.cppHandle = bindings.MaxwellIsotropic3D()
-      self.dimension = self.cppHandle.dimension
+    ModuleMaxwellIsotropic3D.__init__(self)
     return
   
 

@@ -17,9 +17,10 @@
 ## Factory: material.
 
 from ElasticMaterial import ElasticMaterial
+from materials import ElasticIsotropic3D as ModuleElasticIsotropic3D
 
 # ElasticIsotropic3D class
-class ElasticIsotropic3D(ElasticMaterial):
+class ElasticIsotropic3D(ElasticMaterial, ModuleElasticIsotropic3D):
   """
   Python object implementing 3-D isotropic linear elastic material.
 
@@ -44,14 +45,13 @@ class ElasticIsotropic3D(ElasticMaterial):
     return
 
 
-  def _createCppHandle(self):
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _createModuleObj(self):
     """
-    Create handle to corresponding C++ object.
+    Call constructor for module object for access to C++ object.
     """
-    if None == self.cppHandle:
-      import pylith.materials.materials as bindings
-      self.cppHandle = bindings.ElasticIsotropic3D()
-      self.dimension = self.cppHandle.dimension
+    ModuleElasticIsotropic3D.__init__(self)
     return
   
 

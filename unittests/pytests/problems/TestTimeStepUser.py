@@ -19,7 +19,7 @@ from pylith.problems.TimeStepUser import TimeStepUser
 
 from pyre.units.time import second,year
 
-stepsE = [1.0*year, 2.0*year, 3.0*year]
+stepsE = [2*1.0, 2*2.0, 2*3.0]
 
 # ----------------------------------------------------------------------
 class TestTimeStepUser(unittest.TestCase):
@@ -31,8 +31,7 @@ class TestTimeStepUser(unittest.TestCase):
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
     normalizer._configure()
-    normalizer._time = 2.0*second
-    normalizer.initialize()    
+    normalizer.setTimeScale(0.5*year)
 
     tstep = TimeStepUser()
     tstep._configure()
@@ -59,8 +58,7 @@ class TestTimeStepUser(unittest.TestCase):
     tstep = self.tstep
 
     for stepE, step in zip(stepsE, tstep.steps):
-      valueE = stepE.value / 2.0 # Nondimensionalize
-      self.assertEqual(valueE, step)
+      self.assertEqual(stepE, step)
     return
 
 
@@ -72,11 +70,11 @@ class TestTimeStepUser(unittest.TestCase):
 
     self.assertEqual(1, tstep.numTimeSteps())
 
-    tstep.totalTime = (12.0*year).value / 2.0 # nondimensionalize
+    tstep.totalTimeN = 12.0 / 0.5 # nondimensionalize
     self.assertEqual(6, tstep.numTimeSteps())
 
     tstep.loopSteps = True
-    tstep.totalTime = (7.0*year).value / 2.0 # nondimensionalize
+    tstep.totalTimeN = 7.0 / 0.5 # nondimensionalize
     self.assertEqual(5, tstep.numTimeSteps())
     return
 
@@ -87,23 +85,26 @@ class TestTimeStepUser(unittest.TestCase):
     """
     tstep = self.tstep
 
-    step1 = (1.0*year).value / 2.0 # nondimensionalize
-    step2 = (2.0*year).value / 2.0 # nondimensionalize
-    step3 = (3.0*year).value / 2.0 # nondimensionalize
+    step1 = 1.0 / 0.5 # nondimensionalize
+    step2 = 2.0 / 0.5 # nondimensionalize
+    step3 = 3.0 / 0.5 # nondimensionalize
 
-    self.assertEqual(step1, tstep.timeStep(0.5))
-    self.assertEqual(step2, tstep.timeStep(0.5))
-    self.assertEqual(step3, tstep.timeStep(0.5))
-    self.assertEqual(step3, tstep.timeStep(0.5))
-    self.assertEqual(step3, tstep.timeStep(0.5))
+    integrators = None
+    mesh = None
+
+    self.assertEqual(step1, tstep.timeStep(mesh, integrators))
+    self.assertEqual(step2, tstep.timeStep(mesh, integrators))
+    self.assertEqual(step3, tstep.timeStep(mesh, integrators))
+    self.assertEqual(step3, tstep.timeStep(mesh, integrators))
+    self.assertEqual(step3, tstep.timeStep(mesh, integrators))
 
     tstep.index = 0
     tstep.loopSteps = True
-    self.assertEqual(step1, tstep.timeStep(0.5))
-    self.assertEqual(step2, tstep.timeStep(0.5))
-    self.assertEqual(step3, tstep.timeStep(0.5))
-    self.assertEqual(step1, tstep.timeStep(0.5))
-    self.assertEqual(step2, tstep.timeStep(0.5))
+    self.assertEqual(step1, tstep.timeStep(mesh, integrators))
+    self.assertEqual(step2, tstep.timeStep(mesh, integrators))
+    self.assertEqual(step3, tstep.timeStep(mesh, integrators))
+    self.assertEqual(step1, tstep.timeStep(mesh, integrators))
+    self.assertEqual(step2, tstep.timeStep(mesh, integrators))
     return
 
 
@@ -113,10 +114,12 @@ class TestTimeStepUser(unittest.TestCase):
     """
     tstep = self.tstep
 
-    tstep.timeStep(0.0)
-    stepE = 1.0*year
-    valueE = stepE.value / 2.0 # nondimensionalize
-    self.assertEqual(valueE, tstep.currentStep())
+    integrators = None
+    mesh = None
+
+    tstep.timeStep(mesh, integrators)
+    stepE = 1.0 / 0.5 # Nondimensionalize
+    self.assertEqual(stepE, tstep.currentStep())
     return
 
 

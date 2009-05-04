@@ -13,40 +13,49 @@
 subpackage = topology
 include $(top_srcdir)/subpackage.am
 
-subpkgpyexec_LTLIBRARIES = topologymodule.la
+subpkgpyexec_LTLIBRARIES = _topologymodule.la
 
-topologymodule_la_LDFLAGS = -module -avoid-version \
+subpkgpyexec_PYTHON = topology.py
+
+swig_sources = \
+	topology.i \
+	Mesh.i \
+	SubMesh.i \
+	MeshOps.i \
+	FieldBase.i \
+	Field.i \
+	Fields.i \
+	SolutionFields.i \
+	Jacobian.i \
+	Distributor.i
+
+swig_generated = \
+	topology_wrap.cxx \
+	topology.py
+
+_topologymodule_la_LDFLAGS = -module -avoid-version \
 	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
-dist_topologymodule_la_SOURCES = topology.pyxe.src
-nodist_topologymodule_la_SOURCES = \
-	topology.pyxe \
-	topology.c topology_embed.cpp topology_embed.h
+dist__topologymodule_la_SOURCES = $(swig_sources) $(swig_generated)
 
-topologymodule_la_LIBADD = \
+_topologymodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB)
-
-if ENABLE_CUBIT
-  topologymodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
-endif
+	$(PETSC_LIBS)
 if NO_UNDEFINED
-  topologymodule_la_LIBADD += $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+_topologymodule_la_LIBADD += \
+	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
-INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
+INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
-topology.pyx topology_embed.cpp  topology_embed.h: topology.pyxe
-	pyrexembed topology.pyxe
-topology.pyxe: $(srcdir)/topology.pyxe.src
-	cp $(srcdir)/topology.pyxe.src $@
-topology_embed.cpp: topology_embed.h
-topology_embed.h: topology.pyx
+$(srcdir)/topology_wrap.cxx $(srcdir)/topology.py: $(swig_sources)
+	$(SWIG) -Wall -c++ -python $<
 
-.pyx.c:
-	pyrexc $(PYTHON_EGG_PYXFLAGS) $<
 
-CLEANFILES = topology.pyxe topology.pyx topology.c *_embed.*
+MAINTAINERCLEANFILES = \
+	$(srcdir)/topology_wrap.cxx \
+	$(srcdir)/topology.py
+
 
 # End of file 

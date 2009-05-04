@@ -16,7 +16,8 @@
 
 #include "data/CohesiveKinDataTet4e.hh" // USES CohesiveKinDataTet4e
 
-#include "pylith/feassemble/Quadrature2Din3D.hh" // USES Quadrature2Din3D
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature<SubMesh>
 #include "pylith/feassemble/GeometryTri3D.hh" // USES GeometryTri3D
 
 // ----------------------------------------------------------------------
@@ -29,7 +30,7 @@ pylith::faults::TestFaultCohesiveKinTet4e::setUp(void)
 { // setUp
   TestFaultCohesiveKin::setUp();
   _data = new CohesiveKinDataTet4e();
-  _quadrature = new feassemble::Quadrature2Din3D();
+
   CPPUNIT_ASSERT(0 != _quadrature);
   feassemble::GeometryTri3D geometry;
   _quadrature->refGeometry(&geometry);

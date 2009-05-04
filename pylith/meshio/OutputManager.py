@@ -17,76 +17,60 @@
 ##
 ## Factory: output_manager
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # OutputManager class
-class OutputManager(Component):
+class OutputManager(PetscComponent):
   """
   Python abstract base class for managing output of finite-element
   information.
 
-  Factory: output_manager
+  \b Properties
+  @li \b output_freq Flag indicating whether to use 'time_step' or 'skip'
+  to set frequency of solution output.
+  @li \b time_step Time step between solution output.
+  @li \b skip Number of time steps to skip between solution output.
+  
+  \b Facilities
+  @li \b coordsys Coordinate system for output.
+  @li \b vertex_filter Filter for vertex data.
+  @li \b cell_filter Filter for cell data.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
-    """
-    Python object for managing OutputManager facilities and properties.
-    """
+  import pyre.inventory
 
-    ## @class Inventory
-    ## Python object for managing OutputManager facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b output_freq Flag indicating whether to use 'time_step' or 'skip'
-    ##   to set frequency of solution output.
-    ## @li \b time_step Time step between solution output.
-    ## @li \b skip Number of time steps to skip between solution output.
-    ##
-    ## \b Facilities
-    ## @li \b writer Writer for data.
-    ## @li \b coordsys Coordinate system for output.
-    ## @li \b vertex_filter Filter for vertex data.
-    ## @li \b cell_filter Filter for cell data.
-
-    import pyre.inventory
-
-    outputFreq = pyre.inventory.str("output_freq", default="skip",
-             validator=pyre.inventory.choice(["skip", "time_step"]))
-    outputFreq.meta['tip'] = "Flag indicating whether to use 'time_step' " \
-                             "or 'skip' to set frequency of output."
-
-    from pyre.units.time import s
-    dt = pyre.inventory.dimensional("time_step", default=1.0*s)
-    dt.meta['tip'] = "Time step between output."
-
-    skip = pyre.inventory.int("skip", default=0,
-                              validator=pyre.inventory.greaterEqual(0))
-    skip.meta['tip'] = "Number of time steps to skip between output."
-
-    from DataWriterVTK import DataWriterVTK
-    writer = pyre.inventory.facility("writer", factory=DataWriterVTK,
-                                     family="data_writer")
-    writer.meta['tip'] = "Writer for data."
-
-    from spatialdata.geocoords.CSCart import CSCart
-    coordsys = pyre.inventory.facility("coordsys", family="coordsys",
-                                       factory=CSCart)
-    coordsys.meta['tip'] = "Coordinate system for output."
+  outputFreq = pyre.inventory.str("output_freq", default="skip",
+                                  validator=pyre.inventory.choice(["skip", "time_step"]))
+  outputFreq.meta['tip'] = "Flag indicating whether to use 'time_step' " \
+      "or 'skip' to set frequency of output."
   
-    from VertexFilter import VertexFilter
-    vertexFilter = pyre.inventory.facility("vertex_filter",
-                                           factory=VertexFilter,
-                                           family="output_vertex_filter")
-    vertexFilter.meta['tip'] = "Filter for vertex data."
-                                     
-    from CellFilter import CellFilter
-    cellFilter = pyre.inventory.facility("cell_filter",
-                                           factory=CellFilter,
-                                           family="output_cell_filter")
-    cellFilter.meta['tip'] = "Filter for cell data."
-                                     
+  from pyre.units.time import s
+  dt = pyre.inventory.dimensional("time_step", default=1.0*s)
+  dt.meta['tip'] = "Time step between output."
+  
+  skip = pyre.inventory.int("skip", default=0,
+                            validator=pyre.inventory.greaterEqual(0))
+  skip.meta['tip'] = "Number of time steps to skip between output."
+  
+  from spatialdata.geocoords.CSCart import CSCart
+  coordsys = pyre.inventory.facility("coordsys", family="coordsys",
+                                     factory=CSCart)
+  coordsys.meta['tip'] = "Coordinate system for output."
+  
+  from VertexFilter import VertexFilter
+  vertexFilter = pyre.inventory.facility("vertex_filter",
+                                         factory=VertexFilter,
+                                         family="output_vertex_filter")
+  vertexFilter.meta['tip'] = "Filter for vertex data."
+  
+  from CellFilter import CellFilter
+  cellFilter = pyre.inventory.facility("cell_filter",
+                                       factory=CellFilter,
+                                       family="output_cell_filter")
+  cellFilter.meta['tip'] = "Filter for cell data."
+  
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -94,9 +78,8 @@ class OutputManager(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="outputmanager")
+    PetscComponent.__init__(self, name, facility="outputmanager")
     self._loggingPrefix = "OutM "
-    self.cppHandle = None
     self._stepCur = 0
     self._stepWrite = None
     self._tWrite = None
@@ -105,12 +88,14 @@ class OutputManager(Component):
     self.vertexDataFields = []
     self.cellInfoFields = []
     self.cellDataFields = []
+
+    self._createModuleObj()
     return
 
 
   def preinitialize(self, dataProvider):
     """
-    Do
+    Setup output manager.
     """
     self._setupLogging()
     self.dataProvider = dataProvider
@@ -146,8 +131,8 @@ class OutputManager(Component):
     self._logger.eventBegin(logEvent)    
 
     # Nondimensionalize time step
-    lengthScale = normalizer.timeScale()
-    self.dt = normalizer.nondimensionalize(self.dt, lengthScale)
+    timeScale = normalizer.timeScale()
+    self.dtN = normalizer.nondimensionalize(self.dt, timeScale)
 
     # Initialize coordinate system
     if self.coordsys is None:
@@ -156,7 +141,6 @@ class OutputManager(Component):
 
     self.cellFilter.initialize(quadrature)
     self.writer.initialize(normalizer)
-    self._sync()
 
     self._logger.eventEnd(logEvent)
     return
@@ -171,17 +155,12 @@ class OutputManager(Component):
 
     nsteps = numTimeSteps
     if numTimeSteps > 0 and self.outputFreq == "skip" and self.skip > 0:
-      nsteps = numTimeSteps / (1+self.skip)
+      nsteps = int(numTimeSteps / (1+self.skip))
     elif numTimeSteps > 0 and self.outputFreq == "time_step":
-      nsteps = 1 + int(totalTime / self.dt)
+      nsteps = int(1 + totalTime / self.dtN)
 
     (mesh, label, labelId) = self.dataProvider.getDataMesh()
-    
-    assert(None != self.cppHandle)
-    assert(None != mesh.cppHandle)
-    assert(None != mesh.coordsys.cppHandle)
-    self.cppHandle.open(mesh.cppHandle, mesh.coordsys.cppHandle,
-                        nsteps, label, labelId)
+    self._open(mesh, nsteps, label, labelId)
 
     self._logger.eventEnd(logEvent)    
     return
@@ -194,8 +173,7 @@ class OutputManager(Component):
     logEvent = "%sclose" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    assert(None != self.cppHandle)
-    self.cppHandle.close()
+    self._close()
 
     self._logger.eventEnd(logEvent)    
     return
@@ -212,22 +190,18 @@ class OutputManager(Component):
       t = 0.0
       self.open(totalTime=0.0, numTimeSteps=0)
       (mesh, label, labelId) = self.dataProvider.getDataMesh()
-      self.cppHandle.openTimeStep(t,
-                                  mesh.cppHandle, mesh.coordsys.cppHandle,
-                                  label, labelId)
+      self._openTimeStep(t, mesh, label, labelId)
 
       for name in self.vertexInfoFields:
-        (field, fieldType) = self.dataProvider.getVertexField(name)
-        self.cppHandle.appendVertexField(t, name, field, fieldType, 
-                                         mesh.cppHandle)
+        field = self.dataProvider.getVertexField(name)
+        self._appendVertexField(t, field)
 
       for name in self.cellInfoFields:
-        (field, fieldType) = self.dataProvider.getCellField(name)
-        self.cppHandle.appendCellField(t, name, field, fieldType, 
-                                       mesh.cppHandle, label, labelId)
+        field = self.dataProvider.getCellField(name)
+        self._appendCellField(t, field, label, labelId)
 
-      self.cppHandle.closeTimeStep()
-      self.close()
+      self._closeTimeStep()
+      self._close()
 
     self._logger.eventEnd(logEvent)
     return
@@ -245,21 +219,17 @@ class OutputManager(Component):
              len(self.cellDataFields) ) > 0:
 
       (mesh, label, labelId) = self.dataProvider.getDataMesh()
-      self.cppHandle.openTimeStep(t,
-                                  mesh.cppHandle, mesh.coordsys.cppHandle,
-                                  label, labelId)
+      self._openTimeStep(t, mesh, label, labelId)
 
       for name in self.vertexDataFields:
-        (field, fieldType) = self.dataProvider.getVertexField(name, fields)
-        self.cppHandle.appendVertexField(t, name, field, fieldType, 
-                                         mesh.cppHandle)
+        field = self.dataProvider.getVertexField(name, fields)
+        self._appendVertexField(t, field)
 
       for name in self.cellDataFields:
-        (field, fieldType) = self.dataProvider.getCellField(name, fields)
-        self.cppHandle.appendCellField(t, name, field, fieldType, 
-                                       mesh.cppHandle, label, labelId)
+        field = self.dataProvider.getCellField(name, fields)
+        self._appendCellField(t, field, label, labelId)
 
-      self.cppHandle.closeTimeStep()
+      self._closeTimeStep()
 
     self._logger.eventEnd(logEvent)
     return
@@ -271,33 +241,15 @@ class OutputManager(Component):
     """
     Set members based using inventory.
     """
-    Component._configure(self)
-    self.outputFreq = self.inventory.outputFreq
-    self.dt = self.inventory.dt
-    self.skip = self.inventory.skip
-    self.coordsys = self.inventory.coordsys
-    self.writer = self.inventory.writer
-    self.vertexFilter = self.inventory.vertexFilter
-    self.cellFilter = self.inventory.cellFilter
+    PetscComponent._configure(self)
     return
 
-
-  def _sync(self):
+  def _createModuleObj(self):
     """
-    Force synchronization between Python and C++.
+    Create handle to C++ object.
     """
-    if None == self.cppHandle:
-      import pylith.meshio.meshio as bindings
-      self.cppHandle = bindings.OutputManager()
-
-    assert(self.coordsys.cppHandle != None)
-    assert(self.writer.cppHandle != None)
-      
-    self.cppHandle.coordsys = self.coordsys.cppHandle
-    self.cppHandle.writer = self.writer.cppHandle
-    self.cppHandle.vertexFilter = self.vertexFilter.cppHandle
-    self.cppHandle.cellFilter = self.cellFilter.cppHandle
-    return
+    raise NotImplementedError, \
+        "Please implement _createModuleObj() in derived class."
 
 
   def _checkWrite(self, t):
@@ -318,7 +270,7 @@ class OutputManager(Component):
         self._stepWrite = self._stepCur
 
     elif self.outputFreq == "time_step":
-      if t >= self._tWrite + self.dt:
+      if t >= self._tWrite + self.dtN:
        write = True
        self._tWrite = t
 
@@ -382,7 +334,7 @@ class OutputManager(Component):
 
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("FE Output")
+    logger.className("FE Output")
     logger.initialize()
 
     events = ["init",
@@ -399,13 +351,28 @@ class OutputManager(Component):
     return
   
 
-# FACTORIES ////////////////////////////////////////////////////////////
+  def _open(self):
+    raise NotImplementedError("Implement _open() in derived class.")
 
-def output_manager():
-  """
-  Factory associated with OutputManager.
-  """
-  return OutputManager()
+
+  def _openTimeStep(self):
+    raise NotImplementedError("Implement _openTimeStep() in derived class.")
+
+
+  def _appendVertexField(self):
+    raise NotImplementedError("Implement _appendVertexField() in derived class.")
+
+
+  def _appendCellField(self):
+    raise NotImplementedError("Implement _appendCellField() in derived class.")
+
+
+  def _closeTimeStep(self):
+    raise NotImplementedError("Implement _closeTimeStep() in derived class.")
+
+
+  def _close(self):
+    raise NotImplementedError("Implement _close() in derived class.")
 
 
 # End of file 

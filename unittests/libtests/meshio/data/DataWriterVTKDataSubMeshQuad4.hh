@@ -35,8 +35,7 @@ public:
 private:
 
   static const char* _meshFilename; ///< Name of mesh file.
-  static const char* _cellsLabel; ///< Label defining subset of cells.
-  static const int _labelId; /// Value for label defining subset of cells.
+  static const char* _bcLabel; ///< Label defining group of vertices for bc.
 
   static const char* _timestepFilename; ///< Name of VTK file without fields.
   static const char* _vertexFilename; ///< Name of VTK file for vertex fields.

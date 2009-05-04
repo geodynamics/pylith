@@ -311,7 +311,7 @@ class TestFIATSimplex(unittest.TestCase):
 
     cellE = Line2()
     self._checkVals(cellE, cell)
-    from pylith.feassemble.geometry.GeometryLine1D import GeometryLine1D
+    from pylith.feassemble.CellGeometry import GeometryLine1D
     self.failUnless(isinstance(cell.geometry, GeometryLine1D))
     return
 
@@ -328,7 +328,7 @@ class TestFIATSimplex(unittest.TestCase):
 
     cellE = Line3()
     self._checkVals(cellE, cell)
-    from pylith.feassemble.geometry.GeometryLine2D import GeometryLine2D
+    from pylith.feassemble.CellGeometry import GeometryLine2D
     self.failUnless(isinstance(cell.geometry, GeometryLine2D))
     return
 
@@ -345,7 +345,7 @@ class TestFIATSimplex(unittest.TestCase):
 
     cellE = Tri3()
     self._checkVals(cellE, cell)
-    from pylith.feassemble.geometry.GeometryTri2D import GeometryTri2D
+    from pylith.feassemble.CellGeometry import GeometryTri2D
     self.failUnless(isinstance(cell.geometry, GeometryTri2D))
     return
 
@@ -362,7 +362,7 @@ class TestFIATSimplex(unittest.TestCase):
 
     cellE = Tet4()
     self._checkVals(cellE, cell)
-    from pylith.feassemble.geometry.GeometryTet3D import GeometryTet3D
+    from pylith.feassemble.CellGeometry import GeometryTet3D
     self.failUnless(isinstance(cell.geometry, GeometryTet3D))
     return
 

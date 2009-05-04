@@ -21,7 +21,8 @@
 #if !defined(pylith_faults_testconstrateslipfn_hh)
 #define pylith_faults_testconstrateslipfn_hh
 
-#include "pylith/utils/sievetypes.hh" // USES Mesh
+#include "pylith/faults/faultsfwd.hh" // USES ConstRateSlipFn
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -29,7 +30,6 @@
 namespace pylith {
   namespace faults {
     class TestConstRateSlipFn;
-    class ConstRateSlipFn;
 
     namespace _TestConstRateSlipFn {
       struct DataStruct;
@@ -87,12 +87,14 @@ private :
 
   /** Initialize ConstRateSlipFn.
    *
-   * @param faultMesh Fault mesh.
-   * @param slipfn ConstRate slip function.
+   * @param mesh Finite-element mesh of domain.
+   * @param faultMesh Finite-element mesh of fault.
+   * @param slipfn Step slip function.
    * @param originTime Origin time for earthquake rupture.
    */
   static
-  void _initialize(ALE::Obj<Mesh>* faultMesh,
+  void _initialize(topology::Mesh* mesh,
+		   topology::SubMesh* faultMesh,
 		   ConstRateSlipFn* slipfn,
 		   const double originTime);
 

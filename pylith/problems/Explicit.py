@@ -18,6 +18,7 @@
 ## Factory: pde_formulation
 
 from Formulation import Formulation
+from pylith.utils.profiling import resourceUsageString
 
 # Explicit class
 class Explicit(Formulation):
@@ -46,8 +47,8 @@ class Explicit(Formulation):
     """
     Formulation.__init__(self, name)
     self._loggingPrefix = "TSEx "
-    self.solnField = {'name': "dispT",
-                      'label': "displacements"}
+    self.solnField = {'name': "disp(t)",
+                      'label': "displacement"}
     return
 
 
@@ -69,19 +70,40 @@ class Explicit(Formulation):
     Formulation.initialize(self, dimension, normalizer)
 
     self._info.log("Creating other fields and matrices.")
-    self.fields.addReal("dispTpdt")
-    self.fields.addReal("dispTmdt")
-    self.fields.addReal("residual")
-    self.fields.createHistory(["dispTpdt", "dispT", "dispTmdt"])    
-    self.fields.copyLayout("dispT")
-    self.jacobian = self.mesh.createMatrix(self.fields.getSolution())
+    self.fields.add("disp(t+dt)", "displacement")
+    self.fields.add("disp(t-dt)", "displacement")
+    self.fields.add("residual", "residual")
+    self.fields.createHistory(["disp(t+dt)", "disp(t)", "disp(t-dt)"])    
+    self.fields.copyLayout("disp(t)")
+    self.fields.solveSolnName("disp(t+dt)")
+    self._debug.log(resourceUsageString())
 
-    self.solver.initialize(self.mesh, self.fields.getSolution())
+    # Create Petsc vectors for fields involved in solve. Since we
+    # shift fields through the time history, all fields need a PETSc
+    # vector.
+    dispTpdt = self.fields.get("disp(t+dt)")
+    dispTpdt.createVector()
+    dispT = self.fields.get("disp(t)")
+    dispT.createVector()
+    dispTmdt = self.fields.get("disp(t-dt)")
+    dispTmdt.createVector()
+    residual = self.fields.get("residual")
+    residual.createVector()
+
+    self._info.log("Creating Jacobian matrix.")
+    from pylith.topology.Jacobian import Jacobian
+    self.jacobian = Jacobian(self.fields)
+    self.jacobian.zero() # TEMPORARY, to get correct memory usage
+    self._debug.log(resourceUsageString())
+
+    self._info.log("Initializing solver.")
+    self.solver.initialize(self.fields, self.jacobian, self)
+    self._debug.log(resourceUsageString())
 
     # Solve for total displacement field
     for constraint in self.constraints:
       constraint.useSolnIncr(False)
-    for integrator in self.integrators:
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.useSolnIncr(False)
 
     self._logger.eventEnd(logEvent)
@@ -95,12 +117,13 @@ class Explicit(Formulation):
     logEvent = "%sprestep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
     
-    dispTpdt = self.fields.getReal("dispTpdt")
+    dispTpdt = self.fields.get("disp(t+dt)")
     for constraint in self.constraints:
       constraint.setField(t+dt, dispTpdt)
 
     needNewJacobian = False
-    for integrator in self.integrators:
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+      integrator.timeStep(dt)
       if integrator.needNewJacobian():
         needNewJacobian = True
     if needNewJacobian:
@@ -120,17 +143,10 @@ class Explicit(Formulation):
     self._reformResidual(t, dt)
     
     self._info.log("Solving equations.")
-    residual = self.fields.getReal("residual")
-    self.solver.solve(self.fields.getReal("dispTpdt"), self.jacobian, residual)
+    residual = self.fields.get("residual")
+    dispTpdt = self.fields.solveSoln()
+    self.solver.solve(dispTpdt, self.jacobian, residual)
 
-    # BEGIN TEMPORARY
-    #import pylith.topology.topology as bindings
-    #bindings.sectionView(residual, "RHS");
-    #bindings.sectionView(self.fields.getReal("dispTpdt"), "SOLUTION");
-    #import pylith.utils.petsc as petscbindings
-    #print "JACOBIAN"
-    #petscbindings.mat_view(self.jacobian)
-    # END TEMPORARY
     self._logger.eventEnd(logEvent)
     return
 
@@ -143,10 +159,14 @@ class Explicit(Formulation):
     self._logger.eventBegin(logEvent)
     
     self.fields.shiftHistory()
+
+    # :KLUDGE: only works for KSP solver
+    dispTpdt = self.fields.get("disp(t+dt)")
     if not self.solver.guessZero:
-      import pylith.topology.topology as bindings
-      bindings.copyRealSection(self.fields.getReal("dispTpdt"),
-                               self.fields.getReal("dispT"))
+      dispT = self.fields.get("disp(t)")
+      dispTpdt.copy(dispT)
+    else:
+      dispTpdt.zero()
 
     Formulation.poststep(self, t, dt)
 

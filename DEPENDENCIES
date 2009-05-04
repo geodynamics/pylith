@@ -7,9 +7,8 @@ spatialdata
   proj
 numpy
 FIAT
-pyrexembed (from CIG)
-Pyrex
 nemesis
+SWIG (if building from repository)
 
 OPTIONAL DEPENDENCIES
 

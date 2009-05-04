@@ -17,7 +17,7 @@
 #include "data/DataWriterVTKDataBCMeshHex8.hh" // USES DataWriterVTKDataBCMeshHex8
 
 // ----------------------------------------------------------------------
-//CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKBCMeshHex8 );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKBCMeshHex8 );
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -26,6 +26,7 @@ pylith::meshio::TestDataWriterVTKBCMeshHex8::setUp(void)
 { // setUp
   TestDataWriterVTKBCMesh::setUp();
   _data = new DataWriterVTKDataBCMeshHex8;
+  _flipFault = true;
   _initialize();
 } // setUp
 

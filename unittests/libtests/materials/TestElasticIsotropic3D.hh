@@ -26,9 +26,7 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace materials {
-    class ElasticIsotropic3D;
     class TestElasticIsotropic3D;
-    class ElasticIsotropic3DData;
   } // materials
 } // pylith
 
@@ -39,16 +37,19 @@ class pylith::materials::TestElasticIsotropic3D : public TestElasticMaterial
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestElasticIsotropic3D );
 
+  CPPUNIT_TEST( testDimension );
+  CPPUNIT_TEST( testTensorSize );
   CPPUNIT_TEST( testDBToProperties );
-  CPPUNIT_TEST( testDBValues );
-  CPPUNIT_TEST( testProperties );
+  CPPUNIT_TEST( testNonDimProperties );
+  CPPUNIT_TEST( testDimProperties );
+  CPPUNIT_TEST( testDBToStateVars );
+  CPPUNIT_TEST( testNonDimStateVars );
+  CPPUNIT_TEST( testDimStateVars );
   CPPUNIT_TEST( test_calcDensity );
   CPPUNIT_TEST( test_calcStress );
   CPPUNIT_TEST( test_calcElasticConsts );
+  CPPUNIT_TEST( test_updateStateVars );
   CPPUNIT_TEST( test_stableTimeStepImplicit );
-
-  CPPUNIT_TEST( testUsesUpdateProperties );
-  CPPUNIT_TEST( testUpdateProperties );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -57,12 +58,6 @@ public :
 
   /// Setup testing data.
   void setUp(void);
-
-  /// Test usesUpdateProperties().
-  void testUsesUpdateProperties(void);
-
-  /// Test updateProperties()
-  void testUpdateProperties(void);
 
 }; // class TestElasticIsotropic3D
 

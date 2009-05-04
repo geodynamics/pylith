@@ -31,9 +31,13 @@ subpkginclude_HEADERS = \
 	LiuCosSlipFn.icc \
 	SlipTimeFn.hh \
 	StepSlipFn.hh \
-	StepSlipFn.icc
+	StepSlipFn.icc \
+	faultsfwd.hh
 
-noinst_HEADERS =
+noinst_HEADERS = \
+	TopologyOps.hh \
+	TopologyVisitors.hh \
+	TopologyVisitors.cc
 
 # export
 clean-local: clean-subpkgincludeHEADERS

@@ -96,8 +96,8 @@ run "python --version".
     To create libmpich.dylib:
 
     cd ${TOOLS_DIR}/mpich2-1.0.5/${TOOLS_FORMAT}/lib
-    mkdir lib
-    cd lib
+    mkdir tmp
+    cd tmp
     ar -x ../libmpich.a
     gcc -dynamiclib -single_module -undefined dynamic_lookup -o ${TOOLS_DIR}/mpich2-1.0.5/${TOOLS_FORMAT}/lib/libmpich.dylib *.o
     rm *.o

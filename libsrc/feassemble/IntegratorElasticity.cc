@@ -18,7 +18,9 @@
 #include "CellGeometry.hh" // USES CellGeometry
 
 #include "pylith/materials/ElasticMaterial.hh" // USES ElasticMaterial
-#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -30,9 +32,15 @@
 #include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
+
+// ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::IntegratorElasticity::IntegratorElasticity(void) :
-  _material(0)
+  _material(0),
+  _bufferFieldTensor(0),
+  _bufferFieldOther(0)
 { // constructor
 } // constructor
 
@@ -41,6 +49,8 @@ pylith::feassemble::IntegratorElasticity::IntegratorElasticity(void) :
 pylith::feassemble::IntegratorElasticity::~IntegratorElasticity(void)
 { // destructor
   _material = 0; // Don't manage memory for material
+  delete _bufferFieldTensor; _bufferFieldTensor = 0;
+  delete _bufferFieldOther; _bufferFieldOther = 0;
 } // destructor
   
 // ----------------------------------------------------------------------
@@ -69,93 +79,151 @@ pylith::feassemble::IntegratorElasticity::needNewJacobian(void)
 void
 pylith::feassemble::IntegratorElasticity::useSolnIncr(const bool flag)
 { // useSolnIncr
-  Integrator::useSolnIncr(flag);
+  Integrator<Quadrature<topology::Mesh> >::useSolnIncr(flag);
   
   assert(0 != _material);
   _material->useElasticBehavior(!flag);
 } // useSolnIncr
 
 // ----------------------------------------------------------------------
+// Initialize integrator.
+void
+pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
+{ // initialize
+  assert(0 != _quadrature);
+  assert(0 != _material);
+
+  // Get cell information
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const int materialId = _material->id();
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
+
+  // Compute geometry for quadrature operations.
+  _quadrature->computeGeometry(mesh, cells);
+
+  // Initialize material.
+  _material->initialize(mesh, _quadrature);
+
+  // Allocate vectors and matrices for cell values.
+  _initCellVector();
+  _initCellMatrix();
+
+  // Setup event logger.
+  delete _logger; _logger = new utils::EventLogger;
+  assert(0 != _logger);
+  _logger->className("ElasticityIntegrator");
+  _logger->initialize();
+  _logger->registerEvent("ElIR setup");
+  _logger->registerEvent("ElIR geometry");
+  _logger->registerEvent("ElIR compute");
+  _logger->registerEvent("ElIR restrict");
+  _logger->registerEvent("ElIR stateVars");
+  _logger->registerEvent("ElIR stress");
+  _logger->registerEvent("ElIR update");
+ 
+  _logger->registerEvent("ElIJ setup");
+  _logger->registerEvent("ElIJ geometry");
+  _logger->registerEvent("ElIJ compute");
+  _logger->registerEvent("ElIJ restrict");
+  _logger->registerEvent("ElIJ stateVars");
+  _logger->registerEvent("ElIJ update");
+  
+  // Set up gravity field database for querying
+  if (0 != _gravityField) {
+    const int spaceDim = _quadrature->spaceDim();
+    _gravityField->open();
+    if (1 == spaceDim){
+      const char* queryNames[] = { "x"};
+      _gravityField->queryVals(queryNames, spaceDim);
+    } else if (2 == spaceDim){
+      const char* queryNames[] = { "x", "y"};
+      _gravityField->queryVals(queryNames, spaceDim);
+    } else if (3 == spaceDim){
+      const char* queryNames[] = { "x", "y", "z"};
+      _gravityField->queryVals(queryNames, spaceDim);
+    } else {
+      assert(0);
+    } // else
+  } // if
+} // initialize
+
+// ----------------------------------------------------------------------
 // Update state variables as needed.
 void
-pylith::feassemble::IntegratorElasticity::updateState(
-				   const double t,
-				   topology::FieldsManager* const fields,
-				   const ALE::Obj<Mesh>& mesh)
+pylith::feassemble::IntegratorElasticity::updateStateVars(
+				      const double t,
+				      topology::SolutionFields* const fields)
 { // updateState
   assert(0 != _quadrature);
   assert(0 != _material);
   assert(0 != fields);
 
-  // No need to update state if using elastic behavior
-  if (!_material->usesUpdateProperties())
+  // No need to update state vars if material doesn't have any.
+  if (!_material->hasStateVars())
     return;
 
-  // Set variables dependent on dimension of cell
+  // Get cell information that doesn't depend on particular cell
   const int cellDim = _quadrature->cellDim();
-  int tensorSize = 0;
+  const int numQuadPts = _quadrature->numQuadPts();
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const int tensorSize = _material->tensorSize();
   totalStrain_fn_type calcTotalStrainFn;
   if (1 == cellDim) {
-    tensorSize = 1;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
   } else if (2 == cellDim) {
-    tensorSize = 3;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
   } else if (3 == cellDim) {
-    tensorSize = 6;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
   } else
     assert(0);
 
+  // Allocate arrays for cell data.
+  double_array dispCell(numBasis*spaceDim);
+  double_array strainCell(numQuadPts*tensorSize);
+  strainCell = 0.0;
+
   // Get cell information
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
   const int materialId = _material->id();
-  const ALE::Obj<Mesh::label_sequence>& cells = 
-    mesh->getLabelStratum("material-id", materialId);
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
   assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
-  // Get sections
-  const ALE::Obj<real_section_type>& coordinates = 
-    mesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
+  // Get fields
+  const topology::Field<topology::Mesh>& solution = fields->solution();
+  const ALE::Obj<RealSection>& disp = solution.section();
+  assert(!disp.isNull());
+  topology::Mesh::RestrictVisitor dispVisitor(*disp, 
+					      dispCell.size(), &dispCell[0]);
 
-  // Get cell geometry information that doesn't depend on cell
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-
-  const int cellVecSize = numBasis*spaceDim;
-  double_array dispCell(cellVecSize);
-
-  // Allocate vector for total strain
-  double_array totalStrain(numQuadPts*tensorSize);
-  totalStrain = 0.0;
-
-  const ALE::Obj<real_section_type>& disp = fields->getSolution();
-  /// const int dispAtlasTag = fields->getSolutionAtlasTag(materialId);
-  
   // Loop over cells
-  int c_index = 0;
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
-       ++c_iter, ++c_index) {
-    // Compute geometry information for current cell
-    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c_index);
+       ++c_iter) {
+    // Retrieve geometry information for current cell
+    _quadrature->retrieveGeometry(*c_iter);
 
     // Restrict input fields to cell
-    mesh->restrictClosure(disp, *c_iter, &dispCell[0], cellVecSize);
+    dispVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispVisitor);
 
     // Get cell geometry information that depends on cell
     const double_array& basisDeriv = _quadrature->basisDeriv();
   
     // Compute strains
-    calcTotalStrainFn(&totalStrain, basisDeriv, dispCell, numBasis, numQuadPts);
+    calcTotalStrainFn(&strainCell, basisDeriv, dispCell, 
+		      numBasis, numQuadPts);
 
     // Update material state
-    _material->updateProperties(totalStrain, *c_iter);
+    _material->updateStateVars(strainCell, *c_iter);
   } // for
 } // updateState
 
@@ -163,12 +231,12 @@ pylith::feassemble::IntegratorElasticity::updateState(
 // Verify configuration is acceptable.
 void
 pylith::feassemble::IntegratorElasticity::verifyConfiguration(
-						 const ALE::Obj<Mesh>& mesh) const
+					   const topology::Mesh& mesh) const
 { // verifyConfiguration
   assert(0 != _quadrature);
   assert(0 != _material);
 
-  const int dimension = mesh->getDimension();
+  const int dimension = mesh.dimension();
 
   // check compatibility of mesh and material
   if (_material->dimension() != dimension) {
@@ -192,14 +260,17 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(
     throw std::runtime_error(msg.str());
   } // if
   const int numCorners = _quadrature->refGeometry().numCorners();
-  const ALE::Obj<Mesh::label_sequence>& cells = 
-    mesh->getLabelStratum("material-id", _material->id());
+
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", _material->id());
   assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
-    const int cellNumCorners = mesh->getNumCellCorners(*c_iter);
+    const int cellNumCorners = sieveMesh->getNumCellCorners(*c_iter);
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell in material '"
@@ -214,160 +285,162 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(
 
 // ----------------------------------------------------------------------
 // Get cell field associated with integrator.
-const ALE::Obj<pylith::real_section_type>&
+const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::feassemble::IntegratorElasticity::cellField(
-				 VectorFieldEnum* fieldType,
-				 const char* name,
-				 const ALE::Obj<Mesh>& mesh,
-				 topology::FieldsManager* const fields)
+					   const char* name,
+					   const topology::Mesh& mesh,
+					   topology::SolutionFields* fields)
 { // cellField
   assert(0 != _material);
 
-  // We assume the material stores the total-strain field if
-  // usesUpdateProperties() is TRUE.
+  // We assume the material stores the total_strain field if
+  // hasStateVars() is TRUE.
+
+  if (!_material->hasStateVars() &&
+      (0 == strcasecmp(name, "total_strain") ||
+       0 == strcasecmp(name, "stress") )) {
+    assert(0 != fields);
+    _allocateTensorField(mesh);
+    _calcStrainStressField(_bufferFieldTensor, name, fields);
+    _bufferFieldTensor->label(name);
+    return *_bufferFieldTensor;
+  } else if (0 == strcasecmp(name, "stress")) {
+    assert(0 != fields);
+    _allocateTensorField(mesh);
+    _material->getField(_bufferFieldTensor, "total_strain");
+    _calcStressFromStrain(_bufferFieldTensor);
+    _bufferFieldTensor->label(name);
+    return *_bufferFieldTensor;
+  } else {
+    if (0 == _bufferFieldOther)
+      _bufferFieldOther = new topology::Field<topology::Mesh>(mesh);
+    _material->getField(_bufferFieldOther, name);
+    return *_bufferFieldOther;
+  } // if/else
+  
+  // Return tensor section to satisfy member function definition. Code
+  // should never get here.
+  return *_bufferFieldTensor;
+} // cellField
+
+// ----------------------------------------------------------------------
+// Allocate buffer for tensor field at quadrature points.
+void
+pylith::feassemble::IntegratorElasticity::_allocateTensorField(
+						 const topology::Mesh& mesh)
+{ // _allocateTensorField
+  assert(0 != _quadrature);
+  assert(0 != _material);
+
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const int materialId = _material->id();
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
+  assert(!cells.isNull());
 
   const int numQuadPts = _quadrature->numQuadPts();
-
-  if (!_material->usesUpdateProperties() &&
-      (0 == strcasecmp(name, "total_strain") ||
-       0 == strcasecmp(name, "stress")) ) {
-    assert(0 != fields);
-    _calcStrainStressField(&_bufferCellOther, name, mesh, fields);
-    return _bufferCellOther;
-
-  } else if (0 == strcasecmp(name, "stress")) {
-    _material->propertyField(&_bufferCellOther,
-			     "total_strain", mesh, numQuadPts);
-    _calcStressFromStrain(&_bufferCellOther, mesh);
-    return _bufferCellOther;
-
-  } else {
-    const VectorFieldEnum fieldType = _material->propertyFieldType(name);
-    switch (fieldType)
-      { // switch
-      case SCALAR_FIELD :
-	_material->propertyField(&_bufferCellScalar, name, mesh, numQuadPts);
-	return _bufferCellScalar;
-	break;
-      case VECTOR_FIELD :
-	_material->propertyField(&_bufferCellVector, name, mesh, numQuadPts);
-	return _bufferCellVector;
-	break;
-      case TENSOR_FIELD :
-	_material->propertyField(&_bufferCellTensor, name, mesh, numQuadPts);
-	return _bufferCellTensor;
-	break;
-      case OTHER_FIELD :
-	_material->propertyField(&_bufferCellOther, name, mesh, numQuadPts);
-	return _bufferCellOther;
-	break;
-      default:
-	assert(0);
-      } // switch
-  } // else
-
-  // Return scalar section to satisfy member function definition.
-  return _bufferCellScalar;
-} // cellField
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const int tensorSize = _material->tensorSize();
+  
+  if (0 == _bufferFieldTensor) {
+    _bufferFieldTensor = new topology::Field<topology::Mesh>(mesh);
+    assert(0 != _bufferFieldTensor);
+    _bufferFieldTensor->newSection(cells, numQuadPts*tensorSize);
+    _bufferFieldTensor->allocate();
+    _bufferFieldTensor->vectorFieldType(topology::FieldBase::MULTI_TENSOR);
+  } // if
+} // _allocateTensorField
 
 // ----------------------------------------------------------------------
 void
 pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
-				 ALE::Obj<real_section_type>* field,
+				 topology::Field<topology::Mesh>* field,
 				 const char* name,
-				 const ALE::Obj<Mesh>& mesh,
-				 topology::FieldsManager* const fields)
+				 topology::SolutionFields* const fields)
 { // _calcStrainStressField
+  assert(0 != field);
   assert(0 != _quadrature);
   assert(0 != _material);
 
   const bool calcStress = (0 == strcasecmp(name, "stress")) ? true : false;
     
+  // Get cell information that doesn't depend on particular cell
   const int cellDim = _quadrature->cellDim();
-  int tensorSize = 0;
+  const int numQuadPts = _quadrature->numQuadPts();
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const int tensorSize = _material->tensorSize();
   totalStrain_fn_type calcTotalStrainFn;
   if (1 == cellDim) {
-    tensorSize = 1;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
   } else if (2 == cellDim) {
-    tensorSize = 3;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
   } else if (3 == cellDim) {
-    tensorSize = 6;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
   } else
     assert(0);
   
-  // Get cell information
-  const int materialId = _material->id();
-  const ALE::Obj<Mesh::label_sequence>& cells = 
-    mesh->getLabelStratum("material-id", materialId);
-  assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  
-  // Get sections
-  const ALE::Obj<real_section_type>& coordinates = 
-    mesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  const ALE::Obj<real_section_type>& disp = fields->getSolution();
-  
-  // Get cell geometry information that doesn't depend on cell
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  
-  const int cellVecSize = numBasis*spaceDim;
-  double_array dispCell(cellVecSize);
-  
-  // Allocate array for total strain
-  const int totalFiberDim = numQuadPts * tensorSize;
-  double_array totalStrain(totalFiberDim);
-  totalStrain = 0.0;
-  double_array stress(totalFiberDim);
+  // Allocate arrays for cell data.
+  double_array dispCell(numBasis*spaceDim);
+  double_array strainCell(numQuadPts*tensorSize);
+  strainCell = 0.0;
+  double_array stressCell(numQuadPts*tensorSize);
+  stressCell = 0.0;
 
+  // Get normalizer
   assert(0 != _normalizer);
   const double pressureScale = _normalizer->pressureScale();
   
-  // Allocate buffer for property field.
-  if (field->isNull() || 
-      totalFiberDim != (*field)->getFiberDimension(*cells->begin())) {
-    *field = new real_section_type(mesh->comm(), mesh->debug());
-    (*field)->setChart(real_section_type::chart_type(*std::min_element(cells->begin(), cells->end()),
-                                                     *std::max_element(cells->begin(), cells->end())+1));
-    (*field)->setFiberDimension(cells, totalFiberDim);
-    mesh->allocate(*field);
-  } // if
-  
-  
+  // Get cell information
+  const ALE::Obj<SieveMesh>& sieveMesh = field->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const int materialId = _material->id();
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
+  assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  // Get field
+  const topology::Field<topology::Mesh>& solution = fields->solution();
+  const ALE::Obj<RealSection>& disp = solution.section();
+  assert(!disp.isNull());
+  topology::Mesh::RestrictVisitor dispVisitor(*disp, 
+					      dispCell.size(), &dispCell[0]);
+    
+  const ALE::Obj<RealSection>& fieldSection = field->section();
+  assert(!fieldSection.isNull());
+
   // Loop over cells
-  int c_index = 0;
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
-       ++c_iter, ++c_index) {
-    // Compute geometry information for current cell
-    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c_index);
-    
+       ++c_iter) {
+    // Retrieve geometry information for current cell
+    _quadrature->retrieveGeometry(*c_iter);
+
     // Restrict input fields to cell
-    mesh->restrictClosure(disp, *c_iter, &dispCell[0], cellVecSize);
-    
+    dispVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispVisitor);
+
     // Get cell geometry information that depends on cell
     const double_array& basisDeriv = _quadrature->basisDeriv();
     
     // Compute strains
-    calcTotalStrainFn(&totalStrain, basisDeriv, dispCell, numBasis, 
-		      numQuadPts);
+    calcTotalStrainFn(&strainCell, basisDeriv, dispCell, 
+		      numBasis, numQuadPts);
     
-    if (!calcStress) {
-      (*field)->updatePoint(*c_iter, &totalStrain[0]);
-    } else {
-      _material->getPropertiesCell(*c_iter, numQuadPts);
-      stress = _material->calcStress(totalStrain);
-      _normalizer->dimensionalize(&stress[0], stress.size(),
+    if (!calcStress) 
+      fieldSection->updatePoint(*c_iter, &strainCell[0]);
+    else {
+      _material->retrievePropsAndVars(*c_iter);
+      stressCell = _material->calcStress(strainCell);
+      _normalizer->dimensionalize(&stressCell[0], stressCell.size(),
 				  pressureScale);
-      (*field)->updatePoint(*c_iter, &stress[0]);	
+      fieldSection->updatePoint(*c_iter, &stressCell[0]);
     } // else
   } // for
 } // _calcStrainStressField
@@ -375,62 +448,51 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
 // ----------------------------------------------------------------------
 void
 pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
-				 ALE::Obj<real_section_type>* field,
-				 const ALE::Obj<Mesh>& mesh)
+				   topology::Field<topology::Mesh>* field)
 { // _calcStressFromStrain
+  assert(0 != field);
   assert(0 != _quadrature);
   assert(0 != _material);
 
   const int cellDim = _quadrature->cellDim();
-  int tensorSize = 0;
-  if (1 == cellDim) {
-    tensorSize = 1;
-  } else if (2 == cellDim) {
-    tensorSize = 3;
-  } else if (3 == cellDim) {
-    tensorSize = 6;
-  } else
-    assert(0);
-  
-  // Get cell information
-  const int materialId = _material->id();
-  const ALE::Obj<Mesh::label_sequence>& cells = 
-    mesh->getLabelStratum("material-id", materialId);
-  assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  
-  // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const int tensorSize = _material->tensorSize();
   
-  // Allocate vector for total strain
-  const int totalFiberDim = numQuadPts*tensorSize;
-  double_array totalStrain(totalFiberDim);
-  totalStrain = 0.0;
-  double_array stress(totalFiberDim);
-  
+  // Allocate arrays for cell data.
+  double_array strainCell(numQuadPts*tensorSize);
+  strainCell = 0.0;
+  double_array stressCell(numQuadPts*tensorSize);
+  stressCell = 0.0;
+
+  // Get normalizer
   assert(0 != _normalizer);
   const double pressureScale = _normalizer->pressureScale();
   
-  // Allocate buffer for tensor field.
-  if (field->isNull()) {
-    const int fiberDim = numQuadPts * tensorSize;
-    *field = new real_section_type(mesh->comm(), mesh->debug());
-    (*field)->setChart(real_section_type::chart_type(*std::min_element(cells->begin(), cells->end()),
-                                                     *std::max_element(cells->begin(), cells->end())+1));
-    (*field)->setFiberDimension(cells, fiberDim);
-    mesh->allocate(*field);
-  } // if
-  
+  // Get cell information
+  const ALE::Obj<SieveMesh>& sieveMesh = field->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const int materialId = _material->id();
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
+  assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  // Get field
+  const ALE::Obj<RealSection>& fieldSection = field->section();
+  assert(!fieldSection.isNull());
+
   // Loop over cells
-  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
-    (*field)->restrictPoint(*c_iter, &totalStrain[0], totalStrain.size());
-    _material->getPropertiesCell(*c_iter, numQuadPts);
-    stress = _material->calcStress(totalStrain);
-    _normalizer->dimensionalize(&stress[0], stress.size(),
+    fieldSection->restrictPoint(*c_iter, &strainCell[0], strainCell.size());
+    _material->retrievePropsAndVars(*c_iter);
+    stressCell = _material->calcStress(strainCell);
+    _normalizer->dimensionalize(&stressCell[0], stressCell.size(),
 				pressureScale);
-    (*field)->updatePoint(*c_iter, &stress[0]);	
+    fieldSection->updatePoint(*c_iter, &stressCell[0]);
   } // for
 } // _calcStressFromStrain
 

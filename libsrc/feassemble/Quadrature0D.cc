@@ -14,7 +14,8 @@
 
 #include "Quadrature0D.hh" // implementation of class methods
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "QuadratureRefCell.hh" // USES QuadratureRefCell
+#include "CellGeometry.hh" // USES CellGeometry
 
 #include "petsc.h" // USES PetscLogFlops()
 
@@ -22,7 +23,8 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::Quadrature0D::Quadrature0D(void) : Quadrature()
+pylith::feassemble::Quadrature0D::Quadrature0D(const QuadratureRefCell& q) :
+  QuadratureEngine(q)
 { // constructor
 } // constructor
 
@@ -35,32 +37,38 @@ pylith::feassemble::Quadrature0D::~Quadrature0D(void)
 // ----------------------------------------------------------------------
 // Copy constructor.
 pylith::feassemble::Quadrature0D::Quadrature0D(const Quadrature0D& q) :
-  Quadrature(q)
+  QuadratureEngine(q)
 { // copy constructor
 } // copy constructor
 
 // ----------------------------------------------------------------------
 // Compute geometric quantities for a cell at quadrature points.
 void
-pylith::feassemble::Quadrature0D::computeGeometry(
-		       const real_section_type::value_type* vertCoords,
-               const int coordDim,
-               const Mesh::point_type& cell)
+pylith::feassemble::Quadrature0D::computeGeometry(const double* vertCoords,
+						  const int coordDim,
+						  const int cell)
 { // computeGeometry
-  assert(0 == _cellDim);
-  assert(1 == _numQuadPts);
-  assert(1 == _numBasis);
+  const int cellDim = _quadRefCell.cellDim();
+  const int spaceDim = _quadRefCell.spaceDim();
+  const int numQuadPts = _quadRefCell.numQuadPts();
+  const int numBasis = _quadRefCell.numBasis();
 
-  _resetGeometry();
+  const double_array& basisDerivRef = _quadRefCell.basisDerivRef();
+
+  assert(0 == cellDim);
+  assert(1 == numQuadPts);
+  assert(1 == numBasis);
+
+  zero();
   assert(1 == coordDim);
 
-  for (int i=0; i < _spaceDim; ++i)
+  for (int i=0; i < spaceDim; ++i)
     _quadPts[i] = vertCoords[i];
 
   _jacobian[0] = 1.0;
   _jacobianDet[0] = 1.0;
   _jacobianInv[0] = 1.0;
-  _basisDeriv[0] = _basisDerivRef[0];
+  _basisDeriv[0] = basisDerivRef[0];
 
   PetscLogFlops(0);
 } // computeGeometry

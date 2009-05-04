@@ -17,22 +17,21 @@
 const char* pylith::meshio::DataWriterVTKDataSubMeshLine2::_meshFilename = 
   "data/line2.mesh";
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshLine2::_cellsLabel = 
-  "material-id";
-const int pylith::meshio::DataWriterVTKDataSubMeshLine2::_labelId = 0;
+const char* pylith::meshio::DataWriterVTKDataSubMeshLine2::_bcLabel = 
+  "bc1";
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshLine2::_faultLabel = 
   "fault";
 const int pylith::meshio::DataWriterVTKDataSubMeshLine2::_faultId = 100;
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshLine2::_timestepFilename = 
-  "line2_sub.vtk";
+  "line2_surf.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshLine2::_vertexFilename = 
-  "line2_sub_vertex.vtk";
+  "line2_surf_vertex.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshLine2::_cellFilename = 
-  "line2_sub_cell.vtk";
+  "line2_surf_cell.vtk";
 
 const double pylith::meshio::DataWriterVTKDataSubMeshLine2::_time = 1.0;
 
@@ -44,22 +43,26 @@ const int pylith::meshio::DataWriterVTKDataSubMeshLine2::_numVertices = 5;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataSubMeshLine2::_vertexFields[] = {
-  { "displacements", VECTOR_FIELD, 1 },
-  { "pressure", SCALAR_FIELD, 1 },
-  { "other", OTHER_FIELD, 2 },
+  { "displacements", topology::FieldBase::VECTOR, 2 },
+  { "pressure", topology::FieldBase::SCALAR, 1 },
+  { "other", topology::FieldBase::OTHER, 2 },
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshLine2::_vertexField0[] = {
-  1.1, 2.2, 3.3, 4.4, 5.5
+  1.1, 2.2,
+  3.3, 4.4,
+  5.5, 6.6,
+  7.7, 8.8,
+  9.9, 10.0,
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshLine2::_vertexField1[] = {
-  2.1, 3.2, 4.3, 5.4, 6.5
+  2.1, 3.2, 4.3, 5.4, 6.5,
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshLine2::_vertexField2[] = {
-  1.2, 2.3, 
+  1.2, 2.3,
   3.4, 4.5,
   5.6, 6.7,
   7.8, 8.9,
-  9.1, 10.2
+  9.0, 10.1,
 };
 
 const int pylith::meshio::DataWriterVTKDataSubMeshLine2::_numCellFields = 3;
@@ -67,25 +70,24 @@ const int pylith::meshio::DataWriterVTKDataSubMeshLine2::_numCells = 1;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataSubMeshLine2::_cellFields[] = {
-  { "traction", VECTOR_FIELD, 1 },
-  { "pressure", SCALAR_FIELD, 1 },
-  { "other", TENSOR_FIELD, 1 },
+  { "traction", topology::FieldBase::VECTOR, 2 },
+  { "pressure", topology::FieldBase::SCALAR, 1 },
+  { "other", topology::FieldBase::TENSOR, 3 },
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshLine2::_cellField0[] = {
-  1.1,
+  1.1, 2.2,
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshLine2::_cellField1[] = {
   2.1,
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshLine2::_cellField2[] = {
-  1.2,
+  1.2, 2.3, 3.4,
 };
 
 pylith::meshio::DataWriterVTKDataSubMeshLine2::DataWriterVTKDataSubMeshLine2(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
-  cellsLabel = const_cast<char*>(_cellsLabel);
-  labelId = _labelId;
+  bcLabel = const_cast<char*>(_bcLabel);
   faultLabel = const_cast<char*>(_faultLabel);
   faultId = _faultId;
 

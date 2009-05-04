@@ -14,34 +14,34 @@ SUBDIRS = \
 	utils \
 	topology \
 	meshio \
-	feassemble \
+	materials \
 	bc \
+	feassemble \
 	faults \
-	materials
+	problems
 
 lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
-	bc/AbsorbingDampers.cc \
 	bc/BoundaryCondition.cc \
+	bc/DirichletBC.cc \
 	bc/DirichletBoundary.cc \
-	bc/DirichletPoints.cc \
 	bc/Neumann.cc \
-	faults/BruneSlipFn.cc \
-	faults/ConstRateSlipFn.cc \
-	faults/CohesiveTopology.cc \
-	faults/EqKinSrc.cc \
+	bc/AbsorbingDampers.cc \
 	faults/Fault.cc \
-	faults/FaultCohesive.cc \
-	faults/FaultCohesiveKin.cc \
-	faults/FaultCohesiveDyn.cc \
-	faults/LiuCosSlipFn.cc \
 	faults/SlipTimeFn.cc \
 	faults/StepSlipFn.cc \
+	faults/ConstRateSlipFn.cc \
+	faults/BruneSlipFn.cc \
+	faults/LiuCosSlipFn.cc \
+	faults/EqKinSrc.cc \
+	faults/TopologyOps.cc \
+	faults/CohesiveTopology.cc \
+	faults/FaultCohesive.cc \
+	faults/FaultCohesiveDyn.cc \
+	faults/FaultCohesiveKin.cc \
 	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
-	feassemble/ElasticityExplicit.cc \
-	feassemble/ElasticityImplicit.cc \
 	feassemble/GeometryPoint1D.cc \
 	feassemble/GeometryPoint2D.cc \
 	feassemble/GeometryPoint3D.cc \
@@ -54,9 +54,8 @@ libpylith_la_SOURCES = \
 	feassemble/GeometryQuad2D.cc \
 	feassemble/GeometryQuad3D.cc \
 	feassemble/GeometryHex3D.cc \
-	feassemble/Integrator.cc \
-	feassemble/IntegratorElasticity.cc \
-	feassemble/Quadrature.cc \
+	feassemble/QuadratureRefCell.cc \
+	feassemble/QuadratureEngine.cc \
 	feassemble/Quadrature0D.cc \
 	feassemble/Quadrature1D.cc \
 	feassemble/Quadrature1Din2D.cc \
@@ -64,44 +63,49 @@ libpylith_la_SOURCES = \
 	feassemble/Quadrature2D.cc \
 	feassemble/Quadrature2Din3D.cc \
 	feassemble/Quadrature3D.cc \
+	feassemble/IntegratorElasticity.cc \
+	feassemble/ElasticityImplicit.cc \
+	feassemble/ElasticityExplicit.cc \
+	materials/Metadata.cc \
 	materials/Material.cc \
-	materials/ElasticStress1D.cc \
-	materials/ElasticStrain1D.cc \
-	materials/ElasticIsotropic3D.cc \
 	materials/ElasticMaterial.cc \
+	materials/ElasticStrain1D.cc \
+	materials/ElasticStress1D.cc \
 	materials/ElasticPlaneStrain.cc \
 	materials/ElasticPlaneStress.cc \
-	materials/MaxwellIsotropic3D.cc \
-	materials/GenMaxwellIsotropic3D.cc \
+	materials/ElasticIsotropic3D.cc \
 	materials/ViscoelasticMaxwell.cc \
+	materials/MaxwellIsotropic3D.cc \
 	meshio/BinaryIO.cc \
-	meshio/CellFilter.cc \
-	meshio/CellFilterAvg.cc \
-	meshio/DataWriter.cc \
-	meshio/DataWriterVTK.cc \
 	meshio/GMVFile.cc \
 	meshio/GMVFileAscii.cc \
 	meshio/GMVFileBinary.cc \
+	meshio/MeshBuilder.cc \
 	meshio/MeshIO.cc \
 	meshio/MeshIOAscii.cc \
 	meshio/MeshIOLagrit.cc \
-	meshio/OutputManager.cc \
-	meshio/OutputSolnSubset.cc \
 	meshio/PsetFile.cc \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \
-	meshio/VertexFilter.cc \
-	meshio/VertexFilterVecNorm.cc \
-	topology/Distributor.cc \
-	topology/Field.cc \
-	topology/FieldUniform.cc \
-	topology/FieldsManager.cc \
-	topology/FieldOps.cc \
+	meshio/OutputSolnSubset.cc \
+	meshio/UCDFaultFile.cc \
+	problems/Formulation.cc \
+	problems/Solver.cc \
+	problems/SolverLinear.cc \
+	problems/SolverNonlinear.cc \
+	topology/FieldBase.cc \
+	topology/Jacobian.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
-	topology/MeshRefiner.cc \
-	topology/RefineUniform.cc \
-	utils/EventLogger.cc
+	topology/SubMesh.cc \
+	topology/SolutionFields.cc \
+	topology/Distributor.cc \
+	utils/EventLogger.cc \
+	utils/TestArray.cc
+
+# 	materials/GenMaxwellIsotropic3D.cc \
+# 	topology/MeshRefiner.cc \
+#	topology/RefineUniform.cc
 
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 libpylith_la_LIBADD = \

@@ -10,13 +10,15 @@
 # ----------------------------------------------------------------------
 #
 
+
 ## @file pylith/problems/Formulation.py
 ##
 ## @brief Python abstract base class for formulations of solving equations.
 ##
 ## Factory: pde_formulation
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
+from problems import Formulation as ModuleFormulation
 
 from pylith.utils.profiling import resourceUsageString
 from pyre.units.time import second
@@ -33,7 +35,7 @@ def outputFactory(name):
 
 
 # Formulation class
-class Formulation(Component):
+class Formulation(PetscComponent, ModuleFormulation):
   """
   Python abstract base class for formulations of solving equations.
 
@@ -45,7 +47,7 @@ class Formulation(Component):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
+  class Inventory(PetscComponent.Inventory):
     """
     Python object for managing Formulation facilities and properties.
     """
@@ -55,39 +57,24 @@ class Formulation(Component):
     ##
     ## \b Properties
     ## @li \b view_jacobian Flag to output Jacobian matrix when it is reformed.
-    ## @li \b jacobian_filename Filename for Jacobian matrix.
-    ## @li \b jacobian_time_width String length of time stamp in Jacobian filename.
-    ## @li \b jacobian_time_constant Value used to normalize time stamp in filename.
-
     ##
     ## \b Facilities
     ## @li \b time_step Time step size manager.
     ## @li \b solver Algebraic solver.
     ## @li \b output Output manager associated with solution.
+    ## @li \b jacobian_viewer Writer for Jacobian sparse matrix.
 
     import pyre.inventory
 
     viewJacobian = pyre.inventory.bool("view_jacobian", default=False)
     viewJacobian.meta['tip'] = "Write Jacobian matrix to binary file."
     
-    jacobianFilename = pyre.inventory.str("jacobian_filename",
-                                          default="jacobian.mat")
-    jacobianFilename.meta['tip'] = "Filename for Jacobian matrix."
-
-    jacobianTimeWidth = pyre.inventory.int("jacobian_time_width", default=5)
-    jacobianTimeWidth.meta['tip'] = "String length of time stamp in Jacobian filename."
-
-    jacobianTimeConstant = pyre.inventory.dimensional("jacobian_time_constant",
-                                                      default=1.0*second,
-                                                      validator=pyre.inventory.greater(0.0*second))
-    jacobianTimeConstant.meta['tip'] = "Values used to normalize time stamp in Jacobian filename."
-    
     from TimeStepUniform import TimeStepUniform
     timeStep = pyre.inventory.facility("time_step", family="time_step",
                                        factory=TimeStepUniform)
     timeStep.meta['tip'] = "Time step size manager."
 
-    from pylith.solver.SolverLinear import SolverLinear
+    from SolverLinear import SolverLinear
     solver = pyre.inventory.facility("solver", family="solver",
                                      factory=SolverLinear)
     solver.meta['tip'] = "Algebraic solver."
@@ -98,17 +85,26 @@ class Formulation(Component):
                                           factory=SingleOutput)
     output.meta['tip'] = "Output managers associated with solution."
 
+    from pylith.topology.JacobianViewer import JacobianViewer
+    jacobianViewer = pyre.inventory.facility("jacobian_viewer", 
+                                             family="jacobian_viewer",
+                                             factory=JacobianViewer)
+    jacobianViewer.meta['tip'] = "Writer for Jacobian sparse matrix."
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="formulation"):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="pde_formulation")
-    self.integrators = None
+    PetscComponent.__init__(self, name, facility="pde_formulation")
+    ModuleFormulation.__init__(self)
+    self.integratorsMesh = None
+    self.integratorsSubMesh = None
     self.constraints = None
+    self.jacobian = None
     self.fields = None
-    self.solnField = None
+    self.solnName = None
     return
 
 
@@ -124,7 +120,8 @@ class Formulation(Component):
     self.timeStep.preinitialize()
     
     self.mesh = mesh
-    self.integrators = []
+    self.integratorsMesh = []
+    self.integratorsSubMesh = []
     self.constraints = []
     self.gravityField = gravityField
 
@@ -149,7 +146,7 @@ class Formulation(Component):
 
     self.timeStep.verifyConfiguration()
 
-    for integrator in self.integrators:
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.verifyConfiguration()
     for constraint in self.constraints:
       constraint.verifyConfiguration()
@@ -172,8 +169,8 @@ class Formulation(Component):
     numTimeSteps = self.timeStep.numTimeSteps()
     totalTime = self.timeStep.totalTime
 
-    from pylith.topology.FieldsManager import FieldsManager
-    self.fields = FieldsManager(self.mesh)
+    from pylith.topology.SolutionFields import SolutionFields
+    self.fields = SolutionFields(self.mesh)
     self._debug.log(resourceUsageString())
 
     if self.gravityField != None:
@@ -181,9 +178,11 @@ class Formulation(Component):
       self.gravityField.initialize()
 
     self._info.log("Initializing integrators.")
-    for integrator in self.integrators:
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.gravityField = self.gravityField
       integrator.initialize(totalTime, numTimeSteps, normalizer)
+    ModuleFormulation.meshIntegrators(self, self.integratorsMesh)
+    ModuleFormulation.submeshIntegrators(self, self.integratorsSubMesh)
     self._debug.log(resourceUsageString())
 
     self._info.log("Initializing constraints.")
@@ -200,14 +199,17 @@ class Formulation(Component):
 
     self._info.log("Creating solution field.")
     solnName = self.solnField['name']
-    self.fields.addReal(solnName)
-    self.fields.solutionField(solnName)
-    self.fields.setFiberDimension(solnName, dimension)
+    self.fields.add(solnName, self.solnField['label'])
+    self.fields.solutionName(solnName)
+    solution = self.fields.solution()
+    solution.vectorFieldType(solution.VECTOR)
+    solution.newSection(solution.VERTICES_FIELD, dimension)
     for constraint in self.constraints:
-      constraint.setConstraintSizes(self.fields.getSolution())
-    self.fields.allocate(solnName)
+      constraint.setConstraintSizes(solution)
+    solution.allocate()
     for constraint in self.constraints:
-      constraint.setConstraints(self.fields.getSolution())
+      constraint.setConstraints(solution)
+    solution.createScatter()
     self._debug.log(resourceUsageString())
 
     self._logger.eventEnd(logEvent)
@@ -218,14 +220,14 @@ class Formulation(Component):
     """
     Get start time for simulation.
     """
-    return 0.0*second
+    return 0.0
 
 
   def getTotalTime(self):
     """
     Get total time for simulation.
     """
-    return self.timeStep.totalTime
+    return self.timeStep.totalTimeN # Nondimensionalized total time
 
 
   def getTimeStep(self):
@@ -235,7 +237,8 @@ class Formulation(Component):
     logEvent = "%stimestep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    dt = self.timeStep.timeStep(self.integrators)
+    dt = self.timeStep.timeStep(self.mesh,
+                                self.integratorsMesh + self.integratorsSubMesh)
 
     self._logger.eventEnd(logEvent)
     return dt
@@ -275,7 +278,7 @@ class Formulation(Component):
     self._info.log("Writing solution fields.")
     for output in self.output.components():
       output.writeData(t+dt, self.fields)
-    for integrator in self.integrators:
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.poststep(t, dt, totalTime, self.fields)
     for constraint in self.constraints:
       constraint.poststep(t, dt, totalTime, self.fields)
@@ -293,7 +296,7 @@ class Formulation(Component):
 
     self._info.log("Formulation finalize.")
     self._debug.log(resourceUsageString())
-    for integrator in self.integrators:
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.finalize()
     for constraint in self.constraints:
       constraint.finalize()
@@ -311,14 +314,12 @@ class Formulation(Component):
     """
     Set members based using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
     self.timeStep = self.inventory.timeStep
     self.solver = self.inventory.solver
     self.output = self.inventory.output
     self.viewJacobian = self.inventory.viewJacobian
-    self.jacobianFilename = self.inventory.jacobianFilename
-    self.jacobianTimeWidth = self.inventory.jacobianTimeWidth
-    self.jacobianTimeConstant = self.inventory.jacobianTimeConstant
+    self.jacobianViewer = self.inventory.jacobianViewer
 
     import journal
     self._debug = journal.debug(self.name)
@@ -340,7 +341,7 @@ class Formulation(Component):
               "Could not use '%s' as an integrator for material '%s'. " \
               "Functionality missing." % (integrator.name, material.label)
       integrator.preinitialize(self.mesh, material)
-      self.integrators.append(integrator)
+      self.integratorsMesh.append(integrator)
       self._debug.log(resourceUsageString())
 
       self._info.log("Added elasticity integrator for material '%s'." % \
@@ -362,7 +363,7 @@ class Formulation(Component):
       foundType = False
       if implementsIntegrator(bc):
         foundType = True
-        self.integrators.append(bc)
+        self.integratorsSubMesh.append(bc)
         self._info.log("Added boundary condition '%s' as an integrator." % \
                        bc.label)
       if implementsConstraint(bc):
@@ -391,7 +392,7 @@ class Formulation(Component):
       foundType = False
       if implementsIntegrator(ic):
         foundType = True
-        self.integrators.append(ic)
+        self.integratorsSubMesh.append(ic)
         self._info.log("Added interface condition '%s' as an integrator." % \
                        ic.label)
       if implementsConstraint(ic):
@@ -412,77 +413,33 @@ class Formulation(Component):
     Reform Jacobian matrix for operator.
     """
     self._debug.log(resourceUsageString())
+    self._info.log("Integrating Jacobian operator.")
     self._logger.stagePush("Reform Jacobian")
-    import pylith.utils.petsc as petsc
-    petsc.mat_setzero(self.jacobian)
 
-    # Add in contributions that do not require assembly
-    self._info.log("Reforming assembled portion of Jacobian of operator.")
-    for integrator in self.integrators:
-      integrator.timeStep(dt)
-      integrator.integrateJacobianAssembled(self.jacobian, t+dt,
-                                            self.fields)
-      self._debug.log(resourceUsageString()) # TEMPORARY
-    self._info.log("Flushing assembly of Jacobian of operator.")
-    petsc.mat_assemble(self.jacobian, "flush_assembly")
+    self.updateSettings(self.jacobian, self.fields, t, dt)
+    self.reformJacobian()
 
-    # Add in contributions that require assembly
-    self._info.log("Reforming unassembled portion of Jacobian of operator.")
-    for integrator in self.integrators:
-      integrator.timeStep(dt)
-      integrator.integrateJacobian(self.jacobian, t+dt, self.fields)
-      self._debug.log(resourceUsageString()) # TEMPORARY
-    self._info.log("Doing final assembly of Jacobian of operator.")
-    petsc.mat_assemble(self.jacobian, "final_assembly")
     self._logger.stagePop()
 
     if self.viewJacobian:
-      filename = self._createJacobianFilename(t+dt)
-      petsc.mat_view_binary(self.jacobian, filename)
+      self.jacobianViewer.write(self.jacobian, t)
+
     self._debug.log(resourceUsageString())
     return
 
 
-  def _createJacobianFilename(self, t):
-    """
-    Create filename by extracting basename and adding a time stamp.
-    """
-    base = self.jacobianFilename.lstrip().rstrip()
-    baseLen = len(base)
-    if base.endswith(".mat"):
-      basename = base[0:baseLen-4]
-    else:
-      basename = base
-    time = int(t.value/self.jacobianTimeConstant.value)
-    timeStamp = repr(time).rjust(self.jacobianTimeWidth, '0')
-    filename = basename + "_t" + timeStamp + ".mat"
-    return filename
-
-      
   def _reformResidual(self, t, dt):
     """
     Reform residual vector for operator.
     """
     self._info.log("Integrating residual term in operator.")
     self._logger.stagePush("Reform Residual")
-    residual = self.fields.getReal("residual")
-    import pylith.topology.topology as bindings
-    bindings.zeroRealSection(residual)
 
-    # Add in contributions that require assembly
-    for integrator in self.integrators:
-      integrator.timeStep(dt)
-      integrator.integrateResidual(residual, t, self.fields)
-    self._info.log("Completing residual.")
-    bindings.completeSection(self.mesh.cppHandle, residual)
-
-    # Add in contributions that do not require assembly
-    self._info.log("Integrating assembled residual term in operator.")
-    for integrator in self.integrators:
-      integrator.timeStep(dt)
-      integrator.integrateResidualAssembled(residual, t, self.fields)
+    self.updateSettings(self.jacobian, self.fields, t, dt)
+    self.reformResidual()
 
     self._logger.stagePop()
+    self._debug.log(resourceUsageString())
     return
 
 
@@ -495,7 +452,7 @@ class Formulation(Component):
 
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("PDE Formulation")
+    logger.className("PDE Formulation")
     logger.initialize()
 
     events = ["preinit",
@@ -518,6 +475,17 @@ class Formulation(Component):
     self._logger = logger
     return
   
+
+  def _cleanup(self):
+    """
+    Deallocate PETSc and local data structures.
+    """
+    if not self.jacobian is None:
+      self.jacobian.cleanup()
+    if not self.fields is None:
+      self.fields.cleanup()
+    return
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

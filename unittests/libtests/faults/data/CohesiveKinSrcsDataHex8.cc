@@ -98,8 +98,8 @@ const char* pylith::faults::CohesiveKinSrcsDataHex8::_finalSlipFilename =
 const char* pylith::faults::CohesiveKinSrcsDataHex8::_slipTimeFilename = 
   "data/hex8_sliptime.spatialdb";
 
-const char* pylith::faults::CohesiveKinSrcsDataHex8::_peakRateFilename = 
-  "data/hex8_peakrate.spatialdb";
+const char* pylith::faults::CohesiveKinSrcsDataHex8::_riseTimeFilename = 
+  "data/hex8_risetime.spatialdb";
 
 const char* pylith::faults::CohesiveKinSrcsDataHex8::_matPropsFilename = 
   "data/bulkprops_3d.spatialdb";
@@ -1415,7 +1415,7 @@ pylith::faults::CohesiveKinSrcsDataHex8::CohesiveKinSrcsDataHex8(void)
   label = const_cast<char*>(_label);
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
-  peakRateFilename = const_cast<char*>(_peakRateFilename);
+  riseTimeFilename = const_cast<char*>(_riseTimeFilename);
   matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);

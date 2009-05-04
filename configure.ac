@@ -107,21 +107,12 @@ CIT_CHECK_LIB_PETSC_SIEVE
 # Check for Python modules and packages.
 CIT_PYTHON_EGG_SETUP
 
-# PYREX/PYREXEMBED
-AC_CHECK_PROG([have_pyrex],
-  [pyrexc],
-  [yes],
-  [no])
-if test "$have_pyrex" = "no"; then
-  AC_MSG_ERROR([Pyrex not found in current path.])
-fi
-AC_CHECK_PROG([have_pyrexembed],
-  [pyrexembed],
-  [yes],
-  [no])
-if test "$have_pyrexembed" = "no"; then
-  AC_MSG_ERROR([Pyrexembed not found in current path.])
-fi
+# NUMPY
+CIT_NUMPY_PYTHON_MODULE
+CIT_NUMPY_INCDIR
+
+# SWIG
+AC_PROG_SWIG(1.3.33)
 
 # CPPUNIT
 if test "$enable_testing" = "yes" ; then
@@ -211,6 +202,9 @@ if test "$enable_documentation" = "yes" ; then
   fi
 fi
 
+# Check whether compiler sets variable with function names.
+CIT_FUNCTIONSTRING
+
 # ENDIANNESS
 AC_C_BIGENDIAN
 
@@ -223,6 +217,7 @@ AC_CONFIG_FILES([Makefile
 		libsrc/faults/Makefile
                 libsrc/materials/Makefile
                 libsrc/meshio/Makefile
+                libsrc/problems/Makefile
 		libsrc/topology/Makefile
 		libsrc/utils/Makefile
                 modulesrc/Makefile
@@ -231,7 +226,8 @@ AC_CONFIG_FILES([Makefile
                 modulesrc/feassemble/Makefile
                 modulesrc/materials/Makefile
                 modulesrc/meshio/Makefile
-                modulesrc/solver/Makefile
+                modulesrc/mpi/Makefile
+                modulesrc/problems/Makefile
 		modulesrc/topology/Makefile
 		modulesrc/utils/Makefile
 		applications/Makefile
@@ -261,15 +257,16 @@ AC_CONFIG_FILES([Makefile
 		unittests/pytests/materials/data/Makefile
 		unittests/pytests/meshio/Makefile
 		unittests/pytests/meshio/data/Makefile
+		unittests/pytests/mpi/Makefile
 		unittests/pytests/problems/Makefile
 		unittests/pytests/problems/data/Makefile
 		unittests/pytests/topology/Makefile
 		unittests/pytests/topology/data/Makefile
 		unittests/pytests/utils/Makefile
 		tests/Makefile
+		tests/petsc/Makefile
 		tests/1d/Makefile
 		tests/1d/line2/Makefile
-		tests/1d/line3/Makefile
 		tests/2d/Makefile
 		tests/2d/tri3/Makefile
 		tests/2d/quad4/Makefile

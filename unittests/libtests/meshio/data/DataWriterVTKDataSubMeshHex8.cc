@@ -17,22 +17,20 @@
 const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_meshFilename = 
   "data/hex8.mesh";
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_cellsLabel = 
-  "material-id";
-const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_labelId = 0;
+const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_bcLabel = 
+  "top";
 
-const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_faultLabel = 
-  "fault";
-const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_faultId = 100;
+const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_faultLabel = 0;
+const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_faultId = 0;
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_timestepFilename = 
-  "hex8_sub.vtk";
+  "hex8_surf.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexFilename = 
-  "hex8_sub_vertex.vtk";
+  "hex8_surf_vertex.vtk";
 
 const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_cellFilename = 
-  "hex8_sub_cell.vtk";
+  "hex8_surf_cell.vtk";
 
 const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_time = 1.0;
 
@@ -40,13 +38,13 @@ const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_timeFormat =
   "%3.1f";
 
 const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_numVertexFields = 3;
-const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_numVertices = 20;
+const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_numVertices = 12;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexFields[] = {
-  { "displacements", VECTOR_FIELD, 3 },
-  { "pressure", SCALAR_FIELD, 1 },
-  { "other", OTHER_FIELD, 2 },
+  { "displacements", topology::FieldBase::VECTOR, 3 },
+  { "pressure", topology::FieldBase::SCALAR, 1 },
+  { "other", topology::FieldBase::OTHER, 2 },
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexField0[] = {
   1.1, 2.2, 3.3,
@@ -59,21 +57,11 @@ const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexField0[] = {
   10.2, 11.3, 12.4,
   1.3, 2.4, 3.5,
   4.6, 5.7, 6.8,
-  7.9, 8.0, 9.1,
-  10.2, 11.3, 12.4,
-  13.5, 14.6, 15.7,
-  16.8, 17.9, 18.1,
-  19.2, 20.3, 21.4,
-  22.5, 23.6, 24.7,
-  25.5, 26.6, 27.7,
-  28.8, 29.9, 30.0,
-  31.1, 32.2, 33.3,
-  34.4, 35.5, 36.6
+  7.9, 8.1, 9.2,
+  10.3, 11.4, 12.5,
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexField1[] = {
-  2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8,
-  10.0, 12.1, 11.1, 13.1, 14.1, 15.1, 16.1, 17.1,
-  18.1, 19.1, 20.1, 21.1
+  2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8, 10.9, 11.8, 12.7, 13.6
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexField2[] = {
   1.2, 2.3,
@@ -84,44 +72,37 @@ const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexField2[] = {
   3.5, 4.6,
   5.7, 6.8,
   7.9, 8.0,
-  1.3, 2.4,
-  3.5, 4.6,
-  5.7, 6.8,
-  8.0, 1.4,
-  2.5, 3.6,
-  4.8, 1.5,
-  2.6, 3.7,
-  4.8, 5.9,
-  1.1, 1.2,
-  2.1, 2.2,
-  3.1, 3.2,
-  4.1, 4.2,
+  8.1, 8.2,
+  9.2, 9.3,
+  10.4, 10.5,
+  11.5, 11.6,
 };
 
 const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_numCellFields = 3;
-const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_numCells = 1;
+const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_numCells = 2;
 
 const pylith::meshio::DataWriterVTKData::FieldStruct
 pylith::meshio::DataWriterVTKDataSubMeshHex8::_cellFields[] = {
-  { "traction", VECTOR_FIELD, 3 },
-  { "pressure", SCALAR_FIELD, 1 },
-  { "other", TENSOR_FIELD, 6 },
+  { "traction", topology::FieldBase::VECTOR, 3 },
+  { "pressure", topology::FieldBase::SCALAR, 1 },
+  { "other", topology::FieldBase::TENSOR, 6 },
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_cellField0[] = {
   1.1, 2.2, 3.3,
+  4.4, 5.5, 6.6
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_cellField1[] = {
-  2.1,
+  2.1, 3.2,
 };
 const double pylith::meshio::DataWriterVTKDataSubMeshHex8::_cellField2[] = {
   1.2, 2.3, 3.4, 4.5, 5.6, 6.7,
+  7.8, 8.9, 9.0, 10.1, 11.2, 12.3
 };
 
 pylith::meshio::DataWriterVTKDataSubMeshHex8::DataWriterVTKDataSubMeshHex8(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
-  cellsLabel = const_cast<char*>(_cellsLabel);
-  labelId = _labelId;
+  bcLabel = const_cast<char*>(_bcLabel);
   faultLabel = const_cast<char*>(_faultLabel);
   faultId = _faultId;
 

@@ -18,9 +18,10 @@
 ## Factory: material.
 
 from ElasticMaterial import ElasticMaterial
+from materials import ElasticStress1D as ModuleElasticStress1D
 
 # ElasticStress1D class
-class ElasticStress1D(ElasticMaterial):
+class ElasticStress1D(ElasticMaterial, ModuleElasticStress1D):
   """
   Python object implementing 1-D linear elastic material with axial stress.
 
@@ -45,14 +46,13 @@ class ElasticStress1D(ElasticMaterial):
     return
 
 
-  def _createCppHandle(self):
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _createModuleObj(self):
     """
-    Create handle to corresponding C++ object.
+    Call constructor for module object for access to C++ object.
     """
-    if None == self.cppHandle:
-      import pylith.materials.materials as bindings
-      self.cppHandle = bindings.ElasticStress1D()
-      self.dimension = self.cppHandle.dimension
+    ModuleElasticStress1D.__init__(self)
     return
   
 

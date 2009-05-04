@@ -36,11 +36,16 @@ public:
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
-  double dtStableImplicit; ///< Stable time step for implicit time stepping
-  double* density; ///< Density at locations
-  double* strain; ///< Strain at locations
-  double* stress; ///< Stress at locations
-  double* elasticConsts; ///< Elastic constants at locations
+  double dtStableImplicit; ///< Stable time step for implicit time stepping.
+  double* density; ///< Density at location.
+  double* strain; ///< Strain at location.
+  double* stress; ///< Stress at location.
+  double* elasticConsts; ///< Elastic constants at location.
+
+  double* initialStress; ///< Initial stress at location.
+  double* initialStrain; ///< Initial strain at location.
+
+  double* stateVarsUpdated; ///< Updated state variables at location.
 
 };
 

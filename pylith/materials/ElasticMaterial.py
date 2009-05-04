@@ -62,22 +62,6 @@ class ElasticMaterial(Material):
     return
 
 
-  def useElasticBehavior(self, flag):
-    """
-    Set useElasticBehavior flag (True=elastic, False=inelastic if applicable).
-    """
-    assert(None != self.cppHandle)
-    self.cppHandle.useElasticBehavior = flag
-    return
-
-
-  def getCellField(self, name):
-    """
-    Get cell field.
-    """
-    return self.cppHandle.cellField(name, self.mesh.cppHandle)
-
-
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):

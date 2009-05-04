@@ -22,32 +22,14 @@
 #if !defined(pylith_faults_eqkinsrc_hh)
 #define pylith_faults_eqkinsrc_hh
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+// Include directives ---------------------------------------------------
+#include "faultsfwd.hh" // forward declarations
 
-/// Namespace for pylith package
-namespace pylith {
-  namespace faults {
-    class EqKinSrc;
-    class TestEqKinSrc; // unit testing
+#include "pylith/topology/topologyfwd.hh" // USES Field<SubMesh>
 
-    class SlipTimeFn; // HOLDSA SlipTimeFn
-  } // faults
-} // pylith
+#include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
-/// Namespace for spatialdata package
-namespace spatialdata {
-  namespace spatialdb {
-    class SpatialDB;
-  } // spatialdb
-  namespace geocoords {
-    class CoordSys;
-  } // geocoord
-  namespace units {
-    class Nondimensional;
-  } // units
-} // spatialdata
-
-/// C++ oject for managing parameters for a kinematic earthquake source.
+// EqKinSrc -------------------------------------------------------------
 class pylith::faults::EqKinSrc
 { // class EqKinSrc
   friend class TestEqKinSrc; // unit testing
@@ -82,54 +64,46 @@ public :
   /** Initialize slip time function.
    *
    * @param faultMesh Finite-element mesh of fault.
-   * @param cs Coordinate system for mesh
    * @param normalizer Nondimensionalization of scales.
    */
-  void initialize(const ALE::Obj<Mesh>& faultMesh,
-		  const spatialdata::geocoords::CoordSys* cs,
+  void initialize(const topology::SubMesh& faultMesh,
 		  const spatialdata::units::Nondimensional& normalizer);
 
   /** Get slip on fault surface at time t.
    *
    * @param slipField Slip field over fault mesh.
    * @param t Time t.
-   * @param faultMesh Finite-element mesh of fault.
    */
-  void slip(const ALE::Obj<real_section_type>& slipField,
-	    const double t,
-	    const ALE::Obj<Mesh>& faultMesh);
+  void slip(topology::Field<topology::SubMesh>* const slipField,
+	    const double t);
 
   /** Get increment of slip on fault surface between time t0 and t1.
    *
-   * @param slipField Slip field over fault mesh.
-   * @param t Time t.
-   * @param faultMesh Finite-element mesh of fault.
+   * @param slipField Slip increment field over fault mesh.
+   * @param t0 Time for start of slip increment.
+   * @param t1 Time for end of slip increment.
    */
-  void slipIncr(const ALE::Obj<real_section_type>& slipField,
+  void slipIncr(topology::Field<topology::SubMesh>* const slipField,
 		const double t0,
-		const double t1,
-		const ALE::Obj<Mesh>& faultMesh);
+		const double t1);
 
   /** Get final slip.
    *
    * @returns Final slip.
    */
-  ALE::Obj<real_section_type> finalSlip(void);
+  const topology::Field<topology::SubMesh>& finalSlip(void) const;
 
   /** Get time when slip begins at each point.
    *
    * @returns Time when slip begins.
    */
-  ALE::Obj<real_section_type> slipTime(void);
+  const topology::Field<topology::SubMesh>& slipTime(void) const;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
-  /// Not implemented
-  EqKinSrc(const EqKinSrc& s);
-
-  /// Not implemented
-  const EqKinSrc& operator=(const EqKinSrc& s);
+  EqKinSrc(const EqKinSrc&); ///< Not implemented
+  const EqKinSrc& operator=(const EqKinSrc&); ///< Not implemented
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

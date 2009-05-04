@@ -2,12 +2,93 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-0. Add flag to flip which side of fault vertices are replaced when
-   creating cohesive cells [Matt]
+-1. Fix Tabrez's bug. [Matt]
 
-     Update unit tests.
+0. SWIG conversion [Brad]
 
-1. Reduce memory use (new labels) [Matt]
+  (3) Full-scale tests (few 1-D, 2-D, and 3-D)
+
+    Analytical solutions, time stepping, multiple faults
+
+  (4) SNES
+    Reformulate implicit time stepping to use displacement increment.
+    Solution fields should be disp(t) and dispIncr(t).
+    If solnIncr is true, Dirichlet BC set increment values in dispIncr(t).
+
+  (5) Add missing unit tests
+
+  (6) Tidy up
+
+    Add simple stableTimeStep() for elastic materials.
+
+    Check use of label_sequence.  label_sequence - iterators are
+    cached, so use sequence or cache begin/end to maintain access
+
+    Cleanup use of heightStratum() and depthStratum().
+
+    Cleanup logging. Constraints and Integrators should log at the C++
+    level using the C++ EventLogger. Add finer grain logging at C++
+    level as in ElasticityImplicit.
+
+    Update journaling.
+
+    Eliminate use of Inventory class.
+
+    add test_factory() methods to Python unit tests
+
+    Cleanup error checking on PETSc calls.
+      FaultCohesiveKin
+      DataWriterVTK
+
+    pytests
+      test_configure
+
+    Switch Components to PetscComponents.
+      Add _cleanup() to components to deallocate local data structures.
+      Add cleanup() to non-components to deallocate local data structures.
+
+    Create createModuleObj() methods to Python objects as standard way
+    of creating handle to C++ object (not necessary in abstract base
+    classes).
+
+    Add check before calling newSection() when want to enforce at
+    least 1 value.
+
+    Distribution debug (dump VTK) needs Nondimensional
+
+  libsrc/materials
+    Generalized Maxwell materials
+
+  libtests/materials
+    Cleanup testUpdateStateVars for Maxwell models
+
+  libtests/bc/TestDirichletBoundary::testVertexField()
+  libtests/bc/TestDirichletBoundary::testBoundaryMesh()
+
+  pytests/bc/TestDirichletBoundary
+  pytests/bc/TestNeumann (output)
+
+  libtests/feassemble/ElasticityExplict
+    testVerifyConfiguration()
+    testCellField()
+  libtests/feassemble/ElasticityImplict
+    testVerifyConfiguration()
+    testCellField()
+  libtests/materials/Material
+    propertyField()
+    stateVarField()
+
+  DirichletPoints (Python) - rate == None -> dbRate == 0
+  DirichletBoundary (Python) - rate == None -> dbRate == 0
+
+  pytests.meshio.TestOutputSoln
+  pytests.meshio.TestOutputDirichlet
+  pytests.meshio.TestOutputFaultKin
+  pytests.meshio.TestOutputMatElastic
+  pytests.meshio.TestOutputNeumann
+
+1. Memory model [Matt]
+   playpen/memcheck/*
 
 2. Nondimensionalize [Brad]
     Not working
@@ -20,41 +101,64 @@ CURRENT ISSUES/PRIORITIES
       FieldOps::copyValues (obsolete?)
       MeshIO::normalizer()
       Material::normalizer()
-      Material::_nodimProperties()
-      Material::_dimProperties()
       Constraint::normalizer()
       Integrator::normalizer()
       DataWriter::normalizer()
 
-3. Mesh, Field, and FieldUniform objects [Brad]
-    Change name of FieldsManager to SolutionFields
-      (more accurate description).
+3. 3-D Power-law rheology [Charles]
 
-4. Clean-up interface for materials [Brad]
+4. 2-D Plane strain Maxwell viscoelastic rheology [Charles]
 
-5. Power-law nonlinear rheology [Charles]
+5. 2-D Plane strain Generalized Maxwell viscoelastic rheology [Charles]
 
-6. Savage-Presscott benchmark [Charles]
+6. 2-D Power-law rheology [Charles]
    2D viscoelastic models for plane strain
 
-7. Interface with PETSc nonlinear solvers [Brad and Matt]
+7. Initial stress, strain, state variables for inelastic models [Charles]
 
-8. Modularize output? [Matt]
+8. Savage-Presscott benchmark [Charles]
    HDF5 output
 
--- Release (v1.4) --
-
-9. Fault friction
-
-Other
-
-  1. Reverse-slip benchmark.
+9. Analytic BC for reverse-slip benchmark [Charles or Brad]
     a. Create BC for CUBIT mesh.
     b. Create BC for LaGriT mesh.
     c. Run benchmarks.
     d. Generate analytic solutions.
     e. Tabulate results.
 
+10. PETSc SNES nonlinear solvers [Matt]
+
+11. Add ability to use symmetric matrix, set block size (default is 1)
+
+12. Update manual for version 1.4 [Brad and Charles]
+
+  * Reduce memory use with ordering elements by material
+
+  * Nondimensionalization
+
+  * Material
+    * initial stress, strain, and state variables
+    * Cleanup notation and discussion of inelastic materials
+
+  * Incompatibilities
+    importer -> reader
+    material
+     db -> properties_db
+    no need to set Quadrature type
+    CellFilterAvg Mesh/SubMesh
+
+-- Release (v1.4) --
+
+Modularize output? [Matt]
+  "field_dimensioned" is prefered to "field"
+
+Fault friction
+
+Uniform refinement (debug, check, all cell types)
+
+Cuthill-McKee ordering of vertices
+
+Cleanup SlipTimeFn tests (refactor test/initialize stuff)
 
 ======================================================================
 KNOWN DEFICIENCIES
@@ -173,8 +277,6 @@ Release 1.7
 ----------------------------------------------------------------------
 LONG TERM WISH LIST
 ----------------------------------------------------------------------
-
-  1. Replace Pyrex/pyrexembed with SWIG
 
   4. HDF5 output
 

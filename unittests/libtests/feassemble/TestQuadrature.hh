@@ -26,9 +26,7 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace feassemble {
-    class Quadrature;
     class TestQuadrature;
-    class QuadratureData;
   } // feassemble
 } // pylith
 
@@ -39,42 +37,27 @@ class pylith::feassemble::TestQuadrature : public CppUnit::TestFixture
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestQuadrature );
 
-  CPPUNIT_TEST( testClone );
-  CPPUNIT_TEST( testMinJacobian );
+  CPPUNIT_TEST( testCopyConstructor );
   CPPUNIT_TEST( testCheckConditioning );
-  CPPUNIT_TEST( testRefGeometry );
-  CPPUNIT_TEST( testInitialize );
+  CPPUNIT_TEST( testEngineAccessors );
+  CPPUNIT_TEST( testComputeGeometry );
 
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
-  /// Test clone()
-  void testClone(void);
+  /// Test copy constructor.
+  void testCopyConstructor(void);
 
-  /// Test minJacobian()
-  void testMinJacobian(void);
-
-  void testCheckConditioning(void);
   /// Test checkConditioning()
+  void testCheckConditioning(void);
 
-  /// Test refGeometry()
-  void testRefGeometry(void);
+  /// Test quadPts(), basisDeriv(), jacobian(), and jacobianDet().
+  void testEngineAccessors(void);
 
-  /// Test initialize()
-  void testInitialize(void);
-
-  // PROTECTED METHODS //////////////////////////////////////////////////
-protected :
-
-  /** Test initialize() & computeGeometry()
-   *
-   * @param pQuad Pointer to quadrature
-   * @param data Data for testing quadrature
-   */
-  void _testComputeGeometry(Quadrature* pQuad,
-			    const QuadratureData& data) const;
+  /// Test computeGeometry(), retrieveGeometry(), and clear().
+  void testComputeGeometry(void);
 
 }; // class TestQuadrature
 

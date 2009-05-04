@@ -49,6 +49,7 @@ void
 pylith::topology::TestFieldUniform::testConstructor(void)
 { // testConstructor
   Mesh mesh;
+  mesh.createSieveMesh();
   const int fiberDim = 4;
   FieldUniform field(mesh.sieveMesh(), fiberDim);
 
@@ -63,7 +64,7 @@ pylith::topology::TestFieldUniform::testCreateSectionPoints(void)
 { // testCreateSectionPoints
   const int fiberDim = 3;
     
-  Mesh mesh(PETSC_COMM_WORLD, _TestFieldUniform::cellDim);
+  Mesh mesh;
   _buildMesh(&mesh);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
@@ -86,7 +87,7 @@ pylith::topology::TestFieldUniform::testCreateSectionChart(void)
 { // testCreateSectionChart
   const int fiberDim = 2;
     
-  Mesh mesh(PETSC_COMM_WORLD, _TestFieldUniform::cellDim);
+  Mesh mesh;
   _buildMesh(&mesh);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
@@ -120,6 +121,7 @@ pylith::topology::TestFieldUniform::_buildMesh(Mesh* mesh)
 { // _buildMesh
   assert(0 != mesh);
 
+  mesh->createSieveMesh(_TestFieldUniform::cellDim);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
 
   ALE::Obj<SieveMesh::sieve_type> sieve = 

@@ -15,8 +15,8 @@ include $(top_srcdir)/subpackage.am
 
 SUBDIRS = data
 
-TESTS = testdriver.py
-dist_check_SCRIPTS = testdriver.py
+TESTS = testtopology.py
+dist_check_SCRIPTS = testtopology.py
 
 TESTS_ENVIRONMENT = $(PYTHON)
 
@@ -28,10 +28,18 @@ TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
 	TestMesh.py \
+	TestSubMesh.py \
 	TestFieldsManager.py \
 	TestMeshGenerator.py \
 	TestMeshGenSimple.py \
 	TestMeshImporter.py
+
+
+noinst_tmp = \
+	jacobian.mat \
+	jacobian.mat.info
+
+CLEANFILES = $(noinst_tmp)
 
 
 # End of file 

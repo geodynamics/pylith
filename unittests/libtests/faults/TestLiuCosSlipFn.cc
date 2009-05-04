@@ -17,8 +17,11 @@
 #include "pylith/faults/LiuCosSlipFn.hh" // USES LiuCosSlipFn
 
 #include "pylith/faults/CohesiveTopology.hh" // USES CohesiveTopology
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
@@ -27,6 +30,11 @@
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestLiuCosSlipFn );
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::SieveSubMesh SieveSubMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
 namespace pylith {
@@ -218,29 +226,32 @@ pylith::faults::TestLiuCosSlipFn::testSlip(void)
   const double riseTimeE[] = { 1.4, 1.5 };
   const double originTime = 5.064;
 
-  ALE::Obj<Mesh> faultMesh;
+  topology::Mesh mesh;
+  topology::SubMesh faultMesh;
   LiuCosSlipFn slipfn;
-  _initialize(&faultMesh, &slipfn, originTime);
+  _initialize(&mesh, &faultMesh, &slipfn, originTime);
   
-  const int spaceDim = faultMesh->getDimension() + 1;
+  const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();
+  CPPUNIT_ASSERT(0 != cs);
 
-  const ALE::Obj<Mesh::label_sequence>& vertices = faultMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
-  ALE::Obj<real_section_type> slip = 
-    new real_section_type(faultMesh->comm(), faultMesh->debug());
-  slip->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), 
-								 vertices->end()), 
-					       *std::max_element(vertices->begin(), vertices->end())+1));
-  slip->setFiberDimension(vertices, spaceDim);
-  faultMesh->allocate(slip);
-  CPPUNIT_ASSERT(!slip.isNull());
+  const int spaceDim = cs->spaceDim();
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
+  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
+    faultSieveMesh->depthStratum(0);
+  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+  topology::Field<topology::SubMesh> slip(faultMesh);
+  slip.newSection(vertices, spaceDim);
+  slip.allocate();
 
   const double t = 2.134;
-  slipfn.slip(slip, originTime+t, faultMesh);
+  slipfn.slip(&slip, originTime+t);
 
   const double tolerance = 1.0e-06;
   int iPoint = 0;
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  const ALE::Obj<RealSection>& slipSection = slip.section();
+  CPPUNIT_ASSERT(!slipSection.isNull());
+  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++iPoint) {
     double slipMag = 0.0;
@@ -248,13 +259,13 @@ pylith::faults::TestLiuCosSlipFn::testSlip(void)
       slipMag += pow(finalSlipE[iPoint*spaceDim+iDim], 2);
     slipMag = sqrt(slipMag);
 
-    const double slipNorm = 
-      _slipFn(t - slipTimeE[iPoint], slipMag, riseTimeE[iPoint]) / slipMag;
+    const double slipNorm = (slipMag > 0.0) ?
+      _slipFn(t - slipTimeE[iPoint], slipMag, riseTimeE[iPoint]) / slipMag :
+      0.0;
 
-    const int fiberDim = slip->getFiberDimension(*v_iter);
+    const int fiberDim = slipSection->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const real_section_type::value_type* vals = 
-      slip->restrictPoint(*v_iter);
+    const double* vals = slipSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != vals);
     
     for (int iDim=0; iDim < fiberDim; ++iDim) {
@@ -275,30 +286,33 @@ pylith::faults::TestLiuCosSlipFn::testSlipIncr(void)
   const double riseTimeE[] = { 1.4, 1.5 };
   const double originTime = 1.064;
 
-  ALE::Obj<Mesh> faultMesh;
+  topology::Mesh mesh;
+  topology::SubMesh faultMesh;
   LiuCosSlipFn slipfn;
-  _initialize(&faultMesh, &slipfn, originTime);
+  _initialize(&mesh, &faultMesh, &slipfn, originTime);
 
-  const int spaceDim = faultMesh->getDimension() + 1;
+  const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();
+  CPPUNIT_ASSERT(0 != cs);
 
-  const ALE::Obj<Mesh::label_sequence>& vertices = faultMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
-  ALE::Obj<real_section_type> slip =
-    new real_section_type(faultMesh->comm(), faultMesh->debug());
-  slip->setChart(real_section_type::chart_type(*std::min_element(vertices->begin(), 
-								 vertices->end()), 
-					       *std::max_element(vertices->begin(), vertices->end())+1));
-  slip->setFiberDimension(vertices, spaceDim);
-  faultMesh->allocate(slip);
-  CPPUNIT_ASSERT(!slip.isNull());
+  const int spaceDim = cs->spaceDim();
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
+  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
+    faultSieveMesh->depthStratum(0);
+  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+  topology::Field<topology::SubMesh> slip(faultMesh);
+  slip.newSection(vertices, spaceDim);
+  slip.allocate();
 
   const double t0 = 1.234;
   const double t1 = 3.635;
-  slipfn.slipIncr(slip, originTime+t0, originTime+t1, faultMesh);
+  slipfn.slipIncr(&slip, originTime+t0, originTime+t1);
 
   const double tolerance = 1.0e-06;
   int iPoint = 0;
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  const ALE::Obj<RealSection>& slipSection = slip.section();
+  CPPUNIT_ASSERT(!slipSection.isNull());
+  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++iPoint) {
     double slipMag = 0.0;
@@ -306,15 +320,16 @@ pylith::faults::TestLiuCosSlipFn::testSlipIncr(void)
       slipMag += pow(finalSlipE[iPoint*spaceDim+iDim], 2);
     slipMag = sqrt(slipMag);
 
-    const double slipNorm0 = 
-      _slipFn(t0 - slipTimeE[iPoint], slipMag, riseTimeE[iPoint]) / slipMag;
-    const double slipNorm1 = 
-      _slipFn(t1 - slipTimeE[iPoint], slipMag, riseTimeE[iPoint]) / slipMag;
+    const double slipNorm0 = (slipMag > 0.0) ?
+      _slipFn(t0 - slipTimeE[iPoint], slipMag, riseTimeE[iPoint]) / slipMag :
+      0.0;
+    const double slipNorm1 = (slipMag > 0.0) ?
+      _slipFn(t1 - slipTimeE[iPoint], slipMag, riseTimeE[iPoint]) / slipMag :
+      0.0;
 
-    const int fiberDim = slip->getFiberDimension(*v_iter);
+    const int fiberDim = slipSection->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const real_section_type::value_type* vals = 
-      slip->restrictPoint(*v_iter);
+    const double* vals = slipSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != vals);
 
     for (int iDim=0; iDim < fiberDim; ++iDim) {
@@ -351,9 +366,10 @@ pylith::faults::TestLiuCosSlipFn::testSlipTH(void)
 // ----------------------------------------------------------------------
 // Initialize LiuCosSlipFn.
 void
-pylith::faults::TestLiuCosSlipFn::_initialize(ALE::Obj<Mesh>* faultMesh,
-					     LiuCosSlipFn* slipfn,
-					     const double originTime)
+pylith::faults::TestLiuCosSlipFn::_initialize(topology::Mesh* mesh,
+					      topology::SubMesh* faultMesh,
+					      LiuCosSlipFn* slipfn,
+					      const double originTime)
 { // _initialize
   assert(0 != slipfn);
 
@@ -364,33 +380,35 @@ pylith::faults::TestLiuCosSlipFn::_initialize(ALE::Obj<Mesh>* faultMesh,
   const char* slipTimeFilename = "data/tri3_sliptime.spatialdb";
   const char* riseTimeFilename = "data/tri3_risetime.spatialdb";
 
-  ALE::Obj<Mesh> mesh;
   meshio::MeshIOAscii meshIO;
   meshIO.filename(meshFilename);
   meshIO.debug(false);
   meshIO.interpolate(false);
-  meshIO.read(&mesh);
-  CPPUNIT_ASSERT(!mesh.isNull());
-  const int spaceDim = mesh->getDimension();
+  meshIO.read(mesh);
+
+  // Set up coordinates
   spatialdata::geocoords::CSCart cs;
-  cs.setSpaceDim(spaceDim);
+  cs.setSpaceDim(mesh->dimension());
+  cs.initialize();
+  mesh->coordsys(&cs);
 
   // Create fault mesh
   const bool useLagrangeConstraints = true;
-  (*faultMesh)                = new Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
-  ALE::Obj<ALE::Mesh> faultBd = NULL;
-  CohesiveTopology::createFault(*faultMesh, faultBd,
-                                mesh,
-                                mesh->getIntSection(faultLabel));
-  CohesiveTopology::create(*faultMesh, faultBd, mesh,
-                           mesh->getIntSection(faultLabel),
+  ALE::Obj<ALE::Mesh> faultBoundary = 0;
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  CohesiveTopology::createFault(faultMesh, faultBoundary,
+                                *mesh, sieveMesh->getIntSection(faultLabel));
+  CohesiveTopology::create(mesh, *faultMesh, faultBoundary, 
+                           sieveMesh->getIntSection(faultLabel),
                            faultId,
                            useLagrangeConstraints);
-  CPPUNIT_ASSERT(!faultMesh->isNull());
   // Need to copy coordinates from mesh to fault mesh since we are not
   // using create() instead of createParallel().
-  (*faultMesh)->setRealSection("coordinates", 
-			       mesh->getRealSection("coordinates"));
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh->sieveMesh();
+  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
+  faultSieveMesh->setRealSection("coordinates", 
+				 sieveMesh->getRealSection("coordinates"));
 
   // Setup databases
   spatialdata::spatialdb::SimpleDB dbFinalSlip("final slip");
@@ -415,7 +433,7 @@ pylith::faults::TestLiuCosSlipFn::_initialize(ALE::Obj<Mesh>* faultMesh,
   slipfn->dbSlipTime(&dbSlipTime);
   slipfn->dbRiseTime(&dbRiseTime);
   
-  slipfn->initialize(*faultMesh, &cs, normalizer, originTime);
+  slipfn->initialize(*faultMesh, normalizer, originTime);
 } // _initialize
 
 // ----------------------------------------------------------------------
@@ -426,33 +444,38 @@ pylith::faults::TestLiuCosSlipFn::_testInitialize(const _TestLiuCosSlipFn::DataS
   typedef std::set<Mesh::point_type>::const_iterator vert_iterator;  
 
   // Setup mesh
-  ALE::Obj<Mesh> mesh;
+  topology::Mesh mesh;
   meshio::MeshIOAscii meshIO;
   meshIO.filename(data.meshFilename);
   meshIO.debug(false);
   meshIO.interpolate(false);
   meshIO.read(&mesh);
-  CPPUNIT_ASSERT(!mesh.isNull());
-  const int spaceDim = mesh->getDimension();
+
+  // Set up coordinates
   spatialdata::geocoords::CSCart cs;
+  const int spaceDim = mesh.dimension();
   cs.setSpaceDim(spaceDim);
+  cs.initialize();
+  mesh.coordsys(&cs);
 
   // Create fault mesh
-  ALE::Obj<Mesh>      faultMesh = new Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
-  ALE::Obj<ALE::Mesh> faultBd   = NULL;
+  topology::SubMesh faultMesh;
   const bool useLagrangeConstraints = true;
-  CohesiveTopology::createFault(faultMesh, faultBd,
-                                mesh,
-                                mesh->getIntSection(data.faultLabel));
-  CohesiveTopology::create(faultMesh, faultBd, mesh,
-                           mesh->getIntSection(data.faultLabel),
+  ALE::Obj<ALE::Mesh> faultBoundary = 0;
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  CohesiveTopology::createFault(&faultMesh, faultBoundary,
+                                mesh, sieveMesh->getIntSection(data.faultLabel));
+  CohesiveTopology::create(&mesh, faultMesh, faultBoundary, 
+                           sieveMesh->getIntSection(data.faultLabel),
                            data.faultId,
                            useLagrangeConstraints);
-  CPPUNIT_ASSERT(!faultMesh.isNull());
   // Need to copy coordinates from mesh to fault mesh since we are not
   // using create() instead of createParallel().
-  faultMesh->setRealSection("coordinates", 
-			    mesh->getRealSection("coordinates"));
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
+  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
+  faultSieveMesh->setRealSection("coordinates", 
+				 sieveMesh->getRealSection("coordinates"));
 
   // Setup databases
   spatialdata::spatialdb::SimpleDB dbFinalSlip("final slip");
@@ -477,39 +500,49 @@ pylith::faults::TestLiuCosSlipFn::_testInitialize(const _TestLiuCosSlipFn::DataS
   slipfn.dbRiseTime(&dbRiseTime);
   
   spatialdata::units::Nondimensional normalizer;
-
   const double originTime = 5.353;
   
-  slipfn.initialize(faultMesh, &cs, normalizer, originTime);
+  slipfn.initialize(faultMesh, normalizer, originTime);
+
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
+    faultSieveMesh->depthStratum(0);
+  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+
+  CPPUNIT_ASSERT(0 != slipfn._parameters);
+  const ALE::Obj<RealSection>& finalSlipSection =
+    slipfn._parameters->get("final slip").section();
+  CPPUNIT_ASSERT(!finalSlipSection.isNull());
+  const ALE::Obj<RealSection>& slipTimeSection =
+    slipfn._parameters->get("slip time").section();
+  CPPUNIT_ASSERT(!slipTimeSection.isNull());
+  const ALE::Obj<RealSection>& riseTimeSection =
+    slipfn._parameters->get("rise time").section();
+  CPPUNIT_ASSERT(!riseTimeSection.isNull());
 
   const double tolerance = 1.0e-06;
-
-  const ALE::Obj<Mesh::label_sequence>& vertices = 
-    faultMesh->depthStratum(0);
-  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
-
   int iPoint = 0;
-  for (Mesh::label_sequence::iterator v_iter=vertices->begin();
+  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++iPoint) {
-    const int fiberDim = slipfn._parameters->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(spaceDim+2, fiberDim);
-    
-    const real_section_type::value_type* vals = 
-      slipfn._parameters->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != vals);
-
+    CPPUNIT_ASSERT_EQUAL(spaceDim, finalSlipSection->getFiberDimension(*v_iter));
+    const double* finalSlipVertex = finalSlipSection->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(0 != finalSlipVertex);
     for (int iDim=0; iDim < spaceDim; ++iDim)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(data.finalSlipE[iPoint*spaceDim+iDim],
-				   vals[iDim],
+				   finalSlipVertex[iDim],
 				   tolerance);
 
-    const double riseTime = vals[spaceDim  ];
-    const double slipTime = vals[spaceDim+1];
-
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(data.riseTimeE[iPoint], riseTime, tolerance);
+    CPPUNIT_ASSERT_EQUAL(1, slipTimeSection->getFiberDimension(*v_iter));
+    const double* slipTimeVertex = slipTimeSection->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(0 != slipTimeVertex);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(data.slipTimeE[iPoint]+originTime,
-				 slipTime, tolerance);
+				 slipTimeVertex[0], tolerance);
+
+    CPPUNIT_ASSERT_EQUAL(1, riseTimeSection->getFiberDimension(*v_iter));
+    const double* riseTimeVertex = riseTimeSection->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(0 != riseTimeVertex);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(data.riseTimeE[iPoint],
+				 riseTimeVertex[0], tolerance);
   } // for
 } // _testInitialize
 

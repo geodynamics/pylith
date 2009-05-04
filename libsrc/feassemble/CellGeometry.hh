@@ -19,16 +19,12 @@
 #if !defined(pylith_feassemble_cellgeometry_hh)
 #define pylith_feassemble_cellgeometry_hh
 
+// Include directives ---------------------------------------------------
+#include "feassemblefwd.hh" // forwward declarations
+
 #include "pylith/utils/array.hh" // HASA double_array
 
-namespace pylith {
-  namespace feassemble {
-    class CellGeometry;
-
-    class TestCellGeometry; // unit testing
-  } // feassemble
-} // pylith
-
+// CellGeometry ---------------------------------------------------------
 class pylith::feassemble::CellGeometry
 { // CellGeometry
   friend class TestCellGeometry; // unit testing

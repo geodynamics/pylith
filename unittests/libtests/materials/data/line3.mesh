@@ -1,0 +1,28 @@
+// Original mesh
+//
+// 0 ----- 1 ----- 2
+//
+//
+mesh = {
+  dimension = 1
+  use-index-zero = true
+  vertices = {
+    dimension = 1
+    count = 3
+    coordinates = {
+             0     -1.0
+             1      0.0
+             2      1.0
+    }
+  }
+  cells = {
+    count = 1
+    num-corners = 3
+    simplices = {
+             0    0  2  1
+    }
+    material-ids = {
+             0   24
+    }
+  }
+}

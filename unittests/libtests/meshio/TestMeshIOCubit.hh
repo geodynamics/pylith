@@ -21,9 +21,10 @@
 #if !defined(pylith_meshio_testmeshiocubit_hh)
 #define pylith_meshio_testmeshiocubit_hh
 
+// Include directives ---------------------------------------------------
 #include "TestMeshIO.hh"
 
-/// Namespace for pylith package
+// Forward declarations -------------------------------------------------
 namespace pylith {
   namespace meshio {
     class TestMeshIOCubit;
@@ -31,7 +32,7 @@ namespace pylith {
   } // meshio
 } // pylith
 
-/// C++ unit testing for Quadrature1D
+// TestMeshIOCubit ------------------------------------------------------
 class pylith::meshio::TestMeshIOCubit : public TestMeshIO
 { // class TestMeshIOCubit
 

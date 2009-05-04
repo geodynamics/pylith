@@ -17,11 +17,12 @@ subpkginclude_HEADERS = \
 	AbsorbingDampers.hh \
 	BoundaryCondition.hh \
 	BoundaryCondition.icc \
+	DirichletBC.hh \
+	DirichletBC.icc \
 	DirichletBoundary.hh \
 	DirichletBoundary.icc \
-	DirichletPoints.hh \
-	DirichletPoints.icc \
-	Neumann.hh
+	Neumann.hh \
+	bcfwd.hh
 
 noinst_HEADERS =
 

@@ -19,24 +19,10 @@
 #if !defined(pylith_topology_distributor_hh)
 #define pylith_topology_distributor_hh
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+// Include directives ---------------------------------------------------
+#include "topologyfwd.hh" // forward declarations
 
-namespace pylith {
-  namespace topology {
-    class Distributor;
-    class TestDistributor;
-  } // topology
-
-  namespace meshio {
-    class DataWriter;
-  } // meshio
-} // pylith
-
-namespace spatialdata {
-  namespace geocoords {
-    class CoordSys;
-  } // geocoords
-} // spatialdata
+#include "pylith/meshio/meshiofwd.hh" // USES DataWriter<Mesh>
 
 class pylith::topology::Distributor
 { // Distributor
@@ -54,12 +40,12 @@ public :
   /** Distribute mesh among processors.
    *
    * @param newMesh Distributed mesh (result).
-   * @param mesh Mesh to distribute.
+   * @param origMesh Mesh to distribute.
    * @param partitioner Name of partitioner to use in distributing mesh.
    */
   static
-  void distribute(ALE::Obj<Mesh>* const newMesh,
-		  const ALE::Obj<Mesh>& mesh,
+  void distribute(topology::Mesh* const newMesh,
+		  const topology::Mesh& origMesh,
 		  const char* partitioner);
 
   /** Write partitioning info for distributed mesh.
@@ -69,24 +55,28 @@ public :
    * @param cs Coordinate system for mesh.
    */
   static
-  void write(meshio::DataWriter* const writer,
-	     const ALE::Obj<Mesh>& mesh,
-	     const spatialdata::geocoords::CoordSys* cs);
+  void write(meshio::DataWriter<topology::Mesh, topology::Field<topology::Mesh> >* const writer,
+	     const topology::Mesh& mesh);
+
+// PRIVATE //////////////////////////////////////////////////////////////
+private :
+
+  /** Distribute mesh among processors.
+   *
+   * @param newMesh Distributed mesh (result).
+   * @param origMesh Mesh to distribute.
+   */
+  template<typename DistributionType>
+  static
+  void
+  _distribute(topology::Mesh* const newMesh,
+	      const topology::Mesh& origMesh);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
-  /// Not implemented
-  Distributor(const Distributor&);
-
-  /// Not implemented
-  const Distributor& operator=(const Distributor&);
-
-  template<typename DistributionType>
-  static
-  void
-  distribute_private(ALE::Obj<Mesh>* const newMesh,
-                     const ALE::Obj<Mesh>& origMesh);
+  Distributor(const Distributor&); ///< Not implemented
+  const Distributor& operator=(const Distributor&); ///< Not implemented
 
 }; // Distributor
 

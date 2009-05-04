@@ -1,0 +1,143 @@
+#!/usr/bin/env python
+#
+# ======================================================================
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# {LicenseText}
+#
+# ======================================================================
+#
+
+## @file unittests/pytests/topology/TestSubMesh.py
+
+## @brief Unit testing of Mesh object.
+
+import unittest
+
+from pylith.topology.SubMesh import SubMesh
+
+# ----------------------------------------------------------------------
+class TestSubMesh(unittest.TestCase):
+  """
+  Unit testing of SubMesh object.
+  """
+
+  def test_constructorA(self):
+    """
+    Test constructor.
+    """
+    mesh = SubMesh()
+    self.assertEqual(0, mesh.dimension())
+    self.assertEqual(False, mesh.debug())
+    return
+
+
+  def test_constructorB(self):
+    """
+    Test constructor.
+    """
+    mesh = self._getMesh()
+    submesh = SubMesh(mesh, "bc")
+    self.assertEqual(1, submesh.dimension())
+    self.assertEqual(False, mesh.debug())
+    return
+
+
+  def test_createSubMesh(self):
+    """
+    Test createSeiveMesh().
+    """
+    mesh = self._getMesh()
+    submesh = SubMesh()
+    submesh.createSubMesh(mesh, "bc")
+    self.assertEqual(1, submesh.dimension())
+    return
+
+
+  def test_coordsys(self):
+    """
+    Test coordsys().
+    """
+    mesh = self._getMesh()
+    submesh = SubMesh(mesh, "bc")
+    self.assertEqual(2, submesh.coordsys().spaceDim())
+    return
+
+
+  def test_debug(self):
+    """
+    Test debug().
+    """
+    mesh = self._getMesh()
+    submesh = SubMesh(mesh, "bc")
+
+    self.assertEqual(False, submesh.debug())
+
+    submesh.debug(True)
+    self.assertEqual(True, submesh.debug())
+    return
+
+
+  def test_dimension(self):
+    """
+    Test debug().
+    """
+    mesh = self._getMesh()
+    submesh = SubMesh(mesh, "bc")
+
+    self.assertEqual(1, submesh.dimension())
+    return
+
+
+  def test_comm(self):
+    """
+    Test comm().
+    """
+    mesh = self._getMesh()
+    submesh = SubMesh(mesh, "bc")
+
+    comm = submesh.comm()
+    self.assertEqual(0, comm.rank)
+    self.assertEqual(1, comm.size)
+    return
+
+
+  def test_initialize(self):
+    """
+    Test initialize().
+    """
+    mesh = self._getMesh()
+    submesh = SubMesh(mesh, "bc")
+
+    submesh.initialize()
+    return
+
+
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _getMesh(self):
+    """
+    Get mesh from file.
+    """
+    from spatialdata.geocoords.CSCart import CSCart
+    cs = CSCart()
+    cs.inventory.spaceDim = 2
+    cs._configure()
+
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer._configure()    
+
+    from pylith.meshio.MeshIOAscii import MeshIOAscii
+    importer = MeshIOAscii()
+    importer.inventory.filename = "data/tri3.mesh"
+    importer.inventory.coordsys = cs
+    importer._configure()
+    mesh = importer.read(normalizer, debug=False, interpolate=False)
+    
+    return mesh
+  
+
+# End of file 

@@ -38,6 +38,8 @@ class TimeStep(Component):
     from pyre.units.time import second
     self.totalTime = 0.0*second
     self.dt = 0.0*second
+    self.totalTimeN = 0.0 # Nondimensionalized total time
+    self.dtN = 0.0 # Nondimenionalized time step
     return
 
 
@@ -73,8 +75,8 @@ class TimeStep(Component):
 
     # Nondimensionalize time scales
     timeScale = normalizer.timeScale()
-    self.totalTime = normalizer.nondimensionalize(self.totalTime, timeScale)
-    self.dt = normalizer.nondimensionalize(self.dt, timeScale)
+    self.totalTimeN = normalizer.nondimensionalize(self.totalTime, timeScale)
+    self.dtN = normalizer.nondimensionalize(self.dt, timeScale)
 
     self._logger.eventEnd(logEvent)
     return
@@ -88,19 +90,19 @@ class TimeStep(Component):
     return 0
 
 
-  def timeStep(self, integrators):
+  def timeStep(self, mesh, integrators):
     """
     Get stable time step for advancing forward in time.
     """
     # Default is to use the current time step.
-    return self.dt
+    return self.dtN
   
 
   def currentStep(self):
     """
     Get current time step size.
     """
-    return self.dt
+    return self.dtN
   
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -122,7 +124,7 @@ class TimeStep(Component):
 
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("PDE TimeStep")
+    logger.className("PDE TimeStep")
     logger.initialize()
 
     events = ["preinit",

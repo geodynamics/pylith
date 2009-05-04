@@ -14,12 +14,13 @@
 
 #include "OutputSolnSubset.hh" // implementation of class methods
 
-#include <Selection.hh> // USES submesh algorithms
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputSolnSubset::OutputSolnSubset(void) :
-  _label("")
+  _label(""),
+  _submesh(0)
 { // constructor
 } // constructor
 
@@ -27,6 +28,7 @@ pylith::meshio::OutputSolnSubset::OutputSolnSubset(void) :
 // Destructor
 pylith::meshio::OutputSolnSubset::~OutputSolnSubset(void)
 { // destructor
+  delete _submesh; _submesh = 0;
 } // destructor  
 
 // ----------------------------------------------------------------------
@@ -40,11 +42,12 @@ pylith::meshio::OutputSolnSubset::label(const char* value)
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::meshio::OutputSolnSubset::verifyConfiguration(const ALE::Obj<Mesh>& mesh) const
+pylith::meshio::OutputSolnSubset::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
-  assert(!mesh.isNull());
+  const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
 
-  if (!mesh->hasIntSection(_label)) {
+  if (!sieveMesh->hasIntSection(_label)) {
     std::ostringstream msg;
     msg << "Mesh missing group of vertices '" << _label
 	<< " for subdomain output.";
@@ -54,36 +57,12 @@ pylith::meshio::OutputSolnSubset::verifyConfiguration(const ALE::Obj<Mesh>& mesh
 
 // ----------------------------------------------------------------------
 // Get mesh associated with subdomain.
-const ALE::Obj<pylith::Mesh>&
-pylith::meshio::OutputSolnSubset::subdomainMesh(const ALE::Obj<Mesh>& mesh)
+const pylith::topology::SubMesh&
+pylith::meshio::OutputSolnSubset::subdomainMesh(const topology::Mesh& mesh)
 { // subdomainMesh
-  _mesh =
-    ALE::Selection<Mesh>::submeshV<SubMesh>(mesh, mesh->getIntSection(_label));
-  if (_mesh.isNull()) {
-    std::ostringstream msg;
-    msg << "Could not construct mesh of subdomain " << _label << "'.";
-    throw std::runtime_error(msg.str());
-  } // if
-  _mesh->setRealSection("coordinates", 
-			mesh->getRealSection("coordinates"));
-  // Create the parallel overlap
-  const Obj<Mesh::sieve_type>& sieve                   = _mesh->getSieve();
-  Obj<Mesh::send_overlap_type> sendParallelMeshOverlap = _mesh->getSendOverlap();
-  Obj<Mesh::recv_overlap_type> recvParallelMeshOverlap = _mesh->getRecvOverlap();
-  Mesh::renumbering_type&      renumbering             = _mesh->getRenumbering();
-  Mesh::renumbering_type&      oldRenumbering          = mesh->getRenumbering();
-  for(Mesh::renumbering_type::const_iterator r_iter = oldRenumbering.begin(); r_iter != oldRenumbering.end(); ++r_iter) {
-    if (sieve->getChart().hasPoint(r_iter->second) && (sieve->getConeSize(r_iter->second) || sieve->getSupportSize(r_iter->second))) {
-      renumbering[r_iter->first] = r_iter->second;
-    }
-  }
-  //   Can I figure this out in a nicer way?
-  ALE::SetFromMap<std::map<Mesh::point_type,Mesh::point_type> > globalPoints(renumbering);
-
-  ALE::OverlapBuilder<>::constructOverlap(globalPoints, renumbering, sendParallelMeshOverlap, recvParallelMeshOverlap);
-  _mesh->setCalculatedOverlap(true);
-
-  return _mesh;
+  delete _submesh; _submesh = new topology::SubMesh(mesh, _label.c_str());
+  assert(0 != _submesh);
+  return *_submesh;
 } // subdomainMesh
 
 

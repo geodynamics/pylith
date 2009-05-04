@@ -29,8 +29,15 @@ class TestConstRateSlipFn(unittest.TestCase):
     Test constructor.
     """
     slipFn = ConstRateSlipFn()
-    slipFn._createCppHandle()
-    self.failIfEqual(None, slipFn.cppHandle)
+    return
+
+
+  def test_configure(self):
+    """
+    Test _configure().
+    """
+    slipFn = ConstRateSlipFn()
+    slipFn._configure()
     return
 
 
@@ -42,21 +49,27 @@ class TestConstRateSlipFn(unittest.TestCase):
     from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
 
     ioSlipRate = SimpleIOAscii()
-    ioSlipRate.filename = "sliprate.spatialdb"
+    ioSlipRate.inventory.filename = "sliprate.spatialdb"
+    ioSlipRate._configure()
     dbSlipRate = SimpleDB()
-    dbSlipRate.iohandler = ioSlipRate
-    dbSlipRate.label = "slip rate"
+    dbSlipRate.inventory.iohandler = ioSlipRate
+    dbSlipRate.inventory.label = "slip rate"
+    dbSlipRate._configure()
     
     ioSlipTime = SimpleIOAscii()
-    ioSlipTime.filename = "sliptime.spatialdb"
+    ioSlipTime.inventory.filename = "sliptime.spatialdb"
+    ioSlipTime._configure()
     dbSlipTime = SimpleDB()
-    dbSlipTime.iohandler = ioSlipTime
-    dbSlipTime.label = "slip time"
+    dbSlipTime.inventory.iohandler = ioSlipTime
+    dbSlipTime.inventory.label = "slip time"
+    dbSlipTime._configure()
     
     slipFn = ConstRateSlipFn()
-    slipFn.slipRate = dbSlipRate
-    slipFn.slipTime = dbSlipTime
+    slipFn.inventory.dbSlipRate = dbSlipRate
+    slipFn.inventory.dbSlipTime = dbSlipTime
+    slipFn._configure()
     slipFn.preinitialize()
+    slipFn.verifyConfiguration()
     slipFn.initialize()
     return
 

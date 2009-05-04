@@ -21,19 +21,29 @@ check_PROGRAMS = testtopology
 
 # Primary source files
 testtopology_SOURCES = \
-	TestField.cc \
-	TestFieldUniform.cc \
-	TestFieldsManager.cc \
 	TestMesh.cc \
 	TestMeshOps.cc \
+	TestSubMesh.cc \
+	TestFieldMesh.cc \
+	TestFieldSubMesh.cc \
+	TestFieldsMesh.cc \
+	TestFieldsSubMesh.cc \
+	TestSolutionFields.cc \
+	TestJacobian.cc \
 	test_topology.cc
 
+
 noinst_HEADERS = \
-	TestField.hh \
-	TestFieldUniform.hh \
-	TestFieldsManager.hh \
 	TestMesh.hh \
-	TestMeshOps.hh
+	TestSubMesh.hh \
+	TestMeshOps.hh \
+	TestFieldMesh.hh \
+	TestFieldSubMesh.hh \
+	TestFieldsMesh.hh \
+	TestFieldsSubMesh.hh \
+	TestSolutionFields.hh \
+	TestJacobian.hh
+
 
 # Source files associated with testing data
 testtopology_SOURCES += 
@@ -54,8 +64,11 @@ if ENABLE_CUBIT
   testtopology_LDADD += -lnetcdf_c++ -lnetcdf
 endif
 
-noinst_tmp =
+noinst_tmp = \
+	jacobian.mat \
+	jacobian.mat.info
 
 CLEANFILES = $(noinst_tmp)
+
 
 # End of file 

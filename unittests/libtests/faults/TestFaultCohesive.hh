@@ -23,12 +23,11 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "pylith/utils/sievefwd.hh" // USES PETSc Mesh
+#include "pylith/faults/faultsfwd.hh" // USES PETSc Mesh
 
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
-    class Fault;
     class TestFaultCohesive;
     class CohesiveData;
   } // faults

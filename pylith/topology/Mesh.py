@@ -13,148 +13,55 @@
 ## @file pylith/topology/Mesh.py
 ##
 ## @brief Python Mesh for finite-element topology information.
-##
-## Factory: finite_element_mesh
 
-from pyre.components.Component import Component
+from topology import Mesh as ModuleMesh
 
 # Mesh class
-class Mesh(Component):
+class Mesh(ModuleMesh):
   """
   Python Mesh for finite-element topology information.
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="mesh"):
+  def __init__(self, dim=None, comm=None):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="finite_element_mesh")
-    self.cppHandle = None
-    self.coordsys = None
-    self.debug = False
+    if comm is None and dim is None:
+      ModuleMesh.__init__(self)
+    elif comm is None:
+      ModuleMesh.__init__(self, dim)
+    else:
+      ModuleMesh.__init__(self, dim, comm.handle)
     return
 
 
-  def initialize(self, coordsys):
+  def setComm(self, comm):
     """
-    Initialize mesh.
+    Set communicator.
     """
-    self._createCppHandle()
-    self.coordsys = coordsys
+    ModuleMesh.comm(self, comm.handle)
     return
 
 
-  def setDebug(self, flag):
+  def getComm(self):
     """
-    Set debugging flag.
+    Get communicator.
     """
-    self.debug = flag
-    self.cppHandle.debug = self.debug
-    return
-  
+    # Use Communicator object to wrap C++ MPI_Comm* returned by
+    # module.
+    from pylith.mpi.Communicator import Communicator
+    return Communicator(ModuleMesh.comm(self))
 
-  def dimension(self):
-    """
-    Get dimension of mesh.
-    """
-    dim = None
-    if not self.cppHandle is None:
-      dim = self.cppHandle.dimension
-    return dim
-  
-
-  def view(self):
-    """
-    View the mesh.
-    """
-    if not self.cppHandle is None:
-      self.cppHandle.view()
-    return
-
-
-  def comm(self):
-    """
-    Get MPI communicator associated with mesh.
-    """
-    comm = None
-    #if not self.cppHandle is None:
-    #  comm = self.cppHandle.comm
-    import mpi
-    comm = mpi.MPI_COMM_WORLD
-    return comm
-
-
-  def getRealSection(self, label):
-    """
-    Get real section from mesh.
-    """
-    assert(None != self.cppHandle)
-    return self.cppHandle.getRealSection(label)
-
-
-  def createRealSection(self, label, fiberDim):
-    """
-    Create real section (but don't allocate).
-    """
-    assert(None != self.cppHandle)
-    return self.cppHandle.createRealSection(label, fiberDim)
-
-
-  def allocateRealSection(self, field):
-    """
-    Allocated (and zero) real section.
-    """
-    assert(None != self.cppHandle)
-    self.cppHandle.allocateRealSection(field)
-    return
-  
-
-  def createMatrix(self, field):
-    """
-    Create sparse matrix compatible with field.
-    """
-    assert(None != self.cppHandle)
-    return self.cppHandle.createMatrix(field)
-  
 
   def checkMaterialIds(self, materialIds):
     """
-    Make sure material id for each cell matches id of a material.
+    Check material ids for consistency with mesh.
     """
-    assert(None != self.cppHandle)
-    self.cppHandle.checkMaterialIds(materialIds)
-    return
-
-
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _configure(self):
-    """
-    Set members based using inventory.
-    """
-    Component._configure(self)
-    return
-
-  
-  def _createCppHandle(self):
-    """
-    Create handle to corresponding C++ object.
-    """
-    if None == self.cppHandle:
-      import pylith.topology.topology as bindings
-      self.cppHandle = bindings.Mesh()
+    from topology import MeshOps_checkMaterialIds
+    MeshOps_checkMaterialIds(self, materialIds)
     return
   
-
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def finite_element_mesh():
-  """
-  Factory associated with Mesh.
-  """
-  return Mesh()
-
 
 # End of file

@@ -10,17 +10,21 @@
 // ======================================================================
 //
 
+/**
+ * @file libsrc/topology/GMVFile.hh
+ *
+ * @brief C++ base class for input/output of LaGriT GMV files.
+ */
+
 #if !defined(pylith_meshio_gmvfile_hh)
 #define pylith_meshio_gmvfile_hh
 
+// Include directives ---------------------------------------------------
+#include "meshiofwd.hh" // forward declarations
+
 #include <string> // HASA std::string
 
-namespace pylith {
-  namespace meshio {
-  class GMVFile;
-  } // meshio
-} // pylith
-
+// GMVFile --------------------------------------------------------------
 class pylith::meshio::GMVFile
 { // GMVFile
 

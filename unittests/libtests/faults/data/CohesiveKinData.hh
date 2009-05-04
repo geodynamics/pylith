@@ -55,7 +55,7 @@ public:
   char* label; ///< Label for fault
   char* finalSlipFilename; ///< Name of db for final slip
   char* slipTimeFilename; ///< Name of db for slip time
-  char* peakRateFilename; ///< Name of db for peak rate
+  char* riseTimeFilename; ///< Name of db for rise time
   char* matPropsFilename; ///< Name of db for bulk material properties
   //@}
 

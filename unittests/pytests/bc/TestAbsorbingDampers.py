@@ -26,7 +26,7 @@ class TestAbsorbingDampers(unittest.TestCase):
 
   def test_implementsIntegrator(self):
     """
-    Test to make sure AbsorbingDampers satisfies constraint requirements.
+    Test to make sure AbsorbingDampers satisfies integrator requirements.
     """
     bc = AbsorbingDampers()
     from pylith.feassemble.Integrator import implementsIntegrator
@@ -53,10 +53,7 @@ class TestAbsorbingDampers(unittest.TestCase):
 
     (mesh, bc, fields) = self._initialize()
 
-    self.assertNotEqual(None, bc.cppHandle)
-
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
+    # No testing of result.
     return
 
 
@@ -77,7 +74,7 @@ class TestAbsorbingDampers(unittest.TestCase):
     """
     (mesh, bc, fields) = self._initialize()
 
-    self.assertEqual(1.0e+30, bc.stableTimeStep())
+    self.assertEqual(1.0e+30, bc.stableTimeStep(mesh))
     return
 
   
@@ -108,12 +105,11 @@ class TestAbsorbingDampers(unittest.TestCase):
     """
     (mesh, bc, fields) = self._initialize()
 
-    residual = fields.getReal("residual")
+    residual = fields.get("residual")
     t = 0.02
     bc.integrateResidual(residual, t, fields)
 
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
+    # No testing of result.
     return
 
 
@@ -127,15 +123,14 @@ class TestAbsorbingDampers(unittest.TestCase):
 
     (mesh, bc, fields) = self._initialize()
 
-    jacobian = mesh.createMatrix(fields.getReal("residual"))
-    import pylith.utils.petsc as petsc
-    petsc.mat_setzero(jacobian)
+    from pylith.topology.Jacobian import Jacobian
+    jacobian = Jacobian(fields)
+    jacobian.zero()
     t = 0.24
     bc.integrateJacobian(jacobian, t, fields)
     self.assertEqual(False, bc.needNewJacobian())
 
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
+    # No testing of result.
     return
 
 
@@ -153,8 +148,7 @@ class TestAbsorbingDampers(unittest.TestCase):
     totalTime = 5
     bc.poststep(t, dt, totalTime, fields)
 
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
+    # No testing of result.
     return
   
 
@@ -168,8 +162,7 @@ class TestAbsorbingDampers(unittest.TestCase):
     (mesh, bc, fields) = self._initialize()
     bc.finalize()
 
-    # We should really add something here to check to make sure things
-    # actually initialized correctly.
+    # No testing of result.
     return
 
 
@@ -179,43 +172,47 @@ class TestAbsorbingDampers(unittest.TestCase):
     """
     Initialize AbsorbingDampers boundary condition.
     """
-    from pylith.bc.AbsorbingDampers import AbsorbingDampers
-    bc = AbsorbingDampers()
-    bc._configure()
-    bc.id = 0
-    bc.label = "bc"
+    from spatialdata.spatialdb.SimpleDB import SimpleDB
+    db = SimpleDB()
+    db.inventory.label = "TestAbsorbingDampers tri3"
+    db.inventory.iohandler.inventory.filename = \
+        "data/elasticplanestrain.spatialdb"
+    db.inventory.iohandler._configure()
+    db._configure()
 
     from pylith.feassemble.FIATSimplex import FIATSimplex
     cell = FIATSimplex()
-    cell.shape = "line"
-    cell.degree = 1
-    cell.order = 1
-    from pylith.feassemble.quadrature.Quadrature1Din2D import Quadrature1Din2D
-    quadrature = Quadrature1Din2D()
+    cell.inventory.shape = "line"
+    cell.inventory.degree = 1
+    cell.inventory.order = 1
+    cell._configure()
+    from pylith.feassemble.Quadrature import SubMeshQuadrature
+    quadrature = SubMeshQuadrature()
+    quadrature.inventory.cell = cell
     quadrature._configure()
-    quadrature.cell = cell
-    bc.quadrature = quadrature
 
-    from spatialdata.spatialdb.SimpleDB import SimpleDB
-    db = SimpleDB()
-    db._configure()
-    db.label = "TestAbsorbingDampers tri3"
-    db.iohandler.filename = "data/elasticplanestrain.spatialdb"
-    db.initialize()
-    bc.db = db
+    from pylith.bc.AbsorbingDampers import AbsorbingDampers
+    bc = AbsorbingDampers()
+    bc.inventory.quadrature = quadrature
+    bc.inventory.db = db
+    bc.inventory.id = 0
+    bc.inventory.label = "bc"
+    bc._configure()
 
     from spatialdata.geocoords.CSCart import CSCart
     cs = CSCart()
-    cs.spaceDim = 2
+    cs.inventory.spaceDim = 2
+    cs._configure()
 
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
-    normalizer.initialize()
+    normalizer._configure()
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
-    importer.filename = "data/tri3.mesh"
-    importer.coordsys = cs
+    importer.inventory.filename = "data/tri3.mesh"
+    importer.inventory.coordsys = cs
+    importer._configure()
     mesh = importer.read(normalizer, debug=False, interpolate=False)
     
     bc.preinitialize(mesh)
@@ -223,20 +220,21 @@ class TestAbsorbingDampers(unittest.TestCase):
     bc.timeStep(0.01)
 
     # Setup fields
-    from pylith.topology.FieldsManager import FieldsManager
-    fields = FieldsManager(mesh)
-    fields.addReal("residual")
-    fields.addReal("solution")
-    fields.addReal("dispT")
-    fields.addReal("dispTmdt")
-    fields.solutionField("solution")
-    fields.createHistory(["solution", "dispT", "dispTmdt"])
-    fields.setFiberDimension("residual", cs.spaceDim)
-    fields.allocate("residual")
-    fields.copyLayout("residual")
+    from pylith.topology.SolutionFields import SolutionFields
+    fields = SolutionFields(mesh)
+    fields.add("residual", "residual")
+    fields.add("disp(t+dt)", "displacement")
+    fields.add("disp(t)", "displacement")
+    fields.add("disp(t-dt)", "displacement")
+    fields.solutionName("disp(t+dt)")
+    fields.createHistory(["disp(t+dt)", "disp(t)", "disp(t-dt)"])
 
-    import pylith.topology.topology as bindings
-    bindings.zeroRealSection(fields.getReal("residual"))
+    residual = fields.get("residual")
+    residual.newSection(residual.VERTICES_FIELD, cs.spaceDim())
+    residual.allocate()
+    residual.zero()
+
+    fields.copyLayout("residual")
     
     return (mesh, bc, fields)
 

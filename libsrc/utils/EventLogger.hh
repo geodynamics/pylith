@@ -21,18 +21,15 @@
 #if !defined(pylith_utils_eventlogger_hh)
 #define pylith_utils_eventlogger_hh
 
+// Include directives ---------------------------------------------------
+#include "utilsfwd.hh" // forward declarations
+
 #include <string> // USES std::string
 #include <map> // USES std::map
 
 #include "petsclog.h" // USES PetscLogEventBegin/End() in inline methods
 
-namespace pylith {
-  namespace utils {
-    class EventLogger;
-    class TestEventLogger; // unit testing
-  } // utils
-} // pylith
-
+// EventLogger ----------------------------------------------------------
 class pylith::utils::EventLogger
 { // EventLogger
   friend class TestEventLogger; // unit testing

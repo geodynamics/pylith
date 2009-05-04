@@ -14,7 +14,7 @@
 
 #include "Quadrature1D.hh" // implementation of class methods
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "QuadratureRefCell.hh" // USES QuadratureRefCell
 #include "CellGeometry.hh" // USES CellGeometry
 
 #include "petsc.h" // USES PetscLogFlops
@@ -25,7 +25,8 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::Quadrature1D::Quadrature1D(void) : Quadrature()
+pylith::feassemble::Quadrature1D::Quadrature1D(const QuadratureRefCell& q) :
+  QuadratureEngine(q)
 { // constructor
 } // constructor
 
@@ -38,45 +39,54 @@ pylith::feassemble::Quadrature1D::~Quadrature1D(void)
 // ----------------------------------------------------------------------
 // Copy constructor.
 pylith::feassemble::Quadrature1D::Quadrature1D(const Quadrature1D& q) :
-  Quadrature(q)
+  QuadratureEngine(q)
 { // copy constructor
 } // copy constructor
 
 // ----------------------------------------------------------------------
 // Compute geometric quantities for a cell at quadrature points.
 void
-pylith::feassemble::Quadrature1D::computeGeometry(
-		       const real_section_type::value_type* vertCoords,
-               const int coordDim,
-               const Mesh::point_type& cell)
+pylith::feassemble::Quadrature1D::computeGeometry(const double* vertCoords,
+						  const int coordDim,
+						  const int cell)
 { // computeGeometry
-  assert(1 == _cellDim);
-  assert(1 == _spaceDim);
-
-  _resetGeometry();
+  assert(0 != vertCoords);
   assert(1 == coordDim);
+
+  const int cellDim = _quadRefCell.cellDim();
+  const int spaceDim = _quadRefCell.spaceDim();
+  const int numQuadPts = _quadRefCell.numQuadPts();
+  const int numBasis = _quadRefCell.numBasis();
+
+  const double_array& basis = _quadRefCell.basis();
+  const double_array& quadPtsRef = _quadRefCell.quadPtsRef();
+  const double_array& basisDerivRef = _quadRefCell.basisDerivRef();
+  const CellGeometry& geometry = _quadRefCell.refGeometry();
+
+  assert(1 == cellDim);
+  assert(1 == spaceDim);
+  zero();
   
   // Loop over quadrature points
-  for (int iQuadPt=0; iQuadPt < _numQuadPts; ++iQuadPt) {
+  for (int iQuadPt=0; iQuadPt < numQuadPts; ++iQuadPt) {
 
     // Compute coordinates of quadrature point in cell
 #if defined(ISOPARAMETRIC)
     // x = sum[i=0,n-1] (Ni * xi)
-    for (int iBasis=0; iBasis < _numBasis; ++iBasis)
+    for (int iBasis=0; iBasis < numBasis; ++iBasis)
       _quadPts[iQuadPt] += 
-	_basis[iQuadPt*_numBasis+iBasis]*vertCoords[iBasis];
+	basis[iQuadPt*numBasis+iBasis]*vertCoords[iBasis];
 #else
-    assert(0 != _geometry);
-    _geometry->coordsRefToGlobal(&_quadPts[iQuadPt], &_quadPtsRef[iQuadPt],
-				 vertCoords, _spaceDim);
+    geometry.coordsRefToGlobal(&_quadPts[iQuadPt], &quadPtsRef[iQuadPt],
+			       vertCoords, spaceDim);
 #endif
 
 #if defined(ISOPARAMETRIC)
     // Compute Jacobian at quadrature point
     // J = dx/dp = sum[i=0,n-1] (dNi/dp * xi)
-    for (int iBasis=0; iBasis < _numBasis; ++iBasis)
+    for (int iBasis=0; iBasis < numBasis; ++iBasis)
       _jacobian[iQuadPt] += 
-	_basisDerivRef[iQuadPt*_numBasis+iBasis] * vertCoords[iBasis];
+	basisDerivRef[iQuadPt*numBasis+iBasis] * vertCoords[iBasis];
 
     // Compute determinant of Jacobian at quadrature point
     // |J| = j00
@@ -86,8 +96,8 @@ pylith::feassemble::Quadrature1D::computeGeometry(
 #else
     // Compute Jacobian and determinant of Jacobian at quadrature point
     assert(0 != _geometry);
-    _geometry->jacobian(&_jacobian[iQuadPt], &_jacobianDet[iQuadPt],
-			vertCoords, &_quadPtsRef[iQuadPt], _spaceDim);
+    geometry->jacobian(&_jacobian[iQuadPt], &_jacobianDet[iQuadPt],
+		       vertCoords, &quadPtsRef[iQuadPt], spaceDim);
     _checkJacobianDet(_jacobianDet[iQuadPt], cell);
 #endif
     
@@ -95,20 +105,20 @@ pylith::feassemble::Quadrature1D::computeGeometry(
     // Jinv = 1/j00
     _jacobianInv[iQuadPt] = 1.0 / _jacobianDet[iQuadPt];
 
-    assert(_numQuadPts*_numBasis*_spaceDim == _basisDeriv.size());
-    assert(_numQuadPts*_numBasis*_cellDim == _basisDerivRef.size());
-    assert(_numQuadPts*_cellDim*_spaceDim == _jacobianInv.size());
+    assert(numQuadPts*numBasis*spaceDim == _basisDeriv.size());
+    assert(numQuadPts*numBasis*cellDim == basisDerivRef.size());
+    assert(numQuadPts*cellDim*spaceDim == _jacobianInv.size());
 
     // Compute derivatives of basis functions with respect to global
     // coordinates
     // dNi/dx = dNi/dp dp/dx + dNi/dq dq/dx + dNi/dr dr/dx
-    for (int iBasis=0; iBasis < _numBasis; ++iBasis)
-      _basisDeriv[iQuadPt*_numBasis+iBasis] +=
-	  _basisDerivRef[iQuadPt*_numBasis+iBasis] *
+    for (int iBasis=0; iBasis < numBasis; ++iBasis)
+      _basisDeriv[iQuadPt*numBasis+iBasis] +=
+	  basisDerivRef[iQuadPt*numBasis+iBasis] *
 	  _jacobianInv[iQuadPt];
   } // for
 
-  PetscLogFlops(_numQuadPts * (1 + _numBasis * 4));
+  PetscLogFlops(numQuadPts * (1 + numBasis * 4));
 } // computeGeometry
 
 

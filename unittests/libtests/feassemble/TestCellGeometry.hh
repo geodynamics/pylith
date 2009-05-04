@@ -23,12 +23,13 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
+
 /// Namespace for pylith package
 namespace pylith {
   namespace feassemble {
     class TestCellGeometry;
 
-    class CellGeometry;
     class CellGeomData;
   } // feassemble
 } // pylith

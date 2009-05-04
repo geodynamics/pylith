@@ -34,7 +34,6 @@ class SlipTimeFn(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="sliptimefn")
-    self.cppHandle = None
     return
 
 
@@ -43,7 +42,6 @@ class SlipTimeFn(Component):
     Do pre-initialization setup.
     """
     self._setupLogging()
-    self._createCppHandle()      
     return
 
 
@@ -79,14 +77,6 @@ class SlipTimeFn(Component):
     return
 
   
-  def _createCppHandle(self):
-    """
-    Create handle to C++ object.
-    """
-    raise NotImplementedError("Please implement _createCppHandle().")
-    return
-  
-  
   def _setupLogging(self):
     """
     Setup event logging.
@@ -96,7 +86,7 @@ class SlipTimeFn(Component):
 
     from pylith.utils.EventLogger import EventLogger
     logger = EventLogger()
-    logger.setClassName("FE Constraint")
+    logger.className("Slip Time Function")
     logger.initialize()
 
     events = ["verify",

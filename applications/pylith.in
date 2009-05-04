@@ -28,7 +28,7 @@ if __name__ == "__main__":
             sys.path.insert(1, directory)
             site.addsitedir(directory)
 
-    from pylith.PyLithApp import PyLithApp
+    from pylith.apps.PyLithApp import PyLithApp
     from pyre.applications import start
     start(applicationClass=PyLithApp)
 

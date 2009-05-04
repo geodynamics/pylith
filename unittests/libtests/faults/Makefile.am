@@ -21,13 +21,13 @@ check_PROGRAMS = testfaults
 
 # Primary source files
 testfaults_SOURCES = \
-	TestBruneSlipFn.cc \
-	TestLiuCosSlipFn.cc \
-	TestConstRateSlipFn.cc \
-	TestStepSlipFn.cc \
-	TestEqKinSrc.cc \
 	TestFault.cc \
 	TestFaultCohesive.cc \
+	TestStepSlipFn.cc \
+	TestConstRateSlipFn.cc \
+	TestBruneSlipFn.cc \
+	TestLiuCosSlipFn.cc \
+	TestEqKinSrc.cc \
 	TestFaultCohesiveKin.cc \
 	TestFaultCohesiveKinLine2.cc \
 	TestFaultCohesiveKinTri3.cc \
@@ -45,7 +45,6 @@ testfaults_SOURCES = \
 	TestFaultCohesiveKinSrcsTet4.cc \
 	TestFaultCohesiveKinSrcsHex8.cc \
 	test_faults.cc
-
 
 
 noinst_HEADERS = \
