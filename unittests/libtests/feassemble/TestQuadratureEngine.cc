@@ -85,6 +85,8 @@ pylith::feassemble::TestQuadratureEngine::testCopyConstructor(void)
   CPPUNIT_ASSERT_EQUAL(size, jacobianDet.size());
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(jacobianDetE[i], jacobianDet[i]);
+
+  delete engine; engine = 0;
 } // testCopyConstructor
 
 // ----------------------------------------------------------------------
