@@ -55,8 +55,8 @@ class TestTimeStepAdapt(unittest.TestCase):
     """
     tstep = self.tstep
 
-    self.assertEqual(0.0, tstep.totalTime)
-    self.assertEqual(0.5, tstep.maxDt)
+    self.assertEqual(0.0, tstep.totalTimeN)
+    self.assertEqual(0.5, tstep.maxDtN)
     return
   
 
@@ -68,8 +68,8 @@ class TestTimeStepAdapt(unittest.TestCase):
 
     self.assertEqual(1, tstep.numTimeSteps())
 
-    tstep.totalTime = 4.0
-    tstep.maxDt = 2.0
+    tstep.totalTimeN = 4.0
+    tstep.maxDtN = 2.0
     self.assertEqual(3, tstep.numTimeSteps())
 
     return
@@ -130,8 +130,8 @@ class TestTimeStepAdapt(unittest.TestCase):
     Test currentStep().
     """
     tstep = self.tstep
-    tstep.maxDt = 10.0
-    tstep.dt = tstep.maxDt
+    tstep.maxDtN = 10.0
+    tstep.dtN = tstep.maxDtN
     
     self.assertEqual(10.0, tstep.currentStep())
 

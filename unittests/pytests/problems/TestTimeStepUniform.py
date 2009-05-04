@@ -17,6 +17,7 @@
 import unittest
 from pylith.problems.TimeStepUniform import TimeStepUniform
 
+from spatialdata.units.Nondimensional import Nondimensional
 from pyre.units.time import second
 
 # ----------------------------------------------------------------------
@@ -25,17 +26,32 @@ class TestTimeStepUniform(unittest.TestCase):
   Unit testing of TimeStepUniform object.
   """
 
+  def setUp(self):
+    """
+    Setup time step object.
+    """
+    normalizer = Nondimensional()
+    normalizer._configure()
+
+    tstep = TimeStepUniform()
+    tstep._configure()
+    tstep.preinitialize()
+    tstep.verifyConfiguration()
+    tstep.initialize(normalizer)
+    self.tstep = tstep
+    return
+
+
   def test_numTimeSteps(self):
     """
     Test numTimeSteps().
     """
-    tstep = TimeStepUniform()
-    tstep._configure()
+    tstep = self.tstep
 
     self.assertEqual(1, tstep.numTimeSteps())
 
-    tstep.totalTime = 4.0*second
-    tstep.dt = 2.0*second
+    tstep.totalTimeN = 4.0
+    tstep.dtN = 2.0
     self.assertEqual(3, tstep.numTimeSteps())
 
     return
@@ -45,16 +61,15 @@ class TestTimeStepUniform(unittest.TestCase):
     """
     Test timeStep().
     """
-    tstep = TimeStepUniform()
-    tstep._configure()
+    tstep = self.tstep
 
     integrators = None
     mesh = None
 
-    self.assertEqual(1.0*second, tstep.timeStep(mesh, integrators))
+    self.assertEqual(1.0, tstep.timeStep(mesh, integrators))
 
-    tstep.dt = 1.0e-4*second
-    self.assertEqual(1.0e-4*second, tstep.timeStep(mesh, integrators))
+    tstep.dtN = 1.0e-4
+    self.assertEqual(1.0e-4, tstep.timeStep(mesh, integrators))
 
     return
 
@@ -63,13 +78,12 @@ class TestTimeStepUniform(unittest.TestCase):
     """
     Test currentStep().
     """
-    tstep = TimeStepUniform()
-    tstep._configure()
+    tstep = self.tstep
 
-    self.assertEqual(1.0*second, tstep.currentStep())
+    self.assertEqual(1.0, tstep.currentStep())
 
-    tstep.dt = 1.0e-4*second
-    self.assertEqual(1.0e-4*second, tstep.currentStep())
+    tstep.dtN = 1.0e-4
+    self.assertEqual(1.0e-4, tstep.currentStep())
 
     return
 

@@ -113,7 +113,7 @@ class TestTimeStep(unittest.TestCase):
 
     self.assertEqual(0.0, tstep.currentStep())
 
-    tstep.dt = 1.0e-4
+    tstep.dtN = 1.0e-4
     self.assertEqual(1.0e-4, tstep.currentStep())
 
     return

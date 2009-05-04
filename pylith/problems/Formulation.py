@@ -227,7 +227,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     """
     Get total time for simulation.
     """
-    return self.timeStep.totalTime
+    return self.timeStep.totalTimeN # Nondimensionalized total time
 
 
   def getTimeStep(self):

@@ -79,6 +79,7 @@ class TimeStepAdapt(TimeStep):
     TimeStep.__init__(self, name)
     self._loggingPrefix = "DtAd "
     self.skipped = 0
+    self.maxDtN = 0.0 # Nondimensionalized maximum time step
     return
 
 
@@ -93,7 +94,7 @@ class TimeStepAdapt(TimeStep):
 
     # Nondimensionalize time scales
     timeScale = normalizer.timeScale()
-    self.maxDt = normalizer.nondimensionalize(self.maxDt, timeScale)
+    self.maxDtN = normalizer.nondimensionalize(self.maxDt, timeScale)
 
     self._logger.eventEnd(logEvent)
     return
@@ -104,7 +105,7 @@ class TimeStepAdapt(TimeStep):
     Get number of total time steps (or best guess if adaptive).
     """
     # Guess using maximum time step
-    nsteps = int(1.0 + self.totalTime / self.maxDt)
+    nsteps = int(1.0 + self.totalTimeN / self.maxDtN)
     return nsteps
 
 
@@ -119,13 +120,13 @@ class TimeStepAdapt(TimeStep):
         dtStable = dt
     
     if self.skipped < self.adaptSkip and \
-          self.dt != 0.0 and \
-          self.dt < dtStable:
+          self.dtN != 0.0 and \
+          self.dtN < dtStable:
       self.skipped += 1
     else:
-      self.dt = min(dtStable/self.stabilityFactor, self.maxDt)
+      self.dtN = min(dtStable/self.stabilityFactor, self.maxDtN)
       self.skipped = 0
-    return self.dt
+    return self.dtN
 
   
   # PRIVATE METHODS ////////////////////////////////////////////////////

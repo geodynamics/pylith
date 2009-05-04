@@ -71,7 +71,7 @@ class TimeStepUniform(TimeStep):
     """
     Get number of total time steps (or best guess if adaptive).
     """
-    nsteps = int(1 + self.totalTime / self.dt)
+    nsteps = int(1 + self.totalTimeN / self.dtN)
     return nsteps
 
 
@@ -79,7 +79,7 @@ class TimeStepUniform(TimeStep):
     """
     Adjust stable time step for advancing forward in time.
     """
-    return self.dt
+    return self.dtN
 
   
   # PRIVATE METHODS ////////////////////////////////////////////////////

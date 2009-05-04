@@ -115,11 +115,14 @@ class TimeStepUser(TimeStep):
 
     # Nondimensionalize time steps
     timeScale = normalizer.timeScale()
+    self.totalTimeN = normalizer.nondimensionalize(self.totalTime, timeScale)
     for i in xrange(len(self.steps)):
-      self.steps[i] = normalizer.nondimensionalize(self.steps[i], timeScale)
+      step = normalizer.nondimensionalize(self.steps[i], timeScale)
+      assert(step > 0.0)
+      self.steps[i] = step
 
     # Set current time step
-    self.dt = self.steps[self.index]
+    self.dtN = self.steps[self.index]
 
     self._logger.eventEnd(logEvent)
     return
@@ -129,11 +132,10 @@ class TimeStepUser(TimeStep):
     """
     Get number of total time steps (or best guess if adaptive).
     """
-    from pyre.units.time import second
     t = 0.0
     nsteps = 0
     index = 0
-    while t <= self.totalTime:
+    while t <= self.totalTimeN:
       t += self.steps[index]
       index += 1
       if index >= len(self.steps):
@@ -149,12 +151,12 @@ class TimeStepUser(TimeStep):
     """
     Get time step for advancing forward in time.
     """
-    self.dt = self.steps[self.index]
+    self.dtN = self.steps[self.index]
     if self.index+1 < len(self.steps):
       self.index += 1
     elif self.loopSteps:
       self.index = 0
-    return self.dt
+    return self.dtN
 
   
   # PRIVATE METHODS ////////////////////////////////////////////////////

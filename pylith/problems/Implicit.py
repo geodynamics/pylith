@@ -131,7 +131,8 @@ class Implicit(Formulation):
     """
     Get time at which time stepping should start.
     """
-    dt = self.timeStep.currentStep()
+    dt = self.timeStep.timeStep(self.mesh,
+                                self.integratorsMesh + self.integratorsSubMesh)
     return -dt
 
 
