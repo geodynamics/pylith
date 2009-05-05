@@ -56,6 +56,11 @@ Mesh or SubMesh to indicate that they operate on a mesh or submesh
 (e.g., CellFilterAvg is now CellFilterAvgMesh or
 CellFilterAvgSubMesh). This is related to the use of templates.
 
+STILL ON THE TODO LIST
+
+(5) Nondimensionalization of the problem eliminates the need to
+condition the fault constraints. The "mat_db" facility was removed.
+
 ======================================================================
 MIGRATING FROM VERSION 1.2 TO 1.3
 ======================================================================
