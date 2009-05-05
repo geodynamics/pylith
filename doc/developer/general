@@ -1,0 +1,15 @@
+Guiding Principles for PyLith code
+
+1. Document your header files in Doxygen format. Include a description
+for EVERY method, member, and argument to a member function.
+
+2. Class definitions go in header files (.hh), class implementations
+go in .cc files, and inline methods go in .icc files. Use an include
+directive in header files for inline methods.
+
+3. Files checked in to the repository trunk should at least compile.
+
+4. C++ and Python classes should have corresponding unit tests in
+libtests and pytests. High-level functionality should be verified
+using a full-scale test.
+

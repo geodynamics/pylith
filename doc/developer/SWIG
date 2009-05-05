@@ -1,0 +1,31 @@
+Notes on using SWIG for interfacing C++ with SWIG.
+
+The SWIG interface (.i) files are simply stripped down versions of the
+C++ header files.
+
+* Remove unnecessary stuff.
+
+  The SWIG interface files only need the methods that should be
+  included in the interface and any virtual methods (even if they are
+  private). Remove all data members.
+
+* Namespaces
+
+  (1) The class definition must appear within any namespace blocks.
+
+      Use
+        namespace pylith {
+          class Foo {
+          ...
+          };
+        }
+      instead of forward declaring the class and using
+        class pylith::Foo {
+        ...
+        };
+
+   (2) The full class name must be given for method arguments unless
+   the class is in the same namespace. In other words, use
+   pylith::topology::Mesh instead of topology::Mesh.
+
+ 
