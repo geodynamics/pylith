@@ -8,7 +8,29 @@ CURRENT ISSUES/PRIORITIES
 
   (3) Full-scale tests (few 1-D, 2-D, and 3-D)
 
-    Analytical solutions, time stepping, multiple faults
+    1-D
+      1. axial disp [DONE]
+      2. dislocation
+
+    2-D
+      1. axial/shear (DirichletBC)
+      2. axial/shear (DirichletBC, parallel)
+      3. axial traction (Neumann, DirichletBC)
+      4. single fault (static)
+      5. single fault (quasi-static w/multiple ruptures)
+      6. single fault (dynamic)
+      7. two fault (static)
+      8. two fault (static, parallel)
+
+    3-D
+      1. axial/shear (DirichletBC)
+      2. axial/shear (DirichletBC, parallel)
+      3. single fault (static)
+      4. single fault (Savage/Prescott like)
+      5. single fault (dynamic)
+      6. two fault (static)
+      7. two fault (static, parallel)
+ 
 
   (4) SNES
     Reformulate implicit time stepping to use displacement increment.
