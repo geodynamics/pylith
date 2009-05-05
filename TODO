@@ -102,7 +102,6 @@ CURRENT ISSUES/PRIORITIES
       const slip rate in output (slip rate not slip)          
 
     Need unit tests
-      FieldOps::copyValues (obsolete?)
       MeshIO::normalizer()
       Material::normalizer()
       Constraint::normalizer()
@@ -121,7 +120,6 @@ CURRENT ISSUES/PRIORITIES
 7. Initial stress, strain, state variables for inelastic models [Charles]
 
 8. Savage-Presscott benchmark [Charles]
-   HDF5 output
 
 9. Analytic BC for reverse-slip benchmark [Charles or Brad]
     a. Create BC for CUBIT mesh.
@@ -135,6 +133,14 @@ CURRENT ISSUES/PRIORITIES
 11. Add ability to use symmetric matrix, set block size (default is 1)
 
 12. Update manual for version 1.4 [Brad and Charles]
+
+  Installation using source tarball should not require SWIG, Pyrex, or
+  Pyrexembed [need to test]. Should include .i files in tarball for
+  reference.
+
+  Other files
+    INSTALL, README, DEPENDENCIES, AUTHORS, ChangeLog
+    
 
   * Reduce memory use with ordering elements by material
 
