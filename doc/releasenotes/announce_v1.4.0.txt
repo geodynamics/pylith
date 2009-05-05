@@ -1,0 +1,34 @@
+Greetings,
+
+I am pleased to announce the release of PyLith 1.4.0, a finite-element
+code designed to solve dynamic elastic problems and quasi-static
+viscoelastic problems in tectonic deformation.
+
+This release adds several new features to PyLith, including (1) a
+Power-law nonlinear bulk rheology [2-D Maxwell viscoelastic model],
+(2) the ability to specify the initial stress, strain, and state
+variables for bulk rheologies, (3) integration with PETSc nonlinear
+solvers, (4) transparent nondimensionalization of all parameters, (5)
+parsing of units in spatial database files, (6) and replacement of
+Pyrex/Pyrexembed with SWIG. Nondimensionalization the problem restores
+the symmetry of the Jacobian matrix, which dramatically reduces memory
+use. Several other changes to the code have also helped reduce
+runtime. We encourage all users of previous PyLith releases to switch
+to this latest release.
+
+You can download the source code and binaries from
+
+    http://geodynamics.org/cig/software/packages/short/pylith
+
+Installation instructions are in the bundled README and INSTALL  
+files, as well as in the User Manual on the web page.
+
+
+RELEASE NOTES
+
+[ADD NEW FEATURES HERE]
+
+  * Bug fixes
+
+  [ADD BUG FIXES HERE]
+
