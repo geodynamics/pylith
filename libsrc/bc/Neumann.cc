@@ -81,13 +81,13 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
   // Get 'surface' cells (1 dimension lower than top-level cells)
   const ALE::Obj<SieveSubMesh>& submesh = _boundaryMesh->sieveMesh();
   assert(!submesh.isNull());
-  const int boundaryDepth = submesh->depth()-1; // depth of bndry cells
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    submesh->depthStratum(boundaryDepth);
+    submesh->heightStratum(1);
   assert(!cells.isNull());
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Make sure surface cells are compatible with quadrature.
+  const int boundaryDepth = submesh->depth()-1; // depth of bndry cells
   for (SieveSubMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
@@ -266,9 +266,8 @@ pylith::bc::Neumann::integrateResidual(
   // Get cell information
   const ALE::Obj<SieveSubMesh>& submesh = _boundaryMesh->sieveMesh();
   assert(!submesh.isNull());
-  const int boundaryDepth = submesh->depth()-1; // depth of bndry cells
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    submesh->depthStratum(boundaryDepth);
+    submesh->heightStratum(1);
   assert(!cells.isNull());
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
