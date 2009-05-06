@@ -10,7 +10,7 @@ CURRENT ISSUES/PRIORITIES
 
     1-D
       1. axial disp [DONE]
-      2. dislocation
+      2. dislocation [DONE]
 
     2-D
       1. axial/shear (DirichletBC)
@@ -40,6 +40,12 @@ CURRENT ISSUES/PRIORITIES
   (5) Add missing unit tests
 
   (6) Tidy up
+
+    How do we determine the orientation for a fault in a 1-D mesh? We
+    assume normaldir is +1.0, but cohesive cells could be created so
+    that the fault has a normaldir of -1.0. If the normaldir is -1.0,
+    then we need to flip the orientation field to get the correct
+    sense of slip.
 
     Add simple stableTimeStep() for elastic materials.
 
