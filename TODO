@@ -10,7 +10,7 @@ CURRENT ISSUES/PRIORITIES
 
     1-D
       1. axial disp [DONE]
-      2. dislocation [DONE]
+      2. dislocation (need fault tests)
 
     2-D
       1. axial/shear (DirichletBC)

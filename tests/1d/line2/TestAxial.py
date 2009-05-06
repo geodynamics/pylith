@@ -59,106 +59,38 @@ class TestAxial(TestLine2):
     return
 
 
-  def test_soln(self):
+  def calcDisplacements(self, vertices):
     """
-    Check solution (displacement) field.
+    Calculate displacement field given coordinates of vertices.
     """
-    if self.reader is None:
-      return
+    nvertices = self.mesh['nvertices']
+    spaceDim = self.mesh['spaceDim']    
+    disp = numpy.zeros( (nvertices, spaceDim), dtype=numpy.float64)
+    disp[:,0] = -0.2 + 0.1 * vertices[:,0]
 
-    data = self.reader.read("%s_t0000000.vtk" % self.outputRoot)
-
-    # Check cells
-    (ncells, ncorners) = data['cells'].shape
-    self.assertEqual(self.ncells, ncells)
-    self.assertEqual(self.ncorners, ncorners)
-
-    # Check vertices
-    vertices = data['vertices']
-    (nvertices, spaceDim) = vertices.shape
-    self.assertEqual(self.nvertices, nvertices)
-    self.assertEqual(self.spaceDim, spaceDim)
-
-    # Check displacement solution
-    tolerance = 1.0e-5
-    dispE = numpy.zeros( (nvertices, spaceDim), dtype=numpy.float64)
-    dispE[:,0] = -0.2 + 0.1 * vertices[:,0]
-
-    disp = data['vertex_fields']['displacement']
-
-    # Check x displacements
-    diff = numpy.abs(disp[:,0] - dispE[:,0])
-    okay = diff < tolerance
-    if numpy.sum(okay) != nvertices:
-      print "Displacement field expected: ",dispE
-      print "Displacement field: ",disp
-      self.assertEqual(nvertices, numpy.sum(okay))    
-    
-    # Check y displacements
-    diff = numpy.abs(disp[:,1] - dispE[:,1])
-    okay = diff < tolerance
-    if numpy.sum(okay) != nvertices:
-      print "Displacement field expected: ",dispE
-      print "Displacement field: ",disp
-      self.assertEqual(nvertices, numpy.sum(okay))    
-
-    # Check z displacements
-    diff = numpy.abs(disp[:,2] - dispE[:,2])
-    okay = diff < tolerance
-    if numpy.sum(okay) != nvertices:
-      print "Displacement field expected: ",dispE
-      print "Displacement field: ",disp
-      self.assertEqual(nvertices, numpy.sum(okay))    
-    
-    return
+    return disp
 
 
-  def test_elastic_statevars(self):
+  def calcStateVar(self, name, vertices, cells):
     """
-    Check elastic state variables.
+    Calculate state variable.
     """
-    if self.reader is None:
-      return
-
-    data = self.reader.read("%s-statevars-elastic_t0000000.vtk" % \
-                              self.outputRoot)
-
-    # Check cells
-    (ncells, ncorners) = data['cells'].shape
-    self.assertEqual(self.ncells, ncells)
-    self.assertEqual(self.ncorners, ncorners)
-
-    # Check vertices
-    vertices = data['vertices']
-    (nvertices, spaceDim) = vertices.shape
-    self.assertEqual(self.nvertices, nvertices)
-    self.assertEqual(self.spaceDim, spaceDim)
-
-    # Check strains
-    tolerance = 1.0e-5
     exx = 0.1
-    strainE = exx*numpy.ones( (ncells, self.tensorSize), dtype=numpy.float64)
-    strain = data['cell_fields']['total_strain']
-    diff = numpy.abs(strain[:]-strainE[:,0])
-    okay = diff < tolerance
-    if numpy.sum(okay) != ncells:
-      print "Strain field expected: ",strainE
-      print "Strain field: ",strain
-    self.assertEqual(ncells, numpy.sum(okay))    
 
-    # Check stresses
-    lp2m = self.density*self.vp**2
-    stressE = lp2m*exx * numpy.ones( (ncells, self.tensorSize), 
-                                     dtype=numpy.float64)
-    stress = data['cell_fields']['stress']
-    diff = numpy.abs(stress[:]-stressE[:,0])
-    okay = diff < tolerance
-    if numpy.sum(okay) != ncells:
-      print "Stress field expected: ",stressE
-      print "Stress field: ",stress
-    self.assertEqual(ncells, numpy.sum(okay))    
+    ncells = self.mesh['ncells']
+    tensorSize = self.mesh['tensorSize']
 
-    return
+    if name == "total_strain":
+      stateVar = exx*numpy.ones( (ncells, tensorSize), dtype=numpy.float64)
+    
+    elif name == "stress":
+      lp2m = self.density*self.vp**2
+      stateVar = lp2m*exx * numpy.ones( (ncells, tensorSize), 
+                                       dtype=numpy.float64)
+    else:
+      raise ValueError("Unknown state variable '%s'." % name)
+
+    return stateVar
 
 
 # End of file 

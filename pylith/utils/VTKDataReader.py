@@ -76,6 +76,8 @@ class VTKDataReader(object):
       ncorners = 3
     elif cellId == 3:
       ncorners = 2
+    elif cellId == 255:
+      ncorners = 1
     else:
       raise ValueError("Unknown VTK cell type '%d'." % cellId)
     cells = cells.reshape( (ncells, 1+ncorners) )[:,1:1+ncorners]

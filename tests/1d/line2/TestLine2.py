@@ -26,15 +26,16 @@ class TestLine2(unittest.TestCase):
     """
     Setup for tests.
     """
-    self.ncells = 4
-    self.ncorners = 2
-    self.nvertices = 5
-    self.spaceDim = 3
-    self.tensorSize = 1
+    self.mesh = {'ncells': 4,
+                 'ncorners': 2,
+                 'nvertices': 5,
+                 'spaceDim': 3,
+                 'tensorSize': 1}
     self.vs = 3000.0
     self.vp = 5291.502622129181
     self.density = 2500.0
     return
+
 
   def test_elastic_info(self):
     """
@@ -43,46 +44,52 @@ class TestLine2(unittest.TestCase):
     if self.reader is None:
       return
 
-    data = self.reader.read("%s-statevars-elastic_info.vtk" % self.outputRoot)
+    ncells= self.mesh['ncells']
 
-    # Check cells
-    (ncells, ncorners) = data['cells'].shape
-    self.assertEqual(self.ncells, ncells)
-    self.assertEqual(self.ncorners, ncorners)
+    filename = "%s-statevars-elastic_info.vtk" % self.outputRoot
+    m = self.density*self.vs**2
+    l = self.density*self.vp**2 - 2*m
 
-    # Check vertices
-    (nvertices, spaceDim) = data['vertices'].shape
-    self.assertEqual(self.nvertices, nvertices)
-    self.assertEqual(self.spaceDim, spaceDim)
+    propMu =  m*numpy.ones( (ncells, 1), dtype=numpy.float64)
+    propLambda = l*numpy.ones( (ncells, 1), dtype=numpy.float64)
+    propDensity = self.density*numpy.ones( (ncells, 2), dtype=numpy.float64)
 
-    # Check physical properties
-    tolerance = 1.0e-5
+    properties = {'mu': propMu,
+                  'lambda': propLambda,
+                  'density': propDensity}
 
-    # Lame's constant mu (shear modulus)
-    muE = self.density*self.vs**2
-    diff = numpy.abs(1.0 - data['cell_fields']['mu']/muE)
-    okay = diff < tolerance
-    if numpy.sum(okay) != ncells:
-      print "Expected Lame's constant mu: ",muE
-      print "Lame's constant mu: ",data['cell_fields']['mu']
-      self.assertEqual(ncells, numpy.sum(okay))    
+    from pylith.tests.PhysicalProperties import check_properties
+    check_properties(self, filename, self.mesh, properties)
 
-    # Lame's constant lambda
-    lambdaE = self.density*self.vp**2 - 2*muE
-    diff = numpy.abs(1.0 - data['cell_fields']['lambda']/lambdaE)
-    okay = diff < tolerance
-    if numpy.sum(okay) != ncells:
-      print "Expected Lame's constant lambda: ",lambdaE
-      print "Lame's constant lambda: ",data['cell_fields']['lambda']
-      self.assertEqual(ncells, numpy.sum(okay))    
+    return
 
-    # Density
-    diff = numpy.abs(1.0 - data['cell_fields']['density']/self.density)
-    okay = diff < tolerance
-    if numpy.sum(okay) != ncells:
-      print "Expected density: ",self.density
-      print "Density: ",data['cell_fields']['density']
-      self.assertEqual(ncells, numpy.sum(okay))    
+
+  def test_soln(self):
+    """
+    Check solution (displacement) field.
+    """
+    if self.reader is None:
+      return
+
+    filename = "%s_t0000000.vtk" % self.outputRoot
+    from pylith.tests.Solution import check_displacements
+    check_displacements(self, filename, self.mesh)
+
+    return
+
+
+  def test_elastic_statevars(self):
+    """
+    Check elastic state variables.
+    """
+    if self.reader is None:
+      return
+
+    filename = "%s-statevars-elastic_t0000000.vtk" % self.outputRoot
+
+    from pylith.tests.StateVariables import check_state_variables
+    stateVars = ["total_strain", "stress"]
+    check_state_variables(self, filename, self.mesh, stateVars)
 
     return
 

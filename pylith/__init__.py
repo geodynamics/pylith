@@ -24,6 +24,7 @@ __all__ = ['apps',
            'problems',
            'topology',
            'utils',
+           'tests',
            ]
 
 
