@@ -78,13 +78,13 @@ pylith::feassemble::QuadratureRefCell::initialize(const double* basis,
 { // initialize
   const int numQuadPts = numQuadPts1;
   const int numBasis = numBasis1;
-  const int cellDim = cellDim2;
+  const int cellDim = (numBasis != 1) ? cellDim2 : 0;
 
   assert(numQuadPts == numQuadPts2);
   assert(numQuadPts == numQuadPts3);
   assert(numQuadPts == numQuadPts4);
   assert(numBasis == numBasis2);
-  assert(cellDim == cellDim3);
+  assert(cellDim2 == cellDim3);
 
   if (0 == basis ||
       0 == basisDerivRef ||
