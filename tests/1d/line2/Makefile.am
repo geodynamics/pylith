@@ -31,7 +31,12 @@ noinst_DATA = \
 noinst_TMP = \
 	axialextension_t0000000.vtk \
 	axialextension-statevars-elastic_info.vtk \
-	axialextension-statevars-elastic_t0000000.vtk
+	axialextension-statevars-elastic_t0000000.vtk \
+	dislocation-fault_info.vtk \
+	dislocation-fault_t0000000.vtk \
+	dislocation-statevars-elastic_info.vtk \
+	dislocation-statevars-elastic_t0000000.vtk \
+	dislocation_t0000000.vtk
 
 TESTS_ENVIRONMENT = $(PYTHON)
 
