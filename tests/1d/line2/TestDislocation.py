@@ -14,8 +14,8 @@
 ##
 ## @brief Test suite for testing pylith with 1-D axial extension.
 
-import unittest
 import numpy
+from TestLine2 import TestLine2
 from pylith.utils.VTKDataReader import has_vtk
 from pylith.utils.VTKDataReader import VTKDataReader
 
@@ -40,7 +40,7 @@ def run_pylith():
   return
 
 
-class TestDislocation(unittest.TestCase):
+class TestDislocation(TestLine2):
   """
   Test suite for testing pylith with 1-D axial extension.
   """
@@ -49,68 +49,16 @@ class TestDislocation(unittest.TestCase):
     """
     Setup for test.
     """
+    TestLine2.setUp(self)
+    self.nvertices = 6
+    self.nverticesO = 5
+
     run_pylith()
+    self.outputRoot = "dislocation"
     if has_vtk():
       self.reader = VTKDataReader()
     else:
       self.reader = None
-    return
-
-
-  def test_elastic_info(self):
-    """
-    Check elastic info.
-    """
-    if self.reader is None:
-      return
-
-    data = self.reader.read("dislocation-statevars-elastic_info.vtk")
-
-    # Check cells
-    ncellsE = 4
-    ncornersE = 2
-    (ncells, ncorners) = data['cells'].shape
-    self.assertEqual(ncellsE, ncells)
-    self.assertEqual(ncornersE, ncorners)
-
-    # Check vertices
-    nverticesE = 5
-    spaceDimE = 3
-    (nvertices, spaceDim) = data['vertices'].shape
-    self.assertEqual(nverticesE, nvertices)
-    self.assertEqual(spaceDimE, spaceDim)
-
-    # Check physical properties
-    tolerance = 1.0e-5
-    vsE = 3000.0
-    vpE = 5291.502622129181
-    densityE = 2500.0
-
-    # Lame's constant mu (shear modulus)
-    muE = densityE*vsE**2
-    diff = numpy.abs(1.0 - data['cell_fields']['mu']/muE)
-    okay = diff < tolerance
-    if numpy.sum(okay) != ncells:
-      print "Expected Lame's constant mu: ",muE
-      print "Lame's constant mu: ",data['cell_fields']['mu']
-      self.assertEqual(ncells, numpy.sum(okay))    
-
-    # Lame's constant lambda
-    lambdaE = densityE*vpE**2 - 2*muE
-    diff = numpy.abs(1.0 - data['cell_fields']['lambda']/lambdaE)
-    okay = diff < tolerance
-    if numpy.sum(okay) != ncells:
-      print "Expected Lame's constant lambda: ",lambdaE
-      print "Lame's constant lambda: ",data['cell_fields']['lambda']
-      self.assertEqual(ncells, numpy.sum(okay))    
-
-    # Density
-    diff = numpy.abs(1.0 - data['cell_fields']['density']/densityE)
-    okay = diff < tolerance
-    if numpy.sum(okay) != ncells:
-      print "Expected density: ",densityE
-      print "Density: ",data['cell_fields']['density']
-      self.assertEqual(ncells, numpy.sum(okay))    
     return
 
 
@@ -121,27 +69,28 @@ class TestDislocation(unittest.TestCase):
     if self.reader is None:
       return
 
-    data = self.reader.read("dislocation_t0000000.vtk")
+    data = self.reader.read("%s_t0000000.vtk" % self.outputRoot)
 
     # Check cells
-    ncellsE = 4
-    ncornersE = 2
     (ncells, ncorners) = data['cells'].shape
-    self.assertEqual(ncellsE, ncells)
-    self.assertEqual(ncornersE, ncorners)
+    self.assertEqual(self.ncells, ncells)
+    self.assertEqual(self.ncorners, ncorners)
 
     # Check vertices
-    nverticesE = 5
-    spaceDimE = 3
     vertices = data['vertices']
     (nvertices, spaceDim) = vertices.shape
-    self.assertEqual(nverticesE, nvertices)
-    self.assertEqual(spaceDimE, spaceDim)
+    self.assertEqual(self.nvertices, nvertices)
+    self.assertEqual(self.spaceDim, spaceDim)
 
     # Check displacement solution
     tolerance = 1.0e-5
     dispE = numpy.zeros( (nvertices, spaceDim), dtype=numpy.float64)
-    dispE[:,0] = -0.2 + 0.1 * vertices[:,0]
+    maskP = vertices[:,0] >= 2.0
+    maskP[self.nverticesO:self.nvertices] = False
+    maskN = numpy.bitwise_and(vertices[:,0] <= 2.0, ~maskP)
+    dispE[:,0] = \
+        maskN*(-0.20 - 0.025*vertices[:,0]) + \
+        maskP*(+0.30 - 0.025*vertices[:,0])
 
     disp = data['vertex_fields']['displacement']
 
@@ -151,7 +100,7 @@ class TestDislocation(unittest.TestCase):
     if numpy.sum(okay) != nvertices:
       print "Displacement field expected: ",dispE
       print "Displacement field: ",disp
-      self.assertEqual(nvertices, numpy.sum(okay))    
+    self.assertEqual(nvertices, numpy.sum(okay))    
     
     # Check y displacements
     diff = numpy.abs(disp[:,1] - dispE[:,1])
@@ -159,7 +108,7 @@ class TestDislocation(unittest.TestCase):
     if numpy.sum(okay) != nvertices:
       print "Displacement field expected: ",dispE
       print "Displacement field: ",disp
-      self.assertEqual(nvertices, numpy.sum(okay))    
+    self.assertEqual(nvertices, numpy.sum(okay))    
 
     # Check z displacements
     diff = numpy.abs(disp[:,2] - dispE[:,2])
@@ -167,16 +116,57 @@ class TestDislocation(unittest.TestCase):
     if numpy.sum(okay) != nvertices:
       print "Displacement field expected: ",dispE
       print "Displacement field: ",disp
-      self.assertEqual(nvertices, numpy.sum(okay))    
+    self.assertEqual(nvertices, numpy.sum(okay))    
     
     return
 
 
-  #def test_elastic_statevars(self):
-  #  """
-  #  Check elastic state variables.
-  #  """
-  #  return
+  def test_elastic_statevars(self):
+    """
+    Check elastic state variables.
+    """
+    if self.reader is None:
+      return
+
+    data = self.reader.read("%s-statevars-elastic_t0000000.vtk" % \
+                              self.outputRoot)
+
+    # Check cells
+    (ncells, ncorners) = data['cells'].shape
+    self.assertEqual(self.ncells, ncells)
+    self.assertEqual(self.ncorners, ncorners)
+
+    # Check vertices
+    vertices = data['vertices']
+    (nvertices, spaceDim) = vertices.shape
+    self.assertEqual(self.nvertices, nvertices)
+    self.assertEqual(self.spaceDim, spaceDim)
+
+    # Check strains
+    tolerance = 1.0e-5
+    exx = -0.025
+    strainE = exx*numpy.ones( (ncells, self.tensorSize), dtype=numpy.float64)
+    strain = data['cell_fields']['total_strain']
+    diff = numpy.abs(strain[:]-strainE[:,0])
+    okay = diff < tolerance
+    if numpy.sum(okay) != ncells:
+      print "Strain field expected: ",strainE
+      print "Strain field: ",strain
+    self.assertEqual(ncells, numpy.sum(okay))    
+
+    # Check stresses
+    lp2m = self.density*self.vp**2
+    stressE = lp2m*exx * numpy.ones( (ncells, self.tensorSize), 
+                                     dtype=numpy.float64)
+    stress = data['cell_fields']['stress']
+    diff = numpy.abs(stress[:]-stressE[:,0])
+    okay = diff < tolerance
+    if numpy.sum(okay) != ncells:
+      print "Stress field expected: ",stressE
+      print "Stress field: ",stress
+    self.assertEqual(ncells, numpy.sum(okay))    
+
+    return
 
 
 # End of file 
