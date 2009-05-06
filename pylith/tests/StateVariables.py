@@ -39,9 +39,13 @@ def check_state_variables(testcase, filename, mesh, stateVarNames):
     valuesE = testcase.calcStateVar(name, data['vertices'], data['cells'])
     values = data['cell_fields'][name]
 
-    (ncellsE, dim) = valuesE.shape
-    values = values.reshape( (ncells, dim) )
+    (ncellsE, dimE) = valuesE.shape
+    if 1 == dimE:
+      values = values.reshape( (ncells, dimE) )
+    (ncells, dim) = values.shape
+
     testcase.assertEqual(ncellsE, ncells)
+    testcase.assertEqual(dimE, dim)
 
     for i in xrange(dim):
       ratio = numpy.abs(1.0 - values[:,i]/valuesE[:,i])

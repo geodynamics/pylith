@@ -18,7 +18,7 @@ import numpy
 from TestLine2 import TestLine2
 from pylith.utils.VTKDataReader import has_vtk
 from pylith.utils.VTKDataReader import VTKDataReader
-
+from pylith.tests.Fault import check_vertex_fields
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
@@ -75,9 +75,22 @@ class TestDislocation(TestLine2):
       return
 
     filename = "%s-fault_info.vtk" % self.outputRoot
-    from pylith.tests.Fault import check_info
     fields = ["normal_dir", "final_slip", "slip_time"]
-    check_info(self, filename, self.faultMesh, fields)
+    check_vertex_fields(self, filename, self.faultMesh, fields)
+
+    return
+
+
+  def test_fault_data(self):
+    """
+    Check fault information.
+    """
+    if self.reader is None:
+      return
+
+    filename = "%s-fault_t0000000.vtk" % self.outputRoot
+    fields = ["cumulative_slip", "traction_change"]
+    check_vertex_fields(self, filename, self.faultMesh, fields)
 
     return
 
@@ -123,7 +136,7 @@ class TestDislocation(TestLine2):
     return stateVar
 
 
-  def calcFaultInfo(self, name, vertices):
+  def calcFaultField(self, name, vertices):
     """
     Calculate fault info.
     """
@@ -132,10 +145,16 @@ class TestDislocation(TestLine2):
     finalSlip = -0.5
     slipTime = 0.0
 
+    slip = 1.0
+    exx = -0.025
+    lp2m = self.density*self.vp**2
+    traction = -exx*lp2m
+
     nvertices = self.faultMesh['nvertices']
 
     if name == "normal_dir":
-      field = normalDir*numpy.ones( (nvertices, 1), dtype=numpy.float64)
+      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
+      field[:,0] = normalDir
 
     elif name == "final_slip":
       field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
@@ -144,8 +163,16 @@ class TestDislocation(TestLine2):
     elif name == "slip_time":
       field = slipTime*numpy.ones( (nvertices, 1), dtype=numpy.float64)
       
+    elif name == "cumulative_slip":
+      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
+      field[:,0] = finalSlip
+
+    elif name == "traction_change":
+      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
+      field[:,0] = traction
+      
     else:
-      raise ValueError("Unknown fault info field '%s'." % name)
+      raise ValueError("Unknown fault field '%s'." % name)
 
     return field
 
