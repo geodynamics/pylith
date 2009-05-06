@@ -112,6 +112,7 @@ pylith::materials::Material::initialize(
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", _id);
   assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
   assert(0 != cs);
@@ -175,7 +176,7 @@ pylith::materials::Material::initialize(
   assert(0 != _normalizer);
   const double lengthScale = _normalizer->lengthScale();
     
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
@@ -259,6 +260,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", _id);
   assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
   
   if (propertyIndex >= 0) { // If field is a property
@@ -298,7 +300,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
     double_array propertiesCell(numQuadPts*numPropsQuadPt);
 
     // Loop over cells
-    for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+    for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
 	 c_iter != cellsEnd;
 	 ++c_iter) {
       propertiesSection->restrictPoint(*c_iter, 
@@ -353,7 +355,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
     double_array stateVarsCell(numQuadPts*numVarsQuadPt);
     
     // Loop over cells
-    for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+    for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
 	 c_iter != cellsEnd;
 	 ++c_iter) {
       stateVarsSection->restrictPoint(*c_iter, 

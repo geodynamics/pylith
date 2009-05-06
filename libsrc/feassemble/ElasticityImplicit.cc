@@ -162,6 +162,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", materialId);
   assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
@@ -184,7 +185,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   _logger->eventEnd(setupEvent);
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
@@ -344,6 +345,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", materialId);
   assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
@@ -375,7 +377,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   _logger->eventEnd(setupEvent);
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell

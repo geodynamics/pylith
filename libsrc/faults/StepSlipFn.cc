@@ -73,6 +73,7 @@ pylith::faults::StepSlipFn::initialize(
   assert(!sieveMesh.isNull());
   const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
+  const label_sequence::iterator verticesBegin = vertices->begin();
   const label_sequence::iterator verticesEnd = vertices->end();
 
   delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
@@ -130,7 +131,7 @@ pylith::faults::StepSlipFn::initialize(
 
   _slipVertex.resize(spaceDim);
   double_array vCoordsGlobal(spaceDim);  
-  for (label_sequence::iterator v_iter=vertices->begin();
+  for (label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
     coordinates->restrictPoint(*v_iter, 
@@ -188,6 +189,7 @@ pylith::faults::StepSlipFn::slip(topology::Field<topology::SubMesh>* slip,
   assert(!sieveMesh.isNull());
   const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
+  const label_sequence::iterator verticesBegin = vertices->begin();
   const label_sequence::iterator verticesEnd = vertices->end();
 
   // Get sections
@@ -202,7 +204,7 @@ pylith::faults::StepSlipFn::slip(topology::Field<topology::SubMesh>* slip,
   const ALE::Obj<RealSection>& slipSection = slip->section();
   assert(!slipSection.isNull());
 
-  for (label_sequence::iterator v_iter=vertices->begin();
+  for (label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
     finalSlipSection->restrictPoint(*v_iter, &_slipVertex[0], _slipVertex.size());
@@ -234,6 +236,7 @@ pylith::faults::StepSlipFn::slipIncr(topology::Field<topology::SubMesh>* slip,
   assert(!sieveMesh.isNull());
   const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
+  const label_sequence::iterator verticesBegin = vertices->begin();
   const label_sequence::iterator verticesEnd = vertices->end();
 
   // Get sections
@@ -248,7 +251,7 @@ pylith::faults::StepSlipFn::slipIncr(topology::Field<topology::SubMesh>* slip,
   const ALE::Obj<RealSection>& slipSection = slip->section();
   assert(!slipSection.isNull());
 
-  for (label_sequence::iterator v_iter=vertices->begin();
+  for (label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
     finalSlipSection->restrictPoint(*v_iter, &_slipVertex[0], _slipVertex.size());

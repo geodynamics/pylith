@@ -77,6 +77,7 @@ pylith::faults::LiuCosSlipFn::initialize(
   assert(!sieveMesh.isNull());
   const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
+  const label_sequence::iterator verticesBegin = vertices->begin();
   const label_sequence::iterator verticesEnd = vertices->end();
 
   delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
@@ -148,7 +149,7 @@ pylith::faults::LiuCosSlipFn::initialize(
 
   _slipVertex.resize(spaceDim);
   double_array vCoordsGlobal(spaceDim);
-  for (label_sequence::iterator v_iter=vertices->begin();
+  for (label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
     coordinates->restrictPoint(*v_iter, 
@@ -220,6 +221,7 @@ pylith::faults::LiuCosSlipFn::slip(topology::Field<topology::SubMesh>* slip,
   assert(!sieveMesh.isNull());
   const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
+  const label_sequence::iterator verticesBegin = vertices->begin();
   const label_sequence::iterator verticesEnd = vertices->end();
 
   // Get sections
@@ -239,7 +241,7 @@ pylith::faults::LiuCosSlipFn::slip(topology::Field<topology::SubMesh>* slip,
   assert(!slipSection.isNull());
 
   const int spaceDim = _slipVertex.size();
-  for (label_sequence::iterator v_iter=vertices->begin();
+  for (label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
     finalSlipSection->restrictPoint(*v_iter, &_slipVertex[0],
@@ -279,6 +281,7 @@ pylith::faults::LiuCosSlipFn::slipIncr(				      topology::Field<topology::SubMe
   assert(!sieveMesh.isNull());
   const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
+  const label_sequence::iterator verticesBegin = vertices->begin();
   const label_sequence::iterator verticesEnd = vertices->end();
 
   // Get sections
@@ -298,7 +301,7 @@ pylith::faults::LiuCosSlipFn::slipIncr(				      topology::Field<topology::SubMe
   assert(!slipSection.isNull());
 
   const int spaceDim = _slipVertex.size();
-  for (label_sequence::iterator v_iter=vertices->begin();
+  for (label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
     finalSlipSection->restrictPoint(*v_iter, &_slipVertex[0],

@@ -482,7 +482,9 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
   Mesh::renumbering_type& fRenumbering = _faultMesh->getRenumbering();
   const int rank = mesh->commRank();
 
-  for (Mesh::label_sequence::iterator c_iter = cellsCohesiveBegin; c_iter != cellsCohesiveEnd; ++c_iter) {
+  for (Mesh::label_sequence::iterator c_iter = cellsCohesiveBegin;
+       c_iter != cellsCohesiveEnd;
+       ++c_iter) {
     mesh->getSieve()->cone(*c_iter, cV);
     const int               coneSize  = cV.getSize();
     const Mesh::point_type *cone      = cV.getPoints();
@@ -630,8 +632,9 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", id());
   assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     const int cellNumCorners = sieveMesh->getNumCellCorners(*c_iter);
@@ -1140,7 +1143,9 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   const ALE::Obj<RealSection>& coordinates  = mesh->getRealSection("coordinates");
   const ALE::Obj<RealSection>& fCoordinates = _faultMesh->getRealSection("coordinates");
 
-  for (Mesh::label_sequence::iterator v_iter = vertices->begin(); v_iter != verticesEnd; ++v_iter) {
+  for (Mesh::label_sequence::iterator v_iter = verticesBegin;
+       v_iter != verticesEnd;
+       ++v_iter) {
     if (renumbering.find(*v_iter) != renumberingEnd) {
       const int     v    = *v_iter;
       const int     dim  = coordinates->getFiberDimension(*v_iter);

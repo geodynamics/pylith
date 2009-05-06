@@ -195,6 +195,7 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", materialId);
   assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get fields
@@ -205,7 +206,7 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
 					      dispCell.size(), &dispCell[0]);
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Retrieve geometry information for current cell
@@ -266,8 +267,9 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", _material->id());
   assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     const int cellNumCorners = sieveMesh->getNumCellCorners(*c_iter);
@@ -403,6 +405,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", materialId);
   assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get field
@@ -416,7 +419,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   assert(!fieldSection.isNull());
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Retrieve geometry information for current cell
@@ -477,6 +480,7 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", materialId);
   assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get field
@@ -484,7 +488,7 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
   assert(!fieldSection.isNull());
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     fieldSection->restrictPoint(*c_iter, &strainCell[0], strainCell.size());

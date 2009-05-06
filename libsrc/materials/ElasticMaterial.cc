@@ -255,7 +255,7 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
   const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     retrievePropsAndVars(*c_iter);
@@ -347,6 +347,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", id());
   assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
 
@@ -403,7 +404,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
   const ALE::Obj<RealSection>& stressSection = _initialStress->section();
   assert(!stressSection.isNull());
     
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
@@ -472,6 +473,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", id());
   assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
 
@@ -528,7 +530,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   const ALE::Obj<RealSection>& strainSection = _initialStrain->section();
   assert(!strainSection.isNull());
     
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell

@@ -141,6 +141,8 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
     << std::endl;
 #endif
 
+  assert(!cells.isNull());
+  const typename label_sequence::iterator cellsBegin = cells->begin();
   const typename label_sequence::iterator cellsEnd = cells->end();
   assert(0 != _geometry);
   const int numBasis = _numBasis;
@@ -161,7 +163,7 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   const double_array& jacobianDet = _engine->jacobianDet();
   const double_array& basisDeriv = _engine->basisDeriv();
 
-  for(typename label_sequence::iterator c_iter = cells->begin();
+  for(typename label_sequence::iterator c_iter = cellsBegin;
       c_iter != cellsEnd;
       ++c_iter) {
     coordsVisitor.clear();

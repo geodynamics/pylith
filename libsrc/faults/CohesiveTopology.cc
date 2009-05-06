@@ -154,6 +154,10 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   // Add new shadow vertices and possibly Lagrange multipler vertices
   const ALE::Obj<SieveSubMesh::label_sequence>& fVertices       = faultSieveMesh->depthStratum(0);
   assert(!fVertices.isNull());
+  const SieveSubMesh::label_sequence::const_iterator fVerticesBegin = 
+    fVertices->begin();
+  const SieveSubMesh::label_sequence::const_iterator fVerticesEnd = 
+    fVertices->end();
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
@@ -165,9 +169,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   std::map<point_type,point_type> vertexRenumber;
   std::map<point_type,point_type> cellRenumber;
 
-  const SieveSubMesh::label_sequence::const_iterator fVerticesEnd = 
-    fVertices->end();
-  for(SieveSubMesh::label_sequence::iterator v_iter = fVertices->begin();
+  for(SieveSubMesh::label_sequence::iterator v_iter = fVerticesBegin;
       v_iter != fVerticesEnd;
       ++v_iter, ++newPoint) {
     vertexRenumber[*v_iter] = newPoint;
@@ -201,7 +203,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     sieveMesh->reallocate(sieveMesh->getIntSection(*name));
   } // for
 #if 0 // TEST OF OPTIMIZATION?? [MATT: WHY IS THIS COMMENTED OUT?]
-  for(SieveSubMesh::label_sequence::iterator v_iter = fVertices->begin();
+  for(SieveSubMesh::label_sequence::iterator v_iter = fVerticesBegin;
       v_iter != fVerticesEnd;
       ++v_iter, ++newPoint) {
     vertexRenumber[*v_iter] = newPoint;
@@ -222,6 +224,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   const ALE::Obj<SieveSubMesh::label_sequence>& faces =
     faultSieveMesh->heightStratum(1);
   assert(!faces.isNull());
+  const SieveSubMesh::label_sequence::const_iterator facesBegin = faces->begin();
+  const SieveSubMesh::label_sequence::const_iterator facesEnd = faces->end();
   const ALE::Obj<Mesh::label_type>& material = 
     sieveMesh->getLabel("material-id");
   assert(!material.isNull());
@@ -233,8 +237,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> cV2(*ifaultSieve, (size_t) pow(std::max(1, ifaultSieve->getMaxConeSize()), faultSieveMesh->depth()));
   std::set<Mesh::point_type> faceSet;
 
-  const SieveSubMesh::label_sequence::const_iterator facesEnd = faces->end();
-  for(SieveSubMesh::label_sequence::iterator f_iter = faces->begin();
+  for(SieveSubMesh::label_sequence::iterator f_iter = facesBegin;
       f_iter != facesEnd;
       ++f_iter, ++newPoint) {
     const point_type face = *f_iter;
@@ -595,12 +598,14 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   const ALE::Obj<SieveSubMesh::label_sequence>& fVertices2 =
     faultSieveMesh->depthStratum(0);
   assert(!fVertices2.isNull());
+  SieveSubMesh::label_sequence::const_iterator fVertices2Begin = 
+    fVertices2->begin();
+  SieveSubMesh::label_sequence::const_iterator fVertices2End = 
+    fVertices2->end();
 
   if (debug)
     coordinates->view("Coordinates without shadow vertices");
-  SieveSubMesh::label_sequence::const_iterator fVertices2End = 
-    fVertices2->end();
-  for (SieveSubMesh::label_sequence::iterator v_iter = fVertices2->begin();
+  for (SieveSubMesh::label_sequence::iterator v_iter = fVertices2Begin;
       v_iter != fVertices2End;
       ++v_iter) {
     coordinates->addPoint(vertexRenumber[*v_iter],
@@ -611,7 +616,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   } // for
   sieveMesh->reallocate(coordinates);
   fVertices2End = fVertices2->end();
-  for (SieveSubMesh::label_sequence::iterator v_iter = fVertices2->begin();
+  for (SieveSubMesh::label_sequence::iterator v_iter = fVertices2Begin;
       v_iter != fVertices2End;
       ++v_iter) {
     coordinates->updatePoint(vertexRenumber[*v_iter], 
