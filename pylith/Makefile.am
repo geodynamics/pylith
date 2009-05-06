@@ -119,7 +119,12 @@ nobase_pkgpyexec_PYTHON = \
 	utils/VTKDataReader.py \
 	utils/importing.py \
 	utils/profiling.py \
-	utils/testarray.py
+	utils/testarray.py \
+	tests/__init__.py \
+	tests/PhysicalProperties.py \
+	tests/Solution.py \
+	tests/StateVariables.py \
+	tests/Fault.py
 
 
 if ENABLE_TETGEN
