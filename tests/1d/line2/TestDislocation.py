@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/1d/line2/TestAxial.py
+## @file tests/1d/line2/TestDislocation.py
 ##
 ## @brief Test suite for testing pylith with 1-D axial extension.
 
@@ -22,9 +22,9 @@ from pylith.utils.VTKDataReader import VTKDataReader
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
-class AxialApp(PyLithApp):
+class DislocationApp(PyLithApp):
   def __init__(self):
-    PyLithApp.__init__(self, name="axialextension")
+    PyLithApp.__init__(self, name="dislocation")
     return
 
 
@@ -34,13 +34,13 @@ def run_pylith():
   Run pylith.
   """
   if not "done" in dir(run_pylith):
-    app = AxialApp()
+    app = DislocationApp()
     app.run()
     run_pylith.done = True
   return
 
 
-class TestAxial(unittest.TestCase):
+class TestDislocation(unittest.TestCase):
   """
   Test suite for testing pylith with 1-D axial extension.
   """
@@ -64,7 +64,7 @@ class TestAxial(unittest.TestCase):
     if self.reader is None:
       return
 
-    data = self.reader.read("axialextension-statevars-elastic_info.vtk")
+    data = self.reader.read("dislocation-statevars-elastic_info.vtk")
 
     # Check cells
     ncellsE = 4
@@ -121,7 +121,7 @@ class TestAxial(unittest.TestCase):
     if self.reader is None:
       return
 
-    data = self.reader.read("axialextension_t0000000.vtk")
+    data = self.reader.read("dislocation_t0000000.vtk")
 
     # Check cells
     ncellsE = 4
