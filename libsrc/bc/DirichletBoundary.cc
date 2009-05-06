@@ -78,7 +78,6 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
 
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
   assert(0 != cs);
@@ -94,10 +93,6 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
     _tmpField->newSection(vertices, fiberDim);
     _tmpField->allocate();
   } // if
-
-  // ERROR: NEED TO TRANSLATE LABELS FROM MESH INTO SUBMESH
-  std::cerr << "TODO: Translate labels from mesh into submesh." << std::endl;
-  assert(0);
 
   if (0 == strcasecmp(name, "initial")) {
     _tmpField->label("displacement");

@@ -461,7 +461,9 @@ pylith::faults::TopologyOps::orientFaultSieve(const int dim,
     }
   }
   flippedCells.clear();
-  for(ALE::Mesh::label_sequence::iterator e_iter = fFaces->begin(); e_iter != fFaces->end(); ++e_iter) {
+  const ALE::Mesh::label_sequence::iterator fFacesBegin = fFaces->begin();
+  const ALE::Mesh::label_sequence::iterator fFacesEnd = fFaces->end();
+  for(ALE::Mesh::label_sequence::iterator e_iter = fFacesBegin; e_iter != fFacesEnd; ++e_iter) {
     if (debug) std::cout << "  Checking orientation of fault face " << *e_iter << std::endl;
     // for each face get the support (2 fault cells)
     const ALE::Obj<ALE::Mesh::sieve_type::traits::supportSequence>& support = faultSieve->support(*e_iter);

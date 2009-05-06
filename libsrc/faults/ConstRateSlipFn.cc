@@ -75,6 +75,7 @@ pylith::faults::ConstRateSlipFn::initialize(
   assert(!sieveMesh.isNull());
   const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
+  const label_sequence::iterator verticesBegin = vertices->begin();
   const label_sequence::iterator verticesEnd = vertices->end();
 
   delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
@@ -132,7 +133,7 @@ pylith::faults::ConstRateSlipFn::initialize(
 
   _slipRateVertex.resize(spaceDim);
   double_array vCoordsGlobal(spaceDim);
-  for (label_sequence::iterator v_iter=vertices->begin();
+  for (label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
     coordinates->restrictPoint(*v_iter, 
@@ -190,6 +191,7 @@ pylith::faults::ConstRateSlipFn::slip(topology::Field<topology::SubMesh>* slip,
   assert(!sieveMesh.isNull());
   const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
+  const label_sequence::iterator verticesBegin = vertices->begin();
   const label_sequence::iterator verticesEnd = vertices->end();
 
   // Get sections
@@ -204,7 +206,7 @@ pylith::faults::ConstRateSlipFn::slip(topology::Field<topology::SubMesh>* slip,
   const ALE::Obj<RealSection>& slipSection = slip->section();
   assert(!slipSection.isNull());
 
-  for (label_sequence::iterator v_iter=vertices->begin();
+  for (label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
     slipRateSection->restrictPoint(*v_iter, &_slipRateVertex[0],
@@ -238,6 +240,7 @@ pylith::faults::ConstRateSlipFn::slipIncr(
   assert(!sieveMesh.isNull());
   const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
+  const label_sequence::iterator verticesBegin = vertices->begin();
   const label_sequence::iterator verticesEnd = vertices->end();
 
   // Get sections
@@ -252,7 +255,7 @@ pylith::faults::ConstRateSlipFn::slipIncr(
   const ALE::Obj<RealSection>& slipSection = slip->section();
   assert(!slipSection.isNull());
 
-  for (label_sequence::iterator v_iter=vertices->begin();
+  for (label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
     slipRateSection->restrictPoint(*v_iter, &_slipRateVertex[0],

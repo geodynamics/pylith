@@ -48,6 +48,7 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->heightStratum(0);
   assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
   const ALE::Obj<SieveMesh::label_type>& materialsLabel = 
     sieveMesh->getLabel("material-id");
@@ -56,7 +57,7 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
   int* matEnd = materialIds + numMaterials;
   std::sort(matBegin, matEnd);
 
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     const int cellId = sieveMesh->getValue(materialsLabel, *c_iter);

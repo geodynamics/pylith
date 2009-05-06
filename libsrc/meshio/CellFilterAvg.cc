@@ -76,12 +76,13 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     sieveMesh->heightStratum(0) :
     sieveMesh->getLabelStratum(label, labelId);
   assert(!cells.isNull());
+  const typename label_sequence::iterator cellsBegin = cells->begin();
   const typename label_sequence::iterator cellsEnd = cells->end();
 
   // Only processors with cells for output get the correct fiber dimension.
   const ALE::Obj<RealSection>& sectionIn = fieldIn.section();
   assert(!sectionIn.isNull());
-  const int totalFiberDim = sectionIn->getFiberDimension(*cells->begin());
+  const int totalFiberDim = sectionIn->getFiberDimension(*cellsBegin);
   const int fiberDim = totalFiberDim / numQuadPts;
   assert(fiberDim * numQuadPts == totalFiberDim);
 
@@ -125,7 +126,7 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     scalar += wts[iQuad];
 
   // Loop over cells
-  for (typename label_sequence::iterator c_iter=cells->begin();
+  for (typename label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     const double* values = sectionIn->restrictPoint(*c_iter);

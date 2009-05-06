@@ -110,6 +110,10 @@ pylith::meshio::MeshIO::_getVertices(double_array* coordinates,
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
+  const SieveMesh::label_sequence::iterator verticesBegin = 
+    vertices->begin();
+  const SieveMesh::label_sequence::iterator verticesEnd = 
+    vertices->end();
   const ALE::Obj<RealSection>& coordsField =
     sieveMesh->getRealSection("coordinates");
   assert(!coordsField.isNull());
@@ -122,10 +126,8 @@ pylith::meshio::MeshIO::_getVertices(double_array* coordinates,
   const int size = (*numVertices) * (*spaceDim);
   coordinates->resize(size);
 
-  const SieveMesh::label_sequence::iterator verticesEnd = 
-    vertices->end();
   int i = 0;
-  for(SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+  for(SieveMesh::label_sequence::iterator v_iter=verticesBegin;
       v_iter != verticesEnd;
       ++v_iter) {
     const RealSection::value_type *vertexCoords = 
@@ -162,6 +164,10 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
   const ALE::Obj<SieveMesh::label_sequence>& meshCells = 
     sieveMesh->heightStratum(0);
   assert(!meshCells.isNull());
+  const SieveMesh::label_sequence::iterator meshCellsBegin = 
+    meshCells->begin();
+  const SieveMesh::label_sequence::iterator meshCellsEnd = 
+    meshCells->end();
 
   *meshDim = _mesh->dimension();
   *numCells = meshCells->size();
@@ -176,8 +182,8 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
   ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> 
     pV(sieve->getMaxConeSize());
   int i = 0;
-  for(SieveMesh::label_sequence::iterator e_iter = meshCells->begin();
-      e_iter != meshCells->end();
+  for(SieveMesh::label_sequence::iterator e_iter = meshCellsBegin;
+      e_iter != meshCellsEnd;
       ++e_iter) {
     sieve->cone(*e_iter, pV);
     const SieveMesh::point_type *cone = pV.getPoints();
@@ -206,6 +212,10 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
     const ALE::Obj<SieveMesh::label_sequence>& cells = 
       sieveMesh->heightStratum(0);
     assert(!cells.isNull());
+    const SieveMesh::label_sequence::iterator cellsBegin = 
+      cells->begin();
+    const SieveMesh::label_sequence::iterator cellsEnd = 
+      cells->end();
 
     const int numCells = materialIds.size();
     if (cells->size() != numCells) {
@@ -216,11 +226,10 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
       throw std::runtime_error(msg.str());
     } // if
     int i = 0;
-    const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
 #ifdef IMESH_NEW_LABELS
     labelMaterials->setChart(sieveMesh->getSieve()->getChart());
-    for(SieveMesh::label_sequence::iterator e_iter = cells->begin();
+    for(SieveMesh::label_sequence::iterator e_iter = cellsBegin;
 	e_iter != cellsEnd;
 	++e_iter) {
       labelMaterials->setConeSize(*e_iter, 1);
@@ -228,7 +237,7 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
     if (cells->size()) {labelMaterials->setSupportSize(0, cells->size());}
     labelMaterials->allocate();
 #endif
-    for(SieveMesh::label_sequence::iterator e_iter = cells->begin();
+    for(SieveMesh::label_sequence::iterator e_iter = cellsBegin;
 	e_iter != cellsEnd;
 	++e_iter) {
       sieveMesh->setValue(labelMaterials, *e_iter, materialIds[i++]);
@@ -268,6 +277,8 @@ pylith::meshio::MeshIO::_getMaterials(int_array* materialIds) const
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->heightStratum(0);
   assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
   const int numCells = cells->size();
 
   const int size = numCells;
@@ -277,9 +288,8 @@ pylith::meshio::MeshIO::_getMaterials(int_array* materialIds) const
     sieveMesh->getLabel("material-id");
   const int idDefault = 0;
   
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
   int i = 0;
-  for(SieveMesh::label_sequence::iterator e_iter = cells->begin();
+  for(SieveMesh::label_sequence::iterator e_iter = cellsBegin;
       e_iter != cellsEnd;
       ++e_iter)
     (*materialIds)[i++] = 

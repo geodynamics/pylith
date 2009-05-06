@@ -87,11 +87,12 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
     submesh->heightStratum(1);
   assert(!cells.isNull());
+  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Make sure surface cells are compatible with quadrature.
   const int boundaryDepth = submesh->depth()-1; // depth of bndry cells
-  for (SieveSubMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     const int cellNumCorners = 
@@ -171,7 +172,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   // Compute quadrature information
   _quadrature->computeGeometry(*_boundaryMesh, cells);
 
-  for(SieveSubMesh::label_sequence::iterator c_iter = cells->begin();
+  for(SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
       c_iter != cellsEnd;
       ++c_iter) {
     _quadrature->retrieveGeometry(*c_iter);
@@ -270,6 +271,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
     submesh->heightStratum(1);
   assert(!cells.isNull());
+  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
@@ -298,7 +300,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   const double dt = _dt;
   assert(dt > 0);
 
-  for (SieveSubMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Get geometry information for current cell
@@ -376,6 +378,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
     submesh->heightStratum(1);
   assert(!cells.isNull());
+  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
@@ -405,7 +408,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   // Allocate matrix for cell values.
   _initCellMatrix();
 
-  for (SieveSubMesh::label_sequence::iterator c_iter=cells->begin();
+  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Get geometry information for current cell
