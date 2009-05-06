@@ -93,6 +93,7 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
   assert(0 != upDir);
   assert(0 != normalDir);
   assert(0 != _quadrature);
+  assert(0 != _normalizer);
 
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
   assert(0 != cs);
@@ -123,12 +124,16 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
   topology::Field<topology::SubMesh>& slip = _fields->get("slip");
   slip.newSection(vertices, cs->spaceDim());
   slip.allocate();
+  slip.vectorFieldType(topology::FieldBase::VECTOR);
+  slip.scale(_normalizer->lengthScale());
 
   // Allocate cumulative slip field
   _fields->add("cumulative slip", "cumulative_slip");
   topology::Field<topology::SubMesh>& cumSlip = _fields->get("cumulative slip");
   cumSlip.newSection(slip);
   cumSlip.allocate();
+  cumSlip.vectorFieldType(topology::FieldBase::VECTOR);
+  cumSlip.scale(_normalizer->lengthScale());
 
   // Setup pseudo-stiffness of cohesive cells to improve conditioning
   // of Jacobian matrix
@@ -149,6 +154,9 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
 
   // Create empty tractions field for change in fault tractions.
   _fields->add("tractions", "tractions_change");
+  topology::Field<topology::SubMesh>& tractions = _fields->get("tractions");
+  tractions.vectorFieldType(topology::FieldBase::VECTOR);
+  tractions.scale(_normalizer->pressureScale());
 } // initialize
 
 // ----------------------------------------------------------------------
