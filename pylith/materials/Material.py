@@ -51,12 +51,12 @@ class Material(Component):
     ## \b Properties
     ## @li \b id Material identifier (from mesh generator)
     ## @li \b name Name of material
-    ## @li \b useInitialState Use initial state (true) or not (false).
+    ## @li \b use_initial_state Use initial state (true) or not (false).
     ##
     ## \b Facilities
     ## @li \b db Database of material property parameters
     ## @li \b quadrature Quadrature object for numerical integration
-    ## @li \b dbInitialState Database for initial state.
+    ## @li \b initial_state_db Database for initial state.
 
     import pyre.inventory
 
