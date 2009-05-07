@@ -131,6 +131,7 @@ class OutputManager(PetscComponent):
     self._logger.eventBegin(logEvent)    
 
     # Nondimensionalize time step
+    self.normalizer = normalizer
     timeScale = normalizer.timeScale()
     self.dtN = normalizer.nondimensionalize(self.dt, timeScale)
 
@@ -157,7 +158,9 @@ class OutputManager(PetscComponent):
     if numTimeSteps > 0 and self.outputFreq == "skip" and self.skip > 0:
       nsteps = int(numTimeSteps / (1+self.skip))
     elif numTimeSteps > 0 and self.outputFreq == "time_step":
-      nsteps = int(1 + totalTime / self.dtN)
+      timeScale = self.normalizer.timeScale()
+      totalTimeN = self.normalizer.nondimensionalize(totalTime, timeScale)
+      nsteps = int(1 + totalTimeN / self.dtN)
 
     (mesh, label, labelId) = self.dataProvider.getDataMesh()
     self._open(mesh, nsteps, label, labelId)
