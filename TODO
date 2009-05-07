@@ -6,6 +6,12 @@ CURRENT ISSUES/PRIORITIES
 
 0. SWIG conversion [Brad]
 
+  (1) Finish initial stress/strain for materials.
+
+    pylith/materials/ElasticMaterial.py
+      initial_stress_db
+      initial_strain_db
+
   (3) Full-scale tests (few 1-D, 2-D, and 3-D)
 
     1-D
@@ -30,7 +36,8 @@ CURRENT ISSUES/PRIORITIES
       5. single fault (dynamic)
       6. two fault (static)
       7. two fault (static, parallel)
- 
+      8. gravity w/initial stress and strain 
+
 
   (4) SNES
     Reformulate implicit time stepping to use displacement increment.
@@ -38,6 +45,43 @@ CURRENT ISSUES/PRIORITIES
     If solnIncr is true, Dirichlet BC set increment values in dispIncr(t).
 
   (5) Add missing unit tests
+
+    pytests.meshio.TestOutputSoln
+    pytests.meshio.TestOutputDirichlet
+    pytests.meshio.TestOutputFaultKin
+    pytests.meshio.TestOutputMatElastic
+    pytests.meshio.TestOutputNeumann
+
+    add test_factory() methods to Python unit tests
+
+    pytests
+      test_configure
+
+    libtests/materials
+      Cleanup testUpdateStateVars for Maxwell models
+
+    libtests/bc/TestDirichletBoundary::testVertexField()
+    libtests/bc/TestDirichletBoundary::testBoundaryMesh()
+
+    pytests/bc/TestDirichletBoundary
+    pytests/bc/TestNeumann (output)
+
+    libtests/feassemble/ElasticityExplict
+      testVerifyConfiguration()
+      testCellField()
+    libtests/feassemble/ElasticityImplict
+      testVerifyConfiguration()
+      testCellField()
+    libtests/materials/Material
+      propertyField()
+      stateVarField()
+
+    Need unit tests
+      MeshIO::normalizer()
+      Material::normalizer()
+      Constraint::normalizer()
+      Integrator::normalizer()
+      DataWriter::normalizer()
 
   (6) Tidy up
 
@@ -57,15 +101,6 @@ CURRENT ISSUES/PRIORITIES
 
     Eliminate use of Inventory class.
 
-    add test_factory() methods to Python unit tests
-
-    Cleanup error checking on PETSc calls.
-      FaultCohesiveKin
-      DataWriterVTK
-
-    pytests
-      test_configure
-
     Switch Components to PetscComponents.
       Add _cleanup() to components to deallocate local data structures.
       Add cleanup() to non-components to deallocate local data structures.
@@ -77,42 +112,11 @@ CURRENT ISSUES/PRIORITIES
     Add check before calling newSection() when want to enforce at
     least 1 value.
 
-    Distribution debug (dump VTK) needs Nondimensional
-
-  pylith/materials/ElasticMaterial.py
-    initial_stress_db
-    initial_strain_db
-
   libsrc/materials
     Generalized Maxwell materials
 
-  libtests/materials
-    Cleanup testUpdateStateVars for Maxwell models
-
-  libtests/bc/TestDirichletBoundary::testVertexField()
-  libtests/bc/TestDirichletBoundary::testBoundaryMesh()
-
-  pytests/bc/TestDirichletBoundary
-  pytests/bc/TestNeumann (output)
-
-  libtests/feassemble/ElasticityExplict
-    testVerifyConfiguration()
-    testCellField()
-  libtests/feassemble/ElasticityImplict
-    testVerifyConfiguration()
-    testCellField()
-  libtests/materials/Material
-    propertyField()
-    stateVarField()
-
-  DirichletPoints (Python) - rate == None -> dbRate == 0
+  DirichletBC (Python) - rate == None -> dbRate == 0
   DirichletBoundary (Python) - rate == None -> dbRate == 0
-
-  pytests.meshio.TestOutputSoln
-  pytests.meshio.TestOutputDirichlet
-  pytests.meshio.TestOutputFaultKin
-  pytests.meshio.TestOutputMatElastic
-  pytests.meshio.TestOutputNeumann
 
 1. Memory model [Matt]
    playpen/memcheck/*
@@ -123,13 +127,6 @@ CURRENT ISSUES/PRIORITIES
         create dimensionalized copy (NAME_dimensioned)
       solution in output (nondimensional instead of dimensioned)
       const slip rate in output (slip rate not slip)          
-
-    Need unit tests
-      MeshIO::normalizer()
-      Material::normalizer()
-      Constraint::normalizer()
-      Integrator::normalizer()
-      DataWriter::normalizer()
 
 3. 3-D Power-law rheology [Charles]
 
