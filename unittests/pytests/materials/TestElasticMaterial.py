@@ -42,7 +42,10 @@ class TestElasticMaterial(unittest.TestCase):
     db.inventory.iohandler = iohandler
     db._configure()
 
-    self.material.dbInitialStress(db)
+    material = self.material
+    material.inventory.dbInitialStress = db
+    material.inventory.useInitialStress = True
+    material._configure()
 
     # No test of result.
     return
@@ -59,7 +62,10 @@ class TestElasticMaterial(unittest.TestCase):
     db.inventory.iohandler = iohandler
     db._configure()
 
-    self.material.dbInitialStrain(db)
+    material = self.material
+    material.inventory.dbInitialStrain = db
+    material.inventory.useInitialStrain = True
+    material._configure()
 
     # No test of result.
     return
