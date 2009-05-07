@@ -56,6 +56,9 @@ Mesh or SubMesh to indicate that they operate on a mesh or submesh
 (e.g., CellFilterAvg is now CellFilterAvgMesh or
 CellFilterAvgSubMesh). This is related to the use of templates.
 
+(5) The DirichletPoints boundary condition has been renamed to
+DirichletBC.
+
 STILL ON THE TODO LIST
 
 (5) Nondimensionalization of the problem eliminates the need to

@@ -363,8 +363,6 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   assert(0 != jacobian);
   assert(0 != fields);
 
-  typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> visitor_type;
-
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const double_array& quadWts = _quadrature->quadWts();
@@ -393,9 +391,10 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
 					    solutionSection);
   assert(!globalOrder.isNull());
-  visitor_type iV(*solutionSection, *globalOrder,
-		  (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
-			    sieveMesh->depth())*spaceDim);
+  topology::Mesh::IndicesVisitor jacobianVisitor(*solutionSection,
+						 *globalOrder,
+			   (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
+				     sieveMesh->depth())*spaceDim);
 
   // Get sparse matrix
   const PetscMat jacobianMat = jacobian->matrix();
@@ -444,11 +443,11 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
     
     // Assemble cell contribution into PETSc Matrix
+    jacobianVisitor.clear();
     PetscErrorCode err = updateOperator(jacobianMat, *submesh->getSieve(), 
-					iV, *c_iter, &_cellMatrix[0], 
-					ADD_VALUES);
+					jacobianVisitor, *c_iter,
+					&_cellMatrix[0], ADD_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
-    iV.clear();
   } // for
 
   _needNewJacobian = false;

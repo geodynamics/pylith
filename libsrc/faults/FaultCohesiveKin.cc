@@ -291,7 +291,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
       const int indexK = iConstraint + 2*numConstraintVert;
 
       const double pseudoStiffness = stiffnessCell[iConstraint];
-      //assert(areaAssembledCell[iConstraint] > 0);
+      assert(areaAssembledCell[iConstraint] > 0);
       const double wt = pseudoStiffness * 
 	areaCell[iConstraint] / areaAssembledCell[iConstraint];
       
@@ -441,8 +441,6 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
   // direction cosines. Entries are associated with vertices ik, jk,
   // ki, and kj.
 
-  PetscErrorCode err = 0;
-
   // Get cohesive cells
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
@@ -581,8 +579,9 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 
     // Insert cell contribution into PETSc Matrix
     jacobianVisitor.clear();
-    err = updateOperator(jacobianMatrix, *sieveMesh->getSieve(),
-			 jacobianVisitor, *c_iter, &matrixCell[0], INSERT_VALUES);
+    PetscErrorCode err = updateOperator(jacobianMatrix, *sieveMesh->getSieve(),
+					      jacobianVisitor, *c_iter,
+					      &matrixCell[0], INSERT_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
   } // for
   PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*4);
