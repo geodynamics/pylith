@@ -150,17 +150,18 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::closeTimeStep(void)
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
-				       const double t,
-				       const field_type& field)
+				            const double t,
+					    const field_type& field,
+					    const mesh_type& mesh)
 { // writeVertexField
-  typedef typename field_type::Mesh::SieveMesh SieveMesh;
+  typedef typename mesh_type::SieveMesh SieveMesh;
   typedef typename field_type::Mesh::RealSection RealSection;
 
   try {
     int rank = 0;
     MPI_Comm_rank(field.mesh().comm(), &rank);
 
-    const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
+    const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
     assert(!sieveMesh.isNull());
     const std::string labelName = 
       (sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";

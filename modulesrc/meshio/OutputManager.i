@@ -94,9 +94,11 @@ namespace pylith {
        *
        * @param t Time associated with field.
        * @param field Vertex field.
+       * @param mesh Mesh for output.
        */
       void appendVertexField(const double t,
-			     const field_type& field);
+			     const field_type& field,
+			     const mesh_type& mesh);
       
       /** Append finite-element cell field to file.
        *

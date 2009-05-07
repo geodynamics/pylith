@@ -135,12 +135,13 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::OutputManager<mesh_type, field_type>::appendVertexField(
 			                                const double t,
-							const field_type& field)
+							const field_type& field,
+							const mesh_type& mesh)
 { // appendVertexField
   const field_type& fieldFiltered = 
     (0 == _vertexFilter) ? field : _vertexFilter->filter(field);
 
-  _writer->writeVertexField(t, fieldFiltered);
+  _writer->writeVertexField(t, fieldFiltered, mesh);
 } // appendVertexField
 
 // ----------------------------------------------------------------------

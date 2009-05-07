@@ -55,9 +55,11 @@ namespace pylith {
        *
        * @param t Time associated with field.
        * @param field Vertex field.
+       * @param mesh Mesh for output.
        */
       void appendVertexField(const double t,
-			     const pylith::topology::Field<pylith::topology::Mesh>& field);
+			     const pylith::topology::Field<pylith::topology::Mesh>& field,
+			     const pylith::topology::SubMesh& mesh);
 
 
 

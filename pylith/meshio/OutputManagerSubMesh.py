@@ -100,11 +100,11 @@ class OutputManagerSubMesh(OutputManager, ModuleOutputManager):
     return
 
 
-  def _appendVertexField(self, t, field):
+  def _appendVertexField(self, t, field, mesh):
     """
     Call C++ appendVertexField();
     """
-    ModuleOutputManager.appendVertexField(self, t, field)
+    ModuleOutputManager.appendVertexField(self, t, field, mesh)
     return
 
 

@@ -225,7 +225,7 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
   manager.writer(&writer);
   manager.open(mesh, numTimeSteps);
   manager.openTimeStep(t, mesh);
-  manager.appendVertexField(t, field);
+  manager.appendVertexField(t, field, mesh);
   manager.closeTimeStep();
   manager.close();
 
@@ -238,7 +238,7 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
   
   manager.open(mesh, numTimeSteps);
   manager.openTimeStep(t, mesh);
-  manager.appendVertexField(t, field);
+  manager.appendVertexField(t, field, mesh);
   manager.closeTimeStep();
   manager.close();
 

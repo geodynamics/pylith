@@ -80,9 +80,11 @@ namespace pylith {
        *
        * @param t Time associated with field.
        * @param field Field over vertices.
+       * @param mesh Mesh for output.
        */
       void writeVertexField(const double t,
-			    const field_type& field);
+			    const field_type& field,
+			    const mesh_type& mesh);
       
       /** Write field over cells to file.
        *
