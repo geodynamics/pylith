@@ -194,7 +194,7 @@ class OutputManager(PetscComponent):
 
       for name in self.vertexInfoFields:
         field = self.dataProvider.getVertexField(name)
-        self._appendVertexField(t, field)
+        self._appendVertexField(t, field, mesh)
 
       for name in self.cellInfoFields:
         field = self.dataProvider.getCellField(name)
@@ -223,7 +223,7 @@ class OutputManager(PetscComponent):
 
       for name in self.vertexDataFields:
         field = self.dataProvider.getVertexField(name, fields)
-        self._appendVertexField(t, field)
+        self._appendVertexField(t, field, mesh)
 
       for name in self.cellDataFields:
         field = self.dataProvider.getCellField(name, fields)
@@ -355,15 +355,15 @@ class OutputManager(PetscComponent):
     raise NotImplementedError("Implement _open() in derived class.")
 
 
-  def _openTimeStep(self):
+  def _openTimeStep(self, t, mesh, label, labelId):
     raise NotImplementedError("Implement _openTimeStep() in derived class.")
 
 
-  def _appendVertexField(self):
+  def _appendVertexField(self, t, field, mesh):
     raise NotImplementedError("Implement _appendVertexField() in derived class.")
 
 
-  def _appendCellField(self):
+  def _appendCellField(self, t, field, label, labelId):
     raise NotImplementedError("Implement _appendCellField() in derived class.")
 
 

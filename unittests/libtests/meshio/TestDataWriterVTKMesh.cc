@@ -167,7 +167,7 @@ pylith::meshio::TestDataWriterVTKMesh::testWriteVertexField(void)
   } // else
   for (int i=0; i < nfields; ++i) {
     const MeshField& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
-    writer.writeVertexField(t, field);
+    writer.writeVertexField(t, field, *_mesh);
     CPPUNIT_ASSERT(writer._wroteVertexHeader);
     CPPUNIT_ASSERT(false == writer._wroteCellHeader);
   } // for

@@ -171,11 +171,11 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
     return
 
 
-  def _appendVertexField(self, t, field):
+  def _appendVertexField(self, t, field, mesh):
     """
     Call C++ appendVertexField();
     """
-    ModuleOutputSolnSubset.appendVertexField(self, t, field)
+    ModuleOutputSolnSubset.appendVertexField(self, t, field, mesh)
     return
 
   def _appendCellField(self, t, field):
