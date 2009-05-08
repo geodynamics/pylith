@@ -71,6 +71,9 @@ public :
   /// Test setField().
   void testSetField(void);
 
+  /// Test setFieldIncr().
+  void testSetFieldIncr(void);
+
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 

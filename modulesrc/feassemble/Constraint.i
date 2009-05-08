@@ -69,6 +69,17 @@ namespace pylith {
       void setField(const double t,
 		    const pylith::topology::Field<pylith::topology::Mesh>& field) = 0;
       
+      /** Set increment in values from t0 to t1 in field.
+       *
+       * @param t0 Time t.
+       * @param t1 Time t+dt.
+       * @param field Solution field
+       */
+      virtual
+      void setFieldIncr(const double t0,
+			const double t1,
+			const pylith::topology::Field<pylith::topology::Mesh>& field) = 0;
+
     }; // class Constraint
 
   } // feassemble

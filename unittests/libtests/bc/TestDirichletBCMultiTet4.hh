@@ -36,9 +36,12 @@ class pylith::bc::TestDirichletBCMultiTet4 : public TestDirichletBCMulti
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestDirichletBCMultiTet4 );
+
   CPPUNIT_TEST( testSetConstraintSizes );
   CPPUNIT_TEST( testSetConstraints );
   CPPUNIT_TEST( testSetField );
+  CPPUNIT_TEST( testSetFieldIncr );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////

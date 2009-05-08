@@ -123,6 +123,28 @@ class TestDirichletBC(unittest.TestCase):
     return
 
 
+  def test_setFieldIncr(self):
+    """
+    Test setFieldIncr().
+
+    WARNING: This is not a rigorous test of setField() because we
+    don't verify the results.
+    """
+
+    (mesh, bc, field) = self._initialize()
+    bc.setConstraintSizes(field)
+    field.allocate()
+    bc.setConstraints(field)
+    bc.useSolnIncr(True)
+    t0 = 1.0
+    t1 = 2.0
+    bc.setFieldIncr(t0, t1, field)
+
+    # We should really add something here to check to make sure things
+    # actually initialized correctly    
+    return
+
+
   def test_finalize(self):
     """
     Test finalize().

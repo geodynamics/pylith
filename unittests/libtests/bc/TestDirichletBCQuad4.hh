@@ -36,10 +36,13 @@ class pylith::bc::TestDirichletBCQuad4 : public TestDirichletBC
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUB_SUITE( TestDirichletBCQuad4, TestDirichletBC );
+
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testSetConstraintSizes );
   CPPUNIT_TEST( testSetConstraints );
   CPPUNIT_TEST( testSetField );
+  CPPUNIT_TEST( testSetFieldIncr );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////

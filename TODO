@@ -68,6 +68,7 @@ CURRENT ISSUES/PRIORITIES
       test_configure
 
     libtests/materials
+      Cleanup dbToStateVars for Maxwell models (use ids don't just copy)
       Cleanup testUpdateStateVars for Maxwell models
 
     libtests/bc/TestDirichletBoundary::testVertexField()

@@ -44,6 +44,7 @@ pylith::bc::DirichletDataMulti::DirichletDataMulti(void) :
   dbFilenameCRate(0),
   tRefC(0),
   field(0), // General
+  fieldIncr(0), // General
   constraintSizes(0),
   constrainedDOF(0),
   meshFilename(0)

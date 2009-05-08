@@ -189,7 +189,7 @@ pylith::bc::DirichletBC::setField(const double t,
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const SieveMesh::point_type point = _points[iPoint];
     assert(fiberDimension == section->getFiberDimension(point));
-    sieveMesh->restrictClosure(section, point, &allValues[0], fiberDimension);
+    section->restrictPoint(point, &allValues[0], allValues.size());
     for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
       allValues[_fixedDOF[iDOF]] = _valuesInitial[iPoint*numFixedDOF+iDOF];
     if (t > _tRef && 0 != _dbRate)
@@ -199,6 +199,50 @@ pylith::bc::DirichletBC::setField(const double t,
     section->updatePointAll(_points[iPoint], &allValues[0]);
   } // for
 } // setField
+
+// ----------------------------------------------------------------------
+// Set increment in values from t0 to t1 in field.
+void
+pylith::bc::DirichletBC::setFieldIncr(const double t0,
+				      const double t1,
+				      const topology::Field<topology::Mesh>& field)
+{ // setFieldIncr
+  assert(_useSolnIncr);
+
+  const int numFixedDOF = _fixedDOF.size();
+  if (0 == numFixedDOF)
+    return;
+  if (0 == _dbRate) // no rate dependence -> no increment in field
+    return;
+
+  const ALE::Obj<RealSection>& section = field.section();
+  assert(!section.isNull());
+  const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+
+  const int numPoints = _points.size();
+  const int fiberDimension = 
+    (numPoints > 0) ? section->getFiberDimension(_points[0]) : 0;
+  double_array allValues(fiberDimension);
+
+  // Account for when rate dependence begins.
+  double tIncr = 0.0;
+  if (t0 > _tRef) // rate dependence for t0 to t1
+    tIncr = t1 - t0;
+  else if (t1 > _tRef) // rate dependence for tRef to t1
+    tIncr = t1 - _tRef;
+  else
+    tIncr = 0.0; // no rate dependence for t0 to t1
+
+  for (int iPoint=0; iPoint < numPoints; ++iPoint) {
+    const SieveMesh::point_type point = _points[iPoint];
+    assert(fiberDimension == section->getFiberDimension(point));
+    section->restrictPoint(point, &allValues[0], allValues.size());
+    for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
+      allValues[_fixedDOF[iDOF]] = tIncr * _valuesRate[iPoint*numFixedDOF+iDOF];
+    section->updatePointAll(_points[iPoint], &allValues[0]);
+  } // for
+} // setFieldIncr
 
 // ----------------------------------------------------------------------
 // Get mesh labels for points associated with Dirichlet BC.

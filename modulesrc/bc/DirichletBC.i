@@ -90,6 +90,16 @@ namespace pylith {
       void setField(const double t,
 		    const pylith::topology::Field<pylith::topology::Mesh>& field);
       
+      /** Set values in field.
+       *
+       * @param t0 Time t.
+       * @param t1 Time t+dt.
+       * @param field Solution field
+       */
+      void setFieldIncr(const double t0,
+			const double t1,
+			const pylith::topology::Field<pylith::topology::Mesh>& field);
+      
     }; // class DirichletBC
     
   } // bc

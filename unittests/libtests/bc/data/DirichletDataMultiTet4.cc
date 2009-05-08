@@ -14,7 +14,7 @@
  *
  * DirichletPoints BC A at vertices 1 and 3.
  *
- * Fixed DOF: { 1 }
+ * Fixed DOF: { 0 }
  *
  * Initial values
  *   0: 0.1
@@ -30,7 +30,7 @@
  *
  * DirichletPoints BC B at vertices 2 and 3.
  *
- * Fixed DOF: { 0 }
+ * Fixed DOF: { 2 }
  *
  * Initial values
  *   0: 0.01
@@ -44,7 +44,7 @@
  *
  * DirichletPoints BC C at vertices 2 and 3.
  *
- * Fixed DOF: { 2 }
+ * Fixed DOF: { 1 }
  *
  * Initial values
  *   1: 11.0
@@ -125,6 +125,15 @@ const double pylith::bc::DirichletDataMultiTet4::_field[] = {
   40.4, 0.0, 0.0
 };
 
+// Increment values from t=10.0 to t=14.0
+const double pylith::bc::DirichletDataMultiTet4::_fieldIncr[] = {
+   4.0,   0.0,  -4.0,
+   0.0,  40.0,   0.0,
+   8.0,  80.0,  -8.0,
+  12.0, 120.0, -12.0,
+  16.0,   0.0,   0.0
+};
+
 const char* pylith::bc::DirichletDataMultiTet4::_meshFilename = 
   "data/tet4.mesh";
 
@@ -166,6 +175,7 @@ pylith::bc::DirichletDataMultiTet4::DirichletDataMultiTet4(void)
   tRefC = _tRefC;
 
   field = const_cast<double*>(_field);
+  fieldIncr = const_cast<double*>(_fieldIncr);
   constraintSizes = const_cast<int*>(_constraintSizes);
   constrainedDOF = const_cast<int*>(_constrainedDOF);
 

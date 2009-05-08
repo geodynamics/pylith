@@ -88,6 +88,14 @@ const double pylith::bc::DirichletDataMultiTri3::_field[] = {
   2.42, 6.14
 };
 
+// Values from t=10.0 to t=14.0.
+const double pylith::bc::DirichletDataMultiTri3::_fieldIncr[] = {
+  0.0, 0.0,
+  0.0, 0.8,
+ -1.6, 0.0,
+  0.8, 3.2
+};
+
 const char* pylith::bc::DirichletDataMultiTri3::_meshFilename = 
   "data/tri3.mesh";
 
@@ -118,6 +126,7 @@ pylith::bc::DirichletDataMultiTri3::DirichletDataMultiTri3(void)
   tRefB = _tRefB;
 
   field = const_cast<double*>(_field);
+  fieldIncr = const_cast<double*>(_fieldIncr);
   constraintSizes = const_cast<int*>(_constraintSizes);
   constrainedDOF = const_cast<int*>(_constrainedDOF);
 
