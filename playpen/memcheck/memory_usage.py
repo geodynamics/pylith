@@ -45,7 +45,8 @@ def vertexGroupFactory(name):
 
 # ----------------------------------------------------------------------
 # Mesh class
-class Mesh(Component):
+import pylith.perf.Mesh
+class Mesh(Component,pylith.perf.Mesh.Mesh):
   """
   Mesh object for holding mesh size information.
   """
@@ -92,67 +93,7 @@ class Mesh(Component):
     Constructor.
     """
     Component.__init__(self, name)
-    self.cellType = None
-    self.nvertices = 0
-    self.ncells = 0
-    self.coneSize = 0
-    self.dimension = 0
     return
-
-
-  def initialize(self):
-    """
-    Initialize application.
-    """
-    coneSize = {'tri3': 3,
-                'quad4': 4,
-                'tet4': 4,
-                'hex8': 8,
-                }
-    dimension = {'tri3': 2,
-                 'quad4': 2,
-                 'tet4': 3,
-                 'hex8': 3,
-                 }
-    
-    try:
-      self.coneSize = coneSize[self.cellType]
-      self.dimension = dimension[self.cellType]
-    except:
-      raise ValueError("Unknown cell type '%'." % self.cellType)
-    return
-
-
-  def tabulate(self):
-    """
-    Tabulate memory use.
-    """
-    memory = {'mesh': 0,
-              'stratification': 0,
-              'coordinates': 0,
-              'materials': 0}
-    ncells = self.ncells
-    nvertices = self.nvertices
-    coneSize = self.coneSize
-    dimension = self.dimension
-
-    # mesh
-    nbytes = sizeInt * ( 2 * (coneSize*ncells + nvertices + ncells) + \
-                         coneSize*ncells )
-    memory['mesh'] = nbytes
-
-    # stratification
-    nbytes = 2 * sizeArrow * (nvertices + ncells)
-    memory['stratification'] = nbytes
-
-    # coordinates
-    nbytes = sizeDouble * dimension * nvertices
-    memory['coordinates'] = nbytes
-
-    # materials
-    nbytes = 2 * sizeArrow * ncells
-    memory['materials'] = nbytes
-    return memory
   
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -162,10 +103,8 @@ class Mesh(Component):
     Setup members using inventory.
     """
     Component._configure(self)
-    self.cellType = self.inventory.cellType
-    self.nvertices = self.inventory.nvertices
-    self.ncells = self.inventory.ncells
-
+    dim, coneSize = pylith.perf.Mesh.Mesh.cellTypeInfo(self.inventory.cellType)
+    pylith.perf.Mesh.Mesh.__init__(self, dim, coneSize, self.inventory.nvertices, self.inventory.ncells)
     return
 
 
@@ -236,7 +175,8 @@ class VertexGroup(Component):
 
 # ----------------------------------------------------------------------
 # Material class
-class Material(Component):
+import pylith.perf.Material
+class Material(Component,pylith.perf.Material.Material):
   """
   Mesh object for holding material size information.
   """
@@ -274,16 +214,7 @@ class Material(Component):
     Constructor.
     """
     Component.__init__(self, name)
-    self.size = 0
     return
-
-
-  def tabulate(self, mesh):
-    """
-    Tabulate memory use.
-    """
-    nbytes = 2 * sizeArrow * self.size
-    return nbytes
   
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -293,8 +224,7 @@ class Material(Component):
     Setup members using inventory.
     """
     Component._configure(self)
-    self.label = self.inventory.label
-    self.size = self.inventory.size
+    pylith.perf.Material.Material.__init__(self, self.inventory.label, self.inventory.size)
     return
 
 
@@ -438,7 +368,7 @@ class MemoryUsageApp(Application):
     # materials
     memory['materials'] = {}
     for material in self.materials.components():
-      nbytes = material.tabulate(self.mesh)
+      nbytes = material.tabulate()
       total += nbytes
       memory['materials'][material.label] = nbytes
 

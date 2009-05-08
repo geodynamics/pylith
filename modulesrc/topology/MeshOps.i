@@ -38,5 +38,11 @@
 %}
 %clear(int* const materialIds, const int numMaterials);
 
+%inline %{
+  int
+  MeshOps_numMaterialCells(const pylith::topology::Mesh& mesh, int materialId) {
+    pylith::topology::MeshOps::numMaterialCells(mesh,materialId);
+  } // numMaterialCells
+%}
 
 // End of file 

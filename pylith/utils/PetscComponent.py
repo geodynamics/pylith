@@ -32,6 +32,18 @@ class PetscComponent(Component):
     """
     Component.__init__(self, name, facility)
     return
+  
+
+  def compilePerformanceLog(self):
+    """
+    Compile performance and memory information.
+    """
+    for component in self.components():
+      if isinstance(component, PetscComponent):
+        component.compilePerformanceLog()
+        if hasattr(component, 'perfLogger'):
+          self.perfLogger.join(component.perfLogger)
+    return
 
 
   def cleanup(self):

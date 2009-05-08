@@ -75,6 +75,24 @@ namespace pylith {
        * @returns Dimension of mesh.
        */
       int dimension(void) const;
+
+      /** Get representative cone size of mesh.
+       *
+       * @returns Representative cone size of mesh.
+       */
+      int coneSize(void) const;
+      
+      /** Get number of vertices in mesh.
+       *
+       * @returns Number of vertices in mesh.
+       */
+      int numVertices(void) const;
+      
+      /** Get number of cells in mesh.
+       *
+       * @returns Number of cells in mesh.
+       */
+      int numCells(void) const;
       
       /** Set MPI communicator associated with mesh.
        *

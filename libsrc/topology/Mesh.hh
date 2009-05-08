@@ -119,6 +119,24 @@ public :
    */
   int dimension(void) const;
 
+  /** Get representative cone size for mesh.
+   *
+   * @returns Representative cone size for mesh.
+   */
+  int coneSize(void) const;
+  
+  /** Get number of vertices in mesh.
+   *
+   * @returns Number of vertices in mesh.
+   */
+  int numVertices(void) const;
+  
+  /** Get number of cells in mesh.
+   *
+   * @returns Number of cells in mesh.
+   */
+  int numCells(void) const;
+
   /** Set MPI communicator associated with mesh.
    *
    * @param value MPI communicator.
