@@ -148,8 +148,18 @@ class Implicit(Formulation):
     logEvent = "%sprestep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
     
-    # Set dispT to the BC t time t+dt. Unconstrained DOF are
-    # unaffected and will be equal to their values at time t.
+    # If finishing first time step, then switch from solving for total
+    # displacements to solving for incremental displacements
+    needNewJacobian = False
+    if 1 == self._stepCount:
+      self._info.log("Switching from total field solution to incremental " \
+                     "field solution.")
+      for constraint in self.constraints:
+        constraint.useSolnIncr(True)
+      for integrator in self.integratorsMesh + self.integratorsSubMesh:
+        integrator.useSolnIncr(True)
+      needNewJacobian = True
+
     self._info.log("Setting constraints.")
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
     if 0 == self._stepCount:
@@ -159,19 +169,7 @@ class Implicit(Formulation):
       for constraint in self.constraints:
         constraint.setFieldIncr(t, t+dt, dispIncr)
 
-    # If finishing first time step, then switch from solving for total
-    # displacements to solving for incremental displacements
-    if 1 == self._stepCount:
-      self._info.log("Switching from total field solution to incremental " \
-                     "field solution.")
-      for constraint in self.constraints:
-        constraint.useSolnIncr(True)
-      for integrator in self.integratorsMesh + self.integratorsSubMesh:
-        integrator.useSolnIncr(True)
-      self._reformJacobian(t, dt)
-
     ### NONLINEAR: Might want to move logic into IntegrateJacobian() and set a flag instead
-    needNewJacobian = False
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.timeStep(dt)
       if integrator.needNewJacobian():

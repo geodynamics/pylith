@@ -147,13 +147,12 @@ class TestMeshField(unittest.TestCase):
     # No test of result
     return
 
-
   def test_operatorAdd(self):
     """
     Test newSection(field).
     """
     fieldB = MeshField(self.mesh)
-    fieldB += self.field
+    self.field += fieldB
 
     # No test of result
     return

@@ -70,25 +70,26 @@ class Explicit(Formulation):
     Formulation.initialize(self, dimension, normalizer)
 
     self._info.log("Creating other fields and matrices.")
-    self.fields.add("disp(t+dt)", "displacement")
+    self.fields.add("dispIncr(t->t+dt)", "displacement_increment")
     self.fields.add("disp(t-dt)", "displacement")
     self.fields.add("residual", "residual")
-    self.fields.createHistory(["disp(t+dt)", "disp(t)", "disp(t-dt)"])    
     self.fields.copyLayout("disp(t)")
-    self.fields.solveSolnName("disp(t+dt)")
+    self.fields.solveSolnName("dispIncr(t->t+dt)")
     self._debug.log(resourceUsageString())
 
-    # Create Petsc vectors for fields involved in solve. Since we
-    # shift fields through the time history, all fields need a PETSc
-    # vector.
-    dispTpdt = self.fields.get("disp(t+dt)")
-    dispTpdt.createVector()
+    # Set fields to zero
+    dispIncr = self.fields.get("dispIncr(t->t+dt)")
+    dispIncr.zero()
     dispT = self.fields.get("disp(t)")
-    dispT.createVector()
+    dispT.zero()
     dispTmdt = self.fields.get("disp(t-dt)")
-    dispTmdt.createVector()
+    dispTmdt.zero()
     residual = self.fields.get("residual")
+    residual.zero()
+    # Create Petsc vectors for fields involved in solve
     residual.createVector()
+    dispIncr.createVector()
+    self._debug.log(resourceUsageString())
 
     self._info.log("Creating Jacobian matrix.")
     from pylith.topology.Jacobian import Jacobian
@@ -100,11 +101,11 @@ class Explicit(Formulation):
     self.solver.initialize(self.fields, self.jacobian, self)
     self._debug.log(resourceUsageString())
 
-    # Solve for total displacement field
+    # Solve for increment in displacement field.
     for constraint in self.constraints:
-      constraint.useSolnIncr(False)
+      constraint.useSolnIncr(True)
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
-      integrator.useSolnIncr(False)
+      integrator.useSolnIncr(True)
 
     self._logger.eventEnd(logEvent)
     return
@@ -119,7 +120,7 @@ class Explicit(Formulation):
     
     dispTpdt = self.fields.get("disp(t+dt)")
     for constraint in self.constraints:
-      constraint.setField(t+dt, dispTpdt)
+      constraint.setFieldIncr(t, t+dt, dispTpdt)
 
     needNewJacobian = False
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
@@ -144,8 +145,8 @@ class Explicit(Formulation):
     
     self._info.log("Solving equations.")
     residual = self.fields.get("residual")
-    dispTpdt = self.fields.solveSoln()
-    self.solver.solve(dispTpdt, self.jacobian, residual)
+    dispIncr = self.fields.get("dispIncr(t->t+dt")
+    self.solver.solve(dispIncr, self.jacobian, residual)
 
     self._logger.eventEnd(logEvent)
     return
@@ -158,15 +159,13 @@ class Explicit(Formulation):
     logEvent = "%spoststep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
     
-    self.fields.shiftHistory()
+    dispIncr = self.fields.get("dispIncr(t->t+dt)")
+    disp = self.fields.get("disp(t)")
+    dispTmdt = self.fields.get("disp(t-dt)")
 
-    # :KLUDGE: only works for KSP solver
-    dispTpdt = self.fields.get("disp(t+dt)")
-    if not self.solver.guessZero:
-      dispT = self.fields.get("disp(t)")
-      dispTpdt.copy(dispT)
-    else:
-      dispTpdt.zero()
+    dispTmdt.copy(dispT)
+    disp += dispIncr
+    dispIncr.zero()
 
     Formulation.poststep(self, t, dt)
 

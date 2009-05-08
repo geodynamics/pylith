@@ -366,11 +366,11 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
   // Setup fields
   CPPUNIT_ASSERT(0 != fields);
   fields->add("residual", "residual");
-  fields->add("disp(t+dt)", "displacement");
+  fields->add("dispIncr(t->t+dt)", "displacement_increment");
   fields->add("disp(t)", "displacement");
   fields->add("disp(t-dt)", "displacement");
-  fields->solutionName("disp(t+dt)");
-  const char* history[] = { "disp(t+dt)", "disp(t)", "disp(t-dt)" };
+  fields->solutionName("dispIncr(t->t+dt)");
+  const char* history[] = { "dispIncr(t->t+dt)", "disp(t)", "disp(t-dt)" };
   const int historySize = 3;
   fields->createHistory(history, historySize);
   
@@ -381,18 +381,18 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
   fields->copyLayout("residual");
 
   const int fieldSize = _data->spaceDim * _data->numVertices;
-  topology::Field<topology::Mesh>& dispTpdt = fields->get("disp(t+dt)");
+  topology::Field<topology::Mesh>& dispIncr = fields->get("dispIncr(t->t+dt)");
   topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
   topology::Field<topology::Mesh>& dispTmdt = fields->get("disp(t-dt)");
-  const ALE::Obj<RealSection>& dispTpdtSection = dispTpdt.section();
+  const ALE::Obj<RealSection>& dispIncrSection = dispIncr.section();
   const ALE::Obj<RealSection>& dispTSection = dispT.section();
   const ALE::Obj<RealSection>& dispTmdtSection = dispTmdt.section();
-  CPPUNIT_ASSERT(!dispTpdtSection.isNull());
+  CPPUNIT_ASSERT(!dispIncrSection.isNull());
   CPPUNIT_ASSERT(!dispTSection.isNull());
   CPPUNIT_ASSERT(!dispTmdtSection.isNull());
   const int offset = _data->numCells;
   for (int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
-    dispTpdtSection->updatePoint(iVertex+offset, 
+    dispIncrSection->updatePoint(iVertex+offset, 
 				 &_data->fieldTIncr[iVertex*_data->spaceDim]);
     dispTSection->updatePoint(iVertex+offset, 
 			      &_data->fieldT[iVertex*_data->spaceDim]);
