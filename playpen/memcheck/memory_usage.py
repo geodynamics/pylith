@@ -110,7 +110,8 @@ class Mesh(Component,pylith.perf.Mesh.Mesh):
 
 # ----------------------------------------------------------------------
 # VertexGroup class
-class VertexGroup(Component):
+import pylith.perf.VertexGroup
+class VertexGroup(Component,pylith.perf.VertexGroup.VertexGroup):
   """
   Mesh object for holding vertex group size information.
   """
@@ -148,17 +149,7 @@ class VertexGroup(Component):
     Constructor.
     """
     Component.__init__(self, name)
-    self.size = 0
     return
-
-
-  def tabulate(self, mesh):
-    """
-    Tabulate memory use.
-    """
-    nvertices = mesh.nvertices
-    nbytes = sizeInt * ( 2 * nvertices + nvertices)
-    return nbytes
   
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -168,8 +159,7 @@ class VertexGroup(Component):
     Setup members using inventory.
     """
     Component._configure(self)
-    self.label = self.inventory.label
-    self.size = self.inventory.size
+    pylith.perf.VertexGroup.VertexGroup.__init__(self, self.inventory.label, self.inventory.size)
     return
 
 
@@ -311,7 +301,7 @@ class MemoryUsageApp(Application):
     print "    Stratification: %d bytes (%.3f MB)" % \
           (memory['stratification'],
            memory['stratification'] / megabyte)
-    print "    Coordinates:     %d bytes (%.3f MB)" % \
+    print "    Coordinates:    %d bytes (%.3f MB)" % \
           (memory['coordinates'],
            memory['coordinates'] / megabyte)
     print "    Materials:      %d bytes (%.3f MB)" % \
@@ -327,7 +317,7 @@ class MemoryUsageApp(Application):
     for (label, nbytes) in self.memory['materials'].items():
       print "    %s: %d bytes (%.3f MB)" % \
             (label, nbytes, nbytes / megabyte)
-    print "  TOTAL:           %d bytes (%.3f MB)" % \
+    print "  TOTAL:            %d bytes (%.3f MB)" % \
           (self.memory['total'], self.memory['total'] / megabyte)
 
     return
@@ -361,7 +351,7 @@ class MemoryUsageApp(Application):
     # groups
     memory['groups'] = {}
     for group in self.groups.components():
-      nbytes = group.tabulate(self.mesh)
+      nbytes = group.tabulate()
       total += nbytes
       memory['groups'][group.label] = nbytes
 

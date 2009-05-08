@@ -158,6 +158,18 @@ public :
    */
   void view(const char* label);
 
+  /** Return the names of all vertex groups.
+   *
+   * @returns the names of al lvertex groups.
+   */
+  void groups(int *numNames, char ***outNames);
+
+  /** Return the size of a group.
+   *
+   * @returns the number of vertices in the group
+   */
+  int groupSize(const char *name);
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
