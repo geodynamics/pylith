@@ -103,12 +103,12 @@ class MemoryLogger(Logger):
       memory['mesh'] = info
       total += sum(info.values())
     # groups
-    if hasattr(self, 'groups'):
+    if hasattr(self, 'vertexGroups'):
       memory['groups'] = {}
-      for group in self.groups:
-        nbytes = group.tabulate(self.mesh)
+      for label,group in self.vertexGroups.iteritems():
+        nbytes = group.tabulate()
         total += nbytes
-        memory['groups'][group.label] = nbytes
+        memory['groups'][label] = nbytes
     # materials
     if hasattr(self, 'materials'):
       memory['materials'] = {}
