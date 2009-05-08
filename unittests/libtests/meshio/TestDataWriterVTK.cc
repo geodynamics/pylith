@@ -17,6 +17,7 @@
 #include "data/DataWriterVTKData.hh" // USES DataWriterVTKData
 
 #include <string.h> // USES strcmp()
+#include <iostream> // USES std::cerr;
 
 // ----------------------------------------------------------------------
 // Setup testing data.
