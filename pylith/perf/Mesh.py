@@ -3,7 +3,8 @@
 from Memory import Memory
 
 class Mesh(Memory):
-  cellTypes = {(2,3): 'tri3',
+  cellTypes = {(1,2): 'line2',
+               (2,3): 'tri3',
                (2,4): 'quad4',
                (3,4): 'tet4',
                (3,8): 'hex8'
