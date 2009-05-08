@@ -90,6 +90,15 @@ class Mesh(ModuleMesh):
     Return the number of cells.
     """
     return ModuleMesh.numCells(self)
-  
+
+  def groupSizes(self):
+    """
+    Return the name and number of vertices for each group
+    """
+    groups = []
+    names  = ModuleMesh.groups(self)
+    for name in names:
+      groups.append((name,ModuleMesh.groupSize(self, name)))
+    return groups
 
 # End of file

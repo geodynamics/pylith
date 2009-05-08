@@ -95,5 +95,21 @@
   delete[] $2;
 }
 
+%typemap(argout) (int *numNames, char ***outNames) {
+  int       num   = *$1;
+  char    **names = *$2;
+  PyObject *l     = PyList_New(num);
+
+  for(Py_ssize_t i = 0; i < (Py_ssize_t) num; ++i) {
+    PyList_SetItem(l, i, PyString_FromString(names[i]));
+    PetscFree(names[i]);
+  }
+  PetscFree(names);
+  $result = l;
+}
+%typemap(in,numinputs=0) (int *numNames, char ***outNames)(int tempI, char **tempC) {
+    $1 = &tempI;
+    $2 = &tempC;
+}
 
 // End of file

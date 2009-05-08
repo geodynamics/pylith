@@ -74,5 +74,42 @@ pylith::topology::Mesh::initialize(void)
 { // initialize
 } // initialize
 
+// ----------------------------------------------------------------------
+// Return the names of all vertex groups.
+void
+pylith::topology::Mesh::groups(int *numNames, char ***outNames)
+{ // groups
+  const ALE::Obj<std::set<std::string> >& sectionNames =  _mesh->getIntSections();
+  
+  *numNames = sectionNames->size();
+  PetscErrorCode ierr = PetscMalloc((*numNames) * sizeof(char *), outNames);
+  const std::set<std::string>::const_iterator namesEnd = sectionNames->end();
+  int i = 0;
+  for (std::set<std::string>::const_iterator name = sectionNames->begin(); name != namesEnd; ++name) {
+    char *newName;
+
+    ierr = PetscStrallocpy(name->c_str(), &newName);
+    (*outNames)[i++] = newName;
+  }
+} // groups
+
+// ----------------------------------------------------------------------
+// Return the names of all vertex groups.
+int
+pylith::topology::Mesh::groupSize(const char *name)
+{ // groupSize
+  const ALE::Obj<IntSection>&            group    = _mesh->getIntSection(name);
+  const IntSection::chart_type&          chart    = group->getChart();
+  IntSection::chart_type::const_iterator chartEnd = chart.end();
+  int                                    size     = 0;
+
+  for(IntSection::chart_type::const_iterator c_iter = chart.begin(); c_iter != chartEnd; ++c_iter) {
+    if (group->getFiberDimension(*c_iter)) {
+      size++;
+    }
+  }
+  return size;
+} // groupSize
+
 
 // End of file 
