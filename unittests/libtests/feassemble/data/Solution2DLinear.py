@@ -38,9 +38,9 @@ class Solution2DLinear(Component):
     
     # Input fields
     self.dt = 0.01
-    self.fieldTpdt = numpy.array([ 1.3, -0.9,
-                                   1.4,  1.5,
-                                   0.5, -0.9 ], dtype=numpy.float64)
+    self.fieldTIncr = numpy.array([ 1.3, -0.9,
+                                    1.4,  1.5,
+                                    0.5, -0.9 ], dtype=numpy.float64)
     self.fieldT = numpy.array([ 1.6, -0.8,
                                 0.9,  0.7,
                                -0.2, -1.1 ], dtype=numpy.float64)

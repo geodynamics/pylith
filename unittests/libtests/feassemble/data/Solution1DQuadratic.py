@@ -38,7 +38,7 @@ class Solution1DQuadratic(Component):
     
     # Input fields
     self.dt = 0.01
-    self.fieldTpdt = numpy.array([ [1.2], [0.0], [1.7] ], dtype=numpy.float64)
+    self.fieldTIncr = numpy.array([ [1.2], [0.0], [1.7] ], dtype=numpy.float64)
     self.fieldT = numpy.array([ [1.1], [0.1], [1.5] ], dtype=numpy.float64)
     self.fieldTmdt = numpy.array([ [1.0], [0.1], [1.3] ], dtype=numpy.float64)
     return

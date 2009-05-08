@@ -357,8 +357,8 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   // Setup fields
   CPPUNIT_ASSERT(0 != fields);
   fields->add("residual", "residual");
-  fields->add("disp(t), bc(t+dt)", "displacement");
-  fields->add("dispIncr(t->t+dt)", "displacement increment");
+  fields->add("disp(t)", "displacement");
+  fields->add("dispIncr(t->t+dt)", "displacement_increment");
   fields->solutionName("dispIncr(t->t+dt)");
   
   topology::Field<topology::Mesh>& residual = fields->get("residual");
@@ -368,14 +368,18 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   fields->copyLayout("residual");
 
   const int fieldSize = _data->spaceDim * _data->numVertices;
-  topology::Field<topology::Mesh>& dispTBctpdt = 
-    fields->get("disp(t), bc(t+dt)");
-  const ALE::Obj<RealSection>& dispTBctpdtSection = dispTBctpdt.section();
-  CPPUNIT_ASSERT(!dispTBctpdtSection.isNull());
+  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
+  const ALE::Obj<RealSection>& dispTSection = dispT.section();
+  CPPUNIT_ASSERT(!dispTSection.isNull());
+  topology::Field<topology::Mesh>& dispTIncr = fields->get("dispIncr(t->t+dt)");
+  const ALE::Obj<RealSection>& dispTIncrSection = dispTIncr.section();
+  CPPUNIT_ASSERT(!dispTIncrSection.isNull());
   const int offset = _data->numCells;
   for (int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
-    dispTBctpdtSection->updatePoint(iVertex+offset, 
-				    &_data->fieldTpdt[iVertex*_data->spaceDim]);
+    dispTSection->updatePoint(iVertex+offset, 
+			      &_data->fieldT[iVertex*_data->spaceDim]);
+    dispTIncrSection->updatePoint(iVertex+offset, 
+				  &_data->fieldTIncr[iVertex*_data->spaceDim]);
   } // for
 } // _initialize
 

@@ -273,14 +273,15 @@ pylith::topology::Field<mesh_type>::copy(const Field& field)
   if (!_section.isNull()) {
     // Copy values from field
     const chart_type& chart = _section->getChart();
+    const typename chart_type::const_iterator chartBegin = chart.begin();
     const typename chart_type::const_iterator chartEnd = chart.end();
 
-    for (typename chart_type::const_iterator c_iter = chart.begin();
+    for (typename chart_type::const_iterator c_iter = chartBegin;
 	 c_iter != chartEnd;
 	 ++c_iter) {
       assert(field._section->getFiberDimension(*c_iter) ==
 	     _section->getFiberDimension(*c_iter));
-      _section->updatePoint(*c_iter, field._section->restrictPoint(*c_iter));
+      _section->updatePointAll(*c_iter, field._section->restrictPoint(*c_iter));
     } // for
   } // if
 } // copy
@@ -329,7 +330,7 @@ pylith::topology::Field<mesh_type>::copy(const ALE::Obj<typename mesh_type::Real
 // ----------------------------------------------------------------------
 // Add two fields, storing the result in one of the fields.
 template<typename mesh_type>
-void
+pylith::topology::Field<mesh_type>&
 pylith::topology::Field<mesh_type>::operator+=(const Field& field)
 { // operator+=
   // Check compatibility of sections
@@ -361,21 +362,24 @@ pylith::topology::Field<mesh_type>::operator+=(const Field& field)
   if (!_section.isNull()) {
     // Add values from field
     const chart_type& chart = _section->getChart();
+    const typename chart_type::const_iterator chartBegin = chart.begin();
     const typename chart_type::const_iterator chartEnd = chart.end();
 
     // Assume fiber dimension is uniform
-    const int fiberDim = _section->getFiberDimension(*chart.begin());
+    const int fiberDim = _section->getFiberDimension(*chartBegin);
     double_array values(fiberDim);
 
-    for (typename chart_type::const_iterator c_iter = chart.begin();
+    for (typename chart_type::const_iterator c_iter = chartBegin;
 	 c_iter != chartEnd;
 	 ++c_iter) {
       assert(fiberDim == field._section->getFiberDimension(*c_iter));
       assert(fiberDim == _section->getFiberDimension(*c_iter));
       field._section->restrictPoint(*c_iter, &values[0], values.size());
-      _section->updateAddPoint(*c_iter, &values[0]);
+      _section->updatePointAllAdd(*c_iter, &values[0]);
     } // for
   } // if
+
+  return *this;
 } // operator+=
 
 // ----------------------------------------------------------------------

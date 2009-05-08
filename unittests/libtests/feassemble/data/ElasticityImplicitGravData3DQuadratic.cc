@@ -141,7 +141,7 @@ const double pylith::feassemble::ElasticityImplicitGravData3DQuadratic::_basisDe
   0.00000000e+00,  1.50000000e+00,  2.00000000e-01,
 };
 
-const double pylith::feassemble::ElasticityImplicitGravData3DQuadratic::_fieldTpdt[] = {
+const double pylith::feassemble::ElasticityImplicitGravData3DQuadratic::_fieldTIncr[] = {
   3.00000000e-01, -4.00000000e-01, -4.00000000e-01,
  -6.00000000e-01,  8.00000000e-01,  2.00000000e-01,
   5.00000000e-01,  5.00000000e-01,  7.00000000e-01,
@@ -181,16 +181,16 @@ const double pylith::feassemble::ElasticityImplicitGravData3DQuadratic::_fieldTm
 };
 
 const double pylith::feassemble::ElasticityImplicitGravData3DQuadratic::_valsResidual[] = {
- -3.60344070e+07, -8.60416179e+09, -5.23531289e+10,
-  6.93994122e+10, -2.20144385e+10, -2.31408915e+10,
- -1.03575146e+10, -5.86779063e+09, -1.05865385e+11,
-  4.26958272e+09,  7.53982796e+10, -1.28663073e+11,
-  6.65380864e+10,  4.81920110e+10, -1.25017319e+11,
-  4.86877753e+10,  9.01600666e+10, -5.02162253e+10,
- -8.27791991e+10, -6.36931757e+10, -5.66952985e+10,
-  7.53862306e+10, -2.99178646e+10, -2.00089736e+09,
- -1.62484959e+11,  9.80267108e+10, -2.50673581e+11,
- -8.62337994e+09, -1.81679637e+11,  8.31674669e+10,
+  2.17091508e+10, -1.76856611e+10, -3.16592972e+10,
+  1.31632837e+11, -4.68038741e+10, -1.57191521e+10,
+ -5.63686735e+10, -5.92797533e+10, -1.37382956e+11,
+ -5.78258053e+09,  1.17383971e+11, -1.67395324e+11,
+  5.81040000e+10,  1.11498152e+11, -1.28438506e+11,
+  1.14913086e+11,  1.99398526e+11, -8.74985277e+10,
+ -1.78723310e+11, -1.16643455e+11, -8.18170460e+10,
+  6.28557950e+10, -9.05944297e+10,  8.36876150e+09,
+ -1.94927791e+11,  1.49434559e+11, -2.43345729e+11,
+  4.65874861e+10, -2.46708036e+11,  1.73429444e+11,
 };
 
 const double pylith::feassemble::ElasticityImplicitGravData3DQuadratic::_valsJacobian[] = {
@@ -517,7 +517,7 @@ pylith::feassemble::ElasticityImplicitGravData3DQuadratic::ElasticityImplicitGra
   quadWts = const_cast<double*>(_quadWts);
   basis = const_cast<double*>(_basis);
   basisDerivRef = const_cast<double*>(_basisDerivRef);
-  fieldTpdt = const_cast<double*>(_fieldTpdt);
+  fieldTIncr = const_cast<double*>(_fieldTIncr);
   fieldT = const_cast<double*>(_fieldT);
   fieldTmdt = const_cast<double*>(_fieldTmdt);
   valsResidual = const_cast<double*>(_valsResidual);

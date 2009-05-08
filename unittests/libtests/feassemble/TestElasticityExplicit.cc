@@ -393,7 +393,7 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
   const int offset = _data->numCells;
   for (int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
     dispTpdtSection->updatePoint(iVertex+offset, 
-				 &_data->fieldTpdt[iVertex*_data->spaceDim]);
+				 &_data->fieldTIncr[iVertex*_data->spaceDim]);
     dispTSection->updatePoint(iVertex+offset, 
 			      &_data->fieldT[iVertex*_data->spaceDim]);
     dispTmdtSection->updatePoint(iVertex+offset, 

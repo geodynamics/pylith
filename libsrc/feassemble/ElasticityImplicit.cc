@@ -149,7 +149,9 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     assert(0);
 
   // Allocate vectors for cell values.
-  double_array dispTBctpdtCell(numBasis*spaceDim);
+  double_array dispTCell(numBasis*spaceDim);
+  double_array dispTIncrCell(numBasis*spaceDim);
+  double_array dispTpdtCell(numBasis*spaceDim);
   double_array strainCell(numQuadPts*tensorSize);
   strainCell = 0.0;
   double_array gravVec(spaceDim);
@@ -166,12 +168,19 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  const ALE::Obj<RealSection>& dispTBctpdtSection = 
-    fields->get("disp(t), bc(t+dt)").section();
-  assert(!dispTBctpdtSection.isNull());
-  topology::Mesh::RestrictVisitor dispTBctpdtVisitor(*dispTBctpdtSection,
-						     numBasis*spaceDim, 
-						     &dispTBctpdtCell[0]);
+  const ALE::Obj<RealSection>& dispTSection = 
+    fields->get("disp(t)").section();
+  assert(!dispTSection.isNull());
+  topology::Mesh::RestrictVisitor dispTVisitor(*dispTSection,
+					       numBasis*spaceDim, 
+					       &dispTCell[0]);
+  const ALE::Obj<RealSection>& dispTIncrSection = 
+    fields->get("dispIncr(t->t+dt)").section();
+  assert(!dispTIncrSection.isNull());
+  topology::Mesh::RestrictVisitor dispTIncrVisitor(*dispTIncrSection,
+						   numBasis*spaceDim, 
+						   &dispTIncrCell[0]);
+
   const ALE::Obj<RealSection>& residualSection = residual.section();
   topology::Mesh::UpdateAddVisitor residualVisitor(*residualSection,
 						   &_cellVector[0]);
@@ -203,8 +212,10 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
     // Restrict input fields to cell
     _logger->eventBegin(restrictEvent);
-    dispTBctpdtVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispTBctpdtVisitor);
+    dispTVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispTVisitor);
+    dispTIncrVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
     _logger->eventBegin(restrictEvent);
 
     // Get cell geometry information that depends on cell
@@ -212,6 +223,10 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     const double_array& basisDeriv = _quadrature->basisDeriv();
     const double_array& jacobianDet = _quadrature->jacobianDet();
     const double_array& quadPtsNondim = _quadrature->quadPts();
+
+    // Compute current estimate of displacement at time t+dt using
+    // solution increment.
+    dispTpdtCell = dispTCell + dispTIncrCell;
 
     // Compute body force vector if gravity is being used.
     if (0 != _gravityField) {
@@ -249,7 +264,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
     // Compute B(transpose) * sigma, first computing strains
     _logger->eventBegin(stressEvent);
-    calcTotalStrainFn(&strainCell, basisDeriv, dispTBctpdtCell, 
+    calcTotalStrainFn(&strainCell, basisDeriv, dispTpdtCell, 
 		      numBasis, numQuadPts);
     const double_array& stressCell = _material->calcStress(strainCell, true);
     _logger->eventEnd(stressEvent);
@@ -334,7 +349,9 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     assert(0);
 
   // Allocate vector for total strain
-  double_array dispTBctpdtCell(numBasis*spaceDim);
+  double_array dispTCell(numBasis*spaceDim);
+  double_array dispTIncrCell(numBasis*spaceDim);
+  double_array dispTpdtCell(numBasis*spaceDim);
   double_array strainCell(numQuadPts*tensorSize);
   strainCell = 0.0;
 
@@ -349,12 +366,18 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  const ALE::Obj<RealSection>& dispTBctpdtSection = 
-    fields->get("disp(t), bc(t+dt)").section();
-  assert(!dispTBctpdtSection.isNull());
-  topology::Mesh::RestrictVisitor dispTBctpdtVisitor(*dispTBctpdtSection,
-						     numBasis*spaceDim, 
-						     &dispTBctpdtCell[0]);
+  const ALE::Obj<RealSection>& dispTSection = 
+    fields->get("disp(t)").section();
+  assert(!dispTSection.isNull());
+  topology::Mesh::RestrictVisitor dispTVisitor(*dispTSection,
+					       numBasis*spaceDim, 
+					       &dispTCell[0]);
+  const ALE::Obj<RealSection>& dispTIncrSection = 
+    fields->get("dispIncr(t->t+dt)").section();
+  assert(!dispTIncrSection.isNull());
+  topology::Mesh::RestrictVisitor dispTIncrVisitor(*dispTIncrSection,
+						   numBasis*spaceDim, 
+						   &dispTIncrCell[0]);
 
   // Get sparse matrix
   const PetscMat jacobianMat = jacobian->matrix();
@@ -366,10 +389,10 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 
   const ALE::Obj<SieveMesh::order_type>& globalOrder = 
     sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default",
-					    dispTBctpdtSection);
+					    dispTSection);
   assert(!globalOrder.isNull());
   // We would need to request unique points here if we had an interpolated mesh
-  topology::Mesh::IndicesVisitor jacobianVisitor(*dispTBctpdtSection,
+  topology::Mesh::IndicesVisitor jacobianVisitor(*dispTSection,
 						 *globalOrder,
 			   (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
 				     sieveMesh->depth())*spaceDim);
@@ -395,8 +418,10 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 
     // Restrict input fields to cell
     _logger->eventBegin(restrictEvent);
-    dispTBctpdtVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispTBctpdtVisitor);
+    dispTVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispTVisitor);
+    dispTIncrVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
     _logger->eventBegin(restrictEvent);
 
     // Get cell geometry information that depends on cell
@@ -404,9 +429,13 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     const double_array& basisDeriv = _quadrature->basisDeriv();
     const double_array& jacobianDet = _quadrature->jacobianDet();
 
+    // Compute current estimate of displacement at time t+dt using
+    // solution increment.
+    dispTpdtCell = dispTCell + dispTIncrCell;
+      
     _logger->eventBegin(computeEvent);
     // Compute strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispTBctpdtCell, 
+    calcTotalStrainFn(&strainCell, basisDeriv, dispTpdtCell, 
 		      numBasis, numQuadPts);
       
     // Get "elasticity" matrix at quadrature points for this cell
