@@ -38,12 +38,12 @@ class Solution2DQuadratic(Component):
     
     # Input fields
     self.dt = 0.01
-    self.fieldTpdt = numpy.array([ -0.4, -0.6,
-                                   +0.7, +0.8,
-                                   +0.0, +0.2,
-                                   -0.5, -0.4,
-                                   +0.3, +0.9,
-                                   -0.3, -0.9 ], dtype=numpy.float64)
+    self.fieldTIncr = numpy.array([ -0.4, -0.6,
+                                     +0.7, +0.8,
+                                     +0.0, +0.2,
+                                     -0.5, -0.4,
+                                     +0.3, +0.9,
+                                     -0.3, -0.9 ], dtype=numpy.float64)
     self.fieldT = numpy.array([ -0.3, -0.4,
                                 +0.5, +0.6,
                                 +0.0, +0.1,

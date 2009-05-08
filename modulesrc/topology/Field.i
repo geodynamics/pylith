@@ -151,7 +151,7 @@ namespace pylith {
        *
        * @param field Field to add.
        */
-      void operator+=(const Field& field);
+      Field& operator+=(const Field& field);
       
       /** Dimensionalize field. Throws runtime_error if field is not
        * allowed to be dimensionalized.

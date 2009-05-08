@@ -78,7 +78,7 @@ const double pylith::feassemble::ElasticityImplicitData3DLinear::_basisDerivRef[
   0.00000000e+00,  0.00000000e+00,  5.00000000e-01,
 };
 
-const double pylith::feassemble::ElasticityImplicitData3DLinear::_fieldTpdt[] = {
+const double pylith::feassemble::ElasticityImplicitData3DLinear::_fieldTIncr[] = {
   3.00000000e-01,  2.00000000e-01, -5.00000000e-01,
  -3.00000000e-01, -4.00000000e-01, -6.00000000e-01,
   2.00000000e-01,  6.00000000e-01,  3.00000000e-01,
@@ -100,10 +100,10 @@ const double pylith::feassemble::ElasticityImplicitData3DLinear::_fieldTmdt[] = 
 };
 
 const double pylith::feassemble::ElasticityImplicitData3DLinear::_valsResidual[] = {
-  2.78190830e+07,  3.56885378e+10,  3.94225527e+09,
-  1.52090149e+10,  5.28108736e+10,  3.64722119e+10,
- -2.29679058e+10, -8.91228005e+10, -5.23343247e+10,
-  7.73107187e+09,  6.23389095e+08,  1.19198575e+10,
+ -6.04851301e+09,  7.19421933e+10,  7.13890954e+09,
+  1.11995353e+10,  1.19496190e+11,  5.83920074e+10,
+ -1.62946097e+10, -1.94715799e+11, -8.38339529e+10,
+  1.11435874e+10,  3.27741636e+09,  1.83030359e+10,
 };
 
 const double pylith::feassemble::ElasticityImplicitData3DLinear::_valsJacobian[] = {
@@ -178,7 +178,7 @@ pylith::feassemble::ElasticityImplicitData3DLinear::ElasticityImplicitData3DLine
   quadWts = const_cast<double*>(_quadWts);
   basis = const_cast<double*>(_basis);
   basisDerivRef = const_cast<double*>(_basisDerivRef);
-  fieldTpdt = const_cast<double*>(_fieldTpdt);
+  fieldTIncr = const_cast<double*>(_fieldTIncr);
   fieldT = const_cast<double*>(_fieldT);
   fieldTmdt = const_cast<double*>(_fieldTmdt);
   valsResidual = const_cast<double*>(_valsResidual);

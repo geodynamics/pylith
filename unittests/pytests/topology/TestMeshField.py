@@ -148,4 +148,26 @@ class TestMeshField(unittest.TestCase):
     return
 
 
+  def test_operatorAdd(self):
+    """
+    Test newSection(field).
+    """
+    fieldB = MeshField(self.mesh)
+    fieldB += self.field
+
+    # No test of result
+    return
+
+
+  def test_copy(self):
+    """
+    Test newSection(field).
+    """
+    fieldB = MeshField(self.mesh)
+    fieldB.copy(self.field)
+
+    # No test of result
+    return
+
+
 # End of file 

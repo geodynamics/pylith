@@ -34,7 +34,7 @@ pylith::feassemble::IntegratorData::IntegratorData(void) :
   matId(0),
   matLabel(0),
   dt(0),
-  fieldTpdt(0),
+  fieldTIncr(0),
   fieldT(0),
   fieldTmdt(0),
   valsResidual(0),

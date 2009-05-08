@@ -84,7 +84,7 @@ const double pylith::feassemble::ElasticityImplicitGravData1DQuadratic::_basisDe
  -1.15470054e+00,
 };
 
-const double pylith::feassemble::ElasticityImplicitGravData1DQuadratic::_fieldTpdt[] = {
+const double pylith::feassemble::ElasticityImplicitGravData1DQuadratic::_fieldTIncr[] = {
   1.20000000e+00,
   0.00000000e+00,
   1.70000000e+00,
@@ -103,9 +103,9 @@ const double pylith::feassemble::ElasticityImplicitGravData1DQuadratic::_fieldTm
 };
 
 const double pylith::feassemble::ElasticityImplicitGravData1DQuadratic::_valsResidual[] = {
- -2.44166667e+10,
-  7.15833333e+10,
- -6.09666667e+11,
+  3.15833333e+10,
+  2.07583333e+11,
+ -8.01666667e+11,
 };
 
 const double pylith::feassemble::ElasticityImplicitGravData1DQuadratic::_valsJacobian[] = {
@@ -141,7 +141,7 @@ pylith::feassemble::ElasticityImplicitGravData1DQuadratic::ElasticityImplicitGra
   quadWts = const_cast<double*>(_quadWts);
   basis = const_cast<double*>(_basis);
   basisDerivRef = const_cast<double*>(_basisDerivRef);
-  fieldTpdt = const_cast<double*>(_fieldTpdt);
+  fieldTIncr = const_cast<double*>(_fieldTIncr);
   fieldT = const_cast<double*>(_fieldT);
   fieldTmdt = const_cast<double*>(_fieldTmdt);
   valsResidual = const_cast<double*>(_valsResidual);

@@ -54,6 +54,10 @@ CURRENT ISSUES/PRIORITIES
 
 4. Add missing unit tests
 
+    libtests/topology/Field add constraints to field in unit tests
+      copy
+      +=
+
     pytests.meshio.TestOutputSoln
     pytests.meshio.TestOutputDirichlet
     pytests.meshio.TestOutputFaultKin

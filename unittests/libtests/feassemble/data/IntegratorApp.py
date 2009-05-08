@@ -97,7 +97,7 @@ class IntegratorApp(Script):
 
     # Input fields
     self.dt = None
-    self.fieldTpdt = None
+    self.fieldTIncr = None
     self.fieldT = None
     self.fieldTmdt = None
 
@@ -166,7 +166,7 @@ class IntegratorApp(Script):
 
     # Solution information
     self.dt = self.solution.dt
-    self.fieldTpdt = self.solution.fieldTpdt
+    self.fieldTIncr = self.solution.fieldTIncr
     self.fieldT = self.solution.fieldT
     self.fieldTmdt = self.solution.fieldTmdt
     return
@@ -236,8 +236,8 @@ class IntegratorApp(Script):
     # Input files
     self.data.addScalar(vtype="double", name="_dt", value=self.dt,
                         format="%16.8e")
-    self.data.addArray(vtype="double", name="_fieldTpdt",
-                       values=self.fieldTpdt,
+    self.data.addArray(vtype="double", name="_fieldTIncr",
+                       values=self.fieldTIncr,
                        format="%16.8e", ncols=self.spaceDim)
     self.data.addArray(vtype="double", name="_fieldT",
                        values=self.fieldT,

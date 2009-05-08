@@ -70,7 +70,7 @@ class Implicit(Formulation):
     """
     Formulation.__init__(self, name)
     self._loggingPrefix = "TSIm "
-    self.solnField = {'name': "disp(t), bc(t+dt)",
+    self.solnField = {'name': "disp(t)",
                       'label': "displacement"}
     self._stepCount = None
     return
@@ -94,10 +94,21 @@ class Implicit(Formulation):
     Formulation.initialize(self, dimension, normalizer)
 
     self._info.log("Creating other fields.")
-    self.fields.add("dispIncr(t)", "displacement increment")
+    self.fields.add("dispIncr(t->t+dt)", "displacement increment")
     self.fields.add("residual", "residual")
-    self.fields.copyLayout("disp(t), bc(t+dt)")
-    self.fields.solveSolnName("dispIncr(t)")
+    self.fields.copyLayout("disp(t)")
+    self.fields.solveSolnName("dispIncr(t->t+dt)")
+
+    # Set fields to zero
+    disp = self.fields.get("disp(t)")
+    disp.zero()
+    dispIncr = self.fields.get("dispIncr(t->t+dt)")
+    dispIncr.zero()
+    residual = self.fields.get("residual")
+    residual.zero()
+    # Create Petsc vectors for fields involved in solve
+    residual.createVector()
+    dispIncr.createVector()
     self._debug.log(resourceUsageString())
 
     self._info.log("Creating Jacobian matrix.")
@@ -105,12 +116,6 @@ class Implicit(Formulation):
     self.jacobian = Jacobian(self.fields)
     self.jacobian.zero() # TEMPORARY, to get correct memory usage
     self._debug.log(resourceUsageString())
-
-    # Create Petsc vectors for fields involved in solve
-    dispIncr = self.fields.get("dispIncr(t)")
-    dispIncr.createVector()
-    residual = self.fields.get("residual")
-    residual.createVector()
 
     self._info.log("Initializing solver.")
     self.solver.initialize(self.fields, self.jacobian, self)
@@ -143,12 +148,16 @@ class Implicit(Formulation):
     logEvent = "%sprestep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
     
-    # Set dispTBctpdt to the BC t time t+dt. Unconstrained DOF are
+    # Set dispT to the BC t time t+dt. Unconstrained DOF are
     # unaffected and will be equal to their values at time t.
     self._info.log("Setting constraints.")
-    dispTBctpdt = self.fields.get("disp(t), bc(t+dt)")
-    for constraint in self.constraints:
-      constraint.setField(t+dt, dispTBctpdt)
+    dispIncr = self.fields.get("dispIncr(t->t+dt)")
+    if 0 == self._stepCount:
+      for constraint in self.constraints:
+        constraint.setField(t+dt, dispIncr)
+    else:
+      for constraint in self.constraints:
+        constraint.setFieldIncr(t, t+dt, dispIncr)
 
     # If finishing first time step, then switch from solving for total
     # displacements to solving for incremental displacements
@@ -212,14 +221,10 @@ class Implicit(Formulation):
     logEvent = "%spoststep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
     
-    # After solving, dispTBctpdt contains the displacements at time t
-    # for unconstrained DOF and displacements at time t+dt at
-    # constrained DOF. We add in the displacement increments (only
-    # nonzero at unconstrained DOF) so that after poststep(),
-    # dispTBctpdt contains the displacement field at time t+dt.
-    dispIncr = self.fields.get("dispIncr(t)")
-    dispTBctpdt = self.fields.solution()
-    dispTBctpdt += dispIncr
+    # Update displacement field from time t to time t+dt.
+    dispIncr = self.fields.get("dispIncr(t->t+dt)")
+    disp = self.fields.solution()
+    disp += dispIncr
 
     Formulation.poststep(self, t, dt)
 

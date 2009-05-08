@@ -270,8 +270,8 @@ class TestElasticityImplicit(unittest.TestCase):
     from pylith.topology.SolutionFields import SolutionFields
     fields = SolutionFields(mesh)
     fields.add("residual", "residual")
-    fields.add("disp(t), bc(t+dt)", "displacement")
-    fields.add("dispIncr(t->t+dt)", "displacement increment")
+    fields.add("disp(t)", "displacement")
+    fields.add("dispIncr(t->t+dt)", "displacement_increment")
     fields.solutionName("dispIncr(t->t+dt)")
 
     residual = fields.get("residual")

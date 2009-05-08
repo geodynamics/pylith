@@ -53,7 +53,8 @@ class ElasticityImplicitGrav(IntegratorElasticity):
     K = self._calculateStiffnessMat()    
     gravityGlobal = self._calculateGravity()
 
-    self.valsResidual = -numpy.dot(K, self.fieldTpdt) + gravityGlobal.reshape(self.fieldTpdt.shape)
+    self.valsResidual = -numpy.dot(K, self.fieldT+self.fieldTIncr) + \
+        gravityGlobal.reshape(self.fieldT.shape)
     return
 
 

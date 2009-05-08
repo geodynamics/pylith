@@ -75,7 +75,7 @@ private:
 
   static const double _basisDerivRef[];
 
-  static const double _fieldTpdt[];
+  static const double _fieldTIncr[];
 
   static const double _fieldT[];
 
