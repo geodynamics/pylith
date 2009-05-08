@@ -93,6 +93,16 @@ public :
   void setField(const double t,
 		const topology::Field<topology::Mesh>& field);
 
+  /** Set increment in values from t0 to t1 in field.
+   *
+   * @param t0 Time t.
+   * @param t1 Time t+dt.
+   * @param field Solution field
+   */
+  void setFieldIncr(const double t0,
+		    const double t1,
+		    const topology::Field<topology::Mesh>& field);
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 

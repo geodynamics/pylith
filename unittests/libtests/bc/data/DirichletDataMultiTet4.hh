@@ -69,6 +69,7 @@ private:
   static const double _tRefC; ///< Reference time for rate of change.
 
   static const double _field[]; ///< Values in field
+  static const double _fieldIncr[]; ///< Increment values in field
   static const int _constraintSizes[]; ///< Number of constrained DOF at each vertex
   static const int _constrainedDOF[]; ///< Indices of constrained DOF at each constrained vertex
 

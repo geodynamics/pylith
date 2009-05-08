@@ -299,6 +299,100 @@ pylith::bc::TestDirichletBC::testSetField(void)
 } // testSetField
 
 // ----------------------------------------------------------------------
+// Test setFieldIncr().
+void
+pylith::bc::TestDirichletBC::testSetFieldIncr(void)
+{ // testSetFieldIncr
+  topology::Mesh mesh;
+  DirichletBC bc;
+  _initialize(&mesh, &bc);
+  CPPUNIT_ASSERT(0 != _data);
+  bc.useSolnIncr(true);
+
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
+		 sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  
+  const int fiberDim = _data->numDOF;
+  topology::Field<topology::Mesh> field(mesh);
+  field.newSection(vertices, fiberDim);
+  const ALE::Obj<RealSection>& fieldSection = field.section();
+  CPPUNIT_ASSERT(!fieldSection.isNull());
+
+  bc.setConstraintSizes(field);
+  field.allocate();
+  bc.setConstraints(field);
+
+  const double tolerance = 1.0e-06;
+
+  // All values should be zero.
+  field.zero();
+  for (SieveMesh::label_sequence::iterator v_iter = vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter) {
+    const int fiberDim = fieldSection->getFiberDimension(*v_iter);
+    const RealSection::value_type* values = 
+      sieveMesh->restrictClosure(fieldSection, *v_iter);
+    for (int i=0; i < fiberDim; ++i)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, values[i], tolerance);
+  } // for
+
+  // Only unconstrained values should be zero.
+  const double t0 = 1.0;
+  const double t1 = 2.0;
+  bc.setFieldIncr(t0, t1, field);
+
+  // Create list of unconstrained DOF at constrained DOF
+  const int numFreeDOF = _data->numDOF - _data->numFixedDOF;
+  int_array freeDOF(numFreeDOF);
+  int index = 0;
+  for (int iDOF=0; iDOF < _data->numDOF; ++iDOF) {
+    bool free = true;
+    for (int iFixed=0; iFixed < _data->numFixedDOF; ++iFixed)
+      if (iDOF == _data->fixedDOF[iFixed])
+	free = false;
+    if (free)
+      freeDOF[index] = iDOF;
+  } // for
+
+  const int numCells = sieveMesh->heightStratum(0)->size();
+  const int offset = numCells;
+  const int numFixedDOF = _data->numFixedDOF;
+  int iConstraint = 0;
+  for (SieveMesh::label_sequence::iterator v_iter = vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter) {
+    const int fiberDim = fieldSection->getFiberDimension(*v_iter);
+    const RealSection::value_type* values = 
+      sieveMesh->restrictClosure(fieldSection, *v_iter);
+
+    if (*v_iter != _data->constrainedPoints[iConstraint] + offset) {
+      // unconstrained point
+      for (int i=0; i < fiberDim; ++i)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, values[i], tolerance);
+    } else {
+      // constrained point
+
+      // check unconstrained DOF
+      for (int iDOF=0; iDOF < numFreeDOF; ++iDOF)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, values[freeDOF[iDOF]], tolerance);
+
+      // check constrained DOF
+      for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) {
+	const int index = iConstraint * numFixedDOF + iDOF;
+	const double valueE = (t0 > _data->tRef) ? (t1-t0)*_data->valueRate :
+	  (t1 > _data->tRef) ? (t1-_data->tRef)*_data->valueRate : 0.0;
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, values[_data->fixedDOF[iDOF]],
+				     tolerance);
+      } // for
+      ++iConstraint;
+    } // if/else
+  } // for
+} // testSetFieldIncr
+
+// ----------------------------------------------------------------------
 void
 pylith::bc::TestDirichletBC::_initialize(topology::Mesh* mesh,
 					 DirichletBC* const bc) const

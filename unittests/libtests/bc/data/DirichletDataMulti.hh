@@ -73,6 +73,7 @@ public:
   //@}
 
   double* field; ///< Values in field
+  double* fieldIncr; ///< Increment values in field
   int* constraintSizes; ///< Number of constrained DOF at each vertex
   int* constrainedDOF; ///< Indices of constrained DOF at each constrained vertex
 
