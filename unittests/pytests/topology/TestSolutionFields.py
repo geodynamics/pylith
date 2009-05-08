@@ -109,4 +109,27 @@ class TestSolutionFields(unittest.TestCase):
     return
 
 
+  def test_fieldAdd(self):
+    """
+    Test shiftHistory().
+    """
+    fields = self.fields
+    fields.add("field A", "A");
+    fields.add("field B", "B");
+
+    helper_fieldAdd(fields)
+    fieldA = fields.get("field A")
+    fieldB = fields.get("field B")
+    fieldA.copy(fieldB)
+    return
+
+
+def helper_fieldAdd(fields):
+  fieldA = fields.get("field A")
+  fieldB = fields.get("field B")
+
+  fieldA += fieldB    
+  return
+
+
 # End of file 

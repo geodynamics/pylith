@@ -235,7 +235,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
           const double valIJ = valI * basis[iQuad*numBasis+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis*spaceDim+iDim] += 
-	      valIJ * (+ 2.0 * dispTCell[jBasis*spaceDim+iDim]
+	      valIJ * (dispTCell[jBasis*spaceDim+iDim]
 		       - dispTmdtCell[jBasis*spaceDim+iDim]);
         } // for
       } // for
