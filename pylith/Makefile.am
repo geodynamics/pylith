@@ -83,6 +83,12 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/VertexFilterVecNormSubMesh.py \
 	mpi/__init__.py \
 	mpi/Communicator.py \
+	perf/__init__.py \
+	perf/Memory.py \
+	perf/Logger.py \
+	perf/MemoryLogger.py \
+	perf/Mesh.py \
+	perf/Material.py \
 	problems/__init__.py \
 	problems/Explicit.py \
 	problems/Formulation.py \

@@ -116,6 +116,11 @@ class Problem(PetscComponent):
                                           family="spatial_database")
     gravityField.meta['tip'] = "Database used for gravity field."
 
+    from pylith.perf.MemoryLogger import MemoryLogger
+    perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
+                                         factory=MemoryLogger)
+    perfLogger.meta['tip'] = "Performance and memory logging."
+
   
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -166,6 +171,7 @@ class Problem(PetscComponent):
             "Material id values must be unique." % \
             (material.label(), materialIds[material.id()], material.id())
       materialIds[material.id()] = material.label()
+      self.perfLogger.logMaterial("Problem Verification", material)
     
     for interface in self.interfaces.components():
       if interface.id() in materialIds.keys():
@@ -233,6 +239,7 @@ class Problem(PetscComponent):
       self.gravityField = self.inventory.gravityField
     else:
       self.gravityField = None
+    self.perfLogger = self.inventory.perfLogger
     return
 
 

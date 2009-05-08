@@ -19,11 +19,9 @@ CURRENT ISSUES/PRIORITIES
 
   DataWriteVTK needs dimensionalizer
 
-    Not working
-      coordinates in output (nondimensional instead of dimensioned)
-        create dimensionalized copy (NAME_dimensioned)
-      solution in output (nondimensional instead of dimensioned)
-      const slip rate in output (slip rate not slip)          
+  Done coordinates in output (nondimensional instead of dimensioned) create dimensionalized copy (NAME_dimensioned)
+  solution in output (nondimensional instead of dimensioned)
+  const slip rate in output (slip rate not slip)          
 
   Add ability to use symmetric matrix, set block size (default is 1)
 
@@ -93,6 +91,18 @@ CURRENT ISSUES/PRIORITIES
       Constraint::normalizer()
       Integrator::normalizer()
       DataWriter::normalizer()
+
+      Mesh::coneSize()
+      Mesh::numVertices()
+      Mesh::numCells()
+
+      MeshOps::numMaterialCells()
+
+      PetscApplication.compilePerformanceLog()
+      PetscComponent.compilePerformanceLog()
+      Material.ncells
+      MemoryLogger.logMesh()
+      MemoryLogger.logMaterial()
 
 5. Tidy up
 

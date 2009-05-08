@@ -26,6 +26,11 @@
 
 
 // ----------------------------------------------------------------------
+int
+pylith::topology::MeshOps::numMaterialCells(const Mesh& mesh, int materialId)
+{ // numMaterialCells
+  return mesh.sieveMesh()->getLabelStratum("material-id", materialId)->size();
+} // numMaterialCells
 void
 pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
 					    int* const materialIds,

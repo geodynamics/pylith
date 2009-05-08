@@ -52,6 +52,11 @@ class PyLithApp(PetscApplication):
                                       factory=TimeDependent)
     problem.meta['tip'] = "Computational problem to solve."
 
+    from pylith.perf.MemoryLogger import MemoryLogger
+    perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
+                                         factory=MemoryLogger)
+    perfLogger.meta['tip'] = "Performance and memory logging."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -81,6 +86,7 @@ class PyLithApp(PetscApplication):
     if "interfaces" in dir(self.problem):
       interfaces = self.problem.interfaces.components()
     mesh = self.mesher.create(self.problem.normalizer, interfaces)
+    self.perfLogger.logMesh("Meshing", mesh)
     del interfaces
     del self.mesher
     self._debug.log(resourceUsageString())
@@ -112,6 +118,8 @@ class PyLithApp(PetscApplication):
     del mesh
     del self.problem
 
+    self.compilePerformanceLog()
+    self.perfLogger.show()
     self._logger.eventEnd("PyLith main")
     return
   
@@ -125,6 +133,7 @@ class PyLithApp(PetscApplication):
     PetscApplication._configure(self)
     self.mesher = self.inventory.mesher
     self.problem = self.inventory.problem
+    self.perfLogger = self.inventory.perfLogger
 
     import journal
     self._debug = journal.debug(self.name)

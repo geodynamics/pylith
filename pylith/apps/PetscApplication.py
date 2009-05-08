@@ -59,6 +59,19 @@ class PetscApplication(Application):
     return
   
 
+  def compilePerformanceLog(self):
+    """
+    Compile performance and memory information.
+    """
+    from pylith.utils.PetscComponent import PetscComponent
+    for component in self.components():
+      if isinstance(component, PetscComponent):
+        component.compilePerformanceLog()
+        if hasattr(component, 'perfLogger'):
+          self.perfLogger.join(component.perfLogger)
+    return
+
+
   def cleanup(self):
     """
     Deallocate data structures.

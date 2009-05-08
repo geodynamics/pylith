@@ -62,6 +62,34 @@ class Mesh(ModuleMesh):
     from topology import MeshOps_checkMaterialIds
     MeshOps_checkMaterialIds(self, materialIds)
     return
+
+
+  def dimension(self):
+    """
+    Return the topological mesh dimension
+    """
+    return ModuleMesh.dimension(self)
+
+
+  def coneSize(self):
+    """
+    Return the representative cone size, or number of vertices on a cell
+    """
+    return ModuleMesh.coneSize(self)
+
+
+  def numVertices(self):
+    """
+    Return the number of vertices.
+    """
+    return ModuleMesh.numVertices(self)
+
+
+  def numCells(self):
+    """
+    Return the number of cells.
+    """
+    return ModuleMesh.numCells(self)
   
 
 # End of file

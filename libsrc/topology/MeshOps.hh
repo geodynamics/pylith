@@ -43,6 +43,9 @@ public :
 			int* const materialIds,
 			const int numMaterials);
 
+  static
+  int numMaterialCells(const Mesh& mesh, int materialId);
+
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

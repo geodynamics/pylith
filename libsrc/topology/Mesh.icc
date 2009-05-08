@@ -58,6 +58,27 @@ pylith::topology::Mesh::dimension(void) const {
   return (!_mesh.isNull()) ? _mesh->getDimension() : 0;
 }
 
+// Get representative cone size for mesh.
+inline
+int
+pylith::topology::Mesh::coneSize(void) const {
+  return (!_mesh.isNull()) ? _mesh->getSieve()->getConeSize(*_mesh->heightStratum(0)->begin()) : 0;
+}
+
+// Get number of vertices in mesh.
+inline
+int
+pylith::topology::Mesh::numVertices(void) const {
+  return (!_mesh.isNull()) ? _mesh->depthStratum(0)->size() : 0;
+}
+
+// Get number of cells in mesh.
+inline
+int
+pylith::topology::Mesh::numCells(void) const {
+  return (!_mesh.isNull()) ? _mesh->heightStratum(0)->size() : 0;
+}
+
 // Set MPI communicator associated with mesh.
 inline
 void

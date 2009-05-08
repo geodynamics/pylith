@@ -104,6 +104,8 @@ class Material(Component):
     self._setupLogging()
     self.mesh = mesh
     self.quadrature.preinitialize(self.mesh.coordsys().spaceDim())
+    from pylith.topology.topology import MeshOps_numMaterialCells
+    self.ncells = MeshOps_numMaterialCells(mesh, self.id())
     return
 
 
