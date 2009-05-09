@@ -80,7 +80,10 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::newSection(void)
 { // newSection
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Field");
   _section = new RealSection(_mesh.comm(), _mesh.debug());  
+  logger.stagePop();
 } // newSection
 
 // ----------------------------------------------------------------------
@@ -93,6 +96,8 @@ pylith::topology::Field<mesh_type>::newSection(
 { // newSection
   typedef typename mesh_type::SieveMesh::point_type point_type;
 
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Field");
   if (fiberDim < 0) {
     std::ostringstream msg;
     msg
@@ -115,6 +120,7 @@ pylith::topology::Field<mesh_type>::newSection(
     _section->setChart(chart_type(0, 0));
     _section->setFiberDimension(points, fiberDim);  
   } // if/else
+  logger.stagePop();
 } // newSection
 
 // ----------------------------------------------------------------------
@@ -148,6 +154,8 @@ void
 pylith::topology::Field<mesh_type>::newSection(const chart_type& chart,
 					       const int fiberDim)
 { // newSection
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Field");
   if (_section.isNull())
     newSection();
 
@@ -159,6 +167,7 @@ pylith::topology::Field<mesh_type>::newSection(const chart_type& chart,
        ++c_iter)
     _section->setFiberDimension(*c_iter, fiberDim);
   allocate();
+  logger.stagePop();
 } // newSection
 
 // ----------------------------------------------------------------------
@@ -167,6 +176,8 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::newSection(const Field& src)
 { // newSection
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Field");
   _vecFieldType = src._vecFieldType;
 
   const ALE::Obj<RealSection>& srcSection = src.section();
@@ -184,6 +195,7 @@ pylith::topology::Field<mesh_type>::newSection(const Field& src)
       CHECK_PETSC_ERROR(err);
     } // if
   } // if
+  logger.stagePop();
 } // newSection
 
 // ----------------------------------------------------------------------
@@ -192,12 +204,15 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::clear(void)
 { // clear
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Field");
   if (!_section.isNull())
     _section->clear();
 
   _scale = 1.0;
   _vecFieldType = OTHER;
   _dimensionsOkay = false;
+  logger.stagePop();
 } // clear
 
 // ----------------------------------------------------------------------
@@ -206,11 +221,14 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::allocate(void)
 { // allocate
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Field");
   assert(!_section.isNull());
 
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   sieveMesh->allocate(_section);
+  logger.stagePop();
 } // allocate
 
 // ----------------------------------------------------------------------
@@ -229,6 +247,8 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::complete(void)
 { // complete
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Completion");
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh.sieveMesh();
   assert(!sieveMesh.isNull());
 
@@ -236,6 +256,7 @@ pylith::topology::Field<mesh_type>::complete(void)
     ALE::Completion::completeSectionAdd(sieveMesh->getSendOverlap(),
 					sieveMesh->getRecvOverlap(), 
 					_section, _section);
+  logger.stagePop();
 } // complete
 
 // ----------------------------------------------------------------------

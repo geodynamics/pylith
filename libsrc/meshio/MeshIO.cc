@@ -309,7 +309,6 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
   assert(!sieveMesh.isNull());
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.setDebug(1);
   std::cout << "Building Vertex Group " << name << std::endl;
   logger.stagePush("VertexGroups");
   const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(name);
@@ -330,7 +329,6 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
   } // if/else
   sieveMesh->allocate(groupField);
   logger.stagePop();
-  logger.setDebug(0);
 
 #if defined(ALE_MEM_LOGGING)
   std::cout

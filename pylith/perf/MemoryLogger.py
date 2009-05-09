@@ -53,6 +53,8 @@ class MemoryLogger(Logger):
     Logger.__init__(self, name)
     self.megabyte = float(2**20)
     self.memory   = {}
+    self.memory['Field'] = 0
+    self.memory['Completion'] = 0
     return
 
   def logMesh(self, stage, mesh):
@@ -145,13 +147,19 @@ class MemoryLogger(Logger):
           output.append(self.memLine('Code',  name, mem, indent))
     if namePrefix:
       mem = logger.getAllocationTotal(namePrefix) - logger.getDeallocationTotal(namePrefix)
+      print 'Queried',namePrefix,'code memory'
     else:
       mem = logger.getAllocationTotal() - logger.getDeallocationTotal()
+      print 'Queried total code memory'
     if mem == 0:
+      print 'Used code total'
       mem = codeTotal
     output.append(self.memLine('Model', 'Total', total, indent))
     output.append(self.memLine('Code',  'Total', mem, indent))
-    output.append('%sPercentage memory modeled: %.2f%%' % (self.prefix(indent), total*100.0/mem))
+    if mem:
+      output.append('%sPercentage memory modeled: %.2f%%' % (self.prefix(indent), total*100.0/mem))
+    else:
+      output.append('%sMemory modeled:            %d (no measured memory)' % (self.prefix(indent), total))
     return output, total, codeTotal
 
   def show(self):
