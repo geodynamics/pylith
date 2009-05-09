@@ -500,9 +500,8 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
     const double e11 = totalStrain[0];
     const double e22 = totalStrain[1];
     const double e33 = totalStrain[2];
-    const double traceStrainTpdt = e11 + e22 + e33;
-    const double meanStrainTpdt = traceStrainTpdt/3.0 - meanStrainInitial;
-    const double meanStressTpdt = bulkModulus * traceStrainTpdt;
+    const double meanStrainTpdt = (e11 + e22 + e33)/3.0 - meanStrainInitial;
+    const double meanStressTpdt = 3.0 * bulkModulus * meanStrainTpdt;
 
     // Note that I use the initial strain rather than the deviatoric initial
     // strain since otherwise the initial mean strain would get used twice.
@@ -561,7 +560,7 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
     const double effStressTau = (1.0 - alpha) * effStressT +
       alpha * effStressTpdt;
     const double gammaTau = 0.5 *
-      ((effStressTau/viscosityCoeff)^(powerLawExp - 1.0))/visscosityCoeff;
+      ((effStressTau/viscosityCoeff)^(powerLawExp - 1.0))/viscosityCoeff;
     const double factor1 = 1.0/(ae + alpha * _dt * gammaTau);
     const double factor2 = timeFac * gammaTau;
     double devStressTpdt = 0.0;
@@ -847,6 +846,8 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   assert(0 != initialStrain);
   assert(_PowerLaw3D::tensorSize == initialStrainSize);
 
+  const int tensorSize = _PowerLaw3D::tensorSize;
+
   const double mu = properties[p_mu];
   const double lambda = properties[p_lambda];
   const double viscosityCoeff = properties[p_viscosityCoeff];
@@ -867,16 +868,9 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   // it to 0.5, which should probably be the default value.
   const double alpha = 0.5;
   const double timeFac = _dt * (1.0 - alpha);
-  
-  // Values for current time step
-  const double e11 = totalStrain[0];
-  const double e22 = totalStrain[1];
-  const double e33 = totalStrain[2];
-  const double traceStrainTpdt = e11 + e22 + e33;
-  const double meanStrainTpdt = traceStrainTpdt/3.0;
-  const double meanStressTpdt = bulkModulus * traceStrainTpdt;
 
-  // Initial stress values
+  /// Initial state.
+  // Initial stress values.
   const double meanStressInitial = (_stressInitial[0] + _stressInitial[1] +
 				    _stressInitial[2])/3.0;
   const double devStressInitial[] = { _stressInitial[0] - meanStressInitial,
@@ -887,15 +881,28 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
 				      _stressInitial[5] };
   const double stressInvar2Initial = 0.5 *
     _scalarProduct(devStressInitial, devStressInitial);
+
+  // Initial strain values.
+  const double meanStrainInitial = (_strainInitial[0] + _strainInitial[1] +
+				    _strainInitial[2])/3.0;
   
-  // Values for current time step
+  /// Values for current time step
+  const double e11 = totalStrain[0];
+  const double e22 = totalStrain[1];
+  const double e33 = totalStrain[2];
+  const double meanStrainTpdt = (e11 + e22 + e33)/3.0 - meanStrainInitial;
+  const double meanStressTpdt = 3.0 * bulkModulus * meanStrainTpdt;
+  
+  // Note that I use the initial strain rather than the deviatoric initial
+  // strain since otherwise the initial mean strain would get used twice.
+
   const double strainPPTpdt[] =
-    { _totalStrain[0] - meanStrainTpdt - visStrainT[0],
-      _totalStrain[1] - meanStrainTpdt - visStrainT[1],
-      _totalStrain[2] - meanStrainTpdt - visStrainT[2],
-      _totalStrain[3] - visStrainT[3],
-      _totalStrain[4] - visStrainT[4],
-      _totalStrain[5] - visStrainT[5] };
+    { _totalStrain[0] - meanStrainTpdt - visStrainT[0] - initialStrain[0],
+      _totalStrain[1] - meanStrainTpdt - visStrainT[1] - initialStrain[1],
+      _totalStrain[2] - meanStrainTpdt - visStrainT[2] - initialStrain[2],
+      _totalStrain[3] - visStrainT[3] - initialStrain[3],
+      _totalStrain[4] - visStrainT[4] - initialStrain[4],
+      _totalStrain[5] - visStrainT[5] - initialStrain[5] };
   const double strainPPInvar2Tpdt = 0.5 *
     _scalarProduct(strainPPTpdt, strainPPTpdt);
   
@@ -934,38 +941,120 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   // I think the PETSc root-finding procedure is too involved for what we want
   // here.  I would like the function to work something like:
   const double effStressInitialGuess = effStressT;
-  double effStressTpdt =
+  const double effStressTpdt =
     EffectiveStress::getEffStress(effStressInitialGuess,
 				  effStressParams,
 				  pylith::materials::PowerLaw3D::_effStressFunc,
 				  pylith::materials::PowerLaw3D::_effStressFuncDFunc);
+  
+  // Compute quantities at intermediate time tau used to compute values at
+  // end of time step.
+  const double effStressTau = (1.0 - alpha) * effStressT +
+    alpha * effStressTpdt;
 
-  // Compute Maxwell time
-  properties[_PowerLaw3D::pidMaxwellTime] = 1.0e30;
-  if (effStressTpdt != 0.0) {
-    properties[_PowerLaw3D::pidMaxwellTime] =
-      ((viscosityCoeff/effStressTpdt) ^ (powerLawExp - 1.0)) *
-      (viscosityCoeff/mu);
-    PetscLogFlops(5);
-    } // if
+  const double gammaTau = 0.5 *
+    ((effStressTau/viscosityCoeff)^(powerLawExp - 1.0))/viscosityCoeff;
+  const double factor1 = 1.0/(ae + alpha * _dt * gammaTau);
+  const double factor2 = timeFac * gammaTau;
+  const double factor3 = alpha * _dt * factor1;
+  const double k1 = 0.5 * (powerLawExp - 1.0) *
+    ((effStressTau/viscosityCoeff)^(powerLawExp - 2.0)) /
+    (viscosityCoeff * viscosityCoeff);
+  const double k2 = effStressTau - (1.0 - alpha * effStressT);
+  const double denom = 2.0 * a * k2 *
+    (alpha * _dt * k1 * k2 + a) /
+    (alpha * alpha) + k1 * (c - 2.0 * d * d * gammaTau);
+  const double k1Factor = k1/denom;
 
-    // Compute stresses from effective stress.
-    const double effStressTau = (1.0 - alpha) * effStressT +
-      alpha * effStressTpdt;
-    const double gammaTau = 0.5 *
-      ((effStressTau/viscosityCoeff)^(powerLawExp - 1.0))/visscosityCoeff;
-    const double factor1 = 1.0/(ae + alpha * _dt * gammaTau);
-    const double factor2 = timeFac * gammaTau;
-    double devStressTpdt = 0.0;
+  /// Compute tangent matrix.
+  // First compute derivatives of gammaTau w.r.t. deviatoric strain components.
+  const double dGammaDStrain11 = k1 * k1Factor *
+    (0.5 * strainPPTpdt[0] + ae * devStressInitial[0] -
+     factor2 * devStressT[0]);
+  const double dGammaDStrain22 = k1 * k1Factor *
+    (0.5 * strainPPTpdt[1] + ae * devStressInitial[1] -
+     factor2 * devStressT[1]);
+  const double dGammaDStrain33 = k1 * k1Factor *
+    (0.5 * strainPPTpdt[2] + ae * devStressInitial[2] -
+     factor2 * devStressT[2]);
+  const double dGammaDStrain12 = k1 * k1Factor *
+    (0.5 * strainPPTpdt[3] + ae * devStressInitial[3] -
+     factor2 * devStressT[3]);
+  const double dGammaDStrain23 = k1 * k1Factor *
+    (0.5 * strainPPTpdt[4] + ae * devStressInitial[4] -
+     factor2 * devStressT[4]);
+  const double dGammaDStrain13 = k1 * k1Factor *
+    (0.5 * strainPPTpdt[5] + ae * devStressInitial[5] -
+     factor2 * devStressT[5]);
 
-    for (int iComp=0; iComp < tensorSize; ++iComp) {
-      devStressTpdt = factor1 *
-	(strainPPTpdt[iComp] - factor2 * devStressT[iComp] +
-	 ae * devStressInitial[iComp]);
-      stress[iComp] = devStressTpdt + diag[iComp] *
-	(meanStressTpdt + meanStressInitial);
-    } // for
-    PetscLogFlops(14 + 8 * tensorSize);
+  // Compute part related to component i.
+  const double dF11 = timeFac * devStressT[0] +
+    factor3 * (strainPPTpdt[0] - factor2 * devStressT[0] +
+	       ae * devStressInitial[0]);
+  const double dF22 = timeFac * devStressT[1] +
+    factor3 * (strainPPTpdt[1] - factor2 * devStressT[1] +
+	       ae * devStressInitial[1]);
+  const double dF33 = timeFac * devStressT[2] +
+    factor3 * (strainPPTpdt[2] - factor2 * devStressT[2] +
+	       ae * devStressInitial[2]);
+  const double dF12 = timeFac * devStressT[3] +
+    factor3 * (strainPPTpdt[3] - factor2 * devStressT[3] +
+	       ae * devStressInitial[3]);
+  const double dF23 = timeFac * devStressT[4] +
+    factor3 * (strainPPTpdt[4] - factor2 * devStressT[4] +
+	       ae * devStressInitial[4]);
+  const double dF13 = timeFac * devStressT[5] +
+    factor3 * (strainPPTpdt[5] - factor2 * devStressT[5] +
+	       ae * devStressInitial[5]);
+
+  // Compute dStress/dStrain.
+  // There are more terms here than I need, but I want to leave them for now
+  // to test symmetry.
+  const double dStress11dStrain11 = factor1 * (1.0 - dGammaDStrain11 * dF11);
+  const double dStress11dStrain22 = factor1 * (    - dGammaDStrain22 * dF11);
+  const double dStress11dStrain33 = factor1 * (    - dGammaDStrain33 * dF11);
+  const double dStress11dStrain12 = factor1 * (    - dGammaDStrain12 * dF11);
+  const double dStress11dStrain23 = factor1 * (    - dGammaDStrain23 * dF11);
+  const double dStress11dStrain13 = factor1 * (    - dGammaDStrain13 * dF11);
+  const double dStress22dStrain11 = factor1 * (    - dGammaDStrain11 * dF22);
+  const double dStress22dStrain22 = factor1 * (1.0 - dGammaDStrain22 * dF22);
+  const double dStress22dStrain33 = factor1 * (    - dGammaDStrain33 * dF22);
+  const double dStress22dStrain12 = factor1 * (    - dGammaDStrain12 * dF22);
+  const double dStress22dStrain23 = factor1 * (    - dGammaDStrain23 * dF22);
+  const double dStress22dStrain13 = factor1 * (    - dGammaDStrain13 * dF22);
+  const double dStress33dStrain11 = factor1 * (    - dGammaDStrain11 * dF33);
+  const double dStress33dStrain22 = factor1 * (    - dGammaDStrain22 * dF33);
+  const double dStress33dStrain33 = factor1 * (1.0 - dGammaDStrain33 * dF33);
+  const double dStress33dStrain12 = factor1 * (    - dGammaDStrain12 * dF33);
+  const double dStress33dStrain23 = factor1 * (    - dGammaDStrain23 * dF33);
+  const double dStress33dStrain13 = factor1 * (    - dGammaDStrain13 * dF33);
+  const double dStress12dStrain11 = factor1 * (    - dGammaDStrain11 * dF12);
+  const double dStress12dStrain22 = factor1 * (    - dGammaDStrain22 * dF12);
+  const double dStress12dStrain33 = factor1 * (    - dGammaDStrain33 * dF12);
+  const double dStress12dStrain12 = factor1 * (1.0 - dGammaDStrain12 * dF12);
+  const double dStress12dStrain23 = factor1 * (    - dGammaDStrain23 * dF12);
+  const double dStress12dStrain13 = factor1 * (    - dGammaDStrain13 * dF12);
+  const double dStress23dStrain11 = factor1 * (    - dGammaDStrain11 * dF23);
+  const double dStress23dStrain22 = factor1 * (    - dGammaDStrain22 * dF23);
+  const double dStress23dStrain33 = factor1 * (    - dGammaDStrain33 * dF23);
+  const double dStress23dStrain12 = factor1 * (    - dGammaDStrain12 * dF23);
+  const double dStress23dStrain23 = factor1 * (1.0 - dGammaDStrain23 * dF23);
+  const double dStress23dStrain13 = factor1 * (    - dGammaDStrain13 * dF23);
+  const double dStress13dStrain11 = factor1 * (    - dGammaDStrain11 * dF13);
+  const double dStress13dStrain22 = factor1 * (    - dGammaDStrain22 * dF13);
+  const double dStress13dStrain33 = factor1 * (    - dGammaDStrain33 * dF13);
+  const double dStress13dStrain12 = factor1 * (    - dGammaDStrain12 * dF13);
+  const double dStress13dStrain23 = factor1 * (    - dGammaDStrain23 * dF13);
+  const double dStress13dStrain13 = factor1 * (1.0 - dGammaDStrain13 * dF13);
+
+  // Form elastic constants.
+  elasticConsts[ 0] = bulkModulus + (2.0 * dStress11dStrain11 -
+				     dStress11dStrain22 -
+				     dStress11dStrain33)/3.0;  // C1111
+  elasticConsts[1] = bulkModulus - dStressDStrain/3.0;  // C1122
+  elasticConsts[2] = elasticConsts[2];  // C1133
+
+
   assert(0 != elasticConsts);
   assert(_PowerLaw3D::numElasticConsts == numElasticConsts);
   assert(0 != properties);
