@@ -24,6 +24,7 @@ subpkgpyexec_PYTHON = \
 petsc_swig_sources = \
 	petsc.i \
 	petsc_general.i \
+	petsc_memory.i \
 	petsc_mat.i
 
 petsc_swig_generated = \
