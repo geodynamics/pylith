@@ -56,7 +56,7 @@ public:
   /// @name Input fields
   //@{
   double dt; ///< Time step
-  double* fieldTpdt; ///< Input field at time t+dt.
+  double* fieldTIncr; ///< Input increment field for time to to t+dt.
   double* fieldT; ///< Input field at time t.
   double* fieldTmdt; ///< Input field at time t-dt.
   //@}

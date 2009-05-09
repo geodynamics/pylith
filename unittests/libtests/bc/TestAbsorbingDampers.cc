@@ -312,13 +312,10 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     // Setup fields
     CPPUNIT_ASSERT(0 != fields);
     fields->add("residual", "residual");
-    fields->add("disp(t+dt)", "displacement");
+    fields->add("dispIncr(t->t+dt)", "displacement_increment");
     fields->add("disp(t)", "displacement");
     fields->add("disp(t-dt)", "displacement");
-    fields->solutionName("disp(t+dt)");
-    const char* history[] = { "disp(t+dt)", "disp(t)", "disp(t-dt)" };
-    const int historySize = 3;
-    fields->createHistory(history, historySize);
+    fields->solutionName("dispIncr(t->t+dt)");
   
     topology::Field<topology::Mesh>& residual = fields->get("residual");
     const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
@@ -333,20 +330,20 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
 
     const int totalNumVertices = sieveMesh->depthStratum(0)->size();
     const int numMeshCells = sieveMesh->heightStratum(0)->size();
-    const int fieldSize = _data->spaceDim * totalNumVertices;
-    const ALE::Obj<RealSection>& dispTpdtSection = 
-      fields->get("disp(t+dt)").section();
+ int fieldSize = _data->spaceDim * totalNumVertices;
+    const ALE::Obj<RealSection>& dispTIncrSection = 
+      fields->get("dispIncr(t->t+dt)").section();
     const ALE::Obj<RealSection>& dispTSection = 
       fields->get("disp(t)").section();
     const ALE::Obj<RealSection>& dispTmdtSection = 
       fields->get("disp(t-dt)").section();
-    CPPUNIT_ASSERT(!dispTpdtSection.isNull());
+    CPPUNIT_ASSERT(!dispTIncrSection.isNull());
     CPPUNIT_ASSERT(!dispTSection.isNull());
     CPPUNIT_ASSERT(!dispTmdtSection.isNull());
     const int offset = numMeshCells;
     for (int iVertex=0; iVertex < totalNumVertices; ++iVertex) {
-      dispTpdtSection->updatePoint(iVertex+offset, 
-				   &_data->fieldTpdt[iVertex*_data->spaceDim]);
+      dispTIncrSection->updatePoint(iVertex+offset, 
+				   &_data->fieldTIncr[iVertex*_data->spaceDim]);
       dispTSection->updatePoint(iVertex+offset, 
 				&_data->fieldT[iVertex*_data->spaceDim]);
       dispTmdtSection->updatePoint(iVertex+offset, 

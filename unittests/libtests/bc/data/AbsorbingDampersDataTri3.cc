@@ -50,7 +50,7 @@ const double pylith::bc::AbsorbingDampersDataTri3::_fieldT[] = {
   1.5,  2.2,
   1.7,  2.3,
 };
-const double pylith::bc::AbsorbingDampersDataTri3::_fieldTpdt[] = {
+const double pylith::bc::AbsorbingDampersDataTri3::_fieldTIncr[] = {
   1.2,  1.6,
   1.5,  2.4,
   1.8,  2.0,
@@ -72,9 +72,9 @@ const double pylith::bc::AbsorbingDampersDataTri3::_dampingConsts[] = {
 };
 const double pylith::bc::AbsorbingDampersDataTri3::_valsResidual[] = {
   0.0, 0.0,
-  2.4e+07,  1.0e+07,
+  -6.00000000e+06,   -1.00000000e+06,
   0.0, 0.0,
-  2.4e+07,  1.0e+07,
+  -6.00000000e+06,   -1.00000000e+06,
 };
 const double pylith::bc::AbsorbingDampersDataTri3::_valsJacobian[] = {
   0.0, 0.0, // 0x
@@ -127,7 +127,7 @@ pylith::bc::AbsorbingDampersDataTri3::AbsorbingDampersDataTri3(void)
   label = const_cast<char*>(_label);
 
   dt = _dt;
-  fieldTpdt = const_cast<double*>(_fieldTpdt);
+  fieldTIncr = const_cast<double*>(_fieldTIncr);
   fieldT = const_cast<double*>(_fieldT);
   fieldTmdt = const_cast<double*>(_fieldTmdt);
 

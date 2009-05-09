@@ -31,8 +31,8 @@ def calcTri3():
   edgeLen = 2.0**0.5
   N0 = 0.5
   N1 = 0.5
-  dispX = 0.5*(N0+N1)*(N0*(1.1)+N1*(1.3)) / (2.0*dt)
-  dispY = 0.5*(N0+N1)*(N0*(1.8)+N1*(2.2)) / (2.0*dt)
+  dispX = 0.5*(N0+N1)*(N0*(1.1-1.3)+N1*(1.3-1.7)) / (2.0*dt)
+  dispY = 0.5*(N0+N1)*(N0*(1.8-2.1)+N1*(2.2-2.3)) / (2.0*dt)
   normal = [0.5**0.5, -0.5**0.5]
 
   constNormal = density*vp
@@ -78,12 +78,12 @@ def calcQuad4():
   dt = 0.25
   N0 = 0.5
   N1 = 0.5
-  disp1X = 0.5*(N0+N1)*(N0*(1.1) + N1*(1.0)) / (2.0*dt)
-  disp1Y = 0.5*(N0+N1)*(N0*(1.8) + N1*(2.4)) / (2.0*dt)
+  disp1X = 0.5*(N0+N1)*(N0*(1.1-1.3) + N1*(1.0-1.1)) / (2.0*dt)
+  disp1Y = 0.5*(N0+N1)*(N0*(1.8-2.1) + N1*(2.4-2.0)) / (2.0*dt)
   normal1 = [-1.0, 0.0]
 
-  disp2X = 0.5*(N0+N1)*(N0*(1.4) + N1*(1.5)) / (2.0*dt)
-  disp2Y = 0.5*(N0+N1)*(N0*(2.4) + N1*(1.6)) / (2.0*dt)
+  disp2X = 0.5*(N0+N1)*(N0*(1.4-1.9) + N1*(1.5-2.1)) / (2.0*dt)
+  disp2Y = 0.5*(N0+N1)*(N0*(2.4-2.4) + N1*(1.6-2.5)) / (2.0*dt)
   normal2 = [1.0, 0.0]
 
   edgeLen = 2.0
@@ -145,9 +145,9 @@ def calcTet4():
   N0 = 1.0/3.0
   N1 = 1.0/3.0
   N2 = 1.0/3.0
-  dispX = (N0+N1+N2)/3.0 * (N0*(1.3)+N1*(1.2)+N2*(1.0)) / (2.0*dt)
-  dispY = (N0+N1+N2)/3.0 * (N0*(2.2)+N1*(2.4)+N2*(2.4)) / (2.0*dt)
-  dispZ = (N0+N1+N2)/3.0 * (N0*(3.6)+N1*(3.4)+N2*(3.0)) / (2.0*dt)
+  dispX = (N0+N1+N2)/3.0 * (N0*(1.3-1.7)+N1*(1.2-1.5)+N2*(1.0-1.1)) / (2.0*dt)
+  dispY = (N0+N1+N2)/3.0 * (N0*(2.2-2.3)+N1*(2.4-2.2)+N2*(2.4-2.0)) / (2.0*dt)
+  dispZ = (N0+N1+N2)/3.0 * (N0*(3.6-4.4)+N1*(3.4-4.0)+N2*(3.0-3.2)) / (2.0*dt)
   normal = [-1.0, 0.0, 0.0]
   tangent1 = [0.0, -1.0, 0.0]
   tangent2 = [0.0, 0.0, 1.0]
@@ -233,6 +233,18 @@ def calcHex8():
               [1.9,  0.6,  4.8],
               [2.0,  0.4,  5.0],
               [2.1,  0.2,  5.2]]
+  dispT = [[1.1,  2.3,  3.2],
+           [1.3,  2.1,  3.6],
+           [1.5,  1.9,  4.0],
+           [1.7,  1.7,  4.4],
+           [1.9,  1.5,  4.8],
+           [2.1,  1.3,  5.2],
+           [2.3,  1.1,  5.6],
+           [2.5,  0.9,  6.0],
+           [2.7,  0.7,  6.4],
+           [2.9,  0.5,  6.8],
+           [3.1,  0.3,  7.2],
+           [3.3,  0.1,  7.6]]
   normal = [0.0, 1.0, 0.0]
   tangent1 = [-1.0, 0.0, 0.0]
   tangent2 = [0.0, 0.0, 1.0]
@@ -257,18 +269,18 @@ def calcHex8():
       N1 = b[1]
       N2 = b[2]
       N3 = b[3]
-      d0x = dispTmdt[cell[0]][0]/(2.0*dt)
-      d0y = dispTmdt[cell[0]][1]/(2.0*dt)
-      d0z = dispTmdt[cell[0]][2]/(2.0*dt)
-      d1x = dispTmdt[cell[1]][0]/(2.0*dt)
-      d1y = dispTmdt[cell[1]][1]/(2.0*dt)
-      d1z = dispTmdt[cell[1]][2]/(2.0*dt)
-      d2x = dispTmdt[cell[2]][0]/(2.0*dt)
-      d2y = dispTmdt[cell[2]][1]/(2.0*dt)
-      d2z = dispTmdt[cell[2]][2]/(2.0*dt)
-      d3x = dispTmdt[cell[3]][0]/(2.0*dt)
-      d3y = dispTmdt[cell[3]][1]/(2.0*dt)
-      d3z = dispTmdt[cell[3]][2]/(2.0*dt)
+      d0x = (dispTmdt[cell[0]][0] - dispT[cell[0]][0])/(2.0*dt)
+      d0y = (dispTmdt[cell[0]][1] - dispT[cell[0]][1])/(2.0*dt)
+      d0z = (dispTmdt[cell[0]][2] - dispT[cell[0]][2])/(2.0*dt)
+      d1x = (dispTmdt[cell[1]][0] - dispT[cell[1]][0])/(2.0*dt)
+      d1y = (dispTmdt[cell[1]][1] - dispT[cell[1]][1])/(2.0*dt)
+      d1z = (dispTmdt[cell[1]][2] - dispT[cell[1]][2])/(2.0*dt)
+      d2x = (dispTmdt[cell[2]][0] - dispT[cell[2]][0])/(2.0*dt)
+      d2y = (dispTmdt[cell[2]][1] - dispT[cell[2]][1])/(2.0*dt)
+      d2z = (dispTmdt[cell[2]][2] - dispT[cell[2]][2])/(2.0*dt)
+      d3x = (dispTmdt[cell[3]][0] - dispT[cell[3]][0])/(2.0*dt)
+      d3y = (dispTmdt[cell[3]][1] - dispT[cell[3]][1])/(2.0*dt)
+      d3z = (dispTmdt[cell[3]][2] - dispT[cell[3]][2])/(2.0*dt)
       dispX = N0*d0x + N1*d1x + N2*d2x + N3*d3x
       dispY = N0*d0y + N1*d1y + N2*d2y + N3*d3y
       dispZ = N0*d0z + N1*d1z + N2*d2z + N3*d3z
@@ -334,7 +346,7 @@ def calcHex8():
       print "  %16.8e" % v
   print "values for residual:"
   for v in numpy.ravel(residual):
-      print "  %16.8e" % v
+      print "  %16.8e," % v
   print "values for jacobian:"
   for j in numpy.ravel(jacobian):
       print "  %16.8e" % j
@@ -343,8 +355,8 @@ def calcHex8():
 # ----------------------------------------------------------------------
 #calcTri3()
 #calcQuad4()
-#calcTet4()
-calcHex8()
+calcTet4()
+#calcHex8()
 
   
 # End of file 

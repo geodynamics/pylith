@@ -283,12 +283,12 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   topology::SubMesh::UpdateAddVisitor residualVisitor(*residualSection,
 						      &_cellVector[0]);
 
-  const topology::Field<topology::Mesh>& dispTpdt = 
-    fields->get("disp(t+dt)");
-  const ALE::Obj<RealSection>& dispTpdtSection = dispTpdt.section();
-  assert(!dispTpdtSection.isNull());
-  topology::Mesh::RestrictVisitor dispTpdtVisitor(*dispTpdtSection, 
-						  numBasis*spaceDim);
+  const topology::Field<topology::Mesh>& dispT = 
+    fields->get("disp(t)");
+  const ALE::Obj<RealSection>& dispTSection = dispT.section();
+  assert(!dispTSection.isNull());
+  topology::Mesh::RestrictVisitor dispTVisitor(*dispTSection, 
+					       numBasis*spaceDim);
   const topology::Field<topology::Mesh>& dispTmdt = 
     fields->get("disp(t-dt)");
   const ALE::Obj<RealSection>& dispTmdtSection = dispTmdt.section();
@@ -310,16 +310,15 @@ pylith::bc::AbsorbingDampers::integrateResidual(
     _resetCellVector();
 
     // Restrict input fields to cell
-    dispTpdtVisitor.clear();
-    submesh->restrictClosure(*c_iter, dispTpdtVisitor);
-    const double* dispTpdtCell = dispTpdtVisitor.getValues();
+    dispTVisitor.clear();
+    submesh->restrictClosure(*c_iter, dispTVisitor);
+    const double* dispTCell = dispTVisitor.getValues();
 
     dispTmdtVisitor.clear();
     submesh->restrictClosure(*c_iter, dispTmdtVisitor);
     const double* dispTmdtCell = dispTmdtVisitor.getValues();
 
-    dampersSection->restrictPoint(*c_iter, 
-				  &dampersCell[0], dampersCell.size());
+    dampersSection->restrictPoint(*c_iter, &dampersCell[0], dampersCell.size());
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -337,7 +336,8 @@ pylith::bc::AbsorbingDampers::integrateResidual(
           for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis*spaceDim+iDim] += 
 	      dampersCell[iQuad*spaceDim+iDim] *
-	      valIJ * (dispTmdtCell[jBasis*spaceDim+iDim]);
+	      valIJ * (dispTmdtCell[jBasis*spaceDim+iDim] - \
+		       dispTCell[jBasis*spaceDim+iDim]);
         } // for
       } // for
 
