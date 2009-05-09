@@ -42,6 +42,15 @@ class Mesh(Memory):
       raise ValueError("Unknown cell type '%s' for dim %d and cone size %d." % (self.cellType,self.dimension,self.coneSize))
     return
 
+  def tabulateNew(self, memDict):
+    """
+    Tabulate memory use.
+    """
+    memDict['Creation']       = self.sizeInt * (2 * (self.coneSize*self.ncells + self.nvertices + self.ncells) + self.coneSize*self.ncells)
+    memDict['Stratification'] = 2 * self.sizeArrow * (self.nvertices + self.ncells)
+    memDict['Coordinates']    = self.sizeDouble * self.dimension * self.nvertices
+    return
+
   def tabulate(self):
     """
     Tabulate memory use.

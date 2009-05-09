@@ -81,6 +81,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.setDebug(mesh->debug()/2);
 
+  logger.stagePush("Mesh");
   logger.stagePush("MeshCreation");
   if (0 == rank) {
     assert(coordinates->size() == numVertices*spaceDim);
@@ -174,8 +175,27 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
     logger.stagePop();
   } // if/else
 
+  const double lengthScale = normalizer.lengthScale();
+  normalizer.nondimensionalize(&(*coordinates)[0], coordinates->size(),
+			       lengthScale);
+
+  logger.stagePush("MeshCoordinates");
+  ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
+						 &(*coordinates)[0]);
+  logger.stagePop();
+  logger.stagePop();
+
 #if defined(ALE_MEM_LOGGING)
   std::cout
+    << std::endl
+    << "Mesh " << logger.getNumAllocations("Mesh")
+    << " allocations " << logger.getAllocationTotal("Mesh")
+    << " bytes" << std::endl
+    
+    << "Mesh " << logger.getNumDeallocations("Mesh")
+    << " deallocations " << logger.getDeallocationTotal("Mesh")
+    << " bytes" << std::endl
+    
     << std::endl
     << "MeshCreation " << logger.getNumAllocations("MeshCreation")
     << " allocations " << logger.getAllocationTotal("MeshCreation")
@@ -191,15 +211,16 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
     
     << "MeshStratification " << logger.getNumDeallocations("MeshStratification")
     << " deallocations " << logger.getDeallocationTotal("MeshStratification")
+    << " bytes" << std::endl << std::endl
+    
+    << "MeshCoordinates " << logger.getNumAllocations("MeshCoordinates")
+    << " allocations " << logger.getAllocationTotal("MeshCoordinates")
+    << " bytes" << std::endl
+    
+    << "MeshCoordinates " << logger.getNumDeallocations("MeshCoordinates")
+    << " deallocations " << logger.getDeallocationTotal("MeshCoordinates")
     << " bytes" << std::endl << std::endl;
 #endif
-
-  const double lengthScale = normalizer.lengthScale();
-  normalizer.nondimensionalize(&(*coordinates)[0], coordinates->size(),
-			       lengthScale);
-
-  ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
-						 &(*coordinates)[0]);
 
   sieveMesh->getFactory()->clear();
 } // buildMesh

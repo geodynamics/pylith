@@ -205,7 +205,7 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
   assert(!sieveMesh.isNull());
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("MaterialsCreation");
+  logger.stagePush("Materials");
   const ALE::Obj<SieveMesh::label_type>& labelMaterials = 
     sieveMesh->createLabel("material-id");
   if (!sieveMesh->commRank()) {
@@ -250,14 +250,14 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
 
 #if defined(ALE_MEM_LOGGING)
   std::cout 
-    << "MaterialsCreation "
-    << logger.getNumAllocations("MaterialsCreation")
-    << " allocations " << logger.getAllocationTotal("MaterialsCreation")
+    << "Materials "
+    << logger.getNumAllocations("Materials")
+    << " allocations " << logger.getAllocationTotal("Materials")
     << " bytes"
     << std::endl
-    << "MaterialsCreation "
-    << logger.getNumDeallocations("MaterialsCreation")
-    << " deallocations " << logger.getDeallocationTotal("MaterialsCreation")
+    << "Materials "
+    << logger.getNumDeallocations("Materials")
+    << " deallocations " << logger.getDeallocationTotal("Materials")
     << " bytes"
     << std::endl;
 #endif
@@ -309,7 +309,7 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
   assert(!sieveMesh.isNull());
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("GroupCreation");
+  logger.stagePush("VertexGroups");
   const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(name);
   assert(!groupField.isNull());
 
@@ -331,12 +331,12 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
 
 #if defined(ALE_MEM_LOGGING)
   std::cout
-    << "GroupCreation " << logger.getNumAllocations("GroupCreation")
-    << " allocations " << logger.getAllocationTotal("GroupCreation")
+    << "VertexGroups " << logger.getNumAllocations("VertexGroups")
+    << " allocations " << logger.getAllocationTotal("VertexGroups")
     << " bytes"
     << std::endl
-    << "GroupCreation " << logger.getNumDeallocations("GroupCreation")
-    << " deallocations " << logger.getDeallocationTotal("GroupCreation")
+    << "VertexGroups " << logger.getNumDeallocations("VertexGroups")
+    << " deallocations " << logger.getDeallocationTotal("VertexGroups")
     << " bytes"
     << std::endl;
 #endif

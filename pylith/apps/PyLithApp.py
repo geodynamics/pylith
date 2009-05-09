@@ -86,7 +86,7 @@ class PyLithApp(PetscApplication):
     if "interfaces" in dir(self.problem):
       interfaces = self.problem.interfaces.components()
     mesh = self.mesher.create(self.problem.normalizer, interfaces)
-    self.perfLogger.logMesh("Meshing", mesh)
+    self.perfLogger.logMesh("MeshingCreation", mesh)
     del interfaces
     del self.mesher
     self._debug.log(resourceUsageString())
@@ -120,6 +120,7 @@ class PyLithApp(PetscApplication):
 
     self.compilePerformanceLog()
     self.perfLogger.show()
+    self.perfLogger.showNew()
     self._logger.eventEnd("PyLith main")
     return
   

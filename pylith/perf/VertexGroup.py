@@ -14,6 +14,13 @@ class VertexGroup(Memory):
     self.nvertices = numVertices
     return
 
+  def tabulateNew(self, memDict):
+    """
+    Tabulate memory use.
+    """
+    memDict[self.label] = self.sizeInt * (2 * self.nvertices + self.nvertices)
+    return
+
   def tabulate(self):
     """
     Tabulate memory use.
