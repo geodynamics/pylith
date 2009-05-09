@@ -14,18 +14,12 @@ class Material(Memory):
     self.ncells = numCells
     return
 
-  def tabulateNew(self, memDict):
+  def tabulate(self, memDict):
     """
     Tabulate memory use.
     """
-    memDict[self.label] = 2 * self.sizeArrow * self.ncells
+    memDict[self.label] = self.sizeArrow * self.ncells
     return
-
-  def tabulate(self):
-    """
-    Tabulate memory use.
-    """
-    return 2 * self.sizeArrow * self.ncells
 
 if __name__ == '__main__':
   print 'Memory:',Material('rock', 35).tabulate()

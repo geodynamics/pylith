@@ -6,26 +6,22 @@ class VertexGroup(Memory):
   """
   Mesh object for holding vertex group memory and performance information.
   """
-  def __init__(self, label = '', numVertices = 0):
+  def __init__(self, label = '', numVertices = 0, numMeshVertices = 0):
     """
     Constructor.
     """
-    self.label     = label
-    self.nvertices = numVertices
+    self.label         = label
+    self.nvertices     = numVertices
+    self.nMeshVertices = numMeshVertices
     return
 
-  def tabulateNew(self, memDict):
+  def tabulate(self, memDict):
     """
     Tabulate memory use.
     """
-    memDict[self.label] = self.sizeInt * (2 * self.nvertices + self.nvertices)
+    # Here we have data + atlas (could use uniform) + bc (use Section)
+    memDict[self.label] = (self.sizeInt * self.nvertices) + (2 * self.sizeInt * self.nMeshVertices) + (2 * self.sizeInt * self.nMeshVertices)
     return
-
-  def tabulate(self):
-    """
-    Tabulate memory use.
-    """
-    return self.sizeInt * ( 2 * self.nvertices + self.nvertices)
 
 if __name__ == '__main__':
   print 'Memory:',VertexGroup('rock', 35).tabulate()

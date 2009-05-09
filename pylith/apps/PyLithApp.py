@@ -120,7 +120,6 @@ class PyLithApp(PetscApplication):
 
     self.compilePerformanceLog()
     self.perfLogger.show()
-    self.perfLogger.showNew()
     self._logger.eventEnd("PyLith main")
     return
   

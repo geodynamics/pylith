@@ -42,44 +42,15 @@ class Mesh(Memory):
       raise ValueError("Unknown cell type '%s' for dim %d and cone size %d." % (self.cellType,self.dimension,self.coneSize))
     return
 
-  def tabulateNew(self, memDict):
+  def tabulate(self, memDict):
     """
     Tabulate memory use.
     """
     memDict['Creation']       = self.sizeInt * (2 * (self.coneSize*self.ncells + self.nvertices + self.ncells) + self.coneSize*self.ncells)
     memDict['Stratification'] = 2 * self.sizeArrow * (self.nvertices + self.ncells)
-    memDict['Coordinates']    = self.sizeDouble * self.dimension * self.nvertices
+    # Here we have data + atlas (could use uniform) + bc (could use Section)
+    memDict['Coordinates']    = (self.sizeDouble * self.dimension * self.nvertices) + (2 * self.sizeInt * self.nvertices) + (2 * self.sizeInt * self.nvertices)
     return
-
-  def tabulate(self):
-    """
-    Tabulate memory use.
-    """
-    memory = {'mesh': 0,
-              'stratification': 0,
-              'coordinates': 0,
-              'materials': 0}
-    ncells    = self.ncells
-    nvertices = self.nvertices
-    coneSize  = self.coneSize
-    dimension = self.dimension
-
-    # mesh
-    nbytes = self.sizeInt * (2 * (coneSize*ncells + nvertices + ncells) + coneSize*ncells)
-    memory['mesh'] = nbytes
-
-    # stratification
-    nbytes = 2 * self.sizeArrow * (nvertices + ncells)
-    memory['stratification'] = nbytes
-
-    # coordinates
-    nbytes = self.sizeDouble * dimension * nvertices
-    memory['coordinates'] = nbytes
-
-    # materials
-    nbytes = 2 * self.sizeArrow * ncells
-    memory['materials'] = nbytes
-    return memory
 
 if __name__ == '__main__':
   print 'Memory:',Mesh(2, 3, 10, 25).tabulate()
