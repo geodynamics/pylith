@@ -131,7 +131,7 @@ pylith::feassemble::TestElasticityExplicit::testUseSolnIncr(void)
   integrator.material(&material);
   CPPUNIT_ASSERT_EQUAL(false, integrator._useSolnIncr);
   try {
-    integrator.useSolnIncr(true);
+    integrator.useSolnIncr(false);
 
     // Should have thrown exception, so don't make it here.
     CPPUNIT_ASSERT(false);

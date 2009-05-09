@@ -191,16 +191,18 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   const int numQuadPts = _quadrature->numQuadPts();
   const double_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
-  const double_array& basis = _quadrature->basis();
-  const double_array& jacobianDet = _quadrature->jacobianDet();
 
   // Allocate vectors for cell values
   double_array orientationCell(numConstraintVert*orientationSize);
   double_array stiffnessCell(numConstraintVert);
   double_array solutionCell(numCorners*spaceDim);
   double_array residualCell(numCorners*spaceDim);
+
+  // Tributary area for the current for each vertex.
+  double_array areaVertexCell(numConstraintVert);
+
+  // Total fault area associated with each vertex (assembled over all cells).
   double_array areaCell(numConstraintVert);
-  double_array areaAssembledCell(numConstraintVert);
 
   // Get cohesive cells
   const ALE::Obj<SieveMesh>& sieveMesh = residual.mesh().sieveMesh();
@@ -237,8 +239,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     _fields->get("area").section();
   assert(!areaSection.isNull());
   topology::Mesh::RestrictVisitor areaVisitor(*areaSection,
-					      areaAssembledCell.size(),
-					      &areaAssembledCell[0]);
+					      areaCell.size(), &areaCell[0]);
 
   topology::Field<topology::Mesh>& solution = fields->solution();
   const ALE::Obj<RealSection>& solutionSection = solution.section();
@@ -255,15 +256,20 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
     const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
-    areaCell = 0.0;
+    _quadrature->retrieveGeometry(c_fault);
+    areaVertexCell = 0.0;
     residualCell = 0.0;
+
+    // Get cell geometry information that depends on cell
+    const double_array& basis = _quadrature->basis();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
 
     // Compute contributory area for cell (to weight contributions)
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const double wt = quadWts[iQuad] * jacobianDet[iQuad];
       for (int iBasis=0; iBasis < numBasis; ++iBasis) {
         const double dArea = wt*basis[iQuad*numBasis+iBasis];
-	areaCell[iBasis] += dArea;
+	areaVertexCell[iBasis] += dArea;
       } // for
     } // for
         
@@ -291,9 +297,9 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
       const int indexK = iConstraint + 2*numConstraintVert;
 
       const double pseudoStiffness = stiffnessCell[iConstraint];
-      assert(areaAssembledCell[iConstraint] > 0);
+      assert(areaCell[iConstraint] > 0);
       const double wt = pseudoStiffness * 
-	areaCell[iConstraint] / areaAssembledCell[iConstraint];
+	areaVertexCell[iConstraint] / areaCell[iConstraint];
       
       // Get orientation at constraint vertex
       const double* orientationVertex = 
@@ -1052,6 +1058,7 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   
   // Allocate area field.
   _fields->add("area", "area");
+
   topology::Field<topology::SubMesh>& area = _fields->get("area");
   area.newSection(topology::FieldBase::VERTICES_FIELD, 1);
   area.allocate();
