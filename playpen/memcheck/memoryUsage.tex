@@ -18,9 +18,10 @@ $$
 where $A$ is the size of an arrow in bytes. Materials are also stored this way, but in PyLith are mapped only to cells.
 
     For an IGeneralSection, the data take up only the minimum size. The atlas is an IUniformSection so that the data
-take up $2 max(V, C)$ integers, and its atlas is an IConstantSection. Thus, for a group we expect
+take up $2 max(V, C)$ integers, and its atlas is an IConstantSection. We also have a BC ISection, which has an
+IUniformSection Atlas. Thus, for a group we expect
 $$
-  2 max(V, C) + max(V, C)
+  2 max(V, C) + 2 max(V, C) + max(V, C)
 $$
 
 \subsection{Savings}

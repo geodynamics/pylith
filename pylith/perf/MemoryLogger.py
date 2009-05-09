@@ -51,10 +51,8 @@ class MemoryLogger(Logger):
     Constructor.
     """
     Logger.__init__(self, name)
-    self.megabyte     = float(2**20)
-    self.memoryNew    = {}
-    self.materials    = {}
-    self.vertexGroups = {}
+    self.megabyte = float(2**20)
+    self.memory   = {}
     return
 
   def logMesh(self, stage, mesh):
@@ -62,27 +60,25 @@ class MemoryLogger(Logger):
     Read mesh parameters to determine memory from our model.
     """
     import pylith.perf.Mesh
-    self.mesh = pylith.perf.Mesh.Mesh(mesh.dimension(), mesh.coneSize(), mesh.numVertices(), mesh.numCells())
-    if not 'Mesh' in self.memoryNew: self.memoryNew['Mesh'] = {}
-    self.mesh.tabulateNew(self.memoryNew['Mesh'])
+
+    if not 'Mesh' in self.memory: self.memory['Mesh'] = {}
+    meshModel = pylith.perf.Mesh.Mesh(mesh.dimension(), mesh.coneSize(), mesh.numVertices(), mesh.numCells())
+    meshModel.tabulate(self.memory['Mesh'])
     for group, nvertices in mesh.groupSizes():
-      self.logVertexGroup(stage, group, nvertices)
-    if self.verbose:
-      self.tabulate()
-      self.show()
+      self.logVertexGroup(stage, group, nvertices, mesh.numVertices())
+    if self.verbose: self.show()
     return
 
-  def logVertexGroup(self, stage, label, nvertices):
+  def logVertexGroup(self, stage, label, nvertices, nMeshVertices):
     """
     Read vertex group parameters to determine memory from our model.
     """
     import pylith.perf.VertexGroup
-    self.vertexGroups[label] = pylith.perf.VertexGroup.VertexGroup(label, nvertices)
-    if not 'VertexGroups' in self.memoryNew: self.memoryNew['VertexGroups'] = {}
-    self.vertexGroups[label].tabulateNew(self.memoryNew['VertexGroups'])
-    if self.verbose:
-      self.tabulate()
-      self.show()
+
+    if not 'VertexGroups' in self.memory: self.memory['VertexGroups'] = {}
+    group = pylith.perf.VertexGroup.VertexGroup(label, nvertices, nMeshVertices)
+    group.tabulate(self.memory['VertexGroups'])
+    if self.verbose: self.show()
     return
 
   def logMaterial(self, stage, material):
@@ -90,42 +86,11 @@ class MemoryLogger(Logger):
     Read material parameters to determine memory from our model.
     """
     import pylith.perf.Material
-    self.materials[material.id()] = pylith.perf.Material.Material(material.label(), material.ncells)
-    if not 'Materials' in self.memoryNew: self.memoryNew['Materials'] = {}
-    self.materials[material.id()].tabulateNew(self.memoryNew['Materials'])
-    if self.verbose:
-      self.tabulate()
-      self.show()
-    return
 
-  def tabulate(self):
-    """
-    Tabulate expected memory usage.
-    """
-    total = 0
-    memory = {}
-    # mesh
-    if hasattr(self, 'mesh'):
-      info = self.mesh.tabulate()
-      memory['mesh'] = info
-      total += sum(info.values())
-    # groups
-    if hasattr(self, 'vertexGroups'):
-      memory['groups'] = {}
-      for label,group in self.vertexGroups.iteritems():
-        nbytes = group.tabulate()
-        total += nbytes
-        memory['groups'][label] = nbytes
-    # materials
-    if hasattr(self, 'materials'):
-      memory['materials'] = {}
-      for id, material in self.materials.iteritems():
-        nbytes = material.tabulate()
-        total += nbytes
-        memory['materials'][material.label] = nbytes
-    # Total
-    memory['total'] = total
-    self.memory = memory
+    if not 'Materials' in self.memory: self.memory['Materials'] = {}
+    material = pylith.perf.Material.Material(material.label(), material.ncells)
+    material.tabulate(self.memory['Materials'])
+    if self.verbose: self.show()
     return
 
   def mergeMemDict(self, memDictTarget, memDictSource):
@@ -140,48 +105,11 @@ class MemoryLogger(Logger):
         memDictTarget[key] += memDictSource[key]
     return
 
-  def joinNew(self, logger):
-    """
-    Incorporate information from another logger.
-    """
-    self.mergeMemDict(self.memoryNew, logger.memoryNew)
-    return
-
   def join(self, logger):
     """
     Incorporate information from another logger.
     """
-    self.joinNew(logger)
-    # mesh
-    memory = logger.memory
-    if 'mesh' in memory:
-      if not 'mesh' in self.memory:
-        self.memory['mesh'] = memory['mesh']
-      else:
-        for key in self.memory['mesh']:
-          self.memory['mesh'][key] += memory['mesh'][key]
-    # groups
-    if 'groups' in memory:
-      if not 'groups' in self.memory:
-        self.memory['groups'] = memory['groups']
-      else:
-        for key in memory['groups']:
-          if not key in self.memory['groups']:
-            self.memory['groups'][key]  = memory['groups'][key]
-          else:
-            self.memory['groups'][key] += memory['groups'][key]
-    # materials
-    if 'materials' in memory:
-      if not 'materials' in self.memory:
-        self.memory['materials'] = memory['materials']
-      else:
-        for key in memory['materials']:
-          if not key in self.memory['materials']:
-            self.memory['materials'][key]  = memory['materials'][key]
-          else:
-            self.memory['materials'][key] += memory['materials'][key]
-    # Total
-    self.memory['total'] += memory['total']
+    self.mergeMemDict(self.memory, logger.memory)
     return
 
   def prefix(self, indent):
@@ -226,45 +154,13 @@ class MemoryLogger(Logger):
     output.append('%sPercentage memory modeled: %.2f%%' % (self.prefix(indent), total*100.0/mem))
     return output, total, codeTotal
 
-  def showNew(self):
-    """
-    Print memory usage.
-    """
-    output = ["MEMORY USAGE"]
-    output.extend(self.processMemDict(self.memoryNew)[0])
-    print '\n'.join(output)
-    return
-
   def show(self):
     """
     Print memory usage.
     """
-    from pylith.utils.petsc import MemoryLogger
-    logger   = MemoryLogger.singleton()
-    megabyte = self.megabyte
-    print "MEMORY USAGE"
-    if 'mesh' in self.memory:
-      print "  Finite-element mesh"
-      memory = self.memory['mesh']
-      print "    Mesh:           %d bytes (%.3f MB)" % (memory['mesh'], memory['mesh'] / megabyte)
-      print "    Stratification: %d bytes (%.3f MB)" % (memory['stratification'], memory['stratification'] / megabyte)
-      print "    Coordinates:    %d bytes (%.3f MB)" % (memory['coordinates'], memory['coordinates'] / megabyte)
-      print "    Materials:      %d bytes (%.3f MB)" % (memory['materials'], memory['materials'] / megabyte)
-      stage  = "MeshCreation"
-      mem    = logger.getAllocationTotal(stage) - logger.getDeallocationTotal(stage)
-      print "    Mesh (Code):    %d bytes (%.3f MB)" % (mem, mem / megabyte)
-    if 'groups' in self.memory:
-      print "    Groups"
-      for (label, nbytes) in self.memory['groups'].items():
-        print "      %s: %d bytes (%.3f MB)" % (label, nbytes, nbytes / megabyte)
-    if 'materials' in self.memory:
-      print "  Materials"
-      for (label, nbytes) in self.memory['materials'].items():
-        print "    %s: %d bytes (%.3f MB)" % (label, nbytes, nbytes / megabyte)
-    print "  TOTAL:           %d bytes (%.3f MB)" % (self.memory['total'], self.memory['total'] / megabyte)
-    mem = logger.getAllocationTotal() - logger.getDeallocationTotal()
-    print "  TOTAL (Code):    %d bytes (%.3f MB)" % (mem, mem / megabyte)
-    print "  Percentage memory modeled: %.2f%%" % (self.memory['total']*100.0/mem)
+    output = ["MEMORY USAGE"]
+    output.extend(self.processMemDict(self.memory)[0])
+    print '\n'.join(output)
     return
 
   # PRIVATE METHODS ////////////////////////////////////////////////////

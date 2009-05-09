@@ -148,6 +148,8 @@ CURRENT ISSUES/PRIORITIES
 6. Memory model [Matt]
    playpen/memcheck/*
 
+   Must add nested stages so that logging totals are correct
+
 7. 2-D Plane strain Maxwell viscoelastic rheology [Charles]
 
 8. 2-D Plane strain Generalized Maxwell viscoelastic rheology [Charles]
