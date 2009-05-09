@@ -118,9 +118,9 @@ class Explicit(Formulation):
     logEvent = "%sprestep" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
     
-    dispTpdt = self.fields.get("disp(t+dt)")
+    dispIncr = self.fields.get("dispIncr(t->t+dt)")
     for constraint in self.constraints:
-      constraint.setFieldIncr(t, t+dt, dispTpdt)
+      constraint.setFieldIncr(t, t+dt, dispIncr)
 
     needNewJacobian = False
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
@@ -145,7 +145,7 @@ class Explicit(Formulation):
     
     self._info.log("Solving equations.")
     residual = self.fields.get("residual")
-    dispIncr = self.fields.get("dispIncr(t->t+dt")
+    dispIncr = self.fields.get("dispIncr(t->t+dt)")
     self.solver.solve(dispIncr, self.jacobian, residual)
 
     self._logger.eventEnd(logEvent)
@@ -160,11 +160,11 @@ class Explicit(Formulation):
     self._logger.eventBegin(logEvent)
     
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
-    disp = self.fields.get("disp(t)")
+    dispT = self.fields.get("disp(t)")
     dispTmdt = self.fields.get("disp(t-dt)")
 
     dispTmdt.copy(dispT)
-    disp += dispIncr
+    dispT += dispIncr
     dispIncr.zero()
 
     Formulation.poststep(self, t, dt)
