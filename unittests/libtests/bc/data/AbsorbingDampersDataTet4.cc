@@ -52,7 +52,7 @@ const double pylith::bc::AbsorbingDampersDataTet4::_fieldT[] = {
   1.5,  2.2,  4.0,
   1.7,  2.3,  4.4,
 };
-const double pylith::bc::AbsorbingDampersDataTet4::_fieldTpdt[] = {
+const double pylith::bc::AbsorbingDampersDataTet4::_fieldTIncr[] = {
   1.2,  1.6,  3.4,
   1.5,  2.4,  4.0,
   1.8,  2.0,  4.6,
@@ -73,10 +73,10 @@ const double pylith::bc::AbsorbingDampersDataTet4::_dampingConsts[] = {
   1.25e+07,  7.5e+06,  7.5e+06
 };
 const double pylith::bc::AbsorbingDampersDataTet4::_valsResidual[] = {
-  4.861111111e+06,  5.83333333e+06,  8.33333333e+06,
+  -1.11111111e+06,    4.16666667e+05,   -1.33333333e+06,
   0.0,              0.0,             0.0,
-  4.861111111e+06,  5.83333333e+06,  8.33333333e+06,
-  4.861111111e+06,  5.83333333e+06,  8.33333333e+06,
+  -1.11111111e+06,    4.16666667e+05,   -1.33333333e+06,
+  -1.11111111e+06,    4.16666667e+05,   -1.33333333e+06,
   0.0,              0.0,             0.0,  
 };
 const double pylith::bc::AbsorbingDampersDataTet4::_valsJacobian[] = {
@@ -173,7 +173,7 @@ pylith::bc::AbsorbingDampersDataTet4::AbsorbingDampersDataTet4(void)
   label = const_cast<char*>(_label);
 
   dt = _dt;
-  fieldTpdt = const_cast<double*>(_fieldTpdt);
+  fieldTIncr = const_cast<double*>(_fieldTIncr);
   fieldT = const_cast<double*>(_fieldT);
   fieldTmdt = const_cast<double*>(_fieldTmdt);
 

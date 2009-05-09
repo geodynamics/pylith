@@ -53,7 +53,7 @@ const double pylith::bc::AbsorbingDampersDataQuad4::_fieldT[] = {
   1.9,  2.4,
   2.1,  2.5,
 };
-const double pylith::bc::AbsorbingDampersDataQuad4::_fieldTpdt[] = {
+const double pylith::bc::AbsorbingDampersDataQuad4::_fieldTIncr[] = {
   1.2,  1.6,
   1.5,  2.4,
   1.8,  2.0,
@@ -78,12 +78,12 @@ const double pylith::bc::AbsorbingDampersDataQuad4::_dampingConsts[] = {
   1.25e+07, 7.5e+06,
 };
 const double pylith::bc::AbsorbingDampersDataQuad4::_valsResidual[] = {
-  2.625e+07, 3.15e+07,
-  2.625e+07, 3.15e+07,
+  -3.75000000e+06,    7.50000000e+05,
+  -3.75000000e+06,    7.50000000e+05,
   0.0, 0.0, 
   0.0, 0.0,
-  3.625e+07, 3.0e+07,
-  3.625e+07, 3.0e+07,
+  -1.37500000e+07,   -6.75000000e+06,
+  -1.37500000e+07,   -6.75000000e+06,
 };
 const double pylith::bc::AbsorbingDampersDataQuad4::_valsJacobian[] = {
   1.25e+07, 0.0, // 0x
@@ -176,7 +176,7 @@ pylith::bc::AbsorbingDampersDataQuad4::AbsorbingDampersDataQuad4(void)
   label = const_cast<char*>(_label);
 
   dt = _dt;
-  fieldTpdt = const_cast<double*>(_fieldTpdt);
+  fieldTIncr = const_cast<double*>(_fieldTIncr);
   fieldT = const_cast<double*>(_fieldT);
   fieldTmdt = const_cast<double*>(_fieldTmdt);
 

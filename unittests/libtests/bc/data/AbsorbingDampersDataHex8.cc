@@ -85,7 +85,7 @@ const double pylith::bc::AbsorbingDampersDataHex8::_fieldT[] = {
   3.1,  0.3,  7.2,
   3.3,  0.1,  7.6,
 };
-const double pylith::bc::AbsorbingDampersDataHex8::_fieldTpdt[] = {
+const double pylith::bc::AbsorbingDampersDataHex8::_fieldTIncr[] = {
   1.2,  1.1,  3.4,
   1.5,  1.0,  4.0,
   1.8,  0.9,  4.6,
@@ -122,18 +122,18 @@ const double pylith::bc::AbsorbingDampersDataHex8::_dampingConsts[] = {
   7.5e+06,  1.25e+07,  7.5e+06,
 };
 const double pylith::bc::AbsorbingDampersDataHex8::_valsResidual[] = {
-  9.50000021e+06,  2.33333337e+07,  2.65000006e+07,
-  0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
-  2.10000004e+07,  4.00000007e+07,  5.70000012e+07,
-  0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
-  1.15000002e+07,  1.66666670e+07,  3.05000006e+07,
-  0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
-  1.10000002e+07,  1.83333337e+07,  2.95000006e+07,
-  0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
-  2.40000005e+07,  3.00000007e+07,  6.30000012e+07,
-  0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
-  1.30000002e+07,  1.16666670e+07,  3.35000006e+07,
-  0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+   -2.75000007e+06,    1.25000003e+06,   -5.50000014e+06,
+    0.00000000e+00,    0.00000000e+00,    0.00000000e+00,
+   -7.50000018e+06,    2.50000005e+06,   -1.50000004e+07,
+    0.00000000e+00,    0.00000000e+00,    0.00000000e+00,
+   -4.75000010e+06,    1.25000003e+06,   -9.50000021e+06,
+    0.00000000e+00,    0.00000000e+00,    0.00000000e+00,
+   -4.25000008e+06,    1.25000002e+06,   -8.50000015e+06,
+    0.00000000e+00,    0.00000000e+00,    0.00000000e+00,
+   -1.05000002e+07,    2.50000005e+06,   -2.10000004e+07,
+    0.00000000e+00,    0.00000000e+00,    0.00000000e+00,
+   -6.25000011e+06,    1.25000003e+06,   -1.25000002e+07,
+    0.00000000e+00,    0.00000000e+00,    0.00000000e+00,
 };
 const double pylith::bc::AbsorbingDampersDataHex8::_valsJacobian[] = {
   3.33333333e+06, 0.0, 0.0, // 0x
@@ -586,7 +586,7 @@ pylith::bc::AbsorbingDampersDataHex8::AbsorbingDampersDataHex8(void)
   label = const_cast<char*>(_label);
 
   dt = _dt;
-  fieldTpdt = const_cast<double*>(_fieldTpdt);
+  fieldTIncr = const_cast<double*>(_fieldTIncr);
   fieldT = const_cast<double*>(_fieldT);
   fieldTmdt = const_cast<double*>(_fieldTmdt);
 

@@ -48,7 +48,7 @@ private:
   static const char* _label;
 
   static const double _dt;
-  static const double _fieldTpdt[];
+  static const double _fieldTIncr[];
   static const double _fieldT[];
   static const double _fieldTmdt[];
 

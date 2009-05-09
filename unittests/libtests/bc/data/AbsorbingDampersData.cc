@@ -26,7 +26,7 @@ pylith::bc::AbsorbingDampersData::AbsorbingDampersData(void) :
   id(0),
   label(""),
   dt(0),
-  fieldTpdt(0),
+  fieldTIncr(0),
   fieldT(0),
   fieldTmdt(0),
   spaceDim(0),

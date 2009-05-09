@@ -45,7 +45,7 @@ const double pylith::bc::AbsorbingDampersDataLine2::_fieldT[] = {
   1.3,
   1.5,
 };
-const double pylith::bc::AbsorbingDampersDataLine2::_fieldTpdt[] = {
+const double pylith::bc::AbsorbingDampersDataLine2::_fieldTIncr[] = {
   1.2,
   1.5,
   1.8,
@@ -67,9 +67,9 @@ const double pylith::bc::AbsorbingDampersDataLine2::_dampingConsts[] = {
   17.5e+6,
 };
 const double pylith::bc::AbsorbingDampersDataLine2::_valsResidual[] = {
-  12.5e+6*1.0/0.5,
+  12.5e+6*(1.0-1.1)/0.5,
   0.0,
-  17.5e+6*1.2/0.5,
+  17.5e+6*(1.2-1.5)/0.5,
 };
 const double pylith::bc::AbsorbingDampersDataLine2::_valsJacobian[] = {
   12.5e+6/0.5, 0.0, 0.0,
@@ -93,7 +93,7 @@ pylith::bc::AbsorbingDampersDataLine2::AbsorbingDampersDataLine2(void)
   label = const_cast<char*>(_label);
 
   dt = _dt;
-  fieldTpdt = const_cast<double*>(_fieldTpdt);
+  fieldTIncr = const_cast<double*>(_fieldTIncr);
   fieldT = const_cast<double*>(_fieldT);
   fieldTmdt = const_cast<double*>(_fieldTmdt);
 
