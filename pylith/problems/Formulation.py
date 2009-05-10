@@ -56,6 +56,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     ## Python object for managing Formulation facilities and properties.
     ##
     ## \b Properties
+    ## @li \b matrix_type Type of PETSc sparse matrix.
     ## @li \b view_jacobian Flag to output Jacobian matrix when it is reformed.
     ##
     ## \b Facilities
@@ -65,6 +66,9 @@ class Formulation(PetscComponent, ModuleFormulation):
     ## @li \b jacobian_viewer Writer for Jacobian sparse matrix.
 
     import pyre.inventory
+
+    matrixType = pyre.inventory.property("matrix_type", default="unknown")
+    matrixType.meta['tip'] = "Type of PETSc sparse matrix."
 
     viewJacobian = pyre.inventory.bool("view_jacobian", default=False)
     viewJacobian.meta['tip'] = "Write Jacobian matrix to binary file."
@@ -324,6 +328,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     Set members based using inventory.
     """
     PetscComponent._configure(self)
+    self.matrixType = self.inventory.matrixType
     self.timeStep = self.inventory.timeStep
     self.solver = self.inventory.solver
     self.output = self.inventory.output

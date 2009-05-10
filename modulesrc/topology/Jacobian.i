@@ -28,8 +28,10 @@ namespace pylith {
       /** Default constructor.
        *
        * @param fields Fields associated with mesh and solution of the problem.
+       * @param matrixType Type of PETSc sparse matrix.
        */
-      Jacobian(const SolutionFields& fields);
+      Jacobian(const SolutionFields& fields,
+	       const char* matrixType ="aij");
       
       /// Destructor.
       ~Jacobian(void);
