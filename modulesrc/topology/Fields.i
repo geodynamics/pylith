@@ -88,6 +88,12 @@ namespace pylith {
        */
       const typename field_type::Mesh& mesh(void) const;
 
+      /** Return the names of all fields.
+       *
+       * @returns an array of all field names
+       */
+      void fieldNames(int *numNames, char ***outNames);
+
     }; // Fields
 
   } // topology

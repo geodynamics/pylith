@@ -53,7 +53,6 @@ class MemoryLogger(Logger):
     Logger.__init__(self, name)
     self.megabyte = float(2**20)
     self.memory   = {}
-    self.memory['Field'] = 0
     self.memory['Completion'] = 0
     return
 
@@ -92,6 +91,18 @@ class MemoryLogger(Logger):
     if not 'Materials' in self.memory: self.memory['Materials'] = {}
     material = pylith.perf.Material.Material(material.label(), material.ncells)
     material.tabulate(self.memory['Materials'])
+    if self.verbose: self.show()
+    return
+
+  def logField(self, stage, field):
+    """
+    Read field parameters to determine memory from our model.
+    """
+    import pylith.perf.Field
+
+    if not 'Field' in self.memory: self.memory['Field'] = {}
+    field = pylith.perf.Field.Field(field.label(), field.size(), field.chartSize())
+    field.tabulate(self.memory['Field'])
     if self.verbose: self.show()
     return
 
@@ -147,12 +158,9 @@ class MemoryLogger(Logger):
           output.append(self.memLine('Code',  name, mem, indent))
     if namePrefix:
       mem = logger.getAllocationTotal(namePrefix) - logger.getDeallocationTotal(namePrefix)
-      print 'Queried',namePrefix,'code memory'
     else:
       mem = logger.getAllocationTotal() - logger.getDeallocationTotal()
-      print 'Queried total code memory'
     if mem == 0:
-      print 'Used code total'
       mem = codeTotal
     output.append(self.memLine('Model', 'Total', total, indent))
     output.append(self.memLine('Code',  'Total', mem, indent))
