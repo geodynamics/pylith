@@ -31,6 +31,7 @@ class TestVertexFilterVecNormMesh(unittest.TestCase):
     """
     filter = VertexFilterVecNormMesh()
     filter._configure()
+    self.failIf(filter.filter is None)
     return
 
 

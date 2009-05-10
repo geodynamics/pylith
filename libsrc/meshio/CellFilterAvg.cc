@@ -93,7 +93,6 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     _fieldAvg->newSection(sectionIn->getChart(), fiberDim);
     _fieldAvg->allocate();
 
-    _fieldAvg->label(fieldIn.label());
     switch (fieldIn.vectorFieldType())
       { // switch
       case topology::FieldBase::MULTI_SCALAR:
@@ -115,6 +114,7 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
       default :
 	std::cerr << "Bad vector field type for CellFilterAvg." << std::endl;
 	assert(0);
+	throw std::logic_error("Bad vector field type for CellFilterAvg.");
       } // switch
   } // if
   assert(0 != _fieldAvg);
@@ -137,8 +137,10 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
 	fieldAvgCell[i] += wts[iQuad] / scalar * values[iQuad*fiberDim+i];
 
     sectionAvg->updatePoint(*c_iter, &fieldAvgCell[0]);
-    PetscLogFlops( numQuadPts*fiberDim*3 );
   } // for
+  PetscLogFlops( cells->size() * numQuadPts*fiberDim*3 );
+
+  _fieldAvg->label(fieldIn.label());
 
   return *_fieldAvg;
 } // filter

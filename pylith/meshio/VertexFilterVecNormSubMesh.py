@@ -37,6 +37,7 @@ class VertexFilterVecNormSubMesh(VertexFilter, ModuleVertexFilterVecNorm):
     """
     VertexFilter.__init__(self, name)
     ModuleVertexFilterVecNorm.__init__(self)
+    self.filter = True
     return
 
 
