@@ -149,8 +149,6 @@ pylith::materials::PowerLaw3D::PowerLaw3D(void) :
   _updateStateVarsFn(0)
 { // constructor
   useElasticBehavior(true);
-  _viscousStrain.resize(_tensorSize);
-  _stress.resize(_tensorSize);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -186,8 +184,8 @@ pylith::materials::PowerLaw3D::useElasticBehavior(const bool flag)
 // Compute properties from values in spatial database.
 void
 pylith::materials::PowerLaw3D::_dbToProperties(
-					    double* const propValues,
-					    const double_array& dbValues) const
+				double* const propValues,
+				const double_array& dbValues) const
 { // _dbToProperties
   assert(0 != propValues);
   const int numDBValues = dbValues.size();
@@ -238,7 +236,7 @@ pylith::materials::PowerLaw3D::_dbToProperties(
 // Nondimensionalize properties.
 void
 pylith::materials::PowerLaw3D::_nondimProperties(double* const values,
-							 const int nvalues) const
+					         const int nvalues) const
 { // _nondimProperties
   assert(0 != _normalizer);
   assert(0 != values);
@@ -272,7 +270,7 @@ pylith::materials::PowerLaw3D::_dimProperties(double* const values,
 { // _dimProperties
   assert(0 != _normalizer);
   assert(0 != values);
-  assert(nvalues == _totalPropsQuadPt);
+  assert(nvalues == _numPropsQuadPt);
 
   const double densityScale = _normalizer->densityScale();
   const double pressureScale = _normalizer->pressureScale();
@@ -317,6 +315,38 @@ pylith::materials::PowerLaw3D::_dbToStateVars(
 } // _dbToStateVars
 
 // ----------------------------------------------------------------------
+// Nondimensionalize state variables.
+void
+pylith::materials::PowerLaw3D::_nondimStateVars(double* const values,
+						const int nvalues) const
+{ // _nondimStateVars
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _numVarsQuadPt);
+
+  const double pressureScale = _normalizer->pressureScale();
+  _normalizer->nondimensionalize(values[s_stress], _tensorSize, pressureScale);
+
+  PetscLogFlops(_tensorSize);
+} // _nondimStateVars
+
+// ----------------------------------------------------------------------
+// Dimensionalize state variables.
+void
+pylith::materials::PowerLaw3D::_dimStateVars(double* const values,
+					     const int nvalues) const
+{ // _dimStateVars
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _numVarsQuadPt);
+
+  const double pressureScale = _normalizer->pressureScale();
+  _normalizer->dimensionalize(values[s_stress], _tensorSize, pressureScale);
+
+  PetscLogFlops(_tensorSize);
+} // _dimStateVars
+
+// ----------------------------------------------------------------------
 // Compute density at location from properties.
 void
 pylith::materials::PowerLaw3D::_calcDensity(double* const density,
@@ -347,7 +377,7 @@ pylith::materials::PowerLaw3D::_stableTimeStepImplicit(
   assert(_numVarsQuadPt == numStateVars);
 
   memcpy(&stress[0], &stateVars[s_stress],
-	   tensorSize * sizeof(double));
+	   _tensorSize * sizeof(double));
   const double meanStress = (stress[0] + stress[1] + stress[2])/3.0;
   const double devStress[] = {stress[0] - meanStress,
 			      stress[1] - meanStress,
@@ -361,6 +391,7 @@ pylith::materials::PowerLaw3D::_stableTimeStepImplicit(
     dtStable = 0.1 * ((viscosityCoeff/effStressTpdt) ^ (powerLawExp - 1.0)) *
       (viscosityCoeff/mu);
 
+  PetscLogFlops(20);
   return dtStable;
 } // _stableTimeStepImplicit
 
@@ -452,7 +483,7 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
   assert(0 != initialStrain);
   assert(_PowerLaw3D::tensorSize == initialStrainSize);
 
-  const int tensorSize = _PowerLaw3D::tensorSize;
+  const int tensorSize = _tensorSize;
     
   // We need to do root-finding method if state variables are from previous
   // time step.
@@ -534,11 +565,13 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
 		      ae * _scalarProduct(devStressT, devStressInitial)) *
       timeFac;
     const double d = timeFac * effStressT;
+    const double stressScale = mu;
 
-    PetscLogFlops(55);
+    PetscLogFlops(92);
     // Put parameters into a vector and call root-finding algorithm.
     // This could also be a struct.
-    const double effStressParams[] = {ae,
+    const double effStressParams[] = {stressScale,
+				      ae,
 				      b,
 				      c,
 				      d,
@@ -551,10 +584,11 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
     // here.  I would like the function to work something like:
     const double effStressInitialGuess = effStressT;
     double effStressTpdt =
-      EffectiveStress::getEffStress(effStressInitialGuess,
-				    effStressParams,
-				    pylith::materials::PowerLaw3D::_effStressFunc,
-				    pylith::materials::PowerLaw3D::_effStressFuncDFunc);
+      EffectiveStress::getEffStress(
+			effStressInitialGuess,
+			effStressParams,
+			pylith::materials::PowerLaw3D::_effStressFunc,
+			pylith::materials::PowerLaw3D::_effStressFuncDFunc);
 
     // Compute stresses from effective stress.
     const double effStressTau = (1.0 - alpha) * effStressT +
@@ -586,9 +620,9 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
 // Effective stress function that computes effective stress function only
 // (no derivative).
 double
-pylith::materials::PowerLaw3D::_effStressFunc(double effStressTpdt,
-					      double *params)
-{ // _effStressFunc
+pylith::materials::PowerLaw3D::effStressFunc(double effStressTpdt,
+					     double *params)
+{ // effStressFunc
   double ae = params[0];
   double b = params[1];
   double c = params[2];
@@ -607,15 +641,15 @@ pylith::materials::PowerLaw3D::_effStressFunc(double effStressTpdt,
     c * gammaTau - d * d * gammaTau * gammaTau;
   PetscLogFlops(21);
   return y;
-} // _effStressFunc
+} // effStressFunc
 
 // ----------------------------------------------------------------------
 // Effective stress function that computes effective stress function
 // derivative only (no function value).
 double
-pylith::materials::PowerLaw3D::_effStressDFunc(double effStressTpdt,
-					       double *params)
-{ // _effStressDFunc
+pylith::materials::PowerLaw3D::effStressDFunc(double effStressTpdt,
+					      double *params)
+{ // effStressDFunc
   double ae = params[0];
   double c = params[2];
   double d = params[3];
@@ -637,17 +671,17 @@ pylith::materials::PowerLaw3D::_effStressDFunc(double effStressTpdt,
      c - 2.0 * d * d * gammaTau);
   PetscLogFlops(36);
   return dy;
-} // _effStressDFunc
+} // effStressDFunc
 
 // ----------------------------------------------------------------------
 // Effective stress function that computes effective stress function
 // and derivative.
 void
-pylith::materials::PowerLaw3D::_effStressFuncDFunc(double effStressTpdt,
-						   double *params,
-						   double *y,
-						   double *dy)
-{ // _effStressFunc
+pylith::materials::PowerLaw3D::effStressFuncDFunc(double effStressTpdt,
+						  double *params,
+						  double *y,
+						  double *dy)
+{ // effStressFunc
   double ae = params[0];
   double b = params[1];
   double c = params[2];
@@ -671,7 +705,7 @@ pylith::materials::PowerLaw3D::_effStressFuncDFunc(double effStressTpdt,
     (2.0 * a * alpha * dt * effStressTpdt * effStressTpdt +
      c - 2.0 * d * d * gammaTau);
   PetscLogFlops(46);
-} // _effStressFuncDFunc
+} // effStressFuncDFunc
 
 // ----------------------------------------------------------------------
 // Compute derivative of elasticity matrix at location from properties.
@@ -766,7 +800,7 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelasticInitial(
   assert(0 != initialStrain);
   assert(_PowerLaw3D::tensorSize == initialStrainSize);
 
-  const int tensorSize = _PowerLaw3D::tensorSize;
+  const int tensorSize = _tensorSize;
   const double mu = properties[p_mu];
   const double lambda = properties[p_lambda];
   const double viscosityCoeff = properties[p_viscosityCoeff];
@@ -811,7 +845,7 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelasticInitial(
   elasticConsts[19] = 0; // C2313
   elasticConsts[20] = elasticConsts[15]; // C1313
 
-  PetscLogFlops(25);
+  PetscLogFlops(37);
 } // _calcElasticConstsViscoelasticInitial
 
 // ----------------------------------------------------------------------
@@ -846,7 +880,7 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   assert(0 != initialStrain);
   assert(_PowerLaw3D::tensorSize == initialStrainSize);
 
-  const int tensorSize = _PowerLaw3D::tensorSize;
+  const int tensorSize = _tensorSize;
 
   const double mu = properties[p_mu];
   const double lambda = properties[p_lambda];
@@ -871,20 +905,20 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
 
   /// Initial state.
   // Initial stress values.
-  const double meanStressInitial = (_stressInitial[0] + _stressInitial[1] +
-				    _stressInitial[2])/3.0;
-  const double devStressInitial[] = { _stressInitial[0] - meanStressInitial,
-				      _stressInitial[1] - meanStressInitial,
-				      _stressInitial[2] - meanStressInitial,
-				      _stressInitial[3],
-				      _stressInitial[4],
-				      _stressInitial[5] };
+  const double meanStressInitial = (initialStress[0] + initialStress[1] +
+				    initialStress[2])/3.0;
+  const double devStressInitial[] = { initialStress[0] - meanStressInitial,
+				      initialStress[1] - meanStressInitial,
+				      initialStress[2] - meanStressInitial,
+				      initialStress[3],
+				      initialStress[4],
+				      initialStress[5] };
   const double stressInvar2Initial = 0.5 *
     _scalarProduct(devStressInitial, devStressInitial);
 
   // Initial strain values.
-  const double meanStrainInitial = (_strainInitial[0] + _strainInitial[1] +
-				    _strainInitial[2])/3.0;
+  const double meanStrainInitial = (initialStrain[0] + initialStrain[1] +
+				    initialStrain[2])/3.0;
   
   /// Values for current time step
   const double e11 = totalStrain[0];
@@ -907,13 +941,13 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
     _scalarProduct(strainPPTpdt, strainPPTpdt);
   
   // Values for previous time step
-  const double meanStressT = (_stressT[0] + _stressT[1] + _stressT[2])/3.0;
-  const double devStressT[] = { _stressT[0] - meanStressT,
-				_stressT[1] - meanStressT,
-				_stressT[2] - meanStressT,
-				_stressT[3],
-				_stressT[4],
-				_stressT[5] };
+  const double meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
+  const double devStressT[] = { stressT[0] - meanStressT,
+				stressT[1] - meanStressT,
+				stressT[2] - meanStressT,
+				stressT[3],
+				stressT[4],
+				stressT[5] };
   const double stressInvar2T = 0.5 * _scalarProduct(devStressT, devStressT);
   const double effStressT = sqrt(stressInvar2T);
   
@@ -925,11 +959,13 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
 		    ae * _scalarProduct(devStressT, devStressInitial)) *
     timeFac;
   const double d = timeFac * effStressT;
+  const double stressScale = mu;
   
-  PetscLogFlops(45);
+  PetscLogFlops(92);
   // Put parameters into a vector and call root-finding algorithm.
   // This could also be a struct.
-  const double effStressParams[] = {ae,
+  const double effStressParams[] = {stressScale,
+				    ae,
 				    b,
 				    c,
 				    d,
@@ -942,16 +978,16 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   // here.  I would like the function to work something like:
   const double effStressInitialGuess = effStressT;
   const double effStressTpdt =
-    EffectiveStress::getEffStress(effStressInitialGuess,
-				  effStressParams,
-				  pylith::materials::PowerLaw3D::_effStressFunc,
-				  pylith::materials::PowerLaw3D::_effStressFuncDFunc);
+    EffectiveStress::getEffStress(
+			effStressInitialGuess,
+			effStressParams,
+			pylith::materials::PowerLaw3D::_effStressFunc,
+			pylith::materials::PowerLaw3D::_effStressFuncDFunc);
   
   // Compute quantities at intermediate time tau used to compute values at
   // end of time step.
   const double effStressTau = (1.0 - alpha) * effStressT +
     alpha * effStressTpdt;
-
   const double gammaTau = 0.5 *
     ((effStressTau/viscosityCoeff)^(powerLawExp - 1.0))/viscosityCoeff;
   const double factor1 = 1.0/(ae + alpha * _dt * gammaTau);
@@ -1048,127 +1084,241 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   const double dStress13dStrain13 = factor1 * (1.0 - dGammaDStrain13 * dF13);
 
   // Form elastic constants.
-  elasticConsts[ 0] = bulkModulus + (2.0 * dStress11dStrain11 -
-				     dStress11dStrain22 -
-				     dStress11dStrain33)/3.0;  // C1111
-  elasticConsts[1] = bulkModulus - dStressDStrain/3.0;  // C1122
-  elasticConsts[2] = elasticConsts[2];  // C1133
+  elasticConsts[ 0] = bulkModulus + (2.0 * dStress11dStrain11
+				         - dStress11dStrain22
+				         - dStress11dStrain33)/3.0;  // C1111
+  elasticConsts[ 1] = bulkModulus + (2.0 * dStress11dStrain22
+				         - dStress11dStrain11
+				         - dStress11dStrain33)/3.0;  // C1122
+  elasticConsts[ 2] = bulkModulus + (2.0 * dStress11dStrain33
+				         - dStress11dStrain22
+				         - dStress11dStrain33)/3.0;  // C1133
+  elasticConsts[ 3] = dStress11dStrain12;  // C1112
+  elasticConsts[ 4] = dStress11dStrain23;  // C1123
+  elasticConsts[ 5] = dStress11dStrain13;  // C1113
+  elasticConsts[ 6] = bulkModulus + (2.0 * dStress22dStrain22
+				         - dStress22dStrain11
+				         - dStress22dStrain33)/3.0;  // C2222
+  elasticConsts[ 7] = bulkModulus + (2.0 * dStress22dStrain33
+				         - dStress22dStrain22
+				         - dStress22dStrain33)/3.0;  // C2233
+  elasticConsts[ 8] = dStress22dStrain12;  // C2212
+  elasticConsts[ 9] = dStress22dStrain23;  // C2223
+  elasticConsts[10] = dStress22dStrain13;  // C2213
+  elasticConsts[11] = bulkModulus + (2.0 * dStress33dStrain33
+				         - dStress33dStrain11
+				         - dStress33dStrain22)/3.0;  // C3333
+  elasticConsts[12] = dStress33dStrain12;  // C3312
+  elasticConsts[13] = dStress33dStrain23;  // C3323
+  elasticConsts[14] = dStress33dStrain13;  // C3313
+  elasticConsts[15] = dStress12dStrain12;  // C1212
+  elasticConsts[16] = dStress12dStrain23;  // C1223
+  elasticConsts[17] = dStress12dStrain13;  // C1213
+  elasticConsts[18] = dStress23dStrain23;  // C2323
+  elasticConsts[19] = dStress23dStrain13;  // C2313
+  elasticConsts[20] = dStress13dStrain13;  // C1313
 
-
-  assert(0 != elasticConsts);
-  assert(_PowerLaw3D::numElasticConsts == numElasticConsts);
-  assert(0 != properties);
-  assert(_totalPropsQuadPt == numProperties);
-  assert(0 != totalStrain);
-  assert(_PowerLaw3D::tensorSize == strainSize);
-  assert(_PowerLaw3D::tensorSize == initialStateSize);
- 
-  const double mu = properties[_PowerLaw3D::pidMu];
-  const double lambda = properties[_PowerLaw3D::pidLambda];
-  const double maxwelltime = properties[_PowerLaw3D::pidMaxwellTime];
-
-  const double mu2 = 2.0 * mu;
-  const double bulkModulus = lambda + mu2/3.0;
-
-  double dq = ViscoelasticMaxwell::computeVisStrain(_dt, maxwelltime);
-
-  const double visFac = mu*dq/3.0;
-  elasticConsts[ 0] = bulkModulus + 4.0*visFac; // C1111
-  elasticConsts[ 1] = bulkModulus - 2.0*visFac; // C1122
-  elasticConsts[ 2] = elasticConsts[1]; // C1133
-  elasticConsts[ 3] = 0; // C1112
-  elasticConsts[ 4] = 0; // C1123
-  elasticConsts[ 5] = 0; // C1113
-  elasticConsts[ 6] = elasticConsts[0]; // C2222
-  elasticConsts[ 7] = elasticConsts[1]; // C2233
-  elasticConsts[ 8] = 0; // C2212
-  elasticConsts[ 9] = 0; // C2223
-  elasticConsts[10] = 0; // C2213
-  elasticConsts[11] = elasticConsts[0]; // C3333
-  elasticConsts[12] = 0; // C3312
-  elasticConsts[13] = 0; // C3323
-  elasticConsts[14] = 0; // C3313
-  elasticConsts[15] = 6.0 * visFac; // C1212
-  elasticConsts[16] = 0; // C1223
-  elasticConsts[17] = 0; // C1213
-  elasticConsts[18] = elasticConsts[15]; // C2323
-  elasticConsts[19] = 0; // C2313
-  elasticConsts[20] = elasticConsts[15]; // C1313
-
-  PetscLogFlops(10);
+  PetscLogFlops(265);
 } // _calcElasticConstsViscoelastic
 
 // ----------------------------------------------------------------------
 // Update state variables.
 void
-pylith::materials::PowerLaw3D::_updatePropertiesElastic(
-				         double* const properties,
-					 const int numProperties,
-					 const double* totalStrain,
-					 const int strainSize,
-					 const double* initialState,
-					 const int initialStateSize)
-{ // _updatePropertiesElastic
+pylith::materials::PowerLaw3D::_updateStateVarsElastic(
+				    double* const stateVars,
+				    const int numStateVars,
+				    double* const properties,
+				    const int numProperties,
+				    const double* totalStrain,
+				    const int strainSize,
+				    const double* initialStress,
+				    const int initialStressSize,
+				    const double* initialStrain,
+				    const int initialStrainSize)
+{ // _updateStateVarsElastic
+  assert(0 != stateVars);
+  assert(_totalPropsQuadPt == numStateVars);
   assert(0 != properties);
-  assert(_totalPropsQuadPt == numProperties);
+  assert(_numPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_PowerLaw3D::tensorSize == strainSize);
+  assert(0 != initialStress);
+  assert(_PowerLaw3D::tensorSize == initialStressSize);
+  assert(0 != initialStrain);
+  assert(_PowerLaw3D::tensorSize == initialStrainSize);
 
-  const double maxwelltime = properties[_PowerLaw3D::pidMaxwellTime];
+  const bool computeStateVars = true;
+  double stress[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  const int stressSize = strainSize;
+  _calcStressElastic(stress, stressSize,
+		     properties, numproperties,
+		     stateVars, numStateVars,
+		     totalStrain, strainSize,
+		     initialStress, initialStressSize,
+		     initialStrain, initialStrainSize,
+		     computeStateVars);
 
-  const double e11 = totalStrain[0];
-  const double e22 = totalStrain[1];
-  const double e33 = totalStrain[2];
-
-  const double traceStrainTpdt = e11 + e22 + e33;
-  const double meanStrainTpdt = traceStrainTpdt/3.0;
-
-  const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-
-  for (int iComp=0; iComp < _PowerLaw3D::tensorSize; ++iComp) {
-    properties[_PowerLaw3D::pidStrainT+iComp] = totalStrain[iComp];
-    properties[_PowerLaw3D::pidVisStrainT+iComp] =
-      totalStrain[iComp] - diag[iComp] * meanStrainTpdt;
+  for (int iComp=0; iComp < _tensorSize; ++iComp) {
+    stateVars[s_viscousStrain+iComp] = 0.0;
+    stateVars[s_stress+iComp] = stress[iComp];
   } // for
-  PetscLogFlops(3 + 2 * _PowerLaw3D::tensorSize);
 
   _needNewJacobian = true;
-} // _updatePropertiesElastic
+} // _updateStateVarsElastic
 
 // ----------------------------------------------------------------------
 // Update state variables.
 void
-pylith::materials::PowerLaw3D::_updatePropertiesViscoelastic(
-						 double* const properties,
-						 const int numProperties,
-						 const double* totalStrain,
-						 const int strainSize,
-						 const double* initialState,
-						 const int initialStateSize)
-{ // _updatePropertiesViscoelastic
+pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
+				    double* const stateVars,
+				    const int numStateVars,
+				    double* const properties,
+				    const int numProperties,
+				    const double* totalStrain,
+				    const int strainSize,
+				    const double* initialStress,
+				    const int initialStressSize,
+				    const double* initialStrain,
+				    const int initialStrainSize)
+{ // _updateStateVarsViscoelastic
+  assert(0 != stateVars);
+  assert(_numVarsQuadPt == numStateVars);
   assert(0 != properties);
-  assert(_totalPropsQuadPt == numProperties);
+  assert(_numPropsQuadPt == numProperties);
   assert(0 != totalStrain);
   assert(_PowerLaw3D::tensorSize == strainSize);
-  assert(_PowerLaw3D::tensorSize == initialStateSize);
+  assert(0 != initialStress);
+  assert(_PowerLaw3D::tensorSize == initialStressSize);
+  assert(0 != initialStrain);
+  assert(_PowerLaw3D::tensorSize == initialStrainSize);
 
-  const int tensorSize = _PowerLaw3D::tensorSize;
+  const int stressSize = _tensorSize;
 
-  pylith::materials::PowerLaw3D::_computeStateVars(properties,
-							   numProperties,
-							   totalStrain,
-							   strainSize,
-							   initialState,
-							   initialStateSize);
-
-  memcpy(&properties[_PowerLaw3D::pidVisStrainT],
-	 &_visStrainT[0], 
+  // For now, we are duplicating the functionality of _calcStressViscoelastic,
+  // since otherwise we would have to redo a lot of calculations.
+  const double mu = properties[p_mu];
+  const double lambda = properties[p_lambda];
+  const double viscosityCoeff = properties[p_viscosityCoeff];
+  const double powerLawExp = properties[p_powerLawExponent];
+  memcpy(&visStrainT[0], &stateVars[s_viscousStrain],
 	 tensorSize * sizeof(double));
-  memcpy(&properties[_PowerLaw3D::pidStrainT],
-	 &totalStrain[0], 
+  memcpy(&stressT[0], &stateVars[s_stress],
 	 tensorSize * sizeof(double));
+  
+  const double mu2 = 2.0 * mu;
+  const double lamPlusMu = lambda + mu;
+  const double bulkModulus = lambda + mu2/3.0;
+  const double ae = 1.0/mu2;
+  const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 
-  _needNewJacobian = false;
+  // Need to figure out how time integration parameter alpha is going to be
+  // specified.  It should probably be specified in the problem definition and
+  // then used only by the material types that use it.  For now we are setting
+  // it to 0.5, which should probably be the default value.
+  const double alpha = 0.5;
+  const double timeFac = _dt * (1.0 - alpha);
+
+  // Initial stress values
+  const double meanStressInitial = (initialStress[0] + initialStress[1] +
+				    initialStress[2])/3.0;
+  const double devStressInitial[] = { initialStress[0] - meanStressInitial,
+				      initialStress[1] - meanStressInitial,
+				      initialStress[2] - meanStressInitial,
+				      initialStress[3],
+				      initialStress[4],
+				      initialStress[5] };
+  const double stressInvar2Initial = 0.5 *
+    _scalarProduct(devStressInitial, devStressInitial);
+
+  // Initial strain values
+  const double meanStrainInitial = (initialStrain[0] + initialStrain[1] +
+				    initialStrain[2])/3.0;
+  
+  // Values for current time step
+  const double e11 = totalStrain[0];
+  const double e22 = totalStrain[1];
+  const double e33 = totalStrain[2];
+  const double meanStrainTpdt = (e11 + e22 + e33)/3.0 - meanStrainInitial;
+  const double meanStressTpdt = 3.0 * bulkModulus * meanStrainTpdt;
+
+  // Note that I use the initial strain rather than the deviatoric initial
+  // strain since otherwise the initial mean strain would get used twice.
+  const double strainPPTpdt[] =
+    { totalStrain[0] - meanStrainTpdt - visStrainT[0] - initialStrain[0],
+      totalStrain[1] - meanStrainTpdt - visStrainT[1] - initialStrain[1],
+      totalStrain[2] - meanStrainTpdt - visStrainT[2] - initialStrain[2],
+      totalStrain[3] - visStrainT[3] - initialStrain[3],
+      totalStrain[4] - visStrainT[4] - initialStrain[4],
+      totalStrain[5] - visStrainT[5] - initialStrain[5] };
+  const double strainPPInvar2Tpdt = 0.5 *
+    _scalarProduct(strainPPTpdt, strainPPTpdt);
+
+  // Values for previous time step
+  const double meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
+  const double devStressT[] = { stressT[0] - meanStressT,
+				stressT[1] - meanStressT,
+				stressT[2] - meanStressT,
+				stressT[3],
+				stressT[4],
+				stressT[5] };
+  const double stressInvar2T = 0.5 * _scalarProduct(devStressT, devStressT);
+  const double effStressT = sqrt(stressInvar2T);
+
+  // Finish defining parameters needed for root-finding algorithm.
+  const double b = strainInvar2Tpdt +
+    ae * _scalarProduct(strainPPTpdt, devStressInitial) +
+    ae * ae * stressInvar2Initial;
+  const double c = (_scalarProduct(strainPPTpdt, devStressT) +
+		    ae * _scalarProduct(devStressT, devStressInitial)) *
+    timeFac;
+  const double d = timeFac * effStressT;
+  const double stressScale = mu;
+
+  PetscLogFlops(92);
+  // Put parameters into a vector and call root-finding algorithm.
+  // This could also be a struct.
+  const double effStressParams[] = {stressScale,
+				    ae,
+				    b,
+				    c,
+				    d,
+				    alpha,
+				    _dt,
+				    effectiveStressT,
+				    powerLawExp,
+				    viscosityCoeff};
+  // I think the PETSc root-finding procedure is too involved for what we want
+  // here.  I would like the function to work something like:
+  const double effStressInitialGuess = effStressT;
+  double effStressTpdt =
+    EffectiveStress::getEffStress(
+			effStressInitialGuess,
+			effStressParams,
+			pylith::materials::PowerLaw3D::_effStressFunc,
+			pylith::materials::PowerLaw3D::_effStressFuncDFunc);
+
+  // Compute stress and viscous strain and update appropriate state variables.
+  const double effStressTau = (1.0 - alpha) * effStressT +
+    alpha * effStressTpdt;
+  const double gammaTau = 0.5 *
+    ((effStressTau/viscosityCoeff)^(powerLawExp - 1.0))/viscosityCoeff;
+  const double factor1 = 1.0/(ae + alpha * _dt * gammaTau);
+  const double factor2 = timeFac * gammaTau;
+  double devStressTpdt = 0.0;
+  double devStressTau = 0.0;
+
+  for (int iComp=0; iComp < tensorSize; ++iComp) {
+    devStressTpdt = factor1 *
+      (strainPPTpdt[iComp] - factor2 * devStressT[iComp] +
+       ae * devStressInitial[iComp]);
+    stateVars[s_stress+iComp] = devStressTpdt + diag[iComp] *
+      (meanStressTpdt + meanStressInitial);
+    devStressTau = (1.0 - alpha) * devStressT[iComp] + alpha * devStressTpdt;
+    stateVars[s_viscousStrain+iComp] = _dt * gammaTau * devStressTau;
+  } // for
+
+  _needNewJacobian = true;
+  PetscLogFlops(14 + tensorSize * 14);
 
 } // _updatePropertiesViscoelastic
 
