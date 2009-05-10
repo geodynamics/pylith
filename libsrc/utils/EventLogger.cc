@@ -109,9 +109,9 @@ pylith::utils::EventLogger::stageId(const char* name)
 { // stageId
   map_event_type::iterator iter = _stages.find(name);
   if (iter == _stages.end()) {
-    std::ostringstream msg;
-    msg << "Could not find logging stage '" << name << "'.";
-    throw std::runtime_error(msg.str());
+    registerStage(name);
+    iter = _stages.find(name);
+    assert(iter != _stages.end());
   } // if
 
   return iter->second;
