@@ -68,7 +68,8 @@ pylith::meshio::VertexFilterVecNorm<field_type>::filter(
 
   const ALE::Obj<RealSection>& sectionIn = fieldIn.section();
   assert(!sectionIn.isNull());
-  const int fiberDimIn = sectionIn->getFiberDimension(*vertices->begin());
+  const int fiberDimIn = (vertices->size() > 0) ? 
+    sectionIn->getFiberDimension(*vertices->begin()) : 0;
   const int fiberDimNorm = 1;
 
   // Allocation field if necessary

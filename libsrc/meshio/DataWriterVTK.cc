@@ -172,8 +172,10 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
     const ALE::Obj<RealSection>& section = field.section();
     assert(!section.isNull());
     assert(!sieveMesh->getLabelStratum(labelName, 0).isNull());
+    
     const int localFiberDim = 
-      section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, 0)->begin());
+      (sieveMesh->getLabelStratum(labelName, 0)->size() > 0) ? 
+      section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, 0)->begin()) : 0;
     int fiberDim = 0;
     MPI_Allreduce((void *) &localFiberDim, (void *) &fiberDim, 1, 
 		  MPI_INT, MPI_MAX, field.mesh().comm());
@@ -238,8 +240,10 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
     assert(!sieveMesh->getLabelStratum(labelName, depth).isNull());
     const ALE::Obj<RealSection>& section = field.section();
     assert(!section.isNull());
+
     const int localFiberDim = 
-      section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, depth)->begin());
+      (sieveMesh->getLabelStratum(labelName, depth)->size() > 0) ? 
+      section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, depth)->begin()) : 0;
     int fiberDim = 0;
     MPI_Allreduce((void *) &localFiberDim, (void *) &fiberDim, 1, 
 		  MPI_INT, MPI_MAX, field.mesh().comm());

@@ -120,6 +120,7 @@ pylith::meshio::MeshIO::_getVertices(double_array* coordinates,
 
   *numVertices = vertices->size();
   assert(*numVertices > 0);
+  assert(vertices->size() > 0);
   *spaceDim = coordsField->getFiberDimension(*vertices->begin());
   assert(*spaceDim > 0);
 
