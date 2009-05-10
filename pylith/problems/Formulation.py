@@ -91,6 +91,11 @@ class Formulation(PetscComponent, ModuleFormulation):
                                              factory=JacobianViewer)
     jacobianViewer.meta['tip'] = "Writer for Jacobian sparse matrix."
 
+    from pylith.perf.MemoryLogger import MemoryLogger
+    perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
+                                         factory=MemoryLogger)
+    perfLogger.meta['tip'] = "Performance and memory logging."
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="formulation"):
@@ -294,6 +299,10 @@ class Formulation(PetscComponent, ModuleFormulation):
     logEvent = "%sfinalize" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
+    for name in self.fields.fieldNames():
+      field = self.fields.get(name)
+      self.perfLogger.logField('Field', field)
+
     self._info.log("Formulation finalize.")
     self._debug.log(resourceUsageString())
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
@@ -320,6 +329,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     self.output = self.inventory.output
     self.viewJacobian = self.inventory.viewJacobian
     self.jacobianViewer = self.inventory.jacobianViewer
+    self.perfLogger = self.inventory.perfLogger
 
     import journal
     self._debug = journal.debug(self.name)

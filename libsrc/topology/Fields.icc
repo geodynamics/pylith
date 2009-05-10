@@ -39,14 +39,11 @@ template<typename field_type>
 void
 pylith::topology::Fields<field_type>::deallocate(void)
 { // deallocate
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
   const typename map_type::iterator begin = _fields.begin();
   const typename map_type::iterator end = _fields.end();
   for (typename map_type::iterator iter=begin; iter != end; ++iter) {
     delete iter->second; iter->second = 0;
   } // for
-  logger.stagePop();
 } // deallocate
 
 // ----------------------------------------------------------------------
@@ -56,8 +53,6 @@ void
 pylith::topology::Fields<field_type>::add(const char* name,
 					  const char* label)
 { // add
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
   typename map_type::iterator iter = _fields.find(name);
   if (iter != _fields.end()) {
     std::ostringstream msg;
@@ -68,7 +63,6 @@ pylith::topology::Fields<field_type>::add(const char* name,
   
   _fields[name] = new field_type(_mesh);
   _fields[name]->label(label);
-  logger.stagePop();
 } // add
 
 // ----------------------------------------------------------------------
@@ -81,8 +75,6 @@ pylith::topology::Fields<field_type>::add(
 			const pylith::topology::FieldBase::DomainEnum domain,
 			const int fiberDim)
 { // add
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
   typename map_type::iterator iter = _fields.find(name);
   if (iter != _fields.end()) {
     std::ostringstream msg;
@@ -94,7 +86,6 @@ pylith::topology::Fields<field_type>::add(
   _fields[name] = new field_type(_mesh);
   _fields[name]->label(label);
   _fields[name]->newSection(domain, fiberDim);
-  logger.stagePop();
 } // add
 
 // ----------------------------------------------------------------------
@@ -103,8 +94,6 @@ template<typename field_type>
 void
 pylith::topology::Fields<field_type>::del(const char* name)
 { // del
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
   typename map_type::iterator iter = _fields.find(name);
   if (iter == _fields.end()) {
     std::ostringstream msg;
@@ -114,7 +103,6 @@ pylith::topology::Fields<field_type>::del(const char* name)
   } // if
   delete iter->second; iter->second = 0;
   _fields.erase(name);
-  logger.stagePop();
 } // del
 
 // ----------------------------------------------------------------------
@@ -165,8 +153,6 @@ template<typename field_type>
 void
 pylith::topology::Fields<field_type>::copyLayout(const char* name)
 { // copyLayout
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
   typename map_type::const_iterator src = _fields.find(name);
   if (src == _fields.end()) {
     std::ostringstream msg;
@@ -180,7 +166,6 @@ pylith::topology::Fields<field_type>::copyLayout(const char* name)
   for (typename map_type::iterator iter=begin; iter != end; ++iter)
     if (iter != src)
       iter->second->newSection(*src->second);
-  logger.stagePop();
 } // copyLayout
 
 // ----------------------------------------------------------------------
@@ -191,6 +176,24 @@ pylith::topology::Fields<field_type>::mesh(void) const
 { // mesh
   return _mesh;
 } // mesh
+
+// ----------------------------------------------------------------------
+// Get names of all fields
+template<typename field_type>
+void
+pylith::topology::Fields<field_type>::fieldNames(int *numNames, char ***outNames)
+{ // fieldNames
+  *numNames = _fields.size();
+  PetscErrorCode ierr = PetscMalloc((*numNames) * sizeof(char *), outNames);
+  const typename map_type::const_iterator namesEnd = _fields.end();
+  int i = 0;
+  for (typename map_type::const_iterator name = _fields.begin(); name != namesEnd; ++name) {
+    char *newName;
+
+    ierr = PetscStrallocpy(name->first.c_str(), &newName);
+    (*outNames)[i++] = newName;
+  }
+} // fieldNames
 
 
 // End of file 

@@ -132,6 +132,18 @@ public :
    */
   int spaceDim(void) const;
 
+  /** Get the number of sieve points in the chart.
+   *
+   * @returns the chart size.
+   */
+  int chartSize(void) const;
+
+  /** Get the number of degrees of freedom.
+   *
+   * @returns the number of degrees of freedom.
+   */
+  int size(void) const;
+
   /// Create sieve section.
   void newSection(void);
 

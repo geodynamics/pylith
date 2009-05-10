@@ -75,6 +75,24 @@ pylith::topology::Field<mesh_type>::spaceDim(void) const
 } // spaceDim
 
 // ----------------------------------------------------------------------
+// Get the chart size
+template<typename mesh_type>
+int
+pylith::topology::Field<mesh_type>::chartSize(void) const
+{ // spaceDim
+  return _section->getChart().size();
+} // spaceDim
+
+// ----------------------------------------------------------------------
+// Get the size
+template<typename mesh_type>
+int
+pylith::topology::Field<mesh_type>::size(void) const
+{ // spaceDim
+  return _section->size();
+} // spaceDim
+
+// ----------------------------------------------------------------------
 // Create seive section.
 template<typename mesh_type>
 void
@@ -156,9 +174,11 @@ pylith::topology::Field<mesh_type>::newSection(const chart_type& chart,
 { // newSection
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
-  if (_section.isNull())
+  if (_section.isNull()) {
+    logger.stagePop();
     newSection();
-
+    logger.stagePush("Field");
+  }
   _section->setChart(chart);
 
   const typename chart_type::const_iterator chartEnd = chart.end();
@@ -166,7 +186,11 @@ pylith::topology::Field<mesh_type>::newSection(const chart_type& chart,
        c_iter != chartEnd;
        ++c_iter)
     _section->setFiberDimension(*c_iter, fiberDim);
-  allocate();
+  {
+    logger.stagePop();
+    allocate();
+    logger.stagePush("Field");
+  }
   logger.stagePop();
 } // newSection
 
@@ -181,8 +205,11 @@ pylith::topology::Field<mesh_type>::newSection(const Field& src)
   _vecFieldType = src._vecFieldType;
 
   const ALE::Obj<RealSection>& srcSection = src.section();
-  if (!srcSection.isNull() && _section.isNull())
+  if (!srcSection.isNull() && _section.isNull()) {
+    logger.stagePop();
     newSection();
+    logger.stagePush("Field");
+  }
 
   if (!_section.isNull()) {
     _section->setAtlas(srcSection->getAtlas());
