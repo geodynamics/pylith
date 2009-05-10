@@ -254,6 +254,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
   int stateVarIndex = -1;
   _findField(&propertyIndex, &stateVarIndex, name);
 
+  std::cout << "AA" << std::endl;
   // Get cell information
   const ALE::Obj<SieveMesh>& sieveMesh = field->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
@@ -263,9 +264,11 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
   const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
+  std::cout << "BB" << std::endl;
   topology::FieldBase::VectorFieldEnum fieldType = topology::FieldBase::OTHER;
       
   if (propertyIndex >= 0) { // If field is a property
+    std::cout << "CC" << std::endl;
     int propOffset = 0;
     const string_vector& properties = _metadata.properties();
     assert(propertyIndex < properties.size());
@@ -274,28 +277,54 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
 	_metadata.fiberDim(properties[i].c_str(), Metadata::PROPERTY);
     const int fiberDim = _metadata.fiberDim(name, Metadata::PROPERTY);
 
+    std::cout << "DD" << std::endl;
     // :TODO: Get scale information
 
     // Get properties section
+    std::cout << "EE" << std::endl;
     const ALE::Obj<RealSection>& propertiesSection = _properties->section();
     assert(!propertiesSection.isNull());
-    const int totalPropsFiberDim = 
-      propertiesSection->getFiberDimension(*cells->begin());
+    const int totalPropsFiberDimLocal = (cells->size() > 0) ? 
+      propertiesSection->getFiberDimension(*cells->begin()) : 0;
+    std::cout << "FF" << std::endl;
+    int totalPropsFiberDim = 0;
+    MPI_Allreduce((void *) &totalPropsFiberDimLocal, 
+		  (void *) &totalPropsFiberDim, 1, 
+		  MPI_INT, MPI_MAX, field->mesh().comm());
+    assert(totalPropsFiberDim > 0);
+    std::cout << "GG" << std::endl;
     const int numPropsQuadPt = _numPropsQuadPt;
     const int numQuadPts = totalPropsFiberDim / numPropsQuadPt;
     assert(totalPropsFiberDim == numQuadPts * numPropsQuadPt);
     const int totalFiberDim = numQuadPts * fiberDim;
+    std::cout << "HH" << std::endl;
 
-    // Allocate buffer for property field.
+    // Allocate buffer for property field if necessary.
+    std::cout << "II" << std::endl;
     const ALE::Obj<RealSection>& fieldSection = field->section();
-    if ((fieldSection.isNull() && cells->size() > 0) ||
-	totalFiberDim != fieldSection->getFiberDimension(*cells->begin())) {
+    bool useCurrentField = !fieldSection.isNull();
+    if (!fieldSection.isNull()) {
+      // check fiber dimension
+      const int totalFiberDimCurrentLocal = (cells->size() > 0) ?
+	fieldSection->getFiberDimension(*cells->begin()) : 0;
+      std::cout << "JJ" << std::endl;
+      int totalFiberDimCurrent = 0;
+      MPI_Allreduce((void *) &totalFiberDimCurrentLocal, 
+		    (void *) &totalFiberDimCurrent, 1, 
+		    MPI_INT, MPI_MAX, field->mesh().comm());
+      assert(totalFiberDimCurrent > 0);
+      useCurrentField = totalFiberDim == totalFiberDimCurrent;
+    } // if
+    std::cout << "KK" << std::endl;
+    if (!useCurrentField) {
       field->newSection(cells, totalFiberDim);
       field->allocate();
     } // if
+    std::cout << "NN" << std::endl;
     assert(!fieldSection.isNull());
     field->label(name);
     fieldType = _metadata.fieldType(name, Metadata::PROPERTY);
+    std::cout << "OO" << std::endl;
   
     // Buffer for property at cell's quadrature points
     double_array fieldCell(numQuadPts*fiberDim);
@@ -334,17 +363,34 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
     // Get state variables section
     const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
     assert(!stateVarsSection.isNull());
-    const int totalVarsFiberDim = 
-      stateVarsSection->getFiberDimension(*cells->begin());
+    const int totalVarsFiberDimLocal = (cells->size() > 0) ?
+      stateVarsSection->getFiberDimension(*cells->begin()) : 0;
+    int totalVarsFiberDim = 0;
+    MPI_Allreduce((void *) &totalVarsFiberDimLocal, 
+		  (void *) &totalVarsFiberDim, 1, 
+		  MPI_INT, MPI_MAX, field->mesh().comm());
+    assert(totalVarsFiberDim > 0);
     const int numVarsQuadPt = _numVarsQuadPt;
     const int numQuadPts = totalVarsFiberDim / numVarsQuadPt;
     assert(totalVarsFiberDim == numQuadPts * numVarsQuadPt);
     const int totalFiberDim = numQuadPts * fiberDim;
 
-    // Allocate buffer for state variable field.
+    // Allocate buffer for state variable field if necessary.
     const ALE::Obj<RealSection>& fieldSection = field->section();
-    if (fieldSection.isNull() ||
-	totalFiberDim != fieldSection->getFiberDimension(*cells->begin())) {
+    bool useCurrentField = !fieldSection.isNull();
+    if (!fieldSection.isNull()) {
+      // check fiber dimension
+      const int totalFiberDimCurrentLocal = (cells->size() > 0) ?
+	fieldSection->getFiberDimension(*cells->begin()) : 0;
+      std::cout << "JJ" << std::endl;
+      int totalFiberDimCurrent = 0;
+      MPI_Allreduce((void *) &totalFiberDimCurrentLocal, 
+		    (void *) &totalFiberDimCurrent, 1, 
+		    MPI_INT, MPI_MAX, field->mesh().comm());
+      assert(totalFiberDimCurrent > 0);
+      useCurrentField = totalFiberDim == totalFiberDimCurrent;
+    } // if
+    if (!useCurrentField) {
       field->newSection(cells, totalFiberDim);
       field->allocate();
     } // if

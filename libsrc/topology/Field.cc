@@ -414,7 +414,8 @@ pylith::topology::Field<mesh_type>::operator+=(const Field& field)
     const typename chart_type::const_iterator chartEnd = chart.end();
 
     // Assume fiber dimension is uniform
-    const int fiberDim = _section->getFiberDimension(*chartBegin);
+    const int fiberDim = (chart.size() > 0) ? 
+      _section->getFiberDimension(*chartBegin) : 0;
     double_array values(fiberDim);
 
     for (typename chart_type::const_iterator c_iter = chartBegin;
@@ -448,7 +449,8 @@ pylith::topology::Field<mesh_type>::dimensionalize(void)
     const typename chart_type::const_iterator chartEnd = chart.end();
 
     // Assume fiber dimension is uniform
-    const int fiberDim = _section->getFiberDimension(*chart.begin());
+    const int fiberDim = (chart.size() > 0) ? 
+      _section->getFiberDimension(*chart.begin()) : 0;
     double_array values(fiberDim);
 
     spatialdata::units::Nondimensional normalizer;
