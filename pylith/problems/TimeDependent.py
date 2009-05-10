@@ -76,15 +76,11 @@ class TimeDependent(Problem):
     bc/quadrature, etc.).
     """
     self._setupLogging()
-    logEvent = "%spreinit" % self._loggingPrefix    
-    self._logger.eventBegin(logEvent)
     
     self._info.log("Pre-initializing problem.")
     self.mesh = mesh
     self.formulation.preinitialize(mesh, self.materials, self.bc,
                                    self.interfaces, self.gravityField)
-
-    self._logger.eventEnd(logEvent)
     return
 
 
@@ -92,13 +88,8 @@ class TimeDependent(Problem):
     """
     Verify compatibility of configuration.
     """
-    logEvent = "%sverify" % self._loggingPrefix    
-    self._logger.eventBegin(logEvent)
-    
     Problem.verifyConfiguration(self)
     self.formulation.verifyConfiguration()
-
-    self._logger.eventEnd(logEvent)
     return
   
 
@@ -107,14 +98,9 @@ class TimeDependent(Problem):
     Setup integrators for each element family (material/quadrature,
     bc/quadrature, etc.).
     """
-    logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
-
     self._info.log("Initializing problem.")
     self.checkpointTimer.initialize(self.normalizer)
     self.formulation.initialize(self.dimension, self.normalizer)
-
-    self._logger.eventEnd(logEvent)
     return
 
 
@@ -122,8 +108,6 @@ class TimeDependent(Problem):
     """
     Solve time dependent problem.
     """
-    logEvent = "%srun" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
 
     self._info.log("Solving problem.")
     self.checkpointTimer.toplevel = app # Set handle for saving state
@@ -131,6 +115,7 @@ class TimeDependent(Problem):
     t = self.formulation.getStartTime()
     timeScale = self.normalizer.timeScale()
     while t < self.formulation.getTotalTime():
+      self._logger.stagePush("Prestep")
       tsec = self.normalizer.dimensionalize(t, timeScale)
       self._info.log("Main time loop, current time is t=%s" % tsec)
       
@@ -144,19 +129,22 @@ class TimeDependent(Problem):
       self._info.log("Preparing to advance solution from time t=%s to t=%s." %\
                      (tsec, tsec+dtsec))
       self.formulation.prestep(t, dt)
+      self._logger.stagePop()
 
       self._info.log("Advancing solution from t=%s to t=%s." % \
                      (tsec, tsec+dtsec))
+      self._logger.stagePush("Step")
       self.formulation.step(t, dt)
+      self._logger.stagePop()
 
       self._info.log("Finishing advancing solution from t=%s to t=%s." % \
                      (tsec, tsec+dtsec))
+      self._logger.stagePush("Poststep")
       self.formulation.poststep(t, dt)
+      self._logger.stagePop()
 
       # Update time
       t += dt
-
-    self._logger.eventEnd(logEvent)
     return
 
 
@@ -164,12 +152,7 @@ class TimeDependent(Problem):
     """
     Cleanup after running problem.
     """
-    logEvent = "%sfinalize" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
-
     self.formulation.finalize()
-
-    self._logger.eventEnd(logEvent)
     return
 
 

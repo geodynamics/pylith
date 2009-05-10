@@ -177,6 +177,7 @@ pylith::utils::TestEventLogger::testStageId(void)
   for (int i=0; i < numStages; ++i)
     logger.registerStage(stages[i]);
 
+
   const int order[] = { 1, 0, 2 };
   int ids[numStages];
   for (int i=0; i < numStages; ++i)
@@ -187,6 +188,9 @@ pylith::utils::TestEventLogger::testStageId(void)
        s_iter != logger._stages.end();
        ++s_iter, ++i)
     CPPUNIT_ASSERT_EQUAL(s_iter->second, ids[i]);
+  
+  const int idNew = logger.stageId("stage D");
+  CPPUNIT_ASSERT_EQUAL(idNew, logger.stageId("stage D"));
 } // testStageId
 
 // ----------------------------------------------------------------------

@@ -128,6 +128,12 @@ CURRENT ISSUES/PRIORITIES
       throw std::logic_error(message);
     after assert(0) to insure error is trapped.
 
+    Use Fields object to hold Field
+
+    Add Quadrature::computeGeometry(cell, coordinatesCell)
+      do computation on 1 cell
+      much less memory than holding all info in Fields
+
     Eliminate use of Inventory class.
 
     Switch Components to PetscComponents.

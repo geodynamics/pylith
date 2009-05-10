@@ -88,9 +88,6 @@ class Implicit(Formulation):
     """
     Initialize problem for implicit time integration.
     """
-    logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
-    
     Formulation.initialize(self, dimension, normalizer)
 
     self._info.log("Creating other fields.")
@@ -128,7 +125,6 @@ class Implicit(Formulation):
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.useSolnIncr(False)
 
-    self._logger.eventEnd(logEvent)
     return
 
 
@@ -145,8 +141,6 @@ class Implicit(Formulation):
     """
     Hook for doing stuff before advancing time step.
     """
-    logEvent = "%sprestep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
     
     # If finishing first time step, then switch from solving for total
     # displacements to solving for incremental displacements
@@ -177,7 +171,6 @@ class Implicit(Formulation):
     if needNewJacobian:
       self._reformJacobian(t, dt)
 
-    self._logger.eventEnd(logEvent)
     return
 
 
@@ -185,9 +178,6 @@ class Implicit(Formulation):
     """
     Advance to next time step.
     """
-    logEvent = "%sstep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
-
     dispIncr = self.fields.solveSoln()
     dispIncr.zero()
 
@@ -207,8 +197,6 @@ class Implicit(Formulation):
     #dispIncr.view("DISPINCR SOLUTION")
     #residual.view("RESIDUAL")
     # END TEMPORARY
-
-    self._logger.eventEnd(logEvent)
     return
 
 
@@ -216,9 +204,6 @@ class Implicit(Formulation):
     """
     Hook for doing stuff after advancing time step.
     """
-    logEvent = "%spoststep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
-    
     # Update displacement field from time t to time t+dt.
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
     disp = self.fields.solution()
@@ -227,7 +212,6 @@ class Implicit(Formulation):
     Formulation.poststep(self, t, dt)
 
     self._stepCount += 1
-    self._logger.eventEnd(logEvent)
     return
 
 

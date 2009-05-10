@@ -147,9 +147,6 @@ class Problem(PetscComponent):
     """
     Verify compatibility of configuration.
     """
-    logEvent = "%sverify" % self._loggingPrefix    
-    self._logger.eventBegin(logEvent)
-    
     self._info.log("Verifying compatibility of problem configuration.")
     if self.dimension != self.mesh.dimension():
       raise ValueError, \
@@ -186,7 +183,6 @@ class Problem(PetscComponent):
     idValues = numpy.array(materialIds.keys(), dtype=numpy.int32)
     self.mesh.checkMaterialIds(idValues)
 
-    self._logger.eventEnd(logEvent)
     return
   
 
@@ -254,14 +250,6 @@ class Problem(PetscComponent):
     logger = EventLogger()
     logger.className("Problem")
     logger.initialize()
-
-    events = ["preinit",
-              "verify",
-              "init",
-              "run",
-              "finalize"]
-    for event in events:
-      logger.registerEvent("%s%s" % (self._loggingPrefix, event))
 
     self._logger = logger
     return

@@ -78,7 +78,6 @@ class PyLithApp(PetscApplication):
     self._debug.log(resourceUsageString())
 
     self._setupLogging()
-    self._logger.eventBegin("PyLith main")
 
     # Create mesh (adjust to account for interfaces (faults) if necessary)
     self._logger.stagePush("Meshing")
@@ -105,10 +104,8 @@ class PyLithApp(PetscApplication):
     self._logger.stagePop()
 
     # Run problem
-    self._logger.stagePush("Run")
     self.problem.run(self)
     self._debug.log(resourceUsageString())
-    self._logger.stagePop()
 
     # Cleanup
     self._logger.stagePush("Finalize")
@@ -120,7 +117,6 @@ class PyLithApp(PetscApplication):
 
     self.compilePerformanceLog()
     self.perfLogger.show()
-    self._logger.eventEnd("PyLith main")
     return
   
 
@@ -147,14 +143,6 @@ class PyLithApp(PetscApplication):
     logger = EventLogger()
     logger.className("PyLith")
     logger.initialize()
-    logger.registerEvent("PyLith main")
-
-    stages = ["Meshing",
-              "Setup",
-              "Run",
-              "Finalize"]
-    for stage in stages:
-      logger.registerStage(stage)
 
     self._logger = logger
     return
