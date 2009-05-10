@@ -124,6 +124,10 @@ CURRENT ISSUES/PRIORITIES
 
     Update journaling.
 
+    Add
+      throw std::logic_error(message);
+    after assert(0) to insure error is trapped.
+
     Eliminate use of Inventory class.
 
     Switch Components to PetscComponents.
