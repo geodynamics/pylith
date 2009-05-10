@@ -262,7 +262,9 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
   assert(!cells.isNull());
   const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
-  
+
+  topology::FieldBase::VectorFieldEnum fieldType = topology::FieldBase::OTHER;
+      
   if (propertyIndex >= 0) { // If field is a property
     int propOffset = 0;
     const string_vector& properties = _metadata.properties();
@@ -292,8 +294,8 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
       field->allocate();
     } // if
     assert(!fieldSection.isNull());
-    field->vectorFieldType(_metadata.fieldType(name, Metadata::PROPERTY));
     field->label(name);
+    fieldType = _metadata.fieldType(name, Metadata::PROPERTY);
   
     // Buffer for property at cell's quadrature points
     double_array fieldCell(numQuadPts*fiberDim);
@@ -347,7 +349,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
       field->allocate();
     } // if
     assert(!fieldSection.isNull());
-    field->vectorFieldType(_metadata.fieldType(name, Metadata::STATEVAR));
+    fieldType = _metadata.fieldType(name, Metadata::STATEVAR);
     field->label(name);
   
     // Buffer for state variable at cell's quadrature points
@@ -372,6 +374,33 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
       fieldSection->updatePoint(*c_iter, &fieldCell[0]);
     } // for
   } // if/else
+
+  topology::FieldBase::VectorFieldEnum multiType = 
+    topology::FieldBase::MULTI_OTHER;
+  switch (fieldType)
+    { // switch
+    case topology::FieldBase::SCALAR:
+      multiType = topology::FieldBase::MULTI_SCALAR;
+      break;
+    case topology::FieldBase::VECTOR:
+      multiType = topology::FieldBase::MULTI_VECTOR;
+      break;
+    case topology::FieldBase::TENSOR:
+      multiType = topology::FieldBase::MULTI_TENSOR;
+      break;
+    case topology::FieldBase::OTHER:
+      multiType = topology::FieldBase::MULTI_OTHER;
+      break;
+    case topology::FieldBase::MULTI_SCALAR:
+    case topology::FieldBase::MULTI_VECTOR:
+    case topology::FieldBase::MULTI_TENSOR:
+    case topology::FieldBase::MULTI_OTHER:
+    default :
+      std::cerr << "Bad vector field type for Material." << std::endl;
+      assert(0);
+      throw std::logic_error("Bad vector field type for Material.");
+    } // switch
+  field->vectorFieldType(multiType);
 } // getField
   
 // ----------------------------------------------------------------------

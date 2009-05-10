@@ -31,6 +31,7 @@ class TestCellFilterAvgMesh(unittest.TestCase):
     """
     filter = CellFilterAvgMesh()
     filter._configure()
+    self.failIf(filter.filter is None)
     return
 
 
