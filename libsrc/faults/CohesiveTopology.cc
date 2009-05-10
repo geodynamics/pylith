@@ -27,6 +27,11 @@ typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::SieveSubMesh SieveSubMesh;
 typedef pylith::topology::Mesh::IntSection IntSection;
 
+// Alleviate the need to call the very slooooow mesh->stratify()
+// routine by setting the depth/height of new vertices and cells
+// manually.
+#define FAST_STRATIFY 1
+
 // ----------------------------------------------------------------------
 void
 pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
@@ -180,8 +185,19 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     // Add shadow and constraint vertices (if they exist) to group
     // associated with fault
     groupField->addPoint(newPoint, 1);
-    if (constraintCell)
+#if defined(FAST_STRATIFY)
+    // OPTIMIZATION
+    sieveMesh->setHeight(newPoint, 1);
+    sieveMesh->setDepth(newPoint, 0);
+#endif
+    if (constraintCell) {
       groupField->addPoint(newPoint+numFaultVertices, 1);
+#if defined(FAST_STRATIFY)
+      // OPTIMIZATION
+      sieveMesh->setHeight(newPoint+numFaultVertices, 1);
+      sieveMesh->setDepth(newPoint+numFaultVertices, 0);
+#endif
+    } // if
 
     // Add shadow vertices to other groups, don't add constraint
     // vertices (if they exist) because we don't want BC, etc to act
@@ -202,7 +218,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       ++name) {
     sieveMesh->reallocate(sieveMesh->getIntSection(*name));
   } // for
-#if 0 // TEST OF OPTIMIZATION?? [MATT: WHY IS THIS COMMENTED OUT?]
+#if 0 // THE CODE BELOW IS WRONG
+#if defined(FAST_STRATIFY)
   for(SieveSubMesh::label_sequence::iterator v_iter = fVerticesBegin;
       v_iter != fVerticesEnd;
       ++v_iter, ++newPoint) {
@@ -216,6 +233,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       sieveMesh->setDepth(newPoint+numFaultVertices, 0);
     }
   }
+#endif
 #endif
   if (constraintCell)
     newPoint += numFaultVertices;
@@ -375,7 +393,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     } // if
     // TODO: Need to reform the material label when sieve is reallocated
     sieveMesh->setValue(material, newPoint, materialId);
-#if 0 // TEST OF OPTIMIZATION?? [MATT: WHY IS THIS COMMENTED OUT?]
+#if defined(FAST_STRATIFY)
     // OPTIMIZATION
     sieveMesh->setHeight(newPoint, 0);
     sieveMesh->setDepth(newPoint, 1);
@@ -566,7 +584,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   } // for
   if (!faultSieveMesh->commRank())
     delete [] indices;
-#if 1
+#if !defined(FAST_STRATIFY)
   sieveMesh->stratify();
 #endif
   const std::string labelName("censored depth");
