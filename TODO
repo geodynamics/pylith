@@ -6,24 +6,27 @@ CURRENT ISSUES/PRIORITIES
 
 1. SNES
 
-  Reformulate implicit time stepping to use displacement increment.
-  Solution fields should be disp(t) and dispIncr(t).
-  If solnIncr is true, Dirichlet BC set increment values in dispIncr(t).
-
-  add setFieldIncr to Constraint
-  reformulate explicit and implicit time stepping
-
   Power-law rheology
 
 2. Nondimensionalization
 
+  Add Quadrature::computeGeometry(cell, coordinatesCell)
+    do computation on 1 cell
+    much less memory than holding all info in Fields
+    keep computeGeometruy(mesh, cell) and retrieveGeometry(cell)
+
   DataWriteVTK needs dimensionalizer
 
-  Done coordinates in output (nondimensional instead of dimensioned) create dimensionalized copy (NAME_dimensioned)
-  solution in output (nondimensional instead of dimensioned)
-  const slip rate in output (slip rate not slip)          
+  Done coordinates in output (nondimensional instead of dimensioned)
+  create dimensionalized copy (NAME_dimensioned) solution in output
+  (nondimensional instead of dimensioned) const slip rate in output
+  (slip rate not slip)
 
-  Add ability to use symmetric matrix, set block size (default is 1)
+  Add ability to use symmetric matrix.
+
+  Ask constraints if a block matrix is okay. If okay and matrix type
+  is "unknown" (not set by user), then use "baij" rather than
+  "aij". Do this in Python.
 
 3. Full-scale tests (few 1-D, 2-D, and 3-D)
 
@@ -129,10 +132,6 @@ CURRENT ISSUES/PRIORITIES
     after assert(0) to insure error is trapped.
 
     Use Fields object to hold Field
-
-    Add Quadrature::computeGeometry(cell, coordinatesCell)
-      do computation on 1 cell
-      much less memory than holding all info in Fields
 
     Eliminate use of Inventory class.
 

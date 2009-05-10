@@ -34,6 +34,8 @@ pylith::topology::TestJacobian::testConstructor(void)
   SolutionFields fields(mesh);
   _initialize(&mesh, &fields);
   Jacobian jacobian(fields);
+
+  Jacobian jacobianB(fields, "baij");
 } // testConstructor
  
 // ----------------------------------------------------------------------

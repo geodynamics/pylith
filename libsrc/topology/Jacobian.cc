@@ -22,7 +22,8 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::topology::Jacobian::Jacobian(const SolutionFields& fields) :
+pylith::topology::Jacobian::Jacobian(const SolutionFields& fields,
+				     const char* matrixType) :
   _fields(fields),
   _matrix(0)
 { // constructor
@@ -30,7 +31,7 @@ pylith::topology::Jacobian::Jacobian(const SolutionFields& fields) :
   const ALE::Obj<Mesh::RealSection>& solnSection = fields.solution().section();
 
   PetscErrorCode err = MeshCreateMatrix(sieveMesh, solnSection, 
-					MATAIJ, &_matrix);
+					matrixType, &_matrix);
   CHECK_PETSC_ERROR_MSG(err, "Could not create PETSc sparse matrix "
 			"associated with system Jacobian.");
 } // constructor

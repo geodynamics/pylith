@@ -25,13 +25,17 @@ class Jacobian(ModuleJacobian):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, fields):
+  def __init__(self, fields, matrixType="unknown"):
     """
     Constructor.
 
     @param fields Solution fields.
     """
-    ModuleJacobian.__init__(self, fields)
+    # If matrix type has not been set, then set it to a value that will work.
+    if matrixType == "unknown":
+      matrixType = "aij"
+
+    ModuleJacobian.__init__(self, fields, matrixType)
     return
     
 

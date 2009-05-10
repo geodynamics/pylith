@@ -63,6 +63,9 @@ class TestJacobian(unittest.TestCase):
     """
     Test constructor.
     """
+    # setUp() tests constructor with default type
+    jacobianA = Jacobian(self.fields, "aij")
+    jacobianB = Jacobian(self.fields, "baij")
     return
 
 
