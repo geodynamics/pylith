@@ -26,15 +26,8 @@
 #if !defined(pylith_materials_powerlaw3d_hh)
 #define pylith_materials_powerlaw3d_hh
 
-#include "ElasticMaterial.hh"
-
-/// Namespace for pylith package
-namespace pylith {
-  namespace materials {
-    class PowerLaw3D;
-    class TestPowerLaw3D; // unit testing
-  } // materials
-} // pylith
+#include "ElasticMaterial.hh" // ISA ElasticMaterial
+#include "EffectiveStress.hh" // Uses EffectiveStress
 
 /// 3-D, isotropic, linear Maxwell viscoelastic material.
 class pylith::materials::PowerLaw3D : public ElasticMaterial
@@ -443,6 +436,9 @@ private :
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
+
+  /// Structure to hold parameters for effective stress computation.
+  pylith::materials::EffectiveStress::EffStressStruct _effStressParams;
 
   /// Method to use for _calcElasticConsts().
   calcElasticConsts_fn_type _calcElasticConstsFn;

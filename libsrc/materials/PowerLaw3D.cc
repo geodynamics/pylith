@@ -568,27 +568,26 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
     const double stressScale = mu;
 
     PetscLogFlops(92);
-    // Put parameters into a vector and call root-finding algorithm.
-    // This could also be a struct.
-    const double effStressParams[] = {stressScale,
-				      ae,
-				      b,
-				      c,
-				      d,
-				      alpha,
-				      _dt,
-				      effectiveStressT,
-				      powerLawExp,
-				      viscosityCoeff};
-    // I think the PETSc root-finding procedure is too involved for what we want
-    // here.  I would like the function to work something like:
+    // Put parameters into a struct and call root-finding algorithm.
+    _effStressParams.stressScale = stressScale;
+    _effStressParams.ae = ae;
+    _effStressParams.b = b;
+    _effStressParams.c = c;
+    _effStressParams.d = d;
+    _effStressParams.alpha = alpha;
+    _effStressParams.dt = _dt;
+    _effStressParams.effStressT = effStressT;
+    _effStressParams.powerLawExp = powerLawExp;
+    _effStressParams.viscosityCoeff = viscosityCoeff;
+
     const double effStressInitialGuess = effStressT;
+
     double effStressTpdt =
       EffectiveStress::getEffStress(
 			effStressInitialGuess,
-			effStressParams,
-			pylith::materials::PowerLaw3D::_effStressFunc,
-			pylith::materials::PowerLaw3D::_effStressFuncDFunc);
+			&_effStressParams,
+			*pylith::materials::PowerLaw3D::effStressFunc,
+			*pylith::materials::PowerLaw3D::effStressFuncDFunc);
 
     // Compute stresses from effective stress.
     const double effStressTau = (1.0 - alpha) * effStressT +
@@ -620,18 +619,19 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
 // Effective stress function that computes effective stress function only
 // (no derivative).
 double
-pylith::materials::PowerLaw3D::effStressFunc(double effStressTpdt,
-					     double *params)
+pylith::materials::PowerLaw3D::effStressFunc(
+				const double effStressTpdt,
+				const EffStressStruct& effStressParams)
 { // effStressFunc
-  double ae = params[0];
-  double b = params[1];
-  double c = params[2];
-  double d = params[3];
-  double alpha = params[4];
-  double dt = params[5];
-  double effStressT = params[6];
-  double powerLawExp = params[7];
-  double viscosityCoeff = params[8];
+  double ae = effStressParams.ae;
+  double b = effStressParams.b;
+  double c = effStressParams.c;
+  double d = effStressParams.d;
+  double alpha = effStressParams.alpha;
+  double dt = effStressParams.dt;
+  double effStressT = effStressParams.effStressT;
+  double powerLawExp = effStressParams.powerLawExp;
+  double viscosityCoeff = effStressParams.viscosityCoeff;
   double factor1 = 1.0-alpha;
   double effStressTau = factor1 * effStressT + alpha * effStressTpdt;
   double gammaTau = 0.5 * ((effStressTau/viscosityCoeff)^
@@ -647,17 +647,18 @@ pylith::materials::PowerLaw3D::effStressFunc(double effStressTpdt,
 // Effective stress function that computes effective stress function
 // derivative only (no function value).
 double
-pylith::materials::PowerLaw3D::effStressDFunc(double effStressTpdt,
-					      double *params)
+pylith::materials::PowerLaw3D::effStressDFunc(
+				const double effStressTpdt,
+				const EffStressStruct& effStressParams)
 { // effStressDFunc
-  double ae = params[0];
-  double c = params[2];
-  double d = params[3];
-  double alpha = params[4];
-  double dt = params[5];
-  double effStressT = params[6];
-  double powerLawExp = params[7];
-  double viscosityCoeff = params[8];
+  double ae = effStressParams.ae;
+  double c = effStressParams.c;
+  double d = effStressParams.d;
+  double alpha = effStressParams.alpha;
+  double dt = effStressParams.dt;
+  double effStressT = effStressParams.effStressT;
+  double powerLawExp = effStressParams.powerLawExp;
+  double viscosityCoeff = effStressParams.viscosityCoeff;
   double factor1 = 1.0-alpha;
   double effStressTau = factor1 * effStressT + alpha * effStressTpdt;
   double gammaTau = 0.5 * ((effStressTau/viscosityCoeff)^
@@ -677,20 +678,24 @@ pylith::materials::PowerLaw3D::effStressDFunc(double effStressTpdt,
 // Effective stress function that computes effective stress function
 // and derivative.
 void
-pylith::materials::PowerLaw3D::effStressFuncDFunc(double effStressTpdt,
-						  double *params,
-						  double *y,
-						  double *dy)
-{ // effStressFunc
-  double ae = params[0];
-  double b = params[1];
-  double c = params[2];
-  double d = params[3];
-  double alpha = params[4];
-  double dt = params[5];
-  double effStressT = params[6];
-  double powerLawExp = params[7];
-  double viscosityCoeff = params[8];
+pylith::materials::PowerLaw3D::effStressFuncDFunc(
+				const double effStressTpdt,
+				const EffStressStruct& effStressParams,
+				double* py,
+				double* pdy)
+{ // effStressFuncDFunc
+  double y = *py;
+  double dy = *pdy;
+
+  double ae = effStressParams.ae;
+  double b = effStressParams.b;
+  double c = effStressParams.c;
+  double d = effStressParams.d;
+  double alpha = effStressParams.alpha;
+  double dt = effStressParams.dt;
+  double effStressT = effStressParams.effStressT;
+  double powerLawExp = effStressParams.powerLawExp;
+  double viscosityCoeff = effStressParams.viscosityCoeff;
   double factor1 = 1.0-alpha;
   double effStressTau = factor1 * effStressT + alpha * effStressTpdt;
   double gammaTau = 0.5 * ((effStressTau/viscosityCoeff)^
@@ -699,11 +704,18 @@ pylith::materials::PowerLaw3D::effStressFuncDFunc(double effStressTpdt,
     ((effStressTau/viscosityCoeff) ^ (powerLawExp - 2.0))/
     (viscosityCoeff * viscosityCoeff);
   double a = ae + alpha * dt * gammaTau;
-  double *y = a * a * effStressTpdt * effStressTpdt - b +
-    c * gammaTau - d * d * gammaTau * gammaTau;
-  double *dy = 2.0 * a * a * effStressTpdt + dGammaTau *
+  y = a * a * effStressTpdt * effStressTpdt -
+    b +
+    c * gammaTau -
+    d * d * gammaTau * gammaTau;
+  dy = 2.0 * a * a * effStressTpdt +
+    dGammaTau *
     (2.0 * a * alpha * dt * effStressTpdt * effStressTpdt +
      c - 2.0 * d * d * gammaTau);
+
+  *py = y;
+  *pdy = dy;
+
   PetscLogFlops(46);
 } // effStressFuncDFunc
 
@@ -962,27 +974,26 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   const double stressScale = mu;
   
   PetscLogFlops(92);
-  // Put parameters into a vector and call root-finding algorithm.
-  // This could also be a struct.
-  const double effStressParams[] = {stressScale,
-				    ae,
-				    b,
-				    c,
-				    d,
-				    alpha,
-				    _dt,
-				    effectiveStressT,
-				    powerLawExp,
-				    viscosityCoeff};
-  // I think the PETSc root-finding procedure is too involved for what we want
-  // here.  I would like the function to work something like:
+  // Put parameters into a struct and call root-finding algorithm.
+  _effStressParams.stressScale = stressScale;
+  _effStressParams.ae = ae;
+  _effStressParams.b = b;
+  _effStressParams.c = c;
+  _effStressParams.d = d;
+  _effStressParams.alpha = alpha;
+  _effStressParams.dt = _dt;
+  _effStressParams.effStressT = effStressT;
+  _effStressParams.powerLawExp = powerLawExp;
+  _effStressParams.viscosityCoeff = viscosityCoeff;
+
   const double effStressInitialGuess = effStressT;
+
   const double effStressTpdt =
     EffectiveStress::getEffStress(
 			effStressInitialGuess,
-			effStressParams,
-			pylith::materials::PowerLaw3D::_effStressFunc,
-			pylith::materials::PowerLaw3D::_effStressFuncDFunc);
+			&_effStressParams,
+			*pylith::materials::PowerLaw3D::effStressFunc,
+			*pylith::materials::PowerLaw3D::effStressFuncDFunc);
   
   // Compute quantities at intermediate time tau used to compute values at
   // end of time step.
@@ -1275,27 +1286,26 @@ pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
   const double stressScale = mu;
 
   PetscLogFlops(92);
-  // Put parameters into a vector and call root-finding algorithm.
-  // This could also be a struct.
-  const double effStressParams[] = {stressScale,
-				    ae,
-				    b,
-				    c,
-				    d,
-				    alpha,
-				    _dt,
-				    effectiveStressT,
-				    powerLawExp,
-				    viscosityCoeff};
-  // I think the PETSc root-finding procedure is too involved for what we want
-  // here.  I would like the function to work something like:
+  // Put parameters into a struct and call root-finding algorithm.
+  _effStressParams.stressScale = stressScale;
+  _effStressParams.ae = ae;
+  _effStressParams.b = b;
+  _effStressParams.c = c;
+  _effStressParams.d = d;
+  _effStressParams.alpha = alpha;
+  _effStressParams.dt = _dt;
+  _effStressParams.effStressT = effStressT;
+  _effStressParams.powerLawExp = powerLawExp;
+  _effStressParams.viscosityCoeff = viscosityCoeff;
+
   const double effStressInitialGuess = effStressT;
+
   double effStressTpdt =
     EffectiveStress::getEffStress(
 			effStressInitialGuess,
-			effStressParams,
-			pylith::materials::PowerLaw3D::_effStressFunc,
-			pylith::materials::PowerLaw3D::_effStressFuncDFunc);
+			&_effStressParams,
+			*pylith::materials::PowerLaw3D::effStressFunc,
+			*pylith::materials::PowerLaw3D::effStressFuncDFunc);
 
   // Compute stress and viscous strain and update appropriate state variables.
   const double effStressTau = (1.0 - alpha) * effStressT +
