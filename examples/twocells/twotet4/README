@@ -10,7 +10,7 @@ examples may be divided into four groups:
 pylithapp.cfg.
 
 3.  Material properties common to all examples:  described in the
-database file matprops.cfg.
+database file matprops.spatialdb.
 
 4.  Example-specific parameters and boundary condition specifications.
 
