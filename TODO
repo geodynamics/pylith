@@ -113,6 +113,9 @@ CURRENT ISSUES/PRIORITIES
 
 5. Tidy up
 
+    Add error message if number of time steps computed by time
+    stepping scheme is 0.
+
     How do we determine the orientation for a fault in a 1-D mesh? We
     assume normaldir is +1.0, but cohesive cells could be created so
     that the fault has a normaldir of -1.0. If the normaldir is -1.0,

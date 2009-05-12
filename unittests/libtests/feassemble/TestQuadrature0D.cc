@@ -45,12 +45,14 @@ pylith::feassemble::TestQuadrature0D::testPoint(void)
 
   const int numVertices = 1;
   const int numCells = 1;
-  const double vertCoords[] = { 1.1 };
+  const double vertCoordsData[] = { 1.1 };
   const int cells[] = { 0 };
   const double quadPts[] = { 1.1 };
   const double jacobian[] = { 1.0 };
   const double jacobianInv[] = { 1.0 };
   const double jacobianDet[] = { 1.0 };
+
+  double_array vertCoords(vertCoordsData, numBasis*spaceDim);
 
   const double minJacobian = 1.0e-06;
   
@@ -65,7 +67,7 @@ pylith::feassemble::TestQuadrature0D::testPoint(void)
   Quadrature0D engine(refCell);
 
   engine.initialize();
-  engine.computeGeometry(vertCoords, spaceDim, 0);
+  engine.computeGeometry(vertCoords, 0);
 
   const double tolerance = 1.0e-06;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(quadPts[0], engine._quadPts[0], 

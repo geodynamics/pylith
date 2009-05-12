@@ -46,13 +46,9 @@ pylith::feassemble::Quadrature1D::Quadrature1D(const Quadrature1D& q) :
 // ----------------------------------------------------------------------
 // Compute geometric quantities for a cell at quadrature points.
 void
-pylith::feassemble::Quadrature1D::computeGeometry(const double* vertCoords,
-						  const int coordDim,
+pylith::feassemble::Quadrature1D::computeGeometry(const double_array& coordinatesCell,
 						  const int cell)
 { // computeGeometry
-  assert(0 != vertCoords);
-  assert(1 == coordDim);
-
   const int cellDim = _quadRefCell.cellDim();
   const int spaceDim = _quadRefCell.spaceDim();
   const int numQuadPts = _quadRefCell.numQuadPts();
@@ -62,6 +58,8 @@ pylith::feassemble::Quadrature1D::computeGeometry(const double* vertCoords,
   const double_array& quadPtsRef = _quadRefCell.quadPtsRef();
   const double_array& basisDerivRef = _quadRefCell.basisDerivRef();
   const CellGeometry& geometry = _quadRefCell.refGeometry();
+
+  assert(numBasis*spaceDim == coordinatesCell.size());
 
   assert(1 == cellDim);
   assert(1 == spaceDim);
@@ -75,10 +73,10 @@ pylith::feassemble::Quadrature1D::computeGeometry(const double* vertCoords,
     // x = sum[i=0,n-1] (Ni * xi)
     for (int iBasis=0; iBasis < numBasis; ++iBasis)
       _quadPts[iQuadPt] += 
-	basis[iQuadPt*numBasis+iBasis]*vertCoords[iBasis];
+	basis[iQuadPt*numBasis+iBasis]*coordinatesCell[iBasis];
 #else
     geometry.coordsRefToGlobal(&_quadPts[iQuadPt], &quadPtsRef[iQuadPt],
-			       vertCoords, spaceDim);
+			       &coordinatesCell[0], spaceDim);
 #endif
 
 #if defined(ISOPARAMETRIC)
@@ -86,7 +84,7 @@ pylith::feassemble::Quadrature1D::computeGeometry(const double* vertCoords,
     // J = dx/dp = sum[i=0,n-1] (dNi/dp * xi)
     for (int iBasis=0; iBasis < numBasis; ++iBasis)
       _jacobian[iQuadPt] += 
-	basisDerivRef[iQuadPt*numBasis+iBasis] * vertCoords[iBasis];
+	basisDerivRef[iQuadPt*numBasis+iBasis] * coordinatesCell[iBasis];
 
     // Compute determinant of Jacobian at quadrature point
     // |J| = j00
@@ -97,7 +95,7 @@ pylith::feassemble::Quadrature1D::computeGeometry(const double* vertCoords,
     // Compute Jacobian and determinant of Jacobian at quadrature point
     assert(0 != _geometry);
     geometry->jacobian(&_jacobian[iQuadPt], &_jacobianDet[iQuadPt],
-		       vertCoords, &quadPtsRef[iQuadPt], spaceDim);
+		       &coordinatesCell[0], &quadPtsRef[iQuadPt], spaceDim);
     _checkJacobianDet(_jacobianDet[iQuadPt], cell);
 #endif
     

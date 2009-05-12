@@ -72,12 +72,77 @@ pylith::feassemble::Quadrature<mesh_type>::Quadrature(const Quadrature& q) :
 } // copy constructor
 
 // ----------------------------------------------------------------------
+// Setup quadrature engine.
+template<typename mesh_type>
+void
+pylith::feassemble::Quadrature<mesh_type>::initializeGeometry(void)
+{ // initializeGeometry
+  clear();
+  assert(0 == _engine);
+
+  const int cellDim = _cellDim;
+  const int spaceDim = _spaceDim;
+
+  if (1 == spaceDim)
+    if (1 == cellDim)
+      _engine = new Quadrature1D(*this);
+    else if (0 == cellDim)
+      _engine = new Quadrature0D(*this);
+    else {
+      std::cerr << "Unknown quadrature case with cellDim '" 
+		<< cellDim << "' and spaceDim '" << spaceDim << "'" 
+		<< std::endl;
+      assert(0);
+    } // if/else
+  else if (2 == spaceDim)
+    if (2 == cellDim)
+      _engine = new Quadrature2D(*this);
+    else if (1 == cellDim)
+      _engine = new Quadrature1Din2D(*this);
+    else if (0 == cellDim)
+      _engine = new Quadrature0D(*this);
+    else {
+      std::cerr << "Unknown quadrature case with cellDim '" 
+		<< cellDim << "' and spaceDim '" << spaceDim << "'" 
+		<< std::endl;
+      assert(0);
+    } // if/else
+  else if (3 == spaceDim)
+    if (3 == cellDim)
+      _engine = new Quadrature3D(*this);
+    else if (2 == cellDim)
+      _engine = new Quadrature2Din3D(*this);
+    else if (1 == cellDim)
+      _engine = new Quadrature1Din3D(*this);
+    else if (0 == cellDim)
+      _engine = new Quadrature0D(*this);
+    else {
+      std::cerr << "Unknown quadrature case with cellDim '" 
+		<< cellDim << "' and spaceDim '" << spaceDim << "'" 
+		<< std::endl;
+      assert(0);
+    } // if/else
+  else {
+    std::cerr << "Unknown quadrature case with cellDim '" 
+	      << cellDim << "' and spaceDim '" << spaceDim << "'" 
+	      << std::endl;
+    assert(0);
+  } // if/else
+
+  assert(0 != _engine);
+  _engine->initialize();
+} // initializeGeometry
+
+// ----------------------------------------------------------------------
+// Compute geometric quantities for each cell.
 template<typename mesh_type>
 void
 pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
        const mesh_type& mesh,
        const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& cells)
-{ // precomputeGeometry
+{ // computeGeometry
+  assert(0 != _engine);
+
   typedef typename mesh_type::RealSection RealSection;
   typedef typename mesh_type::SieveMesh::label_sequence label_sequence;
   typedef typename mesh_type::RestrictVisitor RestrictVisitor;
@@ -85,10 +150,6 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   const char* loggingStage = "QuadratureCreation";
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush(loggingStage);
-
-  clear();
-  _setupEngine();
-  assert(0 != _engine);
 
   // Allocate field and cell buffer for quadrature points
   int fiberDim = _numQuadPts * _spaceDim;
@@ -148,9 +209,12 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   const int numBasis = _numBasis;
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
+
+  double_array coordinatesCell(numBasis*_spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
-  RestrictVisitor coordsVisitor(*coordinates, numBasis*_spaceDim);
+  RestrictVisitor coordsVisitor(*coordinates,
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   const ALE::Obj<RealSection>& quadPtsSection = _quadPtsField->section();
   const ALE::Obj<RealSection>& jacobianSection = _jacobianField->section();
@@ -168,9 +232,7 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
       ++c_iter) {
     coordsVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    const double* cellVertexCoords = coordsVisitor.getValues();
-    assert(0 != cellVertexCoords);
-    _engine->computeGeometry(cellVertexCoords, _spaceDim, *c_iter);
+    _engine->computeGeometry(coordinatesCell, *c_iter);
 
     // Update fields with cell data
     quadPtsSection->updatePoint(*c_iter, &quadPts[0]);
@@ -230,67 +292,6 @@ pylith::feassemble::Quadrature<mesh_type>::clear(void)
   delete _jacobianDetField; _jacobianDetField = 0;
   delete _basisDerivField; _basisDerivField = 0;
 } // clear
-
-// ----------------------------------------------------------------------
-// Setup quadrature engine.
-template<typename mesh_type>
-void
-pylith::feassemble::Quadrature<mesh_type>::_setupEngine(void)
-{ // clear
-  delete _engine; _engine = 0;
-
-  const int cellDim = _cellDim;
-  const int spaceDim = _spaceDim;
-
-  if (1 == spaceDim)
-    if (1 == cellDim)
-      _engine = new Quadrature1D(*this);
-    else if (0 == cellDim)
-      _engine = new Quadrature0D(*this);
-    else {
-      std::cerr << "Unknown quadrature case with cellDim '" 
-		<< cellDim << "' and spaceDim '" << spaceDim << "'" 
-		<< std::endl;
-      assert(0);
-    } // if/else
-  else if (2 == spaceDim)
-    if (2 == cellDim)
-      _engine = new Quadrature2D(*this);
-    else if (1 == cellDim)
-      _engine = new Quadrature1Din2D(*this);
-    else if (0 == cellDim)
-      _engine = new Quadrature0D(*this);
-    else {
-      std::cerr << "Unknown quadrature case with cellDim '" 
-		<< cellDim << "' and spaceDim '" << spaceDim << "'" 
-		<< std::endl;
-      assert(0);
-    } // if/else
-  else if (3 == spaceDim)
-    if (3 == cellDim)
-      _engine = new Quadrature3D(*this);
-    else if (2 == cellDim)
-      _engine = new Quadrature2Din3D(*this);
-    else if (1 == cellDim)
-      _engine = new Quadrature1Din3D(*this);
-    else if (0 == cellDim)
-      _engine = new Quadrature0D(*this);
-    else {
-      std::cerr << "Unknown quadrature case with cellDim '" 
-		<< cellDim << "' and spaceDim '" << spaceDim << "'" 
-		<< std::endl;
-      assert(0);
-    } // if/else
-  else {
-    std::cerr << "Unknown quadrature case with cellDim '" 
-	      << cellDim << "' and spaceDim '" << spaceDim << "'" 
-	      << std::endl;
-    assert(0);
-  } // if/else
-
-  assert(0 != _engine);
-  _engine->initialize();
-} // _setupEngine
 
 
 // End of file 

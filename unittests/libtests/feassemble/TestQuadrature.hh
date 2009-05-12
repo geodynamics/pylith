@@ -41,6 +41,7 @@ class pylith::feassemble::TestQuadrature : public CppUnit::TestFixture
   CPPUNIT_TEST( testCheckConditioning );
   CPPUNIT_TEST( testEngineAccessors );
   CPPUNIT_TEST( testComputeGeometry );
+  CPPUNIT_TEST( testComputeGeometryCell );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -58,6 +59,9 @@ public :
 
   /// Test computeGeometry(), retrieveGeometry(), and clear().
   void testComputeGeometry(void);
+
+  /// Test computeGeometry() with coordinates and cell.
+  void testComputeGeometryCell(void);
 
 }; // class TestQuadrature
 

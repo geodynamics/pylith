@@ -42,13 +42,11 @@ public :
 
   /** Compute geometric quantities for a cell at quadrature points.
    *
-   * @param vertCoords Coordinates of vertices of finite-element cell.
-   * @param coordDim Spatial dimension of coordinate system.
+   * @param coordinatesCell Coordinates of cell's vertices.
    * @param cell Finite-element cell
    */
-  void computeGeometry(const double* vertCoords,
-                       const int coordDim,
-                       const int cell);
+  void computeGeometry(const double_array& coordinatesCell,
+		       const int cell);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :

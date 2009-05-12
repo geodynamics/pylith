@@ -224,6 +224,7 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
 
   const ALE::Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
   CPPUNIT_ASSERT(!cells.isNull());
+  quadrature.initializeGeometry();
   quadrature.computeGeometry(mesh, cells);
   
   size_t size = 0;
@@ -273,6 +274,111 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
   // Make sure caling clear without data doesn't generate errors 
   quadrature.clear();
 } // testComputeGeometry
+
+// ----------------------------------------------------------------------
+// Test computeGeometry() will coordinates and cell.
+void
+pylith::feassemble::TestQuadrature::testComputeGeometryCell(void)
+{ // testComputeGeometryCell
+  typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+
+  QuadratureData2DLinear data;
+  const int cellDim = data.cellDim;
+  const int numBasis = data.numBasis;
+  const int numQuadPts = data.numQuadPts;
+  const int spaceDim = data.spaceDim;
+
+  const int numCells = data.numCells;
+  double_array vertCoords(data.vertices, numBasis*spaceDim);
+  const double* quadPtsE = data.quadPts;
+  const double* jacobianE = data.jacobian;
+  const double* jacobianDetE = data.jacobianDet;
+  const double* basisDerivE = data.basisDeriv;
+
+  const double minJacobian = 1.0e-06;
+
+#if 0
+  // Create mesh with test cell
+  topology::Mesh mesh(data.cellDim);
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  ALE::Obj<SieveMesh::sieve_type> sieve = 
+    new SieveMesh::sieve_type(mesh.comm());
+  CPPUNIT_ASSERT(!sieve.isNull());
+
+  // Cells and vertices
+  const bool interpolate = false;
+  ALE::Obj<ALE::Mesh::sieve_type> s = 
+    new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+  
+  ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, cellDim, numCells,
+                                              const_cast<int*>(data.cells), 
+					      data.numVertices,
+                                              interpolate, numBasis);
+  std::map<ALE::Mesh::point_type,ALE::Mesh::point_type> renumbering;
+  ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
+  sieveMesh->setSieve(sieve);
+  sieveMesh->stratify();
+  ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
+						 data.vertices);
+#endif
+
+  // Setup quadrature and compute geometry
+  GeometryTri2D geometry;
+  Quadrature<topology::Mesh> quadrature;
+  quadrature.refGeometry(&geometry);
+  quadrature.minJacobian(minJacobian);
+  quadrature.initialize(data.basis, numQuadPts, numBasis,
+			data.basisDerivRef, numQuadPts, numBasis, cellDim,
+			data.quadPtsRef, numQuadPts, cellDim,
+			data.quadWts, numQuadPts,
+			spaceDim);
+
+#if 0
+  const ALE::Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
+  CPPUNIT_ASSERT(!cells.isNull());
+#endif
+
+  quadrature.initializeGeometry();
+  quadrature.computeGeometry(vertCoords, 0);
+  
+  size_t size = 0;
+
+  // Check values from computeGeometry()
+  const double tolerance = 1.0e-06;
+
+  const double_array& quadPts = quadrature.quadPts();
+  size = numQuadPts * spaceDim;
+  CPPUNIT_ASSERT_EQUAL(size, quadPts.size());
+  for (size_t i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(quadPtsE[i], quadPts[i], tolerance);
+  
+  const double_array& jacobian = quadrature.jacobian();
+  size = numQuadPts * cellDim * spaceDim;
+  CPPUNIT_ASSERT_EQUAL(size, jacobian.size());
+  for (size_t i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianE[i], jacobian[i], tolerance);
+  
+  const double_array& jacobianDet = quadrature.jacobianDet();
+  size = numQuadPts;
+  CPPUNIT_ASSERT_EQUAL(size, jacobianDet.size());
+  for (size_t i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianDetE[i], jacobianDet[i], tolerance);
+  
+  const double_array& basisDeriv = quadrature.basisDeriv();
+  size = numQuadPts * numBasis * spaceDim;
+  CPPUNIT_ASSERT_EQUAL(size, basisDeriv.size());
+  for (size_t i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(basisDerivE[i], basisDeriv[i], tolerance);
+
+  quadrature.clear();
+
+  CPPUNIT_ASSERT(0 == quadrature._quadPtsField);
+  CPPUNIT_ASSERT(0 == quadrature._jacobianField);
+  CPPUNIT_ASSERT(0 == quadrature._jacobianDetField);
+  CPPUNIT_ASSERT(0 == quadrature._basisDerivField);
+  CPPUNIT_ASSERT(0 == quadrature._engine);
+} // testComputeGeometryCell
 
 
 // End of file 
