@@ -21,49 +21,6 @@
 \vfill
 
 % ------------------------------------------------------------ SLIDE
-\foilhead{Outline}
-  \summary{}  
-
-  \begin{itemize}
-  \item Introduction to PyLith
-    \begin{itemize}
-    \item Motivation \& development objective
-    \item What does PyLith do?
-    \end{itemize}
-  \item PyLith Design
-    \begin{itemize}
-    \item Architecture and programming languages
-    \item Development strategy
-    \end{itemize}
-  \item Features
-    \begin{itemize}
-    \item Current release
-    \item Planned releases
-    \end{itemize}
-  \item Benchmark results
-  \end{itemize}
-
-\bgadd{\vspace*{7.9in}%
-  \begin{center}%
-    \includegraphics[height=14mm]{../logos/cig}
-  \end{center}}
-
-% ------------------------------------------------------------ SLIDE
-\foilhead{Motivation for Developing PyLith}
-  \summary{}
-  
-  \begin{itemize}
-  \item Available modeling codes
-    \begin{itemize}
-    \item rarely solve the problem {\bf you} want to solve
-    \item are often poorly documented
-    \item may not work correctly
-    \end{itemize}
-  \item Current research demands larger, more complex simulations
-  \item Want to avoid multiple, incompatible versions of the same code
-  \end{itemize}
-
-% ------------------------------------------------------------ SLIDE
 \foilhead{PyLith}
   \summary{What is it good for?}
 
@@ -81,6 +38,79 @@
     \item Local/regional ground-motion modeling
     \end{itemize}
   \end{itemize}
+
+\bgadd{\vspace*{7.9in}%
+  \begin{center}%
+    \includegraphics[height=14mm]{../logos/cig}
+  \end{center}}
+
+% ------------------------------------------------------------ SLIDE
+\foilhead{Example Application 1}
+  \summary{Freed (Purdue), Ali (Purdue), and Freymueller (U. of AK, Fairbanks}
+
+  \vfill
+  \begin{center}
+    Contemporary strain and stressing rates across Alaska from interseismic and 
+    postseismic processes \\
+    \includegraphics[scale=1.8]{figs/example-freed}
+ \end{center}
+
+% ------------------------------------------------------------ SLIDE
+\foilhead{Example Application 2}
+  \summary{Hsu (IESAS), Simons (Caltech), Williams (GNS Science), Casarotti (INGV)}
+
+  \vfill
+
+ \begin{center}
+  3-D FEM derived elastic Green's functions for the coseismic deformation of the
+  2005 Mw 8.7 Nias-Simeulue, Sumatra earthquake \\
+  \includegraphics[scale=1.0]{figs/example-hsu-one}\hspace{0.5in}
+  \includegraphics[scale=1.0]{figs/example-hsu-two}
+ \end{center}
+
+% ------------------------------------------------------------ SLIDE
+\foilhead{Example Application 3}
+  \summary{Williams (GNS Science), Gable (LANL), Hager (MIT), Meade (Harvard) Aagaard (USGS), Knepley (ANL)}
+
+  \vfill
+
+\begin{center}
+  Modeling of Multiple Earthquake Cycles in Southern California Using the SCEC
+  Community Fault Model \\
+  \includegraphics[scale=0.45]{figs/example-williams}
+ \end{center}
+
+% ------------------------------------------------------------ SLIDE
+\foilhead{Example Application 4}
+  \summary{Currenti (INGV), Del Negro (INGV), Ganci (INGV), Williams
+    (GNS Science)}
+
+  \vfill
+
+  \begin{center}
+    Modeling of Coulomb stress changes during the 2002-2003 Etna eruption \\
+    \includegraphics[scale=1.1]{figs/example-currenti}
+ \end{center}
+
+% ------------------------------------------------------------ SLIDE
+\foilhead{Example Application 5}
+  \summary{Buck (Columbia) and Nooner (Columbia)}
+
+  \vfill
+
+  \begin{center}
+    Post-rifting relaxation at a subaerial spreading center \\
+    \includegraphics[scale=1.5]{figs/example-buck}
+ \end{center}
+
+% ------------------------------------------------------------ SLIDE
+\foilhead{Crustal Deformation Modeling}
+  \summary{Overview of workflow for typical research problem}
+
+  \vfill
+  \begin{center}
+    \includegraphics[scale=0.9]{figs/workflow}
+  \end{center}
 
 % ------------------------------------------------------------ SLIDE
 \foilhead{Features in PyLith 1.3}
@@ -131,6 +161,46 @@
   \end{itemize}
 
 % ------------------------------------------------------------ SLIDE
+\foilhead{PyLith 1.x: Planned Releases}
+  \summary{Current productivity is about 2 feature releases per year}
+
+  \begin{itemize}
+  \item PyLith 1.4: June 2009
+    \begin{itemize}
+    \item Power-law viscoelastic rheology and PETSc nonlinear solvers
+    \item Ability to specify initial stress, strain, and state variables
+    \item Automatic, transparent nondimensionalization
+    \item Use SWIG for Python/C++ interface
+    \end{itemize}
+  \item PyLith 1.5: anticipate release in Fall 2009
+    \begin{itemize}
+    \item Fault constitutive behavior with several widely used friction models
+    \end{itemize}
+  \item PyLith 1.6: anticipate release in Spring/Summer 2010
+    \begin{itemize}
+    \item Time dependent boundary conditions
+    \item Large deformations and finite strain
+    \end{itemize}
+  \item PyLith 1.7: Automation of 4-D Green's functions
+  \item PyLith 1.8: Coupling of quasi-static and dynamic simulations
+  \end{itemize}
+  
+% ------------------------------------------------------------ SLIDE
+\foilhead{Motivation for Developing PyLith}
+  \summary{}
+  
+  \begin{itemize}
+  \item Available modeling codes
+    \begin{itemize}
+    \item rarely solve the problem {\bf you} want to solve
+    \item are often poorly documented
+    \item may not work correctly
+    \end{itemize}
+  \item Current research demands larger, more complex simulations
+  \item Want to avoid multiple, incompatible versions of the same code
+  \end{itemize}
+
+% ------------------------------------------------------------ SLIDE
 \foilhead{PyLith Design Objective}
   \summary{Want a code developed for and by the community}
   
@@ -151,13 +221,29 @@
   \end{itemize}
 
 % ------------------------------------------------------------ SLIDE
-\foilhead{Crustal Deformation Modeling}
-  \summary{Overview of workflow for typical research problem}
+\foilhead{PyLith is a Community Code}
+  \summary{Success of code depends on community participation}
 
-  \vfill
-  \begin{center}
-    \includegraphics[scale=0.9]{figs/workflow}
-  \end{center}
+  \begin{itemize}
+  \item End-users (anyone who uses the code)
+    \begin{itemize}
+    \item Help define and prioritize features that should be added
+    \item Report bugs/problems and suggest improvements
+    \end{itemize}
+  \item Expert users
+    \begin{itemize}
+    \item Help test alpha versions of releases
+    \item Run benchmarks and report results
+    \item Contribute meshing and visualization examples to documentation
+    \item Add features following template (e.g., constitutive models)
+    \end{itemize}
+  \item Developer
+    \begin{itemize}
+    \item Define development strategy 
+    \item Implement new features and tests
+    \item Write documentation
+    \end{itemize}
+  \end{itemize}
 
 % ------------------------------------------------------------ SLIDE
 \foilhead{PyLith Design: Focus on Geodynamics}
@@ -165,7 +251,7 @@
 
   \vfill
   \begin{center}
-    \includegraphics[scale=1.23]{figs/packages}
+    \includegraphics[scale=0.9]{figs/packages}
   \end{center}
 
 % ------------------------------------------------------------ SLIDE
@@ -175,7 +261,7 @@
   \begin{itemize}
   \item Top-level code written in Python
     \begin{itemize}
-    \item Expressive, high-level,, object-oriented language
+    \item Expressive, high-level, object-oriented language
     \item Dynamic typing allows adding additional modules at runtime
     \item Convenient scripting
     \end{itemize}
@@ -225,31 +311,6 @@
  \begin{center}
    \includegraphics[scale=0.68]{figs/buildbotsuccess}
  \end{center}
-  
-% ------------------------------------------------------------ SLIDE
-\foilhead{PyLith 1.x: Planned Releases}
-  \summary{First add features present in Tecton and EqSim}
-
-  \begin{itemize}
-  \item PyLith 1.4: June 2009
-    \begin{itemize}
-    \item Power-law viscoelastic rheology and PETSc nonlinear solvers
-    \item Ability to specify initial stress, strain, and state variables
-    \item Automatic, transparent nondimensionalization
-    \item Use SWIG for Python/C++ interface
-    \end{itemize}
-  \item PyLith 1.5: anticipate release in Fall 2009
-    \begin{itemize}
-    \item Fault constitutive behavior with several widely used friction models
-    \end{itemize}
-  \item PyLith 1.6: anticipate release in Spring/Summer 2010
-    \begin{itemize}
-    \item Time dependent boundary conditions
-    \item Large deformations and finite strain
-    \end{itemize}
-  \item PyLith 1.7: Automation of 4-D Green's functions
-  \item PyLith 1.8: Coupling of quasi-static and dynamic simulations
-  \end{itemize}
   
 % ------------------------------------------------------------ SLIDE
 \foilhead{Implementation: Finite-Element Data Structures}
@@ -338,46 +399,30 @@
    \end{itemize}
  \item Disadvantages 
    \begin{itemize}
-   \item Conditioned matrix is non-symmetric (eliminated through
-     nondimensionalization)
+   \item Conditioned matrix is non-symmetric
    \item Mixes displacements and forces in solution
    \end{itemize}
  \end{itemize}
   
 % ------------------------------------------------------------ SLIDE
 \foilhead{Benchmarking PyLith}
-  \summary{Elastic solution for strike-slip benchmark}
+  \summary{Savage and Prescott (1978): Repeated Strike-slip ruptures}
 
-  \vfill
-  \begin{center}
-    \includegraphics[scale=0.6]{figs/benchmark_soln}
-  \end{center}
-  
+  \movie{0.58in}{0.0in}{7.84in}{5.84in}{movies/savageprescott_domain}
+ 
 % ------------------------------------------------------------ SLIDE
-\foilhead{Tet4 500m Mesh: Local Error}
-  \summary{Error largest around edges of fault}
+\foilhead{Benchmarking PyLith}
+  \summary{Savage and Prescott (1978): Repeated Strike-slip ruptures}
 
-  \vfill
-  \begin{center}
-    \includegraphics[scale=0.6]{figs/benchmark_error_tet4_0500m}
-  \end{center}
-  
+  \movie{0.58in}{0.0in}{7.84in}{5.84in}{movies/savageprescott_groundsurf}
+ 
 % ------------------------------------------------------------ SLIDE
-\foilhead{Hex8 500m Mesh: Local Error}
-  \summary{Error concentrated around change in slip gradient}
+\foilhead{Benchmarking PyLith}
+  \summary{Simulation closely matches analytical solution during 10th eq cycle}
 
   \vfill
   \begin{center}
-    \includegraphics[scale=0.6]{figs/benchmark_error_hex8_0500m}
-  \end{center}
-  
-% ------------------------------------------------------------ SLIDE
-\foilhead{Strike-Slip Benchmark: Performance Summary}
-  \summary{Hex8 cells outperform tet4 cells}
-
-  \vfill
-  \begin{center}
-    \includegraphics[scale=0.5]{figs/benchmark_summary}
+    \includegraphics[scale=1.2]{figs/savageprescott_profile9}
   \end{center}
   
 % ------------------------------------------------------------ SLIDE
@@ -392,9 +437,10 @@
     \item Mesh exported from CUBIT
     \item Mesh constructed by hand (PyLith mesh ASCII format)
     \end{itemize}
-  \item Spatial databases for boundary and fault conditions
+  \item Spatial databases for physical properties, boundary
+    conditions, and rupture parameters
     \begin{itemize}
-    \item Simple ASCII files specify spatial variation of parameters
+    \item SCEC CVM-H, USGS Bay Area Velocity model, or simple ASCII files
     \item Independent of discretization scheme and size
     \end{itemize}
   \end{itemize}
@@ -424,52 +470,23 @@
   \end{itemize}
 
 % ------------------------------------------------------------ SLIDE
-\foilhead{PyLith is a Community Code}
-  \summary{Success of code depends on community participation}
-
-  \begin{itemize}
-  \item End-users (anyone who uses the code)
-    \begin{itemize}
-    \item Help define and prioritize features that should be added
-    \item Report bugs/problems and suggest improvements
-    \end{itemize}
-  \item Expert users
-    \begin{itemize}
-    \item Help test alpha versions of releases
-    \item Run benchmarks and report results
-    \item Contribute meshing and visualization examples to documentation
-    \item Add features following template (e.g., constitutive models)
-    \end{itemize}
-  \item Developer
-    \begin{itemize}
-    \item Define development strategy 
-    \item Implement new features and tests
-    \item Write documentation
-    \end{itemize}
-  \end{itemize}
-
-% ------------------------------------------------------------ SLIDE
-\foilhead{Example: Slip on a Vertical Strike-Slip Fault}
-  \summary{examples/3d/hex8}
+\foilhead{Crustal Deformation Modeling}
+  \summary{Overview of workflow for typical research problem}
 
   \vfill
   \begin{center}
-    \includegraphics[scale=0.7]{figs/examplehex8}
+    \includegraphics[scale=0.9]{figs/workflow}
   \end{center}
 
 % ------------------------------------------------------------ SLIDE
-\foilhead{Workflow for Example}
-  \summary{}
+\foilhead{Installing PyLith}
+  \summary{Download from {\tt geodynamics.org} of copy from CDROM}
 
-  \begin{enumerate}
-  \item Generate finite-element mesh using CUBIT (hex8 cells)
-  \item Create {\tt .cfg} file with simulation parameters
-  \item Create spatial database files with parameters for boundary
-    conditions and faults
-  \item Run PyLith
-  \item Visualize results with ParaView
-  \end{enumerate}
-
+  \vfill
+  Recommend copying PyLith and ParaView from CDROM with INSTALL files.
+  \vfill
+  Examples are in src/pylith/examples.
+  \vfill
 
 % --------------------------------------------------------- DOCUMENT
 \end{document}

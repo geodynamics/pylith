@@ -49,6 +49,7 @@ clean:
 
 pdffigs:
 	for i in `find figs -name "*.eps"`; do ~/bin/epstopdf $$i; done
+	for i in `find figs -name "*.pdf.BAK"`; do j=`echo $$i | sed -e s/.BAK//g`; cp -f $$i $$j; done
 
 compressfigs:
 	gzip `find figs -name "*.eps"`
