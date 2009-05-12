@@ -10,7 +10,7 @@ groups:
 
   * Parameter settings common to all three examples: see pylithapp.cfg.
 
-  * Material properties common to all three examples: see matprops.cfg.
+  * Material properties common to all three examples: see matprops.spatialdb.
 
   * Example-specific parameters and boundary condition specifications.
 

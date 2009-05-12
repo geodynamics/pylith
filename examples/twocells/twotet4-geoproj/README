@@ -11,8 +11,8 @@ the examples may be divided into four groups:
 pylithapp.cfg.
 
 3.  Material properties common to all examples:  described in the
-database file matprops.cfg. Note that this file is not actually used unless
-some of the settings are changed in dislocation.cfg.
+database file matprops.spatialdb. Note that this file is not actually used
+unless some of the settings are changed in dislocation.cfg.
 
 4.  Example-specific parameters and boundary condition specifications.
 
