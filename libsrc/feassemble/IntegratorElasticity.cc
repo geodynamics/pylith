@@ -101,6 +101,7 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
     sieveMesh->getLabelStratum("material-id", materialId);
 
   // Compute geometry for quadrature operations.
+  _quadrature->initializeGeometry();
   _quadrature->computeGeometry(mesh, cells);
 
   // Initialize material.

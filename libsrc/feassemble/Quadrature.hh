@@ -57,6 +57,9 @@ public :
    */
   Quadrature(const Quadrature& q);
 
+  /// Setup quadrature engine.
+  void initializeGeometry(void);
+
   /** Set flag for checking ill-conditioning.
    *
    * @param flag True to check for ill-conditioning, false otherwise.
@@ -94,7 +97,7 @@ public :
    */
   const double_array& jacobianDet(void) const;
 
-  /** Precompute geometric quantities for each cell.
+  /** Compute geometric quantities for each cell.
    *
    * @param mesh Finite-element mesh
    * @param cells Finite-element cells for geometry.
@@ -112,11 +115,13 @@ public :
   /// Deallocate temporary storage.
   void clear(void);
 
-// PRIVATE METHODS //////////////////////////////////////////////////////
-private :
-
-  /// Setup quadrature engine.
-  void _setupEngine(void);
+  /** Precompute geometric quantities for each cell.
+   *
+   * @param coordinatesCell Coordinates of vertices in cell.
+   * @param cell Finite-element cell
+   */
+  void computeGeometry(const double_array& coordinatesCell,
+		       const int cell);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

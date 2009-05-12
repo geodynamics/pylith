@@ -44,14 +44,14 @@ pylith::feassemble::Quadrature0D::Quadrature0D(const Quadrature0D& q) :
 // ----------------------------------------------------------------------
 // Compute geometric quantities for a cell at quadrature points.
 void
-pylith::feassemble::Quadrature0D::computeGeometry(const double* vertCoords,
-						  const int coordDim,
+pylith::feassemble::Quadrature0D::computeGeometry(const double_array& coordinatesCell,
 						  const int cell)
 { // computeGeometry
   const int cellDim = _quadRefCell.cellDim();
   const int spaceDim = _quadRefCell.spaceDim();
   const int numQuadPts = _quadRefCell.numQuadPts();
   const int numBasis = _quadRefCell.numBasis();
+  assert(coordinatesCell.size() == numBasis*spaceDim);
 
   const double_array& basisDerivRef = _quadRefCell.basisDerivRef();
 
@@ -60,10 +60,9 @@ pylith::feassemble::Quadrature0D::computeGeometry(const double* vertCoords,
   assert(1 == numBasis);
 
   zero();
-  assert(1 == coordDim);
+  assert(numBasis*1 == coordinatesCell.size());
 
-  for (int i=0; i < spaceDim; ++i)
-    _quadPts[i] = vertCoords[i];
+  _quadPts = coordinatesCell;
 
   _jacobian[0] = 1.0;
   _jacobianDet[0] = 1.0;

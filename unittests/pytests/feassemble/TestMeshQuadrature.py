@@ -128,6 +128,8 @@ class TestMeshQuadrature(unittest.TestCase):
                                           quadrature.quadPtsRef()))
     self.assertTrue(TestArray_checkDouble(quadWtsE.ravel(),
                                           quadrature.quadWts()))
+
+    quadrature.initializeGeometry()
     return
 
 

@@ -46,12 +46,9 @@ pylith::feassemble::Quadrature3D::Quadrature3D(const Quadrature3D& q) :
 // ----------------------------------------------------------------------
 // Compute geometric quantities for a cell at quadrature points.
 void
-pylith::feassemble::Quadrature3D::computeGeometry(const double* vertCoords,
-						  const int coordDim,
+pylith::feassemble::Quadrature3D::computeGeometry(const double_array& coordinatesCell,
 						  const int cell)
 { // computeGeometry
-  assert(0 != vertCoords);
-  assert(3 == coordDim);
 
   const int cellDim = _quadRefCell.cellDim();
   const int spaceDim = _quadRefCell.spaceDim();
@@ -63,6 +60,7 @@ pylith::feassemble::Quadrature3D::computeGeometry(const double* vertCoords,
   const double_array& basisDerivRef = _quadRefCell.basisDerivRef();
   const CellGeometry& geometry = _quadRefCell.refGeometry();
 
+  assert(numBasis*spaceDim == coordinatesCell.size());
   assert(3 == cellDim);
   assert(3 == spaceDim);
   zero();
@@ -79,12 +77,12 @@ pylith::feassemble::Quadrature3D::computeGeometry(const double* vertCoords,
       const double valueBasis = basis[iQuadPt*numBasis+iBasis];
       for (int iDim=0; iDim < spaceDim; ++iDim)
 	_quadPts[iQuadPt*spaceDim+iDim] += 
-	  valueBasis * vertCoords[iBasis*spaceDim+iDim];
+	  valueBasis * coordinatesCell[iBasis*spaceDim+iDim];
     } // for
 #else
     geometry.coordsRefToGlobal(&quadPts[iQuadPt*spaceDim],
 			       &quadPtsRef[iQuadPt*cellDim],
-			       vertCoords, spaceDim);
+			       &coordinatesCell[0], spaceDim);
 #endif
     
 #if defined(ISOPARAMETRIC)
@@ -107,7 +105,7 @@ pylith::feassemble::Quadrature3D::computeGeometry(const double* vertCoords,
 	  basisDerivRef[iQuadPt*numBasis*spaceDim+iBasis*cellDim+iCol];
 	for (int iRow=0; iRow < spaceDim; ++iRow)
 	  _jacobian[iQuadPt*cellDim*spaceDim+iRow*cellDim+iCol] += 
-	    deriv * vertCoords[iBasis*spaceDim+iRow];
+	    deriv * coordinatesCell[iBasis*spaceDim+iRow];
       } // for
 
     // Compute determinant of Jacobian at quadrature point
@@ -137,7 +135,7 @@ pylith::feassemble::Quadrature3D::computeGeometry(const double* vertCoords,
     // Compute Jacobian and determinant of Jacobian at quadrature point
     geometry.jacobian(&_jacobian[iQuadPt*cellDim*spaceDim],
 		      &_jacobianDet[iQuadPt],
-		      vertCoords, &quadPtsRef[iQuadPt*cellDim], spaceDim);
+		      &coordinatesCell[0], &quadPtsRef[iQuadPt*cellDim], spaceDim);
     _checkJacobianDet(_jacobianDet[iQuadPt], cell);
 
     const int iJ = iQuadPt*cellDim*spaceDim;

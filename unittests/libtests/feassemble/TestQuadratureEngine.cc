@@ -158,7 +158,7 @@ pylith::feassemble::TestQuadratureEngine::_testComputeGeometry(
 
   const int numVertices = data.numVertices;
   const int numCells = data.numCells;
-  const double* vertCoords = data.vertices;
+  const double_array vertCoords(data.vertices, numBasis*spaceDim);
   const int* cells = data.cells;
   const double* quadPtsE = data.quadPts;
   const double* jacobianE = data.jacobian;
@@ -180,8 +180,7 @@ pylith::feassemble::TestQuadratureEngine::_testComputeGeometry(
 
   // Check values from computeGeometry()
   engine->initialize();
-  engine->computeGeometry(vertCoords, spaceDim, 0);
-
+  engine->computeGeometry(vertCoords, 0);
 
   const double tolerance = 1.0e-06;
   int size = numQuadPts * spaceDim;

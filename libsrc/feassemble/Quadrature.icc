@@ -69,6 +69,17 @@ pylith::feassemble::Quadrature<mesh_type>::jacobianDet(void) const {
   return _engine->jacobianDet();
 }
 
+// Precompute geometric quantities for each cell.
+template<typename mesh_type>
+inline
+void
+pylith::feassemble::Quadrature<mesh_type>::computeGeometry(const double_array& coordinatesCell,
+							   const int cell) {
+  assert(0 != _engine);
+  _engine->computeGeometry(coordinatesCell, cell);  
+}
+
 #endif
+
 
 // End of file

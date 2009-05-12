@@ -48,6 +48,9 @@ namespace pylith {
        * @returns True if checking for ill-conditioning, false otherwise.
        */
       bool checkConditioning(void) const;
+
+      /// Setup quadrature engine.
+      void initializeGeometry(void);
       
       /// Deallocate temporary storage.
       void clear(void);

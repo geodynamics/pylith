@@ -78,13 +78,11 @@ public :
 
   /** Compute geometric quantities for a cell at quadrature points.
    *
-   * @param mesh Finite-element mesh
-   * @param coordinates Section containing vertex coordinates
+   * @param coordinatesCell Coordinates of cell's vertices.
    * @param cell Finite-element cell
    */
   virtual
-  void computeGeometry(const double* vertCoords,
-		       const int coordDim,
+  void computeGeometry(const double_array& coordinatesCell,
 		       const int cell) = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
