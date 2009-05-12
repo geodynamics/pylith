@@ -42,7 +42,7 @@ $(AUXFILES):
 	touch $(AUXFILES)
 
 clean:
-	rm -f $(AUXFILES) $(DVIFILE) $(PSFILE) $(PDFFILE) $(PDFTMPFILE)\
+	rm -f $(AUXFILES) $(DVIFILE) $(PSFILE) $(PDFTMPFILE)\
 		$(MASTERROOT).log $(MASTERROOT).out *~
 	rm -fr auto
 	rm `find figs -name "*.pdf"`
