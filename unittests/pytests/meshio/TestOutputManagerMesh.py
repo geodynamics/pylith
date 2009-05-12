@@ -260,6 +260,51 @@ class TestOutputManagerMesh(unittest.TestCase):
     return
 
 
+  def test_estimateNumSteps(self):
+    """
+    Test _estimateNumSteps().
+    """
+    from pyre.units.time import second
+
+    output = OutputManagerMesh()
+    output.inventory.outputFreq = "skip"
+    output.inventory.skip = 2
+    output._configure()
+
+    numTimeSteps = 0
+    totalTime = 1.0*second
+    self.assertEqual(0, output._estimateNumSteps(totalTime, numTimeSteps))
+
+    numTimeSteps = 4
+    totalTime = 1.0*second
+    self.assertEqual(2, output._estimateNumSteps(totalTime, numTimeSteps))
+
+    numTimeSteps = 2
+    totalTime = 1.0*second
+    self.assertEqual(1, output._estimateNumSteps(totalTime, numTimeSteps))
+
+    output = OutputManagerMesh()
+    output.inventory.outputFreq = "time_step"
+    output.inventory.dt = 2.0*second
+    output._configure()
+    dataProvider = TestProvider()
+    output.preinitialize(dataProvider)
+    output.initialize(self.normalizer)
+
+    numTimeSteps = 0
+    totalTime = 1.0*second
+    self.assertEqual(0, output._estimateNumSteps(totalTime, numTimeSteps))
+
+    numTimeSteps = 4
+    totalTime = 1.0*second
+    self.assertEqual(1, output._estimateNumSteps(totalTime, numTimeSteps))
+
+    numTimeSteps = 2
+    totalTime = 2.0*second
+    self.assertEqual(2, output._estimateNumSteps(totalTime, numTimeSteps))
+    return
+
+
   def test_checkWrite(self):
     """
     Test _checkWrite().
