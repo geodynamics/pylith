@@ -181,6 +181,7 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
   const double pressureScale = _normalizer->pressureScale();
 
   // Compute quadrature information
+  _quadrature->initializeGeometry();
   _quadrature->computeGeometry(*_boundaryMesh, cells);
 
   // Loop over cells in boundary mesh, compute orientations, and then

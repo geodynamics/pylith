@@ -67,7 +67,7 @@ class Formulation(PetscComponent, ModuleFormulation):
 
     import pyre.inventory
 
-    matrixType = pyre.inventory.property("matrix_type", default="unknown")
+    matrixType = pyre.inventory.str("matrix_type", default="unknown")
     matrixType.meta['tip'] = "Type of PETSc sparse matrix."
 
     viewJacobian = pyre.inventory.bool("view_jacobian", default=False)

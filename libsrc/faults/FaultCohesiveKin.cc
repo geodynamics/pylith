@@ -144,6 +144,7 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
   assert(!cells.isNull());
   const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+  _quadrature->initializeGeometry();
   _quadrature->computeGeometry(*_faultMesh, cells);
 
   // Compute orientation at vertices in fault mesh.

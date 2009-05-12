@@ -170,6 +170,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
 
   // Compute quadrature information
+  _quadrature->initializeGeometry();
   _quadrature->computeGeometry(*_boundaryMesh, cells);
 
   for(SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;

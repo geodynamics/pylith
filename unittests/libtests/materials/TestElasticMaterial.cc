@@ -710,6 +710,7 @@ pylith::materials::TestElasticMaterial::_initialize(
     sieveMesh->getLabelStratum("material-id", materialId);
 
   // Compute geometry for cells
+  quadrature.initializeGeometry();
   quadrature.computeGeometry(*mesh, cells);
 
   spatialdata::spatialdb::SimpleDB db;
