@@ -154,13 +154,7 @@ class OutputManager(PetscComponent):
     logEvent = "%sopen" % self._loggingPrefix
     self._logger.eventBegin(logEvent)    
 
-    nsteps = numTimeSteps
-    if numTimeSteps > 0 and self.outputFreq == "skip" and self.skip > 0:
-      nsteps = int(numTimeSteps / (1+self.skip))
-    elif numTimeSteps > 0 and self.outputFreq == "time_step":
-      timeScale = self.normalizer.timeScale()
-      totalTimeN = self.normalizer.nondimensionalize(totalTime, timeScale)
-      nsteps = int(1 + totalTimeN / self.dtN)
+    nsteps = self._estimateNumSteps(totalTime, numTimeSteps)
 
     (mesh, label, labelId) = self.dataProvider.getDataMesh()
     self._open(mesh, nsteps, label, labelId)
@@ -253,6 +247,22 @@ class OutputManager(PetscComponent):
     """
     raise NotImplementedError, \
         "Please implement _createModuleObj() in derived class."
+    return
+  
+
+  def _estimateNumSteps(self, totalTime, numTimeSteps):
+    """
+    Estimate the number of time steps we expect to output.
+    """
+    nsteps = numTimeSteps
+    if numTimeSteps > 0 and self.outputFreq == "skip" and self.skip > 0:
+      nsteps = int(1 + (numTimeSteps-1) / (1+self.skip))
+    elif numTimeSteps > 0 and self.outputFreq == "time_step":
+      timeScale = self.normalizer.timeScale()
+      totalTimeN = self.normalizer.nondimensionalize(totalTime, timeScale)
+      nsteps = int(1 + totalTimeN / self.dtN)
+
+    return nsteps
 
 
   def _checkWrite(self, t):
