@@ -2,18 +2,58 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
+Matt
+  Memory model
+  field split
+
+Brad
+  Test precompute geometry
+  Nondimensionalization
+  cleanup
+  full-scale testing
+  test uniform refinement
+
+Charles
+  3-D Power-law rheology
+    C++
+    libtests
+    Python
+    pytests
+    full-scale test (axial compression/extension?)
+  2-D Maxwell viscoelastic rheology
+    C++
+    libtests
+    Python
+    pytests
+    full-scale test
+  Initial stress, strain
+    3-D Maxwell model
+    3-D Generalized Maxwell model
+    3-D Power-low model
+    2-D Maxwell model
+    tests
+  Manual
+    Materials
+    Savage-Prescott benchmark
+
 -1. Fix Tabrez's bug. [Matt]
 
 1. SNES
+
+  Cleanup SolutionFields.
+    Remove time history stuff. [TEST]
+    Replace solveSolnVec with solution. [TEST]
 
   Power-law rheology
 
 2. Nondimensionalization
 
-  Add Quadrature::computeGeometry(cell, coordinatesCell)
-    do computation on 1 cell
-    much less memory than holding all info in Fields
-    keep computeGeometruy(mesh, cell) and retrieveGeometry(cell)
+  Add units to spatialdata. [UPDATE TESTING]
+
+  Add Quadrature::computeGeometry(coordinatesCell)
+    Use #define PRECOMPUTE_GEOMETRY [TEST]
+
+  MeshIO: coordinates and coordinates_dimensioned [UPDATE TESTING]
 
   DataWriteVTK needs dimensionalizer
 
@@ -21,8 +61,6 @@ CURRENT ISSUES/PRIORITIES
   create dimensionalized copy (NAME_dimensioned) solution in output
   (nondimensional instead of dimensioned) const slip rate in output
   (slip rate not slip)
-
-  Add ability to use symmetric matrix.
 
   Ask constraints if a block matrix is okay. If okay and matrix type
   is "unknown" (not set by user), then use "baij" rather than
@@ -54,6 +92,7 @@ CURRENT ISSUES/PRIORITIES
       7. two fault (static, parallel)
       8. gravity w/initial stress and strain 
 
+    Gravity with faults, Neumann BC.
 
 4. Add missing unit tests
 
@@ -113,8 +152,7 @@ CURRENT ISSUES/PRIORITIES
 
 5. Tidy up
 
-    Add error message if number of time steps computed by time
-    stepping scheme is 0.
+    Replace memcpy() calls with loops.
 
     How do we determine the orientation for a fault in a 1-D mesh? We
     assume normaldir is +1.0, but cohesive cells could be created so
@@ -159,8 +197,6 @@ CURRENT ISSUES/PRIORITIES
 
 6. Memory model [Matt]
    playpen/memcheck/*
-
-   Must add nested stages so that logging totals are correct
 
 7. 2-D Plane strain Maxwell viscoelastic rheology [Charles]
 
@@ -207,7 +243,6 @@ Fault friction
 
 Uniform refinement (debug, check, all cell types)
 
-Cuthill-McKee ordering of vertices
 
 ======================================================================
 KNOWN DEFICIENCIES
