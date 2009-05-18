@@ -12,6 +12,7 @@
 
 __all__ = ['CheckpointTimer',
            'CppData',
+           'NullComponent',
            'PetscComponent',
            'PetscManager',
            'testarray',

@@ -292,10 +292,6 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
   CPPUNIT_ASSERT(0 != _material);
 
   // Setup mesh
-  spatialdata::geocoords::CSCart cs;
-  cs.setSpaceDim(_data->spaceDim);
-  cs.initialize();
-  mesh->coordsys(&cs);
   mesh->createSieveMesh(_data->cellDim);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
@@ -341,6 +337,13 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
 			  _data->quadWts, _data->numQuadPts,
 			  _data->spaceDim);
 
+  spatialdata::units::Nondimensional normalizer;
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(_data->spaceDim);
+  cs.initialize();
+  mesh->coordsys(&cs);
+  mesh->nondimensionalize(normalizer);
+
   // Setup gravityField
   _gravityField = 0;
 
@@ -350,8 +353,6 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
   spatialdata::spatialdb::SimpleDB dbProperties;
   dbProperties.ioHandler(&iohandler);
   
-  spatialdata::units::Nondimensional normalizer;
-
   _material->id(_data->matId);
   _material->label(_data->matLabel);
   _material->dbProperties(&dbProperties);
@@ -370,9 +371,6 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
   fields->add("disp(t)", "displacement");
   fields->add("disp(t-dt)", "displacement");
   fields->solutionName("dispIncr(t->t+dt)");
-  const char* history[] = { "dispIncr(t->t+dt)", "disp(t)", "disp(t-dt)" };
-  const int historySize = 3;
-  fields->createHistory(history, historySize);
   
   topology::Field<topology::Mesh>& residual = fields->get("residual");
   residual.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);

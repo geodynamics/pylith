@@ -53,8 +53,7 @@ public :
 		 const int numCells,
 		 const int numCorners,
 		 const int meshDim,
-		 const bool interpolate,
-		 const spatialdata::units::Nondimensional& normalizer);
+		 const bool interpolate);
 
   /** Build fault mesh topology.
    *

@@ -280,9 +280,11 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
 
     // Set coordinate system
     spatialdata::geocoords::CSCart cs;
+    spatialdata::units::Nondimensional normalizer;
     cs.setSpaceDim(mesh->dimension());
     cs.initialize();
     mesh->coordsys(&cs);
+    mesh->nondimensionalize(normalizer);
 
     // Set up quadrature
     _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,

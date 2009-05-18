@@ -17,6 +17,7 @@
 ## Factory: problem.
 
 from pylith.utils.PetscComponent import PetscComponent
+from pylith.utils.NullComponent import NullComponent
 
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
@@ -67,7 +68,6 @@ class Problem(PetscComponent):
     ##
     ## \b Properties
     ## @li \b dimension Spatial dimension of problem space.
-    ## @li \b useGravity Gravity on (true) or off (false).
     ##
     ## \b Facilities
     ## @li \b normalizer Nondimensionalizer for problem.
@@ -110,10 +110,9 @@ class Problem(PetscComponent):
     interfaces.meta['tip'] = "Interior surfaces with constraints or " \
                              "constitutive models."
 
-    from spatialdata.spatialdb.GravityField import GravityField
     gravityField = pyre.inventory.facility("gravity_field",
-                                          factory=GravityField,
-                                          family="spatial_database")
+                                          family="spatial_database",
+                                          factory=NullComponent)
     gravityField.meta['tip'] = "Database used for gravity field."
 
     from pylith.perf.MemoryLogger import MemoryLogger
@@ -231,10 +230,10 @@ class Problem(PetscComponent):
     self.materials = self.inventory.materials
     self.bc = self.inventory.bc
     self.interfaces = self.inventory.interfaces
-    if self.inventory.useGravity:
-      self.gravityField = self.inventory.gravityField
-    else:
+    if isinstance(self.inventory.gravityField, NullComponent):
       self.gravityField = None
+    else:
+      self.gravityField = self.inventory.gravityField
     self.perfLogger = self.inventory.perfLogger
     return
 

@@ -106,9 +106,12 @@ namespace pylith {
        */
       const MPI_Comm comm(void) const;
     
-      /// Initialize the finite-element mesh.
-      void initialize(void);
-      
+      /** Initialize the finite-element mesh.
+       *
+       * @param normalizer Nondimensionalizer.
+       */
+      void nondimensionalize(const spatialdata::units::Nondimensional& normalizer);
+
       /** Print mesh to stdout.
        *
        * @param label Label for mesh.

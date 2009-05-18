@@ -82,36 +82,9 @@ class TestSolutionFields(unittest.TestCase):
     return
 
 
-  def test_createHistory(self):
-    """
-    Test createHistory().
-    """
-    fields = self.fields
-    fields.add("field A", "A");
-    fields.add("field B", "B");
-    fields.add("field C", "C");
-    
-    fields.createHistory(["field B", "field A", "field C"])
-    return
-
-
-  def test_shiftHistory(self):
-    """
-    Test shiftHistory().
-    """
-    fields = self.fields
-    fields.add("field A", "A");
-    fields.add("field B", "B");
-    fields.add("field C", "C");
-    
-    fields.createHistory(["field B", "field A", "field C"])
-    fields.shiftHistory()
-    return
-
-
   def test_fieldAdd(self):
     """
-    Test shiftHistory().
+    Test fieldAdd().
     """
     fields = self.fields
     fields.add("field A", "A");

@@ -51,15 +51,18 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;
+
   meshio::MeshIOAscii iohandler;
   iohandler.filename(_data->filename);
   iohandler.read(&mesh);
 
-  // Set coordinate system
+  // Set up coordinates
   spatialdata::geocoords::CSCart cs;
+  spatialdata::units::Nondimensional normalizer;
   cs.setSpaceDim(mesh.dimension());
   cs.initialize();
   mesh.coordsys(&cs);
+  mesh.nondimensionalize(normalizer);
 
   // Create submesh
   topology::SubMesh submesh(mesh, _data->bcLabel);
@@ -116,11 +119,13 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
   iohandler.filename(_data->filename);
   iohandler.read(&mesh);
 
-  // Set coordinate system
+  // Set up coordinates
   spatialdata::geocoords::CSCart cs;
+  spatialdata::units::Nondimensional normalizer;
   cs.setSpaceDim(mesh.dimension());
   cs.initialize();
   mesh.coordsys(&cs);
+  mesh.nondimensionalize(normalizer);
 
   // Adjust topology
   faults::FaultCohesiveKin fault;

@@ -227,7 +227,6 @@ class TestAbsorbingDampers(unittest.TestCase):
     fields.add("disp(t)", "displacement")
     fields.add("disp(t-dt)", "displacement")
     fields.solutionName("disp(t+dt)")
-    fields.createHistory(["disp(t+dt)", "disp(t)", "disp(t-dt)"])
 
     residual = fields.get("residual")
     residual.newSection(residual.VERTICES_FIELD, cs.spaceDim())

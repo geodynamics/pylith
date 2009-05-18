@@ -2,7 +2,7 @@
 SimpleDB {
   num-values = 2
   value-names =  density  vs
-  value-units =  none  none
+  value-units =  kg/m**3  m/s
   num-locs = 1
   data-dim = 0
   space-dim = 2

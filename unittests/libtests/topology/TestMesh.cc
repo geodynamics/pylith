@@ -15,7 +15,10 @@
 #include "TestMesh.hh" // Implementation of class methods
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestMesh );
@@ -127,19 +130,91 @@ pylith::topology::TestMesh::testComm(void)
 } // testComm
 
 // ----------------------------------------------------------------------
-// Test initialize().
+// Test nondimensionalize().
 void
-pylith::topology::TestMesh::testInitialize(void)
-{ // testInitialize
+pylith::topology::TestMesh::testNondimensionalize(void)
+{ // testNondimensionalizer
+  const double lengthScale = 2.0;
+  const int spaceDim = 2;
+  const int numVertices = 4;
+  const int coordinates[] = { 
+    -1.0, 0.0,
+    0.0, -1.0,
+    0.0, 1.0,
+    1.0, 0.0,
+  };
+
   Mesh mesh;
+  meshio::MeshIOAscii iohandler;
+  iohandler.filename("data/tri3.mesh");
+  iohandler.read(&mesh);
 
   spatialdata::geocoords::CSCart cs;
   cs.setSpaceDim(2);
-
   mesh.coordsys(&cs);
-  mesh.initialize();
+  spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(lengthScale);
+  mesh.nondimensionalize(normalizer);
 
-} // testInitialize
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const Mesh::SieveMesh::label_sequence::iterator verticesBegin =
+    vertices->begin();
+  const Mesh::SieveMesh::label_sequence::iterator verticesEnd =
+    vertices->end();
+  CPPUNIT_ASSERT_EQUAL(numVertices, int(vertices->size()));
+
+  // Check nondimensional coordinates
+  const ALE::Obj<Mesh::RealSection>& coordsField =
+    sieveMesh->getRealSection("coordinates");
+  CPPUNIT_ASSERT(!coordsField.isNull());
+  CPPUNIT_ASSERT_EQUAL(spaceDim, 
+		       coordsField->getFiberDimension(*verticesBegin));
+  int i = 0;
+  for(Mesh::SieveMesh::label_sequence::iterator v_iter = verticesBegin;
+      v_iter != verticesEnd;
+      ++v_iter) {
+    const double* coordsVertex = coordsField->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(0 != coordsVertex);
+    const double tolerance = 1.0e-06;
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      const double coordE = coordinates[i++] / lengthScale;
+      if (coordE < 1.0)
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(coordE, coordsVertex[iDim],
+				     tolerance);
+      else
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, coordsVertex[iDim]/coordE,
+				     tolerance);
+    } // for
+  } // for
+  
+  // Check dimensioned coordinates
+  const ALE::Obj<Mesh::RealSection>& coordsDimField =
+    sieveMesh->getRealSection("coordinates_dimensioned");
+  CPPUNIT_ASSERT(!coordsDimField.isNull());
+  CPPUNIT_ASSERT_EQUAL(spaceDim, 
+		       coordsDimField->getFiberDimension(*verticesBegin));
+  i = 0;
+  for(Mesh::SieveMesh::label_sequence::iterator v_iter = verticesBegin;
+      v_iter != verticesEnd;
+      ++v_iter) {
+    const double* coordsVertex = coordsDimField->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(0 != coordsVertex);
+    const double tolerance = 1.0e-06;
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      const double coordE = coordinates[i++];
+      if (coordE < 1.0)
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(coordE, coordsVertex[iDim],
+				     tolerance);
+      else
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, coordsVertex[iDim]/coordE,
+				     tolerance);
+    } // for
+  } // for
+} // testNondimensionalize
 
 
 // End of file 

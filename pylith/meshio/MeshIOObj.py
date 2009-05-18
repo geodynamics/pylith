@@ -46,7 +46,6 @@ class MeshIOObj(Component, ModuleMeshIO):
     self._info.log("Reading finite-element mesh")
 
     # Set flags
-    self.normalizer(normalizer)
     self.debug(debug)
     self.interpolate(interpolate)
 
@@ -59,10 +58,11 @@ class MeshIOObj(Component, ModuleMeshIO):
     mesh = Mesh()
     mesh.setComm(petsc_comm_world())
     mesh.coordsys(self.coordsys)
-    mesh.initialize()
 
     # Read mesh
     ModuleMeshIO.read(self, mesh)
+
+    mesh.nondimensionalize(normalizer)
     return mesh
 
 

@@ -85,66 +85,6 @@ pylith::topology::TestSolutionFields::testSolution(void)
 } // testSolution
 
 // ----------------------------------------------------------------------
-// Test createHistory().
-void
-pylith::topology::TestSolutionFields::testCreateHistory(void)
-{ // testCreateHistory
-  Mesh mesh;
-  _initialize(&mesh);
-  SolutionFields manager(mesh);
-
-  const char* labels[] = { "field A", "field B", "field C" };
-  const int totalSize = 3;
-  const int historySize = 2;
-
-  // Add fields
-  for (int i=0; i < totalSize; ++i)
-    manager.add(labels[i], "displacement");
-
-  manager.createHistory(labels, historySize);
-  for (int i=0; i < historySize; ++i)
-    CPPUNIT_ASSERT_EQUAL(std::string(labels[i]), manager._history[i]);
-} // testCreateHistory
-
-// ----------------------------------------------------------------------
-// Test shiftHistory().
-void
-pylith::topology::TestSolutionFields::testShiftHistory(void)
-{ // testShiftHistory
-  Mesh mesh;
-  _initialize(&mesh);
-  SolutionFields manager(mesh);
-
-  const char* fieldNames[] = { "field A", "field B" };
-  const int numFields = 2;
-  const int fiberDimA = 2;
-  const int fiberDimB = 3;
-
-  for (int i=0; i < numFields; ++i)
-    manager.add(fieldNames[i], "displacement");
-  manager.createHistory(fieldNames, numFields);
-
-  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
-  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
-  Field<Mesh>& fieldA = manager.get(fieldNames[0]);
-  Field<Mesh>& fieldB = manager.get(fieldNames[1]);
-  fieldA.newSection(vertices, fiberDimA);
-  fieldB.newSection(vertices, fiberDimB);
-
-  manager.shiftHistory();
-  const Field<Mesh>& testA = manager.get(fieldNames[0]);
-  const ALE::Obj<Mesh::RealSection>& sectionA = testA.section();
-  const Field<Mesh>& testB = manager.get(fieldNames[1]);
-  const ALE::Obj<Mesh::RealSection>& sectionB = testB.section();
-  CPPUNIT_ASSERT_EQUAL(fiberDimB, 
-		       sectionA->getFiberDimension(*(vertices->begin())));
-  CPPUNIT_ASSERT_EQUAL(fiberDimA, 
-		       sectionB->getFiberDimension(*(vertices->begin())));
-
-} // testShiftHistory
-
-// ----------------------------------------------------------------------
 void
 pylith::topology::TestSolutionFields::_initialize(Mesh* mesh) const
 { // _initialize

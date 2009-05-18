@@ -122,6 +122,7 @@ nobase_pkgpyexec_PYTHON = \
 	utils/CppData.py \
 	utils/EmptyBin.py \
 	utils/EventLogger.py \
+	utils/NullComponent.py \
 	utils/PetscComponent.py \
 	utils/PetscManager.py \
 	utils/VTKDataReader.py \

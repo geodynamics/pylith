@@ -39,8 +39,7 @@ class ElasticMaterial(Material):
     ## Python object for managing FaultCohesiveKin facilities and properties.
     ##
     ## \b Properties
-    ## @li \b use_initial_stress Use initial stress (true) or not (false).
-    ## @li \b use_initial_strain Use initial strain (true) or not (false).
+    ## @li None
     ##
     ## \b Facilities
     ## @li \b output Output manager associated with fault data.
@@ -49,26 +48,20 @@ class ElasticMaterial(Material):
 
     import pyre.inventory
 
-    useInitialStress = pyre.inventory.bool("use_initial_stress", default=False)
-    useInitialStress.meta['tip'] = "Use initial stress for material."
-
-    useInitialStrain = pyre.inventory.bool("use_initial_strain", default=False)
-    useInitialStrain.meta['tip'] = "Use initial strain for material."
-
     from pylith.meshio.OutputMatElastic import OutputMatElastic
     output = pyre.inventory.facility("output", family="output_manager",
                                      factory=OutputMatElastic)
     output.meta['tip'] = "Output manager for elastic material information."
 
-    from spatialdata.spatialdb.SimpleDB import SimpleDB
+    from pylith.utils.NullComponent import NullComponent
     dbInitialStress = pyre.inventory.facility("initial_stress_db",
                                               family="spatial_database",
-                                              factory=SimpleDB)
+                                              factory=NullComponent)
     dbInitialStress.meta['tip'] = "Database for initial stress."
 
     dbInitialStrain = pyre.inventory.facility("initial_strain_db",
                                               family="spatial_database",
-                                              factory=SimpleDB)
+                                              factory=NullComponent)
     dbInitialStrain.meta['tip'] = "Database for initial strain."
 
 
@@ -90,9 +83,10 @@ class ElasticMaterial(Material):
     """
     Material._configure(self)
     self.output = self.inventory.output
-    if self.inventory.useInitialStress:
+    from pylith.utils.NullComponent import NullComponent
+    if not isinstance(self.inventory.dbInitialStress, NullComponent):
       self.dbInitialStress(self.inventory.dbInitialStress)
-    if self.inventory.useInitialStrain:
+    if not isinstance(self.inventory.dbInitialStrain, NullComponent):
       self.dbInitialStrain(self.inventory.dbInitialStrain)
     return
 

@@ -35,7 +35,6 @@ class CellFilter(PetscComponent):
     Constructor.
     """
     PetscComponent.__init__(self, name, facility="cellfilter")
-    self.filter = None
     return
 
 
@@ -57,9 +56,10 @@ class CellFilter(PetscComponent):
 
 def output_cell_filter():
   """
-  Factory associated with MeshCellFilter.
+  Factory associated with CellFilter.
   """
-  return CellFilter()
+  # Abstract object (so return None).
+  return None
 
 
 # End of file 

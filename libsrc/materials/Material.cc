@@ -28,9 +28,12 @@
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 
+//#define PRECOMPUTE_GEOMETRY
+
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
+typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -104,6 +107,7 @@ pylith::materials::Material::initialize(
 
   // Get quadrature information
   const int numQuadPts = quadrature->numQuadPts();
+  const int numBasis = quadrature->numBasis();
   const int spaceDim = quadrature->spaceDim();
 
   // Get cells associated with material
@@ -126,6 +130,14 @@ pylith::materials::Material::initialize(
   _properties->zero();
   const ALE::Obj<RealSection>& propertiesSection = _properties->section();
   assert(!propertiesSection.isNull());
+
+#if !defined(PRECOMPUTE_GEOMETRY)
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    sieveMesh->getRealSection("coordinates");
+  RestrictVisitor coordsVisitor(*coordinates,
+				coordinatesCell.size(), &coordinatesCell[0]);
+#endif
 
   // Create arrays for querying.
   const int numDBProperties = _metadata.numDBProperties();
@@ -180,7 +192,13 @@ pylith::materials::Material::initialize(
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
+#if defined(PRECOMPUTE_GEOMETRY)
     quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
 
     const double_array& quadPtsNonDim = quadrature->quadPts();
     quadPtsGlobal = quadPtsNonDim;

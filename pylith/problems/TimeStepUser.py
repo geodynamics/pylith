@@ -144,6 +144,8 @@ class TimeStepUser(TimeStep):
         else:
           index -= 1
       nsteps += 1
+    if nsteps <= 0:
+      raise ValueError("No time steps found.")
     return nsteps
 
 

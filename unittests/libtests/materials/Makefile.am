@@ -76,7 +76,12 @@ noinst_HEADERS += \
 	data/MaxwellIsotropic3DTimeDepData.hh \
 	data/header.hh
 
-AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
+AM_CPPFLAGS = \
+	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
+	$(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
+
+testmaterials_LDFLAGS = \
+	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
 testmaterials_LDADD = \
 	-lcppunit -ldl \

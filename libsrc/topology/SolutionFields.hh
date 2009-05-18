@@ -46,55 +46,23 @@ public :
   /// Destructor.
   ~SolutionFields(void);
 
-  /** Set name of field for the current solution.
+  /** Set name of field used in the solve.
    *
    * @param name Name of field that holds the solution.
    */
   void solutionName(const char* name);
 
-  /** Get current solution field.
+  /** Get field used in solve.
    *
    * @returns Solution field.
    */
   const Field<Mesh>& solution(void) const;
 
-  /** Get current solution field.
+  /** Get field used in solve.
    *
    * @returns Solution field.
    */
   Field<Mesh>& solution(void);
-
-  /** Set name of field that will be used in the solve.
-   *
-   * @param name Name of field used in the solve.
-   */
-  void solveSolnName(const char* name);
-
-  /** Get field used in the solve.
-   *
-   * @returns Field used in the solve.
-   */
-  const Field<Mesh>& solveSoln(void) const;
-
-  /** Get field used in the solve.
-   *
-   * @returns Field used in the solve.
-   */
-  Field<Mesh>& solveSoln(void);
-
-  /** Create history manager for a subset of the managed fields.
-   *
-   * @param fields Fields in history (first is most recent).
-   * @param size Number of fields in history.
-   */
-  void createHistory(const char* const* fields,
-		     const int size);
-
-  /** Shift fields in history. Handles to fields are shifted so that
-   *  the most recent values become associated with the second most
-   *  recent item in the history, etc.
-   */
-  void shiftHistory(void);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
@@ -104,14 +72,6 @@ private :
   /// Name of field that corresponds to the "working" solution to the
   /// problem.
   std::string _solutionName;
-
-  /// Name of field used in the solve (solution of the solve).  This
-  /// may be an increment that is applied to the "working" solutio to
-  /// form the complete solution.
-  std::string _solveSolnName;
-
-  /// History manager for a subset of the fields
-  std::vector<std::string> _history;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

@@ -31,6 +31,8 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
+//#define PRECOMPUTE_GEOMETRY
+
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
@@ -102,7 +104,9 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
 
   // Compute geometry for quadrature operations.
   _quadrature->initializeGeometry();
+#if defined(PRECOMPUTE_GEOMETRY)
   _quadrature->computeGeometry(mesh, cells);
+#endif
 
   // Initialize material.
   _material->initialize(mesh, _quadrature);
@@ -200,18 +204,34 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get fields
-  const topology::Field<topology::Mesh>& solution = fields->solution();
-  const ALE::Obj<RealSection>& disp = solution.section();
-  assert(!disp.isNull());
-  topology::Mesh::RestrictVisitor dispVisitor(*disp, 
+  const topology::Field<topology::Mesh>& disp = fields->get("disp(t)");
+  const ALE::Obj<RealSection>& dispSection = disp.section();
+  assert(!dispSection.isNull());
+  topology::Mesh::RestrictVisitor dispVisitor(*dispSection, 
 					      dispCell.size(), &dispCell[0]);
+
+#if !defined(PRECOMPUTE_GEOMETRY)
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    sieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						coordinatesCell.size(),
+						&coordinatesCell[0]);
+#endif
 
   // Loop over cells
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Retrieve geometry information for current cell
+#if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
 
     // Restrict input fields to cell
     dispVisitor.clear();
@@ -410,12 +430,22 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get field
-  const topology::Field<topology::Mesh>& solution = fields->solution();
-  const ALE::Obj<RealSection>& disp = solution.section();
-  assert(!disp.isNull());
-  topology::Mesh::RestrictVisitor dispVisitor(*disp, 
+  const topology::Field<topology::Mesh>& disp = fields->get("disp(t)");
+  const ALE::Obj<RealSection>& dispSection = disp.section();
+  assert(!dispSection.isNull());
+  topology::Mesh::RestrictVisitor dispVisitor(*dispSection, 
 					      dispCell.size(), &dispCell[0]);
     
+#if !defined(PRECOMPUTE_GEOMETRY)
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    sieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						coordinatesCell.size(),
+						&coordinatesCell[0]);
+#endif
+
   const ALE::Obj<RealSection>& fieldSection = field->section();
   assert(!fieldSection.isNull());
 
@@ -424,7 +454,13 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
        c_iter != cellsEnd;
        ++c_iter) {
     // Retrieve geometry information for current cell
+#if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
 
     // Restrict input fields to cell
     dispVisitor.clear();

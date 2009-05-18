@@ -37,7 +37,6 @@ class CellFilterAvgSubMesh(CellFilter, ModuleCellFilterAvg):
     """
     CellFilter.__init__(self, name)
     ModuleCellFilterAvg.__init__(self)
-    self.filter = True
     return
 
 

@@ -40,20 +40,14 @@ Charles
 
 1. SNES
 
-  Cleanup SolutionFields.
-    Remove time history stuff. [TEST]
-    Replace solveSolnVec with solution. [TEST]
+  Cleanup SolutionFields. [full scale test]
 
   Power-law rheology
 
 2. Nondimensionalization
 
-  Add units to spatialdata. [UPDATE TESTING]
-
   Add Quadrature::computeGeometry(coordinatesCell)
     Use #define PRECOMPUTE_GEOMETRY [TEST]
-
-  MeshIO: coordinates and coordinates_dimensioned [UPDATE TESTING]
 
   DataWriteVTK needs dimensionalizer
 
@@ -95,6 +89,8 @@ Charles
     Gravity with faults, Neumann BC.
 
 4. Add missing unit tests
+
+    libtests/topology/TestMesh::testNondimensionalize()
 
     libtests/topology/Field add constraints to field in unit tests
       copy

@@ -76,12 +76,6 @@ public :
    */
   bool interpolate(void) const;
 
-  /** Set scales used to nondimensionalize mesh.
-   *
-   * @param dim Nondimensionalizer.
-   */
-  void normalizer(const spatialdata::units::Nondimensional& dim);
-
   /** Read mesh from file.
    *
    * @param mesh PyLith finite-element mesh.
@@ -193,7 +187,6 @@ protected :
 protected :
 
   topology::Mesh* _mesh; ///< Pointer to finite-element mesh.
-  spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer.
 
   bool _debug; ///< True to turn of mesh debugging output.
   bool _interpolate; ///< True if building intermediate topology elements.

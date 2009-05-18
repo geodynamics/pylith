@@ -60,12 +60,14 @@ class OutputManagerSubMesh(OutputManager, ModuleOutputManager):
     """
     Set members based using inventory.
     """
+    from pylith.utils.NullComponent import NullComponent
+
     OutputManager._configure(self)
     ModuleOutputManager.coordsys(self, self.inventory.coordsys)
     ModuleOutputManager.writer(self, self.inventory.writer)
-    if None != self.vertexFilter.filter:
+    if not isinstance(self.inventory.vertexFilter, NullComponent):
       ModuleOutputManager.vertexFilter(self, self.inventory.vertexFilter)
-    if None != self.cellFilter.filter:
+    if not isinstance(self.inventory.cellFilter, NullComponent):
       ModuleOutputManager.cellFilter(self, self.inventory.cellFilter)
     return
 

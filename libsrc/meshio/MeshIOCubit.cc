@@ -79,7 +79,7 @@ pylith::meshio::MeshIOCubit::_read(void)
       _orientCells(&cells, numCells, numCorners, meshDim);
       MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim,
 			     cells, numCells, numCorners, meshDim,
-			     _interpolate, *_normalizer);
+			     _interpolate);
       _setMaterials(materialIds);
       
       _readGroups(ncfile);
@@ -97,7 +97,7 @@ pylith::meshio::MeshIOCubit::_read(void)
   } else {
     MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim,
 			   cells, numCells, numCorners, meshDim,
-			   _interpolate, *_normalizer);
+			   _interpolate);
     _setMaterials(materialIds);
   }
   _distributeGroups();

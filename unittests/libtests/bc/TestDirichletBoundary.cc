@@ -23,6 +23,7 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
 #include "spatialdata/spatialdb/UniformDB.hh" // USES UniformDB
@@ -116,9 +117,11 @@ pylith::bc::TestDirichletBoundary::_initialize(topology::Mesh* mesh,
   iohandler.read(mesh);
 
   spatialdata::geocoords::CSCart cs;
+  spatialdata::units::Nondimensional normalizer;
   cs.setSpaceDim(mesh->dimension());
   cs.initialize();
   mesh->coordsys(&cs);
+  mesh->nondimensionalize(normalizer);
 
   spatialdata::spatialdb::SimpleDB db("TestDirichletBoundary initial");
   spatialdata::spatialdb::SimpleIOAscii dbIO;

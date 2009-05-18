@@ -28,6 +28,8 @@
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 
+//#define PRECOMPUTE_GEOMETRY
+
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
@@ -335,6 +337,19 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
   // Get quadrature information
   const int numQuadPts = quadrature->numQuadPts();
   const int spaceDim = quadrature->spaceDim();
+  const int numBasis = quadrature->numBasis();
+
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+
+#if !defined(PRECOMPUTE_GEOMETRY)
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    sieveMesh->getRealSection("coordinates");
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						coordinatesCell.size(),
+						&coordinatesCell[0]);
+#endif
 
   // Create arrays for querying
   const int tensorSize = _tensorSize;
@@ -342,8 +357,6 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
   double_array stressCell(numQuadPts*tensorSize);
 
   // Get cells associated with material
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", id());
   assert(!cells.isNull());
@@ -408,7 +421,13 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
+#if defined(PRECOMPUTE_GEOMETRY)
     quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
 
     // Dimensionalize coordinates for querying
     const double_array& quadPtsNonDim = quadrature->quadPts();
@@ -461,6 +480,19 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   // Get quadrature information
   const int numQuadPts = quadrature->numQuadPts();
   const int spaceDim = quadrature->spaceDim();
+  const int numBasis = quadrature->numBasis();
+
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+
+#if !defined(PRECOMPUTE_GEOMETRY)
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    sieveMesh->getRealSection("coordinates");
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						coordinatesCell.size(),
+						&coordinatesCell[0]);
+#endif
 
   // Create arrays for querying
   const int tensorSize = _tensorSize;
@@ -468,8 +500,6 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   double_array strainCell(numQuadPts*tensorSize);
 
   // Get cells associated with material
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", id());
   assert(!cells.isNull());
@@ -534,7 +564,13 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
+#if defined(PRECOMPUTE_GEOMETRY)
     quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
 
     // Dimensionalize coordinates for querying
     const double_array& quadPtsNonDim = quadrature->quadPts();

@@ -35,6 +35,8 @@
 #include <cassert> // USES assert()
 #include <cmath> // USES sqrt()
 
+//#define PRECOMPUTE_GEOMETRY
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestMaterial );
 
@@ -194,7 +196,9 @@ pylith::materials::TestMaterial::testInitialize(void)
 
   // Compute geometry for cells
   quadrature.initializeGeometry();
+#if defined(PRECOMPUTE_GEOMETRY)
   quadrature.computeGeometry(mesh, cells);
+#endif
 
   spatialdata::spatialdb::SimpleDB db;
   spatialdata::spatialdb::SimpleIOAscii dbIO;

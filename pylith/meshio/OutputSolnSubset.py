@@ -134,9 +134,10 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
     ModuleOutputSolnSubset.label(self, self.label)
     ModuleOutputSolnSubset.coordsys(self, self.inventory.coordsys)
     ModuleOutputSolnSubset.writer(self, self.inventory.writer)
-    if None != self.vertexFilter.filter:
+    from pylith.utils.NullComponent import NullComponent
+    if not isinstance(self.inventory.vertexFilter, NullComponent):
       ModuleOutputSolnSubset.vertexFilter(self, self.inventory.vertexFilter)
-    if None != self.cellFilter.filter:
+    if not isinstance(self.inventory.cellFilter, NullComponent):
       ModuleOutputSolnSubset.cellFilter(self, self.inventory.cellFilter)
     return
 

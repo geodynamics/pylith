@@ -152,7 +152,12 @@ noinst_HEADERS += \
 	data/NeumannDataTet4.hh \
 	data/NeumannDataHex8.hh
 
-AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
+AM_CPPFLAGS = \
+	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
+	$(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
+
+testbc_LDFLAGS = \
+	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
 testbc_LDADD = \
 	-lcppunit \
