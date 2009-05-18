@@ -11,6 +11,7 @@
 //
 
 #include "petsc.h"
+#include <Python.h>
 
 #include <cppunit/extensions/TestFactoryRegistry.h>
 
@@ -31,8 +32,13 @@ main(int argc,
 
   try {
     // Initialize PETSc
-    PetscErrorCode err = PetscInitialize(&argc, &argv, PETSC_NULL, PETSC_NULL);
+    PetscErrorCode err = PetscInitialize(&argc, &argv,
+					 PETSC_NULL, PETSC_NULL);
     CHKERRQ(err);
+
+    // Initialize Python (to eliminate need to initialize when
+    // parsing units in spatial databases).
+    Py_Initialize();
 
     // Create event manager and test controller
     CppUnit::TestResult controller;
@@ -53,9 +59,11 @@ main(int argc,
     CppUnit::TextOutputter outputter(&result, std::cerr);
     outputter.write();
 
+    // Finalize Python
+    Py_Finalize();
+
     // Finalize PETSc
-    err = PetscFinalize();
-    CHKERRQ(err);
+    err = PetscFinalize(); CHKERRQ(err);
   } catch (...) {
     abort();
   } // catch

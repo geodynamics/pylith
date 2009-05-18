@@ -91,14 +91,14 @@ pylith::problems::Formulation::updateSettings(topology::Jacobian* jacobian,
 // Reform system residual.
 void
 pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
-					      const PetscVec* tmpSolveSolnVec)
+					      const PetscVec* tmpSolutionVec)
 { // reformResidual
   assert(0 != _fields);
 
   // Update section view of field.
-  if (0 != tmpSolveSolnVec) {
-    topology::Field<topology::Mesh>& solveSoln = _fields->solveSoln();
-    solveSoln.scatterVectorToSection(*tmpSolveSolnVec);
+  if (0 != tmpSolutionVec) {
+    topology::Field<topology::Mesh>& solution = _fields->solution();
+    solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
 
   // Set residual to zero.
@@ -144,15 +144,15 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
 // ----------------------------------------------------------------------
 // Reform system Jacobian.
 void
-pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolveSolnVec)
+pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
 { // reformJacobian
   assert(0 != _jacobian);
   assert(0 != _fields);
 
   // Update section view of field.
-  if (0 != tmpSolveSolnVec) {
-    topology::Field<topology::Mesh>& solveSoln = _fields->solveSoln();
-    solveSoln.scatterVectorToSection(*tmpSolveSolnVec);
+  if (0 != tmpSolutionVec) {
+    topology::Field<topology::Mesh>& solution = _fields->solution();
+    solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
 
   // Set residual to zero.

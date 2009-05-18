@@ -25,6 +25,7 @@
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 #include "spatialdata/geocoords/geocoordsfwd.hh" // forward declarations
+#include "spatialdata/units/unitsfwd.hh" // forward declarations
 
 #include <petscmesh.hh> // HASA ALE::IMesh
 
@@ -149,8 +150,11 @@ public :
    */
   const MPI_Comm comm(void) const;
     
-  /// Initialize the finite-element mesh.
-  void initialize(void);
+  /** Initialize the finite-element mesh.
+   *
+   * @param normalizer Nondimensionalizer.
+   */
+  void nondimensionalize(const spatialdata::units::Nondimensional& normalizer);
 
   /** Print mesh to stdout.
    *

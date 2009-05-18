@@ -21,11 +21,15 @@
 
 #include "data/MeshData.hh"
 
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 #include <strings.h> // USES strcasecmp()
 #include <stdexcept> // USES std::logic_error
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
 // Get simple mesh for testing I/O.
@@ -105,6 +109,14 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
     sieveMesh->allocate(groupField);
   } // for
  
+    // Set coordinate system
+  spatialdata::geocoords::CSCart cs;
+  spatialdata::units::Nondimensional normalizer;
+  cs.setSpaceDim(data.spaceDim);
+  cs.initialize();
+  mesh->coordsys(&cs);
+  mesh->nondimensionalize(normalizer);
+
   return mesh;
 } // _createMesh
 
@@ -125,7 +137,7 @@ pylith::meshio::TestMeshIO::_checkVals(const topology::Mesh& mesh,
   // Check vertices
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
-  const ALE::Obj<SieveMesh::real_section_type>& coordsField =
+  const ALE::Obj<RealSection>& coordsField =
     sieveMesh->getRealSection("coordinates");
   const int numVertices = vertices->size();
   CPPUNIT_ASSERT(!vertices.isNull());
@@ -139,8 +151,7 @@ pylith::meshio::TestMeshIO::_checkVals(const topology::Mesh& mesh,
 	vertices->begin();
       v_iter != vertices->end();
       ++v_iter) {
-    const SieveMesh::real_section_type::value_type *vertexCoords = 
-      coordsField->restrictPoint(*v_iter);
+    const double* vertexCoords = coordsField->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != vertexCoords);
     const double tolerance = 1.0e-06;
     for (int iDim=0; iDim < spaceDim; ++iDim)

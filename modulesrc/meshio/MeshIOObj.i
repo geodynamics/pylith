@@ -71,12 +71,6 @@ namespace pylith {
        */
       bool interpolate(void) const;
       
-      /** Set scales used to nondimensionalize mesh.
-       *
-       * @param dim Nondimensionalizer.
-       */
-      void normalizer(const spatialdata::units::Nondimensional& dim);
-      
       /** Read mesh from file.
        *
        * @param mesh PyLith finite-element mesh.

@@ -345,9 +345,9 @@ class TestFaultCohesiveKin(unittest.TestCase):
     from pylith.topology.SolutionFields import SolutionFields
     fields = SolutionFields(mesh)
     fields.add("residual", "residual")
-    fields.add("solution", "displacement")
-    fields.add("disp", "displacement")
-    fields.solutionName("solution")
+    fields.add("dispIncr(t->t+dt)", "displacement_increment")
+    fields.add("disp(t)", "displacement")
+    fields.solutionName("dispIncr(t->t+dt)")
     residual = fields.get("residual")
     residual.newSection(residual.VERTICES_FIELD, cs.spaceDim())
     residual.allocate()

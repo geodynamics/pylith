@@ -15,6 +15,8 @@
 #include "Mesh.hh" // implementation of class methods
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/utils/array.hh" // USES double_array
 
 // ----------------------------------------------------------------------
 // Default constructor
@@ -68,11 +70,56 @@ pylith::topology::Mesh::coordsys(const spatialdata::geocoords::CoordSys* cs)
 } // coordsys
 
 // ----------------------------------------------------------------------
-// Initialize the finite-element mesh.
+// Nondimensionalizer the finite-element mesh.
 void 
-pylith::topology::Mesh::initialize(void)
+pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimensional& normalizer)
 { // initialize
-} // initialize
+  // Get coordinates (currently dimensioned).
+  assert(!_mesh.isNull());
+  const ALE::Obj<RealSection>& coordsSection =
+    _mesh->getRealSection("coordinates");
+  assert(!coordsSection.isNull());
+
+  // Get field for dimensioned coordinates.
+  const ALE::Obj<RealSection>& coordsDimSection =
+    _mesh->getRealSection("coordinates_dimensioned");
+  assert(!coordsDimSection.isNull());
+  coordsDimSection->setAtlas(coordsSection->getAtlas());
+  coordsDimSection->allocateStorage();
+  coordsDimSection->setBC(coordsSection->getBC());
+
+  const double lengthScale = normalizer.lengthScale();
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+    _mesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const SieveMesh::label_sequence::iterator verticesBegin = 
+    vertices->begin();
+  const SieveMesh::label_sequence::iterator verticesEnd = 
+    vertices->end();
+
+  assert(0 != _coordsys);
+  const int spaceDim = _coordsys->spaceDim();
+  double_array coordsVertex(spaceDim);
+  double_array coordsDimVertex(spaceDim);
+
+  int i = 0;
+  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+      v_iter != verticesEnd;
+      ++v_iter) {
+    coordsSection->restrictPoint(*v_iter,
+			       &coordsVertex[0], coordsVertex.size());
+    coordsDimSection->restrictPoint(*v_iter, &coordsDimVertex[0],
+				  coordsDimVertex.size());
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      coordsDimVertex[iDim] = coordsVertex[iDim];
+
+    // Nondimensionalize original coordinates.
+    normalizer.nondimensionalize(&coordsVertex[0], spaceDim, lengthScale);
+
+    coordsSection->updatePoint(*v_iter, &coordsVertex[0]);
+    coordsDimSection->updatePoint(*v_iter, &coordsDimVertex[0]);
+  } // for
+} // nondimensionalize
 
 // ----------------------------------------------------------------------
 // Return the names of all vertex groups.

@@ -94,7 +94,7 @@ class Implicit(Formulation):
     self.fields.add("dispIncr(t->t+dt)", "displacement increment")
     self.fields.add("residual", "residual")
     self.fields.copyLayout("disp(t)")
-    self.fields.solveSolnName("dispIncr(t->t+dt)")
+    self.fields.solutionName("dispIncr(t->t+dt)")
 
     # Set fields to zero
     disp = self.fields.get("disp(t)")
@@ -178,7 +178,7 @@ class Implicit(Formulation):
     """
     Advance to next time step.
     """
-    dispIncr = self.fields.solveSoln()
+    dispIncr = self.fields.solution()
     dispIncr.zero()
 
     ### NONLINEAR: This moves under SNES control as IntegrateResidual()

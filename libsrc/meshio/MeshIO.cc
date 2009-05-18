@@ -17,6 +17,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/array.hh" // USES double_array, int_array
 
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "Selection.hh" // USES boundary()
@@ -34,7 +35,6 @@ typedef pylith::topology::Mesh::IntSection IntSection;
 // Constructor
 pylith::meshio::MeshIO::MeshIO(void) :
   _mesh(0),
-  _normalizer(new spatialdata::units::Nondimensional),
   _debug(false),
   _interpolate(false)
 { // constructor
@@ -44,7 +44,6 @@ pylith::meshio::MeshIO::MeshIO(void) :
 // Destructor
 pylith::meshio::MeshIO::~MeshIO(void)
 { // destructor
-  delete _normalizer; _normalizer = 0;
 } // destructor
   
 // ----------------------------------------------------------------------
@@ -56,18 +55,6 @@ pylith::meshio::MeshIO::getMeshDim(void) const
 } // getMeshDim
 
 // ----------------------------------------------------------------------
-// Set scales used to nondimensionalize mesh.
-void
-pylith::meshio::MeshIO::normalizer(
-			       const spatialdata::units::Nondimensional& dim)
-{ // normalizer
-  if (0 == _normalizer)
-    _normalizer = new spatialdata::units::Nondimensional(dim);
-  else
-    *_normalizer = dim;
-} // normalizer
-
-// ----------------------------------------------------------------------
 // Read mesh from file.
 void 
 pylith::meshio::MeshIO::read(topology::Mesh* mesh)
@@ -77,6 +64,7 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh)
   _mesh = mesh;
   _mesh->debug(_debug);
   _read();
+
   _mesh = 0;
 } // read
 
@@ -115,6 +103,8 @@ pylith::meshio::MeshIO::_getVertices(double_array* coordinates,
   const SieveMesh::label_sequence::iterator verticesEnd = 
     vertices->end();
   const ALE::Obj<RealSection>& coordsField =
+    sieveMesh->hasRealSection("coordinates_dimensioned") ?
+    sieveMesh->getRealSection("coordinates_dimensioned") :
     sieveMesh->getRealSection("coordinates");
   assert(!coordsField.isNull());
 
@@ -128,7 +118,7 @@ pylith::meshio::MeshIO::_getVertices(double_array* coordinates,
   coordinates->resize(size);
 
   int i = 0;
-  for(SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
       v_iter != verticesEnd;
       ++v_iter) {
     const RealSection::value_type *vertexCoords = 
@@ -136,11 +126,6 @@ pylith::meshio::MeshIO::_getVertices(double_array* coordinates,
     for (int iDim=0; iDim < *spaceDim; ++iDim)
       (*coordinates)[i++] = vertexCoords[iDim];
   } // for
-
-  assert(0 != _normalizer);
-  const double lengthScale = _normalizer->lengthScale();
-  _normalizer->dimensionalize(&(*coordinates)[0], coordinates->size(),
-			      lengthScale);
 } // _getVertices
 
 // ----------------------------------------------------------------------

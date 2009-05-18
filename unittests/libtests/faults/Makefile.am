@@ -185,7 +185,12 @@ noinst_HEADERS += \
 	data/CohesiveKinSrcsDataTet4.hh \
 	data/CohesiveKinSrcsDataHex8.hh
 
-AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
+AM_CPPFLAGS = \
+	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
+	$(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
+
+testfaults_LDFLAGS = \
+	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
 testfaults_LDADD = \
 	-lcppunit -ldl \

@@ -34,6 +34,8 @@
 
 #include <cstring> // USES memcpy()
 
+//#define PRECOMPUTE_GEOMETRY
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticMaterial );
 
@@ -672,9 +674,11 @@ pylith::materials::TestElasticMaterial::_initialize(
 
   // Set up coordinates
   spatialdata::geocoords::CSCart cs;
+  spatialdata::units::Nondimensional normalizer;
   cs.setSpaceDim(mesh->dimension());
   cs.initialize();
   mesh->coordsys(&cs);
+  mesh->nondimensionalize(normalizer);
 
   // Setup quadrature
   feassemble::Quadrature<topology::Mesh> quadrature;
@@ -711,7 +715,9 @@ pylith::materials::TestElasticMaterial::_initialize(
 
   // Compute geometry for cells
   quadrature.initializeGeometry();
+#if defined(PRECOMPUTE_GEOMETRY)
   quadrature.computeGeometry(*mesh, cells);
+#endif
 
   spatialdata::spatialdb::SimpleDB db;
   spatialdata::spatialdb::SimpleIOAscii dbIO;
@@ -731,8 +737,6 @@ pylith::materials::TestElasticMaterial::_initialize(
   dbStrain.ioHandler(&dbIOStrain);
   dbStrain.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
   
-  spatialdata::units::Nondimensional normalizer;
-
   material->dbProperties(&db);
   material->id(materialId);
   material->label("my_material");

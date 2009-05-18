@@ -39,8 +39,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
 				       const int numCells,
 				       const int numCorners,
 				       const int meshDim,
-				       const bool interpolate,
-				       const spatialdata::units::Nondimensional& normalizer)
+				       const bool interpolate)
 { // buildMesh
   assert(0 != mesh);
 
@@ -174,10 +173,6 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
     sieveMesh->stratify();
     logger.stagePop();
   } // if/else
-
-  const double lengthScale = normalizer.lengthScale();
-  normalizer.nondimensionalize(&(*coordinates)[0], coordinates->size(),
-			       lengthScale);
 
   logger.stagePush("MeshCoordinates");
   ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 

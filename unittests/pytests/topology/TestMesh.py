@@ -122,19 +122,6 @@ class TestMesh(unittest.TestCase):
     return
 
 
-  def test_initialize(self):
-    """
-    Test initialize().
-    """
-    from spatialdata.geocoords.CSCart import CSCart
-    cs = CSCart()
-
-    mesh = Mesh()
-    mesh.coordsys(cs)
-    mesh.initialize()
-    return
-
-
   def test_view(self):
     """
     Test view().

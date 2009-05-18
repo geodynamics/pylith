@@ -54,8 +54,6 @@ pylith::meshio::MeshIOAscii::~MeshIOAscii(void)
 void
 pylith::meshio::MeshIOAscii::_read(void)
 { // _read
-  assert(0 != _normalizer);
-
   MPI_Comm comm = _mesh->comm();
   int rank = 0;
   int meshDim = 0;
@@ -141,7 +139,7 @@ pylith::meshio::MeshIOAscii::_read(void)
 	  // Can now build mesh
 	  MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim,
 				 cells, numCells, numCorners, meshDim,
-				 _interpolate, *_normalizer);
+				 _interpolate);
 	  _setMaterials(materialIds);
 	  builtMesh = true;
 	} // if
@@ -169,7 +167,7 @@ pylith::meshio::MeshIOAscii::_read(void)
   } else {
     MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim,
 			   cells, numCells, numCorners, meshDim,
-			   _interpolate, *_normalizer);
+			   _interpolate);
     _setMaterials(materialIds);
   } // if/else
   _distributeGroups();

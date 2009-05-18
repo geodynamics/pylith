@@ -182,13 +182,14 @@ class Formulation(PetscComponent, ModuleFormulation):
     self.fields = SolutionFields(self.mesh)
     self._debug.log(resourceUsageString())
 
-    if self.gravityField != None:
+    if not self.gravityField is None:
       self._info.log("Initializing gravity field.")
       self.gravityField.initialize()
 
     self._info.log("Initializing integrators.")
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
-      integrator.gravityField = self.gravityField
+      if not self.gravityField is None:
+        integrator.gravityField(self.gravityField)
       integrator.initialize(totalTime, numTimeSteps, normalizer)
     ModuleFormulation.meshIntegrators(self, self.integratorsMesh)
     ModuleFormulation.submeshIntegrators(self, self.integratorsSubMesh)

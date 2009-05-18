@@ -34,6 +34,8 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
+//#define PRECOMPUTE_GEOMETRY
+
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
@@ -180,6 +182,14 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   topology::Mesh::UpdateAddVisitor residualVisitor(*residualSection,
 						   &_cellVector[0]);
 
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    sieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						coordinatesCell.size(),
+						&coordinatesCell[0]);
+
   assert(0 != _normalizer);
   const double lengthScale = _normalizer->lengthScale();
   const double gravityScale = 
@@ -199,7 +209,13 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
        ++c_iter) {
     // Compute geometry information for current cell
     _logger->eventBegin(geometryEvent);
+#if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
     _logger->eventEnd(geometryEvent);
 
     // Get state variables for cell.
@@ -332,6 +348,14 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
 		  (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
 			    sieveMesh->depth())*spaceDim);
 
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    sieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						coordinatesCell.size(),
+						&coordinatesCell[0]);
+
   _logger->eventEnd(setupEvent);
 
   // Loop over cells
@@ -340,7 +364,13 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
        ++c_iter) {
     // Compute geometry information for current cell
     _logger->eventBegin(geometryEvent);
+#if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
     _logger->eventEnd(geometryEvent);
 
     // Get state variables for cell.

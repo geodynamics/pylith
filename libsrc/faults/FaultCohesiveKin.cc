@@ -39,6 +39,8 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
+//#define PRECOMPUTE_GEOMETRY
+
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
@@ -145,7 +147,9 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
   const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
   _quadrature->initializeGeometry();
+#if defined(PRECOMPUTE_GEOMETRY)
   _quadrature->computeGeometry(*_faultMesh, cells);
+#endif
 
   // Compute orientation at vertices in fault mesh.
   _calcOrientation(upDir, normalDir);
@@ -196,7 +200,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   // Allocate vectors for cell values
   double_array orientationCell(numConstraintVert*orientationSize);
   double_array stiffnessCell(numConstraintVert);
-  double_array solutionCell(numCorners*spaceDim);
+  double_array dispTCell(numCorners*spaceDim);
   double_array residualCell(numCorners*spaceDim);
 
   // Tributary area for the current for each vertex.
@@ -242,25 +246,40 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   topology::Mesh::RestrictVisitor areaVisitor(*areaSection,
 					      areaCell.size(), &areaCell[0]);
 
-  topology::Field<topology::Mesh>& solution = fields->solution();
-  const ALE::Obj<RealSection>& solutionSection = solution.section();
-  assert(!solutionSection.isNull());  
-  topology::Mesh::RestrictVisitor solutionVisitor(*solutionSection,
-						  solutionCell.size(),
-						  &solutionCell[0]);
+  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
+  const ALE::Obj<RealSection>& dispTSection = dispT.section();
+  assert(!dispTSection.isNull());  
+  topology::Mesh::RestrictVisitor dispTVisitor(*dispTSection,
+					       dispTCell.size(), 
+					       &dispTCell[0]);
 
   const ALE::Obj<RealSection>& residualSection = residual.section();
   topology::Mesh::UpdateAddVisitor residualVisitor(*residualSection,
 						   &residualCell[0]);
 
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    faultSieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						coordinatesCell.size(),
+						&coordinatesCell[0]);
+
   for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
     const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
-    _quadrature->retrieveGeometry(c_fault);
     areaVertexCell = 0.0;
     residualCell = 0.0;
 
+    // Compute geometry information for current cell
+#if defined(PRECOMPUTE_GEOMETRY)
+    _quadrature->retrieveGeometry(c_fault);
+#else
+    coordsVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, c_fault);
+#endif
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
     const double_array& jacobianDet = _quadrature->jacobianDet();
@@ -286,9 +305,9 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     areaVisitor.clear();
     faultSieveMesh->restrictClosure(c_fault, areaVisitor);
     
-    // Get solution at cohesive cell's vertices.
-    solutionVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, solutionVisitor);
+    // Get disp(t) at cohesive cell's vertices.
+    dispTVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispTVisitor);
     
     for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
       // Blocks in cell matrix associated with normal cohesive
@@ -311,7 +330,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
       for (int iDim=0; iDim < spaceDim; ++iDim) {
 	for (int kDim=0; kDim < spaceDim; ++kDim)
 	  residualCell[indexI*spaceDim+iDim] -=
-	    solutionCell[indexK*spaceDim+kDim] * 
+	    dispTCell[indexK*spaceDim+kDim] * 
 	    -orientationVertex[kDim*spaceDim+iDim] * wt;
       } // for
       
@@ -319,7 +338,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
       for (int jDim=0; jDim < spaceDim; ++jDim) {
 	for (int kDim=0; kDim < spaceDim; ++kDim)
 	  residualCell[indexJ*spaceDim+jDim] -=
-	    solutionCell[indexK*spaceDim+kDim] * 
+	    dispTCell[indexK*spaceDim+kDim] * 
 	    orientationVertex[kDim*spaceDim+jDim] * wt;
       } // for
     } // for
@@ -333,7 +352,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
       std::cout << "  slip["<<i<<"]: " << cellSlip[i] << std::endl;
     }
     for(int i = 0; i < numCorners*spaceDim; ++i) {
-      std::cout << "  soln["<<i<<"]: " << solutionCell[i] << std::endl;
+      std::cout << "  soln["<<i<<"]: " << dispTCell[i] << std::endl;
     }
     for(int i = 0; i < numCorners*spaceDim; ++i) {
       std::cout << "  v["<<i<<"]: " << residualCell[i] << std::endl;
@@ -743,9 +762,9 @@ pylith::faults::FaultCohesiveKin::vertexField(
 
   } else if (0 == strcasecmp("traction_change", name)) {
     assert(0 != fields);
-    const topology::Field<topology::Mesh>& solution = fields->solution();
+    const topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
     _allocateBufferVectorField();
-    _calcTractionsChange(_bufferVectorField, solution);
+    _calcTractionsChange(_bufferVectorField, dispT);
     _bufferVectorField->label("traction_change");
     return *_bufferVectorField;
 
@@ -828,7 +847,7 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double upDir[3],
   orientation.allocate();
   orientation.zero();
   
-  // Get fault cells (1 dimension lower than top-level cells)
+  // Get fault cells.
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
     faultSieveMesh->heightStratum(0);
   assert(!cells.isNull());
@@ -1047,7 +1066,6 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   assert(quadWts.size() == numQuadPts);
   double jacobianDet = 0;
   double_array areaCell(numBasis);
-  double_array verticesCell(numBasis*spaceDim);
 
   // Get vertices in fault mesh.
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
@@ -1068,6 +1086,14 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   assert(!areaSection.isNull());
   topology::Mesh::UpdateAddVisitor areaVisitor(*areaSection, &areaCell[0]);  
   
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    faultSieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						coordinatesCell.size(),
+						&coordinatesCell[0]);
+
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
     faultSieveMesh->heightStratum(0);
   assert(!cells.isNull());
@@ -1075,12 +1101,20 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Loop over cells in fault mesh, compute area
-  for(SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
+  for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
       c_iter != cellsEnd;
       ++c_iter) {
-    _quadrature->retrieveGeometry(*c_iter);
     areaCell = 0.0;
     
+    // Compute geometry information for current cell
+#if defined(PRECOMPUTE_GEOMETRY)
+    _quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
+
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
     const double_array& jacobianDet = _quadrature->jacobianDet();
@@ -1115,14 +1149,14 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
 void
 pylith::faults::FaultCohesiveKin::_calcTractionsChange(
 			     topology::Field<topology::SubMesh>* tractions,
-			     const topology::Field<topology::Mesh>& solution)
+			     const topology::Field<topology::Mesh>& dispT)
 { // _calcTractionsChange
   assert(0 != tractions);
   assert(0 != _faultMesh);
   assert(0 != _fields);
 
   // Get vertices from mesh of domain.
-  const ALE::Obj<SieveMesh>& sieveMesh = solution.mesh().sieveMesh();
+  const ALE::Obj<SieveMesh>& sieveMesh = dispT.mesh().sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
@@ -1145,8 +1179,8 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   const ALE::Obj<RealSection>& areaSection = 
     _fields->get("area").section();
   assert(!areaSection.isNull());
-  const ALE::Obj<RealSection>& solutionSection = solution.section();
-  assert(!solutionSection.isNull());  
+  const ALE::Obj<RealSection>& dispTSection = dispT.section();
+  assert(!dispTSection.isNull());  
 
   const int numFaultVertices = fvertices->size();
   Mesh::renumbering_type& renumbering = faultSieveMesh->getRenumbering();
@@ -1196,13 +1230,13 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
     if (renumbering.find(*v_iter) != renumberingEnd) {
       const int vertexMesh = *v_iter;
       const int vertexFault = renumbering[*v_iter];
-      assert(fiberDim == solutionSection->getFiberDimension(vertexMesh));
+      assert(fiberDim == dispTSection->getFiberDimension(vertexMesh));
       assert(fiberDim == tractionsSection->getFiberDimension(vertexFault));
       assert(1 == stiffnessSection->getFiberDimension(vertexFault));
       assert(1 == areaSection->getFiberDimension(vertexFault));
 
-      const double* solutionVertex = solutionSection->restrictPoint(vertexMesh);
-      assert(0 != solutionVertex);
+      const double* dispTVertex = dispTSection->restrictPoint(vertexMesh);
+      assert(0 != dispTVertex);
       const double* stiffnessVertex = stiffnessSection->restrictPoint(vertexFault);
       assert(0 != stiffnessVertex);
       const double* areaVertex = areaSection->restrictPoint(vertexFault);
@@ -1210,7 +1244,7 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
 
       const double scale = stiffnessVertex[0] / areaVertex[0];
       for (int i=0; i < fiberDim; ++i)
-	tractionsVertex[i] = solutionVertex[i] * scale;
+	tractionsVertex[i] = dispTVertex[i] * scale;
 
       tractionsSection->updatePoint(vertexFault, &tractionsVertex[0]);
     } // if

@@ -18,6 +18,7 @@
 ## Factory: output_manager
 
 from pylith.utils.PetscComponent import PetscComponent
+from pylith.utils.NullComponent import NullComponent
 
 # OutputManager class
 class OutputManager(PetscComponent):
@@ -59,16 +60,14 @@ class OutputManager(PetscComponent):
                                      factory=CSCart)
   coordsys.meta['tip'] = "Coordinate system for output."
   
-  from VertexFilter import VertexFilter
   vertexFilter = pyre.inventory.facility("vertex_filter",
-                                         factory=VertexFilter,
-                                         family="output_vertex_filter")
+                                         family="output_vertex_filter",
+                                         factory=NullComponent)
   vertexFilter.meta['tip'] = "Filter for vertex data."
   
-  from CellFilter import CellFilter
   cellFilter = pyre.inventory.facility("cell_filter",
-                                       factory=CellFilter,
-                                       family="output_cell_filter")
+                                       family="output_cell_filter",
+                                       factory=NullComponent)
   cellFilter.meta['tip'] = "Filter for cell data."
   
 
@@ -140,7 +139,8 @@ class OutputManager(PetscComponent):
       raise ValueError, "Coordinate system for output is unknown."
     self.coordsys.initialize()
 
-    self.cellFilter.initialize(quadrature)
+    if not isinstance(self.inventory.cellFilter, NullComponent):
+      self.cellFilter.initialize(quadrature)
     self.writer.initialize(normalizer)
 
     self._logger.eventEnd(logEvent)
@@ -240,6 +240,7 @@ class OutputManager(PetscComponent):
     """
     PetscComponent._configure(self)
     return
+
 
   def _createModuleObj(self):
     """

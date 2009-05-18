@@ -74,7 +74,7 @@ class Explicit(Formulation):
     self.fields.add("disp(t-dt)", "displacement")
     self.fields.add("residual", "residual")
     self.fields.copyLayout("disp(t)")
-    self.fields.solveSolnName("dispIncr(t->t+dt)")
+    self.fields.solutionName("dispIncr(t->t+dt)")
     self._debug.log(resourceUsageString())
 
     # Set fields to zero

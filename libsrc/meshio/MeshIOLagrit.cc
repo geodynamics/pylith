@@ -75,7 +75,7 @@ pylith::meshio::MeshIOLagrit::_read(void)
   }
   MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim,
 			 cells, numCells, numCorners, meshDim,
-			 _interpolate, *_normalizer);
+			 _interpolate);
   _setMaterials(materialIds);
 
   if (0 == rank) {

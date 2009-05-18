@@ -283,9 +283,11 @@ pylith::bc::TestDirichletBCMulti::_initialize(topology::Mesh* mesh,
   iohandler.read(mesh);
 
   spatialdata::geocoords::CSCart cs;
+  spatialdata::units::Nondimensional normalizer;
   cs.setSpaceDim(mesh->dimension());
   cs.initialize();
   mesh->coordsys(&cs);
+  mesh->nondimensionalize(normalizer);
 
   // Setup boundary condition A
   spatialdata::spatialdb::SimpleDB db("TestDirichletBCMulti initial");

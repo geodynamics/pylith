@@ -51,7 +51,6 @@ class Material(Component):
     ## \b Properties
     ## @li \b id Material identifier (from mesh generator)
     ## @li \b name Name of material
-    ## @li \b use_initial_state Use initial state (true) or not (false).
     ##
     ## \b Facilities
     ## @li \b db Database of material property parameters
@@ -59,9 +58,6 @@ class Material(Component):
     ## @li \b initial_state_db Database for initial state.
 
     import pyre.inventory
-
-    useInitialState = pyre.inventory.bool("use_initial_state", default=False)
-    useInitialState.meta['tip'] = "Use initial state for material."
 
     id = pyre.inventory.int("id", default=0)
     id.meta['tip'] = "Material identifier (from mesh generator)."
@@ -75,9 +71,10 @@ class Material(Component):
                                            factory=SimpleDB)
     dbProperties.meta['tip'] = "Database for physical property parameters."
 
+    from pylith.utils.NullComponent import NullComponent
     dbInitialState = pyre.inventory.facility("initial_state_db",
                                            family="spatial_database",
-                                           factory=SimpleDB)
+                                           factory=NullComponent)
     dbInitialState.meta['tip'] = "Database for initial state variables."
 
     from pylith.feassemble.Quadrature import MeshQuadrature
@@ -149,7 +146,8 @@ class Material(Component):
     self.id(self.inventory.id)
     self.label(self.inventory.label)
     self.dbProperties(self.inventory.dbProperties)
-    if self.inventory.useInitialState:
+    from pylith.utils.NullComponent import NullComponent
+    if not isinstance(self.inventory.dbInitialState, NullComponent):
       self.dbInitialState(self.inventory.dbInitialState)
 
     self.quadrature = self.inventory.quadrature

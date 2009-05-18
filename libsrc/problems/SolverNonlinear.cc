@@ -83,19 +83,19 @@ pylith::problems::SolverNonlinear::initialize(
 // Solve the system.
 void
 pylith::problems::SolverNonlinear::solve(
-			      topology::Field<topology::Mesh>* solveSoln,
+			      topology::Field<topology::Mesh>* solution,
 			      const topology::Jacobian& jacobian,
 			      const topology::Field<topology::Mesh>& residual)
 { // solve
-  assert(0 != solveSoln);
+  assert(0 != solution);
 
   PetscErrorCode err = 0;
 
-  const PetscVec solveSolnVec = solveSoln->vector();
-  err = SNESSolve(_snes, PETSC_NULL, solveSolnVec); CHECK_PETSC_ERROR(err);
+  const PetscVec solutionVec = solution->vector();
+  err = SNESSolve(_snes, PETSC_NULL, solutionVec); CHECK_PETSC_ERROR(err);
   
   // Update section view of field.
-  solveSoln->scatterVectorToSection();
+  solution->scatterVectorToSection();
 } // solve
 
 // ----------------------------------------------------------------------

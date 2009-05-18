@@ -39,7 +39,6 @@ class VertexFilter(PetscComponent):
     Constructor.
     """
     PetscComponent.__init__(self, name, facility="vertexfilter")
-    self.filter = None
     return
 
 
@@ -63,7 +62,8 @@ def output_vertex_filter():
   """
   Factory associated with VertexFilter.
   """
-  return VertexFilter()
+  # Abstract object (so return None).
+  return None
 
 
 # End of file 
