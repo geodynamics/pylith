@@ -7,7 +7,7 @@
 SimpleDB {
   num-values = 6 // number of stress components
   value-names =  stress_xx stress_yy stress_zz stress_xy stress_yz stress_xz // names of the stress components
-  value-units =  Pa Pa Pa Pa Pa Pa // units (conversions not supported)
+  value-units =  Pa Pa Pa Pa Pa Pa // units
   num-locs = 4 // number of locations: 1 value at the mid-depth for each
                // layer of elements.
   data-dim = 1

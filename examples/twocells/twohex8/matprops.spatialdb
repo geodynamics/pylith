@@ -13,7 +13,7 @@ SimpleDB {
   value-names =  density vs vp viscosity
 
   // These are the units used to specify density, vs, and vp.
-  value-units =  kg/m^3  m/s  m/s  Pa*s
+  value-units =  kg/m**3  m/s  m/s  Pa*s
 
   // Values are only specified at a single point since they are constant
   // throughout the mesh.
