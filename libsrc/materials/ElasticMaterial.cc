@@ -367,6 +367,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
   // Create field to hold initial stress state.
   delete _initialStress; _initialStress = 0;
   _initialStress = new topology::Field<topology::Mesh>(mesh);
+  _initialStress->label("initial stress");
   assert(0 != _initialStress);
   const int fiberDim = numQuadPts * tensorSize;
   assert(fiberDim > 0);
@@ -510,6 +511,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   // Create field to hold initial strain state.
   delete _initialStrain; _initialStrain = 0;
   _initialStrain = new topology::Field<topology::Mesh>(mesh);
+  _initialStrain->label("initial stress");
   assert(0 != _initialStrain);
   const int fiberDim = numQuadPts * tensorSize;
   assert(fiberDim > 0);

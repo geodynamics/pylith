@@ -80,7 +80,7 @@ template<typename mesh_type>
 int
 pylith::topology::Field<mesh_type>::chartSize(void) const
 { // spaceDim
-  return _section->getChart().size();
+  return _section.isNull() ? 0 : _section->getChart().size();
 } // spaceDim
 
 // ----------------------------------------------------------------------
@@ -89,7 +89,7 @@ template<typename mesh_type>
 int
 pylith::topology::Field<mesh_type>::size(void) const
 { // spaceDim
-  return _section->size();
+  return _section.isNull() ? 0 : _section->size();
 } // spaceDim
 
 // ----------------------------------------------------------------------
@@ -99,6 +99,7 @@ void
 pylith::topology::Field<mesh_type>::newSection(void)
 { // newSection
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  std::cout << "Making Field " << _label << " empty section" << std::endl;
   logger.stagePush("Field");
   _section = new RealSection(_mesh.comm(), _mesh.debug());  
   logger.stagePop();
@@ -115,6 +116,7 @@ pylith::topology::Field<mesh_type>::newSection(
   typedef typename mesh_type::SieveMesh::point_type point_type;
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  std::cout << "Making Field " << _label << " section type 1" << std::endl;
   logger.stagePush("Field");
   if (fiberDim < 0) {
     std::ostringstream msg;
@@ -173,6 +175,7 @@ pylith::topology::Field<mesh_type>::newSection(const chart_type& chart,
 					       const int fiberDim)
 { // newSection
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  std::cout << "Making Field " << _label << " section type 2" << std::endl;
   logger.stagePush("Field");
   if (_section.isNull()) {
     logger.stagePop();
@@ -184,13 +187,17 @@ pylith::topology::Field<mesh_type>::newSection(const chart_type& chart,
   const typename chart_type::const_iterator chartEnd = chart.end();
   for (typename chart_type::const_iterator c_iter = chart.begin();
        c_iter != chartEnd;
-       ++c_iter)
+       ++c_iter) {
     _section->setFiberDimension(*c_iter, fiberDim);
+  }
   {
+    std::cout << "  allocating Field " << _label << " section type 2" << std::endl;
     logger.stagePop();
     allocate();
     logger.stagePush("Field");
+    std::cout << "  done allocating Field " << _label << " section type 2" << std::endl;
   }
+  std::cout << "Done making Field " << _label << " section type 2" << std::endl;
   logger.stagePop();
 } // newSection
 
@@ -201,6 +208,7 @@ void
 pylith::topology::Field<mesh_type>::newSection(const Field& src)
 { // newSection
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  std::cout << "Making Field " << _label << " section type 3" << std::endl;
   logger.stagePush("Field");
   _vecFieldType = src._vecFieldType;
 

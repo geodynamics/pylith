@@ -47,6 +47,15 @@ pylith::feassemble::Integrator<quadrature_type>::~Integrator(void)
 } // destructor
   
 // ----------------------------------------------------------------------
+// Get quadrature for integrating finite-element quantities.
+template<typename quadrature_type>
+const quadrature_type&
+pylith::feassemble::Integrator<quadrature_type>::quadrature()
+{ // quadrature
+  return *_quadrature;
+} // quadrature
+  
+// ----------------------------------------------------------------------
 // Set quadrature for integrating finite-element quantities.
 template<typename quadrature_type>
 void

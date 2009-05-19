@@ -34,7 +34,7 @@ swig_generated = \
 	topology.py
 
 _topologymodule_la_LDFLAGS = -module -avoid-version \
-	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
+	-g $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
 dist__topologymodule_la_SOURCES = $(swig_sources) $(swig_generated)
 
@@ -47,7 +47,7 @@ _topologymodule_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
-INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
+INCLUDES += -g $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 $(srcdir)/topology_wrap.cxx $(srcdir)/topology.py: $(swig_sources)
 	$(SWIG) -Wall -c++ -python $<

@@ -51,6 +51,13 @@ public :
   virtual
   ~Integrator(void);
 
+  /** Get the quadrature for integrating finite-element
+   * quantities.
+   *
+   * @returns Quadrature for integrating.
+   */
+  const quadrature_type& quadrature();
+
   /** Set quadrature for integrating finite-element
    * quantities. Quadrature should already be initialized.
    *

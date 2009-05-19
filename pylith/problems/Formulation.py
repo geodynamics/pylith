@@ -306,7 +306,11 @@ class Formulation(PetscComponent, ModuleFormulation):
 
     for name in self.fields.fieldNames():
       field = self.fields.get(name)
+      self.perfLogger.logField('Problem', field)
+      # For debugging right now
       self.perfLogger.logField('Field', field)
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+      self.perfLogger.logQuadrature('Quadrature', integrator.quadrature())
 
     self._info.log("Formulation finalize.")
     self._debug.log(resourceUsageString())
