@@ -112,8 +112,6 @@ class TestDislocation(TestLine2):
         maskP*(+0.30 - 0.025*vertices[:,0])
 
     print "VERTICES",vertices
-    print "DISP",disp
-
     return disp
 
 
