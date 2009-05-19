@@ -167,7 +167,6 @@ class Problem(PetscComponent):
             "Material id values must be unique." % \
             (material.label(), materialIds[material.id()], material.id())
       materialIds[material.id()] = material.label()
-      self.perfLogger.logMaterial("Problem Verification", material)
     
     for interface in self.interfaces.components():
       if interface.id() in materialIds.keys():
@@ -193,6 +192,10 @@ class Problem(PetscComponent):
     raise NotImplementedError, "initialize() not implemented."
     return
 
+  def logMaterials(self):
+    for material in self.materials.components():
+      self.perfLogger.logMaterial('Materials', material)
+    return
 
   def run(self, app):
     """

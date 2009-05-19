@@ -41,7 +41,7 @@ class Logger(PetscComponent):
 
     import pyre.inventory
 
-    verbose = pyre.inventory.bool("verbose", default=True)
+    verbose = pyre.inventory.bool("verbose", default=False)
     verbose.meta['tip'] = "Print information to the screen."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////

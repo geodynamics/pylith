@@ -62,11 +62,11 @@ class MemoryLogger(Logger):
     """
     import pylith.perf.Mesh
 
-    if not 'Mesh' in self.memory: self.memory['Mesh'] = {}
+    if not stage in self.memory: self.memory[stage] = {}
     meshModel = pylith.perf.Mesh.Mesh(mesh.dimension(), mesh.coneSize(), mesh.numVertices(), mesh.numCells())
-    meshModel.tabulate(self.memory['Mesh'])
+    meshModel.tabulate(self.memory[stage])
     for group, nvertices in mesh.groupSizes():
-      self.logVertexGroup(stage, group, nvertices, mesh.numVertices())
+      self.logVertexGroup('VertexGroups', group, nvertices, mesh.numVertices())
     if self.verbose: self.show()
     return
 
@@ -76,9 +76,9 @@ class MemoryLogger(Logger):
     """
     import pylith.perf.VertexGroup
 
-    if not 'VertexGroups' in self.memory: self.memory['VertexGroups'] = {}
-    group = pylith.perf.VertexGroup.VertexGroup(label, nvertices, nMeshVertices)
-    group.tabulate(self.memory['VertexGroups'])
+    if not stage in self.memory: self.memory[stage] = {}
+    groupModel = pylith.perf.VertexGroup.VertexGroup(label, nvertices, nMeshVertices)
+    groupModel.tabulate(self.memory[stage])
     if self.verbose: self.show()
     return
 
@@ -88,9 +88,27 @@ class MemoryLogger(Logger):
     """
     import pylith.perf.Material
 
-    if not 'Materials' in self.memory: self.memory['Materials'] = {}
-    material = pylith.perf.Material.Material(material.label(), material.ncells)
-    material.tabulate(self.memory['Materials'])
+    if not stage in self.memory: self.memory[stage] = {}
+    materialModel = pylith.perf.Material.Material(material.label(), material.ncells)
+    materialModel.tabulate(self.memory[stage])
+    self.logField(stage, material.getProperties())
+    self.logField(stage, material.getStateVars())
+    # For debugging right now
+    self.logField('Field', material.getProperties())
+    self.logField('Field', material.getStateVars())
+    if self.verbose: self.show()
+    return
+
+  def logQuadrature(self, stage, quadrature):
+    ##self.logField(stage, quadrature.quadPtsPrecomp())
+    ##self.logField(stage, quadrature.jacobianPrecomp())
+    ##self.logField(stage, quadrature.jacobianDetPrecomp())
+    ##self.logField(stage, quadrature.basisDerivPrecomp())
+    # For debugging right now
+    ##self.logField('Field', quadrature.quadPtsPrecomp())
+    ##self.logField('Field', quadrature.jacobianPrecomp())
+    ##self.logField('Field', quadrature.jacobianDetPrecomp())
+    ##self.logField('Field', quadrature.basisDerivPrecomp())
     if self.verbose: self.show()
     return
 
@@ -100,9 +118,9 @@ class MemoryLogger(Logger):
     """
     import pylith.perf.Field
 
-    if not 'Field' in self.memory: self.memory['Field'] = {}
-    field = pylith.perf.Field.Field(field.label(), field.size(), field.chartSize())
-    field.tabulate(self.memory['Field'])
+    if not stage in self.memory: self.memory[stage] = {}
+    fieldModel = pylith.perf.Field.Field(field.label(), field.size(), field.chartSize())
+    fieldModel.tabulate(self.memory[stage])
     if self.verbose: self.show()
     return
 

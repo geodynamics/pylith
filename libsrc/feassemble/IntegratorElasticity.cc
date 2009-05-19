@@ -337,6 +337,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
   } else {
     if (0 == _bufferFieldOther)
       _bufferFieldOther = new topology::Field<topology::Mesh>(mesh);
+    _bufferFieldOther->label("scalar field buffer");
     _material->getField(_bufferFieldOther, name);
     return *_bufferFieldOther;
   } // if/else
@@ -369,6 +370,7 @@ pylith::feassemble::IntegratorElasticity::_allocateTensorField(
   
   if (0 == _bufferFieldTensor) {
     _bufferFieldTensor = new topology::Field<topology::Mesh>(mesh);
+    _bufferFieldTensor->label("tensor field buffer");
     assert(0 != _bufferFieldTensor);
     _bufferFieldTensor->newSection(cells, numQuadPts*tensorSize);
     _bufferFieldTensor->allocate();

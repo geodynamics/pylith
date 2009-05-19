@@ -91,6 +91,7 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     _fieldAvg = new field_type(fieldIn.mesh());
     assert(0 != _fieldAvg);
     _fieldAvg->newSection(sectionIn->getChart(), fiberDim);
+    _fieldAvg->label("average");
     _fieldAvg->allocate();
 
     switch (fieldIn.vectorFieldType())

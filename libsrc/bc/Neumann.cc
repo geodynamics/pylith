@@ -117,6 +117,7 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
   const int fiberDim = spaceDim * numQuadPts;
   
   _tractions = new topology::Field<topology::SubMesh>(*_boundaryMesh);
+  _tractions->label("tractions");
   assert(0 != _tractions);
   _tractions->newSection(cells, fiberDim);
   _tractions->allocate();

@@ -104,6 +104,8 @@ pylith::materials::Material::initialize(
 { // initialize
   assert(0 != _dbProperties);
   assert(0 != quadrature);
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Materials");
 
   // Get quadrature information
   const int numQuadPts = quadrature->numQuadPts();
@@ -123,11 +125,13 @@ pylith::materials::Material::initialize(
 
   // Create field to hold physical properties.
   delete _properties; _properties = new topology::Field<topology::Mesh>(mesh);
+  _properties->label("properties");
   assert(0 != _properties);
   int fiberDim = numQuadPts * _numPropsQuadPt;
   _properties->newSection(cells, fiberDim);
   _properties->allocate();
   _properties->zero();
+  std::cout << "Initializing material " << _label << ": Created properties" << std::endl;
   const ALE::Obj<RealSection>& propertiesSection = _properties->section();
   assert(!propertiesSection.isNull());
 
@@ -155,6 +159,7 @@ pylith::materials::Material::initialize(
   // if there is no initial state, because this we will use this field
   // to hold the state variables.
   delete _stateVars; _stateVars = new topology::Field<topology::Mesh>(mesh);
+  _stateVars->label("state variables");
   fiberDim = numQuadPts * _numVarsQuadPt;
   if (fiberDim > 0) {
     assert(0 != _stateVars);
@@ -165,6 +170,7 @@ pylith::materials::Material::initialize(
     _stateVars->allocate();
     _stateVars->zero();
   } // if
+  std::cout << "Initializing material " << _label << ": Created state vars" << std::endl;
   const ALE::Obj<RealSection>& stateVarsSection = 
     (fiberDim > 0) ? _stateVars->section() : 0;
 
@@ -256,13 +262,29 @@ pylith::materials::Material::initialize(
   _dbProperties->close();
   if (0 != _dbInitialState)
     _dbInitialState->close();
+  logger.stagePop();
 } // initialize
+
+// ----------------------------------------------------------------------
+// Get properties
+const pylith::materials::Material::field_type&
+pylith::materials::Material::getProperties() const
+{ // getProperties
+  return *_properties;
+} // getProperties
+
+// ----------------------------------------------------------------------
+// Get state variables
+const pylith::materials::Material::field_type&
+pylith::materials::Material::getStateVars() const
+{ // getStateVars
+  return *_stateVars;
+} // getStateVars
 
 // ----------------------------------------------------------------------
 // Get physical property or state variable field.
 void
-pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
-				      const char* name) const
+pylith::materials::Material::getField(field_type *field, const char* name) const
 { // getField
   assert(0 != field);
   assert(0 != _properties);
@@ -309,6 +331,8 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
     assert(totalPropsFiberDim == numQuadPts * numPropsQuadPt);
     const int totalFiberDim = numQuadPts * fiberDim;
 
+    ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+    logger.stagePush("Materials");
     // Allocate buffer for property field if necessary.
     const ALE::Obj<RealSection>& fieldSection = field->section();
     bool useCurrentField = !fieldSection.isNull();
@@ -330,6 +354,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
     assert(!fieldSection.isNull());
     field->label(name);
     fieldType = _metadata.fieldType(name, Metadata::PROPERTY);
+    logger.stagePop();
   
     // Buffer for property at cell's quadrature points
     double_array fieldCell(numQuadPts*fiberDim);
@@ -380,6 +405,8 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
     assert(totalVarsFiberDim == numQuadPts * numVarsQuadPt);
     const int totalFiberDim = numQuadPts * fiberDim;
 
+    ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+    logger.stagePush("Materials");
     // Allocate buffer for state variable field if necessary.
     const ALE::Obj<RealSection>& fieldSection = field->section();
     bool useCurrentField = !fieldSection.isNull();
@@ -401,6 +428,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh>* field,
     assert(!fieldSection.isNull());
     fieldType = _metadata.fieldType(name, Metadata::STATEVAR);
     field->label(name);
+    logger.stagePop();
   
     // Buffer for state variable at cell's quadrature points
     double_array fieldCell(numQuadPts*fiberDim);

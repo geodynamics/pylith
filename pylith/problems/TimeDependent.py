@@ -108,7 +108,7 @@ class TimeDependent(Problem):
     """
     Solve time dependent problem.
     """
-
+    self.logMaterials()
     self._info.log("Solving problem.")
     self.checkpointTimer.toplevel = app # Set handle for saving state
     

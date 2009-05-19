@@ -121,6 +121,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   const int fiberDim = numQuadPts * spaceDim;
 
   _dampingConsts = new topology::Field<topology::SubMesh>(*_boundaryMesh);
+  _dampingConsts->label("damping constants");
   assert(0 != _dampingConsts);
   _dampingConsts->newSection(cells, fiberDim);
   _dampingConsts->allocate();

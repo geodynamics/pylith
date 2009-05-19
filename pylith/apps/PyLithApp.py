@@ -85,7 +85,7 @@ class PyLithApp(PetscApplication):
     if "interfaces" in dir(self.problem):
       interfaces = self.problem.interfaces.components()
     mesh = self.mesher.create(self.problem.normalizer, interfaces)
-    self.perfLogger.logMesh("MeshingCreation", mesh)
+    self.perfLogger.logMesh('Mesh', mesh)
     del interfaces
     del self.mesher
     self._debug.log(resourceUsageString())

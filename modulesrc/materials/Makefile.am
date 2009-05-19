@@ -33,7 +33,7 @@ swig_generated = \
 	materials.py
 
 _materialsmodule_la_LDFLAGS = -module -avoid-version \
-	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
+	-g $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
 dist__materialsmodule_la_SOURCES = $(swig_sources) $(swig_generated)
 
@@ -49,7 +49,7 @@ _materialsmodule_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
-INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
+INCLUDES += -g $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 $(srcdir)/materials_wrap.cxx $(srcdir)/materials.py: $(swig_sources)
 	$(SWIG) -Wall -c++ -python $<

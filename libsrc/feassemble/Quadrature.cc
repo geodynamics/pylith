@@ -147,13 +147,16 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   typedef typename mesh_type::SieveMesh::label_sequence label_sequence;
   typedef typename mesh_type::RestrictVisitor RestrictVisitor;
 
-  const char* loggingStage = "QuadratureCreation";
+  const char* loggingStage = "Quadrature";
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.setDebug(1);
   logger.stagePush(loggingStage);
 
   // Allocate field and cell buffer for quadrature points
   int fiberDim = _numQuadPts * _spaceDim;
+  std::cout << "Quadrature points: " << _numQuadPts << " space dim: " << _spaceDim << " numCells: " << cells->size() << std::endl;
   _quadPtsField = new topology::Field<mesh_type>(mesh);
+  _quadPtsField->label("quadPoints");
   assert(0 != _quadPtsField);
   _quadPtsField->newSection(cells, fiberDim);
   _quadPtsField->allocate();
@@ -164,29 +167,38 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   const typename RealSection::chart_type& chart = section->getChart();
 
   // Allocate field and cell buffer for Jacobian at quadrature points
+  logger.setDebug(2);
+  std::cout << "Jacobian: cell dim: " << _cellDim << std::endl;
   fiberDim = (_cellDim > 0) ?
     _numQuadPts * _cellDim * _spaceDim :
     _numQuadPts * 1 * _spaceDim;
   _jacobianField = new topology::Field<mesh_type>(mesh);
+  _jacobianField->label("jacobian");
   assert(0 != _jacobianField);
   _jacobianField->newSection(chart, fiberDim);
   _jacobianField->allocate();
+  logger.setDebug(1);
   
   // Allocate field and cell buffer for determinant of Jacobian at quad pts
+  std::cout << "Jacobian det:" << std::endl;
   fiberDim = _numQuadPts;
   _jacobianDetField = new topology::Field<mesh_type>(mesh);
+  _jacobianDetField->label("jacobianDet");
   assert(0 != _jacobianDetField);
   _jacobianDetField->newSection(chart, fiberDim);
   _jacobianDetField->allocate();
   
   // Allocate field for derivatives of basis functions at quad pts
+  std::cout << "Basis derivatives: num basis: " << _numBasis << std::endl;
   fiberDim = _numQuadPts * _numBasis * _spaceDim;
   _basisDerivField = new topology::Field<mesh_type>(mesh);
+  _basisDerivField->label("basis derivatives");
   assert(0 != _basisDerivField);
   _basisDerivField->newSection(chart, fiberDim);
   _basisDerivField->allocate();
 
   logger.stagePop();
+  logger.setDebug(0);
 
 #if defined(ALE_MEM_LOGGING)
   std::cout 

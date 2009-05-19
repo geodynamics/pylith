@@ -1217,6 +1217,7 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
 
   // Allocate buffer for tractions field (if nec.).
   const ALE::Obj<RealSection>& tractionsSection = tractions->section();
+  tractions->label("tractions");
   if (tractionsSection.isNull()) {
     tractions->newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
     tractions->allocate();
@@ -1271,6 +1272,7 @@ pylith::faults::FaultCohesiveKin::_allocateBufferVectorField(void)
   assert(0 != _faultMesh);
   assert(0 != _fields);
   _bufferVectorField = new topology::Field<topology::SubMesh>(*_faultMesh);
+  _bufferVectorField->label("vector field buffer");
   const topology::Field<topology::SubMesh>& slip = 
     _fields->get("cumulative slip");
   _bufferVectorField->newSection(slip);
@@ -1290,6 +1292,7 @@ pylith::faults::FaultCohesiveKin::_allocateBufferScalarField(void)
   assert(0 != _faultMesh);
   assert(0 != _fields);
   _bufferScalarField = new topology::Field<topology::SubMesh>(*_faultMesh);
+  _bufferScalarField->label("scalar field buffer");
   const topology::Field<topology::SubMesh>& area = _fields->get("area");
   _bufferScalarField->newSection(area);
   _bufferScalarField->allocate();

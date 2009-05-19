@@ -38,6 +38,8 @@
 class pylith::materials::Material
 { // class Material
   friend class TestMaterial; // unit testing
+public:
+  typedef pylith::topology::Field<pylith::topology::Mesh> field_type;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -153,8 +155,19 @@ public :
    * @param field Field over material cells.
    * @param name Name of field to retrieve.
    */
-  void getField(topology::Field<topology::Mesh>* field,
-		const char* name) const;
+  void getField(field_type *field, const char* name) const;
+
+  /** Get the properties.
+   *
+   * @returns the properties
+   */
+  const field_type& getProperties() const;
+
+  /** Get the state variables.
+   *
+   * @returns the state variables
+   */
+  const field_type& getStateVars() const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -221,10 +234,10 @@ protected :
   double _dt; ///< Current time step
 
   /// Field containing physical properties of material.
-  topology::Field<topology::Mesh>* _properties;
+  field_type *_properties;
 
   /// Field containing the state variables for the material.
-  topology::Field<topology::Mesh>* _stateVars;
+  field_type *_stateVars;
 
   spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer
   

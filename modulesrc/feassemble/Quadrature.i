@@ -54,6 +54,31 @@ namespace pylith {
       
       /// Deallocate temporary storage.
       void clear(void);
+
+      /** Get precomputed coordinates of quadrature points
+       *
+       * @returns Array of coordinates of quadrature points in cell
+       */
+      const pylith::topology::Field<mesh_type>& quadPtsPrecomp(void) const;
+
+      /** Get precomputed derivatives of basis fns evaluated at quadrature points.
+       *
+       * @returns Array of derivatives of basis fns evaluated at
+       * quadrature points
+       */
+      const pylith::topology::Field<mesh_type>& basisDerivPrecomp(void) const;
+
+      /** Get precomputed Jacobians evaluated at quadrature points.
+       *
+       * @returns Array of Jacobian inverses evaluated at quadrature points.
+       */
+      const pylith::topology::Field<mesh_type>& jacobianPrecomp(void) const;
+
+      /** Get precomputed determinants of Jacobian evaluated at quadrature points.
+       *
+       * @returns Array of determinants of Jacobian evaluated at quadrature pts
+       */
+      const pylith::topology::Field<mesh_type>& jacobianDetPrecomp(void) const;
       
     }; // Quadrature
 

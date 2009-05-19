@@ -111,7 +111,6 @@ class Integrator(object):
     """
     return
 
-
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _setupLogging(self):

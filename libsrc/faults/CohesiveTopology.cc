@@ -647,13 +647,14 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   if (debug)
     coordinates->view("Coordinates with shadow vertices");
 
-#if 0
+#if 1
   // Fix dimensioned coordinates (we use the same chart as the
   // coordinates, so we only need to update the values).
   // MATT: THIS CODE DOESN"T APPEAR TO WORK.
   if (sieveMesh->hasRealSection("coordinates_dimensioned")) {
     const ALE::Obj<topology::Mesh::RealSection>& coordinatesDim = 
       sieveMesh->getRealSection("coordinates_dimensioned");
+    sieveMesh->reallocate(coordinatesDim);
     assert(!coordinatesDim.isNull());
 
     if (debug)
