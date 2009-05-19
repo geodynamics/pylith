@@ -118,7 +118,7 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
     field = None
     fieldType = None
     if name == "displacement":
-      field = fields.solution()
+      field = fields.get("disp(t)")
     else:
       raise ValueError, "Vertex field '%s' not available." % name
     return field

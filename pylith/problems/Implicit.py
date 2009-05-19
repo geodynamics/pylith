@@ -91,7 +91,7 @@ class Implicit(Formulation):
     Formulation.initialize(self, dimension, normalizer)
 
     self._info.log("Creating other fields.")
-    self.fields.add("dispIncr(t->t+dt)", "displacement increment")
+    self.fields.add("dispIncr(t->t+dt)", "displacement_increment")
     self.fields.add("residual", "residual")
     self.fields.copyLayout("disp(t)")
     self.fields.solutionName("dispIncr(t->t+dt)")
@@ -178,7 +178,7 @@ class Implicit(Formulation):
     """
     Advance to next time step.
     """
-    dispIncr = self.fields.solution()
+    dispIncr = self.fields.get("dispIncr(t->t+dt)")
     dispIncr.zero()
 
     ### NONLINEAR: This moves under SNES control as IntegrateResidual()
@@ -206,7 +206,7 @@ class Implicit(Formulation):
     """
     # Update displacement field from time t to time t+dt.
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
-    disp = self.fields.solution()
+    disp = self.fields.get("disp(t)")
     disp += dispIncr
 
     Formulation.poststep(self, t, dt)
