@@ -61,8 +61,6 @@ class MeshIOObj(Component, ModuleMeshIO):
 
     # Read mesh
     ModuleMeshIO.read(self, mesh)
-
-    mesh.nondimensionalize(normalizer)
     return mesh
 
 
