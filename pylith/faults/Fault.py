@@ -93,8 +93,8 @@ class Fault(PetscComponent, ModuleFault):
       "interface; only applies to fault surfaces in a 3-D domain)."
   
   from pylith.feassemble.Quadrature import SubMeshQuadrature
-  quadrature = pyre.inventory.facility("quadrature", factory=SubMeshQuadrature)
-  quadrature.meta['tip'] = "Quadrature object for numerical integration."
+  faultQuadrature = pyre.inventory.facility("quadrature", factory=SubMeshQuadrature)
+  faultQuadrature.meta['tip'] = "Quadrature object for numerical integration."
   
   from spatialdata.spatialdb.SimpleDB import SimpleDB
   matDB = pyre.inventory.facility("mat_db", family="spatial_database",
@@ -214,7 +214,7 @@ class Fault(PetscComponent, ModuleFault):
     Setup members using inventory.
     """
     PetscComponent._configure(self)
-    self.faultQuadrature = self.inventory.quadrature
+    self.faultQuadrature = self.inventory.faultQuadrature
     self.upDir = map(float, self.inventory.upDir)
     self.normalDir = map(float, self.inventory.normalDir)
     self.matDB = self.inventory.matDB
