@@ -646,32 +646,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   } // for
   if (debug)
     coordinates->view("Coordinates with shadow vertices");
-
-#if 1
-  // Fix dimensioned coordinates (we use the same chart as the
-  // coordinates, so we only need to update the values).
-  // MATT: THIS CODE DOESN"T APPEAR TO WORK.
-  if (sieveMesh->hasRealSection("coordinates_dimensioned")) {
-    const ALE::Obj<topology::Mesh::RealSection>& coordinatesDim = 
-      sieveMesh->getRealSection("coordinates_dimensioned");
-    sieveMesh->reallocate(coordinatesDim);
-    assert(!coordinatesDim.isNull());
-
-    if (debug)
-      coordinatesDim->view("Dimensioned coordinates without shadow vertices");
-    for (SieveSubMesh::label_sequence::iterator v_iter = fVertices2Begin;
-	 v_iter != fVertices2EndNew;
-	 ++v_iter) {
-      coordinatesDim->updatePoint(vertexRenumber[*v_iter], 
-				  coordinatesDim->restrictPoint(*v_iter));
-      if (constraintCell)
-	coordinatesDim->updatePoint(vertexRenumber[*v_iter]+numFaultVertices,
-				    coordinatesDim->restrictPoint(*v_iter));
-    } // for
-    if (debug)
-      coordinatesDim->view("Dimensioned coordinates with shadow vertices");
-  } // if
-#endif
 } // create
 
 // ----------------------------------------------------------------------
@@ -817,41 +791,6 @@ pylith::faults::CohesiveTopology::createFaultParallel(
     fCoordinates->updatePoint(fRenumbering[*v_iter], 
 			      coordinates->restrictPoint(*v_iter));
   }
-  //faultSieveMesh->view("Parallel fault mesh");
-
-#if 0
-  // Update dimensioned coordinates (reuse chart used by coordinates
-  // section).
-  // MATT: NEED TO ADD REUSE OF CHART. THIS CODE DOESN"T APPEAR TO WORK.
-  if (sieveMesh->hasRealSection("coordinates_dimensioned")) {
-    const ALE::Obj<topology::Mesh::RealSection>& coordinatesDim =
-      sieveMesh->getRealSection("coordinates_dimensioned");
-    assert(!coordinatesDim.isNull());
-    const ALE::Obj<topology::Mesh::RealSection>& fCoordinatesDim =
-      faultSieveMesh->getRealSection("coordinates_dimensioned");
-    assert(!fCoordinatesDim.isNull());
-
-    fCoordinatesDim->setChart(topology::Mesh::RealSection::chart_type(faultSieveMesh->heightStratum(0)->size(),
-                                                             faultSieveMesh->getSieve()->getChart().max()));
-    for (SieveMesh::label_sequence::iterator v_iter = vBegin;
-	 v_iter != vEnd;
-	 ++v_iter) {
-      if (fRenumbering.find(*v_iter) == fRenumberingEnd)
-	continue;
-      fCoordinatesDim->setFiberDimension(fRenumbering[*v_iter],
-					 coordinatesDim->getFiberDimension(*v_iter));
-  } // for
-    fCoordinatesDim->allocatePoint();
-    for(SieveMesh::label_sequence::iterator v_iter = vBegin;
-	v_iter != vEnd;
-	++v_iter) {
-      if (fRenumbering.find(*v_iter) == fRenumberingEnd)
-	continue;
-      fCoordinatesDim->updatePoint(fRenumbering[*v_iter], 
-				   coordinatesDim->restrictPoint(*v_iter));
-    } // for
-  } // if
-#endif
   //faultSieveMesh->view("Parallel fault mesh");
 
   // Create the parallel overlap

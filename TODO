@@ -46,6 +46,8 @@ Charles
 
 2. Nondimensionalization
 
+  Move nondimensionalization of coordinates to after distribution.
+
   Add Quadrature::computeGeometry(coordinatesCell)
     Use #define PRECOMPUTE_GEOMETRY [TEST]
 

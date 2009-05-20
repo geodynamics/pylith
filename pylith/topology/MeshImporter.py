@@ -102,6 +102,9 @@ class MeshImporter(MeshGenerator):
     # refine mesh (if necessary)
     mesh = self.refiner.refine(mesh)
 
+    # Nondimensionalize mesh (coordinates of vertices).
+    mesh.nondimensionalize(normalizer)
+
     self._logger.eventEnd(logEvent)    
     return mesh
 
