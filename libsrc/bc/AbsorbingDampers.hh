@@ -125,8 +125,8 @@ private :
   /// Mesh of absorbing boundary
   topology::SubMesh* _boundaryMesh;
 
-  /// Damping constants in global coordinates at integration points.
-  topology::Field<topology::SubMesh>* _dampingConsts;
+  /// Parameters for damping constants.
+  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
 
 }; // class AbsorbingDampers
 

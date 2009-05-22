@@ -19,6 +19,7 @@
 
 #include "pylith/materials/ElasticMaterial.hh" // USES ElasticMaterial
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
@@ -41,8 +42,7 @@ typedef pylith::topology::Mesh::RealSection RealSection;
 // Constructor
 pylith::feassemble::IntegratorElasticity::IntegratorElasticity(void) :
   _material(0),
-  _bufferFieldTensor(0),
-  _bufferFieldOther(0)
+  _outputFields(0)
 { // constructor
 } // constructor
 
@@ -50,9 +50,8 @@ pylith::feassemble::IntegratorElasticity::IntegratorElasticity(void) :
 // Destructor
 pylith::feassemble::IntegratorElasticity::~IntegratorElasticity(void)
 { // destructor
+  delete _outputFields; _outputFields = 0;
   _material = 0; // Don't manage memory for material
-  delete _bufferFieldTensor; _bufferFieldTensor = 0;
-  delete _bufferFieldOther; _bufferFieldOther = 0;
 } // destructor
   
 // ----------------------------------------------------------------------
@@ -319,32 +318,43 @@ pylith::feassemble::IntegratorElasticity::cellField(
   // We assume the material stores the total_strain field if
   // hasStateVars() is TRUE.
 
+  if (0 == _outputFields)
+    _outputFields =
+      new topology::Fields<topology::Field<topology::Mesh> >(mesh);
+  
   if (!_material->hasStateVars() &&
       (0 == strcasecmp(name, "total_strain") ||
        0 == strcasecmp(name, "stress") )) {
     assert(0 != fields);
     _allocateTensorField(mesh);
-    _calcStrainStressField(_bufferFieldTensor, name, fields);
-    _bufferFieldTensor->label(name);
-    return *_bufferFieldTensor;
+    topology::Field<topology::Mesh>& buffer = 
+      _outputFields->get("buffer (tensor)");
+    _calcStrainStressField(&buffer, name, fields);
+    buffer.label(name);
+    return buffer;
   } else if (0 == strcasecmp(name, "stress")) {
     assert(0 != fields);
     _allocateTensorField(mesh);
-    _material->getField(_bufferFieldTensor, "total_strain");
-    _calcStressFromStrain(_bufferFieldTensor);
-    _bufferFieldTensor->label(name);
-    return *_bufferFieldTensor;
+    topology::Field<topology::Mesh>& buffer = 
+      _outputFields->get("buffer (tensor)");    
+    _material->getField(&buffer, "total_strain");
+    _calcStressFromStrain(&buffer);
+    buffer.label(name);
+    return buffer;
   } else {
-    if (0 == _bufferFieldOther)
-      _bufferFieldOther = new topology::Field<topology::Mesh>(mesh);
-    _bufferFieldOther->label("scalar field buffer");
-    _material->getField(_bufferFieldOther, name);
-    return *_bufferFieldOther;
+    if (!_outputFields->hasField("buffer (other)"))
+      _outputFields->add("buffer (other)", "buffer");
+    topology::Field<topology::Mesh>& buffer =
+      _outputFields->get("buffer (other)");
+    _material->getField(&buffer, name);
+    return buffer;
   } // if/else
   
   // Return tensor section to satisfy member function definition. Code
   // should never get here.
-  return *_bufferFieldTensor;
+  topology::Field<topology::Mesh>& buffer = 
+    _outputFields->get("buffer (tensor)");    
+  return buffer;
 } // cellField
 
 // ----------------------------------------------------------------------
@@ -355,6 +365,7 @@ pylith::feassemble::IntegratorElasticity::_allocateTensorField(
 { // _allocateTensorField
   assert(0 != _quadrature);
   assert(0 != _material);
+  assert(0 != _outputFields);
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
@@ -368,13 +379,14 @@ pylith::feassemble::IntegratorElasticity::_allocateTensorField(
   const int spaceDim = _quadrature->spaceDim();
   const int tensorSize = _material->tensorSize();
   
-  if (0 == _bufferFieldTensor) {
-    _bufferFieldTensor = new topology::Field<topology::Mesh>(mesh);
-    _bufferFieldTensor->label("tensor field buffer");
-    assert(0 != _bufferFieldTensor);
-    _bufferFieldTensor->newSection(cells, numQuadPts*tensorSize);
-    _bufferFieldTensor->allocate();
-    _bufferFieldTensor->vectorFieldType(topology::FieldBase::MULTI_TENSOR);
+  if (!_outputFields->hasField("buffer (tensor)")) {
+    _outputFields->add("buffer (tensor)", "buffer");
+    topology::Field<topology::Mesh>& buffer =
+      _outputFields->get("buffer (tensor)");
+    buffer.newSection(cells, numQuadPts*tensorSize);
+    buffer.allocate();
+    buffer.vectorFieldType(topology::FieldBase::MULTI_TENSOR);
+    buffer.addDimensionOkay(true);
   } // if
 } // _allocateTensorField
 

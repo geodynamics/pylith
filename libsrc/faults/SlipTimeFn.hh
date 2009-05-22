@@ -23,7 +23,7 @@
 // Include directives ---------------------------------------------------
 #include "faultsfwd.hh" // forward declarations
 
-#include "pylith/topology/topologyfwd.hh" // USES Field<SubMesh>
+#include "pylith/topology/topologyfwd.hh" // USES Fields<SubMesh>
 
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
@@ -92,6 +92,12 @@ public :
    */
   virtual
   const topology::Field<topology::SubMesh>& slipTime(void) = 0;
+
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
+
+  /// Parameters for slip time function.
+  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

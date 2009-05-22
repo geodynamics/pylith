@@ -39,7 +39,7 @@ typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
 // Default constructor.
 pylith::bc::Neumann::Neumann(void) :
   _boundaryMesh(0),
-  _tractions(0)
+  _parameters(0)
 { // constructor
 } // constructor
 
@@ -48,7 +48,7 @@ pylith::bc::Neumann::Neumann(void) :
 pylith::bc::Neumann::~Neumann(void)
 { // destructor
   delete _boundaryMesh; _boundaryMesh = 0;
-  delete _tractions; _tractions = 0;
+  delete _parameters; _parameters = 0;
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -62,7 +62,7 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
   assert(0 != _db);
 
   delete _boundaryMesh; _boundaryMesh = 0;
-  delete _tractions; _tractions = 0;
+  delete _parameters; _parameters = 0;
 
   _boundaryMesh = new topology::SubMesh(mesh, _label.c_str());
   assert(0 != _boundaryMesh);
@@ -116,11 +116,13 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
   const int spaceDim = cellGeometry.spaceDim();
   const int fiberDim = spaceDim * numQuadPts;
   
-  _tractions = new topology::Field<topology::SubMesh>(*_boundaryMesh);
-  _tractions->label("tractions");
-  assert(0 != _tractions);
-  _tractions->newSection(cells, fiberDim);
-  _tractions->allocate();
+  _parameters =
+    new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
+  assert(0 != _parameters);
+  _parameters->add("traction", "traction");
+  topology::Field<topology::SubMesh>& traction = _parameters->get("traction");
+  traction.newSection(cells, fiberDim);
+  traction.allocate();
 
   // Containers for orientation information
   const int orientationSize = spaceDim * spaceDim;
@@ -177,8 +179,9 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
 						coordinatesCell.size(),
 						&coordinatesCell[0]);
 
-  const ALE::Obj<SubRealSection>& tractSection = _tractions->section();
-  assert(!tractSection.isNull());
+  const ALE::Obj<SubRealSection>& tractionSection =
+    _parameters->get("traction").section();
+  assert(!tractionSection.isNull());
 
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
 
@@ -252,7 +255,7 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
     } // for
 
       // Update tractionsGlobal
-    tractSection->updatePoint(*c_iter, &cellTractionsGlobal[0]);
+    tractionSection->updatePoint(*c_iter, &cellTractionsGlobal[0]);
   } // for
 
   _db->close();
@@ -268,7 +271,7 @@ pylith::bc::Neumann::integrateResidual(
 { // integrateResidual
   assert(0 != _quadrature);
   assert(0 != _boundaryMesh);
-  assert(0 != _tractions);
+  assert(0 != _parameters);
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
@@ -290,8 +293,9 @@ pylith::bc::Neumann::integrateResidual(
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  const ALE::Obj<SubRealSection>& tractSection = _tractions->section();
-  assert(!tractSection.isNull());
+  const ALE::Obj<SubRealSection>& tractionSection =
+    _parameters->get("traction").section();
+  assert(!tractionSection.isNull());
   const ALE::Obj<RealSection>& residualSection = residual.section();
   topology::SubMesh::UpdateAddVisitor residualVisitor(*residualSection,
 						      &_cellVector[0]);
@@ -320,7 +324,7 @@ pylith::bc::Neumann::integrateResidual(
     _resetCellVector();
 
     // Restrict tractions to cell
-    tractSection->restrictPoint(*c_iter, 
+    tractionSection->restrictPoint(*c_iter, 
 				&tractionsCell[0], tractionsCell.size());
 
     // Get cell geometry information that depends on cell
@@ -382,11 +386,11 @@ const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::bc::Neumann::cellField(const char* name,
 			       topology::SolutionFields* const fields)
 { // cellField
-  assert(0 != _tractions);
+  assert(0 != _parameters);
   assert(0 != name);
 
   if (0 == strcasecmp(name, "tractions")) {
-    return *_tractions;
+    return _parameters->get("traction");;
   } else {
     std::ostringstream msg;
     msg << "Unknown field '" << name << "' requested for Neumann BC '" 
@@ -394,7 +398,7 @@ pylith::bc::Neumann::cellField(const char* name,
     throw std::runtime_error(msg.str());
   } // else
 
-  return *_tractions;
+  return _parameters->get("traction"); // Satisfy method definition
 } // cellField
 
 

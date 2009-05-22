@@ -43,8 +43,7 @@ pylith::materials::ElasticMaterial::ElasticMaterial(const int dimension,
   Material(dimension, tensorSize, metadata),
   _dbInitialStress(0),
   _dbInitialStrain(0),
-  _initialStress(0),
-  _initialStrain(0),
+  _initialFields(0),
   _numQuadPts(0),
   _numElasticConsts(numElasticConsts)
 { // constructor
@@ -54,8 +53,7 @@ pylith::materials::ElasticMaterial::ElasticMaterial(const int dimension,
 // Destructor.
 pylith::materials::ElasticMaterial::~ElasticMaterial(void)
 { // destructor
-  delete _initialStress; _initialStress = 0;
-  delete _initialStrain; _initialStrain = 0;
+  delete _initialFields; _initialFields = 0;
 
   // Python db object owns databases, so just set point to null
   // :KLUDGE: Should use shared pointer
@@ -76,6 +74,11 @@ pylith::materials::ElasticMaterial::initialize(
   assert(0 != quadrature);
   _numQuadPts = quadrature->numQuadPts();
 
+  if (0 != _dbInitialStress || 0 != _dbInitialStrain) {
+    delete _initialFields; 
+    _initialFields =
+      new topology::Fields<topology::Field<topology::Mesh> >(mesh);
+  } // if
   _initializeInitialStress(mesh, quadrature);
   _initializeInitialStrain(mesh, quadrature);
   _allocateCellArrays();
@@ -101,22 +104,24 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
 				    _stateVarsCell.size());
   } // if
 
-  if (0 == _initialStress)
-    _initialStressCell = 0.0;
-  else {
-    const ALE::Obj<RealSection>& stressSection = _initialStress->section();
-    assert(!stressSection.isNull());
-    stressSection->restrictPoint(cell, &_initialStressCell[0],
-				 _initialStressCell.size());
-  } // if/else
-  if (0 == _initialStrain)
-    _initialStrainCell = 0.0;
-  else {
-    const ALE::Obj<RealSection>& strainSection = _initialStrain->section();
-    assert(!strainSection.isNull());
-    strainSection->restrictPoint(cell, &_initialStrainCell[0],
-				 _initialStrainCell.size());
-  } // if/else
+  _initialStressCell = 0.0;
+  _initialStrainCell = 0.0;
+  if (0 != _initialFields) {
+    if (_initialFields->hasField("initial stress")) {
+      const ALE::Obj<RealSection>& stressSection = 
+	_initialFields->get("initial stress").section();
+      assert(!stressSection.isNull());
+      stressSection->restrictPoint(cell, &_initialStressCell[0],
+				   _initialStressCell.size());
+    } // if
+    if (_initialFields->hasField("initial strain")) {
+      const ALE::Obj<RealSection>& strainSection =
+	_initialFields->get("initial strain").section();
+      assert(!strainSection.isNull());
+      strainSection->restrictPoint(cell, &_initialStrainCell[0],
+				   _initialStrainCell.size());
+    } // if
+  } // if
 } // retrievePropsAndVars
 
 // ----------------------------------------------------------------------
@@ -281,11 +286,18 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
 const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::materials::ElasticMaterial::initialStressField(void) const
 { // initialStressField
-  if (0 == _initialStress)
+  if (0 == _initialFields)
+    throw std::runtime_error("Request for initial stress field, but no "
+			     "initial fields exist.");
+  assert(0 != _initialFields);
+  if (!_initialFields->hasField("initial stress"))
     throw std::runtime_error("Request for initial stress field, but field "
 			     "does not exist.");
+  
+  const topology::Field<topology::Mesh>& initialStress =
+    _initialFields->get("initial stress");
 
-  return *_initialStress;
+  return initialStress;
 } // initialStressField
 
 // ----------------------------------------------------------------------
@@ -293,11 +305,18 @@ pylith::materials::ElasticMaterial::initialStressField(void) const
 const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::materials::ElasticMaterial::initialStrainField(void) const
 { // initialStrainField
-  if (0 == _initialStrain)
+  if (0 == _initialFields)
+    throw std::runtime_error("Request for initial strain field, but no "
+			     "initial fields exist.");
+  assert(0 != _initialFields);
+  if (!_initialFields->hasField("initial strain"))
     throw std::runtime_error("Request for initial strain field, but field "
 			     "does not exist.");
+  
+  const topology::Field<topology::Mesh>& initialStrain =
+    _initialFields->get("initial strain");
 
-  return *_initialStrain;
+  return initialStrain;
 } // initialStrainField
 
 // ----------------------------------------------------------------------
@@ -327,9 +346,13 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
 			 const topology::Mesh& mesh,
 			 feassemble::Quadrature<topology::Mesh>* quadrature)
 { // _initializeInitialStress
-  delete _initialStress; _initialStress = 0;
   if (0 == _dbInitialStress)
     return;
+
+  assert(0 != _initialFields);
+  _initialFields->add("initial stress", "initial_stress");
+  topology::Field<topology::Mesh>& initialStress = 
+    _initialFields->get("initial stress");
 
   assert(0 != _dbInitialStress);
   assert(0 != quadrature);
@@ -365,17 +388,12 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
 
   // Create field to hold initial stress state.
-  delete _initialStress; _initialStress = 0;
-  _initialStress = new topology::Field<topology::Mesh>(mesh);
-  _initialStress->label("initial stress");
-  assert(0 != _initialStress);
   const int fiberDim = numQuadPts * tensorSize;
   assert(fiberDim > 0);
-  _initialStress->newSection(cells, fiberDim);
-  _initialStress->allocate();
-  _initialStress->zero();
-  const ALE::Obj<RealSection>& initialStressSection = 
-    _initialStress->section();
+  initialStress.newSection(cells, fiberDim);
+  initialStress.allocate();
+  initialStress.zero();
+  const ALE::Obj<RealSection>& initialStressSection = initialStress.section();
 
   // Setup databases for querying
   _dbInitialStress->open();
@@ -415,9 +433,6 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
   const double lengthScale = _normalizer->pressureScale();
   const double pressureScale = _normalizer->pressureScale();
 
-  const ALE::Obj<RealSection>& stressSection = _initialStress->section();
-  assert(!stressSection.isNull());
-    
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
@@ -457,7 +472,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
     _normalizer->nondimensionalize(&stressCell[0], stressCell.size(), 
 				   pressureScale);
 
-    stressSection->updatePoint(*c_iter, &stressCell[0]);
+    initialStressSection->updatePoint(*c_iter, &stressCell[0]);
   } // for
 
   // Close databases
@@ -471,9 +486,13 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
 			 const topology::Mesh& mesh,
 			 feassemble::Quadrature<topology::Mesh>* quadrature)
 { // _initializeInitialStrain
-  delete _initialStrain; _initialStrain = 0;
   if (0 == _dbInitialStrain)
     return;
+
+  assert(0 != _initialFields);
+  _initialFields->add("initial strain", "initial_strain");
+  topology::Field<topology::Mesh>& initialStrain = 
+    _initialFields->get("initial strain");
 
   assert(0 != _dbInitialStrain);
   assert(0 != quadrature);
@@ -509,17 +528,12 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
 
   // Create field to hold initial strain state.
-  delete _initialStrain; _initialStrain = 0;
-  _initialStrain = new topology::Field<topology::Mesh>(mesh);
-  _initialStrain->label("initial stress");
-  assert(0 != _initialStrain);
   const int fiberDim = numQuadPts * tensorSize;
   assert(fiberDim > 0);
-  _initialStrain->newSection(cells, fiberDim);
-  _initialStrain->allocate();
-  _initialStrain->zero();
-  const ALE::Obj<RealSection>& initialStrainSection = 
-    _initialStrain->section();
+  initialStrain.newSection(cells, fiberDim);
+  initialStrain.allocate();
+  initialStrain.zero();
+  const ALE::Obj<RealSection>& initialStrainSection = initialStrain.section();
 
   // Setup databases for querying
   _dbInitialStrain->open();
@@ -558,9 +572,6 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   assert(0 != _normalizer);
   const double lengthScale = _normalizer->pressureScale();
   const double pressureScale = _normalizer->pressureScale();
-    
-  const ALE::Obj<RealSection>& strainSection = _initialStrain->section();
-  assert(!strainSection.isNull());
     
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
@@ -601,7 +612,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
     _normalizer->nondimensionalize(&strainCell[0], strainCell.size(), 
 				   pressureScale);
 
-    strainSection->updatePoint(*c_iter, &strainCell[0]);
+    initialStrainSection->updatePoint(*c_iter, &strainCell[0]);
   } // for
 
   // Close databases

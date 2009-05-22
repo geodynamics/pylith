@@ -23,6 +23,7 @@
 #include "Quadrature2Din3D.hh"
 #include "Quadrature3D.hh"
 
+#include "pylith/topology/Fields.hh" // HOLDSA Fields
 #include "pylith/topology/Field.hh" // HOLDSA Field
 
 #include <cstring> // USES memcpy()
@@ -35,10 +36,7 @@
 template<typename mesh_type>
 pylith::feassemble::Quadrature<mesh_type>::Quadrature(void) :
   _engine(0),
-  _quadPtsField(0),
-  _jacobianField(0),
-  _jacobianDetField(0),
-  _basisDerivField(0),
+  _geometryFields(0),
   _checkConditioning(false)
 { // constructor
 } // constructor
@@ -49,10 +47,7 @@ template<typename mesh_type>
 pylith::feassemble::Quadrature<mesh_type>::~Quadrature(void)
 { // destructor
   delete _engine; _engine = 0;
-  delete _quadPtsField; _quadPtsField = 0;
-  delete _jacobianField; _jacobianField = 0;
-  delete _jacobianDetField; _jacobianDetField = 0;
-  delete _basisDerivField; _basisDerivField = 0;
+  delete _geometryFields; _geometryFields = 0;
 } // destructor
   
 // ----------------------------------------------------------------------
@@ -61,10 +56,7 @@ template<typename mesh_type>
 pylith::feassemble::Quadrature<mesh_type>::Quadrature(const Quadrature& q) :
   QuadratureRefCell(q),
   _engine(0),
-  _quadPtsField(0),
-  _jacobianField(0),
-  _jacobianDetField(0),
-  _basisDerivField(0),
+  _geometryFields(0),
   _checkConditioning(q._checkConditioning)
 { // copy constructor
   if (0 != q._engine)
@@ -152,50 +144,53 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   logger.setDebug(1);
   logger.stagePush(loggingStage);
 
+  delete _geometryFields;
+  _geometryFields = new topology::Fields<topology::Field<mesh_type> >;
+
   // Allocate field and cell buffer for quadrature points
+  _geometryFields->add("quadrature points", "quadrature_points");
+  topology::Field<mesh_type>& quadPtsField = 
+    _geometryFields->get("quadrature points");
   int fiberDim = _numQuadPts * _spaceDim;
-  std::cout << "Quadrature points: " << _numQuadPts << " space dim: " << _spaceDim << " numCells: " << cells->size() << std::endl;
-  _quadPtsField = new topology::Field<mesh_type>(mesh);
-  _quadPtsField->label("quadPoints");
-  assert(0 != _quadPtsField);
-  _quadPtsField->newSection(cells, fiberDim);
-  _quadPtsField->allocate();
+  quadPtsField.newSection(cells, fiberDim);
+  quadPtsField.allocate();
 
   // Get chart for reuse in other fields
-  const ALE::Obj<RealSection>& section = _quadPtsField->section(); 
+  const ALE::Obj<RealSection>& section = quadPtsField->section(); 
   assert(!section.isNull());
   const typename RealSection::chart_type& chart = section->getChart();
 
   // Allocate field and cell buffer for Jacobian at quadrature points
   logger.setDebug(2);
   std::cout << "Jacobian: cell dim: " << _cellDim << std::endl;
+  _geometryFields->add("jacobian", "jacobian");
+  topology::Field<mesh_type>& jacobianField = 
+    _geometryFields->get("jacobian");
   fiberDim = (_cellDim > 0) ?
     _numQuadPts * _cellDim * _spaceDim :
     _numQuadPts * 1 * _spaceDim;
-  _jacobianField = new topology::Field<mesh_type>(mesh);
-  _jacobianField->label("jacobian");
-  assert(0 != _jacobianField);
-  _jacobianField->newSection(chart, fiberDim);
-  _jacobianField->allocate();
+  jacobianField->newSection(chart, fiberDim);
+  jacobianField->allocate();
   logger.setDebug(1);
   
   // Allocate field and cell buffer for determinant of Jacobian at quad pts
   std::cout << "Jacobian det:" << std::endl;
+  _geometryFields->add("determinant(jacobian)", "determinant_jacobian");
+  topology::Field<mesh_type>& jacobianDetField = 
+    _geometryFields->get("determinant(jacobian)");
   fiberDim = _numQuadPts;
-  _jacobianDetField = new topology::Field<mesh_type>(mesh);
-  _jacobianDetField->label("jacobianDet");
-  assert(0 != _jacobianDetField);
-  _jacobianDetField->newSection(chart, fiberDim);
-  _jacobianDetField->allocate();
+  jacobianDetField.newSection(chart, fiberDim);
+  jacobianDetField.allocate();
   
   // Allocate field for derivatives of basis functions at quad pts
   std::cout << "Basis derivatives: num basis: " << _numBasis << std::endl;
+  _geometryFields->add("derivative basis functions",
+		       "derivative_basis_functions");
+  topology::Field<mesh_type>& basisDerivField = 
+    _geometryFields->get("jacobian");
   fiberDim = _numQuadPts * _numBasis * _spaceDim;
-  _basisDerivField = new topology::Field<mesh_type>(mesh);
-  _basisDerivField->label("basis derivatives");
-  assert(0 != _basisDerivField);
-  _basisDerivField->newSection(chart, fiberDim);
-  _basisDerivField->allocate();
+  basisDerivField.newSection(chart, fiberDim);
+  basisDerivField.allocate();
 
   logger.stagePop();
   logger.setDebug(0);
@@ -228,11 +223,11 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   RestrictVisitor coordsVisitor(*coordinates,
 				coordinatesCell.size(), &coordinatesCell[0]);
 
-  const ALE::Obj<RealSection>& quadPtsSection = _quadPtsField->section();
-  const ALE::Obj<RealSection>& jacobianSection = _jacobianField->section();
+  const ALE::Obj<RealSection>& quadPtsSection = quadPtsField->section();
+  const ALE::Obj<RealSection>& jacobianSection = jacobianField->section();
   const ALE::Obj<RealSection>& jacobianDetSection = 
-    _jacobianDetField->section();
-  const ALE::Obj<RealSection>& basisDerivSection = _basisDerivField->section();
+    jacobianDetField->section();
+  const ALE::Obj<RealSection>& basisDerivSection = basisDerivField->section();
 
   const double_array& quadPts = _engine->quadPts();
   const double_array& jacobian = _engine->jacobian();
@@ -259,33 +254,33 @@ template<typename mesh_type>
 void
 pylith::feassemble::Quadrature<mesh_type>::retrieveGeometry(const typename mesh_type::SieveMesh::point_type& cell)
 { // retrieveGeometry
-  typedef typename mesh_type::RealSection RealSection;
-
-  assert(0 != _quadPtsField);
-  assert(0 != _jacobianField);
-  assert(0 != _jacobianDetField);
-  assert(0 != _basisDerivField);
+  assert(0 != _geometryFields);
   assert(0 != _engine);
+
+  typedef typename mesh_type::RealSection RealSection;
 
   const double_array& quadPts = _engine->quadPts();
   const double_array& jacobian = _engine->jacobian();
   const double_array& jacobianDet = _engine->jacobianDet();
   const double_array& basisDeriv = _engine->basisDeriv();
 
-  const ALE::Obj<RealSection>& quadPtsSection = _quadPtsField->section();
+  const ALE::Obj<RealSection>& quadPtsSection =
+    _geometryFields->get("quadrature points").section();
   quadPtsSection->restrictPoint(cell, const_cast<double*>(&quadPts[0]),
 				quadPts.size());
 
-  const ALE::Obj<RealSection>& jacobianSection = _jacobianField->section();
+  const ALE::Obj<RealSection>& jacobianSection =
+    _geometryFields->get("jacobian").section();
   jacobianSection->restrictPoint(cell, const_cast<double*>(&jacobian[0]),
 				 jacobian.size());
 
   const ALE::Obj<RealSection>& jacobianDetSection = 
-    _jacobianDetField->section();
+    _geometryFields->get("determinant(jacobian)").section();
   jacobianDetSection->restrictPoint(cell, const_cast<double*>(&jacobianDet[0]),
 				    jacobianDet.size());
 
-  const ALE::Obj<RealSection>& basisDerivSection = _basisDerivField->section();
+  const ALE::Obj<RealSection>& basisDerivSection =
+    _geometryFields->get("determinant basisfunctions").section();
   basisDerivSection->restrictPoint(cell, const_cast<double*>(&basisDeriv[0]),
 				   basisDeriv.size());
 } // retrieveGeometry
@@ -298,11 +293,8 @@ pylith::feassemble::Quadrature<mesh_type>::clear(void)
 { // clear
   delete _engine; _engine = 0;
 
-  // Clear storage for fields
-  delete _quadPtsField; _quadPtsField = 0;
-  delete _jacobianField; _jacobianField = 0;
-  delete _jacobianDetField; _jacobianDetField = 0;
-  delete _basisDerivField; _basisDerivField = 0;
+  // Clear storage of precomputed geometry.
+  delete _geometryFields; _geometryFields = 0;
 } // clear
 
 

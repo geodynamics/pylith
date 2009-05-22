@@ -98,7 +98,7 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
   const int numQuadPts = data.numLocs;
 
   // Test initialStress field
-  CPPUNIT_ASSERT(0 != material._initialStress);
+  CPPUNIT_ASSERT(0 != material._initialFields);
   const ALE::Obj<RealSection>& stressSection = 
     material.initialStressField().section();
   CPPUNIT_ASSERT(!stressSection.isNull());
@@ -113,7 +113,7 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
 				 tolerance);
 
   // Test initialStrain field
-  CPPUNIT_ASSERT(0 != material._initialStrain);
+  CPPUNIT_ASSERT(0 != material._initialFields);
   const ALE::Obj<RealSection>& strainSection = 
     material.initialStrainField().section();
   CPPUNIT_ASSERT(!strainSection.isNull());

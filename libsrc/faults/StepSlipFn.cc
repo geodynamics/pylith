@@ -35,7 +35,6 @@ typedef pylith::topology::SubMesh::RealSection RealSection;
 // Default constructor.
 pylith::faults::StepSlipFn::StepSlipFn(void) :
   _slipTimeVertex(0),
-  _parameters(0),
   _dbFinalSlip(0),
   _dbSlipTime(0)
 { // constructor
@@ -45,7 +44,6 @@ pylith::faults::StepSlipFn::StepSlipFn(void) :
 // Destructor.
 pylith::faults::StepSlipFn::~StepSlipFn(void)
 { // destructor
-  delete _parameters; _parameters = 0;
   _dbFinalSlip = 0; // :TODO: Use shared pointer
   _dbSlipTime = 0; // :TODO: Use shared pointer
 } // destructor

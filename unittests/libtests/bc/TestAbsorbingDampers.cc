@@ -120,7 +120,9 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
   const int fiberDim = numQuadPts * spaceDim;
   double_array dampersCell(fiberDim);
   int index = 0;
-  const ALE::Obj<SubRealSection>& dampersSection = bc._dampingConsts->section();
+  CPPUNIT_ASSERT(0 != bc._parameters);
+  const ALE::Obj<SubRealSection>& dampersSection = 
+    bc._parameters->get("damping constants").section();
 
   const double tolerance = 1.0e-06;
   for(SieveSubMesh::label_sequence::iterator c_iter = cells->begin();

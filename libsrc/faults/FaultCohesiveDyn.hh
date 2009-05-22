@@ -135,10 +135,6 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  /// Orientation of fault surface at vertices (fiber dimension is
-  /// nonzero only at constraint vertices)
-  topology::Field<topology::SubMesh>*  _orientation;
-
 }; // class FaultCohesiveDyn
 
 #include "FaultCohesiveDyn.icc" // inline methods

@@ -29,6 +29,7 @@ namespace pylith {
     class DirichletBoundary;
     class Neumann;
     class AbsorbingDampers;
+    class PointForce;
 
   } // bc
 } // pylith

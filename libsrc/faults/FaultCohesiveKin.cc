@@ -49,9 +49,7 @@ typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
-  _fields(0),
-  _bufferVectorField(0),
-  _bufferScalarField(0)
+  _fields(0)
 { // constructor
 } // constructor
 
@@ -60,8 +58,6 @@ pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
 pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void)
 { // destructor
   delete _fields; _fields = 0;
-  delete _bufferVectorField; _bufferVectorField = 0;
-  delete _bufferScalarField; _bufferScalarField = 0;
   // :TODO: Use shared pointers for earthquake sources
 } // destructor
 
@@ -715,10 +711,12 @@ pylith::faults::FaultCohesiveKin::vertexField(
       orientationSection->getFibration(0);
     assert(!dirSection.isNull());
     _allocateBufferVectorField();
-    assert(0 != _bufferVectorField);
-    _bufferVectorField->copy(dirSection);
-    _bufferVectorField->label("strike_dir");
-    return *_bufferVectorField;
+    topology::Field<topology::SubMesh>& buffer =
+      _fields->get("buffer (vector)");
+    buffer.copy(dirSection);
+    buffer.label("strike_dir");
+    buffer.scale(1.0);
+    return buffer;
 
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
     const ALE::Obj<RealSection>& orientationSection =
@@ -727,10 +725,12 @@ pylith::faults::FaultCohesiveKin::vertexField(
     const ALE::Obj<RealSection>& dirSection =
       orientationSection->getFibration(1);
     _allocateBufferVectorField();
-    assert(0 != _bufferVectorField);
-    _bufferVectorField->copy(dirSection);
-    _bufferVectorField->label("dip_dir");
-    return *_bufferVectorField;
+    topology::Field<topology::SubMesh>& buffer =
+      _fields->get("buffer (vector)");
+    buffer.copy(dirSection);
+    buffer.label("dip_dir");
+    buffer.scale(1.0);
+    return buffer;
 
   } else if (0 == strcasecmp("normal_dir", name)) {
     const ALE::Obj<RealSection>& orientationSection =
@@ -742,10 +742,12 @@ pylith::faults::FaultCohesiveKin::vertexField(
       orientationSection->getFibration(space);
     assert(!dirSection.isNull());
     _allocateBufferVectorField();
-    assert(0 != _bufferVectorField);
-    _bufferVectorField->copy(dirSection);
-    _bufferVectorField->label("normal_dir");
-    return *_bufferVectorField;
+    topology::Field<topology::SubMesh>& buffer =
+      _fields->get("buffer (vector)");
+    buffer.copy(dirSection);
+    buffer.label("normal_dir");
+    buffer.scale(1.0);
+    return buffer;
 
   } else if (0 == strncasecmp("final_slip_X", name, slipStrLen)) {
     const std::string value = std::string(name).substr(slipStrLen+1);
@@ -764,9 +766,10 @@ pylith::faults::FaultCohesiveKin::vertexField(
     assert(0 != fields);
     const topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
     _allocateBufferVectorField();
-    _calcTractionsChange(_bufferVectorField, dispT);
-    _bufferVectorField->label("traction_change");
-    return *_bufferVectorField;
+    topology::Field<topology::SubMesh>& buffer =
+      _fields->get("buffer (vector)");
+    _calcTractionsChange(&buffer, dispT);
+    return buffer;
 
   } else {
     std::ostringstream msg;
@@ -775,8 +778,12 @@ pylith::faults::FaultCohesiveKin::vertexField(
     throw std::runtime_error(msg.str());
   } // else
 
-  assert(0 != _bufferScalarField);
-  return *_bufferScalarField;
+  
+  // Satisfy return values
+  assert(0 != _fields);
+  const topology::Field<topology::SubMesh>& buffer = 
+    _fields->get("buffer (vector)");
+  return buffer;
 } // vertexField
 
 // ----------------------------------------------------------------------
@@ -792,9 +799,11 @@ pylith::faults::FaultCohesiveKin::cellField(
       << "' for fault '" << label() << ".";
   throw std::runtime_error(msg.str());
 
-  // Return generic section to satisfy member function definition.
-  assert(0 != _bufferScalarField);
-  return *_bufferScalarField;
+  // Satisfy return values
+  assert(0 != _fields);
+  const topology::Field<topology::SubMesh>& buffer = 
+    _fields->get("buffer (vector)");
+  return buffer;
 } // cellField
 
 // ----------------------------------------------------------------------
@@ -1154,6 +1163,10 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   assert(0 != tractions);
   assert(0 != _faultMesh);
   assert(0 != _fields);
+  assert(0 != _normalizer);
+
+  tractions->scale(_normalizer->pressureScale());
+  tractions->label("traction");
 
   // Get vertices from mesh of domain.
   const ALE::Obj<SieveMesh>& sieveMesh = dispT.mesh().sieveMesh();
@@ -1265,19 +1278,20 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
 void
 pylith::faults::FaultCohesiveKin::_allocateBufferVectorField(void)
 { // _allocateBufferVectorField
-  if (0 != _bufferVectorField)
+  assert(0 != _fields);
+  if (_fields->hasField("buffer (vector)"))
     return;
 
   // Create vector field; use same shape/chart as cumulative slip field.
   assert(0 != _faultMesh);
-  assert(0 != _fields);
-  _bufferVectorField = new topology::Field<topology::SubMesh>(*_faultMesh);
-  _bufferVectorField->label("vector field buffer");
+  _fields->add("buffer (vector)", "buffer");
+  topology::Field<topology::SubMesh>& buffer =
+    _fields->get("buffer (vector)");
   const topology::Field<topology::SubMesh>& slip = 
     _fields->get("cumulative slip");
-  _bufferVectorField->newSection(slip);
-  _bufferVectorField->allocate();
-  _bufferVectorField->zero();
+  buffer.newSection(slip);
+  buffer.allocate();
+  buffer.zero();
 } // _allocateBufferVectorField
 
 // ----------------------------------------------------------------------
@@ -1285,18 +1299,19 @@ pylith::faults::FaultCohesiveKin::_allocateBufferVectorField(void)
 void
 pylith::faults::FaultCohesiveKin::_allocateBufferScalarField(void)
 { // _allocateBufferScalarField
-  if (0 != _bufferScalarField)
+  assert(0 != _fields);
+  if (_fields->hasField("buffer (scalar)"))
     return;
 
   // Create vector field; use same shape/chart as area field.
   assert(0 != _faultMesh);
-  assert(0 != _fields);
-  _bufferScalarField = new topology::Field<topology::SubMesh>(*_faultMesh);
-  _bufferScalarField->label("scalar field buffer");
+  _fields->add("buffer (scalar)", "buffer");
+  topology::Field<topology::SubMesh>& buffer =
+    _fields->get("buffer (scalar)");
   const topology::Field<topology::SubMesh>& area = _fields->get("area");
-  _bufferScalarField->newSection(area);
-  _bufferScalarField->allocate();
-  _bufferScalarField->zero();
+  buffer.newSection(area);
+  buffer.allocate();
+  buffer.zero();
 } // _allocateBufferScalarField
 
 

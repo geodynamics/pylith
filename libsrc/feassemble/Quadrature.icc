@@ -69,40 +69,13 @@ pylith::feassemble::Quadrature<mesh_type>::jacobianDet(void) const {
   return _engine->jacobianDet();
 }
 
-// Get precomputed coordinates of quadrature points
+// Get precomputed geometry fields.
 template<typename mesh_type>
 inline
-const pylith::topology::Field<mesh_type>&
-pylith::feassemble::Quadrature<mesh_type>::quadPtsPrecomp(void) const {
-  assert(0 != _quadPtsField);
-  return *_quadPtsField;
-}
-
-// Get precomputed derivatives of basis fns evaluated at quadrature points.
-template<typename mesh_type>
-inline
-const pylith::topology::Field<mesh_type>&
-pylith::feassemble::Quadrature<mesh_type>::basisDerivPrecomp(void) const {
-  assert(0 != _basisDerivField);
-  return *_basisDerivField;
-}
-
-// Get precomputed Jacobians evaluated at quadrature points.
-template<typename mesh_type>
-inline
-const pylith::topology::Field<mesh_type>&
-pylith::feassemble::Quadrature<mesh_type>::jacobianPrecomp(void) const {
-  assert(0 != _jacobianField);
-  return *_jacobianField;
-}
-
-// Get precomputed determinants of Jacobian evaluated at quadrature points.
-template<typename mesh_type>
-inline
-const pylith::topology::Field<mesh_type>&
-pylith::feassemble::Quadrature<mesh_type>::jacobianDetPrecomp(void) const {
-  assert(0 != _jacobianDetField);
-  return *_jacobianDetField;
+const pylith::topology::Fields<pylith::topology::Field<mesh_type> >&
+pylith::feassemble::Quadrature<mesh_type>::geometryFields(void) const {
+  assert(0 != _geometryFields);
+  return *_geometryFields;
 }
 
 // Precompute geometric quantities for each cell.

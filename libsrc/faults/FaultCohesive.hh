@@ -70,12 +70,6 @@ protected :
   virtual
   bool _useLagrangeConstraints(void) const = 0;
 
-  // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private :
-
-  FaultCohesive(const FaultCohesive&); ///< Not implemented
-  const FaultCohesive& operator=(const FaultCohesive&); ///< Not implemented
-
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
@@ -84,6 +78,12 @@ private :
   bool _useFaultMesh;
 
   std::string _faultMeshFilename; /// Filename for fault mesh UCD file.
+
+  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private :
+
+  FaultCohesive(const FaultCohesive&); ///< Not implemented
+  const FaultCohesive& operator=(const FaultCohesive&); ///< Not implemented
 
 }; // class FaultCohesive
 

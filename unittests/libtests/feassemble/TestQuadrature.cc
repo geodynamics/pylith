@@ -225,8 +225,18 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
   const ALE::Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
   CPPUNIT_ASSERT(!cells.isNull());
   quadrature.initializeGeometry();
+#if defined(PRECOMPUTE_GEOMETRY)
   quadrature.computeGeometry(mesh, cells);
-  
+#else
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<topology::Mesh::RealSection>& coordinates = 
+    sieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						coordinatesCell.size(),
+						&coordinatesCell[0]);
+#endif
+
   size_t size = 0;
 
   // Check values from computeGeometry()
@@ -235,7 +245,13 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
   for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
+#if defined(PRECOMPUTE_GEOMETRY)
     quadrature.retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    quadrature.computeGeometry(coordinatesCell, *c_iter);    
+#endif
 
     const double_array& quadPts = quadrature.quadPts();
     size = numQuadPts * spaceDim;
@@ -265,10 +281,7 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
   // Check clear()
   quadrature.clear();
   
-  CPPUNIT_ASSERT(0 == quadrature._quadPtsField);
-  CPPUNIT_ASSERT(0 == quadrature._jacobianField);
-  CPPUNIT_ASSERT(0 == quadrature._jacobianDetField);
-  CPPUNIT_ASSERT(0 == quadrature._basisDerivField);
+  CPPUNIT_ASSERT(0 == quadrature._geometryFields);
   CPPUNIT_ASSERT(0 == quadrature._engine);
 
   // Make sure caling clear without data doesn't generate errors 
@@ -373,10 +386,7 @@ pylith::feassemble::TestQuadrature::testComputeGeometryCell(void)
 
   quadrature.clear();
 
-  CPPUNIT_ASSERT(0 == quadrature._quadPtsField);
-  CPPUNIT_ASSERT(0 == quadrature._jacobianField);
-  CPPUNIT_ASSERT(0 == quadrature._jacobianDetField);
-  CPPUNIT_ASSERT(0 == quadrature._basisDerivField);
+  CPPUNIT_ASSERT(0 == quadrature._geometryFields);
   CPPUNIT_ASSERT(0 == quadrature._engine);
 } // testComputeGeometryCell
 
