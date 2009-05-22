@@ -61,7 +61,6 @@ pylith::topology::TestSubMesh::testConstructor(void)
   CPPUNIT_ASSERT(mesh._mesh.isNull());
   CPPUNIT_ASSERT_EQUAL(0, mesh.dimension());
   CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
-  CPPUNIT_ASSERT_EQUAL(0, mesh.comm());
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -177,7 +176,6 @@ void
 pylith::topology::TestSubMesh::testComm(void)
 { // testComm
   SubMesh mesh;
-  CPPUNIT_ASSERT_EQUAL(0, mesh.comm());
 
   Mesh mesh2D;
   _buildMesh(&mesh2D);
