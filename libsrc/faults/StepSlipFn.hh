@@ -25,8 +25,6 @@
 // Include directives ---------------------------------------------------
 #include "SlipTimeFn.hh"
 
-#include "pylith/topology/topologyfwd.hh" // USES Fields<Field<SubMesh> >
-
 #include "pylith/utils/array.hh" // HASA double_array
 
 // StepSlipFn -----------------------------------------------------------
@@ -111,10 +109,6 @@ private :
 
   double _slipTimeVertex; ///< Slip time at a vertex.
   double_array _slipVertex; ///< Final slip at a vertex.
-
-  /// Parameters for step slip time function, final slip (vector) and
-  /// slip time (scalar).
-  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
 
   /// Spatial database for final slip
   spatialdata::spatialdb::SpatialDB* _dbFinalSlip;

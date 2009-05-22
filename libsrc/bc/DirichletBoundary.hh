@@ -74,7 +74,9 @@ private :
 private :
 
   topology::SubMesh* _boundaryMesh; ///< Boundary mesh.
-  topology::Field<topology::SubMesh>* _tmpField; ///< Temporary field for output.
+
+  /// Fields manager (holds temporary field for output).
+  topology::Fields<topology::Field<topology::SubMesh> >* _fields;
 
 }; // class DirichletBoundary
 

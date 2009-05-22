@@ -38,6 +38,13 @@ namespace pylith {
       /// Deallocate PETSc and local data structures.
       void deallocate(void);
 
+      /** Check if fields contains a given field.
+       *
+       * @param name Name of field.
+       * @return True if fields contains field, false otherwise.
+       */
+      bool hasField(const char* name) const;
+
       /** Add field.
        *
        * @param name Name of field.

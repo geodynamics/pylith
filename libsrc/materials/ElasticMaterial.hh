@@ -347,11 +347,8 @@ private :
   /// Database for initial strain tensor;
   spatialdata::spatialdb::SpatialDB* _dbInitialStrain;
 
-  /// Initial stress field.
-  topology::Field<topology::Mesh>* _initialStress;
-  
-  /// Initial strain field.
-  topology::Field<topology::Mesh>* _initialStrain;
+  /// Initial stress/strain fields.
+  topology::Fields<topology::Field<topology::Mesh> >* _initialFields;
   
   /** Properties at quadrature points for current cell.
    *

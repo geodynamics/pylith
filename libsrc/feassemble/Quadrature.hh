@@ -97,30 +97,12 @@ public :
    */
   const double_array& jacobianDet(void) const;
 
-  /** Get precomputed coordinates of quadrature points
-   *
-   * @returns Array of coordinates of quadrature points in cell
-   */
-  const pylith::topology::Field<mesh_type>& quadPtsPrecomp(void) const;
-
-  /** Get precomputed derivatives of basis fns evaluated at quadrature points.
-   *
-   * @returns Array of derivatives of basis fns evaluated at
-   * quadrature points
-   */
-  const pylith::topology::Field<mesh_type>& basisDerivPrecomp(void) const;
-
-  /** Get precomputed Jacobians evaluated at quadrature points.
-   *
-   * @returns Array of Jacobian inverses evaluated at quadrature points.
-   */
-  const pylith::topology::Field<mesh_type>& jacobianPrecomp(void) const;
-
   /** Get precomputed determinants of Jacobian evaluated at quadrature points.
    *
    * @returns Array of determinants of Jacobian evaluated at quadrature pts
    */
-  const pylith::topology::Field<mesh_type>& jacobianDetPrecomp(void) const;
+  const topology::Fields<topology::Field<mesh_type> >&
+  geometryFields(void) const;
 
   /** Compute geometric quantities for each cell.
    *
@@ -153,15 +135,8 @@ private :
 
   QuadratureEngine* _engine; ///< Quadrature geometry engine.
 
-  /** Fields and visitors for precomputing geometry information for
-   * cells associated with this quadrature.
-   */
-  topology::Field<mesh_type>* _quadPtsField; ///< Coordinates of quad pts.
-  topology::Field<mesh_type>* _jacobianField; ///< Jacobian at quad pts.
-  topology::Field<mesh_type>* _jacobianDetField; ///< |J| at quad pts.
-
-  /// Derivatives of basis fns at quad pts.
-  topology::Field<mesh_type>* _basisDerivField;
+  /// Fields for precomputing geometry information.
+  topology::Fields<topology::Field<mesh_type> >* _geometryFields;
 
   bool _checkConditioning; ///< True if checking for ill-conditioning.
 

@@ -42,7 +42,7 @@ typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
 // Default constructor.
 pylith::bc::AbsorbingDampers::AbsorbingDampers(void) :
   _boundaryMesh(0),
-  _dampingConsts(0)
+  _parameters(0)
 { // constructor
 } // constructor
 
@@ -51,7 +51,7 @@ pylith::bc::AbsorbingDampers::AbsorbingDampers(void) :
 pylith::bc::AbsorbingDampers::~AbsorbingDampers(void)
 { // destructor
   delete _boundaryMesh; _boundaryMesh = 0;
-  delete _dampingConsts; _dampingConsts = 0;
+  delete _parameters; _parameters = 0;
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -65,7 +65,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   assert(0 != _db);
 
   delete _boundaryMesh; _boundaryMesh = 0;
-  delete _dampingConsts; _dampingConsts = 0;
+  delete _parameters; _parameters = 0;
 
   _boundaryMesh = new topology::SubMesh(mesh, _label.c_str());
   assert(0 != _boundaryMesh);
@@ -120,11 +120,14 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   const int spaceDim = cellGeometry.spaceDim();
   const int fiberDim = numQuadPts * spaceDim;
 
-  _dampingConsts = new topology::Field<topology::SubMesh>(*_boundaryMesh);
-  _dampingConsts->label("damping constants");
-  assert(0 != _dampingConsts);
-  _dampingConsts->newSection(cells, fiberDim);
-  _dampingConsts->allocate();
+  _parameters = 
+    new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
+  assert(0 != _parameters);
+  _parameters->add("damping constants", "damping_constants");
+  topology::Field<topology::SubMesh>& dampingConsts =
+    _parameters->get("damping constants");
+  dampingConsts.newSection(cells, fiberDim);
+  dampingConsts.allocate();
 
   // Containers for orientation information
   const int orientationSize = spaceDim * spaceDim;
@@ -170,7 +173,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   const double velocityScale = 
     _normalizer->lengthScale() / _normalizer->timeScale();
 
-  const ALE::Obj<SubRealSection>& dampersSection = _dampingConsts->section();
+  const ALE::Obj<SubRealSection>& dampersSection = dampingConsts.section();
   assert(!dampersSection.isNull());
 
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
@@ -267,7 +270,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
 { // integrateResidual
   assert(0 != _quadrature);
   assert(0 != _boundaryMesh);
-  assert(0 != _dampingConsts);
+  assert(0 != _parameters);
   assert(0 != fields);
 
   // Get cell geometry information that doesn't depend on cell
@@ -291,7 +294,8 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  const ALE::Obj<SubRealSection>& dampersSection = _dampingConsts->section();
+  const ALE::Obj<SubRealSection>& dampersSection =
+    _parameters->get("damping constants").section();
   assert(!dampersSection.isNull());
 
   const ALE::Obj<RealSection>& residualSection = residual.section();
@@ -410,7 +414,8 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  const ALE::Obj<SubRealSection>& dampersSection = _dampingConsts->section();
+  const ALE::Obj<SubRealSection>& dampersSection =
+    _parameters->get("damping constants").section();
   assert(!dampersSection.isNull());
 
   const topology::Field<topology::Mesh>& solution = fields->solution();

@@ -113,10 +113,6 @@ private :
   double _slipTimeVertex; ///< Slip time at a vertex.
   double_array _slipRateVertex; ///< Slip rate at a vertex.
 
-  /// Parameters for constant slip rate slip time function, slip rate
-  /// (vector) and slip time (scalar).
-  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
-
   /// Spatial database for slip rate.
   spatialdata::spatialdb::SpatialDB* _dbSlipRate;
 

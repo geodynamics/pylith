@@ -223,11 +223,8 @@ protected :
   /// Elastic material associated with integrator
   materials::ElasticMaterial* _material;
 
-  /// Buffer for storing cell tensor field.
-  topology::Field<topology::Mesh>* _bufferFieldTensor;
-
-  /// Buffer for storing cell state-variable field.
-  topology::Field<topology::Mesh>* _bufferFieldOther;
+  /// Buffers for output.
+  topology::Fields<topology::Field<topology::Mesh> >* _outputFields;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

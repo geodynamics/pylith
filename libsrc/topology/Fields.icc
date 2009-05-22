@@ -47,14 +47,23 @@ pylith::topology::Fields<field_type>::deallocate(void)
 } // deallocate
 
 // ----------------------------------------------------------------------
+// Check if fields contains a given field.
+template<typename field_type>
+bool
+pylith::topology::Fields<field_type>::hasField(const char* name) const
+{ // hasField
+  typename map_type::const_iterator iter = _fields.find(name);
+  return iter != _fields.end();
+} // hasField
+
+// ----------------------------------------------------------------------
 // Add field.
 template<typename field_type>
 void
 pylith::topology::Fields<field_type>::add(const char* name,
 					  const char* label)
 { // add
-  typename map_type::iterator iter = _fields.find(name);
-  if (iter != _fields.end()) {
+  if (hasField(name)) {
     std::ostringstream msg;
     msg << "Could not add field '" << name
 	<< "' to fields manager, because it already exists.";
@@ -75,8 +84,7 @@ pylith::topology::Fields<field_type>::add(
 			const pylith::topology::FieldBase::DomainEnum domain,
 			const int fiberDim)
 { // add
-  typename map_type::iterator iter = _fields.find(name);
-  if (iter != _fields.end()) {
+  if (hasField(name)) {
     std::ostringstream msg;
     msg << "Could not add field '" << name
 	<< "' to fields manager, because it already exists.";

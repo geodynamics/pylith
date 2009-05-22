@@ -113,8 +113,9 @@ private :
   /// Mesh over which tractions are applied
   topology::SubMesh* _boundaryMesh;
 
-  /// Traction vector in global coordinates at integration points.
-  topology::Field<topology::SubMesh>* _tractions;
+  /// Parameters for tractions vector in global coordinates at
+  /// integration points.
+  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
 
 }; // class Neumann
 

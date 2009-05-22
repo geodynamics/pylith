@@ -14,9 +14,14 @@
 
 #include "SlipTimeFn.hh" // implementation of object methods
 
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/Field.hh" // USES Field
+
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::SlipTimeFn::SlipTimeFn(void)
+pylith::faults::SlipTimeFn::SlipTimeFn(void) :
+  _parameters(0)
 { // constructor
 } // constructor
 
@@ -24,6 +29,7 @@ pylith::faults::SlipTimeFn::SlipTimeFn(void)
 // Destructor.
 pylith::faults::SlipTimeFn::~SlipTimeFn(void)
 { // destructor
+  delete _parameters; _parameters = 0;
 } // destructor
 
 

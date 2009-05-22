@@ -267,7 +267,7 @@ pylith::materials::Material::initialize(
 
 // ----------------------------------------------------------------------
 // Get properties
-const pylith::materials::Material::field_type&
+const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::materials::Material::getProperties() const
 { // getProperties
   return *_properties;
@@ -275,7 +275,7 @@ pylith::materials::Material::getProperties() const
 
 // ----------------------------------------------------------------------
 // Get state variables
-const pylith::materials::Material::field_type&
+const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::materials::Material::getStateVars() const
 { // getStateVars
   return *_stateVars;
@@ -284,7 +284,7 @@ pylith::materials::Material::getStateVars() const
 // ----------------------------------------------------------------------
 // Get physical property or state variable field.
 void
-pylith::materials::Material::getField(field_type *field, const char* name) const
+pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, const char* name) const
 { // getField
   assert(0 != field);
   assert(0 != _properties);

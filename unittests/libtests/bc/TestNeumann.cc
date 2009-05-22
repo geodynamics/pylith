@@ -142,7 +142,9 @@ pylith::bc::TestNeumann::testInitialize(void)
   const int fiberDim = numQuadPts * spaceDim;
   double_array tractionsCell(fiberDim);
   int index = 0;
-  const ALE::Obj<SubRealSection>& tractionSection = bc._tractions->section();
+  CPPUNIT_ASSERT(0 != bc._parameters);
+  const ALE::Obj<SubRealSection>& tractionSection =
+    bc._parameters->get("traction").section();
 
   for(SieveSubMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();

@@ -237,12 +237,6 @@ private :
   /// Fields for fault information.
   topology::Fields<topology::Field<topology::SubMesh> >* _fields;
 
-  /// Buffer for vector field over fault vertices.
-  topology::Field<topology::SubMesh>* _bufferVectorField;
-  
-  /// Buffer for scalar field over fault vertices.
-  topology::Field<topology::SubMesh>* _bufferScalarField;
-  
   /// Map label of cohesive cell to label of cells in fault mesh.
   std::map<topology::Mesh::SieveMesh::point_type, 
 	   topology::SubMesh::SieveMesh::point_type> _cohesiveToFault;

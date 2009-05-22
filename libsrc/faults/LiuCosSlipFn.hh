@@ -137,10 +137,6 @@ private :
   double _riseTimeVertex; ///< Rise time at a vertex.
   double_array _slipVertex; ///< Slip at a vertex.
 
-  /// Parameters for Liu cosine/sine slip time function, final slip
-  /// (vector), slip time (scalar), rise time (scalar).
-  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
-
   /// Spatial database for final slip.
   spatialdata::spatialdb::SpatialDB* _dbFinalSlip;
 
