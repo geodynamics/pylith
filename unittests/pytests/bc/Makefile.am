@@ -22,9 +22,9 @@ TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
 	TestAbsorbingDampers.py \
-	TestNeumann.py \
-	TestDirichletPoints.py \
-	TestDirichletBoundary.py
+	TestDirichletBC.py \
+	TestDirichletBoundary.py \
+	TestNeumann.py
 
 
 # End of file 

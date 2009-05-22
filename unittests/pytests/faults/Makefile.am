@@ -23,10 +23,9 @@ TESTS_ENVIRONMENT = $(PYTHON)
 noinst_PYTHON = \
 	TestBruneSlipFn.py \
 	TestConstRateSlipFn.py \
-	TestFault.py \
-	TestFaultCohesive.py \
-	TestFaultCohesiveKin.py \
 	TestEqKinSrc.py \
+	TestFaultCohesiveKin.py \
+	TestLiuCosSlipFn.py \
 	TestSingleRupture.py \
 	TestStepSlipFn.py
 
