@@ -23,6 +23,7 @@ TESTS_ENVIRONMENT = $(PYTHON)
 noinst_PYTHON = \
 	TestHomogeneous.py \
 	TestMaterial.py \
+	TestElasticMaterial.py \
 	TestElasticStrain1D.py \
 	TestElasticStress1D.py \
 	TestElasticPlaneStrain.py \

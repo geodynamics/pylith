@@ -21,7 +21,7 @@ dist_noinst_DATA = \
 	mesh_tet4_200m.lagrit \
 	shearwave.cfg \
 	shearwave_slip.spatialdb \
-	shearwave_sliprate.spatialdb \
+	shearwave_risetime.spatialdb \
 	shearwave_sliptime.spatialdb
 
 # End of file 

@@ -26,8 +26,10 @@ noinst_PYTHON = \
 	TestMeshIOLagrit.py \
 	TestVertexFilterVecNorm.py \
 	TestCellFilterAvg.py \
-	TestOutputManager.py \
-	TestOutputSolnSubset.py
+	TestOutputManagerMesh.py \
+	TestOutputManagerSubMesh.py \
+	TestOutputSolnSubset.py \
+	TestDataWriterVTK.py
 
 if ENABLE_CUBIT
   TESTS += testcubit.py
