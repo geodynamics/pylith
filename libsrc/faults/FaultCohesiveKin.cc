@@ -152,12 +152,6 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
 
   // Compute tributary area for each vertex in fault mesh.
   _calcArea();
-
-  // Create empty tractions field for change in fault tractions.
-  _fields->add("tractions", "traction_change");
-  topology::Field<topology::SubMesh>& tractions = _fields->get("tractions");
-  tractions.vectorFieldType(topology::FieldBase::VECTOR);
-  tractions.scale(_normalizer->pressureScale());
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -1165,8 +1159,8 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   assert(0 != _fields);
   assert(0 != _normalizer);
 
-  tractions->scale(_normalizer->pressureScale());
   tractions->label("traction_change");
+  tractions->scale(_normalizer->pressureScale());
 
   // Get vertices from mesh of domain.
   const ALE::Obj<SieveMesh>& sieveMesh = dispT.mesh().sieveMesh();
@@ -1237,6 +1231,7 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   assert(!tractionsSection.isNull());
   tractions->zero();
   
+  const double pressureScale = tractions->scale();
   for (SieveMesh::label_sequence::iterator v_iter = verticesBegin; 
        v_iter != verticesEnd;
        ++v_iter)
@@ -1255,7 +1250,11 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
       const double* areaVertex = areaSection->restrictPoint(vertexFault);
       assert(0 != areaVertex);
 
-      const double scale = stiffnessVertex[0] / areaVertex[0];
+      // Account for conditioning and then "nondimensionalize" so that
+      // values appear to be nondimensionalized for future
+      // compatibility with nondimensionalization.
+      const double scale = 
+	stiffnessVertex[0] / (areaVertex[0] * pressureScale);
       for (int i=0; i < fiberDim; ++i)
 	tractionsVertex[i] = dispTVertex[i] * scale;
 

@@ -213,6 +213,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     self.fields.solutionName(solnName)
     solution = self.fields.solution()
     solution.vectorFieldType(solution.VECTOR)
+    solution.scale(normalizer.lengthScale().value)
     solution.newSection(solution.VERTICES_FIELD, dimension)
     for constraint in self.constraints:
       constraint.setConstraintSizes(solution)
