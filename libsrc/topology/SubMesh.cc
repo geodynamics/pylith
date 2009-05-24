@@ -71,6 +71,9 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
   } // if
   _mesh->setRealSection("coordinates", 
 			meshSieveMesh->getRealSection("coordinates"));
+  if (meshSieveMesh->hasRealSection("coordinates_dimensioned"))
+  _mesh->setRealSection("coordinates_dimensioned", 
+			meshSieveMesh->getRealSection("coordinates_dimensioned"));
 
   // Create the parallel overlap
   const ALE::Obj<SieveMesh::sieve_type>& sieve = _mesh->getSieve();

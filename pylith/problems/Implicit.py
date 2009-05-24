@@ -97,9 +97,12 @@ class Implicit(Formulation):
     self.fields.solutionName("dispIncr(t->t+dt)")
 
     # Set fields to zero
+    lengthScale = normalizer.lengthScale()
     disp = self.fields.get("disp(t)")
+    disp.scale(lengthScale.value)
     disp.zero()
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
+    dispIncr.scale(lengthScale.value)
     dispIncr.zero()
     residual = self.fields.get("residual")
     residual.zero()
