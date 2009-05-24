@@ -179,6 +179,7 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
     3.1, 3.2,
     4.1, 4.2
   };
+  const double scale = 2.0;
 
   topology::Mesh mesh;
   MeshIOAscii iohandler;
@@ -198,17 +199,20 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
   field.allocate();
   field.label(label);
   field.vectorFieldType(fieldType);
+  field.scale(scale);
   const ALE::Obj<RealSection>& section = field.section();
   CPPUNIT_ASSERT(!section.isNull());
 
   CPPUNIT_ASSERT_EQUAL(nvertices, int(vertices->size()));
+  double_array values(nvertices*fiberDim);
+  for (int i=0; i < nvertices*fiberDim; ++i)
+    values[i] = fieldValues[i];
+  values /= scale;
   int ipt = 0;
   for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
-       ++v_iter, ++ipt) {
-    const double* values = &fieldValues[ipt*fiberDim];
-    section->updatePoint(*v_iter, values);
-  } // for
+       ++v_iter, ++ipt) 
+    section->updatePoint(*v_iter, &values[ipt*fiberDim]);
 
   spatialdata::geocoords::CSCart cs;
   const int numTimeSteps = 1;
@@ -261,6 +265,7 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
     1.1, 1.2,
     2.1, 2.2,
   };
+  const double scale = 4.0;
 
   topology::Mesh mesh;
   MeshIOAscii iohandler;
@@ -280,17 +285,20 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
   field.allocate();
   field.label(label);
   field.vectorFieldType(fieldType);
+  field.scale(scale);
   const ALE::Obj<RealSection>& section = field.section();
   CPPUNIT_ASSERT(!section.isNull());
 
   CPPUNIT_ASSERT_EQUAL(ncells, int(cells->size()));
+  double_array values(ncells*fiberDim);
+  for (int i=0; i < ncells*fiberDim; ++i)
+    values[i] = fieldValues[i];
+  values /= scale;
   int ipt = 0;
   for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
-       ++c_iter, ++ipt) {
-    const double* values = &fieldValues[ipt*fiberDim];
-    section->updatePoint(*c_iter, values);
-  } // for
+       ++c_iter, ++ipt)
+    section->updatePoint(*c_iter, &values[ipt*fiberDim]);
 
   spatialdata::geocoords::CSCart cs;
   const int numTimeSteps = 1;

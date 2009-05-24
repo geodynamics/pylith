@@ -154,7 +154,7 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
   _calcArea();
 
   // Create empty tractions field for change in fault tractions.
-  _fields->add("tractions", "tractions_change");
+  _fields->add("tractions", "traction_change");
   topology::Field<topology::SubMesh>& tractions = _fields->get("tractions");
   tractions.vectorFieldType(topology::FieldBase::VECTOR);
   tractions.scale(_normalizer->pressureScale());
@@ -1166,7 +1166,7 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   assert(0 != _normalizer);
 
   tractions->scale(_normalizer->pressureScale());
-  tractions->label("traction");
+  tractions->label("traction_change");
 
   // Get vertices from mesh of domain.
   const ALE::Obj<SieveMesh>& sieveMesh = dispT.mesh().sieveMesh();
@@ -1230,7 +1230,6 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
 
   // Allocate buffer for tractions field (if nec.).
   const ALE::Obj<RealSection>& tractionsSection = tractions->section();
-  tractions->label("tractions");
   if (tractionsSection.isNull()) {
     tractions->newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
     tractions->allocate();

@@ -91,7 +91,6 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     _fieldAvg = new field_type(fieldIn.mesh());
     assert(0 != _fieldAvg);
     _fieldAvg->newSection(sectionIn->getChart(), fiberDim);
-    _fieldAvg->label("average");
     _fieldAvg->allocate();
 
     switch (fieldIn.vectorFieldType())
@@ -120,6 +119,8 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
   } // if
   assert(0 != _fieldAvg);
   const ALE::Obj<RealSection>& sectionAvg = _fieldAvg->section();
+  _fieldAvg->label(fieldIn.label());
+  _fieldAvg->scale(fieldIn.scale());
 
   double_array fieldAvgCell(fiberDim);
   double scalar = 0.0;
