@@ -79,7 +79,8 @@ pylith::meshio::VertexFilterVecNorm<field_type>::filter(
     _fieldVecNorm->newSection(sectionIn->getChart(), fiberDimNorm);
     _fieldVecNorm->allocate();
 
-    _fieldVecNorm->label(fieldIn.label());    
+    _fieldVecNorm->label(fieldIn.label());
+    _fieldVecNorm->scale(fieldIn.scale());
     switch (fieldIn.vectorFieldType())
       { // switch
       case topology::FieldBase::SCALAR:

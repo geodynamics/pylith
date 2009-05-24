@@ -16,6 +16,8 @@
 #include "VertexFilter.hh" // USES VertexFilter
 #include "CellFilter.hh" // USES CellFilter
 
+#include "pylith/topology/Fields.hh" // USES Fields
+
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 // ----------------------------------------------------------------------
@@ -25,7 +27,8 @@ pylith::meshio::OutputManager<mesh_type, field_type>::OutputManager(void) :
   _coordsys(0),
   _writer(0),
   _vertexFilter(0),
-  _cellFilter(0)
+  _cellFilter(0),
+  _fields(0)
 { // constructor
 } // constructor
 
@@ -38,6 +41,7 @@ pylith::meshio::OutputManager<mesh_type, field_type>::~OutputManager(void)
   _vertexFilter = 0; // :TODO: Use shared pointer
   _cellFilter = 0; // :TODO: Use shared pointer
   delete _coordsys; _coordsys = 0;
+  delete _fields; _fields = 0;
 } // destructor  
 
 // ----------------------------------------------------------------------
@@ -140,8 +144,9 @@ pylith::meshio::OutputManager<mesh_type, field_type>::appendVertexField(
 { // appendVertexField
   const field_type& fieldFiltered = 
     (0 == _vertexFilter) ? field : _vertexFilter->filter(field);
-
-  _writer->writeVertexField(t, fieldFiltered, mesh);
+  const field_type& fieldDimensioned = _dimension(fieldFiltered);
+  
+  _writer->writeVertexField(t, fieldDimensioned, mesh);
 } // appendVertexField
 
 // ----------------------------------------------------------------------
@@ -156,9 +161,85 @@ pylith::meshio::OutputManager<mesh_type, field_type>::appendCellField(
 { // appendCellField
   const field_type& fieldFiltered = 
     (0 == _cellFilter) ? field : _cellFilter->filter(field, label, labelId);
+  const field_type& fieldDimensioned = _dimension(fieldFiltered);
 
-  _writer->writeCellField(t, fieldFiltered, label, labelId);
+  _writer->writeCellField(t, fieldDimensioned, label, labelId);
 } // appendCellField
+
+// ----------------------------------------------------------------------
+// Dimension field.
+template<typename mesh_type, typename field_type>
+const field_type&
+pylith::meshio::OutputManager<mesh_type, field_type>::_dimension(const field_type& fieldIn)
+{ // _dimension
+
+  if (fieldIn.addDimensionOkay()) {
+    std::cout << "Adding dimensions to field '" << fieldIn.label()
+	      << "'." << std::endl;
+    fieldIn.dimensionalize();
+
+    return fieldIn;
+  } else {
+    std::cout << "Creating temporary field to add dimensions to field '"
+	      << fieldIn.label() << "'." << std::endl;
+
+    std::string fieldName = "buffer (other)";
+    switch (fieldIn.vectorFieldType())
+      { // switch
+      case topology::FieldBase::SCALAR :
+	fieldName = "buffer (scalar)";
+	break;
+      case topology::FieldBase::VECTOR :
+	fieldName = "buffer (vector)";
+	break;
+      case topology::FieldBase::TENSOR :
+	fieldName = "buffer (tensor)";
+	break;
+      case topology::FieldBase::OTHER :
+	fieldName = "buffer (other)";
+	break;
+      case topology::FieldBase::MULTI_SCALAR :
+	fieldName = "buffer (multiple scalars)";
+	break;
+      case topology::FieldBase::MULTI_VECTOR :
+	fieldName = "buffer (multiple vectors)";
+	break;
+      case topology::FieldBase::MULTI_TENSOR :
+	fieldName = "buffer (multiple tensors)";
+	break;
+      case topology::FieldBase::MULTI_OTHER :
+	fieldName = "buffer (multiple others)";
+	break;
+      default :
+	// Spit out usefule error message and stop via assert. If
+	// optimized, throw exception.
+	std::cerr << "Unknown field type '" << fieldIn.vectorFieldType()
+		  << "'";
+	assert(0);
+	throw std::logic_error("Unknown field type");
+      } // switch
+    
+    if (0 == _fields)
+      _fields = new topology::Fields<field_type>(fieldIn.mesh());
+    
+    if (!_fields->hasField(fieldName.c_str())) {
+      _fields->add(fieldName.c_str(), fieldIn.label());
+      field_type& fieldOut = _fields->get(fieldName.c_str());
+      fieldOut.newSection(fieldIn);
+      fieldOut.allocate();
+    } // if
+    field_type& fieldOut = _fields->get(fieldName.c_str());
+    fieldOut.copy(fieldIn);
+    fieldOut.addDimensionOkay(true);
+    fieldOut.dimensionalize();
+
+    return fieldOut;
+  } // if/else
+
+  // Satisfy return value. Should never get this far.
+  assert(0 != _fields);
+  return _fields->get("buffer (dimensioned)");
+} // _dimension
 
 
 // End of file 

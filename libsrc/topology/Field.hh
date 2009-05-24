@@ -216,13 +216,13 @@ public :
   /** Dimensionalize field. Throws runtime_error if field is not
    * allowed to be dimensionalized.
    */
-  void dimensionalize(void);
+  void dimensionalize(void) const;
 
   /** Print field to standard out.
    *
    * @param label Label for output.
    */
-  void view(const char* label);
+  void view(const char* label) const;
 
   /// Create PETSc vector for field.
   void createVector(void);

@@ -305,7 +305,6 @@ pylith::topology::Field<mesh_type>::copy(const Field& field)
   const int dstSize = (!_section.isNull()) ? _section->size() : 0;
   if (field.spaceDim() != spaceDim() ||
       field._vecFieldType != _vecFieldType ||
-      field._scale != _scale ||
       srcSize != dstSize) {
     std::ostringstream msg;
 
@@ -315,7 +314,7 @@ pylith::topology::Field<mesh_type>::copy(const Field& field)
 	<< "    space dim: " << field.spaceDim() << "\n"
 	<< "    vector field type: " << field._vecFieldType << "\n"
 	<< "    scale: " << field._scale << "\n"
-	<< "    size: " << srcSize
+	<< "    size: " << srcSize << "\n"
 	<< "  Destination section:\n"
 	<< "    space dim: " << spaceDim() << "\n"
 	<< "    vector field type: " << _vecFieldType << "\n"
@@ -340,6 +339,9 @@ pylith::topology::Field<mesh_type>::copy(const Field& field)
       _section->updatePointAll(*c_iter, field._section->restrictPoint(*c_iter));
     } // for
   } // if
+
+  _label = field._label;
+  _scale = field._scale;
 } // copy
 
 // ----------------------------------------------------------------------
@@ -357,7 +359,7 @@ pylith::topology::Field<mesh_type>::copy(const ALE::Obj<typename mesh_type::Real
     msg << "Cannot copy values from Sieve section "
 	<< _label << "'. Sections are incompatible.\n"
 	<< "  Source section:\n"
-	<< "    size: " << srcSize
+	<< "    size: " << srcSize << "\n"
 	<< "  Destination section:\n"
 	<< "    space dim: " << spaceDim() << "\n"
 	<< "    vector field type: " << _vecFieldType << "\n"
@@ -404,7 +406,7 @@ pylith::topology::Field<mesh_type>::operator+=(const Field& field)
 	<< "    space dim: " << field.spaceDim() << "\n"
 	<< "    vector field type: " << field._vecFieldType << "\n"
 	<< "    scale: " << field._scale << "\n"
-	<< "    size: " << srcSize
+	<< "    size: " << srcSize << "\n"
 	<< "  Destination section:\n"
 	<< "    space dim: " << spaceDim() << "\n"
 	<< "    vector field type: " << _vecFieldType << "\n"
@@ -443,7 +445,7 @@ pylith::topology::Field<mesh_type>::operator+=(const Field& field)
 // Dimensionalize field.
 template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::dimensionalize(void)
+pylith::topology::Field<mesh_type>::dimensionalize(void) const
 { // dimensionalize
   if (!_dimensionsOkay) {
     std::ostringstream msg;
@@ -470,7 +472,7 @@ pylith::topology::Field<mesh_type>::dimensionalize(void)
       
       _section->restrictPoint(*c_iter, &values[0], values.size());
       normalizer.dimensionalize(&values[0], values.size(), _scale);
-      _section->updatePoint(*c_iter, &values[0]);
+      _section->updatePointAll(*c_iter, &values[0]);
     } // for
   } // if
 } // dimensionalize
@@ -479,7 +481,7 @@ pylith::topology::Field<mesh_type>::dimensionalize(void)
 // Print field to standard out.
 template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::view(const char* label)
+pylith::topology::Field<mesh_type>::view(const char* label) const
 { // view
   std::string vecFieldString;
   switch(_vecFieldType)
