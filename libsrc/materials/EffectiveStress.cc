@@ -28,8 +28,8 @@ double
 pylith::materials::EffectiveStress::getEffStress(
 				 const double effStressInitialGuess,
 				 EffStressStruct* effStressParams,
-				 effStressFunc_fn_type* effStressFunc,
-				 effStressFuncDFunc_fn_type* effStressFuncDFunc)
+				 effStressFunc_fn_type effStressFunc,
+				 effStressFuncDFunc_fn_type effStressFuncDFunc)
 { // getEffStress
   // Check parameters
   if (effStressInitialGuess < 0.0)
@@ -67,7 +67,7 @@ pylith::materials::EffectiveStress::_bracketEffStress(
 				     double* px1,
 				     double* px2,
 				     EffStressStruct& effStressParams,
-				     effStressFunc_fn_type* effStressFunc)
+				     effStressFunc_fn_type effStressFunc)
 { // _bracketEffStress
   // Arbitrary number of iterations to bracket the root
   const int maxIterations = 50;
