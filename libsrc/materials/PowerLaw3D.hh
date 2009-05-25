@@ -55,6 +55,40 @@ public :
    */
   void useElasticBehavior(const bool flag);
 
+  /** Compute effective stress function.
+   *
+   * @param effStressTpdt Effective stress value.
+   * @param effStressParams Effective stress parameters.
+   *
+   * @returns Effective stress function value.
+   */
+  static double effStressFunc(
+    const double effStressTpdt,
+    pylith::materials::EffectiveStress::EffStressStruct& effStressParams);
+
+  /** Compute effective stress function derivative.
+   *
+   * @param effStressTpdt Effective stress value.
+   * @param effStressParams Effective stress parameters.
+   */
+  static double effStressDFunc(
+    const double effStressTpdt,
+    pylith::materials::EffectiveStress::EffStressStruct& effStressParams);
+
+  /** Compute effective stress function and derivative.
+   *
+   * @param effStressTpdt Effective stress value.
+   * @param effStressParams Effective stress parameters.
+   * @param py Returned effective stress function value.
+   * @param pdy Returned effective stress function derivative value.
+   *
+   */
+  static void effStressFuncDFunc(
+    const double effStressTpdt,
+    pylith::materials::EffectiveStress::EffStressStruct& effStressParams,
+    double* py,
+    double* pdy);
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
@@ -362,6 +396,35 @@ private :
 				 const int initialStrainSize);
 
   /** Compute derivatives of elasticity matrix from properties as a
+   * viscoelastic material for first iteration.
+   *
+   * @param elasticConsts Array for elastic constants.
+   * @param numElasticConsts Number of elastic constants.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
+   * @param stateVars State variables at locations.
+   * @param numStateVars Number of state variables.
+   * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
+   * @param initialStress Initial stress values.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain values.
+   * @param initialStrainSize Size of initial strain array.
+   */
+  void _calcElasticConstsViscoelasticInitial(double* const elasticConsts,
+					     const int numElasticConsts,
+					     const double* properties,
+					     const int numProperties,
+					     const double* stateVars,
+					     const int numStateVars,
+					     const double* totalStrain,
+					     const int strainSize,
+					     const double* initialStress,
+					     const int initialStressSize,
+					     const double* initialStrain,
+					     const int initialStrainSize);
+
+  /** Compute derivatives of elasticity matrix from properties as a
    * viscoelastic material.
    *
    * @param elasticConsts Array for elastic constants.
@@ -434,6 +497,14 @@ private :
 				    const double* initialStrain,
 				    const int initialStrainSize);
 
+  /** Compute scalar product, assuming vector form of a tensor.
+   *
+   * @param tensor1 First tensor.
+   * @param tensor2 Second tensor.
+   */
+  double _scalarProduct(const double* tensor1,
+			const double* tensor2) const;
+
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
@@ -447,7 +518,7 @@ private :
   calcStress_fn_type _calcStressFn;
 
   /// Method to use for _updateStateVars().
-  updateProperties_fn_type _updateStateVarsFn;
+  updateStateVars_fn_type _updateStateVarsFn;
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

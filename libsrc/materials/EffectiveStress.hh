@@ -49,6 +49,39 @@ public :
     double viscosityCoeff;
   };
 
+  // PUBLIC TYPEDEFS ///////////////////////////////////////////////////
+public :
+
+  /// Member prototype for effStressFunc()
+  typedef static double (*effStressFunc_fn_type)
+  (const double,
+   const double*);
+
+  /// Member prototype for effStressDFunc()
+  typedef static double (*effStressDFunc_fn_type)
+  (const double,
+   const double*);
+  
+  /// Member prototype for effStressFuncDFunc()
+  typedef static void (*effStressFuncDFunc_fn_type)
+  (const double,
+   const double*,
+   double*,
+   double*);
+
+  // PUBLIC MEMBERS ///////////////////////////////////////////////////
+public :
+
+  /// Metod to use for effStressFunc().
+  effStressFunc_fn_type effStressFunc;
+
+  /// Metod to use for effStressDFunc().
+  effStressDFunc_fn_type effStressDFunc;
+
+  /// Metod to use for effStressFuncDFunc().
+  effStressFuncDFunc_fn_type effStressFuncDFunc;
+
+
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
@@ -61,10 +94,10 @@ public :
    *
    * @returns Computed effective stress.
    */
-  static double getEffStress(const double effStressInitialGuess,
-			     const EffStressStruct& effStressParams,
-			     effStressFuncType* effStressFunc,
-			     effStressFuncDFuncType* effStressFuncDFunc);
+  double getEffStress(const double effStressInitialGuess,
+		      EffStressStruct* effStressParams,
+		      effStressFunc_fn_type* effStressFunc,
+		      effStressFuncDFunc_fn_type* effStressFuncDFunc);
 
   // PRIVATE METHODS /////////////////////////////////////////////////////
 private :
@@ -77,10 +110,10 @@ private :
    * @param effStressFunc Function to compute effective stress only.
    *
    */
-  void bracketEffStress(double x1,
-			double x2,
-			const double effStressParams,
-			static double &effStressFunc);
+  void _bracketEffStress(double* px1,
+			 double* px2,
+			 EffStressStruct& effStressParams,
+			 effStressFunc_fn_type* effStressFunc);
 
   /** Solve for effective stress using Newton's method with bisection.
    *
@@ -88,12 +121,15 @@ private :
    * @param x2 Initial guess for second bracket.
    * @param effStressParams Parameters used in computing effective stress.
    * @param effStressFunc Function to compute effective stress only.
+   * @param effStressFuncDFunc Function to compute effective stress and derivative.
    *
    */
-  void bracketEffStress(double x1,
-			double x2,
-			const double effStressParams,
-			static double &effStressFunc);
+  void _findEffStress(double* px1,
+		      double* px2,
+		      EffStressStruct& effStressParams,
+		      effStressFunc_fn_type* effStressFunc,
+		      effStressFuncDFunc_fn_type* effStressFuncDFunc);
+
 }; // class EffectiveStress
 
 #endif // pylith_materials_effectivestress_hh
