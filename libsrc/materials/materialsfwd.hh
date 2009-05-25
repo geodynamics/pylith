@@ -37,6 +37,7 @@ namespace pylith {
     class ElasticIsotropic3D;
     class MaxwellIsotropic3D;
     class GenMaxwellIsotropic3D;
+    class PowerLaw3D;
 
   } // materials
 } // pylith

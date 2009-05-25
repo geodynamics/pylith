@@ -83,7 +83,7 @@ pylith::materials::PowerLaw3D::_calcElasticConsts(
 // Update state variables after solve.
 inline
 void
-pylith::materials::PowerLaw3D::_updateProperties(double* const stateVars,
+pylith::materials::PowerLaw3D::_updateStateVars(double* const stateVars,
 						 const int numStateVars,
 						 const double* properties,
 						 const int numProperties,
@@ -94,8 +94,8 @@ pylith::materials::PowerLaw3D::_updateProperties(double* const stateVars,
 						 const double* initialStrain,
 						 const int initialStrainSize)
 {
-  assert(0 != _updatePropertiesFn);
-  CALL_MEMBER_FN(*this, _updatePropertiesFn)(stateVars, numStateVars,
+  assert(0 != _updateStateVarsFn);
+  CALL_MEMBER_FN(*this, _updateStateVarsFn)(stateVars, numStateVars,
 					     properties, numProperties,
 					     totalStrain, strainSize,
 					     initialStress, initialStressSize,
@@ -103,18 +103,18 @@ pylith::materials::PowerLaw3D::_updateProperties(double* const stateVars,
 } // _updateStateVars
 
 // Compute scalar product, assuming vector form of a tensor.
-inline
-double
-pylith::materials::PowerLaw3D::_scalarProduct(const double* tensor1,
-					      const double* tensor2)
-{
-  const double scalarProduct = tensor1[0] * tensor2[0] +
-    tensor1[1] * tensor2[1] +
-    tensor1[2] * tensor2[2] +
-    2.0 * (tensor1[3] * tensor2[3] +
-	   tensor1[4] * tensor2[4] +
-	   tensor1[5] * tensor2[5]);
-  return scalarProduct;
-} // _scalarProduct
+// inline
+// double
+// pylith::materials::PowerLaw3D::_scalarProduct(const double* tensor1,
+// 					      const double* tensor2)
+// {
+//   const double scalarProduct = tensor1[0] * tensor2[0] +
+//     tensor1[1] * tensor2[1] +
+//     tensor1[2] * tensor2[2] +
+//     2.0 * (tensor1[3] * tensor2[3] +
+// 	   tensor1[4] * tensor2[4] +
+// 	   tensor1[5] * tensor2[5]);
+//   return scalarProduct;
+// } // _scalarProduct
 
 // End of file 

@@ -26,10 +26,10 @@
 // actual initial guess is zero.
 double
 pylith::materials::EffectiveStress::getEffStress(
-				     const double effStressInitialGuess,
-				     const EffStressStruct& effStressParams,
-				     effStressFuncType* effStressFunc,
-				     effStressFuncDFuncType* effStressFuncDFunc)
+				 const double effStressInitialGuess,
+				 EffStressStruct* effStressParams,
+				 effStressFunc_fn_type* effStressFunc,
+				 effStressFuncDFunc_fn_type* effStressFuncDFunc)
 { // getEffStress
   // Check parameters
   if (effStressInitialGuess < 0.0)
@@ -66,8 +66,8 @@ void
 pylith::materials::EffectiveStress::_bracketEffStress(
 				     double* px1,
 				     double* px2,
-				     const EffStressStruct& effStressParams,
-				     effStressFuncType* effStressFunc)
+				     EffStressStruct& effStressParams,
+				     effStressFunc_fn_type* effStressFunc)
 { // _bracketEffStress
   // Arbitrary number of iterations to bracket the root
   const int maxIterations = 50;
@@ -115,7 +115,7 @@ void
 pylith::materials::EffectiveStress::_findEffStress(
 				     const double x1,
 				     const double x2,
-				     const EffStressStruct& effStressParams,
+				     EffStressStruct& effStressParams,
 				     effStressFuncType* effStressFunc,
 				     effStressFuncDFuncType* effStressFuncDFunc)
 { // _findEffStress
