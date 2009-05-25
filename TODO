@@ -9,6 +9,8 @@ Matt
 Brad
   Test precompute geometry [DONE]
   Nondimensionalization
+    Fault coordinates - need coordinates_dimensioned
+    Material state vars - use dimstatevars and dimproperties to get scales
   cleanup
   full-scale testing
   test uniform refinement
