@@ -94,10 +94,11 @@ public :
    *
    * @returns Computed effective stress.
    */
+  static
   double getEffStress(const double effStressInitialGuess,
 		      EffStressStruct* effStressParams,
-		      effStressFunc_fn_type* effStressFunc,
-		      effStressFuncDFunc_fn_type* effStressFuncDFunc);
+		      effStressFunc_fn_type effStressFunc,
+		      effStressFuncDFunc_fn_type effStressFuncDFunc);
 
   // PRIVATE METHODS /////////////////////////////////////////////////////
 private :
@@ -113,7 +114,7 @@ private :
   void _bracketEffStress(double* px1,
 			 double* px2,
 			 EffStressStruct& effStressParams,
-			 effStressFunc_fn_type* effStressFunc);
+			 effStressFunc_fn_type effStressFunc);
 
   /** Solve for effective stress using Newton's method with bisection.
    *
