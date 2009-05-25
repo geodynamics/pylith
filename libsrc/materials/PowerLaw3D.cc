@@ -605,9 +605,9 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
     double effStressTpdt =
       pylith::materials::EffectiveStress::getEffStress(
 			effStressInitialGuess,
-			_effStressParams,
-			&pylith::materials::PowerLaw3D::effStressFunc,
-			&pylith::materials::PowerLaw3D::effStressFuncDFunc);
+			&_effStressParams,
+			pylith::materials::PowerLaw3D::effStressFunc,
+			pylith::materials::PowerLaw3D::effStressFuncDFunc);
 
     // Compute stresses from effective stress.
     const double effStressTau = (1.0 - alpha) * effStressT +
