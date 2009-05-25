@@ -314,6 +314,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
 					   topology::SolutionFields* fields)
 { // cellField
   assert(0 != _material);
+  assert(0 != _normalizer);
 
   // We assume the material stores the total_strain field if
   // hasStateVars() is TRUE.
@@ -322,16 +323,28 @@ pylith::feassemble::IntegratorElasticity::cellField(
     _outputFields =
       new topology::Fields<topology::Field<topology::Mesh> >(mesh);
   
-  if (!_material->hasStateVars() &&
-      (0 == strcasecmp(name, "total_strain") ||
-       0 == strcasecmp(name, "stress") )) {
+  if (!_material->hasStateVars() && 0 == strcasecmp(name, "total_strain")) {
     assert(0 != fields);
     _allocateTensorField(mesh);
     topology::Field<topology::Mesh>& buffer = 
       _outputFields->get("buffer (tensor)");
     _calcStrainStressField(&buffer, name, fields);
-    buffer.label(name);
+    buffer.label("total_strain");
+    buffer.scale(1.0);
+    buffer.addDimensionOkay(true);
     return buffer;
+
+  } else if (!_material->hasStateVars() && 0 == strcasecmp(name, "stress")) {
+    assert(0 != fields);
+    _allocateTensorField(mesh);
+    topology::Field<topology::Mesh>& buffer = 
+      _outputFields->get("buffer (tensor)");
+    _calcStrainStressField(&buffer, name, fields);
+    buffer.label("stress");
+    buffer.scale(_normalizer->pressureScale());
+    buffer.addDimensionOkay(true);
+    return buffer;
+
   } else if (0 == strcasecmp(name, "stress")) {
     assert(0 != fields);
     _allocateTensorField(mesh);
@@ -340,13 +353,17 @@ pylith::feassemble::IntegratorElasticity::cellField(
     _material->getField(&buffer, "total_strain");
     _calcStressFromStrain(&buffer);
     buffer.label(name);
+    buffer.scale(_normalizer->pressureScale());
+    buffer.addDimensionOkay(true);
     return buffer;
+
   } else {
     if (!_outputFields->hasField("buffer (other)"))
       _outputFields->add("buffer (other)", "buffer");
     topology::Field<topology::Mesh>& buffer =
       _outputFields->get("buffer (other)");
     _material->getField(&buffer, name);
+    buffer.addDimensionOkay(true);
     return buffer;
   } // if/else
   

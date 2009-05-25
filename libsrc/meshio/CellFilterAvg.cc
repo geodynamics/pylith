@@ -14,6 +14,8 @@
 
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 
+#include "pylith/topology/Field.hh" // USES Field
+
 // ----------------------------------------------------------------------
 // Constructor
 template<typename mesh_type, typename field_type>
@@ -82,7 +84,8 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
   // Only processors with cells for output get the correct fiber dimension.
   const ALE::Obj<RealSection>& sectionIn = fieldIn.section();
   assert(!sectionIn.isNull());
-  const int totalFiberDim = sectionIn->getFiberDimension(*cellsBegin);
+  const int totalFiberDim = (cellsBegin != cellsEnd) ?
+    sectionIn->getFiberDimension(*cellsBegin) : 0;
   const int fiberDim = totalFiberDim / numQuadPts;
   assert(fiberDim * numQuadPts == totalFiberDim);
 
@@ -92,35 +95,45 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     assert(0 != _fieldAvg);
     _fieldAvg->newSection(sectionIn->getChart(), fiberDim);
     _fieldAvg->allocate();
+  } else if (_fieldAvg->size() != cells->size()*fiberDim) {
+    _fieldAvg->clear();
+    _fieldAvg->newSection(sectionIn->getChart(), fiberDim);
+    _fieldAvg->allocate();
+  } // else
 
-    switch (fieldIn.vectorFieldType())
-      { // switch
-      case topology::FieldBase::MULTI_SCALAR:
-	_fieldAvg->vectorFieldType(topology::FieldBase::SCALAR);
-	break;
-      case topology::FieldBase::MULTI_VECTOR:
-	_fieldAvg->vectorFieldType(topology::FieldBase::VECTOR);
-	break;
-      case topology::FieldBase::MULTI_TENSOR:
-	_fieldAvg->vectorFieldType(topology::FieldBase::TENSOR);
-	break;
-      case topology::FieldBase::MULTI_OTHER:
-	_fieldAvg->vectorFieldType(topology::FieldBase::OTHER);
-	break;
-      case topology::FieldBase::SCALAR:
-      case topology::FieldBase::VECTOR:
-      case topology::FieldBase::TENSOR:
-      case topology::FieldBase::OTHER:
-      default :
-	std::cerr << "Bad vector field type for CellFilterAvg." << std::endl;
-	assert(0);
-	throw std::logic_error("Bad vector field type for CellFilterAvg.");
-      } // switch
-  } // if
+  std::cout << "FIELD " << fieldIn.label()
+	    << ", fiberDim: " << totalFiberDim << "\n"
+	    << "AVG FIELD: " << _fieldAvg->label()
+	    << ", fiberDim: " << fiberDim << std::endl;
+
   assert(0 != _fieldAvg);
+  switch (fieldIn.vectorFieldType())
+    { // switch
+    case topology::FieldBase::MULTI_SCALAR:
+      _fieldAvg->vectorFieldType(topology::FieldBase::SCALAR);
+      break;
+    case topology::FieldBase::MULTI_VECTOR:
+      _fieldAvg->vectorFieldType(topology::FieldBase::VECTOR);
+      break;
+    case topology::FieldBase::MULTI_TENSOR:
+      _fieldAvg->vectorFieldType(topology::FieldBase::TENSOR);
+      break;
+    case topology::FieldBase::MULTI_OTHER:
+      _fieldAvg->vectorFieldType(topology::FieldBase::OTHER);
+      break;
+    case topology::FieldBase::SCALAR:
+    case topology::FieldBase::VECTOR:
+    case topology::FieldBase::TENSOR:
+    case topology::FieldBase::OTHER:
+    default :
+      std::cerr << "Bad vector field type for CellFilterAvg." << std::endl;
+      assert(0);
+      throw std::logic_error("Bad vector field type for CellFilterAvg.");
+    } // switch
   const ALE::Obj<RealSection>& sectionAvg = _fieldAvg->section();
   _fieldAvg->label(fieldIn.label());
   _fieldAvg->scale(fieldIn.scale());
+  _fieldAvg->addDimensionOkay(true);
 
   double_array fieldAvgCell(fiberDim);
   double scalar = 0.0;
@@ -141,8 +154,6 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     sectionAvg->updatePoint(*c_iter, &fieldAvgCell[0]);
   } // for
   PetscLogFlops( cells->size() * numQuadPts*fiberDim*3 );
-
-  _fieldAvg->label(fieldIn.label());
 
   return *_fieldAvg;
 } // filter
