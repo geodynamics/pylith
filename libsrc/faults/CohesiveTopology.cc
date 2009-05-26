@@ -793,6 +793,41 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   }
   //faultSieveMesh->view("Parallel fault mesh");
 
+  // Update dimensioned coordinates if they exist.
+  if (sieveMesh->hasRealSection("coordinates_dimensioned")) {
+    const ALE::Obj<topology::Mesh::RealSection>& coordinatesDim =
+      sieveMesh->getRealSection("coordinates_dimensioned");
+    assert(!coordinatesDim.isNull());
+    const ALE::Obj<topology::Mesh::RealSection>& fCoordinatesDim =
+      faultSieveMesh->getRealSection("coordinates_dimensioned");
+    assert(!fCoordinatesDim.isNull());
+    const ALE::Obj<SieveMesh::label_sequence>& vertices =
+      sieveMesh->depthStratum(0);
+    const SieveMesh::label_sequence::iterator vBegin = vertices->begin();
+    const SieveMesh::label_sequence::iterator vEnd = vertices->end();
+
+    fCoordinatesDim->setChart(topology::Mesh::RealSection::chart_type(faultSieveMesh->heightStratum(0)->size(),
+								   faultSieveMesh->getSieve()->getChart().max()));
+    for (SieveMesh::label_sequence::iterator v_iter = vBegin;
+	 v_iter != vEnd;
+	 ++v_iter) {
+      if (fRenumbering.find(*v_iter) == fRenumberingEnd)
+	continue;
+      fCoordinatesDim->setFiberDimension(fRenumbering[*v_iter],
+					 coordinatesDim->getFiberDimension(*v_iter));
+    } // for
+    fCoordinatesDim->allocatePoint();
+    for(SieveMesh::label_sequence::iterator v_iter = vBegin;
+	v_iter != vEnd;
+	++v_iter) {
+      if (fRenumbering.find(*v_iter) == fRenumberingEnd)
+	continue;
+    fCoordinatesDim->updatePoint(fRenumbering[*v_iter], 
+			      coordinatesDim->restrictPoint(*v_iter));
+    }
+    //faultSieveMesh->view("Parallel fault mesh");
+  } // if
+
   // Create the parallel overlap
   //   Can I figure this out in a nicer way?
   ALE::Obj<SieveSubMesh::send_overlap_type> sendParallelMeshOverlap =
