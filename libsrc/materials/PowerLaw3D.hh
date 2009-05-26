@@ -70,6 +70,8 @@ public :
    *
    * @param effStressTpdt Effective stress value.
    * @param effStressParams Effective stress parameters.
+   *
+   * @returns Effective stress function derivative value.
    */
   static double effStressDFunc(
     const double effStressTpdt,

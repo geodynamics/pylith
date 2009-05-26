@@ -589,7 +589,6 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
 
     PetscLogFlops(92);
     // Put parameters into a struct and call root-finding algorithm.
-    _effStressParams.stressScale = stressScale;
     _effStressParams.ae = ae;
     _effStressParams.b = b;
     _effStressParams.c = c;
@@ -605,7 +604,8 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
     double effStressTpdt =
       pylith::materials::EffectiveStress::getEffStress(
 			effStressInitialGuess,
-			&_effStressParams,
+			stressScale,
+			_effStressParams,
 			pylith::materials::PowerLaw3D::effStressFunc,
 			pylith::materials::PowerLaw3D::effStressFuncDFunc);
 
@@ -638,6 +638,7 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
 // ----------------------------------------------------------------------
 // Effective stress function that computes effective stress function only
 // (no derivative).
+static
 double
 pylith::materials::PowerLaw3D::effStressFunc(
      const double effStressTpdt,
@@ -666,6 +667,7 @@ pylith::materials::PowerLaw3D::effStressFunc(
 // ----------------------------------------------------------------------
 // Effective stress function that computes effective stress function
 // derivative only (no function value).
+static
 double
 pylith::materials::PowerLaw3D::effStressDFunc(
      const double effStressTpdt,
@@ -697,6 +699,7 @@ pylith::materials::PowerLaw3D::effStressDFunc(
 // ----------------------------------------------------------------------
 // Effective stress function that computes effective stress function
 // and derivative.
+static
 void
 pylith::materials::PowerLaw3D::effStressFuncDFunc(
      const double effStressTpdt,
@@ -1010,7 +1013,6 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   
   PetscLogFlops(92);
   // Put parameters into a struct and call root-finding algorithm.
-  _effStressParams.stressScale = stressScale;
   _effStressParams.ae = ae;
   _effStressParams.b = b;
   _effStressParams.c = c;
@@ -1026,7 +1028,8 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   const double effStressTpdt =
     EffectiveStress::getEffStress(
 			effStressInitialGuess,
-			&_effStressParams,
+			stressScale,
+			_effStressParams,
 			pylith::materials::PowerLaw3D::effStressFunc,
 			pylith::materials::PowerLaw3D::effStressFuncDFunc);
   
@@ -1333,7 +1336,6 @@ pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
 
   PetscLogFlops(92);
   // Put parameters into a struct and call root-finding algorithm.
-  _effStressParams.stressScale = stressScale;
   _effStressParams.ae = ae;
   _effStressParams.b = b;
   _effStressParams.c = c;
@@ -1349,7 +1351,8 @@ pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
   double effStressTpdt =
     EffectiveStress::getEffStress(
 			effStressInitialGuess,
-			&_effStressParams,
+			stressScale,
+			_effStressParams,
 			pylith::materials::PowerLaw3D::effStressFunc,
 			pylith::materials::PowerLaw3D::effStressFuncDFunc);
 
