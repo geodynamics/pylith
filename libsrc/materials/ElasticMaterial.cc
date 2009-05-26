@@ -608,10 +608,6 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
       } // if
     } // for
 
-    // Nondimensionalize strain
-    _normalizer->nondimensionalize(&strainCell[0], strainCell.size(), 
-				   pressureScale);
-
     initialStrainSection->updatePoint(*c_iter, &strainCell[0]);
   } // for
 

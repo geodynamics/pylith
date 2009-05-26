@@ -101,11 +101,6 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     _fieldAvg->allocate();
   } // else
 
-  std::cout << "FIELD " << fieldIn.label()
-	    << ", fiberDim: " << totalFiberDim << "\n"
-	    << "AVG FIELD: " << _fieldAvg->label()
-	    << ", fiberDim: " << fiberDim << std::endl;
-
   assert(0 != _fieldAvg);
   switch (fieldIn.vectorFieldType())
     { // switch
