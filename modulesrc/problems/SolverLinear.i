@@ -34,13 +34,6 @@ namespace pylith {
       /// Deallocate PETSc and local data structures.
       void deallocate(void);
 
-      /** Set initial guess zero flag.
-       *
-       * @param value True means use zero as initial guess, false means
-       * use previous solution as initial guess.
-       */
-      void initialGuessZero(const bool value);
-
       /** Initialize solver.
        *
        * @param fields Solution fields.

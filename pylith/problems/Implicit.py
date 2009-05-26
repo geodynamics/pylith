@@ -105,6 +105,7 @@ class Implicit(Formulation):
     dispIncr.scale(lengthScale.value)
     dispIncr.zero()
     residual = self.fields.get("residual")
+    residual.scale(lengthScale.value)
     residual.zero()
     # Create Petsc vectors for fields involved in solve
     residual.createVector()
