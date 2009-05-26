@@ -78,13 +78,18 @@ class Explicit(Formulation):
     self._debug.log(resourceUsageString())
 
     # Set fields to zero
+    lengthScale = normalizer.lengthScale()
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
+    dispIncr.scale(lengthScale.value)
     dispIncr.zero()
     dispT = self.fields.get("disp(t)")
+    dispT.scale(lengthScale.value)
     dispT.zero()
     dispTmdt = self.fields.get("disp(t-dt)")
+    dispTmdt.scale(lengthScale.value)
     dispTmdt.zero()
     residual = self.fields.get("residual")
+    residual.scale(lengthScale.value)
     residual.zero()
     # Create Petsc vectors for fields involved in solve
     residual.createVector()

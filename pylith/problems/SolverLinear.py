@@ -34,16 +34,12 @@ class SolverLinear(Solver, ModuleSolverLinear):
     ## Python object for managing SolverLinear facilities and properties.
     ##
     ## \b Properties
-    ## @li \b initial_guess_zero Use zero for initial guess.
+    ## @li None
     ##
     ## \b Facilities
     ## @li None
 
     import pyre.inventory
-
-    guessZero = pyre.inventory.bool("initial_guess_zero", default=True)
-    guessZero.meta['tip'] = "Use zero for initial guess."
-    
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -61,7 +57,6 @@ class SolverLinear(Solver, ModuleSolverLinear):
     Initialize linear solver.
     """
     ModuleSolverLinear.initialize(self, fields, jacobian, formulation)
-    self.initialGuessZero(self.guessZero)
     return
 
 
@@ -72,7 +67,6 @@ class SolverLinear(Solver, ModuleSolverLinear):
     Set members based using inventory.
     """
     Solver._configure(self)
-    self.guessZero = self.inventory.guessZero
     return
 
 

@@ -47,18 +47,6 @@ pylith::problems::SolverLinear::deallocate(void)
 } // deallocate
   
 // ----------------------------------------------------------------------
-// Set initial guess zero flag.
-void
-pylith::problems::SolverLinear::initialGuessZero(const bool value)
-{ // initialGuessZero
-  assert(0 != _ksp);
-
-  PetscTruth flag = (value) ? PETSC_FALSE : PETSC_TRUE;
-  PetscErrorCode err = KSPSetInitialGuessNonzero(_ksp, flag);
-  CHECK_PETSC_ERROR(err);
-} // initialGuessZero
-
-// ----------------------------------------------------------------------
 // Initialize solver.
 void
 pylith::problems::SolverLinear::initialize(
@@ -76,6 +64,7 @@ pylith::problems::SolverLinear::initialize(
     CHECK_PETSC_ERROR(err);
   } // if    
   err = KSPCreate(fields.mesh().comm(), &_ksp); CHECK_PETSC_ERROR(err);
+  err = KSPSetInitialGuessNonzero(_ksp, PETSC_FALSE); CHECK_PETSC_ERROR(err);
   err = KSPSetFromOptions(_ksp); CHECK_PETSC_ERROR(err);
 } // initialize
 
