@@ -37,7 +37,6 @@ class pylith::materials::EffectiveStress
 public :
 
   struct EffStressStruct {
-    double stressScale;
     double ae;
     double b;
     double c;
@@ -55,17 +54,17 @@ public :
   /// Member prototype for effStressFunc()
   typedef static double (*effStressFunc_fn_type)
   (const double,
-   const double*);
+   EffStressStruct);
 
   /// Member prototype for effStressDFunc()
   typedef static double (*effStressDFunc_fn_type)
   (const double,
-   const double*);
+   EffStressStruct);
   
   /// Member prototype for effStressFuncDFunc()
   typedef static void (*effStressFuncDFunc_fn_type)
   (const double,
-   const double*,
+   EffStressStruct,
    double*,
    double*);
 
@@ -96,7 +95,8 @@ public :
    */
   static
   double getEffStress(const double effStressInitialGuess,
-		      EffStressStruct* effStressParams,
+		      const double stressScale,
+		      EffStressStruct effStressParams,
 		      effStressFunc_fn_type effStressFunc,
 		      effStressFuncDFunc_fn_type effStressFuncDFunc);
 
@@ -113,7 +113,7 @@ private :
    */
   void _bracketEffStress(double* px1,
 			 double* px2,
-			 EffStressStruct& effStressParams,
+			 EffStressStruct effStressParams,
 			 effStressFunc_fn_type effStressFunc);
 
   /** Solve for effective stress using Newton's method with bisection.
@@ -124,12 +124,13 @@ private :
    * @param effStressFunc Function to compute effective stress only.
    * @param effStressFuncDFunc Function to compute effective stress and derivative.
    *
+   * @returns Computed effective stress.
    */
-  void _findEffStress(double* px1,
-		      double* px2,
-		      EffStressStruct& effStressParams,
-		      effStressFunc_fn_type* effStressFunc,
-		      effStressFuncDFunc_fn_type* effStressFuncDFunc);
+  double _findEffStress(double xx1,
+			double xx2,
+			EffStressStruct effStressParams,
+			effStressFunc_fn_type effStressFunc,
+			effStressFuncDFunc_fn_type effStressFuncDFunc);
 
 }; // class EffectiveStress
 

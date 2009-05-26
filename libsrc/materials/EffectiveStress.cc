@@ -27,6 +27,7 @@
 double
 pylith::materials::EffectiveStress::getEffStress(
 				 const double effStressInitialGuess,
+				 const double stressScale,
 				 EffStressStruct* effStressParams,
 				 effStressFunc_fn_type effStressFunc,
 				 effStressFuncDFunc_fn_type effStressFuncDFunc)
@@ -42,16 +43,18 @@ pylith::materials::EffectiveStress::getEffStress(
     x1 = effStressInitialGuess - 0.5 * effStressInitialGuess;
     x2 = effStressInitialGuess + 0.5 * effStressInitialGuess;
   } else {
-    x1 = effStressParams.stressScale - 0.5 * effStressParams.stressScale;
-    x2 = effStressParams.stressScale + 0.5 * effStressParams.stressScale;
+    x1 = stressScale - 0.5 * stressScale;
+    x2 = stressScale + 0.5 * stressScale;
   } // else
 
   PetscLogFlops(4);
   _bracketEffStress(x1, x2, effStressParams, effStressFunc);
 
   // Find effective stress using Newton's method with bisection.
-  const double effStress = _findEffStress(&x1,
-					  &x2,
+  const double xx1 = x1;
+  const double xx2 = x2;
+  const double effStress = _findEffStress(xx1,
+					  xx2,
 					  effStressParams,
 					  effStressFunc,
 					  effStressFuncDFunc);
@@ -113,11 +116,11 @@ pylith::materials::EffectiveStress::_bracketEffStress(
 // Find root using Newton's method with bisection.
 void
 pylith::materials::EffectiveStress::_findEffStress(
-				     const double x1,
-				     const double x2,
-				     EffStressStruct& effStressParams,
-				     effStressFuncType* effStressFunc,
-				     effStressFuncDFuncType* effStressFuncDFunc)
+				     const double xx1,
+				     const double xx2,
+				     EffStressStruct effStressParams,
+				     effStressFuncType effStressFunc,
+				     effStressFuncDFuncType effStressFuncDFunc)
 { // _findEffStress
   // Arbitrary number of iterations to find the root
   const int maxIterations = 100;
@@ -127,8 +130,8 @@ pylith::materials::EffectiveStress::_findEffStress(
 
   /// Determine if root has already been found, or if root is not bracketed.
   // Otherwise, organize search so that effStressFunc(xLow) is less than zero.
-  double funcValueLow = effStressFunc(x1, effStressParams);
-  double funcValueHigh = effStressFunc(x2, effStressParams);
+  double funcValueLow = effStressFunc(xx1, effStressParams);
+  double funcValueHigh = effStressFunc(xx2, effStressParams);
   if (funcValueLow * funcValueHigh > 0.0)
     throw std::runtime_error("Effective stress is not bracketed.");
 
@@ -138,23 +141,23 @@ pylith::materials::EffectiveStress::_findEffStress(
   bool converged = false;
 
   if (std::abs(funcValueLow) < accuracy) {
-    effStress = x1;
+    effStress = xx1;
     converged = true;
     return effStress;
   } else if (std::abs(funcValueHigh) < accuracy) {
-    effStress = x2;
+    effStress = xx2;
     converged = true;
     return effStress;
   } else if (funcValueLow < 0.0) {
-    xLow = x1;
-    xHigh = x2;
+    xLow = xx1;
+    xHigh = xx2;
   } else {
-    xHigh = x1;
-    xLow = x2;
+    xHigh = xx1;
+    xLow = xx2;
   }
 
-  effStress = 0.5 * (x1 + x2);
-  double dxPrevious = std::abs(x2 - x1);
+  effStress = 0.5 * (xx1 + xx2);
+  double dxPrevious = std::abs(xx2 - xx1);
   double dx = dxPrevious;
   double funcValue = 0.0;
   double funcDeriv = 0.0;
