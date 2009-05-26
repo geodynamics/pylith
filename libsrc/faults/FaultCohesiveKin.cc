@@ -40,6 +40,7 @@
 #include <stdexcept> // USES std::runtime_error
 
 //#define PRECOMPUTE_GEOMETRY
+//#define USE_CONDITIONING
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
@@ -133,9 +134,11 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
   cumSlip.vectorFieldType(topology::FieldBase::VECTOR);
   cumSlip.scale(_normalizer->lengthScale());
 
+#if defined(USE_CONDITIONING)
   // Setup pseudo-stiffness of cohesive cells to improve conditioning
   // of Jacobian matrix
   _calcConditioning(cs, matDB);
+#endif
 
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
     faultSieveMesh->heightStratum(0);
@@ -189,7 +192,9 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 
   // Allocate vectors for cell values
   double_array orientationCell(numConstraintVert*orientationSize);
+#if defined(USE_CONDITIONING)
   double_array stiffnessCell(numConstraintVert);
+#endif
   double_array dispTCell(numCorners*spaceDim);
   double_array residualCell(numCorners*spaceDim);
 
@@ -223,12 +228,14 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 						     orientationCell.size(),
 						     &orientationCell[0]);
 
+#if defined(USE_CONDITIONING)
   const ALE::Obj<RealSection>& stiffnessSection = 
     _fields->get("pseudostiffness").section();
   assert(!stiffnessSection.isNull());
   topology::Mesh::RestrictVisitor stiffnessVisitor(*stiffnessSection,
 						   stiffnessCell.size(),
 						   &stiffnessCell[0]);
+#endif
 
   const ALE::Obj<RealSection>& areaSection = 
     _fields->get("area").section();
@@ -287,9 +294,11 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     orientationVisitor.clear();
     faultSieveMesh->restrictClosure(c_fault, orientationVisitor);
     
+#if defined(USE_CONDITIONING)
     // Get pseudo stiffness at fault cell's vertices.
     stiffnessVisitor.clear();
     faultSieveMesh->restrictClosure(c_fault, stiffnessVisitor);
+#endif
     
     // Get area at fault cell's vertices.
     areaVisitor.clear();
@@ -306,10 +315,15 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
       const int indexJ = iConstraint +   numConstraintVert;
       const int indexK = iConstraint + 2*numConstraintVert;
 
+#if defined(USE_CONDITIONING)
       const double pseudoStiffness = stiffnessCell[iConstraint];
       assert(areaCell[iConstraint] > 0);
       const double wt = pseudoStiffness * 
 	areaVertexCell[iConstraint] / areaCell[iConstraint];
+#else
+      assert(areaCell[iConstraint] > 0);
+      const double wt = areaVertexCell[iConstraint] / areaCell[iConstraint];
+#endif
       
       // Get orientation at constraint vertex
       const double* orientationVertex = 
@@ -476,7 +490,9 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
   const int numCorners = 3*numConstraintVert; // cohesive cell
   double_array matrixCell(numCorners*spaceDim * numCorners*spaceDim);
   double_array orientationCell(numConstraintVert*orientationSize);
+#if defined(USE_CONDITIONING)
   double_array stiffnessCell(numConstraintVert);
+#endif
 
   // Get section information
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
@@ -490,12 +506,14 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 						     orientationCell.size(),
 						     &orientationCell[0]);
 
+#if defined(USE_CONDITIONING)
   const ALE::Obj<RealSection>& stiffnessSection = 
     _fields->get("pseudostiffness").section();
   assert(!stiffnessSection.isNull());
   topology::Mesh::RestrictVisitor stiffnessVisitor(*stiffnessSection,
 						   stiffnessCell.size(),
 						   &stiffnessCell[0]);
+#endif
 
 #if 0 // DEBUGGING
   // Check that fault cells match cohesive cells
@@ -548,9 +566,11 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
     orientationVisitor.clear();
     faultSieveMesh->restrictClosure(c_fault, orientationVisitor);
 
+#if defined(USE_CONDITIONING)
     // Get pseudo stiffness at fault cell's vertices.
     stiffnessVisitor.clear();
     faultSieveMesh->restrictClosure(c_fault, stiffnessVisitor);
+#endif
     
     for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
       // Blocks in cell matrix associated with normal cohesive
@@ -564,7 +584,9 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 	&orientationCell[iConstraint*orientationSize];
       assert(0 != orientationVertex);
 
+#if defined(USE_CONDITIONING)
       const double stiffnessVertex = stiffnessCell[iConstraint];
+#endif
 
       // Scale orientation information by pseudo-stiffness to bring
       // constraint forces in solution vector to the same order of
@@ -576,7 +598,11 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 	  const int row = indexI*spaceDim+iDim;
 	  const int col = indexK*spaceDim+kDim;
 	  matrixCell[row*numCorners*spaceDim+col] =
+#if defined(USE_CONDITIONING)
 	    -orientationVertex[kDim*spaceDim+iDim]*stiffnessVertex;
+#else
+	    -orientationVertex[kDim*spaceDim+iDim];
+#endif
 	  matrixCell[col*numCorners*spaceDim+row] =
 	    -orientationVertex[kDim*spaceDim+iDim];
 	} // for
@@ -587,7 +613,11 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 	  const int row = indexJ*spaceDim+jDim;
 	  const int col = indexK*spaceDim+kDim;
 	  matrixCell[row*numCorners*spaceDim+col] =
+#if defined(USE_CONDITIONING)
 	    orientationVertex[kDim*spaceDim+jDim]*stiffnessVertex;
+#else
+	    orientationVertex[kDim*spaceDim+jDim];
+#endif
 	  matrixCell[col*numCorners*spaceDim+row] =
 	    orientationVertex[kDim*spaceDim+jDim];
 	} // for
@@ -1180,9 +1210,11 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   const SieveSubMesh::label_sequence::iterator fverticesEnd = fvertices->end();
 
   // Get sections.
+#if defined(USE_CONDITIONING)
   const ALE::Obj<RealSection>& stiffnessSection = 
     _fields->get("pseudostiffness").section();
   assert(!stiffnessSection.isNull());
+#endif
   const ALE::Obj<RealSection>& areaSection = 
     _fields->get("area").section();
   assert(!areaSection.isNull());
@@ -1240,21 +1272,25 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
       const int vertexFault = renumbering[*v_iter];
       assert(fiberDim == dispTSection->getFiberDimension(vertexMesh));
       assert(fiberDim == tractionsSection->getFiberDimension(vertexFault));
+#if defined(USE_CONDITIONING)
       assert(1 == stiffnessSection->getFiberDimension(vertexFault));
+#endif
       assert(1 == areaSection->getFiberDimension(vertexFault));
 
       const double* dispTVertex = dispTSection->restrictPoint(vertexMesh);
       assert(0 != dispTVertex);
+#if defined(USE_CONDITIONING)
       const double* stiffnessVertex = stiffnessSection->restrictPoint(vertexFault);
       assert(0 != stiffnessVertex);
+#endif
       const double* areaVertex = areaSection->restrictPoint(vertexFault);
       assert(0 != areaVertex);
 
-      // Account for conditioning and then "nondimensionalize" so that
-      // values appear to be nondimensionalized for future
-      // compatibility with nondimensionalization.
-      const double scale = 
-	stiffnessVertex[0] / (areaVertex[0] * pressureScale);
+#if defined(USE_CONDITIONING)
+      const double scale = stiffnessVertex[0] / areaVertex[0];
+#else
+      const double scale = 1.0 / areaVertex[0];
+#endif
       for (int i=0; i < fiberDim; ++i)
 	tractionsVertex[i] = dispTVertex[i] * scale;
 
@@ -1264,10 +1300,7 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   PetscLogFlops(numFaultVertices * (1 + fiberDim) );
 
 #if 0 // DEBUGGING
-  _faultMesh->view("FAULT MESH");
-  _area->view("AREA");
-  _pseudoStiffness->view("CONDITIONING");
-  (*tractions)->view("TRACTIONS");
+  tractions->view("TRACTIONS");
 #endif
 } // _calcTractionsChange
 
