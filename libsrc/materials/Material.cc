@@ -314,8 +314,6 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
 	_metadata.fiberDim(properties[i].c_str(), Metadata::PROPERTY);
     const int fiberDim = _metadata.fiberDim(name, Metadata::PROPERTY);
 
-    // :TODO: Get scale information
-
     // Get properties section
     const ALE::Obj<RealSection>& propertiesSection = _properties->section();
     assert(!propertiesSection.isNull());
@@ -330,6 +328,11 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
     const int numQuadPts = totalPropsFiberDim / numPropsQuadPt;
     assert(totalPropsFiberDim == numQuadPts * numPropsQuadPt);
     const int totalFiberDim = numQuadPts * fiberDim;
+
+    // Get dimension scale information for properties.
+    double_array propertyScales(numPropsQuadPt);
+    propertyScales = 1.0;
+    _dimProperties(&propertyScales[0], propertyScales.size());
 
     ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
     logger.stagePush("Materials");
@@ -353,6 +356,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
     } // if
     assert(!fieldSection.isNull());
     field->label(name);
+    field->scale(propertyScales[propOffset]);
     fieldType = _metadata.fieldType(name, Metadata::PROPERTY);
     logger.stagePop();
   
@@ -367,13 +371,10 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
       propertiesSection->restrictPoint(*c_iter, 
 				       &propertiesCell[0], propertiesCell.size());
    
-      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	_dimProperties(&propertiesCell[iQuad*numPropsQuadPt], 
-		       numPropsQuadPt);
-	memcpy(&fieldCell[iQuad*fiberDim], 
-	       &propertiesCell[iQuad*numPropsQuadPt+propOffset],
-	       fiberDim*sizeof(double));
-      } // for
+      for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
+	for (int i=0; i < fiberDim; ++i)
+	  fieldCell[iQuad*fiberDim+i] = 
+	    propertiesCell[iQuad*numPropsQuadPt+propOffset+i];
 
       fieldSection->updatePoint(*c_iter, &fieldCell[0]);
     } // for
@@ -387,8 +388,6 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
       varOffset += 
 	_metadata.fiberDim(stateVars[i].c_str(), Metadata::STATEVAR);
     const int fiberDim = _metadata.fiberDim(name, Metadata::STATEVAR);
-
-    // :TODO: Get scale information
 
     // Get state variables section
     const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
@@ -404,6 +403,11 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
     const int numQuadPts = totalVarsFiberDim / numVarsQuadPt;
     assert(totalVarsFiberDim == numQuadPts * numVarsQuadPt);
     const int totalFiberDim = numQuadPts * fiberDim;
+
+    // Get dimension scale information for state variables.
+    double_array stateVarScales(numVarsQuadPt);
+    stateVarScales = 1.0;
+    _dimStateVars(&stateVarScales[0], stateVarScales.size());
 
     ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
     logger.stagePush("Materials");
@@ -428,6 +432,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
     assert(!fieldSection.isNull());
     fieldType = _metadata.fieldType(name, Metadata::STATEVAR);
     field->label(name);
+    field->scale(stateVarScales[varOffset]);
     logger.stagePop();
   
     // Buffer for state variable at cell's quadrature points
@@ -441,14 +446,11 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
       stateVarsSection->restrictPoint(*c_iter, 
 				      &stateVarsCell[0], stateVarsCell.size());
       
-      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	_dimStateVars(&stateVarsCell[iQuad*numVarsQuadPt], 
-		      numVarsQuadPt);
-	memcpy(&fieldCell[iQuad*fiberDim], 
-	       &stateVarsCell[iQuad*numVarsQuadPt+varOffset],
-	       fiberDim*sizeof(double));
-      } // for
-
+      for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
+	for (int i=0; i < fiberDim; ++i)
+	  fieldCell[iQuad*fiberDim+i] = 
+	    stateVarsCell[iQuad*numVarsQuadPt+varOffset+i];
+      
       fieldSection->updatePoint(*c_iter, &fieldCell[0]);
     } // for
   } // if/else

@@ -9,7 +9,6 @@ Matt
 Brad
   Test precompute geometry [DONE]
   Nondimensionalization
-    Fault coordinates - need coordinates_dimensioned
     Material state vars - use dimstatevars and dimproperties to get scales
   cleanup
   full-scale testing
@@ -44,21 +43,11 @@ Charles
 
 1. SNES
 
-  Cleanup SolutionFields. [full scale test]
-
   Power-law rheology
 
 2. Nondimensionalization
 
-  Add Quadrature::computeGeometry(coordinatesCell)
-    Use #define PRECOMPUTE_GEOMETRY [TEST]
-
-  DataWriteVTK needs dimensionalizer
-
-  Done coordinates in output (nondimensional instead of dimensioned)
-  create dimensionalized copy (NAME_dimensioned) solution in output
-  (nondimensional instead of dimensioned) const slip rate in output
-  (slip rate not slip)
+  const slip rate in output (slip rate not slip)
 
   Ask constraints if a block matrix is okay. If okay and matrix type
   is "unknown" (not set by user), then use "baij" rather than
@@ -200,7 +189,6 @@ Charles
   Cleanup SlipTimeFn tests (refactor test/initialize stuff)
 
 6. Memory model [Matt]
-   playpen/memcheck/*
 
 7. 2-D Plane strain Maxwell viscoelastic rheology [Charles]
 

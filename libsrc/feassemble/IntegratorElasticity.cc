@@ -328,10 +328,10 @@ pylith::feassemble::IntegratorElasticity::cellField(
     _allocateTensorField(mesh);
     topology::Field<topology::Mesh>& buffer = 
       _outputFields->get("buffer (tensor)");
-    _calcStrainStressField(&buffer, name, fields);
     buffer.label("total_strain");
     buffer.scale(1.0);
     buffer.addDimensionOkay(true);
+    _calcStrainStressField(&buffer, name, fields);
     return buffer;
 
   } else if (!_material->hasStateVars() && 0 == strcasecmp(name, "stress")) {
@@ -339,10 +339,10 @@ pylith::feassemble::IntegratorElasticity::cellField(
     _allocateTensorField(mesh);
     topology::Field<topology::Mesh>& buffer = 
       _outputFields->get("buffer (tensor)");
-    _calcStrainStressField(&buffer, name, fields);
     buffer.label("stress");
     buffer.scale(_normalizer->pressureScale());
     buffer.addDimensionOkay(true);
+    _calcStrainStressField(&buffer, name, fields);
     return buffer;
 
   } else if (0 == strcasecmp(name, "stress")) {
@@ -351,10 +351,10 @@ pylith::feassemble::IntegratorElasticity::cellField(
     topology::Field<topology::Mesh>& buffer = 
       _outputFields->get("buffer (tensor)");    
     _material->getField(&buffer, "total_strain");
-    _calcStressFromStrain(&buffer);
     buffer.label(name);
     buffer.scale(_normalizer->pressureScale());
     buffer.addDimensionOkay(true);
+    _calcStressFromStrain(&buffer);
     return buffer;
 
   } else {
@@ -446,10 +446,6 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   double_array stressCell(numQuadPts*tensorSize);
   stressCell = 0.0;
 
-  // Get normalizer
-  assert(0 != _normalizer);
-  const double pressureScale = _normalizer->pressureScale();
-  
   // Get cell information
   const ALE::Obj<SieveMesh>& sieveMesh = field->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
@@ -509,8 +505,6 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
     else {
       _material->retrievePropsAndVars(*c_iter);
       stressCell = _material->calcStress(strainCell);
-      _normalizer->dimensionalize(&stressCell[0], stressCell.size(),
-				  pressureScale);
       fieldSection->updatePoint(*c_iter, &stressCell[0]);
     } // else
   } // for
@@ -537,10 +531,6 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
   double_array stressCell(numQuadPts*tensorSize);
   stressCell = 0.0;
 
-  // Get normalizer
-  assert(0 != _normalizer);
-  const double pressureScale = _normalizer->pressureScale();
-  
   // Get cell information
   const ALE::Obj<SieveMesh>& sieveMesh = field->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
@@ -562,8 +552,6 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
     fieldSection->restrictPoint(*c_iter, &strainCell[0], strainCell.size());
     _material->retrievePropsAndVars(*c_iter);
     stressCell = _material->calcStress(strainCell);
-    _normalizer->dimensionalize(&stressCell[0], stressCell.size(),
-				pressureScale);
     fieldSection->updatePoint(*c_iter, &stressCell[0]);
   } // for
 } // _calcStressFromStrain
