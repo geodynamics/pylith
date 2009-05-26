@@ -28,7 +28,7 @@ double
 pylith::materials::EffectiveStress::getEffStress(
 				 const double effStressInitialGuess,
 				 const double stressScale,
-				 EffStressStruct* effStressParams,
+				 EffStressStruct effStressParams,
 				 effStressFunc_fn_type effStressFunc,
 				 effStressFuncDFunc_fn_type effStressFuncDFunc)
 { // getEffStress
