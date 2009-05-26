@@ -42,13 +42,10 @@ namespace pylith {
        * @param normalDir General preferred direction for fault normal
        *   (used to pick which of two possible normal directions for
        *   interface; only applies to fault surfaces in a 3-D domain).
-       * @param matDB Database of bulk elastic properties for fault region
-       *   (used to improve conditioning of Jacobian matrix)
        */
       void initialize(const pylith::topology::Mesh& mesh,
 		      const double upDir[3],
-		      const double normalDir[3],
-		      spatialdata::spatialdb::SpatialDB* matDB);
+		      const double normalDir[3]);
 
       /** Integrate contribution of cohesive cells to residual term.
        *

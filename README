@@ -64,8 +64,6 @@ a "use" property to True. Instead, the features is enable when the
 user sets the component to a facility. This applies to gravity,
 initial stresses, initial strains, and initial state variables.
 
-STILL ON THE TODO LIST
-
 (7) Nondimensionalization of the problem eliminates the need to
 condition the fault constraints. The "mat_db" facility was removed.
 
