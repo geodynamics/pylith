@@ -87,10 +87,10 @@ class Problem(PetscComponent):
                                    validator=pyre.inventory.choice([1,2,3]))
     dimension.meta['tip'] = "Spatial dimension of problem space."
 
-    from spatialdata.units.Nondimensional import Nondimensional
+    from spatialdata.units.NondimElasticQuasistatic import NondimElasticQuasistatic
     normalizer = pyre.inventory.facility("normalizer",
                                          family="nondimensional",
-                                         factory=Nondimensional)
+                                         factory=NondimElasticQuasistatic)
     normalizer.meta['tip'] = "Nondimensionalizer for problem."
 
     from pylith.materials.Homogeneous import Homogeneous
