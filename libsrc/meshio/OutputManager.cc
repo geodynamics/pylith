@@ -172,17 +172,13 @@ template<typename mesh_type, typename field_type>
 const field_type&
 pylith::meshio::OutputManager<mesh_type, field_type>::_dimension(const field_type& fieldIn)
 { // _dimension
+  if (1.0 == fieldIn.scale())
+    return fieldIn;
 
   if (fieldIn.addDimensionOkay()) {
-    std::cout << "Adding dimensions to field '" << fieldIn.label()
-	      << "'." << std::endl;
     fieldIn.dimensionalize();
-
     return fieldIn;
   } else {
-    std::cout << "Creating temporary field to add dimensions to field '"
-	      << fieldIn.label() << "'." << std::endl;
-
     std::string fieldName = "buffer (other)";
     switch (fieldIn.vectorFieldType())
       { // switch
