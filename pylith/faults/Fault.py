@@ -59,8 +59,6 @@ class Fault(PetscComponent, ModuleFault):
   @li \b normal_dir General preferred direction for fault normal
     (used to pick which of two possible normal directions for
     interface; only applies to fault surfaces in a 3-D domain).
-  @li \b mat_db Spatial database for bulk material properties
-    (used in improving conditioning of Jacobian matrix).
   
   \b Facilities
   @li \b quadrature Quadrature object for numerical integration
@@ -96,11 +94,6 @@ class Fault(PetscComponent, ModuleFault):
   faultQuadrature = pyre.inventory.facility("quadrature", factory=SubMeshQuadrature)
   faultQuadrature.meta['tip'] = "Quadrature object for numerical integration."
   
-  from spatialdata.spatialdb.SimpleDB import SimpleDB
-  matDB = pyre.inventory.facility("mat_db", family="spatial_database",
-                                  factory=SimpleDB)
-  matDB.meta['tip'] = "Spatial database for bulk material properties " \
-      "(used in improving conditioning of Jacobian matrix)."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -159,7 +152,7 @@ class Fault(PetscComponent, ModuleFault):
 
     self.faultQuadrature.initialize()
     ModuleFault.initialize(self, 
-                           self.mesh, self.upDir, self.normalDir, self.matDB)
+                           self.mesh, self.upDir, self.normalDir)
 
     if None != self.output:
       self.output.initialize(normalizer, self.faultQuadrature)
@@ -217,7 +210,6 @@ class Fault(PetscComponent, ModuleFault):
     self.faultQuadrature = self.inventory.faultQuadrature
     self.upDir = map(float, self.inventory.upDir)
     self.normalDir = map(float, self.inventory.normalDir)
-    self.matDB = self.inventory.matDB
     ModuleFault.id(self, self.inventory.matId)
     ModuleFault.label(self, self.inventory.faultLabel)
     return

@@ -38,8 +38,7 @@ pylith::faults::FaultCohesiveDyn::~FaultCohesiveDyn(void)
 void
 pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
 					     const double upDir[3],
-					     const double normalDir[3],
-					     spatialdata::spatialdb::SpatialDB* matDB)
+					     const double normalDir[3])
 { // initialize
   throw std::logic_error("FaultCohesiveDyn::initialize() not implemented.");
 } // initialize

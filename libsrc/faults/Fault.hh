@@ -92,14 +92,11 @@ public :
    * @param normalDir General preferred direction for fault normal
    *   (used to pick which of two possible normal directions for
    *   interface; only applies to fault surfaces in a 3-D domain).
-   * @param matDB Database of bulk elastic properties for fault region
-   *   (used to improve conditioning of Jacobian matrix)
    */
   virtual
   void initialize(const topology::Mesh& mesh,
 		  const double upDir[3],
-		  const double normalDir[3],
-		  spatialdata::spatialdb::SpatialDB* matDB) = 0;
+		  const double normalDir[3]) = 0;
 
   /** Get mesh associated with fault fields.
    *

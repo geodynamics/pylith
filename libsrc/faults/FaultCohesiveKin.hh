@@ -85,13 +85,10 @@ public :
    * @param normalDir General preferred direction for fault normal
    *   (used to pick which of two possible normal directions for
    *   interface; only applies to fault surfaces in a 3-D domain).
-   * @param matDB Database of bulk elastic properties for fault region
-   *   (used to improve conditioning of Jacobian matrix)
    */
   void initialize(const topology::Mesh& mesh,
 		  const double upDir[3],
-		  const double normalDir[3],
-		  spatialdata::spatialdb::SpatialDB* matDB);
+		  const double normalDir[3]);
 
   /** Integrate contributions to residual term (r) for operator that
    * require assembly across processors.
@@ -187,15 +184,6 @@ private :
    */
   void _calcOrientation(const double upDir[3],
 			const double normalDir[3]);
-
-  /** Calculate conditioning field.
-   *
-   * @param cs Coordinate system for mesh
-   * @param matDB Database of bulk elastic properties for fault region
-   *   (used to improve conditioning of Jacobian matrix)
-   */
-  void _calcConditioning(const spatialdata::geocoords::CoordSys* cs,
-			 spatialdata::spatialdb::SpatialDB* matDB);
 
   /// Calculate fault area field.
   void _calcArea(void);

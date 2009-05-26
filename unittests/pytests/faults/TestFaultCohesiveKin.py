@@ -310,14 +310,6 @@ class TestFaultCohesiveKin(unittest.TestCase):
     slipfn.inventory.dbSlipTime = dbSlipTime
     slipfn._configure()
 
-    ioMatDB = SimpleIOAscii()
-    ioMatDB.inventory.filename = "data/bulkprops_2d.spatialdb"
-    ioMatDB._configure()
-    dbMat = SimpleDB()
-    dbMat.inventory.iohandler = ioMatDB
-    dbMat.inventory.label = "bulk properties"
-    dbMat._configure()
-    
     # Setup fault
     fault = FaultCohesiveKin()
     fault.inventory.output.inventory.writer._configure()
@@ -327,7 +319,6 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault.inventory.upDir = [0, 0, 1]
     fault.inventory.normalDir = [1, 0, 0]
     fault.inventory.faultQuadrature = quadrature
-    fault.inventory.matDB = dbMat
     fault._configure()
     eqsrc = fault.eqsrcs.components()[0]
     eqsrc.inventory.originTime = 1.23*second

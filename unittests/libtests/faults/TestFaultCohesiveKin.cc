@@ -204,23 +204,6 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->area[iVertex], areaVertex[0],
 				 tolerance);
   } // for
-
-  // Check pseudoStiffness
-  const ALE::Obj<RealSection>& stiffnessSection =
-    fault._fields->get("pseudostiffness").section();
-  CPPUNIT_ASSERT(!stiffnessSection.isNull());
-  iVertex = 0;
-  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter, ++iVertex) {
-    const int fiberDim = stiffnessSection->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(1, fiberDim);
-    const double* stiffnessVertex = stiffnessSection->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != stiffnessVertex);
-    const double tolerance = 1.0e-06;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->pseudoStiffness, stiffnessVertex[0],
-				 tolerance);
-  } // for
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -279,10 +262,9 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
       
       const bool isConstraint = _isConstraintVertex(*v_iter);
       if (!isConstraint) {
-	const double pseudoStiffness = _data->pseudoStiffness;
 	for (int i=0; i < fiberDimE; ++i) {
 	  const int index = iVertex*spaceDim+i;
-	  const double valE = valsE[index] * pseudoStiffness;
+	  const double valE = valsE[index];
 	  if (fabs(valE) > tolerance)
 	    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
 	  else
@@ -318,10 +300,9 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
       
       const bool isConstraint = _isConstraintVertex(*v_iter);
       if (!isConstraint) {
-	const double pseudoStiffness = _data->pseudoStiffness;
 	for (int i=0; i < fiberDimE; ++i) {
 	  const int index = iVertex*spaceDim+i;
-	  const double valE = valsE[index] * pseudoStiffness;
+	  const double valE = valsE[index];
 	  if (fabs(valE) > tolerance)
 	    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
 	  else
@@ -474,10 +455,9 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidualAssembled(void)
 	for (int i=0; i < fiberDimE; ++i)
 	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
       } else {
-	const double pseudoStiffness = _data->pseudoStiffness;
 	for (int i=0; i < fiberDimE; ++i) {
 	  const int index = iVertex*spaceDim+i;
-	  const double valE = valsE[index] * pseudoStiffness;
+	  const double valE = valsE[index];
 	  if (fabs(valE) > tolerance)
 	    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
 	  else
@@ -513,10 +493,9 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidualAssembled(void)
 	for (int i=0; i < fiberDimE; ++i)
 	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
       } else {
-	const double pseudoStiffness = _data->pseudoStiffness;
 	for (int i=0; i < fiberDimE; ++i) {
 	  const int index = iVertex*spaceDim+i;
-	  const double valE = valsE[index] * pseudoStiffness;
+	  const double valE = valsE[index];
 	  if (fabs(valE) > tolerance)
 	    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
 	  else
@@ -592,9 +571,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembled(void)
   for (int iRow=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int index = ncols*iRow+iCol;
-      const double pseudoStiffness = 
-	(iRow > iCol) ? 1.0 : _data->pseudoStiffness;
-      const double valE = valsE[index] * pseudoStiffness;
+      const double valE = valsE[index];
 #if 0 // DEBUGGING
       if (fabs(valE-vals[index]) > tolerance)
 	std::cout << "ERROR: iRow: " << iRow << ", iCol: " << iCol
@@ -797,7 +774,7 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
     const double* dispVertex = dispSection->restrictPoint(meshVertex);
     CPPUNIT_ASSERT(0 != dispVertex);
 
-    const double scale = _data->pseudoStiffness / _data->area[iVertex];
+    const double scale = 1.0 / _data->area[iVertex];
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       const double tractionE = dispVertex[iDim] * scale;
       if (tractionE > 1.0) 
@@ -886,12 +863,7 @@ pylith::faults::TestFaultCohesiveKin::_initialize(
   const double upDir[] = { 0.0, 0.0, 1.0 };
   const double normalDir[] = { 1.0, 0.0, 0.0 };
   
-  spatialdata::spatialdb::SimpleDB dbMatProp("material properties");
-  spatialdata::spatialdb::SimpleIOAscii ioMatProp;
-  ioMatProp.filename(_data->matPropsFilename);
-  dbMatProp.ioHandler(&ioMatProp);
-  
-  fault->initialize(*mesh, upDir, normalDir, &dbMatProp); 
+  fault->initialize(*mesh, upDir, normalDir); 
   
   delete[] sources; sources = 0;
   for (int i=0; i < nsrcs; ++i)
