@@ -638,11 +638,10 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
 // ----------------------------------------------------------------------
 // Effective stress function that computes effective stress function only
 // (no derivative).
-static
 double
 pylith::materials::PowerLaw3D::effStressFunc(
      const double effStressTpdt,
-     pylith::materials::EffectiveStress::EffStressStruct& effStressParams)
+     const EffectiveStress::EffStressStruct& effStressParams)
 { // effStressFunc
   double ae = effStressParams.ae;
   double b = effStressParams.b;
@@ -667,11 +666,10 @@ pylith::materials::PowerLaw3D::effStressFunc(
 // ----------------------------------------------------------------------
 // Effective stress function that computes effective stress function
 // derivative only (no function value).
-static
 double
 pylith::materials::PowerLaw3D::effStressDFunc(
      const double effStressTpdt,
-     pylith::materials::EffectiveStress::EffStressStruct& effStressParams)
+     const EffectiveStress::EffStressStruct& effStressParams)
 { // effStressDFunc
   double ae = effStressParams.ae;
   double c = effStressParams.c;
@@ -699,11 +697,10 @@ pylith::materials::PowerLaw3D::effStressDFunc(
 // ----------------------------------------------------------------------
 // Effective stress function that computes effective stress function
 // and derivative.
-static
 void
 pylith::materials::PowerLaw3D::effStressFuncDFunc(
      const double effStressTpdt,
-     pylith::materials::EffectiveStress::EffStressStruct& effStressParams,
+     const EffectiveStress::EffStressStruct& effStressParams,
      double* py,
      double* pdy)
 { // effStressFuncDFunc

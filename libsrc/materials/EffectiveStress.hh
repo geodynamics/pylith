@@ -54,17 +54,17 @@ public :
   /// Member prototype for effStressFunc()
   typedef static double (*effStressFunc_fn_type)
   (const double,
-   EffStressStruct);
+   const EffStressStruct&);
 
   /// Member prototype for effStressDFunc()
   typedef static double (*effStressDFunc_fn_type)
   (const double,
-   EffStressStruct);
+   const EffStressStruct&);
   
   /// Member prototype for effStressFuncDFunc()
   typedef static void (*effStressFuncDFunc_fn_type)
   (const double,
-   EffStressStruct,
+   const EffStressStruct&,
    double*,
    double*);
 
@@ -96,7 +96,7 @@ public :
   static
   double getEffStress(const double effStressInitialGuess,
 		      const double stressScale,
-		      EffStressStruct effStressParams,
+		      const EffStressStruct& effStressParams,
 		      effStressFunc_fn_type effStressFunc,
 		      effStressFuncDFunc_fn_type effStressFuncDFunc);
 
@@ -111,9 +111,10 @@ private :
    * @param effStressFunc Function to compute effective stress only.
    *
    */
+  static
   void _bracketEffStress(double* px1,
 			 double* px2,
-			 EffStressStruct effStressParams,
+			 const EffStressStruct& effStressParams,
 			 effStressFunc_fn_type effStressFunc);
 
   /** Solve for effective stress using Newton's method with bisection.
@@ -126,9 +127,10 @@ private :
    *
    * @returns Computed effective stress.
    */
+  static
   double _findEffStress(double xx1,
 			double xx2,
-			EffStressStruct effStressParams,
+			const EffStressStruct& effStressParams,
 			effStressFunc_fn_type effStressFunc,
 			effStressFuncDFunc_fn_type effStressFuncDFunc);
 

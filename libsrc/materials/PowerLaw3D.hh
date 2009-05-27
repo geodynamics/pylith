@@ -64,7 +64,7 @@ public :
    */
   static double effStressFunc(
     const double effStressTpdt,
-    pylith::materials::EffectiveStress::EffStressStruct& effStressParams);
+    const EffectiveStress::EffStressStruct& effStressParams);
 
   /** Compute effective stress function derivative.
    *
@@ -75,7 +75,7 @@ public :
    */
   static double effStressDFunc(
     const double effStressTpdt,
-    pylith::materials::EffectiveStress::EffStressStruct& effStressParams);
+    const EffectiveStress::EffStressStruct& effStressParams);
 
   /** Compute effective stress function and derivative.
    *
@@ -87,7 +87,7 @@ public :
    */
   static void effStressFuncDFunc(
     const double effStressTpdt,
-    pylith::materials::EffectiveStress::EffStressStruct& effStressParams,
+    const EffectiveStress::EffStressStruct& effStressParams,
     double* py,
     double* pdy);
 
