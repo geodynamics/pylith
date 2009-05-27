@@ -52,17 +52,17 @@ public :
 public :
 
   /// Member prototype for effStressFunc()
-  typedef static double (*effStressFunc_fn_type)
+  typedef double (*effStressFunc_fn_type)
   (const double,
    const EffStressStruct&);
 
   /// Member prototype for effStressDFunc()
-  typedef static double (*effStressDFunc_fn_type)
+  typedef double (*effStressDFunc_fn_type)
   (const double,
    const EffStressStruct&);
   
   /// Member prototype for effStressFuncDFunc()
-  typedef static void (*effStressFuncDFunc_fn_type)
+  typedef void (*effStressFuncDFunc_fn_type)
   (const double,
    const EffStressStruct&,
    double*,
