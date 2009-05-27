@@ -667,9 +667,8 @@ pylith::materials::PowerLaw3D::effStressFunc(
 // Effective stress function that computes effective stress function
 // derivative only (no function value).
 double
-pylith::materials::PowerLaw3D::effStressDFunc(
-     const double effStressTpdt,
-     const EffectiveStress::EffStressStruct& effStressParams)
+pylith::materials::PowerLaw3D::effStressDFunc(const double effStressTpdt,
+					      const EffectiveStress::EffStressStruct& effStressParams)
 { // effStressDFunc
   double ae = effStressParams.ae;
   double c = effStressParams.c;

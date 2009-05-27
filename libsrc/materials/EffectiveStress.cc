@@ -16,8 +16,8 @@
 
 #include "petsc.h" // USES PetscLogFlops
 
+#include <cmath> // USES fabs()
 #include <stdexcept> // USES std::runtime_error
-#include <cmath> // USES fabs
 
 // ----------------------------------------------------------------------
 // Compute effective stress, given an initial guess, a vector of parameters,
@@ -58,7 +58,6 @@ pylith::materials::EffectiveStress::getEffStress(
 					  effStressFuncDFunc);
 
   return effStress;
-
 } // getEffStress
 
 // ----------------------------------------------------------------------
@@ -83,12 +82,12 @@ pylith::materials::EffectiveStress::_bracketEffStress(
 
   int iteration = 0;
   bool bracketed = false;
-
   while (iteration < maxIterations) {
     if ((funcValue1 * funcValue2) < 0.0) {
       bracketed = true;
       break;
-    }
+    } // if
+
     if (fabs(funcValue1) < fabs(funcValue2)) {
       x1 += bracketFactor * (x1 - x2);
       x1 = std::max(x1, 0.0);
@@ -105,9 +104,8 @@ pylith::materials::EffectiveStress::_bracketEffStress(
   *px2 = x2;
 
   PetscLogFlops(5 * iteration);
-  if (bracketed == false)
+  if (!bracketed)
     throw std::runtime_error("Unable to bracket effective stress.");
-
 } // _bracketEffStress
 
 // ----------------------------------------------------------------------
@@ -197,6 +195,7 @@ pylith::materials::EffectiveStress::_findEffStress(
   PetscLogFlops(5 + 15 * iteration);
   return effStress;
 
+  return effStress;
 } // _findEffStress
 
 
