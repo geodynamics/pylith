@@ -7,9 +7,8 @@ Matt
   field split
 
 Brad
-  Test precompute geometry [DONE]
-  Nondimensionalization
-    Material state vars - use dimstatevars and dimproperties to get scales
+  Questions for Matt:
+    How to set symmetric matrix flag?
   cleanup
   full-scale testing
   test uniform refinement
