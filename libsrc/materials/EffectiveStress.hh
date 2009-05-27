@@ -128,8 +128,8 @@ private :
    * @returns Computed effective stress.
    */
   static
-  double _findEffStress(double xx1,
-			double xx2,
+  double _findEffStress(double x1,
+			double x2,
 			const EffStressStruct& effStressParams,
 			effStressFunc_fn_type effStressFunc,
 			effStressFuncDFunc_fn_type effStressFuncDFunc);
