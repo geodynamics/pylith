@@ -66,8 +66,8 @@ class DataWriterVTK(DataWriter):
 
     # Nondimensionalize
     timeScale = normalizer.timeScale()
-    self.timeConstant = normalizer.nondimensionalize(self.timeConstant,
-                                                     timeScale)
+    self.timeConstantN = normalizer.nondimensionalize(self.timeConstant,
+                                                timeScale)
     return
 
 

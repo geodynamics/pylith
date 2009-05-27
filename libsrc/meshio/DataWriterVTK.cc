@@ -289,7 +289,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::_vtkFilename(const double t
     sprintf(sbuffer, _timeFormat.c_str(), t/_timeConstant);
     std::string timestamp(sbuffer);
     const int pos = timestamp.find(".");
-    if (pos >0 && pos != timestamp.length())
+    if (pos > 0 && pos != timestamp.length())
       timestamp.erase(pos, 1);
     filename
       << std::string(_filename, 0, indexExt) << "_t" << timestamp << ".vtk";
