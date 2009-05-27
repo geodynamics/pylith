@@ -17,6 +17,7 @@
 #include "petsc.h" // USES PetscLogFlops
 
 #include <cmath> // USES fabs()
+#include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
