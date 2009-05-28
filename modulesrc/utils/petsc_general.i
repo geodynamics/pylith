@@ -14,7 +14,8 @@
 // initialize
 %inline %{
   int
-  initialize(int argc, char** argv)
+  initialize(int argc,
+	     char** argv)
   { // initialize
     PetscErrorCode err = 
       PetscInitialize(&argc, &argv, NULL, NULL); CHKERRQ(err);

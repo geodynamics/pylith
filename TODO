@@ -164,7 +164,6 @@ Charles
     after assert(0) to insure error is trapped.
 
     Use Fields object to hold Field
-      Material
 
     Eliminate use of Inventory class.
 
