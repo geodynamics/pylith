@@ -52,7 +52,6 @@ class PetscManager(Component):
     if len(options) > 0:
       for arg in options:
         args.append(arg)
-    print "PETSC INITIALIZE ARGS",args
     petsc.initialize(args)
     return
 
