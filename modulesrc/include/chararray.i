@@ -66,8 +66,7 @@
   delete[] $1;
 }
 
-
-// Treat char** as a special case.
+// Treat argc & argv as a special case.
 %typemap(in) (int argc, char** argv) {
   // Check to make sure input is a list.
   if (PyList_Check($input)) {
@@ -92,8 +91,11 @@
 
 // This cleans up the char** array we malloc'd before the function call
 %typemap(freearg) (int argc, char** argv) {
+  for (int i=0; i < $1; ++i)
+    std::cout << "ARGV["<<i<<"]: '" << $2[i] << "'" << std::endl;
   delete[] $2;
 }
+
 
 %typemap(argout) (int *numNames, char ***outNames) {
   int       num   = *$1;
