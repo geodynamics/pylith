@@ -1,4 +1,4 @@
-Full-scale tests for 1-D bar.
+Full-scale tests for 1-D bar with linear cells.
 
 0      1      2      3      4
 * ---- * ---- * ---- * ---- *
@@ -13,7 +13,7 @@ Vertex   Coordinates
 
 AXIAL EXTENSION
 
-1-D axial extension test with linear cells.
+1-D axial extension.
 
 Dirichlet boundary conditions
   u(0) = -0.2
@@ -25,7 +25,7 @@ Analytical solution
 
 DISLOCATION
 
-1-D axial extension with dislocation test with linear cells.
+1-D axial extension with dislocation.
 
 Dirichlet boundary conditions (same as extension)
   u(0) = -0.2
