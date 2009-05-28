@@ -70,8 +70,6 @@ class Implicit(Formulation):
     """
     Formulation.__init__(self, name)
     self._loggingPrefix = "TSIm "
-    self.solnField = {'name': "disp(t)",
-                      'label': "displacement"}
     self._stepCount = None
     return
 
@@ -90,26 +88,16 @@ class Implicit(Formulation):
     """
     Formulation.initialize(self, dimension, normalizer)
 
+    # Allocate other fields, reusing layout from dispIncr
     self._info.log("Creating other fields.")
-    self.fields.add("dispIncr(t->t+dt)", "displacement_increment")
-    self.fields.add("residual", "residual")
-    self.fields.copyLayout("disp(t)")
-    self.fields.solutionName("dispIncr(t->t+dt)")
+    self.fields.copyLayout("dispIncr(t->t+dt)")
 
-    # Set fields to zero
-    lengthScale = normalizer.lengthScale()
-    disp = self.fields.get("disp(t)")
-    disp.scale(lengthScale.value)
-    disp.zero()
-    dispIncr = self.fields.get("dispIncr(t->t+dt)")
-    dispIncr.scale(lengthScale.value)
-    dispIncr.zero()
+    # Setup fields and set to zero
+    dispT = self.fields.get("disp(t)")
+    dispT.zero()
     residual = self.fields.get("residual")
-    residual.scale(lengthScale.value)
     residual.zero()
-    # Create Petsc vectors for fields involved in solve
     residual.createVector()
-    dispIncr.createVector()
     self._debug.log(resourceUsageString())
 
     self._info.log("Creating Jacobian matrix.")
@@ -167,7 +155,6 @@ class Implicit(Formulation):
       for constraint in self.constraints:
         constraint.setFieldIncr(t, t+dt, dispIncr)
 
-    ### NONLINEAR: Might want to move logic into IntegrateJacobian() and set a flag instead
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.timeStep(dt)
       if integrator.needNewJacobian():
@@ -185,22 +172,14 @@ class Implicit(Formulation):
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
     dispIncr.zero()
 
-    ### NONLINEAR: This moves under SNES control as IntegrateResidual()
-    ### NONLINEAR: Also move updateState() from Integrator.poststep() to this function
     self._reformResidual(t+dt, dt)
 
     self._info.log("Solving equations.")
     residual = self.fields.get("residual")
     self._logger.stagePush("Solve")
-    #residual.view("RESIDUAL BEFORE SOLVE")
-    #self.jacobian.view()
     self.solver.solve(dispIncr, self.jacobian, residual)
     self._logger.stagePop()
 
-    # BEGIN TEMPORARY
-    #dispIncr.view("DISPINCR SOLUTION")
-    #residual.view("RESIDUAL")
-    # END TEMPORARY
     return
 
 
@@ -212,6 +191,7 @@ class Implicit(Formulation):
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
     disp = self.fields.get("disp(t)")
     disp += dispIncr
+    dispIncr.zero()
 
     Formulation.poststep(self, t, dt)
 

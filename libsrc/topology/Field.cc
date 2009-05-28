@@ -75,22 +75,22 @@ pylith::topology::Field<mesh_type>::spaceDim(void) const
 } // spaceDim
 
 // ----------------------------------------------------------------------
-// Get the chart size
+// Get the chart size.
 template<typename mesh_type>
 int
 pylith::topology::Field<mesh_type>::chartSize(void) const
-{ // spaceDim
+{ // chartSize
   return _section.isNull() ? 0 : _section->getChart().size();
-} // spaceDim
+} // chartSize
 
 // ----------------------------------------------------------------------
-// Get the size
+// Get the number of degrees of freedom.
 template<typename mesh_type>
 int
-pylith::topology::Field<mesh_type>::size(void) const
-{ // spaceDim
+pylith::topology::Field<mesh_type>::sectionSize(void) const
+{ // sectionSize
   return _section.isNull() ? 0 : _section->size();
-} // spaceDim
+} // sectionSize
 
 // ----------------------------------------------------------------------
 // Create seive section.
@@ -211,6 +211,8 @@ pylith::topology::Field<mesh_type>::newSection(const Field& src)
   std::cout << "Making Field " << _label << " section type 3" << std::endl;
   logger.stagePush("Field");
   _vecFieldType = src._vecFieldType;
+  _scale = src._scale;
+  _dimensionsOkay = false;
 
   const ALE::Obj<RealSection>& srcSection = src.section();
   if (!srcSection.isNull() && _section.isNull()) {
@@ -301,8 +303,8 @@ void
 pylith::topology::Field<mesh_type>::copy(const Field& field)
 { // copy
   // Check compatibility of sections
-  const int srcSize = (!field._section.isNull()) ? field._section->size() : 0;
-  const int dstSize = (!_section.isNull()) ? _section->size() : 0;
+  const int srcSize = field.chartSize();
+  const int dstSize = chartSize();
   if (field.spaceDim() != spaceDim() ||
       field._vecFieldType != _vecFieldType ||
       srcSize != dstSize) {
@@ -351,8 +353,8 @@ void
 pylith::topology::Field<mesh_type>::copy(const ALE::Obj<typename mesh_type::RealSection>& osection)
 { // copy
   // Check compatibility of sections
-  const int srcSize = (!osection.isNull()) ? osection->size() : 0;
-  const int dstSize = (!_section.isNull()) ? _section->size() : 0;
+  const int srcSize = osection->getChart().size();
+  const int dstSize = chartSize();
   if (srcSize != dstSize) {
     std::ostringstream msg;
 
@@ -392,8 +394,8 @@ pylith::topology::Field<mesh_type>&
 pylith::topology::Field<mesh_type>::operator+=(const Field& field)
 { // operator+=
   // Check compatibility of sections
-  const int srcSize = (!field._section.isNull()) ? field._section->size() : 0;
-  const int dstSize = (!_section.isNull()) ? _section->size() : 0;
+  const int srcSize = field.chartSize();
+  const int dstSize = chartSize();
   if (field.spaceDim() != spaceDim() ||
       field._vecFieldType != _vecFieldType ||
       field._scale != _scale ||

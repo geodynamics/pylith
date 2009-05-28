@@ -95,7 +95,7 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     assert(0 != _fieldAvg);
     _fieldAvg->newSection(sectionIn->getChart(), fiberDim);
     _fieldAvg->allocate();
-  } else if (_fieldAvg->size() != cells->size()*fiberDim) {
+  } else if (_fieldAvg->chartSize() != cells->size()*fiberDim) {
     _fieldAvg->clear();
     _fieldAvg->newSection(sectionIn->getChart(), fiberDim);
     _fieldAvg->allocate();
