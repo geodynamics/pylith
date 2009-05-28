@@ -1,8 +1,9 @@
+// -*- C++ -*-
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 1
-  value-names =  slip-rate
-  value-units =  m/s
+  value-names =  slip-time
+  value-units =  s
   num-locs = 1
   data-dim = 0
   space-dim = 1
@@ -11,4 +12,4 @@ SimpleDB {
     space-dim = 1
   }
 }
-0.0   1.0e+6
+0.0    0.0

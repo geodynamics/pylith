@@ -8,7 +8,7 @@ Matt
 
 Brad
   Questions for Matt:
-    How to set symmetric matrix flag?
+    How to use symmetric matrix (updateOperator)?
   cleanup
   full-scale testing
   test uniform refinement

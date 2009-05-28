@@ -14,26 +14,29 @@ TESTS = testpylith.py
 
 check_SCRIPTS = testpylith.py
 
-noinst_PYTHON = \
+dist_noinst_PYTHON = \
+	TestLine3.py \
 	TestAxial.py \
 	TestDislocation.py
 
-noinst_DATA = \
+dist_noinst_DATA = \
 	bar.mesh \
+	matprops.spatialdb \
 	axialextension.cfg \
 	axialextension_disp.spatialdb \
 	dislocation.cfg \
-	dislocation_disp.spatialdb \
-	dislocation_slip.spatialdb \
-	dislocation_sliprate.spatialdb \
-	dislocation_sliptime.spatialdb \
-	matprops.spatialdb
+	finalslip.spatialdb \
+	sliptime.spatialdb
 
 noinst_TMP = \
-	axialextension_t0.vtk \
-	axialextension_t1.vtk \
-	dislocation_t0.vtk \
-	dislocation_t1.vtk
+	axialextension_t0000000.vtk \
+	axialextension-elastic_info.vtk \
+	axialextension-elastic_t0000000.vtk \
+	dislocation-fault_info.vtk \
+	dislocation-fault_t0000000.vtk \
+	dislocation-elastic_info.vtk \
+	dislocation-elastic_t0000000.vtk \
+	dislocation_t0000000.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)
@@ -41,14 +44,14 @@ TESTS_ENVIRONMENT = $(PYTHON)
 
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/tests/1d/line3
-export-data: $(noinst_DATA)
-	for f in $(noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
+export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
+	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
+
+clean-data:
+	if [ "X$(top_srcdir)" != "X$(top_builddir)" ]; then for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
 
 BUILT_SOURCES = export-data
-
-CLEANFILES = \
-	$(export_datadir)/$(noinst_DATA) \
-	$(export_datadir)/$(noinst_TMP)
+clean-local: clean-data
 
 
 # End of file 
