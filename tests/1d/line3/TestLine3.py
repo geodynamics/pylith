@@ -10,14 +10,14 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/1d/line2/TestLine2.py
+## @file tests/1d/line2/TestLine3.py
 ##
 ## @brief Generic tests for problems using 1-D bar mesh.
 
 import unittest
 import numpy
 
-class TestLine2(unittest.TestCase):
+class TestLine3(unittest.TestCase):
   """
   Generic tests for problems using 1-D bar mesh.
   """
@@ -26,8 +26,8 @@ class TestLine2(unittest.TestCase):
     """
     Setup for tests.
     """
-    self.mesh = {'ncells': 4,
-                 'ncorners': 2,
+    self.mesh = {'ncells': 2,
+                 'ncorners': 3,
                  'nvertices': 5,
                  'spaceDim': 3,
                  'tensorSize': 1}

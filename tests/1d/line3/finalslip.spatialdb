@@ -1,3 +1,4 @@
+// -*- C++ -*-
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 1
@@ -11,4 +12,4 @@ SimpleDB {
     space-dim = 1
   }
 }
-0.0   1.0
+0.0    -0.50
