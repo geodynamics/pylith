@@ -207,20 +207,35 @@ class Formulation(PetscComponent, ModuleFormulation):
       output.open(totalTime, numTimeSteps)
     self._debug.log(resourceUsageString())
 
+    # Setup fields
     self._info.log("Creating solution field.")
-    solnName = self.solnField['name']
-    self.fields.add(solnName, self.solnField['label'])
-    self.fields.solutionName(solnName)
-    solution = self.fields.solution()
+    self.fields.add("dispIncr(t->t+dt)", "displacement_increment")
+    self.fields.add("disp(t)", "displacement")
+    self.fields.add("residual", "residual")
+    self.fields.solutionName("dispIncr(t->t+dt)")
+
+    lengthScale = normalizer.lengthScale()
+    solution = self.fields.get("dispIncr(t->t+dt)")
     solution.vectorFieldType(solution.VECTOR)
-    solution.scale(normalizer.lengthScale().value)
+    solution.scale(lengthScale.value)
     solution.newSection(solution.VERTICES_FIELD, dimension)
     for constraint in self.constraints:
       constraint.setConstraintSizes(solution)
     solution.allocate()
     for constraint in self.constraints:
       constraint.setConstraints(solution)
+    solution = self.fields.get("dispIncr(t->t+dt)")
+    solution.createVector()
     solution.createScatter()
+
+    dispT = self.fields.get("disp(t)")
+    dispT.vectorFieldType(dispT.VECTOR)
+    dispT.scale(lengthScale.value)
+
+    residual = self.fields.get("residual")
+    residual.vectorFieldType(residual.VECTOR)
+    residual.scale(lengthScale.value)
+
     self._debug.log(resourceUsageString())
 
     self._logger.eventEnd(logEvent)

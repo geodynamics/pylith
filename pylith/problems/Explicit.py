@@ -47,8 +47,6 @@ class Explicit(Formulation):
     """
     Formulation.__init__(self, name)
     self._loggingPrefix = "TSEx "
-    self.solnField = {'name': "disp(t)",
-                      'label': "displacement"}
     return
 
 
@@ -70,30 +68,18 @@ class Explicit(Formulation):
     Formulation.initialize(self, dimension, normalizer)
 
     self._info.log("Creating other fields and matrices.")
-    self.fields.add("dispIncr(t->t+dt)", "displacement_increment")
     self.fields.add("disp(t-dt)", "displacement")
-    self.fields.add("residual", "residual")
-    self.fields.copyLayout("disp(t)")
-    self.fields.solutionName("dispIncr(t->t+dt)")
+    self.fields.copyLayout("dispIncr(t->t+dt)")
     self._debug.log(resourceUsageString())
 
-    # Set fields to zero
-    lengthScale = normalizer.lengthScale()
-    dispIncr = self.fields.get("dispIncr(t->t+dt)")
-    dispIncr.scale(lengthScale.value)
-    dispIncr.zero()
-    dispT = self.fields.get("disp(t)")
-    dispT.scale(lengthScale.value)
-    dispT.zero()
+    # Setup fields and set to zero
     dispTmdt = self.fields.get("disp(t-dt)")
-    dispTmdt.scale(lengthScale.value)
     dispTmdt.zero()
+    dispT = self.fields.get("disp(t)")
+    dispT.zero()
     residual = self.fields.get("residual")
-    residual.scale(lengthScale.value)
     residual.zero()
-    # Create Petsc vectors for fields involved in solve
     residual.createVector()
-    dispIncr.createVector()
     self._debug.log(resourceUsageString())
 
     self._info.log("Creating Jacobian matrix.")

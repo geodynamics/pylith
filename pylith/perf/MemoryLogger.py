@@ -119,7 +119,7 @@ class MemoryLogger(Logger):
     import pylith.perf.Field
 
     if not stage in self.memory: self.memory[stage] = {}
-    fieldModel = pylith.perf.Field.Field(field.label(), field.size(), field.chartSize())
+    fieldModel = pylith.perf.Field.Field(field.label(), field.sectionSize(), field.chartSize())
     fieldModel.tabulate(self.memory[stage])
     if self.verbose: self.show()
     return

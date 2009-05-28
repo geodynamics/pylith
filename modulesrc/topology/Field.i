@@ -131,7 +131,7 @@ namespace pylith {
        *
        * @returns the number of degrees of freedom.
        */
-      int size(void) const;
+      int sectionSize(void) const;
       
       /// Create sieve section.
       void newSection(void);
