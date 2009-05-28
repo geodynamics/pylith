@@ -18,7 +18,7 @@
 	     char** argv)
   { // initialize
     PetscErrorCode err = 
-      PetscInitialize(&argc, &argv, NULL, NULL); CHKERRQ(err);
+      PetscInitialize(&argc, &argv, PETSC_NULL, PETSC_NULL); CHKERRQ(err);
     return 0;
   } // initialize
 %} // inline

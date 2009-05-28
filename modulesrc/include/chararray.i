@@ -72,7 +72,7 @@
   if (PyList_Check($input)) {
     const int size = PyList_Size($input);
     $1 = size;
-    $2 = (size > 0) ? new char*[size] : 0;
+    $2 = (size > 0) ? new char*[size+1] : 0;
     for (int i = 0; i < size; i++) {
       PyObject *s = PyList_GetItem($input,i);
       if (PyString_Check(s))
@@ -83,6 +83,7 @@
 	return NULL;
       } // else
     } // for
+    $2[size] = 0; // Must terminate argv with null!
   } else {
     PyErr_SetString(PyExc_TypeError, "Expected list of strings.");
     return NULL;
@@ -91,8 +92,6 @@
 
 // This cleans up the char** array we malloc'd before the function call
 %typemap(freearg) (int argc, char** argv) {
-  for (int i=0; i < $1; ++i)
-    std::cout << "ARGV["<<i<<"]: '" << $2[i] << "'" << std::endl;
   delete[] $2;
 }
 
