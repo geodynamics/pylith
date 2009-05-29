@@ -27,7 +27,6 @@
 #define pylith_materials_powerlaw3d_hh
 
 #include "ElasticMaterial.hh" // ISA ElasticMaterial
-#include "EffectiveStress.hh" // Uses EffectiveStress
 
 /// 3-D, isotropic, linear Maxwell viscoelastic material.
 class pylith::materials::PowerLaw3D : public ElasticMaterial
@@ -58,38 +57,29 @@ public :
   /** Compute effective stress function.
    *
    * @param effStressTpdt Effective stress value.
-   * @param effStressParams Effective stress parameters.
    *
    * @returns Effective stress function value.
    */
-  static double effStressFunc(
-    const double effStressTpdt,
-    const EffectiveStress::EffStressStruct& effStressParams);
+  double effStressFunc(const double effStressTpdt);
 
   /** Compute effective stress function derivative.
    *
    * @param effStressTpdt Effective stress value.
-   * @param effStressParams Effective stress parameters.
    *
    * @returns Effective stress function derivative value.
    */
-  static double effStressDFunc(
-    const double effStressTpdt,
-    const EffectiveStress::EffStressStruct& effStressParams);
+  double effStressDerivFunc(const double effStressTpdt);
 
   /** Compute effective stress function and derivative.
    *
+   * @param func Returned effective stress function value.
+   * @param dfunc Returned effective stress function derivative value.
    * @param effStressTpdt Effective stress value.
-   * @param effStressParams Effective stress parameters.
-   * @param py Returned effective stress function value.
-   * @param pdy Returned effective stress function derivative value.
    *
    */
-  static void effStressFuncDFunc(
-    const double effStressTpdt,
-    const EffectiveStress::EffStressStruct& effStressParams,
-    double* py,
-    double* pdy);
+  void effStressFuncDerivFunc(double* func,
+			      double* dfunc,
+			      const double effStressTpdt);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -507,11 +497,26 @@ private :
   double _scalarProduct(const double* tensor1,
 			const double* tensor2) const;
 
+  // PRIVATE STRUCTS ////////////////////////////////////////////////////
+private :
+
+  struct EffStressStruct {
+    double ae;
+    double b;
+    double c;
+    double d;
+    double alpha;
+    double dt;
+    double effStressT;
+    double powerLawExp;
+    double viscosityCoeff;
+  };
+
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
   /// Structure to hold parameters for effective stress computation.
-  pylith::materials::EffectiveStress::EffStressStruct _effStressParams;
+  EffStressStruct _effStressParams;
 
   /// Method to use for _calcElasticConsts().
   calcElasticConsts_fn_type _calcElasticConstsFn;
@@ -521,9 +526,6 @@ private :
 
   /// Method to use for _updateStateVars().
   updateStateVars_fn_type _updateStateVarsFn;
-
-  // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private :
 
   static const int p_density;
   static const int p_mu;
@@ -544,11 +546,8 @@ private :
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
-  /// Not implemented
-  PowerLaw3D(const PowerLaw3D&);
-
-  /// Not implemented
-  const PowerLaw3D& operator=(const PowerLaw3D&);
+  PowerLaw3D(const PowerLaw3D&); ///< Not implemented
+  const PowerLaw3D& operator=(const PowerLaw3D&); ///< Not implemented
 
 }; // class PowerLaw3D
 

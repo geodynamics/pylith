@@ -14,8 +14,8 @@
  *
  * @brief C++ EffectiveStress object.
  *
- * This class contains bracketing and root-finding functions for materials that
- * use an effective stress formulation.
+ * This class contains bracketing and root-finding functions for
+ * materials that use an effective stress formulation.
  */
 
 #if !defined(pylith_materials_effectivestress_hh)
@@ -33,110 +33,61 @@ namespace pylith {
 class pylith::materials::EffectiveStress
 { // class EffectiveStress
 
-  // PUBLIC STRUCTS /////////////////////////////////////////////////////
-public :
-
-  struct EffStressStruct {
-    double ae;
-    double b;
-    double c;
-    double d;
-    double alpha;
-    double dt;
-    double effStressT;
-    double powerLawExp;
-    double viscosityCoeff;
-  };
-
-  // PUBLIC TYPEDEFS ///////////////////////////////////////////////////
-public :
-
-  /// Member prototype for effStressFunc()
-  typedef double (*effStressFunc_fn_type)
-  (const double,
-   const EffStressStruct&);
-
-  /// Member prototype for effStressDFunc()
-  typedef double (*effStressDFunc_fn_type)
-  (const double,
-   const EffStressStruct&);
-  
-  /// Member prototype for effStressFuncDFunc()
-  typedef void (*effStressFuncDFunc_fn_type)
-  (const double,
-   const EffStressStruct&,
-   double*,
-   double*);
-
-  // PUBLIC MEMBERS ///////////////////////////////////////////////////
-public :
-
-  /// Metod to use for effStressFunc().
-  effStressFunc_fn_type effStressFunc;
-
-  /// Metod to use for effStressDFunc().
-  effStressDFunc_fn_type effStressDFunc;
-
-  /// Metod to use for effStressFuncDFunc().
-  effStressFuncDFunc_fn_type effStressFuncDFunc;
-
-
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
   /** Get effective stress from initial guess.
    *
+   * The stressScale argument should provide a reasonable initial
+   * guess in the case where the
+   * actual initial guess is zero.
+   *
    * @param effStressInitialGuess Initial guess for effective stress.
    * @param effStressParams Parameters used in computing effective stress.
-   * @param effStressFunc Function to compute effective stress only.
-   * @param effStressFuncDFunc Function to compute effective stress and derivative.
+   * @param material Material with effective stress function.
    *
    * @returns Computed effective stress.
    */
+  template<typename material_type>
   static
   double getEffStress(const double effStressInitialGuess,
 		      const double stressScale,
-		      const EffStressStruct& effStressParams,
-		      effStressFunc_fn_type effStressFunc,
-		      effStressFuncDFunc_fn_type effStressFuncDFunc);
+		      material_type* const material);
 
   // PRIVATE METHODS /////////////////////////////////////////////////////
 private :
 
   /** Bracket effective stress.
    *
-   * @param x1 Initial guess for first bracket.
-   * @param x2 Initial guess for second bracket.
-   * @param effStressParams Parameters used in computing effective stress.
-   * @param effStressFunc Function to compute effective stress only.
+   * @param px1 Initial guess for first bracket.
+   * @param px2 Initial guess for second bracket.
+   * @param material Material with effective stress function.
    *
    */
+  template<typename material_type>
   static
   void _bracketEffStress(double* px1,
 			 double* px2,
-			 const EffStressStruct& effStressParams,
-			 effStressFunc_fn_type effStressFunc);
+			 material_type* const material);
 
   /** Solve for effective stress using Newton's method with bisection.
    *
    * @param x1 Initial guess for first bracket.
    * @param x2 Initial guess for second bracket.
-   * @param effStressParams Parameters used in computing effective stress.
-   * @param effStressFunc Function to compute effective stress only.
-   * @param effStressFuncDFunc Function to compute effective stress and derivative.
+   * @param material Material with effective stress function.
    *
    * @returns Computed effective stress.
    */
+  template<typename material_type>
   static
   double _findEffStress(double x1,
 			double x2,
-			const EffStressStruct& effStressParams,
-			effStressFunc_fn_type effStressFunc,
-			effStressFuncDFunc_fn_type effStressFuncDFunc);
+			material_type* const material);
 
 }; // class EffectiveStress
 
 #endif // pylith_materials_effectivestress_hh
 
+#include "EffectiveStress.icc" // template methods
 
 // End of file 
