@@ -25,8 +25,8 @@ p_mu = p_density*p_vs**2
 p_lambda = p_density*p_vp**2 - 2*p_mu
 
 # Uniform stress field
-sxx = 1.0e+6
-sxy = 0.0e+6
+sxx = 1.0e+7
+sxy = 8.0e+6
 syy = 0.0
 
 # Uniform strain field
