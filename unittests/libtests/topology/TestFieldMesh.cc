@@ -226,10 +226,10 @@ pylith::topology::TestFieldMesh::testNewSectionChart(void)
 } // testNewSectionChart
 
 // ----------------------------------------------------------------------
-// Test newSection(field).
+// Test cloneSection().
 void
-pylith::topology::TestFieldMesh::testNewSectionField(void)
-{ // testNewSectionField
+pylith::topology::TestFieldMesh::testCloneSection(void)
+{ // testCloneSection
   const int fiberDim = 3;
   const int nconstraints[] = { 0, 2, 1, 3 };
   const int constraints[] = {
@@ -272,7 +272,7 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
   } // Setup source field
 
   Field<Mesh> field(mesh);
-  field.newSection(fieldSrc);
+  field.cloneSection(fieldSrc);
   const ALE::Obj<Mesh::RealSection>& section = field.section();
   CPPUNIT_ASSERT(!section.isNull());
   int iV = 0;
@@ -286,7 +286,7 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
 
   // Verify vector scatter was also copied.
   CPPUNIT_ASSERT_EQUAL(fieldSrc._scatter, field._scatter);
-} // testNewSectionField
+} // testCloneSection
 
 // ----------------------------------------------------------------------
 // Test clear().
@@ -783,7 +783,7 @@ pylith::topology::TestFieldMesh::testCreateScatter(void)
   CPPUNIT_ASSERT(0 != field._scatter);
 
   Field<Mesh> fieldB(mesh);
-  fieldB.newSection(field);
+  fieldB.cloneSection(field);
   CPPUNIT_ASSERT_EQUAL(fieldB._scatter, field._scatter);
 } // testCreateScatter
 

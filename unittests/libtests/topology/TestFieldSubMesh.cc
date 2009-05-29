@@ -212,10 +212,10 @@ pylith::topology::TestFieldSubMesh::testNewSectionChart(void)
 } // testNewSectionChart
 
 // ----------------------------------------------------------------------
-// Test newSection(field).
+// Test cloneSection().
 void
-pylith::topology::TestFieldSubMesh::testNewSectionField(void)
-{ // testNewSectionField
+pylith::topology::TestFieldSubMesh::testCloneSection(void)
+{ // testCloneSection
   const int fiberDim = 3;
   const int nconstraints[] = { 0, 2, 1, 3 };
   const int constraints[] = {
@@ -261,7 +261,7 @@ pylith::topology::TestFieldSubMesh::testNewSectionField(void)
 
 
   Field<SubMesh> field(submesh);
-  field.newSection(fieldSrc);
+  field.cloneSection(fieldSrc);
   const ALE::Obj<SubMesh::RealSection>& section = field.section();
   CPPUNIT_ASSERT(!section.isNull());
   int iV = 0;
@@ -272,7 +272,7 @@ pylith::topology::TestFieldSubMesh::testNewSectionField(void)
     CPPUNIT_ASSERT_EQUAL(nconstraints[iV++], 
 			 section->getConstraintDimension(*v_iter));
   } // for
-} // testNewSectionField
+} // testCloneSection
 
 // ----------------------------------------------------------------------
 // Test clear().

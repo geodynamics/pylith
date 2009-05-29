@@ -101,8 +101,7 @@ pylith::faults::LiuCosSlipFn::initialize(
 
   _parameters->add("rise time", "rise_time");
   topology::Field<topology::SubMesh>& riseTime = _parameters->get("rise time");
-  riseTime.newSection(slipTime);
-  riseTime.allocate();
+  riseTime.cloneSection(slipTime);
   riseTime.scale(timeScale);
   riseTime.vectorFieldType(topology::FieldBase::SCALAR);
   const ALE::Obj<RealSection>& riseTimeSection = riseTime.section();

@@ -20,11 +20,11 @@ def suite():
   """
   suite = unittest.TestSuite()
 
-  from TestAxialPlaneStrain import TestAxialPlaneStrain
-  suite.addTest(unittest.makeSuite(TestAxialPlaneStrain))
+  from TestAxialShearDisp import TestAxialShearDisp
+  suite.addTest(unittest.makeSuite(TestAxialShearDisp))
 
-  from TestShearPlaneStrain import TestShearPlaneStrain
-  suite.addTest(unittest.makeSuite(TestShearPlaneStrain))
+  from TestAxialShearTract import TestShearShearTract
+  suite.addTest(unittest.makeSuite(TestShearShearTract))
 
   from TestDislocation import TestDislocation
   suite.addTest(unittest.makeSuite(TestDislocation))
