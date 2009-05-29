@@ -15,6 +15,7 @@
 #include "PowerLaw3D.hh" // implementation of object methods
 
 #include "Metadata.hh" // USES Metadata
+#include "EffectiveStress.hh" // USES EffectiveStress
 
 #include "pylith/utils/array.hh" // USES double_array
 
@@ -602,12 +603,8 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
     const double effStressInitialGuess = effStressT;
 
     double effStressTpdt =
-      pylith::materials::EffectiveStress::getEffStress(
-			effStressInitialGuess,
-			stressScale,
-			_effStressParams,
-			pylith::materials::PowerLaw3D::effStressFunc,
-			pylith::materials::PowerLaw3D::effStressFuncDFunc);
+      EffectiveStress::getEffStress<PowerLaw3D>(effStressInitialGuess,
+						stressScale, this);
 
     // Compute stresses from effective stress.
     const double effStressTau = (1.0 - alpha) * effStressT +
@@ -639,19 +636,17 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
 // Effective stress function that computes effective stress function only
 // (no derivative).
 double
-pylith::materials::PowerLaw3D::effStressFunc(
-     const double effStressTpdt,
-     const EffectiveStress::EffStressStruct& effStressParams)
+pylith::materials::PowerLaw3D::effStressFunc(const double effStressTpdt)
 { // effStressFunc
-  double ae = effStressParams.ae;
-  double b = effStressParams.b;
-  double c = effStressParams.c;
-  double d = effStressParams.d;
-  double alpha = effStressParams.alpha;
-  double dt = effStressParams.dt;
-  double effStressT = effStressParams.effStressT;
-  double powerLawExp = effStressParams.powerLawExp;
-  double viscosityCoeff = effStressParams.viscosityCoeff;
+  double ae = _effStressParams.ae;
+  double b = _effStressParams.b;
+  double c = _effStressParams.c;
+  double d = _effStressParams.d;
+  double alpha = _effStressParams.alpha;
+  double dt = _effStressParams.dt;
+  double effStressT = _effStressParams.effStressT;
+  double powerLawExp = _effStressParams.powerLawExp;
+  double viscosityCoeff = _effStressParams.viscosityCoeff;
   double factor1 = 1.0-alpha;
   double effStressTau = factor1 * effStressT + alpha * effStressTpdt;
   double gammaTau = 0.5 * pow((effStressTau/viscosityCoeff),
@@ -667,17 +662,16 @@ pylith::materials::PowerLaw3D::effStressFunc(
 // Effective stress function that computes effective stress function
 // derivative only (no function value).
 double
-pylith::materials::PowerLaw3D::effStressDFunc(const double effStressTpdt,
-					      const EffectiveStress::EffStressStruct& effStressParams)
+pylith::materials::PowerLaw3D::effStressDerivFunc(const double effStressTpdt)
 { // effStressDFunc
-  double ae = effStressParams.ae;
-  double c = effStressParams.c;
-  double d = effStressParams.d;
-  double alpha = effStressParams.alpha;
-  double dt = effStressParams.dt;
-  double effStressT = effStressParams.effStressT;
-  double powerLawExp = effStressParams.powerLawExp;
-  double viscosityCoeff = effStressParams.viscosityCoeff;
+  double ae = _effStressParams.ae;
+  double c = _effStressParams.c;
+  double d = _effStressParams.d;
+  double alpha = _effStressParams.alpha;
+  double dt = _effStressParams.dt;
+  double effStressT = _effStressParams.effStressT;
+  double powerLawExp = _effStressParams.powerLawExp;
+  double viscosityCoeff = _effStressParams.viscosityCoeff;
   double factor1 = 1.0-alpha;
   double effStressTau = factor1 * effStressT + alpha * effStressTpdt;
   double gammaTau = 0.5 * pow((effStressTau/viscosityCoeff),
@@ -690,6 +684,7 @@ pylith::materials::PowerLaw3D::effStressDFunc(const double effStressTpdt,
     (2.0 * a * alpha * dt * effStressTpdt * effStressTpdt +
      c - 2.0 * d * d * gammaTau);
   PetscLogFlops(36);
+
   return dy;
 } // effStressDFunc
 
@@ -697,24 +692,22 @@ pylith::materials::PowerLaw3D::effStressDFunc(const double effStressTpdt,
 // Effective stress function that computes effective stress function
 // and derivative.
 void
-pylith::materials::PowerLaw3D::effStressFuncDFunc(
-     const double effStressTpdt,
-     const EffectiveStress::EffStressStruct& effStressParams,
-     double* py,
-     double* pdy)
+pylith::materials::PowerLaw3D::effStressFuncDerivFunc(double* func,
+						      double* dfunc,
+						      const double effStressTpdt)
 { // effStressFuncDFunc
-  double y = *py;
-  double dy = *pdy;
+  double y = *func;
+  double dy = *dfunc;
 
-  double ae = effStressParams.ae;
-  double b = effStressParams.b;
-  double c = effStressParams.c;
-  double d = effStressParams.d;
-  double alpha = effStressParams.alpha;
-  double dt = effStressParams.dt;
-  double effStressT = effStressParams.effStressT;
-  double powerLawExp = effStressParams.powerLawExp;
-  double viscosityCoeff = effStressParams.viscosityCoeff;
+  double ae = _effStressParams.ae;
+  double b = _effStressParams.b;
+  double c = _effStressParams.c;
+  double d = _effStressParams.d;
+  double alpha = _effStressParams.alpha;
+  double dt = _effStressParams.dt;
+  double effStressT = _effStressParams.effStressT;
+  double powerLawExp = _effStressParams.powerLawExp;
+  double viscosityCoeff = _effStressParams.viscosityCoeff;
   double factor1 = 1.0-alpha;
   double effStressTau = factor1 * effStressT + alpha * effStressTpdt;
   double gammaTau = 0.5 * pow((effStressTau/viscosityCoeff),
@@ -732,8 +725,8 @@ pylith::materials::PowerLaw3D::effStressFuncDFunc(
     (2.0 * a * alpha * dt * effStressTpdt * effStressTpdt +
      c - 2.0 * d * d * gammaTau);
 
-  *py = y;
-  *pdy = dy;
+  *func = y;
+  *dfunc = dy;
 
   PetscLogFlops(46);
 } // effStressFuncDFunc
@@ -1022,12 +1015,8 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   const double effStressInitialGuess = effStressT;
 
   const double effStressTpdt =
-    EffectiveStress::getEffStress(
-			effStressInitialGuess,
-			stressScale,
-			_effStressParams,
-			pylith::materials::PowerLaw3D::effStressFunc,
-			pylith::materials::PowerLaw3D::effStressFuncDFunc);
+    EffectiveStress::getEffStress<PowerLaw3D>(effStressInitialGuess,
+					      stressScale, this);
   
   // Compute quantities at intermediate time tau used to compute values at
   // end of time step.
@@ -1345,12 +1334,8 @@ pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
   const double effStressInitialGuess = effStressT;
 
   double effStressTpdt =
-    EffectiveStress::getEffStress(
-			effStressInitialGuess,
-			stressScale,
-			_effStressParams,
-			pylith::materials::PowerLaw3D::effStressFunc,
-			pylith::materials::PowerLaw3D::effStressFuncDFunc);
+    EffectiveStress::getEffStress<PowerLaw3D>(effStressInitialGuess,
+					      stressScale, this);
 
   // Compute stress and viscous strain and update appropriate state variables.
   const double effStressTau = (1.0 - alpha) * effStressT +
