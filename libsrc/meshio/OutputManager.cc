@@ -221,17 +221,7 @@ pylith::meshio::OutputManager<mesh_type, field_type>::_dimension(const field_typ
     if (!_fields->hasField(fieldName.c_str())) {
       _fields->add(fieldName.c_str(), fieldIn.label());
       field_type& fieldOut = _fields->get(fieldName.c_str());
-      const ALE::Obj<typename mesh_type::RealSection>& sectionIn = fieldIn.section();
-      assert(!sectionIn.isNull());
-      const typename mesh_type::RealSection::chart_type chart = sectionIn->getChart();
-      const typename mesh_type::RealSection::chart_type::const_iterator chartBegin =
-	chart.begin();
-      const typename mesh_type::RealSection::chart_type::const_iterator chartEnd =
-	chart.end();
-      const int fiberDim = (chartBegin != chartEnd) ? 
-	sectionIn->getFiberDimension(*chartBegin) : 0;
-      fieldOut.newSection(chart, fiberDim);
-      fieldOut.allocate();
+      fieldOut.cloneSection(fieldIn);
       fieldOut.vectorFieldType(fieldIn.vectorFieldType());
       fieldOut.scale(fieldIn.scale());
     } // if
