@@ -76,7 +76,7 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     muA = vsA*vsA*densityA
     lambdaA = vpA*vpA*densityA - 2.0*muA
     maxwellTimeA = viscosityA / muA
-    meanStrainA = (strainA[1] + strainA[2] + strainA[3])/3.0
+    meanStrainA = (strainA[0] + strainA[1] + strainA[2])/3.0
 
     densityB = 2000.0
     vsB = 1200.0
@@ -89,7 +89,7 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     muB = vsB*vsB*densityB
     lambdaB = vpB*vpB*densityB - 2.0*muB
     maxwellTimeB = viscosityB / muB
-    meanStrainB = (strainB[1] + strainB[2] + strainB[3])/3.0
+    meanStrainB = (strainB[0] + strainB[1] + strainB[2])/3.0
 
     # TEMPORARY, need to determine how to use initial strain
     initialStrainA = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]

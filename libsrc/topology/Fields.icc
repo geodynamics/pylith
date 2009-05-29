@@ -173,7 +173,7 @@ pylith::topology::Fields<field_type>::copyLayout(const char* name)
   const typename map_type::iterator end = _fields.end();
   for (typename map_type::iterator iter=begin; iter != end; ++iter)
     if (iter != src)
-      iter->second->newSection(*src->second);
+      iter->second->cloneSection(*src->second);
 } // copyLayout
 
 // ----------------------------------------------------------------------

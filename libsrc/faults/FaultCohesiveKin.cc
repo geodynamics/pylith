@@ -127,8 +127,7 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
   // Allocate cumulative slip field
   _fields->add("cumulative slip", "cumulative_slip");
   topology::Field<topology::SubMesh>& cumSlip = _fields->get("cumulative slip");
-  cumSlip.newSection(slip);
-  cumSlip.allocate();
+  cumSlip.cloneSection(slip);
   cumSlip.vectorFieldType(topology::FieldBase::VECTOR);
   cumSlip.scale(_normalizer->lengthScale());
 
@@ -802,7 +801,9 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double upDir[3],
   // Allocate orientation field.
   _fields->add("orientation", "orientation");
   topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
-  orientation.newSection(topology::FieldBase::VERTICES_FIELD, orientationSize);
+  const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
+  assert(!slipSection.isNull());
+  orientation.newSection(slipSection->getChart(), orientationSize);
   const ALE::Obj<RealSection>& orientationSection = orientation.section();
   assert(!orientationSection.isNull());
   // Create subspaces for along-strike, up-dip, and normal directions
@@ -967,7 +968,9 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   _fields->add("area", "area");
 
   topology::Field<topology::SubMesh>& area = _fields->get("area");
-  area.newSection(topology::FieldBase::VERTICES_FIELD, 1);
+  const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
+  assert(!slipSection.isNull());
+  area.newSection(slipSection->getChart(), 1);
   area.allocate();
   area.zero();
   const ALE::Obj<RealSection>& areaSection = area.section();
@@ -1107,7 +1110,10 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   // Allocate buffer for tractions field (if nec.).
   const ALE::Obj<RealSection>& tractionsSection = tractions->section();
   if (tractionsSection.isNull()) {
-    tractions->newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+    const ALE::Obj<RealSection>& slipSection =
+      _fields->get("slip").section();
+    assert(!slipSection.isNull());
+    tractions->newSection(slipSection->getChart(), fiberDim);
     tractions->allocate();
   } // if
   assert(!tractionsSection.isNull());
@@ -1158,8 +1164,7 @@ pylith::faults::FaultCohesiveKin::_allocateBufferVectorField(void)
     _fields->get("buffer (vector)");
   const topology::Field<topology::SubMesh>& slip = 
     _fields->get("cumulative slip");
-  buffer.newSection(slip);
-  buffer.allocate();
+  buffer.cloneSection(slip);
   buffer.zero();
 } // _allocateBufferVectorField
 
@@ -1178,8 +1183,7 @@ pylith::faults::FaultCohesiveKin::_allocateBufferScalarField(void)
   topology::Field<topology::SubMesh>& buffer =
     _fields->get("buffer (scalar)");
   const topology::Field<topology::SubMesh>& area = _fields->get("area");
-  buffer.newSection(area);
-  buffer.allocate();
+  buffer.cloneSection(area);
   buffer.zero();
 } // _allocateBufferScalarField
 

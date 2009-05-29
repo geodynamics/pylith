@@ -181,7 +181,7 @@ pylith::topology::Field<mesh_type>::newSection(const chart_type& chart,
     logger.stagePop();
     newSection();
     logger.stagePush("Field");
-  }
+  } // if
   _section->setChart(chart);
 
   const typename chart_type::const_iterator chartEnd = chart.end();
@@ -189,14 +189,8 @@ pylith::topology::Field<mesh_type>::newSection(const chart_type& chart,
        c_iter != chartEnd;
        ++c_iter) {
     _section->setFiberDimension(*c_iter, fiberDim);
-  }
-  {
-    std::cout << "  allocating Field " << _label << " section type 2" << std::endl;
-    logger.stagePop();
-    allocate();
-    logger.stagePush("Field");
-    std::cout << "  done allocating Field " << _label << " section type 2" << std::endl;
-  }
+  } // for
+
   std::cout << "Done making Field " << _label << " section type 2" << std::endl;
   logger.stagePop();
 } // newSection
@@ -205,8 +199,8 @@ pylith::topology::Field<mesh_type>::newSection(const chart_type& chart,
 // Create section with same layout as another section.
 template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::newSection(const Field& src)
-{ // newSection
+pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
+{ // cloneSection
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   std::cout << "Making Field " << _label << " section type 3" << std::endl;
   logger.stagePush("Field");
@@ -233,7 +227,7 @@ pylith::topology::Field<mesh_type>::newSection(const Field& src)
     } // if
   } // if
   logger.stagePop();
-} // newSection
+} // cloneSection
 
 // ----------------------------------------------------------------------
 // Clear variables associated with section.

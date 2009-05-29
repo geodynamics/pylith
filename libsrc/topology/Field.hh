@@ -181,7 +181,7 @@ public :
    *
    * @param sec Section defining layout.
    */
-  void newSection(const Field& src);
+  void cloneSection(const Field& src);
 
   /// Clear variables associated with section.
   void clear(void);
