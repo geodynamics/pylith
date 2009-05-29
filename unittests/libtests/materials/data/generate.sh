@@ -30,6 +30,11 @@ if [ $1 == "elastic" ] || [ $1 == "all" ]; then
     --data.object=MaxwellIsotropic3DElasticData \
     --data.parent=ElasticMaterialData
 
+  python PowerLaw3DElastic.py \
+    --data.namespace=pylith,materials \
+    --data.object=PowerLaw3DElasticData \
+    --data.parent=ElasticMaterialData
+
 #  python GenMaxwellIsotropic3DElastic.py \
 #    --data.namespace=pylith,materials \
 #    --data.object=GenMaxwellIsotropic3DElasticData \
