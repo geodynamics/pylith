@@ -50,9 +50,9 @@ public :
    */
   template<typename material_type>
   static
-  double getEffStress(const double effStressInitialGuess,
-		      const double stressScale,
-		      material_type* const material);
+  double calculate(const double effStressInitialGuess,
+		   const double stressScale,
+		   material_type* const material);
 
   // PRIVATE METHODS /////////////////////////////////////////////////////
 private :
@@ -66,9 +66,9 @@ private :
    */
   template<typename material_type>
   static
-  void _bracketEffStress(double* px1,
-			 double* px2,
-			 material_type* const material);
+  void _bracket(double* px1,
+		double* px2,
+		material_type* const material);
 
   /** Solve for effective stress using Newton's method with bisection.
    *
@@ -80,9 +80,9 @@ private :
    */
   template<typename material_type>
   static
-  double _findEffStress(double x1,
-			double x2,
-			material_type* const material);
+  double _search(double x1,
+		 double x2,
+		 material_type* const material);
 
 }; // class EffectiveStress
 

@@ -603,8 +603,8 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
     const double effStressInitialGuess = effStressT;
 
     double effStressTpdt =
-      EffectiveStress::getEffStress<PowerLaw3D>(effStressInitialGuess,
-						stressScale, this);
+      EffectiveStress::calculate<PowerLaw3D>(effStressInitialGuess,
+					     stressScale, this);
 
     // Compute stresses from effective stress.
     const double effStressTau = (1.0 - alpha) * effStressT +
@@ -1015,8 +1015,8 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   const double effStressInitialGuess = effStressT;
 
   const double effStressTpdt =
-    EffectiveStress::getEffStress<PowerLaw3D>(effStressInitialGuess,
-					      stressScale, this);
+    EffectiveStress::calculate<PowerLaw3D>(effStressInitialGuess,
+					   stressScale, this);
   
   // Compute quantities at intermediate time tau used to compute values at
   // end of time step.
@@ -1334,8 +1334,8 @@ pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
   const double effStressInitialGuess = effStressT;
 
   double effStressTpdt =
-    EffectiveStress::getEffStress<PowerLaw3D>(effStressInitialGuess,
-					      stressScale, this);
+    EffectiveStress::calculate<PowerLaw3D>(effStressInitialGuess,
+					   stressScale, this);
 
   // Compute stress and viscous strain and update appropriate state variables.
   const double effStressTau = (1.0 - alpha) * effStressT +

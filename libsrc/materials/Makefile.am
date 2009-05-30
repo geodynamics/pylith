@@ -33,6 +33,7 @@ subpkginclude_HEADERS = \
 	Material.icc \
 	ViscoelasticMaxwell.hh \
 	EffectiveStress.hh \
+	EffectiveStress.icc \
 	materialsfwd.hh
 
 

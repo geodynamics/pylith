@@ -22,7 +22,7 @@
 // Get effective stress from initial guess.
 template<typename material_type>
 double
-pylith::materials::EffectiveStress::getEffStress(
+pylith::materials::EffectiveStress::calculate(
 				 const double effStressInitialGuess,
 				 const double stressScale,
 				 material_type* const material)
@@ -41,10 +41,10 @@ pylith::materials::EffectiveStress::getEffStress(
     x2 = stressScale + 0.5 * stressScale;
   } // else
 
-  _bracketEffStress(&x1, &x2, material);
+  _bracket(&x1, &x2, material);
 
   // Find effective stress using Newton's method with bisection.
-  const double effStress = _findEffStress(x1, x2, material);
+  const double effStress = _search(x1, x2, material);
 
   PetscLogFlops(4); // Log flops
 
@@ -55,11 +55,10 @@ pylith::materials::EffectiveStress::getEffStress(
 // Bracket effective stress.
 template<typename material_type>
 void
-pylith::materials::EffectiveStress::_bracketEffStress(
-					    double* px1,
-					    double* px2,
-					    material_type* const material)
-{ // _bracketEffStress
+pylith::materials::EffectiveStress::_bracket(double* px1,
+					     double* px2,
+					     material_type* const material)
+{ // _bracket
   // Arbitrary number of iterations to bracket the root
   const int maxIterations = 50;
 
@@ -97,17 +96,16 @@ pylith::materials::EffectiveStress::_bracketEffStress(
   PetscLogFlops(5 * iteration);
   if (!bracketed)
     throw std::runtime_error("Unable to bracket effective stress.");
-} // _bracketEffStress
+} // _bracket
 
 // ----------------------------------------------------------------------
 // Find root using Newton's method with bisection.
 template<typename material_type>
 double
-pylith::materials::EffectiveStress::_findEffStress(
-				 const double x1,
-				 const double x2,
-				 material_type* const material)
-{ // _findEffStress
+pylith::materials::EffectiveStress::_search(const double x1,
+					    const double x2,
+					    material_type* const material)
+{ // _search
   // Arbitrary number of iterations to find the root
   const int maxIterations = 100;
 
@@ -185,7 +183,7 @@ pylith::materials::EffectiveStress::_findEffStress(
   PetscLogFlops(5 + 15 * iteration); // Log flops
 
   return effStress;
-} // _findEffStress
+} // _search
 
 
 // End of file 
