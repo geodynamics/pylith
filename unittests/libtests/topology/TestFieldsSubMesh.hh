@@ -47,6 +47,7 @@ class pylith::topology::TestFieldsSubMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testDelete );
   CPPUNIT_TEST( testGet );
   CPPUNIT_TEST( testGetConst );
+  CPPUNIT_TEST( testHasField );
   CPPUNIT_TEST( testCopyLayout );
 
   CPPUNIT_TEST_SUITE_END();
@@ -77,6 +78,9 @@ public :
 
   /// Test get() for const Fields.
   void testGetConst(void);
+
+  /// Test hasField().
+  void testHasField(void);
 
   /// Test copyLayout(domain).
   void testCopyLayout(void);

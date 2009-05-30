@@ -23,15 +23,20 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::topology::Jacobian::Jacobian(const SolutionFields& fields,
-				     const char* matrixType) :
+				     const char* matrixType,
+				     const bool blockOkay) :
   _fields(fields),
   _matrix(0)
 { // constructor
   const ALE::Obj<Mesh::SieveMesh>& sieveMesh = fields.mesh().sieveMesh();
   const ALE::Obj<Mesh::RealSection>& solnSection = fields.solution().section();
 
+  // Set blockFlag to -1 if okay to set block size equal to fiber
+  // dimension, otherwise use a block size of 1.
+  const int blockFlag = (blockOkay) ? -1 : 1;
+
   PetscErrorCode err = MeshCreateMatrix(sieveMesh, solnSection, 
-					matrixType, &_matrix);
+					matrixType, &_matrix, blockFlag);
   CHECK_PETSC_ERROR_MSG(err, "Could not create PETSc sparse matrix "
 			"associated with system Jacobian.");
 } // constructor

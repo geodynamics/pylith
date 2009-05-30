@@ -27,6 +27,7 @@
 #include <string> // USES std::string
 #include <map> // USES std::map
 
+#include "petsc.h"
 #include "petsclog.h" // USES PetscLogEventBegin/End() in inline methods
 
 // EventLogger ----------------------------------------------------------

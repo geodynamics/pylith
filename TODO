@@ -7,17 +7,18 @@ Matt
   field split
 
 Brad
+  symmetric matrix
+  full-scale testing
+  cleanup
   Questions for Matt:
     How to use symmetric matrix (updateOperator)?
-  cleanup
-  full-scale testing
   test uniform refinement
 
+  PointForce
   time-dependent BC
 
 Charles
   3-D Power-law rheology
-    C++
     libtests
     Python
     pytests
@@ -83,9 +84,6 @@ Charles
 4. Add missing unit tests
 
     libtests/topology/TestMesh::testNondimensionalize()
-
-    libtests/topology/TestFields::testHasField()
-    pytests/topology/TestFields.test_hasField()
 
     libtests/topology/Field add constraints to field in unit tests
       copy

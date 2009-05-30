@@ -151,6 +151,28 @@ pylith::topology::TestFieldsMesh::testGetConst(void)
 } // testGetConst
 
 // ----------------------------------------------------------------------
+// Test hasField().
+void
+pylith::topology::TestFieldsMesh::testHasField(void)
+{ // testHasField
+  CPPUNIT_ASSERT(0 != _mesh);
+  FieldsMesh fields(*_mesh);
+
+  fields.add("field A", "velocity");
+  
+  CPPUNIT_ASSERT_EQUAL(true, fields.hasField("field A"));
+  CPPUNIT_ASSERT_EQUAL(false, fields.hasField("field B"));
+  CPPUNIT_ASSERT_EQUAL(false, fields.hasField("field C"));
+
+  fields.add("field B", "displacement");
+
+  CPPUNIT_ASSERT_EQUAL(true, fields.hasField("field A"));
+  CPPUNIT_ASSERT_EQUAL(true, fields.hasField("field B"));
+  CPPUNIT_ASSERT_EQUAL(false, fields.hasField("field C"));
+
+} // testHasField
+
+// ----------------------------------------------------------------------
 // Test copyLayout().
 void
 pylith::topology::TestFieldsMesh::testCopyLayout(void)
