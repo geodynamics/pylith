@@ -36,6 +36,9 @@ pylith::topology::TestJacobian::testConstructor(void)
   Jacobian jacobian(fields);
 
   Jacobian jacobianB(fields, "baij");
+  Jacobian jacobianC(fields, "baij", true);
+  Jacobian jacobianD(fields, "sbaij");
+  Jacobian jacobianE(fields, "sbaij", true);
 } // testConstructor
  
 // ----------------------------------------------------------------------

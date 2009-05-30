@@ -36,9 +36,12 @@ public :
    *
    * @param fields Fields associated with mesh and solution of the problem.
    * @param matrixType Type of PETSc sparse matrix.
+   * @param blockOkay True if okay to use block size equal to fiberDim
+   * (all or none of the DOF at each point are constrained).
    */
   Jacobian(const SolutionFields& fields,
-	   const char* matrixType ="aij");
+	   const char* matrixType ="aij",
+	   const bool blockOkay =false);
 
   /// Destructor.
   ~Jacobian(void);
