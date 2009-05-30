@@ -38,6 +38,7 @@ class pylith::materials::TestEffectiveStress : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestEffectiveStress );
 
   CPPUNIT_TEST( testCalculateLinear );
+  CPPUNIT_TEST( testCalculateQuadratic );
   CPPUNIT_TEST( testCalculateCubic );
 
   CPPUNIT_TEST_SUITE_END();
@@ -47,6 +48,9 @@ public :
 
   /// Test calculate() with linear function.
   void testCalculateLinear(void);
+
+  /// Test calculate() with quadratic function.
+  void testCalculateQuadratic(void);
 
   /// Test calculate() with cubic function.
   void testCalculateCubic(void);
