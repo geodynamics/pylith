@@ -30,6 +30,7 @@ testmaterials_SOURCES = \
 	TestElasticPlaneStress.cc \
 	TestElasticIsotropic3D.cc \
 	TestMaxwellIsotropic3D.cc \
+	TestEffectiveStress.cc \
 	test_materials.cc
 
 #	TestGenMaxwellIsotropic3D.cc 
@@ -45,7 +46,8 @@ noinst_HEADERS = \
 	TestElasticPlaneStress.hh \
 	TestElasticIsotropic3D.hh \
 	TestGenMaxwellIsotropic3D.hh \
-	TestMaxwellIsotropic3D.hh
+	TestMaxwellIsotropic3D.hh \
+	TestEffectiveStress.hh
 
 # Source files associated with testing data
 testmaterials_SOURCES += \
