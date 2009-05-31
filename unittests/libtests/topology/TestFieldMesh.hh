@@ -65,6 +65,8 @@ class pylith::topology::TestFieldMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testCreateScatter );
   CPPUNIT_TEST( testScatterSectionToVector );
   CPPUNIT_TEST( testScatterVectorToSection );
+  CPPUNIT_TEST( testSplitDefault );
+  CPPUNIT_TEST( testCloneSectionSplit );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -148,6 +150,12 @@ public :
 
   /// Test scatterVectorToSection().
   void testScatterVectorToSection(void);
+
+  /// Test splitDefault().
+  void testSplitDefault(void);
+
+  /// Test cloneSection() with split field.
+  void testCloneSectionSplit(void);
 
 // PRIVATE METHODS /////////////////////////////////////////////////////
 private :

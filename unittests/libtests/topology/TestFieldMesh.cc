@@ -899,6 +899,143 @@ pylith::topology::TestFieldMesh::testScatterVectorToSection(void)
 } // testScatterVectorToSection
 
 // ----------------------------------------------------------------------
+// Test splitDefault().
+void
+pylith::topology::TestFieldMesh::testSplitDefault(void)
+{ // testSplitDefault
+  const int fiberDim = 2;
+  const int numFibrations = 2;
+  const int nconstraints[] = { 0, 2, 1, 3 };
+  const int constraints[] = {
+              // 0
+    0, 2,     // 1
+    2,        // 2
+    0, 1, 2,  // 3
+  };
+    
+  Mesh mesh;
+  _buildMesh(&mesh);
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+
+  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+
+  // Create field with atlas to use to create new field
+  Field<Mesh> fieldSrc(mesh);
+  { // Setup source field
+    fieldSrc.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+    fieldSrc.splitDefault();
+    const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
+    CPPUNIT_ASSERT(!section.isNull());
+    const ALE::Obj<Mesh::RealSection>& sectionSplit =
+      section->getFibration(0);
+    CPPUNIT_ASSERT(!sectionSplit.isNull());
+    int iV=0;
+    for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+	 v_iter != vertices->end();
+	 ++v_iter, ++iV) {
+      section->addConstraintDimension(*v_iter, nconstraints[iV]);
+      sectionSplit->addConstraintDimension(*v_iter, nconstraints[iV]);
+    } // for
+    fieldSrc.allocate();
+
+    int index = 0;
+    int i = 0;
+    for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+	 v_iter != vertices->end();
+	 ++v_iter, index += nconstraints[i++]) {
+      section->setConstraintDof(*v_iter, &constraints[index]);
+      sectionSplit->setConstraintDof(*v_iter, &constraints[index]);
+    } // for
+  } // Setup source field
+
+  const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
+  CPPUNIT_ASSERT(!section.isNull());
+  CPPUNIT_ASSERT_EQUAL(numFibrations, section->getNumSpaces());
+  const ALE::Obj<Mesh::RealSection>& sectionSplit = section->getFibration(0);
+  CPPUNIT_ASSERT(!sectionSplit.isNull());
+  section->view("FULL FIELD");
+  sectionSplit->view("FIBRATION 0");
+
+  CPPUNIT_ASSERT(!vertices.isNull());
+  int iV = 0;
+  for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter) {
+    CPPUNIT_ASSERT_EQUAL(fiberDim, sectionSplit->getFiberDimension(*v_iter));
+    CPPUNIT_ASSERT_EQUAL(nconstraints[iV++], 
+			 sectionSplit->getConstraintDimension(*v_iter));
+  } // for
+} // testSplitDefault
+
+// ----------------------------------------------------------------------
+// Test cloneSection() with split field.
+void
+pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
+{ // testCloneSectionSplit
+  const int fiberDim = 3;
+  const int nconstraints[] = { 0, 2, 1, 3 };
+  const int constraints[] = {
+              // 0
+    0, 2,     // 1
+    2,        // 2
+    0, 1, 2,  // 3
+  };
+  const int numFibrations = 2;
+    
+  Mesh mesh;
+  _buildMesh(&mesh);
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+
+  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+
+  // Create field with atlas to use to create new field
+  Field<Mesh> fieldSrc(mesh);
+  { // Setup source field
+    fieldSrc.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+    const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
+    CPPUNIT_ASSERT(!section.isNull());
+    int iV=0;
+    for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+	 v_iter != vertices->end();
+	 ++v_iter)
+      section->addConstraintDimension(*v_iter, nconstraints[iV++]);
+    fieldSrc.splitDefault();
+    fieldSrc.allocate();
+
+    int index = 0;
+    int i = 0;
+    for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+	 v_iter != vertices->end();
+	 ++v_iter, index += nconstraints[i++])
+      section->setConstraintDof(*v_iter, &constraints[index]);
+  } // Setup source field
+
+  Field<Mesh> field(mesh);
+  field.cloneSection(fieldSrc);
+  const ALE::Obj<Mesh::RealSection>& section = field.section();
+  CPPUNIT_ASSERT(!section.isNull());
+  CPPUNIT_ASSERT_EQUAL(numFibrations, section->getNumSpaces());
+  const ALE::Obj<Mesh::RealSection>& sectionSplit = section->getFibration(0);
+  CPPUNIT_ASSERT(!sectionSplit.isNull());
+  section->view("FULL FIELD");
+  sectionSplit->view("FIBRATION 0");
+  int iV = 0;
+  for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter) {
+    CPPUNIT_ASSERT_EQUAL(fiberDim, sectionSplit->getFiberDimension(*v_iter));
+    CPPUNIT_ASSERT_EQUAL(nconstraints[iV++], 
+			 sectionSplit->getConstraintDimension(*v_iter));
+  } // for
+} // testCloneSectionSplit
+
+// ----------------------------------------------------------------------
 void
 pylith::topology::TestFieldMesh::_buildMesh(Mesh* mesh)
 { // _buildMesh
