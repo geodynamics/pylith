@@ -7,11 +7,10 @@ Matt
   field split
 
 Brad
-  symmetric matrix
+  field split (setup fields)
+  symmetric matrix (use in examples, testing)
   full-scale testing
   cleanup
-  Questions for Matt:
-    How to use symmetric matrix (updateOperator)?
   test uniform refinement
 
   PointForce

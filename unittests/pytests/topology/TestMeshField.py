@@ -137,12 +137,12 @@ class TestMeshField(unittest.TestCase):
     return
 
 
-  def test_newSectionField(self):
+  def test_cloneSectionField(self):
     """
     Test newSection(field).
     """
     fieldB = MeshField(self.mesh)
-    fieldB.newSection(self.field)
+    fieldB.cloneSection(self.field)
 
     # No test of result
     return

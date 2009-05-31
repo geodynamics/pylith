@@ -149,6 +149,56 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
 } // initialize
 
 // ----------------------------------------------------------------------
+void
+pylith::faults::FaultCohesiveKin::splitFields(topology::Field<topology::Mesh>* field)
+{ // splitFields
+  assert(0 != field);
+
+  const ALE::Obj<RealSection>& section = field->section();
+  assert(!section.isNull());
+  if (0 == section->getNumSpaces())
+    return; // Return if there are no fibrations
+
+  const int fibrationDisp = 0;
+  const int fibrationLagrange = 1;
+  const ALE::Obj<RealSection>& splitSection =
+    section->getFibration(fibrationLagrange);
+  assert(!splitSection.isNull());
+
+  // Get domain Sieve mesh
+  const ALE::Obj<SieveMesh>& sieveMesh = field->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+
+  // Get fault Sieve mesh
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const SieveSubMesh::label_sequence::iterator verticesBegin = 
+    vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  SieveSubMesh::renumbering_type& renumbering = 
+    faultSieveMesh->getRenumbering();
+  const SieveSubMesh::renumbering_type::const_iterator renumberingEnd =
+    renumbering.end();
+  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin; 
+       v_iter != verticesEnd;
+       ++v_iter)
+    if (renumbering.find(*v_iter) != renumberingEnd) {
+      const int vertexFault = renumbering[*v_iter];
+      const int vertexMesh = *v_iter;
+      const int fiberDim = section->getFiberDimension(vertexMesh);
+      assert(fiberDim > 0);
+      // Reset displacement fibration fiber dimension to zero.
+      section->setFiberDimension(vertexMesh, 0, fibrationDisp);
+      // Set Langrange fibration fiber dimension.
+      splitSection->setFiberDimension(vertexMesh, fiberDim, fibrationLagrange);
+    } // if
+} // splitFields
+
+// ----------------------------------------------------------------------
 // Integrate contribution of cohesive cells to residual term that
 // require assembly across processors.
 void
