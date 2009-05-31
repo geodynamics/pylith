@@ -85,6 +85,7 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
   const ALE::Obj<RealSection>& section = field.section();
   assert(!section.isNull());
 
+  // Set constraints in field
   const int numPoints = _points.size();
   _offsetLocal.resize(numPoints);
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
@@ -104,6 +105,20 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
     _offsetLocal[iPoint] = curNumConstraints;
     section->addConstraintDimension(_points[iPoint], numFixedDOF);
   } // for
+
+  // Set constraints in fibration 0 (split field) if it exists.
+  if (section->getNumSpaces() > 0) {
+    const int fibration = 0;
+    const ALE::Obj<RealSection>& splitSection =
+      section->getFibration(fibration);
+    for (int iPoint=0; iPoint < numPoints; ++iPoint) {
+      const int fiberDim = splitSection->getFiberDimension(_points[iPoint]);
+      const int curNumConstraints = 
+	splitSection->getConstraintDimension(_points[iPoint]);
+      assert(curNumConstraints + numFixedDOF <= fiberDim);
+      splitSection->addConstraintDimension(_points[iPoint], numFixedDOF);
+    } // for
+  } // if
 } // setConstraintSizes
 
 // ----------------------------------------------------------------------
@@ -117,6 +132,10 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
 
   const ALE::Obj<RealSection>& section = field.section();
   assert(!section.isNull());
+
+  const int fibration = (section->getNumSpaces() > 0) ? 0 : -1;
+  const ALE::Obj<RealSection>& splitSection = (section->getNumSpaces() > 0) ?
+    section->getFibration(fibration) : 0;
 
   const int numPoints = _points.size();
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
@@ -164,6 +183,9 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
 
     // Update list of constrained DOF
     section->setConstraintDof(point, &allFixedDOF[0]);
+
+    if (fibration >= 0)
+      splitSection->setConstraintDof(point, &allFixedDOF[0]);
   } // for
 } // setConstraints
 

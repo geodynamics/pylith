@@ -219,6 +219,7 @@ pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
     _section->setAtlas(srcSection->getAtlas());
     _section->allocateStorage();
     _section->setBC(srcSection->getBC());
+    _section->copyFibration(srcSection);
 
     if (0 != src._scatter) {
       _scatter = src._scatter;
@@ -640,5 +641,28 @@ pylith::topology::Field<mesh_type>::scatterVectorToSection(const PetscVec vector
   err = VecDestroy(localVec); CHECK_PETSC_ERROR(err);
 } // scatterVectorToSection
 
+// ----------------------------------------------------------------------
+// Setup split field with all entries set to a default space of 0.
+template<typename mesh_type>
+void 
+pylith::topology::Field<mesh_type>::splitDefault(void)
+{ // splitDefault
+  assert(!_section.isNull());
+  _section->addSpace(); // displacements
+  _section->addSpace(); // Lagrange multipliers
+
+  // Assume fiber dimension is uniform
+  const chart_type& chart = _section->getChart();
+  const int fiberDim = (chart.size() > 0) ? 
+    _section->getFiberDimension(*chart.begin()) : 0;
+
+  const int fibration = 0;
+  const typename chart_type::const_iterator chartBegin = chart.begin();
+  const typename chart_type::const_iterator chartEnd = chart.end();
+  for (typename chart_type::const_iterator c_iter = chart.begin();
+       c_iter != chartEnd;
+       ++c_iter)
+    _section->setFiberDimension(*c_iter, fiberDim, fibration);
+} // splitDefault
 
 // End of file 

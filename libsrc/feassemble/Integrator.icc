@@ -44,6 +44,13 @@ inline
 void
 pylith::feassemble::Integrator<quadrature_type>::initialize(const topology::Mesh& mesh) {
 } // initialize
+
+// Split solution fields for separate preconditioning.
+template<typename quadrature_type>
+inline
+void
+pylith::feassemble::Integrator<quadrature_type>::splitFields(topology::Field<topology::Mesh>* field) {
+} // splitFields
   
 // Integrate contributions to residual term (r) for operator.
 template<typename quadrature_type>

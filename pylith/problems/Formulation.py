@@ -57,7 +57,10 @@ class Formulation(PetscComponent, ModuleFormulation):
     ##
     ## \b Properties
     ## @li \b matrix_type Type of PETSc sparse matrix.
-    ## @li \b view_jacobian Flag to output Jacobian matrix when it is reformed.
+    ## @li \b split_fields Split solution fields into displacements
+    ## and Lagrange multipliers for separate preconditioning.
+    ## @li \b view_jacobian Flag to output Jacobian matrix when it is
+    ## reformed.
     ##
     ## \b Facilities
     ## @li \b time_step Time step size manager.
@@ -69,6 +72,10 @@ class Formulation(PetscComponent, ModuleFormulation):
 
     matrixType = pyre.inventory.str("matrix_type", default="unknown")
     matrixType.meta['tip'] = "Type of PETSc sparse matrix."
+
+    splitFields = pyre.inventory.bool("split_fields", default=False)
+    splitFields.meta['tip'] = "Split solution fields into displacements "\
+        "and Lagrange multipliers for separate preconditioning."
 
     viewJacobian = pyre.inventory.bool("view_jacobian", default=False)
     viewJacobian.meta['tip'] = "Write Jacobian matrix to binary file."
@@ -219,12 +226,16 @@ class Formulation(PetscComponent, ModuleFormulation):
     solution.vectorFieldType(solution.VECTOR)
     solution.scale(lengthScale.value)
     solution.newSection(solution.VERTICES_FIELD, dimension)
+    if self.splitFields:
+      solution.splitDefault()
     for constraint in self.constraints:
       constraint.setConstraintSizes(solution)
+    if self.splitFields:
+      for integrator in self.integratorsMesh + self.integratorsSubMesh:
+        integrator.splitFields(solution)
     solution.allocate()
     for constraint in self.constraints:
       constraint.setConstraints(solution)
-    solution = self.fields.get("dispIncr(t->t+dt)")
     solution.createVector()
     solution.createScatter()
 
@@ -350,6 +361,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     """
     PetscComponent._configure(self)
     self.matrixType = self.inventory.matrixType
+    self.splitFields = self.inventory.splitFields
     self.timeStep = self.inventory.timeStep
     self.solver = self.inventory.solver
     self.output = self.inventory.output

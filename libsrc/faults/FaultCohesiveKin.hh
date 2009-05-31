@@ -90,6 +90,12 @@ public :
 		  const double upDir[3],
 		  const double normalDir[3]);
 
+  /** Split solution fields for separate preconditioning.
+   *
+   * @param field Solution field.
+   */
+  void splitFields(topology::Field<topology::Mesh>* field);
+
   /** Integrate contributions to residual term (r) for operator that
    * require assembly across processors.
    *
