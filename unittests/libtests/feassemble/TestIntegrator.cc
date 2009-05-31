@@ -185,6 +185,20 @@ pylith::feassemble::TestIntegrator::testResetCellMatrix(void)
 } // testResetCellMatrix
 
 // ----------------------------------------------------------------------
+// Test splitFields().
+void
+pylith::feassemble::TestIntegrator::testSplitFields(void)
+{ // testSplitFields
+
+  topology::Mesh mesh;
+  topology::Field<topology::Mesh> field(mesh);
+  
+  ElasticityExplicit integrator;
+  integrator.splitFields(&field);
+  // Expect nothing to happen
+} // testSplitFields
+
+// ----------------------------------------------------------------------
 // Set quadrature information.
 void
 pylith::feassemble::TestIntegrator::_initQuadrature(
