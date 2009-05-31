@@ -905,6 +905,7 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
 { // testSplitDefault
   const int fiberDim = 2;
   const int numFibrations = 2;
+  const int fibration = 0; // Default fibration
   const int nconstraints[] = { 0, 2, 1, 3 };
   const int constraints[] = {
               // 0
@@ -929,15 +930,14 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
     fieldSrc.splitDefault();
     const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
     CPPUNIT_ASSERT(!section.isNull());
-    const ALE::Obj<Mesh::RealSection>& sectionSplit =
-      section->getFibration(0);
-    CPPUNIT_ASSERT(!sectionSplit.isNull());
     int iV=0;
     for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
 	 v_iter != vertices->end();
 	 ++v_iter, ++iV) {
       section->addConstraintDimension(*v_iter, nconstraints[iV]);
-      sectionSplit->addConstraintDimension(*v_iter, nconstraints[iV]);
+#if 0 // NEED TO BE IMPLEMENTED
+      section->addConstraintDimension(*v_iter, nconstraints[iV], fibration);
+#endif
     } // for
     fieldSrc.allocate();
 
@@ -947,7 +947,9 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
 	 v_iter != vertices->end();
 	 ++v_iter, index += nconstraints[i++]) {
       section->setConstraintDof(*v_iter, &constraints[index]);
-      sectionSplit->setConstraintDof(*v_iter, &constraints[index]);
+#if 0 // NEED TO BE IMPLEMENTED
+      section->setConstraintDof(*v_iter, &constraints[index], fibration);
+#endif
     } // for
   } // Setup source field
 
@@ -966,7 +968,7 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
        ++v_iter) {
     CPPUNIT_ASSERT_EQUAL(fiberDim, sectionSplit->getFiberDimension(*v_iter));
     CPPUNIT_ASSERT_EQUAL(nconstraints[iV++], 
-			 sectionSplit->getConstraintDimension(*v_iter));
+			 section->getConstraintDimension(*v_iter, fibration));
   } // for
 } // testSplitDefault
 
@@ -984,6 +986,7 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
     0, 1, 2,  // 3
   };
   const int numFibrations = 2;
+  const int fibration = 0; // Default fibration
     
   Mesh mesh;
   _buildMesh(&mesh);
@@ -998,22 +1001,31 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
   Field<Mesh> fieldSrc(mesh);
   { // Setup source field
     fieldSrc.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+    fieldSrc.splitDefault();
     const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
     CPPUNIT_ASSERT(!section.isNull());
     int iV=0;
     for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
 	 v_iter != vertices->end();
-	 ++v_iter)
+	 ++v_iter) {
       section->addConstraintDimension(*v_iter, nconstraints[iV++]);
-    fieldSrc.splitDefault();
+#if 0 // NEED TO BE IMPLEMENTED
+      section->addConstraintDimension(*v_iter, nconstraints[iV++],
+				      fibration);
+#endif
+    } // for
     fieldSrc.allocate();
 
     int index = 0;
     int i = 0;
     for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
 	 v_iter != vertices->end();
-	 ++v_iter, index += nconstraints[i++])
+	 ++v_iter, index += nconstraints[i++]) {
       section->setConstraintDof(*v_iter, &constraints[index]);
+#if 0 // NEED TO BE IMPLEMENTED
+      section->setConstraintDof(*v_iter, &constraints[index], fibration);
+#endif
+    } // for
   } // Setup source field
 
   Field<Mesh> field(mesh);
@@ -1029,9 +1041,11 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
        ++v_iter) {
-    CPPUNIT_ASSERT_EQUAL(fiberDim, sectionSplit->getFiberDimension(*v_iter));
+    CPPUNIT_ASSERT_EQUAL(fiberDim,
+			 section->getFiberDimension(*v_iter, fibration));
     CPPUNIT_ASSERT_EQUAL(nconstraints[iV++], 
-			 sectionSplit->getConstraintDimension(*v_iter));
+			 section->getConstraintDimension(*v_iter, 
+							 fibration));
   } // for
 } // testCloneSectionSplit
 
