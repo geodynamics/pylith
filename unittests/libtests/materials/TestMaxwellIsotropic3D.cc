@@ -220,6 +220,9 @@ pylith::materials::TestMaxwellIsotropic3D::test_updateStateVarsTimeDep(void)
 
   MaxwellIsotropic3D material;
   material.useElasticBehavior(false);
+
+  delete _dataElastic; _dataElastic = new MaxwellIsotropic3DTimeDepData();
+
   const double dt = 2.0e+5;
   material.timeStep(dt);
 
