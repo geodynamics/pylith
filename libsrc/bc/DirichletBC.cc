@@ -85,6 +85,8 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
   const ALE::Obj<RealSection>& section = field.section();
   assert(!section.isNull());
 
+  const int fibration = (section->getNumSpaces() > 0) ? 0 : -1;
+
   // Set constraints in field
   const int numPoints = _points.size();
   _offsetLocal.resize(numPoints);
@@ -104,21 +106,15 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
     } // if
     _offsetLocal[iPoint] = curNumConstraints;
     section->addConstraintDimension(_points[iPoint], numFixedDOF);
+#if 0 // WAITING FOR MATT TO IMPLEMENT IN SIEVE
+    if (fibration >= 0) {
+      assert(fiberDim == section->getFiberDimension(_points[iPoint],
+						    fibration));
+      section->addConstraintDimension(_points[iPoint], numFixedDOF, 
+				      fibration);
+    } // if
+#endif
   } // for
-
-  // Set constraints in fibration 0 (split field) if it exists.
-  if (section->getNumSpaces() > 0) {
-    const int fibration = 0;
-    const ALE::Obj<RealSection>& splitSection =
-      section->getFibration(fibration);
-    for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-      const int fiberDim = splitSection->getFiberDimension(_points[iPoint]);
-      const int curNumConstraints = 
-	splitSection->getConstraintDimension(_points[iPoint]);
-      assert(curNumConstraints + numFixedDOF <= fiberDim);
-      splitSection->addConstraintDimension(_points[iPoint], numFixedDOF);
-    } // for
-  } // if
 } // setConstraintSizes
 
 // ----------------------------------------------------------------------
@@ -134,8 +130,6 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
   assert(!section.isNull());
 
   const int fibration = (section->getNumSpaces() > 0) ? 0 : -1;
-  const ALE::Obj<RealSection>& splitSection = (section->getNumSpaces() > 0) ?
-    section->getFibration(fibration) : 0;
 
   const int numPoints = _points.size();
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
@@ -184,8 +178,10 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
     // Update list of constrained DOF
     section->setConstraintDof(point, &allFixedDOF[0]);
 
+#if 0 // WAITING FOR MATT TO IMPLEMENT IN SIEVE
     if (fibration >= 0)
-      splitSection->setConstraintDof(point, &allFixedDOF[0]);
+      section->setConstraintDof(point, &allFixedDOF[0], fibration);
+#endif
   } // for
 } // setConstraints
 
