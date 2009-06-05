@@ -935,7 +935,7 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
 	 v_iter != vertices->end();
 	 ++v_iter, ++iV) {
       section->addConstraintDimension(*v_iter, nconstraints[iV]);
-#if 0 // TODO: FIELD SPLIT
+#if 1 // TODO: FIELD SPLIT
       section->addConstraintDimension(*v_iter, nconstraints[iV], fibration);
 #endif
     } // for
@@ -947,7 +947,9 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
 	 v_iter != vertices->end();
 	 ++v_iter, index += nconstraints[i++]) {
       section->setConstraintDof(*v_iter, &constraints[index]);
-#if 0 // TODO: FIELD SPLIT
+#if 1 // TODO: FIELD SPLIT
+      std::cout << "nconstraints["<<i<<"]: " << nconstraints[i]
+		<< ", constraintDimension: " << section->getConstraintDimension(*v_iter) << std::endl;
       section->setConstraintDof(*v_iter, &constraints[index], fibration);
 #endif
     } // for
