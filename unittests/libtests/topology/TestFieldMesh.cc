@@ -935,7 +935,7 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
 	 v_iter != vertices->end();
 	 ++v_iter, ++iV) {
       section->addConstraintDimension(*v_iter, nconstraints[iV]);
-#if 0 // NEED TO BE IMPLEMENTED
+#if 0 // TODO: FIELD SPLIT
       section->addConstraintDimension(*v_iter, nconstraints[iV], fibration);
 #endif
     } // for
@@ -947,12 +947,13 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
 	 v_iter != vertices->end();
 	 ++v_iter, index += nconstraints[i++]) {
       section->setConstraintDof(*v_iter, &constraints[index]);
-#if 0 // NEED TO BE IMPLEMENTED
+#if 0 // TODO: FIELD SPLIT
       section->setConstraintDof(*v_iter, &constraints[index], fibration);
 #endif
     } // for
   } // Setup source field
 
+#if 0 // TODO: FIELD SPLIT
   const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
   CPPUNIT_ASSERT(!section.isNull());
   CPPUNIT_ASSERT_EQUAL(numFibrations, section->getNumSpaces());
@@ -970,6 +971,7 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
     CPPUNIT_ASSERT_EQUAL(nconstraints[iV++], 
 			 section->getConstraintDimension(*v_iter, fibration));
   } // for
+#endif
 } // testSplitDefault
 
 // ----------------------------------------------------------------------
@@ -1009,7 +1011,7 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
 	 v_iter != vertices->end();
 	 ++v_iter) {
       section->addConstraintDimension(*v_iter, nconstraints[iV++]);
-#if 0 // NEED TO BE IMPLEMENTED
+#if 0 // TODO: FIELD SPLIT
       section->addConstraintDimension(*v_iter, nconstraints[iV++],
 				      fibration);
 #endif
@@ -1022,12 +1024,13 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
 	 v_iter != vertices->end();
 	 ++v_iter, index += nconstraints[i++]) {
       section->setConstraintDof(*v_iter, &constraints[index]);
-#if 0 // NEED TO BE IMPLEMENTED
+#if 0 // TODO: FIELD SPLIT
       section->setConstraintDof(*v_iter, &constraints[index], fibration);
 #endif
     } // for
   } // Setup source field
 
+#if 0 // TODO: FIELD SPLIT
   Field<Mesh> field(mesh);
   field.cloneSection(fieldSrc);
   const ALE::Obj<Mesh::RealSection>& section = field.section();
@@ -1047,6 +1050,7 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
 			 section->getConstraintDimension(*v_iter, 
 							 fibration));
   } // for
+#endif
 } // testCloneSectionSplit
 
 // ----------------------------------------------------------------------
