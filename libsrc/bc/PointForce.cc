@@ -15,8 +15,8 @@
 #include "PointForce.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
+#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -31,7 +31,14 @@ typedef pylith::topology::Mesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::bc::PointForce::PointForce(void)
+pylith::bc::PointForce::PointForce(void) :
+  _parameters(0),
+  _dbInitial(0),
+  _dbRate(0),
+  _dbRateTime(0),
+  _dbChange(0),
+  _dbChangeTime(0),
+  _dbTimeHistory(0)
 { // constructor
 } // constructor
 
@@ -39,6 +46,14 @@ pylith::bc::PointForce::PointForce(void)
 // Destructor.
 pylith::bc::PointForce::~PointForce(void)
 { // destructor
+  delete _parameters; _parameters = 0;
+
+  _dbInitial = 0; // TODO: Use shared pointers
+  _dbRate = 0; // TODO: Use shared pointers
+  _dbRateTime = 0; // TODO: Use shared pointers
+  _dbChange = 0; // TODO: Use shared pointers
+  _dbChangeTime = 0; // TODO: Use shared pointers
+  _dbTimeHistory = 0; // TODO: Use shared pointers
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -50,9 +65,9 @@ pylith::bc::PointForce::forceDOF(const int* flags,
   if (size > 0)
     assert(0 != flags);
 
-  _forceDOF.resize(size);
+  _bcDOF.resize(size);
   for (int i=0; i < size; ++i)
-    _forceDOF[i] = flags[i];
+    _bcDOF[i] = flags[i];
 } // forceDOF
 
 // ----------------------------------------------------------------------
@@ -61,67 +76,200 @@ void
 pylith::bc::PointForce::initialize(const topology::Mesh& mesh,
 				    const double upDir[3])
 { // initialize
-  const int numForceDOF = _forceDOF.size();
-  if (0 == numForceDOF)
+  assert(0 != _normalizer);
+
+  if (0 == _bcDOF.size())
     return;
 
   _getPoints(mesh);
-  _setupQueryDatabases();
-  _queryDatabases(mesh);
+
+  const double lengthScale = _normalizer->lengthScale();
+  const double pressureScale = _normalizer->pressureScale();
+  const double forceScale = pressureScale * lengthScale * lengthScale;
+
+  _queryDatabases(mesh, forceScale, "force");
 } // initialize
 
 // ----------------------------------------------------------------------
 // Integrate contributions to residual term (r) for operator that
 // do not require assembly over cells, vertices, or processors.
 void
-integrateResidualAssembled(const topology::Field<topology::Mesh>& residual,
+pylith::bc::PointForce::integrateResidualAssembled(
+			   topology::Field<topology::Mesh>* residual,
 			   const double t,
 			   topology::SolutionFields* const fields)
 { // integrateResidualAssembled
+  assert(0 != residual);
+  assert(0 != _parameters);
+  assert(0 != _normalizer);
+
+  // Calculate spatial and temporal variation of value for BC.
+  _calculateValue(t);
+
   const int numPoints = _points.size();
-  const int numForceDOF = _forceDOF.size();
+  const int numBCDOF = _bcDOF.size();
 
-  const ALE::Obj<RealSection>& amplitudeSection = 
-    _parameters->get("amplitude").section();
-  assert(!amplitudeSection.isNull());
+  const topology::Mesh& mesh = residual->mesh();
+  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
+  assert(0 != cs);
+  const int spaceDim = cs->spaceDim();
 
-  const ALE::Obj<RealSection>& residualSection = residual.section();
+  double_array residualVertex(spaceDim);
+  const ALE::Obj<RealSection>& residualSection = residual->section();
   assert(!residualSection.isNull());
 
-  const ALE::Obj<RealSection>& startTimeSection =  (0 == _dbStartTime) ?
-    0 : _parameters->get("start time").section();
-
-  double_array forcesVertex(spaceDim);
-  double scale = 1.0;
+  double_array valuesVertex(numBCDOF);
+  const ALE::Obj<RealSection>& valueSection = 
+    _parameters->get("value").section();
+  assert(!valueSection.isNull());
+  
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-    const int p_force = _points[iPoint];
-    assert(numForceDOF == amplitudeSection->getFiberDimension(p_force));
-    const double* amplitudeVertex = amplitudeSection->restrictPoint(p_force);
-    assert(0 != amplitudeVertex);
-
-    if (0 != _dbStartTime) {
-      assert(!startTimeSection.isNull()); // Expect section with start times
-      assert(0 != _dbTimeAmp); // Expect database with temporal evolution
-
-      assert(1 == startTimeSection->getFiberDimension(p_force));
-      const double tRef = *startTimeSection->restrictPoint(p_force);
-      const double tRel = t - tRef;
-      if (tRel > 0.0) {
-	_normalizer->dimensionalize(&tRel, 1, timeScale);
-	scale = _dbTimeAmp->query(tRel);
-      } // if
-    } // if
+    const int p_bc = _points[iPoint]; // Get point label.
+    residualVertex *= 0.0; // Reset residual contribution to zero.
     
-    for (int iDOF=0; iDOF < numForceDOF; ++iDOF)
-      forcesVertex[_forceDOF[iDOF]] = amplitudeVertex[iDOF]*scale;
+    valueSection->restrictPoint(p_bc, &valuesVertex[0], valuesVertex.size());
+    for (int iDOF=0; iDOF < numBCDOF; ++iDOF)
+      residualVertex[_bcDOF[iDOF]] += valuesVertex[iDOF];
+    residualSection->updateAddPoint(p_bc, &residualVertex[0]);
   } // for
-} // interateResidualAssembled
+
+} // integrateResidualAssembled
+
+// ----------------------------------------------------------------------
+// Calculate temporal and spatial variation of value over the list of points.
+void
+pylith::bc::PointForce::_calculateValue(const double t)
+{ // _calculateValue
+  assert(0 != _parameters);
+  assert(0 != _normalizer);
+
+  const ALE::Obj<RealSection>& valueSection = 
+    _parameters->get("value").section();
+  valueSection->zero();
+
+  const int numPoints = _points.size();
+  const int numBCDOF = _bcDOF.size();
+  const double timeScale = _normalizer->timeScale();
+
+  const ALE::Obj<RealSection>& changeSection = (0 != _dbChange) ?
+    _parameters->get("change").section() : 0;
+  const ALE::Obj<RealSection>& changeTimeSection = (0 != _dbChange) ?
+    _parameters->get("change time").section() : 0;
+
+  // Contribution from initial value
+  if (0 != _dbInitial) {
+    double_array values(numBCDOF);
+    const ALE::Obj<RealSection>& initialSection = 
+      _parameters->get("initial").section();
+    assert(!initialSection.isNull());
+
+    for (int iPoint=0; iPoint < numPoints; ++iPoint) {
+      const int p_bc = _points[iPoint]; // Get point label
+
+      initialSection->restrictPoint(p_bc, &values[0], values.size());
+      valueSection->updateAddPoint(p_bc, &values[0]);
+    } // for
+  } // if
+  
+  
+  // Contribution from rate of change of value
+  if (0 != _dbRate) {
+    double_array values(numBCDOF);
+    double tRate = 0.0;
+    const ALE::Obj<RealSection>& rateSection =
+      _parameters->get("rate").section();
+    assert(!rateSection.isNull());
+    const ALE::Obj<RealSection>& rateTimeSection =
+      _parameters->get("rate time").section();
+    assert(!rateTimeSection.isNull());
+
+    for (int iPoint=0; iPoint < numPoints; ++iPoint) {
+      const int p_bc = _points[iPoint]; // Get point label
+
+      rateSection->restrictPoint(p_bc, &values[0], values.size());
+      rateTimeSection->restrictPoint(p_bc, &tRate, 1);
+      if (t > tRate) { // rate of change integrated over time
+	values *= (t - tRate);
+	valueSection->updateAddPoint(p_bc, &values[0]);
+      } // if
+    } // for
+  } // if
+      
+  // Contribution from change of value
+  if (0 != _dbChange) {
+    double_array values(numBCDOF);
+    double tChange = 0.0;
+    const ALE::Obj<RealSection>& changeSection =
+      _parameters->get("change").section();
+    assert(!changeSection.isNull());
+    const ALE::Obj<RealSection>& changeTimeSection =
+      _parameters->get("change time").section();
+    assert(!changeTimeSection.isNull());
+
+    for (int iPoint=0; iPoint < numPoints; ++iPoint) {
+      const int p_bc = _points[iPoint]; // Get point label
+
+      changeSection->restrictPoint(p_bc, &values[0], values.size());
+      changeTimeSection->restrictPoint(p_bc, &tChange, 1);
+      if (t > tChange) { // change in value over time
+	double scale = 1.0;
+	if (0 != _dbTimeHistory) {
+	  double tDim = t - tChange;
+	  _normalizer->dimensionalize(&tDim, 1, timeScale);
+	  const int err = _dbTimeHistory->query(&scale, tDim);
+	  if (0 != err) {
+	    std::ostringstream msg;
+	    msg << "ADD SOMETHING HERE";
+	    throw std::runtime_error(msg.str());
+	  } // if
+	} // if
+	values *= scale;
+	valueSection->updateAddPoint(p_bc, &values[0]);
+      } // if
+    } // for
+  } // if
+}  // _calculateValue
 
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-verifyConfiguration(const topology::Mesh& mesh) const
+pylith::bc::PointForce::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
+  if (0 != _dbRate && 0 == _dbRateTime) {
+    std::ostringstream msg;
+    msg << "Point force boundary condition '" << label() << "',\n has a rate "
+	<< "of change spatial database but no rate of change start time "
+	<< "spatial database.";
+    throw std::runtime_error(msg.str());
+  } // if
+  if (0 == _dbRate && 0 != _dbRateTime) {
+    std::ostringstream msg;
+    msg << "Point force boundary condition '" << label() << "',\n has a rate "
+	<< "of change start time spatial database but no rate of change "
+	<< "spatial database.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  if (0 != _dbChange && 0 == _dbChangeTime) {
+    std::ostringstream msg;
+    msg << "Point force boundary condition '" << label() << "',\n has a "
+	<< "change in value spatial database but change in value start time "
+	<< "spatial database.";
+    throw std::runtime_error(msg.str());
+  } // if
+  if (0 == _dbChange && 0 != _dbChangeTime) {
+    std::ostringstream msg;
+    msg << "Point force boundary condition '" << label() << "',\n has a "
+	<< "change in value start time spatial database but change in value "
+	<< "spatial database.";
+    throw std::runtime_error(msg.str());
+  } // if
+  if (0 == _dbChange && 0 != _dbTimeHistory) {
+    std::ostringstream msg;
+    msg << "Point force boundary condition '" << label() << "',\n has a "
+	<< "time history database but not change in value spatial database.";
+    throw std::runtime_error(msg.str());
+} // if
 } // verifyConfiguration
 
 // ----------------------------------------------------------------------
@@ -155,90 +303,104 @@ pylith::bc::PointForce::_getPoints(const topology::Mesh& mesh)
 } // _getPoints
 
 // ----------------------------------------------------------------------
-// Setup initial and rate of change databases for querying.
+// Query databases for values.
 void
-pylith::bc::PointForce::_setupQueryDatabases(void)
-{ // _setupQueryDatabases
-  assert(0 != _db);
+pylith::bc::PointForce::_queryDatabases(const topology::Mesh& mesh,
+					const double valueScale,
+					const char* fieldName)
+{ // _queryDatabases
+  assert(0 != _normalizer);
+  const double timeScale = _normalizer->timeScale();
+  const double rateScale = valueScale / timeScale;
 
-  const int numForceDOF = _forceDOF.size();
-  char** valueNames = (numForceDOF > 0) ? new char*[numForceDOF] : 0;
-  for (int i=0; i < numForceDOF; ++i) {
+  const int numPoints = _points.size();
+  const int numBCDOF = _bcDOF.size();
+  char** valueNames = (numBCDOF > 0) ? new char*[numBCDOF] : 0;
+  for (int i=0; i < numBCDOF; ++i) {
     std::ostringstream name;
-    name << "dof-" << _forceDOF[i];
+    name << "dof-" << _bcDOF[i];
     const int size = 1 + name.str().length();
     valueNames[i] = new char[size];
     strcpy(valueNames[i], name.str().c_str());
   } // for
 
-  // Setup initial database.
-  _db->open();
-  _db->queryVals(const_cast<const char**>(valueNames), numForceDOF);
+  delete _parameters;
+  _parameters = new topology::Fields<topology::Field<topology::Mesh> >(mesh);
 
-  // Setup rate database, if provided.
-  if (0 != _dbRate) {
-    _dbRate->open();
-    _dbRate->queryVals((const char**) valueNames, numForceDOF);
+  if (0 != _dbInitial) { // Setup initial values, if provided.
+    std::string fieldLabel = std::string("initial_") + std::string(fieldName);
+    _parameters->add("initial", fieldLabel.c_str());
+    topology::Field<topology::Mesh>& initial = 
+      _parameters->get("initial");
+    initial.newSection(_points, numBCDOF);
+    initial.allocate();
+    initial.scale(valueScale);
+    initial.vectorFieldType(topology::FieldBase::VECTOR);
+
+    _dbInitial->queryVals(valueNames, numBCDOF);
+    _queryDB(&initial, _dbInitial, numBCDOF, valueScale);
   } // if
-  for (int i=0; i < numForceDOF; ++i) {
-    delete[] valueNames[i]; valueNames[i] = 0;
-  } // for
-  delete[] valueNames; valueNames = 0;
-} // _setupQueryDatabases
+
+} // _queryDatabases
+
 
 // ----------------------------------------------------------------------
-// Query initial and rate of change databases for values.
+// Query database for values.
 void
-pylith::bc::PointForce::_queryDatabases(const topology::Mesh& mesh)
-{ // _queryDatabases
-  assert(0 != _db);
+pylith::bc::PointForce::_queryDB(topology::Field<topology::Mesh>* field,
+				 spatialdata::spatialdb::SpatialDB* const db,
+				 const int querySize,
+				 const double scale)
+{ // _queryDB
+  assert(0 != field);
+  assert(0 != db);
+  assert(0 != _normalizer);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-
+  const topology::Mesh& mesh = field->mesh();
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
   assert(0 != cs);
   const int spaceDim = cs->spaceDim();
 
   assert(0 != _normalizer);
   const double lengthScale = _normalizer->lengthScale();
-  const double velocityScale = 
-    _normalizer->lengthScale() / _normalizer->timeScale();
 
+  double_array coordsVertex(spaceDim);
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<RealSection>& coordinates = 
+    sieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+
+  const ALE::Obj<RealSection>& section = field->section();
+  assert(!section.isNull());
+
+  double_array valuesVertex(querySize);
+
+  db->open();
   const int numPoints = _points.size();
-  const int numForceDOF = _forceDOF.size();
-  _valuesInitial.resize(numPoints*numForceDOF);
-  if (0 != _dbRate)
-    _valuesRate.resize(numPoints*numForceDOF);
-
-  double_array queryValues(numForceDOF);
-  double_array vCoordsGlobal(spaceDim);
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-    // Get coordinates of vertex
+    // Get dimensionalized coordinates of vertex
     coordinates->restrictPoint(_points[iPoint], 
-			       &vCoordsGlobal[0], vCoordsGlobal.size());
-    _normalizer->dimensionalize(&vCoordsGlobal[0], vCoordsGlobal.size(),
+			       &coordsVertex[0], coordsVertex.size());
+    _normalizer->dimensionalize(&coordsVertex[0], coordsVertex.size(),
 				lengthScale);
-    int err = _db->query(&queryValues[0], numForceDOF, 
-			 &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
+    int err = db->query(&valuesVertex[0], valuesVertex.size(), 
+			&coordsVertex[0], coordsVertex.size(), cs);
     if (err) {
       std::ostringstream msg;
-      msg << "Could not find initial values at (";
+      msg << "Error querying for '" << field->label() << "' at (";
       for (int i=0; i < spaceDim; ++i)
-	msg << "  " << vCoordsGlobal[i];
-      msg << ") using spatial database " << _db->label() << ".";
+	msg << "  " << coordsVertex[i];
+      msg << ") using spatial database " << db->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
-    for (int iDOF=0; iDOF < numForceDOF; ++iDOF)
-      _valuesInitial[numForceDOF*iPoint+iDOF] = 
-	_normalizer->nondimensionalize(queryValues[iDOF], lengthScale);
+    _normalizer->nondimensionalize(&valuesVertex[0], valuesVertex.size(),
+				   scale);
+    section->updatePoint(_points[iPoint], &valuesVertex[0]);
   } // for
-  _db->close();
-} // _queryDatabases
+
+  db->close();
+} // _queryDB
 
 
 // End of file 

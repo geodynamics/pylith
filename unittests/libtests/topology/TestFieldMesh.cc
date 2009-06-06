@@ -21,6 +21,8 @@
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
+#define FIELD_SPLIT
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldMesh );
 
@@ -166,6 +168,54 @@ pylith::topology::TestFieldMesh::testNewSectionPoints(void)
        ++v_iter)
     CPPUNIT_ASSERT_EQUAL(fiberDim, section->getFiberDimension(*v_iter));
 } // testNewSectionPoints
+
+// ----------------------------------------------------------------------
+// Test newSection(int_array).
+void
+pylith::topology::TestFieldMesh::testNewSectionPointsArray(void)
+{ // testNewSectionPointsArray
+  const int fiberDim = 2;
+
+  Mesh mesh;
+  _buildMesh(&mesh);
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+
+  Field<Mesh> field(mesh);
+  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const int npts = vertices->size() / 2;
+  int_array pointsIn(npts);
+  int_array pointsOut(vertices->size() - npts);
+  int count = 0;
+  size_t iIn = 0;
+  size_t iOut = 0;
+  for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter) {
+    if (count % 2  == 0)
+      pointsIn[iIn++] = *v_iter;
+    else
+      pointsOut[iOut++] = *v_iter;
+    ++count;
+  } // for
+  CPPUNIT_ASSERT_EQUAL(iIn, pointsIn.size());
+  CPPUNIT_ASSERT_EQUAL(iOut, pointsOut.size());
+
+  field.newSection(pointsIn, fiberDim);
+  field.allocate();
+  const ALE::Obj<Mesh::RealSection>& section = field.section();
+  CPPUNIT_ASSERT(!section.isNull());
+
+  // Points in array should have a fiber dimension of fiberDim.
+  for (int i=0; i < pointsIn.size(); ++i)
+    CPPUNIT_ASSERT_EQUAL(fiberDim, section->getFiberDimension(pointsIn[i]));
+  
+  // Points not int array should have a fiber dimension of zero.
+  for (int i=0; i < pointsOut.size(); ++i)
+    CPPUNIT_ASSERT_EQUAL(0, section->getFiberDimension(pointsOut[i]));
+} // testNewSectionPointsArray
 
 // ----------------------------------------------------------------------
 // Test newSection(domain).
@@ -935,7 +985,7 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
 	 v_iter != vertices->end();
 	 ++v_iter, ++iV) {
       section->addConstraintDimension(*v_iter, nconstraints[iV]);
-#if 1 // TODO: FIELD SPLIT
+#if defined(FIELD_SPLIT)
       section->addConstraintDimension(*v_iter, nconstraints[iV], fibration);
 #endif
     } // for
@@ -947,29 +997,27 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
 	 v_iter != vertices->end();
 	 ++v_iter, index += nconstraints[i++]) {
       section->setConstraintDof(*v_iter, &constraints[index]);
-#if 1 // TODO: FIELD SPLIT
-      std::cout << "nconstraints["<<i<<"]: " << nconstraints[i]
-		<< ", constraintDimension: " << section->getConstraintDimension(*v_iter) << std::endl;
+#if defined(FIELD_SPLIT)
       section->setConstraintDof(*v_iter, &constraints[index], fibration);
 #endif
     } // for
   } // Setup source field
 
-#if 0 // TODO: FIELD SPLIT
+#if defined(FIELD_SPLIT)
   const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
   CPPUNIT_ASSERT(!section.isNull());
   CPPUNIT_ASSERT_EQUAL(numFibrations, section->getNumSpaces());
   const ALE::Obj<Mesh::RealSection>& sectionSplit = section->getFibration(0);
   CPPUNIT_ASSERT(!sectionSplit.isNull());
-  section->view("FULL FIELD");
-  sectionSplit->view("FIBRATION 0");
+  section->view("FULL FIELD"); // TEMPORARY
+  sectionSplit->view("FIBRATION 0"); // TEMPORARY
 
   CPPUNIT_ASSERT(!vertices.isNull());
   int iV = 0;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
        ++v_iter) {
-    CPPUNIT_ASSERT_EQUAL(fiberDim, sectionSplit->getFiberDimension(*v_iter));
+    CPPUNIT_ASSERT_EQUAL(fiberDim, section->getFiberDimension(*v_iter, fibration));
     CPPUNIT_ASSERT_EQUAL(nconstraints[iV++], 
 			 section->getConstraintDimension(*v_iter, fibration));
   } // for
@@ -1013,9 +1061,8 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
 	 v_iter != vertices->end();
 	 ++v_iter) {
       section->addConstraintDimension(*v_iter, nconstraints[iV++]);
-#if 0 // TODO: FIELD SPLIT
-      section->addConstraintDimension(*v_iter, nconstraints[iV++],
-				      fibration);
+#if defined(FIELD_SPLIT)
+      section->addConstraintDimension(*v_iter, nconstraints[iV++], fibration);
 #endif
     } // for
     fieldSrc.allocate();
@@ -1026,13 +1073,13 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
 	 v_iter != vertices->end();
 	 ++v_iter, index += nconstraints[i++]) {
       section->setConstraintDof(*v_iter, &constraints[index]);
-#if 0 // TODO: FIELD SPLIT
+#if defined(FIELD_SPLIT)
       section->setConstraintDof(*v_iter, &constraints[index], fibration);
 #endif
     } // for
   } // Setup source field
 
-#if 0 // TODO: FIELD SPLIT
+#if defined(FIELD_SPLIT)
   Field<Mesh> field(mesh);
   field.cloneSection(fieldSrc);
   const ALE::Obj<Mesh::RealSection>& section = field.section();
@@ -1040,17 +1087,17 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
   CPPUNIT_ASSERT_EQUAL(numFibrations, section->getNumSpaces());
   const ALE::Obj<Mesh::RealSection>& sectionSplit = section->getFibration(0);
   CPPUNIT_ASSERT(!sectionSplit.isNull());
-  section->view("FULL FIELD");
-  sectionSplit->view("FIBRATION 0");
+  section->view("FULL FIELD"); // TEMPORARY
+  sectionSplit->view("FIBRATION 0"); // TEMPORARY
+
   int iV = 0;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
        ++v_iter) {
-    CPPUNIT_ASSERT_EQUAL(fiberDim,
+    CPPUNIT_ASSERT_EQUAL(fiberDim, 
 			 section->getFiberDimension(*v_iter, fibration));
     CPPUNIT_ASSERT_EQUAL(nconstraints[iV++], 
-			 section->getConstraintDimension(*v_iter, 
-							 fibration));
+			 section->getConstraintDimension(*v_iter, fibration));
   } // for
 #endif
 } // testCloneSectionSplit

@@ -14,5 +14,47 @@
 #error "PointForce.icc can only be included from PointForce.hh"
 #endif
 
+// Set database for initial values.
+inline
+void
+pylith::bc::PointForce::dbInitial(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbInitial = db;
+}
+
+// Set database for rate of change of values.
+inline
+void
+pylith::bc::PointForce::dbRate(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbRate = db;
+}
+
+// Set database for start time of rate change.
+inline
+void
+pylith::bc::PointForce::dbRateTime(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbRateTime = db;
+}
+
+// Set database for change in values.
+inline
+void
+pylith::bc::PointForce::dbChange(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbChange = db;
+}
+
+// Set database for start time of change in values.
+inline
+void
+pylith::bc::PointForce::dbChangeTime(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbChangeTime = db;
+}
+
+// Set database for temporal evolution of change in value.
+inline
+void
+pylith::bc::PointForce::dbTimeHistory(spatialdata::spatialdb::TimeHistory* const db) {
+  _dbTimeHistory = db;
+}
+
 
 // End of file 
