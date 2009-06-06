@@ -46,6 +46,9 @@ pylith::bc::PointForce::PointForce(void) :
 // Destructor.
 pylith::bc::PointForce::~PointForce(void)
 { // destructor
+  if (0 != _dbTimeHistory)
+    _dbTimeHistory->close();
+
   delete _parameters; _parameters = 0;
 
   _dbInitial = 0; // TODO: Use shared pointers
@@ -303,7 +306,7 @@ pylith::bc::PointForce::_getPoints(const topology::Mesh& mesh)
 } // _getPoints
 
 // ----------------------------------------------------------------------
-// Query databases for values.
+// Query databases for parameters.
 void
 pylith::bc::PointForce::_queryDatabases(const topology::Mesh& mesh,
 					const double valueScale,
@@ -335,12 +338,53 @@ pylith::bc::PointForce::_queryDatabases(const topology::Mesh& mesh,
     initial.newSection(_points, numBCDOF);
     initial.allocate();
     initial.scale(valueScale);
-    initial.vectorFieldType(topology::FieldBase::VECTOR);
+    initial.vectorFieldType(topology::FieldBase::OTHER);
 
     _dbInitial->queryVals(valueNames, numBCDOF);
     _queryDB(&initial, _dbInitial, numBCDOF, valueScale);
   } // if
 
+  if (0 != _dbRate) { // Setup rate of change of values, if provided.
+    std::string fieldLabel = std::string("rate_") + std::string(fieldName);
+    _parameters->add("rate", fieldLabel.c_str());
+    topology::Field<topology::Mesh>& rate = 
+      _parameters->get("rate");
+    rate.newSection(_points, numBCDOF);
+    rate.allocate();
+    rate.scale(valueScale);
+    rate.vectorFieldType(topology::FieldBase::VECTOR);
+    const ALE::Obj<RealSection>& rateSection = rate.section();
+    assert(!rateSection.isNull());
+
+    _dbRate->queryVals(valueNames, numBCDOF);
+    _queryDB(&rate, _dbRate, numBCDOF, rateScale);
+
+    std::string timeLabel = 
+      std::string("rate_time_") + std::string(fieldName);
+    _parameters->add("rate time", timeLabel.c_str());
+    topology::Field<topology::Mesh>& rateTime = 
+      _parameters->get("rate time");
+    rateTime.newSection(rateSection->getChart(), 1);
+    rateTime.allocate();
+    rateTime.scale(timeScale);
+    rateTime.vectorFieldType(topology::FieldBase::SCALAR);
+
+    const char* timeNames[1] = { "rate-start-time" };
+    _dbRateTime->queryVals(timeNames, 1);
+    _queryDB(&rateTime, _dbRateTime, 1, timeScale);
+  } // if
+
+  if (0 != _dbChange) { // Setup change of values, if provided.
+    // ADD STUFF HERE
+
+    if (0 != _dbTimeHistory)
+      _dbTimeHistory->open();
+  } // if
+
+  _parameters->add("value", fieldName);
+  topology::Field<topology::Mesh>& value = _parameters->get("value");
+  value.scale(valueScale);
+  value.vectorFieldType(topology::FieldBase::OTHER);
 } // _queryDatabases
 
 
