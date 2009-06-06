@@ -21,7 +21,7 @@
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
-//#define FIELD_SPLIT
+#define FIELD_SPLIT
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldMesh );
@@ -1059,10 +1059,10 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
     int iV=0;
     for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
 	 v_iter != vertices->end();
-	 ++v_iter) {
-      section->addConstraintDimension(*v_iter, nconstraints[iV++]);
+	 ++v_iter, ++iV) {
+      section->addConstraintDimension(*v_iter, nconstraints[iV]);
 #if defined(FIELD_SPLIT)
-      section->addConstraintDimension(*v_iter, nconstraints[iV++], fibration);
+      section->addConstraintDimension(*v_iter, nconstraints[iV], fibration);
 #endif
     } // for
     fieldSrc.allocate();
