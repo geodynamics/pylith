@@ -222,7 +222,8 @@ pylith::bc::PointForce::_calculateValue(const double t)
 	  const int err = _dbTimeHistory->query(&scale, tDim);
 	  if (0 != err) {
 	    std::ostringstream msg;
-	    msg << "ADD SOMETHING HERE";
+	    msg << "Error querying for time '" << tDim << "' in time history database "
+		<< _dbTimeHistory->label() << ".";
 	    throw std::runtime_error(msg.str());
 	  } // if
 	} // if
