@@ -21,7 +21,7 @@
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
-#define FIELD_SPLIT
+//#define FIELD_SPLIT
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldMesh );
