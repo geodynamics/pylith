@@ -28,6 +28,7 @@ libpylith_la_SOURCES = \
 	bc/DirichletBoundary.cc \
 	bc/Neumann.cc \
 	bc/AbsorbingDampers.cc \
+	bc/PointForce.cc \
 	faults/Fault.cc \
 	faults/SlipTimeFn.cc \
 	faults/StepSlipFn.cc \

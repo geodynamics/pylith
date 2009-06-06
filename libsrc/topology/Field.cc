@@ -106,7 +106,8 @@ pylith::topology::Field<mesh_type>::newSection(void)
 } // newSection
 
 // ----------------------------------------------------------------------
-// Create sieve section and set chart and fiber dimesion.
+// Create sieve section and set chart and fiber dimesion for a
+// sequence of points.
 template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::newSection(
@@ -120,9 +121,8 @@ pylith::topology::Field<mesh_type>::newSection(
   logger.stagePush("Field");
   if (fiberDim < 0) {
     std::ostringstream msg;
-    msg
-      << "Fiber dimension (" << fiberDim << ") for field '" << _label
-      << "' must be nonnegative.";
+    msg << "Fiber dimension (" << fiberDim << ") for field '" << _label
+	<< "' must be nonnegative.";
     throw std::runtime_error(msg.str());
   } // if
 
@@ -135,11 +135,44 @@ pylith::topology::Field<mesh_type>::newSection(
       *std::max_element(points->begin(), points->end());
     _section->setChart(chart_type(pointMin, pointMax+1));
     _section->setFiberDimension(points, fiberDim);  
-  } else {
-    // Create empty chart
+  } else // Create empty chart
     _section->setChart(chart_type(0, 0));
-    _section->setFiberDimension(points, fiberDim);  
-  } // if/else
+
+  logger.stagePop();
+} // newSection
+
+// ----------------------------------------------------------------------
+// Create sieve section and set chart and fiber dimesion for a list of
+// points.
+template<typename mesh_type>
+void
+pylith::topology::Field<mesh_type>::newSection(const int_array& points,
+					       const int fiberDim)
+{ // newSection
+  typedef typename mesh_type::SieveMesh::point_type point_type;
+
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  std::cout << "Making Field " << _label << " section type 1b" << std::endl;
+  logger.stagePush("Field");
+  if (fiberDim < 0) {
+    std::ostringstream msg;
+    msg << "Fiber dimension (" << fiberDim << ") for field '" << _label
+	<< "' must be nonnegative.";
+    throw std::runtime_error(msg.str());
+  } // if
+  
+  _section = new RealSection(_mesh.comm(), _mesh.debug());
+
+  const int npts = points.size();
+  if (npts > 0) {
+    const point_type pointMin = points.min();
+    const point_type pointMax = points.max();
+    _section->setChart(chart_type(pointMin, pointMax+1));
+    for (int i=0; i < npts; ++i)
+      _section->setFiberDimension(points[i], fiberDim);
+  } else  // create empty chart
+    _section->setChart(chart_type(0, 0));
+
   logger.stagePop();
 } // newSection
 

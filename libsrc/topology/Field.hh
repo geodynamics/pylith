@@ -25,6 +25,7 @@
 // Include directives ---------------------------------------------------
 #include "FieldBase.hh" // ISA FieldBase
 
+#include "pylith/utils/arrayfwd.hh" // HASA int_array
 #include "pylith/utils/petscfwd.h" // HASA PetscVec
 
 #include <petscmesh.hh>
@@ -147,12 +148,22 @@ public :
   /// Create sieve section.
   void newSection(void);
 
-  /** Create sieve section and set chart and fiber dimesion.
+  /** Create sieve section and set chart and fiber dimesion for
+   * sequence of points.
    *
    * @param points Points over which to define section.
    * @param dim Fiber dimension for section.
    */
   void newSection(const ALE::Obj<label_sequence>& points,
+		  const int fiberDim);
+
+  /** Create sieve section and set chart and fiber dimesion for a list
+   * of points.
+   *
+   * @param points Points over which to define section.
+   * @param dim Fiber dimension for section.
+   */
+  void newSection(const int_array& points,
 		  const int fiberDim);
 
   /** Create sieve section and set chart and fiber dimesion.

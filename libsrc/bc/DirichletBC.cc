@@ -25,6 +25,8 @@
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 
+//#define FIELD_SPLIT
+
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
@@ -106,7 +108,7 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
     } // if
     _offsetLocal[iPoint] = curNumConstraints;
     section->addConstraintDimension(_points[iPoint], numFixedDOF);
-#if 0 // TODO: FIELD SPLIT
+#if defined(FIELD_SPLIT)
     if (fibration >= 0) {
       assert(fiberDim == section->getFiberDimension(_points[iPoint],
 						    fibration));
@@ -178,7 +180,7 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
     // Update list of constrained DOF
     section->setConstraintDof(point, &allFixedDOF[0]);
 
-#if 0 // TODO: FIELD SPLIT
+#if defined(FIELD_SPLIT)
     if (fibration >= 0)
       section->setConstraintDof(point, &allFixedDOF[0], fibration);
 #endif
