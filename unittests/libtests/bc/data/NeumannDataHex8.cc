@@ -66,7 +66,7 @@ const double pylith::bc::NeumannDataHex8::_basisDerivRef[] = {
 };
 
 const char* pylith::bc::NeumannDataHex8::_spatialDBFilename =
-  "data/hex8b.spatialdb";
+  "data/hex8b_traction.spatialdb";
 const int pylith::bc::NeumannDataHex8::_id = 0;
 const char* pylith::bc::NeumannDataHex8::_label = "tractionVerts";
 

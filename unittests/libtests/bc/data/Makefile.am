@@ -35,7 +35,7 @@ dist_noinst_DATA = \
 	hex8.mesh \
 	hex8_disp.spatialdb \
 	hex8b.mesh \
-	hex8b_disp.spatialdb
+	hex8b_traction.spatialdb
 
 
 # 'export' the input files by performing a mock install
