@@ -22,6 +22,7 @@ check_PROGRAMS = testbc
 # Primary source files
 testbc_SOURCES = \
 	TestBoundaryCondition.cc \
+	TestBoundaryConditionPoints.cc \
 	TestTimeDependent.cc \
 	TestBoundaryMesh.cc \
 	TestBoundaryMeshTri3.cc \
@@ -62,6 +63,7 @@ testbc_SOURCES = \
 
 noinst_HEADERS = \
 	TestBoundaryCondition.hh \
+	TestBoundaryConditionPoints.hh \
 	TestTimeDependent.hh \
 	TestBoundaryMesh.hh \
 	TestBoundaryMeshTri3.hh \
