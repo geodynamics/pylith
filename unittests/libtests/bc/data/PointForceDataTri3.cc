@@ -12,7 +12,7 @@
 
 /* Mesh: meshTri3.txt
  *
- * PointForce BC at vertices 1 and 3.
+ * Point force BC at vertices 1 and 3.
  *
  * Force DOF: { 1 }
  *

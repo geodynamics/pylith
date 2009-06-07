@@ -166,7 +166,7 @@ pylith::bc::TestPointForce::testIntegrateResidualAssembled(void)
   const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
-  residual.view("RESIDUAL");
+  //residual.view("RESIDUAL");
 
   const double tolerance = 1.0e-06;
   for (int i=0; i < size; ++i)

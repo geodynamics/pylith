@@ -12,7 +12,7 @@
 
 /* Mesh: meshLine2.txt
  *
- * DirichletPoints BC at vertices 0 and 2.
+ * Dirichlet BC at vertices 0 and 2.
  *
  * Fixed DOF: { 0 }
  *

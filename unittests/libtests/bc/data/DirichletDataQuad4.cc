@@ -12,7 +12,7 @@
 
 /* Mesh: meshQuad4.txt
  *
- * DirichletPoints BC at vertices 0, 2, 4.
+ * Dirichlet BC at vertices 0, 2, 4.
  *
  * Fixed DOF: { 0, 1 }
  *
