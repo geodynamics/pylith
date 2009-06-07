@@ -16,7 +16,7 @@
 
 #include "pylith/bc/PointForce.hh" // USES PointForce
 
-#include "data/PointForceDatatri3.hh" // USES PointForceDataTri3
+#include "data/PointForceDataTri3.hh" // USES PointForceDataTri3
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
