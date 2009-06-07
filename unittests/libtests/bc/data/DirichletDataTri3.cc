@@ -12,7 +12,7 @@
 
 /* Mesh: meshTri3.txt
  *
- * DirichletPoints BC at vertices 1 and 3.
+ * Dirichlet BC at vertices 1 and 3.
  *
  * Fixed DOF: { 1 }
  *

@@ -14,6 +14,7 @@ dist_noinst_DATA = \
 	line2.mesh \
 	line2_disp.spatialdb \
 	line2_tractions.spatialdb \
+	line2_force.spatialdb \
 	elasticstrain1d.spatialdb \
 	tri3.mesh \
 	tri3_disp.spatialdb \
@@ -26,14 +27,17 @@ dist_noinst_DATA = \
 	quad4.mesh \
 	quad4_disp.spatialdb \
 	quad4_tractions.spatialdb \
+	quad4_force.spatialdb \
 	tet4.mesh \
 	tet4_disp.spatialdb \
 	tet4_disp2.spatialdb \
 	tet4_vel2.spatialdb \
 	tet4_tractions.spatialdb \
+	tet4_force.spatialdb \
 	elasticisotropic3d.spatialdb \
 	hex8.mesh \
 	hex8_disp.spatialdb \
+	hex8_force.spatialdb \
 	hex8b.mesh \
 	hex8b_traction.spatialdb
 

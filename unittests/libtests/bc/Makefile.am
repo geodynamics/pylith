@@ -57,7 +57,11 @@ testbc_SOURCES = \
 	TestNeumannTet4.cc \
 	TestNeumannHex8.cc \
 	TestPointForce.cc \
+	TestPointForceLine2.cc \
 	TestPointForceTri3.cc \
+	TestPointForceQuad4.cc \
+	TestPointForceTet4.cc \
+	TestPointForceHex8.cc \
 	test_bc.cc
 
 
@@ -98,7 +102,11 @@ noinst_HEADERS = \
 	TestNeumannTet4.hh \
 	TestNeumannHex8.hh \
 	TestPointForce.hh \
-	TestPointForceTri3.hh
+	TestPointForceLine2.hh \
+	TestPointForceTri3.hh \
+	TestPointForceQuad4.hh \
+	TestPointForceTet4.hh \
+	TestPointForceHex8.hh
 
 # Source files associated with testing data
 testbc_SOURCES += \
@@ -130,7 +138,11 @@ testbc_SOURCES += \
 	data/NeumannDataTet4.cc \
 	data/NeumannDataHex8.cc \
 	data/PointForceData.cc \
-	data/PointForceDataTri3.cc
+	data/PointForceDataLine2.cc \
+	data/PointForceDataTri3.cc \
+	data/PointForceDataQuad4.cc \
+	data/PointForceDataTet4.cc \
+	data/PointForceDataHex8.cc
 
 noinst_HEADERS += \
 	data/BoundaryMeshData.hh \
@@ -161,7 +173,11 @@ noinst_HEADERS += \
 	data/NeumannDataTet4.hh \
 	data/NeumannDataHex8.hh \
 	data/PointForceData.hh \
-	data/PointForceDataTri3.hh
+	data/PointForceDataLine2.hh \
+	data/PointForceDataTri3.hh \
+	data/PointForceDataQuad4.hh \
+	data/PointForceDataTet4.hh \
+	data/PointForceDataHex8.hh
 
 
 AM_CPPFLAGS = \

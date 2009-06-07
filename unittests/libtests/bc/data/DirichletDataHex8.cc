@@ -12,7 +12,7 @@
 
 /* Mesh: meshHex8.txt
  *
- * DirichletPoints BC at vertices 0, 1, 6, 7.
+ * Dirichlet BC at vertices 0, 1, 6, 7.
  *
  * Fixed DOF: { 0, 2 }
  *

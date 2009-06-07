@@ -12,7 +12,7 @@
 
 /* Mesh: meshTet4.txt
  *
- * DirichletPoints BC at vertices 2.
+ * Dirichlet BC at vertices 2.
  *
  * Fixed DOF: { 1, 2 }
  *
