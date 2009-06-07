@@ -58,6 +58,7 @@ public :
    */
   const char* label(void) const;
 
+  // REMOVE THIS
   /** Set database for boundary condition parameters.
    *
    * @param db Spatial database

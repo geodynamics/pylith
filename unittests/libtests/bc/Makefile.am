@@ -22,6 +22,18 @@ check_PROGRAMS = testbc
 # Primary source files
 testbc_SOURCES = \
 	TestBoundaryCondition.cc \
+	TestTimeDependent.cc \
+	TestBoundaryMesh.cc \
+	TestBoundaryMeshTri3.cc \
+	TestBoundaryMeshQuad4.cc \
+	TestBoundaryMeshTet4.cc \
+	TestBoundaryMeshHex8.cc \
+	TestAbsorbingDampers.cc \
+	TestAbsorbingDampersLine2.cc \
+	TestAbsorbingDampersTri3.cc \
+	TestAbsorbingDampersQuad4.cc \
+	TestAbsorbingDampersTet4.cc \
+	TestAbsorbingDampersHex8.cc \
 	TestDirichletBC.cc \
 	TestDirichletBCLine2.cc \
 	TestDirichletBCLine2b.cc \
@@ -43,34 +55,25 @@ testbc_SOURCES = \
 	TestNeumannQuad4.cc \
 	TestNeumannTet4.cc \
 	TestNeumannHex8.cc \
-	TestAbsorbingDampers.cc \
-	TestAbsorbingDampersLine2.cc \
-	TestAbsorbingDampersTri3.cc \
-	TestAbsorbingDampersQuad4.cc \
-	TestAbsorbingDampersTet4.cc \
-	TestAbsorbingDampersHex8.cc \
-	TestBoundaryMesh.cc \
-	TestBoundaryMeshTri3.cc \
-	TestBoundaryMeshQuad4.cc \
-	TestBoundaryMeshTet4.cc \
-	TestBoundaryMeshHex8.cc \
+	TestPointForce.cc \
+	TestPointForceTri3.cc \
 	test_bc.cc
 
 
-
 noinst_HEADERS = \
+	TestBoundaryCondition.hh \
+	TestTimeDependent.hh \
+	TestBoundaryMesh.hh \
+	TestBoundaryMeshTri3.hh \
+	TestBoundaryMeshQuad4.hh \
+	TestBoundaryMeshTet4.hh \
+	TestBoundaryMeshHex8.hh \
 	TestAbsorbingDampers.hh \
 	TestAbsorbingDampersLine2.hh \
 	TestAbsorbingDampersTri3.hh \
 	TestAbsorbingDampersQuad4.hh \
 	TestAbsorbingDampersTet4.hh \
 	TestAbsorbingDampersHex8.hh \
-	TestBoundaryCondition.hh \
-	TestBoundaryMesh.hh \
-	TestBoundaryMeshTri3.hh \
-	TestBoundaryMeshQuad4.hh \
-	TestBoundaryMeshTet4.hh \
-	TestBoundaryMeshHex8.hh \
 	TestDirichletBoundary.hh \
 	TestDirichletBoundaryTri3.hh \
 	TestDirichletBoundaryQuad4.hh \
@@ -91,21 +94,23 @@ noinst_HEADERS = \
 	TestNeumannTri3.hh \
 	TestNeumannQuad4.hh \
 	TestNeumannTet4.hh \
-	TestNeumannHex8.hh
+	TestNeumannHex8.hh \
+	TestPointForce.hh \
+	TestPointForceTri3.hh
 
 # Source files associated with testing data
 testbc_SOURCES += \
+	data/BoundaryMeshData.cc \
+	data/BoundaryMeshDataTri3.cc \
+	data/BoundaryMeshDataQuad4.cc \
+	data/BoundaryMeshDataTet4.cc \
+	data/BoundaryMeshDataHex8.cc \
 	data/AbsorbingDampersData.cc \
 	data/AbsorbingDampersDataLine2.cc \
 	data/AbsorbingDampersDataTri3.cc \
 	data/AbsorbingDampersDataQuad4.cc \
 	data/AbsorbingDampersDataTet4.cc \
 	data/AbsorbingDampersDataHex8.cc \
-	data/BoundaryMeshData.cc \
-	data/BoundaryMeshDataTri3.cc \
-	data/BoundaryMeshDataQuad4.cc \
-	data/BoundaryMeshDataTet4.cc \
-	data/BoundaryMeshDataHex8.cc \
 	data/DirichletData.cc \
 	data/DirichletDataLine2.cc \
 	data/DirichletDataLine2b.cc \
@@ -121,20 +126,22 @@ testbc_SOURCES += \
 	data/NeumannDataTri3.cc \
 	data/NeumannDataQuad4.cc \
 	data/NeumannDataTet4.cc \
-	data/NeumannDataHex8.cc
+	data/NeumannDataHex8.cc \
+	data/PointForceData.cc \
+	data/PointForceDataTri3.cc
 
 noinst_HEADERS += \
+	data/BoundaryMeshData.hh \
+	data/BoundaryMeshDataTri3.hh \
+	data/BoundaryMeshDataQuad4.hh \
+	data/BoundaryMeshDataTet4.hh \
+	data/BoundaryMeshDataHex8.hh \
 	data/AbsorbingDampersData.hh \
 	data/AbsorbingDampersDataLine2.hh \
 	data/AbsorbingDampersDataTri3.hh \
 	data/AbsorbingDampersDataQuad4.hh \
 	data/AbsorbingDampersDataTet4.hh \
 	data/AbsorbingDampersDataHex8.hh \
-	data/BoundaryMeshData.hh \
-	data/BoundaryMeshDataTri3.hh \
-	data/BoundaryMeshDataQuad4.hh \
-	data/BoundaryMeshDataTet4.hh \
-	data/BoundaryMeshDataHex8.hh \
 	data/DirichletData.hh \
 	data/DirichletDataLine2.hh \
 	data/DirichletDataLine2b.hh \
@@ -150,7 +157,10 @@ noinst_HEADERS += \
 	data/NeumannDataTri3.hh \
 	data/NeumannDataQuad4.hh \
 	data/NeumannDataTet4.hh \
-	data/NeumannDataHex8.hh
+	data/NeumannDataHex8.hh \
+	data/PointForceData.hh \
+	data/PointForceDataTri3.hh
+
 
 AM_CPPFLAGS = \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \

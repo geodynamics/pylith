@@ -45,7 +45,7 @@ const double pylith::bc::DirichletDataQuad4::_valuesInitial[] =
 const char* pylith::bc::DirichletDataQuad4::_meshFilename = 
   "data/quad4.mesh";
 const char* pylith::bc::DirichletDataQuad4::_dbFilename =
-  "data/quad4.spatialdb";
+  "data/quad4_disp.spatialdb";
 
 pylith::bc::DirichletDataQuad4::DirichletDataQuad4(void)
 { // constructor

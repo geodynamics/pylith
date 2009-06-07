@@ -25,6 +25,10 @@ namespace pylith {
   namespace bc {
 
     class BoundaryCondition;
+    class BoundaryConditionPoints;
+    class TimeDependent;
+    class TimeDependentPoints;
+    class TimeDependentSubMesh;
     class DirichletBC;
     class DirichletBoundary;
     class Neumann;

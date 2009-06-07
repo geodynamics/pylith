@@ -37,7 +37,7 @@ const double pylith::bc::DirichletDataLine2b::_valuesInitial[] = {0};
 const char* pylith::bc::DirichletDataLine2b::_meshFilename = 
   "data/line2.mesh";
 const char* pylith::bc::DirichletDataLine2b::_dbFilename =
-  "data/line2.spatialdb";
+  "data/line2_disp2.spatialdb";
 
 pylith::bc::DirichletDataLine2b::DirichletDataLine2b(void)
 { // constructor

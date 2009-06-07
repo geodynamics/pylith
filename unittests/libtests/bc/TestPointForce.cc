@@ -1,0 +1,230 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#include <portinfo>
+
+#include "TestPointForce.hh" // Implementation of class methods
+
+#include "pylith/bc/PointForce.hh" // USES PointForce
+
+#include "data/PointForceData.hh" // USES PointForceData
+
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
+#include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
+#include "spatialdata/spatialdb/UniformDB.hh" // USES UniformDB
+
+// ----------------------------------------------------------------------
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestPointForce );
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
+
+// ----------------------------------------------------------------------
+// Setup testing data.
+void
+pylith::bc::TestPointForce::setUp(void)
+{ // setUp
+  _data = 0;
+} // setUp
+
+// ----------------------------------------------------------------------
+// Tear down testing data.
+void
+pylith::bc::TestPointForce::tearDown(void)
+{ // tearDown
+  delete _data; _data = 0;
+} // tearDown
+
+// ----------------------------------------------------------------------
+// Test constructor.
+void
+pylith::bc::TestPointForce::testConstructor(void)
+{ // testConstructor
+  PointForce bc;
+} // testConstructor
+
+// ----------------------------------------------------------------------
+// Test initialize().
+void
+pylith::bc::TestPointForce::testInitialize(void)
+{ // testInitialize
+  topology::Mesh mesh;
+  PointForce bc;
+  _initialize(&mesh, &bc);
+  CPPUNIT_ASSERT(0 != _data);
+
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  
+  const int numCells = sieveMesh->heightStratum(0)->size();
+  const int numForceDOF = _data->numForceDOF;
+  const size_t numPoints = _data->numForcePts;
+
+  // Check points
+  const int offset = numCells;
+  if (numForceDOF > 0) {
+    CPPUNIT_ASSERT_EQUAL(numPoints, bc._points.size());
+    for (int i=0; i < numPoints; ++i)
+      CPPUNIT_ASSERT_EQUAL(_data->forcePoints[i]+offset, bc._points[i]);
+  } // if
+
+  // Check values
+  CPPUNIT_ASSERT(0 != bc._parameters);
+  const ALE::Obj<RealSection>& initialSection =
+    bc._parameters->get("initial").section();
+  CPPUNIT_ASSERT(!initialSection.isNull());
+
+  const double tolerance = 1.0e-06;
+  for (int i=0; i < numPoints; ++i) {
+    const int p_force = _data->forcePoints[i]+offset;
+    CPPUNIT_ASSERT_EQUAL(numForceDOF, initialSection->getFiberDimension(p_force));
+    const double* valuesInitial = initialSection->restrictPoint(p_force);
+    for (int iDOF=0; iDOF < numForceDOF; ++iDOF) 
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->forceInitial[i*numForceDOF+iDOF],
+				   valuesInitial[iDOF], tolerance);
+  } // for
+
+  // Check rate of change
+  const ALE::Obj<RealSection>& rateSection =
+    bc._parameters->get("rate").section();
+  CPPUNIT_ASSERT(!rateSection.isNull());
+
+  for (int i=0; i < numPoints; ++i) {
+    const int p_force = _data->forcePoints[i]+offset;
+    CPPUNIT_ASSERT_EQUAL(numForceDOF, rateSection->getFiberDimension(p_force));
+    const double* valuesRate = rateSection->restrictPoint(p_force);
+    for (int iDOF=0; iDOF < numForceDOF; ++iDOF) 
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->forceRate,
+				   valuesRate[iDOF], tolerance);
+  } // for
+} // testInitialize
+
+// ----------------------------------------------------------------------
+// Test integrateResidualAssembled().
+void
+pylith::bc::TestPointForce::testIntegrateResidualAssembled(void)
+{ // testIntegrateResidualAssembled
+  topology::Mesh mesh;
+  PointForce bc;
+  _initialize(&mesh, &bc);
+
+  topology::Field<topology::Mesh> residual(mesh);
+  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
+  CPPUNIT_ASSERT(0 != cs);
+  const int spaceDim = cs->spaceDim();
+  residual.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
+  residual.allocate();
+  residual.zero();
+
+  topology::SolutionFields fields(mesh);
+
+  const double t = _data->tResidual;
+  bc.integrateResidualAssembled(&residual, t, &fields);
+
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  CPPUNIT_ASSERT(!sieveMesh->depthStratum(0).isNull());
+
+  const double* valsE = _data->residual;
+  const int totalNumVertices = sieveMesh->depthStratum(0)->size();
+  const int sizeE = spaceDim * totalNumVertices;
+
+  const ALE::Obj<RealSection>& residualSection = residual.section();
+  CPPUNIT_ASSERT(!residualSection.isNull());
+  const double* vals = residualSection->restrictSpace();
+  const int size = residualSection->sizeWithBC();
+  CPPUNIT_ASSERT_EQUAL(sizeE, size);
+
+  residual.view("RESIDUAL");
+
+  const double tolerance = 1.0e-06;
+  for (int i=0; i < size; ++i)
+    if (fabs(valsE[i]) > 1.0)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
+    else
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+} // testIntegrateResidualAssembled
+
+// ----------------------------------------------------------------------
+// Test verifyConfiguration().
+void
+pylith::bc::TestPointForce::testVerifyConfiguration(void)
+{ // testVerifyConfiguration
+  topology::Mesh mesh;
+  PointForce bc;
+  _initialize(&mesh, &bc);
+
+  bc.verifyConfiguration(mesh);
+} // testVerifyConfiguration
+
+// ----------------------------------------------------------------------
+void
+pylith::bc::TestPointForce::_initialize(topology::Mesh* mesh,
+					 PointForce* const bc) const
+{ // _initialize
+  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(0 != bc);
+
+  meshio::MeshIOAscii iohandler;
+  iohandler.filename(_data->meshFilename);
+  iohandler.read(mesh);
+
+  spatialdata::geocoords::CSCart cs;
+  spatialdata::units::Nondimensional normalizer;
+  cs.setSpaceDim(mesh->dimension());
+  cs.initialize();
+  mesh->coordsys(&cs);
+  mesh->nondimensionalize(normalizer);
+
+  spatialdata::spatialdb::SimpleDB dbInitial("TestPointForce initial");
+  spatialdata::spatialdb::SimpleIOAscii dbInitialIO;
+  dbInitialIO.filename(_data->dbFilename);
+  dbInitial.ioHandler(&dbInitialIO);
+  dbInitial.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
+
+  spatialdata::spatialdb::UniformDB dbRate("TestPointForce rate");
+  { // rate db
+    const int numValues = 3;
+    const char* names[numValues] = { "force-rate-x", "force-rate-y", "force-rate-z" };
+    const double values[numValues] = { _data->forceRate,
+				       _data->forceRate,
+				       _data->forceRate };
+    dbRate.setData(names, values, numValues);
+  } // rate db
+
+  spatialdata::spatialdb::UniformDB dbRateTime("TestPointForce rate time");
+  { // rate time db
+    const int numValues = 1;
+    const char* names[numValues] = { "rate-start-time" };
+    const double values[numValues] = { _data->tRef };
+    dbRateTime.setData(names, values, numValues);
+  } // rate time db
+
+  const double upDir[] = { 0.0, 0.0, 1.0 };
+
+  bc->label(_data->label);
+  bc->dbInitial(&dbInitial);
+  bc->dbRate(&dbRate);
+  bc->dbRateTime(&dbRateTime);
+  bc->bcDOF(_data->forceDOF, _data->numForceDOF);
+  bc->initialize(*mesh, upDir);
+} // _initialize
+
+
+// End of file 

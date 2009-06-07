@@ -48,7 +48,7 @@ const double pylith::bc::NeumannDataTri3::_basisDerivRef[] = {
 };
 
 const char* pylith::bc::NeumannDataTri3::_spatialDBFilename =
-  "data/tri3-tractions.spatialdb";
+  "data/tri3_tractions.spatialdb";
 const int pylith::bc::NeumannDataTri3::_id = 0;
 const char* pylith::bc::NeumannDataTri3::_label = "bc";
 

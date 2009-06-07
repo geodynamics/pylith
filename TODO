@@ -7,14 +7,17 @@ Matt
   field split
 
 Brad
+  PointForce
+  time-dependent BC
+  Field
+    replace newSection(chart, fiberDim) with newSection(field, fiberDim)
+    choose points to set fiberDim based on other field
   field split (setup fields)
   symmetric matrix (use in examples, testing)
   full-scale testing
   cleanup
   test uniform refinement
 
-  PointForce
-  time-dependent BC
 
 Charles
   3-D Power-law rheology
