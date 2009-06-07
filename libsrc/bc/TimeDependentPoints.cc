@@ -50,7 +50,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
 						 const double valueScale,
 						 const char* fieldName)
 { // _queryDatabases
-  const double timeScale = getNormalizer().timeScale();
+  const double timeScale = _getNormalizer().timeScale();
   const double rateScale = valueScale / timeScale;
 
   const int numPoints = _points.size();
@@ -198,7 +198,7 @@ pylith::bc::TimeDependentPoints::_queryDB(topology::Field<topology::Mesh>* field
   assert(0 != cs);
   const int spaceDim = cs->spaceDim();
 
-  const double lengthScale = getNormalizer().lengthScale();
+  const double lengthScale = _getNormalizer().lengthScale();
 
   double_array coordsVertex(spaceDim);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
@@ -217,7 +217,7 @@ pylith::bc::TimeDependentPoints::_queryDB(topology::Field<topology::Mesh>* field
     // Get dimensionalized coordinates of vertex
     coordinates->restrictPoint(_points[iPoint], 
 			       &coordsVertex[0], coordsVertex.size());
-    getNormalizer().dimensionalize(&coordsVertex[0], coordsVertex.size(),
+    _getNormalizer().dimensionalize(&coordsVertex[0], coordsVertex.size(),
 				lengthScale);
     int err = db->query(&valuesVertex[0], valuesVertex.size(), 
 			&coordsVertex[0], coordsVertex.size(), cs);
@@ -229,7 +229,7 @@ pylith::bc::TimeDependentPoints::_queryDB(topology::Field<topology::Mesh>* field
       msg << ") using spatial database " << db->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
-    getNormalizer().nondimensionalize(&valuesVertex[0], valuesVertex.size(),
+    _getNormalizer().nondimensionalize(&valuesVertex[0], valuesVertex.size(),
 				   scale);
     section->updatePoint(_points[iPoint], &valuesVertex[0]);
   } // for
@@ -249,7 +249,7 @@ pylith::bc::TimeDependentPoints::_calculateValue(const double t)
 
   const int numPoints = _points.size();
   const int numBCDOF = _bcDOF.size();
-  const double timeScale = getNormalizer().timeScale();
+  const double timeScale = _getNormalizer().timeScale();
 
   const ALE::Obj<RealSection>& changeSection = (0 != _dbChange) ?
     _parameters->get("change").section() : 0;
@@ -314,7 +314,7 @@ pylith::bc::TimeDependentPoints::_calculateValue(const double t)
 	double scale = 1.0;
 	if (0 != _dbTimeHistory) {
 	  double tDim = t - tChange;
-	  getNormalizer().dimensionalize(&tDim, 1, timeScale);
+	  _getNormalizer().dimensionalize(&tDim, 1, timeScale);
 	  const int err = _dbTimeHistory->query(&scale, tDim);
 	  if (0 != err) {
 	    std::ostringstream msg;

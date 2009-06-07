@@ -19,7 +19,7 @@
 // Get manager of scales used to nondimensionalize problem.
 inline
 const spatialdata::units::Nondimensional&
-pylith::bc::PointForce::getNormalizer(void) const {
+pylith::bc::PointForce::_getNormalizer(void) const {
   assert(0 != _normalizer);
   return *_normalizer;
 }

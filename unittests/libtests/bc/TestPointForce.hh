@@ -42,6 +42,7 @@ class pylith::bc::TestPointForce : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestPointForce );
 
   CPPUNIT_TEST( testConstructor );
+  CPPUNIT_TEST( testNormalizer );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -56,6 +57,9 @@ public :
 
   /// Test constructor.
   void testConstructor(void);
+
+  /// Test normalizer().
+  void testNormalizer(void);
 
   /// Test initialize().
   void testInitialize(void);

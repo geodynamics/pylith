@@ -47,7 +47,7 @@ protected :
    *
    * @returns Label of surface (from mesh generator).
    */
-  const char* getLabel(void) const;
+  const char* _getLabel(void) const;
 
   /** Query databases for time dependent parameters.
    *

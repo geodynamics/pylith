@@ -68,14 +68,14 @@ pylith::bc::TimeDependent::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
   if (0 != _dbRate && 0 == _dbRateTime) {
     std::ostringstream msg;
-    msg << "Time dependent boundary condition '" << getLabel() << "',\n has a rate "
+    msg << "Time dependent boundary condition '" << _getLabel() << "',\n has a rate "
 	<< "of change spatial database but no rate of change start time "
 	<< "spatial database.";
     throw std::runtime_error(msg.str());
   } // if
   if (0 == _dbRate && 0 != _dbRateTime) {
     std::ostringstream msg;
-    msg << "Time dependent boundary condition '" << getLabel() << "',\n has a rate "
+    msg << "Time dependent boundary condition '" << _getLabel() << "',\n has a rate "
 	<< "of change start time spatial database but no rate of change "
 	<< "spatial database.";
     throw std::runtime_error(msg.str());
@@ -83,21 +83,21 @@ pylith::bc::TimeDependent::verifyConfiguration(const topology::Mesh& mesh) const
 
   if (0 != _dbChange && 0 == _dbChangeTime) {
     std::ostringstream msg;
-    msg << "Time dependent boundary condition '" << getLabel() << "',\n has a "
+    msg << "Time dependent boundary condition '" << _getLabel() << "',\n has a "
 	<< "change in value spatial database but change in value start time "
 	<< "spatial database.";
     throw std::runtime_error(msg.str());
   } // if
   if (0 == _dbChange && 0 != _dbChangeTime) {
     std::ostringstream msg;
-    msg << "Time dependent boundary condition '" << getLabel() << "',\n has a "
+    msg << "Time dependent boundary condition '" << _getLabel() << "',\n has a "
 	<< "change in value start time spatial database but change in value "
 	<< "spatial database.";
     throw std::runtime_error(msg.str());
   } // if
   if (0 == _dbChange && 0 != _dbTimeHistory) {
     std::ostringstream msg;
-    msg << "Time dependent boundary condition '" << getLabel() << "',\n has a "
+    msg << "Time dependent boundary condition '" << _getLabel() << "',\n has a "
 	<< "time history database but not change in value spatial database.";
     throw std::runtime_error(msg.str());
   } // if
