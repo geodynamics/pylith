@@ -60,6 +60,21 @@ pylith::bc::TestPointForce::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
+// Test constructor.
+void
+pylith::bc::TestPointForce::testNormalizer(void)
+{ // testNormalizer
+  PointForce bc;
+
+  spatialdata::units::Nondimensional normalizer;
+  const double scale = 4.0;
+  normalizer.lengthScale(4.0);
+
+  bc.normalizer(normalizer);
+  CPPUNIT_ASSERT_EQUAL(scale, bc._getNormalizer().lengthScale());
+} // testNormalizer
+
+// ----------------------------------------------------------------------
 // Test initialize().
 void
 pylith::bc::TestPointForce::testInitialize(void)

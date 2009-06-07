@@ -17,7 +17,7 @@
 // Get label of boundary condition surface.
 inline
 const char*
-pylith::bc::TimeDependentPoints::getLabel(void) const {
+pylith::bc::TimeDependentPoints::_getLabel(void) const {
   return label();
 }
 

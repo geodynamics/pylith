@@ -70,7 +70,7 @@ protected :
    *
    * @returns Nondimensionalizer.
    */
-  const spatialdata::units::Nondimensional& getNormalizer(void) const;
+  const spatialdata::units::Nondimensional& _getNormalizer(void) const;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

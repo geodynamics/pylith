@@ -104,14 +104,14 @@ protected :
    * @returns Label of surface (from mesh generator).
    */
   virtual
-  const char* getLabel(void) const = 0;
+  const char* _getLabel(void) const = 0;
 
   /** Get manager of scales used to nondimensionalize problem.
    *
    * @returns Nondimensionalizer.
    */
   virtual
-  const spatialdata::units::Nondimensional& getNormalizer(void) const = 0;
+  const spatialdata::units::Nondimensional& _getNormalizer(void) const = 0;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
