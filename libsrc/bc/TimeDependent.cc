@@ -17,6 +17,7 @@
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 
+#include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 
