@@ -69,9 +69,9 @@ const int pylith::bc::DirichletDataMultiTet4::_numConstrainedPtsA = 4;
 const int pylith::bc::DirichletDataMultiTet4::_constrainedPointsA[] = { 0, 2, 3, 4 };
 
 const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameA =
-  "data/tet4_a.spatialdb";
+  "data/tet4_disp2.spatialdb";
 const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameARate =
-  "data/tet4_a_rate.spatialdb";
+  "data/tet4_vel2.spatialdb";
 const double pylith::bc::DirichletDataMultiTet4::_tRefA = 0.0;
 
 const int pylith::bc::DirichletDataMultiTet4::_idB = 1;
@@ -82,9 +82,9 @@ const int pylith::bc::DirichletDataMultiTet4::_numConstrainedPtsB = 3;
 const int pylith::bc::DirichletDataMultiTet4::_constrainedPointsB[] = { 0, 2, 3 };
 
 const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameB =
-  "data/tet4_a.spatialdb";
+  "data/tet4_disp2.spatialdb";
 const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameBRate =
-  "data/tet4_a_rate.spatialdb";
+  "data/tet4_vel2.spatialdb";
 const double pylith::bc::DirichletDataMultiTet4::_tRefB = 0.0;
 
 const int pylith::bc::DirichletDataMultiTet4::_idC = 1;
@@ -95,9 +95,9 @@ const int pylith::bc::DirichletDataMultiTet4::_numConstrainedPtsC = 3;
 const int pylith::bc::DirichletDataMultiTet4::_constrainedPointsC[] = { 1, 2, 3 };
 
 const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameC =
-  "data/tet4_a.spatialdb";
+  "data/tet4_disp2.spatialdb";
 const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameCRate =
-  "data/tet4_a_rate.spatialdb";
+  "data/tet4_vel2.spatialdb";
 const double pylith::bc::DirichletDataMultiTet4::_tRefC = 0.0;
 
 const int pylith::bc::DirichletDataMultiTet4::_constraintSizes[] = {

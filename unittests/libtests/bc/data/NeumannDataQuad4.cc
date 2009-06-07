@@ -58,7 +58,7 @@ const double pylith::bc::NeumannDataQuad4::_basisDerivRef[] = {
 };
 
 const char* pylith::bc::NeumannDataQuad4::_spatialDBFilename =
-  "data/quad4-tractions.spatialdb";
+  "data/quad4_tractions.spatialdb";
 const int pylith::bc::NeumannDataQuad4::_id = 0;
 const char* pylith::bc::NeumannDataQuad4::_label = "bc3";
 

@@ -44,7 +44,7 @@ const double pylith::bc::DirichletDataTri3::_valuesInitial[] =
 const char* pylith::bc::DirichletDataTri3::_meshFilename = 
   "data/tri3.mesh";
 const char* pylith::bc::DirichletDataTri3::_dbFilename =
-  "data/tri3.spatialdb";
+  "data/tri3_disp.spatialdb";
 
 pylith::bc::DirichletDataTri3::DirichletDataTri3(void)
 { // constructor

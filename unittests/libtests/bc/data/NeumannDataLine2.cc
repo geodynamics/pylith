@@ -40,7 +40,7 @@ const double pylith::bc::NeumannDataLine2::_basisDerivRef[] = {
 };
 
 const char* pylith::bc::NeumannDataLine2::_spatialDBFilename =
-  "data/line2-tractions.spatialdb";
+  "data/line2_tractions.spatialdb";
 const int pylith::bc::NeumannDataLine2::_id = 0;
 const char* pylith::bc::NeumannDataLine2::_label = "bc1";
 

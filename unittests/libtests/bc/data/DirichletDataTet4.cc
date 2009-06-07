@@ -49,7 +49,7 @@ const double pylith::bc::DirichletDataTet4::_valuesInitial[] = {
 const char* pylith::bc::DirichletDataTet4::_meshFilename = 
   "data/tet4.mesh";
 const char* pylith::bc::DirichletDataTet4::_dbFilename =
-  "data/tet4.spatialdb";
+  "data/tet4_disp.spatialdb";
 
 pylith::bc::DirichletDataTet4::DirichletDataTet4(void)
 { // constructor

@@ -51,7 +51,7 @@ const double pylith::bc::DirichletDataHex8::_valuesInitial[] = {
 const char* pylith::bc::DirichletDataHex8::_meshFilename = 
   "data/hex8.mesh";
 const char* pylith::bc::DirichletDataHex8::_dbFilename =
-  "data/hex8.spatialdb";
+  "data/hex8_disp.spatialdb";
 
 pylith::bc::DirichletDataHex8::DirichletDataHex8(void)
 { // constructor

@@ -53,7 +53,7 @@ const double pylith::bc::NeumannDataTet4::_basisDerivRef[] = {
 };
 
 const char* pylith::bc::NeumannDataTet4::_spatialDBFilename =
-  "data/tet4-tractions.spatialdb";
+  "data/tet4_tractions.spatialdb";
 const int pylith::bc::NeumannDataTet4::_id = 0;
 const char* pylith::bc::NeumannDataTet4::_label = "bc3";
 

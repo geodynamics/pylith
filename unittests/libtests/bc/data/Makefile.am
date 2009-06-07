@@ -12,29 +12,31 @@
 
 dist_noinst_DATA = \
 	line2.mesh \
-	line2.spatialdb \
-	line2-tractions.spatialdb \
+	line2_disp.spatialdb \
+	line2_tractions.spatialdb \
 	elasticstrain1d.spatialdb \
 	tri3.mesh \
-	tri3.spatialdb \
-	tri3_rate.spatialdb \
-	tri3_b.spatialdb \
-	tri3_b_rate.spatialdb \
-	tri3-tractions.spatialdb \
+	tri3_disp.spatialdb \
+	tri3_vel.spatialdb \
+	tri3_disp2.spatialdb \
+	tri3_vel2.spatialdb \
+	tri3_tractions.spatialdb \
+	tri3_force.spatialdb \
 	elasticplanestrain.spatialdb \
 	quad4.mesh \
-	quad4.spatialdb \
-	quad4-tractions.spatialdb \
+	quad4_disp.spatialdb \
+	quad4_tractions.spatialdb \
 	tet4.mesh \
-	tet4.spatialdb \
-	tet4_a.spatialdb \
-	tet4_a_rate.spatialdb \
-	tet4-tractions.spatialdb \
+	tet4_disp.spatialdb \
+	tet4_disp2.spatialdb \
+	tet4_vel2.spatialdb \
+	tet4_tractions.spatialdb \
 	elasticisotropic3d.spatialdb \
 	hex8.mesh \
-	hex8.spatialdb \
+	hex8_disp.spatialdb \
 	hex8b.mesh \
-	hex8b.spatialdb
+	hex8b_disp.spatialdb
+
 
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/unittests/libtests/bc/data
