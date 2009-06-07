@@ -158,6 +158,19 @@ class PowerLaw3DElastic(ElasticMaterialApp):
     return
 
 
+  def _scalarProduct(self, tensor1, tensor2):
+    """
+    Compute the scalar product of two tensors stored in vector form.
+    """
+    scalarProduct = tensor1[0] * tensor2[0] + \
+                    tensor1[1] * tensor2[1] + \
+                    tensor1[2] * tensor2[2] + \
+                    2.0 * (tensor1[3] * tensor2[3] + \
+                           tensor1[4] * tensor2[4] + \
+                           tensor1[5] * tensor2[5])
+    return scalarProduct
+
+    
   def _getMaxwellTime(self, mu, viscosityCoeff, powerLawExponent, stress):
     """
     Compute Maxwell time from stress, viscosity coefficient, shear modulus, and
@@ -169,13 +182,7 @@ class PowerLaw3DElastic(ElasticMaterialApp):
     devStress[1] = stress[1] - meanStress
     devStress[2] = stress[2] - meanStress
 
-    devStressProd = \
-                  stress[0] * stress[0] + \
-                  stress[1] * stress[1] + \
-                  stress[2] * stress[2] + \
-                  2.0 * (stress[3] * stress[3] + \
-                         stress[4] * stress[4] + \
-                         stress[5] * stress[5])
+    devStressProd = self._scalarProduct(devStress, devStress)
     effStress = (0.5 * devStressProd)**0.5
     maxwellTime = 1.0
     if (effStress != 0.0):
