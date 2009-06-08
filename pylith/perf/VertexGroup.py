@@ -20,7 +20,9 @@ class VertexGroup(Memory):
     Tabulate memory use.
     """
     # Here we have data + atlas (could use uniform) + bc (use Section)
-    memDict[self.label] = (self.sizeInt * self.nvertices) + (2 * self.sizeInt * self.nMeshVertices) + (2 * self.sizeInt * self.nMeshVertices)
+    if not self.label in memDict:
+      memDict[self.label] = 0
+    memDict[self.label] += (self.sizeInt * self.nvertices) + (2 * self.sizeInt * self.nMeshVertices) + (2 * self.sizeInt * self.nMeshVertices)
     return
 
 if __name__ == '__main__':

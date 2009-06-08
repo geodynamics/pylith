@@ -141,7 +141,6 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
 
   const char* loggingStage = "Quadrature";
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.setDebug(1);
   logger.stagePush(loggingStage);
 
   delete _geometryFields;
@@ -161,7 +160,6 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   const typename RealSection::chart_type& chart = section->getChart();
 
   // Allocate field and cell buffer for Jacobian at quadrature points
-  logger.setDebug(2);
   std::cout << "Jacobian: cell dim: " << _cellDim << std::endl;
   _geometryFields->add("jacobian", "jacobian");
   topology::Field<mesh_type>& jacobianField = 
@@ -171,7 +169,6 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
     _numQuadPts * 1 * _spaceDim;
   jacobianField->newSection(chart, fiberDim);
   jacobianField->allocate();
-  logger.setDebug(1);
   
   // Allocate field and cell buffer for determinant of Jacobian at quad pts
   std::cout << "Jacobian det:" << std::endl;
@@ -193,7 +190,6 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   basisDerivField.allocate();
 
   logger.stagePop();
-  logger.setDebug(0);
 
 #if defined(ALE_MEM_LOGGING)
   std::cout 
