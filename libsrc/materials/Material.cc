@@ -105,6 +105,7 @@ pylith::materials::Material::initialize(
   assert(0 != _dbProperties);
   assert(0 != quadrature);
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.setDebug(2);
   logger.stagePush("Materials");
 
   // Get quadrature information
@@ -261,6 +262,7 @@ pylith::materials::Material::initialize(
   if (0 != _dbInitialState)
     _dbInitialState->close();
   logger.stagePop();
+  logger.setDebug(0);
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -333,6 +335,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
     _dimProperties(&propertyScales[0], propertyScales.size());
 
     ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+    logger.setDebug(2);
     logger.stagePush("Materials");
     // Allocate buffer for property field if necessary.
     const ALE::Obj<RealSection>& fieldSection = field->section();
@@ -357,6 +360,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
     field->scale(propertyScales[propOffset]);
     fieldType = _metadata.fieldType(name, Metadata::PROPERTY);
     logger.stagePop();
+    logger.setDebug(0);
   
     // Buffer for property at cell's quadrature points
     double_array fieldCell(numQuadPts*fiberDim);
@@ -408,6 +412,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
     _dimStateVars(&stateVarScales[0], stateVarScales.size());
 
     ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+    logger.setDebug(2);
     logger.stagePush("Materials");
     // Allocate buffer for state variable field if necessary.
     const ALE::Obj<RealSection>& fieldSection = field->section();
@@ -432,6 +437,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
     field->label(name);
     field->scale(stateVarScales[varOffset]);
     logger.stagePop();
+    logger.setDebug(0);
   
     // Buffer for state variable at cell's quadrature points
     double_array fieldCell(numQuadPts*fiberDim);

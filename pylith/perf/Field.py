@@ -20,7 +20,9 @@ class Field(Memory):
     Tabulate memory use.
     """
     # Here we have data + atlas + bc
-    memDict[self.label] = (self.sizeDouble * self.size) + (2 * self.sizeInt * self.chartSize) + (2 * self.sizeInt * self.chartSize)
+    if not self.label in memDict:
+      memDict[self.label] = 0
+    memDict[self.label] += (self.sizeDouble * self.size) + (2 * self.sizeInt * self.chartSize) + (2 * self.sizeInt * self.chartSize)
     return
 
 if __name__ == '__main__':

@@ -191,6 +191,7 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
   assert(!sieveMesh.isNull());
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.setDebug(2);
   logger.stagePush("Materials");
   const ALE::Obj<SieveMesh::label_type>& labelMaterials = 
     sieveMesh->createLabel("material-id");
@@ -233,6 +234,7 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
 #endif
   } // if
   logger.stagePop();
+  logger.setDebug(0);
 
 #if defined(ALE_MEM_LOGGING)
   std::cout 

@@ -177,6 +177,34 @@ pylith::topology::Field<mesh_type>::newSection(const int_array& points,
 } // newSection
 
 // ----------------------------------------------------------------------
+// Create sieve section and set chart and fiber dimesion for a list of
+// points.
+template<typename mesh_type>
+void
+pylith::topology::Field<mesh_type>::newSection(const chart_type& chart,
+					       const int fiberDim)
+{ // newSection
+  typedef typename mesh_type::SieveMesh::point_type point_type;
+
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  std::cout << "Making Field " << _label << " section type 1c" << std::endl;
+  logger.stagePush("Field");
+  if (fiberDim < 0) {
+    std::ostringstream msg;
+    msg << "Fiber dimension (" << fiberDim << ") for field '" << _label
+	<< "' must be nonnegative.";
+    throw std::runtime_error(msg.str());
+  } // if
+  
+  _section = new RealSection(_mesh.comm(), _mesh.debug());
+  _section->setChart(chart);
+  for(typename chart_type::const_iterator p_iter = chart.begin(); p_iter != chart.end(); ++p_iter) {
+    _section->setFiberDimension(*p_iter, fiberDim);
+  }
+  logger.stagePop();
+} // newSection
+
+// ----------------------------------------------------------------------
 // Create sieve section and set chart and fiber dimesion.
 template<typename mesh_type>
 void

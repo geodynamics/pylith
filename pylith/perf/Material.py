@@ -18,7 +18,9 @@ class Material(Memory):
     """
     Tabulate memory use.
     """
-    memDict[self.label] = self.sizeArrow * self.ncells
+    if not self.label in memDict:
+      memDict[self.label] = 0
+    memDict[self.label] += self.sizeArrow * self.ncells
     return
 
 if __name__ == '__main__':
