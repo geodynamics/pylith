@@ -110,7 +110,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
       _parameters->get("rate");
     rate.newSection(_points, numBCDOF);
     rate.allocate();
-    rate.scale(valueScale);
+    rate.scale(rateScale);
     rate.vectorFieldType(topology::FieldBase::OTHER);
     const ALE::Obj<RealSection>& rateSection = rate.section();
     assert(!rateSection.isNull());
@@ -118,7 +118,6 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     _dbRate->open();
     _dbRate->queryVals(rateNames, numBCDOF);
     _queryDB(&rate, _dbRate, numBCDOF, rateScale);
-    _dbRate->close();
 
     std::string timeLabel = 
       std::string("rate_time_") + std::string(fieldName);
@@ -131,10 +130,9 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     rateTime.vectorFieldType(topology::FieldBase::SCALAR);
 
     const char* timeNames[1] = { "rate-start-time" };
-    _dbRateTime->open();
-    _dbRateTime->queryVals(timeNames, 1);
-    _queryDB(&rateTime, _dbRateTime, 1, timeScale);
-    _dbRateTime->close();
+    _dbRate->queryVals(timeNames, 1);
+    _queryDB(&rateTime, _dbRate, 1, timeScale);
+    _dbRate->close();
   } // if
 
   if (0 != _dbChange) { // Setup change of values, if provided.
@@ -152,7 +150,6 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     _dbChange->open();
     _dbChange->queryVals(valueNames, numBCDOF);
     _queryDB(&change, _dbChange, numBCDOF, valueScale);
-    _dbChange->close();
 
     std::string timeLabel = 
       std::string("change_time_") + std::string(fieldName);
@@ -165,10 +162,9 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     changeTime.vectorFieldType(topology::FieldBase::SCALAR);
 
     const char* timeNames[1] = { "change-start-time" };
-    _dbChangeTime->open();
-    _dbChangeTime->queryVals(timeNames, 1);
-    _queryDB(&changeTime, _dbChangeTime, 1, timeScale);
-    _dbChangeTime->close();
+    _dbChange->queryVals(timeNames, 1);
+    _queryDB(&changeTime, _dbChange, 1, timeScale);
+    _dbChange->close();
 
     if (0 != _dbTimeHistory)
       _dbTimeHistory->open();

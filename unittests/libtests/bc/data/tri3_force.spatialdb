@@ -1,8 +1,8 @@
 #SPATIAL.ascii 1
 SimpleDB {
-  num-values = 1
-  value-names =  force-y
-  value-units =  Pa*m**2
+  num-values = 2
+  value-names =  force-x  force-y
+  value-units =  Pa*m**2  Pa*m**2
   num-locs = 2
   data-dim = 1
   space-dim = 2
@@ -11,5 +11,5 @@ SimpleDB {
     space-dim = 2
   }
 }
- 0.0 -1.0  0.3
- 1.0  0.0  0.7
+ 0.0 -1.0   0.4  0.3
+ 1.0  0.0   0.6  0.7

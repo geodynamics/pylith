@@ -24,6 +24,7 @@ testbc_SOURCES = \
 	TestBoundaryCondition.cc \
 	TestBoundaryConditionPoints.cc \
 	TestTimeDependent.cc \
+	TestTimeDependentPoints.cc \
 	TestBoundaryMesh.cc \
 	TestBoundaryMeshTri3.cc \
 	TestBoundaryMeshQuad4.cc \
@@ -69,6 +70,7 @@ noinst_HEADERS = \
 	TestBoundaryCondition.hh \
 	TestBoundaryConditionPoints.hh \
 	TestTimeDependent.hh \
+	TestTimeDependentPoints.hh \
 	TestBoundaryMesh.hh \
 	TestBoundaryMeshTri3.hh \
 	TestBoundaryMeshQuad4.hh \

@@ -51,9 +51,7 @@ pylith::bc::TestTimeDependent::testDBInitial(void)
 
   CPPUNIT_ASSERT(0 != bc._dbInitial);
   CPPUNIT_ASSERT(0 == bc._dbRate);
-  CPPUNIT_ASSERT(0 == bc._dbRateTime);
   CPPUNIT_ASSERT(0 == bc._dbChange);
-  CPPUNIT_ASSERT(0 == bc._dbChangeTime);
   CPPUNIT_ASSERT(0 == bc._dbTimeHistory);
 } // testDBInitial
 
@@ -69,29 +67,9 @@ pylith::bc::TestTimeDependent::testDBRate(void)
 
   CPPUNIT_ASSERT(0 == bc._dbInitial);
   CPPUNIT_ASSERT(0 != bc._dbRate);
-  CPPUNIT_ASSERT(0 == bc._dbRateTime);
   CPPUNIT_ASSERT(0 == bc._dbChange);
-  CPPUNIT_ASSERT(0 == bc._dbChangeTime);
   CPPUNIT_ASSERT(0 == bc._dbTimeHistory);
 } // testDBRate
-
-// ----------------------------------------------------------------------
-// Test dbRateTime().
-void
-pylith::bc::TestTimeDependent::testDBRateTime(void)
-{ // testDBRateTime
-  PointForce bc;
-
-  spatialdata::spatialdb::UniformDB db;
-  bc.dbRateTime(&db);
-
-  CPPUNIT_ASSERT(0 == bc._dbInitial);
-  CPPUNIT_ASSERT(0 == bc._dbRate);
-  CPPUNIT_ASSERT(0 != bc._dbRateTime);
-  CPPUNIT_ASSERT(0 == bc._dbChange);
-  CPPUNIT_ASSERT(0 == bc._dbChangeTime);
-  CPPUNIT_ASSERT(0 == bc._dbTimeHistory);
-} // testDBRateTime
 
 // ----------------------------------------------------------------------
 // Test dbChange().
@@ -105,29 +83,9 @@ pylith::bc::TestTimeDependent::testDBChange(void)
 
   CPPUNIT_ASSERT(0 == bc._dbInitial);
   CPPUNIT_ASSERT(0 == bc._dbRate);
-  CPPUNIT_ASSERT(0 == bc._dbRateTime);
   CPPUNIT_ASSERT(0 != bc._dbChange);
-  CPPUNIT_ASSERT(0 == bc._dbChangeTime);
   CPPUNIT_ASSERT(0 == bc._dbTimeHistory);
 } // testDBChange
-
-// ----------------------------------------------------------------------
-// Test dbChangeTime().
-void
-pylith::bc::TestTimeDependent::testDBChangeTime(void)
-{ // testDBChangeTime
-  PointForce bc;
-
-  spatialdata::spatialdb::UniformDB db;
-  bc.dbChangeTime(&db);
-
-  CPPUNIT_ASSERT(0 == bc._dbInitial);
-  CPPUNIT_ASSERT(0 == bc._dbRate);
-  CPPUNIT_ASSERT(0 == bc._dbRateTime);
-  CPPUNIT_ASSERT(0 == bc._dbChange);
-  CPPUNIT_ASSERT(0 != bc._dbChangeTime);
-  CPPUNIT_ASSERT(0 == bc._dbTimeHistory);
-} // testDBChangeTime
 
 // ----------------------------------------------------------------------
 // Test dbTimeHistory().
@@ -141,9 +99,7 @@ pylith::bc::TestTimeDependent::testDBTimeHistory(void)
 
   CPPUNIT_ASSERT(0 == bc._dbInitial);
   CPPUNIT_ASSERT(0 == bc._dbRate);
-  CPPUNIT_ASSERT(0 == bc._dbRateTime);
   CPPUNIT_ASSERT(0 == bc._dbChange);
-  CPPUNIT_ASSERT(0 == bc._dbChangeTime);
   CPPUNIT_ASSERT(0 != bc._dbTimeHistory);
 } // testDBTimeHistory
 
@@ -165,94 +121,19 @@ pylith::bc::TestTimeDependent::testVerifyConfiguration(void)
   { // rate
     PointForce bc;
     bc.dbRate(&db);
-    bc.dbRateTime(&db);
     bc.TimeDependent::verifyConfiguration(mesh);
   } // rate
 
   { // change
     PointForce bc;
     bc.dbChange(&db);
-    bc.dbChangeTime(&db);
     bc.dbTimeHistory(&th);
     bc.TimeDependent::verifyConfiguration(mesh);
   } // change
 
-  { // change
-    PointForce bc;
-    bc.dbChange(&db);
-    bc.dbChangeTime(&db);
-    bc.TimeDependent::verifyConfiguration(mesh);
-  } // change
-
-  { // rate (missing start time)
-    PointForce bc;
-    bc.dbRate(&db);
-    
-    bool caught = false;
-    try {
-      bc.TimeDependent::verifyConfiguration(mesh);
-    } catch ( const std::exception& err) {
-      caught = true;
-    } // catch
-    CPPUNIT_ASSERT(caught);
-  } // rate (missing start time)
-
-  { // rate (missing rate)
-    PointForce bc;
-    bc.dbRateTime(&db);
-    
-    bool caught = false;
-    try {
-      bc.TimeDependent::verifyConfiguration(mesh);
-    } catch ( const std::exception& err) {
-      caught = true;
-    } // catch
-    CPPUNIT_ASSERT(caught);
-  } // rate (missing rate)
-
-  { // change (missing start time)
-    PointForce bc;
-    bc.dbChange(&db);
-    
-    bool caught = false;
-    try {
-      bc.TimeDependent::verifyConfiguration(mesh);
-    } catch ( const std::exception& err) {
-      caught = true;
-    } // catch
-    CPPUNIT_ASSERT(caught);
-  } // change (missing start time)
-
-  { // change (missing change)
-    PointForce bc;
-    bc.dbChangeTime(&db);
-    
-    bool caught = false;
-    try {
-      bc.TimeDependent::verifyConfiguration(mesh);
-    } catch ( const std::exception& err) {
-      caught = true;
-    } // catch
-    CPPUNIT_ASSERT(caught);
-  } // change (missing change)
-
-  { // change (missing start time)
-    PointForce bc;
-    bc.dbChange(&db);
-    
-    bool caught = false;
-    try {
-      bc.TimeDependent::verifyConfiguration(mesh);
-    } catch ( const std::exception& err) {
-      caught = true;
-    } // catch
-    CPPUNIT_ASSERT(caught);
-  } // change (missing start time)
-
   { // change (missing change)
     PointForce bc;
     bc.dbTimeHistory(&th);
-    bc.dbChangeTime(&db);
 
     bool caught = false;
     try {
@@ -262,20 +143,6 @@ pylith::bc::TestTimeDependent::testVerifyConfiguration(void)
     } // catch
     CPPUNIT_ASSERT(caught);
   } // change (missing change)
-
-  { // change (missing start time)
-    PointForce bc;
-    bc.dbTimeHistory(&th);
-    bc.dbChange(&db);
-    
-    bool caught = false;
-    try {
-      bc.TimeDependent::verifyConfiguration(mesh);
-    } catch ( const std::exception& err) {
-      caught = true;
-    } // catch
-    CPPUNIT_ASSERT(caught);
-  } // change (missing start time)
 
 } // testVerifyConfiguration
 
