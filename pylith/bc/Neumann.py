@@ -122,14 +122,8 @@ class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
     BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 
-    #from pylith.topology.Mesh import Mesh
-    #self.boundaryMesh = Mesh()
-    #self.boundaryMesh.initialize(self.mesh.coordsys)
-    #self.cppHandle.boundaryMesh(self.boundaryMesh.cppHandle)
-
-    #if None != self.output:
-    #  self.output.initialize(normalizer, self.quadrature)
-    #  self.output.writeInfo()
+    self.output.initialize(normalizer, self.bcQuadrature)
+    self.output.writeInfo()
 
     self._logger.eventEnd(logEvent)
     return
@@ -139,7 +133,7 @@ class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
     """
     Get mesh associated with data fields.
     """
-    return (self.boundaryMesh, None, None)
+    return (self.boundaryMesh(), None, None)
 
 
   def getCellField(self, name, fields=None):
@@ -147,10 +141,10 @@ class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
     Get vertex field.
     """
     if None == fields:
-      (field, fieldType) = self.cellField(name)
+      field = self.cellField(name)
     else:
-      (field, fieldType) = self.cellField(name, fields)
-    return (field, fieldType)
+      field = self.cellField(name, fields)
+    return field
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////

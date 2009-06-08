@@ -10,20 +10,20 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/bc/FixedDOFDB.py
+## @file pylith/bc/ZeroDispDB.py
 ##
-## @brief Python object for spatial database with uniform zero values
-## for degrees of freedom.
+## @brief Python object for spatial database with uniform zero
+## displacements for degrees of freedom.
 ##
 ## Factory: spatial_database
 
 from spatialdata.spatialdb.UniformDB import UniformDB
 
-# FixedDOFDB class
-class FixedDOFDB(UniformDB):
+# ZeroDispDB class
+class ZeroDispDB(UniformDB):
   """
-  Python object for spatial database with uniform zero values for
-  degrees of freedom.
+  Python object for spatial database with uniform zero displacements
+  for degrees of freedom.
 
   Factory: spatial_database
   """
@@ -32,11 +32,11 @@ class FixedDOFDB(UniformDB):
 
   class Inventory(UniformDB.Inventory):
     """
-    Python object for managing FixedDOFDB facilities and properties.
+    Python object for managing ZeroDispDB facilities and properties.
     """
 
     ## @class Inventory
-    ## Python object for managing FixedDOFDB facilities and properties.
+    ## Python object for managing ZeroDispDB facilities and properties.
     ##
     ## \b Properties
     ## @li None
@@ -46,7 +46,7 @@ class FixedDOFDB(UniformDB):
 
     import pyre.inventory
 
-    values = ["dof-0", "dof-1", "dof-2"]
+    values = ["displacement-x", "displacement-y", "displacement-z"]
     data = [0.0, 0.0, 0.0]
 
 
@@ -74,9 +74,9 @@ class FixedDOFDB(UniformDB):
 
 def spatial_database():
   """
-  Factory associated with FixedDOFDB.
+  Factory associated with ZeroDispDB.
   """
-  return FixedDOFDB()
+  return ZeroDispDB()
 
 
 # End of file 

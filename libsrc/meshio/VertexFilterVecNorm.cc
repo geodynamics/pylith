@@ -76,7 +76,7 @@ pylith::meshio::VertexFilterVecNorm<field_type>::filter(
   if (0 == _fieldVecNorm) {
     _fieldVecNorm = new field_type(fieldIn.mesh());
     _fieldVecNorm->label("vector norm");
-    _fieldVecNorm->newSection(sectionIn->getChart(), fiberDimNorm);
+    _fieldVecNorm->newSection(fieldIn, fiberDimNorm);
     _fieldVecNorm->allocate();
 
     _fieldVecNorm->label(fieldIn.label());

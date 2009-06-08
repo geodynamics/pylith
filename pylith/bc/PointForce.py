@@ -10,41 +10,28 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/bc/DirichletBC.py
+## @file pylith/bc/PointForce.py
 ##
-## @brief Python object for managing a Dirichlet (prescribed
-## displacements) boundary condition with a set of points.
+## @brief Python object for managing a point force boundary condition
+## with a set of points.
 ##
 ## Factory: boundary_condition
 
 from BoundaryCondition import BoundaryCondition
 from TimeDependent import TimeDependent
-from pylith.feassemble.Constraint import Constraint
-from bc import DirichletBC as ModuleDirichletBC
+from pylith.feassemble.Integrator import Integrator
+from bc import PointForce as ModulePointForce
 
-# DirichletBC class
-class DirichletBC(BoundaryCondition, 
-                  TimeDependent, 
-                  Constraint, 
-                  ModuleDirichletBC):
+# PointForce class
+class PointForce(BoundaryCondition, 
+                 TimeDependent, 
+                 Integrator, 
+                 ModulePointForce):
   """
-  Python object for managing a DirichletBC (prescribed displacements)
-  boundary condition.
+  Python object for managing a point force boundary condition.
 
   Factory: boundary_condition
   """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  import pyre.inventory
-
-  # Override default values for TimeDependent db_initial facility
-  # with ZeroDispDB.
-  from ZeroDispDB import ZeroDispDB
-  dbInitial = pyre.inventory.facility("db_initial", factory=ZeroDispDB,
-                                      family="spatial_database")
-  dbInitial.meta['tip'] = "Database of parameters for initial values."
-  
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -53,7 +40,7 @@ class DirichletBC(BoundaryCondition,
     Constructor.
     """
     BoundaryCondition.__init__(self, name)
-    Constraint.__init__(self)
+    Integrator.__init__(self)
     self._loggingPrefix = "DiBC "
     return
 
@@ -63,7 +50,7 @@ class DirichletBC(BoundaryCondition,
     Do pre-initialization setup.
     """
     BoundaryCondition.preinitialize(self, mesh)
-    Constraint.preinitialize(self, mesh)
+    Integrator.preinitialize(self, mesh)
     return
 
 
@@ -82,12 +69,12 @@ class DirichletBC(BoundaryCondition,
 
   def initialize(self, totalTime, numTimeSteps, normalizer):
     """
-    Initialize DirichletBC boundary condition.
+    Initialize PointForce boundary condition.
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._logger.eventBegin(logEvent)
 
-    self.normalizer(normalizer)
+    Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
     BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 
     self._logger.eventEnd(logEvent)    
@@ -101,7 +88,6 @@ class DirichletBC(BoundaryCondition,
     Setup members using inventory.
     """
     BoundaryCondition._configure(self)
-    TimeDependent._configure(self)
     return
 
 
@@ -109,7 +95,7 @@ class DirichletBC(BoundaryCondition,
     """
     Create handle to corresponding C++ object.
     """
-    ModuleDirichletBC.__init__(self)
+    ModulePointForce.__init__(self)
     return
   
 
@@ -117,9 +103,9 @@ class DirichletBC(BoundaryCondition,
 
 def boundary_condition():
   """
-  Factory associated with DirichletBC.
+  Factory associated with PointForce.
   """
-  return DirichletBC()
+  return PointForce()
 
   
 # End of file 

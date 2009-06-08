@@ -20,10 +20,14 @@ subpkgpyexec_PYTHON = bc.py
 swig_sources = \
 	bc.i \
 	BoundaryCondition.i \
+	BoundaryConditionPoints.i \
+	TimeDependent.i \
+	TimeDependentPoints.i \
 	DirichletBC.i \
 	DirichletBoundary.i \
 	AbsorbingDampers.i \
 	Neumann.i \
+	PointForce.i \
 	../feassemble/Constraint.i \
 	../feassemble/Quadrature.i \
 	../feassemble/Integrator.i

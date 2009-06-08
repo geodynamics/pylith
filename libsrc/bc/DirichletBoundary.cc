@@ -48,16 +48,10 @@ void
 pylith::bc::DirichletBoundary::initialize(const topology::Mesh& mesh,
 					  const double upDir[3])
 { // initialize
-  const int numFixedDOF = _fixedDOF.size();
-  if (0 == numFixedDOF)
-    return;
+  DirichletBC::initialize(mesh, upDir);
 
   _boundaryMesh = new topology::SubMesh(mesh, _label.c_str());
   assert(0 != _boundaryMesh);
-
-  _getPoints(mesh);
-  _setupQueryDatabases();
-  _queryDatabases(mesh);
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -66,75 +60,22 @@ const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::bc::DirichletBoundary::vertexField(const char* name,
 					   const topology::SolutionFields& fields)
 { // getVertexField
-  typedef topology::SubMesh::SieveMesh SieveMesh;
-  typedef topology::SubMesh::RealSection RealSection;
-
-  assert(0 != name);
-  assert(0 != _boundaryMesh);
   assert(0 != _normalizer);
+  const double lengthScale = _normalizer->lengthScale();
+  const double timeScale = _normalizer->timeScale();
+  const double rateScale = lengthScale / timeScale;
 
-  const ALE::Obj<SieveMesh>& sieveMesh = _boundaryMesh->sieveMesh();
-  assert(!sieveMesh.isNull());
-
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-
-  const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
-  assert(0 != cs);
-  const int fiberDim = cs->spaceDim();
-  double_array values(fiberDim);
-
-  const int numPoints = _points.size();
-  const int numFixedDOF = _fixedDOF.size();
-
-  if (0 == _fields) {
-    _fields = 
-      new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
-    assert(0 != _fields);
-    _fields->add("output buffer", "temporary_buffer");
-    topology::Field<topology::SubMesh>& buffer =
-      _fields->get("output buffer");
-    buffer.newSection(vertices, fiberDim);
-    buffer.allocate();
-    buffer.addDimensionOkay(true);
-    buffer.vectorFieldType(topology::Field<topology::SubMesh>::VECTOR);
-  } // if
-
-  topology::Field<topology::SubMesh>& buffer =
-    _fields->get("output buffer");
-  if (0 == strcasecmp(name, "initial")) {
-    buffer.label("bc_displacement");
-    buffer.vectorFieldType(topology::Field<topology::SubMesh>::VECTOR);
-    buffer.scale(_normalizer->lengthScale());
-    buffer.zero();
-    const ALE::Obj<RealSection>& section = buffer.section();
-
-    for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-      const SieveMesh::point_type point = _points[iPoint];
-      assert(fiberDim == section->getFiberDimension(point));
-      for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
-	values[_fixedDOF[iDOF]] = _valuesInitial[iPoint*numFixedDOF+iDOF];
-      section->updatePointAll(_points[iPoint], &values[0]);
-    } // for
-  } else if (0 == strcasecmp(name, "rate-of-change")) {
-    buffer.label("bc_velocity");
-    buffer.vectorFieldType(topology::Field<topology::SubMesh>::VECTOR);
-    assert(0 != _normalizer->timeScale());
-    const double velocityScale =
-      _normalizer->lengthScale() / _normalizer->timeScale();
-    buffer.scale(velocityScale);
-    buffer.zero();
-    const ALE::Obj<RealSection>& section = buffer.section();
-
-    for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-      const SieveMesh::point_type point = _points[iPoint];
-      assert(fiberDim == section->getFiberDimension(point));
-      for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
-	values[_fixedDOF[iDOF]] = _valuesRate[iPoint*numFixedDOF+iDOF];
-      section->updatePointAll(_points[iPoint], &values[0]);
-    } // for
-  } else {
+  if (0 == strcasecmp(name, "initial"))
+    return _bufferVector("initial", "initial_displacement", lengthScale);
+  else if (0 == strcasecmp(name, "rate-of-change"))
+    return _bufferVector("rate", "initial_velocity", rateScale);
+  else if (0 == strcasecmp(name, "change-in-value"))
+    return _bufferVector("change", "displacement_change", lengthScale);
+  else if (0 == strcasecmp(name, "rate-start-time"))
+    return _bufferScalar("rate-start-time", "velocity_start_time", timeScale);
+  else if (0 == strcasecmp(name, "change-start-time"))
+    return _bufferScalar("change-start-time", "change_start_time", timeScale);
+  else {
     std::ostringstream msg;
     msg
       << "Unknown field '" << name << "' requested for Dirichlet boundary BC '" 
@@ -142,8 +83,145 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
     throw std::runtime_error(msg.str());
   } // else
 
-  return buffer;
+  // Satisfy return value (should never reach here)
+  return _fields->get("null");
 } // getVertexField
+
+// ----------------------------------------------------------------------
+// Get vertex vector field with BC information.
+const pylith::topology::Field<pylith::topology::SubMesh>&
+pylith::bc::DirichletBoundary::_bufferVector(const char* name,
+					     const char* label,
+					     const double scale)
+{ // _bufferVector
+  typedef topology::SubMesh::SieveMesh SieveMesh;
+  typedef topology::SubMesh::RealSection RealSection;
+
+  assert(0 != _boundaryMesh);
+  assert(0 != _parameters);
+
+  if (_parameters->hasField(name)) {
+    std::ostringstream msg;
+    msg << "Parameters for field '" << label << " not provided in "
+	<< "Dirichlet BC '" << _label << "'.";
+    throw std::runtime_error(msg.str());
+  } // if
+  
+  if (0 == _fields)
+    _fields = 
+      new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
+  assert(0 != _fields);
+  
+  const ALE::Obj<SieveMesh>& sieveMesh = _boundaryMesh->sieveMesh();
+  assert(!sieveMesh.isNull());
+
+  const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
+  assert(0 != cs);
+  const int fiberDim = cs->spaceDim();
+
+  const int numPoints = _points.size();
+  const int numFixedDOF = _bcDOF.size();
+
+  double_array bufferVertex(fiberDim);
+  if (!_fields->hasField("buffer (vector)")) {
+    _fields->add("buffer (vector)", "buffer");
+    topology::Field<topology::SubMesh>& buffer =
+      _fields->get("buffer (vector)");  
+    buffer.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+    buffer.allocate();
+  } // if
+  topology::Field<topology::SubMesh>& buffer =
+    _fields->get("buffer (vector)");  
+  buffer.label(label);
+  buffer.scale(scale);
+  buffer.vectorFieldType(topology::FieldBase::VECTOR);
+  buffer.zero();
+  const ALE::Obj<RealSection>& bufferSection = buffer.section();
+  assert(!bufferSection.isNull());
+
+  double_array parameterVertex(numFixedDOF);
+  const ALE::Obj<RealSection>& parameterSection = 
+    _parameters->get(name).section();
+  assert(!parameterSection.isNull());
+  
+  for (int iPoint=0; iPoint < numPoints; ++iPoint) {
+    const SieveMesh::point_type point = _points[iPoint];
+    bufferVertex = 0.0;
+
+    parameterSection->restrictPoint(point, &parameterVertex[0], 
+				    parameterVertex.size());
+    
+    for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
+      bufferVertex[_bcDOF[iDOF]] = parameterVertex[iDOF];
+    assert(fiberDim == bufferSection->getFiberDimension(point));
+    bufferSection->updatePointAll(point, &bufferVertex[0]);
+  } // for
+
+  return buffer;
+} // _bufferVector
+
+// ----------------------------------------------------------------------
+// Get vertex scalar field with BC information.
+const pylith::topology::Field<pylith::topology::SubMesh>&
+pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
+					     const char* label,
+					     const double scale)
+{ // _bufferScalar
+  typedef topology::SubMesh::SieveMesh SieveMesh;
+  typedef topology::SubMesh::RealSection RealSection;
+
+  assert(0 != _boundaryMesh);
+  assert(0 != _parameters);
+
+  if (_parameters->hasField(name)) {
+    std::ostringstream msg;
+    msg << "Parameters for field '" << label << " not provided in "
+	<< "Dirichlet BC '" << _label << "'.";
+    throw std::runtime_error(msg.str());
+  } // if
+  
+  if (0 == _fields)
+    _fields = 
+      new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
+  assert(0 != _fields);
+  
+  const ALE::Obj<SieveMesh>& sieveMesh = _boundaryMesh->sieveMesh();
+  assert(!sieveMesh.isNull());
+
+  const int numPoints = _points.size();
+  const int fiberDim = 1;
+
+  if (!_fields->hasField("buffer (scalar)")) {
+    _fields->add("buffer (scalar)", "buffer");
+    topology::Field<topology::SubMesh>& buffer =
+      _fields->get("buffer (scalar)");  
+    buffer.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+    buffer.allocate();
+  } // if
+  topology::Field<topology::SubMesh>& buffer =
+    _fields->get("buffer (scalar)");  
+  buffer.label(label);
+  buffer.scale(scale);
+  buffer.vectorFieldType(topology::FieldBase::SCALAR);
+  buffer.zero();
+  const ALE::Obj<RealSection>& bufferSection = buffer.section();
+  assert(!bufferSection.isNull());
+
+  const ALE::Obj<RealSection>& parameterSection = 
+    _parameters->get(name).section();
+  assert(!parameterSection.isNull());
+  
+  for (int iPoint=0; iPoint < numPoints; ++iPoint) {
+    const SieveMesh::point_type point = _points[iPoint];
+
+    assert(1 == bufferSection->getFiberDimension(point));
+    assert(1 == parameterSection->getFiberDimension(point));
+    bufferSection->updatePointAll(point, 
+				  parameterSection->restrictPoint(point));
+  } // for
+  
+  return buffer;
+} // _bufferScalar
 
 
 // End of file 

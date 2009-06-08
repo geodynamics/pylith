@@ -15,6 +15,7 @@
 #include "PointForce.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -45,13 +46,12 @@ void
 pylith::bc::PointForce::initialize(const topology::Mesh& mesh,
 				    const double upDir[3])
 { // initialize
-  assert(0 != _normalizer);
-
   if (0 == _bcDOF.size())
     return;
 
   _getPoints(mesh);
 
+  assert(0 != _normalizer);
   const double lengthScale = _normalizer->lengthScale();
   const double pressureScale = _normalizer->pressureScale();
   const double forceScale = pressureScale * lengthScale * lengthScale;

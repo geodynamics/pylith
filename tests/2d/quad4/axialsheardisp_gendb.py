@@ -53,10 +53,10 @@ class GenerateDB(object):
     data = {'locs': xy,
             'coordsys': cs,
             'data_dim': 2,
-            'values': [{'name': "dof-0",
+            'values': [{'name': "displacement-x",
                         'units': "m",
                         'data': numpy.ravel(disp[:,0])},
-                       {'name': "dof-1",
+                       {'name': "displacement-y",
                         'units': "m",
                         'data': numpy.ravel(disp[:,1])}]}
 

@@ -157,15 +157,6 @@ public :
   void newSection(const ALE::Obj<label_sequence>& points,
 		  const int fiberDim);
 
-  /** Create sieve section and set chart and fiber dimesion for
-   * sequence of points.
-   *
-   * @param chart Points over which to define section.
-   * @param dim Fiber dimension for section.
-   */
-  void newSection(const chart_type& chart,
-		  const int fiberDim);
-
   /** Create sieve section and set chart and fiber dimesion for a list
    * of points.
    *

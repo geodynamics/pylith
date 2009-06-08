@@ -78,6 +78,15 @@ protected :
    */
   void _calculateValue(const double t);
 
+  /** Calculate increment in spatial and temporal variation of value
+   *  over the list of points.
+   *
+   * @param t0 Time when increment begins.
+   * @param t1 Time when increment ends.
+   */
+  void _calculateValueIncr(const double t0,
+			   const double t1);
+
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 

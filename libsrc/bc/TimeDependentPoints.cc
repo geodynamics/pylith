@@ -246,66 +246,55 @@ pylith::bc::TimeDependentPoints::_calculateValue(const double t)
   const int numBCDOF = _bcDOF.size();
   const double timeScale = _getNormalizer().timeScale();
 
-  const ALE::Obj<RealSection>& changeSection = (0 != _dbChange) ?
+  const ALE::Obj<RealSection>& initialSection = (0 != _dbInitial) ?
+    _parameters->get("initial").section() : 0;
+  const ALE::Obj<RealSection>& rateSection = ( 0 != _dbRate) ?
+    _parameters->get("rate").section() : 0;
+  const ALE::Obj<RealSection>& rateTimeSection = (0 != _dbRate) ?
+    _parameters->get("rate time").section() : 0;
+  const ALE::Obj<RealSection>& changeSection = ( 0 != _dbChange) ?
     _parameters->get("change").section() : 0;
-  const ALE::Obj<RealSection>& changeTimeSection = (0 != _dbChange) ?
+  const ALE::Obj<RealSection>& changeTimeSection = ( 0 != _dbChange) ?
     _parameters->get("change time").section() : 0;
 
-  // Contribution from initial value
-  if (0 != _dbInitial) {
-    double_array values(numBCDOF);
-    const ALE::Obj<RealSection>& initialSection = 
-      _parameters->get("initial").section();
-    assert(!initialSection.isNull());
-
-    for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-      const int p_bc = _points[iPoint]; // Get point label
-
-      initialSection->restrictPoint(p_bc, &values[0], values.size());
-      valueSection->updateAddPoint(p_bc, &values[0]);
-    } // for
-  } // if
-  
-  // Contribution from rate of change of value
-  if (0 != _dbRate) {
-    double_array values(numBCDOF);
-    double tRate = 0.0;
-    const ALE::Obj<RealSection>& rateSection =
-      _parameters->get("rate").section();
-    assert(!rateSection.isNull());
-    const ALE::Obj<RealSection>& rateTimeSection =
-      _parameters->get("rate time").section();
-    assert(!rateTimeSection.isNull());
-
-    for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-      const int p_bc = _points[iPoint]; // Get point label
-
-      rateSection->restrictPoint(p_bc, &values[0], values.size());
+  double_array valuesVertex(numBCDOF);
+  double_array bufferVertex(numBCDOF);
+  for (int iPoint=0; iPoint < numPoints; ++iPoint) {
+    const int p_bc = _points[iPoint]; // Get point label
+    
+    valuesVertex = 0.0;
+    
+    // Contribution from initial value
+    if (0 != _dbInitial) {
+      assert(!initialSection.isNull());
+      initialSection->restrictPoint(p_bc, 
+				    &bufferVertex[0], bufferVertex.size());
+      valuesVertex += bufferVertex;
+    } // if
+    
+    // Contribution from rate of change of value
+    if (0 != _dbRate) {
+      assert(!rateSection.isNull());
+      assert(!rateTimeSection.isNull());
+      double tRate = 0.0;
+      
+      rateSection->restrictPoint(p_bc, &bufferVertex[0], bufferVertex.size());
       rateTimeSection->restrictPoint(p_bc, &tRate, 1);
       if (t > tRate) { // rate of change integrated over time
-	values *= (t - tRate);
-	valueSection->updateAddPoint(p_bc, &values[0]);
+	bufferVertex *= (t - tRate);
+	valuesVertex += bufferVertex;
       } // if
-    } // for
-  } // if
-      
-  // Contribution from change of value
-  if (0 != _dbChange) {
-    double_array values(numBCDOF);
-    double tChange = 0.0;
-    const ALE::Obj<RealSection>& changeSection =
-      _parameters->get("change").section();
-    assert(!changeSection.isNull());
-    const ALE::Obj<RealSection>& changeTimeSection =
-      _parameters->get("change time").section();
-    assert(!changeTimeSection.isNull());
+    } // if
+    
+    // Contribution from change of value
+    if (0 != _dbChange) {
+      assert(!changeSection.isNull());
+      assert(!changeTimeSection.isNull());
+      double tChange = 0.0;
 
-    for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-      const int p_bc = _points[iPoint]; // Get point label
-
-      changeSection->restrictPoint(p_bc, &values[0], values.size());
+      changeSection->restrictPoint(p_bc, &bufferVertex[0], bufferVertex.size());
       changeTimeSection->restrictPoint(p_bc, &tChange, 1);
-      if (t > tChange) { // change in value over time
+      if (t >= tChange) { // change in value over time
 	double scale = 1.0;
 	if (0 != _dbTimeHistory) {
 	  double tDim = t - tChange;
@@ -313,17 +302,136 @@ pylith::bc::TimeDependentPoints::_calculateValue(const double t)
 	  const int err = _dbTimeHistory->query(&scale, tDim);
 	  if (0 != err) {
 	    std::ostringstream msg;
-	    msg << "Error querying for time '" << tDim << "' in time history database "
+	    msg << "Error querying for time '" << tDim 
+		<< "' in time history database "
 		<< _dbTimeHistory->label() << ".";
 	    throw std::runtime_error(msg.str());
 	  } // if
 	} // if
-	values *= scale;
-	valueSection->updateAddPoint(p_bc, &values[0]);
+	bufferVertex *= scale;
+	valuesVertex += bufferVertex;
       } // if
-    } // for
-  } // if
+    } // if
+
+    valueSection->updateAddPoint(p_bc, &valuesVertex[0]);
+  } // for
 }  // _calculateValue
+
+// ----------------------------------------------------------------------
+// Calculate increment in temporal and spatial variation of value over
+// the list of points.
+void
+pylith::bc::TimeDependentPoints::_calculateValueIncr(const double t0,
+						     const double t1)
+{ // _calculateValueIncr
+  assert(0 != _parameters);
+
+  const ALE::Obj<RealSection>& valueSection = 
+    _parameters->get("value").section();
+  assert(!valueSection.isNull());
+  valueSection->zero();
+
+  const int numPoints = _points.size();
+  const int numBCDOF = _bcDOF.size();
+  const double timeScale = _getNormalizer().timeScale();
+
+  const ALE::Obj<RealSection>& rateSection = ( 0 != _dbRate) ?
+    _parameters->get("rate").section() : 0;
+  const ALE::Obj<RealSection>& rateTimeSection = (0 != _dbRate) ?
+    _parameters->get("rate time").section() : 0;
+  const ALE::Obj<RealSection>& changeSection = ( 0 != _dbChange) ?
+    _parameters->get("change").section() : 0;
+  const ALE::Obj<RealSection>& changeTimeSection = ( 0 != _dbChange) ?
+    _parameters->get("change time").section() : 0;
+
+  double_array valuesVertex(numBCDOF);
+  double_array bufferVertex(numBCDOF);
+  for (int iPoint=0; iPoint < numPoints; ++iPoint) {
+    const int p_bc = _points[iPoint]; // Get point label
+    
+    valuesVertex = 0.0;
+    
+    // No contribution from initial value
+    
+    // Contribution from rate of change of value
+    if (0 != _dbRate) {
+      assert(!rateSection.isNull());
+      assert(!rateTimeSection.isNull());
+      double tRate = 0.0;
+      
+      rateSection->restrictPoint(p_bc, &bufferVertex[0], bufferVertex.size());
+      rateTimeSection->restrictPoint(p_bc, &tRate, 1);
+
+      // Account for when rate dependence begins.
+      double tIncr = 0.0;
+      if (t0 > tRate) // rate dependence for t0 to t1
+	tIncr = t1 - t0;
+      else if (t1 > tRate) // rate dependence for tRef to t1
+	tIncr = t1 - tRate;
+      else
+	tIncr = 0.0; // no rate dependence for t0 to t1
+      
+      bufferVertex *= tIncr;
+      valuesVertex += bufferVertex;
+    } // if
+    
+    // Contribution from change of value
+    if (0 != _dbChange) {
+      assert(!changeSection.isNull());
+      assert(!changeTimeSection.isNull());
+      double tChange = 0.0;
+
+      changeSection->restrictPoint(p_bc, &bufferVertex[0], bufferVertex.size());
+      changeTimeSection->restrictPoint(p_bc, &tChange, 1);
+      if (t0 >= tChange) { // increment is after change starts
+	double scale0 = 1.0;
+	double scale1 = 1.0;
+	if (0 != _dbTimeHistory) {
+	  double tDim = t0 - tChange;
+	  _getNormalizer().dimensionalize(&tDim, 1, timeScale);
+	  int err = _dbTimeHistory->query(&scale0, tDim);
+	  if (0 != err) {
+	    std::ostringstream msg;
+	    msg << "Error querying for time '" << tDim 
+		<< "' in time history database "
+		<< _dbTimeHistory->label() << ".";
+	    throw std::runtime_error(msg.str());
+	  } // if
+	  tDim = t1 - tChange;
+	  _getNormalizer().dimensionalize(&tDim, 1, timeScale);
+	  err = _dbTimeHistory->query(&scale1, tDim);
+	  if (0 != err) {
+	    std::ostringstream msg;
+	    msg << "Error querying for time '" << tDim 
+		<< "' in time history database "
+		<< _dbTimeHistory->label() << ".";
+	    throw std::runtime_error(msg.str());
+	  } // if
+	} // if
+	bufferVertex *= scale1 - scale0;
+	valuesVertex += bufferVertex;
+      } else if (t1 >= tChange) { // increment spans when change starts
+	double scale1 = 1.0;
+	if (0 != _dbTimeHistory) {
+	  double tDim = t1 - tChange;
+	  _getNormalizer().dimensionalize(&tDim, 1, timeScale);
+	  int err = _dbTimeHistory->query(&scale1, tDim);
+	  if (0 != err) {
+	    std::ostringstream msg;
+	    msg << "Error querying for time '" << tDim 
+		<< "' in time history database "
+		<< _dbTimeHistory->label() << ".";
+	    throw std::runtime_error(msg.str());
+	  } // if
+	} // if
+	bufferVertex *= scale1;
+	valuesVertex += bufferVertex;
+      } // if/else
+    } // if
+
+    valueSection->updateAddPoint(p_bc, &valuesVertex[0]);
+  } // for
+}  // _calculateValueIncr
 
 
 // End of file 

@@ -20,8 +20,10 @@ nobase_pkgpyexec_PYTHON = \
 	bc/BoundaryCondition.py \
 	bc/DirichletBC.py \
 	bc/DirichletBoundary.py \
-	bc/FixedDOFDB.py \
 	bc/Neumann.py \
+	bc/PointForce.py \
+	bc/TimeDependent.py \
+	bc/ZeroDispDB.py \
 	faults/__init__.py \
 	faults/BruneSlipFn.py \
 	faults/ConstRateSlipFn.py \

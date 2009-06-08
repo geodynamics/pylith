@@ -16,10 +16,14 @@
 // Header files for module C++ code
 %{
 #include "pylith/bc/BoundaryCondition.hh"
+#include "pylith/bc/BoundaryConditionPoints.hh"
+#include "pylith/bc/TimeDependent.hh"
+#include "pylith/bc/TimeDependentPoints.hh"
 #include "pylith/bc/DirichletBC.hh"
 #include "pylith/bc/DirichletBoundary.hh"
 #include "pylith/bc/AbsorbingDampers.hh"
 #include "pylith/bc/Neumann.hh"
+#include "pylith/bc/PointForce.hh"
 %}
 
 %include "exception.i"
@@ -49,13 +53,18 @@ import_array();
 %include "../feassemble/Integrator.i" // ISA Integrator
 
 // template instantiation
+%template(MeshIntegrator) pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >;
 %template(SubMeshIntegrator) pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::SubMesh> >;
 
 %include "BoundaryCondition.i"
+%include "BoundaryConditionPoints.i"
+%include "TimeDependent.i"
+%include "TimeDependentPoints.i"
 %include "DirichletBC.i"
 %include "DirichletBoundary.i"
 %include "AbsorbingDampers.i"
 %include "Neumann.i"
+%include "PointForce.i"
 
 // End of file
 

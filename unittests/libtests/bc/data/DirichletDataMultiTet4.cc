@@ -50,7 +50,7 @@
  *   1: 11.0
  *   2: 22.0
  *   3: 33.0
- * tRef = 0.0.0
+ * tRef = 0.0
  * Rate of change of values
  *   1: 10.0
  *   2: 20.0

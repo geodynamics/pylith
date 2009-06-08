@@ -82,11 +82,6 @@ noinst_HEADERS = \
 	TestAbsorbingDampersQuad4.hh \
 	TestAbsorbingDampersTet4.hh \
 	TestAbsorbingDampersHex8.hh \
-	TestDirichletBoundary.hh \
-	TestDirichletBoundaryTri3.hh \
-	TestDirichletBoundaryQuad4.hh \
-	TestDirichletBoundaryTet4.hh \
-	TestDirichletBoundaryHex8.hh \
 	TestDirichletBC.hh \
 	TestDirichletBCLine2.hh \
 	TestDirichletBCLine2b.hh \
@@ -97,6 +92,11 @@ noinst_HEADERS = \
 	TestDirichletBCMulti.hh \
 	TestDirichletBCMultiTri3.hh \
 	TestDirichletBCMultiTet4.hh \
+	TestDirichletBoundary.hh \
+	TestDirichletBoundaryTri3.hh \
+	TestDirichletBoundaryQuad4.hh \
+	TestDirichletBoundaryTet4.hh \
+	TestDirichletBoundaryHex8.hh \
 	TestNeumann.hh \
 	TestNeumannLine2.hh \
 	TestNeumannTri3.hh \

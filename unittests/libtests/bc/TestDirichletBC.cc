@@ -20,6 +20,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -59,22 +60,6 @@ pylith::bc::TestDirichletBC::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
-// Test fixedDOF()
-void
-pylith::bc::TestDirichletBC::testFixedDOF(void)
-{ // testfixedDOF
-  DirichletBC bc;
-  
-  const size_t numDOF = 4;
-  const int fixedDOF[] = { 0, 2, 3, 5 };
-  bc.fixedDOF(fixedDOF, numDOF);
-
-  CPPUNIT_ASSERT_EQUAL(numDOF, bc._fixedDOF.size());
-  for (int i=0; i < numDOF; ++i)
-    CPPUNIT_ASSERT_EQUAL(fixedDOF[i], bc._fixedDOF[i]);
-} // testFixedDOF
-
-// ----------------------------------------------------------------------
 // Test initialize().
 void
 pylith::bc::TestDirichletBC::testInitialize(void)
@@ -99,18 +84,39 @@ pylith::bc::TestDirichletBC::testInitialize(void)
       CPPUNIT_ASSERT_EQUAL(_data->constrainedPoints[i]+offset, bc._points[i]);
   } // if
 
-  // Check values
-  const size_t size = numPoints * numFixedDOF;
-  CPPUNIT_ASSERT_EQUAL(size, bc._valuesInitial.size());
-  const double tolerance = 1.0e-06;
-  for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valuesInitial[i], bc._valuesInitial[i], 
-				 tolerance);
-
-  CPPUNIT_ASSERT_EQUAL(size, bc._valuesRate.size());
-  for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valueRate, bc._valuesRate[i], 
-				 tolerance);
+  if (numFixedDOF > 0) {
+    // Check values
+    CPPUNIT_ASSERT(0 != bc._parameters);
+    const ALE::Obj<RealSection>& initialSection =
+      bc._parameters->get("initial").section();
+    CPPUNIT_ASSERT(!initialSection.isNull());
+    
+    const double tolerance = 1.0e-06;
+    for (int i=0; i < numPoints; ++i) {
+      const int p_value = _data->constrainedPoints[i]+offset;
+      CPPUNIT_ASSERT_EQUAL(numFixedDOF, 
+			   initialSection->getFiberDimension(p_value));
+      const double* valuesInitial = initialSection->restrictPoint(p_value);
+      for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) 
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valuesInitial[i*numFixedDOF+iDOF],
+				     valuesInitial[iDOF], tolerance);
+    } // for
+    
+    // Check rate of change
+    const ALE::Obj<RealSection>& rateSection =
+      bc._parameters->get("rate").section();
+    CPPUNIT_ASSERT(!rateSection.isNull());
+    
+    for (int i=0; i < numPoints; ++i) {
+      const int p_value = _data->constrainedPoints[i]+offset;
+      CPPUNIT_ASSERT_EQUAL(numFixedDOF, 
+			   rateSection->getFiberDimension(p_value));
+      const double* valuesRate = rateSection->restrictPoint(p_value);
+      for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) 
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valueRate,
+				     valuesRate[iDOF], tolerance);
+    } // for
+  } // if
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -462,20 +468,26 @@ pylith::bc::TestDirichletBC::_initialize(topology::Mesh* mesh,
   db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
 
   spatialdata::spatialdb::UniformDB dbRate("TestDirichletBC rate");
-  const char* names[] = { "dof-0", "dof-1", "dof-2" };
-  const double values[] = { _data->valueRate,
-			    _data->valueRate,
-			    _data->valueRate };
-  const int numValues = 3;
+  const int numValues = 4;
+  const char* names[] = { 
+    "displacement-rate-x", 
+    "displacement-rate-y", 
+    "displacement-rate-z",
+    "rate-start-time"};
+  const double values[numValues] = { 
+    _data->valueRate,
+    _data->valueRate,
+    _data->valueRate,
+    _data->tRef,
+  };
   dbRate.setData(names, values, numValues);
 
   const double upDir[] = { 0.0, 0.0, 1.0 };
 
   bc->label(_data->label);
-  bc->db(&db);
+  bc->dbInitial(&db);
   bc->dbRate(&dbRate);
-  bc->referenceTime(_data->tRef);
-  bc->fixedDOF(_data->fixedDOF, _data->numFixedDOF);
+  bc->bcDOF(_data->fixedDOF, _data->numFixedDOF);
   bc->initialize(*mesh, upDir);
 } // _initialize
 

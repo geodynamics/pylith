@@ -40,8 +40,9 @@ class pylith::bc::TestDirichletBC : public CppUnit::TestFixture
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestDirichletBC );
+
   CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testFixedDOF );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -55,9 +56,6 @@ public :
 
   /// Test constructor.
   void testConstructor(void);
-
-  /// Test fixedDOF().
-  void testFixedDOF(void);
 
   /// Test initialize().
   void testInitialize(void);

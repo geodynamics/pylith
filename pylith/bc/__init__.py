@@ -16,10 +16,12 @@
 
 __all__ = ['AbsorbingDampers',
            'BoundaryCondition',
+           'TimeDependent',
            'DirichletBC',
            'DirichletBoundary',
-           'FixedDOFDB',
            'Neumann',
+           'PointForce', 
+           'ZeroDispDB',
            ]
 
 

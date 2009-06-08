@@ -14,19 +14,15 @@
 #error "DirichletBC.icc can only be included from DirichletBC.hh"
 #endif
 
-// Set database for boundary condition parameters.
-inline
-void
-pylith::bc::DirichletBC::dbRate(spatialdata::spatialdb::SpatialDB* const db) {
-  _dbRate = db;
-}
+#include <cassert> // USES assert()
 
-// Set time at which rate of change begins.
+// Get manager of scales used to nondimensionalize problem.
 inline
-void 
-pylith::bc::DirichletBC::referenceTime(const double t) {
-  _tRef = t;
-} // referenceTime
+const spatialdata::units::Nondimensional&
+pylith::bc::DirichletBC::_getNormalizer(void) const {
+  assert(0 != _normalizer);
+  return *_normalizer;
+}
 
 
 // End of file 
