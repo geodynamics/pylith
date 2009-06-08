@@ -176,13 +176,12 @@ public :
 		  const int fiberDim,
 		  const int stratum =0);
 
-  /** Create section given chart. This allows a chart to be reused
-   * across multiple fields, reducing memory usage.
+  /** Create section using src field as template with given fiber dimension.
    *
-   * @param chart Chart defining points over which section is defined.
+   * @param sec Field defining layout.
    * @param fiberDim Fiber dimension.
    */
-  void newSection(const chart_type& chart,
+  void newSection(const Field& src,
 		  const int fiberDim);
 
   /** Create section with same layout (fiber dimension and
@@ -190,7 +189,7 @@ public :
    * structures to be reused across multiple fields, reducing memory
    * usage.
    *
-   * @param sec Section defining layout.
+   * @param sec Field defining layout.
    */
   void cloneSection(const Field& src);
 

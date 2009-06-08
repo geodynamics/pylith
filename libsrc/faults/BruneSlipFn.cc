@@ -92,7 +92,7 @@ pylith::faults::BruneSlipFn::initialize(
 
   _parameters->add("slip time", "slip_time");
   topology::Field<topology::SubMesh>& slipTime = _parameters->get("slip time");
-  slipTime.newSection(finalSlipSection->getChart(), 1);
+  slipTime.newSection(finalSlip, 1);
   slipTime.allocate();
   slipTime.scale(timeScale);
   slipTime.vectorFieldType(topology::FieldBase::SCALAR);

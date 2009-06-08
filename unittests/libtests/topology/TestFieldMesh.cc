@@ -244,10 +244,10 @@ pylith::topology::TestFieldMesh::testNewSectionDomain(void)
 } // testNewSectionDomain
 
 // ----------------------------------------------------------------------
-// Test newSection(chart).
+// Test newSection(field).
 void
-pylith::topology::TestFieldMesh::testNewSectionChart(void)
-{ // testNewSectionChart
+pylith::topology::TestFieldMesh::testNewSectionField(void)
+{ // testNewSectionField
   const int fiberDim = 3;
     
   Mesh mesh;
@@ -262,8 +262,9 @@ pylith::topology::TestFieldMesh::testNewSectionChart(void)
   CPPUNIT_ASSERT(!sectionSrc.isNull());
   const Mesh::RealSection::chart_type& chart = sectionSrc->getChart();
 
+  const int fiberDim2 = 5;
   Field<Mesh> field(mesh);
-  field.newSection(chart, fiberDim);
+  field.newSection(fieldSrc, fiberDim2);
   const ALE::Obj<Mesh::RealSection>& section = field.section();
   CPPUNIT_ASSERT(!section.isNull());
   const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
@@ -272,8 +273,8 @@ pylith::topology::TestFieldMesh::testNewSectionChart(void)
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
        ++v_iter)
-    CPPUNIT_ASSERT_EQUAL(fiberDim, section->getFiberDimension(*v_iter));
-} // testNewSectionChart
+    CPPUNIT_ASSERT_EQUAL(fiberDim2, section->getFiberDimension(*v_iter));
+} // testNewSectionField
 
 // ----------------------------------------------------------------------
 // Test cloneSection().

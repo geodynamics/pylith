@@ -204,7 +204,7 @@ pylith::topology::Field<mesh_type>::newSection(const DomainEnum domain,
 // Create section given chart.
 template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::newSection(const chart_type& chart,
+pylith::topology::Field<mesh_type>::newSection(const Field& src,
 					       const int fiberDim)
 { // newSection
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
@@ -215,14 +215,20 @@ pylith::topology::Field<mesh_type>::newSection(const chart_type& chart,
     newSection();
     logger.stagePush("Field");
   } // if
-  _section->setChart(chart);
 
-  const typename chart_type::const_iterator chartEnd = chart.end();
-  for (typename chart_type::const_iterator c_iter = chart.begin();
-       c_iter != chartEnd;
-       ++c_iter) {
-    _section->setFiberDimension(*c_iter, fiberDim);
-  } // for
+  const ALE::Obj<RealSection>& srcSection = src.section();
+  if (!srcSection.isNull()) {
+    _section->setChart(srcSection->getChart());
+    const chart_type& chart = _section->getChart();
+    const typename chart_type::const_iterator chartBegin = chart.begin();
+    const typename chart_type::const_iterator chartEnd = chart.end();
+
+    for (typename chart_type::const_iterator c_iter = chartBegin;
+	 c_iter != chartEnd;
+	 ++c_iter) 
+      if (srcSection->getFiberDimension(*c_iter) > 0)
+	_section->setFiberDimension(*c_iter, fiberDim);
+  } // if
 
   std::cout << "Done making Field " << _label << " section type 2" << std::endl;
   logger.stagePop();

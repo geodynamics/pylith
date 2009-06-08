@@ -87,13 +87,20 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
   delete _parameters;
   _parameters = new topology::Fields<topology::Field<topology::Mesh> >(mesh);
 
+  // Create section to hold time dependent values
+  _parameters->add("value", fieldName);
+  topology::Field<topology::Mesh>& value = _parameters->get("value");
+  value.scale(valueScale);
+  value.vectorFieldType(topology::FieldBase::OTHER);
+  value.newSection(_points, numBCDOF);
+  value.allocate();
+
   if (0 != _dbInitial) { // Setup initial values, if provided.
     std::string fieldLabel = std::string("initial_") + std::string(fieldName);
     _parameters->add("initial", fieldLabel.c_str());
     topology::Field<topology::Mesh>& initial = 
       _parameters->get("initial");
-    initial.newSection(_points, numBCDOF);
-    initial.allocate();
+    initial.cloneSection(value);
     initial.scale(valueScale);
     initial.vectorFieldType(topology::FieldBase::OTHER);
 
@@ -108,8 +115,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     _parameters->add("rate", fieldLabel.c_str());
     topology::Field<topology::Mesh>& rate = 
       _parameters->get("rate");
-    rate.newSection(_points, numBCDOF);
-    rate.allocate();
+    rate.cloneSection(value);
     rate.scale(rateScale);
     rate.vectorFieldType(topology::FieldBase::OTHER);
     const ALE::Obj<RealSection>& rateSection = rate.section();
@@ -124,7 +130,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     _parameters->add("rate time", timeLabel.c_str());
     topology::Field<topology::Mesh>& rateTime = 
       _parameters->get("rate time");
-    rateTime.newSection(_points, 1);
+    rateTime.newSection(rate, 1);
     rateTime.allocate();
     rateTime.scale(timeScale);
     rateTime.vectorFieldType(topology::FieldBase::SCALAR);
@@ -140,8 +146,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     _parameters->add("change", fieldLabel.c_str());
     topology::Field<topology::Mesh>& change = 
       _parameters->get("change");
-    change.newSection(_points, numBCDOF);
-    change.allocate();
+    change.cloneSection(value);
     change.scale(valueScale);
     change.vectorFieldType(topology::FieldBase::OTHER);
     const ALE::Obj<RealSection>& changeSection = change.section();
@@ -156,7 +161,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     _parameters->add("change time", timeLabel.c_str());
     topology::Field<topology::Mesh>& changeTime = 
       _parameters->get("change time");
-    changeTime.newSection(_points, 1);
+    changeTime.newSection(change, 1);
     changeTime.allocate();
     changeTime.scale(timeScale);
     changeTime.vectorFieldType(topology::FieldBase::SCALAR);
@@ -170,12 +175,6 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
       _dbTimeHistory->open();
   } // if
 
-  _parameters->add("value", fieldName);
-  topology::Field<topology::Mesh>& value = _parameters->get("value");
-  value.scale(valueScale);
-  value.vectorFieldType(topology::FieldBase::OTHER);
-  value.newSection(_points, numBCDOF);
-  value.allocate();
 } // _queryDatabases
 
 // ----------------------------------------------------------------------

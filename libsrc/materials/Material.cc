@@ -163,10 +163,8 @@ pylith::materials::Material::initialize(
   fiberDim = numQuadPts * _numVarsQuadPt;
   if (fiberDim > 0) {
     assert(0 != _stateVars);
-    const ALE::Obj<RealSection::chart_type>& chart = 
-      propertiesSection->getChart();
-    assert(!chart.isNull());
-    _stateVars->newSection(*chart, fiberDim);
+    assert(0 != _properties);
+    _stateVars->newSection(*_properties, fiberDim);
     _stateVars->allocate();
     _stateVars->zero();
   } // if
