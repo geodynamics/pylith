@@ -1,0 +1,15 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 3
+  value-names =  force-x  force-y change-start-time
+  value-units =  Pa*m**2  Pa*m**2  s
+  num-locs = 2
+  data-dim = 1
+  space-dim = 2
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 2
+  }
+}
+ 0.0 -1.0   1.4  1.3  2.0
+ 1.0  0.0   1.6  1.7  2.4

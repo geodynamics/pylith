@@ -26,9 +26,7 @@
 pylith::bc::TimeDependent::TimeDependent(void) :
   _dbInitial(0),
   _dbRate(0),
-  _dbRateTime(0),
   _dbChange(0),
-  _dbChangeTime(0),
   _dbTimeHistory(0)
 { // constructor
 } // constructor
@@ -37,14 +35,14 @@ pylith::bc::TimeDependent::TimeDependent(void) :
 // Destructor.
 pylith::bc::TimeDependent::~TimeDependent(void)
 { // destructor
+#if 0
   if (0 != _dbTimeHistory)
     _dbTimeHistory->close();
+#endif
 
   _dbInitial = 0; // TODO: Use shared pointers
   _dbRate = 0; // TODO: Use shared pointers
-  _dbRateTime = 0; // TODO: Use shared pointers
   _dbChange = 0; // TODO: Use shared pointers
-  _dbChangeTime = 0; // TODO: Use shared pointers
   _dbTimeHistory = 0; // TODO: Use shared pointers
 } // destructor
 
@@ -67,35 +65,6 @@ pylith::bc::TimeDependent::bcDOF(const int* flags,
 void
 pylith::bc::TimeDependent::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
-  if (0 != _dbRate && 0 == _dbRateTime) {
-    std::ostringstream msg;
-    msg << "Time dependent boundary condition '" << _getLabel() << "',\n has a rate "
-	<< "of change spatial database but no rate of change start time "
-	<< "spatial database.";
-    throw std::runtime_error(msg.str());
-  } // if
-  if (0 == _dbRate && 0 != _dbRateTime) {
-    std::ostringstream msg;
-    msg << "Time dependent boundary condition '" << _getLabel() << "',\n has a rate "
-	<< "of change start time spatial database but no rate of change "
-	<< "spatial database.";
-    throw std::runtime_error(msg.str());
-  } // if
-
-  if (0 != _dbChange && 0 == _dbChangeTime) {
-    std::ostringstream msg;
-    msg << "Time dependent boundary condition '" << _getLabel() << "',\n has a "
-	<< "change in value spatial database but change in value start time "
-	<< "spatial database.";
-    throw std::runtime_error(msg.str());
-  } // if
-  if (0 == _dbChange && 0 != _dbChangeTime) {
-    std::ostringstream msg;
-    msg << "Time dependent boundary condition '" << _getLabel() << "',\n has a "
-	<< "change in value start time spatial database but change in value "
-	<< "spatial database.";
-    throw std::runtime_error(msg.str());
-  } // if
   if (0 == _dbChange && 0 != _dbTimeHistory) {
     std::ostringstream msg;
     msg << "Time dependent boundary condition '" << _getLabel() << "',\n has a "

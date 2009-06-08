@@ -60,7 +60,7 @@ pylith::bc::TestPointForce::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
-// Test constructor.
+// Test normalizer.
 void
 pylith::bc::TestPointForce::testNormalizer(void)
 { // testNormalizer
@@ -215,28 +215,25 @@ pylith::bc::TestPointForce::_initialize(topology::Mesh* mesh,
 
   spatialdata::spatialdb::UniformDB dbRate("TestPointForce rate");
   { // rate db
-    const int numValues = 3;
-    const char* names[numValues] = { "force-rate-x", "force-rate-y", "force-rate-z" };
+    const int numValues = 4;
+    const char* names[numValues] = {
+      "force-rate-x",
+      "force-rate-y",
+      "force-rate-z",
+      "rate-start-time",
+    };
     const double values[numValues] = { _data->forceRate,
 				       _data->forceRate,
-				       _data->forceRate };
+				       _data->forceRate,
+				       _data->tRef};
     dbRate.setData(names, values, numValues);
   } // rate db
-
-  spatialdata::spatialdb::UniformDB dbRateTime("TestPointForce rate time");
-  { // rate time db
-    const int numValues = 1;
-    const char* names[numValues] = { "rate-start-time" };
-    const double values[numValues] = { _data->tRef };
-    dbRateTime.setData(names, values, numValues);
-  } // rate time db
 
   const double upDir[] = { 0.0, 0.0, 1.0 };
 
   bc->label(_data->label);
   bc->dbInitial(&dbInitial);
   bc->dbRate(&dbRate);
-  bc->dbRateTime(&dbRateTime);
   bc->bcDOF(_data->forceDOF, _data->numForceDOF);
   bc->initialize(*mesh, upDir);
 } // _initialize

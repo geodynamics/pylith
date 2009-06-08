@@ -40,9 +40,7 @@ class pylith::bc::TestTimeDependent : public CppUnit::TestFixture
   CPPUNIT_TEST( testBCDOF );
   CPPUNIT_TEST( testDBInitial );
   CPPUNIT_TEST( testDBRate );
-  CPPUNIT_TEST( testDBRateTime );
   CPPUNIT_TEST( testDBChange );
-  CPPUNIT_TEST( testDBChangeTime );
   CPPUNIT_TEST( testDBTimeHistory );
   CPPUNIT_TEST( testVerifyConfiguration );
 
@@ -60,14 +58,8 @@ public :
   /// Test dbRate().
   void testDBRate(void);
 
-  /// Test dbRateTime().
-  void testDBRateTime(void);
-
   /// Test dbChange().
   void testDBChange(void);
-
-  /// Test dbChangeTime().
-  void testDBChangeTime(void);
 
   /// Test dbTimeHistory().
   void testDBTimeHistory(void);

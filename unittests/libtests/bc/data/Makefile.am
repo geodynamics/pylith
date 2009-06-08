@@ -23,6 +23,9 @@ dist_noinst_DATA = \
 	tri3_vel2.spatialdb \
 	tri3_tractions.spatialdb \
 	tri3_force.spatialdb \
+	tri3_force_rate.spatialdb \
+	tri3_force_change.spatialdb \
+	tri3_force.timedb \
 	elasticplanestrain.spatialdb \
 	quad4.mesh \
 	quad4_disp.spatialdb \

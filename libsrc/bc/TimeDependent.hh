@@ -65,23 +65,11 @@ public :
    */
   void dbRate(spatialdata::spatialdb::SpatialDB* const db);
 
-  /** Set database for start time of rate change.
-   *
-   * @param db Spatial database
-   */
-  void dbRateTime(spatialdata::spatialdb::SpatialDB* const db);
-
   /** Set database for change in values.
    *
    * @param db Spatial database
    */
   void dbChange(spatialdata::spatialdb::SpatialDB* const db);
-
-  /** Set database for start time of change in values.
-   *
-   * @param db Spatial database
-   */
-  void dbChangeTime(spatialdata::spatialdb::SpatialDB* const db);
 
   /** Set database for temporal evolution of change in value.
    *
@@ -122,14 +110,8 @@ protected :
   /// Spatial database for rate of change of values.
   spatialdata::spatialdb::SpatialDB* _dbRate;
 
-  /// Spatial database for start time of rate change.
-  spatialdata::spatialdb::SpatialDB* _dbRateTime;
-
   /// Spatial database for change in value.
   spatialdata::spatialdb::SpatialDB* _dbChange;
-
-  /// Spatial database for start time of change in value.
-  spatialdata::spatialdb::SpatialDB* _dbChangeTime;
 
   /// Temporal evolution of amplitude for change in value;
   spatialdata::spatialdb::TimeHistory* _dbTimeHistory;

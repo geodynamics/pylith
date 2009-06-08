@@ -28,25 +28,11 @@ pylith::bc::TimeDependent::dbRate(spatialdata::spatialdb::SpatialDB* const db) {
   _dbRate = db;
 }
 
-// Set database for start time of rate change.
-inline
-void
-pylith::bc::TimeDependent::dbRateTime(spatialdata::spatialdb::SpatialDB* const db) {
-  _dbRateTime = db;
-}
-
 // Set database for change in values.
 inline
 void
 pylith::bc::TimeDependent::dbChange(spatialdata::spatialdb::SpatialDB* const db) {
   _dbChange = db;
-}
-
-// Set database for start time of change in values.
-inline
-void
-pylith::bc::TimeDependent::dbChangeTime(spatialdata::spatialdb::SpatialDB* const db) {
-  _dbChangeTime = db;
 }
 
 // Set database for temporal evolution of change in value.
