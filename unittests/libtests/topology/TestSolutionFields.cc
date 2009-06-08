@@ -72,10 +72,8 @@ pylith::topology::TestSolutionFields::testSolution(void)
   Field<Mesh>& fieldC = manager.get(labels[2]);
   fieldA.newSection(vertices, fiberDimA);
 
-  const ALE::Obj<Mesh::RealSection>& section = fieldA.section();
-  const Mesh::RealSection::chart_type& chart = section->getChart();
-  fieldB.newSection(chart, fiberDimB);
-  fieldC.newSection(chart, fiberDimC);
+  fieldB.newSection(fieldA, fiberDimB);
+  fieldC.newSection(fieldB, fiberDimC);
 
   manager.solutionName(labels[1]);
   const Field<Mesh>& solution = manager.solution();

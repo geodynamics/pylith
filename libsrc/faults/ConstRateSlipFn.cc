@@ -89,7 +89,7 @@ pylith::faults::ConstRateSlipFn::initialize(
 
   _parameters->add("slip time", "slip_time");
   topology::Field<topology::SubMesh>& slipTime = _parameters->get("slip time");
-  slipTime.newSection(slipRateSection->getChart(), 1);
+  slipTime.newSection(slipRate, 1);
   slipTime.allocate();
   slipTime.scale(timeScale);
   slipTime.vectorFieldType(topology::FieldBase::SCALAR);

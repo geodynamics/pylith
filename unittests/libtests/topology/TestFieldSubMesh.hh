@@ -47,7 +47,7 @@ class pylith::topology::TestFieldSubMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testNewSection );
   CPPUNIT_TEST( testNewSectionPoints );
   CPPUNIT_TEST( testNewSectionDomain );
-  CPPUNIT_TEST( testNewSectionChart );
+  CPPUNIT_TEST( testNewSectionField );
   CPPUNIT_TEST( testCloneSection );
   CPPUNIT_TEST( testClear );
   CPPUNIT_TEST( testAllocate );
@@ -89,8 +89,8 @@ public :
   /// Test newSection(domain).
   void testNewSectionDomain(void);
 
-  /// Test newSection(chart).
-  void testNewSectionChart(void);
+  /// Test newSection(field).
+  void testNewSectionField(void);
 
   /// Test cloneSection().
   void testCloneSection(void);

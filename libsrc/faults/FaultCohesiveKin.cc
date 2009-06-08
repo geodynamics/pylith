@@ -851,9 +851,8 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double upDir[3],
   // Allocate orientation field.
   _fields->add("orientation", "orientation");
   topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
-  const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
-  assert(!slipSection.isNull());
-  orientation.newSection(slipSection->getChart(), orientationSize);
+  const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
+  orientation.newSection(slip, orientationSize);
   const ALE::Obj<RealSection>& orientationSection = orientation.section();
   assert(!orientationSection.isNull());
   // Create subspaces for along-strike, up-dip, and normal directions
@@ -1018,9 +1017,8 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
   _fields->add("area", "area");
 
   topology::Field<topology::SubMesh>& area = _fields->get("area");
-  const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
-  assert(!slipSection.isNull());
-  area.newSection(slipSection->getChart(), 1);
+  const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
+  area.newSection(slip, 1);
   area.allocate();
   area.zero();
   const ALE::Obj<RealSection>& areaSection = area.section();
@@ -1160,10 +1158,8 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   // Allocate buffer for tractions field (if nec.).
   const ALE::Obj<RealSection>& tractionsSection = tractions->section();
   if (tractionsSection.isNull()) {
-    const ALE::Obj<RealSection>& slipSection =
-      _fields->get("slip").section();
-    assert(!slipSection.isNull());
-    tractions->newSection(slipSection->getChart(), fiberDim);
+    const topology::Field<topology::SubMesh>& slip =_fields->get("slip");
+    tractions->newSection(slip, fiberDim);
     tractions->allocate();
   } // if
   assert(!tractionsSection.isNull());
