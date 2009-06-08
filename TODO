@@ -7,8 +7,8 @@ Matt
   field split
 
 Brad
-  PointForce
   time-dependent BC
+    TimeDependent::~TimeDependent
   Field
     replace newSection(chart, fiberDim) with newSection(field, fiberDim)
     choose points to set fiberDim based on other field
