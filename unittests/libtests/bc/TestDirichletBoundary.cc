@@ -73,12 +73,14 @@ pylith::bc::TestDirichletBoundary::testInitialize(void)
 
   const int numFixedDOF = _data->numFixedDOF;
   const size_t numBoundary = _data->numConstrainedPts;
+
   // Check vertices in boundary mesh
   const ALE::Obj<SieveMesh>& sieveMesh = bc._boundaryMesh->sieveMesh();
   const ALE::Obj<SieveMesh::label_sequence>& vertices =
     sieveMesh->depthStratum(0);
   const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
 
+  // Check cells
   const int offset = numCells;
   if (numFixedDOF > 0) {
     int i = 0;
@@ -89,19 +91,6 @@ pylith::bc::TestDirichletBoundary::testInitialize(void)
     } // for
     CPPUNIT_ASSERT_EQUAL(int(numBoundary), i);
   } // if
-
-  // Check values
-  const size_t size = numBoundary * numFixedDOF;
-  CPPUNIT_ASSERT_EQUAL(size, bc._valuesInitial.size());
-  const double tolerance = 1.0e-06;
-  for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valuesInitial[i], bc._valuesInitial[i], 
-				 tolerance);
-
-  CPPUNIT_ASSERT_EQUAL(size, bc._valuesRate.size());
-  for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valueRate, bc._valuesRate[i], 
-				 tolerance);
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -130,20 +119,27 @@ pylith::bc::TestDirichletBoundary::_initialize(topology::Mesh* mesh,
   db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
 
   spatialdata::spatialdb::UniformDB dbRate("TestDirichletBoundary rate");
-  const char* names[] = { "dof-0", "dof-1", "dof-2" };
-  const double values[] = { _data->valueRate,
-			    _data->valueRate,
-			    _data->valueRate };
-  const int numValues = 3;
+  const int numValues = 4;
+  const char* names[numValues] = { 
+    "displacement-rate-x", 
+    "displacement-rate-y", 
+    "displacement-rate-z", 
+    "rate-start-time",
+  };
+  const double values[numValues] = {
+    _data->valueRate,
+    _data->valueRate,
+    _data->valueRate,
+    _data->tRef,
+  };
   dbRate.setData(names, values, numValues);
 
   const double upDir[] = { 0.0, 0.0, 1.0 };
 
   bc->label(_data->label);
-  bc->db(&db);
+  bc->dbInitial(&db);
   bc->dbRate(&dbRate);
-  bc->referenceTime(_data->tRef);
-  bc->fixedDOF(_data->fixedDOF, _data->numFixedDOF);
+  bc->bcDOF(_data->fixedDOF, _data->numFixedDOF);
   bc->initialize(*mesh, upDir);
 } // _initialize
 

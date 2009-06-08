@@ -61,14 +61,34 @@ public :
   vertexField(const char* name,
 	      const topology::SolutionFields& fields);
 
-  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+  // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
-  /// Not implemented
-  DirichletBoundary(const DirichletBoundary& m);
+  /** Get vertex vector field with BC information.
+   *
+   * @param name Name of parameter field.
+   * @param label Label for buffer field.
+   * @param scale Scale used to dimensionalize field.
+   *
+   * @returns Field over vertices.
+   */
+  const topology::Field<topology::SubMesh>&
+  _bufferVector(const char* name,
+		const char* label,
+		const double scale);
 
-  /// Not implemented
-  const DirichletBoundary& operator=(const DirichletBoundary& m);
+  /** Get vertex scalar field with BC information.
+   *
+   * @param name Name of parameter field.
+   * @param label Label for buffer field.
+   * @param scale Scale used to dimensionalize field.
+   *
+   * @returns Field over vertices.
+   */
+  const topology::Field<topology::SubMesh>&
+  _bufferScalar(const char* name,
+		const char* label,
+		const double scale);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
@@ -77,6 +97,15 @@ private :
 
   /// Fields manager (holds temporary field for output).
   topology::Fields<topology::Field<topology::SubMesh> >* _fields;
+
+  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private :
+
+  /// Not implemented
+  DirichletBoundary(const DirichletBoundary&);
+
+  /// Not implemented
+  const DirichletBoundary& operator=(const DirichletBoundary&);
 
 }; // class DirichletBoundary
 

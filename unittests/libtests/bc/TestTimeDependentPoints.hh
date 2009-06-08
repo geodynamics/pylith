@@ -48,6 +48,11 @@ class pylith::bc::TestTimeDependentPoints : public CppUnit::TestFixture
   CPPUNIT_TEST( testCalculateValueChange );
   CPPUNIT_TEST( testCalculateValueChangeTH );
   CPPUNIT_TEST( testCalculateValueAll );
+  CPPUNIT_TEST( testCalculateValueIncrInitial );
+  CPPUNIT_TEST( testCalculateValueIncrRate );
+  CPPUNIT_TEST( testCalculateValueIncrChange );
+  CPPUNIT_TEST( testCalculateValueIncrChangeTH );
+  CPPUNIT_TEST( testCalculateValueIncrAll );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -81,8 +86,25 @@ public :
   /// Test _calculateValue() with temporal change w/time history.
   void testCalculateValueChangeTH(void);
 
-  /// Test _calculateValue() with initial, rate, and temporal change w/time history.
+  /// Test _calculateValue() with initial, rate, and temporal change
+  /// w/time history.
   void testCalculateValueAll(void);
+
+  /// Test _calculateValueIncr() with initial value.
+  void testCalculateValueIncrInitial(void);
+
+  /// Test _calculateValueIncr() with rate.
+  void testCalculateValueIncrRate(void);
+
+  /// Test _calculateValueIncr() with temporal change.
+  void testCalculateValueIncrChange(void);
+
+  /// Test _calculateValueIncr() with temporal change w/time history.
+  void testCalculateValueIncrChangeTH(void);
+
+  /// Test _calculateValueIncr() with initial, rate, and temporal change
+  /// w/time history.
+  void testCalculateValueIncrAll(void);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

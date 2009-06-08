@@ -20,13 +20,13 @@
 #define pylith_bc_dirichletbc_hh
 
 // Include directives ---------------------------------------------------
-#include "BoundaryCondition.hh" // ISA BoundaryCondition
+#include "TimeDependentPoints.hh" // ISA TimeDependentPoints
 #include "pylith/feassemble/Constraint.hh" // ISA Constraint
 
-#include "pylith/utils/array.hh" // HASA std::vector, double_array, int_array
+#include "pylith/utils/array.hh" // HASA int_array
 
 // DirichletBC ------------------------------------------------------
-class pylith::bc::DirichletBC : public BoundaryCondition, 
+class pylith::bc::DirichletBC : public TimeDependentPoints, 
 				public feassemble::Constraint
 { // class DirichletBC
   friend class TestDirichletBC; // unit testing
@@ -39,31 +39,6 @@ public :
 
   /// Destructor.
   ~DirichletBC(void);
-
-  /** Set database for rate of change of values.
-   *
-   * @param db Spatial database
-   */
-  void dbRate(spatialdata::spatialdb::SpatialDB* const db);
-
-  /** Set indices of fixed degrees of freedom. 
-   *
-   * Note: all points associated with boundary condition has same
-   * degrees of freedom fixed.
-   *
-   * Example: [0, 1] to fix x and y degrees of freedom in Cartesian system.
-   *
-   * @param flags Array of indices of fixed degrees of freedom.
-   * @param size Size of array
-   */
-  void fixedDOF(const int* flags,
-		const int size);
-
-  /** Set time at which rate of change begins.
-   *
-   * @param t Reference time.
-   */
-  void referenceTime(const double t);
 
   /** Initialize boundary condition.
    *
@@ -103,49 +78,33 @@ public :
 		    const double t1,
 		    const topology::Field<topology::Mesh>& field);
 
+  /** Verify configuration is acceptable.
+   *
+   * @param mesh Finite-element mesh
+   */
+  void verifyConfiguration(const topology::Mesh& mesh) const;
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
-  /** Get mesh labels for points associated with Dirichlet BC.
+  /** Get manager of scales used to nondimensionalize problem.
    *
-   * @param mesh Finite-element mesh.
+   * @returns Nondimensionalizer.
    */
-  void _getPoints(const topology::Mesh& mesh);
-
-  /// Setup initial and rate of change databases for querying.
-  void _setupQueryDatabases(void);
-
-  /** Query initial and rate of change databases for values.
-   *
-   * @param mesh Finite-element mesh.
-   */
-  void _queryDatabases(const topology::Mesh& mesh);
-
-  // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private :
-
-  /// Not implemented
-  DirichletBC(const DirichletBC& m);
-
-  /// Not implemented
-  const DirichletBC& operator=(const DirichletBC& m);
+  const spatialdata::units::Nondimensional& _getNormalizer(void) const;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
-
-  double _tRef; /// Time when rate of change for values begins.
-  double_array _valuesInitial; ///< Initial values at points.
-  double_array _valuesRate; ///< Rate of change of values at points.
-
-  int_array _points; ///< Points for BC
-  int_array _fixedDOF; ///< Indices of fixed degrees of freedom
 
   /// Offset in list of fixed DOF at point to get to fixed DOF
   /// associated with this DirichletBC boundary condition.
   int_array _offsetLocal;
 
-  /// Spatial database with parameters for rate of change values.
-  spatialdata::spatialdb::SpatialDB* _dbRate;
+  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private :
+
+  DirichletBC(const DirichletBC&); ///< Not implemented
+  const DirichletBC& operator=(const DirichletBC&); ///< Not implemented
 
 }; // class DirichletBC
 

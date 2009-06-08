@@ -1,8 +1,8 @@
 #SPATIAL.ascii 1
 SimpleDB {
-  num-values = 3
-  value-names =  dof-0 dof-1  dof-2
-  value-units =  m  m m
+  num-values = 4
+  value-names =  displacement-rate-x  displacement-rate-y  displacement-rate-z rate-start-time
+  value-units =  m  m  m  s
   num-locs = 5
   data-dim = 3
   space-dim = 3
@@ -11,8 +11,8 @@ SimpleDB {
     space-dim = 3
   }
 }
- 0.0  0.0  0.0    1.0  99.9  -1.0
- 1.0  0.0  0.0    9.9  10.0  -9.9
- 0.0  1.0  0.0    2.0  20.0  -2.0
- 0.0  0.0  1.0    3.0  30.0  -3.0
--1.0  0.0  0.0    4.0  99.9  -9.9
+ 0.0  0.0  0.0    1.0  99.9  -1.0   0.0
+ 1.0  0.0  0.0    9.9  10.0  -9.9   0.0
+ 0.0  1.0  0.0    2.0  20.0  -2.0   0.0
+ 0.0  0.0  1.0    3.0  30.0  -3.0   0.0
+-1.0  0.0  0.0    4.0  99.9  -9.9   0.0

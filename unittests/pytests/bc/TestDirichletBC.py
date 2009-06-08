@@ -166,25 +166,17 @@ class TestDirichletBC(unittest.TestCase):
     Initialize DirichletBC boundary condition.
     """
     from spatialdata.spatialdb.SimpleDB import SimpleDB
-    db = SimpleDB()
-    db.inventory.label = "TestDirichletBC tri3"
-    db.inventory.iohandler.inventory.filename = "data/tri3.spatialdb"
-    db.inventory.iohandler._configure()
-    db._configure()
-
-    from pylith.bc.FixedDOFDB import FixedDOFDB
-    dbRate = FixedDOFDB()
-    dbRate.inventory.label = "TestDirichletBC rate tri3"
-    dbRate._configure()
+    dbInitial = SimpleDB()
+    dbInitial.inventory.label = "TestDirichletBC tri3"
+    dbInitial.inventory.iohandler.inventory.filename = "data/tri3_disp.spatialdb"
+    dbInitial.inventory.iohandler._configure()
+    dbInitial._configure()
 
     from pylith.bc.DirichletBC import DirichletBC
     bc = DirichletBC()
     bc.inventory.label = "bc"
-    bc.inventory.fixedDOF = [1]
-    from pyre.units.time import second
-    bc.inventory.tRef = -1.0*second
-    bc.inventory.db = db
-    bc.inventory.dbRate = dbRate
+    bc.inventory.bcDOF = [1]
+    bc.inventory.dbInitial = dbInitial
     bc._configure()
 
     from spatialdata.geocoords.CSCart import CSCart

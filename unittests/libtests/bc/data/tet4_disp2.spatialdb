@@ -1,7 +1,7 @@
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 3
-  value-names =  dof-0 dof-1  dof-2
+  value-names =  displacement-x  displacement-y  displacement-z
   value-units =  m  m m
   num-locs = 5
   data-dim = 3

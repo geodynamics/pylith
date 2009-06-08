@@ -7,11 +7,6 @@ Matt
   field split
 
 Brad
-  time-dependent BC
-    TimeDependent::~TimeDependent
-  Field
-    replace newSection(chart, fiberDim) with newSection(field, fiberDim)
-    choose points to set fiberDim based on other field
   field split (setup fields)
   symmetric matrix (use in examples, testing)
   full-scale testing
@@ -181,21 +176,9 @@ Charles
   libsrc/materials
     Generalized Maxwell materials
 
-  DirichletBC (Python) - rate == None -> dbRate == 0
-  DirichletBoundary (Python) - rate == None -> dbRate == 0
-
   Cleanup SlipTimeFn tests (refactor test/initialize stuff)
 
 6. Memory model [Matt]
-
-7. 2-D Plane strain Maxwell viscoelastic rheology [Charles]
-
-8. 2-D Plane strain Generalized Maxwell viscoelastic rheology [Charles]
-
-9. 2-D Power-law rheology [Charles]
-   2D viscoelastic models for plane strain
-
-10. Initial stress, strain, state variables for inelastic models [Charles]
 
 11. Savage-Presscott benchmark [Charles]
 
@@ -226,8 +209,19 @@ Charles
 
 -- Release (v1.4) --
 
+-- Release (v1.5) --
+
+7. 2-D Plane strain Maxwell viscoelastic rheology [Charles]
+
+8. 2-D Plane strain Generalized Maxwell viscoelastic rheology [Charles]
+
+9. 2-D Power-law rheology [Charles]
+   2D viscoelastic models for plane strain
+
+10. Initial stress, strain, state variables for inelastic models [Charles]
+
+
 Modularize output? [Matt]
-  "field_dimensioned" is prefered to "field"
 
 Fault friction
 

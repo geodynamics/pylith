@@ -68,6 +68,7 @@ namespace pylith {
       };
 
       const double tValue = 2.2;
+      const double tValue2 = 2.6;
       const double valuesRate[npointsIn*numBCDOF] = {
 	-0.34,  -0.17,
 	 0.56,   0.42,
@@ -79,6 +80,22 @@ namespace pylith {
       const double valuesChangeTH[npointsIn*numBCDOF] = {
 	1.3*0.98,  1.4*0.98,
 	0.0,  0.0,
+      };
+      const double valuesIncrInitial[npointsIn*numBCDOF] = {
+	0.0,  0.0,
+	0.0,  0.0,
+      };
+      const double valuesIncrRate[npointsIn*numBCDOF] = {
+	-0.08,  -0.04,
+	 0.16,   0.12,
+      };
+      const double valuesIncrChange[npointsIn*numBCDOF] = {
+	0.0,  0.0,
+	1.7,  1.6,
+      };
+      const double valuesIncrChangeTH[npointsIn*numBCDOF] = {
+	1.3*-0.04,  1.4*-0.04,
+	1.7*0.98,  1.6*0.98,
       };
 
       // Check values in section against expected values.
@@ -255,6 +272,7 @@ pylith::bc::TestTimeDependentPoints::testQueryDatabases(void)
   CPPUNIT_ASSERT(!changeTimeSection.isNull());
   _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::changeTime,
 					 1, changeTimeSection, timeScale);
+  th.close();
 } // testQueryDatabases
 
 // ----------------------------------------------------------------------
@@ -465,6 +483,225 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueAll(void)
   _TestTimeDependentPoints::_checkValues(&valuesE[0],
 					 numBCDOF, valueSection, forceScale);
 } // testCalculateValueAll
+
+// ----------------------------------------------------------------------
+// Test _calculateValueIncr() with initial value.
+void
+pylith::bc::TestTimeDependentPoints::testCalculateValueIncrInitial(void)
+{ // testCalculateValueIncrInitial
+  CPPUNIT_ASSERT(0 != _mesh);
+  CPPUNIT_ASSERT(0 != _bc);
+
+  spatialdata::spatialdb::SimpleDB dbInitial("TestTimeDependentPoints _queryDatabases");
+  spatialdata::spatialdb::SimpleIOAscii dbInitialIO;
+  dbInitialIO.filename("data/tri3_force.spatialdb");
+  dbInitial.ioHandler(&dbInitialIO);
+  dbInitial.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
+
+  _bc->dbInitial(&dbInitial);
+
+  const double pressureScale = _TestTimeDependentPoints::pressureScale;
+  const double lengthScale = _TestTimeDependentPoints::lengthScale;
+  const double timeScale = _TestTimeDependentPoints::timeScale;
+  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const char* fieldName = "force";
+  _bc->_queryDatabases(*_mesh, forceScale, fieldName);
+  const double t0 = _TestTimeDependentPoints::tValue / timeScale;
+  const double t1 = _TestTimeDependentPoints::tValue2 / timeScale;
+  _bc->_calculateValueIncr(t0, t1);
+
+  const double tolerance = 1.0e-06;
+  const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
+  CPPUNIT_ASSERT(0 != _bc->_parameters);
+  
+  // Check values.
+  const ALE::Obj<RealSection>& valueSection = 
+    _bc->_parameters->get("value").section();
+  CPPUNIT_ASSERT(!valueSection.isNull());
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesIncrInitial,
+					 numBCDOF, valueSection, forceScale);
+} // testCalculateValueIncrInitial
+
+// ----------------------------------------------------------------------
+// Test _calculateValueIncr() with rate.
+void
+pylith::bc::TestTimeDependentPoints::testCalculateValueIncrRate(void)
+{ // testCalculateValueIncrRate
+  CPPUNIT_ASSERT(0 != _mesh);
+  CPPUNIT_ASSERT(0 != _bc);
+
+  spatialdata::spatialdb::SimpleDB dbRate("TestTimeDependentPoints _queryDatabases");
+  spatialdata::spatialdb::SimpleIOAscii dbRateIO;
+  dbRateIO.filename("data/tri3_force_rate.spatialdb");
+  dbRate.ioHandler(&dbRateIO);
+  dbRate.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
+
+  _bc->dbRate(&dbRate);
+
+  const double pressureScale = _TestTimeDependentPoints::pressureScale;
+  const double lengthScale = _TestTimeDependentPoints::lengthScale;
+  const double timeScale = _TestTimeDependentPoints::timeScale;
+  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const char* fieldName = "force";
+  _bc->_queryDatabases(*_mesh, forceScale, fieldName);
+  const double t0 = _TestTimeDependentPoints::tValue / timeScale;
+  const double t1 = _TestTimeDependentPoints::tValue2 / timeScale;
+  _bc->_calculateValueIncr(t0, t1);
+
+  const double tolerance = 1.0e-06;
+  const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
+  CPPUNIT_ASSERT(0 != _bc->_parameters);
+  
+  // Check values.
+  const ALE::Obj<RealSection>& valueSection = 
+    _bc->_parameters->get("value").section();
+  CPPUNIT_ASSERT(!valueSection.isNull());
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesIncrRate,
+					 numBCDOF, valueSection, forceScale);
+} // testCalculateValueIncrRate
+
+// ----------------------------------------------------------------------
+// Test _calculateValueIncr() with temporal change.
+void
+pylith::bc::TestTimeDependentPoints::testCalculateValueIncrChange(void)
+{ // testCalculateValueIncrChange
+  CPPUNIT_ASSERT(0 != _mesh);
+  CPPUNIT_ASSERT(0 != _bc);
+
+  spatialdata::spatialdb::SimpleDB dbChange("TestTimeDependentPoints _queryDatabases");
+  spatialdata::spatialdb::SimpleIOAscii dbChangeIO;
+  dbChangeIO.filename("data/tri3_force_change.spatialdb");
+  dbChange.ioHandler(&dbChangeIO);
+  dbChange.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
+
+  _bc->dbChange(&dbChange);
+
+  const double pressureScale = _TestTimeDependentPoints::pressureScale;
+  const double lengthScale = _TestTimeDependentPoints::lengthScale;
+  const double timeScale = _TestTimeDependentPoints::timeScale;
+  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const char* fieldName = "force";
+  _bc->_queryDatabases(*_mesh, forceScale, fieldName);
+  const double t0 = _TestTimeDependentPoints::tValue / timeScale;
+  const double t1 = _TestTimeDependentPoints::tValue2 / timeScale;
+  _bc->_calculateValueIncr(t0, t1);
+
+  const double tolerance = 1.0e-06;
+  const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
+  CPPUNIT_ASSERT(0 != _bc->_parameters);
+  
+  // Check values.
+  const ALE::Obj<RealSection>& valueSection = 
+    _bc->_parameters->get("value").section();
+  CPPUNIT_ASSERT(!valueSection.isNull());
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesIncrChange,
+					 numBCDOF, valueSection, forceScale);
+} // testCalculateValueIncrChange
+
+// ----------------------------------------------------------------------
+// Test _calculateValueIncr() with temporal change w/time history.
+void
+pylith::bc::TestTimeDependentPoints::testCalculateValueIncrChangeTH(void)
+{ // testCalculateValueIncrChangeTH
+  CPPUNIT_ASSERT(0 != _bc);
+
+  spatialdata::spatialdb::SimpleDB dbChange("TestTimeDependentPoints _queryDatabases");
+  spatialdata::spatialdb::SimpleIOAscii dbChangeIO;
+  dbChangeIO.filename("data/tri3_force_change.spatialdb");
+  dbChange.ioHandler(&dbChangeIO);
+  dbChange.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
+
+  spatialdata::spatialdb::TimeHistory th("TestTimeDependentPoints _queryDatabases");
+  th.filename("data/tri3_force.timedb");
+
+  _bc->dbChange(&dbChange);
+  _bc->dbTimeHistory(&th);
+
+  const double pressureScale = _TestTimeDependentPoints::pressureScale;
+  const double lengthScale = _TestTimeDependentPoints::lengthScale;
+  const double timeScale = _TestTimeDependentPoints::timeScale;
+  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const char* fieldName = "force";
+  _bc->_queryDatabases(*_mesh, forceScale, fieldName);
+  const double t0 = _TestTimeDependentPoints::tValue / timeScale;
+  const double t1 = _TestTimeDependentPoints::tValue2 / timeScale;
+  _bc->_calculateValueIncr(t0, t1);
+
+  const double tolerance = 1.0e-06;
+  const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
+  CPPUNIT_ASSERT(0 != _bc->_parameters);
+  
+  // Check values.
+  const ALE::Obj<RealSection>& valueSection = 
+    _bc->_parameters->get("value").section();
+  CPPUNIT_ASSERT(!valueSection.isNull());
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesIncrChangeTH,
+					 numBCDOF, valueSection, forceScale);
+} // testCalculateValueIncrChangeTH
+
+// ----------------------------------------------------------------------
+// Test _calculateValueIncr() with initial, rate, and temporal change w/time history.
+void
+pylith::bc::TestTimeDependentPoints::testCalculateValueIncrAll(void)
+{ // testCalculateValueIncrAll
+  CPPUNIT_ASSERT(0 != _mesh);
+  CPPUNIT_ASSERT(0 != _bc);
+
+  spatialdata::spatialdb::SimpleDB dbInitial("TestTimeDependentPoints _queryDatabases");
+  spatialdata::spatialdb::SimpleIOAscii dbInitialIO;
+  dbInitialIO.filename("data/tri3_force.spatialdb");
+  dbInitial.ioHandler(&dbInitialIO);
+  dbInitial.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
+
+  spatialdata::spatialdb::SimpleDB dbRate("TestTimeDependentPoints _queryDatabases");
+  spatialdata::spatialdb::SimpleIOAscii dbRateIO;
+  dbRateIO.filename("data/tri3_force_rate.spatialdb");
+  dbRate.ioHandler(&dbRateIO);
+  dbRate.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
+
+  spatialdata::spatialdb::SimpleDB dbChange("TestTimeDependentPoints _queryDatabases");
+  spatialdata::spatialdb::SimpleIOAscii dbChangeIO;
+  dbChangeIO.filename("data/tri3_force_change.spatialdb");
+  dbChange.ioHandler(&dbChangeIO);
+  dbChange.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
+
+  spatialdata::spatialdb::TimeHistory th("TestTimeDependentPoints _queryDatabases");
+  th.filename("data/tri3_force.timedb");
+
+  _bc->dbInitial(&dbInitial);
+  _bc->dbRate(&dbRate);
+  _bc->dbChange(&dbChange);
+  _bc->dbTimeHistory(&th);
+
+  const double pressureScale = _TestTimeDependentPoints::pressureScale;
+  const double lengthScale = _TestTimeDependentPoints::lengthScale;
+  const double timeScale = _TestTimeDependentPoints::timeScale;
+  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const char* fieldName = "force";
+  _bc->_queryDatabases(*_mesh, forceScale, fieldName);
+  const double t0 = _TestTimeDependentPoints::tValue / timeScale;
+  const double t1 = _TestTimeDependentPoints::tValue2 / timeScale;
+  _bc->_calculateValueIncr(t0, t1);
+
+  const double tolerance = 1.0e-06;
+  const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
+  CPPUNIT_ASSERT(0 != _bc->_parameters);
+  
+  // Check values.
+  const int npoints = _TestTimeDependentPoints::npointsIn;
+  double_array valuesE(npoints*numBCDOF);
+  for (int i=0; i < valuesE.size(); ++i)
+    valuesE[i] = 
+      _TestTimeDependentPoints::valuesIncrInitial[i] +
+      _TestTimeDependentPoints::valuesIncrRate[i] +
+      _TestTimeDependentPoints::valuesIncrChangeTH[i];
+
+  const ALE::Obj<RealSection>& valueSection = 
+    _bc->_parameters->get("value").section();
+  CPPUNIT_ASSERT(!valueSection.isNull());
+  _TestTimeDependentPoints::_checkValues(&valuesE[0],
+					 numBCDOF, valueSection, forceScale);
+} // testCalculateValueIncrAll
 
 // ----------------------------------------------------------------------
 // Check values in section against expected values.

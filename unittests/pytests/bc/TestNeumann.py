@@ -175,7 +175,7 @@ class TestNeumann(unittest.TestCase):
     db = SimpleDB()
     db._configure()
     db.inventory.label = "TestNeumann tri3"
-    db.inventory.iohandler.inventory.filename = "data/tri3-tractions.spatialdb"
+    db.inventory.iohandler.inventory.filename = "data/tri3_tractions.spatialdb"
     db.inventory.iohandler._configure()
     db._configure()
 

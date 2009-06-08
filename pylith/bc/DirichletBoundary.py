@@ -18,7 +18,6 @@
 ## Factory: boundary_condition
 
 from DirichletBC import DirichletBC
-from DirichletBC import validateDOF
 from bc import DirichletBoundary as ModuleDirichletBoundary
 
 # DirichletBoundary class
@@ -64,7 +63,12 @@ class DirichletBoundary(DirichletBC, ModuleDirichletBoundary):
     self._loggingPrefix = "DiBC "
     self.availableFields = \
         {'vertex': \
-           {'info': ["initial", "rate-of-change"],
+           {'info': ["initial", 
+                     "rate-of-change", 
+                     "change-in-value", 
+                     "rate-start-time", 
+                     "change-start-time",
+                     ],
             'data': []},
          'cell': \
            {'info': [],

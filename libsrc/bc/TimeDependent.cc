@@ -35,11 +35,6 @@ pylith::bc::TimeDependent::TimeDependent(void) :
 // Destructor.
 pylith::bc::TimeDependent::~TimeDependent(void)
 { // destructor
-#if 0
-  if (0 != _dbTimeHistory)
-    _dbTimeHistory->close();
-#endif
-
   _dbInitial = 0; // TODO: Use shared pointers
   _dbRate = 0; // TODO: Use shared pointers
   _dbChange = 0; // TODO: Use shared pointers

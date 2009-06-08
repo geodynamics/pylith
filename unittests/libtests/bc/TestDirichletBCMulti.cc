@@ -303,10 +303,9 @@ pylith::bc::TestDirichletBCMulti::_initialize(topology::Mesh* mesh,
   const double upDir[] = { 0.0, 0.0, 1.0 };
 
   bcA->label(_data->labelA);
-  bcA->db(&db);
+  bcA->dbInitial(&db);
   bcA->dbRate(&dbRate);
-  bcA->referenceTime(_data->tRefA);
-  bcA->fixedDOF(_data->fixedDOFA, _data->numFixedDOFA);
+  bcA->bcDOF(_data->fixedDOFA, _data->numFixedDOFA);
   bcA->initialize(*mesh, upDir);
 
   // Setup boundary condition B
@@ -317,10 +316,9 @@ pylith::bc::TestDirichletBCMulti::_initialize(topology::Mesh* mesh,
   dbRate.ioHandler(&dbIORate);
 
   bcB->label(_data->labelB);
-  bcB->db(&db);
+  bcB->dbInitial(&db);
   bcB->dbRate(&dbRate);
-  bcB->referenceTime(_data->tRefB);
-  bcB->fixedDOF(_data->fixedDOFB, _data->numFixedDOFB);
+  bcB->bcDOF(_data->fixedDOFB, _data->numFixedDOFB);
   bcB->initialize(*mesh, upDir);
 
   // Setup boundary condition C
@@ -332,10 +330,9 @@ pylith::bc::TestDirichletBCMulti::_initialize(topology::Mesh* mesh,
     dbRate.ioHandler(&dbIORate);
     
     bcC->label(_data->labelC);
-    bcC->db(&db);
+    bcC->dbInitial(&db);
     bcC->dbRate(&dbRate);
-    bcC->referenceTime(_data->tRefC);
-    bcC->fixedDOF(_data->fixedDOFC, _data->numFixedDOFC);
+    bcC->bcDOF(_data->fixedDOFC, _data->numFixedDOFC);
     bcC->initialize(*mesh, upDir);
   } // if
 } // _initialize
