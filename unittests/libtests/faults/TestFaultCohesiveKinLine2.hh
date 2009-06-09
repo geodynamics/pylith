@@ -42,6 +42,7 @@ class pylith::faults::TestFaultCohesiveKinLine2 : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobian );
   CPPUNIT_TEST( testUpdateStateVars );
   CPPUNIT_TEST( testCalcTractionsChange );
+  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 

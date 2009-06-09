@@ -150,7 +150,7 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::FaultCohesiveKin::splitFields(topology::Field<topology::Mesh>* field)
+pylith::faults::FaultCohesiveKin::splitField(topology::Field<topology::Mesh>* field)
 { // splitFields
   assert(0 != field);
 
@@ -161,9 +161,6 @@ pylith::faults::FaultCohesiveKin::splitFields(topology::Field<topology::Mesh>* f
 
   const int fibrationDisp = 0;
   const int fibrationLagrange = 1;
-  const ALE::Obj<RealSection>& splitSection =
-    section->getFibration(fibrationLagrange);
-  assert(!splitSection.isNull());
 
   // Get domain Sieve mesh
   const ALE::Obj<SieveMesh>& sieveMesh = field->mesh().sieveMesh();
@@ -194,7 +191,7 @@ pylith::faults::FaultCohesiveKin::splitFields(topology::Field<topology::Mesh>* f
       // Reset displacement fibration fiber dimension to zero.
       section->setFiberDimension(vertexMesh, 0, fibrationDisp);
       // Set Langrange fibration fiber dimension.
-      splitSection->setFiberDimension(vertexMesh, fiberDim, fibrationLagrange);
+      section->setFiberDimension(vertexMesh, fiberDim, fibrationLagrange);
     } // if
 } // splitFields
 

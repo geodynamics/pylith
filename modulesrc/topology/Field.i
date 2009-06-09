@@ -218,6 +218,9 @@ namespace pylith {
       /// Sieve section view of the field.
       void scatterVectorToSection(void) const;
 
+      /// Setup split field with all entries set to a default space of 0.
+      void splitDefault(void);
+
     }; // Field
 
   } // topology
