@@ -30,7 +30,7 @@
 // Default constructor.
 pylith::bc::DirichletBoundary::DirichletBoundary(void) :
   _boundaryMesh(0),
-  _fields(0)
+  _outputFields(0)
 { // constructor
 } // constructor
 
@@ -39,7 +39,7 @@ pylith::bc::DirichletBoundary::DirichletBoundary(void) :
 pylith::bc::DirichletBoundary::~DirichletBoundary(void)
 { // destructor
   delete _boundaryMesh; _boundaryMesh = 0;
-  delete _fields; _fields = 0;
+  delete _outputFields; _outputFields = 0;
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -84,7 +84,7 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
   } // else
 
   // Satisfy return value (should never reach here)
-  return _fields->get("null");
+  return _outputFields->get("null");
 } // getVertexField
 
 // ----------------------------------------------------------------------
@@ -107,10 +107,10 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
     throw std::runtime_error(msg.str());
   } // if
   
-  if (0 == _fields)
-    _fields = 
+  if (0 == _outputFields)
+    _outputFields = 
       new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
-  assert(0 != _fields);
+  assert(0 != _outputFields);
   
   const ALE::Obj<SieveMesh>& sieveMesh = _boundaryMesh->sieveMesh();
   assert(!sieveMesh.isNull());
@@ -123,15 +123,15 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
   const int numFixedDOF = _bcDOF.size();
 
   double_array bufferVertex(fiberDim);
-  if (!_fields->hasField("buffer (vector)")) {
-    _fields->add("buffer (vector)", "buffer");
+  if (!_outputFields->hasField("buffer (vector)")) {
+    _outputFields->add("buffer (vector)", "buffer");
     topology::Field<topology::SubMesh>& buffer =
-      _fields->get("buffer (vector)");  
+      _outputFields->get("buffer (vector)");  
     buffer.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
     buffer.allocate();
   } // if
   topology::Field<topology::SubMesh>& buffer =
-    _fields->get("buffer (vector)");  
+    _outputFields->get("buffer (vector)");  
   buffer.label(label);
   buffer.scale(scale);
   buffer.vectorFieldType(topology::FieldBase::VECTOR);
@@ -180,10 +180,10 @@ pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
     throw std::runtime_error(msg.str());
   } // if
   
-  if (0 == _fields)
-    _fields = 
+  if (0 == _outputFields)
+    _outputFields = 
       new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
-  assert(0 != _fields);
+  assert(0 != _outputFields);
   
   const ALE::Obj<SieveMesh>& sieveMesh = _boundaryMesh->sieveMesh();
   assert(!sieveMesh.isNull());
@@ -191,15 +191,15 @@ pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
   const int numPoints = _points.size();
   const int fiberDim = 1;
 
-  if (!_fields->hasField("buffer (scalar)")) {
-    _fields->add("buffer (scalar)", "buffer");
+  if (!_outputFields->hasField("buffer (scalar)")) {
+    _outputFields->add("buffer (scalar)", "buffer");
     topology::Field<topology::SubMesh>& buffer =
-      _fields->get("buffer (scalar)");  
+      _outputFields->get("buffer (scalar)");  
     buffer.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
     buffer.allocate();
   } // if
   topology::Field<topology::SubMesh>& buffer =
-    _fields->get("buffer (scalar)");  
+    _outputFields->get("buffer (scalar)");  
   buffer.label(label);
   buffer.scale(scale);
   buffer.vectorFieldType(topology::FieldBase::SCALAR);

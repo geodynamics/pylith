@@ -97,11 +97,11 @@ public :
    */
   const double_array& jacobianDet(void) const;
 
-  /** Get precomputed determinants of Jacobian evaluated at quadrature points.
+  /** Get precomputed geometry fields.
    *
-   * @returns Array of determinants of Jacobian evaluated at quadrature pts
+   * @returns Geometry fields.
    */
-  const topology::Fields<topology::Field<mesh_type> >&
+  const topology::Fields<topology::Field<mesh_type> >*
   geometryFields(void) const;
 
   /** Compute geometric quantities for each cell.

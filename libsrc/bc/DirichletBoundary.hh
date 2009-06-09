@@ -96,7 +96,7 @@ private :
   topology::SubMesh* _boundaryMesh; ///< Boundary mesh.
 
   /// Fields manager (holds temporary field for output).
-  topology::Fields<topology::Field<topology::SubMesh> >* _fields;
+  topology::Fields<topology::Field<topology::SubMesh> >* _outputFields;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

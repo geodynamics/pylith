@@ -155,17 +155,17 @@ public :
    */
   void getField(topology::Field<topology::Mesh> *field, const char* name) const;
 
-  /** Get the properties.
+  /** Get the properties field.
    *
-   * @returns the properties
+   * @returns Properties field.
    */
-  const topology::Field<topology::Mesh>& getProperties() const;
+  const topology::Field<topology::Mesh>* propertiesField() const;
 
-  /** Get the state variables.
+  /** Get the state variables field.
    *
-   * @returns the state variables
+   * @returns State variables field.
    */
-  const topology::Field<topology::Mesh>& getStateVars() const;
+  const topology::Field<topology::Mesh>* stateVarsField() const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

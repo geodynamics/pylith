@@ -40,6 +40,13 @@ public :
   /// Destructor.
   virtual
   ~BoundaryConditionPoints(void);
+  
+  /** Get parameter fields.
+   *
+   * @returns Parameter fields.
+   */
+  const topology::Fields<topology::Field<topology::Mesh> >*
+  parameterFields(void) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

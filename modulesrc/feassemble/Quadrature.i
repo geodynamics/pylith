@@ -55,11 +55,11 @@ namespace pylith {
       /// Deallocate temporary storage.
       void clear(void);
 
-      /** Get precomputed coordinates of quadrature points
+      /** Get precomputed geometry fields.
        *
-       * @returns Array of coordinates of quadrature points in cell
+       * @returns Geometry fields.
        */
-      const pylith::topology::Fields<pylith::topology::Field<mesh_type> >& geometryFields(void) const;
+      const pylith::topology::Fields<pylith::topology::Field<mesh_type> >* geometryFields(void) const;
 
     }; // Quadrature
 

@@ -124,18 +124,18 @@ namespace pylith {
        */
       void getField(pylith::topology::Field<pylith::topology::Mesh>* field,
 		    const char* name) const;
-
-      /** Get the properties.
+      
+      /** Get the properties field.
        *
-       * @returns the properties
+       * @returns Properties field.
        */
-      const pylith::topology::Field<pylith::topology::Mesh>& getProperties() const;
-
-      /** Get the state variables.
+      const pylith::topology::Field<pylith::topology::Mesh>* propertiesField() const;
+      
+      /** Get the state variables field.
        *
-       * @returns the state variables
+       * @returns State variables field.
        */
-      const pylith::topology::Field<pylith::topology::Mesh>& getStateVars() const;
+      const pylith::topology::Field<pylith::topology::Mesh>* stateVarsField() const;
 
       // PROTECTED METHODS //////////////////////////////////////////////
     protected :
