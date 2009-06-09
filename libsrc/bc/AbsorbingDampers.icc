@@ -1,0 +1,25 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_bc_absorbingdampers_hh)
+#error "AbsorbingDampers.icc can only be included from AbsorbingDampers.hh"
+#endif
+
+// Set database for boundary condition parameters.
+inline
+void
+pylith::bc::AbsorbingDampers::db(spatialdata::spatialdb::SpatialDB* const db) {
+  _db = db;
+}
+
+
+// End of file 

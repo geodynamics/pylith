@@ -18,10 +18,8 @@
 namespace pylith {
   namespace bc {
 
-    class Neumann : public BoundaryCondition, 
-		    public pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::SubMesh> >
+    class Neumann : public BCIntegratorSubMesh
     { // class Neumann
-      friend class TestNeumann; // unit testing
 
       // PUBLIC METHODS /////////////////////////////////////////////////
     public :
@@ -31,6 +29,12 @@ namespace pylith {
 
       /// Destructor.
       ~Neumann(void);
+
+      /** Set database for boundary condition parameters.
+       *
+       * @param db Spatial database
+       */
+      void db(spatialdata::spatialdb::SpatialDB* const db);
 
       /** Initialize boundary condition.
        *
@@ -67,12 +71,6 @@ namespace pylith {
        * @param mesh Finite-element mesh
        */
       void verifyConfiguration(const pylith::topology::Mesh& mesh) const;
-      
-      /** Get boundary mesh.
-       *
-       * @returns Boundary mesh.
-       */
-      const pylith::topology::SubMesh& boundaryMesh(void) const;
       
       /** Get cell field with BC information.
        *

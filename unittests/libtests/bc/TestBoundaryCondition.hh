@@ -36,8 +36,9 @@ class pylith::bc::TestBoundaryCondition : public CppUnit::TestFixture
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestBoundaryCondition );
+
   CPPUNIT_TEST( testLabel );
-  CPPUNIT_TEST( testDB );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -45,9 +46,6 @@ public :
 
   /// Test label()
   void testLabel(void);
-
-  /// Test db()
-  void testDB(void);
 
 }; // class TestBoundaryCondition
 

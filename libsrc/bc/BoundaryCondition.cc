@@ -21,8 +21,7 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::BoundaryCondition::BoundaryCondition(void) :
-  _label(""),
-  _db(0)
+  _label("")
 { // constructor
 } // constructor
 
@@ -30,7 +29,6 @@ pylith::bc::BoundaryCondition::BoundaryCondition(void) :
 // Destructor.
 pylith::bc::BoundaryCondition::~BoundaryCondition(void)
 { // destructor
-  _db = 0;
 } // destructor
 
 // ----------------------------------------------------------------------

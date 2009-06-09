@@ -20,17 +20,10 @@
 #define pylith_bc_neumann_hh
 
 // Include directives ---------------------------------------------------
-#include "BoundaryCondition.hh" // ISA BoundaryCondition
-
-#include "pylith/topology/SubMesh.hh" // ISA Quadrature<SubMesh>
-#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
-#include "pylith/feassemble/Integrator.hh" // ISA Integrator
-
-#include "pylith/utils/array.hh" // USES std::vector, double_array, int_array
+#include "BCIntegratorSubMesh.hh" // ISA BCIntegratorSubMesh
 
 // Neumann --------------------------------------------------------------
-class pylith::bc::Neumann : public BoundaryCondition, 
-			    public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
+class pylith::bc::Neumann : public BCIntegratorSubMesh
 { // class Neumann
   friend class TestNeumann; // unit testing
 
@@ -42,6 +35,12 @@ public :
 
   /// Destructor.
   ~Neumann(void);
+
+  /** Set database for boundary condition parameters.
+   *
+   * @param db Spatial database
+   */
+  void db(spatialdata::spatialdb::SpatialDB* const db);
 
   /** Initialize boundary condition.
    *
@@ -79,12 +78,6 @@ public :
    */
   void verifyConfiguration(const topology::Mesh& mesh) const;
 
-  /** Get boundary mesh.
-   *
-   * @returns Boundary mesh.
-   */
-  const topology::SubMesh& boundaryMesh(void) const;
-
   /** Get cell field with BC information.
    *
    * @param fieldType Type of field.
@@ -98,26 +91,20 @@ public :
   cellField(const char* name,
 	    topology::SolutionFields* const fields =0);
 
-  // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private :
-
-  /// Not implemented
-  Neumann(const Neumann&);
-
-  /// Not implemented
-  const Neumann& operator=(const Neumann&);
-
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  /// Mesh over which tractions are applied
-  topology::SubMesh* _boundaryMesh;
+  spatialdata::spatialdb::SpatialDB* _db; ///< Spatial database w/parameters
 
-  /// Parameters for tractions vector in global coordinates at
-  /// integration points.
-  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
+  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private :
+
+  Neumann(const Neumann&); ///< Not implemented
+  const Neumann& operator=(const Neumann&); ///< Not implemented
 
 }; // class Neumann
+
+#include "Neumann.icc" // inline methods
 
 #endif // pylith_bc_neumann_hh
 

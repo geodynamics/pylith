@@ -17,6 +17,7 @@
 %{
 #include "pylith/bc/BoundaryCondition.hh"
 #include "pylith/bc/BoundaryConditionPoints.hh"
+#include "pylith/bc/BCIntegratorSubMesh.hh"
 #include "pylith/bc/TimeDependent.hh"
 #include "pylith/bc/TimeDependentPoints.hh"
 #include "pylith/bc/DirichletBC.hh"
@@ -58,6 +59,7 @@ import_array();
 
 %include "BoundaryCondition.i"
 %include "BoundaryConditionPoints.i"
+%include "BCIntegratorSubMesh.i"
 %include "TimeDependent.i"
 %include "TimeDependentPoints.i"
 %include "DirichletBC.i"

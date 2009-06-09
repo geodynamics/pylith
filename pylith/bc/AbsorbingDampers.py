@@ -45,6 +45,7 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
     ##
     ## \b Facilities
     ## @li \b quadrature Quadrature object for numerical integration
+    ## @li \b db Database of boundary condition parameters
 
     import pyre.inventory
 
@@ -53,6 +54,11 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
                                          factory=SubMeshQuadrature)
     quadrature.meta['tip'] = "Quadrature object for numerical integration."
 
+    from spatialdata.spatialdb.SimpleDB import SimpleDB
+    db = pyre.inventory.facility("db", factory=SimpleDB, 
+                                 family="spatial_database")
+    db.meta['tip'] = "Database of boundary condition parameters."
+    
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -74,6 +80,7 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
     Integrator.preinitialize(self, mesh)
     self.bcQuadrature.preinitialize(mesh.coordsys().spaceDim())
     self.quadrature(self.bcQuadrature)
+    self.createSubMesh(mesh)
     return
 
 
@@ -93,6 +100,7 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
               "Dimension of mesh boundary '%s': %d" % \
               (self.bcQuadrature.cellDim,
                self.label, self.mesh.dimension()-1)    
+    ModuleAbsorbingDampers.verifyConfiguration(self, self.mesh)
 
     self._logger.eventEnd(logEvent)
     return
@@ -120,6 +128,7 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
     """
     BoundaryCondition._configure(self)
     self.bcQuadrature = self.inventory.quadrature
+    ModuleAbsorbingDampers.db(self, self.inventory.db)
     return
 
 

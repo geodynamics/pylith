@@ -16,16 +16,15 @@
 
 #include <cassert> // USES assert()
 
-// ----------------------------------------------------------------------
 // Get parameter fields.
-const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
-pylith::bc::BCIntegratorSubMesh::parameterFields(void) const
-{ // parameterFields
+inline
+const pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >*
+pylith::bc::BCIntegratorSubMesh::parameterFields(void) const {
   return _parameters;
 } // parameterFields
 
-// ----------------------------------------------------------------------
 // Get boundary mesh.
+inline
 const pylith::topology::SubMesh&
 pylith::bc::BCIntegratorSubMesh::boundaryMesh(void) const {
   assert(0 != _boundaryMesh);

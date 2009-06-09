@@ -51,17 +51,10 @@
 #define pylith_bc_absorbingdampers_hh
 
 // Include directives ---------------------------------------------------
-#include "BoundaryCondition.hh" // ISA BoundaryCondition
-
-#include "pylith/topology/SubMesh.hh" // ISA Quadrature<SubMesh>
-#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
-#include "pylith/feassemble/Integrator.hh" // ISA Integrator
-
-#include "pylith/utils/array.hh" // USES std::vector, double_array, int_array
+#include "BCIntegratorSubMesh.hh" // ISA BCIntegratorSubMesh
 
 // AbsorbingDampers ------------------------------------------------------
-class pylith::bc::AbsorbingDampers : public BoundaryCondition, 
-				     public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
+class pylith::bc::AbsorbingDampers : public BCIntegratorSubMesh
 { // class AbsorbingDampers
   friend class TestAbsorbingDampers; // unit testing
 
@@ -73,6 +66,12 @@ public :
 
   /// Destructor.
   ~AbsorbingDampers(void);
+
+  /** Set database for boundary condition parameters.
+   *
+   * @param db Spatial database
+   */
+  void db(spatialdata::spatialdb::SpatialDB* const db);
 
   /** Initialize boundary condition.
    *
@@ -110,25 +109,23 @@ public :
    */
   void verifyConfiguration(const topology::Mesh& mesh) const;
 
+  // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private :
+
+  spatialdata::spatialdb::SpatialDB* _db; ///< Spatial database w/parameters
+
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
   /// Not implemented
-  AbsorbingDampers(const AbsorbingDampers& m);
+  AbsorbingDampers(const AbsorbingDampers&);
 
   /// Not implemented
-  const AbsorbingDampers& operator=(const AbsorbingDampers& m);
-
-  // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private :
-
-  /// Mesh of absorbing boundary
-  topology::SubMesh* _boundaryMesh;
-
-  /// Parameters for damping constants.
-  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
+  const AbsorbingDampers& operator=(const AbsorbingDampers&);
 
 }; // class AbsorbingDampers
+
+#include "AbsorbingDampers.icc" // inline methods
 
 #endif // pylith_bc_absorbingdampers_hh
 

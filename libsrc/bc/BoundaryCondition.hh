@@ -58,13 +58,6 @@ public :
    */
   const char* label(void) const;
 
-  // REMOVE THIS
-  /** Set database for boundary condition parameters.
-   *
-   * @param db Spatial database
-   */
-  void db(spatialdata::spatialdb::SpatialDB* const db);
-
   /** Verify configuration.
    *
    * @param mesh Finite-element mesh.
@@ -81,20 +74,19 @@ public :
   void initialize(const topology::Mesh& mesh,
 		  const double upDir[3]) = 0;
 
-  // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private :
-
-  /// Not implemented
-  BoundaryCondition(const BoundaryCondition& m);
-
-  /// Not implemented
-  const BoundaryCondition& operator=(const BoundaryCondition& m);
-
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
   std::string _label; ///< Label of boundary condition
-  spatialdata::spatialdb::SpatialDB* _db; ///< Spatial database w/parameters
+
+  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private :
+
+  /// Not implemented
+  BoundaryCondition(const BoundaryCondition&);
+
+  /// Not implemented
+  const BoundaryCondition& operator=(const BoundaryCondition&);
 
 }; // class BoundaryCondition
 

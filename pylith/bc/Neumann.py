@@ -43,6 +43,7 @@ class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
     ##
     ## \b Facilities
     ## @li \b quadrature Quadrature object for numerical integration
+    ## @li \b db Database of boundary condition parameters
     ## @li \b output Output manager associated with diagnostic output.
 
     import pyre.inventory
@@ -52,6 +53,11 @@ class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
                                          factory=SubMeshQuadrature)
     quadrature.meta['tip'] = "Quadrature object for numerical integration."
 
+    from spatialdata.spatialdb.SimpleDB import SimpleDB
+    db = pyre.inventory.facility("db", factory=SimpleDB, 
+                                 family="spatial_database")
+    db.meta['tip'] = "Database of boundary condition parameters."
+    
     from pylith.meshio.OutputNeumann import OutputNeumann
     output = pyre.inventory.facility("output", family="output_manager",
                                      factory=OutputNeumann)
@@ -85,6 +91,7 @@ class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
     Integrator.preinitialize(self, mesh)
     self.bcQuadrature.preinitialize(mesh.coordsys().spaceDim())
     self.quadrature(self.bcQuadrature)
+    self.createSubMesh(mesh)
     self.output.preinitialize(self)
     return
 
@@ -155,6 +162,7 @@ class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
     """
     BoundaryCondition._configure(self)
     self.bcQuadrature = self.inventory.quadrature
+    ModuleNeumann.db(self, self.inventory.db)
     self.output = self.inventory.output
     return
 
