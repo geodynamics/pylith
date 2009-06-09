@@ -28,12 +28,5 @@ pylith::bc::BoundaryCondition::label(void) const {
   return _label.c_str();
 }
 
-// Set database for boundary condition parameters.
-inline
-void
-pylith::bc::BoundaryCondition::db(spatialdata::spatialdb::SpatialDB* const db) {
-  _db = db;
-}
-
 
 // End of file 

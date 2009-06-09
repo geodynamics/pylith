@@ -38,8 +38,7 @@ typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::Neumann::Neumann(void) :
-  _boundaryMesh(0),
-  _parameters(0)
+  _db(0)
 { // constructor
 } // constructor
 
@@ -47,8 +46,7 @@ pylith::bc::Neumann::Neumann(void) :
 // Destructor.
 pylith::bc::Neumann::~Neumann(void)
 { // destructor
-  delete _boundaryMesh; _boundaryMesh = 0;
-  delete _parameters; _parameters = 0;
+  _db = 0; // :TODO: Use shared pointer
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -58,27 +56,11 @@ void
 pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
 				const double upDir[3])
 { // initialize
+  assert(0 != _boundaryMesh);
   assert(0 != _quadrature);
   assert(0 != _db);
 
-  delete _boundaryMesh; _boundaryMesh = 0;
-  delete _parameters; _parameters = 0;
-
-  _boundaryMesh = new topology::SubMesh(mesh, _label.c_str());
-  assert(0 != _boundaryMesh);
-
   double_array up(upDir, 3);
-
-  // check compatibility of quadrature and boundary mesh
-  if (_quadrature->cellDim() != _boundaryMesh->dimension()) {
-    std::ostringstream msg;
-    msg << "Quadrature is incompatible with cells for Neumann traction "
-	<< "boundary condition '" << _label << "'.\n"
-	<< "Dimension of boundary mesh: " << _boundaryMesh->dimension()
-	<< ", dimension of quadrature: " << _quadrature->cellDim()
-	<< ".";
-    throw std::runtime_error(msg.str());
-  } // if
   const int numCorners = _quadrature->numBasis();
 
   assert(0 != _normalizer);
@@ -94,24 +76,6 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
   const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
-  // Make sure surface cells are compatible with quadrature.
-  const int boundaryDepth = subSieveMesh->depth()-1; // depth of bndry cells
-  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
-    const int cellNumCorners = 
-      subSieveMesh->getNumCellCorners(*c_iter, boundaryDepth);
-    if (numCorners != cellNumCorners) {
-      std::ostringstream msg;
-      msg << "Quadrature is incompatible with cell for Neumann traction "
-	  << "boundary condition '" << _label << "'.\n"
-	  << "Cell " << *c_iter << " has " << cellNumCorners
-	  << " vertices but quadrature reference cell has "
-	  << numCorners << " vertices.";
-      throw std::runtime_error(msg.str());
-    } // if
-  } // for
-
   // Create section for traction vector in global coordinates
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
   const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
@@ -120,6 +84,7 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
   const int spaceDim = cellGeometry.spaceDim();
   const int fiberDim = spaceDim * numQuadPts;
   
+  delete _parameters;
   _parameters =
     new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
   assert(0 != _parameters);
@@ -369,18 +334,8 @@ pylith::bc::Neumann::integrateJacobian(topology::Jacobian* jacobian,
 void
 pylith::bc::Neumann::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
-  BoundaryCondition::verifyConfiguration(mesh);
+  BCIntegratorSubMesh::verifyConfiguration(mesh);
 } // verifyConfiguration
-
-// ----------------------------------------------------------------------
-// Get boundary mesh.
-const pylith::topology::SubMesh&
-pylith::bc::Neumann::boundaryMesh(void) const
-{ // dataMesh
-  assert(0 != _boundaryMesh);
-
-  return *_boundaryMesh;
-} // dataMesh
 
 // ----------------------------------------------------------------------
 // Get cell field for tractions.

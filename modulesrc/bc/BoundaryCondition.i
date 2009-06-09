@@ -43,12 +43,6 @@ namespace pylith {
        */
       const char* label(void) const;
 
-      /** Set database for boundary condition parameters.
-       *
-       * @param db Spatial database
-       */
-      void db(spatialdata::spatialdb::SpatialDB* const db);
-
       /** Verify configuration.
        *
        * @param mesh Finite-element mesh.

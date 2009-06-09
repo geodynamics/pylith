@@ -68,6 +68,20 @@ pylith::bc::TestNeumann::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
+// Test db().
+void
+pylith::bc::TestNeumann::testDB(void)
+{ // testDB
+  const std::string& label = "my db";
+  spatialdata::spatialdb::SimpleDB db(label.c_str());
+  Neumann bc;
+  bc.db(&db);
+  
+  CPPUNIT_ASSERT(0 != bc._db);
+  CPPUNIT_ASSERT_EQUAL(label, std::string(bc._db->label()));
+} // testDB
+    
+// ----------------------------------------------------------------------
 // Test initialize().
 void
 pylith::bc::TestNeumann::testInitialize(void)
@@ -252,6 +266,7 @@ pylith::bc::TestNeumann::_initialize(topology::Mesh* mesh,
     bc->quadrature(_quadrature);
     bc->label(_data->label);
     bc->db(&db);
+    bc->createSubMesh(*mesh);
     bc->initialize(*mesh, upDir);
 
     // Set up fields

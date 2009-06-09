@@ -16,8 +16,6 @@
 
 #include "pylith/bc/DirichletBC.hh" // USES DirichletBC
 
-#include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
-
 #include <string> // USES std::string
 
 // ----------------------------------------------------------------------
@@ -34,20 +32,6 @@ pylith::bc::TestBoundaryCondition::testLabel(void)
   
   CPPUNIT_ASSERT_EQUAL(label, std::string(bc.label()));
 } // testLabel
-    
-// ----------------------------------------------------------------------
-// Test db().
-void
-pylith::bc::TestBoundaryCondition::testDB(void)
-{ // testDB
-  const std::string& label = "my db";
-  spatialdata::spatialdb::SimpleDB db(label.c_str());
-  DirichletBC bc;
-  bc.db(&db);
-  
-  CPPUNIT_ASSERT(0 != bc._db);
-  CPPUNIT_ASSERT_EQUAL(label, std::string(bc._db->label()));
-} // testDB
     
 
 // End of file 

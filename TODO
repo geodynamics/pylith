@@ -26,8 +26,7 @@ Brad
   Update Neumann
   ArbitratySlipFn (final slip, start time)
   UniformDB units
-  field split (setup fields)
-  symmetric matrix (use in examples, testing)
+  symmetric matrix (preconditioner?)
   full-scale testing
   cleanup
   test uniform refinement

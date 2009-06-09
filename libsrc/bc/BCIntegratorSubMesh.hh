@@ -34,7 +34,7 @@
 // BCIntegratorSubMesh ----------------------------------------------
 class pylith::bc::BCIntegratorSubMesh : public BoundaryCondition,
       public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
-{ // class BoundaryCondition
+{ // class BCIntegratorSubMesh
   friend class TestBCIntegratorSubMesh; // unit testing
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ public :
    *
    * @returns Parameter fields.
    */
-  const topology::Fields<topology::Field<topology::Mesh> >*
+  const topology::Fields<topology::Field<topology::SubMesh> >*
   parameterFields(void) const;
 
   /** Get boundary mesh.
@@ -90,6 +90,8 @@ private :
   const BCIntegratorSubMesh& operator=(const BCIntegratorSubMesh&);
 
 }; // class BCIntegratorSubMesh
+
+#include "BCIntegratorSubMesh.icc" // inline methods
 
 #endif // pylith_bc_bcintegratorsubmesh_hh
 

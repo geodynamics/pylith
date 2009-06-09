@@ -18,9 +18,7 @@
 namespace pylith {
   namespace bc {
 
-    class AbsorbingDampers : 
-      public BoundaryCondition, 
-      public pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::SubMesh> >
+    class AbsorbingDampers : public BCIntegratorSubMesh
     { // class AbsorbingDampers
 
       // PUBLIC METHODS /////////////////////////////////////////////////
@@ -31,6 +29,12 @@ namespace pylith {
 
       /// Destructor.
       ~AbsorbingDampers(void);
+
+      /** Set database for boundary condition parameters.
+       *
+       * @param db Spatial database
+       */
+      void db(spatialdata::spatialdb::SpatialDB* const db);
 
       /** Initialize boundary condition.
        *

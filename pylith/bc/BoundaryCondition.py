@@ -67,7 +67,6 @@ class BoundaryCondition(Component, ModuleBoundaryCondition):
     ## @li \b label Label identifier for boundary.
     ##
     ## \b Facilities
-    ## @li \b db Database of boundary condition parameters
 
     import pyre.inventory
 
@@ -80,11 +79,6 @@ class BoundaryCondition(Component, ModuleBoundaryCondition):
 		        "tangent direction that is not collinear " \
 			"with normal direction."
 
-    from spatialdata.spatialdb.SimpleDB import SimpleDB
-    db = pyre.inventory.facility("db", factory=SimpleDB, 
-                                 family="spatial_database")
-    db.meta['tip'] = "Database of boundary condition parameters."
-    
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -101,8 +95,6 @@ class BoundaryCondition(Component, ModuleBoundaryCondition):
     """
     Setup boundary condition.
     """
-    self.label(self.inventory.label)
-    self.db(self.inventory.db)
     self.mesh = mesh
     return
 
@@ -122,6 +114,7 @@ class BoundaryCondition(Component, ModuleBoundaryCondition):
     Setup members using inventory.
     """
     Component._configure(self)
+    ModuleBoundaryCondition.label(self, self.inventory.label)
     self.upDir = map(float, self.inventory.upDir)
     return
 

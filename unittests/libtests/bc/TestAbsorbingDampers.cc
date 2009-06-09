@@ -69,6 +69,20 @@ pylith::bc::TestAbsorbingDampers::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
+// Test db().
+void
+pylith::bc::TestAbsorbingDampers::testDB(void)
+{ // testDB
+  const std::string& label = "my db";
+  spatialdata::spatialdb::SimpleDB db(label.c_str());
+  AbsorbingDampers bc;
+  bc.db(&db);
+  
+  CPPUNIT_ASSERT(0 != bc._db);
+  CPPUNIT_ASSERT_EQUAL(label, std::string(bc._db->label()));
+} // testDB
+    
+// ----------------------------------------------------------------------
 // Test initialize().
 void
 pylith::bc::TestAbsorbingDampers::testInitialize(void)
@@ -309,6 +323,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     bc->timeStep(_data->dt);
     bc->label(_data->label);
     bc->db(&db);
+    bc->createSubMesh(*mesh);
     bc->initialize(*mesh, upDir);
 
     //bc->_boundaryMesh->view("BOUNDARY MESH");

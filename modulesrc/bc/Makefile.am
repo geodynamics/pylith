@@ -21,6 +21,7 @@ swig_sources = \
 	bc.i \
 	BoundaryCondition.i \
 	BoundaryConditionPoints.i \
+	BCIntegratorSubMesh.i \
 	TimeDependent.i \
 	TimeDependentPoints.i \
 	DirichletBC.i \

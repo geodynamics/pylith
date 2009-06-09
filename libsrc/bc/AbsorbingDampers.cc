@@ -41,8 +41,7 @@ typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::AbsorbingDampers::AbsorbingDampers(void) :
-  _boundaryMesh(0),
-  _parameters(0)
+  _db(0)
 { // constructor
 } // constructor
 
@@ -50,8 +49,7 @@ pylith::bc::AbsorbingDampers::AbsorbingDampers(void) :
 // Destructor.
 pylith::bc::AbsorbingDampers::~AbsorbingDampers(void)
 { // destructor
-  delete _boundaryMesh; _boundaryMesh = 0;
-  delete _parameters; _parameters = 0;
+  _db = 0; // :TODO: Use shared pointer
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -61,27 +59,11 @@ void
 pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 					 const double upDir[3])
 { // initialize
+  assert(0 != _boundaryMesh);
   assert(0 != _quadrature);
   assert(0 != _db);
 
-  delete _boundaryMesh; _boundaryMesh = 0;
-  delete _parameters; _parameters = 0;
-
-  _boundaryMesh = new topology::SubMesh(mesh, _label.c_str());
-  assert(0 != _boundaryMesh);
-
   double_array up(upDir, 3);
-
-  // check compatibility of quadrature and boundary mesh
-  if (_quadrature->cellDim() != _boundaryMesh->dimension()) {
-    std::ostringstream msg;
-    msg << "Quadrature is incompatible with cells for absorbing boundary "
-	<< "condition '" << _label << "'.\n"
-	<< "Dimension of boundary mesh: " << _boundaryMesh->dimension()
-	<< ", dimension of quadrature: " << _quadrature->cellDim()
-	<< ".";
-    throw std::runtime_error(msg.str());
-  } // if
   const int numCorners = _quadrature->numBasis();
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
@@ -93,24 +75,6 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
-  // Make sure surface cells are compatible with quadrature.
-  const int boundaryDepth = sieveSubMesh->depth()-1; // depth of bndry cells
-  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
-    const int cellNumCorners = 
-      sieveSubMesh->getNumCellCorners(*c_iter, boundaryDepth);
-    if (numCorners != cellNumCorners) {
-      std::ostringstream msg;
-      msg << "Quadrature is incompatible with cell for absorbing boundary "
-	  << "condition '" << _label << "'.\n"
-	  << "Cell " << *c_iter << " has " << cellNumCorners
-	  << " vertices but quadrature reference cell has "
-	  << numCorners << " vertices.";
-      throw std::runtime_error(msg.str());
-    } // if
-  } // for
-
   // Get damping constants at each quadrature point and rotate to
   // global coordinate frame using orientation information
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
@@ -120,6 +84,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   const int spaceDim = cellGeometry.spaceDim();
   const int fiberDim = numQuadPts * spaceDim;
 
+  delete _parameters;
   _parameters = 
     new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
   assert(0 != _parameters);
@@ -507,7 +472,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 void
 pylith::bc::AbsorbingDampers::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
-  BoundaryCondition::verifyConfiguration(mesh);
+  BCIntegratorSubMesh::verifyConfiguration(mesh);
 } // verifyConfiguration
 
 

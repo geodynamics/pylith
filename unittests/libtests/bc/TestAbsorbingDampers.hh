@@ -41,7 +41,10 @@ class pylith::bc::TestAbsorbingDampers : public CppUnit::TestFixture
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestAbsorbingDampers );
+
   CPPUNIT_TEST( testConstructor );
+  CPPUNIT_TEST( testDB );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -55,6 +58,9 @@ public :
 
   /// Test constructor.
   void testConstructor(void);
+
+  /// Test db()
+  void testDB(void);
 
   /// Test initialize().
   void testInitialize(void);
