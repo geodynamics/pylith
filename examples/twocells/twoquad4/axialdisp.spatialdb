@@ -4,9 +4,9 @@
 SimpleDB {
 
   // There are two values specified in the database, corresponding to the
-  // constraint values for the x (dof-0) and y (dof-1) degrees of freedom.
+  // constraint values for the x and y degrees of freedom.
   num-values = 2
-  value-names =  dof-0 dof-1
+  value-names =  displacement-x displacement-y
 
   // The constraint values (displacements) have units of meters.
   value-units =  m  m
@@ -36,6 +36,6 @@ SimpleDB {
 // As described in axialdisp.cfg, this database will be used to specify
 // data along edges (pylith.bc.BCFourSides).
 // The entries are:
-// X-coord, Y-coord, dof-0 (x constraint), dof-1 (y constraint).
+// X-coord, Y-coord, displ-x, disp-y
 -2.0  0.0  -0.01  0.0
  2.0  0.0   0.01  0.0

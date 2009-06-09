@@ -9,7 +9,7 @@ SimpleDB {
   // There are 3 values specified in the database, corresponding to the
   // constraint values for the x, y, and z degrees of freedom.
   num-values = 3
-  value-names =  dof-0 dof-1 dof-2
+  value-names =  displacement-x  displacement-y  displacement-z
 
   // The constraint values (displacements) have units of meters.
   value-units =  m  m  m
@@ -39,6 +39,6 @@ SimpleDB {
 // As described in axialdisp.cfg, this database will be used to specify
 // data along edges.
 // The entries are:
-// X-coord, Y-coord, Z-coord, dof-0, dof-1, dof-2.
+// X-coord, Y-coord, Z-coord, disp-x  disp-y  disp-z
 -1.0  0.0  0.0  -0.01  0.0  0.0
  1.0  0.0  0.0   0.01  0.0  0.0

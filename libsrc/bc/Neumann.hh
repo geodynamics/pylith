@@ -96,7 +96,7 @@ public :
    */
   const topology::Field<topology::SubMesh>&
   cellField(const char* name,
-	    topology::SolutionFields* const fields);
+	    topology::SolutionFields* const fields =0);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

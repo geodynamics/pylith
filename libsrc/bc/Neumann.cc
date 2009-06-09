@@ -81,6 +81,10 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
   } // if
   const int numCorners = _quadrature->numBasis();
 
+  assert(0 != _normalizer);
+  const double lengthScale = _normalizer->lengthScale();
+  const double pressureScale = _normalizer->pressureScale();
+
   // Get 'surface' cells (1 dimension lower than top-level cells)
   const ALE::Obj<SieveSubMesh>& subSieveMesh = _boundaryMesh->sieveMesh();
   assert(!subSieveMesh.isNull());
@@ -123,6 +127,8 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
   topology::Field<topology::SubMesh>& traction = _parameters->get("traction");
   traction.newSection(cells, fiberDim);
   traction.allocate();
+  traction.scale(pressureScale);
+  traction.vectorFieldType(topology::FieldBase::VECTOR);
 
   // Containers for orientation information
   const int orientationSize = spaceDim * spaceDim;
@@ -184,10 +190,6 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
   assert(!tractionSection.isNull());
 
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
-
-  assert(0 != _normalizer);
-  const double lengthScale = _normalizer->lengthScale();
-  const double pressureScale = _normalizer->pressureScale();
 
   // Compute quadrature information
   _quadrature->initializeGeometry();

@@ -85,7 +85,7 @@ namespace pylith {
        */
       const pylith::topology::Field<pylith::topology::SubMesh>&
       cellField(const char* name,
-		pylith::topology::SolutionFields* const fields);
+		pylith::topology::SolutionFields* const fields =0);
 
     }; // class Neumann
 

@@ -110,7 +110,7 @@ class OutputManagerSubMesh(OutputManager, ModuleOutputManager):
     return
 
 
-  def _appendCellField(self, t, field):
+  def _appendCellField(self, t, field, label, labelId):
     """
     Call C++ appendCellField();
     """
