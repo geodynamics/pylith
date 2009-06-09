@@ -14,32 +14,26 @@
 
 #include "Neumann.hh" // implementation of object methods
 
-#include "pylith/topology/Field.hh" // HOLDSA Field
-#include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
-
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
+#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include <cstring> // USES memcpy()
-#include <strings.h> // USES strcasecmp()
+#include <cstring> // USES strcpy()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 
-//#define PRECOMPUTE_GEOMETRY
-
 // ----------------------------------------------------------------------
-typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-typedef pylith::topology::SubMesh::RealSection SubRealSection;
-typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
+typedef pylith::topology::SubMesh::SieveSubMesh SieveSubMesh;
+typedef pylith::topology::SubMesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::bc::Neumann::Neumann(void) :
-  _boundaryMesh(0),
-  _parameters(0)
+pylith::bc::Neumann::Neumann(void)
 { // constructor
 } // constructor
 
@@ -47,8 +41,6 @@ pylith::bc::Neumann::Neumann(void) :
 // Destructor.
 pylith::bc::Neumann::~Neumann(void)
 { // destructor
-  delete _boundaryMesh; _boundaryMesh = 0;
-  delete _parameters; _parameters = 0;
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -58,28 +50,9 @@ void
 pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
 				const double upDir[3])
 { // initialize
-  assert(0 != _quadrature);
-  assert(0 != _db);
-
-  delete _boundaryMesh; _boundaryMesh = 0;
-  delete _parameters; _parameters = 0;
-
-  _boundaryMesh = new topology::SubMesh(mesh, _label.c_str());
-  assert(0 != _boundaryMesh);
-
   double_array up(upDir, 3);
-
-  // check compatibility of quadrature and boundary mesh
-  if (_quadrature->cellDim() != _boundaryMesh->dimension()) {
-    std::ostringstream msg;
-    msg << "Quadrature is incompatible with cells for Neumann traction "
-	<< "boundary condition '" << _label << "'.\n"
-	<< "Dimension of boundary mesh: " << _boundaryMesh->dimension()
-	<< ", dimension of quadrature: " << _quadrature->cellDim()
-	<< ".";
-    throw std::runtime_error(msg.str());
-  } // if
-  const int numCorners = _quadrature->numBasis();
+  _queryDatabases(up);
+  _paramsLocalToGlobal();
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
   const ALE::Obj<SieveSubMesh>& subSieveMesh = _boundaryMesh->sieveMesh();
@@ -89,24 +62,6 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
   assert(!cells.isNull());
   const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
-
-  // Make sure surface cells are compatible with quadrature.
-  const int boundaryDepth = subSieveMesh->depth()-1; // depth of bndry cells
-  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
-    const int cellNumCorners = 
-      subSieveMesh->getNumCellCorners(*c_iter, boundaryDepth);
-    if (numCorners != cellNumCorners) {
-      std::ostringstream msg;
-      msg << "Quadrature is incompatible with cell for Neumann traction "
-	  << "boundary condition '" << _label << "'.\n"
-	  << "Cell " << *c_iter << " has " << cellNumCorners
-	  << " vertices but quadrature reference cell has "
-	  << numCorners << " vertices.";
-      throw std::runtime_error(msg.str());
-    } // if
-  } // for
 
   // Create section for traction vector in global coordinates
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
@@ -367,18 +322,8 @@ pylith::bc::Neumann::integrateJacobian(topology::Jacobian* jacobian,
 void
 pylith::bc::Neumann::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
-  BoundaryCondition::verifyConfiguration(mesh);
+  BCIntegratorSubMesh::verifyConfiguration(mesh);
 } // verifyConfiguration
-
-// ----------------------------------------------------------------------
-// Get boundary mesh.
-const pylith::topology::SubMesh&
-pylith::bc::Neumann::boundaryMesh(void) const
-{ // dataMesh
-  assert(0 != _boundaryMesh);
-
-  return *_boundaryMesh;
-} // dataMesh
 
 // ----------------------------------------------------------------------
 // Get cell field for tractions.
@@ -400,6 +345,274 @@ pylith::bc::Neumann::cellField(const char* name,
 
   return _parameters->get("traction"); // Satisfy method definition
 } // cellField
+
+// ----------------------------------------------------------------------
+// Query databases for parameters.
+void
+pylith::bc::Neumann::_queryDatabases(void)
+{ // _queryDatabases
+  const double timeScale = _normalizer().timeScale();
+  const double rateScale = valueScale / timeScale;
+
+  const int numBCDOF = _bcDOF.size();
+  char** valueNames = (numBCDOF > 0) ? new char*[numBCDOF] : 0;
+  char** rateNames = (numBCDOF > 0) ? new char*[numBCDOF] : 0;
+  const std::string& valuePrefix = std::string(fieldName) + "-";
+  const std::string& ratePrefix = std::string(fieldName) + "-rate-";
+  const string_vector& components = _valueComponents();
+  for (int i=0; i < numBCDOF; ++i) {
+    std::string name = valuePrefix + components[_bcDOF[i]];
+    int size = 1 + name.length();
+    valueNames[i] = new char[size];
+    strcpy(valueNames[i], name.c_str());
+
+    name = ratePrefix + components[_bcDOF[i]];
+    size = 1 + name.length();
+    rateNames[i] = new char[size];
+    strcpy(rateNames[i], name.c_str());
+  } // for
+
+  delete _parameters; 
+  _parameters = 
+    new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
+
+  // Create section to hold time dependent values
+  _parameters->add("value", fieldName);
+  topology::Field<topology::SubMesh>& value = _parameters->get("value");
+  value.scale(valueScale);
+  value.vectorFieldType(topology::FieldBase::OTHER);
+  value.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
+  value.allocate();
+
+  if (0 != _dbInitial) { // Setup initial values, if provided.
+    std::string fieldLabel = std::string("initial_") + std::string(fieldName);
+    _parameters->add("initial", fieldLabel.c_str());
+    topology::Field<topology::SubMesh>& initial = 
+      _parameters->get("initial");
+    initial.cloneSection(value);
+    initial.scale(pressureScale);
+    initial.vectorFieldType(topology::FieldBase::OTHER);
+
+    _dbInitial->open();
+    _dbInitial->queryVals(valueNames, spaceDim);
+    _queryDB(&initial, _dbInitial, spaceDim, pressureScale);
+    _dbInitial->close();
+  } // if
+
+  if (0 != _dbRate) { // Setup rate of change of values, if provided.
+    std::string fieldLabel = std::string("rate_") + std::string(fieldName);
+    _parameters->add("rate", fieldLabel.c_str());
+    topology::Field<topology::SubMesh>& rate = 
+      _parameters->get("rate");
+    rate.cloneSection(value);
+    rate.scale(rateScale);
+    rate.vectorFieldType(topology::FieldBase::OTHER);
+    const ALE::Obj<RealSection>& rateSection = rate.section();
+    assert(!rateSection.isNull());
+
+    _dbRate->open();
+    _dbRate->queryVals(rateNames, numBCDOF);
+    _queryDB(&rate, _dbRate, numBCDOF, rateScale);
+
+    std::string timeLabel = 
+      std::string("rate_time_") + std::string(fieldName);
+    _parameters->add("rate time", timeLabel.c_str());
+    topology::Field<topology::SubMesh>& rateTime = 
+      _parameters->get("rate time");
+    rateTime.newSection(rate, 1);
+    rateTime.allocate();
+    rateTime.scale(timeScale);
+    rateTime.vectorFieldType(topology::FieldBase::SCALAR);
+
+    const char* timeNames[1] = { "rate-start-time" };
+    _dbRate->queryVals(timeNames, 1);
+    _queryDB(&rateTime, _dbRate, 1, timeScale);
+    _dbRate->close();
+  } // if
+
+  if (0 != _dbChange) { // Setup change of values, if provided.
+    std::string fieldLabel = std::string("change_") + std::string(fieldName);
+    _parameters->add("change", fieldLabel.c_str());
+    topology::Field<topology::SubMesh>& change = 
+      _parameters->get("change");
+    change.cloneSection(value);
+    change.scale(valueScale);
+    change.vectorFieldType(topology::FieldBase::OTHER);
+    const ALE::Obj<RealSection>& changeSection = change.section();
+    assert(!changeSection.isNull());
+
+    _dbChange->open();
+    _dbChange->queryVals(valueNames, numBCDOF);
+    _queryDB(&change, _dbChange, numBCDOF, valueScale);
+
+    std::string timeLabel = 
+      std::string("change_time_") + std::string(fieldName);
+    _parameters->add("change time", timeLabel.c_str());
+    topology::Field<topology::SubMesh>& changeTime = 
+      _parameters->get("change time");
+    changeTime.newSection(change, 1);
+    changeTime.allocate();
+    changeTime.scale(timeScale);
+    changeTime.vectorFieldType(topology::FieldBase::SCALAR);
+
+    const char* timeNames[1] = { "change-start-time" };
+    _dbChange->queryVals(timeNames, 1);
+    _queryDB(&changeTime, _dbChange, 1, timeScale);
+    _dbChange->close();
+
+    if (0 != _dbTimeHistory)
+      _dbTimeHistory->open();
+  } // if
+
+} // _queryDatabases
+
+// ----------------------------------------------------------------------
+// Query database for values.
+void
+pylith::bc::Neumann::_queryDB(topology::Field<topology::SubMesh>* field,
+			      spatialdata::spatialdb::SpatialDB* const db,
+			      const int querySize,
+			      const double scale)
+{ // _queryDB
+  assert(0 != field);
+  assert(0 != db);
+  assert(0 != _boundaryMesh);
+
+  const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
+  assert(0 != cs);
+  const int spaceDim = cs->spaceDim();
+
+  const double lengthScale = _getNormalizer().lengthScale();
+
+  double_array coordsVertex(spaceDim);
+  const ALE::Obj<SieveMesh>& sieveMesh = _boundaryMesh->sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<RealSection>& coordinates = 
+    sieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+
+  const ALE::Obj<RealSection>& section = field->section();
+  assert(!section.isNull());
+
+  double_array valuesCell(querySize);
+
+  // Get 'surface' cells (1 dimension lower than top-level cells)
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
+    sieveMesh->heightStratum(1);
+  assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
+       c_iter != cellsEnd;
+       ++c_iter) {
+    // Get dimensionalized coordinates of vertex
+    coordinates->restrictPoint(_Submesh[iPoint], 
+			       &coordsVertex[0], coordsVertex.size());
+    _getNormalizer().dimensionalize(&coordsVertex[0], coordsVertex.size(),
+				lengthScale);
+    int err = db->query(&valuesVertex[0], valuesVertex.size(), 
+			&coordsVertex[0], coordsVertex.size(), cs);
+    if (err) {
+      std::ostringstream msg;
+      msg << "Error querying for '" << field->label() << "' at (";
+      for (int i=0; i < spaceDim; ++i)
+	msg << "  " << coordsVertex[i];
+      msg << ") using spatial database " << db->label() << ".";
+      throw std::runtime_error(msg.str());
+    } // if
+    _getNormalizer().nondimensionalize(&valuesVertex[0], valuesVertex.size(),
+				   scale);
+    section->updatePoint(_Submesh[iPoint], &valuesVertex[0]);
+  } // for
+} // _queryDB
+
+// ----------------------------------------------------------------------
+// Calculate temporal and spatial variation of value over the list of Submesh.
+void
+pylith::bc::Neumann::_calculateValue(const double t)
+{ // _calculateValue
+  assert(0 != _parameters);
+
+  const ALE::Obj<RealSection>& valueSection = 
+    _parameters->get("value").section();
+  assert(!valueSection.isNull());
+  valueSection->zero();
+
+  const int numSubmesh = _Submesh.size();
+  const int numBCDOF = _bcDOF.size();
+  const double timeScale = _getNormalizer().timeScale();
+
+  const ALE::Obj<RealSection>& initialSection = (0 != _dbInitial) ?
+    _parameters->get("initial").section() : 0;
+  const ALE::Obj<RealSection>& rateSection = ( 0 != _dbRate) ?
+    _parameters->get("rate").section() : 0;
+  const ALE::Obj<RealSection>& rateTimeSection = (0 != _dbRate) ?
+    _parameters->get("rate time").section() : 0;
+  const ALE::Obj<RealSection>& changeSection = ( 0 != _dbChange) ?
+    _parameters->get("change").section() : 0;
+  const ALE::Obj<RealSection>& changeTimeSection = ( 0 != _dbChange) ?
+    _parameters->get("change time").section() : 0;
+
+  double_array valuesVertex(numBCDOF);
+  double_array bufferVertex(numBCDOF);
+  for (int iPoint=0; iPoint < numSubmesh; ++iPoint) {
+    const int p_bc = _Submesh[iPoint]; // Get point label
+    
+    valuesVertex = 0.0;
+    
+    // Contribution from initial value
+    if (0 != _dbInitial) {
+      assert(!initialSection.isNull());
+      initialSection->restrictPoint(p_bc, 
+				    &bufferVertex[0], bufferVertex.size());
+      valuesVertex += bufferVertex;
+    } // if
+    
+    // Contribution from rate of change of value
+    if (0 != _dbRate) {
+      assert(!rateSection.isNull());
+      assert(!rateTimeSection.isNull());
+      double tRate = 0.0;
+      
+      rateSection->restrictPoint(p_bc, &bufferVertex[0], bufferVertex.size());
+      rateTimeSection->restrictPoint(p_bc, &tRate, 1);
+      if (t > tRate) { // rate of change integrated over time
+	bufferVertex *= (t - tRate);
+	valuesVertex += bufferVertex;
+      } // if
+    } // if
+    
+    // Contribution from change of value
+    if (0 != _dbChange) {
+      assert(!changeSection.isNull());
+      assert(!changeTimeSection.isNull());
+      double tChange = 0.0;
+
+      changeSection->restrictPoint(p_bc, &bufferVertex[0], bufferVertex.size());
+      changeTimeSection->restrictPoint(p_bc, &tChange, 1);
+      if (t >= tChange) { // change in value over time
+	double scale = 1.0;
+	if (0 != _dbTimeHistory) {
+	  double tDim = t - tChange;
+	  _getNormalizer().dimensionalize(&tDim, 1, timeScale);
+	  const int err = _dbTimeHistory->query(&scale, tDim);
+	  if (0 != err) {
+	    std::ostringstream msg;
+	    msg << "Error querying for time '" << tDim 
+		<< "' in time history database "
+		<< _dbTimeHistory->label() << ".";
+	    throw std::runtime_error(msg.str());
+	  } // if
+	} // if
+	bufferVertex *= scale;
+	valuesVertex += bufferVertex;
+      } // if
+    } // if
+
+    valueSection->updateAddPoint(p_bc, &valuesVertex[0]);
+  } // for
+}  // _calculateValue
 
 
 // End of file 

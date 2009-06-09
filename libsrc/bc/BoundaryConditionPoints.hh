@@ -51,7 +51,7 @@ public :
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
-  /** Get mesh labels for points associated with applied forces.
+  /** Get mesh labels for points associated with boundary condition.
    *
    * @param mesh Finite-element mesh.
    */
@@ -63,7 +63,7 @@ protected :
   /// Parameters for boundary condition.
   topology::Fields<topology::Field<topology::Mesh> >* _parameters;
 
-  int_array _points; ///< Points for forces.
+  int_array _points; ///< Points for boundary condition.
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

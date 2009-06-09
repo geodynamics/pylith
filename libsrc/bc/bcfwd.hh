@@ -26,6 +26,7 @@ namespace pylith {
 
     class BoundaryCondition;
     class BoundaryConditionPoints;
+    class BCIntegratorSubMesh;
     class TimeDependent;
     class TimeDependentPoints;
     class TimeDependentSubMesh;

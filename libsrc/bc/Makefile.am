@@ -17,6 +17,7 @@ subpkginclude_HEADERS = \
 	BoundaryCondition.hh \
 	BoundaryCondition.icc \
 	BoundaryConditionPoints.hh \
+	BCIntegratorSubMesh.hh \
 	TimeDependent.hh \
 	TimeDependent.icc \
 	TimeDependentPoints.hh \

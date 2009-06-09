@@ -1,0 +1,97 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+/** @file libsrc/bc/BCIntegratorSubMesh.hh
+ *
+ * @brief C++ abstract base class for BoundaryCondition object with
+ * boundary condition applied at a simply-connected boundary (submesh).
+ *
+ * Interface definition for boundary conditions applied to a
+ * simply-connected boundary (submesh).
+ */
+
+#if !defined(pylith_bc_bcintegratorsubmesh_hh)
+#define pylith_bc_bcintegratorsubmesh_hh
+
+// Include directives ---------------------------------------------------
+#include "BoundaryCondition.hh" // ISA BoundaryCondition
+
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Fields, SubMesh
+
+#include "pylith/topology/SubMesh.hh" // ISA Quadrature<SubMesh>
+#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
+#include "pylith/feassemble/Integrator.hh" // ISA Integrator
+
+// BCIntegratorSubMesh ----------------------------------------------
+class pylith::bc::BCIntegratorSubMesh : public BoundaryCondition,
+      public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
+{ // class BoundaryCondition
+  friend class TestBCIntegratorSubMesh; // unit testing
+
+  // PUBLIC METHODS /////////////////////////////////////////////////////
+public :
+
+  /// Default constructor.
+  BCIntegratorSubMesh(void);
+
+  /// Destructor.
+  virtual
+  ~BCIntegratorSubMesh(void);
+  
+  /** Get parameter fields.
+   *
+   * @returns Parameter fields.
+   */
+  const topology::Fields<topology::Field<topology::Mesh> >*
+  parameterFields(void) const;
+
+  /** Get boundary mesh.
+   *
+   * @return Boundary mesh.
+   */
+  const topology::SubMesh& boundaryMesh(void) const;
+
+  /** Get mesh labels for submesh associated with applied forces.
+   *
+   * @param mesh Finite-element mesh.
+   */
+  void createSubMesh(const topology::Mesh& mesh);
+
+  /** Verify configuration is acceptable.
+   *
+   * @param mesh Finite-element mesh
+   */
+  void verifyConfiguration(const topology::Mesh& mesh) const;
+
+  // PROTECTED MEMBERS //////////////////////////////////////////////////
+protected :
+
+  topology::SubMesh* _boundaryMesh; ///< Boundary mesh.
+
+  /// Parameters for boundary condition.
+  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
+
+  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private :
+
+  /// Not implemented
+  BCIntegratorSubMesh(const BCIntegratorSubMesh&);
+
+  /// Not implemented
+  const BCIntegratorSubMesh& operator=(const BCIntegratorSubMesh&);
+
+}; // class BCIntegratorSubMesh
+
+#endif // pylith_bc_bcintegratorsubmesh_hh
+
+
+// End of file 

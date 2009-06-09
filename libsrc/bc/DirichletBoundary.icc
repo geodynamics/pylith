@@ -14,10 +14,13 @@
 #error "DirichletBoundary.icc can only be included from DirichletBoundary.hh"
 #endif
 
+#include <cassert> // USES assert()
+
 // Get boundary mesh.
 inline
 const pylith::topology::SubMesh&
 pylith::bc::DirichletBoundary::boundaryMesh(void) const {
+  assert(0 != _boundaryMesh);
   return *_boundaryMesh;
 } // boundaryMesh
 
