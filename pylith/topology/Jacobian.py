@@ -33,7 +33,7 @@ class Jacobian(ModuleJacobian):
     """
     # If matrix type has not been set, then set it to a value that will work.
     if matrixType == "unknown":
-      matrixType = "sbaij"
+      matrixType = "aij"
 
     ModuleJacobian.__init__(self, fields, matrixType)
     return
