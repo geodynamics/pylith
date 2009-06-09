@@ -97,12 +97,12 @@ namespace pylith {
       virtual
       void initialize(const pylith::topology::Mesh& mesh);
       
-      /** Split solution fields for separate preconditioning.
+      /** Split solution field for separate preconditioning.
        *
        * @param field Solution field.
        */
       virtual
-      void splitFields(pylith::topology::Field<pylith::topology::Mesh>* field);
+      void splitField(pylith::topology::Field<pylith::topology::Mesh>* field);
 
       /** Integrate contributions to residual term (r) for operator.
        *

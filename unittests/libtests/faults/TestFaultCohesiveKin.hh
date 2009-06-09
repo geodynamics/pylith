@@ -107,6 +107,9 @@ public :
   /// Test _calcTractionsChange().
   void testCalcTractionsChange(void);
 
+  /// Test splitField().
+  void testSplitField(void);
+
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 

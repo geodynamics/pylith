@@ -148,6 +148,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
     faultSieveMesh->getRenumbering();
   const ALE::Obj<SieveSubMesh::label_sequence>& vertices = 
     faultSieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
   const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
   const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
   int iVertex = 0;
@@ -631,6 +632,7 @@ pylith::faults::TestFaultCohesiveKin::testUpdateStateVars(void)
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
   const ALE::Obj<SieveSubMesh::label_sequence>& vertices = 
     faultSieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
   const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
   const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
   SieveSubMesh::renumbering_type& renumbering = faultSieveMesh->getRenumbering();
@@ -786,6 +788,69 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
     } // for
   } // for
 } // testCalcTractionsChange
+
+// ----------------------------------------------------------------------
+// Test splitField().
+void
+pylith::faults::TestFaultCohesiveKin::testSplitField(void)
+{ // testSplitField
+  const int fibrationDisp = 0;
+  const int fibrationFault = 1;
+
+  topology::Mesh mesh;
+  FaultCohesiveKin fault;
+  topology::SolutionFields fields(mesh);
+  _initialize(&mesh, &fault, &fields);
+
+  const topology::Field<topology::Mesh>& disp = fields.get("disp(t)");
+  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
+  CPPUNIT_ASSERT(0 != cs);
+  const int spaceDim = cs->spaceDim();
+
+  topology::Field<topology::Mesh> splitField(mesh);
+  splitField.newSection(disp, spaceDim);
+  splitField.splitDefault();
+  fault.splitField(&splitField);
+  splitField.allocate();
+  splitField.zero();
+
+  const ALE::Obj<RealSection>& section = splitField.section();
+  CPPUNIT_ASSERT(!section.isNull());
+  CPPUNIT_ASSERT_EQUAL(2, section->getNumSpaces());
+
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
+  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+  int iVertex = 0;
+  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+       v_iter != verticesEnd;
+       ++v_iter) {
+    if (*v_iter == _data->constraintVertices[iVertex]) {
+      const int fiberDim = section->getFiberDimension(*v_iter);
+      const int fiberDimD = section->getFiberDimension(*v_iter, 
+						       fibrationDisp); 
+      const int fiberDimF = section->getFiberDimension(*v_iter, 
+						       fibrationFault); 
+      CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
+      CPPUNIT_ASSERT_EQUAL(0, fiberDimD);
+      CPPUNIT_ASSERT_EQUAL(fiberDim, fiberDimF);
+      ++iVertex;
+    } else {
+      const int fiberDim = section->getFiberDimension(*v_iter);
+      const int fiberDimD = section->getFiberDimension(*v_iter, 
+						       fibrationDisp); 
+      const int fiberDimF = section->getFiberDimension(*v_iter, 
+						       fibrationFault); 
+      CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
+      CPPUNIT_ASSERT_EQUAL(fiberDim, fiberDimD);
+      CPPUNIT_ASSERT_EQUAL(0, fiberDimF);
+    } // if/else
+  } // for
+} // testSplitField
 
 // ----------------------------------------------------------------------
 // Initialize FaultCohesiveKin interface condition.

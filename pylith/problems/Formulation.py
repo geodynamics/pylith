@@ -228,11 +228,10 @@ class Formulation(PetscComponent, ModuleFormulation):
     solution.newSection(solution.VERTICES_FIELD, dimension)
     if self.splitFields:
       solution.splitDefault()
+      for integrator in self.integratorsMesh + self.integratorsSubMesh:
+        integrator.splitField(solution)
     for constraint in self.constraints:
       constraint.setConstraintSizes(solution)
-    if self.splitFields:
-      for integrator in self.integratorsMesh + self.integratorsSubMesh:
-        integrator.splitFields(solution)
     solution.allocate()
     for constraint in self.constraints:
       constraint.setConstraints(solution)
