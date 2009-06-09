@@ -59,7 +59,7 @@ protected :
 		       const double valueScale,
 		       const char* fieldName);
 
-  /** Wuery database for values.
+  /** Query database for values.
    *
    * @param field Field in which to store values.
    * @param db Spatial database with values.

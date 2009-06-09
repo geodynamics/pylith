@@ -1,0 +1,25 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_bc_neumann_hh)
+#error "Neumann.icc can only be included from Neumann.hh"
+#endif
+
+// Get label of boundary condition surface.
+inline
+const char*
+pylith::bc::Neumann::_getLabel(void) const {
+  return label();
+}
+
+
+// End of file 

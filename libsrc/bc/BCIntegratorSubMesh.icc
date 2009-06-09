@@ -1,0 +1,36 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_bc_bcintegratorsubmesh_hh)
+#error "BCIntegratorSubMesh.icc can only be included from BCIntegratorSubMesh.hh"
+#endif
+
+#include <cassert> // USES assert()
+
+// ----------------------------------------------------------------------
+// Get parameter fields.
+const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
+pylith::bc::BCIntegratorSubMesh::parameterFields(void) const
+{ // parameterFields
+  return _parameters;
+} // parameterFields
+
+// ----------------------------------------------------------------------
+// Get boundary mesh.
+const pylith::topology::SubMesh&
+pylith::bc::BCIntegratorSubMesh::boundaryMesh(void) const {
+  assert(0 != _boundaryMesh);
+  return *_boundaryMesh;
+}
+
+
+// End of file 

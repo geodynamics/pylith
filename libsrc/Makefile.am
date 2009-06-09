@@ -25,6 +25,7 @@ lib_LTLIBRARIES = libpylith.la
 libpylith_la_SOURCES = \
 	bc/BoundaryCondition.cc \
 	bc/BoundaryConditionPoints.cc \
+	bc/BCIntegratorSubMesh.cc \
 	bc/TimeDependent.cc \
 	bc/TimeDependentPoints.cc \
 	bc/DirichletBC.cc \
