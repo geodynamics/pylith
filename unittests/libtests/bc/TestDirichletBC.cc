@@ -156,27 +156,23 @@ pylith::bc::TestDirichletBC::testSetConstraintSizes(void)
 			   fieldSection->getFiberDimension(*v_iter));
       CPPUNIT_ASSERT_EQUAL(0,
 			   fieldSection->getConstraintDimension(*v_iter));
-#if 0 // TODO FIELD SPLIT
       CPPUNIT_ASSERT_EQUAL(_data->numDOF,
 			   fieldSection->getFiberDimension(*v_iter,
 							   fibration));
       CPPUNIT_ASSERT_EQUAL(0,
 			   fieldSection->getConstraintDimension(*v_iter,
 								fibration));
-#endif
     } else {
       CPPUNIT_ASSERT_EQUAL(_data->numDOF,
 			   fieldSection->getFiberDimension(*v_iter));
       CPPUNIT_ASSERT_EQUAL(_data->numFixedDOF, 
 			   fieldSection->getConstraintDimension(*v_iter));
-#if 0 // TODO FIELD SPLIT
       CPPUNIT_ASSERT_EQUAL(_data->numDOF,
 			   fieldSection->getFiberDimension(*v_iter,
 							   fibration));
       CPPUNIT_ASSERT_EQUAL(_data->numFixedDOF, 
 			   fieldSection->getConstraintDimension(*v_iter,
 								fibration));
-#endif
       ++iConstraint;
     } // if/else
   } // for
@@ -229,7 +225,6 @@ pylith::bc::TestDirichletBC::testSetConstraints(void)
     } // if/else
   } // for
 
-#if 0 // TODO FIELD SPLIT
   // Check fibration 0
   const int fibration = 0;
   iConstraint = 0;
@@ -252,7 +247,6 @@ pylith::bc::TestDirichletBC::testSetConstraints(void)
       ++iConstraint;
     } // if/else
   } // for
-#endif
 } // testSetConstraints
 
 // ----------------------------------------------------------------------

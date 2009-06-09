@@ -21,8 +21,6 @@
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
-#define FIELD_SPLIT
-
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldMesh );
 
@@ -986,9 +984,7 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
 	 v_iter != vertices->end();
 	 ++v_iter, ++iV) {
       section->addConstraintDimension(*v_iter, nconstraints[iV]);
-#if defined(FIELD_SPLIT)
       section->addConstraintDimension(*v_iter, nconstraints[iV], fibration);
-#endif
     } // for
     fieldSrc.allocate();
 
@@ -998,20 +994,15 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
 	 v_iter != vertices->end();
 	 ++v_iter, index += nconstraints[i++]) {
       section->setConstraintDof(*v_iter, &constraints[index]);
-#if defined(FIELD_SPLIT)
       section->setConstraintDof(*v_iter, &constraints[index], fibration);
-#endif
     } // for
   } // Setup source field
 
-#if defined(FIELD_SPLIT)
   const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
   CPPUNIT_ASSERT(!section.isNull());
   CPPUNIT_ASSERT_EQUAL(numFibrations, section->getNumSpaces());
   const ALE::Obj<Mesh::RealSection>& sectionSplit = section->getFibration(0);
   CPPUNIT_ASSERT(!sectionSplit.isNull());
-  section->view("FULL FIELD"); // TEMPORARY
-  sectionSplit->view("FIBRATION 0"); // TEMPORARY
 
   CPPUNIT_ASSERT(!vertices.isNull());
   int iV = 0;
@@ -1022,7 +1013,6 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
     CPPUNIT_ASSERT_EQUAL(nconstraints[iV++], 
 			 section->getConstraintDimension(*v_iter, fibration));
   } // for
-#endif
 } // testSplitDefault
 
 // ----------------------------------------------------------------------
@@ -1062,9 +1052,7 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
 	 v_iter != vertices->end();
 	 ++v_iter, ++iV) {
       section->addConstraintDimension(*v_iter, nconstraints[iV]);
-#if defined(FIELD_SPLIT)
       section->addConstraintDimension(*v_iter, nconstraints[iV], fibration);
-#endif
     } // for
     fieldSrc.allocate();
 
@@ -1074,13 +1062,10 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
 	 v_iter != vertices->end();
 	 ++v_iter, index += nconstraints[i++]) {
       section->setConstraintDof(*v_iter, &constraints[index]);
-#if defined(FIELD_SPLIT)
       section->setConstraintDof(*v_iter, &constraints[index], fibration);
-#endif
     } // for
   } // Setup source field
 
-#if defined(FIELD_SPLIT)
   Field<Mesh> field(mesh);
   field.cloneSection(fieldSrc);
   const ALE::Obj<Mesh::RealSection>& section = field.section();
@@ -1100,7 +1085,6 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
     CPPUNIT_ASSERT_EQUAL(nconstraints[iV++], 
 			 section->getConstraintDimension(*v_iter, fibration));
   } // for
-#endif
 } // testCloneSectionSplit
 
 // ----------------------------------------------------------------------

@@ -71,6 +71,9 @@ condition the fault constraints. The "mat_db" facility was removed.
 general time dependence. The names of the facilities and the names of
 the values in the spatial databses are, in most cases, different.
 
+(9) The FixedDOFDB has been renamed to ZeroDispDB in order to better
+reflect the boundary condition.
+
 ======================================================================
 MIGRATING FROM VERSION 1.2 TO 1.3
 ======================================================================

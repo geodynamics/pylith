@@ -509,13 +509,14 @@ pylith::topology::Field<mesh_type>::dimensionalize(void) const
 
     for (typename chart_type::const_iterator c_iter = chart.begin();
 	 c_iter != chartEnd;
-	 ++c_iter) {
-      assert(fiberDim == _section->getFiberDimension(*c_iter));
+	 ++c_iter) 
+      if (0 != _section->getFiberDimension(*c_iter)) {
+	assert(fiberDim == _section->getFiberDimension(*c_iter));
       
-      _section->restrictPoint(*c_iter, &values[0], values.size());
-      normalizer.dimensionalize(&values[0], values.size(), _scale);
-      _section->updatePointAll(*c_iter, &values[0]);
-    } // for
+	_section->restrictPoint(*c_iter, &values[0], values.size());
+	normalizer.dimensionalize(&values[0], values.size(), _scale);
+	_section->updatePointAll(*c_iter, &values[0]);
+      } // if
   } // if
 } // dimensionalize
 
@@ -696,18 +697,17 @@ pylith::topology::Field<mesh_type>::splitDefault(void)
   _section->addSpace(); // displacements
   _section->addSpace(); // Lagrange multipliers
 
-  // Assume fiber dimension is uniform
   const chart_type& chart = _section->getChart();
-  const int fiberDim = (chart.size() > 0) ? 
-    _section->getFiberDimension(*chart.begin()) : 0;
 
   const int fibration = 0;
   const typename chart_type::const_iterator chartBegin = chart.begin();
   const typename chart_type::const_iterator chartEnd = chart.end();
   for (typename chart_type::const_iterator c_iter = chart.begin();
        c_iter != chartEnd;
-       ++c_iter)
+       ++c_iter) {
+    const int fiberDim = _section->getFiberDimension(*c_iter);
     _section->setFiberDimension(*c_iter, fiberDim, fibration);
+  } // for
 } // splitDefault
 
 // End of file 
