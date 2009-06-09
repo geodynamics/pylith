@@ -266,20 +266,20 @@ pylith::materials::Material::initialize(
 } // initialize
 
 // ----------------------------------------------------------------------
-// Get properties
-const pylith::topology::Field<pylith::topology::Mesh>&
-pylith::materials::Material::getProperties() const
-{ // getProperties
-  return *_properties;
-} // getProperties
+// Get the properties field.
+const pylith::topology::Field<pylith::topology::Mesh>*
+pylith::materials::Material::propertiesField() const
+{ // propertiesField
+  return _properties;
+} // propertiesField
 
 // ----------------------------------------------------------------------
-// Get state variables
-const pylith::topology::Field<pylith::topology::Mesh>&
-pylith::materials::Material::getStateVars() const
-{ // getStateVars
-  return *_stateVars;
-} // getStateVars
+// Get the state variables field.
+const pylith::topology::Field<pylith::topology::Mesh>*
+pylith::materials::Material::stateVarsField() const
+{ // stateVarsField
+  return _stateVars;
+} // stateVarsField
 
 // ----------------------------------------------------------------------
 // Get physical property or state variable field.

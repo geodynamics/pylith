@@ -72,10 +72,9 @@ pylith::feassemble::Quadrature<mesh_type>::jacobianDet(void) const {
 // Get precomputed geometry fields.
 template<typename mesh_type>
 inline
-const pylith::topology::Fields<pylith::topology::Field<mesh_type> >&
+const pylith::topology::Fields<pylith::topology::Field<mesh_type> >*
 pylith::feassemble::Quadrature<mesh_type>::geometryFields(void) const {
-  assert(0 != _geometryFields);
-  return *_geometryFields;
+  return _geometryFields;
 }
 
 // Precompute geometric quantities for each cell.

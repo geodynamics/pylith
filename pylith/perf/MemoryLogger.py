@@ -92,8 +92,8 @@ class MemoryLogger(Logger):
     materialModel = pylith.perf.Material.Material(material.label(), material.ncells)
     materialModel.tabulate(self.memory[stage])
     print 'Material:',material.label()
-    self.logField(stage, material.getProperties())
-    self.logField(stage, material.getStateVars())
+    self.logField(stage, material.propertiesField())
+    self.logField(stage, material.stateVarsField())
     if self.verbose: self.show()
     return
 

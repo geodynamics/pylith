@@ -38,6 +38,14 @@ pylith::bc::BoundaryConditionPoints::~BoundaryConditionPoints(void)
 } // destructor
 
 // ----------------------------------------------------------------------
+// Get parameter fields.
+const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
+pylith::bc::BoundaryConditionPoints::parameterFields(void) const
+{ // parameterFields
+  return _parameters;
+} // paramegetFields
+
+// ----------------------------------------------------------------------
 // Get mesh labels for points associated with boundary condition.
 void
 pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)

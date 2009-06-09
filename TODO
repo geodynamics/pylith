@@ -4,9 +4,27 @@ CURRENT ISSUES/PRIORITIES
 
 Matt
   Memory model
+    C++ Objects with fields
+      DirichletBC (BoundarayConditionPoints::_parameters) ACCESSOR DONE
+      DirichletBoundary (_outputFields)
+      PointForce (BoundarayConditionPoints::_parameters) ACCESSOR DONE
+      AbsorbingDampers (_parameters)
+      Neumann (_parameters)
+      SlipTimeFn (_parameters)
+      FaultCohesiveKin (_fields)
+      Quadrature (_geometryFields) [should be NULL]
+      IntegratorElasticity (_outputFields)
+      ElasticMaterial (_initialFields, _properties, _stateVars)
+      OutputManager (_fields)
+      CellFilterAvg (_fieldAvg)
+      VertexFilterVecNorm (_fieldVecNorm)
+      
+      
   field split
 
 Brad
+  Update Neumann
+  ArbitratySlipFn
   field split (setup fields)
   symmetric matrix (use in examples, testing)
   full-scale testing
@@ -127,6 +145,9 @@ Charles
       Mesh::coneSize()
       Mesh::numVertices()
       Mesh::numCells()
+      TimeDependentPoints::parameterFields()
+      Material::propertiesField()
+      Material::stateVarsField()
 
       MeshOps::numMaterialCells()
 
