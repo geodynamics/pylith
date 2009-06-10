@@ -26,7 +26,7 @@
 ## tu(x) is the start time for the change in value given by a spatial datasse,
 ## a(t) is a time history given by a temporal database.
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 from bc import TimeDependent as ModuleTimeDependent
 
 from pylith.utils.NullComponent import NullComponent
@@ -50,7 +50,7 @@ def validateDOF(value):
   
 
 # TimeDependent class
-class TimeDependent(Component, ModuleTimeDependent):
+class TimeDependent(PetscComponent, ModuleTimeDependent):
   """
   Python abstract base class for managing a boundary condition with
   time dependent paramters.
@@ -104,7 +104,7 @@ class TimeDependent(Component, ModuleTimeDependent):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="time_dependent")
+    PetscComponent.__init__(self, name, facility="time_dependent")
     return
 
 
@@ -114,7 +114,7 @@ class TimeDependent(Component, ModuleTimeDependent):
     """
     Setup members using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
 
     import numpy
     bcDOF = numpy.array(self.inventory.bcDOF, dtype=numpy.int32)

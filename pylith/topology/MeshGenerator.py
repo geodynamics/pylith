@@ -16,10 +16,10 @@
 ##
 ## Factory: mesh_generator.
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # MeshGenerator class
-class MeshGenerator(Component):
+class MeshGenerator(PetscComponent):
   """
   Python abstract base class for mesh generator.
 
@@ -28,7 +28,7 @@ class MeshGenerator(Component):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
+  class Inventory(PetscComponent.Inventory):
     """
     Python object for managing MeshGenerator facilities and properties.
     """
@@ -58,7 +58,7 @@ class MeshGenerator(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="mesh_generator")
+    PetscComponent.__init__(self, name, facility="mesh_generator")
     self.debug = False
     self.interpolate = False
     return
@@ -78,7 +78,7 @@ class MeshGenerator(Component):
     """
     Set members based using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
     self.debug = self.inventory.debug
     self.interpolate = self.inventory.interpolate
     return

@@ -1073,8 +1073,6 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
   CPPUNIT_ASSERT_EQUAL(numFibrations, section->getNumSpaces());
   const ALE::Obj<Mesh::RealSection>& sectionSplit = section->getFibration(0);
   CPPUNIT_ASSERT(!sectionSplit.isNull());
-  section->view("FULL FIELD"); // TEMPORARY
-  sectionSplit->view("FIBRATION 0"); // TEMPORARY
 
   int iV = 0;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();

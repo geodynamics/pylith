@@ -17,10 +17,10 @@
 ##
 ## Factory: slip_time_fn
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # SlipTimeFn class
-class SlipTimeFn(Component):
+class SlipTimeFn(PetscComponent):
   """
   Python abstract base class for kinematic slip time function.
 
@@ -33,7 +33,7 @@ class SlipTimeFn(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="sliptimefn")
+    PetscComponent.__init__(self, name, facility="sliptimefn")
     return
 
 
@@ -73,7 +73,7 @@ class SlipTimeFn(Component):
     """
     Setup members using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
     return
 
   

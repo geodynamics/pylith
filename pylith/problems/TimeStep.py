@@ -16,12 +16,11 @@
 ##
 ## Factory: time_step
 
-from pyre.components.Component import Component
-
+from pylith.utils.PetscComponent import PetscComponent
 from pylith.utils.profiling import resourceUsageString
 
 # TimeStep class
-class TimeStep(Component):
+class TimeStep(PetscComponent):
   """
   Python abstract base class for managing the time step size.
 
@@ -34,7 +33,7 @@ class TimeStep(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="time_step")
+    PetscComponent.__init__(self, name, facility="time_step")
     from pyre.units.time import second
     self.totalTime = 0.0*second
     self.dt = 0.0*second
@@ -111,7 +110,7 @@ class TimeStep(Component):
     """
     Set members based using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
     return
 
 

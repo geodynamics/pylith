@@ -92,6 +92,9 @@ class TestApp(Script):
     from TestOutputSolnSubset import TestOutputSolnSubset
     suite.addTest(unittest.makeSuite(TestOutputSolnSubset))
 
+    from TestSingleOutput import TestSingleOutput
+    suite.addTest(unittest.makeSuite(TestSingleOutput))
+
     #TestOutputNeumann
 
     #TestOutputFaultKin

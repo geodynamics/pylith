@@ -16,11 +16,11 @@
 ##
 ## Factory: mesh_io
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 from meshio import MeshIO as ModuleMeshIO
 
 # MeshIOObj class
-class MeshIOObj(Component, ModuleMeshIO):
+class MeshIOObj(PetscComponent, ModuleMeshIO):
   """
   Python abstract base class for finite-element mesh I/O.
   """
@@ -31,7 +31,7 @@ class MeshIOObj(Component, ModuleMeshIO):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="mesh_io")
+    PetscComponent.__init__(self, name, facility="mesh_io")
     self.coordsys = None
     self._createModuleObj()
     return
@@ -81,7 +81,7 @@ class MeshIOObj(Component, ModuleMeshIO):
     """
     Set members based using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
     return
 
 

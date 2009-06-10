@@ -17,11 +17,11 @@
 ##
 ## Factory: quadrature.
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # ----------------------------------------------------------------------
 # QuadratureBase class
-class QuadratureBase(Component):
+class QuadratureBase(PetscComponent):
   """
   Python abstract base class for integrating over finite-elements
   using quadrature.
@@ -31,7 +31,7 @@ class QuadratureBase(Component):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
+  class Inventory(PetscComponent.Inventory):
     """Python object for managing Quadrature facilities and properties."""
 
     ## @class Inventory
@@ -67,7 +67,7 @@ class QuadratureBase(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="quadrature")
+    PetscComponent.__init__(self, name, facility="quadrature")
     return
 
 
@@ -98,7 +98,7 @@ class QuadratureBase(Component):
     """
     Set members based using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
     self.minJacobian(self.inventory.minJacobian)
     self.checkConditioning(self.inventory.checkConditioning)
     self.cell = self.inventory.cell
