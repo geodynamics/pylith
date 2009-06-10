@@ -93,7 +93,7 @@ class Implicit(Formulation):
     self._info.log("Creating solution field.")
     from pylith.utils.petsc import MemoryLogger
     logger = MemoryLogger.singleton()
-    #logger.setDebug(1)
+    logger.setDebug(0)
     logger.stagePush("Problem")
     self.fields.copyLayout("dispIncr(t->t+dt)")
 
@@ -104,13 +104,16 @@ class Implicit(Formulation):
     residual.zero()
     residual.createVector()
     self._debug.log(resourceUsageString())
+    logger.stagePop()
 
+    # Allocates memory for nonzero pattern and Jacobian
     self._info.log("Creating Jacobian matrix.")
     from pylith.topology.Jacobian import Jacobian
     self.jacobian = Jacobian(self.fields, self.matrixType)
     self.jacobian.zero() # TEMPORARY, to get correct memory usage
     self._debug.log(resourceUsageString())
 
+    logger.stagePush("Problem")
     self._info.log("Initializing solver.")
     self.solver.initialize(self.fields, self.jacobian, self)
     self._debug.log(resourceUsageString())
@@ -203,6 +206,15 @@ class Implicit(Formulation):
     Formulation.poststep(self, t, dt)
 
     self._stepCount += 1
+    return
+
+
+  def finalize(self):
+    """
+    Cleanup after time stepping.
+    """
+    Formulation.finalize(self)
+    self.perfLogger.logJacobian('Jacobian', 'dummy')
     return
 
 

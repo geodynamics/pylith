@@ -43,6 +43,14 @@ pylith::problems::Formulation::~Formulation(void)
 } // destructor
 
 // ----------------------------------------------------------------------
+// Return the fields
+const pylith::topology::SolutionFields&
+pylith::problems::Formulation::fields(void) const
+{ // fields
+  return *this->_fields;
+} // fields
+
+// ----------------------------------------------------------------------
 // Set integrators over the mesh.
 void
 pylith::problems::Formulation::meshIntegrators(IntegratorMesh** integrators,

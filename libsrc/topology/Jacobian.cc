@@ -30,6 +30,8 @@ pylith::topology::Jacobian::Jacobian(const SolutionFields& fields,
 { // constructor
   const ALE::Obj<Mesh::SieveMesh>& sieveMesh = fields.mesh().sieveMesh();
   const ALE::Obj<Mesh::RealSection>& solnSection = fields.solution().section();
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Jacobian");
 
   // Set blockFlag to -1 if okay to set block size equal to fiber
   // dimension, otherwise use a block size of 1.
@@ -39,6 +41,7 @@ pylith::topology::Jacobian::Jacobian(const SolutionFields& fields,
 					matrixType, &_matrix, blockFlag);
   CHECK_PETSC_ERROR_MSG(err, "Could not create PETSc sparse matrix "
 			"associated with system Jacobian.");
+  logger.stagePop();
 } // constructor
 
 // ----------------------------------------------------------------------

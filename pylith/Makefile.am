@@ -93,6 +93,8 @@ nobase_pkgpyexec_PYTHON = \
 	perf/Material.py \
 	perf/VertexGroup.py \
 	perf/Field.py \
+	perf/GlobalOrder.py \
+	perf/Jacobian.py \
 	problems/__init__.py \
 	problems/Explicit.py \
 	problems/Formulation.py \

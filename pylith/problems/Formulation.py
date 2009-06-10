@@ -218,7 +218,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     self._info.log("Creating solution field.")
     from pylith.utils.petsc import MemoryLogger
     logger = MemoryLogger.singleton()
-    #logger.setDebug(1)
+    logger.setDebug(0)
     logger.stagePush("Problem")
     self.fields.add("dispIncr(t->t+dt)", "displacement_increment")
     self.fields.add("disp(t)", "displacement")
@@ -239,9 +239,13 @@ class Formulation(PetscComponent, ModuleFormulation):
     solution.allocate()
     for constraint in self.constraints:
       constraint.setConstraints(solution)
+    logger.stagePop()
+
+    # This creates a global order
     solution.createVector()
     solution.createScatter()
 
+    logger.stagePush("Problem")
     dispT = self.fields.get("disp(t)")
     dispT.vectorFieldType(dispT.VECTOR)
     dispT.scale(lengthScale.value)
@@ -339,8 +343,14 @@ class Formulation(PetscComponent, ModuleFormulation):
     for name in self.fields.fieldNames():
       field = self.fields.get(name)
       self.perfLogger.logField('Problem', field)
+    self.perfLogger.logGlobalOrder('GlobalOrder', 'VectorOrder', self.fields.get('residual'))
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
       self.perfLogger.logQuadrature('Quadrature', integrator.quadrature())
+
+    # Placeholders until we know we they go
+    self.perfLogger.memory['Fault'] = 0
+    self.perfLogger.memory['BoundaryConditions'] = 0
+    self.perfLogger.memory['Output'] = 0
 
     self._info.log("Formulation finalize.")
     self._debug.log(resourceUsageString())

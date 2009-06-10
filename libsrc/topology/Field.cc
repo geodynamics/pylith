@@ -579,6 +579,8 @@ pylith::topology::Field<mesh_type>::createVector(void)
     err = VecDestroy(_vector); _vector = 0;
     CHECK_PETSC_ERROR(err);
   } // if
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("GlobalOrder");
 
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = _mesh.sieveMesh();
   assert(!sieveMesh.isNull());
@@ -594,6 +596,7 @@ pylith::topology::Field<mesh_type>::createVector(void)
   CHECK_PETSC_ERROR(err);
 
   err = VecSetFromOptions(_vector); CHECK_PETSC_ERROR(err);  
+  logger.stagePop();
 } // createVector
 
 // ----------------------------------------------------------------------

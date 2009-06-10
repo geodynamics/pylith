@@ -94,6 +94,8 @@ public :
    */
   void reformJacobian(const PetscVec* tmpSolveSolnVec =0);
 
+  const topology::SolutionFields& fields() const;
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 

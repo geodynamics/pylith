@@ -398,7 +398,7 @@ pylith::feassemble::IntegratorElasticity::_allocateTensorField(
   
   if (!_outputFields->hasField("buffer (tensor)")) {
     ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-    logger.stagePush("Problem");
+    logger.stagePush("Output");
     _outputFields->add("buffer (tensor)", "buffer");
     topology::Field<topology::Mesh>& buffer =
       _outputFields->get("buffer (tensor)");
