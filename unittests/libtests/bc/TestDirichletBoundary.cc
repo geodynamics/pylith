@@ -126,13 +126,19 @@ pylith::bc::TestDirichletBoundary::_initialize(topology::Mesh* mesh,
     "displacement-rate-z", 
     "rate-start-time",
   };
+  const char* units[numValues] = { 
+    "m", 
+    "m", 
+    "m", 
+    "s",
+  };
   const double values[numValues] = {
     _data->valueRate,
     _data->valueRate,
     _data->valueRate,
     _data->tRef,
   };
-  dbRate.setData(names, values, numValues);
+  dbRate.setData(names, units, values, numValues);
 
   const double upDir[] = { 0.0, 0.0, 1.0 };
 

@@ -2,7 +2,7 @@
 SimpleDB {
   num-values = 3
   value-names =  force-rate-x  force-rate-y rate-start-time
-  value-units =  Pa*m**2  Pa*m**2  s
+  value-units =  newton/s  newton/s  s
   num-locs = 2
   data-dim = 1
   space-dim = 2

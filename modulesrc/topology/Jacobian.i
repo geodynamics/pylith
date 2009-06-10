@@ -72,6 +72,9 @@ namespace pylith {
        */
       void write(const char* filename);
 
+      /// Verify symmetry of matrix. For debugger purposes only.
+      void verifySymmetry(void) const;
+
     }; // Jacobian
 
   } // topology

@@ -131,5 +131,60 @@ pylith::topology::Jacobian::write(const char* filename)
   err = PetscViewerDestroy(viewer); CHECK_PETSC_ERROR(err);
 } // write
 
+// ----------------------------------------------------------------------
+// Verify symmetry of matrix.
+void
+pylith::topology::Jacobian::verifySymmetry(void) const
+{ // verifySymmetry
+  const PetscMat matSparse = _matrix;
+
+  int nrows = 0;
+  int ncols = 0;
+  MatGetSize(matSparse, &nrows, &ncols);
+
+  PetscMat matDense;
+  PetscMat matSparseAIJ;
+  MatConvert(matSparse, MATSEQAIJ, MAT_INITIAL_MATRIX, &matSparseAIJ);
+  MatConvert(matSparseAIJ, MATSEQDENSE, MAT_INITIAL_MATRIX, &matDense);
+
+  double_array vals(nrows*ncols);
+  int_array rows(nrows);
+  int_array cols(ncols);
+  for (int iRow=0; iRow < nrows; ++iRow)
+    rows[iRow] = iRow;
+  for (int iCol=0; iCol < ncols; ++iCol)
+    cols[iCol] = iCol;
+  MatGetValues(matDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
+  const double tolerance = 1.0e-06;
+  bool isSymmetric = true;
+  for (int iRow=0; iRow < nrows; ++iRow)
+    for (int iCol=0; iCol < ncols; ++iCol) {
+      const int indexIJ = ncols*iRow+iCol;
+      const int indexJI = nrows*iCol+iRow;
+      const double valIJ = vals[indexIJ];
+      const double valJI = vals[indexJI];
+      if (fabs(valIJ) > 1.0)
+	if (fabs(1.0 - valJI/valIJ) > tolerance) {
+	  std::cerr << "Mismatch: " 
+		    << "(" << iRow << ", " << iCol << ") = " << valIJ
+		    << ", (" << iCol << ", " << iRow << ") = " << valJI
+		    << std::endl;
+	  isSymmetric = false;
+	} // if
+      else
+	if (fabs(valJI - valIJ) > tolerance) {
+	  std::cerr << "Mismatch: " 
+		    << "(" << iRow << ", " << iCol << ") = " << valIJ
+		    << ", (" << iCol << ", " << iRow << ") = " << valJI
+		    << std::endl;
+	  isSymmetric = false;
+	} // if
+    } // for
+  MatDestroy(matDense);
+  MatDestroy(matSparseAIJ);
+  if (!isSymmetric)
+    throw std::runtime_error("Jacobian matrix is not symmetric.");
+} // verifySymmetry
+
 
 // End of file 
