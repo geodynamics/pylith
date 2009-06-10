@@ -297,7 +297,7 @@ pylith strikeslip_cubit.cfg strikeslip_hex8_1000m.cfg timedep.cfg
 This will run the problem for 10 years, using a time-step size of 0.1 years,
  and results will be output for each year.
  The benchmarks at resolutions of 1000 m, 500 m, and 250 m require  approximatel
-y 0.3 GB, 2.5 GB, and 24 GB, respectively.
+y 150 MB, 960 MB, and 8 GB, respectively.
 \end_layout
 
 \begin_layout Subsection
