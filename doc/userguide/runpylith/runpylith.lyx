@@ -1,11 +1,12 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding latin1
 \font_roman default
@@ -16,9 +17,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 1
@@ -77,20 +80,23 @@ Mesh information.
  and output (for subsets of the mesh).
  This information can be provided using the PyLith mesh ASCII format (see
  Chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Tutorials"
 
 \end_inset
 
  for examples and Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:MeshIOAscii"
 
 \end_inset
 
  for the format specification) or by importing the information from the
  LaGriT or CUBIT meshing packages (see Chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Tutorials"
 
 \end_inset
@@ -104,13 +110,15 @@ Databases specifying the material property values and boundary condition
  Arbitrarily complex spatial variations in boundary and fault conditions
  and material properties may be given in the spatial database (see Chapter
  
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Tutorials"
 
 \end_inset
 
  for examples and Appendix 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Spatialdata:SimpleIOAscii"
 
 \end_inset
@@ -119,7 +127,8 @@ reference "sec:Spatialdata:SimpleIOAscii"
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:setting:parameters"
 
 \end_inset
@@ -533,9 +542,13 @@ PyLith relies on PETSc for the linear algebra computations.
 [pylithapp.petsc]
 \family default
 .
- The ones of primary interest in the case of PyLith are shown in Table\InsetSpace ~
+ The ones of primary interest in the case of PyLith are shown in Table
+\begin_inset space ~
+\end_inset
 
-\begin_inset LatexCommand ref
+
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "tab:petsc:options:defaults"
 
 \end_inset
@@ -543,10 +556,14 @@ reference "tab:petsc:options:defaults"
 .
  In many quasi-static or dynamic elasticity simulations, runtime can be
  reduced by replacing the Jacobi preconditioner with Additive Schwartz with
- Gram-Schmidt orthogonalization (see Table\InsetSpace ~
+ Gram-Schmidt orthogonalization (see Table
+\begin_inset space ~
+\end_inset
 
-\begin_inset LatexCommand ref
-reference "tab:petsc:options:quasistatic"
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:petsc:options:recommended"
 
 \end_inset
 
@@ -562,12 +579,13 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "tab:petsc:options:defaults"
 
 \end_inset
@@ -581,14 +599,14 @@ Useful command-line arguments for setting PETSc options.
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="3">
 <features>
-<column alignment="left" valignment="top" leftline="true" width="0.9in">
-<column alignment="center" valignment="middle" leftline="true" width="0.8in">
-<column alignment="left" valignment="top" leftline="true" rightline="true" width="4in">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="left" valignment="top" width="0.9in">
+<column alignment="center" valignment="middle" width="0.8in">
+<column alignment="left" valignment="top" width="4in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Property
@@ -596,10 +614,10 @@ Property
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Default Value
@@ -607,10 +625,10 @@ Default Value
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Description
@@ -619,11 +637,11 @@ Description
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 log_summary
@@ -634,7 +652,7 @@ log_summary
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \shape italic
 false
@@ -645,18 +663,18 @@ false
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Print logging objects and events.
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 ksp_monitor
@@ -667,7 +685,7 @@ ksp_monitor
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 false
 \end_layout
 
@@ -676,18 +694,18 @@ false
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Dump preconditioned residual norm to stdout.
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 ksp_view
@@ -698,7 +716,7 @@ ksp_view
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 false
 \end_layout
 
@@ -707,7 +725,7 @@ false
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Print linear solver parameters.
  
 \end_layout
@@ -715,11 +733,11 @@ Print linear solver parameters.
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 ksp_rtol
@@ -730,7 +748,7 @@ ksp_rtol
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \shape italic
 1.0e-05
@@ -741,18 +759,18 @@ ksp_rtol
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Convergence tolerance for relative decrease in residual norm.
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 pc_type
@@ -760,10 +778,10 @@ pc_type
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \shape italic
 jacobi
@@ -771,10 +789,10 @@ jacobi
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Set preconditioner type to block Jacobi.
  See PETSc documentation for a list of all preconditioner types.
  
@@ -799,13 +817,14 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
-name "tab:petsc:options:quasistatic"
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:petsc:options:recommended"
 
 \end_inset
 
@@ -817,16 +836,16 @@ PETSc options that often result in improved performance in quasi-static
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="3">
+<lyxtabular version="3" rows="7" columns="3">
 <features>
-<column alignment="left" valignment="top" leftline="true" width="0.9in">
-<column alignment="center" valignment="middle" leftline="true" width="0.8in">
-<column alignment="left" valignment="top" leftline="true" rightline="true" width="4in">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="left" valignment="top" width="0.9in">
+<column alignment="center" valignment="middle" width="0.8in">
+<column alignment="left" valignment="top" width="4in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Property
@@ -834,10 +853,10 @@ Property
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Value
@@ -845,10 +864,10 @@ Value
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Description
@@ -857,11 +876,11 @@ Description
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 pc_type
@@ -872,7 +891,7 @@ pc_type
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \shape italic
 asm
@@ -883,18 +902,82 @@ asm
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
-Additive Schwarz method
+\begin_layout Plain Layout
+Additive Schwarz method.
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
+
+\family typewriter
+sub_pc_factor_shift_positive_definite
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Turn off positive definite shifting.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+sub_pc_factor_shift_nonzero
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+n/a
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Turn on nonzero shifting.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 
 \family typewriter
 ksp_max_it
@@ -905,7 +988,7 @@ ksp_max_it
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \emph on
 100
@@ -916,18 +999,18 @@ ksp_max_it
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Maximum number of iterations.
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 ksp_gmres_restart
@@ -938,7 +1021,7 @@ ksp_gmres_restart
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 50
 \end_layout
 
@@ -947,18 +1030,18 @@ ksp_gmres_restart
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
-Number of iterations after which Gram-Schmidt orthogonalization is restarted
+\begin_layout Plain Layout
+Number of iterations after which Gram-Schmidt orthogonalization is restarted.
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 ksp_rtol
@@ -966,10 +1049,10 @@ ksp_rtol
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \shape italic
 1.0e-08
@@ -977,10 +1060,10 @@ ksp_rtol
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Convergence tolerance for relative decrease in residual norm.
 \end_layout
 
@@ -1009,7 +1092,8 @@ Geometrical and topological information for the finite element mesh may
  a GMV file and an accompanying Pset file from LaGriT, or by specifying
  the information in PyLith mesh ASCII format.
  See Chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Tutorials"
 
 \end_inset
@@ -1019,32 +1103,37 @@ reference "cha:Tutorials"
 
 \begin_layout Standard
 PyLith supports linear cells in 1D (Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:1D-linear-elements"
 
 \end_inset
 
 ), 2D (Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:2D-linear-elements"
 
 \end_inset
 
 ), and 3D (Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:3D-linear-elements"
 
 \end_inset
 
 ).
  The vertex ordering must follow the convention shown in Figures 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:1D-linear-elements"
 
 \end_inset
 
 -
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:3D-linear-elements"
 
 \end_inset
@@ -1072,13 +1161,15 @@ The mesh information defines the vertex coordinates and specifies the vertices
  For a mesh with a single material type, there will only be a single label
  for every cell in the mesh.
  See Chapters 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:material:models"
 
 \end_inset
 
  and 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:boundary:interface:conditions"
 
 \end_inset
@@ -1095,7 +1186,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
@@ -1106,10 +1197,10 @@ status open
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Linear bar cell available for 1D problems.
 \end_layout
 
@@ -1118,8 +1209,9 @@ Linear bar cell available for 1D problems.
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:1D-linear-elements"
 
 \end_inset
@@ -1141,7 +1233,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
@@ -1149,25 +1241,82 @@ status open
 
 \end_inset
 
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
  
 \begin_inset Graphics
 	filename figs/quad4.eps
@@ -1177,10 +1326,10 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Linear cells available for 2D problems are the triangle (left) and the quadrilat
 eral (right).
 \end_layout
@@ -1190,8 +1339,9 @@ eral (right).
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:2D-linear-elements"
 
 \end_inset
@@ -1213,7 +1363,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
@@ -1221,25 +1371,82 @@ status open
 
 \end_inset
 
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
  
 \begin_inset Graphics
 	filename figs/hex8.eps
@@ -1249,13 +1456,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Linear cells available for 3D problems are the tetrahedron (left) and the
  hexahedron (right).
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:3D-linear-elements"
 
 \end_inset
@@ -1274,7 +1482,8 @@ name "fig:3D-linear-elements"
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:spatial:databases"
 
 \end_inset
@@ -1295,7 +1504,8 @@ on has been provided, the final step is to specify the boundary conditions
 \family default
  file is used to associate boundary condition types and spatial databases
  with each vertex group (see Chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:boundary:interface:conditions"
 
 \end_inset
@@ -1307,7 +1517,8 @@ reference "cha:boundary:interface:conditions"
 \family default
  file is used to associate material types and spatial databases with cells
  identified by the material identifier (see Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:Material-models"
 
 \end_inset
@@ -1373,7 +1584,8 @@ area
  This sort of condition might be used, for example, to specify the variation
  of slip on a fault plane.
  The examples discussed in Chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Tutorials"
 
 \end_inset
@@ -1426,10 +1638,15 @@ The spatial database files need not provide the data using the same coordinate
  Examples of compatible coordinate systems include geographic coordinates
  (longitude/latitude/elevation), and projected coordinates (e.g., coordinates
  in a transverse Mercator projection).
- Spatial database queries use the 
-\begin_inset LatexCommand htmlurl
-name "Proj.4 Cartographic Projections library"
-target "proj.maptools.org"
+ Spatial database queries use the Proj.4 Cartographic Projections library
+ 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+proj.maptools.org
+\end_layout
 
 \end_inset
 
@@ -1457,14 +1674,16 @@ distance
 SimpleDB uses a simple ASCII file to specify the variation of values (e.g.,
  displacement field, slip field, physical properties) in space.
  The file format is described in Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Spatialdata:SimpleIOAscii"
 
 \end_inset
 
 .
  The tutorials in Chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Tutorials"
 
 \end_inset
@@ -1569,6 +1788,8 @@ Specify the physical properties of a linearly elastic, isotropic material
 pylithapp.cfg
 \family default
  file.
+ The data values are dimensioned with the appropriate units using Python
+ syntax.
 \end_layout
 
 \begin_layout LyX-Code
@@ -1584,33 +1805,34 @@ db.values = [vp,vs,density] ; Set the names of the values in the database
 \end_layout
 
 \begin_layout LyX-Code
-db.data = [5773.5, 3333.3, 2700.0] ; Set the values in the database
+db.data = [5773.5*m/s, 3333.3*m/s, 2700.0*kg/m**3] ; Set the values in the database
 \end_layout
 
 \begin_layout Subsubsection
-FixedDOFDB
+ZeroDispDB
 \end_layout
 
 \begin_layout Standard
-The FixedDOFDB is a a special case of the UniformDB for the Dirichlet boundary
+The ZeroDispDB is a a special case of the UniformDB for the Dirichlet boundary
  conditions.
  The values in the database are the ones requested by the Dirichlet boundary
  conditions, 
 \family typewriter
-dof-0
+displacement-x
 \family default
 , 
 \family typewriter
-dof-1
+displacement-y
 \family default
 , and 
 \family typewriter
-dof-2
+displacement-z
 \family default
 , and are all set to zero.
  This makes it trivial to set displacements to zero on a boundary.
  The examples discussed in Chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Tutorials"
 
 \end_inset
@@ -1619,7 +1841,8 @@ reference "cha:Tutorials"
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sub:SCECCVMH-Impl"
 
 \end_inset
@@ -1635,7 +1858,8 @@ Although the SimpleDB implementation is able to specify arbitrarily complex
  and density information for much of southern California.
  Spatialdata provides a direct interface to this database.
  See Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Tutorial-Two-tet4-geoproj"
 
 \end_inset
@@ -1694,7 +1918,9 @@ db = spatialdata.spatialdb.SCECCVMH ; Set the database to the SCEC CVM-H
 \begin_layout LyX-Code
 db.data_dir = /home/johndoe/data/sceccvm-h/vx53 ; Directory containing the
  database 
-\newline
+\begin_inset Newline newline
+\end_inset
+
 data files
 \end_layout
 
@@ -1709,7 +1935,9 @@ squash = True ; Turn on squashing
 \begin_layout LyX-Code
 squash_limit = -1000.0 ; Only distort the geometry above z = -1 km in flattening
  the 
-\newline
+\begin_inset Newline newline
+\end_inset
+
 earth
 \end_layout
 
@@ -1984,7 +2212,8 @@ Nonuniform, User-Specified Time Step
 \begin_layout Standard
 The nonuniform, user-specified time step implementation allows the user
  to specify the time steps in an ASCII file (see Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:FileFormat:TimeStepUser"
 
 \end_inset
@@ -2142,13 +2371,15 @@ PyLith currently supports output to VTK files, which can be imported directly
  Additional diagnostic information can be included by setting the appropriate
  output parameters.
  See Chapters 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:material:models"
 
 \end_inset
 
  and 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:boundary:interface:conditions"
 
 \end_inset
@@ -2222,7 +2453,8 @@ coordsys Coordinate system for vertex coordinates (currently ignored).
 
 \begin_layout Description
 vertex_filter Filter to apply to all vertex fields (see Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:vertex:field:filters"
 
 \end_inset
@@ -2232,7 +2464,8 @@ reference "sub:vertex:field:filters"
 
 \begin_layout Description
 cell_filter Filter to apply to all cell fields (see Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:cell:field:filters"
 
 \end_inset
@@ -2261,7 +2494,7 @@ time_step = 1.0*yr
 \end_layout
 
 \begin_layout LyX-Code
-cell_filter = pylith.meshio.CellFilterAvg
+cell_filter = pylith.meshio.CellFilterAvgMesh
 \end_layout
 
 \begin_layout LyX-Code
@@ -2273,7 +2506,7 @@ cell_data_fields = [total-strain,stress] ; default
 \end_layout
 
 \begin_layout LyX-Code
-writer.filename = dislocation-statevars-elastic.vtk
+writer.filename = dislocation-elastic.vtk
 \end_layout
 
 \begin_layout Subsubsection
@@ -2324,7 +2557,8 @@ Output fields may not directly correspond to the information a user desires.
 \end_layout
 
 \begin_layout Subsubsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sub:vertex:field:filters"
 
 \end_inset
@@ -2344,7 +2578,8 @@ VertexFilterVecNorm Computes the magnitude of a vector field at each location.
 \end_layout
 
 \begin_layout Subsubsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sub:cell:field:filters"
 
 \end_inset
@@ -2358,7 +2593,14 @@ Most users will want to apply a filter to cell fields to average the fields
 \end_layout
 
 \begin_layout Description
-CellFilterAvg Compute the weighted average of the values within a cell.
+CellFilterAvgMesh Compute the weighted average of the values within a bulk
+ cell.
+ The weights are determined from the quadrature associated with the cells.
+\end_layout
+
+\begin_layout Description
+CellFilterAvgSubMesh Compute the weighted average of the values for a boundary
+ cell.
  The weights are determined from the quadrature associated with the cells.
 \end_layout
 
@@ -2505,21 +2747,33 @@ in the directory where you unpacked the distribution.
 
 \family typewriter
 >> {command line}:: 
-\newline
+\begin_inset Newline newline
+\end_inset
+
 -- pyre.inventory(error) 
-\newline
+\begin_inset Newline newline
+\end_inset
+
 -- p4wd <- 'true' 
-\newline
--- unrecognized
- property 'p4wd' 
-\newline
+\begin_inset Newline newline
+\end_inset
+
+-- unrecognized property 'p4wd' 
+\begin_inset Newline newline
+\end_inset
+
 >> {command line}:: 
-\newline
+\begin_inset Newline newline
+\end_inset
+
 -- pyre.inventory(error) 
-\newline
--- p4pg <-
- 'true' 
-\newline
+\begin_inset Newline newline
+\end_inset
+
+-- p4pg <- 'true' 
+\begin_inset Newline newline
+\end_inset
+
 -- unrecognized property ' p4pg'
 \end_layout
 
@@ -2601,7 +2855,8 @@ A segmentation fault might be caused by an error that wasn't trapped or
  the bug).
  If this occurs with any of the problems distributed with PyLith, simply
  submit a bug report (see Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Getting-Help-and"
 
 \end_inset

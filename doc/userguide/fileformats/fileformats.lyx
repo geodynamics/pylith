@@ -1,11 +1,12 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding latin1
 \font_roman default
@@ -16,9 +17,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 1
@@ -47,7 +50,8 @@
 \begin_body
 
 \begin_layout Chapter
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "cha:File-Formats"
 
 \end_inset
@@ -56,7 +60,8 @@ File Formats
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:MeshIOAscii"
 
 \end_inset
@@ -80,7 +85,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
@@ -91,18 +96,20 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Diagram of mesh specified in Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:meshioascii:format"
 
 \end_inset
 
 .
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:meshioascii:diagram"
 
 \end_inset
@@ -417,16 +424,17 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Format of 
 \family typewriter
 PyLith
 \family default
  mesh ASCII files.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:meshioascii:format"
 
 \end_inset
@@ -445,7 +453,8 @@ name "fig:meshioascii:format"
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Spatialdata:SimpleIOAscii"
 
 \end_inset
@@ -549,17 +558,7 @@ SimpleDB { // start specifying the database parameters
 \end_layout
 
 \begin_layout LyX-Code
-  // Specify the units of the values.
- Currently, these are read 
-\end_layout
-
-\begin_layout LyX-Code
-  // and stored but not parsed for meaning.
- Unit conversions will
-\end_layout
-
-\begin_layout LyX-Code
-  // likely be implemented in a future PyLith release.
+  // Specify the units of the values in Python syntax (e.g., kg/m**3).
 \end_layout
 
 \begin_layout LyX-Code
@@ -665,10 +664,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Format of spatial database files.
 \end_layout
 
@@ -699,10 +698,15 @@ proj
 \family default
  program in addition to the Proj.4 libraries, so that you can obtain a list
  of support projections, datums, and ellipsoids.
- Alternatively, refer to the documentation for the 
-\begin_inset LatexCommand htmlurl
-name "Proj.4 Cartographic Projections library"
-target "trac.osgeo.org/proj"
+ Alternatively, refer to the documentation for the Proj.4 Cartographic Projection
+s library 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+trac.osgeo.org/proj
+\end_layout
 
 \end_inset
 
@@ -741,10 +745,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Format for Cartesian coordinate systems in spatial database files.
 \end_layout
 
@@ -893,10 +897,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Format for geographic coordinate systems in spatial database files.
 \end_layout
 
@@ -1103,10 +1107,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Format for geographic projection coordinate systems in spatial database
  files.
 \end_layout
@@ -1308,10 +1312,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Format for the geographic local Cartesian coordinate system in spatial database
  files.
 \end_layout
@@ -1327,7 +1331,8 @@ Format for the geographic local Cartesian coordinate system in spatial database
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:FileFormat:TimeStepUser"
 
 \end_inset
@@ -1407,10 +1412,10 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Format of user-specified time step files.
 \end_layout
 

@@ -1,11 +1,12 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding latin1
 \font_roman default
@@ -16,9 +17,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 0
@@ -47,7 +50,8 @@
 \begin_body
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Tutorial-Two-tet4"
 
 \end_inset
@@ -92,7 +96,7 @@ SimpleDB spatial database
 \end_layout
 
 \begin_layout Itemize
-FixedDOFDB spatial database
+ZeroDispDB spatial database
 \end_layout
 
 \begin_layout Subsection
@@ -118,7 +122,8 @@ Mesh Description
 
 \begin_layout Standard
 The mesh consists of two tetrahedra forming a pyramid shape (Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:twotet4-mesh"
 
 \end_inset
@@ -139,7 +144,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/twotet4-mesh.eps
@@ -149,12 +154,13 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Mesh composed of two linear tetrahedral cells used for example problems.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twotet4-mesh"
 
 \end_inset
@@ -278,7 +284,8 @@ pylith axialdisp.cfg
 \begin_layout Standard
 If the problem ran correctly, you should be able to generate a figure such
  as Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:twotet4-axial"
 
 \end_inset
@@ -292,7 +299,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/axialdisp.jpg
@@ -304,13 +311,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Color contours and vectors of displacement for the axial displacement example
  using a mesh composed of two linear tetrahedral cells.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twotet4-axial"
 
 \end_inset
@@ -381,7 +389,7 @@ twotet4.mesh
 ) defining the points desired, and assigns a label to the boundary condition
  set.
  Rather than specifying a spatial database file to define the boundary condition
-s, we use the default spatial database (FixedDOFDB) for  the Dirichlet boundary
+s, we use the default spatial database (ZeroDispDB) for  the Dirichlet boundary
  condition, which sets the displacements to zero.
 \end_layout
 
@@ -460,7 +468,8 @@ pylith dislocation.cfg
 \begin_layout Standard
 If the problem ran correctly, you should be able to generate a figure such
  as Figure 
-\begin_inset LatexCommand vref
+\begin_inset CommandInset ref
+LatexCommand vref
 reference "fig:twotet4-disloc"
 
 \end_inset
@@ -474,7 +483,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/dislocation.jpg
@@ -486,13 +495,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Color contours and vectors of displacement for the kinematic fault example
  using a mesh composed of two linear tetrahedral cells.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twotet4-disloc"
 
 \end_inset

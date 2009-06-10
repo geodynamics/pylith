@@ -1,8 +1,9 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
+\use_default_options false
 \language english
 \inputencoding auto
 \font_roman default
@@ -13,9 +14,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 1
@@ -44,7 +47,8 @@
 \begin_body
 
 \begin_layout Chapter
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "cha:boundary:interface:conditions"
 
 \end_inset
@@ -96,7 +100,8 @@ The procedure for creating sets of vertices differs depending on the mesh
  generator.
  For meshes specified using the PyLith mesh ASCII format, the sets of vertices
  are specified using groups (see Appendix 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:MeshIOAscii"
 
 \end_inset
@@ -357,7 +362,8 @@ We have created an array with one boundary condition, mybc.
  case of the UniformDB) and specify the velocity in the z-direction to be
  1.0e-06 m/s.
  See Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:spatial:databases"
 
 \end_inset
@@ -374,13 +380,14 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "tab:dirichlet:output"
 
 \end_inset
@@ -394,14 +401,14 @@ Fields available in output of DirichletBoundary boundary condition information.
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="3">
 <features>
-<column alignment="center" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
-<column alignment="center" valignment="top" rightline="true" width="0">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Field Type
@@ -409,10 +416,10 @@ Field Type
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Field
@@ -420,10 +427,10 @@ Field
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Description
@@ -432,11 +439,11 @@ Description
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 vertex_info_fields
@@ -447,7 +454,7 @@ vertex_info_fields
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 initial
@@ -455,30 +462,30 @@ initial
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Displacement vector at reference time in global coordinate system
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 rate_of_change
@@ -486,10 +493,10 @@ rate_of_change
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Rate of change of displacement field in global coordinate system
 \end_layout
 
@@ -540,12 +547,12 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Values in spatial database used for Dirichlet boundary conditions.
 \end_layout
 
@@ -555,13 +562,13 @@ Values in spatial database used for Dirichlet boundary conditions.
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
 <features>
-<column alignment="center" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Value in
@@ -574,10 +581,10 @@ fixed_dof
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Name in Spatial Database
@@ -586,11 +593,11 @@ Name in Spatial Database
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 0
 \end_layout
 
@@ -599,7 +606,7 @@ Name in Spatial Database
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 dof-0
@@ -608,11 +615,11 @@ dof-0
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 1
 \end_layout
 
@@ -621,7 +628,7 @@ dof-0
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 dof-1
@@ -630,20 +637,20 @@ dof-1
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 2
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 dof-2
@@ -680,7 +687,8 @@ Neumann boundary conditions are surface tractions applied over a subset
  The tractions are integrated over each cell and assembled to obtain the
  forces applied at the vertices.
  See Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:Tutorial-twoquad4-traction"
 
 \end_inset
@@ -811,7 +819,8 @@ quadrature.cell.quad_order = 2
 
 \begin_layout Standard
 These settings correspond to the example problem described in Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:Tutorial-twoquad4-traction"
 
 \end_inset
@@ -845,13 +854,14 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "tab:neumann:output"
 
 \end_inset
@@ -865,14 +875,14 @@ Fields available in output of Neumann boundary condition information.
 \begin_inset Tabular
 <lyxtabular version="3" rows="2" columns="3">
 <features>
-<column alignment="center" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
-<column alignment="center" valignment="top" rightline="true" width="0">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Field Type
@@ -880,10 +890,10 @@ Field Type
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Field
@@ -891,10 +901,10 @@ Field
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Description
@@ -903,11 +913,11 @@ Description
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 cell_info_fields
@@ -915,10 +925,10 @@ cell_info_fields
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 tractions
@@ -926,10 +936,10 @@ tractions
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Traction vector in global coordinate system
 \end_layout
 
@@ -1314,7 +1324,8 @@ Conventions
 \begin_layout Standard
 Slip corresponds to relative motion across a fault surface.
  Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:fault:orientation"
 
 \end_inset
@@ -1326,7 +1337,8 @@ reference "fig:fault:orientation"
  angles over potentially complex, nonplanar fault surfaces.
  Instead, the user specifies fault parameters in terms of lateral motion,
  reverse motion, and fault opening as shown in Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:fault:slip:motions"
 
 \end_inset
@@ -1343,7 +1355,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/faultOrientation.eps
@@ -1353,10 +1365,10 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Orientation of a fault surface in 3D, where 
 \begin_inset Formula $\phi$
 \end_inset
@@ -1371,7 +1383,8 @@ Orientation of a fault surface in 3D, where
 
  the rake angle.
  
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:fault:orientation"
 
 \end_inset
@@ -1398,7 +1411,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/slipmotions.eps
@@ -1408,14 +1421,15 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Sign conventions associated with fault slip.
  Positive values are associated with left-lateral, reverse, and fault opening
  motions.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:fault:slip:motions"
 
 \end_inset
@@ -1446,7 +1460,8 @@ t mesh, additional degrees of freedom are added along with adjustment of
  on the two sides of the fault.
  PyLith automatically adds cohesive cells for each fault surface.
  Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:fault:cohesive:quad4"
 
 \end_inset
@@ -1464,7 +1479,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/quad4cohesive.eps
@@ -1474,15 +1489,16 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Example of cohesive cell inserted into a mesh of two quadrilateral cells.
  The zero thickness cohesive cell (shown with dashed lines) controls slip
  on the fault via the relative motion between vertices 3 and 7 and 2 and
  6.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:fault:cohesive:quad4"
 
 \end_inset
@@ -1509,7 +1525,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/quad4cohesivekin.eps
@@ -1519,10 +1535,10 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Example of cohesive cell using Lagrange multipliers inserted into a mesh
  of two quadrilateral cells.
  The zero thickness cohesive cell (shown with dashed lines) controls slip
@@ -1533,7 +1549,8 @@ Example of cohesive cell using Lagrange multipliers inserted into a mesh
  vertices 2 and 6, and the constraint associated with vertex 9 controls
  the relative motion between vertices 3 and 7.
  
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:fault:cohesive:quad4:kin"
 
 \end_inset
@@ -1598,11 +1615,6 @@ quadrature Quadrature object used in integrating fault quantities.
 \end_layout
 
 \begin_layout Description
-mat_db Spatial database for bulk material properties (used in improving
- the conditioning of the system).
-\end_layout
-
-\begin_layout Description
 output Manager for output of diagnostic and data fields for the fault.
 \end_layout
 
@@ -1611,7 +1623,8 @@ By default the output manager outputs both diagnostic information (fault
  normal direction, final slip, and slip initiation time) and the slip at
  each time step.
  Table 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "tab:fault:kin:output"
 
 \end_inset
@@ -1619,7 +1632,8 @@ reference "tab:fault:kin:output"
  lists the fields available for output for a fault with kinematic (prescribed)
  earthquake rupture.
  The fault coordinate system is shown in Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:fault:slip:motions"
 
 \end_inset
@@ -1676,10 +1690,6 @@ normal_dir = [1, 0, 0] ; default
 \end_layout
 
 \begin_layout LyX-Code
-quadrature = pylith.feassemble.Quadrature2Din3D
-\end_layout
-
-\begin_layout LyX-Code
 quadrature.cell = pylith.feassemble.FIATLagrange
 \end_layout
 
@@ -1687,17 +1697,12 @@ quadrature.cell = pylith.feassemble.FIATLagrange
 quadrature.cell.dimension = 2
 \end_layout
 
-\begin_layout LyX-Code
-mat_db.iohandler.filename = elastic_materials.spatialdb
-\end_layout
-
 \begin_layout Standard
 The group of vertices has the label ``fault A.'' We replicate the default
  values for the fault ``up'' direction, and the desired general direction
  for the fault normal.
  These settings apply to a 2D fault surface embedded within a 3D mesh, so
- we use 2D quadrature in a 3D spatial coordinate system with 2D Lagrange
- reference cells.
+ we use 2D Lagrange reference cells.
  The spatial database for elastic properties is used to determine the approximat
 e shear modulus and condition the equations for faster convergence rates.
 \end_layout
@@ -1731,7 +1736,8 @@ The insertion of cohesive cells into the finite-element mesh has the effect
  provides for an easy implementation; we simply add the additional degrees
  of freedom associated with the Lagrange multipliers to the cohesive cells
  as shown in Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:fault:cohesive:quad4:kin"
 
 \end_inset
@@ -1778,34 +1784,7 @@ where
  across the fault, the slip vector and Lagrange multipliers (forces required
  to impose the slip) are in the local fault coordinate system (lateral motion,
  reverse motion, and fault opening).
- Because the solution vector now mixes displacements, 
-\begin_inset Formula $\overrightarrow{u}$
-\end_inset
-
-, and forces, 
-\begin_inset Formula $\overrightarrow{L}$
-\end_inset
-
-, the matrix on the left-hand side is ill-conditioned.
- In order to improve the conditioning, we scale the direction cosines in
- the upper right portion of the matrix by an amount necessary to reduce
- the forces in the solution vector to within a few orders of magnitude of
- the displacements, resulting in
-\begin_inset Formula \begin{equation}
-\left[\begin{array}{cc}
-A & a\underline{C}^{T}\\
-\underline{C} & 0\end{array}\right]\left[\begin{array}{c}
-\overrightarrow{u}\\
-\frac{1}{a}\overrightarrow{L}\end{array}\right]=\left[\begin{array}{c}
-\overrightarrow{b}\\
-\overrightarrow{D}\end{array}\right]\,.\end{equation}
-
-\end_inset
-
-While the matrix on the left-hand side is now nonsymmetric, the solution
- converges very quickly.
- Future releases of PyLith may use alternative conditioning algorithms to
- retain the symmetry of the matrix, thereby reducing storage requirements.
+ 
 \end_layout
 
 \begin_layout Subsubsection
@@ -1877,13 +1856,14 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "tab:fault:kin:output"
 
 \end_inset
@@ -1897,14 +1877,14 @@ Fields available in output of fault information.
 \begin_inset Tabular
 <lyxtabular version="3" rows="8" columns="3">
 <features>
-<column alignment="center" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
-<column alignment="center" valignment="top" rightline="true" width="0">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Field Type
@@ -1912,10 +1892,10 @@ Field Type
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Field
@@ -1923,10 +1903,10 @@ Field
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Description
@@ -1935,11 +1915,11 @@ Description
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 vertex_info_fields
@@ -1950,7 +1930,7 @@ vertex_info_fields
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 normal_dir
@@ -1958,10 +1938,10 @@ normal_dir
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Direction of fault normal in global coordinate system
 \end_layout
 
@@ -1969,19 +1949,19 @@ Direction of fault normal in global coordinate system
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 strike_dir
@@ -1989,10 +1969,10 @@ strike_dir
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Direction of fault strike in global coordinate system
 \end_layout
 
@@ -2000,19 +1980,19 @@ Direction of fault strike in global coordinate system
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 dip_dir
@@ -2020,10 +2000,10 @@ dip_dir
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Up-dip direction on hanging wall in global coordinate system
 \end_layout
 
@@ -2031,19 +2011,19 @@ Up-dip direction on hanging wall in global coordinate system
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 final_slip_NAME
@@ -2051,30 +2031,30 @@ final_slip_NAME
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Vector of final slip (in fault coordinate system) in meters
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 slip_time
@@ -2087,10 +2067,10 @@ NAME
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Time at which slip begins in seconds
 \end_layout
 
@@ -2098,10 +2078,10 @@ Time at which slip begins in seconds
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 vertex_data_fields
@@ -2109,10 +2089,10 @@ vertex_data_fields
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 slip
@@ -2120,30 +2100,30 @@ slip
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Slip vector at time step (in fault coordinate system) in meters
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 tractions_change
@@ -2151,10 +2131,10 @@ tractions_change
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Change in fault tractions (in fault coordinate system) in Pa
 \end_layout
 
@@ -2238,7 +2218,8 @@ The current release of PyLith supports specification of the evolution of
  for quasi-static modeling of earthquake rupture, (2) a constant slip rate
  time function for modeling steady aseismic slip, and (3) the integral of
  Brune's far-field time function 
-\begin_inset LatexCommand cite
+\begin_inset CommandInset citation
+LatexCommand cite
 key "Brune:1970"
 
 \end_inset
@@ -2334,7 +2315,8 @@ slip_time.iohandler.filename = sliptime.spatialdb
 The spatial database files for the slip time function specify the spatial
  variation in the parameters for the slip time function, as shown in Table
  
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "tab:step-function-db-params"
 
 \end_inset
@@ -2351,13 +2333,14 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "tab:step-function-db-params"
 
 \end_inset
@@ -2372,14 +2355,14 @@ Values in spatial database used as parameters in the step function slip
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="3">
 <features>
-<column alignment="left" valignment="top" leftline="true" width="0">
-<column alignment="left" valignment="top" leftline="true" width="0">
-<column alignment="left" valignment="top" leftline="true" rightline="true" width="2.5in">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="2.5in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Database
@@ -2387,10 +2370,10 @@ Database
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Value
@@ -2398,10 +2381,10 @@ Value
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Description
@@ -2410,11 +2393,11 @@ Description
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 final_slip
@@ -2425,7 +2408,7 @@ final_slip
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 left-lateral-slip
@@ -2436,7 +2419,7 @@ left-lateral-slip
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Amount of left-lateral final slip in meters.
  Use negative values for right-lateral slip.
  Applies to faults in 2D and 3D only.
@@ -2446,19 +2429,19 @@ Amount of left-lateral final slip in meters.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 reverse-slip
@@ -2466,10 +2449,10 @@ reverse-slip
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Amount of reverse slip in meters.
  Use negative values for normal slip.
  Applies to faults in 3D only.
@@ -2479,19 +2462,19 @@ Amount of reverse slip in meters.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 fault-opening
@@ -2499,10 +2482,10 @@ fault-opening
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Amount of fault opening in meters.
  Negative values imply penetration.
 \end_layout
@@ -2510,11 +2493,11 @@ Amount of fault opening in meters.
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 slip_time
@@ -2522,10 +2505,10 @@ slip_time
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 slip_time
@@ -2533,10 +2516,10 @@ slip_time
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Slip initiation time (
 \begin_inset Formula $t_{t})$
 \end_inset
@@ -2646,7 +2629,8 @@ slip_time.iohandler.filename = sliptime.spatialdb
 The spatial database files for the slip time function specify the spatial
  variation in the parameters for the slip time function, as shown in Table
  
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "tab:const-slip-rate-db-params"
 
 \end_inset
@@ -2663,13 +2647,14 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "tab:const-slip-rate-db-params"
 
 \end_inset
@@ -2684,14 +2669,14 @@ Values in spatial database used as parameters in the constant slip rate
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="3">
 <features>
-<column alignment="left" valignment="top" leftline="true" width="0">
-<column alignment="left" valignment="top" leftline="true" width="0">
-<column alignment="left" valignment="top" leftline="true" rightline="true" width="2.5in">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="2.5in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Database
@@ -2699,10 +2684,10 @@ Database
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Value
@@ -2710,10 +2695,10 @@ Value
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Description
@@ -2722,11 +2707,11 @@ Description
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 slip_rate
@@ -2737,7 +2722,7 @@ slip_rate
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 left-lateral-slip
@@ -2748,7 +2733,7 @@ left-lateral-slip
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Slip rate for left-lateral final slip in meters per second.
  Use negative values for right-lateral slip.
  Applies to faults in 2D and 3D only.
@@ -2758,19 +2743,19 @@ Slip rate for left-lateral final slip in meters per second.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 reverse-slip
@@ -2778,10 +2763,10 @@ reverse-slip
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Slip rate for reverse slip in meters per second.
  Use negative values for normal slip.
  Applies to faults in 3D only.
@@ -2791,19 +2776,19 @@ Slip rate for reverse slip in meters per second.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 fault-opening
@@ -2811,10 +2796,10 @@ fault-opening
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Slip rate for fault opening in meters per second.
  Negative values imply penetration.
 \end_layout
@@ -2822,11 +2807,11 @@ Slip rate for fault opening in meters per second.
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 slip_time
@@ -2834,10 +2819,10 @@ slip_time
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 slip_time
@@ -2845,10 +2830,10 @@ slip_time
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Slip initiation time (
 \begin_inset Formula $t_{t})$
 \end_inset
@@ -2877,7 +2862,8 @@ Brune Slip Time Function
 
 \begin_layout Standard
 We use an integral of Brune's far-field time function 
-\begin_inset LatexCommand cite
+\begin_inset CommandInset citation
+LatexCommand cite
 key "Brune:1970"
 
 \end_inset
@@ -2978,7 +2964,8 @@ slip_time.iohandler.filename = sliptime.spatialdb
 The spatial database files for the slip time function specify the spatial
  variation in the parameters for the slip time function, as shown in Table
  
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "tab:Brune-slip-db-params"
 
 \end_inset
@@ -2995,13 +2982,14 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "tab:Brune-slip-db-params"
 
 \end_inset
@@ -3015,14 +3003,14 @@ Values in spatial database used as parameters in the Brune slip time function.
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="3">
 <features>
-<column alignment="left" valignment="top" leftline="true" width="0">
-<column alignment="left" valignment="top" leftline="true" width="0">
-<column alignment="left" valignment="top" leftline="true" rightline="true" width="2.5in">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="2.5in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Database
@@ -3030,10 +3018,10 @@ Database
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Value
@@ -3041,10 +3029,10 @@ Value
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Description
@@ -3053,11 +3041,11 @@ Description
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 slip
@@ -3068,7 +3056,7 @@ slip
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 left-lateral-slip
@@ -3079,7 +3067,7 @@ left-lateral-slip
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Amount of left-lateral final slip in meters.
  Use negative values for right-lateral slip.
  Applies to faults in 2D and 3D only.
@@ -3089,19 +3077,19 @@ Amount of left-lateral final slip in meters.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 reverse-slip
@@ -3109,10 +3097,10 @@ reverse-slip
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Amount of reverse slip in meters.
  Use negative values for normal slip.
  Applies to faults in 3D only.
@@ -3122,19 +3110,19 @@ Amount of reverse slip in meters.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 fault-opening
@@ -3142,10 +3130,10 @@ fault-opening
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Amount of fault opening in meters.
  Negative values imply penetration.
 \end_layout
@@ -3153,11 +3141,11 @@ Amount of fault opening in meters.
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 slip_rate
@@ -3168,7 +3156,7 @@ slip_rate
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 slip_rate
@@ -3179,7 +3167,7 @@ slip_rate
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Peak slip rate (
 \begin_inset Formula $V_{max})$
 \end_inset
@@ -3190,11 +3178,11 @@ Peak slip rate (
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 slip_time
@@ -3202,10 +3190,10 @@ slip_time
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 slip_time
@@ -3213,10 +3201,10 @@ slip_time
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Slip initiation time (
 \begin_inset Formula $t_{t})$
 \end_inset
@@ -3252,7 +3240,8 @@ Many problems in geophysics require the consideration of gravitational body
  forces will affect plastic yield criteria and the deformation field for
  large deformation/finite strain problems.
  As described in Chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Governing-Equations"
 
 \end_inset
@@ -3354,7 +3343,8 @@ gravity_dir = [0, -1, 0]
 
 \begin_layout Standard
 An example problem using gravity is described in Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Tutorial-3d-hex8"
 
 \end_inset

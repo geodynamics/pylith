@@ -1,11 +1,12 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding latin1
 \font_roman default
@@ -16,9 +17,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 0
@@ -47,7 +50,8 @@
 \begin_body
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Tutorial-Two-tet4-geoproj"
 
 \end_inset
@@ -96,7 +100,7 @@ SCEC CVM-H spatial database
 \end_layout
 
 \begin_layout Itemize
-FixedDOFDB spatial database
+ZeroDispDB spatial database
 \end_layout
 
 \begin_layout Subsection
@@ -106,7 +110,8 @@ Overview
 \begin_layout Standard
 This tutorial is virtually identical to the other tutorial using two linear
  tetrahedra (See Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Tutorial-Two-tet4"
 
 \end_inset
@@ -115,7 +120,8 @@ reference "sec:Tutorial-Two-tet4"
  The primary difference is in how the material properties are assigned.
  For this tutorial, the physical properties come from the SCEC CVM-H database
  (described in Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:SCECCVMH-Impl"
 
 \end_inset
@@ -139,7 +145,8 @@ pylithapp.cfg
  properly.
  Since all aspects of this problem other than the material database and
  the coordinate system are identical to the examples in Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Tutorial-Two-tet4"
 
 \end_inset
@@ -153,7 +160,8 @@ Mesh Description
 
 \begin_layout Standard
 The mesh consists of two tetrahedra forming a pyramid shape (Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:twotet4-geoproj-mesh"
 
 \end_inset
@@ -165,7 +173,8 @@ twotet4.mesh
 \family default
 , which is in PyLith mesh ASCII format.
  If you compare this mesh against the one used in 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Tutorial-Two-tet4"
 
 \end_inset
@@ -177,7 +186,8 @@ reference "sec:Tutorial-Two-tet4"
  have also used any another geographic projection supported by spatialdata
  and Proj.4.
  See Appendix 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Spatialdata:SimpleIOAscii"
 
 \end_inset
@@ -194,7 +204,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/twotet4-mesh.eps
@@ -204,13 +214,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Mesh composed of two linear tetrahedral cells in a georeferenced coordinate
  system used for the example problems.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twotet4-geoproj-mesh"
 
 \end_inset
@@ -343,10 +354,15 @@ vx53
 \family default
  data files, and must be changed to the location specified by the user when
  the package is installed.
- The package may be obtained from 
-\begin_inset LatexCommand htmlurl
-name "Harvard's Structural Geology and Tectonics"
-target "structure.harvard.edu/cvm-h"
+ The package may be obtained from Harvard's Structural Geology and Tectonics
+ 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+structure.harvard.edu/cvm-h
+\end_layout
 
 \end_inset
 
@@ -479,7 +495,8 @@ pylith dislocation.cfg
 \begin_layout Standard
 If the problem ran correctly, you should be able to generate a figure such
  as Figure 
-\begin_inset LatexCommand vref
+\begin_inset CommandInset ref
+LatexCommand vref
 reference "fig:twotet4-geoproj-disloc"
 
 \end_inset
@@ -493,7 +510,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/dislocation.jpg
@@ -505,14 +522,15 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Color contours and vectors of displacement for the kinematic fault example
  using a mesh composed of two linear tetrahedral cells in a georeferenced
  coordinate system.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twotet4-geoproj-disloc"
 
 \end_inset

@@ -1,11 +1,12 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding latin1
 \font_roman default
@@ -16,9 +17,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 0
@@ -47,7 +50,8 @@
 \begin_body
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Tutorial-Two-triangle"
 
 \end_inset
@@ -92,7 +96,7 @@ SimpleDB spatial database
 \end_layout
 
 \begin_layout Itemize
-FixedDOFDB spatial database
+ZeroDispDB spatial database
 \end_layout
 
 \begin_layout Subsection
@@ -119,7 +123,8 @@ Mesh Description
 \begin_layout Standard
 The mesh consists of two triangles forming a square with edge lengths of
  one unit (Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:twotri3-mesh"
 
 \end_inset
@@ -131,7 +136,8 @@ twotri3.mesh
 \family default
 , which is in PyLith mesh ASCII format.
  This file format is described in Appendix 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:File-Formats"
 
 \end_inset
@@ -150,7 +156,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/twotri3-mesh.eps
@@ -160,12 +166,13 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Mesh composed of two linear triangular cells used in the example problems.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twotri3-mesh"
 
 \end_inset
@@ -316,7 +323,9 @@ axialdisp.spatialdb
 \begin_layout Description
 pylithapp.problem.formulation.output.output.writer Gives the base filename for
  VTK output 
-\newline
+\begin_inset Newline newline
+\end_inset
+
 (
 \family typewriter
 axialdisp.vtk
@@ -430,7 +439,8 @@ density
  files may be used with a number of visualization packages.
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
-\begin_inset LatexCommand vref
+\begin_inset CommandInset ref
+LatexCommand vref
 reference "fig:twotri3-axial"
 
 \end_inset
@@ -446,7 +456,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/axialdisp.jpg
@@ -458,13 +468,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Color contours and vectors of displacement for the axial displacement example
  using a mesh composed of two linear triangular cells.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twotri3-axial"
 
 \end_inset
@@ -575,7 +586,8 @@ Once the problem has run, three files will be produced as in the previous
  example.
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
-\begin_inset LatexCommand vref
+\begin_inset CommandInset ref
+LatexCommand vref
 reference "fig:twotri-shear"
 
 \end_inset
@@ -591,7 +603,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/sheardisp.jpg
@@ -603,13 +615,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Color contours and vectors of displacement for the shear displacement example
  using a mesh composed of two linear triangular cells.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twotri-shear"
 
 \end_inset
@@ -665,7 +678,7 @@ twotri3.mesh
  set.
  In this case, rather than specifying a spatial database file with the values
  for the Dirichlet boundary condition.
- The default database (FixedDOFDB) for Dirichlet boundary conditions is
+ The default database (ZeroDispDB) for Dirichlet boundary conditions is
  used, which sets the displacements to zero.
 \end_layout
 
@@ -774,7 +787,8 @@ dislocation-fault_info.vtk
  time for each vertex on the fault.
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
-\begin_inset LatexCommand vref
+\begin_inset CommandInset ref
+LatexCommand vref
 reference "fig:twotri-disloc"
 
 \end_inset
@@ -790,7 +804,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/dislocation.jpg
@@ -802,13 +816,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Color contours and vectors of displacement for the kinematic fault example
  using a mesh composed of two linear triangular cells.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twotri-disloc"
 
 \end_inset

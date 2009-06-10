@@ -1,5 +1,5 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
@@ -10,6 +10,7 @@
 \renewcommand{\url}[1]{(\myUrl{#1})}
 \newcommand\Prefix[3]{\vphantom{#3}#1#2#3}
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding latin1
 \font_roman default
@@ -20,9 +21,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 1
@@ -59,7 +62,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
@@ -80,14 +83,14 @@ status open
 \begin_inset ERT
 status collapsed
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 thispagestyle{empty}
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
@@ -102,8 +105,10 @@ PyLith User Manual
 
 \begin_layout Author
 © California Institute of Technology
-\newline
-Version 1.3.1
+\begin_inset Newline newline
+\end_inset
+
+Version 1.4.0
 \end_layout
 
 \begin_layout Date
@@ -111,7 +116,7 @@ Version 1.3.1
 \begin_inset ERT
 status collapsed
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -127,7 +132,7 @@ today
 \begin_inset ERT
 status collapsed
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -137,7 +142,8 @@ frontmatter
 \end_inset
 
 
-\begin_inset LatexCommand tableofcontents
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
 
 \end_inset
 
@@ -161,8 +167,9 @@ frontmatter
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \input{preface.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "preface.lyx"
 
 \end_inset
 
@@ -170,7 +177,7 @@ preview false
 \begin_inset ERT
 status collapsed
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -183,7 +190,7 @@ mainmatter
 \begin_inset ERT
 status collapsed
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -196,50 +203,58 @@ raggedbottom
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \input{intro/intro.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "intro/intro.lyx"
 
 \end_inset
 
 
-\begin_inset Include \input{governingeqns/governingeqns.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "governingeqns/governingeqns.lyx"
 
 \end_inset
 
 
-\begin_inset Include \input{install/install.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "install/install.lyx"
 
 \end_inset
 
 
-\begin_inset Include \input{runpylith/runpylith.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "runpylith/runpylith.lyx"
 
 \end_inset
 
 
-\begin_inset Include \input{materials/materials.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "materials/materials.lyx"
 
 \end_inset
 
 
-\begin_inset Include \input{boundaryconditions/boundaryconditions.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "boundaryconditions/boundaryconditions.lyx"
 
 \end_inset
 
  
-\begin_inset Include \input{tutorials/tutorials.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "tutorials/tutorials.lyx"
 
 \end_inset
 
 
-\begin_inset Include \input{benchmarks/benchmarks.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "benchmarks/benchmarks.lyx"
 
 \end_inset
 
@@ -251,39 +266,43 @@ preview false
 \begin_inset ERT
 status collapsed
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 %dummy comment inserted by tex2lyx to ensure that this paragraph is not
  empty
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 
 
-\begin_inset Include \input{glossary.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "glossary.lyx"
 
 \end_inset
 
 
-\begin_inset Include \input{fileformats/fileformats.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "fileformats/fileformats.lyx"
 
 \end_inset
 
 
-\begin_inset Include \input{analyticalsolns/analyticalsolns.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "analyticalsolns/analyticalsolns.lyx"
 
 \end_inset
 
 
-\begin_inset Include \input{license.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "license.lyx"
 
 \end_inset
 
@@ -291,7 +310,8 @@ preview false
 \end_layout
 
 \begin_layout Bibliography
-\begin_inset LatexCommand bibitem
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
 key "Williams:etal:2005"
 
 \end_inset
@@ -310,7 +330,8 @@ Eos Trans.
 \end_layout
 
 \begin_layout Bibliography
-\begin_inset LatexCommand bibitem
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
 key "Williams:2006"
 
 \end_inset
@@ -332,7 +353,8 @@ Eos Trans.
 \end_layout
 
 \begin_layout Bibliography
-\begin_inset LatexCommand bibitem
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
 key "Aagaard:etal:2001a"
 
 \end_inset
@@ -348,7 +370,8 @@ Earthquake Spectra
 \end_layout
 
 \begin_layout Bibliography
-\begin_inset LatexCommand bibitem
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
 key "Aagaard:etal:2001b"
 
 \end_inset
@@ -365,7 +388,8 @@ Bulletin of the Seismological Society of America
 \end_layout
 
 \begin_layout Bibliography
-\begin_inset LatexCommand bibitem
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
 key "Aagaard:etal:2007"
 
 \end_inset
@@ -383,7 +407,8 @@ Eos Trans.
 \end_layout
 
 \begin_layout Bibliography
-\begin_inset LatexCommand bibitem
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
 key "Brune:1970"
 
 \end_inset
@@ -398,7 +423,8 @@ Journal of Geophysical Research
 \end_layout
 
 \begin_layout Bibliography
-\begin_inset LatexCommand bibitem
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
 key "Kojic:Bathe:1987"
 
 \end_inset
@@ -422,7 +448,8 @@ Int.
 \end_layout
 
 \begin_layout Bibliography
-\begin_inset LatexCommand bibitem
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
 label "7"
 key "Zienkiewicz:Taylor:2000"
 
@@ -438,7 +465,8 @@ The Finite Element Method, Fifth Edition, Volume 2: Solid Mechanics
 \end_layout
 
 \begin_layout Bibliography
-\begin_inset LatexCommand bibitem
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
 label "8"
 key "Taylor:2003"
 
@@ -453,7 +481,8 @@ Version 7.5 Theory Manual
 \end_layout
 
 \begin_layout Bibliography
-\begin_inset LatexCommand bibitem
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
 label "9"
 key "Timoshenko:Goodier:1987"
 
@@ -469,7 +498,8 @@ Theory of Elasticity, Third Edition
 \end_layout
 
 \begin_layout Bibliography
-\begin_inset LatexCommand bibitem
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
 label "10"
 key "Okada:1992"
 

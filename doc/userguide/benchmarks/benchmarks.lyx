@@ -1,11 +1,12 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding latin1
 \font_roman default
@@ -16,9 +17,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 1
@@ -47,7 +50,8 @@
 \begin_body
 
 \begin_layout Chapter
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "cha:Benchmarks"
 
 \end_inset
@@ -64,10 +68,15 @@ The Crustal Deformation Modeling Working Group within the Southern California
  Earthquake Center and the Short-Term Tectonics Working Group within CIG
  developed a suite of benchmarks to test the accuracy and performance of
  3D numerical codes.
- The benchmark definitions are posted on the CIG website at 
-\begin_inset LatexCommand htmlurl
-name "Short-Term Tectonics Benchmarks"
-target "geodynamics.org/cig/workinggroups/short/workarea/benchmarks/"
+ The benchmark definitions are posted on the CIG website at Short-Term Tectonics
+ Benchmarks 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/workinggroups/short/workarea/benchmarks/
+\end_layout
 
 \end_inset
 
@@ -75,10 +84,14 @@ target "geodynamics.org/cig/workinggroups/short/workarea/benchmarks/"
  These benchmarks permit evaluating the relative performance of different
  types of basis functions, quadrature schemes, and discretizations for geophysic
 al applications.
- The files needed to run the benchmarks are in the 
-\begin_inset LatexCommand htmlurl
-name "CIG SVN Repository"
-target "geodynamics.org/svn/cig/short/3D/PyLith/benchmarks"
+ The files needed to run the benchmarks are in the CIG SVN Repository 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/svn/cig/short/3D/PyLith/benchmarks
+\end_layout
 
 \end_inset
 
@@ -94,8 +107,9 @@ s based on actual geophysical problems.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \input{strikeslip/strikeslip.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "strikeslip/strikeslip.lyx"
 
 \end_inset
 
