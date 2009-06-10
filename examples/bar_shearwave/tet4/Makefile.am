@@ -19,7 +19,7 @@ dist_noinst_DATA = \
 	bar_tet4_200m.pset \
 	matprops.spatialdb \
 	mesh_tet4_200m.lagrit \
-	shearwave.cfg \
+	pylithapp.cfg \
 	shearwave_slip.spatialdb \
 	shearwave_risetime.spatialdb \
 	shearwave_sliptime.spatialdb

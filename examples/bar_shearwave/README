@@ -8,7 +8,7 @@ boundary conditions on each end perfectly absorb the shear wave.
 
 The problem can be run by entering
 
-  pylith shearwave.cfg
+  pylith
 
 in any of the subdirectories.
 
@@ -23,7 +23,7 @@ Subdirectories
 Each of the subdirectories contains the files listed below (along with
 other files for the mesh).
 
-  - shearwave.cfg: Parameter settings for the shear wave dislocation problem
+  - pylithapp.cfg: Parameter settings for the shear wave dislocation problem
   - matprops.spatialdb: Material database of physical properties
   - shearwave_slip.spatialdb: Spatial database with values for final slip
   - shearwave_sliprate.spatialdb: Spatial database with values for the
