@@ -19,7 +19,7 @@ dist_noinst_DATA = \
 	geometry.jou \
 	matprops.spatialdb \
 	mesh_tri3_200m.jou \
-	shearwave.cfg \
+	pylithapp.cfg \
 	shearwave_slip.spatialdb \
 	shearwave_risetime.spatialdb \
 	shearwave_sliptime.spatialdb
