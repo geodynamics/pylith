@@ -1,0 +1,69 @@
+Full-scale tests of PyLith.
+
+
+PyLith features:
+
+  Problem dimension: 1-D, 2-D, 3-D
+  Boundary conditions
+    Dirichlet
+    Point force
+    Neumann
+    Absorbing dampers
+  Faults
+
+
+
+----------------------------------------------------------------------
+1-D tests
+----------------------------------------------------------------------
+
+line2 (linear cells)
+
+  * axialextension
+
+    - Dirichlet w/initial displacement
+
+  * dislocation
+
+    - Dirichlet w/initial displacement
+    - Fault slip (1 fault, 1 event)
+
+line3 (quadratic cells)
+
+  * axialextension
+
+    - Dirichlet w/initial displacement
+
+  * dislocation
+
+    - Dirichlet w/initial displacement
+    - Fault slip (1 fault, 1 event)
+
+----------------------------------------------------------------------
+2-D tests
+----------------------------------------------------------------------
+
+1. axial/shear (DirichletBC)
+2. axial/shear (DirichletBC, parallel)
+3. axial traction (Neumann, DirichletBC)
+4. single fault (static)
+5. single fault (quasi-static w/multiple ruptures)
+6. single fault (dynamic)
+7. two fault (static)
+8. two fault (static, parallel)
+
+----------------------------------------------------------------------
+3-D tests
+----------------------------------------------------------------------
+
+1. axial/shear (DirichletBC)
+2. axial/shear (DirichletBC, parallel)
+3. single fault (static)
+4. single fault (Savage/Prescott like)
+5. single fault (dynamic)
+6. two fault (static)
+7. two fault (static, parallel)
+8. gravity w/initial stress and strain 
+
+Gravity with faults, Neumann BC.
+

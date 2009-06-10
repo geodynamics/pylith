@@ -132,7 +132,9 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
       break;
     } // case 3
     default :
+      std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
       assert(0);
+      throw std::logic_error("Bad spatial dimension in Neumann.");
     } // switch
 
   // Containers for database query results and quadrature coordinates in

@@ -148,7 +148,9 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
       const char* queryNames[] = { "x", "y", "z"};
       _gravityField->queryVals(queryNames, spaceDim);
     } else {
+      std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
       assert(0);
+      throw std::logic_error("Bad spatial dimension in IntegratorElasticity.");
     } // else
   } // if
 } // initialize
@@ -184,8 +186,11 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
   } else if (3 == cellDim) {
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
-  } else
-    assert(0);
+  } else {
+      std::cerr << "Bad cell dimension '" << cellDim << "'." << std::endl;
+      assert(0);
+      throw std::logic_error("Bad cell dimension in IntegratorElasticity.");
+  } // else
 
   // Allocate arrays for cell data.
   double_array dispCell(numBasis*spaceDim);
@@ -439,8 +444,11 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   } else if (3 == cellDim) {
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
-  } else
-    assert(0);
+  } else {
+      std::cerr << "Bad cell dimension '" << cellDim << "'." << std::endl;
+      assert(0);
+      throw std::logic_error("Bad cell dimension in IntegratorElasticity.");
+  } // else
   
   // Allocate arrays for cell data.
   double_array dispCell(numBasis*spaceDim);

@@ -132,7 +132,9 @@ pylith::faults::BruneSlipFn::initialize(
       break;
     } // case 3
     default :
+      std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
       assert(0);
+      throw std::logic_error("Bad spatial dimension in BruneSlipFn.");
     } // switch
 
   _dbSlipTime->open();

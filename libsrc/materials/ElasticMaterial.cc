@@ -428,7 +428,9 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
       break;
     } // case 3
     default :
+      std::cerr << "Bad dimension '" << dimension() << "'." << std::endl;
       assert(0);
+      throw std::logic_error("Unknown dimension in elastic material.");
     } // switch
   
   assert(0 != _normalizer);
@@ -570,7 +572,9 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
       break;
     } // case 3
     default :
+      std::cerr << "Bad dimension '" << dimension() << "'." << std::endl;
       assert(0);
+      throw std::logic_error("Unknown dimension in elastic material.");
     } // switch
   
   assert(0 != _normalizer);

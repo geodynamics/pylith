@@ -19,6 +19,7 @@
 #include <cstring> // USES memcpy()
 
 #include <iostream> // USES std::cerr
+#include <stdexcept> // USES std::logic_error
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -48,6 +49,7 @@ pylith::feassemble::CellGeometry::CellGeometry(const ShapeEnum shape,
 	<< "Could not find orientation function for cell with shape "
 	<< shape << ".";
       assert(0);
+      throw std::logic_error("Bad shape in CellGeometry.");
     } // switch
 } // constructor
 
@@ -92,6 +94,7 @@ pylith::feassemble::CellGeometry::cellDim(void) const
       std::cerr 
 	<< "Could not find dimension of cell with shape " << _shape << ".";
       assert(0);
+      throw std::logic_error("Bad shape in CellGeometry.");
     } // switch
   return dim;
 } // cellDim
@@ -127,6 +130,7 @@ pylith::feassemble::CellGeometry::numCorners(void) const
 	<< "Could not find number of corners for cell with shape "
 	<< _shape << ".";
       assert(0);
+      throw std::logic_error("Bad shape in CellGeometry.");
     } // switch
   return corners;
 } // numCorners

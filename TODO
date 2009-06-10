@@ -2,6 +2,10 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
+----------------------------------------------------------------------
+RELEASE 1.4
+----------------------------------------------------------------------
+
 Matt
   Memory model
     C++ Objects with fields
@@ -26,8 +30,6 @@ Brad
   ArbitratySlipFn (final slip, start time)
   full-scale testing
   cleanup
-  symmetric matrix (preconditioner? sub_pc_factor_shift_nonzero_positive_definite)
-
 
 Charles
   3-D Power-law rheology
@@ -38,37 +40,22 @@ Charles
   Generalized Maxwell materials (initial stress/strain)
 
 
--1. Fix Tabrez's bug. [Matt]
+----------------------------------------------------------------------
 
-3. Full-scale tests (few 1-D, 2-D, and 3-D)
+1. Tidy up
 
-    1-D
-      1. axial disp [DONE]
-      2. dislocation [DONE]
+    Add simple stableTimeStep() for elastic materials.
 
-    2-D
-      1. axial/shear (DirichletBC)
-      2. axial/shear (DirichletBC, parallel)
-      3. axial traction (Neumann, DirichletBC)
-      4. single fault (static)
-      5. single fault (quasi-static w/multiple ruptures)
-      6. single fault (dynamic)
-      7. two fault (static)
-      8. two fault (static, parallel)
+    Switch Components to PetscComponents.
+      Add _cleanup() to components to deallocate local data structures.
+      Add cleanup() to non-components to deallocate local data structures.
 
-    3-D
-      1. axial/shear (DirichletBC)
-      2. axial/shear (DirichletBC, parallel)
-      3. single fault (static)
-      4. single fault (Savage/Prescott like)
-      5. single fault (dynamic)
-      6. two fault (static)
-      7. two fault (static, parallel)
-      8. gravity w/initial stress and strain 
+    recursive output of parameters in playpen
 
-    Gravity with faults, Neumann BC.
+    Add check before calling newSection() when want to enforce at
+    least 1 value.
 
-4. Add missing unit tests
+2. Add missing unit tests
 
     libtests/topology/TestMesh::testNondimensionalize()
 
@@ -129,44 +116,7 @@ Charles
       MemoryLogger.logMesh()
       MemoryLogger.logMaterial()
 
-5. Tidy up
-
-    Replace memcpy() calls with loops.
-
-    How do we determine the orientation for a fault in a 1-D mesh? We
-    assume normaldir is +1.0, but cohesive cells could be created so
-    that the fault has a normaldir of -1.0. If the normaldir is -1.0,
-    then we need to flip the orientation field to get the correct
-    sense of slip.
-
-    Add simple stableTimeStep() for elastic materials.
-
-    Cleanup logging. Constraints and Integrators should log at the C++
-    level using the C++ EventLogger. Add finer grain logging at C++
-    level as in ElasticityImplicit.
-
-    Update journaling.
-
-    Add
-      throw std::logic_error(message);
-    after assert(0) to insure error is trapped.
-
-    Eliminate use of Inventory class.
-
-    Switch Components to PetscComponents.
-      Add _cleanup() to components to deallocate local data structures.
-      Add cleanup() to non-components to deallocate local data structures.
-
-    Create createModuleObj() methods to Python objects as standard way
-    of creating handle to C++ object (not necessary in abstract base
-    classes).
-
-    Add check before calling newSection() when want to enforce at
-    least 1 value.
-
-  Cleanup SlipTimeFn tests (refactor test/initialize stuff)
-
-13. Update manual for version 1.4 [Brad and Charles]
+3. Update manual for version 1.4 [Brad and Charles]
 
   Figure 2.2: dependencies (Pyrex->SWIG)
 
@@ -195,6 +145,12 @@ Charles
 
     Add Savage-Prescott
   
+  Extending PyLith
+
+    Constitutive models
+
+    Material properties
+
   File Formats
 
     Time History
@@ -208,38 +164,74 @@ Charles
   * Material
     * initial stress, strain, and state variables
 
--- Release (v1.4) --
+4. Check Tabrez's problems.
 
-11. Savage-Presscott benchmark
+
+----------------------------------------------------------------------
+POST RELEASE 1.4
+----------------------------------------------------------------------
+
+1. Savage-Presscott benchmark
     Tet mesh
 
-12. Analytic BC for reverse-slip benchmark [Charles or Brad]
+2. Analytic BC for reverse-slip benchmark [Charles or Brad]
     a. Create BC for CUBIT mesh.
     b. Create BC for LaGriT mesh.
     c. Run benchmarks.
     d. Generate analytic solutions.
     e. Tabulate results.
 
-2. Nondimensionalization
+3. Tidy up
+
+  Replace memcpy() calls with loops.
+
+  Cleanup logging. Constraints and Integrators should log at the C++
+  level using the C++ EventLogger. Add finer grain logging at C++
+  level as in ElasticityImplicit.
+
+  Update journaling.
+
+  Eliminate use of Inventory class.
+
+  Switch Components to PetscComponents.
+    Add _cleanup() to components to deallocate local data structures.
+    Add cleanup() to non-components to deallocate local data structures.
+
+  Create createModuleObj() methods to Python objects as standard way
+  of creating handle to C++ object (not necessary in abstract base
+  classes).
+
+  Create createModuleObj() methods to Python objects as standard way
+  of creating handle to C++ object (not necessary in abstract base
+  classes).
+
+  Add check before calling newSection() when want to enforce at
+  least 1 value.
+
+  Cleanup SlipTimeFn tests (refactor test/initialize stuff)
+
+
+----------------------------------------------------------------------
+RELEASE 1.5
+----------------------------------------------------------------------
+
+1. Nondimensionalization
 
   Ask constraints if a block matrix is okay. If okay and matrix type
   is "unknown" (not set by user), then set block size. Do this in Python.
 
-7. 2-D Plane strain Maxwell viscoelastic rheology [Charles]
+2. 2-D Plane strain Maxwell viscoelastic rheology [Charles]
 
-8. 2-D Plane strain Generalized Maxwell viscoelastic rheology [Charles]
+3. 2-D Plane strain Generalized Maxwell viscoelastic rheology [Charles]
 
-9. 2-D Power-law rheology [Charles]
+4. 2-D Power-law rheology [Charles]
    2D viscoelastic models for plane strain
 
-10. Initial stress, strain, state variables for inelastic models [Charles]
+5. Initial stress, strain, state variables for inelastic models [Charles]
 
-
-  Manual
+6. Manual
 
     * Cleanup notation and discussion of inelastic materials
--- Release (v1.5) --
-
 
 Modularize output? [Matt]
 
@@ -267,20 +259,27 @@ KNOWN DEFICIENCIES
   ifstream is insufficient. Need state of istringstream buffer, but it
   is often !good() at eof(). Test of !good() and !eof()?
 
-* FixedDOFDB
+* ZeroDispDB
 
-  The default BC is FixedDOF which hardwires the values in a UniformDB
+  The default BC is ZeroDispDB which hardwires the values in a UniformDB
   to 0. No error message is generated if the user sets the values or
   data properties and they are overwritten by the hardwired values. A
-  possible solution is for FixedDOF to use a C++ UniformDB but not
+  possible solution is for ZeroDispDB to use a C++ UniformDB but not
   inherit from the Python UniformDB.
+
+* Fault orientatin in 1-D mesh
+
+  How do we determine the orientation for a fault in a 1-D mesh? We
+  assume normaldir is +1.0, but cohesive cells could be created so
+  that the fault has a normaldir of -1.0. If the normaldir is -1.0,
+  then we need to flip the orientation field to get the correct
+  sense of slip.
+
+
 
 ======================================================================
 MISC PRIORITIES (Brad)
 ======================================================================
-
-1. Want to take advantage of symmetry and block structure of Jacobian
-   matrix when possible.
 
 2. Additional unit tests
   a. FaultCohesive
@@ -305,12 +304,19 @@ PLANNED RELEASES
 Release 1.4
 ----------------------------------------------------------------------
 
-  1. Interface w/PETSc nonlinear solvers
-
-  3. Nonlinear bulk rheologies
+  1. Nonlinear bulk rheologies
 
      Power-law viscoelastic material
-  4. Fault constitutive models
+
+  2. Time dependent BCs
+
+  3. Improved PC for kinematic faults
+
+----------------------------------------------------------------------
+Release 1.5
+----------------------------------------------------------------------
+
+  1. Fault constitutive models
 
      Linear slip-weakening
      Rate- and state-friction
@@ -321,18 +327,6 @@ Release 1.4
          Slip and change in tractions (time histories)
          Fault constitutive values (time histories)
          Orientation , Fault constitutive parameters (diagnostic)
-
-  5. Uniform global refinement
-
-  6. Improved PC for kinematic faults
-
-  Improved support for spherical geometry in user-interface
-
-----------------------------------------------------------------------
-Release 1.5
-----------------------------------------------------------------------
-
-  1. Time dependent BCs
 
   2. Large deformations
 
@@ -345,6 +339,10 @@ Release 1.5
        C++ unit tests for CellGeometry refPtsToGlobal() and jacobian()
        Update quadrature to use CellGeometry refPtsToGlobal() and
        jacobian() Remove CellGeometry jacobian(double_array)
+
+  5. Uniform global refinement
+
+  6. Improved support for spherical geometry in user-interface
 
 ----------------------------------------------------------------------
 Release 1.6

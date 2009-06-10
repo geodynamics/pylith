@@ -124,7 +124,8 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     case topology::FieldBase::TENSOR:
     case topology::FieldBase::OTHER:
     default :
-      std::cerr << "Bad vector field type for CellFilterAvg." << std::endl;
+      std::cerr << "Bad vector field type '" << fieldIn.vectorFieldType()
+		<< "'." << std::endl;
       assert(0);
       throw std::logic_error("Bad vector field type for CellFilterAvg.");
     } // switch
