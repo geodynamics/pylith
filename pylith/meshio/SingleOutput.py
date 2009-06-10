@@ -14,10 +14,10 @@
 ##
 ## @brief Python container with one output manager.
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # SingleOutput class
-class SingleOutput(Component):
+class SingleOutput(PetscComponent):
   """
   Python container with one output manager.
 
@@ -26,7 +26,7 @@ class SingleOutput(Component):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
+  class Inventory(PetscComponent.Inventory):
     """
     Python object for managing SingleOutput facilities and properties.
     """
@@ -54,7 +54,7 @@ class SingleOutput(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name)
+    PetscComponent.__init__(self, name, facility="output")
     return
 
 

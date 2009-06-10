@@ -22,7 +22,7 @@
 ##
 ## Factory: boundary_condition
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 from bc import BoundaryCondition as ModuleBoundaryCondition
 
 # Validator for direction
@@ -43,7 +43,7 @@ def validateDir(value):
 
 
 # BoundaryCondition class
-class BoundaryCondition(Component, ModuleBoundaryCondition):
+class BoundaryCondition(PetscComponent, ModuleBoundaryCondition):
   """
   Python abstract base class for managing a boundary condition.
 
@@ -55,7 +55,7 @@ class BoundaryCondition(Component, ModuleBoundaryCondition):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
+  class Inventory(PetscComponent.Inventory):
     """
     Python object for managing BoundaryCondition facilities and properties.
     """
@@ -86,7 +86,7 @@ class BoundaryCondition(Component, ModuleBoundaryCondition):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="boundary_condition")
+    PetscComponent.__init__(self, name, facility="boundary_condition")
     self._createModuleObj()
     return
 
@@ -113,7 +113,7 @@ class BoundaryCondition(Component, ModuleBoundaryCondition):
     """
     Setup members using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
     ModuleBoundaryCondition.label(self, self.inventory.label)
     self.upDir = map(float, self.inventory.upDir)
     return

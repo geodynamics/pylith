@@ -24,10 +24,10 @@
 ##
 ## Factory: material
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # Material class
-class Material(Component):
+class Material(PetscComponent):
   """
   Python material property manager.
 
@@ -40,7 +40,7 @@ class Material(Component):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
+  class Inventory(PetscComponent.Inventory):
     """
     Python object for managing Material facilities and properties.
     """
@@ -88,7 +88,7 @@ class Material(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="material")
+    PetscComponent.__init__(self, name, facility="material")
     self._createModuleObj()
     self.output = None
     return
@@ -142,7 +142,7 @@ class Material(Component):
     """
     Setup members using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
     self.id(self.inventory.id)
     self.label(self.inventory.label)
     self.dbProperties(self.inventory.dbProperties)

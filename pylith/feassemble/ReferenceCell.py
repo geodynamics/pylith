@@ -17,10 +17,10 @@
 ##
 ## Factory: reference_cell.
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # ReferenceCell class
-class ReferenceCell(Component):
+class ReferenceCell(PetscComponent):
   """
   Python abstract base class for managing basis functions and
   quadrature rules of a reference finite-element cell.
@@ -34,7 +34,7 @@ class ReferenceCell(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="reference_cell")
+    PetscComponent.__init__(self, name, facility="reference_cell")
 
     self.geometry = None # Geometry of reference cell
 

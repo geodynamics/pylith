@@ -16,10 +16,10 @@
 ##
 ## Factory: object_bin
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # EmptyBin class
-class EmptyBin(Component):
+class EmptyBin(PetscComponent):
   """
   Python container for a collection of objects.
   """
@@ -30,7 +30,7 @@ class EmptyBin(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="empty_bin")
+    PetscComponent.__init__(self, name, facility="empty_bin")
     return
 
 

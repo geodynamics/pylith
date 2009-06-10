@@ -17,10 +17,10 @@
 ##
 ## Factory: jacobian_viewer
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # JacobianViewer class
-class JacobianViewer(Component):
+class JacobianViewer(PetscComponent):
   """
   Python abstract base class for formulations of solving equations.
 
@@ -32,7 +32,7 @@ class JacobianViewer(Component):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
+  class Inventory(PetscComponent.Inventory):
     """
     Python object for managing JacobianViewer facilities and properties.
     """
@@ -70,7 +70,7 @@ class JacobianViewer(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="jacobian_viewer")
+    PetscComponent.__init__(self, name, facility="jacobian_viewer")
     return
 
 
@@ -88,7 +88,7 @@ class JacobianViewer(Component):
     """
     Set members based using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
     self.filename = self.inventory.filename
     self.timeFormat = self.inventory.timeFormat
     self.timeConstant = self.inventory.timeConstant

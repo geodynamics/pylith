@@ -16,17 +16,17 @@
 ##
 ## Factory: mesh_refiner.
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # MeshRefiner class
-class MeshRefiner(Component):
+class MeshRefiner(PetscComponent):
   """
   Python manager for refining mesh in parallel.
 
   Factory: mesh_refiner
   """
 
-  class Inventory(Component.Inventory):
+  class Inventory(PetscComponent.Inventory):
     """
     Python object for managing RefineUniform facilities and properties.
     """
@@ -56,7 +56,7 @@ class MeshRefiner(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="refiner")
+    PetscComponent.__init__(self, name, facility="refiner")
     self.cppHandle = None
     return
 
@@ -74,7 +74,7 @@ class MeshRefiner(Component):
     """
     Set members based using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
     self.debug = self.inventory.debug
     self.dataWriter = self.inventory.dataWriter
     return

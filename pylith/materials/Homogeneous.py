@@ -14,17 +14,17 @@
 ##
 ## @brief Python materials container with one material.
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # Homogeneous class
-class Homogeneous(Component):
+class Homogeneous(PetscComponent):
   """
   Python materials container with one material.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
+  class Inventory(PetscComponent.Inventory):
     """
     Python object for managing Homogeneous facilities and properties.
     """
@@ -52,7 +52,7 @@ class Homogeneous(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name)
+    PetscComponent.__init__(self, name, facility="material")
     return
 
 

@@ -23,10 +23,10 @@
 ##
 ## Factory: checkpointer.
 
-from pyre.components.Component import Component
+from pylith.utils.PetscComponent import PetscComponent
 
 # CheckpointTimer class
-class CheckpointTimer(Component):
+class CheckpointTimer(PetscComponent):
   """
   Python CheckpointTimer object for managing checkpointing.
 
@@ -42,7 +42,7 @@ class CheckpointTimer(Component):
   
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
+  class Inventory(PetscComponent.Inventory):
     """
     Python object for managing CheckpointTimer facilities and properties.
     """
@@ -70,7 +70,7 @@ class CheckpointTimer(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="checkpointer")
+    PetscComponent.__init__(self, name, facility="checkpointer")
 
     from pyre.units.time import second
     self.t = -8.9e+99*second
@@ -109,7 +109,7 @@ class CheckpointTimer(Component):
     """
     Setup members using inventory.
     """
-    Component._configure(self)
+    PetscComponent._configure(self)
     self.dt = self.inventory.dt
     return
 
