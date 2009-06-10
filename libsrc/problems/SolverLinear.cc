@@ -22,7 +22,7 @@
 
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
-//#define FIELD_SPLIT
+#define FIELD_SPLIT
 
 #if defined(FIELD_SPLIT)
 #include <petscmesh_solvers.hh> // USES constructFieldSplit()
