@@ -41,8 +41,8 @@ class MemoryLogger(Logger):
 
     import pyre.inventory
 
-    dummy = pyre.inventory.bool("dummy", default=True)
-    dummy.meta['tip'] = "Nothing."
+    includeDealloc = pyre.inventory.bool("include_dealloc", default=True)
+    includeDealloc.meta['tip'] = "Subtract deallocated memory when reporting."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -67,7 +67,6 @@ class MemoryLogger(Logger):
     meshModel.tabulate(self.memory[stage])
     for group, nvertices in mesh.groupSizes():
       self.logVertexGroup('VertexGroups', group, nvertices, mesh.numVertices())
-    if self.verbose: self.show()
     return
 
   def logVertexGroup(self, stage, label, nvertices, nMeshVertices):
@@ -79,7 +78,6 @@ class MemoryLogger(Logger):
     if not stage in self.memory: self.memory[stage] = {}
     groupModel = pylith.perf.VertexGroup.VertexGroup(label, nvertices, nMeshVertices)
     groupModel.tabulate(self.memory[stage])
-    if self.verbose: self.show()
     return
 
   def logMaterial(self, stage, material):
@@ -93,7 +91,6 @@ class MemoryLogger(Logger):
     materialModel.tabulate(self.memory[stage])
     self.logField(stage, material.propertiesField())
     self.logField(stage, material.stateVarsField())
-    if self.verbose: self.show()
     return
 
   def logQuadrature(self, stage, quadrature):
@@ -106,7 +103,6 @@ class MemoryLogger(Logger):
     ##self.logField('Field', quadrature.jacobianPrecomp())
     ##self.logField('Field', quadrature.jacobianDetPrecomp())
     ##self.logField('Field', quadrature.basisDerivPrecomp())
-    if self.verbose: self.show()
     return
 
   def logField(self, stage, field):
@@ -118,7 +114,28 @@ class MemoryLogger(Logger):
     if not stage in self.memory: self.memory[stage] = {}
     fieldModel = pylith.perf.Field.Field(field.label(), field.sectionSize(), field.chartSize())
     fieldModel.tabulate(self.memory[stage])
-    if self.verbose: self.show()
+    return
+
+  def logGlobalOrder(self, stage, label, field):
+    """
+    Read parameters to determine memory from our model.
+    """
+    import pylith.perf.GlobalOrder
+
+    if not stage in self.memory: self.memory[stage] = {}
+    orderModel = pylith.perf.GlobalOrder.GlobalOrder(label, field.chartSize())
+    orderModel.tabulate(self.memory[stage])
+    return
+
+  def logJacobian(self, stage, label):
+    """
+    Read parameters to determine memory from our model.
+    """
+    import pylith.perf.Jacobian
+
+    if not stage in self.memory: self.memory[stage] = {}
+    jacModel = pylith.perf.Jacobian.Jacobian(label)
+    jacModel.tabulate(self.memory[stage])
     return
 
   def mergeMemDict(self, memDictTarget, memDictSource):
@@ -149,7 +166,7 @@ class MemoryLogger(Logger):
   def memLine(self, source, name, mem, indent = 0):
     return '%s%-30s %8d bytes (%.3f MB)' % (self.prefix(indent), name+' ('+source+'):', mem, mem / self.megabyte)
 
-  def processMemDict(self, memDict, indent = 0, namePrefix = ''):
+  def processMemDict(self, memDict, indent = 0, namePrefix = '', includeDealloc = True):
     from pylith.utils.petsc import MemoryLogger
     logger    =  MemoryLogger.singleton()
     output    = []
@@ -160,21 +177,27 @@ class MemoryLogger(Logger):
       fullname = namePrefix+name
       if isinstance(m, dict):
         output.append(self.prefix(indent)+name)
-        out,mem,codeMem = self.processMemDict(m, indent, fullname)
+        out,mem,codeMem = self.processMemDict(m, indent, fullname, includeDealloc)
         output.extend(out)
         total     += mem
         codeTotal += codeMem
       else:
-        mem = logger.getAllocationTotal(fullname) - logger.getDeallocationTotal(fullname)
+        mem = logger.getAllocationTotal(fullname)
+        if includeDealloc:
+          mem     -= logger.getDeallocationTotal(fullname)
         total     += m
         codeTotal += mem
         output.append(self.memLine('Model', name, m, indent))
         if logger.getAllocationTotal(fullname):
           output.append(self.memLine('Code',  name, mem, indent))
     if namePrefix:
-      mem = logger.getAllocationTotal(namePrefix) - logger.getDeallocationTotal(namePrefix)
+      mem = logger.getAllocationTotal(namePrefix)
+      if includeDealloc:
+        mem -= logger.getDeallocationTotal(namePrefix)
     else:
-      mem = logger.getAllocationTotal() - logger.getDeallocationTotal()
+      mem = logger.getAllocationTotal()
+      if includeDealloc:
+        mem -= logger.getDeallocationTotal()
     if mem == 0:
       mem = codeTotal
     output.append(self.memLine('Model', 'Total', total, indent))
@@ -190,7 +213,13 @@ class MemoryLogger(Logger):
     Print memory usage.
     """
     output = ["MEMORY USAGE"]
-    output.extend(self.processMemDict(self.memory)[0])
+    output.extend(self.processMemDict(self.memory, includeDealloc = self.includeDealloc)[0])
+
+    from pylith.utils.petsc import MemoryLogger
+    logger    =  MemoryLogger.singleton()
+    output.append(self.memLine('Code',  'Total Alloced', logger.getAllocationTotal('default'), 1))
+    output.append(self.memLine('Code',  'Total Dealloced', logger.getDeallocationTotal('default'), 1))
+
     print '\n'.join(output)
     return
 
@@ -201,7 +230,7 @@ class MemoryLogger(Logger):
     Set members based using inventory.
     """
     Logger._configure(self)
-    self.dummy = self.inventory.dummy
+    self.includeDealloc = self.inventory.includeDealloc
     return
 
 

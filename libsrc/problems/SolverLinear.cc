@@ -16,6 +16,7 @@
 
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
+#include "pylith/problems/Formulation.hh" // USES Formulation
 
 #include <petscksp.h> // USES PetscKSP
 
@@ -77,13 +78,13 @@ pylith::problems::SolverLinear::initialize(
 
   // Check for fibration
   if (residual.section()->getNumSpaces() > 0) {
+    const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = fields.mesh().sieveMesh();
     PC pc;
 
     err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
     err = PCSetType(pc, PCFIELDSPLIT); CHECK_PETSC_ERROR(err);
-
 #if defined(FIELD_SPLIT)
-    constructFieldSplit(residual.section(), pc);
+    constructFieldSplit(residual.section(), sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", residual.section()), residual.vector(), pc);
 #endif
   }
 } // initialize
