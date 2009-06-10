@@ -148,4 +148,30 @@ class PyLithApp(PetscApplication):
     return
   
 
+# ======================================================================
+# Local version of InfoApp that only configures itself. Workaround for
+# not adding --help-all (or similar property) in Pyre Application.
+#
+# Note: We want --help-all to display settings before launching a
+# parallel job.
+class InfoApp(PyLithApp):
+  def __init__(self, name="pylithapp"):
+    """
+    Constructor.
+    """
+    PyLithApp.__init__(self, name)
+    return
+  # An empty main only prevents InfoApp from doing real work.
+  def main(self, *args, **kwds):
+    return
+  def onComputeNodes(self, *args, **kwds):
+    """
+    Run the application in parallel on the compute nodes.
+    """
+    self.main(*args, **kwds)
+    return
+  
+
+
+
 # End of file 
