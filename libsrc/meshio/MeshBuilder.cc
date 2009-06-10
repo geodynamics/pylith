@@ -180,43 +180,6 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   logger.stagePop();
   logger.stagePop();
 
-#if defined(ALE_MEM_LOGGING)
-  std::cout
-    << std::endl
-    << "Mesh " << logger.getNumAllocations("Mesh")
-    << " allocations " << logger.getAllocationTotal("Mesh")
-    << " bytes" << std::endl
-    
-    << "Mesh " << logger.getNumDeallocations("Mesh")
-    << " deallocations " << logger.getDeallocationTotal("Mesh")
-    << " bytes" << std::endl
-    
-    << std::endl
-    << "MeshCreation " << logger.getNumAllocations("MeshCreation")
-    << " allocations " << logger.getAllocationTotal("MeshCreation")
-    << " bytes" << std::endl
-    
-    << "MeshCreation " << logger.getNumDeallocations("MeshCreation")
-    << " deallocations " << logger.getDeallocationTotal("MeshCreation")
-    << " bytes" << std::endl
-    
-    << "MeshStratification " << logger.getNumAllocations("MeshStratification")
-    << " allocations " << logger.getAllocationTotal("MeshStratification")
-    << " bytes" << std::endl
-    
-    << "MeshStratification " << logger.getNumDeallocations("MeshStratification")
-    << " deallocations " << logger.getDeallocationTotal("MeshStratification")
-    << " bytes" << std::endl << std::endl
-    
-    << "MeshCoordinates " << logger.getNumAllocations("MeshCoordinates")
-    << " allocations " << logger.getAllocationTotal("MeshCoordinates")
-    << " bytes" << std::endl
-    
-    << "MeshCoordinates " << logger.getNumDeallocations("MeshCoordinates")
-    << " deallocations " << logger.getDeallocationTotal("MeshCoordinates")
-    << " bytes" << std::endl << std::endl;
-#endif
-
   sieveMesh->getFactory()->clear();
 } // buildMesh
 

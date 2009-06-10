@@ -91,7 +91,6 @@ class MemoryLogger(Logger):
     if not stage in self.memory: self.memory[stage] = {}
     materialModel = pylith.perf.Material.Material(material.label(), material.ncells)
     materialModel.tabulate(self.memory[stage])
-    print 'Material:',material.label()
     self.logField(stage, material.propertiesField())
     self.logField(stage, material.stateVarsField())
     if self.verbose: self.show()
@@ -117,7 +116,6 @@ class MemoryLogger(Logger):
     import pylith.perf.Field
 
     if not stage in self.memory: self.memory[stage] = {}
-    print '  Field:',field.label(), field.sectionSize(), field.chartSize()
     fieldModel = pylith.perf.Field.Field(field.label(), field.sectionSize(), field.chartSize())
     fieldModel.tabulate(self.memory[stage])
     if self.verbose: self.show()

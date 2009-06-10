@@ -116,7 +116,7 @@ class PyLithApp(PetscApplication):
     del self.problem
 
     self.compilePerformanceLog()
-    self.perfLogger.show()
+    if self.perfLogger.verbose: self.perfLogger.show()
     return
   
 

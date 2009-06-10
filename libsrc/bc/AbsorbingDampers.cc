@@ -83,6 +83,8 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   const int numQuadPts = _quadrature->numQuadPts();
   const int spaceDim = cellGeometry.spaceDim();
   const int fiberDim = numQuadPts * spaceDim;
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("BoundaryConditions");
 
   delete _parameters;
   _parameters = 
@@ -93,6 +95,8 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
     _parameters->get("damping constants");
   dampingConsts.newSection(cells, fiberDim);
   dampingConsts.allocate();
+
+  logger.stagePop();
 
   // Containers for orientation information
   const int orientationSize = spaceDim * spaceDim;

@@ -216,6 +216,10 @@ class Formulation(PetscComponent, ModuleFormulation):
 
     # Setup fields
     self._info.log("Creating solution field.")
+    from pylith.utils.petsc import MemoryLogger
+    logger = MemoryLogger.singleton()
+    #logger.setDebug(1)
+    logger.stagePush("Problem")
     self.fields.add("dispIncr(t->t+dt)", "displacement_increment")
     self.fields.add("disp(t)", "displacement")
     self.fields.add("residual", "residual")
@@ -246,6 +250,8 @@ class Formulation(PetscComponent, ModuleFormulation):
     residual.vectorFieldType(residual.VECTOR)
     residual.scale(lengthScale.value)
 
+    logger.stagePop()
+    logger.setDebug(0)
     self._debug.log(resourceUsageString())
 
     self._logger.eventEnd(logEvent)
@@ -333,8 +339,6 @@ class Formulation(PetscComponent, ModuleFormulation):
     for name in self.fields.fieldNames():
       field = self.fields.get(name)
       self.perfLogger.logField('Problem', field)
-      # For debugging right now
-      self.perfLogger.logField('Field', field)
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
       self.perfLogger.logQuadrature('Quadrature', integrator.quadrature())
 
