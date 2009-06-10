@@ -14,9 +14,10 @@
 
 #include "Metadata.hh" // implementation of class methods
 
+#include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
-#include <cassert> // USES assert()
+#include <iostream> // USES std::cerr
 
 // ----------------------------------------------------------------------
 // Constructor.
@@ -112,7 +113,9 @@ pylith::materials::Metadata::fiberDim(const char* name,
     } // STATEVAR
 
     default :
+      std::cerr << "Bad value type '" << valueType << "'." << std::endl;
       assert(0);
+      throw std::logic_error("Unknown valueType in Metadata.");
     } // switch
 
   return fiberDim;
@@ -154,7 +157,9 @@ pylith::materials::Metadata::fieldType(const char* name,
     } // STATEVAR
       
     default :
+      std::cerr << "Bad value type '" << valueType << "'." << std::endl;
       assert(0);
+      throw std::logic_error("Unknown valueType in Metadata.");
     } // switch
   
   return fieldType;

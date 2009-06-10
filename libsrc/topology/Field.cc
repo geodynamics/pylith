@@ -195,6 +195,7 @@ pylith::topology::Field<mesh_type>::newSection(const DomainEnum domain,
   else {
     std::cerr << "Unknown value for DomainEnum: " << domain << std::endl;
     assert(0);
+    throw std::logic_error("Bad domain enum in Field.");
   } // else
 
   newSection(points, fiberDim);
@@ -557,6 +558,7 @@ pylith::topology::Field<mesh_type>::view(const char* label) const
       std::cerr << "Unknown vector field value '" << _vecFieldType
 		<< "'." << std::endl;
       assert(0);
+      throw std::logic_error("Bad vector field type in Field.");
     } // switch
 
   std::cout << "Viewing field '" << _label << "' "<< label << ".\n"
