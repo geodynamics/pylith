@@ -1,11 +1,12 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 \newcommand\Prefix[3]{\vphantom{#3}#1#2#3}
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding latin1
 \font_roman default
@@ -16,9 +17,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 1
@@ -47,7 +50,8 @@
 \begin_body
 
 \begin_layout Chapter
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "cha:material:models"
 
 \end_inset
@@ -59,7 +63,7 @@ Material Models
 \begin_inset ERT
 status collapsed
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -156,13 +160,15 @@ The material property group associates a material model (label for the material,
  If a set of material groups is not specified, a single material model is
  used for the entire problem.
  See Sections 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Tutorial-3d-hex8"
 
 \end_inset
 
  and 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Tutorial-3d-tet4"
 
 \end_inset
@@ -190,8 +196,13 @@ elasticisotropic3d
 \end_layout
 
 \begin_layout Description
-db Spatial database specifying the spatial variation in the parameters of
- the bulk constitutive model (default is a SimpleDB).
+db_properties Spatial database specifying the spatial variation in the parameter
+s of the bulk constitutive model (default is a SimpleDB).
+\end_layout
+
+\begin_layout Description
+db_initial_state Spatial database specifying the spatial variation in the
+ initial variables (default is none).
 \end_layout
 
 \begin_layout Description
@@ -250,11 +261,7 @@ id = 1
 \end_layout
 
 \begin_layout LyX-Code
-db.iohandler.filename = mat_elastic.spatialdb
-\end_layout
-
-\begin_layout LyX-Code
-quadrature = pylith.feassemble.quadrature.Quadrature3D
+db_properties.iohandler.filename = mat_elastic.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
@@ -282,11 +289,7 @@ id = 2
 \end_layout
 
 \begin_layout LyX-Code
-db.iohandler.filename = mat_viscoelastic.spatialdb
-\end_layout
-
-\begin_layout LyX-Code
-quadrature = pylith.feassemble.quadrature.Quadrature3D
+db_properties.iohandler.filename = mat_viscoelastic.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
@@ -303,7 +306,8 @@ These settings correspond to the the problem in
 Section 
 \family default
 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Tutorial-3d-hex8"
 
 \end_inset
@@ -322,7 +326,8 @@ mat_viscoelastic.spatialdb
  Refer to the discussion of each material model to find the parameters that
  must be specified in the spatial database.
  Appendix 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Spatialdata:SimpleIOAscii"
 
 \end_inset
@@ -343,11 +348,11 @@ By default the output manager for a material does not output any information.
 \end_layout
 
 \begin_layout LyX-Code
-cell_filter = pylith.meshio.CellFilterAvg
+cell_filter = pylith.meshio.CellFilterAvgMesh
 \end_layout
 
 \begin_layout LyX-Code
-writer.filename = dislocation-statevars-upper.vtk
+writer.filename = dislocation-elastic.vtk
 \end_layout
 
 \begin_layout LyX-Code
@@ -359,11 +364,11 @@ writer.filename = dislocation-statevars-upper.vtk
 \end_layout
 
 \begin_layout LyX-Code
-cell_filter = pylith.meshio.CellFilterAvg
+cell_filter = pylith.meshio.CellFilterAvgMesh
 \end_layout
 
 \begin_layout LyX-Code
-writer.filename = dislocation-statevars-lower.vtk
+writer.filename = dislocation-viscoelastic.vtk
 \end_layout
 
 \begin_layout Standard
@@ -372,7 +377,8 @@ These settings again correspond to the problem in
 Section 
 \family default
 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Tutorial-3d-hex8"
 
 \end_inset
@@ -415,7 +421,8 @@ writer.filename
 see Section 
 \family default
 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Tutorial-Two-hexahedra"
 
 \end_inset
@@ -438,7 +445,8 @@ cell_info_fields = [mu,lambda,density,maxwell_time]
 \begin_layout Standard
 The properties and state variable available for output in each material
  model are listed in Table 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "tab:material-model-output"
 
 \end_inset
@@ -446,7 +454,8 @@ reference "tab:material-model-output"
 .
  The order of the state variables in the output arrays is given in Table
  
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "tab:material-model-statevars"
 
 \end_inset
@@ -468,12 +477,13 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "tab:material-model-output"
 
 \end_inset
@@ -495,16 +505,16 @@ cell_data_fields
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="4" columns="3">
+<lyxtabular version="3" rows="5" columns="3">
 <features>
-<column alignment="center" valignment="top" leftline="true" width="1.5in">
-<column alignment="center" valignment="top" leftline="true" width="1.5in">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="1.5in">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="center" valignment="top" width="1.5in">
+<column alignment="center" valignment="top" width="1.5in">
+<column alignment="center" valignment="top" width="1.5in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Model
@@ -512,10 +522,10 @@ Model
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Physical Properties
@@ -523,10 +533,10 @@ Physical Properties
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 State Variables
@@ -535,11 +545,11 @@ State Variables
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Elastic
 \end_layout
 
@@ -548,7 +558,7 @@ Elastic
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 mu, lambda, density
 \end_layout
 
@@ -557,18 +567,18 @@ mu, lambda, density
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 total_strain, stress
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Maxwell Viscoelastic
 \end_layout
 
@@ -577,7 +587,7 @@ Maxwell Viscoelastic
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 mu, lambda, density, maxwell_time
 \end_layout
 
@@ -586,18 +596,18 @@ mu, lambda, density, maxwell_time
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 total_strain, viscous_strain, stress
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Generalized Maxwell Viscoelastic
 \end_layout
 
@@ -606,7 +616,7 @@ Generalized Maxwell Viscoelastic
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 mu, lambda, density, shear_ratio, maxwell_time
 \end_layout
 
@@ -615,8 +625,37 @@ mu, lambda, density, shear_ratio, maxwell_time
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 total_strain, viscous_strain, stress
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Power-law
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -638,12 +677,13 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "tab:material-model-statevars"
 
 \end_inset
@@ -657,15 +697,15 @@ Order of components in tensor state-variables for material models.
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="4">
 <features>
-<column alignment="center" valignment="top" leftline="true" width="1.25in">
-<column alignment="center" valignment="top" leftline="true" width="0.5in">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="1.25in">
-<column alignment="center" valignment="top" rightline="true" width="2.25in">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="center" valignment="top" width="1.25in">
+<column alignment="center" valignment="top" width="0.5in">
+<column alignment="center" valignment="top" width="1.25in">
+<column alignment="center" valignment="top" width="2.25in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 State Variable
@@ -673,10 +713,10 @@ State Variable
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 1D
@@ -684,10 +724,10 @@ State Variable
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 2D
@@ -695,10 +735,10 @@ State Variable
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 3D
@@ -707,11 +747,11 @@ State Variable
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 total_strain, viscous_strain
 \end_layout
 
@@ -720,8 +760,8 @@ total_strain, viscous_strain
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
-\begin_inset Formula $\epsilon_{11}$
+\begin_layout Plain Layout
+\begin_inset Formula $\epsilon_{xx}$
 \end_inset
 
 
@@ -732,16 +772,16 @@ total_strain, viscous_strain
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
-\begin_inset Formula $\epsilon_{11}$
+\begin_layout Plain Layout
+\begin_inset Formula $\epsilon_{xx}$
 \end_inset
 
 , 
-\begin_inset Formula $\epsilon_{22}$
+\begin_inset Formula $\epsilon_{yy}$
 \end_inset
 
 , 
-\begin_inset Formula $\epsilon_{12}$
+\begin_inset Formula $\epsilon_{xy}$
 \end_inset
 
 
@@ -749,31 +789,31 @@ total_strain, viscous_strain
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
-\begin_inset Formula $\epsilon_{11}$
+\begin_layout Plain Layout
+\begin_inset Formula $\epsilon_{xx}$
 \end_inset
 
 , 
-\begin_inset Formula $\epsilon_{22}$
+\begin_inset Formula $\epsilon_{yy}$
 \end_inset
 
 , 
-\begin_inset Formula $\epsilon_{33}$
+\begin_inset Formula $\epsilon_{zz}$
 \end_inset
 
 , 
-\begin_inset Formula $\epsilon_{12}$
+\begin_inset Formula $\epsilon_{xy}$
 \end_inset
 
 , 
-\begin_inset Formula $\epsilon_{23}$
+\begin_inset Formula $\epsilon_{yz}$
 \end_inset
 
 , 
-\begin_inset Formula $\epsilon_{13}$
+\begin_inset Formula $\epsilon_{xz}$
 \end_inset
 
 
@@ -782,21 +822,21 @@ total_strain, viscous_strain
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 stress
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
-\begin_inset Formula $\sigma_{11}$
+\begin_layout Plain Layout
+\begin_inset Formula $\sigma_{xx}$
 \end_inset
 
 
@@ -804,19 +844,19 @@ stress
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
-\begin_inset Formula $\sigma_{11}$
+\begin_layout Plain Layout
+\begin_inset Formula $\sigma_{xx}$
 \end_inset
 
 , 
-\begin_inset Formula $\sigma_{22}$
+\begin_inset Formula $\sigma_{yy}$
 \end_inset
 
 , 
-\begin_inset Formula $\sigma_{12}$
+\begin_inset Formula $\sigma_{xy}$
 \end_inset
 
 
@@ -824,31 +864,31 @@ stress
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
-\begin_inset Formula $\sigma_{11}$
+\begin_layout Plain Layout
+\begin_inset Formula $\sigma_{xx}$
 \end_inset
 
 , 
-\begin_inset Formula $\sigma_{22}$
+\begin_inset Formula $\sigma_{yy}$
 \end_inset
 
 , 
-\begin_inset Formula $\sigma_{33}$
+\begin_inset Formula $\sigma_{zz}$
 \end_inset
 
 , 
-\begin_inset Formula $\sigma_{12}$
+\begin_inset Formula $\sigma_{xy}$
 \end_inset
 
 , 
-\begin_inset Formula $\sigma_{23}$
+\begin_inset Formula $\sigma_{yz}$
 \end_inset
 
 , 
-\begin_inset Formula $\sigma_{13}$
+\begin_inset Formula $\sigma_{xz}$
 \end_inset
 
 
@@ -961,12 +1001,12 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Values in spatial database used as parameters in the elastic material constituti
 ve models.
 \end_layout
@@ -977,13 +1017,13 @@ ve models.
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
 <features>
-<column alignment="center" valignment="middle" leftline="true" rightline="true" width="0.85in">
-<column alignment="center" valignment="middle" leftline="true" rightline="true" width="2.47in">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="center" valignment="middle" width="0.85in">
+<column alignment="center" valignment="middle" width="2.47in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Parameter
@@ -991,10 +1031,10 @@ Parameter
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 
 \series bold
@@ -1004,11 +1044,11 @@ Name in Spatial Database
 \end_inset
 </cell>
 </row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $v_{p}$
 \end_inset
 
@@ -1020,7 +1060,7 @@ Name in Spatial Database
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 Vp
@@ -1029,11 +1069,11 @@ Vp
 \end_inset
 </cell>
 </row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $v_{s}$
 \end_inset
 
@@ -1045,7 +1085,7 @@ Vp
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 Vs
@@ -1054,11 +1094,11 @@ Vs
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $\rho$
 \end_inset
 
@@ -1067,10 +1107,10 @@ Vs
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 density
@@ -1310,13 +1350,15 @@ Viscoelastic Materials
 \begin_layout Standard
 At present, there are two viscoelastic material models available in PyLith,
  with at least one additional model planned for the near future (Table 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "tab:Material-models-available"
 
 \end_inset
 
  and Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:Material-models"
 
 \end_inset
@@ -1337,13 +1379,14 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "tab:Material-models-available"
 
 \end_inset
@@ -1357,14 +1400,14 @@ Planned and available 3D viscoelastic materials for PyLith.
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="3">
 <features>
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="0.68in">
-<column alignment="left" valignment="top" leftline="true" rightline="true" width="2.85in">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="2.47in">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="center" valignment="top" width="0.68in">
+<column alignment="left" valignment="top" width="2.85in">
+<column alignment="center" valignment="top" width="2.47in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Available?
@@ -1372,10 +1415,10 @@ Available?
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Model Name
@@ -1383,10 +1426,10 @@ Model Name
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Description
@@ -1395,20 +1438,20 @@ Description
 \end_inset
 </cell>
 </row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Yes
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 MaxwellIsotropic3D
 \end_layout
 
@@ -1417,27 +1460,27 @@ MaxwellIsotropic3D
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Isotropic Maxwell material with linear viscous rheology
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Yes
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 GenMaxwellIsotropic3D
 \end_layout
 
@@ -1446,36 +1489,36 @@ GenMaxwellIsotropic3D
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Generalized model consisting of 3 Maxwell models in parallel
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
-No
+\begin_layout Plain Layout
+Yes
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
-PowerLawMaxwellIsotropic3D
+\begin_layout Plain Layout
+PowerLaw3D
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Isotropic Maxwell material with power-law viscous rheology
 \end_layout
 
@@ -1503,7 +1546,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/pylith-materials.ai
@@ -1514,9 +1557,10 @@ status open
 
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:Material-models"
 
 \end_inset
@@ -1557,7 +1601,8 @@ Definitions
 \begin_layout Standard
 In the following sections, we use a combination of vector and index notation
  (our notation conventions are shown in Table 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "tab:Mathematical-notation"
 
 \end_inset
@@ -1644,7 +1689,8 @@ Note the use of engineering strain measures (
 \end_inset
 
 ) in Equation 
-\begin_inset LatexCommand vpageref
+\begin_inset CommandInset ref
+LatexCommand vpageref
 reference "eq:5"
 
 \end_inset
@@ -1674,13 +1720,14 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "tab:Mathematical-notation"
 
 \end_inset
@@ -1694,43 +1741,43 @@ Mathematical notation used in this section.
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="3">
 <features>
-<column alignment="center" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Index notation
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Vector notation
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Description
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $a_{i}$
 \end_inset
 
@@ -1742,7 +1789,7 @@ Description
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $\overrightarrow{a}$
 \end_inset
 
@@ -1754,18 +1801,18 @@ Description
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Vector field a
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $a_{ij}$
 \end_inset
 
@@ -1774,10 +1821,10 @@ Vector field a
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $\underline{a}$
 \end_inset
 
@@ -1786,10 +1833,10 @@ Vector field a
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Second order tensor field a
 \end_layout
 
@@ -1816,7 +1863,8 @@ Formulation for Generalized Maxwell Models
 The generalized Maxwell viscoelastic model consists of a number of Maxwell
  linear viscoelastic models in parallel with a spring, as shown in Figure
  
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:Material-models"
 
 \end_inset
@@ -1830,13 +1878,15 @@ reference "fig:Material-models"
  the Kelvin model, and the standard linear solid.
  We follow formulations similar to those used by Zienkiewicz and Taylor
  
-\begin_inset LatexCommand cite
+\begin_inset CommandInset citation
+LatexCommand cite
 key "Zienkiewicz:Taylor:2000"
 
 \end_inset
 
  and Taylor 
-\begin_inset LatexCommand cite
+\begin_inset CommandInset citation
+LatexCommand cite
 key "Taylor:2003"
 
 \end_inset
@@ -1950,7 +2000,8 @@ where
 \end_inset
 
 With the form in Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:23"
 
 \end_inset
@@ -1985,7 +2036,8 @@ The first term is zero, the second term includes a jump term associated
 
  at time zero, and the last term covers the subsequent history of strain.
  Applying this separation to Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:22"
 
 \end_inset
@@ -2001,13 +2053,15 @@ where we have left the sign off of the lower limit on the integral.
 
 \begin_layout Standard
 Substituting Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:25"
 
 \end_inset
 
  into 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:28"
 
 \end_inset
@@ -2096,7 +2150,8 @@ We need to compute the tangent constitutive matrix when forming the stiffness
 
 where the second derivative on the right may be easily deduced from Equation
  
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:16"
 
 \end_inset
@@ -2114,13 +2169,15 @@ where
 
  is the identity matrix.
  From Equations 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:33"
 
 \end_inset
 
  through 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:35"
 
 \end_inset
@@ -2153,15 +2210,16 @@ Effective Stress Formulations for Viscoelastic Materials
 \begin_layout Standard
 As an alternative to the approach outlined above, an effective stress function
  formulation 
-\begin_inset LatexCommand cite
+\begin_inset CommandInset citation
+LatexCommand cite
 key "Kojic:Bathe:1987"
 
 \end_inset
 
  may be employed for both a linear Maxwell model and a power-law Maxwell
  model.
- Note that this formulation is not presently employed for either linear
- or power-law models in PyLith 1.3, but it may be employed in future versions.
+ Note that this formulation is not presently employed for linear
+ viscoelastic models, but it may be employed in future versions.
  For the viscoelastic materials considered here, the viscous volumetric
  strains are zero (incompressible flow), and it is convenient to separate
  the general stress-strain relationship at time 
@@ -2214,7 +2272,8 @@ where
 
 , respectively.
  The topmost equation in Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:42"
 
 \end_inset
@@ -2300,25 +2359,29 @@ Therefore,
 \end_inset
 
 Substituting Equations 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:46"
 
 \end_inset
 
 , 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:50"
 
 \end_inset
 
 , and 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:51"
 
 \end_inset
 
  into 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:43"
 
 \end_inset
@@ -2381,7 +2444,8 @@ Using the chain rule,
 \end_inset
 
 From Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:44"
 
 \end_inset
@@ -2393,7 +2457,8 @@ reference "eq:44"
 \end_inset
 
 and from Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:16"
 
 \end_inset
@@ -2409,7 +2474,8 @@ reference "eq:16"
 \end_inset
 
 Finally, from Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:53"
 
 \end_inset
@@ -2421,7 +2487,8 @@ reference "eq:53"
 \end_inset
 
 From Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:57"
 
 \end_inset
@@ -2486,7 +2553,8 @@ C_{44}^{E}=\frac{E}{2(1+\nu)}\,\,\nonumber \end{gather}
 \end_inset
 
 This is consistent with the regular elasticity matrix, and Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:63"
 
 \end_inset
@@ -2532,25 +2600,29 @@ Therefore,
 \end_inset
 
 substituting Equations 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:46"
 
 \end_inset
 
 , 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:65"
 
 \end_inset
 
 , and 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:66"
 
 \end_inset
 
  into 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:43"
 
 \end_inset
@@ -2583,7 +2655,8 @@ d=\Delta t\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\,\,\nonumber \end{gathe
 \end_inset
 
 Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:69"
 
 \end_inset
@@ -2596,19 +2669,22 @@ reference "eq:69"
  -- and may be solved by bisection or by Newton's method.
  Once this parameter has been found, the deviatoric stresses for the current
  time step may be found from Equations 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:65"
 
 \end_inset
 
  and 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:66"
 
 \end_inset
 
 , and the total stresses may be found from Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:54"
 
 \end_inset
@@ -2619,14 +2695,16 @@ reference "eq:54"
 \begin_layout Standard
 To compute the tangent stress-strain relation, we proceed as for the linear
  case, but the evaluation of the first derivative in Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:58"
 
 \end_inset
 
  is more complicated.
  We begin by rewriting Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:68"
 
 \end_inset
@@ -2651,7 +2729,8 @@ The derivative is then
 \end_inset
 
 From Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:66"
 
 \end_inset
@@ -2669,7 +2748,8 @@ We first note that
 \end_inset
 
  which allows us to rewrite Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:69"
 
 \end_inset
@@ -2705,20 +2785,23 @@ Note that for a linear material
 
 , this derivative is zero.
  This relation may be used in Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:73"
 
 \end_inset
 
 .
  Then, using Equations 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:57"
 
 \end_inset
 
  through 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:60"
 
 \end_inset
@@ -2768,7 +2851,8 @@ where we have neglected the changes in
 \begin_layout Standard
 To compute the zero of the effective stress function using Newton's method,
  we require the derivative of equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:69"
 
 \end_inset
@@ -2833,7 +2917,8 @@ use_initial_state
  flag must be set to true and a spatial database with values the initial
  stress tensor provided as in this example from the tutorial in Section
  
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Tutorial-3d-hex8"
 
 \end_inset
@@ -2843,10 +2928,6 @@ reference "sec:Tutorial-3d-hex8"
 
 \begin_layout LyX-Code
 [pylithapp.timedependent.materials.elastic]
-\end_layout
-
-\begin_layout LyX-Code
-use_initial_state = True
 \end_layout
 
 \begin_layout LyX-Code

@@ -1,11 +1,12 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding latin1
 \font_roman default
@@ -16,9 +17,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 1
@@ -70,7 +73,8 @@ PyLith 1.0 was the first version to allow the solution of both implicit (quasi-s
 atic) and explicit (dynamic) problems and was a complete rewrite of the
  original PyLith.
  PyLith 1.0 combines the functionality of EqSim 
-\begin_inset LatexCommand cite
+\begin_inset CommandInset citation
+LatexCommand cite
 key "Aagaard:etal:2001a,Aagaard:etal:2001b"
 
 \end_inset
@@ -92,8 +96,8 @@ The release of PyLith 1.0 has been followed by additional releases that expand
  the number of features as well as improve performance.
  The PyLith 1.x series of releases allows the solution of both quasi-static
  and dynamic problems in one, two, or three dimensions.
- The code runs in either serial or parallel mode, and the design allows
- for relatively easy scripting using the Python programming language.
+ The code runs in either serial or parallel, and the design allows for relativel
+y easy scripting using the Python programming language.
  Material properties and values for boundary and fault conditions are specified
  using spatial databases, which permit easy prescription of complex spatial
  variations of properties and parameters.
@@ -108,9 +112,10 @@ The release of PyLith 1.0 has been followed by additional releases that expand
  possible to create a quadratic mesh from the linear meshes provided by
  most meshing packages.
  Materials presently available include isotropic elastic, linear Maxwell
- viscoelastic (3D only), and generalized Maxwell viscoelastic (3D only).
+ viscoelastic (3D only), generalized Maxwell viscoelastic (3D only), and
+ power-law viscoelastic (3D only).
  Boundary conditions include Dirichlet (prescribed displacements and velocities)
-, Neumann (traction), and absorbing boundaries.
+, Neumann (traction), point forces, and absorbing boundaries.
  Cohesive elements are used to implement slip across interior surfaces (faults).
  At present, only kinematically-specified fault slip is available.
  In the near future, we will provide several constitutive models for cohesive
@@ -122,11 +127,10 @@ The release of PyLith 1.0 has been followed by additional releases that expand
 PyLith is under active development and we expect a number of additions and
  improvements in the near future.
  Likely enhancements will include fault constitutive models with cohesive
- (fault) cells, integration with PETSc's nonlinear solvers, additional bulk
- constitutive models, automatic generation of higher-order elements from
- linear elements, and the generation of Green's functions to be used in
- inversions.
- Several of these features should be available by Jan 2009.
+ (fault) cells, additional bulk constitutive models, automatic generation
+ of higher-order elements from linear elements, and the generation of Green's
+ functions to be used in inversions.
+ Several of these features should be available by Jan 2010.
 \end_layout
 
 \begin_layout Section
@@ -136,7 +140,8 @@ PyLith Workflow
 \begin_layout Standard
 PyLith is one component in the process of investigating problems in tectonics
  (Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:Workflow-summary"
 
 \end_inset
@@ -162,7 +167,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/workflow.eps
@@ -174,11 +179,12 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:Workflow-summary"
 
 \end_inset
@@ -206,7 +212,8 @@ PyLith is separated into modules to encapsulate behavior and facilitate
  This allows expert users to replace functionality of a wide variety of
  components without recompiling or polluting the main code.
  PyLith employs external packages (see Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:pylith-dependencies"
 
 \end_inset
@@ -224,7 +231,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/packages.eps
@@ -235,8 +242,9 @@ status open
 
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:pylith-dependencies"
 
 \end_inset
@@ -269,8 +277,9 @@ PyLith is written in two programming languages.
  This low-level code relies on PETSc to perform operations on matrices and
  vectors in parallel.
  We also make extensive use of two Python packages.
- Pyrex is a package that simplifies the task of adding C extensions to Python
- code, and pyrexembed extends Pyrex to handle C++ code.
+ SWIG is a package that simplifies the task of adding C++ extensions to
+ Python code, and FIAT provides tabulated basis functions and numerical
+ quadrature points.
 \end_layout
 
 \begin_layout Standard
@@ -289,7 +298,7 @@ In writing PyLith 1.0, the code was completely redesigned to be object-oriented
 The new code design leverages Pyre, Sieve, and PETSc much more extensively
  than the previous version.
   Pyre is used to glue together the various modules used to construct a
- simulation and  specify the parameters.
+ simulation and specify the parameters.
  Sieve is used for all finite-element  storage and manipulation and handles
  the creation of the PETSc matrices and vectors.
   As a result, most of the PyLith source code pertains to implementing the
@@ -303,14 +312,14 @@ PyLith also uses FIAT to tabulate the finite-element basis functions  at
  Nemesis allows PyLith to run Python using the Message Passing Interface
  (MPI) for parallel processing.
  Additional, indirect dependencies (see Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:pylith-dependencies"
 
 \end_inset
 
 ) include numpy (efficient operations on numerical arrays in Python), Proj.4
- (geographic projections), and Pyrex/Pyrexembed (calling C and C++ functions
- from Python).
+ (geographic projections), and SWIG (calling C++ functions from Python).
 \end_layout
 
 \begin_layout Standard
@@ -326,7 +335,8 @@ During development, tests were constructed for nearly every module function.
  Additionally, we have run the Southern California Earthquake Center crustal
  deformation benchmarks for strike-slip and reverse-slip to determine the
  relative local and global error (see Chapter 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Benchmarks"
 
 \end_inset
@@ -357,7 +367,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/pyre_overview.png
@@ -368,10 +378,10 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Pyre Architecture.
  The integration framework is a set of cooperating abstract services.
 \end_layout
@@ -473,9 +483,14 @@ Sieve
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand htmlurl
-name "PETSc"
-target "www-unix.mcs.anl.gov/petsc/petsc-as"
+PETSc 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www-unix.mcs.anl.gov/petsc/petsc-as
+\end_layout
 
 \end_inset
 

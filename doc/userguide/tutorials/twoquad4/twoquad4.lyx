@@ -1,11 +1,12 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding latin1
 \font_roman default
@@ -16,9 +17,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 0
@@ -47,7 +50,8 @@
 \begin_body
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Tutorial-Two-quad4"
 
 \end_inset
@@ -96,7 +100,7 @@ SimpleDB spatial database
 \end_layout
 
 \begin_layout Itemize
-FixedDOFDB spatial database
+ZeroDispDB spatial database
 \end_layout
 
 \begin_layout Subsection
@@ -123,7 +127,8 @@ Mesh Description
 \begin_layout Standard
 The mesh consists of two square cells with edge lengths of one unit forming
  a regular region (Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:twoquad4-mesh"
 
 \end_inset
@@ -149,7 +154,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/twoquad4-mesh.eps
@@ -159,12 +164,13 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Mesh composed of two bilinear quadrilateral cells used for the example problems.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twoquad4-mesh"
 
 \end_inset
@@ -315,7 +321,8 @@ pylith axialdisp.cfg
 As in the two triangle axial displacement example, three files will be produced.
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
-\begin_inset LatexCommand vref
+\begin_inset CommandInset ref
+LatexCommand vref
 reference "fig:twoquad4-axial"
 
 \end_inset
@@ -332,7 +339,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/axialdisp.jpg
@@ -344,13 +351,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Color contours and vectors of displacement for the axial displacement example
  using a mesh composed of two bilinear quadrilateral cells.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twoquad4-axial"
 
 \end_inset
@@ -478,7 +486,8 @@ pylith sheardisp.cfg
 As in the previous example, three files will be produced.
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
-\begin_inset LatexCommand vref
+\begin_inset CommandInset ref
+LatexCommand vref
 reference "fig:twoquad4-shear"
 
 \end_inset
@@ -492,7 +501,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/sheardispl.jpg
@@ -504,13 +513,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Color contours and vectors of displacement for the shear displacement example
  using a mesh composed of two bilinear quadrilateral cells.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twoquad4-shear"
 
 \end_inset
@@ -562,7 +572,7 @@ twoquad4.mesh
 ) defining the points desired, and assigning a label to the boundary condition
  set.
  Instead of specifying a spatial database file for the values of the Dirichlet
- boundary condition, we use the default spatial database (FixedDOFDB) for
+ boundary condition, we use the default spatial database (ZeroDispDB) for
  the Dirichlet boundary condition, which sets the displacements to zero
  for all time.
 \end_layout
@@ -580,7 +590,7 @@ twoquad4.mesh
 \family default
 ) defining the points desired, and assigning a label to the boundary condition
  set.
- We use the FixedDOFDB for this boundary condition as well, which sets the
+ We use the ZeroDispDB for this boundary condition as well, which sets the
  displacements to zero for all time.
 \end_layout
 
@@ -672,7 +682,8 @@ dislocation-fault_info.vtk
  each vertex on the fault.
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:twoquad4-disloc"
 
 \end_inset
@@ -686,7 +697,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/dislocation.jpg
@@ -698,13 +709,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Color contours and vectors of displacement for the kinematic fault example
  using a mesh composed of two bilinear quadrilateral cells.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twoquad4-disloc"
 
 \end_inset
@@ -723,7 +735,8 @@ name "fig:twoquad4-disloc"
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sub:Tutorial-twoquad4-traction"
 
 \end_inset
@@ -777,7 +790,7 @@ twoquad4.mesh
 ) defining the points desired.
  In this case, rather than specifying a spatial database file with values
  for the Dirichlet boundary conditions, we use the default spatial database
- (FixedDOFDB) for the Dirichlet boundary condition, which sets the displacements
+ (ZeroDispDB) for the Dirichlet boundary condition, which sets the displacements
  to zero for all time.
 \end_layout
 
@@ -804,14 +817,16 @@ pylithapp.timedependent.bc.y_neg Specifies the boundary conditions for the
 twoquad4.mesh
 \family default
 ) defining the points desired.
- In this case, we again use the FixedDOFDB, which sets the displacements
+ In this case, we again use the ZeroDispDB, which sets the displacements
  to zero for all time.
 \end_layout
 
 \begin_layout Description
 pylithapp.problem.formulation.output.output.writer Gives the base filename for
  VTK output 
-\newline
+\begin_inset Newline newline
+\end_inset
+
 (
 \family typewriter
 axialtract.vtk
@@ -896,7 +911,8 @@ y
  components of traction applied at each integration point.
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
-\begin_inset LatexCommand vref
+\begin_inset CommandInset ref
+LatexCommand vref
 reference "fig:twoquad4-axialtract"
 
 \end_inset
@@ -904,7 +920,8 @@ reference "fig:twoquad4-axialtract"
 , which was generated using ParaView.
  The results may be compared against the analytical solution derived in
  Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:Analytical-Constant-Traction"
 
 \end_inset
@@ -918,7 +935,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/axialtract.jpg
@@ -930,13 +947,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Color contours and vectors of displacement for the axial traction example
  using a mesh composed of two bilinear quadrilateral cells.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twoquad4-axialtract"
 
 \end_inset

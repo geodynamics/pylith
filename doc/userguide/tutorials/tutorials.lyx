@@ -1,11 +1,12 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding latin1
 \font_roman default
@@ -16,9 +17,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 1
@@ -47,7 +50,8 @@
 \begin_body
 
 \begin_layout Chapter
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "cha:Tutorials"
 
 \end_inset
@@ -70,9 +74,13 @@ Prerequisites
 
 \begin_layout Standard
 Before you begin any of the tutorials, you will need to install PyLith following
- the instructions in Chapter\InsetSpace ~
+ the instructions in Chapter
+\begin_inset space ~
+\end_inset
 
-\begin_inset LatexCommand ref
+
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "cha:Installation-and-Getting"
 
 \end_inset
@@ -80,37 +88,53 @@ reference "cha:Installation-and-Getting"
 .
 
 \color none
- For more complex tutorials, you will also need either 
-\begin_inset LatexCommand htmlurl
-name "CUBIT"
-target "cubit.sandia.gov"
+ For more complex tutorials, you will also need either CUBIT 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+cubit.sandia.gov
+\end_layout
 
 \end_inset
 
- or 
-\begin_inset LatexCommand htmlurl
-name "LaGriT"
-target "meshing.lanl.gov"
+ or LaGriT 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+meshing.lanl.gov
+\end_layout
 
 \end_inset
 
  mesh generation software to create the meshes.
  If you do not wish to create your own mesh at this time, the meshes are
  also provided as part of the tutorial.
- The 
-\begin_inset LatexCommand htmlurl
-name "ParaView"
-target "www.paraview.org"
+ The ParaView 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www.paraview.org
+\end_layout
 
 \end_inset
 
  visualization package may be used to view simulation results.
  ParaView 3 includes built-in documentation that is accessed by clicking
  on the Help menu item.
- Some additional documentation is available on the 
-\begin_inset LatexCommand htmlurl
-name "ParaView Wiki site"
-target "paraview.org/Wiki/ParaView"
+ Some additional documentation is available on the ParaView Wiki site 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+paraview.org/Wiki/ParaView
+\end_layout
 
 \end_inset
 
@@ -147,44 +171,51 @@ examples/3d
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \input{twotri3/twotri3.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "twotri3/twotri3.lyx"
 
 \end_inset
 
  
-\begin_inset Include \input{twoquad4/twoquad4.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "twoquad4/twoquad4.lyx"
 
 \end_inset
 
  
-\begin_inset Include \input{twotet4/twotet4.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "twotet4/twotet4.lyx"
 
 \end_inset
 
 
-\begin_inset Include \input{twohex8/twohex8.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "twohex8/twohex8.lyx"
 
 \end_inset
 
 
-\begin_inset Include \input{twotet4-geoproj/twotet4-geoproj.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "twotet4-geoproj/twotet4-geoproj.lyx"
 
 \end_inset
 
 
-\begin_inset Include \input{3dhex8/3dhex8.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "3dhex8/3dhex8.lyx"
 
 \end_inset
 
 
-\begin_inset Include \input{3dtet4/3dtet4.lyx}
-preview false
+\begin_inset CommandInset include
+LatexCommand input
+filename "3dtet4/3dtet4.lyx"
 
 \end_inset
 
@@ -224,18 +255,18 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="2">
 <features>
-<column alignment="left" valignment="top" leftline="true" width="1.75in">
-<column alignment="left" valignment="top" leftline="true" rightline="true" width="4in">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="left" valignment="top" width="1.75in">
+<column alignment="left" valignment="top" width="4in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Directory
@@ -243,10 +274,10 @@ Directory
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Description
@@ -255,11 +286,11 @@ Description
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 bar_shearwave/tri3
@@ -270,18 +301,18 @@ bar_shearwave/tri3
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Wave propagation in a 2D bar discretized with triangular cells
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 bar_shearwave/quad4
@@ -292,18 +323,18 @@ bar_shearwave/quad4
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Wave propagation in a 2D bar discretized with quadrilateral cells
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 bar_shearwave/tet4
@@ -314,18 +345,18 @@ bar_shearwave/tet4
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Wave propagation in a 3D bar discretized with tetrahedral cells
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
 bar_shearwave/hex8
@@ -333,10 +364,10 @@ bar_shearwave/hex8
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Wave propagation in a 3D bar discretized with hexahedral cells
 \end_layout
 
@@ -350,11 +381,12 @@ Wave propagation in a 3D bar discretized with hexahedral cells
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "tab:additional:examples"
 
 \end_inset

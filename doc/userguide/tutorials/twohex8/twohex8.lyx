@@ -1,11 +1,12 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding latin1
 \font_roman default
@@ -16,9 +17,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 0
@@ -47,7 +50,8 @@
 \begin_body
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Tutorial-Two-hexahedra"
 
 \end_inset
@@ -92,7 +96,7 @@ SimpleDB spatial database
 \end_layout
 
 \begin_layout Itemize
-FixedDOFDB spatial database
+ZeroDispDB spatial database
 \end_layout
 
 \begin_layout Itemize
@@ -128,7 +132,8 @@ Mesh Description
 
 \begin_layout Standard
 The mesh consists of two hexahedra forming a rectangular prism (Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:twohex8-mesh"
 
 \end_inset
@@ -149,7 +154,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/twohex8-mesh.eps
@@ -159,12 +164,13 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Mesh composed of two trilinear hexahedral cells used for the example problems.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twohex8-mesh"
 
 \end_inset
@@ -242,15 +248,11 @@ db.values = [vp,vs,density,viscosity]
 \end_layout
 
 \begin_layout LyX-Code
-db.data = [5773.502691896258, 3333.333333333333, 2700.0, 1.0e18]
+db.data = [5773.502691896258*m/s, 3333.333333333333*m/s, 2700.0*kg/m**3, 1.0e18*Pa*s]
 \end_layout
 
 \begin_layout LyX-Code
  
-\end_layout
-
-\begin_layout LyX-Code
-quadrature = pylith.feassemble.quadrature.Quadrature3D
 \end_layout
 
 \begin_layout LyX-Code
@@ -446,7 +448,8 @@ maxwell_time
 ).
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:twohex8-axial"
 
 \end_inset
@@ -460,7 +463,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/axialdisp.jpg
@@ -472,13 +475,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Color contours and vectors of displacement for the axial displacement example
  using a mesh composed of two trilinear hexahedral cells.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twohex8-axial"
 
 \end_inset
@@ -591,7 +595,8 @@ pylith sheardisp.cfg
 \begin_layout Standard
 If the problem ran correctly, you should be able to generate a figure such
  as Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:twohex8-shear"
 
 \end_inset
@@ -605,7 +610,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/sheardisp.jpg
@@ -617,13 +622,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Color contours and vectors of displacement for the shear displacement example
  using a mesh composed of two trilinear hexahedral cells.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twohex8-shear"
 
 \end_inset
@@ -636,7 +642,7 @@ name "fig:twohex8-shear"
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
@@ -677,7 +683,7 @@ twohex8.mesh
 \family default
 ) defining the points desired, and assigns a label to the boundary condition
  set.
- In this case, we use the default spatial database (FixedDOFDB) for the
+ In this case, we use the default spatial database (ZeroDispDB) for the
  Dirichlet boundary condition, which sets the displacements to zero.
 \end_layout
 
@@ -765,7 +771,8 @@ pylith dislocation.cfg
 \begin_layout Standard
 If the problem ran correctly, you should be able to generate a figure such
  as Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:twohex8-disloc"
 
 \end_inset
@@ -781,7 +788,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
@@ -794,13 +801,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Color contours and vectors of displacement for the kinematic fault example
  using a mesh composed of two trilinear hexahedral cells.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:twohex8-disloc"
 
 \end_inset

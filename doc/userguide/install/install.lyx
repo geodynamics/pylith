@@ -1,11 +1,12 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding latin1
 \font_roman default
@@ -16,9 +17,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 1
@@ -47,7 +50,8 @@
 \begin_body
 
 \begin_layout Chapter
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "cha:Installation-and-Getting"
 
 \end_inset
@@ -63,10 +67,15 @@ Installation of PyLith on a desktop or laptop machine is, in most cases,
  Installation of PyLith on other operating systems -- or installation on
  a cluster -- requires building the software from the source code, which
  can be difficult for inexperienced users.
- Help is available from both a CIG mailing list and 
-\begin_inset LatexCommand htmlurl
-name "CIG Roundup Bug Tracking System"
-target "geodynamics.org/roundup/"
+ Help is available from both a CIG mailing list and CIG Roundup Bug Tracking
+ System 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/roundup/
+\end_layout
 
 \end_inset
 
@@ -74,7 +83,8 @@ target "geodynamics.org/roundup/"
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Getting-Help-and"
 
 \end_inset
@@ -83,19 +93,28 @@ Getting Help and Reporting Bugs
 \end_layout
 
 \begin_layout Standard
-The 
-\begin_inset LatexCommand url
-name "CIG Short-Term Crustal Dynamics Mailing List"
-target "cig-short@geodynamics.org"
+The CIG Short-Term Crustal Dynamics Mailing List 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+cig-short@geodynamics.org
+\end_layout
 
 \end_inset
 
  is dedicated to CIG issues associated with short-term crustal dynamics,
  including the use of PyLith.
- You can subscribe to the mailing list and view messages at 
-\begin_inset LatexCommand htmlurl
-name "cig-short Mailing List"
-target "geodynamics.org/cig/lists/cig-short"
+ You can subscribe to the mailing list and view messages at cig-short Mailing
+ List 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/lists/cig-short
+\end_layout
 
 \end_inset
 
@@ -109,10 +128,15 @@ CIG uses
 Roundup
 \family default
  for bug tracking.
- If you find a bug in PyLith, please submit a bug report to the 
-\begin_inset LatexCommand htmlurl
-name "CIG Roundup System"
-target "geodynamics.org/roundup/"
+ If you find a bug in PyLith, please submit a bug report to the CIG Roundup
+ System 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/roundup/
+\end_layout
 
 \end_inset
 
@@ -138,10 +162,14 @@ Installation of Binary Executable
 
 \begin_layout Standard
 Binary executables are available for Linux, Mac OS X (Power PC and Intel),
- and Windows from the 
-\begin_inset LatexCommand htmlurl
-name "PyLith web page"
-target "geodynamics.org/cig/software/packages/short/pylith/"
+ and Windows from the PyLith web page 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/software/packages/short/pylith/
+\end_layout
 
 \end_inset
 
@@ -172,10 +200,14 @@ $ cd pylith
 
 \end_deeper
 \begin_layout Enumerate
-Download the Linux tarball from the 
-\begin_inset LatexCommand htmlurl
-name "PyLith web page"
-target "geodynamics.org/cig/software/packages/short/pylith/"
+Download the Linux tarball from the PyLith web page 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/software/packages/short/pylith/
+\end_layout
 
 \end_inset
 
@@ -192,7 +224,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-1.3.1-linux-i686.tgz
+$ tar -xzf pylith-1.4.0-linux-i686.tgz
 \end_layout
 
 \end_deeper
@@ -241,10 +273,14 @@ $ cd pylith
 
 \end_deeper
 \begin_layout Enumerate
-Download the Darwin tarball from the 
-\begin_inset LatexCommand htmlurl
-name "PyLith web page"
-target "geodynamics.org/cig/software/packages/short/pylith/"
+Download the Darwin tarball from the PyLith web page 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/software/packages/short/pylith/
+\end_layout
 
 \end_inset
 
@@ -262,7 +298,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-1.3.1-darwin-powerpc.tgz
+$ tar -xzf pylith-1.4.0-darwin-powerpc.tgz
 \end_layout
 
 \end_deeper
@@ -292,10 +328,14 @@ Windows
 \end_layout
 
 \begin_layout Enumerate
-Download the Windows installer from the 
-\begin_inset LatexCommand htmlurl
-name "PyLith web page"
-target "geodynamics.org/cig/software/packages/short/pylith/"
+Download the Windows installer from the PyLith web page 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/software/packages/short/pylith/
+\end_layout
 
 \end_inset
 
@@ -312,7 +352,8 @@ Installation from Source
 
 \begin_layout Standard
 PyLith depends on a number of other packages (see Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:pylith-dependencies"
 
 \end_inset
@@ -337,10 +378,15 @@ reference "fig:pylith-dependencies"
 \begin_layout Standard
 Detailed installation instructions for building PyLith using the SVN source
  repository are available for several  platforms.
- The instructions can be accessed via the 
-\begin_inset LatexCommand htmlurl
-name "web interface into the PyLith source repository"
-target "geodynamics.org/wsvn/cig/short/3D/PyLith/trunk/doc/install/"
+ The instructions can be accessed via the web interface into the PyLith
+ source repository 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/wsvn/cig/short/3D/PyLith/trunk/doc/install/
+\end_layout
 
 \end_inset
 
@@ -357,7 +403,8 @@ target "geodynamics.org/wsvn/cig/short/3D/PyLith/trunk/doc/install/"
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:System-Requirements"
 
 \end_inset
@@ -421,10 +468,15 @@ g++
  the package manager for your distribution.
  The Mac OS X version of GCC is included in a software development suite
  called Xcode.
- Xcode is available as a free download at the 
-\begin_inset LatexCommand htmlurl
-name "Apple Developer Connection"
-target "developer.apple.com"
+ Xcode is available as a free download at the Apple Developer Connection
+ 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+developer.apple.com
+\end_layout
 
 \end_inset
 
@@ -517,10 +569,14 @@ Python 2.3.4
 \begin_layout Standard
 Mac OS X 10.3 and later ships with a suitable version of Python preinstalled.
  If you're using an older version of Mac OS X, or for more information in
- general, see 
-\begin_inset LatexCommand htmlurl
-name "Python on the Mac"
-target "www.python.org/download/mac"
+ general, see Python on the Mac 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www.python.org/download/mac
+\end_layout
 
 \end_inset
 
@@ -627,10 +683,14 @@ $
 \begin_layout Standard
 If absolutely necessary, one can easily build Python from source using a
  C compiler.
- You can download Python from the 
-\begin_inset LatexCommand htmlurl
-name "Python website"
-target "www.python.org"
+ You can download Python from the Python website 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www.python.org
+\end_layout
 
 \end_inset
 
@@ -670,14 +730,6 @@ proj (v4.5)
 \end_layout
 
 \begin_layout Itemize
-Pyrex (v0.9.5.1)
-\end_layout
-
-\begin_layout Itemize
-pyrexembed (CIG version)
-\end_layout
-
-\begin_layout Itemize
 Pythia* (v0.8.1.6 or later)
 \end_layout
 
@@ -700,16 +752,23 @@ Chaco*
 \begin_layout Standard
 Dependencies marked with an asterisk (*) can be downloaded and  installed
  automatically.
- The source code for Nemesis, Pyrexembed,  spatialdata, and PyLith package
- can all be downloaded from the 
-\begin_inset LatexCommand htmlurl
-name "PyLith web page"
-target "geodynamics.org/cig/software/packages/short/pylith/"
+ The source code for Nemesis, spatialdata, and PyLith package can all be
+ downloaded from the PyLith web page 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/software/packages/short/pylith/
+\end_layout
 
 \end_inset
 
 .
-  PyLith also has the following optional dependencies:
+ Whereas the SWIG generated Python and C++ sources files are included in
+ the source distribution, they are not in the PyLith repository, so building
+ from the source repository also requires SWIG.
+ PyLith also has the following optional dependencies:
 \end_layout
 
 \begin_layout Itemize
@@ -723,7 +782,8 @@ cppunit (v1.12)
 \begin_layout Standard
 After successfully building and installing PyLith from source, you will
  need to configure Pyre to launch parallel runs of PyLith (see Section 
-\begin_inset LatexCommand vref
+\begin_inset CommandInset ref
+LatexCommand vref
 reference "sec:Pyre-Configuration"
 
 \end_inset
@@ -732,14 +792,16 @@ reference "sec:Pyre-Configuration"
  We strongly recommend downloading the latest PyLith and PETSc source code
  directly from the source code repositories, instead of using the source
  packages; see Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Software-Repository"
 
 \end_inset
 
  later in this chapter.
  Note that this requires additional tools; see Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sub:Additional-Tools"
 
 \end_inset
@@ -748,7 +810,8 @@ reference "sub:Additional-Tools"
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Installing-PETSc"
 
 \end_inset
@@ -770,10 +833,14 @@ PETSc itself depends upon several other software packages.
 
 \begin_layout Standard
 For general information about the development version of PETSc, visit the
- 
-\begin_inset LatexCommand htmlurl
-name "PETSc Developers Site"
-target "www-unix.mcs.anl.gov/petsc/petsc-as/developers"
+ PETSc Developers Site 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www-unix.mcs.anl.gov/petsc/petsc-as/developers
+\end_layout
 
 \end_inset
 
@@ -820,10 +887,14 @@ $PETSC_ARCH
 \shape default
 /conf/make.log 
 \family default
-to 
-\begin_inset LatexCommand url
-name "PETSc Maintenance Mailing List"
-target "petsc-maint@mcs.anl.gov"
+to PETSc Maintenance Mailing List 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+petsc-maint@mcs.anl.gov
+\end_layout
 
 \end_inset
 
@@ -831,10 +902,15 @@ target "petsc-maint@mcs.anl.gov"
 \end_layout
 
 \begin_layout Standard
-For detailed information on installing PETSc, see the 
-\begin_inset LatexCommand htmlurl
-name "PETSc Installation Docs"
-target "www-unix.mcs.anl.gov/petsc/petsc-as/documentation/installation.html"
+For detailed information on installing PETSc, see the PETSc Installation
+ Docs 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www-unix.mcs.anl.gov/petsc/petsc-as/documentation/installation.html
+\end_layout
 
 \end_inset
 
@@ -857,10 +933,14 @@ petsc-dev
 \family typewriter
 petsc-dev
 \family default
- for PyLith from 
-\begin_inset LatexCommand htmlurl
-name "PyLith PETSc tarball"
-target "geodynamics.org/cig/software/packages/short/pylith/petsc-dev-pylith-1_1_0.tgz"
+ for PyLith from PyLith PETSc tarball 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/software/packages/short/pylith/petsc-dev-pylith-1_1_0.tgz
+\end_layout
 
 \end_inset
 
@@ -873,7 +953,7 @@ tar
 \end_layout
 
 \begin_layout LyX-Code
-$ tar xzf petsc-dev-pylith-1.3.1.tgz
+$ tar xzf petsc-dev-pylith-1.4.0.tgz
 \end_layout
 
 \begin_layout Standard
@@ -881,7 +961,7 @@ If you don't have GNU Tar, try the following command instead:
 \end_layout
 
 \begin_layout LyX-Code
-$ gunzip -c petsc-dev-pylith-1.3.1.tgz | tar xf -
+$ gunzip -c petsc-dev-pylith-1.4.0.tgz | tar xf -
 \end_layout
 
 \begin_layout Standard
@@ -1444,10 +1524,14 @@ Installing nemesis
 
 \begin_layout Standard
 As with many other packages, to install nemesis, first download the source
- package available at the 
-\begin_inset LatexCommand htmlurl
-name "PyLith web page"
-target "geodynamics.org/cig/software/packages/short/pylith"
+ package available at the PyLith web page 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/software/packages/short/pylith
+\end_layout
 
 \end_inset
 
@@ -1467,10 +1551,14 @@ Downloading and Unpacking the Nemesis Source
 \end_layout
 
 \begin_layout Standard
-Download Nemesis from the 
-\begin_inset LatexCommand htmlurl
-name "PyLith web page"
-target "geodynamics.org/cig/software/packages/short/pylith"
+Download Nemesis from the PyLith web page 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/software/packages/short/pylith
+\end_layout
 
 \end_inset
 
@@ -1511,10 +1599,14 @@ config.log
 \family typewriter
 make.log
 \family default
- files to the 
-\begin_inset LatexCommand url
-name "CIG Short-Term Crustal Dynamics Mailing List"
-target "cig-short@geodynamics.org"
+ files to the CIG Short-Term Crustal Dynamics Mailing List 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+cig-short@geodynamics.org
+\end_layout
 
 \end_inset
 
@@ -1551,9 +1643,13 @@ cd
 ) to the directory containing the Nemesis source
 \family typewriter
 .
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
 $ cd nemesis-1.0
 \end_layout
 
@@ -1565,9 +1661,13 @@ Run .
  to configure the package for your system
 \family typewriter
 .
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
 $ ./configure --prefix=$HOME/cig
 \end_layout
 
@@ -1579,9 +1679,13 @@ make
  to build the package.
 \family typewriter
 
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
 $ make
 \end_layout
 
@@ -1593,9 +1697,13 @@ make install
  to install the package.
 \family typewriter
 
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
 $ make install
 \end_layout
 
@@ -1626,10 +1734,14 @@ Installing Proj.4
 
 \begin_layout Standard
 As with many other packages, to install Proj.4, first download the source
- package available at the 
-\begin_inset LatexCommand htmlurl
-name "PROJ.4 web page"
-target "trac.osgeo.org/proj"
+ package available at the PROJ.4 web page 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+trac.osgeo.org/proj
+\end_layout
 
 \end_inset
 
@@ -1651,10 +1763,14 @@ Downloading and Unpacking the Proj.4 Source
 \end_layout
 
 \begin_layout Standard
-Download Proj.4 from the 
-\begin_inset LatexCommand htmlurl
-name "Proj.4 website"
-target "trac.osgeo.org/proj"
+Download Proj.4 from the Proj.4 website 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+trac.osgeo.org/proj
+\end_layout
 
 \end_inset
 
@@ -1667,7 +1783,7 @@ tar
 \end_layout
 
 \begin_layout LyX-Code
-$ tar xzf proj-4.6.0.tar.gz
+$ tar xzf proj-4.6.1.tar.gz
 \end_layout
 
 \begin_layout Standard
@@ -1675,7 +1791,7 @@ If you don't have GNU Tar, try the following command instead:
 \end_layout
 
 \begin_layout LyX-Code
-$ gunzip -c proj-4.6.0.tar.gz | tar xf -
+$ gunzip -c proj-4.6.1.tar.gz | tar xf -
 \end_layout
 
 \begin_layout Standard
@@ -1691,7 +1807,14 @@ unzip
 \end_layout
 
 \begin_layout LyX-Code
-$ cd proj-4.6.0/nad$ unzip proj-datumgrid-1.4.zip
+$ cd proj-4.6.1/nad$ unzip proj-datumgrid-1.4.zip
+\end_layout
+
+\begin_layout Standard
+Note: The Ubuntu Proj.4 package does not include the datum shifts due to
+ licensing issues.
+ Consequently, if you are using Ubuntu, we recommend that you build from
+ source with the datum shifts.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1710,10 +1833,14 @@ cd
 ) to the directory containing the Proj.4 source
 \family typewriter
 .
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
-$ cd proj-4.6.0
+
+\begin_inset Newline newline
+\end_inset
+
+$ cd proj-4.6.1
 \end_layout
 
 \begin_layout Enumerate
@@ -1724,9 +1851,13 @@ Run .
  to configure the package for your system
 \family typewriter
 .
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
 $ ./configure --prefix=$HOME/cig
 \end_layout
 
@@ -1738,9 +1869,13 @@ make
  to build the package.
 \family typewriter
 
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
 $ make
 \end_layout
 
@@ -1752,9 +1887,13 @@ make install
  to install the package.
 \family typewriter
 
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
 $ make install
 \end_layout
 
@@ -1787,10 +1926,14 @@ Installing Numpy
 Numpy is written exclusively in Python, although it has some Python extension
  modules.
  As a result, its installation is relatively simple.
- First, download the source package available at the 
-\begin_inset LatexCommand htmlurl
-name "SciPy.org web page"
-target "www.scipy.org/Download"
+ First, download the source package available at the SciPy.org web page 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www.scipy.org/Download
+\end_layout
 
 \end_inset
 
@@ -1803,10 +1946,14 @@ Downloading and Unpacking the Numpy Source
 \end_layout
 
 \begin_layout Standard
-Download Numpy from the 
-\begin_inset LatexCommand htmlurl
-name "SciPy website"
-target "www.scipy.org"
+Download Numpy from the SciPy website 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www.scipy.org
+\end_layout
 
 \end_inset
 
@@ -1819,7 +1966,7 @@ tar
 \end_layout
 
 \begin_layout LyX-Code
-$ tar xzf numpy-1.0.4.tar.gz
+$ tar xzf numpy-1.3.0.tar.gz
 \end_layout
 
 \begin_layout Standard
@@ -1827,7 +1974,7 @@ If you don't have GNU Tar, try the following command instead:
 \end_layout
 
 \begin_layout LyX-Code
-$ gunzip -c numpy-1.0.4.tar.gz | tar xf -
+$ gunzip -c numpy-1.3.0.tar.gz | tar xf -
 \end_layout
 
 \begin_layout Subsubsection
@@ -1846,10 +1993,14 @@ cd
 ) to the directory containing the Numpy source
 \family typewriter
 .
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
-$ cd numpy-1.0.4
+
+\begin_inset Newline newline
+\end_inset
+
+$ cd numpy-1.3.0
 \end_layout
 
 \begin_layout Enumerate
@@ -1860,9 +2011,13 @@ python setup.py install
  to configure the package for your system
 \family typewriter
 .
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
 $ python setup.py install --prefix=$HOME/cig
 \end_layout
 
@@ -1894,10 +2049,14 @@ Installing FIAT
 \begin_layout Standard
 FIAT is written exclusively in Python.
  As a result, its installation is very simple.
- First, download the source package available at the 
-\begin_inset LatexCommand htmlurl
-name "FENICS web page"
-target "www.fenics.org/wiki/Download"
+ First, download the source package available at the FENICS web page 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www.fenics.org/wiki/Download
+\end_layout
 
 \end_inset
 
@@ -1910,10 +2069,14 @@ Downloading and Unpacking the FIAT Source
 \end_layout
 
 \begin_layout Standard
-Download FIAT from the 
-\begin_inset LatexCommand htmlurl
-name "FENICS website"
-target "www.fenics.org"
+Download FIAT from the FENICS website 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+www.fenics.org
+\end_layout
 
 \end_inset
 
@@ -1953,9 +2116,13 @@ cd
 ) to the directory containing the FIAT source
 \family typewriter
 .
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
 $ cd FIAT-0.3.4
 \end_layout
 
@@ -1967,9 +2134,13 @@ python setup.py install
  to configure the package for your system
 \family typewriter
 .
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
 $ python setup.py install --prefix=$HOME/cig
 \end_layout
 
@@ -1995,237 +2166,19 @@ PATH
 \end_layout
 
 \begin_layout Subsection
-Installing Pyrex
-\end_layout
-
-\begin_layout Standard
-Pyrex is written exclusively in Python.
- As a result, its installation is very simple.
- First, download the source package available at the 
-\begin_inset LatexCommand htmlurl
-name "Pyrex web page"
-target "www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex"
-
-\end_inset
-
-.
- Some recent releases of Pyrex are incompatible with PyLith.
- Release 0.9.5.1 is known to work with PyLith.
-\end_layout
-
-\begin_layout Subsubsection
-Downloading and Unpacking the Pyrex Source
-\end_layout
-
-\begin_layout Standard
-Download Pyrex 0.9.5.1 from the 
-\begin_inset LatexCommand htmlurl
-name "Pyrex website"
-target "www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex"
-
-\end_inset
-
-.
- Click on the Previous Releases link to retrieve release 0.9.5.1.
- Download the source archive and unpack it using the 
-\family typewriter
-tar
-\family default
- command: 
-\end_layout
-
-\begin_layout LyX-Code
-$ tar xzf Pyrex-0.9.5.1.1.tar.gz
-\end_layout
-
-\begin_layout Standard
-If you don't have GNU Tar, try the following command instead: 
-\end_layout
-
-\begin_layout LyX-Code
-$ gunzip -c Pyrex-0.9.5.1.1.tar.gz | tar xf -
-\end_layout
-
-\begin_layout Subsubsection
-Pyrex Installation Procedure
-\end_layout
-
-\begin_layout Standard
-After unpacking the source, use the following procedure to install Pyrex:
-\end_layout
-
-\begin_layout Enumerate
-Navigate (i.e., 
-\family typewriter
-cd
-\family default
-) to the directory containing the Pyrex source
-\family typewriter
-.
-\newline
-
-\newline
-$ cd Pyrex-0.9.5.1a
-\end_layout
-
-\begin_layout Enumerate
-Run 
-\family typewriter
-python setup.py install
-\family default
- to configure the package for your system
-\family typewriter
-.
-\newline
-
-\newline
-$ python setup.py install --prefix=$HOME/cig
-\end_layout
-
-\begin_layout Standard
-The above commands will install Pyrex under 
-\family typewriter
-$HOME/cig
-\family default
-.
- Afterwards, you may wish to add 
-\family typewriter
-PREFIX/bin
-\family default
- (
-\family typewriter
-$HOME/cig/bin
-\family default
-, in this example) to your 
-\family typewriter
-PATH
-\family default
-.
-\end_layout
-
-\begin_layout Subsection
-Installing pyrexembed
-\end_layout
-
-\begin_layout Standard
-CIG distributes a customized version of 
-\begin_inset LatexCommand htmlurl
-name "Pyrexembed"
-target "www.freenet.org.nz/python/pyrexembed"
-
-\end_inset
-
- that handles C++ exceptions.
- Pyrexembed is written exclusively in Python and its installation is very
- simple.
- First, download the source package available at the 
-\begin_inset LatexCommand htmlurl
-name "PyLith web page"
-target "geodynamics.org/cig/software/packages/short/pylith"
-
-\end_inset
-
-, unpack the source, and install the package.
-\end_layout
-
-\begin_layout Subsubsection
-Downloading and Unpacking the Pyrexembed Source
-\end_layout
-
-\begin_layout Standard
-Download Pyrexembed from the 
-\begin_inset LatexCommand htmlurl
-name "PyLith web page"
-target "geodynamics.org/cig/software/packages/short/pylith"
-
-\end_inset
-
- and unpack it using the 
-\family typewriter
-tar
-\family default
- command: 
-\end_layout
-
-\begin_layout LyX-Code
-$ tar xzf pyrexembed-1.0.tgz
-\end_layout
-
-\begin_layout Standard
-If you don't have GNU Tar, try the following command instead: 
-\end_layout
-
-\begin_layout LyX-Code
-$ gunzip -c pyrexembed-1.0.tgz | tar xf -
-\end_layout
-
-\begin_layout Subsubsection
-Pyrexembed Installation Procedure
-\end_layout
-
-\begin_layout Standard
-After unpacking the source, use the following procedure to install Pyrexembed:
-\end_layout
-
-\begin_layout Enumerate
-Navigate (i.e., 
-\family typewriter
-cd
-\family default
-) to the directory containing the Pyrexembed source
-\family typewriter
-.
-\newline
-
-\newline
-$ cd pyrexembed-1.0
-\end_layout
-
-\begin_layout Enumerate
-Run 
-\family typewriter
-python setup.py install
-\family default
- to configure the package for your system
-\family typewriter
-.
-\newline
-
-\newline
-$ python setup.py install --prefix=$HOME/cig
-\end_layout
-
-\begin_layout Standard
-The above commands will install Pyrexembed under 
-\family typewriter
-$HOME/cig
-\family default
-.
- Afterwards, you may wish to add 
-\family typewriter
-PREFIX/bin
-\family default
- (
-\family typewriter
-$HOME/cig/bin
-\family default
-, in this example) to your 
-\family typewriter
-PATH
-\family default
-.
-\end_layout
-
-\begin_layout Subsection
 Installing Spatialdata
 \end_layout
 
 \begin_layout Standard
 As with many other packages, to install Spatialdata, first download the
- source package available at the 
-\begin_inset LatexCommand htmlurl
-name "PyLith web page"
-target "geodynamics.org/cig/software/packages/short/pylith"
+ source package available at the PyLith web page 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/software/packages/short/pylith
+\end_layout
 
 \end_inset
 
@@ -2244,10 +2197,14 @@ Downloading and Unpacking the Spatialdata Source
 \end_layout
 
 \begin_layout Standard
-Download Spatialdata from the 
-\begin_inset LatexCommand htmlurl
-name "PyLith web page"
-target "geodynamics.org/cig/software/packages/short/pylith"
+Download Spatialdata from the PyLith web page 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/software/packages/short/pylith
+\end_layout
 
 \end_inset
 
@@ -2259,7 +2216,7 @@ tar
 \end_layout
 
 \begin_layout LyX-Code
-$ tar xzf spatialdata-0.4.tgz
+$ tar xzf spatialdata-0.5.tgz
 \end_layout
 
 \begin_layout Standard
@@ -2267,7 +2224,7 @@ If you don't have GNU Tar, try the following command instead:
 \end_layout
 
 \begin_layout LyX-Code
-$ gunzip -c spatialdata-0.4.tgz | tar xf -
+$ gunzip -c spatialdata-0.5.tgz | tar xf -
 \end_layout
 
 \begin_layout Subsubsection
@@ -2288,10 +2245,14 @@ config.log
 \family typewriter
 make.log
 \family default
- files to the 
-\begin_inset LatexCommand url
-name "CIG Short-Term Crustal Dynamics Mailing List"
-target "cig-short@geodynamics.org"
+ files to the CIG Short-Term Crustal Dynamics Mailing List 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+cig-short@geodynamics.org
+\end_layout
 
 \end_inset
 
@@ -2328,9 +2289,13 @@ cd
 ) to the directory containing the Spatialdata source
 \family typewriter
 .
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
 $ cd spatialdata
 \end_layout
 
@@ -2342,19 +2307,14 @@ Run .
  to configure the package for your system
 \family typewriter
 .
- 
-\family default
-Note that PyLith requires Spatialdata to be configured with the 
-\family typewriter
---enable-pythia
-\family default
- flag
-\family typewriter
-.
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
-$ ./configure --enable-pythia --prefix=$HOME/cig
+
+\begin_inset Newline newline
+\end_inset
+
+$ ./configure --prefix=$HOME/cig
 \end_layout
 
 \begin_layout Enumerate
@@ -2365,9 +2325,13 @@ make
  to build the package.
 \family typewriter
 
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
 $ make
 \end_layout
 
@@ -2379,9 +2343,13 @@ make install
  to install the package.
 \family typewriter
 
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
 $ make install
 \end_layout
 
@@ -2407,7 +2375,8 @@ PATH
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Installing-PyLith"
 
 \end_inset
@@ -2416,10 +2385,15 @@ Installing PyLith
 \end_layout
 
 \begin_layout Standard
-To install PyLith, download the source package available at the 
-\begin_inset LatexCommand htmlurl
-name "PyLith web page"
-target "geodynamics.org/cig/software/packages/short/pylith"
+To install PyLith, download the source package available at the PyLith web
+ page 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/software/packages/short/pylith
+\end_layout
 
 \end_inset
 
@@ -2439,10 +2413,14 @@ Downloading and Unpacking the PyLith Source
 \end_layout
 
 \begin_layout Standard
-Download PyLith from the 
-\begin_inset LatexCommand htmlurl
-name "PyLith web page"
-target "geodynamics.org/cig/software/packages/short/pylith"
+Download PyLith from the PyLith web page 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/software/packages/short/pylith
+\end_layout
 
 \end_inset
 
@@ -2454,7 +2432,7 @@ tar
 \end_layout
 
 \begin_layout LyX-Code
-$ tar xzf pylith-1.3.1.tgz
+$ tar xzf pylith-1.4.0.tgz
 \end_layout
 
 \begin_layout Standard
@@ -2462,7 +2440,7 @@ If you don't have GNU Tar, try the following command instead:
 \end_layout
 
 \begin_layout LyX-Code
-$ gunzip -c pylith-1.3.1.tgz | tar xf -
+$ gunzip -c pylith-1.4.0.tgz | tar xf -
 \end_layout
 
 \begin_layout Subsubsection
@@ -2483,10 +2461,14 @@ config.log
 \family typewriter
 make.log
 \family default
- files to the 
-\begin_inset LatexCommand url
-name "CIG Short-Term Crustal Dynamics Mailing List"
-target "cig-short@geodynamics.org"
+ files to the CIG Short-Term Crustal Dynamics Mailing List 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+cig-short@geodynamics.org
+\end_layout
 
 \end_inset
 
@@ -2523,10 +2505,14 @@ cd
 ) to the directory containing the PyLith source
 \family typewriter
 .
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
-$ cd pylith-1.3.1
+
+\begin_inset Newline newline
+\end_inset
+
+$ cd pylith-1.4.0
 \end_layout
 
 \begin_layout Enumerate
@@ -2537,9 +2523,13 @@ Run .
  to configure the package for your system
 \family typewriter
 .
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
 $ ./configure --prefix=$HOME/cig
 \end_layout
 
@@ -2551,9 +2541,13 @@ make
  to build the package.
 \family typewriter
 
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
 $ make
 \end_layout
 
@@ -2565,9 +2559,13 @@ make install
  to install the package.
 \family typewriter
 
-\newline
+\begin_inset Newline newline
+\end_inset
 
-\newline
+
+\begin_inset Newline newline
+\end_inset
+
 $ make install
 \end_layout
 
@@ -2611,7 +2609,8 @@ For more details about
 configure
 \family default
 , see Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Configuration"
 
 \end_inset
@@ -2632,7 +2631,8 @@ make clean
 \end_layout
 
 \begin_layout Subsubsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Configuration"
 
 \end_inset
@@ -2705,10 +2705,14 @@ configure
 \family typewriter
 configure
 \family default
- failures on the 
-\begin_inset LatexCommand url
-name "CIG Short-Term Crustal Dynamics Mailing List"
-target "cig-short@geodynamics.org"
+ failures on the CIG Short-Term Crustal Dynamics Mailing List 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+cig-short@geodynamics.org
+\end_layout
 
 \end_inset
 
@@ -2818,19 +2822,19 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="2">
 <features>
-<column alignment="center" valignment="top" leftline="true" width="1in">
-<column alignment="left" valignment="top" leftline="true" rightline="true" width="3.5in">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<column alignment="center" valignment="top" width="1in">
+<column alignment="left" valignment="top" width="3.5in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Variable
@@ -2838,10 +2842,10 @@ Variable
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \series bold
 Description
@@ -2850,11 +2854,11 @@ Description
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 CXX
 \end_layout
 
@@ -2863,18 +2867,18 @@ CXX
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 C++ compiler
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 PYTHON
 \end_layout
 
@@ -2883,37 +2887,59 @@ PYTHON
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Python interpreter.
  This is useful if you have Python installed in a non-standard location,
  e.g.,
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
-\InsetSpace ~
-\InsetSpace ~
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
 ./configure 
 \backslash
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \family typewriter
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
 PYTHON=/opt/python2.3/bin/python
 \family default
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 By default, 
 \family typewriter
 configure
@@ -2928,11 +2954,11 @@ PATH
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 PETSC_DIR
 \end_layout
 
@@ -2941,27 +2967,27 @@ PETSC_DIR
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 PETSc installation/build directory.
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 PETSC_ARCH
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 (optional) PETSc configuration tag.
  If not specified, 
 \family typewriter
@@ -2999,7 +3025,8 @@ Warning:
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Pyre-Configuration"
 
 \end_inset
@@ -3116,7 +3143,8 @@ Properly configured, Pyre can handle job submissions automatically, insulating
 \end_layout
 
 \begin_layout Subsubsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sub:Launchers-and-Schedulers"
 
 \end_inset
@@ -3486,10 +3514,14 @@ nodes
 
 \begin_layout Standard
 For more information on configuring Pyre for your batch system, see CIG's
- 
-\begin_inset LatexCommand htmlurl
-name "Pythia page"
-target "geodynamics.org/cig/software/packages/cs/pythia"
+ Pythia page 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/software/packages/cs/pythia
+\end_layout
 
 \end_inset
 
@@ -3497,7 +3529,8 @@ target "geodynamics.org/cig/software/packages/cs/pythia"
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Software-Repository"
 
 \end_inset
@@ -3506,10 +3539,14 @@ Installing from the Software Repository
 \end_layout
 
 \begin_layout Standard
-The PyLith source code is available via the 
-\begin_inset LatexCommand htmlurl
-name "CIG Subversion Repository"
-target "geodynamics.org/cig/software/Repository/"
+The PyLith source code is available via the CIG Subversion Repository 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/software/Repository/
+\end_layout
 
 \end_inset
 
@@ -3534,7 +3571,8 @@ Warning:
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sub:Additional-Tools"
 
 \end_inset
@@ -3558,6 +3596,10 @@ Mercurial (0.9 or later)
 
 \begin_layout Itemize
 GNU Autotools (Autoconf, Automake, and Libtool)
+\end_layout
+
+\begin_layout Itemize
+SWIG (1.3.33 or later)
 \end_layout
 
 \begin_layout Subsubsection
@@ -3587,10 +3629,14 @@ Many flavors of Unix have Subversion packages.
 \end_layout
 
 \begin_layout Standard
-For more information on Subversion, visit the 
-\begin_inset LatexCommand htmlurl
-name "Subversion website"
-target "subversion.tigris.org"
+For more information on Subversion, visit the Subversion website 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+subversion.tigris.org
+\end_layout
 
 \end_inset
 
@@ -3605,10 +3651,15 @@ Mercurial
 To check out the PETSc source, you must have Mercurial 0.9 or later installed.
  You will likely have to build Mercurial from source, but this is a very
  easy task that takes only a couple of minutes.
- To learn how to download and install Mercurial, visit the 
-\begin_inset LatexCommand htmlurl
-name "Mercurial web site"
-target "www.selenic.com/mercurial"
+ To learn how to download and install Mercurial, visit the Mercurial web
+ site 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www.selenic.com/mercurial
+\end_layout
 
 \end_inset
 
@@ -3638,10 +3689,14 @@ $ libtoolize --version
 \end_layout
 
 \begin_layout Standard
-For more information about these GNU tools, see the 
-\begin_inset LatexCommand htmlurl
-name "GNU website"
-target "www.gnu.org/software"
+For more information about these GNU tools, see the GNU website 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www.gnu.org/software
+\end_layout
 
 \end_inset
 
@@ -3805,7 +3860,8 @@ $
 
 \begin_layout Standard
 You are now ready to install PETSc as described in Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Installing-PETSc"
 
 \end_inset
@@ -3878,7 +3934,8 @@ Makefile.am
 autoreconf
 \family default
 , install PyLith as described in Section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Installing-PyLith"
 
 \end_inset
