@@ -46,8 +46,9 @@ class ZeroDispDB(UniformDB):
 
     import pyre.inventory
 
+    from pyre.units.length import m
     values = ["displacement-x", "displacement-y", "displacement-z"]
-    data = [0.0, 0.0, 0.0]
+    data = [0.0*m, 0.0*m, 0.0*m]
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////

@@ -79,6 +79,9 @@ public :
    */
   void write(const char* filename);
 
+  /// Verify symmetry of matrix. For debugger purposes only.
+  void verifySymmetry(void) const;
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 

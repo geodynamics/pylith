@@ -19,17 +19,15 @@ Matt
         CellFilterAvg (_fieldAvg)
         VertexFilterVecNorm (_fieldVecNorm)
       
-      
   field split
 
 Brad
   Update Neumann
   ArbitratySlipFn (final slip, start time)
-  UniformDB units
-  symmetric matrix (preconditioner?)
   full-scale testing
   cleanup
   test uniform refinement
+  symmetric matrix (preconditioner? sub_pc_factor_shift_nonzero_positive_definite)
 
 
 Charles

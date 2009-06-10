@@ -222,11 +222,17 @@ pylith::bc::TestPointForce::_initialize(topology::Mesh* mesh,
       "force-rate-z",
       "rate-start-time",
     };
+    const char* units[numValues] = {
+      "newton",
+      "newton",
+      "newton",
+      "s",
+    };
     const double values[numValues] = { _data->forceRate,
 				       _data->forceRate,
 				       _data->forceRate,
 				       _data->tRef};
-    dbRate.setData(names, values, numValues);
+    dbRate.setData(names, units, values, numValues);
   } // rate db
 
   const double upDir[] = { 0.0, 0.0, 1.0 };
