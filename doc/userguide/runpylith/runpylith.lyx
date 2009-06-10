@@ -2811,7 +2811,7 @@ Go to the lib/python2.5/site-packages directory.
 \end_layout
 
 \begin_layout Enumerate
-Unzip merlin-1.6-py2.5.egg (if it is a file and not a directory).
+Unzip merlin-1.7-py2.5.egg (if it is a file and not a directory).
 \end_layout
 
 \begin_layout Enumerate
@@ -2824,8 +2824,8 @@ Edit __init__.py.
 \end_layout
 
 \begin_layout Enumerate
-If merlin-1.6-py2.5.egg is a file, rezip merlin.
- Go to the site-packages directory and enter "zip -r merlin-1.6-py2.5.egg merlin".
+If merlin-1.7-py2.5.egg is a file, rezip merlin.
+ Go to the site-packages directory and enter "zip -r merlin-1.7-py2.5.egg merlin".
 \end_layout
 
 \begin_layout Itemize
