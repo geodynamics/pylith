@@ -96,7 +96,7 @@ pylith::topology::Mesh::comm(void) const {
 // Print mesh to stdout.
 inline
 void
-pylith::topology::Mesh::view(const char* label) {
+pylith::topology::Mesh::view(const char* label) const {
   _mesh->view(label);
 }
 

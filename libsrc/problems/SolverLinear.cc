@@ -21,7 +21,11 @@
 
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
+//#define FIELD_SPLIT
+
+#if defined(FIELD_SPLIT)
 #include <petscmesh_solvers.hh> // USES constructFieldSplit()
+#endif
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -77,7 +81,10 @@ pylith::problems::SolverLinear::initialize(
 
     err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
     err = PCSetType(pc, PCFIELDSPLIT); CHECK_PETSC_ERROR(err);
+
+#if defined(FIELD_SPLIT)
     constructFieldSplit(residual.section(), pc);
+#endif
   }
 } // initialize
 

@@ -160,7 +160,7 @@ public :
    *
    * @param label Label for mesh.
    */
-  void view(const char* label);
+  void view(const char* label) const;
 
   /** Return the names of all vertex groups.
    *

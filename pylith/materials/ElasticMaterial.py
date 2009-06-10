@@ -43,8 +43,8 @@ class ElasticMaterial(Material):
     ##
     ## \b Facilities
     ## @li \b output Output manager associated with fault data.
-    ## @li \b initial_stress_db Database for initial stress.
-    ## @li \b initial_strain_db Database for initial strain.
+    ## @li \b db_initial_stress Database for initial stress.
+    ## @li \b db_initial_strain Database for initial strain.
 
     import pyre.inventory
 
@@ -54,12 +54,12 @@ class ElasticMaterial(Material):
     output.meta['tip'] = "Output manager for elastic material information."
 
     from pylith.utils.NullComponent import NullComponent
-    dbInitialStress = pyre.inventory.facility("initial_stress_db",
+    dbInitialStress = pyre.inventory.facility("db_initial_stress",
                                               family="spatial_database",
                                               factory=NullComponent)
     dbInitialStress.meta['tip'] = "Database for initial stress."
 
-    dbInitialStrain = pyre.inventory.facility("initial_strain_db",
+    dbInitialStrain = pyre.inventory.facility("db_initial_strain",
                                               family="spatial_database",
                                               factory=NullComponent)
     dbInitialStrain.meta['tip'] = "Database for initial strain."

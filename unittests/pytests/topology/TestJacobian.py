@@ -130,6 +130,7 @@ class TestJacobian(unittest.TestCase):
     :WARNING: This is not a complete test of write(). We do not
     verify the results.
     """
+    self.jacobian = Jacobian(self.fields, "aij")
     self.jacobian.assemble("final_assembly")
     self.jacobian.write("jacobian.mat")
 
