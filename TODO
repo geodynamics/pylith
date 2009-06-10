@@ -26,7 +26,6 @@ Brad
   ArbitratySlipFn (final slip, start time)
   full-scale testing
   cleanup
-  test uniform refinement
   symmetric matrix (preconditioner? sub_pc_factor_shift_nonzero_positive_definite)
 
 
@@ -36,35 +35,10 @@ Charles
     Python
     pytests
     full-scale test (axial compression/extension?)
-  2-D Maxwell viscoelastic rheology
-    C++
-    libtests
-    Python
-    pytests
-    full-scale test
-  Initial stress, strain
-    3-D Maxwell model
-    3-D Generalized Maxwell model
-    3-D Power-low model
-    2-D Maxwell model
-    tests
-  Manual
-    Materials
-    Savage-Prescott benchmark
+  Generalized Maxwell materials (initial stress/strain)
+
 
 -1. Fix Tabrez's bug. [Matt]
-
-1. SNES
-
-  Power-law rheology
-
-2. Nondimensionalization
-
-  const slip rate in output (slip rate not slip)
-
-  Ask constraints if a block matrix is okay. If okay and matrix type
-  is "unknown" (not set by user), then use "baij" rather than
-  "aij". Do this in Python.
 
 3. Full-scale tests (few 1-D, 2-D, and 3-D)
 
@@ -177,8 +151,6 @@ Charles
       throw std::logic_error(message);
     after assert(0) to insure error is trapped.
 
-    Use Fields object to hold Field
-
     Eliminate use of Inventory class.
 
     Switch Components to PetscComponents.
@@ -192,14 +164,54 @@ Charles
     Add check before calling newSection() when want to enforce at
     least 1 value.
 
-  libsrc/materials
-    Generalized Maxwell materials
-
   Cleanup SlipTimeFn tests (refactor test/initialize stuff)
 
-6. Memory model [Matt]
+13. Update manual for version 1.4 [Brad and Charles]
 
-11. Savage-Presscott benchmark [Charles]
+  Figure 2.2: dependencies (Pyrex->SWIG)
+
+  3.3 and 3.4 update for solution increment implementation
+
+  Running PyLith
+
+    nondimensionalization
+
+  Materials
+
+    Material parameters
+
+    Notation xx versus 11 etc
+
+  6.4 Initial State Variables -> Initial stress, strain and state variables
+
+  Insert Time-dependent boundary conditions section
+    Parameters
+
+  Benchmarks
+
+    Update figures
+      summary
+      scaling
+
+    Add Savage-Prescott
+  
+  File Formats
+
+    Time History
+
+  Installation using source tarball should not require SWIG, Pyrex, or
+  Pyrexembed [need to test]. Should include .i files in tarball for
+  reference.
+
+  * Reduce memory use with ordering elements by material??
+
+  * Material
+    * initial stress, strain, and state variables
+
+-- Release (v1.4) --
+
+11. Savage-Presscott benchmark
+    Tet mesh
 
 12. Analytic BC for reverse-slip benchmark [Charles or Brad]
     a. Create BC for CUBIT mesh.
@@ -208,27 +220,10 @@ Charles
     d. Generate analytic solutions.
     e. Tabulate results.
 
-13. Update manual for version 1.4 [Brad and Charles]
+2. Nondimensionalization
 
-  Installation using source tarball should not require SWIG, Pyrex, or
-  Pyrexembed [need to test]. Should include .i files in tarball for
-  reference.
-
-  Other files
-    INSTALL, README, DEPENDENCIES, AUTHORS, ChangeLog
-    
-
-  * Reduce memory use with ordering elements by material
-
-  * Nondimensionalization
-
-  * Material
-    * initial stress, strain, and state variables
-    * Cleanup notation and discussion of inelastic materials
-
--- Release (v1.4) --
-
--- Release (v1.5) --
+  Ask constraints if a block matrix is okay. If okay and matrix type
+  is "unknown" (not set by user), then set block size. Do this in Python.
 
 7. 2-D Plane strain Maxwell viscoelastic rheology [Charles]
 
@@ -238,6 +233,12 @@ Charles
    2D viscoelastic models for plane strain
 
 10. Initial stress, strain, state variables for inelastic models [Charles]
+
+
+  Manual
+
+    * Cleanup notation and discussion of inelastic materials
+-- Release (v1.5) --
 
 
 Modularize output? [Matt]

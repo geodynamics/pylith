@@ -53,9 +53,9 @@ class Material(Component):
     ## @li \b name Name of material
     ##
     ## \b Facilities
-    ## @li \b db Database of material property parameters
+    ## @li \b db_properties Database of material property parameters
     ## @li \b quadrature Quadrature object for numerical integration
-    ## @li \b initial_state_db Database for initial state.
+    ## @li \b db_initial_state Database for initial state.
 
     import pyre.inventory
 
@@ -66,13 +66,13 @@ class Material(Component):
     label.meta['tip'] = "Name of material."
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
-    dbProperties = pyre.inventory.facility("properties_db",
+    dbProperties = pyre.inventory.facility("db_properties",
                                            family="spatial_database",
                                            factory=SimpleDB)
     dbProperties.meta['tip'] = "Database for physical property parameters."
 
     from pylith.utils.NullComponent import NullComponent
-    dbInitialState = pyre.inventory.facility("initial_state_db",
+    dbInitialState = pyre.inventory.facility("db_initial_state",
                                            family="spatial_database",
                                            factory=NullComponent)
     dbInitialState.meta['tip'] = "Database for initial state variables."

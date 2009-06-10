@@ -20,20 +20,18 @@ language tools:
 If you are using a modern UN*X system, there is a good chance that all
 of the above tools are already installed.
 
-In addition, PyLith v1.0 requires the following software packages:
+In addition, PyLith v1.4 requires the following software packages:
 
 1. MPI
 2. PETSc
-3. Pyrex
-4. Pyrexembed (CIG)
-5. Pythia (CIG)
-6. Nemesis (CIG)
-7. Proj
-8. Cppunit (optional; needed to run tests)
-9. Netcdf (optional; needed to import meshes from CUBIT)
-10. Numpy
-11. FIAT
-12. Spatialdata (CIG)
+3. Pythia (CIG)
+4. Nemesis (CIG)
+5. Proj
+6. Cppunit (optional; needed to run tests)
+7. Netcdf (optional; needed to import meshes from CUBIT)
+8. Numpy
+9. FIAT
+10. Spatialdata (CIG)
 
 Generic GNU Installation Instructions
 *************************************
