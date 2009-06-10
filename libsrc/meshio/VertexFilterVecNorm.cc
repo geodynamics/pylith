@@ -73,6 +73,8 @@ pylith::meshio::VertexFilterVecNorm<field_type>::filter(
   const int fiberDimNorm = 1;
 
   // Allocation field if necessary
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Output");
   if (0 == _fieldVecNorm) {
     _fieldVecNorm = new field_type(fieldIn.mesh());
     _fieldVecNorm->label("vector norm");
@@ -98,6 +100,7 @@ pylith::meshio::VertexFilterVecNorm<field_type>::filter(
 	assert(0);
       } // switch
   } // if
+  logger.stagePop();
 
   const ALE::Obj<RealSection>& sectionNorm = 
     _fieldVecNorm->section();

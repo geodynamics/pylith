@@ -110,6 +110,8 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
     assert(0 != src);
     src->initialize(*_faultMesh, *_normalizer);
   } // for
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Fault");
 
   // Allocate slip field
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
@@ -146,6 +148,8 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
 
   // Compute tributary area for each vertex in fault mesh.
   _calcArea();
+
+  logger.stagePop();
 } // initialize
 
 // ----------------------------------------------------------------------

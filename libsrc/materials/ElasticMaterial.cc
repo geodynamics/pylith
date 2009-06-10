@@ -348,6 +348,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
 { // _initializeInitialStress
   if (0 == _dbInitialStress)
     return;
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Materials");
 
   assert(0 != _initialFields);
   _initialFields->add("initial stress", "initial_stress");
@@ -477,6 +479,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
 
   // Close databases
   _dbInitialStress->close();
+
+  logger.stagePop();
 } // _initializeInitialStress
 
 // ----------------------------------------------------------------------

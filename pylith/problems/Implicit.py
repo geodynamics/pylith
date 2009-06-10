@@ -90,6 +90,11 @@ class Implicit(Formulation):
 
     # Allocate other fields, reusing layout from dispIncr
     self._info.log("Creating other fields.")
+    self._info.log("Creating solution field.")
+    from pylith.utils.petsc import MemoryLogger
+    logger = MemoryLogger.singleton()
+    #logger.setDebug(1)
+    logger.stagePush("Problem")
     self.fields.copyLayout("dispIncr(t->t+dt)")
 
     # Setup fields and set to zero
@@ -117,6 +122,8 @@ class Implicit(Formulation):
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.useSolnIncr(False)
 
+    logger.stagePop()
+    logger.setDebug(0)
     return
 
 

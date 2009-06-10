@@ -83,6 +83,8 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
   const int numQuadPts = _quadrature->numQuadPts();
   const int spaceDim = cellGeometry.spaceDim();
   const int fiberDim = spaceDim * numQuadPts;
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("BoundaryConditions");
   
   delete _parameters;
   _parameters =
@@ -94,6 +96,8 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
   traction.allocate();
   traction.scale(pressureScale);
   traction.vectorFieldType(topology::FieldBase::VECTOR);
+
+  logger.stagePop();
 
   // Containers for orientation information
   const int orientationSize = spaceDim * spaceDim;

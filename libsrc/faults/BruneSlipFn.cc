@@ -77,6 +77,8 @@ pylith::faults::BruneSlipFn::initialize(
   assert(!vertices.isNull());
   const label_sequence::iterator verticesBegin = vertices->begin();
   const label_sequence::iterator verticesEnd = vertices->end();
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Fault");
 
   delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
   assert(0 != _parameters);
@@ -106,6 +108,8 @@ pylith::faults::BruneSlipFn::initialize(
   riseTime.vectorFieldType(topology::FieldBase::SCALAR);
   const ALE::Obj<RealSection>& riseTimeSection = riseTime.section();
   assert(!riseTimeSection.isNull());
+
+  logger.stagePop();
 
   // Open databases and set query values
   _dbFinalSlip->open();

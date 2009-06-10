@@ -73,6 +73,8 @@ pylith::faults::StepSlipFn::initialize(
   assert(!vertices.isNull());
   const label_sequence::iterator verticesBegin = vertices->begin();
   const label_sequence::iterator verticesEnd = vertices->end();
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Fault");
 
   delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
   assert(0 != _parameters);
@@ -93,6 +95,8 @@ pylith::faults::StepSlipFn::initialize(
   slipTime.vectorFieldType(topology::FieldBase::SCALAR);
   const ALE::Obj<RealSection>& slipTimeSection = slipTime.section();
   assert(!slipTimeSection.isNull());
+
+  logger.stagePop();
 
   // Open databases and set query values
   _dbFinalSlip->open();

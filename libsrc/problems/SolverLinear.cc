@@ -21,6 +21,8 @@
 
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
+#include <petscmesh_solvers.hh> // USES constructFieldSplit()
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::problems::SolverLinear::SolverLinear(void) :
@@ -66,6 +68,17 @@ pylith::problems::SolverLinear::initialize(
   err = KSPCreate(fields.mesh().comm(), &_ksp); CHECK_PETSC_ERROR(err);
   err = KSPSetInitialGuessNonzero(_ksp, PETSC_FALSE); CHECK_PETSC_ERROR(err);
   err = KSPSetFromOptions(_ksp); CHECK_PETSC_ERROR(err);
+
+  const topology::Field<topology::Mesh>& residual = fields.get("residual");
+
+  // Check for fibration
+  if (residual.section()->getNumSpaces() > 0) {
+    PC pc;
+
+    err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
+    err = PCSetType(pc, PCFIELDSPLIT); CHECK_PETSC_ERROR(err);
+    constructFieldSplit(residual.section(), pc);
+  }
 } // initialize
 
 // ----------------------------------------------------------------------

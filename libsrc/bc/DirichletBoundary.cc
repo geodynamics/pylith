@@ -121,6 +121,8 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
 
   const int numPoints = _points.size();
   const int numFixedDOF = _bcDOF.size();
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("BoundaryConditions");
 
   double_array bufferVertex(fiberDim);
   if (!_outputFields->hasField("buffer (vector)")) {
@@ -157,6 +159,7 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
     bufferSection->updatePointAll(point, &bufferVertex[0]);
   } // for
 
+  logger.stagePop();
   return buffer;
 } // _bufferVector
 

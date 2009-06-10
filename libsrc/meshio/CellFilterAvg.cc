@@ -90,6 +90,8 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
   assert(fiberDim * numQuadPts == totalFiberDim);
 
   // Allocate field if necessary
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Output");
   if (0 == _fieldAvg) {
     _fieldAvg = new field_type(fieldIn.mesh());
     assert(0 != _fieldAvg);
@@ -100,6 +102,7 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     _fieldAvg->newSection(fieldIn, fiberDim);
     _fieldAvg->allocate();
   } // else
+  logger.stagePop();
 
   assert(0 != _fieldAvg);
   switch (fieldIn.vectorFieldType())

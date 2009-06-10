@@ -191,7 +191,7 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
   assert(!sieveMesh.isNull());
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.setDebug(2);
+  ///logger.setDebug(2);
   logger.stagePush("Materials");
   const ALE::Obj<SieveMesh::label_type>& labelMaterials = 
     sieveMesh->createLabel("material-id");
@@ -234,21 +234,7 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
 #endif
   } // if
   logger.stagePop();
-  logger.setDebug(0);
-
-#if defined(ALE_MEM_LOGGING)
-  std::cout 
-    << "Materials "
-    << logger.getNumAllocations("Materials")
-    << " allocations " << logger.getAllocationTotal("Materials")
-    << " bytes"
-    << std::endl
-    << "Materials "
-    << logger.getNumDeallocations("Materials")
-    << " deallocations " << logger.getDeallocationTotal("Materials")
-    << " bytes"
-    << std::endl;
-#endif
+  ///logger.setDebug(0);
 } // _setMaterials
 
 // ----------------------------------------------------------------------
@@ -297,7 +283,6 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
   assert(!sieveMesh.isNull());
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  std::cout << "Building Vertex Group " << name << std::endl;
   logger.stagePush("VertexGroups");
   const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(name);
   assert(!groupField.isNull());
@@ -317,18 +302,6 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
   } // if/else
   sieveMesh->allocate(groupField);
   logger.stagePop();
-
-#if defined(ALE_MEM_LOGGING)
-  std::cout
-    << "VertexGroups " << logger.getNumAllocations("VertexGroups")
-    << " allocations " << logger.getAllocationTotal("VertexGroups")
-    << " bytes"
-    << std::endl
-    << "VertexGroups " << logger.getNumDeallocations("VertexGroups")
-    << " deallocations " << logger.getDeallocationTotal("VertexGroups")
-    << " bytes"
-    << std::endl;
-#endif
 } // _setGroup
 
 // ----------------------------------------------------------------------

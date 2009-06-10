@@ -397,6 +397,8 @@ pylith::feassemble::IntegratorElasticity::_allocateTensorField(
   const int tensorSize = _material->tensorSize();
   
   if (!_outputFields->hasField("buffer (tensor)")) {
+    ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+    logger.stagePush("Problem");
     _outputFields->add("buffer (tensor)", "buffer");
     topology::Field<topology::Mesh>& buffer =
       _outputFields->get("buffer (tensor)");
@@ -404,6 +406,7 @@ pylith::feassemble::IntegratorElasticity::_allocateTensorField(
     buffer.allocate();
     buffer.vectorFieldType(topology::FieldBase::MULTI_TENSOR);
     buffer.addDimensionOkay(true);
+    logger.stagePop();
   } // if
 } // _allocateTensorField
 
