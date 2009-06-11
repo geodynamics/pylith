@@ -189,6 +189,15 @@ class TestElasticityImplicit(unittest.TestCase):
     return
 
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.feassemble.ElasticityImplicit import integrator
+    i = integrator()
+    return
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _preinitialize(self):

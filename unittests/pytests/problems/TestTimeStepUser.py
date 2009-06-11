@@ -123,4 +123,13 @@ class TestTimeStepUser(unittest.TestCase):
     return
 
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.problems.TimeStepUser import time_step
+    ts = time_step()
+    return
+
+
 # End of file 

@@ -83,4 +83,13 @@ class TestBruneSlipFn(unittest.TestCase):
     return
 
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.faults.BruneSlipFn import slip_time_fn
+    fn = slip_time_fn()
+    return
+
+
 # End of file 

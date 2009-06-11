@@ -166,6 +166,15 @@ class TestAbsorbingDampers(unittest.TestCase):
     return
 
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.bc.AbsorbingDampers import boundary_condition
+    bc = boundary_condition()
+    return
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _initialize(self):

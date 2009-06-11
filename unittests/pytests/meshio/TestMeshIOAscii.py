@@ -81,4 +81,13 @@ class TestMeshIOAscii(unittest.TestCase):
     return
 
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.meshio.MeshIOAscii import mesh_io
+    io = mesh_io()
+    return
+
+
 # End of file 

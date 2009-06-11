@@ -88,4 +88,13 @@ class TestTimeStepUniform(unittest.TestCase):
     return
 
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.problems.TimeStepUniform import time_step
+    ts = time_step()
+    return
+
+
 # End of file 

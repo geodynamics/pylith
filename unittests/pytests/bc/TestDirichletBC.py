@@ -159,6 +159,15 @@ class TestDirichletBC(unittest.TestCase):
     return
 
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.bc.DirichletBC import boundary_condition
+    bc = boundary_condition()
+    return
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _initialize(self):

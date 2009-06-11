@@ -83,4 +83,13 @@ class TestLiuCosSlipFn(unittest.TestCase):
     return
 
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.faults.LiuCosSlipFn import slip_time_fn
+    fn = slip_time_fn()
+    return
+
+
 # End of file 

@@ -81,4 +81,13 @@ class TestEqKinSrc(unittest.TestCase):
     return
 
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.faults.EqKinSrc import eq_kinematic_src
+    fn = eq_kinematic_src()
+    return
+
+
 # End of file 

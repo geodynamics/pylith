@@ -82,4 +82,13 @@ class TestElasticPlaneStress(unittest.TestCase):
     self.failIf(dt < 1.0e+30)
   
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.materials.ElasticPlaneStress import material
+    m = material()
+    return
+
+
 # End of file 
