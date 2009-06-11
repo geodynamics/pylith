@@ -72,6 +72,9 @@ public :
   /// Default destructor
   ~Mesh(void);
 
+  /// Deallocate PETSc and local data structures.
+  void deallocate(void);
+  
   /** Create Sieve mesh.
    *
    * @param dim Dimension associated with mesh cells.

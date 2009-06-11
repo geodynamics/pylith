@@ -43,9 +43,11 @@ public :
   Fields(const typename field_type::Mesh& mesh);
 
   /// Destructor.
+  virtual
   ~Fields(void);
 
   /// Deallocate PETSc and local data structures.
+  virtual
   void deallocate(void);
   
   /** Check if fields contains a given field.

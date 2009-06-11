@@ -64,6 +64,9 @@ public :
   /// Default destructor
   ~SubMesh(void);
 
+  /// Deallocate PETSc and local data structures.
+  void deallocate(void);
+  
   /** Create Sieve mesh.
    *
    * @param mesh Finite-element mesh over domain.

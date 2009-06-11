@@ -44,9 +44,17 @@ pylith::topology::Mesh::Mesh(const int dim,
 // Default destructor
 pylith::topology::Mesh::~Mesh(void)
 { // destructor
-  delete _coordsys; _coordsys = 0;
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::topology::Mesh::deallocate(void)
+{ // deallocate
+  delete _coordsys; _coordsys = 0;
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Create Sieve mesh.
 void
