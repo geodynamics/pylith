@@ -44,7 +44,15 @@ pylith::meshio::MeshIO::MeshIO(void) :
 // Destructor
 pylith::meshio::MeshIO::~MeshIO(void)
 { // destructor
+  deallocate();
 } // destructor
+  
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::meshio::MeshIO::deallocate(void)
+{ // deallocate
+} // deallocate
   
 // ----------------------------------------------------------------------
 // Get spatial dimension of mesh.

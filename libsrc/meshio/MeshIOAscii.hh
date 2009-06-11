@@ -41,6 +41,9 @@ public :
   /// Destructor
   ~MeshIOAscii(void);
 
+  /// Deallocate PETSc and local data structures.
+  void deallocate(void);
+  
   /** Set filename for ASCII file.
    *
    * @param filename Name of file

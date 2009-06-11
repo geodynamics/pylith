@@ -39,8 +39,17 @@ pylith::meshio::MeshIOCubit::MeshIOCubit(void) :
 // Destructor
 pylith::meshio::MeshIOCubit::~MeshIOCubit(void)
 { // destructor
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::meshio::MeshIOCubit::deallocate(void)
+{ // deallocate
+  MeshIO::deallocate();
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Unpickle mesh
 void

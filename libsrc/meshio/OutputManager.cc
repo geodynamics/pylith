@@ -37,13 +37,22 @@ pylith::meshio::OutputManager<mesh_type, field_type>::OutputManager(void) :
 template<typename mesh_type, typename field_type>
 pylith::meshio::OutputManager<mesh_type, field_type>::~OutputManager(void)
 { // destructor
+  deallocate();
+} // destructor  
+
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+template<typename mesh_type, typename field_type>
+void
+pylith::meshio::OutputManager<mesh_type, field_type>::deallocate(void)
+{ // deallocate
   _writer = 0; // :TODO: Use shared pointer
   _vertexFilter = 0; // :TODO: Use shared pointer
   _cellFilter = 0; // :TODO: Use shared pointer
   delete _coordsys; _coordsys = 0;
   delete _fields; _fields = 0;
-} // destructor  
-
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Set coordinate system in output. The vertex fields in the output
 template<typename mesh_type, typename field_type>

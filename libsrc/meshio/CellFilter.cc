@@ -27,7 +27,7 @@ pylith::meshio::CellFilter<mesh_type, field_type>::CellFilter(void) :
 template<typename mesh_type, typename field_type>
 pylith::meshio::CellFilter<mesh_type, field_type>::~CellFilter(void)
 { // destructor
-  delete _quadrature; _quadrature = 0;
+  deallocate();
 } // destructor  
 
 // ----------------------------------------------------------------------
@@ -40,6 +40,15 @@ pylith::meshio::CellFilter<mesh_type, field_type>::CellFilter(const CellFilter& 
     _quadrature = new feassemble::Quadrature<mesh_type>(*f._quadrature);
 } // copy constructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+template<typename mesh_type, typename field_type>
+void
+pylith::meshio::CellFilter<mesh_type, field_type>::deallocate(void)
+{ // deallocate
+  delete _quadrature; _quadrature = 0;
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Set quadrature associated with cells.
 template<typename mesh_type, typename field_type>

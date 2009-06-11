@@ -27,9 +27,20 @@ pylith::meshio::VertexFilterVecNorm<field_type>::VertexFilterVecNorm(void) :
 template<typename field_type>
 pylith::meshio::VertexFilterVecNorm<field_type>::~VertexFilterVecNorm(void)
 { // destructor
-  delete _fieldVecNorm; _fieldVecNorm = 0;
+  deallocate();
 } // destructor  
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+template<typename field_type>
+void
+pylith::meshio::VertexFilterVecNorm<field_type>::deallocate(void)
+{ // deallocate
+  VertexFilter<field_type>::deallocate();  
+
+  delete _fieldVecNorm; _fieldVecNorm = 0;
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Copy constructor.
 template<typename field_type>

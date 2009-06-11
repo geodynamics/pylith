@@ -29,9 +29,20 @@ pylith::meshio::CellFilterAvg<mesh_type, field_type>::CellFilterAvg(void) :
 template<typename mesh_type, typename field_type>
 pylith::meshio::CellFilterAvg<mesh_type, field_type>::~CellFilterAvg(void)
 { // destructor
-  delete _fieldAvg; _fieldAvg = 0;
+  deallocate();
 } // destructor  
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+template<typename mesh_type, typename field_type>
+void
+pylith::meshio::CellFilterAvg<mesh_type, field_type>::deallocate(void)
+{ // deallocate
+  CellFilter<mesh_type, field_type>::deallocate();
+
+  delete _fieldAvg; _fieldAvg = 0;
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Copy constructor.
 template<typename mesh_type, typename field_type>

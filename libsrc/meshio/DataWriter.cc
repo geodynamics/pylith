@@ -25,8 +25,17 @@ pylith::meshio::DataWriter<mesh_type, field_type>::DataWriter(void) :
 template<typename mesh_type, typename field_type>
 pylith::meshio::DataWriter<mesh_type, field_type>::~DataWriter(void)
 { // destructor
+  deallocate();
 } // destructor  
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+template<typename mesh_type, typename field_type>
+void
+pylith::meshio::DataWriter<mesh_type, field_type>::deallocate(void)
+{ // deallocate
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Prepare for writing files.
 template<typename mesh_type, typename field_type>

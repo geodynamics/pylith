@@ -30,6 +30,7 @@ namespace pylith {
       CellFilter(void);
       
       /// Destructor
+      virtual
       ~CellFilter(void);
       
       /** Create copy of filter.
@@ -39,6 +40,10 @@ namespace pylith {
       virtual
       CellFilter* clone(void) const = 0;
       
+      /// Deallocate PETSc and local data structures.
+      cirtual
+      void deallocate(void);
+  
       /** Set quadrature associated with cells.
        *
        * @param q Quadrature for cells.

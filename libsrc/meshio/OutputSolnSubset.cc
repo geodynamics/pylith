@@ -28,9 +28,19 @@ pylith::meshio::OutputSolnSubset::OutputSolnSubset(void) :
 // Destructor
 pylith::meshio::OutputSolnSubset::~OutputSolnSubset(void)
 { // destructor
-  delete _submesh; _submesh = 0;
+  deallocate();
 } // destructor  
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::meshio::OutputSolnSubset::deallocate(void)
+{ // deallocate
+  OutputManager<topology::SubMesh, topology::Field<topology::Mesh> >::deallocate();
+
+  delete _submesh; _submesh = 0;
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Set label identifier for subdomain.
 void

@@ -24,8 +24,17 @@ pylith::meshio::VertexFilter<field_type>::VertexFilter(void)
 template<typename field_type>
 pylith::meshio::VertexFilter<field_type>::~VertexFilter(void)
 { // destructor
+  deallocate();
 } // destructor  
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+template<typename field_type>
+void
+pylith::meshio::VertexFilter<field_type>::deallocate(void)
+{ // deallocate
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Copy constructor.
 template<typename field_type>

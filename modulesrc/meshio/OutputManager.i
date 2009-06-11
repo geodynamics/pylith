@@ -33,6 +33,10 @@ namespace pylith {
       virtual
       ~OutputManager(void);
       
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       /** Set coordinate system in output. The vertex fields in the output
        * are not affected by any change in coordinates.
        *

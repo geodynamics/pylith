@@ -45,6 +45,10 @@ namespace pylith {
       virtual
       ~MeshIO(void);
       
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       /** Set debug flag for mesh.
        *
        * @param flag True to print debugging information.

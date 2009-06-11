@@ -38,6 +38,9 @@ public :
   /// Destructor
   ~MeshIOLagrit(void);
 
+  /// Deallocate PETSc and local data structures.
+  void deallocate(void);
+  
   /** Set filename for mesh GMV file.
    *
    * @param filename Name of file

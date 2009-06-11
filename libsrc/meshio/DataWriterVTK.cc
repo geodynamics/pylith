@@ -36,11 +36,20 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::DataWriterVTK(void) :
 template<typename mesh_type, typename field_type>
 pylith::meshio::DataWriterVTK<mesh_type,field_type>::~DataWriterVTK(void)
 { // destructor
+  deallocate();
+} // destructor  
+
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+template<typename mesh_type, typename field_type>
+void
+pylith::meshio::DataWriterVTK<mesh_type, field_type>::deallocate(void)
+{ // deallocate
   if (0 != _viewer)
     PetscViewerDestroy(_viewer);
   _viewer = 0;
-} // destructor  
-
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Copy constructor.
 template<typename mesh_type, typename field_type>
