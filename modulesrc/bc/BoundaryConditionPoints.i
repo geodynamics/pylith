@@ -31,6 +31,10 @@ namespace pylith {
       virtual
       ~BoundaryConditionPoints(void);
 
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
     }; // class BoundaryConditionPoints
 
   } // bc

@@ -34,8 +34,17 @@ pylith::faults::FaultCohesive::FaultCohesive(void) :
 // Destructor.
 pylith::faults::FaultCohesive::~FaultCohesive(void)
 { // destructor
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void 
+pylith::faults::FaultCohesive::deallocate(void)
+{ // deallocate
+  Fault::deallocate();
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Set flag for using fault mesh or group of vertices to define
 // fault surface.

@@ -30,6 +30,10 @@ namespace pylith {
       /// Destructor.
       ~DirichletBoundary(void);
 
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       /** Initialize boundary condition.
        *
        * @param mesh Finite-element mesh.

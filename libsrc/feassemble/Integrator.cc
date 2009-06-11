@@ -40,11 +40,20 @@ pylith::feassemble::Integrator<quadrature_type>::Integrator(void) :
 template<typename quadrature_type>
 pylith::feassemble::Integrator<quadrature_type>::~Integrator(void)
 { // destructor
+  deallocate();
+  _gravityField = 0; /// Memory managed elsewhere :TODO: use shared pointer
+} // destructor
+  
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+template<typename quadrature_type>
+void
+pylith::feassemble::Integrator<quadrature_type>::deallocate(void)
+{ // deallocate
   delete _quadrature; _quadrature = 0;
   delete _normalizer; _normalizer = 0;
   delete _logger; _logger = 0;
-  _gravityField = 0; /// Memory managed elsewhere :TODO: use shared pointer
-} // destructor
+} // deallocate
   
 // ----------------------------------------------------------------------
 // Get quadrature for integrating finite-element quantities.

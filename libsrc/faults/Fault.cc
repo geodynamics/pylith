@@ -29,9 +29,17 @@ pylith::faults::Fault::Fault(void) :
 // Destructor.
 pylith::faults::Fault::~Fault(void)
 { // destructor
-  delete _faultMesh; _faultMesh = 0;
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void 
+pylith::faults::Fault::deallocate(void)
+{ // deallocate
+  delete _faultMesh; _faultMesh = 0;
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Get mesh associated with fault fields.
 const pylith::topology::SubMesh&

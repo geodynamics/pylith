@@ -31,21 +31,32 @@ pylith::bc::BCIntegratorSubMesh::BCIntegratorSubMesh(void) :
 // Destructor.
 pylith::bc::BCIntegratorSubMesh::~BCIntegratorSubMesh(void)
 { // destructor
-  delete _boundaryMesh; _boundaryMesh = 0;
-  delete _parameters; _parameters = 0;
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate data structures.
+void
+pylith::bc::BCIntegratorSubMesh::deallocate(void)
+{ // deallocate
+  BoundaryCondition::deallocate();
+  feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >::deallocate();
+
+  delete _boundaryMesh; _boundaryMesh = 0;
+  delete _parameters; _parameters = 0;
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Get submesh associated with boundary condition.
 void
 pylith::bc::BCIntegratorSubMesh::createSubMesh(const topology::Mesh& mesh)
-{ // _createSubMesh
+{ // createSubMesh
   delete _boundaryMesh; _boundaryMesh = 0;
   delete _parameters; _parameters = 0;
 
   _boundaryMesh = new topology::SubMesh(mesh, _label.c_str());
   assert(0 != _boundaryMesh);
-} // _createSubMesh
+} // createSubMesh
 
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.

@@ -46,11 +46,21 @@ pylith::faults::BruneSlipFn::BruneSlipFn(void) :
 // Destructor.
 pylith::faults::BruneSlipFn::~BruneSlipFn(void)
 { // destructor
+  deallocate();
+} // destructor
+
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void 
+pylith::faults::BruneSlipFn::deallocate(void)
+{ // deallocate
+  SlipTimeFn::deallocate();
+
   _dbFinalSlip = 0; // :TODO: Use shared pointer.
   _dbSlipTime = 0; // :TODO: Use shared pointer.
   _dbRiseTime = 0; // :TODO: Use shared pointer.
-} // destructor
-
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Initialize slip time function.
 void

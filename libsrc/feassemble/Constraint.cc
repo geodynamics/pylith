@@ -28,9 +28,17 @@ pylith::feassemble::Constraint::Constraint(void) :
 // Destructor.
 pylith::feassemble::Constraint::~Constraint(void)
 { // destructor
-  delete _normalizer; _normalizer = 0;
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::feassemble::Constraint::deallocate(void)
+{ // deallocate
+  delete _normalizer; _normalizer = 0;
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.
 void

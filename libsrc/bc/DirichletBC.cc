@@ -42,6 +42,15 @@ pylith::bc::DirichletBC::~DirichletBC(void)
 } // destructor
 
 // ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::bc::DirichletBC::deallocate(void)
+{ // deallocate
+  TimeDependentPoints::deallocate();
+  feassemble::Constraint::deallocate();
+} // deallocate
+  
+// ----------------------------------------------------------------------
 // Initialize boundary condition.
 void
 pylith::bc::DirichletBC::initialize(const topology::Mesh& mesh,

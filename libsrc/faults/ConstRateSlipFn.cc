@@ -44,10 +44,20 @@ pylith::faults::ConstRateSlipFn::ConstRateSlipFn(void) :
 // Destructor.
 pylith::faults::ConstRateSlipFn::~ConstRateSlipFn(void)
 { // destructor
-  _dbSlipRate = 0; // :TODO: Use shared pointer.
-  _dbSlipTime = 0; // :TODO: Use shared pointer.
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void 
+pylith::faults::ConstRateSlipFn::deallocate(void)
+{ // deallocate
+  SlipTimeFn::deallocate();
+
+  _dbSlipRate = 0; // :TODO: Use shared pointer.
+  _dbSlipTime = 0; // :TODO: Use shared pointer.
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Initialize slip time function.
 void

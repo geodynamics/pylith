@@ -31,8 +31,17 @@ pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void)
 // Destructor.
 pylith::faults::FaultCohesiveDyn::~FaultCohesiveDyn(void)
 { // destructor
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void 
+pylith::faults::FaultCohesiveDyn::deallocate(void)
+{ // deallocate
+  FaultCohesive::deallocate();
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Initialize fault. Determine orientation and setup boundary
 void

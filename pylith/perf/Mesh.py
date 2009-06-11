@@ -1,4 +1,18 @@
 #!/usr/bin/env python
+#
+# ----------------------------------------------------------------------
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# <LicenseText>
+#
+# ----------------------------------------------------------------------
+#
+
+## @file pylith/perf/Mesh.py
+##
+## @brief Python memory model for Mesh.
 
 from Memory import Memory
 

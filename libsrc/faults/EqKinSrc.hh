@@ -43,6 +43,10 @@ public :
   /// Destructor.
   ~EqKinSrc(void);
 
+  /// Deallocate PETSc and local data structures.
+  virtual
+  void deallocate(void);
+  
   /** Set origin time for earthquake source.
    *
    * @param value Origin time for earthquake source.

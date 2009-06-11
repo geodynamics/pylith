@@ -44,10 +44,20 @@ pylith::faults::StepSlipFn::StepSlipFn(void) :
 // Destructor.
 pylith::faults::StepSlipFn::~StepSlipFn(void)
 { // destructor
-  _dbFinalSlip = 0; // :TODO: Use shared pointer
-  _dbSlipTime = 0; // :TODO: Use shared pointer
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void 
+pylith::faults::StepSlipFn::deallocate(void)
+{ // deallocate
+  SlipTimeFn::deallocate();
+
+  _dbFinalSlip = 0; // :TODO: Use shared pointer
+  _dbSlipTime = 0; // :TODO: Use shared pointer
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Initialize slip time function.
 void

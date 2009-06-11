@@ -34,9 +34,18 @@ pylith::bc::BoundaryConditionPoints::BoundaryConditionPoints(void) :
 // Destructor.
 pylith::bc::BoundaryConditionPoints::~BoundaryConditionPoints(void)
 { // destructor
-  delete _parameters; _parameters = 0;
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void 
+pylith::bc::BoundaryConditionPoints::deallocate(void)
+{ // deallocate
+  BoundaryCondition::deallocate();
+  delete _parameters; _parameters = 0;
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Get parameter fields.
 const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*

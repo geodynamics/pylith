@@ -31,6 +31,10 @@ namespace pylith {
       virtual
       ~SlipTimeFn(void);
       
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       /** Initialize slip time function.
        *
        * @param faultMesh Finite-element mesh of fault.

@@ -1,4 +1,18 @@
 #!/usr/bin/env python
+#
+# ----------------------------------------------------------------------
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# <LicenseText>
+#
+# ----------------------------------------------------------------------
+#
+
+## @file pylith/perf/Jacobian.py
+##
+## @brief Python memory model for Jacobian sparse matrix.
 
 from Memory import Memory
 
@@ -22,3 +36,6 @@ class Jacobian(Memory):
       memDict[self.label] = 0
     memDict[self.label] += 0
     return
+
+
+# End of file

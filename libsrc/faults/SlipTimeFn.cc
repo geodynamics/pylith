@@ -29,8 +29,16 @@ pylith::faults::SlipTimeFn::SlipTimeFn(void) :
 // Destructor.
 pylith::faults::SlipTimeFn::~SlipTimeFn(void)
 { // destructor
-  delete _parameters; _parameters = 0;
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void 
+pylith::faults::SlipTimeFn::deallocate(void)
+{ // deallocate
+  delete _parameters; _parameters = 0;
+} // deallocate
+  
 
 // End of file 

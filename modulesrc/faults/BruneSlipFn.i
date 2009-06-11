@@ -30,6 +30,10 @@ namespace pylith {
       /// Destructor.
       ~BruneSlipFn(void);
       
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       /** Set spatial database for final slip.
        *
        * @param db Spatial database

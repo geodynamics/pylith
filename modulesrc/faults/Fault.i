@@ -31,6 +31,10 @@ namespace pylith {
       virtual
       ~Fault(void);
       
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       /** Set material identifier of fault.
        *
        * @param value Fault identifier

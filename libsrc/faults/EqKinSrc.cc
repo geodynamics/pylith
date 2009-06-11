@@ -32,9 +32,17 @@ pylith::faults::EqKinSrc::EqKinSrc(void) :
 // Destructor.
 pylith::faults::EqKinSrc::~EqKinSrc(void)
 { // destructor
-  _slipfn = 0; // :TODO: Use shared pointer.
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void 
+pylith::faults::EqKinSrc::deallocate(void)
+{ // deallocate
+  _slipfn = 0; // :TODO: Use shared pointer.
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Set origin time for earthquake source.
 void

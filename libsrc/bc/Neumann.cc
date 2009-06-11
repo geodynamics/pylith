@@ -46,9 +46,17 @@ pylith::bc::Neumann::Neumann(void) :
 // Destructor.
 pylith::bc::Neumann::~Neumann(void)
 { // destructor
-  _db = 0; // :TODO: Use shared pointer
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::bc::Neumann::deallocate(void)
+{ // deallocate
+  _db = 0; // :TODO: Use shared pointer
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Initialize boundary condition. Determine orienation and compute traction
 // vector at integration points.
