@@ -32,6 +32,10 @@ def check_state_variables(testcase, filename, mesh, stateVarNames):
   testcase.assertEqual(mesh['nvertices'], nvertices)
   testcase.assertEqual(mesh['spaceDim'], spaceDim)
 
+  from spatialdata.units.NondimElasticQuasistatic import NondimElasticQuasistatic
+  normalizer = NondimElasticQuasistatic()
+  normalizer._configure()
+
   # Check state variables
   tolerance = 1.0e-5
 
@@ -47,9 +51,13 @@ def check_state_variables(testcase, filename, mesh, stateVarNames):
     testcase.assertEqual(ncellsE, ncells)
     testcase.assertEqual(dimE, dim)
 
+    scale = 1.0
+    if name == "stress":
+      scale *= normalizer.pressureScale().value
+
     for i in xrange(dim):
       ratio = numpy.abs(1.0 - values[:,i]/valuesE[:,i])
-      diff = numpy.abs(values[:,i] - valuesE[:,i])
+      diff = numpy.abs(values[:,i] - valuesE[:,i]) / scale
       mask = valuesE[:,i] != 0.0
       okay = mask*(ratio < tolerance) + ~mask*(diff < tolerance)
       if numpy.sum(okay) != ncells:

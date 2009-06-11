@@ -35,6 +35,10 @@ def check_vertex_fields(testcase, filename, mesh, fieldNames):
   # Check fault information
   tolerance = 1.0e-5
 
+  from spatialdata.units.NondimElasticQuasistatic import NondimElasticQuasistatic
+  normalizer = NondimElasticQuasistatic()
+  normalizer._configure()
+
   for name in fieldNames:
     valuesE = testcase.calcFaultField(name, data['vertices'])
     values = data['vertex_fields'][name]
@@ -47,9 +51,13 @@ def check_vertex_fields(testcase, filename, mesh, fieldNames):
     testcase.assertEqual(nverticesE, nvertices)
     testcase.assertEqual(dimE, dim)
 
+    scale = 1.0
+    if name == "traction_change":
+      scale *= normalizer.pressureScale().value
+
     for i in xrange(dim):
       ratio = numpy.abs(1.0 - values[:,i]/valuesE[:,i])
-      diff = numpy.abs(values[:,i] - valuesE[:,i])
+      diff = numpy.abs(values[:,i] - valuesE[:,i]) / scale
       mask = valuesE[:,i] != 0.0
       okay = mask*(ratio < tolerance) + ~mask*(diff < tolerance)
       if numpy.sum(okay) != nvertices:
