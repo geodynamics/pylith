@@ -37,8 +37,13 @@ public :
   VertexFilter(void);
 
   /// Destructor
+  virtual
   ~VertexFilter(void);
 
+  /// Deallocate PETSc and local data structures.
+  virtual
+  void deallocate(void);
+  
   /** Create copy of filter.
    *
    * @returns Copy of filter.

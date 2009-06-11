@@ -43,6 +43,9 @@ public :
    */
   VertexFilter<field_type>* clone(void) const;
 
+  /// Deallocate PETSc and local data structures.
+  void deallocate(void);
+  
   /** Filter vertex field.
    *
    * @param fieldIn Field to filter.

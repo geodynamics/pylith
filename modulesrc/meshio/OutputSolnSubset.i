@@ -33,6 +33,9 @@ namespace pylith {
       /// Destructor
       ~OutputSolnSubset(void);
       
+      /// Deallocate PETSc and local data structures.
+      void deallocate(void);
+  
       /** Set label identifier for subdomain.
        *
        * @param value Label of subdomain.

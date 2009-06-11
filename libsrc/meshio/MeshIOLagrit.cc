@@ -41,8 +41,17 @@ pylith::meshio::MeshIOLagrit::MeshIOLagrit(void) :
 // Destructor
 pylith::meshio::MeshIOLagrit::~MeshIOLagrit(void)
 { // destructor
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::meshio::MeshIOLagrit::deallocate(void)
+{ // deallocate
+  MeshIO::deallocate();
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Unpickle mesh
 void

@@ -47,6 +47,7 @@ public :
   CellFilter(void);
 
   /// Destructor
+  virtual
   ~CellFilter(void);
 
   /** Create copy of filter.
@@ -56,6 +57,10 @@ public :
   virtual
   CellFilter* clone(void) const = 0;
 
+  /// Deallocate PETSc and local data structures.
+  virtual
+  void deallocate(void);
+  
   /** Set quadrature associated with cells.
    *
    * @param q Quadrature for cells.

@@ -47,8 +47,17 @@ pylith::meshio::MeshIOAscii::MeshIOAscii(void) :
 // Destructor
 pylith::meshio::MeshIOAscii::~MeshIOAscii(void)
 { // destructor
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::meshio::MeshIOAscii::deallocate(void)
+{ // deallocate
+  MeshIO::deallocate();
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Read mesh.
 void

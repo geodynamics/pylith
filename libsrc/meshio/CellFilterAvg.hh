@@ -43,6 +43,9 @@ public :
    */
   CellFilter<mesh_type,field_type>* clone(void) const;
 
+  /// Deallocate PETSc and local data structures.
+  void deallocate(void);
+  
   /** Filter field over cells.
    *
    * @param fieldIn Field to filter.

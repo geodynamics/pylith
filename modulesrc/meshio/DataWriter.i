@@ -40,6 +40,10 @@ namespace pylith {
       virtual
       DataWriter* clone(void) const = 0;
       
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       /** Prepare for writing files.
        *
        * @param mesh Finite-element mesh. 

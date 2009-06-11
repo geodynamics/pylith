@@ -46,6 +46,9 @@ public :
    */
   DataWriter<mesh_type, field_type>* clone(void) const;
 
+  /// Deallocate PETSc and local data structures.
+  void deallocate(void);
+  
   /** Set filename for VTK file.
    *
    * @param filename Name of VTK file.

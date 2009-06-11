@@ -41,6 +41,9 @@ public :
   /// Destructor
   ~MeshIOCubit(void);
 
+  /// Deallocate PETSc and local data structures.
+  void deallocate(void);
+  
   /** Set filename for Cubit file.
    *
    * @param filename Name of file
