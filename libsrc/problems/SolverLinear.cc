@@ -83,6 +83,8 @@ pylith::problems::SolverLinear::initialize(
 
     err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
     err = PCSetType(pc, PCFIELDSPLIT); CHECK_PETSC_ERROR(err);
+    err = PCSetOptionsPrefix(pc, "fs_"); CHECK_PETSC_ERROR(err);
+    err = PCSetFromOptions(pc); CHECK_PETSC_ERROR(err);
 #if defined(FIELD_SPLIT)
     constructFieldSplit(residual.section(), sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", residual.section()), residual.vector(), pc);
 #endif
