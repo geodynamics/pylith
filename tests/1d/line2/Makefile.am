@@ -38,6 +38,7 @@ noinst_TMP = \
 	dislocation-elastic_t0000000.vtk \
 	dislocation_t0000000.vtk
 
+
 TESTS_ENVIRONMENT = $(PYTHON)
 
 
@@ -51,6 +52,7 @@ clean-data:
 
 BUILT_SOURCES = export-data
 clean-local: clean-data
+CLEANFILES = *.pyc
 
 
 # End of file 

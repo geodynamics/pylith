@@ -20,8 +20,11 @@ def suite():
   """
   suite = unittest.TestSuite()
 
-  from TestAxialShearDisp import TestAxialShearDisp
-  suite.addTest(unittest.makeSuite(TestAxialShearDisp))
+  from TestAxialDisp import TestAxialDisp
+  suite.addTest(unittest.makeSuite(TestAxialDisp))
+
+  from TestShearDisp import TestShearDisp
+  suite.addTest(unittest.makeSuite(TestShearDisp))
 
   #from TestAxialShearTract import TestAxislShearTract
   #suite.addTest(unittest.makeSuite(TestAxialShearTract))
