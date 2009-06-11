@@ -52,6 +52,7 @@ clean-data:
 
 BUILT_SOURCES = export-data
 clean-local: clean-data
+CLEANFILES = *.pyc
 
 
 # End of file 

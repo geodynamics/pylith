@@ -11,7 +11,6 @@
 #
 
 SUBDIRS = \
-	tri3 \
 	quad4
 
 
