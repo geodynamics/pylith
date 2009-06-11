@@ -35,12 +35,20 @@ pylith::bc::TimeDependent::TimeDependent(void) :
 // Destructor.
 pylith::bc::TimeDependent::~TimeDependent(void)
 { // destructor
+  deallocate();
+} // destructor
+
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::bc::TimeDependent::deallocate(void)
+{ // deallocate
   _dbInitial = 0; // TODO: Use shared pointers
   _dbRate = 0; // TODO: Use shared pointers
   _dbChange = 0; // TODO: Use shared pointers
   _dbTimeHistory = 0; // TODO: Use shared pointers
-} // destructor
-
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Set indices of vertices with point forces.
 void

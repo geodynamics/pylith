@@ -41,8 +41,18 @@ pylith::bc::TimeDependentPoints::TimeDependentPoints(void)
 // Destructor.
 pylith::bc::TimeDependentPoints::~TimeDependentPoints(void)
 { // destructor
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::bc::TimeDependentPoints::deallocate(void)
+{ // deallocate
+  BoundaryConditionPoints::deallocate();
+  TimeDependent::deallocate();
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Query databases for parameters.
 void

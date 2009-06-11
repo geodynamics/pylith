@@ -32,6 +32,10 @@ namespace pylith {
       virtual
       ~FaultCohesiveKin(void);
       
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       /** Set kinematic earthquake sources.
        *
        * @param names Array of kinematic earthquake source names.

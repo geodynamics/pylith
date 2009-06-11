@@ -67,6 +67,10 @@ public :
   /// Destructor.
   ~AbsorbingDampers(void);
 
+  /// Deallocate PETSc and local data structures.
+  virtual
+  void deallocate(void);
+  
   /** Set database for boundary condition parameters.
    *
    * @param db Spatial database

@@ -31,6 +31,10 @@ namespace pylith {
       /// Destructor.
       ~TimeDependentPoints(void);
       
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       // PROTECTED METHODS //////////////////////////////////////////////
     protected :
       

@@ -30,6 +30,10 @@ namespace pylith {
       /// Destructor.
       ~ConstRateSlipFn(void);
       
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       /** Set spatial database for slip rate.
        *
        * @param db Spatial database

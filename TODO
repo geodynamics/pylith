@@ -48,7 +48,16 @@ Charles
       Add _cleanup() to components to deallocate local data structures.
       Add cleanup() to non-components to deallocate local data structures.
 
+      Need to call parent deallocate() but not objects deallocate.
+      bc C++, SWIG
+      faults C++, SWIG
+
 2. Add missing unit tests
+
+    add test_factory() methods to Python unit tests
+
+    pytests
+      test_configure
 
     libtests/topology/TestMesh::testNondimensionalize()
 
@@ -61,11 +70,6 @@ Charles
     pytests.meshio.TestOutputFaultKin
     pytests.meshio.TestOutputMatElastic
     pytests.meshio.TestOutputNeumann
-
-    add test_factory() methods to Python unit tests
-
-    pytests
-      test_configure
 
     libtests/materials
       Cleanup dbToStateVars for Maxwell models (use ids don't just copy)
@@ -87,27 +91,26 @@ Charles
       propertyField()
       stateVarField()
 
-    Need unit tests
-      MeshIO::normalizer()
-      Material::normalizer()
-      Constraint::normalizer()
-      Integrator::normalizer()
-      DataWriter::normalizer()
+    MeshIO::normalizer()
+    Material::normalizer()
+    Constraint::normalizer()
+    Integrator::normalizer()
+    DataWriter::normalizer()
 
-      Mesh::coneSize()
-      Mesh::numVertices()
-      Mesh::numCells()
-      TimeDependentPoints::parameterFields()
-      Material::propertiesField()
-      Material::stateVarsField()
+    Mesh::coneSize()
+    Mesh::numVertices()
+    Mesh::numCells()
+    TimeDependentPoints::parameterFields()
+    Material::propertiesField()
+    Material::stateVarsField()
 
-      MeshOps::numMaterialCells()
+    MeshOps::numMaterialCells()
 
-      PetscApplication.compilePerformanceLog()
-      PetscComponent.compilePerformanceLog()
-      Material.ncells
-      MemoryLogger.logMesh()
-      MemoryLogger.logMaterial()
+    PetscApplication.compilePerformanceLog()
+    PetscComponent.compilePerformanceLog()
+    Material.ncells
+    MemoryLogger.logMesh()
+    MemoryLogger.logMaterial()
 
 3. Update manual for version 1.4 [Brad and Charles]
 

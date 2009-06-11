@@ -40,6 +40,10 @@ public :
   /// Destructor.
   ~DirichletBC(void);
 
+  /// Deallocate PETSc and local data structures.
+  virtual
+  void deallocate(void);
+  
   /** Initialize boundary condition.
    *
    * @param mesh PETSc mesh

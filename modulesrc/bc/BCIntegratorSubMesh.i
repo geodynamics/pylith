@@ -32,6 +32,10 @@ namespace pylith {
       virtual
       ~BCIntegratorSubMesh(void);
       
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       /** Get parameter fields.
        *
        * @returns Parameter fields.

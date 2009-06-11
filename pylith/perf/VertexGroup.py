@@ -1,4 +1,18 @@
 #!/usr/bin/env python
+#
+# ----------------------------------------------------------------------
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# <LicenseText>
+#
+# ----------------------------------------------------------------------
+#
+
+## @file pylith/perf/VertexGroup.py
+##
+## @brief Python memory model for vertex groups.
 
 from Memory import Memory
 
@@ -27,3 +41,7 @@ class VertexGroup(Memory):
 
 if __name__ == '__main__':
   print 'Memory:',VertexGroup('rock', 35).tabulate()
+
+
+# End of file
+

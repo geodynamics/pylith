@@ -1,4 +1,18 @@
 #!/usr/bin/env python
+#
+# ----------------------------------------------------------------------
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# <LicenseText>
+#
+# ----------------------------------------------------------------------
+#
+
+## @file pylith/perf/GlobalOrder.py
+##
+## @brief Python memory model for global order.
 
 from Memory import Memory
 
@@ -23,3 +37,6 @@ class GlobalOrder(Memory):
       memDict[self.label] = 0
     memDict[self.label] += self.chartSize*(3 * self.sizeInt + self.sizeMapEntry) + self.chartSize*(self.sizeSetEntry+self.sizeInt)
     return
+
+
+# End of file

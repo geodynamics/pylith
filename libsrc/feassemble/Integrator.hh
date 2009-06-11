@@ -51,6 +51,10 @@ public :
   virtual
   ~Integrator(void);
 
+  /// Deallocate PETSc and local data structures.
+  virtual
+  void deallocate(void);
+  
   /** Get the quadrature for integrating finite-element
    * quantities.
    *

@@ -38,10 +38,20 @@ pylith::bc::DirichletBoundary::DirichletBoundary(void) :
 // Destructor.
 pylith::bc::DirichletBoundary::~DirichletBoundary(void)
 { // destructor
-  delete _boundaryMesh; _boundaryMesh = 0;
-  delete _outputFields; _outputFields = 0;
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::bc::DirichletBoundary::deallocate(void)
+{ // deallocate
+  DirichletBC::deallocate();
+
+  delete _boundaryMesh; _boundaryMesh = 0;
+  delete _outputFields; _outputFields = 0;
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Initialize boundary condition.
 void

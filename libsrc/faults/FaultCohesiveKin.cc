@@ -57,10 +57,20 @@ pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
 // Destructor.
 pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void)
 { // destructor
-  delete _fields; _fields = 0;
-  // :TODO: Use shared pointers for earthquake sources
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void 
+pylith::faults::FaultCohesiveKin::deallocate(void)
+{ // deallocate
+  FaultCohesive::deallocate();
+
+  delete _fields; _fields = 0;
+  // :TODO: Use shared pointers for earthquake sources
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Set kinematic earthquake source.
 void

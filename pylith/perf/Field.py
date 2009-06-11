@@ -1,4 +1,18 @@
 #!/usr/bin/env python
+#
+# ----------------------------------------------------------------------
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# <LicenseText>
+#
+# ----------------------------------------------------------------------
+#
+
+## @file pylith/perf/Field.py
+##
+## @brief Python memory model for field.
 
 from Memory import Memory
 
@@ -27,3 +41,6 @@ class Field(Memory):
 
 if __name__ == '__main__':
   print 'Memory:',Material('rock', 35).tabulate()
+
+
+# End of file

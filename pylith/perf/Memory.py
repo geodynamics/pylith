@@ -1,3 +1,19 @@
+#!/usr/bin/env python
+#
+# ----------------------------------------------------------------------
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# <LicenseText>
+#
+# ----------------------------------------------------------------------
+#
+
+## @file pylith/perf/Memory.py
+##
+## @brief Python object for calculating memory usage.
+
 class Memory(object):
   sizeInt    = 4
   sizeDouble = 8
@@ -18,3 +34,5 @@ class Memory(object):
   else:
     raise RuntimeError('Could not determine the size of a pointer')
 
+
+# End of file

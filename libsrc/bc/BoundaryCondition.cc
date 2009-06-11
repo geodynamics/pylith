@@ -32,6 +32,13 @@ pylith::bc::BoundaryCondition::~BoundaryCondition(void)
 } // destructor
 
 // ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::bc::BoundaryCondition::deallocate(void)
+{ // deallocate
+} // deallocate
+  
+// ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::bc::BoundaryCondition::verifyConfiguration(const topology::Mesh& mesh) const

@@ -38,8 +38,18 @@ pylith::bc::PointForce::PointForce(void)
 // Destructor.
 pylith::bc::PointForce::~PointForce(void)
 { // destructor
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::bc::PointForce::deallocate(void)
+{ // deallocate
+  TimeDependentPoints::deallocate();
+  feassemble::Integrator<feassemble::Quadrature<topology::Mesh> >::deallocate();
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Initialize boundary condition.
 void

@@ -40,6 +40,10 @@ public :
   /// Destructor.
   ~TimeDependent(void);
 
+  /// Deallocate PETSc and local data structures.
+  virtual
+  void deallocate(void);
+  
   /** Set indices of degrees of freedom associated with BC.
    *
    * Note: Forces at all points are applied to the same degrees of freedom.

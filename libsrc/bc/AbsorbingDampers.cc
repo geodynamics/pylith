@@ -49,9 +49,17 @@ pylith::bc::AbsorbingDampers::AbsorbingDampers(void) :
 // Destructor.
 pylith::bc::AbsorbingDampers::~AbsorbingDampers(void)
 { // destructor
-  _db = 0; // :TODO: Use shared pointer
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void 
+pylith::bc::AbsorbingDampers::deallocate(void)
+{ // deallocate
+  _db = 0; // :TODO: Use shared pointer
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Initialize boundary condition. Determine orienation and compute traction
 // vector at integration points.

@@ -31,6 +31,10 @@ namespace pylith {
       virtual
       ~BoundaryCondition(void);
 
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       /** Set label of boundary condition surface.
        *
        * @param value Label of surface (from mesh generator).

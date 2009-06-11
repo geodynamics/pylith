@@ -46,6 +46,10 @@ public :
   virtual
   ~FaultCohesiveDyn(void);
 
+  /// Deallocate PETSc and local data structures.
+  virtual
+  void deallocate(void);
+  
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
    *

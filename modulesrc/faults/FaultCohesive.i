@@ -31,6 +31,10 @@ namespace pylith {
       virtual
       ~FaultCohesive(void);
       
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       /** Set flag for using fault mesh or group of vertices to define
        * fault surface.
        *
