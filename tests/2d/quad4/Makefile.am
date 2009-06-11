@@ -21,13 +21,16 @@ dist_noinst_PYTHON = \
 	axialdisp_gendb.py \
 	TestShearDisp.py \
 	sheardisp_soln.py \
-	sheardisp_gendb.py
+	sheardisp_gendb.py \
+	TestDislocation.py \
+	dislocation_soln.py
 
 dist_noinst_DATA = \
 	mesh.exo \
 	matprops.spatialdb \
 	axialdisp.cfg \
-	sheardisp.cfg
+	sheardisp.cfg \
+	dislocation.cfg
 
 noinst_TMP = \
 	axial_disp.spatialdb \
@@ -37,7 +40,12 @@ noinst_TMP = \
 	shear_disp.spatialdb \
 	sheardisp_t0000000.vtk \
 	sheardisp-elastic_info.vtk \
-	sheardisp-elastic_t0000000.vtk
+	sheardisp-elastic_t0000000.vtk \
+	dislocation_t0000000.vtk \
+	dislocation-elastic_info.vtk \
+	dislocation-elastic_t0000000.vtk \
+	dislocation-fault_info.vtk \
+	dislocation-fault_t0000000.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)
