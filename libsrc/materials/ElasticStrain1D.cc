@@ -285,6 +285,14 @@ pylith::materials::ElasticStrain1D::_calcElasticConsts(
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
 double
+pylith::materials::ElasticStrain1D::stableTimeStepImplicit(
+					const topology::Mesh& mesh) {
+  return pylith::PYLITH_MAXDOUBLE;
+}
+
+// ----------------------------------------------------------------------
+// Get stable time step for implicit time integration.
+double
 pylith::materials::ElasticStrain1D::_stableTimeStepImplicit(
 					      const double* properties,
 					      const int numProperties,
