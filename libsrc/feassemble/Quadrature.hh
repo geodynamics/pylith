@@ -57,6 +57,9 @@ public :
    */
   Quadrature(const Quadrature& q);
 
+  /// Deallocate PETSc and local data structures.
+  void deallocate(void);
+  
   /// Setup quadrature engine.
   void initializeGeometry(void);
 

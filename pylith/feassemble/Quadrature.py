@@ -14,8 +14,6 @@
 ##
 ## @brief Python abstract base class for integrating over
 ## finite-elements using quadrature.
-##
-## Factory: quadrature.
 
 from pylith.utils.PetscComponent import PetscComponent
 
@@ -25,8 +23,6 @@ class QuadratureBase(PetscComponent):
   """
   Python abstract base class for integrating over finite-elements
   using quadrature.
-
-  Factory: quadrature.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////

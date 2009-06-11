@@ -37,8 +37,16 @@ pylith::feassemble::QuadratureRefCell::QuadratureRefCell(void) :
 // Destructor
 pylith::feassemble::QuadratureRefCell::~QuadratureRefCell(void)
 { // destructor
-  delete _geometry; _geometry = 0;
+  deallocate();
 } // destructor
+  
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::feassemble::QuadratureRefCell::deallocate(void)
+{ // deallocate
+  delete _geometry; _geometry = 0;
+} // deallocate
   
 // ----------------------------------------------------------------------
 // Copy constructor

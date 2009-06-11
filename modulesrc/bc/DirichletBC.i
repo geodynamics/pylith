@@ -29,6 +29,7 @@ namespace pylith {
       DirichletBC(void);
       
       /// Destructor.
+      virtual
       ~DirichletBC(void);
       
       /// Deallocate PETSc and local data structures.

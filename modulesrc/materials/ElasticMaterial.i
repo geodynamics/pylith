@@ -40,6 +40,10 @@ namespace pylith {
       virtual
       ~ElasticMaterial(void);
 
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       /** Set database for initial stress state.
        *
        * @param db Spatial database.

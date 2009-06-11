@@ -64,6 +64,9 @@ public :
   /// Destructor
   ~ElasticityImplicit(void);
 
+  /// Deallocate PETSc and local data structures.
+  void deallocate(void);
+  
   /** Set time step for advancing from time t to time t+dt.
    *
    * @param dt Time step

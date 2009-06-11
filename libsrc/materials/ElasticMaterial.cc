@@ -53,14 +53,20 @@ pylith::materials::ElasticMaterial::ElasticMaterial(const int dimension,
 // Destructor.
 pylith::materials::ElasticMaterial::~ElasticMaterial(void)
 { // destructor
-  delete _initialFields; _initialFields = 0;
-
-  // Python db object owns databases, so just set point to null
-  // :KLUDGE: Should use shared pointer
-  _dbInitialStress = 0;
-  _dbInitialStrain = 0;
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::materials::ElasticMaterial::deallocate(void)
+{ // deallocate
+  delete _initialFields; _initialFields = 0;
+
+  _dbInitialStress = 0; // :TODO: Use shared pointer.
+  _dbInitialStrain = 0; // :TODO: Use shared pointer.
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Initialize material by getting physical property parameters from
 // database.

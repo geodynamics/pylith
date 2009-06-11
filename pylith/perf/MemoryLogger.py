@@ -44,6 +44,7 @@ class MemoryLogger(Logger):
     includeDealloc = pyre.inventory.bool("include_dealloc", default=True)
     includeDealloc.meta['tip'] = "Subtract deallocated memory when reporting."
 
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="perf_logger"):
@@ -56,6 +57,7 @@ class MemoryLogger(Logger):
     self.memory['Completion'] = 0
     return
 
+
   def logMesh(self, stage, mesh):
     """
     Read mesh parameters to determine memory from our model.
@@ -63,11 +65,13 @@ class MemoryLogger(Logger):
     import pylith.perf.Mesh
 
     if not stage in self.memory: self.memory[stage] = {}
-    meshModel = pylith.perf.Mesh.Mesh(mesh.dimension(), mesh.coneSize(), mesh.numVertices(), mesh.numCells())
+    meshModel = pylith.perf.Mesh.Mesh(mesh.dimension(), mesh.coneSize(), 
+                                      mesh.numVertices(), mesh.numCells())
     meshModel.tabulate(self.memory[stage])
     for group, nvertices in mesh.groupSizes():
       self.logVertexGroup('VertexGroups', group, nvertices, mesh.numVertices())
     return
+
 
   def logVertexGroup(self, stage, label, nvertices, nMeshVertices):
     """
@@ -76,9 +80,11 @@ class MemoryLogger(Logger):
     import pylith.perf.VertexGroup
 
     if not stage in self.memory: self.memory[stage] = {}
-    groupModel = pylith.perf.VertexGroup.VertexGroup(label, nvertices, nMeshVertices)
+    groupModel = pylith.perf.VertexGroup.VertexGroup(label, nvertices, 
+                                                     nMeshVertices)
     groupModel.tabulate(self.memory[stage])
     return
+
 
   def logMaterial(self, stage, material):
     """
@@ -87,11 +93,13 @@ class MemoryLogger(Logger):
     import pylith.perf.Material
 
     if not stage in self.memory: self.memory[stage] = {}
-    materialModel = pylith.perf.Material.Material(material.label(), material.ncells)
+    materialModel = pylith.perf.Material.Material(material.label(), 
+                                                  material.ncells)
     materialModel.tabulate(self.memory[stage])
     self.logField(stage, material.propertiesField())
     self.logField(stage, material.stateVarsField())
     return
+
 
   def logQuadrature(self, stage, quadrature):
     ##self.logField(stage, quadrature.quadPtsPrecomp())
@@ -105,6 +113,7 @@ class MemoryLogger(Logger):
     ##self.logField('Field', quadrature.basisDerivPrecomp())
     return
 
+
   def logField(self, stage, field):
     """
     Read field parameters to determine memory from our model.
@@ -112,9 +121,11 @@ class MemoryLogger(Logger):
     import pylith.perf.Field
 
     if not stage in self.memory: self.memory[stage] = {}
-    fieldModel = pylith.perf.Field.Field(field.label(), field.sectionSize(), field.chartSize())
+    fieldModel = pylith.perf.Field.Field(field.label(), field.sectionSize(), 
+                                         field.chartSize())
     fieldModel.tabulate(self.memory[stage])
     return
+
 
   def logGlobalOrder(self, stage, label, field):
     """
@@ -127,6 +138,7 @@ class MemoryLogger(Logger):
     orderModel.tabulate(self.memory[stage])
     return
 
+
   def logJacobian(self, stage, label):
     """
     Read parameters to determine memory from our model.
@@ -137,6 +149,7 @@ class MemoryLogger(Logger):
     jacModel = pylith.perf.Jacobian.Jacobian(label)
     jacModel.tabulate(self.memory[stage])
     return
+
 
   def mergeMemDict(self, memDictTarget, memDictSource):
     for key in memDictSource:
@@ -150,6 +163,7 @@ class MemoryLogger(Logger):
         memDictTarget[key] += memDictSource[key]
     return
 
+
   def join(self, logger):
     """
     Incorporate information from another logger.
@@ -157,16 +171,20 @@ class MemoryLogger(Logger):
     self.mergeMemDict(self.memory, logger.memory)
     return
 
+
   def prefix(self, indent):
     prefix = ''
     for i in range(indent):
       prefix += '  '
     return prefix
 
-  def memLine(self, source, name, mem, indent = 0):
-    return '%s%-30s %8d bytes (%.3f MB)' % (self.prefix(indent), name+' ('+source+'):', mem, mem / self.megabyte)
 
-  def processMemDict(self, memDict, indent = 0, namePrefix = '', includeDealloc = True):
+  def memLine(self, source, name, mem, indent = 0):
+    return '%s%-30s %8d bytes (%.3f MB)' % \
+        (self.prefix(indent), name+' ('+source+'):', mem, mem / self.megabyte)
+
+  def processMemDict(self, memDict, indent = 0, namePrefix = '', 
+                     includeDealloc = True):
     from pylith.utils.petsc import MemoryLogger
     logger    =  MemoryLogger.singleton()
     output    = []
@@ -177,7 +195,8 @@ class MemoryLogger(Logger):
       fullname = namePrefix+name
       if isinstance(m, dict):
         output.append(self.prefix(indent)+name)
-        out,mem,codeMem = self.processMemDict(m, indent, fullname, includeDealloc)
+        out,mem,codeMem = self.processMemDict(m, indent, fullname, 
+                                              includeDealloc)
         output.extend(out)
         total     += mem
         codeTotal += codeMem
@@ -203,9 +222,11 @@ class MemoryLogger(Logger):
     output.append(self.memLine('Model', 'Total', total, indent))
     output.append(self.memLine('Code',  'Total', mem, indent))
     if mem:
-      output.append('%sPercentage memory modeled: %.2f%%' % (self.prefix(indent), total*100.0/mem))
+      output.append('%sPercentage memory modeled: %.2f%%' % \
+                      (self.prefix(indent), total*100.0/mem))
     else:
-      output.append('%sMemory modeled:            %d (no measured memory)' % (self.prefix(indent), total))
+      output.append('%sMemory modeled:            %d (no measured memory)' % \
+                      (self.prefix(indent), total))
     return output, total, codeTotal
 
   def show(self):
@@ -213,12 +234,15 @@ class MemoryLogger(Logger):
     Print memory usage.
     """
     output = ["MEMORY USAGE"]
-    output.extend(self.processMemDict(self.memory, includeDealloc = self.includeDealloc)[0])
+    output.extend(self.processMemDict(self.memory, includeDealloc = \
+                                        self.includeDealloc)[0])
 
     from pylith.utils.petsc import MemoryLogger
     logger    =  MemoryLogger.singleton()
-    output.append(self.memLine('Code',  'Total Alloced', logger.getAllocationTotal('default'), 1))
-    output.append(self.memLine('Code',  'Total Dealloced', logger.getDeallocationTotal('default'), 1))
+    output.append(self.memLine('Code',  'Total Alloced', 
+                               logger.getAllocationTotal('default'), 1))
+    output.append(self.memLine('Code',  'Total Dealloced', 
+                               logger.getDeallocationTotal('default'), 1))
 
     print '\n'.join(output)
     return

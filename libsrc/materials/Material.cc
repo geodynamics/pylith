@@ -74,16 +74,22 @@ pylith::materials::Material::Material(const int dimension,
 // Destructor.
 pylith::materials::Material::~Material(void)
 { // destructor
+  deallocate();
+} // destructor
+
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::materials::Material::deallocate(void)
+{ // deallocate
   delete _normalizer; _normalizer = 0;
   delete _properties; _properties = 0;
   delete _stateVars; _stateVars = 0;
 
-  // Python db object owns databases, so just set pointer to null
-  // :KLUDGE: Should use shared pointer
-  _dbProperties = 0;
-  _dbInitialState = 0;
-} // destructor
-
+  _dbProperties = 0; // :TODO: Use shared pointer.
+  _dbInitialState = 0; // :TODO: Use shared pointer.
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Set scales used to nondimensionalize physical properties.
 void

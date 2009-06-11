@@ -84,6 +84,9 @@ public :
   /// Default destructor
   ~Metadata(void);
 
+  /// Deallocate PETSc and local data structures.
+  void deallocate(void);
+  
   /** Get names of properties.
    * 
    * @returns Array of names of properties.

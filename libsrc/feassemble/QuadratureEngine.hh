@@ -36,8 +36,13 @@ public :
   QuadratureEngine(const QuadratureRefCell& q);
 
   /// Destructor
+  virtual
   ~QuadratureEngine(void);
 
+  /// Deallocate PETSc and local data structures.
+  virtual
+  void deallocate(void);
+  
   /** Create a copy of this object.
    *
    * @returns Copy of this.

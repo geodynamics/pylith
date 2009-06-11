@@ -31,6 +31,9 @@ namespace pylith {
       /// Destructor
       ~Quadrature(void);
       
+      /// Deallocate PETSc and local data structures.
+      void deallocate(void);
+  
       /** Copy constructor.
        *
        * @param q Quadrature to copy

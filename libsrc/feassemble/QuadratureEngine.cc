@@ -31,8 +31,16 @@ pylith::feassemble::QuadratureEngine::QuadratureEngine(const QuadratureRefCell& 
 // Destructor
 pylith::feassemble::QuadratureEngine::~QuadratureEngine(void)
 { // destructor
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::feassemble::QuadratureEngine::deallocate(void)
+{ // deallocate
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Allocate cell buffers.
 void
