@@ -18,6 +18,9 @@
 
 #include "pylith/materials/ElasticPlaneStress.hh" // USES ElasticPlaneStress
 
+#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+#include "pylith/topology/Mesh.hh" // USES Mesh
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticPlaneStress );
 
@@ -32,6 +35,19 @@ pylith::materials::TestElasticPlaneStress::setUp(void)
   _dataElastic = new ElasticPlaneStressData();
   setupNormalizer();
 } // setUp
+
+// ----------------------------------------------------------------------
+// Test stableTimeStepImplicit().
+void
+pylith::materials::TestElasticPlaneStress::testStableTimeStepImplicit(void)
+{ // testStableTimeStepImplicit
+  assert(0 != _matElastic);
+
+  topology::Mesh mesh;
+
+  const double dt = _matElastic->stableTimeStepImplicit(mesh);
+  CPPUNIT_ASSERT_EQUAL(1.0, dt/pylith::PYLITH_MAXDOUBLE);
+} // testStableTimeStepImplicit
 
 
 // End of file 

@@ -44,14 +44,9 @@ Charles
 
 1. Tidy up
 
-    Add simple stableTimeStep() for elastic materials.
-
     Switch Components to PetscComponents.
       Add _cleanup() to components to deallocate local data structures.
       Add cleanup() to non-components to deallocate local data structures.
-
-    Add check before calling newSection() when want to enforce at
-    least 1 value.
 
 2. Add missing unit tests
 

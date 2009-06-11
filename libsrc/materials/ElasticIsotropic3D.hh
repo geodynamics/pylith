@@ -47,6 +47,15 @@ public :
   /// Destructor
   ~ElasticIsotropic3D(void);
 
+  /** Get stable time step for implicit time integration.
+   *
+   * Default is MAXDOUBLE (or 1.0e+30 if MAXFLOAT is not defined in math.h).
+   *
+   * @param mesh Finite-element mesh.
+   * @returns Time step
+   */
+  double stableTimeStepImplicit(const topology::Mesh& mesh);
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 

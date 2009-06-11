@@ -323,6 +323,14 @@ pylith::materials::ElasticIsotropic3D::_calcElasticConsts(
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
 double
+pylith::materials::ElasticIsotropic3D::stableTimeStepImplicit(
+					const topology::Mesh& mesh) {
+  return pylith::PYLITH_MAXDOUBLE;
+}
+
+// ----------------------------------------------------------------------
+// Get stable time step for implicit time integration.
+double
 pylith::materials::ElasticIsotropic3D::_stableTimeStepImplicit(
 				     const double* properties,
 				     const int numProperties,

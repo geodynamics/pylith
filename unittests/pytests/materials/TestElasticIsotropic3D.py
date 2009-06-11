@@ -70,6 +70,16 @@ class TestElasticIsotropic3D(unittest.TestCase):
     self.material.timeStep(2.0)
     self.failIf(self.material.needNewJacobian())
     return
+
+
+  def testStableTimeStepImplicit(self):
+    """
+    Test stableTimeStepImplicit().
+    """
+    from pylith.topology.Mesh import Mesh
+    mesh = Mesh()
+    dt = self.material.stableTimeStepImplicit(mesh)
+    self.failIf(dt < 1.0e+30)
   
 
 # End of file 

@@ -45,6 +45,7 @@ class pylith::materials::TestElasticPlaneStrain : public TestElasticMaterial
   CPPUNIT_TEST( testDBToStateVars );
   CPPUNIT_TEST( testNonDimStateVars );
   CPPUNIT_TEST( testDimStateVars );
+  CPPUNIT_TEST( testStableTimeStepImplicit );
   CPPUNIT_TEST( test_calcDensity );
   CPPUNIT_TEST( test_calcStress );
   CPPUNIT_TEST( test_calcElasticConsts );
@@ -58,6 +59,9 @@ public :
 
   /// Setup testing data.
   void setUp(void);
+
+  /// Test stableTimeStepImplicit().
+  void testStableTimeStepImplicit(void);
 
 }; // class TestElasticPlaneStrain
 

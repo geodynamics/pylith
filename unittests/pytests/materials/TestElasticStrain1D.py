@@ -72,4 +72,14 @@ class TestElasticStrain1D(unittest.TestCase):
     return
   
 
+  def testStableTimeStepImplicit(self):
+    """
+    Test stableTimeStepImplicit().
+    """
+    from pylith.topology.Mesh import Mesh
+    mesh = Mesh()
+    dt = self.material.stableTimeStepImplicit(mesh)
+    self.failIf(dt < 1.0e+30)
+  
+
 # End of file 

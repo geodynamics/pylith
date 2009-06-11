@@ -18,6 +18,9 @@
 
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 
+#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+#include "pylith/topology/Mesh.hh" // USES Mesh
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticIsotropic3D );
 
@@ -32,6 +35,19 @@ pylith::materials::TestElasticIsotropic3D::setUp(void)
   _dataElastic = new ElasticIsotropic3DData();
   setupNormalizer();
 } // setUp
+
+// ----------------------------------------------------------------------
+// Test stableTimeStepImplicit().
+void
+pylith::materials::TestElasticIsotropic3D::testStableTimeStepImplicit(void)
+{ // testStableTimeStepImplicit
+  assert(0 != _matElastic);
+
+  topology::Mesh mesh;
+
+  const double dt = _matElastic->stableTimeStepImplicit(mesh);
+  CPPUNIT_ASSERT_EQUAL(1.0, dt/pylith::PYLITH_MAXDOUBLE);
+} // testStableTimeStepImplicit
 
 
 // End of file 
