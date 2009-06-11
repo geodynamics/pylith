@@ -54,6 +54,7 @@ Charles
       feassemble C++, SWIG
       materials C++, SWIG
       meshio C++, SWIG
+      problems C++, SWIG
 
 2. Add missing unit tests
 

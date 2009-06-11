@@ -38,8 +38,13 @@ public :
   Solver(void);
 
   /// Destructor
+  virtual
   ~Solver(void);
 
+  /// Deallocate PETSc and local data structures.
+  virtual
+  void deallocate(void);
+  
   /** Initialize solver.
    *
    * @param fields Solution fields.

@@ -31,6 +31,9 @@ namespace pylith {
       /// Destructor
       ~Formulation(void);
 
+      /// Deallocate PETSc and local data structures.
+      void deallocate(void);
+  
       /** Set handles to integrators over the mesh.
        *
        * @param integrators Integrators over the mesh.

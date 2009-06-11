@@ -41,6 +41,8 @@ pylith::problems::SolverNonlinear::~SolverNonlinear(void)
 void
 pylith::problems::SolverNonlinear::deallocate(void)
 { // deallocate
+  Solver::deallocate();
+
   if (0 != _snes) {
     PetscErrorCode err = SNESDestroy(_snes); _snes = 0;
     CHECK_PETSC_ERROR(err);

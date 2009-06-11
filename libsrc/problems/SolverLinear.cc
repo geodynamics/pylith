@@ -47,6 +47,8 @@ pylith::problems::SolverLinear::~SolverLinear(void)
 void
 pylith::problems::SolverLinear::deallocate(void)
 { // deallocate
+  Solver::deallocate();
+
   if (0 != _ksp) {
     PetscErrorCode err = KSPDestroy(_ksp); _ksp = 0;
     CHECK_PETSC_ERROR(err);

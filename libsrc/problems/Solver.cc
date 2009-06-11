@@ -27,9 +27,17 @@ pylith::problems::Solver::Solver(void) :
 // Destructor
 pylith::problems::Solver::~Solver(void)
 { // destructor
-  _formulation = 0; // Handle only, do not manage memory.
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::problems::Solver::deallocate(void)
+{ // deallocate
+  _formulation = 0; // Handle only, do not manage memory.
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Initialize solver.
 void
