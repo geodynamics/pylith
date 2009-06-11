@@ -38,10 +38,18 @@ pylith::problems::Formulation::Formulation(void) :
 // Destructor
 pylith::problems::Formulation::~Formulation(void)
 { // destructor
-  _jacobian = 0; // Handle only, we do not manage the memory.
-  _fields = 0; // Handle only, we do not manage the memory.
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::problems::Formulation::deallocate(void)
+{ // deallocate
+  _jacobian = 0; // :TODO: Use shared pointer.
+  _fields = 0; // :TODO: Use shared pointer.
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Return the fields
 const pylith::topology::SolutionFields&

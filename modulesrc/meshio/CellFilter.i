@@ -41,7 +41,7 @@ namespace pylith {
       CellFilter* clone(void) const = 0;
       
       /// Deallocate PETSc and local data structures.
-      cirtual
+      virtual
       void deallocate(void);
   
       /** Set quadrature associated with cells.
