@@ -23,8 +23,8 @@ def suite():
   from TestAxialShearDisp import TestAxialShearDisp
   suite.addTest(unittest.makeSuite(TestAxialShearDisp))
 
-  #from TestAxialShearTract import TestShearShearTract
-  #suite.addTest(unittest.makeSuite(TestShearShearTract))
+  #from TestAxialShearTract import TestAxislShearTract
+  #suite.addTest(unittest.makeSuite(TestAxialShearTract))
 
   #from TestDislocation import TestDislocation
   #suite.addTest(unittest.makeSuite(TestDislocation))

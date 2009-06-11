@@ -40,6 +40,10 @@ namespace pylith {
       /// Default destructor
       ~Mesh(void);
       
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+
       /** Create Sieve mesh.
        *
        * @param dim Dimension associated with mesh cells.

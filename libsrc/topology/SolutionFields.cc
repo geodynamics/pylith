@@ -28,8 +28,17 @@ pylith::topology::SolutionFields::SolutionFields(const Mesh& mesh) :
 // Destructor.
 pylith::topology::SolutionFields::~SolutionFields(void)
 { // destructor
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::topology::SolutionFields::deallocate(void)
+{ // deallocate
+  Fields<Field<Mesh> >::deallocate();
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Set name of solution field.
 void

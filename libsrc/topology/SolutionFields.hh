@@ -46,6 +46,9 @@ public :
   /// Destructor.
   ~SolutionFields(void);
 
+  /// Deallocate PETSc and local data structures.
+  void deallocate(void);
+  
   /** Set name of field used in the solve.
    *
    * @param name Name of field that holds the solution.

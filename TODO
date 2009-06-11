@@ -55,6 +55,7 @@ Charles
       materials C++, SWIG
       meshio C++, SWIG
       problems C++, SWIG
+      topology C++, SWIG
 
 2. Add missing unit tests
 
