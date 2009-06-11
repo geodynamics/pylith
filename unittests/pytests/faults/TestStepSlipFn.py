@@ -74,4 +74,13 @@ class TestStepSlipFn(unittest.TestCase):
     return
 
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.faults.StepSlipFn import slip_time_fn
+    fn = slip_time_fn()
+    return
+
+
 # End of file 

@@ -323,4 +323,13 @@ class TestOutputManagerSubMesh(unittest.TestCase):
     return
 
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.meshio.OutputManagerSubMesh import output_manager
+    o = output_manager()
+    return
+
+
 # End of file 

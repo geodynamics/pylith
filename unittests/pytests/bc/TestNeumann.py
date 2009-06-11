@@ -165,6 +165,15 @@ class TestNeumann(unittest.TestCase):
     return
 
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.bc.Neumann import boundary_condition
+    bc = boundary_condition()
+    return
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _initialize(self):

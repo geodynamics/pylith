@@ -146,4 +146,13 @@ class TestTimeStepAdapt(unittest.TestCase):
     return
 
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.problems.TimeStepAdapt import time_step
+    ts = time_step()
+    return
+
+
 # End of file 

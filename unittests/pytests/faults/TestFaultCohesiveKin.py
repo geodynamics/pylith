@@ -249,6 +249,15 @@ class TestFaultCohesiveKin(unittest.TestCase):
     return
 
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.faults.FaultCohesiveKin import fault
+    f = fault()
+    return
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _initialize(self):

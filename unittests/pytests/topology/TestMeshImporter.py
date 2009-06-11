@@ -32,4 +32,13 @@ class TestMeshImporter(unittest.TestCase):
     return
 
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.topology.MeshImporter import mesh_generator
+    g = mesh_generator()
+    return
+
+
 # End of file 

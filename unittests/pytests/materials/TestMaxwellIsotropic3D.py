@@ -72,4 +72,13 @@ class TestMaxwellIsotropic3D(unittest.TestCase):
     return
   
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.materials.MaxwellIsotropic3D import material
+    m = material()
+    return
+
+
 # End of file 

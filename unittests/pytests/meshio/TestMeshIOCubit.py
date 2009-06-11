@@ -85,4 +85,13 @@ class TestMeshIOCubit(unittest.TestCase):
     return
 
 
+  def test_factory(self):
+    """
+    Test factory method.
+    """
+    from pylith.meshio.MeshIOCubit import mesh_io
+    io = mesh_io()
+    return
+
+
 # End of file 
