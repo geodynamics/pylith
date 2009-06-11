@@ -57,6 +57,7 @@ pylith::feassemble::CellGeometry::CellGeometry(const ShapeEnum shape,
 // Default destructor.
 pylith::feassemble::CellGeometry::~CellGeometry(void)
 { // destructor
+  deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -68,6 +69,13 @@ pylith::feassemble::CellGeometry::CellGeometry(const CellGeometry& g) :
 { // copy constructor
 } // copy constructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::feassemble::CellGeometry::deallocate(void)
+{ // deallocate
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Get dimension of cell.
 int

@@ -38,7 +38,7 @@ Charles
     pytests
     full-scale test (axial compression/extension?)
   Generalized Maxwell materials (initial stress/strain)
-
+    CURRENTLY DISABLED!!!!
 
 ----------------------------------------------------------------------
 
@@ -51,10 +51,10 @@ Charles
       Need to call parent deallocate() but not objects deallocate.
       bc C++, SWIG
       faults C++, SWIG
+      feassemble C++, SWIG
+      materials C++, SWIG
 
 2. Add missing unit tests
-
-    add test_factory() methods to Python unit tests
 
     pytests
       test_configure

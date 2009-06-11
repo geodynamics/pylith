@@ -50,9 +50,19 @@ pylith::feassemble::IntegratorElasticity::IntegratorElasticity(void) :
 // Destructor
 pylith::feassemble::IntegratorElasticity::~IntegratorElasticity(void)
 { // destructor
-  delete _outputFields; _outputFields = 0;
-  _material = 0; // Don't manage memory for material
+  deallocate();
 } // destructor
+  
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::feassemble::IntegratorElasticity::deallocate(void)
+{ // deallocate
+  Integrator<Quadrature<topology::Mesh> >::deallocate();
+
+  delete _outputFields; _outputFields = 0;
+  _material = 0; // :TODO: Use shared pointer.
+} // deallocate
   
 // ----------------------------------------------------------------------
 // Set material.

@@ -46,9 +46,20 @@ pylith::feassemble::Quadrature<mesh_type>::Quadrature(void) :
 template<typename mesh_type>
 pylith::feassemble::Quadrature<mesh_type>::~Quadrature(void)
 { // destructor
+  deallocate();
+} // destructor
+  
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+template<typename mesh_type>
+void
+pylith::feassemble::Quadrature<mesh_type>::deallocate(void)
+{ // deallocate
+  QuadratureRefCell::deallocate();
+
   delete _engine; _engine = 0;
   delete _geometryFields; _geometryFields = 0;
-} // destructor
+} // deallocate
   
 // ----------------------------------------------------------------------
 // Copy constructor

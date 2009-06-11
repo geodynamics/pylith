@@ -43,8 +43,13 @@ public :
   QuadratureRefCell(void);
 
   /// Destructor
+  virtual
   ~QuadratureRefCell(void);
 
+  /// Deallocate PETSc and local data structures.
+  virtual
+  void deallocate(void);
+  
   /** Set basis functions and their derivatives, and coordinates and
    *  weights of the quadrature points.
    *

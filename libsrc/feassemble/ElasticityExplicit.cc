@@ -51,7 +51,16 @@ pylith::feassemble::ElasticityExplicit::ElasticityExplicit(void) :
 // Destructor
 pylith::feassemble::ElasticityExplicit::~ElasticityExplicit(void)
 { // destructor
+  deallocate();
 } // destructor
+  
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::feassemble::ElasticityExplicit::deallocate(void)
+{ // deallocate
+  IntegratorElasticity::deallocate();
+} // deallocate
   
 // ----------------------------------------------------------------------
 // Set time step for advancing from time t to time t+dt.

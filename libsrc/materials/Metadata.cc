@@ -75,8 +75,16 @@ pylith::materials::Metadata::Metadata(const Metadata& m) :
 // Default destructor
 pylith::materials::Metadata::~Metadata(void)
 { // destructor
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::materials::Metadata::deallocate(void)
+{ // deallocate
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Get fiber dimension of value.
 int

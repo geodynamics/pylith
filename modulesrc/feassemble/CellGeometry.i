@@ -48,6 +48,10 @@ namespace pylith {
       virtual
       ~CellGeometry(void);
       
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       /** Create a copy of geometry.
        *
        * @returns Copy of geometry.

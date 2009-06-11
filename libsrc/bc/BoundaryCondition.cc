@@ -29,6 +29,7 @@ pylith::bc::BoundaryCondition::BoundaryCondition(void) :
 // Destructor.
 pylith::bc::BoundaryCondition::~BoundaryCondition(void)
 { // destructor
+  deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------

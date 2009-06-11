@@ -31,8 +31,13 @@ namespace pylith {
       IntegratorElasticity(void);
 
       /// Destructor
+      virtual
       ~IntegratorElasticity(void);
 
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       /** Set material.
        *
        * @param m Elastic material.

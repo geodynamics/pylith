@@ -31,6 +31,10 @@ namespace pylith {
       virtual
       ~Constraint(void);
 
+      /// Deallocate PETSc and local data structures.
+      virtual
+      void deallocate(void);
+  
       /** Set manager of scales used to nondimensionalize problem.
        *
        * @param dim Nondimensionalizer.

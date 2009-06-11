@@ -56,6 +56,10 @@ public :
   virtual
   ~Material(void);
 
+  /// Deallocate PETSc and local data structures.
+  virtual
+  void deallocate(void);
+  
   /** Get spatial dimension of material.
    *
    * @returns Spatial dimension.
