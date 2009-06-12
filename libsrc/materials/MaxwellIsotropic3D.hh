@@ -258,31 +258,6 @@ private :
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
-  /** Compute viscous strains (state variables) for the current time
-   * step.
-   *
-   * @param stateVars State variables at location.
-   * @param numStateVars Number of state variables.
-   * @param properties Properties at location.
-   * @param numProperties Number of properties.
-   * @param totalStrain Total strain at location.
-   * @param strainSize Size of strain tensor.
-   * @param initialStress Initial stress tensor at location.
-   * @param initialStressSize Size of initial stress array.
-   * @param initialStrain Initial strain tensor at location.
-   * @param initialStrainSize Size of initial strain array.
-   */
-  void _computeStateVars(const double* stateVars,
-			 const int numStateVars,
-			 const double* properties,
-			 const int numProperties,
-			 const double* totalStrain,
-			 const int strainSize,
-			 const double* initialStress,
-			 const int initialStressSize,
-			 const double* initialStrain,
-			 const int initialStrainSize);
-
   /** Compute stress tensor from properties as an elastic material.
    *
    * @param stress Array for stress tensor.
@@ -448,6 +423,31 @@ private :
 				    const int initialStressSize,
 				    const double* initialStrain,
 				    const int initialStrainSize);
+
+  /** Compute viscous strains (state variables) for the current time
+   * step.
+   *
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
+   * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain tensor at location.
+   * @param initialStrainSize Size of initial strain array.
+   */
+  void _computeStateVars(const double* stateVars,
+			 const int numStateVars,
+			 const double* properties,
+			 const int numProperties,
+			 const double* totalStrain,
+			 const int strainSize,
+			 const double* initialStress,
+			 const int initialStressSize,
+			 const double* initialStrain,
+			 const int initialStrainSize);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

@@ -80,6 +80,7 @@ libpylith_la_SOURCES = \
 	materials/ElasticPlaneStress.cc \
 	materials/ElasticIsotropic3D.cc \
 	materials/ViscoelasticMaxwell.cc \
+	materials/GenMaxwellIsotropic3D.cc \
 	materials/MaxwellIsotropic3D.cc \
 	materials/PowerLaw3D.cc \
 	meshio/BinaryIO.cc \
@@ -109,7 +110,6 @@ libpylith_la_SOURCES = \
 	utils/EventLogger.cc \
 	utils/TestArray.cc
 
-# 	materials/GenMaxwellIsotropic3D.cc \
 # 	topology/MeshRefiner.cc \
 #	topology/RefineUniform.cc
 

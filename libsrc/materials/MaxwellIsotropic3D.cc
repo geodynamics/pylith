@@ -310,93 +310,6 @@ pylith::materials::MaxwellIsotropic3D::_calcDensity(double* const density,
 } // _calcDensity
 
 // ----------------------------------------------------------------------
-// Get stable time step for implicit time integration.
-double
-pylith::materials::MaxwellIsotropic3D::_stableTimeStepImplicit(
-					   const double* properties,
-					   const int numProperties,
-					   const double* stateVars,
-					   const int numStateVars) const
-{ // _stableTimeStepImplicit
-  assert(0 != properties);
-  assert(_numPropsQuadPt == numProperties);
-  assert(0 != stateVars);
-  assert(_numVarsQuadPt == numStateVars);
-
-  const double maxwellTime = properties[p_maxwellTime];
-  const double dtStable = 0.1 * maxwellTime;
-
-  return dtStable;
-} // _stableTimeStepImplicit
-
-#include <iostream>
-// ----------------------------------------------------------------------
-// Compute viscous strain for current time step.
-// material.
-void
-pylith::materials::MaxwellIsotropic3D::_computeStateVars(
-					       const double* stateVars,
-					       const int numStateVars,
-					       const double* properties,
-					       const int numProperties,
-					       const double* totalStrain,
-					       const int strainSize,
-					       const double* initialStress,
-					       const int initialStressSize,
-					       const double* initialStrain,
-					       const int initialStrainSize)
-{ // _computeStateVars
-  assert(0 != stateVars);
-  assert(_numVarsQuadPt == numStateVars);
-  assert(0 != properties);
-  assert(_numPropsQuadPt == numProperties);
-  assert(0 != totalStrain);
-  assert(_MaxwellIsotropic3D::tensorSize == strainSize);
-  assert(0 != initialStress);
-  assert(_MaxwellIsotropic3D::tensorSize == initialStressSize);
-  assert(0 != initialStrain);
-  assert(_MaxwellIsotropic3D::tensorSize == initialStrainSize);
-
-  const int tensorSize = _tensorSize;
-  const double maxwellTime = properties[p_maxwellTime];
-
-  // :TODO: Need to account for initial values for state variables
-  // and the initial strain??
-
-  const double e11 = totalStrain[0];
-  const double e22 = totalStrain[1];
-  const double e33 = totalStrain[2];
-  const double e12 = totalStrain[3];
-  const double e23 = totalStrain[4];
-  const double e13 = totalStrain[5];
-  
-  const double meanStrainTpdt = (e11 + e22 + e33) / 3.0;
-
-  const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-
-  const double meanStrainT =
-    ( stateVars[s_totalStrain+0] +
-      stateVars[s_totalStrain+1] +
-      stateVars[s_totalStrain+2] ) / 3.0;
-  
-  // Time integration.
-  double dq = ViscoelasticMaxwell::viscousStrainParam(_dt, maxwellTime);
-  const double expFac = exp(-_dt/maxwellTime);
-
-  double devStrainTpdt = 0.0;
-  double devStrainT = 0.0;
-
-  for (int iComp=0; iComp < tensorSize; ++iComp) {
-    devStrainTpdt = totalStrain[iComp] - diag[iComp] * meanStrainTpdt;
-    devStrainT = stateVars[s_totalStrain+iComp] - diag[iComp] * meanStrainT;
-    _viscousStrain[iComp] = expFac * stateVars[s_viscousStrain+iComp] +
-      dq * (devStrainTpdt - devStrainT);
-  } // for
-
-  PetscLogFlops(8 + 7 * tensorSize);
-} // _computeStateVars
-
-// ----------------------------------------------------------------------
 // Compute stress tensor at location from properties as an elastic
 // material.
 void
@@ -747,6 +660,92 @@ pylith::materials::MaxwellIsotropic3D::_updateStateVarsViscoelastic(
 
   _needNewJacobian = false;
 } // _updateStateVarsViscoelastic
+
+// ----------------------------------------------------------------------
+// Get stable time step for implicit time integration.
+double
+pylith::materials::MaxwellIsotropic3D::_stableTimeStepImplicit(
+					   const double* properties,
+					   const int numProperties,
+					   const double* stateVars,
+					   const int numStateVars) const
+{ // _stableTimeStepImplicit
+  assert(0 != properties);
+  assert(_numPropsQuadPt == numProperties);
+  assert(0 != stateVars);
+  assert(_numVarsQuadPt == numStateVars);
+
+  const double maxwellTime = properties[p_maxwellTime];
+  const double dtStable = 0.1 * maxwellTime;
+
+  return dtStable;
+} // _stableTimeStepImplicit
+
+// ----------------------------------------------------------------------
+// Compute viscous strain for current time step.
+// material.
+void
+pylith::materials::MaxwellIsotropic3D::_computeStateVars(
+					       const double* stateVars,
+					       const int numStateVars,
+					       const double* properties,
+					       const int numProperties,
+					       const double* totalStrain,
+					       const int strainSize,
+					       const double* initialStress,
+					       const int initialStressSize,
+					       const double* initialStrain,
+					       const int initialStrainSize)
+{ // _computeStateVars
+  assert(0 != stateVars);
+  assert(_numVarsQuadPt == numStateVars);
+  assert(0 != properties);
+  assert(_numPropsQuadPt == numProperties);
+  assert(0 != totalStrain);
+  assert(_MaxwellIsotropic3D::tensorSize == strainSize);
+  assert(0 != initialStress);
+  assert(_MaxwellIsotropic3D::tensorSize == initialStressSize);
+  assert(0 != initialStrain);
+  assert(_MaxwellIsotropic3D::tensorSize == initialStrainSize);
+
+  const int tensorSize = _tensorSize;
+  const double maxwellTime = properties[p_maxwellTime];
+
+  // :TODO: Need to account for initial values for state variables
+  // and the initial strain??
+
+  const double e11 = totalStrain[0];
+  const double e22 = totalStrain[1];
+  const double e33 = totalStrain[2];
+  const double e12 = totalStrain[3];
+  const double e23 = totalStrain[4];
+  const double e13 = totalStrain[5];
+  
+  const double meanStrainTpdt = (e11 + e22 + e33) / 3.0;
+
+  const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+
+  const double meanStrainT =
+    ( stateVars[s_totalStrain+0] +
+      stateVars[s_totalStrain+1] +
+      stateVars[s_totalStrain+2] ) / 3.0;
+  
+  // Time integration.
+  double dq = ViscoelasticMaxwell::viscousStrainParam(_dt, maxwellTime);
+  const double expFac = exp(-_dt/maxwellTime);
+
+  double devStrainTpdt = 0.0;
+  double devStrainT = 0.0;
+
+  for (int iComp=0; iComp < tensorSize; ++iComp) {
+    devStrainTpdt = totalStrain[iComp] - diag[iComp] * meanStrainTpdt;
+    devStrainT = stateVars[s_totalStrain+iComp] - diag[iComp] * meanStrainT;
+    _viscousStrain[iComp] = expFac * stateVars[s_viscousStrain+iComp] +
+      dq * (devStrainTpdt - devStrainT);
+  } // for
+
+  PetscLogFlops(8 + 7 * tensorSize);
+} // _computeStateVars
 
 
 // End of file 

@@ -12,16 +12,19 @@
 
 ## @file pylith/materials/GenMaxwellIsotropic3D.py
 ##
-## @brief Python object implementing 3-D generalized isotropic linear Maxwell viscoelastic material.
+## @brief Python object implementing 3-D isotropic linear GenMaxwell
+## viscoelastic material.
 ##
 ## Factory: material.
 
 from ElasticMaterial import ElasticMaterial
+from materials import GenMaxwellIsotropic3D as ModuleGenMaxwellIsotropic3D
 
 # GenMaxwellIsotropic3D class
-class GenMaxwellIsotropic3D(ElasticMaterial):
+class GenMaxwellIsotropic3D(ElasticMaterial, ModuleGenMaxwellIsotropic3D):
   """
-  Python object implementing 3-D generalized isotropic linear Maxwell viscoelastic material.
+  Python object implementing 3-D isotropic linear GenMaxwell viscoelastic
+  material.
 
   Factory: material.
   """
@@ -38,20 +41,22 @@ class GenMaxwellIsotropic3D(ElasticMaterial):
            {'info': [],
             'data': []},
          'cell': \
-           {'info': ["mu", "lambda", "density", "shear_ratio", "maxwell_time"],
-            'data': ["total_strain", "viscous_strain", "stress"]}}
-    self._loggingPrefix = "MaGM3D "
+           {'info': ["mu", "lambda", "density",
+                     "shear_ratio", "maxwell_time"],
+            'data': ["total_strain", "stress",
+                     "viscous_strain_1", 
+                     "viscous_strain_2", 
+                     "viscous_strain_3",
+                     ]}}
+    self._loggingPrefix = "MaMx3D "
     return
 
 
-  def _createCppHandle(self):
+  def _createModuleObj(self):
     """
-    Create handle to corresponding C++ object.
+    Call constructor for module object for access to C++ object.
     """
-    if None == self.cppHandle:
-      import pylith.materials.materials as bindings
-      self.cppHandle = bindings.GenMaxwellIsotropic3D()
-      self.dimension = self.cppHandle.dimension
+    ModuleGenMaxwellIsotropic3D.__init__(self)
     return
   
 

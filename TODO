@@ -2,6 +2,11 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
+CRITICAL
+  petsc-dev doesn't build on the cygwin buildbot (`_vsnprintf' undeclared)
+    http://www.geodynamics.org:8009/?project=PETSc
+  Generalized maxwell model
+
 BUGS
   malloc during assembly when running in parallel
 
@@ -43,9 +48,6 @@ Brad
 
 Charles
   3-D Power-law rheology
-    libtests
-    Python
-    pytests
     full-scale test (axial compression/extension?)
   Generalized Maxwell materials (initial stress/strain)
     CURRENTLY DISABLED!!!!
