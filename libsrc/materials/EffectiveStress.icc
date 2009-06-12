@@ -98,7 +98,6 @@ pylith::materials::EffectiveStress::_bracket(double* px1,
     throw std::runtime_error("Unable to bracket effective stress.");
 } // _bracket
 
-#include <iostream> // TEMPORARY
 // ----------------------------------------------------------------------
 // Find root using Newton's method with bisection.
 template<typename material_type>
@@ -111,7 +110,7 @@ pylith::materials::EffectiveStress::_search(const double x1,
   const int maxIterations = 100;
 
   // Desired accuracy for root. This is a bit arbitrary for now.
-  const double accuracy = 1.0e-18;
+  const double accuracy = 1.0e-10;
 
   // Organize search so that effStressFunc(xLow) is less than zero.
   double funcValueLow = material->effStressFunc(x1);
@@ -144,19 +143,12 @@ pylith::materials::EffectiveStress::_search(const double x1,
   while (iteration < maxIterations) {
     funcXHigh = (effStress - xHigh) * funcDeriv - funcValue;
     funcXLow = (effStress - xLow) * funcDeriv - funcValue;
-    std::cout << "low: " << funcXLow
-	      << ", high: " << funcXHigh
-	      << ", func: " << funcValue
-	      << std::endl;
     if (fabs(funcValue) < accuracy) {
       converged = true;
       break;
     } // if
-    // Use bisection if solution goes out of bounds or is not converging
-    // fast enough.
-    if ( (funcXHigh * funcXLow >= 0.0) ||
-	 (fabs(2.0 * funcValue) > fabs(dxPrevious * funcDeriv))) {
-      dxPrevious = dx;
+    // Use bisection if solution goes out of bounds.
+    if (funcXHigh * funcXLow >= 0.0) {
       dx = 0.5 * (xHigh - xLow);
       effStress = xLow + dx;
     } else {
