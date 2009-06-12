@@ -10,14 +10,14 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/2d/quad4/TestQuad4.py
+## @file tests/2d/tri3/TestTri3.py
 ##
 ## @brief Generic tests for problems using 2-D mesh.
 
 import unittest
 import numpy
 
-class TestQuad4(unittest.TestCase):
+class TestTri3(unittest.TestCase):
   """
   Generic tests for problems using 2-D mesh.
   """
@@ -26,9 +26,9 @@ class TestQuad4(unittest.TestCase):
     """
     Setup for tests.
     """
-    self.mesh = {'ncells': 64,
-                 'ncorners': 4,
-                 'nvertices': 81,
+    self.mesh = {'ncells': 124,
+                 'ncorners': 3,
+                 'nvertices': 79,
                  'spaceDim': 3,
                  'tensorSize': 3}
     return
