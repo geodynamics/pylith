@@ -21,18 +21,18 @@ line2 (linear cells)
 
   * axialextension
 
-    - Dirichlet w/initial displacement
+    - Dirichlet w/initial displacement, SimpleDB
 
   * dislocation
 
-    - Dirichlet w/initial displacement
+    - Dirichlet w/initial displacement, SimpleDB
     - Fault slip (1 fault, 1 event)
 
 line3 (quadratic cells)
 
   * axialextension
 
-    - Dirichlet w/initial displacement
+    - Dirichlet w/initial displacement, SimpleDB
 
   * dislocation
 
@@ -43,14 +43,47 @@ line3 (quadratic cells)
 2-D tests
 ----------------------------------------------------------------------
 
-1. axial/shear (DirichletBC)
-2. axial/shear (DirichletBC, parallel)
-3. axial traction (Neumann, DirichletBC)
-4. single fault (static)
-5. single fault (quasi-static w/multiple ruptures)
-6. single fault (dynamic)
-7. two fault (static)
-8. two fault (static, parallel)
+quad4 (linear cells, plane strain)
+
+  * axialdisp
+
+    - Dirichlet w/initial displacement, SimpleDB
+
+  * sheardisp
+
+    - Dirichlet w/initial displacement, SimpleDB
+
+  * axialtract --TODO--
+  * sheartract --TODO--
+ 
+  * dislocation
+
+    - Dirichlet w/initial displacement, UniformDB
+    - Fault slip (1 fault, 1 event), UniformDB
+
+  * dislocation2 --TODO--
+ 
+    - Dirichlet w/initial displacement, UniformDB
+    - Fault slip (2 faults, 1 event), UniformDB
+
+  * dislocationdyn --TODO--
+    [single fault, dynamic]
+
+tri3 (linear cells, plane stress)
+
+  * axialdisp
+
+    - Dirichlet w/initial displacement, SimpleDB
+
+  * sheardisp
+
+    - Dirichlet w/initial displacement, SimpleDB
+
+  * dislocation --TODO--
+    [1 fault, quasi-static w/multiple ruptures, diff slip]
+
+  * dislocation2 --TODO--
+    [2 faults, static, parallel]
 
 ----------------------------------------------------------------------
 3-D tests

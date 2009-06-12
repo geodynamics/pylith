@@ -14,42 +14,40 @@ TESTS = testpylith.py
 
 check_SCRIPTS = testpylith.py
 
-noinst_PYTHON = \
-	TestAxialPlaneStrain.py \
-	TestShearPlaneStrain.py \
-	TestDislocation.py \
-	TestDislocation2.py
+dist_noinst_PYTHON = \
+	TestTri3.py \
+	TestAxialDisp.py \
+	axialdisp_soln.py \
+	axialdisp_gendb.py \
+	TestShearDisp.py \
+	sheardisp_soln.py \
+	sheardisp_gendb.py 
 
-noinst_DATA = \
-	box_tri3_100m.exo \
+#	TestDislocation.py \
+#	dislocation_soln.py
+
+dist_noinst_DATA = \
+	mesh.exo \
 	matprops.spatialdb \
-	axialplanestrain.cfg \
-	shearplanestrain.cfg \
-	dislocation.cfg \
-	dislocation2.cfg \
-	dislocation_slipLL.spatialdb \
-	dislocation_slipRL.spatialdb \
-	dislocation_sliptime.spatialdb
+	axialdisp.cfg \
+	sheardisp.cfg
+
+#	dislocation.cfg
 
 noinst_TMP = \
-	axialplanestrain_t0000000.vtk \
-	axialplanestrain-statevars-elastic_info.vtk \
-	axialplanestrain-statevars-elastic_t0000000.vtk \
-	shearplanestrain_t0000000.vtk \
-	shearplanestrain-statevars-elastic_info.vtk \
-	shearplanestrain-statevars-elastic_t0000000.vtk \
+	axial_disp.spatialdb \
+	axialdisp_t0000000.vtk \
+	axialdisp-elastic_info.vtk \
+	axialdisp-elastic_t0000000.vtk \
+	shear_disp.spatialdb \
+	sheardisp_t0000000.vtk \
+	sheardisp-elastic_info.vtk \
+	sheardisp-elastic_t0000000.vtk \
 	dislocation_t0000000.vtk \
-	dislocation-statevars-elastic_info.vtk \
-	dislocation-statevars-elastic_t0000000.vtk \
+	dislocation-elastic_info.vtk \
+	dislocation-elastic_t0000000.vtk \
 	dislocation-fault_info.vtk \
-	dislocation-fault_t0000000.vtk \
-	dislocation2_t0000000.vtk \
-	dislocation2-statevars-elastic_info.vtk \
-	dislocation2-statevars-elastic_t0000000.vtk \
-	dislocation2-fault-pos_info.vtk \
-	dislocation2-fault-pos_t0000000.vtk \
-	dislocation2-fault-neg_info.vtk \
-	dislocation2-fault-neg_t0000000.vtk
+	dislocation-fault_t0000000.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)
@@ -57,16 +55,15 @@ TESTS_ENVIRONMENT = $(PYTHON)
 
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/tests/2d/tri3
-export-data: $(noinst_PYTHON) $(noinst_DATA)
-	for f in $(noinst_PYTHON) $(noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
+export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
+	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
+
+clean-data:
+	if [ "X$(top_srcdir)" != "X$(top_builddir)" ]; then for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
+
 
 BUILT_SOURCES = export-data
-
-CLEANFILES = \
-	$(export_datadir)/$(noinst_PYTHON) \
-	$(export_datadir)/$(noinst_DATA) \
-	$(export_datadir)/$(noinst_TMP) \
-	*.pyc
-
+clean-local: clean-data
+CLEANFILES = *.pyc
 
 # End of file 

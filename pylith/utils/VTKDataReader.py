@@ -72,7 +72,7 @@ class VTKDataReader(object):
     cellId = cellTypes[0]
     if numpy.sum(cellTypes-cellId) != 0:
       raise ValueError("Expecting cells to all be the same type.")
-    if cellId == 5: # line3
+    if cellId == 5: # tri3
       ncorners = 3
     elif cellId == 3: # line2
       ncorners = 2

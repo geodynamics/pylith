@@ -1,4 +1,4 @@
-#!/usr/bin/env nemesis
+#!/usr/bin/env python
 #
 # ======================================================================
 #
@@ -20,11 +20,11 @@ def suite():
   """
   suite = unittest.TestSuite()
 
-  from TestAxialPlaneStrain import TestAxialPlaneStrain
-  suite.addTest(unittest.makeSuite(TestAxialPlaneStrain))
+  from TestAxialDisp import TestAxialDisp
+  suite.addTest(unittest.makeSuite(TestAxialDisp))
 
-  from TestShearPlaneStrain import TestShearPlaneStrain
-  suite.addTest(unittest.makeSuite(TestShearPlaneStrain))
+  from TestShearDisp import TestShearDisp
+  suite.addTest(unittest.makeSuite(TestShearDisp))
 
   #from TestDislocation import TestDislocation
   #suite.addTest(unittest.makeSuite(TestDislocation))

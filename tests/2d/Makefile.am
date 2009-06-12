@@ -11,7 +11,8 @@
 #
 
 SUBDIRS = \
-	quad4
+	quad4 \
+	tri3
 
 
 # End of file 

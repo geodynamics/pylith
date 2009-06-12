@@ -6,80 +6,64 @@ playback 'geometry.jou'
 # ----------------------------------------------------------------------
 # Set discretization size
 # ----------------------------------------------------------------------
-surface all size 100
+surface all size 1000
 
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
-surface all scheme tridelaunay
+surface all scheme trimesh
 mesh surface all
-
-# ----------------------------------------------------------------------
-# Improve triangle quality with smoothing
-# ----------------------------------------------------------------------
-surface all smooth scheme condition number beta 1.05 cpu 2
-smooth surface all
 
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
-block 1 surface 5 7 9 11 8 10 
+block 1 surface 3 4 5 
 block 1 name "elastic"
 
 # ----------------------------------------------------------------------
 # Create nodeset for faults
 # ----------------------------------------------------------------------
-group "fault_x" add node in curve 13
-group "fault_x" add node in curve 21
-group "fault_x" add node in curve 20
+group "fault_x" add node in curve 5
 nodeset 10 group fault_x
 nodeset 10 name "fault_x"
 
-group "fault_ypos" add node in curve 18
-group "fault_ypos" add node in curve 23
-nodeset 11 group fault_ypos
-nodeset 11 name "fault_ypos"
-
-group "fault_yneg" add node in curve 10
-group "fault_yneg" add node in curve 15
-nodeset 12 group fault_yneg
-nodeset 12 name "fault_yneg"
+group "fault_x2" add node in curve 10
+nodeset 11 group fault_x2
+nodeset 11 name "fault_x2"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +x edge
 # ----------------------------------------------------------------------
-group "edge_xpos" add node in curve 17
-group "edge_xpos" add node in curve 25
-group "edge_xpos" add node in curve 24
+group "edge_xpos" add node in curve 3
 nodeset 20 group edge_xpos
 nodeset 20 name "edge xpos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -x edge
 # ----------------------------------------------------------------------
-group "edge_xneg" add node in curve 14
-group "edge_xneg" add node in curve 22
-group "edge_xneg" add node in curve 19
+group "edge_xneg" add node in curve 1
 nodeset 21 group edge_xneg
 nodeset 21 name "edge xneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +y edge
 # ----------------------------------------------------------------------
-group "edge_ypos" add node in curve 7
-group "edge_ypos" add node in curve 8
+group "edge_ypos" add node in curve  8
+group "edge_ypos" add node in curve 11
+group "edge_ypos" add node in curve 14
 nodeset 22 group edge_ypos
 nodeset 22 name "edge ypos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -y edge
 # ----------------------------------------------------------------------
-group "edge_yneg" add node in curve 6
-group "edge_yneg" add node in curve 9
+group "edge_yneg" add node in curve  9
+group "edge_yneg" add node in curve 12
+group "edge_yneg" add node in curve 13
 nodeset 23 group edge_yneg
 nodeset 23 name "edge yneg"
 
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-export mesh "box_tri3_100m.exo" dimension 2 overwrite
+export mesh "mesh.exo" dimension 2 overwrite
