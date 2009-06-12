@@ -10,25 +10,25 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/materials/TestMaxwellIsotropic3D.py
+## @file unittests/pytests/materials/TestPowerLaw3D.py
 
-## @brief Unit testing of MaxwellIsotropic3D object.
+## @brief Unit testing of PowerLaw3D object.
 
 import unittest
 
-from pylith.materials.MaxwellIsotropic3D import MaxwellIsotropic3D
+from pylith.materials.PowerLaw3D import PowerLaw3D
 
 # ----------------------------------------------------------------------
-class TestMaxwellIsotropic3D(unittest.TestCase):
+class TestPowerLaw3D(unittest.TestCase):
   """
-  Unit testing of MaxwellIsotropic3D object.
+  Unit testing of PowerLaw3D object.
   """
 
   def setUp(self):
     """
     Setup test subject.
     """
-    self.material = MaxwellIsotropic3D()
+    self.material = PowerLaw3D()
     return
   
 
@@ -65,8 +65,12 @@ class TestMaxwellIsotropic3D(unittest.TestCase):
     # Default should be False.
     self.failIf(self.material.needNewJacobian())
 
-    # Changing time step should require new Jacobian.
+    # Should require a new Jacobian even if time step is the same.
     self.material.timeStep(1.0)
+    self.failUnless(self.material.needNewJacobian())
+    self.material.timeStep(2.0)
+    self.failUnless(self.material.needNewJacobian())
+
     self.material.timeStep(2.0)
     self.failUnless(self.material.needNewJacobian())
     return
@@ -76,7 +80,7 @@ class TestMaxwellIsotropic3D(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.materials.MaxwellIsotropic3D import material
+    from pylith.materials.PowerLaw3D import material
     m = material()
     return
 
