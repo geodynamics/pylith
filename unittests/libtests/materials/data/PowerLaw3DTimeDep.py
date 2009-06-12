@@ -377,7 +377,7 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
                            self.dt, effStressT, powerLawExpV, viscosityCoeffV)
 
     # Find the root using Brent's method (from scipy)
-    rootTolerance = 1.0e-12
+    rootTolerance = 1.0e-14
     effStressTpdt = scipy.optimize.brentq(self._effStressFunc, x1, x2,
                                           args=(ae, b, c, d, self.alpha,
                                                 self.dt, effStressT,
