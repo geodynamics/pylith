@@ -506,18 +506,18 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
     const double lambda = properties[p_lambda];
     const double viscosityCoeff = properties[p_viscosityCoeff];
     const double powerLawExp = properties[p_powerLawExponent];
-    const double visStrainT[] = {stateVars[s_viscousStrain],
-				 stateVars[s_viscousStrain + 1],
-				 stateVars[s_viscousStrain + 2],
-				 stateVars[s_viscousStrain + 3],
-				 stateVars[s_viscousStrain + 4],
-				 stateVars[s_viscousStrain + 5]};
-    const double stressT[] = {stateVars[s_stress],
-			      stateVars[s_stress + 1],
-			      stateVars[s_stress + 2],
-			      stateVars[s_stress + 3],
-			      stateVars[s_stress + 4],
-			      stateVars[s_stress + 5]};
+    const double visStrainT[] = {stateVars[s_viscousStrain  ],
+				 stateVars[s_viscousStrain+1],
+				 stateVars[s_viscousStrain+2],
+				 stateVars[s_viscousStrain+3],
+				 stateVars[s_viscousStrain+4],
+				 stateVars[s_viscousStrain+5]};
+    const double stressT[] = {stateVars[s_stress  ],
+			      stateVars[s_stress+1],
+			      stateVars[s_stress+2],
+			      stateVars[s_stress+3],
+			      stateVars[s_stress+4],
+			      stateVars[s_stress+5]};
 
     const double mu2 = 2.0 * mu;
     const double lamPlusMu = lambda + mu;
@@ -533,8 +533,9 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
     const double timeFac = _dt * (1.0 - alpha);
 
     // Initial stress values
-    const double meanStressInitial = (initialStress[0] + initialStress[1] +
-				      initialStress[2])/3.0;
+    const double meanStressInitial = ( initialStress[0] + 
+				       initialStress[1] +
+				       initialStress[2] )/3.0;
     const double devStressInitial[] = { initialStress[0] - meanStressInitial,
 					initialStress[1] - meanStressInitial,
 					initialStress[2] - meanStressInitial,
@@ -545,8 +546,9 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
       _scalarProduct(devStressInitial, devStressInitial);
 
     // Initial strain values
-    const double meanStrainInitial = (initialStrain[0] + initialStrain[1] +
-				      initialStrain[2])/3.0;
+    const double meanStrainInitial = ( initialStrain[0] +
+				       initialStrain[1] +
+				       initialStrain[2] )/3.0;
 
     // Values for current time step
     const double e11 = totalStrain[0];
@@ -568,7 +570,9 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
       _scalarProduct(strainPPTpdt, strainPPTpdt);
 
     // Values for previous time step
-    const double meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
+    const double meanStressT = ( stressT[0] + 
+				 stressT[1] + 
+				 stressT[2] )/3.0;
     const double devStressT[] = { stressT[0] - meanStressT,
 				  stressT[1] - meanStressT,
 				  stressT[2] - meanStressT,
@@ -638,21 +642,21 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
 double
 pylith::materials::PowerLaw3D::effStressFunc(const double effStressTpdt)
 { // effStressFunc
-  double ae = _effStressParams.ae;
-  double b = _effStressParams.b;
-  double c = _effStressParams.c;
-  double d = _effStressParams.d;
-  double alpha = _effStressParams.alpha;
-  double dt = _effStressParams.dt;
-  double effStressT = _effStressParams.effStressT;
-  double powerLawExp = _effStressParams.powerLawExp;
-  double viscosityCoeff = _effStressParams.viscosityCoeff;
-  double factor1 = 1.0-alpha;
-  double effStressTau = factor1 * effStressT + alpha * effStressTpdt;
-  double gammaTau = 0.5 * pow((effStressTau/viscosityCoeff),
+  const double ae = _effStressParams.ae;
+  const double b = _effStressParams.b;
+  const double c = _effStressParams.c;
+  const double d = _effStressParams.d;
+  const double alpha = _effStressParams.alpha;
+  const double dt = _effStressParams.dt;
+  const double effStressT = _effStressParams.effStressT;
+  const double powerLawExp = _effStressParams.powerLawExp;
+  const double viscosityCoeff = _effStressParams.viscosityCoeff;
+  const double factor1 = 1.0-alpha;
+  const double effStressTau = factor1 * effStressT + alpha * effStressTpdt;
+  const double gammaTau = 0.5 * pow((effStressTau/viscosityCoeff),
 			   (powerLawExp - 1.0))/viscosityCoeff;
-  double a = ae + alpha * dt * gammaTau;
-  double y = a * a * effStressTpdt * effStressTpdt - b +
+  const double a = ae + alpha * dt * gammaTau;
+  const double y = a * a * effStressTpdt * effStressTpdt - b +
     c * gammaTau - d * d * gammaTau * gammaTau;
   PetscLogFlops(21);
   return y;
@@ -664,23 +668,23 @@ pylith::materials::PowerLaw3D::effStressFunc(const double effStressTpdt)
 double
 pylith::materials::PowerLaw3D::effStressDerivFunc(const double effStressTpdt)
 { // effStressDFunc
-  double ae = _effStressParams.ae;
-  double c = _effStressParams.c;
-  double d = _effStressParams.d;
-  double alpha = _effStressParams.alpha;
-  double dt = _effStressParams.dt;
-  double effStressT = _effStressParams.effStressT;
-  double powerLawExp = _effStressParams.powerLawExp;
-  double viscosityCoeff = _effStressParams.viscosityCoeff;
-  double factor1 = 1.0-alpha;
-  double effStressTau = factor1 * effStressT + alpha * effStressTpdt;
-  double gammaTau = 0.5 * pow((effStressTau/viscosityCoeff),
+  const double ae = _effStressParams.ae;
+  const double c = _effStressParams.c;
+  const double d = _effStressParams.d;
+  const double alpha = _effStressParams.alpha;
+  const double dt = _effStressParams.dt;
+  const double effStressT = _effStressParams.effStressT;
+  const double powerLawExp = _effStressParams.powerLawExp;
+  const double viscosityCoeff = _effStressParams.viscosityCoeff;
+  const double factor1 = 1.0-alpha;
+  const double effStressTau = factor1 * effStressT + alpha * effStressTpdt;
+  const double gammaTau = 0.5 * pow((effStressTau/viscosityCoeff),
 			   (powerLawExp - 1.0))/viscosityCoeff;
-  double a = ae + alpha * dt * gammaTau;
-  double dGammaTau = 0.5 * alpha * (powerLawExp - 1.0) *
+  const double a = ae + alpha * dt * gammaTau;
+  const double dGammaTau = 0.5 * alpha * (powerLawExp - 1.0) *
     pow((effStressTau/viscosityCoeff), (powerLawExp - 2.0))/
     (viscosityCoeff * viscosityCoeff);
-  double dy = 2.0 * a * a * effStressTpdt + dGammaTau *
+  const double dy = 2.0 * a * a * effStressTpdt + dGammaTau *
     (2.0 * a * alpha * dt * effStressTpdt * effStressTpdt +
      c - 2.0 * d * d * gammaTau);
   PetscLogFlops(36);
@@ -699,23 +703,23 @@ pylith::materials::PowerLaw3D::effStressFuncDerivFunc(double* func,
   double y = *func;
   double dy = *dfunc;
 
-  double ae = _effStressParams.ae;
-  double b = _effStressParams.b;
-  double c = _effStressParams.c;
-  double d = _effStressParams.d;
-  double alpha = _effStressParams.alpha;
-  double dt = _effStressParams.dt;
-  double effStressT = _effStressParams.effStressT;
-  double powerLawExp = _effStressParams.powerLawExp;
-  double viscosityCoeff = _effStressParams.viscosityCoeff;
-  double factor1 = 1.0-alpha;
-  double effStressTau = factor1 * effStressT + alpha * effStressTpdt;
-  double gammaTau = 0.5 * pow((effStressTau/viscosityCoeff),
+  const double ae = _effStressParams.ae;
+  const double b = _effStressParams.b;
+  const double c = _effStressParams.c;
+  const double d = _effStressParams.d;
+  const double alpha = _effStressParams.alpha;
+  const double dt = _effStressParams.dt;
+  const double effStressT = _effStressParams.effStressT;
+  const double powerLawExp = _effStressParams.powerLawExp;
+  const double viscosityCoeff = _effStressParams.viscosityCoeff;
+  const double factor1 = 1.0-alpha;
+  const double effStressTau = factor1 * effStressT + alpha * effStressTpdt;
+  const double gammaTau = 0.5 * pow((effStressTau/viscosityCoeff),
 			   (powerLawExp - 1.0))/viscosityCoeff;
-  double dGammaTau = 0.5 * alpha * (powerLawExp - 1.0) *
+  const double dGammaTau = 0.5 * alpha * (powerLawExp - 1.0) *
     pow((effStressTau/viscosityCoeff), (powerLawExp - 2.0))/
     (viscosityCoeff * viscosityCoeff);
-  double a = ae + alpha * dt * gammaTau;
+  const double a = ae + alpha * dt * gammaTau;
   y = a * a * effStressTpdt * effStressTpdt -
     b +
     c * gammaTau -
@@ -916,18 +920,18 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   const double viscosityCoeff = properties[p_viscosityCoeff];
   const double powerLawExp = properties[p_powerLawExponent];
 
-  const double visStrainT[] = {stateVars[s_viscousStrain],
-			       stateVars[s_viscousStrain + 1],
-			       stateVars[s_viscousStrain + 2],
-			       stateVars[s_viscousStrain + 3],
-			       stateVars[s_viscousStrain + 4],
-			       stateVars[s_viscousStrain + 5]};
-  const double stressT[] = {stateVars[s_stress],
-			    stateVars[s_stress + 1],
-			    stateVars[s_stress + 2],
-			    stateVars[s_stress + 3],
-			    stateVars[s_stress + 4],
-			    stateVars[s_stress + 5]};
+  const double visStrainT[] = {stateVars[s_viscousStrain  ],
+			       stateVars[s_viscousStrain+1],
+			       stateVars[s_viscousStrain+2],
+			       stateVars[s_viscousStrain+3],
+			       stateVars[s_viscousStrain+4],
+			       stateVars[s_viscousStrain+5]};
+  const double stressT[] = {stateVars[s_stress  ],
+			    stateVars[s_stress+1],
+			    stateVars[s_stress+2],
+			    stateVars[s_stress+3],
+			    stateVars[s_stress+4],
+			    stateVars[s_stress+5]};
 
   const double mu2 = 2.0 * mu;
   const double lamPlusMu = lambda + mu;
@@ -944,8 +948,9 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
 
   /// Initial state.
   // Initial stress values.
-  const double meanStressInitial = (initialStress[0] + initialStress[1] +
-				    initialStress[2])/3.0;
+  const double meanStressInitial = ( initialStress[0] + 
+				     initialStress[1] +
+				     initialStress[2] ) / 3.0;
   const double devStressInitial[] = { initialStress[0] - meanStressInitial,
 				      initialStress[1] - meanStressInitial,
 				      initialStress[2] - meanStressInitial,
@@ -956,8 +961,9 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
     _scalarProduct(devStressInitial, devStressInitial);
 
   // Initial strain values.
-  const double meanStrainInitial = (initialStrain[0] + initialStrain[1] +
-				    initialStrain[2])/3.0;
+  const double meanStrainInitial = ( initialStrain[0] + 
+				     initialStrain[1] +
+				     initialStrain[2] ) / 3.0;
   
   /// Values for current time step
   const double e11 = totalStrain[0];
@@ -980,7 +986,7 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
     _scalarProduct(strainPPTpdt, strainPPTpdt);
   
   // Values for previous time step
-  const double meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
+  const double meanStressT = ( stressT[0] + stressT[1] + stressT[2] ) / 3.0;
   const double devStressT[] = { stressT[0] - meanStressT,
 				stressT[1] - meanStressT,
 				stressT[2] - meanStressT,
@@ -1123,20 +1129,20 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
 				         - dStress11dStrain22
 				         - dStress11dStrain33)/3.0;  // C1111
   elasticConsts[ 1] = bulkModulus + (2.0 * dStress11dStrain22
-				         - dStress11dStrain11
-				         - dStress11dStrain33)/3.0;  // C1122
+				         - dStress11dStrain33
+				         - dStress11dStrain11)/3.0;  // C1122
   elasticConsts[ 2] = bulkModulus + (2.0 * dStress11dStrain33
-				         - dStress11dStrain22
-				         - dStress11dStrain33)/3.0;  // C1133
+				         - dStress11dStrain11
+				         - dStress11dStrain22)/3.0;  // C1133
   elasticConsts[ 3] = dStress11dStrain12;  // C1112
   elasticConsts[ 4] = dStress11dStrain23;  // C1123
   elasticConsts[ 5] = dStress11dStrain13;  // C1113
   elasticConsts[ 6] = bulkModulus + (2.0 * dStress22dStrain22
-				         - dStress22dStrain11
-				         - dStress22dStrain33)/3.0;  // C2222
+				         - dStress22dStrain33
+				         - dStress22dStrain11)/3.0;  // C2222
   elasticConsts[ 7] = bulkModulus + (2.0 * dStress22dStrain33
-				         - dStress22dStrain22
-				         - dStress22dStrain33)/3.0;  // C2233
+				         - dStress22dStrain11
+				         - dStress22dStrain22)/3.0;  // C2233
   elasticConsts[ 8] = dStress22dStrain12;  // C2212
   elasticConsts[ 9] = dStress22dStrain23;  // C2223
   elasticConsts[10] = dStress22dStrain13;  // C2213
