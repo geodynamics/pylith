@@ -27,6 +27,7 @@ swig_sources = \
 	ElasticPlaneStress.i \
 	ElasticIsotropic3D.i \
 	MaxwellIsotropic3D.i \
+	GenMaxwellIsotropic3D.i \
 	PowerLaw3D.i
 
 swig_generated = \
