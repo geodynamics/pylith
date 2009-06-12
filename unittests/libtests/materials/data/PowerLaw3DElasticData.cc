@@ -86,7 +86,7 @@ const double pylith::materials::PowerLaw3DElasticData::_dbProperties[] = {
   2.00000000e+03,
   1.20000000e+03,
   2.07846097e+03,
-  1.20000000e+16,
+  1.00000000e+10,
   3.00000000e+00,
 };
 
@@ -126,7 +126,7 @@ const double pylith::materials::PowerLaw3DElasticData::_properties[] = {
   2.00000000e+03,
   2.88000000e+09,
   2.88000000e+09,
-  1.20000000e+16,
+  1.00000000e+10,
   3.00000000e+00,
 };
 
@@ -166,7 +166,7 @@ const double pylith::materials::PowerLaw3DElasticData::_propertiesNondim[] = {
   2.00000000e+00,
   1.28000000e-01,
   1.28000000e-01,
-  4.25063428e+12,
+  3.54219523e+06,
   3.00000000e+00,
 };
 
@@ -218,15 +218,15 @@ const double pylith::materials::PowerLaw3DElasticData::_strain[] = {
 };
 
 const double pylith::materials::PowerLaw3DElasticData::_stress[] = {
- -1.00000000e+03,
-  0.00000000e+00,
-  1.00000000e+03,
+ -2.24790000e+07,
+ -2.24780000e+07,
+ -2.24770000e+07,
  -8.97600000e+06,
  -8.97500000e+06,
  -8.97400000e+06,
- -1.00000000e+03,
-  0.00000000e+00,
-  1.00000000e+03,
+ -2.82900000e+06,
+ -2.82800000e+06,
+ -2.82700000e+06,
  -1.09800000e+06,
  -1.09700000e+06,
  -1.09600000e+06,
@@ -307,7 +307,32 @@ const double pylith::materials::PowerLaw3DElasticData::_initialStrain[] = {
   6.60000000e-04,
 };
 
-const double* pylith::materials::PowerLaw3DElasticData::_stateVarsUpdated = 0;
+const double pylith::materials::PowerLaw3DElasticData::_stateVarsUpdated[] = {
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+ -2.24790000e+07,
+ -2.24780000e+07,
+ -2.24770000e+07,
+ -8.97600000e+06,
+ -8.97500000e+06,
+ -8.97400000e+06,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+ -2.82900000e+06,
+ -2.82800000e+06,
+ -2.82700000e+06,
+ -1.09800000e+06,
+ -1.09700000e+06,
+ -1.09600000e+06,
+};
 
 pylith::materials::PowerLaw3DElasticData::PowerLaw3DElasticData(void)
 { // constructor

@@ -95,7 +95,7 @@ private:
 
   static const double _initialStrain[];
 
-  static const double* _stateVarsUpdated;
+  static const double _stateVarsUpdated[];
 
 };
 

@@ -77,7 +77,7 @@ class PowerLaw3DElastic(ElasticMaterialApp):
     densityB = 2000.0
     vsB = 1200.0
     vpB = vsB*3**0.5
-    viscosityCoeffB = 1.2e16
+    viscosityCoeffB = 1.0e10
     powerLawExponentB = 3.0
     strainB = [4.1e-4, 4.2e-4, 4.3e-4, 4.4e-4, 4.5e-4, 4.6e-4]
     initialStressB = [5.1e4, 5.2e4, 5.3e4, 5.4e4, 5.5e4, 5.6e4]
@@ -150,10 +150,22 @@ class PowerLaw3DElastic(ElasticMaterialApp):
     (self.elasticConsts[1,:], self.stress[1,:]) = \
         self._calcStress(strainB, muB, lambdaB, \
                            initialStressB, initialStrainB)
+
     maxwellTimeA = self._getMaxwellTime(muA, viscosityCoeffA, \
                                         powerLawExponentA, self.stress[0,:])
     maxwellTimeB = self._getMaxwellTime(muB, viscosityCoeffB, \
                                         powerLawExponentB, self.stress[1,:])
+
+    viscousStrainUpdated = numpy.zeros((numLocs, tensorSize),
+                                       dtype=numpy.float64)
+    stressUpdated = self.stress
+    
+    self.stateVarsUpdated = numpy.array( [viscousStrainUpdated[0,:],
+                                          stressUpdated[0,:],
+                                         viscousStrainUpdated[1,:],
+                                          stressUpdated[1,:]],
+                                         dtype=numpy.float64)
+
     self.dtStableImplicit = 0.1*min(maxwellTimeA, maxwellTimeB)
     return
 
@@ -177,7 +189,8 @@ class PowerLaw3DElastic(ElasticMaterialApp):
     power-law exponent.
     """
     meanStress = (stress[0] + stress[1] + stress[2])/3.0
-    devStress = stress
+    devStress = numpy.array(stress, dtype=numpy.float64)
+    
     devStress[0] = stress[0] - meanStress
     devStress[1] = stress[1] - meanStress
     devStress[2] = stress[2] - meanStress

@@ -86,7 +86,7 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
     densityB = 2000.0
     vsB = 1200.0
     vpB = vsB*3**0.5
-    viscosityCoeffB = 1.2e16
+    viscosityCoeffB = 1.0e10
     powerLawExpB = 3.0
     strainB = [4.1e-4, 4.2e-4, 4.3e-4, 4.4e-4, 4.5e-4, 4.6e-4]
     initialStressB = [5.1e4, 5.2e4, 5.3e4, 5.4e4, 5.5e4, 5.6e4]
@@ -167,31 +167,38 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
     self.strain = numpy.array([strainA, strainB],
                                dtype=numpy.float64)
     self.stress = numpy.zeros( (numLocs, tensorSize), dtype=numpy.float64)
+    self.stateVarsUpdated = numpy.zeros( (numLocs, tensorSize + tensorSize),
+                                         dtype=numpy.float64)
     self.elasticConsts = numpy.zeros( (self.numLocs, numElasticConsts),
                                       dtype=numpy.float64)
 
-    (self.elasticConsts[0,:], self.stress[0,:]) = \
+    (self.elasticConsts[0,:], self.stress[0,:], self.stateVarsUpdated[0,:]) = \
                               self._calcStress(strainA, 
                                                muA, lambdaA, viscosityCoeffA,
                                                powerLawExpA,
                                                visStrainA, stressA,
                                                initialStressA, initialStrainA)
-    (self.elasticConsts[1,:], self.stress[1,:]) = \
+    (self.elasticConsts[1,:], self.stress[1,:], self.stateVarsUpdated[1,:]) = \
                               self._calcStress(strainB, 
                                                muB, lambdaB, viscosityCoeffB, 
                                                powerLawExpB,
                                                visStrainB, stressB,
                                                initialStressB, initialStrainB)
 
+    # I need to make sure that the correct stresses are being used to compute
+    # Maxwell times (and stable time step size).
+    # I am assuming right now that we use the state variable values rather than
+    # the current computed stress values.
     maxwellTimeA = self._getMaxwellTime(muA, viscosityCoeffA, \
-                                        powerLawExpA, self.stress[0,:])
+                                        powerLawExpA, stressA)
+
     maxwellTimeB = self._getMaxwellTime(muB, viscosityCoeffB, \
-                                        powerLawExpB, self.stress[1,:])
+                                        powerLawExpB, stressB)
+
     self.dtStableImplicit = 0.1*min(maxwellTimeA, maxwellTimeB)
     return
 
 
-  # def _bracket(self, effStressInitialGuess, *effStressParams):
   def _bracket(self, effStressInitialGuess, ae, b, c, d, alpha, dt, effStressT,
                powerLawExpV, viscosityCoeffV):
     """
@@ -210,10 +217,6 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
       x1 = 500.0
       x2 = 1500.0
 
-    # funcValue1 = self._effStressFunc(x1, effStressParams)
-    # funcValue2 = self._effStressFunc(x2, effStressParams)
-    # funcValue1 = apply(self._effStressFunc, (x1,) + effStressParams)
-    # funcValue2 = apply(self._effStressFunc, (x2,) + effStressParams)
     funcValue1 = self._effStressFunc(x1, ae, b, c, d, alpha, dt,
                        effStressT, powerLawExpV, viscosityCoeffV)
     funcValue2 = self._effStressFunc(x2, ae, b, c, d, alpha, dt,
@@ -229,14 +232,14 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
       if abs(funcValue1) < abs(funcValue2):
         x1 += bracketFactor * (x1 - x2)
         x1 = max(x1, 0.0)
-        # funcValue1 = apply(self._effStressFunc, (x1,) + effStressParams)
+
         funcValue1 = self._effStressFunc(x1, ae, b, c, d, alpha, dt,
                                          effStressT, powerLawExpV,
                                          viscosityCoeffV)
       else:
         x2 += bracketFactor * (x1 - x2)
         x2 = max(x2, 0.0)
-        # funcValue2 = apply(self._effStressFunc, (x2,) + effStressParams)
+
         funcValue2 = self._effStressFunc(x2, ae, b, c, d, alpha, dt,
                                          effStressT, powerLawExpV,
                                          viscosityCoeffV)
@@ -254,7 +257,8 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
     power-law exponent.
     """
     meanStress = (stress[0] + stress[1] + stress[2])/3.0
-    devStress = stress
+    devStress = numpy.array(stress, dtype=numpy.float64)
+    
     devStress[0] = stress[0] - meanStress
     devStress[1] = stress[1] - meanStress
     devStress[2] = stress[2] - meanStress
@@ -289,57 +293,25 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
                            muV, lambdaV, viscosityCoeffV,
                            powerLawExpV, visStrainT, stressT,
                            initialStress, initialStrain):
-  # def _calcStressComponent(self, strainVal, *calcStressCompParams):
     """
     Function to compute a particular stress component as a function of a
     strain component.
     """
-    # strainComp = calcStressCompParams[0]
-    # stressComp = calcStressCompParams[1]
-    # strainTpdt = calcStressCompParams[2]
-    # mu = calcStressCompParams[3]
-    # lambdaV = calcStressCompParams[4]
-    # viscosityCoeffV = calcStressCompParams[5]
-    # powerLawExpV = calcStressCompParams[6]
-    # visStrainT = calcStressCompParams[7]
-    # stressT = calcStressCompParams[8]
-    # initialStress = calcStressCompParams[9]
-    # initialStrain = calcStressCompParams[10]
     strainTpdt[strainComp] = strainVal
-    stressTpdt = self._computeStress(strainTpdt, muV, lambdaV, viscosityCoeffV,
-                                     powerLawExpV, visStrainT, stressT,
-                                     initialStress, initialStrain)
+    stressTpdt, visStrainTpdt = self._computeStress(strainTpdt, muV, lambdaV,
+                                                    viscosityCoeffV,
+                                                    powerLawExpV, visStrainT,
+                                                    stressT,
+                                                    initialStress,
+                                                    initialStrain)
     return stressTpdt[stressComp]
 
 
-  # def _effStressFunc(self, *args):
   def _effStressFunc(self, effStressTpdt, ae, b, c, d, alpha, dt, effStressT,
                      powerLawExpV, viscosityCoeffV):
     """
     Function to compute effective stress function for a given effective stress.
     """
-    # effStressTpdt = args[0]
-    # effStressTuple = args[1]
-    # ae = args[0]
-    # b = args[1]
-    # c = args[2]
-    # d = args[3]
-    # alpha = args[4]
-    # dt = args[5]
-    # effStressT = args[6]
-    # powerLawExpV = args[7]
-    # viscosityCoeffV = args[8]
-    # effStressTpdt = effStressParams[0]
-    # effStressTuple = effStressParams[1]
-    # ae = effStressTuple[0]
-    # b = effStressTuple[1]
-    # c = effStressTuple[2]
-    # d = effStressTuple[3]
-    # alpha = effStressTuple[4]
-    # dt = effStressTuple[5]
-    # effStressT = effStressTuple[6]
-    # powerLawExpV = effStressTuple[7]
-    # viscosityCoeffV = effStressTuple[8]
 
     factor1 = 1.0 - alpha
     effStressTau = factor1 * effStressT + alpha * effStressTpdt
@@ -356,7 +328,8 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
                      powerLawExpV, visStrainT, stressT,
                      initialStress, initialStrain):
     """
-    Function to compute stresses using the effective stress function algorithm.
+    Function to compute stresses and viscous strains using the
+    effective stress function algorithm.
     """
     import scipy.optimize
     
@@ -400,24 +373,20 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
          ae * self._scalarProduct(devStressT, devStressInitial))  * timeFac
     d = timeFac * effStressT
 
-    # Define parameters for effective stress function
-    # effStressParams = (ae, b, c, d, self.alpha, self.dt, effStressT,
-    #                         powerLawExpV, viscosityCoeffV)
-
     # Bracket the root
     effStressInitialGuess = effStressT
-    # x1, x2 = self._bracket(effStressInitialGuess, effStressParams)
+
     x1, x2 = self._bracket(effStressInitialGuess, ae, b, c, d, self.alpha,
                            self.dt, effStressT, powerLawExpV, viscosityCoeffV)
 
     # Find the root using Brent's method (from scipy)
-    # effStressTpdt = scipy.optimize.brentq(self._effStressFunc, x1, x2,
-    #                                       args=effStressParams)
+    rootTolerance = 1.0e-12
     effStressTpdt = scipy.optimize.brentq(self._effStressFunc, x1, x2,
                                           args=(ae, b, c, d, self.alpha,
                                                 self.dt, effStressT,
                                                 powerLawExpV,
-                                                viscosityCoeffV))
+                                                viscosityCoeffV),
+                                          xtol=rootTolerance)
     
     # Compute stresses from the effective stress.
     effStressTau = (1.0 - self.alpha) * effStressT + self.alpha * effStressTpdt
@@ -427,6 +396,7 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
     factor2 = timeFac * gammaTau
     devStressTpdt = 0.0
     stressTpdt = numpy.zeros( (tensorSize), dtype=numpy.float64)
+    visStrainTpdt = numpy.zeros( (tensorSize), dtype=numpy.float64)
 
     for iComp in range(tensorSize):
       devStressTpdt = factor1 * (strainPPTpdt[iComp] - \
@@ -434,15 +404,19 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
                                  ae * devStressInitial[iComp])
       stressTpdt[iComp] = devStressTpdt + diag[iComp] * \
                           (meanStressTpdt + meanStressInitial)
+      devStressTau = (1.0 - self.alpha) * devStressT[iComp] + \
+                     self.alpha * devStressTpdt
+      deltaVisStrain = self.dt * gammaTau * devStressTau
+      visStrainTpdt[iComp] = visStrainT[iComp] + deltaVisStrain
 
-    return stressTpdt
+    return stressTpdt, visStrainTpdt
 
   
   def _calcStress(self, strainV, muV, lambdaV, viscosityCoeffV,
                   powerLawExpV,visStrainV, stressV,
                   initialStressV, initialStrainV):
     """
-    Compute stress and derivative of elasticity matrix.
+    Compute stress, updated state variables and derivative of elasticity matrix.
     This assumes behavior is always viscoelastic.
     """
     import scipy.misc
@@ -454,25 +428,24 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
     initialStress = numpy.array(initialStressV, dtype=numpy.float64)
     initialStrain = numpy.array(initialStrainV, dtype=numpy.float64)
 
-    stressTpdt = self._computeStress(strainTpdt, muV, lambdaV,
-                                     viscosityCoeffV, powerLawExpV,
-                                     visStrainT, stressT,
-                                     initialStress, initialStrain)
+    stressTpdt, visStrainTpdt = self._computeStress(strainTpdt, muV, lambdaV,
+                                                    viscosityCoeffV,
+                                                    powerLawExpV,
+                                                    visStrainT, stressT,
+                                                    initialStress,
+                                                    initialStrain)
+
+    stateVarsUpdated = numpy.array( [visStrainTpdt, stressTpdt],
+                                    dtype=numpy.float64)
 
     # Compute components of tangent constitutive matrix using numerical
     # derivatives.
-    # calcStressCompParamsList = [0, 0, strainTpdt, muV, lambdaV, viscosityCoeffV,
-    #                             powerLawExpV, visStrainT, stressT,
-    #                             initialStress, initialStrain]
-    derivDx = 1.0e-5
-    derivOrder = 5
+    derivDx = 1.0e-8
+    derivOrder = 3
     elasticConstsList = []
 
     for stressComp in range(tensorSize):
       for strainComp in range(stressComp, tensorSize):
-        # calcStressCompParamsList[0] = strainComp
-        # calcStressCompParamsList[1] = stressComp
-        # calcStressCompParamsTuple = tuple(calcStressCompParamsList)
         dStressDStrain = scipy.misc.derivative(self._calcStressComponent,
                                                strainTpdt[strainComp],
                                                dx=derivDx,
@@ -488,7 +461,8 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
 
     elasticConsts = numpy.array(elasticConstsList, dtype=numpy.float64)
 
-    return (elasticConsts, numpy.ravel(stressTpdt))
+    return (elasticConsts, numpy.ravel(stressTpdt),
+            numpy.ravel(stateVarsUpdated))
   
 
 # MAIN /////////////////////////////////////////////////////////////////
