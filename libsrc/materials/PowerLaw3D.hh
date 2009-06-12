@@ -26,9 +26,10 @@
 #if !defined(pylith_materials_powerlaw3d_hh)
 #define pylith_materials_powerlaw3d_hh
 
+// Include directives ---------------------------------------------------
 #include "ElasticMaterial.hh" // ISA ElasticMaterial
 
-/// 3-D, isotropic, linear Maxwell viscoelastic material.
+// Powerlaw3D -----------------------------------------------------------
 class pylith::materials::PowerLaw3D : public ElasticMaterial
 { // class PowerLaw3D
   friend class TestPowerLaw3D; // unit testing

@@ -24,6 +24,7 @@ __all__ = ['ElasticMaterial',
            'Homogeneous',
            'Material',
            'MaxwellIsotropic3D',
+           'PowerLaw3D',
            ]
 
 

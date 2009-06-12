@@ -62,12 +62,12 @@ namespace pylith {
       
       /// State variables.
       const Metadata::ParamDescription stateVars[] = {
-	{ "total_strain", 6, pylith::topology::FieldBase::TENSOR },
-	{ "viscous_strain", 6, pylith::topology::FieldBase::TENSOR },
+	{ "total_strain", tensorSize, pylith::topology::FieldBase::TENSOR },
+	{ "viscous_strain", tensorSize, pylith::topology::FieldBase::TENSOR },
       };
 
       // Values expected in state variables spatial database
-      const int numDBStateVars = 12;
+      const int numDBStateVars = 2*tensorSize;
       const char* dbStateVars[] = {"total-strain-xx",
 				   "total-strain-yy",
 				   "total-strain-zz",
