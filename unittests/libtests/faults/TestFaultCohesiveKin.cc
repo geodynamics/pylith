@@ -870,7 +870,7 @@ pylith::faults::TestFaultCohesiveKin::_initialize(
   iohandler.filename(_data->meshFilename);
   iohandler.read(mesh);
   
-  mesh->debug(true); // DEBUGGING
+  //mesh->debug(true); // DEBUGGING
   
   spatialdata::geocoords::CSCart cs;
   spatialdata::units::Nondimensional normalizer;
