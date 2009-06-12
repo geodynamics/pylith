@@ -30,6 +30,7 @@ testmaterials_SOURCES = \
 	TestElasticPlaneStress.cc \
 	TestElasticIsotropic3D.cc \
 	TestMaxwellIsotropic3D.cc \
+	TestPowerLaw3D.cc \
 	TestEffectiveStress.cc \
 	test_materials.cc
 
@@ -47,6 +48,7 @@ noinst_HEADERS = \
 	TestElasticIsotropic3D.hh \
 	TestGenMaxwellIsotropic3D.hh \
 	TestMaxwellIsotropic3D.hh \
+	TestPowerLaw3D.hh \
 	TestEffectiveStress.hh
 
 # Source files associated with testing data
@@ -59,7 +61,9 @@ testmaterials_SOURCES += \
 	data/ElasticPlaneStressData.cc \
 	data/ElasticIsotropic3DData.cc \
 	data/MaxwellIsotropic3DElasticData.cc \
-	data/MaxwellIsotropic3DTimeDepData.cc
+	data/MaxwellIsotropic3DTimeDepData.cc \
+	data/PowerLaw3DElasticData.cc \
+	data/PowerLaw3DTimeDepData.cc
 
 #	data/GenMaxwellIsotropic3DElasticData.cc \
 #	data/GenMaxwellIsotropic3DTimeDepData.cc 
@@ -76,6 +80,8 @@ noinst_HEADERS += \
 	data/GenMaxwellIsotropic3DTimeDepData.hh \
 	data/MaxwellIsotropic3DElasticData.hh \
 	data/MaxwellIsotropic3DTimeDepData.hh \
+	data/PowerLaw3DElasticData.hh \
+	data/PowerLaw3DTimeDepData.hh \
 	data/header.hh
 
 AM_CPPFLAGS = \
