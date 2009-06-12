@@ -127,7 +127,7 @@ class Fault(PetscComponent, ModuleFault):
     Verify compatibility of configuration.
     """
     logEvent = "%sverify" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     faultDim = self.mesh.dimension() - 1
     if faultDim != self.faultQuadrature.cell.cellDim:
@@ -139,7 +139,7 @@ class Fault(PetscComponent, ModuleFault):
     if None != self.output:
       self.output.verifyConfiguration(self.mesh)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
   
 
@@ -148,7 +148,7 @@ class Fault(PetscComponent, ModuleFault):
     Initialize fault.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     self.faultQuadrature.initialize()
     ModuleFault.initialize(self, 
@@ -159,7 +159,7 @@ class Fault(PetscComponent, ModuleFault):
       self.output.writeInfo()
       self.output.open(totalTime, numTimeSteps)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -168,12 +168,12 @@ class Fault(PetscComponent, ModuleFault):
     Hook for doing stuff after advancing time step.
     """
     logEvent = "%spoststep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     self._info.log("Writing fault data.")
     self.output.writeData(t+dt, fields)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 

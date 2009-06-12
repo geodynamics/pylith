@@ -82,13 +82,13 @@ class Integrator(object):
     Do initialization.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     self.normalizer(normalizer)
     if None != self.gravityField:
       self.gravityField(self.gravityField)
     
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -97,11 +97,11 @@ class Integrator(object):
     Hook for doing stuff after advancing time step.
     """
     logEvent = "%spoststep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     self.updateStateVars(t, fields)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -133,7 +133,7 @@ class Integrator(object):
     for event in events:
       logger.registerEvent("%s%s" % (self._loggingPrefix, event))
 
-    self._logger = logger
+    self._eventLogger = logger
     return
   
 

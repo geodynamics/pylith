@@ -43,6 +43,14 @@ class PetscComponent(Component):
         component.compilePerformanceLog()
         if hasattr(component, 'perfLogger'):
           self.perfLogger.join(component.perfLogger)
+
+      # Facility arrays are not PetscComponents but have components().
+      elif hasattr(component, "components"):
+        for subcomponent in component.components():
+          if isinstance(subcomponent, PetscComponent):
+            subcomponent.compilePerformanceLog()
+            if hasattr(subcomponent, 'perfLogger'):
+              self.perfLogger.join(subcomponent.perfLogger)
     return
 
 
@@ -53,6 +61,13 @@ class PetscComponent(Component):
     for component in self.components():
       if isinstance(component, PetscComponent):
         component.cleanup()
+
+      # Facility arrays are not PetscComponents but have components().
+      elif hasattr(component, "components"):
+        for subcomponent in self.components():
+          if isinstance(subcomponent, PetscComponent):
+            subcomponent.cleanup()
+
     self._cleanup()
     return
 

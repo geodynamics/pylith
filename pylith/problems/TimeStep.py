@@ -48,9 +48,9 @@ class TimeStep(PetscComponent):
     """
     self._setupLogging()
     logEvent = "%spreinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
     
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -59,9 +59,9 @@ class TimeStep(PetscComponent):
     Verify compatibility of configuration.
     """
     logEvent = "%sverify" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
   
 
@@ -70,14 +70,14 @@ class TimeStep(PetscComponent):
     Initialize time step algorithm.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     # Nondimensionalize time scales
     timeScale = normalizer.timeScale()
     self.totalTimeN = normalizer.nondimensionalize(self.totalTime, timeScale)
     self.dtN = normalizer.nondimensionalize(self.dt, timeScale)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -132,7 +132,7 @@ class TimeStep(PetscComponent):
     for event in events:
       logger.registerEvent("%s%s" % (self._loggingPrefix, event))
 
-    self._logger = logger
+    self._eventLogger = logger
     return
   
 

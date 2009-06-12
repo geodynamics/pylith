@@ -101,7 +101,7 @@ class MeshRefiner(PetscComponent):
     for event in events:
       logger.registerEvent("%s%s" % (self._loggingPrefix, event))
 
-    self._logger = logger
+    self._eventLogger = logger
     return
   
 

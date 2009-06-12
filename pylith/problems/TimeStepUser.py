@@ -105,7 +105,7 @@ class TimeStepUser(TimeStep):
     Initialize time step algorithm.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     TimeStep.initialize(self, normalizer)
 
@@ -124,7 +124,7 @@ class TimeStepUser(TimeStep):
     # Set current time step
     self.dtN = self.steps[self.index]
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 

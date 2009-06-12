@@ -70,7 +70,7 @@ class Distributor(PetscComponent, ModuleDistributor):
     """
     self._setupLogging()
     logEvent = "%sdistribute" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     from pylith.topology.Mesh import Mesh
     newMesh = Mesh(mesh.dimension())
@@ -80,7 +80,7 @@ class Distributor(PetscComponent, ModuleDistributor):
       self.dataWriter.initialize(normalizer)
       ModuleDistributor.write(self.dataWriter, newMesh)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return newMesh
 
 
@@ -110,7 +110,7 @@ class Distributor(PetscComponent, ModuleDistributor):
     for event in events:
       logger.registerEvent("%s%s" % (self._loggingPrefix, event))
 
-    self._logger = logger
+    self._eventLogger = logger
     return
   
 

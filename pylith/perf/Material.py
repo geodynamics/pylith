@@ -28,6 +28,7 @@ class Material(Memory):
     self.ncells = numCells
     return
 
+
   def tabulate(self, memDict):
     """
     Tabulate memory use.

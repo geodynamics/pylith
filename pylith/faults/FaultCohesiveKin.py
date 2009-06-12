@@ -124,7 +124,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
     Verify compatibility of configuration.
     """
     logEvent = "%sverify" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     FaultCohesive.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
@@ -133,7 +133,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
     for eqsrc in self.eqsrcs.components():
       eqsrc.verifyConfiguration()
     
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -142,7 +142,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
     Initialize cohesive elements.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
     self._info.log("Initializing fault '%s'." % self.label())
 
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
@@ -151,7 +151,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
       eqsrc.initialize()
     FaultCohesive.initialize(self, totalTime, numTimeSteps, normalizer)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -160,12 +160,12 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
     Hook for doing stuff after advancing time step.
     """
     logEvent = "%spoststep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     Integrator.poststep(self, t, dt, totalTime, fields)
     FaultCohesive.poststep(self, t, dt, totalTime, fields)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 

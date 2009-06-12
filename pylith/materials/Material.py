@@ -82,6 +82,12 @@ class Material(PetscComponent):
     quadrature.meta['tip'] = "Quadrature object for numerical integration."
 
 
+    from pylith.perf.MemoryLogger import MemoryLogger
+    perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
+                                         factory=MemoryLogger)
+    perfLogger.meta['tip'] = "Performance and memory logging."
+
+  
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="material"):
@@ -111,7 +117,7 @@ class Material(PetscComponent):
     Verify compatibility of configuration.
     """
     logEvent = "%sverify" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     if self.quadrature.cellDim != self.mesh.dimension() or \
        self.quadrature.spaceDim != self.mesh.coordsys.spaceDim():
@@ -125,7 +131,7 @@ class Material(PetscComponent):
                self.quadrature.cellDim, self.quadrature.spaceDim,
                self.mesh.dimension(), self.mesh.coordsys().spaceDim())
     
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
   
 
@@ -134,6 +140,14 @@ class Material(PetscComponent):
     Get mesh associated with data fields.
     """
     return (self.mesh, "material-id", self.id())
+
+
+  def modelMemoryUse(self):
+    """
+    Model allocated memory.
+    """
+    self.perfLogger.logMaterial('Materials', self)
+    return
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -151,6 +165,7 @@ class Material(PetscComponent):
       self.dbInitialState(self.inventory.dbInitialState)
 
     self.quadrature = self.inventory.quadrature
+    self.perfLogger = self.inventory.perfLogger
     return
 
   
@@ -179,7 +194,7 @@ class Material(PetscComponent):
     for event in events:
       logger.registerEvent("%s%s" % (self._loggingPrefix, event))
 
-    self._logger = logger
+    self._eventLogger = logger
     return
   
 

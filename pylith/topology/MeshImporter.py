@@ -83,7 +83,7 @@ class MeshImporter(MeshGenerator):
 
     self._setupLogging()
     logEvent = "%screate" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)    
+    self._eventLogger.eventBegin(logEvent)    
 
     mesh = self.reader.read(normalizer, self.debug, self.interpolate)
     if self.debug:
@@ -105,7 +105,7 @@ class MeshImporter(MeshGenerator):
     # Nondimensionalize mesh (coordinates of vertices).
     mesh.nondimensionalize(normalizer)
 
-    self._logger.eventEnd(logEvent)    
+    self._eventLogger.eventEnd(logEvent)    
     return mesh
 
 

@@ -29,6 +29,7 @@ class Field(Memory):
     self.chartSize = chartSize
     return
 
+
   def tabulate(self, memDict):
     """
     Tabulate memory use.
@@ -36,8 +37,10 @@ class Field(Memory):
     # Here we have data + atlas + bc
     if not self.label in memDict:
       memDict[self.label] = 0
-    memDict[self.label] += (self.sizeDouble * self.size) + (2 * self.sizeInt * self.chartSize) + (2 * self.sizeInt * self.chartSize)
+    memDict[self.label] += (self.sizeDouble * self.size) + \
+        (2 * self.sizeInt * self.chartSize) + (2 * self.sizeInt * self.chartSize)
     return
+
 
 if __name__ == '__main__':
   print 'Memory:',Material('rock', 35).tabulate()

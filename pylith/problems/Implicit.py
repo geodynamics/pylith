@@ -88,13 +88,15 @@ class Implicit(Formulation):
     """
     Formulation.initialize(self, dimension, normalizer)
 
+    logEvent = "%sinit" % self._loggingPrefix
+    self._eventLogger.eventBegin(logEvent)
+    from pylith.utils.petsc import MemoryLogger
+    memoryLogger = MemoryLogger.singleton()
+    memoryLogger.setDebug(0)
+    memoryLogger.stagePush("Problem")
+
     # Allocate other fields, reusing layout from dispIncr
     self._info.log("Creating other fields.")
-    self._info.log("Creating solution field.")
-    from pylith.utils.petsc import MemoryLogger
-    logger = MemoryLogger.singleton()
-    logger.setDebug(0)
-    logger.stagePush("Problem")
     self.fields.copyLayout("dispIncr(t->t+dt)")
 
     # Setup fields and set to zero
@@ -104,7 +106,7 @@ class Implicit(Formulation):
     residual.zero()
     residual.createVector()
     self._debug.log(resourceUsageString())
-    logger.stagePop()
+    memoryLogger.stagePop()
 
     # Allocates memory for nonzero pattern and Jacobian
     self._info.log("Creating Jacobian matrix.")
@@ -113,7 +115,7 @@ class Implicit(Formulation):
     self.jacobian.zero() # TEMPORARY, to get correct memory usage
     self._debug.log(resourceUsageString())
 
-    logger.stagePush("Problem")
+    memoryLogger.stagePush("Problem")
     self._info.log("Initializing solver.")
     self.solver.initialize(self.fields, self.jacobian, self)
     self._debug.log(resourceUsageString())
@@ -125,8 +127,9 @@ class Implicit(Formulation):
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.useSolnIncr(False)
 
-    logger.stagePop()
-    logger.setDebug(0)
+    memoryLogger.stagePop()
+    memoryLogger.setDebug(0)
+    self._modelMemoryUse()
     return
 
 
@@ -186,9 +189,9 @@ class Implicit(Formulation):
 
     self._info.log("Solving equations.")
     residual = self.fields.get("residual")
-    self._logger.stagePush("Solve")
+    self._eventLogger.stagePush("Solve")
     self.solver.solve(dispIncr, self.jacobian, residual)
-    self._logger.stagePop()
+    self._eventLogger.stagePop()
 
     return
 
@@ -214,7 +217,6 @@ class Implicit(Formulation):
     Cleanup after time stepping.
     """
     Formulation.finalize(self)
-    self.perfLogger.logJacobian('Jacobian', 'dummy')
     return
 
 

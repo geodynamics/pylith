@@ -67,12 +67,12 @@ class IntegratorElasticity(Integrator):
     Verify compatibility of configuration.
     """
     logEvent = "%sverify" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     Integrator.verifyConfiguration(self)
     self.output.verifyConfiguration(self.mesh)
 
-    self._logger.eventEnd(logEvent)    
+    self._eventLogger.eventEnd(logEvent)    
     return
 
 
@@ -81,14 +81,14 @@ class IntegratorElasticity(Integrator):
     Initialize material properties.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     self._info.log("Initializing integrator for material '%s'." % \
                    self.materialObj.label)
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
     self.materialObj.normalizer(normalizer)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
   
   
@@ -97,14 +97,14 @@ class IntegratorElasticity(Integrator):
     Hook for doing stuff after advancing time step.
     """
     logEvent = "%spoststep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     Integrator.poststep(self, t, dt, totalTime, fields)
 
     self._info.log("Writing material data.")
     self.output.writeData(t+dt, fields)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -133,6 +133,14 @@ class IntegratorElasticity(Integrator):
     self.output.initialize(normalizer, self.materialObj.quadrature)
     self.output.writeInfo()
     self.output.open(totalTime, numTimeSteps)
+    return
+
+
+  def _modelMemoryUse(self):
+    """
+    Model allocated memory.
+    """
+    self.materialObj.modelMemoryUse()
     return
 
 

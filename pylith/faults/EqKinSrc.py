@@ -80,11 +80,11 @@ class EqKinSrc(PetscComponent, ModuleEqKinSrc):
     Verify compatibility of configuration.
     """
     logEvent = "%sverify" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     self.slipfn.verifyConfiguration()
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -93,11 +93,11 @@ class EqKinSrc(PetscComponent, ModuleEqKinSrc):
     Initialize.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     self.slipfn.initialize()
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -138,7 +138,7 @@ class EqKinSrc(PetscComponent, ModuleEqKinSrc):
     for event in events:
       logger.registerEvent("%s%s" % (self._loggingPrefix, event))
 
-    self._logger = logger
+    self._eventLogger = logger
     return
   
 

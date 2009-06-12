@@ -89,14 +89,14 @@ class MeshGenerator(PetscComponent):
     Adjust topology for interface implementation.
     """
     logEvent = "%sadjTopo" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
     
     if not interfaces is None:
       for interface in interfaces:
         self._info.log("Adjusting topology for fault '%s'." % interface.label)
         interface.adjustTopology(mesh)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
   
 
@@ -117,7 +117,7 @@ class MeshGenerator(PetscComponent):
     for event in events:
       logger.registerEvent("%s%s" % (self._loggingPrefix, event))
 
-    self._logger = logger
+    self._eventLogger = logger
     return
   
 

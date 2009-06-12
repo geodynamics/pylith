@@ -44,6 +44,7 @@ class Logger(PetscComponent):
     verbose = pyre.inventory.bool("verbose", default=False)
     verbose.meta['tip'] = "Print information to the screen."
 
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="perf_logger"):
@@ -53,12 +54,14 @@ class Logger(PetscComponent):
     PetscComponent.__init__(self, name, facility="perf_logger")
     return
 
+
   def join(self, logger):
     """
     Incorporate information from another logger.
     """
     raise NotImplementedError, "join() not implemented."
     return
+
 
   def logMesh(self, stage, mesh):
     """
@@ -78,13 +81,6 @@ class Logger(PetscComponent):
     self.verbose = self.inventory.verbose
     return
 
-
-  def _setupLogging(self):
-    """
-    Setup event logging.
-    """
-    return
-  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

@@ -107,6 +107,7 @@ class Formulation(PetscComponent, ModuleFormulation):
                                          factory=MemoryLogger)
     perfLogger.meta['tip'] = "Performance and memory logging."
 
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="formulation"):
@@ -131,7 +132,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     """
     self._setupLogging()
     logEvent = "%spreinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     self.timeStep.preinitialize()
     
@@ -149,7 +150,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     for output in self.output.components():
       output.preinitialize()
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -158,7 +159,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     Verify compatibility of configuration.
     """
     logEvent = "%sverify" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     self.timeStep.verifyConfiguration()
 
@@ -169,7 +170,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     for output in self.output.components():
       output.verifyConfiguration(self.mesh)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
   
 
@@ -178,7 +179,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     Create integrators for each element family.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     self.timeStep.initialize(normalizer)
 
@@ -217,9 +218,9 @@ class Formulation(PetscComponent, ModuleFormulation):
     # Setup fields
     self._info.log("Creating solution field.")
     from pylith.utils.petsc import MemoryLogger
-    logger = MemoryLogger.singleton()
-    logger.setDebug(0)
-    logger.stagePush("Problem")
+    memoryLogger = MemoryLogger.singleton()
+    memoryLogger.setDebug(0)
+    memoryLogger.stagePush("Problem")
     self.fields.add("dispIncr(t->t+dt)", "displacement_increment")
     self.fields.add("disp(t)", "displacement")
     self.fields.add("residual", "residual")
@@ -239,13 +240,13 @@ class Formulation(PetscComponent, ModuleFormulation):
     solution.allocate()
     for constraint in self.constraints:
       constraint.setConstraints(solution)
-    logger.stagePop()
+    memoryLogger.stagePop()
 
     # This creates a global order
     solution.createVector()
     solution.createScatter()
 
-    logger.stagePush("Problem")
+    memoryLogger.stagePush("Problem")
     dispT = self.fields.get("disp(t)")
     dispT.vectorFieldType(dispT.VECTOR)
     dispT.scale(lengthScale.value)
@@ -254,11 +255,11 @@ class Formulation(PetscComponent, ModuleFormulation):
     residual.vectorFieldType(residual.VECTOR)
     residual.scale(lengthScale.value)
 
-    logger.stagePop()
-    logger.setDebug(0)
+    memoryLogger.stagePop()
+    memoryLogger.setDebug(0)
     self._debug.log(resourceUsageString())
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -281,12 +282,12 @@ class Formulation(PetscComponent, ModuleFormulation):
     Get stable time step for advancing forward in time.
     """
     logEvent = "%stimestep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     dt = self.timeStep.timeStep(self.mesh,
                                 self.integratorsMesh + self.integratorsSubMesh)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return dt
   
 
@@ -295,9 +296,9 @@ class Formulation(PetscComponent, ModuleFormulation):
     Hook for doing stuff before advancing time step.
     """
     logEvent = "%sprestep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -306,9 +307,9 @@ class Formulation(PetscComponent, ModuleFormulation):
     Advance to next time step.
     """
     logEvent = "%sstep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -317,7 +318,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     Hook for doing stuff after advancing time step.
     """
     logEvent = "%spoststep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     totalTime = self.timeStep.totalTime
 
@@ -329,7 +330,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     for constraint in self.constraints:
       constraint.poststep(t, dt, totalTime, self.fields)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -338,12 +339,13 @@ class Formulation(PetscComponent, ModuleFormulation):
     Cleanup after time stepping.
     """
     logEvent = "%sfinalize" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     for name in self.fields.fieldNames():
       field = self.fields.get(name)
       self.perfLogger.logField('Problem', field)
-    self.perfLogger.logGlobalOrder('GlobalOrder', 'VectorOrder', self.fields.get('residual'))
+    self.perfLogger.logGlobalOrder('GlobalOrder', 'VectorOrder',
+                                   self.fields.get('residual'))
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
       self.perfLogger.logQuadrature('Quadrature', integrator.quadrature())
 
@@ -362,7 +364,7 @@ class Formulation(PetscComponent, ModuleFormulation):
       output.close()
     self._debug.log(resourceUsageString())
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
   
 
@@ -475,12 +477,12 @@ class Formulation(PetscComponent, ModuleFormulation):
     """
     self._debug.log(resourceUsageString())
     self._info.log("Integrating Jacobian operator.")
-    self._logger.stagePush("Reform Jacobian")
+    self._eventLogger.stagePush("Reform Jacobian")
 
     self.updateSettings(self.jacobian, self.fields, t, dt)
     self.reformJacobian()
 
-    self._logger.stagePop()
+    self._eventLogger.stagePop()
 
     if self.viewJacobian:
       self.jacobianViewer.write(self.jacobian, t)
@@ -494,12 +496,12 @@ class Formulation(PetscComponent, ModuleFormulation):
     Reform residual vector for operator.
     """
     self._info.log("Integrating residual term in operator.")
-    self._logger.stagePush("Reform Residual")
+    self._eventLogger.stagePush("Reform Residual")
 
     self.updateSettings(self.jacobian, self.fields, t, dt)
     self.reformResidual()
 
-    self._logger.stagePop()
+    self._eventLogger.stagePop()
     self._debug.log(resourceUsageString())
     return
 
@@ -533,9 +535,22 @@ class Formulation(PetscComponent, ModuleFormulation):
     for stage in stages:
       logger.registerStage(stage)
 
-    self._logger = logger
+    self._eventLogger = logger
     return
-  
+
+
+  def _modelMemoryUse(self):
+    """
+    Model memory allocation.
+    """
+    self.perfLogger.logFields('Problem', self.fields)
+    self.perfLogger.logJacobian('Jacobian', 'dummy')
+    self.perfLogger.logGlobalOrder('GlobalOrder', 'VectorOrder',
+                                   self.fields.get('residual'))
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+      self.perfLogger.logQuadrature('Quadrature', integrator.quadrature())
+    return
+
 
   def _cleanup(self):
     """

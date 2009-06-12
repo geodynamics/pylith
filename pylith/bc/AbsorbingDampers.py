@@ -89,7 +89,7 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
     Verify compatibility of configuration.
     """
     logEvent = "%sverify" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     BoundaryCondition.verifyConfiguration(self, self.mesh)
     Integrator.verifyConfiguration(self)
@@ -102,7 +102,7 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
                self.label, self.mesh.dimension()-1)    
     ModuleAbsorbingDampers.verifyConfiguration(self, self.mesh)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
   
 
@@ -111,12 +111,12 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
     Initialize AbsorbingDampers boundary condition.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)    
     BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
   
 

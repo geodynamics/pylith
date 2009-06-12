@@ -192,11 +192,6 @@ class Problem(PetscComponent):
     raise NotImplementedError, "initialize() not implemented."
     return
 
-  def logMaterials(self):
-    for material in self.materials.components():
-      self.perfLogger.logMaterial('Materials', material)
-    return
-
   def run(self, app):
     """
     Solve the problem.
@@ -253,7 +248,7 @@ class Problem(PetscComponent):
     logger.className("Problem")
     logger.initialize()
 
-    self._logger = logger
+    self._eventLogger = logger
     return
   
 

@@ -37,7 +37,7 @@ class MemoryLogger(Logger):
     ## Python object for managing Problem facilities and properties.
     ##
     ## \b Properties
-    ## @li \b dummy Nothing.
+    ## @li \b include_dealloc Subtract deallocate memory when reporting.
 
     import pyre.inventory
 
@@ -47,7 +47,7 @@ class MemoryLogger(Logger):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="perf_logger"):
+  def __init__(self, name="memory_logger"):
     """
     Constructor.
     """
@@ -111,6 +111,17 @@ class MemoryLogger(Logger):
     ##self.logField('Field', quadrature.jacobianPrecomp())
     ##self.logField('Field', quadrature.jacobianDetPrecomp())
     ##self.logField('Field', quadrature.basisDerivPrecomp())
+    return
+
+  
+  def logFields(self, stage, fields):
+    """
+    Log fields to determine memory from our model.
+    """
+    names = fields.fieldNames()
+    for name in names:
+      field = fields.get(name)
+      self.logField(stage, field)
     return
 
 
@@ -183,6 +194,7 @@ class MemoryLogger(Logger):
     return '%s%-30s %8d bytes (%.3f MB)' % \
         (self.prefix(indent), name+' ('+source+'):', mem, mem / self.megabyte)
 
+
   def processMemDict(self, memDict, indent = 0, namePrefix = '', 
                      includeDealloc = True):
     from pylith.utils.petsc import MemoryLogger
@@ -229,6 +241,7 @@ class MemoryLogger(Logger):
                       (self.prefix(indent), total))
     return output, total, codeTotal
 
+
   def show(self):
     """
     Print memory usage.
@@ -247,6 +260,7 @@ class MemoryLogger(Logger):
     print '\n'.join(output)
     return
 
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
@@ -257,13 +271,6 @@ class MemoryLogger(Logger):
     self.includeDealloc = self.inventory.includeDealloc
     return
 
-
-  def _setupLogging(self):
-    """
-    Setup event logging.
-    """
-    return
-  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
