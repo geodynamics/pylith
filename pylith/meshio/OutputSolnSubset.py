@@ -95,12 +95,12 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
     Initialize output manager.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)    
+    self._eventLogger.eventBegin(logEvent)    
 
     self.submesh = self.subdomainMesh(mesh)
     OutputManager.initialize(self, normalizer)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 

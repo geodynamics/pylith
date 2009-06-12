@@ -90,12 +90,12 @@ class DirichletBoundary(DirichletBC, ModuleDirichletBoundary):
     Verify compatibility of configuration.
     """
     logEvent = "%sverify" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     DirichletBC.verifyConfiguration(self)
     self.output.verifyConfiguration(self.mesh)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -104,14 +104,14 @@ class DirichletBoundary(DirichletBC, ModuleDirichletBoundary):
     Initialize DirichletBoundary boundary condition.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     DirichletBC.initialize(self, totalTime, numTimeSteps, normalizer)
 
     self.output.initialize(normalizer)
     self.output.writeInfo()
 
-    self._logger.eventEnd(logEvent)    
+    self._eventLogger.eventEnd(logEvent)    
     return
   
 

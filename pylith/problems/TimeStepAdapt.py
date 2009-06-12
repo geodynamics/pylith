@@ -88,7 +88,7 @@ class TimeStepAdapt(TimeStep):
     Initialize time step algorithm.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     TimeStep.initialize(self, normalizer)
 
@@ -96,7 +96,7 @@ class TimeStepAdapt(TimeStep):
     timeScale = normalizer.timeScale()
     self.maxDtN = normalizer.nondimensionalize(self.maxDt, timeScale)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 

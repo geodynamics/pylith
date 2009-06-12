@@ -80,7 +80,7 @@ class PyLithApp(PetscApplication):
     self._setupLogging()
 
     # Create mesh (adjust to account for interfaces (faults) if necessary)
-    self._logger.stagePush("Meshing")
+    self._eventLogger.stagePush("Meshing")
     interfaces = None
     if "interfaces" in dir(self.problem):
       interfaces = self.problem.interfaces.components()
@@ -89,10 +89,10 @@ class PyLithApp(PetscApplication):
     del interfaces
     del self.mesher
     self._debug.log(resourceUsageString())
-    self._logger.stagePop()
+    self._eventLogger.stagePop()
 
     # Setup problem, verify configuration, and then initialize
-    self._logger.stagePush("Setup")
+    self._eventLogger.stagePush("Setup")
     self.problem.preinitialize(mesh)
     self._debug.log(resourceUsageString())
 
@@ -101,16 +101,16 @@ class PyLithApp(PetscApplication):
     self.problem.initialize()
     self._debug.log(resourceUsageString())
 
-    self._logger.stagePop()
+    self._eventLogger.stagePop()
 
     # Run problem
     self.problem.run(self)
     self._debug.log(resourceUsageString())
 
     # Cleanup
-    self._logger.stagePush("Finalize")
+    self._eventLogger.stagePush("Finalize")
     self.problem.finalize()
-    self._logger.stagePop()
+    self._eventLogger.stagePop()
 
     del mesh
     del self.problem
@@ -144,7 +144,7 @@ class PyLithApp(PetscApplication):
     logger.className("PyLith")
     logger.initialize()
 
-    self._logger = logger
+    self._eventLogger = logger
     return
   
 

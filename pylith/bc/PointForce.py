@@ -59,11 +59,11 @@ class PointForce(BoundaryCondition,
     Verify compatibility of configuration.
     """
     logEvent = "%sverify" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     BoundaryCondition.verifyConfiguration(self, self.mesh)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -72,12 +72,12 @@ class PointForce(BoundaryCondition,
     Initialize PointForce boundary condition.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
     BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 
-    self._logger.eventEnd(logEvent)    
+    self._eventLogger.eventEnd(logEvent)    
     return
   
 

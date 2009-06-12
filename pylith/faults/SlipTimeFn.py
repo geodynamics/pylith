@@ -50,9 +50,9 @@ class SlipTimeFn(PetscComponent):
     Verify compatibility of configuration.
     """
     logEvent = "%sverify" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -61,9 +61,9 @@ class SlipTimeFn(PetscComponent):
     Initialize.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -94,7 +94,7 @@ class SlipTimeFn(PetscComponent):
     for event in events:
       logger.registerEvent("%s%s" % (self._loggingPrefix, event))
 
-    self._logger = logger
+    self._eventLogger = logger
     return
   
 

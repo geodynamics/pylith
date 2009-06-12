@@ -101,7 +101,7 @@ class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
     Verify compatibility of configuration.
     """
     logEvent = "%sverify" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     BoundaryCondition.verifyConfiguration(self, self.mesh)
     Integrator.verifyConfiguration(self)
@@ -115,7 +115,7 @@ class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
     self.output.verifyConfiguration(self.mesh)
     ModuleNeumann.verifyConfiguration(self, self.mesh)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
   
 
@@ -124,7 +124,7 @@ class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
     Initialize Neumann boundary condition.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
     
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
     BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
@@ -132,7 +132,7 @@ class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
     self.output.initialize(normalizer, self.bcQuadrature)
     self.output.writeInfo()
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
   
 

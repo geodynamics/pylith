@@ -28,6 +28,7 @@ class GlobalOrder(Memory):
     self.chartSize = chartSize
     return
 
+
   def tabulate(self, memDict):
     """
     Tabulate memory use.
@@ -35,7 +36,8 @@ class GlobalOrder(Memory):
     # Here we have a map<int --> (int,int)> + set<int>
     if not self.label in memDict:
       memDict[self.label] = 0
-    memDict[self.label] += self.chartSize*(3 * self.sizeInt + self.sizeMapEntry) + self.chartSize*(self.sizeSetEntry+self.sizeInt)
+    memDict[self.label] += self.chartSize*(3 * self.sizeInt + self.sizeMapEntry) + \
+        self.chartSize*(self.sizeSetEntry+self.sizeInt)
     return
 
 

@@ -45,6 +45,11 @@ class DirichletBC(BoundaryCondition,
                                       family="spatial_database")
   dbInitial.meta['tip'] = "Database of parameters for initial values."
   
+  from pylith.perf.MemoryLogger import MemoryLogger
+  perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
+                                       factory=MemoryLogger)
+  perfLogger.meta['tip'] = "Performance and memory logging."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -72,11 +77,11 @@ class DirichletBC(BoundaryCondition,
     Verify compatibility of configuration.
     """
     logEvent = "%sverify" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     BoundaryCondition.verifyConfiguration(self, self.mesh)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -85,12 +90,19 @@ class DirichletBC(BoundaryCondition,
     Initialize DirichletBC boundary condition.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
+
+    from pylith.utils.petsc import MemoryLogger
+    #memoryLogger = MemoryLogger.singleton()
+    #memoryLogger.setDebug(0)
+    #memoryLogger.stagePush("BoundaryConditions")
 
     self.normalizer(normalizer)
     BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 
-    self._logger.eventEnd(logEvent)    
+    #memoryLogger.stagePop()    
+    self._modelMemoryUse()
+    self._eventLogger.eventEnd(logEvent)    
     return
   
 
@@ -112,6 +124,14 @@ class DirichletBC(BoundaryCondition,
     ModuleDirichletBC.__init__(self)
     return
   
+  
+  def _modelMemoryUse(self):
+    """
+    Model memory allocation.
+    """
+    #self.perfLogger.logFields("BoundaryConditions", self.parameterFields())
+    return
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

@@ -63,11 +63,17 @@ class Explicit(Formulation):
     Initialize problem for explicit time integration.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
     
     Formulation.initialize(self, dimension, normalizer)
 
-    self._info.log("Creating other fields and matrices.")
+    from pylith.utils.petsc import MemoryLogger
+    logger = MemoryLogger.singleton()
+    logger.setDebug(0)
+    logger.stagePush("Problem")
+
+    # Allocate other fields, reusing layout from dispIncr
+    self._info.log("Creating other fields.")
     self.fields.add("disp(t-dt)", "displacement")
     self.fields.copyLayout("dispIncr(t->t+dt)")
     self._debug.log(resourceUsageString())
@@ -81,6 +87,7 @@ class Explicit(Formulation):
     residual.zero()
     residual.createVector()
     self._debug.log(resourceUsageString())
+    logger.stagePop()
 
     self._info.log("Creating Jacobian matrix.")
     from pylith.topology.Jacobian import Jacobian
@@ -88,6 +95,7 @@ class Explicit(Formulation):
     self.jacobian.zero() # TEMPORARY, to get correct memory usage
     self._debug.log(resourceUsageString())
 
+    logger.stagePush("Problem")
     self._info.log("Initializing solver.")
     self.solver.initialize(self.fields, self.jacobian, self)
     self._debug.log(resourceUsageString())
@@ -98,7 +106,10 @@ class Explicit(Formulation):
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.useSolnIncr(True)
 
-    self._logger.eventEnd(logEvent)
+    logger.stagePop()
+    logger.setDebug(0)
+    self._modelMemoryUse()
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -107,7 +118,7 @@ class Explicit(Formulation):
     Hook for doing stuff before advancing time step.
     """
     logEvent = "%sprestep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
     
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
     for constraint in self.constraints:
@@ -121,7 +132,7 @@ class Explicit(Formulation):
     if needNewJacobian:
       self._reformJacobian(t, dt)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -130,7 +141,7 @@ class Explicit(Formulation):
     Advance to next time step.
     """
     logEvent = "%sstep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     self._reformResidual(t, dt)
     
@@ -139,7 +150,7 @@ class Explicit(Formulation):
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
     self.solver.solve(dispIncr, self.jacobian, residual)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -148,7 +159,7 @@ class Explicit(Formulation):
     Hook for doing stuff after advancing time step.
     """
     logEvent = "%spoststep" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
     
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
     dispT = self.fields.get("disp(t)")
@@ -160,7 +171,7 @@ class Explicit(Formulation):
 
     Formulation.poststep(self, t, dt)
 
-    self._logger.eventEnd(logEvent)    
+    self._eventLogger.eventEnd(logEvent)    
     return
 
 

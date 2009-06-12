@@ -27,6 +27,7 @@ class Jacobian(Memory):
     self.label = label
     return
 
+
   def tabulate(self, memDict):
     """
     Tabulate memory use.

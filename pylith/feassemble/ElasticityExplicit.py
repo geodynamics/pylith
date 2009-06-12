@@ -44,13 +44,13 @@ class ElasticityExplicit(IntegratorElasticity, ModuleElasticityExplicit):
     Do initialization.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
 
     IntegratorElasticity.initialize(self, totalTime, numTimeSteps, normalizer)
     ModuleElasticityExplicit.initialize(self, self.mesh)
     self._initializeOutput(totalTime, numTimeSteps, normalizer)
     
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 

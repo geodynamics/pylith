@@ -108,14 +108,13 @@ class TimeDependent(Problem):
     """
     Solve time dependent problem.
     """
-    self.logMaterials()
     self._info.log("Solving problem.")
     self.checkpointTimer.toplevel = app # Set handle for saving state
     
     t = self.formulation.getStartTime()
     timeScale = self.normalizer.timeScale()
     while t < self.formulation.getTotalTime():
-      self._logger.stagePush("Prestep")
+      self._eventLogger.stagePush("Prestep")
       tsec = self.normalizer.dimensionalize(t, timeScale)
       self._info.log("Main time loop, current time is t=%s" % tsec)
       
@@ -129,19 +128,19 @@ class TimeDependent(Problem):
       self._info.log("Preparing to advance solution from time t=%s to t=%s." %\
                      (tsec, tsec+dtsec))
       self.formulation.prestep(t, dt)
-      self._logger.stagePop()
+      self._eventLogger.stagePop()
 
       self._info.log("Advancing solution from t=%s to t=%s." % \
                      (tsec, tsec+dtsec))
-      self._logger.stagePush("Step")
+      self._eventLogger.stagePush("Step")
       self.formulation.step(t, dt)
-      self._logger.stagePop()
+      self._eventLogger.stagePop()
 
       self._info.log("Finishing advancing solution from t=%s to t=%s." % \
                      (tsec, tsec+dtsec))
-      self._logger.stagePush("Poststep")
+      self._eventLogger.stagePush("Poststep")
       self.formulation.poststep(t, dt)
-      self._logger.stagePop()
+      self._eventLogger.stagePop()
 
       # Update time
       t += dt

@@ -66,7 +66,7 @@ class RefineUniform(MeshRefiner):
     """
     self._setupLogging()
     logEvent = "%srefine" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)
+    self._eventLogger.eventBegin(logEvent)
     self._info.log("Refining mesh.")
 
     self._createCppHandle()
@@ -83,7 +83,7 @@ class RefineUniform(MeshRefiner):
       self.cppHandle.write(self.dataWriter.cppHandle,
                            newMesh.cppHandle, newMesh.coordsys.cppHandle)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return newMesh
 
 

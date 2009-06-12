@@ -127,7 +127,7 @@ class OutputManager(PetscComponent):
     Initialize output manager.
     """
     logEvent = "%sinit" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)    
+    self._eventLogger.eventBegin(logEvent)    
 
     # Nondimensionalize time step
     self.normalizer = normalizer
@@ -143,7 +143,7 @@ class OutputManager(PetscComponent):
       self.cellFilter.initialize(quadrature)
     self.writer.initialize(normalizer)
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -152,14 +152,14 @@ class OutputManager(PetscComponent):
     Prepare for writing data.
     """
     logEvent = "%sopen" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)    
+    self._eventLogger.eventBegin(logEvent)    
 
     nsteps = self._estimateNumSteps(totalTime, numTimeSteps)
 
     (mesh, label, labelId) = self.dataProvider.getDataMesh()
     self._open(mesh, nsteps, label, labelId)
 
-    self._logger.eventEnd(logEvent)    
+    self._eventLogger.eventEnd(logEvent)    
     return
 
 
@@ -168,11 +168,11 @@ class OutputManager(PetscComponent):
     Perform post-write cleanup.
     """
     logEvent = "%sclose" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)    
+    self._eventLogger.eventBegin(logEvent)    
 
     self._close()
 
-    self._logger.eventEnd(logEvent)    
+    self._eventLogger.eventEnd(logEvent)    
     return
 
 
@@ -181,7 +181,7 @@ class OutputManager(PetscComponent):
     Write information fields.
     """
     logEvent = "%swriteInfo" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)    
+    self._eventLogger.eventBegin(logEvent)    
 
     if len(self.vertexInfoFields) > 0 or len(self.cellInfoFields) > 0:
       t = 0.0
@@ -200,7 +200,7 @@ class OutputManager(PetscComponent):
       self._closeTimeStep()
       self._close()
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -209,7 +209,7 @@ class OutputManager(PetscComponent):
     Write fields at current time step.
     """
     logEvent = "%swriteData" % self._loggingPrefix
-    self._logger.eventBegin(logEvent)    
+    self._eventLogger.eventBegin(logEvent)    
 
     if self._checkWrite(t) and \
            ( len(self.vertexDataFields) > 0 or \
@@ -228,7 +228,7 @@ class OutputManager(PetscComponent):
 
       self._closeTimeStep()
 
-    self._logger.eventEnd(logEvent)
+    self._eventLogger.eventEnd(logEvent)
     return
       
     
@@ -361,7 +361,7 @@ class OutputManager(PetscComponent):
     for event in events:
       logger.registerEvent("%s%s" % (self._loggingPrefix, event))
 
-    self._logger = logger
+    self._eventLogger = logger
     return
   
 
