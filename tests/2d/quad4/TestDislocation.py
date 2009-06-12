@@ -12,7 +12,7 @@
 
 ## @file tests/2d/quad4/TestDislocation.py
 ##
-## @brief Test suite for testing pylith with 2-D axial extension.
+## @brief Test suite for testing pylith with fault slip.
 
 import numpy
 from TestQuad4 import TestQuad4
