@@ -488,7 +488,7 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
   assert(0 != properties);
   assert(_numPropsQuadPt == numProperties);
   assert(0 != stateVars);
-  assert(_numPropsQuadPt == numStateVars);
+  assert(_numVarsQuadPt == numStateVars);
   assert(0 != totalStrain);
   assert(_PowerLaw3D::tensorSize == strainSize);
   assert(0 != initialStress);
@@ -816,7 +816,7 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelasticInitial(
   assert(0 != properties);
   assert(_numPropsQuadPt == numProperties);
   assert(0 != stateVars);
-  assert(_numPropsQuadPt == numStateVars);
+  assert(_numVarsQuadPt == numStateVars);
   assert(0 != totalStrain);
   assert(_PowerLaw3D::tensorSize == strainSize);
   assert(0 != initialStress);
@@ -901,7 +901,7 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   assert(0 != properties);
   assert(_numPropsQuadPt == numProperties);
   assert(0 != stateVars);
-  assert(_numPropsQuadPt == numStateVars);
+  assert(_numVarsQuadPt == numStateVars);
   assert(0 != totalStrain);
   assert(_PowerLaw3D::tensorSize == strainSize);
   assert(0 != initialStress);
@@ -1172,7 +1172,7 @@ pylith::materials::PowerLaw3D::_updateStateVarsElastic(
 				    const int initialStrainSize)
 { // _updateStateVarsElastic
   assert(0 != stateVars);
-  assert(_numPropsQuadPt == numStateVars);
+  assert(_numVarsQuadPt == numStateVars);
   assert(0 != properties);
   assert(_numPropsQuadPt == numProperties);
   assert(0 != totalStrain);
