@@ -86,7 +86,7 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
     densityB = 2000.0
     vsB = 1200.0
     vpB = vsB*3**0.5
-    viscosityCoeffB = 1.0e10
+    viscosityCoeffB = 1.0e12
     powerLawExpB = 3.0
     strainB = [4.1e-4, 4.2e-4, 4.3e-4, 4.4e-4, 4.5e-4, 4.6e-4]
     initialStressB = [5.1e4, 5.2e4, 5.3e4, 5.4e4, 5.5e4, 5.6e4]
@@ -185,10 +185,7 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
                                                visStrainB, stressB,
                                                initialStressB, initialStrainB)
 
-    # I need to make sure that the correct stresses are being used to compute
-    # Maxwell times (and stable time step size).
-    # I am assuming right now that we use the state variable values rather than
-    # the current computed stress values.
+    # Use state variables to compute Maxwell times (and stable time step size).
     maxwellTimeA = self._getMaxwellTime(muA, viscosityCoeffA, \
                                         powerLawExpA, stressA)
 
@@ -440,7 +437,7 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
 
     # Compute components of tangent constitutive matrix using numerical
     # derivatives.
-    derivDx = 1.0e-8
+    derivDx = 1.0e-12
     derivOrder = 3
     elasticConstsList = []
 

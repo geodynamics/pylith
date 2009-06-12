@@ -58,8 +58,7 @@ class pylith::materials::TestPowerLaw3D : public TestElasticMaterial
   CPPUNIT_TEST( test_calcStressElastic );
   CPPUNIT_TEST( test_calcStressTimeDep );
   CPPUNIT_TEST( test_calcElasticConstsElastic );
-  // This doesn't quite pass yet.
-  // CPPUNIT_TEST( test_calcElasticConstsTimeDep );
+  CPPUNIT_TEST( test_calcElasticConstsTimeDep );
   CPPUNIT_TEST( test_updateStateVarsElastic );
   CPPUNIT_TEST( test_updateStateVarsTimeDep );
 
