@@ -79,6 +79,11 @@ if [ $1 == "viscoelastic" ] || [ $1 == "all" ]; then
     --data.object=MaxwellIsotropic3DTimeDepData \
     --data.parent=ElasticMaterialData
 
+  python PowerLaw3DTimeDep.py \
+    --data.namespace=pylith,materials \
+    --data.object=PowerLaw3DTimeDepData \
+    --data.parent=ElasticMaterialData
+
 fi
 
 
