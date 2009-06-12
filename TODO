@@ -33,12 +33,10 @@ Brad
   ArbitratySlipFn (final slip, start time)
   full-scale testing
     2d/quad4
-      axiialtract
+      axialtract
       sheartract
       dislocation2
     2d/tri3
-      axialdisp
-      sheardisp
       dislocation
       dislocation2
   cleanup

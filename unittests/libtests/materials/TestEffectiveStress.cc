@@ -55,10 +55,10 @@ namespace pylith {
 	Quadratic(void) {};
 	~Quadratic(void) {};
 	double effStressFunc(const double x) {
-	  return 1.0e-2 - pow(x - 1.0e-3, 2);
+	  return 1.0e+5 - 1.0/9.0e+3 * pow(x + 2.0e+4, 2);
 	};
 	double effStressDerivFunc(const double x) {
-	  return -2*(x-1.0e-03);
+	  return -2*1.0/9.0e+3*(x+2.0e+4);
 	};
 	double effStressFuncDerivFunc(double* f,
 				      double* df,
@@ -122,7 +122,7 @@ pylith::materials::TestEffectiveStress::testCalculateLinear(void)
 void
 pylith::materials::TestEffectiveStress::testCalculateQuadratic(void)
 { // testCalculateQuadratic
-  const double valueE = 0.101;
+  const double valueE = 1.0e+04;
   
   _EffectiveStress::Quadratic material;
 

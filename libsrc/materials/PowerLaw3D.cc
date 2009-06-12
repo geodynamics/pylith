@@ -658,7 +658,9 @@ pylith::materials::PowerLaw3D::effStressFunc(const double effStressTpdt)
   const double a = ae + alpha * dt * gammaTau;
   const double y = a * a * effStressTpdt * effStressTpdt - b +
     c * gammaTau - d * d * gammaTau * gammaTau;
+
   PetscLogFlops(21);
+
   return y;
 } // effStressFunc
 
@@ -1360,13 +1362,13 @@ pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
     stateVars[s_stress+iComp] = devStressTpdt + diag[iComp] *
       (meanStressTpdt + meanStressInitial);
     devStressTau = (1.0 - alpha) * devStressT[iComp] + alpha * devStressTpdt;
-    stateVars[s_viscousStrain+iComp] = _dt * gammaTau * devStressTau;
+    stateVars[s_viscousStrain+iComp] += _dt * gammaTau * devStressTau;
   } // for
 
   _needNewJacobian = true;
   PetscLogFlops(14 + _tensorSize * 14);
 
-} // _updatePropertiesViscoelastic
+} // _updateStateVarsViscoelastic
 
 // ----------------------------------------------------------------------
 // Compute scalar product of two tensors.

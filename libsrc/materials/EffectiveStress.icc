@@ -63,7 +63,7 @@ pylith::materials::EffectiveStress::_bracket(double* px1,
   const int maxIterations = 50;
 
   // Arbitrary factor by which to increase the brackets.
-  const double bracketFactor = 1.6;
+  const double bracketFactor = 2;
   double x1 = *px1;
   double x2 = *px2;
 
@@ -110,10 +110,9 @@ pylith::materials::EffectiveStress::_search(const double x1,
   const int maxIterations = 100;
 
   // Desired accuracy for root. This is a bit arbitrary for now.
-  const double accuracy = 1.0e-6;
+  const double accuracy = 1.0e-20;
 
-  /// Determine if root has already been found, or if root is not bracketed.
-  // Otherwise, organize search so that effStressFunc(xLow) is less than zero.
+  // Organize search so that effStressFunc(xLow) is less than zero.
   double funcValueLow = material->effStressFunc(x1);
   double funcValueHigh = material->effStressFunc(x2);
   assert(funcValueLow * funcValueHigh <= 0.0);
@@ -123,21 +122,13 @@ pylith::materials::EffectiveStress::_search(const double x1,
   double xHigh = 0.0;
   bool converged = false;
 
-  if (fabs(funcValueLow) < accuracy) {
-    effStress = x1;
-    converged = true;
-    return effStress;
-  } else if (fabs(funcValueHigh) < accuracy) {
-    effStress = x2;
-    converged = true;
-    return effStress;
-  } else if (funcValueLow < 0.0) {
+  if (funcValueLow < 0.0) {
     xLow = x1;
     xHigh = x2;
   } else {
-    xHigh = x1;
     xLow = x2;
-  }
+    xHigh = x1;
+  } // if/else
 
   effStress = 0.5 * (x1 + x2);
   double dxPrevious = fabs(x2 - x1);
@@ -152,6 +143,10 @@ pylith::materials::EffectiveStress::_search(const double x1,
   while (iteration < maxIterations) {
     funcXHigh = (effStress - xHigh) * funcDeriv - funcValue;
     funcXLow = (effStress - xLow) * funcDeriv - funcValue;
+    if (fabs(funcXLow) < accuracy || fabs(funcXHigh) < accuracy) {
+      converged = true;
+      break;
+    } // if
     // Use bisection if solution goes out of bounds or is not converging
     // fast enough.
     if ( (funcXHigh * funcXLow >= 0.0) ||
@@ -164,10 +159,6 @@ pylith::materials::EffectiveStress::_search(const double x1,
       dx = funcValue / funcDeriv;
       effStress = effStress - dx;
     } // else
-    if (fabs(dx) < accuracy) {
-      converged = true;
-      break;
-    } // if
     material->effStressFuncDerivFunc(&funcValue, &funcDeriv, effStress);
     if (funcValue < 0.0) {
       xLow = effStress;
