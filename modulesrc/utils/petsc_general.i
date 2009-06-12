@@ -34,6 +34,16 @@
   } // finalize
 %} // inline
 
+// ----------------------------------------------------------------------
+// sizeofVoidPtr
+%inline %{
+  int
+  sizeofVoidPtr(void)
+  { // sizeofVoidPtr
+    return sizeof(void*);
+  } // sizeofVoidPtr
+%} // inline
+
 
 // End of file
 

@@ -35,6 +35,13 @@ namespace pylith {
       virtual
       void deallocate(void);
   
+      /** Get parameter fields.
+       *
+       * @returns Parameter fields.
+       */
+      const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
+      parameterFields(void) const;
+
     }; // class BoundaryConditionPoints
 
   } // bc
