@@ -5,7 +5,14 @@ CURRENT ISSUES/PRIORITIES
 CRITICAL
   petsc-dev doesn't build on the cygwin buildbot (`_vsnprintf' undeclared)
     http://www.geodynamics.org:8009/?project=PETSc
+
   Generalized maxwell model
+
+  Need power-law full-scale "test" to insure that the power-law and
+  nonlinear solve give reasonable results.
+
+  petsc-dev now may be having problems on the Darwin buildbots
+
 
 BUGS
   malloc during assembly when running in parallel
