@@ -98,6 +98,7 @@ pylith::materials::EffectiveStress::_bracket(double* px1,
     throw std::runtime_error("Unable to bracket effective stress.");
 } // _bracket
 
+#include <iostrem> // TEMPORARY
 // ----------------------------------------------------------------------
 // Find root using Newton's method with bisection.
 template<typename material_type>
