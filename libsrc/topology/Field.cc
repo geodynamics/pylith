@@ -474,10 +474,12 @@ pylith::topology::Field<mesh_type>::operator+=(const Field& field)
     for (typename chart_type::const_iterator c_iter = chartBegin;
 	 c_iter != chartEnd;
 	 ++c_iter) {
-      assert(fiberDim == field._section->getFiberDimension(*c_iter));
-      assert(fiberDim == _section->getFiberDimension(*c_iter));
-      field._section->restrictPoint(*c_iter, &values[0], values.size());
-      _section->updatePointAllAdd(*c_iter, &values[0]);
+      if (0 != field._section->getFiberDimension(*c_iter)) {
+	assert(fiberDim == field._section->getFiberDimension(*c_iter));
+	assert(fiberDim == _section->getFiberDimension(*c_iter));
+	field._section->restrictPoint(*c_iter, &values[0], values.size());
+	_section->updatePointAllAdd(*c_iter, &values[0]);
+      } // if
     } // for
   } // if
 
