@@ -110,7 +110,7 @@ pylith::materials::EffectiveStress::_search(const double x1,
   const int maxIterations = 100;
 
   // Desired accuracy for root. This is a bit arbitrary for now.
-  const double accuracy = 1.0e-20;
+  const double accuracy = 1.0e-18;
 
   // Organize search so that effStressFunc(xLow) is less than zero.
   double funcValueLow = material->effStressFunc(x1);
@@ -143,7 +143,11 @@ pylith::materials::EffectiveStress::_search(const double x1,
   while (iteration < maxIterations) {
     funcXHigh = (effStress - xHigh) * funcDeriv - funcValue;
     funcXLow = (effStress - xLow) * funcDeriv - funcValue;
-    if (fabs(funcXLow) < accuracy || fabs(funcXHigh) < accuracy) {
+    std::cout << "low: " << funcXLow
+	      << ", high: " << funcXHigh
+	      << ", func: " << funcValue
+	      << std::endl;
+    if (fabs(funcValue) < accuracy) {
       converged = true;
       break;
     } // if
