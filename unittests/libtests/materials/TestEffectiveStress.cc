@@ -80,7 +80,7 @@ namespace pylith {
 	Cubic(void) {};
 	~Cubic(void) {};
 	double effStressFunc(const double x) {
-	  return pow(x - 4.0, 3);
+	  return pow(x - 4.0, 3) - 8.0;
 	};
 	double effStressDerivFunc(const double x) {
 	  return 3.0*pow(x - 4.0, 2);
@@ -143,7 +143,7 @@ pylith::materials::TestEffectiveStress::testCalculateQuadratic(void)
 void
 pylith::materials::TestEffectiveStress::testCalculateCubic(void)
 { // testCalculateCubic
-  const double valueE = 4.0;
+  const double valueE = 6.0;
   
   _EffectiveStress::Cubic material;
 
