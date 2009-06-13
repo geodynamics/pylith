@@ -1363,8 +1363,7 @@ pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
     stateVars[s_stress+iComp] = devStressTpdt + diag[iComp] *
       (meanStressTpdt + meanStressInitial);
     devStressTau = (1.0 - alpha) * devStressT[iComp] + alpha * devStressTpdt;
-    deltaVisStrain = _dt * gammaTau * devStressTau;
-    stateVars[s_viscousStrain+iComp] = visStrainT[iComp] + deltaVisStrain;
+    stateVars[s_viscousStrain+iComp] += _dt * gammaTau * devStressTau;
   } // for
 
   _needNewJacobian = true;
