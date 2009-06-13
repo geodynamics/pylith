@@ -92,15 +92,9 @@ class DirichletBC(BoundaryCondition,
     logEvent = "%sinit" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    from pylith.utils.petsc import MemoryLogger
-    #memoryLogger = MemoryLogger.singleton()
-    #memoryLogger.setDebug(0)
-    #memoryLogger.stagePush("BoundaryConditions")
-
     self.normalizer(normalizer)
     BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 
-    #memoryLogger.stagePop()    
     self._modelMemoryUse()
     self._eventLogger.eventEnd(logEvent)    
     return
@@ -129,7 +123,7 @@ class DirichletBC(BoundaryCondition,
     """
     Model memory allocation.
     """
-    #self.perfLogger.logFields("BoundaryConditions", self.parameterFields())
+    self.perfLogger.logFields("BoundaryConditions", self.parameterFields())
     return
 
 
