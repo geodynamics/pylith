@@ -185,7 +185,6 @@ pylith::materials::TestGenMaxwellIsotropic3D::test_updateStateVarsElastic(void)
 void
 pylith::materials::TestGenMaxwellIsotropic3D::test_calcStressTimeDep(void)
 { // testCalcStressTimeDep
-#if 0
   CPPUNIT_ASSERT(0 != _matElastic);
   _matElastic->useElasticBehavior(false);
 
@@ -194,7 +193,6 @@ pylith::materials::TestGenMaxwellIsotropic3D::test_calcStressTimeDep(void)
   double dt = 2.0e+5;
   _matElastic->timeStep(dt);
   test_calcStress();
-#endif
 } // testCalcStressTimeDep
 
 // ----------------------------------------------------------------------
@@ -202,7 +200,6 @@ pylith::materials::TestGenMaxwellIsotropic3D::test_calcStressTimeDep(void)
 void
 pylith::materials::TestGenMaxwellIsotropic3D::test_calcElasticConstsTimeDep(void)
 { // testElasticConstsTimeDep
-#if 0
   CPPUNIT_ASSERT(0 != _matElastic);
   _matElastic->useElasticBehavior(false);
 
@@ -211,7 +208,6 @@ pylith::materials::TestGenMaxwellIsotropic3D::test_calcElasticConstsTimeDep(void
   double dt = 2.0e+5;
   _matElastic->timeStep(dt);
   test_calcElasticConsts();
-#endif
 } // testElasticConstsTimeDep
 
 // ----------------------------------------------------------------------
@@ -410,13 +406,11 @@ pylith::materials::TestGenMaxwellIsotropic3D::test_updateStateVarsTimeDep(void)
 void
 pylith::materials::TestGenMaxwellIsotropic3D::test_stableTimeStepImplicit(void)
 { // test_stableTimeStepImplicit
-#if 0
   CPPUNIT_ASSERT(0 != _matElastic);
 
   delete _dataElastic; _dataElastic = new GenMaxwellIsotropic3DTimeDepData();
 
   TestElasticMaterial::test_stableTimeStepImplicit();
-#endif
 } // test_stableTimeStepImplicit
 
 
