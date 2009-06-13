@@ -147,6 +147,8 @@ class Material(PetscComponent):
     Model allocated memory.
     """
     self.perfLogger.logMaterial('Materials', self)
+    self.perfLogger.logField('Materials', self.propertiesField())
+    self.perfLogger.logField('Materials', self.stateVarsField())
     return
 
 
