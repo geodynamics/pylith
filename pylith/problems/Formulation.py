@@ -341,19 +341,6 @@ class Formulation(PetscComponent, ModuleFormulation):
     logEvent = "%sfinalize" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    for name in self.fields.fieldNames():
-      field = self.fields.get(name)
-      self.perfLogger.logField('Problem', field)
-    self.perfLogger.logGlobalOrder('GlobalOrder', 'VectorOrder',
-                                   self.fields.get('residual'))
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
-      self.perfLogger.logQuadrature('Quadrature', integrator.quadrature())
-
-    # Placeholders until we know we they go
-    self.perfLogger.memory['Fault'] = 0
-    self.perfLogger.memory['BoundaryConditions'] = 0
-    self.perfLogger.memory['Output'] = 0
-
     self._info.log("Formulation finalize.")
     self._debug.log(resourceUsageString())
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
@@ -549,6 +536,9 @@ class Formulation(PetscComponent, ModuleFormulation):
                                    self.fields.get('residual'))
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
       self.perfLogger.logQuadrature('Quadrature', integrator.quadrature())
+    # Placeholders until we know we they go
+    self.perfLogger.memory['Fault'] = 0
+    self.perfLogger.memory['Output'] = 0
     return
 
 
