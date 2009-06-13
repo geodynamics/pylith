@@ -35,10 +35,10 @@ if [ $1 == "elastic" ] || [ $1 == "all" ]; then
     --data.object=PowerLaw3DElasticData \
     --data.parent=ElasticMaterialData
 
-#  python GenMaxwellIsotropic3DElastic.py \
-#    --data.namespace=pylith,materials \
-#    --data.object=GenMaxwellIsotropic3DElasticData \
-#    --data.parent=ElasticMaterialData
+  python GenMaxwellIsotropic3DElastic.py \
+    --data.namespace=pylith,materials \
+    --data.object=GenMaxwellIsotropic3DElasticData \
+    --data.parent=ElasticMaterialData
 
   # 2-D ----------------------------------------------------------------
 
@@ -69,10 +69,10 @@ fi
 # //////////////////////////////////////////////////////////////////////
 if [ $1 == "viscoelastic" ] || [ $1 == "all" ]; then
 
-  #python GenMaxwellIsotropic3DTimeDep.py \
-  #  --data.namespace=pylith,materials \
-  #  --data.object=GenMaxwellIsotropic3DTimeDepData \
-  #  --data.parent=ElasticMaterialData
+  python GenMaxwellIsotropic3DTimeDep.py \
+    --data.namespace=pylith,materials \
+    --data.object=GenMaxwellIsotropic3DTimeDepData \
+    --data.parent=ElasticMaterialData
 
   python MaxwellIsotropic3DTimeDep.py \
     --data.namespace=pylith,materials \

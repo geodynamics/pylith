@@ -34,6 +34,9 @@ namespace pylith {
   namespace materials {
     namespace _GenMaxwellIsotropic3D{
 
+      /// Number of Maxwell models in parallel.
+      const int numMaxwellModels = 3;
+
       // Dimension of material.
       const int dimension = 3;
 
@@ -44,13 +47,10 @@ namespace pylith {
       const int numElasticConsts = 21;
 
       /// Number of physical properties.
-      const int numProperties = 7;
+      const int numProperties = 5;
       
-      /// Number of Maxwell models in parallel.
-      const int numMaxwellModels = 3;
-
       /// Physical properties.
-      const Metadata::ParamDescription properties[] = {
+      const Metadata::ParamDescription properties[numProperties] = {
 	{ "density", 1, pylith::topology::FieldBase::SCALAR },
 	{ "mu", 1, pylith::topology::FieldBase::SCALAR },
 	{ "lambda", 1, pylith::topology::FieldBase::SCALAR },
@@ -60,8 +60,8 @@ namespace pylith {
       // Values expected in properties spatial database.  :KLUDGE: Not
       // generalized over number of models.
       const int numDBProperties = 3 + 2*numMaxwellModels;
-      const char* dbProperties[] = {
-	"density", "vs", "vp" ,
+      const char* dbProperties[numDBProperties] = {
+	"density", "vs", "vp",
 	"shear_ratio_1",
 	"shear_ratio_2",
 	"shear_ratio_3",
@@ -74,7 +74,7 @@ namespace pylith {
       const int numStateVars = 1+numMaxwellModels;
       
       /// State variables. :KLUDGE: Not generalized over number of models.
-      const Metadata::ParamDescription stateVars[] = {
+      const Metadata::ParamDescription stateVars[numStateVars] = {
 	{ "total_strain", tensorSize, pylith::topology::FieldBase::TENSOR },
 	{ "viscous_strain_1", tensorSize, pylith::topology::FieldBase::TENSOR },
 	{ "viscous_strain_2", tensorSize, pylith::topology::FieldBase::TENSOR },
@@ -83,30 +83,30 @@ namespace pylith {
 
       // Values expected in state variables spatial database
       const int numDBStateVars = tensorSize + numMaxwellModels*tensorSize;
-      const char* dbStateVars[] = {"total-strain-xx",
-				   "total-strain-yy",
-				   "total-strain-zz",
-				   "total-strain-xy",
-				   "total-strain-yz",
-				   "total-strain-xz",
-				   "viscous-strain1-xx",
-				   "viscous-strain1-yy",
-				   "viscous-strain1-zz",
-				   "viscous-strain1-xy",
-				   "viscous-strain1-yz",
-				   "viscous-strain1-xz",
-				   "viscous-strain2-xx",
-				   "viscous-strain2-yy",
-				   "viscous-strain2-zz",
-				   "viscous-strain2-xy",
-				   "viscous-strain2-yz",
-				   "viscous-strain2-xz",
-				   "viscous-strain3-xx",
-				   "viscous-strain3-yy",
-				   "viscous-strain3-zz",
-				   "viscous-strain3-xy",
-				   "viscous-strain3-yz",
-				   "viscous-strain3-xz",
+      const char* dbStateVars[numDBStateVars] = {"total-strain-xx",
+						 "total-strain-yy",
+						 "total-strain-zz",
+						 "total-strain-xy",
+						 "total-strain-yz",
+						 "total-strain-xz",
+						 "viscous-strain-1-xx",
+						 "viscous-strain-1-yy",
+						 "viscous-strain-1-zz",
+						 "viscous-strain-1-xy",
+						 "viscous-strain-1-yz",
+						 "viscous-strain-1-xz",
+						 "viscous-strain-2-xx",
+						 "viscous-strain-2-yy",
+						 "viscous-strain-2-zz",
+						 "viscous-strain-2-xy",
+						 "viscous-strain-2-yz",
+						 "viscous-strain-2-xz",
+						 "viscous-strain-3-xx",
+						 "viscous-strain-3-yy",
+						 "viscous-strain-3-zz",
+						 "viscous-strain-3-xy",
+						 "viscous-strain-3-yz",
+						 "viscous-strain-3-xz",
       };
 
     } // _GenMaxwellIsotropic3D
@@ -139,8 +139,7 @@ const int pylith::materials::GenMaxwellIsotropic3D::db_vp =
   pylith::materials::GenMaxwellIsotropic3D::db_vs + 1;
 
 const int pylith::materials::GenMaxwellIsotropic3D::db_shearRatio =
-  pylith::materials::GenMaxwellIsotropic3D::db_vp + 
-  pylith::materials::_GenMaxwellIsotropic3D::numMaxwellModels;
+  pylith::materials::GenMaxwellIsotropic3D::db_vp + 1;
 
 const int pylith::materials::GenMaxwellIsotropic3D::db_viscosity =
   pylith::materials::GenMaxwellIsotropic3D::db_shearRatio + 
@@ -195,7 +194,7 @@ pylith::materials::GenMaxwellIsotropic3D::GenMaxwellIsotropic3D(void) :
   _updateStateVarsFn(0)  
 { // constructor
   useElasticBehavior(true);
-  _viscousStrain.resize(_GenMaxwellIsotropic3D::numMaxwellModels*_tensorSize);
+  _viscousStrain.resize(_tensorSize);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -756,13 +755,10 @@ pylith::materials::GenMaxwellIsotropic3D::_updateStateVarsElastic(
   for (int iComp=0; iComp < tensorSize; ++iComp) {
     devStrain = totalStrain[iComp] - diag[iComp] * meanStrainTpdt;
     // Maxwell model 1
-    shearRatio = properties[p_shearRatio + 0];
     stateVars[s_viscousStrain1+iComp] = devStrain;
     // Maxwell model 2
-    shearRatio = properties[p_shearRatio + 1];
     stateVars[s_viscousStrain2+iComp] = devStrain;
     // Maxwell model 3
-    shearRatio = properties[p_shearRatio + 2];
     stateVars[s_viscousStrain3+iComp] = devStrain;
   } // for
   PetscLogFlops(3 + 2 * tensorSize);

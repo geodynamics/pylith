@@ -30,12 +30,10 @@ testmaterials_SOURCES = \
 	TestElasticPlaneStress.cc \
 	TestElasticIsotropic3D.cc \
 	TestMaxwellIsotropic3D.cc \
+	TestGenMaxwellIsotropic3D.cc \
 	TestPowerLaw3D.cc \
 	TestEffectiveStress.cc \
 	test_materials.cc
-
-#	TestGenMaxwellIsotropic3D.cc 
-
 
 
 noinst_HEADERS = \
@@ -62,10 +60,10 @@ testmaterials_SOURCES += \
 	data/ElasticIsotropic3DData.cc \
 	data/MaxwellIsotropic3DElasticData.cc \
 	data/MaxwellIsotropic3DTimeDepData.cc \
+	data/GenMaxwellIsotropic3DElasticData.cc \
 	data/PowerLaw3DElasticData.cc \
 	data/PowerLaw3DTimeDepData.cc
 
-#	data/GenMaxwellIsotropic3DElasticData.cc \
 #	data/GenMaxwellIsotropic3DTimeDepData.cc 
 
 noinst_HEADERS += \
