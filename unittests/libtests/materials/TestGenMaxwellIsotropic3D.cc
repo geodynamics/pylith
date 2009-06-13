@@ -215,16 +215,15 @@ pylith::materials::TestGenMaxwellIsotropic3D::test_calcElasticConstsTimeDep(void
 void
 pylith::materials::TestGenMaxwellIsotropic3D::test_updateStateVarsTimeDep(void)
 { // testUpdateStateVarsTimeDep
-#if 0
   // :TODO: Use TestElasticMaterial::test_updateStateVars
   // instead. This requires moving the calculation of the expected
   // state vars below to the Python code (where it belongs) and
   // setting the stateVarsUpdate attribute in the Python object.
 
-  MaxwellIsotropic3D material;
+  GenMaxwellIsotropic3D material;
   material.useElasticBehavior(false);
 
-  delete _dataElastic; _dataElastic = new MaxwellIsotropic3DTimeDepData();
+  delete _dataElastic; _dataElastic = new GenMaxwellIsotropic3DTimeDepData();
 
   const double dt = 2.0e+5;
   material.timeStep(dt);
@@ -255,150 +254,66 @@ pylith::materials::TestGenMaxwellIsotropic3D::test_updateStateVarsTimeDep(void)
     memcpy(&initialStrain[0], &_dataElastic->initialStrain[iLoc*tensorSize],
 	   tensorSize*sizeof(double));
 
-    const double meanStrain = (strain[0] + strain[1] + strain[2]) / 3.0;
-    
     // Compute expected state variables
     double_array stateVarsE(numVarsQuadPt);
+    const int numMaxwellModels = 3;
     const int s_totalStrain = 0;
     const int s_viscousStrain = s_totalStrain + tensorSize;
+    const int p_shearRatio = 3;
+    const int p_maxwellTime = p_shearRatio + numMaxwellModels;
 
     // State variable 'total_strain' should match 'strain'
     for (int i=0; i < tensorSize; ++i) 
       stateVarsE[s_totalStrain+i] = strain[i];
     
     // State variable 'viscous_strain'
-    const double meanStrainTpdt = 
-      (strain[0] + strain[1] + strain[2]) / 3.0;
+    double_array maxwellTime(numMaxwellModels);
+    double_array shearRatio(numMaxwellModels);
+    double_array dq(numMaxwellModels);
+    for (int i=0; i < numMaxwellModels; ++i) {
+      shearRatio[i] = properties[p_shearRatio+i];
+      maxwellTime[i] = properties[p_maxwellTime+i];
+      dq[i] = maxwellTime[i] * (1.0 - exp(-dt/maxwellTime[i]))/dt;
+    } // for
+    double_array strainT(tensorSize);
+    for (int i=0; i < tensorSize; ++i)
+      strainT[i] = stateVars[s_totalStrain+i];
     const double meanStrainT = 
       (stateVars[s_totalStrain+0] + 
        stateVars[s_totalStrain+1] + 
        stateVars[s_totalStrain+2]) / 3.0;
+    const double meanStrainTpdt = (strain[0] + strain[1] + strain[2]) / 3.0;
 
-    const int p_maxwellTime = 3;
-    const double maxwellTime = properties[p_maxwellTime];
-    const double dq = maxwellTime*(1.0-exp(-dt/maxwellTime))/dt;
-    const double expFac = exp(-dt/maxwellTime);
     double devStrainTpdt = 0.0;
     double devStrainT = 0.0;
-
+    double deltaStrain = 0.0;
+    double visStrain = 0.0;
     const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    for (int i=0; i < tensorSize; ++i) {
-      devStrainTpdt = strain[i] - diag[i]*meanStrainTpdt;
-      devStrainT = stateVars[s_totalStrain+i] - diag[i]*meanStrainT;
-      stateVarsE[s_viscousStrain+i] = 
-	expFac * stateVars[s_viscousStrain+i] + 
-	dq * (devStrainTpdt - devStrainT);
-    } //for
+    
+    for (int iComp=0; iComp < tensorSize; ++iComp) {
+      devStrainTpdt = strain[iComp] - diag[iComp]*meanStrainTpdt;
+      devStrainT = strainT[iComp] - diag[iComp]*meanStrainT;
+      deltaStrain = devStrainTpdt - devStrainT;
+      for (int imodel=0; imodel < numMaxwellModels; ++imodel) {
+	stateVarsE[s_viscousStrain+imodel*tensorSize+iComp] =
+	  exp(-dt/maxwellTime[imodel]) *
+	  stateVars[s_viscousStrain+imodel*tensorSize+iComp] + dq[imodel] * deltaStrain;
+      } // for
+    } // for
 
     material._updateStateVars(&stateVars[0], stateVars.size(), 
 			      &properties[0], properties.size(),
 			      &strain[0], strain.size(),
 			      &initialStress[0], initialStress.size(),
 			      &initialStrain[0], initialStrain.size());
-    
+
     const double tolerance = 1.0e-06;
     for (int i=0; i < numVarsQuadPt; ++i)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i], tolerance);
+      if (stateVarsE[i] > tolerance)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsE[i], tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i], tolerance);
   } // for
-
-
-
-
-  GenMaxwellIsotropic3D material;
-  GenMaxwellIsotropic3DTimeDepData data;
-
-  const int numParams = data.numParameters;
-  const int numParamsQuadPt = data.numParamsQuadPt;
-
-  const int numMaxwellModels = 3;
-  const int tensorSize = 6;
-  const int initialStateSize = 6;
-  const double mu = 3.0e10;
-
-  material.useElasticBehavior(false);
-  const double dt = 2.0e+5;
-  material.timeStep(dt);
-  const double shearRatio[] = {0.2, 0.3, 0.4};
-  const double viscosity[] = {1.0e+18, 2.0e17, 3.0e19};
-  double maxwellTime[] = {0.0, 0.0, 0.0};
-  for (int model = 0; model < numMaxwellModels; ++model)
-    maxwellTime[model] = viscosity[model]/(mu * shearRatio[model]);
-    
-  double_array totalStrainTpdt(tensorSize);
-  double_array totalStrainT(tensorSize);
-  double_array visStrainT(numMaxwellModels * tensorSize);
-  double_array initialState(initialStateSize);
-  for (int i=0; i < tensorSize; ++i) {
-    totalStrainTpdt[i] = i;
-    totalStrainT[i] = totalStrainTpdt[i] / 2.0;
-    visStrainT[i] = totalStrainTpdt[i] / 4.0;
-    visStrainT[i + tensorSize] = totalStrainTpdt[i] / 4.0;
-    visStrainT[i + 2 * tensorSize] = totalStrainTpdt[i] / 4.0;
-    initialState[i] = 0.1*i;
-  } // for
-
-  const double meanStrainTpdt = 
-    (totalStrainTpdt[0] + totalStrainTpdt[1] + totalStrainTpdt[2]) / 3.0;
-  const double meanStrainT = 
-    (totalStrainT[0] + totalStrainT[1] + totalStrainT[2]) / 3.0;
-
-  const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-
-  double_array parameters(numParamsQuadPt);
-  double_array parametersE(numParamsQuadPt);
-  for (int i=0, index=0; i < numParams; ++i)
-    for (int j=0; j < data.numParamValues[i]; ++j, ++index) {
-      parametersE[index] = i+j;
-      parameters[index] = i+j;
-    } // for
-
-
-  const int pidMuTot = 1;
-  const int pidShearRatio = 3;
-  const int pidMaxwellTime = pidShearRatio + numMaxwellModels;
-  const int pidStrainT = pidMaxwellTime + numMaxwellModels;
-  const int pidVisStrain = pidStrainT + tensorSize;
-
-  parameters[pidMuTot] = mu;
-  parametersE[pidMuTot] = mu;
-
-  double dq[] = {0.0, 0.0, 0.0};
-  for (int model = 0; model < numMaxwellModels; ++model) {
-    parameters[pidShearRatio + model] = shearRatio[model];
-    parameters[pidMaxwellTime + model] = maxwellTime[model];
-    parametersE[pidShearRatio + model] = shearRatio[model];
-    parametersE[pidMaxwellTime + model] = maxwellTime[model];
-    dq[model] = maxwellTime[model] * (1.0 - exp(-dt/maxwellTime[model]))/dt;
-  }
-
-  double devStrainTpdt = 0.0;
-  double devStrainT = 0.0;
-  double deltaStrain = 0.0;
-  double visStrain = 0.0;
-
-  for (int iComp = 0; iComp < tensorSize; ++iComp) {
-    devStrainTpdt = totalStrainTpdt[iComp] - diag[iComp]*meanStrainTpdt;
-    devStrainT = totalStrainT[iComp] - diag[iComp]*meanStrainT;
-    deltaStrain = devStrainTpdt - devStrainT;
-    parameters[pidStrainT + iComp] = totalStrainT[iComp];
-    parametersE[pidStrainT + iComp] = totalStrainTpdt[iComp];
-    for (int model = 0; model < numMaxwellModels; ++model) {
-      int index = iComp + model * tensorSize;
-      parametersE[pidVisStrain + index] =
-	exp(-dt/maxwellTime[model]) *
-	visStrainT[index] + dq[model] * deltaStrain;
-      parameters[pidVisStrain + index] = visStrainT[index];
-    } // for
-  } // for
-  
-  material._updateStateVars(&parameters[0], numParamsQuadPt, 
-			&totalStrainTpdt[0], tensorSize,
-			&initialState[0], initialStateSize);
-
-  const double tolerance = 1.0e-06;
-  for (int i=0; i < numParamsQuadPt; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(parametersE[i], parameters[i], tolerance);
-#endif
 } // testUpdateStateVarsTimeDep
 
 // ----------------------------------------------------------------------

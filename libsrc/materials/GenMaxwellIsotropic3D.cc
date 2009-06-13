@@ -838,6 +838,7 @@ pylith::materials::GenMaxwellIsotropic3D::_stableTimeStepImplicit(
   return dtStable;
 } // _stableTimeStepImplicit
 
+#include <iostream>
 // ----------------------------------------------------------------------
 // Compute viscous strain for current time step.
 void
