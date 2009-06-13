@@ -294,8 +294,9 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
     Function to compute a particular stress component as a function of a
     strain component.
     """
-    strainTpdt[strainComp] = strainVal
-    stressTpdt, visStrainTpdt = self._computeStress(strainTpdt, muV, lambdaV,
+    strainTest = numpy.array(strainTpdt, dtype=numpy.float64)
+    strainTest[strainComp] = strainVal
+    stressTpdt, visStrainTpdt = self._computeStress(strainTest, muV, lambdaV,
                                                     viscosityCoeffV,
                                                     powerLawExpV, visStrainT,
                                                     stressT,
