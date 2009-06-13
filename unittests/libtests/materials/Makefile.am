@@ -61,10 +61,10 @@ testmaterials_SOURCES += \
 	data/MaxwellIsotropic3DElasticData.cc \
 	data/MaxwellIsotropic3DTimeDepData.cc \
 	data/GenMaxwellIsotropic3DElasticData.cc \
+	data/GenMaxwellIsotropic3DTimeDepData.cc \
 	data/PowerLaw3DElasticData.cc \
 	data/PowerLaw3DTimeDepData.cc
 
-#	data/GenMaxwellIsotropic3DTimeDepData.cc 
 
 noinst_HEADERS += \
 	data/MaterialData.hh \

@@ -194,7 +194,7 @@ pylith::materials::GenMaxwellIsotropic3D::GenMaxwellIsotropic3D(void) :
   _updateStateVarsFn(0)  
 { // constructor
   useElasticBehavior(true);
-  _viscousStrain.resize(_tensorSize);
+  _viscousStrain.resize(_GenMaxwellIsotropic3D::numMaxwellModels*_tensorSize);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -512,7 +512,7 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic(
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
   
   double visFrac = 0.0;
-  for (int imodel = 0; imodel < numMaxwellModels; ++imodel) 
+  for (int imodel=0; imodel < numMaxwellModels; ++imodel) 
     visFrac += muRatio[imodel];
   assert(visFrac <= 1.0);
   const double elasFrac = 1.0 - visFrac;
@@ -529,8 +529,6 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic(
   } else {
     int index = 0;
     for (int iComp=0; iComp < tensorSize; ++iComp)
-      _viscousStrain[index++] = stateVars[s_totalStrain+iComp];
-    for (int iComp=0; iComp < tensorSize; ++iComp)
       _viscousStrain[index++] = stateVars[s_viscousStrain1+iComp];
     for (int iComp=0; iComp < tensorSize; ++iComp)
       _viscousStrain[index++] = stateVars[s_viscousStrain2+iComp];
@@ -545,14 +543,11 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic(
     devStrainTpdt = totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
     devStressTpdt = elasFrac*devStrainTpdt;
     for (int model=0; model < numMaxwellModels; ++model) {
-      if (muRatio[model] != 0.0) {
-	int pindex = iComp + model * tensorSize;
-	devStressTpdt += muRatio[model] * _viscousStrain[pindex];
-      } // if
+      devStressTpdt += muRatio[model] * _viscousStrain[model*tensorSize+iComp];
     } // for
 
     devStressTpdt = mu2*devStressTpdt;
-    stress[iComp] =diag[iComp] * meanStressTpdt + devStressTpdt +
+    stress[iComp] = diag[iComp] * meanStressTpdt + devStressTpdt +
 	    initialStress[iComp];
   } // for
 
@@ -922,9 +917,8 @@ pylith::materials::GenMaxwellIsotropic3D::_computeStateVars(
 
     // Maxwell model 1
     int imodel = 0;
-    int vindex = imodel*tensorSize + iComp;
     if (0.0 != muRatio[imodel]) {
-      _viscousStrain[vindex] = exp(-_dt/maxwellTime[imodel])*
+      _viscousStrain[imodel*tensorSize+iComp] = exp(-_dt/maxwellTime[imodel])*
 	stateVars[s_viscousStrain1 + iComp] + dq[imodel] * deltaStrain;
       PetscLogFlops(6);
     } // if
@@ -932,7 +926,7 @@ pylith::materials::GenMaxwellIsotropic3D::_computeStateVars(
     // Maxwell model 2
     imodel = 1;
     if (0.0 != muRatio[imodel]) {
-      _viscousStrain[vindex] = exp(-_dt/maxwellTime[imodel])*
+      _viscousStrain[imodel*tensorSize+iComp] = exp(-_dt/maxwellTime[imodel])*
 	stateVars[s_viscousStrain2 + iComp] + dq[imodel] * deltaStrain;
       PetscLogFlops(6);
     } // if
@@ -940,7 +934,7 @@ pylith::materials::GenMaxwellIsotropic3D::_computeStateVars(
     // Maxwell model 3
     imodel = 2;
     if (0.0 != muRatio[imodel]) {
-      _viscousStrain[vindex] = exp(-_dt/maxwellTime[imodel])*
+      _viscousStrain[imodel*tensorSize+iComp] = exp(-_dt/maxwellTime[imodel])*
 	stateVars[s_viscousStrain3 + iComp] + dq[imodel] * deltaStrain;
       PetscLogFlops(6);
     } // if
