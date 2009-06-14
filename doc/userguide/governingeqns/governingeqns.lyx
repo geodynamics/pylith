@@ -1,8 +1,9 @@
-#LyX 1.5.4 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
+\use_default_options false
 \language english
 \inputencoding auto
 \font_roman default
@@ -13,9 +14,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 1
@@ -38,12 +41,14 @@
 \tracking_changes false
 \output_changes false
 \author "" 
+\author "" 
 \end_header
 
 \begin_body
 
 \begin_layout Chapter
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "cha:Governing-Equations"
 
 \end_inset
@@ -58,7 +63,8 @@ We present here a brief derivation of the equations for both quasi-static
 n terms in the quasi-static case), we first derive these equations.
  We then present solution methods for each specific case.
  In all of our derivations, we use the notation described in Table 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "tab:Mathematical-notation"
 
 \end_inset
@@ -77,11 +83,12 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "tab:Mathematical-notation"
 
 \end_inset
@@ -94,20 +101,20 @@ Mathematical notation
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="10" columns="3">
 <features>
-<column alignment="center" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
-<row topline="true">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
 <cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Symbol
 \end_layout
 
@@ -116,7 +123,7 @@ Symbol
 <cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
@@ -125,47 +132,47 @@ Symbol
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Description
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Index notation
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Vector notation
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $a_{i}$
 \end_inset
 
@@ -177,7 +184,7 @@ Vector notation
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $\overrightarrow{a}$
 \end_inset
 
@@ -189,18 +196,18 @@ Vector notation
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Vector field a
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $a_{ij}$
 \end_inset
 
@@ -212,7 +219,7 @@ Vector field a
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $\underline{a}$
 \end_inset
 
@@ -224,18 +231,18 @@ Vector field a
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Second order tensor field a
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $u_{i}$
 \end_inset
 
@@ -247,7 +254,7 @@ Second order tensor field a
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $\overrightarrow{u}$
 \end_inset
 
@@ -259,18 +266,18 @@ Second order tensor field a
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Displacement vector field
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $f_{i}$
 \end_inset
 
@@ -279,10 +286,10 @@ Displacement vector field
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $\overrightarrow{f}$
 \end_inset
 
@@ -291,10 +298,10 @@ Displacement vector field
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Body force vector field
 \end_layout
 
@@ -302,10 +309,10 @@ Body force vector field
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $T_{i}$
 \end_inset
 
@@ -314,10 +321,10 @@ Body force vector field
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $\overrightarrow{T}$
 \end_inset
 
@@ -326,21 +333,21 @@ Body force vector field
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Traction vector field
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $\sigma_{ij}$
 \end_inset
 
@@ -349,10 +356,10 @@ Traction vector field
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $\underline{\sigma}$
 \end_inset
 
@@ -361,21 +368,21 @@ Traction vector field
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Stress tensor field
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $n_{i}$
 \end_inset
 
@@ -384,10 +391,10 @@ Stress tensor field
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $\overrightarrow{n}$
 \end_inset
 
@@ -396,21 +403,21 @@ Stress tensor field
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Normal vector field
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $\rho$
 \end_inset
 
@@ -419,10 +426,10 @@ Normal vector field
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $\rho$
 \end_inset
 
@@ -431,10 +438,10 @@ Normal vector field
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Mass density scalar field
 \end_layout
 
@@ -496,7 +503,8 @@ where
 
 .
  Substituting into Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eqn:momentum:index"
 
 \end_inset
@@ -598,7 +606,8 @@ where
 
 .
  Substituting into Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eqn:momentum:vec"
 
 \end_inset
@@ -1092,14 +1101,44 @@ Using the central difference method to approximate the acceleration (and
 we have
 \begin_inset Formula \begin{multline}
 \sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{,j}^{p}+N_{,i}^{p})\, dV+\int_{V^{e}}\rho N_{}^{p}\sum_{q}N_{}^{q}(u_{i}^{q}(t+\Delta t)-2u_{i}^{q}(t)+u_{i}^{q}(t-\Delta t))\: dV\\
--\int_{V^{e}}N^{p}f_{i}(t)\: dV-\int_{S_{T}}N^{p}T_{i}\: dS)=0,\end{multline}
+-\int_{V^{e}}N^{p}f_{i}(t)\: dV-\int_{S_{T}}N^{p}T_{i}\: dS)=0.\end{multline}
 
 \end_inset
 
-which we can expand into
+For compatibility with displacement-increment forulations for nonlinear
+ viscoelastic and viscoplastic rheologies, we want to solve for the increment
+ in displacement from time 
+\begin_inset Formula $t$
+\end_inset
+
+ to time 
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+, 
+\begin_inset Formula $\Delta u_{i}^{q}(t)$
+\end_inset
+
+.
+ Replacing 
+\begin_inset Formula $u_{i}^{q}(t+\Delta t)$
+\end_inset
+
+ with 
+\begin_inset Formula $u_{i}^{q}(t)+\Delta u_{i}^{q}(t)$
+\end_inset
+
+, yields
+\begin_inset Formula \[
+\sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{,j}^{p}+N_{,i}^{p})\, dV+\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}(\Delta u_{i}^{q}(t)-u_{i}^{q}(t)+u_{i}^{q}(t-\Delta t))\: dV-\int_{V^{e}}N^{p}f_{i}(t)\: dV-\int_{S_{T}}N^{p}T_{i}\: dS)=0.\]
+
+\end_inset
+
+consistency with solution of quasi-static problems and which we can expand
+ into
 \begin_inset Formula \begin{multline}
-\sum_{elements}({\frac{1}{\Delta t^{2}}\int}_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t+\Delta t)\, dV-\frac{2}{\Delta t^{2}}\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t)\, dV\\
-+\frac{1}{\Delta t^{2}}\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t-\Delta t)\, dV+{\frac{1}{2}\int}_{V^{e}}\sigma_{ij}(t)(N_{,j}^{p}+N_{,i}^{p})\: dV\\
+\sum_{elements}({\frac{1}{\Delta t^{2}}\int}_{V^{e}}\rho N^{p}\sum_{q}N^{q}\Delta u_{i}^{q}(t)\, dV-\frac{1}{\Delta t^{2}}\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t)\, dV\\
++\frac{1}{\Delta t^{2}}\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t-\Delta t)\, dV+\frac{1}{2}\int_{V^{e}}\sigma_{ij}(t)(N_{,j}^{p}+N_{,i}^{p})\: dV\\
 -\int_{V^{e}}N^{p}f_{i}(t)\: dV-\int_{S_{T}}N^{p}T_{i}\: dS)=0\end{multline}
 
 \end_inset
@@ -1119,18 +1158,15 @@ th component associated with basis function
 
  yields
 \begin_inset Formula \begin{multline}
-\frac{1}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t+\Delta t)\, dV\right)=\frac{2}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t)\, dV\right)\\
+\frac{1}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}\Delta u_{i}^{q}(t)\, dV\right)=\frac{1}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t)\, dV\right)\\
 -\frac{1}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t-\Delta t)\, dV\right)-\frac{1}{2}\sum_{elements}\left(\int_{V^{e}}\sigma_{ij}(t)(N_{,j}^{p}+N_{,i}^{p})\: dV\right)\\
 +\sum_{elements}\left(\int_{V^{e}}N^{p}f_{i}(t)\: dV\right)+\sum_{elements}\left(\int_{S_{T}}N^{p}T_{i}\: dS\right).\end{multline}
 
 \end_inset
 
 We can rewrite the left-hand side as a matrix-vector product where the vector
- is the displacement field at time 
-\begin_inset Formula $t+\Delta t$
-\end_inset
-
- and the element mass matrix is given by
+ is the displacement-increment field and the element mass matrix is given
+ by
 \begin_inset Formula \begin{equation}
 M_{ij}^{pq}=\delta_{ij}\int_{V^{e}}\rho N^{p}N^{q}\, dV,\end{equation}
 
@@ -1274,24 +1310,24 @@ and we then obtain
 \begin_layout Standard
 \begin_inset Formula \begin{multline}
 \sum_{elements}(\int_{V^{e}}\frac{1}{4}(N_{,j}^{p}+N_{,i}^{p})C_{ijkl}\left(N_{,l}^{q}+N_{,k}^{q}\right)\, dV)\overrightarrow{U}=\\
-\sum_{elements}\left(\int_{V^{e}}N_{}^{p}f_{i}\: dV+\int_{S_{T}^{e}}N_{}^{p}T_{i}\, dS-\int_{V^{e}}\frac{1}{2}\sigma_{ij}^{0}(N_{,j}^{p}+N_{,i}^{p})\: dV\right),\end{multline}
+\sum_{elements}\left(\int_{V^{e}}N_{}^{p}f_{i}\: dV+\int_{S_{T}^{e}}N^{p}T_{i}\, dS-\int_{V^{e}}\frac{1}{2}\sigma_{ij}^{0}(N_{,j}^{p}+N_{,i}^{p})\: dV\right),\end{multline}
 
 \end_inset
 
 where 
-\begin_inset Formula $\overrightarrow{U}$
+\begin_inset Formula $\overrightarrow{u}$
 \end_inset
 
  is the global displacement vector for all nodes in the finite element mesh.
  This leads to the global matrix problem
 \begin_inset Formula \begin{equation}
-\underline{K}\overrightarrow{U}=\overrightarrow{B}\hphantom{}_{b}+\overrightarrow{B}\hphantom{}_{t}-\overrightarrow{B}\hphantom{}_{i},\end{equation}
+\underline{K}\overrightarrow{u}=\overrightarrow{B}_{b}+\overrightarrow{B}_{t}-\overrightarrow{B}_{i},\end{equation}
 
 \end_inset
 
 or
 \begin_inset Formula \begin{equation}
-\underline{K}\overrightarrow{U}=\overrightarrow{B}\hphantom{}_{ext}-\overrightarrow{B}\hphantom{}_{i}.\end{equation}
+\underline{K}\overrightarrow{u}=\overrightarrow{B}_{ext}-\overrightarrow{B}_{i}.\end{equation}
 
 \end_inset
 
@@ -1340,14 +1376,15 @@ We are interested in computing the solution at time
 
 with the external forces for any given time:
 \begin_inset Formula \begin{equation}
-\overrightarrow{F}\hphantom{}^{t+\Delta t}=\overrightarrow{B}\hphantom{}_{ext}^{t+\Delta t}-\overrightarrow{B}\hphantom{}_{int}^{t+\Delta t}=\overrightarrow{0}.\label{eq:qs-force-balance}\end{equation}
+\overrightarrow{F}(t+\Delta t)=\overrightarrow{B}_{ext}(t+\Delta t)-\overrightarrow{B}_{int}(t+\Delta t)=\overrightarrow{0}.\label{eq:qs-force-balance}\end{equation}
 
 \end_inset
 
 Note that the internal forces include the effects of initial stresses.
  Iterative methods such as Newton-Raphson may be used to solve Equation
  
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:qs-force-balance"
 
 \end_inset
@@ -1363,7 +1400,7 @@ reference "eq:qs-force-balance"
 
  are known, we have
 \begin_inset Formula \begin{equation}
-\overrightarrow{B}\hphantom{}_{int}^{t+\Delta t}=\overrightarrow{B}\hphantom{}_{int}^{t}+\Delta\overrightarrow{B}\hphantom{}_{int},\end{equation}
+\overrightarrow{B}_{int}(t+\Delta t)=\overrightarrow{B}_{int}(t)+\Delta\overrightarrow{B}_{int}(t),\end{equation}
 
 \end_inset
 
@@ -1377,24 +1414,24 @@ where
 \noun off
 \color none
 
-\begin_inset Formula $\Delta\overrightarrow{B}\hphantom{}_{int}$
+\begin_inset Formula $\Delta\overrightarrow{B}_{int}(t)$
 \end_inset
 
  is the increment in nodal point forces corresponding to the increment in
  element displacements and stresses.
  This vector may be approximated as
 \begin_inset Formula \begin{equation}
-\Delta\overrightarrow{B}\hphantom{}_{int}\approx\underline{K}\hphantom{}^{t+\Delta t}\Delta\overrightarrow{U},\end{equation}
+\Delta\overrightarrow{B}_{int}(t)\approx\underline{K}(t+\Delta t)\Delta\overrightarrow{u}(t),\end{equation}
 
 \end_inset
 
 where 
-\begin_inset Formula $\Delta\overrightarrow{U}$
+\begin_inset Formula $\Delta\overrightarrow{u}$
 \end_inset
 
  is a vector of displacement increments and
 \begin_inset Formula \begin{equation}
-\underline{K}\hphantom{}^{t+\Delta t}=-\frac{\partial\overrightarrow{F}\hphantom{}^{t+\Delta t}}{\partial\overrightarrow{U}\hphantom{}^{t+\Delta t}}=\frac{\partial\overrightarrow{B}\hphantom{}_{int}^{t+\Delta t}}{\partial\overrightarrow{U}\hphantom{}^{t+\Delta t}}=\sum_{elements}(\int_{V^{e}}\frac{1}{4}(N_{,j}^{p}+N_{,i}^{p})C_{ijkl}^{t+\Delta t}\left(N_{,l}^{q}+N_{,k}^{q}\right)\, dV).\end{equation}
+\underline{K}(t+\Delta t)=-\frac{\partial\overrightarrow{F}(t+\Delta t)}{\partial\overrightarrow{u}(t+\Delta t)}=\frac{\partial\overrightarrow{B}_{int}(t+\Delta t)}{\partial\overrightarrow{u}(t+\Delta t)}=\sum_{elements}(\int_{V^{e}}\frac{1}{4}(N_{,j}^{p}+N_{,i}^{p})C_{ijkl}^{t+\Delta t}\left(N_{,l}^{q}+N_{,k}^{q}\right)\, dV).\end{equation}
 
 \end_inset
 
