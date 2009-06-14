@@ -127,24 +127,76 @@ reference "sec:Spatialdata:SimpleIOAscii"
 \end_layout
 
 \begin_layout Section
+Defining the Simulation
+\end_layout
+
+\begin_layout Standard
+The parameters for PyLith are specified as a hiearchy or tree of modules.
+ The application assembles the hiearchy of modules from user input and then
+ calls the main function in the top-level module in the same manner as a
+ C or C++ program.
+ The behavior of the application is determined by the modules included in
+ the hiearchy as specified by the user.
+ The Pyre framework provides the interface for defining this hiearchy.
+ Pyre properties correspond to simple settings in the form of strings, integers,
+ and real numbers.
+ Pyre facilities correspond to software modules.
+ Facilities may have their own facilities (branches in the tree) and any
+ number of properties.
+ See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Pyre:Architecture"
+
+\end_inset
+
+ for the general concept of Pyre facilities and properties.
+ The top-level object is the PyLith application with three facilities: 
+\family typewriter
+mesher
+\family default
+, 
+\family typewriter
+problem
+\family default
+, and 
+\family typewriter
+petsc
+\family default
+.
+ The 
+\family typewriter
+mesher
+\family default
+ specifies how to import the mesh, the 
+\family typewriter
+problem
+\family default
+ specifies the physical properties, boundary conditions, etc.
+ and 
+\family typewriter
+petsc
+\family default
+ is used to specify PETSc settings.
+ The next few sections discuss the facilities and components for these objects.
+\end_layout
+
+\begin_layout Subsection
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:setting:parameters"
 
 \end_inset
 
-Setting Parameters for PyLith
+Setting PyLith Parameters
 \end_layout
 
 \begin_layout Standard
-The most basic information for setting up a PyLith simulation is the problem
- parameters, since these also describe the characteristics of the mesh and
- database information.
- There are several methods for setting input parameters for the 
+There are several methods for setting input parameters for the 
 \family typewriter
 pylith
 \family default
- executable: via the command line, or by using a text file in 
+ executable: via the command line or by using a text file in 
 \family typewriter
 .cfg
 \family default
@@ -153,16 +205,24 @@ pylith
 .pml
 \family default
  format.
- PyLith gathers most simulation parameters and settings using Pyre properties
- and facilities.
- Properties correspond to simple settings in the form of strings, integers,
- and real numbers.
- Facilities correspond to software modules.
  Both facilities and properties have default values provided, so you only
  need to set values when you want to deviate from the default behavior.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
+Units
+\end_layout
+
+\begin_layout Standard
+All dimensional parameters require units.
+ The units are specified using Python and Fortran syntax, so square meters
+ is m**2.
+ Whitespace is not allowed in the string for units and dimensioned quantities
+ are multiplied by the units string, for example two meters per second is
+ 2.0*m/s.
+\end_layout
+
+\begin_layout Subsubsection
 Using the Command Line
 \end_layout
 
@@ -275,7 +335,7 @@ Using the
  potential problems in a simulation.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
 Using a 
 \family typewriter
 .cfg
@@ -320,7 +380,7 @@ We strongly recommend that you use
  The files are syntax-colored in the vim editor.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
 Using a 
 \family typewriter
 .pml
@@ -397,7 +457,7 @@ XML files are intended to be read and written by machines, not edited manually
  file can be used.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
 Specification and Placement of Configuration Files
 \end_layout
 
@@ -528,7 +588,617 @@ This is generally a more useful way of determining problem settings, since
 \end_layout
 
 \begin_layout Subsection
-PETSc Settings
+Mesh Information (
+\family typewriter
+mesher
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Geometrical and topological information for the finite element mesh may
+ be provided by exporting an EXODUS format file from CUBIT, by exporting
+ a GMV file and an accompanying Pset file from LaGriT, or by specifying
+ the information in PyLith mesh ASCII format.
+ See Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cha:Tutorials"
+
+\end_inset
+
+ for examples.
+\end_layout
+
+\begin_layout Standard
+PyLith supports linear cells in 1D (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1D-linear-elements"
+
+\end_inset
+
+), 2D (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2D-linear-elements"
+
+\end_inset
+
+), and 3D (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:3D-linear-elements"
+
+\end_inset
+
+).
+ The vertex ordering must follow the convention shown in Figures 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1D-linear-elements"
+
+\end_inset
+
+-
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:3D-linear-elements"
+
+\end_inset
+
+.
+ Quadratic cells are also supported, but at present the only method for
+ using these cells in PyLith is using PyLith ASCII format.
+ PyLith does not yet support automatic generation of a quadratic mesh from
+ the linear meshes created by CUBIT or LaGriT.
+\end_layout
+
+\begin_layout Standard
+The mesh information defines the vertex coordinates and specifies the vertices
+ composing each cell in the mesh.
+ The mesh information must also define at least one set of vertices for
+ which displacement (Dirichlet) boundary conditions will be provided.
+ In most realistic problems, there will be several vertex groups, each with
+ a unique identifying label.
+ For example, one group might define a surface of the mesh where displacement
+ (Dirichlet) boundary conditions will be applied, another might define a
+ surface where traction (Neumann) boundary conditions will be applied, while
+ a third might specify a surface that defines a fault.
+ Similarly, the mesh information contains cell labels that define the material
+ type for each cell in the mesh.
+ For a mesh with a single material type, there will only be a single label
+ for every cell in the mesh.
+ See Chapters 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cha:material:models"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cha:boundary:interface:conditions"
+
+\end_inset
+
+ for more detailed discussions of setting the materials and boundary conditions.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/brad/src/cig/pylith/doc/userguide/runpylith/figs/bar2.eps
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Linear bar cell available for 1D problems.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1D-linear-elements"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/brad/src/cig/pylith/doc/userguide/runpylith/figs/tri3.eps
+
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename /Users/brad/src/cig/pylith/doc/userguide/runpylith/figs/quad4.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Linear cells available for 2D problems are the triangle (left) and the quadrilat
+eral (right).
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2D-linear-elements"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /Users/brad/src/cig/pylith/doc/userguide/runpylith/figs/tet4.eps
+
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename /Users/brad/src/cig/pylith/doc/userguide/runpylith/figs/hex8.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Linear cells available for 3D problems are the tetrahedron (left) and the
+ hexahedron (right).
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:3D-linear-elements"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Problem Specification (
+\family typewriter
+problem
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+The problem component specifies the basic parameters of the simulation,
+ including the physical properties, the boundary conditions, interface condition
+s (faults).
+ The current release of PyLith contains one type of problem, 
+\family typewriter
+TimeDependent
+\family default
+ for use in static, quasi-static, and dynamic simulations.
+ Future releases may contain multiple types of problems, for example, computing
+ Green's functions, as additional applications are developed.
+ The general components are:
+\end_layout
+
+\begin_layout Description
+normalizer Scales used to nondimensionalize the problem (default is 
+\family typewriter
+NondimElasticQuasistatic
+\family default
+).
+\end_layout
+
+\begin_layout Description
+materials Array of materials comprising the domain (default is 
+\family typewriter
+[material]
+\family default
+).
+\end_layout
+
+\begin_layout Description
+bc Array of boundary conditions (default is none).
+\end_layout
+
+\begin_layout Description
+interfaces Array of interface conditions, i.e., faults (default is none).
+\end_layout
+
+\begin_layout Description
+gravity_field Gravity field used to construct body forces (default is none).
+\end_layout
+
+\begin_layout Standard
+The properties for each material group are:
+\end_layout
+
+\begin_layout Description
+dimension Spatial dimension of the problem (default is 3)
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file for a problem is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
+
+\begin_layout LyX-Code
+dimension = 3
+\end_layout
+
+\begin_layout LyX-Code
+normalizer = spatialdata.units.NondimElasticQuasistatic
+\end_layout
+
+\begin_layout LyX-Code
+materials = [elastic,viscoelastic]
+\end_layout
+
+\begin_layout LyX-Code
+bc = [boundary_east,boundary_bottom,boundary_west]
+\end_layout
+
+\begin_layout LyX-Code
+interfaces = [SanAndreas,SanJacinto]
+\end_layout
+
+\begin_layout LyX-Code
+gravity_field = spatialdata.spatialdb.GravityField
+\end_layout
+
+\begin_layout Subsubsection
+Nondimensionalization
+\end_layout
+
+\begin_layout Standard
+PyLith nondimensionalizes all parameters provided by the user so that the
+ simulation solves the equations using nondimensional quantities.
+ This permits application of PyLith to problems across a vast range of spatial
+ and temporal scales.
+ The scales used to nondimensionalize the problem are length, pressure,
+ density, and time.
+ PyLith provides two normalizer objects to make it easy to provide reasonable
+ scales for the nondimensionalization.
+ The 
+\family typewriter
+NondimElasticQuasistatic
+\family default
+ normalizer has the following properties:
+\end_layout
+
+\begin_layout Description
+length_scale Length to nondimensionalize length (default is 1.0 km).
+\end_layout
+
+\begin_layout Description
+shear_modulus Shear modulus to nondimensionalize pressure (default is 3.0e+10
+ Pa).
+\end_layout
+
+\begin_layout Description
+relaxation_time Relaxation time to nondimensionalize time (default is 1.0
+ year).
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file for a problem is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.normalizer]
+\end_layout
+
+\begin_layout LyX-Code
+length_scale = 1.0*km
+\end_layout
+
+\begin_layout LyX-Code
+shear_modules = 3.0e+10*Pa
+\end_layout
+
+\begin_layout LyX-Code
+relaxation_time = 1.0*yr
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+NondimElasticDynamic
+\family default
+ normalizer has the following properties:
+\end_layout
+
+\begin_layout Description
+shear_wave_speed Shear wave speed used to nondimensionalize length and pressure
+ (default is 3.0 km/s).
+\end_layout
+
+\begin_layout Description
+mass_density Mass density to nondimensionalize density and pressure (default
+ is 3.0e+3 kg/m
+\begin_inset Formula $^{3}$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Description
+wave_period Period of seismic waves used to nondimensionalize time (default
+ is 1.0 s).
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file for a problem is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.normalizer]
+\end_layout
+
+\begin_layout LyX-Code
+shear_wave_speed = 3.0*km/s
+\end_layout
+
+\begin_layout LyX-Code
+mass_density = 3.0e+3*kg/m**3
+\end_layout
+
+\begin_layout LyX-Code
+wave_period = 1.0*s
+\end_layout
+
+\begin_layout Subsection
+PETSc Settings (
+\family typewriter
+petsc
+\family default
+)
 \end_layout
 
 \begin_layout Standard
@@ -1083,402 +1753,352 @@ Convergence tolerance for relative decrease in residual norm.
 \end_layout
 
 \begin_layout Section
-Mesh Information
+Time-dependent Problem
 \end_layout
 
 \begin_layout Standard
-Geometrical and topological information for the finite element mesh may
- be provided by exporting an EXODUS format file from CUBIT, by exporting
- a GMV file and an accompanying Pset file from LaGriT, or by specifying
- the information in PyLith mesh ASCII format.
- See Chapter 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "cha:Tutorials"
+PyLith currently only contains this one type of problem which is used for
+ static, quasi-static, and dynamic simulations.
+ The time-dependent problem adds the 
+\family typewriter
+formulation
+\family default
+ facility to the general-problem.
+ The formulation specifies the time-stepping formulation to integrate the
+ elasticity equation.
+ Implicit time stepping should be used for quasi-static problems, whereas
+ explicit time stepping should be used for dynamic problems which include
+ inertial terms.
+ An example of setting the formulation facility to the implicit time stepping
+ component is:
+\end_layout
 
-\end_inset
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
 
- for examples.
+\begin_layout LyX-Code
+formulation = pylith.problems.Implicit
 \end_layout
 
 \begin_layout Standard
-PyLith supports linear cells in 1D (Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:1D-linear-elements"
+An example of setting the formulation facility to the explicit time stepping
+ component is:
+\end_layout
 
-\end_inset
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
 
-), 2D (Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:2D-linear-elements"
+\begin_layout LyX-Code
+formulation = pylith.problems.Explicit
+\end_layout
 
-\end_inset
-
-), and 3D (Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:3D-linear-elements"
-
-\end_inset
-
-).
- The vertex ordering must follow the convention shown in Figures 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:1D-linear-elements"
-
-\end_inset
-
--
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:3D-linear-elements"
-
-\end_inset
-
-.
- Quadratic cells are also supported, but at present the only method for
- using these cells in PyLith is using PyLith ASCII format.
- PyLith does not yet support automatic generation of a quadratic mesh from
- the linear meshes created by CUBIT or LaGriT.
+\begin_layout Subsection
+Time-Stepping Formulation
 \end_layout
 
 \begin_layout Standard
-The mesh information defines the vertex coordinates and specifies the vertices
- composing each cell in the mesh.
- The mesh information must also define at least one set of vertices for
- which displacement (Dirichlet) boundary conditions will be provided.
- In most realistic problems, there will be several vertex groups, each with
- a unique identifying label.
- For example, one group might define a surface of the mesh where displacement
- (Dirichlet) boundary conditions will be applied, another might define a
- surface where traction (Neumann) boundary conditions will be applied, while
- a third might specify a surface that defines a fault.
- Similarly, the mesh information contains cell labels that define the material
- type for each cell in the mesh.
- For a mesh with a single material type, there will only be a single label
- for every cell in the mesh.
- See Chapters 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "cha:material:models"
+The explicit and implicit ime stepping formulations use a common set of
+ facilities and properties.
+ The facilities include
+\end_layout
 
-\end_inset
+\begin_layout Description
+time_step Time step size specification (default is uniform time step).
+\end_layout
 
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "cha:boundary:interface:conditions"
+\begin_layout Description
+solver Type of solver to use (default is linear)
+\end_layout
 
-\end_inset
+\begin_layout Description
+output Array of output managers for output of the solution (default is [output]).
+\end_layout
 
- for more detailed discussions of setting the materials and boundary conditions.
+\begin_layout Description
+jacobian_viewer Viewer to dump the system Jacobian (sparse matrix) to a
+ file for analysis (default is PETSc binary).
 \end_layout
 
 \begin_layout Standard
-\noindent
-\align center
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
+The formulation properties include
+\end_layout
 
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename figs/bar2.eps
+\begin_layout Description
+matrix_type Type of PETSc matrix for the system Jacobian (sparse matrix,
+ default is symmetric, block matrix with a block size of 1).
+\end_layout
 
-\end_inset
+\begin_layout Description
+view_jacobian Flag to indicate if system Jacobian (sparse matrix) should
+ be written to a file (default is false).
+\end_layout
 
+\begin_layout Description
+split_fields Split solution field into a displacement portion (field 0)
+ and a Lagrange multiplier portion (field 1) to permit application of sophistica
+ted PETSc preconditions (default is false, for expert users only).
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file is
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.formulation]
+\end_layout
+
+\begin_layout LyX-Code
+time_step = pylith.problems.TimeStepUniform
+\end_layout
+
+\begin_layout LyX-Code
+solver = pylith.problems.SolverLinear ; Nonlinear solver is pylith.problems.SolverNo
+nlinear
+\end_layout
+
+\begin_layout LyX-Code
+output = [domain,ground_surface]
+\end_layout
+
+\begin_layout LyX-Code
+matrix_type = sbaij ; Nonsymmetric sparse matrix is aij
+\end_layout
+
+\begin_layout LyX-Code
+view_jacobian = false
+\end_layout
+
+\begin_layout Subsection
+Time Stepping
+\end_layout
+
+\begin_layout Standard
+PyLith provides three choices for controlling the time step in time-dependent
+ simulations.
+ These include (1) a uniform, user-specified time step (which is the default),
+ (2) nonuniform, user-specified time steps, and (3) nonuniform, automatically
+ calculated time steps.
+ The procedure for automatically selecting time steps requires that the
+ material models provide a reasonable estimate of the time step for stable
+ time integration.
+ In general, quasi-static simulations should use automatically calculated
+ time steps and dynamic simulations should use a uniform, user-specified
+ time step.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\color red
+Warning:
+\series default
+\color none
  
+\color inherit
+Changing the time step requires recomputing the Jacobian of the system,
+ which can greatly increase the runtime if the time step size changes frequently.
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Linear bar cell available for 1D problems.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:1D-linear-elements"
-
-\end_inset
-
- 
-\end_layout
-
-\end_inset
-
-
+\begin_layout Subsubsection
+Uniform, User-Specified Time Step
 \end_layout
 
 \begin_layout Standard
-\noindent
-\align center
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename figs/tri3.eps
-
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
- 
-\begin_inset Graphics
-	filename figs/quad4.eps
-
-\end_inset
-
-
+With a uniform, user-specified time step, the user selects the time step
+ that is used over the entire duration of the simulation.
+ This value is used whether or not it yields a stable solution, so users
+ should be careful when selecting the time step value.
+ The properties for the uniform, user-specified time step are:
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Linear cells available for 2D problems are the triangle (left) and the quadrilat
-eral (right).
+\begin_layout Description
+total_time Time duration for simulation.
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:2D-linear-elements"
-
-\end_inset
-
- 
-\end_layout
-
-\end_inset
-
-
+\begin_layout Description
+dt Time step for simulation.
 \end_layout
 
 \begin_layout Standard
-\noindent
-\align center
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
+An example of setting a uniform, user-specified time step in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
 
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename figs/tet4.eps
+\begin_layout LyX-Code
+[pylithapp.problem.formulation]
+\end_layout
 
-\end_inset
+\begin_layout LyX-Code
+time_step = pylith.problems.TimeStepUniform ; Default value
+\end_layout
 
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
- 
-\begin_inset Graphics
-	filename figs/hex8.eps
-
-\end_inset
-
+\begin_layout LyX-Code
 
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Caption
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.time_step]
+\end_layout
 
-\begin_layout Plain Layout
-Linear cells available for 3D problems are the tetrahedron (left) and the
- hexahedron (right).
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:3D-linear-elements"
+\begin_layout LyX-Code
+total_time = 1000.0*year
+\end_layout
+
+\begin_layout LyX-Code
+dt = 0.5*year
+\end_layout
+
+\begin_layout Subsubsection
+Nonuniform, User-Specified Time Step
+\end_layout
+
+\begin_layout Standard
+The nonuniform, user-specified time step implementation allows the user
+ to specify the time steps in an ASCII file (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:FileFormat:TimeStepUser"
 
 \end_inset
 
+ for the format specification of the time step file).
+ If the total duration exceeds the time associated with the time steps,
+ then a flag determines whether to cycle through the time steps or to use
+ the last specified time step for the time remaining.
+ The properties for the nonuniform, user-specified time step are:
+\end_layout
+
+\begin_layout Description
+total_time Time duration for simulation.
+\end_layout
+
+\begin_layout Description
+filename Name of file with time step sizes.
+\end_layout
+
+\begin_layout Description
+loop_steps If true, cycle through time steps, otherwise keep using last
+ time step size for any time remaining
+\end_layout
+
+\begin_layout Standard
+An example of setting the properties for nonuniform, user-specified time
+ steps in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation]
+\end_layout
+
+\begin_layout LyX-Code
+time_step = pylith.problems.TimeStepUser ; Change the time step algorithm
+\end_layout
+
+\begin_layout LyX-Code
 
 \end_layout
 
-\end_inset
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.time_step]
+\end_layout
 
+\begin_layout LyX-Code
+total_time = 1000.0*year
+\end_layout
+
+\begin_layout LyX-Code
+filename = timesteps.txt
+\end_layout
+
+\begin_layout LyX-Code
+loop_steps = false ; Default value
+\end_layout
+
+\begin_layout Subsubsection
+Nonuniform, Automatic Time Step
+\end_layout
+
+\begin_layout Standard
+This time step implementation automatically calculates a stable time step
+ based on the constitutive model and rate of deformation.
+ As a result, this choice for choosing the time step relies on accurate
+ calculation of a stable time step within each finite-element cell by the
+ constitutive models.
+ In order to provide some control over the time step selection, the user
+ can control the frequency that a new time step is calculated, the time
+ step to use relative to the value determined by the constitutive models,
+ and a maximum value for the time step.
+ The properties for controlling the automatic time step selection are:
+\end_layout
+
+\begin_layout Description
+total_time Time duration for simulation.
+\end_layout
+
+\begin_layout Description
+max_dt Maximum time step permitted.
+\end_layout
+
+\begin_layout Description
+adapt_skip Number of time steps to skip between calculating new stable time
+ step.
+\end_layout
+
+\begin_layout Description
+stability_factor Safety factor for stable time step.
+\end_layout
+
+\begin_layout Standard
+An example of setting the properties for the automatic time step in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation]
+\end_layout
+
+\begin_layout LyX-Code
+time_step = pylith.problems.TimeStepAdapt ; Change the time step algorithm
+\end_layout
+
+\begin_layout LyX-Code
 
 \end_layout
 
-\end_inset
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.time_step]
+\end_layout
 
+\begin_layout LyX-Code
+total_time = 1000.0*year
+\end_layout
 
+\begin_layout LyX-Code
+max_dt = 10.0*year
+\end_layout
+
+\begin_layout LyX-Code
+adapt_skip = 10 ; Default value
+\end_layout
+
+\begin_layout LyX-Code
+stability_factor = 1.2 ; Default value
 \end_layout
 
 \begin_layout Section
@@ -2086,6 +2706,65 @@ CompositeDB
  conditions where the variations come from two different sources.
 \end_layout
 
+\begin_layout Subsection
+Time History Database
+\end_layout
+
+\begin_layout Standard
+The time history database specifies the temporal variation in the amplitude
+ of a field associated with a boundary condition.
+ It is used in conjunction with spatial databases to provide spatial and
+ temporal variation of parameters for boundary conditions.
+ The same time history is applied to all of the locations, but the time
+ history may be shifted with a spatial variation in the onset time and scaled
+ with a spatial variation in the amplitude.
+ The time history database uses a simple ASCII file which is simpler than
+ the one used by the SimpleDB spatial databse.
+ The file format is described in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Spatialdata:TimeHistoryIO"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+As in the other Pyre objects, spatial database objects contain parameters
+ that can be set from the command line or using 
+\family typewriter
+.cfg or .pml
+\family default
+ files.
+ The parameters for a spatial database are:
+\end_layout
+
+\begin_layout Description
+label Label for the time history database, which is used in diagnostic messages.
+\end_layout
+
+\begin_layout Description
+filename Filename for the time history database.
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+label = Displacement time history
+\end_layout
+
+\begin_layout LyX-Code
+filename = mytimehistory.timedb
+\end_layout
+
 \begin_layout Section
 Labels and Identifiers for Materials, Boundary Conditions, and Faults
 \end_layout
@@ -2120,233 +2799,6 @@ label
  Because we use the fault ``id'' to tag cohesive cells in the mesh the same
  way we tag normal cells to materials, it must be unique among the faults
  as well as the materials.
-\end_layout
-
-\begin_layout Section
-Time Stepping
-\end_layout
-
-\begin_layout Standard
-PyLith provides three choices for controlling the time step in time-dependent
- simulations.
- These include (1) a uniform, user-specified time step (which is the default),
- (2) nonuniform, user-specified time steps, and (3) nonuniform, automatically
- calculated time steps.
- The procedure for automatically selecting time steps requires that the
- material models provide a reasonable estimate of the time step for stable
- time integration.
- In general, quasi-static simulations should use automatically calculated
- time steps and dynamic simulations should use a uniform, user-specified
- time step.
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-\color red
-Warning:
-\series default
-\color none
- 
-\color inherit
-Changing the time step requires recomputing the Jacobian of the system,
- which can greatly increase the runtime if the time step size changes frequently.
-\end_layout
-
-\begin_layout Subsection
-Uniform, User-Specified Time Step
-\end_layout
-
-\begin_layout Standard
-With a uniform, user-specified time step, the user selects the time step
- that is used over the entire duration of the simulation.
- This value is used whether or not it yields a stable solution, so users
- should be careful when selecting the time step value.
- The properties for the uniform, user-specified time step are:
-\end_layout
-
-\begin_layout Description
-total_time Time duration for simulation.
-\end_layout
-
-\begin_layout Description
-dt Time step for simulation.
-\end_layout
-
-\begin_layout Standard
-An example of setting a uniform, user-specified time step in a 
-\family typewriter
-.cfg
-\family default
- file is:
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.problem.formulation]
-\end_layout
-
-\begin_layout LyX-Code
-time_step = pylith.problems.TimeStepUniform ; Default value
-\end_layout
-
-\begin_layout LyX-Code
-
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.problem.formulation.time_step]
-\end_layout
-
-\begin_layout LyX-Code
-total_time = 1000.0*year
-\end_layout
-
-\begin_layout LyX-Code
-dt = 0.5*year
-\end_layout
-
-\begin_layout Subsection
-Nonuniform, User-Specified Time Step
-\end_layout
-
-\begin_layout Standard
-The nonuniform, user-specified time step implementation allows the user
- to specify the time steps in an ASCII file (see Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:FileFormat:TimeStepUser"
-
-\end_inset
-
- for the format specification of the time step file).
- If the total duration exceeds the time associated with the time steps,
- then a flag determines whether to cycle through the time steps or to use
- the last specified time step for the time remaining.
- The properties for the nonuniform, user-specified time step are:
-\end_layout
-
-\begin_layout Description
-total_time Time duration for simulation.
-\end_layout
-
-\begin_layout Description
-filename Name of file with time step sizes.
-\end_layout
-
-\begin_layout Description
-loop_steps If true, cycle through time steps, otherwise keep using last
- time step size for any time remaining
-\end_layout
-
-\begin_layout Standard
-An example of setting the properties for nonuniform, user-specified time
- steps in a 
-\family typewriter
-.cfg
-\family default
- file is:
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.problem.formulation]
-\end_layout
-
-\begin_layout LyX-Code
-time_step = pylith.problems.TimeStepUser ; Change the time step algorithm
-\end_layout
-
-\begin_layout LyX-Code
-
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.problem.formulation.time_step]
-\end_layout
-
-\begin_layout LyX-Code
-total_time = 1000.0*year
-\end_layout
-
-\begin_layout LyX-Code
-filename = timesteps.txt
-\end_layout
-
-\begin_layout LyX-Code
-loop_steps = false ; Default value
-\end_layout
-
-\begin_layout Subsection
-Nonuniform, Automatic Time Step
-\end_layout
-
-\begin_layout Standard
-This time step implementation automatically calculates a stable time step
- based on the constitutive model and rate of deformation.
- As a result, this choice for choosing the time step relies on accurate
- calculation of a stable time step within each finite-element cell by the
- constitutive models.
- In order to provide some control over the time step selection, the user
- can control the frequency that a new time step is calculated, the time
- step to use relative to the value determined by the constitutive models,
- and a maximum value for the time step.
- The properties for controlling the automatic time step selection are:
-\end_layout
-
-\begin_layout Description
-total_time Time duration for simulation.
-\end_layout
-
-\begin_layout Description
-max_dt Maximum time step permitted.
-\end_layout
-
-\begin_layout Description
-adapt_skip Number of time steps to skip between calculating new stable time
- step.
-\end_layout
-
-\begin_layout Description
-stability_factor Safety factor for stable time step.
-\end_layout
-
-\begin_layout Standard
-An example of setting the properties for the automatic time step in a 
-\family typewriter
-.cfg
-\family default
- file is:
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.problem.formulation]
-\end_layout
-
-\begin_layout LyX-Code
-time_step = pylith.problems.TimeStepAdapt ; Change the time step algorithm
-\end_layout
-
-\begin_layout LyX-Code
-
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.problem.formulation.time_step]
-\end_layout
-
-\begin_layout LyX-Code
-total_time = 1000.0*year
-\end_layout
-
-\begin_layout LyX-Code
-max_dt = 10.0*year
-\end_layout
-
-\begin_layout LyX-Code
-adapt_skip = 10 ; Default value
-\end_layout
-
-\begin_layout LyX-Code
-stability_factor = 1.2 ; Default value
 \end_layout
 
 \begin_layout Section
