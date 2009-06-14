@@ -1333,6 +1333,158 @@ Format for the geographic local Cartesian coordinate system in spatial database
 \begin_layout Section
 \begin_inset CommandInset label
 LatexCommand label
+name "sec:Spatialdata:TimeHistoryIO"
+
+\end_inset
+
+Time History Database Files
+\end_layout
+
+\begin_layout Standard
+Time history database files contain a header describing the numer of points
+ in the time history and the units for the time stamps followed by a list
+ with pairs of time stamps and amplitude values.
+ The amplitude at an arbitraty point in time is computed via interpolation
+ of the values in the database.
+ This means that the time history database must span the range of time values
+ of interest.
+ The points in the time history must also be ordered in time.
+\end_layout
+
+\begin_layout LyX-Code
+// This time history database specifies temporal variation in
+\end_layout
+
+\begin_layout LyX-Code
+// amplitude.
+ In this case we prescribe a triangular slip time
+\end_layout
+
+\begin_layout LyX-Code
+// history.
+ 
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+// Comments can appear almost anywhere in these files and are
+\end_layout
+
+\begin_layout LyX-Code
+// delimited with two slashes (//) just like in C++.
+ All text and 
+\end_layout
+
+\begin_layout LyX-Code
+// whitespace after the delimiter on a given line is ignored.
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+// The next line is the magic header for spatial database files 
+\end_layout
+
+\begin_layout LyX-Code
+// in ASCII format.
+\end_layout
+
+\begin_layout LyX-Code
+#TIME HISTORY ascii
+\end_layout
+
+\begin_layout LyX-Code
+TimeHistory { // start specifying the database parameters
+\end_layout
+
+\begin_layout LyX-Code
+  num-points = 5 // number of points in time history
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // Specify the units used in the time stamps.
+\end_layout
+
+\begin_layout LyX-Code
+  time-unit = year
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+} // end of TimeHistory header
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+// The time history values are listed after the parameters.
+\end_layout
+
+\begin_layout LyX-Code
+// Columns time and amplitude where the amplitude values are unitless.
+\end_layout
+
+\begin_layout LyX-Code
+ 0.0     0.00
+\end_layout
+
+\begin_layout LyX-Code
+ 2.0     1.00
+\end_layout
+
+\begin_layout LyX-Code
+ 6.0     4.00
+\end_layout
+
+\begin_layout LyX-Code
+10.0     2.00
+\end_layout
+
+\begin_layout LyX-Code
+11.0     0.00
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Format of time history database files.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:FileFormat:TimeStepUser"
 
 \end_inset
