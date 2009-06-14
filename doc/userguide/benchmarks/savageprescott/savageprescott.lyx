@@ -1,0 +1,388 @@
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+
+\end_preamble
+\use_default_options false
+\language english
+\inputencoding latin1
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 0
+\use_esint 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:benchmarks:savageprescott"
+
+\end_inset
+
+Savage and Prescott Benchmark
+\end_layout
+
+\begin_layout Standard
+This benchmark problem computes the viscoelastic (Maxwell) relaxation of
+ stresses from repeated infinite, strike-slip earthquakes in 3D without
+ gravity.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+CHARLES- use a nondimenisonal description of the problem and geometry.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Problem Description
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:benchmark:savageprescott:geometry"
+
+\end_inset
+
+ shows the geometry of the strike-slip fault (red surface) embedded in the
+ cube consisting of an elastic material (yellow block) over a Maxwell viscoelast
+ic material (blue block).
+ 
+\end_layout
+
+\begin_layout Description
+Domain The domain spans the region
+\begin_inset Formula \begin{gather*}
+0\leq x\leq24\ km,\\
+0\leq y\leq24\ km,\\
+-24\ km\leq z\leq0.\end{gather*}
+
+\end_inset
+
+The top (elastic) layer occupies the region 
+\begin_inset Formula $-12\ km\ \leq z\leq0$
+\end_inset
+
+ and the bottom (viscoelastic) layer occupies the region 
+\begin_inset Formula $-24\ km\ \leq z\leq-12\ km$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Description
+Material
+\begin_inset space ~
+\end_inset
+
+properties The material is a Poisson solid with a shear modulus of 30 GPa.
+ The domain is modeled using an elastic isotropic material for the top layer
+ and a Maxwell viscoelastic material for the bottom layer.
+ The bottom layer has a viscosity of 1.0e+18 Pa-s.
+\end_layout
+
+\begin_layout Description
+Fault The fault is a vertical, right-lateral strike-slip fault.
+ The strike is parallel to the y-direction at the center of the model:
+\begin_inset Formula \begin{gather*}
+x=12\ km,\\
+0\leq y\leq16\ km,\\
+-16\ km\leq z\leq0.\end{gather*}
+
+\end_inset
+
+Uniform slip of 1 m is applied over the region 
+\begin_inset Formula $0\leq y\leq12\ km$
+\end_inset
+
+ and 
+\begin_inset Formula $-12\ km\leq z\leq0$
+\end_inset
+
+ with a linear taper to 0 at y = 16 km and z = -16 km.
+ The tapered region is the light red portion of the fault surface in Figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:benchmark:savageprescott:geometry"
+
+\end_inset
+
+.
+ In the region where the two tapers overlap, each slip value is the minimum
+ of the two tapers (so that the taper remains linear).
+\end_layout
+
+\begin_layout Description
+Boundary
+\begin_inset space ~
+\end_inset
+
+conditions Bottom and side displacements are set to the elastic analytical
+ solution, and the top of the model is a free surface.
+ There are two exceptions to these applied boundary conditions.
+ The first is on the y=0 plane, where y-displacements are left free to preserve
+ symmetry, and the x- and z-displacements are set to zero.
+ The second is along the line segment between (12, 0, -24) and (12, 24,
+ -24), where the analytical solution blows up in some cases.
+ Along this line segment, all three displacement components are left free.
+\end_layout
+
+\begin_layout Description
+Discretization The model is discretized with nominal spatial resolutions
+ of 1000 m, 500 m, and 250 m.
+\end_layout
+
+\begin_layout Description
+Basis
+\begin_inset space ~
+\end_inset
+
+functions We use trilinear hexahedral cells and linear tetrahedral cells.
+\end_layout
+
+\begin_layout Description
+Solution We compute the error in the elastic solution and compare the solution
+ over the domain after 0, 1, 5, and 10 years.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/geometry.png
+	scale 33
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Geometry of strike-slip benchmark problem.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:benchmark:savageprescott:geometry"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Running the Benchmark
+\end_layout
+
+\begin_layout Standard
+After checking out the benchmark files from the CIG SVN repository, change
+ to the 
+\family typewriter
+??
+\family default
+ directory.
+ Decompress the gzipped files in the meshes and parameters directories,
+\end_layout
+
+\begin_layout LyX-Code
+gunzip meshes/*.gz parameters/*.gz
+\end_layout
+
+\begin_layout Standard
+Change to the parameters directory.
+ Each benchmark uses three 
+\family typewriter
+.cfg
+\family default
+ files: 
+\family typewriter
+pylithapp.cfg
+\family default
+, a mesher related file (
+\family typewriter
+strikeslip_cubit.cfg
+\family default
+ or 
+\family typewriter
+strikeslip_lagrit.cfg
+\family default
+), and a resolution and cell related file (e.g., 
+\family typewriter
+strikeslip_hex8_1000m.cfg
+\family default
+).
+ A few examples of running the benchmarks (elastic solution only) are
+\end_layout
+
+\begin_layout LyX-Code
+pylith strikeslip_cubit.cfg strikeslip_hex8_1000m.cfg
+\end_layout
+
+\begin_layout LyX-Code
+pylith strikeslip_cubit.cfg strikeslip_hex8_0500m.cfg
+\end_layout
+
+\begin_layout LyX-Code
+pylith strikeslip_lagrit.cfg strikeslip_tet4_1000m.cfg
+\end_layout
+
+\begin_layout Standard
+To run the time-dependent (viscoelastic) problem, it is necessary to append
+ 
+\family typewriter
+timedep.cfg
+\family default
+ to the above commands, for example
+\end_layout
+
+\begin_layout LyX-Code
+pylith strikeslip_cubit.cfg strikeslip_hex8_1000m.cfg timedep.cfg
+\end_layout
+
+\begin_layout Standard
+This will run the problem for 10 years, using a time-step size of 0.1 years,
+ and results will be output for each year.
+ The benchmarks at resolutions of 1000 m, 500 m, and 250 m require  approximatel
+y 150 MB, 960 MB, and 8 GB, respectively.
+\end_layout
+
+\begin_layout Subsection
+Benchmark Results
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:benchmark:savageprescott:solution"
+
+\end_inset
+
+ shows the displacement field from the simulation with hexahedral cells
+ using trilinear basis functions at a resolution of 1000 m.
+ For each resolution and set of basis functions, we measure the accuracy
+ by comparing the numerical solution against the semi-analytical Okada solution
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Okada:1992"
+
+\end_inset
+
+.
+ We also compare the accuracy and runtime across resolutions and different
+ cell types.
+ This provides practical information about what cell types and resolutions
+ are required to achieve a given level of accuracy with the shortest runtime.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/soln.png
+	scale 33
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Displacement field for strike-slip benchmark problem.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:benchmark:savageprescott:solution"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Solution Accuracy
+\end_layout
+
+\end_body
+\end_document
