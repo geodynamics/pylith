@@ -3,24 +3,30 @@ CURRENT ISSUES/PRIORITIES
 ======================================================================
 
 CRITICAL
+
   petsc-dev doesn't build on the cygwin buildbot (`_vsnprintf' undeclared)
     http://www.geodynamics.org:8009/?project=PETSc
 
-    * Needed for cywgin binaries
-
-    * Matt is going to email Leif instructions for how to remove this test from
-      the PETSc configure.
-
-  Generalized maxwell model
-
-    * Brad is working on updating the C++ unit tests.
+    * installation is timing out. Sent email to Leif to increase timeout value.
 
   Need power-law full-scale "test" to insure that the power-law and
   nonlinear solve give reasonable results.
 
-BUGS
+  Need generalized Maxwell full-scale "test".
 
-  malloc during assembly when running in parallel
+  Extensions
+
+    Physical properties
+
+    Constitutive model
+
+  Time dependent Neumann BC
+
+BONUS
+
+  pylithinfo (Python application, send extra args to PyLith)
+
+  Memory model
 
 ----------------------------------------------------------------------
 RELEASE 1.4
@@ -61,12 +67,47 @@ Brad
 Charles
   3-D Power-law rheology
     full-scale test (axial compression/extension?)
-  Generalized Maxwell materials (initial stress/strain)
-    CURRENTLY DISABLED!!!!
 
 ----------------------------------------------------------------------
 
-1. Tidy up
+1. Update manual for version 1.4 [Brad and Charles]
+
+  Materials
+
+    Material parameters
+
+    Notation xx versus 11 etc
+
+  6.4 Initial State Variables -> Initial stress, strain and state variables
+
+  Insert Time-dependent boundary conditions section
+    Parameters
+
+  Benchmarks
+
+    Update figures
+      summary
+      scaling
+
+    Add Savage-Prescott
+  
+  Extending PyLith
+
+    Constitutive models
+
+    Material properties
+
+  File Formats
+
+    Time History
+
+  Installation using source tarball should not require SWIG, Pyrex, or
+  Pyrexembed [need to test]. Should include .i files in tarball for
+  reference.
+
+  * Reduce memory use with ordering elements by material??
+
+2. Tidy up
 
     Switch Components to PetscComponents.
       Add _cleanup() to components to deallocate local data structures.
@@ -81,7 +122,7 @@ Charles
       problems C++, SWIG
       topology C++, SWIG
 
-2. Add missing unit tests
+3. Add missing unit tests
 
     pytests
       test_configure
@@ -138,54 +179,6 @@ Charles
     Material.ncells
     MemoryLogger.logMesh()
     MemoryLogger.logMaterial()
-
-3. Update manual for version 1.4 [Brad and Charles]
-
-  Figure 2.2: dependencies (Pyrex->SWIG)
-
-  3.3 and 3.4 update for solution increment implementation
-
-  Running PyLith
-
-    nondimensionalization
-
-  Materials
-
-    Material parameters
-
-    Notation xx versus 11 etc
-
-  6.4 Initial State Variables -> Initial stress, strain and state variables
-
-  Insert Time-dependent boundary conditions section
-    Parameters
-
-  Benchmarks
-
-    Update figures
-      summary
-      scaling
-
-    Add Savage-Prescott
-  
-  Extending PyLith
-
-    Constitutive models
-
-    Material properties
-
-  File Formats
-
-    Time History
-
-  Installation using source tarball should not require SWIG, Pyrex, or
-  Pyrexembed [need to test]. Should include .i files in tarball for
-  reference.
-
-  * Reduce memory use with ordering elements by material??
-
-  * Material
-    * initial stress, strain, and state variables
 
 4. Check Tabrez's problems.
 
