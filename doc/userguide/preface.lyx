@@ -1,11 +1,12 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding latin1
 \font_roman default
@@ -16,9 +17,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 1
@@ -81,10 +84,14 @@ Citation
 \end_layout
 
 \begin_layout Standard
-The 
-\begin_inset LatexCommand htmlurl
-name "Computational Infrastructure for Geodynamics (CIG)"
-target "geodynamics.org"
+The Computational Infrastructure for Geodynamics (CIG) 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org
+\end_layout
 
 \end_inset
 
@@ -96,7 +103,7 @@ target "geodynamics.org"
  practice by citing the appropriate peer-reviewed papers and making appropriate
  acknowledgements in talks and publications.
  At this time there are no refereed journal articles discussing the design
- and implementation of PyLith, so we request that you cite three AGU meeting
+ and implementation of PyLith, so we request that you cite four AGU meeting
  abstracts associated with PyLith:
 \end_layout
 
@@ -140,6 +147,19 @@ Eos Trans.
  Suppl., Abstract T21B-0592.
 \end_layout
 
+\begin_layout Itemize
+Aagaard, B., C.
+ Williams, M.
+ Knepley (2008), PyLith: A finite-element code for modeling quasi-static
+ and dynamic crustal deformation, 
+\emph on
+Eos Trans.
+ AGU, 8
+\emph default
+9(53), Fall Meet.
+ Suppl., Abstract T41A-1925.
+\end_layout
+
 \begin_layout Standard
 To cite this manual, use:
 \end_layout
@@ -155,9 +175,11 @@ Aagaard, B., S.
 PyLith User Manual, Version 1.4.
 
 \emph default
- Pasadena, CA: Computational Infrastructure of Geodynamics, 2008.
+ Pasadena, CA: Computational Infrastructure of Geodynamics, 2009.
  URL: geodynamics.org/cig/software/
-\newline
+\begin_inset Newline newline
+\end_inset
+
 short/pylith/pylith_book-1.4.pdf
 \end_layout
 
@@ -166,32 +188,50 @@ Support
 \end_layout
 
 \begin_layout Standard
-Current PyLith development is supported by the 
-\begin_inset LatexCommand htmlurl
-name "Southern California Earthquake Center"
-target "www.scec.org"
+Current PyLith development is supported by the Southern California Earthquake
+ Center 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www.scec.org
+\end_layout
 
 \end_inset
 
-, the 
-\begin_inset LatexCommand htmlurl
-name "National Science Foundation"
-target "www.nsf.gov"
+, the National Science Foundation 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www.nsf.gov
+\end_layout
 
 \end_inset
 
-, the CIG, and internal 
-\begin_inset LatexCommand htmlurl
-name "U.S. Geological Survey"
-target "www.usgs.gov"
+, the CIG, and internal U.S.
+ Geological Survey 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www.usgs.gov
+\end_layout
 
 \end_inset
 
  funding.
- Pyre development is funded by the 
-\begin_inset LatexCommand htmlurl
-name "Department of Energy's"
-target "www.doe.gov/engine/content.do"
+ Pyre development is funded by the Department of Energy's 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www.doe.gov/engine/content.do
+\end_layout
 
 \end_inset
 
@@ -214,10 +254,14 @@ Request for Comments
 
 \begin_layout Standard
 Your suggestions and corrections can only improve this documentation.
- Please report any errors, inaccuracies, or typos to 
-\begin_inset LatexCommand url
-name "Sue Kientz"
-target "sue@geodynamics.org"
+ Please report any errors, inaccuracies, or typos to Sue Kientz 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+sue@geodynamics.org
+\end_layout
 
 \end_inset
 

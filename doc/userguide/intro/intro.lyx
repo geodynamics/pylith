@@ -235,7 +235,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/packages.eps
-	scale 75
+	scale 40
 
 \end_inset
 
@@ -280,11 +280,11 @@ PyLith is written in two programming languages.
  SWIG is a package that simplifies the task of adding C++ extensions to
  Python code, and FIAT provides tabulated basis functions and numerical
  quadrature points.
+ 
 \end_layout
 
 \begin_layout Standard
-In writing PyLith 1.0, the code was completely redesigned to be object-oriented
- and modular.
+In writing PyLith 1.0, the code was designed to be object-oriented and modular.
  Each type of module is accessed through a specified interface (set of functions
 ).
  This permits adding, replacing, and rewriting modules without affecting
@@ -382,6 +382,12 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Pyre:Architecture"
+
+\end_inset
+
 Pyre Architecture.
  The integration framework is a set of cooperating abstract services.
 \end_layout
@@ -446,8 +452,8 @@ Sieve and PETSc
 \end_layout
 
 \begin_layout Standard
-PyLith 0.8 and PyLith 1.x make use of a new set of data structures and routines
- in PETSc called 
+PyLith 1.x makes use of a set of data structures and routines in PETSc called
+ 
 \family typewriter
 Sieve
 \family default
@@ -456,8 +462,8 @@ Sieve
 \family typewriter
 Sieve
 \family default
- is a new method for representing computational meshes, and it greatly simplifie
-s finite-element computations.
+ provides data structures and routines for for representing and manipulating
+ computational meshes, and it greatly simplifies finite-element computations.
 
 \family typewriter
  Sieve
