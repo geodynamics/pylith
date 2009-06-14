@@ -80,9 +80,6 @@ class Problem(PetscComponent):
     import pyre.inventory
     from pylith.utils.EmptyBin import EmptyBin
 
-    useGravity = pyre.inventory.bool("use_gravity", default=False)
-    useGravity.meta['tip'] = "Use gravitational body forces in problem."
-    
     dimension = pyre.inventory.int("dimension", default=3,
                                    validator=pyre.inventory.choice([1,2,3]))
     dimension.meta['tip'] = "Spatial dimension of problem space."
