@@ -66,8 +66,8 @@ Overview
 \begin_layout Standard
 The Crustal Deformation Modeling Working Group within the Southern California
  Earthquake Center and the Short-Term Tectonics Working Group within CIG
- developed a suite of benchmarks to test the accuracy and performance of
- 3D numerical codes.
+ have developed a suite of benchmarks to test the accuracy and performance
+ of 3D numerical codes.
  The benchmark definitions are posted on the CIG website at Short-Term Tectonics
  Benchmarks 
 \begin_inset Flex URL
@@ -110,6 +110,13 @@ s based on actual geophysical problems.
 \begin_inset CommandInset include
 LatexCommand input
 filename "strikeslip/strikeslip.lyx"
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand input
+filename "savageprescott/savageprescott.lyx"
 
 \end_inset
 

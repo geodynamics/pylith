@@ -259,6 +259,13 @@ filename "benchmarks/benchmarks.lyx"
 \end_inset
 
 
+\begin_inset CommandInset include
+LatexCommand input
+filename "extending/extending.lyx"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -404,6 +411,25 @@ Eos Trans.
 \emph default
 8(52), Fall Meet.
  Suppl., Abstract T21B-0592.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "Aagaard:etal:2008"
+
+\end_inset
+
+Aagaard, B., C.
+ Williams, M.
+ Knepley (2008), PyLith: A finite-element code for modeling quasi-static
+ and dynamic crustal deformation, 
+\emph on
+Eos Trans.
+ AGU, 
+\emph default
+89(53), Fall Meet.
+ Suppl., Abstract T41A-1925.
 \end_layout
 
 \begin_layout Bibliography
