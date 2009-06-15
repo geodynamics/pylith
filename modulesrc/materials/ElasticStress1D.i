@@ -52,7 +52,7 @@ namespace pylith {
        * @param dbValues Array of database values.
        */
       void _dbToProperties(double* const propValues,
-			   const double_array& dbValues) const;
+			   const pylith::double_array& dbValues) const;
       
       /** Nondimensionalize properties.
        *

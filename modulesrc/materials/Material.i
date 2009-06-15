@@ -151,7 +151,7 @@ namespace pylith {
        */
       virtual
       void _dbToProperties(double* const propValues,
-			   const double_array& dbValues) const = 0;
+			   const pylith::double_array& dbValues) const = 0;
       
       /** Nondimensionalize properties.
        *
