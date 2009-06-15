@@ -521,7 +521,7 @@ pylith::materials::Material::_findField(int* propertyIndex,
       return;
     } // if
 
-  if (propertyIndex < 0 && stateVarIndex < 0) {
+  if (*propertyIndex < 0 && *stateVarIndex < 0) {
     std::ostringstream msg;
     msg << "Unknown physical property or state variable '" << name
 	<< "' for material '" << _label << "'.";
