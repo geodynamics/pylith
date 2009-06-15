@@ -17,7 +17,11 @@
 
 // Header files for module C++ code.
 %{
+#include "pylith/materials/materialsfwd.hh" // forward declarations
+
 #include "PlaneStrainState.hh"
+
+#include "pylith/utils/arrayfwd.hh"
 %}
 
 // Convert standard C++ exceptions to Python exceptions.

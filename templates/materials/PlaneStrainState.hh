@@ -73,7 +73,7 @@ public :
    * @param mesh Finite-element mesh.
    * @returns Time step
    */
-  double stableTimeStepImplicit(const topology::Mesh& mesh);
+  double stableTimeStepImplicit(const pylith::topology::Mesh& mesh);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

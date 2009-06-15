@@ -15,12 +15,13 @@
 ##
 ## Factory: material.
 
-from ElasticMaterial import ElasticMaterial # ISA ElasticMaterial
+# ISA ElasticMaterial
+from pylith.materials.ElasticMaterial import ElasticMaterial
 
 # Import the SWIG module PlanseStrainState object and rename it
 # ModulePlaneStrainState so that it doesn't clash with the local
 # Python class with the same name.
-from materials import PlaneStrainState as ModulePlaneStrainState
+from materialscontrib import PlaneStrainState as ModulePlaneStrainState
 
 # PlaneStrainState class
 class PlaneStrainState(ElasticMaterial, ModulePlaneStrainState):
