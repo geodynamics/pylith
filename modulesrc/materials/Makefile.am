@@ -30,6 +30,11 @@ swig_sources = \
 	GenMaxwellIsotropic3D.i \
 	PowerLaw3D.i
 
+swigincludedir = $(pkgdatadir)/swig/$(subpackage)
+swiginclude_HEADERS = \
+	Material.i \
+	ElasticMaterial.i
+
 swig_generated = \
 	materials_wrap.cxx \
 	materials.py
