@@ -154,7 +154,7 @@ const double pylith::materials::PowerLaw3DTimeDepData::_propertiesNondim[] = {
   2.00000000e+00,
   1.28000000e-01,
   1.28000000e-01,
-  3.54219523e+08,
+  4.44444444e+01,
   3.00000000e+00,
 };
 

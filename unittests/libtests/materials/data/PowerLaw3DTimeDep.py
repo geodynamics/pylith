@@ -103,9 +103,9 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
     self.timeScale = 1.0
     self.densityScale = 1.0e+3
     self.viscosityCoeffScaleA = \
-                  (self.pressureScale**(1.0/powerLawExpA))/self.timeScale
+                  (self.timeScale**(1.0/powerLawExpA)) * self.pressureScale
     self.viscosityCoeffScaleB = \
-                  (self.pressureScale**(1.0/powerLawExpB))/self.timeScale
+                  (self.timeScale**(1.0/powerLawExpB)) * self.pressureScale
 
     self.dbProperties = numpy.array([ [densityA, vsA, vpA, \
                                        viscosityCoeffA, powerLawExpA],
