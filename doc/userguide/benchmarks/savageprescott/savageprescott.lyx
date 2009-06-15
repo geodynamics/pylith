@@ -208,6 +208,16 @@ status open
 \end_inset
 
 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+REPLACE WITH REAL FIGURE
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Plain Layout
@@ -350,6 +360,16 @@ status open
 \begin_inset Graphics
 	filename figs/soln.png
 	scale 33
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+REPLACE WITH REAL FIGURE
+\end_layout
 
 \end_inset
 
