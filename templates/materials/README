@@ -1,0 +1,12 @@
+PyLith interface files are installed to $PREFIX/shared/pylith/swig.
+
+Functions in bulk material routines are called for every quadrature
+point of every cell of the material, so efficient code is essential.
+
+The consistency checks of user input should throw exceptions with a
+meaningful error message so that the user can fix the
+mistake. Consistency checks in the other routines should use the
+assert() macro so that they can be removed during compilation. To
+remove the assert() calls during compilation configure with -DNDEBUG
+added to the CFLAGS and CXXFLAGS environment variables.
+

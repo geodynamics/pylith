@@ -1,4 +1,4 @@
-# -*- Makefile -*-
+#!/usr/bin/env python
 #
 # ----------------------------------------------------------------------
 #
@@ -10,17 +10,12 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	include \
-	bc \
-	faults \
-	feassemble \
-	materials \
-	meshio \
-	mpi \
-	problems \
-	topology \
-	utils
+## @file __init__.py
+##
+## @brief Python module initialization
+
+__all__ = ['PlaneStrainState',
+           ]
 
 
-# End of file 
+# End of file

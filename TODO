@@ -16,8 +16,6 @@ CRITICAL
 
   Extensions
 
-    Physical properties
-
     Constitutive model
 
   Time dependent Neumann BC
@@ -89,8 +87,6 @@ Charles
     Add Savage-Prescott [CHARLES]
   
   Extending PyLith [BRAD]
-
-    Constitutive models
 
     Material properties
 
