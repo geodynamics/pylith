@@ -160,6 +160,32 @@ PyLith provides several types of spatial databases that can be used for
  
 \end_layout
 
+\begin_layout Standard
+Description of functionality of component (also in README)
+\end_layout
+
+\begin_layout Standard
+Methods required in C++ object with description of UniformVelModel functionality.
+\end_layout
+
+\begin_layout Standard
+Methods required in Python object with description of fuctionality in this
+ case.
+\end_layout
+
+\begin_layout Standard
+Description of how to create SWIG interface files.
+\end_layout
+
+\begin_layout Standard
+Build, install, and run tests.
+ (make, make install, make check)
+\end_layout
+
+\begin_layout Standard
+run twotet4-geoproj to test, how to change settings
+\end_layout
+
 \begin_layout Section
 \begin_inset CommandInset label
 LatexCommand label
