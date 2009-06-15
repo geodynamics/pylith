@@ -17,6 +17,7 @@ dist_noinst_DATA = \
 	dislocation.jpg \
 	finalslip.spatialdb \
 	finalslip_rupture.spatialdb \
+	fixeddisp_axial.spatialdb \
 	fixeddisp_shear.spatialdb \
 	geometry.jou \
 	gravity.cfg \
@@ -26,12 +27,16 @@ dist_noinst_DATA = \
 	hex8-mesh.jpg \
 	initial_state.spatialdb \
 	mat_elastic.spatialdb \
-	mat_viscoelastic.spatialdb \
+	mat_maxwell.spatialdb \
+	mat_genmaxwell.spatialdb \
+	mat_powerlaw.spatialdb \
 	mesh_hex8_1000m.cub \
 	mesh_hex8_1000m.jou \
+	planestrain.cfg \
 	pylithapp.cfg \
 	savageprescott-t100.jpg \
 	savageprescott.cfg \
+	savageprescott-powerlaw.cfg \
 	shear.jpg \
 	shearxy.cfg \
 	sliprate_creep.spatialdb \
