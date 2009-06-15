@@ -63,7 +63,7 @@ class DirichletBoundary(DirichletBC, ModuleDirichletBoundary):
     self._loggingPrefix = "DiBC "
     self.availableFields = \
         {'vertex': \
-           {'info': ["initial", 
+           {'info': ["initial-value", 
                      "rate-of-change", 
                      "change-in-value", 
                      "rate-start-time", 
