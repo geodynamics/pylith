@@ -331,14 +331,12 @@ pylith::feassemble::IntegratorElasticity::cellField(
   assert(0 != _material);
   assert(0 != _normalizer);
 
-  // We assume the material stores the total_strain field if
-  // hasStateVars() is TRUE.
-
   if (0 == _outputFields)
     _outputFields =
       new topology::Fields<topology::Field<topology::Mesh> >(mesh);
   
-  if (!_material->hasStateVars() && 0 == strcasecmp(name, "total_strain")) {
+  if (0 == strcasecmp(name, "total_strain") &&
+      !_material->hasStateVar("total_strain")) {
     assert(0 != fields);
     _allocateTensorField(mesh);
     topology::Field<topology::Mesh>& buffer = 
@@ -349,7 +347,8 @@ pylith::feassemble::IntegratorElasticity::cellField(
     _calcStrainStressField(&buffer, name, fields);
     return buffer;
 
-  } else if (!_material->hasStateVars() && 0 == strcasecmp(name, "stress")) {
+  } else if (0 == strcasecmp(name, "stress") &&
+	     !_material->hasStateVar("total_strain")) {
     assert(0 != fields);
     _allocateTensorField(mesh);
     topology::Field<topology::Mesh>& buffer = 

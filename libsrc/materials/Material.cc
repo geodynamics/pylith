@@ -286,6 +286,28 @@ pylith::materials::Material::stateVarsField() const
 } // stateVarsField
 
 // ----------------------------------------------------------------------
+// Check whether material has a field as a property.
+bool
+pylith::materials::Material::hasProperty(const char* name)
+{ // hasProperty
+  int propertyIndex = -1;
+  int stateVarIndex = -1;
+  _findField(&propertyIndex, &stateVarIndex, name);
+  return (propertyIndex >= 0);
+} // hasProperty
+
+// ----------------------------------------------------------------------
+// Check whether material has a field as a state variable.
+bool
+pylith::materials::Material::hasStateVar(const char* name)
+{ // hasStateVar
+  int propertyIndex = -1;
+  int stateVarIndex = -1;
+  _findField(&propertyIndex, &stateVarIndex, name);
+  return (stateVarIndex >= 0);
+} // hasStateVar
+
+// ----------------------------------------------------------------------
 // Get physical property or state variable field.
 void
 pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, const char* name) const
@@ -297,6 +319,12 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
   int propertyIndex = -1;
   int stateVarIndex = -1;
   _findField(&propertyIndex, &stateVarIndex, name);
+  if (propertyIndex < 0 && stateVarIndex < 0) {
+    std::ostringstream msg;
+    msg << "Unknown physical property or state variable '" << name
+	<< "' for material '" << _label << "'.";
+    throw std::runtime_error(msg.str());
+  } // else
 
   // Get cell information
   const ALE::Obj<SieveMesh>& sieveMesh = field->mesh().sieveMesh();
@@ -520,13 +548,6 @@ pylith::materials::Material::_findField(int* propertyIndex,
       *stateVarIndex = i;
       return;
     } // if
-
-  if (*propertyIndex < 0 && *stateVarIndex < 0) {
-    std::ostringstream msg;
-    msg << "Unknown physical property or state variable '" << name
-	<< "' for material '" << _label << "'.";
-    throw std::runtime_error(msg.str());
-  } // else
 } // _findField
   
 
