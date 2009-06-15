@@ -131,13 +131,13 @@ Defining the Simulation
 \end_layout
 
 \begin_layout Standard
-The parameters for PyLith are specified as a hiearchy or tree of modules.
- The application assembles the hiearchy of modules from user input and then
- calls the main function in the top-level module in the same manner as a
- C or C++ program.
+The parameters for PyLith are specified as a hierarchy or tree of modules.
+ The application assembles the hierarchy of modules from user input and
+ then calls the main function in the top-level module in the same manner
+ as a C or C++ program.
  The behavior of the application is determined by the modules included in
- the hiearchy as specified by the user.
- The Pyre framework provides the interface for defining this hiearchy.
+ the hierarchy as specified by the user.
+ The Pyre framework provides the interface for defining this hierarchy.
  Pyre properties correspond to simple settings in the form of strings, integers,
  and real numbers.
  Pyre facilities correspond to software modules.
@@ -172,8 +172,7 @@ mesher
 \family typewriter
 problem
 \family default
- specifies the physical properties, boundary conditions, etc.
- and 
+ specifies the physical properties, boundary conditions, etc., and 
 \family typewriter
 petsc
 \family default
@@ -217,9 +216,9 @@ Units
 All dimensional parameters require units.
  The units are specified using Python and Fortran syntax, so square meters
  is m**2.
- Whitespace is not allowed in the string for units and dimensioned quantities
- are multiplied by the units string, for example two meters per second is
- 2.0*m/s.
+ Whitespace is not allowed in the string, for units and dimensioned quantities
+ are multiplied by the units string; for example, two meters per second
+ is 2.0*m/s.
 \end_layout
 
 \begin_layout Subsubsection
@@ -699,7 +698,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/brad/src/cig/pylith/doc/userguide/runpylith/figs/bar2.eps
+	filename figs/bar2.eps
 
 \end_inset
 
@@ -746,7 +745,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/brad/src/cig/pylith/doc/userguide/runpylith/figs/tri3.eps
+	filename figs/tri3.eps
 
 \end_inset
 
@@ -828,7 +827,7 @@ status open
 
  
 \begin_inset Graphics
-	filename /Users/brad/src/cig/pylith/doc/userguide/runpylith/figs/quad4.eps
+	filename figs/quad4.eps
 
 \end_inset
 
@@ -876,7 +875,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename /Users/brad/src/cig/pylith/doc/userguide/runpylith/figs/tet4.eps
+	filename figs/tet4.eps
 
 \end_inset
 
@@ -958,7 +957,7 @@ status open
 
  
 \begin_inset Graphics
-	filename /Users/brad/src/cig/pylith/doc/userguide/runpylith/figs/hex8.eps
+	filename figs/hex8.eps
 
 \end_inset
 
@@ -1000,8 +999,8 @@ problem
 
 \begin_layout Standard
 The problem component specifies the basic parameters of the simulation,
- including the physical properties, the boundary conditions, interface condition
-s (faults).
+ including the physical properties, the boundary conditions, and interface
+ conditions (faults).
  The current release of PyLith contains one type of problem, 
 \family typewriter
 TimeDependent
@@ -1799,7 +1798,7 @@ Time-Stepping Formulation
 \end_layout
 
 \begin_layout Standard
-The explicit and implicit ime stepping formulations use a common set of
+The explicit and implicit time stepping formulations use a common set of
  facilities and properties.
  The facilities include
 \end_layout
@@ -1809,7 +1808,7 @@ time_step Time step size specification (default is uniform time step).
 \end_layout
 
 \begin_layout Description
-solver Type of solver to use (default is linear)
+solver Type of solver to use (default is linear).
 \end_layout
 
 \begin_layout Description
@@ -1838,7 +1837,7 @@ view_jacobian Flag to indicate if system Jacobian (sparse matrix) should
 \begin_layout Description
 split_fields Split solution field into a displacement portion (field 0)
  and a Lagrange multiplier portion (field 1) to permit application of sophistica
-ted PETSc preconditions (default is false, for expert users only).
+ted PETSc preconditions (default is false; for expert users only).
 \end_layout
 
 \begin_layout Standard
@@ -1902,7 +1901,7 @@ Warning:
  
 \color inherit
 Changing the time step requires recomputing the Jacobian of the system,
- which can greatly increase the runtime if the time step size changes frequently.
+ which can greatly increase the runtime if the time-step size changes frequently.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1913,7 +1912,7 @@ Uniform, User-Specified Time Step
 With a uniform, user-specified time step, the user selects the time step
  that is used over the entire duration of the simulation.
  This value is used whether or not it yields a stable solution, so users
- should be careful when selecting the time step value.
+ should be careful when selecting the time-step value.
  The properties for the uniform, user-specified time step are:
 \end_layout
 
@@ -1962,7 +1961,7 @@ Nonuniform, User-Specified Time Step
 \end_layout
 
 \begin_layout Standard
-The nonuniform, user-specified time step implementation allows the user
+The nonuniform, user-specified, time-step implementation allows the user
  to specify the time steps in an ASCII file (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1970,7 +1969,7 @@ reference "sec:FileFormat:TimeStepUser"
 
 \end_inset
 
- for the format specification of the time step file).
+ for the format specification of the time-step file).
  If the total duration exceeds the time associated with the time steps,
  then a flag determines whether to cycle through the time steps or to use
  the last specified time step for the time remaining.
@@ -1982,12 +1981,12 @@ total_time Time duration for simulation.
 \end_layout
 
 \begin_layout Description
-filename Name of file with time step sizes.
+filename Name of file with time-step sizes.
 \end_layout
 
 \begin_layout Description
 loop_steps If true, cycle through time steps, otherwise keep using last
- time step size for any time remaining
+ time-step size for any time remaining.
 \end_layout
 
 \begin_layout Standard
@@ -2032,16 +2031,16 @@ Nonuniform, Automatic Time Step
 \end_layout
 
 \begin_layout Standard
-This time step implementation automatically calculates a stable time step
+This time-step implementation automatically calculates a stable time step
  based on the constitutive model and rate of deformation.
  As a result, this choice for choosing the time step relies on accurate
  calculation of a stable time step within each finite-element cell by the
  constitutive models.
- In order to provide some control over the time step selection, the user
+ In order to provide some control over the time-step selection, the user
  can control the frequency that a new time step is calculated, the time
  step to use relative to the value determined by the constitutive models,
  and a maximum value for the time step.
- The properties for controlling the automatic time step selection are:
+ The properties for controlling the automatic time-step selection are:
 \end_layout
 
 \begin_layout Description
@@ -2775,7 +2774,7 @@ For materials, the ``label'' is a string used only for error messages.
  LaGriT (itetclr) and CUBIT (block id).
  The id also tags the cells in the mesh for associating cells with a specific
  material model and quadrature rule.
- For boundary conditions the ``label'' is a string used to associate groups
+ For boundary conditions, the ``label'' is a string used to associate groups
  of vertices (psets in LaGriT and nodesets in CUBIT) with a boundary condition.
  Note that some mesh generators use strings (LaGriT) to identify groups
  of nodes while others use integers (CUBIT Exodus files).
@@ -2783,15 +2782,8 @@ For materials, the ``label'' is a string used only for error messages.
  in the Exodus files, so we must rely on the nodeset ID.
  PyLith 1.0 had an ``id'' for boundary conditions, but we removed it from
  subsequent releases because it was not used.
- For faults the ``label'' is used in the same manner as the 
-\begin_inset Quotes eld
-\end_inset
-
-label
-\begin_inset Quotes erd
-\end_inset
-
- for boundary conditions.
+ For faults the ``label'' is used in the same manner as the ``label'' for
+ boundary conditions.
  That is, it associates a string with a group of vertices (pset in LaGriT
  and nodeset in CUBIT).
  The fault ``id'' is a integer used to tag the cohesive cells in the mesh

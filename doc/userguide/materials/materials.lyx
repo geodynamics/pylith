@@ -3419,8 +3419,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Values in spatial database for initial state variables for 3-D problems.
- 2-D problems use only the relevant values.
+Values in spatial database for initial state variables for 3D problems.
+ 2D problems use only the relevant values.
 \end_layout
 
 \end_inset
