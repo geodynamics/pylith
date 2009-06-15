@@ -70,44 +70,36 @@ Charles
 
 ----------------------------------------------------------------------
 
-1. Update manual for version 1.4 [Brad and Charles]
+1. Update manual
 
-  Materials
+  Materials [CHARLES]
 
-    Material parameters
+    Generalized and power-law
+
+    Material parameters (tables at end of section 6.3)
 
     Notation xx versus 11 etc
 
-  6.4 Initial State Variables -> Initial stress, strain and state variables
-
-  Insert Time-dependent boundary conditions section
-    Parameters
-
   Benchmarks
 
-    Update figures
+    Update figures [BRAD]
       summary
       scaling
 
-    Add Savage-Prescott
+    Add Savage-Prescott [CHARLES]
   
-  Extending PyLith
+  Extending PyLith [BRAD]
 
     Constitutive models
 
     Material properties
 
-  File Formats
-
-    Time History
-
-  Installation using source tarball should not require SWIG, Pyrex, or
-  Pyrexembed [need to test]. Should include .i files in tarball for
-  reference.
-
   * Reduce memory use with ordering elements by material??
 
 2. Tidy up
+
+  Installation using source tarball should not require SWIG. Should include .i files in tarball for
+  reference. [BRAD WILL CHECK WHEN TESTING]
 
     Switch Components to PetscComponents.
       Add _cleanup() to components to deallocate local data structures.
