@@ -405,6 +405,10 @@ pylith::materials::PowerLaw3D::_stableTimeStepImplicit(
       (viscosityCoeff/mu);
 
   const double dtStable = dtTest;
+#if 0 // DEBUGGING
+  double maxwellTime = 10.0 * dtStable;
+  std::cout << "Maxwell time:  " << maxwellTime << std::endl;
+#endif
   PetscLogFlops(20);
   return dtStable;
 } // _stableTimeStepImplicit
@@ -591,25 +595,33 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
 		      ae * _scalarProduct(devStressT, devStressInitial)) *
       timeFac;
     const double d = timeFac * effStressT;
-    const double stressScale = mu;
 
     PetscLogFlops(92);
-    // Put parameters into a struct and call root-finding algorithm.
-    _effStressParams.ae = ae;
-    _effStressParams.b = b;
-    _effStressParams.c = c;
-    _effStressParams.d = d;
-    _effStressParams.alpha = alpha;
-    _effStressParams.dt = _dt;
-    _effStressParams.effStressT = effStressT;
-    _effStressParams.powerLawExp = powerLawExp;
-    _effStressParams.viscosityCoeff = viscosityCoeff;
 
-    const double effStressInitialGuess = effStressT;
+    // If b, c, and d are all zero, then the effective stress is zero and we
+    // don't need a root-finding algorithm. Otherwise, use the algorithm to
+    // find the effective stress.
+    double effStressTpdt = 0.0;
+    if (b != 0.0 || c != 0.0 || d != 0.0) {
+      const double stressScale = mu;
 
-    double effStressTpdt =
-      EffectiveStress::calculate<PowerLaw3D>(effStressInitialGuess,
-					     stressScale, this);
+      // Put parameters into a struct and call root-finding algorithm.
+      _effStressParams.ae = ae;
+      _effStressParams.b = b;
+      _effStressParams.c = c;
+      _effStressParams.d = d;
+      _effStressParams.alpha = alpha;
+      _effStressParams.dt = _dt;
+      _effStressParams.effStressT = effStressT;
+      _effStressParams.powerLawExp = powerLawExp;
+      _effStressParams.viscosityCoeff = viscosityCoeff;
+      
+      const double effStressInitialGuess = effStressT;
+
+      double effStressTpdt =
+	EffectiveStress::calculate<PowerLaw3D>(effStressInitialGuess,
+					       stressScale, this);
+    } // if
 
     // Compute stresses from effective stress.
     const double effStressTau = (1.0 - alpha) * effStressT +
@@ -917,127 +929,119 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   assert(_PowerLaw3D::tensorSize == initialStrainSize);
 
   const int tensorSize = _tensorSize;
+
+  const double mu = properties[p_mu];
+  const double lambda = properties[p_lambda];
+  const double viscosityCoeff = properties[p_viscosityCoeff];
+  const double powerLawExp = properties[p_powerLawExponent];
+    
+  // State variables.
   const double visStrainT[] = {stateVars[s_viscousStrain],
 			       stateVars[s_viscousStrain + 1],
 			       stateVars[s_viscousStrain + 2],
 			       stateVars[s_viscousStrain + 3],
 			       stateVars[s_viscousStrain + 4],
 			       stateVars[s_viscousStrain + 5]};
-  const double visStrainMagT = fabs(visStrainT[0]) +
-    fabs(visStrainT[1]) +
-    fabs(visStrainT[2]) +
-    fabs(visStrainT[3]) +
-    fabs(visStrainT[4]) +
-    fabs(visStrainT[5]);
-  const double totalStrainMag = fabs(totalStrain[0]) +
-    fabs(totalStrain[1]) +
-    fabs(totalStrain[2]) +
-    fabs(totalStrain[3]) +
-    fabs(totalStrain[4]) +
-    fabs(totalStrain[5]);
-  const double tiny = 1.0e-15;
-  // I should replace this with something less arbitrary, like iteration #.
-  if (visStrainMagT < tiny && totalStrainMag < tiny) {
-    _calcElasticConstsViscoelasticInitial(elasticConsts,
-					  numElasticConsts,
-					  properties,
-					  numProperties,
-					  stateVars,
-					  numStateVars,
-					  totalStrain,
-					  strainSize,
-					  initialStress,
-					  initialStressSize,
-					  initialStrain,
-					  initialStrainSize);
+  const double stressT[] = {stateVars[s_stress],
+			    stateVars[s_stress + 1],
+			    stateVars[s_stress + 2],
+			    stateVars[s_stress + 3],
+			    stateVars[s_stress + 4],
+			    stateVars[s_stress + 5]};
+
+  const double mu2 = 2.0 * mu;
+  const double lamPlusMu = lambda + mu;
+  const double bulkModulus = lambda + mu2/3.0;
+  const double ae = 1.0/mu2;
+  const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+    
+  // Need to figure out how time integration parameter alpha is going to be
+  // specified.  It should probably be specified in the problem definition and
+  // then used only by the material types that use it.  For now we are setting
+  // it to 0.5, which should probably be the default value.
+  const double alpha = 0.5;
+  const double timeFac = _dt * (1.0 - alpha);
+    
+  /// Initial state.
+  // Initial stress values.
+  const double meanStressInitial = (initialStress[0] +
+				    initialStress[1] +
+				    initialStress[2])/3.0;
+  const double devStressInitial[] = { initialStress[0] - meanStressInitial,
+				      initialStress[1] - meanStressInitial,
+				      initialStress[2] - meanStressInitial,
+				      initialStress[3],
+				      initialStress[4],
+				      initialStress[5] };
+  const double stressInvar2Initial = 0.5 *
+    _scalarProduct(devStressInitial, devStressInitial);
+
+  // Initial strain values.
+  const double meanStrainInitial = (initialStrain[0] +
+				    initialStrain[1] +
+				    initialStrain[2])/3.0;
+  
+  /// Values for current time step
+  const double e11 = totalStrain[0];
+  const double e22 = totalStrain[1];
+  const double e33 = totalStrain[2];
+  const double meanStrainTpdt = (e11 + e22 + e33)/3.0 - meanStrainInitial;
+  const double meanStressTpdt = 3.0 * bulkModulus * meanStrainTpdt;
+  
+  // Note that I use the initial strain rather than the deviatoric initial
+  // strain since otherwise the initial mean strain would get used twice.
+  
+  const double strainPPTpdt[] =
+    { totalStrain[0] - meanStrainTpdt - visStrainT[0] - initialStrain[0],
+      totalStrain[1] - meanStrainTpdt - visStrainT[1] - initialStrain[1],
+      totalStrain[2] - meanStrainTpdt - visStrainT[2] - initialStrain[2],
+      totalStrain[3] - visStrainT[3] - initialStrain[3],
+      totalStrain[4] - visStrainT[4] - initialStrain[4],
+      totalStrain[5] - visStrainT[5] - initialStrain[5] };
+  const double strainPPInvar2Tpdt = 0.5 *
+    _scalarProduct(strainPPTpdt, strainPPTpdt);
+  
+  // Values for previous time step
+  const double meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
+  const double devStressT[] = { stressT[0] - meanStressT,
+				stressT[1] - meanStressT,
+				stressT[2] - meanStressT,
+				stressT[3],
+				stressT[4],
+				stressT[5] };
+  const double stressInvar2T = 0.5 * _scalarProduct(devStressT, devStressT);
+  const double effStressT = sqrt(stressInvar2T);
+    
+  // Finish defining parameters needed for root-finding algorithm.
+  const double b = strainPPInvar2Tpdt +
+    ae * _scalarProduct(strainPPTpdt, devStressInitial) +
+    ae * ae * stressInvar2Initial;
+  const double c = (_scalarProduct(strainPPTpdt, devStressT) +
+		    ae * _scalarProduct(devStressT, devStressInitial)) *
+    timeFac;
+  const double d = timeFac * effStressT;
+
+  PetscLogFlops(92);
+
+  // If b = c = d = 0, the effective stress is zero and the elastic constants
+  // will be the same as for the elastic case. Otherwise, compute the tangent
+  // matrix using the effective stress function algorithm.
+  if (b == 0.0 && c == 0.0 && d == 0.0) {
+    _calcElasticConstsElastic(elasticConsts,
+			      numElasticConsts,
+			      properties,
+			      numProperties,
+			      stateVars,
+			      numStateVars,
+			      totalStrain,
+			      strainSize,
+			      initialStress,
+			      initialStressSize,
+			      initialStrain,
+			      initialStrainSize);
   } else {
-
-    const double mu = properties[p_mu];
-    const double lambda = properties[p_lambda];
-    const double viscosityCoeff = properties[p_viscosityCoeff];
-    const double powerLawExp = properties[p_powerLawExponent];
-    
-    const double stressT[] = {stateVars[s_stress],
-			      stateVars[s_stress + 1],
-			      stateVars[s_stress + 2],
-			      stateVars[s_stress + 3],
-			      stateVars[s_stress + 4],
-			      stateVars[s_stress + 5]};
-
-    const double mu2 = 2.0 * mu;
-    const double lamPlusMu = lambda + mu;
-    const double bulkModulus = lambda + mu2/3.0;
-    const double ae = 1.0/mu2;
-    const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    
-    // Need to figure out how time integration parameter alpha is going to be
-    // specified.  It should probably be specified in the problem definition and
-    // then used only by the material types that use it.  For now we are setting
-    // it to 0.5, which should probably be the default value.
-    const double alpha = 0.5;
-    const double timeFac = _dt * (1.0 - alpha);
-    
-    /// Initial state.
-    // Initial stress values.
-    const double meanStressInitial = (initialStress[0] +
-				      initialStress[1] +
-				      initialStress[2])/3.0;
-    const double devStressInitial[] = { initialStress[0] - meanStressInitial,
-					initialStress[1] - meanStressInitial,
-					initialStress[2] - meanStressInitial,
-					initialStress[3],
-					initialStress[4],
-					initialStress[5] };
-    const double stressInvar2Initial = 0.5 *
-      _scalarProduct(devStressInitial, devStressInitial);
-
-    // Initial strain values.
-    const double meanStrainInitial = (initialStrain[0] +
-				      initialStrain[1] +
-				      initialStrain[2])/3.0;
-  
-    /// Values for current time step
-    const double e11 = totalStrain[0];
-    const double e22 = totalStrain[1];
-    const double e33 = totalStrain[2];
-    const double meanStrainTpdt = (e11 + e22 + e33)/3.0 - meanStrainInitial;
-    const double meanStressTpdt = 3.0 * bulkModulus * meanStrainTpdt;
-  
-    // Note that I use the initial strain rather than the deviatoric initial
-    // strain since otherwise the initial mean strain would get used twice.
-
-    const double strainPPTpdt[] =
-      { totalStrain[0] - meanStrainTpdt - visStrainT[0] - initialStrain[0],
-	totalStrain[1] - meanStrainTpdt - visStrainT[1] - initialStrain[1],
-	totalStrain[2] - meanStrainTpdt - visStrainT[2] - initialStrain[2],
-	totalStrain[3] - visStrainT[3] - initialStrain[3],
-	totalStrain[4] - visStrainT[4] - initialStrain[4],
-	totalStrain[5] - visStrainT[5] - initialStrain[5] };
-    const double strainPPInvar2Tpdt = 0.5 *
-      _scalarProduct(strainPPTpdt, strainPPTpdt);
-  
-    // Values for previous time step
-    const double meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
-    const double devStressT[] = { stressT[0] - meanStressT,
-				  stressT[1] - meanStressT,
-				  stressT[2] - meanStressT,
-				  stressT[3],
-				  stressT[4],
-				  stressT[5] };
-    const double stressInvar2T = 0.5 * _scalarProduct(devStressT, devStressT);
-    const double effStressT = sqrt(stressInvar2T);
-    
-    // Finish defining parameters needed for root-finding algorithm.
-    const double b = strainPPInvar2Tpdt +
-      ae * _scalarProduct(strainPPTpdt, devStressInitial) +
-      ae * ae * stressInvar2Initial;
-    const double c = (_scalarProduct(strainPPTpdt, devStressT) +
-		      ae * _scalarProduct(devStressT, devStressInitial)) *
-      timeFac;
-    const double d = timeFac * effStressT;
     const double stressScale = mu;
   
-    PetscLogFlops(92);
     // Put parameters into a struct and call root-finding algorithm.
     _effStressParams.ae = ae;
     _effStressParams.b = b;
@@ -1355,25 +1359,33 @@ pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
 		    ae * _scalarProduct(devStressT, devStressInitial)) *
     timeFac;
   const double d = timeFac * effStressT;
-  const double stressScale = mu;
-
   PetscLogFlops(92);
-  // Put parameters into a struct and call root-finding algorithm.
-  _effStressParams.ae = ae;
-  _effStressParams.b = b;
-  _effStressParams.c = c;
-  _effStressParams.d = d;
-  _effStressParams.alpha = alpha;
-  _effStressParams.dt = _dt;
-  _effStressParams.effStressT = effStressT;
-  _effStressParams.powerLawExp = powerLawExp;
-  _effStressParams.viscosityCoeff = viscosityCoeff;
 
-  const double effStressInitialGuess = effStressT;
+  // If b, c, and d are all zero, then the effective stress is zero and we
+  // don't need a root-finding algorithm. Otherwise, use the algorithm to
+  // find the effective stress.
+  double effStressTpdt = 0.0;
+  if (b != 0.0 || c != 0.0 || d != 0.0) {
+    const double stressScale = mu;
 
-  double effStressTpdt =
-    EffectiveStress::calculate<PowerLaw3D>(effStressInitialGuess,
-					   stressScale, this);
+    // Put parameters into a struct and call root-finding algorithm.
+    _effStressParams.ae = ae;
+    _effStressParams.b = b;
+    _effStressParams.c = c;
+    _effStressParams.d = d;
+    _effStressParams.alpha = alpha;
+    _effStressParams.dt = _dt;
+    _effStressParams.effStressT = effStressT;
+    _effStressParams.powerLawExp = powerLawExp;
+    _effStressParams.viscosityCoeff = viscosityCoeff;
+
+    const double effStressInitialGuess = effStressT;
+
+    double effStressTpdt =
+      EffectiveStress::calculate<PowerLaw3D>(effStressInitialGuess,
+					     stressScale, this);
+
+  } // if
 
   // Compute stress and viscous strain and update appropriate state variables.
   const double effStressTau = (1.0 - alpha) * effStressT +
