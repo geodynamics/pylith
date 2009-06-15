@@ -50,8 +50,16 @@ gravity.cfg - Simulation parameters for gravitational body forces problem
 mat_elastic.spatialdb - Spatial database specifying the parameters for
 the physical properties of a 3-D elastic, isotropic material.
 
-mat_viscoelastic.spatialdb - Spatial database specifying the parameters for
+mat_maxwell.spatialdb - Spatial database specifying the parameters for
 the physical properties of a 3-D Maxwell viscoelastic, isotropic
+material.
+
+mat_genmaxwell.spatialdb - Spatial database specifying the parameters for
+the physical properties of a 3-D generalized Maxwell viscoelastic, isotropic
+material.
+
+mat_powerlaw.spatialdb - Spatial database specifying the parameters for
+the physical properties of a 3-D power-law viscoelastic, isotropic
 material.
 
 mesh_hex8_1000m.cub - Native CUBIT file containing finite-element mesh
