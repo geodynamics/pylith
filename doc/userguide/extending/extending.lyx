@@ -59,14 +59,84 @@ name "cha:Extending"
 Extending PyLith
 \end_layout
 
-\begin_layout Section
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:Extending:BulkConstitutiveModels"
+\begin_layout Standard
+One of the powerful features of using the Pyre framework in PyLith is the
+ ability to extend the functionality of the software without altering any
+ of the PyLith code.
+ Any of the components can be replaced with other compatible components.
+ You are already familiar with this feature from running the examples; when
+ you set the spatial database to UniformDB, SimpleDB, or SCECCVMH you are
+ switching between different compatible components for a spatial database
+ facility.
+ In this section we provide examples of how to extend PyLith for components
+ that users will most likely want to replace with their own custom versions.
+ You will need a familirarity with Python, Makefiles, and C++ to write your
+ own components.
+ The primary steps in constructing a component to extend PyLith' functionality
+ include:
+\end_layout
 
-\end_inset
+\begin_layout Enumerate
+Setting up the sources files for the component or set of components based
+ on the templates.
+\end_layout
 
-Bulk Constitutive Models
+\begin_layout Enumerate
+Edit the Python source file (
+\family typewriter
+.py
+\family default
+) for the component.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Define the user-specified properties and facilities.
+\end_layout
+
+\begin_layout Enumerate
+Transfer the user-specified data from the Python object to the corresponding
+ C++ object via calls to the SWIG interface object.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Edit the C++ header (
+\family typewriter
+.hh
+\family default
+) and implementation files (
+\family typewriter
+.cc
+\family default
+) for the component.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Implement the methods required to satisfy the interface definition of the
+ component.
+\end_layout
+
+\begin_layout Enumerate
+Implement the desired functionality of the component in C++.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Edit the SWIG interface files (
+\family typewriter
+.i
+\family default
+) that provide the glue between Python and C++.
+\end_layout
+
+\begin_layout Enumerate
+Edit the Python source file that tests the functionality of the component.
+\end_layout
+
+\begin_layout Enumerate
+Build, install, and run the tests of the component.
 \end_layout
 
 \begin_layout Section
@@ -77,6 +147,27 @@ name "sec:Extending:SpatialDatabases"
 \end_inset
 
 Spatial Databases
+\end_layout
+
+\begin_layout Standard
+PyLith provides several types of spatial databases that can be used for
+ use with specification of parameters for boundary conditions, earthquake
+ ruptures, and physical properties.
+ In this example (the source files are in the spatialdata package in the
+ templates/spatialdb directory) we demonstrate how to provide a spatial
+ database for specifying eleastic properties, such as a seismic velocity
+ model.
+ 
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Extending:BulkConstitutiveModels"
+
+\end_inset
+
+Bulk Constitutive Models
 \end_layout
 
 \end_body
