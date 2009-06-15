@@ -151,6 +151,22 @@ public :
   /// current state.
   void resetNeedNewJacobian(void);
 
+  /** Check whether material has a field as a property.
+   *
+   * @param name Name of field.
+   *
+   * @returns True if material has field as a property, false otherwise.
+   */
+  bool hasProperty(const char* name);
+
+  /** Check whether material has a field as a state variable.
+   *
+   * @param name Name of field.
+   *
+   * @returns True if material has field as a state variable, false otherwise.
+   */
+  bool hasStateVar(const char* name);
+
   /** Get physical property or state variable field. Data is returned
    * via the argument.
    *
@@ -159,13 +175,13 @@ public :
    */
   void getField(topology::Field<topology::Mesh> *field, const char* name) const;
 
-  /** Get the properties field.
+  /** Get the field with all properties.
    *
    * @returns Properties field.
    */
   const topology::Field<topology::Mesh>* propertiesField() const;
 
-  /** Get the state variables field.
+  /** Get the field with all of the state variables.
    *
    * @returns State variables field.
    */
