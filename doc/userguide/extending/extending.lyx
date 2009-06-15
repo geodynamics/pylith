@@ -136,7 +136,7 @@ Edit the Python source file that tests the functionality of the component.
 \end_layout
 
 \begin_layout Enumerate
-Build, install, and run the tests of the component.
+Run configure, build, install, and run the tests of the component.
 \end_layout
 
 \begin_layout Section
@@ -151,39 +151,259 @@ Spatial Databases
 
 \begin_layout Standard
 PyLith provides several types of spatial databases that can be used for
- use with specification of parameters for boundary conditions, earthquake
+ specification of parameters associated with boundary conditions, earthquake
  ruptures, and physical properties.
- In this example (the source files are in the spatialdata package in the
- templates/spatialdb directory) we demonstrate how to provide a spatial
- database for specifying eleastic properties, such as a seismic velocity
- model.
- 
+ In this example we demonstrate how to provide a spatial database, UniformVelMod
+el, for specifying elastic properties.
+ The source files are in the spatialdata package in the 
+\family typewriter
+templates/spatialdb
+\family default
+ directory.
+ The 
+\family typewriter
+README
+\family default
+ file in templates/spatialdb provides detailed instructions for the various
+ steps involved and the source files contain numerous comments to help guide
+ you through the customization process.
+ The UniformVelModel component provides uniform physical properties: P wave
+ speed, S wave speed, and density.
+ Although this is a rather trivial specification of physical properties
+ that could be easily done using a UniformDB, this example demonstrates
+ how to create a user-defined component that matches the requirements of
+ a spatial database for elastic physical properties.
+ Adding additional physical properties is simply a matter of including some
+ additional values in the spatial database.
+ Furthermore, in cases where we are constructing a spatial database for
+ a seismic velocity model, the data points are georeferenced.
+ With our uniform physical properties we do not need to worry about any
+ differences in coordinate systems between our seismic velocity model and
+ points at which the model is queried.
+ Howver, in many cases we do, so we illustrate this functionality by using
+ a geographic projection as the coordinate system in our example.
 \end_layout
 
 \begin_layout Standard
-Description of functionality of component (also in README)
+Using a top-down approach the first step is to determine what information
+ the user will need to supply to the component.
+ Is the data for the spatial database in a file or a series of files? If
+ so, file names and possible paths to a directory containing files with
+ known names might be necessary.
+ Are there other parameters that control the behavior of the component,
+ such as a minimum shear wave speed? In our example the user supplies values
+ for the P wave speed, S wave speed, and density.
+ The user-supplied parameters become Pyre properties and facilities in the
+ Python source file.
+ Because our user supplied parameters are floating point values with dimensions,
+ we create dimensional properties 
+\family typewriter
+vs
+\family default
+, 
+\family typewriter
+vp
+\family default
+, and 
+\family typewriter
+density
+\family default
+.
+ In addition to defining the properties of the component, we also need to
+ transfer these properties to the C++ object that does the real work.
+ This is done by calling the C++ 
+\family typewriter
+vs()
+\family default
+, 
+\family typewriter
+vp()
+\family default
+, and 
+\family typewriter
+density()
+\family default
+ accessor functions that are accessible via the Python module created by
+ SWIG.
 \end_layout
 
 \begin_layout Standard
-Methods required in C++ object with description of UniformVelModel functionality.
+In the C++ object we must implement the functions that are required by the
+ spatial database interface.
+ These functions are listed near the beginning of the UniformVelModel class
+ definition at the top of the C++ header file, 
+\family typewriter
+UniformVelModel.hh
+\family default
+.
+ The C++ object also includes the accessor functions that allow us to set
+ the P wave speed, S wave speed, and density values to the user-specified
+ values in the Python object.
+ Additional information, such as a file name, parameters defined as data
+ structures, etc.
+ would be set via similar accessor functions.
+ You can also add additional functions and data structures to the C++ class
+ to provide the necessary operations and functionality of the spatial database.
+ In SimpleDB we use a separate class to read in the spatial database and
+ yet another class to perform the actual query.
+ In our example the C++ object also creates and stores the UTM zone 10 geographi
+c projection for the seismic velocity model.
+ When the spatial database gets a query for physical properties, we transform
+ the coordinates of the query point from its coordinate system to the coordinate
+ system of our seismic velocity model.
 \end_layout
 
 \begin_layout Standard
-Methods required in Python object with description of fuctionality in this
- case.
+In order to use SWIG to create the Python module that allows us to call
+ C++ from Python, we use a 
+\begin_inset Quotes eld
+\end_inset
+
+main
+\begin_inset Quotes erd
+\end_inset
+
+ SWIG interface file (
+\family typewriter
+spatialdbcontrib.
+\family default
+i in this case) and then one for each object (
+\family typewriter
+UniformVelModel.i
+\family default
+ in this case).
+ This greatly simplifies keeping the Python module synchronized with the
+ C++ and Python code.
+ The 
+\family typewriter
+UniformVelModel.i
+\family default
+ SWIG file is nearly identical to the corresponding C++ header file.
+ There are a few differences as noted in the comments within the file.
+ Copying and pasting the C++ header file and then doing a little cleanup
+ is a very quick and easy way to construct a SWIG interface file for a C++
+ object.
+ Because very little changes from SWIG module to SWIG module, it is usually
+ easiest to construct the 
+\begin_inset Quotes eld
+\end_inset
+
+main
+\begin_inset Quotes erd
+\end_inset
+
+ SWIG interface by copying and customizing an existing one.
 \end_layout
 
 \begin_layout Standard
-Description of how to create SWIG interface files.
+Once the Python, C++, and SWIG interface files are complete, we are ready
+ to build the module.
+ The Makefile.am file defines how to compile and link the C++ library and
+ generate the Python module via SWIG.
+ The 
+\family typewriter
+configure.ac
+\family default
+ file contains the information used to build a configure script.
+ The configure script checks to make sure it can find all of the tools needed
+ to build the component (C++ compiler, Python, installed spatial database
+ package, etc).
+ See the README file for detailed instructions on how to generate the configure
+ script, build, and install the component.
 \end_layout
 
 \begin_layout Standard
-Build, install, and run tests.
- (make, make install, make check)
+We recommend constructing tests of the component to insure that it is functionin
+g properly before attempting to use it in an application.
+ The 
+\family typewriter
+tests
+\family default
+ directory within 
+\family typewriter
+templates/spatialdb
+\family default
+ contains a Python script, 
+\family typewriter
+testcontrib.py
+\family default
+, that runs the tests of the UniformVelModel component defined in 
+\family typewriter
+TestUniformVelModel.py
+\family default
+.
+ Normally, one would want to test each function individually to isolate
+ errors and create C++ tests as well as the Python tests included here.
+ In our rather simple example, we simply test the overall functionality
+ of the component.
+ For examples of thorough testing, see the spatialdatabase and PyLith source
+ code.
 \end_layout
 
 \begin_layout Standard
-run twotet4-geoproj to test, how to change settings
+Once you have built, installed, and tested the UniformVelModel, it is time
+ to use it in a simple example.
+ Because the seismic velocity model uses georeferenced coordinates, our
+ example must also use georeferenced coordinates.
+ The dislocation example in the PyLith 
+\family typewriter
+examples/twocells/twotet4-geopro
+\family default
+j directory uses UTM zone 11 coordinates.
+ The spatial database package will transform the coordinates between the
+ two projections as defined in the UniformVelModel 
+\family typewriter
+query()
+\family default
+ function.
+ The dislocation example uses the SCEC CVM-H seismic velocity model.
+ In order to replace the SCEC CVM-H seismic velocity with our uniform velocity
+ model, in 
+\family typewriter
+pylithapp.cfg
+\family default
+ we replace the lines
+\end_layout
+
+\begin_layout LyX-Code
+db_properties = spatialdata.spatialdb.SCECCVMH
+\end_layout
+
+\begin_layout LyX-Code
+db_properties.data_dir = /home/brad/data/sceccvm-h/vx53/bin
+\end_layout
+
+\begin_layout Standard
+with the lines
+\end_layout
+
+\begin_layout LyX-Code
+db_properties = spatialdata.spatialdb.contrib.UniformVelModel
+\end_layout
+
+\begin_layout Standard
+When you run the dislocation example, the 
+\family typewriter
+dislocation-statevars_info.vtk
+\family default
+ file should reflect the use of physical properties from the uniform seismic
+ velocity with with 
+\begin_inset Formula $\mu=1.69\times10^{10}\mathrm{Pa}$
+\end_inset
+
+, 
+\begin_inset Formula $\lambda=1.6825\times10^{10}\mathrm{Pa}$
+\end_inset
+
+, and 
+\begin_inset Formula $\rho=2500\mathrm{kg/m^{3}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout LyX-Code
+
 \end_layout
 
 \begin_layout Section

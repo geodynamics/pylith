@@ -1,11 +1,12 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding latin1
 \font_roman default
@@ -16,9 +17,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 1
@@ -47,12 +50,50 @@
 \begin_body
 
 \begin_layout Chapter
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "cha:Glossary"
 
 \end_inset
 
 Glossary
+\end_layout
+
+\begin_layout Section
+Pyre
+\end_layout
+
+\begin_layout Description
+component Basic building block of a Pyre application.
+ A component may be built-up from smaller building blocks, where simple
+ data types are called properties and data structures and objects are called
+ facilities.
+ In general a component is a specific implementation of the functionality
+ of a facility.
+ For example, SimpleDB is a specific implementation of the spatial database
+ facility.
+ A component is generally composed of a Python object and a C++ object,
+ although either one may be missing.
+ We nearly always use the naming convention such that for an object called
+ Foo the Python object is in file Foo.py, the C++ class definition is in
+ Foo.hh, inline C++ functions are in foo.icc, the C++ class implementation
+ is in Foo.cc, and the SWIG interface file that glues the C++ and Python
+ code together is in Foo.i.
+\end_layout
+
+\begin_layout Description
+facility Complex data type (object or data structure) building block of
+ a component.
+ See component.
+\end_layout
+
+\begin_layout Description
+property Simple data type (string, integer, real number, or boolean value)
+ parameter for a component.
+\end_layout
+
+\begin_layout Section
+Sieve
 \end_layout
 
 \begin_layout Description
@@ -106,16 +147,22 @@ section These objects associate data to points in a sieve, which is equivalent
 \end_layout
 
 \begin_layout Description
-fiber\InsetSpace \space{}
+fiber
+\begin_inset space \space{}
+\end_inset
+
 dimension The topological dimension of the mesh, meaning the cell dimension.
  It can also mean the dimension of the space in which the mesh is embedded,
  but this is properly the embedding dimension.
 \end_layout
 
 \begin_layout Description
-cohesive\InsetSpace \space{}
-cell A zero volume cell inserted between any two cells which shared
- a fault face.
+cohesive
+\begin_inset space \space{}
+\end_inset
+
+cell A zero volume cell inserted between any two cells which shared a fault
+ face.
  They are prisms with a fault face as the base.
 \end_layout
 
