@@ -75,10 +75,10 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
   const double timeScale = _normalizer->timeScale();
   const double rateScale = lengthScale / timeScale;
 
-  if (0 == strcasecmp(name, "initial"))
+  if (0 == strcasecmp(name, "initial-value"))
     return _bufferVector("initial", "initial_displacement", lengthScale);
   else if (0 == strcasecmp(name, "rate-of-change"))
-    return _bufferVector("rate", "initial_velocity", rateScale);
+    return _bufferVector("rate", "velocity", rateScale);
   else if (0 == strcasecmp(name, "change-in-value"))
     return _bufferVector("change", "displacement_change", lengthScale);
   else if (0 == strcasecmp(name, "rate-start-time"))
