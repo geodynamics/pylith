@@ -335,44 +335,74 @@ pylith::feassemble::IntegratorElasticity::cellField(
     _outputFields =
       new topology::Fields<topology::Field<topology::Mesh> >(mesh);
   
-  // FIX THIS LOGIC
+  if (0 == strcasecmp(name, "total_strain")) {
 
-  if (0 == strcasecmp(name, "total_strain") &&
-      !_material->hasStateVar("total_strain")) {
-    assert(0 != fields);
-    _allocateTensorField(mesh);
-    topology::Field<topology::Mesh>& buffer = 
-      _outputFields->get("buffer (tensor)");
-    buffer.label("total_strain");
-    buffer.scale(1.0);
-    buffer.addDimensionOkay(true);
-    _calcStrainStressField(&buffer, name, fields);
-    return buffer;
+    if (_material->hasStateVar("total_strain")) {
+      // total strain is available as a state variable
+      assert(0 != fields);
+      _allocateTensorField(mesh);
+      topology::Field<topology::Mesh>& buffer = 
+	_outputFields->get("buffer (tensor)");    
+      _material->getField(&buffer, "total_strain");
+      buffer.label(name);
+      buffer.scale(1.0);
+      buffer.addDimensionOkay(true);
+      return buffer;
 
-  } else if (0 == strcasecmp(name, "stress") &&
-	     !_material->hasStateVar("total_strain")) {
-    assert(0 != fields);
-    _allocateTensorField(mesh);
-    topology::Field<topology::Mesh>& buffer = 
-      _outputFields->get("buffer (tensor)");
-    buffer.label("stress");
-    buffer.scale(_normalizer->pressureScale());
-    buffer.addDimensionOkay(true);
-    _calcStrainStressField(&buffer, name, fields);
-    return buffer;
+    } else { // must calculate total strain
+      assert(0 != fields);
+      _allocateTensorField(mesh);
+      topology::Field<topology::Mesh>& buffer = 
+	_outputFields->get("buffer (tensor)");
+      buffer.label("total_strain");
+      buffer.scale(1.0);
+      buffer.addDimensionOkay(true);
+      _calcStrainStressField(&buffer, name, fields);
+      return buffer;
 
+    } // if/else
   } else if (0 == strcasecmp(name, "stress")) {
-    assert(0 != fields);
-    _allocateTensorField(mesh);
-    topology::Field<topology::Mesh>& buffer = 
-      _outputFields->get("buffer (tensor)");    
-    _material->getField(&buffer, "total_strain");
-    buffer.label(name);
-    buffer.scale(_normalizer->pressureScale());
-    buffer.addDimensionOkay(true);
-    _calcStressFromStrain(&buffer);
-    return buffer;
 
+    if (_material->hasStateVar("stress")) {
+      // stress is available as a state variable
+      assert(0 != fields);
+      _allocateTensorField(mesh);
+      topology::Field<topology::Mesh>& buffer = 
+	_outputFields->get("buffer (tensor)");    
+      _material->getField(&buffer, "stress");
+      buffer.label(name);
+      buffer.scale(_normalizer->pressureScale());
+      buffer.addDimensionOkay(true);
+      return buffer;
+
+    } else { // must calculate stress from strain
+      if (_material->hasStateVar("strain")) {
+	// total strain is available as a state variable
+	assert(0 != fields);
+	_allocateTensorField(mesh);
+	topology::Field<topology::Mesh>& buffer = 
+	  _outputFields->get("buffer (tensor)");    
+	_material->getField(&buffer, "total_strain");
+	buffer.label(name);
+	buffer.scale(_normalizer->pressureScale());
+	buffer.addDimensionOkay(true);
+	_calcStressFromStrain(&buffer);
+	return buffer;
+
+      } else { // must calculate strain 
+	assert(0 != fields);
+	_allocateTensorField(mesh);
+	topology::Field<topology::Mesh>& buffer = 
+	  _outputFields->get("buffer (tensor)");
+	buffer.label("stress");
+	buffer.scale(_normalizer->pressureScale());
+	buffer.addDimensionOkay(true);
+	_calcStrainStressField(&buffer, name, fields);
+	return buffer;
+	
+      } // else
+
+    } // else
   } else {
     if (!_outputFields->hasField("buffer (other)"))
       _outputFields->add("buffer (other)", "buffer");
@@ -381,7 +411,9 @@ pylith::feassemble::IntegratorElasticity::cellField(
     _material->getField(&buffer, name);
     buffer.addDimensionOkay(true);
     return buffer;
+    
   } // if/else
+
   
   // Return tensor section to satisfy member function definition. Code
   // should never get here.
