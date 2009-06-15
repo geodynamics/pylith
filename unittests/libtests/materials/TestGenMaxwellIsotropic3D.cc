@@ -19,6 +19,8 @@
 
 #include "pylith/materials/GenMaxwellIsotropic3D.hh" // USES GenMaxwellIsotropic3D
 
+#include <cstring> // USES memcpy()
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestGenMaxwellIsotropic3D );
 
