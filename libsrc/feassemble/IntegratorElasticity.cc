@@ -335,6 +335,8 @@ pylith::feassemble::IntegratorElasticity::cellField(
     _outputFields =
       new topology::Fields<topology::Field<topology::Mesh> >(mesh);
   
+  // FIX THIS LOGIC
+
   if (0 == strcasecmp(name, "total_strain") &&
       !_material->hasStateVar("total_strain")) {
     assert(0 != fields);
