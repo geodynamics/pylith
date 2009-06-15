@@ -55,7 +55,7 @@ namespace contrib {
       const int numProperties = 3;
 
       // Physical properties. 
-      const Metadata::ParamDescription properties[] = {
+      const pylith::materials::Metadata::ParamDescription properties[] = {
 	{ "density", 1, pylith::topology::FieldBase::SCALAR },
 	{ "mu", 1, pylith::topology::FieldBase::SCALAR },
 	{ "lambda", 1, pylith::topology::FieldBase::SCALAR },
@@ -75,7 +75,7 @@ namespace contrib {
       const int numStateVars = 2;
       
       /// State variables.
-      const Metadata::ParamDescription stateVars[] = {
+      const pylith::materials::Metadata::ParamDescription stateVars[] = {
 	{ "total_strain", tensorSize, pylith::topology::FieldBase::TENSOR },
 	{ "stress", tensorSize, pylith::topology::FieldBase::TENSOR },
       };
@@ -108,9 +108,9 @@ const int contrib::materials::PlaneStrainState::db_vp =
   contrib::materials::PlaneStrainState::db_vs + 1;
 
 // Indices of state variables in the state variables array.
-const int contrib::materials::MaxwellIsotropic3D::s_totalStrain = 0;
+const int contrib::materials::PlaneStrainState::s_totalStrain = 0;
 
-const int contrib::materials::MaxwellIsotropic3D::s_stress = 
+const int contrib::materials::PlaneStrainState::s_stress = 
   contrib::materials::PlaneStrainState::s_totalStrain + 
   contrib::materials::_PlaneStrainState::tensorSize;
 
@@ -120,13 +120,13 @@ contrib::materials::PlaneStrainState::PlaneStrainState(void) :
   pylith::materials::ElasticMaterial(_PlaneStrainState::dimension,
 				     _PlaneStrainState::tensorSize,
 				     _PlaneStrainState::numElasticConsts,
-    pylith::materialsMetadata(_PlaneStrainState::properties,
-			      _PlaneStrainState::numProperties,
-			      _PlaneStrainState::dbProperties,
-			      _PlaneStrainState::numDBProperties,
-			      _PlaneStrainState::stateVars,
-			      _PlaneStrainState::numStateVars,
-			      0, 0))
+     pylith::materials::Metadata(_PlaneStrainState::properties,
+				 _PlaneStrainState::numProperties,
+				 _PlaneStrainState::dbProperties,
+				 _PlaneStrainState::numDBProperties,
+				 _PlaneStrainState::stateVars,
+				 _PlaneStrainState::numStateVars,
+				 0, 0))
 { // constructor
 } // constructor
 
@@ -374,7 +374,7 @@ contrib::materials::PlaneStrainState::_calcElasticConsts(
 // Get stable time step for implicit time integration.
 double
 contrib::materials::PlaneStrainState::stableTimeStepImplicit(
-					const topology::Mesh& mesh) {
+				    const pylith::topology::Mesh& mesh) {
   // Override the ElasticMaterial::stableTimeStepImplicit() function
   // (which calls _stableTimeStepImplicit() for each quadrature point
   // ) with an optimized calculation of the stable time step. This is
