@@ -30,8 +30,7 @@ noinst_HEADERS = \
 libmaterialscontrib_la_LDFLAGS = $(AM_LDFLAGS)
 
 libmaterialscontrib_la_LIBADD = \
-	-lpylith \
-	-lproj
+	-lpylith
 if NO_UNDEFINED
 libmaterialscontrib_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
