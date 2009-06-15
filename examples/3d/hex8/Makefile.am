@@ -25,7 +25,7 @@ dist_noinst_DATA = \
 	hex8-gravity.jpg \
 	hex8-gravity_istress.jpg \
 	hex8-mesh.jpg \
-	initial_state.spatialdb \
+	initial_stress.spatialdb \
 	mat_elastic.spatialdb \
 	mat_maxwell.spatialdb \
 	mat_genmaxwell.spatialdb \
