@@ -49,5 +49,28 @@ pylith::materials::TestElasticIsotropic3D::testStableTimeStepImplicit(void)
   CPPUNIT_ASSERT_EQUAL(1.0, dt/pylith::PYLITH_MAXDOUBLE);
 } // testStableTimeStepImplicit
 
+// ----------------------------------------------------------------------
+// Test hasProperty().
+void
+pylith::materials::TestElasticIsotropic3D::testHasProperty(void)
+{ // testHasProperty
+  ElasticIsotropic3D material;
+
+  CPPUNIT_ASSERT(material.hasProperty("mu"));
+  CPPUNIT_ASSERT(material.hasProperty("lambda"));
+  CPPUNIT_ASSERT(material.hasProperty("density"));
+  CPPUNIT_ASSERT(!material.hasProperty("aaa"));
+} // testHasProperty
+
+// ----------------------------------------------------------------------
+// Test hasStateVar().
+void
+pylith::materials::TestElasticIsotropic3D::testHasStateVar(void)
+{ // testHasStateVar
+  ElasticIsotropic3D material;
+
+  CPPUNIT_ASSERT(!material.hasStateVar("stress"));
+} // testHasStateVar
+
 
 // End of file 

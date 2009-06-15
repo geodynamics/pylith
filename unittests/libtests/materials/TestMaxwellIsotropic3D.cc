@@ -317,5 +317,31 @@ pylith::materials::TestMaxwellIsotropic3D::test_stableTimeStepImplicit(void)
   TestElasticMaterial::test_stableTimeStepImplicit();
 } // test_stableTimeStepImplicit
 
+// ----------------------------------------------------------------------
+// Test hasProperty().
+void
+pylith::materials::TestMaxwellIsotropic3D::testHasProperty(void)
+{ // testHasProperty
+  MaxwellIsotropic3D material;
+
+  CPPUNIT_ASSERT(material.hasProperty("mu"));
+  CPPUNIT_ASSERT(material.hasProperty("lambda"));
+  CPPUNIT_ASSERT(material.hasProperty("density"));
+  CPPUNIT_ASSERT(material.hasProperty("maxwell_time"));
+  CPPUNIT_ASSERT(!material.hasProperty("aaa"));
+} // testHasProperty
+
+// ----------------------------------------------------------------------
+// Test hasStateVar().
+void
+pylith::materials::TestMaxwellIsotropic3D::testHasStateVar(void)
+{ // testHasStateVar
+  MaxwellIsotropic3D material;
+
+  CPPUNIT_ASSERT(material.hasStateVar("total_strain"));
+  CPPUNIT_ASSERT(material.hasStateVar("viscous_strain"));
+  CPPUNIT_ASSERT(!material.hasStateVar("stress"));
+} // testHasStateVar
+
 
 // End of file 
