@@ -32,11 +32,9 @@ dist_noinst_DATA = \
 	mat_powerlaw.spatialdb \
 	mesh_hex8_1000m.cub \
 	mesh_hex8_1000m.jou \
-	planestrain.cfg \
 	pylithapp.cfg \
 	savageprescott-t100.jpg \
 	savageprescott.cfg \
-	savageprescott-powerlaw.cfg \
 	shear.jpg \
 	shearxy.cfg \
 	sliprate_creep.spatialdb \
