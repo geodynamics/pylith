@@ -82,10 +82,10 @@ class Material(PetscComponent):
     quadrature.meta['tip'] = "Quadrature object for numerical integration."
 
 
-    from pylith.perf.MemoryLogger import MemoryLogger
-    perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
-                                         factory=MemoryLogger)
-    perfLogger.meta['tip'] = "Performance and memory logging."
+    #from pylith.perf.MemoryLogger import MemoryLogger
+    #perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
+    #                                     factory=MemoryLogger)
+    #perfLogger.meta['tip'] = "Performance and memory logging."
 
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -146,9 +146,9 @@ class Material(PetscComponent):
     """
     Model allocated memory.
     """
-    self.perfLogger.logMaterial('Materials', self)
-    self.perfLogger.logField('Materials', self.propertiesField())
-    self.perfLogger.logField('Materials', self.stateVarsField())
+    #self.perfLogger.logMaterial('Materials', self)
+    #self.perfLogger.logField('Materials', self.propertiesField())
+    #self.perfLogger.logField('Materials', self.stateVarsField())
     return
 
 
@@ -167,7 +167,7 @@ class Material(PetscComponent):
       self.dbInitialState(self.inventory.dbInitialState)
 
     self.quadrature = self.inventory.quadrature
-    self.perfLogger = self.inventory.perfLogger
+    #self.perfLogger = self.inventory.perfLogger
     return
 
   
