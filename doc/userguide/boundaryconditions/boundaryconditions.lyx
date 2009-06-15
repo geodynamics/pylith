@@ -231,7 +231,7 @@ where
  of a value in time.
  One can specify just the initial value, just the rate of change of the
  value (along with the corresponding onset time), or just the modulation
- in amplitude (along withthe corresponding temporal variation and onset
+ in amplitude (along with the corresponding temporal variation and onset
  time), or any combination of the three.
  The facilities associated with this formulation are:
 \end_layout
@@ -303,23 +303,8 @@ nts.
 
 \begin_layout Standard
 By default the output manager does not output any information.
- The specified displacements and velocities can be output by including 
-\begin_inset Quotes eld
-\end_inset
-
-displacements
-\begin_inset Quotes erd
-\end_inset
-
- and 
-\begin_inset Quotes eld
-\end_inset
-
-velocities
-\begin_inset Quotes erd
-\end_inset
-
- in the output manager's 
+ The specified displacements and velocities can be output by including ``displac
+ements'' and ``velocities'' in the output manager's 
 \family typewriter
 vertex_info_fields
 \family default
@@ -857,15 +842,7 @@ Quadrature2Din3D
 \begin_layout Standard
 By default the output manager does not output any information.
  The specified tractions can be output in global coordinates by including
- 
-\begin_inset Quotes eld
-\end_inset
-
-tractions
-\begin_inset Quotes erd
-\end_inset
-
- in the output manager's 
+ ``tractions'' in the output manager's 
 \family typewriter
 cell_info_fields
 \family default
