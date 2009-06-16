@@ -44,10 +44,6 @@ class Solver(PetscComponent):
 
     import pyre.inventory
 
-    guessZero = pyre.inventory.bool("initial_guess_zero", default=True)
-    guessZero.meta['tip'] = "Use zero for initial guess."
-    
-
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="solver"):
