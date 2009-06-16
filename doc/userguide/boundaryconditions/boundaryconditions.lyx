@@ -1183,7 +1183,7 @@ db_initial
 \begin_layout Plain Layout
 
 \family typewriter
-traction-horiz-shear, traction-vert-shear, traction-normal
+traction-shear-horiz, traction-shear-vert, traction-normal
 \end_layout
 
 \end_inset
