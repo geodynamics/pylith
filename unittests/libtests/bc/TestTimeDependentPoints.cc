@@ -148,6 +148,22 @@ pylith::bc::TestTimeDependentPoints::tearDown(void)
 } // tearDown
 
 // ----------------------------------------------------------------------
+// Test constructor.
+void
+pylith::bc::TestTimeDependentPoints::testBCDOF(void)
+{ // testBCDOF
+  PointForce bc;
+
+  const size_t numDOF = 4;
+  const int fixedDOF[numDOF] = { 0, 2, 3, 5 };
+  bc.bcDOF(fixedDOF, numDOF);
+
+  CPPUNIT_ASSERT_EQUAL(numDOF, bc._bcDOF.size());
+  for (int i=0; i < numDOF; ++i)
+    CPPUNIT_ASSERT_EQUAL(fixedDOF[i], bc._bcDOF[i]);
+} // testBCDOF
+
+// ----------------------------------------------------------------------
 // Test _getLabel().
 void
 pylith::bc::TestTimeDependentPoints::testGetLabel(void)

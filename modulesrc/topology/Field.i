@@ -161,8 +161,11 @@ namespace pylith {
       /// Allocate field.
       void allocate(void);
       
-      /// Zero section values.
+      /// Zero section values (excluding constrained DOF).
       void zero(void);
+      
+      /// Zero section values (including constrained DOF).
+      void zeroAll(void);
       
       /// Complete section by assembling across processors.
       void complete(void);

@@ -35,6 +35,24 @@ namespace pylith {
       virtual
       void deallocate(void);
   
+      /** Set indices of degrees of freedom associated with BC.
+       *
+       * Note: Forces at all points are applied to the same degrees of freedom.
+       *
+       * Example: [0, 1] to apply forces to x and y degrees of freedom in
+       * Cartesian system.
+       *
+       * @param flags Array of indices for degrees of freedom for forces.
+       * @param size Size of array
+       */
+      %apply(int* INPLACE_ARRAY1, int DIM1) {
+	(const int* flags, 
+	 const int size)
+	  };
+      void bcDOF(const int* flags,
+		 const int size);  
+      %clear(const int* flags, const int size);
+      
       // PROTECTED METHODS //////////////////////////////////////////////
     protected :
       

@@ -310,16 +310,22 @@ pylith::topology::Field<mesh_type>::allocate(void)
 } // allocate
 
 // ----------------------------------------------------------------------
-// Zero section values.
+// Zero section values (excluding constrained DOF).
 template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::zero(void)
 { // zero
-  if (!_section.isNull()) {
-#if 0 
+  if (!_section.isNull())
     _section->zero(); // Does not zero BC.
-#else
-    // Add values from field
+} // zero
+
+// ----------------------------------------------------------------------
+// Zero section values (including constrained DOF).
+template<typename mesh_type>
+void
+pylith::topology::Field<mesh_type>::zeroAll(void)
+{ // zeroAll
+  if (!_section.isNull()) {
     const chart_type& chart = _section->getChart();
     const typename chart_type::const_iterator chartBegin = chart.begin();
     const typename chart_type::const_iterator chartEnd = chart.end();
@@ -338,9 +344,8 @@ pylith::topology::Field<mesh_type>::zero(void)
 	_section->updatePointAll(*c_iter, &values[0]);
       } // if
     } // for
-#endif
   } // if
-} // zero
+} // zeroAll
 
 // ----------------------------------------------------------------------
 // Complete section by assembling across processors.

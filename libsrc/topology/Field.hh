@@ -199,8 +199,11 @@ public :
   /// Allocate field.
   void allocate(void);
 
-  /// Zero section values (including constrained values).
+  /// Zero section values (does not zero constrained values).
   void zero(void);
+
+  /// Zero section values (including constrained values).
+  void zeroAll(void);
 
   /// Complete section by assembling across processors.
   void complete(void);

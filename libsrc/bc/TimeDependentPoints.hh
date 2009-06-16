@@ -44,6 +44,19 @@ public :
   virtual
   void deallocate(void);
   
+  /** Set indices of degrees of freedom associated with BC.
+   *
+   * Note: Forces at all points are applied to the same degrees of freedom.
+   *
+   * Example: [0, 1] to apply forces to x and y degrees of freedom in
+   * Cartesian system.
+   *
+   * @param flags Array of indices for degrees of freedom for forces.
+   * @param size Size of array
+   */
+  void bcDOF(const int* flags,
+	     const int size);  
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
@@ -90,6 +103,11 @@ protected :
    */
   void _calculateValueIncr(const double t0,
 			   const double t1);
+
+  // PROTECTED MEMBERS //////////////////////////////////////////////////
+protected :
+
+  int_array _bcDOF; ///< Degrees of freedom associated with BC.
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
