@@ -111,7 +111,7 @@ pylith::topology::Jacobian::zero(void)
 // ----------------------------------------------------------------------
 // View matrix to stdout.
 void
-pylith::topology::Jacobian::view(void)
+pylith::topology::Jacobian::view(void) const
 { // view
   PetscErrorCode err = MatView(_matrix, PETSC_VIEWER_STDOUT_WORLD);
   CHECK_PETSC_ERROR(err);

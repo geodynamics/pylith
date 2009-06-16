@@ -71,7 +71,7 @@ public :
   void zero(void);
 
   /// View matrix to stdout.
-  void view(void);
+  void view(void) const;
 
   /** Write matrix to binary file.
    *

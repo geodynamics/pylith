@@ -23,17 +23,23 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <cstring> // USES strcpy()
+#include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 
+//#define PRECOMPUTE_GEOMETRY
+
 // ----------------------------------------------------------------------
-typedef pylith::topology::SubMesh::SieveSubMesh SieveSubMesh;
-typedef pylith::topology::SubMesh::RealSection RealSection;
+typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
+typedef pylith::topology::SubMesh::RealSection SubRealSection;
+typedef pylith::topology::Mesh::RealSection RealSection;
+typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::bc::Neumann::Neumann(void)
+pylith::bc::Neumann::Neumann(void) :
+  _db(0)
 { // constructor
 } // constructor
 
@@ -41,8 +47,17 @@ pylith::bc::Neumann::Neumann(void)
 // Destructor.
 pylith::bc::Neumann::~Neumann(void)
 { // destructor
+  deallocate();
 } // destructor
 
+// ----------------------------------------------------------------------
+// Deallocate PETSc and local data structures.
+void
+pylith::bc::Neumann::deallocate(void)
+{ // deallocate
+  _db = 0; // :TODO: Use shared pointer
+} // deallocate
+  
 // ----------------------------------------------------------------------
 // Initialize boundary condition. Determine orienation and compute traction
 // vector at integration points.
@@ -50,9 +65,10 @@ void
 pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
 				const double upDir[3])
 { // initialize
+  _queryDatabases();
+
   double_array up(upDir, 3);
-  _queryDatabases(up);
-  _paramsLocalToGlobal();
+  _paramsLocalToGlobal(up);
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
   const ALE::Obj<SieveSubMesh>& subSieveMesh = _boundaryMesh->sieveMesh();
@@ -87,27 +103,27 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
   double_array orientation(orientationSize);
 
   // Set names based on dimension of problem.
-  // 1-D problem = {'normal-traction'}
-  // 2-D problem = {'shear-traction', 'normal-traction'}
-  // 3-D problem = {'horiz-shear-traction', 'vert-shear-traction',
-  //                'normal-traction'}
+  // 1-D problem = {'traction-normal'}
+  // 2-D problem = {'traction-shear', 'traction-normal'}
+  // 3-D problem = {'traction-shear-horiz', 'traction-shear-vert',
+  //                'traction-normal'}
   _db->open();
   switch (spaceDim)
     { // switch
     case 1 : {
-      const char* valueNames[] = {"normal-traction"};
+      const char* valueNames[] = {"traction-normal"};
       _db->queryVals(valueNames, 1);
       break;
     } // case 1
     case 2 : {
-      const char* valueNames[] = {"shear-traction", "normal-traction"};
+      const char* valueNames[] = {"traction-shear", "traction-normal"};
       _db->queryVals(valueNames, 2);
       break;
     } // case 2
     case 3 : {
-      const char* valueNames[] = {"horiz-shear-traction",
-				  "vert-shear-traction",
-				  "normal-traction"};
+      const char* valueNames[] = {"traction-shear-horiz",
+				  "traction-shear-vert",
+				  "traction-normal"};
       _db->queryVals(valueNames, 3);
       break;
     } // case 3
@@ -485,6 +501,36 @@ pylith::bc::Neumann::_queryDB(topology::Field<topology::SubMesh>* field,
   const int spaceDim = cs->spaceDim();
 
   const double lengthScale = _getNormalizer().lengthScale();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   double_array coordsVertex(spaceDim);
   const ALE::Obj<SieveMesh>& sieveMesh = _boundaryMesh->sieveMesh();
