@@ -4,11 +4,6 @@ CURRENT ISSUES/PRIORITIES
 
 CRITICAL
 
-  petsc-dev doesn't build on the cygwin buildbot (`_vsnprintf' undeclared)
-    http://www.geodynamics.org:8009/?project=PETSc
-
-    * installation is timing out. Sent email to Leif to increase timeout value.
-
   Need power-law full-scale "test" to insure that the power-law and
   nonlinear solve give reasonable results.
 
