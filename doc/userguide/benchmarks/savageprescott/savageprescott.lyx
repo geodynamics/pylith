@@ -358,18 +358,8 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/soln.png
-	scale 33
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-REPLACE WITH REAL FIGURE
-\end_layout
+	filename figs/soln_profiles.eps
+	scale 66
 
 \end_inset
 
@@ -380,7 +370,9 @@ REPLACE WITH REAL FIGURE
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Displacement field for strike-slip benchmark problem.
+Displacement profiles perpendicular to the fault for a PyLith simulation
+ with hex8 cells and the analytical solution for earthquake cycle 10.
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:benchmark:savageprescott:solution"
