@@ -112,11 +112,11 @@ class PyLithApp(PetscApplication):
     self.problem.finalize()
     self._eventLogger.stagePop()
 
-    del mesh
-    del self.problem
-
     self.compilePerformanceLog()
     if self.perfLogger.verbose: self.perfLogger.show()
+
+    del mesh
+    del self.problem
     return
   
 

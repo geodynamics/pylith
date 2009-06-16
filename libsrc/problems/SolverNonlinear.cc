@@ -67,7 +67,6 @@ pylith::problems::SolverNonlinear::initialize(
     CHECK_PETSC_ERROR(err);
   } // if    
   err = SNESCreate(fields.mesh().comm(), &_snes); CHECK_PETSC_ERROR(err);
-  err = SNESSetFromOptions(_snes); CHECK_PETSC_ERROR(err);
 
   const topology::Field<topology::Mesh>& residual = fields.get("residual");
   const PetscVec residualVec = residual.vector();
@@ -79,6 +78,8 @@ pylith::problems::SolverNonlinear::initialize(
   err = SNESSetJacobian(_snes, jacobianMat, jacobianMat, reformJacobian,
 			(void*) formulation);
   CHECK_PETSC_ERROR(err);
+
+  err = SNESSetFromOptions(_snes); CHECK_PETSC_ERROR(err);
 } // initialize
 
 // ----------------------------------------------------------------------
