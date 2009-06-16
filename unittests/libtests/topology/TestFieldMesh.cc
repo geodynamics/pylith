@@ -458,6 +458,77 @@ pylith::topology::TestFieldMesh::testZero(void)
 } // testZero
 
 // ----------------------------------------------------------------------
+// Test zero().
+void
+pylith::topology::TestFieldMesh::testZeroAll(void)
+{ // testZeroAll
+  const int fiberDim = 3;
+  const double scale = 2.0;
+  const double valuesNondim[] = {
+    1.1, 2.2, 3.3,
+    1.2, 2.3, 3.4,
+    1.3, 2.4, 3.5,
+    1.4, 2.5, 3.6,
+  };
+  const int nconstraints[] = { 0, 2, 1, 3 };
+  const int constraints[] = {
+              // 0
+    0, 2,     // 1
+    2,        // 2
+    0, 1, 2,  // 3
+  };
+    
+  Mesh mesh;
+  _buildMesh(&mesh);
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+
+  // Create field and set constraint sizes
+  Field<Mesh> field(mesh);
+  field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+  const ALE::Obj<Mesh::RealSection>& section = field.section();
+  CPPUNIT_ASSERT(!section.isNull());
+  int iV=0;
+  for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter)
+    section->addConstraintDimension(*v_iter, nconstraints[iV++]);
+  field.allocate();
+  int index = 0;
+  int i = 0;
+  for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter, index += nconstraints[i++])
+    section->setConstraintDof(*v_iter, &constraints[index]);
+  field.zero();
+
+  double_array values(fiberDim);
+  i = 0;
+  for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter) {
+    for (int iDim=0; iDim < fiberDim; ++iDim)
+      values[iDim] = valuesNondim[i++];
+    section->updatePointAll(*v_iter, &values[0]);
+  } // for
+  
+  field.zeroAll();
+  
+  const double tolerance = 1.0e-6;
+  for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter) {
+    section->restrictPoint(*v_iter, &values[0], values.size());
+    for (int iDim=0; iDim < fiberDim; ++iDim) {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, values[iDim], tolerance);
+    } // for
+  } // for
+} // testZeroAll
+
+// ----------------------------------------------------------------------
 // Test complete().
 void
 pylith::topology::TestFieldMesh::testComplete(void)

@@ -40,6 +40,7 @@ class pylith::bc::TestTimeDependentPoints : public CppUnit::TestFixture
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestTimeDependentPoints );
 
+  CPPUNIT_TEST( testBCDOF );
   CPPUNIT_TEST( testGetLabel );
   CPPUNIT_TEST( testQueryDB );
   CPPUNIT_TEST( testQueryDatabases );
@@ -64,6 +65,9 @@ public :
 
   /// Tear down testing data.
   void tearDown(void);
+
+  /// Test bcDOF.
+  void testBCDOF(void);
 
   /// Test _getLabel().
   void testGetLabel(void);

@@ -17,6 +17,7 @@
 __all__ = ['AbsorbingDampers',
            'BoundaryCondition',
            'TimeDependent',
+           'TimeDependentPoints',
            'DirichletBC',
            'DirichletBoundary',
            'Neumann',

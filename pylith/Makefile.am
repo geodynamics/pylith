@@ -23,6 +23,7 @@ nobase_pkgpyexec_PYTHON = \
 	bc/Neumann.py \
 	bc/PointForce.py \
 	bc/TimeDependent.py \
+	bc/TimeDependentPoints.py \
 	bc/ZeroDispDB.py \
 	faults/__init__.py \
 	faults/BruneSlipFn.py \

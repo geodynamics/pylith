@@ -18,13 +18,13 @@
 ## Factory: boundary_condition
 
 from BoundaryCondition import BoundaryCondition
-from TimeDependent import TimeDependent
+from TimeDependentPoints import TimeDependentPoints
 from pylith.feassemble.Constraint import Constraint
 from bc import DirichletBC as ModuleDirichletBC
 
 # DirichletBC class
 class DirichletBC(BoundaryCondition, 
-                  TimeDependent, 
+                  TimeDependentPoints, 
                   Constraint, 
                   ModuleDirichletBC):
   """
@@ -107,7 +107,7 @@ class DirichletBC(BoundaryCondition,
     Setup members using inventory.
     """
     BoundaryCondition._configure(self)
-    TimeDependent._configure(self)
+    TimeDependentPoints._configure(self)
     return
 
 

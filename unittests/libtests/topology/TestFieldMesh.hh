@@ -56,6 +56,7 @@ class pylith::topology::TestFieldMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testClear );
   CPPUNIT_TEST( testAllocate );
   CPPUNIT_TEST( testZero );
+  CPPUNIT_TEST( testZeroAll );
   CPPUNIT_TEST( testComplete );
   CPPUNIT_TEST( testCopy );
   CPPUNIT_TEST( testOperatorAdd );
@@ -124,6 +125,9 @@ public :
 
   /// Test zero().
   void testZero(void);
+
+  /// Test zeroAll().
+  void testZeroAll(void);
 
   /// Test complete().
   void testComplete(void);

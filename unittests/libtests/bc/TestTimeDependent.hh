@@ -37,7 +37,6 @@ class pylith::bc::TestTimeDependent : public CppUnit::TestFixture
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestTimeDependent );
 
-  CPPUNIT_TEST( testBCDOF );
   CPPUNIT_TEST( testDBInitial );
   CPPUNIT_TEST( testDBRate );
   CPPUNIT_TEST( testDBChange );
@@ -48,9 +47,6 @@ class pylith::bc::TestTimeDependent : public CppUnit::TestFixture
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
-
-  /// Test bcDOF.
-  void testBCDOF(void);
 
   /// Test dbInitial().
   void testDBInitial(void);

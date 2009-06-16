@@ -54,6 +54,20 @@ pylith::bc::TimeDependentPoints::deallocate(void)
 } // deallocate
   
 // ----------------------------------------------------------------------
+// Set indices of vertices with point forces.
+void
+pylith::bc::TimeDependentPoints::bcDOF(const int* flags,
+				       const int size)
+{ // bcDOF
+  if (size > 0)
+    assert(0 != flags);
+
+  _bcDOF.resize(size);
+  for (int i=0; i < size; ++i)
+    _bcDOF[i] = flags[i];
+} // bcDOF
+
+// ----------------------------------------------------------------------
 // Query databases for parameters.
 void
 pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,

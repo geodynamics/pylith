@@ -32,23 +32,6 @@ from bc import TimeDependent as ModuleTimeDependent
 from pylith.utils.NullComponent import NullComponent
 
 
-def validateDOF(value):
-  """
-  Validate list of fixed degrees of freedom.
-  """
-  try:
-    size = len(value)
-    num = map(int, value)
-    for v in num:
-      if v < 0:
-        raise ValueError
-  except:
-    raise ValueError, \
-          "'fixed_dof' must be a zero based list of indices of fixed " \
-          "degrees of freedom."
-  return num
-  
-
 # TimeDependent class
 class TimeDependent(PetscComponent, ModuleTimeDependent):
   """
@@ -74,11 +57,6 @@ class TimeDependent(PetscComponent, ModuleTimeDependent):
   # INVENTORY //////////////////////////////////////////////////////////
 
   import pyre.inventory
-
-  bcDOF = pyre.inventory.list("fixed_dof", default=[],
-                                 validator=validateDOF)
-  bcDOF.meta['tip'] = "Indices of boundary condition DOF " \
-      "(0=1st DOF, 1=2nd DOF, etc)."
 
   from spatialdata.spatialdb.SimpleDB import SimpleDB
   dbInitial = pyre.inventory.facility("db_initial", factory=SimpleDB, 
@@ -117,9 +95,6 @@ class TimeDependent(PetscComponent, ModuleTimeDependent):
     PetscComponent._configure(self)
 
     import numpy
-    bcDOF = numpy.array(self.inventory.bcDOF, dtype=numpy.int32)
-    ModuleTimeDependent.bcDOF(self, bcDOF)
-
     if isinstance(self.inventory.dbChange, NullComponent):
       if not isinstance(self.inventory.thChange, NullComponent):
         raise ValueError("Cannot provide a time history temporal database "

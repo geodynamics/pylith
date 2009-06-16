@@ -223,10 +223,6 @@ pylith::bc::DirichletBC::setFieldIncr(const double t0,
   if (0 == numFixedDOF)
     return;
 
-  // no temporal change -> no increment in field
-  if (0 == _dbRate && 0 == _dbChange)
-    return;
-
   // Calculate spatial and temporal variation of value for BC.
   _calculateValueIncr(t0, t1);
 
