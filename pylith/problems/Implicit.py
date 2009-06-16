@@ -161,6 +161,7 @@ class Implicit(Formulation):
 
     self._info.log("Setting constraints.")
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
+    dispIncr.zero()
     if 0 == self._stepCount:
       for constraint in self.constraints:
         constraint.setField(t+dt, dispIncr)
@@ -183,7 +184,6 @@ class Implicit(Formulation):
     Advance to next time step.
     """
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
-    dispIncr.zero()
 
     self._reformResidual(t+dt, dt)
 

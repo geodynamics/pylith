@@ -13,7 +13,16 @@ CRITICAL
 
     Constitutive model
 
+  Time dependent BC
+    fixed_dof -> bc_dof (Python only)
+    bc_dof in TimeDependentPoints, not TimeDependent
+
   Time dependent Neumann BC
+
+
+
+  TimeDependent.py
+    fixed_
 
 BONUS
 
