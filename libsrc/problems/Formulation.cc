@@ -171,7 +171,7 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
     solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
 
-  // Set residual to zero.
+  // Set jacobian to zero.
   _jacobian->zero();
 
   // Add in contributions that do not require assembly.
@@ -182,7 +182,7 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
   for (int i=0; i < numIntegrators; ++i)
     _submeshIntegrators[i]->integrateJacobianAssembled(_jacobian, _t, _fields);
 
-  // Assemble residual.
+  // Flush assembled portion.
   _jacobian->assemble("flush_assembly");
 
   // Add in contributions that require assembly.
@@ -193,7 +193,7 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
   for (int i=0; i < numIntegrators; ++i)
     _submeshIntegrators[i]->integrateJacobian(_jacobian, _t, _fields);
   
-  // Assemble residual.
+  // Assemble jacobian.
   _jacobian->assemble("final_assembly");
 } // reformJacobian
 
