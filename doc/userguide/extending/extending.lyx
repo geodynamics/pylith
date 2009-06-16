@@ -155,7 +155,8 @@ PyLith provides several types of spatial databases that can be used for
  ruptures, and physical properties.
  In this example we demonstrate how to provide a spatial database, UniformVelMod
 el, for specifying elastic properties.
- The source files are in the spatialdata package in the 
+ The source files are included in the source for the spatialdata package
+ in the 
 \family typewriter
 templates/spatialdb
 \family default
@@ -402,10 +403,6 @@ dislocation-statevars_info.vtk
 .
 \end_layout
 
-\begin_layout LyX-Code
-
-\end_layout
-
 \begin_layout Section
 \begin_inset CommandInset label
 LatexCommand label
@@ -414,6 +411,34 @@ name "sec:Extending:BulkConstitutiveModels"
 \end_inset
 
 Bulk Constitutive Models
+\end_layout
+
+\begin_layout Standard
+PyLith includes several linearly elastic and inelastic bulk constitutive
+ models for 2-D and 3-D problems.
+ In this example we demonstrate how to extend PyLith by adding your own
+ bulk constitutive model.
+ We reimplement the 2-D plane strain constitutive model while adding the
+ current strain and stress tensors as state variables.
+ This constitutive model, PlaneStrainState is not particularly useful, but
+ it illustrates the basic steps involved in creating a bulk constitutive
+ model with state variables.
+ The sources files are included with the main PyLith source code in the
+ templates/materials directory.
+ The README file in templates/materials provides detailed instructions for
+ the various steps and the source files contain numerous comments to guide
+ you through the custcomization process.
+\end_layout
+
+\begin_layout Standard
+In contrast to our previous example of customization of a spatial database
+ which involved gathering user-specified parameters via the Pyre framework,
+ there are no user-defined parameters for bulk constitutive models.
+ The specification of the physical properties and state variables associated
+ with the constitutive model is handled directly in the C++ code.
+ As a result, the Python object for the constitutive model component is
+ very simple and customization is limited to simply changing the names of
+ objects.
 \end_layout
 
 \end_body
