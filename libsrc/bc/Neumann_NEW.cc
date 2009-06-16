@@ -502,7 +502,30 @@ pylith::bc::Neumann::_queryDB(topology::Field<topology::SubMesh>* field,
 
   const double lengthScale = _getNormalizer().lengthScale();
 
+  // Get 'surface' cells (1 dimension lower than top-level cells)
+  const ALE::Obj<SieveSubMesh>& subSieveMesh = _boundaryMesh->sieveMesh();
+  assert(!subSieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
+    subSieveMesh->heightStratum(1);
+  assert(!cells.isNull());
+  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
+  // Create section for traction vector in global coordinates
+  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
+  const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
+  const int numBasis = _quadrature->numBasis();
+  const int numQuadPts = _quadrature->numQuadPts();
+  const int spaceDim = cellGeometry.spaceDim();
+  const int fiberDim = spaceDim * numQuadPts;
+  
+  _parameters =
+    new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
+  assert(0 != _parameters);
+  _parameters->add("traction", "traction");
+  topology::Field<topology::SubMesh>& traction = _parameters->get("traction");
+  traction.newSection(cells, fiberDim);
+  traction.allocate();
 
 
 
