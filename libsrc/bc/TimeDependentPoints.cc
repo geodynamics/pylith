@@ -201,6 +201,14 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
       _dbTimeHistory->open();
   } // if
 
+  // Dellocate memory
+  for (int i=0; i < numBCDOF; ++i) {
+    delete[] valueNames[i]; valueNames[i] = 0;
+    delete[] rateNames[i]; rateNames[i] = 0;
+  } // for
+  delete[] valueNames; valueNames = 0;
+  delete[] rateNames; rateNames = 0;
+
   logger.stagePop();
 } // _queryDatabases
 
