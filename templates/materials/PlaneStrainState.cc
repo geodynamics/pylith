@@ -258,7 +258,8 @@ contrib::materials::PlaneStrainState::_calcDensity(double* const density,
   assert(0 != density);
   assert(0 != properties);
   assert(_numPropsQuadPt == numProperties);
-  assert(0 == numStateVars);
+  assert(0 != stateVars);
+  assert(_numVarsQuadPt == numStateVars);
 
   // Set density using physical properties (trivial since one our
   // physical properties is density).
@@ -287,7 +288,8 @@ contrib::materials::PlaneStrainState::_calcStress(double* const stress,
   assert(_PlaneStrainState::tensorSize == stressSize);
   assert(0 != properties);
   assert(_numPropsQuadPt == numProperties);
-  assert(0 == numStateVars);
+  assert(0 != stateVars);
+  assert(_numVarsQuadPt == numStateVars);
   assert(0 != totalStrain);
   assert(_PlaneStrainState::tensorSize == strainSize);
   assert(0 != initialStress);
@@ -341,7 +343,8 @@ contrib::materials::PlaneStrainState::_calcElasticConsts(
   assert(_PlaneStrainState::numElasticConsts == numElasticConsts);
   assert(0 != properties);
   assert(_numPropsQuadPt == numProperties);
-  assert(0 == numStateVars);
+  assert(0 != stateVars);
+  assert(_numVarsQuadPt == numStateVars);
   assert(0 != totalStrain);
   assert(_PlaneStrainState::tensorSize == strainSize);
   assert(0 != initialStress);
