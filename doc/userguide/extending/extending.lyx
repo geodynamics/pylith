@@ -70,14 +70,14 @@ One of the powerful features of using the Pyre framework in PyLith is the
  facility.
  In this section we provide examples of how to extend PyLith for components
  that users will most likely want to replace with their own custom versions.
- You will need a familirarity with Python, Makefiles, and C++ to write your
+ You will need a familiarity with Python, Makefiles, and C++ to write your
  own components.
- The primary steps in constructing a component to extend PyLith' functionality
+ The primary steps in constructing a component to extend PyLith's functionality
  include:
 \end_layout
 
 \begin_layout Enumerate
-Setting up the sources files for the component or set of components based
+Setting up the source files for the component or set of components based
  on the templates.
 \end_layout
 
@@ -165,10 +165,18 @@ templates/spatialdb
 \family typewriter
 README
 \family default
- file in templates/spatialdb provides detailed instructions for the various
- steps involved and the source files contain numerous comments to help guide
- you through the customization process.
- The UniformVelModel component provides uniform physical properties: P wave
+ file in 
+\family typewriter
+templates/spatialdb
+\family default
+ provides detailed instructions for the various steps involved, and the
+ source files contain numerous comments to help guide you through the customizat
+ion process.
+ 
+\end_layout
+
+\begin_layout Standard
+The UniformVelModel component provides uniform physical properties: P wave
  speed, S wave speed, and density.
  Although this is a rather trivial specification of physical properties
  that could be easily done using a UniformDB, this example demonstrates
@@ -181,12 +189,12 @@ README
  With our uniform physical properties we do not need to worry about any
  differences in coordinate systems between our seismic velocity model and
  points at which the model is queried.
- Howver, in many cases we do, so we illustrate this functionality by using
+ However, in many cases we do, so we illustrate this functionality by using
  a geographic projection as the coordinate system in our example.
 \end_layout
 
 \begin_layout Standard
-Using a top-down approach the first step is to determine what information
+Using a top-down approach, the first step is to determine what information
  the user will need to supply to the component.
  Is the data for the spatial database in a file or a series of files? If
  so, file names and possible paths to a directory containing files with
@@ -241,14 +249,17 @@ UniformVelModel.hh
  the P wave speed, S wave speed, and density values to the user-specified
  values in the Python object.
  Additional information, such as a file name, parameters defined as data
- structures, etc.
- would be set via similar accessor functions.
+ structures, etc., would be set via similar accessor functions.
  You can also add additional functions and data structures to the C++ class
  to provide the necessary operations and functionality of the spatial database.
- In SimpleDB we use a separate class to read in the spatial database and
+ 
+\end_layout
+
+\begin_layout Standard
+In SimpleDB we use a separate class to read in the spatial database and
  yet another class to perform the actual query.
- In our example the C++ object also creates and stores the UTM zone 10 geographi
-c projection for the seismic velocity model.
+ In our example, the C++ object also creates and stores the UTM zone 10
+ geographic projection for the seismic velocity model.
  When the spatial database gets a query for physical properties, we transform
  the coordinates of the query point from its coordinate system to the coordinate
  system of our seismic velocity model.
@@ -256,51 +267,46 @@ c projection for the seismic velocity model.
 
 \begin_layout Standard
 In order to use SWIG to create the Python module that allows us to call
- C++ from Python, we use a 
-\begin_inset Quotes eld
-\end_inset
-
-main
-\begin_inset Quotes erd
-\end_inset
-
- SWIG interface file (
+ C++ from Python, we use a ``main'' SWIG interface file (
 \family typewriter
-spatialdbcontrib.
+\size small
+spatialdbcontrib.i
 \family default
-i in this case) and then one for each object (
+\size default
+ in this case) and then one for each object (
 \family typewriter
+\size small
 UniformVelModel.i
 \family default
+\size default
  in this case).
  This greatly simplifies keeping the Python module synchronized with the
  C++ and Python code.
  The 
 \family typewriter
+\size small
 UniformVelModel.i
 \family default
+\size default
  SWIG file is nearly identical to the corresponding C++ header file.
- There are a few differences as noted in the comments within the file.
+ There are a few differences, as noted in the comments within the file.
  Copying and pasting the C++ header file and then doing a little cleanup
  is a very quick and easy way to construct a SWIG interface file for a C++
  object.
  Because very little changes from SWIG module to SWIG module, it is usually
- easiest to construct the 
-\begin_inset Quotes eld
-\end_inset
-
-main
-\begin_inset Quotes erd
-\end_inset
-
- SWIG interface by copying and customizing an existing one.
+ easiest to construct the ``main'' SWIG interface by copying and customizing
+ an existing one.
 \end_layout
 
 \begin_layout Standard
 Once the Python, C++, and SWIG interface files are complete, we are ready
  to build the module.
- The Makefile.am file defines how to compile and link the C++ library and
- generate the Python module via SWIG.
+ The 
+\family typewriter
+Makefile.am
+\family default
+ file defines how to compile and link the C++ library and generate the Python
+ module via SWIG.
  The 
 \family typewriter
 configure.ac
@@ -308,9 +314,9 @@ configure.ac
  file contains the information used to build a configure script.
  The configure script checks to make sure it can find all of the tools needed
  to build the component (C++ compiler, Python, installed spatial database
- package, etc).
+ package, etc.).
  See the README file for detailed instructions on how to generate the configure
- script, build, and install the component.
+ script, and build and install the component.
 \end_layout
 
 \begin_layout Standard
@@ -318,20 +324,28 @@ We recommend constructing tests of the component to insure that it is functionin
 g properly before attempting to use it in an application.
  The 
 \family typewriter
+\size small
 tests
 \family default
+\size default
  directory within 
 \family typewriter
+\size small
 templates/spatialdb
 \family default
+\size default
  contains a Python script, 
 \family typewriter
+\size small
 testcontrib.py
 \family default
+\size default
 , that runs the tests of the UniformVelModel component defined in 
 \family typewriter
+\size small
 TestUniformVelModel.py
 \family default
+\size default
 .
  Normally, one would want to test each function individually to isolate
  errors and create C++ tests as well as the Python tests included here.
@@ -388,7 +402,7 @@ When you run the dislocation example, the
 dislocation-statevars_info.vtk
 \family default
  file should reflect the use of physical properties from the uniform seismic
- velocity with with 
+ velocity with 
 \begin_inset Formula $\mu=1.69\times10^{10}\mathrm{Pa}$
 \end_inset
 
@@ -415,16 +429,16 @@ Bulk Constitutive Models
 
 \begin_layout Standard
 PyLith includes several linearly elastic and inelastic bulk constitutive
- models for 2-D and 3-D problems.
- In this example we demonstrate how to extend PyLith by adding your own
+ models for 2D and 3D problems.
+ In this example, we demonstrate how to extend PyLith by adding your own
  bulk constitutive model.
- We reimplement the 2-D plane strain constitutive model while adding the
+ We reimplement the 2D plane strain constitutive model while adding the
  current strain and stress tensors as state variables.
  This constitutive model, 
 \family typewriter
 PlaneStrainState
 \family default
- is not particularly useful, but it illustrates the basic steps involved
+, is not particularly useful, but it illustrates the basic steps involved
  in creating a bulk constitutive model with state variables.
  The sources files are included with the main PyLith source code in the
  
@@ -440,7 +454,7 @@ README
 \family typewriter
 templates/materials
 \family default
- provides detailed instructions for the various steps and the source files
+ provides detailed instructions for the various steps, and the source files
  contain numerous comments to guide you through the customization process.
 \end_layout
 
@@ -487,7 +501,7 @@ _dbToProperties()
 \family typewriter
 _nondimProperties()
 \family default
- Nondimensionalize the physical properties used in the constitutive model
+ Nondimensionalizes the physical properties used in the constitutive model
  equations.
 \end_layout
 
@@ -496,7 +510,8 @@ _nondimProperties()
 \family typewriter
 _dimProperties()
 \family default
- Dimensionalize the physical properties used in the constitutive model equations.
+ Dimensionalizes the physical properties used in the constitutive model
+ equations.
 \end_layout
 
 \begin_layout Description
@@ -513,7 +528,7 @@ _stableTimeStepImplicit()
 \family typewriter
 _calcDensity()
 \family default
- Compute the density given the physical properties and state variables.
+ Computes the density given the physical properties and state variables.
  In most cases density is a physical property used in the constitutive equations
 , so this is a trivial function in those cases.
 \end_layout
@@ -523,7 +538,7 @@ _calcDensity()
 \family typewriter
 _calcStress()
 \family default
- Compute the stress tensor given the physical properties, state variables,
+ Computes the stress tensor given the physical properties, state variables,
  total strain, initial stress, and initial strain.
 \end_layout
 
@@ -532,7 +547,7 @@ _calcStress()
 \family typewriter
 _calcElasticConsts()
 \family default
- Compute the elastic constants given the physical properties, state variables,
+ Computes the elastic constants given the physical properties, state variables,
  total strain, initial stress, and initial strain.
 \end_layout
 
@@ -541,7 +556,7 @@ _calcElasticConsts()
 \family typewriter
 _updateStateVars()
 \family default
- Update the state variables given the physical properties, total strain,
+ Updates the state variables given the physical properties, total strain,
  initial stress, and initial strain.
  If a constitutive model does not use state variables, then this routine
  is omitted.
@@ -559,11 +574,11 @@ Because it is sometimes convenient to supply physical properties for a bulk
 \begin_inset Formula $\lambda,$
 \end_inset
 
-and density), each bulk constitutive model component has routines to convert
+ and density), each bulk constitutive model component has routines to convert
  the physical property parameters and state variables a user specifies via
  spatial databases to the physical property properties and state variables
  used in the constitutive model equations.
- In quasi-static problems PyLith computes an elastic solution for the first
+ In quasi-static problems, PyLith computes an elastic solution for the first
  time step (
 \begin_inset Formula $-\Delta t$
 \end_inset
@@ -584,15 +599,7 @@ and density), each bulk constitutive model component has routines to convert
 The SWIG interface files for a bulk constitutive component are setup in
  the same manner as in the previous example of creating a customized spatial
  database component.
- The 
-\begin_inset Quotes eld
-\end_inset
-
-main
-\begin_inset Quotes erd
-\end_inset
-
- SWIG interface file (
+ The ``main'' SWIG interface file (
 \family typewriter
 materialscontrib.i
 \family default
@@ -610,9 +617,9 @@ ElasticMaterial
  object defines a number of pure virtual methods (which merely specify the
  interface for the functions and do not implement default behavior), we
  must include many protected functions in the SWIG interface file.
- If these are omitted SWIG will give a warning indicating that some of functions
- remain abstract (i.e., some pure virtual functions defined in the parent
- class 
+ If these are omitted, SWIG will give a warning indicating that some of
+ the functions remain abstract (i.e., some pure virtual functions defined
+ in the parent class 
 \family typewriter
 ElasticMaterial
 \family default
@@ -620,7 +627,7 @@ ElasticMaterial
 \family typewriter
 PlaneStrainState
 \family default
-) and no constructor is created.
+), and no constructor is created.
  When this happens, you cannot create a 
 \family typewriter
 PlaneStrainState
@@ -650,7 +657,7 @@ Because most functionality of the bulk constitutive model component is at
 component
 \family default
  should include tests for both the C++ code and Python code.
- The C++ unit tests can be quite complex and it is best to examine those
+ The C++ unit tests can be quite complex, and it is best to examine those
  used for the bulk constitutive models included with PyLith.
  In this example we create the Python unit tests to verify that we can create
  a 
@@ -680,7 +687,7 @@ Once you have built, installed, and tested the
 PlaneStrainState
 \family default
  component, it is time to use it in a simple example.
- You can try using it in any of the 2-D examples.
+ You can try using it in any of the 2D examples.
  For the examples in 
 \family typewriter
 examples/twocells/twoquad4
@@ -706,14 +713,16 @@ material = pylith.materials.contrib.PlaneStrainState
 
 \begin_layout Standard
 or simply add the command line argument
-\begin_inset Newline newline
-\end_inset
+\end_layout
 
+\begin_layout LyX-Code
 
 \family typewriter
 --material.problem.homogeneous.material=pylith.materials.contrib.PlaneStrainState
-\family default
- when running any of the 2-D examples.
+\end_layout
+
+\begin_layout Standard
+when running any of the 2D examples.
  The output should remain identical, but you should see the 
 \family typewriter
 PlaneStrainState
