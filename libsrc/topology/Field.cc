@@ -315,8 +315,31 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::zero(void)
 { // zero
-  if (!_section.isNull())
-    _section->zero();
+  if (!_section.isNull()) {
+#if 0 
+    _section->zero(); // Does not zero BC.
+#else
+    // Add values from field
+    const chart_type& chart = _section->getChart();
+    const typename chart_type::const_iterator chartBegin = chart.begin();
+    const typename chart_type::const_iterator chartEnd = chart.end();
+
+    // Assume fiber dimension is uniform
+    const int fiberDim = (chart.size() > 0) ? 
+      _section->getFiberDimension(*chartBegin) : 0;
+    double_array values(fiberDim);
+    values *= 0.0;
+
+    for (typename chart_type::const_iterator c_iter = chartBegin;
+	 c_iter != chartEnd;
+	 ++c_iter) {
+      if (0 != _section->getFiberDimension(*c_iter)) {
+	assert(fiberDim == _section->getFiberDimension(*c_iter));
+	_section->updatePointAll(*c_iter, &values[0]);
+      } // if
+    } // for
+#endif
+  } // if
 } // zero
 
 // ----------------------------------------------------------------------
