@@ -9,22 +9,14 @@ CRITICAL
 
   Need generalized Maxwell full-scale "test".
 
-  Extensions
-
-    Constitutive model
-
-  Time dependent BC
-    fixed_dof -> bc_dof (Python only)
-    bc_dof in TimeDependentPoints, not TimeDependent
-
   Time dependent Neumann BC
 
-
-
   TimeDependent.py
-    fixed_
+    fixed_dof to bc_dof - PYRE PROPERTY
 
 BONUS
+
+  Add more to READMEs for extensions.
 
   pylithinfo (Python application, send extra args to PyLith)
 
@@ -90,10 +82,6 @@ Charles
 
     Add Savage-Prescott [CHARLES]
   
-  Extending PyLith [BRAD]
-
-    Material properties
-
   * Reduce memory use with ordering elements by material??
 
 2. Tidy up
@@ -204,10 +192,6 @@ POST RELEASE 1.4
   Switch Components to PetscComponents.
     Add _cleanup() to components to deallocate local data structures.
     Add cleanup() to non-components to deallocate local data structures.
-
-  Create createModuleObj() methods to Python objects as standard way
-  of creating handle to C++ object (not necessary in abstract base
-  classes).
 
   Create createModuleObj() methods to Python objects as standard way
   of creating handle to C++ object (not necessary in abstract base
