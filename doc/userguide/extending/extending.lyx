@@ -711,7 +711,7 @@ or simply add the command line argument
 
 
 \family typewriter
---material.problem.materials.material=pylith.materials.contrib.PlaneStrainState
+--material.problem.homogeneous.material=pylith.materials.contrib.PlaneStrainState
 \family default
  when running any of the 2-D examples.
  The output should remain identical, but you should see the 
