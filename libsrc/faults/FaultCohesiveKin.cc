@@ -245,6 +245,8 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   // Allocate vectors for cell values
   double_array orientationCell(numConstraintVert*orientationSize);
   double_array dispTCell(numCorners*spaceDim);
+  double_array dispTIncrCell(numCorners*spaceDim);
+  double_array dispTpdtCell(numBasis*spaceDim);
   double_array residualCell(numCorners*spaceDim);
 
   // Tributary area for the current for each vertex.
@@ -289,6 +291,15 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   topology::Mesh::RestrictVisitor dispTVisitor(*dispTSection,
 					       dispTCell.size(), 
 					       &dispTCell[0]);
+
+#if 0 // :TODO: Need to use solution
+  topology::Field<topology::Mesh>& dispTIncr = fields->get("dispIncr(t->t+dt)");
+  const ALE::Obj<RealSection>& dispTIncrSection = dispTIncr.section();
+  assert(!dispTIncrSection.isNull());  
+  topology::Mesh::RestrictVisitor dispTIncrVisitor(*dispTIncrSection,
+					       dispTIncrCell.size(), 
+					       &dispTIncrCell[0]);
+#endif
 
   const ALE::Obj<RealSection>& residualSection = residual.section();
   topology::Mesh::UpdateAddVisitor residualVisitor(*residualSection,
@@ -342,6 +353,16 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     dispTVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispTVisitor);
     
+#if 0 // :TODO: need to use solution
+    // Get dispIncr(t) at cohesive cell's vertices.
+    dispTIncrVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
+#endif
+    
+    // Compute current estimate of displacement at time t+dt using
+    // solution increment.
+    dispTpdtCell = dispTCell + dispTIncrCell;
+
     for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
       // Blocks in cell matrix associated with normal cohesive
       // vertices i and j and constraint vertex k
@@ -365,13 +386,25 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 	    -orientationVertex[kDim*spaceDim+iDim] * wt;
       } // for
       
-	// Entries associated with constraint forces applied at node j
+      // Entries associated with constraint forces applied at node j
       for (int jDim=0; jDim < spaceDim; ++jDim) {
 	for (int kDim=0; kDim < spaceDim; ++kDim)
 	  residualCell[indexJ*spaceDim+jDim] -=
 	    dispTCell[indexK*spaceDim+kDim] * 
 	    orientationVertex[kDim*spaceDim+jDim] * wt;
       } // for
+      
+#if 0 // :TODO: Is this a missing -C u term??
+      // Entries associated with relative displacements between node i
+      // and node j for constraint node k
+      for (int kDim=0; kDim < spaceDim; ++kDim) {
+	for (int iDim=0; iDim < spaceDim; ++iDim)
+	  residualCell[indexK*spaceDim+kDim] -=
+	    (dispTpdtCell[indexI*spaceDim+iDim] - 
+	     dispTpdtCell[indexJ*spaceDim+iDim]) *
+	    orientationVertex[kDim*spaceDim+iDim] * wt;
+      } // for
+#endif
     } // for
 
 #if 0 // DEBUGGING
@@ -383,7 +416,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
       std::cout << "  slip["<<i<<"]: " << cellSlip[i] << std::endl;
     }
     for(int i = 0; i < numCorners*spaceDim; ++i) {
-      std::cout << "  soln["<<i<<"]: " << dispTCell[i] << std::endl;
+      std::cout << "  soln["<<i<<"]: " << dispTpdtCell[i] << std::endl;
     }
     for(int i = 0; i < numCorners*spaceDim; ++i) {
       std::cout << "  v["<<i<<"]: " << residualCell[i] << std::endl;
