@@ -58,7 +58,6 @@ class Integrator(object):
     Constructor.
     """
     self.mesh = None
-    self.gravityField = None
     return
 
 
@@ -85,8 +84,6 @@ class Integrator(object):
     self._eventLogger.eventBegin(logEvent)
 
     self.normalizer(normalizer)
-    if None != self.gravityField:
-      self.gravityField(self.gravityField)
     
     self._eventLogger.eventEnd(logEvent)
     return
