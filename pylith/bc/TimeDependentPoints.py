@@ -30,8 +30,8 @@ def validateDOF(value):
         raise ValueError
   except:
     raise ValueError, \
-          "'fixed_dof' must be a zero based list of indices of fixed " \
-          "degrees of freedom."
+          "'bc_dof' must be a zero based list of indices of degrees of " \
+          "freedom at a vertex."
   return num
   
 
@@ -48,7 +48,7 @@ class TimeDependentPoints(TimeDependent, ModuleTimeDependentPoints):
 
   import pyre.inventory
 
-  bcDOF = pyre.inventory.list("fixed_dof", default=[],
+  bcDOF = pyre.inventory.list("bc_dof", default=[],
                                  validator=validateDOF)
   bcDOF.meta['tip'] = "Indices of boundary condition DOF " \
       "(0=1st DOF, 1=2nd DOF, etc)."
