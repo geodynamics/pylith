@@ -188,7 +188,8 @@ class VtkDiff(Application):
       # We assume that differences correspond to midpoint of the 2 time steps.
       timeStampOut = int(0.5 * (timeStamp1 + timeStamp2))
       timeStampOutString = repr(timeStampOut).rjust(self.timeStampWidth, '0')
-      outputFileName = self.vtkOutputRoot + "_t" + timeStampOutString + ".vtk"
+      #outputFileName = self.vtkOutputRoot + "_t" + timeStampOutString + ".vtk"
+      outputFileName = self.vtkOutputRoot + "_t" + timeStampOutString + ".vtu"
       vtkOutputFile = os.path.join(self.vtkOutputDir, outputFileName)
       self._diffFiles(self.vtkInputList[fileInd],
                       self.vtkInputList[fileInd + 1],
@@ -290,7 +291,8 @@ class VtkDiff(Application):
           mesh.cell_data.add_array(arrayOut)
 
     # Write results to VTK file
-    w = tvtk.UnstructuredGridWriter(file_name=vtkFileOut, input=mesh)
+    #w = tvtk.UnstructuredGridWriter(file_name=vtkFileOut, input=mesh)
+    w = tvtk.XMLDataSetWriter(file_name=vtkFileOut, input=mesh)
     w.write()
 
     return
