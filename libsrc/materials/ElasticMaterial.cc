@@ -440,7 +440,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
     } // switch
   
   assert(0 != _normalizer);
-  const double lengthScale = _normalizer->pressureScale();
+  const double lengthScale = _normalizer->lengthScale();
   const double pressureScale = _normalizer->pressureScale();
 
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
@@ -584,7 +584,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
     } // switch
   
   assert(0 != _normalizer);
-  const double lengthScale = _normalizer->pressureScale();
+  const double lengthScale = _normalizer->lengthScale();
   const double pressureScale = _normalizer->pressureScale();
     
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
