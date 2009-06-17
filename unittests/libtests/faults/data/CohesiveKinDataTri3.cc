@@ -97,11 +97,11 @@ const char* pylith::faults::CohesiveKinDataTri3::_matPropsFilename =
 
 const double pylith::faults::CohesiveKinDataTri3::_fieldT[] = {
   8.1, 9.1,
-  8.2, 9.2,
-  8.3, 9.3,
+  8.2, 9.2, // 3
+  8.3, 9.3, // 4
   8.4, 9.4,
-  8.5, 9.5,
-  8.7, 9.7,
+  8.5, 9.5, // 6
+  8.7, 9.7, // 7
   8.6, 9.6, // 8
   8.8, 9.8, // 9
 };
@@ -144,8 +144,8 @@ const double pylith::faults::CohesiveKinDataTri3::_valsResidualIncr[] = {
   0.0,  0.0,
  +9.6, +8.6, // 6
  +9.8, +8.8, // 7
-  0.01257113624, 0.00054657114, // 8
-  0.01401378019, 0.00116781502, // 9
+  0.3,  0.3, // 8
+  0.4,  0.4, // 9
 };
 
 const double pylith::faults::CohesiveKinDataTri3::_valsJacobian[] = {

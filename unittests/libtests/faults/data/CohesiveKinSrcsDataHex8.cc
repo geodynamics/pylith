@@ -188,10 +188,10 @@ const double pylith::faults::CohesiveKinSrcsDataHex8::_valsResidualIncr[] = {
  +9.6,+5.6,+7.6, // 15
  +9.8,+5.8,+7.8, // 16
  +9.0,+5.0,+7.0, // 17
-  0.02640548173, -0.00803645096, 0.00114806442, // 18 (constraint)
-  0.02731113725, -0.00910371242, 0.00227592810, // 19 (constraint)
-  0.02695149106, -0.00970253678, 0.00323417893, // 20 (constraint)
-  0.02466176975, -0.00948529606, 0.00379411842, // 21 (constraint)
+  0.8, 0.8, 0.8, // 18 (constraint)
+  0.9, 0.9, 0.9, // 19 (constraint)
+  1.0, 1.0, 1.0, // 20 (constraint)
+  1.1, 1.1, 1.1, // 21 (constraint)
 };
 
 const double pylith::faults::CohesiveKinSrcsDataHex8::_valsJacobian[] = {

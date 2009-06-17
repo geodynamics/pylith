@@ -191,6 +191,12 @@ class Implicit(Formulation):
     residual = self.fields.get("residual")
     self._eventLogger.stagePush("Solve")
     self.solver.solve(dispIncr, self.jacobian, residual)
+
+    # DEBUGGING
+    # Verify solution makes residual 0
+    #self._reformResidual(t+dt, dt)
+    #residual.view("RESIDUAL")
+    
     self._eventLogger.stagePop()
 
     return

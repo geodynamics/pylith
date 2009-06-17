@@ -246,7 +246,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   double_array orientationCell(numConstraintVert*orientationSize);
   double_array dispTCell(numCorners*spaceDim);
   double_array dispTIncrCell(numCorners*spaceDim);
-  double_array dispTpdtCell(numBasis*spaceDim);
+  double_array dispTpdtCell(numCorners*spaceDim);
   double_array residualCell(numCorners*spaceDim);
 
   // Tributary area for the current for each vertex.
@@ -292,14 +292,12 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 					       dispTCell.size(), 
 					       &dispTCell[0]);
 
-#if 0 // :TODO: Need to use solution
   topology::Field<topology::Mesh>& dispTIncr = fields->get("dispIncr(t->t+dt)");
   const ALE::Obj<RealSection>& dispTIncrSection = dispTIncr.section();
   assert(!dispTIncrSection.isNull());  
   topology::Mesh::RestrictVisitor dispTIncrVisitor(*dispTIncrSection,
 					       dispTIncrCell.size(), 
 					       &dispTIncrCell[0]);
-#endif
 
   const ALE::Obj<RealSection>& residualSection = residual.section();
   topology::Mesh::UpdateAddVisitor residualVisitor(*residualSection,
@@ -353,11 +351,9 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     dispTVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispTVisitor);
     
-#if 0 // :TODO: need to use solution
     // Get dispIncr(t) at cohesive cell's vertices.
     dispTIncrVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
-#endif
     
     // Compute current estimate of displacement at time t+dt using
     // solution increment.
@@ -382,7 +378,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
       for (int iDim=0; iDim < spaceDim; ++iDim) {
 	for (int kDim=0; kDim < spaceDim; ++kDim)
 	  residualCell[indexI*spaceDim+iDim] -=
-	    dispTCell[indexK*spaceDim+kDim] * 
+	    dispTpdtCell[indexK*spaceDim+kDim] * 
 	    -orientationVertex[kDim*spaceDim+iDim] * wt;
       } // for
       
@@ -390,33 +386,31 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
       for (int jDim=0; jDim < spaceDim; ++jDim) {
 	for (int kDim=0; kDim < spaceDim; ++kDim)
 	  residualCell[indexJ*spaceDim+jDim] -=
-	    dispTCell[indexK*spaceDim+kDim] * 
+	    dispTpdtCell[indexK*spaceDim+kDim] * 
 	    orientationVertex[kDim*spaceDim+jDim] * wt;
       } // for
-      
-#if 0 // :TODO: Is this a missing -C u term??
+
       // Entries associated with relative displacements between node i
       // and node j for constraint node k
       for (int kDim=0; kDim < spaceDim; ++kDim) {
-	for (int iDim=0; iDim < spaceDim; ++iDim)
+	for (int iDim=0; iDim < spaceDim; ++iDim) 
 	  residualCell[indexK*spaceDim+kDim] -=
-	    (dispTpdtCell[indexI*spaceDim+iDim] - 
-	     dispTpdtCell[indexJ*spaceDim+iDim]) *
+	    (dispTpdtCell[indexJ*spaceDim+iDim] - 
+	     dispTpdtCell[indexI*spaceDim+iDim]) *
 	    orientationVertex[kDim*spaceDim+iDim] * wt;
       } // for
-#endif
     } // for
 
 #if 0 // DEBUGGING
     std::cout << "Updating fault residual for cell " << *c_iter << std::endl;
-    for(int i = 0; i < numConstraintVert; ++i) {
-      std::cout << "  stif["<<i<<"]: " << stiffnessCell[i] << std::endl;
-    }
-    for(int i = 0; i < numConstraintVert*spaceDim; ++i) {
-      std::cout << "  slip["<<i<<"]: " << cellSlip[i] << std::endl;
+    for(int i = 0; i < numCorners*spaceDim; ++i) {
+      std::cout << "  dispTpdt["<<i<<"]: " << dispTpdtCell[i] << std::endl;
     }
     for(int i = 0; i < numCorners*spaceDim; ++i) {
-      std::cout << "  soln["<<i<<"]: " << dispTpdtCell[i] << std::endl;
+      std::cout << "  dispT["<<i<<"]: " << dispTCell[i] << std::endl;
+    }
+    for(int i = 0; i < numCorners*spaceDim; ++i) {
+      std::cout << "  dispIncr["<<i<<"]: " << dispTIncrCell[i] << std::endl;
     }
     for(int i = 0; i < numCorners*spaceDim; ++i) {
       std::cout << "  v["<<i<<"]: " << residualCell[i] << std::endl;
@@ -452,29 +446,16 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
 
   topology::Field<topology::SubMesh>& slip = _fields->get("slip");
   slip.zero();
-  if (!_useSolnIncr) {
-    // Compute slip field at current time step
-    const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
-    for (srcs_type::iterator s_iter=_eqSrcs.begin(); 
-	 s_iter != srcsEnd; 
-	 ++s_iter) {
-      EqKinSrc* src = s_iter->second;
-      assert(0 != src);
-      if (t >= src->originTime())
-	src->slip(&slip, t);
-    } // for
-  } else {
-    // Compute increment of slip field at current time step
-    const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
-    for (srcs_type::iterator s_iter=_eqSrcs.begin(); 
-	 s_iter != srcsEnd; 
-	 ++s_iter) {
-      EqKinSrc* src = s_iter->second;
-      assert(0 != src);
-      if (t >= src->originTime())
-	src->slipIncr(&slip, t-_dt, t);
-    } // for
-  } // else
+  // Compute slip field at current time step
+  const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
+  for (srcs_type::iterator s_iter=_eqSrcs.begin(); 
+       s_iter != srcsEnd; 
+       ++s_iter) {
+    EqKinSrc* src = s_iter->second;
+    assert(0 != src);
+    if (t >= src->originTime())
+      src->slip(&slip, t);
+  } // for
 
   const int spaceDim = _quadrature->spaceDim();
 
@@ -498,6 +479,7 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
     faultSieveMesh->getRenumbering();
   const SieveSubMesh::renumbering_type::const_iterator renumberingEnd =
     renumbering.end();
+
   for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin; 
        v_iter != verticesEnd;
        ++v_iter)
@@ -508,7 +490,7 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
       assert(spaceDim == slipSection->getFiberDimension(vertexFault));
       assert(spaceDim == residualSection->getFiberDimension(vertexMesh));
       assert(0 != slipVertex);
-      residualSection->updatePoint(vertexMesh, slipVertex);
+      residualSection->updateAddPoint(vertexMesh, slipVertex);
     } // if
 } // integrateResidualAssembled
 
@@ -1006,26 +988,30 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double upDir[3],
 				      
     assert(3 == spaceDim);
     double_array normalDirVertex(&orientationVertex[6], 3);
-    const double dot = 
+    const double normalDot = 
       normalDir[0]*normalDirVertex[0] +
       normalDir[1]*normalDirVertex[1] +
       normalDir[2]*normalDirVertex[2];
-    if (dot < 0.0)
+    
+    const int istrike = 0;
+    const int idip = 3;
+    const int inormal = 6;
+    if (normalDot < 0.0) {
+      // Flip dip direction
       for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
 	   v_iter != verticesEnd;
 	   ++v_iter) {
 	orientationSection->restrictPoint(*v_iter, &orientationVertex[0],
 					  orientationVertex.size());
 	assert(9 == orientationSection->getFiberDimension(*v_iter));
-	// Flip up-dip direction
-	for (int iDim=3; iDim < 6; ++iDim)
-	  orientationVertex[iDim] = -orientationVertex[iDim];
+	for (int iDim=0; iDim < 3; ++iDim) // flip dip
+	  orientationVertex[idip+iDim] *= -1.0;
 	
 	// Update direction
 	orientationSection->updatePoint(*v_iter, &orientationVertex[0]);
       } // for
-
-    PetscLogFlops(5 + count * 3);
+      PetscLogFlops(5 + count * 3);
+    } // if
   } // if
 
   //orientation.view("ORIENTATION");
