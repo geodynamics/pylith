@@ -101,7 +101,7 @@ const double pylith::faults::CohesiveKinDataLine2::_valsResidualIncr[] = {
    7.5,
    0.0,
   -7.5,
-   0.01257664078
+  -0.2,
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_valsResidual[] = {

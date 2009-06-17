@@ -299,19 +299,12 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
       const double* vals = residualSection->restrictPoint(*v_iter);
       CPPUNIT_ASSERT(0 != vals);
       
-      const bool isConstraint = _isConstraintVertex(*v_iter);
-      if (!isConstraint) {
-	for (int i=0; i < fiberDimE; ++i) {
-	  const int index = iVertex*spaceDim+i;
-	  const double valE = valsE[index];
-	  if (fabs(valE) > tolerance)
-	    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
-	  else
-	    CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
-	} // for
-      } else {
-	const double valE = 0.0; // no contribution
-	for (int i=0; i < fiberDimE; ++i)
+      for (int i=0; i < fiberDimE; ++i) {
+	const int index = iVertex*spaceDim+i;
+	const double valE = valsE[index];
+	if (fabs(valE) > tolerance)
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+	else
 	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
       } // for
     } // for
@@ -938,7 +931,8 @@ pylith::faults::TestFaultCohesiveKin::_initialize(
   // Setup fields
   fields->add("residual", "residual");
   fields->add("disp(t)", "displacement");
-  fields->solutionName("disp(t)");
+  fields->add("dispIncr(t->t+dt)", "displacement_increment");
+  fields->solutionName("dispIncr(t->t+dt)");
   
   const int spaceDim = _data->spaceDim;
   topology::Field<topology::Mesh>& residual = fields->get("residual");

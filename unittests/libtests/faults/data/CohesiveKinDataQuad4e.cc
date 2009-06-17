@@ -114,16 +114,16 @@ const char* pylith::faults::CohesiveKinDataQuad4e::_matPropsFilename =
 const double pylith::faults::CohesiveKinDataQuad4e::_fieldT[] = {
   3.1, 5.1,
   3.2, 5.2,
-  3.3, 5.3,
-  3.4, 5.4,
+  3.3, 5.3, // 6
+  3.4, 5.4, // 7
   3.5, 5.5,
   3.6, 5.6,
   3.7, 5.7,
-  3.8, 5.8,
+  3.8, 5.8, // 11
   3.9, 5.9,
-  3.0, 5.0,
-  4.2, 6.2,
-  4.4, 6.4,
+  3.0, 5.0, // 13
+  4.2, 6.2, // 14
+  4.4, 6.4, // 15
   4.1, 6.1, // 16
   4.3, 6.3, // 17
   4.5, 6.5, // 18
@@ -183,9 +183,9 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsResidualIncr[] = {
  +6.1, +4.1, // 13
  +6.3, +4.3, // 15
  +6.5, +4.5, // 17
-  0.01401378019, 0.00116781502, // 16
-  0.01257113624, 0.00054657114, // 17
-  0.01543608228, 0.00185232987, // 18
+ -0.3, -0.3, // 16
+  0.8,  0.8, // 17
+  0.6,  0.6, // 18
 };
 
 const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {

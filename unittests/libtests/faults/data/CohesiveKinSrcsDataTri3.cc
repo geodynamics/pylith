@@ -155,8 +155,8 @@ const double pylith::faults::CohesiveKinSrcsDataTri3::_valsResidualIncr[] = {
   0.0,  0.0,
  +9.6, +8.6, // 6
  +9.8, +8.8, // 7
-  0.02583782954, 0.00112338389, // 8
-  0.02698044341, 0.00224837028, // 9
+  0.3,  0.3, // 8
+  0.4,  0.4, // 9
 };
 
 const double pylith::faults::CohesiveKinSrcsDataTri3::_valsJacobian[] = {
