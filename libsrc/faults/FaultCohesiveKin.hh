@@ -21,16 +21,38 @@
  * fault. 
  *
  * The ordering of vertices in a cohesive cell is the vertices on the
- * one side of the fault, the corresponding entries on the other side
- * of the fault, and then the corresponding constraint vertices.
+ * "negative" side of the fault, the corresponding entries on the
+ * "positive" side of the fault, and then the corresponding constraint
+ * vertices.
  *
- * [ K   C^T ] [ U  ] = [ Fe ]
- * [ C   0   ] [ Fi ] = [ D  ]
+ * The system without Lagrange multipliers is
  *
- * where K is the stiffness matrix, C is the matrix of Lagrange
- * constraints, U is the displacement field, Fe is the vector of
- * external forces, Fi is the vector of Lagrange multipers (forces), D
- * is the fault slip.
+ * [A(t+dt)]{u(t+dt)} = {b(t+dt)}
+ *
+ * With Lagrange multipliers this system becomes
+ *
+ * [A(t+dt) C^T ]{ u(t+dt) } = {b(t+dt)}
+ * [ C      0   ]{ L(t+dt) }   {D(t+dt)}
+ *
+ * where C is the matrix of Lagrange constraints, L is the vector of
+ * Lagrange multiplies (internal forces in this case), and D is the
+ * fault slip.
+ *
+ * We solve for the increment in the displacement field, so we rewrite
+ * the system as
+ *
+ * [A(t+dt) C^T ]{ du(t) } = {b(t+dt)} - [A(t+dt) C^T ]{ u(t) }
+ * [ C      0   ]{ dL(t) }   {D(t+dt)}   [ C      0   ]{ L(t) }
+ * 
+ * We form the residual as
+ *
+ * {r(t+dt)} = {b(t+dt)} - [A(t+dt) C^T ]{ u(t)+du(t) }
+ *             {D(t+dt)}   [ C      0   ]{ L(t)+dL(t) }
+ * 
+ * The term D does not involve integration over cohesive cells. We
+ * integrate the Lagrange multiplier terms over the cohesive cells
+ * because this introduces weighting of the orientation of the fault
+ * for the direction of slip at the vertices of the cohesive cells.
  */
 
 #if !defined(pylith_faults_faultcohesivekin_hh)
