@@ -229,9 +229,6 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   //                  slip
   //   * DOF k: slip values
 
-  if (!_useSolnIncr)
-    return;
-
   // Get cell information and setup storage for cell data
   const int spaceDim = _quadrature->spaceDim();
   const int orientationSize = spaceDim*spaceDim;
@@ -977,10 +974,20 @@ pylith::faults::FaultCohesiveKin::_calcOrientation(const double upDir[3],
 
   if (2 == cohesiveDim && vertices->size() > 0) {
     // Check orientation of first vertex, if dot product of fault
-    // normal with preferred normal is negative, flip up/down dip direction.
-    // If the user gives the correct normal direction, we should end
-    // up with left-lateral-slip, reverse-slip, and fault-opening for
-    // positive slip values.
+    // normal with preferred normal is negative, flip up/down dip
+    // direction.
+    //
+    // If the user gives the correct normal direction (points from
+    // footwall to ahanging wall), we should end up with
+    // left-lateral-slip, reverse-slip, and fault-opening for positive
+    // slip values.
+    //
+    // When we flip the up/down dip direction, we create a left-handed
+    // strike/dip/normal coordinate system, but it gives the correct
+    // sense of slip. In reality the strike/dip/normal directions that
+    // are used are the opposite of what we would want, but we cannot
+    // flip the fault normal direction because it is tied to how the
+    // cohesive cells are created.
     
     assert(vertices->size() > 0);
     orientationSection->restrictPoint(*vertices->begin(), &orientationVertex[0],

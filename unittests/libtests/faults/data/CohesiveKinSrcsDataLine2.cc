@@ -106,10 +106,10 @@ const double pylith::faults::CohesiveKinSrcsDataLine2::_valsResidualIncr[] = {
 
 const double pylith::faults::CohesiveKinSrcsDataLine2::_valsResidual[] = {
    0.0,
+   7.5,
    0.0,
-   0.0,
-   0.0,
-   1.42456033340
+  -7.5,
+  -0.2
 };
 
 const double pylith::faults::CohesiveKinSrcsDataLine2::_valsJacobian[] = {
@@ -119,8 +119,6 @@ const double pylith::faults::CohesiveKinSrcsDataLine2::_valsJacobian[] = {
   0.0,  0.0,  0.0,  0.0, +1.0,
   0.0, -1.0,  0.0, +1.0,  0.0,
 };
-
-const double pylith::faults::CohesiveKinSrcsDataLine2::_pseudoStiffness = 2.4;
 
 pylith::faults::CohesiveKinSrcsDataLine2::CohesiveKinSrcsDataLine2(void)
 { // constructor
@@ -148,7 +146,6 @@ pylith::faults::CohesiveKinSrcsDataLine2::CohesiveKinSrcsDataLine2(void)
   valsResidualIncr = const_cast<double*>(_valsResidualIncr);
   valsResidual = const_cast<double*>(_valsResidual);
   valsJacobian = const_cast<double*>(_valsJacobian);
-  pseudoStiffness = _pseudoStiffness;
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

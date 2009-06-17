@@ -66,7 +66,6 @@ private:
   static const double _valsResidual[]; ///< Expected values from residual calculation.
   static const double _valsResidualIncr[]; ///< Expected values from residual calculation using solution increment.
   static const double _valsJacobian[]; ///< Expected values from Jacobian calculation.
-  static const double _pseudoStiffness; ///< Fake stiffness for conditioning
   static const int _numConstraintVert; ///< Number of constraint vertices
 
 };

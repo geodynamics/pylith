@@ -128,13 +128,13 @@ const int pylith::faults::CohesiveKinDataTri3::_constraintCells[] = {
 
 const double pylith::faults::CohesiveKinDataTri3::_valsResidual[] = {
   0.0,  0.0,
+ -9.6, -8.6, // 3
+ -9.8, -8.8, // 4
   0.0,  0.0,
-  0.0,  0.0,
-  0.0,  0.0,
-  0.0,  0.0,
-  0.0,  0.0,
-  1.05057813143, 0.0456773100622, // 8
-  0.989535448086, 0.0824612873405, // 9
+ +9.6, +8.6, // 6
+ +9.8, +8.8, // 7
+  0.3,  0.3, // 8
+  0.4,  0.4, // 9
 };
 
 const double pylith::faults::CohesiveKinDataTri3::_valsResidualIncr[] = {
@@ -281,8 +281,6 @@ const double pylith::faults::CohesiveKinDataTri3::_valsJacobian[] = {
   0.0, 0.0,
 };
 
-const double pylith::faults::CohesiveKinDataTri3::_pseudoStiffness = 2.4;
-
 pylith::faults::CohesiveKinDataTri3::CohesiveKinDataTri3(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
@@ -309,7 +307,6 @@ pylith::faults::CohesiveKinDataTri3::CohesiveKinDataTri3(void)
   valsResidual = const_cast<double*>(_valsResidual);
   valsResidualIncr = const_cast<double*>(_valsResidualIncr);
   valsJacobian = const_cast<double*>(_valsJacobian);
-  pseudoStiffness = _pseudoStiffness;
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

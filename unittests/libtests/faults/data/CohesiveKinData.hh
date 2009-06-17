@@ -76,7 +76,6 @@ public:
   double* valsResidualIncr;
 
   double* valsJacobian; ///< Expected values from Jacobian calculation.
-  double pseudoStiffness; ///< Fake stiffness for conditioning
   int numConstraintVert; ///< Number of constraint vertices
   //@}
 

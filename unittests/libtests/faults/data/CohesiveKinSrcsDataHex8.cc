@@ -153,22 +153,22 @@ const double pylith::faults::CohesiveKinSrcsDataHex8::_valsResidual[] = {
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
+ -9.4,-5.4,-7.4, // 6
+ -9.6,-5.6,-7.6, // 7
+ -9.8,-5.8,-7.8, // 8
+ -9.0,-5.0,-7.0, // 9
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  1.46662437631, -0.44636394062, 0.06376627723, // 18 (constraint)
-  1.27479107177, -0.42493035726, 0.10623258931, // 19 (constraint)
-  1.06176823515, -0.38223656465, 0.12741218822, // 20 (constraint)
-  0.84520045818, -0.32507709930, 0.13003083972, // 21 (constraint)
+ +9.4,+5.4,+7.4, // 14
+ +9.6,+5.6,+7.6, // 15
+ +9.8,+5.8,+7.8, // 16
+ +9.0,+5.0,+7.0, // 17
+  0.8, 0.8, 0.8, // 18 (constraint)
+  0.9, 0.9, 0.9, // 19 (constraint)
+  1.0, 1.0, 1.0, // 20 (constraint)
+  1.1, 1.1, 1.1, // 21 (constraint)
 };
 
 const double pylith::faults::CohesiveKinSrcsDataHex8::_valsResidualIncr[] = {
@@ -1397,8 +1397,6 @@ const double pylith::faults::CohesiveKinSrcsDataHex8::_valsJacobian[] = {
   0.0, 0.0, 0.0,
 };
 
-const double pylith::faults::CohesiveKinSrcsDataHex8::_pseudoStiffness = 2.4;
-
 pylith::faults::CohesiveKinSrcsDataHex8::CohesiveKinSrcsDataHex8(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
@@ -1425,7 +1423,6 @@ pylith::faults::CohesiveKinSrcsDataHex8::CohesiveKinSrcsDataHex8(void)
   valsResidual = const_cast<double*>(_valsResidual);
   valsResidualIncr = const_cast<double*>(_valsResidualIncr);
   valsJacobian = const_cast<double*>(_valsJacobian);
-  pseudoStiffness = _pseudoStiffness;
   numConstraintVert = _numConstraintVert;  
 } // constructor
 
