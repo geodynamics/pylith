@@ -26,19 +26,38 @@ class Implicit(Formulation):
   Python Implicit object for solving equations using an implicit
   formulation.
 
-  The formulation has the general form, [A(t+dt)] {u(t+dt)} = {b(t+dt)},
-  where we want to solve for {u(t+dt)}. [A(t+dt)] generally
-  depends on {u(t+dt)} as well as the current stresses and additional
-  state variables.  For linear elastic or viscoelastic problems with
-  constant time step size, A is a constant (after the elastic solution).
-  {b(t+dt)} generally depends on the loads applied for time step t+dt
-  (including the contributions to the internal force vector from
-  displacement/velocity BC) as well as the internal force vector computed
-  from the current stresses.
+  The formulation has the general form,
 
-  Jacobian: A(t+dt)
-  solution: u(t+dt)
-  residual: bextern(t+dt) - bintern(t+dt)
+  [A(t+dt)] {u(t+dt)} = {b(t+dt)}. 
+
+  We know the solution at time t, so we write {u(t+dt)} as {u(t)} +
+  {du(t)}, where {du(t)} is the increment in the solution from time t
+  to time t+dt. Thus, we solve
+
+  [A(t+dt)] {du(t)} = {b(t+dt)} - [A(t+dt)]{u(t)}.
+
+  We solve this system by forming the Jacobian, A, and the residual
+
+  {r(t+dt)} = {b(t+dt)} - [A(t+dt)]{u(t)} - [A(t+dt)]{du(t)}
+
+  which we combine into
+
+  {r(t+dt)} = {b(t+dt)} - [A(t+dt)]{u(t)+du(t)}.
+
+  The method reformJacobian() computes [A(t+dt)] and the method
+  reformResidual computes {r(t+dt)}. Note that in forming the residual
+  we compute the action [A(t+dt)]{u(t)+du(t)} and do not perform a
+  matrix-vector multiplication.
+
+  [A(t+dt)] generally depends on {u(t+dt)} as well as the current
+  stresses and additional state variables.  
+
+  For linear elastic or viscoelastic problems with constant time step
+  size, A is a constant (after the elastic solution).  {b(t+dt)}
+  generally depends on the loads applied for time step t+dt (including
+  the contributions to the internal force vector from
+  displacement/velocity BC) as well as the internal force vector
+  computed from the current stresses.
 
   Factory: pde_formulation.
   """
@@ -192,8 +211,7 @@ class Implicit(Formulation):
     self._eventLogger.stagePush("Solve")
     self.solver.solve(dispIncr, self.jacobian, residual)
 
-    # DEBUGGING
-    # Verify solution makes residual 0
+    # DEBUGGING Verify solution makes residual 0
     #self._reformResidual(t+dt, dt)
     #residual.view("RESIDUAL")
     
