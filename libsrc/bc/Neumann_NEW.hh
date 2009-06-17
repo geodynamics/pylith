@@ -10,9 +10,9 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/bc/Neumann.hh
+/** @file libsrc/bc/Neumann_NEW.hh
  *
- * @brief C++ implementation of time dependent Neumann (traction)
+ * @brief C++ implementation of time dependent Neumann_NEW (traction)
  * boundary conditions applied to a simply-connected boundary.
  */
 
@@ -20,23 +20,23 @@
 #define pylith_bc_neumann_hh
 
 // Include directives ---------------------------------------------------
-#include "BCIntegratorSubmesh.hh" // ISA BCIntegratorSubmesh
+#include "BCIntegratorSubMesh.hh" // ISA BCIntegratorSubMesh
 #include "TimeDependent.hh" // ISA TimeDependent
 
-// Neumann ------------------------------------------------------
-class pylith::bc::Neumann : public BCIntegratorSubmesh, 
-			    public TimeDependent
-{ // class Neumann
-  friend class TestNeumann; // unit testing
+// Neumann_NEW ------------------------------------------------------
+class pylith::bc::Neumann_NEW : public BCIntegratorSubMesh, 
+				public TimeDependent
+{ // class Neumann_NEW
+  friend class TestNeumann_NEW; // unit testing
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
   /// Default constructor.
-  Neumann(void);
+  Neumann_NEW(void);
 
   /// Destructor.
-  ~Neumann(void);
+  ~Neumann_NEW(void);
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
@@ -110,13 +110,8 @@ protected :
    */
   const char* _getLabel(void) const;
 
-  /** Query databases for time dependent parameters.
-   *
-   * @param valueScale Dimension scale for value.
-   * @param fieldName Name of field associated with value.
-   */
-  void _queryDatabases(const double valueScale,
-		       const char* fieldName);
+  /// Query databases for time dependent parameters.
+  void _queryDatabases(void);
 
   /** Query database for values.
    *
@@ -130,8 +125,12 @@ protected :
 		const int querySize,
 		const double scale);
 
-  /// Convert parameters in local coordinates to global coordinates.
-  void _paramsLocalToGlobal(void);
+  /** Convert parameters in local coordinates to global coordinates.
+   *
+   * @param upDir Direction perpendicular to horizontal surface tangent 
+   *   direction that is not collinear with surface normal.
+   */
+  void _paramsLocalToGlobal(const double upDir[3]);
 
   /** Calculate spatial and temporal variation of value over the list
    *  of submesh.
@@ -143,12 +142,12 @@ protected :
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
-  Neumann(const Neumann&); ///< Not implemented.
-  const Neumann& operator=(const Neumann&); ///< Not implemented.
+  Neumann_NEW(const Neumann_NEW&); ///< Not implemented.
+  const Neumann_NEW& operator=(const Neumann_NEW&); ///< Not implemented.
 
-}; // class Neumann
+}; // class Neumann_NEW
 
-#include "Neumann.icc"
+#include "Neumann_NEW.icc"
 
 #endif // pylith_bc_neumann_hh
 
