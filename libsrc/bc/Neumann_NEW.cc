@@ -12,7 +12,7 @@
 
 #include <portinfo>
 
-#include "Neumann.hh" // implementation of object methods
+#include "Neumann_NEW.hh" // implementation of object methods
 
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
@@ -38,14 +38,14 @@ typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::bc::Neumann::Neumann(void) :
+pylith::bc::Neumann_NEW::Neumann_NEW(void) :
   _db(0)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::bc::Neumann::~Neumann(void)
+pylith::bc::Neumann_NEW::~Neumann_NEW(void)
 { // destructor
   deallocate();
 } // destructor
@@ -53,7 +53,7 @@ pylith::bc::Neumann::~Neumann(void)
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::bc::Neumann::deallocate(void)
+pylith::bc::Neumann_NEW::deallocate(void)
 { // deallocate
   _db = 0; // :TODO: Use shared pointer
 } // deallocate
@@ -62,182 +62,23 @@ pylith::bc::Neumann::deallocate(void)
 // Initialize boundary condition. Determine orienation and compute traction
 // vector at integration points.
 void
-pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
+pylith::bc::Neumann_NEW::initialize(const topology::Mesh& mesh,
 				const double upDir[3])
 { // initialize
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("BoundaryConditions");
+
   _queryDatabases();
 
-  double_array up(upDir, 3);
-  _paramsLocalToGlobal(up);
+  _paramsLocalToGlobal(upDir);
 
-  // Get 'surface' cells (1 dimension lower than top-level cells)
-  const ALE::Obj<SieveSubMesh>& subSieveMesh = _boundaryMesh->sieveMesh();
-  assert(!subSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    subSieveMesh->heightStratum(1);
-  assert(!cells.isNull());
-  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
-
-  // Create section for traction vector in global coordinates
-  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
-  const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
-  const int numBasis = _quadrature->numBasis();
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int spaceDim = cellGeometry.spaceDim();
-  const int fiberDim = spaceDim * numQuadPts;
-  
-  _parameters =
-    new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
-  assert(0 != _parameters);
-  _parameters->add("traction", "traction");
-  topology::Field<topology::SubMesh>& traction = _parameters->get("traction");
-  traction.newSection(cells, fiberDim);
-  traction.allocate();
-
-  // Containers for orientation information
-  const int orientationSize = spaceDim * spaceDim;
-  const int jacobianSize = spaceDim * cellDim;
-  double_array jacobian(jacobianSize);
-  double jacobianDet = 0;
-  double_array orientation(orientationSize);
-
-  // Set names based on dimension of problem.
-  // 1-D problem = {'traction-normal'}
-  // 2-D problem = {'traction-shear', 'traction-normal'}
-  // 3-D problem = {'traction-shear-horiz', 'traction-shear-vert',
-  //                'traction-normal'}
-  _db->open();
-  switch (spaceDim)
-    { // switch
-    case 1 : {
-      const char* valueNames[] = {"traction-normal"};
-      _db->queryVals(valueNames, 1);
-      break;
-    } // case 1
-    case 2 : {
-      const char* valueNames[] = {"traction-shear", "traction-normal"};
-      _db->queryVals(valueNames, 2);
-      break;
-    } // case 2
-    case 3 : {
-      const char* valueNames[] = {"traction-shear-horiz",
-				  "traction-shear-vert",
-				  "traction-normal"};
-      _db->queryVals(valueNames, 3);
-      break;
-    } // case 3
-    default :
-      std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
-      assert(0);
-      throw std::logic_error("Bad spatial dimension in Neumann.");
-    } // switch
-
-  // Containers for database query results and quadrature coordinates in
-  // reference geometry.
-  double_array tractionDataLocal(spaceDim);
-  double_array quadPtRef(cellDim);
-  double_array quadPtsGlobal(numQuadPts*spaceDim);
-  const double_array& quadPtsRef = _quadrature->quadPtsRef();
-
-  // Container for cell tractions rotated to global coordinates.
-  double_array cellTractionsGlobal(fiberDim);
-
-  // Get sections.
-  double_array coordinatesCell(numCorners*spaceDim);
-  const ALE::Obj<RealSection>& coordinates =
-    subSieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
-
-  const ALE::Obj<SubRealSection>& tractionSection =
-    _parameters->get("traction").section();
-  assert(!tractionSection.isNull());
-
-  const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
-
-  assert(0 != _normalizer);
-  const double lengthScale = _normalizer->lengthScale();
-  const double pressureScale = _normalizer->pressureScale();
-
-  // Compute quadrature information
-  _quadrature->initializeGeometry();
-#if defined(PRECOMPUTE_GEOMETRY)
-  _quadrature->computeGeometry(*_boundaryMesh, cells);
-#endif
-
-  // Loop over cells in boundary mesh, compute orientations, and then
-  // compute corresponding traction vector in global coordinates
-  // (store values in _tractionGlobal).
-  for(SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
-      c_iter != cellsEnd;
-      ++c_iter) {
-    // Compute geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
-#else
-    coordsVisitor.clear();
-    subSieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
-#endif
-    const double_array& quadPtsNondim = _quadrature->quadPts();
-    quadPtsGlobal = quadPtsNondim;
-    _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
-				lengthScale);
-    
-    cellTractionsGlobal = 0.0;
-    for(int iQuad=0, iRef=0, iSpace=0; iQuad < numQuadPts;
-	++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
-      // Get traction vector in local coordinate system at quadrature point
-      const int err = _db->query(&tractionDataLocal[0], spaceDim,
-				 &quadPtsGlobal[iSpace], spaceDim, cs);
-      if (err) {
-	std::ostringstream msg;
-	msg << "Could not find traction values at (";
-	for (int i=0; i < spaceDim; ++i)
-	  msg << " " << quadPtsGlobal[i+iSpace];
-	msg << ") for traction boundary condition " << _label << "\n"
-	    << "using spatial database " << _db->label() << ".";
-	throw std::runtime_error(msg.str());
-      } // if
-      _normalizer->nondimensionalize(&tractionDataLocal[0], spaceDim,
-				     pressureScale);
-
-      // Compute Jacobian and determinant at quadrature point, then get
-      // orientation.
-      memcpy(&quadPtRef[0], &quadPtsRef[iRef], cellDim*sizeof(double));
-#if defined(PRECOMPUTE_GEOMETRY)
-      coordsVisitor.clear();
-      subSieveMesh->restrictClosure(*c_iter, coordsVisitor);
-#endif
-      cellGeometry.jacobian(&jacobian, &jacobianDet,
-			    coordinatesCell, quadPtRef);
-      cellGeometry.orientation(&orientation, jacobian, jacobianDet, up);
-      assert(jacobianDet > 0.0);
-      orientation /= jacobianDet;
-
-      // Rotate traction vector from local coordinate system to global
-      // coordinate system
-      for(int iDim = 0; iDim < spaceDim; ++iDim) {
-	for(int jDim = 0; jDim < spaceDim; ++jDim)
-	  cellTractionsGlobal[iDim+iSpace] +=
-	    orientation[jDim*spaceDim+iDim] * tractionDataLocal[jDim];
-      } // for
-    } // for
-
-      // Update tractionsGlobal
-    tractionSection->updatePoint(*c_iter, &cellTractionsGlobal[0]);
-  } // for
-
-  _db->close();
+  logger.stagePop();
 } // initialize
 
 // ----------------------------------------------------------------------
 // Integrate contributions to residual term (r) for operator.
 void
-pylith::bc::Neumann::integrateResidual(
+pylith::bc::Neumann_NEW::integrateResidual(
 			     const topology::Field<topology::Mesh>& residual,
 			     const double t,
 			     topology::SolutionFields* const fields)
@@ -266,8 +107,9 @@ pylith::bc::Neumann::integrateResidual(
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
+  _calculateValue(t);
   const ALE::Obj<SubRealSection>& tractionSection =
-    _parameters->get("traction").section();
+    _parameters->get("value").section();
   assert(!tractionSection.isNull());
   const ALE::Obj<RealSection>& residualSection = residual.section();
   topology::SubMesh::UpdateAddVisitor residualVisitor(*residualSection,
@@ -328,9 +170,9 @@ pylith::bc::Neumann::integrateResidual(
 // ----------------------------------------------------------------------
 // Integrate contributions to Jacobian matrix (A) associated with
 void
-pylith::bc::Neumann::integrateJacobian(topology::Jacobian* jacobian,
- 				       const double t,
- 				       topology::SolutionFields* const fields)
+pylith::bc::Neumann_NEW::integrateJacobian(topology::Jacobian* jacobian,
+					   const double t,
+					   topology::SolutionFields* const fields)
 { // integrateJacobian
   _needNewJacobian = false;
 } // integrateJacobian
@@ -338,15 +180,19 @@ pylith::bc::Neumann::integrateJacobian(topology::Jacobian* jacobian,
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::bc::Neumann::verifyConfiguration(const topology::Mesh& mesh) const
+pylith::bc::Neumann_NEW::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
+  if (1 == mesh.dimension())
+    throw std::runtime_error("Neumann_NEW boundary conditions are not "
+			     "implemented for a 1-D mesh.");
+
   BCIntegratorSubMesh::verifyConfiguration(mesh);
 } // verifyConfiguration
 
 // ----------------------------------------------------------------------
 // Get cell field for tractions.
 const pylith::topology::Field<pylith::topology::SubMesh>&
-pylith::bc::Neumann::cellField(const char* name,
+pylith::bc::Neumann_NEW::cellField(const char* name,
 			       topology::SolutionFields* const fields)
 { // cellField
   assert(0 != _parameters);
@@ -354,9 +200,12 @@ pylith::bc::Neumann::cellField(const char* name,
 
   if (0 == strcasecmp(name, "tractions")) {
     return _parameters->get("traction");
+
+    // ADD STUFF HERE
+
   } else {
     std::ostringstream msg;
-    msg << "Unknown field '" << name << "' requested for Neumann BC '" 
+    msg << "Unknown field '" << name << "' requested for Neumann_NEW BC '" 
 	<< _label << "'.";
     throw std::runtime_error(msg.str());
   } // else
@@ -367,74 +216,107 @@ pylith::bc::Neumann::cellField(const char* name,
 // ----------------------------------------------------------------------
 // Query databases for parameters.
 void
-pylith::bc::Neumann::_queryDatabases(void)
+pylith::bc::Neumann_NEW::_queryDatabases(void)
 { // _queryDatabases
-  const double timeScale = _normalizer().timeScale();
-  const double rateScale = valueScale / timeScale;
+  assert(0 != _quadrature);
+  assert(0 != _boundaryMesh);
+  
+  const double pressureScale = _normalizer->pressureScale();
+  const double timeScale = _normalizer->timeScale();
+  const double rateScale = pressureScale / timeScale;
 
-  const int numBCDOF = _bcDOF.size();
-  char** valueNames = (numBCDOF > 0) ? new char*[numBCDOF] : 0;
-  char** rateNames = (numBCDOF > 0) ? new char*[numBCDOF] : 0;
-  const std::string& valuePrefix = std::string(fieldName) + "-";
-  const std::string& ratePrefix = std::string(fieldName) + "-rate-";
-  const string_vector& components = _valueComponents();
-  for (int i=0; i < numBCDOF; ++i) {
-    std::string name = valuePrefix + components[_bcDOF[i]];
-    int size = 1 + name.length();
-    valueNames[i] = new char[size];
-    strcpy(valueNames[i], name.c_str());
-
-    name = ratePrefix + components[_bcDOF[i]];
-    size = 1 + name.length();
-    rateNames[i] = new char[size];
-    strcpy(rateNames[i], name.c_str());
-  } // for
+  const int spaceDim = _quadrature->spaceDim();
+  const int numQuadPts = _quadrature->numQuadPts();
+  const int fiberDim = numQuadPts * spaceDim;
 
   delete _parameters; 
   _parameters = 
     new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
 
   // Create section to hold time dependent values
-  _parameters->add("value", fieldName);
+  _parameters->add("value", "traction");
   topology::Field<topology::SubMesh>& value = _parameters->get("value");
-  value.scale(valueScale);
+  value.scale(pressureScale);
   value.vectorFieldType(topology::FieldBase::OTHER);
   value.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
   value.allocate();
 
   if (0 != _dbInitial) { // Setup initial values, if provided.
-    std::string fieldLabel = std::string("initial_") + std::string(fieldName);
-    _parameters->add("initial", fieldLabel.c_str());
+    _parameters->add("initial", "initial_traction");
     topology::Field<topology::SubMesh>& initial = 
       _parameters->get("initial");
     initial.cloneSection(value);
     initial.scale(pressureScale);
-    initial.vectorFieldType(topology::FieldBase::OTHER);
+    initial.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
 
     _dbInitial->open();
-    _dbInitial->queryVals(valueNames, spaceDim);
+    switch (spaceDim)
+      { // switch
+      case 1 : {
+	const char* valueNames[] = {"traction-normal"};
+	_dbInitial->queryVals(valueNames, 1);
+	break;
+      } // case 1
+      case 2 : {
+	const char* valueNames[] = {"traction-shear", "traction-normal"};
+	_dbInitial->queryVals(valueNames, 2);
+	break;
+      } // case 2
+      case 3 : {
+	const char* valueNames[] = {"traction-shear-horiz",
+				    "traction-shear-vert",
+				    "traction-normal"};
+	_dbInitial->queryVals(valueNames, 3);
+	break;
+      } // case 3
+      default :
+	std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
+	assert(0);
+	throw std::logic_error("Bad spatial dimension in Neumann_NEW.");
+      } // switch
     _queryDB(&initial, _dbInitial, spaceDim, pressureScale);
     _dbInitial->close();
   } // if
 
   if (0 != _dbRate) { // Setup rate of change of values, if provided.
-    std::string fieldLabel = std::string("rate_") + std::string(fieldName);
-    _parameters->add("rate", fieldLabel.c_str());
+    _parameters->add("rate", "traction_rate");
     topology::Field<topology::SubMesh>& rate = 
       _parameters->get("rate");
     rate.cloneSection(value);
     rate.scale(rateScale);
-    rate.vectorFieldType(topology::FieldBase::OTHER);
+    rate.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
     const ALE::Obj<RealSection>& rateSection = rate.section();
     assert(!rateSection.isNull());
 
     _dbRate->open();
-    _dbRate->queryVals(rateNames, numBCDOF);
-    _queryDB(&rate, _dbRate, numBCDOF, rateScale);
+    switch (spaceDim)
+      { // switch
+      case 1 : {
+	const char* valueNames[] = {"traction-rate-normal"};
+	_dbRate->queryVals(valueNames, 1);
+	break;
+      } // case 1
+      case 2 : {
+	const char* valueNames[] = {"traction-rate-shear", 
+				    "traction-rate-normal"};
+	_dbRate->queryVals(valueNames, 2);
+	break;
+      } // case 2
+      case 3 : {
+	const char* valueNames[] = {"traction-rate-shear-horiz",
+				    "traction-rate-shear-vert",
+				    "traction-rate-normal"};
+	_dbRate->queryVals(valueNames, 3);
+	break;
+      } // case 3
+      default :
+	std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
+	assert(0);
+	throw std::logic_error("Bad spatial dimension in Neumann_NEW.");
+      } // switch
+    _queryDB(&rate, _dbRate, spaceDim, pressureScale);
 
-    std::string timeLabel = 
-      std::string("rate_time_") + std::string(fieldName);
-    _parameters->add("rate time", timeLabel.c_str());
+    _parameters->add("rate time", "rate_traction_time");
     topology::Field<topology::SubMesh>& rateTime = 
       _parameters->get("rate time");
     rateTime.newSection(rate, 1);
@@ -449,23 +331,43 @@ pylith::bc::Neumann::_queryDatabases(void)
   } // if
 
   if (0 != _dbChange) { // Setup change of values, if provided.
-    std::string fieldLabel = std::string("change_") + std::string(fieldName);
-    _parameters->add("change", fieldLabel.c_str());
+    _parameters->add("change", "change_traction");
     topology::Field<topology::SubMesh>& change = 
       _parameters->get("change");
     change.cloneSection(value);
-    change.scale(valueScale);
-    change.vectorFieldType(topology::FieldBase::OTHER);
+    change.scale(pressureScale);
+    change.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
     const ALE::Obj<RealSection>& changeSection = change.section();
     assert(!changeSection.isNull());
 
     _dbChange->open();
-    _dbChange->queryVals(valueNames, numBCDOF);
-    _queryDB(&change, _dbChange, numBCDOF, valueScale);
+    switch (spaceDim)
+      { // switch
+      case 1 : {
+	const char* valueNames[] = {"traction-normal"};
+	_dbChange->queryVals(valueNames, 1);
+	break;
+      } // case 1
+      case 2 : {
+	const char* valueNames[] = {"traction-shear", "traction-normal"};
+	_dbChange->queryVals(valueNames, 2);
+	break;
+      } // case 2
+      case 3 : {
+	const char* valueNames[] = {"traction-shear-horiz",
+				    "traction-shear-vert",
+				    "traction-normal"};
+	_dbChange->queryVals(valueNames, 3);
+	break;
+      } // case 3
+      default :
+	std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
+	assert(0);
+	throw std::logic_error("Bad spatial dimension in Neumann_NEW.");
+      } // switch
+    _queryDB(&change, _dbChange, spaceDim, pressureScale);
 
-    std::string timeLabel = 
-      std::string("change_time_") + std::string(fieldName);
-    _parameters->add("change time", timeLabel.c_str());
+    _parameters->add("change time", "change_traction_time");
     topology::Field<topology::SubMesh>& changeTime = 
       _parameters->get("change time");
     changeTime.newSection(change, 1);
@@ -487,7 +389,7 @@ pylith::bc::Neumann::_queryDatabases(void)
 // ----------------------------------------------------------------------
 // Query database for values.
 void
-pylith::bc::Neumann::_queryDB(topology::Field<topology::SubMesh>* field,
+pylith::bc::Neumann_NEW::_queryDB(topology::Field<topology::SubMesh>* field,
 			      spatialdata::spatialdb::SpatialDB* const db,
 			      const int querySize,
 			      const double scale)
@@ -495,12 +397,7 @@ pylith::bc::Neumann::_queryDB(topology::Field<topology::SubMesh>* field,
   assert(0 != field);
   assert(0 != db);
   assert(0 != _boundaryMesh);
-
-  const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
-  assert(0 != cs);
-  const int spaceDim = cs->spaceDim();
-
-  const double lengthScale = _getNormalizer().lengthScale();
+  assert(0 != _quadrature);
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
   const ALE::Obj<SieveSubMesh>& subSieveMesh = _boundaryMesh->sieveMesh();
@@ -511,107 +408,257 @@ pylith::bc::Neumann::_queryDB(topology::Field<topology::SubMesh>* field,
   const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
-  // Create section for traction vector in global coordinates
+  const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
+  const int numBasis = _quadrature->numBasis();
+  const int numQuadPts = _quadrature->numQuadPts();
+  const int spaceDim = _quadrature->spaceDim();
+  const int fiberDim = numQuadPts * querySize;
+  
+  // Containers for database query results and quadrature coordinates in
+  // reference geometry.
+  double_array valuesCell(querySize);
+  double_array quadPtRef(cellDim);
+  double_array quadPtsGlobal(numQuadPts*spaceDim);
+  const double_array& quadPtsRef = _quadrature->quadPtsRef();
+
+  // Get sections.
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates =
+    subSieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						coordinatesCell.size(),
+						&coordinatesCell[0]);
+
+  const ALE::Obj<RealSection>& section = field->section();
+  assert(!section.isNull());
+
+  const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
+
+  assert(0 != _normalizer);
+  const double lengthScale = _normalizer->lengthScale();
+
+  // Compute quadrature information
+  _quadrature->initializeGeometry();
+#if defined(PRECOMPUTE_GEOMETRY)
+  _quadrature->computeGeometry(*_boundaryMesh, cells);
+#endif
+
+  // Loop over cells in boundary mesh and perform queries.
+  for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
+       c_iter != cellsEnd;
+       ++c_iter) {
+    // Compute geometry information for current cell
+#if defined(PRECOMPUTE_GEOMETRY)
+    _quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    subSieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
+    const double_array& quadPtsNondim = _quadrature->quadPts();
+    quadPtsGlobal = quadPtsNondim;
+    _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
+				lengthScale);
+    
+    valuesCell = 0.0;
+    for(int iQuad=0, iRef=0, iSpace=0; iQuad < numQuadPts;
+	++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
+      const int err = _db->query(&valuesCell[iQuad*querySize], querySize,
+				 &quadPtsGlobal[iSpace], spaceDim, cs);
+      if (err) {
+	std::ostringstream msg;
+	msg << "Could not find values at (";
+	for (int i=0; i < spaceDim; ++i)
+	  msg << " " << quadPtsGlobal[i+iSpace];
+	msg << ") for traction boundary condition " << _label << "\n"
+	    << "using spatial database " << _db->label() << ".";
+	throw std::runtime_error(msg.str());
+      } // if
+      _normalizer->nondimensionalize(&valuesCell[0], valuesCell.size(),
+				     scale);
+
+    } // for
+
+    // Update section
+    section->updatePoint(*c_iter, &valuesCell[0]);
+  } // for
+} // _queryDB
+
+// ----------------------------------------------------------------------
+// Initialize boundary condition. Determine orienation and compute traction
+// vector at integration points.
+void
+  pylith::bc::Neumann_NEW::_paramsLocalToGlobal(const double upDir[3])
+{ // _paramsLocalToGlobal
+  assert(0 != _boundaryMesh);
+  assert(0 != _quadrature);
+
+  double_array up(upDir, 3);
+
+
+  // Get 'surface' cells (1 dimension lower than top-level cells)
+  const ALE::Obj<SieveSubMesh>& subSieveMesh = _boundaryMesh->sieveMesh();
+  assert(!subSieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
+    subSieveMesh->heightStratum(1);
+  assert(!cells.isNull());
+  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  // Quadrature related values.
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
   const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
   const int numBasis = _quadrature->numBasis();
   const int numQuadPts = _quadrature->numQuadPts();
   const int spaceDim = cellGeometry.spaceDim();
   const int fiberDim = spaceDim * numQuadPts;
+  double_array quadPtRef(cellDim);
+  const double_array& quadPtsRef = _quadrature->quadPtsRef();
   
-  _parameters =
-    new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
-  assert(0 != _parameters);
-  _parameters->add("traction", "traction");
-  topology::Field<topology::SubMesh>& traction = _parameters->get("traction");
-  traction.newSection(cells, fiberDim);
-  traction.allocate();
+  // Containers for orientation information
+  const int orientationSize = spaceDim * spaceDim;
+  const int jacobianSize = spaceDim * cellDim;
+  double_array jacobian(jacobianSize);
+  double jacobianDet = 0;
+  double_array orientation(orientationSize);
 
+  // Container for cell tractions rotated to global coordinates.
+  double_array initialCellLocal(fiberDim);
+  double_array initialCellGlobal(fiberDim);
+  double_array rateCellLocal(fiberDim);
+  double_array rateCellGlobal(fiberDim);
+  double_array changeCellLocal(fiberDim);
+  double_array changeCellGlobal(fiberDim);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  double_array coordsVertex(spaceDim);
-  const ALE::Obj<SieveMesh>& sieveMesh = _boundaryMesh->sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
+  // Get sections.
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates =
+    subSieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						coordinatesCell.size(),
+						&coordinatesCell[0]);
 
-  const ALE::Obj<RealSection>& section = field->section();
-  assert(!section.isNull());
+  const ALE::Obj<RealSection>& initialSection = (0 != _dbInitial) ?
+    _parameters->get("initial").section() : 0;
+  const ALE::Obj<RealSection>& rateSection = ( 0 != _dbRate) ?
+    _parameters->get("rate").section() : 0;
+  const ALE::Obj<RealSection>& changeSection = ( 0 != _dbChange) ?
+    _parameters->get("change").section() : 0;
 
-  double_array valuesCell(querySize);
+  // Loop over cells in boundary mesh, compute orientations, and then
+  // rotate corresponding traction vector from local to global coordinates.
+  for(SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
+      c_iter != cellsEnd;
+      ++c_iter) {
+    // Compute geometry information for current cell
+#if defined(PRECOMPUTE_GEOMETRY)
+    _quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    subSieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
+    // Reset traction vectors
+    initialCellLocal = 0.0;
+    initialCellGlobal = 0.0;
+    rateCellLocal = 0.0;
+    rateCellGlobal = 0.0;
+    changeCellLocal = 0.0;
+    changeCellGlobal = 0.0;
 
-  // Get 'surface' cells (1 dimension lower than top-level cells)
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    sieveMesh->heightStratum(1);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
-
-  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
-    // Get dimensionalized coordinates of vertex
-    coordinates->restrictPoint(_Submesh[iPoint], 
-			       &coordsVertex[0], coordsVertex.size());
-    _getNormalizer().dimensionalize(&coordsVertex[0], coordsVertex.size(),
-				lengthScale);
-    int err = db->query(&valuesVertex[0], valuesVertex.size(), 
-			&coordsVertex[0], coordsVertex.size(), cs);
-    if (err) {
-      std::ostringstream msg;
-      msg << "Error querying for '" << field->label() << "' at (";
-      for (int i=0; i < spaceDim; ++i)
-	msg << "  " << coordsVertex[i];
-      msg << ") using spatial database " << db->label() << ".";
-      throw std::runtime_error(msg.str());
+    // Get values for cell from each of the sections
+    if (0 != _dbInitial) {
+      assert(!initialSection.isNull());
+      initialSection->restrictPoint(*c_iter, &initialCellLocal[0],
+				    initialCellLocal.size());
     } // if
-    _getNormalizer().nondimensionalize(&valuesVertex[0], valuesVertex.size(),
-				   scale);
-    section->updatePoint(_Submesh[iPoint], &valuesVertex[0]);
+    if (0 != _dbRate) {
+      assert(!rateSection.isNull());
+      rateSection->restrictPoint(*c_iter, &rateCellLocal[0], 
+				 rateCellLocal.size());
+    } // if
+    if (0 != _dbChange) {
+      assert(!changeSection.isNull());
+      changeSection->restrictPoint(*c_iter, &changeCellLocal[0], 
+				   changeCellLocal.size());
+    } // if
+
+    for(int iQuad=0, iRef=0, iSpace=0; iQuad < numQuadPts;
+	++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
+      // Compute Jacobian and determinant at quadrature point, then get
+      // orientation.
+      memcpy(&quadPtRef[0], &quadPtsRef[iRef], cellDim*sizeof(double));
+#if defined(PRECOMPUTE_GEOMETRY)
+      coordsVisitor.clear();
+      subSieveMesh->restrictClosure(*c_iter, coordsVisitor);
+#endif
+      cellGeometry.jacobian(&jacobian, &jacobianDet,
+			    coordinatesCell, quadPtRef);
+      cellGeometry.orientation(&orientation, jacobian, jacobianDet, up);
+      assert(jacobianDet > 0.0);
+      orientation /= jacobianDet;
+
+      if (0 != _dbInitial) {
+	assert(!initialSection.isNull());
+	// Rotate traction vector from local coordinate system to global
+	// coordinate system
+	for(int iDim = 0; iDim < spaceDim; ++iDim) {
+	  for(int jDim = 0; jDim < spaceDim; ++jDim)
+	    initialCellGlobal[iDim+iSpace] +=
+	      orientation[jDim*spaceDim+iDim] * initialCellLocal[jDim];
+	} // for
+      } // if
+
+      if (0 != _dbRate) {
+	assert(!rateSection.isNull());
+	// Rotate traction vector from local coordinate system to global
+	// coordinate system
+	for(int iDim = 0; iDim < spaceDim; ++iDim) {
+	  for(int jDim = 0; jDim < spaceDim; ++jDim)
+	    rateCellGlobal[iDim+iSpace] +=
+	      orientation[jDim*spaceDim+iDim] * rateCellLocal[jDim];
+	} // for
+      } // if
+
+      if (0 != _dbChange) {
+	assert(!changeSection.isNull());
+	// Rotate traction vector from local coordinate system to global
+	// coordinate system
+	for(int iDim = 0; iDim < spaceDim; ++iDim) {
+	  for(int jDim = 0; jDim < spaceDim; ++jDim)
+	    changeCellGlobal[iDim+iSpace] +=
+	      orientation[jDim*spaceDim+iDim] * changeCellLocal[jDim];
+	} // for
+      } // if
+
+    } // for
+    
+    // Update sections
+    if (0 != _dbInitial)
+      initialSection->updatePoint(*c_iter, &initialCellGlobal[0]);
+    if (0 != _dbRate)
+      rateSection->updatePoint(*c_iter, &rateCellGlobal[0]);
+    if (0 != _dbChange)
+      changeSection->updatePoint(*c_iter, &changeCellGlobal[0]);
   } // for
-} // _queryDB
+} // paramsLocalToGlobal
 
 // ----------------------------------------------------------------------
 // Calculate temporal and spatial variation of value over the list of Submesh.
 void
-pylith::bc::Neumann::_calculateValue(const double t)
+pylith::bc::Neumann_NEW::_calculateValue(const double t)
 { // _calculateValue
   assert(0 != _parameters);
+  assert(0 != _boundaryMesh);
+  assert(0 != _quadrature);
 
   const ALE::Obj<RealSection>& valueSection = 
     _parameters->get("value").section();
   assert(!valueSection.isNull());
   valueSection->zero();
 
-  const int numSubmesh = _Submesh.size();
-  const int numBCDOF = _bcDOF.size();
   const double timeScale = _getNormalizer().timeScale();
 
   const ALE::Obj<RealSection>& initialSection = (0 != _dbInitial) ?
@@ -625,19 +672,34 @@ pylith::bc::Neumann::_calculateValue(const double t)
   const ALE::Obj<RealSection>& changeTimeSection = ( 0 != _dbChange) ?
     _parameters->get("change time").section() : 0;
 
-  double_array valuesVertex(numBCDOF);
-  double_array bufferVertex(numBCDOF);
-  for (int iPoint=0; iPoint < numSubmesh; ++iPoint) {
-    const int p_bc = _Submesh[iPoint]; // Get point label
+  // Get 'surface' cells (1 dimension lower than top-level cells)
+  const ALE::Obj<SieveSubMesh>& subSieveMesh = _boundaryMesh->sieveMesh();
+  assert(!subSieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
+    subSieveMesh->heightStratum(1);
+  assert(!cells.isNull());
+  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  const int spaceDim = _quadrature->spaceDim();
+  const int numBasis = _quadrature->numBasis();
+  const int numQuadPts = _quadrature->numQuadPts();
+  const int fiberDim = spaceDim * numQuadPts;
+
+  double_array valuesCell(fiberDim);
+  double_array bufferCell(fiberDim);
+  for(SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
+      c_iter != cellsEnd;
+      ++c_iter) {
     
-    valuesVertex = 0.0;
+    valuesCell = 0.0;
     
     // Contribution from initial value
     if (0 != _dbInitial) {
       assert(!initialSection.isNull());
-      initialSection->restrictPoint(p_bc, 
-				    &bufferVertex[0], bufferVertex.size());
-      valuesVertex += bufferVertex;
+      initialSection->restrictPoint(*c_iter, 
+				    &bufferCell[0], bufferCell.size());
+      valuesCell += bufferCell;
     } // if
     
     // Contribution from rate of change of value
@@ -646,11 +708,11 @@ pylith::bc::Neumann::_calculateValue(const double t)
       assert(!rateTimeSection.isNull());
       double tRate = 0.0;
       
-      rateSection->restrictPoint(p_bc, &bufferVertex[0], bufferVertex.size());
-      rateTimeSection->restrictPoint(p_bc, &tRate, 1);
+      rateSection->restrictPoint(*c_iter, &bufferCell[0], bufferCell.size());
+      rateTimeSection->restrictPoint(*c_iter, &tRate, 1);
       if (t > tRate) { // rate of change integrated over time
-	bufferVertex *= (t - tRate);
-	valuesVertex += bufferVertex;
+	bufferCell *= (t - tRate);
+	valuesCell += bufferCell;
       } // if
     } // if
     
@@ -660,8 +722,8 @@ pylith::bc::Neumann::_calculateValue(const double t)
       assert(!changeTimeSection.isNull());
       double tChange = 0.0;
 
-      changeSection->restrictPoint(p_bc, &bufferVertex[0], bufferVertex.size());
-      changeTimeSection->restrictPoint(p_bc, &tChange, 1);
+      changeSection->restrictPoint(*c_iter, &bufferCell[0], bufferCell.size());
+      changeTimeSection->restrictPoint(*c_iter, &tChange, 1);
       if (t >= tChange) { // change in value over time
 	double scale = 1.0;
 	if (0 != _dbTimeHistory) {
@@ -676,12 +738,12 @@ pylith::bc::Neumann::_calculateValue(const double t)
 	    throw std::runtime_error(msg.str());
 	  } // if
 	} // if
-	bufferVertex *= scale;
-	valuesVertex += bufferVertex;
+	bufferCell *= scale;
+	valuesCell += bufferCell;
       } // if
     } // if
 
-    valueSection->updateAddPoint(p_bc, &valuesVertex[0]);
+    valueSection->updateAddPoint(*c_iter, &valuesCell[0]);
   } // for
 }  // _calculateValue
 

@@ -11,8 +11,17 @@ CRITICAL
 
   Time dependent Neumann BC
 
-  TimeDependent.py
-    fixed_dof to bc_dof - PYRE PROPERTY
+  Run valgrind on the unit tests.
+
+RELEASE
+
+  Release notes
+
+  Check source distribution
+    SWIG files included
+    extensions stuff included 
+
+  Binaries (check)
 
 BONUS
 
@@ -76,10 +85,6 @@ Charles
 
   Benchmarks
 
-    Update figures [BRAD]
-      summary
-      scaling
-
     Add Savage-Prescott [CHARLES]
   
   * Reduce memory use with ordering elements by material??
@@ -101,6 +106,21 @@ Charles
       meshio C++, SWIG
       problems C++, SWIG
       topology C++, SWIG
+
+
+----------------------------------------------------------------------
+POST RELEASE 1.4
+----------------------------------------------------------------------
+
+1. Savage-Presscott benchmark
+    Tet mesh
+
+2. Analytic BC for reverse-slip benchmark [Charles or Brad]
+    a. Create BC for CUBIT mesh.
+    b. Create BC for LaGriT mesh.
+    c. Run benchmarks.
+    d. Generate analytic solutions.
+    e. Tabulate results.
 
 3. Add missing unit tests
 
@@ -160,24 +180,10 @@ Charles
     MemoryLogger.logMesh()
     MemoryLogger.logMaterial()
 
-4. Check Tabrez's problems.
+    libtests/faults/FaultCohesiveKin.cc
+      Nontrivial dispIncr(t->t+dt) in integrateResidual
 
-
-----------------------------------------------------------------------
-POST RELEASE 1.4
-----------------------------------------------------------------------
-
-1. Savage-Presscott benchmark
-    Tet mesh
-
-2. Analytic BC for reverse-slip benchmark [Charles or Brad]
-    a. Create BC for CUBIT mesh.
-    b. Create BC for LaGriT mesh.
-    c. Run benchmarks.
-    d. Generate analytic solutions.
-    e. Tabulate results.
-
-3. Tidy up
+4. Tidy up
 
   Replace memcpy() calls with loops.
 
