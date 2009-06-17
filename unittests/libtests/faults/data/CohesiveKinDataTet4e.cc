@@ -123,19 +123,19 @@ const int pylith::faults::CohesiveKinDataTet4e::_constraintCells[] = {
 
 const double pylith::faults::CohesiveKinDataTet4e::_valsResidual[] = {
   0.0,  0.0,  0.0,
+  7.8,  3.8,  5.8, // 5
+  7.0,  3.0,  5.0, // 6
+  8.2,  4.2,  6.2, // 7
+  8.4,  4.4,  6.4, // 8
   0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
-  1.07974939836, -0.32861938211, 0.04694562602, // 14
-  1.00381374723, -0.33460458241, 0.08365114560, // 15
-  0.90493237602, -0.32577565537, 0.10859188512, // 16
-  0.78469841324, -0.30180708202, 0.12072283281, // 17
+ -7.8, -3.8, -5.8, // 10
+ -7.0, -3.0, -5.0, // 11
+ -8.2, -4.2, -6.2, // 12
+ -8.4, -4.4, -6.4, // 13
+ -0.5, -0.5, -0.5, // 14
+ -0.6, -0.6, -0.6, // 15
+ -0.7, -0.7, -0.7, // 16
+ -0.8, -0.8, -0.8, // 17
 };
 
 const double pylith::faults::CohesiveKinDataTet4e::_valsResidualIncr[] = {
@@ -746,8 +746,6 @@ const double pylith::faults::CohesiveKinDataTet4e::_valsJacobian[] = {
   0.0, 0.0, 0.0,
 };
 
-const double pylith::faults::CohesiveKinDataTet4e::_pseudoStiffness = 2.4;
-
 pylith::faults::CohesiveKinDataTet4e::CohesiveKinDataTet4e(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
@@ -774,7 +772,6 @@ pylith::faults::CohesiveKinDataTet4e::CohesiveKinDataTet4e(void)
   valsResidual = const_cast<double*>(_valsResidual);
   valsResidualIncr = const_cast<double*>(_valsResidualIncr);
   valsJacobian = const_cast<double*>(_valsJacobian);
-  pseudoStiffness = _pseudoStiffness;
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

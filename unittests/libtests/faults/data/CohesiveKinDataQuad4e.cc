@@ -155,19 +155,19 @@ const int pylith::faults::CohesiveKinDataQuad4e::_constraintCells[] = {
 const double pylith::faults::CohesiveKinDataQuad4e::_valsResidual[] = {
   0.0,  0.0,
   0.0,  0.0,
+ -6.1, -4.1, // 6
+ -6.3, -4.3, // 7
   0.0,  0.0,
   0.0,  0.0,
   0.0,  0.0,
+ -6.5, -4.5, // 11
   0.0,  0.0,
-  0.0,  0.0,
-  0.0,  0.0,
-  0.0,  0.0,
-  0.0,  0.0,
-  0.0,  0.0,
-  0.0,  0.0,
-  0.989535448086, 0.0824612873405, // 16
-  1.05057813143, 0.0456773100622, // 17
-  0.90435792846,  0.10852295130, // 18
+ +6.1, +4.1, // 13
+ +6.3, +4.3, // 15
+ +6.5, +4.5, // 17
+ -0.3, -0.3, // 16
+  0.8,  0.8, // 17
+  0.6,  0.6, // 18
 };
 
 const double pylith::faults::CohesiveKinDataQuad4e::_valsResidualIncr[] = {
@@ -641,8 +641,6 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
 };
 
-const double pylith::faults::CohesiveKinDataQuad4e::_pseudoStiffness = 2.4;
-
 pylith::faults::CohesiveKinDataQuad4e::CohesiveKinDataQuad4e(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
@@ -669,7 +667,6 @@ pylith::faults::CohesiveKinDataQuad4e::CohesiveKinDataQuad4e(void)
   valsResidual = const_cast<double*>(_valsResidual);
   valsResidualIncr = const_cast<double*>(_valsResidualIncr);
   valsJacobian = const_cast<double*>(_valsJacobian);
-  pseudoStiffness = _pseudoStiffness;
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

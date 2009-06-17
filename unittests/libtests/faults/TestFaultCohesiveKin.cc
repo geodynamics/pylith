@@ -246,7 +246,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     fault.useSolnIncr(false);
     fault.integrateResidual(residual, t, &fields);
 
-    //residual->view("RESIDUAL"); // DEBUGGING
+    residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->valsResidual;
@@ -261,19 +261,12 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
       const double* vals = residualSection->restrictPoint(*v_iter);
       CPPUNIT_ASSERT(0 != vals);
       
-      const bool isConstraint = _isConstraintVertex(*v_iter);
-      if (!isConstraint) {
-	for (int i=0; i < fiberDimE; ++i) {
-	  const int index = iVertex*spaceDim+i;
-	  const double valE = valsE[index];
-	  if (fabs(valE) > tolerance)
-	    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
-	  else
-	    CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
-	} // for
-      } else {
-	const double valE = 0.0; // no contribution
-	for (int i=0; i < fiberDimE; ++i)
+      for (int i=0; i < fiberDimE; ++i) {
+	const int index = iVertex*spaceDim+i;
+	const double valE = valsE[index];
+	if (fabs(valE) > tolerance)
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+	else
 	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
       } // for
     } // for
