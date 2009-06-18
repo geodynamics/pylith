@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -633,7 +633,19 @@ Generalized Maxwell Viscoelastic
 \begin_layout Plain Layout
 
 \family typewriter
-mu, lambda, density, shear_ratio, maxwell_time
+mu, lambda, density,
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+shear_ratio,
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+maxwell_time
 \end_layout
 
 \end_inset
@@ -644,13 +656,13 @@ mu, lambda, density, shear_ratio, maxwell_time
 \begin_layout Plain Layout
 
 \family typewriter
-total_strain,
+total_strain, stress, viscous_strain_1,viscous_strain_2,
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-stress, viscous_strain
+viscous_strain_3
 \end_layout
 
 \end_inset
@@ -678,37 +690,11 @@ mu, lambda, density,
 \begin_layout Plain Layout
 
 \family typewriter
-shear_ratio_1,
+viscosity_coeff,
 \end_layout
 
 \begin_layout Plain Layout
-
-\family typewriter
-shear_ratio_2,
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-shear_ratio_3,
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-maxwell_time_1,
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-maxwell_time_2,
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-maxwell_time_3
+power_law_exponent
 \end_layout
 
 \end_inset
@@ -719,13 +705,7 @@ maxwell_time_3
 \begin_layout Plain Layout
 
 \family typewriter
-total_strain, stress, viscous_strain_1,viscous_strain_2,
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-viscous_strain_3
+total_strain, stress, viscous_strain
 \end_layout
 
 \end_inset
@@ -1418,8 +1398,8 @@ Viscoelastic Materials
 \end_layout
 
 \begin_layout Standard
-At present, there are two viscoelastic material models available in PyLith,
- with at least one additional model planned for the near future (Table 
+At present, there are three viscoelastic material models available in PyLith
+ (Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Material-models-available"
@@ -1461,7 +1441,7 @@ name "tab:Material-models-available"
 
 \end_inset
 
-Planned and available 3D viscoelastic materials for PyLith.
+Available 3D viscoelastic materials for PyLith.
 \end_layout
 
 \end_inset
@@ -1613,6 +1593,8 @@ Spring-dashpot 1D representations of the available 3D elastic and viscoelastic
 \end_inset
 
  is specified for each Maxwell model.
+ For the power-law model, the linear dashpot in the Maxwell model is replaced
+ by a nonlinear dashpot obeying a power-law.
 \end_layout
 
 \end_inset
@@ -1711,24 +1693,13 @@ Due to the symmetry of the stress and strain tensors, it is sometimes convenient
 \overrightarrow{\sigma^{T}}=\left[\begin{array}{cccccc}
 \sigma_{11} & \sigma_{22} & \sigma_{33} & \sigma_{12} & \sigma_{23} & \sigma_{31}\end{array}\right]\label{eq:18}\\
 \overrightarrow{\epsilon^{T}}=\left[\begin{array}{cccccc}
-\epsilon_{11} & \epsilon_{22} & \epsilon_{33} & \gamma_{12} & \gamma_{23} & \gamma_{31}\end{array}\right]\:.\nonumber \end{gather}
+\epsilon_{11} & \epsilon_{22} & \epsilon_{33} & \epsilon_{12} & \epsilon_{23} & \epsilon_{31}\end{array}\right]\:.\nonumber \end{gather}
 
 \end_inset
 
-Note the use of engineering strain measures (
-\begin_inset Formula $\gamma_{ij}$
-\end_inset
-
-) in Equation 
-\begin_inset CommandInset ref
-LatexCommand vpageref
-reference "eq:5"
-
-\end_inset
-
-.
- This simplifies some of the equations when representing stress and strain
- as vectors.
+Note that when taking the scalar inner product of two tensors represented
+ as vectors, it is necessary to double the products representing off-diagonal
+ terms.
 \end_layout
 
 \begin_layout Standard
@@ -1947,6 +1918,21 @@ key "Taylor:2003"
 \end_inset
 
  is always zero and we only use a single Maxwell model.
+ The parameters defining the standard Maxwell model are shown in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:linearMaxwell"
+
+\end_inset
+
+, and those defining the generalized Maxwell model are shown in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:genMaxwell"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -2551,42 +2537,23 @@ Note that the coefficient of the second matrix approaches
 \end_inset
 
  goes to infinity.
- Since finite element computations typically use engineering strain measures,
- the matrix that is actually used is
-\begin_inset Formula \begin{gather}
-C_{ij}^{VE}=\frac{E}{3(1-2\mathrm{v})}\left[\begin{array}{cccccc}
-1 & 1 & 1 & 0 & 0 & 0\\
-1 & 1 & 1 & 0 & 0 & 0\\
-1 & 1 & 1 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0\end{array}\right]+\frac{1}{3\left(\frac{1+\nu}{E}+\frac{\alpha\Delta t}{2\eta}\right)}\left[\begin{array}{cccccc}
-2 & -1 & -1 & 0 & 0 & 0\\
--1 & 2 & -1 & 0 & 0 & 0\\
--1 & -1 & 2 & 0 & 0 & 0\\
-0 & 0 & 0 & \frac{3}{2} & 0 & 0\\
-0 & 0 & 0 & 0 & \frac{3}{2} & 0\\
-0 & 0 & 0 & 0 & 0 & \frac{3}{2}\end{array}\right]\,.\label{eq:63}\end{gather}
-
-\end_inset
-
-To check the results we make sure that the regular elastic constitutive
+ To check the results we make sure that the regular elastic constitutive
  matrix is obtained for selected terms in the case where 
 \begin_inset Formula $\eta$
 \end_inset
 
  goes to infinity.
 \begin_inset Formula \begin{gather}
-C_{11}^{E}=\frac{E(1-\nu)}{(1+\nu)(1-2\nu)}\,\,\label{eq:64}\\
-C_{12}^{E}=\frac{E\nu}{(1+\nu)(1-2\nu)}\,.\nonumber \\
-C_{44}^{E}=\frac{E}{2(1+\nu)}\,\,\nonumber \end{gather}
+C_{11}^{E}=\frac{E(1-\nu)}{(1+\nu)(1-2\nu)}\,\,\nonumber \\
+C_{12}^{E}=\frac{E\nu}{(1+\nu)(1-2\nu)}\,.\label{eq:63}\\
+C_{44}^{E}=\frac{E}{1+\nu}\,\,\nonumber \end{gather}
 
 \end_inset
 
 This is consistent with the regular elasticity matrix, and Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:63"
+reference "eq:62"
 
 \end_inset
 
@@ -2618,15 +2585,23 @@ A power-law Maxwell viscoelastic material may be parameterized with the
 \end_inset
 
 .
+ The parameters defining this model are shown in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:powerLaw"
+
+\end_inset
+
+.
  The creep strain increment is approximated as
 \begin_inset Formula \begin{gather}
-\underline{\Delta e}^{C}=\frac{\Delta t\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}\,^{\tau}\underline{S}}{2\eta^{n}}=\frac{\Delta t^{\tau}\overline{\sigma}^{n-1}\,^{\tau}\underline{S}}{2\sqrt{3}\eta^{n}}\,.\label{eq:65}\end{gather}
+\underline{\Delta e}^{C}=\frac{\Delta t\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}\,^{\tau}\underline{S}}{2\eta^{n}}=\frac{\Delta t^{\tau}\overline{\sigma}^{n-1}\,^{\tau}\underline{S}}{2\sqrt{3}\eta^{n}}\,.\label{eq:64}\end{gather}
 
 \end_inset
 
 Therefore,
 \begin_inset Formula \begin{gather}
-\Delta\bar{e}^{C}=\frac{\Delta t\sqrt{^{\tau}J_{2}^{\prime}}^{n}}{\sqrt{3}\eta^{n}}=\frac{\Delta t^{\tau}\overline{\sigma}^{n}}{\sqrt{3}^{n+1}\eta^{n}}\,,\,\textrm{and}\,^{\tau}\gamma=\frac{\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}}{2\eta^{n}}\,.\label{eq:66}\end{gather}
+\Delta\bar{e}^{C}=\frac{\Delta t\sqrt{^{\tau}J_{2}^{\prime}}^{n}}{\sqrt{3}\eta^{n}}=\frac{\Delta t^{\tau}\overline{\sigma}^{n}}{\sqrt{3}^{n+1}\eta^{n}}\,,\,\textrm{and}\,^{\tau}\gamma=\frac{\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}}{2\eta^{n}}\,.\label{eq:65}\end{gather}
 
 \end_inset
 
@@ -2640,14 +2615,14 @@ reference "eq:46"
 , 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:65"
+reference "eq:64"
 
 \end_inset
 
 , and 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:66"
+reference "eq:65"
 
 \end_inset
 
@@ -2660,26 +2635,26 @@ reference "eq:43"
 
 , we obtain:
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left\{ ^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left[\left(1-\alpha\right)^{t}\underline{S}+\alpha{}^{t+\Delta t}\underline{S}\right]\right\} +\underline{S}^{I}\,,\label{eq:67}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left\{ ^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left[\left(1-\alpha\right)^{t}\underline{S}+\alpha{}^{t+\Delta t}\underline{S}\right]\right\} +\underline{S}^{I}\,,\label{eq:66}\end{gather}
 
 \end_inset
 
 which may be rewritten:
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}\left(\frac{1+\nu}{E}+\alpha\Delta t^{\tau}\gamma\right)={}^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}\underline{S}+\frac{1+\nu}{E}\underline{S}^{I}\,.\label{eq:68}\end{gather}
+^{t+\Delta t}\underline{S}\left(\frac{1+\nu}{E}+\alpha\Delta t^{\tau}\gamma\right)={}^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}\underline{S}+\frac{1+\nu}{E}\underline{S}^{I}\,.\label{eq:67}\end{gather}
 
 \end_inset
 
 Taking the scalar inner product of both sides we obtain:
 \begin_inset Formula \begin{gather}
-a^{2}\,\,{}^{t+\Delta t}J_{2}^{\prime}-b+c^{\tau}\gamma-d^{2}\,^{\tau}\gamma^{2}=F=0\,,\label{eq:69}\end{gather}
+a^{2}\,\,{}^{t+\Delta t}J_{2}^{\prime}-b+c^{\tau}\gamma-d^{2}\,^{\tau}\gamma^{2}=F=0\,,\label{eq:68}\end{gather}
 
 \end_inset
 
 where
 \begin_inset Formula \begin{gather}
 a=\frac{1+\nu}{E}+\alpha\Delta t^{\tau}\gamma\,\,\nonumber \\
-b=\frac{1}{2}{}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot{}^{t+\Delta t}\underline{e}^{\prime\prime}+\frac{1+\nu}{E}{}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot\underline{S}^{I}+\left(\frac{1+\nu}{E}\right)^{2}\,^{I}J_{2}^{\prime}\,.\label{eq:70}\\
+b=\frac{1}{2}{}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot{}^{t+\Delta t}\underline{e}^{\prime\prime}+\frac{1+\nu}{E}{}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot\underline{S}^{I}+\left(\frac{1+\nu}{E}\right)^{2}\,^{I}J_{2}^{\prime}\,.\label{eq:69}\\
 c=\Delta t\left(1-\alpha\right){}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot^{t}\underline{S}+\Delta t\left(1-\alpha\right)\frac{1+\nu}{E}\,^{t}\underline{S}\cdot\underline{S}^{I}\,\,\nonumber \\
 d=\Delta t\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\,\,\nonumber \end{gather}
 
@@ -2688,12 +2663,12 @@ d=\Delta t\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\,\,\nonumber \end{gathe
 Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:69"
+reference "eq:68"
 
 \end_inset
 
- is a function of a single unknown -- the second deviatoric stress invariant
- at time 
+ is a function of a single unknown -- the square root of the second deviatoric
+ stress invariant at time 
 \begin_inset Formula $t+\Delta t$
 \end_inset
 
@@ -2702,14 +2677,14 @@ reference "eq:69"
  time step may be found from Equations 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:65"
+reference "eq:64"
 
 \end_inset
 
  and 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:66"
+reference "eq:65"
 
 \end_inset
 
@@ -2736,77 +2711,77 @@ reference "eq:58"
  We begin by rewriting Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:68"
+reference "eq:67"
 
 \end_inset
 
  as
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{1}{\left(a_{E}+\alpha\Delta t^{\tau}\gamma\right)}\left[^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}\underline{S}+a_{E}\underline{S}^{I}\right]\,,\label{eq:71}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{1}{\left(a_{E}+\alpha\Delta t^{\tau}\gamma\right)}\left[^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}\underline{S}+a_{E}\underline{S}^{I}\right]\,,\label{eq:70}\end{gather}
 
 \end_inset
 
 where
 \begin_inset Formula \begin{gather}
-a_{E}=\frac{1+\nu}{E}\,.\label{eq:72}\end{gather}
+a_{E}=\frac{1+\nu}{E}\,.\label{eq:71}\end{gather}
 
 \end_inset
 
 The derivative is then
 \begin_inset Formula \begin{gather}
 \frac{\partial{}^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{1}{a_{E}+\alpha\Delta t^{\tau}\gamma}\nonumber \\
-\left\langle \delta_{ik}-\frac{\partial^{\tau}\gamma}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\left\{ \Delta t\left(1-\alpha\right)^{t}S_{i}+\frac{\alpha\Delta t}{a_{E}+\alpha\Delta t^{\tau}\gamma}\left[^{t+\Delta t}e_{i}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}S_{i}+a_{E}S_{i}^{I}\right]\right\} \right\rangle \,.\label{eq:73}\end{gather}
+\left\langle \delta_{ik}-\frac{\partial^{\tau}\gamma}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\left\{ \Delta t\left(1-\alpha\right)^{t}S_{i}+\frac{\alpha\Delta t}{a_{E}+\alpha\Delta t^{\tau}\gamma}\left[^{t+\Delta t}e_{i}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}S_{i}+a_{E}S_{i}^{I}\right]\right\} \right\rangle \,.\label{eq:72}\end{gather}
 
 \end_inset
 
 From Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:66"
+reference "eq:65"
 
 \end_inset
 
 ,
 \begin_inset Formula \begin{gather}
-\frac{\partial^{\tau}\gamma}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{2\eta^{n}}\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=K_{1}\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\,.\label{eq:74}\end{gather}
+\frac{\partial^{\tau}\gamma}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{2\eta^{n}}\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=K_{1}\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\,.\label{eq:73}\end{gather}
 
 \end_inset
 
 We first note that
 \begin_inset Formula \begin{gather}
-\sqrt{^{t+\Delta t}J_{2}^{\prime}}=\frac{1}{\alpha}\left[\sqrt{^{\tau}J_{2}^{\prime}}-\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\right]\,,\label{eq:75}\end{gather}
+\sqrt{^{t+\Delta t}J_{2}^{\prime}}=\frac{1}{\alpha}\left[\sqrt{^{\tau}J_{2}^{\prime}}-\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\right]\,,\label{eq:74}\end{gather}
 
 \end_inset
 
  which allows us to rewrite Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:69"
+reference "eq:68"
 
 \end_inset
 
  as
 \begin_inset Formula \begin{gather}
-\frac{a^{2}}{\alpha^{2}}\left[\sqrt{^{\tau}J_{2}^{\prime}}-\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\right]^{2}-b+c\,^{\tau}\gamma-d^{2}\,^{\tau}\gamma^{2}=\frac{a^{2}}{\alpha^{2}}K_{2}^{2}-b+c\,^{\tau}\gamma-d^{2}\,^{\tau}\gamma^{2}=F=0\,.\label{eq:76}\end{gather}
+\frac{a^{2}}{\alpha^{2}}\left[\sqrt{^{\tau}J_{2}^{\prime}}-\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\right]^{2}-b+c\,^{\tau}\gamma-d^{2}\,^{\tau}\gamma^{2}=\frac{a^{2}}{\alpha^{2}}K_{2}^{2}-b+c\,^{\tau}\gamma-d^{2}\,^{\tau}\gamma^{2}=F=0\,.\label{eq:75}\end{gather}
 
 \end_inset
 
 The derivatives of this function are
 \begin_inset Formula \begin{gather}
 \frac{\partial F}{\partial\sqrt{^{\tau}J_{2}^{\prime}}}=\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)\nonumber \\
-\frac{\partial F}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=-\delta_{ik}\left[\frac{^{t+\Delta t}e_{i}^{\prime\prime}}{2}\right]+a_{E}S_{i}^{I}-\Delta t\left(1-\alpha\right)^{t}S_{i}\,^{\tau}\gamma\,.\label{eq:77}\end{gather}
+\frac{\partial F}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=-\frac{^{t+\Delta t}e_{k}^{\prime\prime}}{2}+a_{E}S_{k}^{I}-\Delta t\left(1-\alpha\right)^{t}S_{k}\,^{\tau}\gamma\,.\label{eq:76}\end{gather}
 
 \end_inset
 
 Then using the quotient rule for derivatives,
 \begin_inset Formula \begin{gather}
-\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{\delta_{ik}\left[\frac{^{t+\Delta t}e_{i}^{\prime\prime}}{2}+a_{E}S_{i}^{I}-\Delta t\left(1-\alpha\right)^{t}S_{i}\,^{\tau}\gamma\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)}\,.\label{eq:78}\end{gather}
+\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{\delta_{ik}\left[\frac{^{t+\Delta t}e_{i}^{\prime\prime}}{2}+a_{E}S_{i}^{I}-\Delta t\left(1-\alpha\right)^{t}S_{i}\,^{\tau}\gamma\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)}\,.\label{eq:77}\end{gather}
 
 \end_inset
 
 This yields
 \begin_inset Formula \begin{gather}
-\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{j}^{\prime\prime}}=\frac{\delta_{ik}K_{1}\left[\frac{^{t+\Delta t}e_{i}^{\prime\prime}}{2}+a_{E}S_{i}^{I}-\Delta t\left(1-\alpha\right)^{t}S_{i}\,^{\tau}\gamma\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)}\,.\label{eq:79}\end{gather}
+\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{j}^{\prime\prime}}=\frac{\delta_{ik}K_{1}\left[\frac{^{t+\Delta t}e_{i}^{\prime\prime}}{2}+a_{E}S_{i}^{I}-\Delta t\left(1-\alpha\right)^{t}S_{i}\,^{\tau}\gamma\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)}\,.\label{eq:78}\end{gather}
 
 \end_inset
 
@@ -2818,7 +2793,7 @@ Note that for a linear material
  This relation may be used in Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:73"
+reference "eq:72"
 
 \end_inset
 
@@ -2851,7 +2826,7 @@ C_{ij}^{VE}=\frac{E}{3\left(1-2\nu\right)}\left[\begin{array}{cccccc}
 -1 & -1 & 2 & 0 & 0 & 0\\
 0 & 0 & 0 & 3 & 0 & 0\\
 0 & 0 & 0 & 0 & 3 & 0\\
-0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\,.\label{eq:80}\end{gather}
+0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\,.\label{eq:79}\end{gather}
 
 \end_inset
 
@@ -2860,7 +2835,7 @@ As for the linear case, we use an altered version of the matrix appropriate
  At the beginning of a time step, the strains have not yet been computed,
  and we use the following approximation:
 \begin_inset Formula \begin{gather}
-\frac{\partial{}^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\approx\frac{\delta_{ik}}{a_{E}+\Delta t^{\tau}\gamma}\,,\label{eq:81}\end{gather}
+\frac{\partial{}^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\approx\frac{\delta_{ik}}{a_{E}+\Delta t^{\tau}\gamma}\,,\label{eq:80}\end{gather}
 
 \end_inset
 
@@ -2884,13 +2859,13 @@ To compute the zero of the effective stress function using Newton's method,
  we require the derivative of equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:69"
+reference "eq:68"
 
 \end_inset
 
 , which may be written:
 \begin_inset Formula \begin{gather}
-\frac{\partial F}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}=2a^{2}\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\frac{\alpha\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{2\eta^{n}}\left(2a\alpha\Delta t{}^{t+\Delta t}J_{2}^{\prime}+c-2d^{2}\,^{\tau}\gamma\right)\,.\label{eq:82}\end{gather}
+\frac{\partial F}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}=2a^{2}\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\frac{\alpha\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{2\eta^{n}}\left(2a\alpha\Delta t{}^{t+\Delta t}J_{2}^{\prime}+c-2d^{2}\,^{\tau}\gamma\right)\,.\label{eq:81}\end{gather}
 
 \end_inset
 
@@ -2898,24 +2873,14 @@ reference "eq:69"
 \end_layout
 
 \begin_layout Standard
-PyLith 1.3 does not include power-law viscoelasticity, but we plan to provide
- the effective stress function formulation as one possible implementation
- of a power-law Maxwell viscoelastic material.
+The effective stress formulation is the method used in PyLith 1.4 for power-law
+ viscoelasticity.
+ We may add additional formulations in the future.
 \end_layout
 
 \begin_layout Standard
 \noindent
 \align center
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-CHARLES FIX THESE TABLES
-\end_layout
-
-\end_inset
-
-
 \begin_inset Float table
 placement H
 wide false
@@ -2928,19 +2893,21 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:linearMaxwell"
+
+\end_inset
+
 Values in spatial database used as parameters in the linear Maxwell viscoelastic
  material constitutive model.
- 
-\family typewriter
-\series bold
-FIX THIS TABLE
 \end_layout
 
 \end_inset
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="4" columns="2">
+<lyxtabular version="3" rows="5" columns="2">
 <features>
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
@@ -3020,11 +2987,36 @@ Vs
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 \begin_inset Formula $\rho$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+density
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\eta$
 \end_inset
 
 
@@ -3038,7 +3030,7 @@ Vs
 \begin_layout Plain Layout
 
 \family typewriter
-density
+viscosity
 \end_layout
 
 \end_inset
@@ -3071,19 +3063,21 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:genMaxwell"
+
+\end_inset
+
 Values in spatial database used as parameters in the generalized linear
  Maxwell viscoelastic material constitutive model.
- 
-\family typewriter
-\series bold
-FIX THIS TABLE
 \end_layout
 
 \end_inset
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="4" columns="2">
+<lyxtabular version="3" rows="10" columns="2">
 <features>
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
@@ -3163,11 +3157,161 @@ Vs
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 \begin_inset Formula $\rho$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+density
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mu_{1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+shear ratio 1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mu_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+shear ratio 2
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mu_{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+shear ratio 3
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\eta_{1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+viscosity 1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\eta_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+viscosity 2
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\eta_{3}$
 \end_inset
 
 
@@ -3181,7 +3325,7 @@ Vs
 \begin_layout Plain Layout
 
 \family typewriter
-density
+viscosity 3
 \end_layout
 
 \end_inset
@@ -3214,18 +3358,21 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:powerLaw"
+
+\end_inset
+
 Values in spatial database used as parameters in the nonlinear power-law
  viscoelastic material constitutive model.
-\family typewriter
-\series bold
-FIX THIS TABLE
 \end_layout
 
 \end_inset
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="4" columns="2">
+<lyxtabular version="3" rows="6" columns="2">
 <features>
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
@@ -3305,11 +3452,61 @@ Vs
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 \begin_inset Formula $\rho$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+density
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\eta$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+viscosity coefficient
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $n$
 \end_inset
 
 
@@ -3323,7 +3520,7 @@ Vs
 \begin_layout Plain Layout
 
 \family typewriter
-density
+power law exponent
 \end_layout
 
 \end_inset
