@@ -7,8 +7,6 @@ CRITICAL
   Need power-law full-scale "test" to insure that the power-law and
   nonlinear solve give reasonable results.
 
-  Need generalized Maxwell full-scale "test".
-
   Time dependent Neumann BC
 
   Run valgrind on the unit tests.

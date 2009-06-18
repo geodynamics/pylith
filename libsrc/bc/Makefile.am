@@ -31,6 +31,8 @@ subpkginclude_HEADERS = \
 	DirichletBoundary.icc \
 	Neumann.hh \
 	Neumann.icc \
+	Neumann_NEW.hh \
+	Neumann_NEW.icc \
 	PointForce.hh \
 	PointForce.icc \
 	bcfwd.hh

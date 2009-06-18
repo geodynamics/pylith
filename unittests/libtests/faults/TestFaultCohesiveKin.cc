@@ -167,7 +167,6 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   const ALE::Obj<RealSection>& orientationSection = 
     fault._fields->get("orientation").section();
   CPPUNIT_ASSERT(!orientationSection.isNull());
-  const int cellDim = _data->cellDim;
   const int spaceDim = _data->spaceDim;
   const int orientationSize = spaceDim*spaceDim;
   iVertex = 0;
@@ -246,7 +245,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     fault.useSolnIncr(false);
     fault.integrateResidual(residual, t, &fields);
 
-    residual.view("RESIDUAL"); // DEBUGGING
+    //residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->valsResidual;
