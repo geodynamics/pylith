@@ -68,7 +68,7 @@ pylith::topology::SubMesh::comm(void) const {
 // Print mesh to stdout.
 inline
 void
-pylith::topology::SubMesh::view(const char* label) {
+pylith::topology::SubMesh::view(const char* label) const {
   _mesh->view(label);
 }
 

@@ -38,8 +38,7 @@ typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::bc::Neumann_NEW::Neumann_NEW(void) :
-  _db(0)
+pylith::bc::Neumann_NEW::Neumann_NEW(void)
 { // constructor
 } // constructor
 
@@ -55,7 +54,6 @@ pylith::bc::Neumann_NEW::~Neumann_NEW(void)
 void
 pylith::bc::Neumann_NEW::deallocate(void)
 { // deallocate
-  _db = 0; // :TODO: Use shared pointer
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -198,12 +196,22 @@ pylith::bc::Neumann_NEW::cellField(const char* name,
   assert(0 != _parameters);
   assert(0 != name);
 
-  if (0 == strcasecmp(name, "tractions")) {
-    return _parameters->get("traction");
+  if (0 == strcasecmp(name, "initial-value"))
+    return _parameters->get("initial");
 
-    // ADD STUFF HERE
+  else if (0 == strcasecmp(name, "rate-of-change"))
+    return _parameters->get("rate");
 
-  } else {
+  else if (0 == strcasecmp(name, "change-in-value"))
+    return _parameters->get("change");
+
+  else if (0 == strcasecmp(name, "rate-start-time"))
+    return _parameters->get("rate time");
+
+  else if (0 == strcasecmp(name, "change-start-time"))
+    return _parameters->get("change time");
+
+  else {
     std::ostringstream msg;
     msg << "Unknown field '" << name << "' requested for Neumann_NEW BC '" 
 	<< _label << "'.";
@@ -227,7 +235,6 @@ pylith::bc::Neumann_NEW::_queryDatabases(void)
 
   const int spaceDim = _quadrature->spaceDim();
   const int numQuadPts = _quadrature->numQuadPts();
-  const int fiberDim = numQuadPts * spaceDim;
 
   delete _parameters; 
   _parameters = 
@@ -238,7 +245,7 @@ pylith::bc::Neumann_NEW::_queryDatabases(void)
   topology::Field<topology::SubMesh>& value = _parameters->get("value");
   value.scale(pressureScale);
   value.vectorFieldType(topology::FieldBase::OTHER);
-  value.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
+  value.newSection(topology::FieldBase::CELLS_FIELD, numQuadPts*spaceDim, 1);
   value.allocate();
 
   if (0 != _dbInitial) { // Setup initial values, if provided.
@@ -314,15 +321,15 @@ pylith::bc::Neumann_NEW::_queryDatabases(void)
 	assert(0);
 	throw std::logic_error("Bad spatial dimension in Neumann_NEW.");
       } // switch
-    _queryDB(&rate, _dbRate, spaceDim, pressureScale);
+    _queryDB(&rate, _dbRate, spaceDim, rateScale);
 
     _parameters->add("rate time", "rate_traction_time");
     topology::Field<topology::SubMesh>& rateTime = 
       _parameters->get("rate time");
-    rateTime.newSection(rate, 1);
+    rateTime.newSection(rate, numQuadPts);
     rateTime.allocate();
     rateTime.scale(timeScale);
-    rateTime.vectorFieldType(topology::FieldBase::SCALAR);
+    rateTime.vectorFieldType(topology::FieldBase::MULTI_SCALAR);
 
     const char* timeNames[1] = { "rate-start-time" };
     _dbRate->queryVals(timeNames, 1);
@@ -370,10 +377,10 @@ pylith::bc::Neumann_NEW::_queryDatabases(void)
     _parameters->add("change time", "change_traction_time");
     topology::Field<topology::SubMesh>& changeTime = 
       _parameters->get("change time");
-    changeTime.newSection(change, 1);
+    changeTime.newSection(change, numQuadPts);
     changeTime.allocate();
     changeTime.scale(timeScale);
-    changeTime.vectorFieldType(topology::FieldBase::SCALAR);
+    changeTime.vectorFieldType(topology::FieldBase::MULTI_SCALAR);
 
     const char* timeNames[1] = { "change-start-time" };
     _dbChange->queryVals(timeNames, 1);
@@ -412,11 +419,10 @@ pylith::bc::Neumann_NEW::_queryDB(topology::Field<topology::SubMesh>* field,
   const int numBasis = _quadrature->numBasis();
   const int numQuadPts = _quadrature->numQuadPts();
   const int spaceDim = _quadrature->spaceDim();
-  const int fiberDim = numQuadPts * querySize;
   
   // Containers for database query results and quadrature coordinates in
   // reference geometry.
-  double_array valuesCell(querySize);
+  double_array valuesCell(numQuadPts*querySize);
   double_array quadPtRef(cellDim);
   double_array quadPtsGlobal(numQuadPts*spaceDim);
   const double_array& quadPtsRef = _quadrature->quadPtsRef();
@@ -462,25 +468,28 @@ pylith::bc::Neumann_NEW::_queryDB(topology::Field<topology::SubMesh>* field,
 				lengthScale);
     
     valuesCell = 0.0;
-    for(int iQuad=0, iRef=0, iSpace=0; iQuad < numQuadPts;
-	++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
-      const int err = _db->query(&valuesCell[iQuad*querySize], querySize,
-				 &quadPtsGlobal[iSpace], spaceDim, cs);
+    for(int iQuad=0, iSpace=0; 
+	iQuad < numQuadPts;
+	++iQuad, iSpace+=spaceDim) {
+      const int err = db->query(&valuesCell[iQuad*querySize], querySize,
+				&quadPtsGlobal[iSpace], spaceDim, cs);
+      
       if (err) {
 	std::ostringstream msg;
 	msg << "Could not find values at (";
 	for (int i=0; i < spaceDim; ++i)
 	  msg << " " << quadPtsGlobal[i+iSpace];
 	msg << ") for traction boundary condition " << _label << "\n"
-	    << "using spatial database " << _db->label() << ".";
+	    << "using spatial database " << db->label() << ".";
 	throw std::runtime_error(msg.str());
       } // if
-      _normalizer->nondimensionalize(&valuesCell[0], valuesCell.size(),
-				     scale);
 
     } // for
+    _normalizer->nondimensionalize(&valuesCell[0], valuesCell.size(),
+				   scale);
 
     // Update section
+    assert(valuesCell.size() == section->getFiberDimension(*c_iter));
     section->updatePoint(*c_iter, &valuesCell[0]);
   } // for
 } // _queryDB
@@ -512,7 +521,7 @@ void
   const int numBasis = _quadrature->numBasis();
   const int numQuadPts = _quadrature->numQuadPts();
   const int spaceDim = cellGeometry.spaceDim();
-  const int fiberDim = spaceDim * numQuadPts;
+  const int fiberDim = numQuadPts * spaceDim;
   double_array quadPtRef(cellDim);
   const double_array& quadPtsRef = _quadrature->quadPtsRef();
   
@@ -606,8 +615,8 @@ void
 	// coordinate system
 	for(int iDim = 0; iDim < spaceDim; ++iDim) {
 	  for(int jDim = 0; jDim < spaceDim; ++jDim)
-	    initialCellGlobal[iDim+iSpace] +=
-	      orientation[jDim*spaceDim+iDim] * initialCellLocal[jDim];
+	    initialCellGlobal[iSpace+iDim] +=
+	      orientation[jDim*spaceDim+iDim] * initialCellLocal[iSpace+jDim];
 	} // for
       } // if
 
@@ -618,7 +627,7 @@ void
 	for(int iDim = 0; iDim < spaceDim; ++iDim) {
 	  for(int jDim = 0; jDim < spaceDim; ++jDim)
 	    rateCellGlobal[iDim+iSpace] +=
-	      orientation[jDim*spaceDim+iDim] * rateCellLocal[jDim];
+	      orientation[jDim*spaceDim+iDim] * rateCellLocal[iSpace+jDim];
 	} // for
       } // if
 
@@ -629,7 +638,7 @@ void
 	for(int iDim = 0; iDim < spaceDim; ++iDim) {
 	  for(int jDim = 0; jDim < spaceDim; ++jDim)
 	    changeCellGlobal[iDim+iSpace] +=
-	      orientation[jDim*spaceDim+iDim] * changeCellLocal[jDim];
+	      orientation[jDim*spaceDim+iDim] * changeCellLocal[iSpace+jDim];
 	} // for
       } // if
 
@@ -684,15 +693,17 @@ pylith::bc::Neumann_NEW::_calculateValue(const double t)
   const int spaceDim = _quadrature->spaceDim();
   const int numBasis = _quadrature->numBasis();
   const int numQuadPts = _quadrature->numQuadPts();
-  const int fiberDim = spaceDim * numQuadPts;
+  const int fiberDim = numQuadPts * spaceDim;
 
   double_array valuesCell(fiberDim);
   double_array bufferCell(fiberDim);
+  double_array timeCell(numQuadPts);
   for(SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
       c_iter != cellsEnd;
       ++c_iter) {
     
     valuesCell = 0.0;
+    timeCell = 0.0;
     
     // Contribution from initial value
     if (0 != _dbInitial) {
@@ -706,41 +717,41 @@ pylith::bc::Neumann_NEW::_calculateValue(const double t)
     if (0 != _dbRate) {
       assert(!rateSection.isNull());
       assert(!rateTimeSection.isNull());
-      double tRate = 0.0;
       
       rateSection->restrictPoint(*c_iter, &bufferCell[0], bufferCell.size());
-      rateTimeSection->restrictPoint(*c_iter, &tRate, 1);
-      if (t > tRate) { // rate of change integrated over time
-	bufferCell *= (t - tRate);
-	valuesCell += bufferCell;
-      } // if
+      rateTimeSection->restrictPoint(*c_iter, &timeCell[0], timeCell.size());
+      for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
+	if (t > timeCell[iQuad])  // rate of change integrated over time
+	  for (int iDim=0; iDim < spaceDim; ++iDim)
+	    valuesCell[iQuad*spaceDim+iDim] += 
+	      bufferCell[iQuad*spaceDim+iDim] * (t - timeCell[iQuad]);
     } // if
     
     // Contribution from change of value
     if (0 != _dbChange) {
       assert(!changeSection.isNull());
       assert(!changeTimeSection.isNull());
-      double tChange = 0.0;
 
       changeSection->restrictPoint(*c_iter, &bufferCell[0], bufferCell.size());
-      changeTimeSection->restrictPoint(*c_iter, &tChange, 1);
-      if (t >= tChange) { // change in value over time
-	double scale = 1.0;
-	if (0 != _dbTimeHistory) {
-	  double tDim = t - tChange;
-	  _getNormalizer().dimensionalize(&tDim, 1, timeScale);
-	  const int err = _dbTimeHistory->query(&scale, tDim);
-	  if (0 != err) {
-	    std::ostringstream msg;
-	    msg << "Error querying for time '" << tDim 
-		<< "' in time history database "
-		<< _dbTimeHistory->label() << ".";
-	    throw std::runtime_error(msg.str());
+      changeTimeSection->restrictPoint(*c_iter, &timeCell[0], timeCell.size());
+      for (int i=0; i < numQuadPts; ++i)
+	if (t >= timeCell[i]) { // change in value over time
+	  double scale = 1.0;
+	  if (0 != _dbTimeHistory) {
+	    double tDim = t - timeCell[i];
+	    _getNormalizer().dimensionalize(&tDim, 1, timeScale);
+	    const int err = _dbTimeHistory->query(&scale, tDim);
+	    if (0 != err) {
+	      std::ostringstream msg;
+	      msg << "Error querying for time '" << tDim 
+		  << "' in time history database "
+		  << _dbTimeHistory->label() << ".";
+	      throw std::runtime_error(msg.str());
+	    } // if
 	  } // if
+	  for (int iDim=0; iDim < spaceDim; ++iDim)
+	    valuesCell[i*spaceDim+iDim] += bufferCell[i*spaceDim+iDim] * scale;
 	} // if
-	bufferCell *= scale;
-	valuesCell += bufferCell;
-      } // if
     } // if
 
     valueSection->updateAddPoint(*c_iter, &valuesCell[0]);

@@ -41,12 +41,6 @@ public :
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
   
-  /** Set database for boundary condition parameters.
-   *
-   * @param db Spatial database
-   */
-  void db(spatialdata::spatialdb::SpatialDB* const db);
-
   /** Initialize boundary condition.
    *
    * @param mesh Finite-element mesh.
@@ -96,11 +90,6 @@ public :
   cellField(const char* name,
 	    topology::SolutionFields* const fields);
 
-  // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private :
-
-  spatialdata::spatialdb::SpatialDB* _db; ///< Spatial database w/parameters
-
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
@@ -109,6 +98,12 @@ protected :
    * @returns Label of surface (from mesh generator).
    */
   const char* _getLabel(void) const;
+
+  /** Get manager of scales used to nondimensionalize problem.
+   *
+   * @returns Nondimensionalizer.
+   */
+  const spatialdata::units::Nondimensional& _getNormalizer(void) const;
 
   /// Query databases for time dependent parameters.
   void _queryDatabases(void);

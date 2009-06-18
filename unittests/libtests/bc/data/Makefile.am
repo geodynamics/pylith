@@ -22,6 +22,7 @@ dist_noinst_DATA = \
 	tri3_disp2.spatialdb \
 	tri3_vel2.spatialdb \
 	tri3_tractions.spatialdb \
+	tri3_tractions_NEW.spatialdb \
 	tri3_force.spatialdb \
 	tri3_force_rate.spatialdb \
 	tri3_force_change.spatialdb \
@@ -30,6 +31,10 @@ dist_noinst_DATA = \
 	quad4.mesh \
 	quad4_disp.spatialdb \
 	quad4_tractions.spatialdb \
+	quad4_traction_initial.spatialdb \
+	quad4_traction_rate.spatialdb \
+	quad4_traction_change.spatialdb \
+	quad4_traction.timedb \
 	quad4_force.spatialdb \
 	tet4.mesh \
 	tet4_disp.spatialdb \

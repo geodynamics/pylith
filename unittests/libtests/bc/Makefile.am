@@ -52,6 +52,7 @@ testbc_SOURCES = \
 	TestDirichletBoundaryTet4.cc \
 	TestDirichletBoundaryHex8.cc \
 	TestNeumann.cc \
+	TestNeumann_NEW.cc \
 	TestNeumannLine2.cc \
 	TestNeumannTri3.cc \
 	TestNeumannQuad4.cc \
@@ -98,6 +99,7 @@ noinst_HEADERS = \
 	TestDirichletBoundaryTet4.hh \
 	TestDirichletBoundaryHex8.hh \
 	TestNeumann.hh \
+	TestNeumann_NEW.hh \
 	TestNeumannLine2.hh \
 	TestNeumannTri3.hh \
 	TestNeumannQuad4.hh \
