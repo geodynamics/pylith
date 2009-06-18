@@ -423,9 +423,7 @@ pylith::bc::Neumann_NEW::_queryDB(topology::Field<topology::SubMesh>* field,
   // Containers for database query results and quadrature coordinates in
   // reference geometry.
   double_array valuesCell(numQuadPts*querySize);
-  double_array quadPtRef(cellDim);
   double_array quadPtsGlobal(numQuadPts*spaceDim);
-  const double_array& quadPtsRef = _quadrature->quadPtsRef();
 
   // Get sections.
   double_array coordinatesCell(numBasis*spaceDim);
@@ -468,9 +466,9 @@ pylith::bc::Neumann_NEW::_queryDB(topology::Field<topology::SubMesh>* field,
 				lengthScale);
     
     valuesCell = 0.0;
-    for(int iQuad=0, iSpace=0; 
-	iQuad < numQuadPts;
-	++iQuad, iSpace+=spaceDim) {
+    for (int iQuad=0, iSpace=0; 
+	 iQuad < numQuadPts;
+	 ++iQuad, iSpace+=spaceDim) {
       const int err = db->query(&valuesCell[iQuad*querySize], querySize,
 				&quadPtsGlobal[iSpace], spaceDim, cs);
       
