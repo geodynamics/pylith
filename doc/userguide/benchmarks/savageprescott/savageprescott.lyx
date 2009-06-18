@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -435,8 +435,7 @@ results
  directory in the mesh-specific subdirectory.
  These results may be viewed directly with a package such as ParaView; however,
  to compare results to the analytical solution, some postprocessing is required.
- First, it is necessary to generate analytical results, which may be done
- by going to the 
+ First, generate the analytical results by going to the 
 \family typewriter
 utils
 \family default
@@ -445,7 +444,7 @@ utils
 savpres_ss.py
 \family default
  script.
- This will produce comma-separated-values files for displacements and velocities
+ This will produce comma-delimited files for displacements and velocities
  (
 \family typewriter
 savpres_displ.csv
@@ -464,7 +463,7 @@ utils
 vtkdiff.py
 \family default
 ) that computes velocities from PyLith displacement results.
- To generate velocity results, you can type, for example
+ To generate velocity results, you can type, for example,
 \end_layout
 
 \begin_layout LyX-Code
@@ -478,7 +477,7 @@ results
 \family default
  directory for the appropriate model.
  This will create a set of VTK files that you can use with ParaView.
- You can generate profile results using ParaView (e.g., the "Plot Over Line"
+ You can generate profile results using ParaView (e.g., the ``Plot Over Line''
  filter).
  By loading the entire time series for the ground surface velocity results,
  it is possible to generate profile results for all time steps.
@@ -511,7 +510,7 @@ reference "fig:benchmark:savageprescott:solution"
 e fits as a function of mesh resolution.
  For this benchmark, it is also important to consider the distance of the
  boundary from the region of interest.
- Also note that the agreement between analytical an numerical solutions
+ Also note that the agreement between analytical and numerical solutions
  is poor for early earthquake cycles, due to the differences in simulating
  the problem, as noted above.
 \end_layout
