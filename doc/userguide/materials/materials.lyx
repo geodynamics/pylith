@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2777,13 +2777,13 @@ The derivatives of this function are
 
 Then using the quotient rule for derivatives,
 \begin_inset Formula \begin{gather}
-\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{\delta_{ik}\left[\frac{^{t+\Delta t}e_{i}^{\prime\prime}}{2}+a_{E}S_{i}^{I}-\Delta t\left(1-\alpha\right)^{t}S_{i}\,^{\tau}\gamma\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)}\,.\label{eq:77}\end{gather}
+\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{\left[\frac{^{t+\Delta t}e_{k}^{\prime\prime}}{2}+a_{E}S_{k}^{I}-\Delta t\left(1-\alpha\right)^{t}S_{k}\,^{\tau}\gamma\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)}\,.\label{eq:77}\end{gather}
 
 \end_inset
 
 This yields
 \begin_inset Formula \begin{gather}
-\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{j}^{\prime\prime}}=\frac{\delta_{ik}K_{1}\left[\frac{^{t+\Delta t}e_{i}^{\prime\prime}}{2}+a_{E}S_{i}^{I}-\Delta t\left(1-\alpha\right)^{t}S_{i}\,^{\tau}\gamma\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)}\,.\label{eq:78}\end{gather}
+\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{K_{1}\left[\frac{^{t+\Delta t}e_{k}^{\prime\prime}}{2}+a_{E}S_{k}^{I}-\Delta t\left(1-\alpha\right)^{t}S_{k}\,^{\tau}\gamma\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)}\,.\label{eq:78}\end{gather}
 
 \end_inset
 
