@@ -14,21 +14,11 @@
 #error "Neumann.icc can only be included from Neumann.hh"
 #endif
 
-#include <cassert> // USES assert()
-
-// Get label of boundary condition surface.
+// Set database for boundary condition parameters.
 inline
-const char*
-pylith::bc::Neumann::_getLabel(void) const {
-  return label();
-}
-
-// Get manager of scales used to nondimensionalize problem.
-inline
-const spatialdata::units::Nondimensional&
-pylith::bc::Neumann::_getNormalizer(void) const {
-  assert(0 != _normalizer);
-  return *_normalizer;
+void
+pylith::bc::Neumann::db(spatialdata::spatialdb::SpatialDB* const db) {
+  _db = db;
 }
 
 

@@ -35,9 +35,11 @@ class pylith::bc::TestNeumannLine2 : public TestNeumann
 { // class TestNeumann
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUB_SUITE( TestNeumannLine2, TestNeumann );
+  CPPUNIT_TEST_SUITE( TestNeumannLine2 );
+
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////

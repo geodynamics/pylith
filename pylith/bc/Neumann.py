@@ -17,11 +17,15 @@
 ## Factory: boundary_condition
 
 from BoundaryCondition import BoundaryCondition
+from TimeDependent import TimeDependent
 from pylith.feassemble.Integrator import Integrator
 from bc import Neumann as ModuleNeumann
 
 # Neumann class
-class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
+class Neumann(BoundaryCondition, 
+              TimeDependent,
+              Integrator, 
+              ModuleNeumann):
   """
   Python object for managing traction boundary conditions.
 
@@ -30,38 +34,17 @@ class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(BoundaryCondition.Inventory):
-    """
-    Python object for managing BoundaryCondition facilities and properties.
-    """
-    
-    ## @class Inventory
-    ## Python object for managing BoundaryCondition facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li \b quadrature Quadrature object for numerical integration
-    ## @li \b db Database of boundary condition parameters
-    ## @li \b output Output manager associated with diagnostic output.
-
-    import pyre.inventory
-
-    from pylith.feassemble.Quadrature import SubMeshQuadrature
-    quadrature = pyre.inventory.facility("quadrature",
-                                         factory=SubMeshQuadrature)
-    quadrature.meta['tip'] = "Quadrature object for numerical integration."
-
-    from spatialdata.spatialdb.SimpleDB import SimpleDB
-    db = pyre.inventory.facility("db", factory=SimpleDB, 
-                                 family="spatial_database")
-    db.meta['tip'] = "Database of boundary condition parameters."
-    
-    from pylith.meshio.OutputNeumann import OutputNeumann
-    output = pyre.inventory.facility("output", family="output_manager",
-                                     factory=OutputNeumann)
-    output.meta['tip'] = "Output manager associated with diagnostic output."
+  import pyre.inventory
+  
+  from pylith.feassemble.Quadrature import SubMeshQuadrature
+  bcQuadrature = pyre.inventory.facility("quadrature",
+                                       factory=SubMeshQuadrature)
+  bcQuadrature.meta['tip'] = "Quadrature object for numerical integration."
+  
+  from pylith.meshio.OutputNeumann import OutputNeumann
+  output = pyre.inventory.facility("output", family="output_manager",
+                                   factory=OutputNeumann)
+  output.meta['tip'] = "Output manager associated with diagnostic output."
     
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -72,13 +55,19 @@ class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
     """
     BoundaryCondition.__init__(self, name)
     Integrator.__init__(self)
+    TimeDependent.__init__(self)
     self._loggingPrefix = "NeBC "
     self.availableFields = \
         {'vertex': \
            {'info': [],
             'data': []},
          'cell': \
-           {'info': ["tractions"],
+           {'info': ["initial-value",
+                     "rate-of-change",
+                     "rate-start-time",
+                     "change-in-value",
+                     "change-start-time",
+                     ],
             'data': []}}
     return
 
@@ -161,8 +150,8 @@ class Neumann(BoundaryCondition, Integrator, ModuleNeumann):
     Setup members using inventory.
     """
     BoundaryCondition._configure(self)
-    self.bcQuadrature = self.inventory.quadrature
-    ModuleNeumann.db(self, self.inventory.db)
+    TimeDependent._configure(self)
+    self.bcQuadrature = self.inventory.bcQuadrature
     self.output = self.inventory.output
     return
 

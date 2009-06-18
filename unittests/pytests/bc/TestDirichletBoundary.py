@@ -153,7 +153,12 @@ class TestDirichletBoundary(unittest.TestCase):
     """
     from spatialdata.geocoords.CSCart import CSCart
     cs = CSCart()
-    cs.spaceDim = 2
+    cs.inventory.spaceDim = 2
+    cs._configure()
+
+    from spatialdata.units.Nondimensional import Nondimensional
+    normalizer = Nondimensional()
+    normalizer._configure()
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
@@ -165,46 +170,36 @@ class TestDirichletBoundary(unittest.TestCase):
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     db = SimpleDB()
     db.inventory.label = "TestDirichletBoundary tri3"
-    db.inventory.iohandler.inventory.filename = "data/tri3.spatialdb"
+    db.inventory.iohandler.inventory.filename = "data/tri3_disp.spatialdb"
     db.inventory.iohandler._configure()
     db._configure()
 
-    from pylith.bc.FixedDOFDB import FixedDOFDB
-    dbRate = FixedDOFDB()
-    dbRate.inventory.label = "TestDirichletBoundary rate tri3"
+    from spatialdata.spatialdb.SimpleDB import SimpleDB
+    dbRate = SimpleDB()
+    dbRate.inventory.label = "TestDirichletBoundary tri3"
+    dbRate.inventory.iohandler.inventory.filename = "data/tri3_vel.spatialdb"
+    dbRate.inventory.iohandler._configure()
     dbRate._configure()
-
-    bc.inventory.db = db
-    bc.inventory.dbRate = dbRate
-
 
     from pylith.bc.DirichletBoundary import DirichletBoundary
     bc = DirichletBoundary()
     bc.inventory.output._configure()
-    bc.output.writer._configure()
-    bc.label = "bc"
-    bc.fixedDOF = [1]
+    bc.inventory.output.writer._configure()
+    bc.inventory.label = "bc"
+    bc.inventory.bcDOF = [1]
+    bc.inventory.dbInitial = db
+    bc.inventory.dbRate = dbRate
     bc._configure()
-
-    from pyre.units.time import second
-    bc.tRef = -1.0*second
-
-    from spatialdata.units.Nondimensional import Nondimensional
-    normalizer = Nondimensional()
-    normalizer.initialize()
 
     bc.preinitialize(mesh)
     bc.initialize(totalTime=0.0, numTimeSteps=1, normalizer=normalizer)
 
-    # Setup fields
-    from pylith.topology.FieldsManager import FieldsManager
-    fields = FieldsManager(mesh)
-    fields.addReal("field")
-    fields.setFiberDimension("field", cs.spaceDim)
-    fields.allocate("field")
-
-    import pylith.topology.topology as bindings
-    bindings.zeroRealSection(fields.getReal("field"))
+    # Setup field
+    from pylith.topology.Field import MeshField
+    field = MeshField(mesh)
+    field.newSection(field.VERTICES_FIELD, cs.spaceDim())
+    field.allocate()
+    field.zero()
     
     return (mesh, bc, field)
 

@@ -1,7 +1,7 @@
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 3
-  value-names =  horiz-shear-traction vert-shear-traction normal-traction
+  value-names =  traction-shear-horiz traction-shear-vert traction-normal
   value-units =  Pa  Pa  Pa
   num-locs = 1
   data-dim = 0

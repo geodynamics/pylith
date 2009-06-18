@@ -12,8 +12,8 @@
 
 /** @file libsrc/bc/Neumann.hh
  *
- * @brief C++ implementation of Neumann (prescribed tractions
- * on a surface) boundary conditions.
+ * @brief C++ implementation of time dependent Neumann (traction)
+ * boundary conditions applied to a simply-connected boundary.
  */
 
 #if !defined(pylith_bc_neumann_hh)
@@ -21,9 +21,11 @@
 
 // Include directives ---------------------------------------------------
 #include "BCIntegratorSubMesh.hh" // ISA BCIntegratorSubMesh
+#include "TimeDependent.hh" // ISA TimeDependent
 
-// Neumann --------------------------------------------------------------
-class pylith::bc::Neumann : public BCIntegratorSubMesh
+// Neumann ------------------------------------------------------
+class pylith::bc::Neumann : public BCIntegratorSubMesh, 
+				public TimeDependent
 { // class Neumann
   friend class TestNeumann; // unit testing
 
@@ -35,16 +37,10 @@ public :
 
   /// Destructor.
   ~Neumann(void);
-  
+
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
   
-  /** Set database for boundary condition parameters.
-   *
-   * @param db Spatial database
-   */
-  void db(spatialdata::spatialdb::SpatialDB* const db);
-
   /** Initialize boundary condition.
    *
    * @param mesh Finite-element mesh.
@@ -94,20 +90,59 @@ public :
   cellField(const char* name,
 	    topology::SolutionFields* const fields =0);
 
-  // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private :
+  // PROTECTED METHODS //////////////////////////////////////////////////
+protected :
 
-  spatialdata::spatialdb::SpatialDB* _db; ///< Spatial database w/parameters
+  /** Get label of boundary condition surface.
+   *
+   * @returns Label of surface (from mesh generator).
+   */
+  const char* _getLabel(void) const;
+
+  /** Get manager of scales used to nondimensionalize problem.
+   *
+   * @returns Nondimensionalizer.
+   */
+  const spatialdata::units::Nondimensional& _getNormalizer(void) const;
+
+  /// Query databases for time dependent parameters.
+  void _queryDatabases(void);
+
+  /** Query database for values.
+   *
+   * @param field Field in which to store values.
+   * @param db Spatial database with values.
+   * @param querySize Number of values at each location.
+   * @param scale Dimension scale associated with values.
+   */
+  void _queryDB(topology::Field<topology::SubMesh>* field,
+		spatialdata::spatialdb::SpatialDB* const db,
+		const int querySize,
+		const double scale);
+
+  /** Convert parameters in local coordinates to global coordinates.
+   *
+   * @param upDir Direction perpendicular to horizontal surface tangent 
+   *   direction that is not collinear with surface normal.
+   */
+  void _paramsLocalToGlobal(const double upDir[3]);
+
+  /** Calculate spatial and temporal variation of value over the list
+   *  of submesh.
+   *
+   * @param t Current time.
+   */
+  void _calculateValue(const double t);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
-  Neumann(const Neumann&); ///< Not implemented
-  const Neumann& operator=(const Neumann&); ///< Not implemented
+  Neumann(const Neumann&); ///< Not implemented.
+  const Neumann& operator=(const Neumann&); ///< Not implemented.
 
 }; // class Neumann
 
-#include "Neumann.icc" // inline methods
+#include "Neumann.icc"
 
 #endif // pylith_bc_neumann_hh
 

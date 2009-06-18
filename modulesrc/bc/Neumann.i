@@ -18,7 +18,8 @@
 namespace pylith {
   namespace bc {
 
-    class Neumann : public BCIntegratorSubMesh
+    class Neumann : public BCIntegratorSubMesh,
+		    public TimeDependent
     { // class Neumann
 
       // PUBLIC METHODS /////////////////////////////////////////////////
@@ -33,12 +34,6 @@ namespace pylith {
       /// Deallocate PETSc and local data structures.
       void deallocate(void);
   
-      /** Set database for boundary condition parameters.
-       *
-       * @param db Spatial database
-       */
-      void db(spatialdata::spatialdb::SpatialDB* const db);
-
       /** Initialize boundary condition.
        *
        * @param mesh Finite-element mesh.
@@ -88,6 +83,21 @@ namespace pylith {
       cellField(const char* name,
 		pylith::topology::SolutionFields* const fields =0);
 
+      // PROTECTED METHODS //////////////////////////////////////////////
+    protected :
+      
+      /** Get label of boundary condition surface.
+       *
+       * @returns Label of surface (from mesh generator).
+       */
+      const char* _getLabel(void) const;
+      
+      /** Get manager of scales used to nondimensionalize problem.
+       *
+       * @returns Nondimensionalizer.
+       */
+      const spatialdata::units::Nondimensional& _getNormalizer(void) const;
+      
     }; // class Neumann
 
   } // bc

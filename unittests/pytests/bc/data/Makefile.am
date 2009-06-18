@@ -12,6 +12,7 @@
 
 dist_noinst_DATA = \
 	tri3_disp.spatialdb \
+	tri3_vel.spatialdb \
 	tri3_tractions.spatialdb \
 	tri3.mesh \
 	elasticplanestrain.spatialdb
