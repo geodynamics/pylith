@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -63,17 +63,31 @@ Savage and Prescott Benchmark
 This benchmark problem computes the viscoelastic (Maxwell) relaxation of
  stresses from repeated infinite, strike-slip earthquakes in 3D without
  gravity.
- 
-\begin_inset Note Note
-status open
+ The files needed to run the benchmark may be found at 
+\begin_inset Flex URL
+status collapsed
 
 \begin_layout Plain Layout
-CHARLES- use a nondimensional description of the problem and geometry.
+
+geodynamics.org/svn/cig/short/2.5D/benchmarks/savageprescott
 \end_layout
 
 \end_inset
 
+.
+ An analytical solution to this problem is described by Savage and Prescott
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Savage:Prescott:1978"
 
+\end_inset
+
+, which provides a simple way to check our numerical solution.
+ A python utility code is provided in the utils directory to compute the
+ analytical solution.
+ Although this problem is actually 2.5D (infinite along-strike), we solve
+ it using a 3D finite element model.
 \end_layout
 
 \begin_layout Subsection
@@ -88,27 +102,87 @@ reference "fig:benchmark:savageprescott:geometry"
 
 \end_inset
 
- shows the geometry of the strike-slip fault (red surface) embedded in the
- cube consisting of an elastic material (yellow block) over a Maxwell viscoelast
-ic material (blue block).
- 
+ shows the geometry of the problem, as described by 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Savage:Prescott:1978"
+
+\end_inset
+
+.
+ The analytical solution describes the surface deformation due to repeated
+ earthquakes on an infinite strike-slip fault embedded in an elastic layer
+ overlying a Maxwell viscoelastic half-space.
+ The upper portion of the fault (red in the figure) is locked between earthquake
+s, while the lower portion (blue in the figure) creeps at plate velocity.
+ At regular recurrence intervals, the upper portion of the fault abruptly
+ slips by an amount equal to the plate velocity multiplied by the recurrence
+ interval, thus 'catching up' with the lower part of the fault.
+\end_layout
+
+\begin_layout Standard
+There are some differences between the analytical solution and our numerical
+ representation.
+ First, the analytical solution represents the earthquake cycle as the superposi
+tion of uniform fault creep and an elementary earthquake cycle.
+ Uniform fault creep is simply the uniform movement of the two plates past
+ each other at plate velocity.
+ For the elementary earthquake cycle, no slip occurs below the locked portion
+ of the fault (blue portion in the figure).
+ On the locked (red) portion of the fault, backslip equal to plate velocity
+ occurs until the earthquake recurrence interval, at which point abrupt
+ forward slip occurs.
+ In the finite element solution, we perform the simulation as described
+ in the figure.
+ Velocity boundary conditions are applied at the extreme edges of the model
+ to simulate block motion, steady creep is applied along the blue portion
+ of the fault, and regular earthquakes are applied along the upper portion
+ of the fault.
+ It takes several earthquake cycles for the velocity boundary conditions
+ to approximate the steady flow due to steady block motion, so we would
+ not expect the analytical and numerical solutions to match until several
+ earthquakes have occurred.
+ Another difference lies in the dimensions of the domain.
+ The analytical solution assumes an infinite strike-slip fault in an elastic
+ layer overlying a Maxwell viscoelastic half-space.
+ In our finite element model we are restricted to finite dimensions.
+ We therefore extend the outer boundaries far enough from the region of
+ interest to approximate boundaries at infinity.
+\end_layout
+
+\begin_layout Standard
+Due to the difficulties in representing solutions in an infinite domain,
+ there are several meshes that have been tested for this problem.
+ The simplest meshes have uniform resolution (all cells have equal dimensions);
+ however, such meshes typically do not provide accurate solutions since
+ the resolution is too coarse in the region of interest.
+ For that reason, we also tested several meshes where the mesh resolution
+ decreases away from the center.
+ In the problem description that follows, we will focus on the graded3 mesh
+ (in 
+\family typewriter
+meshes/spbm_hex8_graded4_20km.exo.gz
+\family default
+), which provides reasonable results.
+ It will first be necessary to unzip this mesh so that it may be used by
+ PyLith.
 \end_layout
 
 \begin_layout Description
-Domain The domain spans the region
+Domain The domain for this mesh spans the region
 \begin_inset Formula \begin{gather*}
-0\leq x\leq24\ km,\\
-0\leq y\leq24\ km,\\
--24\ km\leq z\leq0.\end{gather*}
+-1000\leq x\leq1000\ km,\\
+-500\leq y\leq500\ km,\\
+-400\ km\leq z\leq0.\end{gather*}
 
 \end_inset
 
 The top (elastic) layer occupies the region 
-\begin_inset Formula $-12\ km\ \leq z\leq0$
+\begin_inset Formula $-40\ km\ \leq z\leq0$
 \end_inset
 
  and the bottom (viscoelastic) layer occupies the region 
-\begin_inset Formula $-24\ km\ \leq z\leq-12\ km$
+\begin_inset Formula $-400\ km\ \leq z\leq-40\ km$
 \end_inset
 
 .
@@ -119,42 +193,64 @@ Material
 \begin_inset space ~
 \end_inset
 
-properties The material is a Poisson solid with a shear modulus of 30 GPa.
+properties The material is a Poisson solid with a shear modulus (
+\begin_inset Formula $\mu$
+\end_inset
+
+) of 30 GPa.
  The domain is modeled using an elastic isotropic material for the top layer
  and a Maxwell viscoelastic material for the bottom layer.
- The bottom layer has a viscosity of 1.0e+18 Pa-s.
+ The bottom layer has a viscosity (
+\begin_inset Formula $\eta$
+\end_inset
+
+) of 4.73364e19 Pa-s, yielding a relaxation time (
+\begin_inset Formula $2\eta/\mu$
+\end_inset
+
+) of 100 years.
 \end_layout
 
 \begin_layout Description
-Fault The fault is a vertical, right-lateral strike-slip fault.
+Fault The fault is a vertical, left-lateral strike-slip fault.
  The strike is parallel to the y-direction at the center of the model:
 \begin_inset Formula \begin{gather*}
-x=12\ km,\\
-0\leq y\leq16\ km,\\
--16\ km\leq z\leq0.\end{gather*}
+x=0\ km,\\
+-500\leq y\leq500\ km,\\
+-40\ km\leq z\leq0.\end{gather*}
 
 \end_inset
 
-Uniform slip of 1 m is applied over the region 
-\begin_inset Formula $0\leq y\leq12\ km$
-\end_inset
-
- and 
-\begin_inset Formula $-12\ km\leq z\leq0$
-\end_inset
-
- with a linear taper to 0 at y = 16 km and z = -16 km.
- The tapered region is the light red portion of the fault surface in Figure
- 
+The locked portion of the fault (red section in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:benchmark:savageprescott:geometry"
 
 \end_inset
 
+) extends from 
+\begin_inset Formula $-20\: km\leq z\leq0$
+\end_inset
+
+, while the creeping section (blue) extends from 
+\begin_inset Formula $-40\: km\leq z\leq0$
+\end_inset
+
 .
- In the region where the two tapers overlap, each slip value is the minimum
- of the two tapers (so that the taper remains linear).
+ Along the line where the two sections coincide (
+\begin_inset Formula $z=-20\: km$
+\end_inset
+
+), half of the coseismic displacement and half of the steady creep is applied
+ (see 
+\family typewriter
+parameters/finalslip_rupture.spatialdb
+\family default
+ and 
+\family typewriter
+parameters/sliprate_creep.spatialdb
+\family default
+).
 \end_layout
 
 \begin_layout Description
@@ -162,19 +258,22 @@ Boundary
 \begin_inset space ~
 \end_inset
 
-conditions Bottom and side displacements are set to the elastic analytical
- solution, and the top of the model is a free surface.
- There are two exceptions to these applied boundary conditions.
- The first is on the y=0 plane, where y-displacements are left free to preserve
- symmetry, and the x- and z-displacements are set to zero.
- The second is along the line segment between (12, 0, -24) and (12, 24,
- -24), where the analytical solution blows up in some cases.
- Along this line segment, all three displacement components are left free.
+conditions On the bottom boundary, vertical displacements are set to zero,
+ while on the y-boundaries the x-displacements are set to zero.
+ On the x-boundaries, the x-displacements are set to zero, while constant
+ velocities of +/- 1 cm/yr are applied in the y-direction, giving a relative
+ plate motion of 2 cm/year.
 \end_layout
 
 \begin_layout Description
-Discretization The model is discretized with nominal spatial resolutions
- of 1000 m, 500 m, and 250 m.
+Discretization For the graded3 mesh (
+\family typewriter
+meshes/spbm_hex8_graded4_20km.exo
+\family default
+), the resolution at the outer boundaries is 20 km.
+ An inner region is then put through one level of refinement, so that near
+ the center of the mesh the resolution is 10 km.
+ All meshes were generated with Cubit.
 \end_layout
 
 \begin_layout Description
@@ -182,12 +281,19 @@ Basis
 \begin_inset space ~
 \end_inset
 
-functions We use trilinear hexahedral cells and linear tetrahedral cells.
+functions We use trilinear hexahedral cells.
 \end_layout
 
 \begin_layout Description
-Solution We compute the error in the elastic solution and compare the solution
- over the domain after 0, 1, 5, and 10 years.
+Solution We compute the surface displacements and compare these to the analytica
+l solution 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:benchmark:savageprescott:solution"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -202,18 +308,8 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/geometry.png
+	filename figs/model_descript.eps
 	scale 33
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-REPLACE WITH REAL FIGURE
-\end_layout
 
 \end_inset
 
@@ -224,7 +320,7 @@ REPLACE WITH REAL FIGURE
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Geometry of strike-slip benchmark problem.
+Problem description for the Savage and Prescott strike-slip benchmark problem.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:benchmark:savageprescott:geometry"
@@ -252,19 +348,45 @@ Running the Benchmark
 After checking out the benchmark files from the CIG SVN repository, change
  to the 
 \family typewriter
-??
+meshes
 \family default
  directory.
- Decompress the gzipped files in the meshes and parameters directories,
+ Decompress the gzipped files in the 
+\family typewriter
+mesh
+\family default
+ directory,
 \end_layout
 
 \begin_layout LyX-Code
-gunzip meshes/*.gz parameters/*.gz
+gunzip *.gz
 \end_layout
 
 \begin_layout Standard
-Change to the parameters directory.
- Each benchmark uses three 
+Alternatively, simply unzip the mesh you want to use (e.g., 
+\family typewriter
+meshes/spbm_hex8_graded3_20km.exo
+\family default
+).
+ Change to the 
+\family typewriter
+parameters
+\family default
+ directory.
+ There are a number of 
+\family typewriter
+.cfg
+\family default
+ files corresponding to the different meshes, as well as a 
+\family typewriter
+pylithapp.cfg
+\family default
+ file defining parameters common to all problems, and a 
+\family typewriter
+timedep.cfg
+\family default
+ file defining fault slip behavior and output frequency.
+ Each problem uses three 
 \family typewriter
 .cfg
 \family default
@@ -272,52 +394,98 @@ Change to the parameters directory.
 \family typewriter
 pylithapp.cfg
 \family default
-, a mesher related file (
+, a mesh-specific file (e.g., 
 \family typewriter
-strikeslip_cubit.cfg
+spbm_hex8_graded3_20km.cfg
 \family default
- or 
-\family typewriter
-strikeslip_lagrit.cfg
-\family default
-), and a resolution and cell related file (e.g., 
-\family typewriter
-strikeslip_hex8_1000m.cfg
-\family default
-).
- A few examples of running the benchmarks (elastic solution only) are
-\end_layout
-
-\begin_layout LyX-Code
-pylith strikeslip_cubit.cfg strikeslip_hex8_1000m.cfg
-\end_layout
-
-\begin_layout LyX-Code
-pylith strikeslip_cubit.cfg strikeslip_hex8_0500m.cfg
-\end_layout
-
-\begin_layout LyX-Code
-pylith strikeslip_lagrit.cfg strikeslip_tet4_1000m.cfg
-\end_layout
-
-\begin_layout Standard
-To run the time-dependent (viscoelastic) problem, it is necessary to append
- 
+), and 
 \family typewriter
 timedep.cfg
 \family default
- to the above commands, for example
+.
+ There are also scripts for each mesh.
+ You can then run the problem either as
 \end_layout
 
 \begin_layout LyX-Code
-pylith strikeslip_cubit.cfg strikeslip_hex8_1000m.cfg timedep.cfg
+pylith spbm_hex8_graded3_20km.cfg timedep.cfg
 \end_layout
 
 \begin_layout Standard
-This will run the problem for 10 years, using a time-step size of 0.1 years,
- and results will be output for each year.
- The benchmarks at resolutions of 1000 m, 500 m, and 250 m require  approximatel
-y 150 MB, 960 MB, and 8 GB, respectively.
+or as
+\end_layout
+
+\begin_layout LyX-Code
+sh ./spbm_hex8_graded3_20km.sh
+\end_layout
+
+\begin_layout Standard
+This will run the problem for 10 earthquake cycles of 200 years each, using
+ a time-step size of 10 years, for a total simulation time of 2000 years.
+ Ground surface output occurs every 10 years, while all other outputs occur
+ every 50 years.
+ The graded3 benchmark requires  approximately 5 GB of disk space.
+\end_layout
+
+\begin_layout Standard
+Once the problem has run, results will be placed in the 
+\family typewriter
+results
+\family default
+ directory in the mesh-specific subdirectory.
+ These results may be viewed directly with a package such as ParaView; however,
+ to compare results to the analytical solution, some postprocessing is required.
+ First, it is necessary to generate analytical results, which may be done
+ by going to the 
+\family typewriter
+utils
+\family default
+ directory and running the 
+\family typewriter
+savpres_ss.py
+\family default
+ script.
+ This will produce comma-separated-values files for displacements and velocities
+ (
+\family typewriter
+savpres_displ.csv
+\family default
+, 
+\family typewriter
+savpres_vel.csv
+\family default
+) that are easy to use with a plotting package.
+ There is an additional script in the 
+\family typewriter
+utils
+\family default
+ directory (
+\family typewriter
+vtkdiff.py
+\family default
+) that computes velocities from PyLith displacement results.
+ To generate velocity results, you can type, for example
+\end_layout
+
+\begin_layout LyX-Code
+./vtkdiff.py vtkdiff_hex8_graded3_20km.cfg
+\end_layout
+
+\begin_layout Standard
+Results will be placed in the 
+\family typewriter
+results
+\family default
+ directory for the appropriate model.
+ This will create a set of VTK files that you can use with ParaView.
+ You can generate profile results using ParaView (e.g., the "Plot Over Line"
+ filter).
+ By loading the entire time series for the ground surface velocity results,
+ it is possible to generate profile results for all time steps.
+ For comparison with the analytical results, it is easiest to use a profile
+ coincident with the x-axis that extends from x=0 to the right-hand side
+ of the mesh.
+ The profiles can also be saved as CSV files from ParaView.
 \end_layout
 
 \begin_layout Subsection
@@ -332,21 +500,20 @@ reference "fig:benchmark:savageprescott:solution"
 
 \end_inset
 
- shows the displacement field from the simulation with hexahedral cells
- using trilinear basis functions at a resolution of 1000 m.
- For each resolution and set of basis functions, we measure the accuracy
- by comparing the numerical solution against the semi-analytical Okada solution
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Okada:1992"
-
-\end_inset
-
-.
- We also compare the accuracy and runtime across resolutions and different
- cell types.
- This provides practical information about what cell types and resolutions
- are required to achieve a given level of accuracy with the shortest runtime.
+ shows the computed surface displacements for the 10th earthquake cycle
+ compared with the analytical solution.
+ The profile results were obtained as described above, and then all results
+ (analytical and numerical) were referenced to the displacements immediately
+ following the last earthquake.
+ We find very good agreement between the analytical and numerical solutions,
+ even for meshes with uniform refinement.
+ This is a relatively recent benchmark, and we have not yet explored quantitativ
+e fits as a function of mesh resolution.
+ For this benchmark, it is also important to consider the distance of the
+ boundary from the region of interest.
+ Also note that the agreement between analytical an numerical solutions
+ is poor for early earthquake cycles, due to the differences in simulating
+ the problem, as noted above.
 \end_layout
 
 \begin_layout Standard
@@ -390,10 +557,6 @@ name "fig:benchmark:savageprescott:solution"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsubsection
-Solution Accuracy
 \end_layout
 
 \end_body
