@@ -31,7 +31,6 @@ libpylith_la_SOURCES = \
 	bc/DirichletBC.cc \
 	bc/DirichletBoundary.cc \
 	bc/Neumann.cc \
-	bc/Neumann_NEW.cc \
 	bc/AbsorbingDampers.cc \
 	bc/PointForce.cc \
 	faults/Fault.cc \

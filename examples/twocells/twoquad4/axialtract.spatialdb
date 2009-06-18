@@ -6,7 +6,7 @@ SimpleDB {
   // There are two values specified in the database, corresponding to the
   // two components of the traction vector.
   num-values = 2
-  value-names =  shear-traction   normal-traction
+  value-names =  traction-shear   traction-normal
 
   // The tractions have units of Pa.
   value-units =  Pa  Pa

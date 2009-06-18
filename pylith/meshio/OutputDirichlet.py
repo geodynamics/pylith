@@ -17,7 +17,7 @@
 ##
 ## Factory: output_manager
 
-from OutputManager import OutputManagerSubMesh
+from OutputManagerSubMesh import OutputManagerSubMesh
 
 # OutputDirichlet class
 class OutputDirichlet(OutputManagerSubMesh):

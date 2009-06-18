@@ -22,7 +22,6 @@ dist_noinst_DATA = \
 	tri3_disp2.spatialdb \
 	tri3_vel2.spatialdb \
 	tri3_tractions.spatialdb \
-	tri3_tractions_NEW.spatialdb \
 	tri3_force.spatialdb \
 	tri3_force_rate.spatialdb \
 	tri3_force_change.spatialdb \

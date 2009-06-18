@@ -201,8 +201,8 @@ class TestNeumann(unittest.TestCase):
     
     from pylith.bc.Neumann import Neumann
     bc = Neumann()
-    bc.inventory.quadrature = quadrature
-    bc.inventory.db = db
+    bc.inventory.bcQuadrature = quadrature
+    bc.inventory.dbInitial = db
     bc.inventory.label = "bc"
     bc.inventory.output.inventory.writer._configure()
     bc.inventory.output._configure()

@@ -35,9 +35,11 @@ class pylith::bc::TestNeumannTet4 : public TestNeumann
 { // class TestNeumann
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUB_SUITE( TestNeumannTet4, TestNeumann );
+  CPPUNIT_TEST_SUITE( TestNeumannTet4 );
+
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
