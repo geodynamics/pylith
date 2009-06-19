@@ -409,6 +409,10 @@ Fields available in output of DirichletBoundary boundary condition information.
 \end_inset
 
 
+\begin_inset VSpace defskip
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="3">
 <features>
@@ -660,6 +664,10 @@ status open
 Values in the spatial databases used for Dirichlet boundary conditions.
 \end_layout
 
+\end_inset
+
+
+\begin_inset VSpace defskip
 \end_inset
 
 
@@ -959,6 +967,10 @@ Fields available in output of Neumann boundary condition information.
 \end_inset
 
 
+\begin_inset VSpace defskip
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="2" columns="3">
 <features>
@@ -1133,6 +1145,10 @@ Values in the spatial databases used for Dirichlet boundary conditions in
  different as described earlier in this section.
 \end_layout
 
+\end_inset
+
+
+\begin_inset VSpace defskip
 \end_inset
 
 
@@ -1400,6 +1416,10 @@ status open
 Values in the spatial databases used for point force boundary conditions.
 \end_layout
 
+\end_inset
+
+
+\begin_inset VSpace defskip
 \end_inset
 
 
@@ -2365,6 +2385,10 @@ Fields available in output of fault information.
 \end_inset
 
 
+\begin_inset VSpace defskip
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="8" columns="3">
 <features>
@@ -2843,6 +2867,10 @@ Values in spatial database used as parameters in the step function slip
 \end_inset
 
 
+\begin_inset VSpace defskip
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="3">
 <features>
@@ -3154,6 +3182,10 @@ Values in spatial database used as parameters in the constant slip rate
  slip time function.
 \end_layout
 
+\end_inset
+
+
+\begin_inset VSpace defskip
 \end_inset
 
 
@@ -3488,6 +3520,10 @@ name "tab:Brune-slip-db-params"
 Values in spatial database used as parameters in the Brune slip time function.
 \end_layout
 
+\end_inset
+
+
+\begin_inset VSpace defskip
 \end_inset
 
 
