@@ -236,6 +236,7 @@ status open
 \begin_inset Graphics
 	filename figs/packages.eps
 	scale 40
+	rotateAngle 90
 
 \end_inset
 
