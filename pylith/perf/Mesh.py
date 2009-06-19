@@ -40,7 +40,6 @@ class Mesh(Memory):
     self.initialize()
     return
 
-  @classmethod
   def cellTypeInfo(cls, cellType):
     for k,cT in cls.cellTypes.iteritems():
       if cT == cellType:
