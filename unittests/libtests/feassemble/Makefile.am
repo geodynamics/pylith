@@ -104,6 +104,8 @@ noinst_HEADERS = \
 	TestGeometryQuad3D.hh \
 	TestGeometryTet3D.hh \
 	TestGeometryHex3D.hh \
+	TestQuadratureRefCell.hh \
+	TestQuadratureEngine.hh \
 	TestIntegrator.hh \
 	TestIntegratorElasticity.hh \
 	TestQuadrature.hh \

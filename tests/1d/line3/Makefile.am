@@ -17,7 +17,8 @@ check_SCRIPTS = testpylith.py
 dist_noinst_PYTHON = \
 	TestLine3.py \
 	TestAxial.py \
-	TestDislocation.py
+	TestDislocation.py \
+	testpylith.py
 
 dist_noinst_DATA = \
 	bar.mesh \

@@ -37,6 +37,7 @@ testmaterials_SOURCES = \
 
 
 noinst_HEADERS = \
+	TestMetadata.hh \
 	TestMaterial.hh \
 	TestElasticMaterial.hh \
 	TestElasticStrain1D.hh \

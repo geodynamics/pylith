@@ -24,6 +24,10 @@ EXTRA_DIST = \
 	materials/PlaneStrainState.py \
 	materials/tests/Makefile.am \
 	materials/tests/testcontrib.py \
-	materials/tests/TestPlaneStrainState.py
+	materials/tests/TestPlaneStrainState.py \
+	materials/m4/ac_pkg_swig.m4 \
+	materials/m4/cit_numpy.m4 \
+	materials/m4/cit_python.m4
+
 
 # End of file 

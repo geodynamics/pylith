@@ -29,7 +29,9 @@ noinst_PYTHON = \
 	TestOutputManagerMesh.py \
 	TestOutputManagerSubMesh.py \
 	TestOutputSolnSubset.py \
-	TestDataWriterVTK.py
+	TestDataWriterVTK.py \
+	TestSingleOutput.py
+
 
 if ENABLE_CUBIT
   TESTS += testcubit.py

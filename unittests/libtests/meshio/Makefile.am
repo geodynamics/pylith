@@ -73,6 +73,7 @@ noinst_HEADERS = \
 	TestDataWriterVTKMatMeshQuad4.hh \
 	TestDataWriterVTKMatMeshTet4.hh \
 	TestDataWriterVTKMatMeshHex8.hh \
+	TestDataWriterVTKSubMesh.hh \
 	TestDataWriterVTKSubMeshLine2.hh \
 	TestDataWriterVTKSubMeshTri3.hh \
 	TestDataWriterVTKSubMeshQuad4.hh \

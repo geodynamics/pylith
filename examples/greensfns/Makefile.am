@@ -10,14 +10,8 @@
 # ----------------------------------------------------------------------
 #
 
-EXTRA_DIST = \
-	README \
-	Cluster_Rocks-4.3-AMD64.txt \
-	Cluster_Rocks-4.3-AMD64_bash.sh \
-	Linux_Fedora8-AMD64_Aagaard.txt \
-	Linux_Fedora8-AMD64_Aagaard_bash.sh \
-	MacBookPro_Aagaard.txt \
-	MacBookPro_Aagaard_bash.sh
+SUBDIRS = \
+	hex8
 
 
 # End of file 
