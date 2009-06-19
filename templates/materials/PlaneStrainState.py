@@ -47,6 +47,9 @@ class PlaneStrainState(ElasticMaterial, ModulePlaneStrainState):
     #
     # There are no vertex fields because the constitutive model
     # operations on quantities evaluated at the quadrature points.
+    #
+    # Do not change the name of this variable. The output manager will
+    # request this variable by name.
     self.availableFields = \
         {'vertex': \
            {'info': [],
@@ -62,7 +65,9 @@ class PlaneStrainState(ElasticMaterial, ModulePlaneStrainState):
 
   def _createModuleObj(self):
     """
-    Call constructor for module object for access to C++ object.
+    Call constructor for module object for access to C++ object. This
+    function is called automatically by the generic Python Material
+    object. It must have this name and self as the only argument.
     """
     ModulePlaneStrainState.__init__(self)
     return
@@ -70,7 +75,10 @@ class PlaneStrainState(ElasticMaterial, ModulePlaneStrainState):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def material(): # The name of this function MUST be 'material'.
+# This is the function that is called when you invoke
+# material_one = pylith.materials.contrib.PlaneStrainState
+# The name of this function MUST be 'material'.
+def material():
   """
   Factory associated with PlaneStrainState.
   """
