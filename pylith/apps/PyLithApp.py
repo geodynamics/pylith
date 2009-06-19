@@ -155,21 +155,34 @@ class PyLithApp(PetscApplication):
 # Note: We want --help-all to display settings before launching a
 # parallel job.
 class InfoApp(PyLithApp):
-  def __init__(self, name="pylithapp"):
+  def __init__(self, args, name="pylithapp"):
     """
     Constructor.
     """
     PyLithApp.__init__(self, name)
+    self.pylithargs = args
     return
-  # An empty main only prevents InfoApp from doing real work.
-  def main(self, *args, **kwds):
-    return
-  def onComputeNodes(self, *args, **kwds):
+
+  def onLoginNode(self, *args, **kwds):
     """
-    Run the application in parallel on the compute nodes.
+    Instead of scheduling job, do nothing.
     """
-    self.main(*args, **kwds)
     return
+
+  def getArgv(self, *args, **kwds):
+    """
+    Prevent PyLith from getting all of the command line arguments. Use
+    only the ones relevant to PyLith which are specified in the arg to
+    the constructor.
+    """
+    argv = kwds.get('argv')
+    if argv is None:
+      argv = self.pylithargs
+    else:
+      self.arg0 = argv[0]
+      self._requires = kwds.get('requires')
+      argv = argv[1:]
+    return argv
   
 
 
