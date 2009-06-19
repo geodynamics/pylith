@@ -55,6 +55,7 @@ Brad
       axialtract
       sheartract
       dislocation2
+      fourcells_twofaults (1 proc, 2 procs)
     2d/tri3
       dislocation
       dislocation2

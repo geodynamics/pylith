@@ -10,6 +10,8 @@
 # ----------------------------------------------------------------------
 #
 
+SUBDIRS = utilities
+
 INTERPRETER = $(PYTHON)
 noinstINTERPRETER = $(PYTHON)
 
@@ -35,7 +37,5 @@ install-binSCRIPTS: $(bin_SCRIPTS)
 EXTRA_DIST = pylith.in
 CLEANFILES = $(bin_SCRIPTS)
 
-# version
-# $Id$
 
 # End of file 

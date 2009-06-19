@@ -232,6 +232,7 @@ AC_CONFIG_FILES([Makefile
 		modulesrc/topology/Makefile
 		modulesrc/utils/Makefile
 		applications/Makefile
+		applications/utilities/Makefile
 		unittests/Makefile
 		unittests/libtests/Makefile
 		unittests/libtests/bc/Makefile

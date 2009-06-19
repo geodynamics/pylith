@@ -10,43 +10,22 @@
 # ======================================================================
 #
 
+# This script dumps all PyLith parameters (defaults plus those
+# specified by the user to a text file. The default name of the output
+# file is 'pylith_parameters.txt'. Verbose output includes a
+# description of the parameter along with where it's current value was
+# set.
+#
+# Usage: pylithinfo.py [--verbose] [--fileout=FILE] [PyLith args]
+
 __requires__ = "PyLith"
 
 
 # ======================================================================
-from pyre.applications.Script import Script
-class ParametersApp(Script):
+class ParametersApp(object):
   """
   Application for printing current PyLith parameters to a text file.
   """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(Script.Inventory):
-    """
-    Python object for managing ParametersApp facilities and properties.
-    """
-
-    ## @class Inventory
-    ## Python object for managing ParametersApp facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b filename Filename for output.
-    ## @li \b verbose Set to true to print location where each
-    ##   parameter is set.
-    ##
-    ## \b Facilities
-    ## @li none
-
-    import pyre.inventory
-
-    filename = pyre.inventory.str("filename", default="parameters.txt")
-    filename.meta['tip'] = "Filename for output."
-
-    verbose = pyre.inventory.bool("verbose", default=False)
-    verbose.meta['tip'] = "Set to true to print location where " \
-        "each parameter is set."
-
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -54,8 +33,10 @@ class ParametersApp(Script):
     """
     Constructor.
     """
-    Script.__init__(self, name)
-    self._tab = "  "
+    self.verbose = False
+    self.filename = "pylith_parameters.txt"
+    self.pylith_args = ""
+    self._tab = "   "
     self._printPropertyFn = self._printPropertyBasic
     self._printFacilityFn = self._printFacilityBasic
     return
@@ -65,10 +46,9 @@ class ParametersApp(Script):
     """
     Main entry point for application.
     """
-    
     from pylith.apps.PyLithApp import InfoApp
-    targetapp = InfoApp()
-    targetapp.run()
+    targetapp = InfoApp(self.pylith_args)
+    targetapp.run(*args, **kwds)
 
     if self.verbose:
       self._printPropertyFn = self._printPropertyVerbose
@@ -86,16 +66,6 @@ class ParametersApp(Script):
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _configure(self):
-    """
-    Set members using inventory.
-    """
-    Script._configure(self)
-    self.filename = self.inventory.filename
-    self.verbose = self.inventory.verbose
-    return
-
 
   def _printParams(self, fout, obj, depth):
     """
@@ -195,8 +165,23 @@ class ParametersApp(Script):
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
 
+  usage = "%prog [options] [PyLith args]"
+  from optparse import OptionParser
+  parser = OptionParser(usage=usage)
+  parser.add_option("-v", "--verbose", dest="verbose",
+                    action="store_true", default=False,
+                    help="Print verbose output.")
+  parser.add_option("-o", "--fileout", dest="filename",
+                    type="string", metavar="FILE",
+                    help="Write to FILE. [pylith_parameters.txt]",
+                    default="pylith_parameters.txt")
+  (options, args) = parser.parse_args()
+
   app = ParametersApp()
-  app.run()
+  app.verbose = options.verbose
+  app.filename = options.filename
+  app.pylith_args = args
+  app.main()
 
 
 # End of file 
