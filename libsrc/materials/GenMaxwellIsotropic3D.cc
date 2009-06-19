@@ -62,12 +62,12 @@ namespace pylith {
       const int numDBProperties = 3 + 2*numMaxwellModels;
       const char* dbProperties[numDBProperties] = {
 	"density", "vs", "vp",
-	"shear_ratio_1",
-	"shear_ratio_2",
-	"shear_ratio_3",
-	"viscosity_1",
-	"viscosity_2",
-	"viscosity_3",
+	"shear-ratio-1",
+	"shear-ratio-2",
+	"shear-ratio-3",
+	"viscosity-1",
+	"viscosity-2",
+	"viscosity-3",
       };
       
       /// Number of state variables.
