@@ -76,10 +76,6 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
 
   // Get group of vertices associated with fault
   const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = mesh->sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<topology::Mesh::IntSection>& groupField = 
-    sieveMesh->getIntSection(label());
-  assert(!groupField.isNull());
 
   if (_useFaultMesh) {
     const int faultDim = 2;
@@ -95,6 +91,15 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
     faultSieveMesh->setRealSection("coordinates", 
 				   sieveMesh->getRealSection("coordinates"));
 
+    if (!sieveMesh->hasIntSection(label())) {
+      std::ostringstream msg;
+      msg << "Mesh missing group of vertices '" << label()
+          << " for fault interface condition.";
+      throw std::runtime_error(msg.str());
+    } // if  
+    const ALE::Obj<topology::Mesh::IntSection>& groupField = 
+      sieveMesh->getIntSection(label());
+    assert(!groupField.isNull());
     CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(),
 			     _useLagrangeConstraints());
   } else {
@@ -104,7 +109,9 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
           << " for fault interface condition.";
       throw std::runtime_error(msg.str());
     } // if  
-
+    const ALE::Obj<topology::Mesh::IntSection>& groupField = 
+      sieveMesh->getIntSection(label());
+    assert(!groupField.isNull());
     CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField, 
 				  flipFault);
 
