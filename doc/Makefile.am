@@ -11,8 +11,10 @@
 #
 
 SUBDIRS = \
+	developer \
 	install \
 	presentations \
+	releasenotes \
 	userguide \
 	refguide
 

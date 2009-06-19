@@ -16,13 +16,15 @@ SUBDIRS = \
 	libsrc \
 	modulesrc \
 	pylith \
-	applications
+	applications \
+	templates \
+	share
 
 if ENABLE_TESTING
   SUBDIRS += \
 	unittests
 
-# Can't run tests without being able to 'rename' PyLith app.
+# Full-scale tests in progress.
 #	tests
 endif
 
@@ -33,6 +35,8 @@ if ENABLE_DOCUMENTATION
 endif
 
 EXTRA_DIST = \
+	CHANGES \
+	DEPENDENCIES \
 	setup.py \
 	archimedes/__init__.py
 

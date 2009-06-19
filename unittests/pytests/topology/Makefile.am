@@ -29,9 +29,8 @@ TESTS_ENVIRONMENT = $(PYTHON)
 noinst_PYTHON = \
 	TestMesh.py \
 	TestSubMesh.py \
-	TestFieldBase.py
+	TestFieldBase.py \
 	TestMeshField.py \
-	TestSubMeshField.py \
 	TestMeshFields.py \
 	TestSolutionFields.py \
 	TestJacobian.py \

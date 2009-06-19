@@ -11,13 +11,13 @@
 #
 
 EXTRA_DIST = \
-	README \
-	Cluster_Rocks-4.3-AMD64.txt \
-	Cluster_Rocks-4.3-AMD64_bash.sh \
-	Linux_Fedora8-AMD64_Aagaard.txt \
-	Linux_Fedora8-AMD64_Aagaard_bash.sh \
-	MacBookPro_Aagaard.txt \
-	MacBookPro_Aagaard_bash.sh
+	announce_v1.0.1.txt \
+	announce_v1.0.2.txt \
+	announce_v1.1.0.txt \
+	announce_v1.2.0.txt \
+	announce_v1.3.0.txt \
+	announce_v1.3.1.txt \
+	announce_v1.4.0.txt
 
 
 # End of file 

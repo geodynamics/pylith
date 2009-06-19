@@ -21,12 +21,15 @@ dist_noinst_PYTHON = \
 	axialdisp_gendb.py \
 	TestShearDisp.py \
 	sheardisp_soln.py \
-	sheardisp_gendb.py 
+	sheardisp_gendb.py \
+	testpylith.py
 
 #	TestDislocation.py \
 #	dislocation_soln.py
 
 dist_noinst_DATA = \
+	geometry.jou \
+	mesh.jou \
 	mesh.exo \
 	matprops.spatialdb \
 	axialdisp.cfg \

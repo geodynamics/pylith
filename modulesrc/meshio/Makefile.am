@@ -25,6 +25,8 @@ swig_sources = \
 	MeshIOCubit.i \
 	VertexFilter.i \
 	VertexFilterVecNorm.i \
+	CellFilter.i \
+	CellFilterAvg.i \
 	DataWriter.i \
 	DataWriterVTK.i \
 	OutputManager.i \

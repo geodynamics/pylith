@@ -13,6 +13,8 @@
 SUBDIRS = \
 	3d \
 	bar_shearwave \
+	greensfns \
 	twocells
+
 
 # End of file 

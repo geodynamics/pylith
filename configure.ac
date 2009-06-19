@@ -265,22 +265,19 @@ AC_CONFIG_FILES([Makefile
 		unittests/pytests/topology/data/Makefile
 		unittests/pytests/utils/Makefile
 		tests/Makefile
-		tests/petsc/Makefile
 		tests/1d/Makefile
 		tests/1d/line2/Makefile
 		tests/1d/line3/Makefile
 		tests/2d/Makefile
 		tests/2d/tri3/Makefile
 		tests/2d/quad4/Makefile
-		tests/3d/Makefile
-		tests/3d/tet4/Makefile
-		tests/3d/hex8/Makefile
                 doc/Makefile
+		doc/developer/Makefile
 		doc/install/Makefile
 		doc/refguide/Makefile
+		doc/releasenotes/Makefile
 		doc/userguide/Makefile
 		doc/presentations/Makefile
-		doc/presentations/pylith1.0/Makefile
 		examples/Makefile
 		examples/3d/Makefile
 		examples/bar_shearwave/Makefile
@@ -295,11 +292,18 @@ AC_CONFIG_FILES([Makefile
 		examples/bar_shearwave/tet4/output/Makefile
 		examples/bar_shearwave/tri3/Makefile
 		examples/bar_shearwave/tri3/output/Makefile
+		examples/greensfns/Makefile
+		examples/greensfns/hex8/Makefile
+		examples/greensfns/hex8/gfimpulses/Makefile
+		examples/greensfns/hex8/gfresponses/Makefile
 		examples/twocells/twohex8/Makefile
 		examples/twocells/twoquad4/Makefile
 		examples/twocells/twotet4/Makefile
 		examples/twocells/twotet4-geoproj/Makefile
 		examples/twocells/twotri3/Makefile
+		templates/Makefile
+		templates/materials/Makefile
+		share/Makefile
 		])
 
 AC_OUTPUT

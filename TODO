@@ -2,28 +2,14 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-CRITICAL
+BUGS
 
   Distribution fails for cases when a processor doesn't have vertices
   on a fault.
 
-  Need power-law full-scale "test" to insure that the power-law and
-  nonlinear solve give reasonable results.
-
-  Run valgrind on the unit tests.
-
 RELEASE
 
   Release notes
-
-  Check source distribution
-    SWIG files included
-    extensions stuff included 
-
-    Installation using source tarball should not require SWIG. Should
-  include .i files in tarball for reference.
-
-  Binaries (check)
 
 BONUS
 
@@ -37,7 +23,7 @@ RELEASE 1.4
 
 Charles
   3-D Power-law rheology
-    full-scale test (axial compression/extension?)
+    full-scale test
 
 ----------------------------------------------------------------------
 POST RELEASE 1.4

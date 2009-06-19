@@ -28,6 +28,10 @@ swig_sources = \
 	GeometryLine3D.i \
 	GeometryTri2D.i \
 	GeometryTri3D.i \
+	GeometryQuad2D.i \
+	GeometryQuad3D.i \
+	GeometryTet3D.i \
+	GeometryHex3D.i \
 	QuadratureRefCell.i \
 	Quadrature.i \
 	Integrator.i \
