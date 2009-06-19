@@ -27,8 +27,6 @@ RELEASE
 
 BONUS
 
-  Add more to READMEs for extensions.
-
   pylithinfo (Python application, send extra args to PyLith)
 
   Memory model
