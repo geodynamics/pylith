@@ -310,6 +310,7 @@ status open
 \begin_inset Graphics
 	filename figs/model_descript.eps
 	scale 33
+	rotateAngle 90
 
 \end_inset
 

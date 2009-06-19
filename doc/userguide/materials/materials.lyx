@@ -664,7 +664,13 @@ maxwell_time
 \begin_layout Plain Layout
 
 \family typewriter
-total_strain, stress, viscous_strain_1,viscous_strain_2,
+total_strain, stress, viscous_strain_1,
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+viscous_strain_2,
 \end_layout
 
 \begin_layout Plain Layout
@@ -1759,6 +1765,10 @@ name "tab:Mathematical-notation"
 Mathematical notation used in this section.
 \end_layout
 
+\end_inset
+
+
+\begin_inset VSpace defskip
 \end_inset
 
 
