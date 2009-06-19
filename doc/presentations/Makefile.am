@@ -10,7 +10,10 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	pylith1.0
+EXTRA_DIST = \
+	pylith1.0/pylith_overview.pdf \
+	pylith1.2/pylith_overview.pdf \
+	pylith1.3/pylith_overview.pdf
+
 
 # End of file 
