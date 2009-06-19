@@ -1671,46 +1671,84 @@ elastic
 savageprescott-elastic_info.vtk
 \family default
  gives the material properties used for the elastic material.
- The files for the viscoelastic material (
+ The files for the viscoelastic material,
+\end_layout
+
+\begin_layout LyX-Code
+
 \family typewriter
-savageprescott-viscoelastic_tXXXX.vtk
-\family default
- and 
+savageprescott-viscoelastic_tXXXX.vtk 
+\family roman
+and
+\end_layout
+
+\begin_layout LyX-Code
+
 \family typewriter
 savageprescott-viscoelastic_info.vtk
-\family default
-) are exactly analogous to the corresponding files for the elastic material.
+\end_layout
+
+\begin_layout Standard
+are exactly analogous to the corresponding files for the elastic material.
  The files of the form 
+\end_layout
+
+\begin_layout LyX-Code
+
 \family typewriter
-savageprescott-groundsurf_tXXXX..vtk
+savageprescott-groundsurf_tXXXX.vtk
 \family default
- are analogous to 
+ 
+\end_layout
+
+\begin_layout Standard
+are analogous to 
 \family typewriter
 savageprescott_t0000000.vtk
 \family default
 , but in this case the results are only given for a subset of the mesh correspon
 ding to the ground surface (and are output more frequently).
  The files of the form 
-\family typewriter
-savageprescott-fault
-\begin_inset Newline newline
-\end_inset
+\end_layout
 
-_tXXXX.vtk
+\begin_layout LyX-Code
+
+\family typewriter
+savageprescott-fault_tXXXX.vtk
 \family default
- give the fault slip for each vertex on the fault, along with the computed
+ 
+\end_layout
+
+\begin_layout Standard
+give the fault slip for each vertex on the fault, along with the computed
  traction change for the cohesive cell.
- The final file 
+ The final file
+\end_layout
+
+\begin_layout LyX-Code
+
 \family typewriter
 savageprescott-fault_info.vtk
 \family default
- provides information such as the normal direction and final slip and slip
+ 
+\end_layout
+
+\begin_layout Standard
+provides information such as the normal direction and final slip and slip
  time for each vertex on the fault for each fault rupture.
  The desired output fields are specified as 
+\end_layout
+
+\begin_layout LyX-Code
+
 \family typewriter
 pylithapp.timedependent.interfaces.fault.output.vertex_info_fields
 \family default
- in the file 
+ 
+\end_layout
+
+\begin_layout Standard
+in the file 
 \family typewriter
 savageprescott.cfg
 \family default

@@ -933,19 +933,18 @@ petsc-dev
 \family typewriter
 petsc-dev
 \family default
- for PyLith from PyLith PETSc tarball 
-\begin_inset Flex URL
-status collapsed
-
-\begin_layout Plain Layout
-
-geodynamics.org/cig/software/packages/short/pylith/petsc-dev-pylith-1_1_0.tgz
+ for PyLith from PyLith PETSc tarball at
 \end_layout
 
-\end_inset
+\begin_layout LyX-Code
 
-.
- Unpack it using the 
+\size small
+http://geodynamics.org/cig/software/packages/short/pylith/petsc-dev-pylith-1_1_0.t
+gz
+\end_layout
+
+\begin_layout Standard
+Unpack it using the 
 \family typewriter
 tar
 \family default
