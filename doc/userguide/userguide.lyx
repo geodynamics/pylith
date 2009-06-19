@@ -371,9 +371,9 @@ Aagaard, B.T., J.F.
  Heaton (2001), Characterization of near-source ground motions with earthquake
  simulations, 
 \emph on
-Earthquake Spectra
+Earthquake Spectra, 17
 \emph default
-, 17(2), 177-207.
+(2), 177-207.
 \end_layout
 
 \begin_layout Bibliography
@@ -389,9 +389,9 @@ Aagaard, B.T., T.H.
  normal stresses: Implications for friction models and heat production,
  
 \emph on
-Bulletin of the Seismological Society of America
+Bulletin of the Seismological Society of America, 91
 \emph default
-, 91(6), 1765-1796.
+(6), 1765-1796.
 \end_layout
 
 \begin_layout Bibliography
@@ -407,9 +407,9 @@ Aagaard, B., C.
  and dynamic crustal deformation, 
 \emph on
 Eos Trans.
- AGU, 8
+ AGU, 88
 \emph default
-8(52), Fall Meet.
+(52), Fall Meet.
  Suppl., Abstract T21B-0592.
 \end_layout
 
@@ -426,9 +426,13 @@ Aagaard, B., C.
  and dynamic crustal deformation, 
 \emph on
 Eos Trans.
- AGU, 
+ AGU
 \emph default
-89(53), Fall Meet.
+, 
+\emph on
+89(
+\emph default
+53), Fall Meet.
  Suppl., Abstract T41A-1925.
 \end_layout
 
@@ -443,9 +447,9 @@ Brune, J.N.
  (1970), Tectonic stress and spectra of seismic shear waves from earthquakes,
  
 \emph on
-Journal of Geophysical Research
+Journal of Geophysical Research, 75
 \emph default
-, 75, 4997-5009.
+, 4997-5009.
 \end_layout
 
 \begin_layout Bibliography
@@ -566,7 +570,10 @@ Journal of Geophysical
 \shape italic
 Research
 \shape default
-, 83, 3369-3376.
+\emph on
+, 83
+\emph default
+, 3369-3376.
 \end_layout
 
 \end_body

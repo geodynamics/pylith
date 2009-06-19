@@ -104,6 +104,10 @@ Mathematical notation
 \begin_layout Plain Layout
 \noindent
 \align center
+\begin_inset VSpace defskip
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="10" columns="3">
 <features>
