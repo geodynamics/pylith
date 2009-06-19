@@ -7,7 +7,7 @@
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 5 // number of material property values
-  value-names =  density vs vp viscosity_coeff power_law_exponent // names of the material property values
+  value-names =  density vs vp viscosity-coeff power-law-exponent // names of the material property values
   value-units =  kg/m**3  m/s  m/s s**(1.0/3.0)*Pa None // units
   num-locs = 1 // number of locations
   data-dim = 0
@@ -24,6 +24,6 @@ SimpleDB {
 // (4) density (kg/m^3)
 // (5) vs (m/s)
 // (6) vp (m/s)
-// (7) viscosity_coeff (s**(1.0/power_law_exponent) * Pa)
-// (8) power_law_exponent (no units)
-0.0  0.0  0.0   2500.0  3000.0  5291.502622129181 1.00e12  3.0
+// (7) viscosity-coeff (s**(1.0/power-law-exponent) * Pa)
+// (8) power-law-exponent (no units)
+0.0  0.0  0.0   2500.0  3000.0  5291.502622129181 1.00e+12  3.0

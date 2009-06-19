@@ -58,8 +58,8 @@ namespace pylith {
       // Values expected in properties spatial database
       const int numDBProperties = 5;
       const char* dbProperties[] = {"density", "vs", "vp" ,
-				    "viscosity_coeff",
-				    "power_law_exponent"};
+				    "viscosity-coeff",
+				    "power-law-exponent"};
 
       /// Number of state variables.
       const int numStateVars = 2;
