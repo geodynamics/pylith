@@ -103,6 +103,33 @@
   \item Automatic conversion of units for all parameters
   \end{itemize}
 
+  % ------------------------------------------------------------ SLIDE
+\foilhead{PyLith 1.4: Under-the-hood Improvements}
+  \summary{}
+
+  \begin{itemize}
+  \item General cleanup of C++ code
+  \item Pyrex/pyrexembed replaced by SWIG
+    \begin{itemize}
+    \item Greatly simplifies creating Python bindings for C++ objects
+    \item SWIG generated files included in source distribution
+    \item User-defined spatial databases and bulk constitutive models
+    \end{itemize}
+  \item Automatic nondimensionalization of problem
+    \begin{itemize}
+    \item User supplies pressure, time, and length scale of problem
+    \item All parameters nondimensionalized appropriately
+    \item Eliminates need to condition terms in sparse matrix
+    \item Restores symmetry of sparse matrix (reduces memory use)
+    \end{itemize}
+  \item Integration with PETSc Scalable Nonlinear Equations Solvers
+   \begin{itemize}
+    \item Displacement increment formulation for implicit and dynamic 
+      time-stepping
+   \end{itemize}
+  \end{itemize}
+    
+
 % ------------------------------------------------------------ SLIDE
 \foilhead{PyLith 1.4 Performance}
   \summary{PyLith 1.4 is $\sim$5\% faster and uses $\sim$50\% less memory than PyLith 1.3}
