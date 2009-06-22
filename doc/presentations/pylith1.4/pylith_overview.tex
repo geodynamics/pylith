@@ -6,6 +6,8 @@
 \usepackage{pifont}
 \usepackage{rotating} % use turn environment
 
+\newcommand{\newfeature}[1]{{\color{blue}#1}}
+
 \title{PyLith}
 \subtitle{}
 \author{Brad Aagaard, Charles Williams, Matthew Knepley, \\[10pt]
@@ -53,9 +55,9 @@
     \includegraphics[scale=1.15]{figs/workflow}
   \end{center}
 
-% ------------------------------------------------------------ SLIDE
+  % ------------------------------------------------------------ SLIDE
 \foilhead{Features in PyLith 1.4}
-  \summary{}
+  \summary{Enhancements and new features in \newfeature{blue}}
 
   \begin{itemize}
   \item Time integration schemes
@@ -67,22 +69,22 @@
     \begin{itemize}
     \item Elastic model (1-D, 2-D, and 3-D)
     \item Linear and Generalized Maxwell viscoelastic models (3-D)
-    \item Power-law viscoelastic model (3-D)
+    \item \newfeature{Power-law viscoelastic model (3-D)}
     \end{itemize}
   \item Boundary and interface conditions
     \begin{itemize}
-    \item Time-dependent Dirichlet boundary conditions
-    \item Time-dependent Neumann (traction) boundary conditions
+    \item \newfeature{Time-dependent Dirichlet boundary conditions}
+    \item \newfeature{Time-dependent Neumann (traction) boundary conditions}
     \item Absorbing boundary conditions
     \item Kinematic (prescribed slip) fault interfaces w/multiple ruptures
-    \item Time-dependent point forces
+    \item \newfeature{Time-dependent point forces}
     \item Gravitational body forces
     \end{itemize}
   \end{itemize}
 
 % ------------------------------------------------------------ SLIDE
 \foilhead{Features in PyLith 1.4 (cont.)}
-  \summary{}
+  \summary{Enhancements and new features in \newfeature{blue}}
 
   \begin{itemize}
   \item Automatic and user-controlled time stepping
@@ -100,10 +102,10 @@
     \item State variables (e.g., stress and strain) for each material
     \item Fault information (e.g., slip and tractions)
     \end{itemize}
-  \item Automatic conversion of units for all parameters
+  \item \newfeature{Automatic conversion of units for all parameters}
   \end{itemize}
 
-  % ------------------------------------------------------------ SLIDE
+% ------------------------------------------------------------ SLIDE
 \foilhead{PyLith 1.4: Under-the-hood Improvements}
   \summary{}
 
@@ -347,18 +349,6 @@
    \end{itemize}
  \end{itemize}
   
-% ------------------------------------------------------------ SLIDE
-%\foilhead{Benchmarking PyLith}
-%  \summary{Savage and Prescott (1978): Repeated Strike-slip ruptures}
-%
-%  \movie{0.58in}{0.0in}{7.84in}{5.84in}{movies/savageprescott_domain}
- 
-% ------------------------------------------------------------ SLIDE
-%\foilhead{Benchmarking PyLith}
-%  \summary{Savage and Prescott (1978): Repeated Strike-slip ruptures}
-%
-%  \movie{0.58in}{0.0in}{7.84in}{5.84in}{movies/savageprescott_groundsurf}
- 
 % ------------------------------------------------------------ SLIDE
 \foilhead{Benchmarking PyLith}
   \summary{Analytical solution from Savage and Prescott (1978)}
