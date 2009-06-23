@@ -766,8 +766,7 @@ db_change
 \begin_layout Plain Layout
 
 \family typewriter
-displacement-change-x, displacement-change-y, displacement-change-z, change-star
-t-time
+displacement-x, displacement-y, displacement-z, change-start-time
 \end_layout
 
 \end_inset
@@ -1248,8 +1247,7 @@ db_change
 \begin_layout Plain Layout
 
 \family typewriter
-traction-change-horiz-shear, traction-change-vert-shear, traction-change-normal,
- change-start-time
+traction-horiz-shear, traction-vert-shear, traction-normal, change-start-time
 \end_layout
 
 \end_inset
@@ -1518,7 +1516,7 @@ db_change
 \begin_layout Plain Layout
 
 \family typewriter
-force-change-x, force-change-y, force-change-z, change-start-time
+force-x, force-y, force-z, change-start-time
 \end_layout
 
 \end_inset
