@@ -869,31 +869,47 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelasticInitial(
   const double effStress = sqrt(0.5 * _scalarProduct(devStress, devStress));
   const double gamma = 0.5 *
     pow((effStress/viscosityCoeff), (powerLawExp - 1.0))/viscosityCoeff;
-  const double visFac = 1.0/(3.0 * (ae + _dt * gamma));
-
-  elasticConsts[ 0] = bulkModulus + 2.0 * visFac; // C1111
-  elasticConsts[ 1] = bulkModulus - visFac; // C1122
+  //  const double visFac = 1.0/(3.0 * (ae + _dt * gamma));
+  const double visFac1 = 3.0 *(ae + _dt * gamma);
+  const double visFac2 = 0.75 * _dt * (powerLawExp - 1.0) *
+    pow((effStress/viscosityCoeff), (powerLawExp - 2.0))/
+    (viscosityCoeff * viscosityCoeff * effStress);
+  const double dStress11dStrain11 = 1.0/
+    (visFac1 + devStress[0] * devStress[0] * visFac2);
+  const double dStress22dStrain22 = 1.0/
+     (visFac1 + devStress[1] * devStress[1] * visFac2);
+  const double dStress33dStrain33 = 1.0/
+      (visFac1 + devStress[2] * devStress[2] * visFac2);
+  const double dStress12dStrain12 = 1.0/
+       (visFac1 + 2.0 * devStress[3] * devStress[3] * visFac2);
+  const double dStress23dStrain23 = 1.0/
+       (visFac1 + 2.0 * devStress[4] * devStress[4] * visFac2);
+  const double dStress13dStrain13 = 1.0/
+       (visFac1 + 2.0 * devStress[5] * devStress[5] * visFac2);
+  elasticConsts[ 0] = bulkModulus + 2.0 * dStress11dStrain11; // C1111
+  elasticConsts[ 1] = bulkModulus - dStress11dStrain11; // C1122
   elasticConsts[ 2] = elasticConsts[1]; // C1133
   elasticConsts[ 3] = 0; // C1112
   elasticConsts[ 4] = 0; // C1123
   elasticConsts[ 5] = 0; // C1113
-  elasticConsts[ 6] = elasticConsts[0]; // C2222
-  elasticConsts[ 7] = elasticConsts[1]; // C2233
+  elasticConsts[ 6] = bulkModulus + 2.0 * dStress22dStrain22; // C2222
+  elasticConsts[ 7] = bulkModulus - dStress22dStrain22; // C2233
   elasticConsts[ 8] = 0; // C2212
   elasticConsts[ 9] = 0; // C2223
   elasticConsts[10] = 0; // C2213
-  elasticConsts[11] = elasticConsts[0]; // C3333
+  elasticConsts[11] = bulkModulus + 2.0 * dStress33dStrain33; // C3333
   elasticConsts[12] = 0; // C3312
   elasticConsts[13] = 0; // C3323
   elasticConsts[14] = 0; // C3313
-  elasticConsts[15] = 3.0 * visFac; // C1212
+  elasticConsts[15] = 3.0 * dStress12dStrain12; // C1212
   elasticConsts[16] = 0; // C1223
   elasticConsts[17] = 0; // C1213
-  elasticConsts[18] = elasticConsts[15]; // C2323
+  elasticConsts[18] = 3.0 * dStress23dStrain23; // C2323
   elasticConsts[19] = 0; // C2313
-  elasticConsts[20] = elasticConsts[15]; // C1313
+  elasticConsts[20] = 3.0 * dStress13dStrain13; // C1313
 
-  PetscLogFlops(37);
+  // PetscLogFlops(37);
+  PetscLogFlops(85);
 } // _calcElasticConstsViscoelasticInitial
 
 // ----------------------------------------------------------------------
@@ -960,7 +976,8 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   // then used only by the material types that use it.  For now we are setting
   // it to 0.5, which should probably be the default value.
   const double alpha = 0.5;
-  const double timeFac = _dt * (1.0 - alpha);
+  const double explicitFac = 1.0 - alpha;
+  const double timeFac = _dt * explicitFac;
     
   /// Initial state.
   // Initial stress values.
@@ -1068,133 +1085,69 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
     const double a = ae + alpha * _dt * gammaTau;
     const double factor1 = 1.0/a;
     const double factor2 = timeFac * gammaTau;
-    const double factor3 = alpha * _dt * factor1;
-    const double k1 = 0.5 * (powerLawExp - 1.0) *
-      pow((effStressTau/viscosityCoeff),(powerLawExp - 2.0)) /
-      (viscosityCoeff * viscosityCoeff);
-    const double k2 = effStressTau - (1.0 - alpha * effStressT);
-    const double denom = 2.0 * a * k2 *
-      (alpha * _dt * k1 * k2 + a) /
-      (alpha * alpha) + k1 * (c - 2.0 * d * d * gammaTau);
-    const double k1Factor = k1/denom;
+    const double devStressTpdt[] = {
+      factor1 *
+      (strainPPTpdt[0] - factor2 * devStressT[0] + ae * devStressInitial[0]),
+      factor1 *
+      (strainPPTpdt[1] - factor2 * devStressT[1] + ae * devStressInitial[1]),
+      factor1 *
+      (strainPPTpdt[2] - factor2 * devStressT[2] + ae * devStressInitial[2]),
+      factor1 *
+      (strainPPTpdt[3] - factor2 * devStressT[3] + ae * devStressInitial[3]),
+      factor1 *
+      (strainPPTpdt[4] - factor2 * devStressT[4] + ae * devStressInitial[4]),
+      factor1 *
+      (strainPPTpdt[5] - factor2 * devStressT[5] + ae * devStressInitial[5])};
+    const double devStressTau[] = {
+      alpha * devStressT[0] + explicitFac * devStressTpdt[0],
+      alpha * devStressT[1] + explicitFac * devStressTpdt[1],
+      alpha * devStressT[2] + explicitFac * devStressTpdt[2],
+      alpha * devStressT[3] + explicitFac * devStressTpdt[3],
+      alpha * devStressT[4] + explicitFac * devStressTpdt[4],
+      alpha * devStressT[5] + explicitFac * devStressTpdt[5]};
+    const double factor3 = 0.25 * _dt * alpha * (powerLawExp - 1.0) *
+      pow((effStressTau/viscosityCoeff), (powerLawExp - 2.0))/
+      (viscosityCoeff * viscosityCoeff * effStressTpdt);
+
+    // Compute deviatoric derivatives
+    const double dStress11dStrain11 = 1.0/
+      (a + devStressTau[0] * devStressTpdt[0] * factor3);
+    const double dStress22dStrain22 = 1.0/
+      (a + devStressTau[1] * devStressTpdt[1] * factor3);
+    const double dStress33dStrain33 = 1.0/
+      (a + devStressTau[2] * devStressTpdt[2] * factor3);
+    const double dStress12dStrain12 = 1.0/
+      (a + 2.0 * devStressTau[3] * devStressTpdt[3] * factor3);
+    const double dStress23dStrain23 = 1.0/
+      (a + 2.0 * devStressTau[4] * devStressTpdt[4] * factor3);
+    const double dStress13dStrain13 = 1.0/
+      (a + 2.0 * devStressTau[5] * devStressTpdt[5] * factor3);
     
     /// Compute tangent matrix.
-    // First compute derivatives of gammaTau w.r.t. deviatoric strain components.
-    const double dGammaDStrain11 = k1 * k1Factor *
-      (0.5 * strainPPTpdt[0] + ae * devStressInitial[0] -
-       factor2 * devStressT[0]);
-    const double dGammaDStrain22 = k1 * k1Factor *
-      (0.5 * strainPPTpdt[1] + ae * devStressInitial[1] -
-       factor2 * devStressT[1]);
-    const double dGammaDStrain33 = k1 * k1Factor *
-      (0.5 * strainPPTpdt[2] + ae * devStressInitial[2] -
-       factor2 * devStressT[2]);
-    const double dGammaDStrain12 = k1 * k1Factor *
-      (0.5 * strainPPTpdt[3] + ae * devStressInitial[3] -
-       factor2 * devStressT[3]);
-    const double dGammaDStrain23 = k1 * k1Factor *
-      (0.5 * strainPPTpdt[4] + ae * devStressInitial[4] -
-       factor2 * devStressT[4]);
-    const double dGammaDStrain13 = k1 * k1Factor *
-      (0.5 * strainPPTpdt[5] + ae * devStressInitial[5] -
-       factor2 * devStressT[5]);
-
-    // Compute part related to component i.
-    const double dF11 = timeFac * devStressT[0] +
-      factor3 * (strainPPTpdt[0] - factor2 * devStressT[0] +
-		 ae * devStressInitial[0]);
-    const double dF22 = timeFac * devStressT[1] +
-      factor3 * (strainPPTpdt[1] - factor2 * devStressT[1] +
-		 ae * devStressInitial[1]);
-    const double dF33 = timeFac * devStressT[2] +
-      factor3 * (strainPPTpdt[2] - factor2 * devStressT[2] +
-		 ae * devStressInitial[2]);
-    const double dF12 = timeFac * devStressT[3] +
-      factor3 * (strainPPTpdt[3] - factor2 * devStressT[3] +
-		 ae * devStressInitial[3]);
-    const double dF23 = timeFac * devStressT[4] +
-      factor3 * (strainPPTpdt[4] - factor2 * devStressT[4] +
-		 ae * devStressInitial[4]);
-    const double dF13 = timeFac * devStressT[5] +
-      factor3 * (strainPPTpdt[5] - factor2 * devStressT[5] +
-		 ae * devStressInitial[5]);
-    
-    // Compute dStress/dStrain.
-    // There are more terms here than I need, but I want to leave them for now
-    // to test symmetry.
-    const double dStress11dStrain11 = factor1 * (1.0 - dGammaDStrain11 * dF11);
-    const double dStress11dStrain22 = factor1 * (    - dGammaDStrain22 * dF11);
-    const double dStress11dStrain33 = factor1 * (    - dGammaDStrain33 * dF11);
-    const double dStress11dStrain12 = factor1 * (    - dGammaDStrain12 * dF11);
-    const double dStress11dStrain23 = factor1 * (    - dGammaDStrain23 * dF11);
-    const double dStress11dStrain13 = factor1 * (    - dGammaDStrain13 * dF11);
-    // const double dStress22dStrain11 = factor1 * (    - dGammaDStrain11 * dF22);
-    const double dStress22dStrain22 = factor1 * (1.0 - dGammaDStrain22 * dF22);
-    const double dStress22dStrain33 = factor1 * (    - dGammaDStrain33 * dF22);
-    const double dStress22dStrain12 = factor1 * (    - dGammaDStrain12 * dF22);
-    const double dStress22dStrain23 = factor1 * (    - dGammaDStrain23 * dF22);
-    const double dStress22dStrain13 = factor1 * (    - dGammaDStrain13 * dF22);
-    // const double dStress33dStrain11 = factor1 * (    - dGammaDStrain11 * dF33);
-    // const double dStress33dStrain22 = factor1 * (    - dGammaDStrain22 * dF33);
-    const double dStress33dStrain33 = factor1 * (1.0 - dGammaDStrain33 * dF33);
-    const double dStress33dStrain12 = factor1 * (    - dGammaDStrain12 * dF33);
-    const double dStress33dStrain23 = factor1 * (    - dGammaDStrain23 * dF33);
-    const double dStress33dStrain13 = factor1 * (    - dGammaDStrain13 * dF33);
-    // const double dStress12dStrain11 = factor1 * (    - dGammaDStrain11 * dF12);
-    // const double dStress12dStrain22 = factor1 * (    - dGammaDStrain22 * dF12);
-    // const double dStress12dStrain33 = factor1 * (    - dGammaDStrain33 * dF12);
-    const double dStress12dStrain12 = factor1 * (1.0 - dGammaDStrain12 * dF12);
-    const double dStress12dStrain23 = factor1 * (    - dGammaDStrain23 * dF12);
-    const double dStress12dStrain13 = factor1 * (    - dGammaDStrain13 * dF12);
-    // const double dStress23dStrain11 = factor1 * (    - dGammaDStrain11 * dF23);
-    // const double dStress23dStrain22 = factor1 * (    - dGammaDStrain22 * dF23);
-    // const double dStress23dStrain33 = factor1 * (    - dGammaDStrain33 * dF23);
-    // const double dStress23dStrain12 = factor1 * (    - dGammaDStrain12 * dF23);
-    const double dStress23dStrain23 = factor1 * (1.0 - dGammaDStrain23 * dF23);
-    const double dStress23dStrain13 = factor1 * (    - dGammaDStrain13 * dF23);
-    // const double dStress13dStrain11 = factor1 * (    - dGammaDStrain11 * dF13);
-    // const double dStress13dStrain22 = factor1 * (    - dGammaDStrain22 * dF13);
-    // const double dStress13dStrain33 = factor1 * (    - dGammaDStrain33 * dF13);
-    // const double dStress13dStrain12 = factor1 * (    - dGammaDStrain12 * dF13);
-    // const double dStress13dStrain23 = factor1 * (    - dGammaDStrain23 * dF13);
-    const double dStress13dStrain13 = factor1 * (1.0 - dGammaDStrain13 * dF13);
-    
     // Form elastic constants.
-    elasticConsts[ 0] = bulkModulus + (2.0 * dStress11dStrain11
-				       - dStress11dStrain22
-				       - dStress11dStrain33)/3.0;  // C1111
-    elasticConsts[ 1] = bulkModulus + (2.0 * dStress11dStrain22
-				       - dStress11dStrain11
-				       - dStress11dStrain33)/3.0;  // C1122
-    elasticConsts[ 2] = bulkModulus + (2.0 * dStress11dStrain33
-				       - dStress11dStrain22
-				       - dStress11dStrain11)/3.0;  // C1133
-    elasticConsts[ 3] = dStress11dStrain12;  // C1112
-    elasticConsts[ 4] = dStress11dStrain23;  // C1123
-    elasticConsts[ 5] = dStress11dStrain13;  // C1113
-    elasticConsts[ 6] = bulkModulus + (2.0 * dStress22dStrain22
-				       - dStress11dStrain22
-				       - dStress22dStrain33)/3.0;  // C2222
-    elasticConsts[ 7] = bulkModulus + (2.0 * dStress22dStrain33
-				       - dStress22dStrain22
-				       - dStress11dStrain22)/3.0;  // C2233
-    elasticConsts[ 8] = dStress22dStrain12;  // C2212
-    elasticConsts[ 9] = dStress22dStrain23;  // C2223
-    elasticConsts[10] = dStress22dStrain13;  // C2213
-    elasticConsts[11] = bulkModulus + (2.0 * dStress33dStrain33
-				       - dStress11dStrain33
-				       - dStress22dStrain33)/3.0;  // C3333
-    elasticConsts[12] = dStress33dStrain12;  // C3312
-    elasticConsts[13] = dStress33dStrain23;  // C3323
-    elasticConsts[14] = dStress33dStrain13;  // C3313
+    elasticConsts[ 0] = bulkModulus + 2.0 * dStress11dStrain11/3.0;  // C1111
+    elasticConsts[ 1] = bulkModulus -       dStress11dStrain11/3.0;  // C1122
+    elasticConsts[ 2] = elasticConsts[ 1]; // C1133
+    elasticConsts[ 3] = 0.0;  // C1112
+    elasticConsts[ 4] = 0.0;  // C1123
+    elasticConsts[ 5] = 0.0;  // C1113
+    elasticConsts[ 6] = bulkModulus + 2.0 * dStress22dStrain22/3.0;  // C2222
+    elasticConsts[ 7] = bulkModulus -       dStress22dStrain22/3.0;  // C2233
+    elasticConsts[ 8] = 0.0;  // C2212
+    elasticConsts[ 9] = 0.0;  // C2223
+    elasticConsts[10] = 0.0;  // C2213
+    elasticConsts[11] = bulkModulus + 2.0 * dStress33dStrain33/3.0;  // C3333
+    elasticConsts[12] = 0.0;  // C3312
+    elasticConsts[13] = 0.0;  // C3323
+    elasticConsts[14] = 0.0;  // C3313
     elasticConsts[15] = dStress12dStrain12;  // C1212
-    elasticConsts[16] = dStress12dStrain23;  // C1223
-    elasticConsts[17] = dStress12dStrain13;  // C1213
+    elasticConsts[16] = 0.0;  // C1223
+    elasticConsts[17] = 0.0;  // C1213
     elasticConsts[18] = dStress23dStrain23;  // C2323
-    elasticConsts[19] = dStress23dStrain13;  // C2313
+    elasticConsts[19] = 0.0;  // C2313
     elasticConsts[20] = dStress13dStrain13;  // C1313
     
-    PetscLogFlops(265);
+    PetscLogFlops(103);
   } // else
 } // _calcElasticConstsViscoelastic
 
