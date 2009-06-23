@@ -41,16 +41,18 @@ AC_ARG_ENABLE([cubit],
     [AC_HELP_STRING([--enable-cubit],
         [enable reading/writing Cubit EXODUS files (requires netcdf) @<:@default=no@:>@])],
 	[enable_cubit=yes
-	CXXFLAGS="-DENABLE_CUBIT $CXXFLAGS"; export CXXFLAGS],
+	CPPFLAGS="-DENABLE_CUBIT $CPPFLAGS"; export CPPFLAGS;
+	PYLITH_SWIG_CPPFLAGS="-DENABLE_CUBIT $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS],
 	[enable_cubit=no])
 AM_CONDITIONAL([ENABLE_CUBIT], [test "$enable_cubit" = yes])
+AC_SUBST(PYLITH_SWIG_CPPFLAGS)
 
 # PETSc w/TetGen
 AC_ARG_ENABLE([tetgen],
     [AC_HELP_STRING([--enable-tetgen],
         [enable generating simple meshes w/TetGen via PETSc @<:@default=no@:>@])],
 	[enable_tetgen=yes
-	CXXFLAGS="-DENABLE_TETGEN $CXXFLAGS"; export CXXFLAGS],
+	CPPFLAGS="-DENABLE_TETGEN $CPPFLAGS"; export CPPFLAGS],
 	[enable_tetgen=no])
 AM_CONDITIONAL([ENABLE_TETGEN], [test "$enable_tetgen" = yes])
 
@@ -59,7 +61,7 @@ AC_ARG_ENABLE([memory_logging],
     [AC_HELP_STRING([--enable-memory-logging],
         [enable memory logging @<:@default=no@:>@])],
 	[enable_memory_logging=yes
-	CXXFLAGS="-DALE_MEM_LOGGING $CXXFLAGS"; export CXXFLAGS],
+	CPPFLAGS="-DALE_MEM_LOGGING $CPPFLAGS"; export CPPFLAGS],
 	[enable_memory_logging=no])
 AM_CONDITIONAL([ENABLE_MEMORY_LOGGING], [test "$enable_memory_logging" = yes])
 

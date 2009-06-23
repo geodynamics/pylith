@@ -18,7 +18,9 @@
 #include "pylith/meshio/MeshIO.hh"
 #include "pylith/meshio/MeshIOAscii.hh"
 #include "pylith/meshio/MeshIOLagrit.hh"
+#ifdef ENABLE_CUBIT
 #include "pylith/meshio/MeshIOCubit.hh"
+#endif
 
 #include "pylith/meshio/VertexFilter.hh"
 #include "pylith/meshio/VertexFilterVecNorm.hh"
@@ -47,7 +49,9 @@
 %include "MeshIOObj.i"
 %include "MeshIOAscii.i"
 %include "MeshIOLagrit.i"
+#ifdef ENABLE_CUBIT
 %include "MeshIOCubit.i"
+#endif
 
 %include "VertexFilter.i"
 %include "VertexFilterVecNorm.i"
