@@ -56,7 +56,7 @@ endif
 INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 $(srcdir)/meshio_wrap.cxx $(srcdir)/meshio.py: $(swig_sources)
-	$(SWIG) -Wall -c++ -python $<
+	$(SWIG) $(PYLITH_SWIG_CPPFLAGS) -Wall -c++ -python $<
 
 
 MAINTAINERCLEANFILES = \
