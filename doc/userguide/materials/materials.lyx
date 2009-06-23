@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -504,14 +504,6 @@ cell_data_fields
 \end_inset
 
 
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset VSpace defskip
-\end_inset
-
-
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="3">
 <features>
@@ -664,13 +656,7 @@ maxwell_time
 \begin_layout Plain Layout
 
 \family typewriter
-total_strain, stress, viscous_strain_1,
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-viscous_strain_2,
+total_strain, stress, viscous_strain_1,viscous_strain_2,
 \end_layout
 
 \begin_layout Plain Layout
@@ -757,10 +743,6 @@ name "tab:material-model-statevars"
 Order of components in tensor state-variables for material models.
 \end_layout
 
-\end_inset
-
-
-\begin_inset VSpace defskip
 \end_inset
 
 
@@ -1081,10 +1063,6 @@ Values in spatial database used as parameters in the elastic material constituti
 ve models.
 \end_layout
 
-\end_inset
-
-
-\begin_inset VSpace defskip
 \end_inset
 
 
@@ -1471,10 +1449,6 @@ Available 3D viscoelastic materials for PyLith.
 \end_inset
 
 
-\begin_inset VSpace defskip
-\end_inset
-
-
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
 <features>
@@ -1765,10 +1739,6 @@ name "tab:Mathematical-notation"
 Mathematical notation used in this section.
 \end_layout
 
-\end_inset
-
-
-\begin_inset VSpace defskip
 \end_inset
 
 
@@ -2749,7 +2719,7 @@ reference "eq:67"
 
  as
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{1}{\left(a_{E}+\alpha\Delta t^{\tau}\gamma\right)}\left[^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}\underline{S}+a_{E}\underline{S}^{I}\right]\,,\label{eq:70}\end{gather}
+F=^{t+\Delta t}S_{i}\left(a_{E}+\alpha\Delta t^{\tau}\gamma\right)-^{t+\Delta t}e_{i}^{\prime\prime}+\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}S_{i}-a_{E}S_{i}^{I}=0\label{eq:70}\end{gather}
 
 \end_inset
 
@@ -2759,10 +2729,23 @@ a_{E}=\frac{1+\nu}{E}\,.\label{eq:71}\end{gather}
 
 \end_inset
 
-The derivative is then
+The derivative of this function with respect to 
+\begin_inset Formula $^{t+\Delta t}e_{k}^{\prime\prime}$
+\end_inset
+
+ is
 \begin_inset Formula \begin{gather}
-\frac{\partial{}^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{1}{a_{E}+\alpha\Delta t^{\tau}\gamma}\nonumber \\
-\left\langle \delta_{ik}-\frac{\partial^{\tau}\gamma}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\left\{ \Delta t\left(1-\alpha\right)^{t}S_{i}+\frac{\alpha\Delta t}{a_{E}+\alpha\Delta t^{\tau}\gamma}\left[^{t+\Delta t}e_{i}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}S_{i}+a_{E}S_{i}^{I}\right]\right\} \right\rangle \,.\label{eq:72}\end{gather}
+\frac{\partial F}{\partial^{t+\Delta t}e_{k}^{\prime\prime}}=-\delta_{ik}\:,\label{eq:72}\end{gather}
+
+\end_inset
+
+and the derivative with respect to 
+\begin_inset Formula $^{t+\Delta t}S_{i}$
+\end_inset
+
+ is
+\begin_inset Formula \begin{gather}
+\frac{\partial F}{\partial^{t+\Delta t}S_{i}}=a_{E}+\alpha\Delta t^{\tau}\gamma+\frac{\partial^{\tau}\gamma}{\partial^{t+\Delta t}S_{i}}\Delta t\left[\alpha^{t+\Delta t}S_{i}+\left(1-\alpha\right)^{t}S_{i}\right]\:.\label{eq:73}\end{gather}
 
 \end_inset
 
@@ -2773,47 +2756,57 @@ reference "eq:65"
 
 \end_inset
 
-,
-\begin_inset Formula \begin{gather}
-\frac{\partial^{\tau}\gamma}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{2\eta^{n}}\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=K_{1}\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\,.\label{eq:73}\end{gather}
-
-\end_inset
-
-We first note that
-\begin_inset Formula \begin{gather}
-\sqrt{^{t+\Delta t}J_{2}^{\prime}}=\frac{1}{\alpha}\left[\sqrt{^{\tau}J_{2}^{\prime}}-\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\right]\,,\label{eq:74}\end{gather}
-
-\end_inset
-
- which allows us to rewrite Equation 
+ and Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:68"
+reference "eq:49"
 
 \end_inset
 
- as
+,
 \begin_inset Formula \begin{gather}
-\frac{a^{2}}{\alpha^{2}}\left[\sqrt{^{\tau}J_{2}^{\prime}}-\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\right]^{2}-b+c\,^{\tau}\gamma-d^{2}\,^{\tau}\gamma^{2}=\frac{a^{2}}{\alpha^{2}}K_{2}^{2}-b+c\,^{\tau}\gamma-d^{2}\,^{\tau}\gamma^{2}=F=0\,.\label{eq:75}\end{gather}
+^{\tau}\gamma=\frac{1}{2\eta^{n}}\left[\alpha\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\right]^{n-1}\:.\label{eq:74}\end{gather}
 
 \end_inset
 
-The derivatives of this function are
+Then
 \begin_inset Formula \begin{gather}
-\frac{\partial F}{\partial\sqrt{^{\tau}J_{2}^{\prime}}}=\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)\nonumber \\
-\frac{\partial F}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=-\frac{^{t+\Delta t}e_{k}^{\prime\prime}}{2}+a_{E}S_{k}^{I}-\Delta t\left(1-\alpha\right)^{t}S_{k}\,^{\tau}\gamma\,.\label{eq:76}\end{gather}
+\frac{\partial^{\tau}\gamma}{\partial{}^{t+\Delta t}S_{i}}=\frac{\partial^{\tau}\gamma}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}\frac{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}{\partial^{t+\Delta t}S_{l}}\label{eq:75}\\
+=\frac{\alpha\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}{}^{t+\Delta t}T_{i}}{4\eta^{n}}\,,\nonumber \end{gather}
 
 \end_inset
 
-Then using the quotient rule for derivatives,
+Where
 \begin_inset Formula \begin{gather}
-\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{\left[\frac{^{t+\Delta t}e_{k}^{\prime\prime}}{2}+a_{E}S_{k}^{I}-\Delta t\left(1-\alpha\right)^{t}S_{k}\,^{\tau}\gamma\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)}\,.\label{eq:77}\end{gather}
+^{t+\Delta t}T_{i}=^{t+\Delta t}S_{i}\:;\:\:1\leq i\leq3\label{eq:76}\\
+^{t+\Delta t}T_{i}=2^{t+\Delta t}S_{i}\:;\:\:\textrm{otherwise.}\nonumber \end{gather}
 
 \end_inset
 
-This yields
+Then using Equations 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:72"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:73"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:75"
+
+\end_inset
+
+, and the quotient rule for derivatives of an implicit function,
 \begin_inset Formula \begin{gather}
-\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{K_{1}\left[\frac{^{t+\Delta t}e_{k}^{\prime\prime}}{2}+a_{E}S_{k}^{I}-\Delta t\left(1-\alpha\right)^{t}S_{k}\,^{\tau}\gamma\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)}\,.\label{eq:78}\end{gather}
+\frac{\partial^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{\delta_{ik}}{a_{E}+\alpha\Delta t\left[^{\tau}\gamma+\frac{^{\tau}S_{i}\left(n-1\right){}^{t+\Delta t}T_{i}\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{4\sqrt{^{t+\Delta t}J_{2}^{\prime}}\eta^{n}}\right]}\,.\label{eq:77}\end{gather}
 
 \end_inset
 
@@ -2821,11 +2814,10 @@ Note that for a linear material
 \begin_inset Formula $\left(n=1\right)$
 \end_inset
 
-, this derivative is zero.
- This relation may be used in Equation 
+, this equation is identical to Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:72"
+reference "eq:61"
 
 \end_inset
 
@@ -2858,32 +2850,30 @@ C_{ij}^{VE}=\frac{E}{3\left(1-2\nu\right)}\left[\begin{array}{cccccc}
 -1 & -1 & 2 & 0 & 0 & 0\\
 0 & 0 & 0 & 3 & 0 & 0\\
 0 & 0 & 0 & 0 & 3 & 0\\
-0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\,.\label{eq:79}\end{gather}
+0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\,.\label{eq:78}\end{gather}
 
 \end_inset
 
-As for the linear case, we use an altered version of the matrix appropriate
- for engineering strain measures.
- At the beginning of a time step, the strains have not yet been computed,
- and we use the following approximation:
-\begin_inset Formula \begin{gather}
-\frac{\partial{}^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\approx\frac{\delta_{ik}}{a_{E}+\Delta t^{\tau}\gamma}\,,\label{eq:80}\end{gather}
+Note that if there are no deviatoric stresses at the beginning and end of
+ a time step (or if 
+\begin_inset Formula $\eta$
+\end_inset
+
+ goes to infinity), Equations 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:77"
 
 \end_inset
 
-where we have neglected the changes in 
-\begin_inset Formula $^{\tau}\gamma$
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:78"
+
 \end_inset
 
- due to changes in 
-\begin_inset Formula $^{t+\Delta t}e_{k}^{\prime\prime}$
-\end_inset
-
-, and we have used a value of 
-\begin_inset Formula $\alpha=1$
-\end_inset
-
-.
+ reduce to the elastic constitutive matrix, as expected.
 \end_layout
 
 \begin_layout Standard
@@ -2897,7 +2887,7 @@ reference "eq:68"
 
 , which may be written:
 \begin_inset Formula \begin{gather}
-\frac{\partial F}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}=2a^{2}\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\frac{\alpha\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{2\eta^{n}}\left(2a\alpha\Delta t{}^{t+\Delta t}J_{2}^{\prime}+c-2d^{2}\,^{\tau}\gamma\right)\,.\label{eq:81}\end{gather}
+\frac{\partial F}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}=2a^{2}\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\frac{\alpha\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{2\eta^{n}}\left(2a\alpha\Delta t{}^{t+\Delta t}J_{2}^{\prime}+c-2d^{2}\,^{\tau}\gamma\right)\,.\label{eq:79}\end{gather}
 
 \end_inset
 
@@ -2935,10 +2925,6 @@ Values in spatial database used as parameters in the linear Maxwell viscoelastic
  material constitutive model.
 \end_layout
 
-\end_inset
-
-
-\begin_inset VSpace defskip
 \end_inset
 
 
@@ -3109,10 +3095,6 @@ Values in spatial database used as parameters in the generalized linear
  Maxwell viscoelastic material constitutive model.
 \end_layout
 
-\end_inset
-
-
-\begin_inset VSpace defskip
 \end_inset
 
 
@@ -3411,10 +3393,6 @@ Values in spatial database used as parameters in the nonlinear power-law
 \end_inset
 
 
-\begin_inset VSpace defskip
-\end_inset
-
-
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="2">
 <features>
@@ -3664,10 +3642,6 @@ Values in spatial database for initial state variables for 3D problems.
  2D problems use only the relevant values.
 \end_layout
 
-\end_inset
-
-
-\begin_inset VSpace defskip
 \end_inset
 
 
