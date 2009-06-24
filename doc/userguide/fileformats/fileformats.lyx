@@ -1415,7 +1415,7 @@ TimeHistory { // start specifying the database parameters
 \end_layout
 
 \begin_layout LyX-Code
-  time-unit = year
+  time-units = year
 \end_layout
 
 \begin_layout LyX-Code
