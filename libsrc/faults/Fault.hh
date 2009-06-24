@@ -77,13 +77,22 @@ public :
    */
   const char* label(void) const;
 
+  /** Get the number of vertices on the fault.
+   *
+   * @param mesh PETSc mesh
+   * @return faults size
+   */
+  int faultSize(topology::Mesh* const mesh) const;
+
   /** Adjust mesh topology for fault implementation.
    *
    * @param mesh PETSc mesh
    */
   virtual
   void adjustTopology(topology::Mesh* const mesh,
-		      const bool flipFault =false) = 0;
+                      int *firstFaultVertex,
+                      int *firstFaultCell,
+                      const bool flipFault = false) = 0;
 
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.

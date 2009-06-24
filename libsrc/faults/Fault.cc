@@ -43,10 +43,21 @@ pylith::faults::Fault::deallocate(void)
 // ----------------------------------------------------------------------
 // Get mesh associated with fault fields.
 const pylith::topology::SubMesh&
-pylith::faults::Fault:: faultMesh(void) const
+pylith::faults::Fault::faultMesh(void) const
 { // faultMesh
   return *_faultMesh;
 } // faultMesh
 
+// ----------------------------------------------------------------------
+// Get mesh associated with fault fields.
+int
+pylith::faults::Fault::faultSize(topology::Mesh* const mesh) const
+{ // faultSize
+  assert(0 != mesh);
+  assert(std::string("") != label());
+  const ALE::Obj<topology::Mesh::IntSection>& groupField = 
+    mesh->sieveMesh()->getIntSection(label());
+  return groupField->size();
+} // faultSize
 
 // End of file 

@@ -54,11 +54,12 @@ namespace pylith {
        * @param mesh PETSc mesh.
        * @param flipFault Flip fault orientation.
        */
+      %apply int *INOUT {int *firstFaultVertex, int *firstFaultCell};
       void adjustTopology(pylith::topology::Mesh* const mesh,
-			  const bool flipFault =false);
-      
-      // PROTECTED METHODS //////////////////////////////////////////////////
-    protected :
+                          int *firstFaultVertex,
+                          int *firstFaultCell,
+                          const bool flipFault = false);
+      %clear int *firstFaultVertex, int *firstFaultCell;
       
       /** Cohesive cells use Lagrange multiplier constraints?
        *
@@ -66,7 +67,7 @@ namespace pylith {
        * constraints, false otherwise.
        */
       virtual
-      bool _useLagrangeConstraints(void) const = 0;
+      bool useLagrangeConstraints(void) const = 0;
       
     }; // class FaultCohesive
 

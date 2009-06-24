@@ -66,7 +66,9 @@ pylith::faults::FaultCohesive::faultMeshFilename(const char* filename)
 // Adjust mesh topology for fault implementation.
 void
 pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
-					      const bool flipFault)
+                                              int *firstFaultVertex,
+                                              int *firstFaultCell,
+                                              const bool flipFault)
 { // adjustTopology
   assert(0 != mesh);
   assert(std::string("") != label());
@@ -101,7 +103,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       sieveMesh->getIntSection(label());
     assert(!groupField.isNull());
     CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(),
-			     _useLagrangeConstraints());
+                  *firstFaultVertex, *firstFaultCell, useLagrangeConstraints());
   } else {
     if (!sieveMesh->hasIntSection(label())) {
       std::ostringstream msg;
@@ -116,7 +118,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
 				  flipFault);
 
     CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(), 
-			     _useLagrangeConstraints());
+			     *firstFaultVertex, *firstFaultCell, useLagrangeConstraints());
   } // if/else
 } // adjustTopology
 

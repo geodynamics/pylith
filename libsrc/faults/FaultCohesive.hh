@@ -57,14 +57,19 @@ public :
 
   /** Adjust mesh topology for fault implementation.
    *
+   * If firstFaultVertex == 0, then firstFaultVertex is set to the first point
+   * not currently used in the mesh, and firstFaultCell is incremented with this
+   * point. These values are updated as new fault vertices and cells are added.
+   *
    * @param mesh PETSc mesh.
+   * @param firstFaultVertex The first point eligible to become a new fault vertex
+   * @param firstFaultCell The first point eligible to become a new fault cell
    * @param flipFault Flip fault orientation.
    */
   void adjustTopology(topology::Mesh* const mesh,
-		      const bool flipFault =false);
-
-  // PROTECTED METHODS //////////////////////////////////////////////////
-protected :
+                      int *firstFaultVertex,
+                      int *firstFaultCell,
+                      const bool flipFault = false);
 
   /** Cohesive cells use Lagrange multiplier constraints?
    *
@@ -72,7 +77,7 @@ protected :
    * constraints, false otherwise.
    */
   virtual
-  bool _useLagrangeConstraints(void) const = 0;
+  bool useLagrangeConstraints(void) const = 0;
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

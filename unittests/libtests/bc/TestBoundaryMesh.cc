@@ -129,9 +129,11 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
 
   // Adjust topology
   faults::FaultCohesiveKin fault;
+  int firstFaultVertex = 0;
+  int firstFaultCell   = mesh.sieveMesh()->getIntSection(_data->faultLabel)->size();
   fault.label(_data->faultLabel);
   fault.id(_data->faultId);
-  fault.adjustTopology(&mesh, _flipFault);
+  fault.adjustTopology(&mesh, &firstFaultVertex, &firstFaultCell, _flipFault);
 
   // Create submesh
   topology::SubMesh submesh(mesh, _data->bcLabel);

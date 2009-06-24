@@ -129,7 +129,7 @@ void
 pylith::faults::TestFaultCohesiveKin::testUseLagrangeConstraints(void)
 { // testUseLagrangeConstraints
   FaultCohesiveKin fault;
-  CPPUNIT_ASSERT_EQUAL(true, fault._useLagrangeConstraints());
+  CPPUNIT_ASSERT_EQUAL(true, fault.useLagrangeConstraints());
 } // testUseLagrangeConstraints
 
 // ----------------------------------------------------------------------
@@ -903,12 +903,17 @@ pylith::faults::TestFaultCohesiveKin::_initialize(
     names[i][1] = '\0';
   } // for
   
+  int firstFaultVertex = 0;
+  int firstFaultCell   = mesh->sieveMesh()->getIntSection(_data->label)->size();
+  if (fault->useLagrangeConstraints()) {
+    firstFaultCell += mesh->sieveMesh()->getIntSection(_data->label)->size();
+  }
   fault->id(_data->id);
   fault->label(_data->label);
   fault->quadrature(_quadrature);
   
   fault->eqsrcs(const_cast<const char**>(names), nsrcs, sources, nsrcs);
-  fault->adjustTopology(mesh, _flipFault);
+  fault->adjustTopology(mesh, &firstFaultVertex, &firstFaultCell, _flipFault);
   
   const double upDir[] = { 0.0, 0.0, 1.0 };
   const double normalDir[] = { 1.0, 0.0, 0.0 };

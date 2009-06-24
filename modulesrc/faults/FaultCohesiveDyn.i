@@ -99,16 +99,13 @@ namespace pylith {
       const pylith::topology::Field<pylith::topology::SubMesh>&
       cellField(const char* name,
 		const pylith::topology::SolutionFields* fields =0);
-      
-      // PROTECTED METHODS //////////////////////////////////////////////
-    protected :
 
       /** Cohesive cells use Lagrange multiplier constraints?
        *
        * @returns True if implementation using Lagrange multiplier
        * constraints, false otherwise.
        */
-      bool _useLagrangeConstraints(void) const;
+      bool useLagrangeConstraints(void) const;
 
     }; // class FaultCohesiveDyn
 

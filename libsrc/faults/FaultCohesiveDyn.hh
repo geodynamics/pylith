@@ -114,15 +114,12 @@ public :
   cellField(const char* name,
 	    const topology::SolutionFields* fields =0);
 
-  // PROTECTED METHODS //////////////////////////////////////////////////
-protected :
-
   /** Cohesive cells use Lagrange multiplier constraints?
    *
    * @returns True if implementation using Lagrange multiplier
    * constraints, false otherwise.
    */
-  bool _useLagrangeConstraints(void) const;
+  bool useLagrangeConstraints(void) const;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
