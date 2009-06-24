@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-bin_SCRIPTS = pylithinfo
+dist_bin_SCRIPTS = pylithinfo
 
 
 # End of file 
