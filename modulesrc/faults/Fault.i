@@ -58,14 +58,25 @@ namespace pylith {
        * @returns Label of fault
        */
       const char* label(void) const;
+
+      /** Get the number of vertices on the fault.
+       *
+       * @param mesh PETSc mesh
+       * @return faults size
+       */
+      int faultSize(topology::Mesh* const mesh) const;
       
       /** Adjust mesh topology for fault implementation.
        *
        * @param mesh PETSc mesh
        */
+      %apply int *INOUT {int *firstFaultVertex, int *firstFaultCell};
       virtual
       void adjustTopology(pylith::topology::Mesh* const mesh,
-			  const bool flipFault =false) = 0;
+                          int *firstFaultVertex,
+                          int *firstFaultCell,
+                          const bool flipFault = false) = 0;
+      %clear int *firstFaultVertex, int *firstFaultCell;
       
       /** Initialize fault. Determine orientation and setup boundary
        * condition parameters.

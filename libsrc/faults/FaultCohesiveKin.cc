@@ -107,7 +107,7 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
   
   delete _faultMesh; _faultMesh = new topology::SubMesh();
   CohesiveTopology::createFaultParallel(_faultMesh, &_cohesiveToFault, 
-					mesh, id(), _useLagrangeConstraints());
+					mesh, id(), useLagrangeConstraints());
 
   delete _fields; 
   _fields = new topology::Fields<topology::Field<topology::SubMesh> >(*_faultMesh);

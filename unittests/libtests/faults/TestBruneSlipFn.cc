@@ -398,7 +398,12 @@ pylith::faults::TestBruneSlipFn::_initialize(topology::Mesh* mesh,
   mesh->coordsys(&cs);
 
   // Create fault mesh
+  int firstFaultVertex = 0;
+  int firstFaultCell   = mesh->sieveMesh()->getIntSection(faultLabel)->size();
   const bool useLagrangeConstraints = true;
+  if (useLagrangeConstraints) {
+    firstFaultCell += mesh->sieveMesh()->getIntSection(faultLabel)->size();
+  }
   ALE::Obj<ALE::Mesh> faultBoundary = 0;
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
@@ -407,6 +412,7 @@ pylith::faults::TestBruneSlipFn::_initialize(topology::Mesh* mesh,
   CohesiveTopology::create(mesh, *faultMesh, faultBoundary, 
                            sieveMesh->getIntSection(faultLabel),
                            faultId,
+                           firstFaultVertex, firstFaultCell,
                            useLagrangeConstraints);
   // Need to copy coordinates from mesh to fault mesh since we are not
   // using create() instead of createParallel().
@@ -465,7 +471,12 @@ pylith::faults::TestBruneSlipFn::_testInitialize(const _TestBruneSlipFn::DataStr
 
   // Create fault mesh
   topology::SubMesh faultMesh;
+  int firstFaultVertex = 0;
+  int firstFaultCell   = mesh.sieveMesh()->getIntSection(data.faultLabel)->size();
   const bool useLagrangeConstraints = true;
+  if (useLagrangeConstraints) {
+    firstFaultCell += mesh.sieveMesh()->getIntSection(data.faultLabel)->size();
+  }
   ALE::Obj<ALE::Mesh> faultBoundary = 0;
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
@@ -474,6 +485,7 @@ pylith::faults::TestBruneSlipFn::_testInitialize(const _TestBruneSlipFn::DataStr
   CohesiveTopology::create(&mesh, faultMesh, faultBoundary, 
                            sieveMesh->getIntSection(data.faultLabel),
                            data.faultId,
+                           firstFaultVertex, firstFaultCell,
                            useLagrangeConstraints);
   // Need to copy coordinates from mesh to fault mesh since we are not
   // using create() instead of createParallel().

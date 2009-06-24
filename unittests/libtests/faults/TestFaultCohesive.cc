@@ -492,9 +492,14 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   iohandler.read(&mesh);
 
   CPPUNIT_ASSERT(0 != fault);
+  int firstFaultVertex = 0;
+  int firstFaultCell   = mesh.sieveMesh()->getIntSection("fault")->size();
+  if (dynamic_cast<FaultCohesive*>(fault)->useLagrangeConstraints()) {
+    firstFaultCell += mesh.sieveMesh()->getIntSection("fault")->size();
+  }
   fault->id(1);
   fault->label("fault");
-  fault->adjustTopology(&mesh, flipFault);
+  fault->adjustTopology(&mesh, &firstFaultVertex, &firstFaultCell, flipFault);
   //mesh->view(data.filename);
 
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh.dimension());
@@ -621,14 +626,22 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
   iohandler.read(&mesh);
 
   CPPUNIT_ASSERT(0 != faultA);
+  int firstFaultVertex = 0;
+  int firstFaultCell   = mesh.sieveMesh()->getIntSection("faultA")->size() + mesh.sieveMesh()->getIntSection("faultB")->size();
+  if (dynamic_cast<FaultCohesive*>(faultA)->useLagrangeConstraints()) {
+    firstFaultCell += mesh.sieveMesh()->getIntSection("faultA")->size();
+  }
   faultA->id(1);
   faultA->label("faultA");
-  faultA->adjustTopology(&mesh, flipFaultA);
+  faultA->adjustTopology(&mesh, &firstFaultVertex, &firstFaultCell, flipFaultA);
 
   CPPUNIT_ASSERT(0 != faultB);
+  if (dynamic_cast<FaultCohesive*>(faultB)->useLagrangeConstraints()) {
+    firstFaultCell += mesh.sieveMesh()->getIntSection("faultB")->size();
+  }
   faultB->id(2);
   faultB->label("faultB");
-  faultB->adjustTopology(&mesh, flipFaultB);
+  faultB->adjustTopology(&mesh, &firstFaultVertex, &firstFaultCell, flipFaultB);
 
   //sieveMesh->view(data.filename);
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh.dimension());

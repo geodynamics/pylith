@@ -112,6 +112,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
                                          const ALE::Obj<ALE::Mesh>& faultBoundary,
                                          const ALE::Obj<topology::Mesh::IntSection>& groupField,
                                          const int materialId,
+                                         int& firstFaultVertex,
+                                         int& firstFaultCell,
                                          const bool constraintCell)
 { // create
   assert(0 != mesh);
@@ -169,33 +171,36 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   const ALE::Obj<std::set<std::string> >& groupNames = 
     sieveMesh->getIntSections();
   assert(!groupNames.isNull());
-  point_type newPoint = sieve->getBaseSize() + sieve->getCapSize();
   const int numFaultVertices = fVertices->size();
   std::map<point_type,point_type> vertexRenumber;
   std::map<point_type,point_type> cellRenumber;
+  if (firstFaultVertex == 0) {
+    firstFaultVertex += sieve->getBaseSize() + sieve->getCapSize();
+    firstFaultCell   += firstFaultVertex;
+  }
 
   for(SieveSubMesh::label_sequence::iterator v_iter = fVerticesBegin;
       v_iter != fVerticesEnd;
-      ++v_iter, ++newPoint) {
-    vertexRenumber[*v_iter] = newPoint;
+      ++v_iter, ++firstFaultVertex) {
+    vertexRenumber[*v_iter] = firstFaultVertex;
     if (debug) 
       std::cout << "Duplicating " << *v_iter << " to "
 		<< vertexRenumber[*v_iter] << std::endl;
 
     // Add shadow and constraint vertices (if they exist) to group
     // associated with fault
-    groupField->addPoint(newPoint, 1);
+    groupField->addPoint(firstFaultVertex, 1);
 #if defined(FAST_STRATIFY)
     // OPTIMIZATION
-    sieveMesh->setHeight(newPoint, 1);
-    sieveMesh->setDepth(newPoint, 0);
+    sieveMesh->setHeight(firstFaultVertex, 1);
+    sieveMesh->setDepth(firstFaultVertex, 0);
 #endif
     if (constraintCell) {
-      groupField->addPoint(newPoint+numFaultVertices, 1);
+      groupField->addPoint(firstFaultVertex+numFaultVertices, 1);
 #if defined(FAST_STRATIFY)
       // OPTIMIZATION
-      sieveMesh->setHeight(newPoint+numFaultVertices, 1);
-      sieveMesh->setDepth(newPoint+numFaultVertices, 0);
+      sieveMesh->setHeight(firstFaultVertex+numFaultVertices, 1);
+      sieveMesh->setDepth(firstFaultVertex+numFaultVertices, 0);
 #endif
     } // if
 
@@ -209,7 +214,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       const ALE::Obj<IntSection>& group = sieveMesh->getIntSection(*name);
       assert(!group.isNull());
       if (group->getFiberDimension(*v_iter))
-        group->addPoint(newPoint, 1);
+        group->addPoint(firstFaultVertex, 1);
     } // for
   } // for
   const std::set<std::string>::const_iterator namesEnd = groupNames->end();
@@ -218,25 +223,9 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       ++name) {
     sieveMesh->reallocate(sieveMesh->getIntSection(*name));
   } // for
-#if 0 // THE CODE BELOW IS WRONG
-#if defined(FAST_STRATIFY)
-  for(SieveSubMesh::label_sequence::iterator v_iter = fVerticesBegin;
-      v_iter != fVerticesEnd;
-      ++v_iter, ++newPoint) {
-    vertexRenumber[*v_iter] = newPoint;
-    // OPTIMIZATION
-    sieveMesh->setHeight(newPoint, 1);
-    sieveMesh->setDepth(newPoint, 0);
-    if (constraintCell) {
-      // OPTIMIZATION
-      sieveMesh->setHeight(newPoint+numFaultVertices, 1);
-      sieveMesh->setDepth(newPoint+numFaultVertices, 0);
-    }
+  if (constraintCell) {
+    firstFaultVertex += numFaultVertices;
   }
-#endif
-#endif
-  if (constraintCell)
-    newPoint += numFaultVertices;
 
   // Split the mesh along the fault sieve and create cohesive elements
   const ALE::Obj<SieveSubMesh::label_sequence>& faces =
@@ -247,7 +236,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   const ALE::Obj<Mesh::label_type>& material = 
     sieveMesh->getLabel("material-id");
   assert(!material.isNull());
-  const int firstCohesiveCell = newPoint;
+  const int firstCohesiveCell = firstFaultCell;
   TopologyOps::PointSet replaceCells;
   TopologyOps::PointSet noReplaceCells;
   TopologyOps::PointSet replaceVertices;
@@ -257,7 +246,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 
   for(SieveSubMesh::label_sequence::iterator f_iter = facesBegin;
       f_iter != facesEnd;
-      ++f_iter, ++newPoint) {
+      ++f_iter, ++firstFaultCell) {
     const point_type face = *f_iter;
     if (debug)
       std::cout << "Considering fault face " << face << std::endl;
@@ -284,8 +273,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     if (faceVertices.size() != coneSize) {
       std::cout << "Invalid size for faceVertices " << faceVertices.size()
 		<< " of face " << face << "should be " << coneSize << std::endl;
-      std::cout << "  firstCohesiveCell " << firstCohesiveCell << " newPoint " 
-		<< newPoint << " numFaces " << faces->size() << std::endl;
+      std::cout << "  firstCohesiveCell " << firstCohesiveCell << " firstFaultCell " 
+		<< firstFaultCell << " numFaces " << faces->size() << std::endl;
       std::cout << "  faceSet:" << std::endl;
       for(std::set<Mesh::point_type>::const_iterator p_iter = faceSet.begin();
 	  p_iter != faceSet.end();
@@ -370,33 +359,33 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     noReplaceCells.insert(otherCell);
     replaceCells.insert(cell);
     replaceVertices.insert(faceCone, &faceCone[coneSize]);
-    cellRenumber[cell] = newPoint;
+    cellRenumber[cell] = firstFaultCell;
     // Adding cohesive cell (not interpolated)
     if (debug)
-      std::cout << "  Creating cohesive cell " << newPoint << std::endl;
+      std::cout << "  Creating cohesive cell " << firstFaultCell << std::endl;
     for (int c = 0; c < coneSize; ++c) {
       if (debug)
 	std::cout << "    vertex " << faceCone[c] << std::endl;
-      sieve->addArrow(faceCone[c], newPoint);
+      sieve->addArrow(faceCone[c], firstFaultCell);
     } // for
     for (int c = 0; c < coneSize; ++c) {
       if (debug)
 	std::cout << "    shadow vertex " << vertexRenumber[faceCone[c]] << std::endl;
-      sieve->addArrow(vertexRenumber[faceCone[c]], newPoint);
+      sieve->addArrow(vertexRenumber[faceCone[c]], firstFaultCell, true);
     } // for
     if (constraintCell) {
       for (int c = 0; c < coneSize; ++c) {
         if (debug)
 	  std::cout << "    Lagrange vertex " << vertexRenumber[faceCone[c]]+numFaultVertices << std::endl;
-        sieve->addArrow(vertexRenumber[faceCone[c]]+numFaultVertices, newPoint);
+        sieve->addArrow(vertexRenumber[faceCone[c]]+numFaultVertices, firstFaultCell, true);
       } // for
     } // if
     // TODO: Need to reform the material label when sieve is reallocated
-    sieveMesh->setValue(material, newPoint, materialId);
+    sieveMesh->setValue(material, firstFaultCell, materialId);
 #if defined(FAST_STRATIFY)
     // OPTIMIZATION
-    sieveMesh->setHeight(newPoint, 0);
-    sieveMesh->setDepth(newPoint, 1);
+    sieveMesh->setHeight(firstFaultCell, 0);
+    sieveMesh->setDepth(firstFaultCell, 1);
 #endif
     sV2.clear();
     cV2.clear();
@@ -446,7 +435,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
         if (debug)
 	  std::cout << "    Adding new support " << vertexRenumber[*v_iter]
 		    << " --> " << support[s] << std::endl;
-        sieve->addArrow(vertexRenumber[*v_iter], support[s]);
+        sieve->addArrow(vertexRenumber[*v_iter], support[s], true);
       } else {
         if (debug)
 	  std::cout << "    Keeping same support " << *v_iter<<","
@@ -687,11 +676,12 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   assert(!cohesiveCells.isNull());
   const SieveMesh::label_sequence::iterator cBegin = cohesiveCells->begin();
   const SieveMesh::label_sequence::iterator cEnd = cohesiveCells->end();
-  const int sieveEnd = sieve->getBaseSize() + sieve->getCapSize();
+  const int sieveEnd = *std::max_element(sieve->getChart().begin(), sieve->getChart().end())+1;
   const int numFaces = cohesiveCells->size();
   int globalSieveEnd = 0;
   int globalFaceOffset = 0;
 
+  // TODO: For multiple faults, this produces duplicate names. Not sure if we need to worry
   MPI_Allreduce((void *) &sieveEnd, (void *) &globalSieveEnd, 1,
 		MPI_INT, MPI_SUM, sieve->comm());
   MPI_Scan((void *) &numFaces, (void *) &globalFaceOffset, 1,

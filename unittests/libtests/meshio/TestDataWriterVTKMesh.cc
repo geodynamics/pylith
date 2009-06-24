@@ -269,9 +269,14 @@ pylith::meshio::TestDataWriterVTKMesh::_initialize(void)
 
   if (0 != _data->faultLabel) {
     faults::FaultCohesiveKin fault;
+    int firstFaultVertex = 0;
+    int firstFaultCell   = _mesh->sieveMesh()->getIntSection(_data->faultLabel)->size();
+    if (fault.useLagrangeConstraints()) {
+      firstFaultCell += _mesh->sieveMesh()->getIntSection(_data->faultLabel)->size();
+    }
     fault.label(_data->faultLabel);
     fault.id(_data->faultId);
-    fault.adjustTopology(_mesh, _flipFault);
+    fault.adjustTopology(_mesh, &firstFaultVertex, &firstFaultCell, _flipFault);
   } // if
 } // _initialize
 

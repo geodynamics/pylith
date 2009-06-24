@@ -51,9 +51,15 @@ public :
 
   /** Create cohesive cells.
    *
+   * If firstFaultVertex == 0, then firstFaultVertex is set to the first point
+   * not currently used in the mesh, and firstFaultCell is incremented with this
+   * point. These values are updated as new fault vertices and cells are added.
+   *
    * @param fault Finite-element mesh of fault (output)
    * @param mesh Finite-element mesh
    * @param materialId Material id for cohesive elements.
+   * @param firstFaultVertex The first point eligible to become a new fault vertex
+   * @param firstFaultCell The first point eligible to become a new fault cell
    * @param constraintCell True if creating cells constrained with 
    *   Lagrange multipliers that require extra vertices, false otherwise
    */
@@ -63,7 +69,9 @@ public :
               const ALE::Obj<ALE::Mesh>& faultBoundary,
               const ALE::Obj<topology::Mesh::IntSection>& groupField,
               const int materialId,
-              const bool constraintCell =false);
+              int& firstFaultVertex,
+              int& firstFaultCell,
+              const bool constraintCell = false);
 
   /** Create (distributed) fault mesh from cohesive cells.
    *

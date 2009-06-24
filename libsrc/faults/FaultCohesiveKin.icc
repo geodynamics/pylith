@@ -17,7 +17,7 @@
 // Cohesive cells use Lagrange multiplier constraints?
 inline
 bool
-pylith::faults::FaultCohesiveKin::_useLagrangeConstraints(void) const {
+pylith::faults::FaultCohesiveKin::useLagrangeConstraints(void) const {
   return true;
 } // useLagrangeConstraints
 
