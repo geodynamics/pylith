@@ -109,7 +109,7 @@ class TimeDependent(PetscComponent, ModuleTimeDependent):
     if not isinstance(self.inventory.dbChange, NullComponent):
       ModuleTimeDependent.dbChange(self, self.inventory.dbChange)
     if not isinstance(self.inventory.thChange, NullComponent):
-      ModuleTimeDependent.thChange(self, self.inventory.thChange)
+      ModuleTimeDependent.dbTimeHistory(self, self.inventory.thChange)
     return
 
 

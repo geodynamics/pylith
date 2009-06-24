@@ -33,6 +33,28 @@ class TestDirichletBC(unittest.TestCase):
     return
 
 
+  def test_configure(self):
+    """
+    Test constructor.
+    """
+    from spatialdata.spatialdb.SimpleDB import SimpleDB
+    db = SimpleDB()
+    db._configure()
+
+    from spatialdata.spatialdb.TimeHistory import TimeHistory
+    th = TimeHistory()
+    th._configure()
+
+    from pylith.bc.DirichletBC import DirichletBC
+    bc = DirichletBC()
+    bc.inventory.dbInitial = db
+    bc.inventory.dbRate = db
+    bc.inventory.dbChange = db
+    bc.inventory.thChange = th    
+    bc._configure()
+    return
+
+
   def test_implementsConstraint(self):
     """
     Test to make sure DirichletBC satisfies constraint requirements.
