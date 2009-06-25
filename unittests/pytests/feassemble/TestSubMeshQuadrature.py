@@ -120,13 +120,13 @@ class TestSubMeshQuadrature(unittest.TestCase):
     from pylith.utils.testarray import test_double
     from pylith.utils.utils import TestArray_checkDouble
 
-    self.assertTrue(TestArray_checkDouble(basisE.ravel(),
+    self.failUnless(TestArray_checkDouble(basisE.ravel(),
                                           quadrature.basis()))
-    self.assertTrue(TestArray_checkDouble(basisDerivE.ravel(),
+    self.failUnless(TestArray_checkDouble(basisDerivE.ravel(),
                                           quadrature.basisDerivRef()))
-    self.assertTrue(TestArray_checkDouble(quadPtsE.ravel(),
+    self.failUnless(TestArray_checkDouble(quadPtsE.ravel(),
                                           quadrature.quadPtsRef()))
-    self.assertTrue(TestArray_checkDouble(quadWtsE.ravel(),
+    self.failUnless(TestArray_checkDouble(quadWtsE.ravel(),
                                           quadrature.quadWts()))
 
     quadrature.initializeGeometry()
