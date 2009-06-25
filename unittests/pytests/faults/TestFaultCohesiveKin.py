@@ -108,7 +108,9 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault.inventory.faultLabel = "fault"
     fault._configure()
 
-    fault.adjustTopology(mesh)
+    firstFaultVertex = 0
+    firstFaultCell = 0
+    fault.adjustTopology(mesh, firstFaultVertex, firstFaultCell)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
@@ -334,7 +336,9 @@ class TestFaultCohesiveKin(unittest.TestCase):
     eqsrc.inventory.slipfn = slipfn
     eqsrc._configure()
 
-    fault.adjustTopology(mesh)
+    firstFaultVertex = 0
+    firstFaultCell = 0
+    fault.adjustTopology(mesh, firstFaultVertex, firstFaultCell)
     fault.preinitialize(mesh)
     fault.timeStep(dt)
     fault.verifyConfiguration()
