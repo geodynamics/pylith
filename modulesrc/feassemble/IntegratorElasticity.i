@@ -90,6 +90,13 @@ namespace pylith {
 		const pylith::topology::Mesh& mesh,
 		pylith::topology::SolutionFields* const fields =0);
       
+      /** Get output fields.
+       *
+       * @returns Output (buffer) fields.
+       */
+      const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
+      outputFields(void) const;
+
     }; // IntegratorElasticity
 
   } // feassemble

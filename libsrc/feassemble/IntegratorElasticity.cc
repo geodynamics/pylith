@@ -423,6 +423,14 @@ pylith::feassemble::IntegratorElasticity::cellField(
 } // cellField
 
 // ----------------------------------------------------------------------
+// Get output fields.
+const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
+pylith::feassemble::IntegratorElasticity::outputFields(void) const
+{ // outputFields
+  return _outputFields;
+} // outputFields
+
+// ----------------------------------------------------------------------
 // Allocate buffer for tensor field at quadrature points.
 void
 pylith::feassemble::IntegratorElasticity::_allocateTensorField(

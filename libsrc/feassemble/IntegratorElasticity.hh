@@ -101,6 +101,13 @@ public :
    */
   void verifyConfiguration(const topology::Mesh& mesh) const;
 
+  /** Get output fields.
+   *
+   * @returns Output (buffer) fields.
+   */
+  const topology::Fields<topology::Field<topology::Mesh> >*
+  outputFields(void) const;
+
   /** Get cell field associated with integrator.
    *
    * @param name Name of vertex field.
