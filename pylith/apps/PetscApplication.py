@@ -66,9 +66,7 @@ class PetscApplication(Application):
     from pylith.utils.PetscComponent import PetscComponent
     for component in self.components():
       if isinstance(component, PetscComponent):
-        component.compilePerformanceLog()
-        if hasattr(component, 'perfLogger'):
-          self.perfLogger.join(component.perfLogger)
+        component.compilePerformanceLog(self.perfLogger)
     return
 
 

@@ -34,23 +34,23 @@ class PetscComponent(Component):
     return
   
 
-  def compilePerformanceLog(self):
+  def compilePerformanceLog(self, parentLogger):
     """
     Compile performance and memory information.
     """
+    if hasattr(self, 'perfLogger'):
+      if not parentLogger is None:
+        parentLogger.join(self.perfLogger)
+
     for component in self.components():
       if isinstance(component, PetscComponent):
-        component.compilePerformanceLog()
-        if hasattr(component, 'perfLogger'):
-          self.perfLogger.join(component.perfLogger)
+        component.compilePerformanceLog(parentLogger)
 
       # Facility arrays are not PetscComponents but have components().
       elif hasattr(component, "components"):
         for subcomponent in component.components():
           if isinstance(subcomponent, PetscComponent):
-            subcomponent.compilePerformanceLog()
-            if hasattr(subcomponent, 'perfLogger'):
-              self.perfLogger.join(subcomponent.perfLogger)
+            subcomponent.compilePerformanceLog(parentLogger)
     return
 
 

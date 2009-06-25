@@ -94,6 +94,15 @@ pylith::meshio::OutputManager<mesh_type, field_type>::cellFilter(
 } // cellFilter
 
 // ----------------------------------------------------------------------
+// Get fields used in output.
+template<typename mesh_type, typename field_type>
+const pylith::topology::Fields<field_type>*
+pylith::meshio::OutputManager<mesh_type, field_type>::fields(void) const
+{ // fields
+  return _fields;
+} // fields
+
+// ----------------------------------------------------------------------
 // Prepare for output.
 template<typename mesh_type, typename field_type>
 void
@@ -236,6 +245,7 @@ pylith::meshio::OutputManager<mesh_type, field_type>::_dimension(const field_typ
       fieldOut.cloneSection(fieldIn);
       fieldOut.vectorFieldType(fieldIn.vectorFieldType());
       fieldOut.scale(fieldIn.scale());
+
       logger.stagePop();
     } // if
     field_type& fieldOut = _fields->get(fieldName.c_str());

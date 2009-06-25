@@ -345,7 +345,10 @@ class Formulation(PetscComponent, ModuleFormulation):
       constraint.finalize()
     for output in self.output.components():
       output.close()
+      output.finalize()
     self._debug.log(resourceUsageString())
+    
+    self._modelMemoryUse()
 
     self._eventLogger.eventEnd(logEvent)
     return
@@ -534,7 +537,6 @@ class Formulation(PetscComponent, ModuleFormulation):
       self.perfLogger.logQuadrature('Quadrature', integrator.quadrature())
     # Placeholders until we know we they go
     self.perfLogger.memory['Fault'] = 0
-    self.perfLogger.memory['Output'] = 0
     return
 
 

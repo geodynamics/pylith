@@ -10,10 +10,13 @@ BUGS
 RELEASE
 
   Release notes
+  Manual improvements
+    pylithinfo
+    list of components
+    units
+    
 
 BONUS
-
-  pylithinfo (Python application, send extra args to PyLith)
 
   Memory model
 

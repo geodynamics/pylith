@@ -120,6 +120,16 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
     return
   
 
+  def finalize(self):
+    """
+    Cleanup.
+    """
+    BoundaryCondition.finalize(self)
+    Integrator.finalize(self)
+    self._modelMemoryUse()
+    return
+  
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
@@ -139,6 +149,14 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
     ModuleAbsorbingDampers.__init__(self)
     return
   
+
+  def _modelMemoryUse(self):
+    """
+    Model memory allocation.
+    """
+    self.perfLogger.logFields("BoundaryConditions", self.parameterFields())
+    return
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

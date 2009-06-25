@@ -42,6 +42,12 @@ namespace pylith {
       /// Deallocate PETSc and local data structures.
       void deallocate(void);
   
+      /** Get averaged field buffer.
+       *
+       * @returns Field associated with averaged values.
+       */
+      const field_type* fieldAvg(void) const;
+  
       /** Filter field over cells.
        *
        * @param fieldIn Field to filter.

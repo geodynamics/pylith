@@ -82,10 +82,10 @@ class Material(PetscComponent):
     quadrature.meta['tip'] = "Quadrature object for numerical integration."
 
 
-    #from pylith.perf.MemoryLogger import MemoryLogger
-    #perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
-    #                                     factory=MemoryLogger)
-    #perfLogger.meta['tip'] = "Performance and memory logging."
+    from pylith.perf.MemoryLogger import MemoryLogger
+    perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
+                                         factory=MemoryLogger)
+    perfLogger.meta['tip'] = "Performance and memory logging."
 
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -135,21 +135,21 @@ class Material(PetscComponent):
     return
   
 
+  def finalize(self):
+    """
+    Cleanup.
+    """
+    if not self.output is None:
+      self.output.finalize()
+    self._modelMemoryUse()
+    return
+
+
   def getDataMesh(self):
     """
     Get mesh associated with data fields.
     """
     return (self.mesh, "material-id", self.id())
-
-
-  def modelMemoryUse(self):
-    """
-    Model allocated memory.
-    """
-    #self.perfLogger.logMaterial('Materials', self)
-    #self.perfLogger.logField('Materials', self.propertiesField())
-    #self.perfLogger.logField('Materials', self.stateVarsField())
-    return
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -167,7 +167,7 @@ class Material(PetscComponent):
       self.dbInitialState(self.inventory.dbInitialState)
 
     self.quadrature = self.inventory.quadrature
-    #self.perfLogger = self.inventory.perfLogger
+    self.perfLogger = self.inventory.perfLogger
     return
 
   
@@ -177,6 +177,16 @@ class Material(PetscComponent):
     """
     raise NotImplementedError, \
           "Please implement _createModuleOb() in derived class."
+
+
+  def _modelMemoryUse(self):
+    """
+    Model allocated memory.
+    """
+    self.perfLogger.logMaterial('Materials', self)
+    self.perfLogger.logField('Materials', self.propertiesField())
+    self.perfLogger.logField('Materials', self.stateVarsField())
+    return
 
 
   def _setupLogging(self):

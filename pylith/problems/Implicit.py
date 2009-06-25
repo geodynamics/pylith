@@ -148,7 +148,6 @@ class Implicit(Formulation):
 
     memoryLogger.stagePop()
     memoryLogger.setDebug(0)
-    self._modelMemoryUse()
     return
 
 
