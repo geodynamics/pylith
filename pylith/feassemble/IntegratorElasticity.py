@@ -108,6 +108,16 @@ class IntegratorElasticity(Integrator):
     return
 
 
+  def finalize(self):
+    """
+    Cleanup.
+    """
+    Integrator.finalize(self)
+    self.materialObj.finalize()
+    self.output.finalize()
+    return
+
+
   def getDataMesh(self):
     """
     Get mesh associated with data fields.
@@ -133,14 +143,6 @@ class IntegratorElasticity(Integrator):
     self.output.initialize(normalizer, self.materialObj.quadrature)
     self.output.writeInfo()
     self.output.open(totalTime, numTimeSteps)
-    return
-
-
-  def _modelMemoryUse(self):
-    """
-    Model allocated memory.
-    """
-    self.materialObj.modelMemoryUse()
     return
 
 

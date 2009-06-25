@@ -50,7 +50,6 @@ class ElasticityImplicit(IntegratorElasticity, ModuleElasticityImplicit):
     ModuleElasticityImplicit.initialize(self, self.mesh)
     self._initializeOutput(totalTime, numTimeSteps, normalizer)
     
-    self._modelMemoryUse()
     self._eventLogger.eventEnd(logEvent)
     return
 

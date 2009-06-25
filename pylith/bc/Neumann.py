@@ -125,6 +125,16 @@ class Neumann(BoundaryCondition,
     return
   
 
+  def finalize(self):
+    """
+    Cleanup.
+    """
+    BoundaryCondition.finalize(self)
+    Integrator.finalize(self)
+    self._modelMemoryUse()
+    return
+  
+
   def getDataMesh(self):
     """
     Get mesh associated with data fields.
@@ -163,6 +173,14 @@ class Neumann(BoundaryCondition,
     ModuleNeumann.__init__(self)
     return
   
+
+  def _modelMemoryUse(self):
+    """
+    Model memory allocation.
+    """
+    self.perfLogger.logFields("BoundaryConditions", self.parameterFields())
+    return
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

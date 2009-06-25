@@ -108,7 +108,6 @@ class Explicit(Formulation):
 
     logger.stagePop()
     logger.setDebug(0)
-    self._modelMemoryUse()
     self._eventLogger.eventEnd(logEvent)
     return
 

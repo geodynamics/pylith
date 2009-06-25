@@ -112,11 +112,6 @@ class Problem(PetscComponent):
                                           factory=NullComponent)
     gravityField.meta['tip'] = "Database used for gravity field."
 
-    from pylith.perf.MemoryLogger import MemoryLogger
-    perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
-                                         factory=MemoryLogger)
-    perfLogger.meta['tip'] = "Performance and memory logging."
-
   
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -229,7 +224,6 @@ class Problem(PetscComponent):
       self.gravityField = None
     else:
       self.gravityField = self.inventory.gravityField
-    self.perfLogger = self.inventory.perfLogger
     return
 
 

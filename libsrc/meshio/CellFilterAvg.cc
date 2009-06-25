@@ -63,6 +63,15 @@ pylith::meshio::CellFilterAvg<mesh_type, field_type>::clone(void) const
 } // clone
 
 // ----------------------------------------------------------------------
+// Get averaged field buffer.
+template<typename mesh_type, typename field_type>
+const field_type*
+pylith::meshio::CellFilterAvg<mesh_type, field_type>::fieldAvg(void) const
+{ // fieldAvg
+  return _fieldAvg;
+} // fieldAvg
+  
+// ----------------------------------------------------------------------
 // Filter field.
 template<typename mesh_type, typename field_type>
 const field_type&

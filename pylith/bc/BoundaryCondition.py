@@ -79,6 +79,11 @@ class BoundaryCondition(PetscComponent, ModuleBoundaryCondition):
 		        "tangent direction that is not collinear " \
 			"with normal direction."
 
+    from pylith.perf.MemoryLogger import MemoryLogger
+    perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
+                                         factory=MemoryLogger)
+    perfLogger.meta['tip'] = "Performance and memory logging."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -107,6 +112,14 @@ class BoundaryCondition(PetscComponent, ModuleBoundaryCondition):
     return
 
 
+  def finalize(self):
+    """
+    Cleanup.
+    """
+    self._modelMemoryUse()
+    return
+  
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
@@ -116,6 +129,7 @@ class BoundaryCondition(PetscComponent, ModuleBoundaryCondition):
     PetscComponent._configure(self)
     ModuleBoundaryCondition.label(self, self.inventory.label)
     self.upDir = map(float, self.inventory.upDir)
+    self.perfLogger = self.inventory.perfLogger
     return
 
 
@@ -125,6 +139,15 @@ class BoundaryCondition(PetscComponent, ModuleBoundaryCondition):
     """
     raise NotImplementedError, \
           "Please implement _createModuleObj() in derived class."
+
+
+  def _modelMemoryUse(self):
+    """
+    Model memory allocation.
+    """
+    raise NotImplementedError, \
+          "Please implement _modelModelUse() in derived class."
+    return
 
 
 # End of file 

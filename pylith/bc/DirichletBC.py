@@ -45,12 +45,6 @@ class DirichletBC(BoundaryCondition,
                                       family="spatial_database")
   dbInitial.meta['tip'] = "Database of parameters for initial values."
   
-  from pylith.perf.MemoryLogger import MemoryLogger
-  perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
-                                       factory=MemoryLogger)
-  perfLogger.meta['tip'] = "Performance and memory logging."
-
-
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="dirichletbc"):
@@ -95,8 +89,17 @@ class DirichletBC(BoundaryCondition,
     self.normalizer(normalizer)
     BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 
-    self._modelMemoryUse()
     self._eventLogger.eventEnd(logEvent)    
+    return
+  
+
+  def finalize(self):
+    """
+    Cleanup.
+    """
+    BoundaryCondition.finalize(self)
+    Constraint.finalize(self)
+    self._modelMemoryUse()
     return
   
 

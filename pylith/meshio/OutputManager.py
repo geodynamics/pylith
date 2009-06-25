@@ -36,6 +36,7 @@ class OutputManager(PetscComponent):
   @li \b coordsys Coordinate system for output.
   @li \b vertex_filter Filter for vertex data.
   @li \b cell_filter Filter for cell data.
+  @li \b perf_logger Performance (memory) logger.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -70,6 +71,11 @@ class OutputManager(PetscComponent):
                                        factory=NullComponent)
   cellFilter.meta['tip'] = "Filter for cell data."
   
+  from pylith.perf.MemoryLogger import MemoryLogger
+  perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
+                                       factory=MemoryLogger)
+  perfLogger.meta['tip'] = "Performance and memory logging."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -144,6 +150,16 @@ class OutputManager(PetscComponent):
     self.writer.initialize(normalizer)
 
     self._eventLogger.eventEnd(logEvent)
+    return
+
+
+  def finalize(self):
+    """
+    Cleanup after running problem.
+    """
+    if not isinstance(self.inventory.cellFilter, NullComponent):
+      self.cellFilter.finalize()
+    self._modelMemoryUse()
     return
 
 
@@ -239,6 +255,7 @@ class OutputManager(PetscComponent):
     Set members based using inventory.
     """
     PetscComponent._configure(self)
+    self.perfLogger = self.inventory.perfLogger
     return
 
 
@@ -250,6 +267,14 @@ class OutputManager(PetscComponent):
         "Please implement _createModuleObj() in derived class."
     return
   
+
+  def _modelMemoryUse(self):
+    """
+    Model memory allocation.
+    """
+    self.perfLogger.logFields('Output', self.fields())
+    return
+
 
   def _estimateNumSteps(self, totalTime, numTimeSteps):
     """

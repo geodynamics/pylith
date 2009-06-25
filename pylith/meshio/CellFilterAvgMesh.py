@@ -48,6 +48,16 @@ class CellFilterAvgMesh(CellFilter, ModuleCellFilterAvg):
     return
 
 
+  # PRIVATE METHODS ///////////////////////////////////////////////////
+
+  def _modelMemoryUse(self):
+    """
+    Model memory allocation.
+    """
+    self.perfLogger.logField('Output', self.fieldAvg())
+    return
+
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def output_cell_filter():

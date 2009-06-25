@@ -116,6 +116,8 @@ class MemoryLogger(Logger):
     """
     Log fields to determine memory from our model.
     """
+    if fields is None:
+      return
     names = fields.fieldNames()
     for name in names:
       field = fields.get(name)

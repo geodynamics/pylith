@@ -62,6 +62,12 @@ namespace pylith {
        */
       void cellFilter(CellFilter<mesh_type, field_type>* const filter);
       
+      /** Get fields used in output.
+       *
+       * @returns Fields associated with output.
+       */
+      const pylith::topology::Fields<field_type>* fields(void) const;
+
       /** Prepare for output.
        *
        * @param mesh Finite-element mesh object.
