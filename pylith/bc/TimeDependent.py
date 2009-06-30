@@ -58,8 +58,7 @@ class TimeDependent(PetscComponent, ModuleTimeDependent):
 
   import pyre.inventory
 
-  from spatialdata.spatialdb.SimpleDB import SimpleDB
-  dbInitial = pyre.inventory.facility("db_initial", factory=SimpleDB, 
+  dbInitial = pyre.inventory.facility("db_initial", factory=NullComponent, 
                                       family="spatial_database")
   dbInitial.meta['tip'] = "Database with initial values."
     
