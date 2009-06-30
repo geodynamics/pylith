@@ -2,19 +2,16 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-RELEASE
-
-  Release notes
-  Manual improvements
-    pylithinfo
-    list of components
-    
-
 ----------------------------------------------------------------------
 POST RELEASE 1.4
 ----------------------------------------------------------------------
 
 Matt
+
+  field split
+
+Brad
+
   Memory model
     C++ Objects with fields
         DirichletBC (BoundaryConditionPoints::_parameters) ACCESSOR DONE
@@ -30,10 +27,7 @@ Matt
         OutputManager (_fields)
         CellFilterAvg (_fieldAvg)
         VertexFilterVecNorm (_fieldVecNorm)
-      
-  field split
-
-Brad
+ 
   TimeHistorySlipFn (final slip, start time)
   full-scale testing
     2d/quad4
@@ -178,6 +172,8 @@ RELEASE 1.5
 6. Manual
 
     * Cleanup notation and discussion of inelastic materials
+
+7. Body forces?
 
 Modularize output? [Matt]
 
