@@ -1723,7 +1723,7 @@ PETSc options that often result in improved performance in quasi-static
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="3">
+<lyxtabular version="3" rows="9" columns="3">
 <features>
 <column alignment="left" valignment="top" width="0.9in">
 <column alignment="center" valignment="middle" width="0.8in">
@@ -1925,7 +1925,7 @@ Number of iterations after which Gram-Schmidt orthogonalization is restarted.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1936,7 +1936,7 @@ ksp_rtol
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1947,11 +1947,77 @@ ksp_rtol
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Convergence tolerance for relative decrease in residual norm.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+ksp_converged_reason
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+true
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Indicate why iterating stopped in linear solve.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+snes_converged_reason
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+true
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Indicate why iterating stopped in nonlinear solve.
 \end_layout
 
 \end_inset
@@ -3341,7 +3407,11 @@ The rate of convergence in quasi-static (implicit) problems can sometimes
 \end_layout
 
 \begin_layout Itemize
-If you encounter errors or warnings, use the 
+If you encounter errors or warnings, run 
+\family typewriter
+pylithinfo
+\family default
+ or use the 
 \family typewriter
 --help
 \family default
@@ -3353,8 +3423,8 @@ If you encounter errors or warnings, use the
 \family typewriter
 --help-properties
 \family default
- command line arguments to check the parameters to make sure PyLith is using
- the parameters you intended.
+ command line arguments when running PyLith to check the parameters to make
+ sure PyLith is using the parameters you intended.
 \end_layout
 
 \begin_layout Itemize
@@ -3366,9 +3436,17 @@ Use the
 \family typewriter
 --petsc.ksp_monitor
 \family default
-, and 
+, 
 \family typewriter
 --petsc.ksp_view
+\family default
+, 
+\family typewriter
+--petsc.ksp_converged_reason
+\family default
+, and 
+\family typewriter
+--petsc.snes_converged_reason
 \family default
  command line arguments (or set them in a parameter file) to view PyLith
  performance and monitor the convergence.
