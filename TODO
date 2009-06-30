@@ -2,31 +2,13 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-BUGS
-
-  Distribution fails for cases when a processor doesn't have vertices
-  on a fault.
-
 RELEASE
 
   Release notes
   Manual improvements
     pylithinfo
     list of components
-    units
     
-
-BONUS
-
-  Memory model
-
-----------------------------------------------------------------------
-RELEASE 1.4
-----------------------------------------------------------------------
-
-Charles
-  3-D Power-law rheology
-    full-scale test
 
 ----------------------------------------------------------------------
 POST RELEASE 1.4
@@ -52,7 +34,7 @@ Matt
   field split
 
 Brad
-  ArbitratySlipFn (final slip, start time)
+  TimeHistorySlipFn (final slip, start time)
   full-scale testing
     2d/quad4
       axialtract
