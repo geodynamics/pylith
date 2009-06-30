@@ -1,0 +1,1034 @@
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+
+\end_preamble
+\use_default_options false
+\language english
+\inputencoding latin1
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 2in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Chapter
+\begin_inset CommandInset label
+LatexCommand label
+name "cha:components"
+
+\end_inset
+
+PyLith and Spatialdata Components
+\end_layout
+
+\begin_layout Section
+Application components
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+PyLithApp pylith.apps.PyLithApp
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+PyLith application.
+\end_layout
+
+\begin_layout Subsection
+Problem components
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+TimeDependent pylith.problems.TimeDependent
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Time-dependent problem.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+Implicit pylith.problems.Implicit
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Implicit time stepping for static and quasi-static simulations.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+Explicit pylith.problems.Explicit
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Explicit time stepping for dynamic simulations.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+SolverLinear pylith.problems.SolverLinear
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Linear PETSc solver (KSP).
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+SolverNonlinear pylith.problems.SolverNonlinear
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Nonlinear PETSc solver (SNES).
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+TimeStepUniform pylith.problems.TimeStepUniform
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Uniform time stepping.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+TimeStepAdapt pylith.problems.TimeStepAdapt
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Adaptive time stepping (time step selected based on estimated stable time
+ step).
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+TimeStepUser pylith.problems.TimeStepUser
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+User defined time stepping (variable time step set by user).
+\end_layout
+
+\begin_layout Subsection
+Utility components
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+NullComponent pylith.utils.NullComponent
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Null component used to set a facility to an empty value.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+MemoryLogger pylith.perf.MemoryLogger
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Memory model logger for reporting memory use by Sieve.
+\end_layout
+
+\begin_layout Subsection
+Topology components
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+Distributor pylith.topology.Distributor
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Distributor of mesh among processors in parallel simulations.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+JacobianViewer pylith.topology.JacobianViewer
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Viewer for writing Jacobian sparse matrix to file.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+MeshGenerator pylith.topology.MeshGenerator
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Mesh generator/importer.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+MeshImporter pylith.topology.MeshImporter
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Mesh importer/reader.
+\end_layout
+
+\begin_layout Subsection
+Material components
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+ElasticStrain1D pylith.materials.ElasticStrain1D
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Linearly elastic 1-D bulk constitutive model with 1-D strain (
+\begin_inset Formula $\epsilon_{yy}=\epsilon_{zz}=0$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+ElasticStress1D pylith.materials.ElasticStress1D
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Linearly elastic 1-D bulk constitutive model with 1-D stress (
+\begin_inset Formula $\sigma_{yy}=\sigma_{zz}=0$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+ElasticPlaneStrain pylith.materials.ElasticPlaneStrain
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Linearly elastic 2-D bulk constitutive model with plane strain (
+\begin_inset Formula $\epsilon_{zz}=0$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+ElasticPlaneStress pylith.materials.ElasticPlaneStress
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Linearly elastic 2-D bulk constitutive model with plane stress (
+\begin_inset Formula $\sigma_{zz}=0$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+ElasticIsotropic3D pylith.materials.ElasticIsotropic3D
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Linearly elastic 3-D bulk constitutive model.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+MaxwellIsotropic3D pylith.materials.MaxwellIsotropic3D
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Linear Maxwell viscoelastic bulk constitutive model.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+GenMaxwellIsotropic3D pylith.materials.GenMaxwellIsotropic3D
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Generalized Maxwell viscoelastic bulk constitutive model.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+PowerLaw3D pylith.materials.PowerLaw3D
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Power-law viscoelastic bulk constitutive model.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+Homogeneous pylith.materials.Homogeneous
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Container with a single bulk material.
+\end_layout
+
+\begin_layout Subsection
+Boundary condition components
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+AbsorbingDampers pylith.bc.AbsorbingDampers
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Absorbing boundary condition using simple dashpots.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+DirichletBC pylith.bc.DirichletBC
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Dirichlet (prescribed displacements) boundary condition for a set of points.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+DirichletBoundary pylith.bc.DirichletBoundary
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Dirichlet (prescribed displacements) boundary condition for a set of points
+ associated with a boundary surface.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+Neumann pylith.bc.Neumann
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Neumann (traction) boundary conditions applied to a boundary surface.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+PointForce pylith.bc.PointForce
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Point forces applied to a set of vertices.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+ZeroDispDB pylith.bc.ZeroDispDB
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Specialized UniformDB with uniform zero displacements at all degrees of
+ freedom.
+\end_layout
+
+\begin_layout Subsection
+Fault components
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+FaultCohesiveKin pylith.faults.FaultCohesiveKin
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Fault surface with kinematic (prescribed) slip implemented using cohesive
+ elements.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+EqKinSrc pylith.faults.EqKinSrc
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Kinematic (prescribed) slip earthquake rupture.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+SingleRupture pylith.faults.SingleRupture
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Container with one kinematic earthquake rupture.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+StepSlipFn pylith.faults.StepSlipFn
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Step function slip-time function.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+ConstRateSlipFn pylith.faults.ConstRateSlipFn
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Constant slip rate slip-time function.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+BruneSlipFn pylith.faults.BruneSlipFn
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Slip-time function where slip rate is equal to Brune's far-field slip function.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+LiuCosSlipFn pylith.faults.LiuCosSlipFn
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Slip-time functio n composed of three sine/cosine functions.
+ Similar to Brune's far-field time function but with more abrupt termination
+ of slip.
+ 
+\end_layout
+
+\begin_layout Subsection
+Discretization components
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+FIATLagrange pylith.feassemble.FIATLagrange
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Finite-element basis functions and quadrature rules for a Lagrange reference
+ finite-element cell (point, line, quadrilateral, or hexahedron) using FIAT.
+ The basis functions are constructed from the tensor produce of 1-D Lagrange
+ reference cells.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+FIATSimplex pylith.feassemble.FIATSimplex
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Finite-element basis functions and quadrature rules for a simplex finite-element
+ cell (point, line, triangle, or tetrahedron) using FIAT.
+\end_layout
+
+\begin_layout Subsection
+Output components
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+MeshIOAscii pylith.meshio.MeshIOAscii
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Reader for simple mesh ASCII files.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+MeshIOCubit pylith.meshio.MeshIOCubit
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Reader for CUBIT Exodus files.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+MeshIOLagrit pylith.meshio.MeshIOLagrit
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Reader for LaGriT GMV/Pset files.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+OutputManagerMesh pylith.meshio.OutputManagerMesh
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Output manager for mesh information and data.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+OutputManagerSubMesh pylith.meshio.OutputManagerSubMesh
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Output manager for submesh information and data.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+OutputSoln pylith.meshio.OutputSoln
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Output manager for solution data.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+OutputSolnSubset pylith.meshio.OutputSolnSubset
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Output manager for solution data over a submesh.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+OutputDirichlet pylith.meshio.OutputDirichlet
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Output manager for Dirichlet boundary condition information over a submesh.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+OutputNeumann pylith.meshio.OutputNeumann
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Output manager for Neumann boundary condition information over a submesh.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+OutputFaultKin pylith.meshio.OutputFaultKin
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Output manager for fault with kinematic (prescribed) earthquake ruptures.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+OutputMatElastic pylith.meshio.OutputMatElastic
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Output manager for bulk constitutive models for elasticity.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+SingleOutput pylith.meshio.SingleOutput
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Container with single output manger.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+DataWriterVTKMesh pylith.meshio.DataWriterVTKMesh
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Writer for output to VTK files with mesh information.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+DataWriterVTKSubMesh pylith.meshio.DataWriterVTKSubMesh
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Writer for output to VTK files with mesh information over a submesh.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+DataWriterVTKSubSubMesh pylith.meshio.DataWriterVTKSubSubMesh
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Writer for output to VTK files with submesh information over a submesh.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+CellFilterAvgMesh pylith.meshio.CellFilterAvgMesh
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Filter that averages information over quadrature points of mesh cells.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+CellFilterAvgSubMesh pylith.meshio.CellFilterAvgSubMesh
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Filter that averages information over quadrautre points of submesh cells.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+VertexFilterVecNormMesh pylith.meshio.VertexFilterVecNormMesh
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Filter that computes magnitude of vectors for vertex field over mesh.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+VertexFilterVecNormSubMesh pylith.meshio.VertexFilterVecNormSubMesh
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Filter that computes magnitude of vectors for vertex field over submesh.
+\end_layout
+
+\begin_layout Section
+Spatialdata components
+\end_layout
+
+\begin_layout Subsection
+Coordinate system components
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+CSCart spatialdata.geocoords.CSCart
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Cartesian coordinate system (0-D, 1-D, 2-D, or 3-D).
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+CSGeo spatialdata.geocoords.CSGeo
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Geographic coordinate system.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+CSGeoProj spatialdata.geocoords.CSGeoProj
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Coordinate system associated with a geographic projection.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+CSGeoLocalCart spatialdata.geocoords.CSGeoLocalCart
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Local, georeferenced Cartesian coordinate system.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+Projector spatialdata.geocoords.Projector
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Geographic projection.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+Converter spatialdata.geocoords.Converter
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Converter for transforming coordinates of points from one coordinate system
+ to another.
+\end_layout
+
+\begin_layout Subsection
+Spatial database components
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+UniformDB spatialdata.spatialdb.UniformDB
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Spatial database with uniform values.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+SimpleDB spatialdata.spatialdb.SimpleDB
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Simple spatial database that defines fields using a point cloud.
+ Values are determined using a nearest neighbor search or linear interpolation
+ in 0-D, 1-D, 2-D, or 3-D.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+SimpleIOAscii spatialdata.spatialdb.SimpleIOAscii
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Reader/writer for simple spatial database files.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+SCECCVMH spatialdata.spatialdb.SCECCVMH
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Spatial database interface to the SCEC CVM-H (seismic velocity model).
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+CompositeDB spatialdata.spatialdb.CompositeDB
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Spatial database composed from multiple other spatial databases.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+TimeHistory spatialdata.spatialdb.TimeHistory
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Time history for temporal variations of a parameter.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+GravityField spatialdata.spatialdb.GravityField
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Spatial database providing vector for body forces associated with gravity.
+\end_layout
+
+\begin_layout Subsection
+Nondimensionalization components
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+Nondimensional spatialdata.units.Nondimensional
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Nondimensionalization of length, time, and pressure scales.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+NondimensionalElasticDynamic spatialdata.units.NondimensionalElasticDynamic
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Nondimensionalization of scales for dynamic problems.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+NondimensionalElasticQuasistatic spatialdata.units.NondimensionalElasticQuasistati
+c
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Nondimensionalization of scales for quasi-static problems.
+\end_layout
+
+\end_body
+\end_document

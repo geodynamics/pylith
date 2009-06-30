@@ -295,6 +295,13 @@ filename "glossary.lyx"
 
 \begin_inset CommandInset include
 LatexCommand input
+filename "components.lyx"
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand input
 filename "fileformats/fileformats.lyx"
 
 \end_inset
