@@ -305,7 +305,6 @@ AC_CONFIG_FILES([Makefile
 		examples/twocells/twotet4-geoproj/Makefile
 		examples/twocells/twotri3/Makefile
 		templates/Makefile
-		templates/materials/Makefile
 		share/Makefile
 		])
 
