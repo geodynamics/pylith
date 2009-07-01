@@ -71,10 +71,10 @@ export PYTHONPATH=${PYTHONPATH}:${FIAT_DIR}/lib/python${PYTHON_VERSION}/site-pac
 export PETSC_DIR=${TOOLS_DIR}/petsc-dev
 export PETSC_ARCH=linux_${TOOLS_FORMAT}_opt
 
-# Pyrex
-PYREX_DIR=${TOOLS_DIR}/pyrex-0.9.5.1a/${TOOLS_FORMAT}
-PATH=${PATH}:${PYREX_DIR}/bin
-export PYTHONPATH=${PYTHONPATH}:${PYREX_DIR}/lib/python${PYTHON_VERSION}/site-packages
+# SWIG (check this)
+SWIG_DIR=${TOOLS_DIR}/swig-1.3.38/${TOOLS_FORMAT}
+PATH=${PATH}:${SWIG_DIR}/bin
+export PYTHONPATH=${PYTHONPATH}:${SWIG_DIR}/lib/python${PYTHON_VERSION}/site-packages
 
 # Pythia
 export PYTHIA_INCDIR=${CIG_INCDIR}/pythia-0.8

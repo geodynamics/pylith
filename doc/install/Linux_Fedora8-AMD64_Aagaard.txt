@@ -59,7 +59,7 @@ gfortran, etc). in the installation.
     proj-devel
     proj-nad
     numpy
-    Pyrex
+    swig
     netcdf
     netcdf-devel
     mercurial
@@ -183,17 +183,7 @@ gfortran, etc). in the installation.
     make
     make test
 
-8. Install CIG's version of pyrexembed.
-
-  a. Download the source code from the SVN repository.
-
-    svn co http://geodynamics.org/svn/cig/cs/pyrexembed/trunk pyrexembed
-
-  b. Install the software.
-
-    python setup.py install --prefix=${CIG_DIR}
-
-9. Install pythia.
+8. Install pythia.
 
   a. Download the source code from the SVN repository.
 
@@ -207,7 +197,7 @@ gfortran, etc). in the installation.
 
     export PYTHIA_INCDIR=${CIG_INCDIR}/pythia-0.8
 
-10. Install nemesis.
+9. Install nemesis.
 
   a. Download the source code from the SVN repository.
 
@@ -224,7 +214,7 @@ gfortran, etc). in the installation.
     make
     make install
 
-11. Install spatialdata.
+10. Install spatialdata.
 
   a. Download the source code from the SVN repository.
 
@@ -241,7 +231,7 @@ gfortran, etc). in the installation.
     make install
     make check
 
-12. Install PyLith.
+11. Install PyLith.
 
   a. Download the source code from the SVN repository.
 
