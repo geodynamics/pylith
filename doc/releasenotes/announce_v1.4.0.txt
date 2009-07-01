@@ -7,12 +7,12 @@ viscoelastic problems in tectonic deformation.
 This release adds several new features to PyLith, including (1) a
 Power-law nonlinear bulk rheology, (2) integration with PETSc
 nonlinear solvers, (3) automatic nondimensionalization of all
-parameters, (4) parsing of units in spatial database files, (5) a common
-time-dependent formulation for Dirichlet, Neumann, and point force
-boundary conditions, (6) pylithinfo, a diagnostic utility that dumps
-the current hierarchy of PyLith parameters to a file, and (7)
-replacement of Pyrex/Pyrexembed with SWIG. Nondimensionalization the
-problem restores the symmetry of the Jacobian matrix, which
+parameters, (4) parsing of units in spatial database files, (5) a
+common time-dependent formulation for Dirichlet, Neumann, and point
+force boundary conditions, (6) pylithinfo, a diagnostic utility that
+dumps the current hierarchy of PyLith parameters to a file, and (7)
+replacement of Pyrex/Pyrexembed with SWIG. Nondimensionalization of
+the problem restores the symmetry of the Jacobian matrix, which
 significantly reduces memory use. We encourage all users of previous
 PyLith releases to switch to this latest release.
 
@@ -20,7 +20,7 @@ You can download the source code and binaries from
 
     http://geodynamics.org/cig/software/packages/short/pylith
 
-Detailed installation instructions are in User Manual with example
+Detailed installation instructions are in the User Manual with example
 installation procedures for a few platforms in the bundled doc/install
 directory.
 
@@ -122,7 +122,7 @@ condition the fault constraints. The "mat_db" facility was removed.
 
 (8) The Dirichlet and Neumann boundary conditions now follow a more
 general time dependence. The names of the facilities and the names of
-the values in the spatial databses are, in most cases, different.
+the values in the spatial databases are, in most cases, different.
 
 (9) The FixedDOFDB has been renamed to ZeroDispDB in order to better
 reflect the type of spatial database.
