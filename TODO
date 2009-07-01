@@ -2,6 +2,10 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
+doc/install
+  Rocks (SWIG)
+  Fink (SWIG)
+
 ----------------------------------------------------------------------
 POST RELEASE 1.4
 ----------------------------------------------------------------------
@@ -169,11 +173,16 @@ RELEASE 1.5
 
 5. Initial stress, strain, state variables for inelastic models [Charles]
 
+  Use switch to do elastic prestep so that main time loop is all
+  anelastic in the most general case. Want to generate an error if
+  both initial state variables are given and using an elastic prestep.
+
 6. Manual
 
     * Cleanup notation and discussion of inelastic materials
 
-7. Body forces?
+7. Body forces? [Charles is going to discuss this with Brad Hager to
+see if this will satisfy their needs]
 
 Modularize output? [Matt]
 
