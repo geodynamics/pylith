@@ -75,7 +75,7 @@ condition the fault constraints. The "mat_db" facility was removed.
 
 (8) The Dirichlet and Neumann boundary conditions now follow a more
 general time dependence. The names of the facilities and the names of
-the values in the spatial databses are, in most cases, different.
+the values in the spatial databases are, in most cases, different.
 
 (9) The FixedDOFDB has been renamed to ZeroDispDB in order to better
 reflect the type of spatial database.
