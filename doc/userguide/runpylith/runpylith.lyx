@@ -1486,9 +1486,9 @@ Useful command-line arguments for setting PETSc options.
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="3">
 <features>
-<column alignment="left" valignment="top" width="0.9in">
-<column alignment="center" valignment="middle" width="0.8in">
-<column alignment="left" valignment="top" width="4in">
+<column alignment="left" valignment="top" width="1.2in">
+<column alignment="center" valignment="middle" width="0.6in">
+<column alignment="left" valignment="top" width="3.8in">
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -1725,9 +1725,9 @@ PETSc options that often result in improved performance in quasi-static
 \begin_inset Tabular
 <lyxtabular version="3" rows="9" columns="3">
 <features>
-<column alignment="left" valignment="top" width="0.9in">
-<column alignment="center" valignment="middle" width="0.8in">
-<column alignment="left" valignment="top" width="4in">
+<column alignment="left" valignment="top" width="2in">
+<column alignment="center" valignment="middle" width="0.6in">
+<column alignment="left" valignment="top" width="3in">
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -1803,7 +1803,11 @@ Additive Schwarz method.
 \begin_layout Plain Layout
 
 \family typewriter
-sub_pc_factor_shift_positive_definite
+sub_pc_factor_shift_
+\begin_inset Newline newline
+\end_inset
+
+positive_definite
 \end_layout
 
 \end_inset
@@ -1836,7 +1840,11 @@ Turn off positive definite shifting.
 \begin_layout Plain Layout
 
 \family typewriter
-sub_pc_factor_shift_nonzero
+sub_pc_factor_shift_
+\begin_inset Newline newline
+\end_inset
+
+nonzero
 \end_layout
 
 \end_inset
@@ -2036,7 +2044,7 @@ Indicate why iterating stopped in nonlinear solve.
 \end_layout
 
 \begin_layout Section
-Time-dependent Problem
+Time-Dependent Problem
 \end_layout
 
 \begin_layout Standard

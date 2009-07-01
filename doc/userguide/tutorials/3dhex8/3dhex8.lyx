@@ -654,7 +654,11 @@ elastic
  that these values be averaged, so there is a single set of values per cell.
  The third file (
 \family typewriter
-shearxy-statevars-elastic_info.vtk
+shearxy-statevars-elastic
+\begin_inset Newline newline
+\end_inset
+
+_info.vtk
 \family default
 ) gives the material properties used for the upper elastic material.
  Since we have not specified which properties to write, the default properties
@@ -677,12 +681,20 @@ density
 \family default
  and 
 \family typewriter
-shearxy-statevars-viscoelastic_info.vtk
+shearxy-statevars-viscoelastic_
+\begin_inset Newline newline
+\end_inset
+
+info.vtk
 \family default
 ) are exactly analogous to the corresponding files for the elastic material.
  The file 
 \family typewriter
-shearxy-groundsurf_t0000000.vtk
+shearxy-groundsurf
+\begin_inset Newline newline
+\end_inset
+
+_t0000000.vtk
 \family default
  is analogous to 
 \family typewriter
