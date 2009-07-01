@@ -5,30 +5,124 @@ code designed to solve dynamic elastic problems and quasi-static
 viscoelastic problems in tectonic deformation.
 
 This release adds several new features to PyLith, including (1) a
-Power-law nonlinear bulk rheology [2-D Maxwell viscoelastic model],
-(2) the ability to specify the initial stress, strain, and state
-variables for bulk rheologies, (3) integration with PETSc nonlinear
-solvers, (4) transparent nondimensionalization of all parameters, (5)
-parsing of units in spatial database files, (6) and replacement of
-Pyrex/Pyrexembed with SWIG. Nondimensionalization the problem restores
-the symmetry of the Jacobian matrix, which dramatically reduces memory
-use. Several other changes to the code have also helped reduce
-runtime. We encourage all users of previous PyLith releases to switch
-to this latest release.
+Power-law nonlinear bulk rheology, (2) integration with PETSc
+nonlinear solvers, (3) automatic nondimensionalization of all
+parameters, (4) parsing of units in spatial database files, (5) a common
+time-dependent formulation for Dirichlet, Neumann, and point force
+boundary conditions, (6) pylithinfo, a diagnostic utility that dumps
+the current hierarchy of PyLith parameters to a file, and (7)
+replacement of Pyrex/Pyrexembed with SWIG. Nondimensionalization the
+problem restores the symmetry of the Jacobian matrix, which
+significantly reduces memory use. We encourage all users of previous
+PyLith releases to switch to this latest release.
 
 You can download the source code and binaries from
 
     http://geodynamics.org/cig/software/packages/short/pylith
 
-Installation instructions are in the bundled README and INSTALL  
-files, as well as in the User Manual on the web page.
+Detailed installation instructions are in User Manual with example
+installation procedures for a few platforms in the bundled doc/install
+directory.
 
 
 RELEASE NOTES
 
-[ADD NEW FEATURES HERE]
+  * Power-law viscoelastic bulk rheology
 
-  * Bug fixes
+    Added a 3-D power-law viscoelastic bulk rheology. Integration with
+    the PETSc SNES solver permits use of this nonlinear bulk
+    constitutive relation. The nonlinear solver should be used
+    whenever a problem contains a power-law viscoelastic rheology.
 
-  [ADD BUG FIXES HERE]
+  * Automatic nondimensionalization of parameters
 
+    All internal calculations use nondimensional values to permit
+    application across a broad range of spatial and temporal scales.
+    All parameters are nondimensionalized during initialization and
+    output values are dimensonalized, so that the use only deals with
+    dimensioned values. The units in spatial database files are now
+    parsed to provide support for units across all PyLith
+    parameters. The nondimensionalization of values eliminates the
+    need to condition the system for kinematic earthquake sources and
+    restores the symmetry of the sparse system matrix, which
+    significantly reduces memory use.
+
+  * Time-dependent boundary conditions
+
+    Created a common time-dependent formulation for Dirichlet,
+    Neumann, and point force boundary conditions. The formulation
+    allows specification of a spatially variable initial value,
+    spatially variable constant rate of change with a spatially
+    variable start time, and/or a spatially variable amplitude
+    modulated by a user-specified time history with a spatially
+    variable start time. Previously, only Dirichlet boundary
+    conditions could have a temporal variation, which was limited to a
+    spatially variable rate of change with a spatially uniform start
+    time.
+
+  * pylithinfo
+
+    This diagnostic utility dumps all PyLith parameters for a given
+    simulation to a text file. The text file uses indentation to show
+    the hierarchy of components in the simulation. The --verbose flag
+    adds the description of the parameter and the location where its
+    value is set by the user.
+
+  * SWIG for calling C++ from Python
+
+    Replaced use of Pyrex/Pyrexembed with SWIG for calling C++ from
+    Python. This greatly simplifies the process of creating a Python
+    module that allows interacting with C++ from Python.
+
+ * Bug fixes
+
+  - Fixed distribution of mesh across processors for multiple
+    faults. Cases where some processors did not have vertices on a
+    fault generated an error during distribution.
+
+======================================================================
+MIGRATING FROM VERSION 1.3 TO 1.4
+======================================================================
+
+A number of changes to the code require updating old parameter
+settings for use with version 1.4.
+
+(1) The mesh "importer" is now called "reader".
+
+(2) The spatial database facility for a material, "db", is separated
+into a "db_properties" and a "db_initial_state". The initial stress
+and strain tensors are specified using the "db_initial_stress" and
+"db_initial_strain" facilities. The names of some of the spatial
+database values for physical properties for viscoelastic properties
+have changed.
+
+(3) The code is now intelligent enough to determine the dimensions of
+the quadrature required (e.g., Quadrature2D and Quadrature2Din3D,
+etc). Setting the quadrature to the object for a given spatial
+dimension and cell dimension is no longer allowed because it is done
+automatically.
+
+(4) The names of the output filters have changed and include suffixes
+Mesh or SubMesh to indicate that they operate on a mesh or submesh
+(e.g., CellFilterAvg is now CellFilterAvgMesh or
+CellFilterAvgSubMesh). This is related to the use of C++ templates.
+
+(5) The DirichletPoints boundary condition has been renamed to
+DirichletBC.
+
+(6) The procedure for enabling certain features no longer involves
+setting a "use" property to True. Instead, the features are enabled
+when the user sets the component to a facility. This applies to
+gravity, initial stresses, initial strains, and initial state
+variables, and time-dependent boundary conditions (Dirichlet, Neumann,
+and point force).
+
+(7) Nondimensionalization of the problem eliminates the need to
+condition the fault constraints. The "mat_db" facility was removed.
+
+(8) The Dirichlet and Neumann boundary conditions now follow a more
+general time dependence. The names of the facilities and the names of
+the values in the spatial databses are, in most cases, different.
+
+(9) The FixedDOFDB has been renamed to ZeroDispDB in order to better
+reflect the type of spatial database.

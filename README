@@ -28,9 +28,9 @@ files, as well as in the User Manual on the web page.
 PyLith is under active development and we expect a number of additions
 and improvements in the near future. Likely enhancements will include
 additional constitutive models for both volume elements and cohesive
-(fault) elements, automatic generation of higher-order elements from
-linear elements, and the generation of Green's functions to be used in
-inversions.  Many of these features should be available in early 2009.
+(fault) elements, implementation of finite-strain and large
+deformations, and the generation of Green's functions to be used in
+inversions.  Many of these features should be available in early 2010.
 
 
 ======================================================================
@@ -43,9 +43,9 @@ settings for use with version 1.4.
 (1) The mesh "importer" is now called "reader".
 
 (2) The spatial database facility for a material, "db", is separated
-into a "properties_db" and a "initial_state_db". The initial stress
-and strain tensors are specified using the "initial_stress_db" and
-"initial_strain_db" facilities. The names of some of the spatial
+into a "db_properties" and a "db_initial_state". The initial stress
+and strain tensors are specified using the "db_initial_stress" and
+"db_initial_strain" facilities. The names of some of the spatial
 database values for physical properties for viscoelastic properties
 have changed.
 
