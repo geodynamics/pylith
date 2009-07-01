@@ -52,11 +52,9 @@ export PYTHONPATH=${PYTHONPATH}:${FIAT_DIR}/lib/python${PYTHON_VERSION}/site-pac
 export PETSC_DIR=${TOOLS_DIR}/petsc-dev
 export PETSC_ARCH=osx_${TOOLS_FORMAT}_debug
 
-# Pyrex
-PYREX_DIR=${TOOLS_DIR}/pyrex-0.9.5.1/${TOOLS_FORMAT}
-export PYTHONPATH=${PYTHONPATH}:${PYREX_DIR}/lib/python${PYTHON_VERSION}/site-packages
-export PYTHONPATH=${PYTHONPATH}:${PYREX_DIR}/bin
-export PATH=${PATH}:${PYREX_DIR}/bin
+# SWIG
+SWIG_DIR=${TOOLS_DIR}/swig-1.3.39/${TOOLS_FORMAT}
+PATH=${PATH}:${SWIG_DIR}/bin
 
 # Pythia
 export PYTHIA_INCDIR=${CIG_INCDIR}/pythia-0.8
