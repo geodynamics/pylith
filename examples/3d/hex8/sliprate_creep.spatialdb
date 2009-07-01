@@ -10,7 +10,7 @@
 SimpleDB {
   num-values = 3
   value-names =  left-lateral-slip  reverse-slip  fault-opening
-  value-units =  m/s  m/s  m/s
+  value-units =  cm/year cm/year cm/year
   num-locs = 4
   data-dim = 1 // Values are specified along a line.
   space-dim = 3
@@ -28,5 +28,5 @@ SimpleDB {
 // (6) fault-opening rate (m/s)
 0.0   0.0   0.00     0.00  0.0  0.0
 0.0   0.0  -2.00     0.00  0.0  0.0
-0.0   0.0  -2.01    -6.3376175628057904e-10  0.0  0.0
-0.0   0.0  -4.00    -6.3376175628057904e-10  0.0  0.0
+0.0   0.0  -2.01    -2.00  0.0  0.0
+0.0   0.0  -4.00    -2.00  0.0  0.0
