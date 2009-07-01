@@ -207,11 +207,9 @@ run "python --version".
     make
     make test
 
-13. Install Pyrex (http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/)
+13. Install SWIG (http://www.swig.org)
 
-  Versions up to and including 0.9.5.1 are known to work.
-
-  a. Untar and install.
+ a. Untar and install.
 
     python setup.py install --prefix=${TOOLS_DIR}/pyrex-0.9.5.1/${TOOLS_FORMAT}
 
@@ -222,17 +220,7 @@ run "python --version".
     export PYTHONPATH=${PYTHONPATH}:${PYREX_DIR}/bin
     export PATH=${PATH}:${PYREX_DIR}/bin
 
-14. Install CIG's version of pyrexembed.
-
-  a. Download the source code from the SVN repository.
-
-    svn co http://geodynamics.org/svn/cig/cs/pyrexembed/trunk pyrexembed
-
-  b. Install the software.
-
-    python setup.py install --prefix=${CIG_DIR}
-
-15. Install pythia.
+14. Install pythia.
 
   a. Download the source code from the SVN repository.
 
@@ -246,7 +234,7 @@ run "python --version".
 
     export PYTHIA_INCDIR=${CIG_INCDIR}/pythia-0.8
 
-16. Install nemesis.
+15. Install nemesis.
 
   a. Download the source code from the SVN repository.
 
@@ -266,7 +254,7 @@ run "python --version".
     delete "-arch ppc" or "-arch intel", which ever one is not for
     your machine.
 
-17. Install PROJ.4 (http://trac.osgeo.org/proj/)
+16. Install PROJ.4 (http://trac.osgeo.org/proj/)
 
   a. Download the source code AND the datum shifts (proj-datumgrid-1.4.zip).
 
@@ -286,7 +274,7 @@ run "python --version".
     PATH=${PATH}:${PROJ4_DIR}/bin
     export MANPATH=${MANPATH}:${PROJ4_DIR}/man
 
-18. Install spatialdata.
+17. Install spatialdata.
 
   a. Download the source code from the SVN repository.
 
@@ -303,7 +291,7 @@ run "python --version".
     make install
     make check
 
-19. Install PyLith.
+18. Install PyLith.
 
   a. Download the source code from the SVN repository.
 
