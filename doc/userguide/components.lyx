@@ -59,6 +59,16 @@ name "cha:components"
 PyLith and Spatialdata Components
 \end_layout
 
+\begin_layout Standard
+The name of the component is followed by the full path name and description.
+ The full path name is used when setting a component to a facility in a
+ 
+\family typewriter
+.cfg
+\family default
+ file or with command line arguments.
+\end_layout
+
 \begin_layout Section
 Application components
 \end_layout
@@ -548,7 +558,7 @@ LiuCosSlipFn pylith.faults.LiuCosSlipFn
 \begin_inset Newline newline
 \end_inset
 
-Slip-time functio n composed of three sine/cosine functions.
+Slip-time function composed of three sine/cosine functions.
  Similar to Brune's far-field time function but with more abrupt termination
  of slip.
  
@@ -791,7 +801,7 @@ CellFilterAvgSubMesh pylith.meshio.CellFilterAvgSubMesh
 \begin_inset Newline newline
 \end_inset
 
-Filter that averages information over quadrautre points of submesh cells.
+Filter that averages information over quadrature points of submesh cells.
 \end_layout
 
 \begin_layout Description
