@@ -39,3 +39,9 @@ DISTRIBUTIONS
   * Get PyLith source code.
 
     - Check build.
+
+TAG
+
+  * Tag source code.
+
+  svn copy svn+ssh://svn@geodynamics.org/cig/short/3D/PyLith/trunk svn+ssh://svn@geodynamics.org/cig/short/3D/PyLith/tags/v1.x.x
