@@ -53,7 +53,7 @@ class ZeroDispDB(UniformDB):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="fixeddofdb"):
+  def __init__(self, name="zerodispdb"):
     """
     Constructor.
     """
