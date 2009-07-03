@@ -21,6 +21,18 @@ from spatialdata.units.Nondimensional import Nondimensional
 from pyre.units.time import second
 
 # ----------------------------------------------------------------------
+class Integrator:
+
+  def __init__(self, dt):
+    self.dt = dt
+    return
+
+
+  def stableTimeStep(self, mesh):
+    return self.dt
+
+
+# ----------------------------------------------------------------------
 class TestTimeStepUniform(unittest.TestCase):
   """
   Unit testing of TimeStepUniform object.
@@ -63,13 +75,22 @@ class TestTimeStepUniform(unittest.TestCase):
     """
     tstep = self.tstep
 
-    integrators = None
+    integrators = [Integrator(4.0),
+                   Integrator(8.0)]
     mesh = None
 
     self.assertEqual(1.0, tstep.timeStep(mesh, integrators))
 
-    tstep.dtN = 1.0e-4
-    self.assertEqual(1.0e-4, tstep.timeStep(mesh, integrators))
+    tstep.dtN = 0.5
+    self.assertEqual(0.5, tstep.timeStep(mesh, integrators))
+
+    caught = False
+    try:
+      tstep.dtN = 10.0
+      tstep.timeStep(mesh, integrators)
+    except RuntimeError:
+      caught = True
+    self.failUnless(caught)
 
     return
 

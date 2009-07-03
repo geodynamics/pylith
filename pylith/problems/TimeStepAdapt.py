@@ -113,11 +113,7 @@ class TimeStepAdapt(TimeStep):
     """
     Adjust stable time step for advancing forward in time.
     """
-    dtStable = 1.0e+30
-    for integrator in integrators:
-      dt = integrator.stableTimeStep(mesh)
-      if dt < dtStable:
-        dtStable = dt
+    dtStable = self._stableTimeStep(mesh, integrators)
     
     if self.skipped < self.adaptSkip and \
           self.dtN != 0.0 and \

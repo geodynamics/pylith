@@ -35,6 +35,7 @@ class TimeStep(PetscComponent):
     """
     PetscComponent.__init__(self, name, facility="time_step")
     from pyre.units.time import second
+    self.timeScale = 1.0*second
     self.totalTime = 0.0*second
     self.dt = 0.0*second
     self.totalTimeN = 0.0 # Nondimensionalized total time
@@ -76,6 +77,7 @@ class TimeStep(PetscComponent):
     timeScale = normalizer.timeScale()
     self.totalTimeN = normalizer.nondimensionalize(self.totalTime, timeScale)
     self.dtN = normalizer.nondimensionalize(self.dt, timeScale)
+    self.timeScale = timeScale
 
     self._eventLogger.eventEnd(logEvent)
     return
@@ -135,6 +137,20 @@ class TimeStep(PetscComponent):
     self._eventLogger = logger
     return
   
+
+  def _stableTimeStep(self, mesh, integrators):
+    """
+    Get stable time step.
+    """
+    dtStable = 1.0e+30
+    for integrator in integrators:
+      dt = integrator.stableTimeStep(mesh)
+      if dt < dtStable:
+        dtStable = dt
+
+    return dtStable
+
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

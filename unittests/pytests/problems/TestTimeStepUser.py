@@ -22,6 +22,17 @@ from pyre.units.time import second,year
 stepsE = [2*1.0, 2*2.0, 2*3.0]
 
 # ----------------------------------------------------------------------
+class Integrator:
+
+  def __init__(self, dt):
+    self.dt = dt
+
+
+  def stableTimeStep(self, mesh):
+    return self.dt
+
+
+# ----------------------------------------------------------------------
 class TestTimeStepUser(unittest.TestCase):
   """
   Unit testing of TimeStepUser object.
@@ -89,7 +100,8 @@ class TestTimeStepUser(unittest.TestCase):
     step2 = 2.0 / 0.5 # nondimensionalize
     step3 = 3.0 / 0.5 # nondimensionalize
 
-    integrators = None
+    integrators = [Integrator(40.0),
+                   Integrator(80.0)]
     mesh = None
 
     self.assertEqual(step1, tstep.timeStep(mesh, integrators))
@@ -105,6 +117,16 @@ class TestTimeStepUser(unittest.TestCase):
     self.assertEqual(step3, tstep.timeStep(mesh, integrators))
     self.assertEqual(step1, tstep.timeStep(mesh, integrators))
     self.assertEqual(step2, tstep.timeStep(mesh, integrators))
+
+    integrators = [Integrator(0.01),
+                   Integrator(8.0)]
+    caught = False
+    try:
+      tstep.timeStep(mesh, integrators)
+    except RuntimeError:
+      caught = True
+    self.failUnless(caught)
+
     return
 
 
@@ -114,7 +136,8 @@ class TestTimeStepUser(unittest.TestCase):
     """
     tstep = self.tstep
 
-    integrators = None
+    integrators = [Integrator(4.0),
+                   Integrator(8.0)]
     mesh = None
 
     tstep.timeStep(mesh, integrators)

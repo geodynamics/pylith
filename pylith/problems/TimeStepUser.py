@@ -158,6 +158,13 @@ class TimeStepUser(TimeStep):
       self.index += 1
     elif self.loopSteps:
       self.index = 0
+
+    dtStable = self._stableTimeStep(mesh, integrators)
+    if dtStable < self.dtN:
+      raise RuntimeError("Current time step of %s exceeds the stable time "
+                         "step of %s." % (self.dtN*self.timeScale,
+                                          dtStable*self.timeScale))
+
     return self.dtN
 
   

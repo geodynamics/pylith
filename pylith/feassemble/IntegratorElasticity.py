@@ -115,6 +115,7 @@ class IntegratorElasticity(Integrator):
     Integrator.finalize(self)
     self.materialObj.finalize()
     self.output.finalize()
+    self._modelMemoryUse()
     return
 
 
@@ -136,6 +137,8 @@ class IntegratorElasticity(Integrator):
     return field
 
 
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
   def _initializeOutput(self, totalTime, numTimeSteps, normalizer):
     """
     Initialize output.
@@ -143,6 +146,14 @@ class IntegratorElasticity(Integrator):
     self.output.initialize(normalizer, self.materialObj.quadrature)
     self.output.writeInfo()
     self.output.open(totalTime, numTimeSteps)
+    return
+
+
+  def _modelMemoryUse(self):
+    """
+    Model memory allocation.
+    """
+    self.materialObj.perfLogger.logFields("Output", self.outputFields())
     return
 
 
