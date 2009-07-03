@@ -79,6 +79,12 @@ class TimeStepUniform(TimeStep):
     """
     Adjust stable time step for advancing forward in time.
     """
+    dtStable = self._stableTimeStep(mesh, integrators)
+    if dtStable < self.dtN:
+      raise RuntimeError("Current nondimensionalized time step of %12.4e "
+                         "exceeds the nondimensionalized stable time "
+                         "step of %12.4e." % (self.dtN, dtStable))
+
     return self.dtN
 
   

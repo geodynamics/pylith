@@ -19,6 +19,7 @@ from pylith.problems.TimeStepAdapt import TimeStepAdapt
 
 from pyre.units.time import second
 
+# ----------------------------------------------------------------------
 class Integrator:
 
   def __init__(self, dt):
