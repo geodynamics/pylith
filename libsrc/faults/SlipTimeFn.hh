@@ -97,6 +97,13 @@ public :
   virtual
   const topology::Field<topology::SubMesh>& slipTime(void) = 0;
 
+  /** Get parameter fields.
+   *
+   * @returns Parameter fields.
+   */
+  const topology::Fields<topology::Field<topology::SubMesh> >*
+  parameterFields(void) const;
+
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 

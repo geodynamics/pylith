@@ -120,6 +120,7 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
     assert(0 != src);
     src->initialize(*_faultMesh, *_normalizer);
   } // for
+
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Fault");
 
@@ -1195,9 +1196,14 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   // Allocate buffer for tractions field (if nec.).
   const ALE::Obj<RealSection>& tractionsSection = tractions->section();
   if (tractionsSection.isNull()) {
+    ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+    logger.stagePush("Fault");
+
     const topology::Field<topology::SubMesh>& slip =_fields->get("slip");
     tractions->newSection(slip, fiberDim);
     tractions->allocate();
+
+    logger.stagePop();
   } // if
   assert(!tractionsSection.isNull());
   tractions->zero();
@@ -1240,6 +1246,9 @@ pylith::faults::FaultCohesiveKin::_allocateBufferVectorField(void)
   if (_fields->hasField("buffer (vector)"))
     return;
 
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Output");
+
   // Create vector field; use same shape/chart as cumulative slip field.
   assert(0 != _faultMesh);
   _fields->add("buffer (vector)", "buffer");
@@ -1249,6 +1258,8 @@ pylith::faults::FaultCohesiveKin::_allocateBufferVectorField(void)
     _fields->get("cumulative slip");
   buffer.cloneSection(slip);
   buffer.zero();
+
+  logger.stagePop();
 } // _allocateBufferVectorField
 
 // ----------------------------------------------------------------------
@@ -1260,6 +1271,9 @@ pylith::faults::FaultCohesiveKin::_allocateBufferScalarField(void)
   if (_fields->hasField("buffer (scalar)"))
     return;
 
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Output");
+
   // Create vector field; use same shape/chart as area field.
   assert(0 != _faultMesh);
   _fields->add("buffer (scalar)", "buffer");
@@ -1268,6 +1282,8 @@ pylith::faults::FaultCohesiveKin::_allocateBufferScalarField(void)
   const topology::Field<topology::SubMesh>& area = _fields->get("area");
   buffer.cloneSection(area);
   buffer.zero();
+
+  logger.stagePop();
 } // _allocateBufferScalarField
 
 

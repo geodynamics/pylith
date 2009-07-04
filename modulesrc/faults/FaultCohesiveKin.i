@@ -150,6 +150,13 @@ namespace pylith {
        */
       bool useLagrangeConstraints(void) const;
 
+      /** Get fields associated with fault.
+       *
+       * @returns Fields associated with fault.
+       */
+      const pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >*
+      fields(void) const;
+
     }; // class FaultCohesiveKin
 
   } // faults

@@ -94,6 +94,11 @@ class Fault(PetscComponent, ModuleFault):
   faultQuadrature = pyre.inventory.facility("quadrature", factory=SubMeshQuadrature)
   faultQuadrature.meta['tip'] = "Quadrature object for numerical integration."
   
+  from pylith.perf.MemoryLogger import MemoryLogger
+  perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
+                                       factory=MemoryLogger)
+  perfLogger.meta['tip'] = "Performance and memory logging."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -200,6 +205,14 @@ class Fault(PetscComponent, ModuleFault):
     return
 
 
+  def finalize(self):
+    """
+    Cleanup.
+    """
+    self._modelMemoryUse()
+    return
+  
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
@@ -212,6 +225,7 @@ class Fault(PetscComponent, ModuleFault):
     self.normalDir = map(float, self.inventory.normalDir)
     ModuleFault.id(self, self.inventory.matId)
     ModuleFault.label(self, self.inventory.faultLabel)
+    self.perfLogger = self.inventory.perfLogger
     return
 
   
@@ -223,4 +237,13 @@ class Fault(PetscComponent, ModuleFault):
                               "derived class.")
   
   
+  def _modelMemoryUse(self):
+    """
+    Model memory allocation.
+    """
+    raise NotImplementedError, \
+          "Please implement _modelModelUse() in derived class."
+    return
+
+
 # End of file 

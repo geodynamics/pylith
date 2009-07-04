@@ -85,6 +85,13 @@ namespace pylith {
       virtual
       const pylith::topology::Field<pylith::topology::SubMesh>& slipTime(void) = 0;
 
+      /** Get parameter fields.
+       *
+       * @returns Parameter fields.
+       */
+      const pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >*
+      parameterFields(void) const;
+
     }; // class SlipTimeFn
 
   } // faults

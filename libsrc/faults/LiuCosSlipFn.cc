@@ -87,6 +87,7 @@ pylith::faults::LiuCosSlipFn::initialize(
   assert(!vertices.isNull());
   const label_sequence::iterator verticesBegin = vertices->begin();
   const label_sequence::iterator verticesEnd = vertices->end();
+
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Fault");
 
@@ -282,7 +283,8 @@ pylith::faults::LiuCosSlipFn::slip(topology::Field<topology::SubMesh>* slip,
 // ----------------------------------------------------------------------
 // Get increment of slip on fault surface between time t0 and t1.
 void
-pylith::faults::LiuCosSlipFn::slipIncr(				      topology::Field<topology::SubMesh>* slip,
+pylith::faults::LiuCosSlipFn::slipIncr(
+				      topology::Field<topology::SubMesh>* slip,
 				      const double t0,
 				      const double t1)
 { // slipIncr
