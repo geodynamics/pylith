@@ -83,6 +83,7 @@ pylith::faults::StepSlipFn::initialize(
   assert(!vertices.isNull());
   const label_sequence::iterator verticesBegin = vertices->begin();
   const label_sequence::iterator verticesEnd = vertices->end();
+
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Fault");
 

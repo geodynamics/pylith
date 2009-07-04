@@ -535,8 +535,6 @@ class Formulation(PetscComponent, ModuleFormulation):
                                    self.fields.get('residual'))
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
       self.perfLogger.logQuadrature('Quadrature', integrator.quadrature())
-    # Placeholders until we know we they go
-    self.perfLogger.memory['Fault'] = 0
     return
 
 

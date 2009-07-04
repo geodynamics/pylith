@@ -191,6 +191,17 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
     return field
 
 
+  def finalize(self):
+    """
+    Cleanup.
+    """
+    for eqsrc in self.eqsrcs.components():
+      eqsrc.finalize()
+    FaultCohesive.finalize(self)
+    Integrator.finalize(self)
+    return
+  
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
@@ -211,6 +222,14 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
     return
     
   
+  def _modelMemoryUse(self):
+    """
+    Model memory allocation.
+    """
+    self.perfLogger.logFields("Fault", self.fields())
+    return
+
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def fault():

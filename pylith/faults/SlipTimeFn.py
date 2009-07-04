@@ -27,6 +27,16 @@ class SlipTimeFn(PetscComponent):
   Factory: slip_time_fn
   """
 
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  import pyre.inventory
+
+  from pylith.perf.MemoryLogger import MemoryLogger
+  perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
+                                       factory=MemoryLogger)
+  perfLogger.meta['tip'] = "Performance and memory logging."
+
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="sliptimefn"):
@@ -67,6 +77,14 @@ class SlipTimeFn(PetscComponent):
     return
 
 
+  def finalize(self):
+    """
+    Cleanup.
+    """
+    self._modelMemoryUse()
+    return
+  
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
@@ -74,6 +92,7 @@ class SlipTimeFn(PetscComponent):
     Setup members using inventory.
     """
     PetscComponent._configure(self)
+    self.perfLogger = self.inventory.perfLogger
     return
 
   
@@ -97,5 +116,13 @@ class SlipTimeFn(PetscComponent):
     self._eventLogger = logger
     return
   
+
+  def _modelMemoryUse(self):
+    """
+    Model memory allocation.
+    """
+    self.perfLogger.logFields("Fault", self.parameterFields())
+    return
+
 
 # End of file 

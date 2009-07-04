@@ -19,7 +19,6 @@ Brad
         AbsorbingDampers (_parameters)
         Neumann (_parameters)
         SlipTimeFn (_parameters)
-        FaultCohesiveKin (_fields)
         Quadrature (_geometryFields) [should be NULL]
         OutputManager (_fields)
         CellFilterAvg (_fieldAvg)

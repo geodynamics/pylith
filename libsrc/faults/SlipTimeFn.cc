@@ -40,5 +40,13 @@ pylith::faults::SlipTimeFn::deallocate(void)
   delete _parameters; _parameters = 0;
 } // deallocate
   
+// ----------------------------------------------------------------------
+// Get parameter fields.
+const pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >*
+pylith::faults::SlipTimeFn::parameterFields(void) const
+{ // parameterFields
+  return _parameters;
+} // parameterFields
+
 
 // End of file 

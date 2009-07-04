@@ -101,6 +101,14 @@ class EqKinSrc(PetscComponent, ModuleEqKinSrc):
     return
 
 
+  def finalize(self):
+    """
+    Cleanup.
+    """
+    self.slipfn.finalize()
+    return
+  
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
