@@ -108,10 +108,11 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     strcpy(rateNames[i], name.c_str());
   } // for
 
-  delete _parameters;
-  _parameters = new topology::Fields<topology::Field<topology::Mesh> >(mesh);
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("BoundaryConditions");
+
+  delete _parameters;
+  _parameters = new topology::Fields<topology::Field<topology::Mesh> >(mesh);
 
   // Create section to hold time dependent values
   _parameters->add("value", fieldName);

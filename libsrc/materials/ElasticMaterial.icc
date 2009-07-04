@@ -42,5 +42,12 @@ pylith::materials::ElasticMaterial::hasStateVars(void) const {
   return _numVarsQuadPt > 0;
 } // usesUpdateProperties
 
+// Get initial stress/strain fields.
+inline
+const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
+pylith::materials::ElasticMaterial::initialFields(void) const {
+  return _initialFields;
+} // initialFields
+
 
 // End of file 

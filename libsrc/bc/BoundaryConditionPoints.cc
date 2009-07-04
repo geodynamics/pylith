@@ -61,6 +61,9 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
 { // _getPoints
   typedef topology::Mesh::IntSection::chart_type chart_type;
 
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("BoundaryConditions");
+
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
 
@@ -82,6 +85,8 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
       ++c_iter)
     if (groupField->getFiberDimension(*c_iter))
       _points[i++] = *c_iter;
+
+  logger.stagePop();
 } // _getPoints
 
 

@@ -99,7 +99,6 @@ class DirichletBC(BoundaryCondition,
     """
     BoundaryCondition.finalize(self)
     Constraint.finalize(self)
-    self._modelMemoryUse()
     return
   
 

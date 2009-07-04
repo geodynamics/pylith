@@ -82,6 +82,12 @@ namespace pylith {
       virtual
       void useElasticBehavior(const bool flag);
 
+      /** Get initial stress/strain fields.
+       *
+       * @returns Initial stress field.
+       */
+      const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >* initialFields(void) const;
+
       // PROTECTED METHODS //////////////////////////////////////////////
     protected :
 
