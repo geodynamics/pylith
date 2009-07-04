@@ -182,17 +182,11 @@ public :
   virtual
   void useElasticBehavior(const bool flag);
 
-  /** Get initial stress field.
+  /** Get initial stress/strain fields.
    *
    * @returns Initial stress field.
    */
-  const topology::Field<topology::Mesh>& initialStressField(void) const;
-
-  /** Get initial strain field.
-   *
-   * @returns Initial strain field.
-   */
-  const topology::Field<topology::Mesh>& initialStrainField(void) const;
+  const topology::Fields<topology::Field<topology::Mesh> >* initialFields(void) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

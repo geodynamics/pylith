@@ -2,10 +2,6 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-doc/install
-  Rocks (SWIG)
-  Fink (SWIG)
-
 ----------------------------------------------------------------------
 POST RELEASE 1.4
 ----------------------------------------------------------------------
@@ -18,7 +14,6 @@ Brad
 
   Memory model
     C++ Objects with fields
-        DirichletBC (BoundaryConditionPoints::_parameters) ACCESSOR DONE
         DirichletBoundary (_outputFields)
         PointForce (BoundaryConditionPoints::_parameters) ACCESSOR DONE
         AbsorbingDampers (_parameters)
@@ -26,8 +21,6 @@ Brad
         SlipTimeFn (_parameters)
         FaultCohesiveKin (_fields)
         Quadrature (_geometryFields) [should be NULL]
-        IntegratorElasticity (_outputFields)
-        ElasticMaterial (_initialFields, _properties, _stateVars)
         OutputManager (_fields)
         CellFilterAvg (_fieldAvg)
         VertexFilterVecNorm (_fieldVecNorm)

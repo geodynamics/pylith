@@ -91,4 +91,13 @@ class ElasticMaterial(Material):
     return
 
   
-# End of file 
+  def _modelMemoryUse(self):
+    """
+    Model allocated memory.
+    """
+    Material._modelMemoryUse(self)
+    self.perfLogger.logFields('Materials', self.initialFields())
+    return
+
+
+# End of file

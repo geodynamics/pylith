@@ -419,6 +419,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
   // should never get here.
   topology::Field<topology::Mesh>& buffer = 
     _outputFields->get("buffer (tensor)");    
+
   return buffer;
 } // cellField
 

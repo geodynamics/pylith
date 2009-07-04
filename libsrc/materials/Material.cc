@@ -110,8 +110,8 @@ pylith::materials::Material::initialize(
 { // initialize
   assert(0 != _dbProperties);
   assert(0 != quadrature);
+
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  ///logger.setDebug(2);
   logger.stagePush("Materials");
 
   // Get quadrature information
@@ -265,8 +265,8 @@ pylith::materials::Material::initialize(
   _dbProperties->close();
   if (0 != _dbInitialState)
     _dbInitialState->close();
+
   logger.stagePop();
-  ///logger.setDebug(0);
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -312,6 +312,9 @@ pylith::materials::Material::hasStateVar(const char* name)
 void
 pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, const char* name) const
 { // getField
+  // Logging of allocation is handled by getField() caller since it
+  // manages the memory for the field argument.
+
   assert(0 != field);
   assert(0 != _properties);
   assert(0 != _stateVars);
@@ -366,9 +369,6 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
     propertyScales = 1.0;
     _dimProperties(&propertyScales[0], propertyScales.size());
 
-    ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-    ///logger.setDebug(2);
-    logger.stagePush("Materials");
     // Allocate buffer for property field if necessary.
     const ALE::Obj<RealSection>& fieldSection = field->section();
     bool useCurrentField = !fieldSection.isNull();
@@ -384,16 +384,17 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
       useCurrentField = totalFiberDim == totalFiberDimCurrent;
     } // if
     if (!useCurrentField) {
+      ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+      logger.stagePush("Output");
       field->newSection(cells, totalFiberDim);
       field->allocate();
+      logger.stagePop();
     } // if
     assert(!fieldSection.isNull());
     field->label(name);
     field->scale(propertyScales[propOffset]);
     fieldType = _metadata.fieldType(name, Metadata::PROPERTY);
-    logger.stagePop();
-    ///logger.setDebug(0);
-  
+
     // Buffer for property at cell's quadrature points
     double_array fieldCell(numQuadPts*fiberDim);
     double_array propertiesCell(numQuadPts*numPropsQuadPt);
@@ -443,9 +444,6 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
     stateVarScales = 1.0;
     _dimStateVars(&stateVarScales[0], stateVarScales.size());
 
-    ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-    ///logger.setDebug(2);
-    logger.stagePush("Materials");
     // Allocate buffer for state variable field if necessary.
     const ALE::Obj<RealSection>& fieldSection = field->section();
     bool useCurrentField = !fieldSection.isNull();
@@ -461,16 +459,17 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
       useCurrentField = totalFiberDim == totalFiberDimCurrent;
     } // if
     if (!useCurrentField) {
+      ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+      logger.stagePush("Output");
       field->newSection(cells, totalFiberDim);
       field->allocate();
+      logger.stagePop();
     } // if
     assert(!fieldSection.isNull());
     fieldType = _metadata.fieldType(name, Metadata::STATEVAR);
     field->label(name);
     field->scale(stateVarScales[varOffset]);
-    logger.stagePop();
-    ///logger.setDebug(0);
-  
+
     // Buffer for state variable at cell's quadrature points
     double_array fieldCell(numQuadPts*fiberDim);
     double_array stateVarsCell(numQuadPts*numVarsQuadPt);

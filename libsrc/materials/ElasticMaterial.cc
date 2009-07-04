@@ -288,44 +288,6 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
 } // stableTimeStepImplicit
 
 // ----------------------------------------------------------------------
-// Get initial stress field.
-const pylith::topology::Field<pylith::topology::Mesh>&
-pylith::materials::ElasticMaterial::initialStressField(void) const
-{ // initialStressField
-  if (0 == _initialFields)
-    throw std::runtime_error("Request for initial stress field, but no "
-			     "initial fields exist.");
-  assert(0 != _initialFields);
-  if (!_initialFields->hasField("initial stress"))
-    throw std::runtime_error("Request for initial stress field, but field "
-			     "does not exist.");
-  
-  const topology::Field<topology::Mesh>& initialStress =
-    _initialFields->get("initial stress");
-
-  return initialStress;
-} // initialStressField
-
-// ----------------------------------------------------------------------
-// Get initial strain field.
-const pylith::topology::Field<pylith::topology::Mesh>&
-pylith::materials::ElasticMaterial::initialStrainField(void) const
-{ // initialStrainField
-  if (0 == _initialFields)
-    throw std::runtime_error("Request for initial strain field, but no "
-			     "initial fields exist.");
-  assert(0 != _initialFields);
-  if (!_initialFields->hasField("initial strain"))
-    throw std::runtime_error("Request for initial strain field, but field "
-			     "does not exist.");
-  
-  const topology::Field<topology::Mesh>& initialStrain =
-    _initialFields->get("initial strain");
-
-  return initialStrain;
-} // initialStrainField
-
-// ----------------------------------------------------------------------
 // Allocate cell arrays.
 void
 pylith::materials::ElasticMaterial::_allocateCellArrays(void)
@@ -354,6 +316,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
 { // _initializeInitialStress
   if (0 == _dbInitialStress)
     return;
+
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Materials");
 
@@ -501,6 +464,9 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   if (0 == _dbInitialStrain)
     return;
 
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Materials");
+
   assert(0 != _initialFields);
   _initialFields->add("initial strain", "initial_strain");
   topology::Field<topology::Mesh>& initialStrain = 
@@ -627,6 +593,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
 
   // Close databases
   _dbInitialStrain->close();
+
+  logger.stagePop();
 } // _initializeInitialStrain
 
 // ----------------------------------------------------------------------
