@@ -18,7 +18,6 @@ Brad
         PointForce (BoundaryConditionPoints::_parameters) ACCESSOR DONE
         AbsorbingDampers (_parameters)
         Neumann (_parameters)
-        SlipTimeFn (_parameters)
         Quadrature (_geometryFields) [should be NULL]
         OutputManager (_fields)
         CellFilterAvg (_fieldAvg)

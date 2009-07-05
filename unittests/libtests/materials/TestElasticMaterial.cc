@@ -100,7 +100,7 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
   // Test initialStress field
   CPPUNIT_ASSERT(0 != material._initialFields);
   const ALE::Obj<RealSection>& stressSection = 
-    material.initialStressField().section();
+    material._initialFields->get("initial stress").section();
   CPPUNIT_ASSERT(!stressSection.isNull());
   int fiberDim = numQuadPts * tensorSize;
   CPPUNIT_ASSERT_EQUAL(fiberDim, stressSection->getFiberDimension(cell));
@@ -115,7 +115,7 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
   // Test initialStrain field
   CPPUNIT_ASSERT(0 != material._initialFields);
   const ALE::Obj<RealSection>& strainSection = 
-    material.initialStrainField().section();
+    material._initialFields->get("initial strain").section();
   CPPUNIT_ASSERT(!strainSection.isNull());
   fiberDim = numQuadPts * tensorSize;
   CPPUNIT_ASSERT_EQUAL(fiberDim, strainSection->getFiberDimension(cell));
