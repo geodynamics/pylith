@@ -122,7 +122,7 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
   } // for
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Fault");
+  //logger.stagePush("Fault");
 
   // Allocate slip field
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
@@ -160,7 +160,7 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
   // Compute tributary area for each vertex in fault mesh.
   _calcArea();
 
-  logger.stagePop();
+  //logger.stagePop();
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -1197,13 +1197,13 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
   const ALE::Obj<RealSection>& tractionsSection = tractions->section();
   if (tractionsSection.isNull()) {
     ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-    logger.stagePush("Fault");
+    //logger.stagePush("Fault");
 
     const topology::Field<topology::SubMesh>& slip =_fields->get("slip");
     tractions->newSection(slip, fiberDim);
     tractions->allocate();
 
-    logger.stagePop();
+    //logger.stagePop();
   } // if
   assert(!tractionsSection.isNull());
   tractions->zero();

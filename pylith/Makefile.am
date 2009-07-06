@@ -92,6 +92,7 @@ nobase_pkgpyexec_PYTHON = \
 	perf/Logger.py \
 	perf/MemoryLogger.py \
 	perf/Mesh.py \
+	perf/Fault.py \
 	perf/Material.py \
 	perf/VertexGroup.py \
 	perf/Field.py \
