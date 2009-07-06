@@ -77,11 +77,13 @@ endif
 
 INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
+if ENABLE_SWIG
 $(srcdir)/petsc_wrap.cxx $(srcdir)/petsc.py: $(petsc_swig_sources)
 	$(SWIG) -Wall -c++ -python $<
 
 $(srcdir)/utils_wrap.cxx $(srcdir)/utils.py: $(utils_swig_sources)
 	$(SWIG) -Wall -c++ -python $<
+endif
 
 
 MAINTAINERCLEANFILES = \
