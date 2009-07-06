@@ -185,5 +185,32 @@ pylith::materials::TestPowerLaw3D::test_stableTimeStepImplicit(void)
   TestElasticMaterial::test_stableTimeStepImplicit();
 } // test_stableTimeStepImplicit
 
+// ----------------------------------------------------------------------
+// Test hasProperty().
+void
+pylith::materials::TestPowerLaw3D::testHasProperty(void)
+{ // testHasProperty
+  PowerLaw3D material;
+
+  CPPUNIT_ASSERT(material.hasProperty("mu"));
+  CPPUNIT_ASSERT(material.hasProperty("lambda"));
+  CPPUNIT_ASSERT(material.hasProperty("density"));
+  CPPUNIT_ASSERT(material.hasProperty("viscosity_coeff"));
+  CPPUNIT_ASSERT(material.hasProperty("power_law_exponent"));
+  CPPUNIT_ASSERT(!material.hasProperty("aaa"));
+} // testHasProperty
+
+// ----------------------------------------------------------------------
+// Test hasStateVar().
+void
+pylith::materials::TestPowerLaw3D::testHasStateVar(void)
+{ // testHasStateVar
+  PowerLaw3D material;
+
+  CPPUNIT_ASSERT(material.hasStateVar("viscous_strain"));
+  CPPUNIT_ASSERT(material.hasStateVar("stress"));
+  CPPUNIT_ASSERT(!material.hasStateVar("total_strain"));
+} // testHasStateVar
+
 
 // End of file 

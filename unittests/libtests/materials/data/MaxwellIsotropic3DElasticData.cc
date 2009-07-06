@@ -210,18 +210,18 @@ const double pylith::materials::MaxwellIsotropic3DElasticData::_strain[] = {
 };
 
 const double pylith::materials::MaxwellIsotropic3DElasticData::_stress[] = {
- -2.24790000e+07,
- -2.24780000e+07,
- -2.24770000e+07,
- -8.97600000e+06,
- -8.97500000e+06,
- -8.97400000e+06,
- -2.82900000e+06,
- -2.82800000e+06,
- -2.82700000e+06,
- -1.09800000e+06,
- -1.09700000e+06,
- -1.09600000e+06,
+  9.51600000e+06,
+  9.92200000e+06,
+  1.03280000e+07,
+  4.79400000e+06,
+  5.20000000e+06,
+  5.60600000e+06,
+  5.15436000e+06,
+  5.20720000e+06,
+  5.26004000e+06,
+  2.21976000e+06,
+  2.27260000e+06,
+  2.32544000e+06,
 };
 
 const double pylith::materials::MaxwellIsotropic3DElasticData::_elasticConsts[] = {
@@ -285,21 +285,46 @@ const double pylith::materials::MaxwellIsotropic3DElasticData::_initialStress[] 
 };
 
 const double pylith::materials::MaxwellIsotropic3DElasticData::_initialStrain[] = {
-  3.10000000e-04,
-  3.20000000e-04,
-  3.30000000e-04,
-  3.40000000e-04,
-  3.50000000e-04,
-  3.60000000e-04,
-  6.10000000e-04,
-  6.20000000e-04,
-  6.30000000e-04,
-  6.40000000e-04,
-  6.50000000e-04,
-  6.60000000e-04,
+  3.10000000e-05,
+  3.20000000e-05,
+  3.30000000e-05,
+  3.40000000e-05,
+  3.50000000e-05,
+  3.60000000e-05,
+  6.10000000e-05,
+  6.20000000e-05,
+  6.30000000e-05,
+  6.40000000e-05,
+  6.50000000e-05,
+  6.60000000e-05,
 };
 
-const double* pylith::materials::MaxwellIsotropic3DElasticData::_stateVarsUpdated = 0;
+const double pylith::materials::MaxwellIsotropic3DElasticData::_stateVarsUpdated[] = {
+  1.10000000e-04,
+  1.20000000e-04,
+  1.30000000e-04,
+  1.40000000e-04,
+  1.50000000e-04,
+  1.60000000e-04,
+ -1.00000000e-05,
+  1.35525272e-20,
+  1.00000000e-05,
+  1.40000000e-04,
+  1.50000000e-04,
+  1.60000000e-04,
+  4.10000000e-04,
+  4.20000000e-04,
+  4.30000000e-04,
+  4.40000000e-04,
+  4.50000000e-04,
+  4.60000000e-04,
+ -1.00000000e-05,
+  0.00000000e+00,
+  1.00000000e-05,
+  4.40000000e-04,
+  4.50000000e-04,
+  4.60000000e-04,
+};
 
 pylith::materials::MaxwellIsotropic3DElasticData::MaxwellIsotropic3DElasticData(void)
 { // constructor

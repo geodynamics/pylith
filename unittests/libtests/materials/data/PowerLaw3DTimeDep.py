@@ -79,7 +79,7 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
     powerLawExpA = 1.0
     strainA = [1.1e-4, 1.2e-4, 1.3e-4, 1.4e-4, 1.5e-4, 1.6e-4]
     initialStressA = [2.1e4, 2.2e4, 2.3e4, 2.4e4, 2.5e4, 2.6e4]
-    initialStrainA = [3.6e-4, 3.5e-4, 3.4e-4, 3.3e-4, 3.2e-4, 3.1e-4]
+    initialStrainA = [3.6e-5, 3.5e-5, 3.4e-5, 3.3e-5, 3.2e-5, 3.1e-5]
     muA = vsA*vsA*densityA
     lambdaA = vpA*vpA*densityA - 2.0*muA
 
@@ -90,13 +90,13 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
     powerLawExpB = 3.0
     strainB = [4.1e-4, 4.2e-4, 4.3e-4, 4.4e-4, 4.5e-4, 4.6e-4]
     initialStressB = [5.1e4, 5.2e4, 5.3e4, 5.4e4, 5.5e4, 5.6e4]
-    initialStrainB = [6.1e-4, 6.2e-4, 6.3e-4, 6.6e-4, 6.5e-4, 6.4e-4]
+    initialStrainB = [6.1e-5, 6.2e-5, 6.3e-5, 6.6e-5, 6.5e-5, 6.4e-5]
     muB = vsB*vsB*densityB
     lambdaB = vpB*vpB*densityB - 2.0*muB
 
     # TEMPORARY, need to determine how to use initial strain
-    initialStrainA = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    initialStrainB = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    # initialStrainA = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    # initialStrainB = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     
     self.lengthScale = 1.0e+3
     self.pressureScale = muA
@@ -351,7 +351,8 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
                          initialStrain[2])/3.0
 
     # Values for current time step
-    meanStrainTpdt = (strainTpdt[0] + strainTpdt[1] + strainTpdt[2])/3.0
+    meanStrainTpdt = (strainTpdt[0] + strainTpdt[1] + strainTpdt[2])/3.0 - \
+                     meanStrainInitial
     meanStressTpdt = 3.0 * bulkModulus * meanStrainTpdt
     strainPPTpdt = strainTpdt - meanStrainTpdt * diag - \
                    visStrainT - initialStrain

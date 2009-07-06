@@ -355,9 +355,9 @@ pylith::materials::MaxwellIsotropic3D::_calcStressElastic(
   
   const double s123 = lambda * (e11 + e22 + e33);
 
-  stress[0] = s123 + mu2*e11 + initialStress[0];
-  stress[1] = s123 + mu2*e22 + initialStress[1];
-  stress[2] = s123 + mu2*e33 + initialStress[2];
+  stress[0] = s123 + mu2 * e11 + initialStress[0];
+  stress[1] = s123 + mu2 * e22 + initialStress[1];
+  stress[2] = s123 + mu2 * e33 + initialStress[2];
   stress[3] = mu2 * e12 + initialStress[3];
   stress[4] = mu2 * e23 + initialStress[4];
   stress[5] = mu2 * e13 + initialStress[5];
@@ -406,15 +406,34 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
   const double mu2 = 2.0 * mu;
   const double bulkModulus = lambda + mu2 / 3.0;
 
+  // Initial stress and strain values
+  const double meanStrainInitial = (initialStrain[0] +
+				    initialStrain[1] +
+				    initialStrain[2]) / 3.0;
+  const double meanStressInitial = (initialStress[0] +
+				    initialStress[1] +
+				    initialStress[2]) / 3.0;
+  const double devStrainInitial[] = {initialStrain[0] - meanStrainInitial,
+				     initialStrain[1] - meanStrainInitial,
+				     initialStrain[2] - meanStrainInitial,
+				     initialStrain[3],
+				     initialStrain[4],
+				     initialStrain[5]};
+  const double devStressInitial[] = {initialStress[0] - meanStressInitial,
+				     initialStress[1] - meanStressInitial,
+				     initialStress[2] - meanStressInitial,
+				     initialStress[3],
+				     initialStress[4],
+				     initialStress[5]};
+
   // :TODO: Need to determine how to incorporate initial strain and
   // state variables
-  const double e11 = totalStrain[0] - initialStrain[0];
-  const double e22 = totalStrain[1] - initialStrain[1];
-  const double e33 = totalStrain[2] - initialStrain[2];
+  const double meanStrainTpdt = (totalStrain[0] +
+				 totalStrain[1] +
+				 totalStrain[2]) / 3.0;
   
-  const double e123 = e11 + e22 + e33;
-  const double meanStrainTpdt = e123 / 3.0;
-  const double meanStressTpdt = bulkModulus * e123;
+  const double meanStressTpdt = 3.0 * bulkModulus *
+    (meanStrainTpdt - meanStrainInitial) + meanStressInitial;
 
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 
@@ -433,13 +452,13 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
   double devStressTpdt = 0.0;
 
   for (int iComp=0; iComp < tensorSize; ++iComp) {
-    devStressTpdt = mu2 * _viscousStrain[iComp];
+    devStressTpdt = mu2 * (_viscousStrain[iComp] - devStrainInitial[iComp]) +
+      devStressInitial[iComp];
 
-    stress[iComp] = diag[iComp] * meanStressTpdt + devStressTpdt +
-	    initialStress[iComp];
+    stress[iComp] = diag[iComp] * meanStressTpdt + devStressTpdt;
   } // for
 
-  PetscLogFlops(7 + 4 * tensorSize);
+  PetscLogFlops(22 + 5 * tensorSize);
 } // _calcStressViscoelastic
 
 // ----------------------------------------------------------------------
@@ -544,8 +563,8 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsViscoelastic(
   double dq = ViscoelasticMaxwell::viscousStrainParam(_dt, maxwellTime);
 
   const double visFac = mu * dq / 3.0;
-  elasticConsts[ 0] = bulkModulus + 4.0*visFac; // C1111
-  elasticConsts[ 1] = bulkModulus - 2.0*visFac; // C1122
+  elasticConsts[ 0] = bulkModulus + 4.0 * visFac; // C1111
+  elasticConsts[ 1] = bulkModulus - 2.0 * visFac; // C1122
   elasticConsts[ 2] = elasticConsts[1]; // C1133
   elasticConsts[ 3] = 0; // C1112
   elasticConsts[ 4] = 0; // C1123
@@ -570,7 +589,7 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsViscoelastic(
 } // _calcElasticConstsViscoelastic
 
 // ----------------------------------------------------------------------
-// Update state variables.
+// Update state variables as an elastic material.
 void
 pylith::materials::MaxwellIsotropic3D::_updateStateVarsElastic(
 					    double* const stateVars,
@@ -620,7 +639,7 @@ pylith::materials::MaxwellIsotropic3D::_updateStateVarsElastic(
 } // _updateStateVarsElastic
 
 // ----------------------------------------------------------------------
-// Update state variables.
+// Update state variables as a viscoelastic material.
 void
 pylith::materials::MaxwellIsotropic3D::_updateStateVarsViscoelastic(
 					    double* const stateVars,
@@ -683,7 +702,6 @@ pylith::materials::MaxwellIsotropic3D::_stableTimeStepImplicit(
 
 // ----------------------------------------------------------------------
 // Compute viscous strain for current time step.
-// material.
 void
 pylith::materials::MaxwellIsotropic3D::_computeStateVars(
 					       const double* stateVars,

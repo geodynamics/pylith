@@ -122,66 +122,10 @@ pylith::materials::TestMaxwellIsotropic3D::test_calcElasticConstsElastic(void)
 void
 pylith::materials::TestMaxwellIsotropic3D::test_updateStateVarsElastic(void)
 { // test_updateStateVarsElastic
-  // :TODO: Use TestElasticMaterial::test_updateStateVars
-  // instead. This requires moving the calculation of the expected
-  // state vars below to the Python code (where it belongs) and
-  // setting the stateVarsUpdate attribute in the Python object.
+  CPPUNIT_ASSERT(0 != _matElastic);
+  _matElastic->useElasticBehavior(true);
 
-  MaxwellIsotropic3D material;
-  material.useElasticBehavior(true);
-
-  const bool computeStateVars = true;
-  
-  const int numLocs = _dataElastic->numLocs;
-  const int numPropsQuadPt = _dataElastic->numPropsQuadPt;
-  const int numVarsQuadPt = _dataElastic->numVarsQuadPt;
-  const int tensorSize = material.tensorSize();
-  
-  double_array stress(tensorSize);
-  double_array properties(numPropsQuadPt);
-  double_array stateVars(numVarsQuadPt);
-  double_array strain(tensorSize);
-  double_array initialStress(tensorSize);
-  double_array initialStrain(tensorSize);
-  
-  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
-    memcpy(&properties[0], &_dataElastic->properties[iLoc*numPropsQuadPt],
-	   numPropsQuadPt*sizeof(double));
-    memcpy(&stateVars[0], &_dataElastic->stateVars[iLoc*numVarsQuadPt],
-	   numVarsQuadPt*sizeof(double));
-    memcpy(&strain[0], &_dataElastic->strain[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
-    memcpy(&initialStress[0], &_dataElastic->initialStress[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
-    memcpy(&initialStrain[0], &_dataElastic->initialStrain[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
-
-    const double meanStrain = (strain[0] + strain[1] + strain[2]) / 3.0;
-    
-    // Compute expected state variables
-    double_array stateVarsE(numVarsQuadPt);
-    const int s_totalStrain = 0;
-    const int s_viscousStrain = s_totalStrain + tensorSize;
-
-    // State variable 'total_strain' should match 'strain'
-    for (int i=0; i < tensorSize; ++i) 
-      stateVarsE[s_totalStrain+i] = strain[i];
-    
-    // State variable 'viscous_strain'
-    const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    for (int i=0; i < tensorSize; ++i)
-      stateVarsE[s_viscousStrain+i] = strain[i] - diag[i]*meanStrain;
- 
-    material._updateStateVars(&stateVars[0], stateVars.size(), 
-			      &properties[0], properties.size(),
-			      &strain[0], strain.size(),
-			      &initialStress[0], initialStress.size(),
-			      &initialStrain[0], initialStrain.size());
-
-    const double tolerance = 1.0e-06;
-    for (int i=0; i < numVarsQuadPt; ++i)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i], tolerance);
-  } // for
+  test_updateStateVars();
 } // test_updateStateVarsElastic
 
 // ----------------------------------------------------------------------
@@ -219,90 +163,15 @@ pylith::materials::TestMaxwellIsotropic3D::test_calcElasticConstsTimeDep(void)
 void
 pylith::materials::TestMaxwellIsotropic3D::test_updateStateVarsTimeDep(void)
 { // test_updateStateVarsTimeDep
-  // :TODO: Use TestElasticMaterial::test_updateStateVars
-  // instead. This requires moving the calculation of the expected
-  // state vars below to the Python code (where it belongs) and
-  // setting the stateVarsUpdate attribute in the Python object.
-
-  MaxwellIsotropic3D material;
-  material.useElasticBehavior(false);
+  CPPUNIT_ASSERT(0 != _matElastic);
+   _matElastic->useElasticBehavior(false);
 
   delete _dataElastic; _dataElastic = new MaxwellIsotropic3DTimeDepData();
 
-  const double dt = 2.0e+5;
-  material.timeStep(dt);
+  double dt = 2.0e+5;
+  _matElastic->timeStep(dt);
+  test_updateStateVars();
 
-  const bool computeStateVars = true;
-  
-  const int numLocs = _dataElastic->numLocs;
-  const int numPropsQuadPt = _dataElastic->numPropsQuadPt;
-  const int numVarsQuadPt = _dataElastic->numVarsQuadPt;
-  const int tensorSize = material.tensorSize();
-  
-  double_array stress(tensorSize);
-  double_array properties(numPropsQuadPt);
-  double_array stateVars(numVarsQuadPt);
-  double_array strain(tensorSize);
-  double_array initialStress(tensorSize);
-  double_array initialStrain(tensorSize);
-  
-  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
-    memcpy(&properties[0], &_dataElastic->properties[iLoc*numPropsQuadPt],
-	   numPropsQuadPt*sizeof(double));
-    memcpy(&stateVars[0], &_dataElastic->stateVars[iLoc*numVarsQuadPt],
-	   numVarsQuadPt*sizeof(double));
-    memcpy(&strain[0], &_dataElastic->strain[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
-    memcpy(&initialStress[0], &_dataElastic->initialStress[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
-    memcpy(&initialStrain[0], &_dataElastic->initialStrain[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
-
-    const double meanStrain = (strain[0] + strain[1] + strain[2]) / 3.0;
-    
-    // Compute expected state variables
-    double_array stateVarsE(numVarsQuadPt);
-    const int s_totalStrain = 0;
-    const int s_viscousStrain = s_totalStrain + tensorSize;
-
-    // State variable 'total_strain' should match 'strain'
-    for (int i=0; i < tensorSize; ++i) 
-      stateVarsE[s_totalStrain+i] = strain[i];
-    
-    // State variable 'viscous_strain'
-    const double meanStrainTpdt = 
-      (strain[0] + strain[1] + strain[2]) / 3.0;
-    const double meanStrainT = 
-      (stateVars[s_totalStrain+0] + 
-       stateVars[s_totalStrain+1] + 
-       stateVars[s_totalStrain+2]) / 3.0;
-
-    const int p_maxwellTime = 3;
-    const double maxwellTime = properties[p_maxwellTime];
-    const double dq = maxwellTime*(1.0-exp(-dt/maxwellTime))/dt;
-    const double expFac = exp(-dt/maxwellTime);
-    double devStrainTpdt = 0.0;
-    double devStrainT = 0.0;
-
-    const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    for (int i=0; i < tensorSize; ++i) {
-      devStrainTpdt = strain[i] - diag[i]*meanStrainTpdt;
-      devStrainT = stateVars[s_totalStrain+i] - diag[i]*meanStrainT;
-      stateVarsE[s_viscousStrain+i] = 
-	expFac * stateVars[s_viscousStrain+i] + 
-	dq * (devStrainTpdt - devStrainT);
-    } //for
-
-    material._updateStateVars(&stateVars[0], stateVars.size(), 
-			      &properties[0], properties.size(),
-			      &strain[0], strain.size(),
-			      &initialStress[0], initialStress.size(),
-			      &initialStrain[0], initialStrain.size());
-    
-    const double tolerance = 1.0e-06;
-    for (int i=0; i < numVarsQuadPt; ++i)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i], tolerance);
-  } // for
 } // test_updateStateVarsTimeDep
 
 // ----------------------------------------------------------------------
