@@ -62,6 +62,9 @@ class pylith::materials::TestPowerLaw3D : public TestElasticMaterial
   CPPUNIT_TEST( test_updateStateVarsElastic );
   CPPUNIT_TEST( test_updateStateVarsTimeDep );
 
+  CPPUNIT_TEST( testHasProperty );
+  CPPUNIT_TEST( testHasStateVar );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -99,6 +102,12 @@ public :
 
   /// Test _stableTimeStepImplicit()
   void test_stableTimeStepImplicit(void);
+
+  /// Test hasProperty()
+  void testHasProperty(void);
+
+  /// Test hasStateVar()
+  void testHasStateVar(void);
 
 }; // class TestPowerLaw3D
 

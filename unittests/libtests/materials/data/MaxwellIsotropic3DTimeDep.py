@@ -39,6 +39,9 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     """
     ElasticMaterialApp.__init__(self, name)
 
+    # import pdb
+    # pdb.set_trace()
+
     numLocs = 2
 
     self.dimension = dimension
@@ -72,7 +75,7 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     viscosityA = 1.0e18
     strainA = [1.1e-4, 1.2e-4, 1.3e-4, 1.4e-4, 1.5e-4, 1.6e-4]
     initialStressA = [2.1e4, 2.2e4, 2.3e4, 2.4e4, 2.5e4, 2.6e4]
-    #initialStrainA = [3.6e-4, 3.5e-4, 3.4e-4, 3.3e-4, 3.2e-4, 3.1e-4]
+    initialStrainA = [3.6e-5, 3.5e-5, 3.4e-5, 3.3e-5, 3.2e-5, 3.1e-5]
     muA = vsA*vsA*densityA
     lambdaA = vpA*vpA*densityA - 2.0*muA
     maxwellTimeA = viscosityA / muA
@@ -85,15 +88,15 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     strainB = [1.2e-4, 2.3e-4, 3.4e-4, 4.5e-4, 5.6e-4, 6.7e-4]
     strainB = [4.1e-4, 4.2e-4, 4.3e-4, 4.4e-4, 4.5e-4, 4.6e-4]
     initialStressB = [5.1e4, 5.2e4, 5.3e4, 5.4e4, 5.5e4, 5.6e4]
-    #initialStrainB = [6.1e-4, 6.2e-4, 6.3e-4, 6.6e-4, 6.5e-4, 6.4e-4]
+    initialStrainB = [6.1e-5, 6.2e-5, 6.3e-5, 6.6e-5, 6.5e-5, 6.4e-5]
     muB = vsB*vsB*densityB
     lambdaB = vpB*vpB*densityB - 2.0*muB
     maxwellTimeB = viscosityB / muB
     meanStrainB = (strainB[0] + strainB[1] + strainB[2])/3.0
 
     # TEMPORARY, need to determine how to use initial strain
-    initialStrainA = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    initialStrainB = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    # initialStrainA = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    # initialStrainB = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     
     diag = numpy.array([1.0, 1.0, 1.0, 0.0, 0.0, 0.0],
                        dtype=numpy.float64)
@@ -118,8 +121,10 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     density0 = self.densityScale
     time0 = self.timeScale
     self.propertiesNondim = \
-        numpy.array([ [densityA/density0, muA/mu0, lambdaA/mu0, maxwellTimeA/time0],
-                      [densityB/density0, muB/mu0, lambdaB/mu0, maxwellTimeB/time0] ],
+        numpy.array([ [densityA/density0, muA/mu0, lambdaA/mu0, \
+                       maxwellTimeA/time0],
+                      [densityB/density0, muB/mu0, lambdaB/mu0, \
+                       maxwellTimeB/time0] ],
                     dtype=numpy.float64)
 
     self.initialStress = numpy.array([initialStressA,
@@ -139,8 +144,8 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     # (viscous_strain) are defined by the assigned elastic strain.
     totalStrainA = strainA
     totalStrainB = strainB
-    viscousStrainA = numpy.array(strainA) - diag*meanStrainA
-    viscousStrainB = numpy.array(strainB) - diag*meanStrainB
+    viscousStrainA = numpy.array(strainA) - diag * meanStrainA
+    viscousStrainB = numpy.array(strainB) - diag * meanStrainB
     self.stateVars = numpy.array([ [totalStrainA, viscousStrainA],
                                    [totalStrainB, viscousStrainB] ],
                                  dtype=numpy.float64)
@@ -149,15 +154,17 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     self.strain = numpy.array([strainA, strainB],
                                dtype=numpy.float64)
     self.stress = numpy.zeros( (numLocs, tensorSize), dtype=numpy.float64)
-    self.elasticConsts = numpy.zeros( (self.numLocs, numElasticConsts),
+    self.stateVarsUpdated = numpy.zeros( (numLocs, tensorSize + tensorSize),
+                                         dtype=numpy.float64)
+    self.elasticConsts = numpy.zeros( (numLocs, numElasticConsts),
                                       dtype=numpy.float64)
 
-    (self.elasticConsts[0,:], self.stress[0,:]) = \
-                              self._calcStress(strainA, 
-                                               muA, lambdaA, maxwellTimeA,
-                                               totalStrainA, viscousStrainA,
-                                               initialStressA, initialStrainA)
-    (self.elasticConsts[1,:], self.stress[1,:]) = \
+    (self.elasticConsts[0,:], self.stress[0,:], self.stateVarsUpdated[0,:]) = \
+                     self._calcStress(strainA, 
+                                      muA, lambdaA, maxwellTimeA,
+                                      totalStrainA, viscousStrainA,
+                                      initialStressA, initialStrainA)
+    (self.elasticConsts[1,:], self.stress[1,:], self.stateVarsUpdated[1,:]) = \
                               self._calcStress(strainB, 
                                                muB, lambdaB, maxwellTimeB, 
                                                totalStrainB, viscousStrainB,
@@ -167,31 +174,83 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     return
 
 
-  def _calcStress(self, strainV, muV, lambdaV, maxwellTimeV, totalStrainV,
-                  viscousStrainV, initialStressV, initialStrainV):
+  def _calcStressComponent(self, strainVal, strainComp, stressComp, strainTpdt,
+                         muV, lambdaV, maxwellTimeV, dqV, totalStrainT,
+                         viscousStrainT, initialStress, initialStrain):
     """
-    Compute stress and derivative of elasticity matrix.
-    This assumes behavior is always viscoelastic.
+    Function to compute a particular stress component as a function of a
+    strain component.
+    """
+    strainTest = numpy.array(strainTpdt, dtype=numpy.float64)
+    strainTest[strainComp] = strainVal
+    stressTpdt, viscousStrainTpdt = self._computeStress(strainTest,
+                                                        muV,
+                                                        lambdaV,
+                                                        maxwellTimeV,
+                                                        dqV,
+                                                        totalStrainT,
+                                                        viscousStrainT,
+                                                        initialStress,
+                                                        initialStrain)
+    return stressTpdt[stressComp]
+
+
+  def _computeStress(self, strainTpdt, muV, lambdaV, maxwellTimeV, dqV,
+                     strainT, viscousStrainT,
+                     initialStress, initialStrain):
+    """
+    Function to compute stresses and viscous strains for a given strain.
     """
     import math
     
-    bulkModulus = lambdaV + 2.0 * muV/3.0
+    bulkModulus = lambdaV + 2.0 * muV / 3.0
     diag = [1.0, 1.0, 1.0, 0.0, 0.0, 0.0]
 
-    totalStrainR = numpy.array(totalStrainV) - numpy.array(initialStrainV)
-    print strainV
-    print initialStrainV
-    print totalStrainR
+    # Initial stresses and strains
+    meanStrainInitial = \
+    (initialStrain[0] + initialStrain[1] + initialStrain[2]) / 3.0
+    meanStressInitial = \
+    (initialStress[0] + initialStress[1] + initialStress[2]) / 3.0
 
-    traceStrainT = totalStrainR[0] + totalStrainR[1] + totalStrainR[2]
-    traceStrainTpdt = strainV[0] + strainV[1] + strainV[2]
-    meanStrainT = traceStrainT / 3.0
-    meanStrainTpdt = traceStrainTpdt / 3.0
-    meanStressTpdt = bulkModulus * traceStrainTpdt
+    devStrainInitial = initialStrain - numpy.array(diag) * meanStrainInitial
+    devStressInitial = initialStress - numpy.array(diag) * meanStressInitial
+
+    meanStrainT = (strainT[0] + strainT[1] + strainT[2]) / 3.0
+    meanStrainTpdt = (strainTpdt[0] + strainTpdt[1] + strainTpdt[2]) / 3.0
+    meanStressTpdt = 3.0 * bulkModulus * \
+                     (meanStrainTpdt - meanStrainInitial) + meanStressInitial
+
+    stressTpdt = numpy.zeros( (tensorSize), dtype=numpy.float64)
+    viscousStrainTpdt = numpy.zeros( (tensorSize), dtype=numpy.float64)
+
+    expFac = math.exp(-self.dt/maxwellTimeV)
+    elasFac = 2.0 * muV
+    devStrainTpdt = 0.0
+    devStrainT = 0.0
+    devStressTpdt = 0.0
+    for iComp in range(tensorSize):
+      devStrainTpdt = strainTpdt[iComp] - diag[iComp] * meanStrainTpdt
+      devStrainT = strainT[iComp] - diag[iComp] * meanStrainT
+      viscousStrainTpdt[iComp] = expFac * viscousStrainT[iComp] + \
+                                 dqV * (devStrainTpdt - devStrainT)
+      devStressTpdt = elasFac * \
+                      (viscousStrainTpdt[iComp] - devStrainInitial[iComp]) + \
+                      devStressInitial[iComp]
+      stressTpdt[iComp] = diag[iComp] * meanStressTpdt + devStressTpdt
+      
+    return stressTpdt, viscousStrainTpdt
+
+                                                        
+  def _computeViscousFactor(self, maxwellTime):
+    """
+    Compute viscous strain factor for a given Maxwell time.
+    """
+    import math
+    
     timeFrac = 1.0e-5
     numTerms = 5
     dq = 0.0
-    if maxwellTimeV < timeFrac*self.dt:
+    if maxwellTime < timeFrac*self.dt:
       fSign = 1.0
       factorial = 1.0
       fraction = 1.0
@@ -199,61 +258,75 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
       for iTerm in range(2, numTerms + 1):
         factorial *= iTerm
         fSign *= -1.0
-        fraction *= self.dt/maxwellTimeV
+        fraction *= self.dt/maxwellTime
         dq += fSign*fraction/factorial
     else:
-      dq = maxwellTimeV*(1.0-math.exp(-self.dt/maxwellTimeV))/self.dt
+      dq = maxwellTime*(1.0-math.exp(-self.dt/maxwellTime))/self.dt
 
-    visFac = muV*dq/3.0
+    return dq
 
-    C1111 = bulkModulus + 4.0*visFac
-    C1122 = bulkModulus - 2.0*visFac
-    C1133 = C1122
-    C1112 = 0.0
-    C1123 = 0.0
-    C1113 = 0.0
-    C2222 = C1111
-    C2233 = C1122
-    C2212 = 0.0
-    C2223 = 0.0
-    C2213 = 0.0
-    C3333 = C1111
-    C3312 = 0.0
-    C3323 = 0.0
-    C3313 = 0.0
-    C1212 = 6.0*visFac
-    C1223 = 0.0
-    C1213 = 0.0
-    C2323 = C1212
-    C2313 = 0.0
-    C1313 = C1212
-    elasticConsts = numpy.array([C1111, C1122, C1133, C1112, C1123, C1113,
-                                 C2222, C2233, C2212, C2223, C2213,
-                                 C3333, C3312, C3323, C3313,
-                                 C1212, C1223, C1213,
-                                 C2323, C2313,
-                                 C1313], dtype=numpy.float64)
+  
+  def _calcStress(self, strainV, muV, lambdaV, maxwellTimeV, totalStrainV,
+                  viscousStrainV, initialStressV, initialStrainV):
+    """
+    Compute stress, derivative of elasticity matrix, and updated state
+    variables. This assumes behavior is always viscoelastic.
+    """
+    import scipy.misc
 
-    stressV = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    # Define some numpy arrays
+    strainTpdt = numpy.array(strainV, dtype=numpy.float64)
+    strainT = numpy.array(totalStrainV, dtype=numpy.float64)
+    viscousStrainT = numpy.array(viscousStrainV, dtype=numpy.float64)
+    initialStress = numpy.array(initialStressV, dtype=numpy.float64)
+    initialStrain = numpy.array(initialStrainV, dtype=numpy.float64)
+    
+    # Compute current stress and viscous strain.
+    dqV = self._computeViscousFactor(maxwellTimeV)
+    stressTpdt, viscousStrainTpdt = self._computeStress(strainTpdt,
+                                                        muV,
+                                                        lambdaV,
+                                                        maxwellTimeV,
+                                                        dqV,
+                                                        strainT,
+                                                        viscousStrainT,
+                                                        initialStress,
+                                                        initialStrain)
+                                                        
+    # Form updated state variables
+    stateVarsUpdated = numpy.array( [strainTpdt, viscousStrainTpdt],
+                                    dtype=numpy.float64)
 
-    expFac = math.exp(-self.dt/maxwellTimeV)
-    print "expFac:",expFac
-    print "viscousStrain",viscousStrainV
-    elasFac = 2.0*muV
-    devStrainTpdt = 0.0
-    devStrainT = 0.0
-    devStressTpdt = 0.0
-    viscousStrain = 0.0
-    for iComp in range(tensorSize):
-      devStrainTpdt = strainV[iComp] - diag[iComp]*meanStrainTpdt
-      devStrainT = totalStrainR[iComp] - diag[iComp]*meanStrainT
-      viscousStrain = expFac*viscousStrainV[iComp] + dq*(devStrainTpdt - devStrainT)
-      devStressTpdt = elasFac*viscousStrain
-      stressV[iComp] = diag[iComp]*meanStressTpdt + devStressTpdt + \
-                       initialStressV[iComp]
-      
-    stress = numpy.reshape(stressV, (tensorSize,1))
-    return (elasticConsts, numpy.ravel(stress))
+    # Compute components of tangent constitutive matrix using numerical
+    # derivatives.
+    derivDx = 1.0e-12
+    derivOrder = 3
+    elasticConstsList = []
+
+    for stressComp in range(tensorSize):
+      for strainComp in range(stressComp, tensorSize):
+        dStressDStrain = stressComp + strainComp
+        dStressDStrain = scipy.misc.derivative(self._calcStressComponent,
+                                               strainTpdt[strainComp],
+                                               dx=derivDx,
+                                               args=(strainComp,
+                                                     stressComp,
+                                                     strainTpdt,
+                                                     muV,
+                                                     lambdaV,
+                                                     maxwellTimeV,
+                                                     dqV,
+                                                     strainT,
+                                                     viscousStrainT,
+                                                     initialStress,
+                                                     initialStrain),
+                                               order=derivOrder)
+        elasticConstsList.append(dStressDStrain)
+
+    elasticConsts = numpy.array(elasticConstsList, dtype=numpy.float64)
+
+    return (elasticConsts, numpy.ravel(stressTpdt),
+            numpy.ravel(stateVarsUpdated))
   
 
 # MAIN /////////////////////////////////////////////////////////////////
