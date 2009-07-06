@@ -28,6 +28,14 @@ AC_ARG_WITH([embedding],
     [want_embedding=no])
 AM_CONDITIONAL([COND_EMBEDDING], [test "$want_embedding" = yes])
 
+# SWIG
+AC_ARG_ENABLE([swig],
+    [AC_HELP_STRING([--enable-swig],
+        [enable generating modules with SWIG) @<:@default=no@:>@])],
+	[enable_swig=yes],
+	[enable_swig=no])
+AM_CONDITIONAL([ENABLE_SWIG], [test "$enable_swig" = yes])
+
 # TESTING w/cppunit
 AC_ARG_ENABLE([testing],
     [AC_HELP_STRING([--enable-testing],
@@ -114,7 +122,9 @@ CIT_NUMPY_PYTHON_MODULE
 CIT_NUMPY_INCDIR
 
 # SWIG
-AC_PROG_SWIG(1.3.33)
+if test "$enable_swig" = "yes" ; then
+  AC_PROG_SWIG(1.3.33)
+fi
 
 # CPPUNIT
 if test "$enable_testing" = "yes" ; then

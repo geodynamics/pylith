@@ -58,8 +58,10 @@ endif
 
 INCLUDES += -g $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
+if ENABLE_SWIG
 $(srcdir)/materials_wrap.cxx $(srcdir)/materials.py: $(swig_sources)
 	$(SWIG) -Wall -c++ -python $<
+endif
 
 
 MAINTAINERCLEANFILES = \
