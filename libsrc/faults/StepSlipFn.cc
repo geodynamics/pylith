@@ -76,6 +76,10 @@ pylith::faults::StepSlipFn::initialize(
   const double lengthScale = normalizer.lengthScale();
   const double timeScale = normalizer.timeScale();
 
+  // Memory logging
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Fault");
+
   // Get vertices in fault mesh
   const ALE::Obj<SieveMesh>& sieveMesh = faultMesh.sieveMesh();
   assert(!sieveMesh.isNull());
@@ -84,12 +88,10 @@ pylith::faults::StepSlipFn::initialize(
   const label_sequence::iterator verticesBegin = vertices->begin();
   const label_sequence::iterator verticesEnd = vertices->end();
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Fault");
-
   delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
   assert(0 != _parameters);
   _parameters->add("final slip", "final_slip");
+
   topology::Field<topology::SubMesh>& finalSlip = _parameters->get("final slip");
   finalSlip.newSection(vertices, spaceDim);
   finalSlip.allocate();

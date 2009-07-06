@@ -210,11 +210,12 @@ pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
   fault->setSieve(sieve);
 
   MPI_Comm_rank(comm, &rank);
-  // Memory debugging
+
+  // Memory logging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.setDebug(fault->debug()/2);
-
   logger.stagePush("FaultCreation");
+
   if (0 == rank) {
     assert(coordinates.size() == numVertices*spaceDim);
     assert(cells.size() == numCells*numCorners);

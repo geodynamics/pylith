@@ -226,6 +226,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
     """
     Model memory allocation.
     """
+    self.perfLogger.logFault("Fault", self)
     self.perfLogger.logFields("Fault", self.fields())
     return
 

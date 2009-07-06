@@ -162,6 +162,18 @@ class MemoryLogger(Logger):
     return
 
 
+  def logFault(self, stage, mesh):
+    """
+    Lof fault parameters to determine memory from our model.
+    """
+    import pylith.perf.Fault
+
+    if not stage in self.memory: self.memory[stage] = {}
+    faultModel = pylith.perf.Fault.Fault()
+    faultModel.tabulate(self.memory[stage])
+    return
+
+
   def mergeMemDict(self, memDictTarget, memDictSource):
     for key in memDictSource:
       if not key in memDictTarget:

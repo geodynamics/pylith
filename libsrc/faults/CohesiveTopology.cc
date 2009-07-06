@@ -43,6 +43,10 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
   assert(0 != faultMesh);
   assert(!groupField.isNull());
 
+  // Memory logging
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("FaultCreation");
+
   faultMesh->coordsys(mesh);
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
@@ -86,7 +90,12 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
 					    fault->getArrowSection("orientation"), 
 					    faultSieve, flipFault);
   fault->setSieve(faultSieve);
+
+  logger.stagePop();
+  logger.stagePush("FaultStratification");
   fault->stratify();
+  logger.stagePop();
+  logger.stagePush("FaultCreation");
   if (debug)
     fault->view("Fault mesh");
 
@@ -103,6 +112,8 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
   faultSieveMesh->setSieve(ifaultSieve);
   ALE::ISieveConverter::convertMesh(*fault, *faultSieveMesh, renumbering, false);
   renumbering.clear();
+
+  logger.stagePop();
 } // createFault
 
 // ----------------------------------------------------------------------
@@ -122,6 +133,10 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 
   typedef ALE::SieveAlg<ALE::Mesh> sieveAlg;
   typedef ALE::Selection<ALE::Mesh> selection;
+
+  // Memory logging
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("FaultCreation");
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
   assert(!sieveMesh.isNull());
@@ -187,6 +202,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       std::cout << "Duplicating " << *v_iter << " to "
 		<< vertexRenumber[*v_iter] << std::endl;
 
+    logger.stagePop();
+    logger.stagePush("FaultStratification");
     // Add shadow and constraint vertices (if they exist) to group
     // associated with fault
     groupField->addPoint(firstFaultVertex, 1);
@@ -203,6 +220,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       sieveMesh->setDepth(firstFaultVertex+numFaultVertices, 0);
 #endif
     } // if
+    logger.stagePop();
+    logger.stagePush("FaultCreation");
 
     // Add shadow vertices to other groups, don't add constraint
     // vertices (if they exist) because we don't want BC, etc to act
@@ -382,11 +401,15 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     } // if
     // TODO: Need to reform the material label when sieve is reallocated
     sieveMesh->setValue(material, firstFaultCell, materialId);
+    logger.stagePop();
+    logger.stagePush("FaultStratification");
 #if defined(FAST_STRATIFY)
     // OPTIMIZATION
     sieveMesh->setHeight(firstFaultCell, 0);
     sieveMesh->setDepth(firstFaultCell, 1);
 #endif
+    logger.stagePop();
+    logger.stagePush("FaultCreation");
     sV2.clear();
     cV2.clear();
   } // for
@@ -574,7 +597,11 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   if (!faultSieveMesh->commRank())
     delete [] indices;
 #if !defined(FAST_STRATIFY)
+  logger.stagePop();
+  logger.stagePush("FaultStratification");
   sieveMesh->stratify();
+  logger.stagePop();
+  logger.stagePush("FaultCreation");
 #endif
   const std::string labelName("censored depth");
 
@@ -635,6 +662,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   } // for
   if (debug)
     coordinates->view("Coordinates with shadow vertices");
+
+  logger.stagePop();
 } // create
 
 // ----------------------------------------------------------------------
@@ -649,6 +678,10 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 { // createFaultParallel
   assert(0 != faultMesh);
   assert(0 != cohesiveToFault);
+
+  // Memory logging
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("FaultCreation");
 
   faultMesh->coordsys(mesh);
 
@@ -718,7 +751,11 @@ pylith::faults::CohesiveTopology::createFaultParallel(
     cV.clear();
   } // for
   fault->setSieve(faultSieve);
+  logger.stagePop();
+  logger.stagePush("FaultStratification");
   fault->stratify();
+  logger.stagePop();
+  logger.stagePush("FaultCreation");
 
   // Convert fault to an IMesh
   SieveSubMesh::renumbering_type& fRenumbering =
@@ -731,7 +768,11 @@ pylith::faults::CohesiveTopology::createFaultParallel(
     ALE::ISieveConverter::convertSieve(*fault->getSieve(),
 				       *faultSieveMesh->getSieve(),
 				       fRenumbering, true);
+    logger.stagePop();
+    logger.stagePush("FaultStratification");
     faultSieveMesh->stratify();
+    logger.stagePop();
+    logger.stagePush("FaultCreation");
     ALE::ISieveConverter::convertOrientation(*fault->getSieve(),
 					     *faultSieveMesh->getSieve(),
 					     fRenumbering,
@@ -846,6 +887,8 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   faultSieveMesh->setCalculatedOverlap(true);
   //sendParallelMeshOverlap->view("Send parallel fault overlap");
   //recvParallelMeshOverlap->view("Recv parallel fault overlap");
+
+  logger.stagePop();
 } // createFaultParallel
 
 
