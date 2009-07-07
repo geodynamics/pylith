@@ -285,11 +285,9 @@ class Savpres_ss(Application):
 
       for step in range(self.numberSteps + 1):
         if cycle == 0:
-          solutionUT = self._u2A(tau)[0]
-          solutionVT = self._u2A(tau)[1]
+          solutionUT, solutionVT = self._u2A(tau)
         else:
-          solutionUT = self._u2B(tau)[0]
-          solutionVT = self._u2B(tau)[1]
+          solutionUT, solutionVT = self._u2B(tau)
 
         solutionU2[cycle, step, :] += solutionUT
         solutionV2[cycle, step, :] += solutionVT
