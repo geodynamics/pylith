@@ -7,7 +7,7 @@ from merlin import setup, find_packages
 setup(
     
     name = 'PyLith', 
-    version = '1.0',
+    version = '1.4.1',
 
     zip_safe = False,
     packages = find_packages(),
