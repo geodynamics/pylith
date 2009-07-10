@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+# ======================================================================
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# {LicenseText}
+#
+# ======================================================================
+#
+
+if [ $# == 0 ]; then
+  echo "usage: tsurftooff tsurf_file1 tsurf_file2"
+  exit 1
+else
+  files=$*
+fi
+
+for file in $files; do
+  tsurf=$file
+  off=`echo $tsurf | sed -e s/\.[A-Za-z]*$/.off/`
+  echo "tsurf: $tsurf, off: $off"
+
+  awk '/^VRTX/ { vertices[nvertices++]=$3" "$4" "$5 }
+       /^PVRTX/ { vertices[nvertices++]=$3" "$4" "$5 }
+       /^PATOM/ { vertices[nvertices++]=vertices[$3] }
+       /^TRGL/ { cells[ncells++]=$2-1" "$3-1" "$4-1 }
+       END {
+         print "OFF"
+         printf("%d %d %d\n", nvertices, ncells, 0);
+         for (i=0;i<nvertices;++i) print vertices[i];
+         for (i=0;i<ncells;++i) print "3 " cells[i];
+       }' $tsurf > $off
+done
+  
+exit 0
+
+
+# End of file 
