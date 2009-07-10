@@ -43,7 +43,7 @@
 } // typemap(in) [List of kinematic earthquake sources.]
 
 // This cleans up the array we malloc'd before the function call
-%typemap(freearg) (pylith::faults::EqKinsrc** sources,
+%typemap(freearg) (pylith::faults::EqKinSrc** sources, 
 		   const int numSources) {
   delete[] $1;
 }

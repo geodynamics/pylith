@@ -51,6 +51,7 @@ namespace pylith {
 		  const int numNames,
 		  EqKinSrc** sources,
 		  const int numSources);
+      %clear(const char* const* names, const int numNames);
       
       /** Initialize fault. Determine orientation and setup boundary
        * condition parameters.

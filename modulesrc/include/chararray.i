@@ -33,7 +33,7 @@
 } // typemap(in) const char**
 
 // This cleans up the char** array we malloc'd before the function call
-%typemap(freearg) (const char** string_list) {
+%typemap(freearg) (const char* const* string_list) {
   delete[] $1;
 }
 
@@ -62,7 +62,7 @@
 } // typemap(in) const char**
 
 // This cleans up the char** array we malloc'd before the function call
-%typemap(freearg) (const char** string_list, const int list_len) {
+%typemap(freearg) (const char* const* string_list, const int list_len) {
   delete[] $1;
 }
 
