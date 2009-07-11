@@ -284,12 +284,15 @@ pylith::topology::Field<mesh_type>::clear(void)
 { // clear
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
+
+  deallocate();
   if (!_section.isNull())
     _section->clear();
 
   _scale = 1.0;
   _vecFieldType = OTHER;
   _dimensionsOkay = false;
+
   logger.stagePop();
 } // clear
 
@@ -301,11 +304,13 @@ pylith::topology::Field<mesh_type>::allocate(void)
 { // allocate
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
+
   assert(!_section.isNull());
 
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   sieveMesh->allocate(_section);
+
   logger.stagePop();
 } // allocate
 
@@ -355,6 +360,7 @@ pylith::topology::Field<mesh_type>::complete(void)
 { // complete
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Completion");
+
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh.sieveMesh();
   assert(!sieveMesh.isNull());
 
@@ -362,6 +368,7 @@ pylith::topology::Field<mesh_type>::complete(void)
     ALE::Completion::completeSectionAdd(sieveMesh->getSendOverlap(),
 					sieveMesh->getRecvOverlap(), 
 					_section, _section);
+
   logger.stagePop();
 } // complete
 
