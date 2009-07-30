@@ -65,7 +65,7 @@ class TimeStepAdapt(TimeStep):
     adaptSkip.meta['tip'] = "Number of time steps to skip between " \
         "adjusting value."
 
-    stabilityFactor = pyre.inventory.float("stability_factor", default=1.2,
+    stabilityFactor = pyre.inventory.float("stability_factor", default=2.0,
                                     validator=pyre.inventory.greater(0.0))
     stabilityFactor.meta['tip'] = "'Safety factor' for stable time step."
 
