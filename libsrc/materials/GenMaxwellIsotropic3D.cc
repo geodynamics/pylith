@@ -830,7 +830,7 @@ pylith::materials::GenMaxwellIsotropic3D::_stableTimeStepImplicit(
   const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
   for (int i=0; i < numMaxwellModels; ++i) {
     const double maxwellTime = properties[p_maxwellTime+i];
-    const double dt = 0.1*maxwellTime;
+    const double dt = 0.2*maxwellTime;
     if (dt < dtStable)
       dtStable = dt;
   } // for

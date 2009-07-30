@@ -695,7 +695,7 @@ pylith::materials::MaxwellIsotropic3D::_stableTimeStepImplicit(
   assert(_numVarsQuadPt == numStateVars);
 
   const double maxwellTime = properties[p_maxwellTime];
-  const double dtStable = 0.1 * maxwellTime;
+  const double dtStable = 0.2 * maxwellTime;
 
   return dtStable;
 } // _stableTimeStepImplicit
