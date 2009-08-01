@@ -190,7 +190,7 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
         self._calcStress(strainB, muB, lambdaB, shearRatioB, maxwellTimeB,
                          strainTB, visStrainB,
                          initialStressB, initialStrainB)
-    self.dtStableImplicit = 0.1*min(min(maxwellTimeA), min(maxwellTimeB))
+    self.dtStableImplicit = 0.2*min(min(maxwellTimeA), min(maxwellTimeB))
 
     return
 

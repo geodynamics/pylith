@@ -39,7 +39,7 @@ const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_pressureScale
 
 const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_densityScale =   1.00000000e+03;
 
-const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_dtStableImplicit =   4.44444444e+06;
+const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_dtStableImplicit =   8.88888889e+06;
 
 const int pylith::materials::GenMaxwellIsotropic3DTimeDepData::_numPropertyValues[] = {
 1,
