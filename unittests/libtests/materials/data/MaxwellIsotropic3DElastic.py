@@ -139,7 +139,7 @@ class MaxwellIsotropic3DElastic(ElasticMaterialApp):
     (self.elasticConsts[1,:], self.stress[1,:], self.stateVarsUpdated[1,:]) = \
         self._calcStress(strainB, muB, lambdaB, \
                            initialStressB, initialStrainB)
-    self.dtStableImplicit = 0.1*min(maxwellTimeA, maxwellTimeB)
+    self.dtStableImplicit = 0.2*min(maxwellTimeA, maxwellTimeB)
     return
 
 
