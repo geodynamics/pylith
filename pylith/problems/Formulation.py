@@ -404,6 +404,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     """
     from pylith.feassemble.Integrator import implementsIntegrator
     from pylith.feassemble.Constraint import implementsConstraint
+    from pylith.bc.PointForce import PointForce
 
     self._info.log("Pre-initializing boundary conditions.")
     self._debug.log(resourceUsageString())
@@ -412,7 +413,10 @@ class Formulation(PetscComponent, ModuleFormulation):
       foundType = False
       if implementsIntegrator(bc):
         foundType = True
-        self.integratorsSubMesh.append(bc)
+        if not isinstance(bc, PointForce):
+          self.integratorsSubMesh.append(bc)
+        else:
+          self.integratorsMesh.append(bc)
         self._info.log("Added boundary condition '%s' as an integrator." % \
                        bc.label)
       if implementsConstraint(bc):

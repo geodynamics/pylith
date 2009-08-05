@@ -18,13 +18,13 @@
 ## Factory: boundary_condition
 
 from BoundaryCondition import BoundaryCondition
-from TimeDependent import TimeDependent
+from TimeDependentPoints import TimeDependentPoints
 from pylith.feassemble.Integrator import Integrator
 from bc import PointForce as ModulePointForce
 
 # PointForce class
 class PointForce(BoundaryCondition, 
-                 TimeDependent, 
+                 TimeDependentPoints, 
                  Integrator, 
                  ModulePointForce):
   """
@@ -35,13 +35,13 @@ class PointForce(BoundaryCondition,
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="dirichletbc"):
+  def __init__(self, name="pointforce"):
     """
     Constructor.
     """
     BoundaryCondition.__init__(self, name)
     Integrator.__init__(self)
-    self._loggingPrefix = "DiBC "
+    self._loggingPrefix = "PFBC "
     return
 
 
@@ -98,6 +98,7 @@ class PointForce(BoundaryCondition,
     Setup members using inventory.
     """
     BoundaryCondition._configure(self)
+    TimeDependentPoints._configure(self)
     return
 
 

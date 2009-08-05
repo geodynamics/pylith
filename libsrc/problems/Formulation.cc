@@ -152,7 +152,6 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
     residual.scatterSectionToVector();
 
   // TODO: Move this to SolverLinear 
-  //residual *= -1.0;
   if (0 != tmpResidualVec)
     VecScale(*tmpResidualVec, -1.0);
 } // reformResidual
