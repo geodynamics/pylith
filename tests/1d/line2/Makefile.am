@@ -16,23 +16,29 @@ check_SCRIPTS = testpylith.py
 
 dist_noinst_PYTHON = \
 	TestLine2.py \
-	TestAxial.py \
+	TestExtensionDisp.py \
+	TestExtensionForce.py \
 	TestDislocation.py \
 	testpylith.py
 
 dist_noinst_DATA = \
 	bar.mesh \
 	matprops.spatialdb \
-	axialextension.cfg \
-	axialextension_disp.spatialdb \
+	extensiondisp.cfg \
+	extensiondisp_disp.spatialdb \
+	extensionforce.cfg \
+	extensionforce_force.spatialdb \
 	dislocation.cfg \
 	finalslip.spatialdb \
 	sliptime.spatialdb
 
 noinst_TMP = \
-	axialextension_t0000000.vtk \
-	axialextension-elastic_info.vtk \
-	axialextension-elastic_t0000000.vtk \
+	extensiondisp_t0000000.vtk \
+	extensiondisp-elastic_info.vtk \
+	extensiondisp-elastic_t0000000.vtk \
+	extensionforce_t0000000.vtk \
+	extensionforce-elastic_info.vtk \
+	extensionforce-elastic_t0000000.vtk \
 	dislocation-fault_info.vtk \
 	dislocation-fault_t0000000.vtk \
 	dislocation-elastic_info.vtk \

@@ -20,8 +20,11 @@ def suite():
   """
   suite = unittest.TestSuite()
 
-  from TestAxial import TestAxial
-  suite.addTest(unittest.makeSuite(TestAxial))
+  from TestExtensionDisp import TestExtensionDisp
+  suite.addTest(unittest.makeSuite(TestExtensionDisp))
+
+  from TestExtensionForce import TestExtensionForce
+  suite.addTest(unittest.makeSuite(TestExtensionForce))
 
   from TestDislocation import TestDislocation
   suite.addTest(unittest.makeSuite(TestDislocation))
