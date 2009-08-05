@@ -150,7 +150,7 @@ pylith::bc::TestPointForce::testIntegrateResidualAssembled(void)
   topology::SolutionFields fields(mesh);
 
   const double t = _data->tResidual;
-  bc.integrateResidualAssembled(&residual, t, &fields);
+  bc.integrateResidualAssembled(residual, t, &fields);
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
