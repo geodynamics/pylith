@@ -10,9 +10,10 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/1d/line2/TestAxial.py
+## @file tests/1d/line2/TestExtensionForce.py
 ##
-## @brief Test suite for testing pylith with 1-D axial extension.
+## @brief Test suite for testing pylith with 1-D axial extension using
+## point forces.
 
 import numpy
 from TestLine2 import TestLine2
@@ -24,7 +25,7 @@ from pylith.utils.VTKDataReader import VTKDataReader
 from pylith.apps.PyLithApp import PyLithApp
 class AxialApp(PyLithApp):
   def __init__(self):
-    PyLithApp.__init__(self, name="axialextension")
+    PyLithApp.__init__(self, name="extensionforce")
     return
 
 
@@ -40,9 +41,9 @@ def run_pylith():
   return
 
 
-class TestAxial(TestLine2):
+class TestExtensionForce(TestLine2):
   """
-  Test suite for testing pylith with 1-D axial extension.
+  Test suite for testing pylith with 1-D axial extension with point forces.
   """
 
   def setUp(self):
@@ -51,7 +52,7 @@ class TestAxial(TestLine2):
     """
     TestLine2.setUp(self)
     run_pylith()
-    self.outputRoot = "axialextension"
+    self.outputRoot = "extensionforce"
     if has_vtk():
       self.reader = VTKDataReader()
     else:
@@ -66,7 +67,7 @@ class TestAxial(TestLine2):
     nvertices = self.mesh['nvertices']
     spaceDim = self.mesh['spaceDim']    
     disp = numpy.zeros( (nvertices, spaceDim), dtype=numpy.float64)
-    disp[:,0] = -0.2 + 0.1 * vertices[:,0]
+    disp[:,0] = 3.0/7.0 * (-2.0 + vertices[:,0])
 
     return disp
 
@@ -75,7 +76,7 @@ class TestAxial(TestLine2):
     """
     Calculate state variable.
     """
-    exx = 0.1
+    exx = 3.0/7.0
 
     ncells = self.mesh['ncells']
     tensorSize = self.mesh['tensorSize']
