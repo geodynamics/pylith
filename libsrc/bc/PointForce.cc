@@ -74,11 +74,10 @@ pylith::bc::PointForce::initialize(const topology::Mesh& mesh,
 // do not require assembly over cells, vertices, or processors.
 void
 pylith::bc::PointForce::integrateResidualAssembled(
-			   topology::Field<topology::Mesh>* residual,
+			   const topology::Field<topology::Mesh>& residual,
 			   const double t,
 			   topology::SolutionFields* const fields)
 { // integrateResidualAssembled
-  assert(0 != residual);
   assert(0 != _parameters);
   assert(0 != _normalizer);
 
@@ -88,13 +87,13 @@ pylith::bc::PointForce::integrateResidualAssembled(
   const int numPoints = _points.size();
   const int numBCDOF = _bcDOF.size();
 
-  const topology::Mesh& mesh = residual->mesh();
+  const topology::Mesh& mesh = residual.mesh();
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
   assert(0 != cs);
   const int spaceDim = cs->spaceDim();
 
   double_array residualVertex(spaceDim);
-  const ALE::Obj<RealSection>& residualSection = residual->section();
+  const ALE::Obj<RealSection>& residualSection = residual.section();
   assert(!residualSection.isNull());
 
   double_array valuesVertex(numBCDOF);
