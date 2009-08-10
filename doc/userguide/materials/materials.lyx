@@ -2488,7 +2488,7 @@ reference "eq:16"
 2 & -1 & -1\\
 -1 & 2 & -1\\
 -1 & -1 & 2\end{array}\right];\,\,1\leq l,j\leq3\label{eq:60}\\
-\frac{\partial^{t+\Delta t}e_{l}^{\prime}}{\partial^{t+\Delta t}\epsilon_{j}}=\delta_{lj}\,\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\textrm{otherwise}\nonumber \end{gather}
+\frac{\partial^{t+\Delta t}e_{l}^{\prime}}{\partial^{t+\Delta t}\epsilon_{j}}=\delta_{lj}\,\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\textrm{otherwise.}\nonumber \end{gather}
 
 \end_inset
 
