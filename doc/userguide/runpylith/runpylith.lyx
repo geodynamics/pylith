@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2708,15 +2708,17 @@ pylithapp.cfg
 \end_layout
 
 \begin_layout LyX-Code
-db = spatialdata.spatialdb.UniformDB ; Set the db to a UniformDB
+db_properties = spatialdata.spatialdb.UniformDB ; Set the db to a UniformDB
 \end_layout
 
 \begin_layout LyX-Code
-db.values = [vp,vs,density] ; Set the names of the values in the database
+db_properties.values = [vp,vs,density] ; Set the names of the values in the
+ database
 \end_layout
 
 \begin_layout LyX-Code
-db.data = [5773.5*m/s, 3333.3*m/s, 2700.0*kg/m**3] ; Set the values in the database
+db_properties.data = [5773.5*m/s, 3333.3*m/s, 2700.0*kg/m**3] ; Set the values
+ in the database
 \end_layout
 
 \begin_layout Subsubsection
@@ -2823,33 +2825,26 @@ pylithapp.cfg
 \end_layout
 
 \begin_layout LyX-Code
-db = spatialdata.spatialdb.SCECCVMH ; Set the database to the SCEC CVM-H
+db_properties = spatialdata.spatialdb.SCECCVMH ; Set the database to the SCEC
+ CVM-H
 \end_layout
 
 \begin_layout LyX-Code
-db.data_dir = /home/johndoe/data/sceccvm-h/vx53 ; Directory containing the
- database 
-\begin_inset Newline newline
-\end_inset
-
-data files
+db_properties.data_dir = /home/johndoe/data/sceccvm-h/vx53 ; Directory containing
+ the database data files
 \end_layout
 
 \begin_layout LyX-Code
-min_vs = 500*m/s
+db_properties.min_vs = 500*m/s
 \end_layout
 
 \begin_layout LyX-Code
-squash = True ; Turn on squashing
+db_properties.squash = True ; Turn on squashing
 \end_layout
 
 \begin_layout LyX-Code
-squash_limit = -1000.0 ; Only distort the geometry above z = -1 km in flattening
- the 
-\begin_inset Newline newline
-\end_inset
-
-earth
+db_properties.squash_limit = -1000.0 ; Only distort the geometry above z =
+ -1 km in flattening the earth
 \end_layout
 
 \begin_layout Subsection
@@ -2885,19 +2880,15 @@ id = 1
 \end_layout
 
 \begin_layout LyX-Code
-db = spatialdata.spatialdb.CompositeDB
+db_properties = spatialdata.spatialdb.CompositeDB
 \end_layout
 
 \begin_layout LyX-Code
-db.db_A = spatialdata.spatialdb.SCECCVMH
+db_properties.db_A = spatialdata.spatialdb.SCECCVMH
 \end_layout
 
 \begin_layout LyX-Code
-db.db_B = spatialdata.spatialdb.SimpleDB
-\end_layout
-
-\begin_layout LyX-Code
-quadrature = pylith.feassemble.quadrature.Quadrature3D
+db_properties.db_B = spatialdata.spatialdb.SimpleDB
 \end_layout
 
 \begin_layout LyX-Code
@@ -2913,7 +2904,7 @@ quadrature.cell.shape = tetrahedron
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.timedependent.materials.maxwell.db]
+[pylithapp.timedependent.materials.maxwell.db_properties]
 \end_layout
 
 \begin_layout LyX-Code
@@ -2974,7 +2965,11 @@ SimpleDB
 mat_vert_var_maxwell.spatialdb
 \family default
 ).
- The user must first specify the db as a 
+ The user must first specify 
+\family typewriter
+db_properties
+\family default
+ as a 
 \family typewriter
 CompositeDB
 \family default
