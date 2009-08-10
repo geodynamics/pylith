@@ -88,7 +88,7 @@ class TestTimeStepAdapt(unittest.TestCase):
     mesh = None
 
     # Set time step
-    dt = 0.5 / 1.2
+    dt = 0.5 / 2.0
     self.assertEqual(dt, tstep.timeStep(mesh, integrators))
 
     # Increase stable time step, but time step should not change (skipped)
@@ -97,7 +97,7 @@ class TestTimeStepAdapt(unittest.TestCase):
 
     # Reduce time step even if though should have skipped
     integrators[1].dt = 0.2
-    dt = 0.2 / 1.2
+    dt = 0.2 / 2.0
     self.assertEqual(dt, tstep.timeStep(mesh, integrators))
 
     # Skip adjusting time step
@@ -108,8 +108,8 @@ class TestTimeStepAdapt(unittest.TestCase):
     self.assertEqual(dt, tstep.timeStep(mesh, integrators))
 
     # Adjust time step and stability factor
-    tstep.stabilityFactor = 2.0
-    dt = 0.8 / 2.0
+    tstep.stabilityFactor = 3.0
+    dt = 0.8 / 3.0
     self.assertEqual(dt, tstep.timeStep(mesh, integrators))
 
     # Skip adjusting time step
@@ -140,7 +140,7 @@ class TestTimeStepAdapt(unittest.TestCase):
     integrators = [Integrator(3.0),
                    Integrator(2.4)]
     mesh = None
-    dt = 2.4 / 1.2
+    dt = 2.4 / 2.0
     tstep.timeStep(mesh, integrators)
     self.assertEqual(dt, tstep.currentStep())
 
