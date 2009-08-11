@@ -25,7 +25,6 @@ subpkginclude_HEADERS = \
 	Mesh.hh \
 	Mesh.icc \
 	MeshOps.hh \
-	MeshRefiner.hh \
 	RefineUniform.hh \
 	SolutionFields.hh \
 	SubMesh.hh \

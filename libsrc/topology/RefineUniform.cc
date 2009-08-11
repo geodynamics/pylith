@@ -54,8 +54,7 @@ pylith::topology::RefineUniform::~RefineUniform(void)
 void
 pylith::topology::RefineUniform::refine(Mesh* const newMesh,
 					const Mesh& mesh,
-					const int levels,
-					const SolutionFields* fields)
+					const int levels)
 { // refine
   assert(0 != newMesh);
 
@@ -110,7 +109,7 @@ pylith::topology::RefineUniform::_refineTet4(Mesh* const newMesh,
   std::map<edge_type, point_type> edge2vertex;
     
   newSieveMesh->setSieve(newSieve);
-  ALE::MeshBuilder<Mesh>::refineTetrahedra(*mesh.sieveMesh(), *newSieveMesh,
+  ALE::MeshBuilder<Mesh>::refineTetrahedra(*mesh.sieveMesh(), * newSieveMesh,
 					   edge2vertex);
 
   // Fix material ids

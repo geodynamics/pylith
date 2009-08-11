@@ -18,9 +18,10 @@
 ## Factory: mesh_refiner.
 
 from MeshRefiner import MeshRefiner
+from topology import RefineUniform as ModuleRefineUniform
 
 # RefineUniform class
-class RefineUniform(MeshRefiner):
+class RefineUniform(MeshRefiner, ModuleRefineUniform):
   """
   Python manager for uniform global refinement of mesh in parallel.
 
@@ -29,25 +30,11 @@ class RefineUniform(MeshRefiner):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(MeshRefiner.Inventory):
-    """
-    Python object for managing RefineUniform facilities and properties.
-    """
+  import pyre.inventory
 
-    ## @class Inventory
-    ## Python object for managing RefineUniform facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b levels Number of refinement levels.
-    ##
-    ## \b Facilities
-    ## @li None
-
-    import pyre.inventory
-
-    levels = pyre.inventory.int("levels", default=2,
-                                validator=pyre.inventory.choice([2, 4]))
-    levels.meta['tip'] = "Number of refinement levels."
+  levels = pyre.inventory.int("levels", default=2,
+                              validator=pyre.inventory.choice([2, 4]))
+  levels.meta['tip'] = "Number of refinement levels."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -57,6 +44,7 @@ class RefineUniform(MeshRefiner):
     Constructor.
     """
     MeshRefiner.__init__(self, name)
+    self._createModuleObj(self)
     return
 
 
@@ -67,21 +55,15 @@ class RefineUniform(MeshRefiner):
     self._setupLogging()
     logEvent = "%srefine" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
-    self._info.log("Refining mesh.")
 
-    self._createCppHandle()
-    
     from Mesh import Mesh
-    newMesh = Mesh()
-    assert(None != self.cppHandle)
-    newMesh.cppHandle = self.cppHandle.refine(mesh.cppHandle,
-                                              self.levels)
-    newMesh.coordsys = mesh.coordsys
-
-    if self.debug:
-      self.dataWriter.initialize()
-      self.cppHandle.write(self.dataWriter.cppHandle,
-                           newMesh.cppHandle, newMesh.coordsys.cppHandle)
+    newMesh = Mesh(mesh.comm(), mesh.debug())
+    newMesh.debug(mesh.debug())
+    newMesh.coordsys(mesh.coordsys)
+    if fields is None:
+      ModuleRefineUniform.refine(self, newMesh, mesh, self.levels)
+    else:
+      ModuleRefineUniform.refine(self, meshMesh, mesh, self.levels, fields)
 
     self._eventLogger.eventEnd(logEvent)
     return newMesh
@@ -98,13 +80,11 @@ class RefineUniform(MeshRefiner):
     return
 
 
-  def _createCppHandle(self):
+  def _createModuleObj(self):
     """
     Create handle to C++ object.
     """
-    if None == self.cppHandle:
-      import pylith.topology.topology as bindings
-      self.cppHandle = bindings.RefineUniform()
+    ModuleRefineUniform.__init__(self)
     return
   
 

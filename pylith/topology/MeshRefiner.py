@@ -26,30 +26,6 @@ class MeshRefiner(PetscComponent):
   Factory: mesh_refiner
   """
 
-  class Inventory(PetscComponent.Inventory):
-    """
-    Python object for managing RefineUniform facilities and properties.
-    """
-
-    ## @class Inventory
-    ## Python object for managing RefineUniform facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b debug Write partition information to file.
-    ##
-    ## \b Facilities
-    ## @li \b writer Data writer for for partition information.
-
-    import pyre.inventory
-
-    debug = pyre.inventory.bool("debug", default=False)
-    debug.meta['tip'] = "Write partition information to file."
-
-    from pylith.meshio.DataWriterVTK import DataWriterVTK
-    dataWriter = pyre.inventory.facility("data_writer", factory=DataWriterVTK,
-                                         family="output_data_writer")
-    dataWriter.meta['tip'] = "Data writer for partition information."
-
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="refiner"):
@@ -57,7 +33,6 @@ class MeshRefiner(PetscComponent):
     Constructor.
     """
     PetscComponent.__init__(self, name, facility="refiner")
-    self.cppHandle = None
     return
 
 
@@ -65,6 +40,11 @@ class MeshRefiner(PetscComponent):
     """
     Refine mesh.
     """
+    self._setupLogging()
+    logEvent = "%srefine" % self._loggingPrefix
+    self._eventLogger.eventBegin(logEvent)
+
+    self._eventLogger.eventEnd(logEvent)
     return mesh
 
 
@@ -75,18 +55,8 @@ class MeshRefiner(PetscComponent):
     Set members based using inventory.
     """
     PetscComponent._configure(self)
-    self.debug = self.inventory.debug
-    self.dataWriter = self.inventory.dataWriter
     return
 
-
-  def _createCppHandle(self):
-    """
-    Create handle to C++ object.
-    """
-    raise NotImplementedError("Please implement _createCppHandle().");
-    return
-  
 
   def _setupLogging(self):
     """
@@ -104,14 +74,5 @@ class MeshRefiner(PetscComponent):
     self._eventLogger = logger
     return
   
-
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def mesh_refiner():
-  """
-  Factory associated with MeshRefiner.
-  """
-  return MeshRefiner()
-
 
 # End of file 
