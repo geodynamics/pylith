@@ -180,11 +180,18 @@ pylith::meshio::UCDFaultFile::read(const char* filename,
       for (int i=0; i < 2; ++i)
 	faceCells[c*2+i] -= 1;
   } // if
+
+  // Create Sieve mesh for fault
+  ALE::Obj<pylith::topology::Mesh::SieveSubMesh>& faultSieveMesh =
+    faultMesh->sieveMesh();
+  faultSieveMesh =
+    new pylith::topology::Mesh::SieveSubMesh(mesh.comm(), mesh.dimension()-1,
+					     mesh.debug());
   
   assert(!sieveMesh->getSieve().isNull());
   const int firstFaultCell = 
     sieveMesh->getSieve()->getBaseSize() + sieveMesh->getSieve()->getCapSize();
-  MeshBuilder::buildFaultMesh(faultMesh->sieveMesh(), faultBoundary, 
+  MeshBuilder::buildFaultMesh(faultSieveMesh, faultBoundary, 
 			      fCoordinates, numFVertices, fSpaceDim, fCells, 
 			      numFCells, numFCorners, firstFaultCell, 
 			      faceCells, faultDim);
