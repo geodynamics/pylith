@@ -20,10 +20,10 @@
 #define pylith_topology_refineuniform_hh
 
 // Include directives ---------------------------------------------------
-#include "MeshRefiner.hh" // ISA MeshRefiner
+#include "topologyfwd.hh" // forward declarations
 
 // RefineUniform --------------------------------------------------------
-class pylith::topology::RefineUniform : public MeshRefiner
+class pylith::topology::RefineUniform
 { // RefineUniform
   friend class TestRefineUniform; // unit testing
 
@@ -41,12 +41,10 @@ public :
    * @param newMesh Refined mesh (result).
    * @param mesh Mesh to refine.
    * @param levels Number of levels to refine.
-   * @param fields Solution fields.
    */
   void refine(Mesh* const newMesh,
 	      const Mesh& mesh,
-	      const int levels =1,
-	      const SolutionFields* fields =0);
+	      const int levels =2);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
@@ -59,7 +57,7 @@ private :
    */
   void _refineTet4(Mesh* const newMesh,
 		   const Mesh& mesh,
-		   const int levels =1);
+		   const int levels =2);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
@@ -71,5 +69,5 @@ private :
 
 #endif // pylith_topology_refineuniform_hh
 
-
+ 
 // End of file 

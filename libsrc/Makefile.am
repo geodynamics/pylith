@@ -107,7 +107,6 @@ libpylith_la_SOURCES = \
 	topology/SubMesh.cc \
 	topology/SolutionFields.cc \
 	topology/Distributor.cc \
-	topology/MeshRefiner.cc \
 	topology/RefineUniform.cc \
 	utils/EventLogger.cc \
 	utils/TestArray.cc
