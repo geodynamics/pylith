@@ -19,25 +19,10 @@
 #if !defined(pylith_topology_meshrefiner_hh)
 #define pylith_topology_meshrefiner_hh
 
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+// Include directives ---------------------------------------------------
+#include "topologyfwd.hh" // forward declarations
 
-namespace pylith {
-  namespace topology {
-    class MeshRefiner;
-    class TestMeshRefiner;
-  } // topology
-
-  namespace meshio {
-    class DataWriter;
-  } // meshio
-} // pylith
-
-namespace spatialdata {
-  namespace geocoords {
-    class CoordSys;
-  } // geocoords
-} // spatialdata
-
+// MeshRefiner ----------------------------------------------------------
 class pylith::topology::MeshRefiner
 { // MeshRefiner
   friend class TestMeshRefiner; // unit testing
@@ -49,18 +34,21 @@ public :
   MeshRefiner(void);
 
   /// Destructor
+  virtual
   ~MeshRefiner(void);
 
-  /** Write refined mesh.
+  /** Refine mesh.
    *
-   * @param writer Data writer for partition information.
-   * @param mesh Refined mesh.
-   * @param cs Coordinate system for mesh.
+   * @param newMesh Refined mesh (result).
+   * @param mesh Mesh to refine.
+   * @param levels Number of levels to refine.
+   * @param fields Solution fields.
    */
-  static
-  void write(meshio::DataWriter* const writer,
-	     const ALE::Obj<Mesh>& mesh,
-	     const spatialdata::geocoords::CoordSys* cs);
+  virtual
+  void refine(Mesh* const newMesh,
+	      const Mesh& mesh,
+	      const int levels =1,
+	      const SolutionFields* fields =0) = 0;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

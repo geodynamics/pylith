@@ -107,11 +107,11 @@ libpylith_la_SOURCES = \
 	topology/SubMesh.cc \
 	topology/SolutionFields.cc \
 	topology/Distributor.cc \
+	topology/MeshRefiner.cc \
+	topology/RefineUniform.cc \
 	utils/EventLogger.cc \
 	utils/TestArray.cc
 
-# 	topology/MeshRefiner.cc \
-#	topology/RefineUniform.cc
 
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 libpylith_la_LIBADD = \
@@ -132,5 +132,6 @@ if ENABLE_CUBIT
 	meshio/MeshIOCubit.cc
   libpylith_la_LIBADD += -lnetcdf_c++ -lnetcdf
 endif
+
 
 # End of file 
