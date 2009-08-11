@@ -24,6 +24,7 @@
 
 #include "pylith/meshio/meshiofwd.hh" // USES DataWriter<Mesh>
 
+// Distributor ----------------------------------------------------------
 class pylith::topology::Distributor
 { // Distributor
   friend class TestDistributor; // unit testing
