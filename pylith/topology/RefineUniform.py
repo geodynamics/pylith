@@ -44,7 +44,7 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
     Constructor.
     """
     MeshRefiner.__init__(self, name)
-    self._createModuleObj(self)
+    self._createModuleObj()
     return
 
 
@@ -57,13 +57,10 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
     self._eventLogger.eventBegin(logEvent)
 
     from Mesh import Mesh
-    newMesh = Mesh(mesh.comm(), mesh.debug())
+    newMesh = Mesh(mesh.dimension(), mesh.getComm())
     newMesh.debug(mesh.debug())
-    newMesh.coordsys(mesh.coordsys)
-    if fields is None:
-      ModuleRefineUniform.refine(self, newMesh, mesh, self.levels)
-    else:
-      ModuleRefineUniform.refine(self, meshMesh, mesh, self.levels, fields)
+    newMesh.coordsys(mesh.coordsys())
+    ModuleRefineUniform.refine(self, newMesh, mesh, self.levels)
 
     self._eventLogger.eventEnd(logEvent)
     return newMesh
