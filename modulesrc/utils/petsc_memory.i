@@ -39,6 +39,7 @@ namespace ALE {
     int getAllocationTotal(const char *stage);
     int getDeallocationTotal();
     int getDeallocationTotal(const char *stage);
+    void show();
   };
 }
 

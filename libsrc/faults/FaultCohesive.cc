@@ -86,6 +86,13 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
     meshio::UCDFaultFile::read(_faultMeshFilename.c_str(),
 			       &faultMesh, faultBoundary, *mesh);
 
+    // TODO: This is a kludge. We need to make UCD faults report their size
+    const int numFaultVertices = faultMesh.sieveMesh()->depthStratum(0)->size();
+    *firstFaultCell += numFaultVertices;
+    if (useLagrangeConstraints()) {
+      *firstFaultCell += numFaultVertices;
+    }
+
     // Set coordinates in fault mesh
     const ALE::Obj<topology::SubMesh::SieveMesh>& faultSieveMesh = 
       faultMesh.sieveMesh();

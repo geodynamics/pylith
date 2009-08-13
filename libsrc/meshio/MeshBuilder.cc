@@ -231,7 +231,7 @@ pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
 						0,
 						fault->getArrowSection("orientation"),
 						firstCell);
-    
+
     // Add in cells
     for(int c = 0; c < numCells; ++c) {
       s->addArrow(c+firstCell, faceCells[c*2+0]);
