@@ -22,7 +22,36 @@
 #include <petsc.h> // USES MPI_Comm
 
 #include <cassert> // USES assert()
+#include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
+
+// ----------------------------------------------------------------------
+int
+pylith::meshio::UCDFaultFile::numVertices(const char* filename)
+{ // read
+  int nvertices = 0;
+
+  std::ifstream fin(filename, std::ios::in);
+  if (!(fin.is_open() && fin.good())) {
+    std::ostringstream msg;
+    msg << "Could not open ASCII INP file '" << filename << "' for reading.";
+    throw std::runtime_error(msg.str());
+  } // if
+    
+  // Section 1: <num_nodes> <num_cells> <num_ndata> <num_cdata> <num_mdata>
+  fin >> nvertices;
+  fin.close();
+
+  if (nvertices <= 0) {
+    std::ostringstream msg;
+    msg << "Number of vertices (" << nvertices << ") in ASCII INP file '"
+	<< filename << "' must be positive.";
+    throw std::runtime_error(msg.str());
+  } // if
+  
+  return nvertices;
+} // numVertices
+
 
 // ----------------------------------------------------------------------
 void

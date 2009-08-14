@@ -95,12 +95,15 @@ class MeshGenerator(PetscComponent):
       firstFaultVertex = 0
       firstFaultCell   = 0
       for interface in interfaces:
-        firstFaultCell += interface.faultSize(mesh)
+        nvertices = interface.numVertices(mesh)
+        firstFaultCell += nvertices
         if interface.useLagrangeConstraints():
-          firstFaultCell += interface.faultSize(mesh)
+          firstFaultCell += nvertices
       for interface in interfaces:
-        self._info.log("Adjusting topology for fault '%s' of size %d." % (interface.label, interface.faultSize(mesh)))
-        firstFaultVertex, firstFaultCell = interface.adjustTopology(mesh, firstFaultVertex, firstFaultCell)
+        self._info.log("Adjusting topology for fault '%s' with %d vertices." % \
+                         (interface.label, nvertices))
+        firstFaultVertex, firstFaultCell = \
+            interface.adjustTopology(mesh, firstFaultVertex, firstFaultCell)
 
     self._eventLogger.eventEnd(logEvent)
     return
