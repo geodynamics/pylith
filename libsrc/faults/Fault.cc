@@ -48,16 +48,4 @@ pylith::faults::Fault::faultMesh(void) const
   return *_faultMesh;
 } // faultMesh
 
-// ----------------------------------------------------------------------
-// Get mesh associated with fault fields.
-int
-pylith::faults::Fault::faultSize(topology::Mesh* const mesh) const
-{ // faultSize
-  assert(0 != mesh);
-  assert(std::string("") != label());
-  const ALE::Obj<topology::Mesh::IntSection>& groupField = 
-    mesh->sieveMesh()->getIntSection(label());
-  return groupField->size();
-} // faultSize
-
 // End of file 

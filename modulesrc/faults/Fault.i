@@ -62,10 +62,11 @@ namespace pylith {
       /** Get the number of vertices on the fault.
        *
        * @param mesh PETSc mesh
-       * @return faults size
+       * @return Number of vertices on the fault.
        */
-      int faultSize(topology::Mesh* const mesh) const;
-      
+      virtual
+      int numVertices(const topology::Mesh& mesh) const = 0;
+
       /** Adjust mesh topology for fault implementation.
        *
        * @param mesh PETSc mesh

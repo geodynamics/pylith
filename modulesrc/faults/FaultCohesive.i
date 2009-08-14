@@ -49,6 +49,13 @@ namespace pylith {
        */
       void faultMeshFilename(const char* filename);
       
+      /** Get the number of vertices on the fault.
+       *
+       * @param mesh PETSc mesh
+       * @return Number of vertices on the fault.
+       */
+      int numVertices(const topology::Mesh& mesh) const;
+
       /** Adjust mesh topology for fault implementation.
        *
        * @param mesh PETSc mesh.
