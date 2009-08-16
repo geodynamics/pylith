@@ -140,12 +140,6 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
     faultSieveMesh->setRealSection("coordinates", 
 				   sieveMesh->getRealSection("coordinates"));
 
-    if (!sieveMesh->hasIntSection(label())) {
-      std::ostringstream msg;
-      msg << "Mesh missing group of vertices '" << label()
-          << "' for fault interface condition.";
-      throw std::runtime_error(msg.str());
-    } // if  
     const ALE::Obj<topology::Mesh::IntSection>& groupField = 
       sieveMesh->getIntSection(label());
     assert(!groupField.isNull());
