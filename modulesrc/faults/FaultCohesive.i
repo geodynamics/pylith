@@ -18,7 +18,8 @@
 namespace pylith {
   namespace faults {
 
-    class FaultCohesive : public Fault
+    class FaultCohesive : public Fault,
+			  public pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::SubMesh> >
     { // class FaultCohesive
 
       // PUBLIC METHODS /////////////////////////////////////////////////

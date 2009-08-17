@@ -65,12 +65,10 @@
 #include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
-#include <map> // HASA std::map
 #include <string> // HASA std::string
 
 // FaultCohesiveKin -----------------------------------------------------
-class pylith::faults::FaultCohesiveKin : public FaultCohesive,
-					 public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
+class pylith::faults::FaultCohesiveKin : public FaultCohesive
 { // class FaultCohesiveKin
   friend class TestFaultCohesiveKin; // unit testing
 
@@ -208,21 +206,6 @@ public :
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
-  /** Calculate orientation at fault vertices.
-   *
-   * @param upDir Direction perpendicular to along-strike direction that is 
-   *   not collinear with fault normal (usually "up" direction but could 
-   *   be up-dip direction; only applies to fault surfaces in a 3-D domain).
-   * @param normalDir General preferred direction for fault normal
-   *   (used to pick which of two possible normal directions for
-   *   interface; only applies to fault surfaces in a 3-D domain).
-   */
-  void _calcOrientation(const double upDir[3],
-			const double normalDir[3]);
-
-  /// Calculate fault area field.
-  void _calcArea(void);
-
   /** Compute change in tractions on fault surface using solution.
    *
    * @param tractions Field for tractions.
@@ -247,13 +230,6 @@ private :
 private :
 
   srcs_type _eqSrcs; ///< Array of kinematic earthquake sources.
-
-  /// Fields for fault information.
-  topology::Fields<topology::Field<topology::SubMesh> >* _fields;
-
-  /// Map label of cohesive cell to label of cells in fault mesh.
-  std::map<topology::Mesh::SieveMesh::point_type, 
-	   topology::SubMesh::SieveMesh::point_type> _cohesiveToFault;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
