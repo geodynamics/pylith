@@ -26,13 +26,8 @@
 // Include directives ---------------------------------------------------
 #include "FaultCohesive.hh" // ISA FaultCohesive
 
-#include "pylith/topology/SubMesh.hh" // ISA Integrator<Quadrature<SubMesh> >
-#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
-#include "pylith/feassemble/Integrator.hh" // ISA Integrator
-
 // FaultCohesiveDyn -----------------------------------------------------
-class pylith::faults::FaultCohesiveDyn : public FaultCohesive,
-					 public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
+class pylith::faults::FaultCohesiveDyn : public FaultCohesive
 { // class FaultCohesiveDyn
   friend class TestFaultCohesiveDyn; // unit testing
 

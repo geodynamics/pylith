@@ -22,8 +22,14 @@
 // Include directives ---------------------------------------------------
 #include "Fault.hh" // ISA Fault
 
+#include <map> // HASA std::map
+#include "pylith/topology/SubMesh.hh" // ISA Integrator<Quadrature<SubMesh> >
+#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
+#include "pylith/feassemble/Integrator.hh" // ISA Integrator
+
 // FaultCohesive --------------------------------------------------------
-class pylith::faults::FaultCohesive : public Fault
+class pylith::faults::FaultCohesive : public Fault,
+				      public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
 { // class FaultCohesive
   friend class TestFaultCohesive; // unit testing
 
@@ -85,6 +91,34 @@ public :
    */
   virtual
   bool useLagrangeConstraints(void) const = 0;
+
+  // PROTECTED METHODS //////////////////////////////////////////////////
+protected :
+
+  /** Calculate orientation at fault vertices.
+   *
+   * @param upDir Direction perpendicular to along-strike direction that is 
+   *   not collinear with fault normal (usually "up" direction but could 
+   *   be up-dip direction; only applies to fault surfaces in a 3-D domain).
+   * @param normalDir General preferred direction for fault normal
+   *   (used to pick which of two possible normal directions for
+   *   interface; only applies to fault surfaces in a 3-D domain).
+   */
+  void _calcOrientation(const double upDir[3],
+			const double normalDir[3]);
+
+  /// Calculate fault area field.
+  void _calcArea(void);
+
+  // PROTECTED MEMBERS //////////////////////////////////////////////////
+protected :
+
+  /// Fields for fault information.
+  topology::Fields<topology::Field<topology::SubMesh> >* _fields;
+
+  /// Map label of cohesive cell to label of cells in fault mesh.
+  std::map<topology::Mesh::SieveMesh::point_type, 
+	   topology::SubMesh::SieveMesh::point_type> _cohesiveToFault;
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
