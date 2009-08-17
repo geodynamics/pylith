@@ -252,6 +252,11 @@ pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
     fault->stratify();
     logger.stagePop();
   } else {
+    Obj<ALE::Mesh> tmpMesh = 
+      new ALE::Mesh(fault->comm(), dim, fault->debug());
+    faultBd = ALE::Selection<ALE::Mesh>::boundary(tmpMesh);
+
+    logger.stagePop();
     logger.stagePush("FaultStratification");
     fault->getSieve()->setChart(SieveMesh::sieve_type::chart_type());
     fault->getSieve()->allocate();
