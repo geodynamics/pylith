@@ -45,7 +45,7 @@ class PowerLaw3DElastic(ElasticMaterialApp):
     self.numLocs = numLocs
 
     self.dbPropertyValues = ["density", "vs", "vp",
-                             "viscosity_coeff", "power_law_exponent"]
+                             "power_law_coefficient", "power_law_exponent"]
     self.numPropertyValues = numpy.array([1, 1, 1, 1, 1], dtype=numpy.int32)
 
     self.dbStateVarValues = ["viscous-strain-xx",
@@ -66,24 +66,28 @@ class PowerLaw3DElastic(ElasticMaterialApp):
     densityA = 2500.0
     vsA = 3000.0
     vpA = vsA*3**0.5
-    viscosityCoeffA = 1.0e18
+    powerLawCoeffA = 1.0/3.0e18
     powerLawExponentA = 1.0
     strainA = [1.1e-4, 1.2e-4, 1.3e-4, 1.4e-4, 1.5e-4, 1.6e-4]
     initialStressA = [2.1e4, 2.2e4, 2.3e4, 2.4e4, 2.5e4, 2.6e4]
     initialStrainA = [3.1e-4, 3.2e-4, 3.3e-4, 3.4e-4, 3.5e-4, 3.6e-4]
     muA = vsA*vsA*densityA
     lambdaA = vpA*vpA*densityA - 2.0*muA
+    viscosityCoeffA = (1.0/((3.0**0.5)**(powerLawExponentA + 1.0) \
+                            * powerLawCoeffA))**(1.0/powerLawExponentA)
     
     densityB = 2000.0
     vsB = 1200.0
     vpB = vsB*3**0.5
-    viscosityCoeffB = 1.0e10
+    powerLawCoeffB = 1.0/9.0e30
     powerLawExponentB = 3.0
     strainB = [4.1e-4, 4.2e-4, 4.3e-4, 4.4e-4, 4.5e-4, 4.6e-4]
     initialStressB = [5.1e4, 5.2e4, 5.3e4, 5.4e4, 5.5e4, 5.6e4]
     initialStrainB = [6.1e-4, 6.2e-4, 6.3e-4, 6.4e-4, 6.5e-4, 6.6e-4]
     muB = vsB*vsB*densityB
     lambdaB = vpB*vpB*densityB - 2.0*muB
+    viscosityCoeffB = (1.0/((3.0**0.5)**(powerLawExponentB + 1.0) \
+                            * powerLawCoeffB))**(1.0/powerLawExponentB)
 
     self.lengthScale = 1.0e+3
     self.pressureScale = muA
@@ -95,9 +99,9 @@ class PowerLaw3DElastic(ElasticMaterialApp):
                   (self.timeScale**(1.0/powerLawExponentB)) * self.pressureScale
 
     self.dbProperties = numpy.array([ [densityA, vsA, vpA, \
-                                       viscosityCoeffA, powerLawExponentA],
+                                       powerLawCoeffA, powerLawExponentA],
                                       [densityB, vsB, vpB, \
-                                       viscosityCoeffB, powerLawExponentB] ], 
+                                       powerLawCoeffB, powerLawExponentB] ], 
                                     dtype=numpy.float64)
     self.properties = numpy.array([ [densityA, muA, lambdaA, \
                                      viscosityCoeffA, powerLawExponentA],
