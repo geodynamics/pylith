@@ -287,6 +287,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
       _logger->eventEnd(computeEvent);      
     } // if
 
+    // residualSection->view("After gravity contribution");
     // Compute B(transpose) * sigma, first computing strains
     _logger->eventBegin(stressEvent);
     calcTotalStrainFn(&strainCell, basisDeriv, dispTpdtCell, 
@@ -308,6 +309,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     _logger->eventBegin(updateEvent);
     residualVisitor.clear();
     sieveMesh->updateAdd(*c_iter, residualVisitor);
+    // residualSection->view("After stress contribution");
     _logger->eventEnd(updateEvent);
   } // for
 } // integrateResidual

@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -581,6 +581,43 @@ Research
 , 83
 \emph default
 , 3369-3376.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "12"
+key "Kirby:Kronenberg:1987"
+
+\end_inset
+
+Kirby, S.
+ H.
+ and A.
+ K.
+ Kronenberg (1987), Rheology of the lithosphere: Selected topics, 
+\shape italic
+Reviews of Geophysics, 25
+\shape default
+, 1219-1244.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "13"
+key "Paterson:1994"
+
+\end_inset
+
+Paterson, W.
+ S.
+ B.
+ (1994), 
+\shape italic
+The Physics of Glaciers, Third Edition
+\shape default
+, Elsevier Science Ltd., Oxford, 480 pp.
 \end_layout
 
 \end_body

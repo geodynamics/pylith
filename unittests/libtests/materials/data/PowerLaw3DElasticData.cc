@@ -58,7 +58,7 @@ const char* pylith::materials::PowerLaw3DElasticData::_dbPropertyValues[] = {
 "density",
 "vs",
 "vp",
-"viscosity_coeff",
+"power_law_coefficient",
 "power_law_exponent",
 };
 
@@ -81,12 +81,12 @@ const double pylith::materials::PowerLaw3DElasticData::_dbProperties[] = {
   2.50000000e+03,
   3.00000000e+03,
   5.19615242e+03,
-  1.00000000e+18,
+  3.33333333e-19,
   1.00000000e+00,
   2.00000000e+03,
   1.20000000e+03,
   2.07846097e+03,
-  1.00000000e+10,
+  1.11111111e-31,
   3.00000000e+00,
 };
 

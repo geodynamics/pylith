@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -391,6 +391,9 @@ writer.filename
  settings) will cause two files to be created for each material group: an
  info file, which describes the material properties used in the model, and
  a state variables file, which contains the state variable information.
+ Note that the material properties described by the info file are the properties
+ used internally by PyLith.
+ They do not necessarily correspond to properties specified by the user.
  If the problem has more than one time step, a state variable output file
  will be created for each requested time step.
  We have requested that the values be averaged over each cell.
@@ -443,7 +446,7 @@ cell_info_fields = [mu,lambda,density,maxwell_time]
 \end_layout
 
 \begin_layout Standard
-The properties and state variable available for output in each material
+The properties and state variables available for output in each material
  model are listed in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1674,18 +1677,23 @@ where
 \end_inset
 
 , the second deviatoric stress invariant, 
-\begin_inset Formula $\sqrt{J_{2}^{\prime}}$
+\begin_inset Formula $J_{2}^{\prime}$
 \end_inset
 
-, and the effective deviatoric strain, 
+, the effective deviatoric strain, 
 \begin_inset Formula $\overline{e}$
+\end_inset
+
+, and the second deviatoric strain invariant, 
+\begin_inset Formula $L_{2}^{\prime}$
 \end_inset
 
 , as
 \begin_inset Formula \begin{gather}
-\overline{\sigma}=\sqrt{\frac{3}{2}\underline{S}\cdot\underline{S}}\,\,\label{eq:17}\\
-\sqrt{J_{2}^{\prime}}=\sqrt{\frac{1}{2}\underline{S}\cdot\underline{S}}\,.\nonumber \\
-\overline{e}=\sqrt{\frac{2}{3}\underline{e^{\prime}}\cdot\underline{e^{\prime}}}\,\,\nonumber \end{gather}
+\overline{\sigma}=\sqrt{\frac{3}{2}\underline{S}\cdot\underline{S}}\,\,\nonumber \\
+J_{2}^{\prime}=\frac{1}{2}\underline{S}\cdot\underline{S}\,.\label{eq:17}\\
+\overline{e}=\sqrt{\frac{2}{3}\underline{e}\cdot\underline{e}}\,\,\nonumber \\
+L_{2}^{\prime}=\frac{1}{2}\underline{e}\cdot\underline{e}\,\,\nonumber \end{gather}
 
 \end_inset
 
@@ -2247,13 +2255,13 @@ key "Kojic:Bathe:1987"
 
  into deviatoric and volumetric parts:
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left(^{t+\Delta t}\underline{e}^{\prime}-^{t+\Delta t}\underline{e}^{C}-\underline{e}^{I}\right)+\underline{S}^{I}\label{eq:42}\\
+^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left(^{t+\Delta t}\underline{e}-^{t+\Delta t}\underline{e}^{C}-\underline{e}^{I}\right)+\underline{S}^{I}\label{eq:42}\\
 ^{t+\Delta t}P=\frac{E}{1-2\nu}\left(^{t+\Delta t}\theta-\theta^{I}\right)+P^{I}\:,\nonumber \end{gather}
 
 \end_inset
 
 where 
-\begin_inset Formula $^{t+\Delta t}\underline{e}^{\prime}$
+\begin_inset Formula $^{t+\Delta t}\underline{e}$
 \end_inset
 
  is the total deviatoric strain, 
@@ -2299,13 +2307,13 @@ reference "eq:42"
 
  may also be written as
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{E}{1+\mathrm{\nu}}(^{t+\Delta t}\underline{e}^{\prime\prime}-\underline{\Delta e}^{C})+\underline{S}^{I}\,,\label{eq:43}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{E}{1+\mathrm{\nu}}(^{t+\Delta t}\underline{e}^{\prime}-\underline{\Delta e}^{C})+\underline{S}^{I}\,,\label{eq:43}\end{gather}
 
 \end_inset
 
 where
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{e}^{\prime\prime}=^{t+\Delta t}\underline{e}^{\prime}-^{t}\underline{e}^{C}-\underline{e}^{I}\,\,,\,\,\,\underline{\Delta e}^{C}=^{t+\Delta t}\underline{e}^{C}-^{t}\underline{e}^{C}\,.\label{eq:44}\end{gather}
+^{t+\Delta t}\underline{e}^{\prime}=^{t+\Delta t}\underline{e}-^{t}\underline{e}^{C}-\underline{e}^{I}\,\,,\,\,\,\underline{\Delta e}^{C}=^{t+\Delta t}\underline{e}^{C}-^{t}\underline{e}^{C}\,.\label{eq:44}\end{gather}
 
 \end_inset
 
@@ -2407,7 +2415,7 @@ reference "eq:43"
 
 , we obtain
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left\{ ^{t+\Delta t}\underline{e}^{\prime\prime}-\frac{\Delta t}{2\eta}\left[(1-\alpha)^{t}\underline{S}+\alpha^{t+\Delta t}\underline{S}\right]\right\} +\underline{S}^{I}\,\,.\label{eq:52}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left\{ ^{t+\Delta t}\underline{e}^{\prime}-\frac{\Delta t}{2\eta}\left[(1-\alpha)^{t}\underline{S}+\alpha^{t+\Delta t}\underline{S}\right]\right\} +\underline{S}^{I}\,\,.\label{eq:52}\end{gather}
 
 \end_inset
 
@@ -2417,7 +2425,7 @@ Solving for
 
 ,
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{1}{\frac{1+\mathrm{\nu}}{E}+\frac{\alpha\Delta t}{2\eta}}\left[^{t+\Delta t}\underline{e}^{\prime\prime}-\frac{\Delta t}{2\eta}(1-\alpha)^{t}\underline{S}+\frac{1+\mathrm{\nu}}{E}\underline{S}^{I}\right]\,\,.\label{eq:53}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{1}{\frac{1+\mathrm{\nu}}{E}+\frac{\alpha\Delta t}{2\eta}}\left[^{t+\Delta t}\underline{e}^{\prime}-\frac{\Delta t}{2\eta}(1-\alpha)^{t}\underline{S}+\frac{1+\mathrm{\nu}}{E}\underline{S}^{I}\right]\,\,.\label{eq:53}\end{gather}
 
 \end_inset
 
@@ -2458,7 +2466,7 @@ C_{ij}^{VE}=C_{ij}^{\prime}\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,
 
 Using the chain rule,
 \begin_inset Formula \begin{gather}
-\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}\epsilon_{j}}=\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}e_{k}^{\prime\prime}}\frac{\partial^{t+\Delta t}e_{k}^{\prime\prime}}{\partial^{t+\Delta t}e_{l}^{\prime}}\frac{\partial^{t+\Delta t}e_{l}^{\prime}}{\partial^{t+\Delta t}\epsilon_{j}}\,\,.\label{eq:58}\end{gather}
+\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}\epsilon_{j}}=\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}e_{k}^{\prime}}\frac{\partial^{t+\Delta t}e_{k}^{\prime}}{\partial^{t+\Delta t}e_{l}}\frac{\partial^{t+\Delta t}e_{l}}{\partial^{t+\Delta t}\epsilon_{j}}\,\,.\label{eq:58}\end{gather}
 
 \end_inset
 
@@ -2471,7 +2479,7 @@ reference "eq:44"
 
 , we obtain
 \begin_inset Formula \begin{gather}
-\frac{\partial^{t+\Delta t}e_{k}^{\prime\prime}}{\partial^{t+\Delta t}e_{l}^{\prime}}=\delta_{kl}\,\,,\label{eq:59}\end{gather}
+\frac{\partial^{t+\Delta t}e_{k}^{\prime}}{\partial^{t+\Delta t}e_{l}}=\delta_{kl}\,\,,\label{eq:59}\end{gather}
 
 \end_inset
 
@@ -2484,11 +2492,11 @@ reference "eq:16"
 
 :
 \begin_inset Formula \begin{gather}
-\frac{\partial^{t+\Delta t}e_{l}^{\prime}}{\partial^{t+\Delta t}e_{j}}=\frac{1}{3}\left[\begin{array}{ccc}
+\frac{\partial^{t+\Delta t}e_{l}}{\partial^{t+\Delta t}\epsilon_{j}}=\frac{1}{3}\left[\begin{array}{ccc}
 2 & -1 & -1\\
 -1 & 2 & -1\\
 -1 & -1 & 2\end{array}\right];\,\,1\leq l,j\leq3\label{eq:60}\\
-\frac{\partial^{t+\Delta t}e_{l}^{\prime}}{\partial^{t+\Delta t}\epsilon_{j}}=\delta_{lj}\,\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\textrm{otherwise.}\nonumber \end{gather}
+\frac{\partial^{t+\Delta t}e_{l}}{\partial^{t+\Delta t}\epsilon_{j}}=\delta_{lj}\,\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\textrm{otherwise.}\nonumber \end{gather}
 
 \end_inset
 
@@ -2501,7 +2509,7 @@ reference "eq:53"
 
 , we have
 \begin_inset Formula \begin{gather}
-\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{\delta_{ik}}{\frac{1+\nu}{E}+\frac{\alpha\Delta t}{2\eta}}\,\,.\label{eq:61}\end{gather}
+\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}e_{k}^{\prime}}=\frac{\delta_{ik}}{\frac{1+\nu}{E}+\frac{\alpha\Delta t}{2\eta}}\,\,.\label{eq:61}\end{gather}
 
 \end_inset
 
@@ -2569,41 +2577,282 @@ Power-Law Maxwell Viscoelastic Material
 \end_layout
 
 \begin_layout Standard
-A power-law Maxwell viscoelastic material may be parameterized with the
- elastic parameters 
-\begin_inset Formula $E$
+Laboratory results on rock rheology are typically performed using a triaxial
+ experiment, and the creep data are fit to a power-law equation of the form
+ (e.g., 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kirby:Kronenberg:1987"
+
 \end_inset
 
- and 
-\begin_inset Formula $\nu$
+):
+\begin_inset Formula \begin{equation}
+\dot{\epsilon}_{11}^{C}=A_{E}\exp\left(\frac{-Q}{RT}\right)\left(\sigma_{1}-\sigma_{3}\right)^{n}=A_{E}\exp\left(\frac{-Q}{RT}\right)\sigma_{d}^{n}\:,\label{eq:64}\end{equation}
+
 \end_inset
 
-, the viscosity coefficient 
-\begin_inset Formula $\eta$
+where 
+\begin_inset Formula $\dot{\epsilon}_{11}^{C}$
 \end_inset
 
-, and the power-law exponent 
+ is the strain rate in the direction of the maximum principal stress 
+\begin_inset Formula $\left(\sigma_{1}\right)$
+\end_inset
+
+, 
+\begin_inset Formula $A_{E}$
+\end_inset
+
+ is the experimentally-derived pre-exponential constant, 
+\begin_inset Formula $Q$
+\end_inset
+
+ is the activation enthalpy, 
+\begin_inset Formula $R$
+\end_inset
+
+ is the universal gas constant, 
+\begin_inset Formula $T$
+\end_inset
+
+ is the absolute temperature, 
 \begin_inset Formula $n$
 \end_inset
 
-.
- The parameters defining this model are shown in Table 
+ is the power-law exponent, 
+\begin_inset Formula $\sigma_{3}\:\left(=\sigma_{2}\right)$
+\end_inset
+
+ is equal to the confining pressure, and 
+\begin_inset Formula $\sigma_{d}$
+\end_inset
+
+ is the differential stress.
+ To properly formulate the flow law, it must be generalized so that the
+ results are not influenced by the experiment type or the choice of coordinate
+ systems (e.g., 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Paterson:1994"
+
+\end_inset
+
+).
+ The flow law may then be generalized in terms of the deviatoric stress
+ and strain rate invariants:
+\begin_inset Formula \begin{equation}
+\sqrt{\dot{L}_{2}^{\prime C}}=A_{M}\exp\left(\frac{-Q}{RT}\right)\sqrt{J_{2}^{\prime}}^{n}\:,\label{eq:65}\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $A_{M}$
+\end_inset
+
+ is now a pre-exponential constant used in the formulation for modeling.
+ In practice, it is necessary to compute each strain rate component using
+ the flow law.
+ This is accomplished using:
+\begin_inset Formula \begin{equation}
+\dot{e}_{ij}^{C}=A_{M}\exp\left(\frac{-Q}{RT}\right)\sqrt{J_{2}^{\prime}}^{n-1}S_{ij}\:.\label{eq:66}\end{equation}
+
+\end_inset
+
+Note that equations 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:65"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:66"
+
+\end_inset
+
+ are consistent, since equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:65"
+
+\end_inset
+
+ may be obtained from equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:66"
+
+\end_inset
+
+ by taking the scalar inner product of both sides, multiplying by 1/2, and
+ taking the square root.
+\end_layout
+
+\begin_layout Standard
+In a triaxial experiment with confining pressure 
+\begin_inset Formula $P_{c}$
+\end_inset
+
+, we have
+\begin_inset Formula \begin{gather}
+\sigma_{2}=\sigma_{3}=P_{c}\nonumber \\
+\sigma_{1}=\sigma_{1}^{app}\label{eq:67}\\
+P=\frac{\sigma_{1}+2P_{c}}{3}\:,\nonumber \end{gather}
+
+\end_inset
+
+where 
+\begin_inset Formula $\sigma_{1}^{app}$
+\end_inset
+
+ is the applied load.
+ The deviatoric stresses are then:
+\begin_inset Formula \begin{gather}
+S_{1}=\frac{2}{3}\left(\sigma_{1}-P_{c}\right)\nonumber \\
+S_{2}=S_{3}=-\frac{1}{3}\left(\sigma_{1}-P_{c}\right)\:.\label{eq:68}\end{gather}
+
+\end_inset
+
+This gives
+\begin_inset Formula \begin{gather}
+S_{1}=\frac{2}{3}\left(\sigma_{1}-\sigma_{3}\right)=\frac{2}{3}\sigma_{d}\nonumber \\
+S_{2}=S_{3}=-\frac{1}{3}\left(\sigma_{1}-\sigma_{3}\right)=-\frac{1}{3}\sigma_{d}\:.\label{eq:69}\end{gather}
+
+\end_inset
+
+In terms of the second deviatoric stress invariant, we then have
+\begin_inset Formula \begin{equation}
+\sqrt{J_{2}^{\prime}}=\frac{\sigma_{d}}{\sqrt{3}}\:.\label{eq:70}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Under the assumption that the creep measured in the laboratory experiments
+ is incompressible, we have
+\begin_inset Formula \begin{gather}
+\dot{e}_{11}^{C}=\dot{\epsilon}_{11}\nonumber \\
+\dot{e}_{22}^{C}=\dot{e}_{33}^{C}=-\frac{1}{2}\dot{\epsilon}_{11}\:.\label{eq:71}\end{gather}
+
+\end_inset
+
+In terms of the second deviatoric strain rate invariant we then have
+\begin_inset Formula \begin{equation}
+\sqrt{\dot{L}_{2}^{\prime C}}=\frac{\sqrt{3}}{2}\dot{\epsilon}_{11}\:.\label{eq:72}\end{equation}
+
+\end_inset
+
+Substituting equations 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:70"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:72"
+
+\end_inset
+
+ into equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:64"
+
+\end_inset
+
+, we obtain
+\begin_inset Formula \begin{equation}
+\sqrt{\dot{L}_{2}^{\prime C}}=A_{E}\frac{\sqrt{3}^{n+1}}{2}\exp\left(\frac{-Q}{RT}\right)\sqrt{J_{2}^{\prime}}^{n}\:,\label{eq:73}\end{equation}
+
+\end_inset
+
+and therefore,
+\begin_inset Formula \begin{equation}
+A_{M}=\frac{\sqrt{3}^{n+1}}{2}A_{E}\:.\label{eq:74}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Since users will generally want to make direct use of laboratory results,
+ PyLith converts the coefficients internally, and users are asked to specify
+ the power-law exponent, 
+\begin_inset Formula $n$
+\end_inset
+
+, as well as a power-law coefficient:
+\begin_inset Formula \begin{equation}
+A_{T}=A_{E}\exp\left(\frac{-Q}{RT}\right)\:.\label{eq:75}\end{equation}
+
+\end_inset
+
+In Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:powerLaw"
 
 \end_inset
 
-.
- The creep strain increment is approximated as
+, the properties 
+\family typewriter
+power-law-coefficient
+\family default
+ and 
+\family typewriter
+power-law-exponent
+\family default
+ refer to 
+\begin_inset Formula $A_{T}$
+\end_inset
+
+ and 
+\begin_inset Formula $n$
+\end_inset
+
+, respectively.
+ To avoid scaling issues, PyLith internally makes use of a viscosity coefficient
+, 
+\begin_inset Formula $\eta$
+\end_inset
+
+, rather than the power-law coefficient:
 \begin_inset Formula \begin{gather}
-\underline{\Delta e}^{C}=\frac{\Delta t\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}\,^{\tau}\underline{S}}{2\eta^{n}}=\frac{\Delta t^{\tau}\overline{\sigma}^{n-1}\,^{\tau}\underline{S}}{2\sqrt{3}\eta^{n}}\,.\label{eq:64}\end{gather}
+\dot{e}_{ij}^{C}=\frac{\sqrt{J_{2}^{\prime}}^{n-1}S_{ij}}{2\eta^{n}}\label{eq:76}\\
+\eta=\frac{\exp\left(\frac{Q}{nRT}\right)}{\left(2A_{M}\right)^{\frac{1}{n}}}\:.\nonumber \end{gather}
+
+\end_inset
+
+This viscosity coefficient is the value written to info files, as listed
+ in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:material-model-output"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The creep strain increment is approximated as
+\begin_inset Formula \begin{gather}
+\underline{\Delta e}^{C}=\frac{\Delta t\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}\,^{\tau}\underline{S}}{2\eta^{n}}=\frac{\Delta t^{\tau}\overline{\sigma}^{n-1}\,^{\tau}\underline{S}}{2\sqrt{3}\eta^{n}}\,.\label{eq:77}\end{gather}
 
 \end_inset
 
 Therefore,
 \begin_inset Formula \begin{gather}
-\Delta\bar{e}^{C}=\frac{\Delta t\sqrt{^{\tau}J_{2}^{\prime}}^{n}}{\sqrt{3}\eta^{n}}=\frac{\Delta t^{\tau}\overline{\sigma}^{n}}{\sqrt{3}^{n+1}\eta^{n}}\,,\,\textrm{and}\,^{\tau}\gamma=\frac{\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}}{2\eta^{n}}\,.\label{eq:65}\end{gather}
+\Delta\bar{e}^{C}=\frac{\Delta t\sqrt{^{\tau}J_{2}^{\prime}}^{n}}{\sqrt{3}\eta^{n}}=\frac{\Delta t^{\tau}\overline{\sigma}^{n}}{\sqrt{3}^{n+1}\eta^{n}}\,,\,\textrm{and}\,^{\tau}\gamma=\frac{\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}}{2\eta^{n}}\,.\label{eq:78}\end{gather}
 
 \end_inset
 
@@ -2617,14 +2866,14 @@ reference "eq:46"
 , 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:64"
+reference "eq:77"
 
 \end_inset
 
 , and 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:65"
+reference "eq:78"
 
 \end_inset
 
@@ -2637,27 +2886,27 @@ reference "eq:43"
 
 , we obtain:
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left\{ ^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left[\left(1-\alpha\right)^{t}\underline{S}+\alpha{}^{t+\Delta t}\underline{S}\right]\right\} +\underline{S}^{I}\,,\label{eq:66}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left\{ ^{t+\Delta t}\underline{e}^{\prime}-\Delta t^{\tau}\gamma\left[\left(1-\alpha\right)^{t}\underline{S}+\alpha{}^{t+\Delta t}\underline{S}\right]\right\} +\underline{S}^{I}\,,\label{eq:79}\end{gather}
 
 \end_inset
 
 which may be rewritten:
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}\left(\frac{1+\nu}{E}+\alpha\Delta t^{\tau}\gamma\right)={}^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}\underline{S}+\frac{1+\nu}{E}\underline{S}^{I}\,.\label{eq:67}\end{gather}
+^{t+\Delta t}\underline{S}\left(\frac{1+\nu}{E}+\alpha\Delta t^{\tau}\gamma\right)={}^{t+\Delta t}\underline{e}^{\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}\underline{S}+\frac{1+\nu}{E}\underline{S}^{I}\,.\label{eq:80}\end{gather}
 
 \end_inset
 
 Taking the scalar inner product of both sides we obtain:
 \begin_inset Formula \begin{gather}
-a^{2}\,\,{}^{t+\Delta t}J_{2}^{\prime}-b+c^{\tau}\gamma-d^{2}\,^{\tau}\gamma^{2}=F=0\,,\label{eq:68}\end{gather}
+a^{2}\,\,{}^{t+\Delta t}J_{2}^{\prime}-b+c^{\tau}\gamma-d^{2}\,^{\tau}\gamma^{2}=F=0\,,\label{eq:81}\end{gather}
 
 \end_inset
 
 where
 \begin_inset Formula \begin{gather}
 a=\frac{1+\nu}{E}+\alpha\Delta t^{\tau}\gamma\,\,\nonumber \\
-b=\frac{1}{2}{}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot{}^{t+\Delta t}\underline{e}^{\prime\prime}+\frac{1+\nu}{E}{}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot\underline{S}^{I}+\left(\frac{1+\nu}{E}\right)^{2}\,^{I}J_{2}^{\prime}\,.\label{eq:69}\\
-c=\Delta t\left(1-\alpha\right){}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot^{t}\underline{S}+\Delta t\left(1-\alpha\right)\frac{1+\nu}{E}\,^{t}\underline{S}\cdot\underline{S}^{I}\,\,\nonumber \\
+b=\frac{1}{2}{}^{t+\Delta t}\underline{e}^{\prime}\cdot{}^{t+\Delta t}\underline{e}^{\prime}+\frac{1+\nu}{E}{}^{t+\Delta t}\underline{e}^{\prime}\cdot\underline{S}^{I}+\left(\frac{1+\nu}{E}\right)^{2}\,^{I}J_{2}^{\prime}\,.\label{eq:82}\\
+c=\Delta t\left(1-\alpha\right){}^{t+\Delta t}\underline{e}^{\prime}\cdot^{t}\underline{S}+\Delta t\left(1-\alpha\right)\frac{1+\nu}{E}\,^{t}\underline{S}\cdot\underline{S}^{I}\,\,\nonumber \\
 d=\Delta t\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\,\,\nonumber \end{gather}
 
 \end_inset
@@ -2665,7 +2914,7 @@ d=\Delta t\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\,\,\nonumber \end{gathe
 Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:68"
+reference "eq:81"
 
 \end_inset
 
@@ -2679,14 +2928,14 @@ reference "eq:68"
  time step may be found from Equations 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:64"
+reference "eq:78"
 
 \end_inset
 
  and 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:65"
+reference "eq:79"
 
 \end_inset
 
@@ -2713,19 +2962,19 @@ reference "eq:58"
  We begin by rewriting Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:67"
+reference "eq:80"
 
 \end_inset
 
  as
 \begin_inset Formula \begin{gather}
-F=^{t+\Delta t}S_{i}\left(a_{E}+\alpha\Delta t^{\tau}\gamma\right)-^{t+\Delta t}e_{i}^{\prime\prime}+\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}S_{i}-a_{E}S_{i}^{I}=0\label{eq:70}\end{gather}
+F=^{t+\Delta t}S_{i}\left(a_{E}+\alpha\Delta t^{\tau}\gamma\right)-^{t+\Delta t}e_{i}^{\prime}+\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}S_{i}-a_{E}S_{i}^{I}=0\label{eq:83}\end{gather}
 
 \end_inset
 
 where
 \begin_inset Formula \begin{gather}
-a_{E}=\frac{1+\nu}{E}\,.\label{eq:71}\end{gather}
+a_{E}=\frac{1+\nu}{E}\,.\label{eq:84}\end{gather}
 
 \end_inset
 
@@ -2735,7 +2984,7 @@ The derivative of this function with respect to
 
  is
 \begin_inset Formula \begin{gather}
-\frac{\partial F}{\partial^{t+\Delta t}e_{k}^{\prime\prime}}=-\delta_{ik}\:,\label{eq:72}\end{gather}
+\frac{\partial F}{\partial^{t+\Delta t}e_{k}^{\prime}}=-\delta_{ik}\:,\label{eq:85}\end{gather}
 
 \end_inset
 
@@ -2745,14 +2994,14 @@ and the derivative with respect to
 
  is
 \begin_inset Formula \begin{gather}
-\frac{\partial F}{\partial^{t+\Delta t}S_{i}}=a_{E}+\alpha\Delta t^{\tau}\gamma+\frac{\partial^{\tau}\gamma}{\partial^{t+\Delta t}S_{i}}\Delta t\left[\alpha^{t+\Delta t}S_{i}+\left(1-\alpha\right)^{t}S_{i}\right]\:.\label{eq:73}\end{gather}
+\frac{\partial F}{\partial^{t+\Delta t}S_{i}}=a_{E}+\alpha\Delta t^{\tau}\gamma+\frac{\partial^{\tau}\gamma}{\partial^{t+\Delta t}S_{i}}\Delta t\left[\alpha^{t+\Delta t}S_{i}+\left(1-\alpha\right)^{t}S_{i}\right]\:.\label{eq:86}\end{gather}
 
 \end_inset
 
 From Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:65"
+reference "eq:78"
 
 \end_inset
 
@@ -2765,20 +3014,20 @@ reference "eq:49"
 
 ,
 \begin_inset Formula \begin{gather}
-^{\tau}\gamma=\frac{1}{2\eta^{n}}\left[\alpha\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\right]^{n-1}\:.\label{eq:74}\end{gather}
+^{\tau}\gamma=\frac{1}{2\eta^{n}}\left[\alpha\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\right]^{n-1}\:.\label{eq:87}\end{gather}
 
 \end_inset
 
 Then
 \begin_inset Formula \begin{gather}
-\frac{\partial^{\tau}\gamma}{\partial{}^{t+\Delta t}S_{i}}=\frac{\partial^{\tau}\gamma}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}\frac{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}{\partial^{t+\Delta t}S_{l}}\label{eq:75}\\
+\frac{\partial^{\tau}\gamma}{\partial{}^{t+\Delta t}S_{i}}=\frac{\partial^{\tau}\gamma}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}\frac{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}{\partial^{t+\Delta t}S_{l}}\label{eq:88}\\
 =\frac{\alpha\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}{}^{t+\Delta t}T_{i}}{4\eta^{n}}\,,\nonumber \end{gather}
 
 \end_inset
 
 Where
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}T_{i}=^{t+\Delta t}S_{i}\:;\:\:1\leq i\leq3\label{eq:76}\\
+^{t+\Delta t}T_{i}=^{t+\Delta t}S_{i}\:;\:\:1\leq i\leq3\label{eq:89}\\
 ^{t+\Delta t}T_{i}=2^{t+\Delta t}S_{i}\:;\:\:\textrm{otherwise.}\nonumber \end{gather}
 
 \end_inset
@@ -2786,27 +3035,27 @@ Where
 Then using Equations 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:72"
+reference "eq:85"
 
 \end_inset
 
 , 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:73"
+reference "eq:86"
 
 \end_inset
 
 , 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:75"
+reference "eq:88"
 
 \end_inset
 
 , and the quotient rule for derivatives of an implicit function,
 \begin_inset Formula \begin{gather}
-\frac{\partial^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{\delta_{ik}}{a_{E}+\alpha\Delta t\left[^{\tau}\gamma+\frac{^{\tau}S_{i}\left(n-1\right){}^{t+\Delta t}T_{i}\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{4\sqrt{^{t+\Delta t}J_{2}^{\prime}}\eta^{n}}\right]}\,.\label{eq:77}\end{gather}
+\frac{\partial^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime}}=\frac{\delta_{ik}}{a_{E}+\alpha\Delta t\left[^{\tau}\gamma+\frac{^{\tau}S_{i}\left(n-1\right){}^{t+\Delta t}T_{i}\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{4\sqrt{^{t+\Delta t}J_{2}^{\prime}}\eta^{n}}\right]}\,.\label{eq:90}\end{gather}
 
 \end_inset
 
@@ -2844,13 +3093,13 @@ C_{ij}^{VE}=\frac{E}{3\left(1-2\nu\right)}\left[\begin{array}{cccccc}
 1 & 1 & 1 & 0 & 0 & 0\\
 0 & 0 & 0 & 0 & 0 & 0\\
 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0\end{array}\right]+\frac{1}{3}\frac{\partial{}^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\left[\begin{array}{cccccc}
+0 & 0 & 0 & 0 & 0 & 0\end{array}\right]+\frac{1}{3}\frac{\partial{}^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime}}\left[\begin{array}{cccccc}
 2 & -1 & -1 & 0 & 0 & 0\\
 -1 & 2 & -1 & 0 & 0 & 0\\
 -1 & -1 & 2 & 0 & 0 & 0\\
 0 & 0 & 0 & 3 & 0 & 0\\
 0 & 0 & 0 & 0 & 3 & 0\\
-0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\,.\label{eq:78}\end{gather}
+0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\,.\label{eq:91}\end{gather}
 
 \end_inset
 
@@ -2862,14 +3111,14 @@ Note that if there are no deviatoric stresses at the beginning and end of
  goes to infinity), Equations 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:77"
+reference "eq:90"
 
 \end_inset
 
  and 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:78"
+reference "eq:91"
 
 \end_inset
 
@@ -2881,13 +3130,13 @@ To compute the zero of the effective stress function using Newton's method,
  we require the derivative of equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:68"
+reference "eq:81"
 
 \end_inset
 
 , which may be written:
 \begin_inset Formula \begin{gather}
-\frac{\partial F}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}=2a^{2}\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\frac{\alpha\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{2\eta^{n}}\left(2a\alpha\Delta t{}^{t+\Delta t}J_{2}^{\prime}+c-2d^{2}\,^{\tau}\gamma\right)\,.\label{eq:79}\end{gather}
+\frac{\partial F}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}=2a^{2}\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\frac{\alpha\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{2\eta^{n}}\left(2a\alpha\Delta t{}^{t+\Delta t}J_{2}^{\prime}+c-2d^{2}\,^{\tau}\gamma\right)\,.\label{eq:92}\end{gather}
 
 \end_inset
 
@@ -3503,7 +3752,7 @@ density
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\eta$
+\begin_inset Formula $A_{T}$
 \end_inset
 
 
@@ -3517,7 +3766,7 @@ density
 \begin_layout Plain Layout
 
 \family typewriter
-viscosity-coefficient
+power-law-coefficient
 \end_layout
 
 \end_inset

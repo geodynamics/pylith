@@ -16,11 +16,11 @@
  *
  * 3-D, isotropic, power-law Maxwell viscoelastic material. The
  * physical properties are specified using density, shear-wave speed,
- * viscosity coefficient, power-law exponent, and compressional-wave speed.
+ * power-law coefficient, power-law exponent, and compressional-wave speed.
  * The physical properties are stored internally using density, lambda, mu,
  * which are directly related to the elasticity constants used in the
  * finite-element integration. The viscosity information is retained as
- * specified.
+ * a viscosity coefficient and the power-law exponent.
  */
 
 #if !defined(pylith_materials_powerlaw3d_hh)
@@ -510,7 +510,7 @@ private :
     double dt;
     double effStressT;
     double powerLawExp;
-    double viscosityCoeff;
+    double viscosityCoefficient;
   };
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
@@ -531,12 +531,12 @@ private :
   static const int p_density;
   static const int p_mu;
   static const int p_lambda;
-  static const int p_viscosityCoeff;
+  static const int p_viscosityCoefficient;
   static const int p_powerLawExponent;
   static const int db_density;
   static const int db_vs;
   static const int db_vp;
-  static const int db_viscosityCoeff;
+  static const int db_powerLawCoefficient;
   static const int db_powerLawExponent;
 
   static const int s_viscousStrain;
