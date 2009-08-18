@@ -243,7 +243,7 @@ pylith::bc::Neumann::_queryDatabases(void)
   _parameters->add("value", "traction");
   topology::Field<topology::SubMesh>& value = _parameters->get("value");
   value.scale(pressureScale);
-  value.vectorFieldType(topology::FieldBase::OTHER);
+  value.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
   value.newSection(topology::FieldBase::CELLS_FIELD, numQuadPts*spaceDim, 1);
   value.allocate();
 
