@@ -144,5 +144,13 @@ pylith::faults::FaultCohesiveDyn::cellField(
   throw std::logic_error("FaultCohesiveDyn::vertexField() not implemented.");
 } // cellField
 
+// ----------------------------------------------------------------------
+// Calculate orientation at fault vertices.
+void
+pylith::faults::FaultCohesiveDyn::_calcOrientation(const double upDir[3],
+						   const double normalDir[3])
+{ // _calcOrientation
+  throw std::logic_error("FaultCohesiveDyn::_calcOrientation() not implemented.");
+} // _calcOrientation
 
 // End of file 

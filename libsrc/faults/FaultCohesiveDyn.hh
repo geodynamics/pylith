@@ -116,6 +116,21 @@ public :
    */
   bool useLagrangeConstraints(void) const;
 
+  // PRIVATE METHODS ////////////////////////////////////////////////////
+private :
+
+  /** Calculate orientation at quadrature points.
+   *
+   * @param upDir Direction perpendicular to along-strike direction that is 
+   *   not collinear with fault normal (usually "up" direction but could 
+   *   be up-dip direction; only applies to fault surfaces in a 3-D domain).
+   * @param normalDir General preferred direction for fault normal
+   *   (used to pick which of two possible normal directions for
+   *   interface; only applies to fault surfaces in a 3-D domain).
+   */
+  void _calcOrientation(const double upDir[3],
+			const double normalDir[3]);
+
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
