@@ -1,18 +1,18 @@
 ======================================================================
-INSTRUCTIONS FOR INSTALLING PYLITH ON AN INTEL MAC RUNNING OSX 10.4
+INSTRUCTIONS FOR INSTALLING PYLITH ON AN INTEL MAC RUNNING OSX 10.5
 ======================================================================
 
-NOTE: These installation instructions use the Fink package manager to
-install some commonly used packages. MacPorts appears to be a better
-alternative because packages are updated more frequently and there is
-better coherence among packages. However, MacPorts builds all packages
-from source so installing packages can take a long time.
+NOTE: These installation instructions use the MacPorts package manager
+to install some commonly used packages. MacPorts appears to be a
+better alternative to Fink because packages are updated more
+frequently and there is better coherence among packages. However,
+MacPorts builds all packages from source so installing packages can
+take a long time.
 
-I place applications that are rarely updated in /sw/tools (with Fink
-stuff in /sw). For CIG source code, I separate the source code, build
-directories, and installed code. The source code sits in
-$HOME/src/cig, I build the packages under $HOME/scratch/build/cig, and
-install the packages to $HOME/tools/cig.
+MacPorts places everything in /opt/local. For CIG source code, I
+separate the source code, build directories, and installed code. The
+source code sits in $HOME/src/cig, I build the packages under
+$HOME/scratch/build/cig, and install the packages to $HOME/tools/cig.
 
 I use the bash shell and place all software package environment
 variables in a .bash.tools file that is read by the .bashrc file.
@@ -25,7 +25,7 @@ optimization). Note that the python version should match the version
 of Python you will be using. If you don't know the version of python,
 run "python --version".
 
-  export TOOLS_DIR=/sw/tools
+  export TOOLS_DIR=/tools
   export TOOLS_FORMAT=gcc-4.0
   export PYTHON_VERSION=2.5
 
@@ -41,54 +41,34 @@ run "python --version".
   X and Xcode are on the Apple OSX install disc 1. X is under
   "additional options."
 
-2. Install Fink (http://www.finkproject.org/)
+2. Install MacPorts (http://www.macports.org/)
 
-3. Install Fink Commander
- (http://sourceforge.net/project/showfiles.php?group_id=48896&package_id=42095)
+3. Install Porticus (GUI interface to MacPorts)
+   (http://porticus.alittledrop.com)
 
-4. Install Fink packages
+4. Install MacPorts packages
 
-  Install the following Fink binary packages:
+  Install the following using Porticus:
 
-    svn-client
-    autoconf2.5
-    automake1.9
-    libtool4
-    netcdf
+    autoconf
+    automake
+    libtool
+    subversion
+    mercurial
+    cppunit
+    python25
+    py25-numpy
+    swig
 
-5. Install python 2.5.1 (http://www.python.org).
+  Install netcdf via the command line so that you can change the default variants:
 
-  a. Download the universal installer.
-  b. Install the package by double clicking on MacPython.mpkg.
-  c. Update environment variables.
+    /opt/local/bin/port install netcdf -dap -netcdf4
 
-    PATH=/Library/Frameworks/Python.framework/Versions/Current/bin:${PATH}
-
-6. Install the Scipy superpack (http://trichech.us/?page_id=5).
-
-  This includes numpy, scipy, and matplotlib.
-
-  a. Download the installer and install the package by double clicking
-     on the .mpkg file.
-
-7. Install mercurial (http://www.selenic.com/mercurial/wiki/)
-
-  a. Download the package to $TOOLS_DIR/mercurial-0.9.4.
-  b. Install package.
-
-    python setup.py install --prefix=$TOOLS_DIR/mercurial-0.9.4/${TOOLS_FORMAT}
-
-  c. Set environment variables.
-
-    MERCURIAL_DIR=${TOOLS_DIR}/mercurial-0.9.4/${TOOLS_FORMAT}
-    export PATH=${PATH}:${MERCURIAL_DIR}/bin
-    export PYTHONPATH=${PYTHONPATH}:${MERCURIAL_DIR}/lib/python${PYTHON_VERSION}/site-packages
-  
-8. Install MPICH2 (http://www.mcs.anl.gov/research/projects/mpich2/)
+5. Install MPICH2 (http://www.mcs.anl.gov/research/projects/mpich2/)
 
   a. Untar the source and then run configure, build, and install.
 
-  ./configure --with-arch=Darwin --disable-f90 --enable-css --prefix=${TOOLS_DIR}/mpich2-1.0.5/${TOOLS_FORMAT} --enable-g=none --enable-fast --disable-weak-symbols --enable-shared-libx=osx-gcc
+  ./configure --with-arch=Darwin --disable-f90 --enable-css --prefix=${TOOLS_DIR}/mpich2-1.1.1/${TOOLS_FORMAT} --enable-g=none --enable-fast --disable-weak-symbols --enable-shared-libx=osx-gcc
     make
     make install
 
@@ -101,36 +81,40 @@ run "python --version".
 
     To create libmpich.dylib:
 
-    cd ${TOOLS_DIR}/mpich2-1.0.5/${TOOLS_FORMAT}/lib
+    cd ${TOOLS_DIR}/mpich2-1.1.1/${TOOLS_FORMAT}/lib
     mkdir tmp
     cd tmp
     ar -x ../libmpich.a
-    gcc -dynamiclib -single_module -undefined dynamic_lookup -o ${TOOLS_DIR}/mpich2-1.0.5/${TOOLS_FORMAT}/lib/libmpich.dylib *.o
+    gcc -dynamiclib -single_module -undefined dynamic_lookup -o ${TOOLS_DIR}/mpich2-1.1.1/${TOOLS_FORMAT}/lib/libmpich.dylib *.o
     rm *.o
     cd ..
     rmdir tmp
 
   d. Set environment variables.
 
-    export MPI_DIR=$TOOLS_DIR/mpich2-1.0.5/${TOOLS_FORMAT}
+    export MPI_DIR=$TOOLS_DIR/mpich2-1.1.1/${TOOLS_FORMAT}
     PATH=$PATH:$MPI_DIR/bin
     export MANPATH=$MPI_DIR/man:$MANPATH
     export MPI_INCDIR=$MPI_DIR/include
     export MPI_LIBDIR=$MPI_DIR/lib
     export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MPI_LIBDIR}
 
-9. Install ParMetis (http://glaros.dtc.umn.edu/gkhome/metis/parmetis/overview)
+6. Install ParMetis (http://glaros.dtc.umn.edu/gkhome/metis/parmetis/overview)
 
-  a. Untar the source and edit the Makefile.
+  a. Untar the source and edit the Makefile.in.
   b. Set the CC, COPTIONS, INCDIR, LD, and LIBDIR variables.
 
     CC = gcc
-    COPTIONS = -fPIC
+    COPTIONS = -DNDEBUG -fPIC
     INCDIR = -I${MPI_INCDIR}
-    LD = gcc
     LIBDIR = -L${MPI_LIBDIR} -lmpich -lpmpich
 
-  c. Create shared libraries by hand.
+  c. Edit the ParMETISLib/stdheaders.h file
+
+    Comment out the line #include <malloc.h> since this is not a
+    standard header file and not present in OS X 10.5.
+
+  d. Create shared libraries by hand.
 
     Note: It is important to specify the full path for the .dylib files.
 
@@ -139,18 +123,18 @@ run "python --version".
     cd tmp
     ar -x ../libmetis.a
     gcc -o ${TOOLS_DIR}/parmetis-3.1/${TOOLS_FORMAT}/lib/libmetis.dylib -dynamiclib -single_module -undefined dynamic_lookup  *.o
-    rm *.o
+    rm *
     ar -x ../libparmetis.a
     gcc -o ${TOOLS_DIR}/parmetis-3.1/${TOOLS_FORMAT}/lib/libparmetis.dylib -dynamiclib -single_module -undefined dynamic_lookup  *.o
-    rm *.o
+    rm *
     cd ..
     rmdir tmp
 
-  d. Copy parmetis.h to the install location.
+  e. Copy parmetis.h to the install location.
 
     cp parmetis.h ${TOOLS_DIR}/parmetis-3.1/${TOOLS_FORMAT}/include/
 
-  e. Set environment variables.
+  f. Set environment variables.
 
     PARMETIS_DIR=$TOOLS_DIR/parmetis-3.1/${TOOLS_FORMAT}
     export PARMETIS_INCDIR=$PARMETIS_DIR/include
@@ -158,23 +142,7 @@ run "python --version".
     export PARMETIS_LIBS="-lparmetis -lmetis"
     export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${PARMETIS_LIBDIR}
 
-10. Install cppunit (http://cppunit.sourceforge.net/cppunit-wiki)
-
-  a. Untar the source and run configure, build, and install.
-
-    ./configure --prefix=${TOOLS_DIR}/cppunit-1.12.0/${TOOLS_FORMAT}
-    make
-    make install
-
-  b. Set environment variables.
-
-    CPPUNIT_DIR=${TOOLS_DIR}/cppunit-1.12.0/${TOOLS_FORMAT}
-    PATH=${PATH}:${CPPUNIT_DIR}/bin
-    export CPPUNIT_LIBDIR=${CPPUNIT_DIR}/lib
-    export CPPUNIT_INCDIR=${CPPUNIT_DIR}/include
-    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${CPPUNIT_LIBDIR}
-
-11. Install FIAT (http://www.fenics.org/wiki/FIAT)
+7. Install FIAT (http://www.fenics.org/wiki/FIAT)
 
   a. Install FIAT.
 
@@ -182,10 +150,10 @@ run "python --version".
 
   b. Set environment variables.
 
-    FIAT_DIR=${TOOLS_DIR}/fiat-0.3.1/${TOOLS_FORMAT}
+    FIAT_DIR=${TOOLS_DIR}/fiat-0.3.4/${TOOLS_FORMAT}
     export PYTHONPATH=${PYTHONPATH}:${FIAT_DIR}/lib/python${PYTHON_VERSION}/site-packages
 
-12. Install the development version of PETSc
+8. Install the development version of PETSc
   (http://www-unix.mcs.anl.gov/petsc/petsc-as/)
 
   a. Clone the source repository.
@@ -205,7 +173,7 @@ run "python --version".
     ARCH_FLAGS="--PETSC_ARCH=osx_${TOOLS_FORMAT}_debug --with-debugging=1"
     LANG_FLAGS="--with-clanguage=c++"
     BUILD_FLAGS="--with-mpi-compilers=0 --with-gnu-compilers=1 --with-shared=1 --with-dynamic=1 --with-64-bit-points=1 --with-large-file-io=1 --CC=gcc --CXX=g++"
-    MPI_FLAGS="--with-mpi-dir=/sw/tools/mpich2-1.0.5/gcc-4.0 --with-mpi-shared=0"
+    MPI_FLAGS="--with-mpi-dir=/sw/tools/mpich2-1.1.1/gcc-4.0 --with-mpi-shared=0"
     OPTIONS="--with-lgrind=0 --download-tetgen"
     PART_FLAGS="--with-chaco=1 --download-chaco=1 --with-parmetis=1 --with-parmetis-dir=/sw/tools/parmetis-3.1/gcc-4.0"
     SIEVE_FLAGS="--with-sieve=1 --with-boost=1 --download-boost=1"
@@ -213,21 +181,7 @@ run "python --version".
     make
     make test
 
-13. Install SWIG (http://www.swig.org/)
-
-  a. Untar and install.
-
-    tar -zxvf swig.1.3.39.tgz
-    configure --prefix=${TOOLS_DIR}/swig-1.3.39/${TOOLS_FORMAT}
-    make
-    make install
-
-  b. Update environment variables.
-
-    SWIG_DIR=${TOOLS_DIR}/swig-1.3.39/${TOOLS_FORMAT}
-    PATH=${PATH}:${SWIG_DIR}/bin
-
-14. Install pythia.
+9. Install pythia.
 
   a. Download the source code from the SVN repository.
 
@@ -241,7 +195,7 @@ run "python --version".
 
     export PYTHIA_INCDIR=${CIG_INCDIR}/pythia-0.8
 
-15. Install nemesis.
+10. Install nemesis.
 
   a. Download the source code from the SVN repository.
 
@@ -261,7 +215,7 @@ run "python --version".
     delete "-arch ppc" or "-arch intel", which ever one is not for
     your machine.
 
-16. Install PROJ.4 (http://trac.osgeo.org/proj/)
+11. Install PROJ.4 (http://trac.osgeo.org/proj/)
 
   a. Download the source code AND the datum shifts (proj-datumgrid-1.4.zip).
 
@@ -269,19 +223,19 @@ run "python --version".
 
   c. Run configure and build.
 
-    ./configure --prefix=${TOOLS_DIR}/proj-4.5.0/${TOOLS_FORMAT}
+    ./configure --prefix=${TOOLS_DIR}/proj-4.6.1/${TOOLS_FORMAT}
     make
     make install
 
   d. Set environment variables.
 
-    PROJ4_DIR=${TOOLS_DIR}/proj-4.5.0/${TOOLS_FORMAT}
+    PROJ4_DIR=${TOOLS_DIR}/proj-4.6.1/${TOOLS_FORMAT}
     export PROJ4_LIBDIR=${PROJ4_DIR}/lib
     export PROJ4_INCDIR=${PROJ4_DIR}/include
     PATH=${PATH}:${PROJ4_DIR}/bin
     export MANPATH=${MANPATH}:${PROJ4_DIR}/man
 
-17. Install spatialdata.
+12. Install spatialdata.
 
   a. Download the source code from the SVN repository.
 
@@ -298,7 +252,7 @@ run "python --version".
     make install
     make check
 
-18. Install PyLith.
+13. Install PyLith.
 
   a. Download the source code from the SVN repository.
 
