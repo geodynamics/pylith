@@ -131,8 +131,20 @@ private :
   void _calcOrientation(const double upDir[3],
 			const double normalDir[3]);
 
-  /// Calculate fault area field.
-  void _calcArea(void);
+  /** Get initial tractions using a spatial database.
+   */
+  void _getInitialTractions(void);
+
+  /** Setup fault constitutive model.
+   */
+  void _initConstitutiveModel(void);
+
+  // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private :
+
+  /// Database for initial tractions.
+  spatialdata::spatialdb::SpatialDB* _dbInitial;
+
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -142,9 +154,6 @@ private :
 
   /// Not implemented
   const FaultCohesiveDyn& operator=(const FaultCohesiveDyn&);
-
-  // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private :
 
 }; // class FaultCohesiveDyn
 

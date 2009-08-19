@@ -55,19 +55,23 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
   assert(0 != upDir);
   assert(0 != normalDir);
   assert(0 != _quadrature);
-  assert(0 != _normalizer);
 
-  // _calcOrientation()
-  // Compute orientation at vertices in fault mesh.
+  // Reset fields.
+  delete _fields; 
+  _fields = 
+    new topology::Fields<topology::Field<topology::SubMesh> >(*_faultMesh);
+
+  // Initialize quadrature geometry.
+  _quadrature->initializeGeometry();
+
+  // Compute orientation at quadrature points in fault mesh.
   _calcOrientation(upDir, normalDir);
 
-  // Compute tributary area for each vertex in fault mesh.
-  _calcArea();
-
-  //_getInitialTractions()
+  // Get initial tractions using a spatial database.
+  _getInitialTractions();
   
-  
-  // _initializeConstitutiveModel()
+  // Setup fault constitutive model.
+  _initConstitutiveModel();
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -255,286 +259,228 @@ pylith::faults::FaultCohesiveDyn::cellField(
 // ----------------------------------------------------------------------
 // Calculate orientation at fault vertices.
 void
-pylith::faults::FaultCohesive::_calcOrientation(const double upDir[3],
+pylith::faults::FaultCohesiveDyn::_calcOrientation(const double upDir[3],
 						   const double normalDir[3])
 { // _calcOrientation
-  assert(0 != upDir);
-  assert(0 != normalDir);
-  assert(0 != _faultMesh);
   assert(0 != _fields);
+  assert(0 != _quadrature);
 
-  double_array upDirArray(upDir, 3);
+  double_array up(upDir, 3);
 
-  // Get vertices in fault mesh.
+  // Get 'fault' cells.
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
   assert(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = 
-    faultSieveMesh->depthStratum(0);
-  const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
-  
-  // Containers for orientation information.
-  const int cohesiveDim = _faultMesh->dimension();
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int orientationSize = spaceDim*spaceDim;
-  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
-  const double_array& verticesRef = cellGeometry.vertices();
-  const int jacobianSize = (cohesiveDim > 0) ? spaceDim * cohesiveDim : 1;
-  const double_array& quadWts = _quadrature->quadWts();
-  double_array jacobian(jacobianSize);
-  double jacobianDet = 0;
-  double_array orientationVertex(orientationSize);
-  double_array coordinatesCell(numBasis*spaceDim);
-  double_array refCoordsVertex(cohesiveDim);
-
-  // Allocate orientation field.
-  _fields->add("orientation", "orientation");
-  topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
-  const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  orientation.newSection(slip, orientationSize);
-  const ALE::Obj<RealSection>& orientationSection = orientation.section();
-  assert(!orientationSection.isNull());
-  // Create subspaces for along-strike, up-dip, and normal directions
-  for (int iDim=0; iDim <= cohesiveDim; ++iDim)
-    orientationSection->addSpace();
-  for (int iDim=0; iDim <= cohesiveDim; ++iDim)
-    orientationSection->setFiberDimension(vertices, spaceDim, iDim);
-  orientation.allocate();
-  orientation.zero();
-  
-  // Get fault cells.
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
     faultSieveMesh->heightStratum(0);
   assert(!cells.isNull());
   const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
-  // Compute orientation of fault at constraint vertices
-
-  // Get section containing coordinates of vertices
-  const ALE::Obj<RealSection>& coordinatesSection = 
-    faultSieveMesh->getRealSection("coordinates");
-  assert(!coordinatesSection.isNull());
-  topology::Mesh::RestrictVisitor coordinatesVisitor(*coordinatesSection,
-						     coordinatesCell.size(),
-						     &coordinatesCell[0]);
-
-  // Set orientation function
-  assert(cohesiveDim == _quadrature->cellDim());
-  assert(spaceDim == _quadrature->spaceDim());
-
-  // Loop over cohesive cells, computing orientation weighted by
-  // jacobian at constraint vertices
-  
-  const ALE::Obj<SieveSubMesh::sieve_type>& sieve = faultSieveMesh->getSieve();
-  assert(!sieve.isNull());
-  typedef ALE::SieveAlg<SieveSubMesh> SieveAlg;
-
-  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> ncV(*sieve, (size_t) pow(sieve->getMaxConeSize(), std::max(0, faultSieveMesh->depth())));
-
-  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
-    // Get orientations at fault cell's vertices.
-    coordinatesVisitor.clear();
-    faultSieveMesh->restrictClosure(*c_iter, coordinatesVisitor);
-
-    ncV.clear();
-    ALE::ISieveTraversal<SieveSubMesh::sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
-    const int               coneSize = ncV.getSize();
-    const Mesh::point_type *cone     = ncV.getPoints();
-    
-    for (int v=0; v < coneSize; ++v) {
-      // Compute Jacobian and determinant of Jacobian at vertex
-      memcpy(&refCoordsVertex[0], &verticesRef[v*cohesiveDim],
-	     cohesiveDim*sizeof(double));
-      cellGeometry.jacobian(&jacobian, &jacobianDet, coordinatesCell,
-			    refCoordsVertex);
-
-      // Compute orientation
-      cellGeometry.orientation(&orientationVertex, jacobian, jacobianDet, 
-			       upDirArray);
-      
-      // Update orientation
-      orientationSection->updateAddPoint(cone[v], &orientationVertex[0]);
-    } // for
-  } // for
-
-  //orientation.view("ORIENTATION BEFORE COMPLETE");
-
-  // Assemble orientation information
-  orientation.complete();
-
-  // Loop over vertices, make orientation information unit magnitude
-  double_array vertexDir(orientationSize);
-  int count = 0;
-  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter, ++count) {
-    orientationVertex = 0.0;
-    orientationSection->restrictPoint(*v_iter, &orientationVertex[0],
-				      orientationVertex.size());
-    for (int iDim=0; iDim < spaceDim; ++iDim) {
-      double mag = 0;
-      for (int jDim=0, index=iDim*spaceDim; jDim < spaceDim; ++jDim)
-	mag += pow(orientationVertex[index+jDim],2);
-      mag = sqrt(mag);
-      assert(mag > 0.0);
-      for (int jDim=0, index=iDim*spaceDim; jDim < spaceDim; ++jDim)
-	orientationVertex[index+jDim] /= mag;
-    } // for
-
-    orientationSection->updatePoint(*v_iter, &orientationVertex[0]);
-  } // for
-  PetscLogFlops(count * orientationSize * 4);
-
-  if (2 == cohesiveDim && vertices->size() > 0) {
-    // Check orientation of first vertex, if dot product of fault
-    // normal with preferred normal is negative, flip up/down dip
-    // direction.
-    //
-    // If the user gives the correct normal direction (points from
-    // footwall to ahanging wall), we should end up with
-    // left-lateral-slip, reverse-slip, and fault-opening for positive
-    // slip values.
-    //
-    // When we flip the up/down dip direction, we create a left-handed
-    // strike/dip/normal coordinate system, but it gives the correct
-    // sense of slip. In reality the strike/dip/normal directions that
-    // are used are the opposite of what we would want, but we cannot
-    // flip the fault normal direction because it is tied to how the
-    // cohesive cells are created.
-    
-    assert(vertices->size() > 0);
-    orientationSection->restrictPoint(*vertices->begin(), &orientationVertex[0],
-				      orientationVertex.size());
-				      
-    assert(3 == spaceDim);
-    double_array normalDirVertex(&orientationVertex[6], 3);
-    const double normalDot = 
-      normalDir[0]*normalDirVertex[0] +
-      normalDir[1]*normalDirVertex[1] +
-      normalDir[2]*normalDirVertex[2];
-    
-    const int istrike = 0;
-    const int idip = 3;
-    const int inormal = 6;
-    if (normalDot < 0.0) {
-      // Flip dip direction
-      for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
-	   v_iter != verticesEnd;
-	   ++v_iter) {
-	orientationSection->restrictPoint(*v_iter, &orientationVertex[0],
-					  orientationVertex.size());
-	assert(9 == orientationSection->getFiberDimension(*v_iter));
-	for (int iDim=0; iDim < 3; ++iDim) // flip dip
-	  orientationVertex[idip+iDim] *= -1.0;
-	
-	// Update direction
-	orientationSection->updatePoint(*v_iter, &orientationVertex[0]);
-      } // for
-      PetscLogFlops(5 + count * 3);
-    } // if
-  } // if
-
-  //orientation.view("ORIENTATION");
-} // _calcOrientation
-
-// ----------------------------------------------------------------------
-void
-pylith::faults::FaultCohesive::_calcArea(void)
-{ // _calcArea
-  assert(0 != _faultMesh);
-  assert(0 != _fields);
-
-  // Containers for area information
-  const int cellDim = _quadrature->cellDim();
+  // Quadrature related values.
+  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
+  const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
   const int numBasis = _quadrature->numBasis();
   const int numQuadPts = _quadrature->numQuadPts();
-  const int spaceDim = _quadrature->spaceDim();
-  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
-  const double_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
+  const int spaceDim = cellGeometry.spaceDim();
+  double_array quadPtRef(cellDim);
+  const double_array& quadPtsRef = _quadrature->quadPtsRef();
+  
+  // Containers for orientation information
+  const int orientationSize = spaceDim * spaceDim;
+  const int fiberDim = numQuadPts * orientationSize;
+  const int jacobianSize = spaceDim * cellDim;
+  double_array jacobian(jacobianSize);
   double jacobianDet = 0;
-  double_array areaCell(numBasis);
+  double_array orientationQuadPt(orientationSize);
+  double_array orientationCell(fiberDim);
 
-  // Get vertices in fault mesh.
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
-  assert(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = 
-    faultSieveMesh->depthStratum(0);
-  const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
-  
-  // Allocate area field.
-  _fields->add("area", "area");
-
-  topology::Field<topology::SubMesh>& area = _fields->get("area");
-  const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  area.newSection(slip, 1);
-  area.allocate();
-  area.zero();
-  const ALE::Obj<RealSection>& areaSection = area.section();
-  assert(!areaSection.isNull());
-  topology::Mesh::UpdateAddVisitor areaVisitor(*areaSection, &areaCell[0]);  
-  
+  // Get sections.
   double_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
+  const ALE::Obj<RealSection>& coordinates =
     faultSieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
   topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
 						coordinatesCell.size(),
 						&coordinatesCell[0]);
 
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    faultSieveMesh->heightStratum(0);
-  assert(!cells.isNull());
-  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+  // :TODO: Use spaces to create subsections like in FaultCohesiveKin.
+  _fields->add("orientation", "orientation", 
+	       topology::FieldBase::CELLS_FIELD, fiberDim);
+  topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
+  orientation.allocate();
+  const ALE::Obj<RealSection>& orientationSection = orientation.section();
+  assert(!orientationSection.isNull());
 
-  // Loop over cells in fault mesh, compute area
-  for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
+  // Loop over cells in fault mesh and compute orientations.
+  for(SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
       c_iter != cellsEnd;
       ++c_iter) {
-    areaCell = 0.0;
-    
     // Compute geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
-#else
     coordsVisitor.clear();
     faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
     _quadrature->computeGeometry(coordinatesCell, *c_iter);
-#endif
 
-    // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
+    // Reset orientation to zero.
+    orientationCell = 0.0;
 
-    // Compute area
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-        const double dArea = wt*basis[iQuad*numBasis+iBasis];
-	areaCell[iBasis] += dArea;
-      } // for
+    // Compute orientation at each quadrature point of current cell.
+    for (int iQuad=0, iRef=0, iSpace=0; 
+	 iQuad < numQuadPts;
+	 ++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
+      // Reset orientation at quad pt to zero.
+      orientationQuadPt = 0.0;
+
+      // Compute Jacobian and determinant at quadrature point, then get
+      // orientation.
+      memcpy(&quadPtRef[0], &quadPtsRef[iRef], cellDim*sizeof(double));
+      cellGeometry.jacobian(&jacobian, &jacobianDet,
+			    coordinatesCell, quadPtRef);
+      cellGeometry.orientation(&orientationQuadPt, jacobian, jacobianDet, up);
+      assert(jacobianDet > 0.0);
+      orientationQuadPt /= jacobianDet;
+
+      memcpy(&orientationCell[iQuad*orientationSize], 
+	     &orientationQuadPt[0], orientationSize*sizeof(double));
     } // for
-    areaVisitor.clear();
-    faultSieveMesh->updateAdd(*c_iter, areaVisitor);
 
-    PetscLogFlops( numQuadPts*(1+numBasis*2) );
+    orientationSection->updatePoint(*c_iter, &orientationCell[0]);
   } // for
 
-  // Assemble area information
-  area.complete();
+  // debugging
+  orientation.view("FAULT ORIENTATION");
+} // _calcOrientation
 
-#if 0 // DEBUGGING
-  area.view("AREA");
-  //_faultMesh->getSendOverlap()->view("Send fault overlap");
-  //_faultMesh->getRecvOverlap()->view("Receive fault overlap");
-#endif
-} // _calcArea
+// ----------------------------------------------------------------------
+void
+pylith::faults::FaultCohesiveDyn::_getInitialTractions(void)
+{ // _getInitialTractions
+  assert(0 != _normalizer);
+  assert(0 != _quadrature);
+
+  const double pressureScale = _normalizer->pressureScale();
+  const double lengthScale = _normalizer->lengthScale();
+
+  const int spaceDim = _quadrature->spaceDim();
+  const int numQuadPts = _quadrature->numQuadPts();
+
+  if (0 != _dbInitial) { // Setup initial values, if provided.
+    // Create section to hold initial tractions.
+    _fields->add("initial traction", "initial_traction");
+    topology::Field<topology::SubMesh>& traction = _fields->get("initial traction");
+    traction.scale(pressureScale);
+    traction.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
+    traction.newSection(topology::FieldBase::CELLS_FIELD, numQuadPts*spaceDim);
+    traction.allocate();
+    const ALE::Obj<RealSection>& tractionSection = traction.section();
+    assert(!tractionSection.isNull());
+
+    _dbInitial->open();
+    switch (spaceDim)
+      { // switch
+      case 1 : {
+	const char* valueNames[] = {"traction-normal"};
+	_dbInitial->queryVals(valueNames, 1);
+	break;
+      } // case 1
+      case 2 : {
+	const char* valueNames[] = {"traction-shear", "traction-normal"};
+	_dbInitial->queryVals(valueNames, 2);
+	break;
+      } // case 2
+      case 3 : {
+	const char* valueNames[] = {"traction-shear-leftlateral",
+				    "traction-shear-updip",
+				    "traction-normal"};
+	_dbInitial->queryVals(valueNames, 3);
+	break;
+      } // case 3
+      default :
+	std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
+	assert(0);
+	throw std::logic_error("Bad spatial dimension in Neumann.");
+      } // switch
+
+    // Get 'fault' cells.
+    const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+    assert(!faultSieveMesh.isNull());
+    const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
+      faultSieveMesh->heightStratum(0);
+    assert(!cells.isNull());
+    const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
+    const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+
+    const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
+    const int numBasis = _quadrature->numBasis();
+    const int numQuadPts = _quadrature->numQuadPts();
+    const int spaceDim = _quadrature->spaceDim();
+  
+    // Containers for database query results and quadrature coordinates in
+    // reference geometry.
+    double_array tractionCell(numQuadPts*spaceDim);
+    double_array quadPtsGlobal(numQuadPts*spaceDim);
+    
+    // Get sections.
+    double_array coordinatesCell(numBasis*spaceDim);
+    const ALE::Obj<RealSection>& coordinates =
+      faultSieveMesh->getRealSection("coordinates");
+    assert(!coordinates.isNull());
+    topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						  coordinatesCell.size(),
+						  &coordinatesCell[0]);
+
+    const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
+    
+    // Compute quadrature information
+    
+    // Loop over cells in boundary mesh and perform queries.
+    for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
+	 c_iter != cellsEnd;
+	 ++c_iter) {
+      // Compute geometry information for current cell
+      coordsVisitor.clear();
+      faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
+      _quadrature->computeGeometry(coordinatesCell, *c_iter);
+      
+      const double_array& quadPtsNondim = _quadrature->quadPts();
+      quadPtsGlobal = quadPtsNondim;
+      _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
+				  lengthScale);
+      
+      tractionCell = 0.0;
+      for (int iQuad=0, iSpace=0; 
+	   iQuad < numQuadPts;
+	   ++iQuad, iSpace+=spaceDim) {
+	const int err = _dbInitial->query(&tractionCell[iQuad*spaceDim], spaceDim,
+					  &quadPtsGlobal[iSpace], spaceDim, cs);
+	if (err) {
+	  std::ostringstream msg;
+	  msg << "Could not find initial tractions at (";
+	  for (int i=0; i < spaceDim; ++i)
+	    msg << " " << quadPtsGlobal[i+iSpace];
+	  msg << ") for dynamic fault interface " << label() << "\n"
+	      << "using spatial database " << _dbInitial->label() << ".";
+	  throw std::runtime_error(msg.str());
+	} // if
+	
+      } // for
+      _normalizer->nondimensionalize(&tractionCell[0], tractionCell.size(),
+				     pressureScale);
+      
+      // Update section
+      assert(tractionCell.size() == tractionSection->getFiberDimension(*c_iter));
+      tractionSection->updatePoint(*c_iter, &tractionCell[0]);
+    } // for
+    
+    _dbInitial->close();
+  } // if
+} // _getInitialTractions
+
+// ----------------------------------------------------------------------
+void
+pylith::faults::FaultCohesiveDyn::_initConstitutiveModel(void)
+{ // _initConstitutiveModel
+  // :TODO: ADD STUFF HERE
+} // _initConstitutiveModel
 
 
 // End of file 

@@ -60,7 +60,7 @@ public :
   /** Add field.
    *
    * @param name Name of field.
-   * @param label Label for field.
+   * @param label Label for field (used in output).
    */
   void add(const char* name,
 	   const char* label);
