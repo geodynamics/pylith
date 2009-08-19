@@ -17,8 +17,11 @@
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
-
 // ----------------------------------------------------------------------
+typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
+typedef pylith::topology::SubMesh::RealSection SubRealSection;
+typedef pylith::topology::Mesh::RealSection RealSection;
+typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 
 // ----------------------------------------------------------------------
@@ -60,7 +63,96 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 			   const double t,
 			   topology::SolutionFields* const fields)
 { // integrateResidual
-  throw std::logic_error("FaultCohesiveDyn::integrateResidual() not implemented.");
+  assert(0 != _quadrature);
+  assert(0 != _faultMesh); // changed to fault mesh
+  assert(0 != _fields); // change to fields
+
+  // Get cell geometry information that doesn't depend on cell
+  const int numQuadPts = _quadrature->numQuadPts();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const int numCornersCohesive = 2*numBasis;
+
+  // Allocate vectors for cell values.
+  double_array tractionsCell(numQuadPts*spaceDim);
+  double_array residualCell(numCornersCohesive*spaceDim);
+
+  // GET COHESIVE CELLS (see FaultCohesiveKin)
+  const ALE::Obj<SieveMesh>& sieveMesh = residual.mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cellsCohesive = 
+    sieveMesh->getLabelStratum("material-id", id());
+  assert(!cellsCohesive.isNull());
+  // Add setting cellsBegin
+
+  // Get cell information
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh(); // updated (subSieveMesh -> faultSieveMesh)
+  const SieveSubMesh::label_sequence::iterator cellsEnd = cellsCohesive->end();
+  assert(!faultSieveMesh.isNull());
+
+  // GET PARAMETERS FOR FAULT CONSTITUTIVE MODEL (later)
+  // TEMPORARY hardwire to (1,0,0)
+  for (int i=0; i < numQuadPts; ++i)
+    tractionsCell[i*spaceDim] = 1.0;
+
+  // Get sections (see FaultCohesiveKin)
+  const ALE::Obj<RealSection>& residualSection = residual.section();
+  topology::Mesh::UpdateAddVisitor residualVisitor(*residualSection,
+						      &residualCell[0]);
+
+#if !defined(PRECOMPUTE_GEOMETRY)
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    faultSieveMesh->getRealSection("coordinates");
+  RestrictVisitor coordsVisitor(*coordinates,
+				coordinatesCell.size(), &coordinatesCell[0]);
+#endif
+
+  // CHANGE TO LOOP OVER COHESIVE CELLS (See FaultCohesiveKin)
+ 
+  // Loop over faces and integrate contribution from each face
+  for (SieveSubMesh::label_sequence::iterator c_iter=cellsCohesive->begin();
+       c_iter != cellsEnd; // cellsEnd
+       ++c_iter) {
+    const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
+    residualCell = 0.0;
+
+#if defined(PRECOMPUTE_GEOMETRY)
+    _quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, c_fault);
+#endif
+
+    // USE FAULT CONSTITUTIVE MODEL TO GET TRACTION (later)
+    
+    // Get cell geometry information that depends on cell
+    const double_array& basis = _quadrature->basis();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
+
+    // Compute action for traction bc terms
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+        const double valI = wt*basis[iQuad*numBasis+iBasis];
+        for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+          const double valIJ = valI * basis[iQuad*numBasis+jBasis];
+          for (int iDim=0; iDim < spaceDim; ++iDim)
+            residualCell[iBasis*spaceDim+iDim] += 
+	      tractionsCell[iQuad*spaceDim+iDim] * valIJ;
+        } // for
+      } // for
+    } // for
+
+    // Assemble cell contribution into field
+    residualVisitor.clear();
+    sieveMesh->updateAdd(*c_iter, residualVisitor);
+
+    PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*(1+2*spaceDim))));
+  } // for
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -71,6 +163,7 @@ pylith::faults::FaultCohesiveDyn::integrateJacobian(
 				   const double t,
 				   topology::SolutionFields* const fields)
 { // integrateJacobian
+  // See Neumann
   throw std::logic_error("FaultCohesiveDyn::integrateJacobian() not implemented.");
 } // integrateJacobian
   
@@ -141,7 +234,7 @@ pylith::faults::FaultCohesiveDyn::cellField(
 				      const char* name,
 				      const topology::SolutionFields* fields)
 { // cellField
-  throw std::logic_error("FaultCohesiveDyn::vertexField() not implemented.");
+  throw std::logic_error("FaultCohesiveDyn::cellField() not implemented.");
 } // cellField
 
 // ----------------------------------------------------------------------
