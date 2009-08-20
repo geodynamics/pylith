@@ -13,6 +13,7 @@
 #include <portinfo>
 
 #include "FaultCohesiveDyn.hh" // implementation of object methods
+#include "CohesiveTopology.hh" // USES CohesiveTopology
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -65,6 +66,10 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
   assert(0 != upDir);
   assert(0 != normalDir);
   assert(0 != _quadrature);
+
+  delete _faultMesh; _faultMesh = new topology::SubMesh();
+  CohesiveTopology::createFaultParallel(_faultMesh, &_cohesiveToFault, 
+					mesh, id(), useLagrangeConstraints());
 
   // Reset fields.
   delete _fields; 
@@ -212,19 +217,19 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
       // Use basis functions to compute displacement at quadrature point and
       // then difference displacements to get slip.
       // ADD STUFF HERE
-      double_array dispQuadPt(numQuadPts*spaceDim*2);
+      double_array dispQuadPt(spaceDim*2);
       double_array slipGlobal(spaceDim);
       for (int iBasis=0; iBasis < numBasis; ++iBasis) {
 	for (int iSpace=0; iSpace < spaceDim; ++iSpace) {
-	  dispQuadPt[iQuad*spaceDim+iSpace] += basis[iQuad*numBasis+iBasis]
+	  dispQuadPt[iSpace] += basis[iQuad*numBasis+iBasis]
 	    *dispCell[iBasis*spaceDim+iSpace];
-	  dispQuadPt[(iQuad+numQuadPts)*spaceDim+iSpace] += basis[iQuad*numBasis+iBasis]
+	  dispQuadPt[spaceDim+iSpace] += basis[iQuad*numBasis+iBasis]
 	    *dispCell[(iBasis+numBasis)*spaceDim+iSpace];
 	}
       }
       for (int iSpace=0; iSpace < spaceDim; ++iSpace) {
-	slipGlobal[iSpace] = dispQuadPt[(iQuad+numQuadPts)*spaceDim+iSpace]
-	  -dispQuadPt[iQuad*spaceDim+iSpace];
+	slipGlobal[iSpace] = dispQuadPt[spaceDim+iSpace]
+	  -dispQuadPt[iSpace];
       }
 	 
       // Compute slip in fault orientation.
@@ -248,19 +253,19 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
       // Use basis functions to compute forces at quadrature point, then difference to get relative forces,
       // and divide by area to get traction vector.
       // ADD STUFF HERE
-      double_array forcesQuadPt(numQuadPts*spaceDim*2);
+      double_array forcesQuadPt(2*spaceDim);
       double_array tractionCurrentGlobal(spaceDim);
       for (int iBasis=0; iBasis < numBasis; ++iBasis) {
 	for (int iSpace=0; iSpace < spaceDim; ++iSpace) {
-	  forcesQuadPt[iQuad*spaceDim+iSpace] += basis[iQuad*numBasis+iBasis]
+	  forcesQuadPt[iSpace] += basis[iQuad*numBasis+iBasis]
 	    *forcesCurrentCell[iBasis*spaceDim+iSpace];
-	  forcesQuadPt[(iQuad+numQuadPts)*spaceDim+iSpace] += basis[iQuad*numBasis+iBasis]
+	  forcesQuadPt[spaceDim+iSpace] += basis[iQuad*numBasis+iBasis]
 	    *forcesCurrentCell[(iBasis+numBasis)*spaceDim+iSpace];
 	}
       }
       for (int iSpace=0; iSpace < spaceDim; ++iSpace) {
-	tractionCurrentGlobal[iSpace] = forcesQuadPt[(iQuad+numQuadPts)*spaceDim+iSpace]
-	  -forcesQuadPt[iQuad*spaceDim+iSpace];
+	tractionCurrentGlobal[iSpace] = forcesQuadPt[spaceDim+iSpace]
+	  -forcesQuadPt[iSpace];
 	tractionCurrentGlobal[iSpace] /= wt;
       }
       
@@ -296,7 +301,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
       // Out: frictionFault [spaceDim]
       // BEGIN TEMPORARY
       // Simple fault constitutive model with static friction.
-      const double mu = 0.6;
+      const double mu = 0.7;
       // ADD STUFF HERE
       double_array frictionFault(spaceDim);
       frictionFault = 0.0;
@@ -304,22 +309,30 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
       { // switch
       case 1 : {
 	if (tractionTotalFault[0] < 0) {
-	  frictionFault[0] = tractionCurrentFault[0];
+	  frictionFault[0] = tractionCurrentFault[0]/2;
 	    }
 	break;
       } // case 1
       case 2 : {
 	if (tractionTotalFault[1] < 0) {
-	  frictionFault[1] = tractionCurrentFault[1];
+	  frictionFault[1] = tractionCurrentFault[1]/2;
 	  frictionFault[0] = -mu * tractionTotalFault[1];
+	  if (frictionFault[0] > tractionCurrentFault[0])
+	    frictionFault[0] = tractionCurrentFault[0];
 	}
 	break;
       } // case 2
       case 3 : {
 	if (tractionTotalFault[2] < 0) {
-	  frictionFault[2] = tractionCurrentFault[2];
+	  frictionFault[2] = tractionCurrentFault[2]/2;
 	  frictionFault[1] = -mu * tractionTotalFault[2] * tractionTotalFault[1] / sqrt(pow(tractionTotalFault[1],2) +pow(tractionTotalFault[0],2));
 	  frictionFault[0] = -mu * tractionTotalFault[2] * tractionTotalFault[0] / sqrt(pow(tractionTotalFault[1],2) +pow(tractionTotalFault[0],2));
+	
+	  if (frictionFault[0] > tractionCurrentFault[0])
+	    frictionFault[0] = tractionCurrentFault[0];
+	
+	  if (frictionFault[1] > tractionCurrentFault[1])
+	    frictionFault[1] = tractionCurrentFault[1];
 	}
 	break;
       } // case 3
@@ -348,16 +361,33 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 	}
       }
       
+    std::cout << "wt: " << wt
+	      << ", dispQuadPt (-): (" << dispQuadPt[0] << "," << dispQuadPt[1] << ")\n"
+	      << ", dispQuadPt (+): (" << dispQuadPt[spaceDim+0] << "," << dispQuadPt[spaceDim+1] << ")\n"
+	      << ", slipGlobal: (" << slipGlobal[0] << "," << slipGlobal[1] << ")\n"
+	      << ", slipFault:  (" << slipFault[0] << "," << slipFault[1] << ")\n"
+	      << ", forcesQuadPt (-): (" << forcesQuadPt[0] << "," << forcesQuadPt[1] << ")\n"
+	      << ", forcesQuadPt (+): (" << forcesQuadPt[spaceDim+0] << "," << forcesQuadPt[spaceDim+1] << ")\n"
+	      << ", tractionCurrentGlobal: (" << tractionCurrentGlobal[0] << "," << tractionCurrentGlobal[1] << ")\n"
+	      << ", tractionCurrentFault: (" << tractionCurrentFault[0] << "," << tractionCurrentFault[1] << ")\n"
+	      << ", tractionTotalFault: (" << tractionTotalFault[0] << "," << tractionTotalFault[1] << ")\n"
+	      << ", frictionFault: (" << frictionFault[0] << "," << frictionFault[1] << ")\n"
+	      << ", tractionCell: (" << tractionCell[iQuad*spaceDim+0] << "," << tractionCell[iQuad*spaceDim+1] << ")\n"
+	      << std::endl;
+
 
       // Compute action for dynamic fault term
       for (int iBasis=0; iBasis < numBasis; ++iBasis) {
         const double valI = wt*basis[iQuad*numBasis+iBasis];
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
           const double valIJ = valI * basis[iQuad*numBasis+jBasis];
-          for (int iDim=0; iDim < spaceDim; ++iDim)
+          for (int iDim=0; iDim < spaceDim; ++iDim) {
 	    // :TODO: action for each side of the fault
             residualCell[iBasis*spaceDim+iDim] += 
 	      tractionCell[iQuad*spaceDim+iDim] * valIJ;
+	  residualCell[(iBasis+numBasis)*spaceDim+iDim] += 
+	      -tractionCell[iQuad*spaceDim+iDim] * valIJ;
+	  } // for
         } // for
       } // for
     } // for
@@ -410,7 +440,8 @@ pylith::faults::FaultCohesiveDyn::verifyConfiguration(
 	<< "'.";
     throw std::runtime_error(msg.str());
   } // if
-  const int numCorners = _quadrature->numBasis();
+
+  const int numCorners = _quadrature->refGeometry().numCorners();
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->getLabelStratum("material-id", id());
   assert(!cells.isNull());
@@ -420,7 +451,7 @@ pylith::faults::FaultCohesiveDyn::verifyConfiguration(
        c_iter != cellsEnd;
        ++c_iter) {
     const int cellNumCorners = sieveMesh->getNumCellCorners(*c_iter);
-    if (3*numCorners != cellNumCorners) {
+    if (2*numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Number of vertices in reference cell (" << numCorners 
 	  << ") is not compatible with number of vertices (" << cellNumCorners
@@ -667,6 +698,9 @@ pylith::faults::FaultCohesiveDyn::_getInitialTractions(void)
     } // for
     
     _dbInitial->close();
+
+    // debugging
+    traction.view("INITIAL TRACTIONS");
   } // if
 } // _getInitialTractions
 

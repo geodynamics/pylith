@@ -32,6 +32,7 @@ nobase_pkgpyexec_PYTHON = \
 	faults/Fault.py \
 	faults/FaultCohesive.py \
 	faults/FaultCohesiveKin.py \
+	faults/FaultCohesiveDyn.py \
 	faults/LiuCosSlipFn.py \
 	faults/SingleRupture.py \
 	faults/SlipTimeFn.py \
@@ -78,6 +79,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/OutputManagerSubMesh.py \
 	meshio/OutputSoln.py \
 	meshio/OutputFaultKin.py \
+	meshio/OutputFaultDyn.py \
 	meshio/OutputMatElastic.py \
 	meshio/OutputNeumann.py \
 	meshio/OutputSolnSubset.py \
