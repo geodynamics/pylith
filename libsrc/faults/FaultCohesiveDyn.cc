@@ -13,7 +13,7 @@
 #include <portinfo>
 
 #include "FaultCohesiveDyn.hh" // implementation of object methods
-
+#include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
@@ -83,8 +83,8 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 			   topology::SolutionFields* const fields)
 { // integrateResidual
   assert(0 != _quadrature);
-  assert(0 != _faultMesh); // changed to fault mesh
-  assert(0 != _fields); // change to fields
+  assert(0 != _faultMesh);
+  assert(0 != _fields);
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
@@ -93,33 +93,56 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
   const int numCornersCohesive = 2*numBasis;
+  const int orientationSize = spaceDim*spaceDim;
 
-  // Allocate vectors for cell values.
-  double_array tractionsCell(numQuadPts*spaceDim);
-  double_array residualCell(numCornersCohesive*spaceDim);
-
-  // GET COHESIVE CELLS (see FaultCohesiveKin)
+  // Get cohesive cells.
   const ALE::Obj<SieveMesh>& sieveMesh = residual.mesh().sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<SieveMesh::label_sequence>& cellsCohesive = 
     sieveMesh->getLabelStratum("material-id", id());
   assert(!cellsCohesive.isNull());
-  // Add setting cellsBegin
-
-  // Get cell information
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh(); // updated (subSieveMesh -> faultSieveMesh)
+  const SieveSubMesh::label_sequence::iterator cellsBegin = cellsCohesive->begin();
   const SieveSubMesh::label_sequence::iterator cellsEnd = cellsCohesive->end();
+
+  // Get fault mesh.
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
   assert(!faultSieveMesh.isNull());
 
-  // GET PARAMETERS FOR FAULT CONSTITUTIVE MODEL (later)
-  // TEMPORARY hardwire to (1,0,0)
-  for (int i=0; i < numQuadPts; ++i)
-    tractionsCell[i*spaceDim] = 1.0;
+  // Get sections.
 
-  // Get sections (see FaultCohesiveKin)
+  // Get residual.
   const ALE::Obj<RealSection>& residualSection = residual.section();
+  assert(!residualSection.isNull());
+  double_array residualCell(numCornersCohesive*spaceDim);
   topology::Mesh::UpdateAddVisitor residualVisitor(*residualSection,
-						      &residualCell[0]);
+						   &residualCell[0]);
+  double_array forcesCurrentCell(numCornersCohesive*spaceDim);
+  RestrictVisitor forcesCurrentVisitor(*residualSection,
+				       forcesCurrentCell.size(), &forcesCurrentCell[0]);
+  
+  // Get displacements.
+  double_array dispCell(numCornersCohesive*spaceDim);
+  const ALE::Obj<RealSection>& dispSection = fields->get("disp(t)").section();
+  assert(!dispSection.isNull());
+  RestrictVisitor dispVisitor(*dispSection,
+			      dispCell.size(), &dispCell[0]);
+  
+  // Get initial tractions (if exist).
+  double_array tractionInitialFault(numQuadPts*spaceDim);
+  const ALE::Obj<RealSection>& tractionInitialSection = (0 != _dbInitial) ?
+    _fields->get("initial traction").section() : 0;
+
+  // Get orientation.
+  double_array orientationCell(numQuadPts*orientationSize);
+  const ALE::Obj<RealSection>& orientationSection = _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
+
+  // Values defined at quadrature points.
+  double_array tractionsCurrentCell(numQuadPts*spaceDim);
+  double_array tractionCell(numQuadPts*spaceDim); // friction
+  double_array slip(spaceDim); // slip at quad pt
+  double_array tractionsCurrentFault(spaceDim); // current tractions at quad pt
+  double_array tractionFault(spaceDim); // friction at quad pt
 
 #if !defined(PRECOMPUTE_GEOMETRY)
   double_array coordinatesCell(numBasis*spaceDim);
@@ -129,11 +152,9 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 				coordinatesCell.size(), &coordinatesCell[0]);
 #endif
 
-  // CHANGE TO LOOP OVER COHESIVE CELLS (See FaultCohesiveKin)
- 
   // Loop over faces and integrate contribution from each face
-  for (SieveSubMesh::label_sequence::iterator c_iter=cellsCohesive->begin();
-       c_iter != cellsEnd; // cellsEnd
+  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
+       c_iter != cellsEnd;
        ++c_iter) {
     const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
     residualCell = 0.0;
@@ -146,22 +167,187 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
     _quadrature->computeGeometry(coordinatesCell, c_fault);
 #endif
 
-    // USE FAULT CONSTITUTIVE MODEL TO GET TRACTION (later)
-    
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
     const double_array& jacobianDet = _quadrature->jacobianDet();
 
-    // Compute action for traction bc terms
+    // Get displacements at vertices of cohesive cell.
+    dispVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispVisitor);
+
+    // Get current forces at vertices of cohesive cell (current residual).
+    forcesCurrentVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, forcesCurrentVisitor);
+
+    // Get initial tractions for fault cell.
+    if (0 != _dbInitial) {
+      assert(!tractionInitialSection.isNull());
+      tractionInitialSection->restrictPoint(c_fault, &tractionInitialFault[0],
+					    tractionInitialFault.size());
+    } // if
+
+    // Get fault orientation at quadrature points.
+    orientationSection->restrictPoint(c_fault, &orientationCell[0],
+				      orientationCell.size());
+
+    tractionCell = 0.0;
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      // wt is also area associated with quadrature point
       const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+
+      // Compute slip at current quad pt in global coordinate system.
+      // In: dispCell [2*numBasis*spaceDim] (negative side then positive side??)
+      //     basis [numQuadpts*numBasis]
+      // Out: slipGlobal [spaceDim]
+      // Use basis functions to compute displacement at quadrature point and
+      // then difference displacements to get slip.
+      // ADD STUFF HERE
+      double_array dispQuadPt(numQuadPts*spaceDim*2);
+      double_array slipGlobal(spaceDim);
+      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+	for (int iSpace=0; iSpace < spaceDim; ++iSpace) {
+	  dispQuadPt[iQuad*spaceDim+iSpace] += basis[iQuad*numBasis+iBasis]
+	    *dispCell[iBasis*spaceDim+iSpace];
+	  dispQuadPt[(iQuad+numQuadPts)*spaceDim+iSpace] += basis[iQuad*numBasis+iBasis]
+	    *dispCell[(iBasis+numBasis)*spaceDim+iSpace];
+	}
+      }
+      for (int iSpace=0; iSpace < spaceDim; ++iSpace) {
+	slipGlobal[iSpace] = dispQuadPt[(iQuad+numQuadPts)*spaceDim+iSpace]
+	  -dispQuadPt[iQuad*spaceDim+iSpace];
+      }
+	 
+      // Compute slip in fault orientation.
+      // In: slipGlobal [spaceDim]
+      //     orientationCell [numQuadPts*spaceDim*spaceDim, iQuadPt*spaceDim*spaceDim+iDim*spaceDim+jDim]
+      // Out: slipFault [spaceDim]
+      // Use orientation to rotate from global to fault orientation.
+      // ADD STUFF HERE
+      double_array slipFault(spaceDim);
+      for (int iSpace=0; iSpace < spaceDim; ++iSpace) {
+	for (int jSpace=0; jSpace < spaceDim; ++jSpace) {
+	  slipFault[iSpace] += slipGlobal[jSpace]
+	    *orientationCell[iQuad*spaceDim*spaceDim+iSpace*spaceDim+jSpace];
+	}
+      }
+	       
+
+      // Compute traction from current deformation in global coordinate system. (tractionCurrentGlobal)
+      // In: forcesCurrentCell [2*numBasis*spaceDim] (negative side then positive side)
+      // Out: tractionCurrentGlobal [spaceDim]
+      // Use basis functions to compute forces at quadrature point, then difference to get relative forces,
+      // and divide by area to get traction vector.
+      // ADD STUFF HERE
+      double_array forcesQuadPt(numQuadPts*spaceDim*2);
+      double_array tractionCurrentGlobal(spaceDim);
+      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+	for (int iSpace=0; iSpace < spaceDim; ++iSpace) {
+	  forcesQuadPt[iQuad*spaceDim+iSpace] += basis[iQuad*numBasis+iBasis]
+	    *forcesCurrentCell[iBasis*spaceDim+iSpace];
+	  forcesQuadPt[(iQuad+numQuadPts)*spaceDim+iSpace] += basis[iQuad*numBasis+iBasis]
+	    *forcesCurrentCell[(iBasis+numBasis)*spaceDim+iSpace];
+	}
+      }
+      for (int iSpace=0; iSpace < spaceDim; ++iSpace) {
+	tractionCurrentGlobal[iSpace] = forcesQuadPt[(iQuad+numQuadPts)*spaceDim+iSpace]
+	  -forcesQuadPt[iQuad*spaceDim+iSpace];
+	tractionCurrentGlobal[iSpace] /= wt;
+      }
+      
+
+      // Compute traction in fault orientation.
+      // In: tractionCurrentGlobal [spaceDim]
+      // Out: tractionCurrentFault [spaceDim]
+      // Use orientation to rotate from global to fault orientation.
+      // ADD STUFF HERE
+      double_array tractionCurrentFault(spaceDim);
+      for (int iSpace=0; iSpace < spaceDim; ++iSpace) {
+	for (int jSpace=0; jSpace < spaceDim; ++jSpace) {
+	  tractionCurrentFault[iSpace] += tractionCurrentGlobal[jSpace]
+	    *orientationCell[iQuad*spaceDim*spaceDim+iSpace*spaceDim+jSpace];
+	}
+      }
+
+      // Compute total traction (initial + current).
+      // In: tractionCurrentFault [spaceDim]
+      //     tractionInitialFault [numQuadPts*spaceDim]
+      // Out: tractionTotalFault [spaceDim]
+      // ADD STUFF HERE
+      double_array tractionTotalFault(spaceDim); 
+      for (int iSpace=0; iSpace < spaceDim; ++iSpace) {
+	tractionTotalFault[iSpace] += tractionCurrentFault[iSpace]
+	  +tractionInitialFault[iQuad*spaceDim+iSpace];
+      }
+
+      // Compute traction ("friction") using fault constitutive model in fault orientation.
+      // In: slipFault [spaceDim]
+      //     tractionCurrentFault [spaceDim]
+      //     tractionTotalFault [spaceDim]
+      // Out: frictionFault [spaceDim]
+      // BEGIN TEMPORARY
+      // Simple fault constitutive model with static friction.
+      const double mu = 0.6;
+      // ADD STUFF HERE
+      double_array frictionFault(spaceDim);
+      frictionFault = 0.0;
+    switch (spaceDim)
+      { // switch
+      case 1 : {
+	if (tractionTotalFault[0] < 0) {
+	  frictionFault[0] = tractionCurrentFault[0];
+	    }
+	break;
+      } // case 1
+      case 2 : {
+	if (tractionTotalFault[1] < 0) {
+	  frictionFault[1] = tractionCurrentFault[1];
+	  frictionFault[0] = -mu * tractionTotalFault[1];
+	}
+	break;
+      } // case 2
+      case 3 : {
+	if (tractionTotalFault[2] < 0) {
+	  frictionFault[2] = tractionCurrentFault[2];
+	  frictionFault[1] = -mu * tractionTotalFault[2] * tractionTotalFault[1] / sqrt(pow(tractionTotalFault[1],2) +pow(tractionTotalFault[0],2));
+	  frictionFault[0] = -mu * tractionTotalFault[2] * tractionTotalFault[0] / sqrt(pow(tractionTotalFault[1],2) +pow(tractionTotalFault[0],2));
+	}
+	break;
+      } // case 3
+      default :
+	std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
+	assert(0);
+	throw std::logic_error("Bad spatial dimension in Neumann.");
+      } // switch
+
+      
+      // END TEMPORARY
+
+      // If normal traction is negative (compression), prevent
+      // interpenetration by setting traction to exactly counteract
+      // current forces acting normal to fault.
+
+      // Compute traction associated with "friction" in global coordinate system. (tractionCell)
+      // In: frictionFault [spaceDim]
+      // Out: tractionCell [numQuadPts*spaceDim]
+      // Use orientation to rotate from global to fault orientation.
+      // ADD STUFF HERE
+      for (int iSpace=0; iSpace < spaceDim; ++iSpace) {
+	for (int jSpace=0; jSpace < spaceDim; ++jSpace) {
+	  tractionCell[iQuad*spaceDim+iSpace] += frictionFault[jSpace]
+	    *orientationCell[iQuad*spaceDim*spaceDim+iSpace*spaceDim+jSpace];
+	}
+      }
+      
+
+      // Compute action for dynamic fault term
       for (int iBasis=0; iBasis < numBasis; ++iBasis) {
         const double valI = wt*basis[iQuad*numBasis+iBasis];
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
           const double valIJ = valI * basis[iQuad*numBasis+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim)
+	    // :TODO: action for each side of the fault
             residualCell[iBasis*spaceDim+iDim] += 
-	      tractionsCell[iQuad*spaceDim+iDim] * valIJ;
+	      tractionCell[iQuad*spaceDim+iDim] * valIJ;
         } // for
       } // for
     } // for
@@ -170,7 +356,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
     residualVisitor.clear();
     sieveMesh->updateAdd(*c_iter, residualVisitor);
 
-    PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*(1+2*spaceDim))));
+    PetscLogFlops(numQuadPts*(0)); // :TODO: Count number of operations
   } // for
 } // integrateResidual
 
@@ -182,8 +368,7 @@ pylith::faults::FaultCohesiveDyn::integrateJacobian(
 				   const double t,
 				   topology::SolutionFields* const fields)
 { // integrateJacobian
-  // See Neumann
-  throw std::logic_error("FaultCohesiveDyn::integrateJacobian() not implemented.");
+  _needNewJacobian = false;
 } // integrateJacobian
   
 // ----------------------------------------------------------------------
