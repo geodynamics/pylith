@@ -26,7 +26,8 @@ typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void)
+pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void) : 
+  _dbInitial(0)
 { // constructor
 } // constructor
 
@@ -43,8 +44,17 @@ void
 pylith::faults::FaultCohesiveDyn::deallocate(void)
 { // deallocate
   FaultCohesive::deallocate();
+
+  _dbInitial = 0; // :TODO: Use shared pointer
 } // deallocate
-  
+
+// ----------------------------------------------------------------------
+// Sets the spatial database for the inital tractions
+void pylith::faults::FaultCohesiveDyn::dbInitial(spatialdata::spatialdb::SpatialDB* dbs)
+{ // dbInitial
+  _dbInitial = dbs;
+} // dbInitial
+
 // ----------------------------------------------------------------------
 // Initialize fault. Determine orientation and setup boundary
 void
