@@ -10,20 +10,9 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/ElasticStrain1D.h
+/** @file libsrc/materials/ElasticStrain1D.hh
  *
- * @brief C++ ElasticStrain1D object
- *
- * 1-D, linear elastic material with axial strain. The physical
- * properties are specified using density and compressional-wave
- * speed. The physical properties are stored internally using density
- * and lambda + 2 mu, which are directly related to the elasticity
- * constants used in the finite-element integration.
- *
- * $\sigma - \sigma_0 = (\lambda + 2 \mu) (\epislon - \epsilon_0)$
- *
- * This implies that when $\epsilon = \epsilon_0$, $\sigma =
- * \sigma_0$.
+ * @brief 1-D, linear elastic material with axial strain.
  */
 
 #if !defined(pylith_materials_elasticstrain1d_hh)
@@ -33,6 +22,20 @@
 #include "ElasticMaterial.hh" // ISA ElasticMaterial
 
 // ElasticStrain1D ------------------------------------------------------
+/** @brief 1-D, linear elastic material with axial strain.
+ *
+ *  The physical properties are specified using density and
+ * compressional-wave speed. The physical properties are stored
+ * internally using density and lambda + 2 mu, which are directly
+ * related to the elasticity constants used in the finite-element
+ * integration.
+ *
+ * $\sigma - \sigma_0 = (\lambda + 2 \mu) (\epislon - \epsilon_0)$
+ *
+ * This implies that when $\epsilon = \epsilon_0$, $\sigma =
+ * \sigma_0$.
+ */
+
 class pylith::materials::ElasticStrain1D : public ElasticMaterial
 { // class ElasticStrain1D
   friend class TestElasticStrain1D; // unit testing

@@ -11,16 +11,10 @@
 //
 
 /**
- * @file pylith/feassemble/QuadratureRefCell.hh
+ * @file libsrc/feassemble/QuadratureRefCell.hh
  *
- * @brief Object with basic quadrature information for the reference cell.
- *
- * This object contains the basis functions and their derivatives
- * evaluated at the quadrature points of the reference element, and
- * the coordinates and weights of the quadrature points. 
- *
- * The Quadrature object manages the general functionality of the
- * numerical quadrature.
+ * @brief Object with basic quadrature information for the reference
+ * cell.
  */
 
 #if !defined(pylith_feassemble_quadraturerefcell_hh)
@@ -32,6 +26,16 @@
 #include "pylith/utils/array.hh" // HASA double_array
 
 // Quadrature -----------------------------------------------------------
+/** @brief Object with basic quadrature information for the reference
+ * cell.
+ *
+ * This object contains the basis functions and their derivatives
+ * evaluated at the quadrature points of the reference element, and
+ * the coordinates and weights of the quadrature points.
+ *
+ * The Quadrature object manages the general functionality of the
+ * numerical quadrature.
+ */
 class pylith::feassemble::QuadratureRefCell
 { // Quadrature
   friend class TestQuadratureRefCell; // unit testing

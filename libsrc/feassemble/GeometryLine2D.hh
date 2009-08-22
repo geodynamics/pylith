@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/GeometryLine2D.hh
+ * @file libsrc/feassemble/GeometryLine2D.hh
  *
  * @brief C++ implementation of cell geometry calculations for 1-D
  * line cell in 2-D space.
@@ -24,6 +24,7 @@
 #include "CellGeometry.hh" // ISA CellGeometry
 
 // GeometryLine2D -------------------------------------------------------
+/// Cell geometry calculations for 1-D line cell in 2-D space.
 class pylith::feassemble::GeometryLine2D : public CellGeometry
 { // GeometryLine2D
 

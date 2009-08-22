@@ -13,11 +13,6 @@
 /** @file libsrc/faults/ConstRateSlipFn.hh
  *
  * @brief C++ implementation of a constant slip rate slip time function.
- *
- * Slip time function follows the integral of constant slip rate slip
- * time function.
- *
- * Normalized slip = sliprate * (t - t0)
  */
 
 #if !defined(pylith_faults_constrateslipfn_hh)
@@ -31,6 +26,13 @@
 #include "pylith/utils/array.hh" // HASA double_array
 
 // ConstRateTimeFn ------------------------------------------------------
+/** @brief Constant slip rate slip-time function.
+ *
+ * Slip time function follows the integral of constant slip rate slip
+ * time function.
+ *
+ * Normalized slip = sliprate * (t - t0)
+ */
 class pylith::faults::ConstRateSlipFn : public SlipTimeFn
 { // class ConstRateSlipFn
   friend class TestConstRateSlipFn; // unit testing
@@ -63,7 +65,6 @@ public :
   /** Initialize slip time function.
    *
    * @param faultMesh Finite-element mesh of fault.
-   * @param cs Coordinate system for mesh
    * @param normalizer Nondimensionalization of scales.
    * @param originTime Origin time for earthquake source.
    */

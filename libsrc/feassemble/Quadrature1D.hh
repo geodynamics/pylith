@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/Quadrature1D.hh
+ * @file libsrc/feassemble/Quadrature1D.hh
  *
  * @brief Quadrature for 1-D finite-elements.
  */
@@ -19,8 +19,11 @@
 #if !defined(pylith_feassemble_quadrature1d_hh)
 #define pylith_feassemble_quadrature1d_hh
 
+// Include directives ---------------------------------------------------
 #include "QuadratureEngine.hh" // ISA Quadrature
 
+// Quadrature1D ---------------------------------------------------------
+/// Quadrature for 1-D finite-elements.
 class pylith::feassemble::Quadrature1D : public QuadratureEngine
 { // Quadrature1D
   friend class TestQuadrature1D; // unit testing

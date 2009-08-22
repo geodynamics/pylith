@@ -13,10 +13,6 @@
 /** @file libsrc/faults/StepSlipFn.hh
  *
  * @brief C++ implementation of a step-function slip time function.
- *
- * Slip time function is a step function with slip beginning at time t0.
- *
- * Normalized slip = 1 if t >= t0, 0 otherwise
  */
 
 #if !defined(pylith_faults_stepslipfn_hh)
@@ -28,6 +24,13 @@
 #include "pylith/utils/array.hh" // HASA double_array
 
 // StepSlipFn -----------------------------------------------------------
+/**
+ * @brief C++ implementation of a step-function slip time function.
+ *
+ * Slip time function is a step function with slip beginning at time t0.
+ *
+ * Normalized slip = 1 if t >= t0, 0 otherwise
+*/
 class pylith::faults::StepSlipFn : public SlipTimeFn
 { // class StepSlipFn
   friend class TestStepSlipFn; // unit testing

@@ -11,23 +11,10 @@
 //
 
 /**
- * @file pylith/feassemble/GeometryQuad2D.hh
+ * @file libsrc/feassemble/GeometryQuad2D.hh
  *
  * @brief C++ implementation of cell geometry calculations for 2-D
  * quadrilateral cell.
- *
- * Reference cell:
- *
- * 3 -- 2
- * |    |
- * |    |
- * 0 -- 1
- *
- * Vertex   x     y
- *    0   -1.0  -1.0
- *    1   +1.0  -1.0
- *    2   +1.0  +1.0
- *    3   -1.0  +1.0
  */
 
 #if !defined(pylith_feassemble_geometryquad2d_hh)
@@ -37,8 +24,27 @@
 #include "CellGeometry.hh" // ISA CellGeometry
 
 // GeometryQuad2D -------------------------------------------------------
-class pylith::feassemble::GeometryQuad2D : public CellGeometry
-{ // GeometryQuad2D
+/** @brief Cell geometry calculations for 2-D quadrilateral cell in
+ * 2-D space.
+ *
+ * @brief C++ implementation of cell geometry calculations for 2-D
+ * quadrilateral cell.
+ *
+ * Reference cell:
+@verbatim
+3 -- 2
+|    |
+|    |
+0 -- 1
+
+Vertex   x     y
+   0   -1.0  -1.0
+   1   +1.0  -1.0
+   2   +1.0  +1.0
+   3   -1.0  +1.0
+@endverbatim
+ */
+class pylith::feassemble::GeometryQuad2D : public CellGeometry {
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :

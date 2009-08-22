@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/GeometryPoint1D.hh
+ * @file libsrc/feassemble/GeometryPoint1D.hh
  *
  * @brief C++ implementation of cell geometry calculations for 0-D
  * point cell.
@@ -24,6 +24,7 @@
 #include "CellGeometry.hh" // ISA CellGeometry
 
 // GeometryPoint1D ------------------------------------------------------
+/// Cell geometry calculations for 0-D point cell.
 class pylith::feassemble::GeometryPoint1D : public CellGeometry
 { // GeometryPoint1D
 

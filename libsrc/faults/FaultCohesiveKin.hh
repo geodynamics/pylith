@@ -14,6 +14,24 @@
  *
  * @brief C++ implementation for a fault surface with kinematic
  * (prescribed) slip implemented with cohesive elements.
+ */
+
+#if !defined(pylith_faults_faultcohesivekin_hh)
+#define pylith_faults_faultcohesivekin_hh
+
+// Include directives ---------------------------------------------------
+#include "FaultCohesive.hh" // ISA FaultCohesive
+
+#include "pylith/topology/SubMesh.hh" // ISA Integrator<Quadrature<SubMesh> >
+#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
+#include "pylith/feassemble/Integrator.hh" // ISA Integrator
+
+#include <string> // HASA std::string
+
+// FaultCohesiveKin -----------------------------------------------------
+/**
+ * @brief C++ implementation for a fault surface with kinematic
+ * (prescribed) slip implemented with cohesive elements.
  *
  * Fault boundary condition is specified using Lagrange
  * multipliers. The constraints are associated with "constraint"
@@ -54,20 +72,6 @@
  * because this introduces weighting of the orientation of the fault
  * for the direction of slip at the vertices of the cohesive cells.
  */
-
-#if !defined(pylith_faults_faultcohesivekin_hh)
-#define pylith_faults_faultcohesivekin_hh
-
-// Include directives ---------------------------------------------------
-#include "FaultCohesive.hh" // ISA FaultCohesive
-
-#include "pylith/topology/SubMesh.hh" // ISA Integrator<Quadrature<SubMesh> >
-#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
-#include "pylith/feassemble/Integrator.hh" // ISA Integrator
-
-#include <string> // HASA std::string
-
-// FaultCohesiveKin -----------------------------------------------------
 class pylith::faults::FaultCohesiveKin : public FaultCohesive
 { // class FaultCohesiveKin
   friend class TestFaultCohesiveKin; // unit testing

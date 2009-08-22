@@ -27,6 +27,9 @@
 #include "pylith/utils/array.hh" // HASA int_array
 
 // BoundaryConditionPoints ----------------------------------------------
+/** @brief C++ abstract base class for BoundaryCondition object with
+ * boundary condition applied at a set of points.
+ */
 class pylith::bc::BoundaryConditionPoints : public BoundaryCondition
 { // class BoundaryCondition
   friend class TestBoundaryConditionPoints; // unit testing

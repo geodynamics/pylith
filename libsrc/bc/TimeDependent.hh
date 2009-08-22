@@ -12,7 +12,8 @@
 
 /** @file libsrc/bc/TimeDependent.hh
  *
- * @brief C++ implementation of point force on vertices.
+ * @brief C++ Abstract base class for time-dependent boundary
+ * conditions.
  */
 
 #if !defined(pylith_bc_timedependent_hh)
@@ -27,6 +28,7 @@
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
 // TimeDependent ------------------------------------------------------
+/// Abstract base class for time-dependent boundary conditions.
 class pylith::bc::TimeDependent
 { // class TimeDependent
   friend class TestTimeDependent; // unit testing

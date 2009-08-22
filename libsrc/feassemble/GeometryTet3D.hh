@@ -11,18 +11,10 @@
 //
 
 /**
- * @file pylith/feassemble/GeometryTet3D.hh
+ * @file libsrc/feassemble/GeometryTet3D.hh
  *
  * @brief C++ implementation of cell geometry calculations for 3-D
  * tetrahedral cell.
- *
- * Reference cell:
- *
- * Vertex   x     y     z
- *    0   -1.0  -1.0  -1.0
- *    1   +1.0  -1.0  -1.0
- *    2   -1.0  +1.0  -1.0
- *    3   -1.0  -1.0  +1.0
  */
 
 #if !defined(pylith_feassemble_geometrytet3d_hh)
@@ -32,6 +24,18 @@
 #include "CellGeometry.hh" // ISA CellGeometry
 
 // GeometryTet3D --------------------------------------------------------
+/** @brief C++ implementation of cell geometry calculations for 3-D
+ * tetrahedral cell.
+ *
+ * Reference cell:
+@verbatim
+Vertex   x     y     z
+   0   -1.0  -1.0  -1.0
+   1   +1.0  -1.0  -1.0
+   2   -1.0  +1.0  -1.0
+   3   -1.0  -1.0  +1.0
+@endverbatim
+ */
 class pylith::feassemble::GeometryTet3D : public CellGeometry
 { // GeometryTet3D
 

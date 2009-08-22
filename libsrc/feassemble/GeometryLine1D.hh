@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/GeometryLine1D.hh
+ * @file libsrc/feassemble/GeometryLine1D.hh
  *
  * @brief C++ implementation of cell geometry calculations for 1-D
  * line cell.
@@ -24,6 +24,7 @@
 #include "CellGeometry.hh" // ISA CellGeometry
 
 // GeometryLine1D -------------------------------------------------------
+/// Cell geometry calculations for 1-D line cell.
 class pylith::feassemble::GeometryLine1D : public CellGeometry
 { // GeometryLine1D
 

@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/Quadrature2Din3D.hh
+ * @file libsrc/feassemble/Quadrature2Din3D.hh
  *
  * @brief Quadrature for 2-D finite-elements in 3-D space.
  */
@@ -19,15 +19,11 @@
 #if !defined(pylith_feassemble_quadrature2din3d_hh)
 #define pylith_feassemble_quadrature2din3d_hh
 
+// Include directives ---------------------------------------------------
 #include "QuadratureEngine.hh"
 
-namespace pylith {
-  namespace feassemble {
-    class Quadrature2Din3D;
-    class TestQuadrature2Din3D;
-  } // feassemble
-} // pylith
-
+// Quadrature0D ---------------------------------------------------------
+/// Quadrature for 2-D finite-elements in 3-D space.
 class pylith::feassemble::Quadrature2Din3D : public QuadratureEngine
 { // Quadrature2Din3D
   friend class TestQuadrature2Din3D; // unit testing

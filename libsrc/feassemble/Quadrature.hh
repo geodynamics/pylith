@@ -11,19 +11,10 @@
 //
 
 /**
- * @file pylith/feassemble/Quadrature.hh
+ * @file libsrc/feassemble/Quadrature.hh
  *
  * @brief Abstract base class for integrating over finite-elements
  * using quadrature.
- *
- * This object contains the informatio needed to perform numerical
- * quadrature over a finite-element cell. It inherits quadrature
- * information over the reference cell from the QuadratureRefCell object.
-
- * Given a cell this object will compute the cell's Jacobian, the
- * determinant of the Jacobian, the inverse of the Jacobian, and the
- * coordinates in the domain of the cell's quadrature points. The
- * Jacobian and its inverse are computed at the quadrature points.
  */
 
 #if !defined(pylith_feassemble_quadrature_hh)
@@ -37,6 +28,19 @@
 #include "pylith/utils/array.hh" // HASA double_array
 
 // Quadrature -----------------------------------------------------------
+/** @brief Abstract base class for integrating over finite-elements
+ * using quadrature.
+ *
+ * This object contains the informatio needed to perform numerical
+ * quadrature over a finite-element cell. It inherits quadrature
+ * information over the reference cell from the QuadratureRefCell
+ * object.
+ *
+ * Given a cell this object will compute the cell's Jacobian, the
+ * determinant of the Jacobian, the inverse of the Jacobian, and the
+ * coordinates in the domain of the cell's quadrature points. The
+ * Jacobian and its inverse are computed at the quadrature points.
+ */
 template<typename mesh_type>
 class pylith::feassemble::Quadrature : public QuadratureRefCell
 { // Quadrature

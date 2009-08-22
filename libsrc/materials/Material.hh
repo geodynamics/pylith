@@ -13,10 +13,6 @@
 /** @file libsrc/materials/Material.hh
  *
  * @brief C++ abstract base class for Material object.
- *
- * Interface definition for a material. The physical properties for
- * the material are associated with the constants in the constitutive
- * model.
  */
 
 #if !defined(pylith_materials_material_hh)
@@ -35,6 +31,13 @@
 #include <string> // HASA std::string
 
 // Material -------------------------------------------------------------
+/** @brief C++ abstract base class for Material object.
+ *
+ * Interface definition for a material. The physical properties for
+ * the material are associated with the constants in the constitutive
+ * model.
+ */
+
 class pylith::materials::Material
 { // class Material
   friend class TestMaterial; // unit testing

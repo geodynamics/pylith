@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/ElasticityImplicit.hh
+ * @file libsrc/feassemble/ElasticityImplicit.hh
  *
  * @brief Implicit time integration of quasi-static elasticity equation
  * using finite-elements.
@@ -22,13 +22,13 @@
  *
  * Computes contributions to terms A and r in
  *
- * A(t) u(t+dt) = b(u(t), u(t-dt)),
+ * A(t+dt) du(t) = b(t+dt, u(t), u(t-dt)) - A(t+dt) u(t)
  *
- * r = b - A u0(t+dt)
+ * r = b(t+dt) - A(t+dt) (u(t) + du(t))
  *
  * where A(t) is a sparse matrix or vector, u(t+dt) is the field we
- * want to compute at time t+dt, b is a vector that depends on the
- * field at time t and t-dt, and u0 is zero at unknown DOF and set to
+ * want to compute at time t+dt, b(t+dt) is a vector that depends on the
+ * field at time t+dt and t, and du is zero at unknown DOF and set to
  * the constrained values at known DOF.
  *
  * Contributions to the RHS (b) include body forces, which are either

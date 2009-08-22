@@ -26,6 +26,9 @@
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
 // Constraint -----------------------------------------------------------
+/** @brief Abstract base class for defining constraints applied to
+ *  vertices of finite-elements.
+ */
 class pylith::feassemble::Constraint
 { // class Constraint
   friend class TestConstraint; // unit testing

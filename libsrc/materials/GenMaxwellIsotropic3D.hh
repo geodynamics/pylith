@@ -10,11 +10,24 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/GenMaxwellIsotropic3D.h
+/** @file libsrc/materials/GenMaxwellIsotropic3D.hh
  *
  * @brief C++ GenMaxwellIsotropic3D object
+ */
+
+// :TODO: Rewrite as template over the number of Maxwell models?
+// We could instatiate for 2 and 3 models and provide example for how to
+// instantiate over other numbers of Maxwell models.
+
+#if !defined(pylith_materials_genmaxwellisotropic3d_hh)
+#define pylith_materials_genmaxwellisotropic3d_hh
+
+// Include directives ---------------------------------------------------
+#include "ElasticMaterial.hh" // ISA ElasticMaterial
+
+// GenMaxwellIsotropic3D ------------------------------------------------
+/** @brief 3-D, isotropic, generalized linear Maxwell viscoelastic material.
  *
- * 3-D, isotropic, generalized linear Maxwell viscoelastic material.
  * This consists of several Maxwell models in parallel. At present,
  * the number of models is fixed at 3, but this will be changed in the
  * future. The physical properties are specified using density,
@@ -31,18 +44,6 @@
  * (viscosity/mu), and the shear ratio is also stored for each Maxwell
  * model.
  */
-
-// :TODO: Rewrite as template over the number of Maxwell models?
-// We could instatiate for 2 and 3 models and provide example for how to
-// instantiate over other numbers of Maxwell models.
-
-#if !defined(pylith_materials_genmaxwellisotropic3d_hh)
-#define pylith_materials_genmaxwellisotropic3d_hh
-
-// Include directives ---------------------------------------------------
-#include "ElasticMaterial.hh" // ISA ElasticMaterial
-
-// GenMaxwellIsotropic3D ------------------------------------------------
 class pylith::materials::GenMaxwellIsotropic3D : public ElasticMaterial
 { // class GenMaxwellIsotropic3D
   friend class TestGenMaxwellIsotropic3D; // unit testing

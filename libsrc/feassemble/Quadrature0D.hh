@@ -11,25 +11,23 @@
 //
 
 /**
- * @file pylith/feassemble/Quadrature0D.hh
+ * @file libsrc/feassemble/Quadrature0D.hh
  *
  * @brief Quadrature for 0-D finite-elements.
- *
- * Need Quadrature in 0-D for integration of boundary condition for
- * 1-D meshes.
  */
 
 #if !defined(pylith_feassemble_quadrature0d_hh)
 #define pylith_feassemble_quadrature0d_hh
 
+// Include directives ---------------------------------------------------
 #include "QuadratureEngine.hh"
 
-namespace pylith {
-  namespace feassemble {
-    class TestQuadrature0D;
-  } // feassemble
-} // pylith
-
+// Quadrature0D ---------------------------------------------------------
+/** @brief Quadrature for 0-D finite-elements.
+ *
+ * Need Quadrature in 0-D for integration of boundary condition for
+ * 1-D meshes.
+ */
 class pylith::feassemble::Quadrature0D : public QuadratureEngine
 { // Quadrature0D
   friend class TestQuadrature0D; // unit testing

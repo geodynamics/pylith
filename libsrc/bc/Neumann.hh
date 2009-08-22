@@ -24,8 +24,10 @@
 #include "TimeDependent.hh" // ISA TimeDependent
 
 // Neumann ------------------------------------------------------
+/// @brief Time dependent Neumann (traction) boundary conditions
+/// applied to a simply-connected boundary.
 class pylith::bc::Neumann : public BCIntegratorSubMesh, 
-				public TimeDependent
+			    public TimeDependent
 { // class Neumann
   friend class TestNeumann; // unit testing
 

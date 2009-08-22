@@ -13,23 +13,20 @@
 /** @file libsrc/materials/EffectiveStress.hh
  *
  * @brief C++ EffectiveStress object.
- *
- * This class contains bracketing and root-finding functions for
- * materials that use an effective stress formulation.
  */
 
 #if !defined(pylith_materials_effectivestress_hh)
 #define pylith_materials_effectivestress_hh
 
-/// Namespace for pylith package
-namespace pylith {
-  namespace materials {
-    class EffectiveStress;
-  } // materials
+// Include directives ---------------------------------------------------
+#include "materialsfwd.hh"
 
-} // pylith
-
-/// C++ abstract base class for Material object.
+// EffectiveStress ------------------------------------------------------
+/** @brief C++ EffectiveStress object.
+ *
+ * This class contains bracketing and root-finding functions for
+ * materials that use an effective stress formulation.
+ */
 class pylith::materials::EffectiveStress
 { // class EffectiveStress
 

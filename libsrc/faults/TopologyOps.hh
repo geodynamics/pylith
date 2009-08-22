@@ -12,7 +12,7 @@
 
 /** @file libsrc/faults/TopologyOps.hh
  *
- * @brief C++ object to manage creation of cohesive cells.
+ * @brief C++ helper object for creation of cohesive cells.
  */
 
 #if !defined(pylith_faults_topologyops_hh)
@@ -24,6 +24,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
 // TopologyOps ----------------------------------------------------------
+/// Helper object for creation of cohesive cells.
 class pylith::faults::TopologyOps
 { // class TopologyOps
 
