@@ -39,6 +39,9 @@ namespace pylith {
     class GenMaxwellIsotropic3D;
     class PowerLaw3D;
 
+    class EffectiveStress;
+    class ViscoelasticMaxwell;
+
   } // materials
 } // pylith
 

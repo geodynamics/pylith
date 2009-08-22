@@ -25,6 +25,7 @@
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 // PointForce ------------------------------------------------------
+/// Point forces applied at vertices.
 class pylith::bc::PointForce : public TimeDependentPoints,
 			       public feassemble::Integrator<feassemble::Quadrature<topology::Mesh> >
 { // class PointForce

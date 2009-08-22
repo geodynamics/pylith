@@ -10,16 +10,9 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/MaxwellIsotropic3D.h
+/** @file libsrc/materials/MaxwellIsotropic3D.hh
  *
- * @brief C++ MaxwellIsotropic3D object
- *
- * 3-D, isotropic, linear Maxwell viscoelastic material. The
- * physical properties are specified using density, shear-wave speed,
- * viscosity, and compressional-wave speed. The physical properties are
- * stored internally using density, lambda, mu, which are directly
- * related to the elasticity constants used in the finite-element
- * integration. The viscosity is stored using Maxwell Time (viscosity/mu).
+ * @brief 3-D, isotropic, linear Maxwell viscoelastic material.
  */
 
 #if !defined(pylith_materials_maxwellisotropic3d_hh)
@@ -29,6 +22,15 @@
 #include "ElasticMaterial.hh" // ISA ElasticMaterial
 
 // MaxwellIsotropic3D ---------------------------------------------------
+/** @brief 3-D, isotropic, linear Maxwell viscoelastic material.
+ *
+ * The physical properties are specified using density, shear-wave
+ * speed, viscosity, and compressional-wave speed. The physical
+ * properties are stored internally using density, lambda, mu, which
+ * are directly related to the elasticity constants used in the
+ * finite-element integration. The viscosity is stored using Maxwell
+ * Time (viscosity/mu).
+ */
 class pylith::materials::MaxwellIsotropic3D : public ElasticMaterial
 { // class MaxwellIsotropic3D
   friend class TestMaxwellIsotropic3D; // unit testing

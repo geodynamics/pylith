@@ -14,10 +14,6 @@
  *
  * @brief C++ implementation for a fault surface with spontaneous
  * (dynamic) slip implemented with cohesive elements.
- *
- * The ordering of vertices in a cohesive cell is the vertices on the
- * POSITIVE/NEGATIVE (CHECK WHICH IT IS) side of the fault and then the
- * corresponding entries on the other side of the fault.
  */
 
 #if !defined(pylith_faults_faultcohesivedyn_hh)
@@ -27,6 +23,14 @@
 #include "FaultCohesive.hh" // ISA FaultCohesive
 
 // FaultCohesiveDyn -----------------------------------------------------
+/** 
+ * @brief C++ implementation for a fault surface with spontaneous
+ * (dynamic) slip implemented with cohesive elements.
+ *
+ * The ordering of vertices in a cohesive cell is the vertices on the
+ * negative side of the fault and then the corresponding entries on
+ * the positive side of the fault.
+ */
 class pylith::faults::FaultCohesiveDyn : public FaultCohesive
 { // class FaultCohesiveDyn
   friend class TestFaultCohesiveDyn; // unit testing

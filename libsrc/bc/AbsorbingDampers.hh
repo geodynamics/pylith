@@ -54,6 +54,7 @@
 #include "BCIntegratorSubMesh.hh" // ISA BCIntegratorSubMesh
 
 // AbsorbingDampers ------------------------------------------------------
+/// Absorbing boundary with simple dampers.
 class pylith::bc::AbsorbingDampers : public BCIntegratorSubMesh
 { // class AbsorbingDampers
   friend class TestAbsorbingDampers; // unit testing

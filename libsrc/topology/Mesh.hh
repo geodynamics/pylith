@@ -14,9 +14,6 @@
  * @file libsrc/topology/Mesh.hh
  *
  * @brief C++ PyLith finite-element mesh.
- *
- * Extends Sieve mesh to include coordinate system associated with
- * domain.
  */
 
 #if !defined(pylith_topology_mesh_hh)
@@ -30,6 +27,11 @@
 #include <petscmesh.hh> // HASA ALE::IMesh
 
 // Mesh -----------------------------------------------------------------
+/** @brief PyLith finite-element mesh.
+ *
+ * Extends Sieve mesh to include coordinate system associated with
+ * domain.
+ */
 class pylith::topology::Mesh
 { // Mesh
   friend class TestMesh; // unit testing
@@ -37,15 +39,17 @@ class pylith::topology::Mesh
 // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
 public :
 
-  // Typedefs for basic types associated with Sieve mesh.
-  // All other PyLith mesh and submesh objects should define:
-  //   (1) SieveMesh - Sieve mesh
-  //   (2) RealSection - Section of doubles
-  //   (3) IntSection - Section of ints
-  // because these are used in templated code.
-  // 
-  // All other mesh objects for the domain should also define
-  //   (1) SieveSubMesh - SubMesh object
+  /** Typedefs for basic types associated with Sieve mesh.
+   * All other PyLith mesh and submesh objects should define:
+   *   (1) SieveMesh - Sieve mesh
+   *   (2) RealSection - Section of doubles
+   *   (3) IntSection - Section of ints
+   * because these are used in templated code.
+   * 
+   * All other mesh objects for the domain should also define
+   *   (1) SieveSubMesh - SubMesh object
+   */
+  //@{
   typedef ALE::IMesh<> SieveMesh;
   typedef SieveMesh::real_section_type RealSection;
   typedef SieveMesh::int_section_type IntSection;
@@ -53,6 +57,7 @@ public :
   typedef ALE::ISieveVisitor::RestrictVisitor<RealSection> RestrictVisitor;
   typedef ALE::ISieveVisitor::UpdateAddVisitor<RealSection> UpdateAddVisitor;
   typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> IndicesVisitor;
+  //@}
 
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////

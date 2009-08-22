@@ -11,14 +11,10 @@
 //
 
 /**
- * @file pylith/feassemble/Integrator.hh
+ * @file libsrc/feassemble/Integrator.hh
  *
  * @brief Abstract base class for integration of finite-element
  * actions.
- *
- * Note: Each object operates on a single finite-element family, which
- * is defined by the quadrature and a database of material property
- * parameters.
  */
 
 #if !defined(pylith_feassemble_integrator_hh)
@@ -36,6 +32,13 @@
 #include "pylith/utils/array.hh" // HASA double_array
 
 // Integrator -----------------------------------------------------------
+/** @brief Abstract base class for integration of finite-element
+ * actions.
+ *
+ * Note: Each object operates on a single finite-element family, which
+ * is defined by the quadrature and a database of material property
+ * parameters.
+ */
 template<typename quadrature_type>
 class pylith::feassemble::Integrator
 { // Integrator

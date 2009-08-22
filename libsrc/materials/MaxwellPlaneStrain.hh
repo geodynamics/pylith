@@ -10,21 +10,16 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/MaxwellPlaneStrain.h
+/** @file libsrc/materials/MaxwellPlaneStrain.hh
  *
- * @brief C++ MaxwellPlaneStrain object
- *
- * 2-D, isotropic, linear Maxwell viscoelastic material for plane strain. The
- * physical properties are specified using density, shear-wave speed,
- * viscosity, and compressional-wave speed. The physical properties are
- * stored internally using density, lambda, mu, which are directly
- * related to the elasticity constants used in the finite-element
- * integration. The viscosity is stored using Maxwell Time (viscosity/mu).
+ * @brief 2-D, isotropic, linear Maxwell viscoelastic material for
+ * plane strain.  
  */
 
 #if !defined(pylith_materials_maxwellplanestrain_hh)
 #define pylith_materials_maxwellplanestrain_hh
 
+// Include directives ---------------------------------------------------
 #include "ElasticMaterial.hh"
 
 /// Namespace for pylith package
@@ -35,7 +30,17 @@ namespace pylith {
   } // materials
 } // pylith
 
-/// 2-D, isotropic, linear Maxwell viscoelastic material.
+// MaxwellPlaneStrain ---------------------------------------------------
+/** @brief 2-D, isotropic, linear Maxwell viscoelastic material for
+ * plane strain.
+ *
+ * The physical properties are specified using density, shear-wave
+ * speed, viscosity, and compressional-wave speed. The physical
+ * properties are stored internally using density, lambda, mu, which
+ * are directly related to the elasticity constants used in the
+ * finite-element integration. The viscosity is stored using Maxwell
+ * Time (viscosity/mu).
+ */
 class pylith::materials::MaxwellPlaneStrain : public ElasticMaterial
 { // class MaxwellPlaneStrain
   friend class TestMaxwellPlaneStrain; // unit testing

@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/Quadrature3D.hh
+ * @file libsrc/feassemble/Quadrature3D.hh
  *
  * @brief Quadrature for 3-D finite-elements.
  */
@@ -19,8 +19,11 @@
 #if !defined(pylith_feassemble_quadrature3d_hh)
 #define pylith_feassemble_quadrature3d_hh
 
-#include "QuadratureEngine.hh" // ISA QuadratureEngine
+// Include directives ---------------------------------------------------
+#include "QuadratureEngine.hh"
 
+// Quadrature0D ---------------------------------------------------------
+/// Quadrature for 3-D finite-elements in 3-D space.
 class pylith::feassemble::Quadrature3D : public QuadratureEngine
 { // Quadrature3D
   friend class TestQuadrature3D; // unit testing

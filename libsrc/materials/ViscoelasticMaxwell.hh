@@ -12,24 +12,21 @@
 
 /** @file libsrc/materials/ViscoelasticMaxwell.hh
  *
- * @brief C++ ViscoelasticMaxwell object.
- *
- * This class contains a single function that can be used by any
- * linear Maxwell viscoelastic class.
+ * @brief Class for basic Maxwell viscoelastic functions.
  */
 
 #if !defined(pylith_materials_viscoelasticmaxwell_hh)
 #define pylith_materials_viscoelasticmaxwell_hh
 
-/// Namespace for pylith package
-namespace pylith {
-  namespace materials {
-    class ViscoelasticMaxwell;
-  } // materials
+// Include directives ---------------------------------------------------
+#include "materialsfwd.hh" // forward declarations
 
-} // pylith
-
-/// C++ abstract base class for Material object.
+// ViscoelasticMaxwell --------------------------------------------------
+/** @brief Class for basic Maxwell viscoelastic functions.
+ *
+ * This class contains functions that can be used by any linear
+ * Maxwell viscoelastic class.
+ */
 class pylith::materials::ViscoelasticMaxwell
 { // class ViscoelasticMaxwell
 

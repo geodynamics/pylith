@@ -11,12 +11,9 @@
 //
 
 /**
- * @file libsrc/topology/Metadata.hh
+ * @file libsrc/materials/Metadata.hh
  *
  * @brief C++ object for material metadata.
- *
- * Extends Sieve mesh to include coordinate system associated with
- * domain.
  */
 
 #if !defined(pylith_materials_metadata_hh)
@@ -31,6 +28,12 @@
 #include <map> // HASA std::map
 
 // MaterialMetadata -----------------------------------------------------
+/** @brief C++ object for material metadata.
+ *
+ * Extends Sieve mesh to include coordinate system associated with
+ * domain.
+ */
+
 class pylith::materials::Metadata
 { // Mesh
   friend class TestMetadata; // unit testing

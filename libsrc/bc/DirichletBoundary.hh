@@ -23,6 +23,8 @@
 #include "DirichletBC.hh" // ISA DirichletBC
 
 // DirichletBoundary ----------------------------------------------------
+/// @brief Dirichlet (prescribed values at degrees of freedom) boundary
+/// conditions with points on a boundary.
 class pylith::bc::DirichletBoundary : public DirichletBC
 { // class DirichletBoundary
   friend class TestDirichletBoundary; // unit testing

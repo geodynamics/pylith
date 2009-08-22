@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/IntegratorElasticity.hh
+ * @file libsrc/feassemble/IntegratorElasticity.hh
  *
  * @brief Object containing general elasticity operations for implicit
  * and explicit time integration of the elasticity equation.
@@ -32,6 +32,9 @@
 #include "pylith/utils/arrayfwd.hh" // USES std::vector, double_array
 
 // IntegratorElasticity -------------------------------------------------
+/** @brief General elasticity operations for implicit and explicit
+ * time integration of the elasticity equation.
+ */
 class pylith::feassemble::IntegratorElasticity :
   public Integrator<Quadrature<topology::Mesh> >
 { // IntegratorElasticity

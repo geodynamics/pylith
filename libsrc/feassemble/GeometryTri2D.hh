@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/GeometryTri2D.hh
+ * @file libsrc/feassemble/GeometryTri2D.hh
  *
  * @brief C++ implementation of cell geometry calculations for 2-D
  * triangular cell.
@@ -31,6 +31,17 @@
 #include "CellGeometry.hh" // ISA CellGeometry
 
 // GeometryTri2D --------------------------------------------------------
+/** @brief C++ implementation of cell geometry calculations for 2-D
+ * triangular cell.
+ *
+ * Reference cell:
+@verbatim
+Vertex   x     y
+   0   -1.0  -1.0
+   1   +1.0  -1.0
+   2   -1.0  +1.0
+@endverbatim
+ */
 class pylith::feassemble::GeometryTri2D : public CellGeometry
 { // GeometryTri2D
 
