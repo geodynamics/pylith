@@ -208,9 +208,9 @@ class Implicit(Formulation):
     self._info.log("Solving equations.")
     residual = self.fields.get("residual")
     self._eventLogger.stagePush("Solve")
-    self.jacobian.view() # TEMPORARY
+    #self.jacobian.view() # TEMPORARY
     self.solver.solve(dispIncr, self.jacobian, residual)
-    dispIncr.view("DISP INCR") # TEMPORARY
+    #dispIncr.view("DISP INCR") # TEMPORARY
 
     # DEBUGGING Verify solution makes residual 0
     #self._reformResidual(t+dt, dt)
