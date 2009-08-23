@@ -58,7 +58,7 @@ class MeshGenerator(PetscComponent):
     """
     Constructor.
     """
-    PetscComponent.__init__(self, name, facility="mesh_generator")
+    PetscComponent.__init__(self, name, facility="meshgenerator")
     self.debug = False
     self.interpolate = False
     return
