@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/meshio/CellFilterAvg.hh
+ * @file libsrc/meshio/CellFilterAvg.hh
  *
  * @brief C++ object for averaging cell fields over quadrature points
  * when outputing finite-element data.
@@ -24,6 +24,9 @@
 #include "CellFilter.hh" // ISA CellFilter
 
 // CellFilter -----------------------------------------------------------
+/** @brief C++ object for averaging cell fields over quadrature points
+ * when outputing finite-element data.
+ */
 template<typename mesh_type, typename field_type>
 class pylith::meshio::CellFilterAvg : public CellFilter<mesh_type, field_type>
 { // CellFilterAvg

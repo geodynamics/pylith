@@ -11,9 +11,9 @@
 //
 
 /**
- * @file pylith/meshio/DataWriterVTK.hh
+ * @file libsrc/meshio/DataWriterVTK.hh
  *
- * @brief Abstract base class for writing finite-element data to file.
+ * @brief Object for writing finite-element data to VTK file.
  */
 
 #if !defined(pylith_meshio_datawritervtk_hh)
@@ -23,6 +23,7 @@
 #include "DataWriter.hh" // ISA DataWriter
 
 // DataWriterVTK --------------------------------------------------------
+/// Object for writing finite-element data to VTK file.
 template<typename mesh_type, typename field_type>
 class pylith::meshio::DataWriterVTK : public DataWriter<mesh_type,field_type>
 { // DataWriterVTK

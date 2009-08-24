@@ -10,6 +10,12 @@
 // ======================================================================
 //
 
+/**
+ * @file libsrc/meshio/MeshBuilder.hh
+ *
+ * @brief Helper class for constructing Sieve mesh data structures.
+ */
+
 #if !defined(pylith_meshio_meshbuilder_hh)
 #define pylith_meshio_meshbuilder_hh
 
@@ -24,6 +30,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
 // MeshBuilder ----------------------------------------------------------
+/// Helper class for constructing Sieve mesh data structures.
 class pylith::meshio::MeshBuilder
 { // MeshBuilder
 
