@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/topology/Distributor.hh
+ * @file libsrc/topology/Distributor.hh
  *
  * @brief Object for managing distribution of mesh among processors.
  */
@@ -25,6 +25,7 @@
 #include "pylith/meshio/meshiofwd.hh" // USES DataWriter<Mesh>
 
 // Distributor ----------------------------------------------------------
+/// Distribute mesh among processors.
 class pylith::topology::Distributor
 { // Distributor
   friend class TestDistributor; // unit testing

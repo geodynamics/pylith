@@ -14,9 +14,6 @@
  * @file libsrc/topology/SubMesh.hh
  *
  * @brief C++ PyLith finite-element mesh.
- *
- * Extends Sieve mesh over subset of domain to include coordinate
- * system associated with domain.
  */
 
 #if !defined(pylith_topology_submesh_hh)
@@ -29,6 +26,12 @@
 #include "Mesh.hh" // USES Mesh
 
 // SubMesh -----------------------------------------------------------------
+/** @brief C++ PyLith finite-element mesh.
+ *
+ * Extends Sieve mesh over subset of domain to include coordinate
+ * system associated with domain. Also has functions to simply
+ * creating submeshes from groups of vertices.
+ */
 class pylith::topology::SubMesh
 { // SubMesh
   friend class TestSubMesh; // unit testing
