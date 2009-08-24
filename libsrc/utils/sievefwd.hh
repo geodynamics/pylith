@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/utils/sievefwd.hh
+ * @file libsrc/utils/sievefwd.hh
  *
  * @brief Forward declarations for PETSc Sieve objects.
  */

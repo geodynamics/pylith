@@ -11,15 +11,9 @@
 //
 
 /**
- * @file pylith/utils/TestArray.hh
+ * @file libsrc/utils/TestArray.hh
  *
  * @brief C++ object for testing array values.
- *
- * This object is used in unit testing of SWIG interfaces where the
- * C++ object has an accessor returning a std::valarray. The TestArray
- * methods provide the ability to compare the array returned by the
- * accessor against the expected values, which are supplied via a
- * pointer and a size (number of values).
  */
 
 #if !defined(pylith_utils_testarray_hh)
@@ -31,6 +25,14 @@
 #include "arrayfwd.hh" // USES double_array
 
 // TestArray ------------------------------------------------------------
+/** @brief C++ object for testing array values.
+ *
+ * This object is used in unit testing of SWIG interfaces where the
+ * C++ object has an accessor returning a std::valarray. The TestArray
+ * methods provide the ability to compare the array returned by the
+ * accessor against the expected values, which are supplied via a
+ * pointer and a size (number of values).
+ */
 class pylith::utils::TestArray
 { // TestArray
 

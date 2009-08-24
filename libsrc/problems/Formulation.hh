@@ -32,6 +32,7 @@
 
 
 // Formulation ----------------------------------------------------------
+/// Reform the Jacobian and residual for the problem.
 class pylith::problems::Formulation
 { // Formulation
   friend class TestFormulation; // unit testing

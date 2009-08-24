@@ -15,9 +15,6 @@
  *
  * @brief Object for using PETSc scalable nonlinear equation solvers
  * (SNES).
- *
- * The PETSc nonlinear solvers provide an interface to Newton-based
- * methods for solving nonlinear equations.
  */
 
 #if !defined(pylith_problems_solvernonlinear_hh)
@@ -30,6 +27,12 @@
 #include <petscmat.h> // USES MatStructure
 
 // SolverNonlinear ---------------------------------------------------------
+/** @brief Object for using PETSc scalable nonlinear equation solvers
+ * (SNES).
+ *
+ * The PETSc nonlinear solvers provide an interface to Newton-based
+ * methods for solving nonlinear equations.
+ */
 class pylith::problems::SolverNonlinear : public Solver
 { // SolverNonlinear
   friend class TestSolverNonlinear; // unit testing
