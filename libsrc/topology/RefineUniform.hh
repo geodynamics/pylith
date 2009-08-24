@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/topology/RefineUniform.hh
+ * @file libsrc/topology/RefineUniform.hh
  *
  * @brief Object for managing uniform global mesh refinement.
  */
@@ -23,6 +23,7 @@
 #include "topologyfwd.hh" // forward declarations
 
 // RefineUniform --------------------------------------------------------
+/// Object for managing uniform global mesh refinement.
 class pylith::topology::RefineUniform
 { // RefineUniform
   friend class TestRefineUniform; // unit testing

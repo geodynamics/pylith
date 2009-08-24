@@ -30,6 +30,9 @@
 #include "Fields.hh" // ISA Fields< Field<Mesh> >
 
 // SolutionFields -------------------------------------------------------
+/** @brief Object for managing solution fields over a finite-element
+ * mesh.
+ */
 class pylith::topology::SolutionFields : public Fields<Field<Mesh> >
 { // SolutionFields
   friend class TestSolutionFields; // unit testing
