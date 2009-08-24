@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/utils/lapack.h
+ * @file libsrc/utils/lapack.h
  *
  * @brief Declarations for LAPACK routines that we use. We rely on
  * PETSc's interface to these routines.

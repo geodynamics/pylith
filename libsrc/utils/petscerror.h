@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/utils/petscerror.h
+ * @file libsrc/utils/petscerror.h
  *
  * @brief Wrappers around PETSc error handling routines.
  */
