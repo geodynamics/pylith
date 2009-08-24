@@ -11,7 +11,7 @@
 //
 
 /**
- * @file libsrc/topology/PsetFile.hh
+ * @file libsrc/meshio/PsetFileAscii.hh
  *
  * @brief C++ object for input/output of LaGriT binary Pset files.
  */
@@ -25,6 +25,7 @@
 #include <iosfwd>
 
 // PsetFileAscii --------------------------------------------------------
+/// C++ object for input/output of LaGriT ascii Pset files.
 class pylith::meshio::PsetFileAscii : public PsetFile
 { // PsetFileAscii
 

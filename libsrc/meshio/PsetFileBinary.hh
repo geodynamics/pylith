@@ -11,7 +11,7 @@
 //
 
 /**
- * @file libsrc/topology/PsetFile.hh
+ * @file libsrc/meshio/PsetFileBinary.hh
  *
  * @brief C++ object for input/output of LaGriT binary Pset files.
  */
@@ -25,6 +25,7 @@
 #include <iosfwd>
 
 // PsetFileBinary -------------------------------------------------------
+/// C++ object for input/output of LaGriT binary Pset files.
 class pylith::meshio::PsetFileBinary : public PsetFile
 { // PsetFileBinary
 

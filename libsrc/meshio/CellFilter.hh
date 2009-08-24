@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/meshio/CellFilter.hh
+ * @file libsrc/meshio/CellFilter.hh
  *
  * @brief C++ object for filtering cell fields when outputing
  * finite-element data.
@@ -27,6 +27,9 @@
 #include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Quadrature<Mesh>
 
 // CellFilter -----------------------------------------------------------
+/** @brief C++ object for filtering cell fields when outputing
+ * finite-element data.
+ */
 template<typename mesh_type, typename field_type>
 class pylith::meshio::CellFilter
 { // CellFilter
