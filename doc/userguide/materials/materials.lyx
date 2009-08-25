@@ -693,7 +693,7 @@ mu, lambda, density,
 \begin_layout Plain Layout
 
 \family typewriter
-viscosity_coeff,
+viscosity_coefficient,
 \end_layout
 
 \begin_layout Plain Layout
@@ -2820,6 +2820,35 @@ power-law-exponent
 \end_inset
 
 , respectively.
+ Note that the units of 
+\begin_inset Formula $A_{E}$
+\end_inset
+
+ and 
+\begin_inset Formula $A_{T}$
+\end_inset
+
+ are 
+\begin_inset Formula $\mathrm{stress}^{-n}\mathrm{time}^{-1}$
+\end_inset
+
+.
+ Frequently, the 
+\begin_inset Formula $\log_{10}$
+\end_inset
+
+ of 
+\begin_inset Formula $A_{E}$
+\end_inset
+
+ is given (e.g., 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kirby:Kronenberg:1987"
+
+\end_inset
+
+).
  To avoid scaling issues, PyLith internally makes use of a viscosity coefficient
 , 
 \begin_inset Formula $\eta$
