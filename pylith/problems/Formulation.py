@@ -394,7 +394,7 @@ class Formulation(PetscComponent, ModuleFormulation):
       self._debug.log(resourceUsageString())
 
       self._info.log("Added elasticity integrator for material '%s'." % \
-                     material.label)    
+                     material.label())
     return
 
 
@@ -418,12 +418,12 @@ class Formulation(PetscComponent, ModuleFormulation):
         else:
           self.integratorsMesh.append(bc)
         self._info.log("Added boundary condition '%s' as an integrator." % \
-                       bc.label)
+                       bc.label())
       if implementsConstraint(bc):
         foundType = True
         self.constraints.append(bc)
         self._info.log("Added boundary condition '%s' as a constraint." % \
-                       bc.label)
+                       bc.label())
       if not foundType:
         raise TypeError, \
               "Could not determine whether boundary condition '%s' is an " \
@@ -447,12 +447,12 @@ class Formulation(PetscComponent, ModuleFormulation):
         foundType = True
         self.integratorsSubMesh.append(ic)
         self._info.log("Added interface condition '%s' as an integrator." % \
-                       ic.label)
+                       ic.label())
       if implementsConstraint(ic):
         foundType = True
         self.constraints.append(ic)
         self._info.log("Added interface condition '%s' as a constraint." % \
-                       ic.label)
+                       ic.label())
       if not foundType:
         raise TypeError, \
               "Could not determine whether interface condition '%s' is an " \
