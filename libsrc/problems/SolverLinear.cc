@@ -110,7 +110,7 @@ pylith::problems::SolverLinear::solve(
 
   const PetscMat jacobianMat = jacobian.matrix();
   err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, 
-			DIFFERENT_NONZERO_PATTERN); CHECK_PETSC_ERROR(err);
+			SAME_NONZERO_PATTERN); CHECK_PETSC_ERROR(err);
 
   const PetscVec residualVec = residual.vector();
   const PetscVec solutionVec = solution->vector();
