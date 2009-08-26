@@ -99,7 +99,7 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
               "Dimension for quadrature: %d\n" \
               "Dimension of mesh boundary '%s': %d" % \
               (self.bcQuadrature.cellDim,
-               self.label, self.mesh.dimension()-1)    
+               self.label(), self.mesh.dimension()-1)    
     ModuleAbsorbingDampers.verifyConfiguration(self, self.mesh)
 
     self._eventLogger.eventEnd(logEvent)
