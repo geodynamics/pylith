@@ -98,19 +98,26 @@ pylith::problems::SolverLinear::initialize(
 void
 pylith::problems::SolverLinear::solve(
 			      topology::Field<topology::Mesh>* solution,
-			      const topology::Jacobian& jacobian,
+			      topology::Jacobian* jacobian,
 			      const topology::Field<topology::Mesh>& residual)
 { // solve
   assert(0 != solution);
+  assert(0 != jacobian);
 
   PetscErrorCode err = 0;
 
   // Update PetscVector view of field.
   residual.scatterSectionToVector();
 
-  const PetscMat jacobianMat = jacobian.matrix();
-  err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, 
-			SAME_NONZERO_PATTERN); CHECK_PETSC_ERROR(err);
+  const PetscMat jacobianMat = jacobian->matrix();
+  if (!jacobian->valuesChanged()) {
+    err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, 
+			  SAME_PRECONDITIONER); CHECK_PETSC_ERROR(err);
+  } else {
+    err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, 
+			  DIFFERENT_NONZERO_PATTERN); CHECK_PETSC_ERROR(err);
+  } // else
+  jacobian->resetValuesChanged();
 
   const PetscVec residualVec = residual.vector();
   const PetscVec solutionVec = solution->vector();

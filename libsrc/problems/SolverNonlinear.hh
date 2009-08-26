@@ -64,7 +64,7 @@ public :
    * @param residual Residual field.
    */
   void solve(topology::Field<topology::Mesh>* solveSoln,
-	     const topology::Jacobian& jacobian,
+	     topology::Jacobian* jacobian,
 	     const topology::Field<topology::Mesh>& residual);
 
   /** Generic C interface for reformResidual for integration with

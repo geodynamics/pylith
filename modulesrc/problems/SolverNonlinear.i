@@ -52,7 +52,7 @@ namespace pylith {
        * @param residual Residual field.
        */
       void solve(pylith::topology::Field<pylith::topology::Mesh>* solution,
-		 const pylith::topology::Jacobian& jacobian,
+		 pylith::topology::Jacobian* jacobian,
 		 const pylith::topology::Field<pylith::topology::Mesh>& residual);
 
     }; // SolverNonlinear

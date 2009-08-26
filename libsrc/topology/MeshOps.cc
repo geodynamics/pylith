@@ -58,6 +58,9 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
   const ALE::Obj<SieveMesh::label_type>& materialsLabel = 
     sieveMesh->getLabel("material-id");
 
+  //mesh.view("===== MESH BEFORE CHECKING MATERIALS =====");
+  //materialsLabel->view("material-id");
+
   int* matBegin = materialIds;
   int* matEnd = materialIds + numMaterials;
   std::sort(matBegin, matEnd);

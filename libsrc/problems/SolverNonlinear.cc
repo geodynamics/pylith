@@ -87,7 +87,7 @@ pylith::problems::SolverNonlinear::initialize(
 void
 pylith::problems::SolverNonlinear::solve(
 			      topology::Field<topology::Mesh>* solution,
-			      const topology::Jacobian& jacobian,
+			      topology::Jacobian* jacobian,
 			      const topology::Field<topology::Mesh>& residual)
 { // solve
   assert(0 != solution);

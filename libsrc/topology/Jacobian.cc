@@ -26,7 +26,8 @@ pylith::topology::Jacobian::Jacobian(const SolutionFields& fields,
 				     const char* matrixType,
 				     const bool blockOkay) :
   _fields(fields),
-  _matrix(0)
+  _matrix(0),
+  _valuesChanged(true)
 { // constructor
   const ALE::Obj<Mesh::SieveMesh>& sieveMesh = fields.mesh().sieveMesh();
   const ALE::Obj<Mesh::RealSection>& solnSection = fields.solution().section();
@@ -97,6 +98,8 @@ pylith::topology::Jacobian::assemble(const char* mode)
   } else
     throw std::runtime_error("Unknown mode for assembly of sparse matrix "
 			     "associated with system Jacobian.");
+
+  _valuesChanged = true;
 } // assemble
 
 // ----------------------------------------------------------------------
@@ -106,6 +109,7 @@ pylith::topology::Jacobian::zero(void)
 { // zero
   PetscErrorCode err = MatZeroEntries(_matrix);
   CHECK_PETSC_ERROR(err);
+  _valuesChanged = true;
 } // zero
 
 // ----------------------------------------------------------------------
@@ -188,6 +192,23 @@ pylith::topology::Jacobian::verifySymmetry(void) const
   if (!isSymmetric)
     throw std::runtime_error("Jacobian matrix is not symmetric.");
 } // verifySymmetry
+
+// ----------------------------------------------------------------------
+// Get flag indicating if sparse matrix values have been
+// updated.
+bool
+pylith::topology::Jacobian::valuesChanged(void) const
+{ // valuesChanged
+  return _valuesChanged;
+} // valuesChanged
+
+// ----------------------------------------------------------------------
+// Reset flag indicating if sparse matrix values have been updated.
+void
+pylith::topology::Jacobian::resetValuesChanged(void)
+{ // resetValuesChanged
+  _valuesChanged = false;
+} // resteValuesChanged
 
 
 // End of file 
