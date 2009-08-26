@@ -136,6 +136,8 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
 			     *firstFaultVertex, *firstFaultCell, useLagrangeConstraints());
 
   } else {
+    //std::cout << "BEFORE ADJUSTING TOPOLOGY FOR FAULT '" << label() << "' firstFaultVertex: " << *firstFaultVertex << ", firstFaultCell: " << *firstFaultCell << std::endl;
+
     const int faultDim = 2;
     assert(3 == mesh->dimension());
 
@@ -154,6 +156,8 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
     assert(!groupField.isNull());
     CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(),
                   *firstFaultVertex, *firstFaultCell, useLagrangeConstraints());
+
+    //std::cout << "AFTER ADJUSTING TOPOLOGY FOR FAULT '" << label() << "' firstFaultVertex: " << *firstFaultVertex << ", firstFaultCell: " << *firstFaultCell << std::endl;
   } // if/else
 } // adjustTopology
 

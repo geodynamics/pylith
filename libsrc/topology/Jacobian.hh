@@ -82,11 +82,24 @@ public :
   /// Verify symmetry of matrix. For debugger purposes only.
   void verifySymmetry(void) const;
 
+  /** Get flag indicating if sparse matrix values have been
+   * updated. This pertains to the values being changed, NOT the
+   * pattern of nonzero entries.
+   *
+   * @returns True if values have been updated/altered.
+   */
+  bool valuesChanged(void) const;
+
+  /// Reset flag indicating if sparse matrix values have been updated.
+  void resetValuesChanged(void);
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
   const SolutionFields& _fields; ///< Solution fields associated with problem.
   PetscMat _matrix; ///< Sparse matrix for Jacobian of problem.
+
+  bool _valuesChanged; ///< Sparse matrix values have been updated.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

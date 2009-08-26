@@ -62,7 +62,7 @@ public :
    * @param residual Residual field.
    */
   void solve(topology::Field<topology::Mesh>* solution,
-	     const topology::Jacobian& jacobian,
+	     topology::Jacobian* jacobian,
 	     const topology::Field<topology::Mesh>& residual);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
