@@ -331,7 +331,7 @@ key "Williams:etal:2005"
 \end_inset
 
 Williams, C.A., B.
- Aagaard, M.G.
+ Aagaard, and M.G.
  Knepley (2005), Development of software for studying earthquakes across
  multiple spatial and temporal scales by coupling quasi-static and dynamic
  simulations, 
@@ -409,7 +409,7 @@ key "Aagaard:etal:2007"
 \end_inset
 
 Aagaard, B., C.
- Williams, M.
+ Williams, and M.
  Knepley (2007), PyLith: A finite-element code for modeling quasi-static
  and dynamic crustal deformation, 
 \emph on
@@ -428,7 +428,7 @@ key "Aagaard:etal:2008"
 \end_inset
 
 Aagaard, B., C.
- Williams, M.
+ Williams, and M.
  Knepley (2008), PyLith: A finite-element code for modeling quasi-static
  and dynamic crustal deformation, 
 \emph on
