@@ -388,7 +388,7 @@ class Formulation(PetscComponent, ModuleFormulation):
       if not implementsIntegrator(integrator):
         raise TypeError, \
               "Could not use '%s' as an integrator for material '%s'. " \
-              "Functionality missing." % (integrator.name, material.label)
+              "Functionality missing." % (integrator.name, material.label())
       integrator.preinitialize(self.mesh, material)
       self.integratorsMesh.append(integrator)
       self._debug.log(resourceUsageString())
