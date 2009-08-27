@@ -291,7 +291,6 @@ private :
   ALE::Obj<RealSection> _section; ///< Real section with data.
   PetscVec _vector; ///< PETSc vector associated with field.
   PetscVecScatter _scatter; ///< PETSc scatter associated with field.
-  PetscVec _scatterVec; ///< PETSC vector used in scattering.
   VectorFieldEnum _vecFieldType; ///< Type of vector field.
   bool _dimensionsOkay; ///< Flag indicating it is okay to dimensionalize.
 
