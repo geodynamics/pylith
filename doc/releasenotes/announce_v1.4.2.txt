@@ -4,14 +4,17 @@ I am pleased to announce the release of PyLith 1.4.2, a finite-element
 code designed to solve dynamic elastic problems and quasi-static
 viscoelastic problems in tectonic deformation.
 
-This release fixes several bugs that in the v1.4.0 and v1.4.1
-releases, including (1) parameters in the power-law rheology are now
-consistent with laboratory experiments, (2) fixed implementation
-errors in point forces, (3) increased the stable time step for
-implicit time-stepping with linear viscoelastic models from 0.1 times
-the Maxwell time to 0.2 times the Maxwell time based on accuracy
-tests, and (4) eliminated several memory leaks associated with output
-and running in parallel.  
+This release fixes several bugs in PyLith v1.4.0 and v1.4.1. The
+changes include (1) parameters in the power-law rheology are now
+consistent with laboratory experiments, (2) errors in the
+implementation of point forces have been fixed, (3) the stable time
+step for implicit time-stepping with linear viscoelastic models has
+been increased from 0.1 times the Maxwell time to 0.2 times the
+Maxwell time based on accuracy tests, (4) the preconditioner is only
+recomputed when necessary, (5) some unnecessary allocation and
+deallocations were removed through the use of persistent data
+structures, and (6) several memory leaks associated with output and
+running in parallel have been eliminated.
 
 We strongly recommend all users of previous PyLith releases to switch
 to this latest release. Switching from v1.4.0 or v1.4.1 to v1.4.2 only
@@ -39,13 +42,17 @@ RELEASE NOTES
     user manual for details.
 
   - Numerous errors in the Python and SWIG point source implementation
-    were fixed. Point forces did not work in v1.4.1.
+    were fixed. Point forces did not work in v1.4.0 and v1.4.1.
 
   - Based on accuracy tests the stable time step for implicit
     time-stepping for the Maxwell viscoelastic models has been
     increased to 0.2 times the Maxwell time. The default stability
     factor in the adaptive time-stepping has been corresponding
     adjusted to provide a time step of 0.1 times the Maxwell time.
+
+  - The preconditioner for the linear solver is only recomputed when
+    the sparse matrix has been changed. This reduces runtime and
+    unnecessary creation and destruction of the sparse matrix.
 
   - Several memory leaks associated with output and running in
     parallel have been fixed.
