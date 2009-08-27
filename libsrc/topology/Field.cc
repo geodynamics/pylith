@@ -33,6 +33,7 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh) :
   _mesh(mesh),
   _vector(0),
   _scatter(0),
+  _scatterVec(0),
   _vecFieldType(OTHER),
   _dimensionsOkay(false)
 { // constructor
@@ -60,6 +61,11 @@ pylith::topology::Field<mesh_type>::deallocate(void)
 
   if (0 != _scatter) {
     err = VecScatterDestroy(_scatter); _scatter = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
+
+  if (0 != _scatterVec) {
+    err = VecDestroy(_scatterVec); _scatterVec = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 } // deallocate
@@ -250,6 +256,8 @@ pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   //std::cout << "Making Field " << _label << " section type 3" << std::endl;
   logger.stagePush("Field");
+
+  deallocate();
   _vecFieldType = src._vecFieldType;
   _scale = src._scale;
   _dimensionsOkay = false;
@@ -267,9 +275,13 @@ pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
     _section->setBC(srcSection->getBC());
     _section->copyFibration(srcSection);
 
+    PetscErrorCode err = 0;
     if (0 != src._scatter) {
       _scatter = src._scatter;
-      PetscErrorCode err = PetscObjectReference((PetscObject) _scatter);
+      err = PetscObjectReference((PetscObject) _scatter);
+      CHECK_PETSC_ERROR(err);
+      _scatterVec = src._scatterVec;
+      err = PetscObjectReference((PetscObject) _scatterVec);
       CHECK_PETSC_ERROR(err);
     } // if
   } // if
@@ -654,9 +666,17 @@ pylith::topology::Field<mesh_type>::createScatter(void)
     err = VecScatterDestroy(_scatter); _scatter = 0;
     CHECK_PETSC_ERROR(err);
   } // if
-
   err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, &_scatter);
   CHECK_PETSC_ERROR(err);
+
+  if (0 != _scatterVec) {
+    err = VecDestroy(_scatterVec); _scatterVec = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
+  assert(_section->sizeWithBC() > 0);
+  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
+			      _section->sizeWithBC(), _section->restrictSpace(),
+			      &_scatterVec); CHECK_PETSC_ERROR(err);
 } // createScatter
 
 // ----------------------------------------------------------------------
@@ -680,18 +700,14 @@ pylith::topology::Field<mesh_type>::scatterSectionToVector(const PetscVec vector
 { // scatterSectionToVector
   assert(!_section.isNull());
   assert(0 != _scatter);
+  assert(0 != _scatterVec);
   assert(0 != vector);
 
   PetscErrorCode err = 0;
-  PetscVec localVec = 0;
-  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
-			      _section->sizeWithBC(), _section->restrictSpace(),
-			      &localVec); CHECK_PETSC_ERROR(err);
-  err = VecScatterBegin(_scatter, localVec, vector,
+  err = VecScatterBegin(_scatter, _scatterVec, vector,
 			INSERT_VALUES, SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
-  err = VecScatterEnd(_scatter, localVec, vector,
+  err = VecScatterEnd(_scatter, _scatterVec, vector,
 		      INSERT_VALUES, SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
-  err = VecDestroy(localVec); CHECK_PETSC_ERROR(err);
 } // scatterSectionToVector
 
 // ----------------------------------------------------------------------
@@ -715,18 +731,14 @@ pylith::topology::Field<mesh_type>::scatterVectorToSection(const PetscVec vector
 { // scatterVectorToSection
   assert(!_section.isNull());
   assert(0 != _scatter);
+  assert(0 != _scatterVec);
   assert(0 != vector);
 
   PetscErrorCode err = 0;
-  PetscVec localVec = 0;
-  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
-			      _section->sizeWithBC(), _section->restrictSpace(),
-			      &localVec); CHECK_PETSC_ERROR(err);
-  err = VecScatterBegin(_scatter, vector, localVec,
+  err = VecScatterBegin(_scatter, vector, _scatterVec,
 			INSERT_VALUES, SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
-  err = VecScatterEnd(_scatter, vector, localVec,
+  err = VecScatterEnd(_scatter, vector, _scatterVec,
 		      INSERT_VALUES, SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
-  err = VecDestroy(localVec); CHECK_PETSC_ERROR(err);
 } // scatterVectorToSection
 
 // ----------------------------------------------------------------------
