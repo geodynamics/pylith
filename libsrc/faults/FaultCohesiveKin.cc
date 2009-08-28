@@ -650,8 +650,7 @@ pylith::faults::FaultCohesiveKin::updateStateVars(const double t,
   // Update cumulative slip
   topology::Field<topology::SubMesh>& cumSlip = _fields->get("cumulative slip");
   topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  if (!_useSolnIncr)
-    cumSlip.zero();
+  cumSlip.zero();
   cumSlip += slip;
 } // updateStateVars
 
