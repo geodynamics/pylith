@@ -659,12 +659,14 @@ maxwell_time
 \begin_layout Plain Layout
 
 \family typewriter
-total_strain, stress, viscous_strain_1,viscous_strain_2,
-\end_layout
+total_strain, stress, viscous_strain_1,
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout Plain Layout
+viscous_strain_2,
+\begin_inset Newline newline
+\end_inset
 
-\family typewriter
 viscous_strain_3
 \end_layout
 

@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -236,7 +236,6 @@ status open
 \begin_inset Graphics
 	filename figs/packages.eps
 	scale 40
-	rotateAngle 90
 
 \end_inset
 

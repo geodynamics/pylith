@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2704,19 +2704,27 @@ pylithapp.cfg
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 [pylithapp.timedependent.materials.material]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 db_properties = spatialdata.spatialdb.UniformDB ; Set the db to a UniformDB
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 db_properties.values = [vp,vs,density] ; Set the names of the values in the
  database
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 db_properties.data = [5773.5*m/s, 3333.3*m/s, 2700.0*kg/m**3] ; Set the values
  in the database
 \end_layout
@@ -2821,30 +2829,49 @@ pylithapp.cfg
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 [pylithapp.timedependent.materials.material]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 db_properties = spatialdata.spatialdb.SCECCVMH ; Set the database to the SCEC
  CVM-H
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 db_properties.data_dir = /home/johndoe/data/sceccvm-h/vx53 ; Directory containing
- the database data files
+\begin_inset Newline newline
+\end_inset
+
+the database data files
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 db_properties.min_vs = 500*m/s
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 db_properties.squash = True ; Turn on squashing
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 db_properties.squash_limit = -1000.0 ; Only distort the geometry above z =
- -1 km in flattening the earth
+ -1 km in 
+\begin_inset Newline newline
+\end_inset
+
+flattening the earth
 \end_layout
 
 \begin_layout Subsection

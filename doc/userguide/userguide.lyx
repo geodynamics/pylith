@@ -30,7 +30,7 @@
 \use_geometry true
 \use_amsmath 1
 \use_esint 0
-\cite_engine natbib_authoryear
+\cite_engine basic
 \use_bibtopic false
 \paperorientation portrait
 \leftmargin 1in
@@ -81,7 +81,7 @@ status open
 
 \begin_layout Standard
 \begin_inset ERT
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -326,6 +326,7 @@ filename "license.lyx"
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
+label "1"
 key "Williams:etal:2005"
 
 \end_inset
@@ -346,6 +347,7 @@ Eos Trans.
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
+label "2"
 key "Williams:2006"
 
 \end_inset
@@ -369,6 +371,7 @@ Eos Trans.
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
+label "3"
 key "Aagaard:etal:2001a"
 
 \end_inset
@@ -386,6 +389,7 @@ Earthquake Spectra, 17
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
+label "4"
 key "Aagaard:etal:2001b"
 
 \end_inset
@@ -404,6 +408,7 @@ Bulletin of the Seismological Society of America, 91
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
+label "5"
 key "Aagaard:etal:2007"
 
 \end_inset
@@ -423,6 +428,7 @@ Eos Trans.
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
+label "6"
 key "Aagaard:etal:2008"
 
 \end_inset
@@ -446,6 +452,7 @@ Eos Trans.
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
+label "7"
 key "Brune:1970"
 
 \end_inset
@@ -462,6 +469,7 @@ Journal of Geophysical Research, 75
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
+label "8"
 key "Kojic:Bathe:1987"
 
 \end_inset
@@ -487,7 +495,7 @@ Int.
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "7"
+label "9"
 key "Zienkiewicz:Taylor:2000"
 
 \end_inset
@@ -504,7 +512,7 @@ The Finite Element Method, Fifth Edition, Volume 2: Solid Mechanics
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "8"
+label "10"
 key "Taylor:2003"
 
 \end_inset
@@ -520,7 +528,7 @@ Version 7.5 Theory Manual
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "9"
+label "11"
 key "Timoshenko:Goodier:1987"
 
 \end_inset
@@ -537,7 +545,7 @@ Theory of Elasticity, Third Edition
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "10"
+label "12"
 key "Okada:1992"
 
 \end_inset
@@ -560,7 +568,7 @@ Bull.
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "11"
+label "13"
 key "Savage:Prescott:1978"
 
 \end_inset
@@ -586,7 +594,7 @@ Research
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "12"
+label "14"
 key "Kirby:Kronenberg:1987"
 
 \end_inset
@@ -605,7 +613,7 @@ Reviews of Geophysics, 25
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "13"
+label "15"
 key "Paterson:1994"
 
 \end_inset
