@@ -12,8 +12,6 @@ TESTING
 
   * Run benchmarks.
 
-  * Check building from source tarball.
-
   * Check contrib stuff.
 
 MANUAL

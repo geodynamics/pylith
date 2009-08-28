@@ -8,7 +8,7 @@ This release fixes several bugs in PyLith v1.4.0 and v1.4.1. The
 changes include (1) parameters in the power-law rheology are now
 consistent with laboratory experiments, (2) errors in the
 implementation of point forces have been fixed, (3) output of slip was
-correctedto remove integration in time, (4) the stable time step for
+corrected to remove integration in time, (4) the stable time step for
 implicit time-stepping with linear viscoelastic models has been
 increased from 0.1 times the Maxwell time to 0.2 times the Maxwell
 time based on accuracy tests, (5) the preconditioner is only
@@ -19,10 +19,11 @@ running in parallel have been eliminated.
 
 We strongly recommend all users of previous PyLith releases to switch
 to this latest release. Switching from v1.4.0 or v1.4.1 to v1.4.2 only
-requires changes to parameter files when using adaptive time stepping
-with a non-default stability factor (see the release notes below for
-details). See the README file for changes required to switch to the
-v1.4.x release series from previous versions.
+requires changes to parameter files when using the power-law rheology
+or adaptive time stepping with a non-default stability factor (see the
+manual and release notes below for details). See the README file for
+changes required to switch to the v1.4.x release series from previous
+versions.
 
 You can download the source code and binaries from
 
