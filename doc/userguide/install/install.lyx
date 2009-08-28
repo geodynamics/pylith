@@ -224,7 +224,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-1.4.0-linux-i686.tgz
+$ tar -xzf pylith-1.4.2-linux-i686.tgz
 \end_layout
 
 \end_deeper
@@ -298,7 +298,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-1.4.0-darwin-powerpc.tgz
+$ tar -xzf pylith-1.4.2-darwin-powerpc.tgz
 \end_layout
 
 \end_deeper
@@ -952,7 +952,7 @@ tar
 \end_layout
 
 \begin_layout LyX-Code
-$ tar xzf petsc-dev-pylith-1.4.0.tgz
+$ tar xzf petsc-dev-pylith-1.4.2.tgz
 \end_layout
 
 \begin_layout Standard
@@ -960,7 +960,7 @@ If you don't have GNU Tar, try the following command instead:
 \end_layout
 
 \begin_layout LyX-Code
-$ gunzip -c petsc-dev-pylith-1.4.0.tgz | tar xf -
+$ gunzip -c petsc-dev-pylith-1.4.2.tgz | tar xf -
 \end_layout
 
 \begin_layout Standard
@@ -2431,7 +2431,7 @@ tar
 \end_layout
 
 \begin_layout LyX-Code
-$ tar xzf pylith-1.4.0.tgz
+$ tar xzf pylith-1.4.2.tgz
 \end_layout
 
 \begin_layout Standard
@@ -2439,7 +2439,7 @@ If you don't have GNU Tar, try the following command instead:
 \end_layout
 
 \begin_layout LyX-Code
-$ gunzip -c pylith-1.4.0.tgz | tar xf -
+$ gunzip -c pylith-1.4.2.tgz | tar xf -
 \end_layout
 
 \begin_layout Subsubsection
@@ -2511,7 +2511,7 @@ cd
 \begin_inset Newline newline
 \end_inset
 
-$ cd pylith-1.4.0
+$ cd pylith-1.4.2
 \end_layout
 
 \begin_layout Enumerate
