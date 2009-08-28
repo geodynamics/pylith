@@ -7,13 +7,14 @@ viscoelastic problems in tectonic deformation.
 This release fixes several bugs in PyLith v1.4.0 and v1.4.1. The
 changes include (1) parameters in the power-law rheology are now
 consistent with laboratory experiments, (2) errors in the
-implementation of point forces have been fixed, (3) the stable time
-step for implicit time-stepping with linear viscoelastic models has
-been increased from 0.1 times the Maxwell time to 0.2 times the
-Maxwell time based on accuracy tests, (4) the preconditioner is only
-recomputed when necessary, (5) some unnecessary allocation and
+implementation of point forces have been fixed, (3) output of slip was
+correctedto remove integration in time, (4) the stable time step for
+implicit time-stepping with linear viscoelastic models has been
+increased from 0.1 times the Maxwell time to 0.2 times the Maxwell
+time based on accuracy tests, (5) the preconditioner is only
+recomputed when necessary, (6) some unnecessary allocation and
 deallocations were removed through the use of persistent data
-structures, and (6) several memory leaks associated with output and
+structures, and (7) several memory leaks associated with output and
 running in parallel have been eliminated.
 
 We strongly recommend all users of previous PyLith releases to switch
@@ -43,6 +44,9 @@ RELEASE NOTES
 
   - Numerous errors in the Python and SWIG point source implementation
     were fixed. Point forces did not work in v1.4.0 and v1.4.1.
+
+  - Output of slip on faults was actually the integral of slip in time
+    in v1.4.0 and v1.4.1. This erroneous integration was removed.
 
   - Based on accuracy tests the stable time step for implicit
     time-stepping for the Maxwell viscoelastic models has been
