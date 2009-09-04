@@ -54,12 +54,13 @@ b = numpy.zeros( (6,1), dtype=numpy.float64)
 Ai = numpy.linalg.inv(A)
 
 # ----------------------------------------------------------------------
-def reformResidual(disp):
+def reformResidual(disp, incr):
     """
     Calculate residual
     """
-    residual = b - numpy.dot(A, disp)
-    residual[4] += k[4]*u5
+    calcFriction(disp, incr) # FaultCohesiveDyn::integrateResidual()
+    residual = b - numpy.dot(A, disp+incr)
+    residual[4] += k[4]*u5 # Dirichlet BC
     return residual
 
 
@@ -89,8 +90,8 @@ def solve(incr, jacobian, residual, disp):
         print "Interation: %d" % iter
         dincr = numpy.dot(Ai, residual) # Increment to disp increment.
         incr += dincr
-        calcFriction(disp, incr)
-        residual = reformResidual(disp+incr)
+        #calcFriction(disp, incr)
+        residual = reformResidual(disp, incr)
         print "Disp(t):",disp
         print "Incr(t):",incr
         print "b:",b
@@ -102,7 +103,7 @@ def solve(incr, jacobian, residual, disp):
 # ----------------------------------------------------------------------
 # main
 incr = 0*disp
-residual = reformResidual(disp + incr)
+residual = reformResidual(disp, incr)
 solve(incr, A, residual, disp)
 disp += incr
 print "Solution:",disp
