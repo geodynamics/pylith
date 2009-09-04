@@ -1,0 +1,89 @@
+\documentclass[12pt]{article}
+
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{url}
+
+\title{Sieve Notes}
+\author{Matthew G. Knepley\\
+\small Computation Institute\\[-0.8ex]
+\small University of Chicago, Chicago, IL\\
+\small \texttt{knepley@ci.uchicago.edu}\\
+}
+
+\begin{document}
+\maketitle
+
+\section{Point Numbering}
+
+    In PyLith, we choose to use integers to refer to Sieve points. Thus, we are left with the task of assigning
+semantics to certain ranges. Without this, debugging becomes quite difficult and quick range checks qould be replaced by
+costly depth checks in many algorithms.
+
+    The first assumption, also present in much of Sieve itself, is that cells are numbered first, followed by vertices,
+and then all other intermediate topological pieces, such as edges and faces. This simple scheme is enough for most
+applications, however the introduction of faults and cohesive cells in PyLith poses additional problems.
+
+    When faults are introduced, we must also assign numbers to three more types of topological pieces:
+\begin{itemize}
+  \item cohesive cells
+
+  \item new fault vertices, which are duplicate vertices on the far side of the fault
+
+  \item Lagrange vertices, which implement Lagrange multiplier constraints
+\end{itemize}
+Before creating the faults, we know only the number of vertices in each fault group. Currently, we number new fault
+vertices in a block, the the Lagrange vertices, and then cohesive cells. In each division, the new points for each fault
+are numbered contiguously. Sieve viewers use a variant depth label, ``censored depth'', to exclude some points from the
+output. The censored depth is computed by rejecting both the Lagrange vertices and cohesive cells.
+
+\section{Point Depth and Height}
+
+    In general, vertices are at a depth of 0 and cells are at the maximum depth. Similarly, cells are at a height of 0
+and vertices are at the maximum depth. Notice that depth and height correspond the the usual dimension and
+codimension. For a 3-D mesh with vertices, edges, faces, and cells:
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+               & Depth & Height \\
+\hline
+    vertices   &   0   &   3 \\
+    edges      &   1   &   2 \\
+    faces      &   2   &   1 \\
+    cells      &   3   &   0 \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Depth and height of various topological pieces.}
+\end{table}
+
+  For a boundary mesh, we currently store the full set (vertices,
+  edges, faces, and cells). Obviously for 2-D meshes, the boundary
+  mesh doesn't contain "volume" cells, but just vertices, edges, and
+  faces. This means the "boundary" cells are at a height of 1 and
+  maximum depth - 1 .
+
+  The fault mesh is generated with its own numbering, so it is
+  different and it only contains vertices and "faces" where "faces"
+  means faces for a 3-D mesh and edges for a 2-D mesh.
+
+\section{Sections}
+
+\begin{itemize}
+
+  \item Fiber dimension
+
+  Fiber dimension refers to the number of values at a point.
+
+  \item Section/Field
+
+  Sections generally refer to the Sieve data structure, whereas Fields
+  refer to a vector field. The PyLith Field class stores a vector
+  field over vertices or cells.
+\end{itemize}
+
+\end{document}
