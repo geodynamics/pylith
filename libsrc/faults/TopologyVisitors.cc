@@ -134,8 +134,15 @@ pylith::faults::ClassifyVisitor<Sieve>::visitPoint(const point_type& point)
   } // if
   bool classified = false;
     
-  if (debug)
+  if (debug) {
     std::cout << "Checking neighbor " << point << std::endl;
+    ALE::ISieveVisitor::PointRetriever<Sieve> pR(9);
+
+    sieve.cone(point, pR);
+    for(int i = 0; i < pR.getSize(); ++i) {
+      std::cout << "  cone point " << pR.getPoints()[i] << std::endl;
+    }
+  }
   if (vReplaceCells.find(point) != vReplaceCells.end()) {
     if (debug) 
       std::cout << "  already in replaceCells" << std::endl;

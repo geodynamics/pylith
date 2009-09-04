@@ -92,6 +92,7 @@ public :
   virtual
   void adjustTopology(topology::Mesh* const mesh,
                       int *firstFaultVertex,
+                      int *firstLagrangeVertex,
                       int *firstFaultCell,
                       const bool flipFault = false) = 0;
 

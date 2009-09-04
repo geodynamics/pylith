@@ -95,20 +95,22 @@ class MeshGenerator(PetscComponent):
     #mesh.view("===== MESH BEFORE ADJUSTING TOPOLOGY =====")
 
     if not interfaces is None:
-      firstFaultVertex = 0
-      firstFaultCell   = 0
+      firstFaultVertex    = 0
+      firstLagrangeVertex = 0
+      firstFaultCell      = 0
       for interface in interfaces:
         self._info.log("Counting vertices for fault '%s'." % interface.label())
         nvertices = interface.numVertices(mesh)
-        firstFaultCell += nvertices
+        firstLagrangeVertex += nvertices
+        firstFaultCell      += nvertices
         if interface.useLagrangeConstraints():
           firstFaultCell += nvertices
       for interface in interfaces:
         nvertices = interface.numVertices(mesh)
         self._info.log("Adjusting topology for fault '%s' with %d vertices." % \
                          (interface.label(), nvertices))
-        firstFaultVertex, firstFaultCell = \
-            interface.adjustTopology(mesh, firstFaultVertex, firstFaultCell)
+        firstFaultVertex, firstLagrangeVertex, firstFaultCell = \
+            interface.adjustTopology(mesh, firstFaultVertex, firstLagrangeVertex, firstFaultCell)
         
     #mesh.view("===== MESH AFTER ADJUSTING TOPOLOGY =====")
     #self._info.deactivate()
