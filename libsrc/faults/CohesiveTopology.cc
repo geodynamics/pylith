@@ -124,6 +124,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
                                          const ALE::Obj<topology::Mesh::IntSection>& groupField,
                                          const int materialId,
                                          int& firstFaultVertex,
+                                         int& firstLagrangeVertex,
                                          int& firstFaultCell,
                                          const bool constraintCell)
 { // create
@@ -190,8 +191,9 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   std::map<point_type,point_type> vertexRenumber;
   std::map<point_type,point_type> cellRenumber;
   if (firstFaultVertex == 0) {
-    firstFaultVertex += sieve->getBaseSize() + sieve->getCapSize();
-    firstFaultCell   += firstFaultVertex;
+    firstFaultVertex    += sieve->getBaseSize() + sieve->getCapSize();
+    firstLagrangeVertex += firstFaultVertex;
+    firstFaultCell      += firstFaultVertex;
   }
 
   for(SieveSubMesh::label_sequence::iterator v_iter = fVerticesBegin;
@@ -213,12 +215,13 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     sieveMesh->setDepth(firstFaultVertex, 0);
 #endif
     if (constraintCell) {
-      groupField->addPoint(firstFaultVertex+numFaultVertices, 1);
+      groupField->addPoint(firstLagrangeVertex, 1);
 #if defined(FAST_STRATIFY)
       // OPTIMIZATION
-      sieveMesh->setHeight(firstFaultVertex+numFaultVertices, 1);
-      sieveMesh->setDepth(firstFaultVertex+numFaultVertices, 0);
+      sieveMesh->setHeight(firstLagrangeVertex, 1);
+      sieveMesh->setDepth(firstLagrangeVertex, 0);
 #endif
+      ++firstLagrangeVertex;
     } // if
     logger.stagePop();
     logger.stagePush("FaultCreation");
@@ -242,9 +245,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       ++name) {
     sieveMesh->reallocate(sieveMesh->getIntSection(*name));
   } // for
-  if (constraintCell) {
-    firstFaultVertex += numFaultVertices;
-  }
 
   // Split the mesh along the fault sieve and create cohesive elements
   const ALE::Obj<SieveSubMesh::label_sequence>& faces =
@@ -609,8 +609,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     const ALE::Obj<Mesh::label_type>& label = sieveMesh->createLabel(labelName);
     assert(!label.isNull());
 
-    TopologyOps::computeCensoredDepth(label, sieveMesh->getSieve(),
-				      firstCohesiveCell-(constraintCell?numFaultVertices:0));
+    TopologyOps::computeCensoredDepth(label, sieveMesh->getSieve(), firstFaultVertex);
   } else {
     // Insert new shadow vertices into existing label
     const ALE::Obj<Mesh::label_type>& label = sieveMesh->getLabel(labelName);

@@ -393,8 +393,9 @@ pylith::faults::TestLiuCosSlipFn::_initialize(topology::Mesh* mesh,
   mesh->coordsys(&cs);
 
   // Create fault mesh
-  int firstFaultVertex = 0;
-  int firstFaultCell   = mesh->sieveMesh()->getIntSection(faultLabel)->size();
+  int firstFaultVertex    = 0;
+  int firstLagrangeVertex = mesh->sieveMesh()->getIntSection(faultLabel)->size();
+  int firstFaultCell      = mesh->sieveMesh()->getIntSection(faultLabel)->size();
   const bool useLagrangeConstraints = true;
   if (useLagrangeConstraints) {
     firstFaultCell += mesh->sieveMesh()->getIntSection(faultLabel)->size();
@@ -407,7 +408,7 @@ pylith::faults::TestLiuCosSlipFn::_initialize(topology::Mesh* mesh,
   CohesiveTopology::create(mesh, *faultMesh, faultBoundary, 
                            sieveMesh->getIntSection(faultLabel),
                            faultId,
-                           firstFaultVertex, firstFaultCell,
+                           firstFaultVertex, firstLagrangeVertex, firstFaultCell,
                            useLagrangeConstraints);
   // Need to copy coordinates from mesh to fault mesh since we are not
   // using create() instead of createParallel().
@@ -466,8 +467,9 @@ pylith::faults::TestLiuCosSlipFn::_testInitialize(const _TestLiuCosSlipFn::DataS
 
   // Create fault mesh
   topology::SubMesh faultMesh;
-  int firstFaultVertex = 0;
-  int firstFaultCell   = mesh.sieveMesh()->getIntSection(data.faultLabel)->size();
+  int firstFaultVertex    = 0;
+  int firstLagrangeVertex = mesh.sieveMesh()->getIntSection(data.faultLabel)->size();
+  int firstFaultCell      = mesh.sieveMesh()->getIntSection(data.faultLabel)->size();
   const bool useLagrangeConstraints = true;
   if (useLagrangeConstraints) {
     firstFaultCell += mesh.sieveMesh()->getIntSection(data.faultLabel)->size();
@@ -480,7 +482,7 @@ pylith::faults::TestLiuCosSlipFn::_testInitialize(const _TestLiuCosSlipFn::DataS
   CohesiveTopology::create(&mesh, faultMesh, faultBoundary, 
                            sieveMesh->getIntSection(data.faultLabel),
                            data.faultId,
-                           firstFaultVertex, firstFaultCell,
+                           firstFaultVertex, firstLagrangeVertex, firstFaultCell,
                            useLagrangeConstraints);
   // Need to copy coordinates from mesh to fault mesh since we are not
   // using create() instead of createParallel().

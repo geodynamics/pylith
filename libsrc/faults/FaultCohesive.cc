@@ -106,6 +106,7 @@ pylith::faults::FaultCohesive::numVertices(const topology::Mesh& mesh) const
 void
 pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
                                               int *firstFaultVertex,
+                                              int *firstLagrangeVertex,
                                               int *firstFaultCell,
                                               const bool flipFault)
 { // adjustTopology
@@ -133,7 +134,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
 				  flipFault);
 
     CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(), 
-			     *firstFaultVertex, *firstFaultCell, useLagrangeConstraints());
+                             *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
 
   } else {
     //std::cout << "BEFORE ADJUSTING TOPOLOGY FOR FAULT '" << label() << "' firstFaultVertex: " << *firstFaultVertex << ", firstFaultCell: " << *firstFaultCell << std::endl;
@@ -155,7 +156,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       sieveMesh->getIntSection(label());
     assert(!groupField.isNull());
     CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(),
-                  *firstFaultVertex, *firstFaultCell, useLagrangeConstraints());
+                             *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
 
     //std::cout << "AFTER ADJUSTING TOPOLOGY FOR FAULT '" << label() << "' firstFaultVertex: " << *firstFaultVertex << ", firstFaultCell: " << *firstFaultCell << std::endl;
   } // if/else

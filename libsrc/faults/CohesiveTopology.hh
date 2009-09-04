@@ -70,6 +70,7 @@ public :
               const ALE::Obj<topology::Mesh::IntSection>& groupField,
               const int materialId,
               int& firstFaultVertex,
+              int& firstLagrangeVertex,
               int& firstFaultCell,
               const bool constraintCell = false);
 

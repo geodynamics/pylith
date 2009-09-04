@@ -75,6 +75,7 @@ namespace pylith {
       virtual
       void adjustTopology(pylith::topology::Mesh* const mesh,
                           int *firstFaultVertex,
+                          int *firstLagrangeVertex,
                           int *firstFaultCell,
                           const bool flipFault = false) = 0;
       %clear int *firstFaultVertex, int *firstFaultCell;

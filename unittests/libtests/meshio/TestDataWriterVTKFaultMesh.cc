@@ -211,15 +211,16 @@ pylith::meshio::TestDataWriterVTKFaultMesh::_initialize(void)
   iohandler.read(_mesh);
 
   faults::FaultCohesiveKin fault;
-  int firstFaultVertex = 0;
-  int firstFaultCell   = _mesh->sieveMesh()->getIntSection(_data->faultLabel)->size();
+  int firstFaultVertex    = 0;
+  int firstLagrangeVertex = _mesh->sieveMesh()->getIntSection(_data->faultLabel)->size();
+  int firstFaultCell      = _mesh->sieveMesh()->getIntSection(_data->faultLabel)->size();
   const bool constraintCell = true;
   if (constraintCell) {
     firstFaultCell += _mesh->sieveMesh()->getIntSection(_data->faultLabel)->size();
   }
   fault.label(_data->faultLabel);
   fault.id(_data->faultId);
-  fault.adjustTopology(_mesh, &firstFaultVertex, &firstFaultCell, _flipFault);
+  fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
   std::map<Mesh::point_type, Mesh::point_type> cohesiveToFault;
   faults::CohesiveTopology::createFaultParallel(_faultMesh, &cohesiveToFault,
 						*_mesh, _data->faultId,
