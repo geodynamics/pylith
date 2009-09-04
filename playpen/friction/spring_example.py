@@ -29,7 +29,7 @@
 import numpy
 
 # Spring stiffness [k0, k1, ..., kN]
-k = (1.0, 1.0, 2.0, 1.0, 1.0)
+k = (1.0, 1.0, 1.0, 1.0, 1.0)
 
 # Prescribed displacement, u5
 u5 = 2.5
@@ -90,7 +90,6 @@ def solve(incr, jacobian, residual, disp):
         print "Interation: %d" % iter
         dincr = numpy.dot(Ai, residual) # Increment to disp increment.
         incr += dincr
-        #calcFriction(disp, incr)
         residual = reformResidual(disp, incr)
         print "Disp(t):",disp
         print "Incr(t):",incr
