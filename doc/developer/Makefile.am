@@ -12,7 +12,7 @@
 
 EXTRA_DIST = \
 	general \
-	Sieve \
+	Sieve.tex \
 	SWIG
 
 
