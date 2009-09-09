@@ -189,6 +189,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   assert(!groupNames.isNull());
   const int numFaultVertices = fVertices->size();
   std::map<point_type,point_type> vertexRenumber;
+  std::map<point_type,point_type> vertexLagrangeRenumber;
   std::map<point_type,point_type> cellRenumber;
   if (firstFaultVertex == 0) {
     firstFaultVertex    += sieve->getBaseSize() + sieve->getCapSize();
@@ -215,6 +216,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     sieveMesh->setDepth(firstFaultVertex, 0);
 #endif
     if (constraintCell) {
+      vertexLagrangeRenumber[*v_iter] = firstLagrangeVertex;
       groupField->addPoint(firstLagrangeVertex, 1);
 #if defined(FAST_STRATIFY)
       // OPTIMIZATION
@@ -395,8 +397,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     if (constraintCell) {
       for (int c = 0; c < coneSize; ++c) {
         if (debug)
-	  std::cout << "    Lagrange vertex " << vertexRenumber[faceCone[c]]+numFaultVertices << std::endl;
-        sieve->addArrow(vertexRenumber[faceCone[c]]+numFaultVertices, firstFaultCell, true);
+	  std::cout << "    Lagrange vertex " << vertexLagrangeRenumber[faceCone[c]] << std::endl;
+        sieve->addArrow(vertexLagrangeRenumber[faceCone[c]], firstFaultCell, true);
       } // for
     } // if
     // TODO: Need to reform the material label when sieve is reallocated
@@ -644,7 +646,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     coordinates->addPoint(vertexRenumber[*v_iter],
 			  coordinates->getFiberDimension(*v_iter));
     if (constraintCell)
-      coordinates->addPoint(vertexRenumber[*v_iter]+numFaultVertices,
+      coordinates->addPoint(vertexLagrangeRenumber[*v_iter],
 			    coordinates->getFiberDimension(*v_iter));
   } // for
   sieveMesh->reallocate(coordinates);
@@ -656,7 +658,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     coordinates->updatePoint(vertexRenumber[*v_iter], 
 			     coordinates->restrictPoint(*v_iter));
     if (constraintCell)
-      coordinates->updatePoint(vertexRenumber[*v_iter]+numFaultVertices,
+      coordinates->updatePoint(vertexLagrangeRenumber[*v_iter],
 			       coordinates->restrictPoint(*v_iter));
   } // for
   if (debug)
