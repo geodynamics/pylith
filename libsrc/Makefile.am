@@ -44,6 +44,7 @@ libpylith_la_SOURCES = \
 	faults/CohesiveTopology.cc \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveDyn.cc \
+	faults/FaultCohesiveDynL.cc \
 	faults/FaultCohesiveKin.cc \
 	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
