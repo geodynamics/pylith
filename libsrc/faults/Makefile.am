@@ -25,6 +25,8 @@ subpkginclude_HEADERS = \
 	FaultCohesive.hh \
 	FaultCohesiveDyn.hh \
 	FaultCohesiveDyn.icc \
+	FaultCohesiveDynL.hh \
+	FaultCohesiveDynL.icc \
 	FaultCohesiveKin.hh \
 	FaultCohesiveKin.icc \
 	LiuCosSlipFn.hh \
