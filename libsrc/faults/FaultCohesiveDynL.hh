@@ -216,6 +216,14 @@ private :
   void _calcOrientation(const double upDir[3],
 			const double normalDir[3]);
 
+  /** Get initial tractions using a spatial database.
+   */
+  void _getInitialTractions(void);
+
+  /** Setup fault constitutive model.
+   */
+  void _initConstitutiveModel(void);
+
   /// Allocate buffer for vector field.
   void _allocateBufferVertexVectorField(void);
 

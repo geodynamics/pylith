@@ -14,7 +14,6 @@
 
 #include "FaultCohesiveDynL.hh" // implementation of object methods
 
-#include "EqDynLSrc.hh" // USES EqDynLSrc
 #include "CohesiveTopology.hh" // USES CohesiveTopology
 
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
@@ -71,9 +70,10 @@ pylith::faults::FaultCohesiveDynL::deallocate(void)
   
 // ----------------------------------------------------------------------
 // Sets the spatial database for the inital tractions
-void pylith::faults::FaultCohesiveDynL::dbInitial(spatialdata::spatialdb::SpatialDB* dbs)
+void
+pylith::faults::FaultCohesiveDynL::dbInitial(spatialdata::spatialdb::SpatialDB* db)
 { // dbInitial
-  _dbInitial = dbs;
+  _dbInitial = db;
 } // dbInitial
 
 // ----------------------------------------------------------------------
@@ -137,14 +137,11 @@ pylith::faults::FaultCohesiveDynL::initialize(const topology::Mesh& mesh,
   // Initialize quadrature geometry.
   _quadrature->initializeGeometry();
 
-  // Compute orientation at quadrature points in fault mesh.
-  _calcOrientation(upDir, normalDir);
-
   // Get initial tractions using a spatial database.
   _getInitialTractions();
   
   // Setup fault constitutive model.
-  _initConstitutiveModel();
+  //_initConstitutiveModel();
 
   //logger.stagePop();
 } // initialize
@@ -430,16 +427,6 @@ pylith::faults::FaultCohesiveDynL::integrateResidualAssembled(
 
   topology::Field<topology::SubMesh>& slip = _fields->get("slip");
   slip.zero();
-  // Compute slip field at current time step
-  const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
-  for (srcs_type::iterator s_iter=_eqSrcs.begin(); 
-       s_iter != srcsEnd; 
-       ++s_iter) {
-    EqDynLSrc* src = s_iter->second;
-    assert(0 != src);
-    if (t >= src->originTime())
-      src->slip(&slip, t);
-  } // for
 
   const int spaceDim = _quadrature->spaceDim();
 
@@ -726,7 +713,7 @@ pylith::faults::FaultCohesiveDynL::vertexField(
     const ALE::Obj<RealSection>& dirSection =
       orientationSection->getFibration(0);
     assert(!dirSection.isNull());
-    _allocateBufferVectorField();
+    _allocateBufferVertexVectorField();
     topology::Field<topology::SubMesh>& buffer =
       _fields->get("buffer (vector)");
     buffer.copy(dirSection);
@@ -740,7 +727,7 @@ pylith::faults::FaultCohesiveDynL::vertexField(
     assert(!orientationSection.isNull());
     const ALE::Obj<RealSection>& dirSection =
       orientationSection->getFibration(1);
-    _allocateBufferVectorField();
+    _allocateBufferVertexVectorField();
     topology::Field<topology::SubMesh>& buffer =
       _fields->get("buffer (vector)");
     buffer.copy(dirSection);
@@ -757,7 +744,7 @@ pylith::faults::FaultCohesiveDynL::vertexField(
     const ALE::Obj<RealSection>& dirSection =
       orientationSection->getFibration(space);
     assert(!dirSection.isNull());
-    _allocateBufferVectorField();
+    _allocateBufferVertexVectorField();
     topology::Field<topology::SubMesh>& buffer =
       _fields->get("buffer (vector)");
     buffer.copy(dirSection);
@@ -768,23 +755,16 @@ pylith::faults::FaultCohesiveDynL::vertexField(
   } else if (0 == strncasecmp("final_slip_X", name, slipStrLen)) {
     const std::string value = std::string(name).substr(slipStrLen+1);
 
-    const srcs_type::const_iterator s_iter = _eqSrcs.find(value);
-    assert(s_iter != _eqSrcs.end());
-    return s_iter->second->finalSlip();
-
   } else if (0 == strncasecmp("slip_time_X", name, timeStrLen)) {
     const std::string value = std::string(name).substr(timeStrLen+1);
-    const srcs_type::const_iterator s_iter = _eqSrcs.find(value);
-    assert(s_iter != _eqSrcs.end());
-    return s_iter->second->slipTime();
 
   } else if (0 == strcasecmp("traction_change", name)) {
     assert(0 != fields);
     const topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
-    _allocateBufferVectorField();
+    _allocateBufferVertexVectorField();
     topology::Field<topology::SubMesh>& buffer =
       _fields->get("buffer (vector)");
-    _calcTractionsChange(&buffer, dispT);
+    //_calcTractionsChange(&buffer, dispT);
     return buffer;
 
   } else {
@@ -1011,101 +991,7 @@ pylith::faults::FaultCohesiveDynL::_calcOrientation(const double upDir[3],
   //orientation.view("ORIENTATION");
 } // _calcOrientation
 
-// ----------------------------------------------------------------------
-void
-pylith::faults::FaultCohesiveDynL::_calcArea(void)
-{ // _calcArea
-  assert(0 != _faultMesh);
-  assert(0 != _fields);
-
-  // Containers for area information
-  const int cellDim = _quadrature->cellDim();
-  const int numBasis = _quadrature->numBasis();
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int spaceDim = _quadrature->spaceDim();
-  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
-  const double_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
-  double jacobianDet = 0;
-  double_array areaCell(numBasis);
-
-  // Get vertices in fault mesh.
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
-  assert(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = 
-    faultSieveMesh->depthStratum(0);
-  const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
-  
-  // Allocate area field.
-  _fields->add("area", "area");
-
-  topology::Field<topology::SubMesh>& area = _fields->get("area");
-  const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  area.newSection(slip, 1);
-  area.allocate();
-  area.zero();
-  const ALE::Obj<RealSection>& areaSection = area.section();
-  assert(!areaSection.isNull());
-  topology::Mesh::UpdateAddVisitor areaVisitor(*areaSection, &areaCell[0]);  
-  
-  double_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    faultSieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
-
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    faultSieveMesh->heightStratum(0);
-  assert(!cells.isNull());
-  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
-
-  // Loop over cells in fault mesh, compute area
-  for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
-      c_iter != cellsEnd;
-      ++c_iter) {
-    areaCell = 0.0;
-    
-    // Compute geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
-#else
-    coordsVisitor.clear();
-    faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
-#endif
-
-    // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
-
-    // Compute area
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-        const double dArea = wt*basis[iQuad*numBasis+iBasis];
-	areaCell[iBasis] += dArea;
-      } // for
-    } // for
-    areaVisitor.clear();
-    faultSieveMesh->updateAdd(*c_iter, areaVisitor);
-
-    PetscLogFlops( numQuadPts*(1+numBasis*2) );
-  } // for
-
-  // Assemble area information
-  area.complete();
-
-#if 0 // DEBUGGING
-  area.view("AREA");
-  //_faultMesh->getSendOverlap()->view("Send fault overlap");
-  //_faultMesh->getRecvOverlap()->view("Receive fault overlap");
-#endif
-} // _calcArea
-
+#if 0
 // ----------------------------------------------------------------------
 // Compute change in tractions on fault surface using solution.
 // NOTE: We must convert vertex labels to fault vertex labels
@@ -1222,12 +1108,148 @@ pylith::faults::FaultCohesiveDynL::_calcTractionsChange(
   tractions->view("TRACTIONS");
 #endif
 } // _calcTractionsChange
+#endif
+
+// ----------------------------------------------------------------------
+void
+pylith::faults::FaultCohesiveDynL::_getInitialTractions(void)
+{ // _getInitialTractions
+  assert(0 != _normalizer);
+  assert(0 != _quadrature);
+
+  const double pressureScale = _normalizer->pressureScale();
+  const double lengthScale = _normalizer->lengthScale();
+
+  const int spaceDim = _quadrature->spaceDim();
+  const int numQuadPts = _quadrature->numQuadPts();
+
+  if (0 != _dbInitial) { // Setup initial values, if provided.
+    // Create section to hold initial tractions.
+    _fields->add("initial traction", "initial_traction");
+    topology::Field<topology::SubMesh>& traction = _fields->get("initial traction");
+    traction.scale(pressureScale);
+    traction.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
+    traction.newSection(topology::FieldBase::CELLS_FIELD, numQuadPts*spaceDim);
+    traction.allocate();
+    const ALE::Obj<RealSection>& tractionSection = traction.section();
+    assert(!tractionSection.isNull());
+
+    _dbInitial->open();
+    switch (spaceDim)
+      { // switch
+      case 1 : {
+	const char* valueNames[] = {"traction-normal"};
+	_dbInitial->queryVals(valueNames, 1);
+	break;
+      } // case 1
+      case 2 : {
+	const char* valueNames[] = {"traction-shear", "traction-normal"};
+	_dbInitial->queryVals(valueNames, 2);
+	break;
+      } // case 2
+      case 3 : {
+	const char* valueNames[] = {"traction-shear-leftlateral",
+				    "traction-shear-updip",
+				    "traction-normal"};
+	_dbInitial->queryVals(valueNames, 3);
+	break;
+      } // case 3
+      default :
+	std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
+	assert(0);
+	throw std::logic_error("Bad spatial dimension in Neumann.");
+      } // switch
+
+    // Get 'fault' cells.
+    const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+    assert(!faultSieveMesh.isNull());
+    const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
+      faultSieveMesh->heightStratum(0);
+    assert(!cells.isNull());
+    const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
+    const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+
+    const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
+    const int numBasis = _quadrature->numBasis();
+    const int numQuadPts = _quadrature->numQuadPts();
+    const int spaceDim = _quadrature->spaceDim();
+  
+    // Containers for database query results and quadrature coordinates in
+    // reference geometry.
+    double_array tractionCell(numQuadPts*spaceDim);
+    double_array quadPtsGlobal(numQuadPts*spaceDim);
+    
+    // Get sections.
+    double_array coordinatesCell(numBasis*spaceDim);
+    const ALE::Obj<RealSection>& coordinates =
+      faultSieveMesh->getRealSection("coordinates");
+    assert(!coordinates.isNull());
+    topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						  coordinatesCell.size(),
+						  &coordinatesCell[0]);
+
+    const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
+    
+    // Compute quadrature information
+    
+    // Loop over cells in boundary mesh and perform queries.
+    for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
+	 c_iter != cellsEnd;
+	 ++c_iter) {
+      // Compute geometry information for current cell
+      coordsVisitor.clear();
+      faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
+      _quadrature->computeGeometry(coordinatesCell, *c_iter);
+      
+      const double_array& quadPtsNondim = _quadrature->quadPts();
+      quadPtsGlobal = quadPtsNondim;
+      _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
+				  lengthScale);
+      
+      tractionCell = 0.0;
+      for (int iQuad=0, iSpace=0; 
+	   iQuad < numQuadPts;
+	   ++iQuad, iSpace+=spaceDim) {
+	const int err = _dbInitial->query(&tractionCell[iQuad*spaceDim], spaceDim,
+					  &quadPtsGlobal[iSpace], spaceDim, cs);
+	if (err) {
+	  std::ostringstream msg;
+	  msg << "Could not find initial tractions at (";
+	  for (int i=0; i < spaceDim; ++i)
+	    msg << " " << quadPtsGlobal[i+iSpace];
+	  msg << ") for dynamic fault interface " << label() << "\n"
+	      << "using spatial database " << _dbInitial->label() << ".";
+	  throw std::runtime_error(msg.str());
+	} // if
+	
+      } // for
+      _normalizer->nondimensionalize(&tractionCell[0], tractionCell.size(),
+				     pressureScale);
+      
+      // Update section
+      assert(tractionCell.size() == tractionSection->getFiberDimension(*c_iter));
+      tractionSection->updatePoint(*c_iter, &tractionCell[0]);
+    } // for
+    
+    _dbInitial->close();
+
+    // debugging
+    traction.view("INITIAL TRACTIONS");
+  } // if
+} // _getInitialTractions
+
+// ----------------------------------------------------------------------
+void
+pylith::faults::FaultCohesiveDynL::_initConstitutiveModel(void)
+{ // _initConstitutiveModel
+  // :TODO: ADD STUFF HERE
+} // _initConstitutiveModel
 
 // ----------------------------------------------------------------------
 // Allocate buffer for vector field.
 void
-pylith::faults::FaultCohesiveDynL::_allocateBufferVectorField(void)
-{ // _allocateBufferVectorField
+pylith::faults::FaultCohesiveDynL::_allocateBufferVertexVectorField(void)
+{ // _allocateBufferVertexVectorField
   assert(0 != _fields);
   if (_fields->hasField("buffer (vector)"))
     return;
@@ -1246,13 +1268,13 @@ pylith::faults::FaultCohesiveDynL::_allocateBufferVectorField(void)
   buffer.zero();
 
   logger.stagePop();
-} // _allocateBufferVectorField
+} // _allocateBufferVertexVectorField
 
 // ----------------------------------------------------------------------
 // Allocate buffer for scalar field.
 void
-pylith::faults::FaultCohesiveDynL::_allocateBufferScalarField(void)
-{ // _allocateBufferScalarField
+pylith::faults::FaultCohesiveDynL::_allocateBufferVertexScalarField(void)
+{ // _allocateBufferVertexScalarField
   assert(0 != _fields);
   if (_fields->hasField("buffer (scalar)"))
     return;
@@ -1270,7 +1292,7 @@ pylith::faults::FaultCohesiveDynL::_allocateBufferScalarField(void)
   buffer.zero();
 
   logger.stagePop();
-} // _allocateBufferScalarField
+} // _allocateBufferVertexScalarField
 
 
 // End of file 
