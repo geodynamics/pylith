@@ -29,6 +29,7 @@ namespace pylith {
     class Fault;
     class FaultCohesive;
     class FaultCohesiveDyn;
+    class FaultCohesiveDynL;
     class FaultCohesiveKin;
 
     class EqKinSrc;
