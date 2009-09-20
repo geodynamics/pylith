@@ -108,7 +108,7 @@ class TestEventLogger(unittest.TestCase):
     logger.className("logging A")
     logger.initialize()
 
-    stages = ["stage 1" , "stage 2" , "stage 3"]
+    stages = ["stage 1a" , "stage 2a" , "stage 3a"]
     id = {}
     for stage in stages:
       id[stage] = logger.registerStage(stage)
@@ -125,18 +125,18 @@ class TestEventLogger(unittest.TestCase):
     logger = EventLogger()
     logger.className("logging A")
     logger.initialize()
-    stages = ["stage 1" , "stage 2" , "stage 3"]
+    stages = ["stage 1b" , "stage 2b" , "stage 3b"]
     for stage in stages:
       logger.registerStage(stage)
 
-    logger.stagePush("stage 2")
+    logger.stagePush("stage 2b")
     logger.stagePop()
 
-    logger.stagePush("stage 1")
+    logger.stagePush("stage 1b")
     logger.stagePop()
 
-    logger.stagePush("stage 3")
-    logger.stagePush("stage 1")
+    logger.stagePush("stage 3b")
+    logger.stagePush("stage 1b")
     logger.stagePop()
     logger.stagePop()
     return

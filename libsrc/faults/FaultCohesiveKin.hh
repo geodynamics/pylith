@@ -67,10 +67,25 @@
  * {r(t+dt)} = {b(t+dt)} - [A(t+dt) C^T ]{ u(t)+du(t) }
  *             {D(t+dt)}   [ C      0   ]{ L(t)+dL(t) }
  * 
- * The term D does not involve integration over cohesive cells. We
- * integrate the Lagrange multiplier terms over the cohesive cells
- * because this introduces weighting of the orientation of the fault
- * for the direction of slip at the vertices of the cohesive cells.
+ * The terms in the residual contributing to the DOF at the Lagrange
+ * vertices are
+ *
+ * {r(t+dt)} = {D(t+dt)} - [C]{u(t)+dt(t)}
+ *
+ * The first term, {D(t+dt)}, does not involve integration over the
+ * cohesive cells, so it does not require assembling over cohesive
+ * cells or processors. We compute the term in
+ * integrateResidualAssembled().
+ *
+ * The term in the residual contributing to the DOF at the
+ * non-Lagrange vertices of the cohesive cells is
+ *
+ * {r(t+dt)} = -[C]^T{L(t)+dL(t)}
+ *
+ * We integrate the Lagrange multiplier term and the relative
+ * displacement term over the cohesive cells, because this introduces
+ * weighting of the orientation of the fault for the direction of slip
+ * at the vertices of the cohesive cells.
  */
 class pylith::faults::FaultCohesiveKin : public FaultCohesive
 { // class FaultCohesiveKin

@@ -38,6 +38,8 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
+// Precomputing geometry significantly increases storage but gives a
+// slight speed improvement.
 //#define PRECOMPUTE_GEOMETRY
 
 // ----------------------------------------------------------------------
@@ -65,7 +67,7 @@ pylith::faults::FaultCohesiveDynL::deallocate(void)
 { // deallocate
   FaultCohesive::deallocate();
 
-  // :TODO: Use shared pointers for earthquake sources
+  // :TODO: Use shared pointers for initial database
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -114,13 +116,6 @@ pylith::faults::FaultCohesiveDynL::initialize(const topology::Mesh& mesh,
   slip.vectorFieldType(topology::FieldBase::VECTOR);
   slip.scale(_normalizer->lengthScale());
 
-  // Allocate cumulative slip field
-  _fields->add("cumulative slip", "cumulative_slip");
-  topology::Field<topology::SubMesh>& cumSlip = _fields->get("cumulative slip");
-  cumSlip.cloneSection(slip);
-  cumSlip.vectorFieldType(topology::FieldBase::VECTOR);
-  cumSlip.scale(_normalizer->lengthScale());
-
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
     faultSieveMesh->heightStratum(0);
   assert(!cells.isNull());
@@ -134,6 +129,9 @@ pylith::faults::FaultCohesiveDynL::initialize(const topology::Mesh& mesh,
   // Compute orientation at vertices in fault mesh.
   _calcOrientation(upDir, normalDir);
 
+  // Compute tributary area for each vertex in fault mesh.
+  _calcArea();
+
   // Initialize quadrature geometry.
   _quadrature->initializeGeometry();
 
@@ -141,7 +139,7 @@ pylith::faults::FaultCohesiveDynL::initialize(const topology::Mesh& mesh,
   _getInitialTractions();
   
   // Setup fault constitutive model.
-  //_initConstitutiveModel();
+  _initConstitutiveModel();
 
   //logger.stagePop();
 } // initialize
@@ -210,8 +208,8 @@ pylith::faults::FaultCohesiveDynL::integrateResidual(
   // vertex k make 2 contributions to the residual:
   //
   //   * DOF i and j: internal forces in soln field associated with 
-  //                  slip
-  //   * DOF k: slip values
+  //                  slip  -[C]^T{L(t)+dL(t)}
+  //   * DOF k: slip values  -[C]{u(t)+dt(t)}
 
   // Get cell information and setup storage for cell data
   const int spaceDim = _quadrature->spaceDim();
@@ -419,11 +417,9 @@ pylith::faults::FaultCohesiveDynL::integrateResidualAssembled(
   assert(0 != _fields);
 
   // Cohesive cells with normal vertices i and j, and constraint
-  // vertex k make 2 contributions to the residual:
+  // vertex k make contributions to the assembled residual:
   //
-  //   * DOF i and j: internal forces in soln field associated with 
-  //                  slip
-  //   * DOF k: slip values
+  //   * DOF k: slip values {D(t+dt)}
 
   topology::Field<topology::SubMesh>& slip = _fields->get("slip");
   slip.zero();
@@ -764,7 +760,7 @@ pylith::faults::FaultCohesiveDynL::vertexField(
     _allocateBufferVertexVectorField();
     topology::Field<topology::SubMesh>& buffer =
       _fields->get("buffer (vector)");
-    //_calcTractionsChange(&buffer, dispT);
+    _calcTractionsChange(&buffer, dispT);
     return buffer;
 
   } else {
@@ -991,7 +987,101 @@ pylith::faults::FaultCohesiveDynL::_calcOrientation(const double upDir[3],
   //orientation.view("ORIENTATION");
 } // _calcOrientation
 
-#if 0
+// ----------------------------------------------------------------------
+void
+pylith::faults::FaultCohesiveDynL::_calcArea(void)
+{ // _calcArea
+  assert(0 != _faultMesh);
+  assert(0 != _fields);
+
+  // Containers for area information
+  const int cellDim = _quadrature->cellDim();
+  const int numBasis = _quadrature->numBasis();
+  const int numQuadPts = _quadrature->numQuadPts();
+  const int spaceDim = _quadrature->spaceDim();
+  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
+  double jacobianDet = 0;
+  double_array areaCell(numBasis);
+
+  // Get vertices in fault mesh.
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = 
+    faultSieveMesh->depthStratum(0);
+  const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  
+  // Allocate area field.
+  _fields->add("area", "area");
+
+  topology::Field<topology::SubMesh>& area = _fields->get("area");
+  const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
+  area.newSection(slip, 1);
+  area.allocate();
+  area.zero();
+  const ALE::Obj<RealSection>& areaSection = area.section();
+  assert(!areaSection.isNull());
+  topology::Mesh::UpdateAddVisitor areaVisitor(*areaSection, &areaCell[0]);  
+  
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    faultSieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						coordinatesCell.size(),
+						&coordinatesCell[0]);
+
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
+    faultSieveMesh->heightStratum(0);
+  assert(!cells.isNull());
+  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  // Loop over cells in fault mesh, compute area
+  for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
+      c_iter != cellsEnd;
+      ++c_iter) {
+    areaCell = 0.0;
+    
+    // Compute geometry information for current cell
+#if defined(PRECOMPUTE_GEOMETRY)
+    _quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
+
+    // Get cell geometry information that depends on cell
+    const double_array& basis = _quadrature->basis();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
+
+    // Compute area
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+        const double dArea = wt*basis[iQuad*numBasis+iBasis];
+	areaCell[iBasis] += dArea;
+      } // for
+    } // for
+    areaVisitor.clear();
+    faultSieveMesh->updateAdd(*c_iter, areaVisitor);
+
+    PetscLogFlops( numQuadPts*(1+numBasis*2) );
+  } // for
+
+  // Assemble area information
+  area.complete();
+
+#if 0 // DEBUGGING
+  area.view("AREA");
+  //_faultMesh->getSendOverlap()->view("Send fault overlap");
+  //_faultMesh->getRecvOverlap()->view("Receive fault overlap");
+#endif
+} // _calcArea
+
 // ----------------------------------------------------------------------
 // Compute change in tractions on fault surface using solution.
 // NOTE: We must convert vertex labels to fault vertex labels
@@ -1108,7 +1198,6 @@ pylith::faults::FaultCohesiveDynL::_calcTractionsChange(
   tractions->view("TRACTIONS");
 #endif
 } // _calcTractionsChange
-#endif
 
 // ----------------------------------------------------------------------
 void

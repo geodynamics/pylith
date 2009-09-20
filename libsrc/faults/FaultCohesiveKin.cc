@@ -135,13 +135,6 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
   slip.vectorFieldType(topology::FieldBase::VECTOR);
   slip.scale(_normalizer->lengthScale());
 
-  // Allocate cumulative slip field
-  _fields->add("cumulative slip", "cumulative_slip");
-  topology::Field<topology::SubMesh>& cumSlip = _fields->get("cumulative slip");
-  cumSlip.cloneSection(slip);
-  cumSlip.vectorFieldType(topology::FieldBase::VECTOR);
-  cumSlip.scale(_normalizer->lengthScale());
-
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
     faultSieveMesh->heightStratum(0);
   assert(!cells.isNull());
@@ -225,8 +218,8 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   // vertex k make 2 contributions to the residual:
   //
   //   * DOF i and j: internal forces in soln field associated with 
-  //                  slip
-  //   * DOF k: slip values
+  //                  slip  -[C]^T{L(t)+dL(t)}
+  //   * DOF k: slip values  -[C]{u(t)+dt(t)}
 
   // Get cell information and setup storage for cell data
   const int spaceDim = _quadrature->spaceDim();
@@ -434,11 +427,9 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
   assert(0 != _fields);
 
   // Cohesive cells with normal vertices i and j, and constraint
-  // vertex k make 2 contributions to the residual:
+  // vertex k make contributions to the assembled residual:
   //
-  //   * DOF i and j: internal forces in soln field associated with 
-  //                  slip
-  //   * DOF k: slip values
+  //   * DOF k: slip values {D(t+dt)}
 
   topology::Field<topology::SubMesh>& slip = _fields->get("slip");
   slip.zero();
@@ -647,12 +638,6 @@ pylith::faults::FaultCohesiveKin::updateStateVars(const double t,
   assert(0 != fields);
   assert(0 != _fields);
 
-  // Update cumulative slip
-  topology::Field<topology::SubMesh>& cumSlip = _fields->get("cumulative slip");
-  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  if (!_useSolnIncr)
-    cumSlip.zero();
-  cumSlip += slip;
 } // updateStateVars
 
 // ----------------------------------------------------------------------
@@ -727,9 +712,9 @@ pylith::faults::FaultCohesiveKin::vertexField(
   double scale = 0.0;
   int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
-    const topology::Field<topology::SubMesh>& cumSlip = 
-      _fields->get("cumulative slip");
-    return cumSlip;
+    const topology::Field<topology::SubMesh>& slip = 
+      _fields->get("slip");
+    return slip;
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
     const ALE::Obj<RealSection>& orientationSection =
@@ -1247,13 +1232,13 @@ pylith::faults::FaultCohesiveKin::_allocateBufferVectorField(void)
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Output");
 
-  // Create vector field; use same shape/chart as cumulative slip field.
+  // Create vector field; use same shape/chart as slip field.
   assert(0 != _faultMesh);
   _fields->add("buffer (vector)", "buffer");
   topology::Field<topology::SubMesh>& buffer =
     _fields->get("buffer (vector)");
   const topology::Field<topology::SubMesh>& slip = 
-    _fields->get("cumulative slip");
+    _fields->get("slip");
   buffer.cloneSection(slip);
   buffer.zero();
 
