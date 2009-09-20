@@ -622,16 +622,16 @@ pylith::faults::TestFaultCohesiveKin::testUpdateStateVars(void)
   const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
   SieveSubMesh::renumbering_type& renumbering = faultSieveMesh->getRenumbering();
 
-  // Compute expected cumulative slip using eqsrcs
-  topology::Field<topology::SubMesh> cumSlipE(*fault._faultMesh);
-  cumSlipE.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
-  cumSlipE.allocate();
-  const ALE::Obj<RealSection> cumSlipESection = cumSlipE.section();
-  CPPUNIT_ASSERT(!cumSlipESection.isNull());
+  // Compute expected slip using eqsrcs
+  topology::Field<topology::SubMesh> slipE(*fault._faultMesh);
+  slipE.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
+  slipE.allocate();
+  const ALE::Obj<RealSection> slipESection = slipE.section();
+  CPPUNIT_ASSERT(!slipESection.isNull());
 
-  const ALE::Obj<RealSection> cumSlipSection =
-    fault._fields->get("cumulative slip").section();
-  CPPUNIT_ASSERT(!cumSlipSection.isNull());
+  const ALE::Obj<RealSection> slipSection =
+    fault._fields->get("slip").section();
+  CPPUNIT_ASSERT(!slipSection.isNull());
 
   const FaultCohesiveKin::srcs_type::const_iterator srcsEnd = fault._eqSrcs.end();
   for (FaultCohesiveKin::srcs_type::iterator s_iter=fault._eqSrcs.begin(); 
@@ -640,7 +640,7 @@ pylith::faults::TestFaultCohesiveKin::testUpdateStateVars(void)
     EqKinSrc* src = s_iter->second;
     assert(0 != src);
     if (t >= src->originTime())
-      src->slip(&cumSlipE, t);
+      src->slip(&slipE, t);
   } // for
 
   int iVertex = 0;
@@ -660,13 +660,13 @@ pylith::faults::TestFaultCohesiveKin::testUpdateStateVars(void)
     } // for
     CPPUNIT_ASSERT(found);
 
-    // Check _cumSlip
-    int fiberDim = cumSlipSection->getFiberDimension(*v_iter);
+    // Check _slip
+    int fiberDim = slipSection->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const double* slipV = cumSlipSection->restrictPoint(*v_iter);
+    const double* slipV = slipSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != slipV);
 
-    const double* slipE = cumSlipESection->restrictPoint(*v_iter);
+    const double* slipE = slipESection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != slipE);
 
     for (int iDim=0; iDim < spaceDim; ++iDim) {

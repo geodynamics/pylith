@@ -67,10 +67,25 @@
  * {r(t+dt)} = {b(t+dt)} - [A(t+dt) C^T ]{ u(t)+du(t) }
  *             {D(t+dt)}   [ C      0   ]{ L(t)+dL(t) }
  * 
- * The term D does not involve integration over cohesive cells. We
- * integrate the Lagrange multiplier terms over the cohesive cells
- * because this introduces weighting of the orientation of the fault
- * for the direction of slip at the vertices of the cohesive cells.
+ * The terms in the residual contributing to the DOF at the Lagrange
+ * vertices are
+ *
+ * {r(t+dt)} = {D(t+dt)} - [C]{u(t)+dt(t)}
+ *
+ * The first term, {D(t+dt)}, does not involve integration over the
+ * cohesive cells, so it does not require assembling over cohesive
+ * cells or processors. We compute the term in
+ * integrateResidualAssembled().
+ *
+ * The term in the residual contributing to the DOF at the
+ * non-Lagrange vertices of the cohesive cells is
+ *
+ * {r(t+dt)} = -[C]^T{L(t)+dL(t)}
+ *
+ * We integrate the Lagrange multiplier term and the relative
+ * displacement term over the cohesive cells, because this introduces
+ * weighting of the orientation of the fault for the direction of slip
+ * at the vertices of the cohesive cells.
  */
 class pylith::faults::FaultCohesiveDynL : public FaultCohesive
 { // class FaultCohesiveDynL
@@ -111,7 +126,8 @@ public :
 		  const double upDir[3],
 		  const double normalDir[3]);
 
-  /** Split solution field for separate preconditioning.
+  /** Split solution field for separate preconditioning of normal DOF
+   * from DOF associated with Lagrange multipliers.
    *
    * @param field Solution field.
    */
@@ -216,6 +232,9 @@ private :
   void _calcOrientation(const double upDir[3],
 			const double normalDir[3]);
 
+  /// Calculate fault area field.
+  void _calcArea(void);
+
   /** Get initial tractions using a spatial database.
    */
   void _getInitialTractions(void);
@@ -223,6 +242,15 @@ private :
   /** Setup fault constitutive model.
    */
   void _initConstitutiveModel(void);
+
+  /** Compute change in tractions on fault surface using solution.
+   *
+   * @param tractions Field for tractions.
+   * @param mesh Finite-element mesh for domain
+   * @param solution Solution over domain
+   */
+  void _calcTractionsChange(topology::Field<topology::SubMesh>* tractions,
+			    const topology::Field<topology::Mesh>& solution);
 
   /// Allocate buffer for vector field.
   void _allocateBufferVertexVectorField(void);
