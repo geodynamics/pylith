@@ -58,7 +58,6 @@ def reformResidual(disp, incr):
     """
     Calculate residual
     """
-    calcFriction(disp, incr) # FaultCohesiveDyn::integrateResidual()
     residual = b - numpy.dot(A, disp+incr)
     residual[4] += k[4]*u5 # Dirichlet BC
     return residual
@@ -88,8 +87,9 @@ def solve(incr, jacobian, residual, disp):
     iter = 0
     while numpy.sum(numpy.abs(residual)) > 1.0e-8 and iter < 40:
         print "Interation: %d" % iter
-        dincr = numpy.dot(Ai, residual) # Increment to disp increment.
+        dincr = numpy.dot(Ai, residual) # Increment to disp increment. (Newton step)
         incr += dincr
+        calcFriction(disp, incr) # line search (modify search)
         residual = reformResidual(disp, incr)
         print "Disp(t):",disp
         print "Incr(t):",incr
