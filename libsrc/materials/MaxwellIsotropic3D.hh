@@ -101,6 +101,8 @@ protected :
    * @param density Array for density.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
+   * @param stateVars Number of state variables.
+   * @param numStateVars Number of state variables.
    */
   void _calcDensity(double* const density,
 		    const double* properties,
@@ -288,7 +290,7 @@ private :
 			  const int initialStrainSize,
 			  const bool computeStateVars);
 
-  /** Compute stress tensor from properties as an viscoelastic material.
+  /** Compute stress tensor from properties as a viscoelastic material.
    *
    * @param stress Array for stress tensor.
    * @param stressSize Size of stress tensor.

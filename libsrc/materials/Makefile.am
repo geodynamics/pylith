@@ -25,6 +25,8 @@ subpkginclude_HEADERS = \
 	GenMaxwellIsotropic3D.icc \
 	MaxwellIsotropic3D.hh \
 	MaxwellIsotropic3D.icc \
+	MaxwellPlaneStrain.hh \
+	MaxwellPlaneStrain.icc \
 	PowerLaw3D.hh \
 	PowerLaw3D.icc \
 	Metadata.hh \
