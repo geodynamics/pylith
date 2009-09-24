@@ -82,6 +82,7 @@ libpylith_la_SOURCES = \
 	materials/ViscoelasticMaxwell.cc \
 	materials/GenMaxwellIsotropic3D.cc \
 	materials/MaxwellIsotropic3D.cc \
+	materials/MaxwellPlaneStrain.cc \
 	materials/PowerLaw3D.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \

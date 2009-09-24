@@ -36,6 +36,7 @@ namespace pylith {
     class ElasticPlaneStress;
     class ElasticIsotropic3D;
     class MaxwellIsotropic3D;
+    class MaxwellPlaneStrain;
     class GenMaxwellIsotropic3D;
     class PowerLaw3D;
 

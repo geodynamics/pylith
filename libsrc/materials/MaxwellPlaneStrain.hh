@@ -25,17 +25,10 @@
 #if !defined(pylith_materials_maxwellplanestrain_hh)
 #define pylith_materials_maxwellplanestrain_hh
 
-#include "ElasticMaterial.hh"
+// Include directives ---------------------------------------------------
+#include "ElasticMaterial.hh" // ISA ElasticMaterial
 
-/// Namespace for pylith package
-namespace pylith {
-  namespace materials {
-    class MaxwellPlaneStrain;
-    class TestMaxwellPlaneStrain; // unit testing
-  } // materials
-} // pylith
-
-/// 2-D, isotropic, linear Maxwell viscoelastic material.
+// MaxwellPlaneStrain ---------------------------------------------------
 class pylith::materials::MaxwellPlaneStrain : public ElasticMaterial
 { // class MaxwellPlaneStrain
   friend class TestMaxwellPlaneStrain; // unit testing
@@ -60,13 +53,6 @@ public :
    * @param flag True to use elastic, false to use inelastic.
    */
   void useElasticBehavior(const bool flag);
-
-  /** Get flag indicating whether material implements an empty
-   * _updateProperties() method.
-   *
-   * @returns False if _updateProperties() is empty, true otherwise.
-   */
-  bool usesUpdateProperties(void) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -98,54 +84,64 @@ protected :
   void _dimProperties(double* const values,
 		      const int nvalues) const;
 
-  /** Nondimensionalize initial state.
+  /** Compute initial state variables from values in spatial database.
    *
-   * @param values Array of initial state values.
-   * @param nvalues Number of values.
+   * @param stateValues Array of state variable values.
+   * @param dbValues Array of database values.
    */
-  void _nondimInitState(double* const values,
-			const int nvalues) const;
+  void _dbToStateVars(double* const stateValues,
+		      const double_array& dbValues) const;
 
-  /** Dimensionalize initial state.
-   *
-   * @param values Array of initial state values.
-   * @param nvalues Number of values.
-   */
-  void _dimInitState(double* const values,
-		     const int nvalues) const;
+  // Note: We do not need to dimensionalize or nondimensionalize state
+  // variables because there are strains, which are dimensionless.
+
 
   /** Compute density from properties.
    *
    * @param density Array for density.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
+   * @param stateVars Number of state variables.
+   * @param numStateVars Number of state variables.
    */
   void _calcDensity(double* const density,
 		    const double* properties,
-		    const int numProperties);
+		    const int numProperties,
+		    const double* stateVars,
+		    const int numStateVars);
 
-  /** Compute stress tensor from properties. If the state variables
-   * are from the previous time step, then the computeStateVars flag
-   * should be set to true so that the state variables are updated
-   * (but not stored) when computing the stresses.
+  /** Compute stress tensor from properties and state variables. If
+   * the state variables are from the previous time step, then the
+   * computeStateVars flag should be set to true so that the state
+   * variables are updated (but not stored) when computing the
+   * stresses.
    *
    * @param stress Array for stress tensor.
    * @param stressSize Size of stress tensor.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialState Initial state values.
-   * @param initialStateSize Size of initial state array.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain tensor at location.
+   * @param initialStrainSize Size of initial strain array.
+   * @param computeStateVars Flag indicating to compute updated state variables.
    */
   void _calcStress(double* const stress,
 		   const int stressSize,
 		   const double* properties,
 		   const int numProperties,
+		   const double* stateVars,
+		   const int numStateVars,
 		   const double* totalStrain,
 		   const int strainSize,
-		   const double* initialState,
-		   const int initialStateSize,
+		   const double* initialStress,
+		   const int initialStressSize,
+		   const double* initialStrain,
+		   const int initialStrainSize,
 		   const bool computeStateVars);
 
   /** Compute derivatives of elasticity matrix from properties.
@@ -154,42 +150,65 @@ protected :
    * @param numElasticConsts Number of elastic constants.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialState Initial state values.
-   * @param initialStateSize Size of initial state array.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain tensor at location.
+   * @param initialStrainSize Size of initial strain array.
    */
   void _calcElasticConsts(double* const elasticConsts,
 			  const int numElasticConsts,
 			  const double* properties,
 			  const int numProperties,
+			  const double* stateVars,
+			  const int numStateVars,
 			  const double* totalStrain,
 			  const int strainSize,
-		          const double* initialState,
-		          const int initialStateSize);
+		          const double* initialStress,
+		          const int initialStressSize,
+		          const double* initialStrain,
+		          const int initialStrainSize);
 
-  /** Get stable time step for implicit time integration.
+  /** Update state variables (for next time step).
    *
-   * @returns Time step
-   */
-  double _stableTimeStepImplicit(const double* properties,
-				 const int numProperties) const;
-
-  /** Update properties (for next time step).
-   *
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialState Initial state values.
-   * @param initialStateSize Size of initial state array.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain tensor at location.
+   * @param initialStrainSize Size of initial strain array.
    */
-  void _updateProperties(double* const properties,
-		    const int numProperties,
-		    const double* totalStrain,
-		    const int strainSize,
-		    const double* initialState,
-		    const int initialStateSize);
+  void _updateStateVars(double* const stateVars,
+			const int numStateVars,
+			const double* properties,
+			const int numProperties,
+			const double* totalStrain,
+			const int strainSize,
+			const double* initialStress,
+			const int initialStressSize,
+			const double* initialStrain,
+			const int initialStrainSize);
+
+  /** Get stable time step for implicit time integration.
+   *
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
+   *
+   * @returns Time step
+   */
+  double _stableTimeStepImplicit(const double* properties,
+				 const int numProperties,
+				 const double* stateVars,
+				 const int numStateVars) const;
 
   // PRIVATE TYPEDEFS ///////////////////////////////////////////////////
 private :
@@ -197,6 +216,10 @@ private :
   /// Member prototype for _calcStress()
   typedef void (pylith::materials::MaxwellPlaneStrain::*calcStress_fn_type)
     (double* const,
+     const int,
+     const double*,
+     const int,
+     const double*,
      const int,
      const double*,
      const int,
@@ -215,11 +238,19 @@ private :
      const double*,
      const int,
      const double*,
+     const int,
+     const double*,
+     const int,
+     const double*,
      const int);
 
-  /// Member prototype for _updateProperties()
-  typedef void (pylith::materials::MaxwellPlaneStrain::*updateProperties_fn_type)
+  /// Member prototype for _updateStateVars()
+  typedef void (pylith::materials::MaxwellPlaneStrain::*updateStateVars_fn_type)
     (double* const,
+     const int,
+     const double*,
+     const int,
+     const double*,
      const int,
      const double*,
      const int,
@@ -229,64 +260,64 @@ private :
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
-/** Compute viscous strains (state variables) for the current time step.
-   *
-   * @param properties Properties at location.
-   * @param numProperties Number of properties.
-   * @param totalStrain Total strain at location.
-   * @param strainSize Size of strain tensor.
-   * @param initialState Initial state values.
-   * @param initialStateSize Size of initial state array.
-   */
-  void _computeStateVars(const double* properties,
-			 const int numProperties,
-			 const double* totalStrain,
-			 const int strainSize,
-			 const double* initialState,
-			 const int initialStateSize);
-
   /** Compute stress tensor from properties as an elastic material.
    *
    * @param stress Array for stress tensor.
    * @param stressSize Size of stress tensor.
    * @param properties Properties at locations.
    * @param numProperties Number of properties.
+   * @param stateVars State variables at locations.
+   * @param numStateVars Number of state variables.
    * @param totalStrain Total strain at locations.
    * @param strainSize Size of strain tensor.
-   * @param initialState Initial state values.
-   * @param initialStateSize Size of initial state array.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain tensor at location.
+   * @param initialStrainSize Size of initial strain array.
    * @param computeStateVars Flag indicating to compute updated state vars.
    */
   void _calcStressElastic(double* const stress,
 			  const int stressSize,
 			  const double* properties,
 			  const int numProperties,
+			  const double* stateVars,
+			  const int numStateVars,
 			  const double* totalStrain,
 			  const int strainSize,
-			  const double* initialState,
-			  const int initialStateSize,
+			  const double* initialStress,
+			  const int initialStressSize,
+			  const double* initialStrain,
+			  const int initialStrainSize,
 			  const bool computeStateVars);
 
-  /** Compute stress tensor from properties as an viscoelastic material.
+  /** Compute stress tensor from properties as a viscoelastic material.
    *
    * @param stress Array for stress tensor.
    * @param stressSize Size of stress tensor.
    * @param properties Properties at locations.
    * @param numProperties Number of properties.
+   * @param stateVars State variables at locations.
+   * @param numStateVars Number of state variables.
    * @param totalStrain Total strain at locations.
    * @param strainSize Size of strain tensor.
-   * @param initialState Initial state values.
-   * @param initialStateSize Size of initial state array.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain tensor at location.
+   * @param initialStrainSize Size of initial strain array.
    * @param computeStateVars Flag indicating to compute updated state vars.
    */
   void _calcStressViscoelastic(double* const stress,
 			       const int stressSize,
 			       const double* properties,
 			       const int numProperties,
+			       const double* stateVars,
+			       const int numStateVars,
 			       const double* totalStrain,
 			       const int strainSize,
-			       const double* initialState,
-			       const int initialStateSize,
+			       const double* initialStress,
+			       const int initialStressSize,
+			       const double* initialStrain,
+			       const int initialStrainSize,
 			       const bool computeStateVars);
 
   /** Compute derivatives of elasticity matrix from properties as an
@@ -296,19 +327,27 @@ private :
    * @param numElasticConsts Number of elastic constants.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialState Initial state values.
-   * @param initialStateSize Size of initial state array.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain tensor at location.
+   * @param initialStrainSize Size of initial strain array.
    */
   void _calcElasticConstsElastic(double* const elasticConsts,
 				 const int numElasticConsts,
 				 const double* properties,
 				 const int numProperties,
+				 const double* stateVars,
+				 const int numStateVars,
 				 const double* totalStrain,
 				 const int strainSize,
-			         const double* initialState,
-			         const int initialStateSize);
+			         const double* initialStress,
+			         const int initialStressSize,
+			         const double* initialStrain,
+			         const int initialStrainSize);
 
   /** Compute derivatives of elasticity matrix from properties as a
    * viscoelastic material.
@@ -317,66 +356,105 @@ private :
    * @param numElasticConsts Number of elastic constants.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialState Initial state values.
-   * @param initialStateSize Size of initial state array.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain tensor at location.
+   * @param initialStrainSize Size of initial strain array.
    */
   void _calcElasticConstsViscoelastic(double* const elasticConsts,
 				      const int numElasticConsts,
 				      const double* properties,
 				      const int numProperties,
+				      const double* stateVars,
+				      const int numStateVars,
 				      const double* totalStrain,
 				      const int strainSize,
-			              const double* initialState,
-			              const int initialStateSize);
+			              const double* initialStress,
+			              const int initialStressSize,
+			              const double* initialStrain,
+			              const int initialStrainSize);
 
   /** Update state variables after solve as an elastic material.
    *
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialState Initial state values.
-   * @param initialStateSize Size of initial state array.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain tensor at location.
+   * @param initialStrainSize Size of initial strain array.
    */
-  void _updatePropertiesElastic(double* const properties,
-			   const int numProperties,
-			   const double* totalStrain,
-			   const int strainSize,
-			   const double* initialState,
-			   const int initialStateSize);
+  void _updateStateVarsElastic(double* const stateVars,
+			       const int numStateVars,
+			       const double* properties,
+			       const int numProperties,
+			       const double* totalStrain,
+			       const int strainSize,
+			       const double* initialStress,
+			       const int initialStressSize,
+			       const double* initialStrain,
+			       const int initialStrainSize);
 
   /** Update state variables after solve as a viscoelastic material.
    *
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialState Initial state values.
-   * @param initialStateSize Size of initial state array.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain tensor at location.
+   * @param initialStrainSize Size of initial strain array.
    */
-  void _updatePropertiesViscoelastic(double* const properties,
-				const int numProperties,
-				const double* totalStrain,
-				const int strainSize,
-			        const double* initialState,
-			        const int initialStateSize);
+  void _updateStateVarsViscoelastic(double* const stateVars,
+				    const int numStateVars,
+				    const double* properties,
+				    const int numProperties,
+				    const double* totalStrain,
+				    const int strainSize,
+				    const double* initialStress,
+				    const int initialStressSize,
+				    const double* initialStrain,
+				    const int initialStrainSize);
 
-  // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private :
-
-  /// Not implemented
-  MaxwellPlaneStrain(const MaxwellPlaneStrain& m);
-
-  /// Not implemented
-  const MaxwellPlaneStrain& operator=(const MaxwellPlaneStrain& m);
+  /** Compute viscous strains (state variables) for the current time
+   * step.
+   *
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
+   * @param totalStrain Total strain at location.
+   * @param strainSize Size of strain tensor.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain tensor at location.
+   * @param initialStrainSize Size of initial strain array.
+   */
+  void _computeStateVars(const double* stateVars,
+			 const int numStateVars,
+			 const double* properties,
+			 const int numProperties,
+			 const double* totalStrain,
+			 const int strainSize,
+			 const double* initialStress,
+			 const int initialStressSize,
+			 const double* initialStrain,
+			 const int initialStrainSize);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  /// Viscous strain array.
-  double_array _visStrain;
+  double_array _viscousStrain; ///< Array for viscous strain tensor
 
   /// Method to use for _calcElasticConsts().
   calcElasticConsts_fn_type _calcElasticConstsFn;
@@ -384,8 +462,34 @@ private :
   /// Method to use for _calcStress().
   calcStress_fn_type _calcStressFn;
 
-  /// Method to use for _updateProperties().
-  updateProperties_fn_type _updatePropertiesFn;
+  /// Method to use for _updateStateVars().
+  updateStateVars_fn_type _updateStateVarsFn;
+
+  // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private :
+
+  static const int p_density;
+  static const int p_mu;
+  static const int p_lambda;
+  static const int p_maxwellTime;
+  static const int db_density;
+  static const int db_vs;
+  static const int db_vp;
+  static const int db_viscosity;
+
+  static const int s_totalStrain;
+  static const int s_viscousStrain;
+  static const int db_totalStrain;
+  static const int db_viscousStrain;
+
+  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private :
+
+  /// Not implemented
+  MaxwellPlaneStrain(const MaxwellPlaneStrain&);
+
+  /// Not implemented
+  const MaxwellPlaneStrain& operator=(const MaxwellPlaneStrain&);
 
 }; // class MaxwellPlaneStrain
 

@@ -762,7 +762,7 @@ pylith::materials::MaxwellIsotropic3D::_computeStateVars(
       dq * (devStrainTpdt - devStrainT);
   } // for
 
-  PetscLogFlops(8 + 7 * tensorSize);
+  PetscLogFlops(9 + 7 * tensorSize);
 } // _computeStateVars
 
 
