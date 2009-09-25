@@ -132,9 +132,6 @@ pylith::faults::FaultCohesiveDynL::initialize(const topology::Mesh& mesh,
   // Compute tributary area for each vertex in fault mesh.
   _calcArea();
 
-  // Initialize quadrature geometry.
-  _quadrature->initializeGeometry();
-
   // Get initial tractions using a spatial database.
   _getInitialTractions();
   
@@ -422,7 +419,6 @@ pylith::faults::FaultCohesiveDynL::integrateResidualAssembled(
   //   * DOF k: slip values {D(t+dt)}
 
   topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  slip.zero();
 
   const int spaceDim = _quadrature->spaceDim();
 
@@ -618,13 +614,17 @@ pylith::faults::FaultCohesiveDynL::updateStateVars(const double t,
   assert(0 != fields);
   assert(0 != _fields);
 
-  // Update cumulative slip
-  topology::Field<topology::SubMesh>& cumSlip = _fields->get("cumulative slip");
-  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  if (!_useSolnIncr)
-    cumSlip.zero();
-  cumSlip += slip;
 } // updateStateVars
+
+// ----------------------------------------------------------------------
+// Constrain solution based on friction.
+void
+pylith::faults::FaultCohesiveDynL::constrainSolution(
+				       const double t,
+				       topology::SolutionFields* const fields)
+{ // constrainSolution
+  // :TODO: Friction stuff goes here
+} // constrainSolution
 
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.

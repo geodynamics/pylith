@@ -177,6 +177,14 @@ public :
   void updateStateVars(const double t,
 		       topology::SolutionFields* const fields);
 
+  /** Constrain solution based on friction.
+   *
+   * @param t Current time
+   * @param fields Solution fields
+   */
+  void constrainSolution(const double t,
+			 topology::SolutionFields* const fields);
+
   /** Verify configuration is acceptable.
    *
    * @param mesh Finite-element mesh

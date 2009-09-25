@@ -29,7 +29,7 @@
 import numpy
 
 # Spring stiffness [k0, k1, ..., kN]
-k = (1.0, 1.0, 1.0, 1.0, 1.0)
+k = (6.0, 2.0, 1.0, 1.0, 4.0)
 
 # Prescribed displacement, u5
 u5 = 2.5
@@ -75,8 +75,8 @@ def calcFriction(disp, incr):
         #slipIncr = 2*(lm-fy)
         slipIncr = (k[2] + k[3])*(lm-fy) - (k[2]*b[2] - k[3]*b[3])
         b[5] += slipIncr # Update slip estimate
-        incr[2] -= 0.5*slipIncr
-        incr[3] += 0.5*slipIncr
+        #incr[2] -= 0.5*slipIncr
+        #incr[3] += 0.5*slipIncr
 
 
 # ----------------------------------------------------------------------
