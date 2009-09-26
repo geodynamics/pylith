@@ -159,7 +159,7 @@ public :
    * operator that do not require assembly across cells, vertices, or
    * processors.
    *
-   * @param mat Sparse matrix
+   * @param jacobian Sparse matrix
    * @param t Current time
    * @param fields Solution fields
    * @param mesh Finite-element mesh
@@ -179,11 +179,13 @@ public :
 
   /** Constrain solution based on friction.
    *
+   * @param fields Solution fields.
    * @param t Current time.
-   * @param fields Solution fields
+   * @param jacobian Sparse matrix for system Jacobian.
    */
-  void constrainSolution(const double t,
-			 topology::SolutionFields* const fields);
+  void constrainSolution(topology::SolutionFields* const fields,
+			 const double t,
+			 const topology::Jacobian& jacobian);
 
   /** Verify configuration is acceptable.
    *

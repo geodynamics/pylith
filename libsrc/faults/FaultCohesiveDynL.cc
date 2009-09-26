@@ -620,25 +620,125 @@ pylith::faults::FaultCohesiveDynL::updateStateVars(const double t,
 // Constrain solution based on friction.
 void
 pylith::faults::FaultCohesiveDynL::constrainSolution(
+				       topology::SolutionFields* const fields,
 				       const double t,
-				       topology::SolutionFields* const fields)
+				       const topology::Jacobian& jacobian)
 { // constrainSolution
+  assert(0 != fields);
+  assert(0 != _quadrature);
+  assert(0 != _fields);
 
-  // Loop over Lagrange vertices
+  // Cohesive cells with normal vertices i and j, and constraint
+  // vertex k.
 
-  // Compute current traction from Lagrange multiplier and area.
+  // Get cell information and setup storage for cell data
+  const int spaceDim = _quadrature->spaceDim();
+  const int numBasis = _quadrature->numBasis();
+  const int numConstraintVert = numBasis;
+  const int numCorners = 3*numConstraintVert; // cohesive cell
+  const int numQuadPts = _quadrature->numQuadPts();
 
-  // Compute the current slip from current displacements.
+  // Allocate vectors for cell values
+  double_array dispTCell(numCorners*spaceDim);
+  double_array dispTIncrCell(numCorners*spaceDim);
+  double_array dispTpdtCell(numCorners*spaceDim);
+  double_array tractionVertex(spaceDim);
+  double_array slipVertex(spaceDim);
 
-  // Use fault constitutive model to compute traction associated with
-  // friction.
-  
-  // Adjust Lagrange multiplier values accordingly.
+  // Total fault area associated with each vertex (assembled over all cells).
+  double_array areaCell(numConstraintVert);
 
-  // Update the slip estimate based on adjustement to the Lagrange
-  // multiplier values.
+  // Get cohesive cells
+  const ALE::Obj<SieveMesh>& sieveMesh = 
+    fields->get("disp(t)").mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cellsCohesive = 
+    sieveMesh->getLabelStratum("material-id", id());
+  assert(!cellsCohesive.isNull());
+  const SieveMesh::label_sequence::iterator cellsCohesiveBegin =
+    cellsCohesive->begin();
+  const SieveMesh::label_sequence::iterator cellsCohesiveEnd =
+    cellsCohesive->end();
+  const int cellsCohesiveSize = cellsCohesive->size();
 
+  // Get fault Sieve mesh
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
 
+  // Get section information
+  const ALE::Obj<RealSection>& areaSection = 
+    _fields->get("area").section();
+  assert(!areaSection.isNull());
+  topology::Mesh::RestrictVisitor areaVisitor(*areaSection,
+					      areaCell.size(), &areaCell[0]);
+
+  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
+  const ALE::Obj<RealSection>& dispTSection = dispT.section();
+  assert(!dispTSection.isNull());  
+  topology::Mesh::RestrictVisitor dispTVisitor(*dispTSection,
+					       dispTCell.size(), 
+					       &dispTCell[0]);
+
+  topology::Field<topology::Mesh>& dispTIncr = fields->get("dispIncr(t->t+dt)");
+  const ALE::Obj<RealSection>& dispTIncrSection = dispTIncr.section();
+  assert(!dispTIncrSection.isNull());  
+  topology::Mesh::RestrictVisitor dispTIncrVisitor(*dispTIncrSection,
+					       dispTIncrCell.size(), 
+					       &dispTIncrCell[0]);
+
+  for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+       c_iter != cellsCohesiveEnd;
+       ++c_iter) {
+    const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
+
+    // Get area at fault cell's vertices.
+    areaVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, areaVisitor);
+    
+    // Get disp(t) at cohesive cell's vertices.
+    dispTVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispTVisitor);
+    
+    // Get dispIncr(t) at cohesive cell's vertices.
+    dispTIncrVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
+    
+    // Compute current estimate of displacement at time t+dt using
+    // solution increment.
+    dispTpdtCell = dispTCell + dispTIncrCell;
+
+    for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
+      // Blocks in cell matrix associated with normal cohesive
+      // vertices i and j and constraint vertex k
+      const int indexI = iConstraint;
+      const int indexJ = iConstraint +   numConstraintVert;
+      const int indexK = iConstraint + 2*numConstraintVert;
+
+      assert(areaCell[iConstraint] > 0);
+      const double areaVertex = areaCell[iConstraint];
+      
+      // :KLUDGE: (TEMPORARY) Compute traction by dividing force by area
+      for (int i=0; i < spaceDim; ++i)
+	tractionVertex[i] = dispTpdtCell[indexK+i] / areaVertex;
+
+      // Compute the current slip from current displacements.
+      for (int i=0; i < spaceDim; ++i)
+	slipVertex[i] = dispTpdtCell[indexJ+i] - dispTpdtCell[indexI+i];
+
+      // Use fault constitutive model to compute traction associated with
+      // friction.
+      
+      // Adjust Lagrange multiplier values accordingly.
+
+      // Update the slip estimate based on adjustement to the Lagrange
+      // multiplier values.
+
+    } // for
+
+  } // for
+
+  // FIX THIS
+  PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*7);
 } // constrainSolution
 
 // ----------------------------------------------------------------------
@@ -1231,10 +1331,9 @@ pylith::faults::FaultCohesiveDynL::_getInitialTractions(void)
     // Create section to hold initial tractions.
     _fields->add("initial traction", "initial_traction");
     topology::Field<topology::SubMesh>& traction = _fields->get("initial traction");
+    topology::Field<topology::SubMesh>& slip = _fields->get("slip");
+    traction.cloneSection(slip);
     traction.scale(pressureScale);
-    traction.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
-    traction.newSection(topology::FieldBase::CELLS_FIELD, numQuadPts*spaceDim);
-    traction.allocate();
     const ALE::Obj<RealSection>& tractionSection = traction.section();
     assert(!tractionSection.isNull());
 
@@ -1264,75 +1363,56 @@ pylith::faults::FaultCohesiveDynL::_getInitialTractions(void)
 	throw std::logic_error("Bad spatial dimension in Neumann.");
       } // switch
 
-    // Get 'fault' cells.
+    // Get 'fault' vertices.
     const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
     assert(!faultSieveMesh.isNull());
-    const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-      faultSieveMesh->heightStratum(0);
-    assert(!cells.isNull());
-    const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
-    const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+    const ALE::Obj<SieveSubMesh::label_sequence>& vertices = 
+      faultSieveMesh->depthStratum(0);
+    assert(!vertices.isNull());
+    const SieveSubMesh::label_sequence::iterator verticesBegin =
+      vertices->begin();
+    const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
-    const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
     const int numBasis = _quadrature->numBasis();
-    const int numQuadPts = _quadrature->numQuadPts();
     const int spaceDim = _quadrature->spaceDim();
   
     // Containers for database query results and quadrature coordinates in
     // reference geometry.
-    double_array tractionCell(numQuadPts*spaceDim);
-    double_array quadPtsGlobal(numQuadPts*spaceDim);
+    double_array tractionVertex(spaceDim);
+    double_array coordsVertex(spaceDim);
     
     // Get sections.
-    double_array coordinatesCell(numBasis*spaceDim);
     const ALE::Obj<RealSection>& coordinates =
-      faultSieveMesh->getRealSection("coordinates");
+      faultSieveMesh->getRealSection("coordinates_dimensioned");
     assert(!coordinates.isNull());
-    topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						  coordinatesCell.size(),
-						  &coordinatesCell[0]);
-
     const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
     
-    // Compute quadrature information
-    
-    // Loop over cells in boundary mesh and perform queries.
-    for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
-	 c_iter != cellsEnd;
-	 ++c_iter) {
-      // Compute geometry information for current cell
-      coordsVisitor.clear();
-      faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
-      _quadrature->computeGeometry(coordinatesCell, *c_iter);
+    // Loop over vertices in fault mesh and perform queries.
+    for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin;
+	 v_iter != verticesEnd;
+	 ++v_iter) {
+      coordinates->restrictPoint(*v_iter, 
+				 &coordsVertex[0], coordsVertex.size());
       
-      const double_array& quadPtsNondim = _quadrature->quadPts();
-      quadPtsGlobal = quadPtsNondim;
-      _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
-				  lengthScale);
-      
-      tractionCell = 0.0;
-      for (int iQuad=0, iSpace=0; 
-	   iQuad < numQuadPts;
-	   ++iQuad, iSpace+=spaceDim) {
-	const int err = _dbInitial->query(&tractionCell[iQuad*spaceDim], spaceDim,
-					  &quadPtsGlobal[iSpace], spaceDim, cs);
-	if (err) {
-	  std::ostringstream msg;
-	  msg << "Could not find initial tractions at (";
-	  for (int i=0; i < spaceDim; ++i)
-	    msg << " " << quadPtsGlobal[i+iSpace];
-	  msg << ") for dynamic fault interface " << label() << "\n"
-	      << "using spatial database " << _dbInitial->label() << ".";
-	  throw std::runtime_error(msg.str());
-	} // if
+      tractionVertex = 0.0;
+      const int err = _dbInitial->query(&tractionVertex[0], spaceDim,
+					&coordsVertex[0], spaceDim, cs);
+      if (err) {
+	std::ostringstream msg;
+	msg << "Could not find initial tractions at (";
+	for (int i=0; i < spaceDim; ++i)
+	  msg << " " << coordsVertex[i];
+	msg << ") for dynamic fault interface " << label() << "\n"
+	    << "using spatial database " << _dbInitial->label() << ".";
+	throw std::runtime_error(msg.str());
+      } // if
 	
-      } // for
-      _normalizer->nondimensionalize(&tractionCell[0], tractionCell.size(),
+      _normalizer->nondimensionalize(&tractionVertex[0], tractionVertex.size(),
 				     pressureScale);
       
       // Update section
-      assert(tractionCell.size() == tractionSection->getFiberDimension(*c_iter));
-      tractionSection->updatePoint(*c_iter, &tractionCell[0]);
+      assert(tractionVertex.size() == tractionSection->getFiberDimension(*v_iter));
+      tractionSection->updatePoint(*v_iter, &tractionVertex[0]);
     } // for
     
     _dbInitial->close();
