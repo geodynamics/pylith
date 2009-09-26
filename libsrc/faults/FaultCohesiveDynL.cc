@@ -623,7 +623,22 @@ pylith::faults::FaultCohesiveDynL::constrainSolution(
 				       const double t,
 				       topology::SolutionFields* const fields)
 { // constrainSolution
-  // :TODO: Friction stuff goes here
+
+  // Loop over Lagrange vertices
+
+  // Compute current traction from Lagrange multiplier and area.
+
+  // Compute the current slip from current displacements.
+
+  // Use fault constitutive model to compute traction associated with
+  // friction.
+  
+  // Adjust Lagrange multiplier values accordingly.
+
+  // Update the slip estimate based on adjustement to the Lagrange
+  // multiplier values.
+
+
 } // constrainSolution
 
 // ----------------------------------------------------------------------

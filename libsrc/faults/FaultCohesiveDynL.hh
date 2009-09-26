@@ -179,7 +179,7 @@ public :
 
   /** Constrain solution based on friction.
    *
-   * @param t Current time
+   * @param t Current time.
    * @param fields Solution fields
    */
   void constrainSolution(const double t,
