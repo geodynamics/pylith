@@ -432,7 +432,7 @@ pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic(
     devStressInitial[0];
   stress[1] = meanStressTpdt + mu2 * (_viscousStrain[1] - devStrainInitial[1]) +
     devStressInitial[1];
-  stress[2] = mu2 * (_viscousStrain[2] - devStrainInitial[2]) +
+  stress[2] = mu2 * (_viscousStrain[3] - devStrainInitial[2]) +
     devStressInitial[2];
 
   PetscLogFlops(28);
