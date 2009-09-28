@@ -30,6 +30,7 @@ noinst_PYTHON = \
 	TestElasticPlaneStress.py \
 	TestElasticIsotropic3D.py \
 	TestMaxwellIsotropic3D.py \
+	TestMaxwellPlaneStrain.py \
 	TestGenMaxwellIsotropic3D.py \
 	TestPowerLaw3D.py
 
