@@ -52,6 +52,11 @@ if [ $1 == "elastic" ] || [ $1 == "all" ]; then
     --data.object=ElasticPlaneStressData \
     --data.parent=ElasticMaterialData
 
+  python MaxwellPlaneStrainElastic.py \
+    --data.namespace=pylith,materials \
+    --data.object=MaxwellPlaneStrainElasticData \
+    --data.parent=ElasticMaterialData
+
   # 1-D ----------------------------------------------------------------
 
   python ElasticStrain1D.py \
@@ -77,6 +82,11 @@ if [ $1 == "viscoelastic" ] || [ $1 == "all" ]; then
   python MaxwellIsotropic3DTimeDep.py \
     --data.namespace=pylith,materials \
     --data.object=MaxwellIsotropic3DTimeDepData \
+    --data.parent=ElasticMaterialData
+
+  python MaxwellPlaneStrainTimeDep.py \
+    --data.namespace=pylith,materials \
+    --data.object=MaxwellPlaneStrainTimeDepData \
     --data.parent=ElasticMaterialData
 
   python PowerLaw3DTimeDep.py \
