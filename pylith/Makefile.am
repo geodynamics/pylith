@@ -33,6 +33,7 @@ nobase_pkgpyexec_PYTHON = \
 	faults/FaultCohesive.py \
 	faults/FaultCohesiveKin.py \
 	faults/FaultCohesiveDyn.py \
+	faults/FaultCohesiveDynL.py \
 	faults/LiuCosSlipFn.py \
 	faults/SingleRupture.py \
 	faults/SlipTimeFn.py \

@@ -24,6 +24,7 @@
 #include "pylith/faults/Fault.hh"
 #include "pylith/faults/FaultCohesive.hh"
 #include "pylith/faults/FaultCohesiveDyn.hh"
+#include "pylith/faults/FaultCohesiveDynL.hh"
 #include "pylith/faults/FaultCohesiveKin.hh"
 
 #include "pylith/topology/SubMesh.hh"
@@ -71,6 +72,7 @@ import_array();
 %include "Fault.i"
 %include "FaultCohesive.i"
 %include "FaultCohesiveDyn.i"
+%include "FaultCohesiveDynL.i"
 %include "FaultCohesiveKin.i"
 
 // End of file

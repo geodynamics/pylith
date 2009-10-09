@@ -628,9 +628,6 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
   assert(0 != _quadrature);
   assert(0 != _fields);
 
-  // Cohesive cells with normal vertices i and j, and constraint
-  // vertex k.
-
   // Get cell information and setup storage for cell data
   const int spaceDim = _quadrature->spaceDim();
   const int numBasis = _quadrature->numBasis();
@@ -643,6 +640,7 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
   double_array dispTIncrCell(numCorners*spaceDim);
   double_array dispTpdtCell(numCorners*spaceDim);
   double_array tractionVertex(spaceDim);
+  double_array tractionStickVertex(spaceDim);
   double_array slipVertex(spaceDim);
 
   // Total fault area associated with each vertex (assembled over all cells).
@@ -689,6 +687,7 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
   for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
+    // Get fault cell label associated with cohesive cell
     const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
 
     // Get area at fault cell's vertices.
@@ -717,11 +716,18 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
       assert(areaCell[iConstraint] > 0);
       const double areaVertex = areaCell[iConstraint];
       
-      // :KLUDGE: (TEMPORARY) Compute traction by dividing force by area
+      // :KLUDGE: (TEMPORARY) Solution at Lagrange constraint vertices
+      // is the Lagrange multiplier value, which is currently the
+      // force.  Compute traction by dividing force by area
       for (int i=0; i < spaceDim; ++i)
 	tractionVertex[i] = dispTpdtCell[indexK+i] / areaVertex;
 
-      // Compute the current slip from current displacements.
+      // Tractions required for sticking (if not exceeded slip
+      // increment is zero).
+      tractionStickVertex = tractionVertex;
+
+      // Compute the current slip at the constraint vertex from
+      // current displacements at the normal cohesive vertices.
       for (int i=0; i < spaceDim; ++i)
 	slipVertex[i] = dispTpdtCell[indexJ+i] - dispTpdtCell[indexI+i];
 
