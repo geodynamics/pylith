@@ -619,11 +619,11 @@ pylith::faults::FaultCohesiveDynL::updateStateVars(const double t,
 // ----------------------------------------------------------------------
 // Constrain solution based on friction.
 void
-pylith::faults::FaultCohesiveDynL::constrainSolution(
+pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 				       topology::SolutionFields* const fields,
 				       const double t,
 				       const topology::Jacobian& jacobian)
-{ // constrainSolution
+{ // constrainSolnSpace
   assert(0 != fields);
   assert(0 != _quadrature);
   assert(0 != _fields);
@@ -739,7 +739,7 @@ pylith::faults::FaultCohesiveDynL::constrainSolution(
 
   // FIX THIS
   PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*7);
-} // constrainSolution
+} // constrainSolnSpace
 
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.

@@ -107,6 +107,16 @@ pylith::feassemble::Integrator<quadrature_type>::updateStateVars(
 				     topology::SolutionFields* const fields) {
 } // updateState
 
+// Constrain solution space.
+template<typename quadrature_type>
+inline
+void
+pylith::feassemble::Integrator<quadrature_type>::constrainSolnSpace(
+			       topology::SolutionFields* const fields,
+			       const double t,
+			       const topology::Jacobian& jacobian) {
+} // constrainSolnSpace
+
 
 #endif
 

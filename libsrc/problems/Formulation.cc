@@ -117,12 +117,29 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
     solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
 
+  // ===================================================================
+  // :KLUDGE: WAITING FOR MATT TO IMPLEMENT DIFFERENT LINE SEARCH
+  int numIntegrators = _meshIntegrators.size();
+  assert(numIntegrators > 0); // must have at least 1 bulk integrator
+  for (int i=0; i < numIntegrators; ++i) {
+    _meshIntegrators[i]->timeStep(_dt);
+    _meshIntegrators[i]->constrainSolnSpace(_fields, _t, *_jacobian);
+  } // for
+  numIntegrators = _submeshIntegrators.size();
+  for (int i=0; i < numIntegrators; ++i) {
+    _submeshIntegrators[i]->timeStep(_dt);
+    _submeshIntegrators[i]->constrainSolnSpace(_fields, _t, *_jacobian);
+  } // for
+  // :KLUDGE: END
+  // ===================================================================
+
+
   // Set residual to zero.
   topology::Field<topology::Mesh>& residual = _fields->get("residual");
   residual.zero();
 
   // Add in contributions that require assembly.
-  int numIntegrators = _meshIntegrators.size();
+  numIntegrators = _meshIntegrators.size();
   assert(numIntegrators > 0); // must have at least 1 bulk integrator
   for (int i=0; i < numIntegrators; ++i) {
     _meshIntegrators[i]->timeStep(_dt);
