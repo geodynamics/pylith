@@ -16,8 +16,8 @@
  * (dynamic) slip implemented with cohesive elements.
  */
 
-#if !defined(pylith_faults_faultcohesivedyn_hh)
-#define pylith_faults_faultcohesivedyn_hh
+#if !defined(pylith_faults_faultcohesivedynl_hh)
+#define pylith_faults_faultcohesivedynl_hh
 
 // Include directives ---------------------------------------------------
 #include "FaultCohesive.hh" // ISA FaultCohesive
@@ -287,7 +287,7 @@ private :
 
 #include "FaultCohesiveDynL.icc" // inline methods
 
-#endif // pylith_faults_faultcohesivedyn_hh
+#endif // pylith_faults_faultcohesivedynl_hh
 
 
 // End of file 
