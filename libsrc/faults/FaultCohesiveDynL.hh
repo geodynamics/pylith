@@ -177,15 +177,15 @@ public :
   void updateStateVars(const double t,
 		       topology::SolutionFields* const fields);
 
-  /** Constrain solution based on friction.
+  /** Constrain solution space based on friction.
    *
    * @param fields Solution fields.
    * @param t Current time.
    * @param jacobian Sparse matrix for system Jacobian.
    */
-  void constrainSolution(topology::SolutionFields* const fields,
-			 const double t,
-			 const topology::Jacobian& jacobian);
+  void constrainSolnSpace(topology::SolutionFields* const fields,
+			  const double t,
+			  const topology::Jacobian& jacobian);
 
   /** Verify configuration is acceptable.
    *

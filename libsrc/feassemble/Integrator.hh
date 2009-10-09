@@ -188,6 +188,17 @@ public :
   void updateStateVars(const double t,
 		       topology::SolutionFields* const fields);
 
+  /** Constrain solution space.
+   *
+   * @param fields Solution fields.
+   * @param t Current time.
+   * @param jacobian Sparse matrix for system Jacobian.
+   */
+  virtual
+  void constrainSolnSpace(topology::SolutionFields* const fields,
+			  const double t,
+			  const topology::Jacobian& jacobian);
+
   /** Verify configuration is acceptable.
    *
    * @param mesh Finite-element mesh
