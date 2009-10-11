@@ -38,6 +38,7 @@ libpylith_la_SOURCES = \
 	faults/StepSlipFn.cc \
 	faults/ConstRateSlipFn.cc \
 	faults/BruneSlipFn.cc \
+	faults/TimeHistorySlipFn.cc \
 	faults/LiuCosSlipFn.cc \
 	faults/EqKinSrc.cc \
 	faults/TopologyOps.cc \

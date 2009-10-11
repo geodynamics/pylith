@@ -34,6 +34,8 @@ subpkginclude_HEADERS = \
 	SlipTimeFn.hh \
 	StepSlipFn.hh \
 	StepSlipFn.icc \
+	TimeHistorySlipFn.hh \
+	TimeHistorySlipFn.icc \
 	faultsfwd.hh
 
 noinst_HEADERS = \
