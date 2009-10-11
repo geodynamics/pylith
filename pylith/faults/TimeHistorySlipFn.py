@@ -10,23 +10,21 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/faults/LiuCosSlipFn.py
+## @file pylith/faults/TimeHistorySlipFn.py
 ##
-## @brief Sine/cosine slip time function from Liu, Archuleta, and Hartzell,
-## BSSA, 2006 (doi:10.1785/0120060036) which has a rapid rise and then
-## a gradual falloff with a finite duration.
+## @brief User-defined slip-time function with spatially variable
+## amplitude and start time.
 ##
 ## Factory: slip_time_fn
 
 from SlipTimeFn import SlipTimeFn
-from faults import LiuCosSlipFn as ModuleLiuCosSlipFn
+from faults import TimeHistorySlipFn as ModuleTimeHistorySlipFn
 
-# LiuCosSlipFn class
-class LiuCosSlipFn(SlipTimeFn, ModuleLiuCosSlipFn):
+# TimeHistorySlipFn class
+class TimeHistorySlipFn(SlipTimeFn, ModuleTimeHistorySlipFn):
   """
-  Sine/cosine slip time function from Liu, Archuleta, and Hartzell,
-  BSSA, 2006 (doi:10.1785/0120060036) which has a rapid rise and then
-  a gradual falloff with a finite duration.
+  User-defined slip-time function with spatially variable amplitude
+  and start time.
 
   Inventory
 
@@ -34,9 +32,9 @@ class LiuCosSlipFn(SlipTimeFn, ModuleLiuCosSlipFn):
   @li None
   
   \b Facilities
-  @li \b slip Spatial database of final slip.
+  @li \b slip Spatial database of slip amplitude.
   @li \b slip_time Spatial database of slip initiation time.
-  @li \b rise_time Spatial database of rise time (t95).
+  @li \b time_history Temporal database for slip time history function.
 
   Factory: slip_time_fn
   """
@@ -49,26 +47,28 @@ class LiuCosSlipFn(SlipTimeFn, ModuleLiuCosSlipFn):
   
   dbSlip = pyre.inventory.facility("slip", family="spatial_database",
                                    factory=SimpleDB)
-  dbSlip.meta['tip'] = "Spatial database of slip."
+  dbSlip.meta['tip'] = "Spatial database of slip amplitude."
   
   dbSlipTime = pyre.inventory.facility("slip_time", family="spatial_database",
                                        factory=SimpleDB)
   dbSlipTime.meta['tip'] = "Spatial database of slip initiation time."
   
-  dbRiseTime = pyre.inventory.facility("rise_time", family="spatial_database",
-                                       factory=SimpleDB)
-  dbRiseTime.meta['tip'] = "Spatial database of rise time (t95)."
+  from spatialdata.spatialdb.TimeHistory import TimeHistory
+  dbTimeHistory = pyre.inventory.facility("time_history",
+                                          family="temporal_database",
+                                          factory=TimeHistory)
+  dbTimeHistory.meta['tip'] = "Spatial database of rise time (t95)."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="liucosslipfn"):
+  def __init__(self, name="timehistoryslipfn"):
     """
     Constructor.
     """
     SlipTimeFn.__init__(self, name)
-    ModuleLiuCosSlipFn.__init__(self)
-    self._loggingPrefix = "LCSF "
+    ModuleTimeHistorySlipFn.__init__(self)
+    self._loggingPrefix = "THSF "
     return
 
 
@@ -79,9 +79,9 @@ class LiuCosSlipFn(SlipTimeFn, ModuleLiuCosSlipFn):
     Setup members using inventory.
     """
     SlipTimeFn._configure(self)
-    ModuleLiuCosSlipFn.dbFinalSlip(self, self.inventory.dbSlip)
-    ModuleLiuCosSlipFn.dbSlipTime(self, self.inventory.dbSlipTime)
-    ModuleLiuCosSlipFn.dbRiseTime(self, self.inventory.dbRiseTime)
+    ModuleTimeHistorySlipFn.dbAmplitude(self, self.inventory.dbSlip)
+    ModuleTimeHistorySlipFn.dbSlipTime(self, self.inventory.dbSlipTime)
+    ModuleTimeHistorySlipFn.dbTimeHistory(self, self.inventory.dbTimeHistory)
     return
 
 
@@ -89,9 +89,9 @@ class LiuCosSlipFn(SlipTimeFn, ModuleLiuCosSlipFn):
 
 def slip_time_fn():
   """
-  Factory associated with LiuCosSlipFn.
+  Factory associated with TimeHistorySlipFn.
   """
-  return LiuCosSlipFn()
+  return TimeHistorySlipFn()
 
 
 # End of file 
