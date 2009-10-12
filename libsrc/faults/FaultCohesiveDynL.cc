@@ -731,6 +731,7 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 	      // Limit traction
 	      tractionTpdtVertex[0] = 0.0;
 	    } // else
+	    break;
 	  } // case 1
 	case 2 :
 	  { // case 2
@@ -760,10 +761,12 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 	      // Limit traction
 	      tractionTpdtVertex = 0.0;
 	    } // else
+	    break;
 	  } // case 2
 	case 3 :
 	  { // case 3
 	    // ADD STUFF HERE
+	    break;
 	  } // case 3
 	default :
 	  assert(0);
