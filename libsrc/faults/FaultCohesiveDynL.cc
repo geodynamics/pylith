@@ -629,14 +629,10 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
   const int spaceDim = _quadrature->spaceDim();
 
   // Allocate arrays for vertex values
-  double_array tractionVertex(spaceDim);
-  double_array tractionStickVertex(spaceDim);
-  double_array tractionIncrVertex(spaceDim);
-  double_array slipIncrVertex(spaceDim);
+  double_array tractionTVertex(spaceDim);
+  double_array tractionTpdtVertex(spaceDim);
+  double_array slipTpdtVertex(spaceDim);
   double_array lagrangeTpdtVertex(spaceDim);
-
-  // Compute slip at fault vertices based on current disp.
-  //_updateSlip();
 
   // Get domain mesh and fault mesh
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
@@ -684,10 +680,6 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
       const int vertexFault = renumbering[*v_iter];
       const int vertexMesh = *v_iter;
 
-      // Reset values to zero.
-      tractionIncrVertex = 0.0;
-      slipIncrVertex = 0.0;
-
       // Get slip
       slipSection->restrictPoint(vertexFault, &slipVertex[0], slipVertex.size());
 
@@ -717,11 +709,8 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
       // is the Lagrange multiplier value, which is currently the
       // force.  Compute traction by dividing force by area
       assert(*areaVertex > 0);
-      tractionVertex = lagrangeTpdtVertex / (*areaVertex);
-      
-      // Tractions required for sticking (if not exceeded, then slip
-      // increment is zero).
-      tractionStickVertex = tractionVertex;
+      tractionTVertex = lagrangeTVertex / (*areaVertex);
+      tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);
       
       // Use fault constitutive model to compute traction associated with
       // friction.
@@ -731,45 +720,46 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 	{ // switch
 	case 1 :
 	  { // case 1
-	    if (tractionVertex[0]+tractionInitialVertex[0] > 0)
-	      // if tension, then traction is zero (current + increment = 0).
-	      tractionIncrVertex[0] = -tractionVertex[0];
-	    else {
-	      // if compression, then prevent interpenetration
-	      // current + increment = stick
-	      tractionIncrVertex[0] = tractionStickVertex[0] - tractionVertex[0];
-	    } // if/else
-	  } // case 1
-	case 2 :
-	  { // case 2
-	    if (tractionVertex[1]+tractionInitialVertex[1] > 0) {
-	      // if in tension, then traction is zero (current + increment = 0)
-	      tractionIncrVertex = -tractionVertex;
+	    if (tractionTpdtVertex[0]+tractionInitialVertex[0] < 0) {
+	      // if compression, then no changes to solution
+	    } else {
+	      // if tension, then traction is zero.
 	      // :KLUDGE:
 	      const double kii = 1.0;
 	      const double kjj = 1.0;
-	      slipIncrVertex[0] = (kii+kjj)*(tractionVertex[0]);
-	    } else {
+	      slipVertex[0] += (kii+kjj)*(tractionTpdtVertex[0]);
+	      // Limit traction
+	      tractionTpdtVertex[0] = 0.0;
+	    } // else
+	  } // case 1
+	case 2 :
+	  { // case 2
+	    if (tractionTpdtVertex[1]+tractionInitialVertex[1] < 0) {
 	      // if in compression
 	      const double friction =
-		muf * (tractionInitialVertex[1] + tractionVertex[1]);
-	      if (tractionStickVertex[0] > friction ||
-		  (tractionStickVertex[0] < friction && slipVertex[0] > 0.0)) {
+		muf * (tractionInitialVertex[1] + tractionTpdtVertex[1]);
+	      if (tractionTpdtVertex[0] > friction ||
+		  (tractionTpdtVertex[0] < friction && slipVertex[0] > 0.0)) {
 		// traction is limited by friction, so have sliding
-		tractionIncrVertex[0] = friction - tractionVertex[0];
 		// :KLUDGE:
 		const double kii = 1.0;
 		const double kjj = 1.0;
-		slipIncrVertex[0] = (kii+kjj)*(tractionVertex[0]-friction);
+		slipVertex[0] += (kii+kjj)*(tractionTpdtVertex[0]-friction);
+		// Limit traction
+		tractionTpdtVertex[0] = friction;
 	      } else {
 		// else friction exceeds value necessary, so stick
-		// current + increment = stick
-		tractionIncrVertex[0] =
-		  tractionStickVertex[0] - tractionVertex[0];
-		// No increment in slip.
-		slipIncrVertex = 0.0;
+		// no changes to solution
 	      } // if/else
-	    } // if/else
+	    } else {
+	      // if in tension, then traction is zero.
+	      // :KLUDGE:
+	      const double kii = 1.0;
+	      const double kjj = 1.0;
+	      slipVertex[0] += (kii+kjj)*(tractionTpdtVertex[0]);
+	      // Limit traction
+	      tractionTpdtVertex = 0.0;
+	    } // else
 	  } // case 2
 	case 3 :
 	  { // case 3
@@ -784,15 +774,16 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
       // :KLUDGE: (TEMPORARY) Solution at Lagrange constraint vertices
       // is the Lagrange multiplier value, which is currently the
       // force.  Compute force by multipling traction by area
-      lagrangeTIncrVertex = tractionIncrVertex * (*areaVertex);
+      lagrangeTIncrVertex =
+	(tractionTpdtVertex - tractionTVertex) * (*areaVertex);
       assert(lagrangeTIncrVertex.size() == 
 	     dispTIncrSection->getFiberDimension(vertexMesh));
       dispTIncrSection->updatePoint(vertexMesh, &lagrangeTIncrVertex[0]);
       
       // Update the slip estimate based on adjustment to the Lagrange
       // multiplier values.
-      slipVertex += slipIncrVertex;
-      assert(slipVertex.size() == slipSection->getFiberDimension(vertexFault));
+      assert(slipVertex.size() == 
+	     slipSection->getFiberDimension(vertexFault));
       slipSection->updatePoint(vertexFault, &slipVertex[0]);
     } // if
   
