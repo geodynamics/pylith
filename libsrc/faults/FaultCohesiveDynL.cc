@@ -470,8 +470,6 @@ pylith::faults::FaultCohesiveDynL::integrateJacobianAssembled(
   assert(0 != fields);
   assert(0 != _fields);
 
-  typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> visitor_type;
-
   // Add constraint information to Jacobian matrix; these are the
   // direction cosines. Entries are associated with vertices ik, jk,
   // ki, and kj.
@@ -628,123 +626,178 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
   assert(0 != _quadrature);
   assert(0 != _fields);
 
-  // Get cell information and setup storage for cell data
   const int spaceDim = _quadrature->spaceDim();
-  const int numBasis = _quadrature->numBasis();
-  const int numConstraintVert = numBasis;
-  const int numCorners = 3*numConstraintVert; // cohesive cell
-  const int numQuadPts = _quadrature->numQuadPts();
 
-  // Allocate vectors for cell values
-  double_array dispTCell(numCorners*spaceDim);
-  double_array dispTIncrCell(numCorners*spaceDim);
-  double_array dispTpdtCell(numCorners*spaceDim);
+  // Allocate arrays for vertex values
   double_array tractionVertex(spaceDim);
   double_array tractionStickVertex(spaceDim);
-  double_array slipVertex(spaceDim);
+  double_array tractionIncrVertex(spaceDim);
+  double_array slipIncrVertex(spaceDim);
+  double_array lagrangeTpdtVertex(spaceDim);
 
-  // Total fault area associated with each vertex (assembled over all cells).
-  double_array areaCell(numConstraintVert);
+  // Compute slip at fault vertices based on current disp.
+  //_updateSlip();
 
-  // Get cohesive cells
-  const ALE::Obj<SieveMesh>& sieveMesh = 
-    fields->get("disp(t)").mesh().sieveMesh();
+  // Get domain mesh and fault mesh
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cellsCohesive = 
-    sieveMesh->getLabelStratum("material-id", id());
-  assert(!cellsCohesive.isNull());
-  const SieveMesh::label_sequence::iterator cellsCohesiveBegin =
-    cellsCohesive->begin();
-  const SieveMesh::label_sequence::iterator cellsCohesiveEnd =
-    cellsCohesive->end();
-  const int cellsCohesiveSize = cellsCohesive->size();
-
-  // Get fault Sieve mesh
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
   assert(!faultSieveMesh.isNull());
 
-  // Get section information
-  const ALE::Obj<RealSection>& areaSection = 
-    _fields->get("area").section();
+  // Get sections
+  double_array slipVertex(spaceDim);
+  const ALE::Obj<RealSection>& slipSection =  _fields->get("slip").section();
+  assert(!slipSection.isNull());
+
+  const ALE::Obj<RealSection>& areaSection =  _fields->get("area").section();
   assert(!areaSection.isNull());
-  topology::Mesh::RestrictVisitor areaVisitor(*areaSection,
-					      areaCell.size(), &areaCell[0]);
 
-  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
-  const ALE::Obj<RealSection>& dispTSection = dispT.section();
-  assert(!dispTSection.isNull());  
-  topology::Mesh::RestrictVisitor dispTVisitor(*dispTSection,
-					       dispTCell.size(), 
-					       &dispTCell[0]);
+  double_array tractionInitialVertex(spaceDim);
+  const ALE::Obj<RealSection>& tractionInitialSection = (0 != _dbInitial) ?
+    _fields->get("initial traction").section() : 0;
 
-  topology::Field<topology::Mesh>& dispTIncr = fields->get("dispIncr(t->t+dt)");
-  const ALE::Obj<RealSection>& dispTIncrSection = dispTIncr.section();
+  double_array lagrangeTVertex(spaceDim);
+  const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
+  assert(!dispTSection.isNull());
+  
+  double_array lagrangeTIncrVertex(spaceDim);
+  const ALE::Obj<RealSection>& dispTIncrSection = 
+    fields->get("dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());  
-  topology::Mesh::RestrictVisitor dispTIncrVisitor(*dispTIncrSection,
-					       dispTIncrCell.size(), 
-					       &dispTIncrCell[0]);
 
-  for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
-       c_iter != cellsCohesiveEnd;
-       ++c_iter) {
-    // Get fault cell label associated with cohesive cell
-    const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
+  // Get mesh and fault vertices and renumbering
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const SieveSubMesh::label_sequence::iterator verticesBegin = 
+    vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  SieveSubMesh::renumbering_type& renumbering = 
+    faultSieveMesh->getRenumbering();
+  const SieveSubMesh::renumbering_type::const_iterator renumberingEnd =
+    renumbering.end();
 
-    // Get area at fault cell's vertices.
-    areaVisitor.clear();
-    faultSieveMesh->restrictClosure(c_fault, areaVisitor);
-    
-    // Get disp(t) at cohesive cell's vertices.
-    dispTVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispTVisitor);
-    
-    // Get dispIncr(t) at cohesive cell's vertices.
-    dispTIncrVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
-    
-    // Compute current estimate of displacement at time t+dt using
-    // solution increment.
-    dispTpdtCell = dispTCell + dispTIncrCell;
+  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin; 
+       v_iter != verticesEnd;
+       ++v_iter)
+    if (renumbering.find(*v_iter) != renumberingEnd) {
+      const int vertexFault = renumbering[*v_iter];
+      const int vertexMesh = *v_iter;
 
-    for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
-      // Blocks in cell matrix associated with normal cohesive
-      // vertices i and j and constraint vertex k
-      const int indexI = iConstraint;
-      const int indexJ = iConstraint +   numConstraintVert;
-      const int indexK = iConstraint + 2*numConstraintVert;
+      // Reset values to zero.
+      tractionIncrVertex = 0.0;
+      slipIncrVertex = 0.0;
 
-      assert(areaCell[iConstraint] > 0);
-      const double areaVertex = areaCell[iConstraint];
+      // Get slip
+      slipSection->restrictPoint(vertexFault, &slipVertex[0], slipVertex.size());
+
+      // Get total fault area asssociated with vertex (assembled over all cells)
+      const double* areaVertex = areaSection->restrictPoint(vertexFault);
+      assert(0 != areaVertex);
+      assert(1 == areaSection->getFiberDimension(vertexFault));
+
+      // Get initial fault tractions
+      if (0 != _dbInitial) {
+	assert(!tractionInitialSection.isNull());
+	tractionInitialSection->restrictPoint(vertexFault, 
+					      &tractionInitialVertex[0],
+					      tractionInitialVertex.size());
+      } // if
+
+      // Get Lagrange multiplier values from disp(t), and dispIncr(t->t+dt)
+      dispTSection->restrictPoint(vertexMesh, &lagrangeTVertex[0],
+				  lagrangeTVertex.size());
+      dispTIncrSection->restrictPoint(vertexMesh, &lagrangeTIncrVertex[0],
+				      lagrangeTIncrVertex.size());
+      
+      // Compute Lagrange multiplier at time t+dt
+      lagrangeTpdtVertex = lagrangeTVertex + lagrangeTIncrVertex;
       
       // :KLUDGE: (TEMPORARY) Solution at Lagrange constraint vertices
       // is the Lagrange multiplier value, which is currently the
       // force.  Compute traction by dividing force by area
-      for (int i=0; i < spaceDim; ++i)
-	tractionVertex[i] = dispTpdtCell[indexK+i] / areaVertex;
-
-      // Tractions required for sticking (if not exceeded slip
+      assert(*areaVertex > 0);
+      tractionVertex = lagrangeTpdtVertex / (*areaVertex);
+      
+      // Tractions required for sticking (if not exceeded, then slip
       // increment is zero).
       tractionStickVertex = tractionVertex;
-
-      // Compute the current slip at the constraint vertex from
-      // current displacements at the normal cohesive vertices.
-      for (int i=0; i < spaceDim; ++i)
-	slipVertex[i] = dispTpdtCell[indexJ+i] - dispTpdtCell[indexI+i];
-
+      
       // Use fault constitutive model to compute traction associated with
       // friction.
+      // :KLUDGE: TEMPORARY BEGIN CONSTANT COEFFICIENT OF FRICTION
+      const double muf = 0.6;
+      switch (spaceDim)
+	{ // switch
+	case 1 :
+	  { // case 1
+	    if (tractionVertex[0]+tractionInitialVertex[0] > 0)
+	      // if tension, then traction is zero (current + increment = 0).
+	      tractionIncrVertex[0] = -tractionVertex[0];
+	    else {
+	      // if compression, then prevent interpenetration
+	      // current + increment = stick
+	      tractionIncrVertex[0] = tractionStickVertex[0] - tractionVertex[0];
+	    } // if/else
+	  } // case 1
+	case 2 :
+	  { // case 2
+	    if (tractionVertex[1]+tractionInitialVertex[1] > 0) {
+	      // if in tension, then traction is zero (current + increment = 0)
+	      tractionIncrVertex = -tractionVertex;
+	      // :KLUDGE:
+	      const double kii = 1.0;
+	      const double kjj = 1.0;
+	      slipIncrVertex[0] = (kii+kjj)*(tractionVertex[0]);
+	    } else {
+	      // if in compression
+	      const double friction =
+		muf * (tractionInitialVertex[1] + tractionVertex[1]);
+	      if (tractionStickVertex[0] > friction ||
+		  (tractionStickVertex[0] < friction && slipVertex[0] > 0.0)) {
+		// traction is limited by friction, so have sliding
+		tractionIncrVertex[0] = friction - tractionVertex[0];
+		// :KLUDGE:
+		const double kii = 1.0;
+		const double kjj = 1.0;
+		slipIncrVertex[0] = (kii+kjj)*(tractionVertex[0]-friction);
+	      } else {
+		// else friction exceeds value necessary, so stick
+		// current + increment = stick
+		tractionIncrVertex[0] =
+		  tractionStickVertex[0] - tractionVertex[0];
+		// No increment in slip.
+		slipIncrVertex = 0.0;
+	      } // if/else
+	    } // if/else
+	  } // case 2
+	case 3 :
+	  { // case 3
+	    // ADD STUFF HERE
+	  } // case 3
+	default :
+	  assert(0);
+	} // switch
+      // TEMPORARY END
       
-      // Adjust Lagrange multiplier values accordingly.
-
-      // Update the slip estimate based on adjustement to the Lagrange
+      // Update Lagrange multiplier values.
+      // :KLUDGE: (TEMPORARY) Solution at Lagrange constraint vertices
+      // is the Lagrange multiplier value, which is currently the
+      // force.  Compute force by multipling traction by area
+      lagrangeTIncrVertex = tractionIncrVertex * (*areaVertex);
+      assert(lagrangeTIncrVertex.size() == 
+	     dispTIncrSection->getFiberDimension(vertexMesh));
+      dispTIncrSection->updatePoint(vertexMesh, &lagrangeTIncrVertex[0]);
+      
+      // Update the slip estimate based on adjustment to the Lagrange
       // multiplier values.
-
-    } // for
-
-  } // for
-
+      slipVertex += slipIncrVertex;
+      assert(slipVertex.size() == slipSection->getFiberDimension(vertexFault));
+      slipSection->updatePoint(vertexFault, &slipVertex[0]);
+    } // if
+  
   // FIX THIS
-  PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*7);
+  PetscLogFlops(0);
 } // constrainSolnSpace
 
 // ----------------------------------------------------------------------
@@ -819,9 +872,8 @@ pylith::faults::FaultCohesiveDynL::vertexField(
   double scale = 0.0;
   int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
-    const topology::Field<topology::SubMesh>& cumSlip = 
-      _fields->get("cumulative slip");
-    return cumSlip;
+    const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
+    return slip;
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
     const ALE::Obj<RealSection>& orientationSection =
@@ -1447,13 +1499,13 @@ pylith::faults::FaultCohesiveDynL::_allocateBufferVertexVectorField(void)
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Output");
 
-  // Create vector field; use same shape/chart as cumulative slip field.
+  // Create vector field; use same shape/chart as slip field.
   assert(0 != _faultMesh);
   _fields->add("buffer (vector)", "buffer");
   topology::Field<topology::SubMesh>& buffer =
     _fields->get("buffer (vector)");
   const topology::Field<topology::SubMesh>& slip = 
-    _fields->get("cumulative slip");
+    _fields->get("slip");
   buffer.cloneSection(slip);
   buffer.zero();
 
