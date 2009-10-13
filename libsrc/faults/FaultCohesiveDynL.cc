@@ -661,6 +661,13 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
     fields->get("dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());  
 
+
+  slipSection->view("SLIP");
+  areaSection->view("AREA");
+  tractionInitialSection->view("INITIAL TRACTION");
+  dispTSection->view("DISP (t)");
+  dispTIncrSection->view("DISP INCR (t->t+dt)");
+
   // Get mesh and fault vertices and renumbering
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
@@ -735,25 +742,34 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 	  } // case 1
 	case 2 :
 	  { // case 2
+	    std::cout << "Normal traction:"
+		      << tractionTpdtVertex[1]+tractionInitialVertex[1]
+		      << std::endl;
 	    if (tractionTpdtVertex[1]+tractionInitialVertex[1] < 0) {
 	      // if in compression
+	      std::cout << "FAULT IN COMPRESSION" << std::endl;
 	      const double friction =
-		muf * (tractionInitialVertex[1] + tractionTpdtVertex[1]);
+		-muf * (tractionInitialVertex[1] + tractionTpdtVertex[1]);
+	      std::cout << "friction: " << friction << std::endl;
 	      if (tractionTpdtVertex[0] > friction ||
 		  (tractionTpdtVertex[0] < friction && slipVertex[0] > 0.0)) {
 		// traction is limited by friction, so have sliding
+		std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
 		// :KLUDGE:
 		const double kii = 1.0;
 		const double kjj = 1.0;
 		slipVertex[0] += (kii+kjj)*(tractionTpdtVertex[0]-friction);
+		std::cout << "Estimated slip: " << slipVertex[0] << std::endl;
 		// Limit traction
 		tractionTpdtVertex[0] = friction;
 	      } else {
 		// else friction exceeds value necessary, so stick
+		std::cout << "STICK" << std::endl;
 		// no changes to solution
 	      } // if/else
 	    } else {
 	      // if in tension, then traction is zero.
+	      std::cout << "FAULT IN TENSION" << std::endl;
 	      // :KLUDGE:
 	      const double kii = 1.0;
 	      const double kjj = 1.0;
@@ -790,6 +806,9 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
       slipSection->updatePoint(vertexFault, &slipVertex[0]);
     } // if
   
+  dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
+  slipSection->view("AFTER SLIP");
+
   // FIX THIS
   PetscLogFlops(0);
 } // constrainSolnSpace
