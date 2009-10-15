@@ -16,6 +16,9 @@ dist_noinst_DATA = \
 	dislocation.jpg \
 	finalslip.spatialdb \
 	fixeddisp_shear.spatialdb \
+	gravity.cfg \
+	gravity_istress.cfg \
+	initial_stress.spatialdb \
 	mat_elastic.spatialdb \
 	mat_viscoelastic.spatialdb \
 	mesh_tet4_1000m.lagrit \
