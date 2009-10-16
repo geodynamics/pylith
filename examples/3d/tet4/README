@@ -14,10 +14,9 @@ The box spans the volume:
 The mesh is generated using LaGrit. A LaGrit script is included and is
 annotated to guide you through the process of generating the mesh.
 
-See the configuration files shearxy.cfg, dislocation.cfg, gravity.cfg, and
-gravity_istress.cfg for instructions on how to run these simulations. The
-configuration files also contain information about the simulation
-parameters.
+See the configuration files shearxy.cfg and dislocation.cfg for
+instructions on how to run these simulations. The configuration files
+also contain information about the simulation parameters.
 
 
 DESCRIPTION OF FILES
@@ -29,14 +28,6 @@ finalslip.spatialdb - Spatial database for spatial variation of final slip
 fixeddisp_shear.spatialdb - Spatial database for spatial variation of
 the displacement field in the Dirichlet (prescribed displacement)
 boundary conditions for the shear problem
-
-gravity.cfg - Simulation parameters for the gravity problem.
-
-gravity_istress.cfg - Simulation parameters for the gravity problem with
-initial stresses.
-
-initial_stress.spatialdb - Spatial database for spatial variation of the
-initial stresses. They just correspond to rho * g * h.
 
 mat_elastic.spatialdb - Spatial database for spatial variation of the
 elastic material properties
