@@ -59,6 +59,8 @@ pylith::faults::TimeHistorySlipFn::deallocate(void)
 
   _dbAmplitude = 0; // :TODO: Use shared pointer
   _dbSlipTime = 0; // :TODO: Use shared pointer
+  if (0 != _dbTimeHistory)
+    _dbTimeHistory->close();
   _dbTimeHistory = 0; // :TODO: Use shared pointer
 } // deallocate
   
@@ -96,7 +98,8 @@ pylith::faults::TimeHistorySlipFn::initialize(
   assert(0 != _parameters);
   _parameters->add("slip amplitude", "slip_amplitude");
 
-  topology::Field<topology::SubMesh>& slipAmplitude = _parameters->get("slip amplitude");
+  topology::Field<topology::SubMesh>& slipAmplitude = 
+    _parameters->get("slip amplitude");
   slipAmplitude.newSection(vertices, spaceDim);
   slipAmplitude.allocate();
   slipAmplitude.scale(lengthScale);
@@ -234,7 +237,8 @@ pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::SubMesh>* slip
   for (label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
-    slipAmplitudeSection->restrictPoint(*v_iter, &_slipVertex[0], _slipVertex.size());
+    slipAmplitudeSection->restrictPoint(*v_iter, 
+					&_slipVertex[0], _slipVertex.size());
     slipTimeSection->restrictPoint(*v_iter, &_slipTimeVertex, 1);
 
     double relTime = t - _slipTimeVertex;
@@ -257,7 +261,7 @@ pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::SubMesh>* slip
     slipSection->updateAddPoint(*v_iter, &_slipVertex[0]);
   } // for
 
-  PetscLogFlops(vertices->size() * 1);
+  PetscLogFlops(vertices->size() * 3);
 } // slip
 
 // ----------------------------------------------------------------------
@@ -269,6 +273,7 @@ pylith::faults::TimeHistorySlipFn::slipIncr(topology::Field<topology::SubMesh>* 
 { // slipIncr
   assert(0 != slip);
   assert(0 != _parameters);
+  assert(0 != _dbTimeHistory);
 
   // Get vertices in fault mesh
   const ALE::Obj<SieveMesh>& sieveMesh = slip->mesh().sieveMesh();
@@ -328,7 +333,7 @@ pylith::faults::TimeHistorySlipFn::slipIncr(topology::Field<topology::SubMesh>* 
     slipSection->updateAddPoint(*v_iter, &_slipVertex[0]);
   } // for
 
-  PetscLogFlops(vertices->size() * 2);
+  PetscLogFlops(vertices->size() * 6);
 } // slipIncr
 
 // ----------------------------------------------------------------------
