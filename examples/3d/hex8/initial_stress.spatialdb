@@ -12,8 +12,8 @@ SimpleDB {
 
   value-units =  Pa Pa Pa Pa Pa Pa // units
 
-  num-locs = 4 // number of locations: 1 value at the mid-depth for each
-               // layer of elements.
+  num-locs = 2 // number of locations: 1 value each at the upper and lower
+               // surfaces. Linear interpolation should be used.
 
   data-dim = 1
   space-dim = 3
@@ -32,7 +32,5 @@ SimpleDB {
 // (7) stress-xy (Pa)
 // (8) stress-yz (Pa)
 // (9) stress-xz (Pa)
-0.0  0.0 -3500.0 -3.064578125e+07 -3.064578125e+07 -8.58081875e+07 0.0 0.0 0.0
-0.0  0.0 -2500.0 -2.188984375e+07 -2.188984375e+07 -6.12915625e+07 0.0 0.0 0.0
-0.0  0.0 -1500.0 -1.313390625e+07 -1.313390625e+07 -3.67749375e+07 0.0 0.0 0.0
-0.0  0.0  -500.0 -4.37796875e+06 -4.37796875e+06 -1.22583125e+07 0.0 0.0 0.0
+0.0  0.0 -4000.0 -98066500 -98066500 -98066500 0.0 0.0 0.0
+0.0  0.0  0.0 0.0 0.0 0.0 0.0 0.0 0.0
