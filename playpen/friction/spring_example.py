@@ -29,7 +29,7 @@
 import numpy
 
 # Spring stiffness [k0, k1, ..., kN]
-k = (6.0, 2.0, 1.0, 1.0, 4.0)
+k = (4.0, 2.0, 1.0, 1.0, 6.0)
 
 # Prescribed displacement, u5
 u5 = 2.5
@@ -72,11 +72,9 @@ def calcFriction(disp, incr):
     lm = dispTpdt[5] # Lagrange multiplier
     if lm > fy or (lm < fy and b[5] > 0.0):
         incr[5] = fy - disp[5] # Adjust Lagrange multiplier in solution
-        #slipIncr = 2*(lm-fy)
-        slipIncr = (k[2] + k[3])*(lm-fy) - (k[2]*b[2] - k[3]*b[3])
+        slipIncr = -(1.0/k[2] + 1.0/k[3])*(fy-lm)
         b[5] += slipIncr # Update slip estimate
-        #incr[2] -= 0.5*slipIncr
-        #incr[3] += 0.5*slipIncr
+        print "slipIncr:",slipIncr
 
 
 # ----------------------------------------------------------------------
@@ -106,3 +104,9 @@ residual = reformResidual(disp, incr)
 solve(incr, A, residual, disp)
 disp += incr
 print "Solution:",disp
+
+# Analytic solution to sensitivity of slip to Lagrange multipliers
+#Asub = A[0:5,0:5]
+#Asubi = numpy.linalg.inv(Asub)
+#C = numpy.array([[0, 0, -1.0, 1.0, 0.0]], dtype=numpy.float64)
+#print numpy.dot(numpy.dot(C, -Asubi), C.transpose())
