@@ -253,6 +253,15 @@ private :
    */
   void _initConstitutiveModel(void);
 
+  /** Update diagonal of Jacobian at conventional vertices i and j
+   *  associated with Lagrange vertex k.
+   *
+   * @param fields Solution fields.
+   * @param jacobian System jacobian.
+   */
+  void _updateJacobianDiagonal(const topology::SolutionFields& fields,
+			       const topology::Jacobian& jacobian);
+
   /** Compute change in tractions on fault surface using solution.
    *
    * @param tractions Field for tractions.

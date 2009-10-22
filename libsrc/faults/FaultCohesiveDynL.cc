@@ -138,6 +138,14 @@ pylith::faults::FaultCohesiveDynL::initialize(const topology::Mesh& mesh,
   // Setup fault constitutive model.
   _initConstitutiveModel();
 
+  // Create field for diagonal entries of Jacobian at conventional
+  // vertices i and j associated with Lagrange vertex k
+  topology::Field<topology::SubMesh>& jacobianDiag = 
+    _fields->get("Jacobian diagonal");
+  jacobianDiag.newSection(slip, 2*cs->spaceDim());
+  jacobianDiag.allocate();
+  jacobianDiag.vectorFieldType(topology::FieldBase::OTHER);
+
   //logger.stagePop();
 } // initialize
 
@@ -219,17 +227,10 @@ pylith::faults::FaultCohesiveDynL::integrateResidual(
   assert(quadWts.size() == numQuadPts);
 
   // Allocate vectors for cell values
-  double_array orientationCell(numConstraintVert*orientationSize);
-  double_array dispTCell(numCorners*spaceDim);
-  double_array dispTIncrCell(numCorners*spaceDim);
   double_array dispTpdtCell(numCorners*spaceDim);
-  double_array residualCell(numCorners*spaceDim);
 
   // Tributary area for the current for each vertex.
   double_array areaVertexCell(numConstraintVert);
-
-  // Total fault area associated with each vertex (assembled over all cells).
-  double_array areaCell(numConstraintVert);
 
   // Get cohesive cells
   const ALE::Obj<SieveMesh>& sieveMesh = residual.mesh().sieveMesh();
@@ -248,6 +249,7 @@ pylith::faults::FaultCohesiveDynL::integrateResidual(
   assert(!faultSieveMesh.isNull());
 
   // Get section information
+  double_array orientationCell(numConstraintVert*orientationSize);
   const ALE::Obj<RealSection>& orientationSection = 
     _fields->get("orientation").section();
   assert(!orientationSection.isNull());
@@ -255,12 +257,15 @@ pylith::faults::FaultCohesiveDynL::integrateResidual(
 						     orientationCell.size(),
 						     &orientationCell[0]);
 
+  // Total fault area associated with each vertex (assembled over all cells).
+  double_array areaCell(numConstraintVert);
   const ALE::Obj<RealSection>& areaSection = 
     _fields->get("area").section();
   assert(!areaSection.isNull());
   topology::Mesh::RestrictVisitor areaVisitor(*areaSection,
 					      areaCell.size(), &areaCell[0]);
 
+  double_array dispTCell(numCorners*spaceDim);
   topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
   const ALE::Obj<RealSection>& dispTSection = dispT.section();
   assert(!dispTSection.isNull());  
@@ -268,6 +273,7 @@ pylith::faults::FaultCohesiveDynL::integrateResidual(
 					       dispTCell.size(), 
 					       &dispTCell[0]);
 
+  double_array dispTIncrCell(numCorners*spaceDim);
   topology::Field<topology::Mesh>& dispTIncr = fields->get("dispIncr(t->t+dt)");
   const ALE::Obj<RealSection>& dispTIncrSection = dispTIncr.section();
   assert(!dispTIncrSection.isNull());  
@@ -275,6 +281,7 @@ pylith::faults::FaultCohesiveDynL::integrateResidual(
 					       dispTIncrCell.size(), 
 					       &dispTIncrCell[0]);
 
+  double_array residualCell(numCorners*spaceDim);
   const ALE::Obj<RealSection>& residualSection = residual.section();
   topology::Mesh::UpdateAddVisitor residualVisitor(*residualSection,
 						   &residualCell[0]);
@@ -648,6 +655,11 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
   const ALE::Obj<RealSection>& areaSection =  _fields->get("area").section();
   assert(!areaSection.isNull());
 
+  double_array orientationVertex(spaceDim*spaceDim);
+  const ALE::Obj<RealSection>& orientationSection =
+    _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
+
   double_array tractionInitialVertex(spaceDim);
   const ALE::Obj<RealSection>& tractionInitialSection = (0 != _dbInitial) ?
     _fields->get("initial traction").section() : 0;
@@ -661,6 +673,11 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
     fields->get("dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());  
 
+  double_array jacobianVertex(2*spaceDim);
+  const ALE::Obj<RealSection>& jacobianSection = 
+    fields->get("Jacobian diagonal").section();
+  assert(!jacobianSection.isNull());
+  _updateJacobianDiagonal(*fields, jacobian);
 
   slipSection->view("SLIP");
   areaSection->view("AREA");
@@ -688,12 +705,22 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
       const int vertexMesh = *v_iter;
 
       // Get slip
-      slipSection->restrictPoint(vertexFault, &slipVertex[0], slipVertex.size());
+      slipSection->restrictPoint(vertexFault, 
+				 &slipVertex[0], slipVertex.size());
 
       // Get total fault area asssociated with vertex (assembled over all cells)
       const double* areaVertex = areaSection->restrictPoint(vertexFault);
       assert(0 != areaVertex);
       assert(1 == areaSection->getFiberDimension(vertexFault));
+
+      // Get fault orientation
+      orientationSection->restrictPoint(vertexFault, &orientationVertex[0],
+					orientationVertex.size());
+
+      // Get diagonal of Jacobian at conventional vertices i and j
+      // associated with Lagrange vertex k
+      jacobianSection->restrictPoint(vertexFault, &jacobianVertex[0], 
+				     jacobianVertex.size());
 
       // Get initial fault tractions
       if (0 != _dbInitial) {
@@ -712,9 +739,9 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
       // Compute Lagrange multiplier at time t+dt
       lagrangeTpdtVertex = lagrangeTVertex + lagrangeTIncrVertex;
       
-      // :KLUDGE: (TEMPORARY) Solution at Lagrange constraint vertices
-      // is the Lagrange multiplier value, which is currently the
-      // force.  Compute traction by dividing force by area
+      // :KLUDGE: Solution at Lagrange constraint vertices is the
+      // Lagrange multiplier value, which is currently the force.
+      // Compute traction by dividing force by area
       assert(*areaVertex > 0);
       tractionTVertex = lagrangeTVertex / (*areaVertex);
       tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);
@@ -727,15 +754,22 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 	{ // switch
 	case 1 :
 	  { // case 1
+	    // Sensitivity of slip to changes in the Lagrange multipliers
+	    // Aixjx = 1.0/Aix + 1.0/Ajx
+	    const double Aixjx = 
+	      1.0/jacobianVertex[0] + 1.0/jacobianVertex[spaceDim+0];
+	    const double Spp = 1.0;
+
 	    if (tractionTpdtVertex[0]+tractionInitialVertex[0] < 0) {
 	      // if compression, then no changes to solution
 	    } else {
 	      // if tension, then traction is zero.
-	      // :KLUDGE:
-	      const double kii = 1.0;
-	      const double kjj = 1.0;
-	      slipVertex[0] += (kii+kjj)*(tractionTpdtVertex[0]);
-	      // Limit traction
+	      
+	      // Update slip based on value required to stick versus
+	      // zero traction
+	      slipVertex[0] += Spp * tractionTpdtVertex[0];
+
+	      // Set traction to zero.
 	      tractionTpdtVertex[0] = 0.0;
 	    } // else
 	    break;
@@ -745,6 +779,22 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 	    std::cout << "Normal traction:"
 		      << tractionTpdtVertex[1]+tractionInitialVertex[1]
 		      << std::endl;
+
+	    // Sensitivity of slip to changes in the Lagrange multipliers
+	    // Aixjx = 1.0/Aix + 1.0/Ajx
+	    const double Aixjx = 
+	      1.0/jacobianVertex[0] + 1.0/jacobianVertex[spaceDim+0];
+	    // Aiyjy = 1.0/Aiy + 1.0/Ajy
+	    const double Aiyjy = 
+	      1.0/jacobianVertex[1] + 1.0/jacobianVertex[spaceDim+1];
+	    const double Cpx = orientationVertex[0];
+	    const double Cpy = orientationVertex[1];
+	    const double Cqx = orientationVertex[2];
+	    const double Cqy = orientationVertex[3];
+	    const double Spp = Cpx*Cpx*Aixjx + Cpy*Cpy*Aiyjy;
+	    const double Spq = Cpx*Cqx*Aixjx + Cpy*Cqy*Aiyjy;
+	    const double Sqq = Cqx*Cqx*Aixjx + Cqy*Cqy*Aiyjy;
+
 	    if (tractionTpdtVertex[1]+tractionInitialVertex[1] < 0) {
 	      // if in compression
 	      std::cout << "FAULT IN COMPRESSION" << std::endl;
@@ -755,10 +805,9 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 		  (tractionTpdtVertex[0] < friction && slipVertex[0] > 0.0)) {
 		// traction is limited by friction, so have sliding
 		std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
-		// :KLUDGE:
-		const double kii = 1.0;
-		const double kjj = 1.0;
-		slipVertex[0] += (kii+kjj)*(tractionTpdtVertex[0]-friction);
+
+		// Update slip based on value required to stick versus friction
+		slipVertex[0] += Spp * (tractionTpdtVertex[0]-friction);
 		std::cout << "Estimated slip: " << slipVertex[0] << std::endl;
 		// Limit traction
 		tractionTpdtVertex[0] = friction;
@@ -770,11 +819,17 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 	    } else {
 	      // if in tension, then traction is zero.
 	      std::cout << "FAULT IN TENSION" << std::endl;
-	      // :KLUDGE:
-	      const double kii = 1.0;
-	      const double kjj = 1.0;
-	      slipVertex[0] += (kii+kjj)*(tractionTpdtVertex[0]);
-	      // Limit traction
+	      
+		// Update slip based on value required to stick versus
+		// zero traction
+	      slipVertex[0] += 
+		Spp * tractionTpdtVertex[0] +
+		Spq * tractionTpdtVertex[1];
+	      slipVertex[1] += 
+		Spq * tractionTpdtVertex[0] +
+		Sqq * tractionTpdtVertex[1];
+
+	      // Set traction to zero
 	      tractionTpdtVertex = 0.0;
 	    } // else
 	    break;
@@ -1499,6 +1554,105 @@ pylith::faults::FaultCohesiveDynL::_initConstitutiveModel(void)
 { // _initConstitutiveModel
   // :TODO: ADD STUFF HERE
 } // _initConstitutiveModel
+
+// ----------------------------------------------------------------------
+// Update diagonal of Jacobian at conventional vertices i and j
+//  associated with Lagrange vertex k.
+void
+pylith::faults::FaultCohesiveDynL::_updateJacobianDiagonal(
+				     const topology::SolutionFields& fields,
+				     const topology::Jacobian& jacobian)
+{ // _updateJacobianDiagonal
+  assert(0 != _fields);
+
+  // Get cohesive cells
+  const ALE::Obj<SieveMesh>& sieveMesh = fields.mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cellsCohesive = 
+    sieveMesh->getLabelStratum("material-id", id());
+  assert(!cellsCohesive.isNull());
+  const SieveMesh::label_sequence::iterator cellsCohesiveBegin =
+    cellsCohesive->begin();
+  const SieveMesh::label_sequence::iterator cellsCohesiveEnd =
+    cellsCohesive->end();
+  const int cellsCohesiveSize = cellsCohesive->size();
+
+  const int spaceDim = _quadrature->spaceDim();
+
+  const int numConstraintVert = _quadrature->numBasis();
+  const int numCorners = 3*numConstraintVert; // cohesive cell
+  double_array matrixCell(numCorners*spaceDim * numCorners*spaceDim);
+
+  // Get section information
+  const ALE::Obj<RealSection>& solutionSection = fields.solution().section();
+  assert(!solutionSection.isNull());  
+
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+
+  double_array jacobianDiagCell(numConstraintVert*2*spaceDim);
+  const ALE::Obj<RealSection>& jacobianDiagSection = 
+    _fields->get("Jacobian diagonal").section();
+  topology::Mesh::UpdateAllVisitor jacobianDiagVisitor(*jacobianDiagSection,
+						       &jacobianDiagCell[0]);
+
+  const PetscMat jacobianMatrix = jacobian.matrix();
+  assert(0 != jacobianMatrix);
+  const ALE::Obj<SieveMesh::order_type>& globalOrder = 
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
+					    solutionSection);
+  assert(!globalOrder.isNull());
+  // We would need to request unique points here if we had an interpolated mesh
+  topology::Mesh::IndicesVisitor jacobianVisitor(*solutionSection,
+						 *globalOrder,
+		      (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
+				     sieveMesh->depth())*spaceDim);
+
+  for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+       c_iter != cellsCohesiveEnd;
+       ++c_iter) {
+    const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
+
+    // Insert cell contribution into PETSc Matrix
+    jacobianVisitor.clear();
+#if 0 // MISSING
+    PetscErrorCode err = restrictOperator(jacobianMatrix,
+					  *sieveMesh->getSieve(),
+					  jacobianVisitor, *c_iter,
+					  &matrixCell[0]);
+#endif
+
+    for (int iConstraint=0, iJacobian=0; 
+	 iConstraint < numConstraintVert;
+	 ++iConstraint, iJacobian += 2*spaceDim) {
+      // Blocks in cell matrix associated with normal cohesive
+      // vertices i and j and constraint vertex k
+      const int indexI = iConstraint;
+      const int indexJ = iConstraint +   numConstraintVert;
+      const int indexK = iConstraint + 2*numConstraintVert;
+      
+      // Diagonal for vertex i
+      int row = indexI*spaceDim;
+      int col = row;
+      for (int iDim=0; iDim < spaceDim; ++iDim)
+	jacobianDiagCell[iJacobian+iDim] =
+	  matrixCell[(row+iDim)*numCorners*spaceDim+col+iDim];
+
+      // Diagonal for vertex j
+      row = indexJ*spaceDim;
+      col = row;
+      for (int iDim=0; iDim < spaceDim; ++iDim)
+	jacobianDiagCell[iJacobian+spaceDim+iDim] =
+	  matrixCell[(row+iDim)*numCorners*spaceDim+col+iDim];
+    } // for
+
+    // Insert cell contribution into 
+    jacobianDiagVisitor.clear();
+#if 0 // MISSING
+    sieveMesh->updateAll(*c_iter, jacobianDiagVisitor);
+#endif
+  } // for
+} // _updateJacobianDiagonal
 
 // ----------------------------------------------------------------------
 // Allocate buffer for vector field.
