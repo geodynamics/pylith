@@ -55,6 +55,12 @@ public :
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
   
+  /** Get solution fields.
+   *
+   * @returns solution fields.
+   */
+  const topology::SolutionFields& fields(void) const;
+
   /** Set handles to integrators over the mesh.
    *
    * @param integrators Integrators over the mesh.
@@ -84,6 +90,19 @@ public :
 		      const double t,
 		      const double dt);
 
+  /** Update handles and parameters for reforming the Jacobian and
+   *  residual.
+   *
+   * @param jacobian Handle to diagonal matrix (as Field) for system Jacobian.
+   * @param fields Handle to solution fields.
+   * @param t Current time (nondimensional).
+   * @param dt Time step (nondimension).
+   */
+  void updateSettings(topology::Field<topology::Mesh>* jacobian,
+		      topology::SolutionFields* fields,
+		      const double t,
+		      const double dt);
+
   /** Reform system residual.
    *
    * @param tmpResidualVec Temporary PETSc vector for residual.
@@ -98,7 +117,20 @@ public :
    */
   void reformJacobian(const PetscVec* tmpSolveSolnVec =0);
 
-  const topology::SolutionFields& fields() const;
+  /* Reform system Jacobian.
+   */
+  void reformJacobianLumped(void);
+
+  /** Adjust solution from solver with lumped Jacobian to match Lagrange
+   *  multiplier constraints.
+   *
+   * @param solution Solution field.
+   * @param jacobian Jacobian of the system.
+   * @param residual Residual field.
+   */
+  void adjustSolnLumped(topology::Field<topology::Mesh>* solution,
+			const topology::Field<topology::Mesh>& jacobian,
+			const topology::Field<topology::Mesh>& residual);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
@@ -106,6 +138,7 @@ private :
   double _t; ///< Current time (nondimensional).
   double _dt; ///< Current time step (nondimensional).
   topology::Jacobian* _jacobian; ///< Handle to Jacobian of system.
+  topology::Field<topology::Mesh>* _jacobianLumped; ///< Handle to lumped Jacobian of system.
   topology::SolutionFields* _fields; ///< Handle to solution fields for system.
 
   /// Integrators over subdomains of the mesh.

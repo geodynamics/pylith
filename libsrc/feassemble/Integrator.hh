@@ -141,18 +141,6 @@ public :
 			 const double t,
 			 topology::SolutionFields* const fields);
 
-  /** Integrate contributions to Jacobian matrix (A) associated with
-   * operator.
-   *
-   * @param jacobian Sparse matrix for Jacobian of system.
-   * @param t Current time
-   * @param fields Solution fields
-   */
-  virtual
-  void integrateJacobian(topology::Jacobian* jacobian,
-			 const double t,
-			 topology::SolutionFields* const fields);
-
   /** Integrate contributions to residual term (r) for operator that
    * do not require assembly over cells, vertices, or processors.
    *
@@ -166,6 +154,18 @@ public :
 				  topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
+   * operator.
+   *
+   * @param jacobian Sparse matrix for Jacobian of system.
+   * @param t Current time
+   * @param fields Solution fields
+   */
+  virtual
+  void integrateJacobian(topology::Jacobian* jacobian,
+			 const double t,
+			 topology::SolutionFields* const fields);
+
+  /** Integrate contributions to Jacobian matrix (A) associated with
    * operator that do not require assembly over cells, vertices, or
    * processors
    *
@@ -175,6 +175,31 @@ public :
    */
   virtual
   void integrateJacobianAssembled(topology::Jacobian* jacobian,
+				  const double t,
+				  topology::SolutionFields* const fields);
+
+  /** Integrate contributions to Jacobian matrix (A) associated with
+   * operator.
+   *
+   * @param jacobian Diagonal matrix (as field) for Jacobian of system.
+   * @param t Current time
+   * @param fields Solution fields
+   */
+  virtual
+  void integrateJacobian(const topology::Field<topology::Mesh>& jacobian,
+			 const double t,
+			 topology::SolutionFields* const fields);
+
+  /** Integrate contributions to Jacobian matrix (A) associated with
+   * operator that do not require assembly over cells, vertices, or
+   * processors
+   *
+   * @param jacobian Diagonal matrix (as field) for Jacobian of system.
+   * @param t Current time
+   * @param fields Solution fields
+   */
+  virtual
+  void integrateJacobianAssembled(const topology::Field<topology::Mesh>&  jacobian,
 				  const double t,
 				  topology::SolutionFields* const fields);
 
@@ -198,6 +223,18 @@ public :
   void constrainSolnSpace(topology::SolutionFields* const fields,
 			  const double t,
 			  const topology::Jacobian& jacobian);
+
+  /** Adjust solution from solver with lumped Jacobian to match Lagrange
+   *  multiplier constraints.
+   *
+   * @param solution Solution field.
+   * @param jacobian Jacobian of the system.
+   * @param residual Residual field.
+   */
+  virtual
+  void adjustSolnLumped(topology::Field<topology::Mesh>* solution,
+			const topology::Field<topology::Mesh>& jacobian,
+			const topology::Field<topology::Mesh>& residuale);
 
   /** Verify configuration is acceptable.
    *

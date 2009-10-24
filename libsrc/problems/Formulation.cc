@@ -30,6 +30,7 @@ pylith::problems::Formulation::Formulation(void) :
   _t(0.0),
   _dt(0.0),
   _jacobian(0),
+  _jacobianLumped(0),
   _fields(0)
 { // constructor
 } // constructor
@@ -47,6 +48,7 @@ void
 pylith::problems::Formulation::deallocate(void)
 { // deallocate
   _jacobian = 0; // :TODO: Use shared pointer.
+  _jacobianLumped = 0; // :TODO: Use shared pointer.
   _fields = 0; // :TODO: Use shared pointer.
 } // deallocate
   
@@ -104,6 +106,25 @@ pylith::problems::Formulation::updateSettings(topology::Jacobian* jacobian,
 } // updateSettings
 
 // ----------------------------------------------------------------------
+// Update handles and parameters for reforming the Jacobian and
+// residual.
+void
+pylith::problems::Formulation::updateSettings(topology::Field<topology::Mesh>* jacobian,
+					      topology::SolutionFields* fields,
+					      const double t,
+					      const double dt)
+{ // updateSettings
+  assert(0 != jacobian);
+  assert(0 != fields);
+  assert(dt > 0.0);
+
+  _jacobianLumped = jacobian;
+  _fields = fields;
+  _t = t;
+  _dt = dt;
+} // updateSettings
+
+// ----------------------------------------------------------------------
 // Reform system residual.
 void
 pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
@@ -119,6 +140,8 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
 
   // ===================================================================
   // :KLUDGE: WAITING FOR MATT TO IMPLEMENT DIFFERENT LINE SEARCH
+  // Need a customized replacement routine for line search that will be 
+  // set via SNES_SetLineSearch().
   int numIntegrators = _meshIntegrators.size();
   assert(numIntegrators > 0); // must have at least 1 bulk integrator
   for (int i=0; i < numIntegrators; ++i) {
@@ -212,6 +235,60 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
   // Assemble jacobian.
   _jacobian->assemble("final_assembly");
 } // reformJacobian
+
+// ----------------------------------------------------------------------
+// Reform system Jacobian.
+void
+pylith::problems::Formulation::reformJacobianLumped(void)
+{ // reformJacobian
+  assert(0 != _jacobianLumped);
+  assert(0 != _fields);
+
+  // Set jacobian to zero.
+  _jacobianLumped->zero();
+
+  // Add in contributions that require assembly.
+  int numIntegrators = _meshIntegrators.size();
+  for (int i=0; i < numIntegrators; ++i)
+    _meshIntegrators[i]->integrateJacobian(*_jacobianLumped, _t, _fields);
+  numIntegrators = _submeshIntegrators.size();
+  for (int i=0; i < numIntegrators; ++i)
+    _submeshIntegrators[i]->integrateJacobian(*_jacobianLumped, _t, _fields);
+  
+  // Assemble jacbian.
+  _jacobianLumped->complete();
+
+  // Add in contributions that do not require assembly.
+  numIntegrators = _meshIntegrators.size();
+  for (int i=0; i < numIntegrators; ++i)
+    _meshIntegrators[i]->integrateJacobianAssembled(*_jacobianLumped, 
+						    _t, _fields);
+  numIntegrators = _submeshIntegrators.size();
+  for (int i=0; i < numIntegrators; ++i)
+    _submeshIntegrators[i]->integrateJacobianAssembled(*_jacobianLumped,
+						       _t, _fields);
+
+} // reformJacobian
+
+// ----------------------------------------------------------------------
+// Adjust solution from solver with lumped Jacobian to match Lagrange
+//  multiplier constraints.
+void
+pylith::problems::Formulation::adjustSolnLumped(
+			  topology::Field<topology::Mesh>* solution,
+			  const topology::Field<topology::Mesh>& jacobian,
+			  const topology::Field<topology::Mesh>& residual)
+{ // adjustSolnLumped
+  assert(0 != solution);
+
+  int numIntegrators = _meshIntegrators.size();
+  for (int i=0; i < numIntegrators; ++i)
+    _meshIntegrators[i]->adjustSolnLumped(solution, jacobian, residual);
+
+  numIntegrators = _submeshIntegrators.size();
+  for (int i=0; i < numIntegrators; ++i)
+    _submeshIntegrators[i]->adjustSolnLumped(solution, jacobian, residual);
+} // adjustSolnLumped
 
 
 // End of file 

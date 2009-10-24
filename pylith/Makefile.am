@@ -104,12 +104,14 @@ nobase_pkgpyexec_PYTHON = \
 	perf/Jacobian.py \
 	problems/__init__.py \
 	problems/Explicit.py \
+	problems/ExplicitLumped.py \
 	problems/Formulation.py \
 	problems/Implicit.py \
 	problems/Problem.py \
 	problems/Solver.py \
 	problems/SolverLinear.py \
 	problems/SolverNonlinear.py \
+	problems/SolverLumped.py \
 	problems/TimeDependent.py \
 	problems/TimeStep.py \
 	problems/TimeStepAdapt.py \

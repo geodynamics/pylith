@@ -6,38 +6,6 @@ CURRENT ISSUES/PRIORITIES
 FRICTION
 ----------------------------------------------------------------------
 
-1. Update header files for documentation via doxygen. [Brad]
-
-2. FaultCohesiveDyn
-
-  a. Fix implementation so that it works for implicit case [Brad and Surendra]
-    Use Lagrange multipliers?
-    Enforce interpenetration in strong sense?
-    Enforce stick-slip in weak sense?
-
-    Create axial and shear test cases in playpen/friction. [Surendra]
-
-  b. Implement output of desired fields [Brad]
-    orientation
-    initial tractions
-    slip
-    traction
-    slip
-    fault constitutive model parameters
-    fault constitutive model state variables
-
-  c. Unit tests [Brad and Surendra]
-    Brad will create base class and template.
-    Surendra will complete for different cell types (quad, tri, tet, hex)
-
-    Use slip-weakening friction (don't use trivial constant friction)
-    testInitialize()
-    testIntegrateResidual()
-    testIntegrateJacobian()??
-    testOrientation()
-    testInitialTractions()
-
-  c. cleanup/optimization
 
 3. pylith::friction::FrictionModel
   (base class for fault constitutive models) [Brad]
@@ -52,6 +20,43 @@ FRICTION
 6. Other fault constitutive models [Surendra]
   Rate- and state-friction with aging law
   Rate- and state-friction with slip law
+
+----------------------------------------------------------------------
+LUMPED SOLVER
+----------------------------------------------------------------------
+
+Unit tests
+  FaultCohesiveKin
+    integrateJacobian (lumped)
+    adjustSolnLumped
+
+  FaultCohesiveDynL
+    integrateJacobian (lumped)
+    adjustSolnLumped
+
+  ElasticityExplicit
+    integrateJacobian (lumped)
+
+  AbsorbingDampers
+    integrateJacobian (lumped)
+
+
+FaultCohesiveKin (C++)
+  integrateJacobian (lumped)
+  adjustSolnLumped()
+
+ElasticityExplicit
+  integrateJacobian (lumped)
+
+AbsorbingDampers
+  integrateJacobian (lumped)
+
+FaultCohesiveDynL (C++)
+  integrateJacobian (lumped)
+  adjustSolnLumped()
+    compute Lagrange multipliers (zero increment of slip)
+    calls constrainSolnSpace()
+    adjust displacements
 
 ----------------------------------------------------------------------
 POST RELEASE 1.4
