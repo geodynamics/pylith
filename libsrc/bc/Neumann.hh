@@ -62,17 +62,6 @@ public :
 			 const double t,
 			 topology::SolutionFields* const fields);
 
-  /** Integrate contributions to Jacobian matrix (A) associated with
-   * operator.
-   *
-   * @param jacobian Sparse matrix for Jacobian of system.
-   * @param t Current time
-   * @param fields Solution fields
-   */
-  void integrateJacobian(topology::Jacobian* jacobian,
-			 const double t,
-			 topology::SolutionFields* const fields);
-
   /** Verify configuration is acceptable.
    *
    * @param mesh Finite-element mesh

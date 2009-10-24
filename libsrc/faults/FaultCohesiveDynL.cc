@@ -140,6 +140,7 @@ pylith::faults::FaultCohesiveDynL::initialize(const topology::Mesh& mesh,
 
   // Create field for diagonal entries of Jacobian at conventional
   // vertices i and j associated with Lagrange vertex k
+  _fields->add("Jacobian diagonal", "jacobian_diagonal");
   topology::Field<topology::SubMesh>& jacobianDiag = 
     _fields->get("Jacobian diagonal");
   jacobianDiag.newSection(slip, 2*cs->spaceDim());
@@ -675,7 +676,7 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 
   double_array jacobianVertex(2*spaceDim);
   const ALE::Obj<RealSection>& jacobianSection = 
-    fields->get("Jacobian diagonal").section();
+    _fields->get("Jacobian diagonal").section();
   assert(!jacobianSection.isNull());
   _updateJacobianDiagonal(*fields, jacobian);
 

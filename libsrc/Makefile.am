@@ -102,6 +102,7 @@ libpylith_la_SOURCES = \
 	problems/Solver.cc \
 	problems/SolverLinear.cc \
 	problems/SolverNonlinear.cc \
+	problems/SolverLumped.cc \
 	topology/FieldBase.cc \
 	topology/Jacobian.cc \
 	topology/Mesh.cc \

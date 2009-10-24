@@ -18,6 +18,7 @@ subpkginclude_HEADERS = \
 	Solver.hh \
 	SolverLinear.hh \
 	SolverNonlinear.hh \
+	SolverLumped.hh \
 	problemsfwd.hh
 
 noinst_HEADERS =
