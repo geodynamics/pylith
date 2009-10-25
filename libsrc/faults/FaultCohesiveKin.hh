@@ -164,12 +164,23 @@ public :
    * operator that do not require assembly across cells, vertices, or
    * processors.
    *
-   * @param mat Sparse matrix
+   * @param jacobian Sparse matrix
    * @param t Current time
    * @param fields Solution fields
-   * @param mesh Finite-element mesh
    */
   void integrateJacobianAssembled(topology::Jacobian* jacobian,
+				  const double t,
+				  topology::SolutionFields* const fields);
+
+  /** Integrate contributions to Jacobian matrix (A) associated with
+   * operator that do not require assembly across cells, vertices, or
+   * processors.
+   *
+   * @param jacobian Diagonal Jacobian matrix as a field.
+   * @param t Current time
+   * @param fields Solution fields
+   */
+  void integrateJacobianAssembled(topology::Field<topology::Mesh>* jacobian,
 				  const double t,
 				  topology::SolutionFields* const fields);
 
@@ -181,6 +192,16 @@ public :
    */
   void updateStateVars(const double t,
 		       topology::SolutionFields* const fields);
+
+  /** Adjust solution from solver with lumped Jacobian to match Lagrange
+   *  multiplier constraints.
+   *
+   * @param solution Solution field.
+   * @param jacobian Jacobian of the system.
+   * @param residual Residual field.
+   */
+  void adjustSolnLumped(topology::SolutionFields* fields,
+			const topology::Field<topology::Mesh>& jacobian);
 
   /** Verify configuration is acceptable.
    *
