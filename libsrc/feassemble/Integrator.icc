@@ -147,9 +147,8 @@ template<typename quadrature_type>
 inline
 void
 pylith::feassemble::Integrator<quadrature_type>::adjustSolnLumped(
-			topology::Field<topology::Mesh>* solution,
-			const topology::Field<topology::Mesh>& jacobian,
-			const topology::Field<topology::Mesh>& residuale) {
+			topology::SolutionFields* fields,
+			const topology::Field<topology::Mesh>& jacobian) {
 } // adjustSolnLumped
 
 

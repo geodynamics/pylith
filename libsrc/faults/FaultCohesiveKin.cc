@@ -713,8 +713,8 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
   //                   - A_i A_j / (A_i+A_j) d_k
   //   * DOF i and j: Adjust displacement increment (solution) to account
   //            for Lagrange multiplier constraints
-  //            du_i = -A^-1 C_ki^T dlk
-  //            du_j = -A^-1 C_kj^T dlk
+  //            du_i = -A_i^-1 C_ki^T dlk
+  //            du_j = +A_j^-1 C_kj^T dlk
 
   // Get cell information and setup storage for cell data
   const int spaceDim = _quadrature->spaceDim();
@@ -906,7 +906,14 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  const double Aruslip = Aru - slipVertex[0];
 	  const double dlp = dinv00*Aruslip;
 
-	  solutionCell[indexK*spaceDim+0] = dlp;
+	  // Update displacements at node I
+	  solutionCell[indexI*spaceDim+0] =  wt * -1.0/Ai[0] * dlp;
+
+	  // Update displacements at node J
+	  solutionCell[indexJ*spaceDim+0] = wt * +1.0/Aj[0] * dlp;
+
+	  // Update Lagrange multipliers
+	  solutionCell[indexK*spaceDim+0] = wt * dlp;
 
 	  break;
 	} // case 1
@@ -918,19 +925,19 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  const double Crx = orientationVertex[4];
 	  const double Cry = orientationVertex[5];
 
-	  const double d00 = 
+	  const double Spp = 
 	    Cpx*Cpx*(1.0/Ai[0] + 1.0/Aj[0]) +
 	    Cpy*Cpy*(1.0/Ai[1] + 1.0/Aj[1]);
-	  const double d01 =
+	  const double Spq =
 	    Cpx*Cqx*(1.0/Ai[0] + 1.0/Aj[0]) +
 	    Cpy*Cqy*(1.0/Ai[1] + 1.0/Aj[1]);
-	  const double d11 = 
+	  const double Sqq = 
 	    Cqx*Cqx*(1.0/Ai[0] + 1.0/Aj[0]) +
 	    Cqy*Cqy*(1.0/Ai[1] + 1.0/Aj[1]);
-	  const double detD = d00*d11 - d01*d01;
-	  const double dinv00 = d11 / detD;
-	  const double dinv01 = -d01 / detD;
-	  const double dinv11 = d00 / detD;
+	  const double detS = Spp*Sqq - Spq*Spq;
+	  const double Sinvpp = Sqq / detS;
+	  const double Sinvpq = -Spq / detS;
+	  const double Sinvqq = Spp / detS;
 
 	  // Aru = A_i^{-1} r_i - A_j^{-1} r_j + u_i - u_j
 	  const double Arux = ri[0]/Ai[0] - rj[0]/Aj[0] + ui[0] - uj[0];
@@ -941,11 +948,24 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  const double Aruq = Cqx*Arux + Cqy*Aruy;
 	  const double Arupslip = Arup - slipVertex[0];
 	  const double Aruqslip = Aruq - slipVertex[1];
-	  const double dlp = dinv00*Arupslip + dinv01*Aruqslip;
-	  const double dlq = dinv01*Arupslip + dinv11*Aruqslip;
+	  const double dlp = Sinvpp*Arupslip + Sinvpq*Aruqslip;
+	  const double dlq = Sinvpq*Arupslip + Sinvqq*Aruqslip;
 
-	  solutionCell[indexK*spaceDim+0] = dlp;
-	  solutionCell[indexK*spaceDim+1] = dlq;
+	  // Update displacements at node I
+	  solutionCell[indexI*spaceDim+0] = 
+	    wt * -1.0/Ai[0] * (Cpx*dlp + Cqx*dlq);
+	  solutionCell[indexI*spaceDim+1] = 
+	    wt * -1.0/Ai[1] * (Cpy*dlp + Cqy*dlq);
+
+	  // Update displacements at node J
+	  solutionCell[indexJ*spaceDim+0] = 
+	    wt * +1.0/Aj[0] * (Cpx*dlp + Cqx*dlq);
+	  solutionCell[indexJ*spaceDim+1] = 
+	    wt * +1.0/Aj[1] * (Cpy*dlp + Cqy*dlq);
+
+	  // Update Lagrange multipliers
+	  solutionCell[indexK*spaceDim+0] = wt * dlp;
+	  solutionCell[indexK*spaceDim+1] = wt * dlq;
 
 	  break;
 	} // case 2
@@ -960,40 +980,40 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  const double Cry = orientationVertex[7];
 	  const double Crz = orientationVertex[8];
 
-	  const double d00 = 
+	  const double Spp = 
 	    Cpx*Cpx*(1.0/Ai[0] + 1.0/Aj[0]) +
 	    Cpy*Cpy*(1.0/Ai[1] + 1.0/Aj[1]) +
 	    Cpz*Cpz*(1.0/Ai[2] + 1.0/Aj[2]);
-	  const double d01 =
+	  const double Spq =
 	    Cpx*Cqx*(1.0/Ai[0] + 1.0/Aj[0]) +
 	    Cpy*Cqy*(1.0/Ai[1] + 1.0/Aj[1]) +
 	    Cpz*Cqz*(1.0/Ai[2] + 1.0/Aj[2]);
-	  const double d02 =
+	  const double Spr =
 	    Cpx*Crx*(1.0/Ai[0] + 1.0/Aj[0]) +
 	    Cpy*Cry*(1.0/Ai[1] + 1.0/Aj[1]) +
 	    Cpz*Crz*(1.0/Ai[2] + 1.0/Aj[2]);
-	  const double d11 = 
+	  const double Sqq = 
 	    Cqx*Cqx*(1.0/Ai[0] + 1.0/Aj[0]) +
 	    Cqy*Cqy*(1.0/Ai[1] + 1.0/Aj[1]) +
 	    Cqz*Cqz*(1.0/Ai[2] + 1.0/Aj[2]);
-	  const double d12 =
+	  const double Sqr =
 	    Cqx*Crx*(1.0/Ai[0] + 1.0/Aj[0]) +
 	    Cqy*Cry*(1.0/Ai[1] + 1.0/Aj[1]) +
 	    Cqz*Crz*(1.0/Ai[2] + 1.0/Aj[2]);
-	  const double d22 = 
+	  const double Srr = 
 	    Crx*Crx*(1.0/Ai[0] + 1.0/Aj[0]) +
 	    Cry*Cry*(1.0/Ai[1] + 1.0/Aj[1]) +
 	    Crz*Crz*(1.0/Ai[2] + 1.0/Aj[2]);
-	  const double detD =
-	    d00 * (d11*d22 - d12*d12) +
-	    d01 * (d02*d12 - d01*d22) +
-	    d02 * (d01*d12 - d02*d11);
-	  const double dinv00 = (d11*d22 - d12*d12) / detD;
-	  const double dinv01 = (d02*d12 - d01*d22) / detD;
-	  const double dinv02 = (d01*d12 - d02*d11) / detD;
-	  const double dinv11 = (d00*d22 - d02*d02) / detD;
-	  const double dinv12 = (d01*d02 - d00*d12) / detD;
-	  const double dinv22 = (d00*d11 - d01*d01) / detD;
+	  const double detS =
+	    Spp * (Sqq*Srr - Sqr*Sqr) +
+	    Spq * (Spr*Sqr - Spq*Srr) +
+	    Spr * (Spq*Sqr - Spr*Sqq);
+	  const double Sinvpp = (Sqq*Srr - Sqr*Sqr) / detS;
+	  const double Sinvpq = (Spr*Sqr - Spq*Srr) / detS;
+	  const double Sinvpr = (Spq*Sqr - Spr*Sqq) / detS;
+	  const double Sinvqq = (Spp*Srr - Spr*Spr) / detS;
+	  const double Sinvqr = (Spq*Spr - Spp*Sqr) / detS;
+	  const double Sinvrr = (Spp*Sqq - Spq*Spq) / detS;
 
 	  // Aru = A_i^{-1} r_i - A_j^{-1} r_j + u_i - u_j
 	  const double Arux = ri[0]/Ai[0] - rj[0]/Aj[0] + ui[0] - uj[0];
@@ -1008,15 +1028,32 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  const double Aruqslip = Aruq - slipVertex[1];
 	  const double Arurslip = Arur - slipVertex[2];
 	  const double dlp = 
-	    dinv00*Arupslip + dinv01*Aruqslip + dinv02*Arurslip;
+	    Sinvpp*Arupslip + Sinvpq*Aruqslip + Sinvpr*Arurslip;
 	  const double dlq = 
-	    dinv01*Arupslip + dinv11*Aruqslip + dinv12*Arurslip;
+	    Sinvpq*Arupslip + Sinvqq*Aruqslip + Sinvqr*Arurslip;
 	  const double dlr = 
-	    dinv02*Arupslip + dinv12*Aruqslip + dinv22*Arurslip;
+	    Sinvpr*Arupslip + Sinvqr*Aruqslip + Sinvrr*Arurslip;
 
-	  solutionCell[indexK*spaceDim+0] = dlp;
-	  solutionCell[indexK*spaceDim+1] = dlq;
-	  solutionCell[indexK*spaceDim+2] = dlr;
+	  // Update displacements at node I
+	  solutionCell[indexI*spaceDim+0] = 
+	    wt * -1.0/Ai[0] * (Cpx*dlp + Cqx*dlq + Crx*dlr);
+	  solutionCell[indexI*spaceDim+1] = 
+	    wt * -1.0/Ai[1] * (Cpy*dlp + Cqy*dlq + Cry*dlr);
+	  solutionCell[indexI*spaceDim+2] = 
+	    wt * -1.0/Ai[2] * (Cpz*dlp + Cqz*dlq + Crz*dlr);
+
+	  // Update displacements at node J
+	  solutionCell[indexJ*spaceDim+0] = 
+	    wt * +1.0/Aj[0] * (Cpx*dlp + Cqx*dlq + Crx*dlr);
+	  solutionCell[indexJ*spaceDim+1] = 
+	    wt * +1.0/Aj[1] * (Cpy*dlp + Cqy*dlq + Cry*dlr);
+	  solutionCell[indexJ*spaceDim+2] = 
+	    wt * +1.0/Aj[2] * (Cpz*dlp + Cqz*dlq + Crz*dlr);
+
+	  // Update Lagrange multipliers
+	  solutionCell[indexK*spaceDim+0] = wt * dlp;
+	  solutionCell[indexK*spaceDim+1] = wt * dlq;
+	  solutionCell[indexK*spaceDim+2] = wt * dlr;
 
 	  break;
 	} // case 3
