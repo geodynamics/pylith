@@ -256,6 +256,10 @@ protected :
   /// Zero out matrix containing result of integration for cell.
   void _resetCellMatrix(void);
 
+  /// Lump cell matrix, putting the result in the cell vector using
+  /// equivalent forces for rigid body motion.
+  void _lumpCellMatrix(void);
+
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
