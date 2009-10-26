@@ -110,7 +110,7 @@ pylith::problems::SolverLumped::solve(
   } // for
 
   // Adjust solution to match constraints
-  _formulation->adjustSolnLumped(solution, jacobian, residual);
+  _formulation->adjustSolnLumped();
 
   PetscLogFlops(vertices->size());
 } // solve

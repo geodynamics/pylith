@@ -123,14 +123,8 @@ public :
 
   /** Adjust solution from solver with lumped Jacobian to match Lagrange
    *  multiplier constraints.
-   *
-   * @param solution Solution field.
-   * @param jacobian Jacobian of the system.
-   * @param residual Residual field.
    */
-  void adjustSolnLumped(topology::Field<topology::Mesh>* solution,
-			const topology::Field<topology::Mesh>& jacobian,
-			const topology::Field<topology::Mesh>& residual);
+  void adjustSolnLumped(void);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

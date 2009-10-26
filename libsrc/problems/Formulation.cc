@@ -274,20 +274,15 @@ pylith::problems::Formulation::reformJacobianLumped(void)
 // Adjust solution from solver with lumped Jacobian to match Lagrange
 //  multiplier constraints.
 void
-pylith::problems::Formulation::adjustSolnLumped(
-			  topology::Field<topology::Mesh>* solution,
-			  const topology::Field<topology::Mesh>& jacobian,
-			  const topology::Field<topology::Mesh>& residual)
+pylith::problems::Formulation::adjustSolnLumped(void)
 { // adjustSolnLumped
-  assert(0 != solution);
-
   int numIntegrators = _meshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i)
-    _meshIntegrators[i]->adjustSolnLumped(solution, jacobian, residual);
+    _meshIntegrators[i]->adjustSolnLumped(_fields, *_jacobianLumped);
 
   numIntegrators = _submeshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i)
-    _submeshIntegrators[i]->adjustSolnLumped(solution, jacobian, residual);
+    _submeshIntegrators[i]->adjustSolnLumped(_fields, *_jacobianLumped);
 } // adjustSolnLumped
 
 
