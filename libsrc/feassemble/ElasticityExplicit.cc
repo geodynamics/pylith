@@ -431,5 +431,137 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   _material->resetNeedNewJacobian();
 } // integrateJacobian
 
+// ----------------------------------------------------------------------
+// Compute matrix associated with operator.
+void
+pylith::feassemble::ElasticityExplicit::integrateJacobian(
+			    const topology::Field<topology::Mesh>& jacobian,
+			    const double t,
+			    topology::SolutionFields* fields)
+{ // integrateJacobian
+  assert(0 != _quadrature);
+  assert(0 != _material);
+  assert(0 != fields);
+
+  const int setupEvent = _logger->eventId("ElIJ setup");
+  const int geometryEvent = _logger->eventId("ElIJ geometry");
+  const int computeEvent = _logger->eventId("ElIJ compute");
+  const int restrictEvent = _logger->eventId("ElIJ restrict");
+  const int stateVarsEvent = _logger->eventId("ElIJ stateVars");
+  const int updateEvent = _logger->eventId("ElIJ update");
+
+  _logger->eventBegin(setupEvent);
+
+  // Get cell geometry information that doesn't depend on cell
+  const int numQuadPts = _quadrature->numQuadPts();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const int cellDim = _quadrature->cellDim();
+  const int tensorSize = _material->tensorSize();
+  if (cellDim != spaceDim)
+    throw std::logic_error("Don't know how to integrate elasticity " \
+			   "contribution to Jacobian matrix for cells with " \
+			   "different dimensions than the spatial dimension.");
+
+  // Get cell information
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const int materialId = _material->id();
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
+  assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  // Get parameters used in integration.
+  const double dt = _dt;
+  const double dt2 = dt*dt;
+  assert(dt > 0);
+
+  // Get sections
+  double_array dispTCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& dispTSection = 
+    fields->get("disp(t)").section();
+  assert(!dispTSection.isNull());
+
+  const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
+  assert(!jacobianSection.isNull());
+  topology::Mesh::UpdateAddVisitor jacobianVisitor(*jacobianSection, 
+						   &_cellVector[0]);
+
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    sieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						coordinatesCell.size(),
+						&coordinatesCell[0]);
+
+  _logger->eventEnd(setupEvent);
+
+  // Loop over cells
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
+       c_iter != cellsEnd;
+       ++c_iter) {
+    // Compute geometry information for current cell
+    _logger->eventBegin(geometryEvent);
+#if defined(PRECOMPUTE_GEOMETRY)
+    _quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
+    _logger->eventEnd(geometryEvent);
+
+    // Get state variables for cell.
+    _logger->eventBegin(stateVarsEvent);
+    _material->retrievePropsAndVars(*c_iter);
+    _logger->eventEnd(stateVarsEvent);
+
+    // Reset element matrix to zero
+    _resetCellMatrix();
+
+    // Get cell geometry information that depends on cell
+    const double_array& basis = _quadrature->basis();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
+
+    // Get material physical properties at quadrature points for this cell
+    const double_array& density = _material->calcDensity();
+
+    // Compute Jacobian for inertial terms
+    _logger->eventBegin(computeEvent);
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = 
+	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / dt2;
+      for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
+        const double valI = wt*basis[iQ+iBasis];
+        for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+          const double valIJ = valI * basis[iQ+jBasis];
+          for (int iDim=0; iDim < spaceDim; ++iDim) {
+            const int iBlock = (iBasis*spaceDim + iDim) * (numBasis*spaceDim);
+            const int jBlock = (jBasis*spaceDim + iDim);
+            _cellMatrix[iBlock+jBlock] += valIJ;
+          } // for
+        } // for
+      } // for
+    } // for
+    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+spaceDim))));
+    _lumpCellMatrix();
+    _logger->eventEnd(computeEvent);
+    
+    // Assemble cell contribution into lumped matrix.
+    _logger->eventBegin(updateEvent);
+    jacobianVisitor.clear();
+    sieveMesh->updateAdd(*c_iter, jacobianVisitor);
+    _logger->eventEnd(updateEvent);
+  } // for
+
+  _needNewJacobian = false;
+  _material->resetNeedNewJacobian();
+} // integrateJacobian
+
 
 // End of file 

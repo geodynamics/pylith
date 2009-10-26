@@ -5,6 +5,13 @@ CURRENT ISSUES/PRIORITIES
 Data structure to hold fault Lagrange vertices and conventional vertices
 array = numVertics x 3 (i, j, k)
 
+Status?
+
+  Field split
+  uniform global refinement for tets with faults
+  customized SNES line search
+  
+
 ----------------------------------------------------------------------
 FRICTION
 ----------------------------------------------------------------------
@@ -29,6 +36,10 @@ LUMPED SOLVER
 ----------------------------------------------------------------------
 
 Unit tests
+
+  Integrator
+    _lumpCellMatrix
+
   FaultCohesiveKin
     integrateJacobian (lumped)
     adjustSolnLumped
@@ -43,16 +54,6 @@ Unit tests
   AbsorbingDampers
     integrateJacobian (lumped)
 
-
-FaultCohesiveKin (C++)
-  integrateJacobian (lumped)
-  adjustSolnLumped()
-
-ElasticityExplicit
-  integrateJacobian (lumped)
-
-AbsorbingDampers
-  integrateJacobian (lumped)
 
 FaultCohesiveDynL (C++)
   integrateJacobian (lumped)
