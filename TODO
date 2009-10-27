@@ -39,9 +39,6 @@ LUMPED SOLVER
 
 Unit tests
 
-  Integrator
-    _lumpCellMatrix
-
   FaultCohesiveKin
     integrateJacobian (lumped)
     adjustSolnLumped
