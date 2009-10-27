@@ -185,6 +185,39 @@ pylith::feassemble::TestIntegrator::testResetCellMatrix(void)
 } // testResetCellMatrix
 
 // ----------------------------------------------------------------------
+// Test _lumpCellMatrix()
+void
+pylith::feassemble::TestIntegrator::testLumpCellMatrix(void)
+{ // testLumpCellMatrix
+  Quadrature<topology::Mesh> quadrature;
+  _initQuadrature(&quadrature);
+
+  ElasticityExplicit integrator;
+  integrator.quadrature(&quadrature);
+
+  integrator._initCellMatrix();
+  integrator._initCellVector();
+  
+  const size_t sizeM = 
+    quadrature.spaceDim() * quadrature.numBasis() *
+    quadrature.spaceDim() * quadrature.numBasis();
+  CPPUNIT_ASSERT_EQUAL(sizeM, integrator._cellMatrix.size());
+  for (size_t i=0; i < sizeM; ++i)
+    integrator._cellMatrix[i] = 1.23 + 1.2*i;
+  integrator._lumpCellMatrix();
+
+  const int numBasis = quadrature.numBasis();
+  const int spaceDim = quadrature.spaceDim();
+  for (int iBasis=0, index=0; iBasis < numBasis; ++iBasis)
+    for (int iDim=0; iDim < spaceDim; ++iDim, ++index) {
+      double value = 0;
+      for (int jBasis=0; jBasis < numBasis; ++jBasis)
+	value += 1.23 + 1.2*(index+jBasis*spaceDim+iDim);
+      CPPUNIT_ASSERT_EQUAL(value, integrator._cellVector[iBasis*spaceDim+iDim]);
+    } // for
+} // testLumpCellMatrix
+
+// ----------------------------------------------------------------------
 // Test splitField().
 void
 pylith::feassemble::TestIntegrator::testSplitField(void)
