@@ -11,7 +11,8 @@ Status?
   Field split
   uniform global refinement for tets with faults
   customized SNES line search
-  
+  restrictOperator() for sparse matrix
+  updateAllVisitor for Mesh
 
 ----------------------------------------------------------------------
 FRICTION

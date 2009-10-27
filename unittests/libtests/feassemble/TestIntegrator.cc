@@ -208,9 +208,10 @@ pylith::feassemble::TestIntegrator::testLumpCellMatrix(void)
 
   const int numBasis = quadrature.numBasis();
   const int spaceDim = quadrature.spaceDim();
-  for (int iBasis=0, index=0; iBasis < numBasis; ++iBasis)
-    for (int iDim=0; iDim < spaceDim; ++iDim, ++index) {
+  for (int iBasis=0; iBasis < numBasis; ++iBasis)
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
       double value = 0;
+      const int index = (iBasis*spaceDim+iDim)*numBasis*spaceDim;
       for (int jBasis=0; jBasis < numBasis; ++jBasis)
 	value += 1.23 + 1.2*(index+jBasis*spaceDim+iDim);
       CPPUNIT_ASSERT_EQUAL(value, integrator._cellVector[iBasis*spaceDim+iDim]);
