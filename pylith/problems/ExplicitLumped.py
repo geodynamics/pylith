@@ -121,6 +121,7 @@ class ExplicitLumped(Formulation):
     jacobian.label("jacobian")
     solution.vectorFieldType(solution.VECTOR)
     jacobian.newSection(jacobian.VERTICES_FIELD, dimension)
+    jacobian.allocate()
     self.jacobian = jacobian
     self._debug.log(resourceUsageString())
 

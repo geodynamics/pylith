@@ -169,8 +169,9 @@ pylith::feassemble::Integrator<quadrature_type>::_lumpCellMatrix(void)
   for (int iBasis=0; iBasis < numBasis; ++iBasis)
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       value = 0.0;
-      for (int jBasis=0, indexI=iBasis*spaceDim; jBasis < numBasis; ++jBasis)
-	value += _cellMatrix[indexI+jBasis*spaceDim+iDim];
+      const int indexR = (iBasis*spaceDim+iDim) * numBasis * spaceDim;
+      for (int jBasis=0; jBasis < numBasis; ++jBasis)
+	value += _cellMatrix[indexR+jBasis*spaceDim+iDim];
       _cellVector[iBasis*spaceDim+iDim] = value;
     } // for
 

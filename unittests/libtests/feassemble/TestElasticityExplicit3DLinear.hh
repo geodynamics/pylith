@@ -41,6 +41,7 @@ class pylith::feassemble::TestElasticityExplicit3DLinear :
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST( testIntegrateJacobian );
+  CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testUpdateStateVars );
   CPPUNIT_TEST( testStableTimeStep );
 
