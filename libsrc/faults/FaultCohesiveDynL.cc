@@ -837,7 +837,99 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 	  } // case 2
 	case 3 :
 	  { // case 3
-	    // ADD STUFF HERE
+	    std::cout << "Normal traction:"
+		      << tractionTpdtVertex[2]+tractionInitialVertex[2]
+		      << std::endl;
+
+	    // Sensitivity of slip to changes in the Lagrange multipliers
+	    // Aixjx = 1.0/Aix + 1.0/Ajx
+	    const double Aixjx = 
+	      1.0/jacobianVertex[0] + 1.0/jacobianVertex[spaceDim+0];
+	    // Aiyjy = 1.0/Aiy + 1.0/Ajy
+	    const double Aiyjy = 
+	      1.0/jacobianVertex[1] + 1.0/jacobianVertex[spaceDim+1];
+	    // Aizjz = 1.0/Aiz + 1.0/Ajz
+	    const double Aizjz = 
+	      1.0/jacobianVertex[2] + 1.0/jacobianVertex[spaceDim+2];
+	    const double Cpx = orientationVertex[0];
+	    const double Cpy = orientationVertex[1];
+	    const double Cpz = orientationVertex[2];
+	    const double Cqx = orientationVertex[3];
+	    const double Cqy = orientationVertex[4];
+	    const double Cqz = orientationVertex[5];
+	    const double Crx = orientationVertex[6];
+	    const double Cry = orientationVertex[7];
+	    const double Crz = orientationVertex[8];
+	    const double Spp = Cpx*Cpx*Aixjx + Cpy*Cpy*Aiyjy + Cpz*Cpz*Aizjz;
+	    const double Spq = Cpx*Cqx*Aixjx + Cpy*Cqy*Aiyjy + Cpz*Cqz*Aizjz;
+	    const double Spr = Cpx*Crx*Aixjx + Cpy*Cry*Aiyjy + Cpz*Crz*Aizjz;
+	    const double Sqq = Cqx*Cqx*Aixjx + Cqy*Cqy*Aiyjy + Cqz*Cqz*Aizjz;
+	    const double Sqr = Cqx*Crx*Aixjx + Cqy*Cry*Aiyjy + Cqz*Crz*Aizjz;
+	    const double Srr = Crx*Crx*Aixjx + Cry*Cry*Aiyjy + Crz*Crz*Aizjz;
+
+	    double tractionTotalVertex;
+	    double tractionShearVertex;
+	    double slipShearVertex;
+
+	    tractionTotalVertex = tractionTpdtVertex[2]+tractionInitialVertex[2];
+	    tractionShearVertex = sqrt(pow(tractionTpdtVertex[1],2) +pow(tractionTpdtVertex[0],2));
+	    slipShearVertex = sqrt(pow(slipVertex[1],2)+pow(slipVertex[0],2));
+
+	    if (tractionTotalVertex < 0) {
+	      // if in compression
+	      std::cout << "FAULT IN COMPRESSION" << std::endl;
+	      const double friction =
+		-muf * (tractionTotalVertex);
+	      std::cout << "friction: " << friction << std::endl;
+	      if (tractionShearVertex > friction ||
+		  (tractionShearVertex < friction && slipShearVertex > 0.0)) {
+		// traction is limited by friction, so have sliding
+		std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
+
+		// Update slip based on value required to stick versus friction
+		slipVertex[0] += Spp * (tractionShearVertex-friction) 
+		  *tractionTpdtVertex[0]/ tractionShearVertex +
+		                  Spq * (tractionShearVertex-friction) 
+		  *tractionTpdtVertex[1]/ tractionShearVertex;
+
+		slipVertex[1] += Spq * (tractionShearVertex-friction) 
+		  *tractionTpdtVertex[0]/ tractionShearVertex +
+		                  Sqq * (tractionShearVertex-friction) 
+		  *tractionTpdtVertex[1]/ tractionShearVertex;
+
+
+
+		std::cout << "Estimated slip: " << slipVertex[0] << std::endl;
+		// Limit traction
+		tractionTpdtVertex[0] = friction *tractionTpdtVertex[0]/ tractionShearVertex;
+		tractionTpdtVertex[1] = friction *tractionTpdtVertex[1]/ tractionShearVertex;
+	      } else {
+		// else friction exceeds value necessary, so stick
+		std::cout << "STICK" << std::endl;
+		// no changes to solution
+	      } // if/else
+	    } else {
+	      // if in tension, then traction is zero.
+	      std::cout << "FAULT IN TENSION" << std::endl;
+	      
+		// Update slip based on value required to stick versus
+		// zero traction
+	      slipVertex[0] += 
+		Spp * tractionTpdtVertex[0] +
+		Spq * tractionTpdtVertex[1] +
+		Spr * tractionTpdtVertex[2];
+	      slipVertex[1] += 
+		Spq * tractionTpdtVertex[0] +
+		Sqq * tractionTpdtVertex[1] +
+		Sqr * tractionTpdtVertex[2];
+	      slipVertex[2] += 
+		Spr * tractionTpdtVertex[0] +
+		Sqr * tractionTpdtVertex[1] +
+		Srr * tractionTpdtVertex[2];
+
+	      // Set traction to zero
+	      tractionTpdtVertex = 0.0;
+	    } // else
 	    break;
 	  } // case 3
 	default :
