@@ -11,6 +11,7 @@ Status?
   Field split
   uniform global refinement for tets with faults
   customized SNES line search
+  Laplacian based preconditioner
 
 ----------------------------------------------------------------------
 FRICTION
