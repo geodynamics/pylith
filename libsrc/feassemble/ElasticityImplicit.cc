@@ -308,7 +308,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     // Assemble cell contribution into field
     _logger->eventBegin(updateEvent);
     residualVisitor.clear();
-    sieveMesh->updateAdd(*c_iter, residualVisitor);
+    sieveMesh->updateClosure(*c_iter, residualVisitor);
     // residualSection->view("After stress contribution");
     _logger->eventEnd(updateEvent);
   } // for

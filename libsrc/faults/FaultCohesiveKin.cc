@@ -414,7 +414,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 #endif
 
     residualVisitor.clear();
-    sieveMesh->updateAdd(*c_iter, residualVisitor);
+    sieveMesh->updateClosure(*c_iter, residualVisitor);
   } // for
 
   // FIX THIS
