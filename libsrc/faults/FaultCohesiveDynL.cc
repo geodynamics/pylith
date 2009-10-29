@@ -678,7 +678,7 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
   const ALE::Obj<RealSection>& jacobianSection = 
     _fields->get("Jacobian diagonal").section();
   assert(!jacobianSection.isNull());
-  _updateJacobianDiagonal(*fields, jacobian);
+  _updateJacobianDiagonal(*fields);
 
   slipSection->view("SLIP");
   areaSection->view("AREA");
@@ -1653,8 +1653,7 @@ pylith::faults::FaultCohesiveDynL::_initConstitutiveModel(void)
 //  associated with Lagrange vertex k.
 void
 pylith::faults::FaultCohesiveDynL::_updateJacobianDiagonal(
-				     const topology::SolutionFields& fields,
-				     const topology::Jacobian& jacobian)
+				     const topology::SolutionFields& fields)
 { // _updateJacobianDiagonal
   assert(0 != _fields);
 
@@ -1670,54 +1669,39 @@ pylith::faults::FaultCohesiveDynL::_updateJacobianDiagonal(
     cellsCohesive->end();
   const int cellsCohesiveSize = cellsCohesive->size();
 
-  const int spaceDim = _quadrature->spaceDim();
-
-  const int numConstraintVert = _quadrature->numBasis();
-  const int numCorners = 3*numConstraintVert; // cohesive cell
-  double_array matrixCell(numCorners*spaceDim * numCorners*spaceDim);
-
-  // Get section information
-  const ALE::Obj<RealSection>& solutionSection = fields.solution().section();
-  assert(!solutionSection.isNull());  
-
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
   assert(!faultSieveMesh.isNull());
 
-  double_array jacobianDiagCell(numConstraintVert*2*spaceDim);
-  const ALE::Obj<RealSection>& jacobianDiagSection = 
-    _fields->get("Jacobian diagonal").section();
-  topology::Mesh::UpdateAllVisitor jacobianDiagVisitor(*jacobianDiagSection,
-						       &jacobianDiagCell[0]);
+  const int spaceDim = _quadrature->spaceDim();
+  const int numConstraintVert = _quadrature->numBasis();
+  const int numCorners = 3*numConstraintVert; // cohesive cell
 
-  const PetscMat jacobianMatrix = jacobian.matrix();
-  assert(0 != jacobianMatrix);
-  const ALE::Obj<SieveMesh::order_type>& globalOrder = 
-    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
-					    solutionSection);
-  assert(!globalOrder.isNull());
-  // We would need to request unique points here if we had an interpolated mesh
-  topology::Mesh::IndicesVisitor jacobianVisitor(*solutionSection,
-						 *globalOrder,
-		      (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
-				     sieveMesh->depth())*spaceDim);
+  // Get section information
+  double_array jacobianDiagCell(numCorners*spaceDim);
+  const ALE::Obj<RealSection>& jacobianDiagSection = 
+    fields.get("Jacobian diagonal").section();
+  assert(!jacobianDiagSection.isNull());  
+  topology::Mesh::RestrictVisitor jacobianDiagVisitor(*jacobianDiagSection,
+						      jacobianDiagCell.size(),
+						      &jacobianDiagCell[0]);
+
+  double_array jacobianDiagFaultCell(numConstraintVert*2*spaceDim);
+  const ALE::Obj<RealSection>& jacobianDiagFaultSection = 
+    _fields->get("Jacobian diagonal").section();
+  topology::Mesh::UpdateAllVisitor jacobianDiagFaultVisitor(*jacobianDiagFaultSection,
+							    &jacobianDiagFaultCell[0]);
 
   for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
     const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
 
-    // Insert cell contribution into PETSc Matrix
-    jacobianVisitor.clear();
-#if 0 // MISSING
-    PetscErrorCode err = restrictOperator(jacobianMatrix,
-					  *sieveMesh->getSieve(),
-					  jacobianVisitor, *c_iter,
-					  &matrixCell[0]);
-#endif
+    jacobianDiagVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, jacobianDiagVisitor);
 
-    for (int iConstraint=0, iJacobian=0; 
+    for (int iConstraint=0, indexF=0; 
 	 iConstraint < numConstraintVert;
-	 ++iConstraint, iJacobian += 2*spaceDim) {
+	 ++iConstraint) {
       // Blocks in cell matrix associated with normal cohesive
       // vertices i and j and constraint vertex k
       const int indexI = iConstraint;
@@ -1725,25 +1709,25 @@ pylith::faults::FaultCohesiveDynL::_updateJacobianDiagonal(
       const int indexK = iConstraint + 2*numConstraintVert;
       
       // Diagonal for vertex i
-      int row = indexI*spaceDim;
-      int col = row;
-      for (int iDim=0; iDim < spaceDim; ++iDim)
-	jacobianDiagCell[iJacobian+iDim] =
-	  matrixCell[(row+iDim)*numCorners*spaceDim+col+iDim];
+      for (int iDim=0; iDim < spaceDim; ++iDim) {
+	jacobianDiagFaultCell[indexF+iDim] = 
+	  jacobianDiagCell[indexI*spaceDim+iDim];
+	assert(jacobianDiagFaultCell[indexF+iDim] > 0.0);
+      } // for
+      indexF += spaceDim;
 
       // Diagonal for vertex j
-      row = indexJ*spaceDim;
-      col = row;
-      for (int iDim=0; iDim < spaceDim; ++iDim)
-	jacobianDiagCell[iJacobian+spaceDim+iDim] =
-	  matrixCell[(row+iDim)*numCorners*spaceDim+col+iDim];
+      for (int iDim=0; iDim < spaceDim; ++iDim) {
+	jacobianDiagFaultCell[indexF+iDim] = 
+	  jacobianDiagCell[indexJ*spaceDim+iDim];
+	assert(jacobianDiagFaultCell[indexF+iDim] > 0.0);
+      } // for
+      indexF += spaceDim;
     } // for
 
     // Insert cell contribution into 
     jacobianDiagVisitor.clear();
-#if 0 // MISSING
-    sieveMesh->updateAll(*c_iter, jacobianDiagVisitor);
-#endif
+    sieveMesh->updateClosure(c_fault, jacobianDiagFaultVisitor);
   } // for
 } // _updateJacobianDiagonal
 

@@ -234,6 +234,23 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
   
   // Assemble jacobian.
   _jacobian->assemble("final_assembly");
+
+  // Extract diagonal :KLUDGE: We extract the diagonal even if we
+  // don't need to.
+  if (!_fields->hasField("Jacobian diagonal")) {
+    _fields->add("Jacobian diagonal", "jacobian_diagonal");
+    topology::Field<topology::Mesh>& jacobianDiag = 
+      _fields->get("Jacobian diagonal");
+    const topology::Field<topology::Mesh>& disp = 
+      _fields->get("disp(t)");
+    jacobianDiag.cloneSection(disp);
+    jacobianDiag.createVector();
+    jacobianDiag.createScatter();
+  } // if
+  topology::Field<topology::Mesh>& jacobianDiag = 
+    _fields->get("Jacobian diagonal");
+  MatGetDiagonal(_jacobian->matrix(), jacobianDiag.vector());
+  jacobianDiag.scatterVectorToSection();  
 } // reformJacobian
 
 // ----------------------------------------------------------------------

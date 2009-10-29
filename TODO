@@ -4,15 +4,13 @@ CURRENT ISSUES/PRIORITIES
 
 Data structure to hold label of fault Lagrange vertices and
 conventional vertices 
-  array = numVertics x 3 (i, j, k)
+  array of structure (lagrange, positive, negative, fault)
 
 Status?
 
   Field split
   uniform global refinement for tets with faults
   customized SNES line search
-  restrictOperator() for sparse matrix
-  updateAllVisitor for Mesh
 
 ----------------------------------------------------------------------
 FRICTION
@@ -47,9 +45,6 @@ Unit tests
   FaultCohesiveDynL
     integrateJacobian (lumped)
     adjustSolnLumped
-
-  ElasticityExplicit
-    integrateJacobian (lumped)
 
   AbsorbingDampers
     integrateJacobian (lumped)
