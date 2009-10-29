@@ -93,14 +93,24 @@ class Quadrature2DQuadratic(Component):
     Component.__init__(self, name, facility="quadrature")
     
     # These are just approximate points used to test the quadrature routine
-    self.quadPtsRef = numpy.array( [[0.0, -1.0],
-                                    [-1.0, 0.0],
-                                    [0.0, 0.0]],
+    self.quadPtsRef = numpy.array( [[-0.75,-0.75],
+                                    [0.75,-0.75],
+                                    [-0.75,0.75],
+                                    [0,-0.75],
+                                    [-0.75,0],
+                                    [0.25,0.25]],
                                    dtype=numpy.float64)
-    self.quadWts = numpy.array([2.0/3.0, 2.0/3.0, 2.0/3.0],
+    self.quadWts = numpy.array([1.0/3.0, 1.0/3.0, 1.0/3.0, 1.0/3.0, 1.0/3.0, 1.0/3.0],
                                dtype=numpy.float64)
+    #self.quadPtsRef = numpy.array( [[-0.64288254347276719, -0.68989794855663567],
+    #                                [-0.84993777955478378, 0.28989794855663559],
+    #                                [0.33278049202940285, -0.68989794855663567],
+    #                                [-0.43996016900185175, 0.28989794855663559]],
+    #                               dtype=numpy.float64)
+    #self.quadWts = numpy.array([0.63608276,  0.36391724,  0.63608276,  0.36391724],
+    #                           dtype=numpy.float64)
     self.numBasis = 6
-    self.numQuadPts = 3
+    self.numQuadPts = 6
     self.spaceDim = 2
     self.cellDim = 2
     return
