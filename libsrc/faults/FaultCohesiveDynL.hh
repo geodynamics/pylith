@@ -257,10 +257,8 @@ private :
    *  associated with Lagrange vertex k.
    *
    * @param fields Solution fields.
-   * @param jacobian System jacobian.
    */
-  void _updateJacobianDiagonal(const topology::SolutionFields& fields,
-			       const topology::Jacobian& jacobian);
+  void _updateJacobianDiagonal(const topology::SolutionFields& fields);
 
   /** Compute change in tractions on fault surface using solution.
    *
