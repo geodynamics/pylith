@@ -172,6 +172,10 @@ pylith::feassemble::Integrator<quadrature_type>::_lumpCellMatrix(void)
       const int indexR = (iBasis*spaceDim+iDim) * numBasis * spaceDim;
       for (int jBasis=0; jBasis < numBasis; ++jBasis)
 	value += _cellMatrix[indexR+jBasis*spaceDim+iDim];
+      if (value < 0.0) {
+	throw std::runtime_error("Negative diagonal entry computed when "
+				 "lumping Jacobian matrix.");
+      } // for
       _cellVector[iBasis*spaceDim+iDim] = value;
     } // for
 
