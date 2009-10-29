@@ -285,6 +285,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobianLumped(void)
       valsE[iBasis*spaceDim+iDim] = value;
     } // for
 
+#if 0 // DEBUGGING
   // TEMPORARY
   jacobian.view("JACOBIAN");
   std::cout << "\n\nJACOBIAN FULL" << std::endl;
@@ -294,6 +295,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobianLumped(void)
       std::cout << "  " << valsMatrixE[r*n+c];
     std::cout << "\n";
   } // for
+#endif // DEBUGGING
 
   const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
   CPPUNIT_ASSERT(!jacobianSection.isNull());
