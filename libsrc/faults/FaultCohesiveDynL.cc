@@ -402,7 +402,7 @@ pylith::faults::FaultCohesiveDynL::integrateResidual(
 #endif
 
     residualVisitor.clear();
-    sieveMesh->updateAdd(*c_iter, residualVisitor);
+    sieveMesh->updateClosure(*c_iter, residualVisitor);
   } // for
 
   // FIX THIS
@@ -1401,7 +1401,7 @@ pylith::faults::FaultCohesiveDynL::_calcArea(void)
       } // for
     } // for
     areaVisitor.clear();
-    faultSieveMesh->updateAdd(*c_iter, areaVisitor);
+    faultSieveMesh->updateClosure(*c_iter, areaVisitor);
 
     PetscLogFlops( numQuadPts*(1+numBasis*2) );
   } // for
