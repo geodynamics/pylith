@@ -357,7 +357,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
 
     // Assemble cell contribution into field
     residualVisitor.clear();
-    sieveSubMesh->updateAdd(*c_iter, residualVisitor);
+    sieveSubMesh->updateClosure(*c_iter, residualVisitor);
   } // for
 } // integrateResidual
 

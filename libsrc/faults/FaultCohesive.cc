@@ -431,7 +431,7 @@ pylith::faults::FaultCohesive::_calcArea(void)
       } // for
     } // for
     areaVisitor.clear();
-    faultSieveMesh->updateAdd(*c_iter, areaVisitor);
+    faultSieveMesh->updateClosure(*c_iter, areaVisitor);
 
     PetscLogFlops( numQuadPts*(1+numBasis*2) );
   } // for
