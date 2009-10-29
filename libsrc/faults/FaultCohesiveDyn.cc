@@ -414,7 +414,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 
     // Assemble cell contribution into field
     residualVisitor.clear();
-    sieveMesh->updateAdd(*c_iter, residualVisitor);
+    sieveMesh->updateClosure(*c_iter, residualVisitor);
 
     PetscLogFlops(numQuadPts*(0)); // :TODO: Count number of operations
   } // for

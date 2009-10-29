@@ -282,7 +282,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     // Assemble cell contribution into field
     _logger->eventBegin(updateEvent);
     residualVisitor.clear();
-    sieveMesh->updateAdd(*c_iter, residualVisitor);
+    sieveMesh->updateClosure(*c_iter, residualVisitor);
     _logger->eventEnd(updateEvent);
   } // for
 } // integrateResidual
@@ -555,7 +555,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     // Assemble cell contribution into lumped matrix.
     _logger->eventBegin(updateEvent);
     jacobianVisitor.clear();
-    sieveMesh->updateAdd(*c_iter, jacobianVisitor);
+    sieveMesh->updateClosure(*c_iter, jacobianVisitor);
     _logger->eventEnd(updateEvent);
   } // for
 

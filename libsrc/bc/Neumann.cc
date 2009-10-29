@@ -158,7 +158,7 @@ pylith::bc::Neumann::integrateResidual(
     } // for
     // Assemble cell contribution into field
     residualVisitor.clear();
-    subSieveMesh->updateAdd(*c_iter, residualVisitor);
+    subSieveMesh->updateClosure(*c_iter, residualVisitor);
 
     PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*(1+2*spaceDim))));
   } // for

@@ -357,7 +357,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
 
     // Assemble cell contribution into field
     residualVisitor.clear();
-    sieveSubMesh->updateAdd(*c_iter, residualVisitor);
+    sieveSubMesh->updateClosure(*c_iter, residualVisitor);
   } // for
 } // integrateResidual
 
@@ -581,7 +581,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     
     // Assemble cell contribution into lumped matrix.
     jacobianVisitor.clear();
-    sieveMesh->updateAdd(*c_iter, jacobianVisitor);
+    sieveMesh->updateClosure(*c_iter, jacobianVisitor);
   } // for
 
   _needNewJacobian = false;

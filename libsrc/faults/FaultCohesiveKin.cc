@@ -407,7 +407,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 #endif
 
     residualVisitor.clear();
-    sieveMesh->updateAdd(*c_iter, residualVisitor);
+    sieveMesh->updateClosure(*c_iter, residualVisitor);
   } // for
 
   // FIX THIS
@@ -1080,7 +1080,7 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 #endif
 
     solutionVisitor.clear();
-    sieveMesh->updateAdd(*c_iter, solutionVisitor);
+    sieveMesh->updateClosure(*c_iter, solutionVisitor);
   } // for
 
   // FIX THIS
@@ -1535,7 +1535,7 @@ pylith::faults::FaultCohesiveKin::_calcArea(void)
       } // for
     } // for
     areaVisitor.clear();
-    faultSieveMesh->updateAdd(*c_iter, areaVisitor);
+    faultSieveMesh->updateClosure(*c_iter, areaVisitor);
 
     PetscLogFlops( numQuadPts*(1+numBasis*2) );
   } // for
