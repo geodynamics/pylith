@@ -6,18 +6,14 @@ Data structure to hold label of fault Lagrange vertices and
 conventional vertices 
   array of structure (lagrange, positive, negative, fault)
 
-Status?
-
-  Field split
-  uniform global refinement for tets with faults
-  customized SNES line search
-  Laplacian based preconditioner
-
 ----------------------------------------------------------------------
 FRICTION
 ----------------------------------------------------------------------
 
-
+Initial tractions
+  Integrate over fault surface (should be current implementation)
+Constitutive model parameters
+  Integrate over faces to get weighted averages
 
 3. pylith::friction::FrictionModel
   (base class for fault constitutive models) [Brad]
