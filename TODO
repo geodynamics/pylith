@@ -2,6 +2,56 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
+Status?
+
+  Field split
+  uniform global refinement for tets with faults
+  customized SNES line search
+  Laplacian based preconditioner
+
+----------------------------------------------------------------------
+VISIT TO GNS SCIENCE
+----------------------------------------------------------------------
+
+Discuss TODO list for 2010 workshop
+
+Large deformations
+
+Drucker-Prager elastoplastic (or viscoelastoplastic?)
+
+Reduced integration
+
+Lumped solver
+
+Setup fault constitutive models
+
+
+
+----------------------------------------------------------------------
+TODO WELL BEFORE WORKSHOP 2010
+----------------------------------------------------------------------
+
+Tutorial
+  3d/hex8
+    1. Dirichlet BC (static)
+    2. Neumann BC (static)
+    3. Earthquake rupture (static)
+    4. Dirichlet BC (quasi-static)
+    5. Dirichlet + Neumann (quasi-static)
+    6. Multiple earthquake rupture + creep (quasi-static)
+    7. Earthquake rupture + creep + Dirichlet BC (quasi-static)
+    8. Add power-law rheology (quasi-static)
+    9. Static friction + Dirichlet BC (static)
+   10. Static friction + Dirchlet BC (quasi-static)
+   11. Rate- and state-friction + Dirichlet BC (quasi-static)??
+
+Write up description of Savage and Prescott (1978) benchmark and
+distribute to Greg Lyzenga and Jay Parker
+
+Rewrite governing equations to include fault implementation
+
+Rewrite bulk constitutive models
+
 ----------------------------------------------------------------------
 POST RELEASE 1.4
 ----------------------------------------------------------------------
