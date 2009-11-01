@@ -511,6 +511,10 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   const double dt = _dt;
   assert(dt > 0);
 
+  // Allocate matrix for cell values.
+  _initCellMatrix();
+  _initCellVector();
+
   // Get sections
   const ALE::Obj<SubRealSection>& dampersSection =
     _parameters->get("damping constants").section();
@@ -518,6 +522,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 
   const topology::Field<topology::Mesh>& solution = fields->solution();
   const ALE::Obj<SieveMesh>& sieveMesh = solution.mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
   const ALE::Obj<RealSection>& solutionSection = solution.section();
   assert(!solutionSection.isNull());
 
@@ -533,9 +538,6 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   RestrictVisitor coordsVisitor(*coordinates,
 				coordinatesCell.size(), &coordinatesCell[0]);
 #endif
-
-  // Allocate matrix for cell values.
-  _initCellMatrix();
 
   for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
@@ -581,7 +583,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     
     // Assemble cell contribution into lumped matrix.
     jacobianVisitor.clear();
-    sieveMesh->updateClosure(*c_iter, jacobianVisitor);
+    sieveSubMesh->updateClosure(*c_iter, jacobianVisitor);
   } // for
 
   _needNewJacobian = false;
