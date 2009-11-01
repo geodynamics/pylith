@@ -71,6 +71,9 @@ public :
   /// Test integrateJacobian().
   void testIntegrateJacobian(void);
 
+  /// Test integrateJacobianLumped().
+  void testIntegrateJacobianLumped(void);
+
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 

@@ -64,6 +64,9 @@ main(int argc,
 
     // Finalize PETSc
     err = PetscFinalize(); CHKERRQ(err);
+  } catch (const std::exception& err) {
+    std::cerr << "Error: " << err.what() << std::endl;
+    abort();
   } catch (...) {
     abort();
   } // catch
