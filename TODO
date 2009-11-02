@@ -43,10 +43,6 @@ Unit tests
     integrateJacobian (lumped)
     adjustSolnLumped
 
-  AbsorbingDampers
-    integrateJacobian (lumped)
-
-
 FaultCohesiveDynL (C++)
   integrateJacobian (lumped)
   adjustSolnLumped()
