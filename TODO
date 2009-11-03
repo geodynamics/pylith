@@ -36,7 +36,6 @@ LUMPED SOLVER
 Unit tests
 
   FaultCohesiveKin
-    integrateJacobian (lumped)
     adjustSolnLumped
 
   FaultCohesiveDynL

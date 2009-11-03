@@ -632,11 +632,10 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 // require assembly across cells, vertices, or processors.
 void
 pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
-				    topology::Field<topology::Mesh>* jacobian,
+				    topology::Field<topology::Mesh>& jacobian,
 				    const double t,
 				    topology::SolutionFields* const fields)
 { // integrateJacobianAssembled
-  assert(0 != jacobian);
   assert(0 != fields);
   assert(0 != _fields);
 
@@ -668,7 +667,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
   const int spaceDim = _quadrature->spaceDim();
   double_array jacobianVertex(spaceDim);
   jacobianVertex = 1.0;
-  const ALE::Obj<RealSection>& jacobianSection = jacobian->section();
+  const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
   assert(!jacobianSection.isNull());  
   for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin; 
        v_iter != verticesEnd;
