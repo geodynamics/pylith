@@ -521,12 +521,12 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembled(void)
   topology::Jacobian jacobian(fields);
 
   const double t = 2.134;
-  fault.integrateJacobian(&jacobian, t, &fields);
+  fault.integrateJacobianAssembled(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
 
   jacobian.assemble("final_assembly");
 
-  //MatView(jacobian, PETSC_VIEWER_STDOUT_WORLD); // DEBUGGING
+  // MatView(jacobian.matrix(), PETSC_VIEWER_STDOUT_WORLD); // DEBUGGING
 
   const double* valsE = _data->valsJacobian;
   const int nrowsE = dispSection->sizeWithBC();
@@ -574,6 +574,77 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembled(void)
   MatDestroy(jSparseAIJ);
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
 } // testIntegrateJacobianAssembled
+
+// ----------------------------------------------------------------------
+// Test integrateJacobianAssembled() with lumped Jacobian.
+void
+pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembledLumped(void)
+{ // testIntegrateJacobianAssembledLumped
+  topology::Mesh mesh;
+  FaultCohesiveKin fault;
+  topology::SolutionFields fields(mesh);
+  _initialize(&mesh, &fault, &fields);
+
+  topology::Field<topology::Mesh> jacobian(mesh);
+  jacobian.label("Jacobian");
+  jacobian.vectorFieldType(topology::FieldBase::VECTOR);
+  jacobian.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
+  jacobian.allocate();
+
+  const double t = 2.134;
+  fault.integrateJacobianAssembled(jacobian, t, &fields);
+  CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
+  jacobian.complete();
+
+#if 0 // DEBUGGING
+  jacobian.view("JACOBIAN");
+#endif // DEBUGGING
+
+  const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
+  CPPUNIT_ASSERT(!jacobianSection.isNull());
+
+  int iVertex = 0;
+  const double tolerance = 1.0e-06;
+  const int spaceDim = _data->spaceDim;
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
+  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
+    faultSieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const SieveSubMesh::label_sequence::iterator verticesBegin = 
+    vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  SieveSubMesh::renumbering_type& renumbering = 
+    faultSieveMesh->getRenumbering();
+  const SieveMesh::renumbering_type::const_iterator renumberingBegin = 
+    renumbering.begin();
+  const SieveMesh::renumbering_type::const_iterator renumberingEnd = 
+    renumbering.end();
+  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+       v_iter != verticesEnd;
+       ++v_iter, ++iVertex) {
+    SieveMesh::point_type meshVertex = -1;
+    bool found = false;
+
+    for (SieveMesh::renumbering_type::const_iterator r_iter = renumberingBegin;
+	 r_iter != renumberingEnd;
+	 ++r_iter) {
+      if (r_iter->second == *v_iter) {
+        meshVertex = r_iter->first;
+        found = true;
+        break;
+      } // if
+    } // for
+    CPPUNIT_ASSERT(found);
+    int fiberDim = jacobianSection->getFiberDimension(meshVertex);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
+    const double* jacobianVertex = jacobianSection->restrictPoint(meshVertex);
+    CPPUNIT_ASSERT(0 != jacobianVertex);
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, jacobianVertex[iDim],
+				   tolerance);
+  } // for
+} // testIntegrateJacobianAssembledLumped
 
 // ----------------------------------------------------------------------
 // Test updateStateVars().

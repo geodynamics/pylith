@@ -40,6 +40,8 @@ class pylith::faults::TestFaultCohesiveKinSrcsHex8 : public TestFaultCohesiveKin
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST( testIntegrateJacobian );
+  CPPUNIT_TEST( testIntegrateJacobianAssembled );
+  CPPUNIT_TEST( testIntegrateJacobianAssembledLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
 
   CPPUNIT_TEST_SUITE_END();
