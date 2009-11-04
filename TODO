@@ -6,6 +6,10 @@ Data structure to hold label of fault Lagrange vertices and
 conventional vertices 
   array of structure (lagrange, positive, negative, fault)
 
+  no mesh queries? Just loops?
+
+What is the proper formula for integrating tractions?
+
 ----------------------------------------------------------------------
 FRICTION
 ----------------------------------------------------------------------
@@ -32,6 +36,8 @@ Constitutive model parameters
 ----------------------------------------------------------------------
 LUMPED SOLVER
 ----------------------------------------------------------------------
+
+S (sensitivity matrix) - should be diagonal?
 
 Unit tests
 
