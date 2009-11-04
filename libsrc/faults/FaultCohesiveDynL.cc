@@ -783,11 +783,15 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 
 	    // Sensitivity of slip to changes in the Lagrange multipliers
 	    // Aixjx = 1.0/Aix + 1.0/Ajx
+	    assert(jacobianVertex[0] > 0.0);
+	    assert(jacobianVertex[spaceDim+0] > 0.0);
 	    const double Aixjx = 
-	      1.0/jacobianVertex[0] + 1.0/jacobianVertex[spaceDim+0];
+	      1.0 / jacobianVertex[0] + 1.0 / jacobianVertex[spaceDim+0];
 	    // Aiyjy = 1.0/Aiy + 1.0/Ajy
+	    assert(jacobianVertex[1] > 0.0);
+	    assert(jacobianVertex[spaceDim+1] > 0.0);
 	    const double Aiyjy = 
-	      1.0/jacobianVertex[1] + 1.0/jacobianVertex[spaceDim+1];
+	      1.0 / jacobianVertex[1] + 1.0 / jacobianVertex[spaceDim+1];
 	    const double Cpx = orientationVertex[0];
 	    const double Cpy = orientationVertex[1];
 	    const double Cqx = orientationVertex[2];
@@ -888,12 +892,12 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 
 		// Update slip based on value required to stick versus friction
 		slipVertex[0] += Spp * (tractionShearVertex-friction) 
-		  *tractionTpdtVertex[0]/ tractionShearVertex +
+		  *tractionTpdtVertex[0] / tractionShearVertex +
 		                  Spq * (tractionShearVertex-friction) 
 		  *tractionTpdtVertex[1]/ tractionShearVertex;
 
 		slipVertex[1] += Spq * (tractionShearVertex-friction) 
-		  *tractionTpdtVertex[0]/ tractionShearVertex +
+		  *tractionTpdtVertex[0] / tractionShearVertex +
 		                  Sqq * (tractionShearVertex-friction) 
 		  *tractionTpdtVertex[1]/ tractionShearVertex;
 
@@ -1726,8 +1730,8 @@ pylith::faults::FaultCohesiveDynL::_updateJacobianDiagonal(
     } // for
 
     // Insert cell contribution into 
-    jacobianDiagVisitor.clear();
-    sieveMesh->updateClosure(c_fault, jacobianDiagFaultVisitor);
+    jacobianDiagFaultVisitor.clear();
+    faultSieveMesh->updateClosure(c_fault, jacobianDiagFaultVisitor);
   } // for
 } // _updateJacobianDiagonal
 
