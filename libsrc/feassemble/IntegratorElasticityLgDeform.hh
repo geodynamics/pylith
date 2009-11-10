@@ -39,8 +39,6 @@ public :
 
   typedef void (*totalStrain_fn_type)(double_array*,
 				      const double_array&,
-				      const double_array&,
-				      const int,
 				      const int);
   
 
@@ -126,49 +124,40 @@ protected :
    */
   void _elasticityJacobian3D(const double_array& elasticConsts);
 
-  /** Compute total strain in at quadrature points of a cell.
+  /** Calculate Green-Lagrange strain tensor at quadrature points of a
+   *  1-D cell.
    *
-   * @param strain Strain tensor at quadrature points.
-   * @param basisDeriv Derivatives of basis functions at quadrature points.
-   * @param disp Displacement at vertices of cell.
-   * @param numBasis Number of basis functions for cell.
+   * @param strain Green-Lagrange strain tensor at quadrature points (output).
+   * @param deform Deformation tensor at quadrature points.
    * @param numQuadPts Number of quadrature points.
    */
   static
   void _calcTotalStrain1D(double_array* strain,
-			  const double_array& basisDeriv,
-			  const double_array& disp,
-			  const int numBasis,
+			  const double_array& deform,
 			  const int numQuadPts);
 
-  /** Compute total strain in at quadrature points of a cell.
+  /** Calculate Green-Lagrange strain tensor at quadrature points of a
+   *  2-D cell.
    *
-   * @param strain Strain tensor at quadrature points.
-   * @param basisDeriv Derivatives of basis functions at quadrature points.
-   * @param disp Displacement at vertices of cell.
-   * @param numBasis Number of basis functions for cell.
+   * @param strain Green-Lagrange strain tensor at quadrature points (output).
+   * @param deform Deformation tensor at quadrature points.
    * @param numQuadPts Number of quadrature points.
    */
   static
   void _calcTotalStrain2D(double_array* strain,
-			  const double_array& basisDeriv,
-			  const double_array& disp,
-			  const int numBasis,
+			  const double_array& deform,
 			  const int numQuadPts);
 
-  /** Compute total strain in at quadrature points of a cell.
+  /** Calculate Green-Lagrange strain tensor at quadrature points of a
+   *  3-D cell.
    *
-   * @param strain Strain tensor at quadrature points.
-   * @param basisDeriv Derivatives of basis functions at quadrature points.
-   * @param disp Displacement at vertices of cell.
-   * @param numBasis Number of basis functions for cell.
+   * @param strain Green-Lagrange strain tensor at quadrature points (output).
+   * @param deform Deformation tensor at quadrature points.
    * @param numQuadPts Number of quadrature points.
    */
   static
   void _calcTotalStrain3D(double_array* strain,
-			  const double_array& basisDeriv,
-			  const double_array& disp,
-			  const int numBasis,
+			  const double_array& deform,
 			  const int numQuadPts);
 
   /** Calculate deformation tensor.

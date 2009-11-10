@@ -55,9 +55,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::~IntegratorElasticityLgDeform(
 bool
 pylith::feassemble::IntegratorElasticityLgDeform::needNewJacobian(void)
 { // needNewJacobian
-  assert(0 != _material);
-  if (!_needNewJacobian)
-    _needNewJacobian = _material->needNewJacobian();
+  _needNewJacobian = IntegratorElasticity::needNewJacobian();
   return _needNewJacobian;
 } // needNewJacobian
 
@@ -101,6 +99,8 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(
   // Allocate arrays for cell data.
   double_array dispCell(numBasis*spaceDim);
   double_array strainCell(numQuadPts*tensorSize);
+  double_array deformCell(numQuadPts*spaceDim*spaceDim);
+  deformCell = 0.0;
   strainCell = 0.0;
 
   // Get cell information
@@ -120,7 +120,6 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(
   topology::Mesh::RestrictVisitor dispVisitor(*dispSection, 
 					      dispCell.size(), &dispCell[0]);
 
-#if !defined(PRECOMPUTE_GEOMETRY)
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
@@ -128,7 +127,6 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(
   topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
 						coordinatesCell.size(),
 						&coordinatesCell[0]);
-#endif
 
   // Loop over cells
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
@@ -150,9 +148,12 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(
     // Get cell geometry information that depends on cell
     const double_array& basisDeriv = _quadrature->basisDeriv();
   
+    // Compute deformation tensor.
+    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispCell,
+		     numBasis, numQuadPts, spaceDim);
+
     // Compute strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispCell, 
-		      numBasis, numQuadPts);
+    calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
 
     // Update material state
     _material->updateStateVars(strainCell, *c_iter);
@@ -196,6 +197,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(
   
   // Allocate arrays for cell data.
   double_array dispCell(numBasis*spaceDim);
+  double_array deformCell(numQuadPts*spaceDim*spaceDim);
   double_array strainCell(numQuadPts*tensorSize);
   strainCell = 0.0;
   double_array stressCell(numQuadPts*tensorSize);
@@ -218,7 +220,6 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(
   topology::Mesh::RestrictVisitor dispVisitor(*dispSection, 
 					      dispCell.size(), &dispCell[0]);
     
-#if !defined(PRECOMPUTE_GEOMETRY)
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
@@ -226,7 +227,6 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(
   topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
 						coordinatesCell.size(),
 						&coordinatesCell[0]);
-#endif
 
   const ALE::Obj<RealSection>& fieldSection = field->section();
   assert(!fieldSection.isNull());
@@ -251,10 +251,13 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(
     // Get cell geometry information that depends on cell
     const double_array& basisDeriv = _quadrature->basisDeriv();
     
+    // Compute deformation tensor.
+    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispCell,
+		     numBasis, numQuadPts, spaceDim);
+
     // Compute strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispCell, 
-		      numBasis, numQuadPts);
-    
+    calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
+
     if (!calcStress) 
       fieldSection->updatePoint(*c_iter, &strainCell[0]);
     else {
@@ -628,96 +631,114 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(
 } // _elasticityJacobian3D
 
 // ----------------------------------------------------------------------
-void
+// Calculate Green-Lagrange strain tensor at quadrature points of a 1-D cell.
+void 
 pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D(
-					    double_array* strain,
-					    const double_array& basisDeriv,
-					    const double_array& disp,
-					    const int numBasis,
-					    const int numQuadPts)
-{ // calcTotalStrain1D
+					      double_array* strain,
+					      const double_array& deform,
+					      const int numQuadPts)
+{ // _calcTotalStrain1D
+  // Green-Lagrange strain tensor = 1/2 ( X^T X - I )
+  // X: deformation tensor
+  // I: identity matrix
+
   assert(0 != strain);
 
   const int dim = 1;
-  
-  assert(basisDeriv.size() == numQuadPts*numBasis*dim);
-  assert(disp.size() == numBasis*dim);
+  const int strainSize = 1;
+  assert(deform.size() == numQuadPts*dim*dim);
+  assert(strain->size() == numQuadPts*strainSize);
 
-  (*strain) = 0.0;
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    for (int iBasis=0; iBasis < numBasis; ++iBasis)
-      (*strain)[iQuad] += basisDeriv[iQuad*numBasis+iBasis] * disp[iBasis];
-  } // for
-} // calcTotalStrain1D
 
-// ----------------------------------------------------------------------
-void
-pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D(
-					    double_array* strain,
-					    const double_array& basisDeriv,
-					    const double_array& disp,
-					    const int numBasis,
-					    const int numQuadPts)
-{ // calcTotalStrain2D
-  assert(0 != strain);
-  
-  const int dim = 2;
-
-  assert(basisDeriv.size() == numQuadPts*numBasis*dim);
-  assert(disp.size() == numBasis*dim);
-
-  (*strain) = 0.0;
-  const int strainSize = 3;
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-    for (int iBasis=0, iQ=iQuad*numBasis*dim; iBasis < numBasis; ++iBasis) {
-      (*strain)[iQuad*strainSize+0] += 
-	basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim  ];
-      (*strain)[iQuad*strainSize+1] += 
-	basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+1];
-      (*strain)[iQuad*strainSize+2] += 
-	0.5 * (basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim  ] +
-	       basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+1]);
-    } // for
-} // calcTotalStrain2D
-
+    (*strain)[iQuad] = 0.5*(deform[iQuad]*deform[iQuad] - 1.0);
+} // _calcTotalStrain1D
+  
 // ----------------------------------------------------------------------
-void
+// Calculate Green-Lagrange strain tensor at quadrature points of a 2-D cell.
+void 
+pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D(
+					      double_array* strain,
+					      const double_array& deform,
+					      const int numQuadPts)
+{ // _calcTotalStrain2D
+  // Green-Lagrange strain tensor = 1/2 ( X^T X - I )
+  // X: deformation tensor
+  // I: identity matrix
+
+  assert(0 != strain);
+
+  const int dim = 2;
+  const int deformSize = dim*dim;
+  const int strainSize = 3;
+  assert(deform.size() == numQuadPts*deformSize);
+  assert(strain->size() == numQuadPts*strainSize);
+
+  for (int iQuad=0, iDeform=0, iStrain=0;
+       iQuad < numQuadPts;
+       ++iQuad, iDeform+=deformSize, iStrain+=strainSize) {
+    (*strain)[iStrain  ] =
+      0.5 * (deform[iDeform  ]*deform[iDeform  ] + 
+	     deform[iDeform+2]*deform[iDeform+2] - 1.0);
+    (*strain)[iStrain+1] =
+      0.5 * (deform[iDeform+1]*deform[iDeform+1] + 
+	     deform[iDeform+3]*deform[iDeform+3] - 1.0);
+    (*strain)[iStrain+2] =
+      0.5 * (deform[iDeform  ]*deform[iDeform+2] + 
+	     deform[iDeform+1]*deform[iDeform+3]);
+  } // for
+} // _calcTotalStrain2D
+  
+// ----------------------------------------------------------------------
+// Calculate Green-Lagrange strain tensor at quadrature points of a 3-D cell.
+void 
 pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D(
-					    double_array* strain,
-					    const double_array& basisDeriv,
-					    const double_array& disp,
-					    const int numBasis,
-					    const int numQuadPts)
-{ // calcTotalStrain3D
+					      double_array* strain,
+					      const double_array& deform,
+					      const int numQuadPts)
+{ // _calcTotalStrain3D
+  // Green-Lagrange strain tensor = 1/2 ( X^T X - I )
+  // X: deformation tensor
+  // I: identity matrix
+
   assert(0 != strain);
 
   const int dim = 3;
-
-  assert(basisDeriv.size() == numQuadPts*numBasis*dim);
-  assert(disp.size() == numBasis*dim);
-
-  (*strain) = 0.0;
+  const int deformSize = dim*dim;
   const int strainSize = 6;
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-    for (int iBasis=0, iQ=iQuad*numBasis*dim; iBasis < numBasis; ++iBasis) {
-      (*strain)[iQuad*strainSize+0] += 
-	basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim  ];
-      (*strain)[iQuad*strainSize+1] += 
-	basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+1];
-      (*strain)[iQuad*strainSize+2] += 
-	basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim+2];
-      (*strain)[iQuad*strainSize+3] += 
-	0.5 * (basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim  ] +
-	       basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+1]);
-      (*strain)[iQuad*strainSize+4] += 
-	0.5 * (basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim+1] +
-	       basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+2]);
-      (*strain)[iQuad*strainSize+5] += 
-	0.5 * (basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim  ] +
-	       basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+2]);
-    } // for
-} // calcTotalStrain3D
+  assert(deform.size() == numQuadPts*dim*dim);
+  assert(strain->size() == numQuadPts*strainSize);
 
+  for (int iQuad=0, iDeform=0, iStrain=0;
+       iQuad < numQuadPts;
+       ++iQuad, iDeform+=deformSize, iStrain+=strainSize) {
+    (*strain)[iStrain  ] =
+      0.5 * (deform[iDeform  ]*deform[iDeform  ] +
+	     deform[iDeform+3]*deform[iDeform+3] +
+	     deform[iDeform+6]*deform[iDeform+6] - 1.0);
+    (*strain)[iStrain+1] =
+      0.5 * (deform[iDeform+1]*deform[iDeform+1] +
+	     deform[iDeform+4]*deform[iDeform+4] +
+	     deform[iDeform+7]*deform[iDeform+7] - 1.0);
+    (*strain)[iStrain+2] =
+      0.5 * (deform[iDeform+2]*deform[iDeform+2] +
+	     deform[iDeform+5]*deform[iDeform+5] +
+	     deform[iDeform+8]*deform[iDeform+8] - 1.0);
+    (*strain)[iStrain+3] =
+      0.5 * (deform[iDeform  ]*deform[iDeform+1] +
+	     deform[iDeform+3]*deform[iDeform+4] +
+	     deform[iDeform+6]*deform[iDeform+7]);
+    (*strain)[iStrain+4] =
+      0.5 * (deform[iDeform+1]*deform[iDeform+2] +
+	     deform[iDeform+4]*deform[iDeform+5] +
+	     deform[iDeform+7]*deform[iDeform+8]);
+    (*strain)[iStrain+5] =
+      0.5 * (deform[iDeform+0]*deform[iDeform+2] +
+	     deform[iDeform+3]*deform[iDeform+5] +
+	     deform[iDeform+6]*deform[iDeform+8]);
+  } // for
+} // _calcTotalStrain3D
+  
 // ----------------------------------------------------------------------
 // Calculate deformation tensor.
 void 
