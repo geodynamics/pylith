@@ -66,6 +66,7 @@ testfeassemble_SOURCES = \
 	TestElasticityImplicitGrav2DQuadratic.cc \
 	TestElasticityImplicitGrav3DLinear.cc \
 	TestElasticityImplicitGrav3DQuadratic.cc \
+	TestIntegratorElasticityLgDeform.cc \
 	test_feassemble.cc
 
 

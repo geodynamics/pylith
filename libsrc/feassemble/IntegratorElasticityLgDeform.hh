@@ -164,7 +164,7 @@ protected :
    *
    * @param deform Deformation tensor for cell at quadrature points.
    * @param basisDeriv Derivatives of basis functions at quadrature points.
-   * @param coords Coordinates of DOF of cell.
+   * @param vertices Coordinates of vertices in reference cell.
    * @param disp Displacements of DOF of cell.
    * @param numBasis Number of basis functions for cell.
    * @param numQuadPts Number of quadrature points.
@@ -173,7 +173,7 @@ protected :
   static
   void _calcDeformation(double_array* deform,
 			const double_array& basisDeriv,
-			const double_array& coords,
+			const double_array& vertices,
 			const double_array& disp,
 			const int numBasis,
 			const int numQuadPts,
