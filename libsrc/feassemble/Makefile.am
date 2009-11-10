@@ -24,6 +24,7 @@ subpkginclude_HEADERS = \
 	Integrator.icc \
 	Integrator.cc \
 	IntegratorElasticity.hh \
+	IntegratorElasticityLgDeform.hh \
 	GeometryPoint1D.hh \
 	GeometryPoint2D.hh \
 	GeometryPoint3D.hh \
