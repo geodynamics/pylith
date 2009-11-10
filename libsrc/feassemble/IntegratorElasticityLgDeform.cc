@@ -684,8 +684,8 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D(
       0.5 * (deform[iDeform+1]*deform[iDeform+1] + 
 	     deform[iDeform+3]*deform[iDeform+3] - 1.0);
     (*strain)[iStrain+2] =
-      0.5 * (deform[iDeform  ]*deform[iDeform+2] + 
-	     deform[iDeform+1]*deform[iDeform+3]);
+      0.5 * (deform[iDeform  ]*deform[iDeform+1] + 
+	     deform[iDeform+2]*deform[iDeform+3]);
   } // for
 } // _calcTotalStrain2D
   
@@ -745,7 +745,7 @@ void
 pylith::feassemble::IntegratorElasticityLgDeform::_calcDeformation(
 					      double_array* deform,
 					      const double_array& basisDeriv,
-					      const double_array& coords,
+					      const double_array& vertices,
 					      const double_array& disp,
 					      const int numBasis,
 					      const int numQuadPts,
@@ -765,7 +765,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcDeformation(
 	for (int jDim=0; jDim < dim; ++jDim, ++indexD)
 	  (*deform)[iQuad*deformSize+indexD] += 
 	    basisDeriv[iQ+iBasis*dim+jDim] *
-	    (coords[iBasis*dim+iDim] + disp[iBasis*dim+iDim]);
+	    (vertices[iBasis*dim+iDim] + disp[iBasis*dim+iDim]);
 } // _calcDeformation
   
 
