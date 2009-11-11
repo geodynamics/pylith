@@ -802,7 +802,7 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 
 	    if (tractionTpdtVertex[1]+tractionInitialVertex[1] < 0 &&
 		0 == slipVertex[1]) {
-	      // if in compression
+	      // if in compression and no opening
 	      std::cout << "FAULT IN COMPRESSION" << std::endl;
 	      const double friction =
 		-muf * (tractionInitialVertex[1] + tractionTpdtVertex[1]);
