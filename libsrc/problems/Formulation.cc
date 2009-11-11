@@ -153,9 +153,13 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
     _submeshIntegrators[i]->timeStep(_dt);
     _submeshIntegrators[i]->constrainSolnSpace(_fields, _t, *_jacobian);
   } // for
+
+  if (0 != tmpSolutionVec) {
+    topology::Field<topology::Mesh>& solution = _fields->solution();
+    solution.scatterSectionToVector(*tmpSolutionVec);
+  } // if
   // :KLUDGE: END
   // ===================================================================
-
 
   // Set residual to zero.
   topology::Field<topology::Mesh>& residual = _fields->get("residual");
