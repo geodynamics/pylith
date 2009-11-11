@@ -71,9 +71,10 @@ libpylith_la_SOURCES = \
 	feassemble/Quadrature2Din3D.cc \
 	feassemble/Quadrature3D.cc \
 	feassemble/IntegratorElasticity.cc \
-	feassemble/IntegratorElasticityLgDeform.cc \
 	feassemble/ElasticityImplicit.cc \
 	feassemble/ElasticityExplicit.cc \
+	feassemble/IntegratorElasticityLgDeform.cc \
+	feassemble/ElasticityImplicitLgDeform.cc \
 	materials/Metadata.cc \
 	materials/Material.cc \
 	materials/ElasticMaterial.cc \

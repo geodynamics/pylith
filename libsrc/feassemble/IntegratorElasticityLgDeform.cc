@@ -199,9 +199,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(
   double_array dispCell(numBasis*spaceDim);
   double_array deformCell(numQuadPts*spaceDim*spaceDim);
   double_array strainCell(numQuadPts*tensorSize);
-  strainCell = 0.0;
   double_array stressCell(numQuadPts*tensorSize);
-  stressCell = 0.0;
 
   // Get cell information
   const ALE::Obj<SieveMesh>& sieveMesh = field->mesh().sieveMesh();
@@ -318,7 +316,8 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStressFromStrain(
 // Integrate elasticity term in residual for 1-D cells.
 void
 pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual1D(
-				     const double_array& stress)
+				     const double_array& stress,
+				     const double_array& disp)
 { // _elasticityResidual1D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -335,18 +334,22 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual1D(
     const double wt = quadWts[iQuad] * jacobianDet[iQuad];
     const double s11 = stress[iQuad];
     for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-      const double N1 = wt*basisDeriv[iQuad*numBasis+iBasis  ];
+      double l11 = 0.0;
+      for (int kBasis=0; kBasis < numBasis; ++kBasis)
+	l11 += basisDeriv[iQuad*numBasis+kBasis  ] * disp[kBasis  ]; 
+      const double N1 = wt * (1.0 + l11) * basisDeriv[iQuad*numBasis+iBasis  ];
       _cellVector[iBasis*spaceDim  ] -= N1*s11;
     } // for
   } // for
-  PetscLogFlops(numQuadPts*(1+numBasis*5));
+  PetscLogFlops(numQuadPts*(1+numBasis*5+numBasis*numBasis*2));
 } // _elasticityResidual1D
 
 // ----------------------------------------------------------------------
 // Integrate elasticity term in residual for 2-D cells.
 void
 pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual2D(
-				     const double_array& stress)
+				     const double_array& stress,
+				     const double_array& disp)
 { // _elasticityResidual2D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -368,20 +371,35 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual2D(
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
-      const double N1 = wt*basisDeriv[iQ+iBasis*spaceDim  ];
-      const double N2 = wt*basisDeriv[iQ+iBasis*spaceDim+1];
-      _cellVector[iBasis*spaceDim  ] -= N1*s11 + N2*s12;
-      _cellVector[iBasis*spaceDim+1] -= N1*s12 + N2*s22;
+      double l11 = 0.0;
+      double l12 = 0.0;
+      double l21 = 0.0;
+      double l22 = 0.0;
+      for (int kBasis=0; kBasis < numBasis; ++kBasis) {
+	const int kB = kBasis*spaceDim;
+	l11 += basisDeriv[iQ+kB  ] * disp[kB  ];
+	l12 += basisDeriv[iQ+kB+1] * disp[kB  ];
+	l21 += basisDeriv[iQ+kB  ] * disp[kB+1];
+	l22 += basisDeriv[iQ+kB+1] * disp[kB+1];
+      } // for
+      const int iB = iBasis*spaceDim;
+      const double N1 = basisDeriv[iQ+iB  ];
+      const double N2 = basisDeriv[iQ+iB+1];
+      _cellVector[iB  ] -= 
+	wt*((1.0+l11)*N1*s11 + N2*l12*s22 + ((1.0+l11)*N2 + l12*N1)*s12);
+      _cellVector[iB+1] -=
+	wt*(l21*N1*s11 + (1.0+l22)*N2*s22 + ((1.0+l22)*N1 + l21*N2)*s12);
     } // for
   } // for
-  PetscLogFlops(numQuadPts*(1+numBasis*(8+2+9)));
+  PetscLogFlops(numQuadPts*(1+numBasis*(numBasis*8+14)));
 } // _elasticityResidual2D
 
 // ----------------------------------------------------------------------
 // Integrate elasticity term in residual for 3-D cells.
 void
 pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual3D(
-				     const double_array& stress)
+				     const double_array& stress,
+				     const double_array& disp)
 { // _elasticityResidual3D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -407,24 +425,59 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual3D(
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
-      const int iBlock = iBasis*spaceDim;
-      const double N1 = wt*basisDeriv[iQ+iBasis*spaceDim+0];
-      const double N2 = wt*basisDeriv[iQ+iBasis*spaceDim+1];
-      const double N3 = wt*basisDeriv[iQ+iBasis*spaceDim+2];
+      double l11 = 0.0;
+      double l12 = 0.0;
+      double l13 = 0.0;
+      double l21 = 0.0;
+      double l22 = 0.0;
+      double l23 = 0.0;
+      double l31 = 0.0;
+      double l32 = 0.0;
+      double l33 = 0.0;
+      for (int kBasis=0; kBasis < numBasis; ++kBasis) {
+	const int kB = kBasis*spaceDim;
+	l11 += basisDeriv[iQ+kB  ] * disp[kB  ];
+	l12 += basisDeriv[iQ+kB+1] * disp[kB  ];
+	l13 += basisDeriv[iQ+kB+2] * disp[kB  ];
+	l21 += basisDeriv[iQ+kB  ] * disp[kB+1];
+	l22 += basisDeriv[iQ+kB+1] * disp[kB+1];
+	l23 += basisDeriv[iQ+kB+2] * disp[kB+1];
+	l31 += basisDeriv[iQ+kB  ] * disp[kB+2];
+	l32 += basisDeriv[iQ+kB+1] * disp[kB+2];
+	l33 += basisDeriv[iQ+kB+2] * disp[kB+2];
+      } // for
+      const int iB = iBasis*spaceDim;
+      const double N1 = basisDeriv[iQ+iB  ];
+      const double N2 = basisDeriv[iQ+iB+1];
+      const double N3 = basisDeriv[iQ+iB+2];
 
-      _cellVector[iBlock  ] -= N1*s11 + N2*s12 + N3*s13;
-      _cellVector[iBlock+1] -= N1*s12 + N2*s22 + N3*s23;
-      _cellVector[iBlock+2] -= N1*s13 + N2*s23 + N3*s33;
+      _cellVector[iB  ] -= 
+	wt*((1.0+l11)*N1*s11 + l12*N2*s22 + l13*N3*s33 +
+	    ((1.0+l11)*N2 + l12*N1)*s12 +
+	    (l12*N3 + l13*N2)*s23 +
+	    ((1.0+l11)*N3 + l13*N1)*s13);
+      _cellVector[iB+1] -=
+	wt*(l21*N1*s11 + (1.0+l22)*N2*s22 + l23*N3*s33 +
+	    ((1.0+l22)*N1 + l21*N2)*s12 +
+	    ((1.0+l22)*N3 + l23*N2)*s23 +
+	    (l21*N3 + l23*N1)*s13);
+      _cellVector[iB+2] -=
+	wt*(l31*N1*s11 + l32*N2*s22 + (1.0+l33)*N3*s33 +
+	    (l31*N2 + l32*N1)*s12 +
+	    ((1.0+l33)*N2 + l32*N3)*s23 +
+	    ((1.0+l33)*N1 + l31*N3)*s13);
     } // for
   } // for
-  PetscLogFlops(numQuadPts*(1+numBasis*(3+12)));
+  PetscLogFlops(numQuadPts*(1+numBasis*(numBasis*18+3*27)));
 } // _elasticityResidual3D
 
 // ----------------------------------------------------------------------
 // Integrate elasticity term in Jacobian for 1-D cells.
 void
 pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian1D(
-			       const double_array& elasticConsts)
+				       const double_array& elasticConsts,
+				       const double_array& stress,
+				       const double_array& disp)
 { // _elasticityJacobian1D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -457,7 +510,9 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian1D(
 // Integrate elasticity term in Jacobian for 2-D cells.
 void
 pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(
-			       const double_array& elasticConsts)
+				       const double_array& elasticConsts,
+				       const double_array& stress,
+				       const double_array& disp)
 { // _elasticityJacobian2D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -521,7 +576,9 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(
 // Integrate elasticity term in Jacobian for 3-D cells.
 void
 pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(
-			       const double_array& elasticConsts)
+				       const double_array& elasticConsts,
+				       const double_array& stress,
+				       const double_array& disp)
 { // _elasticityJacobian3D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
