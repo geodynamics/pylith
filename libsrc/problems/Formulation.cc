@@ -154,6 +154,7 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
     _submeshIntegrators[i]->constrainSolnSpace(_fields, _t, *_jacobian);
   } // for
 
+  // Update PETScVec of solution for changes to Lagrange multipliers.
   if (0 != tmpSolutionVec) {
     topology::Field<topology::Mesh>& solution = _fields->solution();
     solution.scatterSectionToVector(*tmpSolutionVec);
