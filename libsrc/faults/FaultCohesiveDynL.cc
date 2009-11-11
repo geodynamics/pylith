@@ -800,7 +800,8 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 	    const double Spq = Cpx*Cqx*Aixjx + Cpy*Cqy*Aiyjy;
 	    const double Sqq = Cqx*Cqx*Aixjx + Cqy*Cqy*Aiyjy;
 
-	    if (tractionTpdtVertex[1]+tractionInitialVertex[1] < 0) {
+	    if (tractionTpdtVertex[1]+tractionInitialVertex[1] < 0 &&
+		slipVertex[1] == 0) {
 	      // if in compression
 	      std::cout << "FAULT IN COMPRESSION" << std::endl;
 	      const double friction =
