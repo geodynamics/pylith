@@ -11,10 +11,10 @@
 //
 
 /**
- * @file libsrc/feassemble/ElasticityImplicit.hh
+ * @file libsrc/feassemble/ElasticityImplicitLgDeform.hh
  *
  * @brief Implicit time integration of quasi-static elasticity equation
- * using finite-elements.
+ * with large rigid body motion and small strains using finite-elements.
  *
  * Note: This object operates on a single finite-element family, which
  * is defined by the quadrature and a database of material property
@@ -44,25 +44,26 @@
  * information.
  */
 
-#if !defined(pylith_feassemble_elasticityimplicit_hh)
-#define pylith_feassemble_elasticityimplicit_hh
+#if !defined(pylith_feassemble_elasticityimplicitlgdeform_hh)
+#define pylith_feassemble_elasticityimplicitlgdeform_hh
 
 // Include directives ---------------------------------------------------
-#include "IntegratorElasticity.hh" // ISA IntegratorElasticity
+#include "IntegratorElasticityLgDeform.hh" // ISA IntegratorElasticityLgDeform
 
-// ElasticityImplicit ---------------------------------------------------
-class pylith::feassemble::ElasticityImplicit : public IntegratorElasticity
-{ // ElasticityImplicit
-  friend class TestElasticityImplicit; // unit testing
+// ElasticityImplicitLgDeform -------------------------------------------
+class pylith::feassemble::ElasticityImplicitLgDeform : 
+  public IntegratorElasticityLgDeform
+{ // ElasticityImplicitLgDeform
+  friend class TestElasticityImplicitLgDeform; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
-  ElasticityImplicit(void);
+  ElasticityImplicitLgDeform(void);
 
   /// Destructor
-  ~ElasticityImplicit(void);
+  ~ElasticityImplicitLgDeform(void);
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
@@ -122,19 +123,19 @@ public :
 private :
 
   /// Not implemented.
-  ElasticityImplicit(const ElasticityImplicit&);
+  ElasticityImplicitLgDeform(const ElasticityImplicitLgDeform&);
 
   /// Not implemented
-  const ElasticityImplicit& operator=(const ElasticityImplicit&);
+  const ElasticityImplicitLgDeform& operator=(const ElasticityImplicitLgDeform&);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
   double _dtm1; ///< Time step for t-dt1 -> t
 
-}; // ElasticityImplicit
+}; // ElasticityImplicitLgDeform
 
-#endif // pylith_feassemble_elasticityimplicit_hh
+#endif // pylith_feassemble_elasticityimplicitlgdeform_hh
 
 
 // End of file 

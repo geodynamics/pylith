@@ -20,6 +20,7 @@ subpkginclude_HEADERS = \
 	Constraint.icc \
 	ElasticityExplicit.hh \
 	ElasticityImplicit.hh \
+	ElasticityImplicitLgDeform.hh \
 	Integrator.hh \
 	Integrator.icc \
 	Integrator.cc \

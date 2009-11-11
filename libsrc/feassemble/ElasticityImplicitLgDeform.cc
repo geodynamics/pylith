@@ -12,7 +12,7 @@
 
 #include <portinfo>
 
-#include "ElasticityImplicit.hh" // implementation of class methods
+#include "ElasticityImplicitLgDeform.hh" // implementation of class methods
 
 #include "Quadrature.hh" // USES Quadrature
 #include "CellGeometry.hh" // USES CellGeometry
@@ -44,14 +44,14 @@ typedef pylith::topology::Mesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::ElasticityImplicit::ElasticityImplicit(void) :
+pylith::feassemble::ElasticityImplicitLgDeform::ElasticityImplicitLgDeform(void) :
   _dtm1(-1.0)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::feassemble::ElasticityImplicit::~ElasticityImplicit(void)
+pylith::feassemble::ElasticityImplicitLgDeform::~ElasticityImplicitLgDeform(void)
 { // destructor
   deallocate();
 } // destructor
@@ -59,15 +59,15 @@ pylith::feassemble::ElasticityImplicit::~ElasticityImplicit(void)
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::feassemble::ElasticityImplicit::deallocate(void)
+pylith::feassemble::ElasticityImplicitLgDeform::deallocate(void)
 { // deallocate
-  IntegratorElasticity::deallocate();
+  IntegratorElasticityLgDeform::deallocate();
 } // deallocate
   
 // ----------------------------------------------------------------------
 // Set time step for advancing from time t to time t+dt.
 void
-pylith::feassemble::ElasticityImplicit::timeStep(const double dt)
+pylith::feassemble::ElasticityImplicitLgDeform::timeStep(const double dt)
 { // timeStep
   if (_dt != -1.0)
     _dtm1 = _dt;
@@ -81,7 +81,7 @@ pylith::feassemble::ElasticityImplicit::timeStep(const double dt)
 // ----------------------------------------------------------------------
 // Get stable time step for advancing from time t to time t+dt.
 double
-pylith::feassemble::ElasticityImplicit::stableTimeStep(const topology::Mesh& mesh) const
+pylith::feassemble::ElasticityImplicitLgDeform::stableTimeStep(const topology::Mesh& mesh) const
 { // stableTimeStep
   assert(0 != _material);
   return _material->stableTimeStepImplicit(mesh);
@@ -91,7 +91,7 @@ pylith::feassemble::ElasticityImplicit::stableTimeStep(const topology::Mesh& mes
 // Set flag for setting constraints for total field solution or
 // incremental field solution.
 void
-pylith::feassemble::ElasticityImplicit::useSolnIncr(const bool flag)
+pylith::feassemble::ElasticityImplicitLgDeform::useSolnIncr(const bool flag)
 { // useSolnIncr
   assert(0 != _material);
   _useSolnIncr = flag;
@@ -101,14 +101,14 @@ pylith::feassemble::ElasticityImplicit::useSolnIncr(const bool flag)
 // ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
-pylith::feassemble::ElasticityImplicit::integrateResidual(
+pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 			  const topology::Field<topology::Mesh>& residual,
 			  const double t,
 			  topology::SolutionFields* const fields)
 { // integrateResidual
   /// Member prototype for _elasticityResidualXD()
-  typedef void (pylith::feassemble::ElasticityImplicit::*elasticityResidual_fn_type)
-    (const double_array&);
+  typedef void (pylith::feassemble::ElasticityImplicitLgDeform::*elasticityResidual_fn_type)
+    (const double_array&, const double_array&);
   
   assert(0 != _quadrature);
   assert(0 != _material);
@@ -127,6 +127,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
+  const double_array& vertices = _quadrature->refGeometry().vertices();
   const double_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
@@ -143,19 +144,19 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   elasticityResidual_fn_type elasticityResidualFn;
   if (1 == cellDim) {
     elasticityResidualFn = 
-      &pylith::feassemble::ElasticityImplicit::_elasticityResidual1D;
+      &pylith::feassemble::ElasticityImplicitLgDeform::_elasticityResidual1D;
     calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
+      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D;
   } else if (2 == cellDim) {
     elasticityResidualFn = 
-      &pylith::feassemble::ElasticityImplicit::_elasticityResidual2D;
+      &pylith::feassemble::ElasticityImplicitLgDeform::_elasticityResidual2D;
     calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
+      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D;
   } else if (3 == cellDim) {
     elasticityResidualFn = 
-      &pylith::feassemble::ElasticityImplicit::_elasticityResidual3D;
+      &pylith::feassemble::ElasticityImplicitLgDeform::_elasticityResidual3D;
     calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
+      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D;
   } else
     assert(0);
 
@@ -163,8 +164,8 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   double_array dispTCell(numBasis*spaceDim);
   double_array dispTIncrCell(numBasis*spaceDim);
   double_array dispTpdtCell(numBasis*spaceDim);
+  double_array deformCell(numQuadPts*spaceDim*spaceDim);
   double_array strainCell(numQuadPts*tensorSize);
-  strainCell = 0.0;
   double_array gravVec(spaceDim);
   double_array quadPtsGlobal(numQuadPts*spaceDim);
 
@@ -287,15 +288,17 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
       _logger->eventEnd(computeEvent);      
     } // if
 
-    // Compute B(transpose) * sigma, first computing strains
+    // Compute B(transpose) * sigma, first computing deformation
+    // tensor and strains
     _logger->eventBegin(stressEvent);
-    calcTotalStrainFn(&strainCell, basisDeriv, dispTpdtCell, 
-		      numBasis, numQuadPts);
+    _calcDeformation(&deformCell, basisDeriv, vertices, dispTpdtCell,
+		     numBasis, numQuadPts, spaceDim);
+    calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
     const double_array& stressCell = _material->calcStress(strainCell, true);
     _logger->eventEnd(stressEvent);
 
     _logger->eventBegin(computeEvent);
-    CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell);
+    CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell, dispTpdtCell);
     _logger->eventEnd(computeEvent);
 
 #if 0 // DEBUGGING
@@ -315,14 +318,14 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 // ----------------------------------------------------------------------
 // Compute stiffness matrix.
 void
-pylith::feassemble::ElasticityImplicit::integrateJacobian(
+pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
 					topology::Jacobian* jacobian,
 					const double t,
 					topology::SolutionFields* fields)
 { // integrateJacobian
   /// Member prototype for _elasticityJacobianXD()
-  typedef void (pylith::feassemble::ElasticityImplicit::*elasticityJacobian_fn_type)
-    (const double_array&);
+  typedef void (pylith::feassemble::ElasticityImplicitLgDeform::*elasticityJacobian_fn_type)
+    (const double_array&, const double_array&, const double_array&);
 
   assert(0 != _quadrature);
   assert(0 != _material);
@@ -341,6 +344,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
+  const double_array& vertices = _quadrature->refGeometry().vertices();
   const double_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
@@ -357,19 +361,19 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   elasticityJacobian_fn_type elasticityJacobianFn;
   if (1 == cellDim) {
     elasticityJacobianFn = 
-      &pylith::feassemble::ElasticityImplicit::_elasticityJacobian1D;
+      &pylith::feassemble::ElasticityImplicitLgDeform::_elasticityJacobian1D;
     calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
+      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D;
   } else if (2 == cellDim) {
     elasticityJacobianFn = 
-      &pylith::feassemble::ElasticityImplicit::_elasticityJacobian2D;
+      &pylith::feassemble::ElasticityImplicitLgDeform::_elasticityJacobian2D;
     calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
+      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D;
   } else if (3 == cellDim) {
     elasticityJacobianFn = 
-      &pylith::feassemble::ElasticityImplicit::_elasticityJacobian3D;
+      &pylith::feassemble::ElasticityImplicitLgDeform::_elasticityJacobian3D;
     calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
+      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D;
   } else
     assert(0);
 
@@ -377,8 +381,9 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   double_array dispTCell(numBasis*spaceDim);
   double_array dispTIncrCell(numBasis*spaceDim);
   double_array dispTpdtCell(numBasis*spaceDim);
+  double_array deformCell(numQuadPts*spaceDim*spaceDim);
   double_array strainCell(numQuadPts*tensorSize);
-  strainCell = 0.0;
+  double_array stressCell(numQuadPts*tensorSize);
 
   // Get cell information
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
@@ -473,15 +478,20 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     dispTpdtCell = dispTCell + dispTIncrCell;
       
     _logger->eventBegin(computeEvent);
-    // Compute strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispTpdtCell, 
-		      numBasis, numQuadPts);
-      
+    // Compute deformation tensor, strains, and stresses
+    _calcDeformation(&deformCell, basisDeriv, vertices, dispTpdtCell,
+		     numBasis, numQuadPts, spaceDim);
+    calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
+
     // Get "elasticity" matrix at quadrature points for this cell
     const double_array& elasticConsts = 
       _material->calcDerivElastic(strainCell);
 
-    CALL_MEMBER_FN(*this, elasticityJacobianFn)(elasticConsts);
+    // Get Second Priola-Kirchoff stress tensor
+    const double_array& stressCell = _material->calcStress(strainCell, true);
+
+    CALL_MEMBER_FN(*this, elasticityJacobianFn)(elasticConsts, stressCell,
+						dispTpdtCell);
     _logger->eventEnd(computeEvent);
 
     if (_quadrature->checkConditioning()) {
