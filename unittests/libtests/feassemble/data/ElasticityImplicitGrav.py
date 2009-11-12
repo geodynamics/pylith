@@ -15,16 +15,15 @@
 ## @brief Python application for generating C++ data files for testing
 ## C++ ElasticityImplicitGrav object.
 
-from IntegratorElasticity import IntegratorElasticity
+from ElasticityImplicit import ElasticityImplicit
 
 import numpy
 import feutils
-# import pdb
 
 # ----------------------------------------------------------------------
 
 # ElasticityImplicitGrav class
-class ElasticityImplicitGrav(IntegratorElasticity):
+class ElasticityImplicitGrav(ElasticityImplicit):
   """
   Python application for generating C++ data files for testing C++
   ElasticityImplicitGrav object.
@@ -36,69 +35,49 @@ class ElasticityImplicitGrav(IntegratorElasticity):
     """
     Constructor.
     """
-    # pdb.set_trace()
-    IntegratorElasticity.__init__(self, name)
+    ElasticityImplicit.__init__(self, name)
     return
   
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
-  def _calculateResidual(self):
+  def calculateResidual(self, integrator):
     """
     Calculate contribution to residual of operator for integrator.
 
     {r} = -[K]{u(t)}
     """
-    # pdb.set_trace()
-    K = self._calculateStiffnessMat()    
-    gravityGlobal = self._calculateGravity()
-
-    self.valsResidual = -numpy.dot(K, self.fieldT+self.fieldTIncr) + \
-        gravityGlobal.reshape(self.fieldT.shape)
-    return
+    residual = ElasticityImplicit.calculateResidual(self, integrator)
+    gravityGlobal = self._calculateGravity(integrator)
+    residual += gravityGlobal.reshape(residual.shape)
+    return residual
 
 
-  def _calculateJacobian(self):
-    """
-    Calculate contribution to Jacobian matrix of operator for integrator.
-
-    [A] = [K]
-    """
-    K = self._calculateStiffnessMat()    
-
-    self.valsJacobian = K
-    return
-
-
-  def _calculateGravity(self):
+  def _calculateGravity(self, integrator):
     """
     Calculate body force vector.
     """
-    # pdb.set_trace()
-    gravityGlobal = numpy.zeros(( self.numVertices*self.spaceDim ),
+    gravityGlobal = numpy.zeros(( integrator.numVertices*integrator.spaceDim ),
                                 dtype=numpy.float64)
-    for cell in self.cells:
-      gravityCell = numpy.zeros(self.spaceDim*self.numBasis)
-      vertices = self.vertices[cell, :]
+    for cell in integrator.cells:
+      gravityCell = numpy.zeros(integrator.spaceDim*integrator.numBasis)
+      vertices = integrator.vertices[cell, :]
       (jacobian, jacobianInv, jacobianDet, basisDeriv) = \
-                 feutils.calculateJacobian(self.quadrature, vertices)
-      for iQuad in xrange(self.numQuadPts):
-        wt = self.quadWts[iQuad] * jacobianDet[iQuad] * self.density
-        for iBasis in xrange(self.numBasis):
-          valI = wt * self.basis[iQuad, iBasis]
-          for iDim in xrange(self.spaceDim):
-            gravityCell[iDim + iBasis * self.spaceDim] += \
-                             valI * self.gravityVec[iDim]
-      feutils.assembleVec(gravityGlobal, gravityCell, cell, self.spaceDim)
+                 feutils.calculateJacobian(integrator.quadrature, vertices)
+      for iQuad in xrange(integrator.numQuadPts):
+        wt = integrator.quadWts[iQuad] * jacobianDet[iQuad] * integrator.density
+        for iBasis in xrange(integrator.numBasis):
+          valI = wt * integrator.basis[iQuad, iBasis]
+          for iDim in xrange(integrator.spaceDim):
+            gravityCell[iDim + iBasis * integrator.spaceDim] += \
+                             valI * integrator.gravityVec[iDim]
+      feutils.assembleVec(gravityGlobal, gravityCell, cell, integrator.spaceDim)
     return gravityGlobal
     
 
-
-# MAIN /////////////////////////////////////////////////////////////////
-if __name__ == "__main__":
-
-  app = ElasticityImplicitGrav()
-  app.run()
+# FACTORY //////////////////////////////////////////////////////////////
+def formulation():
+  return ElasticityImplicitGrav()
 
 
 # End of file 
