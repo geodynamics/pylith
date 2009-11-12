@@ -333,15 +333,15 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual1D(
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const double wt = quadWts[iQuad] * jacobianDet[iQuad];
     const double s11 = stress[iQuad];
+    double l11 = 0.0;
+    for (int kBasis=0; kBasis < numBasis; ++kBasis)
+      l11 += basisDeriv[iQuad*numBasis+kBasis  ] * disp[kBasis  ]; 
     for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-      double l11 = 0.0;
-      for (int kBasis=0; kBasis < numBasis; ++kBasis)
-	l11 += basisDeriv[iQuad*numBasis+kBasis  ] * disp[kBasis  ]; 
       const double N1 = wt * (1.0 + l11) * basisDeriv[iQuad*numBasis+iBasis  ];
       _cellVector[iBasis*spaceDim  ] -= N1*s11;
     } // for
   } // for
-  PetscLogFlops(numQuadPts*(1+numBasis*5+numBasis*numBasis*2));
+  PetscLogFlops(numQuadPts*(1+numBasis*5+numBasis*2));
 } // _elasticityResidual1D
 
 // ----------------------------------------------------------------------
@@ -364,24 +364,27 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual2D(
   const int stressSize = 3;
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    const int iQ = iQuad*numBasis*spaceDim;
     const double wt = quadWts[iQuad] * jacobianDet[iQuad];
     const double s11 = stress[iQuad*stressSize+0];
     const double s22 = stress[iQuad*stressSize+1];
     const double s12 = stress[iQuad*stressSize+2];
+
+    double l11 = 0.0;
+    double l12 = 0.0;
+    double l21 = 0.0;
+    double l22 = 0.0;
+    for (int kBasis=0; kBasis < numBasis; ++kBasis) {
+      const int kB = kBasis*spaceDim;
+      l11 += basisDeriv[iQ+kB  ] * disp[kB  ];
+      l12 += basisDeriv[iQ+kB+1] * disp[kB  ];
+      l21 += basisDeriv[iQ+kB  ] * disp[kB+1];
+      l22 += basisDeriv[iQ+kB+1] * disp[kB+1];
+    } // for
+
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
-      double l11 = 0.0;
-      double l12 = 0.0;
-      double l21 = 0.0;
-      double l22 = 0.0;
-      for (int kBasis=0; kBasis < numBasis; ++kBasis) {
-	const int kB = kBasis*spaceDim;
-	l11 += basisDeriv[iQ+kB  ] * disp[kB  ];
-	l12 += basisDeriv[iQ+kB+1] * disp[kB  ];
-	l21 += basisDeriv[iQ+kB  ] * disp[kB+1];
-	l22 += basisDeriv[iQ+kB+1] * disp[kB+1];
-      } // for
       const int iB = iBasis*spaceDim;
       const double N1 = basisDeriv[iQ+iB  ];
       const double N2 = basisDeriv[iQ+iB+1];
@@ -414,6 +417,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual3D(
   const int stressSize = 6;
   
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    const int iQ = iQuad*numBasis*spaceDim;
     const double wt = quadWts[iQuad] * jacobianDet[iQuad];
     const double s11 = stress[iQuad*stressSize+0];
     const double s22 = stress[iQuad*stressSize+1];
@@ -422,30 +426,31 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual3D(
     const double s23 = stress[iQuad*stressSize+4];
     const double s13 = stress[iQuad*stressSize+5];
     
+    double l11 = 0.0;
+    double l12 = 0.0;
+    double l13 = 0.0;
+    double l21 = 0.0;
+    double l22 = 0.0;
+    double l23 = 0.0;
+    double l31 = 0.0;
+    double l32 = 0.0;
+    double l33 = 0.0;
+    for (int kBasis=0; kBasis < numBasis; ++kBasis) {
+      const int kB = kBasis*spaceDim;
+      l11 += basisDeriv[iQ+kB  ] * disp[kB  ];
+      l12 += basisDeriv[iQ+kB+1] * disp[kB  ];
+      l13 += basisDeriv[iQ+kB+2] * disp[kB  ];
+      l21 += basisDeriv[iQ+kB  ] * disp[kB+1];
+      l22 += basisDeriv[iQ+kB+1] * disp[kB+1];
+      l23 += basisDeriv[iQ+kB+2] * disp[kB+1];
+      l31 += basisDeriv[iQ+kB  ] * disp[kB+2];
+      l32 += basisDeriv[iQ+kB+1] * disp[kB+2];
+      l33 += basisDeriv[iQ+kB+2] * disp[kB+2];
+    } // for
+    
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
-      double l11 = 0.0;
-      double l12 = 0.0;
-      double l13 = 0.0;
-      double l21 = 0.0;
-      double l22 = 0.0;
-      double l23 = 0.0;
-      double l31 = 0.0;
-      double l32 = 0.0;
-      double l33 = 0.0;
-      for (int kBasis=0; kBasis < numBasis; ++kBasis) {
-	const int kB = kBasis*spaceDim;
-	l11 += basisDeriv[iQ+kB  ] * disp[kB  ];
-	l12 += basisDeriv[iQ+kB+1] * disp[kB  ];
-	l13 += basisDeriv[iQ+kB+2] * disp[kB  ];
-	l21 += basisDeriv[iQ+kB  ] * disp[kB+1];
-	l22 += basisDeriv[iQ+kB+1] * disp[kB+1];
-	l23 += basisDeriv[iQ+kB+2] * disp[kB+1];
-	l31 += basisDeriv[iQ+kB  ] * disp[kB+2];
-	l32 += basisDeriv[iQ+kB+1] * disp[kB+2];
-	l33 += basisDeriv[iQ+kB+2] * disp[kB+2];
-      } // for
       const int iB = iBasis*spaceDim;
       const double N1 = basisDeriv[iQ+iB  ];
       const double N2 = basisDeriv[iQ+iB+1];
@@ -493,17 +498,30 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian1D(
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const double wt = quadWts[iQuad] * jacobianDet[iQuad];
     const double C1111 = elasticConsts[iQuad];
+    const double s11 = stress[iQuad];
+
+    double l11 = 0.0;
+    for (int kBasis=0; kBasis < numBasis; ++kBasis)
+      l11 += basisDeriv[iQuad*numBasis+kBasis  ] * disp[kBasis  ]; 
+
+    // KLij = valI * valJ * C1111 + valInl * valJnl * s11
+    // valI = (1+l11) * Ni,1
+    // valJ = (1+l11) * Nj,1
+    // valInl = Ni,1
+    // valJnl = Nj,1
     for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-      const double valI = wt*basisDeriv[iQ+iBasis]*C1111;
+      const double valI = wt*basisDeriv[iQ+iBasis]*(1.0+l11)*(1.0+l11)*C1111;
+      const double valInl = wt*s11*basisDeriv[iQ+iBasis];
       for (int jBasis=0; jBasis < numBasis; ++jBasis) {
 	const double valIJ = valI * basisDeriv[iQ+jBasis];
+	const double valIJnl = valInl * basisDeriv[iQ+jBasis];
 	const int iBlock = iBasis*spaceDim * (numBasis*spaceDim);
 	const int jBlock = jBasis*spaceDim;
-	_cellMatrix[iBlock+jBlock] += valIJ;
+	_cellMatrix[iBlock+jBlock] += valIJ + valIJnl;
       } // for
     } // for
   } // for
-  PetscLogFlops(numQuadPts*(1+numBasis*(2+numBasis*3)));
+  PetscLogFlops(numQuadPts*(1+numBasis*(6+numBasis*4)));
 } // _elasticityJacobian1D
 
 // ----------------------------------------------------------------------
@@ -521,51 +539,110 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(
   const double_array& quadWts = _quadrature->quadWts();
   const double_array& jacobianDet = _quadrature->jacobianDet();
   const double_array& basisDeriv = _quadrature->basisDeriv();
+  const int tensorSize = _material->tensorSize();
   
   assert(2 == cellDim);
   assert(quadWts.size() == numQuadPts);
   const int numConsts = 6;
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    const int iQ = iQuad*numBasis*spaceDim;
     const double wt = quadWts[iQuad] * jacobianDet[iQuad];
     // tau_ij = C_ijkl * e_kl
     //        = C_ijlk * 0.5 (u_k,l + u_l,k)
     //        = 0.5 * C_ijkl * (u_k,l + u_l,k)
     // divide C_ijkl by 2 if k != l
-    const double C1111 = elasticConsts[iQuad*numConsts+0];
-    const double C1122 = elasticConsts[iQuad*numConsts+1];
-    const double C1112 = elasticConsts[iQuad*numConsts+2]/2.0;
-    const double C2222 = elasticConsts[iQuad*numConsts+3];
-    const double C2212 = elasticConsts[iQuad*numConsts+4]/2.0;
-    const double C1212 = elasticConsts[iQuad*numConsts+5]/2.0;
+    const int iC = iQuad*numConsts;
+    const double C1111 = elasticConsts[iC+0];
+    const double C1122 = elasticConsts[iC+1];
+    const double C1112 = elasticConsts[iC+2] / 2.0;
+    const double C2222 = elasticConsts[iC+3];
+    const double C2212 = elasticConsts[iC+4] / 2.0;
+    const double C1212 = elasticConsts[iC+5] / 2.0;
+
+    const int iS = iQuad*tensorSize;
+    const double s11 = stress[iS+0];
+    const double s22 = stress[iS+1];
+    const double s12 = stress[iS+2];
+
+    double l11 = 0.0;
+    double l12 = 0.0;
+    double l21 = 0.0;
+    double l22 = 0.0;
+    for (int kBasis=0; kBasis < numBasis; ++kBasis) {
+      const int kB = kBasis*spaceDim;
+      l11 += basisDeriv[iQ+kB  ] * disp[kB  ];
+      l12 += basisDeriv[iQ+kB+1] * disp[kB  ];
+      l21 += basisDeriv[iQ+kB  ] * disp[kB+1];
+      l22 += basisDeriv[iQ+kB+1] * disp[kB+1];
+    } // for
+
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
-      const double Nip = wt*basisDeriv[iQ+iBasis*spaceDim  ];
-      const double Niq = wt*basisDeriv[iQ+iBasis*spaceDim+1];
-      const int iBlock = (iBasis*spaceDim  ) * (numBasis*spaceDim);
-      const int iBlock1 = (iBasis*spaceDim+1) * (numBasis*spaceDim);
+      const int iB = iBasis*spaceDim;
+      const double Nip = wt*basisDeriv[iQ+iB  ];
+      const double Niq = wt*basisDeriv[iQ+iB+1];
+      const int iBlock = (iB) * (numBasis*spaceDim);
+      const int iBlock1 = (iB+1) * (numBasis*spaceDim);
+
+      const double valInl0 = Nip*s11 + Niq*s12;
+      const double valInl1 = Nip*s12 + Niq*s22;
       for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	const double Njp = basisDeriv[iQ+jBasis*spaceDim  ];
-	const double Njq = basisDeriv[iQ+jBasis*spaceDim+1];
-	const double ki0j0 = 
-	  C1111 * Nip * Njp + C1112 * Niq * Njp +
-	  C1112 * Nip * Njq + C1212 * Niq * Njq;
-	const double ki0j1 =
-	  C1122 * Nip * Njq + C2212 * Niq * Njq +
-	  C1112 * Nip * Njp + C1212 * Niq * Njp;
-	const double ki1j0 =
-	  C1122 * Niq * Njp + C2212 * Niq * Njq +
-	  C1112 * Nip * Njp + C1212 * Nip * Njq;
-	const double ki1j1 =
-	  C2222 * Niq * Njq + C2212 * Nip * Njq +
-	  C2212 * Niq * Njp + C1212 * Nip * Njp;
-	const int jBlock = (jBasis*spaceDim  );
-	const int jBlock1 = (jBasis*spaceDim+1);
-	_cellMatrix[iBlock +jBlock ] += ki0j0;
-	_cellMatrix[iBlock +jBlock1] += ki0j1;
-	_cellMatrix[iBlock1+jBlock ] += ki1j0;
-	_cellMatrix[iBlock1+jBlock1] += ki1j1;
+	const int jB = jBasis*spaceDim;
+	const double Njp = basisDeriv[iQ+jB  ];
+	const double Njq = basisDeriv[iQ+jB+1];
+
+	// Generated using Maxima (see jacobian2d_lgdeform.wxm)
+	const double Ki0j0 = 
+	  l12*Niq*(l12*Niq*l12*Njq*C2222 + 
+		   l12*Niq*((l11+1.0)*Njq+l12*Njp)*C2212 + 
+		   l12*Niq*(l11+1.0)*Njp*C1122) + 
+	  ((l11+1.0)*Niq+l12*Nip)*(l12*Njq*C2212 + 
+				 ((l11+1.0)*Njq+l12*Njp)*C1212 + 
+				 (l11+1.0)*Njp*C1112) + 
+	  (l11+1.0)*Nip*(l12*Njq*C1122 + 
+		       ((l11+1.0)*Njq+l12*Njp)*C1112 +
+		       (l11+1.0)*Njp*C1111);
+	const double Ki0j1 =
+	  l12*Niq*((l22+1.0)*Njq*C2222 + 
+		   (l21*Njq+(l22+1.0)*Njp)*C2212 + 
+		   l21*Njp*C1122) + 
+	  ((l11+1.0)*Niq+l12*Nip)*((l22+1.0)*Njq*C2212 + 
+				 (l21*Njq+(l22+1.0)*Njp)*C1212 + 
+				 l21*Njp*C1112) + 
+	  (l11+1.0)*Nip*((l22+1.0)*Njq*C1122 + 
+		       (l21*Njq+(l22+1.0)*Njp)*C1112 + 
+		       l21*Njp*C1111);
+	const double Ki1j0 =
+	  (l22+1.0)*Niq*(l12*Njq*C2222 + 
+		       ((l11+1.0)*Njq+l12*Njp)*C2212 + 
+		       (l11+1.0)*Njp*C1122) + 
+	  (l21*Niq+(l22+1.0)*Nip)*(l12*Njq*C2212 + 
+				 ((l11+1.0)*Njq+l12*Njp)*C1212 + 
+				 (l11+1.0)*Njp*C1112) + 
+	  l21*Nip*(l12*Njq*C1122 + 
+		   ((l11+1.0)*Njq+l12*Njp)*C1112 + 
+		   (l11+1.0)*Njp*C1111);
+	const double Ki1j1 =
+	  (l22+1.0)*Niq*((l22+1.0)*Njq*C2222 + 
+		       (l21*Njq+(l22+1.0)*Njp)*C2212 + 
+		       l21*Njp*C1122) + 
+	  (l21*Niq+(l22+1.0)*Nip)*((l22+1.0)*Njq*C2212 + 
+				 (l21*Njq+(l22+1.0)*Njp)*C1212 + 
+				 l21*Njp*C1112) + 
+	  l21*Nip*((l22+1.0)*Njq*C1122 + 
+		   (l21*Njq+(l22+1.0)*Njp)*C1112 + 
+		   l21*Njp*C1111);
+	const double Knl = 
+	  (Nip*s11 + Niq*s12)*Njp + (Nip*s12 + Niq*s22)*Njq;
+
+	const int jBlock = (jB);
+	const int jBlock1 = (jB+1);
+	_cellMatrix[iBlock +jBlock ] += Ki0j0 + Knl;
+	_cellMatrix[iBlock +jBlock1] += Ki0j1;
+	_cellMatrix[iBlock1+jBlock ] += Ki1j0;
+	_cellMatrix[iBlock1+jBlock1] += Ki1j1 + Knl;
       } // for
     } // for
   } // for
@@ -587,100 +664,448 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(
   const double_array& quadWts = _quadrature->quadWts();
   const double_array& jacobianDet = _quadrature->jacobianDet();
   const double_array& basisDeriv = _quadrature->basisDeriv();
-  
+  const int tensorSize = _material->tensorSize();
+
   assert(3 == cellDim);
   assert(quadWts.size() == numQuadPts);
   const int numConsts = 21;
 
   // Compute Jacobian for consistent tangent matrix
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    const int iQ = iQuad*numBasis*spaceDim;
     const double wt = quadWts[iQuad] * jacobianDet[iQuad];
     // tau_ij = C_ijkl * e_kl
     //        = C_ijlk * 0.5 (u_k,l + u_l,k)
     //        = 0.5 * C_ijkl * (u_k,l + u_l,k)
     // divide C_ijkl by 2 if k != l
-    const double C1111 = elasticConsts[iQuad*numConsts+ 0];
-    const double C1122 = elasticConsts[iQuad*numConsts+ 1];
-    const double C1133 = elasticConsts[iQuad*numConsts+ 2];
-    const double C1112 = elasticConsts[iQuad*numConsts+ 3] / 2.0;
-    const double C1123 = elasticConsts[iQuad*numConsts+ 4] / 2.0;
-    const double C1113 = elasticConsts[iQuad*numConsts+ 5] / 2.0;
-    const double C2222 = elasticConsts[iQuad*numConsts+ 6];
-    const double C2233 = elasticConsts[iQuad*numConsts+ 7];
-    const double C2212 = elasticConsts[iQuad*numConsts+ 8] / 2.0;
-    const double C2223 = elasticConsts[iQuad*numConsts+ 9] / 2.0;
-    const double C2213 = elasticConsts[iQuad*numConsts+10] / 2.0;
-    const double C3333 = elasticConsts[iQuad*numConsts+11];
-    const double C3312 = elasticConsts[iQuad*numConsts+12] / 2.0;
-    const double C3323 = elasticConsts[iQuad*numConsts+13] / 2.0;
-    const double C3313 = elasticConsts[iQuad*numConsts+14] / 2.0;
-    const double C1212 = elasticConsts[iQuad*numConsts+15] / 2.0;
-    const double C1223 = elasticConsts[iQuad*numConsts+16] / 2.0;
-    const double C1213 = elasticConsts[iQuad*numConsts+17] / 2.0;
-    const double C2323 = elasticConsts[iQuad*numConsts+18] / 2.0;
-    const double C2313 = elasticConsts[iQuad*numConsts+19] / 2.0;
-    const double C1313 = elasticConsts[iQuad*numConsts+20] / 2.0;
+    const int iC = iQuad*numConsts;
+    const double C1111 = elasticConsts[iC+ 0];
+    const double C1122 = elasticConsts[iC+ 1];
+    const double C1133 = elasticConsts[iC+ 2];
+    const double C1112 = elasticConsts[iC+ 3] / 2.0;
+    const double C1123 = elasticConsts[iC+ 4] / 2.0;
+    const double C1113 = elasticConsts[iC+ 5] / 2.0;
+    const double C2222 = elasticConsts[iC+ 6];
+    const double C2233 = elasticConsts[iC+ 7];
+    const double C2212 = elasticConsts[iC+ 8] / 2.0;
+    const double C2223 = elasticConsts[iC+ 9] / 2.0;
+    const double C2213 = elasticConsts[iC+10] / 2.0;
+    const double C3333 = elasticConsts[iC+11];
+    const double C3312 = elasticConsts[iC+12] / 2.0;
+    const double C3323 = elasticConsts[iC+13] / 2.0;
+    const double C3313 = elasticConsts[iC+14] / 2.0;
+    const double C1212 = elasticConsts[iC+15] / 2.0;
+    const double C1223 = elasticConsts[iC+16] / 2.0;
+    const double C1213 = elasticConsts[iC+17] / 2.0;
+    const double C2323 = elasticConsts[iC+18] / 2.0;
+    const double C2313 = elasticConsts[iC+19] / 2.0;
+    const double C1313 = elasticConsts[iC+20] / 2.0;
+
+    const int iS = iQuad*tensorSize;
+    const double s11 = stress[iS+0];
+    const double s22 = stress[iS+1];
+    const double s33 = stress[iS+2];
+    const double s12 = stress[iS+3];
+    const double s23 = stress[iS+4];
+    const double s13 = stress[iS+5];
+
+    double l11 = 0.0;
+    double l12 = 0.0;
+    double l13 = 0.0;
+    double l21 = 0.0;
+    double l22 = 0.0;
+    double l23 = 0.0;
+    double l31 = 0.0;
+    double l32 = 0.0;
+    double l33 = 0.0;
+    for (int kBasis=0; kBasis < numBasis; ++kBasis) {
+      const int kB = kBasis*spaceDim;
+      l11 += basisDeriv[iQ+kB  ] * disp[kB  ];
+      l12 += basisDeriv[iQ+kB+1] * disp[kB  ];
+      l13 += basisDeriv[iQ+kB+2] * disp[kB  ];
+      l21 += basisDeriv[iQ+kB  ] * disp[kB+1];
+      l22 += basisDeriv[iQ+kB+1] * disp[kB+1];
+      l23 += basisDeriv[iQ+kB+2] * disp[kB+1];
+      l31 += basisDeriv[iQ+kB  ] * disp[kB+2];
+      l32 += basisDeriv[iQ+kB+1] * disp[kB+2];
+      l33 += basisDeriv[iQ+kB+2] * disp[kB+2];
+    } // for
+    
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
-      const double Nip = wt*basisDeriv[iQ+iBasis*spaceDim+0];
-      const double Niq = wt*basisDeriv[iQ+iBasis*spaceDim+1];
-      const double Nir = wt*basisDeriv[iQ+iBasis*spaceDim+2];
+      const int iB = iBasis*spaceDim;
+      const double Nip = wt*basisDeriv[iQ+iB+0];
+      const double Niq = wt*basisDeriv[iQ+iB+1];
+      const double Nir = wt*basisDeriv[iQ+iB+2];
       for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	const double Njp = basisDeriv[iQ+jBasis*spaceDim+0];
-	const double Njq = basisDeriv[iQ+jBasis*spaceDim+1];
-	const double Njr = basisDeriv[iQ+jBasis*spaceDim+2];
-	const double ki0j0 = 
-	  C1111 * Nip * Njp + C1112 * Niq * Njp + C1113 * Nir * Njp +
-	  C1112 * Nip * Njq + C1212 * Niq * Njq + C1213 * Nir * Njq +
-	  C1113 * Nip * Njr + C1213 * Niq * Njr + C1313 * Nir * Njr;
-	const double ki0j1 =
-	  C1122 * Nip * Njq + C2212 * Niq * Njq + C2213 * Nir * Njq +
-	  C1112 * Nip * Njp + C1212 * Niq * Njp + C1213 * Nir * Njp +
-	  C1123 * Nip * Njr + C1223 * Niq * Njr + C2313 * Nir * Njr;
-	const double ki0j2 =
-	  C1133 * Nip * Njr + C3312 * Niq * Njr + C3313 * Nir * Njr +
-	  C1123 * Nip * Njq + C1223 * Niq * Njq + C2313 * Nir * Njq +
-	  C1113 * Nip * Njp + C1213 * Niq * Njp + C1313 * Nir * Njp;
-	const double ki1j0 =
-	  C1122 * Niq * Njp + C1112 * Nip * Njp + C1123 * Nir * Njp +
-	  C2212 * Niq * Njq + C1212 * Nip * Njq + C1223 * Nir * Njq +
-	  C2213 * Niq * Njr + C1213 * Nip * Njr + C2313 * Nir * Njr;
-	const double ki1j1 =
-	  C2222 * Niq * Njq + C2212 * Nip * Njq + C2223 * Nir * Njq +
-	  C2212 * Niq * Njp + C1212 * Nip * Njp + C1223 * Nir * Njp +
-	  C2223 * Niq * Njr + C1223 * Nip * Njr + C2323 * Nir * Njr;
-	const double ki1j2 =
-	  C2233 * Niq * Njr + C3312 * Nip * Njr + C3323 * Nir * Njr +
-	  C2223 * Niq * Njq + C1223 * Nip * Njq + C2323 * Nir * Njq +
-	  C2213 * Niq * Njp + C1213 * Nip * Njp + C2313 * Nir * Njp;
-	const double ki2j0 =
-	  C1133 * Nir * Njp + C1123 * Niq * Njp + C1113 * Nip * Njp +
-	  C3312 * Nir * Njq + C1223 * Niq * Njq + C1213 * Nip * Njq +
-	  C3313 * Nir * Njr + C2313 * Niq * Njr + C1313 * Nip * Njr; 
-	const double ki2j1 =
-	  C2233 * Nir * Njq + C2223 * Niq * Njq + C2213 * Nip * Njq +
-	  C3312 * Nir * Njp + C1223 * Niq * Njp + C1213 * Nip * Njp +
-	  C3323 * Nir * Njr + C2323 * Niq * Njr + C2313 * Nip * Njr; 
-	const double ki2j2 =
-	  C3333 * Nir * Njr + C3323 * Niq * Njr + C3313 * Nip * Njr +
-	  C3323 * Nir * Njq + C2323 * Niq * Njq + C2313 * Nip * Njq +
-	  C3313 * Nir * Njp + C2313 * Niq * Njp + C1313 * Nip * Njp;
-	const int iBlock = iBasis*spaceDim * (numBasis*spaceDim);
-	const int iBlock1 = (iBasis*spaceDim+1) * (numBasis*spaceDim);
-	const int iBlock2 = (iBasis*spaceDim+2) * (numBasis*spaceDim);
-	const int jBlock = jBasis*spaceDim;
-	const int jBlock1 = jBasis*spaceDim+1;
-	const int jBlock2 = jBasis*spaceDim+2;
-	_cellMatrix[iBlock +jBlock ] += ki0j0;
-	_cellMatrix[iBlock +jBlock1] += ki0j1;
-	_cellMatrix[iBlock +jBlock2] += ki0j2;
-	_cellMatrix[iBlock1+jBlock ] += ki1j0;
-	_cellMatrix[iBlock1+jBlock1] += ki1j1;
-	_cellMatrix[iBlock1+jBlock2] += ki1j2;
-	_cellMatrix[iBlock2+jBlock ] += ki2j0;
-	_cellMatrix[iBlock2+jBlock1] += ki2j1;
-	_cellMatrix[iBlock2+jBlock2] += ki2j2;
+	const int jB = jBasis*spaceDim;
+	const double Njp = basisDeriv[iQ+jB+0];
+	const double Njq = basisDeriv[iQ+jB+1];
+	const double Njr = basisDeriv[iQ+jB+2];
+
+	// Generated using Maxima (see jacobian3d_lgdeform.wxm)
+	const double Ki0j0 = 
+	  l13*Nir*(l13*Njr*C3333 + 
+		   (l12*Njr+l13*Njq)*C3323 + 
+		   ((l11+1)*Njr+l13*Njp)*C3313 + 
+		   ((l11+1)*Njq+l12*Njp)*C3312 + 
+		   l12*Njq*C2233 + 
+		   (l11+1)*Njp*C1133) + 
+	  (l12*Nir+l13*Niq)*(l13*Njr*C3323 + 
+			     (l12*Njr+l13*Njq)*C2323 + 
+			     ((l11+1)*Njr+l13*Njp)*C2313 + 
+			     l12*Njq*C2223 + 
+			     ((l11+1)*Njq+l12*Njp)*C1223 + 
+			     (l11+1)*Njp*C1123) + 
+	  ((l11+1)*Nir+l13*Nip)*(l13*Njr*C3313 + 
+				 (l12*Njr+l13*Njq)*C2313 + 
+				 l12*Njq*C2213 + 
+				 ((l11+1)*Njr+l13*Njp)*C1313 + 
+				 ((l11+1)*Njq+l12*Njp)*C1213 + 
+				 (l11+1)*Njp*C1113) + 
+	  ((l11+1)*Niq+l12*Nip)*(l13*Njr*C3312 + 
+				 l12*Njq*C2212 + 
+				 (l12*Njr+l13*Njq)*C1223 + 
+				 ((l11+1)*Njr+l13*Njp)*C1213 + 
+				 ((l11+1)*Njq+l12*Njp)*C1212 + 
+				 (l11+1)*Njp*C1112) + 
+	  l12*Niq*(l13*Njr*C2233 + 
+		   (l12*Njr+l13*Njq)*C2223 + 
+		   l12*Njq*C2222 + 
+		   ((l11+1)*Njr+l13*Njp)*C2213 + 
+		   ((l11+1)*Njq+l12*Njp)*C2212 + 
+		   (l11+1)*Njp*C1122) + 
+	  (l11+1)*Nip*(l13*Njr*C1133 + 
+		       (l12*Njr+l13*Njq)*C1123 + 
+		       l12*Njq*C1122 + 
+		       ((l11+1)*Njr+l13*Njp)*C1113 + 
+		       ((l11+1)*Njq+l12*Njp)*C1112 + 
+		       (l11+1)*Njp*C1111);
+
+	const double Ki0j1 =
+	  l13*Nir*(l23*Njr*C3333 + 
+		   ((l22+1)*Njr+l23*Njq)*C3323 + 
+		   (l21*Njr+l23*Njp)*C3313 + 
+		   (l21*Njq+(l22+1)*Njp)*C3312 + 
+		   (l22+1)*Njq*C2233 + 
+		   l21*Njp*C1133) + 
+	  (l12*Nir+l13*Niq)*(l23*Njr*C3323 + 
+			     ((l22+1)*Njr+l23*Njq)*C2323 + 
+			     (l21*Njr+l23*Njp)*C2313 + 
+			     (l22+1)*Njq*C2223 + 
+			     (l21*Njq+(l22+1)*Njp)*C1223 + 
+			     l21*Njp*C1123) + 
+	  ((l11+1)*Nir+l13*Nip)*(l23*Njr*C3313 + 
+				 ((l22+1)*Njr+l23*Njq)*C2313 + 
+				 (l22+1)*Njq*C2213 + 
+				 (l21*Njr+l23*Njp)*C1313 + 
+				 (l21*Njq+(l22+1)*Njp)*C1213 + 
+				 l21*Njp*C1113) + 
+	  ((l11+1)*Niq+l12*Nip)*(l23*Njr*C3312 + 
+				 (l22+1)*Njq*C2212 + 
+				 ((l22+1)*Njr+l23*Njq)*C1223 + 
+				 (l21*Njr+l23*Njp)*C1213 + 
+				 (l21*Njq+(l22+1)*Njp)*C1212 + 
+				 l21*Njp*C1112) + 
+	  l12*Niq*(l23*Njr*C2233 + 
+		   ((l22+1)*Njr+l23*Njq)*C2223 + 
+		   (l22+1)*Njq*C2222 + 
+		   (l21*Njr+l23*Njp)*C2213 + 
+		   (l21*Njq+(l22+1)*Njp)*C2212 + 
+		   l21*Njp*C1122) + 
+	  (l11+1)*Nip*(l23*Njr*C1133 + 
+		       ((l22+1)*Njr+l23*Njq)*C1123 + 
+		       (l22+1)*Njq*C1122 + 
+		       (l21*Njr+l23*Njp)*C1113 + 
+		       (l21*Njq+(l22+1)*Njp)*C1112 + 
+		       l21*Njp*C1111);
+
+	const double Ki0j2 =
+	  l13*Nir*((l33+1)*Njr*C3333 + 
+		   (l32*Njr+(l33+1)*Njq)*C3323 + 
+		   (l31*Njr+(l33+1)*Njp)*C3313 + 
+		   (l31*Njq+l32*Njp)*C3312 + 
+		   l32*Njq*C2233 + 
+		   l31*Njp*C1133) + 
+	  (l12*Nir+l13*Niq)*((l33+1)*Njr*C3323 + 
+			     (l32*Njr+(l33+1)*Njq)*C2323 + 
+			     (l31*Njr+(l33+1)*Njp)*C2313 + 
+			     l32*Njq*C2223 + 
+			     (l31*Njq+l32*Njp)*C1223 + 
+			     l31*Njp*C1123) + 
+	  ((l11+1)*Nir+l13*Nip)*((l33+1)*Njr*C3313 + 
+				 (l32*Njr+(l33+1)*Njq)*C2313 + 
+				 l32*Njq*C2213 + 
+				 (l31*Njr+(l33+1)*Njp)*C1313 + 
+				 (l31*Njq+l32*Njp)*C1213 + 
+				 l31*Njp*C1113) + 
+	  ((l11+1)*Niq+l12*Nip)*((l33+1)*Njr*C3312 + 
+				 l32*Njq*C2212 + 
+				 (l32*Njr+(l33+1)*Njq)*C1223 + 
+				 (l31*Njr+(l33+1)*Njp)*C1213 + 
+				 (l31*Njq+l32*Njp)*C1212 + 
+				 l31*Njp*C1112) + 
+	  l12*Niq*((l33+1)*Njr*C2233 + 
+		   (l32*Njr+(l33+1)*Njq)*C2223 + 
+		   l32*Njq*C2222 + 
+		   (l31*Njr+(l33+1)*Njp)*C2213 + 
+		   (l31*Njq+l32*Njp)*C2212 + 
+		   l31*Njp*C1122) + 
+	  (l11+1)*Nip*((l33+1)*Njr*C1133 + 
+		       (l32*Njr+(l33+1)*Njq)*C1123 + 
+		       l32*Njq*C1122 + 
+		       (l31*Njr+(l33+1)*Njp)*C1113 + 
+		       (l31*Njq+l32*Njp)*C1112 + 
+		       l31*Njp*C1111);
+
+	const double Ki1j0 =
+	  l23*Nir*(l13*Njr*C3333 + 
+		   (l12*Njr+l13*Njq)*C3323 + 
+		   ((l11+1)*Njr+l13*Njp)*C3313 + 
+		   ((l11+1)*Njq+l12*Njp)*C3312 + 
+		   l12*Njq*C2233+(l11+1)*Njp*C1133) + 
+	  ((l22+1)*Nir+l23*Niq)*(l13*Njr*C3323 + 
+				 (l12*Njr+l13*Njq)*C2323 + 
+				 ((l11+1)*Njr+l13*Njp)*C2313 + 
+				 l12*Njq*C2223 + 
+				 ((l11+1)*Njq+l12*Njp)*C1223 + 
+				 (l11+1)*Njp*C1123) + 
+	  (l21*Nir+l23*Nip)*(l13*Njr*C3313 + 
+			     (l12*Njr+l13*Njq)*C2313 + 
+			     l12*Njq*C2213 + 
+			     ((l11+1)*Njr + 
+			      l13*Njp)*C1313 + 
+			     ((l11+1)*Njq+l12*Njp)*C1213 + 
+			     (l11+1)*Njp*C1113) + 
+	  (l21*Niq+(l22+1)*Nip)*(l13*Njr*C3312 + 
+				 l12*Njq*C2212 + 
+				 (l12*Njr+l13*Njq)*C1223 + 
+				 ((l11+1)*Njr+l13*Njp)*C1213 + 
+				 ((l11+1)*Njq+l12*Njp)*C1212 + 
+				 (l11+1)*Njp*C1112) + 
+	  (l22+1)*Niq*(l13*Njr*C2233 + 
+		       (l12*Njr+l13*Njq)*C2223 + 
+		       l12*Njq*C2222 + 
+		       ((l11+1)*Njr+l13*Njp)*C2213 + 
+		       ((l11+1)*Njq+l12*Njp)*C2212 + 
+		       (l11+1)*Njp*C1122) + 
+	  l21*Nip*(l13*Njr*C1133 + 
+		   (l12*Njr+l13*Njq)*C1123 + 
+		   l12*Njq*C1122 + 
+		   ((l11+1)*Njr+l13*Njp)*C1113 + 
+		   ((l11+1)*Njq+l12*Njp)*C1112 + 
+		   (l11+1)*Njp*C1111);
+
+	const double Ki1j1 =
+	  l23*Nir*(l23*Njr*C3333 + 
+		   ((l22+1)*Njr+l23*Njq)*C3323 + 
+		   (l21*Njr+l23*Njp)*C3313 + 
+		   (l21*Njq+(l22+1)*Njp)*C3312 + 
+		   (l22+1)*Njq*C2233 + 
+		   l21*Njp*C1133) + 
+	  ((l22+1)*Nir+l23*Niq)*(l23*Njr*C3323 + 
+				 ((l22+1)*Njr+l23*Njq)*C2323 + 
+				 (l21*Njr+l23*Njp)*C2313 + 
+				 (l22+1)*Njq*C2223 + 
+				 (l21*Njq+(l22+1)*Njp)*C1223 + 
+				 l21*Njp*C1123) + 
+	  (l21*Nir+l23*Nip)*(l23*Njr*C3313 + 
+			     ((l22+1)*Njr+l23*Njq)*C2313 + 
+			     (l22+1)*Njq*C2213 + 
+			     (l21*Njr+l23*Njp)*C1313 + 
+			     (l21*Njq+(l22+1)*Njp)*C1213 + 
+			     l21*Njp*C1113) + 
+	  (l21*Niq+(l22+1)*Nip)*(l23*Njr*C3312 + 
+				 (l22+1)*Njq*C2212 + 
+				 ((l22+1)*Njr+l23*Njq)*C1223 + 
+				 (l21*Njr+l23*Njp)*C1213 + 
+				 (l21*Njq+(l22+1)*Njp)*C1212 + 
+				 l21*Njp*C1112) + 
+	  (l22+1)*Niq*(l23*Njr*C2233 + 
+		       ((l22+1)*Njr+l23*Njq)*C2223 + 
+		       (l22+1)*Njq*C2222 + 
+		       (l21*Njr+l23*Njp)*C2213 + 
+		       (l21*Njq+(l22+1)*Njp)*C2212 + 
+		       l21*Njp*C1122) + 
+	  l21*Nip*(l23*Njr*C1133 + 
+		   ((l22+1)*Njr+l23*Njq)*C1123 + 
+		   (l22+1)*Njq*C1122 + 
+		   (l21*Njr+l23*Njp)*C1113 + 
+		   (l21*Njq+(l22+1)*Njp)*C1112 + 
+		   l21*Njp*C1111);
+
+	const double Ki1j2 =
+	  l23*Nir*((l33+1)*Njr*C3333 + 
+		   (l32*Njr+(l33+1)*Njq)*C3323 + 
+		   (l31*Njr+(l33+1)*Njp)*C3313 + 
+		   (l31*Njq+l32*Njp)*C3312 + 
+		   l32*Njq*C2233 + 
+		   l31*Njp*C1133) + 
+	  ((l22+1)*Nir+l23*Niq)*((l33+1)*Njr*C3323 + 
+				 (l32*Njr+(l33+1)*Njq)*C2323 + 
+				 (l31*Njr+(l33+1)*Njp)*C2313 + 
+				 l32*Njq*C2223 + 
+				 (l31*Njq+l32*Njp)*C1223 + 
+				 l31*Njp*C1123) + 
+	  (l21*Nir+l23*Nip)*((l33+1)*Njr*C3313 +
+			     (l32*Njr+(l33+1)*Njq)*C2313 +
+			     l32*Njq*C2213 +
+			     (l31*Njr+(l33+1)*Njp)*C1313 +
+			     (l31*Njq+l32*Njp)*C1213 + 
+			     l31*Njp*C1113) + 
+	  (l21*Niq+(l22+1)*Nip)*((l33+1)*Njr*C3312 + 
+				 l32*Njq*C2212 + 
+				 (l32*Njr+(l33+1)*Njq)*C1223 + 
+				 (l31*Njr+(l33+1)*Njp)*C1213 + 
+				 (l31*Njq+l32*Njp)*C1212 + 
+				 l31*Njp*C1112) +
+	  (l22+1)*Niq*((l33+1)*Njr*C2233 + 
+		       (l32*Njr+(l33+1)*Njq)*C2223 + 
+		       l32*Njq*C2222 + 
+		       (l31*Njr+(l33+1)*Njp)*C2213 + 
+		       (l31*Njq+l32*Njp)*C2212 + 
+		       l31*Njp*C1122) + 
+	  l21*Nip*((l33+1)*Njr*C1133 + 
+		   (l32*Njr+(l33+1)*Njq)*C1123 + 
+		   l32*Njq*C1122 + 
+		   (l31*Njr+(l33+1)*Njp)*C1113 + 
+		   (l31*Njq+l32*Njp)*C1112+l31*Njp*C1111);
+
+	const double Ki2j0 =
+	  (l33+1)*Nir*(l13*Njr*C3333 + 
+		       (l12*Njr+l13*Njq)*C3323 + 
+		       ((l11+1)*Njr+l13*Njp)*C3313 + 
+		       ((l11+1)*Njq+l12*Njp)*C3312 + 
+		       l12*Njq*C2233 + 
+		       (l11+1)*Njp*C1133) + 
+	  (l32*Nir+(l33+1)*Niq)*(l13*Njr*C3323 + 
+				 (l12*Njr+l13*Njq)*C2323 + 
+				 ((l11+1)*Njr+l13*Njp)*C2313 + 
+				 l12*Njq*C2223 + 
+				 ((l11+1)*Njq+l12*Njp)*C1223 + 
+				 (l11+1)*Njp*C1123) + 
+	  (l31*Nir+(l33+1)*Nip)*(l13*Njr*C3313 + 
+				 (l12*Njr+l13*Njq)*C2313 + 
+				 l12*Njq*C2213 + 
+				 ((l11+1)*Njr+l13*Njp)*C1313 + 
+				 ((l11+1)*Njq+l12*Njp)*C1213 + 
+				 (l11+1)*Njp*C1113) +
+	  (l31*Niq+l32*Nip)*(l13*Njr*C3312 + 
+			     l12*Njq*C2212 + 
+			     (l12*Njr+l13*Njq)*C1223 + 
+			     ((l11+1)*Njr+l13*Njp)*C1213 + 
+			     ((l11+1)*Njq+l12*Njp)*C1212 + 
+			     (l11+1)*Njp*C1112) + 
+	  l32*Niq*(l13*Njr*C2233 +
+		   (l12*Njr+l13*Njq)*C2223 + 
+		   l12*Njq*C2222 + 
+		   ((l11+1)*Njr+l13*Njp)*C2213 + 
+		   ((l11+1)*Njq+l12*Njp)*C2212 + 
+		   (l11+1)*Njp*C1122) + 
+	  l31*Nip*(l13*Njr*C1133 + 
+		   (l12*Njr+l13*Njq)*C1123 + 
+		   l12*Njq*C1122 + 
+		   ((l11+1)*Njr+l13*Njp)*C1113 + 
+		   ((l11+1)*Njq+l12*Njp)*C1112 + 
+		   (l11+1)*Njp*C1111);
+
+	const double Ki2j1 =
+	  (l33+1)*Nir*(l23*Njr*C3333 + 
+		       ((l22+1)*Njr+l23*Njq)*C3323 + 
+		       (l21*Njr+l23*Njp)*C3313 + 
+		       (l21*Njq+(l22+1)*Njp)*C3312 + 
+		       (l22+1)*Njq*C2233 + 
+		       l21*Njp*C1133) + 
+	  (l32*Nir+(l33+1)*Niq)*(l23*Njr*C3323 + 
+				 ((l22+1)*Njr+l23*Njq)*C2323 + 
+				 (l21*Njr+l23*Njp)*C2313 + 
+				 (l22+1)*Njq*C2223 + 
+				 (l21*Njq+(l22+1)*Njp)*C1223 + 
+				 l21*Njp*C1123) + 
+	  (l31*Nir+(l33+1)*Nip)*(l23*Njr*C3313 + 
+				 ((l22+1)*Njr+l23*Njq)*C2313 + 
+				 (l22+1)*Njq*C2213 + 
+				 (l21*Njr+l23*Njp)*C1313 + 
+				 (l21*Njq+(l22+1)*Njp)*C1213 + 
+				 l21*Njp*C1113) + 
+	  (l31*Niq+l32*Nip)*(l23*Njr*C3312 + 
+			     (l22+1)*Njq*C2212 + 
+			     ((l22+1)*Njr+l23*Njq)*C1223 + 
+			     (l21*Njr+l23*Njp)*C1213 + 
+			     (l21*Njq+(l22+1)*Njp)*C1212 + 
+			     l21*Njp*C1112) + 
+	  l32*Niq*(l23*Njr*C2233 + 
+		   ((l22+1)*Njr+l23*Njq)*C2223 + 
+		   (l22+1)*Njq*C2222 + 
+		   (l21*Njr+l23*Njp)*C2213 + 
+		   (l21*Njq+(l22+1)*Njp)*C2212 + 
+		   l21*Njp*C1122) + 
+	  l31*Nip*(l23*Njr*C1133 + 
+		   ((l22+1)*Njr+l23*Njq)*C1123 + 
+		   (l22+1)*Njq*C1122 + 
+		   (l21*Njr+l23*Njp)*C1113 + 
+		   (l21*Njq+(l22+1)*Njp)*C1112 + 
+		   l21*Njp*C1111);
+
+	const double Ki2j2 =
+	  (l33+1)*Nir*((l33+1)*Njr*C3333 + 
+		       (l32*Njr+(l33+1)*Njq)*C3323 + 
+		       (l31*Njr+(l33+1)*Njp)*C3313 + 
+		       (l31*Njq+l32*Njp)*C3312 + 
+		       l32*Njq*C2233 + 
+		       l31*Njp*C1133) + 
+	  (l32*Nir+(l33+1)*Niq)*((l33+1)*Njr*C3323 + 
+				 (l32*Njr+(l33+1)*Njq)*C2323 + 
+				 (l31*Njr+(l33+1)*Njp)*C2313 + 
+				 l32*Njq*C2223 + 
+				 (l31*Njq+l32*Njp)*C1223 + 
+				 l31*Njp*C1123) + 
+	  (l31*Nir+(l33+1)*Nip)*((l33+1)*Njr*C3313 + 
+				 (l32*Njr+(l33+1)*Njq)*C2313 + 
+				 l32*Njq*C2213 + 
+				 (l31*Njr+(l33+1)*Njp)*C1313 + 
+				 (l31*Njq+l32*Njp)*C1213 + 
+				 l31*Njp*C1113) + 
+	  (l31*Niq+l32*Nip)*((l33+1)*Njr*C3312 + 
+			     l32*Njq*C2212 + 
+			     (l32*Njr+(l33+1)*Njq)*C1223 + 
+			     (l31*Njr+(l33+1)*Njp)*C1213 + 
+			     (l31*Njq+l32*Njp)*C1212 + 
+			     l31*Njp*C1112) + 
+	  l32*Niq*((l33+1)*Njr*C2233 + 
+		   (l32*Njr+(l33+1)*Njq)*C2223 + 
+		   l32*Njq*C2222 + 
+		   (l31*Njr+(l33+1)*Njp)*C2213 + 
+		   (l31*Njq+l32*Njp)*C2212 + 
+		   l31*Njp*C1122) + 
+	  l31*Nip*((l33+1)*Njr*C1133 + 
+		   (l32*Njr+(l33+1)*Njq)*C1123 + 
+		   l32*Njq*C1122 + 
+		   (l31*Njr+(l33+1)*Njp)*C1113 + 
+		   (l31*Njq+l32*Njp)*C1112 + 
+		   l31*Njp*C1111);
+
+	const double Knl = 
+	  Nir*(Njr*s33+Njq*s23+Njp*s13) + 
+	  Niq*(Njr*s23+Njq*s22+Njp*s12) + 
+	  Nip*(Njr*s13+Njq*s12+Njp*s11);
+
+	const int iBlock = iB * (numBasis*spaceDim);
+	const int iBlock1 = (iB+1) * (numBasis*spaceDim);
+	const int iBlock2 = (iB+2) * (numBasis*spaceDim);
+	const int jBlock = jB;
+	const int jBlock1 = jB+1;
+	const int jBlock2 = jB+2;
+	_cellMatrix[iBlock +jBlock ] += Ki0j0 + Knl;
+	_cellMatrix[iBlock +jBlock1] += Ki0j1;
+	_cellMatrix[iBlock +jBlock2] += Ki0j2;
+	_cellMatrix[iBlock1+jBlock ] += Ki1j0;
+	_cellMatrix[iBlock1+jBlock1] += Ki1j1 + Knl;
+	_cellMatrix[iBlock1+jBlock2] += Ki1j2;
+	_cellMatrix[iBlock2+jBlock ] += Ki2j0;
+	_cellMatrix[iBlock2+jBlock1] += Ki2j1;
+	_cellMatrix[iBlock2+jBlock2] += Ki2j2 + Knl;
       } // for
     } // for
   } // for
