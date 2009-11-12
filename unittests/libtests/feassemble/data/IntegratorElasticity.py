@@ -29,6 +29,29 @@ class IntegratorElasticity(IntegratorApp):
   elasticity integrator objects.
   """
   
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(IntegratorApp.Inventory):
+    """Python object for managing IntegratorApp facilities and properties."""
+
+    ## @class Inventory
+    ## Python object for managing ElasticityIntegrator facilities and
+    ## properties.
+    ##
+    ## \b Properties
+    ## @li None
+    ##
+    ## \b Facilities
+    ## @li \b formulation Elasticity formulation.
+
+    import pyre.inventory
+
+    from ElasticityImplicit import ElasticityImplicit
+    formulation = pyre.inventory.facility("formulation",
+                                          factory=ElasticityImplicit)
+    formulation.meta['tip'] = "Elasticity formulation."
+
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
   
   def __init__(self, name="integratorelasticity"):
@@ -45,6 +68,31 @@ class IntegratorElasticity(IntegratorApp):
   
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _configure(self):
+    """
+    Set members using inventory.
+    """
+    IntegratorApp._configure(self)
+    self.formulation = self.inventory.formulation
+    return
+
+
+  def _calculateResidual(self):
+    """
+    Calculate contribution to residual of operator for integrator.
+    """
+    self.valsResidual = self.formulation.calculateResidual(self)
+    return
+
+
+  def _calculateJacobian(self):
+    """
+    Calculate contribution to Jacobian matrix of operator for integrator.
+    """
+    self.valsJacobian = self.formulation.calculateJacobian(self)
+    return
+
 
   def _calculateStiffnessMat(self):
     """
@@ -198,6 +246,13 @@ class IntegratorElasticity(IntegratorApp):
     else:
       raise ValueError("Unknown spatial dimension '%d'." % self.spaceDim)
     return B
+
+
+# MAIN /////////////////////////////////////////////////////////////////
+if __name__ == "__main__":
+
+  app = IntegratorElasticity()
+  app.run()
 
 
 # End of file 

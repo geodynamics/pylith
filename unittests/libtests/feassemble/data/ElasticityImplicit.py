@@ -15,14 +15,14 @@
 ## @brief Python application for generating C++ data files for testing
 ## C++ ElasticityImplicit object.
 
-from IntegratorElasticity import IntegratorElasticity
+from pyre.components.Component import Component
 
 import numpy
 
 # ----------------------------------------------------------------------
 
 # ElasticityImplicit class
-class ElasticityImplicit(IntegratorElasticity):
+class ElasticityImplicit(Component):
   """
   Python application for generating C++ data files for testing C++
   ElasticityImplicit object.
@@ -34,41 +34,39 @@ class ElasticityImplicit(IntegratorElasticity):
     """
     Constructor.
     """
-    IntegratorElasticity.__init__(self, name)
+    Component.__init__(self, name, facility="formulation")
     return
   
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
-  def _calculateResidual(self):
+  def calculateResidual(self, integrator):
     """
     Calculate contribution to residual of operator for integrator.
 
     {r} = -[K]{u(t)}
     """
-    K = self._calculateStiffnessMat()    
+    K = integrator._calculateStiffnessMat()    
 
-    self.valsResidual = -numpy.dot(K, self.fieldT+self.fieldTIncr)
-    return
+    residual = -numpy.dot(K, integrator.fieldT+integrator.fieldTIncr)
+    return residual
 
 
-  def _calculateJacobian(self):
+  def calculateJacobian(self, integrator):
     """
     Calculate contribution to Jacobian matrix of operator for integrator.
 
     [A] = [K]
     """
-    K = self._calculateStiffnessMat()    
+    K = integrator._calculateStiffnessMat()    
 
-    self.valsJacobian = K
-    return
+    jacobian = K
+    return jacobian
 
 
-# MAIN /////////////////////////////////////////////////////////////////
-if __name__ == "__main__":
-
-  app = ElasticityImplicit()
-  app.run()
+# FACTORY //////////////////////////////////////////////////////////////
+def formulation():
+  return ElasticityImplicit()
 
 
 # End of file 
