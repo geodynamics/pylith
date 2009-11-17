@@ -166,6 +166,13 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateResidual(void)
   const double* valsE = _data->valsResidual;
   const int sizeE = _data->spaceDim * _data->numVertices;
 
+#if 1 // DEBUGGING
+  residual.view("RESIDUAL");
+  std::cout << "RESIDUAL EXPECTED\n";
+  for (int i=0; i < sizeE; ++i)
+    std::cout << "  " << valsE[i] << "\n";
+#endif
+
   const ALE::Obj<RealSection>& residualSection = residual.section();
   CPPUNIT_ASSERT(!residualSection.isNull());
   const double* vals = residualSection->restrictSpace();
@@ -196,10 +203,8 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateJacobian(void)
   topology::Jacobian jacobian(fields);
 
   const double t = 1.0;
-  //mesh->getSieve()->setDebug(10);
   integrator.integrateJacobian(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
-  //mesh->getSieve()->setDebug(0);
   jacobian.assemble("final_assembly");
 
   const double* valsE = _data->valsJacobian;

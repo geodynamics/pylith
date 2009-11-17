@@ -338,6 +338,9 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual1D(
       l11 += basisDeriv[iQuad*numBasis+kBasis  ] * disp[kBasis  ]; 
     for (int iBasis=0; iBasis < numBasis; ++iBasis) {
       const double N1 = wt * (1.0 + l11) * basisDeriv[iQuad*numBasis+iBasis  ];
+      std::cout << "N1: " << N1
+		<< ", s11: " << s11
+		<< std::endl;
       _cellVector[iBasis*spaceDim  ] -= N1*s11;
     } // for
   } // for
@@ -517,6 +520,13 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian1D(
 	const double valIJnl = valInl * basisDeriv[iQ+jBasis];
 	const int iBlock = iBasis*spaceDim * (numBasis*spaceDim);
 	const int jBlock = jBasis*spaceDim;
+	std::cout << "iBasis: " << iBasis
+		  << ", jBasis: " << jBasis
+		  << ", l11: " << l11
+		  << ", valIJ: " << valIJ
+		  << ", s11: " << s11
+		  << ", valInl" << valIJnl
+		  << std::endl;
 	_cellMatrix[iBlock+jBlock] += valIJ + valIJnl;
       } // for
     } // for

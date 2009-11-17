@@ -73,7 +73,13 @@ class IntegratorElasticityLgDeform(IntegratorElasticity):
         BNL = self._calculateBasisDerivMatNonlinear(basisDeriv, iQuad)
         strain = numpy.dot(BL0+BL1, fieldTpdt)
         S = self._calculateStress(strain, D)
+        print "BL0",BL0
+        print "BL1",BL1
+        print "D",D
+        print "BNL",BNL
+        print "S",S
         cellK[:] += wt * numpy.dot(numpy.dot(BNL.transpose(), S), BNL)
+        print "K",cellK
       feutils.assembleMat(K, cellK, cell, self.spaceDim)
     return K
 
