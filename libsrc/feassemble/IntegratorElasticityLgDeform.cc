@@ -520,13 +520,6 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian1D(
 	const double valIJnl = valInl * basisDeriv[iQ+jBasis];
 	const int iBlock = iBasis*spaceDim * (numBasis*spaceDim);
 	const int jBlock = jBasis*spaceDim;
-	std::cout << "iBasis: " << iBasis
-		  << ", jBasis: " << jBasis
-		  << ", l11: " << l11
-		  << ", valIJ: " << valIJ
-		  << ", s11: " << s11
-		  << ", valInl" << valIJnl
-		  << std::endl;
 	_cellMatrix[iBlock+jBlock] += valIJ + valIJnl;
       } // for
     } // for
@@ -573,7 +566,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(
     const int iS = iQuad*tensorSize;
     const double s11 = stress[iS+0];
     const double s22 = stress[iS+1];
-    const double s12 = stress[iS+2];
+    const double s12 = stress[iS+2] * 0.5; // WHY 0.5!!!!
 
     double l11 = 0.0;
     double l12 = 0.0;
@@ -605,15 +598,18 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(
 
 	// Generated using Maxima (see jacobian2d_lgdeform.wxm)
 	const double Ki0j0 = 
-	  l12*Niq*(l12*Niq*l12*Njq*C2222 + 
-		   l12*Niq*((l11+1.0)*Njq+l12*Njp)*C2212 + 
-		   l12*Niq*(l11+1.0)*Njp*C1122) + 
-	  ((l11+1.0)*Niq+l12*Nip)*(l12*Njq*C2212 + 
-				 ((l11+1.0)*Njq+l12*Njp)*C1212 + 
-				 (l11+1.0)*Njp*C1112) + 
-	  (l11+1.0)*Nip*(l12*Njq*C1122 + 
-		       ((l11+1.0)*Njq+l12*Njp)*C1112 +
-		       (l11+1.0)*Njp*C1111);
+	  l12*Niq*(l12*Njq*C2222 + 
+		   ((l11+1)*Njq+l12*Njp)*C2212 + 
+		   (l11+1)*Njp*C1122) + 
+	  ((l11+1)*Niq+l12*Nip)*(l12*Njq*C2212 + 
+				 ((l11+1)*Njq+l12*Njp)*C1212 + 
+				 (l11+1)*Njp*C1112) + 
+	  (l11+1)*Nip*(l12*Njq*C1122 + 
+		       ((l11+1)*Njq+l12*Njp)*C1112 + 
+		       (l11+1)*Njp*C1111);
+
+
+
 	const double Ki0j1 =
 	  l12*Niq*((l22+1.0)*Njq*C2222 + 
 		   (l21*Njq+(l22+1.0)*Njp)*C2212 + 
@@ -649,6 +645,15 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(
 
 	const int jBlock = (jB);
 	const int jBlock1 = (jB+1);
+	std::cout << "s11: " << s11
+		  << ", s12: " << s12
+		  << ", s22: " << s22
+		  << ", Knl: " << Knl
+		  << ", Ki0j0: " << Ki0j0
+		  << ", Ki0j1: " << Ki0j1
+		  << ", Ki1j0: " << Ki1j0
+		  << ", Ki1j1: " << Ki1j1
+		  << std::endl;
 	_cellMatrix[iBlock +jBlock ] += Ki0j0 + Knl;
 	_cellMatrix[iBlock +jBlock1] += Ki0j1;
 	_cellMatrix[iBlock1+jBlock ] += Ki1j0;
@@ -657,6 +662,13 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(
     } // for
   } // for
   PetscLogFlops(numQuadPts*(1+numBasis*(2+numBasis*(3*11+4))));
+
+  std::cout << "cellMatrix: ";
+  for (int i=0; i < numBasis*spaceDim; ++i) {
+    for (int j=0; j < numBasis*spaceDim; ++j)
+      std::cout << "  " << _cellMatrix[i*numBasis*spaceDim+j];
+    std::cout << std::endl;
+  } // for
 } // _elasticityJacobian2D
 
 // ----------------------------------------------------------------------
@@ -1143,7 +1155,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D(
 
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-    (*strain)[iQuad] = 0.5*(deform[iQuad]*deform[iQuad] - 1.0);
+      (*strain)[iQuad] = 0.5*(deform[iQuad]*deform[iQuad] - 1.0);
 } // _calcTotalStrain1D
   
 // ----------------------------------------------------------------------
@@ -1178,6 +1190,12 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D(
     (*strain)[iStrain+2] =
       0.5 * (deform[iDeform  ]*deform[iDeform+1] + 
 	     deform[iDeform+2]*deform[iDeform+3]);
+      std::cout << "iQuad: " << iQuad
+		<< ", strain:"
+		<< "  " << (*strain)[iStrain  ]
+		<< "  " << (*strain)[iStrain+1]
+		<< "  " << (*strain)[iStrain+2]
+		<< std::endl;
   } // for
 } // _calcTotalStrain2D
   
@@ -1255,9 +1273,30 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcDeformation(
     for (int iBasis=0, iQ=iQuad*numBasis*dim; iBasis < numBasis; ++iBasis)
       for (int iDim=0, indexD=0; iDim < dim; ++iDim)
 	for (int jDim=0; jDim < dim; ++jDim, ++indexD)
+	  {
 	  (*deform)[iQuad*deformSize+indexD] += 
 	    basisDeriv[iQ+iBasis*dim+jDim] *
 	    (vertices[iBasis*dim+iDim] + disp[iBasis*dim+iDim]);
+	  std::cout << "vertex: " << vertices[iBasis*dim+iDim]
+		    << ", disp: " << disp[iBasis*dim+iDim]
+		    << ", basisDeriv: " << basisDeriv[iQ+iBasis*dim+jDim]
+		    << std::endl;
+	  }
+
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    std::cout << "\n\niQuad: " << iQuad
+	      << ", deformation tensor: "
+	      << std::endl;
+    for (int iDim=0; iDim < dim; ++iDim) {
+      std::cout << "  ";
+      for (int jDim=0; jDim < dim; ++jDim) {
+	std::cout << "  " << (*deform)[iQuad*deformSize+iDim*dim+jDim];
+      }
+      std::cout << std::endl;
+    }
+  }
+  
+		    
 } // _calcDeformation
   
 

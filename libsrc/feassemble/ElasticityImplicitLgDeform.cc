@@ -127,7 +127,6 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& vertices = _quadrature->refGeometry().vertices();
   const double_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
@@ -291,7 +290,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
     // Compute B(transpose) * sigma, first computing deformation
     // tensor and strains
     _logger->eventBegin(stressEvent);
-    _calcDeformation(&deformCell, basisDeriv, vertices, dispTpdtCell,
+    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispTpdtCell,
 		     numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
     const double_array& stressCell = _material->calcStress(strainCell, true);
@@ -344,7 +343,6 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& vertices = _quadrature->refGeometry().vertices();
   const double_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
@@ -479,7 +477,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
       
     _logger->eventBegin(computeEvent);
     // Compute deformation tensor, strains, and stresses
-    _calcDeformation(&deformCell, basisDeriv, vertices, dispTpdtCell,
+    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispTpdtCell,
 		     numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
 

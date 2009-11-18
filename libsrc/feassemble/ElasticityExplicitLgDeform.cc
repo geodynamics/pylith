@@ -118,7 +118,6 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& vertices = _quadrature->refGeometry().vertices();
   const double_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
@@ -306,7 +305,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
 
     // Compute B(transpose) * sigma, first computing strains
     _logger->eventBegin(stressEvent);
-    _calcDeformation(&deformCell, basisDeriv, vertices, dispTCell,
+    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispTCell,
 		     numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
     const double_array& stressCell = _material->calcStress(strainCell, true);
