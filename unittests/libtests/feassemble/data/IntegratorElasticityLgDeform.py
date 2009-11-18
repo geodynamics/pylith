@@ -67,16 +67,14 @@ class IntegratorElasticityLgDeform(IntegratorElasticity):
       for iQuad in xrange(self.numQuadPts):
         wt = self.quadWts[iQuad] * jacobianDet[iQuad]
         BL0 = self._calculateBasisDerivMatLinear0(basisDeriv, iQuad)
-        cellK[:] += wt * numpy.dot(numpy.dot(BL0.transpose(), D), BL0)
         BL1 = self._calculateBasisDerivMatLinear1(basisDeriv, iQuad, fieldTpdt)
-        cellK[:] += wt * numpy.dot(numpy.dot(BL1.transpose(), D), BL1)
+        BL = BL0 + BL1
+        cellK[:] += wt * numpy.dot(numpy.dot(BL.transpose(), D), BL)
+        print "Kl",wt * numpy.dot(numpy.dot(BL.transpose(), D), BL)
         BNL = self._calculateBasisDerivMatNonlinear(basisDeriv, iQuad)
-        strain = numpy.dot(BL0+BL1, fieldTpdt)
+        strain = self._calculateStrain(basisDeriv, iQuad, fieldTpdt)
         S = self._calculateStress(strain, D)
-        print "BL0",BL0
-        print "BL1",BL1
-        print "D",D
-        print "BNL",BNL
+        print "strain",strain
         print "S",S
         cellK[:] += wt * numpy.dot(numpy.dot(BNL.transpose(), S), BNL)
         print "K",cellK
@@ -227,28 +225,75 @@ class IntegratorElasticityLgDeform(IntegratorElasticity):
     return B
 
 
+  def _calculateStrain(self, basisDeriv, iQuad, disp):
+    """
+    Calculte Green-Lagrange strain.
+    """
+    if 3 == self.spaceDim:
+      strain = numpy.zeros( (1,6), dtype=numpy.float64)
+
+    elif 2 == self.spaceDim:
+      strain = numpy.zeros( (1,3), dtype=numpy.float64)
+      l11 = 0.0
+      l12 = 0.0
+      l21 = 0.0
+      l22 = 0.0
+      for kBasis in xrange(self.numBasis):
+        l11 += basisDeriv[iQuad, kBasis, 0]*disp[kBasis*self.spaceDim  ]
+        l12 += basisDeriv[iQuad, kBasis, 1]*disp[kBasis*self.spaceDim  ]
+        l21 += basisDeriv[iQuad, kBasis, 0]*disp[kBasis*self.spaceDim+1]
+        l22 += basisDeriv[iQuad, kBasis, 1]*disp[kBasis*self.spaceDim+1]
+      strain[0, 0] = 0.5*(l11*l11 + l21*l21)
+      strain[0, 1] = 0.5*(l12*l12 + l22*l22)
+      strain[0, 2] = 0.5*(l11*l12 + l21*l22)
+      for iBasis in xrange(self.numBasis):
+        strain[0, 0] += \
+            basisDeriv[iQuad, iBasis, 0]*disp[iBasis*self.spaceDim  ]
+        strain[0, 1] += \
+            basisDeriv[iQuad, iBasis, 1]*disp[iBasis*self.spaceDim+1]
+        strain[0, 2] += \
+            0.5*(basisDeriv[iQuad, iBasis, 0]*disp[iBasis*self.spaceDim+1] +
+                 basisDeriv[iQuad, iBasis, 1]*disp[iBasis*self.spaceDim  ])
+
+    elif 1 == self.spaceDim:
+      strain = numpy.zeros( (1,1), dtype=numpy.float64)
+      l11 = 0.0
+      for kBasis in xrange(self.numBasis):
+        l11 += basisDeriv[iQuad, kBasis, 0]*disp[kBasis]
+      strain[0, 0] = 0.5*l11*l11
+      for iBasis in xrange(self.numBasis):
+        strain[0, 0] += basisDeriv[iQuad, iBasis, 0]*disp[iBasis]
+    else:
+      raise ValueError("Unknown spatial dimension '%d'." % self.spaceDim)
+      
+    return strain
+
+
   def _calculateStress(self, strain, D):
     """
     Calculte 2nd Priola-Kirchoff stress matrix.
     """
     S = numpy.zeros( (self.spaceDim*self.spaceDim,
                       self.spaceDim*self.spaceDim), dtype=numpy.float64)
-    Svec = numpy.dot(D, strain)
+    Svec = numpy.dot(D, strain.transpose())
     if 3 == self.spaceDim:
-      Smat = numpy.array([[Svec[0], Svec[3], Svec[5]],
-                          [Svec[3], Svec[1], Svec[4]],
-                          [Svec[5], Svec[4], Svec[2]]], dtype=numpy.float64)
+      Smat = numpy.array([[Svec[0,0], Svec[3,0], Svec[5,0]],
+                          [Svec[3,0], Svec[1,0], Svec[4,0]],
+                          [Svec[5,0], Svec[4,0], Svec[2,0]]], 
+                         dtype=numpy.float64)
       S[0:3,0:3] = Smat[:]
       S[3:6,3:6] = Smat[:]
       S[6:9,6:9] = Smat[:]
     elif 2 == self.spaceDim:
-      Smat = numpy.array([[Svec[0], Svec[2]],
-                          [Svec[2], Svec[1]]], dtype=numpy.float64)
+      Smat = numpy.array([[Svec[0,0], Svec[2,0]],
+                          [Svec[2,0], Svec[1,0]]], dtype=numpy.float64)
       S[0:2,0:2] = Smat[:]
       S[2:4,2:4] = Smat[:]
     elif 1 == self.spaceDim:
       Smat = numpy.array([[Svec[0]]], dtype=numpy.float64)
       S[0:1,0:1] = Smat[:]
+    else:
+      raise ValueError("Unknown spatial dimension '%d'." % self.spaceDim)
     return S
 
 

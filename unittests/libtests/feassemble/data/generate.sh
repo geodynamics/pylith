@@ -429,6 +429,7 @@ fi
 
   # 3-D ----------------------------------------------------------------
 
+if (( 0 )); then
   python IntegratorElasticityLgDeform.py \
     --formulation=ElasticityImplicit \
     --data.namespace=pylith,feassemble \
@@ -469,6 +470,7 @@ if (( 0 )); then
     --quadrature=Quadrature3DQuadratic \
     --material=ElasticIsotropic3D \
     --solution=Solution3DQuadratic
+fi
 fi
 
 fi

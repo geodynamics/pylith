@@ -1,5 +1,5 @@
 /* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
-/* [ Created with wxMaxima version 0.8.3a ] */
+/* [ Created with wxMaxima version 0.8.2 ] */
 
 /* [wxMaxima: input   start ] */
 Bnl: matrix([N11,0,N21,0,N31,0],
