@@ -70,14 +70,10 @@ class IntegratorElasticityLgDeform(IntegratorElasticity):
         BL1 = self._calculateBasisDerivMatLinear1(basisDeriv, iQuad, fieldTpdt)
         BL = BL0 + BL1
         cellK[:] += wt * numpy.dot(numpy.dot(BL.transpose(), D), BL)
-        print "Kl",wt * numpy.dot(numpy.dot(BL.transpose(), D), BL)
         BNL = self._calculateBasisDerivMatNonlinear(basisDeriv, iQuad)
         strain = self._calculateStrain(basisDeriv, iQuad, fieldTpdt)
         S = self._calculateStress(strain, D)
-        print "strain",strain
-        print "S",S
         cellK[:] += wt * numpy.dot(numpy.dot(BNL.transpose(), S), BNL)
-        print "K",cellK
       feutils.assembleMat(K, cellK, cell, self.spaceDim)
     return K
 
@@ -227,10 +223,54 @@ class IntegratorElasticityLgDeform(IntegratorElasticity):
 
   def _calculateStrain(self, basisDeriv, iQuad, disp):
     """
-    Calculte Green-Lagrange strain.
+    Calculte Green-Lagrange strain. Shear strains are twice the
+    Green-Lagrance values for compatibility with computing the strains
+    using the B matrix in the infinitesimal strain case.
     """
     if 3 == self.spaceDim:
       strain = numpy.zeros( (1,6), dtype=numpy.float64)
+
+      l11 = 0.0
+      l12 = 0.0
+      l13 = 0.0
+      l21 = 0.0
+      l22 = 0.0
+      l23 = 0.0
+      l31 = 0.0
+      l32 = 0.0
+      l33 = 0.0
+      for kBasis in xrange(self.numBasis):
+        l11 += basisDeriv[iQuad, kBasis, 0]*disp[kBasis*self.spaceDim  ]
+        l12 += basisDeriv[iQuad, kBasis, 1]*disp[kBasis*self.spaceDim  ]
+        l13 += basisDeriv[iQuad, kBasis, 2]*disp[kBasis*self.spaceDim  ]
+        l21 += basisDeriv[iQuad, kBasis, 0]*disp[kBasis*self.spaceDim+1]
+        l22 += basisDeriv[iQuad, kBasis, 1]*disp[kBasis*self.spaceDim+1]
+        l23 += basisDeriv[iQuad, kBasis, 2]*disp[kBasis*self.spaceDim+1]
+        l31 += basisDeriv[iQuad, kBasis, 0]*disp[kBasis*self.spaceDim+2]
+        l32 += basisDeriv[iQuad, kBasis, 1]*disp[kBasis*self.spaceDim+2]
+        l33 += basisDeriv[iQuad, kBasis, 2]*disp[kBasis*self.spaceDim+2]
+      strain[0, 0] = 0.5*(l11*l11 + l21*l21 + l31*l31)
+      strain[0, 1] = 0.5*(l12*l12 + l22*l22 + l32*l32)
+      strain[0, 2] = 0.5*(l13*l13 + l23*l23 + l33*l33)
+      strain[0, 3] = (l11*l12 + l21*l22 + l31*l32) # Use 2*e12 (D has mu)
+      strain[0, 4] = (l12*l13 + l22*l23 + l32*l33)
+      strain[0, 5] = (l11*l13 + l21*l23 + l31*l33)
+      for iBasis in xrange(self.numBasis):
+        strain[0, 0] += \
+            basisDeriv[iQuad, iBasis, 0]*disp[iBasis*self.spaceDim  ]
+        strain[0, 1] += \
+            basisDeriv[iQuad, iBasis, 1]*disp[iBasis*self.spaceDim+1]
+        strain[0, 2] += \
+            basisDeriv[iQuad, iBasis, 2]*disp[iBasis*self.spaceDim+2]
+        strain[0, 3] += \
+            (basisDeriv[iQuad, iBasis, 0]*disp[iBasis*self.spaceDim+1] +
+             basisDeriv[iQuad, iBasis, 1]*disp[iBasis*self.spaceDim  ])
+        strain[0, 4] += \
+            (basisDeriv[iQuad, iBasis, 1]*disp[iBasis*self.spaceDim+2] +
+             basisDeriv[iQuad, iBasis, 2]*disp[iBasis*self.spaceDim+1])
+        strain[0, 5] += \
+            (basisDeriv[iQuad, iBasis, 0]*disp[iBasis*self.spaceDim+2] +
+             basisDeriv[iQuad, iBasis, 2]*disp[iBasis*self.spaceDim  ])
 
     elif 2 == self.spaceDim:
       strain = numpy.zeros( (1,3), dtype=numpy.float64)
@@ -245,15 +285,15 @@ class IntegratorElasticityLgDeform(IntegratorElasticity):
         l22 += basisDeriv[iQuad, kBasis, 1]*disp[kBasis*self.spaceDim+1]
       strain[0, 0] = 0.5*(l11*l11 + l21*l21)
       strain[0, 1] = 0.5*(l12*l12 + l22*l22)
-      strain[0, 2] = 0.5*(l11*l12 + l21*l22)
+      strain[0, 2] = (l11*l12 + l21*l22) # Use 2*e12 (D has mu, not 2*mu)
       for iBasis in xrange(self.numBasis):
         strain[0, 0] += \
             basisDeriv[iQuad, iBasis, 0]*disp[iBasis*self.spaceDim  ]
         strain[0, 1] += \
             basisDeriv[iQuad, iBasis, 1]*disp[iBasis*self.spaceDim+1]
         strain[0, 2] += \
-            0.5*(basisDeriv[iQuad, iBasis, 0]*disp[iBasis*self.spaceDim+1] +
-                 basisDeriv[iQuad, iBasis, 1]*disp[iBasis*self.spaceDim  ])
+            (basisDeriv[iQuad, iBasis, 0]*disp[iBasis*self.spaceDim+1] +
+             basisDeriv[iQuad, iBasis, 1]*disp[iBasis*self.spaceDim  ])
 
     elif 1 == self.spaceDim:
       strain = numpy.zeros( (1,1), dtype=numpy.float64)

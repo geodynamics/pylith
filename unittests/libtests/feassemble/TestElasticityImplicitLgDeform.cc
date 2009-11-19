@@ -166,7 +166,7 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateResidual(void)
   const double* valsE = _data->valsResidual;
   const int sizeE = _data->spaceDim * _data->numVertices;
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   residual.view("RESIDUAL");
   std::cout << "RESIDUAL EXPECTED\n";
   for (int i=0; i < sizeE; ++i)

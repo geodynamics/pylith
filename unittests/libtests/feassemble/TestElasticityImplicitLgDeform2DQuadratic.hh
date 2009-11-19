@@ -18,8 +18,8 @@
  * C++ unit testing for ElasticityImplicitLgDeform with 2-D quadratic cells.
  */
 
-#if !defined(pylith_feassemble_testelasticityimplicit2dquadratic_hh)
-#define pylith_feassemble_testelasticityimplicit2dquadratic_hh
+#if !defined(pylith_feassemble_testelasticityimplicitlgdeform2dquadratic_hh)
+#define pylith_feassemble_testelasticityimplicitlgdeform2dquadratic_hh
 
 #include "TestElasticityImplicitLgDeform.hh" // ISA TestElasticityImplicitLgDeform
 
@@ -54,7 +54,7 @@ public :
 
 }; // class TestElasticityImplicitLgDeform2DQuadratic
 
-#endif // pylith_feassemble_testelasticityimplicit2dquadratic_hh
+#endif // pylith_feassemble_testelasticityimplicitlgdeform2dquadratic_hh
 
 
 // End of file 

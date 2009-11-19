@@ -341,7 +341,7 @@ if [ $1 == "implicitlgdeform" ] || [ $1 == "all" ]; then
   # 1-D ----------------------------------------------------------------
 
   python IntegratorElasticityLgDeform.py \
-    --formulation=ElasticityImplicit \
+    --formulation=ElasticityImplicitLgDeform \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitLgDeformData1DLinear \
     --data.parent=IntegratorData \
@@ -351,7 +351,7 @@ if [ $1 == "implicitlgdeform" ] || [ $1 == "all" ]; then
     --solution=Solution1DLinear
 
   python IntegratorElasticityLgDeform.py \
-    --formulation=ElasticityImplicit \
+    --formulation=ElasticityImplicitLgDeform \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitLgDeformData1DQuadratic \
     --data.parent=IntegratorData \
@@ -385,7 +385,7 @@ fi
   # 2-D ----------------------------------------------------------------
 
   python IntegratorElasticityLgDeform.py \
-    --formulation=ElasticityImplicit \
+    --formulation=ElasticityImplicitLgDeform \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitLgDeformData2DLinear \
     --data.parent=IntegratorData \
@@ -395,7 +395,7 @@ fi
     --solution=Solution2DLinear
 
   python IntegratorElasticityLgDeform.py \
-    --formulation=ElasticityImplicit \
+    --formulation=ElasticityImplicitLgDeform \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitLgDeformData2DQuadratic \
     --data.parent=IntegratorData \
@@ -429,9 +429,8 @@ fi
 
   # 3-D ----------------------------------------------------------------
 
-if (( 0 )); then
   python IntegratorElasticityLgDeform.py \
-    --formulation=ElasticityImplicit \
+    --formulation=ElasticityImplicitLgDeform \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitLgDeformData3DLinear \
     --data.parent=IntegratorData \
@@ -441,7 +440,7 @@ if (( 0 )); then
     --solution=Solution3DLinear
 
   python IntegratorElasticityLgDeform.py \
-    --formulation=ElasticityImplicit \
+    --formulation=ElasticityImplicitLgDeform \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitLgDeformData3DQuadratic \
     --data.parent=IntegratorData \
@@ -470,7 +469,6 @@ if (( 0 )); then
     --quadrature=Quadrature3DQuadratic \
     --material=ElasticIsotropic3D \
     --solution=Solution3DQuadratic
-fi
 fi
 
 fi
