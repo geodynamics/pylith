@@ -18,8 +18,8 @@
  * C++ unit testing for ElasticityImplicitLgDeform with 1-D linear cells.
  */
 
-#if !defined(pylith_feassemble_testelasticityimplicit1dlinear_hh)
-#define pylith_feassemble_testelasticityimplicit1dlinear_hh
+#if !defined(pylith_feassemble_testelasticityimplicitlgdeform1dlinear_hh)
+#define pylith_feassemble_testelasticityimplicitlgdeform1dlinear_hh
 
 #include "TestElasticityImplicitLgDeform.hh" // ISA TestElasticityImplicitLgDeform
 
@@ -54,7 +54,7 @@ public :
 
 }; // class TestElasticityImplicitLgDeform1DLinear
 
-#endif // pylith_feassemble_testelasticityimplicit1dlinear_hh
+#endif // pylith_feassemble_testelasticityimplicitlgdeform1dlinear_hh
 
 
 // End of file 
