@@ -39,12 +39,15 @@ class IntegratorElasticity(IntegratorApp):
     ## properties.
     ##
     ## \b Properties
-    ## @li None
+    ## @li \b useGravity Include gravitational body forces in residual.
     ##
     ## \b Facilities
     ## @li \b formulation Elasticity formulation.
 
     import pyre.inventory
+
+    useGravity = pyre.inventory.bool("use_gravity", default=False)
+    useGravity.meta['tip'] = "Include gravitational body forces in residual."
 
     from ElasticityImplicit import ElasticityImplicit
     formulation = pyre.inventory.facility("formulation",
@@ -74,6 +77,7 @@ class IntegratorElasticity(IntegratorApp):
     Set members using inventory.
     """
     IntegratorApp._configure(self)
+    self.useGravity = self.inventory.useGravity
     self.formulation = self.inventory.formulation
     return
 
@@ -83,6 +87,8 @@ class IntegratorElasticity(IntegratorApp):
     Calculate contribution to residual of operator for integrator.
     """
     self.valsResidual = self.formulation.calculateResidual(self)
+    if self.useGravity:
+      self.valsResidual += self._calculateGravityVec()
     return
 
 
@@ -146,6 +152,28 @@ class IntegratorElasticity(IntegratorApp):
       feutils.assembleMat(M, cellM, cell, self.spaceDim)
     return M
 
+
+  def _calculateGravityVec(self):
+    """
+    Calculate body force vector.
+    """
+    gravityGlobal = numpy.zeros((self.numVertices*self.spaceDim),
+                                dtype=numpy.float64)
+    for cell in self.cells:
+      gravityCell = numpy.zeros((self.spaceDim*self.numBasis))
+      vertices = self.vertices[cell, :]
+      (jacobian, jacobianInv, jacobianDet, basisDeriv) = \
+                 feutils.calculateJacobian(self.quadrature, vertices)
+      for iQuad in xrange(self.numQuadPts):
+        wt = self.quadWts[iQuad] * jacobianDet[iQuad] * self.density
+        for iBasis in xrange(self.numBasis):
+          valI = wt * self.basis[iQuad, iBasis]
+          for iDim in xrange(self.spaceDim):
+            gravityCell[iDim + iBasis * self.spaceDim] += \
+                             valI * self.gravityVec[iDim]
+      feutils.assembleVec(gravityGlobal, gravityCell, cell, self.spaceDim)
+    return gravityGlobal
+    
 
   def _calculateElasticityMat(self):
     """

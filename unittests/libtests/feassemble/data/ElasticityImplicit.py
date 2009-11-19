@@ -49,7 +49,7 @@ class ElasticityImplicit(Component):
     K = integrator._calculateStiffnessMat()    
 
     residual = -numpy.dot(K, integrator.fieldT+integrator.fieldTIncr)
-    return residual
+    return residual.flatten()
 
 
   def calculateJacobian(self, integrator):

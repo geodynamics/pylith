@@ -74,6 +74,7 @@ testfeassemble_SOURCES = \
 	TestElasticityImplicitLgDeform2DQuadratic.cc \
 	TestElasticityImplicitLgDeform3DLinear.cc \
 	TestElasticityImplicitLgDeform3DQuadratic.cc \
+	TestElasticityImplicitLgDeformGrav1DLinear.cc \
 	test_feassemble.cc
 
 
@@ -107,6 +108,7 @@ noinst_HEADERS = \
 	TestElasticityImplicitLgDeform2DQuadratic.hh \
 	TestElasticityImplicitLgDeform3DLinear.hh \
 	TestElasticityImplicitLgDeform3DQuadratic.hh \
+	TestElasticityImplicitLgDeformGrav1DLinear.hh \
 	TestGeometryPoint1D.hh \
 	TestGeometryPoint2D.hh \
 	TestGeometryPoint3D.hh \
@@ -172,6 +174,7 @@ testfeassemble_SOURCES += \
 	data/ElasticityImplicitLgDeformData2DQuadratic.cc \
 	data/ElasticityImplicitLgDeformData3DLinear.cc \
 	data/ElasticityImplicitLgDeformData3DQuadratic.cc \
+	data/ElasticityImplicitLgDeformGravData1DLinear.cc \
 	data/QuadratureData.cc \
 	data/QuadratureData1DLinear.cc \
 	data/QuadratureData1DQuadratic.cc \
@@ -228,6 +231,7 @@ noinst_HEADERS += \
 	data/ElasticityImplicitLgDeformData2DQuadratic.hh \
 	data/ElasticityImplicitLgDeformData3DLinear.hh \
 	data/ElasticityImplicitLgDeformData3DQuadratic.hh \
+	data/ElasticityImplicitLgDeformGravData1DLinear.hh \
 	data/QuadratureData.hh \
 	data/QuadratureData1DLinear.hh \
 	data/QuadratureData1DQuadratic.hh \
