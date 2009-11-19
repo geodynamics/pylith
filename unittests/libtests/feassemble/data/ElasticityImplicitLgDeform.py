@@ -48,7 +48,7 @@ class ElasticityImplicitLgDeform(ElasticityImplicit):
     """
     import feutils
 
-    residual = numpy.zeros( (integrator.spaceDim*integrator.numVertices, 1),
+    residual = numpy.zeros( (integrator.spaceDim*integrator.numVertices),
                             dtype=numpy.float64)
 
     # Matrix of elasticity values
@@ -68,12 +68,9 @@ class ElasticityImplicitLgDeform(ElasticityImplicit):
         BL = BL0 + BL1
         strain = integrator._calculateStrain(basisDeriv, iQuad, fieldTpdt)
         S = numpy.dot(D, strain.transpose())
-        print "BL:",BL.shape
-        print "S:",S.shape
         cellR -= wt * numpy.dot(BL.transpose(), S)
-        print "S",S
-        print cellR
-      feutils.assembleVec(residual, cellR, cell, integrator.spaceDim)
+      
+      feutils.assembleVec(residual, cellR.flatten(), cell, integrator.spaceDim)
 
     return residual
 

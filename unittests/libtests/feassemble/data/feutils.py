@@ -139,7 +139,7 @@ def assembleVec(globalVec, cellVec, cell, fiberDim):
   """
   Assemble cell vector into global vector.
   """
-  (nrows,ncols) = cellVec.shape
+  (nrows,) = cellVec.shape
   for iR in xrange(nrows/fiberDim):
     ibeginL = iR * fiberDim
     iendL = ibeginL + fiberDim

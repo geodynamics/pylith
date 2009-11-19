@@ -230,7 +230,8 @@ if [ $1 == "implicit" ] || [ $1 == "all" ]; then
     --solution=Solution1DQuadratic
 
   python IntegratorElasticity.py \
-    --formulation=ElasticityImplicitGrav \
+    --use_gravity=True \
+    --formulation=ElasticityImplicit \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitGravData1DLinear \
     --data.parent=IntegratorData \
@@ -240,7 +241,8 @@ if [ $1 == "implicit" ] || [ $1 == "all" ]; then
     --solution=Solution1DLinear
 
   python IntegratorElasticity.py \
-    --formulation=ElasticityImplicitGrav \
+    --use_gravity=True \
+    --formulation=ElasticityImplicit \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitGravData1DQuadratic \
     --data.parent=IntegratorData \
@@ -272,7 +274,8 @@ if [ $1 == "implicit" ] || [ $1 == "all" ]; then
     --solution=Solution2DQuadratic
 
   python IntegratorElasticity.py \
-    --formulation=ElasticityImplicitGrav \
+    --use_gravity=True \
+    --formulation=ElasticityImplicit \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitGravData2DLinear \
     --data.parent=IntegratorData \
@@ -282,7 +285,8 @@ if [ $1 == "implicit" ] || [ $1 == "all" ]; then
     --solution=Solution2DLinear
 
   python IntegratorElasticity.py \
-    --formulation=ElasticityImplicitGrav \
+    --use_gravity=True \
+    --formulation=ElasticityImplicit \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitGravData2DQuadratic \
     --data.parent=IntegratorData \
@@ -315,7 +319,8 @@ if [ $1 == "implicit" ] || [ $1 == "all" ]; then
     --solution=Solution3DQuadratic
 
   python IntegratorElasticity.py \
-    --formulation=ElasticityImplicitGrav \
+    --use_gravity=True \
+    --formulation=ElasticityImplicit \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitGravData3DLinear \
     --data.parent=IntegratorData \
@@ -325,7 +330,8 @@ if [ $1 == "implicit" ] || [ $1 == "all" ]; then
     --solution=Solution3DLinear
 
   python IntegratorElasticity.py \
-    --formulation=ElasticityImplicitGrav \
+    --use_gravity=True \
+    --formulation=ElasticityImplicit \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitGravData3DQuadratic \
     --data.parent=IntegratorData \
@@ -360,9 +366,9 @@ if [ $1 == "implicitlgdeform" ] || [ $1 == "all" ]; then
     --material=MaterialElasticStrain1D \
     --solution=Solution1DQuadratic
 
-if (( 0 )); then
   python IntegratorElasticityLgDeform.py \
-    --formulation=ElasticityImplicitGrav \
+    --use_gravity=True \
+    --formulation=ElasticityImplicitLgDeform \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitLgDeformGravData1DLinear \
     --data.parent=IntegratorData \
@@ -372,7 +378,8 @@ if (( 0 )); then
     --solution=Solution1DLinear
 
   python IntegratorElasticityLgDeform.py \
-    --formulation=ElasticityImplicitGrav \
+    --use_gravity=True \
+    --formulation=ElasticityImplicitLgDeform \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitLgDeformGravData1DQuadratic \
     --data.parent=IntegratorData \
@@ -380,7 +387,7 @@ if (( 0 )); then
     --quadrature=Quadrature1DQuadratic \
     --material=MaterialElasticStrain1D \
     --solution=Solution1DQuadratic
-fi
+
 
   # 2-D ----------------------------------------------------------------
 
@@ -404,9 +411,9 @@ fi
     --material=ElasticPlaneStrain \
     --solution=Solution2DQuadratic
 
-if (( 0 )); then
   python IntegratorElasticityLgDeform.py \
-    --formulation=ElasticityImplicitGrav \
+    --use_gravity=True \
+    --formulation=ElasticityImplicitLgDeform \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitLgDeformGravData2DLinear \
     --data.parent=IntegratorData \
@@ -416,7 +423,8 @@ if (( 0 )); then
     --solution=Solution2DLinear
 
   python IntegratorElasticityLgDeform.py \
-    --formulation=ElasticityImplicitGrav \
+    --use_gravity=True \
+    --formulation=ElasticityImplicitLgDeform \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitLgDeformGravData2DQuadratic \
     --data.parent=IntegratorData \
@@ -424,7 +432,6 @@ if (( 0 )); then
     --quadrature=Quadrature2DQuadratic \
     --material=ElasticPlaneStrain \
     --solution=Solution2DQuadratic
-fi
 
 
   # 3-D ----------------------------------------------------------------
@@ -449,9 +456,9 @@ fi
     --material=ElasticIsotropic3D \
     --solution=Solution3DQuadratic
 
-if (( 0 )); then
   python IntegratorElasticityLgDeform.py \
-    --formulation=ElasticityImplicitGrav \
+    --use_gravity=True \
+    --formulation=ElasticityImplicitLgDeform \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitLgDeformGravData3DLinear \
     --data.parent=IntegratorData \
@@ -461,7 +468,8 @@ if (( 0 )); then
     --solution=Solution3DLinear
 
   python IntegratorElasticityLgDeform.py \
-    --formulation=ElasticityImplicitGrav \
+    --use_gravity=True \
+    --formulation=ElasticityImplicitLgDeform \
     --data.namespace=pylith,feassemble \
     --data.object=ElasticityImplicitLgDeformGravData3DQuadratic \
     --data.parent=IntegratorData \
@@ -469,7 +477,6 @@ if (( 0 )); then
     --quadrature=Quadrature3DQuadratic \
     --material=ElasticIsotropic3D \
     --solution=Solution3DQuadratic
-fi
 
 fi
 
