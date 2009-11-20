@@ -42,11 +42,14 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/__init__.py \
 	feassemble/Constraint.py \
 	feassemble/ElasticityExplicit.py \
+	feassemble/ElasticityExplicitLgDeform.py \
 	feassemble/ElasticityImplicit.py \
+	feassemble/ElasticityImplicitLgDeform.py \
 	feassemble/FIATLagrange.py \
 	feassemble/FIATSimplex.py \
 	feassemble/Integrator.py \
 	feassemble/IntegratorElasticity.py \
+	feassemble/IntegratorElasticityLgDeform.py \
 	feassemble/ReferenceCell.py \
 	feassemble/Quadrature.py \
 	feassemble/CellGeometry.py \

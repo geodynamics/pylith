@@ -10,9 +10,9 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file modulesrc/feassemble/Integrator.i
+/** @file modulesrc/feassemble/IntegratorElasticity.i
  *
- * @brief Python interface to C++ abstract Integrator object.
+ * @brief Python interface to C++ abstract IntegratorElasticity object.
  */
 
 %template(MeshIntegrator) pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >;
