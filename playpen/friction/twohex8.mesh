@@ -123,4 +123,15 @@ mesh = {
       0  1  2  3  4  5
     }
   }
+
+  // This group of vertices may be used to specify boundary conditions.
+  // There are 4 vertices corresponding to indices 0, 1, 4, and 5.
+  group = {
+    name = z_neg_nofault
+    type = vertices
+    count = 4
+    indices = {
+      0  1  4  5
+    }
+  }
 }
