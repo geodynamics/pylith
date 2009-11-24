@@ -80,8 +80,6 @@ mesh = {
     }
   }
 
-  // This group of vertices may be used to specify boundary conditions.
-  // There are 4 vertices corresponding to indices 0, 1, 6, and 7.
   group = {
     name = x_neg
     type = vertices
@@ -91,8 +89,6 @@ mesh = {
     }
   }
 
-  // This group of vertices may be used to specify boundary conditions.
-  // There are 4 vertices corresponding to indices 4, 5, 10, and 11.
   group = {
     name = x_pos
     type = vertices
@@ -102,8 +98,6 @@ mesh = {
     }
   }
 
-  // This group of vertices may be used to specify boundary conditions.
-  // There are 6 vertices corresponding to indices 0, 2, 4, 6, 8, and 10.
   group = {
     name = y_neg
     type = vertices
@@ -113,8 +107,16 @@ mesh = {
     }
   }
 
-  // This group of vertices may be used to specify boundary conditions.
-  // There are 6 vertices corresponding to indices 0, 1, 2, 3, 4, and 5.
+  // y_neg with fault vertices removed
+  group = {
+    name = y_neg_nofault
+    type = vertices
+    count = 4
+    indices = {
+      0  4  6  10
+    }
+  }
+
   group = {
     name = z_neg
     type = vertices
@@ -124,8 +126,7 @@ mesh = {
     }
   }
 
-  // This group of vertices may be used to specify boundary conditions.
-  // There are 4 vertices corresponding to indices 0, 1, 4, and 5.
+  // z_neg with fault vertices removed
   group = {
     name = z_neg_nofault
     type = vertices
