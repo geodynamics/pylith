@@ -183,7 +183,7 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
   // Code to constrain solution space.
   //
   // Matt- It seems like I should adjust both x (current iterate) and
-  // the search direction, with the Lagrange multipliers in x modified
+  // y (the search direction), with the Lagrange multipliers in x modified
   // to conform to the constraints imposed by friction, and y adjusted
   // so that the DOF associated with the Lagrange multipliers are zero
   // (search direction doesn't change the Lagrange multipliers).
