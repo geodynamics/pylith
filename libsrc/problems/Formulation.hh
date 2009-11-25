@@ -106,10 +106,10 @@ public :
   /** Reform system residual.
    *
    * @param tmpResidualVec Temporary PETSc vector for residual.
-   * @param tmpSolveSolnVec Temporary PETSc vector for solution.
+   * @param tmpSolutionVec Temporary PETSc vector for solution.
    */
   void reformResidual(const PetscVec* tmpResidualVec =0,
-		      const PetscVec* tmpSolveSolnVec =0);
+		      const PetscVec* tmpSolutionVec =0);
   
   /* Reform system Jacobian.
    *
@@ -120,6 +120,12 @@ public :
   /* Reform system Jacobian.
    */
   void reformJacobianLumped(void);
+
+  /** Constrain solution space.
+   *
+   * @param tmpSolutionVec Temporary PETSc vector for solution.
+   */
+  void constrainSolnSpace(const PetscVec* tmpSolutionVec);
 
   /** Adjust solution from solver with lumped Jacobian to match Lagrange
    *  multiplier constraints.

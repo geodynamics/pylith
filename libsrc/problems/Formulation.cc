@@ -138,36 +138,12 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
     solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
 
-  // ===================================================================
-  // :KLUDGE: WAITING FOR MATT TO IMPLEMENT DIFFERENT LINE SEARCH
-  // Need a customized replacement routine for line search that will be 
-  // set via SNES_SetLineSearch().
-  int numIntegrators = _meshIntegrators.size();
-  assert(numIntegrators > 0); // must have at least 1 bulk integrator
-  for (int i=0; i < numIntegrators; ++i) {
-    _meshIntegrators[i]->timeStep(_dt);
-    _meshIntegrators[i]->constrainSolnSpace(_fields, _t, *_jacobian);
-  } // for
-  numIntegrators = _submeshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i) {
-    _submeshIntegrators[i]->timeStep(_dt);
-    _submeshIntegrators[i]->constrainSolnSpace(_fields, _t, *_jacobian);
-  } // for
-
-  // Update PETScVec of solution for changes to Lagrange multipliers.
-  if (0 != tmpSolutionVec) {
-    topology::Field<topology::Mesh>& solution = _fields->solution();
-    solution.scatterSectionToVector(*tmpSolutionVec);
-  } // if
-  // :KLUDGE: END
-  // ===================================================================
-
   // Set residual to zero.
   topology::Field<topology::Mesh>& residual = _fields->get("residual");
   residual.zero();
 
   // Add in contributions that require assembly.
-  numIntegrators = _meshIntegrators.size();
+  int numIntegrators = _meshIntegrators.size();
   assert(numIntegrators > 0); // must have at least 1 bulk integrator
   for (int i=0; i < numIntegrators; ++i) {
     _meshIntegrators[i]->timeStep(_dt);
@@ -291,6 +267,39 @@ pylith::problems::Formulation::reformJacobianLumped(void)
 						       _t, _fields);
 
 } // reformJacobian
+
+// ----------------------------------------------------------------------
+// Constrain solution space.
+void
+pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec)
+{ // constrainSolnSpace
+  assert(0 != tmpSolutionVec);
+  assert(0 != _fields);
+
+  // Update section view of field.
+  if (0 != tmpSolutionVec) {
+    topology::Field<topology::Mesh>& solution = _fields->solution();
+    solution.scatterVectorToSection(*tmpSolutionVec);
+  } // if
+
+  int numIntegrators = _meshIntegrators.size();
+  assert(numIntegrators > 0); // must have at least 1 bulk integrator
+  for (int i=0; i < numIntegrators; ++i) {
+    _meshIntegrators[i]->timeStep(_dt);
+    _meshIntegrators[i]->constrainSolnSpace(_fields, _t, *_jacobian);
+  } // for
+  numIntegrators = _submeshIntegrators.size();
+  for (int i=0; i < numIntegrators; ++i) {
+    _submeshIntegrators[i]->timeStep(_dt);
+    _submeshIntegrators[i]->constrainSolnSpace(_fields, _t, *_jacobian);
+  } // for
+
+  // Update PETScVec of solution for changes to Lagrange multipliers.
+  if (0 != tmpSolutionVec) {
+    topology::Field<topology::Mesh>& solution = _fields->solution();
+    solution.scatterSectionToVector(*tmpSolutionVec);
+  } // if
+} // constrainSolnSpace
 
 // ----------------------------------------------------------------------
 // Adjust solution from solver with lumped Jacobian to match Lagrange

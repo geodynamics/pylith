@@ -23,55 +23,147 @@
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
 #include "../src/snes/impls/ls/ls.h"
-#undef __FUNCT__  
-#define __FUNCT__ "FrictionLineSearchCubic"
-/*@C
-   FrictionLineSearchCubic - Performs a cubic line search (default line search method).
 
-   Collective on SNES
+// ----------------------------------------------------------------------
+// Constructor
+pylith::problems::SolverNonlinear::SolverNonlinear(void) :
+  _snes(0)
+{ // constructor
+} // constructor
 
-   Input Parameters:
-+  snes - nonlinear context
-.  lsctx - optional context for line search (not used here)
-.  x - current iterate
-.  f - residual evaluated at x
-.  y - search direction 
-.  w - work vector
-.  fnorm - 2-norm of f
--  xnorm - norm of x if known, otherwise 0
+// ----------------------------------------------------------------------
+// Destructor
+pylith::problems::SolverNonlinear::~SolverNonlinear(void)
+{ // destructor
+  deallocate();
+} // destructor
 
-   Output Parameters:
-+  g - residual evaluated at new iterate y
-.  w - new iterate 
-.  gnorm - 2-norm of g
-.  ynorm - 2-norm of search length
--  flag - PETSC_TRUE if line search succeeds; PETSC_FALSE on failure.
+// ----------------------------------------------------------------------
+// Deallocate data structures.
+void
+pylith::problems::SolverNonlinear::deallocate(void)
+{ // deallocate
+  Solver::deallocate();
 
-   Options Database Key:
-+  -snes_ls cubic - Activates SNESLineSearchCubic()
-.   -snes_ls_alpha <alpha> - Sets alpha
-.   -snes_ls_maxstep <maxstep> - Sets the maximum stepsize the line search will use (if the 2-norm(y) > maxstep then scale y to be y = (maxstep/2-norm(y)) *y)
--   -snes_ls_minlambda <minlambda> - Sets the minimum lambda the line search will use minlambda/ max_i ( y[i]/x[i] )
+  if (0 != _snes) {
+    PetscErrorCode err = SNESDestroy(_snes); _snes = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
+} // deallocate
+  
+// ----------------------------------------------------------------------
+// Initialize solver.
+void
+pylith::problems::SolverNonlinear::initialize(
+			             const topology::SolutionFields& fields,
+				     const topology::Jacobian& jacobian,
+				     Formulation* formulation)
+{ // initialize
+  assert(0 != formulation);
 
-    
-   Notes:
-   This line search is taken from "Numerical Methods for Unconstrained 
-   Optimization and Nonlinear Equations" by Dennis and Schnabel, page 325.
+  Solver::initialize(fields, jacobian, formulation);
 
-   Level: advanced
+  PetscErrorCode err = 0;
+  if (0 != _snes) {
+    err = SNESDestroy(_snes); _snes = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if    
+  err = SNESCreate(fields.mesh().comm(), &_snes); CHECK_PETSC_ERROR(err);
 
-.keywords: SNES, nonlinear, line search, cubic
+  const topology::Field<topology::Mesh>& residual = fields.get("residual");
+  const PetscVec residualVec = residual.vector();
+  err = SNESSetFunction(_snes, residualVec, reformResidual,
+			(void*) formulation);
+  CHECK_PETSC_ERROR(err);
 
-.seealso: SNESLineSearchQuadratic(), SNESLineSearchNo(), SNESLineSearchSet(), SNESLineSearchNoNorms()
-@*/
-PetscErrorCode PETSCSNES_DLLEXPORT FrictionLineSearchCubic(SNES snes,void *lsctx,Vec x,Vec f,Vec g,Vec y,Vec w,PetscReal fnorm,PetscReal xnorm,PetscReal *ynorm,PetscReal *gnorm,PetscTruth *flag)
-{
-  /* 
-     Note that for line search purposes we work with with the related
-     minimization problem:
-        min  z(x):  R^n -> R,
-     where z(x) = .5 * fnorm*fnorm, and fnorm = || f ||_2.
-   */
+  PetscMat jacobianMat = jacobian.matrix();
+  err = SNESSetJacobian(_snes, jacobianMat, jacobianMat, reformJacobian,
+			(void*) formulation);
+  CHECK_PETSC_ERROR(err);
+
+  err = SNESSetFromOptions(_snes); CHECK_PETSC_ERROR(err);
+  err = SNESLineSearchSet(_snes, lineSearch, 
+			  (void*) formulation); CHECK_PETSC_ERROR(err);
+} // initialize
+
+// ----------------------------------------------------------------------
+// Solve the system.
+void
+pylith::problems::SolverNonlinear::solve(
+			      topology::Field<topology::Mesh>* solution,
+			      const topology::Jacobian& jacobian,
+			      const topology::Field<topology::Mesh>& residual)
+{ // solve
+  assert(0 != solution);
+
+  PetscErrorCode err = 0;
+
+  const PetscVec solutionVec = solution->vector();
+  err = SNESSolve(_snes, PETSC_NULL, solutionVec); CHECK_PETSC_ERROR(err);
+  
+  // Update section view of field.
+  solution->scatterVectorToSection();
+} // solve
+
+// ----------------------------------------------------------------------
+// Generic C interface for reformResidual for integration with
+// PETSc SNES solvers.
+PetscErrorCode
+pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
+						  PetscVec tmpSolutionVec,
+						  PetscVec tmpResidualVec,
+						  void* context)
+{ // reformResidual
+  assert(0 != context);
+  Formulation* formulation = (Formulation*) context;
+  assert(0 != formulation);
+
+  // Reform residual
+  formulation->reformResidual(&tmpResidualVec, &tmpSolutionVec);
+
+  return 0;
+} // reformResidual
+
+// ----------------------------------------------------------------------
+// Generic C interface for reformJacobian for integration with
+// PETSc SNES solvers.
+PetscErrorCode
+pylith::problems::SolverNonlinear::reformJacobian(PetscSNES snes,
+						  PetscVec tmpSolutionVec,
+						  PetscMat* jacobianMat,
+						  PetscMat* preconditionerMat,
+						  MatStructure* preconditionerLayout,
+						  void* context)
+{ // reformJacobian
+  assert(0 != context);
+  Formulation* formulation = (Formulation*) context;
+  assert(0 != formulation);
+
+  formulation->reformJacobian(&tmpSolutionVec);
+
+  return 0;
+} // reformJacobian
+
+// ----------------------------------------------------------------------
+// Generic C interface for customized PETSc line search.
+PetscErrorCode
+pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
+					      void *lsctx,
+					      PetscVec x,
+					      PetscVec f,
+					      PetscVec g,
+					      PetscVec y,
+					      PetscVec w,
+					      PetscReal fnorm,
+					      PetscReal xnorm,
+					      PetscReal *ynorm,
+					      PetscReal *gnorm,
+					      PetscTruth *flag)
+{ // lineSearch
+  // Note that for line search purposes we work with with the related
+  // minimization problem:
+  // min  z(x):  R^n -> R,
+  // where z(x) = .5 * fnorm*fnorm, and fnorm = || f ||_2.
         
   PetscReal      initslope,lambdaprev,gnormprev,a,b,d,t1,t2,rellength;
   PetscReal      minlambda,lambda,lambdatemp;
@@ -86,6 +178,20 @@ PetscErrorCode PETSCSNES_DLLEXPORT FrictionLineSearchCubic(SNES snes,void *lsctx
   PetscFunctionBegin;
   ierr = PetscLogEventBegin(SNES_LineSearch,snes,x,f,g);CHKERRQ(ierr);
   *flag   = PETSC_TRUE;
+
+  // ======================================================================
+  // Code to constraint solution space.
+  //
+  // Matt- It seems like I should adjust both x (current iterate) and
+  // the search direction, with the Lagrange multipliers in x modified
+  // to conform to the constraints imposed by friction, and y adjusted
+  // so that the DOF associated with the Lagrange multipliers are zero
+  // (search direction doesn't change the Lagrange multipliers).
+  assert(0 != lsctx);
+  Formulation* formulation = (Formulation*) lsctx;
+  assert(0 != formulation);
+  formulation->constrainSolnSpace(&y);
+  // ======================================================================
 
   ierr = VecNorm(y,NORM_2,ynorm);CHKERRQ(ierr);
   if (!*ynorm) {
@@ -231,127 +337,9 @@ PetscErrorCode PETSCSNES_DLLEXPORT FrictionLineSearchCubic(SNES snes,void *lsctx
     }
   }
   ierr = PetscLogEventEnd(SNES_LineSearch,snes,x,f,g);CHKERRQ(ierr);
+
   PetscFunctionReturn(0);
 }
-
-// ----------------------------------------------------------------------
-// Constructor
-pylith::problems::SolverNonlinear::SolverNonlinear(void) :
-  _snes(0)
-{ // constructor
-} // constructor
-
-// ----------------------------------------------------------------------
-// Destructor
-pylith::problems::SolverNonlinear::~SolverNonlinear(void)
-{ // destructor
-  deallocate();
-} // destructor
-
-// ----------------------------------------------------------------------
-// Deallocate data structures.
-void
-pylith::problems::SolverNonlinear::deallocate(void)
-{ // deallocate
-  Solver::deallocate();
-
-  if (0 != _snes) {
-    PetscErrorCode err = SNESDestroy(_snes); _snes = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if
-} // deallocate
-  
-// ----------------------------------------------------------------------
-// Initialize solver.
-void
-pylith::problems::SolverNonlinear::initialize(
-			             const topology::SolutionFields& fields,
-				     const topology::Jacobian& jacobian,
-				     Formulation* formulation)
-{ // initialize
-  assert(0 != formulation);
-
-  Solver::initialize(fields, jacobian, formulation);
-
-  PetscErrorCode err = 0;
-  if (0 != _snes) {
-    err = SNESDestroy(_snes); _snes = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if    
-  err = SNESCreate(fields.mesh().comm(), &_snes); CHECK_PETSC_ERROR(err);
-
-  const topology::Field<topology::Mesh>& residual = fields.get("residual");
-  const PetscVec residualVec = residual.vector();
-  err = SNESSetFunction(_snes, residualVec, reformResidual,
-			(void*) formulation);
-  CHECK_PETSC_ERROR(err);
-
-  PetscMat jacobianMat = jacobian.matrix();
-  err = SNESSetJacobian(_snes, jacobianMat, jacobianMat, reformJacobian,
-			(void*) formulation);
-  CHECK_PETSC_ERROR(err);
-
-  err = SNESSetFromOptions(_snes); CHECK_PETSC_ERROR(err);
-  err = SNESLineSearchSet(_snes, FrictionLineSearchCubic, this); CHECK_PETSC_ERROR(err);
-} // initialize
-
-// ----------------------------------------------------------------------
-// Solve the system.
-void
-pylith::problems::SolverNonlinear::solve(
-			      topology::Field<topology::Mesh>* solution,
-			      const topology::Jacobian& jacobian,
-			      const topology::Field<topology::Mesh>& residual)
-{ // solve
-  assert(0 != solution);
-
-  PetscErrorCode err = 0;
-
-  const PetscVec solutionVec = solution->vector();
-  err = SNESSolve(_snes, PETSC_NULL, solutionVec); CHECK_PETSC_ERROR(err);
-  
-  // Update section view of field.
-  solution->scatterVectorToSection();
-} // solve
-
-// ----------------------------------------------------------------------
-// Generic C interface for reformResidual for integration with
-// PETSc SNES solvers.
-PetscErrorCode
-pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
-						  PetscVec tmpSolutionVec,
-						  PetscVec tmpResidualVec,
-						  void* context)
-{ // reformResidual
-  assert(0 != context);
-  Formulation* formulation = (Formulation*) context;
-  assert(0 != formulation);
-
-  // Reform residual
-  formulation->reformResidual(&tmpResidualVec, &tmpSolutionVec);
-
-  return 0;
-} // reformResidual
-
-// ----------------------------------------------------------------------
-// Generic C interface for reformJacobian for integration with
-// PETSc SNES solvers.
-PetscErrorCode
-pylith::problems::SolverNonlinear::reformJacobian(PetscSNES snes,
-						  PetscVec tmpSolutionVec,
-						  PetscMat* jacobianMat,
-						  PetscMat* preconditionerMat,
-						  MatStructure* preconditionerLayout,
-						  void* context)
-{ // reformJacobian
-  assert(0 != context);
-  Formulation* formulation = (Formulation*) context;
-  assert(0 != formulation);
-
-  formulation->reformJacobian(&tmpSolutionVec);
-
-  return 0;
-} // reformJacobian
 
 
 // End of file
