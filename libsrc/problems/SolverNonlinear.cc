@@ -180,7 +180,7 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
   *flag   = PETSC_TRUE;
 
   // ======================================================================
-  // Code to constraint solution space.
+  // Code to constrain solution space.
   //
   // Matt- It seems like I should adjust both x (current iterate) and
   // the search direction, with the Lagrange multipliers in x modified
@@ -190,7 +190,7 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
   assert(0 != lsctx);
   Formulation* formulation = (Formulation*) lsctx;
   assert(0 != formulation);
-  formulation->constrainSolnSpace(&y);
+  formulation->constrainSolnSpace(&x); // Adjust x? y? both?
   // ======================================================================
 
   ierr = VecNorm(y,NORM_2,ynorm);CHKERRQ(ierr);
