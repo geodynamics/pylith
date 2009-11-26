@@ -22,6 +22,9 @@
 
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
+#include <cmath>
+#define isnan std::isnan // TEMPORARY
+#define isinf std::isinf // TEMPORARY
 #include "../src/snes/impls/ls/ls.h"
 
 // ----------------------------------------------------------------------
