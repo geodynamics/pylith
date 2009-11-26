@@ -263,11 +263,10 @@ private :
   /** Compute change in tractions on fault surface using solution.
    *
    * @param tractions Field for tractions.
-   * @param mesh Finite-element mesh for domain
    * @param solution Solution over domain
    */
-  void _calcTractionsChange(topology::Field<topology::SubMesh>* tractions,
-			    const topology::Field<topology::Mesh>& solution);
+  void _calcTractions(topology::Field<topology::SubMesh>* tractions,
+		      const topology::Field<topology::Mesh>& solution);
 
   /// Allocate buffer for vector field.
   void _allocateBufferVertexVectorField(void);
