@@ -7,7 +7,7 @@
 //  |       |       |
 //  0 ----- 2 ----- 4
 //
-// Each edge has a length of 2.0.
+// Each edge has a length of 1.0.
 //
 mesh = {
 
@@ -31,12 +31,12 @@ mesh = {
     // Vertex number (starting from zero), x-coord, y-coord
     // Use coordinate units that are consistent with the other units used.
     coordinates = {
-             0     -2.0 -1.0
-             1     -2.0  1.0
-             2      0.0 -1.0
-             3      0.0  1.0
-             4      2.0 -1.0
-             5      2.0  1.0
+             0     -1.0 -0.5
+             1     -1.0  0.5
+             2      0.0 -0.5
+             3      0.0  0.5
+             4      1.0 -0.5
+             5      1.0  0.5
     }
   }
 
