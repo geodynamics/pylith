@@ -641,6 +641,7 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
   double_array tractionTpdtVertex(spaceDim);
   double_array slipTpdtVertex(spaceDim);
   double_array lagrangeTpdtVertex(spaceDim);
+  double_array dLagrangeTpdtVertex(spaceDim);
 
   // Get domain mesh and fault mesh
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
@@ -739,13 +740,14 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
       
       // Compute Lagrange multiplier at time t+dt
       lagrangeTpdtVertex = lagrangeTVertex + lagrangeTIncrVertex;
+      dLagrangeTpdtVertex = 0.0;
       
       // :KLUDGE: Solution at Lagrange constraint vertices is the
       // Lagrange multiplier value, which is currently the force.
       // Compute traction by dividing force by area
       assert(*areaVertex > 0);
       tractionTVertex = lagrangeTVertex / (*areaVertex);
-      tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);
+      tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);      
       
       // Use fault constitutive model to compute traction associated with
       // friction.
@@ -768,7 +770,8 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 	      
 	      // Update slip based on value required to stick versus
 	      // zero traction
-	      slipVertex[0] += Spp * tractionTpdtVertex[0];
+	      dLagrangeTpdtVertex[0] = tractionTpdtVertex[0] * (*areaVertex);
+	      slipVertex[0] += Spp * dLagrangeTpdtVertex[0];
 
 	      // Set traction to zero.
 	      tractionTpdtVertex[0] = 0.0;
@@ -813,7 +816,9 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 		std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
 
 		// Update slip based on value required to stick versus friction
-		slipVertex[0] += Spp * (tractionTpdtVertex[0]-friction);
+		dLagrangeTpdtVertex[0] = 
+		  (tractionTpdtVertex[0] - friction) * (*areaVertex);
+		slipVertex[0] += Spp * dLagrangeTpdtVertex[0];
 		std::cout << "Estimated slip: " << slipVertex[0] << std::endl;
 		// Limit traction
 		tractionTpdtVertex[0] = friction;
@@ -828,13 +833,15 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 	      
 		// Update slip based on value required to stick versus
 		// zero traction
+	      dLagrangeTpdtVertex[0] = tractionTpdtVertex[0] * (*areaVertex);
+	      dLagrangeTpdtVertex[1] = tractionTpdtVertex[1] * (*areaVertex);
 	      slipVertex[0] += 
-		Spp * tractionTpdtVertex[0] +
-		Spq * tractionTpdtVertex[1];
+		Spp * dLagrangeTpdtVertex[0] +
+		Spq * dLagrangeTpdtVertex[1];
 	      slipVertex[1] += 
-		Spq * tractionTpdtVertex[0] +
-		Sqq * tractionTpdtVertex[1];
-
+		Spq * dLagrangeTpdtVertex[0] +
+		Sqq * dLagrangeTpdtVertex[1];
+	      
 	      // Set traction to zero
 	      tractionTpdtVertex = 0.0;
 	    } // else
@@ -892,22 +899,29 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 		std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
 
 		// Update slip based on value required to stick versus friction
-		slipVertex[0] += Spp * (tractionShearVertex-friction) 
-		  *tractionTpdtVertex[0] / tractionShearVertex +
-		                  Spq * (tractionShearVertex-friction) 
-		  *tractionTpdtVertex[1]/ tractionShearVertex;
+		dLagrangeTpdtVertex[0] = (tractionShearVertex-friction) *
+		  tractionTpdtVertex[0] / tractionShearVertex * (*areaVertex);
+		dLagrangeTpdtVertex[1] = (tractionShearVertex-friction) *
+		  tractionTpdtVertex[1] / tractionShearVertex * (*areaVertex);
+		slipVertex[0] += 
+		  Spp * dLagrangeTpdtVertex[0] +
+		  Spq * dLagrangeTpdtVertex[1];
 
-		slipVertex[1] += Spq * (tractionShearVertex-friction) 
-		  *tractionTpdtVertex[0] / tractionShearVertex +
-		                  Sqq * (tractionShearVertex-friction) 
-		  *tractionTpdtVertex[1]/ tractionShearVertex;
+		slipVertex[1] += 
+		  Spq * dLagrangeTpdtVertex[0] +
+		  Sqq * dLagrangeTpdtVertex[1];
 
+	      std::cout << "Estimated slip: "
+			<< "  " << slipVertex[0]
+			<< "  " << slipVertex[1]
+			<< "  " << slipVertex[2]
+			<< std::endl;
 
-
-		std::cout << "Estimated slip: " << slipVertex[0] << std::endl;
 		// Limit traction
-		tractionTpdtVertex[0] = friction *tractionTpdtVertex[0]/ tractionShearVertex;
-		tractionTpdtVertex[1] = friction *tractionTpdtVertex[1]/ tractionShearVertex;
+		tractionTpdtVertex[0] = 
+		  friction * tractionTpdtVertex[0] / tractionShearVertex;
+		tractionTpdtVertex[1] = 
+		  friction * tractionTpdtVertex[1] / tractionShearVertex;
 	      } else {
 		// else friction exceeds value necessary, so stick
 		std::cout << "STICK" << std::endl;
@@ -919,18 +933,27 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 	      
 		// Update slip based on value required to stick versus
 		// zero traction
+	      dLagrangeTpdtVertex[0] = tractionTpdtVertex[0] * (*areaVertex);
+	      dLagrangeTpdtVertex[1] = tractionTpdtVertex[1] * (*areaVertex);
+	      dLagrangeTpdtVertex[2] = tractionTpdtVertex[2] * (*areaVertex);
 	      slipVertex[0] += 
-		Spp * tractionTpdtVertex[0] +
-		Spq * tractionTpdtVertex[1] +
-		Spr * tractionTpdtVertex[2];
+		Spp * dLagrangeTpdtVertex[0] +
+		Spq * dLagrangeTpdtVertex[1] +
+		Spr * dLagrangeTpdtVertex[2];
 	      slipVertex[1] += 
-		Spq * tractionTpdtVertex[0] +
-		Sqq * tractionTpdtVertex[1] +
-		Sqr * tractionTpdtVertex[2];
+		Spq * dLagrangeTpdtVertex[0] +
+		Sqq * dLagrangeTpdtVertex[1] +
+		Sqr * dLagrangeTpdtVertex[2];
 	      slipVertex[2] += 
-		Spr * tractionTpdtVertex[0] +
-		Sqr * tractionTpdtVertex[1] +
-		Srr * tractionTpdtVertex[2];
+		Spr * dLagrangeTpdtVertex[0] +
+		Sqr * dLagrangeTpdtVertex[1] +
+		Srr * dLagrangeTpdtVertex[2];
+
+	      std::cout << "Estimated slip: "
+			<< "  " << slipVertex[0]
+			<< "  " << slipVertex[1]
+			<< "  " << slipVertex[2]
+			<< std::endl;
 
 	      // Set traction to zero
 	      tractionTpdtVertex = 0.0;
