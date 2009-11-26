@@ -31,8 +31,8 @@ class OutputFaultDyn(OutputManagerSubMesh):
   Python object for managing OutputFaultDyn facilities and properties.
   
   \b Properties
-  @li \b cell_info_fields Names of cell info fields to output.
-  @li \b cell_data_fields Names of cell data fields to output.
+  @li \b vertex_info_fields Names of vertex info fields to output.
+  @li \b vertex_data_fields Names of vertex data fields to output.
   
   \b Facilities
   @li None
@@ -44,14 +44,14 @@ class OutputFaultDyn(OutputManagerSubMesh):
 
   import pyre.inventory
 
-  cellInfoFields = pyre.inventory.list("cell_info_fields",
+  vertexInfoFields = pyre.inventory.list("vertex_info_fields",
                                          default=["normal_dir"])
-  cellInfoFields.meta['tip'] = "Names of cell info fields to output."
+  vertexInfoFields.meta['tip'] = "Names of vertex info fields to output."
 
-  cellDataFields = pyre.inventory.list("cell_data_fields", 
-                                       default=["slip",
-                                                "traction"])
-  cellDataFields.meta['tip'] = "Names of cell data fields to output."
+  vertexDataFields = pyre.inventory.list("vertex_data_fields", 
+                                         default=["slip",
+                                                  "traction"])
+  vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -71,8 +71,8 @@ class OutputFaultDyn(OutputManagerSubMesh):
     Set members based using inventory.
     """
     OutputManagerSubMesh._configure(self)
-    self.cellInfoFields = self.inventory.cellInfoFields
-    self.cellDataFields = self.inventory.cellDataFields
+    self.vertexInfoFields = self.inventory.vertexInfoFields
+    self.vertexDataFields = self.inventory.vertexDataFields
     return
 
 

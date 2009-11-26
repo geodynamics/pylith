@@ -53,9 +53,9 @@ class FaultCohesiveDynL(FaultCohesive, Integrator, ModuleFaultCohesiveDynL):
                                factory=NullComponent)
   db.meta['tip'] = "Spatial database for initial tractions."
 
-  from pylith.meshio.OutputFaultKin import OutputFaultKin
+  from pylith.meshio.OutputFaultDyn import OutputFaultDyn
   output = pyre.inventory.facility("output", family="output_manager",
-                                   factory=OutputFaultKin)
+                                   factory=OutputFaultDyn)
   output.meta['tip'] = "Output manager associated with fault data."
   
 

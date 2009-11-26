@@ -1116,19 +1116,19 @@ pylith::faults::FaultCohesiveDynL::vertexField(
     buffer.scale(1.0);
     return buffer;
 
-  } else if (0 == strncasecmp("final_slip_X", name, slipStrLen)) {
-    const std::string value = std::string(name).substr(slipStrLen+1);
+  } else if (0 == strncasecmp("initial_traction", name, slipStrLen)) {
+    assert(0 != _dbInitial);
+    const topology::Field<topology::SubMesh>& initialTraction =
+      _fields->get("initial traction");
+    return initialTraction;
 
-  } else if (0 == strncasecmp("slip_time_X", name, timeStrLen)) {
-    const std::string value = std::string(name).substr(timeStrLen+1);
-
-  } else if (0 == strcasecmp("traction_change", name)) {
+  } else if (0 == strcasecmp("traction", name)) {
     assert(0 != fields);
     const topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
     _allocateBufferVertexVectorField();
     topology::Field<topology::SubMesh>& buffer =
       _fields->get("buffer (vector)");
-    _calcTractionsChange(&buffer, dispT);
+    _calcTractions(&buffer, dispT);
     return buffer;
 
   } else {
@@ -1454,7 +1454,7 @@ pylith::faults::FaultCohesiveDynL::_calcArea(void)
 // Compute change in tractions on fault surface using solution.
 // NOTE: We must convert vertex labels to fault vertex labels
 void
-pylith::faults::FaultCohesiveDynL::_calcTractionsChange(
+pylith::faults::FaultCohesiveDynL::_calcTractions(
 			     topology::Field<topology::SubMesh>* tractions,
 			     const topology::Field<topology::Mesh>& dispT)
 { // _calcTractionsChange
@@ -1462,9 +1462,6 @@ pylith::faults::FaultCohesiveDynL::_calcTractionsChange(
   assert(0 != _faultMesh);
   assert(0 != _fields);
   assert(0 != _normalizer);
-
-  tractions->label("traction_change");
-  tractions->scale(_normalizer->pressureScale());
 
   // Get vertices from mesh of domain.
   const ALE::Obj<SieveMesh>& sieveMesh = dispT.mesh().sieveMesh();
@@ -1489,6 +1486,43 @@ pylith::faults::FaultCohesiveDynL::_calcTractionsChange(
   assert(!areaSection.isNull());
   const ALE::Obj<RealSection>& dispTSection = dispT.section();
   assert(!dispTSection.isNull());  
+
+  // Fiber dimension of tractions matches spatial dimension.
+  const int fiberDim = _quadrature->spaceDim();
+  double_array tractionsVertex(fiberDim);
+
+  // Allocate buffer for tractions field (if nec.).
+  const ALE::Obj<RealSection>& tractionsSection = tractions->section();
+  if (tractionsSection.isNull()) {
+    ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+    //logger.stagePush("Fault");
+
+    const topology::Field<topology::SubMesh>& slip =_fields->get("slip");
+    tractions->newSection(slip, fiberDim);
+    tractions->allocate();
+
+    //logger.stagePop();
+  } // if
+  assert(!tractionsSection.isNull());
+  const double pressureScale = _normalizer->pressureScale();
+  tractions->label("traction");
+  tractions->scale(pressureScale);
+  tractions->zero();
+
+  // Set tractions to initial tractions if they exist
+  if (0 != _dbInitial) {
+    const ALE::Obj<RealSection>& initialTractionSection = 
+      _fields->get("initial traction").section();
+    assert(!initialTractionSection.isNull());
+    for (SubMesh::label_sequence::iterator v_iter = fverticesBegin;
+	 v_iter != fverticesEnd;
+	 ++v_iter) {
+      initialTractionSection->restrictPoint(*v_iter, &tractionsVertex[0],
+					    tractionsVertex.size());
+      assert(fiberDim == tractionsSection->getFiberDimension(*v_iter));
+      tractionsSection->updatePoint(*v_iter, &tractionsVertex[0]);
+    } // for
+  } // if
 
   const int numFaultVertices = fvertices->size();
   Mesh::renumbering_type& renumbering = faultSieveMesh->getRenumbering();
@@ -1519,26 +1553,6 @@ pylith::faults::FaultCohesiveDynL::_calcTractionsChange(
   }
 #endif
 
-  // Fiber dimension of tractions matches spatial dimension.
-  const int fiberDim = _quadrature->spaceDim();
-  double_array tractionsVertex(fiberDim);
-
-  // Allocate buffer for tractions field (if nec.).
-  const ALE::Obj<RealSection>& tractionsSection = tractions->section();
-  if (tractionsSection.isNull()) {
-    ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-    //logger.stagePush("Fault");
-
-    const topology::Field<topology::SubMesh>& slip =_fields->get("slip");
-    tractions->newSection(slip, fiberDim);
-    tractions->allocate();
-
-    //logger.stagePop();
-  } // if
-  assert(!tractionsSection.isNull());
-  tractions->zero();
-  
-  const double pressureScale = tractions->scale();
   for (SieveMesh::label_sequence::iterator v_iter = verticesBegin; 
        v_iter != verticesEnd;
        ++v_iter)
@@ -1557,7 +1571,7 @@ pylith::faults::FaultCohesiveDynL::_calcTractionsChange(
       for (int i=0; i < fiberDim; ++i)
 	tractionsVertex[i] = dispTVertex[i] / areaVertex[0];
 
-      tractionsSection->updatePoint(vertexFault, &tractionsVertex[0]);
+      tractionsSection->updatePointAllAdd(vertexFault, &tractionsVertex[0]);
     } // if
 
   PetscLogFlops(numFaultVertices * (1 + fiberDim) );
@@ -1565,7 +1579,7 @@ pylith::faults::FaultCohesiveDynL::_calcTractionsChange(
 #if 0 // DEBUGGING
   tractions->view("TRACTIONS");
 #endif
-} // _calcTractionsChange
+} // _calcTractions
 
 // ----------------------------------------------------------------------
 void
