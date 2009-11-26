@@ -7,7 +7,7 @@
 //  |       |       |
 //  0 ----- 2 ----- 4
 //
-// Each edge has a length of 2.0.
+// Each edge has a length of 1.0.
 //
 mesh = {
 
