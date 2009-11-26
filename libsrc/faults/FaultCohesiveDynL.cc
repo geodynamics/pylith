@@ -855,12 +855,18 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 
 	    // Sensitivity of slip to changes in the Lagrange multipliers
 	    // Aixjx = 1.0/Aix + 1.0/Ajx
+	    assert(jacobianVertex[0] > 0.0);
+	    assert(jacobianVertex[spaceDim+0] > 0.0);
 	    const double Aixjx = 
 	      1.0/jacobianVertex[0] + 1.0/jacobianVertex[spaceDim+0];
 	    // Aiyjy = 1.0/Aiy + 1.0/Ajy
+	    assert(jacobianVertex[1] > 0.0);
+	    assert(jacobianVertex[spaceDim+1] > 0.0);
 	    const double Aiyjy = 
 	      1.0/jacobianVertex[1] + 1.0/jacobianVertex[spaceDim+1];
 	    // Aizjz = 1.0/Aiz + 1.0/Ajz
+	    assert(jacobianVertex[2] > 0.0);
+	    assert(jacobianVertex[spaceDim+2] > 0.0);
 	    const double Aizjz = 
 	      1.0/jacobianVertex[2] + 1.0/jacobianVertex[spaceDim+2];
 	    const double Cpx = orientationVertex[0];
