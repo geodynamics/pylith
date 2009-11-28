@@ -108,8 +108,10 @@ nobase_pkgpyexec_PYTHON = \
 	problems/__init__.py \
 	problems/Explicit.py \
 	problems/ExplicitLumped.py \
+	problems/ExplicitLgDeform.py \
 	problems/Formulation.py \
 	problems/Implicit.py \
+	problems/ImplicitLgDeform.py \
 	problems/Problem.py \
 	problems/Solver.py \
 	problems/SolverLinear.py \
