@@ -138,6 +138,7 @@ protected :
    * @param name Name of field to compute ('total-strain' or 'stress')
    * @param fields Manager for solution fields.
    */
+  virtual
   void _calcStrainStressField(topology::Field<topology::Mesh>* field,
 			      const char* name,
 			      topology::SolutionFields* const fields);
@@ -147,6 +148,7 @@ protected :
    *
    * @param field Field in which to store stress.
    */
+  virtual
   void _calcStressFromStrain(topology::Field<topology::Mesh>* field);
 			      
 
