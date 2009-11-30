@@ -88,10 +88,9 @@ mesh = {
   group = {
     name = y_neg
     type = vertices
-    count = 3
+    count = 2
     indices = {
       0
-      2
       4
     }
   }
