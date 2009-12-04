@@ -8,8 +8,6 @@ conventional vertices
 
   no mesh queries? Just loops?
 
-What is the proper formula for integrating tractions?
-
 ----------------------------------------------------------------------
 FRICTION
 ----------------------------------------------------------------------
@@ -39,14 +37,13 @@ LARGE DEFORMATIONS
 
 C++ unit tests
   Need to setup C++ files in libtests/feassemble
-  Need to setup test data for gravity
   Need to setup test data for explicit
 
 ----------------------------------------------------------------------
 LUMPED SOLVER
 ----------------------------------------------------------------------
 
-S (sensitivity matrix) - should be diagonal?
+S (sensitivity matrix) - assume diagonal (check with assert)
 
 Unit tests
 
