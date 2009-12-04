@@ -10,31 +10,31 @@
 # ----------------------------------------------------------------------
 #
 
-## @file unittests/libtests/feassemble/data/ElasticityImplicitLgDeform.py
+## @file unittests/libtests/feassemble/data/ElasticityExplicit.py
 
 ## @brief Python application for generating C++ data files for testing
-## C++ ElasticityImplicitLgDeform object.
+## C++ ElasticityExplicit object.
 
-from ElasticityImplicit import ElasticityImplicit
+from pyre.components.Component import Component
 
 import numpy
 
 # ----------------------------------------------------------------------
 
-# ElasticityImplicitLgDeform class
-class ElasticityImplicitLgDeform(ElasticityImplicit):
+# ElasticityExplicit class
+class ElasticityExplicit(Component):
   """
   Python application for generating C++ data files for testing C++
-  ElasticityImplicitLgDeform object.
+  ElasticityExplicit object.
   """
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
   
-  def __init__(self, name="elasticityimplicitlgdeform"):
+  def __init__(self, name="elasticityexplicit"):
     """
     Constructor.
     """
-    ElasticityImplicit.__init__(self, name)
+    Component.__init__(self, name, facility="formulation")
     return
   
 
@@ -44,12 +44,18 @@ class ElasticityImplicitLgDeform(ElasticityImplicit):
     """
     Calculate contribution to residual of operator for integrator.
 
-    {r} = -Sum(wt * [BL]^T [S})
+    {r} = (1/dt**2)[M](-{u(t+dt)} + 2 {u(t)} - {u(t-dt)}) -
+          Sum(wt * [BL]^T [S])
     """
     import feutils
 
-    residual = numpy.zeros( (integrator.spaceDim*integrator.numVertices),
-                            dtype=numpy.float64)
+    # Calculate action for inertia
+    M = integrator._calculateMassMat()
+    dispResult = integrator.fieldT - integrator.fieldTmdt
+    residual = 1.0/integrator.dt**2 * numpy.dot(M, dispResult)
+    residual = residual.flatten()
+
+    # Calculate action for elasticity
 
     # Matrix of elasticity values
     D = integrator._calculateElasticityMat()
@@ -60,13 +66,13 @@ class ElasticityImplicitLgDeform(ElasticityImplicit):
       vertices = integrator.vertices[cell, :]
       (jacobian, jacobianInv, jacobianDet, basisDeriv) = \
           feutils.calculateJacobian(integrator.quadrature, vertices)
-      fieldTpdt = integrator.fieldT + integrator.fieldTIncr
+      fieldT = integrator.fieldT
       for iQuad in xrange(integrator.numQuadPts):
         wt = integrator.quadWts[iQuad] * jacobianDet[iQuad]
         BL0 = integrator._calculateBasisDerivMatLinear0(basisDeriv, iQuad)
-        BL1 = integrator._calculateBasisDerivMatLinear1(basisDeriv, iQuad, fieldTpdt)
+        BL1 = integrator._calculateBasisDerivMatLinear1(basisDeriv, iQuad, fieldT)
         BL = BL0 + BL1
-        strain = integrator._calculateStrain(basisDeriv, iQuad, fieldTpdt)
+        strain = integrator._calculateStrain(basisDeriv, iQuad, fieldT)
         S = numpy.dot(D, strain.transpose())
         cellR -= wt * numpy.dot(BL.transpose(), S)
       
@@ -75,9 +81,21 @@ class ElasticityImplicitLgDeform(ElasticityImplicit):
     return residual
 
 
+  def calculateJacobian(self, integrator):
+    """
+    Calculate contribution to Jacobian matrix of operator for integrator.
+
+    [A] = (1/dt**2)[M]
+    """
+    M = integrator._calculateMassMat()
+
+    jacobian = 1.0/integrator.dt**2 * M
+    return jacobian
+
+
 # FACTORY //////////////////////////////////////////////////////////////
 def formulation():
-  return ElasticityImplicitLgDeform()
+  return ElasticityExplicit()
 
 
 # End of file 

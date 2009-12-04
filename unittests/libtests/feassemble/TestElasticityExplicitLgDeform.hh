@@ -11,15 +11,15 @@
 //
 
 /**
- * @file unittests/libtests/feassemble/TestElasticityImplicitLgDeform.hh
+ * @file unittests/libtests/feassemble/TestElasticityExplicitLgDeform.hh
  *
- * @brief C++ TestElasticityImplicitLgDeform object
+ * @brief C++ TestElasticityExplicitLgDeform object
  *
- * C++ unit testing for ElasticityImplicitLgDeform.
+ * C++ unit testing for ElasticityExplicitLgDeform.
  */
 
-#if !defined(pylith_feassemble_testelasticityimplicitlgdeform_hh)
-#define pylith_feassemble_testelasticityimplicitlgdeform_hh
+#if !defined(pylith_feassemble_testelasticityexplicitlgdeform_hh)
+#define pylith_feassemble_testelasticityexplicitlgdeform_hh
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -32,17 +32,17 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace feassemble {
-    class TestElasticityImplicitLgDeform;
+    class TestElasticityExplicitLgDeform;
     class IntegratorData;
   } // feassemble
 } // pylith
 
-/// C++ unit testing for ElasticityImplicitLgDeform
-class pylith::feassemble::TestElasticityImplicitLgDeform : public CppUnit::TestFixture
-{ // class TestElasticityImplicitLgDeform
+/// C++ unit testing for ElasticityExplicitLgDeform
+class pylith::feassemble::TestElasticityExplicitLgDeform : public CppUnit::TestFixture
+{ // class TestElasticityExplicitLgDeform
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestElasticityImplicitLgDeform );
+  CPPUNIT_TEST_SUITE( TestElasticityExplicitLgDeform );
 
   CPPUNIT_TEST( testConstructor );
 
@@ -94,12 +94,12 @@ private :
    * @param fields Solution fields.
    */
   void _initialize(topology::Mesh* mesh,
-		   ElasticityImplicitLgDeform* const integrator,
+		   ElasticityExplicitLgDeform* const integrator,
 		   topology::SolutionFields* const fields);
 
-}; // class TestElasticityImplicitLgDeform
+}; // class TestElasticityExplicitLgDeform
 
-#endif // pylith_feassemble_testelasticityimplicitlgdeform_hh
+#endif // pylith_feassemble_testelasticityexplicitlgdeform_hh
 
 
 // End of file 

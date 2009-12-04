@@ -73,6 +73,19 @@ testfeassemble_SOURCES = \
 	TestElasticityImplicitGrav3DLinear.cc \
 	TestElasticityImplicitGrav3DQuadratic.cc \
 	TestIntegratorElasticityLgDeform.cc \
+	TestElasticityExplicitLgDeform.cc \
+	TestElasticityExplicitLgDeform1DLinear.cc \
+	TestElasticityExplicitLgDeform1DQuadratic.cc \
+	TestElasticityExplicitLgDeform2DLinear.cc \
+	TestElasticityExplicitLgDeform2DQuadratic.cc \
+	TestElasticityExplicitLgDeform3DLinear.cc \
+	TestElasticityExplicitLgDeform3DQuadratic.cc \
+	TestElasticityExplicitLgDeformGrav1DLinear.cc \
+	TestElasticityExplicitLgDeformGrav1DQuadratic.cc \
+	TestElasticityExplicitLgDeformGrav2DLinear.cc \
+	TestElasticityExplicitLgDeformGrav2DQuadratic.cc \
+	TestElasticityExplicitLgDeformGrav3DLinear.cc \
+	TestElasticityExplicitLgDeformGrav3DQuadratic.cc \
 	TestElasticityImplicitLgDeform.cc \
 	TestElasticityImplicitLgDeform1DLinear.cc \
 	TestElasticityImplicitLgDeform1DQuadratic.cc \
@@ -118,6 +131,20 @@ noinst_HEADERS = \
 	TestElasticityImplicitGrav2DQuadratic.hh \
 	TestElasticityImplicitGrav3DLinear.hh \
 	TestElasticityImplicitGrav3DQuadratic.hh \
+	TestIntegratorElasticityLgDeform.hh \
+	TestElasticityExplicitLgDeform.hh \
+	TestElasticityExplicitLgDeform1DLinear.hh \
+	TestElasticityExplicitLgDeform1DQuadratic.hh \
+	TestElasticityExplicitLgDeform2DLinear.hh \
+	TestElasticityExplicitLgDeform2DQuadratic.hh \
+	TestElasticityExplicitLgDeform3DLinear.hh \
+	TestElasticityExplicitLgDeform3DQuadratic.hh \
+	TestElasticityExplicitLgDeformGrav1DLinear.hh \
+	TestElasticityExplicitLgDeformGrav1DQuadratic.hh \
+	TestElasticityExplicitLgDeformGrav2DLinear.hh \
+	TestElasticityExplicitLgDeformGrav2DQuadratic.hh \
+	TestElasticityExplicitLgDeformGrav3DLinear.hh \
+	TestElasticityExplicitLgDeformGrav3DQuadratic.hh \
 	TestElasticityImplicitLgDeform.hh \
 	TestElasticityImplicitLgDeform1DLinear.hh \
 	TestElasticityImplicitLgDeform1DQuadratic.hh \
@@ -196,6 +223,18 @@ testfeassemble_SOURCES += \
 	data/ElasticityImplicitGravData2DQuadratic.cc \
 	data/ElasticityImplicitGravData3DLinear.cc \
 	data/ElasticityImplicitGravData3DQuadratic.cc \
+	data/ElasticityExplicitLgDeformData1DLinear.cc \
+	data/ElasticityExplicitLgDeformData1DQuadratic.cc \
+	data/ElasticityExplicitLgDeformData2DLinear.cc \
+	data/ElasticityExplicitLgDeformData2DQuadratic.cc \
+	data/ElasticityExplicitLgDeformData3DLinear.cc \
+	data/ElasticityExplicitLgDeformData3DQuadratic.cc \
+	data/ElasticityExplicitLgDeformGravData1DLinear.cc \
+	data/ElasticityExplicitLgDeformGravData1DQuadratic.cc \
+	data/ElasticityExplicitLgDeformGravData2DLinear.cc \
+	data/ElasticityExplicitLgDeformGravData2DQuadratic.cc \
+	data/ElasticityExplicitLgDeformGravData3DLinear.cc \
+	data/ElasticityExplicitLgDeformGravData3DQuadratic.cc \
 	data/ElasticityImplicitLgDeformData1DLinear.cc \
 	data/ElasticityImplicitLgDeformData1DQuadratic.cc \
 	data/ElasticityImplicitLgDeformData2DLinear.cc \
@@ -264,6 +303,18 @@ noinst_HEADERS += \
 	data/ElasticityImplicitGravData2DQuadratic.hh \
 	data/ElasticityImplicitGravData3DLinear.hh \
 	data/ElasticityImplicitGravData3DQuadratic.hh \
+	data/ElasticityExplicitLgDeformData1DLinear.hh \
+	data/ElasticityExplicitLgDeformData1DQuadratic.hh \
+	data/ElasticityExplicitLgDeformData2DLinear.hh \
+	data/ElasticityExplicitLgDeformData2DQuadratic.hh \
+	data/ElasticityExplicitLgDeformData3DLinear.hh \
+	data/ElasticityExplicitLgDeformData3DQuadratic.hh \
+	data/ElasticityExplicitLgDeformGravData1DLinear.hh \
+	data/ElasticityExplicitLgDeformGravData1DQuadratic.hh \
+	data/ElasticityExplicitLgDeformGravData2DLinear.hh \
+	data/ElasticityExplicitLgDeformGravData2DQuadratic.hh \
+	data/ElasticityExplicitLgDeformGravData3DLinear.hh \
+	data/ElasticityExplicitLgDeformGravData3DQuadratic.hh \
 	data/ElasticityImplicitLgDeformData1DLinear.hh \
 	data/ElasticityImplicitLgDeformData1DQuadratic.hh \
 	data/ElasticityImplicitLgDeformData2DLinear.hh \
