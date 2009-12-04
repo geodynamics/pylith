@@ -53,7 +53,7 @@ class ElasticityExplicit(Component):
     dispResult = integrator.fieldT - integrator.fieldTmdt
     residual = 1.0/integrator.dt**2 * numpy.dot(M, dispResult) - \
         numpy.dot(K, integrator.fieldT)
-    return residual
+    return residual.flatten()
 
 
   def calculateJacobian(self, integrator):

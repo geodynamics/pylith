@@ -53,6 +53,12 @@ testfeassemble_SOURCES = \
 	TestElasticityExplicit2DQuadratic.cc \
 	TestElasticityExplicit3DLinear.cc \
 	TestElasticityExplicit3DQuadratic.cc \
+	TestElasticityExplicitGrav1DLinear.cc \
+	TestElasticityExplicitGrav1DQuadratic.cc \
+	TestElasticityExplicitGrav2DLinear.cc \
+	TestElasticityExplicitGrav2DQuadratic.cc \
+	TestElasticityExplicitGrav3DLinear.cc \
+	TestElasticityExplicitGrav3DQuadratic.cc \
 	TestElasticityImplicit.cc \
 	TestElasticityImplicit1DLinear.cc \
 	TestElasticityImplicit1DQuadratic.cc \
@@ -93,6 +99,12 @@ noinst_HEADERS = \
 	TestElasticityExplicit2DQuadratic.hh \
 	TestElasticityExplicit3DLinear.hh \
 	TestElasticityExplicit3DQuadratic.hh \
+	TestElasticityExplicitGrav1DLinear.hh \
+	TestElasticityExplicitGrav1DQuadratic.hh \
+	TestElasticityExplicitGrav2DLinear.hh \
+	TestElasticityExplicitGrav2DQuadratic.hh \
+	TestElasticityExplicitGrav3DLinear.hh \
+	TestElasticityExplicitGrav3DQuadratic.hh \
 	TestElasticityImplicit.hh \
 	TestElasticityImplicit1DLinear.hh \
 	TestElasticityImplicit1DQuadratic.hh \
@@ -166,6 +178,12 @@ testfeassemble_SOURCES += \
 	data/ElasticityExplicitData2DQuadratic.cc \
 	data/ElasticityExplicitData3DLinear.cc \
 	data/ElasticityExplicitData3DQuadratic.cc \
+	data/ElasticityExplicitGravData1DLinear.cc \
+	data/ElasticityExplicitGravData1DQuadratic.cc \
+	data/ElasticityExplicitGravData2DLinear.cc \
+	data/ElasticityExplicitGravData2DQuadratic.cc \
+	data/ElasticityExplicitGravData3DLinear.cc \
+	data/ElasticityExplicitGravData3DQuadratic.cc \
 	data/ElasticityImplicitData1DLinear.cc \
 	data/ElasticityImplicitData1DQuadratic.cc \
 	data/ElasticityImplicitData2DLinear.cc \
@@ -228,6 +246,12 @@ noinst_HEADERS += \
 	data/ElasticityExplicitData2DQuadratic.hh \
 	data/ElasticityExplicitData3DLinear.hh \
 	data/ElasticityExplicitData3DQuadratic.hh \
+	data/ElasticityExplicitGravData1DLinear.hh \
+	data/ElasticityExplicitGravData1DQuadratic.hh \
+	data/ElasticityExplicitGravData2DLinear.hh \
+	data/ElasticityExplicitGravData2DQuadratic.hh \
+	data/ElasticityExplicitGravData3DLinear.hh \
+	data/ElasticityExplicitGravData3DQuadratic.hh \
 	data/ElasticityImplicitData1DLinear.hh \
 	data/ElasticityImplicitData1DQuadratic.hh \
 	data/ElasticityImplicitData2DLinear.hh \
