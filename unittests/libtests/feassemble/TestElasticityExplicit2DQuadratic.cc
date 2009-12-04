@@ -32,6 +32,7 @@ pylith::feassemble::TestElasticityExplicit2DQuadratic::setUp(void)
   TestElasticityExplicit::setUp();
 
   _data = new ElasticityExplicitData2DQuadratic();
+  _gravityField = 0;
   CPPUNIT_ASSERT(0 != _quadrature);
   GeometryTri2D geometry;
   _quadrature->refGeometry(&geometry);

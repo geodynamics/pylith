@@ -89,7 +89,7 @@ const double pylith::feassemble::ElasticityExplicitData1DLinear::_fieldTmdt[] = 
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DLinear::_valsResidual[] = {
-  1.60042188e+10,
+  1.60042187e+10,
  -1.59957812e+10,
 };
 

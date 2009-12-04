@@ -247,6 +247,40 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     const double_array& basis = _quadrature->basis();
     const double_array& basisDeriv = _quadrature->basisDeriv();
     const double_array& jacobianDet = _quadrature->jacobianDet();
+    const double_array& quadPtsNondim = _quadrature->quadPts();
+
+    // Compute body force vector if gravity is being used.
+    if (0 != _gravityField) {
+      _logger->eventBegin(computeEvent);
+      const spatialdata::geocoords::CoordSys* cs = fields->mesh().coordsys();
+      assert(0 != cs);
+
+      // Get density at quadrature points for this cell
+      const double_array& density = _material->calcDensity();
+
+      quadPtsGlobal = quadPtsNondim;
+      _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
+          lengthScale);
+
+      // Compute action for element body forces
+      for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
+        const int err = _gravityField->query(&gravVec[0], gravVec.size(),
+            &quadPtsGlobal[0], spaceDim, cs);
+        if (err)
+          throw std::runtime_error("Unable to get gravity vector for point.");
+        _normalizer->nondimensionalize(&gravVec[0], gravVec.size(),
+            gravityScale);
+        const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
+        for (int iBasis = 0, iQ = iQuad * numBasis; iBasis < numBasis; ++iBasis) {
+          const double valI = wt * basis[iQ + iBasis];
+          for (int iDim = 0; iDim < spaceDim; ++iDim) {
+            _cellVector[iBasis * spaceDim + iDim] += valI * gravVec[iDim];
+          } // for
+        } // for
+      } // for
+      PetscLogFlops(numQuadPts * (2 + numBasis * (1 + 2 * spaceDim)));
+      _logger->eventEnd(computeEvent);
+    } // if
 
     // Compute action for inertial terms
     _logger->eventBegin(computeEvent);
