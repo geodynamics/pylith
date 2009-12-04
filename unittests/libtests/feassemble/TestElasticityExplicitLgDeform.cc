@@ -12,9 +12,9 @@
 
 #include <portinfo>
 
-#include "TestElasticityImplicitLgDeform.hh" // Implementation of class methods
+#include "TestElasticityExplicitLgDeform.hh" // Implementation of class methods
 
-#include "pylith/feassemble/ElasticityImplicitLgDeform.hh" // USES ElasticityImplicitLgDeform
+#include "pylith/feassemble/ElasticityExplicitLgDeform.hh" // USES ElasticityExplicitLgDeform
 #include "data/IntegratorData.hh" // USES IntegratorData
 
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
@@ -33,7 +33,7 @@
 #include <math.h> // USES fabs()
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicitLgDeform );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicitLgDeform );
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
@@ -42,7 +42,7 @@ typedef pylith::topology::Mesh::RealSection RealSection;
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::feassemble::TestElasticityImplicitLgDeform::setUp(void)
+pylith::feassemble::TestElasticityExplicitLgDeform::setUp(void)
 { // setUp
   _quadrature = new Quadrature<topology::Mesh>();
   _data = 0;
@@ -53,7 +53,7 @@ pylith::feassemble::TestElasticityImplicitLgDeform::setUp(void)
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::feassemble::TestElasticityImplicitLgDeform::tearDown(void)
+pylith::feassemble::TestElasticityExplicitLgDeform::tearDown(void)
 { // tearDown
   delete _data; _data = 0;
   delete _quadrature; _quadrature = 0;
@@ -64,20 +64,20 @@ pylith::feassemble::TestElasticityImplicitLgDeform::tearDown(void)
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::feassemble::TestElasticityImplicitLgDeform::testConstructor(void)
+pylith::feassemble::TestElasticityExplicitLgDeform::testConstructor(void)
 { // testConstructor
-  ElasticityImplicitLgDeform integrator;
+  ElasticityExplicitLgDeform integrator;
 } // testConstructor
 
 // ----------------------------------------------------------------------
 // Test initialize().
 void 
-pylith::feassemble::TestElasticityImplicitLgDeform::testInitialize(void)
+pylith::feassemble::TestElasticityExplicitLgDeform::testInitialize(void)
 { // testInitialize
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;
-  ElasticityImplicitLgDeform integrator;
+  ElasticityExplicitLgDeform integrator;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
@@ -86,12 +86,12 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testInitialize(void)
 // ----------------------------------------------------------------------
 // Test integrateResidual().
 void
-pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateResidual(void)
+pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateResidual(void)
 { // testIntegrateResidual
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;
-  ElasticityImplicitLgDeform integrator;
+  ElasticityExplicitLgDeform integrator;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
@@ -126,12 +126,12 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateResidual(void)
 // ----------------------------------------------------------------------
 // Test integrateJacobian().
 void
-pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateJacobian(void)
+pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateJacobian(void)
 { // testIntegrateJacobian
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;
-  ElasticityImplicitLgDeform integrator;
+  ElasticityExplicitLgDeform integrator;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
   integrator._needNewJacobian = true;
@@ -184,12 +184,12 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateJacobian(void)
 // ----------------------------------------------------------------------
 // Test updateStateVars().
 void 
-pylith::feassemble::TestElasticityImplicitLgDeform::testUpdateStateVars(void)
+pylith::feassemble::TestElasticityExplicitLgDeform::testUpdateStateVars(void)
 { // testUpdateStateVars
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;
-  ElasticityImplicitLgDeform integrator;
+  ElasticityExplicitLgDeform integrator;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
@@ -200,9 +200,9 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testUpdateStateVars(void)
 // ----------------------------------------------------------------------
 // Initialize elasticity integrator.
 void
-pylith::feassemble::TestElasticityImplicitLgDeform::_initialize(
+pylith::feassemble::TestElasticityExplicitLgDeform::_initialize(
 					 topology::Mesh* mesh,
-					 ElasticityImplicitLgDeform* const integrator,
+					 ElasticityExplicitLgDeform* const integrator,
 					 topology::SolutionFields* fields)
 { // _initialize
   CPPUNIT_ASSERT(0 != mesh);
@@ -285,6 +285,7 @@ pylith::feassemble::TestElasticityImplicitLgDeform::_initialize(
   fields->add("residual", "residual");
   fields->add("disp(t)", "displacement");
   fields->add("dispIncr(t->t+dt)", "displacement_increment");
+  fields->add("disp(t-dt)", "displacement");
   fields->solutionName("dispIncr(t->t+dt)");
   
   topology::Field<topology::Mesh>& residual = fields->get("residual");
@@ -294,18 +295,23 @@ pylith::feassemble::TestElasticityImplicitLgDeform::_initialize(
   fields->copyLayout("residual");
 
   const int fieldSize = _data->spaceDim * _data->numVertices;
+  topology::Field<topology::Mesh>& dispIncr = fields->get("dispIncr(t->t+dt)");
   topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
+  topology::Field<topology::Mesh>& dispTmdt = fields->get("disp(t-dt)");
+  const ALE::Obj<RealSection>& dispIncrSection = dispIncr.section();
   const ALE::Obj<RealSection>& dispTSection = dispT.section();
+  const ALE::Obj<RealSection>& dispTmdtSection = dispTmdt.section();
+  CPPUNIT_ASSERT(!dispIncrSection.isNull());
   CPPUNIT_ASSERT(!dispTSection.isNull());
-  topology::Field<topology::Mesh>& dispTIncr = fields->get("dispIncr(t->t+dt)");
-  const ALE::Obj<RealSection>& dispTIncrSection = dispTIncr.section();
-  CPPUNIT_ASSERT(!dispTIncrSection.isNull());
+  CPPUNIT_ASSERT(!dispTmdtSection.isNull());
   const int offset = _data->numCells;
   for (int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
+    dispIncrSection->updatePoint(iVertex+offset,
+         &_data->fieldTIncr[iVertex*_data->spaceDim]);
     dispTSection->updatePoint(iVertex+offset, 
-			      &_data->fieldT[iVertex*_data->spaceDim]);
-    dispTIncrSection->updatePoint(iVertex+offset, 
-				  &_data->fieldTIncr[iVertex*_data->spaceDim]);
+            &_data->fieldT[iVertex*_data->spaceDim]);
+    dispTmdtSection->updatePoint(iVertex+offset,
+         &_data->fieldTmdt[iVertex*_data->spaceDim]);
   } // for
 } // _initialize
 

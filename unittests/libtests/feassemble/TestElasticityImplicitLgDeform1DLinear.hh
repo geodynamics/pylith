@@ -42,7 +42,6 @@ class pylith::feassemble::TestElasticityImplicitLgDeform1DLinear :
   CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST( testIntegrateJacobian );
   CPPUNIT_TEST( testUpdateStateVars );
-  CPPUNIT_TEST( testStableTimeStep );
 
   CPPUNIT_TEST_SUITE_END();
 
