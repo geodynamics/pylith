@@ -9,8 +9,11 @@ PyLith features:
     Point force
     Neumann
     Absorbing dampers
+    Body forces (2-D, 3-D)
   Faults
-
+    Kinematic
+    Dynamic
+  Large deformations
 
 
 ----------------------------------------------------------------------
@@ -68,6 +71,18 @@ quad4 (linear cells, plane strain)
 
   * dislocationdyn --TODO--
     [single fault, dynamic]
+
+  * lgdeformrigidbody --TODO--
+
+    - Dirichlet BC w/initial displacement, UniformDB
+      (rigid body translation and rotation)
+    - Large deformation
+
+  * lgdeformtraction --TODO--
+
+    - Dirichlet BC w/initial displacement, UniformDB
+    - Neuman BC w/initial value, UniformDB
+    - Large deformation
 
 tri3 (linear cells, plane stress)
 
