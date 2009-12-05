@@ -12,7 +12,8 @@
 
 SUBDIRS = \
 	1d \
-	2d
+	2d \
+	petsc
 
 
 # End of file 
