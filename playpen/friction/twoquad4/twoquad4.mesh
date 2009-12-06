@@ -124,9 +124,10 @@ mesh = {
   group = {
     name = y_pos
     type = vertices
-    count = 1
+    count = 2
     indices = {
-      3
+      1
+      5
     }
   }
 }
