@@ -12,20 +12,20 @@
 
 ## @file tests/2d/quad4/TestRigidBody.py
 ##
-## @brief Test suite for testing pylith with rigid body motion for
+## @brief Test suite for testing pylith with uniform tractions for
 ## large deformations in 2-D.
 
 import numpy
 from TestQuad4 import TestQuad4
-from rigidbody_soln import AnalyticalSoln
+from lgdeformtraction_soln import AnalyticalSoln
 from pylith.utils.VTKDataReader import has_vtk
 from pylith.utils.VTKDataReader import VTKDataReader
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
-class RigidBodyApp(PyLithApp):
+class TractionApp(PyLithApp):
   def __init__(self):
-    PyLithApp.__init__(self, name="lgdeformrigidbody")
+    PyLithApp.__init__(self, name="lgdeformtraction")
     return
 
 
@@ -35,21 +35,16 @@ def run_pylith():
   Run pylith.
   """
   if not "done" in dir(run_pylith):
-    # Generate spatial databases
-    from rigidbody_gendb import GenerateDB
-    db = GenerateDB()
-    db.run()
-
     # Run PyLith
-    app = RigidBodyApp()
+    app = TractionApp()
     app.run()
     run_pylith.done = True
   return
 
 
-class TestRigidBody(TestQuad4):
+class TestTraction(TestQuad4):
   """
-  Test suite for testing pylith with 2-D rigid body motion.
+  Test suite for testing pylith with 2-D axial tractions.
   """
 
   def setUp(self):
@@ -58,7 +53,7 @@ class TestRigidBody(TestQuad4):
     """
     TestQuad4.setUp(self)
     run_pylith()
-    self.outputRoot = "lgdeformrigidbody"
+    self.outputRoot = "lgdeformtraction"
     if has_vtk():
       self.reader = VTKDataReader()
       self.soln = AnalyticalSoln()
