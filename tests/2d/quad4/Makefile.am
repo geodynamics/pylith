@@ -28,6 +28,8 @@ dist_noinst_PYTHON = \
 	TestLgDeformRigidBody.py \
 	rigidbody_soln.py \
 	rigidbody_gendb.py \
+	TestLgDeformTraction.py \
+	lgdeformtraction_soln.py \
 	testpylith.py
 
 dist_noinst_DATA = \
@@ -59,7 +61,10 @@ noinst_TMP = \
 	rigidbody_disp.spatialdb \
 	lgdeformrigidbody_t0000000.vtk \
 	lgdeformrigidbody-elastic_info.vtk \
-	lgdeformrigidbody-elastic_t0000000.vtk
+	lgdeformrigidbody-elastic_t0000000.vtk \
+	lgdeformtraction_t0000000.vtk \
+	lgdeformtraction-elastic_info.vtk \
+	lgdeformtraction-elastic_t0000000.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)

@@ -35,6 +35,9 @@ def suite():
   from TestLgDeformRigidBody import TestRigidBody
   suite.addTest(unittest.makeSuite(TestRigidBody))
 
+  from TestLgDeformTraction import TestTraction
+  suite.addTest(unittest.makeSuite(TestTraction))
+
   return suite
 
 
