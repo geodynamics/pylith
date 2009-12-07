@@ -10,13 +10,13 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/2d/quad4/TestLgDeformTraction.py
+## @file tests/3dnew/hex8/TestLgDeformTraction.py
 ##
 ## @brief Test suite for testing pylith with uniform tractions for
-## large deformations in 2-D.
+## large deformations in 3-D.
 
 import numpy
-from TestQuad4 import TestQuad4
+from TestHex8 import TestHex8
 from lgdeformtraction_soln import AnalyticalSoln
 from pylith.utils.VTKDataReader import has_vtk
 from pylith.utils.VTKDataReader import VTKDataReader
@@ -42,16 +42,16 @@ def run_pylith():
   return
 
 
-class TestTraction(TestQuad4):
+class TestTraction(TestHex8):
   """
-  Test suite for testing pylith with 2-D axial tractions.
+  Test suite for testing pylith with 3-D axial tractions.
   """
 
   def setUp(self):
     """
     Setup for test.
     """
-    TestQuad4.setUp(self)
+    TestHex8.setUp(self)
     run_pylith()
     self.outputRoot = "lgdeformtraction"
     if has_vtk():

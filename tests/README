@@ -72,13 +72,13 @@ quad4 (linear cells, plane strain)
   * dislocationdyn --TODO--
     [single fault, dynamic]
 
-  * lgdeformrigidbody --TODO--
+  * lgdeformrigidbody --TODO-- (need higher precision output)
 
     - Dirichlet BC w/initial displacement, UniformDB
       (rigid body translation and rotation)
     - Large deformation
 
-  * lgdeformtraction --TODO--
+  * lgdeformtraction --TODO-- (need higher precision output)
 
     - Dirichlet BC w/initial displacement, UniformDB
     - Neuman BC w/initial value, UniformDB
@@ -114,4 +114,16 @@ tri3 (linear cells, plane stress)
 8. gravity w/initial stress and strain 
 
 Gravity with faults, Neumann BC.
+
+  * lgdeformrigidbody --TODO-- (need higher precision output)
+
+    - Dirichlet BC w/initial displacement, UniformDB
+      (rigid body translation and rotation)
+    - Large deformation
+
+  * lgdeformtraction --TODO-- (need higher precision output)
+
+    - Dirichlet BC w/initial displacement, UniformDB
+    - Neuman BC w/initial value, UniformDB
+    - Large deformation
 

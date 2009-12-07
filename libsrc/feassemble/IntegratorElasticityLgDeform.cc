@@ -386,12 +386,19 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual2D(
 	 iBasis < numBasis;
 	 ++iBasis) {
       const int iB = iBasis*spaceDim;
-      const double N1 = basisDeriv[iQ+iB  ];
-      const double N2 = basisDeriv[iQ+iB+1];
+      const double Nip = basisDeriv[iQ+iB  ];
+      const double Niq = basisDeriv[iQ+iB+1];
+
+      // Generated using Maxima (see jacobian2d_lgdeform.wxm)
       _cellVector[iB  ] -= 
-	wt*((1.0+l11)*N1*s11 + N2*l12*s22 + ((1.0+l11)*N2 + l12*N1)*s12);
+	wt*(l12*Niq*s22 + 
+	    ((l11+1)*Niq+l12*Nip)*s12 + 
+	    (l11+1)*Nip*s11);
+
       _cellVector[iB+1] -=
-	wt*(l21*N1*s11 + (1.0+l22)*N2*s22 + ((1.0+l22)*N1 + l21*N2)*s12);
+	wt*((l22+1)*Niq*s22 + 
+	    (l21*Niq+(l22+1)*Nip)*s12 + 
+	    l21*Nip*s11);
     } // for
   } // for
   PetscLogFlops(numQuadPts*(1+numBasis*(numBasis*8+14)));
@@ -452,25 +459,34 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual3D(
 	 iBasis < numBasis;
 	 ++iBasis) {
       const int iB = iBasis*spaceDim;
-      const double N1 = basisDeriv[iQ+iB  ];
-      const double N2 = basisDeriv[iQ+iB+1];
-      const double N3 = basisDeriv[iQ+iB+2];
+      const double Nip = basisDeriv[iQ+iB  ];
+      const double Niq = basisDeriv[iQ+iB+1];
+      const double Nir = basisDeriv[iQ+iB+2];
 
+      // Generated using Maxima (see jacobian3d_lgdeform.wxm)
       _cellVector[iB  ] -= 
-	wt*((1.0+l11)*N1*s11 + l12*N2*s22 + l13*N3*s33 +
-	    ((1.0+l11)*N2 + l12*N1)*s12 +
-	    (l12*N3 + l13*N2)*s23 +
-	    ((1.0+l11)*N3 + l13*N1)*s13);
+	wt*(l13*Nir*s33 + 
+	    (l12*Nir+l13*Niq)*s23 + 
+	    l12*Niq*s22 + 
+	    ((l11+1)*Nir + l13*Nip)*s13 + 
+	    ((l11+1)*Niq+l12*Nip)*s12 + 
+	    (l11+1)*Nip*s11);
+
       _cellVector[iB+1] -=
-	wt*(l21*N1*s11 + (1.0+l22)*N2*s22 + l23*N3*s33 +
-	    ((1.0+l22)*N1 + l21*N2)*s12 +
-	    ((1.0+l22)*N3 + l23*N2)*s23 +
-	    (l21*N3 + l23*N1)*s13);
+	wt*(l23*Nir*s33 + 
+	    ((l22+1)*Nir+l23*Niq)*s23 + 
+	    (l22+1)*Niq*s22 + 
+	    (l21*Nir+l23*Nip)*s13 + 
+	    (l21*Niq+(l22+1)*Nip)*s12 + 
+	    l21*Nip*s11);
+
       _cellVector[iB+2] -=
-	wt*(l31*N1*s11 + l32*N2*s22 + (1.0+l33)*N3*s33 +
-	    (l31*N2 + l32*N1)*s12 +
-	    ((1.0+l33)*N2 + l32*N3)*s23 +
-	    ((1.0+l33)*N1 + l31*N3)*s13);
+	wt*((l33+1)*Nir*s33 + 
+	    (l32*Nir+(l33+1)*Niq)*s23 + 
+	    l32*Niq*s22 + 
+	    (l31*Nir+(l33+1)*Nip)*s13 + 
+	    (l31*Niq+l32*Nip)*s12 + 
+	    l31*Nip*s11);
     } // for
   } // for
   PetscLogFlops(numQuadPts*(1+numBasis*(numBasis*18+3*27)));
@@ -668,6 +684,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(
 
   assert(3 == cellDim);
   assert(quadWts.size() == numQuadPts);
+  assert(6 == tensorSize);
   const int numConsts = 21;
 
   // Compute Jacobian for consistent tangent matrix

@@ -22,11 +22,6 @@ def check_displacements(testcase, filename, mesh):
   """
   data = testcase.reader.read(filename)
   
-  # Check cells
-  (ncells, ncorners) = data['cells'].shape
-  testcase.assertEqual(mesh['ncells'], ncells)
-  testcase.assertEqual(mesh['ncorners'], ncorners)
-
   # Check vertices
   (nvertices, spaceDim) = data['vertices'].shape
   testcase.assertEqual(mesh['nvertices'], nvertices)

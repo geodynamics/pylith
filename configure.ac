@@ -284,6 +284,7 @@ AC_CONFIG_FILES([Makefile
 		tests/2d/Makefile
 		tests/2d/tri3/Makefile
 		tests/2d/quad4/Makefile
+		tests/3dnew/hex8/Makefile
 		tests/petsc/Makefile
                 doc/Makefile
 		doc/developer/Makefile
