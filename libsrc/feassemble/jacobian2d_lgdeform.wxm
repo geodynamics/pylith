@@ -41,5 +41,13 @@ C: matrix([C1111, C1122, C1112],
 y: transpose(Bi) . C . Bj;
 /* [wxMaxima: input   end   ] */
 
+/* [wxMaxima: input   start ] */
+Svec: matrix([s11, s22, s12]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+r: transpose(Bi) . transpose(Svec);
+/* [wxMaxima: input   end   ] */
+
 /* Maxima can't load/batch files which end with a comment! */
 "Created with wxMaxima"$

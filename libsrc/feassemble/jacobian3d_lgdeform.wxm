@@ -1,5 +1,5 @@
 /* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
-/* [ Created with wxMaxima version 0.8.3a ] */
+/* [ Created with wxMaxima version 0.8.2 ] */
 
 /* [wxMaxima: input   start ] */
 Bnli: matrix([Nip,0,0],
@@ -70,6 +70,14 @@ C: matrix([C1111, C1122, C1133, C1112, C1123, C1113],
 
 /* [wxMaxima: input   start ] */
 y: transpose(Bi) . C . Bj;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Svec: matrix([s11,s22,s33,s12,s23,s13]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+r: transpose(Bi) . transpose(Svec);
 /* [wxMaxima: input   end   ] */
 
 /* Maxima can't load/batch files which end with a comment! */

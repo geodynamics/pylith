@@ -74,6 +74,8 @@ class VTKDataReader(object):
       raise ValueError("Expecting cells to all be the same type.")
     if cellId == 5: # tri3
       ncorners = 3
+    elif cellId == 12: # tri3
+      ncorners = 8
     elif cellId == 3: # line2
       ncorners = 2
     elif cellId == 9: # quad4
