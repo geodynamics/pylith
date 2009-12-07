@@ -28,15 +28,18 @@ surface 9 name "material_interface"
 webcut volume 1 with plane surface fault_surface
 webcut volume 1 with plane surface fault_surface_b
 webcut volume 1 with plane surface material_interface
-webcut volume 4 with plane surface material_interface
+webcut volume 5 with plane surface material_interface
+webcut volume 6 with plane surface material_interface
 volume 1 name "elastic_xpos"
-volume 1 name "elastic_xpos"
-volume 4 name "elastic_xneg"
-volume 5 name "visco_xpos"
-volume 6 name "visco_xneg"
+volume 6 name "elastic_mid"
+volume 5 name "elastic_xneg"
+volume 7 name "visco_xpos"
+volume 9 name "visco_mid"
+volume 8 name "visco_xneg"
 
 # ----------------------------------------------------------------------
 # Imprint all volumes, merging surfaces
 # ----------------------------------------------------------------------
 imprint all with volume all
 merge all
+
