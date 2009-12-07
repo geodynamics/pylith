@@ -32,14 +32,6 @@ Constitutive model parameters
   Rate- and state-friction with slip law
 
 ----------------------------------------------------------------------
-LARGE DEFORMATIONS
-----------------------------------------------------------------------
-
-C++ unit tests
-  Need to setup C++ files in libtests/feassemble
-  Need to setup test data for explicit
-
-----------------------------------------------------------------------
 LUMPED SOLVER
 ----------------------------------------------------------------------
 
