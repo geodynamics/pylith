@@ -6,20 +6,20 @@ playback 'geometry.jou'
 # ----------------------------------------------------------------------
 # Set discretization size
 # ----------------------------------------------------------------------
-surface all size 1000
+volume all size 1000
 
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
-surface all scheme submap
-mesh surface all
+volume all scheme submap
+mesh volume all
 
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
-block 1 volume 1 5 6 
+block 1 volume 1 5 6
 block 1 name "elastic"
-block 2 volume 7 9 8 
+block 2 volume 7 9 8
 block 2 name "viscoelastic"
 
 # ----------------------------------------------------------------------
@@ -105,4 +105,5 @@ nodeset 26 name "face zneg nofault"
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "mesh.exo" dimension 3 overwrite
+
 
