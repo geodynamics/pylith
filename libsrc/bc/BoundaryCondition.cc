@@ -47,6 +47,8 @@ pylith::bc::BoundaryCondition::verifyConfiguration(const topology::Mesh& mesh) c
   const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
 
+  std::cout << "HAS INT SECTION '" << _label << "': " << sieveMesh->hasIntSection(_label) << std::endl;
+
   if (!sieveMesh->hasIntSection(_label)) {
     std::ostringstream msg;
     msg << "Mesh missing group of vertices '" << _label
