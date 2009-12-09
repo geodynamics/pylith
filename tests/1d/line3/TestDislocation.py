@@ -89,7 +89,7 @@ class TestDislocation(TestLine3):
       return
 
     filename = "%s-fault_t0000000.vtk" % self.outputRoot
-    fields = ["cumulative_slip", "traction_change"]
+    fields = ["slip", "traction_change"]
     check_vertex_fields(self, filename, self.faultMesh, fields)
 
     return
@@ -163,7 +163,7 @@ class TestDislocation(TestLine3):
     elif name == "slip_time":
       field = slipTime*numpy.ones( (nvertices, 1), dtype=numpy.float64)
       
-    elif name == "cumulative_slip":
+    elif name == "slip":
       field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
       field[:,0] = finalSlip
 

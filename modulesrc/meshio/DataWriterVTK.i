@@ -63,6 +63,12 @@ namespace pylith {
        */
       void timeConstant(const double value);
       
+	  /** Set precision of floating point values in output.
+   	   *	
+       * @param value Precision for floating point values.
+       */
+  	  void precision(const int value);
+
       /** Prepare file for data at a new time step.
        *
        * @param t Time stamp for new data
