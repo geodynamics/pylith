@@ -28,17 +28,17 @@ p_lambda = p_density*p_vp**2 - 2*p_mu
 # Uniform stress field (plane strain)
 sxx0 = -100.0e+6
 syy0 = -10.0e+6
-ux = -12.6626
-uy = 3.37568
+ux = -12.6625644
+uy = 3.37567811
 
-sxx = -1.00159e+8
+sxx = -1.00158533e+8
 sxy = 0.0
-syy = -9.99578e+6
+syy = -9.99578218e+6
 szz = p_lambda/(2*p_lambda+2*p_mu)*(sxx+syy)
 
 # Uniform strain field
-exx = -0.00158157
-eyy = 0.000422049
+exx = -0.00158156790
+eyy = 0.000422048789
 ezz = 1.0/(2*p_mu) * (szz - p_lambda/(3*p_lambda+2*p_mu) * (sxx+syy+szz))
 
 exy = 1.0/(2*p_mu) * (sxy)

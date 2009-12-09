@@ -33,7 +33,7 @@ def check_properties(testcase, filename, mesh, properties):
   testcase.assertEqual(mesh['spaceDim'], spaceDim)
 
   # Check physical properties
-  tolerance = 1.0e-5
+  tolerance = 1.0e-6
 
   for name in properties.keys():
     propertyE = properties[name]

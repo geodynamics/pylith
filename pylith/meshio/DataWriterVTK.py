@@ -48,6 +48,11 @@ class DataWriterVTK(DataWriter):
                                             validator=pyre.inventory.greater(0.0*second))
   timeConstant.meta['tip'] = "Values used to normalize time stamp in filename."
 
+  precision = pyre.inventory.int("float_precision", default=6,
+                                 validator=pyre.inventory.greater(0))
+  precision.meta['tip'] = "Precision of floating point values in output."
+  
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="datawritervtk"):

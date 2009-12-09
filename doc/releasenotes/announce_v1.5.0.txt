@@ -1,0 +1,37 @@
+Greetings,
+
+I am pleased to announce the release of PyLith 1.5.0, a finite-element
+code designed to solve dynamic elastic problems and quasi-static
+viscoelastic problems in tectonic deformation.
+
+This release adds several new features to PyLith, including (1) fault
+friction with several widely-used fault constitutive models, (2) an
+optimized solver for explicit time-stepping with a lumped Jacobian
+sparse matrix, (3) Total Langrangian formulation for large
+deformations, (4) use of scientific notation in VTK output files with
+user-specified precision, (5) ??, (6) ??, and (7) ??. We encourage all
+users of previous PyLith releases to switch to this latest release.
+
+We strongly recommend all users of previous PyLith releases to switch
+to this latest release. Switching from v1.4.0 or v1.4.1 to v1.4.2 only
+requires changes to parameter files when using adaptive time stepping
+with a non-default stability factor (see the release notes below for
+details). See the README file for changes required to switch to the
+v1.4.x release series from previous versions.
+
+You can download the source code and binaries from
+
+    http://geodynamics.org/cig/software/packages/short/pylith
+
+Detailed installation instructions are in the User Manual with example
+installation procedures for a few platforms in the bundled doc/install
+directory.
+
+
+RELEASE NOTES
+
+ *
+
+ * Bug fixes
+
+  - 
