@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/utils/array.hh
+ * @file libsrc/utils/array.hh
  *
  * @brief Header file for PyLith array objects.
  *

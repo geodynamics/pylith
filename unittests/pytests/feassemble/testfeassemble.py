@@ -75,6 +75,12 @@ class TestApp(Script):
     from TestElasticityExplicit import TestElasticityExplicit
     suite.addTest(unittest.makeSuite(TestElasticityExplicit))
 
+    from TestElasticityImplicitLgDeform import TestElasticityImplicitLgDeform
+    suite.addTest(unittest.makeSuite(TestElasticityImplicitLgDeform))
+
+    from TestElasticityExplicitLgDeform import TestElasticityExplicitLgDeform
+    suite.addTest(unittest.makeSuite(TestElasticityExplicitLgDeform))
+
     return suite
 
 

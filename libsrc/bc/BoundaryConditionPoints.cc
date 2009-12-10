@@ -67,13 +67,14 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
 
-  const ALE::Obj<SieveMesh::int_section_type>& groupField = 
-    sieveMesh->getIntSection(_label);
-  if (groupField.isNull()) {
+  if (!sieveMesh->hasIntSection(_label)) {
     std::ostringstream msg;
     msg << "Could not find group of points '" << _label << "' in mesh.";
     throw std::runtime_error(msg.str());
   } // if
+
+  const ALE::Obj<SieveMesh::int_section_type>& groupField = 
+    sieveMesh->getIntSection(_label);
   assert(!groupField.isNull());
   const chart_type& chart = groupField->getChart();
   const chart_type::const_iterator& chartEnd = chart.end();

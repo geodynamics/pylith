@@ -11,10 +11,10 @@
 //
 
 /**
- * @file pylith/feassemble/GeometryPoint2D.hh
+ * @file libsrc/feassemble/GeometryPoint2D.hh
  *
  * @brief C++ implementation of cell geometry calculations for 0-D
- * point cell.
+ * point cell in 2-D space.
  */
 
 #if !defined(pylith_feassemble_geometrypoint2d_hh)
@@ -24,6 +24,7 @@
 #include "CellGeometry.hh" // ISA CellGeometry
 
 // GeometryPoint2D ------------------------------------------------------
+/// Cell geometry calculations for 0-D line cell in 2-D space.
 class pylith::feassemble::GeometryPoint2D : public CellGeometry
 { // GeometryPoint2D
 

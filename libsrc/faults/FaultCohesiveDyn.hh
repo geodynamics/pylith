@@ -14,10 +14,6 @@
  *
  * @brief C++ implementation for a fault surface with spontaneous
  * (dynamic) slip implemented with cohesive elements.
- *
- * The ordering of vertices in a cohesive cell is the vertices on the
- * POSITIVE/NEGATIVE (CHECK WHICH IT IS) side of the fault and then the
- * corresponding entries on the other side of the fault.
  */
 
 #if !defined(pylith_faults_faultcohesivedyn_hh)
@@ -27,6 +23,14 @@
 #include "FaultCohesive.hh" // ISA FaultCohesive
 
 // FaultCohesiveDyn -----------------------------------------------------
+/** 
+ * @brief C++ implementation for a fault surface with spontaneous
+ * (dynamic) slip implemented with cohesive elements.
+ *
+ * The ordering of vertices in a cohesive cell is the vertices on the
+ * negative side of the fault and then the corresponding entries on
+ * the positive side of the fault.
+ */
 class pylith::faults::FaultCohesiveDyn : public FaultCohesive
 { // class FaultCohesiveDyn
   friend class TestFaultCohesiveDyn; // unit testing
@@ -44,6 +48,11 @@ public :
   /// Deallocate PETSc and local data structures.
   virtual
   void deallocate(void);
+
+  /** Sets the spatial database for the inital tractions
+   * @param dbs spatial database for initial tractions
+   */
+  void dbInitial(spatialdata::spatialdb::SpatialDB* dbs);
   
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
@@ -116,6 +125,36 @@ public :
    */
   bool useLagrangeConstraints(void) const;
 
+  // PRIVATE METHODS ////////////////////////////////////////////////////
+private :
+
+  /** Calculate orientation at quadrature points.
+   *
+   * @param upDir Direction perpendicular to along-strike direction that is 
+   *   not collinear with fault normal (usually "up" direction but could 
+   *   be up-dip direction; only applies to fault surfaces in a 3-D domain).
+   * @param normalDir General preferred direction for fault normal
+   *   (used to pick which of two possible normal directions for
+   *   interface; only applies to fault surfaces in a 3-D domain).
+   */
+  void _calcOrientation(const double upDir[3],
+			const double normalDir[3]);
+
+  /** Get initial tractions using a spatial database.
+   */
+  void _getInitialTractions(void);
+
+  /** Setup fault constitutive model.
+   */
+  void _initConstitutiveModel(void);
+
+  // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private :
+
+  /// Database for initial tractions.
+  spatialdata::spatialdb::SpatialDB* _dbInitial;
+
+
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
@@ -124,9 +163,6 @@ private :
 
   /// Not implemented
   const FaultCohesiveDyn& operator=(const FaultCohesiveDyn&);
-
-  // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private :
 
 }; // class FaultCohesiveDyn
 

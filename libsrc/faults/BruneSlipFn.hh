@@ -13,12 +13,6 @@
 /** @file libsrc/faults/BruneSlipFn.hh
  *
  * @brief C++ implementation of Brune slip time function.
- *
- * Slip time function follows the integral of Brune's (1970) far-field
- * time function.
- *
- * Normalize slip = 1 - exp(-t/tau)(1 + t/tau),
- * where tau = finalSlip / (exp(1.0) * peakRate)
  */
 
 #if !defined(pylith_faults_bruneslipfn_hh)
@@ -32,6 +26,14 @@
 #include "pylith/utils/array.hh" // HASA double_array
 
 // BruneSlipFn ----------------------------------------------------------
+/** @brief Brune slip-time function.
+ *
+ * Slip time function follows the integral of Brune's (1970) far-field
+ * time function.
+ *
+ * Normalize slip = 1 - exp(-t/tau)(1 + t/tau),
+ * where tau = finalSlip / (exp(1.0) * peakRate)
+ */
 class pylith::faults::BruneSlipFn : public SlipTimeFn
 { // class BruneSlipFn
   friend class TestBruneSlipFn; // unit testing

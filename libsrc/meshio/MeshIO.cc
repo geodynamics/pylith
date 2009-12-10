@@ -290,6 +290,13 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   assert(!sieveMesh.isNull());
 
+  if (sieveMesh->hasIntSection(name)) {
+    std::ostringstream msg;
+    msg << "Could not setup group '" << name
+	<< "'. Group already exists in mesh.";
+    throw std::runtime_error(msg.str());
+  } // if
+
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("VertexGroups");
   const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(name);
@@ -395,6 +402,13 @@ pylith::meshio::MeshIO::_getGroup(int_array* points,
 
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   assert(!sieveMesh.isNull());
+
+  if (!sieveMesh->hasIntSection(name)) {
+    std::ostringstream msg;
+    msg << "Could not get group '" << name
+	<< "'. Group missing from mesh.";
+    throw std::runtime_error(msg.str());
+  } // if
 
   const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(name);
   assert(!groupField.isNull());

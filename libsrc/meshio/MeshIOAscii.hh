@@ -28,6 +28,7 @@
 #include <string> // HASA std::string
 
 // MeshIOAscii ----------------------------------------------------------
+/// C++ input/output manager for PyLith ASCII mesh files.
 class pylith::meshio::MeshIOAscii : public MeshIO
 { // MeshIOAscii
   friend class TestMeshIOAscii; // unit testing

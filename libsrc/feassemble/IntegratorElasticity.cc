@@ -759,6 +759,38 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian1D(
 } // _elasticityJacobian1D
 
 // ----------------------------------------------------------------------
+// Integrate laplacian term in Jacobian preconditioner for 1-D cells.
+void
+pylith::feassemble::IntegratorElasticity::_elasticityPrecon1D(
+			       const double_array& elasticConsts)
+{ // _elasticityPrecon1D
+  const int numQuadPts = _quadrature->numQuadPts();
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const int cellDim = _quadrature->cellDim();
+  const double_array& quadWts = _quadrature->quadWts();
+  const double_array& jacobianDet = _quadrature->jacobianDet();
+  const double_array& basisDeriv = _quadrature->basisDeriv();
+  
+  assert(1 == cellDim);
+  assert(quadWts.size() == numQuadPts);
+  
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+    for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
+      const double valI = wt*basisDeriv[iQ+iBasis];
+      for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+        const double valIJ = valI * basisDeriv[iQ+jBasis];
+        const int iBlock = iBasis*spaceDim * (numBasis*spaceDim);
+        const int jBlock = jBasis*spaceDim;
+        _cellMatrix[iBlock+jBlock] += valIJ;
+      } // for
+    } // for
+  } // for
+  PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*2)));
+} // _elasticityPrecon1D
+
+// ----------------------------------------------------------------------
 // Integrate elasticity term in Jacobian for 2-D cells.
 void
 pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(
@@ -821,6 +853,49 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(
   } // for
   PetscLogFlops(numQuadPts*(1+numBasis*(2+numBasis*(3*11+4))));
 } // _elasticityJacobian2D
+
+// ----------------------------------------------------------------------
+// Integrate laplacian term in Jacobian preconditioner for 2-D cells.
+void
+pylith::feassemble::IntegratorElasticity::_elasticityPrecon2D(
+			       const double_array& elasticConsts)
+{ // _elasticityPrecon2D
+  const int numQuadPts = _quadrature->numQuadPts();
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const int cellDim = _quadrature->cellDim();
+  const double_array& quadWts = _quadrature->quadWts();
+  const double_array& jacobianDet = _quadrature->jacobianDet();
+  const double_array& basisDeriv = _quadrature->basisDeriv();
+
+  assert(2 == cellDim);
+  assert(quadWts.size() == numQuadPts);
+  const int numConsts = 6;
+
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+    // Delta_ij = C_ijkl * e_kl
+    //        = C_ijlk * 0.5 (u_k,l + u_l,k)
+    //        = 0.5 * C_ijkl * (u_k,l + u_l,k)
+    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
+	 iBasis < numBasis;
+	 ++iBasis) {
+      const double Nip  = wt*basisDeriv[iQ+iBasis*spaceDim  ];
+      const double Niq  = wt*basisDeriv[iQ+iBasis*spaceDim+1];
+      const int iBlock  = (iBasis*spaceDim  ) * (numBasis*spaceDim);
+      const int iBlock1 = (iBasis*spaceDim+1) * (numBasis*spaceDim);
+      for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+        const double Njp  = basisDeriv[iQ+jBasis*spaceDim  ];
+        const double Njq  = basisDeriv[iQ+jBasis*spaceDim+1];
+        const int jBlock  = (jBasis*spaceDim  );
+        const int jBlock1 = (jBasis*spaceDim+1);
+        _cellMatrix[iBlock +jBlock ] += Nip*Njp;
+        _cellMatrix[iBlock1+jBlock1] += Niq*Njq;
+      } // for
+    } // for
+  } // for
+  PetscLogFlops(numQuadPts*(1+numBasis*(2+numBasis*(4))));
+} // _elasticityPrecon2D
 
 // ----------------------------------------------------------------------
 // Integrate elasticity term in Jacobian for 3-D cells.
@@ -934,6 +1009,52 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
   } // for
   PetscLogFlops(numQuadPts*(1+numBasis*(3+numBasis*(6*26+9))));
 } // _elasticityJacobian3D
+
+// ----------------------------------------------------------------------
+// Integrate laplacian term in Jacobian preconditioner for 3-D cells.
+void
+pylith::feassemble::IntegratorElasticity::_elasticityPrecon3D(
+			       const double_array& elasticConsts)
+{ // _elasticityPrecon3D
+  const int numQuadPts = _quadrature->numQuadPts();
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const int cellDim = _quadrature->cellDim();
+  const double_array& quadWts = _quadrature->quadWts();
+  const double_array& jacobianDet = _quadrature->jacobianDet();
+  const double_array& basisDeriv = _quadrature->basisDeriv();
+  
+  assert(3 == cellDim);
+  assert(quadWts.size() == numQuadPts);
+  const int numConsts = 21;
+
+  // Compute Jacobian for consistent tangent matrix
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
+	 iBasis < numBasis;
+	 ++iBasis) {
+      const double Nip = wt*basisDeriv[iQ+iBasis*spaceDim+0];
+      const double Niq = wt*basisDeriv[iQ+iBasis*spaceDim+1];
+      const double Nir = wt*basisDeriv[iQ+iBasis*spaceDim+2];
+      for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+        const double Njp = basisDeriv[iQ+jBasis*spaceDim+0];
+        const double Njq = basisDeriv[iQ+jBasis*spaceDim+1];
+        const double Njr = basisDeriv[iQ+jBasis*spaceDim+2];
+        const int iBlock = iBasis*spaceDim * (numBasis*spaceDim);
+        const int iBlock1 = (iBasis*spaceDim+1) * (numBasis*spaceDim);
+        const int iBlock2 = (iBasis*spaceDim+2) * (numBasis*spaceDim);
+        const int jBlock = jBasis*spaceDim;
+        const int jBlock1 = jBasis*spaceDim+1;
+        const int jBlock2 = jBasis*spaceDim+2;
+        _cellMatrix[iBlock +jBlock ] += Nip*Njp;
+        _cellMatrix[iBlock1+jBlock1] += Niq*Njq;
+        _cellMatrix[iBlock2+jBlock2] += Nir*Njr;
+      } // for
+    } // for
+  } // for
+  PetscLogFlops(numQuadPts*(1+numBasis*(3+numBasis*(6))));
+} // _elasticityPrecon3D
 
 // ----------------------------------------------------------------------
 void

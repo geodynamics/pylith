@@ -11,9 +11,20 @@
 //
 
 /**
- * @file pylith/feassemble/ElasticityExplicit.hh
+ * @file libsrc/feassemble/ElasticityExplicit.hh
  *
  * @brief Explicit time integration of dynamic elasticity equation
+ * using finite-elements.
+ */
+
+#if !defined(pylith_feassemble_elasticityexplicit_hh)
+#define pylith_feassemble_elasticityexplicit_hh
+
+// Include directives ---------------------------------------------------
+#include "IntegratorElasticity.hh" // ISA IntegratorElasticity
+
+// ElasticityExplicit ---------------------------------------------------
+/**@brief Explicit time integration of the dynamic elasticity equation
  * using finite-elements.
  *
  * Note: This object operates on a single finite-element family, which
@@ -22,9 +33,9 @@
  *
  * Computes contributions to terms A and r in
  *
- * A(t) u(t+dt) = b(u(t), u(t-dt)),
+ * A(t+dt) du(t) = b(t+dt, u(t), u(t-dt)) - A(t+dt) u(t),
  *
- * r = b - A u0(t+dt)
+ * r(t+dt) = b(t+dt) - A(t+dt) (u(t) + du(t))
  *
  * where A(t) is a sparse matrix or vector, u(t+dt) is the field we
  * want to compute at time t+dt, b is a vector that depends on the
@@ -50,15 +61,7 @@
  *
  * See governing equations section of user manual for more
  * information.
- */
-
-#if !defined(pylith_feassemble_elasticityexplicit_hh)
-#define pylith_feassemble_elasticityexplicit_hh
-
-// Include directives ---------------------------------------------------
-#include "IntegratorElasticity.hh" // ISA IntegratorElasticity
-
-// ElasticityExplicit ---------------------------------------------------
+*/
 class pylith::feassemble::ElasticityExplicit : public IntegratorElasticity
 { // ElasticityExplicit
   friend class TestElasticityExplicit; // unit testing
@@ -106,6 +109,17 @@ public :
    * @param fields Solution fields
    */
   void integrateJacobian(topology::Jacobian* jacobian,
+			 const double t,
+			 topology::SolutionFields* const fields);
+
+  /** Integrate contributions to Jacobian matrix (A) associated with
+   * operator.
+   *
+   * @param jacobian Diagonal matrix (as field) for Jacobian of system.
+   * @param t Current time
+   * @param fields Solution fields
+   */
+  void integrateJacobian(const topology::Field<topology::Mesh>& jacobian,
 			 const double t,
 			 topology::SolutionFields* const fields);
 

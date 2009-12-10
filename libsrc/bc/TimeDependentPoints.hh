@@ -26,6 +26,7 @@
 #include "pylith/utils/array.hh" // HASA int_array
 
 // TimeDependentPoints ------------------------------------------------------
+/// Time dependent boundary conditions applied to a set of vertices.
 class pylith::bc::TimeDependentPoints : public BoundaryConditionPoints, 
 					public TimeDependent
 { // class TimeDependentPoints

@@ -11,6 +11,7 @@
 #
 
 dist_noinst_DATA = \
+	slipfn.timedb \
 	bulkprops_1d.spatialdb \
 	bulkprops_2d.spatialdb \
 	bulkprops_3d.spatialdb \

@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/utils/macrodefs.hh
+ * @file libsrc/utils/constdefs.h
  *
  * @brief Macro definitions for PyLith.
  */

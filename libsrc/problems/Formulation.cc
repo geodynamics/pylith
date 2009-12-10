@@ -30,6 +30,7 @@ pylith::problems::Formulation::Formulation(void) :
   _t(0.0),
   _dt(0.0),
   _jacobian(0),
+  _jacobianLumped(0),
   _fields(0)
 { // constructor
 } // constructor
@@ -47,6 +48,7 @@ void
 pylith::problems::Formulation::deallocate(void)
 { // deallocate
   _jacobian = 0; // :TODO: Use shared pointer.
+  _jacobianLumped = 0; // :TODO: Use shared pointer.
   _fields = 0; // :TODO: Use shared pointer.
 } // deallocate
   
@@ -98,6 +100,25 @@ pylith::problems::Formulation::updateSettings(topology::Jacobian* jacobian,
   assert(dt > 0.0);
 
   _jacobian = jacobian;
+  _fields = fields;
+  _t = t;
+  _dt = dt;
+} // updateSettings
+
+// ----------------------------------------------------------------------
+// Update handles and parameters for reforming the Jacobian and
+// residual.
+void
+pylith::problems::Formulation::updateSettings(topology::Field<topology::Mesh>* jacobian,
+					      topology::SolutionFields* fields,
+					      const double t,
+					      const double dt)
+{ // updateSettings
+  assert(0 != jacobian);
+  assert(0 != fields);
+  assert(dt > 0.0);
+
+  _jacobianLumped = jacobian;
   _fields = fields;
   _t = t;
   _dt = dt;
@@ -194,7 +215,106 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
   
   // Assemble jacobian.
   _jacobian->assemble("final_assembly");
+
+  // Extract diagonal :KLUDGE: We extract the diagonal even if we
+  // don't need to.
+  if (!_fields->hasField("Jacobian diagonal")) {
+    _fields->add("Jacobian diagonal", "jacobian_diagonal");
+    topology::Field<topology::Mesh>& jacobianDiag = 
+      _fields->get("Jacobian diagonal");
+    const topology::Field<topology::Mesh>& disp = 
+      _fields->get("disp(t)");
+    jacobianDiag.cloneSection(disp);
+    jacobianDiag.createVector();
+    jacobianDiag.createScatter();
+  } // if
+  topology::Field<topology::Mesh>& jacobianDiag = 
+    _fields->get("Jacobian diagonal");
+  MatGetDiagonal(_jacobian->matrix(), jacobianDiag.vector());
+  jacobianDiag.scatterVectorToSection();  
 } // reformJacobian
+
+// ----------------------------------------------------------------------
+// Reform system Jacobian.
+void
+pylith::problems::Formulation::reformJacobianLumped(void)
+{ // reformJacobian
+  assert(0 != _jacobianLumped);
+  assert(0 != _fields);
+
+  // Set jacobian to zero.
+  _jacobianLumped->zero();
+
+  // Add in contributions that require assembly.
+  int numIntegrators = _meshIntegrators.size();
+  for (int i=0; i < numIntegrators; ++i)
+    _meshIntegrators[i]->integrateJacobian(*_jacobianLumped, _t, _fields);
+  numIntegrators = _submeshIntegrators.size();
+  for (int i=0; i < numIntegrators; ++i)
+    _submeshIntegrators[i]->integrateJacobian(*_jacobianLumped, _t, _fields);
+  
+  // Assemble jacbian.
+  _jacobianLumped->complete();
+
+  // Add in contributions that do not require assembly.
+  numIntegrators = _meshIntegrators.size();
+  for (int i=0; i < numIntegrators; ++i)
+    _meshIntegrators[i]->integrateJacobianAssembled(*_jacobianLumped, 
+						    _t, _fields);
+  numIntegrators = _submeshIntegrators.size();
+  for (int i=0; i < numIntegrators; ++i)
+    _submeshIntegrators[i]->integrateJacobianAssembled(*_jacobianLumped,
+						       _t, _fields);
+
+} // reformJacobian
+
+// ----------------------------------------------------------------------
+// Constrain solution space.
+void
+pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec)
+{ // constrainSolnSpace
+  assert(0 != tmpSolutionVec);
+  assert(0 != _fields);
+
+  // Update section view of field.
+  if (0 != tmpSolutionVec) {
+    topology::Field<topology::Mesh>& solution = _fields->solution();
+    solution.scatterVectorToSection(*tmpSolutionVec);
+  } // if
+
+  int numIntegrators = _meshIntegrators.size();
+  assert(numIntegrators > 0); // must have at least 1 bulk integrator
+  for (int i=0; i < numIntegrators; ++i) {
+    _meshIntegrators[i]->timeStep(_dt);
+    _meshIntegrators[i]->constrainSolnSpace(_fields, _t, *_jacobian);
+  } // for
+  numIntegrators = _submeshIntegrators.size();
+  for (int i=0; i < numIntegrators; ++i) {
+    _submeshIntegrators[i]->timeStep(_dt);
+    _submeshIntegrators[i]->constrainSolnSpace(_fields, _t, *_jacobian);
+  } // for
+
+  // Update PETScVec of solution for changes to Lagrange multipliers.
+  if (0 != tmpSolutionVec) {
+    topology::Field<topology::Mesh>& solution = _fields->solution();
+    solution.scatterSectionToVector(*tmpSolutionVec);
+  } // if
+} // constrainSolnSpace
+
+// ----------------------------------------------------------------------
+// Adjust solution from solver with lumped Jacobian to match Lagrange
+//  multiplier constraints.
+void
+pylith::problems::Formulation::adjustSolnLumped(void)
+{ // adjustSolnLumped
+  int numIntegrators = _meshIntegrators.size();
+  for (int i=0; i < numIntegrators; ++i)
+    _meshIntegrators[i]->adjustSolnLumped(_fields, *_jacobianLumped);
+
+  numIntegrators = _submeshIntegrators.size();
+  for (int i=0; i < numIntegrators; ++i)
+    _submeshIntegrators[i]->adjustSolnLumped(_fields, *_jacobianLumped);
+} // adjustSolnLumped
 
 
 // End of file 

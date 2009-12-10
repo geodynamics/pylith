@@ -12,9 +12,8 @@
 
 /** @file libsrc/materials/ElasticMaterial.hh
  *
- * @brief C++ ElasticMaterial object
- *
- * Interface definition for linear and nonlinear elastic materials.
+ * @brief Interface definition for linear and nonlinear elastic
+ * materials.
  */
 
 #if !defined(pylith_materials_elasticmaterial_hh)
@@ -24,6 +23,9 @@
 #include "Material.hh" // ISA Material
 
 // ElasticMaterial ------------------------------------------------------
+/** @brief Interface definition for linear and nonlinear elastic
+ *  materials.
+ */
 class pylith::materials::ElasticMaterial : public Material
 { // class ElasticMaterial
   friend class TestElasticMaterial; ///< unit testing

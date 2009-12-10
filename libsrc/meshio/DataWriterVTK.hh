@@ -11,9 +11,9 @@
 //
 
 /**
- * @file pylith/meshio/DataWriterVTK.hh
+ * @file libsrc/meshio/DataWriterVTK.hh
  *
- * @brief Abstract base class for writing finite-element data to file.
+ * @brief Object for writing finite-element data to VTK file.
  */
 
 #if !defined(pylith_meshio_datawritervtk_hh)
@@ -23,6 +23,7 @@
 #include "DataWriter.hh" // ISA DataWriter
 
 // DataWriterVTK --------------------------------------------------------
+/// Object for writing finite-element data to VTK file.
 template<typename mesh_type, typename field_type>
 class pylith::meshio::DataWriterVTK : public DataWriter<mesh_type,field_type>
 { // DataWriterVTK
@@ -69,6 +70,12 @@ public :
    * filename.
    */
   void timeConstant(const double value);
+
+  /** Set precision of floating point values in output.
+   *
+   * @param value Precision for floating point values.
+   */
+  void precision(const int value);
 
   /** Prepare file for data at a new time step.
    *
@@ -139,6 +146,8 @@ private :
   std::string _timeFormat; ///< C style time format for time stamp.
 
   PetscViewer _viewer; ///< Output file
+
+  int _precision; ///< Precision of floating point values in output.
 
   bool _wroteVertexHeader; ///< True if wrote header for vertex data.
   bool _wroteCellHeader; ///< True if wrote header for cell data

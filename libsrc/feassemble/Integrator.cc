@@ -153,5 +153,34 @@ pylith::feassemble::Integrator<quadrature_type>::_resetCellMatrix(void)
   _cellMatrix = 0.0;
 } // _resetCellMatrix
 
+// ----------------------------------------------------------------------
+// Lump cell matrix, putting the result in the cell vector using
+// equivalent forces for rigid body motion.
+template<typename quadrature_type>
+void
+pylith::feassemble::Integrator<quadrature_type>::_lumpCellMatrix(void)
+{ // _lumpCellMatrix
+  assert(0 != _quadrature);
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+
+  _cellVector = 0.0;
+  double value = 0.0;
+  for (int iBasis=0; iBasis < numBasis; ++iBasis)
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      value = 0.0;
+      const int indexR = (iBasis*spaceDim+iDim) * numBasis * spaceDim;
+      for (int jBasis=0; jBasis < numBasis; ++jBasis)
+	value += _cellMatrix[indexR+jBasis*spaceDim+iDim];
+      if (value < 0.0) {
+	throw std::runtime_error("Negative diagonal entry computed when "
+				 "lumping Jacobian matrix.");
+      } // for
+      _cellVector[iBasis*spaceDim+iDim] = value;
+    } // for
+
+  PetscLogFlops(numBasis*numBasis*spaceDim);
+} // _lumpCellMatrix
+
 
 // End of file 

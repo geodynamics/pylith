@@ -11,7 +11,7 @@
 //
 
 /**
- * @file libsrc/topology/GMVFileAscii.hh
+ * @file libsrc/meshio/GMVFileAscii.hh
  *
  * @brief C++ object for input/output of LaGriT ASCII GMV files.
  */
@@ -26,6 +26,7 @@
 #include <iosfwd>
 
 // GMVFileAscii ---------------------------------------------------------
+/// C++ object for input/output of LaGriT ASCII GMV files.
 class pylith::meshio::GMVFileAscii : public GMVFile
 { // GMVFileAscii
 

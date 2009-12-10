@@ -40,6 +40,7 @@ class pylith::bc::TestAbsorbingDampersHex8 : public TestAbsorbingDampers
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST( testIntegrateJacobian );
+  CPPUNIT_TEST( testIntegrateJacobianLumped );
 
   CPPUNIT_TEST_SUITE_END();
 

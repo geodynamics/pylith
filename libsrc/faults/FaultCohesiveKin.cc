@@ -135,13 +135,6 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
   slip.vectorFieldType(topology::FieldBase::VECTOR);
   slip.scale(_normalizer->lengthScale());
 
-  // Allocate cumulative slip field
-  _fields->add("cumulative slip", "cumulative_slip");
-  topology::Field<topology::SubMesh>& cumSlip = _fields->get("cumulative slip");
-  cumSlip.cloneSection(slip);
-  cumSlip.vectorFieldType(topology::FieldBase::VECTOR);
-  cumSlip.scale(_normalizer->lengthScale());
-
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
     faultSieveMesh->heightStratum(0);
   assert(!cells.isNull());
@@ -225,8 +218,8 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   // vertex k make 2 contributions to the residual:
   //
   //   * DOF i and j: internal forces in soln field associated with 
-  //                  slip
-  //   * DOF k: slip values
+  //                  slip  -[C]^T{L(t)+dL(t)}
+  //   * DOF k: slip values  -[C]{u(t)+dt(t)}
 
   // Get cell information and setup storage for cell data
   const int spaceDim = _quadrature->spaceDim();
@@ -434,11 +427,9 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(
   assert(0 != _fields);
 
   // Cohesive cells with normal vertices i and j, and constraint
-  // vertex k make 2 contributions to the residual:
+  // vertex k make contributions to the assembled residual:
   //
-  //   * DOF i and j: internal forces in soln field associated with 
-  //                  slip
-  //   * DOF k: slip values
+  //   * DOF k: slip values {D(t+dt)}
 
   topology::Field<topology::SubMesh>& slip = _fields->get("slip");
   slip.zero();
@@ -502,8 +493,6 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
   assert(0 != jacobian);
   assert(0 != fields);
   assert(0 != _fields);
-
-  typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> visitor_type;
 
   // Add constraint information to Jacobian matrix; these are the
   // direction cosines. Entries are associated with vertices ik, jk,
@@ -639,20 +628,463 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
 } // integrateJacobianAssembled
   
 // ----------------------------------------------------------------------
+// Compute Jacobian matrix (A) associated with operator that do not
+// require assembly across cells, vertices, or processors.
+void
+pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
+				    topology::Field<topology::Mesh>& jacobian,
+				    const double t,
+				    topology::SolutionFields* const fields)
+{ // integrateJacobianAssembled
+  assert(0 != fields);
+  assert(0 != _fields);
+
+  // Add ones to diagonal Jacobian matrix (as field) for
+  // convenience. Instead of including the constraints in the Jacobian
+  // matrix, we adjust the solution to account for the Lagrange
+  // multipliers as part of the solve.
+
+  // Get domain Sieve mesh
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+
+  // Get fault Sieve mesh
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const SieveSubMesh::label_sequence::iterator verticesBegin = 
+    vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  SieveSubMesh::renumbering_type& renumbering = 
+    faultSieveMesh->getRenumbering();
+  const SieveSubMesh::renumbering_type::const_iterator renumberingEnd =
+    renumbering.end();
+
+  // Get section information
+  const int spaceDim = _quadrature->spaceDim();
+  double_array jacobianVertex(spaceDim);
+  jacobianVertex = 1.0;
+  const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
+  assert(!jacobianSection.isNull());  
+  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin; 
+       v_iter != verticesEnd;
+       ++v_iter)
+    if (renumbering.find(*v_iter) != renumberingEnd) {
+      assert(jacobianSection->getFiberDimension(*v_iter) == spaceDim);
+      jacobianSection->updatePoint(*v_iter, &jacobianVertex[0]);
+    } // if
+
+  PetscLogFlops(0);
+
+  _needNewJacobian = false;
+} // integrateJacobianAssembled
+  
+// ----------------------------------------------------------------------
 // Update state variables as needed.
 void
-pylith::faults::FaultCohesiveKin::updateStateVars(const double t,
-		       topology::SolutionFields* const fields)
+pylith::faults::FaultCohesiveKin::updateStateVars(
+				     const double t,
+				     topology::SolutionFields* const fields)
 { // updateStateVars
   assert(0 != fields);
   assert(0 != _fields);
 
-  // Update cumulative slip
-  topology::Field<topology::SubMesh>& cumSlip = _fields->get("cumulative slip");
-  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  cumSlip.zero();
-  cumSlip += slip;
 } // updateStateVars
+
+// ----------------------------------------------------------------------
+// Adjust solution from solver with lumped Jacobian to match Lagrange
+// multiplier constraints.
+void
+pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* const fields,
+			const topology::Field<topology::Mesh>& jacobian)
+{ // adjustSolnLumped
+  assert(0 != fields);
+  assert(0 != _quadrature);
+
+  // Cohesive cells with conventional vertices i and j, and constraint
+  // vertex k require 2 adjustments to the solution:
+  //
+  //   * DOF k: Compute increment in Lagrange multipliers
+  //            dl_k = 1/(A_i+A_j) (C_ki A_j r_i - C_kj A_i r_j)
+  //                   - A_i A_j / (A_i+A_j) d_k
+  //   * DOF i and j: Adjust displacement increment (solution) to account
+  //            for Lagrange multiplier constraints
+  //            du_i = -A_i^-1 C_ki^T dlk
+  //            du_j = +A_j^-1 C_kj^T dlk
+
+  // Get cell information and setup storage for cell data
+  const int spaceDim = _quadrature->spaceDim();
+  const int orientationSize = spaceDim*spaceDim;
+  const int numBasis = _quadrature->numBasis();
+  const int numConstraintVert = numBasis;
+  const int numCorners = 3*numConstraintVert; // cohesive cell
+  const int numQuadPts = _quadrature->numQuadPts();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
+
+  // Get cohesive cells
+  const ALE::Obj<SieveMesh>& sieveMesh = 
+    fields->get("dispIncr(t->t+dt)").mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cellsCohesive = 
+    sieveMesh->getLabelStratum("material-id", id());
+  assert(!cellsCohesive.isNull());
+  const SieveMesh::label_sequence::iterator cellsCohesiveBegin =
+    cellsCohesive->begin();
+  const SieveMesh::label_sequence::iterator cellsCohesiveEnd =
+    cellsCohesive->end();
+  const int cellsCohesiveSize = cellsCohesive->size();
+
+  // Get fault Sieve mesh
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+
+  // Get section information
+  double_array orientationCell(numConstraintVert*orientationSize);
+  const ALE::Obj<RealSection>& orientationSection = 
+    _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
+  topology::Mesh::RestrictVisitor orientationVisitor(*orientationSection,
+						     orientationCell.size(),
+						     &orientationCell[0]);
+
+  double_array slipCell(numConstraintVert*spaceDim);
+  const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
+  assert(!slipSection.isNull());
+  topology::Mesh::RestrictVisitor slipVisitor(*slipSection,
+					      slipCell.size(),
+					      &slipCell[0]);
+
+  // Tributary area for the current for each vertex.
+  double_array areaVertexCell(numConstraintVert);
+  // Total fault area associated with each vertex (assembled over all cells).
+  double_array areaCell(numConstraintVert);
+  const ALE::Obj<RealSection>& areaSection = 
+    _fields->get("area").section();
+  assert(!areaSection.isNull());
+  topology::Mesh::RestrictVisitor areaVisitor(*areaSection,
+					      areaCell.size(), &areaCell[0]);
+
+  double_array jacobianCell(numCorners*spaceDim);
+  const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
+  assert(!jacobianSection.isNull());  
+  topology::Mesh::RestrictVisitor jacobianVisitor(*jacobianSection,
+					       jacobianCell.size(), 
+					       &jacobianCell[0]);
+
+  double_array residualCell(numCorners*spaceDim);
+  const ALE::Obj<RealSection>& residualSection = 
+    fields->get("residual").section();
+  topology::Mesh::RestrictVisitor residualVisitor(*residualSection,
+						  residualCell.size(),
+						  &residualCell[0]);
+
+  double_array dispTCell(numCorners*spaceDim);
+  const ALE::Obj<RealSection>& dispTSection = 
+    fields->get("disp(t)").section();
+  topology::Mesh::RestrictVisitor dispTVisitor(*dispTSection,
+					       dispTCell.size(),
+					       &dispTCell[0]);
+
+  double_array solutionCell(numCorners*spaceDim);
+  const ALE::Obj<RealSection>& solutionSection = 
+    fields->get("dispIncr(t->t+dt)").section();
+  topology::Mesh::UpdateAddVisitor solutionVisitor(*solutionSection,
+						   &solutionCell[0]);
+
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    faultSieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						coordinatesCell.size(),
+						&coordinatesCell[0]);
+
+  for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+       c_iter != cellsCohesiveEnd;
+       ++c_iter) {
+    const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
+    areaVertexCell = 0.0;
+    solutionCell = 0.0;
+
+    // Compute geometry information for current cell
+#if defined(PRECOMPUTE_GEOMETRY)
+    _quadrature->retrieveGeometry(c_fault);
+#else
+    coordsVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, c_fault);
+#endif
+    // Get cell geometry information that depends on cell
+    const double_array& basis = _quadrature->basis();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
+
+    // Compute contributory area for cell (to weight contributions)
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+        const double dArea = wt*basis[iQuad*numBasis+iBasis];
+	areaVertexCell[iBasis] += dArea;
+      } // for
+    } // for
+        
+    // Get orientations at fault cell's vertices.
+    orientationVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, orientationVisitor);
+    
+    // Get area at fault cell's vertices.
+    areaVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, areaVisitor);
+    
+    // Get slip at fault cell's vertices.
+    slipVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, slipVisitor);
+    
+    // Get residual at cohesive cell's vertices.
+    residualVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, residualVisitor);
+    
+    // Get jacobian at cohesive cell's vertices.
+    jacobianVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, jacobianVisitor);
+    
+    // Get disp(t) at cohesive cell's vertices.
+    dispTVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispTVisitor);
+    
+    for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
+      // Blocks in cell matrix associated with normal cohesive
+      // vertices i and j and constraint vertex k
+      const int indexI = iConstraint;
+      const int indexJ = iConstraint +   numConstraintVert;
+      const int indexK = iConstraint + 2*numConstraintVert;
+
+      assert(areaCell[iConstraint] > 0);
+      const double wt = areaVertexCell[iConstraint] / areaCell[iConstraint];
+      
+      // Get orientation at constraint vertex
+      const double* orientationVertex = 
+	&orientationCell[iConstraint*orientationSize];
+      assert(0 != orientationVertex);
+
+      // Get slip at constraint vertex
+      const double* slipVertex = &slipCell[iConstraint*spaceDim];
+      assert(0 != slipVertex);
+
+      // Get Jacobian at conventional vertices i and j
+      const double* Ai = &jacobianCell[indexI*spaceDim];
+      assert(0 != Ai);
+      const double* Aj = &jacobianCell[indexJ*spaceDim];
+      assert(0 != Aj);
+
+      // Get residual at conventional vertices i and j
+      const double* ri = &residualCell[indexI*spaceDim];
+      assert(0 != ri);
+      const double* rj = &residualCell[indexJ*spaceDim];
+      assert(0 != rj);
+      
+      // Get disp(t) at conventional vertices i and j
+      const double* ui = &dispTCell[indexI*spaceDim];
+      assert(0 != ui);
+      const double* uj = &dispTCell[indexJ*spaceDim];
+      assert(0 != uj);
+
+      switch(spaceDim)
+	{ // switch
+	case 1 : {
+	  const double d00 = 1.0/Ai[0] + 1.0/Aj[0];
+	  const double dinv00 = 1.0 / d00;
+
+	  // Aru = A_i^{-1} r_i - A_j^{-1} r_j + u_i - u_j
+	  const double Aru = ri[0]/Ai[0] - rj[0]/Aj[0] + ui[0] - uj[0];
+
+	  // dl_k = D^{-1}( C_{ki} Aru - d_k)
+	  const double Aruslip = Aru - slipVertex[0];
+	  const double dlp = dinv00*Aruslip;
+
+	  // Update displacements at node I
+	  solutionCell[indexI*spaceDim+0] =  wt * -1.0/Ai[0] * dlp;
+
+	  // Update displacements at node J
+	  solutionCell[indexJ*spaceDim+0] = wt * +1.0/Aj[0] * dlp;
+
+	  // Update Lagrange multipliers
+	  solutionCell[indexK*spaceDim+0] = wt * dlp;
+
+	  break;
+	} // case 1
+	case 2 : {
+	  const double Cpx = orientationVertex[0];
+	  const double Cpy = orientationVertex[1];
+	  const double Cqx = orientationVertex[2];
+	  const double Cqy = orientationVertex[3];
+	  const double Crx = orientationVertex[4];
+	  const double Cry = orientationVertex[5];
+
+	  const double Spp = 
+	    Cpx*Cpx*(1.0/Ai[0] + 1.0/Aj[0]) +
+	    Cpy*Cpy*(1.0/Ai[1] + 1.0/Aj[1]);
+	  const double Spq =
+	    Cpx*Cqx*(1.0/Ai[0] + 1.0/Aj[0]) +
+	    Cpy*Cqy*(1.0/Ai[1] + 1.0/Aj[1]);
+	  const double Sqq = 
+	    Cqx*Cqx*(1.0/Ai[0] + 1.0/Aj[0]) +
+	    Cqy*Cqy*(1.0/Ai[1] + 1.0/Aj[1]);
+	  const double detS = Spp*Sqq - Spq*Spq;
+	  const double Sinvpp = Sqq / detS;
+	  const double Sinvpq = -Spq / detS;
+	  const double Sinvqq = Spp / detS;
+
+	  // Aru = A_i^{-1} r_i - A_j^{-1} r_j + u_i - u_j
+	  const double Arux = ri[0]/Ai[0] - rj[0]/Aj[0] + ui[0] - uj[0];
+	  const double Aruy = ri[1]/Ai[1] - rj[1]/Aj[1] + ui[1] - uj[1];
+
+	  // dl_k = D^{-1}( C_{ki} Aru - d_k)
+	  const double Arup = Cpx*Arux + Cpy*Aruy;
+	  const double Aruq = Cqx*Arux + Cqy*Aruy;
+	  const double Arupslip = Arup - slipVertex[0];
+	  const double Aruqslip = Aruq - slipVertex[1];
+	  const double dlp = Sinvpp*Arupslip + Sinvpq*Aruqslip;
+	  const double dlq = Sinvpq*Arupslip + Sinvqq*Aruqslip;
+
+	  // Update displacements at node I
+	  solutionCell[indexI*spaceDim+0] = 
+	    wt * -1.0/Ai[0] * (Cpx*dlp + Cqx*dlq);
+	  solutionCell[indexI*spaceDim+1] = 
+	    wt * -1.0/Ai[1] * (Cpy*dlp + Cqy*dlq);
+
+	  // Update displacements at node J
+	  solutionCell[indexJ*spaceDim+0] = 
+	    wt * +1.0/Aj[0] * (Cpx*dlp + Cqx*dlq);
+	  solutionCell[indexJ*spaceDim+1] = 
+	    wt * +1.0/Aj[1] * (Cpy*dlp + Cqy*dlq);
+
+	  // Update Lagrange multipliers
+	  solutionCell[indexK*spaceDim+0] = wt * dlp;
+	  solutionCell[indexK*spaceDim+1] = wt * dlq;
+
+	  break;
+	} // case 2
+	case 3 : {
+	  const double Cpx = orientationVertex[0];
+	  const double Cpy = orientationVertex[1];
+	  const double Cpz = orientationVertex[2];
+	  const double Cqx = orientationVertex[3];
+	  const double Cqy = orientationVertex[4];
+	  const double Cqz = orientationVertex[5];
+	  const double Crx = orientationVertex[6];
+	  const double Cry = orientationVertex[7];
+	  const double Crz = orientationVertex[8];
+
+	  const double Spp = 
+	    Cpx*Cpx*(1.0/Ai[0] + 1.0/Aj[0]) +
+	    Cpy*Cpy*(1.0/Ai[1] + 1.0/Aj[1]) +
+	    Cpz*Cpz*(1.0/Ai[2] + 1.0/Aj[2]);
+	  const double Spq =
+	    Cpx*Cqx*(1.0/Ai[0] + 1.0/Aj[0]) +
+	    Cpy*Cqy*(1.0/Ai[1] + 1.0/Aj[1]) +
+	    Cpz*Cqz*(1.0/Ai[2] + 1.0/Aj[2]);
+	  const double Spr =
+	    Cpx*Crx*(1.0/Ai[0] + 1.0/Aj[0]) +
+	    Cpy*Cry*(1.0/Ai[1] + 1.0/Aj[1]) +
+	    Cpz*Crz*(1.0/Ai[2] + 1.0/Aj[2]);
+	  const double Sqq = 
+	    Cqx*Cqx*(1.0/Ai[0] + 1.0/Aj[0]) +
+	    Cqy*Cqy*(1.0/Ai[1] + 1.0/Aj[1]) +
+	    Cqz*Cqz*(1.0/Ai[2] + 1.0/Aj[2]);
+	  const double Sqr =
+	    Cqx*Crx*(1.0/Ai[0] + 1.0/Aj[0]) +
+	    Cqy*Cry*(1.0/Ai[1] + 1.0/Aj[1]) +
+	    Cqz*Crz*(1.0/Ai[2] + 1.0/Aj[2]);
+	  const double Srr = 
+	    Crx*Crx*(1.0/Ai[0] + 1.0/Aj[0]) +
+	    Cry*Cry*(1.0/Ai[1] + 1.0/Aj[1]) +
+	    Crz*Crz*(1.0/Ai[2] + 1.0/Aj[2]);
+	  const double detS =
+	    Spp * (Sqq*Srr - Sqr*Sqr) +
+	    Spq * (Spr*Sqr - Spq*Srr) +
+	    Spr * (Spq*Sqr - Spr*Sqq);
+	  const double Sinvpp = (Sqq*Srr - Sqr*Sqr) / detS;
+	  const double Sinvpq = (Spr*Sqr - Spq*Srr) / detS;
+	  const double Sinvpr = (Spq*Sqr - Spr*Sqq) / detS;
+	  const double Sinvqq = (Spp*Srr - Spr*Spr) / detS;
+	  const double Sinvqr = (Spq*Spr - Spp*Sqr) / detS;
+	  const double Sinvrr = (Spp*Sqq - Spq*Spq) / detS;
+
+	  // Aru = A_i^{-1} r_i - A_j^{-1} r_j + u_i - u_j
+	  const double Arux = ri[0]/Ai[0] - rj[0]/Aj[0] + ui[0] - uj[0];
+	  const double Aruy = ri[1]/Ai[1] - rj[1]/Aj[1] + ui[1] - uj[1];
+	  const double Aruz = ri[2]/Ai[2] - rj[2]/Aj[2] + ui[2] - uj[2];
+
+	  // dl_k = D^{-1}( C_{ki} Aru - d_k)
+	  const double Arup = Cpx*Arux + Cpy*Aruy + Cpz*Aruz;
+	  const double Aruq = Cqx*Arux + Cqy*Aruy + Cqz*Aruz;
+	  const double Arur = Crx*Arux + Cry*Aruy + Crz*Aruz;
+	  const double Arupslip = Arup - slipVertex[0];
+	  const double Aruqslip = Aruq - slipVertex[1];
+	  const double Arurslip = Arur - slipVertex[2];
+	  const double dlp = 
+	    Sinvpp*Arupslip + Sinvpq*Aruqslip + Sinvpr*Arurslip;
+	  const double dlq = 
+	    Sinvpq*Arupslip + Sinvqq*Aruqslip + Sinvqr*Arurslip;
+	  const double dlr = 
+	    Sinvpr*Arupslip + Sinvqr*Aruqslip + Sinvrr*Arurslip;
+
+	  // Update displacements at node I
+	  solutionCell[indexI*spaceDim+0] = 
+	    wt * -1.0/Ai[0] * (Cpx*dlp + Cqx*dlq + Crx*dlr);
+	  solutionCell[indexI*spaceDim+1] = 
+	    wt * -1.0/Ai[1] * (Cpy*dlp + Cqy*dlq + Cry*dlr);
+	  solutionCell[indexI*spaceDim+2] = 
+	    wt * -1.0/Ai[2] * (Cpz*dlp + Cqz*dlq + Crz*dlr);
+
+	  // Update displacements at node J
+	  solutionCell[indexJ*spaceDim+0] = 
+	    wt * +1.0/Aj[0] * (Cpx*dlp + Cqx*dlq + Crx*dlr);
+	  solutionCell[indexJ*spaceDim+1] = 
+	    wt * +1.0/Aj[1] * (Cpy*dlp + Cqy*dlq + Cry*dlr);
+	  solutionCell[indexJ*spaceDim+2] = 
+	    wt * +1.0/Aj[2] * (Cpz*dlp + Cqz*dlq + Crz*dlr);
+
+	  // Update Lagrange multipliers
+	  solutionCell[indexK*spaceDim+0] = wt * dlp;
+	  solutionCell[indexK*spaceDim+1] = wt * dlq;
+	  solutionCell[indexK*spaceDim+2] = wt * dlr;
+
+	  break;
+	} // case 3
+	default :
+	  assert(0);
+	  throw std::logic_error("Unknown spatial dimension.");
+	} // switch
+    } // for
+      
+#if 0 // DEBUGGING
+    std::cout << "Adjusting lumped solution for cell " << *c_iter << std::endl;
+    for(int i = 0; i < numCorners*spaceDim; ++i) {
+      std::cout << "  dispTpdt["<<i<<"]: " << dispTpdtCell[i] << std::endl;
+    }
+    for(int i = 0; i < numCorners*spaceDim; ++i) {
+      std::cout << "  dispT["<<i<<"]: " << dispTCell[i] << std::endl;
+    }
+    for(int i = 0; i < numCorners*spaceDim; ++i) {
+      std::cout << "  dispIncr["<<i<<"]: " << dispTIncrCell[i] << std::endl;
+    }
+    for(int i = 0; i < numCorners*spaceDim; ++i) {
+      std::cout << "  v["<<i<<"]: " << residualCell[i] << std::endl;
+    }
+#endif
+
+    solutionVisitor.clear();
+    sieveMesh->updateClosure(*c_iter, solutionVisitor);
+  } // for
+
+  // FIX THIS
+  PetscLogFlops(0);
+} // adjustSolnLumped
 
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
@@ -726,9 +1158,9 @@ pylith::faults::FaultCohesiveKin::vertexField(
   double scale = 0.0;
   int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
-    const topology::Field<topology::SubMesh>& cumSlip = 
-      _fields->get("cumulative slip");
-    return cumSlip;
+    const topology::Field<topology::SubMesh>& slip = 
+      _fields->get("slip");
+    return slip;
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
     const ALE::Obj<RealSection>& orientationSection =
@@ -832,6 +1264,290 @@ pylith::faults::FaultCohesiveKin::cellField(
     _fields->get("buffer (vector)");
   return buffer;
 } // cellField
+
+// ----------------------------------------------------------------------
+// Calculate orientation at fault vertices.
+void
+pylith::faults::FaultCohesiveKin::_calcOrientation(const double upDir[3],
+						   const double normalDir[3])
+{ // _calcOrientation
+  assert(0 != upDir);
+  assert(0 != normalDir);
+  assert(0 != _faultMesh);
+  assert(0 != _fields);
+
+  double_array upDirArray(upDir, 3);
+
+  // Get vertices in fault mesh.
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = 
+    faultSieveMesh->depthStratum(0);
+  const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  
+  // Containers for orientation information.
+  const int cohesiveDim = _faultMesh->dimension();
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const int orientationSize = spaceDim*spaceDim;
+  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
+  const double_array& verticesRef = cellGeometry.vertices();
+  const int jacobianSize = (cohesiveDim > 0) ? spaceDim * cohesiveDim : 1;
+  const double_array& quadWts = _quadrature->quadWts();
+  double_array jacobian(jacobianSize);
+  double jacobianDet = 0;
+  double_array orientationVertex(orientationSize);
+  double_array coordinatesCell(numBasis*spaceDim);
+  double_array refCoordsVertex(cohesiveDim);
+
+  // Allocate orientation field.
+  _fields->add("orientation", "orientation");
+  topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
+  const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
+  orientation.newSection(slip, orientationSize);
+  const ALE::Obj<RealSection>& orientationSection = orientation.section();
+  assert(!orientationSection.isNull());
+  // Create subspaces for along-strike, up-dip, and normal directions
+  for (int iDim=0; iDim <= cohesiveDim; ++iDim)
+    orientationSection->addSpace();
+  for (int iDim=0; iDim <= cohesiveDim; ++iDim)
+    orientationSection->setFiberDimension(vertices, spaceDim, iDim);
+  orientation.allocate();
+  orientation.zero();
+  
+  // Get fault cells.
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
+    faultSieveMesh->heightStratum(0);
+  assert(!cells.isNull());
+  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  // Compute orientation of fault at constraint vertices
+
+  // Get section containing coordinates of vertices
+  const ALE::Obj<RealSection>& coordinatesSection = 
+    faultSieveMesh->getRealSection("coordinates");
+  assert(!coordinatesSection.isNull());
+  topology::Mesh::RestrictVisitor coordinatesVisitor(*coordinatesSection,
+						     coordinatesCell.size(),
+						     &coordinatesCell[0]);
+
+  // Set orientation function
+  assert(cohesiveDim == _quadrature->cellDim());
+  assert(spaceDim == _quadrature->spaceDim());
+
+  // Loop over cohesive cells, computing orientation weighted by
+  // jacobian at constraint vertices
+  
+  const ALE::Obj<SieveSubMesh::sieve_type>& sieve = faultSieveMesh->getSieve();
+  assert(!sieve.isNull());
+  typedef ALE::SieveAlg<SieveSubMesh> SieveAlg;
+
+  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> ncV(*sieve, (size_t) pow(sieve->getMaxConeSize(), std::max(0, faultSieveMesh->depth())));
+
+  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
+       c_iter != cellsEnd;
+       ++c_iter) {
+    // Get orientations at fault cell's vertices.
+    coordinatesVisitor.clear();
+    faultSieveMesh->restrictClosure(*c_iter, coordinatesVisitor);
+
+    ncV.clear();
+    ALE::ISieveTraversal<SieveSubMesh::sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
+    const int               coneSize = ncV.getSize();
+    const Mesh::point_type *cone     = ncV.getPoints();
+    
+    for (int v=0; v < coneSize; ++v) {
+      // Compute Jacobian and determinant of Jacobian at vertex
+      memcpy(&refCoordsVertex[0], &verticesRef[v*cohesiveDim],
+	     cohesiveDim*sizeof(double));
+      cellGeometry.jacobian(&jacobian, &jacobianDet, coordinatesCell,
+			    refCoordsVertex);
+
+      // Compute orientation
+      cellGeometry.orientation(&orientationVertex, jacobian, jacobianDet, 
+			       upDirArray);
+      
+      // Update orientation
+      orientationSection->updateAddPoint(cone[v], &orientationVertex[0]);
+    } // for
+  } // for
+
+  //orientation.view("ORIENTATION BEFORE COMPLETE");
+
+  // Assemble orientation information
+  orientation.complete();
+
+  // Loop over vertices, make orientation information unit magnitude
+  double_array vertexDir(orientationSize);
+  int count = 0;
+  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
+       v_iter != verticesEnd;
+       ++v_iter, ++count) {
+    orientationVertex = 0.0;
+    orientationSection->restrictPoint(*v_iter, &orientationVertex[0],
+				      orientationVertex.size());
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      double mag = 0;
+      for (int jDim=0, index=iDim*spaceDim; jDim < spaceDim; ++jDim)
+	mag += pow(orientationVertex[index+jDim],2);
+      mag = sqrt(mag);
+      assert(mag > 0.0);
+      for (int jDim=0, index=iDim*spaceDim; jDim < spaceDim; ++jDim)
+	orientationVertex[index+jDim] /= mag;
+    } // for
+
+    orientationSection->updatePoint(*v_iter, &orientationVertex[0]);
+  } // for
+  PetscLogFlops(count * orientationSize * 4);
+
+  if (2 == cohesiveDim && vertices->size() > 0) {
+    // Check orientation of first vertex, if dot product of fault
+    // normal with preferred normal is negative, flip up/down dip
+    // direction.
+    //
+    // If the user gives the correct normal direction (points from
+    // footwall to ahanging wall), we should end up with
+    // left-lateral-slip, reverse-slip, and fault-opening for positive
+    // slip values.
+    //
+    // When we flip the up/down dip direction, we create a left-handed
+    // strike/dip/normal coordinate system, but it gives the correct
+    // sense of slip. In reality the strike/dip/normal directions that
+    // are used are the opposite of what we would want, but we cannot
+    // flip the fault normal direction because it is tied to how the
+    // cohesive cells are created.
+    
+    assert(vertices->size() > 0);
+    orientationSection->restrictPoint(*vertices->begin(), &orientationVertex[0],
+				      orientationVertex.size());
+				      
+    assert(3 == spaceDim);
+    double_array normalDirVertex(&orientationVertex[6], 3);
+    const double normalDot = 
+      normalDir[0]*normalDirVertex[0] +
+      normalDir[1]*normalDirVertex[1] +
+      normalDir[2]*normalDirVertex[2];
+    
+    const int istrike = 0;
+    const int idip = 3;
+    const int inormal = 6;
+    if (normalDot < 0.0) {
+      // Flip dip direction
+      for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
+	   v_iter != verticesEnd;
+	   ++v_iter) {
+	orientationSection->restrictPoint(*v_iter, &orientationVertex[0],
+					  orientationVertex.size());
+	assert(9 == orientationSection->getFiberDimension(*v_iter));
+	for (int iDim=0; iDim < 3; ++iDim) // flip dip
+	  orientationVertex[idip+iDim] *= -1.0;
+	
+	// Update direction
+	orientationSection->updatePoint(*v_iter, &orientationVertex[0]);
+      } // for
+      PetscLogFlops(5 + count * 3);
+    } // if
+  } // if
+
+  //orientation.view("ORIENTATION");
+} // _calcOrientation
+
+// ----------------------------------------------------------------------
+void
+pylith::faults::FaultCohesiveKin::_calcArea(void)
+{ // _calcArea
+  assert(0 != _faultMesh);
+  assert(0 != _fields);
+
+  // Containers for area information
+  const int cellDim = _quadrature->cellDim();
+  const int numBasis = _quadrature->numBasis();
+  const int numQuadPts = _quadrature->numQuadPts();
+  const int spaceDim = _quadrature->spaceDim();
+  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
+  double jacobianDet = 0;
+  double_array areaCell(numBasis);
+
+  // Get vertices in fault mesh.
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = 
+    faultSieveMesh->depthStratum(0);
+  const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  
+  // Allocate area field.
+  _fields->add("area", "area");
+
+  topology::Field<topology::SubMesh>& area = _fields->get("area");
+  const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
+  area.newSection(slip, 1);
+  area.allocate();
+  area.zero();
+  const ALE::Obj<RealSection>& areaSection = area.section();
+  assert(!areaSection.isNull());
+  topology::Mesh::UpdateAddVisitor areaVisitor(*areaSection, &areaCell[0]);  
+  
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    faultSieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
+						coordinatesCell.size(),
+						&coordinatesCell[0]);
+
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
+    faultSieveMesh->heightStratum(0);
+  assert(!cells.isNull());
+  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  // Loop over cells in fault mesh, compute area
+  for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
+      c_iter != cellsEnd;
+      ++c_iter) {
+    areaCell = 0.0;
+    
+    // Compute geometry information for current cell
+#if defined(PRECOMPUTE_GEOMETRY)
+    _quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
+
+    // Get cell geometry information that depends on cell
+    const double_array& basis = _quadrature->basis();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
+
+    // Compute area
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+        const double dArea = wt*basis[iQuad*numBasis+iBasis];
+	areaCell[iBasis] += dArea;
+      } // for
+    } // for
+    areaVisitor.clear();
+    faultSieveMesh->updateClosure(*c_iter, areaVisitor);
+
+    PetscLogFlops( numQuadPts*(1+numBasis*2) );
+  } // for
+
+  // Assemble area information
+  area.complete();
+
+#if 0 // DEBUGGING
+  area.view("AREA");
+  //_faultMesh->getSendOverlap()->view("Send fault overlap");
+  //_faultMesh->getRecvOverlap()->view("Receive fault overlap");
+#endif
+} // _calcArea
 
 // ----------------------------------------------------------------------
 // Compute change in tractions on fault surface using solution.
@@ -962,13 +1678,13 @@ pylith::faults::FaultCohesiveKin::_allocateBufferVectorField(void)
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Output");
 
-  // Create vector field; use same shape/chart as cumulative slip field.
+  // Create vector field; use same shape/chart as slip field.
   assert(0 != _faultMesh);
   _fields->add("buffer (vector)", "buffer");
   topology::Field<topology::SubMesh>& buffer =
     _fields->get("buffer (vector)");
   const topology::Field<topology::SubMesh>& slip = 
-    _fields->get("cumulative slip");
+    _fields->get("slip");
   buffer.cloneSection(slip);
   buffer.zero();
 

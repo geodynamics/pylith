@@ -32,6 +32,8 @@
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 // BCIntegratorSubMesh ----------------------------------------------
+/// @brief Abstract base classs for BoundaryCondition object with
+/// boundary condition applied at a simple-connect surface (submesh).
 class pylith::bc::BCIntegratorSubMesh : public BoundaryCondition,
       public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
 { // class BCIntegratorSubMesh

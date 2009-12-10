@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/meshio/DataWriter.hh
+ * @file libsrc/meshio/DataWriter.hh
  *
  * @brief Abstract base class for writing finite-element data to file.
  */
@@ -25,6 +25,7 @@
 #include "pylith/topology/topologyfwd.hh" // USES Field
 
 // DataWriter -----------------------------------------------------------
+/// Abstract base class for writing finite-element data to file.
 template<typename mesh_type, typename field_type>
 class pylith::meshio::DataWriter
 { // DataWriter

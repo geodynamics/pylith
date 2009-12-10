@@ -14,6 +14,24 @@
  *
  * @brief C++ implementation for a fault surface with kinematic
  * (prescribed) slip implemented with cohesive elements.
+ */
+
+#if !defined(pylith_faults_faultcohesivekin_hh)
+#define pylith_faults_faultcohesivekin_hh
+
+// Include directives ---------------------------------------------------
+#include "FaultCohesive.hh" // ISA FaultCohesive
+
+#include "pylith/topology/SubMesh.hh" // ISA Integrator<Quadrature<SubMesh> >
+#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
+#include "pylith/feassemble/Integrator.hh" // ISA Integrator
+
+#include <string> // HASA std::string
+
+// FaultCohesiveKin -----------------------------------------------------
+/**
+ * @brief C++ implementation for a fault surface with kinematic
+ * (prescribed) slip implemented with cohesive elements.
  *
  * Fault boundary condition is specified using Lagrange
  * multipliers. The constraints are associated with "constraint"
@@ -49,25 +67,26 @@
  * {r(t+dt)} = {b(t+dt)} - [A(t+dt) C^T ]{ u(t)+du(t) }
  *             {D(t+dt)}   [ C      0   ]{ L(t)+dL(t) }
  * 
- * The term D does not involve integration over cohesive cells. We
- * integrate the Lagrange multiplier terms over the cohesive cells
- * because this introduces weighting of the orientation of the fault
- * for the direction of slip at the vertices of the cohesive cells.
+ * The terms in the residual contributing to the DOF at the Lagrange
+ * vertices are
+ *
+ * {r(t+dt)} = {D(t+dt)} - [C]{u(t)+dt(t)}
+ *
+ * The first term, {D(t+dt)}, does not involve integration over the
+ * cohesive cells, so it does not require assembling over cohesive
+ * cells or processors. We compute the term in
+ * integrateResidualAssembled().
+ *
+ * The term in the residual contributing to the DOF at the
+ * non-Lagrange vertices of the cohesive cells is
+ *
+ * {r(t+dt)} = -[C]^T{L(t)+dL(t)}
+ *
+ * We integrate the Lagrange multiplier term and the relative
+ * displacement term over the cohesive cells, because this introduces
+ * weighting of the orientation of the fault for the direction of slip
+ * at the vertices of the cohesive cells.
  */
-
-#if !defined(pylith_faults_faultcohesivekin_hh)
-#define pylith_faults_faultcohesivekin_hh
-
-// Include directives ---------------------------------------------------
-#include "FaultCohesive.hh" // ISA FaultCohesive
-
-#include "pylith/topology/SubMesh.hh" // ISA Integrator<Quadrature<SubMesh> >
-#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
-#include "pylith/feassemble/Integrator.hh" // ISA Integrator
-
-#include <string> // HASA std::string
-
-// FaultCohesiveKin -----------------------------------------------------
 class pylith::faults::FaultCohesiveKin : public FaultCohesive
 { // class FaultCohesiveKin
   friend class TestFaultCohesiveKin; // unit testing
@@ -145,12 +164,23 @@ public :
    * operator that do not require assembly across cells, vertices, or
    * processors.
    *
-   * @param mat Sparse matrix
+   * @param jacobian Sparse matrix
    * @param t Current time
    * @param fields Solution fields
-   * @param mesh Finite-element mesh
    */
   void integrateJacobianAssembled(topology::Jacobian* jacobian,
+				  const double t,
+				  topology::SolutionFields* const fields);
+
+  /** Integrate contributions to Jacobian matrix (A) associated with
+   * operator that do not require assembly across cells, vertices, or
+   * processors.
+   *
+   * @param jacobian Diagonal Jacobian matrix as a field.
+   * @param t Current time
+   * @param fields Solution fields
+   */
+  void integrateJacobianAssembled(topology::Field<topology::Mesh>& jacobian,
 				  const double t,
 				  topology::SolutionFields* const fields);
 
@@ -162,6 +192,16 @@ public :
    */
   void updateStateVars(const double t,
 		       topology::SolutionFields* const fields);
+
+  /** Adjust solution from solver with lumped Jacobian to match Lagrange
+   *  multiplier constraints.
+   *
+   * @param solution Solution field.
+   * @param jacobian Jacobian of the system.
+   * @param residual Residual field.
+   */
+  void adjustSolnLumped(topology::SolutionFields* fields,
+			const topology::Field<topology::Mesh>& jacobian);
 
   /** Verify configuration is acceptable.
    *
@@ -205,6 +245,21 @@ public :
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
+
+  /** Calculate orientation at fault vertices.
+   *
+   * @param upDir Direction perpendicular to along-strike direction that is 
+   *   not collinear with fault normal (usually "up" direction but could 
+   *   be up-dip direction; only applies to fault surfaces in a 3-D domain).
+   * @param normalDir General preferred direction for fault normal
+   *   (used to pick which of two possible normal directions for
+   *   interface; only applies to fault surfaces in a 3-D domain).
+   */
+  void _calcOrientation(const double upDir[3],
+			const double normalDir[3]);
+
+  /// Calculate fault area field.
+  void _calcArea(void);
 
   /** Compute change in tractions on fault surface using solution.
    *

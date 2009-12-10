@@ -25,6 +25,11 @@ dist_noinst_PYTHON = \
 	TestDislocation.py \
 	dislocation_soln.py \
 	dislocation2_soln.py \
+	TestLgDeformRigidBody.py \
+	rigidbody_soln.py \
+	rigidbody_gendb.py \
+	TestLgDeformTraction.py \
+	lgdeformtraction_soln.py \
 	testpylith.py
 
 dist_noinst_DATA = \
@@ -35,7 +40,9 @@ dist_noinst_DATA = \
 	axialdisp.cfg \
 	sheardisp.cfg \
 	dislocation.cfg \
-	dislocation2.cfg
+	dislocation2.cfg \
+	lgdeformrigidbody.cfg \
+	lgdeformtraction.cfg
 
 noinst_TMP = \
 	axial_disp.spatialdb \
@@ -50,7 +57,14 @@ noinst_TMP = \
 	dislocation-elastic_info.vtk \
 	dislocation-elastic_t0000000.vtk \
 	dislocation-fault_info.vtk \
-	dislocation-fault_t0000000.vtk
+	dislocation-fault_t0000000.vtk \
+	rigidbody_disp.spatialdb \
+	lgdeformrigidbody_t0000000.vtk \
+	lgdeformrigidbody-elastic_info.vtk \
+	lgdeformrigidbody-elastic_t0000000.vtk \
+	lgdeformtraction_t0000000.vtk \
+	lgdeformtraction-elastic_info.vtk \
+	lgdeformtraction-elastic_t0000000.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)

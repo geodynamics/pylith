@@ -29,6 +29,32 @@ class IntegratorElasticity(IntegratorApp):
   elasticity integrator objects.
   """
   
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(IntegratorApp.Inventory):
+    """Python object for managing IntegratorApp facilities and properties."""
+
+    ## @class Inventory
+    ## Python object for managing ElasticityIntegrator facilities and
+    ## properties.
+    ##
+    ## \b Properties
+    ## @li \b useGravity Include gravitational body forces in residual.
+    ##
+    ## \b Facilities
+    ## @li \b formulation Elasticity formulation.
+
+    import pyre.inventory
+
+    useGravity = pyre.inventory.bool("use_gravity", default=False)
+    useGravity.meta['tip'] = "Include gravitational body forces in residual."
+
+    from ElasticityImplicit import ElasticityImplicit
+    formulation = pyre.inventory.facility("formulation",
+                                          factory=ElasticityImplicit)
+    formulation.meta['tip'] = "Elasticity formulation."
+
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
   
   def __init__(self, name="integratorelasticity"):
@@ -45,6 +71,34 @@ class IntegratorElasticity(IntegratorApp):
   
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _configure(self):
+    """
+    Set members using inventory.
+    """
+    IntegratorApp._configure(self)
+    self.useGravity = self.inventory.useGravity
+    self.formulation = self.inventory.formulation
+    return
+
+
+  def _calculateResidual(self):
+    """
+    Calculate contribution to residual of operator for integrator.
+    """
+    self.valsResidual = self.formulation.calculateResidual(self)
+    if self.useGravity:
+      self.valsResidual += self._calculateGravityVec()
+    return
+
+
+  def _calculateJacobian(self):
+    """
+    Calculate contribution to Jacobian matrix of operator for integrator.
+    """
+    self.valsJacobian = self.formulation.calculateJacobian(self)
+    return
+
 
   def _calculateStiffnessMat(self):
     """
@@ -98,6 +152,28 @@ class IntegratorElasticity(IntegratorApp):
       feutils.assembleMat(M, cellM, cell, self.spaceDim)
     return M
 
+
+  def _calculateGravityVec(self):
+    """
+    Calculate body force vector.
+    """
+    gravityGlobal = numpy.zeros((self.numVertices*self.spaceDim),
+                                dtype=numpy.float64)
+    for cell in self.cells:
+      gravityCell = numpy.zeros((self.spaceDim*self.numBasis))
+      vertices = self.vertices[cell, :]
+      (jacobian, jacobianInv, jacobianDet, basisDeriv) = \
+                 feutils.calculateJacobian(self.quadrature, vertices)
+      for iQuad in xrange(self.numQuadPts):
+        wt = self.quadWts[iQuad] * jacobianDet[iQuad] * self.density
+        for iBasis in xrange(self.numBasis):
+          valI = wt * self.basis[iQuad, iBasis]
+          for iDim in xrange(self.spaceDim):
+            gravityCell[iDim + iBasis * self.spaceDim] += \
+                             valI * self.gravityVec[iDim]
+      feutils.assembleVec(gravityGlobal, gravityCell, cell, self.spaceDim)
+    return gravityGlobal
+    
 
   def _calculateElasticityMat(self):
     """
@@ -198,6 +274,13 @@ class IntegratorElasticity(IntegratorApp):
     else:
       raise ValueError("Unknown spatial dimension '%d'." % self.spaceDim)
     return B
+
+
+# MAIN /////////////////////////////////////////////////////////////////
+if __name__ == "__main__":
+
+  app = IntegratorElasticity()
+  app.run()
 
 
 # End of file 

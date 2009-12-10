@@ -10,14 +10,23 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/ElasticStress1D.h
+/** @file libsrc/materials/ElasticStress1D.hh
  *
- * @brief C++ ElasticStress1D object
+ * @brief 1-D, linear elastic material with axial stress.
+ */
+
+#if !defined(pylith_materials_elasticstress1d_hh)
+#define pylith_materials_elasticstress1d_hh
+
+// Include directives ---------------------------------------------------
+#include "ElasticMaterial.hh" // ISA ElasticMaterial
+
+// ElasticStress1D ------------------------------------------------------
+/** @brief 1-D, linear elastic material with axial stress.
  *
- * 1-D, linear elastic material with axial stress. The physical
- * properties are specified using density, shear-wave speed, and
- * compressional-wave speed. The physical properties are stored
- * internally using density, mu, and lambda, which are directly
+ * The physical properties are specified using density, shear-wave
+ * speed, and compressional-wave speed. The physical properties are
+ * stored internally using density, mu, and lambda, which are directly
  * related to the elasticity constants used in the finite-element
  * integration.
  *
@@ -28,13 +37,6 @@
  * \sigma_0$.
  */
 
-#if !defined(pylith_materials_elasticstress1d_hh)
-#define pylith_materials_elasticstress1d_hh
-
-// Include directives ---------------------------------------------------
-#include "ElasticMaterial.hh" // ISA ElasticMaterial
-
-// ElasticStress1D ------------------------------------------------------
 class pylith::materials::ElasticStress1D : public ElasticMaterial
 { // class ElasticStress1D
   friend class TestElasticStress1D; // unit testing

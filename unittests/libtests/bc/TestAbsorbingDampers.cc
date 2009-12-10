@@ -277,6 +277,80 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
 } // testIntegrateJacobian
 
 // ----------------------------------------------------------------------
+// Test integrateJacobianLumped().
+void
+pylith::bc::TestAbsorbingDampers::testIntegrateJacobianLumped(void)
+{ // testIntegrateJacobianLumped
+  CPPUNIT_ASSERT(0 != _data);
+
+  topology::Mesh mesh;
+  AbsorbingDampers bc;
+  topology::SolutionFields fields(mesh);
+  _initialize(&mesh, &bc, &fields);
+
+  topology::Field<topology::Mesh> jacobian(mesh);
+  jacobian.label("Jacobian");
+  jacobian.vectorFieldType(topology::FieldBase::VECTOR);
+  jacobian.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
+  jacobian.allocate();
+
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+
+  const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
+  const ALE::Obj<SieveSubMesh>& submesh = boundaryMesh.sieveMesh();
+  CPPUNIT_ASSERT(!submesh.isNull());
+
+  topology::Field<topology::Mesh>& solution = fields.solution();
+  const ALE::Obj<RealSection>& solutionSection = solution.section();
+  CPPUNIT_ASSERT(!solutionSection.isNull());
+
+  const double t = 1.0;
+  bc.integrateJacobian(jacobian, t, &fields);
+  CPPUNIT_ASSERT_EQUAL(false, bc.needNewJacobian());
+  jacobian.complete();
+
+  const double* valsMatrixE = _data->valsJacobian;
+  const int totalNumVertices = sieveMesh->depthStratum(0)->size();
+  const int sizeE = totalNumVertices * _data->spaceDim;
+  double_array valsE(sizeE);
+  const int spaceDim = _data->spaceDim;
+  for (int iVertex=0; iVertex < totalNumVertices; ++iVertex)
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      const int indexRow = (iVertex*spaceDim+iDim)*totalNumVertices*spaceDim;
+      double value = 0.0;
+      for (int jVertex=0; jVertex < totalNumVertices; ++jVertex)
+	value += valsMatrixE[indexRow + jVertex*spaceDim+iDim];
+      valsE[iVertex*spaceDim+iDim] = value;
+    } // for
+
+#if 0 // DEBUGGING
+  jacobian.view("JACOBIAN");
+  std::cout << "\n\nJACOBIAN FULL" << std::endl;
+  const int n = totalNumVertices*spaceDim;
+  for (int r=0; r < n; ++r) {
+    for (int c=0; c < n; ++c) 
+      std::cout << "  " << valsMatrixE[r*n+c];
+    std::cout << "\n";
+  } // for
+#endif // DEBUGGING
+
+  const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
+  CPPUNIT_ASSERT(!jacobianSection.isNull());
+  const double* vals = jacobianSection->restrictSpace();
+  const int size = jacobianSection->sizeWithBC();
+  CPPUNIT_ASSERT_EQUAL(sizeE, size);
+
+  const double tolerance = 1.0e-06;
+  for (int i=0; i < size; ++i)
+    if (fabs(valsE[i]) > 1.0)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
+    else
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+
+} // testIntegrateJacobianLumped
+
+// ----------------------------------------------------------------------
 void
 pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
 					      AbsorbingDampers* const bc,

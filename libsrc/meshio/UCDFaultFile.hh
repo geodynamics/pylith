@@ -14,12 +14,6 @@
  * @file libsrc/meshio/UCDFaultFile.hh
  *
  * @brief C++ object for reading a fault mesh from a UCD file.
- *
- * Temporary fix for getting a fault mesh information into
- * PyLith. Using a fault mesh permits cells to have more than one face
- * on the fault surface. Supporting information also provides the
- * orientation of the fault surface, eliminating the need to determine
- * it from the faces/vertices alone.
  */
 
 #if !defined(pylith_meshio_ucdfaultfile_hh)
@@ -33,6 +27,14 @@
 #include "pylith/utils/sievetypes.hh" // USES ALE::Obj, ALE::Mesh
 
 // UCDFaultFile ---------------------------------------------------------
+/** @brief C++ object for reading a fault mesh from a UCD file.
+ *
+ * TEMPORARY fix for getting a fault mesh information into
+ * PyLith. Using a fault mesh permits cells to have more than one face
+ * on the fault surface. Supporting information also provides the
+ * orientation of the fault surface, eliminating the need to determine
+ * it from the faces/vertices alone.
+ */
 class pylith::meshio::UCDFaultFile
 { // UCDFaultFile
   friend class TestUCDFaultFile; // unit testing

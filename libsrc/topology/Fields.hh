@@ -13,7 +13,8 @@
 /**
  * @file libsrc/topology/Fields.hh
  *
- * @brief Object for managing fields over a finite-element mesh.
+ * @brief Container for managing multiple fields over a finite-element
+ * mesh.
  */
 
 #if !defined(pylith_topology_fields_hh)
@@ -27,6 +28,7 @@
 #include <string> // USES std::string
 
 // Fields ---------------------------------------------------------------
+/// Container for managing multiple fields over a finite-element mesh.
 template<typename field_type>
 class pylith::topology::Fields
 { // Fields
@@ -60,7 +62,7 @@ public :
   /** Add field.
    *
    * @param name Name of field.
-   * @param label Label for field.
+   * @param label Label for field (used in output).
    */
   void add(const char* name,
 	   const char* label);

@@ -11,14 +11,10 @@
 //
 
 /**
- * @file pylith/feassemble/Integrator.hh
+ * @file libsrc/feassemble/Integrator.hh
  *
  * @brief Abstract base class for integration of finite-element
  * actions.
- *
- * Note: Each object operates on a single finite-element family, which
- * is defined by the quadrature and a database of material property
- * parameters.
  */
 
 #if !defined(pylith_feassemble_integrator_hh)
@@ -36,6 +32,13 @@
 #include "pylith/utils/array.hh" // HASA double_array
 
 // Integrator -----------------------------------------------------------
+/** @brief Abstract base class for integration of finite-element
+ * actions.
+ *
+ * Note: Each object operates on a single finite-element family, which
+ * is defined by the quadrature and a database of material property
+ * parameters.
+ */
 template<typename quadrature_type>
 class pylith::feassemble::Integrator
 { // Integrator
@@ -138,18 +141,6 @@ public :
 			 const double t,
 			 topology::SolutionFields* const fields);
 
-  /** Integrate contributions to Jacobian matrix (A) associated with
-   * operator.
-   *
-   * @param jacobian Sparse matrix for Jacobian of system.
-   * @param t Current time
-   * @param fields Solution fields
-   */
-  virtual
-  void integrateJacobian(topology::Jacobian* jacobian,
-			 const double t,
-			 topology::SolutionFields* const fields);
-
   /** Integrate contributions to residual term (r) for operator that
    * do not require assembly over cells, vertices, or processors.
    *
@@ -161,6 +152,18 @@ public :
   void integrateResidualAssembled(const topology::Field<topology::Mesh>& residual,
 				  const double t,
 				  topology::SolutionFields* const fields);
+
+  /** Integrate contributions to Jacobian matrix (A) associated with
+   * operator.
+   *
+   * @param jacobian Sparse matrix for Jacobian of system.
+   * @param t Current time
+   * @param fields Solution fields
+   */
+  virtual
+  void integrateJacobian(topology::Jacobian* jacobian,
+			 const double t,
+			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator that do not require assembly over cells, vertices, or
@@ -175,6 +178,31 @@ public :
 				  const double t,
 				  topology::SolutionFields* const fields);
 
+  /** Integrate contributions to Jacobian matrix (A) associated with
+   * operator.
+   *
+   * @param jacobian Diagonal matrix (as field) for Jacobian of system.
+   * @param t Current time
+   * @param fields Solution fields
+   */
+  virtual
+  void integrateJacobian(const topology::Field<topology::Mesh>& jacobian,
+			 const double t,
+			 topology::SolutionFields* const fields);
+
+  /** Integrate contributions to Jacobian matrix (A) associated with
+   * operator that do not require assembly over cells, vertices, or
+   * processors
+   *
+   * @param jacobian Diagonal matrix (as field) for Jacobian of system.
+   * @param t Current time
+   * @param fields Solution fields
+   */
+  virtual
+  void integrateJacobianAssembled(const topology::Field<topology::Mesh>&  jacobian,
+				  const double t,
+				  topology::SolutionFields* const fields);
+
   /** Update state variables as needed.
    *
    * @param t Current time
@@ -184,6 +212,27 @@ public :
   virtual
   void updateStateVars(const double t,
 		       topology::SolutionFields* const fields);
+
+  /** Constrain solution space.
+   *
+   * @param fields Solution fields.
+   * @param t Current time.
+   * @param jacobian Sparse matrix for system Jacobian.
+   */
+  virtual
+  void constrainSolnSpace(topology::SolutionFields* const fields,
+			  const double t,
+			  const topology::Jacobian& jacobian);
+
+  /** Adjust solution from solver with lumped Jacobian to match Lagrange
+   *  multiplier constraints.
+   *
+   * @param fields Solution fields.
+   * @param jacobian Jacobian of the system.
+   */
+  virtual
+  void adjustSolnLumped(topology::SolutionFields* fields,
+			const topology::Field<topology::Mesh>& jacobian);
 
   /** Verify configuration is acceptable.
    *
@@ -206,6 +255,10 @@ protected :
 
   /// Zero out matrix containing result of integration for cell.
   void _resetCellMatrix(void);
+
+  /// Lump cell matrix, putting the result in the cell vector using
+  /// equivalent forces for rigid body motion.
+  void _lumpCellMatrix(void);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :

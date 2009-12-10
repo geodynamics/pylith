@@ -27,6 +27,9 @@
 
 
 // Solver ---------------------------------------------------------
+/** @brief Abstract C++ base class for using PETSc linear and
+ * nonlinear solvers.
+ */
 class pylith::problems::Solver
 { // Solver
   friend class TestSolver; // unit testing

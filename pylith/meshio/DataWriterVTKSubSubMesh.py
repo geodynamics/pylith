@@ -47,6 +47,7 @@ class DataWriterVTKSubSubMesh(DataWriterVTK, ModuleDataWriterVTK):
     ModuleDataWriterVTK.filename(self, self.filename)
     ModuleDataWriterVTK.timeFormat(self, self.timeFormat)
     ModuleDataWriterVTK.timeConstant(self, self.timeConstantN)
+    ModuleDataWriterVTK.precision(self, self.precision)
     return
   
 

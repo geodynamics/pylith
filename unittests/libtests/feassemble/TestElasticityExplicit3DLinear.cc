@@ -32,6 +32,7 @@ pylith::feassemble::TestElasticityExplicit3DLinear::setUp(void)
   TestElasticityExplicit::setUp();
 
   _data = new ElasticityExplicitData3DLinear();
+  _gravityField = 0;
   CPPUNIT_ASSERT(0 != _quadrature);
   GeometryTet3D geometry;
   _quadrature->refGeometry(&geometry);

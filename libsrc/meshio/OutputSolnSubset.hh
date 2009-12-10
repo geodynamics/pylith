@@ -11,9 +11,9 @@
 //
 
 /**
- * @file pylith/meshio/OutputSolnSubset.hh
+ * @file libsrc/meshio/OutputSolnSubset.hh
  *
- * @brief C++ object for manager output of finite-element data over a
+ * @brief C++ object for managing output of finite-element data over a
  * subdomain.
  */
 
@@ -31,6 +31,9 @@
 #include <string> // HASA std::string
 
 // OutputSolnSubset -----------------------------------------------------
+/** @brief C++ object for managing output of finite-element data over
+ * a subdomain.
+ */
 class pylith::meshio::OutputSolnSubset : 
   public OutputManager<topology::SubMesh, topology::Field<topology::Mesh> >
 { // OutputSolnSubset

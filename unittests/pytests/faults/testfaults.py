@@ -68,6 +68,9 @@ class TestApp(Script):
     from TestLiuCosSlipFn import TestLiuCosSlipFn
     suite.addTest(unittest.makeSuite(TestLiuCosSlipFn))
 
+    from TestTimeHistorySlipFn import TestTimeHistorySlipFn
+    suite.addTest(unittest.makeSuite(TestTimeHistorySlipFn))
+
     from TestEqKinSrc import TestEqKinSrc
     suite.addTest(unittest.makeSuite(TestEqKinSrc))
 

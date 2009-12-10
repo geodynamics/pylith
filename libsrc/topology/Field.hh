@@ -15,8 +15,6 @@
  *
  * @brief Vector field over the vertices or cells of a finite-element
  * mesh.
- *
- * Extends Sieve real general section by adding metadata.
  */
 
 #if !defined(pylith_topology_field_hh)
@@ -31,6 +29,11 @@
 #include <petscmesh.hh>
 
 // Field ----------------------------------------------------------------
+/** @brief Vector field over the vertices or cells of a finite-element
+ * mesh.
+ *
+ * Extends Sieve real general section by adding metadata.
+ */
 template<typename mesh_type>
 class pylith::topology::Field : public FieldBase
 { // Field

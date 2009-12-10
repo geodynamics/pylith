@@ -27,7 +27,8 @@ noinst_PYTHON = \
 	TestFaultCohesiveKin.py \
 	TestLiuCosSlipFn.py \
 	TestSingleRupture.py \
-	TestStepSlipFn.py
+	TestStepSlipFn.py \
+	TestTimeHistorySlipFn.py
 
 
 # End of file 

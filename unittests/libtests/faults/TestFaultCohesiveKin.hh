@@ -101,6 +101,9 @@ public :
   /// Test integrateJacobianAssembled().
   void testIntegrateJacobianAssembled(void);
 
+  /// Test integrateJacobianAssembled() with lumped Jacobian.
+  void testIntegrateJacobianAssembledLumped(void);
+
   /// Test updateStateVars().
   void testUpdateStateVars(void);
 

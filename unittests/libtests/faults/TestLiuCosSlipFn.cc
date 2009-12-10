@@ -407,9 +407,8 @@ pylith::faults::TestLiuCosSlipFn::_initialize(topology::Mesh* mesh,
                                 *mesh, sieveMesh->getIntSection(faultLabel));
   CohesiveTopology::create(mesh, *faultMesh, faultBoundary, 
                            sieveMesh->getIntSection(faultLabel),
-                           faultId,
-                           firstFaultVertex, firstLagrangeVertex, firstFaultCell,
-                           useLagrangeConstraints);
+                           faultId, firstFaultVertex, firstLagrangeVertex,
+			   firstFaultCell, useLagrangeConstraints);
   // Need to copy coordinates from mesh to fault mesh since we are not
   // using create() instead of createParallel().
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh->sieveMesh();
@@ -481,9 +480,8 @@ pylith::faults::TestLiuCosSlipFn::_testInitialize(const _TestLiuCosSlipFn::DataS
                                 mesh, sieveMesh->getIntSection(data.faultLabel));
   CohesiveTopology::create(&mesh, faultMesh, faultBoundary, 
                            sieveMesh->getIntSection(data.faultLabel),
-                           data.faultId,
-                           firstFaultVertex, firstLagrangeVertex, firstFaultCell,
-                           useLagrangeConstraints);
+                           data.faultId, firstFaultVertex, firstLagrangeVertex,
+			   firstFaultCell, useLagrangeConstraints);
   // Need to copy coordinates from mesh to fault mesh since we are not
   // using create() instead of createParallel().
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();

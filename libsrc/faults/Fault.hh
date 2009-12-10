@@ -12,13 +12,6 @@
 
 /** @file libsrc/faults/Fault.hh
  *
- * @brief C++ abstract base class for Fault object.
- *
- * Interface definition for fault.
- *
- * The fault id is associated with the material-id for the fault and
- * the label is associated with the group of vertices that define the
- * fault surface.
  */
 
 #if !defined(pylith_faults_fault_hh)
@@ -35,6 +28,15 @@
 #include <string> // HASA std::string
 
 // Fault ----------------------------------------------------------------
+/**
+ * @brief C++ abstract base class for Fault object.
+ *
+ * Interface definition for fault.
+ *
+ * The fault id is associated with the material-id for the fault and
+ * the label is associated with the group of vertices that define the
+ * fault surface.
+ */
 class pylith::faults::Fault
 { // class Fault
   friend class TestFault; // unit testing
