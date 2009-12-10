@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/meshio/MeshIOCubit.hh
+ * @file libsrc/meshio/MeshIOCubit.hh
  *
  * @brief C++ input/output manager for CUBIT Exodus II files.
  */
@@ -25,6 +25,7 @@
 #include <string> // HASA std::string
 
 // Forward declarations -------------------------------------------------
+/// C++ input/output manager for CUBIT Exodus II files.
 class NcFile; // netcdf file
 
 // MeshIOCubit ----------------------------------------------------------

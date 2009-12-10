@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/utils/arrayfwd.hh
+ * @file libsrc/utils/arrayfwd.hh
  *
  * @brief Forward declarations for PyLith array objects.
  *

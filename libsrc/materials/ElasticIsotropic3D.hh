@@ -10,21 +10,9 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/ElasticIsotropic3D.h
+/** @file libsrc/materials/ElasticIsotropic3D.hh
  *
- * @brief C++ ElasticIsotropic3D object
- *
- * 3-D, isotropic, linear elastic material. The physical properties
- * are specified using density, shear-wave speed, and
- * compressional-wave speed. The physical properties are stored
- * internally using density, lambda, and mu, which are directly
- * related to the elasticity constants used in the finite-element
- * integration.
- *
- * $\sigma - \sigma_0 = C (\epsilon - \epsilon_0)
- *
- * This implies that when $\epsilon = \epsilon_0$, $\sigma =
- * \sigma_0$.
+ * @brief C++ 3-D, isotropic, linear elastic material.
  */
 
 #if !defined(pylith_materials_elasticisotropic3d_hh)
@@ -34,6 +22,19 @@
 #include "ElasticMaterial.hh" // ISA ElasticMaterial
 
 // ElasticIsotropic3D ---------------------------------------------------
+/** @brief 3-D, isotropic, linear elastic material. 
+ *
+ * The physical properties are specified using density, shear-wave
+ * speed, and compressional-wave speed. The physical properties are
+ * stored internally using density, lambda, and mu, which are directly
+ * related to the elasticity constants used in the finite-element
+ * integration.
+ *
+ * $\sigma - \sigma_0 = C (\epsilon - \epsilon_0)
+ *
+ * This implies that when $\epsilon = \epsilon_0$, $\sigma =
+ * \sigma_0$.
+ */
 class pylith::materials::ElasticIsotropic3D : public ElasticMaterial
 { // class ElasticIsotropic3D
   friend class TestElasticIsotropic3D; // unit testing

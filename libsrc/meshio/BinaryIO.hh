@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/meshio/MeshIOCubit.hh
+ * @file libsrc/meshio/BinaryIO.hh
  *
  * @brief C++ object for general binary input/output operations.
  */
@@ -25,6 +25,7 @@
 #include <iosfwd>
 
 // BinaryIO -------------------------------------------------------------
+/// General binary input/output operations.
 class pylith::meshio::BinaryIO
 { // BinaryIO
 

@@ -38,12 +38,14 @@ libpylith_la_SOURCES = \
 	faults/StepSlipFn.cc \
 	faults/ConstRateSlipFn.cc \
 	faults/BruneSlipFn.cc \
+	faults/TimeHistorySlipFn.cc \
 	faults/LiuCosSlipFn.cc \
 	faults/EqKinSrc.cc \
 	faults/TopologyOps.cc \
 	faults/CohesiveTopology.cc \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveDyn.cc \
+	faults/FaultCohesiveDynL.cc \
 	faults/FaultCohesiveKin.cc \
 	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
@@ -71,6 +73,9 @@ libpylith_la_SOURCES = \
 	feassemble/IntegratorElasticity.cc \
 	feassemble/ElasticityImplicit.cc \
 	feassemble/ElasticityExplicit.cc \
+	feassemble/IntegratorElasticityLgDeform.cc \
+	feassemble/ElasticityImplicitLgDeform.cc \
+	feassemble/ElasticityExplicitLgDeform.cc \
 	materials/Metadata.cc \
 	materials/Material.cc \
 	materials/ElasticMaterial.cc \
@@ -101,6 +106,7 @@ libpylith_la_SOURCES = \
 	problems/Solver.cc \
 	problems/SolverLinear.cc \
 	problems/SolverNonlinear.cc \
+	problems/SolverLumped.cc \
 	topology/FieldBase.cc \
 	topology/Jacobian.cc \
 	topology/Mesh.cc \

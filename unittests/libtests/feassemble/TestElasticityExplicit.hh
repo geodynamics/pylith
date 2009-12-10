@@ -89,6 +89,9 @@ public :
   /// Test integrateJacobian().
   void testIntegrateJacobian(void);
 
+  /// Test integrateJacobianLumped().
+  void testIntegrateJacobianLumped(void);
+
   /// Test updateStateVars().
   void testUpdateStateVars(void);
 

@@ -27,7 +27,8 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::DataWriterVTK(void) :
   _timeFormat("%f"),
   _viewer(0),
   _wroteVertexHeader(false),
-  _wroteCellHeader(false)
+  _wroteCellHeader(false),
+  _precision(6)
 { // constructor
 } // constructor
 
@@ -38,6 +39,21 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::~DataWriterVTK(void)
 { // destructor
   deallocate();
 } // destructor  
+
+// ----------------------------------------------------------------------
+// Set precision of floating point values in output.
+template<typename mesh_type, typename field_type>
+void
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::precision(const int value)
+{ // precision
+  if (value <= 0) {
+    std::ostringstream msg;
+    msg << "Floating point precision (" << value << ") must be positive.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  _precision = value;
+} // precision
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
@@ -201,7 +217,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
     } // if
 
     err = VTKViewer::writeField(section, field.label(), fiberDim, numbering,
-				_viewer, enforceDim);
+				_viewer, enforceDim, _precision);
     CHECK_PETSC_ERROR(err);
   } catch (const std::exception& err) {
     std::ostringstream msg;
@@ -269,7 +285,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
     } // if
 
     VTKViewer::writeField(section, field.label(), fiberDim, numbering,
-			  _viewer, enforceDim);
+			  _viewer, enforceDim, _precision);
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 

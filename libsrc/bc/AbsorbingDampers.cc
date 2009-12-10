@@ -480,6 +480,116 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 } // integrateJacobian
 
 // ----------------------------------------------------------------------
+// Integrate contributions to Jacobian matrix (A) associated with
+void
+pylith::bc::AbsorbingDampers::integrateJacobian(
+			      const topology::Field<topology::Mesh>& jacobian,
+			      const double t,
+			      topology::SolutionFields* const fields)
+{ // integrateJacobian
+  assert(0 != _quadrature);
+  assert(0 != _boundaryMesh);
+  assert(0 != fields);
+
+  // Get cell geometry information that doesn't depend on cell
+  const int numQuadPts = _quadrature->numQuadPts();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+
+  // Get cell information
+  const ALE::Obj<SieveSubMesh>& sieveSubMesh = _boundaryMesh->sieveMesh();
+  assert(!sieveSubMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
+    sieveSubMesh->heightStratum(1);
+  assert(!cells.isNull());
+  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  // Get parameters used in integration.
+  const double dt = _dt;
+  assert(dt > 0);
+
+  // Allocate matrix for cell values.
+  _initCellMatrix();
+  _initCellVector();
+
+  // Get sections
+  const ALE::Obj<SubRealSection>& dampersSection =
+    _parameters->get("damping constants").section();
+  assert(!dampersSection.isNull());
+
+  const topology::Field<topology::Mesh>& solution = fields->solution();
+  const ALE::Obj<SieveMesh>& sieveMesh = solution.mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<RealSection>& solutionSection = solution.section();
+  assert(!solutionSection.isNull());
+
+  const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
+  assert(!jacobianSection.isNull());
+  topology::Mesh::UpdateAddVisitor jacobianVisitor(*jacobianSection, 
+						   &_cellVector[0]);
+
+#if !defined(PRECOMPUTE_GEOMETRY)
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    sieveSubMesh->getRealSection("coordinates");
+  RestrictVisitor coordsVisitor(*coordinates,
+				coordinatesCell.size(), &coordinatesCell[0]);
+#endif
+
+  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
+       c_iter != cellsEnd;
+       ++c_iter) {
+    // Compute geometry information for current cell
+#if defined(PRECOMPUTE_GEOMETRY)
+    _quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    sieveSubMesh->restrictClosure(*c_iter, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
+
+    // Reset element vector to zero
+    _resetCellMatrix();
+
+    // Get cell geometry information that depends on cell
+    const double_array& basis = _quadrature->basis();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
+
+    assert(numQuadPts*spaceDim == dampersSection->getFiberDimension(*c_iter));
+    const double* dampingConstsCell = dampersSection->restrictPoint(*c_iter);
+
+    // Compute Jacobian for absorbing bc terms
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = 
+	quadWts[iQuad] * jacobianDet[iQuad] / (2.0 * dt);
+      for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
+        const double valI = wt*basis[iQ+iBasis];
+        for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+          const double valIJ = valI * basis[iQ+jBasis];
+          for (int iDim=0; iDim < spaceDim; ++iDim) {
+            const int iBlock = (iBasis*spaceDim + iDim) * (numBasis*spaceDim);
+            const int jBlock = (jBasis*spaceDim + iDim);
+            _cellMatrix[iBlock+jBlock] += 
+	      valIJ * dampingConstsCell[iQuad*spaceDim+iDim];
+          } // for
+        } // for
+      } // for
+    } // for
+    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
+    _lumpCellMatrix();
+    
+    // Assemble cell contribution into lumped matrix.
+    jacobianVisitor.clear();
+    sieveSubMesh->updateClosure(*c_iter, jacobianVisitor);
+  } // for
+
+  _needNewJacobian = false;
+} // integrateJacobian
+
+// ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::bc::AbsorbingDampers::verifyConfiguration(const topology::Mesh& mesh) const

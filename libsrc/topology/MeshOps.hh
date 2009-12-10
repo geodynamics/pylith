@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/topology/MeshOps.hh
+ * @file libsrc/topology/MeshOps.hh
  *
  * @brief Simple operations on a Mesh object.
  */
@@ -23,6 +23,7 @@
 #include "topologyfwd.hh" // forward declarations
 
 // MeshOps --------------------------------------------------------------
+/// Simple operations on a Mesh object.
 class pylith::topology::MeshOps
 { // MeshOps
   friend class TestMeshOps; // unit testing

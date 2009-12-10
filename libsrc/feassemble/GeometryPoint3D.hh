@@ -11,10 +11,10 @@
 //
 
 /**
- * @file pylith/feassemble/GeometryPoint3D.hh
+ * @file libsrc/feassemble/GeometryPoint3D.hh
  *
  * @brief C++ implementation of cell geometry calculations for 0-D
- * point cell.
+ * point cell in 3-D space.
  */
 
 #if !defined(pylith_feassemble_geometrypoint3d_hh)
@@ -24,6 +24,7 @@
 #include "CellGeometry.hh" // ISA CellGeometry
 
 // GeometryPoint3D ------------------------------------------------------
+/// Cell geometry calculations for 0-D line cell in 3-D space.
 class pylith::feassemble::GeometryPoint3D : public CellGeometry
 { // GeometryPoint3D
 

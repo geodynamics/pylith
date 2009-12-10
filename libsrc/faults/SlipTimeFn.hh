@@ -13,8 +13,6 @@
 /** @file libsrc/faults/SlipTimeFn.hh
  *
  * @brief C++ abstract base class for kinematic slip time function.
- *
- * Interface definition for slip time function.
  */
 
 #if !defined(pylith_faults_sliptimefn_hh)
@@ -29,6 +27,11 @@
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 
 // SlipTimeFn -----------------------------------------------------------
+/**
+ * @brief Abstract base class for kinematic slip time function.
+ *
+ * Interface definition for slip time function.
+ */
 class pylith::faults::SlipTimeFn
 { // class SlipTimeFn
   friend class TestSlipTimeFn; // unit testing

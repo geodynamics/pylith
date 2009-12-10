@@ -14,9 +14,6 @@
  * @file libsrc/problems/SolverLinear.hh
  *
  * @brief Object for using PETSc scalable linear equation solvers (KSP).
- *
- * The PETSc linear KSP solvers provide an interface to Krylov subspace
- * (KS) iterative methods and preconditioners (P).
  */
 
 #if !defined(pylith_problems_solverlinear_hh)
@@ -28,6 +25,13 @@
 #include "pylith/utils/petscfwd.h" // HASA PetscKSP
 
 // SolverLinear ---------------------------------------------------------
+/** @brief Object for using PETSc scalable linear equation solvers
+ * (KSP).
+ *
+ * The PETSc linear KSP solvers provide an interface to Krylov subspace
+ * (KS) iterative methods and preconditioners (P).
+ */
+
 class pylith::problems::SolverLinear : Solver
 { // SolverLinear
   friend class TestSolverLinear; // unit testing

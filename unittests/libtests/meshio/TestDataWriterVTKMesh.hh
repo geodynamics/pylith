@@ -43,6 +43,7 @@ class pylith::meshio::TestDataWriterVTKMesh : public TestDataWriterVTK
   CPPUNIT_TEST( testFilename );
   CPPUNIT_TEST( testTimeFormat );
   CPPUNIT_TEST( testTimeConstant );
+  CPPUNIT_TEST( testPrecision );
   CPPUNIT_TEST( testVtkFilename );
 
   CPPUNIT_TEST_SUITE_END();
@@ -67,6 +68,9 @@ public :
 
   /// Test timeConstant()
   void testTimeConstant(void);
+
+  /// Test precision()
+  void testPrecision(void);
 
   /// Test openTimeStep() and closeTimeStep()
   void testTimeStep(void);

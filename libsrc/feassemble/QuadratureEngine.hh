@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/QuadratureEngine.hh
+ * @file libsrc/feassemble/QuadratureEngine.hh
  *
  * @brief Abstract base class for quadrature computation engine.
  */
@@ -19,9 +19,12 @@
 #if !defined(pylith_feassemble_quadratureengine_hh)
 #define pylith_feassemble_quadratureengine_hh
 
+// Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declaration
 #include "pylith/utils/array.hh" // USES double_array
 
+// Quadrature0D ---------------------------------------------------------
+/// Abstract base class for quadrature computation engine.
 class pylith::feassemble::QuadratureEngine
 { // QuadratureEngine
   friend class TestQuadratureEngine;

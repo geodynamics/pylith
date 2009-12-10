@@ -22,6 +22,7 @@
 #include "faultsfwd.hh" // forward declarations
 
 // ReplaceVisitor -------------------------------------------------------
+/// Visitor for replacement.
 template<typename Sieve, typename Renumbering>
 class pylith::faults::ReplaceVisitor {
 private:
@@ -46,6 +47,7 @@ public:
 };
 
 // ClassifyVisitor ------------------------------------------------------
+/// Visitor for classification.
 template<typename Sieve>
 class pylith::faults::ClassifyVisitor {
 public:

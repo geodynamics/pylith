@@ -165,16 +165,6 @@ pylith::bc::Neumann::integrateResidual(
 } // integrateResidual
 
 // ----------------------------------------------------------------------
-// Integrate contributions to Jacobian matrix (A) associated with
-void
-pylith::bc::Neumann::integrateJacobian(topology::Jacobian* jacobian,
-					   const double t,
-					   topology::SolutionFields* const fields)
-{ // integrateJacobian
-  _needNewJacobian = false;
-} // integrateJacobian
-
-// ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::bc::Neumann::verifyConfiguration(const topology::Mesh& mesh) const

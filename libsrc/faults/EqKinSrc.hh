@@ -14,9 +14,6 @@
  *
  * @brief C++ object for managing parameters for a kinematic
  * earthquake source.
- *
- * EqKinSrc is responsible for providing the value of slip at time t
- * over a fault surface.
  */
 
 #if !defined(pylith_faults_eqkinsrc_hh)
@@ -30,6 +27,11 @@
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
 // EqKinSrc -------------------------------------------------------------
+/** @brief Kinematic earthquake source.
+ *
+ * EqKinSrc is responsible for providing the value of slip at time t
+ * over a fault surface.
+ */
 class pylith::faults::EqKinSrc
 { // class EqKinSrc
   friend class TestEqKinSrc; // unit testing

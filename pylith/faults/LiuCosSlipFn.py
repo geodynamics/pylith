@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/faults/BruneSlipFn.py
+## @file pylith/faults/LiuCosSlipFn.py
 ##
 ## @brief Sine/cosine slip time function from Liu, Archuleta, and Hartzell,
 ## BSSA, 2006 (doi:10.1785/0120060036) which has a rapid rise and then
@@ -62,13 +62,13 @@ class LiuCosSlipFn(SlipTimeFn, ModuleLiuCosSlipFn):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="bruneslipfn"):
+  def __init__(self, name="liucosslipfn"):
     """
     Constructor.
     """
     SlipTimeFn.__init__(self, name)
     ModuleLiuCosSlipFn.__init__(self)
-    self._loggingPrefix = "BrSF "
+    self._loggingPrefix = "LCSF "
     return
 
 

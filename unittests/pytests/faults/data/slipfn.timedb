@@ -1,0 +1,10 @@
+#TIME HISTORY ascii
+TimeHistory {
+  num-points = 5
+  time-units = second
+}
+ 0.0  0.0
+ 1.0  0.5
+ 4.0  0.8
+ 8.0  1.0
+10.0  1.0

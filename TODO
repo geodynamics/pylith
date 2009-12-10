@@ -2,6 +2,7 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
+<<<<<<< .working
 Status?
 
   Field split
@@ -9,7 +10,16 @@ Status?
   customized SNES line search
   Laplacian based preconditioner
 
+=======
+Data structure to hold label of fault Lagrange vertices and
+conventional vertices 
+  array of structure (lagrange, positive, negative, fault)
+
+  no mesh queries? Just loops?
+
+>>>>>>> .merge-right.r16093
 ----------------------------------------------------------------------
+<<<<<<< .working
 VISIT TO GNS SCIENCE
 ----------------------------------------------------------------------
 
@@ -53,6 +63,53 @@ Rewrite governing equations to include fault implementation
 Rewrite bulk constitutive models
 
 ----------------------------------------------------------------------
+=======
+FRICTION
+----------------------------------------------------------------------
+
+Initial tractions
+  Integrate over fault surface (should be current implementation)
+Constitutive model parameters
+  Integrate over faces to get weighted averages
+
+3. pylith::friction::FrictionModel
+  (base class for fault constitutive models) [Brad]
+  similar to Material + ElasticMaterial
+
+4. Constant friction [Surendra]
+  Simplest friction model with constant coefficient of friction
+
+5. SlipWeakening [Surendra]
+  Slip-weakening friction model
+
+6. Other fault constitutive models [Surendra]
+  Rate- and state-friction with aging law
+  Rate- and state-friction with slip law
+
+----------------------------------------------------------------------
+LUMPED SOLVER
+----------------------------------------------------------------------
+
+S (sensitivity matrix) - assume diagonal (check with assert)
+
+Unit tests
+
+  FaultCohesiveKin
+    adjustSolnLumped
+
+  FaultCohesiveDynL
+    integrateJacobian (lumped)
+    adjustSolnLumped
+
+FaultCohesiveDynL (C++)
+  integrateJacobian (lumped)
+  adjustSolnLumped()
+    compute Lagrange multipliers (zero increment of slip)
+    calls constrainSolnSpace()
+    adjust displacements
+
+----------------------------------------------------------------------
+>>>>>>> .merge-right.r16093
 POST RELEASE 1.4
 ----------------------------------------------------------------------
 
@@ -73,7 +130,6 @@ Brad
         CellFilterAvg (_fieldAvg)
         VertexFilterVecNorm (_fieldVecNorm)
  
-  TimeHistorySlipFn (final slip, start time)
   full-scale testing
     2d/quad4
       axialtract
@@ -97,9 +153,6 @@ Brad
       meshio C++, SWIG
       problems C++, SWIG
       topology C++, SWIG
-
-Student
-      Create a spatial database for the PREM model
 
 1. Savage-Presscott benchmark
     Tet mesh
@@ -295,18 +348,6 @@ PLANNED RELEASES
 ======================================================================
 
 ----------------------------------------------------------------------
-Release 1.4
-----------------------------------------------------------------------
-
-  1. Nonlinear bulk rheologies
-
-     Power-law viscoelastic material
-
-  2. Time dependent BCs
-
-  3. Improved PC for kinematic faults
-
-----------------------------------------------------------------------
 Release 1.5
 ----------------------------------------------------------------------
 
@@ -326,14 +367,6 @@ Release 1.5
 
   3. Finite strain
 
-  4. Higher order cells
-
-     Nonisoparametric cells
-
-       C++ unit tests for CellGeometry refPtsToGlobal() and jacobian()
-       Update quadrature to use CellGeometry refPtsToGlobal() and
-       jacobian() Remove CellGeometry jacobian(double_array)
-
   5. Uniform global refinement
 
   6. Improved support for spherical geometry in user-interface
@@ -343,6 +376,14 @@ Release 1.6
 ----------------------------------------------------------------------
 
   1. Green's functions
+
+  2. Higher order cells
+
+     Nonisoparametric cells
+
+       C++ unit tests for CellGeometry refPtsToGlobal() and jacobian()
+       Update quadrature to use CellGeometry refPtsToGlobal() and
+       jacobian() Remove CellGeometry jacobian(double_array)
 
 ----------------------------------------------------------------------
 Release 1.7
@@ -357,6 +398,9 @@ Release 1.7
 ----------------------------------------------------------------------
 LONG TERM WISH LIST
 ----------------------------------------------------------------------
+
+Student
+      Create a spatial database for the PREM model
 
   4. HDF5 output
 

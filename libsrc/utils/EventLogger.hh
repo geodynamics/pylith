@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/utils/EventLogger.hh
+ * @file libsrc/utils/EventLogger.hh
  *
  * @brief C++ object for managing event logging using PETSc.
  *
@@ -31,6 +31,10 @@
 #include "petsclog.h" // USES PetscLogEventBegin/End() in inline methods
 
 // EventLogger ----------------------------------------------------------
+/** @brief C++ object for managing event logging using PETSc.
+ *
+ * Each logger object manages the events for a single "logging class".
+ */
 class pylith::utils::EventLogger
 { // EventLogger
   friend class TestEventLogger; // unit testing

@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/IntegratorElasticity.hh
+ * @file libsrc/feassemble/IntegratorElasticity.hh
  *
  * @brief Object containing general elasticity operations for implicit
  * and explicit time integration of the elasticity equation.
@@ -32,6 +32,9 @@
 #include "pylith/utils/arrayfwd.hh" // USES std::vector, double_array
 
 // IntegratorElasticity -------------------------------------------------
+/** @brief General elasticity operations for implicit and explicit
+ * time integration of the elasticity equation.
+ */
 class pylith::feassemble::IntegratorElasticity :
   public Integrator<Quadrature<topology::Mesh> >
 { // IntegratorElasticity
@@ -135,6 +138,7 @@ protected :
    * @param name Name of field to compute ('total-strain' or 'stress')
    * @param fields Manager for solution fields.
    */
+  virtual
   void _calcStrainStressField(topology::Field<topology::Mesh>* field,
 			      const char* name,
 			      topology::SolutionFields* const fields);
@@ -144,6 +148,7 @@ protected :
    *
    * @param field Field in which to store stress.
    */
+  virtual
   void _calcStressFromStrain(topology::Field<topology::Mesh>* field);
 			      
 
@@ -182,6 +187,24 @@ protected :
    * @param elasticConsts Matrix of elasticity constants at quadrature points.
    */
   void _elasticityJacobian3D(const double_array& elasticConsts);
+
+  /** Integrate laplacian term in Jacobian preconditioner for 1-D cells.
+   *
+   * @param elasticConsts Matrix of elasticity constants at quadrature points.
+   */
+  void _elasticityPrecon1D(const double_array& elasticConsts);
+
+  /** Integrate laplacian term in Jacobian preconditioner for 2-D cells.
+   *
+   * @param elasticConsts Matrix of elasticity constants at quadrature points.
+   */
+  void _elasticityPrecon2D(const double_array& elasticConsts);
+
+  /** Integrate laplacian term in Jacobian preconditioner for 3-D cells.
+   *
+   * @param elasticConsts Matrix of elasticity constants at quadrature points.
+   */
+  void _elasticityPrecon3D(const double_array& elasticConsts);
 
   /** Compute total strain in at quadrature points of a cell.
    *

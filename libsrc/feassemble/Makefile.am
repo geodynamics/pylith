@@ -19,11 +19,14 @@ subpkginclude_HEADERS = \
 	Constraint.hh \
 	Constraint.icc \
 	ElasticityExplicit.hh \
+	ElasticityExplicitLgDeform.hh \
 	ElasticityImplicit.hh \
+	ElasticityImplicitLgDeform.hh \
 	Integrator.hh \
 	Integrator.icc \
 	Integrator.cc \
 	IntegratorElasticity.hh \
+	IntegratorElasticityLgDeform.hh \
 	GeometryPoint1D.hh \
 	GeometryPoint2D.hh \
 	GeometryPoint3D.hh \

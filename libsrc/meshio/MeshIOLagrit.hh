@@ -25,6 +25,7 @@
 #include <string> // HASA std::string
 
 // MeshIOLagrit ---------------------------------------------------------
+/// Input/output manager for LaGriT GMV and Pset files.
 class pylith::meshio::MeshIOLagrit : public MeshIO
 { // MeshIOLagrit
   friend class TestMeshIOLagrit; // unit testing

@@ -153,16 +153,25 @@ pylith::topology::Mesh::groups(int *numNames, char ***outNames)
 int
 pylith::topology::Mesh::groupSize(const char *name)
 { // groupSize
+  if (!_mesh->hasIntSection(name)) {
+    std::ostringstream msg;
+    msg << "Cannot get size of group '" << name
+	<< "'. Group missing from mesh.";
+    throw std::runtime_error(msg.str());
+  } // if
+
   const ALE::Obj<IntSection>&            group    = _mesh->getIntSection(name);
   const IntSection::chart_type&          chart    = group->getChart();
   IntSection::chart_type::const_iterator chartEnd = chart.end();
   int                                    size     = 0;
 
-  for(IntSection::chart_type::const_iterator c_iter = chart.begin(); c_iter != chartEnd; ++c_iter) {
-    if (group->getFiberDimension(*c_iter)) {
+  for(IntSection::chart_type::const_iterator c_iter = chart.begin();
+      c_iter != chartEnd;
+      ++c_iter) {
+    if (group->getFiberDimension(*c_iter))
       size++;
-    }
-  }
+  } // for
+
   return size;
 } // groupSize
 

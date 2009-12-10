@@ -29,6 +29,7 @@ namespace pylith {
     class Solver;
     class SolverLinear;
     class SolverNonlinear;
+    class SolverLumped;
 
   } // problems
 } // pylith

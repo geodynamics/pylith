@@ -28,6 +28,7 @@
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 // FaultCohesive --------------------------------------------------------
+/// Absract base class for fault surface implemented with cohesive cells.
 class pylith::faults::FaultCohesive : public Fault,
 				      public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
 { // class FaultCohesive
@@ -94,24 +95,6 @@ public :
    */
   virtual
   bool useLagrangeConstraints(void) const = 0;
-
-  // PROTECTED METHODS //////////////////////////////////////////////////
-protected :
-
-  /** Calculate orientation at fault vertices.
-   *
-   * @param upDir Direction perpendicular to along-strike direction that is 
-   *   not collinear with fault normal (usually "up" direction but could 
-   *   be up-dip direction; only applies to fault surfaces in a 3-D domain).
-   * @param normalDir General preferred direction for fault normal
-   *   (used to pick which of two possible normal directions for
-   *   interface; only applies to fault surfaces in a 3-D domain).
-   */
-  void _calcOrientation(const double upDir[3],
-			const double normalDir[3]);
-
-  /// Calculate fault area field.
-  void _calcArea(void);
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :

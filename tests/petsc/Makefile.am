@@ -14,7 +14,7 @@ TESTS = testpetsc.py
 
 check_SCRIPTS = testpetsc.py
 
-noinst_PYTHON = \
+dist_noinst_PYTHON = \
 	TestPetscApp.py
 
 noinst_DATA = 
@@ -26,15 +26,15 @@ TESTS_ENVIRONMENT = $(PYTHON)
 
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/tests/petsc
-export-data: $(noinst_PYTHON) $(noinst_DATA)
-	for f in $(noinst_PYTHON) $(noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
+export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
+	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
+
+clean-data:
+	if [ "X$(top_srcdir)" != "X$(top_builddir)" ]; then for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
+
 
 BUILT_SOURCES = export-data
-
-CLEANFILES = \
-	$(export_datadir)/$(noinst_PYTHON) \
-	$(export_datadir)/$(noinst_DATA) \
-	$(export_datadir)/$(noinst_TMP)
-
+clean-local: clean-data
+CLEANFILES = *.pyc
 
 # End of file 

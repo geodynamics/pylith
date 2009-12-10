@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/utils/petscfwd.h
+ * @file libsrc/utils/petscfwd.h
  *
  * @brief Forward declarations for Petsc objects.
  */

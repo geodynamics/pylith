@@ -32,6 +32,7 @@
 #include <string> // HASA std::string
 
 // BoundaryCondition ----------------------------------------------------
+/// Abstract base class for boundary conditions.
 class pylith::bc::BoundaryCondition
 { // class BoundaryCondition
   friend class TestBoundaryCondition; // unit testing

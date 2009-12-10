@@ -12,11 +12,7 @@
 
 /** @file libsrc/faults/LiuCosSlipFn.hh
  *
- * @brief C++ implementation of LiuCos slip time function.
- *
- * Sine/cosine slip time function from Liu, Archuleta, and Hartzell,
- * BSSA, 2006 (doi:10.1785/0120060036) which has a rapid rise and then
- * a gradual falloff with a finite duration.
+ * @brief C++ implementation of Liu cosine-sine slip time function.
  */
 
 #if !defined(pylith_faults_liucosslipfn_hh)
@@ -30,6 +26,13 @@
 #include "pylith/utils/array.hh" // HASA double_array
 
 // LiuCosSlipFn ---------------------------------------------------------
+/**
+ * @brief C++ implementation of Liu cosine-sine slip time function.
+ *
+ * Sine/cosine slip time function from Liu, Archuleta, and Hartzell,
+ * BSSA, 2006 (doi:10.1785/0120060036) which has a rapid rise and then
+ * a gradual falloff with a finite duration.
+ */
 class pylith::faults::LiuCosSlipFn : public SlipTimeFn
 { // class LiuCosSlipFn
   friend class TestLiuCosSlipFn; // unit testing

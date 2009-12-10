@@ -181,6 +181,13 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidual(void)
   const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
+#if 0
+  residual.view("RESIDUAL");
+  std::cout << "EXPECTED RESIDUAL" << std::endl;
+  for (int i=0; i < size; ++i)
+    std::cout << "  " << valsE[i] << std::endl;
+#endif
+
   const double tolerance = 1.0e-06;
   for (int i=0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
@@ -246,6 +253,70 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobian(void)
   MatDestroy(jDense);
   MatDestroy(jSparseAIJ);
 } // testIntegrateJacobian
+
+// ----------------------------------------------------------------------
+// Test integrateJacobian().
+void
+pylith::feassemble::TestElasticityExplicit::testIntegrateJacobianLumped(void)
+{ // testIntegrateJacobian
+  CPPUNIT_ASSERT(0 != _data);
+
+  topology::Mesh mesh;
+  ElasticityExplicit integrator;
+  topology::SolutionFields fields(mesh);
+  _initialize(&mesh, &integrator, &fields);
+  integrator._needNewJacobian = true;
+
+  topology::Field<topology::Mesh> jacobian(mesh);
+  jacobian.label("Jacobian");
+  jacobian.vectorFieldType(topology::FieldBase::VECTOR);
+  jacobian.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
+  jacobian.allocate();
+
+  const double t = 1.0;
+  integrator.integrateJacobian(jacobian, t, &fields);
+  CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
+  jacobian.complete();
+
+  const double* valsMatrixE = _data->valsJacobian;
+  const int sizeE = _data->numVertices * _data->spaceDim;
+  double_array valsE(sizeE);
+  const int spaceDim = _data->spaceDim;
+  const int numBasis = _data->numVertices;
+  for (int iBasis=0; iBasis < numBasis; ++iBasis)
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      const int indexRow = (iBasis*spaceDim+iDim)*numBasis*spaceDim;
+      double value = 0.0;
+      for (int jBasis=0; jBasis < numBasis; ++jBasis)
+	value += valsMatrixE[indexRow + jBasis*spaceDim+iDim];
+      valsE[iBasis*spaceDim+iDim] = value;
+    } // for
+
+#if 0 // DEBUGGING
+  // TEMPORARY
+  jacobian.view("JACOBIAN");
+  std::cout << "\n\nJACOBIAN FULL" << std::endl;
+  const int n = numBasis*spaceDim;
+  for (int r=0; r < n; ++r) {
+    for (int c=0; c < n; ++c) 
+      std::cout << "  " << valsMatrixE[r*n+c];
+    std::cout << "\n";
+  } // for
+#endif // DEBUGGING
+
+  const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
+  CPPUNIT_ASSERT(!jacobianSection.isNull());
+  const double* vals = jacobianSection->restrictSpace();
+  const int size = jacobianSection->sizeWithBC();
+  CPPUNIT_ASSERT_EQUAL(sizeE, size);
+
+  const double tolerance = 1.0e-06;
+  for (int i=0; i < size; ++i)
+    if (fabs(valsE[i]) > 1.0)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
+    else
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+} // testIntegrateJacobianLumped
 
 // ----------------------------------------------------------------------
 // Test updateStateVars().
@@ -343,9 +414,6 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
   cs.initialize();
   mesh->coordsys(&cs);
   mesh->nondimensionalize(normalizer);
-
-  // Setup gravityField
-  _gravityField = 0;
 
   // Setup material
   spatialdata::spatialdb::SimpleIOAscii iohandler;

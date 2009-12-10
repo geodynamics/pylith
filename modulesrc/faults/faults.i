@@ -20,10 +20,12 @@
 #include "pylith/faults/ConstRateSlipFn.hh"
 #include "pylith/faults/BruneSlipFn.hh"
 #include "pylith/faults/LiuCosSlipFn.hh"
+#include "pylith/faults/TimeHistorySlipFn.hh"
 #include "pylith/faults/EqKinSrc.hh"
 #include "pylith/faults/Fault.hh"
 #include "pylith/faults/FaultCohesive.hh"
 #include "pylith/faults/FaultCohesiveDyn.hh"
+#include "pylith/faults/FaultCohesiveDynL.hh"
 #include "pylith/faults/FaultCohesiveKin.hh"
 
 #include "pylith/topology/SubMesh.hh"
@@ -67,10 +69,12 @@ import_array();
 %include "ConstRateSlipFn.i"
 %include "BruneSlipFn.i"
 %include "LiuCosSlipFn.i"
+%include "TimeHistorySlipFn.i"
 %include "EqKinSrc.i"
 %include "Fault.i"
 %include "FaultCohesive.i"
 %include "FaultCohesiveDyn.i"
+%include "FaultCohesiveDynL.i"
 %include "FaultCohesiveKin.i"
 
 // End of file

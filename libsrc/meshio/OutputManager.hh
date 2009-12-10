@@ -11,9 +11,9 @@
 //
 
 /**
- * @file pylith/meshio/OutputManager.hh
+ * @file libsrc/meshio/OutputManager.hh
  *
- * @brief C++ object for manager output of finite-element data.
+ * @brief Manager for output of finite-element data.
  */
 
 #if !defined(pylith_meshio_outputmanager_hh)
@@ -26,6 +26,7 @@
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
 
 // OutputManager --------------------------------------------------------
+/// Manager for output of finite-element data.
 template<typename mesh_type, typename field_type>
 class pylith::meshio::OutputManager
 { // OutputManager

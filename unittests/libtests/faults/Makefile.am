@@ -27,6 +27,7 @@ testfaults_SOURCES = \
 	TestConstRateSlipFn.cc \
 	TestBruneSlipFn.cc \
 	TestLiuCosSlipFn.cc \
+	TestTimeHistorySlipFn.cc \
 	TestEqKinSrc.cc \
 	TestFaultCohesiveKin.cc \
 	TestFaultCohesiveKinLine2.cc \
@@ -49,7 +50,7 @@ testfaults_SOURCES = \
 
 noinst_HEADERS = \
 	TestBruneSlipFn.hh \
-	TestLiuCosSlipFn.hh \
+	TestTimeHistorySlipFn.hh \
 	TestConstRateSlipFn.hh \
 	TestStepSlipFn.hh \
 	TestEqKinSrc.hh \

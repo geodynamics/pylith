@@ -10,21 +10,9 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/ElasticPlaneStrain.h
+/** @file libsrc/materials/ElasticPlaneStrain.hh
  *
- * @brief C++ ElasticPlaneStrain object
- *
- * 2-D, isotropic, linear elastic material for plane strain. The
- * physical properties are specified using density, shear-wave speed,
- * and compressional-wave speed. The physical properties are stored
- * internally using density, lambda, and mu, which are directly
- * related to the elasticity constants used in the finite-element
- * integration.
- *
- * $\sigma - \sigma_0 = C (\epsilon - \epsilon_0)
- *
- * This implies that when $\epsilon = \epsilon_0$, $\sigma =
- * \sigma_0$.
+ * @brief 2-D, isotropic, linear elastic material for plane strain.
  */
 
 #if !defined(pylith_materials_elasticplanestrain_hh)
@@ -34,6 +22,19 @@
 #include "ElasticMaterial.hh" // ISA ElasticMaterial
 
 // ElasticPlaneStrain ---------------------------------------------------
+/** @brief 2-D, isotropic, linear elastic material for plane strain.
+ *
+ * The physical properties are specified using density, shear-wave
+ * speed, and compressional-wave speed. The physical properties are
+ * stored internally using density, lambda, and mu, which are directly
+ * related to the elasticity constants used in the finite-element
+ * integration.
+ *
+ * $\sigma - \sigma_0 = C (\epsilon - \epsilon_0)
+ *
+ * This implies that when $\epsilon = \epsilon_0$, $\sigma =
+ * \sigma_0$.
+ */
 class pylith::materials::ElasticPlaneStrain : public ElasticMaterial
 { // class ElasticPlaneStrain
   friend class TestElasticPlaneStrain; // unit testing

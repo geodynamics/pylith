@@ -258,33 +258,32 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
       _logger->eventBegin(computeEvent);
       const spatialdata::geocoords::CoordSys* cs = fields->mesh().coordsys();
       assert(0 != cs);
-      
+
       // Get density at quadrature points for this cell
       const double_array& density = _material->calcDensity();
 
       quadPtsGlobal = quadPtsNondim;
       _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
-				  lengthScale);
+          lengthScale);
 
       // Compute action for element body forces
-      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	const int err = _gravityField->query(&gravVec[0], gravVec.size(),
-					     &quadPtsGlobal[0], spaceDim, cs);
-	if (err)
-	  throw std::runtime_error("Unable to get gravity vector for point.");
-	_normalizer->nondimensionalize(&gravVec[0], gravVec.size(), 
-				       gravityScale);
-	const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
-	for (int iBasis=0, iQ=iQuad*numBasis;
-	     iBasis < numBasis; ++iBasis) {
-	  const double valI = wt*basis[iQ+iBasis];
-	  for (int iDim=0; iDim < spaceDim; ++iDim) {
-	    _cellVector[iBasis*spaceDim+iDim] += valI*gravVec[iDim];
-	  } // for
-	} // for
+      for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
+        const int err = _gravityField->query(&gravVec[0], gravVec.size(),
+            &quadPtsGlobal[0], spaceDim, cs);
+        if (err)
+          throw std::runtime_error("Unable to get gravity vector for point.");
+        _normalizer->nondimensionalize(&gravVec[0], gravVec.size(),
+            gravityScale);
+        const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
+        for (int iBasis = 0, iQ = iQuad * numBasis; iBasis < numBasis; ++iBasis) {
+          const double valI = wt * basis[iQ + iBasis];
+          for (int iDim = 0; iDim < spaceDim; ++iDim) {
+            _cellVector[iBasis * spaceDim + iDim] += valI * gravVec[iDim];
+          } // for
+        } // for
       } // for
-      PetscLogFlops(numQuadPts*(2+numBasis*(1+2*spaceDim)));
-      _logger->eventEnd(computeEvent);      
+      PetscLogFlops(numQuadPts * (2 + numBasis * (1 + 2 * spaceDim)));
+      _logger->eventEnd(computeEvent);
     } // if
 
     // residualSection->view("After gravity contribution");
@@ -309,7 +308,6 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     _logger->eventBegin(updateEvent);
     residualVisitor.clear();
     sieveMesh->updateClosure(*c_iter, residualVisitor);
-    // residualSection->view("After stress contribution");
     _logger->eventEnd(updateEvent);
   } // for
 } // integrateResidual
@@ -357,19 +355,26 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   // Set variables dependent on dimension of cell
   totalStrain_fn_type calcTotalStrainFn;
   elasticityJacobian_fn_type elasticityJacobianFn;
+  elasticityJacobian_fn_type elasticityPreconFn;
   if (1 == cellDim) {
     elasticityJacobianFn = 
       &pylith::feassemble::ElasticityImplicit::_elasticityJacobian1D;
+    elasticityPreconFn = 
+      &pylith::feassemble::ElasticityImplicit::_elasticityPrecon1D;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
   } else if (2 == cellDim) {
     elasticityJacobianFn = 
       &pylith::feassemble::ElasticityImplicit::_elasticityJacobian2D;
+    elasticityPreconFn = 
+      &pylith::feassemble::ElasticityImplicit::_elasticityPrecon2D;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
   } else if (3 == cellDim) {
     elasticityJacobianFn = 
       &pylith::feassemble::ElasticityImplicit::_elasticityJacobian3D;
+    elasticityPreconFn = 
+      &pylith::feassemble::ElasticityImplicit::_elasticityPrecon3D;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
   } else
@@ -525,6 +530,21 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 					&_cellMatrix[0], ADD_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
     _logger->eventEnd(updateEvent);
+#if 0
+    _logger->eventBegin(computeEvent);
+    // Get laplacian matrix at quadrature points for this cell
+    CALL_MEMBER_FN(*this, elasticityPreconFn)(elasticConsts);
+    _logger->eventEnd(computeEvent);
+
+    // Assemble cell contribution into PETSc preconditioner matrix.
+    _logger->eventBegin(updateEvent);
+    jacobianVisitor.clear();
+    PetscErrorCode err = updateOperator(preconMat, *sieveMesh->getSieve(),
+					jacobianVisitor, *c_iter,
+					&_cellMatrix[0], ADD_VALUES);
+    CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
+    _logger->eventEnd(updateEvent);
+#endif
   } // for
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();

@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/CellGeometry.hh
+ * @file libsrc/feassemble/CellGeometry.hh
  *
  * @brief C++ abstract base class for cell geometry calculations.
  */
@@ -25,6 +25,7 @@
 #include "pylith/utils/array.hh" // HASA double_array
 
 // CellGeometry ---------------------------------------------------------
+/// Abstract base class for cell geometry calculations.
 class pylith::feassemble::CellGeometry
 { // CellGeometry
   friend class TestCellGeometry; // unit testing

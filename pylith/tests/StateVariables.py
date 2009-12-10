@@ -37,7 +37,7 @@ def check_state_variables(testcase, filename, mesh, stateVarNames):
   normalizer._configure()
 
   # Check state variables
-  tolerance = 1.0e-5
+  tolerance = 1.0e-6
 
   for name in stateVarNames:
     valuesE = testcase.calcStateVar(name, data['vertices'], data['cells'])

@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/meshio/VertexFilterVecNorm.hh
+ * @file libsrc/meshio/VertexFilterVecNorm.hh
  *
  * @brief C++ object for computing vector norms for fields over
  * vertices when outputing finite-element data.
@@ -24,6 +24,9 @@
 #include "VertexFilter.hh" // ISA VertexFilter
 
 // VertexFilterVecNorm --------------------------------------------------
+/** @brief C++ object for computing vector norms for fields over
+ * vertices when outputing finite-element data.
+ */
 template<typename field_type>
 class pylith::meshio::VertexFilterVecNorm : public VertexFilter<field_type>
 { // VertexFilterVecNorm

@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/Quadrature1Din2D.hh
+ * @file libsrc/feassemble/Quadrature1Din2D.hh
  *
  * @brief Quadrature for 1-D finite-elements in 2-D space.
  */
@@ -19,14 +19,11 @@
 #if !defined(pylith_feassemble_quadrature1din2d_hh)
 #define pylith_feassemble_quadrature1din2d_hh
 
+// Include directives ---------------------------------------------------
 #include "QuadratureEngine.hh"
 
-namespace pylith {
-  namespace feassemble {
-    class Quadrature1Din2D;
-  } // feassemble
-} // pylith
-
+// Quadrature0D ---------------------------------------------------------
+/// Quadrature for 1-D finite-elements in 2-D space.
 class pylith::feassemble::Quadrature1Din2D : public QuadratureEngine
 { // Quadrature1Din2D
   friend class TestQuadrature1Din2D; // unit testing

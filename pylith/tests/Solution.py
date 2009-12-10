@@ -22,25 +22,22 @@ def check_displacements(testcase, filename, mesh):
   """
   data = testcase.reader.read(filename)
   
-  # Check cells
-  (ncells, ncorners) = data['cells'].shape
-  testcase.assertEqual(mesh['ncells'], ncells)
-  testcase.assertEqual(mesh['ncorners'], ncorners)
-
   # Check vertices
   (nvertices, spaceDim) = data['vertices'].shape
   testcase.assertEqual(mesh['nvertices'], nvertices)
   testcase.assertEqual(mesh['spaceDim'], spaceDim)
 
   # Check displacement solution
-  tolerance = 1.0e-5
+  tolerance = 1.0e-6
 
   dispE = testcase.calcDisplacements(data['vertices'])
   disp = data['vertex_fields']['displacement']
 
   # Check x displacements
+  mask = numpy.abs(dispE[:,0] > tolerance)
   diff = numpy.abs(disp[:,0] - dispE[:,0])
-  okay = diff < tolerance
+  diffR = numpy.abs(1.0 - disp[:,0] / dispE[:,0])  
+  okay = ~mask * (diff < tolerance) + mask * (diffR < tolerance)
   if numpy.sum(okay) != nvertices:
     "Error in x-component of displacement field."
     print "Expected values: ",dispE
@@ -48,8 +45,10 @@ def check_displacements(testcase, filename, mesh):
   testcase.assertEqual(nvertices, numpy.sum(okay))    
     
   # Check y displacements
-  diff = numpy.abs(disp[:,1] - dispE[:,1])
-  okay = diff < tolerance
+  mask = numpy.abs(dispE[:,1] > tolerance)
+  diff = numpy.abs(disp[:,1] - dispE[:,0])
+  diffR = numpy.abs(1.0 - disp[:,1] / dispE[:,1])  
+  okay = ~mask * (diff < tolerance) + mask * (diffR < tolerance)
   if numpy.sum(okay) != nvertices:
     "Error in y-component of displacement field."
     print "Expected values: ",dispE
@@ -57,8 +56,10 @@ def check_displacements(testcase, filename, mesh):
   testcase.assertEqual(nvertices, numpy.sum(okay))    
 
   # Check z displacements
+  mask = numpy.abs(dispE[:,2] > tolerance)
   diff = numpy.abs(disp[:,2] - dispE[:,2])
-  okay = diff < tolerance
+  diffR = numpy.abs(1.0 - disp[:,2] / dispE[:,2])  
+  okay = ~mask * (diff < tolerance) + mask * (diffR < tolerance)
   if numpy.sum(okay) != nvertices:
     "Error in z-component of displacement field."
     print "Expected values: ",dispE

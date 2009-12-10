@@ -521,12 +521,12 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembled(void)
   topology::Jacobian jacobian(fields);
 
   const double t = 2.134;
-  fault.integrateJacobian(&jacobian, t, &fields);
+  fault.integrateJacobianAssembled(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
 
   jacobian.assemble("final_assembly");
 
-  //MatView(jacobian, PETSC_VIEWER_STDOUT_WORLD); // DEBUGGING
+  // MatView(jacobian.matrix(), PETSC_VIEWER_STDOUT_WORLD); // DEBUGGING
 
   const double* valsE = _data->valsJacobian;
   const int nrowsE = dispSection->sizeWithBC();
@@ -576,6 +576,77 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembled(void)
 } // testIntegrateJacobianAssembled
 
 // ----------------------------------------------------------------------
+// Test integrateJacobianAssembled() with lumped Jacobian.
+void
+pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembledLumped(void)
+{ // testIntegrateJacobianAssembledLumped
+  topology::Mesh mesh;
+  FaultCohesiveKin fault;
+  topology::SolutionFields fields(mesh);
+  _initialize(&mesh, &fault, &fields);
+
+  topology::Field<topology::Mesh> jacobian(mesh);
+  jacobian.label("Jacobian");
+  jacobian.vectorFieldType(topology::FieldBase::VECTOR);
+  jacobian.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
+  jacobian.allocate();
+
+  const double t = 2.134;
+  fault.integrateJacobianAssembled(jacobian, t, &fields);
+  CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
+  jacobian.complete();
+
+#if 0 // DEBUGGING
+  jacobian.view("JACOBIAN");
+#endif // DEBUGGING
+
+  const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
+  CPPUNIT_ASSERT(!jacobianSection.isNull());
+
+  int iVertex = 0;
+  const double tolerance = 1.0e-06;
+  const int spaceDim = _data->spaceDim;
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
+  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
+    faultSieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const SieveSubMesh::label_sequence::iterator verticesBegin = 
+    vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  SieveSubMesh::renumbering_type& renumbering = 
+    faultSieveMesh->getRenumbering();
+  const SieveMesh::renumbering_type::const_iterator renumberingBegin = 
+    renumbering.begin();
+  const SieveMesh::renumbering_type::const_iterator renumberingEnd = 
+    renumbering.end();
+  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+       v_iter != verticesEnd;
+       ++v_iter, ++iVertex) {
+    SieveMesh::point_type meshVertex = -1;
+    bool found = false;
+
+    for (SieveMesh::renumbering_type::const_iterator r_iter = renumberingBegin;
+	 r_iter != renumberingEnd;
+	 ++r_iter) {
+      if (r_iter->second == *v_iter) {
+        meshVertex = r_iter->first;
+        found = true;
+        break;
+      } // if
+    } // for
+    CPPUNIT_ASSERT(found);
+    int fiberDim = jacobianSection->getFiberDimension(meshVertex);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
+    const double* jacobianVertex = jacobianSection->restrictPoint(meshVertex);
+    CPPUNIT_ASSERT(0 != jacobianVertex);
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, jacobianVertex[iDim],
+				   tolerance);
+  } // for
+} // testIntegrateJacobianAssembledLumped
+
+// ----------------------------------------------------------------------
 // Test updateStateVars().
 void
 pylith::faults::TestFaultCohesiveKin::testUpdateStateVars(void)
@@ -622,16 +693,16 @@ pylith::faults::TestFaultCohesiveKin::testUpdateStateVars(void)
   const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
   SieveSubMesh::renumbering_type& renumbering = faultSieveMesh->getRenumbering();
 
-  // Compute expected cumulative slip using eqsrcs
-  topology::Field<topology::SubMesh> cumSlipE(*fault._faultMesh);
-  cumSlipE.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
-  cumSlipE.allocate();
-  const ALE::Obj<RealSection> cumSlipESection = cumSlipE.section();
-  CPPUNIT_ASSERT(!cumSlipESection.isNull());
+  // Compute expected slip using eqsrcs
+  topology::Field<topology::SubMesh> slipE(*fault._faultMesh);
+  slipE.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
+  slipE.allocate();
+  const ALE::Obj<RealSection> slipESection = slipE.section();
+  CPPUNIT_ASSERT(!slipESection.isNull());
 
-  const ALE::Obj<RealSection> cumSlipSection =
-    fault._fields->get("cumulative slip").section();
-  CPPUNIT_ASSERT(!cumSlipSection.isNull());
+  const ALE::Obj<RealSection> slipSection =
+    fault._fields->get("slip").section();
+  CPPUNIT_ASSERT(!slipSection.isNull());
 
   const FaultCohesiveKin::srcs_type::const_iterator srcsEnd = fault._eqSrcs.end();
   for (FaultCohesiveKin::srcs_type::iterator s_iter=fault._eqSrcs.begin(); 
@@ -640,7 +711,7 @@ pylith::faults::TestFaultCohesiveKin::testUpdateStateVars(void)
     EqKinSrc* src = s_iter->second;
     assert(0 != src);
     if (t >= src->originTime())
-      src->slip(&cumSlipE, t);
+      src->slip(&slipE, t);
   } // for
 
   int iVertex = 0;
@@ -660,13 +731,13 @@ pylith::faults::TestFaultCohesiveKin::testUpdateStateVars(void)
     } // for
     CPPUNIT_ASSERT(found);
 
-    // Check _cumSlip
-    int fiberDim = cumSlipSection->getFiberDimension(*v_iter);
+    // Check _slip
+    int fiberDim = slipSection->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const double* slipV = cumSlipSection->restrictPoint(*v_iter);
+    const double* slipV = slipSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != slipV);
 
-    const double* slipE = cumSlipESection->restrictPoint(*v_iter);
+    const double* slipE = slipESection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != slipE);
 
     for (int iDim=0; iDim < spaceDim; ++iDim) {

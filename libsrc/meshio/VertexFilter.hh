@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/meshio/VertexFilter.hh
+ * @file libsrc/meshio/VertexFilter.hh
  *
  * @brief C++ object for filtering vertex fields when outputing
  * finite-element data.
@@ -26,6 +26,9 @@
 #include "pylith/topology/topologyfwd.hh" // USES Field
 
 // VertexFilter ---------------------------------------------------------
+/** @brief C++ object for filtering vertex fields when outputing
+ * finite-element data.
+ */
 template<typename field_type>
 class pylith::meshio::VertexFilter
 { // VertexFilter

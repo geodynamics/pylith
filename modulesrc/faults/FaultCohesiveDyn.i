@@ -34,6 +34,12 @@ namespace pylith {
       /// Deallocate PETSc and local data structures.
       virtual
       void deallocate(void);
+
+      /** Sets the spatial database for the inital tractions
+       * @param dbs spatial database for initial tractions
+       */
+      void dbInitial(spatialdata::spatialdb::SpatialDB* dbs);
+
   
       /** Initialize fault. Determine orientation and setup boundary
        * condition parameters.

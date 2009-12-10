@@ -11,9 +11,9 @@
 //
 
 /**
- * @file libsrc/topology/MeshIO.hh
+ * @file libsrc/meshio/MeshIO.hh
  *
- * @brief C++ object for managing mesh input/output.
+ * @brief C++ base class for managing mesh input/output.
  */
 
 #if !defined(pylith_meshio_meshio_hh)
@@ -29,6 +29,7 @@
                                     // string_vector
 
 // MeshIO ---------------------------------------------------------------
+/// C++ abstract base class for managing mesh input/output.
 class pylith::meshio::MeshIO
 { // MeshIO
 

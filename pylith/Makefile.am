@@ -32,18 +32,24 @@ nobase_pkgpyexec_PYTHON = \
 	faults/Fault.py \
 	faults/FaultCohesive.py \
 	faults/FaultCohesiveKin.py \
+	faults/FaultCohesiveDyn.py \
+	faults/FaultCohesiveDynL.py \
 	faults/LiuCosSlipFn.py \
 	faults/SingleRupture.py \
 	faults/SlipTimeFn.py \
 	faults/StepSlipFn.py \
+	faults/TimeHistorySlipFn.py \
 	feassemble/__init__.py \
 	feassemble/Constraint.py \
 	feassemble/ElasticityExplicit.py \
+	feassemble/ElasticityExplicitLgDeform.py \
 	feassemble/ElasticityImplicit.py \
+	feassemble/ElasticityImplicitLgDeform.py \
 	feassemble/FIATLagrange.py \
 	feassemble/FIATSimplex.py \
 	feassemble/Integrator.py \
 	feassemble/IntegratorElasticity.py \
+	feassemble/IntegratorElasticityLgDeform.py \
 	feassemble/ReferenceCell.py \
 	feassemble/Quadrature.py \
 	feassemble/CellGeometry.py \
@@ -79,6 +85,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/OutputManagerSubMesh.py \
 	meshio/OutputSoln.py \
 	meshio/OutputFaultKin.py \
+	meshio/OutputFaultDyn.py \
 	meshio/OutputMatElastic.py \
 	meshio/OutputNeumann.py \
 	meshio/OutputSolnSubset.py \
@@ -101,12 +108,16 @@ nobase_pkgpyexec_PYTHON = \
 	perf/Jacobian.py \
 	problems/__init__.py \
 	problems/Explicit.py \
+	problems/ExplicitLumped.py \
+	problems/ExplicitLgDeform.py \
 	problems/Formulation.py \
 	problems/Implicit.py \
+	problems/ImplicitLgDeform.py \
 	problems/Problem.py \
 	problems/Solver.py \
 	problems/SolverLinear.py \
 	problems/SolverNonlinear.py \
+	problems/SolverLumped.py \
 	problems/TimeDependent.py \
 	problems/TimeStep.py \
 	problems/TimeStepAdapt.py \

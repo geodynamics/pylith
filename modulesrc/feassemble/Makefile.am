@@ -37,7 +37,10 @@ swig_sources = \
 	Integrator.i \
 	IntegratorElasticity.i \
 	ElasticityImplicit.i \
-	ElasticityExplicit.i
+	ElasticityExplicit.i \
+	IntegratorElasticityLgDeform.i \
+	ElasticityImplicitLgDeform.i \
+	ElasticityExplicitLgDeform.i
 
 swig_generated = \
 	feassemble_wrap.cxx \

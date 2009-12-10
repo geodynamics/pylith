@@ -32,6 +32,12 @@ def suite():
   #from TestDislocation2 import TestDislocation2
   #suite.addTest(unittest.makeSuite(TestDislocation2))
 
+  from TestLgDeformRigidBody import TestRigidBody
+  suite.addTest(unittest.makeSuite(TestRigidBody))
+
+  from TestLgDeformTraction import TestTraction
+  suite.addTest(unittest.makeSuite(TestTraction))
+
   return suite
 
 

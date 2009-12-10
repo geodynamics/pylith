@@ -10,17 +10,9 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/PowerLaw3D.h
+/** @file libsrc/materials/PowerLaw3D.hh
  *
- * @brief C++ PowerLaw3D object
- *
- * 3-D, isotropic, power-law Maxwell viscoelastic material. The
- * physical properties are specified using density, shear-wave speed,
- * power-law coefficient, power-law exponent, and compressional-wave speed.
- * The physical properties are stored internally using density, lambda, mu,
- * which are directly related to the elasticity constants used in the
- * finite-element integration. The viscosity information is retained as
- * a viscosity coefficient and the power-law exponent.
+ * @brief 3-D, isotropic, power-law viscoelastic material. 
  */
 
 #if !defined(pylith_materials_powerlaw3d_hh)
@@ -30,6 +22,16 @@
 #include "ElasticMaterial.hh" // ISA ElasticMaterial
 
 // Powerlaw3D -----------------------------------------------------------
+/** @brief 3-D, isotropic, power-law viscoelastic material. 
+ *
+ * The physical properties are specified using density, shear-wave
+ * speed, viscosity coefficient, power-law exponent, and
+ * compressional-wave speed.  The physical properties are stored
+ * internally using density, lambda, mu, which are directly related to
+ * the elasticity constants used in the finite-element
+ * integration. The viscosity information is retained as specified.
+ */
+
 class pylith::materials::PowerLaw3D : public ElasticMaterial
 { // class PowerLaw3D
   friend class TestPowerLaw3D; // unit testing

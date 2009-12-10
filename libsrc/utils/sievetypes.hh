@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/utils/sievetypes.hh
+ * @file libsrc/utils/sievetypes.hh
  *
  * @brief Aliases for Sieve types.
  */
@@ -23,7 +23,10 @@
 
 namespace pylith {
 
+  /// Sieve mesh.
   typedef ALE::IMesh<> Mesh;
+
+  /// Sieve submesh.
   typedef ALE::IMesh<ALE::LabelSifter<int, Mesh::point_type> > SubMesh;
 
 } // pylith

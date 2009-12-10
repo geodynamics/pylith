@@ -26,6 +26,8 @@
 #include "pylith/utils/array.hh" // HASA int_array
 
 // DirichletBC ------------------------------------------------------
+/// @brief Dirichlet (prescribed values at degrees of freedom) boundary
+/// conditions with a set of points.
 class pylith::bc::DirichletBC : public TimeDependentPoints, 
 				public feassemble::Constraint
 { // class DirichletBC

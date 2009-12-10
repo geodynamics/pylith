@@ -11,7 +11,7 @@
 //
 
 /**
- * @file libsrc/topology/PsetFile.hh
+ * @file libsrc/meshio/PsetFile.hh
  *
  * @brief C++ base class for input/output of LaGriT Pset files.
  */
@@ -26,6 +26,7 @@
 #include <string> // HASA std::string
 
 // PsetFile -------------------------------------------------------------
+/// C++ base class for input/output of LaGriT Pset files.
 class pylith::meshio::PsetFile
 { // PsetFile
 

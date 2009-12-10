@@ -25,6 +25,7 @@
 #include "pylith/utils/petscfwd.h" // HOLDSA PetscMat
 
 // Jacobian -------------------------------------------------------------
+/// Jacobian of the system as a PETSc sparse matrix.
 class pylith::topology::Jacobian
 { // Jacobian
   friend class TestJacobian; // unit testing
