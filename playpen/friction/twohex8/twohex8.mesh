@@ -103,7 +103,16 @@ mesh = {
     type = vertices
     count = 6
     indices = {
-      0  2  4  6  8 10
+      0  2  4  6  8  10
+    }
+  }
+
+  group = {
+    name = y_pos
+    type = vertices
+    count = 6
+    indices = {
+      1  3  5  7  9  11
     }
   }
 
@@ -123,6 +132,15 @@ mesh = {
     count = 6
     indices = {
       0  1  2  3  4  5
+    }
+  }
+
+  group = {
+    name = z_pos
+    type = vertices
+    count = 6
+    indices = {
+      6  7  8  9  10  11
     }
   }
 
