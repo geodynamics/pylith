@@ -58,7 +58,9 @@ public:
 
   /// @name Input fields
   //@{
+  double* fieldT; ///< Solution field at time t.
   double* fieldIncr; ///< Solution increment field at time t.
+  double* jacobian; ///< Jacobian sparse matrix.
   //@}
 
   /// @name Calculated values.
@@ -66,7 +68,9 @@ public:
   double* orientation; ///< Expected values for fault orientation.
   double* area; ///< Expected values for fault area.
   double* fieldIncrSlip; ///< Expected values for solution increment for slipping case.
+  double* slipSlip; ///< Expected values for slip for slipping case.
   double* fieldIncrOpen; ///< Expected values for solution increment for opening case.
+  double* slipOpen; ///< Expected values for slip for opening case.
 
   int* constraintVertices; ///< Expected points for constraint vertices
   int* constraintCells; ///< Expected cells for constraint vertices
