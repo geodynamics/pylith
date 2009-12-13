@@ -185,7 +185,7 @@ class FaultCohesiveDynL(FaultCohesive, Integrator, ModuleFaultCohesiveDynL):
     """
     FaultCohesive._configure(self)
     if not isinstance(self.inventory.db, NullComponent):
-      ModuleFaultCohesiveDynL.dbInitial(self, self.inventory.db)
+      ModuleFaultCohesiveDynL.dbInitialTract(self, self.inventory.db)
     self.output = self.inventory.output
     return
 
