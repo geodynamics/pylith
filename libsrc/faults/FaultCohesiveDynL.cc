@@ -73,9 +73,9 @@ pylith::faults::FaultCohesiveDynL::deallocate(void)
 // ----------------------------------------------------------------------
 // Sets the spatial database for the inital tractions
 void
-pylith::faults::FaultCohesiveDynL::dbInitial(spatialdata::spatialdb::SpatialDB* db)
+pylith::faults::FaultCohesiveDynL::dbInitialTract(spatialdata::spatialdb::SpatialDB* db)
 { // dbInitial
-  _dbInitial = db;
+  _dbInitialTract = db;
 } // dbInitial
 
 // ----------------------------------------------------------------------
@@ -663,7 +663,7 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
   assert(!orientationSection.isNull());
 
   double_array tractionInitialVertex(spaceDim);
-  const ALE::Obj<RealSection>& tractionInitialSection = (0 != _dbInitial) ?
+  const ALE::Obj<RealSection>& tractionInitialSection = (0 != _dbInitialTract) ?
     _fields->get("initial traction").section() : 0;
 
   double_array lagrangeTVertex(spaceDim);
@@ -725,7 +725,7 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 				     jacobianVertex.size());
 
       // Get initial fault tractions
-      if (0 != _dbInitial) {
+      if (0 != _dbInitialTract) {
 	assert(!tractionInitialSection.isNull());
 	tractionInitialSection->restrictPoint(vertexFault, 
 					      &tractionInitialVertex[0],
@@ -1117,7 +1117,7 @@ pylith::faults::FaultCohesiveDynL::vertexField(
     return buffer;
 
   } else if (0 == strncasecmp("initial_traction", name, slipStrLen)) {
-    assert(0 != _dbInitial);
+    assert(0 != _dbInitialTract);
     const topology::Field<topology::SubMesh>& initialTraction =
       _fields->get("initial traction");
     return initialTraction;
@@ -1510,7 +1510,7 @@ pylith::faults::FaultCohesiveDynL::_calcTractions(
   tractions->zero();
 
   // Set tractions to initial tractions if they exist
-  if (0 != _dbInitial) {
+  if (0 != _dbInitialTract) {
     const ALE::Obj<RealSection>& initialTractionSection = 
       _fields->get("initial traction").section();
     assert(!initialTractionSection.isNull());
@@ -1594,7 +1594,7 @@ pylith::faults::FaultCohesiveDynL::_getInitialTractions(void)
   const int spaceDim = _quadrature->spaceDim();
   const int numQuadPts = _quadrature->numQuadPts();
 
-  if (0 != _dbInitial) { // Setup initial values, if provided.
+  if (0 != _dbInitialTract) { // Setup initial values, if provided.
     // Create section to hold initial tractions.
     _fields->add("initial traction", "initial_traction");
     topology::Field<topology::SubMesh>& traction = _fields->get("initial traction");
@@ -1604,24 +1604,24 @@ pylith::faults::FaultCohesiveDynL::_getInitialTractions(void)
     const ALE::Obj<RealSection>& tractionSection = traction.section();
     assert(!tractionSection.isNull());
 
-    _dbInitial->open();
+    _dbInitialTract->open();
     switch (spaceDim)
       { // switch
       case 1 : {
 	const char* valueNames[] = {"traction-normal"};
-	_dbInitial->queryVals(valueNames, 1);
+	_dbInitialTract->queryVals(valueNames, 1);
 	break;
       } // case 1
       case 2 : {
 	const char* valueNames[] = {"traction-shear", "traction-normal"};
-	_dbInitial->queryVals(valueNames, 2);
+	_dbInitialTract->queryVals(valueNames, 2);
 	break;
       } // case 2
       case 3 : {
 	const char* valueNames[] = {"traction-shear-leftlateral",
 				    "traction-shear-updip",
 				    "traction-normal"};
-	_dbInitial->queryVals(valueNames, 3);
+	_dbInitialTract->queryVals(valueNames, 3);
 	break;
       } // case 3
       default :
@@ -1662,7 +1662,7 @@ pylith::faults::FaultCohesiveDynL::_getInitialTractions(void)
 				 &coordsVertex[0], coordsVertex.size());
       
       tractionVertex = 0.0;
-      const int err = _dbInitial->query(&tractionVertex[0], spaceDim,
+      const int err = _dbInitialTract->query(&tractionVertex[0], spaceDim,
 					&coordsVertex[0], spaceDim, cs);
       if (err) {
 	std::ostringstream msg;
@@ -1670,7 +1670,7 @@ pylith::faults::FaultCohesiveDynL::_getInitialTractions(void)
 	for (int i=0; i < spaceDim; ++i)
 	  msg << " " << coordsVertex[i];
 	msg << ") for dynamic fault interface " << label() << "\n"
-	    << "using spatial database " << _dbInitial->label() << ".";
+	    << "using spatial database " << _dbInitialTract->label() << ".";
 	throw std::runtime_error(msg.str());
       } // if
 	
@@ -1682,7 +1682,7 @@ pylith::faults::FaultCohesiveDynL::_getInitialTractions(void)
       tractionSection->updatePoint(*v_iter, &tractionVertex[0]);
     } // for
     
-    _dbInitial->close();
+    _dbInitialTract->close();
 
     // debugging
     traction.view("INITIAL TRACTIONS");

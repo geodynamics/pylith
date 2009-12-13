@@ -2,7 +2,6 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-<<<<<<< .working
 Status?
 
   Field split
@@ -10,26 +9,13 @@ Status?
   customized SNES line search
   Laplacian based preconditioner
 
-=======
 Data structure to hold label of fault Lagrange vertices and
 conventional vertices 
   array of structure (lagrange, positive, negative, fault)
 
   no mesh queries? Just loops?
 
->>>>>>> .merge-right.r16093
-----------------------------------------------------------------------
-<<<<<<< .working
-VISIT TO GNS SCIENCE
-----------------------------------------------------------------------
-
-Discuss TODO list for 2010 workshop
-
-Large deformations
-
 Drucker-Prager elastoplastic (or viscoelastoplastic?)
-
-Reduced integration
 
 Lumped solver
 
@@ -63,7 +49,6 @@ Rewrite governing equations to include fault implementation
 Rewrite bulk constitutive models
 
 ----------------------------------------------------------------------
-=======
 FRICTION
 ----------------------------------------------------------------------
 
@@ -71,6 +56,12 @@ Initial tractions
   Integrate over fault surface (should be current implementation)
 Constitutive model parameters
   Integrate over faces to get weighted averages
+
+FaultCohesiveDyn -> FaultCohesiveDynNoL
+FaultCohesiveDynL -> FaultCohesiveDyn
+Refactor FaultCohesive
+  integrateResidualAssembled()
+    updateSlip() [implemented for FaultCohesiveKin, not for FaultCohesiveDyn]
 
 3. pylith::friction::FrictionModel
   (base class for fault constitutive models) [Brad]
