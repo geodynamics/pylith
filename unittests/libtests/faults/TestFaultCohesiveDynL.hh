@@ -26,6 +26,7 @@
 #include "pylith/faults/faultsfwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
 #include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Quadrature
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
 
 #include <vector> // HASA std::vector
 
@@ -47,6 +48,14 @@ class pylith::faults::TestFaultCohesiveDynL : public CppUnit::TestFixture
 
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testDBInitialTract );
+
+  // Tests in derived classes:
+  // testInitialize()
+  // testConstrainSolnSpaceStick()
+  // testConstrainSolnSpaceSlip()
+  // testConstrainSolnSpaceOpen()
+  // testUpdateStateVars()
+  // testCalcTractions()
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -76,8 +85,14 @@ public :
   /// Test initialize().
   void testInitialize(void);
 
-  /// Test constrainSolnSpace().
-  void testConstrainSolnSpace(void);
+  /// Test constrainSolnSpace() for sticking case.
+  void testConstrainSolnSpaceStick(void);
+
+  /// Test constrainSolnSpace() for slipping case.
+  void testConstrainSolnSpaceSlip(void);
+
+  /// Test constrainSolnSpace for fault opening case().
+  void testConstrainSolnSpaceOpen(void);
 
   /// Test updateStateVars().
   void testUpdateStateVars(void);
@@ -96,7 +111,7 @@ private :
    */
   void _initialize(topology::Mesh* const mesh,
 		   FaultCohesiveDynL* const fault,
-		   topology::SolutionFields* const fields) const;
+		   topology::SolutionFields* const fields);
 
   /** Determine if vertex is a Lagrange multiplier constraint vertex.
    *

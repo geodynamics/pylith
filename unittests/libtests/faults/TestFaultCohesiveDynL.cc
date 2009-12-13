@@ -80,10 +80,10 @@ pylith::faults::TestFaultCohesiveDynL::testDBInitialTract(void)
   FaultCohesiveDynL fault;
 
   const std::string& label = "test database";
-  spatialdata::spatialdb::UniformDB db;
+  spatialdata::spatialdb::SimpleDB db;
   db.label(label.c_str());
   fault.dbInitialTract(&db);
-  CPPUNIT_ASSERT(0 != fault._dbInitialTract)
+  CPPUNIT_ASSERT(&db == fault._dbInitialTract);
   CPPUNIT_ASSERT_EQUAL(label, std::string(fault._dbInitialTract->label()));
  } // testDBInitialTract
 
@@ -162,12 +162,28 @@ pylith::faults::TestFaultCohesiveDynL::testInitialize(void)
 } // testInitialize
 
 // ----------------------------------------------------------------------
-// Test constrainSolnSpace().
+// Test constrainSolnSpace() for sticking case.
 void
-pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpace(void)
-{ // testConstrainSolnSpace
+pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceStick(void)
+{ // testConstrainSolnSpaceStick
   // STUFF GOES HERE
-} // testConstrainSolnSpace
+} // testConstrainSolnSpaceStick
+
+// ----------------------------------------------------------------------
+// Test constrainSolnSpace() for slipping case.
+void
+pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceSlip(void)
+{ // testConstrainSolnSpaceSlip
+  // STUFF GOES HERE
+} // testConstrainSolnSpaceSlip
+
+// ----------------------------------------------------------------------
+// Test constrainSolnSpace() for opening case.
+void
+pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceOpen(void)
+{ // testConstrainSolnSpaceOpen
+  // STUFF GOES HERE
+} // testConstrainSolnSpaceOpen
 
 // ----------------------------------------------------------------------
 // Test updateStateVars().
@@ -196,7 +212,7 @@ void
 pylith::faults::TestFaultCohesiveDynL::_initialize(
 					topology::Mesh* const mesh,
 					FaultCohesiveDynL* const fault,
-					topology::SolutionFields* const fields) const
+					topology::SolutionFields* const fields)
 { // _initialize
   CPPUNIT_ASSERT(0 != mesh);
   CPPUNIT_ASSERT(0 != fault);
@@ -225,12 +241,13 @@ pylith::faults::TestFaultCohesiveDynL::_initialize(
 			  _data->spaceDim);
   
   // Setup initial tractions
-  delete _dbInitialTract; _dbInitialTract =
+  spatialdata::spatialdb::SimpleDB* db =
       new spatialdata::spatialdb::SimpleDB("initial tractions");
-  CPPUNIT_ASSERT(0 != _dbInitialTract)
+  CPPUNIT_ASSERT(0 != db);
   spatialdata::spatialdb::SimpleIOAscii ioInitialTract;
   ioInitialTract.filename(_data->initialTractFilename);
-  _dbInitialTract->ioHandler(&ioInitialTract);
+  db->ioHandler(&ioInitialTract);
+  delete _dbInitialTract; _dbInitialTract = db;
 
   int firstFaultVertex    = 0;
   int firstLagrangeVertex = mesh->sieveMesh()->getIntSection(_data->label)->size();
@@ -248,11 +265,6 @@ pylith::faults::TestFaultCohesiveDynL::_initialize(
   const double normalDir[] = { 1.0, 0.0, 0.0 };
   
   fault->initialize(*mesh, upDir, normalDir); 
-  
-  delete[] sources; sources = 0;
-  for (int i=0; i < nsrcs; ++i)
-    delete[] names[i];
-  delete[] names; names = 0;
   
   // Setup fields
   fields->add("residual", "residual");
