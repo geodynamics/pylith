@@ -39,7 +39,7 @@ namespace pylith {
        *
        * @param db spatial database for initial tractions
        */
-      void dbInitial(spatialdata::spatialdb::SpatialDB* db);
+      void dbInitialTract(spatialdata::spatialdb::SpatialDB* db);
   
       /** Initialize fault. Determine orientation and setup boundary
        * condition parameters.
