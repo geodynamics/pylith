@@ -83,7 +83,7 @@ pylith::faults::TestFaultCohesiveDynL::testDBInitialTract(void)
   spatialdata::spatialdb::SimpleDB db;
   db.label(label.c_str());
   fault.dbInitialTract(&db);
-  CPPUNIT_ASSERT(&db == fault._dbInitialTract);
+  CPPUNIT_ASSERT(0 != fault._dbInitialTract);
   CPPUNIT_ASSERT_EQUAL(label, std::string(fault._dbInitialTract->label()));
  } // testDBInitialTract
 
