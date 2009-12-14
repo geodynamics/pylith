@@ -108,10 +108,12 @@ private :
    * @param mesh PETSc mesh to initialize
    * @param fault Cohesive fault interface condition to initialize.
    * @param fields Solution fields.
+   * @param fieldIncrVals Values for solution increment field.
    */
   void _initialize(topology::Mesh* const mesh,
 		   FaultCohesiveDynL* const fault,
-		   topology::SolutionFields* const fields);
+		   topology::SolutionFields* const fields,
+		   const double* const fieldIncrVals);
 
   /** Determine if vertex is a Lagrange multiplier constraint vertex.
    *
