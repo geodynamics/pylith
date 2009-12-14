@@ -92,10 +92,12 @@ pylith::faults::TestFaultCohesiveDynL::testDBInitialTract(void)
 void
 pylith::faults::TestFaultCohesiveDynL::testInitialize(void)
 { // testInitialize
+  CPPUNIT_ASSERT(0 != _data);
+
   topology::Mesh mesh;
   FaultCohesiveDynL fault;
   topology::SolutionFields fields(mesh);
-  _initialize(&mesh, &fault, &fields);
+  _initialize(&mesh, &fault, &fields, _data->fieldIncrStick);
 
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
@@ -159,6 +161,31 @@ pylith::faults::TestFaultCohesiveDynL::testInitialize(void)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->area[iVertex], areaVertex[0],
 				 tolerance);
   } // for
+
+  // Initial tractions
+  if (0 != fault._dbInitialTract) {
+    //fault._fields->get("initial traction").view("INITIAL TRACTIONS"); // DEBUGGING
+    const ALE::Obj<RealSection>& tractionSection = fault._fields->get(
+        "initial traction").section();
+    CPPUNIT_ASSERT(!tractionSection.isNull());
+    const int spaceDim = _data->spaceDim;
+    iVertex = 0;
+    for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin;
+        v_iter != verticesEnd;
+        ++v_iter, ++iVertex) {
+      const int fiberDim = orientationSection->getFiberDimension(*v_iter);
+      CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
+      const double* tractionVertex = tractionSection->restrictPoint(*v_iter);
+      CPPUNIT_ASSERT(0 != tractionVertex);
+
+      const double tolerance = 1.0e-06;
+      for (int i = 0; i < spaceDim; ++i) {
+        const int index = iVertex * spaceDim + i;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->initialTractions[index],
+            tractionVertex[i], tolerance);
+      } // for
+    } // for
+  } // if
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -166,7 +193,9 @@ pylith::faults::TestFaultCohesiveDynL::testInitialize(void)
 void
 pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceStick(void)
 { // testConstrainSolnSpaceStick
-  // STUFF GOES HERE
+  // STUFF GOES HERE (Surendra)
+  // No change to dispIncr field
+  // Slip field should be zero
 } // testConstrainSolnSpaceStick
 
 // ----------------------------------------------------------------------
@@ -174,7 +203,7 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceStick(void)
 void
 pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceSlip(void)
 { // testConstrainSolnSpaceSlip
-  // STUFF GOES HERE
+  // STUFF GOES HERE (Brad)
 } // testConstrainSolnSpaceSlip
 
 // ----------------------------------------------------------------------
@@ -182,7 +211,7 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceSlip(void)
 void
 pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceOpen(void)
 { // testConstrainSolnSpaceOpen
-  // STUFF GOES HERE
+  // STUFF GOES HERE (Surendra)
 } // testConstrainSolnSpaceOpen
 
 // ----------------------------------------------------------------------
@@ -190,7 +219,7 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceOpen(void)
 void
 pylith::faults::TestFaultCohesiveDynL::testUpdateStateVars(void)
 { // testUpdateStateVars
-  // STUFF GOES HERE
+  // :TODO: Need to verify that fault constitutive updateStateVars is called.
 } // testUpdateStateVars
 
 // ----------------------------------------------------------------------
@@ -198,12 +227,18 @@ pylith::faults::TestFaultCohesiveDynL::testUpdateStateVars(void)
 void
 pylith::faults::TestFaultCohesiveDynL::testCalcTractions(void)
 { // testCalcTractions
+  CPPUNIT_ASSERT(0 != _data);
+
   topology::Mesh mesh;
   FaultCohesiveDynL fault;
   topology::SolutionFields fields(mesh);
-  _initialize(&mesh, &fault, &fields);
+  _initialize(&mesh, &fault, &fields, _data->fieldIncrStick);
   
-  // STUFF GOES HERE
+  // Test with dbInitialTract
+  // :TODO: STUFF GOES HERE (Brad)
+
+  // Test without dbInitialTract
+  // :TODO: STUFF GOES HERE (Brad)
 } // testCalcTractions
 
 // ----------------------------------------------------------------------
@@ -212,7 +247,8 @@ void
 pylith::faults::TestFaultCohesiveDynL::_initialize(
 					topology::Mesh* const mesh,
 					FaultCohesiveDynL* const fault,
-					topology::SolutionFields* const fields)
+					topology::SolutionFields* const fields,
+					const double* const fieldIncr)
 { // _initialize
   CPPUNIT_ASSERT(0 != mesh);
   CPPUNIT_ASSERT(0 != fault);
@@ -252,9 +288,8 @@ pylith::faults::TestFaultCohesiveDynL::_initialize(
   int firstFaultVertex    = 0;
   int firstLagrangeVertex = mesh->sieveMesh()->getIntSection(_data->label)->size();
   int firstFaultCell      = mesh->sieveMesh()->getIntSection(_data->label)->size();
-  if (fault->useLagrangeConstraints()) {
+  if (fault->useLagrangeConstraints())
     firstFaultCell += mesh->sieveMesh()->getIntSection(_data->label)->size();
-  }
   fault->id(_data->id);
   fault->label(_data->label);
   fault->quadrature(_quadrature);
