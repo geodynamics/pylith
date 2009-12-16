@@ -86,6 +86,19 @@ mesh = {
   // Here we list different groups (cells or vertices) that we want to associate
   // with a particular name (ID).
 
+  // This group of vertices may be used to define a fault.
+  // There are 4 vertices corresponding to indices 2, 3, 8, and 9.
+  group = {
+    name = fault
+    type = vertices
+    count = 4
+    indices = {
+      2
+      3
+      8
+      9
+    }
+  }
 
   group = {
     name = x_neg
