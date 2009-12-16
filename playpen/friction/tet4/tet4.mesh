@@ -2,7 +2,7 @@
 // This defines a brick-shaped mesh composed of two cubic elements.
 mesh = {
 
-  // This is a 3D mesh.is is a 3D mesh.
+  // This is a 3D mesh.
   dimension = 3
 
   // We are using zero-indexing (default) rather than one-indexing.
@@ -49,14 +49,14 @@ mesh = {
     // List the information as:
     // Cell number (starting from zero), vertex 0, vertex 1, etc.
     simplices = {
-             0       0  2  6  1
+             0       0  2  6  1 // reversed
              1       2  1  6  7
              2       2  7  6  8
-             3       3  1  9  2
+             3       3  1  9  2 // reversed
              4       1  2  9  8
              5       1  8  9  7
-             6       2  4  8  3
-             7       4  9  8  9
+             6       2  4  8  3 // reversed
+             7       4  9  8  9 // repeated node
              8       4  9  8 10 
              9       5  3 11  4
             10       3  4 11 10
