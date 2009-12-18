@@ -97,7 +97,7 @@ pylith::faults::TestFaultCohesiveDynL::testInitialize(void)
   topology::Mesh mesh;
   FaultCohesiveDynL fault;
   topology::SolutionFields fields(mesh);
-  _initialize(&mesh, &fault, &fields, _data->fieldIncrStick);
+  _initialize(&mesh, &fault, &fields);
 
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
@@ -203,7 +203,97 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceStick(void)
 void
 pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceSlip(void)
 { // testConstrainSolnSpaceSlip
-  // STUFF GOES HERE (Brad)
+  assert(0 != _data);
+
+  topology::Mesh mesh;
+  FaultCohesiveDynL fault;
+  topology::SolutionFields fields(mesh);
+  _initialize(&mesh, &fault, &fields);
+  topology::Jacobian jacobian(fields, "seqdense");
+  _setFieldsJacobian(&mesh, &fault, &fields, &jacobian, _data->fieldIncrSlip);
+
+  const int spaceDim = _data->spaceDim;
+
+  const double t = 2.134;
+  const double dt = 0.01;
+  fault.timeStep(dt);
+  fault.constrainSolnSpace(&fields, t, jacobian);
+
+  //residual.view("RESIDUAL"); // DEBUGGING
+
+  { // Check solution values
+    const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+    CPPUNIT_ASSERT(!sieveMesh.isNull());
+    const ALE::Obj<SieveMesh::label_sequence>& vertices =
+      sieveMesh->depthStratum(0);
+    CPPUNIT_ASSERT(!vertices.isNull());
+    const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
+    const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+
+    const ALE::Obj<RealSection>& dispIncrSection =
+      fields.get("dispIncr(t->t+dt)").section();
+    CPPUNIT_ASSERT(!dispIncrSection.isNull());
+
+    const double* valsE = _data->fieldIncrOpenE;
+    int iVertex = 0;
+    const int fiberDimE = spaceDim;
+    const double tolerance = 1.0e-06;
+    for (SieveMesh::label_sequence::iterator v_iter = verticesBegin;
+        v_iter != verticesEnd;
+        ++v_iter, ++iVertex) {
+      const int fiberDim = dispIncrSection->getFiberDimension(*v_iter);
+      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
+      const double* vals = dispIncrSection->restrictPoint(*v_iter);
+      CPPUNIT_ASSERT(0 != vals);
+
+      for (int i = 0; i < fiberDimE; ++i) {
+        const int index = iVertex * spaceDim + i;
+        const double valE = valsE[index];
+        if (fabs(valE) > tolerance)
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+        else
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+      } // for
+    } // for
+  } // Check solution values
+
+  { // Check slip values
+    const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
+    CPPUNIT_ASSERT(!faultSieveMesh.isNull());
+    SieveSubMesh::renumbering_type& renumbering =
+      faultSieveMesh->getRenumbering();
+    const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
+      faultSieveMesh->depthStratum(0);
+    CPPUNIT_ASSERT(!vertices.isNull());
+    const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
+    const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+
+    const ALE::Obj<RealSection>& slipSection =
+      fault._fields->get("slip").section();
+    CPPUNIT_ASSERT(!slipSection.isNull());
+
+    const double* valsE = _data->slipSlipE;
+    int iVertex = 0;
+    const int fiberDimE = spaceDim;
+    const double tolerance = 1.0e-06;
+    for (SieveMesh::label_sequence::iterator v_iter = verticesBegin; v_iter
+        != verticesEnd; ++v_iter, ++iVertex) {
+      const int fiberDim = slipSection->getFiberDimension(*v_iter);
+      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
+      const double* vals = slipSection->restrictPoint(*v_iter);
+      CPPUNIT_ASSERT(0 != vals);
+
+      for (int i = 0; i < fiberDimE; ++i) {
+        const int index = iVertex * spaceDim + i;
+        const double valE = valsE[index];
+        if (fabs(valE) > tolerance)
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+        else
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+      } // for
+    } // for
+  } // Check slip values
+
 } // testConstrainSolnSpaceSlip
 
 // ----------------------------------------------------------------------
@@ -232,7 +322,9 @@ pylith::faults::TestFaultCohesiveDynL::testCalcTractions(void)
   topology::Mesh mesh;
   FaultCohesiveDynL fault;
   topology::SolutionFields fields(mesh);
-  _initialize(&mesh, &fault, &fields, _data->fieldIncrStick);
+  _initialize(&mesh, &fault, &fields);
+  topology::Jacobian jacobian(fields, "seqdense");
+  _setFieldsJacobian(&mesh, &fault, &fields, &jacobian, _data->fieldIncrStick);
   
   // Test with dbInitialTract
   // :TODO: STUFF GOES HERE (Brad)
@@ -247,8 +339,7 @@ void
 pylith::faults::TestFaultCohesiveDynL::_initialize(
 					topology::Mesh* const mesh,
 					FaultCohesiveDynL* const fault,
-					topology::SolutionFields* const fields,
-					const double* const fieldIncr)
+					topology::SolutionFields* const fields)
 { // _initialize
   CPPUNIT_ASSERT(0 != mesh);
   CPPUNIT_ASSERT(0 != fault);
@@ -302,17 +393,96 @@ pylith::faults::TestFaultCohesiveDynL::_initialize(
   fault->initialize(*mesh, upDir, normalDir); 
   
   // Setup fields
-  fields->add("residual", "residual");
   fields->add("disp(t)", "displacement");
   fields->add("dispIncr(t->t+dt)", "displacement_increment");
   fields->solutionName("dispIncr(t->t+dt)");
   
   const int spaceDim = _data->spaceDim;
-  topology::Field<topology::Mesh>& residual = fields->get("residual");
-  residual.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
-  residual.allocate();
-  fields->copyLayout("residual");
+  topology::Field<topology::Mesh>& disp = fields->get("disp(t)");
+  disp.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
+  disp.allocate();
+  fields->copyLayout("disp(t)");
 } // _initialize
+
+// ----------------------------------------------------------------------
+// Set values for fields and Jacobian.
+void
+pylith::faults::TestFaultCohesiveDynL::_setFieldsJacobian(
+          topology::Mesh* const mesh,
+          FaultCohesiveDynL* const fault,
+          topology::SolutionFields* const fields,
+          topology::Jacobian* const jacobian,
+          const double* const fieldIncr)
+{ // _initialize
+  CPPUNIT_ASSERT(0 != mesh);
+  CPPUNIT_ASSERT(0 != fault);
+  CPPUNIT_ASSERT(0 != fields);
+  CPPUNIT_ASSERT(0 != jacobian);
+  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(0 != fieldIncr);
+
+  const int spaceDim = _data->spaceDim;
+
+  // Get vertices in mesh
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
+  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+
+  // Set displacement values
+  const ALE::Obj<RealSection>& dispSection =
+    fields->get("disp(t)").section();
+  CPPUNIT_ASSERT(!dispSection.isNull());
+  int iVertex = 0;
+  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+       v_iter != verticesEnd;
+       ++v_iter, ++iVertex)
+    dispSection->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
+
+  // Set increment values
+  const ALE::Obj<RealSection>& dispIncrSection =
+    fields->get("dispIncr(t->t+dt)").section();
+  CPPUNIT_ASSERT(!dispIncrSection.isNull());
+  iVertex = 0;
+  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+       v_iter != verticesEnd;
+       ++v_iter, ++iVertex)
+    dispIncrSection->updatePoint(*v_iter, &fieldIncr[iVertex*spaceDim]);
+
+  // Setup Jacobian matrix
+  const int nrows = dispIncrSection->sizeWithBC();
+  const int ncols = nrows;
+  int nrowsM = 0;
+  int ncolsM = 0;
+  PetscMat jacobianMat = jacobian->matrix();
+  MatGetSize(jacobianMat, &nrowsM, &ncolsM);
+  CPPUNIT_ASSERT_EQUAL(nrows, nrowsM);
+  CPPUNIT_ASSERT_EQUAL(ncols, ncolsM);
+
+  int_array rows(nrows);
+  int_array cols(ncols);
+  for (int iRow=0; iRow < nrows; ++iRow)
+    rows[iRow] = iRow;
+  for (int iCol=0; iCol < ncols; ++iCol)
+    cols[iCol] = iCol;
+  MatSetValues(jacobianMat, nrows, &rows[0], ncols, &cols[0], _data->jacobian, INSERT_VALUES);
+  jacobian->assemble("final_assembly");
+
+  // Set Jacobian diagonal
+  fields->add("Jacobian diagonal", "jacobian_diagonal");
+  topology::Field<topology::Mesh>& jacobianDiag =
+    fields->get("Jacobian diagonal");
+  const topology::Field<topology::Mesh>& disp =
+    fields->get("disp(t)");
+  jacobianDiag.cloneSection(disp);
+  jacobianDiag.createVector();
+  jacobianDiag.createScatter();
+  MatGetDiagonal(jacobian->matrix(), jacobianDiag.vector());
+  jacobianDiag.scatterVectorToSection();
+} // _setFieldsJacobian
 
 // ----------------------------------------------------------------------
 // Determine if vertex is a Lagrange multiplier constraint vertex.

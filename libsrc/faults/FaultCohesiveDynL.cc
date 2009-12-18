@@ -49,7 +49,8 @@ typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::FaultCohesiveDynL::FaultCohesiveDynL(void)
+pylith::faults::FaultCohesiveDynL::FaultCohesiveDynL(void) :
+  _dbInitialTract(0)
 { // constructor
 } // constructor
 
@@ -68,6 +69,7 @@ pylith::faults::FaultCohesiveDynL::deallocate(void)
   FaultCohesive::deallocate();
 
   // :TODO: Use shared pointers for initial database
+  _dbInitialTract = 0;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -683,7 +685,8 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
 
   slipSection->view("SLIP");
   areaSection->view("AREA");
-  tractionInitialSection->view("INITIAL TRACTION");
+  if (0 != _dbInitialTract)
+    tractionInitialSection->view("INITIAL TRACTION");
   dispTSection->view("DISP (t)");
   dispTIncrSection->view("DISP INCR (t->t+dt)");
 

@@ -27,9 +27,7 @@
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
 #include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Quadrature
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
-
 #include <vector> // HASA std::vector
-
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
@@ -40,27 +38,26 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for FaultCohesiveDynL
-class pylith::faults::TestFaultCohesiveDynL : public CppUnit::TestFixture
-{ // class TestFaultCohesiveDynL
+class pylith::faults::TestFaultCohesiveDynL: public CppUnit::TestFixture { // class TestFaultCohesiveDynL
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestFaultCohesiveDynL );
+CPPUNIT_TEST_SUITE( TestFaultCohesiveDynL );
 
-  CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testDBInitialTract );
+    CPPUNIT_TEST( testConstructor );
+    CPPUNIT_TEST( testDBInitialTract );
 
-  // Tests in derived classes:
-  // testInitialize()
-  // testConstrainSolnSpaceStick()
-  // testConstrainSolnSpaceSlip()
-  // testConstrainSolnSpaceOpen()
-  // testUpdateStateVars()
-  // testCalcTractions()
+    // Tests in derived classes:
+    // testInitialize()
+    // testConstrainSolnSpaceStick()
+    // testConstrainSolnSpaceSlip()
+    // testConstrainSolnSpaceOpen()
+    // testUpdateStateVars()
+    // testCalcTractions()
 
   CPPUNIT_TEST_SUITE_END();
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected :
+protected:
 
   CohesiveDynLData* _data; ///< Data for testing
   feassemble::Quadrature<topology::SubMesh>* _quadrature; ///< Fault quad.
@@ -68,7 +65,7 @@ protected :
   bool _flipFault; ///< If true, flip fault orientation.
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+public:
 
   /// Setup testing data.
   void setUp(void);
@@ -101,19 +98,35 @@ public :
   void testCalcTractions(void);
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
-private :
+private:
 
   /** Initialize FaultCohesiveDynL interface condition.
    *
    * @param mesh PETSc mesh to initialize
    * @param fault Cohesive fault interface condition to initialize.
    * @param fields Solution fields.
-   * @param fieldIncrVals Values for solution increment field.
    */
   void _initialize(topology::Mesh* const mesh,
-		   FaultCohesiveDynL* const fault,
-		   topology::SolutionFields* const fields,
-		   const double* const fieldIncrVals);
+      FaultCohesiveDynL* const fault,
+      topology::SolutionFields* const fields);
+
+  /** Set values for fields and Jacobian.
+   *
+   * @pre Must call _initialize() before _setFieldsJacobian to set solution
+   * field. Note: Call to Jacobian constructor should be after call to
+   * _initialize() so that the solution field is setup.
+   *
+   * @param mesh PETSc mesh to initialize
+   * @param fault Cohesive fault interface condition to initialize.
+   * @param fields Solution fields.
+   * @param jacobian Jacobian sparse matrix.
+   * @param fieldIncrVals Values for solution increment field.
+   */
+  void _setFieldsJacobian(topology::Mesh* const mesh,
+      FaultCohesiveDynL* const fault,
+      topology::SolutionFields* const fields,
+      topology::Jacobian* const jacobian,
+      const double* const fieldIncrVals);
 
   /** Determine if vertex is a Lagrange multiplier constraint vertex.
    *
@@ -122,11 +135,9 @@ private :
    * @returns True if vertex is a constraint vertex, false otherwise.
    */
   bool _isConstraintVertex(const int vertex) const;
-  
 
 }; // class TestFaultCohesiveDynL
 
 #endif // pylith_faults_testfaultcohesivedynl_hh
-
 
 // End of file 
