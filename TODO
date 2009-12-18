@@ -2,51 +2,31 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-Status?
+* Uniform global refinement for tets with faults
 
-  Field split
-  uniform global refinement for tets with faults
-  customized SNES line search
-  Laplacian based preconditioner
+* Better preconditioning
+  Better PETSc settings or Laplacian based preconditioner
 
-Data structure to hold label of fault Lagrange vertices and
+* Data structure to hold label of fault Lagrange vertices and
 conventional vertices 
   array of structure (lagrange, positive, negative, fault)
 
   no mesh queries? Just loops?
 
-Drucker-Prager elastoplastic (or viscoelastoplastic?)
+* Drucker-Prager elastoplastic (or viscoelastoplastic?)
 
-Lumped solver
+* Friction
 
-Setup fault constitutive models
+* Lumped solver
 
+* Updates to manual
+  + tutorial
+  + governing equations
 
-
-----------------------------------------------------------------------
-TODO WELL BEFORE WORKSHOP 2010
-----------------------------------------------------------------------
-
-Tutorial
-  3d/hex8
-    1. Dirichlet BC (static)
-    2. Neumann BC (static)
-    3. Earthquake rupture (static)
-    4. Dirichlet BC (quasi-static)
-    5. Dirichlet + Neumann (quasi-static)
-    6. Multiple earthquake rupture + creep (quasi-static)
-    7. Earthquake rupture + creep + Dirichlet BC (quasi-static)
-    8. Add power-law rheology (quasi-static)
-    9. Static friction + Dirichlet BC (static)
-   10. Static friction + Dirchlet BC (quasi-static)
-   11. Rate- and state-friction + Dirichlet BC (quasi-static)??
-
-Write up description of Savage and Prescott (1978) benchmark and
-distribute to Greg Lyzenga and Jay Parker
-
-Rewrite governing equations to include fault implementation
-
-Rewrite bulk constitutive models
+* Cleanup
+  + memory model
+  + full-scale testing
+  + Code cleanup
 
 ----------------------------------------------------------------------
 FRICTION
@@ -77,6 +57,7 @@ Refactor FaultCohesive
   Rate- and state-friction with aging law
   Rate- and state-friction with slip law
 
+
 ----------------------------------------------------------------------
 LUMPED SOLVER
 ----------------------------------------------------------------------
@@ -100,13 +81,33 @@ FaultCohesiveDynL (C++)
     adjust displacements
 
 ----------------------------------------------------------------------
->>>>>>> .merge-right.r16093
-POST RELEASE 1.4
+TODO WELL BEFORE WORKSHOP 2010
 ----------------------------------------------------------------------
 
-Matt
+Tutorial
+  3d/hex8
+    1. Dirichlet BC (static)
+    2. Neumann BC (static)
+    3. Earthquake rupture (static)
+    4. Dirichlet BC (quasi-static)
+    5. Dirichlet + Neumann (quasi-static)
+    6. Multiple earthquake rupture + creep (quasi-static)
+    7. Earthquake rupture + creep + Dirichlet BC (quasi-static)
+    8. Add power-law rheology (quasi-static)
+    9. Static friction + Dirichlet BC (static)
+   10. Static friction + Dirchlet BC (quasi-static)
+   11. Rate- and state-friction + Dirichlet BC (quasi-static)??
 
-  field split
+Write up description of Savage and Prescott (1978) benchmark and
+distribute to Greg Lyzenga and Jay Parker
+
+Rewrite governing equations to include fault implementation
+
+Rewrite bulk constitutive models
+
+----------------------------------------------------------------------
+POST RELEASE 1.4
+----------------------------------------------------------------------
 
 Brad
 

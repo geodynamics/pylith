@@ -53,7 +53,7 @@ public:
   //@{
   int id; ///< Fault material identifier
   char* label; ///< Label for fault
-  char* initialTractFilename; ///< Name of db for final slip
+  char* initialTractFilename; ///< Name of db for initial tractions.
   //@}
 
   /// @name Input fields
@@ -71,9 +71,9 @@ public:
   double* area; ///< Expected values for fault area.
   double* initialTractions; ///< Expected values for initial tractions.
   double* fieldIncrSlipE; ///< Expected values for solution increment for slipping case.
-  double* slipSlip; ///< Expected values for slip for slipping case.
+  double* slipSlipE; ///< Expected values for slip for slipping case.
   double* fieldIncrOpenE; ///< Expected values for solution increment for opening case.
-  double* slipOpen; ///< Expected values for slip for opening case.
+  double* slipOpenE; ///< Expected values for slip for opening case.
 
   int* constraintVertices; ///< Expected points for constraint vertices
   int* constraintCells; ///< Expected cells for constraint vertices

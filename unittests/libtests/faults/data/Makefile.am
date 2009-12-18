@@ -34,6 +34,7 @@ dist_noinst_DATA = \
 	tri3d_finalslip.spatialdb \
 	tri3d_sliptime.spatialdb \
 	tri3d_risetime.spatialdb \
+	tri3_initialtract.spatialdb \
 	quad4.mesh \
 	quad4b.mesh \
 	quad4c.mesh \

@@ -37,9 +37,9 @@ pylith::faults::CohesiveDynLData::CohesiveDynLData(void) :
   initialTractions(0),
   area(0),
   fieldIncrSlipE(0),
-  slipSlip(0),
+  slipSlipE(0),
   fieldIncrOpenE(0),
-  slipOpen(0),
+  slipOpenE(0),
   constraintVertices(0),
   constraintCells(0),
   numConstraintVert(0)
