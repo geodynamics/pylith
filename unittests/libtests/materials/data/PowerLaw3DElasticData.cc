@@ -19,15 +19,15 @@ const int pylith::materials::PowerLaw3DElasticData::_dimension = 3;
 
 const int pylith::materials::PowerLaw3DElasticData::_numLocs = 2;
 
-const int pylith::materials::PowerLaw3DElasticData::_numProperties = 5;
+const int pylith::materials::PowerLaw3DElasticData::_numProperties = 6;
 
 const int pylith::materials::PowerLaw3DElasticData::_numStateVars = 2;
 
-const int pylith::materials::PowerLaw3DElasticData::_numDBProperties = 5;
+const int pylith::materials::PowerLaw3DElasticData::_numDBProperties = 6;
 
 const int pylith::materials::PowerLaw3DElasticData::_numDBStateVars = 12;
 
-const int pylith::materials::PowerLaw3DElasticData::_numPropsQuadPt = 5;
+const int pylith::materials::PowerLaw3DElasticData::_numPropsQuadPt = 6;
 
 const int pylith::materials::PowerLaw3DElasticData::_numVarsQuadPt = 12;
 
@@ -47,6 +47,7 @@ const int pylith::materials::PowerLaw3DElasticData::_numPropertyValues[] = {
 1,
 1,
 1,
+1,
 };
 
 const int pylith::materials::PowerLaw3DElasticData::_numStateVarValues[] = {
@@ -58,7 +59,8 @@ const char* pylith::materials::PowerLaw3DElasticData::_dbPropertyValues[] = {
 "density",
 "vs",
 "vp",
-"power_law_coefficient",
+"reference_strain_rate",
+"reference_stress",
 "power_law_exponent",
 };
 
@@ -81,12 +83,14 @@ const double pylith::materials::PowerLaw3DElasticData::_dbProperties[] = {
   2.50000000e+03,
   3.00000000e+03,
   5.19615242e+03,
-  3.33333333e-19,
+  1.00000000e-06,
+  2.00000000e+12,
   1.00000000e+00,
   2.00000000e+03,
   1.20000000e+03,
   2.07846097e+03,
-  1.11111111e-31,
+  1.00000000e-06,
+  1.25992105e+08,
   3.00000000e+00,
 };
 
@@ -121,12 +125,14 @@ const double pylith::materials::PowerLaw3DElasticData::_properties[] = {
   2.50000000e+03,
   2.25000000e+10,
   2.25000000e+10,
-  1.00000000e+18,
+  1.00000000e-06,
+  2.00000000e+12,
   1.00000000e+00,
   2.00000000e+03,
   2.88000000e+09,
   2.88000000e+09,
-  1.00000000e+10,
+  1.00000000e-06,
+  1.25992105e+08,
   3.00000000e+00,
 };
 
@@ -161,12 +167,14 @@ const double pylith::materials::PowerLaw3DElasticData::_propertiesNondim[] = {
   2.50000000e+00,
   1.00000000e+00,
   1.00000000e+00,
-  4.44444444e+07,
+  1.00000000e-06,
+  8.88888889e+01,
   1.00000000e+00,
   2.00000000e+00,
   1.28000000e-01,
   1.28000000e-01,
-  4.44444444e-01,
+  1.00000000e-06,
+  5.59964911e-03,
   3.00000000e+00,
 };
 

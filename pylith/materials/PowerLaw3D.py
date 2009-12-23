@@ -41,7 +41,8 @@ class PowerLaw3D(ElasticMaterial, ModulePowerLaw3D):
             'data': []},
          'cell': \
            {'info': ["mu", "lambda", "density", 
-                     "viscosity_coefficient", "power_law_exponent"],
+                     "reference_strain_rate", "reference_stress",
+                     "power_law_exponent"],
             'data': ["total_strain", "stress", "viscous_strain"]}}
     self._loggingPrefix = "MaPL3D "
     return

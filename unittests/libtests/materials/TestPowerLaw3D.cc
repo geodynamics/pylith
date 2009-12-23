@@ -195,7 +195,8 @@ pylith::materials::TestPowerLaw3D::testHasProperty(void)
   CPPUNIT_ASSERT(material.hasProperty("mu"));
   CPPUNIT_ASSERT(material.hasProperty("lambda"));
   CPPUNIT_ASSERT(material.hasProperty("density"));
-  CPPUNIT_ASSERT(material.hasProperty("viscosity_coefficient"));
+  CPPUNIT_ASSERT(material.hasProperty("reference_strain_rate"));
+  CPPUNIT_ASSERT(material.hasProperty("reference_stress"));
   CPPUNIT_ASSERT(material.hasProperty("power_law_exponent"));
   CPPUNIT_ASSERT(!material.hasProperty("aaa"));
 } // testHasProperty
