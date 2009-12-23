@@ -391,35 +391,6 @@ private :
 				 const int initialStrainSize);
 
   /** Compute derivatives of elasticity matrix from properties as a
-   * viscoelastic material for first iteration.
-   *
-   * @param elasticConsts Array for elastic constants.
-   * @param numElasticConsts Number of elastic constants.
-   * @param properties Properties at location.
-   * @param numProperties Number of properties.
-   * @param stateVars State variables at locations.
-   * @param numStateVars Number of state variables.
-   * @param totalStrain Total strain at location.
-   * @param strainSize Size of strain tensor.
-   * @param initialStress Initial stress values.
-   * @param initialStressSize Size of initial stress array.
-   * @param initialStrain Initial strain values.
-   * @param initialStrainSize Size of initial strain array.
-   */
-  void _calcElasticConstsViscoelasticInitial(double* const elasticConsts,
-					     const int numElasticConsts,
-					     const double* properties,
-					     const int numProperties,
-					     const double* stateVars,
-					     const int numStateVars,
-					     const double* totalStrain,
-					     const int strainSize,
-					     const double* initialStress,
-					     const int initialStressSize,
-					     const double* initialStrain,
-					     const int initialStrainSize);
-
-  /** Compute derivatives of elasticity matrix from properties as a
    * viscoelastic material.
    *
    * @param elasticConsts Array for elastic constants.
@@ -512,7 +483,8 @@ private :
     double dt;
     double effStressT;
     double powerLawExp;
-    double viscosityCoefficient;
+    double referenceStrainRate;
+    double referenceStress;
   };
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
@@ -533,12 +505,14 @@ private :
   static const int p_density;
   static const int p_mu;
   static const int p_lambda;
-  static const int p_viscosityCoefficient;
+  static const int p_referenceStrainRate;
+  static const int p_referenceStress;
   static const int p_powerLawExponent;
   static const int db_density;
   static const int db_vs;
   static const int db_vp;
-  static const int db_powerLawCoefficient;
+  static const int db_referenceStrainRate;
+  static const int db_referenceStress;
   static const int db_powerLawExponent;
 
   static const int s_viscousStrain;

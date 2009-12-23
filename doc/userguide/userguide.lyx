@@ -628,5 +628,25 @@ The Physics of Glaciers, Third Edition
 , Elsevier Science Ltd., Oxford, 480 pp.
 \end_layout
 
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "16"
+key "Prentice:1968"
+
+\end_inset
+
+Prentice, J.
+ H, (1968), Dimensional problem of the power law in rheology, 
+\shape italic
+Nature
+\shape default
+, 
+\shape italic
+217
+\shape default
+, 157.
+\end_layout
+
 \end_body
 \end_document

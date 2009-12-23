@@ -19,15 +19,15 @@ const int pylith::materials::PowerLaw3DTimeDepData::_dimension = 3;
 
 const int pylith::materials::PowerLaw3DTimeDepData::_numLocs = 2;
 
-const int pylith::materials::PowerLaw3DTimeDepData::_numProperties = 5;
+const int pylith::materials::PowerLaw3DTimeDepData::_numProperties = 6;
 
 const int pylith::materials::PowerLaw3DTimeDepData::_numStateVars = 2;
 
-const int pylith::materials::PowerLaw3DTimeDepData::_numDBProperties = 5;
+const int pylith::materials::PowerLaw3DTimeDepData::_numDBProperties = 6;
 
 const int pylith::materials::PowerLaw3DTimeDepData::_numDBStateVars = 12;
 
-const int pylith::materials::PowerLaw3DTimeDepData::_numPropsQuadPt = 5;
+const int pylith::materials::PowerLaw3DTimeDepData::_numPropsQuadPt = 6;
 
 const int pylith::materials::PowerLaw3DTimeDepData::_numVarsQuadPt = 12;
 
@@ -47,6 +47,7 @@ const int pylith::materials::PowerLaw3DTimeDepData::_numPropertyValues[] = {
 1,
 1,
 1,
+1,
 };
 
 const int pylith::materials::PowerLaw3DTimeDepData::_numStateVarValues[] = {
@@ -58,7 +59,8 @@ const char* pylith::materials::PowerLaw3DTimeDepData::_dbPropertyValues[] = {
 "density",
 "vs",
 "vp",
-"power_law_coefficient",
+"reference_strain_rate",
+"reference_stress",
 "power_law_exponent",
 };
 
@@ -81,12 +83,14 @@ const double pylith::materials::PowerLaw3DTimeDepData::_dbProperties[] = {
   2.50000000e+03,
   3.00000000e+03,
   5.19615242e+03,
-  3.33333333e-19,
+  1.00000000e-06,
+  2.00000000e+12,
   1.00000000e+00,
   2.00000000e+03,
   1.20000000e+03,
   2.07846097e+03,
-  1.11111111e-37,
+  1.00000000e-06,
+  1.25992105e+10,
   3.00000000e+00,
 };
 
@@ -109,12 +113,14 @@ const double pylith::materials::PowerLaw3DTimeDepData::_properties[] = {
   2.50000000e+03,
   2.25000000e+10,
   2.25000000e+10,
-  1.00000000e+18,
+  1.00000000e-06,
+  2.00000000e+12,
   1.00000000e+00,
   2.00000000e+03,
   2.88000000e+09,
   2.88000000e+09,
-  1.00000000e+12,
+  1.00000000e-06,
+  1.25992105e+10,
   3.00000000e+00,
 };
 
@@ -149,12 +155,14 @@ const double pylith::materials::PowerLaw3DTimeDepData::_propertiesNondim[] = {
   2.50000000e+00,
   1.00000000e+00,
   1.00000000e+00,
-  4.44444444e+07,
+  1.00000000e-06,
+  8.88888889e+01,
   1.00000000e+00,
   2.00000000e+00,
   1.28000000e-01,
   1.28000000e-01,
-  4.44444444e+01,
+  1.00000000e-06,
+  5.59964911e-01,
   3.00000000e+00,
 };
 
