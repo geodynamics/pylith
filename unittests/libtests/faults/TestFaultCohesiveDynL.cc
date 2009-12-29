@@ -164,7 +164,7 @@ pylith::faults::TestFaultCohesiveDynL::testInitialize(void)
 
   // Initial tractions
   if (0 != fault._dbInitialTract) {
-    //fault._fields->get("initial traction").view("INITIAL TRACTIONS"); // DEBUGGING
+    fault._fields->get("initial traction").view("INITIAL TRACTIONS"); // DEBUGGING
     const ALE::Obj<RealSection>& tractionSection = fault._fields->get(
         "initial traction").section();
     CPPUNIT_ASSERT(!tractionSection.isNull());
@@ -222,6 +222,8 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceSlip(void)
   //residual.view("RESIDUAL"); // DEBUGGING
 
   { // Check solution values
+    // Lagrange multipliers should be adjusted according to friction
+    // as reflected in the fieldIncrSlipE data member.
     const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
     CPPUNIT_ASSERT(!sieveMesh.isNull());
     const ALE::Obj<SieveMesh::label_sequence>& vertices =
@@ -230,22 +232,26 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceSlip(void)
     const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
     const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
 
+    // Get section containing solution (disp + Lagrange multipliers)
     const ALE::Obj<RealSection>& dispIncrSection =
       fields.get("dispIncr(t->t+dt)").section();
     CPPUNIT_ASSERT(!dispIncrSection.isNull());
 
-    const double* valsE = _data->fieldIncrOpenE;
-    int iVertex = 0;
-    const int fiberDimE = spaceDim;
+    // Get expected values
+    const double* valsE = _data->fieldIncrSlipE; // Expected values for dispIncr
+    int iVertex = 0; // variable to use as index into valsE array
+    const int fiberDimE = spaceDim; // number of values per point
     const double tolerance = 1.0e-06;
     for (SieveMesh::label_sequence::iterator v_iter = verticesBegin;
-        v_iter != verticesEnd;
-        ++v_iter, ++iVertex) {
+	 v_iter != verticesEnd;
+	 ++v_iter, ++iVertex) { // loop over all vertices in mesh
+      // Check fiber dimension (number of values at point)
       const int fiberDim = dispIncrSection->getFiberDimension(*v_iter);
       CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
       const double* vals = dispIncrSection->restrictPoint(*v_iter);
       CPPUNIT_ASSERT(0 != vals);
 
+      // Check values at point
       for (int i = 0; i < fiberDimE; ++i) {
         const int index = iVertex * spaceDim + i;
         const double valE = valsE[index];
@@ -258,6 +264,10 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceSlip(void)
   } // Check solution values
 
   { // Check slip values
+    // Slip values should be adjusted based on the change in the
+    // Lagrange multipliers as reflected in the slipSlipE data member.
+
+    // Get fault vertex info
     const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
     CPPUNIT_ASSERT(!faultSieveMesh.isNull());
     SieveSubMesh::renumbering_type& renumbering =
@@ -268,21 +278,26 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceSlip(void)
     const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
     const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
+    // Get section containing slip
     const ALE::Obj<RealSection>& slipSection =
       fault._fields->get("slip").section();
     CPPUNIT_ASSERT(!slipSection.isNull());
 
+    // Get expected values
     const double* valsE = _data->slipSlipE;
-    int iVertex = 0;
-    const int fiberDimE = spaceDim;
+    int iVertex = 0; // variable to use as index into valsE array
+    const int fiberDimE = spaceDim; // number of calues per point
     const double tolerance = 1.0e-06;
     for (SieveMesh::label_sequence::iterator v_iter = verticesBegin; v_iter
-        != verticesEnd; ++v_iter, ++iVertex) {
+	   != verticesEnd;
+	 ++v_iter, ++iVertex) { // loop over fault vertices
+      // Check fiber dimension (number of values at point)
       const int fiberDim = slipSection->getFiberDimension(*v_iter);
       CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
       const double* vals = slipSection->restrictPoint(*v_iter);
       CPPUNIT_ASSERT(0 != vals);
 
+      // Check values at point
       for (int i = 0; i < fiberDimE; ++i) {
         const int index = iVertex * spaceDim + i;
         const double valE = valsE[index];
@@ -326,8 +341,80 @@ pylith::faults::TestFaultCohesiveDynL::testCalcTractions(void)
   topology::Jacobian jacobian(fields, "seqdense");
   _setFieldsJacobian(&mesh, &fault, &fields, &jacobian, _data->fieldIncrStick);
   
-  // Test with dbInitialTract
-  // :TODO: STUFF GOES HERE (Brad)
+  CPPUNIT_ASSERT(0 != fault._faultMesh);
+  const int spaceDim = _data->spaceDim;
+  topology::Field<topology::SubMesh> tractions(*fault._faultMesh);
+  tractions.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
+  tractions.allocate();
+  tractions.zero();
+  const ALE::Obj<RealSection>& tractionsSection = tractions.section();
+  CPPUNIT_ASSERT(!tractionsSection.isNull());
+
+  const double t = 0;
+  fault.updateStateVars(t, &fields);
+  fault._calcTractions(&tractions, fields.get("disp(t)"));
+
+  tractions.view("TRACTIONS");
+
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
+  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
+    faultSieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const SieveSubMesh::label_sequence::iterator verticesBegin =
+    vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  SieveSubMesh::renumbering_type& renumbering =
+    faultSieveMesh->getRenumbering();
+  const SieveMesh::renumbering_type::const_iterator renumberingBegin =
+    renumbering.begin();
+  const SieveMesh::renumbering_type::const_iterator renumberingEnd =
+    renumbering.end();
+
+  const ALE::Obj<RealSection>& dispSection = fields.get("disp(t)").section();
+  CPPUNIT_ASSERT(!dispSection.isNull());
+
+  int iVertex = 0;
+  const double tolerance = 1.0e-06;
+  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+       v_iter != verticesEnd;
+       ++v_iter, ++iVertex) {
+    SieveMesh::point_type meshVertex = -1;
+    bool found = false;
+
+    // Test with dbInitialTract
+    for (SieveMesh::renumbering_type::const_iterator r_iter = renumberingBegin;
+      r_iter != renumberingEnd;
+      ++r_iter) {
+      if (r_iter->second == *v_iter) {
+        meshVertex = r_iter->first;
+        found = true;
+        break;
+      } // if
+    } // for
+    CPPUNIT_ASSERT(found);
+    int fiberDim = tractionsSection->getFiberDimension(*v_iter);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
+    const double* tractionsVertex = tractionsSection->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(0 != tractionsVertex);
+
+    fiberDim = dispSection->getFiberDimension(meshVertex);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
+    const double* dispVertex = dispSection->restrictPoint(meshVertex);
+    CPPUNIT_ASSERT(0 != dispVertex);
+
+    const double scale = 1.0 / _data->area[iVertex];
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      const double tractionE =
+        (_data->initialTractions[iVertex*spaceDim+iDim] + dispVertex[iDim]) * scale;
+      if (tractionE != 0.0)
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tractionsVertex[iDim]/tractionE,
+             tolerance);
+      else
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(tractionE, tractionsVertex[iDim],
+             tolerance);
+    } // for
+  } // for
 
   // Test without dbInitialTract
   // :TODO: STUFF GOES HERE (Brad)
@@ -375,6 +462,7 @@ pylith::faults::TestFaultCohesiveDynL::_initialize(
   ioInitialTract.filename(_data->initialTractFilename);
   db->ioHandler(&ioInitialTract);
   delete _dbInitialTract; _dbInitialTract = db;
+  fault->dbInitialTract(db);
 
   int firstFaultVertex    = 0;
   int firstLagrangeVertex = mesh->sieveMesh()->getIntSection(_data->label)->size();

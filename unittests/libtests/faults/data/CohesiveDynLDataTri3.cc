@@ -10,7 +10,7 @@
 // ======================================================================
 //
 
-/* Original mesh
+/* Original mesh using Sieve labels.
  *
  * Cells are 0-1, vertices are 2-5.
  *
@@ -27,7 +27,7 @@
  *              4
  *
  *
- * After adding cohesive elements
+ * After adding cohesive elements using Sieve labels.
  *
  * Cells are 0-1, 8, vertices are 2-7.
  *
@@ -97,8 +97,10 @@ const double pylith::faults::CohesiveDynLDataTri3::_fieldT[] = {
   8.8, 9.8, // 9
 };
 
+// :TODO: Make sensible values for Jacobian for DOF on positive and
+// negative sides of the fault. Add semi-random values for other DOF.
 const double pylith::faults::CohesiveDynLDataTri3::_jacobian[] = {
-  1.0, 0.0, // 2x
+  1.0, 0.0, // 2x (values for row associated with vertex with label 2, x DOF)
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -114,13 +116,13 @@ const double pylith::faults::CohesiveDynLDataTri3::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0, // 3x
+  0.0, 0.0, // 3x (values for row associated with vertex label 3, x DOF)
   1.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, // 8
+  0.0,+1.0, // 8 (column for DOF associated with vertex label 8)
   0.0, 0.0,
   0.0, 0.0, // 3y
   0.0, 1.0,
@@ -195,7 +197,7 @@ const double pylith::faults::CohesiveDynLDataTri3::_jacobian[] = {
   0.0, 0.0,
  -1.0, 0.0, //  9
 
-  0.0, 0.0, // 8x
+  0.0, 0.0, // 8x (rows associated with Lagrange multiplier vertex label 8)
   0.0,+1.0, //  3
   0.0, 0.0,
   0.0, 0.0,
@@ -244,6 +246,7 @@ const double pylith::faults::CohesiveDynLDataTri3::_area[] = {
   1.0,
 };
 
+// :TODO: Normalize by shear modulus
 const double pylith::faults::CohesiveDynLDataTri3::_initialTractions[] = {
   1.0, -2.0,
   1.1, -2.1,
@@ -292,6 +295,7 @@ const double pylith::faults::CohesiveDynLDataTri3::_fieldIncrSlip[] = {
 };
 
 // Output
+// :TODO: Update Lagrange multiplier values
 const double pylith::faults::CohesiveDynLDataTri3::_fieldIncrSlipE[] = {
   8.1, 9.1,
   8.2, 9.2, // 3
@@ -303,6 +307,7 @@ const double pylith::faults::CohesiveDynLDataTri3::_fieldIncrSlipE[] = {
   8.8, 9.8, // 9
 };
 
+// :TODO: Update slip values based on changes in Lagrange multiplier values
 const double pylith::faults::CohesiveDynLDataTri3::_slipSlipE[] = {
   0.0, 0.0,
   0.0, 0.0,
@@ -361,6 +366,7 @@ pylith::faults::CohesiveDynLDataTri3::CohesiveDynLDataTri3(void)
   jacobian = const_cast<double*>(_jacobian);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
+  initialTractions = const_cast<double*>(_initialTractions);
 
   constraintVertices = const_cast<int*>(_constraintVertices);
   constraintCells = const_cast<int*>(_constraintCells);
