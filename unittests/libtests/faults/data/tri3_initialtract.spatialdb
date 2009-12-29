@@ -2,7 +2,7 @@
 SimpleDB {
   num-values = 2
   value-names =  traction-shear traction-normal
-  value-units =  MPa   MPa
+  value-units =  Pa   Pa
   num-locs = 2
   data-dim = 1
   space-dim = 2
