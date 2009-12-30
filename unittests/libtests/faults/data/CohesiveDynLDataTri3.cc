@@ -246,7 +246,6 @@ const double pylith::faults::CohesiveDynLDataTri3::_area[] = {
   1.0,
 };
 
-// :TODO: Normalize by shear modulus
 const double pylith::faults::CohesiveDynLDataTri3::_initialTractions[] = {
   1.0, -2.0,
   1.1, -2.1,
