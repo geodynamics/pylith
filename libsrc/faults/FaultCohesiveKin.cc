@@ -29,7 +29,6 @@
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <cmath> // USES pow(), sqrt()
 #include <strings.h> // USES strcasecmp()

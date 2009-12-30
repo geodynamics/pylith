@@ -173,7 +173,7 @@ pylith::faults::TestFaultCohesiveDynL::testInitialize(void)
     for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin;
         v_iter != verticesEnd;
         ++v_iter, ++iVertex) {
-      const int fiberDim = orientationSection->getFiberDimension(*v_iter);
+      const int fiberDim = tractionSection->getFiberDimension(*v_iter);
       CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
       const double* tractionVertex = tractionSection->restrictPoint(*v_iter);
       CPPUNIT_ASSERT(0 != tractionVertex);
@@ -473,7 +473,8 @@ pylith::faults::TestFaultCohesiveDynL::_initialize(
   fault->label(_data->label);
   fault->quadrature(_quadrature);
   
-  fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
+  fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex,
+			&firstFaultCell, _flipFault);
   
   const double upDir[] = { 0.0, 0.0, 1.0 };
   const double normalDir[] = { 1.0, 0.0, 0.0 };

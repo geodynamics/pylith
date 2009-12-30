@@ -1653,16 +1653,21 @@ pylith::faults::FaultCohesiveDynL::_getInitialTractions(void)
     
     // Get sections.
     const ALE::Obj<RealSection>& coordinates =
-      faultSieveMesh->getRealSection("coordinates_dimensioned");
+      faultSieveMesh->getRealSection("coordinates");
     assert(!coordinates.isNull());
     const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
     
+    const double lengthScale = _normalizer->lengthScale();
+
     // Loop over vertices in fault mesh and perform queries.
     for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin;
 	 v_iter != verticesEnd;
 	 ++v_iter) {
       coordinates->restrictPoint(*v_iter, 
 				 &coordsVertex[0], coordsVertex.size());
+      // Dimensionalize coordinates
+      _normalizer->dimensionalize(&coordsVertex[0], coordsVertex.size(),
+				  lengthScale);
       
       tractionVertex = 0.0;
       const int err = _dbInitialTract->query(&tractionVertex[0], spaceDim,
