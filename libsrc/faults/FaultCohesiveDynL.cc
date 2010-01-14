@@ -1692,8 +1692,7 @@ pylith::faults::FaultCohesiveDynL::_getInitialTractions(void)
     
     _dbInitialTract->close();
 
-    // debugging
-    traction.view("INITIAL TRACTIONS");
+    //traction.view("INITIAL TRACTIONS"); // DEBUGGING
   } // if
 } // _getInitialTractions
 

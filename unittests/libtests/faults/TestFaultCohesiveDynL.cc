@@ -164,7 +164,7 @@ pylith::faults::TestFaultCohesiveDynL::testInitialize(void)
 
   // Initial tractions
   if (0 != fault._dbInitialTract) {
-    fault._fields->get("initial traction").view("INITIAL TRACTIONS"); // DEBUGGING
+    //fault._fields->get("initial traction").view("INITIAL TRACTIONS"); // DEBUGGING
     const ALE::Obj<RealSection>& tractionSection = fault._fields->get(
         "initial traction").section();
     CPPUNIT_ASSERT(!tractionSection.isNull());
@@ -255,6 +255,9 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceSlip(void)
       for (int i = 0; i < fiberDimE; ++i) {
         const int index = iVertex * spaceDim + i;
         const double valE = valsE[index];
+	std::cout << "valE: " << valE
+		  << ", val: " << vals[i]
+		  << std::endl;
         if (fabs(valE) > tolerance)
           CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
         else
@@ -354,7 +357,7 @@ pylith::faults::TestFaultCohesiveDynL::testCalcTractions(void)
   fault.updateStateVars(t, &fields);
   fault._calcTractions(&tractions, fields.get("disp(t)"));
 
-  tractions.view("TRACTIONS");
+  //tractions.view("TRACTIONS"); // DEBUGGING
 
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
