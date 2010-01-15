@@ -75,7 +75,7 @@ class PowerLawApp(Application):
                                        factory=SimpleDB)
   dbActivationE.meta['tip'] = "Spatial db for activation energy, Q."
 
-  dbTemperature = pyre.inventory.facility("db_tempoerature",
+  dbTemperature = pyre.inventory.facility("db_temperature",
                                        family="spatial_database",
                                        factory=SimpleDB)
   dbTemperature.meta['tip'] = "Spatial db for temperature, T."
@@ -122,38 +122,41 @@ class PowerLawApp(Application):
     self._info.log("Querying for parameters at output points.")
     n = self._queryDB(self.dbExponent, "power-law-exponent", points, coordsys)
     Q = self._queryDB(self.dbActivationE, "activation-energy", points, coordsys)
-    Ae = self._queryDB(self.dbAe, "power-law-coefficient", points, coordsys)
+    #Ae = self._queryDB(self.dbAe, "power-law-coefficient", points, coordsys)
+    Ae = self._queryDB(self.dbAe, "flow-constant", points, coordsys)
     T = self._queryDB(self.dbTemperature, "temperature", points, coordsys)
 
     # Compute power-law parameters
-    self._info("Computing parameters at output points.")
+    self._info.log("Computing parameters at output points.")
     from pyre.handbook.constants.fundamental import R
-    At = 3**(0.5*(n+1))/2.0 * Ae * numpy.exp(-Q/(R*T))
+    At = 3**(0.5*(n+1))/2.0 * Ae * numpy.exp(-Q/(R.value*T))
     
     if self.refSelection == "stress":
-      refStrainRate = self.refStress**n / At
+      refStress[:] = self.refStress.value
+      refStrainRate = self.refStress.value**n / At
     elif self.refSelection == "strain_rate":
-      refStress = (self.refStrainRate / At)**(1.0/n)
+      refStrainRate[:] = self.refStrainRate.value
+      refStress = (self.refStrainRate.value / At)**(1.0/n)
     else:
       raise ValueError("Invalid value (%s) for reference value." % \
                          self.refSelection)
     
     refStressInfo = {'name': "reference-stress",
                      'units': "Pa",
-                     'data': refStress}
+                     'data': refStress.flatten()}
     refStrainRateInfo = {'name': "reference-strain-rate",
                          'units': "1/s",
-                         'data': refStrainRate}
+                         'data': refStrainRate.flatten()}
     exponentInfo = {'name': "powerlaw-exponent",
                     'units': "none",
-                    'data': n}
+                    'data': n.flatten()}
 
     # Write database
     self._info.log("Writing database.")
     data = {'points': points,
             'coordsys': coordsys,
             'data_dim': self.geometry.dataDim,
-            'values': [refStressInfo, refStrainInfo, exponentInfo]}
+            'values': [refStressInfo, refStrainRateInfo, exponentInfo]}
     self.iohandler.write(data)
     return
 
