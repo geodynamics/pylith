@@ -16,22 +16,21 @@
 ## given a spatial database describing the temperature and another spatial
 ## database describing the laboratory-derived properties for the various
 ## materials. The output is another spatial database containing the power-law
-## parameters for PyLith, as well as user-specified elastic properties. The
-## generated spatial database will have the same dimensions and coordinate
-## specifications as the input properties database.
+## parameters for PyLith. The generated spatial database will have the same
+## dimensions and coordinate specifications as the input properties database.
 
 import numpy
+import math
 
 from pyre.applications.Script import Script as Application
 
 class Pl3dComputeParams(Application):
   """
   Python application to compute power-law parameters used by PyLith,
-  given input spatial databases describing the elastic properties, the
-  temperature, and the laboratory-derived properties for the various
-  materials. The output is another spatial database containing the power-law
-  parameters for PyLith, as well as user-specified elastic properties. The
-  generated spatial database will have the same dimensions and coordinate
+  given input spatial databases describing the temperature and the
+  laboratory-derived properties for the various materials. The output is
+  another spatial database containing the power-law parameters for PyLith.
+  The generated spatial database will have the same dimensions and coordinate
   specifications as the input properties database.
   """
   
@@ -48,10 +47,10 @@ class Pl3dComputeParams(Application):
     ## @li \b reference_stress Value of reference stress.
     ## @li \b reference_strain_rate Value of reference strain rate.
     ## @li \b db_template Which database to use as template for output.
+    ## @li \b point_locations_file File containing points to output.
     ## @li \b output_db_name File name for output spatial database.
     ##
     ## \b Facilities
-    ## @li \b db_input_elastic_properties Database of input elastic properties.
     ## @li \b db_input_power_law_properties Database of input power law properties.
     ## @li \b db_input_temperature Database of input temperature values.
     ## @li \b db_output_properties Database of output material properties.
@@ -72,24 +71,15 @@ class Pl3dComputeParams(Application):
                                                      default=1.0e-6/s)
     referenceStrainRate.meta['tip'] = "Reference strain rate value."
 
+    pointLocationsFile = pyre.inventory.str("point_locations_file",
+                                            default="points.txt")
+    pointLocationsFile.meta['tip'] = "File containing points to output."
+
     outputDbName = pyre.inventory.str("output_db_name",
                                       default="mat_powerlaw.spatialdb")
     outputDbName.meta['tip'] = "File name of output spatial database."
     
-    dbTemplate = pyre.inventory.str(
-      "db_template",
-      default="db_input_power_law_properties",
-      validator=pyre.inventory.choice(["db_input_power_law_properties",
-                                       "db_input_elastic_properties",
-                                       "db_input_temperature"]))
-    dbTemplate.meta['tip'] = "Which input DB to use as a template for output."
-
     from spatialdata.spatialdb.SimpleDB import SimpleDB
-    dbInputElasticProperties = pyre.inventory.facility(
-      "db_input_elastic_properties",
-      family="spatial_database",
-      factory=SimpleDB)
-    dbInputElasticProperties.meta['tip'] = "DB for input elastic properties."
 
     dbInputPowerLawProperties = pyre.inventory.facility(
       "db_input_power_law_properties",
@@ -115,13 +105,17 @@ class Pl3dComputeParams(Application):
   def __init__(self, name="pl3dcomputeparams"):
     Application.__init__(self, name)
 
+    self.numPoints = 0
+    self.points = None
+
     return
 
 
   def main(self):
     # import pdb
     # pdb.set_trace()
-    self._getParameters()
+    self._readPoints()
+    self._computeParams()
     return
 
 
@@ -137,11 +131,13 @@ class Pl3dComputeParams(Application):
     self.useReferenceStress = self.inventory.useReferenceStress
     self.referenceStress = self.inventory.referenceStress.value
     self.referenceStrainRate = self.inventory.referenceStrainRate.value
-    self.dbTemplate = self.inventory.dbTemplate
+    self.pointLocationsFile = self.inventory.pointLocationsFile
     self.outputDbName = self.inventory.outputDbName
 
+    # This script is presently restricted to 3D.
+    self.spaceDim = 3
+
     # Facilities
-    self.dbInputElasticProperties = self.inventory.dbInputElasticProperties
     self.dbInputPowerLawProperties = self.inventory.dbInputPowerLawProperties
     self.dbInputTemperature = self.inventory.dbInputTemperature
     self.dbOutputProperties = self.inventory.dbOutputProperties
@@ -149,20 +145,43 @@ class Pl3dComputeParams(Application):
     return
 
 
-  def _getParameters(self):
+  def _readPoints(self):
     """
-    Get parameters from different databases and output power-law properties.
+    Read point coordinates to use in generating output.
+    """
+    inFile = file(self.pointLocationsFile, 'r')
+    listCoords = []
+
+    for line in inFile:
+      if not line.strip():
+        continue
+      if re.compile('^#').search(line) is not None:
+        continue
+      else:
+        self.numPoints += 1
+        data = line.split()
+        for dim in range(self.spaceDim):
+          listCoords.append(float(data[dim]))
+
+    self.points = numpy.array(
+      listCoords, dtype=numpy.float64).reshape(self.numPoints, self.spaceDim) 
+
+    return
+    
+
+  def _computeParams(self):
+    """
+    Get parameters from different databases and output power-law properties
+    at specified points.
     """
 
-    # Need to open all the input databases and then get the number of locations
-    # from the template database.
-    # We then loop over these locations and compute the power-law parameters
-    # for each point.
-    self.dbInputElasticProperties.open()
+    from pyre.handbook.constants.fundamental import R
+
+    # Open input databases.
     self.dbInputPowerLawProperties.open()
     self.dbInputTemperature.open()
+
     temp_queryVals = ["temperature"]
-    elastic_queryVals = ["density", "Vs", "Vp"]
     pl_queryVals = ["flow-constant", "activation-energy",
                     "power-law-exponent", "flow-constant-multiplier"]
 
