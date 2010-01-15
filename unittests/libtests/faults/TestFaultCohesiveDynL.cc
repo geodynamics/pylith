@@ -289,7 +289,7 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceSlip(void)
     // Get expected values
     const double* valsE = _data->slipSlipE;
     int iVertex = 0; // variable to use as index into valsE array
-    const int fiberDimE = spaceDim; // number of calues per point
+    const int fiberDimE = spaceDim; // number of values per point
     const double tolerance = 1.0e-06;
     for (SieveMesh::label_sequence::iterator v_iter = verticesBegin; v_iter
 	   != verticesEnd;

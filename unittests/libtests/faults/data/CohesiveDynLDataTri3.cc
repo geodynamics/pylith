@@ -283,33 +283,33 @@ const double pylith::faults::CohesiveDynLDataTri3::_fieldIncrStick[] = {
 // ----------------------------------------------------------------------
 // Input
 const double pylith::faults::CohesiveDynLDataTri3::_fieldIncrSlip[] = {
-  8.1, 9.1,
-  8.2, 9.2, // 3
-  8.3, 9.3, // 4
-  8.4, 9.4,
-  8.5, 9.5, // 6
-  8.7, 9.7, // 7
-  8.6, 9.6, // 8
-  8.8, 9.8, // 9
+  9.1, 10.1,
+  9.2, 10.2, // 3
+  9.3, 10.3, // 4
+  9.4, 10.4,
+  9.5, 10.5, // 6
+  9.7, 10.7, // 7
+  9.6, -10.6, // 8
+  9.8, -10.8, // 9
 };
 
 // Output
 // :TODO: Update Lagrange multiplier values
 const double pylith::faults::CohesiveDynLDataTri3::_fieldIncrSlipE[] = {
-  8.1, 9.1,
-  8.2, 9.2, // 3
-  8.3, 9.3, // 4
-  8.4, 9.4,
-  8.5, 9.5, // 6
-  8.7, 9.7, // 7
-  8.6, 9.6, // 8
-  8.8, 9.8, // 9
+  9.1, 10.1,
+  9.2, 10.2, // 3
+  9.3, 10.3, // 4
+  9.4, 10.4,
+  9.5, 10.5, // 6
+  9.7, 10.7, // 7
+  -6.8, -10.6, // 8
+  -6.94, -10.8, // 9
 };
 
 // :TODO: Update slip values based on changes in Lagrange multiplier values
 const double pylith::faults::CohesiveDynLDataTri3::_slipSlipE[] = {
-  0.0, 0.0,
-  0.0, 0.0,
+  32.8, 0.0,
+  33.48, 0.0,
 };
 
 // ----------------------------------------------------------------------
