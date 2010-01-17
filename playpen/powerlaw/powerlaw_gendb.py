@@ -122,13 +122,14 @@ class PowerLawApp(Application):
     self._info.log("Querying for parameters at output points.")
     n = self._queryDB(self.dbExponent, "power-law-exponent", points, coordsys)
     Q = self._queryDB(self.dbActivationE, "activation-energy", points, coordsys)
-    #Ae = self._queryDB(self.dbAe, "power-law-coefficient", points, coordsys)
-    Ae = self._queryDB(self.dbAe, "flow-constant", points, coordsys)
+    logAe = self._queryDB(self.dbAe, "log-flow-constant", points, coordsys)
+    scaleAe = self._queryDB(self.dbAe, "flow-constant-scale", points, coordsys)
     T = self._queryDB(self.dbTemperature, "temperature", points, coordsys)
 
     # Compute power-law parameters
     self._info.log("Computing parameters at output points.")
     from pyre.handbook.constants.fundamental import R
+    Ae = 10**(logAe - scaleAe * n)
     At = 3**(0.5*(n+1))/2.0 * Ae * numpy.exp(-Q/(R.value*T))
     
     if self.refSelection == "stress":
