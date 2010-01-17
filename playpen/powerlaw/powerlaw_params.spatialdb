@@ -13,7 +13,7 @@
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 4 // number of material property values
-  value-names =  flow-constant activation-energy power-law-exponent flow-constant-multiplier // names of the material property values
+  value-names =  log-flow-constant activation-energy power-law-exponent flow-constant-scale // names of the material property values
   value-units =  None kJ/mol None None // units
   num-locs = 4 // number of locations
   data-dim = 1
