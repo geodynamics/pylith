@@ -19,7 +19,7 @@
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Mesh.hh" // USES MeshslipTpdtVertex
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
