@@ -49,6 +49,7 @@ dist_noinst_DATA = \
 	quad4e_finalslip.spatialdb \
 	quad4e_sliptime.spatialdb \
 	quad4e_risetime.spatialdb \
+	quad4_initialtract.spatialdb \
 	tet4.mesh \
 	tet4b.mesh \
 	tet4c.mesh \
