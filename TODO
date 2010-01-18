@@ -28,6 +28,7 @@ conventional vertices
   + full-scale testing
   + Code cleanup
 
+    Remove constraintCells from unitests/libtests/faults/data?
 ----------------------------------------------------------------------
 FRICTION
 ----------------------------------------------------------------------

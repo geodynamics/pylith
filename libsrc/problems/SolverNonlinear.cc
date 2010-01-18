@@ -22,9 +22,11 @@
 
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
-#include <cmath>
+// KLUDGE, Fixes issue with PetscIsInfOrNanReal and include cmath
+// instead of math.h.
 #define isnan std::isnan // TEMPORARY
 #define isinf std::isinf // TEMPORARY
+
 #include "../src/snes/impls/ls/ls.h"
 
 // ----------------------------------------------------------------------
