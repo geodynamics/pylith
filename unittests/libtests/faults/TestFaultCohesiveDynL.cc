@@ -212,8 +212,7 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceStick(void)
   //residual.view("RESIDUAL"); // DEBUGGING
 
   { // Check solution values
-    // Lagrange multipliers should be adjusted according to friction
-    // (No change to dispIncr field).
+    // No change to Lagrange multipliers for stick case.
     const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
     CPPUNIT_ASSERT(!sieveMesh.isNull());
     const ALE::Obj<SieveMesh::label_sequence>& vertices =
@@ -254,8 +253,7 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceStick(void)
   } // Check solution values
 
   { // Check slip values
-    // Slip values should be adjusted based on the change in the
-    // Lagrange multipliers (slip should be zero).
+    // Slip should be zero for the stick case.
 
     // Get fault vertex info
     const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
@@ -273,11 +271,7 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceStick(void)
       fault._fields->get("slip").section();
     CPPUNIT_ASSERT(!slipSection.isNull());
 
-    // Get expected values
-    //    const double* valsE = _data->slipStickE;
-    double_array slipStickE(4);
-    slipStickE = 0.0;
-    const double* valsE = &slipStickE[0];
+    const double valE = 0.0; // slip should be zero
     int iVertex = 0; // variable to use as index into valsE array
     const int fiberDimE = spaceDim; // number of values per point
     const double tolerance = 1.0e-06;
@@ -293,11 +287,7 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceStick(void)
       // Check values at point
       for (int i = 0; i < fiberDimE; ++i) {
         const int index = iVertex * spaceDim + i;
-        const double valE = valsE[index];
-        if (fabs(valE) > tolerance)
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
-        else
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
       } // for
     } // for
   } // Check slip values
@@ -444,8 +434,8 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceOpen(void)
   //residual.view("RESIDUAL"); // DEBUGGING
 
   { // Check solution values
-    // Lagrange multipliers should be adjusted according to friction
-    // as reflected in the fieldIncrOpenE data member.
+    // Lagrange multipliers should be set to zero as reflected in the
+    // fieldIncrOpenE data member.
     const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
     CPPUNIT_ASSERT(!sieveMesh.isNull());
     const ALE::Obj<SieveMesh::label_sequence>& vertices =
