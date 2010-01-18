@@ -193,9 +193,115 @@ pylith::faults::TestFaultCohesiveDynL::testInitialize(void)
 void
 pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceStick(void)
 { // testConstrainSolnSpaceStick
-  // STUFF GOES HERE (Surendra)
-  // No change to dispIncr field
-  // Slip field should be zero
+  assert(0 != _data);
+
+  topology::Mesh mesh;
+  FaultCohesiveDynL fault;
+  topology::SolutionFields fields(mesh);
+  _initialize(&mesh, &fault, &fields);
+  topology::Jacobian jacobian(fields, "seqdense");
+  _setFieldsJacobian(&mesh, &fault, &fields, &jacobian, _data->fieldIncrStick);
+
+  const int spaceDim = _data->spaceDim;
+
+  const double t = 2.134;
+  const double dt = 0.01;
+  fault.timeStep(dt);
+  fault.constrainSolnSpace(&fields, t, jacobian);
+
+  //residual.view("RESIDUAL"); // DEBUGGING
+
+  { // Check solution values
+    // Lagrange multipliers should be adjusted according to friction
+    // (No change to dispIncr field).
+    const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+    CPPUNIT_ASSERT(!sieveMesh.isNull());
+    const ALE::Obj<SieveMesh::label_sequence>& vertices =
+      sieveMesh->depthStratum(0);
+    CPPUNIT_ASSERT(!vertices.isNull());
+    const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
+    const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+
+    // Get section containing solution (disp + Lagrange multipliers)
+    const ALE::Obj<RealSection>& dispIncrSection =
+      fields.get("dispIncr(t->t+dt)").section();
+    CPPUNIT_ASSERT(!dispIncrSection.isNull());
+
+    // Get expected values
+    const double* valsE = _data->fieldIncrStick; // No change in dispIncr
+    int iVertex = 0; // variable to use as index into valsE array
+    const int fiberDimE = spaceDim; // number of values per point
+    const double tolerance = 1.0e-06;
+    for (SieveMesh::label_sequence::iterator v_iter = verticesBegin;
+	 v_iter != verticesEnd;
+	 ++v_iter, ++iVertex) { // loop over all vertices in mesh
+      // Check fiber dimension (number of values at point)
+      const int fiberDim = dispIncrSection->getFiberDimension(*v_iter);
+      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
+      const double* vals = dispIncrSection->restrictPoint(*v_iter);
+      CPPUNIT_ASSERT(0 != vals);
+
+      // Check values at point
+      for (int i = 0; i < fiberDimE; ++i) {
+        const int index = iVertex * spaceDim + i;
+        const double valE = valsE[index];
+        if (fabs(valE) > tolerance)
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+        else
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+      } // for
+    } // for
+  } // Check solution values
+
+  { // Check slip values
+    // Slip values should be adjusted based on the change in the
+    // Lagrange multipliers (slip should be zero).
+
+    // Get fault vertex info
+    const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
+    CPPUNIT_ASSERT(!faultSieveMesh.isNull());
+    SieveSubMesh::renumbering_type& renumbering =
+      faultSieveMesh->getRenumbering();
+    const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
+      faultSieveMesh->depthStratum(0);
+    CPPUNIT_ASSERT(!vertices.isNull());
+    const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
+    const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+
+    // Get section containing slip
+    const ALE::Obj<RealSection>& slipSection =
+      fault._fields->get("slip").section();
+    CPPUNIT_ASSERT(!slipSection.isNull());
+
+    // Get expected values
+    //    const double* valsE = _data->slipStickE;
+    double_array slipStickE(4);
+    slipStickE = 0.0;
+    const double* valsE = &slipStickE[0];
+    int iVertex = 0; // variable to use as index into valsE array
+    const int fiberDimE = spaceDim; // number of values per point
+    const double tolerance = 1.0e-06;
+    for (SieveMesh::label_sequence::iterator v_iter = verticesBegin; v_iter
+	   != verticesEnd;
+	 ++v_iter, ++iVertex) { // loop over fault vertices
+      // Check fiber dimension (number of values at point)
+      const int fiberDim = slipSection->getFiberDimension(*v_iter);
+      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
+      const double* vals = slipSection->restrictPoint(*v_iter);
+      CPPUNIT_ASSERT(0 != vals);
+
+      // Check values at point
+      for (int i = 0; i < fiberDimE; ++i) {
+        const int index = iVertex * spaceDim + i;
+        const double valE = valsE[index];
+        if (fabs(valE) > tolerance)
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+        else
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+      } // for
+    } // for
+  } // Check slip values
+
 } // testConstrainSolnSpaceStick
 
 // ----------------------------------------------------------------------
@@ -319,7 +425,112 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceSlip(void)
 void
 pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceOpen(void)
 { // testConstrainSolnSpaceOpen
-  // STUFF GOES HERE (Surendra)
+  assert(0 != _data);
+
+  topology::Mesh mesh;
+  FaultCohesiveDynL fault;
+  topology::SolutionFields fields(mesh);
+  _initialize(&mesh, &fault, &fields);
+  topology::Jacobian jacobian(fields, "seqdense");
+  _setFieldsJacobian(&mesh, &fault, &fields, &jacobian, _data->fieldIncrOpen);
+
+  const int spaceDim = _data->spaceDim;
+
+  const double t = 2.134;
+  const double dt = 0.01;
+  fault.timeStep(dt);
+  fault.constrainSolnSpace(&fields, t, jacobian);
+
+  //residual.view("RESIDUAL"); // DEBUGGING
+
+  { // Check solution values
+    // Lagrange multipliers should be adjusted according to friction
+    // as reflected in the fieldIncrOpenE data member.
+    const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+    CPPUNIT_ASSERT(!sieveMesh.isNull());
+    const ALE::Obj<SieveMesh::label_sequence>& vertices =
+      sieveMesh->depthStratum(0);
+    CPPUNIT_ASSERT(!vertices.isNull());
+    const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
+    const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+
+    // Get section containing solution (disp + Lagrange multipliers)
+    const ALE::Obj<RealSection>& dispIncrSection =
+      fields.get("dispIncr(t->t+dt)").section();
+    CPPUNIT_ASSERT(!dispIncrSection.isNull());
+
+    // Get expected values
+    const double* valsE = _data->fieldIncrOpenE; // Expected values for dispIncr
+    int iVertex = 0; // variable to use as index into valsE array
+    const int fiberDimE = spaceDim; // number of values per point
+    const double tolerance = 1.0e-06;
+    for (SieveMesh::label_sequence::iterator v_iter = verticesBegin;
+	 v_iter != verticesEnd;
+	 ++v_iter, ++iVertex) { // loop over all vertices in mesh
+      // Check fiber dimension (number of values at point)
+      const int fiberDim = dispIncrSection->getFiberDimension(*v_iter);
+      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
+      const double* vals = dispIncrSection->restrictPoint(*v_iter);
+      CPPUNIT_ASSERT(0 != vals);
+
+      // Check values at point
+      for (int i = 0; i < fiberDimE; ++i) {
+        const int index = iVertex * spaceDim + i;
+        const double valE = valsE[index];
+        if (fabs(valE) > tolerance)
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+        else
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+      } // for
+    } // for
+  } // Check solution values
+
+  { // Check slip values
+    // Slip values should be adjusted based on the change in the
+    // Lagrange multipliers as reflected in the slipOpenE data member.
+
+    // Get fault vertex info
+    const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
+    CPPUNIT_ASSERT(!faultSieveMesh.isNull());
+    SieveSubMesh::renumbering_type& renumbering =
+      faultSieveMesh->getRenumbering();
+    const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
+      faultSieveMesh->depthStratum(0);
+    CPPUNIT_ASSERT(!vertices.isNull());
+    const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
+    const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+
+    // Get section containing slip
+    const ALE::Obj<RealSection>& slipSection =
+      fault._fields->get("slip").section();
+    CPPUNIT_ASSERT(!slipSection.isNull());
+
+    // Get expected values
+    const double* valsE = _data->slipOpenE;
+    int iVertex = 0; // variable to use as index into valsE array
+    const int fiberDimE = spaceDim; // number of values per point
+    const double tolerance = 1.0e-06;
+    for (SieveMesh::label_sequence::iterator v_iter = verticesBegin; v_iter
+	   != verticesEnd;
+	 ++v_iter, ++iVertex) { // loop over fault vertices
+      // Check fiber dimension (number of values at point)
+      const int fiberDim = slipSection->getFiberDimension(*v_iter);
+      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
+      const double* vals = slipSection->restrictPoint(*v_iter);
+      CPPUNIT_ASSERT(0 != vals);
+
+      // Check values at point
+      for (int i = 0; i < fiberDimE; ++i) {
+        const int index = iVertex * spaceDim + i;
+        const double valE = valsE[index];
+        if (fabs(valE) > tolerance)
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+        else
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+      } // for
+    } // for
+  } // Check slip values
+
 } // testConstrainSolnSpaceOpen
 
 // ----------------------------------------------------------------------
