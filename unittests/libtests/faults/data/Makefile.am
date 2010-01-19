@@ -67,6 +67,7 @@ dist_noinst_DATA = \
 	tet4e_finalslip.spatialdb \
 	tet4e_sliptime.spatialdb \
 	tet4e_risetime.spatialdb \
+	tet4_initialtract.spatialdb \
 	hex8.mesh \
 	hex8b.mesh \
 	hex8c.mesh \
@@ -79,6 +80,7 @@ dist_noinst_DATA = \
 	hex8_finalslip.spatialdb \
 	hex8_sliptime.spatialdb \
 	hex8_risetime.spatialdb \
+	hex8_initialtract.spatialdb \
 	tri3traction.mesh \
 	quad4traction.mesh \
 	tet4traction.mesh \
