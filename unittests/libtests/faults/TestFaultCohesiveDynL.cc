@@ -400,6 +400,9 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceSlip(void)
       for (int i = 0; i < fiberDimE; ++i) {
         const int index = iVertex * spaceDim + i;
         const double valE = valsE[index];
+	std::cout << "valE: " << valE
+		  << ", val: " << vals[i]
+		  << std::endl;
         if (fabs(valE) > tolerance)
           CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
         else
@@ -467,6 +470,9 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceOpen(void)
       for (int i = 0; i < fiberDimE; ++i) {
         const int index = iVertex * spaceDim + i;
         const double valE = valsE[index];
+	std::cout << "valE: " << valE
+		  << ", val: " << vals[i]
+		  << std::endl;
         if (fabs(valE) > tolerance)
           CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
         else
@@ -513,6 +519,9 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceOpen(void)
       for (int i = 0; i < fiberDimE; ++i) {
         const int index = iVertex * spaceDim + i;
         const double valE = valsE[index];
+	std::cout << "valE: " << valE
+		  << ", val: " << vals[i]
+		  << std::endl;
         if (fabs(valE) > tolerance)
           CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
         else
@@ -610,7 +619,7 @@ pylith::faults::TestFaultCohesiveDynL::testCalcTractions(void)
     const double scale = 1.0 / _data->area[iVertex];
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       const double tractionE =
-        (_data->initialTractions[iVertex*spaceDim+iDim] + dispVertex[iDim]) * scale;
+        _data->initialTractions[iVertex*spaceDim+iDim] + (dispVertex[iDim]) * scale;
       if (tractionE != 0.0)
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tractionsVertex[iDim]/tractionE,
              tolerance);
