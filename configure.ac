@@ -227,6 +227,7 @@ AC_CONFIG_FILES([Makefile
 		libsrc/bc/Makefile
                 libsrc/feassemble/Makefile
 		libsrc/faults/Makefile
+		libsrc/friction/Makefile
                 libsrc/materials/Makefile
                 libsrc/meshio/Makefile
                 libsrc/problems/Makefile
