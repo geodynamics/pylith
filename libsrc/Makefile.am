@@ -18,6 +18,7 @@ SUBDIRS = \
 	bc \
 	feassemble \
 	faults \
+	friction \
 	problems
 
 lib_LTLIBRARIES = libpylith.la
