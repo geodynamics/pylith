@@ -57,12 +57,12 @@ const int pylith::friction::StaticFriction::db_coef = 0;
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::friction::StaticFriction::StaticFriction(void) :
-  FrictionModel(Metadata(_StaticFriction::properties,
-			 _StaticFriction::numProperties,
-			 _StaticFriction::dbProperties,
-			 _StaticFriction::numDBProperties,
-			 0, 0,
-			 0, 0))
+  FrictionModel(materials::Metadata(_StaticFriction::properties,
+				    _StaticFriction::numProperties,
+				    _StaticFriction::dbProperties,
+				    _StaticFriction::numDBProperties,
+				    0, 0,
+				    0, 0))
 { // constructor
 } // constructor
 
