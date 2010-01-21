@@ -248,6 +248,19 @@ protected :
 		       const double* stateVars,
 		       const int numStateVars) = 0;
 
+  /** Update state variables (for next time step).
+   *
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
+   */
+  virtual
+  void _updateStateVars(double* const stateVars,
+			const int numStateVars,
+			const double* properties,
+			const int numProperties);
+
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
