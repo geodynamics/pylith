@@ -26,6 +26,8 @@ namespace pylith {
 
     class FrictionModel;
 
+    class StaticFriction;
+
   } // friction
 } // pylith
 

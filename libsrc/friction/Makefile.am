@@ -15,6 +15,7 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	FrictionModel.hh \
+	StaticFriction.hh \
 	frictionfwd.hh
 
 
