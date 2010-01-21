@@ -112,8 +112,8 @@ public :
    * @param quadrature Quadrature for finite-element integration
    */
   virtual
-  void initialize(const topology::Mesh& mesh,
-		  feassemble::Quadrature<topology::Mesh>* quadrature);
+  void initialize(const topology::SubMesh& mesh,
+		  feassemble::Quadrature<topology::SubMesh>* quadrature);
   
   /** Check whether friction model has a field as a property.
    *

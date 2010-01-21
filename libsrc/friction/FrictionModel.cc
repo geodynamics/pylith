@@ -37,7 +37,7 @@ typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::friction::FrictionModel::FrictionModel(const Metadata& metadata) :
+pylith::friction::FrictionModel::FrictionModel(const materials::Metadata& metadata) :
   _dt(0.0),
   _properties(0),
   _stateVars(0),
@@ -52,13 +52,15 @@ pylith::friction::FrictionModel::FrictionModel(const Metadata& metadata) :
   const string_vector& properties = metadata.properties();
   const int numProperties = properties.size();
   for (int i=0; i < numProperties; ++i)
-    _numProps += metadata.fiberDim(properties[i].c_str(), Metadata::PROPERTY);
+    _numProps += metadata.fiberDim(properties[i].c_str(), 
+				   materials::Metadata::PROPERTY);
   assert(_numProps >= 0);
 
   const string_vector& stateVars = metadata.stateVars();
   const int numStateVars = stateVars.size();
   for (int i=0; i < numStateVars; ++i)
-    _numVars += metadata.fiberDim(stateVars[i].c_str(), Metadata::STATEVAR);
+    _numVars += metadata.fiberDim(stateVars[i].c_str(), 
+				  materials::Metadata::STATEVAR);
   assert(_numVars >= 0);
 } // constructor
 
@@ -97,9 +99,10 @@ pylith::friction::FrictionModel::normalizer(const spatialdata::units::Nondimensi
 // Get physical property parameters and initial state (if used) from database.
 void
 pylith::friction::FrictionModel::initialize(
-			    const topology::SubMesh& mesh,
-			    feassemble::Quadrature<topology::Mesh>* quadrature)
+			const topology::SubMesh& mesh,
+			feassemble::Quadrature<topology::SubMesh>* quadrature)
 { // initialize
+#if 0
   assert(0 != _dbProperties);
   assert(0 != quadrature);
 
@@ -260,6 +263,7 @@ pylith::friction::FrictionModel::initialize(
     _dbInitialState->close();
 
   logger.stagePop();
+#endif
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -272,7 +276,7 @@ pylith::friction::FrictionModel::propertiesField() const
 
 // ----------------------------------------------------------------------
 // Get the state variables field.
-const pylith::topology::Field<pylith::topology::Mesh>*
+const pylith::topology::Field<pylith::topology::SubMesh>*
 pylith::friction::FrictionModel::stateVarsField() const
 { // stateVarsField
   return _stateVars;
@@ -306,6 +310,7 @@ void
 pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *field,
 					  const char* name) const
 { // getField
+#if 0
   // Logging of allocation is handled by getField() caller since it
   // manages the memory for the field argument.
 
@@ -340,8 +345,10 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
     assert(propertyIndex < properties.size());
     for (int i=0; i < propertyIndex; ++i)
       propOffset += 
-	_metadata.fiberDim(properties[i].c_str(), Metadata::PROPERTY);
-    const int fiberDim = _metadata.fiberDim(name, Metadata::PROPERTY);
+	_metadata.fiberDim(properties[i].c_str(), 
+			   materials::Metadata::PROPERTY);
+    const int fiberDim = 
+      _metadata.fiberDim(name, materials::Metadata::PROPERTY);
 
     // Get properties section
     const ALE::Obj<RealSection>& propertiesSection = _properties->section();
@@ -387,7 +394,7 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
     assert(!fieldSection.isNull());
     field->label(name);
     field->scale(propertyScales[propOffset]);
-    fieldType = _metadata.fieldType(name, Metadata::PROPERTY);
+    fieldType = _metadata.fieldType(name, materials::Metadata::PROPERTY);
 
     // Buffer for property at cell's quadrature points
     double_array fieldCell(numQuadPts*fiberDim);
@@ -415,8 +422,10 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
     assert(stateVarIndex < stateVars.size());
     for (int i=0; i < stateVarIndex; ++i)
       varOffset += 
-	_metadata.fiberDim(stateVars[i].c_str(), Metadata::STATEVAR);
-    const int fiberDim = _metadata.fiberDim(name, Metadata::STATEVAR);
+	_metadata.fiberDim(stateVars[i].c_str(), 
+			   materials::Metadata::STATEVAR);
+    const int fiberDim = 
+      _metadata.fiberDim(name, materials::Metadata::STATEVAR);
 
     // Get state variables section
     const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
@@ -460,7 +469,7 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
       logger.stagePop();
     } // if
     assert(!fieldSection.isNull());
-    fieldType = _metadata.fieldType(name, Metadata::STATEVAR);
+    fieldType = _metadata.fieldType(name, materials::Metadata::STATEVAR);
     field->label(name);
     field->scale(stateVarScales[varOffset]);
 
@@ -510,15 +519,16 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
       throw std::logic_error("Bad vector field type for FrictionModel.");
     } // switch
   field->vectorFieldType(multiType);
+#endif
 } // getField
   
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
-pylith::friction::StaticFriction::_updateStateVars(double* const stateVars,
-						   const int numStateVars,
-						   const double* properties,
-						   const int numProperties)
+pylith::friction::FrictionModel::_updateStateVars(double* const stateVars,
+						  const int numStateVars,
+						  const double* properties,
+						  const int numProperties)
 { // _updateStateVars
 } // _updateStateVars
 
