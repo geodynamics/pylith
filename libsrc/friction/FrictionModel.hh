@@ -30,7 +30,7 @@
 
 #include <string> // HASA std::string
 
-// Material -------------------------------------------------------------
+// FrictionModel --------------------------------------------------------
 /** @brief C++ abstract base class for FrictionModel object.
  *
  * Interface definition for a friction model. The physical properties
@@ -49,7 +49,7 @@ public :
    *
    * @param metadata Metadata for physical properties and state variables.
    */
-  FrictionModel(const Metadata& metadata);
+  FrictionModel(const pylith::materials::Metadata& metadata);
 
   /// Destructor.
   virtual
@@ -102,8 +102,8 @@ public :
    */
   void normalizer(const spatialdata::units::Nondimensional& dim);
 
-  /** Initialize material by getting physical property parameters from
-   * database.
+  /** Initialize friction model by getting physical property
+   * parameters from database.
    *
    * @pre Must call Quadrature::computeGeometry() before calling
    * initialize().
@@ -115,26 +115,28 @@ public :
   void initialize(const topology::Mesh& mesh,
 		  feassemble::Quadrature<topology::Mesh>* quadrature);
   
-  /** Check whether material has a field as a property.
+  /** Check whether friction model has a field as a property.
    *
    * @param name Name of field.
    *
-   * @returns True if material has field as a property, false otherwise.
+   * @returns True if friction model has field as a property, false
+   * otherwise.
    */
   bool hasProperty(const char* name);
 
-  /** Check whether material has a field as a state variable.
+  /** Check whether friction model has a field as a state variable.
    *
    * @param name Name of field.
    *
-   * @returns True if material has field as a state variable, false otherwise.
+   * @returns True if friction model has field as a state variable,
+   * false otherwise.
    */
   bool hasStateVar(const char* name);
 
   /** Get physical property or state variable field. Data is returned
    * via the argument.
    *
-   * @param field Field over material cells.
+   * @param field Field over fault interface cells.
    * @param name Name of field to retrieve.
    */
   void getField(topology::Field<topology::SubMesh> *field,
@@ -251,17 +253,16 @@ protected :
 
   double _dt; ///< Current time step
 
-  /// Field containing physical properties of material.
+  /// Field containing physical properties of friction model.
   topology::Field<topology::SubMesh> *_properties;
 
-  /// Field containing the state variables for the material.
+  /// Field containing the state variables for the friction model.
   topology::Field<topology::SubMesh> *_stateVars;
 
   spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer
   
   int _numProps; ///< Number of properties per quad point.
   int _numVars; ///< Number of state variables per quad point.
-  const int _dimension; ///< Spatial dimension associated with material.
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
@@ -281,10 +282,10 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  /// Database of parameters for physical properties of material.
+  /// Database of parameters for physical properties of friction model.
   spatialdata::spatialdb::SpatialDB* _dbProperties;
 
-  /// Database of initial state variables for the material.
+  /// Database of initial state variables for the friction model.
   spatialdata::spatialdb::SpatialDB* _dbInitialState;
 
   std::string _label; ///< Label of friction model.
