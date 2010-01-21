@@ -513,6 +513,16 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
 } // getField
   
 // ----------------------------------------------------------------------
+// Update state variables (for next time step).
+void
+pylith::friction::StaticFriction::_updateStateVars(double* const stateVars,
+						   const int numStateVars,
+						   const double* properties,
+						   const int numProperties)
+{ // _updateStateVars
+} // _updateStateVars
+
+// ----------------------------------------------------------------------
 // Get indices for physical property or state variable field.
 void
 pylith::friction::FrictionModel::_findField(int* propertyIndex,
