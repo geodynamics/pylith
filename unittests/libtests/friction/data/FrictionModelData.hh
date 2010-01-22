@@ -1,0 +1,69 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_friction_frictionmodeldata_hh)
+#define pylith_friction_frictionmodeldata_hh
+
+namespace pylith {
+  namespace friction {
+     class FrictionModelData;
+  } // pylith
+} // friction
+
+class pylith::friction::FrictionModelData {
+
+// PUBLIC METHODS ///////////////////////////////////////////////////////
+public :
+  
+  /// Constructor
+  FrictionModelData(void);
+
+  /// Destructor
+  ~FrictionModelData(void);
+
+// PUBLIC MEMBERS ///////////////////////////////////////////////////////
+public:
+
+  int numProperties; ///< Number of parameters for physical properties.
+  int numStateVars; ///< Number of state variables.
+  int numDBProperties; ///< Number of db values for properties.
+  int numDBStateVars; ///< Number of db values for state variables.
+
+  int numProps; ///< Number of properties at each vertex.
+  int numVars; ///< Number of state variables at each vertex.
+
+  int* numPropertyValues; ///< Number of values for each property
+  int* numStateVarValues; ///< Number of values for each state variable
+
+  char** dbPropertyValues; ///< Names of db values for properties.
+  char** dbStateVarValues; ///< Names of db values for state variables.
+
+  double* dbProperties; ///< Database values for properties at locations.
+  double* dbStateVars; ///< Database values for state variables at locations.
+  double* properties; ///< Properties at locations.
+  double* stateVars; ///< State variables at locations.
+  double* propertiesNondim; ///< Nondimensional properties at locations.
+  double* stateVarsNondim; ///< Nondimensional state variables at locations.
+
+  double* friction; ///< Friction at location.
+  double* stateVarsUpdated; ///< Updated state variables at location.
+
+  double lengthScale; ///< Length scale for nondimensionalization.
+  double timeScale; ///< Time scale for nondimensionalization.
+  double pressureScale; ///< Pressure scale for nondimensionalization.
+  double densityScale; ///< Density scale for nondimensionalization.
+
+};
+
+#endif // pylith_friction_frictionmodeldata_hh
+
+// End of file
