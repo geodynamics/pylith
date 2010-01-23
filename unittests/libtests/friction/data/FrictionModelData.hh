@@ -33,13 +33,15 @@ public :
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
+  int numLocs; ///< Number of locations
+
   int numProperties; ///< Number of parameters for physical properties.
   int numStateVars; ///< Number of state variables.
   int numDBProperties; ///< Number of db values for properties.
   int numDBStateVars; ///< Number of db values for state variables.
 
-  int numProps; ///< Number of properties at each vertex.
-  int numVars; ///< Number of state variables at each vertex.
+  int numPropsVertex; ///< Number of properties at each vertex.
+  int numVarsVertex; ///< Number of state variables at each vertex.
 
   int* numPropertyValues; ///< Number of values for each property
   int* numStateVarValues; ///< Number of values for each state variable
@@ -54,7 +56,11 @@ public:
   double* propertiesNondim; ///< Nondimensional properties at locations.
   double* stateVarsNondim; ///< Nondimensional state variables at locations.
 
-  double* friction; ///< Friction at location.
+  double* friction; ///< Friction at locations.
+  double* slip; ///< Slip at locations.
+  double* slipRate; ///< Slip rate at locations.
+  double* normalTraction; ///< Normal traction at locations.
+
   double* stateVarsUpdated; ///< Updated state variables at location.
 
   double lengthScale; ///< Length scale for nondimensionalization.

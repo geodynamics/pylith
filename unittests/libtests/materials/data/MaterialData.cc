@@ -31,6 +31,8 @@ pylith::materials::MaterialData::MaterialData(void) :
   dbStateVars(0),
   properties(0),
   stateVars(0),
+  propertiesNondim(0),
+  stateVarsNondim(0),
   lengthScale(0),
   timeScale(0),
   pressureScale(0),

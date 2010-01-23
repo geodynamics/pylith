@@ -12,18 +12,16 @@
 
 #include <portinfo>
 
-#include "TestElasticMaterial.hh" // Implementation of class methods
+#include "TestFrictionModel.hh" // Implementation of class methods
 
-#include "data/ElasticMaterialData.hh" // USES ElasticMaterialData
-#include "data/ElasticStrain1DData.hh" // USES ElasticStrain1DData
+#include "data/StaticFrictionData.hh" // USES StaticFrictionData
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
-#include "pylith/materials/ElasticStrain1D.hh" // USES ElasticStrain1D
+#include "pylith/friction/StaticFriction.hh" // USES StaticFriction
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
+#include "pylith/feassemble/GeometryTri2D.hh" // USES GeometryTri2D
 
 #include "pylith/utils/array.hh" // USES double_array
 
@@ -37,584 +35,493 @@
 //#define PRECOMPUTE_GEOMETRY
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticMaterial );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::friction::TestFrictionModel );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::SieveSubMesh SieveSubMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
-// Test dbInitialStress()
+// Test label()
 void
-pylith::materials::TestElasticMaterial::testDBInitialStress(void)
-{ // testDBInitialStress
-  const std::string& label = "my_database";
-  spatialdata::spatialdb::SimpleDB db;
-  db.label(label.c_str());
+pylith::friction::TestFrictionModel::testLabel(void)
+{ // testLabel
+  const std::string& label = "the database";
+  StaticFriction friction;
+  friction.label(label.c_str());
   
-  ElasticIsotropic3D material;
-  material.dbInitialStress(&db);
+  CPPUNIT_ASSERT_EQUAL(label, std::string(friction.label()));
+} // testLabel
+    
+// ----------------------------------------------------------------------
+// Test timestep()
+void
+pylith::friction::TestFrictionModel::testTimeStep(void) 
+{ // testTimeStep
+  const double dt = 2.0;
+  StaticFriction friction;
+  friction.timeStep(dt);
   
-  CPPUNIT_ASSERT(0 != material._dbInitialStress);
-  CPPUNIT_ASSERT_EQUAL(label, std::string(material._dbInitialStress->label()));
-} // testDBInitialStress
+  CPPUNIT_ASSERT_EQUAL(dt, friction.timeStep());
+} // testTimeStep
 
 // ----------------------------------------------------------------------
-// Test dbInitialStrain()
+// Test dbProperties()
 void
-pylith::materials::TestElasticMaterial::testDBInitialStrain(void)
-{ // testDBInitialStrain
+pylith::friction::TestFrictionModel::testDBProperties(void)
+{ // testDBProperties
   const std::string& label = "my_database";
   spatialdata::spatialdb::SimpleDB db;
   db.label(label.c_str());
   
-  ElasticIsotropic3D material;
-  material.dbInitialStrain(&db);
+  StaticFriction friction;
+  friction.dbProperties(&db);
   
-  CPPUNIT_ASSERT(0 != material._dbInitialStrain);
-  CPPUNIT_ASSERT_EQUAL(label, std::string(material._dbInitialStrain->label()));
-} // testDBInitialStrain
+  CPPUNIT_ASSERT(0 != friction._dbProperties);
+  CPPUNIT_ASSERT_EQUAL(label, std::string(friction._dbProperties->label()));
+} // testDBProperties
+
+// ----------------------------------------------------------------------
+// Test dbStateVars()
+void
+pylith::friction::TestFrictionModel::testDBStateVars(void)
+{ // testDBStateVars
+  const std::string& label = "my_database";
+  spatialdata::spatialdb::SimpleDB db;
+  db.label(label.c_str());
+  
+  StaticFriction friction;
+  friction.dbInitialState(&db);
+  
+  CPPUNIT_ASSERT(0 != friction._dbInitialState);
+  CPPUNIT_ASSERT_EQUAL(label, std::string(friction._dbInitialState->label()));
+} // testDBStateVars
+
+// ----------------------------------------------------------------------
+// Test normalizer()
+void
+pylith::friction::TestFrictionModel::testNormalizer(void)
+{ // testNormalizer
+  spatialdata::units::Nondimensional normalizer;
+  const double lengthScale = 2.0;
+  normalizer.lengthScale(lengthScale);
+
+  StaticFriction friction;
+  friction.normalizer(normalizer);
+  
+  CPPUNIT_ASSERT(0 != friction._normalizer);
+  CPPUNIT_ASSERT_EQUAL(lengthScale, friction._normalizer->lengthScale());
+} // testNormalizer
 
 // ----------------------------------------------------------------------
 // Test initialize()
 void
-pylith::materials::TestElasticMaterial::testInitialize(void)
+pylith::friction::TestFrictionModel::testInitialize(void)
 { // testInitialize
   topology::Mesh mesh;
-  ElasticStrain1D material;
-  ElasticStrain1DData data;
-  _initialize(&mesh, &material, &data);
+  StaticFriction friction;
+  StaticFrictionData data;
+  _initialize(&mesh, &friction, &data);
 
-  // Get cells associated with material
-  const int materialId = 24;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  SieveMesh::point_type cell = *cells->begin();
-
-  const double tolerance = 1.0e-06;
-  const int tensorSize = material._tensorSize;
-  const int numQuadPts = data.numLocs;
-
-  // Test initialStress field
-  CPPUNIT_ASSERT(0 != material._initialFields);
-  const ALE::Obj<RealSection>& stressSection = 
-    material._initialFields->get("initial stress").section();
-  CPPUNIT_ASSERT(!stressSection.isNull());
-  int fiberDim = numQuadPts * tensorSize;
-  CPPUNIT_ASSERT_EQUAL(fiberDim, stressSection->getFiberDimension(cell));
-  const double* initialStress = stressSection->restrictPoint(cell);
-  CPPUNIT_ASSERT(0 != initialStress);
-  const double* initialStressE = data.initialStress;
-  CPPUNIT_ASSERT(0 != initialStressE);
-  for (int i=0; i < fiberDim; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStress[i]/initialStressE[i],
-				 tolerance);
-
-  // Test initialStrain field
-  CPPUNIT_ASSERT(0 != material._initialFields);
-  const ALE::Obj<RealSection>& strainSection = 
-    material._initialFields->get("initial strain").section();
-  CPPUNIT_ASSERT(!strainSection.isNull());
-  fiberDim = numQuadPts * tensorSize;
-  CPPUNIT_ASSERT_EQUAL(fiberDim, strainSection->getFiberDimension(cell));
-  const double* initialStrain = strainSection->restrictPoint(cell);
-  CPPUNIT_ASSERT(0 != initialStrain);
-  const double* initialStrainE = data.initialStrain;
-  CPPUNIT_ASSERT(0 != initialStrainE);
-  for (int i=0; i < fiberDim; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStrain[i]/initialStrainE[i],
-				 tolerance);
+#if 1
+  CPPUNIT_ASSERT(false);
+#else
+  // :TODO: ADD STUFF HERE
+  // Test propertiesVertex with mesh
 
   // Test cell arrays
-  size_t size = data.numLocs*data.numPropsQuadPt;
-  CPPUNIT_ASSERT_EQUAL(size, material._propertiesCell.size());
+  size_t size = data.numLocs*data.numPropsVertex;
+  CPPUNIT_ASSERT_EQUAL(size, friction._propertiesVertex.size());
 
-  size = data.numLocs*data.numVarsQuadPt;
-  CPPUNIT_ASSERT_EQUAL(size, material._stateVarsCell.size());
-
-  size = data.numLocs*tensorSize;
-  CPPUNIT_ASSERT_EQUAL(size, material._initialStressCell.size());
-
-  size = data.numLocs*tensorSize;
-  CPPUNIT_ASSERT_EQUAL(size, material._initialStrainCell.size());
+  size = data.numLocs*data.numVarsVertex;
+  CPPUNIT_ASSERT_EQUAL(size, friction._stateVarsVertex.size());
 
   size = data.numLocs;
-  CPPUNIT_ASSERT_EQUAL(size, material._densityCell.size());
-
-  size = data.numLocs*tensorSize;
-  CPPUNIT_ASSERT_EQUAL(size, material._stressCell.size());
-
-  int numElasticConsts = 0;
-  switch (data.dimension)
-    { // switch
-    case 1 :
-      numElasticConsts = 1;
-      break;
-    case 2 :
-      numElasticConsts = 6;
-      break;
-    case 3 :
-      numElasticConsts = 21;
-      break;
-    default :
-      assert(0);
-    } // switch
-  size = data.numLocs*numElasticConsts;
-  CPPUNIT_ASSERT_EQUAL(size, material._elasticConstsCell.size());
+  CPPUNIT_ASSERT_EQUAL(size, material._frictionVertex.size());
+#endif
 } // testInitialize
 
 // ----------------------------------------------------------------------
 // Test retrievePropsAndVars().
 void
-pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
+pylith::friction::TestFrictionModel::testRetrievePropsAndVars(void)
 { // testRetrievePropsAndVars
   topology::Mesh mesh;
-  ElasticStrain1D material;
-  ElasticStrain1DData data;
-  _initialize(&mesh, &material, &data);
+  StaticFriction friction;
+  StaticFrictionData data;
+  _initialize(&mesh, &friction, &data);
 
-  // Get cells associated with material
-  const int materialId = 24;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  SieveMesh::point_type cell = *cells->begin();
+#if 1
+  CPPUNIT_ASSERT(false);
+#else
+  // ADD STUFF HERE
 
-  material.retrievePropsAndVars(cell);
+  friction.retrievePropsAndVars(vertex);
 
   const double tolerance = 1.0e-06;
-  const int tensorSize = material._tensorSize;
-  const int numQuadPts = data.numLocs;
-  const int numVarsQuadPt = data.numVarsQuadPt;
+  const int numVarsVertex = data.numVarsVertex;
 
-  // Test cell arrays
+  // Test vertex arrays
   const double* propertiesE = data.properties;
   CPPUNIT_ASSERT(0 != propertiesE);
   const double_array& properties = material._propertiesCell;
-  size_t size = data.numLocs*data.numPropsQuadPt;
+  size_t size = data.numLocs*data.numPropsVertex;
   CPPUNIT_ASSERT_EQUAL(size, properties.size());
   for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, properties[i]/propertiesE[i],
 				 tolerance);
 
   const double* stateVarsE = data.stateVars;
-  CPPUNIT_ASSERT( (0 < numVarsQuadPt && 0 != stateVarsE) ||
-		  (0 == numVarsQuadPt && 0 == stateVarsE) );
+  CPPUNIT_ASSERT( (0 < numVarsVertex && 0 != stateVarsE) ||
+		  (0 == numVarsVertex && 0 == stateVarsE) );
   const double_array& stateVars = material._stateVarsCell;
-  size = data.numLocs*numVarsQuadPt;
+  size = data.numLocs*numVarsVertex;
   CPPUNIT_ASSERT_EQUAL(size, stateVars.size());
   for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsE[i],
 				 tolerance);
-
-  const double* initialStressE = data.initialStress;
-  CPPUNIT_ASSERT(0 != initialStressE);
-  const double_array& initialStress = material._initialStressCell;
-  size = data.numLocs*tensorSize;
-  CPPUNIT_ASSERT_EQUAL(size, initialStress.size());
-  for (size_t i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStress[i]/initialStressE[i],
-				 tolerance);
-
-  const double* initialStrainE = data.initialStrain;
-  CPPUNIT_ASSERT(0 != initialStrainE);
-  const double_array& initialStrain = material._initialStrainCell;
-  size = data.numLocs*tensorSize;
-  CPPUNIT_ASSERT_EQUAL(size, initialStrain.size());
-  for (size_t i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStrain[i]/initialStrainE[i],
-				 tolerance);
+#endif
 } // testRetrievePropsAndVars
 
 // ----------------------------------------------------------------------
-// Test calcDensity()
+// Test calcFriction()
 void
-pylith::materials::TestElasticMaterial::testCalcDensity(void)
-{ // testCalcDensity
+pylith::friction::TestFrictionModel::testCalcFriction(void)
+{ // testCalcFriction
   topology::Mesh mesh;
-  ElasticStrain1D material;
-  ElasticStrain1DData data;
-  _initialize(&mesh, &material, &data);
+  StaticFriction friction;
+  StaticFrictionData data;
+  _initialize(&mesh, &friction, &data);
 
-  // Get cells associated with material
-  const int materialId = 24;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  SieveMesh::point_type cell = *cells->begin();
+#if 1
+  CPPUNIT_ASSERT(false);
+#else
 
-  material.retrievePropsAndVars(cell);
-  const double_array& density = material.calcDensity();
+  friction.retrievePropsAndVars(vertex);
+  const double_array& friction = friction.calcFriction();
 
-  const int tensorSize = material._tensorSize;
-  const int numQuadPts = data.numLocs;
-
-  const double* densityE = data.density;
-  CPPUNIT_ASSERT(0 != densityE);
-  const size_t size = numQuadPts;
+  const double* densityE = data.friction;
+  CPPUNIT_ASSERT(0 != frictionE);
+  const size_t size = numVertexs;
   CPPUNIT_ASSERT_EQUAL(size, density.size());
   const double tolerance = 1.0e-06;
   for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, density[i]/densityE[i], tolerance);
-} // testCalcDensity
-    
-// ----------------------------------------------------------------------
-// Test calcStress()
-void
-pylith::materials::TestElasticMaterial::testCalcStress(void)
-{ // testCalcStress
-  topology::Mesh mesh;
-  ElasticStrain1D material;
-  ElasticStrain1DData data;
-  _initialize(&mesh, &material, &data);
-
-  // Get cells associated with material
-  const int materialId = 24;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  SieveMesh::point_type cell = *cells->begin();
-
-  const int tensorSize = material._tensorSize;
-  const int numQuadPts = data.numLocs;
-
-  // Setup total strain
-  double_array strain(data.strain, numQuadPts*tensorSize);
-
-  material.retrievePropsAndVars(cell);
-  const double_array& stress = material.calcStress(strain);
-
-  const double* stressE = data.stress;
-  CPPUNIT_ASSERT(0 != stressE);
-  const size_t size = numQuadPts * tensorSize;
-  CPPUNIT_ASSERT_EQUAL(size, stress.size());
-  const double tolerance = 1.0e-06;
-  for (size_t i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stress[i]/stressE[i], tolerance);
-} // testCalcStress
-    
-// ----------------------------------------------------------------------
-// Test calcDerivElastic()
-void
-pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
-{ // testCalcDerivElastic
-  topology::Mesh mesh;
-  ElasticStrain1D material;
-  ElasticStrain1DData data;
-  _initialize(&mesh, &material, &data);
-
-  // Get cells associated with material
-  const int materialId = 24;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  SieveMesh::point_type cell = *cells->begin();
-
-  const int tensorSize = material._tensorSize;
-  const int numQuadPts = data.numLocs;
-
-  // Setup total strain
-  double_array strain(data.strain, numQuadPts*tensorSize);
-
-  material.retrievePropsAndVars(cell);
-  const double_array& elasticConsts = material.calcDerivElastic(strain);
-
-  int numElasticConsts = 0;
-  switch (data.dimension)
-    { // switch
-    case 1 :
-      numElasticConsts = 1;
-      break;
-    case 2 :
-      numElasticConsts = 6;
-      break;
-    case 3 :
-      numElasticConsts = 21;
-      break;
-    default :
-      assert(0);
-    } // switch
-
-  const double* elasticConstsE = data.elasticConsts;
-  CPPUNIT_ASSERT(0 != elasticConstsE);
-  const size_t size = numQuadPts * numElasticConsts;
-  CPPUNIT_ASSERT_EQUAL(size, elasticConsts.size());
-  const double tolerance = 1.0e-06;
-  for (size_t i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, elasticConsts[i]/elasticConstsE[i],
-				 tolerance);
-} // testCalcDerivElastic
+#endif
+} // testCalcFriction
     
 // ----------------------------------------------------------------------
 // Test updateStateVars()
 void
-pylith::materials::TestElasticMaterial::testUpdateStateVars(void)
+pylith::friction::TestFrictionModel::testUpdateStateVars(void)
 { // testUpdateStateVars
   std::cout << "\n\nWARNING!! WARNING!! WARNING!!\n"
     "Need to implement using material with state variables.\n\n";
 } // testUpdateStateVars
 
 // ----------------------------------------------------------------------
-// Test calcStableTimeStepImplicit()
-void
-pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
-{ // testStableTimeStepImplicit
-  topology::Mesh mesh;
-  ElasticStrain1D material;
-  ElasticStrain1DData data;
-  _initialize(&mesh, &material, &data);
-
-  // Get cells associated with material
-  const int materialId = 24;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  SieveMesh::point_type cell = *cells->begin();
-
-  material.retrievePropsAndVars(cell);
-  const double dt = material.stableTimeStepImplicit(mesh);
-
-  const double tolerance = 1.0e-06;
-  const double dtE = data.dtStableImplicit;
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dt/dtE, tolerance);
-} // testStableTimeStepImplicit
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::materials::TestElasticMaterial::setUp(void)
+pylith::friction::TestFrictionModel::setUp(void)
 { // setUp
-  TestMaterial::setUp();
-  _matElastic = 0;
-  _dataElastic = 0;
+  _friction = 0;
+  _data = 0;
 } // setUp
 
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::materials::TestElasticMaterial::tearDown(void)
+pylith::friction::TestFrictionModel::tearDown(void)
 { // tearDown
-  TestMaterial::tearDown();
-  delete _matElastic; _matElastic = 0;
-  delete _dataElastic; _dataElastic = 0;
+  delete _friction; _friction = 0;
+  delete _data; _data = 0;
 } // tearDown
 
 // ----------------------------------------------------------------------
-// Test _calcDensity()
+// Test _dbToProperties().
 void
-pylith::materials::TestElasticMaterial::test_calcDensity(void)
-{ // _testCalcDensity
-  CPPUNIT_ASSERT(0 != _matElastic);
-  CPPUNIT_ASSERT(0 != _dataElastic);
-  const ElasticMaterialData* data = _dataElastic;
-
-  const int numLocs = data->numLocs;
-  const int numPropsQuadPt = data->numPropsQuadPt;
-  const int numVarsQuadPt = data->numVarsQuadPt;
+pylith::friction::TestFrictionModel::testDBToProperties(void)
+{ // testDBToProperties
+  CPPUNIT_ASSERT(0 != _friction);
+  CPPUNIT_ASSERT(0 != _data);
   
-  double density = 0;
-  double_array properties(numPropsQuadPt);
-  double_array stateVars(numVarsQuadPt);
+  const int numLocs = _data->numLocs;
+  const int numDBProperties = _data->numDBProperties;
+  double_array dbValues(numDBProperties);
+
+  const int propertiesSize = _data->numPropsVertex;
+  double_array properties(propertiesSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
-    memcpy(&properties[0], &data->properties[iLoc*numPropsQuadPt],
-	   numPropsQuadPt*sizeof(double));
-    memcpy(&stateVars[0], &data->stateVars[iLoc*numVarsQuadPt],
-	   numVarsQuadPt*sizeof(double));
+    for (int i=0; i < numDBProperties; ++i)
+      dbValues[i] = _data->dbProperties[iLoc*numDBProperties+i];
 
-    _matElastic->_calcDensity(&density, 
-			      &properties[0], properties.size(),
-			      &stateVars[0], stateVars.size());
+    _friction->_dbToProperties(&properties[0], dbValues);
     
-    const double densityE = data->density[iLoc];
-    
+    const double* const propertiesE = &_data->properties[iLoc*propertiesSize];
     const double tolerance = 1.0e-06;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, density/densityE, tolerance);
-  } // for
-} // _testCalcDensity
-
-// ----------------------------------------------------------------------
-// Test _calcStress()
-void
-pylith::materials::TestElasticMaterial::test_calcStress(void)
-{ // _testCalcStress
-  CPPUNIT_ASSERT(0 != _matElastic);
-  CPPUNIT_ASSERT(0 != _dataElastic);
-  const ElasticMaterialData* data = _dataElastic;
-
-  const bool computeStateVars = true;
-
-  const int numLocs = data->numLocs;
-  const int numPropsQuadPt = data->numPropsQuadPt;
-  const int numVarsQuadPt = data->numVarsQuadPt;
-  const int tensorSize = _matElastic->_tensorSize;
-  
-  double_array stress(tensorSize);
-  double_array properties(numPropsQuadPt);
-  double_array stateVars(numVarsQuadPt);
-  double_array strain(tensorSize);
-  double_array initialStress(tensorSize);
-  double_array initialStrain(tensorSize);
-
-  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
-    memcpy(&properties[0], &data->properties[iLoc*numPropsQuadPt],
-	   properties.size()*sizeof(double));
-    memcpy(&stateVars[0], &data->stateVars[iLoc*numVarsQuadPt],
-	   stateVars.size()*sizeof(double));
-    memcpy(&strain[0], &data->strain[iLoc*tensorSize],
-	   strain.size()*sizeof(double));
-    memcpy(&initialStress[0], &data->initialStress[iLoc*tensorSize],
-	   initialStress.size()*sizeof(double));
-    memcpy(&initialStrain[0], &data->initialStrain[iLoc*tensorSize],
-	   initialStrain.size()*sizeof(double));
-
-    _matElastic->_calcStress(&stress[0], stress.size(),
-			     &properties[0], properties.size(),
-			     &stateVars[0], stateVars.size(),
-			     &strain[0], strain.size(),
-			     &initialStress[0], initialStress.size(),
-			     &initialStrain[0], initialStrain.size(),
-			     computeStateVars);
-
-    const double* stressE = &data->stress[iLoc*tensorSize];
-    CPPUNIT_ASSERT(0 != stressE);
-
-    const double tolerance = 1.0e-06;
-    for (int i=0; i < tensorSize; ++i)
-      if (fabs(stressE[i]) > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stress[i]/stressE[i], 
+    for (int i=0; i < propertiesSize; ++i) {
+      if (fabs(propertiesE[i]) > tolerance)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
+				     properties[i]/propertiesE[i],
 				     tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(stressE[i], stress[i],
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[i], properties[i],
 				     tolerance);
+    } // for
   } // for
-} // _testCalcStress
+} // testDBToProperties
 
 // ----------------------------------------------------------------------
-// Test _calcElasticConsts()
+// Test _nondimProperties().
 void
-pylith::materials::TestElasticMaterial::test_calcElasticConsts(void)
-{ // _testCalcElasticConsts
-  CPPUNIT_ASSERT(0 != _matElastic);
-  CPPUNIT_ASSERT(0 != _dataElastic);
-  const ElasticMaterialData* data = _dataElastic;
-
-  int numConsts = 0;
-  int tensorSize = 0;
-  switch(data->dimension)
-    { // switch
-    case 1 :
-      numConsts = 1;
-      tensorSize = 1;
-      break;
-    case 2 :
-      numConsts = 6;
-      tensorSize = 3;
-      break;
-    case 3 :
-      numConsts = 21;
-      tensorSize = 6;
-      break;
-    } // switch
-  const int numLocs = data->numLocs;
-  const int numPropsQuadPt = data->numPropsQuadPt;
-  const int numVarsQuadPt = data->numVarsQuadPt;
+pylith::friction::TestFrictionModel::testNonDimProperties(void)
+{ // testNonDimProperties
+  CPPUNIT_ASSERT(0 != _friction);
+  CPPUNIT_ASSERT(0 != _data);
   
-  double_array elasticConsts(numConsts);
-  double_array properties(numPropsQuadPt);
-  double_array stateVars(numVarsQuadPt);
-  double_array strain(tensorSize);
-  double_array initialStress(tensorSize);
-  double_array initialStrain(tensorSize);
+  const int numLocs = _data->numLocs;
+  const int propertiesSize = _data->numPropsVertex;
+  double_array propertiesNondim(propertiesSize);
+  double_array properties(propertiesSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
-    memcpy(&properties[0], &data->properties[iLoc*numPropsQuadPt],
-	   numPropsQuadPt*sizeof(double));
-    memcpy(&stateVars[0], &data->stateVars[iLoc*numVarsQuadPt],
-	   numVarsQuadPt*sizeof(double));
-    memcpy(&strain[0], &data->strain[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
-    memcpy(&initialStress[0], &data->initialStress[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
-    memcpy(&initialStrain[0], &data->initialStrain[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
-
-    _matElastic->_calcElasticConsts(&elasticConsts[0], elasticConsts.size(),
-				    &properties[0], properties.size(),
-				    &stateVars[0], stateVars.size(),
-				    &strain[0], strain.size(),
-				    &initialStress[0], initialStress.size(),
-				    &initialStrain[0], initialStrain.size());
-
-    const double* elasticConstsE = &data->elasticConsts[iLoc*numConsts];
-    CPPUNIT_ASSERT(0 != elasticConstsE);
+    for (int i=0; i < propertiesSize; ++i)
+      properties[i] = _data->properties[iLoc*propertiesSize+i];
+    _friction->_nondimProperties(&properties[0], properties.size());
     
+    const double* const propertiesNondimE =
+      &_data->propertiesNondim[iLoc*propertiesSize];
+    CPPUNIT_ASSERT(0 != propertiesNondimE);
+
     const double tolerance = 1.0e-06;
-    for (int i=0; i < numConsts; ++i)
-      if (fabs(elasticConstsE[i]) > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, elasticConsts[i]/elasticConstsE[i], 
+    for (int i=0; i < propertiesSize; ++i) {
+      if (fabs(propertiesNondimE[i]) > tolerance)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
+				     properties[i]/propertiesNondimE[i],
 				     tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(elasticConstsE[i], elasticConsts[i],
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesNondimE[i], properties[i],
 				     tolerance);
+    } // for
   } // for
-} // _testCalcElasticConsts
+} // testNonDimProperties
+
+// ----------------------------------------------------------------------
+// Test _dimProperties().
+void
+pylith::friction::TestFrictionModel::testDimProperties(void)
+{ // testDimProperties
+  CPPUNIT_ASSERT(0 != _friction);
+  CPPUNIT_ASSERT(0 != _data);
+  
+  const int numLocs = _data->numLocs;
+  const int propertiesSize = _data->numPropsVertex;
+  double_array properties(propertiesSize);
+
+  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
+    for (int i=0; i < propertiesSize; ++i)
+      properties[i] = _data->propertiesNondim[iLoc*propertiesSize+i];
+    _friction->_dimProperties(&properties[0], properties.size());
+    
+    const double* const propertiesE =
+      &_data->properties[iLoc*propertiesSize];
+    CPPUNIT_ASSERT(0 != propertiesE);
+
+    const double tolerance = 1.0e-06;
+    for (int i=0; i < propertiesSize; ++i) {
+      if (fabs(propertiesE[i]) > tolerance)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
+				     properties[i]/propertiesE[i],
+				     tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[i], properties[i],
+				     tolerance);
+    } // for
+  } // for
+} // testDimProperties
+
+// ----------------------------------------------------------------------
+// Test _dbToStateVars().
+void
+pylith::friction::TestFrictionModel::testDBToStateVars(void)
+{ // testDBToStateVars
+  CPPUNIT_ASSERT(0 != _friction);
+  CPPUNIT_ASSERT(0 != _data);
+  
+  const int numLocs = _data->numLocs;
+  const int numDBStateVars = _data->numDBStateVars;
+  double_array dbValues(numDBStateVars);
+
+  const int stateVarsSize = _data->numVarsVertex;
+  double_array stateVars(stateVarsSize);
+
+  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
+    for (int i=0; i < numDBStateVars; ++i)
+      dbValues[i] = _data->dbStateVars[iLoc*numDBStateVars+i];
+
+    _friction->_dbToStateVars(&stateVars[0], dbValues);
+    
+    const double* const stateVarsE = 
+      (stateVarsSize > 0) ? &_data->stateVars[iLoc*stateVarsSize] : 0;
+    CPPUNIT_ASSERT( (0 < stateVarsSize && 0 != stateVarsE) ||
+		    (0 == stateVarsSize && 0 == stateVarsE) );
+    const double tolerance = 1.0e-06;
+    for (int i=0; i < stateVarsSize; ++i) {
+      if (fabs(stateVarsE[i]) > tolerance)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
+				     stateVars[i]/stateVarsE[i],
+				     tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i],
+				     tolerance);
+    } // for
+  } // for
+} // testDBToStateVars
+
+// ----------------------------------------------------------------------
+// Test _nondimStateVars().
+void
+pylith::friction::TestFrictionModel::testNonDimStateVars(void)
+{ // testNonDimStateVars
+  CPPUNIT_ASSERT(0 != _friction);
+  CPPUNIT_ASSERT(0 != _data);
+  
+  const int numLocs = _data->numLocs;
+  const int stateVarsSize = _data->numVarsVertex;
+  double_array stateVars(stateVarsSize);
+
+  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
+    for (int i=0; i < stateVarsSize; ++i)
+      stateVars[i] = _data->dbStateVars[iLoc*stateVarsSize+i];
+    _friction->_nondimStateVars(&stateVars[0], stateVars.size());
+    
+    const double* const stateVarsNondimE =
+      (stateVarsSize > 0) ? &_data->stateVarsNondim[iLoc*stateVarsSize] : 0;
+    CPPUNIT_ASSERT( (0 < stateVarsSize && 0 != stateVarsNondimE) ||
+		    (0 == stateVarsSize && 0 == stateVarsNondimE) );
+
+    const double tolerance = 1.0e-06;
+    for (int i=0; i < stateVarsSize; ++i) {
+      if (fabs(stateVarsNondimE[i]) > tolerance)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
+				     stateVars[i]/stateVarsNondimE[i],
+				     tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsNondimE[i], stateVars[i],
+				     tolerance);
+    } // for
+  } // for
+} // testNonDimStateVars
+
+// ----------------------------------------------------------------------
+// Test _dimStateVars().
+void
+pylith::friction::TestFrictionModel::testDimStateVars(void)
+{ // testDimStateVars
+  CPPUNIT_ASSERT(0 != _friction);
+  CPPUNIT_ASSERT(0 != _data);
+  
+  const int numLocs = _data->numLocs;
+  const int stateVarsSize = _data->numVarsVertex;
+  double_array stateVars(stateVarsSize);
+
+  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
+    for (int i=0; i < stateVarsSize; ++i)
+      stateVars[i] = _data->stateVarsNondim[iLoc*stateVarsSize+i];
+    _friction->_dimStateVars(&stateVars[0], stateVars.size());
+    
+    const double* const stateVarsE =
+      (stateVarsSize > 0) ? &_data->stateVars[iLoc*stateVarsSize] : 0;
+    CPPUNIT_ASSERT( (0 < stateVarsSize && 0 != stateVarsE) ||
+		    (0 == stateVarsSize && 0 == stateVarsE) );
+
+    const double tolerance = 1.0e-06;
+    for (int i=0; i < stateVarsSize; ++i) {
+      if (fabs(stateVarsE[i]) > tolerance)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
+				     stateVars[i]/stateVarsE[i],
+				     tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i],
+				     tolerance);
+    } // for
+  } // for
+} // testDimStateVars
+
+// ----------------------------------------------------------------------
+// Test _calcFriction()
+void
+pylith::friction::TestFrictionModel::test_calcFriction(void)
+{ // _testCalcFriction
+  CPPUNIT_ASSERT(0 != _friction);
+  CPPUNIT_ASSERT(0 != _data);
+
+  const int numLocs = _data->numLocs;
+  const int numPropsVertex = _data->numPropsVertex;
+  const int numVarsVertex = _data->numVarsVertex;
+  
+  double_array properties(numPropsVertex);
+  double_array stateVars(numVarsVertex);
+
+  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
+    for (int i=0; i < numPropsVertex; ++i)
+      properties[i] = _data->properties[iLoc*numPropsVertex+i];
+    for (int i=0; i < numVarsVertex; ++i)
+      stateVars[i] = _data->stateVars[iLoc*numVarsVertex+i];
+    const double slip = _data->slip[iLoc];
+    const double slipRate = _data->slipRate[iLoc];
+    const double normalTraction = _data->normalTraction[iLoc];
+
+    const double friction = _friction->_calcFriction(
+					slip, slipRate, normalTraction,
+					&properties[0], properties.size(),
+					&stateVars[0], stateVars.size());
+    
+    const double frictionE = _data->friction[iLoc];
+    
+    const double tolerance = 1.0e-06;
+    if (0.0 != frictionE)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, friction/frictionE, tolerance);
+    else
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(frictionE, friction, tolerance);
+  } // for
+} // _testCalcFriction
 
 // ----------------------------------------------------------------------
 // Test _updateStateVars()
 void
-pylith::materials::TestElasticMaterial::test_updateStateVars(void)
+pylith::friction::TestFrictionModel::test_updateStateVars(void)
 { // test_updateStateVars
-  CPPUNIT_ASSERT(0 != _matElastic);
-  CPPUNIT_ASSERT(0 != _dataElastic);
-  const ElasticMaterialData* data = _dataElastic;
+  CPPUNIT_ASSERT(0 != _friction);
+  CPPUNIT_ASSERT(0 != _data);
 
   const bool computeStateVars = true;
 
-  const int numLocs = data->numLocs;
-  const int numPropsQuadPt = data->numPropsQuadPt;
-  const int numVarsQuadPt = data->numVarsQuadPt;
-  const int tensorSize = _matElastic->_tensorSize;
+  const int numLocs = _data->numLocs;
+  const int numPropsVertex = _data->numPropsVertex;
+  const int numVarsVertex = _data->numVarsVertex;
   
-  double_array properties(numPropsQuadPt);
-  double_array stateVars(numVarsQuadPt);
-  double_array strain(tensorSize);
-  double_array initialStress(tensorSize);
-  double_array initialStrain(tensorSize);
+  double_array properties(numPropsVertex);
+  double_array stateVars(numVarsVertex);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
-    memcpy(&properties[0], &data->properties[iLoc*numPropsQuadPt],
-	   numPropsQuadPt*sizeof(double));
-    memcpy(&stateVars[0], &data->stateVars[iLoc*numVarsQuadPt],
-	   numVarsQuadPt*sizeof(double));
-    memcpy(&strain[0], &data->strain[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
-    memcpy(&initialStress[0], &data->initialStress[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
-    memcpy(&initialStrain[0], &data->initialStrain[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
+    for (int i=0; i < numPropsVertex; ++i)
+      properties[i] = _data->properties[iLoc*numPropsVertex+i];
+    for (int i=0; i < numVarsVertex; ++i)
+      stateVars[i] = _data->stateVars[iLoc*numVarsVertex+i];
 
-    _matElastic->_updateStateVars(&stateVars[0], stateVars.size(),
-				  &properties[0], properties.size(),
-				  &strain[0], strain.size(),
-				  &initialStress[0], initialStress.size(),
-				  &initialStrain[0], initialStrain.size());
+    _friction->_updateStateVars(&stateVars[0], stateVars.size(),
+				&properties[0], properties.size());
     
     const double* stateVarsE = 
-      (numVarsQuadPt > 0) ? &data->stateVarsUpdated[iLoc*numVarsQuadPt] : 0;
-    CPPUNIT_ASSERT( (0 < numVarsQuadPt && 0 != stateVarsE) ||
-		    (0 == numVarsQuadPt && 0 == stateVarsE) );
+      (numVarsVertex > 0) ? &_data->stateVarsUpdated[iLoc*numVarsVertex] : 0;
+    CPPUNIT_ASSERT( (0 < numVarsVertex && 0 != stateVarsE) ||
+		    (0 == numVarsVertex && 0 == stateVarsE) );
 
     const double tolerance = 1.0e-06;
-    for (int i=0; i < numVarsQuadPt; ++i)
-      if (fabs(stateVarsE[i]) > tolerance)
+    for (int i=0; i < numVarsVertex; ++i)
+      if (0.0 != stateVarsE[i])
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsE[i], 
 				     tolerance);
       else
@@ -624,50 +531,31 @@ pylith::materials::TestElasticMaterial::test_updateStateVars(void)
 } // test_updateStateVars
 
 // ----------------------------------------------------------------------
-// Test _stableTimeStepImplicit()
-void
-pylith::materials::TestElasticMaterial::test_stableTimeStepImplicit(void)
-{ // _testCalcDensity
-  CPPUNIT_ASSERT(0 != _matElastic);
-  CPPUNIT_ASSERT(0 != _dataElastic);
-  const ElasticMaterialData* data = _dataElastic;
-
-  const double dt =
-    _matElastic->_stableTimeStepImplicit(data->properties, data->numPropsQuadPt,
-					 data->stateVars, data->numVarsQuadPt);
-
-  const double dtE = data->dtStableImplicit;
-
-  const double tolerance = 1.0e-06;
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dt/dtE, tolerance);
-} // _testStableTimeStepImplicit
-
-// ----------------------------------------------------------------------
 // Setup nondimensionalization.
 void
-pylith::materials::TestElasticMaterial::setupNormalizer(void)
+pylith::friction::TestFrictionModel::setupNormalizer(void)
 { // setupNormalizer
   spatialdata::units::Nondimensional normalizer;
   normalizer.lengthScale(_data->lengthScale);
   normalizer.pressureScale(_data->pressureScale);
   normalizer.timeScale(_data->timeScale);
   normalizer.densityScale(_data->densityScale);
-  _material->normalizer(normalizer);
-  _matElastic->normalizer(normalizer);
+  _friction->normalizer(normalizer);
 } // setupNormalizer
 
 // ----------------------------------------------------------------------
 // Setup mesh and material.
 void
-pylith::materials::TestElasticMaterial::_initialize(
+pylith::friction::TestFrictionModel::_initialize(
 					  topology::Mesh* mesh,
-					  ElasticStrain1D* material,
-					  const ElasticStrain1DData* data)
+					  StaticFriction* friction,
+					  const StaticFrictionData* data)
 { // _initialize
   CPPUNIT_ASSERT(0 != mesh);
-  CPPUNIT_ASSERT(0 != material);
+  CPPUNIT_ASSERT(0 != friction);
   CPPUNIT_ASSERT(0 != data);
 
+#if 0
   meshio::MeshIOAscii iohandler;
   iohandler.filename("data/line3.mesh");
   iohandler.read(mesh);
@@ -739,12 +627,13 @@ pylith::materials::TestElasticMaterial::_initialize(
   
   material->dbProperties(&db);
   material->id(materialId);
-  material->label("my_material");
+  material->label("my_friction");
   material->normalizer(normalizer);
   material->dbInitialStress(&dbStress);
   material->dbInitialStrain(&dbStrain);
   
   material->initialize(*mesh, &quadrature);
+#endif
 } // _initialize
 
 
