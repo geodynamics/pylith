@@ -31,6 +31,7 @@ namespace pylith {
   namespace friction {
     class TestFrictionModel;
     class FrictionModelData;
+    class StaticFrictionData;
   } // friction
 } // pylith
 
@@ -48,6 +49,8 @@ class pylith::friction::TestFrictionModel : public CppUnit::TestFixture
   CPPUNIT_TEST( testNormalizer );
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testRetrievePropsAndVars );
+  CPPUNIT_TEST( testCalcFriction );
+  CPPUNIT_TEST( testUpdateStateVars );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -68,9 +71,6 @@ public :
 
   /// Test normalizer().
   void testNormalizer(void);
-
-  /// Test needNewJacobian()
-  void testNeedNewJacobian(void);
 
   /// Test initialize()
   void testInitialize(void);
@@ -97,17 +97,29 @@ public :
   virtual
   void tearDown(void);
 
+  /// Test _dbToProperties().
+  void testDBToProperties(void);
+
+  /// Test _nondimProperties().
+  void testNonDimProperties(void);
+
+  /// Test _dimProperties().
+  void testDimProperties(void);
+
+  /// Test _dbToStateVars().
+  void testDBToStateVars(void);
+
+  /// Test _nondimStateVars().
+  void testNonDimStateVars(void);
+
+  /// Test _dimStateVars().
+  void testDimStateVars(void);
+
   /// Test _calcFriction().
   void test_calcFriction(void);
 
   /// Test _updateStateVars().
   void test_updateStateVars(void);
-
-  /// Test hasProperty().
-  void testHasProperty(void);
-
-  /// Test hasStateVar().
-  void testHasStateVar(void);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -127,8 +139,12 @@ private :
   /** Setup mesh and material.
    *
    * @param mesh Finite-element mesh.
+   * @param friction Friction model.
+   * @param data Data with properties for friction model.
    */
-  void _initialize(topology::SubMesh* mesh);
+  void _initialize(topology::Mesh* mesh,
+		   StaticFriction* friction,
+		   const StaticFrictionData* data);
 
 }; // class TestFrictionModel
 

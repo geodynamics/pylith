@@ -37,7 +37,7 @@ namespace pylith {
 
       // Physical properties.
       const pylith::materials::Metadata::ParamDescription properties[] = {
-	{ "friction-coefficient", 1, pylith::topology::FieldBase::SCALAR },
+	{ "friction_coefficient", 1, pylith::topology::FieldBase::SCALAR },
       };
 
       // Values expected in spatial database

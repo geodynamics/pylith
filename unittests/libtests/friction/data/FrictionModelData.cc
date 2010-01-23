@@ -10,19 +10,18 @@
 // ======================================================================
 //
 
-#include "MaterialData.hh"
+#include "FrictionModelData.hh"
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::materials::MaterialData::MaterialData(void) :
-  dimension(0),
+pylith::friction::FrictionModelData::FrictionModelData(void) :
   numLocs(0),
   numProperties(0),
   numStateVars(0),
   numDBProperties(0),
   numDBStateVars(0),
-  numPropsQuadPt(0),
-  numVarsQuadPt(0),
+  numPropsVertex(0),
+  numVarsVertex(0),
   numPropertyValues(0),
   numStateVarValues(0),
   dbPropertyValues(0),
@@ -31,6 +30,13 @@ pylith::materials::MaterialData::MaterialData(void) :
   dbStateVars(0),
   properties(0),
   stateVars(0),
+  propertiesNondim(0),
+  stateVarsNondim(0),
+  friction(0),
+  slip(0),
+  slipRate(0),
+  normalTraction(0),
+  stateVarsUpdated(0),
   lengthScale(0),
   timeScale(0),
   pressureScale(0),
@@ -40,7 +46,7 @@ pylith::materials::MaterialData::MaterialData(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::materials::MaterialData::~MaterialData(void)
+pylith::friction::FrictionModelData::~FrictionModelData(void)
 { // destructor
 } // destructor
 
