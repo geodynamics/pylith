@@ -274,8 +274,8 @@ protected :
 
   spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer
   
-  int _numProps; ///< Number of properties per quad point.
-  int _numVars; ///< Number of state variables per quad point.
+  int _numPropsVertex; ///< Number of properties per vertex.
+  int _numVarsVertex; ///< Number of state variables per vertex.
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
