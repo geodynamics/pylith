@@ -134,7 +134,7 @@ pylith::friction::StaticFriction::_calcFriction(const double slip,
 						const int numStateVars)
 { // _calcFriction
   assert(0 != properties);
-  assert(_numProps == numProperties);
+  assert(_numPropsVertex == numProperties);
   assert(0 == numStateVars);
 
   const double friction = (normalTraction < 0) ?
