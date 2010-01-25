@@ -18,6 +18,7 @@
 #include "pylith/meshio/MeshIO.hh"
 #include "pylith/meshio/MeshIOAscii.hh"
 #include "pylith/meshio/MeshIOLagrit.hh"
+#include "pylith/meshio/MeshIOSieve.hh"
 #ifdef ENABLE_CUBIT
 #include "pylith/meshio/MeshIOCubit.hh"
 #endif
@@ -49,6 +50,7 @@
 %include "MeshIOObj.i"
 %include "MeshIOAscii.i"
 %include "MeshIOLagrit.i"
+%include "MeshIOSieve.i"
 #ifdef ENABLE_CUBIT
 %include "MeshIOCubit.i"
 #endif

@@ -23,6 +23,7 @@ swig_sources = \
 	MeshIOAscii.i \
 	MeshIOLagrit.i \
 	MeshIOCubit.i \
+	MeshIOSieve.i \
 	VertexFilter.i \
 	VertexFilterVecNorm.i \
 	CellFilter.i \
