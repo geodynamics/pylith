@@ -63,7 +63,7 @@ class TestMeshIOAscii(unittest.TestCase):
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
 
-    mesh = io.read(normalizer, debug=False, interpolate=False)
+    mesh = io.read(debug=False, interpolate=False)
 
     io.filename(filenameOut)
     io.write(mesh)

@@ -168,7 +168,7 @@ class TestMaterial(unittest.TestCase):
     importer.inventory.filename = "data/twoelems.mesh"
     importer.inventory.coordsys = cs
     importer._configure()
-    mesh = importer.read(normalizer, debug=False, interpolate=False)
+    mesh = importer.read(debug=False, interpolate=False)
     
     material.preinitialize(mesh)
 

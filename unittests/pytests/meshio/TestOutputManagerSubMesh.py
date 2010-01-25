@@ -46,7 +46,7 @@ class TestProvider(object):
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
     normalizer._configure()
-    mesh = iohandler.read(normalizer, debug=False, interpolate=False)
+    mesh = iohandler.read(debug=False, interpolate=False)
 
     from pylith.topology.SubMesh import SubMesh
     submesh = SubMesh(mesh, "4")
