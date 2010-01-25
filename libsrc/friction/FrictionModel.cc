@@ -102,7 +102,6 @@ pylith::friction::FrictionModel::initialize(
 			const topology::SubMesh& faultMesh,
 			feassemble::Quadrature<topology::SubMesh>* quadrature)
 { // initialize
-#if 0
   assert(0 != _dbProperties);
   assert(0 != quadrature);
 
@@ -113,6 +112,8 @@ pylith::friction::FrictionModel::initialize(
   const int numQuadPts = quadrature->numQuadPts();
   const int numBasis = quadrature->numBasis();
   const int spaceDim = quadrature->spaceDim();
+  const double_array& quadWts = quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
 
   // Get cells associated with friction interface
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
@@ -136,14 +137,15 @@ pylith::friction::FrictionModel::initialize(
   // Create arrays for querying.
   const int numDBProperties = _metadata.numDBProperties();
   double_array quadPtsGlobal(numQuadPts*spaceDim);
-  double_array propertiesQuery(numDBProperties);
+  double_array propertiesDBQuery(numDBProperties);
+  double_array propertiesQuadPt(numQuadPts*_numPropsVertex);
 
   // Create field to hold physical properties.
   delete _properties; _properties = 
 			new topology::Field<topology::SubMesh>(faultMesh);
   _properties->label("properties");
   assert(0 != _properties);
-  int fiberDim = _numPropsVertext;
+  int fiberDim = _numPropsVertex;
   _properties->newSection(cells, fiberDim);
   _properties->allocate();
   _properties->zero();
@@ -159,19 +161,29 @@ pylith::friction::FrictionModel::initialize(
   _dbProperties->queryVals(_metadata.dbProperties(),
 			   _metadata.numDBProperties());
 
+  // Create arrays for querying
+  const int numDBStateVars = _metadata.numDBStateVars();
+  double_array stateVarsDBQuery;
+  double_array stateVarsQuadPt;
+  if (0 != _dbInitialState) {
+    assert(numDBStateVars > 0);
+    assert(_numVarsVertex > 0);
+    stateVarsDBQuery.resize(numDBStateVars);
+    stateVarsQuadPt.resize(numQuadPts*_numVarsVertex);
+    // Setup database for querying for initial state variables
+    _dbInitialState->open();
+    _dbInitialState->queryVals(_metadata.dbStateVars(),
+             _metadata.numDBStateVars());
+  } // if
+
   // Create field to hold state variables. We create the field even
   // if there is no initial state, because this we will use this field
   // to hold the state variables.
   delete _stateVars; _stateVars = new topology::Field<topology::SubMesh>(faultMesh);
   _stateVars->label("state variables");
   fiberDim = _numVarsVertex;
-  // :TODO: ADD UPDATE VISITOR HERE
-  const ALE::Obj<RealSection>& areaSection = area.section();
-  assert(!areaSection.isNull());
-
-
   if (fiberDim > 0) {
-    assert(0 != _stateVarsVertex);
+    assert(0 != _stateVars);
     assert(0 != _properties);
     _stateVars->newSection(*_properties, fiberDim);
     _stateVars->allocate();
@@ -182,21 +194,6 @@ pylith::friction::FrictionModel::initialize(
   double_array stateVarsCell(numBasis*numDBStateVars); // size may be zero, is this ok?
   topology::Mesh::UpdateAddVisitor stateVarsVisitor(*stateVarsSection,
         &stateVarsCell[0]);
-
-  // Create arrays for querying
-  const int numDBStateVars = _metadata.numDBStateVars();
-  double_array stateVarsQuery;
-  if (0 != _dbInitialState) {
-    assert(!stateVarsSection.isNull());
-    assert(numDBStateVars > 0);
-    assert(_numVarsVertex > 0);
-    stateVarsQuery.resize(numDBStateVars);
-    
-    // Setup database for querying for initial state variables
-    _dbInitialState->open();
-    _dbInitialState->queryVals(_metadata.dbStateVars(),
-			       _metadata.numDBStateVars());
-  } // if
 
   assert(0 != _normalizer);
   const double lengthScale = _normalizer->lengthScale();
@@ -209,7 +206,7 @@ pylith::friction::FrictionModel::initialize(
     quadrature->retrieveGeometry(*c_iter);
 #else
     coordsVisitor.clear();
-    sieveSubMesh->restrictClosure(*c_iter, coordsVisitor);
+    faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
     quadrature->computeGeometry(coordinatesCell, *c_iter);
 #endif
 
@@ -219,9 +216,10 @@ pylith::friction::FrictionModel::initialize(
 				lengthScale);
 
     // Loop over quadrature points in cell and query database
-    for (int iQuadPt = 0, index = 0; iQuadPt < numQuadPts; ++iQuadPt, index
-        += spaceDim) {
-      int err = _dbProperties->query(&propertiesQuery[0], numDBProperties,
+    for (int iQuadPt=0, index=0;
+        iQuadPt < numQuadPts;
+        ++iQuadPt, index+=spaceDim) {
+      int err = _dbProperties->query(&propertiesDBQuery[0], numDBProperties,
           &quadPtsGlobal[index], spaceDim, cs);
       if (err) {
         std::ostringstream msg;
@@ -232,27 +230,26 @@ pylith::friction::FrictionModel::initialize(
             << "using spatial database '" << _dbProperties->label() << "'.";
         throw std::runtime_error(msg.str());
       } // if
-      // FIX THIS
-      _dbToProperties(&propertiesCell[iQuadPt*_numPropsQuadPt],
-          propertiesQuery);
+      _dbToProperties(&propertiesQuadPt[iQuadPt*_numPropsVertex],
+          propertiesDBQuery);
 
       // Get cell geometry information that depends on cell
-      const double_array& basis = _quadrature->basis();
-      const double_array& jacobianDet = _quadrature->jacobianDet();
+      const double_array& basis = quadrature->basis();
+      const double_array& jacobianDet = quadrature->jacobianDet();
 
       // Compute properties weighted by area
-      const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+      const double wt = quadWts[iQuadPt] * jacobianDet[iQuadPt];
       for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
-        const double dArea = wt * basis[iQuad * numBasis + iBasis];
+        const double dArea = wt * basis[iQuadPt*numBasis+iBasis];
         for (int iProp = 0; iProp < numDBProperties; ++iProp)
           propertiesCell[iBasis*numDBProperties+iProp]
-              = propertiesQuery[iProp] * dArea;
+              = propertiesQuadPt[iProp] * dArea;
       } // for
       propertiesVisitor.clear();
       faultSieveMesh->updateClosure(*c_iter, propertiesVisitor);
 
       if (0 != _dbInitialState) {
-        err = _dbInitialState->query(&stateVarsQuery[0], numDBStateVars,
+        err = _dbInitialState->query(&stateVarsDBQuery[0], numDBStateVars,
             &quadPtsGlobal[index], spaceDim, cs);
         if (err) {
           std::ostringstream msg;
@@ -263,23 +260,20 @@ pylith::friction::FrictionModel::initialize(
               << "using spatial database '" << _dbInitialState->label() << "'.";
           throw std::runtime_error(msg.str());
         } // if
-        // FIX THIS
-        _dbToStateVars(&stateVarsCell[iQuadPt * _numVarsQuadPt], stateVarsQuery);
+        _dbToStateVars(&stateVarsQuadPt[iQuadPt*_numVarsVertex],
+            stateVarsDBQuery);
 
         // Compute state variables weighted by area
         for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
-          const double dArea = wt * basis[iQuad * numBasis + iBasis];
+          const double dArea = wt * basis[iQuadPt*numBasis+iBasis];
           for (int iVar = 0; iVar < numDBStateVars; ++iVar)
             stateVarsCell[iBasis*numDBStateVars+iVar]
-                = stateVarsQuery[iVar] * dArea;
+                = stateVarsDBQuery[iVar] * dArea;
         } // for
         stateVarsVisitor.clear();
         faultSieveMesh->updateClosure(*c_iter, stateVarsVisitor);
       } // if
-
     } // for
-
-
   } // for
 
   // Close databases
@@ -287,26 +281,34 @@ pylith::friction::FrictionModel::initialize(
   if (0 != _dbInitialState)
     _dbInitialState->close();
 
-  // Loop over vertices and nondimensionalize properties and state variables
-    // ADD STUFF HERE
-  _nondimProperties(&propertiesCell[iQuadPt*_numPropsQuadPt],
-  _numPropsQuadPt);
+  // Loop over vertices and divide by area to get weighted values and
+  // nondimensionalize properties and state variables
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
+    faultSieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const SieveSubMesh::label_sequence::iterator verticesBegin =
+    vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
-  // Insert cell contribution into fields
-  propertiesSection->updatePoint(*c_iter, &propertiesCell[0]);
+  double_array propertiesVertex(_numPropsVertex);
+  double_array stateVarsVertex(_numVarsVertex);
+  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
+       v_iter != verticesEnd;
+       ++v_iter) {
+    propertiesSection->restrictPoint(*v_iter,
+        &propertiesVertex[0], propertiesVertex.size());
+    _nondimProperties(&propertiesVertex[0], _numPropsVertex);
+    propertiesSection->updatePoint(*v_iter, &propertiesVertex[0]);
 
-  _nondimStateVars(&stateVarsCell[iQuadPt * _numVarsQuadPt],
-      _numVarsQuadPt);
-
-  if (0 != _dbInitialState)
-    stateVarsSection->updatePoint(*c_iter, &stateVarsCell[0]);
-
-
-
-
+    if (0 != _dbInitialState) {
+      stateVarsSection->restrictPoint(*v_iter,
+          &stateVarsVertex[0], stateVarsVertex.size());
+      _nondimStateVars(&stateVarsVertex[0], _numVarsVertex);
+      stateVarsSection->updatePoint(*v_iter, &stateVarsVertex[0]);
+    } // if
+  } // for
 
   logger.stagePop();
-#endif
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -353,7 +355,6 @@ void
 pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *field,
 					  const char* name) const
 { // getField
-#if 0
   // Logging of allocation is handled by getField() caller since it
   // manages the memory for the field argument.
 
@@ -374,11 +375,12 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
   // Get cell information
   const ALE::Obj<SieveSubMesh>& sieveSubMesh = field->mesh().sieveMesh();
   assert(!sieveSubMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    sieveSubMesh->getLabelStratum("material-id", _id);
-  assert(!cells.isNull());
-  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
+    sieveSubMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const SieveSubMesh::label_sequence::iterator verticesBegin =
+    vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
   topology::FieldBase::VectorFieldEnum fieldType = topology::FieldBase::OTHER;
       
@@ -386,30 +388,19 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
     int propOffset = 0;
     const string_vector& properties = _metadata.properties();
     assert(propertyIndex < properties.size());
-    for (int i=0; i < propertyIndex; ++i)
-      propOffset += 
-	_metadata.fiberDim(properties[i].c_str(), 
-			   materials::Metadata::PROPERTY);
-    const int fiberDim = 
-      _metadata.fiberDim(name, materials::Metadata::PROPERTY);
+    for (int i = 0; i < propertyIndex; ++i)
+      propOffset += _metadata.fiberDim(properties[i].c_str(),
+          materials::Metadata::PROPERTY);
+    const int fiberDim =
+        _metadata.fiberDim(name, materials::Metadata::PROPERTY);
 
     // Get properties section
     const ALE::Obj<RealSection>& propertiesSection = _properties->section();
     assert(!propertiesSection.isNull());
-    const int totalPropsFiberDimLocal = (cells->size() > 0) ? 
-      propertiesSection->getFiberDimension(*cells->begin()) : 0;
-    int totalPropsFiberDim = 0;
-    MPI_Allreduce((void *) &totalPropsFiberDimLocal, 
-		  (void *) &totalPropsFiberDim, 1, 
-		  MPI_INT, MPI_MAX, field->mesh().comm());
-    assert(totalPropsFiberDim > 0);
-    const int numPropsQuadPt = _numPropsQuadPt;
-    const int numQuadPts = totalPropsFiberDim / numPropsQuadPt;
-    assert(totalPropsFiberDim == numQuadPts * numPropsQuadPt);
-    const int totalFiberDim = numQuadPts * fiberDim;
+    const int numPropsVertex = _numPropsVertex;
 
     // Get dimension scale information for properties.
-    double_array propertyScales(numPropsQuadPt);
+    double_array propertyScales(numPropsVertex);
     propertyScales = 1.0;
     _dimProperties(&propertyScales[0], propertyScales.size());
 
@@ -418,19 +409,21 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
     bool useCurrentField = !fieldSection.isNull();
     if (!fieldSection.isNull()) {
       // check fiber dimension
-      const int totalFiberDimCurrentLocal = (cells->size() > 0) ?
-	fieldSection->getFiberDimension(*cells->begin()) : 0;
+      const int
+          totalFiberDimCurrentLocal =
+              (vertices->size() > 0) ? fieldSection->getFiberDimension(
+                  *verticesBegin) : 0;
       int totalFiberDimCurrent = 0;
-      MPI_Allreduce((void *) &totalFiberDimCurrentLocal, 
-		    (void *) &totalFiberDimCurrent, 1, 
-		    MPI_INT, MPI_MAX, field->mesh().comm());
+      MPI_Allreduce((void *) &totalFiberDimCurrentLocal,
+          (void *) &totalFiberDimCurrent, 1,
+          MPI_INT, MPI_MAX, field->mesh().comm());
       assert(totalFiberDimCurrent > 0);
-      useCurrentField = totalFiberDim == totalFiberDimCurrent;
+      useCurrentField = fiberDim == totalFiberDimCurrent;
     } // if
     if (!useCurrentField) {
       ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
       logger.stagePush("Output");
-      field->newSection(cells, totalFiberDim);
+      field->newSection(vertices, fiberDim);
       field->allocate();
       logger.stagePop();
     } // if
@@ -440,53 +433,40 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
     fieldType = _metadata.fieldType(name, materials::Metadata::PROPERTY);
 
     // Buffer for property at cell's quadrature points
-    double_array fieldCell(numQuadPts*fiberDim);
-    double_array propertiesCell(numQuadPts*numPropsQuadPt);
+    double_array fieldVertex(fiberDim);
+    double_array propertiesVertex(numPropsVertex);
 
     // Loop over cells
-    for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
-	 c_iter != cellsEnd;
-	 ++c_iter) {
-      propertiesSection->restrictPoint(*c_iter, 
-				       &propertiesCell[0], propertiesCell.size());
-   
-      for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-	for (int i=0; i < fiberDim; ++i)
-	  fieldCell[iQuad*fiberDim+i] = 
-	    propertiesCell[iQuad*numPropsQuadPt+propOffset+i];
+    for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin;
+        v_iter != verticesEnd;
+        ++v_iter) {
+      propertiesSection->restrictPoint(*v_iter, &propertiesVertex[0],
+          propertiesVertex.size());
 
-      fieldSection->updatePoint(*c_iter, &fieldCell[0]);
+      for (int i = 0; i < fiberDim; ++i)
+        fieldVertex[i] = propertiesVertex[propOffset+i];
+
+      fieldSection->updatePoint(*v_iter, &fieldVertex[0]);
     } // for
   } else { // field is a state variable
     assert(stateVarIndex >= 0);
-    
+
     int varOffset = 0;
     const string_vector& stateVars = _metadata.stateVars();
     assert(stateVarIndex < stateVars.size());
-    for (int i=0; i < stateVarIndex; ++i)
-      varOffset += 
-	_metadata.fiberDim(stateVars[i].c_str(), 
-			   materials::Metadata::STATEVAR);
-    const int fiberDim = 
-      _metadata.fiberDim(name, materials::Metadata::STATEVAR);
+    for (int i = 0; i < stateVarIndex; ++i)
+      varOffset += _metadata.fiberDim(stateVars[i].c_str(),
+          materials::Metadata::STATEVAR);
+    const int fiberDim =
+        _metadata.fiberDim(name, materials::Metadata::STATEVAR);
 
     // Get state variables section
     const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
     assert(!stateVarsSection.isNull());
-    const int totalVarsFiberDimLocal = (cells->size() > 0) ?
-      stateVarsSection->getFiberDimension(*cells->begin()) : 0;
-    int totalVarsFiberDim = 0;
-    MPI_Allreduce((void *) &totalVarsFiberDimLocal, 
-		  (void *) &totalVarsFiberDim, 1, 
-		  MPI_INT, MPI_MAX, field->mesh().comm());
-    assert(totalVarsFiberDim > 0);
-    const int numVarsQuadPt = _numVarsQuadPt;
-    const int numQuadPts = totalVarsFiberDim / numVarsQuadPt;
-    assert(totalVarsFiberDim == numQuadPts * numVarsQuadPt);
-    const int totalFiberDim = numQuadPts * fiberDim;
+    const int numVarsVertext = _numVarsVertex;
 
     // Get dimension scale information for state variables.
-    double_array stateVarScales(numVarsQuadPt);
+    double_array stateVarScales(_numVarsVertex);
     stateVarScales = 1.0;
     _dimStateVars(&stateVarScales[0], stateVarScales.size());
 
@@ -495,19 +475,21 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
     bool useCurrentField = !fieldSection.isNull();
     if (!fieldSection.isNull()) {
       // check fiber dimension
-      const int totalFiberDimCurrentLocal = (cells->size() > 0) ?
-	fieldSection->getFiberDimension(*cells->begin()) : 0;
+      const int
+          totalFiberDimCurrentLocal =
+              (vertices->size() > 0) ? fieldSection->getFiberDimension(
+                  *verticesBegin) : 0;
       int totalFiberDimCurrent = 0;
-      MPI_Allreduce((void *) &totalFiberDimCurrentLocal, 
-		    (void *) &totalFiberDimCurrent, 1, 
-		    MPI_INT, MPI_MAX, field->mesh().comm());
+      MPI_Allreduce((void *) &totalFiberDimCurrentLocal,
+          (void *) &totalFiberDimCurrent, 1,
+          MPI_INT, MPI_MAX, field->mesh().comm());
       assert(totalFiberDimCurrent > 0);
-      useCurrentField = totalFiberDim == totalFiberDimCurrent;
+      useCurrentField = fiberDim == totalFiberDimCurrent;
     } // if
     if (!useCurrentField) {
       ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
       logger.stagePush("Output");
-      field->newSection(cells, totalFiberDim);
+      field->newSection(vertices, fiberDim);
       field->allocate();
       logger.stagePop();
     } // if
@@ -517,52 +499,48 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
     field->scale(stateVarScales[varOffset]);
 
     // Buffer for state variable at cell's quadrature points
-    double_array fieldCell(numQuadPts*fiberDim);
-    double_array stateVarsCell(numQuadPts*numVarsQuadPt);
-    
+    double_array fieldVertex(fiberDim);
+    double_array stateVarsVertex(_numVarsVertex);
+
     // Loop over cells
-    for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
-	 c_iter != cellsEnd;
-	 ++c_iter) {
-      stateVarsSection->restrictPoint(*c_iter, 
-				      &stateVarsCell[0], stateVarsCell.size());
-      
-      for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-	for (int i=0; i < fiberDim; ++i)
-	  fieldCell[iQuad*fiberDim+i] = 
-	    stateVarsCell[iQuad*numVarsQuadPt+varOffset+i];
-      
-      fieldSection->updatePoint(*c_iter, &fieldCell[0]);
+    for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin;
+          v_iter != verticesEnd;
+          ++v_iter) {
+      stateVarsSection->restrictPoint(*v_iter, &stateVarsVertex[0],
+          stateVarsVertex.size());
+
+      for (int i = 0; i < fiberDim; ++i)
+        fieldVertex[i] = stateVarsVertex[varOffset + i];
+
+      fieldSection->updatePoint(*v_iter, &fieldVertex[0]);
     } // for
   } // if/else
 
-  topology::FieldBase::VectorFieldEnum multiType = 
-    topology::FieldBase::MULTI_OTHER;
-  switch (fieldType)
-    { // switch
-    case topology::FieldBase::SCALAR:
-      multiType = topology::FieldBase::MULTI_SCALAR;
-      break;
-    case topology::FieldBase::VECTOR:
-      multiType = topology::FieldBase::MULTI_VECTOR;
-      break;
-    case topology::FieldBase::TENSOR:
-      multiType = topology::FieldBase::MULTI_TENSOR;
-      break;
-    case topology::FieldBase::OTHER:
-      multiType = topology::FieldBase::MULTI_OTHER;
-      break;
-    case topology::FieldBase::MULTI_SCALAR:
-    case topology::FieldBase::MULTI_VECTOR:
-    case topology::FieldBase::MULTI_TENSOR:
-    case topology::FieldBase::MULTI_OTHER:
-    default :
-      std::cerr << "Bad vector field type '" << fieldType << "'." << std::endl;
-      assert(0);
-      throw std::logic_error("Bad vector field type for FrictionModel.");
-    } // switch
+  topology::FieldBase::VectorFieldEnum multiType =
+      topology::FieldBase::MULTI_OTHER;
+  switch (fieldType) { // switch
+  case topology::FieldBase::SCALAR:
+    multiType = topology::FieldBase::MULTI_SCALAR;
+    break;
+  case topology::FieldBase::VECTOR:
+    multiType = topology::FieldBase::MULTI_VECTOR;
+    break;
+  case topology::FieldBase::TENSOR:
+    multiType = topology::FieldBase::MULTI_TENSOR;
+    break;
+  case topology::FieldBase::OTHER:
+    multiType = topology::FieldBase::MULTI_OTHER;
+    break;
+  case topology::FieldBase::MULTI_SCALAR:
+  case topology::FieldBase::MULTI_VECTOR:
+  case topology::FieldBase::MULTI_TENSOR:
+  case topology::FieldBase::MULTI_OTHER:
+  default:
+    std::cerr << "Bad vector field type '" << fieldType << "'." << std::endl;
+    assert(0);
+    throw std::logic_error("Bad vector field type for FrictionModel.");
+  } // switch
   field->vectorFieldType(multiType);
-#endif
 } // getField
   
 // ----------------------------------------------------------------------
