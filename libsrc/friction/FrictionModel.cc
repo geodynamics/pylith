@@ -216,14 +216,8 @@ pylith::friction::FrictionModel::initialize(
       for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
         const double dArea = wt * basis[iQuadPt*numBasis+iBasis];
         for (int iProp = 0; iProp < numDBProperties; ++iProp)
-        {
           propertiesCell[iBasis*numDBProperties+iProp]
               = propertiesQuadPt[iProp] * dArea;
-          std::cout << "propertiesCell[" << iBasis*numDBProperties+iProp << "]: "
-              << propertiesCell[iBasis*numDBProperties+iProp]
-                                << ", propertiesQuadPt[" << iProp << "]: " << propertiesQuadPt[iProp]
-                                                                                               << std::endl;
-        }
       } // for
       propertiesVisitor.clear();
       faultSieveMesh->updateClosure(*c_iter, propertiesVisitor);
@@ -585,6 +579,42 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
   field->vectorFieldType(multiType);
 } // getField
   
+// ----------------------------------------------------------------------
+// Retrieve parameters for physical properties and state variables
+// for vertex.
+void
+pylith::friction::FrictionModel::retrievePropsAndVars(const int vertex)
+{ // retrievePropsAndVars
+  assert(0 != _properties);
+  assert(0 != _stateVars);
+
+  const ALE::Obj<RealSection>& propertiesSection = _properties->section();
+  assert(!propertiesSection.isNull());
+  assert(_propertiesVertex.size() == propertiesSection->getFiberDimension(vertex));
+  propertiesSection->restrictPoint(vertex, &_propertiesVertex[0],
+           _propertiesVertex.size());
+
+  if (_numVarsVertex > 0) {
+    const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
+    assert(!stateVarsSection.isNull());
+    assert(_stateVarsVertex.size() == stateVarsSection->getFiberDimension(vertex));
+    stateVarsSection->restrictPoint(vertex, &_stateVarsVertex[0],
+            _stateVarsVertex.size());
+  } // if
+} // retrievePropsAndVars
+
+// ----------------------------------------------------------------------
+// Compute friction at vertex.
+double
+pylith::friction::FrictionModel::calcFriction(const double slip,
+                                              const double slipRate,
+                                              const double normalTraction)
+{ // calcFriction
+  _calcFriction(slip, slipRate, normalTraction,
+      &_propertiesVertex[0], _propertiesVertex.size(),
+      &_stateVarsVertex[0], _stateVarsVertex.size());
+} // calcFriction
+
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void

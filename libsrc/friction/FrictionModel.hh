@@ -166,9 +166,15 @@ public :
    * @pre Must call retrievePropsAndVars for cell before calling
    * calcFriction().
    *
+   * @param slip Current slip at location.
+   * @param slipRate Current slip rate at location.
+   * @param normalTraction Normal traction at location.
+   *
    * @returns Friction (magnitude of shear traction) at vertex.
    */
-  double calcFriction(void);
+  double calcFriction(const double slip,
+                      const double slipRate,
+                      const double normalTraction);
   
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
