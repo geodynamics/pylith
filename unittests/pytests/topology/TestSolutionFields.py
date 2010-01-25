@@ -42,7 +42,7 @@ class TestSolutionFields(unittest.TestCase):
     importer.inventory.filename = "data/tri3.mesh"
     importer.inventory.coordsys = cs
     importer._configure()
-    self.mesh = importer.read(normalizer, debug=False, interpolate=False)
+    self.mesh = importer.read(debug=False, interpolate=False)
     
     self.fields = SolutionFields(self.mesh)
     return

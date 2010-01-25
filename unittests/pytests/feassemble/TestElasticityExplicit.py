@@ -221,7 +221,7 @@ class TestElasticityExplicit(unittest.TestCase):
     importer.inventory.filename = "data/tri3.mesh"
     importer.inventory.coordsys = cs
     importer._configure()
-    mesh = importer.read(normalizer, debug=False, interpolate=False)
+    mesh = importer.read(debug=False, interpolate=False)
 
     # Setup material
     from pylith.feassemble.FIATSimplex import FIATSimplex

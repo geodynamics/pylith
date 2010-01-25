@@ -85,7 +85,7 @@ class MeshImporter(MeshGenerator):
     logEvent = "%screate" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)    
 
-    mesh = self.reader.read(normalizer, self.debug, self.interpolate)
+    mesh = self.reader.read(self.debug, self.interpolate)
     if self.debug:
       mesh.view("Finite-element mesh.")
     self._debug.log(resourceUsageString())

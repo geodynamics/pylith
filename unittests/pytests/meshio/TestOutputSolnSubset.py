@@ -37,7 +37,7 @@ class TestOutputSolnSubset(unittest.TestCase):
     iohandler.inventory.filename = filename
     iohandler.inventory.coordsys = CSCart()
     iohandler._configure()
-    mesh = iohandler.read(normalizer, debug=False, interpolate=False)
+    mesh = iohandler.read(debug=False, interpolate=False)
 
     from pylith.topology.SolutionFields import SolutionFields
     fields = SolutionFields(mesh)

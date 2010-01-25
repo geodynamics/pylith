@@ -37,7 +37,7 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
     return
 
 
-  def read(self, normalizer, debug, interpolate):
+  def read(self, debug, interpolate):
     """
     Read finite-element mesh and store in Sieve mesh object.
 

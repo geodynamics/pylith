@@ -101,7 +101,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     importer.inventory.filename = "data/tri3.mesh"
     importer.inventory.coordsys = cs
     importer._configure()
-    mesh = importer.read(normalizer, debug=False, interpolate=False)
+    mesh = importer.read(debug=False, interpolate=False)
 
     fault = FaultCohesiveKin()
     fault.inventory.matId = 10
@@ -285,7 +285,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     importer.inventory.filename = "data/tri3.mesh"
     importer.inventory.coordsys = cs
     importer._configure()
-    mesh = importer.read(normalizer, debug=False, interpolate=False)
+    mesh = importer.read(debug=False, interpolate=False)
 
     # Setup quadrature
     from pylith.feassemble.FIATSimplex import FIATSimplex
