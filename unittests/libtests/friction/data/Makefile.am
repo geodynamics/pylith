@@ -10,7 +10,9 @@
 # ----------------------------------------------------------------------
 #
 
-dist_noinst_DATA =
+dist_noinst_DATA = \
+	tri3.mesh \
+	friction_static.spatialdb
 
 noinst_TMP =
 

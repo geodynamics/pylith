@@ -114,6 +114,7 @@ pylith::friction::FrictionModel::initialize(
   const int spaceDim = quadrature->spaceDim();
   const double_array& quadWts = quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
+  double_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Get cells associated with friction interface
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
@@ -123,6 +124,13 @@ pylith::friction::FrictionModel::initialize(
   assert(!cells.isNull());
   const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
+    faultSieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const SieveSubMesh::label_sequence::iterator verticesBegin =
+    vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+
   const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();
   assert(0 != cs);
 
@@ -134,11 +142,15 @@ pylith::friction::FrictionModel::initialize(
         coordinatesCell.size(), &coordinatesCell[0]);
 #endif
 
+  assert(0 != _normalizer);
+  const double lengthScale = _normalizer->lengthScale();
+
+  // Query database for properties
+
   // Create arrays for querying.
   const int numDBProperties = _metadata.numDBProperties();
-  double_array quadPtsGlobal(numQuadPts*spaceDim);
   double_array propertiesDBQuery(numDBProperties);
-  double_array propertiesQuadPt(numQuadPts*_numPropsVertex);
+  double_array propertiesQuadPt(_numPropsVertex);
 
   // Create field to hold physical properties.
   delete _properties; _properties = 
@@ -146,7 +158,7 @@ pylith::friction::FrictionModel::initialize(
   _properties->label("properties");
   assert(0 != _properties);
   int fiberDim = _numPropsVertex;
-  _properties->newSection(cells, fiberDim);
+  _properties->newSection(vertices, fiberDim);
   _properties->allocate();
   _properties->zero();
   const ALE::Obj<RealSection>& propertiesSection = _properties->section();
@@ -161,43 +173,6 @@ pylith::friction::FrictionModel::initialize(
   _dbProperties->queryVals(_metadata.dbProperties(),
 			   _metadata.numDBProperties());
 
-  // Create arrays for querying
-  const int numDBStateVars = _metadata.numDBStateVars();
-  double_array stateVarsDBQuery;
-  double_array stateVarsQuadPt;
-  if (0 != _dbInitialState) {
-    assert(numDBStateVars > 0);
-    assert(_numVarsVertex > 0);
-    stateVarsDBQuery.resize(numDBStateVars);
-    stateVarsQuadPt.resize(numQuadPts*_numVarsVertex);
-    // Setup database for querying for initial state variables
-    _dbInitialState->open();
-    _dbInitialState->queryVals(_metadata.dbStateVars(),
-             _metadata.numDBStateVars());
-  } // if
-
-  // Create field to hold state variables. We create the field even
-  // if there is no initial state, because this we will use this field
-  // to hold the state variables.
-  delete _stateVars; _stateVars = new topology::Field<topology::SubMesh>(faultMesh);
-  _stateVars->label("state variables");
-  fiberDim = _numVarsVertex;
-  if (fiberDim > 0) {
-    assert(0 != _stateVars);
-    assert(0 != _properties);
-    _stateVars->newSection(*_properties, fiberDim);
-    _stateVars->allocate();
-    _stateVars->zero();
-  } // if
-  const ALE::Obj<RealSection>& stateVarsSection = 
-    (fiberDim > 0) ? _stateVars->section() : 0;
-  double_array stateVarsCell(numBasis*numDBStateVars); // size may be zero, is this ok?
-  topology::Mesh::UpdateAddVisitor stateVarsVisitor(*stateVarsSection,
-        &stateVarsCell[0]);
-
-  assert(0 != _normalizer);
-  const double lengthScale = _normalizer->lengthScale();
-    
   for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
@@ -213,7 +188,7 @@ pylith::friction::FrictionModel::initialize(
     const double_array& quadPtsNonDim = quadrature->quadPts();
     quadPtsGlobal = quadPtsNonDim;
     _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
-				lengthScale);
+        lengthScale);
 
     // Loop over quadrature points in cell and query database
     for (int iQuadPt=0, index=0;
@@ -230,8 +205,7 @@ pylith::friction::FrictionModel::initialize(
             << "using spatial database '" << _dbProperties->label() << "'.";
         throw std::runtime_error(msg.str());
       } // if
-      _dbToProperties(&propertiesQuadPt[iQuadPt*_numPropsVertex],
-          propertiesDBQuery);
+      _dbToProperties(&propertiesQuadPt[0], propertiesDBQuery);
 
       // Get cell geometry information that depends on cell
       const double_array& basis = quadrature->basis();
@@ -242,15 +216,92 @@ pylith::friction::FrictionModel::initialize(
       for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
         const double dArea = wt * basis[iQuadPt*numBasis+iBasis];
         for (int iProp = 0; iProp < numDBProperties; ++iProp)
+        {
           propertiesCell[iBasis*numDBProperties+iProp]
               = propertiesQuadPt[iProp] * dArea;
+          std::cout << "propertiesCell[" << iBasis*numDBProperties+iProp << "]: "
+              << propertiesCell[iBasis*numDBProperties+iProp]
+                                << ", propertiesQuadPt[" << iProp << "]: " << propertiesQuadPt[iProp]
+                                                                                               << std::endl;
+        }
       } // for
       propertiesVisitor.clear();
       faultSieveMesh->updateClosure(*c_iter, propertiesVisitor);
+    } // for
+  } // for
+  // Close properties database
+  _dbProperties->close();
 
-      if (0 != _dbInitialState) {
-        err = _dbInitialState->query(&stateVarsDBQuery[0], numDBStateVars,
-            &quadPtsGlobal[index], spaceDim, cs);
+  // Loop over vertices and divide by area to get weighted values and
+  // nondimensionalize properties.
+  double_array propertiesVertex(_numPropsVertex);
+  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
+       v_iter != verticesEnd;
+       ++v_iter) {
+    propertiesSection->restrictPoint(*v_iter,
+        &propertiesVertex[0], propertiesVertex.size());
+    _nondimProperties(&propertiesVertex[0], _numPropsVertex);
+    propertiesSection->updatePoint(*v_iter, &propertiesVertex[0]);
+  } // for
+
+
+  // Create field to hold state variables. We create the field even
+  // if there is no initial state, because this we will use this field
+  // to hold the state variables.
+  delete _stateVars; _stateVars = new topology::Field<topology::SubMesh>(faultMesh);
+  _stateVars->label("state variables");
+  fiberDim = _numVarsVertex;
+  if (fiberDim > 0) {
+    assert(0 != _stateVars);
+    assert(0 != _properties);
+    _stateVars->newSection(*_properties, fiberDim);
+    _stateVars->allocate();
+    _stateVars->zero();
+  } // if
+
+  // Query database for initial state variables
+  if (0 != _dbInitialState) {
+    assert(_numVarsVertex > 0);
+
+    // Create arrays for querying
+    const int numDBStateVars = _metadata.numDBStateVars();
+    double_array stateVarsDBQuery(numDBStateVars);
+    double_array stateVarsQuadPt(_numVarsVertex);
+
+    // Setup database for querying for initial state variables
+    _dbInitialState->open();
+    _dbInitialState->queryVals(_metadata.dbStateVars(),
+             _metadata.numDBStateVars());
+
+    const ALE::Obj<RealSection>& stateVarsSection =_stateVars->section();
+    assert(!stateVarsSection.isNull());
+    double_array stateVarsCell(numBasis*numDBStateVars);
+    topology::Mesh::UpdateAddVisitor stateVarsVisitor(*stateVarsSection,
+                                                      &stateVarsCell[0]);
+
+    for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
+        c_iter != cellsEnd;
+        ++c_iter) {
+      // Compute geometry information for current cell
+#if defined(PRECOMPUTE_GEOMETRY)
+      quadrature->retrieveGeometry(*c_iter);
+#else
+      coordsVisitor.clear();
+      faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
+      quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
+
+      const double_array& quadPtsNonDim = quadrature->quadPts();
+      quadPtsGlobal = quadPtsNonDim;
+      _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
+          lengthScale);
+
+      // Loop over quadrature points in cell and query database
+      for (int iQuadPt=0, index=0;
+          iQuadPt < numQuadPts;
+          ++iQuadPt, index+=spaceDim) {
+        int err = _dbInitialState->query(&stateVarsDBQuery[0], numDBStateVars,
+          &quadPtsGlobal[index], spaceDim, cs);
         if (err) {
           std::ostringstream msg;
           msg << "Could not find initial state variables at \n" << "(";
@@ -260,10 +311,14 @@ pylith::friction::FrictionModel::initialize(
               << "using spatial database '" << _dbInitialState->label() << "'.";
           throw std::runtime_error(msg.str());
         } // if
-        _dbToStateVars(&stateVarsQuadPt[iQuadPt*_numVarsVertex],
-            stateVarsDBQuery);
+        _dbToStateVars(&stateVarsQuadPt[0], stateVarsDBQuery);
+
+        // Get cell geometry information that depends on cell
+        const double_array& basis = quadrature->basis();
+        const double_array& jacobianDet = quadrature->jacobianDet();
 
         // Compute state variables weighted by area
+        const double wt = quadWts[iQuadPt] * jacobianDet[iQuadPt];
         for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
           const double dArea = wt * basis[iQuadPt*numBasis+iBasis];
           for (int iVar = 0; iVar < numDBStateVars; ++iVar)
@@ -271,42 +326,29 @@ pylith::friction::FrictionModel::initialize(
                 = stateVarsDBQuery[iVar] * dArea;
         } // for
         stateVarsVisitor.clear();
-        faultSieveMesh->updateClosure(*c_iter, stateVarsVisitor);
-      } // if
+      faultSieveMesh->updateClosure(*c_iter, stateVarsVisitor);
+      } // for
     } // for
-  } // for
-
-  // Close databases
-  _dbProperties->close();
-  if (0 != _dbInitialState)
+    // Close database
     _dbInitialState->close();
 
-  // Loop over vertices and divide by area to get weighted values and
-  // nondimensionalize properties and state variables
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
-    faultSieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const SieveSubMesh::label_sequence::iterator verticesBegin =
-    vertices->begin();
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+    // Loop over vertices and divide by area to get weighted values and
+    // nondimensionalize properties.
+    double_array stateVarsVertex(_numVarsVertex);
 
-  double_array propertiesVertex(_numPropsVertex);
-  double_array stateVarsVertex(_numVarsVertex);
-  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter) {
-    propertiesSection->restrictPoint(*v_iter,
-        &propertiesVertex[0], propertiesVertex.size());
-    _nondimProperties(&propertiesVertex[0], _numPropsVertex);
-    propertiesSection->updatePoint(*v_iter, &propertiesVertex[0]);
-
-    if (0 != _dbInitialState) {
+    for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
+         v_iter != verticesEnd;
+         ++v_iter) {
       stateVarsSection->restrictPoint(*v_iter,
           &stateVarsVertex[0], stateVarsVertex.size());
       _nondimStateVars(&stateVarsVertex[0], _numVarsVertex);
       stateVarsSection->updatePoint(*v_iter, &stateVarsVertex[0]);
-    } // if
-  } // for
+    } // for
+  } // if
+
+  // Setup buffers for restrict/update of properties and state variables.
+  _propertiesVertex.resize(_numPropsVertex);
+  _stateVarsVertex.resize(_numVarsVertex);
 
   logger.stagePop();
 } // initialize

@@ -25,6 +25,7 @@
 
 #include "pylith/friction/frictionfwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // forward declarations
+#include "pylith/faults/faultsfwd.hh" // forward declarations
 
 /// Namespace for pylith package
 namespace pylith {
@@ -48,6 +49,7 @@ class pylith::friction::TestFrictionModel : public CppUnit::TestFixture
   CPPUNIT_TEST( testDBStateVars );
   CPPUNIT_TEST( testNormalizer );
   CPPUNIT_TEST( testInitialize );
+  CPPUNIT_TEST( testGetField );
   CPPUNIT_TEST( testRetrievePropsAndVars );
   CPPUNIT_TEST( testCalcFriction );
   CPPUNIT_TEST( testUpdateStateVars );
@@ -72,8 +74,11 @@ public :
   /// Test normalizer().
   void testNormalizer(void);
 
-  /// Test initialize()
+  /// Test initialize().
   void testInitialize(void);
+
+  /// Test getField().
+  void testGetField(void);
 
   /// Test retrievePropsAndVars().
   void testRetrievePropsAndVars(void);
@@ -139,15 +144,17 @@ private :
   /** Setup mesh and material.
    *
    * @param mesh Finite-element mesh.
+   * @param fault Fault with friction.
    * @param friction Friction model.
    * @param data Data with properties for friction model.
    */
   void _initialize(topology::Mesh* mesh,
-		   StaticFriction* friction,
-		   const StaticFrictionData* data);
+                   faults::FaultCohesiveDynL* fault,
+                   StaticFriction* friction,
+                   const StaticFrictionData* data);
 
 }; // class TestFrictionModel
 
 #endif // pylith_friction_testfrictionmodel_hh
 
-// End of file 
+// End of file

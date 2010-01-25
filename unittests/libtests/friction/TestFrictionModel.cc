@@ -20,8 +20,9 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/friction/StaticFriction.hh" // USES StaticFriction
+#include "pylith/faults/FaultCohesiveDynL.hh" // USES FaultCohesiveDynL
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/feassemble/GeometryTri2D.hh" // USES GeometryTri2D
+#include "pylith/feassemble/GeometryLine2D.hh" // USES GeometryLine2D
 
 #include "pylith/utils/array.hh" // USES double_array
 
@@ -38,6 +39,7 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::friction::TestFrictionModel );
 
 // ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::SieveSubMesh SieveSubMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
 
@@ -114,14 +116,68 @@ pylith::friction::TestFrictionModel::testNormalizer(void)
 } // testNormalizer
 
 // ----------------------------------------------------------------------
-// Test initialize()
+// Test initialize().
 void
 pylith::friction::TestFrictionModel::testInitialize(void)
 { // testInitialize
+  const double propertiesE[] = { 0.55, 0.45 };
+  const int numProperties = 1;
+
   topology::Mesh mesh;
+  faults::FaultCohesiveDynL fault;
   StaticFriction friction;
   StaticFrictionData data;
-  _initialize(&mesh, &friction, &data);
+  _initialize(&mesh, &fault, &friction, &data);
+
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault.faultMesh().sieveMesh();
+  assert(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
+    faultSieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const SieveSubMesh::label_sequence::iterator verticesBegin =
+    vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+
+  const double tolerance = 1.0e-06;
+
+  // Test propertiesVertex with mesh
+  int index = 0;
+  double_array propertiesVertex(numProperties);
+  CPPUNIT_ASSERT(0 != friction._properties);
+  friction._properties->view("PROPERTIES");
+  const ALE::Obj<RealSection>& propertiesSection = friction._properties->section();
+  CPPUNIT_ASSERT(!propertiesSection.isNull());
+  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
+       v_iter != verticesEnd;
+       ++v_iter) {
+    CPPUNIT_ASSERT(numProperties == propertiesSection->getFiberDimension(*v_iter));
+    propertiesSection->restrictPoint(*v_iter, &propertiesVertex[0], propertiesVertex.size());
+    for (int i=0; i < numProperties; ++i, ++index)
+      if (0 != propertiesE[index])
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesVertex[i]/propertiesE[index], tolerance);
+      else
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[index], propertiesVertex[i], tolerance);
+  } // for
+
+  // Test vertex array sizes.
+  size_t size = data.numPropsVertex;
+  CPPUNIT_ASSERT_EQUAL(size, friction._propertiesVertex.size());
+
+  size = data.numVarsVertex;
+  CPPUNIT_ASSERT_EQUAL(size, friction._stateVarsVertex.size());
+
+} // testInitialize
+
+// ----------------------------------------------------------------------
+// Test getField().
+void
+pylith::friction::TestFrictionModel::testGetField(void)
+{ // testGetField
+  topology::Mesh mesh;
+  faults::FaultCohesiveDynL fault;
+  StaticFriction friction;
+  StaticFrictionData data;
+  _initialize(&mesh, &fault, &friction, &data);
 
 #if 1
   CPPUNIT_ASSERT(false);
@@ -139,7 +195,7 @@ pylith::friction::TestFrictionModel::testInitialize(void)
   size = data.numLocs;
   CPPUNIT_ASSERT_EQUAL(size, material._frictionVertex.size());
 #endif
-} // testInitialize
+} // testGetField
 
 // ----------------------------------------------------------------------
 // Test retrievePropsAndVars().
@@ -147,9 +203,10 @@ void
 pylith::friction::TestFrictionModel::testRetrievePropsAndVars(void)
 { // testRetrievePropsAndVars
   topology::Mesh mesh;
+  faults::FaultCohesiveDynL fault;
   StaticFriction friction;
   StaticFrictionData data;
-  _initialize(&mesh, &friction, &data);
+  _initialize(&mesh, &fault, &friction, &data);
 
 #if 1
   CPPUNIT_ASSERT(false);
@@ -189,9 +246,10 @@ void
 pylith::friction::TestFrictionModel::testCalcFriction(void)
 { // testCalcFriction
   topology::Mesh mesh;
+  faults::FaultCohesiveDynL fault;
   StaticFriction friction;
   StaticFrictionData data;
-  _initialize(&mesh, &friction, &data);
+  _initialize(&mesh, &fault, &friction, &data);
 
 #if 1
   CPPUNIT_ASSERT(false);
@@ -548,16 +606,17 @@ pylith::friction::TestFrictionModel::setupNormalizer(void)
 void
 pylith::friction::TestFrictionModel::_initialize(
 					  topology::Mesh* mesh,
+            faults::FaultCohesiveDynL* fault,
 					  StaticFriction* friction,
 					  const StaticFrictionData* data)
 { // _initialize
   CPPUNIT_ASSERT(0 != mesh);
+  CPPUNIT_ASSERT(0 != fault);
   CPPUNIT_ASSERT(0 != friction);
   CPPUNIT_ASSERT(0 != data);
 
-#if 0
   meshio::MeshIOAscii iohandler;
-  iohandler.filename("data/line3.mesh");
+  iohandler.filename("data/tri3.mesh");
   iohandler.read(mesh);
 
   // Set up coordinates
@@ -569,23 +628,16 @@ pylith::friction::TestFrictionModel::_initialize(
   mesh->nondimensionalize(normalizer);
 
   // Setup quadrature
-  feassemble::Quadrature<topology::Mesh> quadrature;
-  feassemble::GeometryLine1D geometry;
+  feassemble::Quadrature<topology::SubMesh> quadrature;
+  feassemble::GeometryLine2D geometry;
   quadrature.refGeometry(&geometry);
   const int cellDim = 1;
-  const int numCorners = 3;
+  const int numCorners = 2;
   const int numQuadPts = 2;
-  const int spaceDim = 1;
-  const double basis[] = { 0.455, -0.122, 0.667, -0.122, 0.455, 0.667 };
-  const double basisDeriv[] = { 
-    -1.07735027e+00,
-    -7.73502692e-02,
-    1.15470054e+00,
-    7.73502692e-02,
-    1.07735027e+00,
-    -1.15470054e+00,
-  };
-  const double quadPtsRef[] = { -0.577350269, 0.577350269 };
+  const int spaceDim = 2;
+  const double basis[] = { 0.75, 0.25, 0.25, 0.75 };
+  const double basisDeriv[] = { -0.5, 0.5, -0.5, 0.5 };
+  const double quadPtsRef[] = { -0.5, 0.5 };
   const double quadWts[] = { 1.0, 1.0  };
   quadrature.initialize(basis, numQuadPts, numCorners,
 			basisDeriv, numQuadPts, numCorners, cellDim,
@@ -593,47 +645,47 @@ pylith::friction::TestFrictionModel::_initialize(
 			quadWts, numQuadPts,
 			spaceDim);
 
+  const bool flipFault = false;
+  const char* label = "fault";
+  int firstFaultVertex = 0;
+  int firstLagrangeVertex = mesh->sieveMesh()->getIntSection(label)->size();
+  int firstFaultCell = mesh->sieveMesh()->getIntSection(label)->size();
+  if (fault->useLagrangeConstraints())
+    firstFaultCell += mesh->sieveMesh()->getIntSection(label)->size();
+  fault->id(100);
+  fault->label(label);
+  fault->quadrature(&quadrature);
+  fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex,
+      &firstFaultCell, flipFault);
 
-  // Get cells associated with material
-  const int materialId = 24;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
+  const double upDir[] = { 0.0, 0.0, 1.0 };
+  const double normalDir[] = { 1.0, 0.0, 0.0 };
+  fault->initialize(*mesh, upDir, normalDir);
+
+  // Get cells associated with fault
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault->faultMesh().sieveMesh();
+  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells =
+    faultSieveMesh->heightStratum(0);
+  CPPUNIT_ASSERT(!cells.isNull());
 
   // Compute geometry for cells
   quadrature.initializeGeometry();
 #if defined(PRECOMPUTE_GEOMETRY)
-  quadrature.computeGeometry(*mesh, cells);
+  quadrature.computeGeometry(fault->faultMesh(), cells);
 #endif
 
   spatialdata::spatialdb::SimpleDB db;
   spatialdata::spatialdb::SimpleIOAscii dbIO;
-  dbIO.filename("data/matinitialize.spatialdb");
+  dbIO.filename("data/friction_static.spatialdb");
   db.ioHandler(&dbIO);
   db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
   
-  spatialdata::spatialdb::SimpleDB dbStress;
-  spatialdata::spatialdb::SimpleIOAscii dbIOStress;
-  dbIOStress.filename("data/matstress.spatialdb");
-  dbStress.ioHandler(&dbIOStress);
-  dbStress.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
+  friction->dbProperties(&db);
+  friction->label("my_friction");
+  friction->normalizer(normalizer);
   
-  spatialdata::spatialdb::SimpleDB dbStrain;
-  spatialdata::spatialdb::SimpleIOAscii dbIOStrain;
-  dbIOStrain.filename("data/matstrain.spatialdb");
-  dbStrain.ioHandler(&dbIOStrain);
-  dbStrain.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
-  
-  material->dbProperties(&db);
-  material->id(materialId);
-  material->label("my_friction");
-  material->normalizer(normalizer);
-  material->dbInitialStress(&dbStress);
-  material->dbInitialStrain(&dbStrain);
-  
-  material->initialize(*mesh, &quadrature);
-#endif
+  friction->initialize(fault->faultMesh(), &quadrature);
 } // _initialize
 
 
