@@ -1,0 +1,33 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_meshio_meshiosieve_hh)
+#error "MeshIOSieve.icc must be included only from MeshIOSieve.icc"
+#else
+
+// Set filename for Sieve mesh file.
+inline
+void
+pylith::meshio::MeshIOSieve::filename(const char* name) {
+  _filename = name;
+}
+
+// Get filename of Sieve mesh file.
+inline
+const char* 
+pylith::meshio::MeshIOSieve::filename(void) const {
+  return _filename.c_str();
+}
+
+#endif
+
+// End of file

@@ -15,6 +15,7 @@ nobase_pkgpyexec_PYTHON = \
 	apps/__init__.py \
 	apps/PyLithApp.py \
 	apps/PetscApplication.py \
+	apps/PrepMeshApp.py \
 	bc/__init__.py \
 	bc/AbsorbingDampers.py \
 	bc/BoundaryCondition.py \
@@ -79,6 +80,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/MeshIOAscii.py \
 	meshio/MeshIOCubit.py \
 	meshio/MeshIOLagrit.py \
+	meshio/MeshIOSieve.py \
 	meshio/OutputDirichlet.py \
 	meshio/OutputManager.py \
 	meshio/OutputManagerMesh.py \
@@ -134,6 +136,7 @@ nobase_pkgpyexec_PYTHON = \
 	topology/JacobianViewer.py \
 	topology/MeshGenerator.py \
 	topology/MeshImporter.py \
+	topology/MeshImporterDist.py \
 	topology/MeshRefiner.py \
 	topology/RefineUniform.py \
 	utils/__init__.py \
