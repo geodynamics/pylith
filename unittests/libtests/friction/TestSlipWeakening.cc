@@ -38,9 +38,9 @@ pylith::friction::TestSlipWeakening::testHasProperty(void)
 { // testHasProperty
   SlipWeakening material;
 
-  CPPUNIT_ASSERT(material.hasProperty("static-coefficient"));
-  CPPUNIT_ASSERT(material.hasProperty("dynamic-coefficient"));
-  CPPUNIT_ASSERT(material.hasProperty("slip-weakening-parameter"));
+  CPPUNIT_ASSERT(material.hasProperty("static_coefficient"));
+  CPPUNIT_ASSERT(material.hasProperty("dynamic_coefficient"));
+  CPPUNIT_ASSERT(material.hasProperty("slip_weakening_parameter"));
   CPPUNIT_ASSERT(!material.hasProperty("aaa"));
 } // testHasProperty
 
@@ -51,8 +51,8 @@ pylith::friction::TestSlipWeakening::testHasStateVar(void)
 { // testHasStateVar
   SlipWeakening material;
 
-  CPPUNIT_ASSERT(material.hasStateVar("cumulative-slip"));
-  CPPUNIT_ASSERT(material.hasStateVar("previous-slip"));
+  CPPUNIT_ASSERT(material.hasStateVar("cumulative_slip"));
+  CPPUNIT_ASSERT(material.hasStateVar("previous_slip"));
   CPPUNIT_ASSERT(!material.hasStateVar("aaa"));
 } // testHasStateVar
 
