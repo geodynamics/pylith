@@ -58,19 +58,19 @@ private:
 
   static const int _numPropertyValues[];
 
-  static const int* _numStateVarValues;
+  static const int _numStateVarValues[];
 
   static const char* _dbPropertyValues[];
 
-  static const char** _dbStateVarValues;
+  static const char* _dbStateVarValues[];
 
   static const double _dbProperties[];
 
-  static const double* _dbStateVars;
+  static const double _dbStateVars[];
 
   static const double _properties[];
 
-  static const double* _stateVars;
+  static const double _stateVars[];
 
   static const double _propertiesNondim[];
 

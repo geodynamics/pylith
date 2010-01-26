@@ -23,8 +23,8 @@ check_PROGRAMS = testfriction
 testfriction_SOURCES = \
 	test_friction.cc \
 	TestFrictionModel.cc \
-	TestStaticFriction.cc
-#	TestSlipWeakening.cc
+	TestStaticFriction.cc \
+	TestSlipWeakening.cc
 
 
 noinst_HEADERS = 

@@ -51,6 +51,8 @@ pylith::friction::TestSlipWeakening::testHasStateVar(void)
 { // testHasStateVar
   SlipWeakening material;
 
+  CPPUNIT_ASSERT(material.hasStateVar("cumulative-slip"));
+  CPPUNIT_ASSERT(material.hasStateVar("previous-slip"));
   CPPUNIT_ASSERT(!material.hasStateVar("aaa"));
 } // testHasStateVar
 

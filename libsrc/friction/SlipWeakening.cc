@@ -178,7 +178,7 @@ pylith::friction::SlipWeakening::_dbToStateVars(
 { // _dbToStateVars
   assert(0 != stateValues);
   const int numDBValues = dbValues.size();
-  assert(_SlipWeakening::numDBProperties == numDBValues);
+  assert(_SlipWeakening::numDBStateVars == numDBValues);
 
   const double cumulativeSlip = dbValues[db_coef+3];
   const double previousSlip = dbValues[db_coef+4];
