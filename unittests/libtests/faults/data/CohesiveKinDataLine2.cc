@@ -78,7 +78,28 @@ const double pylith::faults::CohesiveKinDataLine2::_fieldT[] = {
   7.5
 };
 
+const double pylith::faults::CohesiveKinDataLine2::_fieldIncr[] = {
+  1.1,
+  1.2,
+  1.3,
+  1.4,
+  1.5
+};
+
+const double pylith::faults::CohesiveKinDataLine2::_jacobianLumped[] = {
+  2.1,
+  2.2,
+  2.3,
+  2.4,
+  2.5
+};
+
 const int pylith::faults::CohesiveKinDataLine2::_numConstraintVert = 1;
+const int pylith::faults::CohesiveKinDataLine2::_constraintVertices[] = {
+  6
+};
+
+
 
 const double pylith::faults::CohesiveKinDataLine2::_orientation[] = {
   1.0
@@ -87,11 +108,6 @@ const double pylith::faults::CohesiveKinDataLine2::_orientation[] = {
 const double pylith::faults::CohesiveKinDataLine2::_area[] = {
   1.0
 };
-
-const int pylith::faults::CohesiveKinDataLine2::_constraintVertices[] = {
-  6
-};
-
 
 const double pylith::faults::CohesiveKinDataLine2::_residualIncr[] = {
    0.0,
@@ -117,6 +133,14 @@ const double pylith::faults::CohesiveKinDataLine2::_jacobian[] = {
   0.0, -1.0,  0.0, +1.0,  0.0,
 };
 
+const double pylith::faults::CohesiveKinDataLine2::_fieldIncrAdjusted[] = {
+  1.1,
+  1.2, // 3
+  1.3,
+  1.4, // 5
+  1.5, // 6
+};
+
 pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
@@ -136,12 +160,15 @@ pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
   matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
+  fieldIncr = const_cast<double*>(_fieldIncr);
+  jacobianLumped = const_cast<double*>(_jacobianLumped);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  constraintVertices = const_cast<int*>(_constraintVertices);
   residualIncr = const_cast<double*>(_residualIncr);
   residual = const_cast<double*>(_residual);
   jacobian = const_cast<double*>(_jacobian);
+  fieldIncrAdjusted = const_cast<double*>(_fieldIncrAdjusted);
+  constraintVertices = const_cast<int*>(_constraintVertices);
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

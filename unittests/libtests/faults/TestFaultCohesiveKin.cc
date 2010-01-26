@@ -676,6 +676,17 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
     } // for
   } // setup disp
 
+  { // setup disp increment
+    const ALE::Obj<RealSection>& dispIncrSection = fields.get("dispIncr(t->t+dt)").section();
+    CPPUNIT_ASSERT(!dispIncrSection.isNull());
+    int iVertex = 0;
+    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+        v_iter != verticesEnd;
+        ++v_iter, ++iVertex) {
+        dispIncrSection->updatePoint(*v_iter, &_data->fieldIncr[iVertex*spaceDim]);
+    } // for
+  } // setup disp increment
+
   // Set Jacobian values
   topology::Field<topology::Mesh> jacobian(mesh);
   jacobian.label("Jacobian");
@@ -703,11 +714,15 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   residual.complete();
   fault.integrateResidualAssembled(residual, t, &fields);
 
+  const topology::Field<topology::Mesh>& solution = fields.get("dispIncr(t->t+dt)");
+#if 1 // DEBUGGING
+  solution.view("SOLUTION BEFORE ADJUSTMENT");
+#endif // DEBUGGING
+
   fault.adjustSolnLumped(&fields, jacobian);
 
-  const topology::Field<topology::Mesh>& solution = fields.get("dispIncr(t->t+dt)");
-#if 0 // DEBUGGING
-  solution.view("ADJUSTED SOLUTION");
+#if 1 // DEBUGGING
+  solution.view("SOLUTION AFTER ADJUSTMENT");
 #endif // DEBUGGING
 
   const ALE::Obj<RealSection>& solutionSection = solution.section();

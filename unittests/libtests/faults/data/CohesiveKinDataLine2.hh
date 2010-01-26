@@ -57,14 +57,17 @@ private:
   static const char* _matPropsFilename; ///< Name of db for bulk mat properties.
   //@}
 
-  static const double _fieldT[]; ///< Solution field at time t.
+  static const double _fieldT[]; ///< Field over domain at time t.
+  static const double _fieldIncr[]; ///< Solution increment field over domain at time t.
+  static const double _jacobianLumped[]; ///< Lumped Jacobian.
 
   static const double _orientation[]; ///< Expected values for fault orientation.
   static const double _area[]; ///< Expected values for fault area.
-  static const int _constraintVertices[]; ///< Expected points for constraint vertices
   static const double _residual[]; ///< Expected values from residual calculation.
   static const double _residualIncr[]; ///< Expected values from residual calculation with solution increment.
   static const double _jacobian[]; ///< Expected values from Jacobian calculation.
+  static const double _fieldIncrAdjusted[]; ///< Expected values for colution increment after adjustment.
+  static const int _constraintVertices[]; ///< Expected points for constraint vertices
   static const int _numConstraintVert; ///< Number of constraint vertices
 
 };
