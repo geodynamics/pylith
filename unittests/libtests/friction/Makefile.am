@@ -23,22 +23,26 @@ check_PROGRAMS = testfriction
 testfriction_SOURCES = \
 	test_friction.cc \
 	TestFrictionModel.cc \
-	TestStaticFriction.cc
+	TestStaticFriction.cc \
+	TestSlipWeakening.cc
 
 
 noinst_HEADERS = 
 	TestFrictionModel.hh \
-	TestStaticFriction.hh
+	TestStaticFriction.hh \
+	TestSlipWeakening.hh
 
 # Source files associated with testing data
 testfriction_SOURCES += \
 	data/FrictionModelData.cc \
-	data/StaticFrictionData.cc
+	data/StaticFrictionData.cc \
+	data/SlipWeakeningData.cc
 
 
 noinst_HEADERS += \
 	data/FrictionModelData.hh \
-	data/StaticFrictionData.hh
+	data/StaticFrictionData.hh \
+	data/SlipWeakeningData.hh
 
 AM_CPPFLAGS = \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \

@@ -79,6 +79,7 @@ libpylith_la_SOURCES = \
 	feassemble/ElasticityExplicitLgDeform.cc \
 	friction/FrictionModel.cc \
 	friction/StaticFriction.cc \
+	friction/SlipWeakening.cc \
 	materials/Metadata.cc \
 	materials/Material.cc \
 	materials/ElasticMaterial.cc \

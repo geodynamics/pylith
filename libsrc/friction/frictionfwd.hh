@@ -28,6 +28,8 @@ namespace pylith {
 
     class StaticFriction;
 
+    class SlipWeakening;
+
   } // friction
 } // pylith
 
