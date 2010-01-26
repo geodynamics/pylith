@@ -74,7 +74,7 @@ private:
 
   static const double _propertiesNondim[];
 
-  static const double* _stateVarsNondim;
+  static const double _stateVarsNondim[];
 
   static const double _friction[];
 
@@ -84,7 +84,7 @@ private:
 
   static const double _normalTraction[];
 
-  static const double* _stateVarsUpdated;
+  static const double _stateVarsUpdated[];
 
 };
 

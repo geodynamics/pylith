@@ -130,8 +130,21 @@ protected :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  static const int p_coef;
-  static const int db_coef;
+  /// Indices for properties in section and spatial database.
+  static const int p_coefS;
+  static const int p_coefD;
+  static const int p_d0;
+
+  static const int db_coefS;
+  static const int db_coefD;
+  static const int db_d0;
+
+  /// Indices for state variables in section and spatial database.
+  static const int s_slipCum;
+  static const int s_slipPrev;
+
+  static const int db_slipCum;
+  static const int db_slipPrev;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

@@ -53,7 +53,7 @@ pylith::friction::FrictionModel::FrictionModel(const materials::Metadata& metada
   const int numProperties = properties.size();
   for (int i=0; i < numProperties; ++i)
     _numPropsVertex += metadata.fiberDim(properties[i].c_str(),
-				   materials::Metadata::PROPERTY);
+					 materials::Metadata::PROPERTY);
   assert(_numPropsVertex >= 0);
 
   const string_vector& stateVars = metadata.stateVars();
