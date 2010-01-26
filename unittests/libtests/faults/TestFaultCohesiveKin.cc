@@ -656,7 +656,6 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
 
-#if 0
   const int spaceDim = _data->spaceDim;
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
@@ -677,17 +676,6 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
     } // for
   } // setup disp
 
-  { // setup residual
-    const ALE::Obj<RealSection>& resisualSection = fields.get("residual").section();
-    CPPUNIT_ASSERT(!residualSection.isNull());
-    int iVertex = 0;
-    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-        v_iter != verticesEnd;
-        ++v_iter, ++iVertex) {
-        residualSection->updatePoint(*v_iter, &_data->residualE[iVertex*spaceDim]);
-    } // for
-  } // setup residual
-
   // Set Jacobian values
   topology::Field<topology::Mesh> jacobian(mesh);
   jacobian.label("Jacobian");
@@ -706,9 +694,18 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   } // setup disp
   jacobian.complete();
 
+  // compute residual so that slip and residual are setup
+  const double t = 2.134;
+  const double dt = 0.01;
+  fault.timeStep(dt);
+  topology::Field<topology::Mesh>& residual = fields.get("residual");
+  fault.integrateResidual(residual, t, &fields);
+  residual.complete();
+  fault.integrateResidualAssembled(residual, t, &fields);
+
   fault.adjustSolnLumped(&fields, jacobian);
 
-  const topology::Field<topology::Mesh>& solution = fields->get("dispIncr(t->t+dt)");
+  const topology::Field<topology::Mesh>& solution = fields.get("dispIncr(t->t+dt)");
 #if 0 // DEBUGGING
   solution.view("ADJUSTED SOLUTION");
 #endif // DEBUGGING
@@ -718,17 +715,7 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
 
   int iVertex = 0;
   const double tolerance = 1.0e-06;
-  const int spaceDim = _data->spaceDim;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-    sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const SieveMesh::label_sequence::iterator verticesBegin =
-    vertices->begin();
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-
-  const double* solutionE = _data->fieldIncrAdjustedE;
+  const double* solutionE = _data->fieldIncrAdjusted;
   for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter, ++iVertex) {
@@ -737,13 +724,12 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
     const double* solutionVertex = solutionSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != solutionVertex);
     for (int iDim=0; iDim < spaceDim; ++iDim)
-      if (0.0 != solutionE[index])
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, solutionVertex[iDim]/solutionE[index],
+      if (0.0 != solutionE[iVertex])
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, solutionVertex[iDim]/solutionE[iVertex],
           tolerance);
       else
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(solutionE[index], solutionVertex[iDim], tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(solutionE[iVertex], solutionVertex[iDim], tolerance);
   } // for
-#endif
 } // testAdjustSolnLumped
 
 // ----------------------------------------------------------------------

@@ -32,12 +32,15 @@ pylith::faults::CohesiveKinData::CohesiveKinData(void) :
   riseTimeFilename(0),
   matPropsFilename(0),
   fieldT(0),
+  fieldIncr(0),
+  jacobianLumped(0),
   orientation(0),
   area(0),
-  constraintVertices(0),
   residual(0),
   residualIncr(0),
   jacobian(0),
+  fieldIncrAdjusted(0),
+  constraintVertices(0),
   numConstraintVert(0)
 { // constructor
 } // constructor

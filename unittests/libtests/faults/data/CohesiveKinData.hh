@@ -77,6 +77,9 @@ public:
 
   double* jacobian; ///< Expected values from Jacobian calculation.
 
+  /// Expected values for solution increment after adjustment.
+  double* fieldIncrAdjusted;
+
   int* constraintVertices; ///< Expected points for constraint vertices
   int numConstraintVert; ///< Number of constraint vertices
   //@}

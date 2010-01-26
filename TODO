@@ -8,12 +8,12 @@ CURRENT ISSUES/PRIORITIES
   Better PETSc settings or Laplacian based preconditioner
 
 * Data structure to hold label of fault Lagrange vertices and
-conventional vertices 
-  array of structure (lagrange, positive, negative, fault)
+  conventional vertices
+    array of structure (lagrange, positive, negative, fault)
 
-  no mesh queries? Just loops?
+    no mesh queries? Just loops?
 
-* Drucker-Prager elastoplastic (or viscoelastoplastic?)
+* Drucker-Prager elastoplastic
 
 * Friction
 
@@ -28,28 +28,21 @@ conventional vertices
   + full-scale testing
   + Code cleanup
 
-    Remove constraintCells from unitests/libtests/faults/data?
+    Add elasticPrestep() to Formulation
+    Remove solnIncr, keep setField()
+
 ----------------------------------------------------------------------
 FRICTION
 ----------------------------------------------------------------------
 
 Initial tractions
   Integrate over fault surface (should be current implementation)
-Constitutive model parameters
-  Integrate over faces to get weighted averages
 
 FaultCohesiveDyn -> FaultCohesiveDynNoL
 FaultCohesiveDynL -> FaultCohesiveDyn
 Refactor FaultCohesive
   integrateResidualAssembled()
     updateSlip() [implemented for FaultCohesiveKin, not for FaultCohesiveDyn]
-
-3. pylith::friction::FrictionModel
-  (base class for fault constitutive models) [Brad]
-  similar to Material + ElasticMaterial
-
-4. Constant friction [Surendra]
-  Simplest friction model with constant coefficient of friction
 
 5. SlipWeakening [Surendra]
   Slip-weakening friction model
@@ -63,7 +56,9 @@ Refactor FaultCohesive
 LUMPED SOLVER
 ----------------------------------------------------------------------
 
-S (sensitivity matrix) - assume diagonal (check with assert)
+FaultCohesiveKin
+  adjustSolnLumped()
+    S (sensitivity matrix) - assume diagonal (check with assert)
 
 Unit tests
 
