@@ -61,21 +61,23 @@ public:
 
   /// @name Input fields
   //@{
-  double* fieldT; ///< Solution field at time t.
+  double* fieldT; ///< Field over domain at time t.
+  double* fieldIncr; ///< Solution increment field over domain at time t.
+  double* jacobianLumped; ///< Lumped Jacobian.
   //@}
 
   /// @name Calculated values.
   //@{
   double* orientation; ///< Expected values for fault orientation.
   double* area; ///< Expected values for fault area.
-  int* constraintVertices; ///< Expected points for constraint vertices
-  int* constraintCells; ///< Expected cells for constraint vertices
-  double* valsResidual; ///< Expected values from residual calculation.
+  double* residual; ///< Expected values from residual calculation.
 
   /// Expected values from residual calculation using solution increment.
-  double* valsResidualIncr;
+  double* residualIncr;
 
-  double* valsJacobian; ///< Expected values from Jacobian calculation.
+  double* jacobian; ///< Expected values from Jacobian calculation.
+
+  int* constraintVertices; ///< Expected points for constraint vertices
   int numConstraintVert; ///< Number of constraint vertices
   //@}
 

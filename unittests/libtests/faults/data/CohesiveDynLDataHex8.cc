@@ -1351,10 +1351,6 @@ const int pylith::faults::CohesiveDynLDataHex8::_numConstraintVert = 4;
 const int pylith::faults::CohesiveDynLDataHex8::_constraintVertices[] = {
   18, 19, 20, 21
 };
-const int pylith::faults::CohesiveDynLDataHex8::_constraintCells[] = {
-  23, 23, 23, 23
-};
-
 // ----------------------------------------------------------------------
 // Stick case
 // ----------------------------------------------------------------------
@@ -1527,7 +1523,6 @@ pylith::faults::CohesiveDynLDataHex8::CohesiveDynLDataHex8(void)
   initialTractions = const_cast<double*>(_initialTractions);
 
   constraintVertices = const_cast<int*>(_constraintVertices);
-  constraintCells = const_cast<int*>(_constraintCells);
   numConstraintVert = _numConstraintVert;  
 
   // Stick

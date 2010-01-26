@@ -35,10 +35,9 @@ pylith::faults::CohesiveKinData::CohesiveKinData(void) :
   orientation(0),
   area(0),
   constraintVertices(0),
-  constraintCells(0),
-  valsResidual(0),
-  valsResidualIncr(0),
-  valsJacobian(0),
+  residual(0),
+  residualIncr(0),
+  jacobian(0),
   numConstraintVert(0)
 { // constructor
 } // constructor

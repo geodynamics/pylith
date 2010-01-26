@@ -41,7 +41,6 @@ pylith::faults::CohesiveDynLData::CohesiveDynLData(void) :
   fieldIncrOpenE(0),
   slipOpenE(0),
   constraintVertices(0),
-  constraintCells(0),
   numConstraintVert(0)
 { // constructor
 } // constructor

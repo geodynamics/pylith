@@ -256,9 +256,6 @@ const int pylith::faults::CohesiveDynLDataTri3::_numConstraintVert = 2;
 const int pylith::faults::CohesiveDynLDataTri3::_constraintVertices[] = {
   8, 9
 };
-const int pylith::faults::CohesiveDynLDataTri3::_constraintCells[] = {
-  11, 11
-};
 
 // ----------------------------------------------------------------------
 // Stick case
@@ -368,7 +365,6 @@ pylith::faults::CohesiveDynLDataTri3::CohesiveDynLDataTri3(void)
   initialTractions = const_cast<double*>(_initialTractions);
 
   constraintVertices = const_cast<int*>(_constraintVertices);
-  constraintCells = const_cast<int*>(_constraintCells);
   numConstraintVert = _numConstraintVert;  
 
   // Stick

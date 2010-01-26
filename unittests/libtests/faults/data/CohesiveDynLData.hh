@@ -76,7 +76,6 @@ public:
   double* slipOpenE; ///< Expected values for slip for opening case.
 
   int* constraintVertices; ///< Expected points for constraint vertices
-  int* constraintCells; ///< Expected cells for constraint vertices
   int numConstraintVert; ///< Number of constraint vertices
   //@}
 
