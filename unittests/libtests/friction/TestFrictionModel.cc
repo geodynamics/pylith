@@ -585,12 +585,15 @@ pylith::friction::TestFrictionModel::test_updateStateVars(void)
   double_array stateVars(numVarsVertex);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
+    const double slip = _data->slip[iLoc];
+    const double slipRate = _data->slipRate[iLoc];
     for (int i=0; i < numPropsVertex; ++i)
       properties[i] = _data->properties[iLoc*numPropsVertex+i];
     for (int i=0; i < numVarsVertex; ++i)
       stateVars[i] = _data->stateVars[iLoc*numVarsVertex+i];
 
-    _friction->_updateStateVars(&stateVars[0], stateVars.size(),
+    _friction->_updateStateVars(slip, slipRate,
+				&stateVars[0], stateVars.size(),
 				&properties[0], properties.size());
     
     const double* stateVarsE = 
