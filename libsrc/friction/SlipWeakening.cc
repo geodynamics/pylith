@@ -240,7 +240,8 @@ pylith::friction::SlipWeakening::_calcFriction(const double slip,
   assert(0 != numStateVars);
   assert(_numVarsVertex == numStateVars);
 
-  _updateStateVars(const_cast<double*>(&stateVars[0]),numStateVars,&properties[0],numProperties);
+  _updateStateVars(slip,slipRate,const_cast<double*>(&stateVars[0]),
+		   numStateVars,&properties[0],numProperties);
 
   const double friction = (normalTraction < 0) ?
     ((stateVars[0] < properties[p_coef+2]) ?
@@ -256,7 +257,9 @@ pylith::friction::SlipWeakening::_calcFriction(const double slip,
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
-pylith::friction::SlipWeakening::_updateStateVars(double* const stateVars,
+pylith::friction::SlipWeakening::_updateStateVars(const double slip,
+						  const double slipRate,
+						  double* const stateVars,
 						  const int numStateVars,
 						  const double* properties,
 						  const int numProperties)
@@ -265,13 +268,10 @@ pylith::friction::SlipWeakening::_updateStateVars(double* const stateVars,
   assert(0 != numStateVars);
   assert(0 != numProperties);
 
-  const double* previousSlip = &stateVars[1];
-  const double* cumulativeSlip = &stateVars[0];
-  
-  const double* tmpPreviousSlip = previousSlip;
-  
-  previousSlip = cumulativeSlip;
-  cumulativeSlip += fabs(slip - tmpPreviousSlip);
+  const double tmpPreviousSlip = stateVars[1];
+ 
+  stateVars[1] = stateVars[0];
+  stateVars[0] += fabs(slip - tmpPreviousSlip);
     
 } // _updateStateVars
 

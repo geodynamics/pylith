@@ -262,7 +262,9 @@ protected :
    * @param numProperties Number of properties.
    */
   virtual
-  void _updateStateVars(double* const stateVars,
+  void _updateStateVars(const double slip,
+			const double slipRate,
+			double* const stateVars,
 			const int numStateVars,
 			const double* properties,
 			const int numProperties);

@@ -120,7 +120,9 @@ protected :
 		       const double* stateVars,
 		       const int numStateVars);
   virtual
-  void _updateStateVars(double* const stateVars,
+  void _updateStateVars(const double slip,
+			const double slipRate,
+			double* const stateVars,
 			const int numStateVars,
 			const double* properties,
 			const int numProperties);
