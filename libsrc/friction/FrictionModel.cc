@@ -618,7 +618,9 @@ pylith::friction::FrictionModel::calcFriction(const double slip,
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
-pylith::friction::FrictionModel::_updateStateVars(double* const stateVars,
+pylith::friction::FrictionModel::_updateStateVars(const double slip,
+						  const double slipRate,
+						  double* const stateVars,
 						  const int numStateVars,
 						  const double* properties,
 						  const int numProperties)
