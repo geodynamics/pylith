@@ -144,11 +144,8 @@ const int pylith::faults::CohesiveKinDataHex8::_constraintVertices[] = {
   18, 19, 20, 21
 };
 
-const int pylith::faults::CohesiveKinDataHex8::_constraintCells[] = {
-  23, 23, 23, 23
-};
 
-const double pylith::faults::CohesiveKinDataHex8::_valsResidual[] = {
+const double pylith::faults::CohesiveKinDataHex8::_residual[] = {
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
@@ -171,7 +168,7 @@ const double pylith::faults::CohesiveKinDataHex8::_valsResidual[] = {
   1.1, 1.1, 1.1, // 21 (constraint)
 };
 
-const double pylith::faults::CohesiveKinDataHex8::_valsResidualIncr[] = {
+const double pylith::faults::CohesiveKinDataHex8::_residualIncr[] = {
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
@@ -194,7 +191,7 @@ const double pylith::faults::CohesiveKinDataHex8::_valsResidualIncr[] = {
   1.1, 1.1, 1.1, // 21 (constraint)
 };
 
-const double pylith::faults::CohesiveKinDataHex8::_valsJacobian[] = {
+const double pylith::faults::CohesiveKinDataHex8::_jacobian[] = {
   0.0, 0.0, 0.0, // 2x
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
@@ -1419,10 +1416,9 @@ pylith::faults::CohesiveKinDataHex8::CohesiveKinDataHex8(void)
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
   constraintVertices = const_cast<int*>(_constraintVertices);
-  constraintCells = const_cast<int*>(_constraintCells);
-  valsResidual = const_cast<double*>(_valsResidual);
-  valsResidualIncr = const_cast<double*>(_valsResidualIncr);
-  valsJacobian = const_cast<double*>(_valsJacobian);
+  residual = const_cast<double*>(_residual);
+  residualIncr = const_cast<double*>(_residualIncr);
+  jacobian = const_cast<double*>(_jacobian);
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

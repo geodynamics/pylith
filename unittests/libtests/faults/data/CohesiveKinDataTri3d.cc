@@ -144,11 +144,7 @@ const int pylith::faults::CohesiveKinDataTri3d::_constraintVertices[] = {
   13, 14, 15
 };
 
-const int pylith::faults::CohesiveKinDataTri3d::_constraintCells[] = {
-  18, 18, 19
-};
-
-const double pylith::faults::CohesiveKinDataTri3d::_valsResidual[] = {
+const double pylith::faults::CohesiveKinDataTri3d::_residual[] = {
   0.0,  0.0,
  -1.4142135623730949, -11.030865786510143, // 5
  -8.0,  -6.0, // 6
@@ -163,7 +159,7 @@ const double pylith::faults::CohesiveKinDataTri3d::_valsResidual[] = {
  -0.6, 0.6, // 15
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_valsResidualIncr[] = {
+const double pylith::faults::CohesiveKinDataTri3d::_residualIncr[] = {
   0.0,  0.0,
  -1.4142135623730949, -11.030865786510143, // 5
  -8.0,  -6.0, // 6
@@ -178,7 +174,7 @@ const double pylith::faults::CohesiveKinDataTri3d::_valsResidualIncr[] = {
  -0.6, 0.6, // 15
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_valsJacobian[] = {
+const double pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
   0.0, 0.0, // 4x
   0.0, 0.0,
   0.0, 0.0,
@@ -491,10 +487,9 @@ pylith::faults::CohesiveKinDataTri3d::CohesiveKinDataTri3d(void)
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
   constraintVertices = const_cast<int*>(_constraintVertices);
-  constraintCells = const_cast<int*>(_constraintCells);
-  valsResidual = const_cast<double*>(_valsResidual);
-  valsResidualIncr = const_cast<double*>(_valsResidualIncr);
-  valsJacobian = const_cast<double*>(_valsJacobian);
+  residual = const_cast<double*>(_residual);
+  residualIncr = const_cast<double*>(_residualIncr);
+  jacobian = const_cast<double*>(_jacobian);
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

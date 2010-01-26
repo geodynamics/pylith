@@ -326,9 +326,6 @@ const int pylith::faults::CohesiveDynLDataQuad4::_numConstraintVert = 2;
 const int pylith::faults::CohesiveDynLDataQuad4::_constraintVertices[] = {
   10, 11
 };
-const int pylith::faults::CohesiveDynLDataQuad4::_constraintCells[] = {
-  13, 13
-};
 
 // ----------------------------------------------------------------------
 // Stick case
@@ -448,7 +445,6 @@ pylith::faults::CohesiveDynLDataQuad4::CohesiveDynLDataQuad4(void)
   initialTractions = const_cast<double*>(_initialTractions);
 
   constraintVertices = const_cast<int*>(_constraintVertices);
-  constraintCells = const_cast<int*>(_constraintCells);
   numConstraintVert = _numConstraintVert;  
 
   // Stick

@@ -117,11 +117,7 @@ const int pylith::faults::CohesiveKinDataTet4e::_constraintVertices[] = {
   14, 15, 16, 17
 };
 
-const int pylith::faults::CohesiveKinDataTet4e::_constraintCells[] = {
-  20, 20, 20, 21
-};
-
-const double pylith::faults::CohesiveKinDataTet4e::_valsResidual[] = {
+const double pylith::faults::CohesiveKinDataTet4e::_residual[] = {
   0.0,  0.0,  0.0,
   7.8,  3.8,  5.8, // 5
   7.0,  3.0,  5.0, // 6
@@ -138,7 +134,7 @@ const double pylith::faults::CohesiveKinDataTet4e::_valsResidual[] = {
  -0.8, -0.8, -0.8, // 17
 };
 
-const double pylith::faults::CohesiveKinDataTet4e::_valsResidualIncr[] = {
+const double pylith::faults::CohesiveKinDataTet4e::_residualIncr[] = {
   0.0,  0.0,  0.0,
   7.8,  3.8,  5.8, // 5
   7.0,  3.0,  5.0, // 6
@@ -155,7 +151,7 @@ const double pylith::faults::CohesiveKinDataTet4e::_valsResidualIncr[] = {
  -0.8, -0.8, -0.8, // 17
 };
 
-const double pylith::faults::CohesiveKinDataTet4e::_valsJacobian[] = {
+const double pylith::faults::CohesiveKinDataTet4e::_jacobian[] = {
   0.0, 0.0, 0.0, // 4x
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
@@ -768,10 +764,9 @@ pylith::faults::CohesiveKinDataTet4e::CohesiveKinDataTet4e(void)
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
   constraintVertices = const_cast<int*>(_constraintVertices);
-  constraintCells = const_cast<int*>(_constraintCells);
-  valsResidual = const_cast<double*>(_valsResidual);
-  valsResidualIncr = const_cast<double*>(_valsResidualIncr);
-  valsJacobian = const_cast<double*>(_valsJacobian);
+  residual = const_cast<double*>(_residual);
+  residualIncr = const_cast<double*>(_residualIncr);
+  jacobian = const_cast<double*>(_jacobian);
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

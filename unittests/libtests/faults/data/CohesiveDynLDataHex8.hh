@@ -67,7 +67,6 @@ private:
   static const double _fieldIncrOpenE[]; ///< Expected values for solution increment for opening case.
   static const double _slipOpenE[]; ///< Expected values for slip for opening case.
   static const int _constraintVertices[]; ///< Expected points for constraint vertices
-  static const int _constraintCells[]; ///< Expected cells for constraint vertices
   static const int _numConstraintVert; ///< Number of constraint vertices
 
 };

@@ -248,7 +248,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     //residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
-    const double* valsE = _data->valsResidual;
+    const double* valsE = _data->residual;
     iVertex = 0;
     const int fiberDimE = spaceDim;
     const double tolerance = 1.0e-06;
@@ -279,7 +279,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     //residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
-    const double* valsE = _data->valsResidualIncr;
+    const double* valsE = _data->residualIncr;
     iVertex = 0;
     const int fiberDimE = spaceDim;
     const double tolerance = 1.0e-06;
@@ -340,7 +340,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
 
   //MatView(jacobian, PETSC_VIEWER_STDOUT_WORLD); // DEBUGGING
 
-  const double* valsE = _data->valsJacobian;
+  const double* valsE = _data->jacobian;
   const int nrowsE = dispSection->sizeWithBC();
   const int ncolsE = nrowsE;
 
@@ -423,7 +423,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidualAssembled(void)
     //residual->view("RESIDUAL"); // DEBUGGING
 
     // Check values
-    const double* valsE = _data->valsResidual;
+    const double* valsE = _data->residual;
     iVertex = 0;
     const int fiberDimE = spaceDim;
     const double tolerance = 1.0e-06;
@@ -461,7 +461,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidualAssembled(void)
     //residual->view("RESIDUAL"); // DEBUGGING
 
     // Check values
-    const double* valsE = _data->valsResidualIncr;
+    const double* valsE = _data->residualIncr;
     iVertex = 0;
     const int fiberDimE = spaceDim;
     const double tolerance = 1.0e-06;
@@ -528,7 +528,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembled(void)
 
   // MatView(jacobian.matrix(), PETSC_VIEWER_STDOUT_WORLD); // DEBUGGING
 
-  const double* valsE = _data->valsJacobian;
+  const double* valsE = _data->jacobian;
   const int nrowsE = dispSection->sizeWithBC();
   const int ncolsE = nrowsE;
 
@@ -645,6 +645,106 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembledLumped(void)
 				   tolerance);
   } // for
 } // testIntegrateJacobianAssembledLumped
+
+// ----------------------------------------------------------------------
+// Test adjustSolnLumped().
+void
+pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
+{ // testAdjustSolnLumped
+  topology::Mesh mesh;
+  FaultCohesiveKin fault;
+  topology::SolutionFields fields(mesh);
+  _initialize(&mesh, &fault, &fields);
+
+#if 0
+  const int spaceDim = _data->spaceDim;
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
+  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+
+  { // setup disp
+    const ALE::Obj<RealSection>& dispTSection = fields.get("disp(t)").section();
+    CPPUNIT_ASSERT(!dispTSection.isNull());
+    int iVertex = 0;
+    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+        v_iter != verticesEnd;
+        ++v_iter, ++iVertex) {
+        dispTSection->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
+    } // for
+  } // setup disp
+
+  { // setup residual
+    const ALE::Obj<RealSection>& resisualSection = fields.get("residual").section();
+    CPPUNIT_ASSERT(!residualSection.isNull());
+    int iVertex = 0;
+    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+        v_iter != verticesEnd;
+        ++v_iter, ++iVertex) {
+        residualSection->updatePoint(*v_iter, &_data->residualE[iVertex*spaceDim]);
+    } // for
+  } // setup residual
+
+  // Set Jacobian values
+  topology::Field<topology::Mesh> jacobian(mesh);
+  jacobian.label("Jacobian");
+  jacobian.vectorFieldType(topology::FieldBase::VECTOR);
+  jacobian.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
+  jacobian.allocate();
+  { // setup disp
+    const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
+    CPPUNIT_ASSERT(!jacobianSection.isNull());
+    int iVertex = 0;
+    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+        v_iter != verticesEnd;
+        ++v_iter, ++iVertex) {
+        jacobianSection->updatePoint(*v_iter, &_data->jacobianLumped[iVertex*spaceDim]);
+    } // for
+  } // setup disp
+  jacobian.complete();
+
+  fault.adjustSolnLumped(&fields, jacobian);
+
+  const topology::Field<topology::Mesh>& solution = fields->get("dispIncr(t->t+dt)");
+#if 0 // DEBUGGING
+  solution.view("ADJUSTED SOLUTION");
+#endif // DEBUGGING
+
+  const ALE::Obj<RealSection>& solutionSection = solution.section();
+  CPPUNIT_ASSERT(!solutionSection.isNull());
+
+  int iVertex = 0;
+  const double tolerance = 1.0e-06;
+  const int spaceDim = _data->spaceDim;
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const SieveMesh::label_sequence::iterator verticesBegin =
+    vertices->begin();
+  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+
+  const double* solutionE = _data->fieldIncrAdjustedE;
+  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+       v_iter != verticesEnd;
+       ++v_iter, ++iVertex) {
+    const int fiberDim = solutionSection->getFiberDimension(*v_iter);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
+    const double* solutionVertex = solutionSection->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(0 != solutionVertex);
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      if (0.0 != solutionE[index])
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, solutionVertex[iDim]/solutionE[index],
+          tolerance);
+      else
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(solutionE[index], solutionVertex[iDim], tolerance);
+  } // for
+#endif
+} // testAdjustSolnLumped
 
 // ----------------------------------------------------------------------
 // Test updateStateVars().
