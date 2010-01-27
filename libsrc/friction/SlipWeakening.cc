@@ -26,7 +26,7 @@
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
-
+#include <iostream>
 // ----------------------------------------------------------------------
 namespace pylith {
   namespace friction {
@@ -124,7 +124,7 @@ pylith::friction::SlipWeakening::_dbToProperties(
 
   const double db_static = dbValues[db_coefS];
   const double db_dynamic = dbValues[db_coefD];
-  const double db_d0 = dbValues[db_d0];
+  const double db_do = dbValues[db_d0];
  
   if (db_static <= 0.0) {
     std::ostringstream msg;
@@ -152,7 +152,8 @@ pylith::friction::SlipWeakening::_dbToProperties(
 
   propValues[p_coefS] = db_static;
   propValues[p_coefD] = db_dynamic;
-  propValues[p_d0] = db_d0;
+  propValues[p_d0] = db_do;
+
 } // _dbToProperties
 
 // ----------------------------------------------------------------------
@@ -251,26 +252,25 @@ pylith::friction::SlipWeakening::_calcFriction(const double slip,
   assert(0 != numStateVars);
   assert(_numVarsVertex == numStateVars);
 
-  // SURENDRA: Use p_coefS, p_coefD, p_d0, s_slipCum, s_slipPrev to
-  // unpack values.  Expression for friction should be efficient but
-  // easy to understand.
-
-  /*
-  const double friction = (normalTraction < 0) ?
-    ((stateVars[0] < properties[p_coef+2]) ?
-     properties[p_coef]-(properties[p_coef]-properties[p_coef+1]) *
-     stateVars[0] / properties[p_coef+2] * normalTraction : 
-     properties[p_coef+1] * normalTraction) : 0.0;
-  */
 
   // DO SOMETHING LIKE THIS:
   double friction = 0.0;
+  double mu_f = 0.0;
   if (normalTraction < 0.0) {
+    // if fault is in compression
+    if (stateVars[s_slipCum] < properties[p_coefD]) {
+	// if/else linear slip-weakening form of mu_f 
+	mu_f = properties[p_coefS] -
+	  (properties[p_coefS] - properties[p_coefD]) * 
+	  stateVars[s_slipCum] / properties[p_d0];
+	friction = - mu_f * normalTraction;
+      } else {
+	mu_f = properties[p_coefD];
+	friction = - mu_f * normalTraction;
+      } // if/else
   } // if
 
-  PetscLogFlops(1); // SURENDRA: Update this with the number of
-		    // floating point operations (add, subtract,
-		    // multiply, divide)
+  PetscLogFlops(5);
 
   return friction;
 } // _calcFriction
@@ -289,10 +289,10 @@ pylith::friction::SlipWeakening::_updateStateVars(const double slip,
   assert(0 != numStateVars);
   assert(0 != numProperties);
 
-  const double tmpPreviousSlip = stateVars[1];
+  const double tmpPreviousSlip = stateVars[s_slipPrev];
  
-  stateVars[1] = stateVars[0];
-  stateVars[0] += fabs(slip - tmpPreviousSlip);
+  stateVars[s_slipPrev] = stateVars[s_slipCum];
+  stateVars[s_slipCum] += fabs(slip - tmpPreviousSlip);
     
 } // _updateStateVars
 
