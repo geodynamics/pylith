@@ -903,6 +903,11 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  // dl_k = D^{-1}( C_{ki} Aru - d_k)
 	  const double Aruslip = Aru - slipVertex[0];
 	  const double dlp = dinv00*Aruslip;
+	  std::cout << "Aru: " << Aru
+		    << ", Aruslip: " << Aruslip
+		    << ", dinv00: " << dinv00
+		    << ", dlp: " << dlp
+		    << std::endl;
 
 	  // Update displacements at node I
 	  solutionCell[indexI*spaceDim+0] =  wt * -1.0/Ai[0] * dlp;

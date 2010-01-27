@@ -72,26 +72,26 @@ const char* pylith::faults::CohesiveKinDataLine2::_matPropsFilename =
 // Don't expect these values to be used, so just use some values.
 const double pylith::faults::CohesiveKinDataLine2::_fieldT[] = {
   7.1,
-  7.2,
+  7.2, // 3
   7.3,
-  7.4,
+  7.4, // 5
   7.5
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_fieldIncr[] = {
   1.1,
-  1.2,
+  1.2, // 3
   1.3,
-  1.4,
+  1.4, // 5
   1.5
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_jacobianLumped[] = {
   2.1,
-  2.2,
+  2.2, // 3
   2.3,
-  2.4,
-  2.5
+  2.4, // 5
+  1.0
 };
 
 const int pylith::faults::CohesiveKinDataLine2::_numConstraintVert = 1;
@@ -119,9 +119,9 @@ const double pylith::faults::CohesiveKinDataLine2::_residualIncr[] = {
 
 const double pylith::faults::CohesiveKinDataLine2::_residual[] = {
    0.0,
-   7.5,
+   7.5, // 3
    0.0,
-  -7.5,
+   -7.5, // 5
   -0.2,
 };
 

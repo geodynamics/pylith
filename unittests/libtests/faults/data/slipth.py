@@ -1,14 +1,16 @@
 from math import *
 
-finalSlip = (2.6, -1.0, 0.4)
+finalSlip = (2.3, 0.0, 0.0)
+riseTime = 1.4
 
 slipMag = (finalSlip[0]**2+finalSlip[1]**2+finalSlip[2]**2)**0.5
-peakRate = 1.8
-slipTime1 = 1.5+0.5
+
+slipTime1 = 1.2
 slipTime2 = 1.5
 t = 2.134
 dt = 0.01
 
+peakRate = slipMag / riseTime * 1.745;
 tau = slipMag / (exp(1.0) * peakRate)
 
 t0 = slipTime1
@@ -25,7 +27,7 @@ slipN = slipN1 + slipN2
 slipNincr = slipNincr1 + slipNincr2
 
 print "%13.11f, %13.11f, %13.11f" % \
-      (slipN*finalSlip[0], slipN*finalSlip[1], slipN*finalSlip[2])
+      (slipN1*finalSlip[0], slipN1*finalSlip[1], slipN1*finalSlip[2])
 
 print "%13.11f, %13.11f, %13.11f" % \
       (slipNincr*finalSlip[0], slipNincr*finalSlip[1], slipNincr*finalSlip[2])
