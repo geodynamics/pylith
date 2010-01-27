@@ -48,17 +48,14 @@ pylith::meshio::MeshIOSieve::deallocate(void)
 void
 pylith::meshio::MeshIOSieve::_read(void)
 { // _read
-  MPI_Comm comm = _mesh->comm();
-  int rank = 0;
-  int meshDim = 0;
-  int spaceDim = 0;
-  int numVertices = 0;
-  int numCells = 0;
-  int numCorners = 0;
+  _mesh->createSieveMesh(3);
+  const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = _mesh->sieveMesh();
+  assert(!sieveMesh.isNull());
 
-
-  // :TODO: STUFF GOES HERE
-  assert(false);
+  ALE::Obj<topology::Mesh::SieveMesh::sieve_type> sieve = 
+    new topology::Mesh::SieveMesh::sieve_type(_mesh->comm());
+  sieveMesh->setSieve(sieve);
+  ALE::MeshSerializer::loadMesh(_filename, *sieveMesh);
 } // read
 
 // ----------------------------------------------------------------------
@@ -66,9 +63,7 @@ pylith::meshio::MeshIOSieve::_read(void)
 void
 pylith::meshio::MeshIOSieve::_write(void) const
 { // write
-
   ALE::MeshSerializer::writeMesh(_filename, *_mesh->sieveMesh());
-
 } // write
 
   
