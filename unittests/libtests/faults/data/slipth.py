@@ -1,6 +1,6 @@
 from math import *
 
-finalSlip = (2.3, 0.0, 0.0)
+finalSlip = (2.3, 0.1, 0.0)
 riseTime = 1.4
 
 slipMag = (finalSlip[0]**2+finalSlip[1]**2+finalSlip[2]**2)**0.5

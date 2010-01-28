@@ -894,20 +894,15 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
       switch(spaceDim)
 	{ // switch
 	case 1 : {
-	  const double d00 = 1.0/Ai[0] + 1.0/Aj[0];
-	  const double dinv00 = 1.0 / d00;
+	  const double Spp = 1.0/Ai[0] + 1.0/Aj[0];
+	  const double Sinvpp = 1.0 / Spp;
 
 	  // Aru = A_i^{-1} r_i - A_j^{-1} r_j + u_i - u_j
 	  const double Aru = ri[0]/Ai[0] - rj[0]/Aj[0] + ui[0] - uj[0];
 
 	  // dl_k = D^{-1}( C_{ki} Aru - d_k)
 	  const double Aruslip = Aru - slipVertex[0];
-	  const double dlp = dinv00*Aruslip;
-	  std::cout << "Aru: " << Aru
-		    << ", Aruslip: " << Aruslip
-		    << ", dinv00: " << dinv00
-		    << ", dlp: " << dlp
-		    << std::endl;
+	  const double dlp = Sinvpp * Aruslip;
 
 	  // Update displacements at node I
 	  solutionCell[indexI*spaceDim+0] =  wt * -1.0/Ai[0] * dlp;
@@ -925,8 +920,6 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  const double Cpy = orientationVertex[1];
 	  const double Cqx = orientationVertex[2];
 	  const double Cqy = orientationVertex[3];
-	  const double Crx = orientationVertex[4];
-	  const double Cry = orientationVertex[5];
 
 	  const double Spp = 
 	    Cpx*Cpx*(1.0/Ai[0] + 1.0/Aj[0]) +
@@ -934,6 +927,7 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  const double Spq =
 	    Cpx*Cqx*(1.0/Ai[0] + 1.0/Aj[0]) +
 	    Cpy*Cqy*(1.0/Ai[1] + 1.0/Aj[1]);
+	  assert(fabs(Spq) < 1.0e-06);
 	  const double Sqq = 
 	    Cqx*Cqx*(1.0/Ai[0] + 1.0/Aj[0]) +
 	    Cqy*Cqy*(1.0/Ai[1] + 1.0/Aj[1]);
@@ -953,6 +947,22 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  const double Aruqslip = Aruq - slipVertex[1];
 	  const double dlp = Sinvpp*Arupslip + Sinvpq*Aruqslip;
 	  const double dlq = Sinvpq*Arupslip + Sinvqq*Aruqslip;
+
+	  std::cout << "slip: " << slipVertex[0]
+		    << ", ri: " << ri[0]
+		    << ", rj: " << rj[0]
+		    << ", ui: " << ui[0]
+		    << ", uj: " << uj[0]
+		    << ", Arup: " << Arup
+		    << ", Aruq: " << Aruq
+		    << ", Arupslip: " << Arupslip
+		    << ", Aruqslip: " << Aruqslip
+		    << ", Sinvpp: " << Sinvpp
+		    << ", Sinvqq: " << Sinvqq
+		    << ", dlp: " << dlp
+		    << ", dlq: " << dlq
+		    << ", wt: " << wt
+		    << std::endl;
 
 	  // Update displacements at node I
 	  solutionCell[indexI*spaceDim+0] = 

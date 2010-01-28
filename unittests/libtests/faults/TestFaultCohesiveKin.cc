@@ -676,6 +676,15 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
     } // for
   } // setup disp
 
+  // compute residual so that slip and residual are setup
+  const double t = 2.134;
+  const double dt = 0.01;
+  fault.timeStep(dt);
+  topology::Field<topology::Mesh>& residual = fields.get("residual");
+  fault.integrateResidual(residual, t, &fields);
+  residual.complete();
+  fault.integrateResidualAssembled(residual, t, &fields);
+
   { // setup disp increment
     const ALE::Obj<RealSection>& dispIncrSection = fields.get("dispIncr(t->t+dt)").section();
     CPPUNIT_ASSERT(!dispIncrSection.isNull());
@@ -704,15 +713,6 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
     } // for
   } // setup disp
   jacobian.complete();
-
-  // compute residual so that slip and residual are setup
-  const double t = 2.134;
-  const double dt = 0.01;
-  fault.timeStep(dt);
-  topology::Field<topology::Mesh>& residual = fields.get("residual");
-  fault.integrateResidual(residual, t, &fields);
-  residual.complete();
-  fault.integrateResidualAssembled(residual, t, &fields);
 
   const topology::Field<topology::Mesh>& solution = fields.get("dispIncr(t->t+dt)");
 #if 1 // DEBUGGING
