@@ -656,6 +656,15 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
   const ALE::Obj<RealSection>& slipSection =  _fields->get("slip").section();
   assert(!slipSection.isNull());
 
+  // :TODO: Get slip rate from velocity(t)
+  //_updateSlipRate(*fields);
+  double_array slipRateVertex(spaceDim);
+#if 0
+  const ALE::Obj<RealSection>& slipRateSection =
+    _fields->get("slip_rate").section();
+  assert(!slipRateSection.isNull());
+#endif
+
   const ALE::Obj<RealSection>& areaSection =  _fields->get("area").section();
   assert(!areaSection.isNull());
 
@@ -712,6 +721,12 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
       // Get slip
       slipSection->restrictPoint(vertexFault, 
 				 &slipVertex[0], slipVertex.size());
+
+#if 0
+      // Get slip rate
+      slipRateSection->restrictPoint(vertexFault, 
+				     &slipRateVertex[0], slipRateVertex.size());
+#endif
 
       // Get total fault area asssociated with vertex (assembled over all cells)
       const double* areaVertex = areaSection->restrictPoint(vertexFault);
