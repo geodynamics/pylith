@@ -106,7 +106,33 @@ const double pylith::faults::CohesiveKinDataTri3::_fieldT[] = {
   8.8, 9.8, // 9
 };
 
+const double pylith::faults::CohesiveKinDataTri3::_fieldIncr[] = {
+  3.1, 4.1,
+  3.2, 4.2, // 3
+  3.3, 4.3, // 4
+  3.4, 4.4,
+  3.5, 4.5, // 6
+  3.7, 4.7, // 7
+  3.6, 4.6, // 8
+  3.8, 4.8, // 9
+};
+
+const double pylith::faults::CohesiveKinDataTri3::_jacobianLumped[] = {
+  1.1, 1.1,
+  1.2, 1.2, // 3
+  1.3, 1.3, // 4
+  1.4, 1.4,
+  1.5, 1.5, // 6
+  1.7, 1.7, // 7
+  1.6, 1.6, // 8
+  1.8, 1.8, // 9
+};
+
 const int pylith::faults::CohesiveKinDataTri3::_numConstraintVert = 2;
+const int pylith::faults::CohesiveKinDataTri3::_constraintVertices[] = {
+  8, 9
+};
+
 
 const double pylith::faults::CohesiveKinDataTri3::_orientation[] = {
   0.0, -1.0,  -1.0, 0.0,
@@ -116,10 +142,6 @@ const double pylith::faults::CohesiveKinDataTri3::_orientation[] = {
 const double pylith::faults::CohesiveKinDataTri3::_area[] = {
   1.0,
   1.0,
-};
-
-const int pylith::faults::CohesiveKinDataTri3::_constraintVertices[] = {
-  8, 9
 };
 
 const double pylith::faults::CohesiveKinDataTri3::_residual[] = {
@@ -277,6 +299,17 @@ const double pylith::faults::CohesiveKinDataTri3::_jacobian[] = {
   0.0, 0.0,
 };
 
+const double pylith::faults::CohesiveKinDataTri3::_fieldIncrAdjusted[] = {
+  3.1, 4.1,
+  3.2, 4.2, // 3
+  3.3, 4.3, // 4
+  3.4, 4.4,
+  3.5, 4.5, // 6
+  3.7, 4.7, // 7
+  3.6, 4.6, // 8
+  3.8, 4.8, // 9
+};
+
 pylith::faults::CohesiveKinDataTri3::CohesiveKinDataTri3(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
@@ -296,12 +329,15 @@ pylith::faults::CohesiveKinDataTri3::CohesiveKinDataTri3(void)
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
   matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
+  fieldIncr = const_cast<double*>(_fieldIncr);
+  jacobianLumped = const_cast<double*>(_jacobianLumped);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  constraintVertices = const_cast<int*>(_constraintVertices);
-  residual = const_cast<double*>(_residual);
   residualIncr = const_cast<double*>(_residualIncr);
+  residual = const_cast<double*>(_residual);
   jacobian = const_cast<double*>(_jacobian);
+  fieldIncrAdjusted = const_cast<double*>(_fieldIncrAdjusted);
+  constraintVertices = const_cast<int*>(_constraintVertices);
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

@@ -135,10 +135,10 @@ const double pylith::faults::CohesiveKinDataLine2::_jacobian[] = {
 
 const double pylith::faults::CohesiveKinDataLine2::_fieldIncrAdjusted[] = {
   1.1,
-  1.2, // 3
+  -1.11580527225, // 3
   1.3,
-  1.4, // 5
-  1.5, // 6
+  3.52282149957, // 5
+  6.59477159896, // 6
 };
 
 pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)
