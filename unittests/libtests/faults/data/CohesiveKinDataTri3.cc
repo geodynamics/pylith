@@ -301,13 +301,13 @@ const double pylith::faults::CohesiveKinDataTri3::_jacobian[] = {
 
 const double pylith::faults::CohesiveKinDataTri3::_fieldIncrAdjusted[] = {
   3.1, 4.1,
-  3.2, 4.2, // 3
-  3.3, 4.3, // 4
+  11.3208825088, 10.4802977015, // 3
+  10.9812907996, 10.2898485695, // 4
   3.4, 4.4,
-  3.5, 4.5, // 6
-  3.7, 4.7, // 7
-  3.6, 4.6, // 8
-  3.8, 4.8, // 9
+  -2.99670600701, -0.524238161213, // 6
+  -2.17392825851, 0.119527564532, // 7
+  11.1363572418, 14.3450590105, // 8
+  11.5868031403, 14.7856780395, // 9
 };
 
 pylith::faults::CohesiveKinDataTri3::CohesiveKinDataTri3(void)
