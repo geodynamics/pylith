@@ -728,22 +728,23 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   const ALE::Obj<RealSection>& solutionSection = solution.section();
   CPPUNIT_ASSERT(!solutionSection.isNull());
 
-  int iVertex = 0;
+  int i = 0;
   const double tolerance = 1.0e-06;
   const double* solutionE = _data->fieldIncrAdjusted;
   for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
-       ++v_iter, ++iVertex) {
+       ++v_iter) {
     const int fiberDim = solutionSection->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
     const double* solutionVertex = solutionSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != solutionVertex);
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      if (0.0 != solutionE[iVertex])
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, solutionVertex[iDim]/solutionE[iVertex],
+    for (int iDim=0; iDim < spaceDim; ++iDim, ++i)
+      if (0.0 != solutionE[i])
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, solutionVertex[iDim]/solutionE[i],
           tolerance);
       else
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(solutionE[iVertex], solutionVertex[iDim], tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(solutionE[i], solutionVertex[iDim],
+				     tolerance);
   } // for
 } // testAdjustSolnLumped
 

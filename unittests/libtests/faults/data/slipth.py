@@ -1,11 +1,11 @@
 from math import *
 
-finalSlip = (2.3, 0.1, 0.0)
-riseTime = 1.4
+finalSlip = (2.4, 0.2, 0.0)
+riseTime = 1.5
 
 slipMag = (finalSlip[0]**2+finalSlip[1]**2+finalSlip[2]**2)**0.5
 
-slipTime1 = 1.2
+slipTime1 = 1.3
 slipTime2 = 1.5
 t = 2.134
 dt = 0.01
