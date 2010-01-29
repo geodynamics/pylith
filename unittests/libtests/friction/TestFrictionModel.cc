@@ -267,7 +267,7 @@ void
 pylith::friction::TestFrictionModel::testCalcFriction(void)
 { // testCalcFriction
   const double slip = 1.2;
-  const double slipRate =-2.3;
+  const double slipRate = -2.3;
   const double normalTraction = -2.4;
   const double frictionCoef = 0.45;
   const double frictionE = -normalTraction*frictionCoef;
@@ -283,10 +283,10 @@ pylith::friction::TestFrictionModel::testCalcFriction(void)
   const double frictionV = friction.calcFriction(slip, slipRate, normalTraction);
 
   const double tolerance = 1.0e-6;
-  if (0 != frictionE)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(frictionE, frictionV, tolerance);
-  else
+  if (0.0 != frictionE)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, frictionV/frictionE, tolerance);
+  else
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(frictionE, frictionV, tolerance);
 } // testCalcFriction
     
 // ----------------------------------------------------------------------

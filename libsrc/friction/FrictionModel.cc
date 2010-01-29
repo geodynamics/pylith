@@ -610,9 +610,12 @@ pylith::friction::FrictionModel::calcFriction(const double slip,
                                               const double slipRate,
                                               const double normalTraction)
 { // calcFriction
-  _calcFriction(slip, slipRate, normalTraction,
-      &_propertiesVertex[0], _propertiesVertex.size(),
-      &_stateVarsVertex[0], _stateVarsVertex.size());
+  const double friction =
+    _calcFriction(slip, slipRate, normalTraction,
+		  &_propertiesVertex[0], _propertiesVertex.size(),
+		  &_stateVarsVertex[0], _stateVarsVertex.size());
+
+  return friction;
 } // calcFriction
 
 // ----------------------------------------------------------------------
