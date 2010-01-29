@@ -99,7 +99,7 @@ namespace pylith {
        * operator that do not require assembly across cells, vertices, or
        * processors.
        *
-       * @param mat Sparse matrix
+       * @param jacobian Sparse matrix
        * @param t Current time
        * @param fields Solution fields
        * @param mesh Finite-element mesh
@@ -108,6 +108,18 @@ namespace pylith {
 				      const double t,
 				      pylith::topology::SolutionFields* const fields);
       
+      /** Integrate contributions to Jacobian matrix (A) associated with
+       * operator that do not require assembly across cells, vertices, or
+       * processors.
+       *
+       * @param jacobian Diagonal Jacobian matrix as a field.
+       * @param t Current time
+       * @param fields Solution fields
+       */
+      void integrateJacobianAssembled(pylith::topology::Field<pylith::topology::Mesh>* jacobian,
+				      const double t,
+				      pylith::topology::SolutionFields* const fields);
+
       /** Update state variables as needed.
        *
        * @param t Current time

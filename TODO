@@ -22,6 +22,7 @@ CURRENT ISSUES/PRIORITIES
 * Updates to manual
   + tutorial
   + governing equations
+  + Large deformation formulation
 
 * Cleanup
   + memory model
@@ -55,10 +56,6 @@ Refactor FaultCohesive
 ----------------------------------------------------------------------
 LUMPED SOLVER
 ----------------------------------------------------------------------
-
-FaultCohesiveKin
-  adjustSolnLumped()
-    S (sensitivity matrix) - assume diagonal (check with assert)
 
 FaultCohesiveDynL (C++)
   integrateJacobian (lumped)

@@ -471,12 +471,13 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
 // Compute matrix associated with operator.
 void
 pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
-			    const topology::Field<topology::Mesh>& jacobian,
+			    topology::Field<topology::Mesh>* jacobian,
 			    const double t,
 			    topology::SolutionFields* fields)
 { // integrateJacobian
   assert(0 != _quadrature);
   assert(0 != _material);
+  assert(0 != jacobian);
   assert(0 != fields);
 
   const int setupEvent = _logger->eventId("ElIJ setup");
@@ -522,7 +523,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
     fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
 
-  const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
+  const ALE::Obj<RealSection>& jacobianSection = jacobian->section();
   assert(!jacobianSection.isNull());
   topology::Mesh::UpdateAddVisitor jacobianVisitor(*jacobianSection, 
 						   &_cellVector[0]);

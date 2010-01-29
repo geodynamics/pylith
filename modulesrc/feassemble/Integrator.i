@@ -119,18 +119,6 @@ namespace pylith {
 			     const double t,
 			     pylith::topology::SolutionFields* const fields);
 
-      /** Integrate contributions to Jacobian matrix (A) associated with
-       * operator.
-       *
-       * @param jacobian Sparse matrix for Jacobian of system.
-       * @param t Current time
-       * @param fields Solution fields
-       */
-      virtual
-      void integrateJacobian(pylith::topology::Jacobian* jacobian,
-			     const double t,
-			     pylith::topology::SolutionFields* const fields);
-
       /** Integrate contributions to residual term (r) for operator that
        * do not require assembly over cells, vertices, or processors.
        *
@@ -144,6 +132,18 @@ namespace pylith {
 				      pylith::topology::SolutionFields* const fields);
 
       /** Integrate contributions to Jacobian matrix (A) associated with
+       * operator.
+       *
+       * @param jacobian Sparse matrix for Jacobian of system.
+       * @param t Current time
+       * @param fields Solution fields
+       */
+      virtual
+      void integrateJacobian(pylith::topology::Jacobian* jacobian,
+			     const double t,
+			     pylith::topology::SolutionFields* const fields);
+
+      /** Integrate contributions to Jacobian matrix (A) associated with
        * operator that do not require assembly over cells, vertices, or
        * processors
        *
@@ -153,6 +153,31 @@ namespace pylith {
        */
       virtual
       void integrateJacobianAssembled(pylith::topology::Jacobian* jacobian,
+				      const double t,
+				      pylith::topology::SolutionFields* const fields);
+
+      /** Integrate contributions to Jacobian matrix (A) associated with
+       * operator.
+       *
+       * @param jacobian Diagonal matrix (as field) for Jacobian of system.
+       * @param t Current time
+       * @param fields Solution fields
+       */
+      virtual
+      void integrateJacobian(pylith::topology::Field<pylith::topology::Mesh>* jacobian,
+			     const double t,
+			     pylith::topology::SolutionFields* const fields);
+      
+      /** Integrate contributions to Jacobian matrix (A) associated with
+       * operator that do not require assembly over cells, vertices, or
+       * processors
+       *
+       * @param jacobian Diagonal matrix (as field) for Jacobian of system.
+       * @param t Current time
+       * @param fields Solution fields
+       */
+      virtual
+      void integrateJacobianAssembled(pylith::topology::Field<pylith::topology::Mesh>* jacobian,
 				      const double t,
 				      pylith::topology::SolutionFields* const fields);
 

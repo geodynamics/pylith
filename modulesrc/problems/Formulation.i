@@ -63,6 +63,20 @@ namespace pylith {
 			  const double t,
 			  const double dt);
       
+      /** Update handles and parameters for reforming the Jacobian and
+       *  residual.
+       *
+       * @param jacobian Handle to diagonal matrix (as Field) for
+       * system Jacobian.
+       * @param fields Handle to solution fields.
+       * @param t Current time (nondimensional).
+       * @param dt Time step (nondimension).
+       */
+      void updateSettings(pylith::topology::Field<pylith::topology::Mesh>* jacobian,
+			  pylith::topology::SolutionFields* fields,
+			  const double t,
+			  const double dt);
+
       /** Reform system residual.
        *
        * @param tmpResidualVec Temporary PETSc vector for residual.
@@ -77,6 +91,10 @@ namespace pylith {
        */
       void reformJacobian(const PetscVec* tmpSolveSolnVec =0);
       
+      /* Reform system Jacobian.
+       */
+      void reformJacobianLumped(void);
+
     }; // Formulation
 
   } // problems

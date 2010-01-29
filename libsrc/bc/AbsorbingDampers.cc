@@ -483,12 +483,13 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 // Integrate contributions to Jacobian matrix (A) associated with
 void
 pylith::bc::AbsorbingDampers::integrateJacobian(
-			      const topology::Field<topology::Mesh>& jacobian,
+			      topology::Field<topology::Mesh>* jacobian,
 			      const double t,
 			      topology::SolutionFields* const fields)
 { // integrateJacobian
   assert(0 != _quadrature);
   assert(0 != _boundaryMesh);
+  assert(0 != jacobian);
   assert(0 != fields);
 
   // Get cell geometry information that doesn't depend on cell
@@ -526,7 +527,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   const ALE::Obj<RealSection>& solutionSection = solution.section();
   assert(!solutionSection.isNull());
 
-  const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
+  const ALE::Obj<RealSection>& jacobianSection = jacobian->section();
   assert(!jacobianSection.isNull());
   topology::Mesh::UpdateAddVisitor jacobianVisitor(*jacobianSection, 
 						   &_cellVector[0]);
