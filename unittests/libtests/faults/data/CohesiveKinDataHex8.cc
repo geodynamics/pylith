@@ -127,7 +127,56 @@ const double pylith::faults::CohesiveKinDataHex8::_fieldT[] = {
   5.0, 7.0, 9.0, // 21
 };
 
+const double pylith::faults::CohesiveKinDataHex8::_fieldIncr[] = {
+  3.1, 4.1, 5.1,
+  3.2, 4.2, 5.2,
+  3.3, 4.3, 5.3,
+  3.4, 4.4, 5.4,
+  3.5, 4.5, 5.5, // 6
+  3.6, 4.6, 5.6, // 7
+  3.7, 4.7, 5.7, // 8
+  3.8, 4.8, 5.8, // 9
+  3.9, 4.9, 5.9,
+  3.0, 4.0, 5.0,
+  3.1, 4.1, 5.1,
+  3.2, 4.2, 5.2,
+  3.3, 4.3, 5.3, // 14
+  3.5, 4.5, 5.5, // 15
+  3.7, 4.7, 5.7, // 16
+  3.9, 4.9, 5.9, // 17
+  3.4, 4.4, 5.4, // 18
+  3.6, 4.6, 5.6, // 19
+  3.8, 4.8, 5.8, // 20
+  3.0, 4.0, 5.0, // 21
+};
+
+const double pylith::faults::CohesiveKinDataHex8::_jacobianLumped[] = {
+  1.1, 1.1, 1.1,
+  1.2, 1.2, 1.2,
+  1.3, 1.3, 1.3,
+  1.4, 1.4, 1.4,
+  1.5, 1.5, 1.5, // 6
+  1.6, 1.6, 1.6, // 7
+  1.7, 1.7, 1.7, // 8
+  1.8, 1.8, 1.8, // 9
+  1.9, 1.9, 1.9,
+  1.0, 1.0, 1.0,
+  1.1, 1.1, 1.1,
+  1.2, 1.2, 1.2,
+  1.3, 1.3, 1.3, // 14
+  1.5, 1.5, 1.5, // 15
+  1.7, 1.7, 1.7, // 16
+  1.9, 1.9, 1.9, // 17
+  1.4, 1.4, 1.4, // 18
+  1.6, 1.6, 1.6, // 19
+  1.8, 1.8, 1.8, // 20
+  1.0, 1.0, 1.0, // 21
+};
+
 const int pylith::faults::CohesiveKinDataHex8::_numConstraintVert = 4;
+const int pylith::faults::CohesiveKinDataHex8::_constraintVertices[] = {
+  18, 19, 20, 21
+};
 
 const double pylith::faults::CohesiveKinDataHex8::_orientation[] = {
   0.0, -1.0, 0.0,    0.0, 0.0, -1.0,    -1.0, 0.0, 0.0,
@@ -139,11 +188,6 @@ const double pylith::faults::CohesiveKinDataHex8::_orientation[] = {
 const double pylith::faults::CohesiveKinDataHex8::_area[] = {
   1.0, 1.0, 1.0, 1.0
 };
-
-const int pylith::faults::CohesiveKinDataHex8::_constraintVertices[] = {
-  18, 19, 20, 21
-};
-
 
 const double pylith::faults::CohesiveKinDataHex8::_residual[] = {
   0.0, 0.0, 0.0,
@@ -1394,6 +1438,29 @@ const double pylith::faults::CohesiveKinDataHex8::_jacobian[] = {
   0.0, 0.0, 0.0,
 };
 
+const double pylith::faults::CohesiveKinDataHex8::_fieldIncrAdjusted[] = {
+  3.1, 4.1, 5.1,
+  3.2, 4.2, 5.2,
+  3.3, 4.3, 5.3,
+  3.4, 4.4, 5.4,
+  10.1012399174, 7.62375619614, 11.0627491494, // 6
+  9.96706334677, 7.71443758064, 11.0591659677, // 7
+  9.87367998662, 7.85321557474, 11.0613129813, // 8
+  9.26265302548, 7.47826568661, 10.5092833522, // 9
+  3.9, 4.9, 5.9,
+  3.0, 4.0, 5.0,
+  3.1, 4.1, 5.1,
+  3.2, 4.2, 5.2,
+  -4.31681528934, 0.695665927527, -1.11855671086, // 14
+  -3.29153423656, 1.17793324732, -0.323110365593, // 15
+  -2.47367998662, 1.54678442526, 0.338687018672, // 16
+  -1.27514497151, 2.36269566532, 1.43857366631, // 17
+  8.08563429421, 12.7441237241, 15.3018598761, // 18
+  8.58310012902, 13.3346655484, 15.7873013548, // 19
+  9.16046647706, 13.9142320683, 16.2952559773, // 20
+  7.8208782359, 12.476710034, 14.8327754459, // 21
+};
+
 pylith::faults::CohesiveKinDataHex8::CohesiveKinDataHex8(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
@@ -1413,12 +1480,15 @@ pylith::faults::CohesiveKinDataHex8::CohesiveKinDataHex8(void)
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
   matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
+  fieldIncr = const_cast<double*>(_fieldIncr);
+  jacobianLumped = const_cast<double*>(_jacobianLumped);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  constraintVertices = const_cast<int*>(_constraintVertices);
-  residual = const_cast<double*>(_residual);
   residualIncr = const_cast<double*>(_residualIncr);
+  residual = const_cast<double*>(_residual);
   jacobian = const_cast<double*>(_jacobian);
+  fieldIncrAdjusted = const_cast<double*>(_fieldIncrAdjusted);
+  constraintVertices = const_cast<int*>(_constraintVertices);
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

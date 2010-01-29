@@ -921,6 +921,8 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  const double Cqx = orientationVertex[2];
 	  const double Cqy = orientationVertex[3];
 
+	  // OPTIMIZE THIS
+
 	  const double Spp = 
 	    Cpx*Cpx*(1.0/Ai[0] + 1.0/Aj[0]) +
 	    Cpy*Cpy*(1.0/Ai[1] + 1.0/Aj[1]);
@@ -948,21 +950,7 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  const double dlp = Sinvpp*Arupslip + Sinvpq*Aruqslip;
 	  const double dlq = Sinvpq*Arupslip + Sinvqq*Aruqslip;
 
-	  std::cout << "slip: " << slipVertex[0]
-		    << ", ri: " << ri[0]
-		    << ", rj: " << rj[0]
-		    << ", ui: " << ui[0]
-		    << ", uj: " << uj[0]
-		    << ", Arup: " << Arup
-		    << ", Aruq: " << Aruq
-		    << ", Arupslip: " << Arupslip
-		    << ", Aruqslip: " << Aruqslip
-		    << ", Sinvpp: " << Sinvpp
-		    << ", Sinvqq: " << Sinvqq
-		    << ", dlp: " << dlp
-		    << ", dlq: " << dlq
-		    << ", wt: " << wt
-		    << std::endl;
+	  // OPTIMIZE THIS
 
 	  // Update displacements at node I
 	  solutionCell[indexI*spaceDim+0] = 

@@ -105,8 +105,37 @@ const double pylith::faults::CohesiveKinDataQuad4::_fieldT[] = {
   8.0, 9.0, // 11
 };
 
+const double pylith::faults::CohesiveKinDataQuad4::_fieldIncr[] = {
+  3.1, 4.1,
+  3.2, 4.2,
+  3.3, 4.3, // 4
+  3.4, 4.4, // 5
+  3.5, 4.5,
+  3.6, 4.6,
+  3.7, 4.7, // 8
+  3.9, 4.9, // 9
+  3.8, 4.8, // 10
+  3.0, 4.0, // 11
+};
+
+const double pylith::faults::CohesiveKinDataQuad4::_jacobianLumped[] = {
+  1.1, 1.1,
+  1.2, 1.2,
+  1.3, 1.3, // 4
+  1.4, 1.4, // 5
+  1.5, 1.5,
+  1.6, 1.6,
+  1.7, 1.7, // 8
+  1.9, 1.9, // 9
+  1.8, 1.8, // 10
+  1.0, 1.0, // 11
+};
+
 
 const int pylith::faults::CohesiveKinDataQuad4::_numConstraintVert = 2;
+const int pylith::faults::CohesiveKinDataQuad4::_constraintVertices[] = {
+  10, 11
+};
 
 const double pylith::faults::CohesiveKinDataQuad4::_orientation[] = {
   0.0,  1.0,  +1.0, 0.0,
@@ -115,10 +144,6 @@ const double pylith::faults::CohesiveKinDataQuad4::_orientation[] = {
 
 const double pylith::faults::CohesiveKinDataQuad4::_area[] = {
   1.0, 1.0,
-};
-
-const int pylith::faults::CohesiveKinDataQuad4::_constraintVertices[] = {
-  10, 11
 };
 
 
@@ -351,6 +376,19 @@ const double pylith::faults::CohesiveKinDataQuad4::_jacobian[] = {
   0.0, 0.0,
 };
 
+const double pylith::faults::CohesiveKinDataQuad4::_fieldIncrAdjusted[] = {
+  3.1, 4.1,
+  3.2, 4.2,
+  -3.92795746626, -1.23651523612, // 4
+  -2.69324360432, 0.0649209102031, // 5
+  3.5, 4.5,
+  3.6, 4.6,
+  9.22726159185, 8.9338057688, // 8
+  8.38975844529, 8.09426880301, // 9
+  10.997469807, 14.1963447061, // 10
+  9.06911072572, 12.530541046, // 11
+};
+
 pylith::faults::CohesiveKinDataQuad4::CohesiveKinDataQuad4(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
@@ -370,12 +408,15 @@ pylith::faults::CohesiveKinDataQuad4::CohesiveKinDataQuad4(void)
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
   matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
+  fieldIncr = const_cast<double*>(_fieldIncr);
+  jacobianLumped = const_cast<double*>(_jacobianLumped);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  constraintVertices = const_cast<int*>(_constraintVertices);
-  residual = const_cast<double*>(_residual);
   residualIncr = const_cast<double*>(_residualIncr);
+  residual = const_cast<double*>(_residual);
   jacobian = const_cast<double*>(_jacobian);
+  fieldIncrAdjusted = const_cast<double*>(_fieldIncrAdjusted);
+  constraintVertices = const_cast<int*>(_constraintVertices);
   numConstraintVert = _numConstraintVert;  
 } // constructor
 
