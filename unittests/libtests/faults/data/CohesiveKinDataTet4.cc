@@ -94,7 +94,38 @@ const double pylith::faults::CohesiveKinDataTet4::_fieldT[] = {
   7.1, 8.1, 9.1, // 12
 };
 
+const double pylith::faults::CohesiveKinDataTet4::_fieldIncr[] = {
+  3.1, 4.1, 5.1,
+  3.2, 4.2, 5.2, // 3
+  3.3, 4.3, 5.3, // 4
+  3.4, 4.4, 5.4, // 5
+  3.5, 4.5, 5.5,
+  3.6, 4.6, 5.6, // 7
+  3.8, 4.8, 5.8, // 8
+  3.0, 4.0, 5.0, // 9
+  3.7, 4.7, 5.7, // 10
+  3.9, 4.9, 5.9, // 11
+  3.1, 4.1, 5.1, // 12
+};
+
+const double pylith::faults::CohesiveKinDataTet4::_jacobianLumped[] = {
+  1.1, 1.1, 1.1,
+  1.2, 1.2, 1.2, // 3
+  1.3, 1.3, 1.3, // 4
+  1.4, 1.4, 1.4, // 5
+  1.5, 1.5, 1.5,
+  1.6, 1.6, 1.6, // 7
+  1.8, 1.8, 1.8, // 8
+  1.0, 1.0, 1.0, // 9
+  1.7, 1.7, 1.7, // 10
+  1.9, 1.9, 1.9, // 11
+  1.1, 1.1, 1.1, // 12
+};
+
 const int pylith::faults::CohesiveKinDataTet4::_numConstraintVert = 3;
+const int pylith::faults::CohesiveKinDataTet4::_constraintVertices[] = {
+  10, 11, 12
+};
 
 const double pylith::faults::CohesiveKinDataTet4::_orientation[] = {
   0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
@@ -106,10 +137,6 @@ const double pylith::faults::CohesiveKinDataTet4::_area[] = {
   1.0/3.0, 
   1.0/3.0, 
   1.0/3.0,
-};
-
-const int pylith::faults::CohesiveKinDataTet4::_constraintVertices[] = {
-  10, 11, 12
 };
 
 const double pylith::faults::CohesiveKinDataTet4::_residual[] = {
@@ -506,6 +533,20 @@ const double pylith::faults::CohesiveKinDataTet4::_jacobian[] = {
   0.0, 0.0, 0.0,
 };
 
+const double pylith::faults::CohesiveKinDataTet4::_fieldIncrAdjusted[] = {
+  3.1, 4.1, 5.1,
+  -4.6094015101, -0.944806160821, -2.13895133408, // 3
+  -3.94295740571, -0.501344947885, -1.58424978164, // 4
+  -3.19081175355, -0.205970962145, -0.779945691723, // 5
+  3.5, 4.5, 5.5,
+  9.45705113257, 8.45860462062, 11.1042135006, // 7
+  9.03102479301, 8.26763801792, 10.7719581756, // 8
+  12.227136455, 10.448359347, 13.6519239684, // 9
+  9.87376739299, 13.5067416009, 15.0712818121, // 10
+  10.1417484323, 13.8495247161, 15.3158446274, // 11
+  9.548359347, 12.7519239684, 14.327136455, // 12
+};
+
 pylith::faults::CohesiveKinDataTet4::CohesiveKinDataTet4(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
@@ -525,12 +566,15 @@ pylith::faults::CohesiveKinDataTet4::CohesiveKinDataTet4(void)
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
   matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
+  fieldIncr = const_cast<double*>(_fieldIncr);
+  jacobianLumped = const_cast<double*>(_jacobianLumped);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  constraintVertices = const_cast<int*>(_constraintVertices);
-  residual = const_cast<double*>(_residual);
   residualIncr = const_cast<double*>(_residualIncr);
+  residual = const_cast<double*>(_residual);
   jacobian = const_cast<double*>(_jacobian);
+  fieldIncrAdjusted = const_cast<double*>(_fieldIncrAdjusted);
+  constraintVertices = const_cast<int*>(_constraintVertices);
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

@@ -60,21 +60,18 @@ FaultCohesiveKin
   adjustSolnLumped()
     S (sensitivity matrix) - assume diagonal (check with assert)
 
-Unit tests
-
-  FaultCohesiveKin
-    adjustSolnLumped
-
-  FaultCohesiveDynL
-    integrateJacobian (lumped)
-    adjustSolnLumped
-
 FaultCohesiveDynL (C++)
   integrateJacobian (lumped)
   adjustSolnLumped()
     compute Lagrange multipliers (zero increment of slip)
     calls constrainSolnSpace()
     adjust displacements
+
+Unit tests
+
+  FaultCohesiveDynL
+    integrateJacobian (lumped)
+    adjustSolnLumped
 
 ----------------------------------------------------------------------
 TODO WELL BEFORE WORKSHOP 2010
