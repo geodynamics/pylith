@@ -248,10 +248,10 @@ pylith::problems::Formulation::reformJacobianLumped(void)
   // Add in contributions that require assembly.
   int numIntegrators = _meshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i)
-    _meshIntegrators[i]->integrateJacobian(*_jacobianLumped, _t, _fields);
+    _meshIntegrators[i]->integrateJacobian(_jacobianLumped, _t, _fields);
   numIntegrators = _submeshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i)
-    _submeshIntegrators[i]->integrateJacobian(*_jacobianLumped, _t, _fields);
+    _submeshIntegrators[i]->integrateJacobian(_jacobianLumped, _t, _fields);
   
   // Assemble jacbian.
   _jacobianLumped->complete();
@@ -259,11 +259,11 @@ pylith::problems::Formulation::reformJacobianLumped(void)
   // Add in contributions that do not require assembly.
   numIntegrators = _meshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i)
-    _meshIntegrators[i]->integrateJacobianAssembled(*_jacobianLumped, 
+    _meshIntegrators[i]->integrateJacobianAssembled(_jacobianLumped, 
 						    _t, _fields);
   numIntegrators = _submeshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i)
-    _submeshIntegrators[i]->integrateJacobianAssembled(*_jacobianLumped,
+    _submeshIntegrators[i]->integrateJacobianAssembled(_jacobianLumped,
 						       _t, _fields);
 
 } // reformJacobian

@@ -104,7 +104,7 @@ template<typename quadrature_type>
 inline
 void
 pylith::feassemble::Integrator<quadrature_type>::integrateJacobian(
-				     const topology::Field<topology::Mesh>& jacobian,
+				     topology::Field<topology::Mesh>* jacobian,
 				     const double t,
 				     topology::SolutionFields* const fields) {
   _needNewJacobian = false;
@@ -117,7 +117,7 @@ template<typename quadrature_type>
 inline
 void
 pylith::feassemble::Integrator<quadrature_type>::integrateJacobianAssembled(
-			      const topology::Field<topology::Mesh>& jacobian,
+			      topology::Field<topology::Mesh>* jacobian,
 			      const double t,
 			      topology::SolutionFields* const fields) {
 } // integrateJacobianAssembled

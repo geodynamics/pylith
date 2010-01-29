@@ -186,7 +186,7 @@ public :
    * @param fields Solution fields
    */
   virtual
-  void integrateJacobian(const topology::Field<topology::Mesh>& jacobian,
+  void integrateJacobian(topology::Field<topology::Mesh>* jacobian,
 			 const double t,
 			 topology::SolutionFields* const fields);
 
@@ -199,7 +199,7 @@ public :
    * @param fields Solution fields
    */
   virtual
-  void integrateJacobianAssembled(const topology::Field<topology::Mesh>&  jacobian,
+  void integrateJacobianAssembled(topology::Field<topology::Mesh>* jacobian,
 				  const double t,
 				  topology::SolutionFields* const fields);
 

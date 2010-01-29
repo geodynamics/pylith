@@ -116,10 +116,10 @@ class ExplicitLumped(Formulation):
     logger.stagePop()
 
     self._info.log("Creating lumped Jacobian matrix.")
-    from pylith.topology.topology.MeshField import MeshField
+    from pylith.topology.topology import MeshField
     jacobian = MeshField(self.mesh)
     jacobian.label("jacobian")
-    solution.vectorFieldType(solution.VECTOR)
+    jacobian.vectorFieldType(jacobian.VECTOR)
     jacobian.newSection(jacobian.VERTICES_FIELD, dimension)
     jacobian.allocate()
     self.jacobian = jacobian
@@ -223,7 +223,7 @@ class ExplicitLumped(Formulation):
     self._info.log("Integrating Jacobian operator.")
     self._eventLogger.stagePush("Reform Jacobian")
 
-    self.updateSettings(self.jacobian, fields, t, dt)
+    self.updateSettings(self.jacobian, self.fields, t, dt)
     self.reformJacobianLumped()
 
     self._eventLogger.stagePop()
@@ -232,6 +232,15 @@ class ExplicitLumped(Formulation):
       self.jacobian.view("Lumped Jacobian")
 
     self._debug.log(resourceUsageString())
+    return
+
+
+  def _cleanup(self):
+    """
+    Deallocate PETSc and local data structures.
+    """
+    if not self.fields is None:
+      self.fields.cleanup()
     return
 
 

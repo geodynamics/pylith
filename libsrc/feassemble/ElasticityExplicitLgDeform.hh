@@ -121,7 +121,7 @@ public :
    * @param t Current time
    * @param fields Solution fields
    */
-  void integrateJacobian(const topology::Field<topology::Mesh>& jacobian,
+  void integrateJacobian(topology::Field<topology::Mesh>* jacobian,
 			 const double t,
 			 topology::SolutionFields* const fields);
 

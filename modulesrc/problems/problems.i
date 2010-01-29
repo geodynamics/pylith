@@ -24,6 +24,7 @@
 #include "pylith/problems/Solver.hh"
 #include "pylith/problems/SolverLinear.hh"
 #include "pylith/problems/SolverNonlinear.hh"
+#include "pylith/problems/SolverLumped.hh"
 
 %}
 
@@ -44,6 +45,7 @@
 %include "Solver.i"
 %include "SolverLinear.i"
 %include "SolverNonlinear.i"
+%include "SolverLumped.i"
 
 
 // End of file

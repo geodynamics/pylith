@@ -103,6 +103,12 @@ pylith::problems::SolverLumped::solve(
 				   jacobianVertex.size());
     residualSection->restrictPoint(*v_iter, &residualVertex[0],
 				   residualVertex.size());
+
+#if !defined(NDEBUG)
+    for (int i=0; i < spaceDim; ++i)
+      assert(jacobianVertex[i] != 0.0);
+#endif
+
     solutionVertex = residualVertex / jacobianVertex;
     
     assert(solutionSection->getFiberDimension(*v_iter) == spaceDim);
@@ -112,7 +118,7 @@ pylith::problems::SolverLumped::solve(
   // Adjust solution to match constraints
   _formulation->adjustSolnLumped();
 
-  PetscLogFlops(vertices->size());
+  PetscLogFlops(vertices->size() * spaceDim);
 } // solve
 
 

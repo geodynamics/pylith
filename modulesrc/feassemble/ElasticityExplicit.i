@@ -67,6 +67,18 @@ namespace pylith {
 			     const double t,
 			     pylith::topology::SolutionFields* const fields);
 
+      /** Integrate contributions to Jacobian matrix (A) associated
+       * with operator that require assembly across cells, vertices,
+       * or processors.
+       *
+       * @param jacobian Diagonal Jacobian matrix as a field.
+       * @param t Current time
+       * @param fields Solution fields
+       */
+      void integrateJacobian(pylith::topology::Field<pylith::topology::Mesh>* jacobian,
+			     const double t,
+			     pylith::topology::SolutionFields* const fields);
+
     }; // ElasticityExplicit
 
   } // feassemble
