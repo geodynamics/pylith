@@ -10,11 +10,11 @@ if test == "line2":
 
     Si = (Ai * Aj) / (Ai + Aj)
     Aru = ri/Ai - rj/Aj + ui - uj
-    Aruslip = C*Aru - dk
+    Aruslip = dk - C*Aru
     dlp = Si * Aruslip
 
-    ddui = -C / Ai * dlp
-    dduj = +C / Aj * dlp
+    ddui = +C / Ai * dlp
+    dduj = -C / Aj * dlp
 
     #print "Aru",Aru
     #print "Aruslip",Aruslip
@@ -116,17 +116,17 @@ elif test == "tri3" or test == "quad4":
 
     Arup = Cpx*Arux + Cpy*Aruy
     Aruq = Cqx*Arux + Cqy*Aruy
-    Arupslip = Arup - dkp
-    Aruqslip = Aruq - dkq
+    Arupslip = dkp - Arup
+    Aruqslip = dkq - Aruq
 
     dlp = Sppi * Arupslip
     dlq = Sqqi * Aruqslip
 
-    dduix = -1.0/Aix * (Cpx*dlp + Cqx*dlq)
-    dduiy = -1.0/Aiy * (Cpy*dlp + Cqy*dlq)
+    dduix = +1.0/Aix * (Cpx*dlp + Cqx*dlq)
+    dduiy = +1.0/Aiy * (Cpy*dlp + Cqy*dlq)
 
-    ddujx = +1.0/Ajx * (Cpx*dlp + Cqx*dlq)
-    ddujy = +1.0/Ajy * (Cpy*dlp + Cqy*dlq)
+    ddujx = -1.0/Ajx * (Cpx*dlp + Cqx*dlq)
+    ddujy = -1.0/Ajy * (Cpy*dlp + Cqy*dlq)
 
     print "Sppi",Sppi
     print "Sqqi",Sqqi
@@ -314,21 +314,21 @@ elif test == "tet4" or test == "hex8":
     Arup = Cpx*Arux + Cpy*Aruy + Cpz*Aruz
     Aruq = Cqx*Arux + Cqy*Aruy + Cqz*Aruz
     Arur = Crx*Arux + Cry*Aruy + Crz*Aruz
-    Arupslip = Arup - dkp
-    Aruqslip = Aruq - dkq
-    Arurslip = Arur - dkr
+    Arupslip = dkp - Arup
+    Aruqslip = dkq - Aruq
+    Arurslip = dkr - Arur
 
     dlp = Sppi * Arupslip
     dlq = Sqqi * Aruqslip
     dlr = Srri * Arurslip
 
-    dduix = -1.0/Aix * (Cpx*dlp + Cqx*dlq + Crx*dlr)
-    dduiy = -1.0/Aiy * (Cpy*dlp + Cqy*dlq + Cry*dlr)
-    dduiz = -1.0/Aiy * (Cpz*dlp + Cqz*dlq + Crz*dlr)
+    dduix = +1.0/Aix * (Cpx*dlp + Cqx*dlq + Crx*dlr)
+    dduiy = +1.0/Aiy * (Cpy*dlp + Cqy*dlq + Cry*dlr)
+    dduiz = +1.0/Aiy * (Cpz*dlp + Cqz*dlq + Crz*dlr)
 
-    ddujx = +1.0/Ajx * (Cpx*dlp + Cqx*dlq + Crx*dlr)
-    ddujy = +1.0/Ajy * (Cpy*dlp + Cqy*dlq + Cry*dlr)
-    ddujz = +1.0/Ajz * (Cpz*dlp + Cqz*dlq + Crz*dlr)
+    ddujx = -1.0/Ajx * (Cpx*dlp + Cqx*dlq + Crx*dlr)
+    ddujy = -1.0/Ajy * (Cpy*dlp + Cqy*dlq + Cry*dlr)
+    ddujz = -1.0/Ajz * (Cpz*dlp + Cqz*dlq + Crz*dlr)
 
     print "Sppi",Sppi
     print "Sqqi",Sqqi

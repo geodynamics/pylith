@@ -138,7 +138,7 @@ const double pylith::faults::CohesiveKinDataLine2::_fieldIncrAdjusted[] = {
   -1.11580527225, // 3
   1.3,
   3.52282149957, // 5
-  6.59477159896, // 6
+  -3.59477159896, // 6
 };
 
 pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)
