@@ -53,7 +53,7 @@ class GenerateDB(object):
     cs = CSCart()
     cs.inventory.spaceDim = 2
     cs._configure()
-    data = {'locs': xy,
+    data = {'points': xy,
             'coordsys': cs,
             'data_dim': 2,
             'values': [{'name': "displacement-x",
