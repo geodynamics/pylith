@@ -306,7 +306,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobianLumped(void)
   CPPUNIT_ASSERT(!solutionSection.isNull());
 
   const double t = 1.0;
-  bc.integrateJacobian(jacobian, t, &fields);
+  bc.integrateJacobian(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, bc.needNewJacobian());
   jacobian.complete();
 

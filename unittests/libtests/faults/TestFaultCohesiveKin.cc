@@ -592,7 +592,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembledLumped(void)
   jacobian.allocate();
 
   const double t = 2.134;
-  fault.integrateJacobianAssembled(jacobian, t, &fields);
+  fault.integrateJacobianAssembled(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
   jacobian.complete();
 

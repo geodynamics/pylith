@@ -274,7 +274,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobianLumped(void)
   jacobian.allocate();
 
   const double t = 1.0;
-  integrator.integrateJacobian(jacobian, t, &fields);
+  integrator.integrateJacobian(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
   jacobian.complete();
 
