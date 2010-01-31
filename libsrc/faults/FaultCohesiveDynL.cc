@@ -149,6 +149,13 @@ pylith::faults::FaultCohesiveDynL::initialize(const topology::Mesh& mesh,
   jacobianDiag.allocate();
   jacobianDiag.vectorFieldType(topology::FieldBase::OTHER);
 
+  // Create field for slip rate associated with Lagrange vertex k
+  _fields->add("slip rate", "slip_rate");
+  topology::Field<topology::SubMesh>& slipRate = 
+    _fields->get("slip rate");
+  slipRate.cloneSection(slip);
+  slipRate.vectorFieldType(topology::FieldBase::OTHER);
+
   //logger.stagePop();
 } // initialize
 
@@ -407,8 +414,7 @@ pylith::faults::FaultCohesiveDynL::integrateResidual(
     sieveMesh->updateClosure(*c_iter, residualVisitor);
   } // for
 
-  // FIX THIS
-  PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*7);
+  PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*11);
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -656,14 +662,11 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
   const ALE::Obj<RealSection>& slipSection =  _fields->get("slip").section();
   assert(!slipSection.isNull());
 
-  // :TODO: Get slip rate from velocity(t)
-  //_updateSlipRate(*fields);
+  //_updateSlipRate(*fields); // waiting for velocity field to be defined
   double_array slipRateVertex(spaceDim);
-#if 0
   const ALE::Obj<RealSection>& slipRateSection =
-    _fields->get("slip_rate").section();
+    _fields->get("slip rate").section();
   assert(!slipRateSection.isNull());
-#endif
 
   const ALE::Obj<RealSection>& areaSection =  _fields->get("area").section();
   assert(!areaSection.isNull());
@@ -722,11 +725,9 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
       slipSection->restrictPoint(vertexFault, 
 				 &slipVertex[0], slipVertex.size());
 
-#if 0
       // Get slip rate
       slipRateSection->restrictPoint(vertexFault, 
 				     &slipRateVertex[0], slipRateVertex.size());
-#endif
 
       // Get total fault area asssociated with vertex (assembled over all cells)
       const double* areaVertex = areaSection->restrictPoint(vertexFault);
@@ -1800,6 +1801,111 @@ pylith::faults::FaultCohesiveDynL::_updateJacobianDiagonal(
     faultSieveMesh->updateClosure(c_fault, jacobianDiagFaultVisitor);
   } // for
 } // _updateJacobianDiagonal
+
+// ----------------------------------------------------------------------
+// Update slip rate associated with Lagrange vertex k corresponding
+// to diffential velocity between conventional vertices i and j.
+void
+pylith::faults::FaultCohesiveDynL::_updateSlipRate(const topology::SolutionFields& fields)
+{ // _updateSlipRate
+  assert(0 != _fields);
+
+  // Get cohesive cells
+  const ALE::Obj<SieveMesh>& sieveMesh = fields.mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cellsCohesive = 
+    sieveMesh->getLabelStratum("material-id", id());
+  assert(!cellsCohesive.isNull());
+  const SieveMesh::label_sequence::iterator cellsCohesiveBegin =
+    cellsCohesive->begin();
+  const SieveMesh::label_sequence::iterator cellsCohesiveEnd =
+    cellsCohesive->end();
+  const int cellsCohesiveSize = cellsCohesive->size();
+
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+
+  const int spaceDim = _quadrature->spaceDim();
+  const int numConstraintVert = _quadrature->numBasis();
+  const int numCorners = 3*numConstraintVert; // cohesive cell
+  const int orientationSize = spaceDim*spaceDim;
+
+  // Get section information
+  double_array velocityCell(numCorners*spaceDim);
+  const ALE::Obj<RealSection>& velocitySection = 
+    fields.get("velocity(t)").section();
+  assert(!velocitySection.isNull());  
+  topology::Mesh::RestrictVisitor velocityVisitor(*velocitySection,
+						  velocityCell.size(),
+						  &velocityCell[0]);
+
+  double_array slipRateCell(numConstraintVert*spaceDim);
+  const ALE::Obj<RealSection>& slipRateSection = 
+    _fields->get("slip rate").section();
+  topology::Mesh::UpdateAllVisitor slipRateVisitor(*slipRateSection,
+						   &slipRateCell[0]);
+
+  // Get section information
+  double_array orientationCell(numConstraintVert*orientationSize);
+  const ALE::Obj<RealSection>& orientationSection = 
+    _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
+  topology::Mesh::RestrictVisitor orientationVisitor(*orientationSection,
+						     orientationCell.size(),
+						     &orientationCell[0]);
+
+  for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+       c_iter != cellsCohesiveEnd;
+       ++c_iter) {
+    const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
+    slipRateCell = 0.0;
+
+    velocityVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, velocityVisitor);
+
+    // Get orientations at fault cell's vertices.
+    orientationVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, orientationVisitor);
+
+    for (int iConstraint=0; 
+	 iConstraint < numConstraintVert;
+	 ++iConstraint) {
+      // Blocks in cell matrix associated with normal cohesive
+      // vertices i and j and constraint vertex k
+      const int indexI = iConstraint;
+      const int indexJ = iConstraint +   numConstraintVert;
+      const int indexK = iConstraint + 2*numConstraintVert;
+      
+      // Get orientation at constraint vertex
+      const double* orientationVertex = 
+	&orientationCell[iConstraint*orientationSize];
+      assert(0 != orientationVertex);
+      
+      // Velocity for vertex i.
+      for (int iDim=0; iDim < spaceDim; ++iDim) {
+	for (int kDim=0; kDim < spaceDim; ++kDim)
+	  slipRateCell[iConstraint*spaceDim+iDim] -=
+	    velocityCell[indexI*spaceDim+kDim] * 
+	    -orientationVertex[kDim*spaceDim+iDim];
+      } // for
+
+      // Velocity for vertex j.
+      for (int iDim=0; iDim < spaceDim; ++iDim) {
+	for (int kDim=0; kDim < spaceDim; ++kDim)
+	  slipRateCell[iConstraint*spaceDim+iDim] -=
+	    velocityCell[indexJ*spaceDim+kDim] * 
+	    +orientationVertex[kDim*spaceDim+iDim];
+      } // for
+
+    } // for
+
+    // Insert cell contribution into 
+    slipRateVisitor.clear();
+    faultSieveMesh->updateClosure(c_fault, slipRateVisitor);
+  } // for
+  
+  PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*3);
+} // _updateSlipRate
 
 // ----------------------------------------------------------------------
 // Allocate buffer for vector field.

@@ -260,6 +260,13 @@ private :
    */
   void _updateJacobianDiagonal(const topology::SolutionFields& fields);
 
+  /** Update slip rate associated with Lagrange vertex k corresponding
+   * to diffential velocity between conventional vertices i and j.
+   *
+   * @param fields Solution fields.
+   */
+  void _updateSlipRate(const topology::SolutionFields& fields);
+
   /** Compute change in tractions on fault surface using solution.
    *
    * @param tractions Field for tractions.
