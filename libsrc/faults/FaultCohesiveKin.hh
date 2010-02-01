@@ -246,6 +246,9 @@ public :
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
+  /// Initialize logger.
+  void _initializeLogger(void);
+  
   /** Calculate orientation at fault vertices.
    *
    * @param upDir Direction perpendicular to along-strike direction that is 

@@ -126,6 +126,9 @@ public :
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
+  /// Initialize logger.
+  void _initializeLogger(void);
+
   /** Allocate buffer for tensor field at quadrature points.
    *
    * @param mesh Finite-element mesh.

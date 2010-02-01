@@ -124,6 +124,12 @@ public :
    */
   void verifyConfiguration(const topology::Mesh& mesh) const;
 
+  // PRIVATE METHODS ////////////////////////////////////////////////////
+private :
+
+  /// Initialize logger.
+  void _initializeLogger(void);
+
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
