@@ -533,6 +533,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
   assert(0 != jacobian);
   assert(0 != fields);
   assert(0 != _fields);
+  assert(0 != _logger);
 
   const int setupEvent = _logger->eventId("FkIJ setup");
   const int geometryEvent = _logger->eventId("FkIJ geometry");
@@ -699,6 +700,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(
   assert(0 != jacobian);
   assert(0 != fields);
   assert(0 != _fields);
+  assert(0 != _logger);
 
   const int setupEvent = _logger->eventId("FkIJ setup");
   const int geometryEvent = _logger->eventId("FkIJ geometry");
