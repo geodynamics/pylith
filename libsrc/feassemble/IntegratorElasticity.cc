@@ -104,6 +104,8 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
   assert(0 != _quadrature);
   assert(0 != _material);
 
+  _initializeLogger();
+
   // Get cell information
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
@@ -124,26 +126,6 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
   _initCellVector();
   _initCellMatrix();
 
-  // Setup event logger.
-  delete _logger; _logger = new utils::EventLogger;
-  assert(0 != _logger);
-  _logger->className("ElasticityIntegrator");
-  _logger->initialize();
-  _logger->registerEvent("ElIR setup");
-  _logger->registerEvent("ElIR geometry");
-  _logger->registerEvent("ElIR compute");
-  _logger->registerEvent("ElIR restrict");
-  _logger->registerEvent("ElIR stateVars");
-  _logger->registerEvent("ElIR stress");
-  _logger->registerEvent("ElIR update");
- 
-  _logger->registerEvent("ElIJ setup");
-  _logger->registerEvent("ElIJ geometry");
-  _logger->registerEvent("ElIJ compute");
-  _logger->registerEvent("ElIJ restrict");
-  _logger->registerEvent("ElIJ stateVars");
-  _logger->registerEvent("ElIJ update");
-  
   // Set up gravity field database for querying
   if (0 != _gravityField) {
     const int spaceDim = _quadrature->spaceDim();
@@ -430,6 +412,31 @@ pylith::feassemble::IntegratorElasticity::outputFields(void) const
 { // outputFields
   return _outputFields;
 } // outputFields
+
+// ----------------------------------------------------------------------
+// Initialize logger.
+void
+pylith::feassemble::IntegratorElasticity::_initializeLogger(void)
+{ // initializeLogger
+  delete _logger; _logger = new utils::EventLogger;
+  assert(0 != _logger);
+  _logger->className("ElasticityIntegrator");
+  _logger->initialize();
+  _logger->registerEvent("ElIR setup");
+  _logger->registerEvent("ElIR geometry");
+  _logger->registerEvent("ElIR compute");
+  _logger->registerEvent("ElIR restrict");
+  _logger->registerEvent("ElIR stateVars");
+  _logger->registerEvent("ElIR stress");
+  _logger->registerEvent("ElIR update");
+ 
+  _logger->registerEvent("ElIJ setup");
+  _logger->registerEvent("ElIJ geometry");
+  _logger->registerEvent("ElIJ compute");
+  _logger->registerEvent("ElIJ restrict");
+  _logger->registerEvent("ElIJ stateVars");
+  _logger->registerEvent("ElIJ update");
+} // initializeLogger
 
 // ----------------------------------------------------------------------
 // Allocate buffer for tensor field at quadrature points.
