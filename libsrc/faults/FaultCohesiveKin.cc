@@ -903,8 +903,8 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  // Aru = A_i^{-1} r_i - A_j^{-1} r_j + u_i - u_j
 	  const double Aru = ri[0]/Ai[0] - rj[0]/Aj[0] + ui[0] - uj[0];
 
-	  // dl_k = D^{-1}( d_k - C_{ki} Aru)
-	  const double Aruslip = slipVertex[0] - Aru;
+	  // dl_k = D^{-1}( - C_{ki} Aru - d_k)
+	  const double Aruslip = -Aru - slipVertex[0] ;
 	  const double dlp = wt * Sinv * Aruslip;
 
 	  // Update displacements at node I
@@ -916,7 +916,7 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  // Update Lagrange multipliers
 	  solutionCell[indexK*spaceDim+0] = dlp;
 
-	  PetscLogFlops(16);
+	  PetscLogFlops(17);
 	  break;
 	} // case 1
 	case 2 : {
@@ -941,11 +941,11 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  const double Arux = ri[0]/Ai[0] - rj[0]/Aj[0] + ui[0] - uj[0];
 	  const double Aruy = ri[1]/Ai[1] - rj[1]/Aj[1] + ui[1] - uj[1];
 
-	  // dl_k = S^{-1}( d_k - C_{ki} Aru)
+	  // dl_k = S^{-1}(-C_{ki} Aru - d_k)
 	  const double Arup = Cpx*Arux + Cpy*Aruy;
 	  const double Aruq = Cqx*Arux + Cqy*Aruy;
-	  const double Arupslip = slipVertex[0] - Arup;
-	  const double Aruqslip = slipVertex[1] - Aruq;
+	  const double Arupslip = -Arup - slipVertex[0] ;
+	  const double Aruqslip = -Aruq - slipVertex[1];
 	  const double dlp = Sinv * Arupslip;
 	  const double dlq = Sinv * Aruqslip;
 
@@ -964,7 +964,7 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  solutionCell[indexK*spaceDim+0] = wt * dlp;
 	  solutionCell[indexK*spaceDim+1] = wt * dlq;
 
-	  PetscLogFlops(39);
+	  PetscLogFlops(41);
 	  break;
 	} // case 2
 	case 3 : {
@@ -997,13 +997,13 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  const double Aruy = ri[1]/Ai[1] - rj[1]/Aj[1] + ui[1] - uj[1];
 	  const double Aruz = ri[2]/Ai[2] - rj[2]/Aj[2] + ui[2] - uj[2];
 
-	  // dl_k = D^{-1}( d_k - C_{ki} Aru)
+	  // dl_k = D^{-1}( -C_{ki} Aru - d_k)
 	  const double Arup = Cpx*Arux + Cpy*Aruy + Cpz*Aruz;
 	  const double Aruq = Cqx*Arux + Cqy*Aruy + Cqz*Aruz;
 	  const double Arur = Crx*Arux + Cry*Aruy + Crz*Aruz;
-	  const double Arupslip = slipVertex[0] - Arup;
-	  const double Aruqslip = slipVertex[1] - Aruq;
-	  const double Arurslip = slipVertex[2] - Arur;
+	  const double Arupslip = -Arup - slipVertex[0];
+	  const double Aruqslip = -Aruq - slipVertex[1];
+	  const double Arurslip = -Arur - slipVertex[2];
 	  const double dlp = Sinv * Arupslip;
 	  const double dlq = Sinv * Aruqslip;
 	  const double dlr = Sinv * Arurslip;
@@ -1027,7 +1027,7 @@ pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* con
 	  solutionCell[indexK*spaceDim+1] = wt * dlq;
 	  solutionCell[indexK*spaceDim+2] = wt * dlr;
 
-	  PetscLogFlops(69);
+	  PetscLogFlops(72);
 	  break;
 	} // case 3
 	default :

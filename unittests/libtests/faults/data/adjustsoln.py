@@ -10,7 +10,7 @@ if test == "line2":
 
     Si = (Ai * Aj) / (Ai + Aj)
     Aru = ri/Ai - rj/Aj + ui - uj
-    Aruslip = dk - C*Aru
+    Aruslip = -C*Aru - dk 
     dlp = Si * Aruslip
 
     ddui = +C / Ai * dlp
@@ -116,8 +116,8 @@ elif test == "tri3" or test == "quad4":
 
     Arup = Cpx*Arux + Cpy*Aruy
     Aruq = Cqx*Arux + Cqy*Aruy
-    Arupslip = dkp - Arup
-    Aruqslip = dkq - Aruq
+    Arupslip = -Arup - dkp 
+    Aruqslip = -Aruq - dkq 
 
     dlp = Sppi * Arupslip
     dlq = Sqqi * Aruqslip
@@ -314,9 +314,9 @@ elif test == "tet4" or test == "hex8":
     Arup = Cpx*Arux + Cpy*Aruy + Cpz*Aruz
     Aruq = Cqx*Arux + Cqy*Aruy + Cqz*Aruz
     Arur = Crx*Arux + Cry*Aruy + Crz*Aruz
-    Arupslip = dkp - Arup
-    Aruqslip = dkq - Aruq
-    Arurslip = dkr - Arur
+    Arupslip = -Arup - dkp
+    Aruqslip = -Aruq - dkq
+    Arurslip = -Arur - dkr
 
     dlp = Sppi * Arupslip
     dlq = Sqqi * Aruqslip
