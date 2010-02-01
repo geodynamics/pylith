@@ -22,6 +22,8 @@
 // Include directives ---------------------------------------------------
 #include "FaultCohesive.hh" // ISA FaultCohesive
 
+#include "pylith/friction/frictionfwd.hh" // HOLDSA Friction model
+
 #include "pylith/topology/SubMesh.hh" // ISA Integrator<Quadrature<SubMesh> >
 #include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
@@ -220,6 +222,12 @@ public :
    */
   bool useLagrangeConstraints(void) const;
 
+  /** Get the friction (constitutive) model.
+   *
+   * @param model Fault constutive model.
+   */
+  void frictionModel(friction::FrictionModel* const model);
+
   /** Get fields associated with fault.
    *
    * @returns Fields associated with fault.
@@ -286,6 +294,9 @@ private :
 
   /// Database for initial tractions.
   spatialdata::spatialdb::SpatialDB* _dbInitialTract;
+
+  /// To identify constitutive model
+  friction::FrictionModel* _friction;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
