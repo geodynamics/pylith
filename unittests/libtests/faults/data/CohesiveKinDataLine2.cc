@@ -114,7 +114,7 @@ const double pylith::faults::CohesiveKinDataLine2::_residualIncr[] = {
    7.5,
    0.0,
   -7.5,
-  -0.2,
+  -0.2+1.89546413727,
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_residual[] = {
@@ -122,7 +122,7 @@ const double pylith::faults::CohesiveKinDataLine2::_residual[] = {
    7.5, // 3
    0.0,
    -7.5, // 5
-  -0.2,
+  -0.2+1.89546413727,
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_jacobian[] = {
