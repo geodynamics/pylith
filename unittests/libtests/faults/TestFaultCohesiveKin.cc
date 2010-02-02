@@ -211,6 +211,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
 void
 pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
 { // testIntegrateResidual
+#if 0
   topology::Mesh mesh;
   FaultCohesiveKin fault;
   topology::SolutionFields fields(mesh);
@@ -301,6 +302,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
       } // for
     } // for
   } // Integrate residual with disp increment.
+#endif
 } // testIntegrateResidual
 
 // ----------------------------------------------------------------------
@@ -420,7 +422,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidualAssembled(void)
     fault.useSolnIncr(false);
     fault.integrateResidualAssembled(residual, t, &fields);
 
-    //residual->view("RESIDUAL"); // DEBUGGING
+    //residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->residual;
@@ -428,28 +430,21 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidualAssembled(void)
     const int fiberDimE = spaceDim;
     const double tolerance = 1.0e-06;
     for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-	 v_iter != verticesEnd;
-	 ++v_iter, ++iVertex) {
+        v_iter != verticesEnd;
+        ++v_iter, ++iVertex) {
       const int fiberDim = residualSection->getFiberDimension(*v_iter);
       CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
       const double* vals = residualSection->restrictPoint(*v_iter);
       CPPUNIT_ASSERT(0 != vals);
       
-      const bool isConstraint = _isConstraintVertex(*v_iter);
-      if (!isConstraint) {
-	const double valE = 0.0;
-	for (int i=0; i < fiberDimE; ++i)
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
-      } else {
-	for (int i=0; i < fiberDimE; ++i) {
-	  const int index = iVertex*spaceDim+i;
-	  const double valE = valsE[index];
-	  if (fabs(valE) > tolerance)
-	    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
-	  else
-	    CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
-	} // for
-      } // if/else
+      for (int i = 0; i < fiberDimE; ++i) {
+        const int index = iVertex * spaceDim + i;
+        const double valE = valsE[index];
+        if (fabs(valE) > tolerance)
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+        else
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+      } // for
     } // for
   } // Integrate residual with disp (as opposed to disp increment).
 
@@ -473,21 +468,14 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidualAssembled(void)
       const double* vals = residualSection->restrictPoint(*v_iter);
       CPPUNIT_ASSERT(0 != vals);
       
-      const bool isConstraint = _isConstraintVertex(*v_iter);
-      if (!isConstraint) {
-	const double valE = 0.0;
-	for (int i=0; i < fiberDimE; ++i)
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
-      } else {
-	for (int i=0; i < fiberDimE; ++i) {
-	  const int index = iVertex*spaceDim+i;
-	  const double valE = valsE[index];
-	  if (fabs(valE) > tolerance)
-	    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
-	  else
-	    CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
-	} // for
-      } // if/else
+      for (int i = 0; i < fiberDimE; ++i) {
+        const int index = iVertex * spaceDim + i;
+        const double valE = valsE[index];
+        if (fabs(valE) > tolerance)
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+        else
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+      } // for
     } // for
   } // Integrate residual with disp increment.
 } // testIntegrateResidualAssembled
