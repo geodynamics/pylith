@@ -100,7 +100,8 @@ pylith::friction::FrictionModel::normalizer(const spatialdata::units::Nondimensi
 void
 pylith::friction::FrictionModel::initialize(
 			const topology::SubMesh& faultMesh,
-			feassemble::Quadrature<topology::SubMesh>* quadrature)
+			feassemble::Quadrature<topology::SubMesh>* quadrature,
+			const topology::Field<topology::SubMesh>& area)
 { // initialize
   assert(0 != _dbProperties);
   assert(0 != quadrature);
@@ -226,18 +227,26 @@ pylith::friction::FrictionModel::initialize(
   // Close properties database
   _dbProperties->close();
 
+  _properties->complete(); // Assemble contributions
+
   // Loop over vertices and divide by area to get weighted values and
   // nondimensionalize properties.
+  const ALE::Obj<RealSection>& areaSection = area.section();
+  assert(!areaSection.isNull());
+
   double_array propertiesVertex(_numPropsVertex);
+  double areaVertex = 0.0;
   for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
     propertiesSection->restrictPoint(*v_iter,
         &propertiesVertex[0], propertiesVertex.size());
     _nondimProperties(&propertiesVertex[0], _numPropsVertex);
+    areaSection->restrictPoint(*v_iter, &areaVertex, 1);
+    assert(areaVertex > 0.0);
+    propertiesVertex /= areaVertex;
     propertiesSection->updatePoint(*v_iter, &propertiesVertex[0]);
   } // for
-
 
   // Create field to hold state variables. We create the field even
   // if there is no initial state, because this we will use this field
@@ -326,6 +335,8 @@ pylith::friction::FrictionModel::initialize(
     // Close database
     _dbInitialState->close();
 
+    _stateVars->complete(); // Assemble contributions.
+
     // Loop over vertices and divide by area to get weighted values and
     // nondimensionalize properties.
     double_array stateVarsVertex(_numVarsVertex);
@@ -336,6 +347,9 @@ pylith::friction::FrictionModel::initialize(
       stateVarsSection->restrictPoint(*v_iter,
           &stateVarsVertex[0], stateVarsVertex.size());
       _nondimStateVars(&stateVarsVertex[0], _numVarsVertex);
+      areaSection->restrictPoint(*v_iter, &areaVertex, 1);
+      assert(areaVertex > 0.0);
+      stateVarsVertex /= areaVertex;
       stateVarsSection->updatePoint(*v_iter, &stateVarsVertex[0]);
     } // for
   } // if
