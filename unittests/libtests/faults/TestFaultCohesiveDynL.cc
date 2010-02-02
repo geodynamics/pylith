@@ -213,8 +213,6 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceStick(void)
   fault.timeStep(dt);
   fault.constrainSolnSpace(&fields, t, jacobian);
 
-  //residual.view("RESIDUAL"); // DEBUGGING
-
   { // Check solution values
     // No change to Lagrange multipliers for stick case.
     const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
@@ -229,6 +227,8 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceStick(void)
     const ALE::Obj<RealSection>& dispIncrSection =
       fields.get("dispIncr(t->t+dt)").section();
     CPPUNIT_ASSERT(!dispIncrSection.isNull());
+
+    //dispIncrSection->view("DISP INCREMENT"); // DEBUGGING
 
     // Get expected values
     const double* valsE = _data->fieldIncrStick; // No change in dispIncr
