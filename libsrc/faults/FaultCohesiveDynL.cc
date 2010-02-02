@@ -136,7 +136,7 @@ void pylith::faults::FaultCohesiveDynL::initialize(const topology::Mesh& mesh,
 
   // Setup fault constitutive model.
   assert(0 != _friction);
-  _friction->initialize(*_faultMesh, _quadrature);
+  _friction->initialize(*_faultMesh, _quadrature, _fields->get("area"));
 
   // Create field for diagonal entries of Jacobian at conventional
   // vertices i and j associated with Lagrange vertex k

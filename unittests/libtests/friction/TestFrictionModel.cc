@@ -682,23 +682,6 @@ pylith::friction::TestFrictionModel::_initialize(
   fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex,
       &firstFaultCell, flipFault);
 
-  const double upDir[] = { 0.0, 0.0, 1.0 };
-  const double normalDir[] = { 1.0, 0.0, 0.0 };
-  fault->initialize(*mesh, upDir, normalDir);
-
-  // Get cells associated with fault
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault->faultMesh().sieveMesh();
-  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells =
-    faultSieveMesh->heightStratum(0);
-  CPPUNIT_ASSERT(!cells.isNull());
-
-  // Compute geometry for cells
-  quadrature.initializeGeometry();
-#if defined(PRECOMPUTE_GEOMETRY)
-  quadrature.computeGeometry(fault->faultMesh(), cells);
-#endif
-
   spatialdata::spatialdb::SimpleDB db;
   spatialdata::spatialdb::SimpleIOAscii dbIO;
   dbIO.filename("data/friction_static.spatialdb");
@@ -708,8 +691,11 @@ pylith::friction::TestFrictionModel::_initialize(
   friction->dbProperties(&db);
   friction->label("my_friction");
   friction->normalizer(normalizer);
+  fault->frictionModel(friction);
   
-  friction->initialize(fault->faultMesh(), &quadrature);
+  const double upDir[] = { 0.0, 0.0, 1.0 };
+  const double normalDir[] = { 1.0, 0.0, 0.0 };
+  fault->initialize(*mesh, upDir, normalDir);
 } // _initialize
 
 

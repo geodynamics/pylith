@@ -108,12 +108,14 @@ public :
    * @pre Must call Quadrature::computeGeometry() before calling
    * initialize().
    *
-   * @param mesh Finite-element mesh.
+   * @param mesh Finite-element mesh of subdomain.
    * @param quadrature Quadrature for finite-element integration
+   * @param area Area at vertices of subdomain.
    */
   virtual
   void initialize(const topology::SubMesh& mesh,
-		  feassemble::Quadrature<topology::SubMesh>* quadrature);
+		  feassemble::Quadrature<topology::SubMesh>* quadrature,
+		  const topology::Field<topology::SubMesh>& area);
   
   /** Check whether friction model has a field as a property.
    *
