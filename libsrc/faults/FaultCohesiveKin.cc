@@ -94,7 +94,7 @@ void pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
   _faultMesh = new topology::SubMesh();
   CohesiveTopology::createFaultParallel(_faultMesh, &_cohesiveToFault, mesh, id(), useLagrangeConstraints());
 
-  //_initializeCohesiveInfo(mesh);
+  _initializeCohesiveInfo(mesh);
 
   delete _fields;
   _fields = new topology::Fields<topology::Field<topology::SubMesh> >(
@@ -1338,6 +1338,12 @@ void pylith::faults::FaultCohesiveKin::_initializeCohesiveInfo(const topology::M
         _cohesiveVertices[index].positive = v_positive;
         _cohesiveVertices[index].negative = v_negative;
         _cohesiveVertices[index].fault = v_fault;
+	std::cout << "cohesiveVertices[" << index << "]: "
+		  << "l: " << v_lagrange
+		  << ", p: " << v_positive
+		  << ", n: " << v_negative
+		  << ", f: " << v_fault
+		  << std::endl;
         indexMap[v_lagrange] = index; // add index to map
         ++index;
       } // if

@@ -150,7 +150,8 @@ pylith::faults::FaultCohesiveDynL::initialize(const topology::Mesh& mesh,
  _getInitialTractions();
 
  // Setup fault constitutive model.
- _initConstitutiveModel();
+  assert(0 != _friction);
+  _friction->initialize(*_faultMesh, _quadrature);
 
  // Create field for diagonal entries of Jacobian at conventional
  // vertices i and j associated with Lagrange vertex k
@@ -1736,13 +1737,6 @@ pylith::faults::FaultCohesiveDynL::_getInitialTractions(void)
    //traction.view("INITIAL TRACTIONS"); // DEBUGGING
  } // if
 } // _getInitialTractions
-
-// ----------------------------------------------------------------------
-void
-pylith::faults::FaultCohesiveDynL::_initConstitutiveModel(void)
-{ // _initConstitutiveModel
- // :TODO: ADD STUFF HERE
-} // _initConstitutiveModel
 
 // ----------------------------------------------------------------------
 // Update diagonal of Jacobian at conventional vertices i and j

@@ -257,10 +257,6 @@ private :
    */
   void _getInitialTractions(void);
 
-  /** Setup fault constitutive model.
-   */
-  void _initConstitutiveModel(void);
-
   /** Update diagonal of Jacobian at conventional vertices i and j
    *  associated with Lagrange vertex k.
    *
