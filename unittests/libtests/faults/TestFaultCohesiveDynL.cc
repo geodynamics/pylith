@@ -26,6 +26,7 @@
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/friction/StaticFriction.hh" // USES StaticFriction
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
@@ -50,7 +51,8 @@ pylith::faults::TestFaultCohesiveDynL::setUp(void)
   _quadrature = new feassemble::Quadrature<topology::SubMesh>();
   CPPUNIT_ASSERT(0 != _quadrature);
   _dbInitialTract = 0;
-
+  _friction = 0;
+  _dbFriction = 0;
   _flipFault = false;
 } // setUp
 
@@ -62,6 +64,8 @@ pylith::faults::TestFaultCohesiveDynL::tearDown(void)
   delete _data; _data = 0;
   delete _quadrature; _quadrature = 0;
   delete _dbInitialTract; _dbInitialTract = 0;
+  delete _friction; _friction = 0;
+  delete _dbFriction; _dbFriction = 0;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -678,6 +682,24 @@ pylith::faults::TestFaultCohesiveDynL::_initialize(
   delete _dbInitialTract; _dbInitialTract = db;
   fault->dbInitialTract(db);
 
+  // Setup friction
+  spatialdata::spatialdb::SimpleDB* dbFriction =
+      new spatialdata::spatialdb::SimpleDB("static friction");
+  CPPUNIT_ASSERT(0 != dbFriction);
+  spatialdata::spatialdb::SimpleIOAscii ioFriction;
+  if (2 == _data->spaceDim)
+    ioFriction.filename("data/static_friction_2d.spatialdb");
+  else if (3 == _data->spaceDim)
+    ioFriction.filename("data/static_friction_3d.spatialdb");
+  dbFriction->ioHandler(&ioFriction);
+  delete _dbFriction; _dbFriction = dbFriction;
+  friction::StaticFriction* friction = new pylith::friction::StaticFriction();
+  CPPUNIT_ASSERT(0 != friction);
+  friction->label("static friction");
+  friction->dbProperties(dbFriction);
+  _friction = friction;
+  fault->frictionModel(friction);
+
   int firstFaultVertex    = 0;
   int firstLagrangeVertex = mesh->sieveMesh()->getIntSection(_data->label)->size();
   int firstFaultCell      = mesh->sieveMesh()->getIntSection(_data->label)->size();
@@ -693,7 +715,7 @@ pylith::faults::TestFaultCohesiveDynL::_initialize(
   const double upDir[] = { 0.0, 0.0, 1.0 };
   const double normalDir[] = { 1.0, 0.0, 0.0 };
   
-  fault->initialize(*mesh, upDir, normalDir); 
+  fault->initialize(*mesh, upDir, normalDir);
   
   // Setup fields
   fields->add("disp(t)", "displacement");

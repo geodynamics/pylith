@@ -26,6 +26,7 @@
 #include "pylith/faults/faultsfwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
 #include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Quadrature
+#include "pylith/friction/frictionfwd.hh" // HOLDSA FrictionModel
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
 #include <vector> // HASA std::vector
 /// Namespace for pylith package
@@ -62,6 +63,8 @@ protected:
   CohesiveDynLData* _data; ///< Data for testing
   feassemble::Quadrature<topology::SubMesh>* _quadrature; ///< Fault quad.
   spatialdata::spatialdb::SpatialDB* _dbInitialTract; ///< Initial tractions.
+  friction::FrictionModel* _friction; ///< Friction model
+  spatialdata::spatialdb::SpatialDB* _dbFriction; ///< Friction parameters.
   bool _flipFault; ///< If true, flip fault orientation.
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
