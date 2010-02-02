@@ -139,17 +139,6 @@ public :
   void splitField(topology::Field<topology::Mesh>* field);
 
   /** Integrate contributions to residual term (r) for operator that
-   * require assembly across processors.
-   *
-   * @param residual Field containing values for residual
-   * @param t Current time
-   * @param fields Solution fields
-   */
-  void integrateResidual(const topology::Field<topology::Mesh>& residual,
-			 const double t,
-			 topology::SolutionFields* const fields);
-
-  /** Integrate contributions to residual term (r) for operator that
    * do not require assembly across cells, vertices, or processors.
    *
    * @param residual Field containing values for residual

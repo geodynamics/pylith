@@ -92,11 +92,11 @@ public :
   /// Test integrateResidual().
   void testIntegrateResidual(void);
 
-  /// Test integrateJacobian().
-  void testIntegrateJacobian(void);
-
   /// Test integrateResidualAssembled().
   void testIntegrateResidualAssembled(void);
+
+  /// Test integrateJacobian().
+  void testIntegrateJacobian(void);
 
   /// Test integrateJacobianAssembled().
   void testIntegrateJacobianAssembled(void);

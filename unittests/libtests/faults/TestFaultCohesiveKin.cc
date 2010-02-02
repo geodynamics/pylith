@@ -211,7 +211,6 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
 void
 pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
 { // testIntegrateResidual
-#if 0
   topology::Mesh mesh;
   FaultCohesiveKin fault;
   topology::SolutionFields fields(mesh);
@@ -249,7 +248,6 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     //residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
-    const double* valsE = _data->residual;
     iVertex = 0;
     const int fiberDimE = spaceDim;
     const double tolerance = 1.0e-06;
@@ -263,11 +261,8 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
       
       for (int i=0; i < fiberDimE; ++i) {
 	const int index = iVertex*spaceDim+i;
-	const double valE = valsE[index];
-	if (fabs(valE) > tolerance)
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
-	else
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+	const double valE = 0.0;
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
       } // for
     } // for
   } // Integrate residual with disp (as opposed to disp increment).
@@ -278,6 +273,97 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     fault.integrateResidual(residual, t, &fields);
 
     //residual.view("RESIDUAL"); // DEBUGGING
+
+    // Check values
+    iVertex = 0;
+    const int fiberDimE = spaceDim;
+    const double tolerance = 1.0e-06;
+    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+	 v_iter != verticesEnd;
+	 ++v_iter, ++iVertex) {
+      const int fiberDim = residualSection->getFiberDimension(*v_iter);
+      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
+      const double* vals = residualSection->restrictPoint(*v_iter);
+      CPPUNIT_ASSERT(0 != vals);
+      
+      for (int i=0; i < fiberDimE; ++i) {
+	const int index = iVertex*spaceDim+i;
+	const double valE = 0.0;
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+      } // for
+    } // for
+  } // Integrate residual with disp increment.
+} // testIntegrateResidual
+
+// ----------------------------------------------------------------------
+// Test integrateResidualAssembled().
+void
+pylith::faults::TestFaultCohesiveKin::testIntegrateResidualAssembled(void)
+{ // testIntegrateResidualAssembled
+  topology::Mesh mesh;
+  FaultCohesiveKin fault;
+  topology::SolutionFields fields(mesh);
+  _initialize(&mesh, &fault, &fields);
+
+  const int spaceDim = _data->spaceDim;
+  topology::Field<topology::Mesh>& residual = fields.get("residual");
+  const ALE::Obj<RealSection>& residualSection = residual.section();
+  CPPUNIT_ASSERT(!residualSection.isNull());
+
+  const ALE::Obj<RealSection>& dispSection = fields.get("disp(t)").section();
+  CPPUNIT_ASSERT(!dispSection.isNull());
+
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
+  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+  int iVertex = 0;
+  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+       v_iter != verticesEnd;
+       ++v_iter, ++iVertex)
+    dispSection->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
+  
+  const double t = 2.134;
+  const double dt = 0.01;
+  fault.timeStep(dt);
+  { // Integrate residual with disp (as opposed to disp increment).
+    fault.useSolnIncr(false);
+    fault.integrateResidualAssembled(residual, t, &fields);
+
+    residual.view("RESIDUAL"); // DEBUGGING
+
+    // Check values
+    const double* valsE = _data->residual;
+    iVertex = 0;
+    const int fiberDimE = spaceDim;
+    const double tolerance = 1.0e-06;
+    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+        v_iter != verticesEnd;
+        ++v_iter, ++iVertex) {
+      const int fiberDim = residualSection->getFiberDimension(*v_iter);
+      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
+      const double* vals = residualSection->restrictPoint(*v_iter);
+      CPPUNIT_ASSERT(0 != vals);
+      
+      for (int i = 0; i < fiberDimE; ++i) {
+        const int index = iVertex * spaceDim + i;
+        const double valE = valsE[index];
+        if (fabs(valE) > tolerance)
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+        else
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+      } // for
+    } // for
+  } // Integrate residual with disp (as opposed to disp increment).
+
+  residual.zero();
+  { // Integrate residual with disp increment.
+    fault.useSolnIncr(true);
+    fault.integrateResidualAssembled(residual, t, &fields);
+
+    //residual->view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->residualIncr;
@@ -292,18 +378,17 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
       const double* vals = residualSection->restrictPoint(*v_iter);
       CPPUNIT_ASSERT(0 != vals);
       
-      for (int i=0; i < fiberDimE; ++i) {
-	const int index = iVertex*spaceDim+i;
-	const double valE = valsE[index];
-	if (fabs(valE) > tolerance)
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
-	else
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+      for (int i = 0; i < fiberDimE; ++i) {
+        const int index = iVertex * spaceDim + i;
+        const double valE = valsE[index];
+        if (fabs(valE) > tolerance)
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+        else
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
       } // for
     } // for
   } // Integrate residual with disp increment.
-#endif
-} // testIntegrateResidual
+} // testIntegrateResidualAssembled
 
 // ----------------------------------------------------------------------
 // Test integrateJacobian().
@@ -384,101 +469,6 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   MatDestroy(jSparseAIJ);
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
 } // testIntegrateJacobian
-
-// ----------------------------------------------------------------------
-// Test integrateResidualAssembled().
-void
-pylith::faults::TestFaultCohesiveKin::testIntegrateResidualAssembled(void)
-{ // testIntegrateResidualAssembled
-  topology::Mesh mesh;
-  FaultCohesiveKin fault;
-  topology::SolutionFields fields(mesh);
-  _initialize(&mesh, &fault, &fields);
-
-  const int spaceDim = _data->spaceDim;
-  topology::Field<topology::Mesh>& residual = fields.get("residual");
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  CPPUNIT_ASSERT(!residualSection.isNull());
-
-  const ALE::Obj<RealSection>& dispSection = fields.get("disp(t)").section();
-  CPPUNIT_ASSERT(!dispSection.isNull());
-
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-  int iVertex = 0;
-  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter, ++iVertex)
-    dispSection->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
-  
-  const double t = 2.134;
-  const double dt = 0.01;
-  fault.timeStep(dt);
-  { // Integrate residual with disp (as opposed to disp increment).
-    fault.useSolnIncr(false);
-    fault.integrateResidualAssembled(residual, t, &fields);
-
-    //residual.view("RESIDUAL"); // DEBUGGING
-
-    // Check values
-    const double* valsE = _data->residual;
-    iVertex = 0;
-    const int fiberDimE = spaceDim;
-    const double tolerance = 1.0e-06;
-    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-        v_iter != verticesEnd;
-        ++v_iter, ++iVertex) {
-      const int fiberDim = residualSection->getFiberDimension(*v_iter);
-      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
-      const double* vals = residualSection->restrictPoint(*v_iter);
-      CPPUNIT_ASSERT(0 != vals);
-      
-      for (int i = 0; i < fiberDimE; ++i) {
-        const int index = iVertex * spaceDim + i;
-        const double valE = valsE[index];
-        if (fabs(valE) > tolerance)
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
-        else
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
-      } // for
-    } // for
-  } // Integrate residual with disp (as opposed to disp increment).
-
-  residual.zero();
-  { // Integrate residual with disp increment.
-    fault.useSolnIncr(true);
-    fault.integrateResidualAssembled(residual, t, &fields);
-
-    //residual->view("RESIDUAL"); // DEBUGGING
-
-    // Check values
-    const double* valsE = _data->residualIncr;
-    iVertex = 0;
-    const int fiberDimE = spaceDim;
-    const double tolerance = 1.0e-06;
-    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-	 v_iter != verticesEnd;
-	 ++v_iter, ++iVertex) {
-      const int fiberDim = residualSection->getFiberDimension(*v_iter);
-      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
-      const double* vals = residualSection->restrictPoint(*v_iter);
-      CPPUNIT_ASSERT(0 != vals);
-      
-      for (int i = 0; i < fiberDimE; ++i) {
-        const int index = iVertex * spaceDim + i;
-        const double valE = valsE[index];
-        if (fabs(valE) > tolerance)
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
-        else
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
-      } // for
-    } // for
-  } // Integrate residual with disp increment.
-} // testIntegrateResidualAssembled
 
 // ----------------------------------------------------------------------
 // Test integrateJacobianAssembled().
