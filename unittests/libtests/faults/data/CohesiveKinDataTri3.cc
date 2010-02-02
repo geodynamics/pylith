@@ -151,8 +151,8 @@ const double pylith::faults::CohesiveKinDataTri3::_residual[] = {
   0.0,  0.0,
  +9.6, +8.6, // 6
  +9.8, +8.8, // 7
-  0.3,  0.3, // 8
-  0.4,  0.4, // 9
+  0.3+1.89546413727,  0.3+0.08241148423, // 8
+  0.4+1.77538035254,  0.4+0.14794836271, // 9
 };
 
 const double pylith::faults::CohesiveKinDataTri3::_residualIncr[] = {
@@ -162,8 +162,8 @@ const double pylith::faults::CohesiveKinDataTri3::_residualIncr[] = {
   0.0,  0.0,
  +9.6, +8.6, // 6
  +9.8, +8.8, // 7
-  0.3,  0.3, // 8
-  0.4,  0.4, // 9
+  0.3+1.89546413727,  0.3+0.08241148423, // 8
+  0.4+1.77538035254,  0.4+0.14794836271, // 9
 };
 
 const double pylith::faults::CohesiveKinDataTri3::_jacobian[] = {

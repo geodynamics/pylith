@@ -156,8 +156,8 @@ const double pylith::faults::CohesiveKinDataQuad4::_residual[] = {
   0.0,  0.0,
  -9.8, -8.8, // 8
  -9.0, -8.0, // 9
- -0.4, -0.4, // 10
- -0.5, -0.5, // 11
+ -0.4+1.77538035254, -0.4+0.14794836271, // 10
+ -0.5+1.89546413727, -0.5+0.08241148423, // 11
 };
 
 const double pylith::faults::CohesiveKinDataQuad4::_residualIncr[] = {
@@ -169,8 +169,8 @@ const double pylith::faults::CohesiveKinDataQuad4::_residualIncr[] = {
   0.0,  0.0,
  -9.8, -8.8, // 8
  -9.0, -8.0, // 9
- -0.4, -0.4, // 10
- -0.5, -0.5, // 11
+ -0.4+1.77538035254, -0.4+0.14794836271, // 10
+ -0.5+1.89546413727, -0.5+0.08241148423, // 11
 };
 
 const double pylith::faults::CohesiveKinDataQuad4::_jacobian[] = {

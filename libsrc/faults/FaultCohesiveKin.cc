@@ -169,15 +169,6 @@ void pylith::faults::FaultCohesiveKin::splitField(topology::Field<
 } // splitFields
 
 // ----------------------------------------------------------------------
-// Integrate contribution of cohesive cells to residual term that
-// require assembly across processors.
-void pylith::faults::FaultCohesiveKin::integrateResidual(const topology::Field<
-                                                             topology::Mesh>& residual,
-                                                         const double t,
-                                                         topology::SolutionFields* const fields) { // integrateResidual
-} // integrateResidual
-
-// ----------------------------------------------------------------------
 // Integrate contribution of cohesive cells to residual term that do
 // not require assembly across cells, vertices, or processors.
 void pylith::faults::FaultCohesiveKin::integrateResidualAssembled(const topology::Field<
