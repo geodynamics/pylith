@@ -243,6 +243,34 @@ public :
   const topology::Fields<topology::Field<topology::SubMesh> >*
   fields(void) const;
 
+  // PROTECTED STRUCTS //////////////////////////////////////////////////
+protected :
+
+  /** Data structure to hold relations between vertices in cohesive cell
+   *  in mesh of domain and cell of fault mesh.
+   */
+  struct CohesiveInfo {
+    int lagrange; ///< Vertex associated with Lagrange multiplier.
+    int positive; ///< Vertex on positive side of the fault.
+    int negative; ///< Vertex on negative side of the fault.
+    int fault; ///< Vertex in fault mesh.
+  };
+
+  // PROTECTED METHODS //////////////////////////////////////////////////
+protected :
+
+  /** Initialize auxiliary cohesive cell information.
+   *
+   * @param mesh Finite-element mesh of the domain.
+   */
+  void _initializeCohesiveInfo(const topology::Mesh& mesh);
+
+  // PROTECTED MEMBERS //////////////////////////////////////////////////
+protected :
+
+  /// Array of cohesive vertex information.
+  std::vector<CohesiveInfo> _cohesiveVertices;
+
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
@@ -283,6 +311,9 @@ private :
 private :
 
   typedef std::map<std::string, EqKinSrc*> srcs_type;
+
+  // PRIVATE STRUCTS ////////////////////////////////////////////////////
+private :
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
