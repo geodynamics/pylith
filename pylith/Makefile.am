@@ -54,6 +54,9 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/ReferenceCell.py \
 	feassemble/Quadrature.py \
 	feassemble/CellGeometry.py \
+	friction/__init__.py \
+	friction/FrictionModel.py \
+	friction/StaticFriction.py \
 	materials/__init__.py \
 	materials/ElasticMaterial.py \
 	materials/ElasticIsotropic3D.py \
