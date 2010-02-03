@@ -10,18 +10,19 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	include \
-	bc \
-	faults \
-	feassemble \
-	friction \
-	materials \
-	meshio \
-	mpi \
-	problems \
-	topology \
-	utils
+subpackage = friction
+include $(top_srcdir)/subpackage.am
+
+SUBDIRS = data
+
+TESTS = testfriction.py
+dist_check_SCRIPTS = testfriction.py
+
+TESTS_ENVIRONMENT = $(PYTHON)
+
+noinst_PYTHON = \
+	TestFrictionModel.py \
+	TestStaticFriction.py
 
 
 # End of file 

@@ -113,6 +113,12 @@ public :
    */
   void dbInitialTract(spatialdata::spatialdb::SpatialDB* db);
   
+  /** Set the friction (constitutive) model.
+   *
+   * @param model Fault constutive model.
+   */
+  void frictionModel(friction::FrictionModel* const model);
+
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
    *
@@ -221,12 +227,6 @@ public :
    * constraints, false otherwise.
    */
   bool useLagrangeConstraints(void) const;
-
-  /** Get the friction (constitutive) model.
-   *
-   * @param model Fault constutive model.
-   */
-  void frictionModel(friction::FrictionModel* const model);
 
   /** Get fields associated with fault.
    *

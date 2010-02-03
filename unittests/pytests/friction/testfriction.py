@@ -10,9 +10,9 @@
 # ======================================================================
 #
 
-## @file unittests/faults/testfaults.py
+## @file unittests/friction/testfriction.py
 
-## @brief Python application for testing faults code.
+## @brief Python application for testing fault constitutive models.
 
 from pyre.applications.Script import Script
 
@@ -56,32 +56,11 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
-    from TestStepSlipFn import TestStepSlipFn
-    suite.addTest(unittest.makeSuite(TestStepSlipFn))
+    from TestStaticFriction import TestStaticFriction
+    suite.addTest(unittest.makeSuite(TestStaticFriction))
 
-    from TestConstRateSlipFn import TestConstRateSlipFn
-    suite.addTest(unittest.makeSuite(TestConstRateSlipFn))
-
-    from TestBruneSlipFn import TestBruneSlipFn
-    suite.addTest(unittest.makeSuite(TestBruneSlipFn))
-
-    from TestLiuCosSlipFn import TestLiuCosSlipFn
-    suite.addTest(unittest.makeSuite(TestLiuCosSlipFn))
-
-    from TestTimeHistorySlipFn import TestTimeHistorySlipFn
-    suite.addTest(unittest.makeSuite(TestTimeHistorySlipFn))
-
-    from TestEqKinSrc import TestEqKinSrc
-    suite.addTest(unittest.makeSuite(TestEqKinSrc))
-
-    from TestFaultCohesiveKin import TestFaultCohesiveKin
-    suite.addTest(unittest.makeSuite(TestFaultCohesiveKin))
-
-    from TestFaultCohesiveDynL import TestFaultCohesiveDynL
-    suite.addTest(unittest.makeSuite(TestFaultCohesiveDynL))
-
-    from TestSingleRupture import TestSingleRupture
-    suite.addTest(unittest.makeSuite(TestSingleRupture))
+    from TestFrictionModel import TestFrictionModel
+    suite.addTest(unittest.makeSuite(TestFrictionModel))
 
     return suite
 

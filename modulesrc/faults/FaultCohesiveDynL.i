@@ -41,6 +41,12 @@ namespace pylith {
        */
       void dbInitialTract(spatialdata::spatialdb::SpatialDB* db);
   
+      /** Set the friction (constitutive) model.
+       *
+       * @param model Fault constutive model.
+       */
+      void frictionModel(pylith::friction::FrictionModel* const model);
+
       /** Initialize fault. Determine orientation and setup boundary
        * condition parameters.
        *
