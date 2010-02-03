@@ -1,4 +1,4 @@
-#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -464,11 +464,21 @@ reference "tab:material-model-statevars"
 \end_inset
 
 .
- For the generalized Maxwell model, values of shear-ratio and Maxwell-time
+ For the generalized Maxwell model, values of 
+\family typewriter
+shear_ratio
+\family default
+ and 
+\family typewriter
+maxwell_time
+\family default
  are given for each Maxwell element in the model (there are presently three,
  as described below).
- Similarly, there are three sets of viscous-strain values for the generalized
- Maxwell model.
+ Similarly, there are three sets of 
+\family typewriter
+viscous_strain
+\family default
+ values for the generalized Maxwell model.
 \end_layout
 
 \begin_layout Standard
@@ -508,7 +518,7 @@ cell_data_fields
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="3">
+<lyxtabular version="3" rows="6" columns="3">
 <features>
 <column alignment="center" valignment="top" width="1.5in">
 <column alignment="center" valignment="top" width="1.8in">
@@ -674,7 +684,7 @@ viscous_strain_3
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -683,7 +693,7 @@ Power-law
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -706,13 +716,47 @@ power_law_exponent
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
 total_strain, stress, viscous_strain
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Drucker-Prager Elastoplastic
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+mu, lambda, density, friction_angle, cohesion, dilatation_angle, friction_harden
+ing, cohesion_hardening, dilatation_hardening 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+total_strain, stress, plastic_strain
 \end_layout
 
 \end_inset
@@ -1409,7 +1453,7 @@ At present, there are four viscoelastic material models available in PyLith
  (Table 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "tab:Material-models-available"
+reference "tab:Viscoelastic-models-available"
 
 \end_inset
 
@@ -1446,7 +1490,7 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "tab:Material-models-available"
+name "tab:Viscoelastic-models-available"
 
 \end_inset
 
@@ -2279,8 +2323,8 @@ key "Kojic:Bathe:1987"
 
  into deviatoric and volumetric parts:
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left(^{t+\Delta t}\underline{e}-^{t+\Delta t}\underline{e}^{C}-\underline{e}^{I}\right)+\underline{S}^{I}\label{eq:42}\\
-^{t+\Delta t}P=\frac{E}{1-2\nu}\left(^{t+\Delta t}\theta-\theta^{I}\right)+P^{I}\:,\nonumber \end{gather}
+^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left(^{t+\Delta t}\underline{e}-^{t+\Delta t}\underline{e}^{C}-\underline{e}^{I}\right)+\underline{S}^{I}=\frac{1}{a_{E}}\left(^{t+\Delta t}\underline{e}-^{t+\Delta t}\underline{e}^{C}-\underline{e}^{I}\right)\label{eq:42}\\
+^{t+\Delta t}P=\frac{E}{1-2\nu}\left(^{t+\Delta t}\theta-\theta^{I}\right)+P^{I}=\frac{1}{a_{m}}\left(^{t+\Delta t}\theta-\theta^{I}\right)\:,\nonumber \end{gather}
 
 \end_inset
 
@@ -2325,13 +2369,13 @@ where
  The topmost equation in Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:42"
+reference "eq:105"
 
 \end_inset
 
  may also be written as
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{E}{1+\mathrm{\nu}}(^{t+\Delta t}\underline{e}^{\prime}-\underline{\Delta e}^{C})+\underline{S}^{I}\,,\label{eq:43}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{1}{a_{E}}(^{t+\Delta t}\underline{e}^{\prime}-\underline{\Delta e}^{C})+\underline{S}^{I}\,,\label{eq:43}\end{gather}
 
 \end_inset
 
@@ -2439,7 +2483,7 @@ reference "eq:43"
 
 , we obtain
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left\{ ^{t+\Delta t}\underline{e}^{\prime}-\frac{\Delta t}{2\eta}\left[(1-\alpha)^{t}\underline{S}+\alpha^{t+\Delta t}\underline{S}\right]\right\} +\underline{S}^{I}\,\,.\label{eq:52}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{1}{a_{E}}\left\{ ^{t+\Delta t}\underline{e}^{\prime}-\frac{\Delta t}{2\eta}\left[(1-\alpha)^{t}\underline{S}+\alpha^{t+\Delta t}\underline{S}\right]\right\} +\underline{S}^{I}\,\,.\label{eq:52}\end{gather}
 
 \end_inset
 
@@ -2449,7 +2493,7 @@ Solving for
 
 ,
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{1}{\frac{1+\mathrm{\nu}}{E}+\frac{\alpha\Delta t}{2\eta}}\left[^{t+\Delta t}\underline{e}^{\prime}-\frac{\Delta t}{2\eta}(1-\alpha)^{t}\underline{S}+\frac{1+\mathrm{\nu}}{E}\underline{S}^{I}\right]\,\,.\label{eq:53}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{1}{a_{E}+\frac{\alpha\Delta t}{2\eta}}\left[^{t+\Delta t}\underline{e}^{\prime}-\frac{\Delta t}{2\eta}(1-\alpha)^{t}\underline{S}+\frac{1+\mathrm{\nu}}{E}\underline{S}^{I}\right]\,\,.\label{eq:53}\end{gather}
 
 \end_inset
 
@@ -2457,7 +2501,7 @@ In this case it is possible to solve directly for the deviatoric stresses,
  and the effective stress function approach is not needed.
  To obtain the total stress, we simply use
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\sigma_{ij}=^{t+\Delta t}S_{ij}+\frac{\mathit{E}}{1-2\nu}\left(\,^{t+\Delta t}\theta-\theta^{I}\right)\delta_{ij}+P^{I}\delta_{ij}\,\,.\label{eq:54}\end{gather}
+^{t+\Delta t}\sigma_{ij}=^{t+\Delta t}S_{ij}+\frac{\mathit{1}}{a_{m}}\left(\,^{t+\Delta t}\theta-\theta^{I}\right)\delta_{ij}+P^{I}\delta_{ij}\,\,.\label{eq:54}\end{gather}
 
 \end_inset
 
@@ -2483,7 +2527,7 @@ In terms of the vectors, we have
 
 Therefore,
 \begin_inset Formula \begin{gather}
-C_{ij}^{VE}=C_{ij}^{\prime}+\frac{E}{3(1-2\mathrm{v})}\,;\,\,1\leq i,j\leq3\,\,.\label{eq:57}\\
+C_{ij}^{VE}=C_{ij}^{\prime}+\frac{1}{3a_{m}}\,;\,\,1\leq i,j\leq3\,\,.\label{eq:57}\\
 C_{ij}^{VE}=C_{ij}^{\prime}\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\textrm{otherwise}\nonumber \end{gather}
 
 \end_inset
@@ -2533,7 +2577,7 @@ reference "eq:53"
 
 , we have
 \begin_inset Formula \begin{gather}
-\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}e_{k}^{\prime}}=\frac{\delta_{ik}}{\frac{1+\nu}{E}+\frac{\alpha\Delta t}{2\eta}}\,\,.\label{eq:61}\end{gather}
+\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}e_{k}^{\prime}}=\frac{\delta_{ik}}{a_{E}+\frac{\alpha\Delta t}{2\eta}}\,\,.\label{eq:61}\end{gather}
 
 \end_inset
 
@@ -2546,13 +2590,13 @@ reference "eq:57"
 
 , the final material matrix relating stress and tensor strain is
 \begin_inset Formula \begin{gather}
-C_{ij}^{VE}=\frac{E}{3(1-2\nu)}\left[\begin{array}{cccccc}
+C_{ij}^{VE}=\frac{1}{3a_{m}}\left[\begin{array}{cccccc}
 1 & 1 & 1 & 0 & 0 & 0\\
 1 & 1 & 1 & 0 & 0 & 0\\
 1 & 1 & 1 & 0 & 0 & 0\\
 0 & 0 & 0 & 0 & 0 & 0\\
 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0\end{array}\right]+\frac{1}{3\left(\frac{1+\nu}{E}+\frac{\alpha\Delta t}{2\eta}\right)}\left[\begin{array}{cccccc}
+0 & 0 & 0 & 0 & 0 & 0\end{array}\right]+\frac{1}{3\left(a_{E}+\frac{\alpha\Delta t}{2\eta}\right)}\left[\begin{array}{cccccc}
 2 & -1 & -1 & 0 & 0 & 0\\
 -1 & 2 & -1 & 0 & 0 & 0\\
 -1 & -1 & 2 & 0 & 0 & 0\\
@@ -2563,7 +2607,7 @@ C_{ij}^{VE}=\frac{E}{3(1-2\nu)}\left[\begin{array}{cccccc}
 \end_inset
 
 Note that the coefficient of the second matrix approaches 
-\begin_inset Formula $E/3(1+\nu)$
+\begin_inset Formula $E/3(1+\nu)=1/3a_{E}$
 \end_inset
 
  as 
@@ -2941,13 +2985,13 @@ The flow law in component form is
 
 and the creep strain increment is approximated as
 \begin_inset Formula \begin{gather}
-\underline{\Delta e}^{C}=\frac{\Delta t\dot{e}_{0}\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}\,^{\tau}\underline{S}}{S_{0}^{n}}=\frac{\Delta t\dot{e}_{0}\phantom{}^{\tau}\overline{\sigma}^{n-1}\,^{\tau}\underline{S}}{\sqrt{3}S_{0}^{n}}\,.\label{eq:80}\end{gather}
+\underline{\Delta e}^{C}\approx\frac{\Delta t\dot{e}_{0}\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}\,^{\tau}\underline{S}}{S_{0}^{n}}=\frac{\Delta t\dot{e}_{0}\phantom{}^{\tau}\overline{\sigma}^{n-1}\,^{\tau}\underline{S}}{\sqrt{3}S_{0}^{n}}\,.\label{eq:80}\end{gather}
 
 \end_inset
 
  Therefore,
 \begin_inset Formula \begin{gather}
-\Delta\bar{e}^{C}=\frac{2\Delta t\dot{e}_{0}\sqrt{^{\tau}J_{2}^{\prime}}^{n}}{\sqrt{3}S_{0}^{n}}=\frac{2\Delta t\dot{e}_{0}\phantom{}^{\tau}\overline{\sigma}^{n}}{\sqrt{3}^{n+1}S_{0}^{n}}\,,\,\textrm{and}\,^{\tau}\gamma=\frac{\dot{e}_{0}\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}}{S_{0}^{n}}\,.\label{eq:81}\end{gather}
+\Delta\bar{e}^{C}\approx\frac{2\Delta t\dot{e}_{0}\sqrt{^{\tau}J_{2}^{\prime}}^{n}}{\sqrt{3}S_{0}^{n}}=\frac{2\Delta t\dot{e}_{0}\phantom{}^{\tau}\overline{\sigma}^{n}}{\sqrt{3}^{n+1}S_{0}^{n}}\,,\,\textrm{and}\,^{\tau}\gamma=\frac{\dot{e}_{0}\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}}{S_{0}^{n}}\,.\label{eq:81}\end{gather}
 
 \end_inset
 
@@ -2981,13 +3025,13 @@ reference "eq:43"
 
 , we obtain:
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left\{ ^{t+\Delta t}\underline{e}^{\prime}-\Delta t^{\tau}\gamma\left[\left(1-\alpha\right)^{t}\underline{S}+\alpha{}^{t+\Delta t}\underline{S}\right]\right\} +\underline{S}^{I}\,,\label{eq:82}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{1}{a_{E}}\left\{ ^{t+\Delta t}\underline{e}^{\prime}-\Delta t^{\tau}\gamma\left[\left(1-\alpha\right)^{t}\underline{S}+\alpha{}^{t+\Delta t}\underline{S}\right]\right\} +\underline{S}^{I}\,,\label{eq:82}\end{gather}
 
 \end_inset
 
 which may be rewritten:
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}\underline{S}\left(\frac{1+\nu}{E}+\alpha\Delta t^{\tau}\gamma\right)={}^{t+\Delta t}\underline{e}^{\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}\underline{S}+\frac{1+\nu}{E}\underline{S}^{I}\,.\label{eq:83}\end{gather}
+^{t+\Delta t}\underline{S}\left(a_{E}+\alpha\Delta t^{\tau}\gamma\right)={}^{t+\Delta t}\underline{e}^{\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}\underline{S}+a_{E}\underline{S}^{I}\,.\label{eq:83}\end{gather}
 
 \end_inset
 
@@ -2999,9 +3043,9 @@ a^{2}\,\,{}^{t+\Delta t}J_{2}^{\prime}-b+c^{\tau}\gamma-d^{2}\,^{\tau}\gamma^{2}
 
 where
 \begin_inset Formula \begin{gather}
-a=\frac{1+\nu}{E}+\alpha\Delta t^{\tau}\gamma\,\,\nonumber \\
-b=\frac{1}{2}{}^{t+\Delta t}\underline{e}^{\prime}\cdot{}^{t+\Delta t}\underline{e}^{\prime}+\frac{1+\nu}{E}{}^{t+\Delta t}\underline{e}^{\prime}\cdot\underline{S}^{I}+\left(\frac{1+\nu}{E}\right)^{2}\,^{I}J_{2}^{\prime}\,.\label{eq:85}\\
-c=\Delta t\left(1-\alpha\right){}^{t+\Delta t}\underline{e}^{\prime}\cdot^{t}\underline{S}+\Delta t\left(1-\alpha\right)\frac{1+\nu}{E}\,^{t}\underline{S}\cdot\underline{S}^{I}\,\,\nonumber \\
+a=a_{E}+\alpha\Delta t^{\tau}\gamma\,\,\nonumber \\
+b=\frac{1}{2}{}^{t+\Delta t}\underline{e}^{\prime}\cdot{}^{t+\Delta t}\underline{e}^{\prime}+a_{E}{}^{t+\Delta t}\underline{e}^{\prime}\cdot\underline{S}^{I}+a_{E}^{2}\,^{I}J_{2}^{\prime}\,.\label{eq:85}\\
+c=\Delta t\left(1-\alpha\right){}^{t+\Delta t}\underline{e}^{\prime}\cdot^{t}\underline{S}+\Delta t\left(1-\alpha\right)a_{E}\,^{t}\underline{S}\cdot\underline{S}^{I}\,\,\nonumber \\
 d=\Delta t\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\,\,\nonumber \end{gather}
 
 \end_inset
@@ -3070,13 +3114,7 @@ reference "eq:83"
 
  as
 \begin_inset Formula \begin{gather}
-F=^{t+\Delta t}S_{i}\left(a_{E}+\alpha\Delta t^{\tau}\gamma\right)-^{t+\Delta t}e_{i}^{\prime}+\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}S_{i}-a_{E}S_{i}^{I}=0\label{eq:86}\end{gather}
-
-\end_inset
-
-where
-\begin_inset Formula \begin{gather}
-a_{E}=\frac{1+\nu}{E}\,.\label{eq:87}\end{gather}
+F=^{t+\Delta t}S_{i}\left(a_{E}+\alpha\Delta t^{\tau}\gamma\right)-^{t+\Delta t}e_{i}^{\prime}+\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}S_{i}-a_{E}S_{i}^{I}=0\:.\label{eq:86}\end{gather}
 
 \end_inset
 
@@ -3086,7 +3124,7 @@ The derivative of this function with respect to
 
  is
 \begin_inset Formula \begin{gather}
-\frac{\partial F}{\partial^{t+\Delta t}e_{k}^{\prime}}=-\delta_{ik}\:,\label{eq:88}\end{gather}
+\frac{\partial F}{\partial^{t+\Delta t}e_{k}^{\prime}}=-\delta_{ik}\:,\label{eq:87}\end{gather}
 
 \end_inset
 
@@ -3096,7 +3134,7 @@ and the derivative with respect to
 
  is
 \begin_inset Formula \begin{gather}
-\frac{\partial F}{\partial^{t+\Delta t}S_{i}}=a_{E}+\alpha\Delta t^{\tau}\gamma+\frac{\partial^{\tau}\gamma}{\partial^{t+\Delta t}S_{i}}\Delta t\left[\alpha^{t+\Delta t}S_{i}+\left(1-\alpha\right)^{t}S_{i}\right]\:.\label{eq:89}\end{gather}
+\frac{\partial F}{\partial^{t+\Delta t}S_{i}}=a_{E}+\alpha\Delta t^{\tau}\gamma+\frac{\partial^{\tau}\gamma}{\partial^{t+\Delta t}S_{i}}\Delta t\left[\alpha^{t+\Delta t}S_{i}+\left(1-\alpha\right)^{t}S_{i}\right]\:.\label{eq:88}\end{gather}
 
 \end_inset
 
@@ -3116,25 +3154,32 @@ reference "eq:49"
 
 ,
 \begin_inset Formula \begin{gather}
-^{\tau}\gamma=\frac{\dot{e}_{0}}{S_{0}^{n}}\left[\alpha\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\right]^{n-1}\:.\label{eq:90}\end{gather}
+^{\tau}\gamma=\frac{\dot{e}_{0}}{S_{0}^{n}}\left[\alpha\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\right]^{n-1}\:.\label{eq:89}\end{gather}
 
 \end_inset
 
 Then
 \begin_inset Formula \begin{gather}
-\frac{\partial^{\tau}\gamma}{\partial{}^{t+\Delta t}S_{i}}=\frac{\partial^{\tau}\gamma}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}\frac{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}{\partial^{t+\Delta t}S_{l}}\label{eq:91}\\
+\frac{\partial^{\tau}\gamma}{\partial{}^{t+\Delta t}S_{i}}=\frac{\partial^{\tau}\gamma}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}\frac{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}{\partial^{t+\Delta t}S_{l}}\label{eq:90}\\
 =\frac{\dot{e}_{0}\alpha\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}{}^{t+\Delta t}T_{i}}{2S_{0}^{n}}\,,\nonumber \end{gather}
 
 \end_inset
 
 Where
 \begin_inset Formula \begin{gather}
-^{t+\Delta t}T_{i}=^{t+\Delta t}S_{i}\:;\:\:1\leq i\leq3\label{eq:92}\\
+^{t+\Delta t}T_{i}=^{t+\Delta t}S_{i}\:;\:\:1\leq i\leq3\label{eq:91}\\
 ^{t+\Delta t}T_{i}=2^{t+\Delta t}S_{i}\:;\:\:\textrm{otherwise.}\nonumber \end{gather}
 
 \end_inset
 
 Then using Equations 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:87"
+
+\end_inset
+
+, 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:88"
@@ -3144,20 +3189,13 @@ reference "eq:88"
 , 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:89"
-
-\end_inset
-
-, 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:91"
+reference "eq:90"
 
 \end_inset
 
 , and the quotient rule for derivatives of an implicit function,
 \begin_inset Formula \begin{gather}
-\frac{\partial^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime}}=\frac{\delta_{ik}}{a_{E}+\alpha\Delta t\left[^{\tau}\gamma+\frac{\dot{e}_{0}{}^{\tau}S_{i}\left(n-1\right){}^{t+\Delta t}T_{i}\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{2\sqrt{^{t+\Delta t}J_{2}^{\prime}}S_{0}^{n}}\right]}\,.\label{eq:93}\end{gather}
+\frac{\partial^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime}}=\frac{\delta_{ik}}{a_{E}+\alpha\Delta t\left[^{\tau}\gamma+\frac{\dot{e}_{0}{}^{\tau}S_{i}\left(n-1\right){}^{t+\Delta t}T_{i}\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{2\sqrt{^{t+\Delta t}J_{2}^{\prime}}S_{0}^{n}}\right]}\,.\label{eq:92}\end{gather}
 
 \end_inset
 
@@ -3193,7 +3231,7 @@ reference "eq:60"
 
 ,
 \begin_inset Formula \begin{gather}
-C_{ij}^{VE}=\frac{E}{3\left(1-2\nu\right)}\left[\begin{array}{cccccc}
+C_{ij}^{VE}=\frac{1}{3a_{m}}\left[\begin{array}{cccccc}
 1 & 1 & 1 & 0 & 0 & 0\\
 1 & 1 & 1 & 0 & 0 & 0\\
 1 & 1 & 1 & 0 & 0 & 0\\
@@ -3205,7 +3243,7 @@ C_{ij}^{VE}=\frac{E}{3\left(1-2\nu\right)}\left[\begin{array}{cccccc}
 -1 & -1 & 2 & 0 & 0 & 0\\
 0 & 0 & 0 & 3 & 0 & 0\\
 0 & 0 & 0 & 0 & 3 & 0\\
-0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\,.\label{eq:94}\end{gather}
+0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\,.\label{eq:93}\end{gather}
 
 \end_inset
 
@@ -3217,14 +3255,14 @@ Note that if there are no deviatoric stresses at the beginning and end of
  approaches zero), Equations 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:93"
+reference "eq:92"
 
 \end_inset
 
  and 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:94"
+reference "eq:93"
 
 \end_inset
 
@@ -3242,7 +3280,7 @@ reference "eq:84"
 
 , which may be written:
 \begin_inset Formula \begin{gather}
-\frac{\partial F}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}=2a^{2}\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\frac{\dot{e}_{0}\alpha\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{S_{0}^{n}}\left(2a\alpha\Delta t{}^{t+\Delta t}J_{2}^{\prime}+c-2d^{2}\,^{\tau}\gamma\right)\,.\label{eq:95}\end{gather}
+\frac{\partial F}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}=2a^{2}\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\frac{\dot{e}_{0}\alpha\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{S_{0}^{n}}\left(2a\alpha\Delta t{}^{t+\Delta t}J_{2}^{\prime}+c-2d^{2}\,^{\tau}\gamma\right)\,.\label{eq:94}\end{gather}
 
 \end_inset
 
@@ -3934,6 +3972,292 @@ power-law-exponent
 
 
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Elastoplastic Materials
+\end_layout
+
+\begin_layout Standard
+At present, there are two elastoplastic material models available in PyLith.
+ Both materials make use of the Drucker-Prager yield criterion.
+ The only difference is that one model includes hardening/softening, and
+ the other is for the case of perfect plasticity.
+ Additional elastoplastic materials will be available in future versions.
+\end_layout
+
+\begin_layout Subsection
+General Elastoplasticity Formulation
+\end_layout
+
+\begin_layout Standard
+The elastoplasticity formulation in PyLith is based on an additive decomposition
+ of the total strain into elastic and plastic parts:
+\begin_inset Formula \begin{equation}
+d\epsilon_{ij}=d\epsilon_{ij}^{E}+d\epsilon_{ij}^{P}\:.\label{eq:95}\end{equation}
+
+\end_inset
+
+The stress increment is then given by
+\begin_inset Formula \begin{equation}
+d\sigma_{ij}=C_{ijrs}^{E}\left(d\epsilon_{rs}-d\epsilon_{rs}^{P}\right)\:,\label{eq:96}\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $C_{ijrs}^{E}$
+\end_inset
+
+ are the components of the elastic constitutive tensor.
+ To completely specify an elastoplastic problem, three components are needed.
+ We first require a yield condition, which specifies the state of stress
+ at which plastic flow initiates.
+ This is generally given in the form:
+\begin_inset Formula \begin{equation}
+f\left(\underline{\sigma},k\right)=0\:,\label{eq:97}\end{equation}
+
+\end_inset
+
+where 
+\shape italic
+k
+\shape default
+ is an internal state parameter.
+ It is then necessary to specify a flow rule, which describes the relationship
+ between plastic strain and stress.
+ The flow rule is given in the form:
+\begin_inset Formula \begin{equation}
+g\left(\underline{\sigma},k\right)=0\:.\label{eq:98}\end{equation}
+
+\end_inset
+
+The plastic strain increment is then given as
+\begin_inset Formula \begin{equation}
+d\epsilon_{ij}^{P}=d\lambda\frac{\partial g}{\partial\sigma_{ij}}\:,\label{eq:99}\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $d\lambda$
+\end_inset
+
+ is the scalar plastic multiplier.
+ When the flow rule is identical to the yield criterion (
+\begin_inset Formula $f\equiv g$
+\end_inset
+
+), the plasticity is described as associated.
+ Otherwise, it is non-associated.
+ The final component needed is a hardening hypothesis, which describes how
+ the yield condition and flow rule are modified during plastic flow.
+ When the yield condition and flow rule remain constant during plastic flow
+ (e.g., no hardening), the material is referred to as perfectly plastic.
+\end_layout
+
+\begin_layout Subsection
+Drucker-Prager Elastoplastic Material
+\end_layout
+
+\begin_layout Standard
+PyLith includes an elastoplastic implementation of the Drucker-Prager yield
+ criterion 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Drucker:Prager:1952"
+
+\end_inset
+
+.
+ This criterion was originally devised to model plastic deformation of soils,
+ and it has also been used to model rock deformation.
+ It is intended to be a smooth approximation of the Mohr-Coulomb yield criterion.
+ The implementation used in PyLith includes non-associated plastic flow,
+ which allows control over the unreasonable amounts of dilatation that are
+ sometimes predicted by the associated model.
+ The model is described by the following yield condition:
+\begin_inset Formula \begin{equation}
+f\left(\underline{\sigma},k\right)=\alpha_{f}I_{1}+\sqrt{J_{2}^{\prime}}-\beta\bar{c}\left(k\right)\:,\label{eq:100}\end{equation}
+
+\end_inset
+
+where
+\begin_inset Formula \begin{equation}
+\alpha_{f}=\frac{2\sin\phi\left(k\right)}{\sqrt{3}\left(3-\sin\phi\left(k\right)\right)}\:,\label{eq:101}\end{equation}
+
+\end_inset
+
+and
+\begin_inset Formula \begin{equation}
+\beta=\frac{6\cos\phi_{0}}{\sqrt{3}\left(3-\sin\phi_{0}\right)}\:.\label{eq:102}\end{equation}
+
+\end_inset
+
+The friction angle, 
+\begin_inset Formula $\phi$
+\end_inset
+
+, and the cohesion, 
+\begin_inset Formula $\bar{c}$
+\end_inset
+
+, may both be functions of the internal state parameter, and they correspond
+ to the values used in the Mohr-Coulomb model.
+ The initial friction angle is given by 
+\begin_inset Formula $\phi_{0}$
+\end_inset
+
+.
+ The yield surface defined by equations 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:100"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:101"
+
+\end_inset
+
+, and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:102"
+
+\end_inset
+
+ represents a circular cone in principal stress space that is coincident
+ with the outer apices of the corresponding Mohr-Coulomb yield surface.
+ The flow rule is given by:
+\begin_inset Formula \begin{equation}
+g\left(\underline{\sigma},k\right)=\sqrt{J_{2}^{\prime}}+\alpha_{g}I_{1}\:,\label{eq:103}\end{equation}
+
+\end_inset
+
+where
+\begin_inset Formula \begin{equation}
+\alpha_{g}=\frac{2\sin\psi(k)}{\sqrt{3}\left(3-\sin\psi\left(k\right)\right)}\:.\label{eq:104}\end{equation}
+
+\end_inset
+
+The dilatation angle, 
+\begin_inset Formula $\psi$
+\end_inset
+
+, may also be a function of the internal state parameter.
+\end_layout
+
+\begin_layout Standard
+As for the viscoelastic models, it is convenient to separate the deformation
+ into deviatoric and volumetric parts:
+\begin_inset Formula \begin{gather}
+^{t+\Delta t}S_{ij}=\frac{1}{a_{E}}\left(^{t+\Delta t}e_{ij}-^{t+\Delta t}e_{ij}^{P}-e_{ij}^{I}\right)+S_{ij}^{I}=\frac{1}{a_{E}}\left(^{t+\Delta t}e_{ij}^{\prime}-\Delta e_{ij}^{P}\right)+S_{ij}^{I}\label{eq:105}\\
+^{t+\Delta t}P=\frac{1}{a_{m}}\left(^{t+\Delta t}\theta-^{t+\Delta t}\theta^{P}-^{t+\Delta t}\theta^{I}\right)+P^{I}=\frac{1}{a_{m}}\left(^{t+\Delta t}\theta^{\prime}-\Delta\theta^{P}\right)+P^{I}\:,\nonumber \end{gather}
+
+\end_inset
+
+where
+\begin_inset Formula \begin{gather}
+^{t+\Delta t}e_{ij}^{\prime}=^{t+\Delta t}e_{ij}-^{t}e_{ij}^{P}-e_{ij}^{I}\nonumber \\
+\Delta e_{ij}^{P}=^{t+\Delta t}e_{ij}^{P}-^{t}e_{ij}^{P}\nonumber \\
+^{t+\Delta t}\theta^{\prime}=^{t+\Delta t}\theta-^{t}\theta^{P}-\theta^{I}\nonumber \\
+\Delta\theta^{P}=^{t+\Delta t}\theta^{P}-^{t}\theta^{P}\:.\label{eq:106}\end{gather}
+
+\end_inset
+
+Since the plasticity is pressure-dependent, there are volumetric plastic
+ strains, unlike the viscous strains in the previous section.
+ From equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:99"
+
+\end_inset
+
+, the plastic strain increment is
+\begin_inset Formula \begin{equation}
+\Delta\epsilon_{ij}^{P}=\lambda\frac{\partial^{t+\Delta t}g}{\partial^{t+\Delta t}\sigma_{ij}}=\lambda\alpha_{g}\delta_{ij}+\lambda\frac{^{t+\Delta t}S_{ij}}{2\sqrt{^{t+\Delta t}J_{2}^{\prime}}}\:.\label{eq:107}\end{equation}
+
+\end_inset
+
+The volumetric part is
+\begin_inset Formula \begin{equation}
+\Delta\theta^{P}=\frac{1}{3}\Delta\epsilon_{ii}^{P}=\lambda\alpha_{g}\:,\label{eq:108}\end{equation}
+
+\end_inset
+
+and the deviatoric part is
+\begin_inset Formula \begin{equation}
+\Delta e_{ij}^{P}=\Delta\epsilon_{ij}^{P}-\Delta\epsilon_{m}^{P}\delta_{ij}=\lambda\frac{^{t+\Delta t}S_{ij}}{2\sqrt{^{t+\Delta t}J_{2}^{\prime}}}\:.\label{eq:109}\end{equation}
+
+\end_inset
+
+The problem is reduced to solving for 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+ The procedure is different depending on whether hardening is included.
+\end_layout
+
+\begin_layout Subsubsection
+Drucker-Prager Elastoplastic With No Hardening (Perfectly Plastic)
+\end_layout
+
+\begin_layout Standard
+When the yield and flow functions do not vary, we can solve for 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ by substituting 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:109"
+
+\end_inset
+
+ into equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:105"
+
+\end_inset
+
+ and taking the scalar product of both sides:
+\begin_inset Formula \begin{equation}
+\lambda=\sqrt{2}\,\phantom{}^{t+\Delta t}d-2a_{E}\sqrt{^{t+\Delta t}J_{2}^{\prime}}\:,\label{eq:110}\end{equation}
+
+\end_inset
+
+where
+\begin_inset Formula \begin{equation}
+^{t+\Delta t}d^{2}=2J_{2}^{\prime I}+2S_{ij}^{I}\,\phantom{}^{t+\Delta t}e_{ij}^{\prime}+^{t+\Delta t}e_{ij}^{\prime}\,\phantom{}^{t+\Delta t}e_{ij}^{\prime}\:.\label{eq:111}\end{equation}
+
+\end_inset
+
+The pressure is computed from 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:105"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:108"
+
+\end_inset
+
+ as:
+\begin_inset Formula \begin{equation}
+^{t+\Delta t}P=\frac{1}{a_{m}}\left(^{t+\Delta t}\theta^{\prime}-\lambda\alpha_{g}\right)\:.\label{eq:112}\end{equation}
 
 \end_inset
 
