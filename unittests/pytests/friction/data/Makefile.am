@@ -11,13 +11,7 @@
 #
 
 dist_noinst_DATA = \
-	bulkprops_2d.spatialdb \
-	tri3.mesh \
-	tri3_finalslip.spatialdb \
-	tri3_sliptime.spatialdb \
-	tri3_peakrate.spatialdb \
-	tri3_initialtractions.spatialdb \
-	tri3_staticfriction.spatialdb
+	staticfriction.spatialdb
 
 noinst_TMP =
 
