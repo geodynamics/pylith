@@ -9,9 +9,10 @@ CURRENT ISSUES/PRIORITIES
 
 * Data structure to hold label of fault Lagrange vertices and
   conventional vertices
-    array of structure (lagrange, positive, negative, fault)
 
-    no mesh queries? Just loops?
+  Move CohesiveInfo to CohesiveTopology.
+  Create data structure in createFaultParallel() [call function]
+  Refactor in FaultCohesive
 
 * Drucker-Prager elastoplastic
 
@@ -23,6 +24,7 @@ CURRENT ISSUES/PRIORITIES
   + tutorial
   + governing equations
   + Large deformation formulation
+  + Lumped solver
 
 * Cleanup
   + memory model
@@ -39,14 +41,11 @@ FRICTION
 Initial tractions
   Integrate over fault surface (should be current implementation)
 
-FaultCohesiveDyn -> FaultCohesiveDynNoL
+FaultCohesiveDyn -> FaultCohesiveTract
 FaultCohesiveDynL -> FaultCohesiveDyn
 Refactor FaultCohesive
   integrateResidualAssembled()
     updateSlip() [implemented for FaultCohesiveKin, not for FaultCohesiveDyn]
-
-5. SlipWeakening [Surendra]
-  Slip-weakening friction model
 
 6. Other fault constitutive models [Surendra]
   Rate- and state-friction with aging law
