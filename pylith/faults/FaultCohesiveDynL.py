@@ -40,6 +40,7 @@ class FaultCohesiveDynL(FaultCohesive, Integrator, ModuleFaultCohesiveDynL):
   
   \b Facilities
   @li \b db_initial_tractions Spatial database for initial tractions.
+  @li \b friction Fault constitutive model.
   @li \b output Output manager associated with fault data.
 
   Factory: fault
@@ -52,6 +53,10 @@ class FaultCohesiveDynL(FaultCohesive, Integrator, ModuleFaultCohesiveDynL):
   db = pyre.inventory.facility("db_initial_tractions", family="spatial_database",
                                factory=NullComponent)
   db.meta['tip'] = "Spatial database for initial tractions."
+
+  from pylith.friction.StaticFriction import StaticFriction
+  friction = pyre.inventory.facility("friction", family="friction_model",
+                                     factory=StaticFriction)
 
   from pylith.meshio.OutputFaultDyn import OutputFaultDyn
   output = pyre.inventory.facility("output", family="output_manager",
@@ -186,6 +191,7 @@ class FaultCohesiveDynL(FaultCohesive, Integrator, ModuleFaultCohesiveDynL):
     FaultCohesive._configure(self)
     if not isinstance(self.inventory.db, NullComponent):
       ModuleFaultCohesiveDynL.dbInitialTract(self, self.inventory.db)
+    ModuleFaultCohesiveDynL.frictionModel(self, self.inventory.friction)
     self.output = self.inventory.output
     return
 

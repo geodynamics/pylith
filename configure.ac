@@ -238,6 +238,7 @@ AC_CONFIG_FILES([Makefile
                 modulesrc/bc/Makefile
                 modulesrc/faults/Makefile
                 modulesrc/feassemble/Makefile
+		modulesrc/friction/Makefile
                 modulesrc/materials/Makefile
                 modulesrc/meshio/Makefile
                 modulesrc/mpi/Makefile
