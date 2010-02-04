@@ -35,6 +35,7 @@
 #include <stdexcept> // USES std::runtime_error
 
 //#define PRECOMPUTE_GEOMETRY
+//#define DETAILED_EVENT_LOGGING
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
@@ -211,13 +212,18 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   assert(dt > 0);
 
   _logger->eventEnd(setupEvent);
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventBegin(computeEvent);
+#endif
 
   // Loop over cells
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
+#endif
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
 #else
@@ -225,23 +231,31 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
     _quadrature->computeGeometry(coordinatesCell, *c_iter);
 #endif
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
+    _logger->eventBegin(stateVarsEvent);
+#endif
 
     // Get state variables for cell.
-    _logger->eventBegin(stateVarsEvent);
     _material->retrievePropsAndVars(*c_iter);
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(stateVarsEvent);
+    _logger->eventBegin(restrictEvent);
+#endif
 
     // Reset element vector to zero
     _resetCellVector();
 
     // Restrict input fields to cell
-    _logger->eventBegin(restrictEvent);
     dispTVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispTVisitor);
     dispTmdtVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispTmdtVisitor);
+
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
+    _logger->eventBegin(computeEvent);
+#endif
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -251,7 +265,6 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 
     // Compute body force vector if gravity is being used.
     if (0 != _gravityField) {
-      _logger->eventBegin(computeEvent);
       const spatialdata::geocoords::CoordSys* cs = fields->mesh().coordsys();
       assert(0 != cs);
 
@@ -279,47 +292,319 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
         } // for
       } // for
       PetscLogFlops(numQuadPts * (2 + numBasis * (1 + 2 * spaceDim)));
-      _logger->eventEnd(computeEvent);
     } // if
 
     // Compute action for inertial terms
-    _logger->eventBegin(computeEvent);
     const double_array& density = _material->calcDensity();
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = 
-	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / dt2;
-      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-        const double valI = wt*basis[iQuad*numBasis+iBasis];
-        for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-          const double valIJ = valI * basis[iQuad*numBasis+jBasis];
-          for (int iDim=0; iDim < spaceDim; ++iDim)
-            _cellVector[iBasis*spaceDim+iDim] += 
-	      valIJ * (dispTCell[jBasis*spaceDim+iDim]
-		       - dispTmdtCell[jBasis*spaceDim+iDim]);
+    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad]
+          / dt2;
+      for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
+        const double valI = wt * basis[iQuad * numBasis + iBasis];
+        for (int jBasis = 0; jBasis < numBasis; ++jBasis) {
+          const double valIJ = valI * basis[iQuad * numBasis + jBasis];
+          for (int iDim = 0; iDim < spaceDim; ++iDim)
+            _cellVector[iBasis * spaceDim + iDim] += valIJ * (dispTCell[jBasis
+                * spaceDim + iDim] - dispTmdtCell[jBasis * spaceDim + iDim]);
         } // for
       } // for
     } // for
     PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(6*spaceDim))));
+
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
+    _logger->eventBegin(stressEvent);
+#endif
 
     // Compute B(transpose) * sigma, first computing strains
-    _logger->eventBegin(stressEvent);
     calcTotalStrainFn(&strainCell, basisDeriv, dispTCell, 
 		      numBasis, numQuadPts);
     const double_array& stressCell = _material->calcStress(strainCell, true);
-    _logger->eventEnd(stressEvent);
 
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(stressEvent);
     _logger->eventBegin(computeEvent);
+#endif
+
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell);
+
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
+    _logger->eventBegin(updateEvent);
+#endif
 
     // Assemble cell contribution into field
-    _logger->eventBegin(updateEvent);
     residualVisitor.clear();
     sieveMesh->updateClosure(*c_iter, residualVisitor);
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
+#endif
   } // for
+
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventEnd(computeEvent);
+#endif
 } // integrateResidual
+
+// ----------------------------------------------------------------------
+// Integrate constributions to residual term (r) for operator.
+void
+pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
+        const topology::Field<topology::Mesh>& residual,
+        const double t,
+        topology::SolutionFields* const fields)
+{ // integrateResidualLumped
+  /// Member prototype for _elasticityResidualXD()
+  typedef void (pylith::feassemble::ElasticityExplicit::*elasticityResidual_fn_type)
+    (const double_array&);
+
+  assert(0 != _quadrature);
+  assert(0 != _material);
+  assert(0 != _logger);
+  assert(0 != fields);
+
+  const int setupEvent = _logger->eventId("ElIR setup");
+  const int geometryEvent = _logger->eventId("ElIR geometry");
+  const int computeEvent = _logger->eventId("ElIR compute");
+  const int restrictEvent = _logger->eventId("ElIR restrict");
+  const int stateVarsEvent = _logger->eventId("ElIR stateVars");
+  const int stressEvent = _logger->eventId("ElIR stress");
+  const int updateEvent = _logger->eventId("ElIR update");
+
+  _logger->eventBegin(setupEvent);
+
+  // Get cell geometry information that doesn't depend on cell
+  const int numQuadPts = _quadrature->numQuadPts();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const int cellDim = _quadrature->cellDim();
+  const int tensorSize = _material->tensorSize();
+  /** :TODO:
+   *
+   * If cellDim and spaceDim are different, we need to transform
+   * displacements into cellDim, compute action, and transform result
+   * back into spaceDim. We get this information from the Jacobian and
+   * inverse of the Jacobian.
+   */
+  if (cellDim != spaceDim)
+    throw std::logic_error("Integration for cells with spatial dimensions "
+         "different than the spatial dimension of the "
+         "domain not implemented yet.");
+
+  // Set variables dependent on dimension of cell
+  totalStrain_fn_type calcTotalStrainFn;
+  elasticityResidual_fn_type elasticityResidualFn;
+  if (1 == cellDim) {
+    elasticityResidualFn =
+      &pylith::feassemble::ElasticityExplicit::_elasticityResidual1D;
+    calcTotalStrainFn =
+      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
+  } else if (2 == cellDim) {
+    elasticityResidualFn =
+      &pylith::feassemble::ElasticityExplicit::_elasticityResidual2D;
+    calcTotalStrainFn =
+      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
+  } else if (3 == cellDim) {
+    elasticityResidualFn =
+      &pylith::feassemble::ElasticityExplicit::_elasticityResidual3D;
+    calcTotalStrainFn =
+      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
+  } else
+    assert(0);
+
+  // Allocate vectors for cell values.
+  double_array dispTCell(numBasis*spaceDim);
+  double_array dispTmdtCell(numBasis*spaceDim);
+  double_array strainCell(numQuadPts*tensorSize);
+  strainCell = 0.0;
+  double_array gravVec(spaceDim);
+  double_array quadPtsGlobal(numQuadPts*spaceDim);
+
+  // Get cell information
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const int materialId = _material->id();
+  const ALE::Obj<SieveMesh::label_sequence>& cells =
+    sieveMesh->getLabelStratum("material-id", materialId);
+  assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  // Get sections
+  const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
+  assert(!dispTSection.isNull());
+  topology::Mesh::RestrictVisitor dispTVisitor(*dispTSection,
+                 numBasis*spaceDim,
+                 &dispTCell[0]);
+  const ALE::Obj<RealSection>& dispTmdtSection =
+    fields->get("disp(t-dt)").section();
+  assert(!dispTmdtSection.isNull());
+  topology::Mesh::RestrictVisitor dispTmdtVisitor(*dispTmdtSection,
+                 numBasis*spaceDim,
+                 &dispTmdtCell[0]);
+  const ALE::Obj<RealSection>& residualSection = residual.section();
+  topology::Mesh::UpdateAddVisitor residualVisitor(*residualSection,
+               &_cellVector[0]);
+
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates =
+    sieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates,
+            coordinatesCell.size(),
+            &coordinatesCell[0]);
+
+  assert(0 != _normalizer);
+  const double lengthScale = _normalizer->lengthScale();
+  const double gravityScale =
+    _normalizer->pressureScale() / (_normalizer->lengthScale() *
+            _normalizer->densityScale());
+
+  // Get parameters used in integration.
+  const double dt = _dt;
+  const double dt2 = dt*dt;
+  assert(dt > 0);
+
+  _logger->eventEnd(setupEvent);
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventBegin(computeEvent);
+#endif
+
+  // Loop over cells
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
+       c_iter != cellsEnd;
+       ++c_iter) {
+    // Compute geometry information for current cell
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventBegin(geometryEvent);
+#endif
+#if defined(PRECOMPUTE_GEOMETRY)
+    _quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(geometryEvent);
+    _logger->eventBegin(stateVarsEvent);
+#endif
+
+    // Get state variables for cell.
+    _material->retrievePropsAndVars(*c_iter);
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(stateVarsEvent);
+    _logger->eventBegin(restrictEvent);
+#endif
+
+    // Reset element vector to zero
+    _resetCellVector();
+
+    // Restrict input fields to cell
+    dispTVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispTVisitor);
+    dispTmdtVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispTmdtVisitor);
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(restrictEvent);
+    _logger->eventBegin(computeEvent);
+#endif
+
+    // Get cell geometry information that depends on cell
+    const double_array& basis = _quadrature->basis();
+    const double_array& basisDeriv = _quadrature->basisDeriv();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
+    const double_array& quadPtsNondim = _quadrature->quadPts();
+
+    // Compute body force vector if gravity is being used.
+    if (0 != _gravityField) {
+      const spatialdata::geocoords::CoordSys* cs = fields->mesh().coordsys();
+      assert(0 != cs);
+
+      // Get density at quadrature points for this cell
+      const double_array& density = _material->calcDensity();
+
+      quadPtsGlobal = quadPtsNondim;
+      _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
+          lengthScale);
+
+      // Compute action for element body forces
+      for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
+        const int err = _gravityField->query(&gravVec[0], gravVec.size(),
+            &quadPtsGlobal[0], spaceDim, cs);
+        if (err)
+          throw std::runtime_error("Unable to get gravity vector for point.");
+        _normalizer->nondimensionalize(&gravVec[0], gravVec.size(),
+            gravityScale);
+        const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
+        for (int iBasis = 0, iQ = iQuad * numBasis; iBasis < numBasis; ++iBasis) {
+          const double valI = wt * basis[iQ + iBasis];
+          for (int iDim = 0; iDim < spaceDim; ++iDim) {
+            _cellVector[iBasis * spaceDim + iDim] += valI * gravVec[iDim];
+          } // for
+        } // for
+      } // for
+      PetscLogFlops(numQuadPts * (2 + numBasis * (1 + 2 * spaceDim)));
+    } // if
+
+    // Compute action for inertial terms
+    const double_array& density = _material->calcDensity();
+    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad]
+          / dt2;
+      const int iQ = iQuad * numBasis;
+      double valJ = 0.0;
+      for (int jBasis = 0; jBasis < numBasis; ++jBasis)
+        valJ += basis[iQ + jBasis];
+      valJ *= wt;
+      for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
+        const double valIJ = basis[iQ + iBasis] * valJ;
+        for (int iDim = 0; iDim < spaceDim; ++iDim) {
+          _cellVector[iBasis*spaceDim+iDim] += valIJ *
+              (dispTCell[iBasis*spaceDim+iDim] - dispTmdtCell[iBasis*spaceDim+iDim]);
+        } // for
+      } // for
+    } // for
+    PetscLogFlops(numQuadPts*(4+numBasis+numBasis*(1+spaceDim*2)));
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(computeEvent);
+    _logger->eventBegin(stressEvent);
+#endif
+
+    // Compute B(transpose) * sigma, first computing strains
+    calcTotalStrainFn(&strainCell, basisDeriv, dispTCell,
+          numBasis, numQuadPts);
+    const double_array& stressCell = _material->calcStress(strainCell, true);
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(stressEvent);
+    _logger->eventBegin(computeEvent);
+#endif
+
+    CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell);
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(computeEvent);
+    _logger->eventBegin(updateEvent);
+#endif
+
+    // Assemble cell contribution into field
+    residualVisitor.clear();
+    sieveMesh->updateClosure(*c_iter, residualVisitor);
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(updateEvent);
+#endif
+  } // for
+
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventEnd(computeEvent);
+#endif
+} // integrateResidualLumped
 
 // ----------------------------------------------------------------------
 // Compute matrix associated with operator.
@@ -400,13 +685,18 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
 						&coordinatesCell[0]);
 
   _logger->eventEnd(setupEvent);
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventBegin(computeEvent);
+#endif
 
   // Loop over cells
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
+#endif
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
 #else
@@ -414,12 +704,19 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
     _quadrature->computeGeometry(coordinatesCell, *c_iter);
 #endif
+
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
+    _logger->eventBegin(stateVarsEvent);
+#endif
 
     // Get state variables for cell.
-    _logger->eventBegin(stateVarsEvent);
     _material->retrievePropsAndVars(*c_iter);
+
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(stateVarsEvent);
+    _logger->eventBegin(computeEvent);
+#endif
 
     // Reset element matrix to zero
     _resetCellMatrix();
@@ -432,10 +729,9 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     const double_array& density = _material->calcDensity();
 
     // Compute Jacobian for inertial terms
-    _logger->eventBegin(computeEvent);
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const double wt = 
-	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / dt2;
+          quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / dt2;
       for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
         const double valI = wt*basis[iQ+iBasis];
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
@@ -449,17 +745,27 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
       } // for
     } // for
     PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+spaceDim))));
+
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
+    _logger->eventBegin(updateEvent);
+#endif
     
     // Assemble cell contribution into PETSc matrix.
-    _logger->eventBegin(updateEvent);
     jacobianVisitor.clear();
     PetscErrorCode err = updateOperator(jacobianMat, *sieveMesh->getSieve(),
 					jacobianVisitor, *c_iter,
 					&_cellMatrix[0], ADD_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
+
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
+#endif
   } // for
+
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventEnd(computeEvent);
+#endif
 
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();
@@ -535,13 +841,17 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
 						&coordinatesCell[0]);
 
   _logger->eventEnd(setupEvent);
-
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventBegin(computeEvent);
+#endif
   // Loop over cells
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
+#endif
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
 #else
@@ -549,15 +859,22 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
     _quadrature->computeGeometry(coordinatesCell, *c_iter);
 #endif
+
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
+    _logger->eventBegin(stateVarsEvent);
+#endif
 
     // Get state variables for cell.
-    _logger->eventBegin(stateVarsEvent);
     _material->retrievePropsAndVars(*c_iter);
+
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(stateVarsEvent);
+    _logger->eventBegin(computeEvent);
+#endif
 
     // Reset element matrix to zero
-    _resetCellMatrix();
+    _resetCellVector();
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -567,32 +884,39 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     const double_array& density = _material->calcDensity();
 
     // Compute Jacobian for inertial terms
-    _logger->eventBegin(computeEvent);
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = 
-	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / dt2;
-      for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-        const double valI = wt*basis[iQ+iBasis];
-        for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-          const double valIJ = valI * basis[iQ+jBasis];
-          for (int iDim=0; iDim < spaceDim; ++iDim) {
-            const int iBlock = (iBasis*spaceDim + iDim) * (numBasis*spaceDim);
-            const int jBlock = (jBasis*spaceDim + iDim);
-            _cellMatrix[iBlock+jBlock] += valIJ;
-          } // for
-        } // for
+    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad]
+          / dt2;
+      const int iQ = iQuad * numBasis;
+      double valJ = 0.0;
+      for (int jBasis = 0; jBasis < numBasis; ++jBasis)
+        valJ += basis[iQ + jBasis];
+      valJ *= wt;
+      for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
+        const double valIJ = basis[iQ + iBasis] * valJ;
+        for (int iDim = 0; iDim < spaceDim; ++iDim)
+          _cellVector[iBasis*spaceDim+iDim] += valIJ;
       } // for
     } // for
-    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+spaceDim))));
-    _lumpCellMatrix();
+    PetscLogFlops(numQuadPts*(4+numBasis+numBasis*(1+spaceDim)));
+
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
+    _logger->eventBegin(updateEvent);
+#endif
     
     // Assemble cell contribution into lumped matrix.
-    _logger->eventBegin(updateEvent);
     jacobianVisitor.clear();
     sieveMesh->updateClosure(*c_iter, jacobianVisitor);
+
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
+#endif
   } // for
+
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventEnd(computeEvent);
+#endif
 
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();

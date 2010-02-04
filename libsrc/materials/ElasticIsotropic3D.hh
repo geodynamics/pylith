@@ -196,6 +196,8 @@ private :
 
 }; // class ElasticIsotropic3D
 
+#include "ElasticIsotropic3D.icc" // inline methods
+
 #endif // pylith_materials_elasticisotropic3d_hh
 
 

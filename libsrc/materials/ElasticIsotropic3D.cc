@@ -189,23 +189,6 @@ pylith::materials::ElasticIsotropic3D::_dimProperties(double* const values,
 } // _dimProperties
 
 // ----------------------------------------------------------------------
-// Compute density at location from properties.
-void
-pylith::materials::ElasticIsotropic3D::_calcDensity(double* const density,
-						    const double* properties,
-						    const int numProperties,
-						    const double* stateVars,
-						    const int numStateVars)
-{ // _calcDensity
-  assert(0 != density);
-  assert(0 != properties);
-  assert(_numPropsQuadPt == numProperties);
-  assert(0 == numStateVars);
-
-  density[0] = properties[p_density];
-} // _calcDensity
-
-// ----------------------------------------------------------------------
 // Compute stress tensor at location from properties.
 void
 pylith::materials::ElasticIsotropic3D::_calcStress(double* const stress,

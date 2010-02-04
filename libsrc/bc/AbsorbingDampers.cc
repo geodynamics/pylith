@@ -30,6 +30,7 @@
 #include <sstream> // USES std::ostringstream
 
 //#define PRECOMPUTE_GEOMETRY
+//#define DETAILED_EVENT_LOGGING
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
@@ -304,16 +305,17 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   topology::Mesh::RestrictVisitor dispTmdtVisitor(*dispTmdtSection, 
 						  numBasis*spaceDim);
 
-  _logger->eventEnd(setupEvent);
-
 #if !defined(PRECOMPUTE_GEOMETRY)
-  _logger->eventBegin(geometryEvent);
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveSubMesh->getRealSection("coordinates");
   RestrictVisitor coordsVisitor(*coordinates,
 				coordinatesCell.size(), &coordinatesCell[0]);
-  _logger->eventEnd(geometryEvent);
+#endif
+
+  _logger->eventEnd(setupEvent);
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventBegin(computeEvent);
 #endif
 
   // Get parameters used in integration.
@@ -324,7 +326,9 @@ pylith::bc::AbsorbingDampers::integrateResidual(
        c_iter != cellsEnd;
        ++c_iter) {
     // Get geometry information for current cell
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
+#endif
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
 #else
@@ -332,13 +336,16 @@ pylith::bc::AbsorbingDampers::integrateResidual(
     sieveSubMesh->restrictClosure(*c_iter, coordsVisitor);
     _quadrature->computeGeometry(coordinatesCell, *c_iter);
 #endif
+
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
+    _logger->eventBegin(restrictEvent);
+#endif
 
     // Reset element vector to zero
     _resetCellVector();
 
     // Restrict input fields to cell
-    _logger->eventBegin(restrictEvent);
     dispTVisitor.clear();
     sieveSubMesh->restrictClosure(*c_iter, dispTVisitor);
     const double* dispTCell = dispTVisitor.getValues();
@@ -349,8 +356,10 @@ pylith::bc::AbsorbingDampers::integrateResidual(
 
     dampersSection->restrictPoint(*c_iter, &dampersCell[0], dampersCell.size());
 
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
     _logger->eventBegin(computeEvent);
+#endif
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -373,16 +382,25 @@ pylith::bc::AbsorbingDampers::integrateResidual(
         } // for
       } // for
     } // for
+
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
+    _logger->eventBegin(updateEvent);
+#endif
 
     // Assemble cell contribution into field
-    _logger->eventBegin(updateEvent);
     residualVisitor.clear();
     sieveSubMesh->updateClosure(*c_iter, residualVisitor);
-    _logger->eventEnd(updateEvent);
-  } // for
 
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(updateEvent);
+#endif
+  } // for
   PetscLogFlops(cells->size()*numQuadPts*(3+numBasis*(1+numBasis*(5*spaceDim))));
+
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventEnd(computeEvent);
+#endif
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -441,8 +459,6 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 			   (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
 				     sieveMesh->depth())*spaceDim);
 
-  _logger->eventEnd(setupEvent);
-
   // Get sparse matrix
   const PetscMat jacobianMat = jacobian->matrix();
   assert(0 != jacobianMat);
@@ -455,20 +471,25 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   _initCellMatrix();
 
 #if !defined(PRECOMPUTE_GEOMETRY)
-  _logger->eventBegin(geometryEvent);
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates =
     sieveSubMesh->getRealSection("coordinates");
   RestrictVisitor coordsVisitor(*coordinates,
 				coordinatesCell.size(), &coordinatesCell[0]);
-  _logger->eventEnd(geometryEvent);
+#endif
+
+  _logger->eventEnd(setupEvent);
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventBegin(computeEvent);
 #endif
 
   for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
+#endif
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
 #else
@@ -476,15 +497,19 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     sieveSubMesh->restrictClosure(*c_iter, coordsVisitor);
     _quadrature->computeGeometry(coordinatesCell, *c_iter);
 #endif
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
+    _logger->eventBegin(restrictEvent);
+#endif
 
     // Get damping constants
-    _logger->eventBegin(restrictEvent);
     assert(numQuadPts*spaceDim == dampersSection->getFiberDimension(*c_iter));
     const double* dampingConstsCell = dampersSection->restrictPoint(*c_iter);
-    _logger->eventEnd(restrictEvent);
 
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(restrictEvent);
     _logger->eventBegin(computeEvent);
+#endif
 
     // Reset element vector to zero
     _resetCellMatrix();
@@ -510,19 +535,27 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
         } // for
       } // for
     } // for
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
+    _logger->eventBegin(updateEvent);
+#endif
     
     // Assemble cell contribution into PETSc Matrix
-    _logger->eventBegin(updateEvent);
     jacobianVisitor.clear();
     PetscErrorCode err = updateOperator(jacobianMat, *sieveSubMesh->getSieve(), 
 					jacobianVisitor, *c_iter,
 					&_cellMatrix[0], ADD_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
-    _logger->eventEnd(updateEvent);
-  } // for
 
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(updateEvent);
+#endif
+  } // for
   PetscLogFlops(cells->size()*numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
+
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventEnd(computeEvent);
+#endif
 
   _needNewJacobian = false;
 } // integrateJacobian
@@ -589,23 +622,26 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   topology::Mesh::UpdateAddVisitor jacobianVisitor(*jacobianSection, 
 						   &_cellVector[0]);
 
-  _logger->eventEnd(setupEvent);
-
 #if !defined(PRECOMPUTE_GEOMETRY)
-  _logger->eventBegin(geometryEvent);
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveSubMesh->getRealSection("coordinates");
   RestrictVisitor coordsVisitor(*coordinates,
 				coordinatesCell.size(), &coordinatesCell[0]);
-  _logger->eventEnd(geometryEvent);
+#endif
+
+  _logger->eventEnd(setupEvent);
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventBegin(computeEvent);
 #endif
 
   for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
+#endif
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
 #else
@@ -613,15 +649,19 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     sieveSubMesh->restrictClosure(*c_iter, coordsVisitor);
     _quadrature->computeGeometry(coordinatesCell, *c_iter);
 #endif
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
+    _logger->eventBegin(restrictEvent);
+#endif
 
     // Get damping constants
-    _logger->eventBegin(restrictEvent);
     assert(numQuadPts*spaceDim == dampersSection->getFiberDimension(*c_iter));
     const double* dampingConstsCell = dampersSection->restrictPoint(*c_iter);
-    _logger->eventEnd(restrictEvent);
 
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(restrictEvent);
     _logger->eventBegin(computeEvent);
+#endif
 
     // Reset element vector to zero
     _resetCellMatrix();
@@ -649,15 +689,23 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     } // for
     _lumpCellMatrix();
     
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
+    _logger->eventBegin(updateEvent);
+#endif
 
     // Assemble cell contribution into lumped matrix.
-    _logger->eventBegin(updateEvent);
     jacobianVisitor.clear();
     sieveSubMesh->updateClosure(*c_iter, jacobianVisitor);
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
+#endif
   } // for
   PetscLogFlops(cells->size()*numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
+
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventEnd(computeEvent);
+#endif
 
   _needNewJacobian = false;
 } // integrateJacobian
