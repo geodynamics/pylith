@@ -384,6 +384,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
     } // for
 
 #if defined(DETAILED_EVENT_LOGGING)
+    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(5*spaceDim))));
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
@@ -396,12 +397,173 @@ pylith::bc::AbsorbingDampers::integrateResidual(
     _logger->eventEnd(updateEvent);
 #endif
   } // for
-  PetscLogFlops(cells->size()*numQuadPts*(3+numBasis*(1+numBasis*(5*spaceDim))));
 
 #if !defined(DETAILED_EVENT_LOGGING)
+  PetscLogFlops(cells->size()*numQuadPts*(3+numBasis*(1+numBasis*(5*spaceDim))));
   _logger->eventEnd(computeEvent);
 #endif
 } // integrateResidual
+
+// ----------------------------------------------------------------------
+// Integrate contributions to residual term (r) for operator.
+void
+pylith::bc::AbsorbingDampers::integrateResidualLumped(
+           const topology::Field<topology::Mesh>& residual,
+           const double t,
+           topology::SolutionFields* const fields)
+{ // integrateResidualLumped
+  assert(0 != _quadrature);
+  assert(0 != _boundaryMesh);
+  assert(0 != _parameters);
+  assert(0 != fields);
+  assert(0 != _logger);
+
+  const int setupEvent = _logger->eventId("AdIR setup");
+  const int geometryEvent = _logger->eventId("AdIR geometry");
+  const int computeEvent = _logger->eventId("AdIR compute");
+  const int restrictEvent = _logger->eventId("AdIR restrict");
+  const int updateEvent = _logger->eventId("AdIR update");
+
+  _logger->eventBegin(setupEvent);
+
+  // Get cell geometry information that doesn't depend on cell
+  const int numQuadPts = _quadrature->numQuadPts();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+
+  // Allocate vectors for cell values.
+  _initCellVector();
+  double_array dampersCell(numQuadPts*spaceDim);
+
+  // Get cell information
+  const ALE::Obj<SieveSubMesh>& sieveSubMesh = _boundaryMesh->sieveMesh();
+  assert(!sieveSubMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells =
+    sieveSubMesh->heightStratum(1);
+  assert(!cells.isNull());
+  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  // Get sections
+  const ALE::Obj<SubRealSection>& dampersSection =
+    _parameters->get("damping constants").section();
+  assert(!dampersSection.isNull());
+
+  const ALE::Obj<RealSection>& residualSection = residual.section();
+  assert(!residualSection.isNull());
+  topology::SubMesh::UpdateAddVisitor residualVisitor(*residualSection,
+                  &_cellVector[0]);
+
+  const topology::Field<topology::Mesh>& dispT =
+    fields->get("disp(t)");
+  const ALE::Obj<RealSection>& dispTSection = dispT.section();
+  assert(!dispTSection.isNull());
+  topology::Mesh::RestrictVisitor dispTVisitor(*dispTSection,
+                 numBasis*spaceDim);
+  const topology::Field<topology::Mesh>& dispTmdt =
+    fields->get("disp(t-dt)");
+  const ALE::Obj<RealSection>& dispTmdtSection = dispTmdt.section();
+  assert(!dispTmdtSection.isNull());
+  topology::Mesh::RestrictVisitor dispTmdtVisitor(*dispTmdtSection,
+              numBasis*spaceDim);
+
+#if !defined(PRECOMPUTE_GEOMETRY)
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates =
+    sieveSubMesh->getRealSection("coordinates");
+  RestrictVisitor coordsVisitor(*coordinates,
+        coordinatesCell.size(), &coordinatesCell[0]);
+#endif
+
+  _logger->eventEnd(setupEvent);
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventBegin(computeEvent);
+#endif
+
+  // Get parameters used in integration.
+  const double dt = _dt;
+  assert(dt > 0);
+
+  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
+       c_iter != cellsEnd;
+       ++c_iter) {
+    // Get geometry information for current cell
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventBegin(geometryEvent);
+#endif
+#if defined(PRECOMPUTE_GEOMETRY)
+    _quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    sieveSubMesh->restrictClosure(*c_iter, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(geometryEvent);
+    _logger->eventBegin(restrictEvent);
+#endif
+
+    // Reset element vector to zero
+    _resetCellVector();
+
+    // Restrict input fields to cell
+    dispTVisitor.clear();
+    sieveSubMesh->restrictClosure(*c_iter, dispTVisitor);
+    const double* dispTCell = dispTVisitor.getValues();
+
+    dispTmdtVisitor.clear();
+    sieveSubMesh->restrictClosure(*c_iter, dispTmdtVisitor);
+    const double* dispTmdtCell = dispTmdtVisitor.getValues();
+
+    dampersSection->restrictPoint(*c_iter, &dampersCell[0], dampersCell.size());
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(restrictEvent);
+    _logger->eventBegin(computeEvent);
+#endif
+
+    // Get cell geometry information that depends on cell
+    const double_array& basis = _quadrature->basis();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
+
+    // Compute action for absorbing bc terms
+    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad] / (2.0 * dt);
+      const int iQ = iQuad * numBasis;
+      double valJ = 0.0;
+      for (int jBasis = 0; jBasis < numBasis; ++jBasis)
+        valJ += basis[iQ + jBasis];
+      valJ *= wt;
+      for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
+        const double valIJ = basis[iQ + iBasis] * valJ;
+        for (int iDim = 0; iDim < spaceDim; ++iDim)
+          _cellVector[iBasis * spaceDim + iDim] += valIJ * dampersCell[iQuad
+              * spaceDim + iDim] * (dispTmdtCell[iBasis * spaceDim + iDim]
+              - dispTCell[iBasis * spaceDim + iDim]);
+      } // for
+    } // for
+#if defined(DETAILED_EVENT_LOGGING)
+    PetscLogFlops(numQuadPts*(4+numBasis+numBasis*(1+spaceDim*4)));
+    _logger->eventEnd(computeEvent);
+    _logger->eventBegin(updateEvent);
+#endif
+
+    // Assemble cell contribution into field
+    residualVisitor.clear();
+    sieveSubMesh->updateClosure(*c_iter, residualVisitor);
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(updateEvent);
+#endif
+  } // for
+#if !defined(DETAILED_EVENT_LOGGING)
+  PetscLogFlops(cells->size()*numQuadPts*(4+numBasis+numBasis*(1+spaceDim*4)));
+  _logger->eventEnd(computeEvent);
+#endif
+} // integrateResidualLumped
 
 // ----------------------------------------------------------------------
 // Integrate contributions to Jacobian matrix (A) associated with
@@ -536,6 +698,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
       } // for
     } // for
 #if defined(DETAILED_EVENT_LOGGING)
+    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
@@ -551,9 +714,9 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     _logger->eventEnd(updateEvent);
 #endif
   } // for
-  PetscLogFlops(cells->size()*numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
 
 #if !defined(DETAILED_EVENT_LOGGING)
+  PetscLogFlops(cells->size()*numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
   _logger->eventEnd(computeEvent);
 #endif
 
@@ -664,32 +827,29 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 #endif
 
     // Reset element vector to zero
-    _resetCellMatrix();
+    _resetCellVector();
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
     const double_array& jacobianDet = _quadrature->jacobianDet();
 
     // Compute Jacobian for absorbing bc terms
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = 
-	quadWts[iQuad] * jacobianDet[iQuad] / (2.0 * dt);
-      for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-        const double valI = wt*basis[iQ+iBasis];
-        for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-          const double valIJ = valI * basis[iQ+jBasis];
-          for (int iDim=0; iDim < spaceDim; ++iDim) {
-            const int iBlock = (iBasis*spaceDim + iDim) * (numBasis*spaceDim);
-            const int jBlock = (jBasis*spaceDim + iDim);
-            _cellMatrix[iBlock+jBlock] += 
-	      valIJ * dampingConstsCell[iQuad*spaceDim+iDim];
-          } // for
-        } // for
+    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad] / (2.0 * dt);
+      const int iQ = iQuad * numBasis;
+      double valJ = 0.0;
+      for (int jBasis = 0; jBasis < numBasis; ++jBasis)
+        valJ += basis[iQ + jBasis];
+      valJ *= wt;
+      for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
+        const double valIJ = basis[iQ + iBasis] * valJ;
+        for (int iDim = 0; iDim < spaceDim; ++iDim)
+          _cellVector[iBasis * spaceDim + iDim] += valIJ
+              * dampingConstsCell[iQuad * spaceDim + iDim];
       } // for
     } // for
-    _lumpCellMatrix();
-    
 #if defined(DETAILED_EVENT_LOGGING)
+    PetscLogFlops(numQuadPts*(4+numBasis+numBasis*(1+spaceDim*2)));
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
@@ -701,9 +861,9 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     _logger->eventEnd(updateEvent);
 #endif
   } // for
-  PetscLogFlops(cells->size()*numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
 
 #if !defined(DETAILED_EVENT_LOGGING)
+  PetscLogFlops(cells->size()*numQuadPts*(4+numBasis+numBasis*(1+spaceDim*2)));
   _logger->eventEnd(computeEvent);
 #endif
 
