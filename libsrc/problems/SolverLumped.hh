@@ -65,6 +65,12 @@ public :
 	     const topology::Field<topology::Mesh>& jacobian,
 	     const topology::Field<topology::Mesh>& residual);
 
+// PRIVATE METHODS //////////////////////////////////////////////////////
+private :
+
+  /// Initialize logger.
+  void _initializeLogger(void);
+
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 

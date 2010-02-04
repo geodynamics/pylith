@@ -135,6 +135,12 @@ public :
 			    PetscReal *gnorm,
 			    PetscTruth *flag);
 
+// PRIVATE METHODS //////////////////////////////////////////////////////
+private :
+
+  /// Initialize logger.
+  void _initializeLogger(void);
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 

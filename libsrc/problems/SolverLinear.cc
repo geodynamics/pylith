@@ -17,6 +17,7 @@
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/problems/Formulation.hh" // USES Formulation
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include <petscksp.h> // USES PetscKSP
 
@@ -65,6 +66,7 @@ pylith::problems::SolverLinear::initialize(
 { // initialize
   assert(0 != formulation);
 
+  _initializeLogger();
   Solver::initialize(fields, jacobian, formulation);
 
   PetscErrorCode err = 0;
@@ -104,11 +106,18 @@ pylith::problems::SolverLinear::solve(
   assert(0 != solution);
   assert(0 != jacobian);
 
-  PetscErrorCode err = 0;
+  const int setupEvent = _logger->eventId("SoLi setup");
+  const int solveEvent = _logger->eventId("SoLi solve");
+  const int scatterEvent = _logger->eventId("SoLi scatter");
+  _logger->eventBegin(scatterEvent);
 
   // Update PetscVector view of field.
   residual.scatterSectionToVector();
 
+  _logger->eventEnd(scatterEvent);
+  _logger->eventBegin(setupEvent);
+
+  PetscErrorCode err = 0;
   const PetscMat jacobianMat = jacobian->matrix();
   if (!jacobian->valuesChanged()) {
     err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, 
@@ -121,11 +130,34 @@ pylith::problems::SolverLinear::solve(
 
   const PetscVec residualVec = residual.vector();
   const PetscVec solutionVec = solution->vector();
+
+  _logger->eventEnd(setupEvent);
+  _logger->eventBegin(solveEvent);
+
   err = KSPSolve(_ksp, residualVec, solutionVec); CHECK_PETSC_ERROR(err);
+
+  _logger->eventEnd(solveEvent);
+  _logger->eventBegin(scatterEvent);
 
   // Update section view of field.
   solution->scatterVectorToSection();
+
+  _logger->eventEnd(scatterEvent);
 } // solve
+
+// ----------------------------------------------------------------------
+// Initialize logger.
+void
+pylith::problems::SolverLinear::_initializeLogger(void)
+{ // initializeLogger
+  delete _logger; _logger = new utils::EventLogger;
+  assert(0 != _logger);
+  _logger->className("SolverLinear");
+  _logger->initialize();
+  _logger->registerEvent("SoLi setup");
+  _logger->registerEvent("SoLi solve");
+  _logger->registerEvent("SoLi scatter");
+} // initializeLogger
 
 
 // End of file

@@ -14,12 +14,15 @@
 
 #include "Solver.hh" // implementation of class methods
 
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
+
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Constructor
 pylith::problems::Solver::Solver(void) :
-  _formulation(0)
+  _formulation(0),
+  _logger(0)
 { // constructor
 } // constructor
 
@@ -36,6 +39,7 @@ void
 pylith::problems::Solver::deallocate(void)
 { // deallocate
   _formulation = 0; // Handle only, do not manage memory.
+  delete _logger; _logger = 0;
 } // deallocate
   
 // ----------------------------------------------------------------------

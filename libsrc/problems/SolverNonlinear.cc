@@ -17,6 +17,7 @@
 #include "Formulation.hh" // USES Formulation
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include <petscsnes.h> // USES PetscSNES
 
@@ -66,6 +67,7 @@ pylith::problems::SolverNonlinear::initialize(
 { // initialize
   assert(0 != formulation);
 
+  _initializeLogger();
   Solver::initialize(fields, jacobian, formulation);
 
   PetscErrorCode err = 0;
@@ -101,13 +103,21 @@ pylith::problems::SolverNonlinear::solve(
 { // solve
   assert(0 != solution);
 
-  PetscErrorCode err = 0;
+  const int solveEvent = _logger->eventId("SoLi solve");
+  const int scatterEvent = _logger->eventId("SoLi scatter");
+  _logger->eventBegin(solveEvent);
 
+  PetscErrorCode err = 0;
   const PetscVec solutionVec = solution->vector();
   err = SNESSolve(_snes, PETSC_NULL, solutionVec); CHECK_PETSC_ERROR(err);
   
+  _logger->eventEnd(solveEvent);
+  _logger->eventBegin(scatterEvent);
+
   // Update section view of field.
   solution->scatterVectorToSection();
+
+  _logger->eventEnd(scatterEvent);
 } // solve
 
 // ----------------------------------------------------------------------
@@ -392,6 +402,20 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
 
   PetscFunctionReturn(0);
 } // lineSearch
+
+// ----------------------------------------------------------------------
+// Initialize logger.
+void
+pylith::problems::SolverNonlinear::_initializeLogger(void)
+{ // initializeLogger
+  delete _logger; _logger = new utils::EventLogger;
+  assert(0 != _logger);
+  _logger->className("SolverNonlinear");
+  _logger->initialize();
+  _logger->registerEvent("SoNl setup");
+  _logger->registerEvent("SoNl solve");
+  _logger->registerEvent("SoNl scatter");
+} // initializeLogger
 
 
 // End of file

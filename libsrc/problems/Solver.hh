@@ -24,7 +24,7 @@
 #include "problemsfwd.hh" // forward declarations
 
 #include "pylith/topology/topologyfwd.hh" // USES SolutionFields
-
+#include "pylith/utils/utilsfwd.hh" // USES EventLogger
 
 // Solver ---------------------------------------------------------
 /** @brief Abstract C++ base class for using PETSc linear and
@@ -64,6 +64,7 @@ public :
 protected :
 
   Formulation* _formulation; ///< Handle to formulation for system of eqns.
+  utils::EventLogger* _logger; ///< Event logger.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
