@@ -34,6 +34,7 @@
 #include <stdexcept> // USES std::runtime_error
 
 //#define PRECOMPUTE_GEOMETRY
+//#define DETAILED_EVENT_LOGGING
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
@@ -246,6 +247,9 @@ void pylith::faults::FaultCohesiveKin::integrateResidualAssembled(const topology
   assert(!dispTIncrSection.isNull());
 
   _logger->eventEnd(setupEvent);
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventBegin(computeEvent);
+#endif
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
@@ -254,7 +258,9 @@ void pylith::faults::FaultCohesiveKin::integrateResidualAssembled(const topology
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
+#endif
 
     slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
 
@@ -271,8 +277,10 @@ void pylith::faults::FaultCohesiveKin::integrateResidualAssembled(const topology
     dispTIncrSection->restrictPoint(v_positive, &dispTIncrVertexP[0], dispTIncrVertexP.size());
     dispTIncrSection->restrictPoint(v_lagrange, &dispTIncrVertexL[0], dispTIncrVertexL.size());
 
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
     _logger->eventBegin(computeEvent);
+#endif
 
     // Compute current estimate of displacement at time t+dt using
     // solution increment.
@@ -297,8 +305,10 @@ void pylith::faults::FaultCohesiveKin::integrateResidualAssembled(const topology
         residualVertexL[kDim] -= (dispTpdtVertexP[iDim] - dispTpdtVertexN[iDim])
             * orientationVertex[kDim*spaceDim+iDim];
 
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
+#endif
 
     assert(residualVertexN.size() == residualSection->getFiberDimension(v_negative));
     residualSection->updateAddPoint(v_negative, &residualVertexN[0]);
@@ -309,11 +319,15 @@ void pylith::faults::FaultCohesiveKin::integrateResidualAssembled(const topology
     assert(residualVertexL.size() == residualSection->getFiberDimension(v_lagrange));
     residualSection->updateAddPoint(v_lagrange, &residualVertexL[0]);
 
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
-
+#endif
   } // for
-
   PetscLogFlops(numVertices*spaceDim*spaceDim*8);
+
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventEnd(computeEvent);
+#endif
 } // integrateResidualAssembled
 
 // ----------------------------------------------------------------------
@@ -412,20 +426,27 @@ void pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(topology::Jaco
       sieveMesh->depth()) * spaceDim);
 
   _logger->eventEnd(setupEvent);
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventBegin(computeEvent);
+#endif
 
   for (SieveMesh::label_sequence::iterator c_iter = cellsCohesiveBegin; c_iter
       != cellsCohesiveEnd; ++c_iter) {
     const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
 
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
+#endif
 
     matrixCell = 0.0;
     // Get orientations at fault cell's vertices.
     orientationVisitor.clear();
     faultSieveMesh->restrictClosure(c_fault, orientationVisitor);
 
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
     _logger->eventBegin(computeEvent);
+#endif
 
     for (int iConstraint = 0; iConstraint < numConstraintVert; ++iConstraint) {
       // Blocks in cell matrix associated with normal cohesive
@@ -462,18 +483,27 @@ void pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(topology::Jaco
         } // for
     } // for
 
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
+    _logger->eventBegin(updateEvent);
+#endif
 
     // Insert cell contribution into PETSc Matrix
-    _logger->eventBegin(updateEvent);
     jacobianVisitor.clear();
     PetscErrorCode err = updateOperator(jacobianMatrix, *sieveMesh->getSieve(),
       jacobianVisitor, *c_iter, &matrixCell[0], INSERT_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
-    _logger->eventEnd(updateEvent);
 
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(updateEvent);
+#endif
   } // for
   PetscLogFlops(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*4);
+
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventEnd(computeEvent);
+#endif
+
   _needNewJacobian = false;
 } // integrateJacobianAssembled
 
@@ -509,6 +539,9 @@ void pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(topology::Fiel
   assert(!jacobianSection.isNull());
 
   _logger->eventEnd(setupEvent);
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventBegin(computeEvent);
+#endif
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
@@ -516,12 +549,19 @@ void pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(topology::Fiel
 
     assert(jacobianSection->getFiberDimension(v_lagrange) == spaceDim);
 
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(updateEvent);
+#endif
     jacobianSection->updatePoint(v_lagrange, &jacobianVertex[0]);
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
+#endif
   } // for
-
   PetscLogFlops(0);
+
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventEnd(computeEvent);
+#endif
 
   _needNewJacobian = false;
 } // integrateJacobianAssembled
@@ -599,6 +639,10 @@ void pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields
 
   _logger->eventEnd(setupEvent);
 
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventBegin(computeEvent);
+#endif
+
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
@@ -606,7 +650,9 @@ void pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
+#endif
 
     // Get orientations at fault cell's vertices.
     orientationSection->restrictPoint(v_fault, &orientationVertex[0], orientationVertex.size());
@@ -626,8 +672,10 @@ void pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields
     dispTSection->restrictPoint(v_negative, &dispTVertexN[0], dispTVertexN.size());
     dispTSection->restrictPoint(v_positive, &dispTVertexP[0], dispTVertexP.size());
 
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
     _logger->eventBegin(computeEvent);
+#endif
 
       switch (spaceDim) { // switch
     case 1: {
@@ -783,8 +831,10 @@ void pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields
       throw std::logic_error("Unknown spatial dimension.");
     } // switch
 
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
+#endif
 
     assert(solutionVertexN.size() == solutionSection->getFiberDimension(v_negative));
     solutionSection->updateAddPoint(v_negative, &solutionVertexN[0]);
@@ -795,7 +845,9 @@ void pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields
     assert(solutionVertexL.size() == solutionSection->getFiberDimension(v_lagrange));
     solutionSection->updateAddPoint(v_lagrange, &solutionVertexL[0]);
 
+#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
+#endif
   } // for
 
   switch(spaceDim) {
@@ -812,6 +864,10 @@ void pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields
     assert(0);
     throw std::logic_error("Unknown spatial dimension.");
   } // switch
+
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventEnd(computeEvent);
+#endif
 } // adjustSolnLumped
 
 // ----------------------------------------------------------------------

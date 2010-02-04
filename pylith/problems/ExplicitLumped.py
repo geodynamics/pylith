@@ -215,6 +215,21 @@ class ExplicitLumped(Formulation):
     return
 
 
+  def _reformResidual(self, t, dt):
+    """
+    Reform residual vector for operator.
+    """
+    self._info.log("Integrating residual term in operator.")
+    self._eventLogger.stagePush("Reform Residual")
+
+    self.updateSettings(self.jacobian, self.fields, t, dt)
+    self.reformResidualLumped()
+
+    self._eventLogger.stagePop()
+    self._debug.log(resourceUsageString())
+    return
+
+
   def _reformJacobian(self, t, dt):
     """
     Reform Jacobian matrix for operator.

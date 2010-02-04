@@ -65,6 +65,12 @@ FaultCohesiveDynL (C++)
 
 Unit tests
 
+  setting up cohesive info
+
+  ElasticityExplicit
+    integrateResidualLumped()
+
+
   FaultCohesiveDynL
     integrateJacobian (lumped)
     adjustSolnLumped

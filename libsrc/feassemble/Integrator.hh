@@ -148,10 +148,33 @@ public :
    * @param t Current time
    * @param fields Solution fields
    */
-  virtual 
+  virtual
   void integrateResidualAssembled(const topology::Field<topology::Mesh>& residual,
 				  const double t,
 				  topology::SolutionFields* const fields);
+
+  /** Integrate contributions to residual term (r) for operator.
+   *
+   * @param residual Field containing values for residual
+   * @param t Current time
+   * @param fields Solution fields
+   */
+  virtual
+  void integrateResidualLumped(const topology::Field<topology::Mesh>& residual,
+       const double t,
+       topology::SolutionFields* const fields);
+
+  /** Integrate contributions to residual term (r) for operator that
+   * do not require assembly over cells, vertices, or processors.
+   *
+   * @param residual Field containing values for residual
+   * @param t Current time
+   * @param fields Solution fields
+   */
+  virtual
+  void integrateResidualLumpedAssembled(const topology::Field<topology::Mesh>& residual,
+          const double t,
+          topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator.
