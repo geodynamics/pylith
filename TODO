@@ -69,6 +69,8 @@ Unit tests
 
   ElasticityExplicit
     integrateResidualLumped()
+  AbsorbingDampers
+    integrateResidualLumped()
 
 
   FaultCohesiveDynL

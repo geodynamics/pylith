@@ -309,9 +309,8 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
         } // for
       } // for
     } // for
-    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(6*spaceDim))));
-
 #if defined(DETAILED_EVENT_LOGGING)
+    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(6*spaceDim))));
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(stressEvent);
 #endif
@@ -342,6 +341,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
+  PetscLogFlops(cells->size()*numQuadPts*(3+numBasis*(1+numBasis*(6*spaceDim))));
   _logger->eventEnd(computeEvent);
 #endif
 } // integrateResidual
@@ -568,9 +568,8 @@ pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
         } // for
       } // for
     } // for
-    PetscLogFlops(numQuadPts*(4+numBasis+numBasis*(1+spaceDim*2)));
-
 #if defined(DETAILED_EVENT_LOGGING)
+    PetscLogFlops(numQuadPts*(4+numBasis+numBasis*(1+spaceDim*2)));
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(stressEvent);
 #endif
@@ -602,6 +601,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
+  PetscLogFlops(cells->size()*numQuadPts*(4+numBasis+numBasis*(1+spaceDim*2)));
   _logger->eventEnd(computeEvent);
 #endif
 } // integrateResidualLumped
@@ -744,9 +744,8 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
         } // for
       } // for
     } // for
-    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+spaceDim))));
-
 #if defined(DETAILED_EVENT_LOGGING)
+    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+spaceDim))));
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
@@ -764,6 +763,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
+  PetscLogFlops(cells->size()*numQuadPts*(3+numBasis*(1+numBasis*(1+spaceDim))));
   _logger->eventEnd(computeEvent);
 #endif
 
@@ -893,14 +893,17 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
         valJ += basis[iQ + jBasis];
       valJ *= wt;
       for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
+        // Compute value for DOF 0
         const double valIJ = basis[iQ + iBasis] * valJ;
-        for (int iDim = 0; iDim < spaceDim; ++iDim)
-          _cellVector[iBasis*spaceDim+iDim] += valIJ;
+        _cellVector[iBasis*spaceDim] += valIJ;
+
+        // Copy values to DOF 1 and 2
+        for (int iDim = 1; iDim < spaceDim; ++iDim)
+          _cellVector[iBasis*spaceDim+iDim] = _cellVector[iBasis*spaceDim];
       } // for
     } // for
-    PetscLogFlops(numQuadPts*(4+numBasis+numBasis*(1+spaceDim)));
-
 #if defined(DETAILED_EVENT_LOGGING)
+    PetscLogFlops(numQuadPts*(4+numBasis+numBasis*(1+spaceDim)));
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
@@ -915,6 +918,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
+  PetscLogFlops(cells->size()*numQuadPts*(4+numBasis+numBasis*(1+spaceDim)));
   _logger->eventEnd(computeEvent);
 #endif
 
