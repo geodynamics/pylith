@@ -18,6 +18,8 @@
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/problems/Formulation.hh" // USES Formulation
 
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
+
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
@@ -53,6 +55,8 @@ pylith::problems::SolverLumped::initialize(
 { // initialize
   assert(0 != formulation);
 
+  _initializeLogger();
+
   _formulation = formulation;
 } // initialize
 
@@ -69,6 +73,11 @@ pylith::problems::SolverLumped::solve(
   
   // solution = residual / jacobian
   
+  const int setupEvent = _logger->eventId("SoLu setup");
+  const int solveEvent = _logger->eventId("SoLu solve");
+  const int adjustEvent = _logger->eventId("SoLu adjust");
+  _logger->eventBegin(setupEvent);
+
   const spatialdata::geocoords::CoordSys* cs = solution->mesh().coordsys();
   assert(0 != cs);
   const int spaceDim = cs->spaceDim();
@@ -96,6 +105,9 @@ pylith::problems::SolverLumped::solve(
   const ALE::Obj<RealSection>& residualSection = residual.section();
   assert(!residualSection.isNull());
   
+  _logger->eventEnd(setupEvent);
+  _logger->eventBegin(solveEvent);
+
   for (SieveMesh::label_sequence::iterator v_iter=verticesBegin; 
        v_iter != verticesEnd;
        ++v_iter) {
@@ -114,12 +126,29 @@ pylith::problems::SolverLumped::solve(
     assert(solutionSection->getFiberDimension(*v_iter) == spaceDim);
     solutionSection->updatePoint(*v_iter, &solutionVertex[0]);
   } // for
+  PetscLogFlops(vertices->size() * spaceDim);
+  _logger->eventEnd(solveEvent);
+  _logger->eventBegin(adjustEvent);
 
   // Adjust solution to match constraints
   _formulation->adjustSolnLumped();
 
-  PetscLogFlops(vertices->size() * spaceDim);
+  _logger->eventEnd(adjustEvent);
 } // solve
+
+// ----------------------------------------------------------------------
+// Initialize logger.
+void
+pylith::problems::SolverLumped::_initializeLogger(void)
+{ // initializeLogger
+  delete _logger; _logger = new utils::EventLogger;
+  assert(0 != _logger);
+  _logger->className("SolverLumped");
+  _logger->initialize();
+  _logger->registerEvent("SoLu setup");
+  _logger->registerEvent("SoLu solve");
+  _logger->registerEvent("SoLu adjust");
+} // initializeLogger
 
 
 // End of file
