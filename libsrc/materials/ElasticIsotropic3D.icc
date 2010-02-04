@@ -1,0 +1,36 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_materials_elasticisotropic3d_hh)
+#error "ElasticIsotropic3D.icc can only be included from ElasticIsotropic3D.hh"
+#endif
+
+#include <cassert> // USES assert()
+
+// Compute density at location from properties.
+inline
+void
+pylith::materials::ElasticIsotropic3D::_calcDensity(double* const density,
+						    const double* properties,
+						    const int numProperties,
+						    const double* stateVars,
+						    const int numStateVars)
+{ // _calcDensity
+  assert(0 != density);
+  assert(0 != properties);
+  assert(_numPropsQuadPt == numProperties);
+  assert(0 == numStateVars);
+
+  density[0] = properties[p_density];
+} // _calcDensity
+
+// End of file 
