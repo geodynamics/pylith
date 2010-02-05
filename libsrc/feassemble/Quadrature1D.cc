@@ -49,8 +49,9 @@ void
 pylith::feassemble::Quadrature1D::computeGeometry(const double_array& coordinatesCell,
 						  const int cell)
 { // computeGeometry
-  const int cellDim = _quadRefCell.cellDim();
-  const int spaceDim = _quadRefCell.spaceDim();
+  const int cellDim = 1;
+  const int spaceDim = 1;
+
   const int numQuadPts = _quadRefCell.numQuadPts();
   const int numBasis = _quadRefCell.numBasis();
 
@@ -59,21 +60,21 @@ pylith::feassemble::Quadrature1D::computeGeometry(const double_array& coordinate
   const double_array& basisDerivRef = _quadRefCell.basisDerivRef();
   const CellGeometry& geometry = _quadRefCell.refGeometry();
 
+  assert(_quadRefCell.cellDim() == cellDim);
+  assert(_quadRefCell.spaceDim() == spaceDim);
   assert(numBasis*spaceDim == coordinatesCell.size());
 
-  assert(1 == cellDim);
-  assert(1 == spaceDim);
   zero();
   
   // Loop over quadrature points
   for (int iQuadPt=0; iQuadPt < numQuadPts; ++iQuadPt) {
+    const int iQ = iQuadPt*numBasis;
 
     // Compute coordinates of quadrature point in cell
 #if defined(ISOPARAMETRIC)
     // x = sum[i=0,n-1] (Ni * xi)
     for (int iBasis=0; iBasis < numBasis; ++iBasis)
-      _quadPts[iQuadPt] += 
-	basis[iQuadPt*numBasis+iBasis]*coordinatesCell[iBasis];
+      _quadPts[iQuadPt] += basis[iQ+iBasis]*coordinatesCell[iBasis];
 #else
     geometry.coordsRefToGlobal(&_quadPts[iQuadPt], &quadPtsRef[iQuadPt],
 			       &coordinatesCell[0], spaceDim);
@@ -83,8 +84,7 @@ pylith::feassemble::Quadrature1D::computeGeometry(const double_array& coordinate
     // Compute Jacobian at quadrature point
     // J = dx/dp = sum[i=0,n-1] (dNi/dp * xi)
     for (int iBasis=0; iBasis < numBasis; ++iBasis)
-      _jacobian[iQuadPt] += 
-	basisDerivRef[iQuadPt*numBasis+iBasis] * coordinatesCell[iBasis];
+      _jacobian[iQuadPt] += basisDerivRef[iQ+iBasis] * coordinatesCell[iBasis];
 
     // Compute determinant of Jacobian at quadrature point
     // |J| = j00
@@ -111,9 +111,8 @@ pylith::feassemble::Quadrature1D::computeGeometry(const double_array& coordinate
     // coordinates
     // dNi/dx = dNi/dp dp/dx + dNi/dq dq/dx + dNi/dr dr/dx
     for (int iBasis=0; iBasis < numBasis; ++iBasis)
-      _basisDeriv[iQuadPt*numBasis+iBasis] +=
-	  basisDerivRef[iQuadPt*numBasis+iBasis] *
-	  _jacobianInv[iQuadPt];
+      _basisDeriv[iQ+iBasis] +=
+          basisDerivRef[iQ+iBasis] * _jacobianInv[iQuadPt];
   } // for
 
   PetscLogFlops(numQuadPts * (1 + numBasis * 4));

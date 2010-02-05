@@ -47,20 +47,20 @@ void
 pylith::feassemble::Quadrature0D::computeGeometry(const double_array& coordinatesCell,
 						  const int cell)
 { // computeGeometry
-  const int cellDim = _quadRefCell.cellDim();
-  const int spaceDim = _quadRefCell.spaceDim();
-  const int numQuadPts = _quadRefCell.numQuadPts();
-  const int numBasis = _quadRefCell.numBasis();
+  const int cellDim = 0;
+  const int spaceDim = 1;
+  const int numQuadPts = 1;
+  const int numBasis = 1;
+
+  assert(_quadRefCell.cellDim() == cellDim);
+  assert(_quadRefCell.spaceDim() == spaceDim);
+  assert(_quadRefCell.numQuadPts() == numQuadPts);
+  assert(_quadRefCell.numBasis() == numBasis);
   assert(coordinatesCell.size() == numBasis*spaceDim);
 
   const double_array& basisDerivRef = _quadRefCell.basisDerivRef();
 
-  assert(0 == cellDim);
-  assert(1 == numQuadPts);
-  assert(1 == numBasis);
-
   zero();
-  assert(numBasis*1 == coordinatesCell.size());
 
   _quadPts = coordinatesCell;
 
