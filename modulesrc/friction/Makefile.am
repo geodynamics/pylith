@@ -20,7 +20,8 @@ subpkgpyexec_PYTHON = friction.py
 swig_sources = \
 	friction.i \
 	FrictionModel.i \
-	StaticFriction.i
+	StaticFriction.i \
+	SlipWeakening.i
 
 swigincludedir = $(pkgdatadir)/swig/$(subpackage)
 swiginclude_HEADERS = \

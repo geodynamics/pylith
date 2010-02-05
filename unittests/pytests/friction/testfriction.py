@@ -59,6 +59,9 @@ class TestApp(Script):
     from TestStaticFriction import TestStaticFriction
     suite.addTest(unittest.makeSuite(TestStaticFriction))
 
+    from TestSlipWeakening import TestSlipWeakening
+    suite.addTest(unittest.makeSuite(TestSlipWeakening))
+
     from TestFrictionModel import TestFrictionModel
     suite.addTest(unittest.makeSuite(TestFrictionModel))
 

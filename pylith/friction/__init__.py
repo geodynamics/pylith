@@ -16,6 +16,7 @@
 
 __all__ = ['FrictionModel',
            'StaticFriction',
+           'SlipWeakening',
            ]
 
 

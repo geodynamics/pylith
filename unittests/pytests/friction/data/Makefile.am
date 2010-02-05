@@ -11,7 +11,8 @@
 #
 
 dist_noinst_DATA = \
-	staticfriction.spatialdb
+	staticfriction.spatialdb \
+	slipweakening.spatialdb
 
 noinst_TMP =
 

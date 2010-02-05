@@ -22,6 +22,7 @@
 
 #include "pylith/friction/FrictionModel.hh"
 #include "pylith/friction/StaticFriction.hh"
+#include "pylith/friction/SlipWeakening.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 %}
@@ -50,6 +51,7 @@ import_array();
 // Interfaces
 %include "FrictionModel.i"
 %include "StaticFriction.i"
+%include "SlipWeakening.i"
 
 
 // End of file
