@@ -4058,6 +4058,25 @@ where
  (e.g., no hardening), the material is referred to as perfectly plastic.
 \end_layout
 
+\begin_layout Standard
+To perform the solution, the yield condition (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:97"
+
+\end_inset
+
+) is first evaluated under the assumption of elastic behavior.
+ If 
+\begin_inset Formula $^{t+\Delta t}f<0$
+\end_inset
+
+, the material behavior is elastic and no plastic flow occurs.
+ Otherwise, the behavior is plastic and a plastic strain increment must
+ be computed to return the stress state to the yield envelope.
+ This procedure is known as an elastic predictor-plastic corrector algorithm.
+\end_layout
+
 \begin_layout Subsection
 Drucker-Prager Elastoplastic Material
 \end_layout
@@ -4237,11 +4256,17 @@ reference "eq:105"
 
 where
 \begin_inset Formula \begin{equation}
-^{t+\Delta t}d^{2}=2J_{2}^{\prime I}+2S_{ij}^{I}\,\phantom{}^{t+\Delta t}e_{ij}^{\prime}+^{t+\Delta t}e_{ij}^{\prime}\,\phantom{}^{t+\Delta t}e_{ij}^{\prime}\:.\label{eq:111}\end{equation}
+^{t+\Delta t}d^{2}=2a_{E}^{2}J_{2}^{\prime I}+2a_{E}S_{ij}^{I}\,\phantom{}^{t+\Delta t}e_{ij}^{\prime}+^{t+\Delta t}e_{ij}^{\prime}\,\phantom{}^{t+\Delta t}e_{ij}^{\prime}\:.\label{eq:111}\end{equation}
 
 \end_inset
 
-The pressure is computed from 
+The second deviatoric stress invariant is therefore
+\begin_inset Formula \begin{equation}
+\sqrt{^{t+\Delta t}J_{2}^{\prime}}=\frac{\sqrt{2}^{t+\Delta t}d-\lambda}{2a_{E}}\:,\label{eq:112}\end{equation}
+
+\end_inset
+
+and the pressure is computed from 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:105"
@@ -4257,7 +4282,105 @@ reference "eq:108"
 
  as:
 \begin_inset Formula \begin{equation}
-^{t+\Delta t}P=\frac{1}{a_{m}}\left(^{t+\Delta t}\theta^{\prime}-\lambda\alpha_{g}\right)\:.\label{eq:112}\end{equation}
+^{t+\Delta t}P=\frac{^{t+\Delta t}I_{1}}{3}=\frac{1}{a_{m}}\left(^{t+\Delta t}\theta^{\prime}-\lambda\alpha_{g}\right)\:.\label{eq:113}\end{equation}
+
+\end_inset
+
+We then use the yield condition (
+\begin_inset Formula $^{t+\Delta t}f=0$
+\end_inset
+
+) and substitute for the stress invariants at 
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+ to obtain:
+\begin_inset Formula \begin{equation}
+\lambda=\frac{2a_{E}a_{m}\left(\frac{3\alpha_{f}}{a_{m}}^{t+\Delta t}\theta^{\prime}+\frac{^{t+\Delta t}d}{\sqrt{2}a_{E}}-\beta\bar{c}\right)}{6\alpha_{f}\alpha_{g}a_{E}+a_{m}}\:.\label{eq:114}\end{equation}
+
+\end_inset
+
+Since 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ is now known, we can substitue 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:112"
+
+\end_inset
+
+ into 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:109"
+
+\end_inset
+
+ to obtain
+\begin_inset Formula \begin{equation}
+^{t+\Delta t}S_{ij}=\frac{\Delta e_{ij}^{P}\left(\sqrt{2}\phantom{\,}^{t+\Delta t}d-\lambda\right)}{\lambda a_{E}}\:.\label{eq:115}\end{equation}
+
+\end_inset
+
+Substituting this into 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:105"
+
+\end_inset
+
+, we obtain the deviatoric plastic strain increment:
+\begin_inset Formula \begin{equation}
+\Delta e_{ij}^{P}=\frac{\lambda}{\sqrt{2}\,\phantom{}^{t+\Delta t}d}\left(^{t+\Delta t}e_{ij}^{\prime}+a_{E}S_{ij}^{I}\right)\:.\label{eq:116}\end{equation}
+
+\end_inset
+
+We then use 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:108"
+
+\end_inset
+
+ and the second equation of 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:105"
+
+\end_inset
+
+ to obtain the volumetric plastic strains and the pressure, and we use 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:116"
+
+\end_inset
+
+ and the first equation of 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:105"
+
+\end_inset
+
+ to obtain the deviatoric plastic strains and the deviatoric stresses.
+\end_layout
+
+\begin_layout Standard
+To compute the elastoplastic tangent matrix we proceed in a manner analogous
+ to the viscoelastic case, computing the derivative of the stress vector
+ with respect to the strain vector:
+\begin_inset Formula \begin{equation}
+C_{ij}^{EP}=\frac{\partial^{t+\Delta t}\sigma}{\partial^{t+\Delta t}\epsilon}=\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}e_{k}^{\prime}}\frac{\partial^{t+\Delta t}e_{k}^{\prime}}{\partial^{t+\Delta t}e_{l}}\frac{\partial^{t+\Delta t}e_{l}}{\partial^{t+\Delta t}\epsilon_{j}}+R_{i}\frac{\partial^{t+\Delta t}P}{\partial^{t+\Delta t}\theta^{\prime}}\frac{\partial^{t+\Delta t}\theta^{\prime}}{\partial^{t+\Delta t}\theta}\frac{\partial^{t+\Delta t}\theta}{\partial^{t+\Delta t}\epsilon_{j}}\:,\label{eq:117}\end{equation}
+
+\end_inset
+
+where
+\begin_inset Formula \begin{gather}
+R_{i}=1\:;\; i=1,2,3\label{eq:118}\\
+R_{i}=0\:;\; i=4,5,6\:.\nonumber \end{gather}
 
 \end_inset
 
