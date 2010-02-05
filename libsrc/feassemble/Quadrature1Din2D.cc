@@ -49,8 +49,9 @@ void
 pylith::feassemble::Quadrature1Din2D::computeGeometry(const double_array& coordinatesCell,
 						      const int cell)
 { // computeGeometry
-  const int cellDim = _quadRefCell.cellDim();
-  const int spaceDim = _quadRefCell.spaceDim();
+  const int cellDim = 1;
+  const int spaceDim = 2;
+
   const int numQuadPts = _quadRefCell.numQuadPts();
   const int numBasis = _quadRefCell.numBasis();
 
@@ -59,21 +60,22 @@ pylith::feassemble::Quadrature1Din2D::computeGeometry(const double_array& coordi
   const double_array& basisDerivRef = _quadRefCell.basisDerivRef();
   const CellGeometry& geometry = _quadRefCell.refGeometry();
 
+  assert(_quadRefCell.cellDim() == cellDim);
+  assert(_quadRefCell.spaceDim() == spaceDim);
   assert(numBasis*spaceDim == coordinatesCell.size());
 
-  assert(1 == cellDim);
-  assert(2 == spaceDim);
   zero();
 
   // Loop over quadrature points
   for (int iQuadPt=0; iQuadPt < numQuadPts; ++iQuadPt) {
+    const int iQ = iQuadPt*numBasis;
     
     // Compute coordinates of quadrature point in cell
 #if defined(ISOPARAMETRIC)
     // x = sum[i=0,n-1] (Ni * xi)
     // y = sum[i=0,n-1] (Ni * yi)
     for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-      const double valueBasis = basis[iQuadPt*numBasis+iBasis];
+      const double valueBasis = basis[iQ+iBasis];
       for (int iDim=0; iDim < spaceDim; ++iDim)
 	_quadPts[iQuadPt*spaceDim+iDim] +=
 	  valueBasis * coordinatesCell[iBasis*spaceDim+iDim];
@@ -91,7 +93,7 @@ pylith::feassemble::Quadrature1Din2D::computeGeometry(const double_array& coordi
     // dx/dp = sum[i=0,n-1] (dNi/dp * xi)
     // dy/dp = sum[i=0,n-1] (dNi/dp * yi)
     for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-      const double deriv = basisDerivRef[iQuadPt*numBasis+iBasis];
+      const double deriv = basisDerivRef[iQ+iBasis];
       for (int iDim=0; iDim < spaceDim; ++iDim)
 	_jacobian[iQuadPt*spaceDim+iDim] += 
 	  deriv * coordinatesCell[iBasis*spaceDim+iDim];
@@ -123,12 +125,15 @@ pylith::feassemble::Quadrature1Din2D::computeGeometry(const double_array& coordi
     // Compute derivatives of basis functions with respect to global
     // coordinates
     // dNi/dx = dNi/dp dp/dx + dNi/dq dq/dx + dNi/dr dr/dx
-    for (int iBasis=0; iBasis < numBasis; ++iBasis)
+    const int iJ = iQuadPt*cellDim*spaceDim;
+    for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+      const int iD = iQuadPt*numBasis*spaceDim + iBasis*spaceDim;
+      const int iDR = iQuadPt*numBasis*cellDim + iBasis*cellDim;
       for (int iDim=0; iDim < spaceDim; ++iDim)
-	for (int jDim=0; jDim < cellDim; ++jDim)
-	  _basisDeriv[iQuadPt*numBasis*spaceDim+iBasis*spaceDim+iDim] +=
-	    basisDerivRef[iQuadPt*numBasis*cellDim+iBasis*cellDim+jDim] *
-	    _jacobianInv[iQuadPt*cellDim*spaceDim+jDim*spaceDim+iDim];
+        for (int jDim=0; jDim < cellDim; ++jDim)
+          _basisDeriv[iD+iDim] +=
+              basisDerivRef[iDR+jDim] * _jacobianInv[iJ+jDim*spaceDim+iDim];
+    } // for
   } // for
 
   PetscLogFlops(numQuadPts * (1 + numBasis*spaceDim*2 +
