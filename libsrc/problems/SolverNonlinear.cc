@@ -103,8 +103,8 @@ pylith::problems::SolverNonlinear::solve(
 { // solve
   assert(0 != solution);
 
-  const int solveEvent = _logger->eventId("SoLi solve");
-  const int scatterEvent = _logger->eventId("SoLi scatter");
+  const int solveEvent = _logger->eventId("SoNl solve");
+  const int scatterEvent = _logger->eventId("SoNl scatter");
   _logger->eventBegin(solveEvent);
 
   PetscErrorCode err = 0;
