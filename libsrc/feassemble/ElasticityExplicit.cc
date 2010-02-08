@@ -411,8 +411,10 @@ pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
       &pylith::feassemble::ElasticityExplicit::_elasticityResidual3D;
     calcTotalStrainFn =
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
-  } else
+  } else {
     assert(0);
+    throw std::runtime_error("Error unknown cell dimension.");
+  } // if/else
 
   // Allocate vectors for cell values.
   double_array dispTCell(numBasis*spaceDim);
@@ -553,61 +555,23 @@ pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
 
     // Compute action for inertial terms
     const double_array& density = _material->calcDensity();
-#if 1
+    valuesIJ = 0.0;
     for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
       const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad]
-          / dt2;
+	/ dt2;
       const int iQ = iQuad * numBasis;
       double valJ = 0.0;
       for (int jBasis = 0; jBasis < numBasis; ++jBasis)
-        valJ += basis[iQ + jBasis];
+	valJ += basis[iQ + jBasis];
       valJ *= wt;
-      for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
-        const double valIJ = basis[iQ + iBasis] * valJ;
-        for (int iDim = 0; iDim < spaceDim; ++iDim) {
-          _cellVector[iBasis*spaceDim+iDim] += valIJ *
-              (dispTCell[iBasis*spaceDim+iDim] - dispTmdtCell[iBasis*spaceDim+iDim]);
-        } // for
-      } // for
-    } // for
-#else
-    valuesIJ = 0.0;
-    if (spaceDim != 3 || numBasis != 8 || numQuadPts != 8) {
-      for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
-        const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad]
-            / dt2;
-        const int iQ = iQuad * numBasis;
-        double valJ = 0.0;
-        for (int jBasis = 0; jBasis < numBasis; ++jBasis)
-          valJ += basis[iQ + jBasis];
-        valJ *= wt;
-        for (int iBasis = 0; iBasis < numBasis; ++iBasis)
-          valuesIJ[iBasis] = basis[iQ + iBasis] * valJ;
-      } // for
       for (int iBasis = 0; iBasis < numBasis; ++iBasis)
-        for (int iDim = 0; iDim < spaceDim; ++iDim)
-          _cellVector[iBasis*spaceDim+iDim] += valuesIJ[iBasis] *
-                (dispTCell[iBasis*spaceDim+iDim] - dispTmdtCell[iBasis*spaceDim+iDim]);
-    } else {
-      for (int iQuad = 0; iQuad < 8; ++iQuad) {
-        const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad]
-            / dt2;
-        const int iQ = iQuad * 8;
-        double valJ = 0.0;
-        for (int jBasis = 0; jBasis < 8; ++jBasis)
-          valJ += basis[iQ + jBasis];
-        valJ *= wt;
-        for (int iBasis = 0; iBasis < 8; ++iBasis)
-          valuesIJ[iBasis] += basis[iQ + iBasis] * valJ;
-      } // for
-      for (int iBasis = 0; iBasis < 8; ++iBasis) {
-        for (int iDim = 0; iDim < 3; ++iDim) {
-          _cellVector[iBasis*3+iDim] += valuesIJ[iBasis] *
-              (dispTCell[iBasis*3+iDim] - dispTmdtCell[iBasis*3+iDim]);
-        } // for
-      } // for
-    } // if/else
-#endif
+	valuesIJ[iBasis] += basis[iQ + iBasis] * valJ;
+    } // for
+    for (int iBasis = 0; iBasis < numBasis; ++iBasis)
+      for (int iDim = 0; iDim < spaceDim; ++iDim)
+	_cellVector[iBasis*spaceDim+iDim] += valuesIJ[iBasis] *
+	  (dispTCell[iBasis*spaceDim+iDim] - dispTmdtCell[iBasis*spaceDim+iDim]);
+
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(numQuadPts*(4+numBasis*3) + numBasis*spaceDim*3);
     _logger->eventEnd(computeEvent);
@@ -641,7 +605,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(cells->size()*numQuadPts*(4+numBasis+numBasis*(1+spaceDim*2)));
+  PetscLogFlops(cells->size()*(numQuadPts*(4+numBasis*3)+numBasis*spaceDim*3));
   _logger->eventEnd(computeEvent);
 #endif
 } // integrateResidualLumped
@@ -925,10 +889,10 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     const double_array& density = _material->calcDensity();
 
     // Compute Jacobian for inertial terms
-#if 1
-     for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
+#if 0
+    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
       const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad]
-          / dt2;
+	/ dt2;
       const int iQ = iQuad * numBasis;
       double valJ = 0.0;
       for (int jBasis = 0; jBasis < numBasis; ++jBasis)
@@ -938,17 +902,16 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
         // Compute value for DOF 0
         const double valIJ = basis[iQ + iBasis] * valJ;
         _cellVector[iBasis*spaceDim] += valIJ;
-
-        // Copy values to DOF 1 and 2
-        for (int iDim = 1; iDim < spaceDim; ++iDim)
-          _cellVector[iBasis*spaceDim+iDim] = _cellVector[iBasis*spaceDim];
       } // for
     } // for
+    for (int iBasis = 0; iBasis < numBasis; ++iBasis)
+      for (int iDim = 1; iDim < spaceDim; ++iDim)
+	_cellVector[iBasis*spaceDim+iDim] += _cellVector[iBasis*spaceDim];
  #else
     valuesIJ = 0.0;
     for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
       const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad]
-          / dt2;
+	/ dt2;
       const int iQ = iQuad * numBasis;
       double valJ = 0.0;
       for (int jBasis = 0; jBasis < numBasis; ++jBasis)
@@ -962,7 +925,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
       for (int iDim = 0; iDim < spaceDim; ++iDim)
         _cellVector[iBasis*spaceDim+iDim] += valuesIJ[iBasis];
 #endif
-
+    
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(numQuadPts*(4 + numBasis*3) + numBasis*spaceDim);
     _logger->eventEnd(computeEvent);
@@ -979,7 +942,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(cells->size()*numQuadPts*(4 + numBasis*3) + numBasis*spaceDim);
+  PetscLogFlops(cells->size()*(numQuadPts*(4 + numBasis*3) + numBasis*spaceDim));
   _logger->eventEnd(computeEvent);
 #endif
 
