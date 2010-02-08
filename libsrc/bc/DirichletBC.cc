@@ -78,8 +78,6 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
   const ALE::Obj<RealSection>& section = field.section();
   assert(!section.isNull());
 
-  const int fibration = (section->getNumSpaces() > 0) ? 0 : -1;
-
   // Set constraints in field
   const int numPoints = _points.size();
   _offsetLocal.resize(numPoints);
@@ -99,13 +97,17 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
     } // if
     _offsetLocal[iPoint] = curNumConstraints;
     section->addConstraintDimension(_points[iPoint], numFixedDOF);
-    if (fibration >= 0) {
-      assert(fiberDim == section->getFiberDimension(_points[iPoint],
-						    fibration));
-      section->addConstraintDimension(_points[iPoint], numFixedDOF, 
-				      fibration);
-    } // if
   } // for
+
+  // We only worry about the conventional DOF in a split field associated with
+  // fibrations.
+  const int numFibrations = section->getNumSpaces(); // > 1 for split field
+  if (numFibrations > 0)
+    for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) {
+      const int fibration = _bcDOF[iDOF];
+      for (int iPoint=0; iPoint < numPoints; ++iPoint)
+        section->addConstraintDimension(_points[iPoint], 1, fibration);
+    } // for
 } // setConstraintSizes
 
 // ----------------------------------------------------------------------
@@ -119,8 +121,6 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
 
   const ALE::Obj<RealSection>& section = field.section();
   assert(!section.isNull());
-
-  const int fibration = (section->getNumSpaces() > 0) ? 0 : -1;
 
   const int numPoints = _points.size();
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
@@ -168,10 +168,19 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
 
     // Update list of constrained DOF
     section->setConstraintDof(point, &allFixedDOF[0]);
-
-    if (fibration >= 0)
-      section->setConstraintDof(point, &allFixedDOF[0], fibration);
   } // for
+
+  // We only worry about the conventional DOF in a split field associated with
+  // fibrations.
+  const int numFibrations = section->getNumSpaces(); // > 1 for split field
+  if (numFibrations > 0) {
+    int zero = 0;
+    for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) {
+      const int fibration = _bcDOF[iDOF];
+      for (int iPoint=0; iPoint < numPoints; ++iPoint)
+        section->setConstraintDof(_points[iPoint], &zero, fibration);
+    } // for
+  } // if
 } // setConstraints
 
 // ----------------------------------------------------------------------

@@ -136,6 +136,7 @@ pylith::bc::TestDirichletBC::testSetConstraintSizes(void)
   CPPUNIT_ASSERT(!vertices.isNull());
   
   const int fiberDim = _data->numDOF;
+  const int spaceDim = mesh.dimension();
   topology::Field<topology::Mesh> field(mesh);
   field.newSection(vertices, fiberDim);
   field.splitDefault();
@@ -146,7 +147,6 @@ pylith::bc::TestDirichletBC::testSetConstraintSizes(void)
 
   const int numCells = sieveMesh->heightStratum(0)->size();
   const int offset = numCells;
-  const int fibration = 0;
   int iConstraint = 0;
   for (SieveMesh::label_sequence::iterator v_iter = vertices->begin();
        v_iter != vertices->end();
@@ -156,23 +156,32 @@ pylith::bc::TestDirichletBC::testSetConstraintSizes(void)
 			   fieldSection->getFiberDimension(*v_iter));
       CPPUNIT_ASSERT_EQUAL(0,
 			   fieldSection->getConstraintDimension(*v_iter));
-      CPPUNIT_ASSERT_EQUAL(_data->numDOF,
-			   fieldSection->getFiberDimension(*v_iter,
-							   fibration));
-      CPPUNIT_ASSERT_EQUAL(0,
-			   fieldSection->getConstraintDimension(*v_iter,
-								fibration));
+      for (int fibration=0; fibration < spaceDim; ++fibration) {
+        CPPUNIT_ASSERT_EQUAL(1,
+            fieldSection->getFiberDimension(*v_iter,
+                fibration));
+        CPPUNIT_ASSERT_EQUAL(0,
+            fieldSection->getConstraintDimension(*v_iter,
+                fibration));
+      } // for
     } else {
       CPPUNIT_ASSERT_EQUAL(_data->numDOF,
 			   fieldSection->getFiberDimension(*v_iter));
       CPPUNIT_ASSERT_EQUAL(_data->numFixedDOF, 
 			   fieldSection->getConstraintDimension(*v_iter));
-      CPPUNIT_ASSERT_EQUAL(_data->numDOF,
-			   fieldSection->getFiberDimension(*v_iter,
-							   fibration));
-      CPPUNIT_ASSERT_EQUAL(_data->numFixedDOF, 
-			   fieldSection->getConstraintDimension(*v_iter,
-								fibration));
+      for (int fibration=0; fibration < spaceDim; ++fibration) {
+        CPPUNIT_ASSERT_EQUAL(1,
+            fieldSection->getFiberDimension(*v_iter,
+                fibration));
+        bool isConstrained = false;
+        for (int iDOF=0; iDOF < _data->numFixedDOF; ++iDOF)
+          if (fibration == _data->fixedDOF[iDOF])
+            isConstrained = true;
+        const int constraintDimE = (!isConstrained) ? 0 : 1;
+        CPPUNIT_ASSERT_EQUAL(constraintDimE,
+            fieldSection->getConstraintDimension(*v_iter,
+                fibration));
+      } // for
       ++iConstraint;
     } // if/else
   } // for
@@ -194,6 +203,7 @@ pylith::bc::TestDirichletBC::testSetConstraints(void)
 		 sieveMesh->depthStratum(0);
   CPPUNIT_ASSERT(!vertices.isNull());
   
+  const int spaceDim = mesh.dimension();
   const int fiberDim = _data->numDOF;
   topology::Field<topology::Mesh> field(mesh);
   field.newSection(vertices, fiberDim);
@@ -214,7 +224,6 @@ pylith::bc::TestDirichletBC::testSetConstraints(void)
     const int* fixedDOF = fieldSection->getConstraintDof(*v_iter);
     if (*v_iter != _data->constrainedPoints[iConstraint] + offset) {
       CPPUNIT_ASSERT_EQUAL(0, fieldSection->getConstraintDimension(*v_iter));
-      //CPPUNIT_ASSERT(0 == fixedDOF);
     } else {
       CPPUNIT_ASSERT(0 != fixedDOF);
       CPPUNIT_ASSERT_EQUAL(_data->numFixedDOF, 
@@ -225,25 +234,35 @@ pylith::bc::TestDirichletBC::testSetConstraints(void)
     } // if/else
   } // for
 
-  // Check fibration 0
-  const int fibration = 0;
+  // Check fibrations for split fields.
   iConstraint = 0;
   for (SieveMesh::label_sequence::iterator v_iter = vertices->begin();
        v_iter != vertices->end();
        ++v_iter) {
-    const int* fixedDOF = fieldSection->getConstraintDof(*v_iter, fibration);
     if (*v_iter != _data->constrainedPoints[iConstraint] + offset) {
-      CPPUNIT_ASSERT_EQUAL(0,
-			   fieldSection->getConstraintDimension(*v_iter,
-								fibration));
-      //CPPUNIT_ASSERT(0 == fixedDOF);
+      for (int fibration=0; fibration < spaceDim; ++fibration)
+        CPPUNIT_ASSERT_EQUAL(0,
+            fieldSection->getConstraintDimension(*v_iter,
+                fibration));
     } else {
-      CPPUNIT_ASSERT(0 != fixedDOF);
-      CPPUNIT_ASSERT_EQUAL(_data->numFixedDOF, 
-			   fieldSection->getConstraintDimension(*v_iter,
-								fibration));
-      for (int iDOF=0; iDOF < _data->numFixedDOF; ++iDOF)
-	CPPUNIT_ASSERT_EQUAL(_data->fixedDOF[iDOF], fixedDOF[iDOF]);
+      for (int fibration=0; fibration < spaceDim; ++fibration) {
+        bool isConstrained = false;
+        for (int iDOF=0; iDOF < _data->numFixedDOF; ++iDOF)
+          if (fibration == _data->fixedDOF[iDOF])
+          isConstrained = true;
+        if (isConstrained) {
+          CPPUNIT_ASSERT_EQUAL(1,
+              fieldSection->getConstraintDimension(*v_iter,
+                  fibration));
+          const int* fixedDOF = fieldSection->getConstraintDof(*v_iter,
+            fibration);
+          CPPUNIT_ASSERT(0 != fixedDOF);
+          CPPUNIT_ASSERT_EQUAL(0, fixedDOF[0]);
+        } else
+          CPPUNIT_ASSERT_EQUAL(0,
+              fieldSection->getConstraintDimension(*v_iter,
+                  fibration));
+      } // for
       ++iConstraint;
     } // if/else
   } // for

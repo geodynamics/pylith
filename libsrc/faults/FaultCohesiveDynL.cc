@@ -158,7 +158,8 @@ void pylith::faults::FaultCohesiveDynL::initialize(const topology::Mesh& mesh,
 
 // ----------------------------------------------------------------------
 void pylith::faults::FaultCohesiveDynL::splitField(topology::Field<
-    topology::Mesh>* field) { // splitFields
+    topology::Mesh>* field)
+{ // splitField
   assert(0 != field);
 
   const ALE::Obj<RealSection>& section = field->section();
@@ -199,7 +200,7 @@ void pylith::faults::FaultCohesiveDynL::splitField(topology::Field<
       // Set Langrange fibration fiber dimension.
       section->setFiberDimension(vertexMesh, fiberDim, fibrationLagrange);
     } // if
-} // splitFields
+} // splitField
 
 // ----------------------------------------------------------------------
 // Integrate contribution of cohesive cells to residual term that
