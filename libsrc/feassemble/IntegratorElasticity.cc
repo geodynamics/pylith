@@ -632,15 +632,17 @@ void
 pylith::feassemble::IntegratorElasticity::_elasticityResidual1D(
 				     const double_array& stress)
 { // _elasticityResidual1D
+  const int spaceDim = 1;
+  const int cellDim = 1;
+
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
   const double_array& quadWts = _quadrature->quadWts();
   const double_array& jacobianDet = _quadrature->jacobianDet();
   const double_array& basisDeriv = _quadrature->basisDeriv();
 
-  assert(1 == cellDim);
+  assert(_quadrature->spaceDim() == spaceDim);
+  assert(_quadrature->cellDim() == cellDim);
   assert(quadWts.size() == numQuadPts);
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
@@ -660,17 +662,19 @@ void
 pylith::feassemble::IntegratorElasticity::_elasticityResidual2D(
 				     const double_array& stress)
 { // _elasticityResidual2D
+  const int cellDim = 2;
+  const int spaceDim = 2;
+  const int stressSize = 3;
+
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
   const double_array& quadWts = _quadrature->quadWts();
   const double_array& jacobianDet = _quadrature->jacobianDet();
   const double_array& basisDeriv = _quadrature->basisDeriv();
   
-  assert(2 == cellDim);
+  assert(_quadrature->spaceDim() == spaceDim);
+  assert(_quadrature->cellDim() == cellDim);
   assert(quadWts.size() == numQuadPts);
-  const int stressSize = 3;
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const int iQs = iQuad*stressSize;
@@ -744,15 +748,17 @@ void
 pylith::feassemble::IntegratorElasticity::_elasticityJacobian1D(
 			       const double_array& elasticConsts)
 { // _elasticityJacobian1D
+  const int cellDim = 1;
+  const int spaceDim = 1;
+
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
   const double_array& quadWts = _quadrature->quadWts();
   const double_array& jacobianDet = _quadrature->jacobianDet();
   const double_array& basisDeriv = _quadrature->basisDeriv();
   
-  assert(1 == cellDim);
+  assert(_quadrature->spaceDim() == spaceDim);
+  assert(_quadrature->cellDim() == cellDim);
   assert(quadWts.size() == numQuadPts);
   
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
@@ -809,17 +815,19 @@ void
 pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(
 			       const double_array& elasticConsts)
 { // _elasticityJacobian2D
+  const int spaceDim = 2;
+  const int cellDim = 2;
+  const int numConsts = 6;
+
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
   const double_array& quadWts = _quadrature->quadWts();
   const double_array& jacobianDet = _quadrature->jacobianDet();
   const double_array& basisDeriv = _quadrature->basisDeriv();
   
-  assert(2 == cellDim);
+  assert(_quadrature->spaceDim() == spaceDim);
+  assert(_quadrature->cellDim() == cellDim);
   assert(quadWts.size() == numQuadPts);
-  const int numConsts = 6;
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const double wt = quadWts[iQuad] * jacobianDet[iQuad];
