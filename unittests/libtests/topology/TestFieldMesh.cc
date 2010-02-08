@@ -1023,15 +1023,14 @@ pylith::topology::TestFieldMesh::testScatterVectorToSection(void)
 void
 pylith::topology::TestFieldMesh::testSplitDefault(void)
 { // testSplitDefault
-  const int fiberDim = 2;
-  const int numFibrations = 2;
-  const int fibration = 0; // Default fibration
-  const int nconstraints[] = { 0, 2, 1, 3 };
-  const int constraints[] = {
-              // 0
-    0, 2,     // 1
-    2,        // 2
-    0, 1, 2,  // 3
+  const int spaceDim = _TestFieldMesh::cellDim;
+  const int numFibrations = spaceDim + 1;
+  const int nconstraints[4] = { 1, 2, 0, 1 };
+  const int constraints[4] = {
+    1,     // 0
+    0, 1,  // 1
+           // 2
+    0,     // 3
   };
     
   Mesh mesh;
@@ -1046,43 +1045,63 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
   // Create field with atlas to use to create new field
   Field<Mesh> fieldSrc(mesh);
   { // Setup source field
-    fieldSrc.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+    fieldSrc.newSection(Field<Mesh>::VERTICES_FIELD, spaceDim);
     fieldSrc.splitDefault();
     const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
     CPPUNIT_ASSERT(!section.isNull());
     int iV=0;
+    int iC=0;
     for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-	 v_iter != vertices->end();
-	 ++v_iter, ++iV) {
-      section->addConstraintDimension(*v_iter, nconstraints[iV]);
-      section->addConstraintDimension(*v_iter, nconstraints[iV], fibration);
+        v_iter != vertices->end();
+        ++v_iter, ++iV) {
+      const int nconstraintsVertex = nconstraints[iV];
+      section->addConstraintDimension(*v_iter, nconstraintsVertex);
+      for (int iConstraint=0; iConstraint < nconstraintsVertex; ++iConstraint) {
+        const int fibration = constraints[iC++];
+        section->addConstraintDimension(*v_iter, 1, fibration);
+      } // for
     } // for
     fieldSrc.allocate();
 
-    int index = 0;
-    int i = 0;
+    iC = 0;
+    iV = 0;
+    int zero = 0;
     for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-	 v_iter != vertices->end();
-	 ++v_iter, index += nconstraints[i++]) {
-      section->setConstraintDof(*v_iter, &constraints[index]);
-      section->setConstraintDof(*v_iter, &constraints[index], fibration);
+        v_iter != vertices->end();
+        ++v_iter, ++iV) {
+      const int nconstraintsVertex = nconstraints[iV];
+      if (nconstraintsVertex > 0)
+        section->setConstraintDof(*v_iter, &constraints[iC]);
+      for (int iConstraint=0; iConstraint < nconstraintsVertex; ++iConstraint) {
+        const int fibration = constraints[iC++];
+        section->setConstraintDof(*v_iter, &zero, fibration);
+      } // for
     } // for
   } // Setup source field
 
   const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
   CPPUNIT_ASSERT(!section.isNull());
   CPPUNIT_ASSERT_EQUAL(numFibrations, section->getNumSpaces());
-  const ALE::Obj<Mesh::RealSection>& sectionSplit = section->getFibration(0);
-  CPPUNIT_ASSERT(!sectionSplit.isNull());
 
-  CPPUNIT_ASSERT(!vertices.isNull());
-  int iV = 0;
-  for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != vertices->end();
-       ++v_iter) {
-    CPPUNIT_ASSERT_EQUAL(fiberDim, section->getFiberDimension(*v_iter, fibration));
-    CPPUNIT_ASSERT_EQUAL(nconstraints[iV++], 
-			 section->getConstraintDimension(*v_iter, fibration));
+  for (int fibration=0; fibration < spaceDim; ++fibration) {
+    const ALE::Obj<Mesh::RealSection>& sectionSplit = section->getFibration(fibration);
+    CPPUNIT_ASSERT(!sectionSplit.isNull());
+    CPPUNIT_ASSERT(!vertices.isNull());
+    int iV = 0;
+    int iC = 0;
+    for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+        v_iter != vertices->end();
+        ++v_iter, ++iV) {
+      CPPUNIT_ASSERT_EQUAL(1, section->getFiberDimension(*v_iter, fibration));
+      bool isConstrained = false;
+      const int nconstraintsVertex = nconstraints[iV];
+      for (int iConstraint=0; iConstraint < nconstraintsVertex; ++iConstraint)
+        if (constraints[iC++] == fibration)
+          isConstrained = true;
+      const int constraintDimE = (!isConstrained) ? 0 : 1;
+      CPPUNIT_ASSERT_EQUAL(constraintDimE,
+                           section->getConstraintDimension(*v_iter, fibration));
+    } // for
   } // for
 } // testSplitDefault
 
@@ -1091,16 +1110,15 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
 void
 pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
 { // testCloneSectionSplit
-  const int fiberDim = 3;
-  const int nconstraints[] = { 0, 2, 1, 3 };
-  const int constraints[] = {
-              // 0
-    0, 2,     // 1
-    2,        // 2
-    0, 1, 2,  // 3
+  const int spaceDim = _TestFieldMesh::cellDim;
+  const int numFibrations = spaceDim + 1;
+  const int nconstraints[4] = { 1, 2, 0, 1 };
+  const int constraints[4] = {
+    1,     // 0
+    0, 1,  // 1
+           // 2
+    0,     // 3
   };
-  const int numFibrations = 2;
-  const int fibration = 0; // Default fibration
     
   Mesh mesh;
   _buildMesh(&mesh);
@@ -1114,45 +1132,66 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
   // Create field with atlas to use to create new field
   Field<Mesh> fieldSrc(mesh);
   { // Setup source field
-    fieldSrc.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+    fieldSrc.newSection(Field<Mesh>::VERTICES_FIELD, spaceDim);
     fieldSrc.splitDefault();
     const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
     CPPUNIT_ASSERT(!section.isNull());
     int iV=0;
+    int iC=0;
     for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-	 v_iter != vertices->end();
-	 ++v_iter, ++iV) {
-      section->addConstraintDimension(*v_iter, nconstraints[iV]);
-      section->addConstraintDimension(*v_iter, nconstraints[iV], fibration);
+        v_iter != vertices->end();
+        ++v_iter, ++iV) {
+      const int nconstraintsVertex = nconstraints[iV];
+      section->addConstraintDimension(*v_iter, nconstraintsVertex);
+      for (int iConstraint=0; iConstraint < nconstraintsVertex; ++iConstraint) {
+        const int fibration = constraints[iC++];
+        section->addConstraintDimension(*v_iter, 1, fibration);
+      } // for
     } // for
     fieldSrc.allocate();
 
-    int index = 0;
-    int i = 0;
+    iC = 0;
+    iV = 0;
+    int zero = 0;
     for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-	 v_iter != vertices->end();
-	 ++v_iter, index += nconstraints[i++]) {
-      section->setConstraintDof(*v_iter, &constraints[index]);
-      section->setConstraintDof(*v_iter, &constraints[index], fibration);
+        v_iter != vertices->end();
+        ++v_iter, ++iV) {
+      const int nconstraintsVertex = nconstraints[iV];
+      if (nconstraintsVertex > 0)
+        section->setConstraintDof(*v_iter, &constraints[iC]);
+      for (int iConstraint=0; iConstraint < nconstraintsVertex; ++iConstraint) {
+        const int fibration = constraints[iC++];
+        section->setConstraintDof(*v_iter, &zero, fibration);
+      } // for
     } // for
   } // Setup source field
 
   Field<Mesh> field(mesh);
   field.cloneSection(fieldSrc);
-  const ALE::Obj<Mesh::RealSection>& section = field.section();
+
+  const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
   CPPUNIT_ASSERT(!section.isNull());
   CPPUNIT_ASSERT_EQUAL(numFibrations, section->getNumSpaces());
-  const ALE::Obj<Mesh::RealSection>& sectionSplit = section->getFibration(0);
-  CPPUNIT_ASSERT(!sectionSplit.isNull());
 
-  int iV = 0;
-  for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != vertices->end();
-       ++v_iter) {
-    CPPUNIT_ASSERT_EQUAL(fiberDim, 
-			 section->getFiberDimension(*v_iter, fibration));
-    CPPUNIT_ASSERT_EQUAL(nconstraints[iV++], 
-			 section->getConstraintDimension(*v_iter, fibration));
+  for (int fibration=0; fibration < spaceDim; ++fibration) {
+    const ALE::Obj<Mesh::RealSection>& sectionSplit = section->getFibration(fibration);
+    CPPUNIT_ASSERT(!sectionSplit.isNull());
+    CPPUNIT_ASSERT(!vertices.isNull());
+    int iV = 0;
+    int iC = 0;
+    for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+        v_iter != vertices->end();
+        ++v_iter, ++iV) {
+      CPPUNIT_ASSERT_EQUAL(1, section->getFiberDimension(*v_iter, fibration));
+      bool isConstrained = false;
+      const int nconstraintsVertex = nconstraints[iV];
+      for (int iConstraint=0; iConstraint < nconstraintsVertex; ++iConstraint)
+        if (constraints[iC++] == fibration)
+          isConstrained = true;
+      const int constraintDimE = (!isConstrained) ? 0 : 1;
+      CPPUNIT_ASSERT_EQUAL(constraintDimE,
+                           section->getConstraintDimension(*v_iter, fibration));
+    } // for
   } // for
 } // testCloneSectionSplit
 

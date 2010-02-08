@@ -752,20 +752,22 @@ void
 pylith::topology::Field<mesh_type>::splitDefault(void)
 { // splitDefault
   assert(!_section.isNull());
-  _section->addSpace(); // displacements
+  const int spaceDim = _mesh.dimension();
+  for (int iDim=0; iDim < spaceDim; ++iDim)
+    _section->addSpace(); // displacements
   _section->addSpace(); // Lagrange multipliers
 
   const chart_type& chart = _section->getChart();
 
-  const int fibration = 0;
   const typename chart_type::const_iterator chartBegin = chart.begin();
   const typename chart_type::const_iterator chartEnd = chart.end();
-  for (typename chart_type::const_iterator c_iter = chart.begin();
-       c_iter != chartEnd;
-       ++c_iter) {
-    const int fiberDim = _section->getFiberDimension(*c_iter);
-    _section->setFiberDimension(*c_iter, fiberDim, fibration);
-  } // for
+  for (int fibration=0; fibration < spaceDim; ++fibration)
+    for (typename chart_type::const_iterator c_iter = chart.begin();
+        c_iter != chartEnd;
+        ++c_iter) {
+      assert(spaceDim == _section->getFiberDimension(*c_iter));
+      _section->setFiberDimension(*c_iter, 1, fibration);
+    } // for
 } // splitDefault
 
 // End of file 

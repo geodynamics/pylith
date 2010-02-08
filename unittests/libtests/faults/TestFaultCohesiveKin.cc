@@ -924,9 +924,6 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
 void
 pylith::faults::TestFaultCohesiveKin::testSplitField(void)
 { // testSplitField
-  const int fibrationDisp = 0;
-  const int fibrationFault = 1;
-
   topology::Mesh mesh;
   FaultCohesiveKin fault;
   topology::SolutionFields fields(mesh);
@@ -946,7 +943,7 @@ pylith::faults::TestFaultCohesiveKin::testSplitField(void)
 
   const ALE::Obj<RealSection>& section = splitField.section();
   CPPUNIT_ASSERT(!section.isNull());
-  CPPUNIT_ASSERT_EQUAL(2, section->getNumSpaces());
+  CPPUNIT_ASSERT_EQUAL(spaceDim+1, section->getNumSpaces());
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
@@ -959,25 +956,19 @@ pylith::faults::TestFaultCohesiveKin::testSplitField(void)
   for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
+    const int fiberDim = section->getFiberDimension(*v_iter);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
     if (*v_iter == _data->constraintVertices[iVertex]) {
-      const int fiberDim = section->getFiberDimension(*v_iter);
-      const int fiberDimD = section->getFiberDimension(*v_iter, 
-						       fibrationDisp); 
-      const int fiberDimF = section->getFiberDimension(*v_iter, 
-						       fibrationFault); 
-      CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-      CPPUNIT_ASSERT_EQUAL(0, fiberDimD);
-      CPPUNIT_ASSERT_EQUAL(fiberDim, fiberDimF);
+      for (int fibration=0; fibration < spaceDim; ++fibration)
+        CPPUNIT_ASSERT_EQUAL(0, section->getFiberDimension(*v_iter, fibration));
+      const int fibrationF = spaceDim;
+      CPPUNIT_ASSERT_EQUAL(spaceDim, section->getFiberDimension(*v_iter, fibrationF));
       ++iVertex;
     } else {
-      const int fiberDim = section->getFiberDimension(*v_iter);
-      const int fiberDimD = section->getFiberDimension(*v_iter, 
-						       fibrationDisp); 
-      const int fiberDimF = section->getFiberDimension(*v_iter, 
-						       fibrationFault); 
-      CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-      CPPUNIT_ASSERT_EQUAL(fiberDim, fiberDimD);
-      CPPUNIT_ASSERT_EQUAL(0, fiberDimF);
+      for (int fibration=0; fibration < spaceDim; ++fibration)
+        CPPUNIT_ASSERT_EQUAL(1, section->getFiberDimension(*v_iter, fibration));
+      const int fibrationF = spaceDim;
+      CPPUNIT_ASSERT_EQUAL(0, section->getFiberDimension(*v_iter, fibrationF));
     } // if/else
   } // for
 } // testSplitField

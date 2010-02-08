@@ -146,7 +146,8 @@ void pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
 
 // ----------------------------------------------------------------------
 void pylith::faults::FaultCohesiveKin::splitField(topology::Field<
-    topology::Mesh>* field) { // splitFields
+    topology::Mesh>* field)
+{ // splitField
   assert(0 != field);
 
   const ALE::Obj<RealSection>& section = field->section();
@@ -154,20 +155,20 @@ void pylith::faults::FaultCohesiveKin::splitField(topology::Field<
   if (0 == section->getNumSpaces())
     return; // Return if there are no fibrations
 
-  const int fibrationDisp = 0;
-  const int fibrationLagrange = 1;
+  const int spaceDim = field->mesh().dimension();
+  const int fibrationLagrange = spaceDim;
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
-    const int fiberDim = section->getFiberDimension(v_lagrange);
-    assert(fiberDim > 0);
+    assert(spaceDim == section->getFiberDimension(v_lagrange));
     // Reset displacement fibration fiber dimension to zero.
-    section->setFiberDimension(v_lagrange, 0, fibrationDisp);
+    for (int fibration=0; fibration < spaceDim; ++fibration)
+      section->setFiberDimension(v_lagrange, 0, fibration);
     // Set Lagrange fibration fiber dimension.
-    section->setFiberDimension(v_lagrange, fiberDim, fibrationLagrange);
+    section->setFiberDimension(v_lagrange, spaceDim, fibrationLagrange);
   } // for
-} // splitFields
+} // splitField
 
 // ----------------------------------------------------------------------
 // Integrate contribution of cohesive cells to residual term that do
