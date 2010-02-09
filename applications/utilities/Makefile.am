@@ -10,7 +10,8 @@
 # ----------------------------------------------------------------------
 #
 
-dist_bin_SCRIPTS = pylithinfo
+dist_bin_SCRIPTS = pylithinfo \
+		   powerlaw_gendb.py
 
 
 # End of file 
