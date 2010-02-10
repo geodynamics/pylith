@@ -2977,6 +2977,40 @@ S_{0}=\left(\frac{\dot{e}_{0}}{A_{T}}\right)^{\frac{1}{n}}\:.\label{eq:78}\end{e
 \end_layout
 
 \begin_layout Standard
+A utility code (
+\family typewriter
+powerlaw_gendb.py
+\family default
+) is provided to convert laboratory results to the properties used by PyLith.
+ To use the code, users must specify the spatial variation of 
+\begin_inset Formula $A_{E}$
+\end_inset
+
+, 
+\begin_inset Formula $Q$
+\end_inset
+
+, 
+\begin_inset Formula $n$
+\end_inset
+
+, and 
+\begin_inset Formula $T$
+\end_inset
+
+.
+ An additional parameter is given to define the units of 
+\begin_inset Formula $A_{E}$
+\end_inset
+
+.
+ The user then specifies either a reference stress or a reference strain
+ rate, and a database suitable for PyLith is generated.
+ This utility is described more fully in the Appendix.
+ ***Maybe describe in Tutorials instead?***
+\end_layout
+
+\begin_layout Standard
 The flow law in component form is 
 \begin_inset Formula \begin{equation}
 \dot{e}_{ij}^{C}=\frac{\dot{e}_{0}\sqrt{J_{2}^{\prime}}^{n-1}S_{ij}}{S_{0}^{n}}\:,\label{eq:79}\end{equation}
@@ -4374,7 +4408,7 @@ To compute the elastoplastic tangent matrix we proceed in a manner analogous
  strain tensors, and then computing the derivative of the stress vector
  with respect to the strain vector:
 \begin_inset Formula \begin{equation}
-C_{ij}^{EP}=\frac{\partial\phantom{}^{t+\Delta t}\sigma_{i}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{\partial\phantom{}^{t+\Delta t}S_{i}}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}\frac{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}{\partial\phantom{}^{t+\Delta t}e_{l}}\frac{\partial\phantom{}^{t+\Delta t}e_{l}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}+R_{i}\frac{\partial\phantom{}^{t+\Delta t}P}{\partial\phantom{}^{t+\Delta t}\theta^{\prime}}\frac{\partial\phantom{}^{t+\Delta t}\theta^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\:,\label{eq:117}\end{equation}
+C_{ij}^{EP}=\frac{\partial\phantom{}^{t+\Delta t}\sigma_{i}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{\partial\phantom{}^{t+\Delta t}S_{i}}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}\frac{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}{\partial\phantom{}^{t+\Delta t}e_{l}}\frac{\partial\phantom{}^{t+\Delta t}e_{l}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}+R_{i}\frac{\partial\phantom{}^{t+\Delta t}P}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\:,\label{eq:117}\end{equation}
 
 \end_inset
 
