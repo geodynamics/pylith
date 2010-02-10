@@ -91,9 +91,10 @@ Tutorial
     6. Multiple earthquake rupture + creep (quasi-static)
     7. Earthquake rupture + creep + Dirichlet BC (quasi-static)
     8. Add power-law rheology (quasi-static)
-    9. Static friction + Dirichlet BC (static)
-   10. Static friction + Dirchlet BC (quasi-static)
-   11. Rate- and state-friction + Dirichlet BC (quasi-static)??
+    9. Replace power-law with Drucker-Prager elastoplastic
+   10. Static friction + Dirichlet BC (static)
+   11. Static friction + Dirchlet BC (quasi-static)
+   12. Rate- and state-friction + Dirichlet BC (quasi-static)??
 
 Write up description of Savage and Prescott (1978) benchmark and
 distribute to Greg Lyzenga and Jay Parker
