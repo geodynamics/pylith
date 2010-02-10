@@ -74,6 +74,7 @@ libpylith_la_SOURCES = \
 	feassemble/IntegratorElasticity.cc \
 	feassemble/ElasticityImplicit.cc \
 	feassemble/ElasticityExplicit.cc \
+	feassemble/ElasticityExplicitTet4.cc \
 	feassemble/IntegratorElasticityLgDeform.cc \
 	feassemble/ElasticityImplicitLgDeform.cc \
 	feassemble/ElasticityExplicitLgDeform.cc \

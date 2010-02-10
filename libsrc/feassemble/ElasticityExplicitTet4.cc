@@ -12,10 +12,9 @@
 
 #include <portinfo>
 
-#include "ElasticityExplicit.hh" // implementation of class methods
+#include "ElasticityExplicitTet4.hh" // implementation of class methods
 
 #include "Quadrature.hh" // USES Quadrature
-#include "CellGeometry.hh" // USES CellGeometry
 
 #include "pylith/materials/ElasticMaterial.hh" // USES ElasticMaterial
 #include "pylith/topology/Field.hh" // USES Field
@@ -34,23 +33,30 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-//#define PRECOMPUTE_GEOMETRY
-//#define DETAILED_EVENT_LOGGING
+#define DETAILED_EVENT_LOGGING
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
+const int pylith::feassemble::ElasticityExplicitTet4::_spaceDim = 3;
+const int pylith::feassemble::ElasticityExplicitTet4::_cellDim = 3;
+const int pylith::feassemble::ElasticityExplicitTet4::_tensorSize = 6;
+const int pylith::feassemble::ElasticityExplicitTet4::_numBasis = 4;
+const int pylith::feassemble::ElasticityExplicitTet4::_numQuadPts = 1;
+
+// ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::ElasticityExplicit::ElasticityExplicit(void) :
+pylith::feassemble::ElasticityExplicitTet4::ElasticityExplicitTet4(void) :
   _dtm1(-1.0)
 { // constructor
+  _basisDerivArray.resize(_numQuadPts*_numBasis*_spaceDim);
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::feassemble::ElasticityExplicit::~ElasticityExplicit(void)
+pylith::feassemble::ElasticityExplicitTet4::~ElasticityExplicitTet4(void)
 { // destructor
   deallocate();
 } // destructor
@@ -58,7 +64,7 @@ pylith::feassemble::ElasticityExplicit::~ElasticityExplicit(void)
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::feassemble::ElasticityExplicit::deallocate(void)
+pylith::feassemble::ElasticityExplicitTet4::deallocate(void)
 { // deallocate
   IntegratorElasticity::deallocate();
 } // deallocate
@@ -66,7 +72,7 @@ pylith::feassemble::ElasticityExplicit::deallocate(void)
 // ----------------------------------------------------------------------
 // Set time step for advancing from time t to time t+dt.
 void
-pylith::feassemble::ElasticityExplicit::timeStep(const double dt)
+pylith::feassemble::ElasticityExplicitTet4::timeStep(const double dt)
 { // timeStep
   if (_dt != -1.0)
     _dtm1 = _dt;
@@ -82,7 +88,7 @@ pylith::feassemble::ElasticityExplicit::timeStep(const double dt)
 // Set flag for setting constraints for total field solution or
 // incremental field solution.
 void
-pylith::feassemble::ElasticityExplicit::useSolnIncr(const bool flag)
+pylith::feassemble::ElasticityExplicitTet4::useSolnIncr(const bool flag)
 { // useSolnIncr
   if (!flag)
     throw std::logic_error("Non-incremental solution not supported for "
@@ -93,15 +99,11 @@ pylith::feassemble::ElasticityExplicit::useSolnIncr(const bool flag)
 // ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
-pylith::feassemble::ElasticityExplicit::integrateResidual(
+pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 			  const topology::Field<topology::Mesh>& residual,
 			  const double t,
 			  topology::SolutionFields* const fields)
 { // integrateResidual
-  /// Member prototype for _elasticityResidualXD()
-  typedef void (pylith::feassemble::ElasticityExplicit::*elasticityResidual_fn_type)
-    (const double_array&);
-
   assert(0 != _quadrature);
   assert(0 != _material);
   assert(0 != _logger);
@@ -118,13 +120,18 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
-  const int numQuadPts = _quadrature->numQuadPts();
+  assert(_quadrature->numQuadPts() == _numQuadPts);
   const double_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
-  const int tensorSize = _material->tensorSize();
+  assert(quadWts.size() == _numQuadPts);
+  assert(_quadrature->numBasis() == _numBasis);
+  assert(_quadrature->spaceDim() == _spaceDim);
+  assert(_quadrature->cellDim() == _cellDim);
+  assert(_material->tensorSize() == _tensorSize);
+  const int spaceDim = _spaceDim;
+  const int cellDim = _cellDim;
+  const int tensorSize = _tensorSize;
+  const int numBasis = _numBasis;
+  const int numQuadPts = _numQuadPts;
   /** :TODO:
    *
    * If cellDim and spaceDim are different, we need to transform
@@ -136,27 +143,6 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     throw std::logic_error("Integration for cells with spatial dimensions "
 			   "different than the spatial dimension of the "
 			   "domain not implemented yet.");
-
-  // Set variables dependent on dimension of cell
-  totalStrain_fn_type calcTotalStrainFn;
-  elasticityResidual_fn_type elasticityResidualFn;
-  if (1 == cellDim) {
-    elasticityResidualFn = 
-      &pylith::feassemble::ElasticityExplicit::_elasticityResidual1D;
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
-  } else if (2 == cellDim) {
-    elasticityResidualFn = 
-      &pylith::feassemble::ElasticityExplicit::_elasticityResidual2D;
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
-  } else if (3 == cellDim) {
-    elasticityResidualFn = 
-      &pylith::feassemble::ElasticityExplicit::_elasticityResidual3D;
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
-  } else
-    assert(0);
 
   // Allocate vectors for cell values.
   double_array dispTCell(numBasis*spaceDim);
@@ -220,17 +206,16 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
-    // Compute geometry information for current cell
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
-#else
+
+    // Compute geometry information for current cell
     coordsVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
-#endif
+    const double volume = _volume(coordinatesCell);
+    assert(volume > 0.0);
+
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
     _logger->eventBegin(stateVarsEvent);
@@ -238,7 +223,8 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 
     // Get state variables for cell.
     _material->retrievePropsAndVars(*c_iter);
-#if defined(DETAILED_EVENT_LOGGING)
+
+    #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(stateVarsEvent);
     _logger->eventBegin(restrictEvent);
 #endif
@@ -257,77 +243,125 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     _logger->eventBegin(computeEvent);
 #endif
 
-    // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& basisDeriv = _quadrature->basisDeriv();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
-    const double_array& quadPtsNondim = _quadrature->quadPts();
+    const double_array& density = _material->calcDensity();
+    assert(density.size() == 1);
 
     // Compute body force vector if gravity is being used.
     if (0 != _gravityField) {
       const spatialdata::geocoords::CoordSys* cs = fields->mesh().coordsys();
       assert(0 != cs);
 
-      // Get density at quadrature points for this cell
-      const double_array& density = _material->calcDensity();
-
-      quadPtsGlobal = quadPtsNondim;
+      quadPtsGlobal = 0.0;
+      for (int iBasis=0; iBasis < numBasis; ++iBasis)
+        for (int iDim=0; iDim < spaceDim; ++iDim)
+          quadPtsGlobal[iDim] += 0.25 * coordinatesCell[iBasis*spaceDim+iDim];
       _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
           lengthScale);
 
       // Compute action for element body forces
-      for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
-        const int err = _gravityField->query(&gravVec[0], gravVec.size(),
-            &quadPtsGlobal[0], spaceDim, cs);
-        if (err)
-          throw std::runtime_error("Unable to get gravity vector for point.");
-        _normalizer->nondimensionalize(&gravVec[0], gravVec.size(),
-            gravityScale);
-        const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
-        for (int iBasis = 0, iQ = iQuad * numBasis; iBasis < numBasis; ++iBasis) {
-          const double valI = wt * basis[iQ + iBasis];
-          for (int iDim = 0; iDim < spaceDim; ++iDim) {
-            _cellVector[iBasis * spaceDim + iDim] += valI * gravVec[iDim];
-          } // for
-        } // for
-      } // for
-      PetscLogFlops(numQuadPts * (2 + numBasis * (1 + 2 * spaceDim)));
+      const int err = _gravityField->query(&gravVec[0], gravVec.size(),
+        &quadPtsGlobal[0], spaceDim, cs);
+      if (err)
+        throw std::runtime_error("Unable to get gravity vector for point.");
+      _normalizer->nondimensionalize(&gravVec[0], gravVec.size(),
+          gravityScale);
+      const double wtVertex = density[0] * volume / 4.0;
+      for (int iBasis=0; iBasis < numBasis; ++iBasis)
+        for (int iDim=0; iDim < spaceDim; ++iDim)
+            _cellVector[iBasis * spaceDim + iDim] += wtVertex * gravVec[iDim];
+      PetscLogFlops(numBasis*spaceDim*2 + numBasis*spaceDim*2);
     } // if
 
     // Compute action for inertial terms
-    const double_array& density = _material->calcDensity();
-    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad]
-          / dt2;
-      for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
-        const double valI = wt * basis[iQuad * numBasis + iBasis];
-        for (int jBasis = 0; jBasis < numBasis; ++jBasis) {
-          const double valIJ = valI * basis[iQuad * numBasis + jBasis];
-          for (int iDim = 0; iDim < spaceDim; ++iDim)
-            _cellVector[iBasis * spaceDim + iDim] += valIJ * (dispTCell[jBasis
+    const double wtVertex = density[0] * volume / (16.0 * dt2);
+    for (int iBasis = 0; iBasis < numBasis; ++iBasis)
+      for (int jBasis = 0; jBasis < numBasis; ++jBasis)
+        for (int iDim = 0; iDim < spaceDim; ++iDim)
+            _cellVector[iBasis * spaceDim + iDim] += wtVertex * (dispTCell[jBasis
                 * spaceDim + iDim] - dispTmdtCell[jBasis * spaceDim + iDim]);
-        } // for
-      } // for
-    } // for
+
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(6*spaceDim))));
+    PetscLogFlops(3 + numBasis*numBasis*spaceDim*3);
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(stressEvent);
 #endif
 
     // Compute B(transpose) * sigma, first computing strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispTCell, 
-		      numBasis, numQuadPts);
+    const double x0 = coordinatesCell[0];
+    const double y0 = coordinatesCell[1];
+    const double z0 = coordinatesCell[2];
+
+    const double x1 = coordinatesCell[3];
+    const double y1 = coordinatesCell[4];
+    const double z1 = coordinatesCell[5];
+
+    const double x2 = coordinatesCell[6];
+    const double y2 = coordinatesCell[7];
+    const double z2 = coordinatesCell[8];
+
+    const double x3 = coordinatesCell[9];
+    const double y3 = coordinatesCell[10];
+    const double z3 = coordinatesCell[11];
+
+    const double scaleB = 6.0 * volume;
+    const double b1 = (y1*(z3-z2)-y2*z3+y3*z2-(y3-y2)*z1) / scaleB;
+    const double c1 = (-x1*(z3-z2)+x2*z3-x3*z2-(x2-x3)*z1) / scaleB;
+    const double d1 = (-x2*y3-x1*(y2-y3)+x3*y2+(x2-x3)*y1) / scaleB;
+
+    const double b2 = (-y0*z3-y2*(z0-z3)+(y0-y3)*z2+y3*z0) / scaleB;
+    const double c2 = (x0*z3+x2*(z0-z3)+(x3-x0)*z2-x3*z0) / scaleB;
+    const double d2 = (x2*(y3-y0)-x0*y3-(x3-x0)*y2+x3*y0) / scaleB;
+
+    const double b3 = (-(y1-y0)*z3+y3*(z1-z0)-y0*z1+y1*z0) / scaleB;
+    const double c3 = (-(x0-x1)*z3-x3*(z1-z0)+x0*z1-x1*z0) / scaleB;
+    const double d3 = ((x0-x1)*y3-x0*y1-x3*(y0-y1)+x1*y0) / scaleB;
+
+    const double b4 = (-y0*(z2-z1)+y1*z2-y2*z1+(y2-y1)*z0) / scaleB;
+    const double c4 = (x0*(z2-z1)-x1*z2+x2*z1+(x1-x2)*z0) / scaleB;
+    const double d4 = (x1*y2+x0*(y1-y2)-x2*y1-(x1-x2)*y0) / scaleB;
+
+    assert(strainCell.size() == 6);
+    strainCell[0] = b1 * dispTCell[0] + b2 * dispTCell[3] + b3 * dispTCell[6]
+        + b4 * dispTCell[9];
+    strainCell[1] = c3 * dispTCell[7] + c2 * dispTCell[4] + c4 * dispTCell[10]
+        + c1 * dispTCell[1];
+    strainCell[2] = d3 * dispTCell[8] + d2 * dispTCell[5] + d1 * dispTCell[2]
+        + d4 * dispTCell[11];
+    strainCell[3] = (c4 * dispTCell[9] + b3 * dispTCell[7] + c3 * dispTCell[6]
+        + b2 * dispTCell[4] + c2 * dispTCell[3] + b4 * dispTCell[10] + b1
+        * dispTCell[1] + c1 * dispTCell[0]) / 2.0;
+    strainCell[4] = (c3 * dispTCell[8] + d3 * dispTCell[7] + c2 * dispTCell[5]
+        + d2 * dispTCell[4] + c1 * dispTCell[2] + c4 * dispTCell[11] + d4
+        * dispTCell[10] + d1 * dispTCell[1]) / 2.0;
+    strainCell[5] = (d4 * dispTCell[9] + b3 * dispTCell[8] + d3 * dispTCell[6]
+        + b2 * dispTCell[5] + d2 * dispTCell[3] + b1 * dispTCell[2] + b4
+        * dispTCell[11] + d1 * dispTCell[0]) / 2.0;
+
     const double_array& stressCell = _material->calcStress(strainCell, true);
 
 #if defined(DETAILED_EVENT_LOGGING)
+    PetscLogFlops(196);
     _logger->eventEnd(stressEvent);
     _logger->eventBegin(computeEvent);
 #endif
 
-    CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell);
+    assert(_cellVector.size() == 12);
+    assert(stressCell.size() == 6);
+    _cellVector[0] -= (d1*stressCell[5]+c1*stressCell[3]+b1*stressCell[0]) * volume;
+    _cellVector[1] -= (d1*stressCell[4]+b1*stressCell[3]+c1*stressCell[1]) * volume;
+    _cellVector[2] -= (b1*stressCell[5]+c1*stressCell[4]+d1*stressCell[2]) * volume;
+    _cellVector[3] -= (d2*stressCell[5]+c2*stressCell[3]+b2*stressCell[0]) * volume;
+    _cellVector[4] -= (d2*stressCell[4]+b2*stressCell[3]+c2*stressCell[1]) * volume;
+    _cellVector[5] -= (b2*stressCell[5]+c2*stressCell[4]+d2*stressCell[2]) * volume;
+    _cellVector[6] -= (d3*stressCell[5]+c3*stressCell[3]+b3*stressCell[0]) * volume;
+    _cellVector[7] -= (d3*stressCell[4]+b3*stressCell[3]+c3*stressCell[1]) * volume;
+    _cellVector[8] -= (b3*stressCell[5]+c3*stressCell[4]+d3*stressCell[2]) * volume;
+    _cellVector[9] -= (d4*stressCell[5]+c4*stressCell[3]+b4*stressCell[0]) * volume;
+    _cellVector[10] -= (d4*stressCell[4]+b4*stressCell[3]+c4*stressCell[1]) * volume;
+    _cellVector[11] -= (b4*stressCell[5]+c4*stressCell[4]+d4*stressCell[2]) * volume;
 
 #if defined(DETAILED_EVENT_LOGGING)
+    PetscLogFlops(84);
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
@@ -341,7 +375,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(cells->size()*numQuadPts*(3+numBasis*(1+numBasis*(6*spaceDim))));
+  PetscLogFlops(cells->size()*(196+84));
   _logger->eventEnd(computeEvent);
 #endif
 } // integrateResidual
@@ -349,13 +383,13 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 // ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
-pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
+pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
         const topology::Field<topology::Mesh>& residual,
         const double t,
         topology::SolutionFields* const fields)
 { // integrateResidualLumped
   /// Member prototype for _elasticityResidualXD()
-  typedef void (pylith::feassemble::ElasticityExplicit::*elasticityResidual_fn_type)
+  typedef void (pylith::feassemble::ElasticityExplicitTet4::*elasticityResidual_fn_type)
     (const double_array&);
 
   assert(0 != _quadrature);
@@ -374,13 +408,16 @@ pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
-  const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
-  const int tensorSize = _material->tensorSize();
+  assert(_quadrature->numQuadPts() == _numQuadPts);
+  assert(_quadrature->numBasis() == _numBasis);
+  assert(_quadrature->spaceDim() == _spaceDim);
+  assert(_quadrature->cellDim() == _cellDim);
+  assert(_material->tensorSize() == _tensorSize);
+  const int spaceDim = _spaceDim;
+  const int cellDim = _cellDim;
+  const int tensorSize = _tensorSize;
+  const int numBasis = _numBasis;
+  const int numQuadPts = _numQuadPts;
   /** :TODO:
    *
    * If cellDim and spaceDim are different, we need to transform
@@ -392,29 +429,6 @@ pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
     throw std::logic_error("Integration for cells with spatial dimensions "
          "different than the spatial dimension of the "
          "domain not implemented yet.");
-
-  // Set variables dependent on dimension of cell
-  totalStrain_fn_type calcTotalStrainFn;
-  elasticityResidual_fn_type elasticityResidualFn;
-  if (1 == cellDim) {
-    elasticityResidualFn =
-      &pylith::feassemble::ElasticityExplicit::_elasticityResidual1D;
-    calcTotalStrainFn =
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
-  } else if (2 == cellDim) {
-    elasticityResidualFn =
-      &pylith::feassemble::ElasticityExplicit::_elasticityResidual2D;
-    calcTotalStrainFn =
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
-  } else if (3 == cellDim) {
-    elasticityResidualFn =
-      &pylith::feassemble::ElasticityExplicit::_elasticityResidual3D;
-    calcTotalStrainFn =
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
-  } else {
-    assert(0);
-    throw std::runtime_error("Error unknown cell dimension.");
-  } // if/else
 
   // Allocate vectors for cell values.
   double_array dispTCell(numBasis*spaceDim);
@@ -479,118 +493,159 @@ pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
-    // Compute geometry information for current cell
 #if defined(DETAILED_EVENT_LOGGING)
-    _logger->eventBegin(geometryEvent);
+    _logger->eventBegin(restrictEvent);
 #endif
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
-#else
+
+    // Restrict input fields to cell
     coordsVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+
+    dispTVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispTVisitor);
+
+    dispTmdtVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispTmdtVisitor);
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(restrictEvent);
+    _logger->eventBegin(geometryEvent);
 #endif
+
+    // Compute geometry information for current cell
+    const double volume = _volume(coordinatesCell);
+
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
     _logger->eventBegin(stateVarsEvent);
 #endif
+
+    // Get density at quadrature points for this cell
+    const double_array& density = _material->calcDensity();
 
     // Get state variables for cell.
     _material->retrievePropsAndVars(*c_iter);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(stateVarsEvent);
-    _logger->eventBegin(restrictEvent);
+    _logger->eventBegin(computeEvent);
 #endif
 
     // Reset element vector to zero
     _resetCellVector();
-
-    // Restrict input fields to cell
-    dispTVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispTVisitor);
-    dispTmdtVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispTmdtVisitor);
-#if defined(DETAILED_EVENT_LOGGING)
-    _logger->eventEnd(restrictEvent);
-    _logger->eventBegin(computeEvent);
-#endif
-
-    // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& basisDeriv = _quadrature->basisDeriv();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
-    const double_array& quadPtsNondim = _quadrature->quadPts();
 
     // Compute body force vector if gravity is being used.
     if (0 != _gravityField) {
       const spatialdata::geocoords::CoordSys* cs = fields->mesh().coordsys();
       assert(0 != cs);
 
-      // Get density at quadrature points for this cell
-      const double_array& density = _material->calcDensity();
-
-      quadPtsGlobal = quadPtsNondim;
+      quadPtsGlobal = 0.0;
+      for (int iBasis=0; iBasis < numBasis; ++iBasis)
+        for (int iDim=0; iDim < spaceDim; ++iDim)
+          quadPtsGlobal[iDim] += 0.25 * coordinatesCell[iBasis*spaceDim+iDim];
       _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
           lengthScale);
 
       // Compute action for element body forces
-      for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
-        const int err = _gravityField->query(&gravVec[0], gravVec.size(),
-            &quadPtsGlobal[0], spaceDim, cs);
-        if (err)
-          throw std::runtime_error("Unable to get gravity vector for point.");
-        _normalizer->nondimensionalize(&gravVec[0], gravVec.size(),
-            gravityScale);
-        const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
-        for (int iBasis = 0, iQ = iQuad * numBasis; iBasis < numBasis; ++iBasis) {
-          const double valI = wt * basis[iQ + iBasis];
-          for (int iDim = 0; iDim < spaceDim; ++iDim) {
-            _cellVector[iBasis * spaceDim + iDim] += valI * gravVec[iDim];
-          } // for
-        } // for
-      } // for
-      PetscLogFlops(numQuadPts * (2 + numBasis * (1 + 2 * spaceDim)));
+      const int err = _gravityField->query(&gravVec[0], gravVec.size(),
+        &quadPtsGlobal[0], spaceDim, cs);
+      if (err)
+        throw std::runtime_error("Unable to get gravity vector for point.");
+      _normalizer->nondimensionalize(&gravVec[0], gravVec.size(),
+          gravityScale);
+      const double wtVertex = density[0] * volume / 4.0;
+      for (int iBasis=0; iBasis < numBasis; ++iBasis)
+        for (int iDim=0; iDim < spaceDim; ++iDim)
+            _cellVector[iBasis * spaceDim + iDim] += wtVertex * gravVec[iDim];
+      PetscLogFlops(numBasis*spaceDim*2 + numBasis*spaceDim*2);
     } // if
 
     // Compute action for inertial terms
-    const double_array& density = _material->calcDensity();
-    valuesIJ = 0.0;
-    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad]
-	/ dt2;
-      const int iQ = iQuad * numBasis;
-      double valJ = 0.0;
-      for (int jBasis = 0; jBasis < numBasis; ++jBasis)
-	valJ += basis[iQ + jBasis];
-      valJ *= wt;
-      for (int iBasis = 0; iBasis < numBasis; ++iBasis)
-	valuesIJ[iBasis] += basis[iQ + iBasis] * valJ;
-    } // for
-    for (int iBasis = 0; iBasis < numBasis; ++iBasis)
-      for (int iDim = 0; iDim < spaceDim; ++iDim)
-	_cellVector[iBasis*spaceDim+iDim] += valuesIJ[iBasis] *
-	  (dispTCell[iBasis*spaceDim+iDim] - dispTmdtCell[iBasis*spaceDim+iDim]);
+    const double wtVertex = density[0] * volume / (4.0 * dt2);
+    _cellVector += wtVertex * (dispTCell - dispTmdtCell);
 
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(numQuadPts*(4+numBasis*3) + numBasis*spaceDim*3);
+    PetscLogFlops(2 + numBasis*spaceDim*3);
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(stressEvent);
 #endif
 
     // Compute B(transpose) * sigma, first computing strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispTCell,
-          numBasis, numQuadPts);
+    const double x0 = coordinatesCell[0];
+    const double y0 = coordinatesCell[1];
+    const double z0 = coordinatesCell[2];
+
+    const double x1 = coordinatesCell[3];
+    const double y1 = coordinatesCell[4];
+    const double z1 = coordinatesCell[5];
+
+    const double x2 = coordinatesCell[6];
+    const double y2 = coordinatesCell[7];
+    const double z2 = coordinatesCell[8];
+
+    const double x3 = coordinatesCell[9];
+    const double y3 = coordinatesCell[10];
+    const double z3 = coordinatesCell[11];
+
+    const double scaleB = 6.0 * volume;
+    const double b1 = (y1*(z3-z2)-y2*z3+y3*z2-(y3-y2)*z1) / scaleB;
+    const double c1 = (-x1*(z3-z2)+x2*z3-x3*z2-(x2-x3)*z1) / scaleB;
+    const double d1 = (-x2*y3-x1*(y2-y3)+x3*y2+(x2-x3)*y1) / scaleB;
+
+    const double b2 = (-y0*z3-y2*(z0-z3)+(y0-y3)*z2+y3*z0) / scaleB;
+    const double c2 = (x0*z3+x2*(z0-z3)+(x3-x0)*z2-x3*z0) / scaleB;
+    const double d2 = (x2*(y3-y0)-x0*y3-(x3-x0)*y2+x3*y0) / scaleB;
+
+    const double b3 = (-(y1-y0)*z3+y3*(z1-z0)-y0*z1+y1*z0) / scaleB;
+    const double c3 = (-(x0-x1)*z3-x3*(z1-z0)+x0*z1-x1*z0) / scaleB;
+    const double d3 = ((x0-x1)*y3-x0*y1-x3*(y0-y1)+x1*y0) / scaleB;
+
+    const double b4 = (-y0*(z2-z1)+y1*z2-y2*z1+(y2-y1)*z0) / scaleB;
+    const double c4 = (x0*(z2-z1)-x1*z2+x2*z1+(x1-x2)*z0) / scaleB;
+    const double d4 = (x1*y2+x0*(y1-y2)-x2*y1-(x1-x2)*y0) / scaleB;
+
+    assert(strainCell.size() == 6);
+    strainCell[0] = b1 * dispTCell[0] + b2 * dispTCell[3] + b3 * dispTCell[6]
+        + b4 * dispTCell[9];
+    strainCell[1] = c3 * dispTCell[7] + c2 * dispTCell[4] + c4 * dispTCell[10]
+        + c1 * dispTCell[1];
+    strainCell[2] = d3 * dispTCell[8] + d2 * dispTCell[5] + d1 * dispTCell[2]
+        + d4 * dispTCell[11];
+    strainCell[3] = (c4 * dispTCell[9] + b3 * dispTCell[7] + c3 * dispTCell[6]
+        + b2 * dispTCell[4] + c2 * dispTCell[3] + b4 * dispTCell[10] + b1
+        * dispTCell[1] + c1 * dispTCell[0]) / 2.0;
+    strainCell[4] = (c3 * dispTCell[8] + d3 * dispTCell[7] + c2 * dispTCell[5]
+        + d2 * dispTCell[4] + c1 * dispTCell[2] + c4 * dispTCell[11] + d4
+        * dispTCell[10] + d1 * dispTCell[1]) / 2.0;
+    strainCell[5] = (d4 * dispTCell[9] + b3 * dispTCell[8] + d3 * dispTCell[6]
+        + b2 * dispTCell[5] + d2 * dispTCell[3] + b1 * dispTCell[2] + b4
+        * dispTCell[11] + d1 * dispTCell[0]) / 2.0;
+
     const double_array& stressCell = _material->calcStress(strainCell, true);
 
 #if defined(DETAILED_EVENT_LOGGING)
+    PetscLogFlops(196);
     _logger->eventEnd(stressEvent);
     _logger->eventBegin(computeEvent);
 #endif
 
-    CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell);
+    assert(_cellVector.size() == 12);
+    assert(stressCell.size() == 6);
+    _cellVector[0] -= (d1*stressCell[5]+c1*stressCell[3]+b1*stressCell[0]) * volume;
+    _cellVector[1] -= (d1*stressCell[4]+b1*stressCell[3]+c1*stressCell[1]) * volume;
+    _cellVector[2] -= (b1*stressCell[5]+c1*stressCell[4]+d1*stressCell[2]) * volume;
+    _cellVector[3] -= (d2*stressCell[5]+c2*stressCell[3]+b2*stressCell[0]) * volume;
+    _cellVector[4] -= (d2*stressCell[4]+b2*stressCell[3]+c2*stressCell[1]) * volume;
+    _cellVector[5] -= (b2*stressCell[5]+c2*stressCell[4]+d2*stressCell[2]) * volume;
+    _cellVector[6] -= (d3*stressCell[5]+c3*stressCell[3]+b3*stressCell[0]) * volume;
+    _cellVector[7] -= (d3*stressCell[4]+b3*stressCell[3]+c3*stressCell[1]) * volume;
+    _cellVector[8] -= (b3*stressCell[5]+c3*stressCell[4]+d3*stressCell[2]) * volume;
+    _cellVector[9] -= (d4*stressCell[5]+c4*stressCell[3]+b4*stressCell[0]) * volume;
+    _cellVector[10] -= (d4*stressCell[4]+b4*stressCell[3]+c4*stressCell[1]) * volume;
+    _cellVector[11] -= (b4*stressCell[5]+c4*stressCell[4]+d4*stressCell[2]) * volume;
 
 #if defined(DETAILED_EVENT_LOGGING)
+    PetscLogFlops(84);
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
@@ -605,7 +660,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(cells->size()*(numQuadPts*(4+numBasis*3)+numBasis*spaceDim*3));
+  PetscLogFlops(cells->size()*(2 + numBasis*spaceDim*3));
   _logger->eventEnd(computeEvent);
 #endif
 } // integrateResidualLumped
@@ -613,7 +668,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
 // ----------------------------------------------------------------------
 // Compute matrix associated with operator.
 void
-pylith::feassemble::ElasticityExplicit::integrateJacobian(
+pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 					topology::Jacobian* jacobian,
 					const double t,
 					topology::SolutionFields* fields)
@@ -697,17 +752,15 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
-    // Compute geometry information for current cell
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
-#else
+
+    // Compute geometry information for current cell
     coordsVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
-#endif
+    const double volume = _volume(coordinatesCell);
+    assert(volume > 0.0);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -725,31 +778,22 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     // Reset element matrix to zero
     _resetCellMatrix();
 
-    // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
-
     // Get material physical properties at quadrature points for this cell
     const double_array& density = _material->calcDensity();
+    assert(density.size() == 1);
 
     // Compute Jacobian for inertial terms
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = 
-          quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / dt2;
-      for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-        const double valI = wt*basis[iQ+iBasis];
-        for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-          const double valIJ = valI * basis[iQ+jBasis];
-          for (int iDim=0; iDim < spaceDim; ++iDim) {
-            const int iBlock = (iBasis*spaceDim + iDim) * (numBasis*spaceDim);
-            const int jBlock = (jBasis*spaceDim + iDim);
-            _cellMatrix[iBlock+jBlock] += valIJ;
-          } // for
-        } // for
-      } // for
-    } // for
+    const double wtVertex = density[0] * volume / (16.0 * dt2);
+    for (int iBasis = 0; iBasis < numBasis; ++iBasis)
+      for (int jBasis = 0; jBasis < numBasis; ++jBasis)
+	for (int iDim=0; iDim < spaceDim; ++iDim) {
+	  const int iBlock = (iBasis*spaceDim + iDim) * (numBasis*spaceDim);
+	  const int jBlock = (jBasis*spaceDim + iDim);
+	  _cellMatrix[iBlock+jBlock] += wtVertex;
+	} // for
+    
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+spaceDim))));
+    PetscLogFlops(numQuadPts*(3+numBasis*numBasis*spaceDim*1));
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
@@ -767,7 +811,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(cells->size()*numQuadPts*(3+numBasis*(1+numBasis*(1+spaceDim))));
+  PetscLogFlops(cells->size()*(3+numBasis*numBasis*spaceDim*1));
   _logger->eventEnd(computeEvent);
 #endif
 
@@ -778,7 +822,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
 // ----------------------------------------------------------------------
 // Compute matrix associated with operator.
 void
-pylith::feassemble::ElasticityExplicit::integrateJacobian(
+pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 			    topology::Field<topology::Mesh>* jacobian,
 			    const double t,
 			    topology::SolutionFields* fields)
@@ -798,13 +842,13 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
-  const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
-  const int tensorSize = _material->tensorSize();
+  assert(_quadrature->numBasis() == _numBasis);
+  assert(_quadrature->spaceDim() == _spaceDim);
+  assert(_quadrature->cellDim() == _cellDim);
+  assert(_material->tensorSize() == _tensorSize);
+  const int spaceDim = _spaceDim;
+  const int cellDim = _cellDim;
+  const int numBasis = _numBasis;
   if (cellDim != spaceDim)
     throw std::logic_error("Don't know how to integrate elasticity " \
 			   "contribution to Jacobian matrix for cells with " \
@@ -824,14 +868,8 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   const double dt = _dt;
   const double dt2 = dt*dt;
   assert(dt > 0);
-  double_array valuesIJ(numBasis);
 
   // Get sections
-  double_array dispTCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispTSection = 
-    fields->get("disp(t)").section();
-  assert(!dispTSection.isNull());
-
   const ALE::Obj<RealSection>& jacobianSection = jacobian->section();
   assert(!jacobianSection.isNull());
   topology::Mesh::UpdateAddVisitor jacobianVisitor(*jacobianSection, 
@@ -857,13 +895,9 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
-#else
     coordsVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
-#endif
+    const double volume = _volume(coordinatesCell);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -878,36 +912,13 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     _logger->eventBegin(computeEvent);
 #endif
 
-    // Reset element matrix to zero
-    _resetCellVector();
-
-    // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
-
-    // Get material physical properties at quadrature points for this cell
-    const double_array& density = _material->calcDensity();
-
     // Compute Jacobian for inertial terms
-    valuesIJ = 0.0;
-    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad]
-	/ dt2;
-      const int iQ = iQuad * numBasis;
-      double valJ = 0.0;
-      for (int jBasis = 0; jBasis < numBasis; ++jBasis)
-        valJ += basis[iQ + jBasis];
-      valJ *= wt;
-      for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
-        valuesIJ[iBasis] += basis[iQ + iBasis] * valJ;
-      } // for
-    } // for
-    for (int iBasis = 0; iBasis < numBasis; ++iBasis)
-      for (int iDim = 0; iDim < spaceDim; ++iDim)
-        _cellVector[iBasis*spaceDim+iDim] += valuesIJ[iBasis];
+    const double_array& density = _material->calcDensity();
+    assert(volume > 0.0);
+    _cellVector = density[0] * volume / (4.0 * dt2);
     
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(numQuadPts*(4 + numBasis*3) + numBasis*spaceDim);
+    PetscLogFlops(3);
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
@@ -922,13 +933,49 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(cells->size()*(numQuadPts*(4 + numBasis*3) + numBasis*spaceDim));
+  PetscLogFlops(cells->size()*3);
   _logger->eventEnd(computeEvent);
 #endif
 
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();
 } // integrateJacobian
+
+// ----------------------------------------------------------------------
+// Compute volume of tetrahedral cell.
+double
+pylith::feassemble::ElasticityExplicitTet4::_volume(
+			     const double_array& coordinatesCell) const
+{ // __volume
+  assert(12 == coordinatesCell.size());
+
+  const double x0 = coordinatesCell[0];
+  const double y0 = coordinatesCell[1];
+  const double z0 = coordinatesCell[2];
+
+  const double x1 = coordinatesCell[3];
+  const double y1 = coordinatesCell[4];
+  const double z1 = coordinatesCell[5];
+
+  const double x2 = coordinatesCell[6];
+  const double y2 = coordinatesCell[7];
+  const double z2 = coordinatesCell[8];
+
+  const double x3 = coordinatesCell[9];
+  const double y3 = coordinatesCell[10];
+  const double z3 = coordinatesCell[11];
+
+  const double det = 
+    x1*(y2*z3-y3*z2)-y1*(x2*z3-x3*z2)+(x2*y3-x3*y2)*z1 - 
+    x0*((y2*z3-y3*z2)-y1*(z3-z2)+(y3-y2)*z1) +
+    y0*((x2*z3-x3*z2)-x1*(z3-z2)+(x3-x2)*z1) -
+    z0*((x2*y3-x3*y2)-x1*(y3-y2)+(x3-x2)*y1);
+    
+  const double volume = det / 6.0;
+  PetscLogFlops(48);
+
+  return volume;  
+} // _volume
 
 
 // End of file 
