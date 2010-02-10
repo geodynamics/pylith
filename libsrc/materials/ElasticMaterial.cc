@@ -131,26 +131,6 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
 } // retrievePropsAndVars
 
 // ----------------------------------------------------------------------
-// Compute density for cell at quadrature points.
-const pylith::double_array&
-pylith::materials::ElasticMaterial::calcDensity(void)
-{ // calcDensity
-  const int numQuadPts = _numQuadPts;
-  const int numPropsQuadPt = _numPropsQuadPt;
-  const int numVarsQuadPt = _numVarsQuadPt;
-  assert(_propertiesCell.size() == numQuadPts*numPropsQuadPt);
-  assert(_stateVarsCell.size() == numQuadPts*numVarsQuadPt);
-  assert(_densityCell.size() == numQuadPts*1);
-
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-    _calcDensity(&_densityCell[iQuad], 
-		 &_propertiesCell[iQuad*numPropsQuadPt], numPropsQuadPt,
-		 &_stateVarsCell[iQuad*numVarsQuadPt], numVarsQuadPt);
-
-  return _densityCell;
-} // calcDensity
-
-// ----------------------------------------------------------------------
 // Compute stress tensor for cell at quadrature points.
 const pylith::double_array&
 pylith::materials::ElasticMaterial::calcStress(const double_array& totalStrain,

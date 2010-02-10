@@ -59,6 +59,7 @@ testfeassemble_SOURCES = \
 	TestElasticityExplicitGrav2DQuadratic.cc \
 	TestElasticityExplicitGrav3DLinear.cc \
 	TestElasticityExplicitGrav3DQuadratic.cc \
+	TestElasticityExplicitTet4.cc \
 	TestElasticityImplicit.cc \
 	TestElasticityImplicit1DLinear.cc \
 	TestElasticityImplicit1DQuadratic.cc \
@@ -118,6 +119,7 @@ noinst_HEADERS = \
 	TestElasticityExplicitGrav2DQuadratic.hh \
 	TestElasticityExplicitGrav3DLinear.hh \
 	TestElasticityExplicitGrav3DQuadratic.hh \
+	TestElasticityExplicitTet4.hh \
 	TestElasticityImplicit.hh \
 	TestElasticityImplicit1DLinear.hh \
 	TestElasticityImplicit1DQuadratic.hh \

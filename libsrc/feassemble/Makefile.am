@@ -19,6 +19,7 @@ subpkginclude_HEADERS = \
 	Constraint.hh \
 	Constraint.icc \
 	ElasticityExplicit.hh \
+	ElasticityExplicitTet4.hh \
 	ElasticityExplicitLgDeform.hh \
 	ElasticityImplicit.hh \
 	ElasticityImplicitLgDeform.hh \
