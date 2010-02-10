@@ -1,4 +1,4 @@
-#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -646,6 +646,29 @@ Nature
 217
 \shape default
 , 157.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "17"
+key "Drucker:Prager:1952"
+
+\end_inset
+
+Drucker, D.
+ C.
+ and Prager, W.
+ (1952).
+ Soil mechanics and plastic analysis for limit design, 
+\shape italic
+Quarterly of Applied Mathematics
+\shape default
+, 
+\shape italic
+10
+\shape default
+, 157–165.
 \end_layout
 
 \end_body
