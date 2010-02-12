@@ -252,8 +252,6 @@ pylith::friction::SlipWeakening::_calcFriction(const double slip,
   assert(0 != numStateVars);
   assert(_numVarsVertex == numStateVars);
 
-
-  // DO SOMETHING LIKE THIS:
   double friction = 0.0;
   double mu_f = 0.0;
   if (normalTraction < 0.0) {
