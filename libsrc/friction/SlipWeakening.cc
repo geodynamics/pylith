@@ -258,16 +258,15 @@ pylith::friction::SlipWeakening::_calcFriction(const double slip,
   double mu_f = 0.0;
   if (normalTraction < 0.0) {
     // if fault is in compression
-    if (stateVars[s_slipCum] < properties[p_coefD]) {
+    if (stateVars[s_slipCum] < properties[p_d0]) {
 	// if/else linear slip-weakening form of mu_f 
 	mu_f = properties[p_coefS] -
 	  (properties[p_coefS] - properties[p_coefD]) * 
 	  stateVars[s_slipCum] / properties[p_d0];
-	friction = - mu_f * normalTraction;
       } else {
 	mu_f = properties[p_coefD];
-	friction = - mu_f * normalTraction;
       } // if/else
+    friction = - mu_f * normalTraction;
   } // if
 
   PetscLogFlops(5);
