@@ -77,6 +77,26 @@ pylith::faults::TestFaultCohesiveDynL::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
+// Test needJacobianDiag().
+void
+pylith::faults::TestFaultCohesiveDynL::testNeedJacobianDiag(void)
+{ // testNeedJacobianDiag
+  FaultCohesiveDynL fault;
+
+  CPPUNIT_ASSERT_EQUAL(true, fault.needJacobianDiag());
+} // testNeedJacobianDiag
+
+// ----------------------------------------------------------------------
+// Test needVelocity().
+void
+pylith::faults::TestFaultCohesiveDynL::testNeedVelocity(void)
+{ // testNeedVelocity
+  FaultCohesiveDynL fault;
+
+  CPPUNIT_ASSERT_EQUAL(true, fault.needVelocity());
+} // testNeedVelocity
+
+// ----------------------------------------------------------------------
 // Test dbInitialTract().
 void
 pylith::faults::TestFaultCohesiveDynL::testDBInitialTract(void)

@@ -13,7 +13,9 @@
 #include <portinfo>
 
 #include "FaultCohesiveDynL.hh" // implementation of object methods
+
 #include "CohesiveTopology.hh" // USES CohesiveTopology
+
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 #include "pylith/topology/Mesh.hh" // USES Mesh
@@ -23,9 +25,11 @@
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/friction/FrictionModel.hh" // USES FrictionModel
+
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 #include <cmath> // USES pow(), sqrt()
 #include <strings.h> // USES strcasecmp()
 #include <cstring> // USES strlen()
@@ -33,6 +37,7 @@
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
+
 // Precomputing geometry significantly increases storage but gives a
 // slight speed improvement.
 //#define PRECOMPUTE_GEOMETRY
@@ -45,43 +50,53 @@ typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesiveDynL::FaultCohesiveDynL(void) :
-  _dbInitialTract(0), _friction(0) { // constructor
+  _dbInitialTract(0),
+  _friction(0)
+{ // constructor
+  _needJacobianDiag = true;
+  _needVelocity = true;
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::faults::FaultCohesiveDynL::~FaultCohesiveDynL(void) { // destructor
+pylith::faults::FaultCohesiveDynL::~FaultCohesiveDynL(void)
+{ // destructor
   deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-void pylith::faults::FaultCohesiveDynL::deallocate(void) { // deallocate
+void pylith::faults::FaultCohesiveDynL::deallocate(void)
+{ // deallocate
   FaultCohesive::deallocate();
 
-  // :TODO: Use shared pointers for initial database
-  _dbInitialTract = 0;
-
+  _dbInitialTract = 0; // :TODO: Use shared pointer
   _friction = 0; // :TODO: Use shared pointer
 } // deallocate
 
 // ----------------------------------------------------------------------
 // Sets the spatial database for the inital tractions
-void pylith::faults::FaultCohesiveDynL::dbInitialTract(spatialdata::spatialdb::SpatialDB* db) { // dbInitial
+void
+pylith::faults::FaultCohesiveDynL::dbInitialTract(spatialdata::spatialdb::SpatialDB* db)
+{ // dbInitial
   _dbInitialTract = db;
 } // dbInitial
 
 // ----------------------------------------------------------------------
 // Get the friction (constitutive) model.  
-void pylith::faults::FaultCohesiveDynL::frictionModel(friction::FrictionModel* const model) { // frictionModel
+void
+pylith::faults::FaultCohesiveDynL::frictionModel(friction::FrictionModel* const model)
+{ // frictionModel
   _friction = model;
 } // frictionModel
 
 // ----------------------------------------------------------------------
 // Initialize fault. Determine orientation and setup boundary
-void pylith::faults::FaultCohesiveDynL::initialize(const topology::Mesh& mesh,
-                                                   const double upDir[3],
-                                                   const double normalDir[3]) { // initialize
+void
+pylith::faults::FaultCohesiveDynL::initialize(const topology::Mesh& mesh,
+					      const double upDir[3],
+					      const double normalDir[3])
+{ // initialize
   assert(0 != upDir);
   assert(0 != normalDir);
   assert(0 != _quadrature);
@@ -208,7 +223,8 @@ void pylith::faults::FaultCohesiveDynL::splitField(topology::Field<
 void pylith::faults::FaultCohesiveDynL::integrateResidual(const topology::Field<
                                                               topology::Mesh>& residual,
                                                           const double t,
-                                                          topology::SolutionFields* const fields) { // integrateResidual
+                                                          topology::SolutionFields* const fields)
+{ // integrateResidual
   assert(0 != fields);
   assert(0 != _quadrature);
   assert(0 != _fields);
@@ -410,7 +426,8 @@ void pylith::faults::FaultCohesiveDynL::integrateResidual(const topology::Field<
 void pylith::faults::FaultCohesiveDynL::integrateResidualAssembled(const topology::Field<
                                                                        topology::Mesh>& residual,
                                                                    const double t,
-                                                                   topology::SolutionFields* const fields) { // integrateResidualAssembled
+                                                                   topology::SolutionFields* const fields)
+{ // integrateResidualAssembled
   assert(0 != fields);
   assert(0 != _fields);
 
@@ -460,9 +477,12 @@ void pylith::faults::FaultCohesiveDynL::integrateResidualAssembled(const topolog
 // ----------------------------------------------------------------------
 // Compute Jacobian matrix (A) associated with operator that do not
 // require assembly across cells, vertices, or processors.
-void pylith::faults::FaultCohesiveDynL::integrateJacobianAssembled(topology::Jacobian* jacobian,
-                                                                   const double t,
-                                                                   topology::SolutionFields* const fields) { // integrateJacobianAssembled
+void
+pylith::faults::FaultCohesiveDynL::integrateJacobianAssembled(
+				      topology::Jacobian* jacobian,
+				      const double t,
+				      topology::SolutionFields* const fields)
+{ // integrateJacobianAssembled
   assert(0 != jacobian);
   assert(0 != fields);
   assert(0 != _fields);
@@ -599,8 +619,11 @@ void pylith::faults::FaultCohesiveDynL::integrateJacobianAssembled(topology::Jac
 
 // ----------------------------------------------------------------------
 // Update state variables as needed.
-void pylith::faults::FaultCohesiveDynL::updateStateVars(const double t,
-                                                        topology::SolutionFields* const fields) { // updateStateVars
+void
+pylith::faults::FaultCohesiveDynL::updateStateVars(
+				      const double t,
+				      topology::SolutionFields* const fields)
+{ // updateStateVars
   assert(0 != fields);
   assert(0 != _fields);
 
@@ -608,9 +631,12 @@ void pylith::faults::FaultCohesiveDynL::updateStateVars(const double t,
 
 // ----------------------------------------------------------------------
 // Constrain solution based on friction.
-void pylith::faults::FaultCohesiveDynL::constrainSolnSpace(topology::SolutionFields* const fields,
-                                                           const double t,
-                                                           const topology::Jacobian& jacobian) { // constrainSolnSpace
+void
+pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
+				    topology::SolutionFields* const fields,
+				    const double t,
+				    const topology::Jacobian& jacobian)
+{ // constrainSolnSpace
   assert(0 != fields);
   assert(0 != _quadrature);
   assert(0 != _fields);
@@ -982,7 +1008,9 @@ void pylith::faults::FaultCohesiveDynL::constrainSolnSpace(topology::SolutionFie
 
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
-void pylith::faults::FaultCohesiveDynL::verifyConfiguration(const topology::Mesh& mesh) const { // verifyConfiguration
+void
+pylith::faults::FaultCohesiveDynL::verifyConfiguration(const topology::Mesh& mesh) const
+{ // verifyConfiguration
   assert(0 != _quadrature);
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
@@ -1030,7 +1058,8 @@ void pylith::faults::FaultCohesiveDynL::verifyConfiguration(const topology::Mesh
 // Get vertex field associated with integrator.
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveDynL::vertexField(const char* name,
-                                               const topology::SolutionFields* fields) { // vertexField
+                                               const topology::SolutionFields* fields)
+{ // vertexField
   assert(0 != _faultMesh);
   assert(0 != _quadrature);
   assert(0 != _normalizer);
@@ -1144,8 +1173,10 @@ pylith::faults::FaultCohesiveDynL::cellField(const char* name,
 
 // ----------------------------------------------------------------------
 // Calculate orientation at fault vertices.
-void pylith::faults::FaultCohesiveDynL::_calcOrientation(const double upDir[3],
-                                                         const double normalDir[3]) { // _calcOrientation
+void
+pylith::faults::FaultCohesiveDynL::_calcOrientation(const double upDir[3],
+                                                         const double normalDir[3])
+{ // _calcOrientation
   assert(0 != upDir);
   assert(0 != normalDir);
   assert(0 != _faultMesh);
@@ -1422,8 +1453,10 @@ void pylith::faults::FaultCohesiveDynL::_calcArea(void) { // _calcArea
 // ----------------------------------------------------------------------
 // Compute change in tractions on fault surface using solution.
 // NOTE: We must convert vertex labels to fault vertex labels
-void pylith::faults::FaultCohesiveDynL::_calcTractions(topology::Field<
-    topology::SubMesh>* tractions, const topology::Field<topology::Mesh>& dispT) { // _calcTractionsChange
+void
+pylith::faults::FaultCohesiveDynL::_calcTractions(topology::Field<
+    topology::SubMesh>* tractions, const topology::Field<topology::Mesh>& dispT)
+{ // _calcTractionsChange
   assert(0 != tractions);
   assert(0 != _faultMesh);
   assert(0 != _fields);
@@ -1546,7 +1579,9 @@ void pylith::faults::FaultCohesiveDynL::_calcTractions(topology::Field<
 } // _calcTractions
 
 // ----------------------------------------------------------------------
-void pylith::faults::FaultCohesiveDynL::_getInitialTractions(void) { // _getInitialTractions
+void
+pylith::faults::FaultCohesiveDynL::_getInitialTractions(void)
+{ // _getInitialTractions
   assert(0 != _normalizer);
   assert(0 != _quadrature);
 
@@ -1655,7 +1690,9 @@ void pylith::faults::FaultCohesiveDynL::_getInitialTractions(void) { // _getInit
 // ----------------------------------------------------------------------
 // Update diagonal of Jacobian at conventional vertices i and j
 //  associated with Lagrange vertex k.
-void pylith::faults::FaultCohesiveDynL::_updateJacobianDiagonal(const topology::SolutionFields& fields) { // _updateJacobianDiagonal
+void
+pylith::faults::FaultCohesiveDynL::_updateJacobianDiagonal(const topology::SolutionFields& fields)
+{ // _updateJacobianDiagonal
   assert(0 != _fields);
 
   // Get cohesive cells
@@ -1731,7 +1768,9 @@ void pylith::faults::FaultCohesiveDynL::_updateJacobianDiagonal(const topology::
 // ----------------------------------------------------------------------
 // Update slip rate associated with Lagrange vertex k corresponding
 // to diffential velocity between conventional vertices i and j.
-void pylith::faults::FaultCohesiveDynL::_updateSlipRate(const topology::SolutionFields& fields) { // _updateSlipRate
+void
+pylith::faults::FaultCohesiveDynL::_updateSlipRate(const topology::SolutionFields& fields)
+{ // _updateSlipRate
   assert(0 != _fields);
 
   // Get cohesive cells
@@ -1826,7 +1865,9 @@ void pylith::faults::FaultCohesiveDynL::_updateSlipRate(const topology::Solution
 
 // ----------------------------------------------------------------------
 // Allocate buffer for vector field.
-void pylith::faults::FaultCohesiveDynL::_allocateBufferVertexVectorField(void) { // _allocateBufferVertexVectorField
+void
+pylith::faults::FaultCohesiveDynL::_allocateBufferVertexVectorField(void)
+{ // _allocateBufferVertexVectorField
   assert(0 != _fields);
   if (_fields->hasField("buffer (vector)"))
     return;
@@ -1847,7 +1888,9 @@ void pylith::faults::FaultCohesiveDynL::_allocateBufferVertexVectorField(void) {
 
 // ----------------------------------------------------------------------
 // Allocate buffer for scalar field.
-void pylith::faults::FaultCohesiveDynL::_allocateBufferVertexScalarField(void) { // _allocateBufferVertexScalarField
+void
+pylith::faults::FaultCohesiveDynL::_allocateBufferVertexScalarField(void)
+{ // _allocateBufferVertexScalarField
   assert(0 != _fields);
   if (_fields->hasField("buffer (scalar)"))
     return;

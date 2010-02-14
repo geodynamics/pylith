@@ -197,6 +197,7 @@ class Formulation(PetscComponent, ModuleFormulation):
       integrator.initialize(totalTime, numTimeSteps, normalizer)
     ModuleFormulation.meshIntegrators(self, self.integratorsMesh)
     ModuleFormulation.submeshIntegrators(self, self.integratorsSubMesh)
+    ModuleFormulation.initialize(self)
     self._debug.log(resourceUsageString())
 
     self._info.log("Initializing constraints.")

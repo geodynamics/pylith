@@ -31,6 +31,8 @@ pylith::feassemble::Integrator<quadrature_type>::Integrator(void) :
   _gravityField(0),
   _logger(0),
   _needNewJacobian(true),
+  _needJacobianDiag(false),
+  _needVelocity(false),
   _useSolnIncr(false)
 { // constructor
 } // constructor
