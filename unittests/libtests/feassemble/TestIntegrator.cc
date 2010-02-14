@@ -49,6 +49,32 @@ pylith::feassemble::TestIntegrator::testStableTimeStep(void)
 } // testStableTimeStep
 
 // ----------------------------------------------------------------------
+// Test needJacobianDiag().
+void
+pylith::feassemble::TestIntegrator::testNeedJacobianDiag(void)
+{ // testNeedJacobianDiag
+  ElasticityExplicit integrator;
+
+  CPPUNIT_ASSERT_EQUAL(false, integrator.needJacobianDiag());
+
+  integrator._needJacobianDiag = true;
+  CPPUNIT_ASSERT_EQUAL(true, integrator.needJacobianDiag());
+} // testNeedJacobianDiag
+
+// ----------------------------------------------------------------------
+// Test needVelocity().
+void
+pylith::feassemble::TestIntegrator::testNeedVelocity(void)
+{ // testNeedVelocity
+  ElasticityExplicit integrator;
+
+  CPPUNIT_ASSERT_EQUAL(false, integrator.needVelocity());
+
+  integrator._needVelocity = true;
+  CPPUNIT_ASSERT_EQUAL(true, integrator.needVelocity());
+} // testNeedVelocity
+
+// ----------------------------------------------------------------------
 // Test quadrature().
 void
 pylith::feassemble::TestIntegrator::testQuadrature(void)

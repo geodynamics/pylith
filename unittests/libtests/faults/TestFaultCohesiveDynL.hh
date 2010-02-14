@@ -39,21 +39,24 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for FaultCohesiveDynL
-class pylith::faults::TestFaultCohesiveDynL: public CppUnit::TestFixture { // class TestFaultCohesiveDynL
+class pylith::faults::TestFaultCohesiveDynL: public CppUnit::TestFixture
+{ // class TestFaultCohesiveDynL
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-CPPUNIT_TEST_SUITE( TestFaultCohesiveDynL );
+  CPPUNIT_TEST_SUITE( TestFaultCohesiveDynL );
 
-    CPPUNIT_TEST( testConstructor );
-    CPPUNIT_TEST( testDBInitialTract );
+  CPPUNIT_TEST( testConstructor );
+  CPPUNIT_TEST( testNeedJacobianDiag );
+  CPPUNIT_TEST( testNeedVelocity );
+  CPPUNIT_TEST( testDBInitialTract );
 
-    // Tests in derived classes:
-    // testInitialize()
-    // testConstrainSolnSpaceStick()
-    // testConstrainSolnSpaceSlip()
-    // testConstrainSolnSpaceOpen()
-    // testUpdateStateVars()
-    // testCalcTractions()
+  // Tests in derived classes:
+  // testInitialize()
+  // testConstrainSolnSpaceStick()
+  // testConstrainSolnSpaceSlip()
+  // testConstrainSolnSpaceOpen()
+  // testUpdateStateVars()
+  // testCalcTractions()
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -78,6 +81,12 @@ public:
 
   /// Test constructor.
   void testConstructor(void);
+
+  /// Test needJacobianDiag().
+  void testNeedJacobianDiag(void);
+
+  /// Test needVelocity().
+  void testNeedVelocity(void);
 
   /// Test dbInitialTract().
   void testDBInitialTract(void);
