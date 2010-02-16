@@ -99,10 +99,6 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     ((sieveMesh->hasLabel("censored depth")) ?
      "censored depth" : "depth") : label;
 
-  std::cout << "labelName: " << labelName
-	    << ", depth: " << depth
-	    << std::endl;
-
   const ALE::Obj<label_sequence>& cells = 
     sieveMesh->getLabelStratum(labelName, depth);
   assert(!cells.isNull());
@@ -116,11 +112,6 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     sectionIn->getFiberDimension(*cellsBegin) : 0;
   const int fiberDim = totalFiberDim / numQuadPts;
   assert(fiberDim * numQuadPts == totalFiberDim);
-
-  fieldIn.view("INPUT FIELD");
-  std::cout << "CELLS SIZE: " << cells->size() << std::endl;
-  std::cout << "FIBERDIM: " << fiberDim << std::endl;
-  std::cout << "CELLS BEGIN: " << *cellsBegin << std::endl;
 
   // Allocate field if necessary
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
@@ -191,8 +182,6 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     sectionAvg->updatePoint(*c_iter, &fieldAvgCell[0]);
   } // for
   PetscLogFlops( cells->size() * numQuadPts*fiberDim*3 );
-
-  _fieldAvg->view("AVERAGED FIELD");
 
   return *_fieldAvg;
 } // filter
