@@ -19,10 +19,11 @@
 ## Factory: pde_formulation
 
 from Formulation import Formulation
+from problems import Explicit as ModuleExplicit
 from pylith.utils.profiling import resourceUsageString
 
 # ExplicitLumped class
-class ExplicitLumped(Formulation):
+class ExplicitLumped(Formulation, ModuleExplicit):
   """
   Python ExplicitLumped object for solving equations using an explicit
   formulation.
@@ -72,6 +73,7 @@ class ExplicitLumped(Formulation):
     Constructor.
     """
     Formulation.__init__(self, name)
+    ModuleExplicit.__init__(self)
     self._loggingPrefix = "TSEx "
     return
 

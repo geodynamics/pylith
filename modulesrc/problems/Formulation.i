@@ -34,6 +34,18 @@ namespace pylith {
       /// Deallocate PETSc and local data structures.
       void deallocate(void);
   
+      /** Get solution fields.
+       *
+       * @returns solution fields.
+       */
+      const pylith::topology::SolutionFields& fields(void) const;
+
+      /** Get flag indicating whether we need to compute velocity at time t.
+       *
+       * @returns True if velocity is needed, otherwise false.
+       */
+      bool needVelocity(void) const;
+  
       /** Set handles to integrators over the mesh.
        *
        * @param integrators Integrators over the mesh.
@@ -106,6 +118,13 @@ namespace pylith {
       /* Reform system Jacobian.
        */
       void reformJacobianLumped(void);
+
+    // PROTECTED METHODS ////////////////////////////////////////////////
+    protected :
+      
+      /// Compute velocity at time t.
+      virtual
+      void _calcVelocity(void) = 0;
 
     }; // Formulation
 

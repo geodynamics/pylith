@@ -18,10 +18,11 @@
 ## Factory: pde_formulation
 
 from Formulation import Formulation
+from problems import Implicit as ModuleImplicit
 from pylith.utils.profiling import resourceUsageString
 
 # Implicit class
-class Implicit(Formulation):
+class Implicit(Formulation, ModuleImplicit):
   """
   Python Implicit object for solving equations using an implicit
   formulation.
@@ -88,6 +89,7 @@ class Implicit(Formulation):
     Constructor.
     """
     Formulation.__init__(self, name)
+    ModuleImplicit.__init__(self)
     self._loggingPrefix = "TSIm "
     self._stepCount = None
     return

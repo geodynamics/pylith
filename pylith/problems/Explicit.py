@@ -18,10 +18,11 @@
 ## Factory: pde_formulation
 
 from Formulation import Formulation
+from problems import Explicit as ModuleExplicit
 from pylith.utils.profiling import resourceUsageString
 
 # Explicit class
-class Explicit(Formulation):
+class Explicit(Formulation, ModuleExplicit):
   """
   Python Explicit object for solving equations using an explicit
   formulation.
@@ -46,6 +47,7 @@ class Explicit(Formulation):
     Constructor.
     """
     Formulation.__init__(self, name)
+    ModuleExplicit.__init__(self)
     self._loggingPrefix = "TSEx "
     return
 

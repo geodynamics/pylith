@@ -63,6 +63,14 @@ pylith::problems::Formulation::fields(void) const
 } // fields
 
 // ----------------------------------------------------------------------
+// Get flag indicating whether we need to compute velocity at time t.
+bool
+pylith::problems::Formulation::needVelocity(void) const
+{ // needVelocity
+  return _needVelocity;
+} // needVelocity
+  
+// ----------------------------------------------------------------------
 // Set integrators over the mesh.
 void
 pylith::problems::Formulation::meshIntegrators(IntegratorMesh** integrators,

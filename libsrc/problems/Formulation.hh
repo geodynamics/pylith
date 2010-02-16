@@ -61,6 +61,12 @@ public :
    */
   const topology::SolutionFields& fields(void) const;
 
+  /** Get flag indicating whether we need to compute velocity at time t.
+   *
+   * @returns True if velocity is needed, otherwise false.
+   */
+  bool needVelocity(void) const;
+  
   /** Set handles to integrators over the mesh.
    *
    * @param integrators Integrators over the mesh.
@@ -144,8 +150,15 @@ public :
    */
   void adjustSolnLumped(void);
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
+// PROTECTED METHODS ////////////////////////////////////////////////////
+protected :
+
+  /// Compute velocity at time t.
+  virtual
+  void _calcVelocity(void) = 0;
+
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
 
   double _t; ///< Current time (nondimensional).
   double _dt; ///< Current time step (nondimensional).

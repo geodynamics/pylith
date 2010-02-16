@@ -115,7 +115,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     Constructor.
     """
     PetscComponent.__init__(self, name, facility="formulation")
-    ModuleFormulation.__init__(self)
+    # ModuleFormulation constructor called in base clase
     self.integratorsMesh = None
     self.integratorsSubMesh = None
     self.constraints = None

@@ -21,6 +21,8 @@
 #include "pylith/feassemble/feassemblefwd.hh" // USES Integrator
 
 #include "pylith/problems/Formulation.hh"
+#include "pylith/problems/Explicit.hh"
+#include "pylith/problems/Implicit.hh"
 #include "pylith/problems/Solver.hh"
 #include "pylith/problems/SolverLinear.hh"
 #include "pylith/problems/SolverNonlinear.hh"
@@ -42,6 +44,8 @@
 
 // Interfaces
 %include "Formulation.i"
+%include "Explicit.i"
+%include "Implicit.i"
 %include "Solver.i"
 %include "SolverLinear.i"
 %include "SolverNonlinear.i"
