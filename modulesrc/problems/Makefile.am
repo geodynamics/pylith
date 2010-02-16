@@ -20,6 +20,8 @@ subpkgpyexec_PYTHON = problems.py
 swig_sources = \
 	problems.i \
 	Formulation.i \
+	Explicit.i \
+	Implicit.i \
 	Solver.i \
 	SolverLinear.i \
 	SolverNonlinear.i

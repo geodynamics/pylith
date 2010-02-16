@@ -25,6 +25,8 @@ namespace pylith {
   namespace problems {
 
     class Formulation;
+    class Implicit;
+    class Explicit;
 
     class Solver;
     class SolverLinear;

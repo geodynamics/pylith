@@ -110,6 +110,8 @@ libpylith_la_SOURCES = \
 	meshio/OutputSolnSubset.cc \
 	meshio/UCDFaultFile.cc \
 	problems/Formulation.cc \
+	problems/Explicit.cc \
+	problems/Implicit.cc \
 	problems/Solver.cc \
 	problems/SolverLinear.cc \
 	problems/SolverNonlinear.cc \

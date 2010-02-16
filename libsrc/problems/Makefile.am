@@ -15,6 +15,8 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	Formulation.hh \
+	Explicit.hh \
+	Implicit.hh \
 	Solver.hh \
 	SolverLinear.hh \
 	SolverNonlinear.hh \
