@@ -537,7 +537,6 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
 			      stateVars[s_stress + 5]};
 
     const double mu2 = 2.0 * mu;
-    const double lamPlusMu = lambda + mu;
     const double bulkModulus = lambda + mu2/3.0;
     const double ae = 1.0/mu2;
     const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
@@ -882,7 +881,6 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
 			    stateVars[s_stress + 5]};
 
   const double mu2 = 2.0 * mu;
-  const double lamPlusMu = lambda + mu;
   const double bulkModulus = lambda + mu2/3.0;
   const double ae = 1.0/mu2;
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
@@ -1166,7 +1164,6 @@ pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
 			    stateVars[s_stress + 5]};
   
   const double mu2 = 2.0 * mu;
-  const double lamPlusMu = lambda + mu;
   const double bulkModulus = lambda + mu2/3.0;
   const double ae = 1.0/mu2;
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
