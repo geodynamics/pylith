@@ -50,7 +50,7 @@ pylith::problems::Implicit::_calcVelocity(void)
   const int spaceDim = cs->spaceDim();
   
   if (!_fields->hasField("velocity(t)")) {
-    _fields->add("velocity(t)", "velocity(t)");
+    _fields->add("velocity(t)", "velocity");
     topology::Field<topology::Mesh>& velocity = _fields->get("velocity(t)");
     velocity.cloneSection(dispIncr);
   } // if

@@ -122,13 +122,13 @@ pylith::problems::Formulation::initialize(void)
   numIntegrators = _meshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i) {
     assert(0 != _meshIntegrators[i]);
-    if (_meshIntegrators[i]->needJacobianDiag())
+    if (_meshIntegrators[i]->needVelocity())
       _needVelocity = true;
   } // fpr
   numIntegrators = _submeshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i) {
     assert(0 != _submeshIntegrators[i]);
-    if (_submeshIntegrators[i]->needJacobianDiag())
+    if (_submeshIntegrators[i]->needVelocity())
       _needVelocity = true;
   } // for
 } // initialize
@@ -185,6 +185,10 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
     solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
 
+  // Compute velocity if necessary.
+  if (_needVelocity)
+    _calcVelocity();
+
   // Set residual to zero.
   topology::Field<topology::Mesh>& residual = _fields->get("residual");
   residual.zero();
@@ -237,6 +241,10 @@ pylith::problems::Formulation::reformResidualLumped(const PetscVec* tmpResidualV
     topology::Field<topology::Mesh>& solution = _fields->solution();
     solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
+
+  // Compute velocity if necessary.
+  if (_needVelocity)
+    _calcVelocity();
 
   // Set residual to zero.
   topology::Field<topology::Mesh>& residual = _fields->get("residual");

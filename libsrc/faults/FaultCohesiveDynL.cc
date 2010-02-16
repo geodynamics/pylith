@@ -662,7 +662,7 @@ pylith::faults::FaultCohesiveDynL::constrainSolnSpace(
   const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
   assert(!slipSection.isNull());
 
-  //_updateSlipRate(*fields); // waiting for velocity field to be defined
+  _updateSlipRate(*fields);
   double_array slipRateVertex(spaceDim);
   const ALE::Obj<RealSection>& slipRateSection =
       _fields->get("slip rate").section();
