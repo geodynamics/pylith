@@ -93,10 +93,18 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
   
   const ALE::Obj<SieveMesh>& sieveMesh = fieldIn.mesh().sieveMesh();
   assert(!sieveMesh.isNull());
+  const int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
+  const int depth = (0 == label) ? cellDepth : labelId;
+  const std::string labelName = (0 == label) ?
+    ((sieveMesh->hasLabel("censored depth")) ?
+     "censored depth" : "depth") : label;
 
-  const ALE::Obj<label_sequence>& cells = (0 == label) ?
-    sieveMesh->heightStratum(0) :
-    sieveMesh->getLabelStratum(label, labelId);
+  std::cout << "labelName: " << labelName
+	    << ", depth: " << depth
+	    << std::endl;
+
+  const ALE::Obj<label_sequence>& cells = 
+    sieveMesh->getLabelStratum(labelName, depth);
   assert(!cells.isNull());
   const typename label_sequence::iterator cellsBegin = cells->begin();
   const typename label_sequence::iterator cellsEnd = cells->end();
@@ -108,6 +116,11 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     sectionIn->getFiberDimension(*cellsBegin) : 0;
   const int fiberDim = totalFiberDim / numQuadPts;
   assert(fiberDim * numQuadPts == totalFiberDim);
+
+  fieldIn.view("INPUT FIELD");
+  std::cout << "CELLS SIZE: " << cells->size() << std::endl;
+  std::cout << "FIBERDIM: " << fiberDim << std::endl;
+  std::cout << "CELLS BEGIN: " << *cellsBegin << std::endl;
 
   // Allocate field if necessary
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
@@ -168,6 +181,7 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
        c_iter != cellsEnd;
        ++c_iter) {
     const double* values = sectionIn->restrictPoint(*c_iter);
+    assert(totalFiberDim == sectionIn->getFiberDimension(*c_iter));
     
     fieldAvgCell = 0.0;
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
@@ -177,6 +191,8 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     sectionAvg->updatePoint(*c_iter, &fieldAvgCell[0]);
   } // for
   PetscLogFlops( cells->size() * numQuadPts*fiberDim*3 );
+
+  _fieldAvg->view("AVERAGED FIELD");
 
   return *_fieldAvg;
 } // filter
