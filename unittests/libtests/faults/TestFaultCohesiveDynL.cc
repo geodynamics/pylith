@@ -740,6 +740,7 @@ pylith::faults::TestFaultCohesiveDynL::_initialize(
   // Setup fields
   fields->add("disp(t)", "displacement");
   fields->add("dispIncr(t->t+dt)", "displacement_increment");
+  fields->add("velocity(t)", "velocity");
   fields->solutionName("dispIncr(t->t+dt)");
   
   const int spaceDim = _data->spaceDim;
