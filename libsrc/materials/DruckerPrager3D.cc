@@ -728,6 +728,184 @@ pylith::materials::DruckerPragerEP3D::_calcElasticConstsElastoplastic(
   assert(0 != initialStrain);
   assert(_DruckerPragerEP3D::tensorSize == initialStrainSize);
 
+  // Duplicate functionality of _calcStressElastoplastic
+  // Get properties
+  const int tensorSize = _tensorSize;
+  const double mu = properties[p_mu];
+  const double lambda = properties[p_lambda];
+  const double alphaYield = properties[p_alphaYield];
+  const double beta = properties[p_beta];
+  const double alphaFlow = properties[p_alphaFlow];
+  const double mu2 = 2.0 * mu;
+  const double bulkModulus = lambda + mu2/3.0;
+  const double ae = 1.0/mu2;
+  const double am = 1.0/(3.0 * bulkModulus);
+  
+  // Get state variables from previous time step
+  const double plasticStrainT[] = {stateVars[s_plasticStrain],
+				   stateVars[s_plasticStrain + 1],
+				   stateVars[s_plasticStrain + 2],
+				   stateVars[s_plasticStrain + 3],
+				   stateVars[s_plasticStrain + 4],
+				   stateVars[s_plasticStrain + 5]};
+  const double meanPlasticStrainT = (plasticStrainT[0] +
+				     plasticStrainT[1] +
+				     plasticStrainT[2])/3.0;
+  const double devPlasticStrainT[] = { plasticStrainT[0] - meanPlasticStrainT,
+				       plasticStrainT[1] - meanPlasticStrainT,
+				       plasticStrainT[2] - meanPlasticStrainT,
+				       plasticStrainT[3],
+				       plasticStrainT[4],
+				       plasticStrainT[5]};
+
+  const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+
+  // Initial stress values
+  const double meanStressInitial = (initialStress[0] +
+				    initialStress[1] +
+				    initialStress[2])/3.0;
+  const double devStressInitial[] = { initialStress[0] - meanStressInitial,
+				      initialStress[1] - meanStressInitial,
+				      initialStress[2] - meanStressInitial,
+				      initialStress[3],
+				      initialStress[4],
+				      initialStress[5] };
+
+  // Initial strain values
+  const double meanStrainInitial = (initialStrain[0] +
+				    initialStrain[1] +
+				    initialStrain[2])/3.0;
+  const double devStrainInitial[] = { initialStrain[0] - meanStrainInitial,
+				      initialStrain[1] - meanStrainInitial,
+				      initialStrain[2] - meanStrainInitial,
+				      initialStrain[3],
+				      initialStrain[4],
+				      initialStrain[5] };
+
+  // Values for current time step
+  const double e11 = totalStrain[0];
+  const double e22 = totalStrain[1];
+  const double e33 = totalStrain[2];
+  const double meanStrainTpdt = (e11 + e22 + e33)/3.0;
+  const double meanStrainPPTpdt = meanStrainTpdt - meanPlasticStrainT -
+    meanStrainInitial;
+  
+  const double strainPPTpdt[] =
+    { totalStrain[0] - meanStrainTpdt - devPlasticStrainT[0] -
+      devStrainInitial[0],
+      totalStrain[1] - meanStrainTpdt - devPlasticStrainT[1] -
+      devStrainInitial[1],
+      totalStrain[2] - meanStrainTpdt - devPlasticStrainT[2] -
+      devStrainInitial[2],
+      totalStrain[3] - devPlasticStrainT[3] - devStrainInitial[3],
+      totalStrain[4] - devPlasticStrainT[4] - devStrainInitial[4],
+      totalStrain[5] - devPlasticStrainT[5] - devStrainInitial[5] };
+  
+  // Compute trial elastic stresses and yield function to see if yield should
+  // occur.
+  const double trialDevStress[] = { strainPPTpdt[0]/ae + devStressInitial[0],
+				    strainPPTpdt[1]/ae + devStressInitial[1],
+				    strainPPTpdt[2]/ae + devStressInitial[2],
+				    strainPPTpdt[3]/ae + devStressInitial[3],
+				    strainPPTpdt[4]/ae + devStressInitial[4],
+				    strainPPTpdt[5]/ae + devStressInitial[5]};
+  const double trialMeanStress = meanStrainPPTpdt/am + meanStressInitial;
+  const double yieldFunction = 3.0* alphaYield * trialMeanStress +
+    _scalarProduct(trialDevStress, trialDevStress) - beta;
+  PetscLogFlops(74);
+  
+  // If yield function is greater than zero, compute elastoplastic stress and
+  // corresponding tangent matrix.
+  if (yieldFunction >= 0.0) {
+    const double devStressInitialProd = 
+      _scalarProduct(devStressInitial, devStressInitial);
+    const double strainPPTpdtProd =
+      _scalarProduct(strainPPTpdt, strainPPTpdt);
+    const double d = sqrt(ae * ae * devStressInitialProd +
+			  2.0 * ae *
+			  _scalarProduct(devStressInitial, strainPPTpdt) +
+			  strainPPTpdtProd);
+    plasticMult = 2.0 * ae * am * (3.0 * alphaYield * meanStrainPPTpdt/am +
+				   d/(sqrt(2.0) * ae) - beta)/
+      (6.0 * alphaYield * alphaFlow * ae + am);
+    const double meanStressTpdt =
+      (meanStrainPPTpdt - plasticMult * alphaFlow)/am + meanStressInitial;
+    double deltaDevPlasticStrain = 0.0;
+    double devStressTpdt = 0.0;
+    for (int iComp=0; iComp < tensorSize; ++iComp) {
+      deltaDevPlasticStrain = plasticMult *(strainPPTpdt[iComp] +
+					    ae * devStressInitial[iComp])/
+	(sqrt(2.0) * d);
+      devStressTpdt = (strainPPTpdt[iComp] - deltaDevPlasticStrain)/ae +
+	devStressInitial[iComp];
+      stress[iComp] = devStressTpdt + diag[iComp] * meanStressTpdt;
+    } // for
+
+    // Define some constants and vectors
+    const double dDdEPrime[] = {
+      (ae * devStressInitial[0] + strainPPTpdt[0])/d,
+      (ae * devStressInitial[1] + strainPPTpdt[1])/d,
+      (ae * devStressInitial[2] + strainPPTpdt[2])/d,
+      2.0 * (ae * devStressInitial[0] + strainPPTpdt[0])/d,
+      2.0 * (ae * devStressInitial[0] + strainPPTpdt[0])/d,
+      2.0 * (ae * devStressInitial[0] + strainPPTpdt[0])/d};
+    const double const1 = 2.0 * ae * am/
+      (6.0 * alphaYield * alphaFlow * ae + am);
+    const double const2 = 3.0 * alphaYield/am;
+    const double const3 = 1.0/(sqrt(2.0) * ae);
+    const double dLambdadEPrime[] = {
+      const1 * (-1.5 * const2 + const3 * dDdEPrime[0]),
+      const1 * (-1.5 * const2 + const3 * dDdEPrime[1]),
+      const1 * (-1.5 * const2 + const3 * dDdEPrime[2]),
+      const1 * (                const3 * dDdEPrime[3]),
+      const1 * (                const3 * dDdEPrime[4]),
+      const1 * (                const3 * dDdEPrime[5])};
+
+
+    PetscLogFlops(62 + 11 * tensorSize);
+
+    } else {
+      // No plastic strain.
+      const double meanStressTpdt = meanStrainPPTpdt/am + meanStressInitial;
+      stress[0] = strainPPTpdt[0]/ae + devStressInitial[0] + meanStressTpdt; 
+      stress[1] = strainPPTpdt[1]/ae + devStressInitial[1] + meanStressTpdt; 
+      stress[2] = strainPPTpdt[2]/ae + devStressInitial[2] + meanStressTpdt; 
+      stress[3] = strainPPTpdt[3]/ae + devStressInitial[3]; 
+      stress[4] = strainPPTpdt[4]/ae + devStressInitial[4]; 
+      stress[5] = strainPPTpdt[5]/ae + devStressInitial[5]; 
+    } // if
+
+    // If state variables have already been updated, the plastic strain for the
+    // time step has already been computed.
+  } else {
+    const double mu2 = 2.0 * mu;
+    const double plasticStrainTpdt[] = {stateVars[s_plasticStrain],
+					stateVars[s_plasticStrain + 1],
+					stateVars[s_plasticStrain + 2],
+					stateVars[s_plasticStrain + 3],
+					stateVars[s_plasticStrain + 4],
+					stateVars[s_plasticStrain + 5]};
+
+    const double e11 = totalStrain[0] - plasticStrainTpdt[0] - initialStrain[0];
+    const double e22 = totalStrain[1] - plasticStrainTpdt[1] - initialStrain[1];
+    const double e33 = totalStrain[2] - plasticStrainTpdt[2] - initialStrain[2];
+    const double e12 = totalStrain[3] - plasticStrainTpdt[3] - initialStrain[3];
+    const double e23 = totalStrain[4] - plasticStrainTpdt[4] - initialStrain[4];
+    const double e13 = totalStrain[5] - plasticStrainTpdt[5] - initialStrain[5];
+
+    const double traceStrainTpdt = e11 + e22 + e33;
+    const double s123 = lambda * traceStrainTpdt;
+
+    stress[0] = s123 + mu2 * e11 + initialStress[0];
+    stress[1] = s123 + mu2 * e22 + initialStress[1];
+    stress[2] = s123 + mu2 * e33 + initialStress[2];
+    stress[3] = mu2 * e12 + initialStress[3];
+    stress[4] = mu2 * e23 + initialStress[4];
+    stress[5] = mu2 * e13 + initialStress[5];
+
+    PetscLogFlops(31);
+
+  } // else
   const int tensorSize = _tensorSize;
 
   const double mu = properties[p_mu];
