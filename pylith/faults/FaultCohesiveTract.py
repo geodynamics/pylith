@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/faults/FaultCohesiveDyn.py
+## @file pylith/faults/FaultCohesiveTract.py
 ##
 
 ## @brief Python object for a fault surface with dynamic
@@ -20,12 +20,12 @@
 
 from FaultCohesive import FaultCohesive
 from pylith.feassemble.Integrator import Integrator
-from faults import FaultCohesiveDyn as ModuleFaultCohesiveDyn
+from faults import FaultCohesiveTract as ModuleFaultCohesiveTract
 
 from pylith.utils.NullComponent import NullComponent
 
-# FaultCohesiveDyn class
-class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
+# FaultCohesiveTract class
+class FaultCohesiveTract(FaultCohesive, Integrator, ModuleFaultCohesiveTract):
   """
   Python object for a fault surface with dynamic (friction) fault
   implemented with cohesive elements.
@@ -33,7 +33,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
   Inventory
 
   @class Inventory
-  Python object for managing FaultCohesiveDyn facilities and properties.
+  Python object for managing FaultCohesiveTract facilities and properties.
   
   \b Properties
   @li None
@@ -53,10 +53,10 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
                                factory=NullComponent)
   db.meta['tip'] = "Spatial database for initial tractions."
 
-  from pylith.meshio.OutputFaultDyn import OutputFaultDyn
-  output = pyre.inventory.facility("output", family="output_manager",
-                                   factory=OutputFaultDyn)
-  output.meta['tip'] = "Output manager associated with fault data."
+  #from pylith.meshio.OutputFaultTract import OutputFaultTract
+  #output = pyre.inventory.facility("output", family="output_manager",
+  #                                 factory=OutputFaultTract)
+  #output.meta['tip'] = "Output manager associated with fault data."
   
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
     """
     FaultCohesive.__init__(self, name)
     Integrator.__init__(self)
-    self._loggingPrefix = "CoDy "
+    self._loggingPrefix = "CoTr "
 
     self.availableFields = \
         {'vertex': \
@@ -89,7 +89,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
     FaultCohesive.preinitialize(self, mesh)
     Integrator.preinitialize(self, mesh)
 
-    ModuleFaultCohesiveDyn.quadrature(self, self.faultQuadrature)
+    ModuleFaultCohesiveTract.quadrature(self, self.faultQuadrature)
 
     if mesh.dimension() == 2:
       self.availableFields['cell']['info'] += ["strike_dir"]
@@ -111,7 +111,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
 
     FaultCohesive.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
-    ModuleFaultCohesiveDyn.verifyConfiguration(self, self.mesh)
+    ModuleFaultCohesiveTract.verifyConfiguration(self, self.mesh)
 
     self._eventLogger.eventEnd(logEvent)
     return
@@ -152,9 +152,9 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
     Get vertex field.
     """
     if None == fields:
-      field = ModuleFaultCohesiveDyn.vertexField(self, name)
+      field = ModuleFaultCohesiveTract.vertexField(self, name)
     else:
-      field = ModuleFaultCohesiveDyn.vertexField(self, name, fields)
+      field = ModuleFaultCohesiveTract.vertexField(self, name, fields)
     return field
 
 
@@ -163,9 +163,9 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
     Get cell field.
     """
     if None == fields:
-      field = ModuleFaultCohesiveDyn.cellField(self, name)
+      field = ModuleFaultCohesiveTract.cellField(self, name)
     else:
-      field = ModuleFaultCohesiveDyn.cellField(self, name, fields)
+      field = ModuleFaultCohesiveTract.cellField(self, name, fields)
     return field
 
 
@@ -186,16 +186,16 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
     """
     FaultCohesive._configure(self)
     if not isinstance(self.inventory.db, NullComponent):
-      ModuleFaultCohesiveDyn.dbInitial(self, self.inventory.db)
-    self.output = self.inventory.output
+      ModuleFaultCohesiveTract.dbInitial(self, self.inventory.db)
+    #self.output = self.inventory.output
     return
 
 
   def _createModuleObj(self):
     """
-    Create handle to C++ FaultCohesiveDyn.
+    Create handle to C++ FaultCohesiveTract.
     """
-    ModuleFaultCohesiveDyn.__init__(self)
+    ModuleFaultCohesiveTract.__init__(self)
     return
     
   
@@ -212,9 +212,9 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
 
 def fault():
   """
-  Factory associated with FaultCohesiveDyn.
+  Factory associated with FaultCohesiveTract.
   """
-  return FaultCohesiveDyn()
+  return FaultCohesiveTract()
 
 
 # End of file 

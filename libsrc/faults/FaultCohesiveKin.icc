@@ -14,13 +14,6 @@
 #error "FaultCohesiveKin.icc can only be included from FaultCohesiveKin.hh"
 #endif
 
-// Cohesive cells use Lagrange multiplier constraints?
-inline
-bool
-pylith::faults::FaultCohesiveKin::useLagrangeConstraints(void) const {
-  return true;
-} // useLagrangeConstraints
-
 // Get fields associated with fault.
 inline
 const pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >*

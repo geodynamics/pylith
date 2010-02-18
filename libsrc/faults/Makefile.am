@@ -23,8 +23,8 @@ subpkginclude_HEADERS = \
 	Fault.hh \
 	Fault.icc \
 	FaultCohesive.hh \
-	FaultCohesiveDyn.hh \
-	FaultCohesiveDyn.icc \
+	FaultCohesive.icc \
+	FaultCohesiveTract.hh \
 	FaultCohesiveDynL.hh \
 	FaultCohesiveDynL.icc \
 	FaultCohesiveKin.hh \

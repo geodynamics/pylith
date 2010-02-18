@@ -218,13 +218,6 @@ public :
   cellField(const char* name,
 	    const topology::SolutionFields* fields =0);
 
-  /** Cohesive cells use Lagrange multiplier constraints?
-   *
-   * @returns True if implementation using Lagrange multiplier
-   * constraints, false otherwise.
-   */
-  bool useLagrangeConstraints(void) const;
-
   /** Get fields associated with fault.
    *
    * @returns Fields associated with fault.

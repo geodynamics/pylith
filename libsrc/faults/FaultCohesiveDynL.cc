@@ -53,6 +53,7 @@ pylith::faults::FaultCohesiveDynL::FaultCohesiveDynL(void) :
   _dbInitialTract(0),
   _friction(0)
 { // constructor
+  _useLagrangeConstraints = true;
   _needJacobianDiag = true;
   _needVelocity = true;
 } // constructor
