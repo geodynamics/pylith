@@ -33,40 +33,36 @@ namespace pylith {
     namespace _RateStateAgeing {
 
       // Number of physical properties.
-      const int numProperties = 6;
+      const int numProperties = 5;
 
       // Physical properties.
       const pylith::materials::Metadata::ParamDescription properties[] = {
 	{ "reference_friction_coefficient", 1, pylith::topology::FieldBase::SCALAR },
-	{ "reference_slip_velocity", 1, pylith::topology::FieldBase::SCALAR },
+	{ "reference_slip_rate", 1, pylith::topology::FieldBase::SCALAR },
         { "characteristic_slip_distance", 1, pylith::topology::FieldBase::SCALAR },
-	{ "initial_slip_velocity", 1, pylith::topology::FieldBase::SCALAR },
 	{ "constitutive_parameter_a", 1, pylith::topology::FieldBase::SCALAR },
         { "constitutive_parameter_b", 1, pylith::topology::FieldBase::SCALAR },
       };
 
       // Number of State Variables.
-      const int numStateVars = 2;
+      const int numStateVars = 1;
 
       // State Variables.
       const pylith::materials::Metadata::ParamDescription stateVars[] = {
-	{ "state-variable", 1, pylith::topology::FieldBase::SCALAR },
-	{ "initial-state-variable", 1, pylith::topology::FieldBase::SCALAR },
+	{ "state_variable", 1, pylith::topology::FieldBase::SCALAR },
       };
 
       // Values expected in spatial database
-      const int numDBProperties = 6;
+      const int numDBProperties = 5;
       const char* dbProperties[] = { "reference-friction-coefficient"
-				     "reference-slip-velocity"
+				     "reference-slip-rate"
 				     "characteristic-slip-distance"
-				     "initial slip velocity"
-				     "constitutive parameter a"
-				     "constitutive parameter b"
+				     "constitutive-parameter-a"
+				     "constitutive-parameter-b"
  };      
 
-      const int numDBStateVars = 2;
+      const int numDBStateVars = 1;
       const char* dbStateVars[] = { "state-variable"
-				     "initial state variable"
 };      
       
     } // _RateStateAgeing
@@ -79,10 +75,8 @@ const int pylith::friction::RateStateAgeing::p_slipRate0 =
   pylith::friction::RateStateAgeing::p_coef + 1;
 const int pylith::friction::RateStateAgeing::p_L = 
   pylith::friction::RateStateAgeing::p_slipRate0 + 1;
-const int pylith::friction::RateStateAgeing::p_slipRateIn = 
-  pylith::friction::RateStateAgeing::p_L + 1;
 const int pylith::friction::RateStateAgeing::p_a = 
-  pylith::friction::RateStateAgeing::p_slipRateIn + 1;
+  pylith::friction::RateStateAgeing::p_L + 1;
 const int pylith::friction::RateStateAgeing::p_b = 
   pylith::friction::RateStateAgeing::p_a + 1;
 
@@ -92,22 +86,16 @@ const int pylith::friction::RateStateAgeing::db_slipRate0 =
   pylith::friction::RateStateAgeing::db_coef + 1;
 const int pylith::friction::RateStateAgeing::db_L = 
   pylith::friction::RateStateAgeing::db_slipRate0 + 1;
-const int pylith::friction::RateStateAgeing::db_slipRateIn = 
-  pylith::friction::RateStateAgeing::db_L + 1;
 const int pylith::friction::RateStateAgeing::db_a = 
-  pylith::friction::RateStateAgeing::db_slipRateIn + 1;
+  pylith::friction::RateStateAgeing::db_L + 1;
 const int pylith::friction::RateStateAgeing::db_b = 
   pylith::friction::RateStateAgeing::db_a + 1;
 
 // Indices of state variables.
 const int pylith::friction::RateStateAgeing::s_state = 0;
-const int pylith::friction::RateStateAgeing::s_stateIn = 
-  pylith::friction::RateStateAgeing::s_state + 1;
 
 // Indices of database values (order must match dbProperties)
 const int pylith::friction::RateStateAgeing::db_state = 0;
-const int pylith::friction::RateStateAgeing::db_stateIn = 
-  pylith::friction::RateStateAgeing::db_stateIn + 1;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -143,7 +131,6 @@ pylith::friction::RateStateAgeing::_dbToProperties(
   const double db_fricCoef = dbValues[db_coef];
   const double db_slipVel0 = dbValues[db_slipRate0];
   const double db_dC = dbValues[db_L];
-  const double db_slipVelIn = dbValues[db_slipRateIn];
   const double db_parA = dbValues[db_a];
   const double db_parB = dbValues[db_b];
  
@@ -182,7 +169,6 @@ pylith::friction::RateStateAgeing::_dbToProperties(
   propValues[p_coef] = db_fricCoef;
   propValues[p_slipRate0] = db_slipVel0;
   propValues[p_L] = db_dC;
-  propValues[p_slipRateIn] = db_slipVelIn;
   propValues[p_a] = db_parA;
   propValues[p_b] = db_parB;
 
@@ -204,7 +190,6 @@ pylith::friction::RateStateAgeing::_nondimProperties(double* const values,
 
   values[p_slipRate0] /= lengthScale / timeScale;
   values[p_L] /= lengthScale;
-  values[p_slipRateIn] /= lengthScale / timeScale;
 } // _nondimProperties
 
 // ----------------------------------------------------------------------
@@ -223,7 +208,6 @@ pylith::friction::RateStateAgeing::_dimProperties(double* const values,
 
   values[p_slipRate0] *= lengthScale / timeScale;
   values[p_L] *= lengthScale;
-  values[p_slipRateIn] *= lengthScale / timeScale;
 } // _dimProperties
 
 // ----------------------------------------------------------------------
@@ -238,10 +222,8 @@ pylith::friction::RateStateAgeing::_dbToStateVars(
   assert(_RateStateAgeing::numDBStateVars == numDBValues);
 
   const double stateVariable = dbValues[db_state];
-  const double initialStateVariable = dbValues[db_stateIn];
  
   stateValues[s_state] = stateVariable;
-  stateValues[s_stateIn] = initialStateVariable;
 } // _dbToStateVars
 
 // ----------------------------------------------------------------------
@@ -257,7 +239,6 @@ pylith::friction::RateStateAgeing::_nondimStateVars(double* const values,
   const double timeScale = _normalizer->timeScale();
 
   values[s_state] /= timeScale;
-  values[s_stateIn] /= timeScale;
 } // _nondimStateVars
 
 // ----------------------------------------------------------------------
@@ -273,7 +254,6 @@ pylith::friction::RateStateAgeing::_dimStateVars(double* const values,
   const double timeScale = _normalizer->timeScale();
 
   values[s_state] *= timeScale;
-  values[s_stateIn] *= timeScale;
 } // _dimStateVars
 
 // ----------------------------------------------------------------------
@@ -292,7 +272,6 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
   assert(0 != numStateVars);
   assert(_numVarsVertex == numStateVars);
 
-  // :TODO: slipRate has to be at (n+1)
   double friction = 0.0;
   double mu_f = 0.0;
   if (normalTraction < 0.0) {
@@ -301,18 +280,21 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
 
     const double slipRate0 = properties[p_slipRate0];
     const double a = properties[p_a];
-    const double aLnTerm = a * log(slipRate / slipRate0);
 
     const double theta = stateVars[s_state];
     const double L = properties[p_L];
     const double b = properties[p_b];
     const double bLnTerm = b * log(slipRate0 * theta / L);
 
-    mu_f = f0 + aLnTerm + bLnTerm;
+    const double expTerm = exp((f0 + bLnTerm)/a);
+
+    const double sinhArg = slipRate / 2 / slipRate0 * expTerm;
+
+    mu_f = a * asinh(sinhArg);
     friction = -mu_f * normalTraction;
   } // if
 
-  PetscLogFlops(5);
+  PetscLogFlops(10);
 
   return friction;
 } // _calcFriction
@@ -331,14 +313,20 @@ pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
   assert(0 != numStateVars);
   assert(0 != numProperties);
 
-  stateVars[s_stateIn] = stateVars[s_state];
-
   const double deltaT = _dt;
-  const double thetaN = stateVars[s_stateIn];
+  const double thetaN = stateVars[s_state];
   const double L = properties[p_L];
   const double expTerm = exp(-slipRate * deltaT / L);
- 
-  stateVars[s_state] = thetaN * expTerm +
+  const double vDtL = slipRate * deltaT / L;
+
+  // Ageing law
+  if (vDtL < 0.00001)
+    // Use first three terms of taylor expansion of 
+    // expTerm when it approaches unity
+    stateVars[s_state] = thetaN * expTerm + 
+                        deltaT - 0.5 * slipRate * pow(deltaT,2) / L;
+  else
+    stateVars[s_state] = thetaN * expTerm +
                        L / slipRate * (1 - expTerm);
     
 } // _updateStateVars
