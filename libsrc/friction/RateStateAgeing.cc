@@ -37,10 +37,10 @@ namespace pylith {
 
       // Physical properties.
       const pylith::materials::Metadata::ParamDescription properties[] = {
-	{ "reference_friction_coefficient", 1, pylith::topology::FieldBase::SCALAR },
-	{ "reference_slip_rate", 1, pylith::topology::FieldBase::SCALAR },
+        { "reference_friction_coefficient", 1, pylith::topology::FieldBase::SCALAR },
+        { "reference_slip_rate", 1, pylith::topology::FieldBase::SCALAR },
         { "characteristic_slip_distance", 1, pylith::topology::FieldBase::SCALAR },
-	{ "constitutive_parameter_a", 1, pylith::topology::FieldBase::SCALAR },
+        { "constitutive_parameter_a", 1, pylith::topology::FieldBase::SCALAR },
         { "constitutive_parameter_b", 1, pylith::topology::FieldBase::SCALAR },
       };
 
@@ -49,21 +49,23 @@ namespace pylith {
 
       // State Variables.
       const pylith::materials::Metadata::ParamDescription stateVars[] = {
-	{ "state_variable", 1, pylith::topology::FieldBase::SCALAR },
+        { "state_variable", 1, pylith::topology::FieldBase::SCALAR },
       };
 
       // Values expected in spatial database
       const int numDBProperties = 5;
-      const char* dbProperties[] = { "reference-friction-coefficient"
-				     "reference-slip-rate"
-				     "characteristic-slip-distance"
-				     "constitutive-parameter-a"
-				     "constitutive-parameter-b"
- };      
+      const char* dbProperties[] = {
+          "reference-friction-coefficient"
+          "reference-slip-rate"
+          "characteristic-slip-distance"
+          "constitutive-parameter-a"
+          "constitutive-parameter-b"
+      };
 
       const int numDBStateVars = 1;
-      const char* dbStateVars[] = { "state-variable"
-};      
+      const char* dbStateVars[] = {
+            "state-variable"
+      };
       
     } // _RateStateAgeing
   } // friction
@@ -128,49 +130,49 @@ pylith::friction::RateStateAgeing::_dbToProperties(
   const int numDBValues = dbValues.size();
   assert(_RateStateAgeing::numDBProperties == numDBValues);
 
-  const double db_fricCoef = dbValues[db_coef];
-  const double db_slipVel0 = dbValues[db_slipRate0];
-  const double db_dC = dbValues[db_L];
-  const double db_parA = dbValues[db_a];
-  const double db_parB = dbValues[db_b];
+  const double frictionCoef = dbValues[db_coef];
+  const double slipRate0 = dbValues[db_slipRate0];
+  const double dc = dbValues[db_L];
+  const double a = dbValues[db_a];
+  const double b = dbValues[db_b];
  
-  if (db_fricCoef <= 0.0) {
+  if (frictionCoef <= 0.0) {
     std::ostringstream msg;
     msg << "Spatial database returned nonpositive value for reference coefficient "
 	<< "of Rate and State friction Ageing Law.\n"
-	<< "reference coefficient of friction: " << db_fricCoef << "\n";
+	<< "reference coefficient of friction: " << frictionCoef << "\n";
     throw std::runtime_error(msg.str());
   } // if
 
-  if (db_dC <= 0.0) {
+  if (dc <= 0.0) {
     std::ostringstream msg;
     msg << "Spatial database returned nonpositive value for characteristic"
 	<< "slip distance of Rate and State friction Ageing Law.\n"
-	<< "characteristic slip distance: " << db_dC << "\n";
+	<< "characteristic slip distance: " << dc << "\n";
     throw std::runtime_error(msg.str());
   } // if
 
-  if (db_parA <= 0.0) {
+  if (a <= 0.0) {
     std::ostringstream msg;
     msg << "Spatial database returned nonpositive value for constitutive "
 	<< "parameter 'a' of Rate and State friction Ageing Law.\n"
-	<< "Rate and State parameter 'a' of Ageing Law of friction: " << db_parA << "\n";
+	<< "Rate and State parameter 'a' of Ageing Law of friction: " << a << "\n";
     throw std::runtime_error(msg.str());
   } // if
 
-  if (db_parB <= 0.0) {
+  if (b <= 0.0) {
     std::ostringstream msg;
     msg << "Spatial database returned nonpositive value for constitutive "
 	<< "parameter 'b' of Rate and State friction Ageing Law.\n"
-	<< "Rate and State parameter 'a' of Ageing Law of friction: " << db_parB << "\n";
+	<< "Rate and State parameter 'a' of Ageing Law of friction: " << b << "\n";
     throw std::runtime_error(msg.str());
   } // if
 
-  propValues[p_coef] = db_fricCoef;
-  propValues[p_slipRate0] = db_slipVel0;
-  propValues[p_L] = db_dC;
-  propValues[p_a] = db_parA;
-  propValues[p_b] = db_parB;
+  propValues[p_coef] = frictionCoef;
+  propValues[p_slipRate0] = slipRate0;
+  propValues[p_L] = dc;
+  propValues[p_a] = a;
+  propValues[p_b] = b;
 
 } // _dbToProperties
 
@@ -285,10 +287,8 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
     const double L = properties[p_L];
     const double b = properties[p_b];
     const double bLnTerm = b * log(slipRate0 * theta / L);
-
     const double expTerm = exp((f0 + bLnTerm)/a);
-
-    const double sinhArg = slipRate / 2 / slipRate0 * expTerm;
+    const double sinhArg = 0.5 * slipRate / slipRate0 * expTerm;
 
     mu_f = a * asinh(sinhArg);
     friction = -mu_f * normalTraction;
@@ -313,18 +313,18 @@ pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
   assert(0 != numStateVars);
   assert(0 != numProperties);
 
-  const double deltaT = _dt;
+  const double dt = _dt;
   const double thetaN = stateVars[s_state];
   const double L = properties[p_L];
-  const double expTerm = exp(-slipRate * deltaT / L);
-  const double vDtL = slipRate * deltaT / L;
+  const double expTerm = exp(-slipRate * dt / L);
+  const double vDtL = slipRate * dt / L;
 
   // Ageing law
   if (vDtL < 0.00001)
     // Use first three terms of taylor expansion of 
     // expTerm when it approaches unity
     stateVars[s_state] = thetaN * expTerm + 
-                        deltaT - 0.5 * slipRate * pow(deltaT,2) / L;
+                        dt - 0.5 * slipRate * pow(dt,2) / L;
   else
     stateVars[s_state] = thetaN * expTerm +
                        L / slipRate * (1 - expTerm);
