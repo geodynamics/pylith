@@ -43,18 +43,23 @@ typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) { // constructor
+pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void)
+{ // constructor
+  _useLagrangeConstraints = true;
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void) { // destructor
+pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void)
+{ // destructor
   deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-void pylith::faults::FaultCohesiveKin::deallocate(void) { // deallocate
+void
+pylith::faults::FaultCohesiveKin::deallocate(void)
+{ // deallocate
   FaultCohesive::deallocate();
 
   // :TODO: Use shared pointers for earthquake sources
@@ -62,10 +67,12 @@ void pylith::faults::FaultCohesiveKin::deallocate(void) { // deallocate
 
 // ----------------------------------------------------------------------
 // Set kinematic earthquake source.
-void pylith::faults::FaultCohesiveKin::eqsrcs(const char* const * names,
-                                              const int numNames,
-                                              EqKinSrc** sources,
-                                              const int numSources) { // eqsrcs
+void
+pylith::faults::FaultCohesiveKin::eqsrcs(const char* const * names,
+					 const int numNames,
+					 EqKinSrc** sources,
+					 const int numSources)
+{ // eqsrcs
   assert(numNames == numSources);
 
   // :TODO: Use shared pointers for earthquake sources
@@ -79,9 +86,11 @@ void pylith::faults::FaultCohesiveKin::eqsrcs(const char* const * names,
 
 // ----------------------------------------------------------------------
 // Initialize fault. Determine orientation and setup boundary
-void pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
-                                                  const double upDir[3],
-                                                  const double normalDir[3]) { // initialize
+void
+pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
+					     const double upDir[3],
+					     const double normalDir[3])
+{ // initialize
   assert(0 != upDir);
   assert(0 != normalDir);
   assert(0 != _quadrature);
@@ -145,7 +154,8 @@ void pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
 } // initialize
 
 // ----------------------------------------------------------------------
-void pylith::faults::FaultCohesiveKin::splitField(topology::Field<
+void
+pylith::faults::FaultCohesiveKin::splitField(topology::Field<
     topology::Mesh>* field)
 { // splitField
   assert(0 != field);
@@ -173,7 +183,8 @@ void pylith::faults::FaultCohesiveKin::splitField(topology::Field<
 // ----------------------------------------------------------------------
 // Integrate contribution of cohesive cells to residual term that do
 // not require assembly across cells, vertices, or processors.
-void pylith::faults::FaultCohesiveKin::integrateResidualAssembled(const topology::Field<
+void
+pylith::faults::FaultCohesiveKin::integrateResidualAssembled(const topology::Field<
                                                                       topology::Mesh>& residual,
                                                                   const double t,
                                                                   topology::SolutionFields* const fields) { // integrateResidualAssembled
@@ -334,9 +345,11 @@ void pylith::faults::FaultCohesiveKin::integrateResidualAssembled(const topology
 // ----------------------------------------------------------------------
 // Compute Jacobian matrix (A) associated with operator that do not
 // require assembly across cells, vertices, or processors.
-void pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(topology::Jacobian* jacobian,
+void
+pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(topology::Jacobian* jacobian,
                                                                   const double t,
-                                                                  topology::SolutionFields* const fields) { // integrateJacobianAssembled
+                                                                  topology::SolutionFields* const fields)
+{ // integrateJacobianAssembled
   assert(0 != jacobian);
   assert(0 != fields);
   assert(0 != _fields);
@@ -511,10 +524,12 @@ void pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(topology::Jaco
 // ----------------------------------------------------------------------
 // Compute Jacobian matrix (A) associated with operator that do not
 // require assembly across cells, vertices, or processors.
-void pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(topology::Field<
+void
+pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(topology::Field<
                                                                       topology::Mesh>* jacobian,
                                                                   const double t,
-                                                                  topology::SolutionFields* const fields) { // integrateJacobianAssembled
+                                                                  topology::SolutionFields* const fields)
+{ // integrateJacobianAssembled
   assert(0 != jacobian);
   assert(0 != fields);
   assert(0 != _fields);
@@ -569,8 +584,10 @@ void pylith::faults::FaultCohesiveKin::integrateJacobianAssembled(topology::Fiel
 
 // ----------------------------------------------------------------------
 // Update state variables as needed.
-void pylith::faults::FaultCohesiveKin::updateStateVars(const double t,
-                                                       topology::SolutionFields* const fields) { // updateStateVars
+void
+pylith::faults::FaultCohesiveKin::updateStateVars(const double t,
+                                                       topology::SolutionFields* const fields)
+{ // updateStateVars
   assert(0 != fields);
   assert(0 != _fields);
 
@@ -579,9 +596,11 @@ void pylith::faults::FaultCohesiveKin::updateStateVars(const double t,
 // ----------------------------------------------------------------------
 // Adjust solution from solver with lumped Jacobian to match Lagrange
 // multiplier constraints.
-void pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* const fields,
+void
+pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields* const fields,
                                                         const topology::Field<
-                                                            topology::Mesh>& jacobian) { // adjustSolnLumped
+                                                            topology::Mesh>& jacobian)
+{ // adjustSolnLumped
   assert(0 != fields);
   assert(0 != _quadrature);
 
@@ -873,7 +892,9 @@ void pylith::faults::FaultCohesiveKin::adjustSolnLumped(topology::SolutionFields
 
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
-void pylith::faults::FaultCohesiveKin::verifyConfiguration(const topology::Mesh& mesh) const { // verifyConfiguration
+void
+pylith::faults::FaultCohesiveKin::verifyConfiguration(const topology::Mesh& mesh) const
+{ // verifyConfiguration
   assert(0 != _quadrature);
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
@@ -921,7 +942,8 @@ void pylith::faults::FaultCohesiveKin::verifyConfiguration(const topology::Mesh&
 // Get vertex field associated with integrator.
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveKin::vertexField(const char* name,
-                                              const topology::SolutionFields* fields) { // vertexField
+                                              const topology::SolutionFields* fields)
+{ // vertexField
   assert(0 != _faultMesh);
   assert(0 != _quadrature);
   assert(0 != _normalizer);
@@ -1025,7 +1047,8 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
 // Get cell field associated with integrator.
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveKin::cellField(const char* name,
-                                            const topology::SolutionFields* fields) { // cellField
+                                            const topology::SolutionFields* fields)
+{ // cellField
   // Should not reach this point if requested field was found
   std::ostringstream msg;
   msg << "Request for unknown cell field '" << name << "' for fault '"
@@ -1041,7 +1064,8 @@ pylith::faults::FaultCohesiveKin::cellField(const char* name,
 
 // ----------------------------------------------------------------------
 // Initialize auxiliary cohesive cell information.
-void pylith::faults::FaultCohesiveKin::_initializeCohesiveInfo(const topology::Mesh& mesh) { // _initializeCohesiveInfo
+void pylith::faults::FaultCohesiveKin::_initializeCohesiveInfo(const topology::Mesh& mesh)
+{ // _initializeCohesiveInfo
   assert(0 != _quadrature);
 
   // Get cohesive cells
@@ -1120,7 +1144,9 @@ void pylith::faults::FaultCohesiveKin::_initializeCohesiveInfo(const topology::M
 
 // ----------------------------------------------------------------------
 // Initialize logger.
-void pylith::faults::FaultCohesiveKin::_initializeLogger(void) { // initializeLogger
+void
+pylith::faults::FaultCohesiveKin::_initializeLogger(void)
+{ // initializeLogger
   delete _logger;
   _logger = new utils::EventLogger;
   assert(0 != _logger);
@@ -1148,8 +1174,10 @@ void pylith::faults::FaultCohesiveKin::_initializeLogger(void) { // initializeLo
 
 // ----------------------------------------------------------------------
 // Calculate orientation at fault vertices.
-void pylith::faults::FaultCohesiveKin::_calcOrientation(const double upDir[3],
-                                                        const double normalDir[3]) { // _calcOrientation
+void
+pylith::faults::FaultCohesiveKin::_calcOrientation(const double upDir[3],
+						   const double normalDir[3])
+{ // _calcOrientation
   assert(0 != upDir);
   assert(0 != normalDir);
   assert(0 != _faultMesh);
@@ -1332,7 +1360,9 @@ void pylith::faults::FaultCohesiveKin::_calcOrientation(const double upDir[3],
 } // _calcOrientation
 
 // ----------------------------------------------------------------------
-void pylith::faults::FaultCohesiveKin::_calcArea(void) { // _calcArea
+void
+pylith::faults::FaultCohesiveKin::_calcArea(void)
+{ // _calcArea
   assert(0 != _faultMesh);
   assert(0 != _fields);
 
@@ -1496,7 +1526,9 @@ pylith::faults::FaultCohesiveKin::_calcTractionsChange(
 
 // ----------------------------------------------------------------------
 // Allocate buffer for vector field.
-void pylith::faults::FaultCohesiveKin::_allocateBufferVectorField(void) { // _allocateBufferVectorField
+void
+pylith::faults::FaultCohesiveKin::_allocateBufferVectorField(void)
+{ // _allocateBufferVectorField
   assert(0 != _fields);
   if (_fields->hasField("buffer (vector)"))
     return;
@@ -1517,7 +1549,9 @@ void pylith::faults::FaultCohesiveKin::_allocateBufferVectorField(void) { // _al
 
 // ----------------------------------------------------------------------
 // Allocate buffer for scalar field.
-void pylith::faults::FaultCohesiveKin::_allocateBufferScalarField(void) { // _allocateBufferScalarField
+void
+pylith::faults::FaultCohesiveKin::_allocateBufferScalarField(void)
+{ // _allocateBufferScalarField
   assert(0 != _fields);
   if (_fields->hasField("buffer (scalar)"))
     return;

@@ -10,15 +10,15 @@
 // ----------------------------------------------------------------------
 //
 
-#if !defined(pylith_faults_faultcohesivedyn_hh)
-#error "FaultCohesiveDyn.icc can only be included from FaultCohesiveDyn.hh"
+#if !defined(pylith_faults_faultcohesive_hh)
+#error "FaultCohesive.icc can only be included from FaultCohesive.hh"
 #endif
 
 // Cohesive cells use Lagrange multiplier constraints?
 inline
 bool
-pylith::faults::FaultCohesiveDyn::useLagrangeConstraints(void) const {
-  return false;
+pylith::faults::FaultCohesive::useLagrangeConstraints(void) const {
+  return _useLagrangeConstraints;
 } // useLagrangeConstraints
 
 

@@ -10,26 +10,26 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file modulesrc/faults/FaultCohesiveDyn.i
+/** @file modulesrc/faults/FaultCohesiveTract.i
  *
- * @brief Python interface to C++ FaultCohesiveDyn object.
+ * @brief Python interface to C++ FaultCohesiveTract object.
  */
 
 namespace pylith {
   namespace faults {
 
-    class FaultCohesiveDyn : public FaultCohesive
-    { // class FaultCohesiveDyn
+    class FaultCohesiveTract : public FaultCohesive
+    { // class FaultCohesiveTract
 
       // PUBLIC METHODS /////////////////////////////////////////////////
     public :
 
       /// Default constructor.
-      FaultCohesiveDyn(void);
+      FaultCohesiveTract(void);
       
       /// Destructor.
       virtual
-      ~FaultCohesiveDyn(void);
+      ~FaultCohesiveTract(void);
       
       /// Deallocate PETSc and local data structures.
       virtual
@@ -105,14 +105,7 @@ namespace pylith {
       cellField(const char* name,
 		const pylith::topology::SolutionFields* fields =0);
 
-      /** Cohesive cells use Lagrange multiplier constraints?
-       *
-       * @returns True if implementation using Lagrange multiplier
-       * constraints, false otherwise.
-       */
-      bool useLagrangeConstraints(void) const;
-
-    }; // class FaultCohesiveDyn
+    }; // class FaultCohesiveTract
 
   } // faults
 } // pylith

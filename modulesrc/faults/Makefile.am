@@ -27,9 +27,9 @@ swig_sources = \
 	EqKinSrc.i \
 	Fault.i \
 	FaultCohesive.i \
-	FaultCohesiveDyn.i \
 	FaultCohesiveDynL.i \
 	FaultCohesiveKin.i \
+	FaultCohesiveTract.i \
 	../topology/SubMesh.i \
 	../feassemble/Quadrature.i \
 	../feassemble/Integrator.i

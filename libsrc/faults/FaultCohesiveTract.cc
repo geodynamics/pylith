@@ -12,12 +12,13 @@
 
 #include <portinfo>
 
-#include "FaultCohesiveDyn.hh" // implementation of object methods
+#include "FaultCohesiveTract.hh" // implementation of object methods
 #include "CohesiveTopology.hh" // USES CohesiveTopology
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
+
 // ----------------------------------------------------------------------
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 typedef pylith::topology::SubMesh::RealSection SubRealSection;
@@ -27,14 +28,15 @@ typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void) : 
+pylith::faults::FaultCohesiveTract::FaultCohesiveTract(void) : 
   _dbInitial(0)
 { // constructor
+  _useLagrangeConstraints = false;
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::faults::FaultCohesiveDyn::~FaultCohesiveDyn(void)
+pylith::faults::FaultCohesiveTract::~FaultCohesiveTract(void)
 { // destructor
   deallocate();
 } // destructor
@@ -42,7 +44,7 @@ pylith::faults::FaultCohesiveDyn::~FaultCohesiveDyn(void)
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void 
-pylith::faults::FaultCohesiveDyn::deallocate(void)
+pylith::faults::FaultCohesiveTract::deallocate(void)
 { // deallocate
   FaultCohesive::deallocate();
 
@@ -51,7 +53,7 @@ pylith::faults::FaultCohesiveDyn::deallocate(void)
 
 // ----------------------------------------------------------------------
 // Sets the spatial database for the inital tractions
-void pylith::faults::FaultCohesiveDyn::dbInitial(spatialdata::spatialdb::SpatialDB* dbs)
+void pylith::faults::FaultCohesiveTract::dbInitial(spatialdata::spatialdb::SpatialDB* dbs)
 { // dbInitial
   _dbInitial = dbs;
 } // dbInitial
@@ -59,7 +61,7 @@ void pylith::faults::FaultCohesiveDyn::dbInitial(spatialdata::spatialdb::Spatial
 // ----------------------------------------------------------------------
 // Initialize fault. Determine orientation and setup boundary
 void
-pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
+pylith::faults::FaultCohesiveTract::initialize(const topology::Mesh& mesh,
 					     const double upDir[3],
 					     const double normalDir[3])
 { // initialize
@@ -92,7 +94,7 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Integrate contribution of cohesive cells to residual term.
 void
-pylith::faults::FaultCohesiveDyn::integrateResidual(
+pylith::faults::FaultCohesiveTract::integrateResidual(
 			   const topology::Field<topology::Mesh>& residual,
 			   const double t,
 			   topology::SolutionFields* const fields)
@@ -426,7 +428,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 // ----------------------------------------------------------------------
 // Compute Jacobian matrix (A) associated with operator.
 void
-pylith::faults::FaultCohesiveDyn::integrateJacobian(
+pylith::faults::FaultCohesiveTract::integrateJacobian(
 				   topology::Jacobian* jacobian,
 				   const double t,
 				   topology::SolutionFields* const fields)
@@ -437,7 +439,7 @@ pylith::faults::FaultCohesiveDyn::integrateJacobian(
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::faults::FaultCohesiveDyn::verifyConfiguration(
+pylith::faults::FaultCohesiveTract::verifyConfiguration(
 					    const topology::Mesh& mesh) const
 { // verifyConfiguration
   assert(0 != _quadrature);
@@ -488,27 +490,27 @@ pylith::faults::FaultCohesiveDyn::verifyConfiguration(
 // ----------------------------------------------------------------------
 // Get vertex field associated with integrator.
 const pylith::topology::Field<pylith::topology::SubMesh>&
-pylith::faults::FaultCohesiveDyn::vertexField(
+pylith::faults::FaultCohesiveTract::vertexField(
 				       const char* name,
 				       const topology::SolutionFields* fields)
 { // vertexField
-  throw std::logic_error("FaultCohesiveDyn::vertexField() not implemented.");
+  throw std::logic_error("FaultCohesiveTract::vertexField() not implemented.");
 } // vertexField
 
 // ----------------------------------------------------------------------
 // Get cell field associated with integrator.
 const pylith::topology::Field<pylith::topology::SubMesh>&
-pylith::faults::FaultCohesiveDyn::cellField(
+pylith::faults::FaultCohesiveTract::cellField(
 				      const char* name,
 				      const topology::SolutionFields* fields)
 { // cellField
-  throw std::logic_error("FaultCohesiveDyn::cellField() not implemented.");
+  throw std::logic_error("FaultCohesiveTract::cellField() not implemented.");
 } // cellField
 
 // ----------------------------------------------------------------------
 // Calculate orientation at fault vertices.
 void
-pylith::faults::FaultCohesiveDyn::_calcOrientation(const double upDir[3],
+pylith::faults::FaultCohesiveTract::_calcOrientation(const double upDir[3],
 						   const double normalDir[3])
 { // _calcOrientation
   assert(0 != _fields);
@@ -601,7 +603,7 @@ pylith::faults::FaultCohesiveDyn::_calcOrientation(const double upDir[3],
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::FaultCohesiveDyn::_getInitialTractions(void)
+pylith::faults::FaultCohesiveTract::_getInitialTractions(void)
 { // _getInitialTractions
   assert(0 != _normalizer);
   assert(0 != _quadrature);
@@ -729,7 +731,7 @@ pylith::faults::FaultCohesiveDyn::_getInitialTractions(void)
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::FaultCohesiveDyn::_initConstitutiveModel(void)
+pylith::faults::FaultCohesiveTract::_initConstitutiveModel(void)
 { // _initConstitutiveModel
   // :TODO: ADD STUFF HERE
 } // _initConstitutiveModel

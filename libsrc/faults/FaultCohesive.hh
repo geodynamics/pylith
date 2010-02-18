@@ -93,8 +93,7 @@ public :
    * @returns True if implementation using Lagrange multiplier
    * constraints, false otherwise.
    */
-  virtual
-  bool useLagrangeConstraints(void) const = 0;
+  bool useLagrangeConstraints(void) const;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
@@ -105,6 +104,8 @@ protected :
   /// Map label of cohesive cell to label of cells in fault mesh.
   std::map<topology::Mesh::SieveMesh::point_type, 
 	   topology::SubMesh::SieveMesh::point_type> _cohesiveToFault;
+
+  bool _useLagrangeConstraints; ///< True if uses Lagrange multipliers.
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
@@ -122,6 +123,8 @@ private :
   const FaultCohesive& operator=(const FaultCohesive&); ///< Not implemented
 
 }; // class FaultCohesive
+
+#include "FaultCohesive.icc" // inline methods
 
 #endif // pylith_faults_faultcohesive_hh
 

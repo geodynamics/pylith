@@ -10,40 +10,36 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/faults/FaultCohesiveDyn.hh
+/** @file libsrc/faults/FaultCohesiveTract.hh
  *
- * @brief C++ implementation for a fault surface with spontaneous
- * (dynamic) slip implemented with cohesive elements.
+ * @brief C++ implementation for a fault surface with tractions
+ * applied to the fault surface using cohesive cells.
  */
 
-#if !defined(pylith_faults_faultcohesivedyn_hh)
-#define pylith_faults_faultcohesivedyn_hh
+#if !defined(pylith_faults_faultcohesivetract_hh)
+#define pylith_faults_faultcohesivetract_hh
 
 // Include directives ---------------------------------------------------
 #include "FaultCohesive.hh" // ISA FaultCohesive
 
-// FaultCohesiveDyn -----------------------------------------------------
+// FaultCohesiveTract -----------------------------------------------------
 /** 
- * @brief C++ implementation for a fault surface with spontaneous
- * (dynamic) slip implemented with cohesive elements.
- *
- * The ordering of vertices in a cohesive cell is the vertices on the
- * negative side of the fault and then the corresponding entries on
- * the positive side of the fault.
+ * @brief C++ implementation for a fault surface with tractions
+ * applied to the fault surface using cohesive cells.
  */
-class pylith::faults::FaultCohesiveDyn : public FaultCohesive
-{ // class FaultCohesiveDyn
-  friend class TestFaultCohesiveDyn; // unit testing
+class pylith::faults::FaultCohesiveTract : public FaultCohesive
+{ // class FaultCohesiveTract
+  friend class TestFaultCohesiveTract; // unit testing
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
   /// Default constructor.
-  FaultCohesiveDyn(void);
+  FaultCohesiveTract(void);
 
   /// Destructor.
   virtual
-  ~FaultCohesiveDyn(void);
+  ~FaultCohesiveTract(void);
 
   /// Deallocate PETSc and local data structures.
   virtual
@@ -118,13 +114,6 @@ public :
   cellField(const char* name,
 	    const topology::SolutionFields* fields =0);
 
-  /** Cohesive cells use Lagrange multiplier constraints?
-   *
-   * @returns True if implementation using Lagrange multiplier
-   * constraints, false otherwise.
-   */
-  bool useLagrangeConstraints(void) const;
-
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
@@ -159,16 +148,14 @@ private :
 private :
 
   /// Not implemented
-  FaultCohesiveDyn(const FaultCohesiveDyn&);
+  FaultCohesiveTract(const FaultCohesiveTract&);
 
   /// Not implemented
-  const FaultCohesiveDyn& operator=(const FaultCohesiveDyn&);
+  const FaultCohesiveTract& operator=(const FaultCohesiveTract&);
 
-}; // class FaultCohesiveDyn
+}; // class FaultCohesiveTract
 
-#include "FaultCohesiveDyn.icc" // inline methods
-
-#endif // pylith_faults_faultcohesivedyn_hh
+#endif // pylith_faults_faultcohesivetract_hh
 
 
 // End of file 
