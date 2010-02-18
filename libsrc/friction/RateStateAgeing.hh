@@ -134,23 +134,19 @@ private :
   static const int p_coef;
   static const int p_slipRate0;
   static const int p_L;
-  static const int p_slipRateIn;
   static const int p_a;
   static const int p_b;
 
   static const int db_coef;
   static const int db_slipRate0;
   static const int db_L;
-  static const int db_slipRateIn;
   static const int db_a;
   static const int db_b;
 
   /// Indices for state variables in section and spatial database.
   static const int s_state;
-  static const int s_stateIn;
 
   static const int db_state;
-  static const int db_stateIn;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
