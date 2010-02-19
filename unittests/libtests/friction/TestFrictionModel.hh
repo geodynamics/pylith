@@ -149,7 +149,7 @@ private :
    * @param data Data with properties for friction model.
    */
   void _initialize(topology::Mesh* mesh,
-                   faults::FaultCohesiveDynL* fault,
+                   faults::FaultCohesiveDyn* fault,
                    StaticFriction* friction,
                    const StaticFrictionData* data);
 

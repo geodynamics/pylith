@@ -15,21 +15,21 @@
 
 namespace pylith {
   namespace faults {
-     class CohesiveDynLData;
+     class CohesiveDynData;
   } // pylith
 } // faults
 
-class pylith::faults::CohesiveDynLData
+class pylith::faults::CohesiveDynData
 {
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
   
   /// Constructor
-  CohesiveDynLData(void);
+  CohesiveDynData(void);
 
   /// Destructor
-  ~CohesiveDynLData(void);
+  ~CohesiveDynData(void);
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:

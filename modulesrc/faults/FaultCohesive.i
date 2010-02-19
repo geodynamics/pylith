@@ -39,12 +39,19 @@ namespace pylith {
       /** Set flag for using fault mesh or group of vertices to define
        * fault surface.
        *
+       * This method is part of a KLUDGE to allow creation of cohesive
+       * cells in cases where domain cells have more than one face
+       * (edge for 2-D problems) on the fault.
+       *
        * @param flag True if using fault mesh, false if using vertices.
        */
       void useFaultMesh(const bool flag);
       
-      // TEMPORARY
       /** Set filename of UCD file for fault mesh.
+       *
+       * This method is part of a KLUDGE to allow creation of cohesive
+       * cells in cases where domain cells have more than one face
+       * (edge for 2-D problems) on the fault.
        *
        * @param filename Filename for UCD file.
        */
@@ -75,9 +82,15 @@ namespace pylith {
        * @returns True if implementation using Lagrange multiplier
        * constraints, false otherwise.
        */
-      virtual
-      bool useLagrangeConstraints(void) const = 0;
+      bool useLagrangeConstraints(void) const;
       
+      /** Get fields associated with fault.
+       *
+       * @returns Fields associated with fault.
+       */
+      const pylith::topology::Fields<topology::Field<pylith::topology::SubMesh> >*
+      fields(void) const;
+
     }; // class FaultCohesive
 
   } // faults

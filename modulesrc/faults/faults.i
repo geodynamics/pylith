@@ -24,8 +24,9 @@
 #include "pylith/faults/EqKinSrc.hh"
 #include "pylith/faults/Fault.hh"
 #include "pylith/faults/FaultCohesive.hh"
-#include "pylith/faults/FaultCohesiveDynL.hh"
+#include "pylith/faults/FaultCohesiveLagrange.hh"
 #include "pylith/faults/FaultCohesiveKin.hh"
+#include "pylith/faults/FaultCohesiveDyn.hh"
 #include "pylith/faults/FaultCohesiveTract.hh"
 
 #include "pylith/topology/SubMesh.hh"
@@ -73,8 +74,9 @@ import_array();
 %include "EqKinSrc.i"
 %include "Fault.i"
 %include "FaultCohesive.i"
-%include "FaultCohesiveDynL.i"
+%include "FaultCohesiveLagrange.i"
 %include "FaultCohesiveKin.i"
+%include "FaultCohesiveDyn.i"
 %include "FaultCohesiveTract.i"
 
 // End of file

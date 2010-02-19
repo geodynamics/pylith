@@ -672,13 +672,11 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 void
 pylith::faults::CohesiveTopology::createFaultParallel(
 			    topology::SubMesh* faultMesh,
-			    std::map<point_type, point_type>* cohesiveToFault,
 			    const topology::Mesh& mesh,
 			    const int materialId,
 			    const bool constraintCell)
 { // createFaultParallel
   assert(0 != faultMesh);
-  assert(0 != cohesiveToFault);
 
   // Memory logging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
@@ -703,7 +701,6 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   ALE::Obj<ALE::Mesh::sieve_type> faultSieve =
     new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
   assert(!faultSieve.isNull());
-  cohesiveToFault->clear();
 
   const ALE::Obj<SieveMesh::label_sequence>& cohesiveCells =
     sieveMesh->getLabelStratum("material-id", materialId);
@@ -747,7 +744,6 @@ pylith::faults::CohesiveTopology::createFaultParallel(
       for (int i = 2*faceSize; i < 3*faceSize; ++i)
         faultSieve->addArrow(cone[i], face, color++);
     } // if/else
-    (*cohesiveToFault)[*c_iter] = face;
     ++face;
     cV.clear();
   } // for
@@ -787,11 +783,6 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   assert(!faultCells.isNull());
   SieveSubMesh::label_sequence::iterator f_iter = faultCells->begin();
 
-  for(SieveMesh::label_sequence::iterator c_iter = cBegin;
-      c_iter != cEnd;
-      ++c_iter, ++f_iter)
-    (*cohesiveToFault)[*c_iter] = *f_iter;
-    
   // Update coordinates
   const ALE::Obj<topology::Mesh::RealSection>& coordinates =
     sieveMesh->getRealSection("coordinates");

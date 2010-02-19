@@ -22,7 +22,6 @@
 // Include directives ---------------------------------------------------
 #include "Fault.hh" // ISA Fault
 
-#include <map> // HASA std::map
 #include "pylith/topology/SubMesh.hh" // ISA Integrator<Quadrature<SubMesh> >
 #include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
@@ -51,12 +50,19 @@ public :
   /** Set flag for using fault mesh or group of vertices to define
    * fault surface.
    *
+   * This method is part of a KLUDGE to allow creation of cohesive
+   * cells in cases where domain cells have more than one face (edge
+   * for 2-D problems) on the fault.
+   *
    * @param flag True if using fault mesh, false if using vertices.
    */
   void useFaultMesh(const bool flag);
 
-  // TEMPORARY
   /** Set filename of UCD file for fault mesh.
+   *
+   * This method is part of a KLUDGE to allow creation of cohesive
+   * cells in cases where domain cells have more than one face (edge
+   * for 2-D problems) on the fault.
    *
    * @param filename Filename for UCD file.
    */
@@ -95,15 +101,18 @@ public :
    */
   bool useLagrangeConstraints(void) const;
 
+  /** Get fields associated with fault.
+   *
+   * @returns Fields associated with fault.
+   */
+  const topology::Fields<topology::Field<topology::SubMesh> >*
+  fields(void) const;
+
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
   /// Fields for fault information.
   topology::Fields<topology::Field<topology::SubMesh> >* _fields;
-
-  /// Map label of cohesive cell to label of cells in fault mesh.
-  std::map<topology::Mesh::SieveMesh::point_type, 
-	   topology::SubMesh::SieveMesh::point_type> _cohesiveToFault;
 
   bool _useLagrangeConstraints; ///< True if uses Lagrange multipliers.
 

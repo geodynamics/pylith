@@ -10,19 +10,19 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/faults/TestFaultCohesiveDynL.py
+## @file unittests/pytests/faults/TestFaultCohesiveDyn.py
 
-## @brief Unit testing of FaultCohesiveDynL object.
+## @brief Unit testing of FaultCohesiveDyn object.
 
 import unittest
 
-from pylith.faults.FaultCohesiveDynL import FaultCohesiveDynL
+from pylith.faults.FaultCohesiveDyn import FaultCohesiveDyn
 
 from spatialdata.geocoords.CSCart import CSCart
 from pyre.units.time import second
 
 # ----------------------------------------------------------------------
-class TestFaultCohesiveDynL(unittest.TestCase):
+class TestFaultCohesiveDyn(unittest.TestCase):
   """
   Unit testing of Fault object.
   """
@@ -31,7 +31,7 @@ class TestFaultCohesiveDynL(unittest.TestCase):
     """
     Test constructor.
     """
-    fault = FaultCohesiveDynL()
+    fault = FaultCohesiveDyn()
     return
 
 
@@ -39,16 +39,16 @@ class TestFaultCohesiveDynL(unittest.TestCase):
     """
     Test _configure().
     """
-    fault = FaultCohesiveDynL()
+    fault = FaultCohesiveDyn()
     fault._configure()
     return
 
 
   def test_implementsIntegrator(self):
     """
-    Test to make sure FaultCohesiveDynL satisfies integrator requirements.
+    Test to make sure FaultCohesiveDyn satisfies integrator requirements.
     """
-    fault = FaultCohesiveDynL()
+    fault = FaultCohesiveDyn()
     from pylith.feassemble.Integrator import implementsIntegrator
     self.failUnless(implementsIntegrator(fault))
     return
@@ -76,7 +76,7 @@ class TestFaultCohesiveDynL(unittest.TestCase):
     importer._configure()
     mesh = importer.read(debug=False, interpolate=False)
 
-    fault = FaultCohesiveDynL()
+    fault = FaultCohesiveDyn()
     fault.inventory.matId = 10
     fault.inventory.faultLabel = "fault"
     fault._configure()
@@ -231,7 +231,7 @@ class TestFaultCohesiveDynL(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.faults.FaultCohesiveDynL import fault
+    from pylith.faults.FaultCohesiveDyn import fault
     f = fault()
     return
 
@@ -297,7 +297,7 @@ class TestFaultCohesiveDynL(unittest.TestCase):
     friction._configure()
 
     # Setup fault
-    fault = FaultCohesiveDynL()
+    fault = FaultCohesiveDyn()
     fault.inventory.output.inventory.writer._configure()
     fault.inventory.output._configure()
     fault.inventory.matId = 10

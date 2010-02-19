@@ -12,11 +12,11 @@
 
 #include <portinfo>
 
-#include "TestFaultCohesiveDynL.hh" // Implementation of class methods
+#include "TestFaultCohesiveDyn.hh" // Implementation of class methods
 
-#include "pylith/faults/FaultCohesiveDynL.hh" // USES FaultCohesiveDynL
+#include "pylith/faults/FaultCohesiveDyn.hh" // USES FaultCohesiveDyn
 
-#include "data/CohesiveDynLData.hh" // USES CohesiveDynLData
+#include "data/CohesiveDynData.hh" // USES CohesiveDynData
 
 #include "pylith/faults/EqKinSrc.hh" // USES EqKinSrc
 #include "pylith/faults/BruneSlipFn.hh" // USES BruneSlipFn
@@ -35,7 +35,7 @@
 #include <stdexcept> // USES runtime_error
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveDynL );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveDyn );
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
@@ -45,7 +45,7 @@ typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::faults::TestFaultCohesiveDynL::setUp(void)
+pylith::faults::TestFaultCohesiveDyn::setUp(void)
 { // setUp
   _data = 0;
   _quadrature = new feassemble::Quadrature<topology::SubMesh>();
@@ -59,7 +59,7 @@ pylith::faults::TestFaultCohesiveDynL::setUp(void)
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::faults::TestFaultCohesiveDynL::tearDown(void)
+pylith::faults::TestFaultCohesiveDyn::tearDown(void)
 { // tearDown
   delete _data; _data = 0;
   delete _quadrature; _quadrature = 0;
@@ -71,17 +71,17 @@ pylith::faults::TestFaultCohesiveDynL::tearDown(void)
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::faults::TestFaultCohesiveDynL::testConstructor(void)
+pylith::faults::TestFaultCohesiveDyn::testConstructor(void)
 { // testConstructor
-  FaultCohesiveDynL fault;
+  FaultCohesiveDyn fault;
 } // testConstructor
 
 // ----------------------------------------------------------------------
 // Test needJacobianDiag().
 void
-pylith::faults::TestFaultCohesiveDynL::testNeedJacobianDiag(void)
+pylith::faults::TestFaultCohesiveDyn::testNeedJacobianDiag(void)
 { // testNeedJacobianDiag
-  FaultCohesiveDynL fault;
+  FaultCohesiveDyn fault;
 
   CPPUNIT_ASSERT_EQUAL(true, fault.needJacobianDiag());
 } // testNeedJacobianDiag
@@ -89,9 +89,9 @@ pylith::faults::TestFaultCohesiveDynL::testNeedJacobianDiag(void)
 // ----------------------------------------------------------------------
 // Test needVelocity().
 void
-pylith::faults::TestFaultCohesiveDynL::testNeedVelocity(void)
+pylith::faults::TestFaultCohesiveDyn::testNeedVelocity(void)
 { // testNeedVelocity
-  FaultCohesiveDynL fault;
+  FaultCohesiveDyn fault;
 
   CPPUNIT_ASSERT_EQUAL(true, fault.needVelocity());
 } // testNeedVelocity
@@ -99,9 +99,9 @@ pylith::faults::TestFaultCohesiveDynL::testNeedVelocity(void)
 // ----------------------------------------------------------------------
 // Test dbInitialTract().
 void
-pylith::faults::TestFaultCohesiveDynL::testDBInitialTract(void)
+pylith::faults::TestFaultCohesiveDyn::testDBInitialTract(void)
 { // testDBInitialTract
-  FaultCohesiveDynL fault;
+  FaultCohesiveDyn fault;
 
   const std::string& label = "test database";
   spatialdata::spatialdb::SimpleDB db;
@@ -114,12 +114,12 @@ pylith::faults::TestFaultCohesiveDynL::testDBInitialTract(void)
 // ----------------------------------------------------------------------
 // Test initialize().
 void
-pylith::faults::TestFaultCohesiveDynL::testInitialize(void)
+pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
 { // testInitialize
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;
-  FaultCohesiveDynL fault;
+  FaultCohesiveDyn fault;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
 
@@ -215,12 +215,12 @@ pylith::faults::TestFaultCohesiveDynL::testInitialize(void)
 // ----------------------------------------------------------------------
 // Test constrainSolnSpace() for sticking case.
 void
-pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceStick(void)
+pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
 { // testConstrainSolnSpaceStick
   assert(0 != _data);
 
   topology::Mesh mesh;
-  FaultCohesiveDynL fault;
+  FaultCohesiveDyn fault;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
   topology::Jacobian jacobian(fields, "seqdense");
@@ -321,12 +321,12 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceStick(void)
 // ----------------------------------------------------------------------
 // Test constrainSolnSpace() for slipping case.
 void
-pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceSlip(void)
+pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
 { // testConstrainSolnSpaceSlip
   assert(0 != _data);
 
   topology::Mesh mesh;
-  FaultCohesiveDynL fault;
+  FaultCohesiveDyn fault;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
   topology::Jacobian jacobian(fields, "seqdense");
@@ -440,12 +440,12 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceSlip(void)
 // ----------------------------------------------------------------------
 // Test constrainSolnSpace() for opening case.
 void
-pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceOpen(void)
+pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
 { // testConstrainSolnSpaceOpen
   assert(0 != _data);
 
   topology::Mesh mesh;
-  FaultCohesiveDynL fault;
+  FaultCohesiveDyn fault;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
   topology::Jacobian jacobian(fields, "seqdense");
@@ -559,7 +559,7 @@ pylith::faults::TestFaultCohesiveDynL::testConstrainSolnSpaceOpen(void)
 // ----------------------------------------------------------------------
 // Test updateStateVars().
 void
-pylith::faults::TestFaultCohesiveDynL::testUpdateStateVars(void)
+pylith::faults::TestFaultCohesiveDyn::testUpdateStateVars(void)
 { // testUpdateStateVars
   // :TODO: Need to verify that fault constitutive updateStateVars is called.
 } // testUpdateStateVars
@@ -567,12 +567,12 @@ pylith::faults::TestFaultCohesiveDynL::testUpdateStateVars(void)
 // ----------------------------------------------------------------------
 // Test calcTractions().
 void
-pylith::faults::TestFaultCohesiveDynL::testCalcTractions(void)
+pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
 { // testCalcTractions
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;
-  FaultCohesiveDynL fault;
+  FaultCohesiveDyn fault;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
   topology::Jacobian jacobian(fields, "seqdense");
@@ -659,11 +659,11 @@ pylith::faults::TestFaultCohesiveDynL::testCalcTractions(void)
 } // testCalcTractions
 
 // ----------------------------------------------------------------------
-// Initialize FaultCohesiveDynL interface condition.
+// Initialize FaultCohesiveDyn interface condition.
 void
-pylith::faults::TestFaultCohesiveDynL::_initialize(
+pylith::faults::TestFaultCohesiveDyn::_initialize(
 					topology::Mesh* const mesh,
-					FaultCohesiveDynL* const fault,
+					FaultCohesiveDyn* const fault,
 					topology::SolutionFields* const fields)
 { // _initialize
   CPPUNIT_ASSERT(0 != mesh);
@@ -753,9 +753,9 @@ pylith::faults::TestFaultCohesiveDynL::_initialize(
 // ----------------------------------------------------------------------
 // Set values for fields and Jacobian.
 void
-pylith::faults::TestFaultCohesiveDynL::_setFieldsJacobian(
+pylith::faults::TestFaultCohesiveDyn::_setFieldsJacobian(
           topology::Mesh* const mesh,
-          FaultCohesiveDynL* const fault,
+          FaultCohesiveDyn* const fault,
           topology::SolutionFields* const fields,
           topology::Jacobian* const jacobian,
           const double* const fieldIncr)
@@ -833,7 +833,7 @@ pylith::faults::TestFaultCohesiveDynL::_setFieldsJacobian(
 // ----------------------------------------------------------------------
 // Determine if vertex is a Lagrange multiplier constraint vertex.
 bool
-pylith::faults::TestFaultCohesiveDynL::_isConstraintVertex(const int vertex) const
+pylith::faults::TestFaultCohesiveDyn::_isConstraintVertex(const int vertex) const
 { // _isConstraintVertex
   assert(0 != _data);
 

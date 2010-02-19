@@ -11,31 +11,31 @@
 //
 
 /**
- * @file unittests/libtests/faults/TestFaultCohesiveDynLTri3.hh
+ * @file unittests/libtests/faults/TestFaultCohesiveDynTri3.hh
  *
- * @brief C++ TestFaultCohesiveDynLTri3 object.
+ * @brief C++ TestFaultCohesiveDynTri3 object.
  *
- * C++ unit testing for FaultCohesiveDynL for mesh with 2-D triangular cells.
+ * C++ unit testing for FaultCohesiveDyn for mesh with 2-D triangular cells.
  */
 
-#if !defined(pylith_faults_testfaultcohesivedynltri3_hh)
-#define pylith_faults_testfaultcohesivedynltri3_hh
+#if !defined(pylith_faults_testfaultcohesivedyntri3_hh)
+#define pylith_faults_testfaultcohesivedyntri3_hh
 
-#include "TestFaultCohesiveDynL.hh" // ISA TestFaultCohesiveDynL
+#include "TestFaultCohesiveDyn.hh" // ISA TestFaultCohesiveDyn
 
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
-    class TestFaultCohesiveDynLTri3;
+    class TestFaultCohesiveDynTri3;
   } // bc
 } // pylith
 
-/// C++ unit testing for FaultCohesiveDynL for mesh with 2-D triangular cells.
-class pylith::faults::TestFaultCohesiveDynLTri3 : public TestFaultCohesiveDynL
-{ // class TestFaultCohesiveDynLTri3
+/// C++ unit testing for FaultCohesiveDyn for mesh with 2-D triangular cells.
+class pylith::faults::TestFaultCohesiveDynTri3 : public TestFaultCohesiveDyn
+{ // class TestFaultCohesiveDynTri3
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestFaultCohesiveDynLTri3 );
+  CPPUNIT_TEST_SUITE( TestFaultCohesiveDynTri3 );
 
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testConstrainSolnSpaceStick );
@@ -52,9 +52,9 @@ public :
   /// Setup testing data.
   void setUp(void);
 
-}; // class TestFaultCohesiveDynLTri3
+}; // class TestFaultCohesiveDynTri3
 
-#endif // pylith_faults_testfaultcohesivedynltri3_hh
+#endif // pylith_faults_testfaultcohesivedyntri3_hh
 
 
 // End of file 

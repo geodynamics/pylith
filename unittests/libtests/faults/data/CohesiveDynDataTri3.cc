@@ -44,49 +44,49 @@
  *              7 -9- 4
  */
 
-#include "CohesiveDynLDataTri3.hh"
+#include "CohesiveDynDataTri3.hh"
 
-const char* pylith::faults::CohesiveDynLDataTri3::_meshFilename =
+const char* pylith::faults::CohesiveDynDataTri3::_meshFilename =
   "data/tri3.mesh";
 
-const int pylith::faults::CohesiveDynLDataTri3::_spaceDim = 2;
+const int pylith::faults::CohesiveDynDataTri3::_spaceDim = 2;
 
-const int pylith::faults::CohesiveDynLDataTri3::_cellDim = 1;
+const int pylith::faults::CohesiveDynDataTri3::_cellDim = 1;
 
-const int pylith::faults::CohesiveDynLDataTri3::_numBasis = 2;
+const int pylith::faults::CohesiveDynDataTri3::_numBasis = 2;
 
-const int pylith::faults::CohesiveDynLDataTri3::_numQuadPts = 1;
+const int pylith::faults::CohesiveDynDataTri3::_numQuadPts = 1;
 
-const double pylith::faults::CohesiveDynLDataTri3::_quadPts[] = {
+const double pylith::faults::CohesiveDynDataTri3::_quadPts[] = {
   0.0,
 };
 
-const double pylith::faults::CohesiveDynLDataTri3::_quadWts[] = {
+const double pylith::faults::CohesiveDynDataTri3::_quadWts[] = {
   2.0,
 };
 
-const double pylith::faults::CohesiveDynLDataTri3::_basis[] = {
+const double pylith::faults::CohesiveDynDataTri3::_basis[] = {
   0.5,
   0.5
 };
 
-const double pylith::faults::CohesiveDynLDataTri3::_basisDeriv[] = {
+const double pylith::faults::CohesiveDynDataTri3::_basisDeriv[] = {
   -0.5,
    0.5
 };
 
-const double pylith::faults::CohesiveDynLDataTri3::_verticesRef[] = {
+const double pylith::faults::CohesiveDynDataTri3::_verticesRef[] = {
   -1.0, 1.0
 };
 
-const int pylith::faults::CohesiveDynLDataTri3::_id = 10;
+const int pylith::faults::CohesiveDynDataTri3::_id = 10;
 
-const char* pylith::faults::CohesiveDynLDataTri3::_label = "fault";
+const char* pylith::faults::CohesiveDynDataTri3::_label = "fault";
 
-const char* pylith::faults::CohesiveDynLDataTri3::_initialTractFilename = 
+const char* pylith::faults::CohesiveDynDataTri3::_initialTractFilename = 
   "data/tri3_initialtract.spatialdb";
 
-const double pylith::faults::CohesiveDynLDataTri3::_fieldT[] = {
+const double pylith::faults::CohesiveDynDataTri3::_fieldT[] = {
   8.1, 9.1,
   8.2, 9.2, // 3
   8.3, 9.3, // 4
@@ -99,7 +99,7 @@ const double pylith::faults::CohesiveDynLDataTri3::_fieldT[] = {
 
 // :TODO: Make sensible values for Jacobian for DOF on positive and
 // negative sides of the fault. Add semi-random values for other DOF.
-const double pylith::faults::CohesiveDynLDataTri3::_jacobian[] = {
+const double pylith::faults::CohesiveDynDataTri3::_jacobian[] = {
   1.0, 1.1, // 2x (values for row associated with vertex with label 2, x DOF)
   0.1, 1.2,
   0.2, 1.3,
@@ -236,24 +236,24 @@ const double pylith::faults::CohesiveDynLDataTri3::_jacobian[] = {
 // Computed values
 // ----------------------------------------------------------------------
 
-const double pylith::faults::CohesiveDynLDataTri3::_orientation[] = {
+const double pylith::faults::CohesiveDynDataTri3::_orientation[] = {
   0.0, -1.0,  -1.0, 0.0,
   0.0, -1.0,  -1.0, 0.0
 };
 
-const double pylith::faults::CohesiveDynLDataTri3::_area[] = {
+const double pylith::faults::CohesiveDynDataTri3::_area[] = {
   1.0,
   1.0,
 };
 
-const double pylith::faults::CohesiveDynLDataTri3::_initialTractions[] = {
+const double pylith::faults::CohesiveDynDataTri3::_initialTractions[] = {
   1.0, -2.0,
   1.1, -2.1,
 };
 
 
-const int pylith::faults::CohesiveDynLDataTri3::_numConstraintVert = 2;
-const int pylith::faults::CohesiveDynLDataTri3::_constraintVertices[] = {
+const int pylith::faults::CohesiveDynDataTri3::_numConstraintVert = 2;
+const int pylith::faults::CohesiveDynDataTri3::_constraintVertices[] = {
   8, 9
 };
 
@@ -261,7 +261,7 @@ const int pylith::faults::CohesiveDynLDataTri3::_constraintVertices[] = {
 // Stick case
 // ----------------------------------------------------------------------
 // Input
-const double pylith::faults::CohesiveDynLDataTri3::_fieldIncrStick[] = {
+const double pylith::faults::CohesiveDynDataTri3::_fieldIncrStick[] = {
   1.1, 29.1,
   1.2, 29.2, // 3
   1.3, 29.3, // 4
@@ -279,7 +279,7 @@ const double pylith::faults::CohesiveDynLDataTri3::_fieldIncrStick[] = {
 // Slip case
 // ----------------------------------------------------------------------
 // Input
-const double pylith::faults::CohesiveDynLDataTri3::_fieldIncrSlip[] = {
+const double pylith::faults::CohesiveDynDataTri3::_fieldIncrSlip[] = {
   9.1, 10.1,
   9.2, 10.2, // 3
   9.3, 10.3, // 4
@@ -292,7 +292,7 @@ const double pylith::faults::CohesiveDynLDataTri3::_fieldIncrSlip[] = {
 
 // Output
 // :TODO: Update Lagrange multiplier values
-const double pylith::faults::CohesiveDynLDataTri3::_fieldIncrSlipE[] = {
+const double pylith::faults::CohesiveDynDataTri3::_fieldIncrSlipE[] = {
   9.1, 10.1,
   9.2, 10.2, // 3
   9.3, 10.3, // 4
@@ -304,7 +304,7 @@ const double pylith::faults::CohesiveDynLDataTri3::_fieldIncrSlipE[] = {
 };
 
 // :TODO: Update slip values based on changes in Lagrange multiplier values
-const double pylith::faults::CohesiveDynLDataTri3::_slipSlipE[] = {
+const double pylith::faults::CohesiveDynDataTri3::_slipSlipE[] = {
   32.8, 0.0,
   33.48, 0.0,
 };
@@ -313,7 +313,7 @@ const double pylith::faults::CohesiveDynLDataTri3::_slipSlipE[] = {
 // Open case
 // ----------------------------------------------------------------------
 // Input
-const double pylith::faults::CohesiveDynLDataTri3::_fieldIncrOpen[] = {
+const double pylith::faults::CohesiveDynDataTri3::_fieldIncrOpen[] = {
   9.1, 10.1,
   9.2, 10.2, // 3
   9.3, 10.3, // 4
@@ -325,7 +325,7 @@ const double pylith::faults::CohesiveDynLDataTri3::_fieldIncrOpen[] = {
 };
 
 // Output
-const double pylith::faults::CohesiveDynLDataTri3::_fieldIncrOpenE[] = {
+const double pylith::faults::CohesiveDynDataTri3::_fieldIncrOpenE[] = {
   9.1, 10.1,
   9.2, 10.2, // 3
   9.3, 10.3, // 4
@@ -336,13 +336,13 @@ const double pylith::faults::CohesiveDynLDataTri3::_fieldIncrOpenE[] = {
   -8.8, -9.8, // 9
 };
 
-const double pylith::faults::CohesiveDynLDataTri3::_slipOpenE[] = {
+const double pylith::faults::CohesiveDynDataTri3::_slipOpenE[] = {
   36.4, 40.4,
   37.2, 41.2,
 };
 
 // ----------------------------------------------------------------------
-pylith::faults::CohesiveDynLDataTri3::CohesiveDynLDataTri3(void)
+pylith::faults::CohesiveDynDataTri3::CohesiveDynDataTri3(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
   spaceDim = _spaceDim;
@@ -381,7 +381,7 @@ pylith::faults::CohesiveDynLDataTri3::CohesiveDynLDataTri3(void)
   slipOpenE = const_cast<double*>(_slipOpenE);
 } // constructor
 
-pylith::faults::CohesiveDynLDataTri3::~CohesiveDynLDataTri3(void)
+pylith::faults::CohesiveDynDataTri3::~CohesiveDynDataTri3(void)
 {}
 
 

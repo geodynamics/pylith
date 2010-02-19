@@ -11,31 +11,31 @@
 //
 
 /**
- * @file unittests/libtests/faults/TestFaultCohesiveDynLQuad4.hh
+ * @file unittests/libtests/faults/TestFaultCohesiveDynQuad4.hh
  *
- * @brief C++ TestFaultCohesiveDynLQuad4 object.
+ * @brief C++ TestFaultCohesiveDynQuad4 object.
  *
- * C++ unit testing for FaultCohesiveDynL for mesh with 2-D quadrilateral cells.
+ * C++ unit testing for FaultCohesiveDyn for mesh with 2-D quadrilateral cells.
  */
 
-#if !defined(pylith_faults_testfaultcohesivedynlquad4_hh)
-#define pylith_faults_testfaultcohesivedynlquad4_hh
+#if !defined(pylith_faults_testfaultcohesivedynquad4_hh)
+#define pylith_faults_testfaultcohesivedynquad4_hh
 
-#include "TestFaultCohesiveDynL.hh" // ISA TestFaultCohesiveDynL
+#include "TestFaultCohesiveDyn.hh" // ISA TestFaultCohesiveDyn
 
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
-    class TestFaultCohesiveDynLQuad4;
+    class TestFaultCohesiveDynQuad4;
   } // bc
 } // pylith
 
-/// C++ unit testing for FaultCohesiveDynL for mesh with 2-D quadrilateral cells.
-class pylith::faults::TestFaultCohesiveDynLQuad4 : public TestFaultCohesiveDynL
-{ // class TestFaultCohesiveDynLQuad4
+/// C++ unit testing for FaultCohesiveDyn for mesh with 2-D quadrilateral cells.
+class pylith::faults::TestFaultCohesiveDynQuad4 : public TestFaultCohesiveDyn
+{ // class TestFaultCohesiveDynQuad4
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestFaultCohesiveDynLQuad4 );
+  CPPUNIT_TEST_SUITE( TestFaultCohesiveDynQuad4 );
 
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testConstrainSolnSpaceStick );
@@ -52,9 +52,9 @@ public :
   /// Setup testing data.
   void setUp(void);
 
-}; // class TestFaultCohesiveDynLQuad4
+}; // class TestFaultCohesiveDynQuad4
 
-#endif // pylith_faults_testfaultcohesivedynlquad4_hh
+#endif // pylith_faults_testfaultcohesivedynquad4_hh
 
 
 // End of file 
