@@ -38,9 +38,6 @@ FRICTION
 Initial tractions
   Integrate over fault surface (should be current implementation)
 
-FaultCohesiveDynL -> FaultCohesiveDyn
-Refactor FaultCohesive
-
 6. Other fault constitutive models [Surendra]
   Rate- and state-friction with aging law
   Rate- and state-friction with slip law (only if desired)
@@ -50,8 +47,7 @@ Refactor FaultCohesive
 LUMPED SOLVER
 ----------------------------------------------------------------------
 
-FaultCohesiveDynL (C++)
-  integrateJacobian (lumped)
+FaultCohesiveDyn (C++)
   adjustSolnLumped()
     compute Lagrange multipliers (zero increment of slip)
     calls constrainSolnSpace()
