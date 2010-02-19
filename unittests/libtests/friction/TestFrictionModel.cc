@@ -20,7 +20,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/friction/StaticFriction.hh" // USES StaticFriction
-#include "pylith/faults/FaultCohesiveDynL.hh" // USES FaultCohesiveDynL
+#include "pylith/faults/FaultCohesiveDyn.hh" // USES FaultCohesiveDyn
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/GeometryLine2D.hh" // USES GeometryLine2D
 
@@ -124,7 +124,7 @@ pylith::friction::TestFrictionModel::testInitialize(void)
   const int numProperties = 1;
 
   topology::Mesh mesh;
-  faults::FaultCohesiveDynL fault;
+  faults::FaultCohesiveDyn fault;
   StaticFriction friction;
   StaticFrictionData data;
   _initialize(&mesh, &fault, &friction, &data);
@@ -178,7 +178,7 @@ pylith::friction::TestFrictionModel::testGetField(void)
   const int fiberDim = 1;
 
   topology::Mesh mesh;
-  faults::FaultCohesiveDynL fault;
+  faults::FaultCohesiveDyn fault;
   StaticFriction friction;
   StaticFrictionData data;
   _initialize(&mesh, &fault, &friction, &data);
@@ -226,7 +226,7 @@ pylith::friction::TestFrictionModel::testRetrievePropsAndVars(void)
   const int vertex = 2;
 
   topology::Mesh mesh;
-  faults::FaultCohesiveDynL fault;
+  faults::FaultCohesiveDyn fault;
   StaticFriction friction;
   StaticFrictionData data;
   _initialize(&mesh, &fault, &friction, &data);
@@ -274,7 +274,7 @@ pylith::friction::TestFrictionModel::testCalcFriction(void)
   const int vertex = 2;
 
   topology::Mesh mesh;
-  faults::FaultCohesiveDynL fault;
+  faults::FaultCohesiveDyn fault;
   StaticFriction friction;
   StaticFrictionData data;
   _initialize(&mesh, &fault, &friction, &data);
@@ -630,7 +630,7 @@ pylith::friction::TestFrictionModel::setupNormalizer(void)
 void
 pylith::friction::TestFrictionModel::_initialize(
 					  topology::Mesh* mesh,
-            faults::FaultCohesiveDynL* fault,
+            faults::FaultCohesiveDyn* fault,
 					  StaticFriction* friction,
 					  const StaticFrictionData* data)
 { // _initialize

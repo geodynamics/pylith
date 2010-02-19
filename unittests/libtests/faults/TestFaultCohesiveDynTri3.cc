@@ -12,27 +12,27 @@
 
 #include <portinfo>
 
-#include "TestFaultCohesiveDynLTet4.hh" // Implementation of class methods
+#include "TestFaultCohesiveDynTri3.hh" // Implementation of class methods
 
-#include "data/CohesiveDynLDataTet4.hh" // USES CohesiveDynLDataTet4
+#include "data/CohesiveDynDataTri3.hh" // USES CohesiveDynDataTri3
 
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature<SubMesh>
-#include "pylith/feassemble/GeometryTri3D.hh" // USES GeometryTri3D
+#include "pylith/feassemble/GeometryLine2D.hh" // USES GeometryLine2D
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveDynLTet4 );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveDynTri3 );
 
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::faults::TestFaultCohesiveDynLTet4::setUp(void)
+pylith::faults::TestFaultCohesiveDynTri3::setUp(void)
 { // setUp
-  TestFaultCohesiveDynL::setUp();
-  _data = new CohesiveDynLDataTet4();
+  TestFaultCohesiveDyn::setUp();
+  _data = new CohesiveDynDataTri3();
 
   CPPUNIT_ASSERT(0 != _quadrature);
-  feassemble::GeometryTri3D geometry;
+  feassemble::GeometryLine2D geometry;
   _quadrature->refGeometry(&geometry);
   
   _flipFault = true;

@@ -10,11 +10,11 @@
 // ======================================================================
 //
 
-#include "CohesiveDynLData.hh"
+#include "CohesiveDynData.hh"
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::faults::CohesiveDynLData::CohesiveDynLData(void) :
+pylith::faults::CohesiveDynData::CohesiveDynData(void) :
   meshFilename(0),
   spaceDim(0),
   cellDim(0),
@@ -47,7 +47,7 @@ pylith::faults::CohesiveDynLData::CohesiveDynLData(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::faults::CohesiveDynLData::~CohesiveDynLData(void)
+pylith::faults::CohesiveDynData::~CohesiveDynData(void)
 { // destructor
 } // destructor
 

@@ -80,8 +80,6 @@ public :
   /** Create (distributed) fault mesh from cohesive cells.
    *
    * @param faultMesh Finite-element mesh of fault (output).
-   * @param cohesiveToFault Mapping of cohesive cell to fault mesh
-   *   cell (output).
    * @param mesh Finite-element mesh.
    * @param materialId Material id for cohesive elements.
    * @param constraintCell True if creating cells constrained with 
@@ -89,7 +87,6 @@ public :
    */
   static
   void createFaultParallel(topology::SubMesh* faultMesh,
-			   std::map<point_type, point_type>* cohesiveToFault,
 			   const topology::Mesh& mesh,
 			   const int materialId,
 			   const bool constraintCell =false);

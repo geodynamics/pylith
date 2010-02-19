@@ -10,26 +10,26 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file modulesrc/faults/FaultCohesiveDynL.i
+/** @file modulesrc/faults/FaultCohesiveDyn.i
  *
- * @brief Python interface to C++ FaultCohesiveDynL object.
+ * @brief Python interface to C++ FaultCohesiveDyn object.
  */
 
 namespace pylith {
   namespace faults {
 
-    class FaultCohesiveDynL : public FaultCohesive
-    { // class FaultCohesiveDynL
+    class FaultCohesiveDyn : public FaultCohesiveLagrange
+    { // class FaultCohesiveDyn
 
       // PUBLIC METHODS /////////////////////////////////////////////////
     public :
 
       /// Default constructor.
-      FaultCohesiveDynL(void);
+      FaultCohesiveDyn(void);
       
       /// Destructor.
       virtual
-      ~FaultCohesiveDynL(void);
+      ~FaultCohesiveDyn(void);
       
       /// Deallocate PETSc and local data structures.
       virtual
@@ -62,47 +62,6 @@ namespace pylith {
 		      const double upDir[3],
 		      const double normalDir[3]);
       
-      /** Split solution field for separate preconditioning.
-       *
-       * @param field Solution field.
-       */
-      void splitField(pylith::topology::Field<pylith::topology::Mesh>* field);
-
-      /** Integrate contributions to residual term (r) for operator that
-       * require assembly across processors.
-       *
-       * @param residual Field containing values for residual
-       * @param t Current time
-       * @param fields Solution fields
-       */
-      void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
-			     const double t,
-			     pylith::topology::SolutionFields* const fields);
-
-      /** Integrate contributions to residual term (r) for operator that
-       * do not require assembly across cells, vertices, or processors.
-       *
-       * @param residual Field containing values for residual
-       * @param t Current time
-       * @param fields Solution fields
-       */
-      void integrateResidualAssembled(const pylith::topology::Field<pylith::topology::Mesh>& residual,
-				      const double t,
-				      pylith::topology::SolutionFields* const fields);
-
-      /** Integrate contributions to Jacobian matrix (A) associated with
-       * operator that do not require assembly across cells, vertices, or
-       * processors.
-       *
-       * @param mat Sparse matrix
-       * @param t Current time
-       * @param fields Solution fields
-       * @param mesh Finite-element mesh
-       */
-      void integrateJacobianAssembled(pylith::topology::Jacobian* jacobian,
-				      const double t,
-				      pylith::topology::SolutionFields* const fields);
-      
       /** Update state variables as needed.
        *
        * @param t Current time
@@ -121,6 +80,15 @@ namespace pylith {
       void constrainSolnSpace(pylith::topology::SolutionFields* const fields,
 			      const double t,
 			      const pylith::topology::Jacobian& jacobian);
+
+      /** Adjust solution from solver with lumped Jacobian to match Lagrange
+       *  multiplier constraints.
+       *
+       * @param fields Solution fields.
+       * @param jacobian Jacobian of the system.
+       */
+      void adjustSolnLumped(pylith::topology::SolutionFields* fields,
+			    const pylith::topology::Field<pylith::topology::Mesh>& jacobian);
 
       /** Verify configuration is acceptable.
        *
@@ -148,21 +116,7 @@ namespace pylith {
       cellField(const char* name,
 		const pylith::topology::SolutionFields* fields =0);
 
-      /** Cohesive cells use Lagrange multiplier constraints?
-       *
-       * @returns True if implementation using Lagrange multiplier
-       * constraints, false otherwise.
-       */
-      bool useLagrangeConstraints(void) const;
-
-      /** Get fields associated with fault.
-       *
-       * @returns Fields associated with fault.
-       */
-      const pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >*
-      fields(void) const;
-
-    }; // class FaultCohesiveDynL
+    }; // class FaultCohesiveDyn
 
   } // faults
 } // pylith

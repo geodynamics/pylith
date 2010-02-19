@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/faults/FaultCohesiveDynL.py
+## @file pylith/faults/FaultCohesiveDyn.py
 ##
 
 ## @brief Python object for a fault surface with dynamic
@@ -20,12 +20,12 @@
 
 from FaultCohesive import FaultCohesive
 from pylith.feassemble.Integrator import Integrator
-from faults import FaultCohesiveDynL as ModuleFaultCohesiveDynL
+from faults import FaultCohesiveDyn as ModuleFaultCohesiveDyn
 
 from pylith.utils.NullComponent import NullComponent
 
-# FaultCohesiveDynL class
-class FaultCohesiveDynL(FaultCohesive, Integrator, ModuleFaultCohesiveDynL):
+# FaultCohesiveDyn class
+class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
   """
   Python object for a fault surface with kinematic (prescribed) slip
   implemented with cohesive elements.
@@ -33,7 +33,7 @@ class FaultCohesiveDynL(FaultCohesive, Integrator, ModuleFaultCohesiveDynL):
   Inventory
 
   @class Inventory
-  Python object for managing FaultCohesiveDynL facilities and properties.
+  Python object for managing FaultCohesiveDyn facilities and properties.
   
   \b Properties
   @li None
@@ -93,7 +93,7 @@ class FaultCohesiveDynL(FaultCohesive, Integrator, ModuleFaultCohesiveDynL):
     FaultCohesive.preinitialize(self, mesh)
     Integrator.preinitialize(self, mesh)
 
-    ModuleFaultCohesiveDynL.quadrature(self, self.faultQuadrature)
+    ModuleFaultCohesiveDyn.quadrature(self, self.faultQuadrature)
 
     if mesh.dimension() == 2:
       self.availableFields['vertex']['info'] += ["strike_dir"]
@@ -115,7 +115,7 @@ class FaultCohesiveDynL(FaultCohesive, Integrator, ModuleFaultCohesiveDynL):
 
     FaultCohesive.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
-    ModuleFaultCohesiveDynL.verifyConfiguration(self, self.mesh)
+    ModuleFaultCohesiveDyn.verifyConfiguration(self, self.mesh)
 
     self._eventLogger.eventEnd(logEvent)
     return
@@ -156,9 +156,9 @@ class FaultCohesiveDynL(FaultCohesive, Integrator, ModuleFaultCohesiveDynL):
     Get vertex field.
     """
     if None == fields:
-      field = ModuleFaultCohesiveDynL.vertexField(self, name)
+      field = ModuleFaultCohesiveDyn.vertexField(self, name)
     else:
-      field = ModuleFaultCohesiveDynL.vertexField(self, name, fields)
+      field = ModuleFaultCohesiveDyn.vertexField(self, name, fields)
     return field
 
 
@@ -167,9 +167,9 @@ class FaultCohesiveDynL(FaultCohesive, Integrator, ModuleFaultCohesiveDynL):
     Get cell field.
     """
     if None == fields:
-      field = ModuleFaultCohesiveDynL.cellField(self, name)
+      field = ModuleFaultCohesiveDyn.cellField(self, name)
     else:
-      field = ModuleFaultCohesiveDynL.cellField(self, name, fields)
+      field = ModuleFaultCohesiveDyn.cellField(self, name, fields)
     return field
 
 
@@ -190,17 +190,17 @@ class FaultCohesiveDynL(FaultCohesive, Integrator, ModuleFaultCohesiveDynL):
     """
     FaultCohesive._configure(self)
     if not isinstance(self.inventory.db, NullComponent):
-      ModuleFaultCohesiveDynL.dbInitialTract(self, self.inventory.db)
-    ModuleFaultCohesiveDynL.frictionModel(self, self.inventory.friction)
+      ModuleFaultCohesiveDyn.dbInitialTract(self, self.inventory.db)
+    ModuleFaultCohesiveDyn.frictionModel(self, self.inventory.friction)
     self.output = self.inventory.output
     return
 
 
   def _createModuleObj(self):
     """
-    Create handle to C++ FaultCohesiveDynL.
+    Create handle to C++ FaultCohesiveDyn.
     """
-    ModuleFaultCohesiveDynL.__init__(self)
+    ModuleFaultCohesiveDyn.__init__(self)
     return
     
   
@@ -217,9 +217,9 @@ class FaultCohesiveDynL(FaultCohesive, Integrator, ModuleFaultCohesiveDynL):
 
 def fault():
   """
-  Factory associated with FaultCohesiveDynL.
+  Factory associated with FaultCohesiveDyn.
   """
-  return FaultCohesiveDynL()
+  return FaultCohesiveDyn()
 
 
 # End of file 

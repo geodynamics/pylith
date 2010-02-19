@@ -45,11 +45,11 @@ testfaults_SOURCES = \
 	TestFaultCohesiveKinSrcsQuad4.cc \
 	TestFaultCohesiveKinSrcsTet4.cc \
 	TestFaultCohesiveKinSrcsHex8.cc \
-	TestFaultCohesiveDynL.cc \
-	TestFaultCohesiveDynLTri3.cc \
-	TestFaultCohesiveDynLQuad4.cc \
-	TestFaultCohesiveDynLHex8.cc \
-	TestFaultCohesiveDynLTet4.cc \
+	TestFaultCohesiveDyn.cc \
+	TestFaultCohesiveDynTri3.cc \
+	TestFaultCohesiveDynQuad4.cc \
+	TestFaultCohesiveDynHex8.cc \
+	TestFaultCohesiveDynTet4.cc \
 	test_faults.cc
 
 
@@ -77,11 +77,11 @@ noinst_HEADERS = \
 	TestFaultCohesiveKinSrcsQuad4.hh \
 	TestFaultCohesiveKinSrcsTet4.hh \
 	TestFaultCohesiveKinSrcsHex8.hh \
-	TestFaultCohesiveDynL.hh \
-	TestFaultCohesiveDynLTri3.hh \
-	TestFaultCohesiveDynLQuad4.hh \
-	TestFaultCohesiveDynLHex8.hh \
-	TestFaultCohesiveDynLTet4.hh
+	TestFaultCohesiveDyn.hh \
+	TestFaultCohesiveDynTri3.hh \
+	TestFaultCohesiveDynQuad4.hh \
+	TestFaultCohesiveDynHex8.hh \
+	TestFaultCohesiveDynTet4.hh
 
 # Source files associated with testing data
 testfaults_SOURCES += \
@@ -139,11 +139,11 @@ testfaults_SOURCES += \
 	data/CohesiveKinSrcsDataQuad4.cc \
 	data/CohesiveKinSrcsDataTet4.cc \
 	data/CohesiveKinSrcsDataHex8.cc \
-	data/CohesiveDynLData.cc \
-	data/CohesiveDynLDataTri3.cc \
-	data/CohesiveDynLDataQuad4.cc \
-	data/CohesiveDynLDataHex8.cc \
-	data/CohesiveDynLDataTet4.cc
+	data/CohesiveDynData.cc \
+	data/CohesiveDynDataTri3.cc \
+	data/CohesiveDynDataQuad4.cc \
+	data/CohesiveDynDataHex8.cc \
+	data/CohesiveDynDataTet4.cc
 
 noinst_HEADERS += \
 	data/CohesiveData.hh \
@@ -200,11 +200,11 @@ noinst_HEADERS += \
 	data/CohesiveKinSrcsDataQuad4.hh \
 	data/CohesiveKinSrcsDataTet4.hh \
 	data/CohesiveKinSrcsDataHex8.hh \
-	data/CohesiveDynLData.hh \
-	data/CohesiveDynLDataTri3.hh \
-	data/CohesiveDynLDataQuad4.hh \
-	data/CohesiveDynLDataHex8.hh \
-	data/CohesiveDynLDataTet4.hh
+	data/CohesiveDynData.hh \
+	data/CohesiveDynDataTri3.hh \
+	data/CohesiveDynDataQuad4.hh \
+	data/CohesiveDynDataHex8.hh \
+	data/CohesiveDynDataTet4.hh
 
 AM_CPPFLAGS = \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \

@@ -11,15 +11,15 @@
 //
 
 /**
- * @file unittests/libtests/faults/TestFaultCohesiveDynL.hh
+ * @file unittests/libtests/faults/TestFaultCohesiveDyn.hh
  *
- * @brief C++ TestFaultCohesiveDynL object
+ * @brief C++ TestFaultCohesiveDyn object
  *
- * C++ unit testing for FaultCohesiveDynL.
+ * C++ unit testing for FaultCohesiveDyn.
  */
 
-#if !defined(pylith_faults_testfaultcohesivedynl_hh)
-#define pylith_faults_testfaultcohesivedynl_hh
+#if !defined(pylith_faults_testfaultcohesivedyn_hh)
+#define pylith_faults_testfaultcohesivedyn_hh
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -32,18 +32,18 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
-    class TestFaultCohesiveDynL;
+    class TestFaultCohesiveDyn;
 
-    class CohesiveDynLData;
+    class CohesiveDynData;
   } // faults
 } // pylith
 
-/// C++ unit testing for FaultCohesiveDynL
-class pylith::faults::TestFaultCohesiveDynL: public CppUnit::TestFixture
-{ // class TestFaultCohesiveDynL
+/// C++ unit testing for FaultCohesiveDyn
+class pylith::faults::TestFaultCohesiveDyn: public CppUnit::TestFixture
+{ // class TestFaultCohesiveDyn
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestFaultCohesiveDynL );
+  CPPUNIT_TEST_SUITE( TestFaultCohesiveDyn );
 
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testNeedJacobianDiag );
@@ -63,7 +63,7 @@ class pylith::faults::TestFaultCohesiveDynL: public CppUnit::TestFixture
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
 
-  CohesiveDynLData* _data; ///< Data for testing
+  CohesiveDynData* _data; ///< Data for testing
   feassemble::Quadrature<topology::SubMesh>* _quadrature; ///< Fault quad.
   spatialdata::spatialdb::SpatialDB* _dbInitialTract; ///< Initial tractions.
   friction::FrictionModel* _friction; ///< Friction model
@@ -112,14 +112,14 @@ public:
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private:
 
-  /** Initialize FaultCohesiveDynL interface condition.
+  /** Initialize FaultCohesiveDyn interface condition.
    *
    * @param mesh PETSc mesh to initialize
    * @param fault Cohesive fault interface condition to initialize.
    * @param fields Solution fields.
    */
   void _initialize(topology::Mesh* const mesh,
-      FaultCohesiveDynL* const fault,
+      FaultCohesiveDyn* const fault,
       topology::SolutionFields* const fields);
 
   /** Set values for fields and Jacobian.
@@ -135,7 +135,7 @@ private:
    * @param fieldIncrVals Values for solution increment field.
    */
   void _setFieldsJacobian(topology::Mesh* const mesh,
-      FaultCohesiveDynL* const fault,
+      FaultCohesiveDyn* const fault,
       topology::SolutionFields* const fields,
       topology::Jacobian* const jacobian,
       const double* const fieldIncrVals);
@@ -148,8 +148,8 @@ private:
    */
   bool _isConstraintVertex(const int vertex) const;
 
-}; // class TestFaultCohesiveDynL
+}; // class TestFaultCohesiveDyn
 
-#endif // pylith_faults_testfaultcohesivedynl_hh
+#endif // pylith_faults_testfaultcohesivedyn_hh
 
 // End of file 

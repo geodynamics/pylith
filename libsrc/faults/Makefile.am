@@ -24,11 +24,10 @@ subpkginclude_HEADERS = \
 	Fault.icc \
 	FaultCohesive.hh \
 	FaultCohesive.icc \
+	FaultCohesiveLagrange.hh \
 	FaultCohesiveTract.hh \
-	FaultCohesiveDynL.hh \
-	FaultCohesiveDynL.icc \
+	FaultCohesiveDyn.hh \
 	FaultCohesiveKin.hh \
-	FaultCohesiveKin.icc \
 	LiuCosSlipFn.hh \
 	LiuCosSlipFn.icc \
 	SlipTimeFn.hh \

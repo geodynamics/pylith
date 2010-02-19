@@ -21,5 +21,12 @@ pylith::faults::FaultCohesive::useLagrangeConstraints(void) const {
   return _useLagrangeConstraints;
 } // useLagrangeConstraints
 
+// Get fields associated with fault.
+inline
+const pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >*
+pylith::faults::FaultCohesive::fields(void) const {
+  return _fields;
+} // fields
+
 
 // End of file 

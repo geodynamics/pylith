@@ -10,28 +10,28 @@
 // ======================================================================
 //
 
-#if !defined(pylith_faults_cohesivedynldatatet4_hh)
-#define pylith_faults_cohesivedynldatatet4_hh
+#if !defined(pylith_faults_cohesivedynldataquad4_hh)
+#define pylith_faults_cohesivedynldataquad4_hh
 
-#include "CohesiveDynLData.hh"
+#include "CohesiveDynData.hh"
 
 namespace pylith {
   namespace faults {
-     class CohesiveDynLDataTet4;
+     class CohesiveDynDataQuad4;
   } // pylith
 } // faults
 
-class pylith::faults::CohesiveDynLDataTet4 : public CohesiveDynLData
+class pylith::faults::CohesiveDynDataQuad4 : public CohesiveDynData
 {
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public: 
 
   /// Constructor
-  CohesiveDynLDataTet4(void);
+  CohesiveDynDataQuad4(void);
 
   /// Destructor
-  ~CohesiveDynLDataTet4(void);
+  ~CohesiveDynDataQuad4(void);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
@@ -71,7 +71,7 @@ private:
 
 };
 
-#endif // pylith_faults_cohesivedynldatatet4_hh
+#endif // pylith_faults_cohesivedynldataquad4_hh
 
 
 // End of file
