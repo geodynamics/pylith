@@ -23,7 +23,8 @@ TESTS_ENVIRONMENT = $(PYTHON)
 noinst_PYTHON = \
 	TestFrictionModel.py \
 	TestStaticFriction.py \
-	TestSlipWeakening.py
+	TestSlipWeakening.py \
+	TestRateStateAgeing.py
 
 
 # End of file 
