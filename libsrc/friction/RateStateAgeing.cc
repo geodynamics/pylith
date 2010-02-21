@@ -164,7 +164,7 @@ pylith::friction::RateStateAgeing::_dbToProperties(
     std::ostringstream msg;
     msg << "Spatial database returned nonpositive value for constitutive "
 	<< "parameter 'b' of Rate and State friction Ageing Law.\n"
-	<< "Rate and State parameter 'a' of Ageing Law of friction: " << b << "\n";
+	<< "Rate and State parameter 'b' of Ageing Law of friction: " << b << "\n";
     throw std::runtime_error(msg.str());
   } // if
 
@@ -187,7 +187,6 @@ pylith::friction::RateStateAgeing::_nondimProperties(double* const values,
   assert(nvalues == _RateStateAgeing::numProperties);
 
   const double lengthScale = _normalizer->lengthScale();
-  const double pressureScale = _normalizer->pressureScale();
   const double timeScale = _normalizer->timeScale();
 
   values[p_slipRate0] /= lengthScale / timeScale;
@@ -205,7 +204,6 @@ pylith::friction::RateStateAgeing::_dimProperties(double* const values,
   assert(nvalues == _RateStateAgeing::numProperties);
 
   const double lengthScale = _normalizer->lengthScale();
-  const double pressureScale = _normalizer->pressureScale();
   const double timeScale = _normalizer->timeScale();
 
   values[p_slipRate0] *= lengthScale / timeScale;
@@ -328,6 +326,8 @@ pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
   else
     stateVars[s_state] = thetaN * expTerm +
                        L / slipRate * (1 - expTerm);
+
+  PetscLogFlops(6);
     
 } // _updateStateVars
 

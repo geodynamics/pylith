@@ -24,25 +24,29 @@ testfriction_SOURCES = \
 	test_friction.cc \
 	TestFrictionModel.cc \
 	TestStaticFriction.cc \
-	TestSlipWeakening.cc
+	TestSlipWeakening.cc \
+	TestRateStateAgeing.cc
 
 
 noinst_HEADERS = 
 	TestFrictionModel.hh \
 	TestStaticFriction.hh \
-	TestSlipWeakening.hh
+	TestSlipWeakening.hh \
+	TestRateStateAgeing.hh
 
 # Source files associated with testing data
 testfriction_SOURCES += \
 	data/FrictionModelData.cc \
 	data/StaticFrictionData.cc \
-	data/SlipWeakeningData.cc
+	data/SlipWeakeningData.cc \
+	data/RateStateAgeingData.cc
 
 
 noinst_HEADERS += \
 	data/FrictionModelData.hh \
 	data/StaticFrictionData.hh \
-	data/SlipWeakeningData.hh
+	data/SlipWeakeningData.hh \
+	data/RateStateAgeingData.hh
 
 AM_CPPFLAGS = \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
