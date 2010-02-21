@@ -314,7 +314,6 @@ pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
 
   const double dt = _dt;
   const double thetaTVertex = stateVars[s_state];
-  const double thetaTpdtVertex;
   const double L = properties[p_L];
   const double expTerm = exp(-slipRate * dt / L);
   const double vDtL = slipRate * dt / L;
@@ -324,6 +323,7 @@ pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
   // Above ODE is integrated from t->t+dt keeping slipRate constant gives
   // thetaTpdt = thetaT * exp(- slipRate * theta / L)
   //             + L / slipRate * (1 -  exp(- slipRate * theta / L))
+  double thetaTpdtVertex = 0.0;
   if (vDtL < 0.00001)
     // As (slipRate * dt / L) --> 0, exp(-slipRate * dt / L) --> 1
     // So using first three term in the Taylor series expansion of 
