@@ -276,6 +276,7 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
   double mu_f = 0.0;
   if (normalTraction < 0.0) {
     // if fault is in compression
+    // Using Regularized Rate and State equation
     const double f0 = properties[p_coef];
 
     const double slipRate0 = properties[p_slipRate0];
@@ -312,20 +313,28 @@ pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
   assert(0 != numProperties);
 
   const double dt = _dt;
-  const double thetaN = stateVars[s_state];
+  const double thetaTVertex = stateVars[s_state];
+  const double thetaTpdtVertex;
   const double L = properties[p_L];
   const double expTerm = exp(-slipRate * dt / L);
   const double vDtL = slipRate * dt / L;
 
   // Ageing law
+  // d(theta)/dt = (1 - slipRate * theta / L)
+  // Above ODE is integrated from t->t+dt keeping slipRate constant gives
+  // thetaTpdt = thetaT * exp(- slipRate * theta / L)
+  //             + L / slipRate * (1 -  exp(- slipRate * theta / L))
   if (vDtL < 0.00001)
-    // Use first three terms of taylor expansion of 
-    // expTerm when it approaches unity
-    stateVars[s_state] = thetaN * expTerm + 
+    // As (slipRate * dt / L) --> 0, exp(-slipRate * dt / L) --> 1
+    // So using first three term in the Taylor series expansion of 
+    // exp(- slipRate * theta / L) i.e., exp(-x) = 1 - x + (x^2)/2;
+    thetaTpdtVertex = thetaTVertex * expTerm + 
                         dt - 0.5 * slipRate * pow(dt,2) / L;
   else
-    stateVars[s_state] = thetaN * expTerm +
+    thetaTpdtVertex = thetaTVertex * expTerm +
                        L / slipRate * (1 - expTerm);
+
+  stateVars[s_state] = thetaTpdtVertex;
 
   PetscLogFlops(6);
     

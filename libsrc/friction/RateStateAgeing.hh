@@ -13,6 +13,17 @@
 /** @file libsrc/friction/RateStateAgeing.hh
  *
  * @brief C++ Rate and State fault constitutive model with ageing law.
+ *
+ * Implementation comes from "Kaneko, Y., N. Lapusta, and J.-P. Ampuero 
+ * (2008), Spectral element modeling of spontaneous earthquake rupture on
+ * rate and state faults: Effect of velocity-strengthening friction at 
+ * shallow depths, J. Geophys. Res., 113, B09317" 
+ *
+ * Regularized Rate & State equation : Eqn(15) of Kaneko et. al. (2008)
+ *
+ * Ageing Law : Eqn (19), of Kaneko et. al. (2008) added separate expression
+ * if (slipRate * dt / L) < = 0.00001 by using Taylor series expansion of
+ * exp(slipRate * dt / L) for the term (1 - exp(slipRate * dt / L))
  */
 
 #if !defined(pylith_friction_ratestateageing_hh)
