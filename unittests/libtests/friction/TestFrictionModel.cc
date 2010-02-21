@@ -560,6 +560,7 @@ pylith::friction::TestFrictionModel::test_calcFriction(void)
     const double frictionE = _data->friction[iLoc];
     
     const double tolerance = 1.0e-06;
+
     if (0.0 != frictionE)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, friction/frictionE, tolerance);
     else
