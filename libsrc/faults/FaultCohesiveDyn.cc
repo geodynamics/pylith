@@ -1088,7 +1088,7 @@ pylith::faults::FaultCohesiveDyn::_getInitialTractions(void)
     tractionSection->updatePoint(*v_iter, &tractionVertex[0]);
   } // for
 
-  traction.view("INITIAL TRACTIONS"); // DEBUGGING
+  //traction.view("INITIAL TRACTIONS"); // DEBUGGING
 } // _getInitialTractions
 
 // ----------------------------------------------------------------------
