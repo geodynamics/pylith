@@ -332,7 +332,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidualAssembled(void)
     fault.useSolnIncr(false);
     fault.integrateResidualAssembled(residual, t, &fields);
 
-    residual.view("RESIDUAL"); // DEBUGGING
+    //residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->residual;
@@ -574,9 +574,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembledLumped(void)
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
   jacobian.complete();
 
-#if 0 // DEBUGGING
-  jacobian.view("JACOBIAN");
-#endif // DEBUGGING
+  // jacobian.view("JACOBIAN"); // DEBUGGING
 
   const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
   CPPUNIT_ASSERT(!jacobianSection.isNull());
