@@ -80,7 +80,7 @@ class PowerLawApp(Application):
                                        factory=SimpleDB)
   dbTemperature.meta['tip'] = "Spatial db for temperature, T."
 
-  dbAe = pyre.inventory.facility("db_powerlaw_coefficient",
+  dbAe = pyre.inventory.facility("db_power-law_coefficient",
                                  family="spatial_database",
                                  factory=SimpleDB)
   dbAe.meta['tip'] = "Spatial db for power-law coefficient, Ae."
