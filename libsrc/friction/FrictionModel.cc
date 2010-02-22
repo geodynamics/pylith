@@ -186,6 +186,8 @@ pylith::friction::FrictionModel::initialize(
     quadrature->computeGeometry(coordinatesCell, *c_iter);
 #endif
 
+    propertiesCell = 0.0;
+
     const double_array& quadPtsNonDim = quadrature->quadPts();
     quadPtsGlobal = quadPtsNonDim;
     _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
@@ -218,11 +220,11 @@ pylith::friction::FrictionModel::initialize(
         const double dArea = wt * basis[iQuadPt*numBasis+iBasis];
         for (int iProp = 0; iProp < numDBProperties; ++iProp)
           propertiesCell[iBasis*numDBProperties+iProp]
-              = propertiesQuadPt[iProp] * dArea;
+              += propertiesQuadPt[iProp] * dArea;
       } // for
-      propertiesVisitor.clear();
-      faultSieveMesh->updateClosure(*c_iter, propertiesVisitor);
     } // for
+    propertiesVisitor.clear();
+    faultSieveMesh->updateClosure(*c_iter, propertiesVisitor);
   } // for
   // Close properties database
   _dbProperties->close();
@@ -299,6 +301,8 @@ pylith::friction::FrictionModel::initialize(
       _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
           lengthScale);
 
+      stateVarsCell = 0.0;
+
       // Loop over quadrature points in cell and query database
       for (int iQuadPt=0, index=0;
           iQuadPt < numQuadPts;
@@ -326,11 +330,11 @@ pylith::friction::FrictionModel::initialize(
           const double dArea = wt * basis[iQuadPt*numBasis+iBasis];
           for (int iVar = 0; iVar < numDBStateVars; ++iVar)
             stateVarsCell[iBasis*numDBStateVars+iVar]
-                = stateVarsDBQuery[iVar] * dArea;
+                += stateVarsDBQuery[iVar] * dArea;
         } // for
-        stateVarsVisitor.clear();
-      faultSieveMesh->updateClosure(*c_iter, stateVarsVisitor);
       } // for
+      stateVarsVisitor.clear();
+      faultSieveMesh->updateClosure(*c_iter, stateVarsVisitor);
     } // for
     // Close database
     _dbInitialState->close();

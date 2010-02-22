@@ -6,6 +6,8 @@ CURRENT ISSUES/PRIORITIES
   Better PETSc settings or Laplacian based preconditioner
 
 * Drucker-Prager elastoplastic
+  Add isJacobianSymmetric() to Integrator (default is true, need to query material model).
+  Need to pass hint when creating Jacobian.
 
 * Friction
 
@@ -34,9 +36,6 @@ CURRENT ISSUES/PRIORITIES
 ----------------------------------------------------------------------
 FRICTION
 ----------------------------------------------------------------------
-
-Initial tractions
-  Integrate over fault surface (should be current implementation)
 
 6. Other fault constitutive models [Surendra]
   Rate- and state-friction with aging law

@@ -46,6 +46,7 @@
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
+typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -930,106 +931,164 @@ pylith::faults::FaultCohesiveDyn::_getInitialTractions(void)
   assert(0 != _normalizer);
   assert(0 != _quadrature);
 
+  // If no initial tractions specified, leave method
+  if (0 == _dbInitialTract)
+    return;
+
+  assert(0 != _normalizer);
   const double pressureScale = _normalizer->pressureScale();
   const double lengthScale = _normalizer->lengthScale();
 
-  const int spaceDim = _quadrature->spaceDim();
+  // Get quadrature information
   const int numQuadPts = _quadrature->numQuadPts();
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
 
-  if (0 != _dbInitialTract) { // Setup initial values, if provided.
-    // Create section to hold initial tractions.
-    _fields->add("initial traction", "initial_traction");
-    topology::Field<topology::SubMesh>& traction = _fields->get(
-      "initial traction");
-    topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-    traction.cloneSection(slip);
-    traction.scale(pressureScale);
-    const ALE::Obj<RealSection>& tractionSection = traction.section();
-    assert(!tractionSection.isNull());
+  double_array quadPtsGlobal(numQuadPts*spaceDim);
 
-    _dbInitialTract->open();
-    switch (spaceDim) { // switch
-    case 1: {
-      const char* valueNames[] = { "traction-normal" };
-      _dbInitialTract->queryVals(valueNames, 1);
-      break;
-    } // case 1
-    case 2: {
-      const char* valueNames[] = { "traction-shear", "traction-normal" };
-      _dbInitialTract->queryVals(valueNames, 2);
-      break;
-    } // case 2
-    case 3: {
-      const char* valueNames[] = { "traction-shear-leftlateral",
-          "traction-shear-updip", "traction-normal" };
-      _dbInitialTract->queryVals(valueNames, 3);
-      break;
-    } // case 3
-    default:
-      std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
-      assert(0);
-      throw std::logic_error("Bad spatial dimension in Neumann.");
-    } // switch
+  // Create section to hold initial tractions.
+  _fields->add("initial traction", "initial_traction");
+  topology::Field<topology::SubMesh>& traction = 
+    _fields->get("initial traction");
+  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
+  traction.cloneSection(slip);
+  traction.scale(pressureScale);
+  const ALE::Obj<RealSection>& tractionSection = traction.section();
+  assert(!tractionSection.isNull());
+  double_array tractionCell(numBasis*spaceDim);
+  double_array tractionQuadPt(spaceDim);
+  topology::Mesh::UpdateAddVisitor tractionVisitor(*tractionSection,
+        &tractionCell[0]);
 
-    // Get 'fault' vertices.
-    const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
-    assert(!faultSieveMesh.isNull());
-    const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
-        faultSieveMesh->depthStratum(0);
-    assert(!vertices.isNull());
-    const SieveSubMesh::label_sequence::iterator verticesBegin =
-        vertices->begin();
-    const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  assert(0 != _dbInitialTract);
+  _dbInitialTract->open();
+  switch (spaceDim) { // switch
+  case 1: {
+    const char* valueNames[] = { "traction-normal" };
+    _dbInitialTract->queryVals(valueNames, 1);
+    break;
+  } // case 1
+  case 2: {
+    const char* valueNames[] = { "traction-shear", "traction-normal" };
+    _dbInitialTract->queryVals(valueNames, 2);
+    break;
+  } // case 2
+  case 3: {
+    const char* valueNames[] = { "traction-shear-leftlateral",
+				 "traction-shear-updip", "traction-normal" };
+    _dbInitialTract->queryVals(valueNames, 3);
+    break;
+  } // case 3
+  default:
+    std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
+    assert(0);
+    throw std::logic_error("Bad spatial dimension in Neumann.");
+  } // switch
+  
+  // Get cells associated with fault
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
+    faultSieveMesh->heightStratum(0);
+  assert(!cells.isNull());
+  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
+    faultSieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const SieveSubMesh::label_sequence::iterator verticesBegin =
+    vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
-    const int numBasis = _quadrature->numBasis();
-    const int spaceDim = _quadrature->spaceDim();
+  const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
+  assert(0 != cs);
 
-    // Containers for database query results and quadrature coordinates in
-    // reference geometry.
-    double_array tractionVertex(spaceDim);
-    double_array coordsVertex(spaceDim);
+#if !defined(PRECOMPUTE_GEOMETRY)
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates =
+    faultSieveMesh->getRealSection("coordinates");
+  RestrictVisitor coordsVisitor(*coordinates,
+        coordinatesCell.size(), &coordinatesCell[0]);
+#endif
 
-    // Get sections.
-    const ALE::Obj<RealSection>& coordinates = faultSieveMesh->getRealSection(
-      "coordinates");
-    assert(!coordinates.isNull());
-    const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
+  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
+       c_iter != cellsEnd;
+       ++c_iter) {
+    // Compute geometry information for current cell
+#if defined(PRECOMPUTE_GEOMETRY)
+    _quadrature->retrieveGeometry(*c_iter);
+#else
+    coordsVisitor.clear();
+    faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+#endif
 
-    const double lengthScale = _normalizer->lengthScale();
-
-    // Loop over vertices in fault mesh and perform queries.
-    for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin; v_iter
-        != verticesEnd; ++v_iter) {
-      coordinates->restrictPoint(*v_iter, &coordsVertex[0], coordsVertex.size());
-      // Dimensionalize coordinates
-      _normalizer->dimensionalize(&coordsVertex[0], coordsVertex.size(),
+    const double_array& quadPtsNonDim = _quadrature->quadPts();
+    quadPtsGlobal = quadPtsNonDim;
+    _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
         lengthScale);
+    tractionCell = 0.0;
 
-      tractionVertex = 0.0;
-      const int err = _dbInitialTract->query(&tractionVertex[0], spaceDim,
-        &coordsVertex[0], spaceDim, cs);
+    // Loop over quadrature points in cell and query database
+    for (int iQuadPt=0, index=0;
+        iQuadPt < numQuadPts;
+        ++iQuadPt, index+=spaceDim) {
+
+      tractionQuadPt = 0.0;
+      int err = _dbInitialTract->query(&tractionQuadPt[0], spaceDim,
+          &quadPtsGlobal[index], spaceDim, cs);
       if (err) {
         std::ostringstream msg;
-        msg << "Could not find initial tractions at (";
+        msg << "Could not find parameters for physical properties at \n" << "(";
         for (int i = 0; i < spaceDim; ++i)
-          msg << " " << coordsVertex[i];
-        msg << ") for dynamic fault interface " << label() << "\n"
-            << "using spatial database " << _dbInitialTract->label() << ".";
+          msg << "  " << quadPtsGlobal[index + i];
+        msg << ") in friction model " << label() << "\n"
+            << "using spatial database '" << _dbInitialTract->label() << "'.";
         throw std::runtime_error(msg.str());
       } // if
+      tractionQuadPt /= pressureScale;
 
-      _normalizer->nondimensionalize(&tractionVertex[0], tractionVertex.size(),
-        pressureScale);
+      // Get cell geometry information that depends on cell
+      const double_array& basis = _quadrature->basis();
+      const double_array& jacobianDet = _quadrature->jacobianDet();
 
-      // Update section
-      assert(tractionVertex.size() == tractionSection->getFiberDimension(*v_iter));
-      tractionSection->updatePoint(*v_iter, &tractionVertex[0]);
+      // Compute properties weighted by area
+      const double wt = quadWts[iQuadPt] * jacobianDet[iQuadPt];
+      for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
+        const double dArea = wt * basis[iQuadPt*numBasis+iBasis];
+        for (int iDim = 0; iDim < spaceDim; ++iDim)
+          tractionCell[iBasis*spaceDim+iDim] += tractionQuadPt[iDim] * dArea;
+      } // for
     } // for
+    tractionVisitor.clear();
+    faultSieveMesh->updateClosure(*c_iter, tractionVisitor);
+  } // for
+  // Close properties database
+  _dbInitialTract->close();
 
-    _dbInitialTract->close();
+  traction.complete(); // Assemble contributions
 
-    //traction.view("INITIAL TRACTIONS"); // DEBUGGING
-  } // if
+  // Loop over vertices and divide by area to get weighted values and
+  // nondimensionalize properties.
+  const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
+  assert(!areaSection.isNull());
+
+  double_array tractionVertex(spaceDim);
+  double areaVertex = 0.0;
+  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
+       v_iter != verticesEnd;
+       ++v_iter) {
+    tractionSection->restrictPoint(*v_iter,
+        &tractionVertex[0], tractionVertex.size());
+    areaSection->restrictPoint(*v_iter, &areaVertex, 1);
+    assert(areaVertex > 0.0);
+    tractionVertex /= areaVertex;
+    tractionSection->updatePoint(*v_iter, &tractionVertex[0]);
+  } // for
+
+  traction.view("INITIAL TRACTIONS"); // DEBUGGING
 } // _getInitialTractions
 
 // ----------------------------------------------------------------------

@@ -247,8 +247,8 @@ const double pylith::faults::CohesiveDynDataTri3::_area[] = {
 };
 
 const double pylith::faults::CohesiveDynDataTri3::_initialTractions[] = {
-  1.0, -2.0,
-  1.1, -2.1,
+  1.05, -2.05,
+  1.05, -2.05,
 };
 
 
@@ -299,14 +299,14 @@ const double pylith::faults::CohesiveDynDataTri3::_fieldIncrSlipE[] = {
   9.4, 10.4,
   9.5, 10.5, // 6
   9.7, 10.7, // 7
-  -6.8, -10.6, // 8
-  -6.94, -10.8, // 9
+  -8.6+3.05*0.6, -10.6, // 8
+  -8.8+3.05*0.6, -10.8, // 9
 };
 
 // :TODO: Update slip values based on changes in Lagrange multiplier values
 const double pylith::faults::CohesiveDynDataTri3::_slipSlipE[] = {
-  32.8, 0.0,
-  33.48, 0.0,
+  32.74, 0.0,
+  33.54, 0.0,
 };
 
 // ----------------------------------------------------------------------
