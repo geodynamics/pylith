@@ -48,8 +48,8 @@ testfaults_SOURCES = \
 	TestFaultCohesiveDyn.cc \
 	TestFaultCohesiveDynTri3.cc \
 	TestFaultCohesiveDynQuad4.cc \
-	TestFaultCohesiveDynHex8.cc \
 	TestFaultCohesiveDynTet4.cc \
+	TestFaultCohesiveDynHex8.cc \
 	test_faults.cc
 
 
@@ -80,8 +80,8 @@ noinst_HEADERS = \
 	TestFaultCohesiveDyn.hh \
 	TestFaultCohesiveDynTri3.hh \
 	TestFaultCohesiveDynQuad4.hh \
-	TestFaultCohesiveDynHex8.hh \
-	TestFaultCohesiveDynTet4.hh
+	TestFaultCohesiveDynTet4.hh \
+	TestFaultCohesiveDynHex8.hh 
 
 # Source files associated with testing data
 testfaults_SOURCES += \
@@ -142,8 +142,8 @@ testfaults_SOURCES += \
 	data/CohesiveDynData.cc \
 	data/CohesiveDynDataTri3.cc \
 	data/CohesiveDynDataQuad4.cc \
-	data/CohesiveDynDataHex8.cc \
-	data/CohesiveDynDataTet4.cc
+	data/CohesiveDynDataTet4.cc \
+	data/CohesiveDynDataHex8.cc
 
 noinst_HEADERS += \
 	data/CohesiveData.hh \
@@ -203,8 +203,8 @@ noinst_HEADERS += \
 	data/CohesiveDynData.hh \
 	data/CohesiveDynDataTri3.hh \
 	data/CohesiveDynDataQuad4.hh \
-	data/CohesiveDynDataHex8.hh \
-	data/CohesiveDynDataTet4.hh
+	data/CohesiveDynDataTet4.hh \
+	data/CohesiveDynDataHex8.hh 
 
 AM_CPPFLAGS = \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
