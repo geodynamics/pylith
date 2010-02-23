@@ -80,7 +80,6 @@ protected :
    * @param stateVars State variables at location.
    * @param numStateVars Number of state variables.
    */
-  virtual
   void _dbToStateVars(double* const stateValues,
 		      const double_array& dbValues) const;
 
@@ -89,7 +88,6 @@ protected :
    * @param values Array of initial state values.
    * @param nvalues Number of values.
    */
-  virtual
   void _nondimStateVars(double* const values,
 			   const int nvalues) const;
   
@@ -98,7 +96,6 @@ protected :
    * @param values Array of initial state values.
    * @param nvalues Number of values.
    */
-  virtual
   void _dimStateVars(double* const values,
 			const int nvalues) const;
 
@@ -119,13 +116,24 @@ protected :
 		       const int numProperties,
 		       const double* stateVars,
 		       const int numStateVars);
-  virtual
+
+  /** Update state variables (for next time step).
+   *
+   * @param slip Current slip at location.
+   * @param slipRate Current slip rate at location.
+   * @param normalTraction Normal traction at location.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
+   */
   void _updateStateVars(const double slip,
-			const double slipRate,
-			double* const stateVars,
-			const int numStateVars,
-			const double* properties,
-			const int numProperties);
+      const double slipRate,
+      const double normalTraction,
+      double* const stateVars,
+      const int numStateVars,
+      const double* properties,
+      const int numProperties);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

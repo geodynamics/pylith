@@ -15,11 +15,14 @@
 #include "TestFrictionModel.hh" // Implementation of class methods
 
 #include "data/StaticFrictionData.hh" // USES StaticFrictionData
+#include "data/SlipWeakeningData.hh" // USES SlipWeakeningData
+
+#include "pylith/friction/StaticFriction.hh" // USES StaticFriction
+#include "pylith/friction/SlipWeakening.hh" // USES SlipWeakening
 
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/friction/StaticFriction.hh" // USES StaticFriction
 #include "pylith/faults/FaultCohesiveDyn.hh" // USES FaultCohesiveDyn
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/GeometryLine2D.hh" // USES GeometryLine2D
@@ -294,8 +297,57 @@ pylith::friction::TestFrictionModel::testCalcFriction(void)
 void
 pylith::friction::TestFrictionModel::testUpdateStateVars(void)
 { // testUpdateStateVars
-  std::cout << "\n\nWARNING!! WARNING!! WARNING!!\n"
-    "Need to implement using friction model with state variables.\n\n";
+  { // Test with friction model without state variables
+    topology::Mesh mesh;
+    faults::FaultCohesiveDyn fault;
+    StaticFriction friction;
+    StaticFrictionData data;
+    _initialize(&mesh, &fault, &friction, &data);
+    
+    const double slip = 1.2;
+    const double slipRate = -2.3;
+    const double normalTraction = -2.4;
+    const int vertex = 2;
+    
+    friction.retrievePropsAndVars(vertex);
+    friction.updateStateVars(slip, slipRate, normalTraction);
+    
+    // no outcome to test
+  } // Test with friction model without state variables
+
+  { // Test with friction model with state variables (slip weakening)
+    // Initialize uses static friction, so we hardwire the properties
+    // and stateVars
+    const double slip = 0.25;
+    const double slipRate = 0.64;
+    const double normalTraction = -2.3;
+    
+    const size_t numProperties = 3;
+    const double properties[3] = { 0.6, 0.5, 0.004 };
+    const size_t numStateVars = 2;
+    const double stateVars[2] = { 0.5, 0.1 };
+    const double stateVarsUpdated[2] = { 0.65, 0.5 };
+    
+    SlipWeakening friction;
+
+    friction._propertiesVertex.resize(numProperties);
+    for (size_t i=0; i < numProperties; ++i)
+      friction._propertiesVertex[i] = properties[i];
+    friction._stateVarsVertex.resize(numStateVars);
+    for (size_t i=0; i < numStateVars; ++i)
+      friction._stateVarsVertex[i] = stateVars[i];
+
+    friction.updateStateVars(slip, slipRate, normalTraction);
+    
+    CPPUNIT_ASSERT_EQUAL(numStateVars, friction._stateVarsVertex.size());
+
+    const double tolerance = 1.0e-06;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsUpdated[0],
+				 friction._stateVarsVertex[0], tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsUpdated[1],
+				 friction._stateVarsVertex[1], tolerance);
+  } // Test with friction model with state variables (slip weakening)
+
 } // testUpdateStateVars
 
 // ----------------------------------------------------------------------
@@ -588,12 +640,13 @@ pylith::friction::TestFrictionModel::test_updateStateVars(void)
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
     const double slip = _data->slip[iLoc];
     const double slipRate = _data->slipRate[iLoc];
+    const double normalTraction = _data->normalTraction[iLoc];
     for (int i=0; i < numPropsVertex; ++i)
       properties[i] = _data->properties[iLoc*numPropsVertex+i];
     for (int i=0; i < numVarsVertex; ++i)
       stateVars[i] = _data->stateVars[iLoc*numVarsVertex+i];
 
-    _friction->_updateStateVars(slip, slipRate,
+    _friction->_updateStateVars(slip, slipRate, normalTraction,
 				&stateVars[0], stateVars.size(),
 				&properties[0], properties.size());
     
@@ -603,13 +656,19 @@ pylith::friction::TestFrictionModel::test_updateStateVars(void)
 		    (0 == numVarsVertex && 0 == stateVarsE) );
 
     const double tolerance = 1.0e-06;
-    for (int i=0; i < numVarsVertex; ++i)
+    for (int i=0; i < numVarsVertex; ++i) {
+#if 1 // DEBUGGING
+      std::cout << "valE: " << stateVarsE[i] 
+		<< ", val: " << stateVars[i]
+		<< std::endl;
+#endif
       if (0.0 != stateVarsE[i])
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsE[i], 
 				     tolerance);
       else
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i],
 				     tolerance);
+    } // for
   } // for
 } // test_updateStateVars
 

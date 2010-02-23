@@ -303,12 +303,12 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
 void
 pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
 						  const double slipRate,
+						  const double normalTraction,
 						  double* const stateVars,
 						  const int numStateVars,
 						  const double* properties,
 						  const int numProperties)
 { // _updateStateVars
-
   assert(0 != numStateVars);
   assert(0 != numProperties);
 
@@ -336,8 +336,9 @@ pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
 
   stateVars[s_state] = thetaTpdtVertex;
 
+  std::cout << "STATEVAR before: " << thetaTVertex << ", after: " << thetaTpdtVertex << std::endl;
+
   PetscLogFlops(6);
-    
 } // _updateStateVars
 
 
