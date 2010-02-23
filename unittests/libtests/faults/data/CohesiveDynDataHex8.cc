@@ -1409,7 +1409,6 @@ const double pylith::faults::CohesiveDynDataHex8::_fieldIncrSlip[] = {
 };
 
 // Output
-// :TODO: Update Lagrange multiplier values
 const double pylith::faults::CohesiveDynDataHex8::_fieldIncrSlipE[] = {
   5.1, 7.1, 9.1,
   5.2, 7.2, 9.2,
@@ -1433,7 +1432,6 @@ const double pylith::faults::CohesiveDynDataHex8::_fieldIncrSlipE[] = {
   -3.49677632, -4.95014952,  -10.0, // 21
 };
 
-// :TODO: Update slip values based on changes in Lagrange multiplier values
 const double pylith::faults::CohesiveDynDataHex8::_slipSlipE[] = {
   20.68227232,  27.69321209,  0.0,
   21.42498706,  28.44957298,  0.0,

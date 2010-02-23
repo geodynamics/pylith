@@ -522,7 +522,6 @@ const double pylith::faults::CohesiveDynDataTet4::_fieldIncrSlip[] = {
 };
 
 // Output
-// :TODO: Update Lagrange multiplier values
 const double pylith::faults::CohesiveDynDataTet4::_fieldIncrSlipE[] = {
   8.1, 9.1, 10.1,
   8.2, 9.2, 10.2, // 3
@@ -537,7 +536,6 @@ const double pylith::faults::CohesiveDynDataTet4::_fieldIncrSlipE[] = {
   -6.29211869, -7.18581852, -10.1, // 12
 };
 
-// :TODO: Update slip values based on changes in Lagrange multiplier values
 const double pylith::faults::CohesiveDynDataTet4::_slipSlipE[] = {
   31.17649592,  34.97850762,  0.0,
   31.9741524,  35.78059911,  0.0,
