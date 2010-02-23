@@ -135,8 +135,8 @@ const double pylith::friction::RateStateAgeingData::_normalTraction[] = {
 };
 
 const double pylith::friction::RateStateAgeingData::_stateVarsUpdated[] = {
-  92.7,
-  93.7,
+  92.682443150471812,
+  93.668141160483529,
 };
 
 pylith::friction::RateStateAgeingData::RateStateAgeingData(void)
