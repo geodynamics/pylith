@@ -639,12 +639,25 @@ pylith::friction::FrictionModel::calcFriction(const double slip,
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
+pylith::friction::FrictionModel::updateStateVars(const double slip,
+						 const double slipRate,
+						 const double normalTraction)
+{ // updateStateVars
+  _updateStateVars(slip, slipRate, normalTraction,
+		   &_stateVarsVertex[0], _stateVarsVertex.size(),
+		   &_propertiesVertex[0], _propertiesVertex.size());
+} // updateStateVars
+
+// ----------------------------------------------------------------------
+// Update state variables (for next time step).
+void
 pylith::friction::FrictionModel::_updateStateVars(const double slip,
-						  const double slipRate,
-						  double* const stateVars,
-						  const int numStateVars,
-						  const double* properties,
-						  const int numProperties)
+    const double slipRate,
+    const double normalTraction,
+    double* const stateVars,
+    const int numStateVars,
+    const double* properties,
+    const int numProperties)
 { // _updateStateVars
 } // _updateStateVars
 
@@ -652,8 +665,8 @@ pylith::friction::FrictionModel::_updateStateVars(const double slip,
 // Get indices for physical property or state variable field.
 void
 pylith::friction::FrictionModel::_findField(int* propertyIndex,
-					int* stateVarIndex,
-					const char* name) const
+					    int* stateVarIndex,
+					    const char* name) const
 { // _findField
   assert(0 != propertyIndex);
   assert(0 != stateVarIndex);

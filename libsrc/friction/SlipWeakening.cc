@@ -277,20 +277,20 @@ pylith::friction::SlipWeakening::_calcFriction(const double slip,
 void
 pylith::friction::SlipWeakening::_updateStateVars(const double slip,
 						  const double slipRate,
+						  const double normalTraction,
 						  double* const stateVars,
 						  const int numStateVars,
 						  const double* properties,
 						  const int numProperties)
 { // _updateStateVars
-
   assert(0 != numStateVars);
   assert(0 != numProperties);
 
-  const double tmpPreviousSlip = stateVars[s_slipPrev];
+  const double slipPrev = stateVars[s_slipPrev];
  
   stateVars[s_slipPrev] = stateVars[s_slipCum];
-  stateVars[s_slipCum] += fabs(slip - tmpPreviousSlip);
-    
+  stateVars[s_slipCum] += fabs(slip - slipPrev);
+ 
 } // _updateStateVars
 
 

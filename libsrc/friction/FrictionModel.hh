@@ -178,6 +178,19 @@ public :
                       const double slipRate,
                       const double normalTraction);
   
+  /** Compute friction at vertex.
+   *
+   * @pre Must call retrievePropsAndVars for cell before calling
+   * calcFriction().
+   *
+   * @param slip Current slip at location.
+   * @param slipRate Current slip rate at location.
+   * @param normalTraction Normal traction at location.
+   */
+  void updateStateVars(const double slip,
+		       const double slipRate,
+		       const double normalTraction);
+  
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
@@ -258,6 +271,9 @@ protected :
 
   /** Update state variables (for next time step).
    *
+   * @param slip Current slip at location.
+   * @param slipRate Current slip rate at location.
+   * @param normalTraction Normal traction at location.
    * @param stateVars State variables at location.
    * @param numStateVars Number of state variables.
    * @param properties Properties at location.
@@ -266,6 +282,7 @@ protected :
   virtual
   void _updateStateVars(const double slip,
 			const double slipRate,
+			const double normalTraction,
 			double* const stateVars,
 			const int numStateVars,
 			const double* properties,
