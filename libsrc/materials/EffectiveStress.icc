@@ -68,6 +68,7 @@ pylith::materials::EffectiveStress::_bracket(double* px1,
   const double xMin = -1.0e-10;
   double x1 = *px1;
   double x2 = *px2;
+  double xLow = 1.0e-10;
 
   double funcValue1 = material->effStressFunc(x1);
   double funcValue2 = material->effStressFunc(x2);
@@ -82,13 +83,15 @@ pylith::materials::EffectiveStress::_bracket(double* px1,
 
     if (fabs(funcValue1) < fabs(funcValue2)) {
       x1 += bracketFactor * (x1 - x2);
-      x1 = std::max(x1, xMin);
+      x1 = std::max(x1, xLow);
       funcValue1 = material->effStressFunc(x1);
     } else {
       x2 += bracketFactor * (x1 - x2);
-      x2 = std::max(x2, xMin);
+      x2 = std::max(x2, xLow);
       funcValue2 = material->effStressFunc(x2);
     } // else
+    if (x1 == xLow || x2 == xLow)
+      xLow *= 0.5;
     ++iteration;
   } // while
 

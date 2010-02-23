@@ -27,6 +27,7 @@
 #include <cassert> // USES assert()
 #include <cstring> // USES memcpy()
 #include <sstream> // USES std::ostringstream
+#include <iostream> // USES std::cout
 #include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
@@ -408,14 +409,12 @@ pylith::materials::PowerLaw3D::_stableTimeStepImplicit(
 			      stress[4],
 			      stress[5] };
   const double devStressProd = _scalarProduct(devStress, devStress);
-  const double effStress = sqrt(0.5 * devStressProd);
-  double dtTest = 1.0;
-  if (effStress != 0.0)
-    dtTest = 0.05 *
-      pow((referenceStress/effStress), (powerLawExp - 1.0)) *
-      (referenceStress/mu)/referenceStrainRate;
+  const double effStress = (devStressProd <= 0.0) ? referenceStress :
+    sqrt(0.5 * devStressProd);
+  const double dtStable = 0.05 *
+    pow((referenceStress/effStress), (powerLawExp - 1.0)) *
+    (referenceStress/mu)/referenceStrainRate;
 
-  const double dtStable = dtTest;
 #if 0 // DEBUGGING
   double maxwellTime = 10.0 * dtStable;
   std::cout << "Maxwell time:  " << maxwellTime << std::endl;
@@ -630,7 +629,7 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
       
       const double effStressInitialGuess = effStressT;
 
-      double effStressTpdt =
+      effStressTpdt =
 	EffectiveStress::calculate<PowerLaw3D>(effStressInitialGuess,
 					       stressScale, this);
     } // if
@@ -1252,7 +1251,7 @@ pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
 
     const double effStressInitialGuess = effStressT;
 
-    double effStressTpdt =
+    effStressTpdt =
       EffectiveStress::calculate<PowerLaw3D>(effStressInitialGuess,
 					     stressScale, this);
 
