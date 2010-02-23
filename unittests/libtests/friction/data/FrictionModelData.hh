@@ -49,6 +49,7 @@ public:
   char** dbPropertyValues; ///< Names of db values for properties.
   char** dbStateVarValues; ///< Names of db values for state variables.
 
+  double dt; ///< Time step
   double* dbProperties; ///< Database values for properties at locations.
   double* dbStateVars; ///< Database values for state variables at locations.
   double* properties; ///< Properties at locations.
