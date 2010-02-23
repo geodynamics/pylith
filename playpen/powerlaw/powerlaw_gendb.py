@@ -148,7 +148,7 @@ class PowerLawApp(Application):
     refStrainRateInfo = {'name': "reference-strain-rate",
                          'units': "1/s",
                          'data': refStrainRate.flatten()}
-    exponentInfo = {'name': "powerlaw-exponent",
+    exponentInfo = {'name': "power-law-exponent",
                     'units': "none",
                     'data': n.flatten()}
 
