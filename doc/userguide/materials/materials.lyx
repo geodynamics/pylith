@@ -4444,7 +4444,7 @@ reference "eq:105"
 
 , we have
 \begin_inset Formula \begin{equation}
-\frac{\partial\phantom{}^{t+\Delta t}S_{i}}{\partial\phantom{}^{t+\Delta t}e_{j}^{\prime}}=\frac{1}{a_{E}}\left(\delta_{ij}-\frac{\partial\Delta e_{i}^{P}}{\partial\phantom{}^{t+\Delta t}e_{j}^{\prime}}\right)\:,\label{eq:121}\end{equation}
+\frac{\partial\phantom{}^{t+\Delta t}S_{i}}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}=\frac{1}{a_{E}}\left(\delta_{ik}-\frac{\partial\Delta e_{i}^{P}}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}\right)\:,\label{eq:121}\end{equation}
 
 \end_inset
 
@@ -4457,7 +4457,7 @@ reference "eq:116"
 
  we have
 \begin_inset Formula \begin{equation}
-\frac{\partial\Delta e_{i}^{P}}{\partial\phantom{}^{t+\Delta t}e_{j}^{\prime}}=\frac{\partial\lambda}{\partial\phantom{}^{t+\Delta t}e_{j}^{\prime}}\frac{1}{\sqrt{2}\,\phantom{}^{t+\Delta t}d}\left(^{t+\Delta t}e_{i}^{\prime}+a_{E}S_{i}^{I}\right)+\frac{\lambda}{\sqrt{2}}\left[\frac{-1}{^{t+\Delta t}d^{2}}\frac{\partial\phantom{}^{t+\Delta t}d}{\partial\phantom{}^{t+\Delta t}e_{j}^{\prime}}\left(^{t+\Delta t}e_{i}^{\prime}+a_{E}S_{i}^{I}\right)+\frac{\delta_{ij}}{^{t+\Delta t}d}\right]\:.\label{eq:122}\end{equation}
+\frac{\partial\Delta e_{i}^{P}}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}=\frac{\partial\lambda}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}\frac{1}{\sqrt{2}\,\phantom{}^{t+\Delta t}d}\left(^{t+\Delta t}e_{i}^{\prime}+a_{E}S_{i}^{I}\right)+\frac{\lambda}{\sqrt{2}}\left[\frac{-1}{^{t+\Delta t}d^{2}}\frac{\partial\phantom{}^{t+\Delta t}d}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}\left(^{t+\Delta t}e_{i}^{\prime}+a_{E}S_{i}^{I}\right)+\frac{\delta_{ik}}{^{t+\Delta t}d}\right]\:.\label{eq:122}\end{equation}
 
 \end_inset
 
@@ -4467,14 +4467,14 @@ The derivative of
 
  is
 \begin_inset Formula \begin{equation}
-\frac{\partial\phantom{}^{t+\Delta t}d}{\partial\phantom{}^{t+\Delta t}e_{j}^{\prime}}=\frac{a_{E}T_{j}^{I}+\phantom{}^{t+\Delta t}E_{j}}{\phantom{}^{t+\Delta t}d}\:,\label{eq:123}\end{equation}
+\frac{\partial\phantom{}^{t+\Delta t}d}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}=\frac{a_{E}T_{k}^{I}+\phantom{}^{t+\Delta t}E_{k}}{\phantom{}^{t+\Delta t}d}\:,\label{eq:123}\end{equation}
 
 \end_inset
 
 where
 \begin_inset Formula \begin{align}
-T_{j}^{I} & =S_{j}^{I}\;\mathrm{and}\;\phantom{}^{t+\Delta t}E_{j}=\phantom{}^{t+\Delta t}e_{j}^{\prime}\:;\; j=1,2,3\nonumber \\
-T_{j}^{I} & =2S_{j}^{I}\;\mathrm{and}\;\phantom{}^{t+\Delta t}E_{j}=2\phantom{}^{t+\Delta t}e_{j}^{\prime}\:;\; j=4,5,6\:.\label{eq:124}\end{align}
+T_{k}^{I} & =S_{k}^{I}\;\mathrm{and}\;\phantom{}^{t+\Delta t}E_{k}=\phantom{}^{t+\Delta t}e_{k}^{\prime}\:;\; k=1,2,3\nonumber \\
+T_{k}^{I} & =2S_{k}^{I}\;\mathrm{and}\;\phantom{}^{t+\Delta t}E_{k}=2\phantom{}^{t+\Delta t}e_{k}^{\prime}\:;\; k=4,5,6\:.\label{eq:124}\end{align}
 
 \end_inset
 
@@ -4484,7 +4484,7 @@ We then need to compute the derivative of
 
 :
 \begin_inset Formula \begin{equation}
-\frac{\partial\lambda}{\partial\phantom{}^{t+\Delta t}e_{j}^{\prime}}=\frac{2a_{E}a_{m}}{6\alpha_{f}\alpha_{g}a_{E}+a_{m}}\left(\frac{3\alpha_{f}}{a_{m}}\frac{\partial\phantom{}^{t+\Delta t}\theta^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{k}}\frac{\partial\phantom{}^{t+\Delta t}\epsilon_{k}}{\partial\phantom{}^{t+\Delta t}e_{l}}\frac{\partial\phantom{}^{t+\Delta t}e_{l}}{\partial\phantom{}^{t+\Delta t}e_{j}^{\prime}}+\frac{1}{\sqrt{2}a_{E}}\frac{\partial\phantom{}^{t+\Delta t}d}{\partial\phantom{}^{t+\Delta t}e_{j}^{\prime}}\right)\:.\label{eq:125}\end{equation}
+\frac{\partial\lambda}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}=\frac{2a_{E}a_{m}}{6\alpha_{f}\alpha_{g}a_{E}+a_{m}}\left(\frac{3\alpha_{f}}{a_{m}}\frac{\partial\phantom{}^{t+\Delta t}\theta^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{l}}\frac{\partial\phantom{}^{t+\Delta t}\epsilon_{l}}{\partial\phantom{}^{t+\Delta t}e_{m}}\frac{\partial\phantom{}^{t+\Delta t}e_{m}}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}+\frac{1}{\sqrt{2}a_{E}}\frac{\partial\phantom{}^{t+\Delta t}d}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}\right)\:.\label{eq:125}\end{equation}
 
 \end_inset
 
@@ -4497,7 +4497,7 @@ reference "eq:125"
 
  is simply
 \begin_inset Formula \begin{equation}
-\frac{\partial\phantom{}^{t+\Delta t}\theta^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{k}}=\frac{R_{k}}{3}\:.\label{eq:126}\end{equation}
+\frac{\partial\phantom{}^{t+\Delta t}\theta^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{l}}=\frac{R_{l}}{3}\:.\label{eq:126}\end{equation}
 
 \end_inset
 
@@ -4525,11 +4525,11 @@ reference "eq:120"
 
 :
 \begin_inset Formula \begin{align}
-\frac{\partial\phantom{}^{t+\Delta t}\epsilon_{k}}{\partial\phantom{}^{t+\Delta t}e_{l}} & =3\left[\begin{array}{ccc}
+\frac{\partial\phantom{}^{t+\Delta t}\epsilon_{l}}{\partial\phantom{}^{t+\Delta t}e_{m}} & =3\left[\begin{array}{ccc}
 \frac{1}{2} & -1 & -1\\
 -1 & \frac{1}{2} & -1\\
--1 & -1 & \frac{1}{2}\end{array}\right]\:;\; k,l=1,2,3\nonumber \\
-\frac{\partial\phantom{}^{t+\Delta t}\epsilon_{k}}{\partial\phantom{}^{t+\Delta t}e_{l}} & =\delta_{kl}\:;\;\mathrm{otherwise.}\label{eq:127}\end{align}
+-1 & -1 & \frac{1}{2}\end{array}\right]\:;\; l,m=1,2,3\nonumber \\
+\frac{\partial\phantom{}^{t+\Delta t}\epsilon_{l}}{\partial\phantom{}^{t+\Delta t}e_{m}} & =\delta_{lm}\:;\;\mathrm{otherwise.}\label{eq:127}\end{align}
 
 \end_inset
 
