@@ -570,7 +570,24 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
 void
 pylith::faults::TestFaultCohesiveDyn::testUpdateStateVars(void)
 { // testUpdateStateVars
+  assert(0 != _data);
+
+  topology::Mesh mesh;
+  FaultCohesiveDyn fault;
+  topology::SolutionFields fields(mesh);
+  _initialize(&mesh, &fault, &fields);
+  topology::Jacobian jacobian(fields, "seqdense");
+  _setFieldsJacobian(&mesh, &fault, &fields, &jacobian, _data->fieldIncrSlip);
+
+  const int spaceDim = _data->spaceDim;
+
+  const double t = 2.134;
+  const double dt = 0.01;
+  fault.timeStep(dt);
+  fault.updateStateVars(t, &fields);
+
   // :TODO: Need to verify that fault constitutive updateStateVars is called.
+  // We don't have a way to verify state variables inside friction object.
 } // testUpdateStateVars
 
 // ----------------------------------------------------------------------

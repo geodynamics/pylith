@@ -326,6 +326,7 @@ class TestFaultCohesiveDyn(unittest.TestCase):
     fields.add("residual", "residual")
     fields.add("dispIncr(t->t+dt)", "displacement_increment")
     fields.add("disp(t)", "displacement")
+    fields.add("velocity(t)", "velocity")
     fields.solutionName("dispIncr(t->t+dt)")
     residual = fields.get("residual")
     residual.newSection(residual.VERTICES_FIELD, cs.spaceDim())

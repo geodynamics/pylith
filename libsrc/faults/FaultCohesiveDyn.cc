@@ -145,7 +145,119 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
   assert(0 != fields);
   assert(0 != _fields);
 
-  // :TODO: Update friction state variables
+  _updateSlipRate(*fields);
+
+  const int spaceDim = _quadrature->spaceDim();
+
+  // Allocate arrays for vertex values
+  double_array tractionTVertex(spaceDim);
+  double_array tractionTpdtVertex(spaceDim);
+  double_array slipTpdtVertex(spaceDim);
+  double_array lagrangeTpdtVertex(spaceDim);
+
+  // Get sections
+  double_array slipVertex(spaceDim);
+  const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
+  assert(!slipSection.isNull());
+
+  double_array slipRateVertex(spaceDim);
+  const ALE::Obj<RealSection>& slipRateSection =
+      _fields->get("slip rate").section();
+  assert(!slipRateSection.isNull());
+
+  const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
+  assert(!areaSection.isNull());
+
+  double_array tractionInitialVertex(spaceDim);
+  const ALE::Obj<RealSection>& tractionInitialSection =
+      (0 != _dbInitialTract) ? _fields->get("initial traction").section() : 0;
+
+  double_array lagrangeTVertex(spaceDim);
+  const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
+  assert(!dispTSection.isNull());
+
+  double_array lagrangeTIncrVertex(spaceDim);
+  const ALE::Obj<RealSection>& dispTIncrSection =
+      fields->get("dispIncr(t->t+dt)").section();
+  assert(!dispTIncrSection.isNull());
+
+  const int numVertices = _cohesiveVertices.size();
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
+    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int v_fault = _cohesiveVertices[iVertex].fault;
+    const int v_negative = _cohesiveVertices[iVertex].negative;
+    const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    // Get slip
+    slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
+
+    // Get slip rate
+    slipRateSection->restrictPoint(v_fault, &slipRateVertex[0],
+      slipRateVertex.size());
+
+    // Get total fault area asssociated with vertex (assembled over all cells)
+    const double* areaVertex = areaSection->restrictPoint(v_fault);
+    assert(0 != areaVertex);
+    assert(1 == areaSection->getFiberDimension(v_fault));
+
+    // Get initial fault tractions
+    if (0 != _dbInitialTract) {
+      assert(!tractionInitialSection.isNull());
+      tractionInitialSection->restrictPoint(v_fault,
+        &tractionInitialVertex[0], tractionInitialVertex.size());
+    } // if
+
+    // Get Lagrange multiplier values from disp(t), and dispIncr(t->t+dt)
+    dispTSection->restrictPoint(v_lagrange, &lagrangeTVertex[0],
+      lagrangeTVertex.size());
+    dispTIncrSection->restrictPoint(v_lagrange, &lagrangeTIncrVertex[0],
+      lagrangeTIncrVertex.size());
+
+    // Compute Lagrange multiplier at time t+dt
+    lagrangeTpdtVertex = lagrangeTVertex + lagrangeTIncrVertex;
+
+    // :KLUDGE: Solution at Lagrange constraint vertices is the
+    // Lagrange multiplier value, which is currently the force.
+    // Compute traction by dividing force by area
+    assert(*areaVertex > 0);
+    tractionTVertex = lagrangeTVertex / (*areaVertex);
+      tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);
+
+    // Get friction properties and state variables.
+    _friction->retrievePropsAndVars(v_fault);
+
+    // Use fault constitutive model to compute traction associated with
+    // friction.
+    switch (spaceDim) { // switch
+    case 1: { // case 1
+      const double slipMag = 0.0;
+      const double slipRateMag = 0.0;
+      const double tractionNormal = tractionTpdtVertex[0];
+      _friction->updateStateVars(slipMag, slipRateMag, tractionNormal);
+      break;
+    } // case 1
+    case 2: { // case 2
+      const double slipMag = slipVertex[0];
+      const double slipRateMag = slipRateVertex[0];
+      const double tractionNormal = tractionTpdtVertex[1];
+      _friction->updateStateVars(slipMag, slipRateMag, tractionNormal);
+      break;
+    } // case 2
+    case 3: { // case 3
+      const double slipMag = 
+	sqrt(slipVertex[0]*slipVertex[0] + slipVertex[1]*slipVertex[1]);
+      const double slipRateMag = 
+	sqrt(slipRateVertex[0]*slipRateVertex[0] + 
+	     slipRateVertex[1]*slipRateVertex[1]);
+      const double tractionNormal = tractionTpdtVertex[2];
+      _friction->updateStateVars(slipMag, slipRateMag, tractionNormal);
+      break;
+    } // case 3
+    default:
+      assert(0);
+      throw std::logic_error("Unknown spatial dimension in updateStateVars().");
+    } // switch
+  } // for
 } // updateStateVars
 
 // ----------------------------------------------------------------------
@@ -483,6 +595,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     } // case 3
     default:
       assert(0);
+      throw std::logic_error("Unknown spatial dimension in updateStateVars().");
     } // switch
 
     // Update Lagrange multiplier values.
