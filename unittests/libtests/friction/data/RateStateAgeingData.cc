@@ -34,6 +34,8 @@ const double pylith::friction::RateStateAgeingData::_pressureScale =   2.2500000
 
 const double pylith::friction::RateStateAgeingData::_densityScale =   1.00000000e+03;
 
+const double pylith::friction::RateStateAgeingData::_dt = 0.01;
+
 const int pylith::friction::RateStateAgeingData::_numPropertyValues[] = {
   1,
   1,
@@ -156,6 +158,7 @@ pylith::friction::RateStateAgeingData::RateStateAgeingData(void)
   dbStateVarValues = const_cast<char**>(_dbStateVarValues);
   dbProperties = const_cast<double*>(_dbProperties);
   dbStateVars = const_cast<double*>(_dbStateVars);
+  dt = _dt;
   properties = const_cast<double*>(_properties);
   stateVars = const_cast<double*>(_stateVars);
   propertiesNondim = const_cast<double*>(_propertiesNondim);

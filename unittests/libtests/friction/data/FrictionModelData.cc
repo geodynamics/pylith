@@ -26,6 +26,7 @@ pylith::friction::FrictionModelData::FrictionModelData(void) :
   numStateVarValues(0),
   dbPropertyValues(0),
   dbStateVarValues(0),
+  dt(0.0),
   dbProperties(0),
   dbStateVars(0),
   properties(0),

@@ -282,6 +282,7 @@ pylith::friction::TestFrictionModel::testCalcFriction(void)
   StaticFrictionData data;
   _initialize(&mesh, &fault, &friction, &data);
 
+  friction.timeStep(data.dt);
   friction.retrievePropsAndVars(vertex);
   const double frictionV = friction.calcFriction(slip, slipRate, normalTraction);
 
@@ -309,6 +310,7 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     const double normalTraction = -2.4;
     const int vertex = 2;
     
+    friction.timeStep(data.dt);
     friction.retrievePropsAndVars(vertex);
     friction.updateStateVars(slip, slipRate, normalTraction);
     
@@ -321,7 +323,8 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     const double slip = 0.25;
     const double slipRate = 0.64;
     const double normalTraction = -2.3;
-    
+    const double dt = 0.01;
+
     const size_t numProperties = 3;
     const double properties[3] = { 0.6, 0.5, 0.004 };
     const size_t numStateVars = 2;
@@ -337,6 +340,7 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     for (size_t i=0; i < numStateVars; ++i)
       friction._stateVarsVertex[i] = stateVars[i];
 
+    friction.timeStep(dt);
     friction.updateStateVars(slip, slipRate, normalTraction);
     
     CPPUNIT_ASSERT_EQUAL(numStateVars, friction._stateVarsVertex.size());
@@ -604,6 +608,7 @@ pylith::friction::TestFrictionModel::test_calcFriction(void)
     const double slipRate = _data->slipRate[iLoc];
     const double normalTraction = _data->normalTraction[iLoc];
 
+    _friction->timeStep(_data->dt);
     const double friction = _friction->_calcFriction(
 					slip, slipRate, normalTraction,
 					&properties[0], properties.size(),
@@ -646,6 +651,7 @@ pylith::friction::TestFrictionModel::test_updateStateVars(void)
     for (int i=0; i < numVarsVertex; ++i)
       stateVars[i] = _data->stateVars[iLoc*numVarsVertex+i];
 
+    _friction->timeStep(_data->dt);
     _friction->_updateStateVars(slip, slipRate, normalTraction,
 				&stateVars[0], stateVars.size(),
 				&properties[0], properties.size());
@@ -690,7 +696,7 @@ pylith::friction::TestFrictionModel::setupNormalizer(void)
 void
 pylith::friction::TestFrictionModel::_initialize(
 					  topology::Mesh* mesh,
-            faults::FaultCohesiveDyn* fault,
+					  faults::FaultCohesiveDyn* fault,
 					  StaticFriction* friction,
 					  const StaticFrictionData* data)
 { // _initialize

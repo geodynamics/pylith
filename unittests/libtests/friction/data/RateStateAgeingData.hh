@@ -56,6 +56,8 @@ private:
 
   static const double _densityScale;
 
+  static const double _dt;
+
   static const int _numPropertyValues[];
 
   static const int _numStateVarValues[];
