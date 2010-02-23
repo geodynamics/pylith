@@ -14,6 +14,7 @@ CURRENT ISSUES/PRIORITIES
 * Lumped solver
 
 * Optimization
+  inline methods (what isn't getting inlined) -Winline
   restrict/update closure
   templates, Uniform section, set spaceDim, numBasis, numQuadPts at compile time?
 
