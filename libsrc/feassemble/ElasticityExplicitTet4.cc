@@ -33,7 +33,7 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-#define DETAILED_EVENT_LOGGING
+//#define DETAILED_EVENT_LOGGING
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
@@ -448,6 +448,9 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
   const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
+  assert(!sieve.isNull());
+
   // Get sections
   const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
@@ -498,6 +501,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
 #endif
 
     // Restrict input fields to cell
+#if 1
     coordsVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
 
@@ -506,6 +510,16 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
 
     dispTmdtVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispTmdtVisitor);
+#else
+    coordsVisitor.clear();
+    sieve->orientedConeOpt(*c_iter, coordsVisitor, numBasis, spaceDim);
+
+    dispTVisitor.clear();
+    sieve->orientedConeOpt(*c_iter, dispTVisitor, numBasis, spaceDim);
+
+    dispTmdtVisitor.clear();
+    sieve->orientedConeOpt(*c_iter, dispTmdtVisitor, numBasis, spaceDim);
+#endif
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
