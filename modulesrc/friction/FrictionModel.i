@@ -158,6 +158,19 @@ namespace pylith {
 			  const double normalTraction);
   
 
+      /** Compute friction at vertex.
+       *
+       * @pre Must call retrievePropsAndVars for cell before calling
+       * calcFriction().
+       *
+       * @param slip Current slip at location.
+       * @param slipRate Current slip rate at location.
+       * @param normalTraction Normal traction at location.
+       */
+      void updateStateVars(const double slip,
+			   const double slipRate,
+			   const double normalTraction);
+  
       // PROTECTED METHODS //////////////////////////////////////////////
     protected :
       
