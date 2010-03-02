@@ -4419,7 +4419,7 @@ R_{i}=0\:;\; i=4,5,6\:.\nonumber \end{gather}
 
 \end_inset
 
-First considering the dilatational portion, we have
+First considering the deviatoric portion, we have
 \begin_inset Formula \begin{equation}
 \frac{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}{\partial\phantom{}^{t+\Delta t}e_{l}}=\delta_{kl}\:,\label{eq:119}\end{equation}
 
