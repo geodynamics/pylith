@@ -66,7 +66,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="faultcohesivedynl"):
+  def __init__(self, name="faultcohesivedyn"):
     """
     Initialize configuration.
     """
