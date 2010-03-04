@@ -202,20 +202,25 @@ run "python --version".
 
 9. Install FIAT (http://www.fenics.org/wiki/FIAT)
 
-  a. Install FIAT.
+  a. Install FIAT. Versions 0.3.x are known to work.
 
-    python setup.py install --prefix=$TOOLS_DIR/fiat-0.3.1/${TOOLS_FORMAT}
+    python setup.py install --prefix=$TOOLS_DIR/fiat-0.3.5/${TOOLS_FORMAT}
 
   b. Set environment variables.
 
-    FIAT_DIR=${TOOLS_DIR}/fiat-0.3.3/${TOOLS_FORMAT}
+    FIAT_DIR=${TOOLS_DIR}/fiat-0.3.5/${TOOLS_FORMAT}
     export PYTHONPATH=${PYTHONPATH}:${FIAT_DIR}/lib/python${PYTHON_VERSION}/site-packages
 
 10. Install the development version of PETSc
   (http://www-unix.mcs.anl.gov/petsc/petsc-as/)
 
+  These instructions cover installing the development version of
+  PETSc. Use mercurial to download the repository rather than
+  downloading a tarball.
+
   a. Clone the source repository.
 
+    cd $TOOLS_DIR/petsc
     hg clone http://petsc.cs.iit.edu/petsc/petsc-dev
     cd petsc-dev/config
     hg clone http://petsc.cs.iit.edu/petsc/BuildSystem BuildSystem
@@ -229,7 +234,7 @@ run "python --version".
 
     ARCH_FLAGS="--PETSC_ARCH=linux_${TOOLS_FORMAT}_opt --with-debugging=no"
     LANG_FLAGS="--with-clanguage=c++"
-    BUILD_FLAGS="--with-mpi-compilers=0 --with-gnu-compilers=1 --with-shared=1 --with-dynamic=1 --with-64-bit-points=1 --with-large-file-io=1 --CC=gcc --CXX=g++ --FC=g77 --F77=g77"
+    BUILD_FLAGS="--with-mpi-compilers=0 --with-gnu-compilers=1 --with-shared=1 --with-dynamic=1 --with-64-bit-points=1 --with-large-file-io=1 --CC=gcc --CXX=g++"
     MPI_FLAGS="--with-mpi-dir=${TOOLS_DIR}/mpich2-1.0.4p1/gcc-3.4_64 --with-mpi-shared=0"
     LIBS="-L${PVFS2_LIBDIR} -lpvfs2 -lssl -lpthread -lrt"
     OPTIONS="--with-lgrind=0 --download-tetgen"
@@ -254,6 +259,8 @@ run "python --version".
     PATH=${PATH}:${SWIG_DIR}/bin
 
 12. Install pythia.
+
+  I place all CIG source code in src/cig.
 
   a. Download the source code from the SVN repository.
 
@@ -333,7 +340,7 @@ run "python --version".
 
   c. Run configure, build, install, and the unit tests.
 
-    ./configure  --enable-pythia --enable-testing  --prefix=${CIG_DIR} CPPFLAGS="-I${PROJ4_INCDIR} -I${CPPUNIT_INCDIR} -I${CIG_INCDIR}"  LDFLAGS="-L${PROJ4_LIBDIR} -L${CPPUNIT_LIBDIR} -L${CIG_LIBDIR} "  LIBS=""  CC=gcc CXX=g++ FC=g77 F77=f77
+    ./configure  --enable-pythia --enable-swig --enable-testing  --prefix=${CIG_DIR} CPPFLAGS="-I${PROJ4_INCDIR} -I${CPPUNIT_INCDIR} -I${CIG_INCDIR}"  LDFLAGS="-L${PROJ4_LIBDIR} -L${CPPUNIT_LIBDIR} -L${CIG_LIBDIR} "  LIBS=""  CC=gcc CXX=g++ FC=g77 F77=f77
     make
     make install
     make check
@@ -350,7 +357,7 @@ run "python --version".
 
   c. Run configure, build, install, and the unit tests.
 
-    ./configure  --enable-testing --enable-tetgen --enable-cubit --prefix=${CIG_DIR}  CPPFLAGS="-I${PROJ4_INCDIR} -I${CPPUNIT_INCDIR} -I${CIG_INCDIR} -I${PYTHIA_INCDIR} -I${NETCDF_INCDIR}"  LDFLAGS="-L${PROJ4_LIBDIR} -L${CPPUNIT_LIBDIR} -L${CIG_LIBDIR} -L${NETCDF_LIBDIR}"  LIBS=""  CC=gcc CXX=g++ FC=g77 F77=f77
+    ./configure  --enable-testing --enable-swig --enable-tetgen --enable-cubit --prefix=${CIG_DIR}  CPPFLAGS="-I${PROJ4_INCDIR} -I${CPPUNIT_INCDIR} -I${CIG_INCDIR} -I${PYTHIA_INCDIR} -I${NETCDF_INCDIR}"  LDFLAGS="-L${PROJ4_LIBDIR} -L${CPPUNIT_LIBDIR} -L${CIG_LIBDIR} -L${NETCDF_LIBDIR}"  LIBS=""  CC=gcc CXX=g++ FC=g77 F77=f77
     make
     make install
     make check

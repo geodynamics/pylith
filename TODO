@@ -38,6 +38,12 @@ CURRENT ISSUES/PRIORITIES
 FRICTION
 ----------------------------------------------------------------------
 
+FaultCohesiveDyn
+  adjustSoln()
+  reformResidual()
+    Impose initial fault tractions in reformResidual().
+    temporary kludge is to call constrainSolnSpace() in solve.
+
 6. Other fault constitutive models [Surendra]
   Rate- and state-friction with aging law
   Rate- and state-friction with slip law (only if desired)

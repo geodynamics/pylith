@@ -183,11 +183,11 @@ run "python --version".
     LANG_FLAGS="--with-clanguage=c++"
     BUILD_FLAGS="--with-mpi-compilers=0 --with-gnu-compilers=1 --with-shared=1 --with-dynamic=1 --with-64-bit-points=1 --with-large-file-io=1 --CC=gcc --CXX=g++ --FC=g77 --F77=g77"
     MPI_FLAGS="--with-mpi-dir=${TOOLS_DIR}/mpich2-1.0.4p1/gcc-3.4_64 --with-mpi-shared=0"
-    LIBS="-L${PVFS2_LIBDIR} -lpvfs2 -lssl -lpthread -lrt"
+    LIBS=""
     OPTIONS="--with-lgrind=0 --download-tetgen"
     PART_FLAGS="--with-chaco=1 --download-chaco=1 --with-parmetis=1 --with-parmetis-dir=${TOOLS_DIR}/parmetis-3.1/gcc-3.4_64"
     SIEVE_FLAGS="--with-sieve=1 --with-boost=1 --download-boost=1"
-    config/configure.py ${ARCH_FLAGS} ${LANG_FLAGS} ${BUILD_FLAGS} --with-blas-lapack-lib="-L${ACML_LIBDIR} -lacml -lacml_mv" ${MPI_FLAGS} --LIBS="-L${PVFS2_LIBDIR} -lpvfs2 -lssl" ${OPTIONS} ${PART_FLAGS} ${SIEVE_FLAGS}
+    config/configure.py ${ARCH_FLAGS} ${LANG_FLAGS} ${BUILD_FLAGS} --with-blas-lapack-lib="-L${ACML_LIBDIR} -lacml -lacml_mv" ${MPI_FLAGS} --LIBS="" ${OPTIONS} ${PART_FLAGS} ${SIEVE_FLAGS}
     make
     make test
 
