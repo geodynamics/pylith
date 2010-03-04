@@ -46,7 +46,6 @@ FaultCohesiveDyn
 
 6. Other fault constitutive models [Surendra]
   Rate- and state-friction with aging law
-  Rate- and state-friction with slip law (only if desired)
 
 
 ----------------------------------------------------------------------
@@ -344,31 +343,67 @@ Release 1.5
 
   1. Fault constitutive models
 
+     Static friction
      Linear slip-weakening
-     Rate- and state-friction
-     Uniform friction
-     Slip- and rate-weakening friction model
+     Rate- and state-friction w/ageing law
 
        Spontaneous (dynamic) fault rupture output
-         Slip and change in tractions (time histories)
-         Fault constitutive values (time histories)
-         Orientation , Fault constitutive parameters (diagnostic)
+         Slip and tractions (time histories)
+         State variables (time histories)
+         Orientation (diagnostic)
+         Properties (diagnostic)
 
   2. Large deformations
 
   3. Finite strain
 
-  5. Uniform global refinement
-
-  6. Improved support for spherical geometry in user-interface
-
 ----------------------------------------------------------------------
 Release 1.6
 ----------------------------------------------------------------------
 
-  1. Green's functions
+  1. HDF5 output
 
-  2. Higher order cells
+     Write data into raw binary data file, compress each time chunk
+
+       Datasets contain entire time histories (makes it possible to
+       slice along time or space)
+
+     HDF5 metadata file points to raw binary data file
+
+  2. Output data at arbitrary point locations
+
+     Interpolate solution to desired location
+     Solution field (time history)
+
+  3. Output velocity field
+
+  4. Uniform global refinement
+
+  5. Drucker-Prager viscoelastoplastic
+
+----------------------------------------------------------------------
+Release 1.7
+----------------------------------------------------------------------
+
+  1. Restart / checkpointing
+    Checkpointing
+    Spin up
+    Saving quasi-static information is probably more important
+
+  2. Green's functions
+
+  3. Coupling of quasi-static and dynamic simulations
+
+  4. Damping for Q
+    Mass/stiffness proportional damping for attenuation
+
+  4. Improved support for spherical geometry in user-interface
+
+----------------------------------------------------------------------
+Release 2.0
+----------------------------------------------------------------------
+
+  1. Higher order cells
 
      Nonisoparametric cells
 
@@ -376,15 +411,7 @@ Release 1.6
        Update quadrature to use CellGeometry refPtsToGlobal() and
        jacobian() Remove CellGeometry jacobian(double_array)
 
-----------------------------------------------------------------------
-Release 1.7
-----------------------------------------------------------------------
-
-  1. Coupling of quasi-static and dynamic simulations
-
-  2. Restart / checkpointing
-
-  3. Uniform global refinement.
+  2. XFEM fault implementation
 
 ----------------------------------------------------------------------
 LONG TERM WISH LIST
@@ -392,20 +419,6 @@ LONG TERM WISH LIST
 
 Student
       Create a spatial database for the PREM model
-
-  4. HDF5 output
-
-       HDF5 files
-
-         Would prefer to include multiple materials
-
-         Datasets contain entire time histories (makes it possible to
-         slice along time or space)
-
-       Point locations (arbitrary location such as instrument site)
-
-         Interpolate solution to desired location
-         Solution field (time history)
 
   5. Use shared pointers for objects where both Python and C++ hold pointers.
 
