@@ -32,11 +32,11 @@
      objecttolerance="10000"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.9903746"
-     inkscape:cx="177.12025"
-     inkscape:cy="195.21781"
+     inkscape:zoom="2.8148148"
+     inkscape:cx="443.5446"
+     inkscape:cy="343.29591"
      inkscape:document-units="px"
-     inkscape:current-layer="g3109"
+     inkscape:current-layer="layer3"
      showgrid="true"
      units="in"
      inkscape:object-paths="true"
@@ -48,7 +48,7 @@
      inkscape:window-height="856"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="1">
+     inkscape:window-maximized="0">
     <inkscape:grid
        enabled="true"
        visible="true"
@@ -303,7 +303,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -341,20 +341,24 @@
          sodipodi:role="line"
          id="tspan2620"
          x="294.1416"
-         y="299.82227">Fall 2009</tspan></text>
+         y="299.82227">Jun 2010</tspan></text>
     <text
-       sodipodi:linespacing="125%"
+       sodipodi:linespacing="100%"
        id="text5188"
-       y="500.3291"
-       x="374.50586"
-       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:end;line-height:125%;writing-mode:lr-tb;text-anchor:end;fill:#ce91ff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       y="487.8291"
+       x="459.26367"
+       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ce91ff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial Bold"
        xml:space="preserve"><tspan
-         y="500.3291"
-         x="374.50586"
+         y="487.8291"
+         x="459.26367"
          id="tspan5190"
          sodipodi:role="line">Release 1.6</tspan><tspan
-         y="517.8291"
-         x="374.50586"
+         y="501.8291"
+         x="459.26367"
+         sodipodi:role="line"
+         id="tspan4302">Fall 2010</tspan><tspan
+         y="515.8291"
+         x="459.26367"
          sodipodi:role="line"
          id="tspan5222" /></text>
     <rect
@@ -368,31 +372,65 @@
        style="fill:none;stroke:#ce91ff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6, 6;stroke-dashoffset:0"
        id="rect5269"
        width="276"
-       height="218"
+       height="264"
        x="4"
        y="250" />
     <rect
        style="fill:none;stroke:#ce91ff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:8, 8;stroke-dashoffset:0"
        id="rect4359"
-       width="286"
-       height="134"
-       x="4"
-       y="476" />
+       width="120"
+       height="40"
+       x="322"
+       y="470" />
     <text
        xml:space="preserve"
        style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:end;line-height:125%;writing-mode:lr-tb;text-anchor:end;fill:#ce91ff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial Bold"
        x="375.26367"
-       y="640.0625"
+       y="654.0625"
        id="text4390"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4392"
          x="375.26367"
-         y="640.0625">Release 2.0</tspan><tspan
+         y="654.0625">Release 2.0</tspan><tspan
          id="tspan4394"
          sodipodi:role="line"
          x="375.26367"
-         y="657.5625" /></text>
+         y="671.5625" /></text>
+    <rect
+       y="526"
+       x="4"
+       height="98"
+       width="286"
+       id="rect3038"
+       style="fill:none;stroke:#ce91ff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:8, 8;stroke-dashoffset:0" />
+    <text
+       xml:space="preserve"
+       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ce91ff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       x="309.26367"
+       y="550.0625"
+       id="text4296"
+       sodipodi:linespacing="100%"><tspan
+         sodipodi:role="line"
+         id="tspan4298"
+         x="309.26367"
+         y="550.0625">Release 1.7</tspan><tspan
+         sodipodi:role="line"
+         x="309.26367"
+         y="564.0625"
+         id="tspan4308">Jun 2011</tspan><tspan
+         sodipodi:role="line"
+         x="309.26367"
+         y="578.0625"
+         id="tspan4306" /><tspan
+         sodipodi:role="line"
+         x="309.26367"
+         y="592.0625"
+         id="tspan4304" /><tspan
+         id="tspan4300"
+         sodipodi:role="line"
+         x="309.26367"
+         y="606.0625" /></text>
   </g>
   <g
      style="display:inline"
@@ -412,13 +450,13 @@
        id="text3413"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
-         id="tspan3415"
          x="170"
-         y="270">Quasi-static</tspan><tspan
+         y="270"
+         id="tspan3417">Quasi-static</tspan><tspan
          sodipodi:role="line"
          x="170"
          y="285"
-         id="tspan3417">modeling</tspan></text>
+         id="tspan4312">(no inertia)</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#1e6e96;fill-opacity:1;stroke:none;display:inline;font-family:Sans;-inkscape-font-specification:Sans Bold"
@@ -433,25 +471,27 @@
          sodipodi:role="line"
          x="188.91016"
          y="424.11719"
-         id="tspan3423">modeling</tspan></text>
+         id="tspan3423">(w/inertia)</tspan></text>
     <path
        style="fill:none;stroke:#3b7d08;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
-       d="m 150,260 10,0 0,110 -10,0"
-       id="path3447" />
+       d="m 150,260 10,0 0,150 -10,0"
+       id="path3447"
+       sodipodi:nodetypes="cccc" />
     <path
        style="fill:none;stroke:#1e6e96;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
-       d="m 170,300 10,0 0,160 -10,0"
-       id="path3449" />
+       d="m 170,300 10,0 0,200 -10,0"
+       id="path3449"
+       sodipodi:nodetypes="cccc" />
     <image
-       y="530.46448"
+       y="548.46448"
        x="96.532234"
        id="image4328"
        height="10"
        width="54"
        xlink:href="file:///Users/brad/pubs/presentations/CIG/cfem2009/tutorial/figs/inkscape_pasted_image_20100301_122546.png" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;marker-end:"
-       d="m 150,580 -30,0 0,-44"
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow2Mstart)"
+       d="m 148,598 -28,0 0,-44"
        id="path4519"
        sodipodi:nodetypes="ccc" />
   </g>
@@ -646,7 +686,7 @@
              id="flowPara2614">interface w/PETSc nonlinear solvers</flowPara></flowRoot>      </g>
     </g>
     <g
-       transform="translate(1.0029726,344.00594)"
+       transform="translate(1.0029726,390.00594)"
        id="g2498">
       <g
          id="g2656">
@@ -707,9 +747,9 @@
              id="use2628"
              width="585"
              height="810" /></flowRegion><flowPara
-           id="flowPara2630">nonlinear bulk rheologies</flowPara></flowRoot>    </g>
+           id="flowPara2630">power-law viscoelastic</flowPara></flowRoot>    </g>
     <g
-       transform="translate(2.0000086,297.92894)"
+       transform="translate(2.0000086,315.92894)"
        id="g2696">
       <rect
          style="fill:#33bbff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
@@ -802,7 +842,7 @@
              height="810" /></flowRegion><flowPara
            id="flowPara2846">large deformation, small strain</flowPara></flowRoot>    </g>
     <g
-       transform="translate(-180.12402,367.96447)"
+       transform="translate(-180.12402,385.96447)"
        id="g2888">
       <rect
          style="fill:#ffbc69;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
@@ -878,7 +918,7 @@
              id="flowPara3108">Time-dependent BCs</flowPara></flowRoot>      </g>
     </g>
     <g
-       transform="translate(-118,221.56726)"
+       transform="translate(200,215.56726)"
        id="g2615">
       <rect
          style="fill:#33bbff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
@@ -991,7 +1031,7 @@
            id="flowPara2684">nondimensionalization</flowPara></flowRoot>    </g>
     <g
        id="g3689"
-       transform="translate(1.9999991,35.999999)">
+       transform="translate(1.9999991,81.999999)">
       <g
          id="g3069">
         <rect
@@ -1074,7 +1114,7 @@
          id="flowPara3443">initial state</flowPara><flowPara
          id="flowPara3445">variables</flowPara></flowRoot>    <g
        id="g4486"
-       transform="translate(26,0)">
+       transform="translate(26,14)">
       <rect
          y="623.62793"
          x="122.05518"
@@ -1117,7 +1157,7 @@
            id="flowPara4484">XFEM fault implementation</flowPara></flowRoot>    </g>
     <g
        id="g4506"
-       transform="translate(12,0)">
+       transform="translate(12,14)">
       <rect
          style="fill:#33bbff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
          id="rect3373"
@@ -1160,7 +1200,8 @@
            id="flowPara4502">mesh free /</flowPara><flowPara
            id="flowPara4504">radial basis fns</flowPara></flowRoot>    </g>
     <g
-       id="g3109">
+       id="g3109"
+       transform="translate(0,16)">
       <g
          id="g3117">
         <rect
@@ -1185,8 +1226,42 @@
                x="0"
                y="0"
                xlink:href="#rect3371"
-               id="use3105" /></flowRegion><flowPara
+               id="use3105"
+               width="585"
+               height="810" /></flowRegion><flowPara
              id="flowPara3107">Green's functions</flowPara></flowRoot>      </g>
     </g>
+    <g
+       id="g4314"
+       transform="translate(-158,246)">
+      <rect
+         ry="1"
+         y="130"
+         x="170"
+         height="36"
+         width="110"
+         id="rect4316"
+         style="fill:#ffbc69;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <rect
+         y="143"
+         x="285"
+         height="10"
+         width="10"
+         id="rect4318"
+         style="fill:#1e6e96;fill-opacity:1;fill-rule:evenodd;stroke:#1e6e96;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <flowRoot
+         transform="translate(0.06445312,2.6333008)"
+         id="flowRoot4320"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+         xml:space="preserve"><flowRegion
+           id="flowRegion4322"><use
+             height="810"
+             width="585"
+             id="use4324"
+             xlink:href="#rect3361"
+             y="0"
+             x="0" /></flowRegion><flowPara
+           id="flowPara4326">Drucker-Prager</flowPara><flowPara
+           id="flowPara4328">elastoplastic deformation, small strain</flowPara></flowRoot>    </g>
   </g>
 </svg>
