@@ -109,6 +109,12 @@ pylith::problems::SolverNonlinear::solve(
 
   PetscErrorCode err = 0;
   const PetscVec solutionVec = solution->vector();
+
+  // BEGIN TEMPORARY KLUDGE
+  assert(0 != _formulation);
+  _formulation->constrainSolnSpace(&solutionVec);
+  // END TEMPORARY KLUDGE
+
   err = SNESSolve(_snes, PETSC_NULL, solutionVec); CHECK_PETSC_ERROR(err);
   
   _logger->eventEnd(solveEvent);
