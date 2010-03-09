@@ -106,7 +106,7 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
   FaultCohesiveLagrange::initialize(mesh, upDir, normalDir);
 
   // Get initial tractions using a spatial database.
-  _getInitialTractions();
+  _setupInitialTractions();
 
   // Setup fault constitutive model.
   assert(0 != _friction);
@@ -155,7 +155,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
   // Get sections
   double_array forcesInitialVertex(spaceDim);
   const ALE::Obj<RealSection>& forcesInitialSection = 
-    _fields->get("initial force").section();
+    _fields->get("initial forces").section();
   assert(!forcesInitialSection.isNull());
 
   double_array residualVertex(spaceDim);
@@ -164,12 +164,12 @@ pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
-    // Get initial forces at fault vertex
+    // Get initial forces at fault vertex. Forces are in the global
+    // coordinate system so no rotation is necessary.
     forcesInitialSection->restrictPoint(v_fault, 
 					&forcesInitialVertex[0],
 					forcesInitialVertex.size());
@@ -186,6 +186,8 @@ pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
   } // for
 
   PetscLogFlops(numVertices*spaceDim);
+
+  residual.view("RESIDUAL FAULT");
 } // integrateResidualAssembled
 
 // ----------------------------------------------------------------------
@@ -1015,12 +1017,11 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     return buffer;
 
   } else if (0 == strncasecmp("initial_traction", name, slipStrLen)) {
-    // :TODO: Need to use scratch buffer to convert initial forces to
-    // initial tractions.
     assert(0 != _dbInitialTract);
-    const topology::Field<topology::SubMesh>& initialTraction = _fields->get(
-      "initial traction");
-    return initialTraction;
+    topology::Field<topology::SubMesh>& buffer =
+        _fields->get("buffer (vector)");
+    _calcInitialTractions(&buffer);
+    return buffer;
 
   } else if (0 == strcasecmp("traction", name)) {
     assert(0 != fields);
@@ -1066,8 +1067,8 @@ pylith::faults::FaultCohesiveDyn::cellField(const char* name,
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::FaultCohesiveDyn::_getInitialTractions(void)
-{ // _getInitialTractions
+pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
+{ // _setupInitialTractions
   assert(0 != _normalizer);
   assert(0 != _quadrature);
 
@@ -1209,17 +1210,50 @@ pylith::faults::FaultCohesiveDyn::_getInitialTractions(void)
 
   forcesInitial.complete(); // Assemble contributions
 
-  //intialForces.view("INITIAL FORCES"); // DEBUGGING
-} // _getInitialTractions
+  // Rotate forces from fault coordinate system to global coordinate system
+  const int orientationSize = spaceDim * spaceDim;
+  const ALE::Obj<RealSection>& orientationSection =
+    _fields->get("orientation").section();
+
+  double_array forcesInitialVertexFault(spaceDim);
+  double_array forcesInitialVertexGlobal(spaceDim);
+
+  const int numVertices = _cohesiveVertices.size();
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
+    const int v_fault = _cohesiveVertices[iVertex].fault;
+
+    assert(orientationSize == orientationSection->getFiberDimension(v_fault));
+    assert(spaceDim == forcesInitialSection->getFiberDimension(v_fault));
+
+    const double* orientationVertex = 
+      orientationSection->restrictPoint(v_fault);
+
+    forcesInitialSection->restrictPoint(v_fault, 
+					&forcesInitialVertexFault[0], 
+					forcesInitialVertexFault.size());
+
+    forcesInitialVertexGlobal = 0.0;
+    for (int iDim = 0; iDim < spaceDim; ++iDim)
+      for (int kDim = 0; kDim < spaceDim; ++kDim)
+        forcesInitialVertexGlobal[iDim] +=
+          forcesInitialVertexFault[kDim] * 
+	  orientationVertex[iDim*spaceDim+kDim];
+
+    assert(forcesInitialVertexGlobal.size() == 
+	   forcesInitialSection->getFiberDimension(v_fault));
+    forcesInitialSection->updatePoint(v_fault, &forcesInitialVertexGlobal[0]);
+  } // for
+
+  forcesInitial.view("INITIAL FORCES"); // DEBUGGING
+} // _setupInitialTractions
 
 // ----------------------------------------------------------------------
-// Compute change in tractions on fault surface using solution.
-// NOTE: We must convert vertex labels to fault vertex labels
+// Compute tractions on fault surface using solution.
 void
 pylith::faults::FaultCohesiveDyn::_calcTractions(
     topology::Field<topology::SubMesh>* tractions,
     const topology::Field<topology::Mesh>& dispT)
-{ // _calcTractionsChange
+{ // _calcTractions
   assert(0 != tractions);
   assert(0 != _faultMesh);
   assert(0 != _fields);
@@ -1242,8 +1276,7 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(
     //logger.stagePush("Fault");
 
     const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-    tractions->newSection(slip, fiberDim);
-    tractions->allocate();
+    tractions->cloneSection(slip);
 
     //logger.stagePop();
   } // if
@@ -1280,6 +1313,88 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(
 #endif
 
 } // _calcTractions
+
+// ----------------------------------------------------------------------
+// Compute initial tractions on fault surface.
+void
+pylith::faults::FaultCohesiveDyn::_calcInitialTractions(
+    topology::Field<topology::SubMesh>* tractions)
+{ // _calcInitialTractions
+  assert(0 != tractions);
+  assert(0 != _faultMesh);
+  assert(0 != _fields);
+  assert(0 != _normalizer);
+
+  // Fiber dimension of tractions matches spatial dimension.
+  const int spaceDim = _quadrature->spaceDim();
+  double_array tractionsVertexGlobal(spaceDim);
+  double_array tractionsVertexFault(spaceDim);
+
+  // Get sections.
+  const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
+  assert(!areaSection.isNull());
+  const ALE::Obj<RealSection>& orientationSection = 
+    _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
+  const ALE::Obj<RealSection>& forcesInitialSection = 
+    _fields->get("initial forces").section();
+  assert(!forcesInitialSection.isNull());
+
+  // Allocate buffer for tractions field (if necessary).
+  const ALE::Obj<RealSection>& tractionsSection = tractions->section();
+  if (tractionsSection.isNull()) {
+    ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+    //logger.stagePush("Fault");
+
+    const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
+    tractions->cloneSection(slip);
+
+    //logger.stagePop();
+  } // if
+  const double pressureScale = _normalizer->pressureScale();
+  tractions->label("initial_traction");
+  tractions->scale(pressureScale);
+  tractions->zero();
+
+  const int numVertices = _cohesiveVertices.size();
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
+    const int v_fault = _cohesiveVertices[iVertex].fault;
+
+    assert(spaceDim == forcesInitialSection->getFiberDimension(v_fault));
+    assert(spaceDim == tractionsSection->getFiberDimension(v_fault));
+    assert(1 == areaSection->getFiberDimension(v_fault));
+
+    const double* forcesInitialVertex = 
+      forcesInitialSection->restrictPoint(v_fault);
+    assert(0 != forcesInitialVertex);
+    const double* areaVertex = areaSection->restrictPoint(v_fault);
+    assert(0 != areaVertex);
+    const double* orientationVertex = 
+      orientationSection->restrictPoint(v_fault);
+    assert(0 != orientationVertex);
+
+    for (int i = 0; i < spaceDim; ++i)
+      tractionsVertexGlobal[i] = forcesInitialVertex[i] / areaVertex[0];
+
+    // Rotate from global coordinate system to local coordinate system
+    tractionsVertexFault = 0.0;
+    for (int iDim = 0; iDim < spaceDim; ++iDim)
+      for (int kDim = 0; kDim < spaceDim; ++kDim)
+        tractionsVertexFault[iDim] +=
+          tractionsVertexGlobal[kDim] * orientationVertex[kDim*spaceDim+iDim];
+    
+    assert(tractionsVertexFault.size() == 
+	   tractionsSection->getFiberDimension(v_fault));
+    tractionsSection->updateAddPoint(v_fault, &tractionsVertexFault[0]);
+  } // for
+
+  PetscLogFlops(numVertices * (1 + spaceDim) );
+
+#if 0 // DEBUGGING
+  tractions->view("TRACTIONS");
+#endif
+
+} // _calcInitialTractions
 
 // ----------------------------------------------------------------------
 // Update slip rate associated with Lagrange vertex k corresponding
