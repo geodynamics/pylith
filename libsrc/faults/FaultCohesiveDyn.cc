@@ -146,6 +146,8 @@ pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
   assert(0 != fields);
   assert(0 != _fields);
 
+  FaultCohesiveLagrange::integrateResidualAssembled(residual, t, fields);
+
   // No contribution if no initial tractions are specified.
   if (0 == _dbInitialTract)
     return;
@@ -165,6 +167,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_fault = _cohesiveVertices[iVertex].fault;
+    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
@@ -174,6 +177,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
 					&forcesInitialVertex[0],
 					forcesInitialVertex.size());
 
+#if 0
     residualVertex = forcesInitialVertex;
     assert(residualVertex.size() == 
 	   residualSection->getFiberDimension(v_positive));
@@ -183,6 +187,12 @@ pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
     assert(residualVertex.size() == 
 	   residualSection->getFiberDimension(v_negative));
     residualSection->updatePoint(v_negative, &residualVertex[0]);
+#else
+    residualVertex = forcesInitialVertex;
+    assert(residualVertex.size() == 
+	   residualSection->getFiberDimension(v_lagrange));
+    residualSection->updatePoint(v_lagrange, &residualVertex[0]);
+#endif
   } // for
 
   PetscLogFlops(numVertices*spaceDim);
