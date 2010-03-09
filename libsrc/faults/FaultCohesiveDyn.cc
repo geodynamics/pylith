@@ -164,6 +164,9 @@ pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
   const ALE::Obj<RealSection>& residualSection = residual.section();
   assert(!residualSection.isNull());
 
+  const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
+  assert(!slipSection.isNull());
+
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_fault = _cohesiveVertices[iVertex].fault;
@@ -177,22 +180,22 @@ pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
 					&forcesInitialVertex[0],
 					forcesInitialVertex.size());
 
-#if 0
-    residualVertex = forcesInitialVertex;
-    assert(residualVertex.size() == 
-	   residualSection->getFiberDimension(v_positive));
-    residualSection->updatePoint(v_positive, &residualVertex[0]);
-
-    residualVertex *= -1.0;
-    assert(residualVertex.size() == 
-	   residualSection->getFiberDimension(v_negative));
-    residualSection->updatePoint(v_negative, &residualVertex[0]);
-#else
-    residualVertex = forcesInitialVertex;
-    assert(residualVertex.size() == 
-	   residualSection->getFiberDimension(v_lagrange));
-    residualSection->updatePoint(v_lagrange, &residualVertex[0]);
-#endif
+    assert(spaceDim == slipSection->getFiberDimension(v_fault));
+    const double* slipVertex = slipSection->restrictPoint(v_fault);
+    assert(0 != slipVertex);
+    
+    // only apply initial tractions if there is no opening
+    if (0.0 == slipVertex[spaceDim-1]) {
+      residualVertex = forcesInitialVertex;
+      assert(residualVertex.size() == 
+	     residualSection->getFiberDimension(v_positive));
+      residualSection->updateAddPoint(v_positive, &residualVertex[0]);
+      
+      residualVertex *= -1.0;
+      assert(residualVertex.size() == 
+	     residualSection->getFiberDimension(v_negative));
+      residualSection->updateAddPoint(v_negative, &residualVertex[0]);
+    } // if
   } // for
 
   PetscLogFlops(numVertices*spaceDim);
@@ -1313,7 +1316,7 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(
       tractionsVertex[i] = dispTVertex[i] / areaVertex[0];
 
     assert(tractionsVertex.size() == tractionsSection->getFiberDimension(v_fault));
-    tractionsSection->updateAddPoint(v_fault, &tractionsVertex[0]);
+    tractionsSection->updatePoint(v_fault, &tractionsVertex[0]);
   } // for
 
   PetscLogFlops(numVertices * (1 + fiberDim) );
@@ -1395,7 +1398,7 @@ pylith::faults::FaultCohesiveDyn::_calcInitialTractions(
     
     assert(tractionsVertexFault.size() == 
 	   tractionsSection->getFiberDimension(v_fault));
-    tractionsSection->updateAddPoint(v_fault, &tractionsVertexFault[0]);
+    tractionsSection->updatePoint(v_fault, &tractionsVertexFault[0]);
   } // for
 
   PetscLogFlops(numVertices * (1 + spaceDim) );
