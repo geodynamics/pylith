@@ -40,12 +40,24 @@ FRICTION
 
 FaultCohesiveDyn
   adjustSoln()
-  reformResidual()
-    Impose initial fault tractions in reformResidual().
-    temporary kludge is to call constrainSolnSpace() in solve.
 
-6. Other fault constitutive models [Surendra]
-  Rate- and state-friction with aging law
+  _getInitialTractions()
+    Integrate tractions to get forces. Store in section over fault surface.
+    Complete section.
+
+  reformResidualAssembled()
+    Copy data from initial forces section.
+
+Full scale tests of sliding bar. [Surendra]
+
+  check fault output
+    fault constitutive parameters
+      properties
+      initial state variables
+    initial tractions
+    state variables
+    tractions
+    slip
 
 
 ----------------------------------------------------------------------

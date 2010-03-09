@@ -136,6 +136,59 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
 } // initialize
 
 // ----------------------------------------------------------------------
+// Integrate contributions to residual term (r) for operator.
+void
+pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
+			     const topology::Field<topology::Mesh>& residual,
+			     const double t,
+			     topology::SolutionFields* const fields)
+{ // integrateResidualAssembled
+  assert(0 != fields);
+  assert(0 != _fields);
+
+  // No contribution if no initial tractions are specified.
+  if (0 == _dbInitialTract)
+    return;
+
+  const int spaceDim = _quadrature->spaceDim();
+
+  // Get sections
+  double_array forcesInitialVertex(spaceDim);
+  const ALE::Obj<RealSection>& forcesInitialSection = 
+    _fields->get("initial force").section();
+  assert(!forcesInitialSection.isNull());
+
+  double_array residualVertex(spaceDim);
+  const ALE::Obj<RealSection>& residualSection = residual.section();
+  assert(!residualSection.isNull());
+
+  const int numVertices = _cohesiveVertices.size();
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
+    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int v_fault = _cohesiveVertices[iVertex].fault;
+    const int v_negative = _cohesiveVertices[iVertex].negative;
+    const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    // Get initial forces at fault vertex
+    forcesInitialSection->restrictPoint(v_fault, 
+					&forcesInitialVertex[0],
+					forcesInitialVertex.size());
+
+    residualVertex = forcesInitialVertex;
+    assert(residualVertex.size() == 
+	   residualSection->getFiberDimension(v_positive));
+    residualSection->updatePoint(v_positive, &residualVertex[0]);
+
+    residualVertex *= -1.0;
+    assert(residualVertex.size() == 
+	   residualSection->getFiberDimension(v_negative));
+    residualSection->updatePoint(v_negative, &residualVertex[0]);
+  } // for
+
+  PetscLogFlops(numVertices*spaceDim);
+} // integrateResidualAssembled
+
+// ----------------------------------------------------------------------
 // Update state variables as needed.
 void
 pylith::faults::FaultCohesiveDyn::updateStateVars(
@@ -168,10 +221,6 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
   const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
   assert(!areaSection.isNull());
 
-  double_array tractionInitialVertex(spaceDim);
-  const ALE::Obj<RealSection>& tractionInitialSection =
-      (0 != _dbInitialTract) ? _fields->get("initial traction").section() : 0;
-
   double_array lagrangeTVertex(spaceDim);
   const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
@@ -199,13 +248,6 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
     const double* areaVertex = areaSection->restrictPoint(v_fault);
     assert(0 != areaVertex);
     assert(1 == areaSection->getFiberDimension(v_fault));
-
-    // Get initial fault tractions
-    if (0 != _dbInitialTract) {
-      assert(!tractionInitialSection.isNull());
-      tractionInitialSection->restrictPoint(v_fault,
-        &tractionInitialVertex[0], tractionInitialVertex.size());
-    } // if
 
     // Get Lagrange multiplier values from disp(t), and dispIncr(t->t+dt)
     dispTSection->restrictPoint(v_lagrange, &lagrangeTVertex[0],
@@ -302,10 +344,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       _fields->get("orientation").section();
   assert(!orientationSection.isNull());
 
-  double_array tractionInitialVertex(spaceDim);
-  const ALE::Obj<RealSection>& tractionInitialSection =
-      (0 != _dbInitialTract) ? _fields->get("initial traction").section() : 0;
-
   double_array lagrangeTVertex(spaceDim);
   const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
@@ -323,8 +361,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 
   slipSection->view("SLIP");
   areaSection->view("AREA");
-  if (0 != _dbInitialTract)
-    tractionInitialSection->view("INITIAL TRACTION");
   dispTSection->view("DISP (t)");
   dispTIncrSection->view("DISP INCR (t->t+dt)");
 
@@ -358,13 +394,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     jacobianDiagSection->restrictPoint(v_positive, &jacobianVertexP[0],
       jacobianVertexP.size());
 
-    // Get initial fault tractions
-    if (0 != _dbInitialTract) {
-      assert(!tractionInitialSection.isNull());
-      tractionInitialSection->restrictPoint(v_fault,
-        &tractionInitialVertex[0], tractionInitialVertex.size());
-    } // if
-
     // Get Lagrange multiplier values from disp(t), and dispIncr(t->t+dt)
     dispTSection->restrictPoint(v_lagrange, &lagrangeTVertex[0],
       lagrangeTVertex.size());
@@ -395,7 +424,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
           / jacobianVertexP[0];
       const double Spp = 1.0;
 
-      if (tractionTpdtVertex[0] + tractionInitialVertex[0] < 0) {
+      if (tractionTpdtVertex[0] < 0) {
         // if compression, then no changes to solution
       } else {
         // if tension, then traction is zero.
@@ -412,8 +441,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       break;
     } // case 1
     case 2: { // case 2
-      std::cout << "Normal traction:" << tractionTpdtVertex[1]
-          + tractionInitialVertex[1] << std::endl;
+      std::cout << "Normal traction:" << tractionTpdtVertex[1] << std::endl;
 
       // Sensitivity of slip to changes in the Lagrange multipliers
       // Aixjx = 1.0/Aix + 1.0/Ajx
@@ -434,13 +462,11 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       const double Spq = Cpx * Cqx * Aixjx + Cpy * Cqy * Aiyjy;
       const double Sqq = Cqx * Cqx * Aixjx + Cqy * Cqy * Aiyjy;
 
-      const double tractionNormal = tractionTpdtVertex[1]
-          + tractionInitialVertex[1];
+      const double tractionNormal = tractionTpdtVertex[1];
       const double slip = slipVertex[0];
       const double slipRate = slipRateVertex[0];
 
-      if (tractionTpdtVertex[1] + tractionInitialVertex[1] < 0 && 0
-          == slipVertex[1]) {
+      if (tractionTpdtVertex[1] < 0 && 0.0 == slipVertex[1]) {
         // if in compression and no opening
         std::cout << "FAULT IN COMPRESSION" << std::endl;
         const double frictionStress = _friction->calcFriction(slip, slipRate,
@@ -483,8 +509,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       break;
     } // case 2
     case 3: { // case 3
-      std::cout << "Normal traction:" << tractionTpdtVertex[2]
-          + tractionInitialVertex[2] << std::endl;
+      std::cout << "Normal traction:" << tractionTpdtVertex[2] << std::endl;
 
       // Sensitivity of slip to changes in the Lagrange multipliers
       // Aixjx = 1.0/Aix + 1.0/Ajx
@@ -528,7 +553,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       double slipRate = sqrt(pow(slipRateVertex[1], 2) + pow(slipRateVertex[0],
         2));
 
-      const double tractionNormalVertex = tractionTpdtVertex[2] + tractionInitialVertex[2];
+      const double tractionNormalVertex = tractionTpdtVertex[2];
       const double tractionShearVertex = sqrt(pow(tractionTpdtVertex[1], 2) + pow(
         tractionTpdtVertex[0], 2));
       const double slipShearVertex = sqrt(pow(slipVertex[1], 2) + pow(slipVertex[0], 2));
@@ -990,6 +1015,8 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     return buffer;
 
   } else if (0 == strncasecmp("initial_traction", name, slipStrLen)) {
+    // :TODO: Need to use scratch buffer to convert initial forces to
+    // initial tractions.
     assert(0 != _dbInitialTract);
     const topology::Field<topology::SubMesh>& initialTraction = _fields->get(
       "initial traction");
@@ -1062,18 +1089,18 @@ pylith::faults::FaultCohesiveDyn::_getInitialTractions(void)
   double_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Create section to hold initial tractions.
-  _fields->add("initial traction", "initial_traction");
-  topology::Field<topology::SubMesh>& traction = 
-    _fields->get("initial traction");
+  _fields->add("initial forces", "initial_forces");
+  topology::Field<topology::SubMesh>& forcesInitial = 
+    _fields->get("initial forces");
   topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  traction.cloneSection(slip);
-  traction.scale(pressureScale);
-  const ALE::Obj<RealSection>& tractionSection = traction.section();
-  assert(!tractionSection.isNull());
-  double_array tractionCell(numBasis*spaceDim);
+  forcesInitial.cloneSection(slip);
+  forcesInitial.scale(pressureScale);
+  const ALE::Obj<RealSection>& forcesInitialSection = forcesInitial.section();
+  assert(!forcesInitialSection.isNull());
+  double_array forcesInitialCell(numBasis*spaceDim);
   double_array tractionQuadPt(spaceDim);
-  topology::Mesh::UpdateAddVisitor tractionVisitor(*tractionSection,
-        &tractionCell[0]);
+  topology::Mesh::UpdateAddVisitor forcesInitialVisitor(*forcesInitialSection,
+        &forcesInitialCell[0]);
 
   assert(0 != _dbInitialTract);
   _dbInitialTract->open();
@@ -1108,12 +1135,6 @@ pylith::faults::FaultCohesiveDyn::_getInitialTractions(void)
   assert(!cells.isNull());
   const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
-    faultSieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const SieveSubMesh::label_sequence::iterator verticesBegin =
-    vertices->begin();
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
   const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
   assert(0 != cs);
@@ -1142,7 +1163,7 @@ pylith::faults::FaultCohesiveDyn::_getInitialTractions(void)
     quadPtsGlobal = quadPtsNonDim;
     _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
         lengthScale);
-    tractionCell = 0.0;
+    forcesInitialCell = 0.0;
 
     // Loop over quadrature points in cell and query database
     for (int iQuadPt=0, index=0;
@@ -1167,41 +1188,28 @@ pylith::faults::FaultCohesiveDyn::_getInitialTractions(void)
       const double_array& basis = _quadrature->basis();
       const double_array& jacobianDet = _quadrature->jacobianDet();
 
-      // Compute properties weighted by area
+      // Compute action for traction bc terms
       const double wt = quadWts[iQuadPt] * jacobianDet[iQuadPt];
-      for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
-        const double dArea = wt * basis[iQuadPt*numBasis+iBasis];
-        for (int iDim = 0; iDim < spaceDim; ++iDim)
-          tractionCell[iBasis*spaceDim+iDim] += tractionQuadPt[iDim] * dArea;
+      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+	const double valI = wt*basis[iQuadPt*numBasis+iBasis];
+	for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+	  const double valIJ = valI * basis[iQuadPt*numBasis+jBasis];
+	  for (int iDim=0; iDim < spaceDim; ++iDim)
+	    forcesInitialCell[iBasis*spaceDim+iDim] += 
+	      tractionQuadPt[iDim] * valIJ;
+	} // for
       } // for
     } // for
-    tractionVisitor.clear();
-    faultSieveMesh->updateClosure(*c_iter, tractionVisitor);
+    // Assemble cell contribution into field
+    forcesInitialVisitor.clear();
+    faultSieveMesh->updateClosure(*c_iter, forcesInitialVisitor);
   } // for
   // Close properties database
   _dbInitialTract->close();
 
-  traction.complete(); // Assemble contributions
+  forcesInitial.complete(); // Assemble contributions
 
-  // Loop over vertices and divide by area to get weighted values and
-  // nondimensionalize properties.
-  const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
-  assert(!areaSection.isNull());
-
-  double_array tractionVertex(spaceDim);
-  double areaVertex = 0.0;
-  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter) {
-    tractionSection->restrictPoint(*v_iter,
-        &tractionVertex[0], tractionVertex.size());
-    areaSection->restrictPoint(*v_iter, &areaVertex, 1);
-    assert(areaVertex > 0.0);
-    tractionVertex /= areaVertex;
-    tractionSection->updatePoint(*v_iter, &tractionVertex[0]);
-  } // for
-
-  //traction.view("INITIAL TRACTIONS"); // DEBUGGING
+  //intialForces.view("INITIAL FORCES"); // DEBUGGING
 } // _getInitialTractions
 
 // ----------------------------------------------------------------------
@@ -1243,21 +1251,6 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(
   tractions->label("traction");
   tractions->scale(pressureScale);
   tractions->zero();
-
-  // Set tractions to initial tractions if they exist
-  if (0 != _dbInitialTract) {
-    const ALE::Obj<RealSection>& initialTractionSection = _fields->get(
-      "initial traction").section();
-    assert(!initialTractionSection.isNull());
-    const int numVertices = _cohesiveVertices.size();
-    for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-      const int v_fault = _cohesiveVertices[iVertex].fault;
-      initialTractionSection->restrictPoint(v_fault, &tractionsVertex[0],
-        tractionsVertex.size());
-      assert(fiberDim == tractionsSection->getFiberDimension(v_fault));
-      tractionsSection->updatePoint(v_fault, &tractionsVertex[0]);
-    } // for
-  } // if
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
