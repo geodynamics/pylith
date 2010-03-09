@@ -1253,7 +1253,6 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
 
 // ----------------------------------------------------------------------
 // Compute change in tractions on fault surface using solution.
-// NOTE: We must convert vertex labels to fault vertex labels
 void
 pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
     topology::Field<topology::SubMesh>* tractions,
@@ -1268,8 +1267,8 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
   tractions->scale(_normalizer->pressureScale());
 
   // Fiber dimension of tractions matches spatial dimension.
-  const int fiberDim = _quadrature->spaceDim();
-  double_array tractionsVertex(fiberDim);
+  const int spaceDim = _quadrature->spaceDim();
+  double_array tractionsVertex(spaceDim);
 
   // Get sections.
   const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
@@ -1284,8 +1283,7 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
     //logger.stagePush("Fault");
 
     const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-    tractions->newSection(slip, fiberDim);
-    tractions->allocate();
+    tractions->cloneSection(slip);
 
     //logger.stagePop();
   } // if
@@ -1299,8 +1297,8 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
-    assert(fiberDim == dispTSection->getFiberDimension(v_lagrange));
-    assert(fiberDim == tractionsSection->getFiberDimension(v_fault));
+    assert(spaceDim == dispTSection->getFiberDimension(v_lagrange));
+    assert(spaceDim == tractionsSection->getFiberDimension(v_fault));
     assert(1 == areaSection->getFiberDimension(v_fault));
 
     const double* dispTVertex = dispTSection->restrictPoint(v_lagrange);
@@ -1308,14 +1306,14 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
     const double* areaVertex = areaSection->restrictPoint(v_fault);
     assert(0 != areaVertex);
 
-    for (int i = 0; i < fiberDim; ++i)
+    for (int i = 0; i < spaceDim; ++i)
       tractionsVertex[i] = dispTVertex[i] / areaVertex[0];
 
     assert(tractionsVertex.size() == tractionsSection->getFiberDimension(v_fault));
     tractionsSection->updatePoint(v_fault, &tractionsVertex[0]);
   } // for
 
-  PetscLogFlops(numVertices * (1 + fiberDim) );
+  PetscLogFlops(numVertices * (1 + spaceDim) );
 
 #if 0 // DEBUGGING
   tractions->view("TRACTIONS");

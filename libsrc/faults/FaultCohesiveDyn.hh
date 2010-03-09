@@ -143,15 +143,21 @@ private :
 
   /** Get initial tractions using a spatial database.
    */
-  void _getInitialTractions(void);
+  void _setupInitialTractions(void);
 
-  /** Compute change in tractions on fault surface using solution.
+  /** Compute tractions on fault surface using solution.
    *
    * @param tractions Field for tractions.
    * @param solution Solution over domain
    */
   void _calcTractions(topology::Field<topology::SubMesh>* tractions,
           const topology::Field<topology::Mesh>& solution);
+
+  /** Compute initial tractions on fault surface.
+   *
+   * @param tractions Field for tractions.
+   */
+  void _calcInitialTractions(topology::Field<topology::SubMesh>* tractions);
 
   /** Update slip rate associated with Lagrange vertex k corresponding
    * to diffential velocity between conventional vertices i and j.
