@@ -199,8 +199,6 @@ pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
   } // for
 
   PetscLogFlops(numVertices*spaceDim);
-
-  residual.view("RESIDUAL FAULT");
 } // integrateResidualAssembled
 
 // ----------------------------------------------------------------------
@@ -1250,14 +1248,14 @@ pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
       for (int kDim = 0; kDim < spaceDim; ++kDim)
         forcesInitialVertexGlobal[iDim] +=
           forcesInitialVertexFault[kDim] * 
-	  orientationVertex[iDim*spaceDim+kDim];
+	  orientationVertex[kDim*spaceDim+iDim];
 
     assert(forcesInitialVertexGlobal.size() == 
 	   forcesInitialSection->getFiberDimension(v_fault));
     forcesInitialSection->updatePoint(v_fault, &forcesInitialVertexGlobal[0]);
   } // for
 
-  forcesInitial.view("INITIAL FORCES"); // DEBUGGING
+  //forcesInitial.view("INITIAL FORCES"); // DEBUGGING
 } // _setupInitialTractions
 
 // ----------------------------------------------------------------------
@@ -1394,7 +1392,7 @@ pylith::faults::FaultCohesiveDyn::_calcInitialTractions(
     for (int iDim = 0; iDim < spaceDim; ++iDim)
       for (int kDim = 0; kDim < spaceDim; ++kDim)
         tractionsVertexFault[iDim] +=
-          tractionsVertexGlobal[kDim] * orientationVertex[kDim*spaceDim+iDim];
+          tractionsVertexGlobal[kDim] * orientationVertex[iDim*spaceDim+kDim];
     
     assert(tractionsVertexFault.size() == 
 	   tractionsSection->getFiberDimension(v_fault));
