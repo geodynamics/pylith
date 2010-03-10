@@ -470,10 +470,10 @@ const double pylith::faults::CohesiveDynDataTet4::_area[] = {
   1.0/3.0,
 };
 
-const double pylith::faults::CohesiveDynDataTet4::_initialTractions[] = {
-  1.1, 2.1, -3.1,
-  1.1, 2.1, -3.1,
-  1.1, 2.1, -3.1,
+const double pylith::faults::CohesiveDynDataTet4::_forcesInitial[] = {
+  3.1/3.0, -1.1/3.0, -2.1/3.0,
+  3.1/3.0, -1.1/3.0, -2.1/3.0,
+  3.1/3.0, -1.1/3.0, -2.1/3.0,
 };
 
 
@@ -531,15 +531,15 @@ const double pylith::faults::CohesiveDynDataTet4::_fieldIncrSlipE[] = {
   8.6, 9.6, 10.6, // 7
   8.8, 9.8, 10.8, // 8
   8.0, 9.0, 10.0, // 9
-  -6.88824796, -7.78925381, -10.7, // 10
-  -7.0870762, -7.99029956, -10.9, // 11
-  -6.29211869, -7.18581852, -10.1, // 12
+  -7.30077769, -8.25209204, -10.7, // 10
+  -7.50020141, -8.45260634, -10.9, // 11
+  -6.70268132, -7.65040255, -10.1, // 12
 };
 
 const double pylith::faults::CohesiveDynDataTet4::_slipSlipE[] = {
-  31.17649592,  34.97850762,  0.0,
-  31.9741524,  35.78059911,  0.0,
-  28.78423738,  32.57163703,  0.0,
+  32.00155537,  35.90418407,  0.0,
+  32.80040282,  36.70521268,  0.0,
+  29.60536264,  33.5008051,  0.0,
 };
 
 // ----------------------------------------------------------------------
@@ -602,7 +602,7 @@ pylith::faults::CohesiveDynDataTet4::CohesiveDynDataTet4(void)
   jacobian = const_cast<double*>(_jacobian);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  initialTractions = const_cast<double*>(_initialTractions);
+  forcesInitial = const_cast<double*>(_forcesInitial);
 
   constraintVertices = const_cast<int*>(_constraintVertices);
   numConstraintVert = _numConstraintVert;  

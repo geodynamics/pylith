@@ -187,27 +187,28 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
 				 tolerance);
   } // for
 
-  // Initial tractions
+  // Initial forces/tractions
   if (0 != fault._dbInitialTract) {
-    //fault._fields->get("initial traction").view("INITIAL TRACTIONS"); // DEBUGGING
-    const ALE::Obj<RealSection>& tractionSection = fault._fields->get(
-        "initial traction").section();
-    CPPUNIT_ASSERT(!tractionSection.isNull());
+    fault._fields->get("initial forces").view("INITIAL FORCES"); // DEBUGGING
+    const ALE::Obj<RealSection>& forcesInitialSection = 
+      fault._fields->get("initial forces").section();
+    CPPUNIT_ASSERT(!forcesInitialSection.isNull());
     const int spaceDim = _data->spaceDim;
     iVertex = 0;
     for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin;
         v_iter != verticesEnd;
         ++v_iter, ++iVertex) {
-      const int fiberDim = tractionSection->getFiberDimension(*v_iter);
+      const int fiberDim = forcesInitialSection->getFiberDimension(*v_iter);
       CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-      const double* tractionVertex = tractionSection->restrictPoint(*v_iter);
-      CPPUNIT_ASSERT(0 != tractionVertex);
+      const double* forcesInitialVertex = 
+	forcesInitialSection->restrictPoint(*v_iter);
+      CPPUNIT_ASSERT(0 != forcesInitialVertex);
 
       const double tolerance = 1.0e-06;
       for (int i = 0; i < spaceDim; ++i) {
         const int index = iVertex * spaceDim + i;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->initialTractions[index],
-            tractionVertex[i], tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->forcesInitial[index], 
+				     forcesInitialVertex[i], tolerance);
       } // for
     } // for
   } // if
@@ -645,7 +646,6 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
     SieveMesh::point_type meshVertex = -1;
     bool found = false;
 
-    // Test with dbInitialTract
     for (SieveMesh::renumbering_type::const_iterator r_iter = renumberingBegin;
       r_iter != renumberingEnd;
       ++r_iter) {
@@ -668,20 +668,15 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
 
     const double scale = 1.0 / _data->area[iVertex];
     for (int iDim=0; iDim < spaceDim; ++iDim) {
-      const double tractionE =
-        _data->initialTractions[iVertex*spaceDim+iDim] + 
-	dispVertex[iDim] * scale;
+      const double tractionE = dispVertex[iDim] * scale;
       if (tractionE != 0.0)
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tractionsVertex[iDim]/tractionE,
-             tolerance);
+				     tolerance);
       else
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tractionE, tractionsVertex[iDim],
              tolerance);
     } // for
   } // for
-
-  // Test without dbInitialTract
-  // :TODO: STUFF GOES HERE (Brad)
 } // testCalcTractions
 
 // ----------------------------------------------------------------------
