@@ -1,0 +1,25 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  // number of values for final slip
+  num-values = 2
+
+  // Names and units of final slip values
+  value-names =  left-lateral-slip  fault-opening
+  value-units =  m  m
+
+  // Number of locations where physical properties are given
+  // 1 location -> data is uniform -> data dimension is 0
+  num-locs = 1
+  data-dim = 0
+
+  // Problem is in 2-D
+  space-dim = 2
+
+  // Coordinate system (2-D with coordinates in meters)
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 2
+  }
+}
+// Columns are x, y, left-lateral-slip, fault-opening
+0.0  0.0   1.0  0.0
