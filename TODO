@@ -41,13 +41,6 @@ FRICTION
 FaultCohesiveDyn
   adjustSoln()
 
-  _getInitialTractions()
-    Integrate tractions to get forces. Store in section over fault surface.
-    Complete section.
-
-  reformResidualAssembled()
-    Copy data from initial forces section.
-
 Full scale tests of sliding bar. [Surendra]
 
   check fault output
