@@ -1339,11 +1339,11 @@ const double pylith::faults::CohesiveDynDataHex8::_area[] = {
   1.0, 1.0, 1.0, 1.0
 };
 
-const double pylith::faults::CohesiveDynDataHex8::_initialTractions[] = {
-  1.063397471, 2.063397471, -3.063397471, 
-  1.121132498, 2.121132498, -3.121132498, 
-  1.178867525, 2.178867525, -3.178867525,
-  1.236602552, 2.236602552, -3.236602552
+const double pylith::faults::CohesiveDynDataHex8::_forcesInitial[] = {
+  3.063397471, -1.063397471, -2.063397471, 
+  3.121132498, -1.121132498, -2.121132498, 
+  3.178867525, -1.178867525, -2.178867525,
+  3.236602552, -1.236602552, -2.236602552,
 };
 
 
@@ -1372,10 +1372,10 @@ const double pylith::faults::CohesiveDynDataHex8::_fieldIncrStick[] = {
   1.5, 3.5, 29.5, // 15
   1.7, 3.7, 29.7, // 16
   1.9, 3.9, 29.9, // 17
-  1.4, 3.4, -29.4, // 18
-  1.6, 3.6, -29.6, // 19
-  1.8, 3.8, -29.8, // 20
-  1.0, 3.0, -29.0, // 21
+  1.4, 3.4, -89.4, // 18
+  1.6, 3.6, -89.6, // 19
+  1.8, 3.8, -89.8, // 20
+  1.0, 3.0, -89.0, // 21
 };
 
 // No change in fieldIncr
@@ -1426,17 +1426,17 @@ const double pylith::faults::CohesiveDynDataHex8::_fieldIncrSlipE[] = {
   6.5, 8.5, 10.5, // 15
   6.7, 8.7, 10.7, // 16
   6.9, 8.9, 10.9, // 17
-  -3.94113616, -5.44660605,  -10.4, // 18
-  -4.11249353, -5.62478649,  -10.6, // 19
-  -4.28408279, -5.80283922,  -10.8, // 20 
-  -3.49677632, -4.95014952,  -10.0, // 21
+  -5.04097437, -6.91927077,  -10.4, // 18
+  -5.23905396, -7.12071099,  -10.6, // 19
+  -5.4372421, -7.32208086,   -10.8, // 20 
+  -4.6451818,  -6.516157,    -10.0, // 21
 };
 
 const double pylith::faults::CohesiveDynDataHex8::_slipSlipE[] = {
-  20.68227232,  27.69321209,  0.0,
-  21.42498706,  28.44957298,  0.0,
-  22.16816557,  29.20567845,  0.0,
-  18.99355263,  25.90029904,  0.0,
+  22.88194874,  30.63854153,  0.0,
+  23.67810791,  31.44142198,  0.0,
+  24.4744842,   32.24416172,  0.0,
+  21.2903636,   29.032314,    0.0,
 };
 
 // ----------------------------------------------------------------------
@@ -1518,7 +1518,7 @@ pylith::faults::CohesiveDynDataHex8::CohesiveDynDataHex8(void)
   jacobian = const_cast<double*>(_jacobian);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  initialTractions = const_cast<double*>(_initialTractions);
+  forcesInitial = const_cast<double*>(_forcesInitial);
 
   constraintVertices = const_cast<int*>(_constraintVertices);
   numConstraintVert = _numConstraintVert;  

@@ -246,9 +246,9 @@ const double pylith::faults::CohesiveDynDataTri3::_area[] = {
   1.0,
 };
 
-const double pylith::faults::CohesiveDynDataTri3::_initialTractions[] = {
-  1.05, -2.05,
-  1.05, -2.05,
+const double pylith::faults::CohesiveDynDataTri3::_forcesInitial[] = {
+  2.05, -1.05,
+  2.05, -1.05,
 };
 
 
@@ -291,7 +291,6 @@ const double pylith::faults::CohesiveDynDataTri3::_fieldIncrSlip[] = {
 };
 
 // Output
-// :TODO: Update Lagrange multiplier values
 const double pylith::faults::CohesiveDynDataTri3::_fieldIncrSlipE[] = {
   9.1, 10.1,
   9.2, 10.2, // 3
@@ -299,14 +298,13 @@ const double pylith::faults::CohesiveDynDataTri3::_fieldIncrSlipE[] = {
   9.4, 10.4,
   9.5, 10.5, // 6
   9.7, 10.7, // 7
-  -8.6+3.05*0.6, -10.6, // 8
-  -8.8+3.05*0.6, -10.8, // 9
+  -8.6+1.0*0.6, -10.6, // 8
+  -8.8+1.0*0.6, -10.8, // 9
 };
 
-// :TODO: Update slip values based on changes in Lagrange multiplier values
 const double pylith::faults::CohesiveDynDataTri3::_slipSlipE[] = {
-  32.74, 0.0,
-  33.54, 0.0,
+  35.2, 0.0,
+  36.0, 0.0,
 };
 
 // ----------------------------------------------------------------------
@@ -362,7 +360,7 @@ pylith::faults::CohesiveDynDataTri3::CohesiveDynDataTri3(void)
   jacobian = const_cast<double*>(_jacobian);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  initialTractions = const_cast<double*>(_initialTractions);
+  forcesInitial = const_cast<double*>(_forcesInitial);
 
   constraintVertices = const_cast<int*>(_constraintVertices);
   numConstraintVert = _numConstraintVert;  

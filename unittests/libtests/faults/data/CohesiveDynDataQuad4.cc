@@ -316,9 +316,9 @@ const double pylith::faults::CohesiveDynDataQuad4::_area[] = {
   1.0,
 };
 
-const double pylith::faults::CohesiveDynDataQuad4::_initialTractions[] = {
-  1.05, -2.05,
-  1.05, -2.05,
+const double pylith::faults::CohesiveDynDataQuad4::_forcesInitial[] = {
+  2.05, -1.05,
+  2.05, -1.05,
 };
 
 
@@ -375,14 +375,14 @@ const double pylith::faults::CohesiveDynDataQuad4::_fieldIncrSlipE[] = {
   9.6, 10.6,
   9.7, 10.7, // 8
   9.9, 10.9, // 9
-  -8.8+3.05*0.6, -10.8, // 10
-  -8.0+3.05*0.6, -10.0, // 11
+  -8.8+1.0*0.6, -10.8, // 10
+  -8.0+1.0*0.6, -10.0, // 11
 };
 
 // :TODO: Update slip values based on changes in Lagrange multiplier values
 const double pylith::faults::CohesiveDynDataQuad4::_slipSlipE[] = {
-  33.54, 0.0,
-  30.34, 0.0,
+  36.0, 0.0,
+  32.8, 0.0,
 };
 
 // ----------------------------------------------------------------------
@@ -442,7 +442,7 @@ pylith::faults::CohesiveDynDataQuad4::CohesiveDynDataQuad4(void)
   jacobian = const_cast<double*>(_jacobian);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  initialTractions = const_cast<double*>(_initialTractions);
+  forcesInitial = const_cast<double*>(_forcesInitial);
 
   constraintVertices = const_cast<int*>(_constraintVertices);
   numConstraintVert = _numConstraintVert;  
