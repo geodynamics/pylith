@@ -140,23 +140,30 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   // Set variables dependent on dimension of cell
   totalStrain_fn_type calcTotalStrainFn;
   elasticityResidual_fn_type elasticityResidualFn;
-  if (1 == cellDim) {
+  switch (cellDim) {
+  case 1 :
     elasticityResidualFn = 
       &pylith::feassemble::ElasticityExplicit::_elasticityResidual1D;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
-  } else if (2 == cellDim) {
+    break;
+  case 2 :
     elasticityResidualFn = 
       &pylith::feassemble::ElasticityExplicit::_elasticityResidual2D;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
-  } else if (3 == cellDim) {
+    break;
+  case 3 :
     elasticityResidualFn = 
       &pylith::feassemble::ElasticityExplicit::_elasticityResidual3D;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
-  } else
+    break;
+  default :
     assert(0);
+    throw std::logic_error("Unknown cellDim in "
+			   "ElasticityExplicit::integrateResidual.");
+  } // switch
 
   // Allocate vectors for cell values.
   double_array dispTCell(numBasis*spaceDim);
