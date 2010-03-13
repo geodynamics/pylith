@@ -24,6 +24,7 @@
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
@@ -523,6 +524,14 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
                                                         const topology::Field<
 							topology::Mesh>& jacobian)
 { // adjustSolnLumped
+  /// Member prototype for _adjustSolnLumpedXD()
+  typedef void (pylith::faults::FaultCohesiveLagrange::*adjustSolnLumped_fn_type)
+    (double_array*, double_array*, double_array*,
+     const double_array&, const double_array&, 
+     const double_array&, const double_array&, 
+     const double_array&, const double_array&, 
+     const double_array&, const double_array&);
+
   assert(0 != fields);
   assert(0 != _quadrature);
 
@@ -532,6 +541,7 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
   //   * DOF k: Compute increment in Lagrange multipliers
   //            dl_k = S^{-1} (-C_ki (A_i^{-1} r_i - C_kj A_j^{-1} r_j + u_i - u_j) - d_k)
   //            S = C_ki (A_i^{-1} + A_j^{-1}) C_ki^T
+  //
   //   * DOF i and j: Adjust displacement increment (solution) to account
   //            for Lagrange multiplier constraints
   //            du_i = +A_i^-1 C_ki^T dlk
@@ -573,11 +583,31 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
   double_array dispTVertexP(spaceDim);
   const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
 
-  double_array solutionVertexN(spaceDim);
-  double_array solutionVertexP(spaceDim);
-  double_array solutionVertexL(spaceDim);
-  const ALE::Obj<RealSection>& solutionSection = fields->get(
+  double_array dispTIncrVertexN(spaceDim);
+  double_array dispTIncrVertexP(spaceDim);
+  double_array lagrangeIncrVertex(spaceDim);
+  const ALE::Obj<RealSection>& dispTIncrSection = fields->get(
     "dispIncr(t->t+dt)").section();
+
+  adjustSolnLumped_fn_type adjustSolnLumpedFn;
+  switch (spaceDim) { // switch
+  case 1:
+    adjustSolnLumpedFn = 
+      &pylith::faults::FaultCohesiveLagrange::_adjustSolnLumped1D;
+    break;
+  case 2: 
+    adjustSolnLumpedFn = 
+      &pylith::faults::FaultCohesiveLagrange::_adjustSolnLumped2D;
+    break;
+  case 3:
+    adjustSolnLumpedFn = 
+      &pylith::faults::FaultCohesiveLagrange::_adjustSolnLumped3D;
+    break;
+  default :
+    assert(0);
+    throw std::logic_error("Unknown spatial dimension in "
+			   "FaultCohesiveLagrange::adjustSolnLumped.");
+  } // switch
 
   _logger->eventEnd(setupEvent);
 
@@ -597,215 +627,64 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
 #endif
 
     // Get orientations at fault cell's vertices.
-    orientationSection->restrictPoint(v_fault, &orientationVertex[0], orientationVertex.size());
+    orientationSection->restrictPoint(v_fault, &orientationVertex[0],
+				      orientationVertex.size());
 
     // Get slip at fault cell's vertices.
     slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
 
     // Get residual at cohesive cell's vertices.
-    residualSection->restrictPoint(v_negative, &residualVertexN[0], residualVertexN.size());
-    residualSection->restrictPoint(v_positive, &residualVertexP[0], residualVertexP.size());
-
+    residualSection->restrictPoint(v_negative, &residualVertexN[0],
+				   residualVertexN.size());
+    residualSection->restrictPoint(v_positive, &residualVertexP[0], 
+				   residualVertexP.size());
+    
     // Get jacobian at cohesive cell's vertices.
-    jacobianSection->restrictPoint(v_negative, &jacobianVertexN[0], jacobianVertexN.size());
-    jacobianSection->restrictPoint(v_positive, &jacobianVertexP[0], jacobianVertexP.size());
+    jacobianSection->restrictPoint(v_negative, &jacobianVertexN[0], 
+				   jacobianVertexN.size());
+    jacobianSection->restrictPoint(v_positive, &jacobianVertexP[0], 
+				   jacobianVertexP.size());
 
     // Get disp(t) at cohesive cell's vertices.
-    dispTSection->restrictPoint(v_negative, &dispTVertexN[0], dispTVertexN.size());
-    dispTSection->restrictPoint(v_positive, &dispTVertexP[0], dispTVertexP.size());
+    dispTSection->restrictPoint(v_negative, &dispTVertexN[0],
+				dispTVertexN.size());
+    dispTSection->restrictPoint(v_positive, &dispTVertexP[0],
+				dispTVertexP.size());
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
     _logger->eventBegin(computeEvent);
 #endif
 
-      switch (spaceDim) { // switch
-    case 1: {
-      assert(jacobianVertexN[0] > 0.0);
-      assert(jacobianVertexP[0] > 0.0);
-
-      const double Sinv = jacobianVertexN[0] * jacobianVertexP[0]
-          / (jacobianVertexN[0] + jacobianVertexP[0]);
-
-      // Aru = A_i^{-1} r_i - A_j^{-1} r_j + u_i - u_j
-      const double Aru = residualVertexN[0] / jacobianVertexN[0]
-          - residualVertexP[0] / jacobianVertexP[0] + dispTVertexN[0]
-          - dispTVertexP[0];
-
-      // dl_k = D^{-1}( - C_{ki} Aru - d_k)
-      const double Aruslip = -Aru - slipVertex[0];
-      const double dlp = Sinv * Aruslip;
-
-      // Update displacements at negative vertex
-      solutionVertexN[0] = +1.0 / jacobianVertexN[0] * dlp;
-
-      // Update displacements at positive vertex
-      solutionVertexP[0] = -1.0 / jacobianVertexP[0] * dlp;
-
-      // Update Lagrange multiplier.
-      solutionVertexL[0] = dlp;
-
-      break;
-    } // case 1
-    case 2: {
-      assert(jacobianVertexN[0] > 0.0);
-      assert(jacobianVertexN[1] > 0.0);
-      assert(jacobianVertexP[0] > 0.0);
-      assert(jacobianVertexP[1] > 0.0);
-
-      const double Cpx = orientationVertex[0];
-      const double Cpy = orientationVertex[1];
-      const double Cqx = orientationVertex[2];
-      const double Cqy = orientationVertex[3];
-
-      // Check to make sure Jacobian is same at all DOF for
-      // vertices i and j (means S is diagonal with equal enties).
-      assert(jacobianVertexN[0] == jacobianVertexN[1]);
-      assert(jacobianVertexP[0] == jacobianVertexP[1]);
-
-      const double Sinv = jacobianVertexN[0] * jacobianVertexP[0]
-          / (jacobianVertexN[0] + jacobianVertexP[0]);
-
-      // Aru = A_i^{-1} r_i - A_j^{-1} r_j + u_i - u_j
-      const double Arux = residualVertexN[0] / jacobianVertexN[0]
-          - residualVertexP[0] / jacobianVertexP[0] + dispTVertexN[0]
-          - dispTVertexP[0];
-      const double Aruy = residualVertexN[1] / jacobianVertexN[1]
-          - residualVertexP[1] / jacobianVertexP[1] + dispTVertexN[1]
-          - dispTVertexP[1];
-
-      // dl_k = S^{-1}(-C_{ki} Aru - d_k)
-      const double Arup = Cpx * Arux + Cpy * Aruy;
-      const double Aruq = Cqx * Arux + Cqy * Aruy;
-      const double Arupslip = -Arup - slipVertex[0];
-      const double Aruqslip = -Aruq - slipVertex[1];
-      const double dlp = Sinv * Arupslip;
-      const double dlq = Sinv * Aruqslip;
-
-      const double dlx = Cpx * dlp + Cqx * dlq;
-      const double dly = Cpy * dlp + Cqy * dlq;
-
-      // Update displacements at negative vertex.
-      solutionVertexN[0] = dlx / jacobianVertexN[0];
-      solutionVertexN[1] = dly / jacobianVertexN[1];
-
-      // Update displacements at positive vertex.
-      solutionVertexP[0] = -dlx / jacobianVertexP[0];
-      solutionVertexP[1] = -dly / jacobianVertexP[0];
-
-      // Update Lagrange multiplier.
-      solutionVertexL[0] = dlp;
-      solutionVertexL[1] = dlq;
-
-      break;
-    } // case 2
-    case 3: {
-      assert(jacobianVertexN[0] > 0.0);
-      assert(jacobianVertexN[1] > 0.0);
-      assert(jacobianVertexN[2] > 0.0);
-      assert(jacobianVertexP[0] > 0.0);
-      assert(jacobianVertexP[1] > 0.0);
-      assert(jacobianVertexP[2] > 0.0);
-
-      const double Cpx = orientationVertex[0];
-      const double Cpy = orientationVertex[1];
-      const double Cpz = orientationVertex[2];
-      const double Cqx = orientationVertex[3];
-      const double Cqy = orientationVertex[4];
-      const double Cqz = orientationVertex[5];
-      const double Crx = orientationVertex[6];
-      const double Cry = orientationVertex[7];
-      const double Crz = orientationVertex[8];
-
-      // Check to make sure Jacobian is same at all DOF for
-      // vertices i and j (means S is diagonal with equal enties).
-      assert(jacobianVertexN[0] == jacobianVertexN[1] && jacobianVertexN[0] == jacobianVertexN[2]);
-      assert(jacobianVertexP[0] == jacobianVertexP[1] && jacobianVertexP[0] == jacobianVertexP[2]);
-
-      const double Sinv = jacobianVertexN[0] * jacobianVertexP[0]
-          / (jacobianVertexN[0] + jacobianVertexP[0]);
-
-      // Aru = A_i^{-1} r_i - A_j^{-1} r_j + u_i - u_j
-      const double Arux = residualVertexN[0] / jacobianVertexN[0]
-          - residualVertexP[0] / jacobianVertexP[0] + dispTVertexN[0]
-          - dispTVertexP[0];
-      const double Aruy = residualVertexN[1] / jacobianVertexN[1]
-          - residualVertexP[1] / jacobianVertexP[1] + dispTVertexN[1]
-          - dispTVertexP[1];
-      const double Aruz = residualVertexN[2] / jacobianVertexN[2]
-          - residualVertexP[2] / jacobianVertexP[2] + dispTVertexN[2]
-          - dispTVertexP[2];
-
-      // dl_k = D^{-1}( -C_{ki} Aru - d_k)
-      const double Arup = Cpx * Arux + Cpy * Aruy + Cpz * Aruz;
-      const double Aruq = Cqx * Arux + Cqy * Aruy + Cqz * Aruz;
-      const double Arur = Crx * Arux + Cry * Aruy + Crz * Aruz;
-      const double Arupslip = -Arup - slipVertex[0];
-      const double Aruqslip = -Aruq - slipVertex[1];
-      const double Arurslip = -Arur - slipVertex[2];
-      const double dlp = Sinv * Arupslip;
-      const double dlq = Sinv * Aruqslip;
-      const double dlr = Sinv * Arurslip;
-
-      const double dlx = Cpx * dlp + Cqx * dlq + Crx * dlr;
-      const double dly = Cpy * dlp + Cqy * dlq + Cry * dlr;
-      const double dlz = Cpz * dlp + Cqz * dlq + Crz * dlr;
-
-      // Update displacements at negative vertex.
-      solutionVertexN[0] = dlx / jacobianVertexN[0];
-      solutionVertexN[1] = dly / jacobianVertexN[1];
-      solutionVertexN[2] = dlz / jacobianVertexN[2];
-
-      // Update displacements at positive vertex.
-      solutionVertexP[0] = -dlx / jacobianVertexP[0];
-      solutionVertexP[1] = -dly / jacobianVertexP[1];
-      solutionVertexP[2] = -dlz / jacobianVertexP[2];
-
-      // Update Lagrange multiplier.
-      solutionVertexL[0] = dlp;
-      solutionVertexL[1] = dlq;
-      solutionVertexL[2] = dlr;
-
-      break;
-    } // case 3
-    default:
-      assert(0);
-      throw std::logic_error("Unknown spatial dimension.");
-    } // switch
+    CALL_MEMBER_FN(*this, 
+		   adjustSolnLumpedFn)(&lagrangeIncrVertex, 
+				       &dispTIncrVertexN, &dispTIncrVertexP,
+				       slipVertex, orientationVertex, 
+				       dispTVertexN, dispTVertexP,
+				       residualVertexN, residualVertexP,
+				       jacobianVertexN, jacobianVertexP);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
 
-    assert(solutionVertexN.size() == solutionSection->getFiberDimension(v_negative));
-    solutionSection->updateAddPoint(v_negative, &solutionVertexN[0]);
+    assert(dispTIncrVertexN.size() == 
+	   dispTIncrSection->getFiberDimension(v_negative));
+    dispTIncrSection->updateAddPoint(v_negative, &dispTIncrVertexN[0]);
 
-    assert(solutionVertexP.size() == solutionSection->getFiberDimension(v_positive));
-    solutionSection->updateAddPoint(v_positive, &solutionVertexP[0]);
+    assert(dispTIncrVertexP.size() == 
+	   dispTIncrSection->getFiberDimension(v_positive));
+    dispTIncrSection->updateAddPoint(v_positive, &dispTIncrVertexP[0]);
 
-    assert(solutionVertexL.size() == solutionSection->getFiberDimension(v_lagrange));
-    solutionSection->updateAddPoint(v_lagrange, &solutionVertexL[0]);
+    assert(lagrangeIncrVertex.size() == 
+	   dispTIncrSection->getFiberDimension(v_lagrange));
+    dispTIncrSection->updateAddPoint(v_lagrange, &lagrangeIncrVertex[0]);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
 #endif
   } // for
-
-  switch(spaceDim) {
-  case 1:
-    PetscLogFlops(numVertices*17);
-    break;
-  case 2:
-    PetscLogFlops(numVertices*41);
-    break;
-  case 3:
-    PetscLogFlops(numVertices*72);
-    break;
-  default:
-    assert(0);
-    throw std::logic_error("Unknown spatial dimension.");
-  } // switch
 
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventEnd(computeEvent);
@@ -1365,6 +1244,216 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferScalarField(void)
 
   logger.stagePop();
 } // _allocateBufferScalarField
+
+// ----------------------------------------------------------------------
+// Adjust solution in lumped formulation to match slip for 1-D.
+void
+pylith::faults::FaultCohesiveLagrange::_adjustSolnLumped1D(
+					  double_array* lagrangeIncr,
+					  double_array* dispTIncrN,
+					  double_array* dispTIncrP,
+					  const double_array& slip,
+					  const double_array& orientation,
+					  const double_array& dispTN,
+					  const double_array& dispTP,
+					  const double_array& residualN,
+					  const double_array& residualP,
+					  const double_array& jacobianN,
+					  const double_array& jacobianP)
+{ // _adjustSoln1D
+  assert(0 != lagrangeIncr);
+  assert(0 != dispTIncrN);
+  assert(0 != dispTIncrP);
+
+  assert(jacobianN[0] > 0.0);
+  assert(jacobianP[0] > 0.0);
+  
+  const double Sinv = jacobianN[0] * jacobianP[0]
+    / (jacobianN[0] + jacobianP[0]);
+  
+  // Aru = A_i^{-1} r_i - A_j^{-1} r_j + u_i - u_j
+  const double Aru = residualN[0] / jacobianN[0]
+    - residualP[0] / jacobianP[0] + dispTN[0]
+    - dispTP[0];
+  
+  // dl_k = D^{-1}( - C_{ki} Aru - d_k)
+  const double Aruslip = -Aru - slip[0];
+  const double dlp = Sinv * Aruslip;
+  
+  // Update displacements at negative vertex
+  (*dispTIncrN)[0] = +1.0 / jacobianN[0] * dlp;
+  
+  // Update displacements at positive vertex
+  (*dispTIncrP)[0] = -1.0 / jacobianP[0] * dlp;
+  
+  // Update Lagrange multiplier.
+  (*lagrangeIncr)[0] = dlp;
+
+  PetscLogFlops(17);
+} // _adjustSoln1D
+
+// ----------------------------------------------------------------------
+// Adjust solution in lumped formulation to match slip for 2-D.
+void
+pylith::faults::FaultCohesiveLagrange::_adjustSolnLumped2D(
+					  double_array* lagrangeIncr,
+					  double_array* dispTIncrN,
+					  double_array* dispTIncrP,
+					  const double_array& slip,
+					  const double_array& orientation,
+					  const double_array& dispTN,
+					  const double_array& dispTP,
+					  const double_array& residualN,
+					  const double_array& residualP,
+					  const double_array& jacobianN,
+					  const double_array& jacobianP)
+{ // _adjustSoln2D
+  assert(0 != lagrangeIncr);
+  assert(0 != dispTIncrN);
+  assert(0 != dispTIncrP);
+
+  assert(jacobianN[0] > 0.0);
+  assert(jacobianN[1] > 0.0);
+  assert(jacobianP[0] > 0.0);
+  assert(jacobianP[1] > 0.0);
+  
+  const double Cpx = orientation[0];
+  const double Cpy = orientation[1];
+  const double Cqx = orientation[2];
+  const double Cqy = orientation[3];
+  
+  // Check to make sure Jacobian is same at all DOF for
+  // vertices i and j (means S is diagonal with equal enties).
+  assert(jacobianN[0] == jacobianN[1]);
+  assert(jacobianP[0] == jacobianP[1]);
+  
+  const double Sinv = jacobianN[0] * jacobianP[0]
+    / (jacobianN[0] + jacobianP[0]);
+  
+  // Aru = A_i^{-1} r_i - A_j^{-1} r_j + u_i - u_j
+  const double Arux = residualN[0] / jacobianN[0]
+    - residualP[0] / jacobianP[0] + dispTN[0]
+    - dispTP[0];
+  const double Aruy = residualN[1] / jacobianN[1]
+    - residualP[1] / jacobianP[1] + dispTN[1]
+    - dispTP[1];
+  
+  // dl_k = S^{-1}(-C_{ki} Aru - d_k)
+  const double Arup = Cpx * Arux + Cpy * Aruy;
+  const double Aruq = Cqx * Arux + Cqy * Aruy;
+  const double Arupslip = -Arup - slip[0];
+  const double Aruqslip = -Aruq - slip[1];
+  const double dlp = Sinv * Arupslip;
+  const double dlq = Sinv * Aruqslip;
+  
+  const double dlx = Cpx * dlp + Cqx * dlq;
+  const double dly = Cpy * dlp + Cqy * dlq;
+  
+  // Update displacements at negative vertex.
+  (*dispTIncrN)[0] = dlx / jacobianN[0];
+  (*dispTIncrN)[1] = dly / jacobianN[1];
+  
+  // Update displacements at positive vertex.
+  (*dispTIncrP)[0] = -dlx / jacobianP[0];
+  (*dispTIncrP)[1] = -dly / jacobianP[0];
+  
+  // Update Lagrange multiplier.
+  (*lagrangeIncr)[0] = dlp;
+  (*lagrangeIncr)[1] = dlq;
+
+    PetscLogFlops(41);
+} // _adjustSoln2D
+
+// ----------------------------------------------------------------------
+// Adjust solution in lumped formulation to match slip for 3-D.
+void
+pylith::faults::FaultCohesiveLagrange::_adjustSolnLumped3D(
+					  double_array* lagrangeIncr,
+					  double_array* dispTIncrN,
+					  double_array* dispTIncrP,
+					  const double_array& slip,
+					  const double_array& orientation,
+					  const double_array& dispTN,
+					  const double_array& dispTP,
+					  const double_array& residualN,
+					  const double_array& residualP,
+					  const double_array& jacobianN,
+					  const double_array& jacobianP)
+{ // _adjustSoln3D
+  assert(0 != lagrangeIncr);
+  assert(0 != dispTIncrN);
+  assert(0 != dispTIncrP);
+
+  assert(jacobianN[0] > 0.0);
+  assert(jacobianN[1] > 0.0);
+  assert(jacobianN[2] > 0.0);
+  assert(jacobianP[0] > 0.0);
+  assert(jacobianP[1] > 0.0);
+  assert(jacobianP[2] > 0.0);
+
+  const double Cpx = orientation[0];
+  const double Cpy = orientation[1];
+  const double Cpz = orientation[2];
+  const double Cqx = orientation[3];
+  const double Cqy = orientation[4];
+  const double Cqz = orientation[5];
+  const double Crx = orientation[6];
+  const double Cry = orientation[7];
+  const double Crz = orientation[8];
+
+  // Check to make sure Jacobian is same at all DOF for
+  // vertices i and j (means S is diagonal with equal enties).
+  assert(jacobianN[0] == jacobianN[1] && 
+	 jacobianN[0] == jacobianN[2]);
+  assert(jacobianP[0] == jacobianP[1] && 
+	 jacobianP[0] == jacobianP[2]);
+
+  const double Sinv = jacobianN[0] * jacobianP[0]
+    / (jacobianN[0] + jacobianP[0]);
+
+  // Aru = A_i^{-1} r_i - A_j^{-1} r_j + u_i - u_j
+  const double Arux = residualN[0] / jacobianN[0]
+    - residualP[0] / jacobianP[0] + dispTN[0]
+    - dispTP[0];
+  const double Aruy = residualN[1] / jacobianN[1]
+    - residualP[1] / jacobianP[1] + dispTN[1]
+    - dispTP[1];
+  const double Aruz = residualN[2] / jacobianN[2]
+    - residualP[2] / jacobianP[2] + dispTN[2]
+    - dispTP[2];
+
+  // dl_k = D^{-1}( -C_{ki} Aru - d_k)
+  const double Arup = Cpx * Arux + Cpy * Aruy + Cpz * Aruz;
+  const double Aruq = Cqx * Arux + Cqy * Aruy + Cqz * Aruz;
+  const double Arur = Crx * Arux + Cry * Aruy + Crz * Aruz;
+  const double Arupslip = -Arup - slip[0];
+  const double Aruqslip = -Aruq - slip[1];
+  const double Arurslip = -Arur - slip[2];
+  const double dlp = Sinv * Arupslip;
+  const double dlq = Sinv * Aruqslip;
+  const double dlr = Sinv * Arurslip;
+
+  const double dlx = Cpx * dlp + Cqx * dlq + Crx * dlr;
+  const double dly = Cpy * dlp + Cqy * dlq + Cry * dlr;
+  const double dlz = Cpz * dlp + Cqz * dlq + Crz * dlr;
+
+  // Update displacements at negative vertex.
+  (*dispTIncrN)[0] = dlx / jacobianN[0];
+  (*dispTIncrN)[1] = dly / jacobianN[1];
+  (*dispTIncrN)[2] = dlz / jacobianN[2];
+
+  // Update displacements at positive vertex.
+  (*dispTIncrP)[0] = -dlx / jacobianP[0];
+  (*dispTIncrP)[1] = -dly / jacobianP[1];
+  (*dispTIncrP)[2] = -dlz / jacobianP[2];
+
+  // Update Lagrange multiplier.
+  (*lagrangeIncr)[0] = dlp;
+  (*lagrangeIncr)[1] = dlq;
+  (*lagrangeIncr)[2] = dlr;
+
+  PetscLogFlops(72);
+} // _adjustSoln3D
 
 
 // End of file 
