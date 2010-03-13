@@ -166,6 +166,66 @@ private :
    */
   void _updateSlipRate(const topology::SolutionFields& fields);
 
+  /** Constrain solution space with lumped Jacobian in 1-D.
+   *
+   * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
+   * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
+   * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
+   * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
+   * @param orientation Fault orientation assoc. w/Lagrang multiplier vertex.
+   * @param jacobianN Jacobian for vertex on - side of the fault.
+   * @param jacobianP Jacobian for vertex on + side of the fault.
+   * @param area Fault area associated w/Lagrange multiplier vertex.
+   */
+  void _constrainSolnSpaceLumped1D(double_array* dLagrangeTpdt,
+				   double_array* slip,
+				   double_array* tractionTpdt,
+				   const double_array& sliprate,
+				   const double_array& orientation,
+				   const double_array& jacobianN,
+				   const double_array& jacobianP,
+				   const double area);
+
+  /** Constrain solution space with lumped Jacobian in 2-D.
+   *
+   * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
+   * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
+   * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
+   * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
+   * @param orientation Fault orientation assoc. w/Lagrang multiplier vertex.
+   * @param jacobianN Jacobian for vertex on - side of the fault.
+   * @param jacobianP Jacobian for vertex on + side of the fault.
+   * @param area Fault area associated w/Lagrange multiplier vertex.
+   */
+  void _constrainSolnSpaceLumped2D(double_array* dLagrangeTpdt,
+				   double_array* slip,
+				   double_array* tractionTpdt,
+				   const double_array& sliprate,
+				   const double_array& orientation,
+				   const double_array& jacobianN,
+				   const double_array& jacobianP,
+				   const double area);
+
+  /** Constrain solution space with lumped Jacobian in 3-D.
+   *
+   * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
+   * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
+   * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
+   * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
+   * @param orientation Fault orientation assoc. w/Lagrang multiplier vertex.
+   * @param jacobianN Jacobian for vertex on - side of the fault.
+   * @param jacobianP Jacobian for vertex on + side of the fault.
+   * @param area Fault area associated w/Lagrange multiplier vertex.
+   */
+  void _constrainSolnSpaceLumped3D(double_array* dLagrangeTpdt,
+				   double_array* slip,
+				   double_array* tractionTpdt,
+				   const double_array& sliprate,
+				   const double_array& orientation,
+				   const double_array& jacobianN,
+				   const double_array& jacobianP,
+				   const double area);
+
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
