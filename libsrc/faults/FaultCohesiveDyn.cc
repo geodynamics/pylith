@@ -25,6 +25,7 @@
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/friction/FrictionModel.hh" // USES FrictionModel
+#include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
@@ -292,8 +293,8 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
       break;
     } // case 1
     case 2: { // case 2
-      const double slipMag = slipVertex[0];
-      const double slipRateMag = slipRateVertex[0];
+      const double slipMag = fabs(slipVertex[0]);
+      const double slipRateMag = fabs(slipRateVertex[0]);
       const double tractionNormal = tractionTpdtVertex[1];
       _friction->updateStateVars(slipMag, slipRateMag, tractionNormal);
       break;
@@ -310,7 +311,8 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
     } // case 3
     default:
       assert(0);
-      throw std::logic_error("Unknown spatial dimension in updateStateVars().");
+      throw std::logic_error("Unknown spatial dimension in "
+			     "FaultCohesiveDyn::updateStateVars().");
     } // switch
   } // for
 } // updateStateVars
@@ -323,6 +325,13 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 				    const double t,
 				    const topology::Jacobian& jacobian)
 { // constrainSolnSpace
+  /// Member prototype for _constrainSolnSpaceLumpedXD()
+  typedef void (pylith::faults::FaultCohesiveDyn::*constrainSolnSpace_fn_type)
+    (double_array*, double_array*, double_array*,
+     const double_array&, const double_array&, 
+     const double_array&, const double_array&, 
+     const double);
+
   assert(0 != fields);
   assert(0 != _quadrature);
   assert(0 != _fields);
@@ -371,6 +380,27 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   const ALE::Obj<RealSection>& jacobianDiagSection =
         fields->get("Jacobian diagonal").section();
   assert(!jacobianDiagSection.isNull());
+
+  constrainSolnSpace_fn_type constrainSolnSpaceFn;
+  switch (spaceDim) { // switch
+  case 1:
+    constrainSolnSpaceFn = 
+      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped1D;
+    break;
+  case 2: 
+    constrainSolnSpaceFn = 
+      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped2D;
+    break;
+  case 3:
+    constrainSolnSpaceFn = 
+      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3D;
+    break;
+  default :
+    assert(0);
+    throw std::logic_error("Unknown spatial dimension in "
+			   "FaultCohesiveDyn::constrainSolnSpace().");
+  } // switch
+
 
 #if 0 // DEBUGGING
   slipSection->view("SLIP");
@@ -431,33 +461,12 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 
     // Use fault constitutive model to compute traction associated with
     // friction.
-    switch (spaceDim) { // switch
-    case 1:
-      _constrainSolnSpaceLumped1D(&dLagrangeTpdtVertex,
-				  &slipVertex, &tractionTpdtVertex, 
-				  slipRateVertex, orientationVertex,
-				  jacobianVertexN, jacobianVertexP,
-				  *areaVertex);
-      break;
-    case 2:
-      _constrainSolnSpaceLumped2D(&dLagrangeTpdtVertex,
-				  &slipVertex, &tractionTpdtVertex, 
-				  slipRateVertex, orientationVertex,
-				  jacobianVertexN, jacobianVertexP,
-				  *areaVertex);
-      break;
-    case 3 :
-      _constrainSolnSpaceLumped3D(&dLagrangeTpdtVertex,
-				  &slipVertex, &tractionTpdtVertex, 
-				  slipRateVertex, orientationVertex,
-				  jacobianVertexN, jacobianVertexP,
-				  *areaVertex);
-      break;
-    default:
-      assert(0);
-      throw std::logic_error("Unknown spatial dimension in "
-			     "FaultCohesiveDyn::constrainSolnSpace().");
-    } // switch
+    CALL_MEMBER_FN(*this,
+		   constrainSolnSpaceFn)(&dLagrangeTpdtVertex,
+					 &slipVertex, &tractionTpdtVertex, 
+					 slipRateVertex, orientationVertex,
+					 jacobianVertexN, jacobianVertexP,
+					 *areaVertex);
 
     // Update Lagrange multiplier values.
     // :KLUDGE: (TEMPORARY) Solution at Lagrange constraint vertices
@@ -490,23 +499,36 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 			 topology::SolutionFields* const fields,
 			 const topology::Field<topology::Mesh>& jacobian)
 { // adjustSolnLumped
-  // :TODO: Update this to constrain solution space using friction
-  assert(false);
-#if 0
+  /// Member prototype for _constrainSolnSpaceLumpedXD()
+  typedef void (pylith::faults::FaultCohesiveDyn::*constrainSolnSpace_fn_type)
+    (double_array*, double_array*, double_array*,
+     const double_array&, const double_array&, 
+     const double_array&, const double_array&, 
+     const double);
+
+  /// Member prototype for _adjustSolnLumpedXD()
+  typedef void (pylith::faults::FaultCohesiveDyn::*adjustSolnLumped_fn_type)
+    (double_array*, double_array*, double_array*,
+     const double_array&, const double_array&, 
+     const double_array&, const double_array&, 
+     const double_array&, const double_array&, 
+     const double_array&, const double_array&);
+
+
   assert(0 != fields);
   assert(0 != _quadrature);
 
   // Cohesive cells with conventional vertices i and j, and constraint
-  // vertex k require 2 adjustments to the solution:
+  // vertex k require three adjustments to the solution:
   //
   //   * DOF k: Compute increment in Lagrange multipliers
   //            dl_k = S^{-1} (-C_ki (A_i^{-1} r_i - C_kj A_j^{-1} r_j + u_i - u_j) - d_k)
   //            S = C_ki (A_i^{-1} + A_j^{-1}) C_ki^T
   //
-  //   Adjust increment in Lagrange multipliers according to friction
+  //   * Adjust Lagrange multipliers to match friction criterion
   //
-  //   * DOF i and j: Adjust displacement increment (solution) to account
-  //            for Lagrange multiplier constraints
+  //   * DOF k: Adjust displacement increment (solution) to create slip
+  //     consistent with Lagrange multiplier constraints
   //            du_i = +A_i^-1 C_ki^T dlk
   //            du_j = -A_j^-1 C_kj^T dlk
 
@@ -570,6 +592,33 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
   const ALE::Obj<RealSection>& residualSection =
       fields->get("residual").section();
 
+  adjustSolnLumped_fn_type adjustSolnLumpedFn;
+  constrainSolnSpace_fn_type constrainSolnSpaceFn;
+  switch (spaceDim) { // switch
+  case 1:
+    adjustSolnLumpedFn = 
+      &pylith::faults::FaultCohesiveDyn::_adjustSolnLumped1D;
+    constrainSolnSpaceFn = 
+      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped1D;
+    break;
+  case 2: 
+    adjustSolnLumpedFn = 
+      &pylith::faults::FaultCohesiveDyn::_adjustSolnLumped2D;
+    constrainSolnSpaceFn = 
+      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped2D;
+    break;
+  case 3:
+    adjustSolnLumpedFn = 
+      &pylith::faults::FaultCohesiveDyn::_adjustSolnLumped3D;
+    constrainSolnSpaceFn = 
+      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3D;
+    break;
+  default :
+    assert(0);
+    throw std::logic_error("Unknown spatial dimension in "
+			   "FaultCohesiveDyn::adjustSolnLumped.");
+  } // switch
+
   _logger->eventEnd(setupEvent);
 
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -627,6 +676,25 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     dispTIncrSection->restrictPoint(v_lagrange, &lagrangeTIncrVertex[0],
 				    lagrangeTIncrVertex.size());
     
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(restrictEvent);
+    _logger->eventBegin(computeEvent);
+#endif
+
+    CALL_MEMBER_FN(*this,
+		   adjustSolnLumpedFn)(&lagrangeTIncrVertex,
+				       &dispTIncrVertexN,
+				       &dispTIncrVertexP,
+				       slipVertex,
+				       orientationVertex,
+				       dispTVertexN,
+				       dispTVertexP,
+				       residualVertexN,
+				       residualVertexP,
+				       jacobianVertexN,
+				       jacobianVertexP);
+
     // Compute Lagrange multiplier at time t+dt
     lagrangeTpdtVertex = lagrangeTVertex + lagrangeTIncrVertex;
     dLagrangeTpdtVertex = 0.0;
@@ -641,60 +709,29 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     // Get friction properties and state variables.
     _friction->retrievePropsAndVars(v_fault);
 
+    CALL_MEMBER_FN(*this,
+		   constrainSolnSpaceFn)(&dLagrangeTpdtVertex,
+					 &slipVertex,
+					 &tractionTpdtVertex,
+					 slipRateVertex, orientationVertex,
+					 jacobianVertexN, jacobianVertexP,
+					 *areaVertex);
 
-#if defined(DETAILED_EVENT_LOGGING)
-    _logger->eventEnd(restrictEvent);
-    _logger->eventBegin(computeEvent);
-#endif
+    lagrangeTIncrVertex += dLagrangeTpdtVertex;
 
     switch (spaceDim) { // switch
     case 1: {
       assert(jacobianVertexN[0] > 0.0);
       assert(jacobianVertexP[0] > 0.0);
 
-      const double Sinv = jacobianVertexN[0] * jacobianVertexP[0]
-          / (jacobianVertexN[0] + jacobianVertexP[0]);
-
-      // Aru = A_i^{-1} r_i - A_j^{-1} r_j + u_i - u_j
-      const double Aru = residualVertexN[0] / jacobianVertexN[0]
-          - residualVertexP[0] / jacobianVertexP[0] + dispTVertexN[0]
-          - dispTVertexP[0];
-
-      // dl_k = D^{-1}( - C_{ki} Aru - d_k)
-      const double Aruslip = -Aru - slipVertex[0];
-      const double dlp = Sinv * Aruslip;
-
-      lagrangeTpdtVertex[0] += dlp;
-      
-      // Sensitivity of slip to changes in the Lagrange multipliers
-      // Aixjx = 1.0/Aix + 1.0/Ajx
-      const double Aixjx = 1.0 / jacobianVertexN[0] + 1.0
-          / jacobianVertexP[0];
-      const double Spp = 1.0;
-
-      if (tractionTpdtVertex[0] < 0) {
-        // if compression, then no changes to solution
-      } else {
-        // if tension, then traction is zero.
-
-        // Update slip based on value required to stick versus
-        // zero traction
-        dLagrangeTpdtVertex[0] = tractionTpdtVertex[0] * (*areaVertex);
-        slipVertex[0] += Spp * dLagrangeTpdtVertex[0];
-
-        // Set traction to zero.
-        tractionTpdtVertex[0] = 0.0;
-      } // else
+      const double dlp = dLagrangeTpdtVertex[0];
 
       // Update displacements at negative vertex
-      dispTIncrVertexN[0] = +1.0 / jacobianVertexN[0] * dLagrangeTpdtVertex[0];
-
+      dispTIncrVertexN[0] = +1.0 / jacobianVertexN[0] * dlp;
+  
       // Update displacements at positive vertex
-      dispTIncrVertexP[0] = -1.0 / jacobianVertexP[0] * dLagrangeTpdtVertex[0];
-
-      // Update Lagrange multiplier.
-      dispTIncrVertexL[0] = dLagrangeTpdtVertex[0];
-
+      dispTIncrVertexP[0] = -1.0 / jacobianVertexP[0] * dlp;
+  
       break;
     } // case 1
     case 2: {
@@ -703,118 +740,29 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
       assert(jacobianVertexP[0] > 0.0);
       assert(jacobianVertexP[1] > 0.0);
 
-      const double Cpx = orientationVertex[0];
-      const double Cpy = orientationVertex[1];
-      const double Cqx = orientationVertex[2];
-      const double Cqy = orientationVertex[3];
-
       // Check to make sure Jacobian is same at all DOF for
       // vertices i and j (means S is diagonal with equal enties).
       assert(jacobianVertexN[0] == jacobianVertexN[1]);
       assert(jacobianVertexP[0] == jacobianVertexP[1]);
 
-      const double Sinv = jacobianVertexN[0] * jacobianVertexP[0]
-          / (jacobianVertexN[0] + jacobianVertexP[0]);
-
-      // Aru = A_i^{-1} r_i - A_j^{-1} r_j + u_i - u_j
-      const double Arux = residualVertexN[0] / jacobianVertexN[0]
-          - residualVertexP[0] / jacobianVertexP[0] + dispTVertexN[0]
-          - dispTVertexP[0];
-      const double Aruy = residualVertexN[1] / jacobianVertexN[1]
-          - residualVertexP[1] / jacobianVertexP[1] + dispTVertexN[1]
-          - dispTVertexP[1];
-
-      // dl_k = S^{-1}(-C_{ki} Aru - d_k)
-      const double Arup = Cpx * Arux + Cpy * Aruy;
-      const double Aruq = Cqx * Arux + Cqy * Aruy;
-      const double Arupslip = -Arup - slipVertex[0];
-      const double Aruqslip = -Aruq - slipVertex[1];
-      const double dlp = Sinv * Arupslip;
-      const double dlq = Sinv * Aruqslip;
-
-      lagrangeTpdtVertex[0] += dlp;
-      lagrangeTpdtVertex[1] += dlq;
-
-      std::cout << "Normal traction:" << tractionTpdtVertex[1] << std::endl;
-
-      // Sensitivity of slip to changes in the Lagrange multipliers
-      // Aixjx = 1.0/Aix + 1.0/Ajx
-      assert(jacobianVertexN[0] > 0.0);
-      assert(jacobianVertexP[0] > 0.0);
-      const double Aixjx = 1.0 / jacobianVertexN[0] + 1.0
-          / jacobianVertexP[0];
-      // Aiyjy = 1.0/Aiy + 1.0/Ajy
-      assert(jacobianVertexN[1] > 0.0);
-      assert(jacobianVertexP[1] > 0.0);
-      const double Aiyjy = 1.0 / jacobianVertexN[1] + 1.0
-          / jacobianVertexP[1];
       const double Cpx = orientationVertex[0];
       const double Cpy = orientationVertex[1];
       const double Cqx = orientationVertex[2];
       const double Cqy = orientationVertex[3];
-      const double Spp = Cpx * Cpx * Aixjx + Cpy * Cpy * Aiyjy;
-      const double Spq = Cpx * Cqx * Aixjx + Cpy * Cqy * Aiyjy;
-      const double Sqq = Cqx * Cqx * Aixjx + Cqy * Cqy * Aiyjy;
 
-      const double tractionNormal = tractionTpdtVertex[1];
-      const double slip = slipVertex[0];
-      const double slipRate = slipRateVertex[0];
-
-      if (tractionTpdtVertex[1] < 0 && 0.0 == slipVertex[1]) {
-        // if in compression and no opening
-        std::cout << "FAULT IN COMPRESSION" << std::endl;
-        const double frictionStress = _friction->calcFriction(slip, slipRate,
-          tractionNormal);
-        std::cout << "frictionStress: " << frictionStress << std::endl;
-        if (tractionTpdtVertex[0] > frictionStress || (tractionTpdtVertex[0]
-            < frictionStress && slipVertex[0] > 0.0)) {
-          // traction is limited by friction, so have sliding
-          std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
-
-          // Update slip based on value required to stick versus friction
-          dLagrangeTpdtVertex[0] = (tractionTpdtVertex[0] - frictionStress)
-              * (*areaVertex);
-          slipVertex[0] += Spp * dLagrangeTpdtVertex[0];
-          std::cout << "Estimated slip: " << slipVertex[0] << std::endl;
-          // Limit traction
-          tractionTpdtVertex[0] = frictionStress;
-        } else {
-          // else friction exceeds value necessary, so stick
-          std::cout << "STICK" << std::endl;
-          // no changes to solution
-        } // if/else
-      } else {
-        // if in tension, then traction is zero.
-        std::cout << "FAULT IN TENSION" << std::endl;
-
-        // Update slip based on value required to stick versus
-        // zero traction
-        dLagrangeTpdtVertex[0] = tractionTpdtVertex[0] * (*areaVertex);
-        dLagrangeTpdtVertex[1] = tractionTpdtVertex[1] * (*areaVertex);
-        slipVertex[0] += Spp * dLagrangeTpdtVertex[0] + Spq
-            * dLagrangeTpdtVertex[1];
-        slipVertex[1] += Spq * dLagrangeTpdtVertex[0] + Sqq
-            * dLagrangeTpdtVertex[1];
-
-        // Set traction to zero
-        tractionTpdtVertex = 0.0;
-      } // else
-
+      const double dlp = dLagrangeTpdtVertex[0];
+      const double dlq = dLagrangeTpdtVertex[1];
 
       const double dlx = Cpx * dlp + Cqx * dlq;
       const double dly = Cpy * dlp + Cqy * dlq;
-
+  
       // Update displacements at negative vertex.
       dispTIncrVertexN[0] = dlx / jacobianVertexN[0];
-      dispTIncrVertexN[1] = dly / jacobianVertexN[1];
-
+      dispTIncrVertexN[1] = dly / jacobianVertexN[0];
+  
       // Update displacements at positive vertex.
       dispTIncrVertexP[0] = -dlx / jacobianVertexP[0];
       dispTIncrVertexP[1] = -dly / jacobianVertexP[0];
-
-      // Update Lagrange multiplier.
-      dispTIncrVertexL[0] = dlp;
-      dispTIncrVertexL[1] = dlq;
 
       break;
     } // case 2
@@ -826,6 +774,13 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
       assert(jacobianVertexP[1] > 0.0);
       assert(jacobianVertexP[2] > 0.0);
 
+      // Check to make sure Jacobian is same at all DOF for
+      // vertices i and j (means S is diagonal with equal enties).
+      assert(jacobianVertexN[0] == jacobianVertexN[1] && 
+	     jacobianVertexN[0] == jacobianVertexN[2]);
+      assert(jacobianVertexP[0] == jacobianVertexP[1] && 
+	     jacobianVertexP[0] == jacobianVertexP[2]);
+
       const double Cpx = orientationVertex[0];
       const double Cpy = orientationVertex[1];
       const double Cpz = orientationVertex[2];
@@ -836,35 +791,9 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
       const double Cry = orientationVertex[7];
       const double Crz = orientationVertex[8];
 
-      // Check to make sure Jacobian is same at all DOF for
-      // vertices i and j (means S is diagonal with equal enties).
-      assert(jacobianVertexN[0] == jacobianVertexN[1] && jacobianVertexN[0] == jacobianVertexN[2]);
-      assert(jacobianVertexP[0] == jacobianVertexP[1] && jacobianVertexP[0] == jacobianVertexP[2]);
-
-      const double Sinv = jacobianVertexN[0] * jacobianVertexP[0]
-          / (jacobianVertexN[0] + jacobianVertexP[0]);
-
-      // Aru = A_i^{-1} r_i - A_j^{-1} r_j + u_i - u_j
-      const double Arux = residualVertexN[0] / jacobianVertexN[0]
-          - residualVertexP[0] / jacobianVertexP[0] + dispTVertexN[0]
-          - dispTVertexP[0];
-      const double Aruy = residualVertexN[1] / jacobianVertexN[1]
-          - residualVertexP[1] / jacobianVertexP[1] + dispTVertexN[1]
-          - dispTVertexP[1];
-      const double Aruz = residualVertexN[2] / jacobianVertexN[2]
-          - residualVertexP[2] / jacobianVertexP[2] + dispTVertexN[2]
-          - dispTVertexP[2];
-
-      // dl_k = D^{-1}( -C_{ki} Aru - d_k)
-      const double Arup = Cpx * Arux + Cpy * Aruy + Cpz * Aruz;
-      const double Aruq = Cqx * Arux + Cqy * Aruy + Cqz * Aruz;
-      const double Arur = Crx * Arux + Cry * Aruy + Crz * Aruz;
-      const double Arupslip = -Arup - slipVertex[0];
-      const double Aruqslip = -Aruq - slipVertex[1];
-      const double Arurslip = -Arur - slipVertex[2];
-      const double dlp = Sinv * Arupslip;
-      const double dlq = Sinv * Aruqslip;
-      const double dlr = Sinv * Arurslip;
+      const double dlp = dLagrangeTpdtVertex[0];
+      const double dlq = dLagrangeTpdtVertex[1];
+      const double dlr = dLagrangeTpdtVertex[2];
 
       const double dlx = Cpx * dlp + Cqx * dlq + Crx * dlr;
       const double dly = Cpy * dlp + Cqy * dlq + Cry * dlr;
@@ -880,16 +809,12 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
       dispTIncrVertexP[1] = -dly / jacobianVertexP[1];
       dispTIncrVertexP[2] = -dlz / jacobianVertexP[2];
 
-      // Update Lagrange multiplier.
-      dispTIncrVertexL[0] = dlp;
-      dispTIncrVertexL[1] = dlq;
-      dispTIncrVertexL[2] = dlr;
-
       break;
     } // case 3
     default:
       assert(0);
-      throw std::logic_error("Unknown spatial dimension.");
+      throw std::logic_error("Unknown spatial dimension in "
+			     "FaultCohesiveDyn::adjustSolnLumped().");
     } // switch
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -897,38 +822,25 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     _logger->eventBegin(updateEvent);
 #endif
 
-    assert(dispTIncrVertexN.size() == dispTIncrSection->getFiberDimension(v_negative));
+    assert(dispTIncrVertexN.size() == 
+	   dispTIncrSection->getFiberDimension(v_negative));
     dispTIncrSection->updateAddPoint(v_negative, &dispTIncrVertexN[0]);
 
-    assert(dispTIncrVertexP.size() == dispTIncrSection->getFiberDimension(v_positive));
+    assert(dispTIncrVertexP.size() == 
+	   dispTIncrSection->getFiberDimension(v_positive));
     dispTIncrSection->updateAddPoint(v_positive, &dispTIncrVertexP[0]);
 
-    assert(dispTIncrVertexL.size() == dispTIncrSection->getFiberDimension(v_lagrange));
-    dispTIncrSection->updateAddPoint(v_lagrange, &dispTIncrVertexL[0]);
+    assert(lagrangeTIncrVertex.size() == 
+	   dispTIncrSection->getFiberDimension(v_lagrange));
+    dispTIncrSection->updateAddPoint(v_lagrange, &lagrangeTIncrVertex[0]);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
 #endif
   } // for
 
-  switch(spaceDim) {
-  case 1:
-    PetscLogFlops(numVertices*17);
-    break;
-  case 2:
-    PetscLogFlops(numVertices*41);
-    break;
-  case 3:
-    PetscLogFlops(numVertices*72);
-    break;
-  default:
-    assert(0);
-    throw std::logic_error("Unknown spatial dimension.");
-  } // switch
-
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventEnd(computeEvent);
-#endif
 #endif
 } // adjustSolnLumped
 
@@ -1527,28 +1439,32 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped2D(
   const double Spq = Cpx * Cqx * Aixjx + Cpy * Cqy * Aiyjy;
   const double Sqq = Cqx * Cqx * Aixjx + Cqy * Cqy * Aiyjy;
   
-  const double tractionNormal = (*tractionTpdt)[1];
   const double slipMag = fabs((*slip)[0]);
   const double slipRateMag = fabs(slipRate[0]);
-  
+
+  const double tractionNormal = (*tractionTpdt)[1];
+  const double tractionShearMag = fabs((*tractionTpdt)[0]);
+
   if (tractionNormal < 0 && 0.0 == (*slip)[1]) {
     // if in compression and no opening
     std::cout << "FAULT IN COMPRESSION" << std::endl;
     const double frictionStress = _friction->calcFriction(slipMag, slipRateMag,
 							  tractionNormal);
     std::cout << "frictionStress: " << frictionStress << std::endl;
-    if ((*tractionTpdt)[0] > frictionStress || 
-	((*tractionTpdt)[0] < frictionStress && slipMag > 0.0)) {
+    if (tractionShearMag > frictionStress || 
+	(tractionShearMag < frictionStress && slipMag > 0.0)) {
       // traction is limited by friction, so have sliding
       std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
       
       // Update slip based on value required to stick versus friction
-      const double dlp = ((*tractionTpdt)[0] - frictionStress) * area;
+      const double dlp = (tractionShearMag - frictionStress) * area *
+	(*tractionTpdt)[0] / tractionShearMag;
       (*dLagrangeTpdt)[0] = dlp;
       (*slip)[0] += Spp * dlp;
       std::cout << "Estimated slip: " << (*slip)[0] << std::endl;
+
       // Limit traction
-      (*tractionTpdt)[0] = frictionStress;
+      (*tractionTpdt)[0] *= frictionStress / tractionShearMag;
     } else {
       // else friction exceeds value necessary, so stick
       std::cout << "STICK" << std::endl;
@@ -1645,10 +1561,10 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3D(
       std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
       
       // Update slip based on value required to stick versus friction
-      const double dlp = (tractionShearMag - frictionStress) * 
-	(*tractionTpdt)[0] / tractionShearMag * area;
-      const double dlq = (tractionShearMag - frictionStress)
-	* (*tractionTpdt)[1] / tractionShearMag * area;
+      const double dlp = (tractionShearMag - frictionStress) * area *
+	(*tractionTpdt)[0] / tractionShearMag;
+      const double dlq = (tractionShearMag - frictionStress) * area *
+	(*tractionTpdt)[1] / tractionShearMag;
 
       (*dLagrangeTpdt)[0] = dlp;
       (*dLagrangeTpdt)[1] = dlq;

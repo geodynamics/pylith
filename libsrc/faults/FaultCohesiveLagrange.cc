@@ -542,8 +542,8 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
   //            dl_k = S^{-1} (-C_ki (A_i^{-1} r_i - C_kj A_j^{-1} r_j + u_i - u_j) - d_k)
   //            S = C_ki (A_i^{-1} + A_j^{-1}) C_ki^T
   //
-  //   * DOF i and j: Adjust displacement increment (solution) to account
-  //            for Lagrange multiplier constraints
+  //   * DOF i and j: Adjust displacement increment (solution) to create slip
+  //     consistent with Lagrange multiplier constraints
   //            du_i = +A_i^-1 C_ki^T dlk
   //            du_j = -A_j^-1 C_kj^T dlk
 
