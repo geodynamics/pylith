@@ -292,6 +292,7 @@ AC_CONFIG_FILES([Makefile
 		tests/2d/quad4/Makefile
 		tests/3dnew/hex8/Makefile
 		tests/petsc/Makefile
+		playpen/closure/Makefile
                 doc/Makefile
 		doc/developer/Makefile
 		doc/install/Makefile
