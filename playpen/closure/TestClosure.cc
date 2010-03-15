@@ -24,7 +24,7 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-//#define SEPARATE_FIELDS
+#define SEPARATE_FIELDS
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
@@ -36,7 +36,7 @@ const int pylith::playpen::TestClosure::_spaceDim = 3;
 // ----------------------------------------------------------------------
 // Constructor
 pylith::playpen::TestClosure::TestClosure(void) :
-  _niterations(1000)
+  _niterations(10)
 { // constructor
 } // constructor
 
@@ -147,7 +147,7 @@ pylith::playpen::TestClosure::testRestrictClosure(const pylith::topology::Mesh& 
   ALE::LogStagePush(stage);
   logger.eventBegin(closureEvent);
 
-  long i = 0;
+  long count = 0;
   const long niterations = _niterations;
   for (long iter=0; iter < niterations; ++iter)
     for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
@@ -155,25 +155,28 @@ pylith::playpen::TestClosure::testRestrictClosure(const pylith::topology::Mesh& 
 	 ++c_iter) {
       coordsVisitor.clear();
       sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+      //sieve->orientedConeOpt(*c_iter, coordsVisitor, coneSize, spaceDim);
       
 #if defined(SEPARATE_FIELDS)
       fieldAVisitor.clear();
       sieveMesh->restrictClosure(*c_iter, fieldAVisitor);
+      //sieve->orientedConeOpt(*c_iter, fieldAVisitor, coneSize, spaceDim);
       
       fieldBVisitor.clear();
       sieveMesh->restrictClosure(*c_iter, fieldBVisitor);
+      //sieve->orientedConeOpt(*c_iter, fieldBVisitor, coneSize, spaceDim);
       
       // Perform trivial operation on fields
-      tmpCell = fieldACell + fieldBCell + coordsCell;
+      //tmpCell = fieldACell + fieldBCell + coordsCell;
 #else
       fieldABVisitor.clear();
       sieveMesh->restrictClosure(*c_iter, fieldABVisitor);
       
       // Perform trivial operation on fields
-      for (int i=0; i < dataSize; ++i) 
-	tmpCell[i] = fieldABCell[i] + fieldABCell[dataSize+i] + coordsCell[i];
+      //for (int i=0; i < dataSize; ++i) 
+      //tmpCell[i] = fieldABCell[i] + fieldABCell[dataSize+i] + coordsCell[i];
 #endif
-      ++i;
+      ++count;
       
     } // for
 
@@ -188,7 +191,7 @@ pylith::playpen::TestClosure::testRestrictClosure(const pylith::topology::Mesh& 
   ierr = StageLogGetEventPerfLog(stageLog, stage, &eventLog); CHECK_PETSC_ERROR(ierr);
   EventPerfInfo eventInfo = eventLog->eventInfo[closureEvent];
   assert(1 == eventInfo.count);
-  assert(i == cells->size() * _niterations);
+  assert(count == cells->size() * _niterations);
 
 #if defined(SEPARATE_FIELDS)
   const long nclosures = (1 + 2) * cells->size() * _niterations;
