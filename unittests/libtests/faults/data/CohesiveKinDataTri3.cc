@@ -306,8 +306,8 @@ const double pylith::faults::CohesiveKinDataTri3::_fieldIncrAdjusted[] = {
   3.4, 4.4,
   -3.06996065966, -2.20909517212, // 6
   -2.30215017286, -1.41913540767, // 7
-  -6.46364275818, -5.25494098949, // 8
-  -6.60253019304, -5.40365529386, // 9
+  -10.0636427582, -9.85494098949, // 8
+  -10.402530193, -10.2036552939, // 9
 };
 
 pylith::faults::CohesiveKinDataTri3::CohesiveKinDataTri3(void)

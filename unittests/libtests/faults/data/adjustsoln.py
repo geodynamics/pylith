@@ -21,7 +21,7 @@ if test == "line2":
     #print "Si",Si
     #print "dlip",dlp
 
-    print dui+ddui,duj+dduj,l+dlp
+    print dui+ddui,duj+dduj,dlp
 
 # ----------------------------------------------------------------------
 elif test == "tri3" or test == "quad4":
@@ -148,7 +148,7 @@ elif test == "tri3" or test == "quad4":
 
     print duix+dduix,duiy+dduiy
     print dujx+ddujx,dujy+ddujy
-    print lp+dlp,lq+dlq
+    print dlp,dlq
 
 # ----------------------------------------------------------------------
 elif test == "tet4" or test == "hex8":
@@ -330,31 +330,31 @@ elif test == "tet4" or test == "hex8":
     ddujy = -1.0/Ajy * (Cpy*dlp + Cqy*dlq + Cry*dlr)
     ddujz = -1.0/Ajz * (Cpz*dlp + Cqz*dlq + Crz*dlr)
 
-    print "Sppi",Sppi
-    print "Sqqi",Sqqi
-    print "Srri",Srri
+#     print "Sppi",Sppi
+#     print "Sqqi",Sqqi
+#     print "Srri",Srri
 
-    print "Arup",Arup
-    print "Aruq",Aruq
-    print "Arur",Arur
+#     print "Arup",Arup
+#     print "Aruq",Aruq
+#     print "Arur",Arur
 
-    print "Arupslip",Arupslip
-    print "Aruqslip",Aruqslip
-    print "Arurslip",Arurslip
+#     print "Arupslip",Arupslip
+#     print "Aruqslip",Aruqslip
+#     print "Arurslip",Arurslip
 
-    print "dlp",dlp
-    print "dlq",dlq
-    print "dlr",dlr
+#     print "dlp",dlp
+#     print "dlq",dlq
+#     print "dlr",dlr
 
-    print "dduix:",dduix
-    print "dduiy:",dduiy
-    print "dduiz:",dduiz
+#     print "dduix:",dduix
+#     print "dduiy:",dduiy
+#     print "dduiz:",dduiz
 
-    print "ddujx:",ddujx
-    print "ddujy:",ddujy
-    print "ddujz:",ddujz
+#     print "ddujx:",ddujx
+#     print "ddujy:",ddujy
+#     print "ddujz:",ddujz
 
     print duix+dduix,duiy+dduiy,duiz+dduiz
     print dujx+ddujx,dujy+ddujy,dujz+ddujz
-    print lp+dlp,lq+dlq,lr+dlr
+    print dlp,dlq,dlr
 

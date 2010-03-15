@@ -693,7 +693,7 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   const topology::Field<topology::Mesh>& solution = fields.get("dispIncr(t->t+dt)");
   fault.adjustSolnLumped(&fields, jacobian);
 
-  // solution.view("SOLUTION AFTER ADJUSTMENT"); // DEBUGGING
+  //solution.view("SOLUTION AFTER ADJUSTMENT"); // DEBUGGING
 
   const ALE::Obj<RealSection>& solutionSection = solution.section();
   CPPUNIT_ASSERT(!solutionSection.isNull());
