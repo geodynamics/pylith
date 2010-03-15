@@ -327,7 +327,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 { // constrainSolnSpace
   /// Member prototype for _constrainSolnSpaceLumpedXD()
   typedef void (pylith::faults::FaultCohesiveDyn::*constrainSolnSpace_fn_type)
-    (double_array*, double_array*, double_array*,
+    (double_array*, double_array*, const double_array&,
      const double_array&, const double_array&, 
      const double_array&, const double_array&, 
      const double);
@@ -463,17 +463,13 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     // friction.
     CALL_MEMBER_FN(*this,
 		   constrainSolnSpaceFn)(&dLagrangeTpdtVertex,
-					 &slipVertex, &tractionTpdtVertex, 
-					 slipRateVertex, orientationVertex,
+					 &slipVertex, slipRateVertex, 
+					 tractionTpdtVertex, orientationVertex,
 					 jacobianVertexN, jacobianVertexP,
 					 *areaVertex);
 
     // Update Lagrange multiplier values.
-    // :KLUDGE: (TEMPORARY) Solution at Lagrange constraint vertices
-    // is the Lagrange multiplier value, which is currently the
-    // force.  Compute force by multipling traction by area
-    lagrangeTIncrVertex =
-      (tractionTpdtVertex - tractionTVertex) * (*areaVertex);
+    lagrangeTIncrVertex += dLagrangeTpdtVertex;
     assert(lagrangeTIncrVertex.size() ==
         dispTIncrSection->getFiberDimension(v_lagrange));
     dispTIncrSection->updatePoint(v_lagrange, &lagrangeTIncrVertex[0]);
@@ -485,7 +481,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     slipSection->updatePoint(v_fault, &slipVertex[0]);
   } // if
 
-#if 1 // DEBUGGIN
+#if 0 // DEBUGGING
   dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
   slipSection->view("AFTER SLIP");
 #endif
@@ -501,7 +497,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 { // adjustSolnLumped
   /// Member prototype for _constrainSolnSpaceLumpedXD()
   typedef void (pylith::faults::FaultCohesiveDyn::*constrainSolnSpace_fn_type)
-    (double_array*, double_array*, double_array*,
+    (double_array*, double_array*, const double_array&,
      const double_array&, const double_array&, 
      const double_array&, const double_array&, 
      const double);
@@ -696,13 +692,6 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 				       jacobianVertexP);
 
     
-    std::cout << "adjusted solution, lagrangeT: "
-	      << lagrangeTVertex[0]
-	      << ", " << lagrangeTVertex[1]
-	      << "; lagrangeTIncr: "
-	      << lagrangeTIncrVertex[0]
-	      << ", " << lagrangeTIncrVertex[1] << std::endl;
-
     // Compute Lagrange multiplier at time t+dt
     lagrangeTpdtVertex = lagrangeTVertex + lagrangeTIncrVertex;
     dLagrangeTpdtVertex = 0.0;
@@ -719,20 +708,10 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 
     CALL_MEMBER_FN(*this,
 		   constrainSolnSpaceFn)(&dLagrangeTpdtVertex,
-					 &slipVertex,
-					 &tractionTpdtVertex,
-					 slipRateVertex, orientationVertex,
+					 &slipVertex, slipRateVertex,
+					 tractionTpdtVertex, orientationVertex,
 					 jacobianVertexN, jacobianVertexP,
 					 *areaVertex);
-
-    std::cout << "constrain solution, dLagrangeTpdtVertex: " 
-	      << dLagrangeTpdtVertex[0]
-	      << ", " << dLagrangeTpdtVertex[1]
-	      << "; slipVertex: " << slipVertex[0]
-	      << ", " << slipVertex[1]
-	      << "; tractionTpdtVertex: " << tractionTpdtVertex[0]
-	      << ", " << tractionTpdtVertex[1]
-	      << std::endl;
 
     lagrangeTIncrVertex += dLagrangeTpdtVertex;
 
@@ -741,7 +720,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
       assert(jacobianVertexN[0] > 0.0);
       assert(jacobianVertexP[0] > 0.0);
 
-      const double dlp = dLagrangeTpdtVertex[0];
+      const double dlp = lagrangeTIncrVertex[0];
 
       // Update displacements at negative vertex
       dispTIncrVertexN[0] = +1.0 / jacobianVertexN[0] * dlp;
@@ -767,8 +746,8 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
       const double Cqx = orientationVertex[2];
       const double Cqy = orientationVertex[3];
 
-      const double dlp = dLagrangeTpdtVertex[0];
-      const double dlq = dLagrangeTpdtVertex[1];
+      const double dlp = lagrangeTIncrVertex[0];
+      const double dlq = lagrangeTIncrVertex[1];
 
       const double dlx = Cpx * dlp + Cqx * dlq;
       const double dly = Cpy * dlp + Cqy * dlq;
@@ -808,9 +787,9 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
       const double Cry = orientationVertex[7];
       const double Crz = orientationVertex[8];
 
-      const double dlp = dLagrangeTpdtVertex[0];
-      const double dlq = dLagrangeTpdtVertex[1];
-      const double dlr = dLagrangeTpdtVertex[2];
+      const double dlp = lagrangeTIncrVertex[0];
+      const double dlq = lagrangeTIncrVertex[1];
+      const double dlr = lagrangeTIncrVertex[2];
 
       const double dlx = Cpx * dlp + Cqx * dlq + Crx * dlr;
       const double dly = Cpy * dlp + Cqy * dlq + Cry * dlr;
@@ -839,6 +818,8 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     _logger->eventBegin(updateEvent);
 #endif
 
+    // Adjust displacements to account for Lagrange multiplier values
+    // (assumed to be zero in perliminary solve).
     assert(dispTIncrVertexN.size() == 
 	   dispTIncrSection->getFiberDimension(v_negative));
     dispTIncrSection->updateAddPoint(v_negative, &dispTIncrVertexN[0]);
@@ -847,6 +828,8 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 	   dispTIncrSection->getFiberDimension(v_positive));
     dispTIncrSection->updateAddPoint(v_positive, &dispTIncrVertexP[0]);
 
+    // Set Lagrange multiplier value. Value from preliminary solve is
+    // bogus due to artificial diagonal entry of 1.0.
     assert(lagrangeTIncrVertex.size() == 
 	   dispTIncrSection->getFiberDimension(v_lagrange));
     dispTIncrSection->updatePoint(v_lagrange, &lagrangeTIncrVertex[0]);
@@ -1108,7 +1091,7 @@ pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
       const double_array& basis = _quadrature->basis();
       const double_array& jacobianDet = _quadrature->jacobianDet();
 
-      // Compute action for traction bc terms
+      // Integrate tractions over cell.
       const double wt = quadWts[iQuadPt] * jacobianDet[iQuadPt];
       for (int iBasis=0; iBasis < numBasis; ++iBasis) {
 	const double valI = wt*basis[iQuadPt*numBasis+iBasis];
@@ -1388,8 +1371,8 @@ void
 pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped1D(
 				     double_array* dLagrangeTpdt,
 				     double_array* slip,
-				     double_array* tractionTpdt,
 				     const double_array& sliprate,
+				     const double_array& tractionTpdt,
 				     const double_array& orientation,
 				     const double_array& jacobianN,
 				     const double_array& jacobianP,
@@ -1397,7 +1380,6 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped1D(
 { // constrainSolnSpace1D
   assert(0 != dLagrangeTpdt);
   assert(0 != slip);
-  assert(0 != tractionTpdt);
 
   // Sensitivity of slip to changes in the Lagrange multipliers
   // Aixjx = 1.0/Aix + 1.0/Ajx
@@ -1405,19 +1387,16 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped1D(
     / jacobianP[0];
   const double Spp = 1.0;
   
-  if ((*tractionTpdt)[0] < 0) {
+  if (tractionTpdt[0] < 0) {
     // if compression, then no changes to solution
   } else {
     // if tension, then traction is zero.
     
     // Update slip based on value required to stick versus
     // zero traction
-    const double dlp = (*tractionTpdt)[0] * area;
-    (*dLagrangeTpdt)[0] = dlp;
-    (*slip)[0] += Spp * dlp;
-    
-    // Set traction to zero.
-    (*tractionTpdt)[0] = 0.0;
+    const double dlp = tractionTpdt[0] * area;
+    (*dLagrangeTpdt)[0] = -dlp;
+    (*slip)[0] += Spp * dlp;    
   } // else
 
   PetscLogFlops(6);
@@ -1429,8 +1408,8 @@ void
 pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped2D(
 				     double_array* dLagrangeTpdt,
 				     double_array* slip,
-				     double_array* tractionTpdt,
 				     const double_array& slipRate,
+				     const double_array& tractionTpdt,
 				     const double_array& orientation,
 				     const double_array& jacobianN,
 				     const double_array& jacobianP,
@@ -1438,9 +1417,8 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped2D(
 { // constrainSolnSpace2D
   assert(0 != dLagrangeTpdt);
   assert(0 != slip);
-  assert(0 != tractionTpdt);
 
-  std::cout << "Normal traction:" << (*tractionTpdt)[1] << std::endl;
+  std::cout << "Normal traction:" << tractionTpdt[1] << std::endl;
 
   // Sensitivity of slip to changes in the Lagrange multipliers
   // Aixjx = 1.0/Aix + 1.0/Ajx
@@ -1464,8 +1442,8 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped2D(
   const double slipMag = fabs((*slip)[0]);
   const double slipRateMag = fabs(slipRate[0]);
 
-  const double tractionNormal = (*tractionTpdt)[1];
-  const double tractionShearMag = fabs((*tractionTpdt)[0]);
+  const double tractionNormal = tractionTpdt[1];
+  const double tractionShearMag = fabs(tractionTpdt[0]);
 
   if (tractionNormal < 0 && 0.0 == (*slip)[1]) {
     // if in compression and no opening
@@ -1480,13 +1458,10 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped2D(
       
       // Update slip based on value required to stick versus friction
       const double dlp = (tractionShearMag - frictionStress) * area *
-	(*tractionTpdt)[0] / tractionShearMag;
-      (*dLagrangeTpdt)[0] = dlp;
+	tractionTpdt[0] / tractionShearMag;
+      (*dLagrangeTpdt)[0] = -dlp;
       (*slip)[0] += Spp * dlp;
       std::cout << "Estimated slip: " << (*slip)[0] << std::endl;
-
-      // Limit traction
-      (*tractionTpdt)[0] *= frictionStress / tractionShearMag;
     } else {
       // else friction exceeds value necessary, so stick
       std::cout << "STICK" << std::endl;
@@ -1498,16 +1473,13 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped2D(
     
     // Update slip based on value required to stick versus
     // zero traction
-    const double dlp = (*tractionTpdt)[0] * area;
-    const double dlq = (*tractionTpdt)[1] * area;
+    const double dlp = tractionTpdt[0] * area;
+    const double dlq = tractionTpdt[1] * area;
 
-    (*dLagrangeTpdt)[0] = dlp;
-    (*dLagrangeTpdt)[1] = dlq;
+    (*dLagrangeTpdt)[0] = -dlp;
+    (*dLagrangeTpdt)[1] = -dlq;
     (*slip)[0] += Spp * dlp + Spq * dlq;
     (*slip)[1] += Spq * dlp + Sqq * dlq;
-    
-    // Set traction to zero
-    (*tractionTpdt) = 0.0;
   } // else
 
   PetscLogFlops(0); // :TODO: Fix this
@@ -1519,8 +1491,8 @@ void
 pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3D(
 				     double_array* dLagrangeTpdt,
 				     double_array* slip,
-				     double_array* tractionTpdt,
 				     const double_array& slipRate,
+				     const double_array& tractionTpdt,
 				     const double_array& orientation,
 				     const double_array& jacobianN,
 				     const double_array& jacobianP,
@@ -1528,9 +1500,8 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3D(
 { // constrainSolnSpace3D
   assert(0 != dLagrangeTpdt);
   assert(0 != slip);
-  assert(0 != tractionTpdt);
 
-  std::cout << "Normal traction:" << (*tractionTpdt)[2] << std::endl;
+  std::cout << "Normal traction:" << tractionTpdt[2] << std::endl;
 
   // Sensitivity of slip to changes in the Lagrange multipliers
   // Aixjx = 1.0/Aix + 1.0/Ajx
@@ -1566,10 +1537,10 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3D(
   double slipRateMag = sqrt(slipRate[0]*slipRate[0] + 
 			    slipRate[1]*slipRate[1]);
   
-  const double tractionNormal = (*tractionTpdt)[2];
+  const double tractionNormal = tractionTpdt[2];
   const double tractionShearMag = 
-    sqrt((*tractionTpdt)[0] * (*tractionTpdt)[0] +
-	 (*tractionTpdt)[1] * (*tractionTpdt)[1]);
+    sqrt(tractionTpdt[0] * tractionTpdt[0] +
+	 tractionTpdt[1] * tractionTpdt[1]);
   
   if (tractionNormal < 0.0 && 0.0 == (*slip)[2]) {
     // if in compression and no opening
@@ -1584,21 +1555,17 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3D(
       
       // Update slip based on value required to stick versus friction
       const double dlp = (tractionShearMag - frictionStress) * area *
-	(*tractionTpdt)[0] / tractionShearMag;
+	tractionTpdt[0] / tractionShearMag;
       const double dlq = (tractionShearMag - frictionStress) * area *
-	(*tractionTpdt)[1] / tractionShearMag;
+	tractionTpdt[1] / tractionShearMag;
 
-      (*dLagrangeTpdt)[0] = dlp;
-      (*dLagrangeTpdt)[1] = dlq;
+      (*dLagrangeTpdt)[0] = -dlp;
+      (*dLagrangeTpdt)[1] = -dlq;
       (*slip)[0] += Spp * dlp + Spq * dlq;
       (*slip)[1] += Spq * dlp + Sqq * dlq;
       
       std::cout << "Estimated slip: " << "  " << (*slip)[0] << "  "
 		<< (*slip)[1] << "  " << (*slip)[2] << std::endl;
-      
-      // Limit traction
-      (*tractionTpdt)[0] *= frictionStress / tractionShearMag;
-      (*tractionTpdt)[1] *= frictionStress / tractionShearMag;
     } else {
       // else friction exceeds value necessary, so stick
       std::cout << "STICK" << std::endl;
@@ -1610,13 +1577,13 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3D(
     
     // Update slip based on value required to stick versus
     // zero traction
-    const double dlp = (*tractionTpdt)[0] * area;
-    const double dlq = (*tractionTpdt)[1] * area;
-    const double dlr = (*tractionTpdt)[2] * area;
+    const double dlp = tractionTpdt[0] * area;
+    const double dlq = tractionTpdt[1] * area;
+    const double dlr = tractionTpdt[2] * area;
 
-    (*dLagrangeTpdt)[0] = dlp;
-    (*dLagrangeTpdt)[1] = dlq;
-    (*dLagrangeTpdt)[2] = dlr;
+    (*dLagrangeTpdt)[0] = -dlp;
+    (*dLagrangeTpdt)[1] = -dlq;
+    (*dLagrangeTpdt)[2] = -dlr;
     (*slip)[0] += Spp * dlp + Spq * dlq + Spr * dlr;
     (*slip)[1] += Spq * dlp + Sqq * dlq + Sqr * dlr;
     (*slip)[2] += Spr * dlp + Sqr * dlq + Srr * dlr;
@@ -1624,8 +1591,6 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3D(
     std::cout << "Estimated slip: " << "  " << (*slip)[0] << "  "
 	      << (*slip)[1] << "  " << (*slip)[2] << std::endl;
     
-    // Set traction to zero
-    (*tractionTpdt) = 0.0;
   } // else
 
   PetscLogFlops(0); // :TODO: Fix this
