@@ -1,0 +1,177 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#include <portinfo>
+
+#include "TestClosure.hh" // implementation of class methods
+
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+
+#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
+
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include <cassert> // USES assert()
+#include <stdexcept> // USES std::runtime_error
+
+#define SEPARATE_FIELDS
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
+
+// ----------------------------------------------------------------------
+const int pylith::playpen::TestClosure::_spaceDim = 3;
+
+// ----------------------------------------------------------------------
+// Constructor
+pylith::playpen::TestClosure::TestClosure(void) :
+  _niterations(1000)
+{ // constructor
+} // constructor
+
+// ----------------------------------------------------------------------
+// Destructor
+pylith::playpen::TestClosure::~TestClosure(void)
+{ // destructor
+} // destructor
+  
+// ----------------------------------------------------------------------
+// Set number of iterations.
+void
+pylith::playpen::TestClosure::iterations(const long value) {
+  _niterations = value;
+}
+
+// ----------------------------------------------------------------------
+// Test restrictClosure().
+void
+pylith::playpen::TestClosure::testRestrictClosure(const pylith::topology::Mesh& mesh)
+{ // testRestrictClosure
+
+  const int spaceDim = _spaceDim;
+
+  // Create fields
+  pylith::topology::SolutionFields fields(mesh);
+  fields.add("field A", "field_A");
+  fields.add("field B", "field_B");
+  topology::Field<topology::Mesh>& fieldA = fields.get("field A");
+  fieldA.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
+  fieldA.allocate();
+  fieldA.zero();
+  fields.copyLayout("field A");
+
+  // Setup timing
+  utils::EventLogger logger;
+  logger.className("TestClosure");
+  logger.initialize();
+  const int stage = logger.registerStage("Test Closure");
+  const int closureEvent = logger.registerEvent("closure");
+  
+  // Setup stuff for doing closure
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells =
+    sieveMesh->heightStratum(0);
+  assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
+  assert(!sieve.isNull());
+  typedef ALE::SieveAlg<SieveMesh> SieveAlg;
+  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> ncV(*sieve,
+      (size_t) pow(sieve->getMaxConeSize(), std::max(0, sieveMesh->depth())));
+  ncV.clear();
+  ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*sieve,
+							       *cellsBegin, ncV);
+  const int coneSize = ncV.getSize();
+
+  // Setup visitors
+  double_array coordsCell(coneSize*spaceDim);
+  const ALE::Obj<RealSection>& coordsSection = 
+    sieveMesh->getRealSection("coordinates");
+  assert(!coordsSection.isNull());
+  topology::Mesh::RestrictVisitor coordsVisitor(*coordsSection,
+						coordsCell.size(),
+						&coordsCell[0]);
+  double_array fieldACell(coneSize*spaceDim);
+  const ALE::Obj<RealSection>& fieldASection = fields.get("field A").section();
+  assert(!fieldASection.isNull());
+  topology::Mesh::RestrictVisitor fieldAVisitor(*fieldASection,
+						fieldACell.size(),
+						&fieldACell[0]);
+  double_array fieldBCell(coneSize*spaceDim);
+  const ALE::Obj<RealSection>& fieldBSection = fields.get("field B").section();
+  assert(!fieldBSection.isNull());
+  topology::Mesh::RestrictVisitor fieldBVisitor(*fieldBSection,
+						fieldBCell.size(),
+						&fieldBCell[0]);
+  
+  double_array tmpCell(coneSize*spaceDim);
+
+  ALE::LogStagePush(stage);
+  logger.eventBegin(closureEvent);
+
+  long i = 0;
+  const long niterations = _niterations;
+  for (long iter=0; iter < niterations; ++iter)
+    for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
+	 c_iter != cellsEnd;
+	 ++c_iter) {
+#if defined(SEPARATE_FIELDS)
+      coordsVisitor.clear();
+      sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+      
+      fieldAVisitor.clear();
+      sieveMesh->restrictClosure(*c_iter, fieldAVisitor);
+      
+      fieldBVisitor.clear();
+      sieveMesh->restrictClosure(*c_iter, fieldBVisitor);
+      
+      ++i;
+#else
+#endif
+      
+      // Perform trivial operation on fields
+      tmpCell = fieldACell + fieldBCell + coordsCell;
+    } // for
+
+  logger.eventEnd(closureEvent);
+  ALE::LogStagePop(stage);
+
+  // Print stats
+  PetscErrorCode ierr = 0;
+  StageLog stageLog = 0;
+  EventPerfLog eventLog = 0;
+  ierr = PetscLogGetStageLog(&stageLog); CHECK_PETSC_ERROR(ierr);
+  ierr = StageLogGetEventPerfLog(stageLog, stage, &eventLog); CHECK_PETSC_ERROR(ierr);
+  EventPerfInfo eventInfo = eventLog->eventInfo[closureEvent];
+  assert(1 == eventInfo.count);
+  assert(i == cells->size() * _niterations);
+
+#if defined(SEPARATE_FIELDS)
+  const long nclosures = (1 + 2) * cells->size() * _niterations;
+#else
+  const long nclosures = (1 + 1) * cells->size() * _niterations;
+#endif
+  std::cout << "Number of cells: " << cells->size() << std::endl;
+  std::cout << "Number of loops: " << _niterations << std::endl;
+  std::cout << "Total time: " << eventInfo.time << std::endl;
+  std::cout << "Average time per closure (" << nclosures << ") : "
+	    << eventInfo.time/nclosures << std::endl;
+
+} // testRestrictClosure
+
+
+// End of file 
