@@ -24,7 +24,7 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-#define SEPARATE_FIELDS
+//#define SEPARATE_FIELDS
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
@@ -61,16 +61,6 @@ pylith::playpen::TestClosure::testRestrictClosure(const pylith::topology::Mesh& 
 
   const int spaceDim = _spaceDim;
 
-  // Create fields
-  pylith::topology::SolutionFields fields(mesh);
-  fields.add("field A", "field_A");
-  fields.add("field B", "field_B");
-  topology::Field<topology::Mesh>& fieldA = fields.get("field A");
-  fieldA.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
-  fieldA.allocate();
-  fieldA.zero();
-  fields.copyLayout("field A");
-
   // Setup timing
   utils::EventLogger logger;
   logger.className("TestClosure");
@@ -97,7 +87,7 @@ pylith::playpen::TestClosure::testRestrictClosure(const pylith::topology::Mesh& 
 							       *cellsBegin, ncV);
   const int coneSize = ncV.getSize();
 
-  // Setup visitors
+  // Setup coordinates visitor
   double_array coordsCell(coneSize*spaceDim);
   const ALE::Obj<RealSection>& coordsSection = 
     sieveMesh->getRealSection("coordinates");
@@ -105,6 +95,18 @@ pylith::playpen::TestClosure::testRestrictClosure(const pylith::topology::Mesh& 
   topology::Mesh::RestrictVisitor coordsVisitor(*coordsSection,
 						coordsCell.size(),
 						&coordsCell[0]);
+#if defined(SEPARATE_FIELDS)
+  // Create fields
+  pylith::topology::SolutionFields fields(mesh);
+  fields.add("field A", "field_A");
+  fields.add("field B", "field_B");
+  topology::Field<topology::Mesh>& fieldA = fields.get("field A");
+  fieldA.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
+  fieldA.allocate();
+  fieldA.zero();
+  fields.copyLayout("field A");
+
+  // Setup field visitors
   double_array fieldACell(coneSize*spaceDim);
   const ALE::Obj<RealSection>& fieldASection = fields.get("field A").section();
   assert(!fieldASection.isNull());
@@ -120,6 +122,28 @@ pylith::playpen::TestClosure::testRestrictClosure(const pylith::topology::Mesh& 
   
   double_array tmpCell(coneSize*spaceDim);
 
+#else
+  // Create fields
+  pylith::topology::SolutionFields fields(mesh);
+  fields.add("field AB", "field_AB");
+  topology::Field<topology::Mesh>& fieldAB = fields.get("field AB");
+  fieldAB.newSection(topology::FieldBase::VERTICES_FIELD, 2*spaceDim);
+  fieldAB.allocate();
+  fieldAB.zero();
+  fields.copyLayout("field AB");
+
+  // Create field visitors
+  double_array fieldABCell(coneSize*2*spaceDim);
+  const ALE::Obj<RealSection>& fieldABSection = fields.get("field AB").section();
+  assert(!fieldABSection.isNull());
+  topology::Mesh::RestrictVisitor fieldABVisitor(*fieldABSection,
+						 fieldABCell.size(),
+						&fieldABCell[0]);
+  
+  double_array tmpCell(coneSize*2*spaceDim);
+#endif
+  const int dataSize = coneSize * spaceDim;
+
   ALE::LogStagePush(stage);
   logger.eventBegin(closureEvent);
 
@@ -129,22 +153,28 @@ pylith::playpen::TestClosure::testRestrictClosure(const pylith::topology::Mesh& 
     for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
 	 c_iter != cellsEnd;
 	 ++c_iter) {
-#if defined(SEPARATE_FIELDS)
       coordsVisitor.clear();
       sieveMesh->restrictClosure(*c_iter, coordsVisitor);
       
+#if defined(SEPARATE_FIELDS)
       fieldAVisitor.clear();
       sieveMesh->restrictClosure(*c_iter, fieldAVisitor);
       
       fieldBVisitor.clear();
       sieveMesh->restrictClosure(*c_iter, fieldBVisitor);
       
-      ++i;
-#else
-#endif
-      
       // Perform trivial operation on fields
       tmpCell = fieldACell + fieldBCell + coordsCell;
+#else
+      fieldABVisitor.clear();
+      sieveMesh->restrictClosure(*c_iter, fieldABVisitor);
+      
+      // Perform trivial operation on fields
+      for (int i=0; i < dataSize; ++i) 
+	tmpCell[i] = fieldABCell[i] + fieldABCell[dataSize+i] + coordsCell[i];
+#endif
+      ++i;
+      
     } // for
 
   logger.eventEnd(closureEvent);
