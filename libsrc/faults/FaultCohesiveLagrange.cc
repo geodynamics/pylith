@@ -635,7 +635,7 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
 
     // Get residual at cohesive cell's vertices.
     residualSection->restrictPoint(v_negative, &residualVertexN[0],
-				   residualVertexN.size());
+			   residualVertexN.size());
     residualSection->restrictPoint(v_positive, &residualVertexP[0], 
 				   residualVertexP.size());
     
@@ -669,6 +669,8 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
     _logger->eventBegin(updateEvent);
 #endif
 
+    // Adjust displacements to account for Lagrange multiplier values
+    // (assumed to be zero in perliminary solve).
     assert(dispTIncrVertexN.size() == 
 	   dispTIncrSection->getFiberDimension(v_negative));
     dispTIncrSection->updateAddPoint(v_negative, &dispTIncrVertexN[0]);
@@ -677,6 +679,8 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
 	   dispTIncrSection->getFiberDimension(v_positive));
     dispTIncrSection->updateAddPoint(v_positive, &dispTIncrVertexP[0]);
 
+    // Set Lagrange multiplier value. Value from preliminary solve is
+    // bogus due to artificial diagonal entry of 1.0.
     assert(lagrangeIncrVertex.size() == 
 	   dispTIncrSection->getFiberDimension(v_lagrange));
     dispTIncrSection->updatePoint(v_lagrange, &lagrangeIncrVertex[0]);

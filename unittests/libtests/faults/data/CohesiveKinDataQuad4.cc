@@ -385,8 +385,8 @@ const double pylith::faults::CohesiveKinDataQuad4::_fieldIncrAdjusted[] = {
   3.6, 4.6,
   9.35548350619, 10.472468741, // 8
   8.459683341, 9.70254140433, // 9
-  -6.0131968597, -4.81432196053, // 10
-  -6.12482866822, -4.66339834789, // 11
+  -9.8131968597, -9.61432196053, // 10
+  -9.12482866822, -8.66339834789, // 11
 };
 
 pylith::faults::CohesiveKinDataQuad4::CohesiveKinDataQuad4(void)
