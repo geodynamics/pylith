@@ -695,6 +695,14 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 				       jacobianVertexN,
 				       jacobianVertexP);
 
+    
+    std::cout << "adjusted solution, lagrangeT: "
+	      << lagrangeTVertex[0]
+	      << ", " << lagrangeTVertex[1]
+	      << "; lagrangeTIncr: "
+	      << lagrangeTIncrVertex[0]
+	      << ", " << lagrangeTIncrVertex[1] << std::endl;
+
     // Compute Lagrange multiplier at time t+dt
     lagrangeTpdtVertex = lagrangeTVertex + lagrangeTIncrVertex;
     dLagrangeTpdtVertex = 0.0;
@@ -716,6 +724,15 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 					 slipRateVertex, orientationVertex,
 					 jacobianVertexN, jacobianVertexP,
 					 *areaVertex);
+
+    std::cout << "constrain solution, dLagrangeTpdtVertex: " 
+	      << dLagrangeTpdtVertex[0]
+	      << ", " << dLagrangeTpdtVertex[1]
+	      << "; slipVertex: " << slipVertex[0]
+	      << ", " << slipVertex[1]
+	      << "; tractionTpdtVertex: " << tractionTpdtVertex[0]
+	      << ", " << tractionTpdtVertex[1]
+	      << std::endl;
 
     lagrangeTIncrVertex += dLagrangeTpdtVertex;
 
@@ -832,8 +849,13 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 
     assert(lagrangeTIncrVertex.size() == 
 	   dispTIncrSection->getFiberDimension(v_lagrange));
-    dispTIncrSection->updateAddPoint(v_lagrange, &lagrangeTIncrVertex[0]);
+    dispTIncrSection->updatePoint(v_lagrange, &lagrangeTIncrVertex[0]);
 
+    // Update the slip estimate based on adjustment to the Lagrange
+    // multiplier values.
+    assert(slipVertex.size() ==
+        slipSection->getFiberDimension(v_fault));
+    slipSection->updatePoint(v_fault, &slipVertex[0]);
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
 #endif
