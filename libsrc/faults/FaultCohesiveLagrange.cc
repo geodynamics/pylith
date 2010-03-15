@@ -679,7 +679,7 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
 
     assert(lagrangeIncrVertex.size() == 
 	   dispTIncrSection->getFiberDimension(v_lagrange));
-    dispTIncrSection->updateAddPoint(v_lagrange, &lagrangeIncrVertex[0]);
+    dispTIncrSection->updatePoint(v_lagrange, &lagrangeIncrVertex[0]);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
