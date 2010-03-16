@@ -17,15 +17,15 @@ if dim == "2d":
     elif cell == "quad4":
         fieldT = numpy.array([[8.8, 9.8],
                               [8.0, 9.0]])
-        fieldIncr = numpy.array([[9.8, -10.8],
-                                 [9.0, -10.0]])
+        fieldIncr = numpy.array([[-9.8, -10.8],
+                                 [-9.0, -10.0]])
         area = numpy.array([1.0, 1.0])
     
 
     # ------------------------------------------------------------------
     fieldTpdt = fieldT + fieldIncr
 
-    tractionShear = fieldTpdt[:,0] / area
+    tractionShear = abs(fieldTpdt[:,0]) / area
     tractionNormal = fieldTpdt[:,1] / area
 
     print "tractionShear",tractionShear
@@ -70,10 +70,10 @@ elif dim == "3d":
                               [5.6, 7.6, 9.6],
                               [5.8, 7.8, 9.8],
                               [5.0, 7.0, 9.0]])
-        fieldIncr = numpy.array([[6.4, 8.4, -10.4],
-                                 [6.6, 8.6, -10.6],
-                                 [6.8, 8.8, -10.8],
-                                 [6.0, 8.0, -10.0]])
+        fieldIncr = numpy.array([[-6.4, -8.4, -10.4],
+                                 [-6.6, -8.6, -10.6],
+                                 [-6.8, -8.8, -10.8],
+                                 [-6.0, -8.0, -10.0]])
         area = numpy.array([1.0, 1.0, 1.0, 1.0])
     
 
