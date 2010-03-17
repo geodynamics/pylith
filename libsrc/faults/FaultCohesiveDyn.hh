@@ -226,6 +226,46 @@ private :
 				   const double_array& jacobianP,
 				   const double area);
 
+  /** Constrain solution space with 2 x 2 Jacobian block in 2-D.
+   *
+   * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
+   * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
+   * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
+   * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
+   * @param orientation Fault orientation assoc. w/Lagrang multiplier vertex.
+   * @param jacobianN Jacobian for vertex on - side of the fault.
+   * @param jacobianP Jacobian for vertex on + side of the fault.
+   * @param area Fault area associated w/Lagrange multiplier vertex.
+   */
+  void _constrainSolnSpaceLumped2x22D(double_array* dLagrangeTpdt,
+				   double_array* slip,
+				   const double_array& sliprate,
+				   const double_array& tractionTpdt,
+				   const double_array& orientation,
+				   const double_array& jacobianN,
+				   const double_array& jacobianP,
+				   const double area);
+
+  /** Constrain solution space with 3 X 3 Jacobian block in 3-D.
+   *
+   * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
+   * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
+   * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
+   * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
+   * @param orientation Fault orientation assoc. w/Lagrang multiplier vertex.
+   * @param jacobianN Jacobian for vertex on - side of the fault.
+   * @param jacobianP Jacobian for vertex on + side of the fault.
+   * @param area Fault area associated w/Lagrange multiplier vertex.
+   */
+  void _constrainSolnSpaceLumped3x33D(double_array* dLagrangeTpdt,
+				   double_array* slip,
+				   const double_array& sliprate,
+				   const double_array& tractionTpdt,
+				   const double_array& orientation,
+				   const double_array& jacobianN,
+				   const double_array& jacobianP,
+				   const double area);
+
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
