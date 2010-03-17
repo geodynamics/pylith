@@ -21,7 +21,7 @@ import numpy
 
 # ----------------------------------------------------------------------
 dimension = 2
-numElasticConsts = 6
+numElasticConsts = 9
 tensorSize = 3
 
 # MaxwellPlaneStrainTimeDep class
@@ -335,7 +335,7 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
     elasticConstsList = []
 
     for stressComp in range(tensorSize):
-      for strainComp in range(stressComp, tensorSize):
+      for strainComp in range(tensorSize):
         dStressDStrain = stressComp + strainComp
         dStressDStrain = scipy.misc.derivative(self._calcStressComponent,
                                                strainTpdt[strainComp],

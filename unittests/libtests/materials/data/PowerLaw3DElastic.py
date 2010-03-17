@@ -21,7 +21,7 @@ import numpy
 
 # ----------------------------------------------------------------------
 dimension = 3
-numElasticConsts = 21
+numElasticConsts = 36
 tensorSize = 6
 
 # PowerLaw3DElastic class
@@ -235,37 +235,53 @@ class PowerLaw3DElastic(ElasticMaterialApp):
     C1112 = 0.0
     C1123 = 0.0
     C1113 = 0.0
+    C2211 = lambdaV
     C2222 = lambdaV + 2.0*muV
     C2233 = lambdaV
     C2212 = 0.0
     C2223 = 0.0
     C2213 = 0.0
+    C3311 = lambdaV
+    C3322 = lambdaV
     C3333 = lambdaV + 2.0*muV
     C3312 = 0.0
     C3323 = 0.0
     C3313 = 0.0
+    C1211 = 0.0
+    C1222 = 0.0
+    C1233 = 0.0
     C1212 = 2.0*muV
     C1223 = 0.0
     C1213 = 0.0
+    C2311 = 0.0
+    C2322 = 0.0
+    C2333 = 0.0
+    C2312 = 0.0
     C2323 = 2.0*muV
     C2313 = 0.0
+    C1311 = 0.0
+    C1322 = 0.0
+    C1333 = 0.0
+    C1312 = 0.0
+    C1323 = 0.0
     C1313 = 2.0*muV
     elasticConsts = numpy.array([C1111, C1122, C1133, C1112, C1123, C1113,
-                                 C2222, C2233, C2212, C2223, C2213,
-                                 C3333, C3312, C3323, C3313,
-                                 C1212, C1223, C1213,
-                                 C2323, C2313,
-                                 C1313], dtype=numpy.float64)
+                                 C2211, C2222, C2233, C2212, C2223, C2213,
+                                 C3311, C3322, C3333, C3312, C3323, C3313,
+                                 C1211, C1222, C1233, C1212, C1223, C1213,
+                                 C2311, C2322, C2333, C2312, C2323, C2313,
+                                 C1311, C1322, C1333, C1312, C1323, C1313],
+				 dtype=numpy.float64)
 
     strain = numpy.reshape(strainV, (6,1))
     initialStress = numpy.reshape(initialStressV, (tensorSize,1))
     initialStrain = numpy.reshape(initialStrainV, (tensorSize,1))
     elastic = numpy.array([ [C1111, C1122, C1133, C1112, C1123, C1113],
-                            [C1122, C2222, C2233, C2212, C2223, C2213],
-                            [C1133, C2233, C3333, C3312, C3323, C3313],
-                            [C1112, C2212, C3312, C1212, C1223, C1213],
-                            [C1123, C2223, C3323, C1223, C2323, C2313],
-                            [C1113, C2213, C3313, C1213, C2313, C1313] ],
+                            [C2211, C2222, C2233, C2212, C2223, C2213],
+                            [C3311, C3322, C3333, C3312, C3323, C3313],
+                            [C1211, C1222, C1233, C1212, C1223, C1213],
+                            [C2311, C2322, C2333, C2312, C2323, C2313],
+                            [C1311, C1322, C1333, C1312, C1323, C1313] ],
                           dtype=numpy.float64)
     stress = numpy.dot(elastic, strain-initialStrain) + initialStress
     return (elasticConsts, numpy.ravel(stress))
