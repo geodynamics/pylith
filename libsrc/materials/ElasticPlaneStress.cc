@@ -38,8 +38,8 @@ namespace pylith {
       // Number of entries in stress tensor.
       const int tensorSize = 3;
 
-      // Number of elastic constants (for general 3-D elastic material)
-      const int numElasticConsts = 6;
+      // Number of elastic constants (for general 2-D elastic material)
+      const int numElasticConsts = 9;
 
       // Number of physical properties.
       const int numProperties = 3;
@@ -295,9 +295,12 @@ pylith::materials::ElasticPlaneStress::_calcElasticConsts(
   elasticConsts[0] = c11; // C1111
   elasticConsts[1] = mu2 * lambda / lambda2mu; // C1122
   elasticConsts[2] = 0; // C1112
-  elasticConsts[3] = c11; // C2222
-  elasticConsts[4] = 0; // C2212
-  elasticConsts[5] = mu2; // C1212
+  elasticConsts[3] = elasticConsts[1]; // C2211
+  elasticConsts[4] = c11; // C2222
+  elasticConsts[5] = 0; // C2212
+  elasticConsts[6] = 0; // C1211
+  elasticConsts[7] = 0; // C1222
+  elasticConsts[8] = mu2; // C1212
 
   PetscLogFlops(8);
 } // calcElasticConsts

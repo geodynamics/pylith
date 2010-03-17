@@ -27,6 +27,28 @@ pylith::materials::DruckerPragerEP3D::timeStep(const double dt) {
   _dt = dt;
 } // timeStep
 
+// Compute mean stress/strain from vector.
+inline
+double
+pylith::materials::DruckerPragerEP3D::_calcMean(const double* vec) {
+  const double vecMean = (vec[0] + vec[1] + vec[2])/3.0;
+  return vecMean;
+} // _calcMean
+
+// Compute deviatoric stress/strain from vector and mean value.
+inline
+double
+pylith::materials::DruckerPragerEP3D::_calcDeviatoric(const double* vec,
+						      const double vecMean) {
+  const double deviatoric[] = {vec[0] - vecMean,
+			       vec[1] - vecMean,
+			       vec[2] - vecMean,
+			       vec[3],
+			       vec[4],
+			       vec[5]};
+  return deviatoric;
+} // _calcDeviatoric
+
 // Compute stress tensor from parameters.
 inline
 void

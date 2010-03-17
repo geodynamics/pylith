@@ -40,7 +40,7 @@ namespace pylith {
       const int tensorSize = 3;
 
       /// Number of entries in derivative of elasticity matrix.
-      const int numElasticConsts = 6;
+      const int numElasticConsts = 9;
 
       /// Number of physical properties.
       const int numProperties = 4;
@@ -477,9 +477,12 @@ pylith::materials::MaxwellPlaneStrain::_calcElasticConstsElastic(
   elasticConsts[ 0] = lambda2mu; // C1111
   elasticConsts[ 1] = lambda; // C1122
   elasticConsts[ 2] = 0; // C1112
-  elasticConsts[ 3] = lambda2mu; // C2222
-  elasticConsts[ 4] = 0; // C2212
-  elasticConsts[ 5] = mu2; // C1212
+  elasticConsts[ 3] = lambda; // C2211
+  elasticConsts[ 4] = lambda2mu; // C2222
+  elasticConsts[ 5] = 0; // C2212
+  elasticConsts[ 6] = 0; // C1211
+  elasticConsts[ 7] = 0; // C1222
+  elasticConsts[ 8] = mu2; // C1212
 
   PetscLogFlops(2);
 } // _calcElasticConstsElastic
@@ -528,9 +531,12 @@ pylith::materials::MaxwellPlaneStrain::_calcElasticConstsViscoelastic(
   elasticConsts[ 0] = bulkModulus + 4.0 * visFac; // C1111
   elasticConsts[ 1] = bulkModulus - 2.0 * visFac; // C1122
   elasticConsts[ 2] = 0; // C1112
-  elasticConsts[ 3] = elasticConsts[0]; // C2222
-  elasticConsts[ 4] = 0; // C2212
-  elasticConsts[ 5] = 6.0 * visFac; // C1212
+  elasticConsts[ 3] = elasticConsts[1]; // C2211
+  elasticConsts[ 4] = elasticConsts[0]; // C2222
+  elasticConsts[ 5] = 0; // C2212
+  elasticConsts[ 6] = 0; // C1211
+  elasticConsts[ 7] = 0; // C1222
+  elasticConsts[ 8] = 6.0 * visFac; // C1212
 
   PetscLogFlops(10);
 } // _calcElasticConstsViscoelastic

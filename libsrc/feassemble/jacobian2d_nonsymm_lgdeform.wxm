@@ -1,0 +1,53 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 0.8.2 ] */
+
+/* [wxMaxima: input   start ] */
+Bnl: matrix([N11,0,N21,0,N31,0],
+[N12,0,N22,0,N32,0],
+[0,N11,0,N21,0,N31],
+[0,N12,0,N22,0,N32]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+S: matrix([S11,S12,0,0],
+[S12,S22,0,0],
+[0,0,S11,S12],
+[0,0,S12,S22]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+x: transpose(Bnl) . S . Bnl;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Bi: matrix([Nip*(1+l11), l21*Nip],
+[l12*Niq,(1+l22)*Niq],
+[(1+l11)*Niq+l12*Nip,(1+l22)*Nip+l21*Niq]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Bj: matrix([Njp*(1+l11), l21*Njp],
+[l12*Njq,(1+l22)*Njq],
+[(1+l11)*Njq+l12*Njp,(1+l22)*Njp+l21*Njq]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+C: matrix([C1111, C1122, C1112],
+[C2211, C2222, C2212],
+[C1211, C1222, C1212]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+y: transpose(Bi) . C . Bj;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Svec: matrix([s11, s22, s12]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+r: transpose(Bi) . transpose(Svec);
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$

@@ -559,7 +559,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(
   
   assert(2 == cellDim);
   assert(quadWts.size() == numQuadPts);
-  const int numConsts = 6;
+  const int numConsts = 9;
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const int iQ = iQuad*numBasis*spaceDim;
@@ -572,9 +572,12 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(
     const double C1111 = elasticConsts[iC+0];
     const double C1122 = elasticConsts[iC+1];
     const double C1112 = elasticConsts[iC+2] / 2.0; // 2*mu -> mu
-    const double C2222 = elasticConsts[iC+3];
-    const double C2212 = elasticConsts[iC+4] / 2.0;
-    const double C1212 = elasticConsts[iC+5] / 2.0;
+    const double C2211 = elasticConsts[iC+3];
+    const double C2222 = elasticConsts[iC+4];
+    const double C2212 = elasticConsts[iC+5] / 2.0;
+    const double C1211 = elasticConsts[iC+6] / 2.0;
+    const double C1222 = elasticConsts[iC+7] / 2.0;
+    const double C1212 = elasticConsts[iC+8] / 2.0;
 
     const int iS = iQuad*tensorSize;
     const double s11 = stress[iS+0];
@@ -613,40 +616,40 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(
 	const double Ki0j0 = 
 	  l12*Niq*(l12*Njq*C2222 + 
 		   ((l11+1)*Njq+l12*Njp)*C2212 + 
-		   (l11+1)*Njp*C1122) + 
-	  ((l11+1)*Niq+l12*Nip)*(l12*Njq*C2212 + 
+		   (l11+1)*Njp*C2211) + 
+	  ((l11+1)*Niq+l12*Nip)*(l12*Njq*C1222 + 
 				 ((l11+1)*Njq+l12*Njp)*C1212 + 
-				 (l11+1)*Njp*C1112) + 
+				 (l11+1)*Njp*C1211) + 
 	  (l11+1)*Nip*(l12*Njq*C1122 + 
 		       ((l11+1)*Njq+l12*Njp)*C1112 + 
 		       (l11+1)*Njp*C1111);
 	const double Ki0j1 =
 	  l12*Niq*((l22+1.0)*Njq*C2222 + 
 		   (l21*Njq+(l22+1.0)*Njp)*C2212 + 
-		   l21*Njp*C1122) + 
-	  ((l11+1.0)*Niq+l12*Nip)*((l22+1.0)*Njq*C2212 + 
+		   l21*Njp*C2211) + 
+	  ((l11+1.0)*Niq+l12*Nip)*((l22+1.0)*Njq*C1222 + 
 				 (l21*Njq+(l22+1.0)*Njp)*C1212 + 
-				 l21*Njp*C1112) + 
+				 l21*Njp*C1211) + 
 	  (l11+1.0)*Nip*((l22+1.0)*Njq*C1122 + 
 		       (l21*Njq+(l22+1.0)*Njp)*C1112 + 
 		       l21*Njp*C1111);
 	const double Ki1j0 =
 	  (l22+1.0)*Niq*(l12*Njq*C2222 + 
 		       ((l11+1.0)*Njq+l12*Njp)*C2212 + 
-		       (l11+1.0)*Njp*C1122) + 
-	  (l21*Niq+(l22+1.0)*Nip)*(l12*Njq*C2212 + 
+		       (l11+1.0)*Njp*C2211) + 
+	  (l21*Niq+(l22+1.0)*Nip)*(l12*Njq*C1222 + 
 				 ((l11+1.0)*Njq+l12*Njp)*C1212 + 
-				 (l11+1.0)*Njp*C1112) + 
+				 (l11+1.0)*Njp*C1211) + 
 	  l21*Nip*(l12*Njq*C1122 + 
 		   ((l11+1.0)*Njq+l12*Njp)*C1112 + 
 		   (l11+1.0)*Njp*C1111);
 	const double Ki1j1 =
 	  (l22+1.0)*Niq*((l22+1.0)*Njq*C2222 + 
 		       (l21*Njq+(l22+1.0)*Njp)*C2212 + 
-		       l21*Njp*C1122) + 
-	  (l21*Niq+(l22+1.0)*Nip)*((l22+1.0)*Njq*C2212 + 
+		       l21*Njp*C2211) + 
+	  (l21*Niq+(l22+1.0)*Nip)*((l22+1.0)*Njq*C1222 + 
 				 (l21*Njq+(l22+1.0)*Njp)*C1212 + 
-				 l21*Njp*C1112) + 
+				 l21*Njp*C1211) + 
 	  l21*Nip*((l22+1.0)*Njq*C1122 + 
 		   (l21*Njq+(l22+1.0)*Njp)*C1112 + 
 		   l21*Njp*C1111);
@@ -685,7 +688,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(
   assert(3 == cellDim);
   assert(quadWts.size() == numQuadPts);
   assert(6 == tensorSize);
-  const int numConsts = 21;
+  const int numConsts = 36;
 
   // Compute Jacobian for consistent tangent matrix
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
@@ -702,21 +705,36 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(
     const double C1112 = elasticConsts[iC+ 3] / 2.0;
     const double C1123 = elasticConsts[iC+ 4] / 2.0;
     const double C1113 = elasticConsts[iC+ 5] / 2.0;
-    const double C2222 = elasticConsts[iC+ 6];
-    const double C2233 = elasticConsts[iC+ 7];
-    const double C2212 = elasticConsts[iC+ 8] / 2.0;
-    const double C2223 = elasticConsts[iC+ 9] / 2.0;
-    const double C2213 = elasticConsts[iC+10] / 2.0;
-    const double C3333 = elasticConsts[iC+11];
-    const double C3312 = elasticConsts[iC+12] / 2.0;
-    const double C3323 = elasticConsts[iC+13] / 2.0;
-    const double C3313 = elasticConsts[iC+14] / 2.0;
-    const double C1212 = elasticConsts[iC+15] / 2.0;
-    const double C1223 = elasticConsts[iC+16] / 2.0;
-    const double C1213 = elasticConsts[iC+17] / 2.0;
-    const double C2323 = elasticConsts[iC+18] / 2.0;
-    const double C2313 = elasticConsts[iC+19] / 2.0;
-    const double C1313 = elasticConsts[iC+20] / 2.0;
+    const double C2211 = elasticConsts[iC+ 6];
+    const double C2222 = elasticConsts[iC+ 7];
+    const double C2233 = elasticConsts[iC+ 8];
+    const double C2212 = elasticConsts[iC+ 9] / 2.0;
+    const double C2223 = elasticConsts[iC+10] / 2.0;
+    const double C2213 = elasticConsts[iC+11] / 2.0;
+    const double C3311 = elasticConsts[iC+12];
+    const double C3322 = elasticConsts[iC+13];
+    const double C3333 = elasticConsts[iC+14];
+    const double C3312 = elasticConsts[iC+15] / 2.0;
+    const double C3323 = elasticConsts[iC+16] / 2.0;
+    const double C3313 = elasticConsts[iC+17] / 2.0;
+    const double C1211 = elasticConsts[iC+18] / 2.0;
+    const double C1222 = elasticConsts[iC+19] / 2.0;
+    const double C1233 = elasticConsts[iC+20] / 2.0;
+    const double C1212 = elasticConsts[iC+21] / 2.0;
+    const double C1223 = elasticConsts[iC+22] / 2.0;
+    const double C1213 = elasticConsts[iC+23] / 2.0;
+    const double C2311 = elasticConsts[iC+24] / 2.0;
+    const double C2322 = elasticConsts[iC+25] / 2.0;
+    const double C2333 = elasticConsts[iC+26] / 2.0;
+    const double C2312 = elasticConsts[iC+27] / 2.0;
+    const double C2323 = elasticConsts[iC+28] / 2.0;
+    const double C2313 = elasticConsts[iC+29] / 2.0;
+    const double C1311 = elasticConsts[iC+30] / 2.0;
+    const double C1322 = elasticConsts[iC+31] / 2.0;
+    const double C1333 = elasticConsts[iC+32] / 2.0;
+    const double C1312 = elasticConsts[iC+33] / 2.0;
+    const double C1323 = elasticConsts[iC+34] / 2.0;
+    const double C1313 = elasticConsts[iC+35] / 2.0;
 
     const int iS = iQuad*tensorSize;
     const double s11 = stress[iS+0];
@@ -767,32 +785,32 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(
 		   (l12*Njr+l13*Njq)*C3323 + 
 		   ((l11+1)*Njr+l13*Njp)*C3313 + 
 		   ((l11+1)*Njq+l12*Njp)*C3312 + 
-		   l12*Njq*C2233 + 
-		   (l11+1)*Njp*C1133) + 
-	  (l12*Nir+l13*Niq)*(l13*Njr*C3323 + 
+		   l12*Njq*C3322 + 
+		   (l11+1)*Njp*C3311) + 
+	  (l12*Nir+l13*Niq)*(l13*Njr*C2333 + 
 			     (l12*Njr+l13*Njq)*C2323 + 
 			     ((l11+1)*Njr+l13*Njp)*C2313 + 
-			     l12*Njq*C2223 + 
-			     ((l11+1)*Njq+l12*Njp)*C1223 + 
-			     (l11+1)*Njp*C1123) + 
-	  ((l11+1)*Nir+l13*Nip)*(l13*Njr*C3313 + 
-				 (l12*Njr+l13*Njq)*C2313 + 
-				 l12*Njq*C2213 + 
+			     l12*Njq*C2322 + 
+			     ((l11+1)*Njq+l12*Njp)*C2312 + 
+			     (l11+1)*Njp*C2311) + 
+	  ((l11+1)*Nir+l13*Nip)*(l13*Njr*C1333 + 
+				 (l12*Njr+l13*Njq)*C1323 + 
+				 l12*Njq*C1322 + 
 				 ((l11+1)*Njr+l13*Njp)*C1313 + 
-				 ((l11+1)*Njq+l12*Njp)*C1213 + 
-				 (l11+1)*Njp*C1113) + 
-	  ((l11+1)*Niq+l12*Nip)*(l13*Njr*C3312 + 
-				 l12*Njq*C2212 + 
+				 ((l11+1)*Njq+l12*Njp)*C1312 + 
+				 (l11+1)*Njp*C1311) + 
+	  ((l11+1)*Niq+l12*Nip)*(l13*Njr*C1233 + 
+				 l12*Njq*C1222 + 
 				 (l12*Njr+l13*Njq)*C1223 + 
 				 ((l11+1)*Njr+l13*Njp)*C1213 + 
 				 ((l11+1)*Njq+l12*Njp)*C1212 + 
-				 (l11+1)*Njp*C1112) + 
+				 (l11+1)*Njp*C1211) + 
 	  l12*Niq*(l13*Njr*C2233 + 
 		   (l12*Njr+l13*Njq)*C2223 + 
 		   l12*Njq*C2222 + 
 		   ((l11+1)*Njr+l13*Njp)*C2213 + 
 		   ((l11+1)*Njq+l12*Njp)*C2212 + 
-		   (l11+1)*Njp*C1122) + 
+		   (l11+1)*Njp*C2211) + 
 	  (l11+1)*Nip*(l13*Njr*C1133 + 
 		       (l12*Njr+l13*Njq)*C1123 + 
 		       l12*Njq*C1122 + 
@@ -805,32 +823,32 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(
 		   ((l22+1)*Njr+l23*Njq)*C3323 + 
 		   (l21*Njr+l23*Njp)*C3313 + 
 		   (l21*Njq+(l22+1)*Njp)*C3312 + 
-		   (l22+1)*Njq*C2233 + 
-		   l21*Njp*C1133) + 
-	  (l12*Nir+l13*Niq)*(l23*Njr*C3323 + 
+		   (l22+1)*Njq*C3322 + 
+		   l21*Njp*C3311) + 
+	  (l12*Nir+l13*Niq)*(l23*Njr*C2333 + 
 			     ((l22+1)*Njr+l23*Njq)*C2323 + 
 			     (l21*Njr+l23*Njp)*C2313 + 
-			     (l22+1)*Njq*C2223 + 
-			     (l21*Njq+(l22+1)*Njp)*C1223 + 
-			     l21*Njp*C1123) + 
-	  ((l11+1)*Nir+l13*Nip)*(l23*Njr*C3313 + 
-				 ((l22+1)*Njr+l23*Njq)*C2313 + 
-				 (l22+1)*Njq*C2213 + 
+			     (l22+1)*Njq*C2322 + 
+			     (l21*Njq+(l22+1)*Njp)*C2312 + 
+			     l21*Njp*C2311) + 
+	  ((l11+1)*Nir+l13*Nip)*(l23*Njr*C1333 + 
+				 ((l22+1)*Njr+l23*Njq)*C1323 + 
+				 (l22+1)*Njq*C1322 + 
 				 (l21*Njr+l23*Njp)*C1313 + 
-				 (l21*Njq+(l22+1)*Njp)*C1213 + 
-				 l21*Njp*C1113) + 
-	  ((l11+1)*Niq+l12*Nip)*(l23*Njr*C3312 + 
-				 (l22+1)*Njq*C2212 + 
+				 (l21*Njq+(l22+1)*Njp)*C1312 + 
+				 l21*Njp*C1311) + 
+	  ((l11+1)*Niq+l12*Nip)*(l23*Njr*C1233 + 
+				 (l22+1)*Njq*C1222 + 
 				 ((l22+1)*Njr+l23*Njq)*C1223 + 
 				 (l21*Njr+l23*Njp)*C1213 + 
 				 (l21*Njq+(l22+1)*Njp)*C1212 + 
-				 l21*Njp*C1112) + 
+				 l21*Njp*C1211) + 
 	  l12*Niq*(l23*Njr*C2233 + 
 		   ((l22+1)*Njr+l23*Njq)*C2223 + 
 		   (l22+1)*Njq*C2222 + 
 		   (l21*Njr+l23*Njp)*C2213 + 
 		   (l21*Njq+(l22+1)*Njp)*C2212 + 
-		   l21*Njp*C1122) + 
+		   l21*Njp*C2211) + 
 	  (l11+1)*Nip*(l23*Njr*C1133 + 
 		       ((l22+1)*Njr+l23*Njq)*C1123 + 
 		       (l22+1)*Njq*C1122 + 
@@ -843,32 +861,32 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(
 		   (l32*Njr+(l33+1)*Njq)*C3323 + 
 		   (l31*Njr+(l33+1)*Njp)*C3313 + 
 		   (l31*Njq+l32*Njp)*C3312 + 
-		   l32*Njq*C2233 + 
-		   l31*Njp*C1133) + 
-	  (l12*Nir+l13*Niq)*((l33+1)*Njr*C3323 + 
+		   l32*Njq*C3322 + 
+		   l31*Njp*C3311) + 
+	  (l12*Nir+l13*Niq)*((l33+1)*Njr*C2333 + 
 			     (l32*Njr+(l33+1)*Njq)*C2323 + 
 			     (l31*Njr+(l33+1)*Njp)*C2313 + 
-			     l32*Njq*C2223 + 
-			     (l31*Njq+l32*Njp)*C1223 + 
-			     l31*Njp*C1123) + 
-	  ((l11+1)*Nir+l13*Nip)*((l33+1)*Njr*C3313 + 
-				 (l32*Njr+(l33+1)*Njq)*C2313 + 
-				 l32*Njq*C2213 + 
+			     l32*Njq*C2322 + 
+			     (l31*Njq+l32*Njp)*C2312 + 
+			     l31*Njp*C2311) + 
+	  ((l11+1)*Nir+l13*Nip)*((l33+1)*Njr*C1333 + 
+				 (l32*Njr+(l33+1)*Njq)*C1323 + 
+				 l32*Njq*C1322 + 
 				 (l31*Njr+(l33+1)*Njp)*C1313 + 
-				 (l31*Njq+l32*Njp)*C1213 + 
-				 l31*Njp*C1113) + 
-	  ((l11+1)*Niq+l12*Nip)*((l33+1)*Njr*C3312 + 
-				 l32*Njq*C2212 + 
+				 (l31*Njq+l32*Njp)*C1312 + 
+				 l31*Njp*C1311) + 
+	  ((l11+1)*Niq+l12*Nip)*((l33+1)*Njr*C1233 + 
+				 l32*Njq*C1222 + 
 				 (l32*Njr+(l33+1)*Njq)*C1223 + 
 				 (l31*Njr+(l33+1)*Njp)*C1213 + 
 				 (l31*Njq+l32*Njp)*C1212 + 
-				 l31*Njp*C1112) + 
+				 l31*Njp*C1211) + 
 	  l12*Niq*((l33+1)*Njr*C2233 + 
 		   (l32*Njr+(l33+1)*Njq)*C2223 + 
 		   l32*Njq*C2222 + 
 		   (l31*Njr+(l33+1)*Njp)*C2213 + 
 		   (l31*Njq+l32*Njp)*C2212 + 
-		   l31*Njp*C1122) + 
+		   l31*Njp*C2211) + 
 	  (l11+1)*Nip*((l33+1)*Njr*C1133 + 
 		       (l32*Njr+(l33+1)*Njq)*C1123 + 
 		       l32*Njq*C1122 + 
@@ -881,32 +899,32 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(
 		   (l12*Njr+l13*Njq)*C3323 + 
 		   ((l11+1)*Njr+l13*Njp)*C3313 + 
 		   ((l11+1)*Njq+l12*Njp)*C3312 + 
-		   l12*Njq*C2233+(l11+1)*Njp*C1133) + 
-	  ((l22+1)*Nir+l23*Niq)*(l13*Njr*C3323 + 
+		   l12*Njq*C3322 + 
+		   (l11+1)*Njp*C3311) + 
+	  ((l22+1)*Nir+l23*Niq)*(l13*Njr*C2333 + 
 				 (l12*Njr+l13*Njq)*C2323 + 
 				 ((l11+1)*Njr+l13*Njp)*C2313 + 
-				 l12*Njq*C2223 + 
-				 ((l11+1)*Njq+l12*Njp)*C1223 + 
-				 (l11+1)*Njp*C1123) + 
-	  (l21*Nir+l23*Nip)*(l13*Njr*C3313 + 
-			     (l12*Njr+l13*Njq)*C2313 + 
-			     l12*Njq*C2213 + 
-			     ((l11+1)*Njr + 
-			      l13*Njp)*C1313 + 
-			     ((l11+1)*Njq+l12*Njp)*C1213 + 
-			     (l11+1)*Njp*C1113) + 
-	  (l21*Niq+(l22+1)*Nip)*(l13*Njr*C3312 + 
-				 l12*Njq*C2212 + 
+				 l12*Njq*C2322 + 
+				 ((l11+1)*Njq+l12*Njp)*C2312 + 
+				 (l11+1)*Njp*C2311) + 
+	  (l21*Nir+l23*Nip)*(l13*Njr*C1333 + 
+			     (l12*Njr+l13*Njq)*C1323 + 
+			     l12*Njq*C1322 + 
+			     ((l11+1)*Njr+l13*Njp)*C1313 + 
+			     ((l11+1)*Njq+l12*Njp)*C1312 + 
+			     (l11+1)*Njp*C1311) + 
+	  (l21*Niq+(l22+1)*Nip)*(l13*Njr*C1233 + 
+				 l12*Njq*C1222 + 
 				 (l12*Njr+l13*Njq)*C1223 + 
 				 ((l11+1)*Njr+l13*Njp)*C1213 + 
 				 ((l11+1)*Njq+l12*Njp)*C1212 + 
-				 (l11+1)*Njp*C1112) + 
+				 (l11+1)*Njp*C1211) + 
 	  (l22+1)*Niq*(l13*Njr*C2233 + 
 		       (l12*Njr+l13*Njq)*C2223 + 
 		       l12*Njq*C2222 + 
 		       ((l11+1)*Njr+l13*Njp)*C2213 + 
 		       ((l11+1)*Njq+l12*Njp)*C2212 + 
-		       (l11+1)*Njp*C1122) + 
+		       (l11+1)*Njp*C2211) + 
 	  l21*Nip*(l13*Njr*C1133 + 
 		   (l12*Njr+l13*Njq)*C1123 + 
 		   l12*Njq*C1122 + 
@@ -919,32 +937,32 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(
 		   ((l22+1)*Njr+l23*Njq)*C3323 + 
 		   (l21*Njr+l23*Njp)*C3313 + 
 		   (l21*Njq+(l22+1)*Njp)*C3312 + 
-		   (l22+1)*Njq*C2233 + 
-		   l21*Njp*C1133) + 
-	  ((l22+1)*Nir+l23*Niq)*(l23*Njr*C3323 + 
+		   (l22+1)*Njq*C3322 + 
+		   l21*Njp*C3311) + 
+	  ((l22+1)*Nir+l23*Niq)*(l23*Njr*C2333 + 
 				 ((l22+1)*Njr+l23*Njq)*C2323 + 
 				 (l21*Njr+l23*Njp)*C2313 + 
-				 (l22+1)*Njq*C2223 + 
-				 (l21*Njq+(l22+1)*Njp)*C1223 + 
-				 l21*Njp*C1123) + 
-	  (l21*Nir+l23*Nip)*(l23*Njr*C3313 + 
-			     ((l22+1)*Njr+l23*Njq)*C2313 + 
-			     (l22+1)*Njq*C2213 + 
+				 (l22+1)*Njq*C2322 + 
+				 (l21*Njq+(l22+1)*Njp)*C2312 + 
+				 l21*Njp*C2311) + 
+	  (l21*Nir+l23*Nip)*(l23*Njr*C1333 + 
+			     ((l22+1)*Njr+l23*Njq)*C1323 + 
+			     (l22+1)*Njq*C1322 + 
 			     (l21*Njr+l23*Njp)*C1313 + 
-			     (l21*Njq+(l22+1)*Njp)*C1213 + 
-			     l21*Njp*C1113) + 
-	  (l21*Niq+(l22+1)*Nip)*(l23*Njr*C3312 + 
-				 (l22+1)*Njq*C2212 + 
+			     (l21*Njq+(l22+1)*Njp)*C1312 + 
+			     l21*Njp*C1311) + 
+	  (l21*Niq+(l22+1)*Nip)*(l23*Njr*C1233 + 
+				 (l22+1)*Njq*C1222 + 
 				 ((l22+1)*Njr+l23*Njq)*C1223 + 
 				 (l21*Njr+l23*Njp)*C1213 + 
 				 (l21*Njq+(l22+1)*Njp)*C1212 + 
-				 l21*Njp*C1112) + 
+				 l21*Njp*C1211) + 
 	  (l22+1)*Niq*(l23*Njr*C2233 + 
 		       ((l22+1)*Njr+l23*Njq)*C2223 + 
 		       (l22+1)*Njq*C2222 + 
 		       (l21*Njr+l23*Njp)*C2213 + 
 		       (l21*Njq+(l22+1)*Njp)*C2212 + 
-		       l21*Njp*C1122) + 
+		       l21*Njp*C2211) + 
 	  l21*Nip*(l23*Njr*C1133 + 
 		   ((l22+1)*Njr+l23*Njq)*C1123 + 
 		   (l22+1)*Njq*C1122 + 
@@ -957,69 +975,70 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(
 		   (l32*Njr+(l33+1)*Njq)*C3323 + 
 		   (l31*Njr+(l33+1)*Njp)*C3313 + 
 		   (l31*Njq+l32*Njp)*C3312 + 
-		   l32*Njq*C2233 + 
-		   l31*Njp*C1133) + 
-	  ((l22+1)*Nir+l23*Niq)*((l33+1)*Njr*C3323 + 
+		   l32*Njq*C3322 + 
+		   l31*Njp*C3311) + 
+	  ((l22+1)*Nir+l23*Niq)*((l33+1)*Njr*C2333 + 
 				 (l32*Njr+(l33+1)*Njq)*C2323 + 
 				 (l31*Njr+(l33+1)*Njp)*C2313 + 
-				 l32*Njq*C2223 + 
-				 (l31*Njq+l32*Njp)*C1223 + 
-				 l31*Njp*C1123) + 
-	  (l21*Nir+l23*Nip)*((l33+1)*Njr*C3313 +
-			     (l32*Njr+(l33+1)*Njq)*C2313 +
-			     l32*Njq*C2213 +
+				 l32*Njq*C2322 + 
+				 (l31*Njq+l32*Njp)*C2312 + 
+				 l31*Njp*C2311) + 
+	  (l21*Nir+l23*Nip)*((l33+1)*Njr*C1333 +
+			     (l32*Njr+(l33+1)*Njq)*C1323 +
+			     l32*Njq*C1322 +
 			     (l31*Njr+(l33+1)*Njp)*C1313 +
-			     (l31*Njq+l32*Njp)*C1213 + 
-			     l31*Njp*C1113) + 
-	  (l21*Niq+(l22+1)*Nip)*((l33+1)*Njr*C3312 + 
-				 l32*Njq*C2212 + 
+			     (l31*Njq+l32*Njp)*C1312 + 
+			     l31*Njp*C1311) + 
+	  (l21*Niq+(l22+1)*Nip)*((l33+1)*Njr*C1233 + 
+				 l32*Njq*C1222 + 
 				 (l32*Njr+(l33+1)*Njq)*C1223 + 
 				 (l31*Njr+(l33+1)*Njp)*C1213 + 
 				 (l31*Njq+l32*Njp)*C1212 + 
-				 l31*Njp*C1112) +
+				 l31*Njp*C1211) +
 	  (l22+1)*Niq*((l33+1)*Njr*C2233 + 
 		       (l32*Njr+(l33+1)*Njq)*C2223 + 
 		       l32*Njq*C2222 + 
 		       (l31*Njr+(l33+1)*Njp)*C2213 + 
 		       (l31*Njq+l32*Njp)*C2212 + 
-		       l31*Njp*C1122) + 
+		       l31*Njp*C2211) + 
 	  l21*Nip*((l33+1)*Njr*C1133 + 
 		   (l32*Njr+(l33+1)*Njq)*C1123 + 
 		   l32*Njq*C1122 + 
 		   (l31*Njr+(l33+1)*Njp)*C1113 + 
-		   (l31*Njq+l32*Njp)*C1112+l31*Njp*C1111);
+		   (l31*Njq+l32*Njp)*C1112 + 
+		   l31*Njp*C1111);
 
 	const double Ki2j0 =
 	  (l33+1)*Nir*(l13*Njr*C3333 + 
 		       (l12*Njr+l13*Njq)*C3323 + 
 		       ((l11+1)*Njr+l13*Njp)*C3313 + 
 		       ((l11+1)*Njq+l12*Njp)*C3312 + 
-		       l12*Njq*C2233 + 
-		       (l11+1)*Njp*C1133) + 
-	  (l32*Nir+(l33+1)*Niq)*(l13*Njr*C3323 + 
+		       l12*Njq*C3322 + 
+		       (l11+1)*Njp*C3311) + 
+	  (l32*Nir+(l33+1)*Niq)*(l13*Njr*C2333 + 
 				 (l12*Njr+l13*Njq)*C2323 + 
 				 ((l11+1)*Njr+l13*Njp)*C2313 + 
-				 l12*Njq*C2223 + 
-				 ((l11+1)*Njq+l12*Njp)*C1223 + 
-				 (l11+1)*Njp*C1123) + 
-	  (l31*Nir+(l33+1)*Nip)*(l13*Njr*C3313 + 
-				 (l12*Njr+l13*Njq)*C2313 + 
-				 l12*Njq*C2213 + 
+				 l12*Njq*C2322 + 
+				 ((l11+1)*Njq+l12*Njp)*C2312 + 
+				 (l11+1)*Njp*C2311) + 
+	  (l31*Nir+(l33+1)*Nip)*(l13*Njr*C1333 + 
+				 (l12*Njr+l13*Njq)*C1323 + 
+				 l12*Njq*C1322 + 
 				 ((l11+1)*Njr+l13*Njp)*C1313 + 
-				 ((l11+1)*Njq+l12*Njp)*C1213 + 
-				 (l11+1)*Njp*C1113) +
-	  (l31*Niq+l32*Nip)*(l13*Njr*C3312 + 
-			     l12*Njq*C2212 + 
+				 ((l11+1)*Njq+l12*Njp)*C1312 + 
+				 (l11+1)*Njp*C1311) +
+	  (l31*Niq+l32*Nip)*(l13*Njr*C1233 + 
+			     l12*Njq*C1222 + 
 			     (l12*Njr+l13*Njq)*C1223 + 
 			     ((l11+1)*Njr+l13*Njp)*C1213 + 
 			     ((l11+1)*Njq+l12*Njp)*C1212 + 
-			     (l11+1)*Njp*C1112) + 
+			     (l11+1)*Njp*C1211) + 
 	  l32*Niq*(l13*Njr*C2233 +
 		   (l12*Njr+l13*Njq)*C2223 + 
 		   l12*Njq*C2222 + 
 		   ((l11+1)*Njr+l13*Njp)*C2213 + 
 		   ((l11+1)*Njq+l12*Njp)*C2212 + 
-		   (l11+1)*Njp*C1122) + 
+		   (l11+1)*Njp*C2211) + 
 	  l31*Nip*(l13*Njr*C1133 + 
 		   (l12*Njr+l13*Njq)*C1123 + 
 		   l12*Njq*C1122 + 
@@ -1032,32 +1051,32 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(
 		       ((l22+1)*Njr+l23*Njq)*C3323 + 
 		       (l21*Njr+l23*Njp)*C3313 + 
 		       (l21*Njq+(l22+1)*Njp)*C3312 + 
-		       (l22+1)*Njq*C2233 + 
-		       l21*Njp*C1133) + 
-	  (l32*Nir+(l33+1)*Niq)*(l23*Njr*C3323 + 
+		       (l22+1)*Njq*C3322 + 
+		       l21*Njp*C3311) + 
+	  (l32*Nir+(l33+1)*Niq)*(l23*Njr*C2333 + 
 				 ((l22+1)*Njr+l23*Njq)*C2323 + 
 				 (l21*Njr+l23*Njp)*C2313 + 
-				 (l22+1)*Njq*C2223 + 
-				 (l21*Njq+(l22+1)*Njp)*C1223 + 
-				 l21*Njp*C1123) + 
-	  (l31*Nir+(l33+1)*Nip)*(l23*Njr*C3313 + 
-				 ((l22+1)*Njr+l23*Njq)*C2313 + 
-				 (l22+1)*Njq*C2213 + 
+				 (l22+1)*Njq*C2322 + 
+				 (l21*Njq+(l22+1)*Njp)*C2312 + 
+				 l21*Njp*C2311) + 
+	  (l31*Nir+(l33+1)*Nip)*(l23*Njr*C1333 + 
+				 ((l22+1)*Njr+l23*Njq)*C1323 + 
+				 (l22+1)*Njq*C1322 + 
 				 (l21*Njr+l23*Njp)*C1313 + 
-				 (l21*Njq+(l22+1)*Njp)*C1213 + 
-				 l21*Njp*C1113) + 
-	  (l31*Niq+l32*Nip)*(l23*Njr*C3312 + 
-			     (l22+1)*Njq*C2212 + 
+				 (l21*Njq+(l22+1)*Njp)*C1312 + 
+				 l21*Njp*C1311) + 
+	  (l31*Niq+l32*Nip)*(l23*Njr*C1233 + 
+			     (l22+1)*Njq*C1222 + 
 			     ((l22+1)*Njr+l23*Njq)*C1223 + 
 			     (l21*Njr+l23*Njp)*C1213 + 
 			     (l21*Njq+(l22+1)*Njp)*C1212 + 
-			     l21*Njp*C1112) + 
+			     l21*Njp*C1211) + 
 	  l32*Niq*(l23*Njr*C2233 + 
 		   ((l22+1)*Njr+l23*Njq)*C2223 + 
 		   (l22+1)*Njq*C2222 + 
 		   (l21*Njr+l23*Njp)*C2213 + 
 		   (l21*Njq+(l22+1)*Njp)*C2212 + 
-		   l21*Njp*C1122) + 
+		   l21*Njp*C2211) + 
 	  l31*Nip*(l23*Njr*C1133 + 
 		   ((l22+1)*Njr+l23*Njq)*C1123 + 
 		   (l22+1)*Njq*C1122 + 
@@ -1070,32 +1089,32 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(
 		       (l32*Njr+(l33+1)*Njq)*C3323 + 
 		       (l31*Njr+(l33+1)*Njp)*C3313 + 
 		       (l31*Njq+l32*Njp)*C3312 + 
-		       l32*Njq*C2233 + 
-		       l31*Njp*C1133) + 
-	  (l32*Nir+(l33+1)*Niq)*((l33+1)*Njr*C3323 + 
+		       l32*Njq*C3322 + 
+		       l31*Njp*C3311) + 
+	  (l32*Nir+(l33+1)*Niq)*((l33+1)*Njr*C2333 + 
 				 (l32*Njr+(l33+1)*Njq)*C2323 + 
 				 (l31*Njr+(l33+1)*Njp)*C2313 + 
-				 l32*Njq*C2223 + 
-				 (l31*Njq+l32*Njp)*C1223 + 
-				 l31*Njp*C1123) + 
-	  (l31*Nir+(l33+1)*Nip)*((l33+1)*Njr*C3313 + 
-				 (l32*Njr+(l33+1)*Njq)*C2313 + 
-				 l32*Njq*C2213 + 
+				 l32*Njq*C2322 + 
+				 (l31*Njq+l32*Njp)*C2312 + 
+				 l31*Njp*C2311) + 
+	  (l31*Nir+(l33+1)*Nip)*((l33+1)*Njr*C1333 + 
+				 (l32*Njr+(l33+1)*Njq)*C1323 + 
+				 l32*Njq*C1322 + 
 				 (l31*Njr+(l33+1)*Njp)*C1313 + 
-				 (l31*Njq+l32*Njp)*C1213 + 
-				 l31*Njp*C1113) + 
-	  (l31*Niq+l32*Nip)*((l33+1)*Njr*C3312 + 
-			     l32*Njq*C2212 + 
+				 (l31*Njq+l32*Njp)*C1312 + 
+				 l31*Njp*C1311) + 
+	  (l31*Niq+l32*Nip)*((l33+1)*Njr*C1233 + 
+			     l32*Njq*C1222 + 
 			     (l32*Njr+(l33+1)*Njq)*C1223 + 
 			     (l31*Njr+(l33+1)*Njp)*C1213 + 
 			     (l31*Njq+l32*Njp)*C1212 + 
-			     l31*Njp*C1112) + 
+			     l31*Njp*C1211) + 
 	  l32*Niq*((l33+1)*Njr*C2233 + 
 		   (l32*Njr+(l33+1)*Njq)*C2223 + 
 		   l32*Njq*C2222 + 
 		   (l31*Njr+(l33+1)*Njp)*C2213 + 
 		   (l31*Njq+l32*Njp)*C2212 + 
-		   l31*Njp*C1122) + 
+		   l31*Njp*C2211) + 
 	  l31*Nip*((l33+1)*Njr*C1133 + 
 		   (l32*Njr+(l33+1)*Njq)*C1123 + 
 		   l32*Njq*C1122 + 
