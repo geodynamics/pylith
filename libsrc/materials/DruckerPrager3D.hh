@@ -446,6 +446,20 @@ private :
   double _scalarProduct(const double* tensor1,
 			const double* tensor2) const;
 
+  /** Compute tensor mean, assuming vector form of a tensor.
+   *
+   * @param vec Tensor represented as a vector.
+   */
+  double _calcMean(const double* vec) const;
+
+  /** Compute deviatoric components, assuming vector form of a tensor.
+   *
+   * @param vec Tensor represented as a vector.
+   * @param vecMean Tensor mean.
+   */
+  double _calcDeviatoric(const double* vec,
+			 const double vecMean) const;
+
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

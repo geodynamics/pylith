@@ -44,7 +44,7 @@ namespace pylith {
       const int tensorSize = 6;
 
       /// Number of entries in derivative of elasticity matrix.
-      const int numElasticConsts = 21;
+      const int numElasticConsts = 36;
 
       /// Number of physical properties.
       const int numProperties = 5;
@@ -596,23 +596,38 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsElastic(
   elasticConsts[ 3] = 0; // C1112
   elasticConsts[ 4] = 0; // C1123
   elasticConsts[ 5] = 0; // C1113
-  elasticConsts[ 6] = lambda2mu; // C2222
-  elasticConsts[ 7] = lambda; // C2233
-  elasticConsts[ 8] = 0; // C2212
-  elasticConsts[ 9] = 0; // C2223
-  elasticConsts[10] = 0; // C2213
-  elasticConsts[11] = lambda2mu; // C3333
-  elasticConsts[12] = 0; // C3312
-  elasticConsts[13] = 0; // C3323
-  elasticConsts[14] = 0; // C3313
-  elasticConsts[15] = mu2; // C1212
-  elasticConsts[16] = 0; // C1223
-  elasticConsts[17] = 0; // C1213
-  elasticConsts[18] = mu2; // C2323
-  elasticConsts[19] = 0; // C2313
-  elasticConsts[20] = mu2; // C1313
+  elasticConsts[ 6] = lambda; // C2211
+  elasticConsts[ 7] = lambda2mu; // C2222
+  elasticConsts[ 8] = lambda; // C2233
+  elasticConsts[ 9] = 0; // C2212
+  elasticConsts[10] = 0; // C2223
+  elasticConsts[11] = 0; // C2213
+  elasticConsts[12] = lambda; // C3311
+  elasticConsts[13] = lambda; // C3322
+  elasticConsts[14] = lambda2mu; // C3333
+  elasticConsts[15] = 0; // C3312
+  elasticConsts[16] = 0; // C3323
+  elasticConsts[17] = 0; // C3313
+  elasticConsts[18] = 0; // C1211
+  elasticConsts[19] = 0; // C1222
+  elasticConsts[20] = 0; // C1233
+  elasticConsts[21] = mu2; // C1212
+  elasticConsts[22] = 0; // C1223
+  elasticConsts[23] = 0; // C1213
+  elasticConsts[24] = 0; // C2311
+  elasticConsts[25] = 0; // C2322
+  elasticConsts[26] = 0; // C2333
+  elasticConsts[27] = 0; // C2312
+  elasticConsts[28] = mu2; // C2323
+  elasticConsts[29] = 0; // C2313
+  elasticConsts[30] = 0; // C1311
+  elasticConsts[31] = 0; // C1322
+  elasticConsts[32] = 0; // C1333
+  elasticConsts[33] = 0; // C1312
+  elasticConsts[34] = 0; // C1323
+  elasticConsts[35] = mu2; // C1313
 
-  PetscLogFlops(4);
+  PetscLogFlops(2);
 } // _calcElasticConstsElastic
 
 // ----------------------------------------------------------------------
@@ -670,27 +685,42 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic(
   double elasFrac = 1.0 - visFrac;
   double shearFac = mu*(elasFrac + visFac)/3.0;
 
-  elasticConsts[ 0] = bulkModulus + 4.0*shearFac; // C1111
-  elasticConsts[ 1] = bulkModulus - 2.0*shearFac; // C1122
+  elasticConsts[ 0] = bulkModulus + 4.0 * shearFac; // C1111
+  elasticConsts[ 1] = bulkModulus - 2.0 * shearFac; // C1122
   elasticConsts[ 2] = elasticConsts[1]; // C1133
   elasticConsts[ 3] = 0; // C1112
   elasticConsts[ 4] = 0; // C1123
   elasticConsts[ 5] = 0; // C1113
-  elasticConsts[ 6] = elasticConsts[0]; // C2222
-  elasticConsts[ 7] = elasticConsts[1]; // C2233
-  elasticConsts[ 8] = 0; // C2212
-  elasticConsts[ 9] = 0; // C2223
-  elasticConsts[10] = 0; // C2213
-  elasticConsts[11] = elasticConsts[0]; // C3333
-  elasticConsts[12] = 0; // C3312
-  elasticConsts[13] = 0; // C3323
-  elasticConsts[14] = 0; // C3313
-  elasticConsts[15] = 6.0 * shearFac; // C1212
-  elasticConsts[16] = 0; // C1223
-  elasticConsts[17] = 0; // C1213
-  elasticConsts[18] = elasticConsts[15]; // C2323
-  elasticConsts[19] = 0; // C2313
-  elasticConsts[20] = elasticConsts[15]; // C1313
+  elasticConsts[ 6] = elasticConsts[1]; // C2211
+  elasticConsts[ 7] = elasticConsts[0]; // C2222
+  elasticConsts[ 8] = elasticConsts[1]; // C2233
+  elasticConsts[ 9] = 0; // C2212
+  elasticConsts[10] = 0; // C2223
+  elasticConsts[11] = 0; // C2213
+  elasticConsts[12] = elasticConsts[1]; // C3311
+  elasticConsts[13] = elasticConsts[1]; // C3322
+  elasticConsts[14] = elasticConsts[0]; // C3333
+  elasticConsts[15] = 0; // C3312
+  elasticConsts[16] = 0; // C3323
+  elasticConsts[17] = 0; // C3313
+  elasticConsts[18] = 0; // C1211
+  elasticConsts[19] = 0; // C1222
+  elasticConsts[20] = 0; // C1233
+  elasticConsts[21] = 6.0 * shearFac; // C1212
+  elasticConsts[22] = 0; // C1223
+  elasticConsts[23] = 0; // C1213
+  elasticConsts[24] = 0; // C2311
+  elasticConsts[25] = 0; // C2322
+  elasticConsts[26] = 0; // C2333
+  elasticConsts[27] = 0; // C2312
+  elasticConsts[28] = elasticConsts[21]; // C2323
+  elasticConsts[29] = 0; // C2313
+  elasticConsts[30] = 0; // C1311
+  elasticConsts[31] = 0; // C1322
+  elasticConsts[32] = 0; // C1333
+  elasticConsts[33] = 0; // C1312
+  elasticConsts[34] = 0; // C1323
+  elasticConsts[35] = elasticConsts[21]; // C1313
 
 #if 0 // DEBUGGING
   std::cout << "_calcElasticConstsViscoelastic" << std::endl;
@@ -775,7 +805,7 @@ pylith::materials::GenMaxwellIsotropic3D::_updateStateVarsViscoelastic(
 					    const int initialStressSize,
 					    const double* initialStrain,
 					    const int initialStrainSize)
-{ // _updateStateVarsElastic
+{ // _updateStateVarsViscoelastic
   assert(0 != stateVars);
   assert(_numVarsQuadPt == numStateVars);
   assert(0 != properties);

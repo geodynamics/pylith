@@ -817,7 +817,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(
 { // _elasticityJacobian2D
   const int spaceDim = 2;
   const int cellDim = 2;
-  const int numConsts = 6;
+  const int numConsts = 9;
 
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -838,9 +838,12 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(
     const double C1111 = elasticConsts[iQuad*numConsts+0];
     const double C1122 = elasticConsts[iQuad*numConsts+1];
     const double C1112 = elasticConsts[iQuad*numConsts+2]/2.0;
-    const double C2222 = elasticConsts[iQuad*numConsts+3];
-    const double C2212 = elasticConsts[iQuad*numConsts+4]/2.0;
-    const double C1212 = elasticConsts[iQuad*numConsts+5]/2.0;
+    const double C2211 = elasticConsts[iQuad*numConsts+3];
+    const double C2222 = elasticConsts[iQuad*numConsts+4];
+    const double C2212 = elasticConsts[iQuad*numConsts+5]/2.0;
+    const double C1211 = elasticConsts[iQuad*numConsts+6]/2.0;
+    const double C1222 = elasticConsts[iQuad*numConsts+7]/2.0;
+    const double C1212 = elasticConsts[iQuad*numConsts+8]/2.0;
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
@@ -852,16 +855,16 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(
 	const double Njp = basisDeriv[iQ+jBasis*spaceDim  ];
 	const double Njq = basisDeriv[iQ+jBasis*spaceDim+1];
 	const double ki0j0 = 
-	  C1111 * Nip * Njp + C1112 * Niq * Njp +
+	  C1111 * Nip * Njp + C1211 * Niq * Njp +
 	  C1112 * Nip * Njq + C1212 * Niq * Njq;
 	const double ki0j1 =
-	  C1122 * Nip * Njq + C2212 * Niq * Njq +
+	  C1122 * Nip * Njq + C1222 * Niq * Njq +
 	  C1112 * Nip * Njp + C1212 * Niq * Njp;
 	const double ki1j0 =
-	  C1122 * Niq * Njp + C2212 * Niq * Njq +
-	  C1112 * Nip * Njp + C1212 * Nip * Njq;
+	  C2211 * Niq * Njp + C1211 * Nip * Njp +
+	  C2212 * Niq * Njq + C1212 * Nip * Njq;
 	const double ki1j1 =
-	  C2222 * Niq * Njq + C2212 * Nip * Njq +
+	  C2222 * Niq * Njq + C1222 * Nip * Njq +
 	  C2212 * Niq * Njp + C1212 * Nip * Njp;
 	const int jBlock = (jBasis*spaceDim  );
 	const int jBlock1 = (jBasis*spaceDim+1);
@@ -891,7 +894,6 @@ pylith::feassemble::IntegratorElasticity::_elasticityPrecon2D(
 
   assert(2 == cellDim);
   assert(quadWts.size() == numQuadPts);
-  const int numConsts = 6;
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const double wt = quadWts[iQuad] * jacobianDet[iQuad];
@@ -926,7 +928,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
 { // _elasticityJacobian3D
   const int spaceDim = 3;
   const int cellDim = 3;
-  const int numConsts = 21;
+  const int numConsts = 36;
 
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -951,21 +953,36 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
     const double C1112 = elasticConsts[iQuad*numConsts+ 3] / 2.0;
     const double C1123 = elasticConsts[iQuad*numConsts+ 4] / 2.0;
     const double C1113 = elasticConsts[iQuad*numConsts+ 5] / 2.0;
-    const double C2222 = elasticConsts[iQuad*numConsts+ 6];
-    const double C2233 = elasticConsts[iQuad*numConsts+ 7];
-    const double C2212 = elasticConsts[iQuad*numConsts+ 8] / 2.0;
-    const double C2223 = elasticConsts[iQuad*numConsts+ 9] / 2.0;
-    const double C2213 = elasticConsts[iQuad*numConsts+10] / 2.0;
-    const double C3333 = elasticConsts[iQuad*numConsts+11];
-    const double C3312 = elasticConsts[iQuad*numConsts+12] / 2.0;
-    const double C3323 = elasticConsts[iQuad*numConsts+13] / 2.0;
-    const double C3313 = elasticConsts[iQuad*numConsts+14] / 2.0;
-    const double C1212 = elasticConsts[iQuad*numConsts+15] / 2.0;
-    const double C1223 = elasticConsts[iQuad*numConsts+16] / 2.0;
-    const double C1213 = elasticConsts[iQuad*numConsts+17] / 2.0;
-    const double C2323 = elasticConsts[iQuad*numConsts+18] / 2.0;
-    const double C2313 = elasticConsts[iQuad*numConsts+19] / 2.0;
-    const double C1313 = elasticConsts[iQuad*numConsts+20] / 2.0;
+    const double C2211 = elasticConsts[iQuad*numConsts+ 6];
+    const double C2222 = elasticConsts[iQuad*numConsts+ 7];
+    const double C2233 = elasticConsts[iQuad*numConsts+ 8];
+    const double C2212 = elasticConsts[iQuad*numConsts+ 9] / 2.0;
+    const double C2223 = elasticConsts[iQuad*numConsts+10] / 2.0;
+    const double C2213 = elasticConsts[iQuad*numConsts+11] / 2.0;
+    const double C3311 = elasticConsts[iQuad*numConsts+12];
+    const double C3322 = elasticConsts[iQuad*numConsts+13];
+    const double C3333 = elasticConsts[iQuad*numConsts+14];
+    const double C3312 = elasticConsts[iQuad*numConsts+15] / 2.0;
+    const double C3323 = elasticConsts[iQuad*numConsts+16] / 2.0;
+    const double C3313 = elasticConsts[iQuad*numConsts+17] / 2.0;
+    const double C1211 = elasticConsts[iQuad*numConsts+18] / 2.0;
+    const double C1222 = elasticConsts[iQuad*numConsts+19] / 2.0;
+    const double C1233 = elasticConsts[iQuad*numConsts+20] / 2.0;
+    const double C1212 = elasticConsts[iQuad*numConsts+21] / 2.0;
+    const double C1223 = elasticConsts[iQuad*numConsts+22] / 2.0;
+    const double C1213 = elasticConsts[iQuad*numConsts+23] / 2.0;
+    const double C2311 = elasticConsts[iQuad*numConsts+24] / 2.0;
+    const double C2322 = elasticConsts[iQuad*numConsts+25] / 2.0;
+    const double C2333 = elasticConsts[iQuad*numConsts+26] / 2.0;
+    const double C2312 = elasticConsts[iQuad*numConsts+27] / 2.0;
+    const double C2323 = elasticConsts[iQuad*numConsts+28] / 2.0;
+    const double C2313 = elasticConsts[iQuad*numConsts+29] / 2.0;
+    const double C1311 = elasticConsts[iQuad*numConsts+30] / 2.0;
+    const double C1322 = elasticConsts[iQuad*numConsts+31] / 2.0;
+    const double C1333 = elasticConsts[iQuad*numConsts+32] / 2.0;
+    const double C1312 = elasticConsts[iQuad*numConsts+33] / 2.0;
+    const double C1323 = elasticConsts[iQuad*numConsts+34] / 2.0;
+    const double C1313 = elasticConsts[iQuad*numConsts+35] / 2.0;
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
@@ -977,40 +994,40 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
 	const double Njq = basisDeriv[iQ+jBasis*spaceDim+1];
 	const double Njr = basisDeriv[iQ+jBasis*spaceDim+2];
 	const double ki0j0 = 
-	  C1111 * Nip * Njp + C1112 * Niq * Njp + C1113 * Nir * Njp +
-	  C1112 * Nip * Njq + C1212 * Niq * Njq + C1213 * Nir * Njq +
+	  C1111 * Nip * Njp + C1211 * Niq * Njp + C1311 * Nir * Njp +
+	  C1112 * Nip * Njq + C1212 * Niq * Njq + C1312 * Nir * Njq +
 	  C1113 * Nip * Njr + C1213 * Niq * Njr + C1313 * Nir * Njr;
 	const double ki0j1 =
-	  C1122 * Nip * Njq + C2212 * Niq * Njq + C2213 * Nir * Njq +
-	  C1112 * Nip * Njp + C1212 * Niq * Njp + C1213 * Nir * Njp +
-	  C1123 * Nip * Njr + C1223 * Niq * Njr + C2313 * Nir * Njr;
+	  C1122 * Nip * Njq + C1222 * Niq * Njq + C1322 * Nir * Njq +
+	  C1112 * Nip * Njp + C1212 * Niq * Njp + C1312 * Nir * Njp +
+	  C1123 * Nip * Njr + C1223 * Niq * Njr + C1323 * Nir * Njr;
 	const double ki0j2 =
-	  C1133 * Nip * Njr + C3312 * Niq * Njr + C3313 * Nir * Njr +
-	  C1123 * Nip * Njq + C1223 * Niq * Njq + C2313 * Nir * Njq +
+	  C1133 * Nip * Njr + C1233 * Niq * Njr + C1333 * Nir * Njr +
+	  C1123 * Nip * Njq + C1223 * Niq * Njq + C1323 * Nir * Njq +
 	  C1113 * Nip * Njp + C1213 * Niq * Njp + C1313 * Nir * Njp;
 	const double ki1j0 =
-	  C1122 * Niq * Njp + C1112 * Nip * Njp + C1123 * Nir * Njp +
-	  C2212 * Niq * Njq + C1212 * Nip * Njq + C1223 * Nir * Njq +
+	  C2211 * Niq * Njp + C1211 * Nip * Njp + C2311 * Nir * Njp +
+	  C2212 * Niq * Njq + C1212 * Nip * Njq + C2312 * Nir * Njq +
 	  C2213 * Niq * Njr + C1213 * Nip * Njr + C2313 * Nir * Njr;
 	const double ki1j1 =
-	  C2222 * Niq * Njq + C2212 * Nip * Njq + C2223 * Nir * Njq +
-	  C2212 * Niq * Njp + C1212 * Nip * Njp + C1223 * Nir * Njp +
+	  C2222 * Niq * Njq + C1222 * Nip * Njq + C2322 * Nir * Njq +
+	  C2212 * Niq * Njp + C1212 * Nip * Njp + C2312 * Nir * Njp +
 	  C2223 * Niq * Njr + C1223 * Nip * Njr + C2323 * Nir * Njr;
 	const double ki1j2 =
-	  C2233 * Niq * Njr + C3312 * Nip * Njr + C3323 * Nir * Njr +
+	  C2233 * Niq * Njr + C1233 * Nip * Njr + C2333 * Nir * Njr +
 	  C2223 * Niq * Njq + C1223 * Nip * Njq + C2323 * Nir * Njq +
 	  C2213 * Niq * Njp + C1213 * Nip * Njp + C2313 * Nir * Njp;
 	const double ki2j0 =
-	  C1133 * Nir * Njp + C1123 * Niq * Njp + C1113 * Nip * Njp +
-	  C3312 * Nir * Njq + C1223 * Niq * Njq + C1213 * Nip * Njq +
+	  C3311 * Nir * Njp + C2311 * Niq * Njp + C1311 * Nip * Njp +
+	  C3312 * Nir * Njq + C2312 * Niq * Njq + C1312 * Nip * Njq +
 	  C3313 * Nir * Njr + C2313 * Niq * Njr + C1313 * Nip * Njr; 
 	const double ki2j1 =
-	  C2233 * Nir * Njq + C2223 * Niq * Njq + C2213 * Nip * Njq +
-	  C3312 * Nir * Njp + C1223 * Niq * Njp + C1213 * Nip * Njp +
-	  C3323 * Nir * Njr + C2323 * Niq * Njr + C2313 * Nip * Njr; 
+	  C3322 * Nir * Njq + C2322 * Niq * Njq + C1322 * Nip * Njq +
+	  C3312 * Nir * Njp + C2312 * Niq * Njp + C1312 * Nip * Njp +
+	  C3323 * Nir * Njr + C2323 * Niq * Njr + C1323 * Nip * Njr; 
 	const double ki2j2 =
-	  C3333 * Nir * Njr + C3323 * Niq * Njr + C3313 * Nip * Njr +
-	  C3323 * Nir * Njq + C2323 * Niq * Njq + C2313 * Nip * Njq +
+	  C3333 * Nir * Njr + C2333 * Niq * Njr + C1333 * Nip * Njr +
+	  C3323 * Nir * Njq + C2323 * Niq * Njq + C1323 * Nip * Njq +
 	  C3313 * Nir * Njp + C2313 * Niq * Njp + C1313 * Nip * Njp;
 	const int iBlock = iBasis*spaceDim * (numBasis*spaceDim);
 	const int iBlock1 = (iBasis*spaceDim+1) * (numBasis*spaceDim);
@@ -1049,7 +1066,6 @@ pylith::feassemble::IntegratorElasticity::_elasticityPrecon3D(
   
   assert(3 == cellDim);
   assert(quadWts.size() == numQuadPts);
-  const int numConsts = 21;
 
   // Compute Jacobian for consistent tangent matrix
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
