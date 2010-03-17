@@ -1435,9 +1435,11 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped2D(
   const double Cpy = orientation[1];
   const double Cqx = orientation[2];
   const double Cqy = orientation[3];
-  const double Spp = Cpx * Cpx * Aixjx + Cpy * Cpy * Aiyjy;
-  const double Spq = Cpx * Cqx * Aixjx + Cpy * Cqy * Aiyjy;
-  const double Sqq = Cqx * Cqx * Aixjx + Cqy * Cqy * Aiyjy;
+
+  // Sensitivity matrix using only diagonal of A to approximate its inverse
+   const double Spp = Cpx * Cpx * Aixjx + Cpy * Cpy * Aiyjy;
+   const double Spq = Cpx * Cqx * Aixjx + Cpy * Cqy * Aiyjy;
+   const double Sqq = Cqx * Cqx * Aixjx + Cqy * Cqy * Aiyjy;
   
   const double slipMag = fabs((*slip)[0]);
   const double slipRateMag = fabs(slipRate[0]);
@@ -1525,12 +1527,14 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3D(
   const double Crx = orientation[6];
   const double Cry = orientation[7];
   const double Crz = orientation[8];
-  const double Spp = Cpx * Cpx * Aixjx + Cpy * Cpy * Aiyjy + Cpz * Cpz * Aizjz;
-  const double Spq = Cpx * Cqx * Aixjx + Cpy * Cqy * Aiyjy + Cpz * Cqz * Aizjz;
-  const double Spr = Cpx * Crx * Aixjx + Cpy * Cry * Aiyjy + Cpz * Crz * Aizjz;
-  const double Sqq = Cqx * Cqx * Aixjx + Cqy * Cqy * Aiyjy + Cqz * Cqz * Aizjz;
-  const double Sqr = Cqx * Crx * Aixjx + Cqy * Cry * Aiyjy + Cqz * Crz * Aizjz;
-  const double Srr = Crx * Crx * Aixjx + Cry * Cry * Aiyjy + Crz * Crz * Aizjz;
+
+  // Sensitivity matrix using only diagonal of A to approximate its inverse
+    const double Spp = Cpx * Cpx * Aixjx + Cpy * Cpy * Aiyjy + Cpz * Cpz * Aizjz;
+    const double Spq = Cpx * Cqx * Aixjx + Cpy * Cqy * Aiyjy + Cpz * Cqz * Aizjz;
+    const double Spr = Cpx * Crx * Aixjx + Cpy * Cry * Aiyjy + Cpz * Crz * Aizjz;
+    const double Sqq = Cqx * Cqx * Aixjx + Cqy * Cqy * Aiyjy + Cqz * Cqz * Aizjz;
+    const double Sqr = Cqx * Crx * Aixjx + Cqy * Cry * Aiyjy + Cqz * Crz * Aizjz;
+    const double Srr = Crx * Crx * Aixjx + Cry * Cry * Aiyjy + Crz * Crz * Aizjz;
   
   const double slipShearMag = sqrt((*slip)[0] * (*slip)[0] + 
 				   (*slip)[1] * (*slip)[1]);
@@ -1595,6 +1599,359 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3D(
 
   PetscLogFlops(0); // :TODO: Fix this
 } // constrainSolnSpace3D
+
+// ----------------------------------------------------------------------
+// Constrain solution space in 2-D.
+void
+pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped2x22D(
+				     double_array* dLagrangeTpdt,
+				     double_array* slip,
+				     const double_array& slipRate,
+				     const double_array& tractionTpdt,
+				     const double_array& orientation,
+				     const double_array& jacobianN,
+				     const double_array& jacobianP,
+				     const double area)
+{ // constrainSolnSpace2x22D
+ assert(0 != dLagrangeTpdt);
+ assert(0 != slip);
+
+ std::cout << "Normal traction:" << tractionTpdt[1] << std::endl;
+
+ // Sensitivity of slip to changes in the Lagrange multipliers
+ assert(jacobianN[0] > 0.0);
+ assert(jacobianP[0] > 0.0);
+ assert(jacobianN[1] > 0.0);
+ assert(jacobianP[1] > 0.0);
+ assert(jacobianN[2] > 0.0);
+ assert(jacobianP[2] > 0.0);
+ assert(jacobianN[3] > 0.0);
+ assert(jacobianP[3] > 0.0);
+
+ // Fault orientation matrix
+ const double Cpx = orientation[0];
+ const double Cpy = orientation[1];
+ const double Cqx = orientation[2];
+ const double Cqy = orientation[3];
+
+ // 3 x 3 Jacobian block of i side of fault
+ const double Aixx = jacobianN[0];
+ const double Aixy = jacobianN[1];
+ const double Aiyx = jacobianN[2];
+ const double Aiyy = jacobianN[3];
+
+ // 3 x 3 Jacobian block of j side of fault
+ const double Ajxx = jacobianP[0];
+ const double Ajxy = jacobianP[1];
+ const double Ajyx = jacobianP[2];
+ const double Ajyy = jacobianP[3];
+
+ // Determinant of 2 X 2 block of Jacobian on each side of the fault
+ const double Deti = Aixx * Aiyy - Aixy*Aiyx;
+ const double Detj = Ajxx * Ajyy - Ajxy*Ajyx;
+
+ // Co-factor matrix for i side of fault
+ const double Ci11 = Aiyy;
+ const double Ci12 = -Aiyx;
+ const double Ci21 = -Aixy;
+ const double Ci22 = Aixx;
+
+ // Co-factor matrix for j side of fault
+ const double Cj11 = Ajyy;
+ const double Cj12 = -Ajyx;
+ const double Cj21 = -Ajxy;
+ const double Cj22 = Ajxx;
+
+ // Contribution to sensitivity from i side of fault
+ const double Sipp = Ci11 * Cpx * Cpx + Ci22 * Cpy * Cpy + (Ci12 + Ci21) * Cpx * Cpy;
+ const double Sipq = (Ci11 * Cpx + Ci12 * Cpy) * Cqx + (Ci21 * Cpx + Ci22 * Cpy) * Cqy;
+ const double Siqp = (Ci11 * Cqx + Ci12 * Cqy) * Cpx + (Ci21 * Cqx + Ci22 * Cqy) * Cpy;
+ const double Siqq = Ci11 * Cqx * Cqx + Ci22 * Cqy * Cqy + (Ci12 + Ci21) * Cqx * Cqy;
+
+ // Contribution to sensitivity from i side of fault
+ const double Sjpp = Cj11 * Cpx * Cpx + Cj22 * Cpy * Cpy + (Cj12 + Cj21) * Cpx * Cpy;
+ const double Sjpq = (Cj11 * Cpx + Cj12 * Cpy) * Cqx + (Cj21 * Cpx + Cj22 * Cpy) * Cqy;
+ const double Sjqp = (Cj11 * Cqx + Cj12 * Cqy) * Cpx + (Cj21 * Cqx + Cj22 * Cqy) * Cpy;
+ const double Sjqq = Cj11 * Cqx * Cqx + Cj22 * Cqy * Cqy + (Cj12 + Cj21) * Cqx * Cqy;
+
+ // Sensitivity Matrix
+ const double Spp = Sipp/Deti + Sjpp/Detj;
+ const double Spq = Sipq/Deti + Sjpq/Detj;
+ const double Sqp = Siqp/Deti + Sjqp/Detj;
+ const double Sqq = Siqq/Deti + Sjqq/Detj;
+
+ const double slipMag = fabs((*slip)[0]);
+ const double slipRateMag = fabs(slipRate[0]);
+
+ const double tractionNormal = tractionTpdt[1];
+ const double tractionShearMag = fabs(tractionTpdt[0]);
+
+ if (tractionNormal < 0 && 0.0 == (*slip)[1]) {
+   // if in compression and no opening
+   std::cout << "FAULT IN COMPRESSION" << std::endl;
+   const double frictionStress = _friction->calcFriction(slipMag, slipRateMag,
+							  tractionNormal);
+   std::cout << "frictionStress: " << frictionStress << std::endl;
+   if (tractionShearMag > frictionStress ||
+	(tractionShearMag < frictionStress && slipMag > 0.0)) {
+     // traction is limited by friction, so have sliding
+     std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
+
+     // Update slip based on value required to stick versus friction
+     const double dlp = (tractionShearMag - frictionStress) * area *
+	tractionTpdt[0] / tractionShearMag;
+     (*dLagrangeTpdt)[0] = -dlp;
+     (*slip)[0] += Spp * dlp;
+     std::cout << "Estimated slip: " << (*slip)[0] << std::endl;
+   } else {
+     // else friction exceeds value necessary, so stick
+     std::cout << "STICK" << std::endl;
+     // no changes to solution
+   } // if/else
+ } else {
+   // if in tension, then traction is zero.
+   std::cout << "FAULT IN TENSION" << std::endl;
+
+   // Update slip based on value required to stick versus
+   // zero traction
+   const double dlp = tractionTpdt[0] * area;
+   const double dlq = tractionTpdt[1] * area;
+
+   (*dLagrangeTpdt)[0] = -dlp;
+   (*dLagrangeTpdt)[1] = -dlq;
+   (*slip)[0] += Spp * dlp + Spq * dlq;
+   (*slip)[1] += Spq * dlp + Sqq * dlq;
+ } // else
+
+ PetscLogFlops(0); // :TODO: Fix this
+} // constrainSolnSpace2x22D
+
+// ----------------------------------------------------------------------
+// Constrain solution space in 3-D.
+void
+pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3x33D(
+				     double_array* dLagrangeTpdt,
+				     double_array* slip,
+				     const double_array& slipRate,
+				     const double_array& tractionTpdt,
+				     const double_array& orientation,
+				     const double_array& jacobianN,
+				     const double_array& jacobianP,
+				     const double area)
+{ // constrainSolnSpace3x33D
+ assert(0 != dLagrangeTpdt);
+ assert(0 != slip);
+
+ std::cout << "Normal traction:" << tractionTpdt[2] << std::endl;
+
+ // Sensitivity of slip to changes in the Lagrange multipliers
+ assert(jacobianN[0] > 0.0);
+ assert(jacobianP[0] > 0.0);
+ assert(jacobianN[1] > 0.0);
+ assert(jacobianP[1] > 0.0);
+ assert(jacobianN[2] > 0.0);
+ assert(jacobianP[2] > 0.0);
+ assert(jacobianN[3] > 0.0);
+ assert(jacobianP[3] > 0.0);
+ assert(jacobianN[4] > 0.0);
+ assert(jacobianP[4] > 0.0);
+ assert(jacobianN[5] > 0.0);
+ assert(jacobianP[5] > 0.0);
+ assert(jacobianN[6] > 0.0);
+ assert(jacobianP[6] > 0.0);
+ assert(jacobianN[7] > 0.0);
+ assert(jacobianP[7] > 0.0);
+ assert(jacobianN[8] > 0.0);
+ assert(jacobianP[8] > 0.0);
+
+ // 3 x 3 Jacobian block of i side of fault
+ const double Aixx = jacobianN[0];
+ const double Aixy = jacobianN[1];
+ const double Aixz = jacobianN[2];
+ const double Aiyx = jacobianN[3];
+ const double Aiyy = jacobianN[4];
+ const double Aiyz = jacobianN[5];
+ const double Aizx = jacobianN[6];
+ const double Aizy = jacobianN[7];
+ const double Aizz = jacobianN[8];
+
+ // 3 x 3 Jacobian block of j side of fault
+ const double Ajxx = jacobianP[0];
+ const double Ajxy = jacobianP[1];
+ const double Ajxz = jacobianP[2];
+ const double Ajyx = jacobianP[3];
+ const double Ajyy = jacobianP[4];
+ const double Ajyz = jacobianP[5];
+ const double Ajzx = jacobianP[6];
+ const double Ajzy = jacobianP[7];
+ const double Ajzz = jacobianP[8];
+
+ // Fault orientation matrix
+ const double Cpx = orientation[0];
+ const double Cpy = orientation[1];
+ const double Cpz = orientation[2];
+ const double Cqx = orientation[3];
+ const double Cqy = orientation[4];
+ const double Cqz = orientation[5];
+ const double Crx = orientation[6];
+ const double Cry = orientation[7];
+ const double Crz = orientation[8];
+
+ // Determinant of 3 X 3 block of Jacobian on each side of the fault
+ const double Deti = Aixz * (-Aiyy * Aizx + Aiyx * Aizy) +
+   Aixy * (Aiyz * Aizx - Aiyx * Aizz) + Aixx * (-Aiyz * Aizy + Aiyy * Aizz);
+ const double Detj = Ajxz * (-Ajyy * Ajzx + Ajyx * Ajzy) +
+   Ajxy * (Ajyz * Ajzx - Ajyx * Ajzz) + Ajxx * (-Ajyz * Ajzy + Ajyy * Ajzz);
+
+ // Co-factor matrix for i side of fault
+ const double Ci11 = Aiyz * Aizy + Aiyy * Aizz;
+ const double Ci12 = Aiyz * Aizx - Aiyx * Aizz;
+ const double Ci13 = -Aiyy * Aizx + Aiyx * Aizy;
+ const double Ci21 = Aixz * Aizy - Aixy * Aizz;
+ const double Ci22 = -Aixz * Aizx + Aixx * Aizz;
+ const double Ci23 = Aixy * Aizx - Aixx * Aizy;
+ const double Ci31 = Aixz * Aiyy + Aixy * Aiyz;
+ const double Ci32 = Aixz * Aiyx - Aixx * Aiyz;
+ const double Ci33 = -Aixy * Aiyx + Aixx * Aiyy;
+
+ // Co-factor matrix for j side of fault
+ const double Cj11 = Ajyz * Ajzy + Ajyy * Ajzz;
+ const double Cj12 = Ajyz * Ajzx - Ajyx * Ajzz;
+ const double Cj13 = -Ajyy * Ajzx + Ajyx * Ajzy;
+ const double Cj21 = Ajxz * Ajzy - Ajxy * Ajzz;
+ const double Cj22 = -Ajxz * Ajzx + Ajxx * Ajzz;
+ const double Cj23 = Ajxy * Ajzx - Ajxx * Ajzy;
+ const double Cj31 = Ajxz * Ajyy + Ajxy * Ajyz;
+ const double Cj32 = Ajxz * Ajyx - Ajxx * Ajyz;
+ const double Cj33 = -Ajxy * Ajyx + Ajxx * Ajyy;
+
+ // Contribution to sensitivity from i side of fault
+ const double Sipp = Ci11 * Cpx * Cpx + Ci22 * Cpy * Cpy + Ci33 * Cpz * Cpz +
+   (Ci12 + Ci21) * Cpx * Cpy + (Ci13 + Ci31) * Cpx * Cpz + (Ci23 + Ci32) * Cpy * Cpz;
+ const double Siqq = Ci11 * Cqx * Cqx + Ci22 * Cqy * Cqy + Ci33 * Cqz * Cqz +
+   (Ci12 + Ci21) * Cqx * Cqy + (Ci13 + Ci31) * Cqx * Cqz + (Ci23 + Ci32) * Cqy * Cqz;
+ const double Sirr = Ci11 * Crx * Crx + Ci22 * Cry * Cry + Ci33 * Crz * Crz +
+   (Ci12 + Ci21) * Crx * Cry + (Ci13 + Ci31) * Crx * Crz + (Ci23 + Ci32) * Cry * Crz;
+ const double Sipq = (Ci11 * Cpx + Ci12 * Cpy + Ci13 * Cpz) * Cqx +
+   (Ci21 * Cpx + Ci22 * Cpy + Ci23 * Cpz) * Cqy +
+   (Ci31 * Cpx + Ci32 * Cpy + Ci33 * Cpz) * Cqz;
+ const double Sipr = (Ci11 * Cpx + Ci12 * Cpy + Ci13 * Cpz) * Crx +
+   (Ci21 * Cpx + Ci22 * Cpy + Ci23 * Cpz) * Cry +
+   (Ci31 * Cpx + Ci32 * Cpy + Ci33 * Cpz) * Crz;
+ const double Siqp = (Ci11 * Cqx + Ci12 * Cqy + Ci13 * Cqz) * Cpx +
+   (Ci21 * Cqx + Ci22 * Cqy + Ci23 * Cqz) * Cpy +
+   (Ci31 * Cqx + Ci32 * Cqy + Ci33 * Cqz) * Cpz;
+ const double Siqr = (Ci11 * Cqx + Ci12 * Cqy + Ci13 * Cqz) * Crx +
+   (Ci21 * Cqx + Ci22 * Cqy + Ci23 * Cqz) * Cry +
+   (Ci31 * Cqx + Ci32 * Cqy + Ci33 * Cqz) * Crz;
+ const double Sirp = (Ci11 * Crx + Ci12 * Cry + Ci13 * Crz) * Cpx +
+   (Ci21 * Crx + Ci22 * Cry + Ci23 * Crz) * Cpy +
+   (Ci31 * Crx + Ci32 * Cry + Ci33 * Crz) * Cpz;
+ const double Sirq = (Ci11 * Crx + Ci12 * Cry + Ci13 * Crz) * Cqx +
+   (Ci21 * Crx + Ci22 * Cry + Ci23 * Crz) * Cqy +
+   (Ci31 * Crx + Ci32 * Cry + Ci33 * Crz) * Cqz;
+
+ // Contribution to sensitivity from i side of fault
+ const double Sjpp = Cj11 * Cpx * Cpx + Cj22 * Cpy * Cpy + Cj33 * Cpz * Cpz +
+   (Cj12 + Cj21) * Cpx * Cpy + (Cj13 + Cj31) * Cpx * Cpz + (Cj23 + Cj32) * Cpy * Cpz;
+ const double Sjqq = Cj11 * Cqx * Cqx + Cj22 * Cqy * Cqy + Cj33 * Cqz * Cqz +
+   (Cj12 + Cj21) * Cqx * Cqy + (Cj13 + Cj31) * Cqx * Cqz + (Cj23 + Cj32) * Cqy * Cqz;
+ const double Sjrr = Cj11 * Crx * Crx + Cj22 * Cry * Cry + Cj33 * Crz * Crz +
+   (Cj12 + Cj21) * Crx * Cry + (Cj13 + Cj31) * Crx * Crz + (Cj23 + Cj32) * Cry * Crz;
+ const double Sjpq = (Cj11 * Cpx + Cj12 * Cpy + Cj13 * Cpz) * Cqx +
+   (Cj21 * Cpx + Cj22 * Cpy + Cj23 * Cpz) * Cqy +
+   (Cj31 * Cpx + Cj32 * Cpy + Cj33 * Cpz) * Cqz;
+ const double Sjpr = (Cj11 * Cpx + Cj12 * Cpy + Cj13 * Cpz) * Crx +
+   (Cj21 * Cpx + Cj22 * Cpy + Cj23 * Cpz) * Cry +
+   (Cj31 * Cpx + Cj32 * Cpy + Cj33 * Cpz) * Crz;
+ const double Sjqp = (Cj11 * Cqx + Cj12 * Cqy + Cj13 * Cqz) * Cpx +
+   (Cj21 * Cqx + Cj22 * Cqy + Cj23 * Cqz) * Cpy +
+   (Cj31 * Cqx + Cj32 * Cqy + Cj33 * Cqz) * Cpz;
+ const double Sjqr = (Cj11 * Cqx + Cj12 * Cqy + Cj13 * Cqz) * Crx +
+   (Cj21 * Cqx + Cj22 * Cqy + Cj23 * Cqz) * Cry +
+   (Cj31 * Cqx + Cj32 * Cqy + Cj33 * Cqz) * Crz;
+ const double Sjrp = (Cj11 * Crx + Cj12 * Cry + Cj13 * Crz) * Cpx +
+   (Cj21 * Crx + Cj22 * Cry + Cj23 * Crz) * Cpy +
+   (Cj31 * Crx + Cj32 * Cry + Cj33 * Crz) * Cpz;
+ const double Sjrq = (Cj11 * Crx + Cj12 * Cry + Cj13 * Crz) * Cqx +
+   (Cj21 * Crx + Cj22 * Cry + Cj23 * Crz) * Cqy +
+   (Cj31 * Crx + Cj32 * Cry + Cj33 * Crz) * Cqz;
+
+ // Sensitivity Matrix
+ const double Spp = Sipp/Deti + Sjpp/Detj;
+ const double Spq = Sipq/Deti + Sjpq/Detj;
+ const double Spr = Sipr/Deti + Sjpr/Detj;
+ const double Sqp = Siqp/Deti + Sjqp/Detj;
+ const double Sqq = Siqq/Deti + Sjqq/Detj;
+ const double Sqr = Siqr/Deti + Sjqr/Detj;
+ const double Srp = Sirp/Deti + Sjrp/Detj;
+ const double Srq = Sirq/Deti + Sjrq/Detj;
+ const double Srr = Sirr/Deti + Sjrr/Detj;
+
+
+ const double slipShearMag = sqrt((*slip)[0] * (*slip)[0] +
+				   (*slip)[1] * (*slip)[1]);
+ double slipRateMag = sqrt(slipRate[0]*slipRate[0] +
+			    slipRate[1]*slipRate[1]);
+
+ const double tractionNormal = tractionTpdt[2];
+ const double tractionShearMag =
+   sqrt(tractionTpdt[0] * tractionTpdt[0] +
+	 tractionTpdt[1] * tractionTpdt[1]);
+
+ if (tractionNormal < 0.0 && 0.0 == (*slip)[2]) {
+   // if in compression and no opening
+   std::cout << "FAULT IN COMPRESSION" << std::endl;
+   const double frictionStress =
+     _friction->calcFriction(slipShearMag, slipRateMag, tractionNormal);
+   std::cout << "frictionStress: " << frictionStress << std::endl;
+   if (tractionShearMag > frictionStress ||
+	(tractionShearMag < frictionStress && slipShearMag > 0.0)) {
+     // traction is limited by friction, so have sliding
+     std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
+
+     // Update slip based on value required to stick versus friction
+     const double dlp = (tractionShearMag - frictionStress) * area *
+	tractionTpdt[0] / tractionShearMag;
+     const double dlq = (tractionShearMag - frictionStress) * area *
+	tractionTpdt[1] / tractionShearMag;
+
+     (*dLagrangeTpdt)[0] = -dlp;
+     (*dLagrangeTpdt)[1] = -dlq;
+     (*slip)[0] += Spp * dlp + Spq * dlq;
+     (*slip)[1] += Spq * dlp + Sqq * dlq;
+
+     std::cout << "Estimated slip: " << "  " << (*slip)[0] << "  "
+		<< (*slip)[1] << "  " << (*slip)[2] << std::endl;
+   } else {
+     // else friction exceeds value necessary, so stick
+     std::cout << "STICK" << std::endl;
+     // no changes to solution
+   } // if/else
+ } else {
+   // if in tension, then traction is zero.
+   std::cout << "FAULT IN TENSION" << std::endl;
+
+   // Update slip based on value required to stick versus
+   // zero traction
+   const double dlp = tractionTpdt[0] * area;
+   const double dlq = tractionTpdt[1] * area;
+   const double dlr = tractionTpdt[2] * area;
+
+   (*dLagrangeTpdt)[0] = -dlp;
+   (*dLagrangeTpdt)[1] = -dlq;
+   (*dLagrangeTpdt)[2] = -dlr;
+   (*slip)[0] += Spp * dlp + Spq * dlq + Spr * dlr;
+   (*slip)[1] += Spq * dlp + Sqq * dlq + Sqr * dlr;
+   (*slip)[2] += Spr * dlp + Sqr * dlq + Srr * dlr;
+
+   std::cout << "Estimated slip: " << "  " << (*slip)[0] << "  "
+	      << (*slip)[1] << "  " << (*slip)[2] << std::endl;
+
+ } // else
+
+ PetscLogFlops(0); // :TODO: Fix this
+} // constrainSolnSpace3x33D
 
 
 // End of file 
