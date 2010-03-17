@@ -21,7 +21,7 @@ import numpy
 
 # ----------------------------------------------------------------------
 dimension = 2
-numElasticConsts = 6
+numElasticConsts = 9
 tensorSize = 3
 
 # ElasticPlaneStrain class
@@ -123,17 +123,20 @@ class ElasticPlaneStrain(ElasticMaterialApp):
     C1111 = lambdaV + 2.0*muV
     C1122 = lambdaV
     C1112 = 0.0
+    C2211 = lambdaV
     C2222 = lambdaV + 2.0*muV
     C2212 = 0.0
+    C1211 = 0.0
+    C1222 = 0.0
     C1212 = 2.0*muV
     elasticConsts = numpy.array([C1111, C1122, C1112,
-                                 C2222, C2212,
-                                 C1212], dtype=numpy.float64)
+                                 C2211, C2222, C2212,
+                                 C1211, C1222, C1212], dtype=numpy.float64)
 
     strain = numpy.reshape(strainV, (tensorSize,1))
     elastic = numpy.array([ [C1111, C1122, C1112],
-                            [C1122, C2222, C2212],
-                            [C1112, C2212, C1212] ],
+                            [C2211, C2222, C2212],
+                            [C1211, C2212, C1212] ],
                           dtype=numpy.float64)
     initialStress = numpy.reshape(initialStressV, (tensorSize,1))
     initialStrain = numpy.reshape(initialStrainV, (tensorSize,1))

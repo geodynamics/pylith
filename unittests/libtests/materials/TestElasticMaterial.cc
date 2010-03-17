@@ -332,10 +332,10 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
       numElasticConsts = 1;
       break;
     case 2 :
-      numElasticConsts = 6;
+      numElasticConsts = 9;
       break;
     case 3 :
-      numElasticConsts = 21;
+      numElasticConsts = 36;
       break;
     default :
       assert(0);
@@ -515,11 +515,11 @@ pylith::materials::TestElasticMaterial::test_calcElasticConsts(void)
       tensorSize = 1;
       break;
     case 2 :
-      numConsts = 6;
+      numConsts = 9;
       tensorSize = 3;
       break;
     case 3 :
-      numConsts = 21;
+      numConsts = 36;
       tensorSize = 6;
       break;
     } // switch

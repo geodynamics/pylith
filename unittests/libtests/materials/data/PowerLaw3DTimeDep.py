@@ -21,7 +21,7 @@ import numpy
 
 # ----------------------------------------------------------------------
 dimension = 3
-numElasticConsts = 21
+numElasticConsts = 36
 tensorSize = 6
 
 # PowerLaw3DTimeDep class
@@ -462,7 +462,7 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
     elasticConstsList = []
 
     for stressComp in range(tensorSize):
-      for strainComp in range(stressComp, tensorSize):
+      for strainComp in range(tensorSize):
         dStressDStrain = scipy.misc.derivative(self._calcStressComponent,
                                                strainTpdt[strainComp],
                                                dx=derivDx,

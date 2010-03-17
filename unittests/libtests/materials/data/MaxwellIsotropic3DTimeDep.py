@@ -21,7 +21,7 @@ import numpy
 
 # ----------------------------------------------------------------------
 dimension = 3
-numElasticConsts = 21
+numElasticConsts = 36
 tensorSize = 6
 
 # MaxwellIsotropic3DTimeDep class
@@ -312,7 +312,7 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     elasticConstsList = []
 
     for stressComp in range(tensorSize):
-      for strainComp in range(stressComp, tensorSize):
+      for strainComp in range(tensorSize):
         dStressDStrain = stressComp + strainComp
         dStressDStrain = scipy.misc.derivative(self._calcStressComponent,
                                                strainTpdt[strainComp],
