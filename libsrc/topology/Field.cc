@@ -690,8 +690,6 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::scatterSectionToVector(void) const
 { // scatterSectionToVector
-  assert(0 != _vector);
-
   scatterSectionToVector(_vector);
 } // scatterSectionToVector
 
@@ -721,8 +719,6 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::scatterVectorToSection(void) const
 { // scatterVectorToSection
-  assert(0 != _vector);
-
   scatterVectorToSection(_vector);
 } // scatterVectorToSection
 
