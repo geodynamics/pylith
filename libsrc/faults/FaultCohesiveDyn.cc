@@ -1649,6 +1649,8 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped2x22D(
  // Determinant of 2 X 2 block of Jacobian on each side of the fault
  const double Deti = Aixx * Aiyy - Aixy*Aiyx;
  const double Detj = Ajxx * Ajyy - Ajxy*Ajyx;
+ assert(Deti > 0.0);
+ assert(Detj > 0.0);
 
  // Co-factor matrix for i side of fault
  const double Ci11 = Aiyy;
@@ -1802,6 +1804,8 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3x33D(
    Aixy * (Aiyz * Aizx - Aiyx * Aizz) + Aixx * (-Aiyz * Aizy + Aiyy * Aizz);
  const double Detj = Ajxz * (-Ajyy * Ajzx + Ajyx * Ajzy) +
    Ajxy * (Ajyz * Ajzx - Ajyx * Ajzz) + Ajxx * (-Ajyz * Ajzy + Ajyy * Ajzz);
+ assert(Deti > 0.0);
+ assert(Detj > 0.0);
 
  // Co-factor matrix for i side of fault
  const double Ci11 = Aiyz * Aizy + Aiyy * Aizz;
