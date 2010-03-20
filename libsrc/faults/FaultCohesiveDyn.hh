@@ -166,6 +166,16 @@ private :
    */
   void _updateSlipRate(const topology::SolutionFields& fields);
 
+  /** Update Jacobian blocks associated with DOF of vertices on
+   * negative and positive sides of the fault associated with Lagrange
+   * vertex k.
+   *
+   * @param jacobian Jacobian matrix.
+   * @param fields Solution fields.
+   */
+  void _updateJacobianBlocks(const topology::Jacobian& jacobian,
+			     const topology::SolutionFields& fields);
+
   /** Constrain solution space with lumped Jacobian in 1-D.
    *
    * @param dLagrangeTpdt Adjustment to Lagrange multiplier.

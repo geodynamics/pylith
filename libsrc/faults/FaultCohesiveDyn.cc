@@ -116,20 +116,11 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
   assert(0 != cs);
 
-  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-
-  // Create field for diagonal entries of Jacobian at conventional
-  // vertices i and j associated with Lagrange vertex k
-  _fields->add("Jacobian diagonal", "jacobian_diagonal");
-  topology::Field<topology::SubMesh>& jacobianDiag = _fields->get(
-    "Jacobian diagonal");
-  jacobianDiag.newSection(slip, 2 * cs->spaceDim());
-  jacobianDiag.allocate();
-  jacobianDiag.vectorFieldType(topology::FieldBase::OTHER);
 
   // Create field for slip rate associated with Lagrange vertex k
   _fields->add("slip rate", "slip_rate");
   topology::Field<topology::SubMesh>& slipRate = _fields->get("slip rate");
+  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
   slipRate.cloneSection(slip);
   slipRate.vectorFieldType(topology::FieldBase::OTHER);
 
@@ -1364,6 +1355,81 @@ pylith::faults::FaultCohesiveDyn::_updateSlipRate(const topology::SolutionFields
 
   PetscLogFlops(numVertices*spaceDim*spaceDim*4);
 } // _updateSlipRate
+
+// ----------------------------------------------------------------------
+// Update Jacobian blocks associated with DOF of vertices on negative
+// and positive sides of the fault associated with Lagrange vertex k.
+void
+pylith::faults::FaultCohesiveDyn::_updateJacobianBlocks(
+				   const topology::Jacobian& jacobian,
+				   const topology::SolutionFields& fields)
+{ // _updateJacobianBlocks
+  assert(0 != _fields);
+  assert(0 != _quadrature);
+
+  const int spaceDim = _quadrature->spaceDim();
+
+  if (!_fields->hasField("Jacobian blocks")) {
+    // Create field for entries of Jacobian at conventional vertices on
+    // negative and positive sides of the fault associated with Lagrange
+    // vertex k.
+    _fields->add("Jacobian blocks", "jacobian_blocks");
+    topology::Field<topology::SubMesh>& jacobianBlocks = 
+      _fields->get("Jacobian diagonal");
+    const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
+    jacobianBlocks.newSection(slip, 2*spaceDim*spaceDim);
+    jacobianBlocks.allocate();
+    jacobianBlocks.vectorFieldType(topology::FieldBase::OTHER);
+  } // if
+  
+  const ALE::Obj<RealSection>& jacobianBlocksSection = 
+    _fields->get("Jacobian diagonal").section();
+
+  const ALE::Obj<SieveMesh>& sieveMesh = fields.mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<RealSection>& solutionSection = fields.solution().section();
+  assert(!solutionSection.isNull());
+  const ALE::Obj<SieveMesh::order_type>& globalOrder =
+      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default",
+        solutionSection);
+  assert(!globalOrder.isNull());
+
+  const PetscMat jacobianMatrix = jacobian.matrix();
+  assert(0 != jacobianMatrix);
+
+  // Arrays for values (extracting block diagonal so rows and cols are
+  // the same).
+  const int nvalues = 2*spaceDim*spaceDim;
+  const int nrows = 2*spaceDim;
+  double_array jacobianValues(nvalues);
+  int_array rows(nrows);
+
+  const int numVertices = _cohesiveVertices.size();
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
+    const int v_fault = _cohesiveVertices[iVertex].fault;
+    const int v_negative = _cohesiveVertices[iVertex].negative;
+    const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    // Set rows/cols using globalOrder
+    const int indexN = globalOrder->getIndex(v_negative);
+    const int indexP = globalOrder->getIndex(v_positive);
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      rows[0*spaceDim+iDim] = indexN + iDim;
+      rows[1*spaceDim+iDim] = indexP + iDim;
+    } // for
+
+    // Get values
+    PetscErrorCode err = MatGetValues(jacobianMatrix, 
+				      nrows, &rows[0], 
+				      nrows, &rows[0],
+				      &jacobianValues[0]);
+    
+    // Store blocks
+    assert(jacobianValues.size() == 
+	   jacobianBlocksSection->getFiberDimension(v_fault));
+    jacobianBlocksSection->updatePoint(v_fault, &jacobianValues[0]);
+  } // for
+} // _updateJacobianBlocks
 
 // ----------------------------------------------------------------------
 // Constrain solution space in 1-D.
