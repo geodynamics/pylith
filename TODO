@@ -38,9 +38,6 @@ CURRENT ISSUES/PRIORITIES
 FRICTION
 ----------------------------------------------------------------------
 
-FaultCohesiveDyn
-  adjustSoln()
-
 Full scale tests of sliding bar. [Surendra]
 
   check fault output
@@ -74,7 +71,8 @@ Unit tests
 
 
   FaultCohesiveDyn
-    adjustSolnLumped
+
+    adjustSolnLumped()
 
 ----------------------------------------------------------------------
 TODO WELL BEFORE WORKSHOP 2010
