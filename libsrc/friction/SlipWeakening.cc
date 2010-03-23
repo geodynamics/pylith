@@ -33,13 +33,14 @@ namespace pylith {
     namespace _SlipWeakening {
 
       // Number of physical properties.
-      const int numProperties = 3;
+      const int numProperties = 4;
 
       // Physical properties.
       const pylith::materials::Metadata::ParamDescription properties[] = {
 	{ "static_coefficient", 1, pylith::topology::FieldBase::SCALAR },
 	{ "dynamic_coefficient", 1, pylith::topology::FieldBase::SCALAR },
         { "slip_weakening_parameter", 1, pylith::topology::FieldBase::SCALAR },
+	{ "cohesion", 1, pylith::topology::FieldBase::SCALAR },
       };
 
       // Number of State Variables.
@@ -52,10 +53,11 @@ namespace pylith {
       };
 
       // Values expected in spatial database
-      const int numDBProperties = 3;
+      const int numDBProperties = 4;
       const char* dbProperties[] = { "static-coefficient"
 				     "dynamic-coefficient"
 				     "slip-weakening-parameter"
+				     "cohesion"
  };      
 
       const int numDBStateVars = 2;
@@ -73,6 +75,8 @@ const int pylith::friction::SlipWeakening::p_coefD =
   pylith::friction::SlipWeakening::p_coefS + 1;
 const int pylith::friction::SlipWeakening::p_d0 = 
   pylith::friction::SlipWeakening::p_coefD + 1;
+const int pylith::friction::SlipWeakening::p_cohesion =
+  pylith::friction::SlipWeakening::p_d0 + 1;
 
 // Indices of database values (order must match dbProperties)
 const int pylith::friction::SlipWeakening::db_coefS = 0;
@@ -80,6 +84,8 @@ const int pylith::friction::SlipWeakening::db_coefD =
   pylith::friction::SlipWeakening::db_coefS + 1;
 const int pylith::friction::SlipWeakening::db_d0 = 
   pylith::friction::SlipWeakening::db_coefD + 1;
+const int pylith::friction::SlipWeakening::db_cohesion =
+  pylith::friction::SlipWeakening::db_d0 + 1;
 
 // Indices of state variables.
 const int pylith::friction::SlipWeakening::s_slipCum = 0;
@@ -125,7 +131,8 @@ pylith::friction::SlipWeakening::_dbToProperties(
   const double db_static = dbValues[db_coefS];
   const double db_dynamic = dbValues[db_coefD];
   const double db_do = dbValues[db_d0];
- 
+  const double db_c = dbValues[db_cohesion];
+
   if (db_static <= 0.0) {
     std::ostringstream msg;
     msg << "Spatial database returned nonpositive value for static coefficient "
@@ -153,6 +160,7 @@ pylith::friction::SlipWeakening::_dbToProperties(
   propValues[p_coefS] = db_static;
   propValues[p_coefD] = db_dynamic;
   propValues[p_d0] = db_do;
+  propValues[p_cohesion] = db_c;
 
 } // _dbToProperties
 
@@ -167,8 +175,10 @@ pylith::friction::SlipWeakening::_nondimProperties(double* const values,
   assert(nvalues == _SlipWeakening::numProperties);
 
   const double lengthScale = _normalizer->lengthScale();
+  const double pressureScale = _normalizer->pressureScale();
 
   values[p_d0] /= lengthScale;
+  values[p_cohesion] /= pressureScale;
 } // _nondimProperties
 
 // ----------------------------------------------------------------------
@@ -182,8 +192,10 @@ pylith::friction::SlipWeakening::_dimProperties(double* const values,
   assert(nvalues == _SlipWeakening::numProperties);
 
   const double lengthScale = _normalizer->lengthScale();
+  const double pressureScale = _normalizer->pressureScale();
 
   values[p_d0] *= lengthScale;
+  values[p_cohesion] *= pressureScale;
 } // _dimProperties
 
 // ----------------------------------------------------------------------
@@ -264,10 +276,10 @@ pylith::friction::SlipWeakening::_calcFriction(const double slip,
       } else {
 	mu_f = properties[p_coefD];
       } // if/else
-    friction = - mu_f * normalTraction;
+    friction = - mu_f * normalTraction + properties[p_cohesion];
   } // if
 
-  PetscLogFlops(5);
+  PetscLogFlops(6);
 
   return friction;
 } // _calcFriction
