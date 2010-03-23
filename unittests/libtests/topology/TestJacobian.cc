@@ -17,6 +17,7 @@
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 
@@ -31,25 +32,43 @@ void
 pylith::topology::TestJacobian::testConstructor(void)
 { // testConstructor
   Mesh mesh;
-  SolutionFields fields(mesh);
-  _initialize(&mesh, &fields);
-  Jacobian jacobian(fields);
+  Field<Mesh> field(mesh);
+  _initialize(&mesh, &field);
+  Jacobian jacobian(field);
 
-  Jacobian jacobianB(fields, "baij");
-  Jacobian jacobianC(fields, "baij", true);
-  Jacobian jacobianD(fields, "sbaij");
-  Jacobian jacobianE(fields, "sbaij", true);
+  Jacobian jacobianB(field, "baij");
+  Jacobian jacobianC(field, "baij", true);
+  Jacobian jacobianD(field, "sbaij");
+  Jacobian jacobianE(field, "sbaij", true);
 } // testConstructor
- 
+
+// ----------------------------------------------------------------------
+// Test constructor with subdomain field
+void
+pylith::topology::TestJacobian::testConstructorSubDomain(void)
+{ // testConstructorSubDomain
+  Mesh mesh;
+  Field<Mesh> field(mesh);
+  _initialize(&mesh, &field);
+
+  SubMesh submesh(mesh, "bc");
+  Field<SubMesh> subfield(submesh);
+  subfield.newSection(FieldBase::VERTICES_FIELD, submesh.dimension());
+  subfield.allocate();
+  subfield.zero();
+
+  Jacobian jacobian(subfield);
+} // testConstructorSubDomain
+
 // ----------------------------------------------------------------------
 // Test matrix().
 void
 pylith::topology::TestJacobian::testMatrix(void)
 { // testMatrix
   Mesh mesh;
-  SolutionFields fields(mesh);
-  _initialize(&mesh, &fields);
-  Jacobian jacobian(fields);
+  Field<Mesh> field(mesh);
+  _initialize(&mesh, &field);
+  Jacobian jacobian(field);
 
   const PetscMat matrix = jacobian.matrix();
   CPPUNIT_ASSERT(0 != matrix);
@@ -61,9 +80,9 @@ void
 pylith::topology::TestJacobian::testAssemble(void)
 { // testAssemble
   Mesh mesh;
-  SolutionFields fields(mesh);
-  _initialize(&mesh, &fields);
-  Jacobian jacobian(fields);
+  Field<Mesh> field(mesh);
+  _initialize(&mesh, &field);
+  Jacobian jacobian(field);
 
   jacobian.assemble("flush_assembly");
   jacobian.assemble("final_assembly");
@@ -75,9 +94,9 @@ void
 pylith::topology::TestJacobian::testZero(void)
 { // testZero
   Mesh mesh;
-  SolutionFields fields(mesh);
-  _initialize(&mesh, &fields);
-  Jacobian jacobian(fields);
+  Field<Mesh> field(mesh);
+  _initialize(&mesh, &field);
+  Jacobian jacobian(field);
 
   jacobian.zero();
 } // testZero
@@ -88,9 +107,9 @@ void
 pylith::topology::TestJacobian::testView(void)
 { // testView
   Mesh mesh;
-  SolutionFields fields(mesh);
-  _initialize(&mesh, &fields);
-  Jacobian jacobian(fields);
+  Field<Mesh> field(mesh);
+  _initialize(&mesh, &field);
+  Jacobian jacobian(field);
 
   jacobian.assemble("final_assembly");
 
@@ -103,32 +122,30 @@ void
 pylith::topology::TestJacobian::testWrite(void)
 { // testWrite
   Mesh mesh;
-  SolutionFields fields(mesh);
-  _initialize(&mesh, &fields);
-  Jacobian jacobian(fields);
+  Field<Mesh> field(mesh);
+  _initialize(&mesh, &field);
+  Jacobian jacobian(field);
 
   jacobian.assemble("final_assembly");
 
-  jacobian.write("jacobian.mat");
+  jacobian.write("jacobian.mat", mesh.comm());
 } // testWrite
 
 // ----------------------------------------------------------------------
 void
 pylith::topology::TestJacobian::_initialize(Mesh* mesh,
-					    SolutionFields* fields) const
+                                            Field<Mesh>* field) const
 { // _initialize
   CPPUNIT_ASSERT(0 != mesh);
+  CPPUNIT_ASSERT(0 != field);
 
   meshio::MeshIOAscii iohandler;
   iohandler.filename("data/tri3.mesh");
   iohandler.read(mesh);
 
-  fields->add("disp t+dt", "displacement");
-  fields->solutionName("disp t+dt");
-  Field<Mesh>& solution = fields->solution();
-  solution.newSection(FieldBase::VERTICES_FIELD, mesh->dimension());
-  solution.allocate();
-  solution.zero();
+  field->newSection(FieldBase::VERTICES_FIELD, mesh->dimension());
+  field->allocate();
+  field->zero();
 } // _initialize
 
 

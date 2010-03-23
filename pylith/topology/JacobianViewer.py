@@ -74,11 +74,11 @@ class JacobianViewer(PetscComponent):
     return
 
 
-  def view(self, jacobian, t):
+  def view(self, jacobian, t, comm):
     """
     Write Jacobian to binary file.
     """
-    jacobian.write(self._filenameStamp(t))
+    jacobian.write(self._filenameStamp(t), comm)
     return
 
 

@@ -25,7 +25,7 @@ class Jacobian(ModuleJacobian):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, fields, matrixType="unknown"):
+  def __init__(self, field, matrixType="unknown"):
     """
     Constructor.
 
@@ -35,7 +35,7 @@ class Jacobian(ModuleJacobian):
     if matrixType == "unknown":
       matrixType = "sbaij"
 
-    ModuleJacobian.__init__(self, fields, matrixType)
+    ModuleJacobian.__init__(self, field, matrixType)
     return
     
 
