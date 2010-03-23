@@ -87,7 +87,7 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
 
   delete _faultMesh;
   _faultMesh = new topology::SubMesh();
-  CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(), 
+  CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(),
 					_useLagrangeConstraints);
   _initializeCohesiveInfo(mesh);
 
@@ -763,12 +763,18 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
 
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
   assert(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& faultCells =
+    faultSieveMesh->heightStratum(0);
+  assert(!faultCells.isNull());
+  SieveSubMesh::label_sequence::iterator f_iter = faultCells->begin();
+
   SubMesh::renumbering_type& renumbering = faultSieveMesh->getRenumbering();
   const SieveSubMesh::renumbering_type::const_iterator renumberingEnd =
     renumbering.end();
   const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
       faultSieveMesh->depthStratum(0);
 
+  _cohesiveToFault.clear();
   typedef std::map<int, int> indexmap_type;
   indexmap_type indexMap;
   _cohesiveVertices.resize(vertices->size());
@@ -783,7 +789,9 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
 
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
       c_iter != cellsEnd;
-      ++c_iter) {
+      ++c_iter, ++f_iter) {
+    _cohesiveToFault[*c_iter] = *f_iter;
+
     // Get oriented closure
     ncV.clear();
     ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*sieve, *c_iter, ncV);

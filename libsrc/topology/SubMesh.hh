@@ -46,6 +46,7 @@ public:
   typedef Mesh::IntSection IntSection;
   typedef Mesh::RestrictVisitor RestrictVisitor;
   typedef Mesh::UpdateAddVisitor UpdateAddVisitor;
+  typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> IndicesVisitor;
 
   // Sieve mesh for higher level domain (mesh, not submesh)
   typedef Mesh::SieveMesh DomainSieveMesh;

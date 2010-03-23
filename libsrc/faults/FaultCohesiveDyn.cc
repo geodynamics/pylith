@@ -26,6 +26,7 @@
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/friction/FrictionModel.hh" // USES FrictionModel
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
+#include "pylith/problems/SolverLinear.hh" // USES SolverLinear
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
@@ -53,9 +54,10 @@ typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
 // Default constructor.
 pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void) :
   _dbInitialTract(0),
-  _friction(0)
+  _friction(0),
+  _jacobian(0),
+  _ksp(0)
 { // constructor
-  _needJacobianDiag = true;
   _needVelocity = true;
 } // constructor
 
@@ -74,6 +76,12 @@ void pylith::faults::FaultCohesiveDyn::deallocate(void)
 
   _dbInitialTract = 0; // :TODO: Use shared pointer
   _friction = 0; // :TODO: Use shared pointer
+
+  delete _jacobian; _jacobian = 0;
+  if (0 != _ksp) {
+    PetscErrorCode err = KSPDestroy(_ksp); _ksp = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
 } // deallocate
 
 // ----------------------------------------------------------------------
@@ -316,11 +324,12 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 				    const double t,
 				    const topology::Jacobian& jacobian)
 { // constrainSolnSpace
-  /// Member prototype for _constrainSolnSpaceLumpedXD()
+  /// Member prototype for _constrainSolnSpaceXD()
   typedef void (pylith::faults::FaultCohesiveDyn::*constrainSolnSpace_fn_type)
-    (double_array*, double_array*, const double_array&,
-     const double_array&, const double_array&, 
-     const double_array&, const double_array&, 
+    (double_array*,
+     const double_array&,
+     const double_array&,
+     const double_array&,
      const double);
 
   assert(0 != fields);
@@ -329,6 +338,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   assert(0 != _friction);
 
   _updateSlipRate(*fields);
+  _sensitivitySetup(jacobian);
 
   const int spaceDim = _quadrature->spaceDim();
 
@@ -337,10 +347,10 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   double_array tractionTpdtVertex(spaceDim);
   double_array slipTpdtVertex(spaceDim);
   double_array lagrangeTpdtVertex(spaceDim);
-  double_array dLagrangeTpdtVertex(spaceDim);
 
   // Get sections
   double_array slipVertex(spaceDim);
+  double_array dSlipVertex(spaceDim);
   const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
   assert(!slipSection.isNull());
 
@@ -358,33 +368,36 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   assert(!orientationSection.isNull());
 
   double_array lagrangeTVertex(spaceDim);
+  double_array dispTVertexN(spaceDim);
+  double_array dispTVertexP(spaceDim);
   const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
 
   double_array lagrangeTIncrVertex(spaceDim);
+  double_array dispTIncrVertexN(spaceDim);
+  double_array dispTIncrVertexP(spaceDim);
   const ALE::Obj<RealSection>& dispTIncrSection =
       fields->get("dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());
 
-  double_array jacobianVertexN(spaceDim);
-  double_array jacobianVertexP(spaceDim);
-  const ALE::Obj<RealSection>& jacobianDiagSection =
-        fields->get("Jacobian diagonal").section();
-  assert(!jacobianDiagSection.isNull());
+  double_array dLagrangeTpdtVertex(spaceDim);
+  const ALE::Obj<RealSection>& dLagrangeTpdtSection =
+      _fields->get("sensitivity dLagrange").section();
+  assert(!dLagrangeTpdtSection.isNull());
 
   constrainSolnSpace_fn_type constrainSolnSpaceFn;
   switch (spaceDim) { // switch
   case 1:
     constrainSolnSpaceFn = 
-      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped1D;
+      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpace1D;
     break;
   case 2: 
     constrainSolnSpaceFn = 
-      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped2D;
+      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D;
     break;
   case 3:
     constrainSolnSpaceFn = 
-      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3D;
+      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D;
     break;
   default :
     assert(0);
@@ -404,8 +417,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
-    const int v_negative = _cohesiveVertices[iVertex].negative;
-    const int v_positive = _cohesiveVertices[iVertex].positive;
 
     // Get slip
     slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
@@ -418,17 +429,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     const double* areaVertex = areaSection->restrictPoint(v_fault);
     assert(0 != areaVertex);
     assert(1 == areaSection->getFiberDimension(v_fault));
-
-    // Get fault orientation
-    orientationSection->restrictPoint(v_fault, &orientationVertex[0],
-    orientationVertex.size());
-
-    // Get diagonal of Jacobian at conventional vertices i and j
-    // associated with Lagrange vertex k
-    jacobianDiagSection->restrictPoint(v_negative, &jacobianVertexN[0],
-      jacobianVertexN.size());
-    jacobianDiagSection->restrictPoint(v_positive, &jacobianVertexP[0],
-      jacobianVertexP.size());
 
     // Get Lagrange multiplier values from disp(t), and dispIncr(t->t+dt)
     dispTSection->restrictPoint(v_lagrange, &lagrangeTVertex[0],
@@ -454,25 +454,85 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     // friction.
     CALL_MEMBER_FN(*this,
 		   constrainSolnSpaceFn)(&dLagrangeTpdtVertex,
-					 &slipVertex, slipRateVertex, 
-					 tractionTpdtVertex, orientationVertex,
-					 jacobianVertexN, jacobianVertexP,
-					 *areaVertex);
+					 slipVertex, slipRateVertex,
+					 tractionTpdtVertex, *areaVertex);
 
-    // Update Lagrange multiplier values.
-    lagrangeTIncrVertex += dLagrangeTpdtVertex;
-    assert(lagrangeTIncrVertex.size() ==
-        dispTIncrSection->getFiberDimension(v_lagrange));
-    dispTIncrSection->updatePoint(v_lagrange, &lagrangeTIncrVertex[0]);
+    assert(dLagrangeTpdtVertex.size() ==
+        dLagrangeTpdtSection->getFiberDimension(v_fault));
+    dLagrangeTpdtSection->updatePoint(v_fault, &dLagrangeTpdtVertex[0]);
+  } // for
 
-    // Update the slip estimate based on adjustment to the Lagrange
-    // multiplier values.
-    assert(slipVertex.size() ==
+  // Solve sensitivity problem for negative side of the fault.
+  bool negativeSide = true;
+  _sensitivityUpdateJacobian(negativeSide, jacobian, *fields);
+  _sensitivityReformResidual(negativeSide);
+  _sensitivitySolve();
+  _sensitivityUpdateSoln(negativeSide);
+
+  // Solve sensitivity problem for positive side of the fault.
+  negativeSide = false;
+  _sensitivityUpdateJacobian(negativeSide, jacobian, *fields);
+  _sensitivityReformResidual(negativeSide);
+  _sensitivitySolve();
+  _sensitivityUpdateSoln(negativeSide);
+
+  // Update slip field based on solution of sensitivity problem and
+  // increment in Lagrange multipliers.
+  const ALE::Obj<RealSection>& dispRelSection =
+    _fields->get("sensitivity dispRel").section();
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
+    const int v_fault = _cohesiveVertices[iVertex].fault;
+    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int v_negative = _cohesiveVertices[iVertex].negative;
+    const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    // Get fault orientation
+    orientationSection->restrictPoint(v_fault, &orientationVertex[0],
+    orientationVertex.size());
+
+    // Get change in relative displacement.
+    const double* dispRelVertex = dispRelSection->restrictPoint(v_fault);
+    assert(0 != dispRelVertex);
+    assert(spaceDim == dispRelSection->getFiberDimension(v_fault));
+
+    // Get Lagrange multiplier at time t
+    dispTSection->restrictPoint(v_lagrange, &lagrangeTVertex[0],
+				lagrangeTVertex.size());
+
+    // Get Lagrange multiplier increment at time t
+    dispTIncrSection->restrictPoint(v_lagrange, &lagrangeTIncrVertex[0],
+				    lagrangeTIncrVertex.size());
+
+    // Get change in Lagrange multiplier.
+    dLagrangeTpdtSection->restrictPoint(v_fault, &dLagrangeTpdtVertex[0],
+					dLagrangeTpdtVertex.size());
+    // Compute change in slip.
+    dSlipVertex = 0.0;
+    for (int iDim = 0; iDim < spaceDim; ++iDim)
+      for (int kDim = 0; kDim < spaceDim; ++kDim)
+        dSlipVertex[iDim] += 
+	  orientationVertex[iDim*spaceDim+kDim] * dispRelVertex[kDim];
+
+    // Set fault opening to zero if fault is under compression.
+    const int indexN = spaceDim - 1;
+    const double lagrangeTpdtNormal = lagrangeTVertex[indexN] + 
+      lagrangeTIncrVertex[indexN] + dLagrangeTpdtVertex[indexN];
+    if (lagrangeTpdtNormal < 0.0)
+      dSlipVertex[indexN] = 0.0;
+
+    // Set change in slip.
+    assert(dSlipVertex.size() ==
         slipSection->getFiberDimension(v_fault));
-    slipSection->updatePoint(v_fault, &slipVertex[0]);
-  } // if
+    slipSection->updateAddPoint(v_fault, &dSlipVertex[0]);
+    
+    // Update Lagrange multiplier increment.
+    assert(dLagrangeTpdtVertex.size() ==
+	   dispTIncrSection->getFiberDimension(v_lagrange));
+    dispTIncrSection->updateAddPoint(v_lagrange, &dLagrangeTpdtVertex[0]);
+  } // for
 
 #if 0 // DEBUGGING
+  dLagrangeTpdtSection->view("AFTER dLagrange");
   dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
   slipSection->view("AFTER SLIP");
 #endif
@@ -486,19 +546,28 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 			 topology::SolutionFields* const fields,
 			 const topology::Field<topology::Mesh>& jacobian)
 { // adjustSolnLumped
-  /// Member prototype for _constrainSolnSpaceLumpedXD()
+  /// Member prototype for _constrainSolnSpaceXD()
   typedef void (pylith::faults::FaultCohesiveDyn::*constrainSolnSpace_fn_type)
-    (double_array*, double_array*, const double_array&,
-     const double_array&, const double_array&, 
-     const double_array&, const double_array&, 
+    (double_array*,
+     const double_array&,
+     const double_array&,
+     const double_array&,
      const double);
+
+  /// Member prototype for _sensitivitySolveLumpedXD()
+  typedef void (pylith::faults::FaultCohesiveDyn::*sensitivitySolveLumped_fn_type)
+    (double_array*,
+     const double_array&,
+     const double_array&,
+     const double_array&,
+     const double_array&);
 
   /// Member prototype for _adjustSolnLumpedXD()
   typedef void (pylith::faults::FaultCohesiveDyn::*adjustSolnLumped_fn_type)
     (double_array*, double_array*, double_array*,
-     const double_array&, const double_array&, 
-     const double_array&, const double_array&, 
-     const double_array&, const double_array&, 
+     const double_array&, const double_array&,
+     const double_array&, const double_array&,
+     const double_array&, const double_array&,
      const double_array&, const double_array&);
 
 
@@ -581,24 +650,31 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 
   adjustSolnLumped_fn_type adjustSolnLumpedFn;
   constrainSolnSpace_fn_type constrainSolnSpaceFn;
+  sensitivitySolveLumped_fn_type sensitivitySolveLumpedFn;
   switch (spaceDim) { // switch
   case 1:
     adjustSolnLumpedFn = 
       &pylith::faults::FaultCohesiveDyn::_adjustSolnLumped1D;
     constrainSolnSpaceFn = 
-      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped1D;
+      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpace1D;
+    sensitivitySolveLumpedFn =
+      &pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped1D;
     break;
   case 2: 
     adjustSolnLumpedFn = 
       &pylith::faults::FaultCohesiveDyn::_adjustSolnLumped2D;
     constrainSolnSpaceFn = 
-      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped2D;
+      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D;
+    sensitivitySolveLumpedFn =
+      &pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped2D;
     break;
   case 3:
     adjustSolnLumpedFn = 
       &pylith::faults::FaultCohesiveDyn::_adjustSolnLumped3D;
     constrainSolnSpaceFn = 
-      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3D;
+      &pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D;
+    sensitivitySolveLumpedFn =
+      &pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped3D;
     break;
   default :
     assert(0);
@@ -699,13 +775,16 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 
     CALL_MEMBER_FN(*this,
 		   constrainSolnSpaceFn)(&dLagrangeTpdtVertex,
-					 &slipVertex, slipRateVertex,
-					 tractionTpdtVertex, orientationVertex,
-					 jacobianVertexN, jacobianVertexP,
-					 *areaVertex);
+					 slipVertex, slipRateVertex,
+					 tractionTpdtVertex, *areaVertex);
+    CALL_MEMBER_FN(*this,
+       sensitivitySolveLumpedFn)(&slipVertex,
+           dLagrangeTpdtVertex, orientationVertex,
+           jacobianVertexN, jacobianVertexP);
 
     lagrangeTIncrVertex += dLagrangeTpdtVertex;
 
+    // :TODO: Refactor this into sensitivitySolveLumpedXD().
     switch (spaceDim) { // switch
     case 1: {
       assert(jacobianVertexN[0] > 0.0);
@@ -1340,13 +1419,13 @@ pylith::faults::FaultCohesiveDyn::_updateSlipRate(const topology::SolutionFields
     for (int iDim = 0; iDim < spaceDim; ++iDim)
       for (int kDim = 0; kDim < spaceDim; ++kDim)
         slipRateVertex[iDim] +=
-          velocityVertexN[kDim] * -orientationVertex[kDim*spaceDim+iDim];
+          velocityVertexN[kDim] * -orientationVertex[iDim*spaceDim+kDim];
 
     // Velocity for positive vertex.
     for (int iDim = 0; iDim < spaceDim; ++iDim)
       for (int kDim = 0; kDim < spaceDim; ++kDim)
         slipRateVertex[iDim] +=
-          velocityVertexP[kDim] * +orientationVertex[kDim*spaceDim+iDim];
+          velocityVertexP[kDim] * +orientationVertex[iDim*spaceDim+kDim];
 
     // Update slip rate field.
     assert(slipRateVertex.size() == slipRateSection->getFiberDimension(v_fault));
@@ -1357,94 +1436,323 @@ pylith::faults::FaultCohesiveDyn::_updateSlipRate(const topology::SolutionFields
 } // _updateSlipRate
 
 // ----------------------------------------------------------------------
-// Update Jacobian blocks associated with DOF of vertices on negative
-// and positive sides of the fault associated with Lagrange vertex k.
+// Setup sensitivity problem to compute change in slip given change in Lagrange multipliers.
 void
-pylith::faults::FaultCohesiveDyn::_updateJacobianBlocks(
-				   const topology::Jacobian& jacobian,
-				   const topology::SolutionFields& fields)
-{ // _updateJacobianBlocks
+pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& jacobian)
+{ // _sensitivitySetup
   assert(0 != _fields);
   assert(0 != _quadrature);
 
   const int spaceDim = _quadrature->spaceDim();
 
-  if (!_fields->hasField("Jacobian blocks")) {
-    // Create field for entries of Jacobian at conventional vertices on
-    // negative and positive sides of the fault associated with Lagrange
-    // vertex k.
-    _fields->add("Jacobian blocks", "jacobian_blocks");
-    topology::Field<topology::SubMesh>& jacobianBlocks = 
-      _fields->get("Jacobian diagonal");
-    const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-    jacobianBlocks.newSection(slip, 2*spaceDim*spaceDim);
-    jacobianBlocks.allocate();
-    jacobianBlocks.vectorFieldType(topology::FieldBase::OTHER);
+  // Setup fields involved in sensitivity solve.
+  if (!_fields->hasField("sensitivity solution")) {
+    _fields->add("sensitivity solution", "sensitivity_soln");
+    topology::Field<topology::SubMesh>& solution =
+        _fields->get("sensitivity solution");
+    const topology::Field<topology::SubMesh>& slip =
+        _fields->get("slip");
+    solution.cloneSection(slip);
+    solution.createVector();
+    solution.createScatter();
   } // if
-  
-  const ALE::Obj<RealSection>& jacobianBlocksSection = 
-    _fields->get("Jacobian diagonal").section();
+  const topology::Field<topology::SubMesh>& solution =
+      _fields->get("sensitivity solution");
 
+  if (!_fields->hasField("sensitivity residual")) {
+    _fields->add("sensitivity residual", "sensitivity_residual");
+    topology::Field<topology::SubMesh>& residual =
+        _fields->get("sensitivity residual");
+    residual.cloneSection(solution);
+    residual.createVector();
+    residual.createScatter();
+  } // if
+
+  if (!_fields->hasField("sensitivity dispRel")) {
+    _fields->add("sensitivity dispRel", "sensitivity_disprel");
+    topology::Field<topology::SubMesh>& dispRel =
+        _fields->get("sensitivity dispRel");
+    dispRel.cloneSection(solution);
+  } // if
+  topology::Field<topology::SubMesh>& dispRel =
+    _fields->get("sensitivity dispRel");
+  dispRel.zero();
+
+  if (!_fields->hasField("sensitivity dLagrange")) {
+    _fields->add("sensitivity dLagrange", "sensitivity_dlagrange");
+    topology::Field<topology::SubMesh>& dLagrange =
+        _fields->get("sensitivity dLagrange");
+    dLagrange.cloneSection(solution);
+  } // if
+  topology::Field<topology::SubMesh>& dLagrange =
+    _fields->get("sensitivity dLagrange");
+  dLagrange.zero();
+
+  // Setup Jacobian sparse matrix for sensitivity solve.
+  if (0 == _jacobian)
+    _jacobian = new topology::Jacobian(solution, jacobian.matrixType());
+  assert(0 != _jacobian);
+  _jacobian->zero();
+
+  // Setup PETSc KSP linear solver.
+  if (0 == _ksp) {
+    PetscErrorCode err = 0;
+    if (0 != _ksp) {
+      err = KSPDestroy(_ksp); _ksp = 0;
+      CHECK_PETSC_ERROR(err);
+    } // if
+    err = KSPCreate(_faultMesh->comm(), &_ksp); CHECK_PETSC_ERROR(err);
+    err = KSPSetInitialGuessNonzero(_ksp, PETSC_FALSE); CHECK_PETSC_ERROR(err);
+
+    PC pc;
+    err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
+    err = PCSetType(pc, PCJACOBI); CHECK_PETSC_ERROR(err);
+    err = KSPSetType(_ksp, KSPGMRES);
+
+    err = KSPSetFromOptions(_ksp); CHECK_PETSC_ERROR(err);
+    err = KSPAppendOptionsPrefix(_ksp, "friction");
+  } // if
+} // _sensitivitySetup
+
+// ----------------------------------------------------------------------
+// Update the Jacobian values for the sensitivity solve.
+void
+pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negativeSide,
+                                                             const topology::Jacobian& jacobian,
+                                                             const topology::SolutionFields& fields)
+{ // _sensitivityUpdateJacobian
+  assert(0 != _quadrature);
+  assert(0 != _fields);
+
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const int subnrows = numBasis*spaceDim;
+  const int submatrixSize = subnrows * subnrows;
+  const int nrows = 3*subnrows;
+  const int matrixSize = nrows * nrows;
+
+  // Get solution field
+  const topology::Field<topology::Mesh>& solutionDomain = fields.solution();
+  const ALE::Obj<RealSection>& solutionDomainSection = solutionDomain.section();
+  assert(!solutionDomainSection.isNull());
+
+  // Get cohesive cells
   const ALE::Obj<SieveMesh>& sieveMesh = fields.mesh().sieveMesh();
   assert(!sieveMesh.isNull());
-  const ALE::Obj<RealSection>& solutionSection = fields.solution().section();
-  assert(!solutionSection.isNull());
-  const ALE::Obj<SieveMesh::order_type>& globalOrder =
-      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default",
-        solutionSection);
-  assert(!globalOrder.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cellsCohesive =
+    sieveMesh->getLabelStratum("material-id", id());
+  assert(!cellsCohesive.isNull());
+  const SieveMesh::label_sequence::iterator cellsCohesiveBegin =
+    cellsCohesive->begin();
+  const SieveMesh::label_sequence::iterator cellsCohesiveEnd =
+    cellsCohesive->end();
 
-  const PetscMat jacobianMatrix = jacobian.matrix();
-  assert(0 != jacobianMatrix);
+  // Visitor for Jacobian matrix associated with domain.
+  double_array jacobianDomainCell(matrixSize);
+  const PetscMat jacobianDomainMatrix = jacobian.matrix();
+  assert(0 != jacobianDomainMatrix);
+  const ALE::Obj<SieveMesh::order_type>& globalOrderDomain =
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionDomainSection);
+  assert(!globalOrderDomain.isNull());
+  // We would need to request unique points here if we had an interpolated mesh
+  topology::Mesh::IndicesVisitor jacobianDomainVisitor(*solutionDomainSection,
+                                                 *globalOrderDomain,
+                           (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
+                                     sieveMesh->depth())*spaceDim);
 
-  // Arrays for values (extracting block diagonal so rows and cols are
-  // the same).
-  const int nvalues = 2*spaceDim*spaceDim;
-  const int nrows = 2*spaceDim;
-  double_array jacobianValues(nvalues);
-  int_array rows(nrows);
+  // Get fault Sieve mesh
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+
+  // Get sensitivity solution field
+  const ALE::Obj<RealSection>& solutionFaultSection =
+    _fields->get("sensitivity solution").section();
+  assert(!solutionFaultSection.isNull());
+
+  // Visitor for Jacobian matrix associated with fault.
+  double_array jacobianFaultCell(submatrixSize);
+  assert(0 != _jacobian);
+  const PetscMat jacobianFaultMatrix = _jacobian->matrix();
+  assert(0 != jacobianFaultMatrix);
+  const ALE::Obj<SieveSubMesh::order_type>& globalOrderFault =
+    faultSieveMesh->getFactory()->getGlobalOrder(faultSieveMesh, "default", solutionFaultSection);
+  assert(!globalOrderFault.isNull());
+  // We would need to request unique points here if we had an interpolated mesh
+  topology::SubMesh::IndicesVisitor jacobianFaultVisitor(*solutionFaultSection,
+                                                 *globalOrderFault,
+                           (int) pow(faultSieveMesh->getSieve()->getMaxConeSize(),
+                                     faultSieveMesh->depth())*spaceDim);
+
+  const int indexOffset = (negativeSide) ? 0 : 3*submatrixSize + subnrows;
+
+  for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+       c_iter != cellsCohesiveEnd;
+       ++c_iter) {
+    const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
+    jacobianDomainCell = 0.0;
+    jacobianFaultCell = 0.0;
+
+    // Get cell contribution in PETSc Matrix
+    jacobianDomainVisitor.clear();
+#if 0
+
+    PetscErrorCode err = restrictOperator(jacobianDomainMatrix, *sieveMesh->getSieve(),
+                                              jacobianDomainVisitor, *c_iter,
+                                              &jacobianDomainCell[0]);
+    CHECK_PETSC_ERROR_MSG(err, "Restrict from PETSc Mat failed.");
+#else
+    ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*sieveMesh->getSieve(), 
+						 *c_iter, 
+						 jacobianDomainVisitor);
+    const int* indices = jacobianDomainVisitor.getValues();
+    const int numIndices = jacobianDomainVisitor.getSize();
+    PetscErrorCode err = MatGetValues(jacobianDomainMatrix, 
+				      numIndices, indices,
+				      numIndices, indices,
+				      &jacobianDomainCell[0]);
+    CHECK_PETSC_ERROR_MSG(err, "Restrict from PETSc Mat failed.");
+#endif
+
+    for (int iRow=0, i=0; iRow < subnrows; ++iRow) {
+      const int indexR = indexOffset + iRow*nrows;
+      for (int iCol=0; iCol < subnrows; ++iCol, ++i)
+        jacobianFaultCell[i] = jacobianDomainCell[indexR+iCol];
+    } // for
+
+    // Insert cell contribution into PETSc Matrix
+    jacobianFaultVisitor.clear();
+    err = updateOperator(jacobianFaultMatrix, *faultSieveMesh->getSieve(),
+			 jacobianFaultVisitor, c_fault,
+			 &jacobianFaultCell[0], INSERT_VALUES);
+    CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
+  } // for
+
+  _jacobian->assemble("final_assembly");
+} // _sensitivityUpdateJacobian
+
+// ----------------------------------------------------------------------
+// Reform residual for sensitivity problem.
+void
+pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negativeSide)
+{ // _sensitivityReformResidual
+  assert(0 != _fields);
+  assert(0 != _quadrature);
+
+  const int spaceDim = _quadrature->spaceDim();
+
+  // Compute residual -C^T dLagrange
+  double_array residualVertex(spaceDim);
+  topology::Field<topology::SubMesh>& residual =
+      _fields->get("sensitivity residual");
+  const ALE::Obj<RealSection>& residualSection = residual.section();
+  residual.zero();
+
+  const ALE::Obj<RealSection>& dLagrangeSection =
+      _fields->get("sensitivity dLagrange").section();
+
+  const ALE::Obj<RealSection>& orientationSection =
+      _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
+
+  const double sign = (negativeSide) ? -1.0 : 1.0;
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_fault = _cohesiveVertices[iVertex].fault;
-    const int v_negative = _cohesiveVertices[iVertex].negative;
-    const int v_positive = _cohesiveVertices[iVertex].positive;
 
-    // Set rows/cols using globalOrder
-    const int indexN = globalOrder->getIndex(v_negative);
-    const int indexP = globalOrder->getIndex(v_positive);
-    for (int iDim=0; iDim < spaceDim; ++iDim) {
-      rows[0*spaceDim+iDim] = indexN + iDim;
-      rows[1*spaceDim+iDim] = indexP + iDim;
-    } // for
+    const double* dLagrangeVertex = dLagrangeSection->restrictPoint(v_fault);
+    assert(0 != dLagrangeVertex);
+    assert(spaceDim == dLagrangeSection->getFiberDimension(v_fault));
 
-    // Get values
-    PetscErrorCode err = MatGetValues(jacobianMatrix, 
-				      nrows, &rows[0], 
-				      nrows, &rows[0],
-				      &jacobianValues[0]);
-    
-    // Store blocks
-    assert(jacobianValues.size() == 
-	   jacobianBlocksSection->getFiberDimension(v_fault));
-    jacobianBlocksSection->updatePoint(v_fault, &jacobianValues[0]);
+    const double* orientationVertex = orientationSection->restrictPoint(v_fault);
+    assert(0 != orientationVertex);
+    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
+
+    residualVertex = 0.0;
+    for (int iDim = 0; iDim < spaceDim; ++iDim)
+      for (int kDim = 0; kDim < spaceDim; ++kDim)
+        residualVertex[iDim] +=
+          sign * dLagrangeVertex[kDim] * -orientationVertex[kDim*spaceDim+iDim];
+
+    assert(residualVertex.size() == residualSection->getFiberDimension(v_fault));
+    residualSection->updatePoint(v_fault, &residualVertex[0]);
   } // for
-} // _updateJacobianBlocks
+
+  PetscLogFlops(numVertices*spaceDim*spaceDim*4);
+} // _sensitivityReformResidual
 
 // ----------------------------------------------------------------------
-// Constrain solution space in 1-D.
+// Solve sensitivity problem.
 void
-pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped1D(
-				     double_array* dLagrangeTpdt,
-				     double_array* slip,
-				     const double_array& sliprate,
-				     const double_array& tractionTpdt,
+pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
+{ // _sensitivitySolve
+  assert(0 != _fields);
+  assert(0 != _jacobian);
+  assert(0 != _ksp);
+
+  const topology::Field<topology::SubMesh>& residual =
+      _fields->get("sensitivity residual");
+  const topology::Field<topology::SubMesh>& solution =
+      _fields->get("sensitivity solution");
+
+  // Update PetscVector view of field.
+  residual.scatterSectionToVector();
+
+  PetscErrorCode err = 0;
+  const PetscMat jacobianMat = _jacobian->matrix();
+  err = KSPSetOperators(_ksp, jacobianMat, jacobianMat,
+    DIFFERENT_NONZERO_PATTERN); CHECK_PETSC_ERROR(err);
+
+  const PetscVec residualVec = residual.vector();
+  const PetscVec solutionVec = solution.vector();
+  err = KSPSolve(_ksp, residualVec, solutionVec); CHECK_PETSC_ERROR(err);
+
+  // Update section view of field.
+  solution.scatterVectorToSection();
+} // _sensitivitySolve
+
+// ----------------------------------------------------------------------
+// Update the relative displacement field values based on the
+// sensitivity solve.
+void
+pylith::faults::FaultCohesiveDyn::_sensitivityUpdateSoln(const bool negativeSide)
+{ // _sensitivityUpdateSoln
+  assert(0 != _fields);
+  assert(0 != _quadrature);
+
+  const int spaceDim = _quadrature->spaceDim();
+
+  double_array dispVertex(spaceDim);
+  const ALE::Obj<RealSection>& solutionSection =
+      _fields->get("sensitivity solution").section();
+  const ALE::Obj<RealSection>& dispRelSection =
+    _fields->get("sensitivity dispRel").section();
+
+  const double sign = (negativeSide) ? -1.0 : 1.0;
+
+  const int numVertices = _cohesiveVertices.size();
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
+    const int v_fault = _cohesiveVertices[iVertex].fault;
+
+    solutionSection->restrictPoint(v_fault, &dispVertex[0], dispVertex.size());
+
+    dispVertex *= sign;
+
+    assert(dispVertex.size() == dispRelSection->getFiberDimension(v_fault));
+    dispRelSection->updateAddPoint(v_fault, &dispVertex[0]);
+  } // for
+} // _sensitivityUpdateSoln
+
+// ----------------------------------------------------------------------
+// Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 1-D.
+void
+pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped1D(
+             double_array* slip,
+				     const double_array& dLagrangeTpdt,
 				     const double_array& orientation,
 				     const double_array& jacobianN,
-				     const double_array& jacobianP,
-				     const double area)
-{ // constrainSolnSpace1D
-  assert(0 != dLagrangeTpdt);
+				     const double_array& jacobianP)
+{ // _sensitivitySolveLumped1D
   assert(0 != slip);
 
   // Sensitivity of slip to changes in the Lagrange multipliers
@@ -1452,39 +1760,26 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped1D(
   const double Aixjx = 1.0 / jacobianN[0] + 1.0
     / jacobianP[0];
   const double Spp = 1.0;
-  
-  if (tractionTpdt[0] < 0) {
-    // if compression, then no changes to solution
-  } else {
-    // if tension, then traction is zero.
-    
-    // Update slip based on value required to stick versus
-    // zero traction
-    const double dlp = tractionTpdt[0] * area;
-    (*dLagrangeTpdt)[0] = -dlp;
-    (*slip)[0] += Spp * dlp;    
-  } // else
 
-  PetscLogFlops(6);
-} // constrainSolnSpace1D
+  const double dlp = dLagrangeTpdt[0];
+  (*slip)[0] -= Spp * dlp;
+
+  std::cout << "Slip: (" << (*slip)[0] << ")" << std::endl;
+
+  PetscLogFlops(2);
+} // _sensitivitySolveLumped1D
 
 // ----------------------------------------------------------------------
-// Constrain solution space in 2-D.
+// Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 2-D.
 void
-pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped2D(
-				     double_array* dLagrangeTpdt,
-				     double_array* slip,
-				     const double_array& slipRate,
-				     const double_array& tractionTpdt,
+pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped2D(
+             double_array* slip,
+				     const double_array& dLagrangeTpdt,
 				     const double_array& orientation,
 				     const double_array& jacobianN,
-				     const double_array& jacobianP,
-				     const double area)
-{ // constrainSolnSpace2D
-  assert(0 != dLagrangeTpdt);
+				     const double_array& jacobianP)
+{ // _sensitivitySolveLumped2D
   assert(0 != slip);
-
-  std::cout << "Normal traction:" << tractionTpdt[1] << std::endl;
 
   // Sensitivity of slip to changes in the Lagrange multipliers
   // Aixjx = 1.0/Aix + 1.0/Ajx
@@ -1506,70 +1801,28 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped2D(
    const double Spp = Cpx * Cpx * Aixjx + Cpy * Cpy * Aiyjy;
    const double Spq = Cpx * Cqx * Aixjx + Cpy * Cqy * Aiyjy;
    const double Sqq = Cqx * Cqx * Aixjx + Cqy * Cqy * Aiyjy;
-  
-  const double slipMag = fabs((*slip)[0]);
-  const double slipRateMag = fabs(slipRate[0]);
 
-  const double tractionNormal = tractionTpdt[1];
-  const double tractionShearMag = fabs(tractionTpdt[0]);
+  const double dlp = dLagrangeTpdt[0];
+  const double dlq = dLagrangeTpdt[1];
+  (*slip)[0] -= Spp * dlp + Spq * dlq;
+  (*slip)[1] -= Spq * dlp + Sqq * dlq;
 
-  if (tractionNormal < 0 && 0.0 == (*slip)[1]) {
-    // if in compression and no opening
-    std::cout << "FAULT IN COMPRESSION" << std::endl;
-    const double frictionStress = _friction->calcFriction(slipMag, slipRateMag,
-							  tractionNormal);
-    std::cout << "frictionStress: " << frictionStress << std::endl;
-    if (tractionShearMag > frictionStress || 
-	(tractionShearMag < frictionStress && slipMag > 0.0)) {
-      // traction is limited by friction, so have sliding
-      std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
-      
-      // Update slip based on value required to stick versus friction
-      const double dlp = (tractionShearMag - frictionStress) * area *
-	tractionTpdt[0] / tractionShearMag;
-      (*dLagrangeTpdt)[0] = -dlp;
-      (*slip)[0] += Spp * dlp;
-      std::cout << "Estimated slip: " << (*slip)[0] << std::endl;
-    } else {
-      // else friction exceeds value necessary, so stick
-      std::cout << "STICK" << std::endl;
-      // no changes to solution
-    } // if/else
-  } else {
-    // if in tension, then traction is zero.
-    std::cout << "FAULT IN TENSION" << std::endl;
-    
-    // Update slip based on value required to stick versus
-    // zero traction
-    const double dlp = tractionTpdt[0] * area;
-    const double dlq = tractionTpdt[1] * area;
+  std::cout << "Slip: (" << (*slip)[0] << ", " << (*slip)[1] << ")" << std::endl;
 
-    (*dLagrangeTpdt)[0] = -dlp;
-    (*dLagrangeTpdt)[1] = -dlq;
-    (*slip)[0] += Spp * dlp + Spq * dlq;
-    (*slip)[1] += Spq * dlp + Sqq * dlq;
-  } // else
-
-  PetscLogFlops(0); // :TODO: Fix this
-} // constrainSolnSpace2D
+  PetscLogFlops(8);
+} // _sensitivitySolveLumped2D
 
 // ----------------------------------------------------------------------
-// Constrain solution space in 3-D.
+// Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 3-D.
 void
-pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3D(
-				     double_array* dLagrangeTpdt,
-				     double_array* slip,
-				     const double_array& slipRate,
-				     const double_array& tractionTpdt,
+pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped3D(
+             double_array* slip,
+				     const double_array& dLagrangeTpdt,
 				     const double_array& orientation,
 				     const double_array& jacobianN,
-				     const double_array& jacobianP,
-				     const double area)
-{ // constrainSolnSpace3D
-  assert(0 != dLagrangeTpdt);
+				     const double_array& jacobianP)
+{ // _sensitivitySolveLumped3D
   assert(0 != slip);
-
-  std::cout << "Normal traction:" << tractionTpdt[2] << std::endl;
 
   // Sensitivity of slip to changes in the Lagrange multipliers
   // Aixjx = 1.0/Aix + 1.0/Ajx
@@ -1595,47 +1848,83 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3D(
   const double Crz = orientation[8];
 
   // Sensitivity matrix using only diagonal of A to approximate its inverse
-    const double Spp = Cpx * Cpx * Aixjx + Cpy * Cpy * Aiyjy + Cpz * Cpz * Aizjz;
-    const double Spq = Cpx * Cqx * Aixjx + Cpy * Cqy * Aiyjy + Cpz * Cqz * Aizjz;
-    const double Spr = Cpx * Crx * Aixjx + Cpy * Cry * Aiyjy + Cpz * Crz * Aizjz;
-    const double Sqq = Cqx * Cqx * Aixjx + Cqy * Cqy * Aiyjy + Cqz * Cqz * Aizjz;
-    const double Sqr = Cqx * Crx * Aixjx + Cqy * Cry * Aiyjy + Cqz * Crz * Aizjz;
-    const double Srr = Crx * Crx * Aixjx + Cry * Cry * Aiyjy + Crz * Crz * Aizjz;
-  
-  const double slipShearMag = sqrt((*slip)[0] * (*slip)[0] + 
-				   (*slip)[1] * (*slip)[1]);
-  double slipRateMag = sqrt(slipRate[0]*slipRate[0] + 
-			    slipRate[1]*slipRate[1]);
-  
-  const double tractionNormal = tractionTpdt[2];
-  const double tractionShearMag = 
-    sqrt(tractionTpdt[0] * tractionTpdt[0] +
-	 tractionTpdt[1] * tractionTpdt[1]);
-  
-  if (tractionNormal < 0.0 && 0.0 == (*slip)[2]) {
+  const double Spp = Cpx * Cpx * Aixjx + Cpy * Cpy * Aiyjy + Cpz * Cpz * Aizjz;
+  const double Spq = Cpx * Cqx * Aixjx + Cpy * Cqy * Aiyjy + Cpz * Cqz * Aizjz;
+  const double Spr = Cpx * Crx * Aixjx + Cpy * Cry * Aiyjy + Cpz * Crz * Aizjz;
+  const double Sqq = Cqx * Cqx * Aixjx + Cqy * Cqy * Aiyjy + Cqz * Cqz * Aizjz;
+  const double Sqr = Cqx * Crx * Aixjx + Cqy * Cry * Aiyjy + Cqz * Crz * Aizjz;
+  const double Srr = Crx * Crx * Aixjx + Cry * Cry * Aiyjy + Crz * Crz * Aizjz;
+
+  const double dlp = dLagrangeTpdt[0];
+  const double dlq = dLagrangeTpdt[1];
+  const double dlr = dLagrangeTpdt[2];
+  (*slip)[0] -= Spp * dlp + Spq * dlq + Spr * dlr;
+  (*slip)[1] -= Spq * dlp + Sqq * dlq + Sqr * dlr;
+  (*slip)[2] -= Spr * dlp + Sqr * dlq + Srr * dlr;
+
+  std::cout << "Slip: (" << (*slip)[0] << ", " << (*slip)[1] << ", " << (*slip)[2] << ")" << std::endl;
+
+  PetscLogFlops(3*3 + 6*8 + 3*6);
+} // _sensitivitySolveLumped3D
+
+// ----------------------------------------------------------------------
+// Constrain solution space with lumped Jacobian in 1-D.
+void
+pylith::faults::FaultCohesiveDyn::_constrainSolnSpace1D(double_array* dLagrangeTpdt,
+         const double_array& slip,
+         const double_array& sliprate,
+         const double_array& tractionTpdt,
+         const double area)
+{ // _constrainSolnSpace1D
+  assert(0 != dLagrangeTpdt);
+
+    if (tractionTpdt[0] < 0) {
+      // if compression, then no changes to solution
+    } else {
+      // if tension, then traction is zero.
+
+      const double dlp = -tractionTpdt[0] * area;
+      (*dLagrangeTpdt)[0] = dlp;
+    } // else
+
+    PetscLogFlops(2);
+} // _constrainSolnSpace1D
+
+// ----------------------------------------------------------------------
+// Constrain solution space with lumped Jacobian in 2-D.
+void
+pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeTpdt,
+         const double_array& slip,
+         const double_array& slipRate,
+         const double_array& tractionTpdt,
+         const double area)
+{ // _constrainSolnSpace2D
+  assert(0 != dLagrangeTpdt);
+
+  std::cout << "Normal traction:" << tractionTpdt[1] << std::endl;
+
+  const double slipMag = fabs(slip[0]);
+  const double slipRateMag = fabs(slipRate[0]);
+
+  const double tractionNormal = tractionTpdt[1];
+  const double tractionShearMag = fabs(tractionTpdt[0]);
+
+  if (tractionNormal < 0 && 0.0 == slip[1]) {
     // if in compression and no opening
     std::cout << "FAULT IN COMPRESSION" << std::endl;
-    const double frictionStress = 
-      _friction->calcFriction(slipShearMag, slipRateMag, tractionNormal);
+    const double frictionStress = _friction->calcFriction(slipMag, slipRateMag,
+                tractionNormal);
     std::cout << "frictionStress: " << frictionStress << std::endl;
     if (tractionShearMag > frictionStress || 
-	(tractionShearMag < frictionStress && slipShearMag > 0.0)) {
+  (tractionShearMag < frictionStress && slipMag > 0.0)) {
       // traction is limited by friction, so have sliding
       std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
       
       // Update slip based on value required to stick versus friction
-      const double dlp = (tractionShearMag - frictionStress) * area *
-	tractionTpdt[0] / tractionShearMag;
-      const double dlq = (tractionShearMag - frictionStress) * area *
-	tractionTpdt[1] / tractionShearMag;
-
-      (*dLagrangeTpdt)[0] = -dlp;
-      (*dLagrangeTpdt)[1] = -dlq;
-      (*slip)[0] += Spp * dlp + Spq * dlq;
-      (*slip)[1] += Spq * dlp + Sqq * dlq;
-      
-      std::cout << "Estimated slip: " << "  " << (*slip)[0] << "  "
-		<< (*slip)[1] << "  " << (*slip)[2] << std::endl;
+      const double dlp = -(tractionShearMag - frictionStress) * area *
+  tractionTpdt[0] / tractionShearMag;
+      (*dLagrangeTpdt)[0] = dlp;
+      (*dLagrangeTpdt)[1] = 0.0;
     } else {
       // else friction exceeds value necessary, so stick
       std::cout << "STICK" << std::endl;
@@ -1645,383 +1934,73 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3D(
     // if in tension, then traction is zero.
     std::cout << "FAULT IN TENSION" << std::endl;
     
-    // Update slip based on value required to stick versus
-    // zero traction
-    const double dlp = tractionTpdt[0] * area;
-    const double dlq = tractionTpdt[1] * area;
-    const double dlr = tractionTpdt[2] * area;
-
-    (*dLagrangeTpdt)[0] = -dlp;
-    (*dLagrangeTpdt)[1] = -dlq;
-    (*dLagrangeTpdt)[2] = -dlr;
-    (*slip)[0] += Spp * dlp + Spq * dlq + Spr * dlr;
-    (*slip)[1] += Spq * dlp + Sqq * dlq + Sqr * dlr;
-    (*slip)[2] += Spr * dlp + Sqr * dlq + Srr * dlr;
-    
-    std::cout << "Estimated slip: " << "  " << (*slip)[0] << "  "
-	      << (*slip)[1] << "  " << (*slip)[2] << std::endl;
-    
+    (*dLagrangeTpdt)[0] = -tractionTpdt[0] * area;
+    (*dLagrangeTpdt)[1] = -tractionTpdt[1] * area;
   } // else
 
-  PetscLogFlops(0); // :TODO: Fix this
-} // constrainSolnSpace3D
+  PetscLogFlops(8);
+} // _constrainSolnSpace2D
 
 // ----------------------------------------------------------------------
-// Constrain solution space in 2-D.
+// Constrain solution space with lumped Jacobian in 3-D.
 void
-pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped2x22D(
-				     double_array* dLagrangeTpdt,
-				     double_array* slip,
-				     const double_array& slipRate,
-				     const double_array& tractionTpdt,
-				     const double_array& orientation,
-				     const double_array& jacobianN,
-				     const double_array& jacobianP,
-				     const double area)
-{ // constrainSolnSpace2x22D
- assert(0 != dLagrangeTpdt);
- assert(0 != slip);
+pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeTpdt,
+         const double_array& slip,
+         const double_array& slipRate,
+         const double_array& tractionTpdt,
+         const double area)
+{ // _constrainSolnSpace3D
+  assert(0 != dLagrangeTpdt);
 
- std::cout << "Normal traction:" << tractionTpdt[1] << std::endl;
+  std::cout << "Normal traction:" << tractionTpdt[2] << std::endl;
 
- // Sensitivity of slip to changes in the Lagrange multipliers
- assert(jacobianN[0] > 0.0);
- assert(jacobianP[0] > 0.0);
- assert(jacobianN[1] > 0.0);
- assert(jacobianP[1] > 0.0);
- assert(jacobianN[2] > 0.0);
- assert(jacobianP[2] > 0.0);
- assert(jacobianN[3] > 0.0);
- assert(jacobianP[3] > 0.0);
+  const double slipShearMag = sqrt(slip[0] * slip[0] +
+             slip[1] * slip[1]);
+  double slipRateMag = sqrt(slipRate[0]*slipRate[0] + 
+            slipRate[1]*slipRate[1]);
+  
+  const double tractionNormal = tractionTpdt[2];
+  const double tractionShearMag = 
+    sqrt(tractionTpdt[0] * tractionTpdt[0] +
+   tractionTpdt[1] * tractionTpdt[1]);
+  
+  if (tractionNormal < 0.0 && 0.0 == slip[2]) {
+    // if in compression and no opening
+    std::cout << "FAULT IN COMPRESSION" << std::endl;
+    const double frictionStress = 
+      _friction->calcFriction(slipShearMag, slipRateMag, tractionNormal);
+    std::cout << "frictionStress: " << frictionStress << std::endl;
+    if (tractionShearMag > frictionStress || 
+  (tractionShearMag < frictionStress && slipShearMag > 0.0)) {
+      // traction is limited by friction, so have sliding
+      std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
+      
+      // Update slip based on value required to stick versus friction
+      const double dlp = -(tractionShearMag - frictionStress) * area *
+  tractionTpdt[0] / tractionShearMag;
+      const double dlq = -(tractionShearMag - frictionStress) * area *
+  tractionTpdt[1] / tractionShearMag;
 
- // Fault orientation matrix
- const double Cpx = orientation[0];
- const double Cpy = orientation[1];
- const double Cqx = orientation[2];
- const double Cqy = orientation[3];
+      (*dLagrangeTpdt)[0] = dlp;
+      (*dLagrangeTpdt)[1] = dlq;
+      (*dLagrangeTpdt)[2] = 0.0;
+      
+    } else {
+      // else friction exceeds value necessary, so stick
+      std::cout << "STICK" << std::endl;
+      // no changes to solution
+    } // if/else
+  } else {
+    // if in tension, then traction is zero.
+    std::cout << "FAULT IN TENSION" << std::endl;
+    
+    (*dLagrangeTpdt)[0] = -tractionTpdt[0] * area;
+    (*dLagrangeTpdt)[1] = -tractionTpdt[1] * area;
+    (*dLagrangeTpdt)[2] = -tractionTpdt[2] * area;
+  } // else
 
- // 3 x 3 Jacobian block of i side of fault
- const double Aixx = jacobianN[0];
- const double Aixy = jacobianN[1];
- const double Aiyx = jacobianN[2];
- const double Aiyy = jacobianN[3];
-
- // 3 x 3 Jacobian block of j side of fault
- const double Ajxx = jacobianP[0];
- const double Ajxy = jacobianP[1];
- const double Ajyx = jacobianP[2];
- const double Ajyy = jacobianP[3];
-
- // Determinant of 2 X 2 block of Jacobian on each side of the fault
- const double Deti = Aixx * Aiyy - Aixy*Aiyx;
- const double Detj = Ajxx * Ajyy - Ajxy*Ajyx;
- assert(Deti > 0.0);
- assert(Detj > 0.0);
-
- // Co-factor matrix for i side of fault
- const double Ci11 = Aiyy;
- const double Ci12 = -Aiyx;
- const double Ci21 = -Aixy;
- const double Ci22 = Aixx;
-
- // Co-factor matrix for j side of fault
- const double Cj11 = Ajyy;
- const double Cj12 = -Ajyx;
- const double Cj21 = -Ajxy;
- const double Cj22 = Ajxx;
-
- // Contribution to sensitivity from i side of fault
- const double Sipp = Ci11 * Cpx * Cpx + Ci22 * Cpy * Cpy + (Ci12 + Ci21) * Cpx * Cpy;
- const double Sipq = (Ci11 * Cpx + Ci12 * Cpy) * Cqx + (Ci21 * Cpx + Ci22 * Cpy) * Cqy;
- const double Siqp = (Ci11 * Cqx + Ci12 * Cqy) * Cpx + (Ci21 * Cqx + Ci22 * Cqy) * Cpy;
- const double Siqq = Ci11 * Cqx * Cqx + Ci22 * Cqy * Cqy + (Ci12 + Ci21) * Cqx * Cqy;
-
- // Contribution to sensitivity from i side of fault
- const double Sjpp = Cj11 * Cpx * Cpx + Cj22 * Cpy * Cpy + (Cj12 + Cj21) * Cpx * Cpy;
- const double Sjpq = (Cj11 * Cpx + Cj12 * Cpy) * Cqx + (Cj21 * Cpx + Cj22 * Cpy) * Cqy;
- const double Sjqp = (Cj11 * Cqx + Cj12 * Cqy) * Cpx + (Cj21 * Cqx + Cj22 * Cqy) * Cpy;
- const double Sjqq = Cj11 * Cqx * Cqx + Cj22 * Cqy * Cqy + (Cj12 + Cj21) * Cqx * Cqy;
-
- // Sensitivity Matrix
- const double Spp = Sipp/Deti + Sjpp/Detj;
- const double Spq = Sipq/Deti + Sjpq/Detj;
- const double Sqp = Siqp/Deti + Sjqp/Detj;
- const double Sqq = Siqq/Deti + Sjqq/Detj;
-
- const double slipMag = fabs((*slip)[0]);
- const double slipRateMag = fabs(slipRate[0]);
-
- const double tractionNormal = tractionTpdt[1];
- const double tractionShearMag = fabs(tractionTpdt[0]);
-
- if (tractionNormal < 0 && 0.0 == (*slip)[1]) {
-   // if in compression and no opening
-   std::cout << "FAULT IN COMPRESSION" << std::endl;
-   const double frictionStress = _friction->calcFriction(slipMag, slipRateMag,
-							  tractionNormal);
-   std::cout << "frictionStress: " << frictionStress << std::endl;
-   if (tractionShearMag > frictionStress ||
-	(tractionShearMag < frictionStress && slipMag > 0.0)) {
-     // traction is limited by friction, so have sliding
-     std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
-
-     // Update slip based on value required to stick versus friction
-     const double dlp = (tractionShearMag - frictionStress) * area *
-	tractionTpdt[0] / tractionShearMag;
-     (*dLagrangeTpdt)[0] = -dlp;
-     (*slip)[0] += Spp * dlp;
-     std::cout << "Estimated slip: " << (*slip)[0] << std::endl;
-   } else {
-     // else friction exceeds value necessary, so stick
-     std::cout << "STICK" << std::endl;
-     // no changes to solution
-   } // if/else
- } else {
-   // if in tension, then traction is zero.
-   std::cout << "FAULT IN TENSION" << std::endl;
-
-   // Update slip based on value required to stick versus
-   // zero traction
-   const double dlp = tractionTpdt[0] * area;
-   const double dlq = tractionTpdt[1] * area;
-
-   (*dLagrangeTpdt)[0] = -dlp;
-   (*dLagrangeTpdt)[1] = -dlq;
-   (*slip)[0] += Spp * dlp + Spq * dlq;
-   (*slip)[1] += Spq * dlp + Sqq * dlq;
- } // else
-
- PetscLogFlops(0); // :TODO: Fix this
-} // constrainSolnSpace2x22D
-
-// ----------------------------------------------------------------------
-// Constrain solution space in 3-D.
-void
-pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceLumped3x33D(
-				     double_array* dLagrangeTpdt,
-				     double_array* slip,
-				     const double_array& slipRate,
-				     const double_array& tractionTpdt,
-				     const double_array& orientation,
-				     const double_array& jacobianN,
-				     const double_array& jacobianP,
-				     const double area)
-{ // constrainSolnSpace3x33D
- assert(0 != dLagrangeTpdt);
- assert(0 != slip);
-
- std::cout << "Normal traction:" << tractionTpdt[2] << std::endl;
-
- // Sensitivity of slip to changes in the Lagrange multipliers
- assert(jacobianN[0] > 0.0);
- assert(jacobianP[0] > 0.0);
- assert(jacobianN[1] > 0.0);
- assert(jacobianP[1] > 0.0);
- assert(jacobianN[2] > 0.0);
- assert(jacobianP[2] > 0.0);
- assert(jacobianN[3] > 0.0);
- assert(jacobianP[3] > 0.0);
- assert(jacobianN[4] > 0.0);
- assert(jacobianP[4] > 0.0);
- assert(jacobianN[5] > 0.0);
- assert(jacobianP[5] > 0.0);
- assert(jacobianN[6] > 0.0);
- assert(jacobianP[6] > 0.0);
- assert(jacobianN[7] > 0.0);
- assert(jacobianP[7] > 0.0);
- assert(jacobianN[8] > 0.0);
- assert(jacobianP[8] > 0.0);
-
- // 3 x 3 Jacobian block of i side of fault
- const double Aixx = jacobianN[0];
- const double Aixy = jacobianN[1];
- const double Aixz = jacobianN[2];
- const double Aiyx = jacobianN[3];
- const double Aiyy = jacobianN[4];
- const double Aiyz = jacobianN[5];
- const double Aizx = jacobianN[6];
- const double Aizy = jacobianN[7];
- const double Aizz = jacobianN[8];
-
- // 3 x 3 Jacobian block of j side of fault
- const double Ajxx = jacobianP[0];
- const double Ajxy = jacobianP[1];
- const double Ajxz = jacobianP[2];
- const double Ajyx = jacobianP[3];
- const double Ajyy = jacobianP[4];
- const double Ajyz = jacobianP[5];
- const double Ajzx = jacobianP[6];
- const double Ajzy = jacobianP[7];
- const double Ajzz = jacobianP[8];
-
- // Fault orientation matrix
- const double Cpx = orientation[0];
- const double Cpy = orientation[1];
- const double Cpz = orientation[2];
- const double Cqx = orientation[3];
- const double Cqy = orientation[4];
- const double Cqz = orientation[5];
- const double Crx = orientation[6];
- const double Cry = orientation[7];
- const double Crz = orientation[8];
-
- // Determinant of 3 X 3 block of Jacobian on each side of the fault
- const double Deti = Aixz * (-Aiyy * Aizx + Aiyx * Aizy) +
-   Aixy * (Aiyz * Aizx - Aiyx * Aizz) + Aixx * (-Aiyz * Aizy + Aiyy * Aizz);
- const double Detj = Ajxz * (-Ajyy * Ajzx + Ajyx * Ajzy) +
-   Ajxy * (Ajyz * Ajzx - Ajyx * Ajzz) + Ajxx * (-Ajyz * Ajzy + Ajyy * Ajzz);
- assert(Deti > 0.0);
- assert(Detj > 0.0);
-
- // Co-factor matrix for i side of fault
- const double Ci11 = Aiyz * Aizy + Aiyy * Aizz;
- const double Ci12 = Aiyz * Aizx - Aiyx * Aizz;
- const double Ci13 = -Aiyy * Aizx + Aiyx * Aizy;
- const double Ci21 = Aixz * Aizy - Aixy * Aizz;
- const double Ci22 = -Aixz * Aizx + Aixx * Aizz;
- const double Ci23 = Aixy * Aizx - Aixx * Aizy;
- const double Ci31 = Aixz * Aiyy + Aixy * Aiyz;
- const double Ci32 = Aixz * Aiyx - Aixx * Aiyz;
- const double Ci33 = -Aixy * Aiyx + Aixx * Aiyy;
-
- // Co-factor matrix for j side of fault
- const double Cj11 = Ajyz * Ajzy + Ajyy * Ajzz;
- const double Cj12 = Ajyz * Ajzx - Ajyx * Ajzz;
- const double Cj13 = -Ajyy * Ajzx + Ajyx * Ajzy;
- const double Cj21 = Ajxz * Ajzy - Ajxy * Ajzz;
- const double Cj22 = -Ajxz * Ajzx + Ajxx * Ajzz;
- const double Cj23 = Ajxy * Ajzx - Ajxx * Ajzy;
- const double Cj31 = Ajxz * Ajyy + Ajxy * Ajyz;
- const double Cj32 = Ajxz * Ajyx - Ajxx * Ajyz;
- const double Cj33 = -Ajxy * Ajyx + Ajxx * Ajyy;
-
- // Contribution to sensitivity from i side of fault
- const double Sipp = Ci11 * Cpx * Cpx + Ci22 * Cpy * Cpy + Ci33 * Cpz * Cpz +
-   (Ci12 + Ci21) * Cpx * Cpy + (Ci13 + Ci31) * Cpx * Cpz + (Ci23 + Ci32) * Cpy * Cpz;
- const double Siqq = Ci11 * Cqx * Cqx + Ci22 * Cqy * Cqy + Ci33 * Cqz * Cqz +
-   (Ci12 + Ci21) * Cqx * Cqy + (Ci13 + Ci31) * Cqx * Cqz + (Ci23 + Ci32) * Cqy * Cqz;
- const double Sirr = Ci11 * Crx * Crx + Ci22 * Cry * Cry + Ci33 * Crz * Crz +
-   (Ci12 + Ci21) * Crx * Cry + (Ci13 + Ci31) * Crx * Crz + (Ci23 + Ci32) * Cry * Crz;
- const double Sipq = (Ci11 * Cpx + Ci12 * Cpy + Ci13 * Cpz) * Cqx +
-   (Ci21 * Cpx + Ci22 * Cpy + Ci23 * Cpz) * Cqy +
-   (Ci31 * Cpx + Ci32 * Cpy + Ci33 * Cpz) * Cqz;
- const double Sipr = (Ci11 * Cpx + Ci12 * Cpy + Ci13 * Cpz) * Crx +
-   (Ci21 * Cpx + Ci22 * Cpy + Ci23 * Cpz) * Cry +
-   (Ci31 * Cpx + Ci32 * Cpy + Ci33 * Cpz) * Crz;
- const double Siqp = (Ci11 * Cqx + Ci12 * Cqy + Ci13 * Cqz) * Cpx +
-   (Ci21 * Cqx + Ci22 * Cqy + Ci23 * Cqz) * Cpy +
-   (Ci31 * Cqx + Ci32 * Cqy + Ci33 * Cqz) * Cpz;
- const double Siqr = (Ci11 * Cqx + Ci12 * Cqy + Ci13 * Cqz) * Crx +
-   (Ci21 * Cqx + Ci22 * Cqy + Ci23 * Cqz) * Cry +
-   (Ci31 * Cqx + Ci32 * Cqy + Ci33 * Cqz) * Crz;
- const double Sirp = (Ci11 * Crx + Ci12 * Cry + Ci13 * Crz) * Cpx +
-   (Ci21 * Crx + Ci22 * Cry + Ci23 * Crz) * Cpy +
-   (Ci31 * Crx + Ci32 * Cry + Ci33 * Crz) * Cpz;
- const double Sirq = (Ci11 * Crx + Ci12 * Cry + Ci13 * Crz) * Cqx +
-   (Ci21 * Crx + Ci22 * Cry + Ci23 * Crz) * Cqy +
-   (Ci31 * Crx + Ci32 * Cry + Ci33 * Crz) * Cqz;
-
- // Contribution to sensitivity from i side of fault
- const double Sjpp = Cj11 * Cpx * Cpx + Cj22 * Cpy * Cpy + Cj33 * Cpz * Cpz +
-   (Cj12 + Cj21) * Cpx * Cpy + (Cj13 + Cj31) * Cpx * Cpz + (Cj23 + Cj32) * Cpy * Cpz;
- const double Sjqq = Cj11 * Cqx * Cqx + Cj22 * Cqy * Cqy + Cj33 * Cqz * Cqz +
-   (Cj12 + Cj21) * Cqx * Cqy + (Cj13 + Cj31) * Cqx * Cqz + (Cj23 + Cj32) * Cqy * Cqz;
- const double Sjrr = Cj11 * Crx * Crx + Cj22 * Cry * Cry + Cj33 * Crz * Crz +
-   (Cj12 + Cj21) * Crx * Cry + (Cj13 + Cj31) * Crx * Crz + (Cj23 + Cj32) * Cry * Crz;
- const double Sjpq = (Cj11 * Cpx + Cj12 * Cpy + Cj13 * Cpz) * Cqx +
-   (Cj21 * Cpx + Cj22 * Cpy + Cj23 * Cpz) * Cqy +
-   (Cj31 * Cpx + Cj32 * Cpy + Cj33 * Cpz) * Cqz;
- const double Sjpr = (Cj11 * Cpx + Cj12 * Cpy + Cj13 * Cpz) * Crx +
-   (Cj21 * Cpx + Cj22 * Cpy + Cj23 * Cpz) * Cry +
-   (Cj31 * Cpx + Cj32 * Cpy + Cj33 * Cpz) * Crz;
- const double Sjqp = (Cj11 * Cqx + Cj12 * Cqy + Cj13 * Cqz) * Cpx +
-   (Cj21 * Cqx + Cj22 * Cqy + Cj23 * Cqz) * Cpy +
-   (Cj31 * Cqx + Cj32 * Cqy + Cj33 * Cqz) * Cpz;
- const double Sjqr = (Cj11 * Cqx + Cj12 * Cqy + Cj13 * Cqz) * Crx +
-   (Cj21 * Cqx + Cj22 * Cqy + Cj23 * Cqz) * Cry +
-   (Cj31 * Cqx + Cj32 * Cqy + Cj33 * Cqz) * Crz;
- const double Sjrp = (Cj11 * Crx + Cj12 * Cry + Cj13 * Crz) * Cpx +
-   (Cj21 * Crx + Cj22 * Cry + Cj23 * Crz) * Cpy +
-   (Cj31 * Crx + Cj32 * Cry + Cj33 * Crz) * Cpz;
- const double Sjrq = (Cj11 * Crx + Cj12 * Cry + Cj13 * Crz) * Cqx +
-   (Cj21 * Crx + Cj22 * Cry + Cj23 * Crz) * Cqy +
-   (Cj31 * Crx + Cj32 * Cry + Cj33 * Crz) * Cqz;
-
- // Sensitivity Matrix
- const double Spp = Sipp/Deti + Sjpp/Detj;
- const double Spq = Sipq/Deti + Sjpq/Detj;
- const double Spr = Sipr/Deti + Sjpr/Detj;
- const double Sqp = Siqp/Deti + Sjqp/Detj;
- const double Sqq = Siqq/Deti + Sjqq/Detj;
- const double Sqr = Siqr/Deti + Sjqr/Detj;
- const double Srp = Sirp/Deti + Sjrp/Detj;
- const double Srq = Sirq/Deti + Sjrq/Detj;
- const double Srr = Sirr/Deti + Sjrr/Detj;
-
-
- const double slipShearMag = sqrt((*slip)[0] * (*slip)[0] +
-				   (*slip)[1] * (*slip)[1]);
- double slipRateMag = sqrt(slipRate[0]*slipRate[0] +
-			    slipRate[1]*slipRate[1]);
-
- const double tractionNormal = tractionTpdt[2];
- const double tractionShearMag =
-   sqrt(tractionTpdt[0] * tractionTpdt[0] +
-	 tractionTpdt[1] * tractionTpdt[1]);
-
- if (tractionNormal < 0.0 && 0.0 == (*slip)[2]) {
-   // if in compression and no opening
-   std::cout << "FAULT IN COMPRESSION" << std::endl;
-   const double frictionStress =
-     _friction->calcFriction(slipShearMag, slipRateMag, tractionNormal);
-   std::cout << "frictionStress: " << frictionStress << std::endl;
-   if (tractionShearMag > frictionStress ||
-	(tractionShearMag < frictionStress && slipShearMag > 0.0)) {
-     // traction is limited by friction, so have sliding
-     std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
-
-     // Update slip based on value required to stick versus friction
-     const double dlp = (tractionShearMag - frictionStress) * area *
-	tractionTpdt[0] / tractionShearMag;
-     const double dlq = (tractionShearMag - frictionStress) * area *
-	tractionTpdt[1] / tractionShearMag;
-
-     (*dLagrangeTpdt)[0] = -dlp;
-     (*dLagrangeTpdt)[1] = -dlq;
-     (*slip)[0] += Spp * dlp + Spq * dlq;
-     (*slip)[1] += Spq * dlp + Sqq * dlq;
-
-     std::cout << "Estimated slip: " << "  " << (*slip)[0] << "  "
-		<< (*slip)[1] << "  " << (*slip)[2] << std::endl;
-   } else {
-     // else friction exceeds value necessary, so stick
-     std::cout << "STICK" << std::endl;
-     // no changes to solution
-   } // if/else
- } else {
-   // if in tension, then traction is zero.
-   std::cout << "FAULT IN TENSION" << std::endl;
-
-   // Update slip based on value required to stick versus
-   // zero traction
-   const double dlp = tractionTpdt[0] * area;
-   const double dlq = tractionTpdt[1] * area;
-   const double dlr = tractionTpdt[2] * area;
-
-   (*dLagrangeTpdt)[0] = -dlp;
-   (*dLagrangeTpdt)[1] = -dlq;
-   (*dLagrangeTpdt)[2] = -dlr;
-   (*slip)[0] += Spp * dlp + Spq * dlq + Spr * dlr;
-   (*slip)[1] += Spq * dlp + Sqq * dlq + Sqr * dlr;
-   (*slip)[2] += Spr * dlp + Sqr * dlq + Srr * dlr;
-
-   std::cout << "Estimated slip: " << "  " << (*slip)[0] << "  "
-	      << (*slip)[1] << "  " << (*slip)[2] << std::endl;
-
- } // else
-
- PetscLogFlops(0); // :TODO: Fix this
-} // constrainSolnSpace3x33D
+  PetscLogFlops(22);
+} // _constrainSolnSpace3D
 
 
 // End of file 

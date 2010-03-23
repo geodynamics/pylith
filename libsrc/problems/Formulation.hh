@@ -172,7 +172,6 @@ protected :
   ///< Integrators over lower-dimensional subdomains of the mesh.
   std::vector<IntegratorSubMesh*> _submeshIntegrators;
 
-  bool _needJacobianDiag; ///< Integrator(s) need Jacobian diagonal.
   bool _needVelocity; ///< Integrator(s) need velocity.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

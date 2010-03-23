@@ -221,7 +221,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   const ALE::Obj<RealSection>& solutionSection = solution.section();
   CPPUNIT_ASSERT(!solutionSection.isNull());
 
-  topology::Jacobian jacobian(fields);
+  topology::Jacobian jacobian(solution);
 
   const double t = 1.0;
   bc.integrateJacobian(&jacobian, t, &fields);

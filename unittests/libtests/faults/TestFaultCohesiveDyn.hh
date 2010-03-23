@@ -46,7 +46,6 @@ class pylith::faults::TestFaultCohesiveDyn: public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestFaultCohesiveDyn );
 
   CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testNeedJacobianDiag );
   CPPUNIT_TEST( testNeedVelocity );
   CPPUNIT_TEST( testDBInitialTract );
 
@@ -81,9 +80,6 @@ public:
 
   /// Test constructor.
   void testConstructor(void);
-
-  /// Test needJacobianDiag().
-  void testNeedJacobianDiag(void);
 
   /// Test needVelocity().
   void testNeedVelocity(void);
