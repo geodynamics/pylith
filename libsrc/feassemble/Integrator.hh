@@ -108,12 +108,6 @@ public :
   virtual
   bool needNewJacobian(void) const;
 
-  /** Check whether integrator needs Jacobian diagonal.
-   *
-   * @returns True if integrator needs Jacobian diagonal for computation.
-   */
-  bool needJacobianDiag(void) const;
-
    /** Check whether integrator needs velocity.
     *
     * @returns True if integrator needs velocity for computation.
@@ -316,10 +310,6 @@ protected :
   /// True if we need to recompute Jacobian for operator, false otherwise.
   /// Default is false;
   bool _needNewJacobian;
-
-  /// True if we need to store Jacobian diagonal, false otherwise.
-  /// Default is false;
-  bool _needJacobianDiag;
 
   /// True if we need to compute velocity field, false otherwise.
   /// Default is false;

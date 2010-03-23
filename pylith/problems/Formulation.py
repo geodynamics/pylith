@@ -476,7 +476,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     self._eventLogger.stagePop()
 
     if self.viewJacobian:
-      self.jacobianViewer.write(self.jacobian, t)
+      self.jacobianViewer.write(self.jacobian, t, self.mesh.comm())
 
     self._debug.log(resourceUsageString())
     return

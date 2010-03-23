@@ -291,6 +291,10 @@ protected :
   /// Array of cohesive vertex information.
   std::vector<CohesiveInfo> _cohesiveVertices;
 
+  /// Map label of cohesive cell to label of cells in fault mesh.
+  std::map<topology::Mesh::SieveMesh::point_type,
+           topology::SubMesh::SieveMesh::point_type> _cohesiveToFault;
+
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 

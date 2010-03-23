@@ -23,6 +23,7 @@
 #include "FaultCohesiveLagrange.hh" // ISA FaultCohesiveLagrange
 
 #include "pylith/friction/frictionfwd.hh" // HOLDSA Friction model
+#include "pylith/utils/petscfwd.h" // HASA PetscKSP
 
 // FaultCohesiveDyn -----------------------------------------------------
 /**
@@ -166,115 +167,128 @@ private :
    */
   void _updateSlipRate(const topology::SolutionFields& fields);
 
-  /** Update Jacobian blocks associated with DOF of vertices on
-   * negative and positive sides of the fault associated with Lagrange
-   * vertex k.
+  /** Setup sensitivity problem to compute change in slip given change
+   * in Lagrange multipliers.
    *
-   * @param jacobian Jacobian matrix.
+   * @param jacobian Jacobian matrix for entire domain.
+   */
+  void _sensitivitySetup(const topology::Jacobian& jacobian);
+
+  /** Update the Jacobian values for the sensitivity solve.
+   *
+   * @param negativeSide True if solving sensitivity problem for
+   * negative side of the fault, false if solving sensitivity problem
+   * for positive side of the fault.
+   * @param jacobian Jacobian matrix for entire domain.
    * @param fields Solution fields.
    */
-  void _updateJacobianBlocks(const topology::Jacobian& jacobian,
-			     const topology::SolutionFields& fields);
+  void _sensitivityUpdateJacobian(const bool negativeSide,
+                                  const topology::Jacobian& jacobian,
+                                  const topology::SolutionFields& fields);
+
+  /** Reform residual for sensitivity problem.
+   *
+   * @param negativeSide True if solving sensitivity problem for
+   * negative side of the fault, false if solving sensitivity problem
+   * for positive side of the fault.
+   */
+  void _sensitivityReformResidual(const bool negativeSide);
+
+  /// Solve sensitivity problem.
+  void _sensitivitySolve(void);
+
+  /** Update the solution (displacement increment) values based on
+   * the sensitivity solve.
+   *
+   * @param negativeSide True if solving sensitivity problem for
+   * negative side of the fault, false if solving sensitivity problem
+   * for positive side of the fault.
+   */
+  void _sensitivityUpdateSoln(const bool negativeSide);
+
+  /** Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 1-D.
+   *
+   * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
+   * @param dLagrangeTpdt Change in Lagrange multiplier.
+   * @param orientation Fault orientation assoc. w/Lagrang multiplier vertex.
+   * @param jacobianN Jacobian for vertex on - side of the fault.
+   * @param jacobianP Jacobian for vertex on + side of the fault.
+   */
+  void _sensitivitySolveLumped1D(double_array* slip,
+                                 const double_array& dLagrangeTpdt,
+                                 const double_array& orientation,
+                                 const double_array& jacobianN,
+                                 const double_array& jacobianP);
+
+  /** Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 2-D.
+   *
+   * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
+   * @param dLagrangeTpdt Change in Lagrange multiplier.
+   * @param orientation Fault orientation assoc. w/Lagrang multiplier vertex.
+   * @param jacobianN Jacobian for vertex on - side of the fault.
+   * @param jacobianP Jacobian for vertex on + side of the fault.
+   */
+  void _sensitivitySolveLumped2D(double_array* slip,
+                                 const double_array& dLagrangeTpdt,
+                                 const double_array& orientation,
+                                 const double_array& jacobianN,
+                                 const double_array& jacobianP);
+
+  /** Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 3-D.
+   *
+   * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
+   * @param dLagrangeTpdt Change in Lagrange multiplier.
+   * @param orientation Fault orientation assoc. w/Lagrang multiplier vertex.
+   * @param jacobianN Jacobian for vertex on - side of the fault.
+   * @param jacobianP Jacobian for vertex on + side of the fault.
+   */
+  void _sensitivitySolveLumped3D(double_array* slip,
+                                 const double_array& dLagrangeTpdt,
+                                 const double_array& orientation,
+                                 const double_array& jacobianN,
+                                 const double_array& jacobianP);
 
   /** Constrain solution space with lumped Jacobian in 1-D.
    *
    * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
-   * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
+   * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
-   * @param orientation Fault orientation assoc. w/Lagrang multiplier vertex.
-   * @param jacobianN Jacobian for vertex on - side of the fault.
-   * @param jacobianP Jacobian for vertex on + side of the fault.
    * @param area Fault area associated w/Lagrange multiplier vertex.
    */
-  void _constrainSolnSpaceLumped1D(double_array* dLagrangeTpdt,
-				   double_array* slip,
-				   const double_array& sliprate,
-				   const double_array& tractionTpdt,
-				   const double_array& orientation,
-				   const double_array& jacobianN,
-				   const double_array& jacobianP,
-				   const double area);
+  void _constrainSolnSpace1D(double_array* dLagrangeTpdt,
+           const double_array& slip,
+           const double_array& slipRate,
+           const double_array& tractionTpdt,
+           const double area);
 
   /** Constrain solution space with lumped Jacobian in 2-D.
    *
    * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
-   * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
+   * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
-   * @param orientation Fault orientation assoc. w/Lagrang multiplier vertex.
-   * @param jacobianN Jacobian for vertex on - side of the fault.
-   * @param jacobianP Jacobian for vertex on + side of the fault.
    * @param area Fault area associated w/Lagrange multiplier vertex.
    */
-  void _constrainSolnSpaceLumped2D(double_array* dLagrangeTpdt,
-				   double_array* slip,
-				   const double_array& sliprate,
-				   const double_array& tractionTpdt,
-				   const double_array& orientation,
-				   const double_array& jacobianN,
-				   const double_array& jacobianP,
-				   const double area);
+  void _constrainSolnSpace2D(double_array* dLagrangeTpdt,
+           const double_array& slip,
+           const double_array& slipRate,
+           const double_array& tractionTpdt,
+           const double area);
 
   /** Constrain solution space with lumped Jacobian in 3-D.
    *
    * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
-   * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
+   * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
-   * @param orientation Fault orientation assoc. w/Lagrang multiplier vertex.
-   * @param jacobianN Jacobian for vertex on - side of the fault.
-   * @param jacobianP Jacobian for vertex on + side of the fault.
    * @param area Fault area associated w/Lagrange multiplier vertex.
    */
-  void _constrainSolnSpaceLumped3D(double_array* dLagrangeTpdt,
-				   double_array* slip,
-				   const double_array& sliprate,
-				   const double_array& tractionTpdt,
-				   const double_array& orientation,
-				   const double_array& jacobianN,
-				   const double_array& jacobianP,
-				   const double area);
-
-  /** Constrain solution space with 2 x 2 Jacobian block in 2-D.
-   *
-   * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
-   * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
-   * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
-   * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
-   * @param orientation Fault orientation assoc. w/Lagrang multiplier vertex.
-   * @param jacobianN Jacobian for vertex on - side of the fault.
-   * @param jacobianP Jacobian for vertex on + side of the fault.
-   * @param area Fault area associated w/Lagrange multiplier vertex.
-   */
-  void _constrainSolnSpaceLumped2x22D(double_array* dLagrangeTpdt,
-				   double_array* slip,
-				   const double_array& sliprate,
-				   const double_array& tractionTpdt,
-				   const double_array& orientation,
-				   const double_array& jacobianN,
-				   const double_array& jacobianP,
-				   const double area);
-
-  /** Constrain solution space with 3 X 3 Jacobian block in 3-D.
-   *
-   * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
-   * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
-   * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
-   * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
-   * @param orientation Fault orientation assoc. w/Lagrang multiplier vertex.
-   * @param jacobianN Jacobian for vertex on - side of the fault.
-   * @param jacobianP Jacobian for vertex on + side of the fault.
-   * @param area Fault area associated w/Lagrange multiplier vertex.
-   */
-  void _constrainSolnSpaceLumped3x33D(double_array* dLagrangeTpdt,
-				   double_array* slip,
-				   const double_array& sliprate,
-				   const double_array& tractionTpdt,
-				   const double_array& orientation,
-				   const double_array& jacobianN,
-				   const double_array& jacobianP,
-				   const double area);
+  void _constrainSolnSpace3D(double_array* dLagrangeTpdt,
+           const double_array& slip,
+           const double_array& slipRate,
+           const double_array& tractionTpdt,
+           const double area);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
@@ -285,7 +299,12 @@ private :
   /// To identify constitutive model
   friction::FrictionModel* _friction;
 
-  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+  /// Sparse matrix for sensitivity solve.
+  topology::Jacobian* _jacobian;
+
+  PetscKSP _ksp; ///< PETSc KSP linear solver for sensitivity problem.
+
+// NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
   /// Not implemented

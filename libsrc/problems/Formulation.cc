@@ -32,7 +32,6 @@ pylith::problems::Formulation::Formulation(void) :
   _jacobian(0),
   _jacobianLumped(0),
   _fields(0),
-  _needJacobianDiag(false),
   _needVelocity(false)
 { // constructor
 } // constructor
@@ -102,24 +101,9 @@ void
 pylith::problems::Formulation::initialize(void)
 { // initialize
 
-  // Determine whether we need to store Jacobian diagonal
-  _needJacobianDiag = false;
-  int numIntegrators = _meshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i) {
-    assert(0 != _meshIntegrators[i]);
-    if (_meshIntegrators[i]->needJacobianDiag())
-      _needJacobianDiag = true;
-  } // for
-  numIntegrators = _submeshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i) {
-    assert(0 != _submeshIntegrators[i]);
-    if (_submeshIntegrators[i]->needJacobianDiag())
-      _needJacobianDiag = true;
-  } // for
-
   // Determine whether we need to compute velocity
   _needVelocity = false;
-  numIntegrators = _meshIntegrators.size();
+  int numIntegrators = _meshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i) {
     assert(0 != _meshIntegrators[i]);
     if (_meshIntegrators[i]->needVelocity())
@@ -324,21 +308,6 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
   // Assemble jacobian.
   _jacobian->assemble("final_assembly");
 
-  if (_needJacobianDiag) {
-    if (!_fields->hasField("Jacobian diagonal")) {
-      _fields->add("Jacobian diagonal", "jacobian_diagonal");
-      topology::Field<topology::Mesh>& jacobianDiag = _fields->get(
-          "Jacobian diagonal");
-      const topology::Field<topology::Mesh>& disp = _fields->get("disp(t)");
-      jacobianDiag.cloneSection(disp);
-      jacobianDiag.createVector();
-      jacobianDiag.createScatter();
-    } // if
-  topology::Field<topology::Mesh>& jacobianDiag = _fields->get(
-        "Jacobian diagonal");
-    MatGetDiagonal(_jacobian->matrix(), jacobianDiag.vector());
-    jacobianDiag.scatterVectorToSection();
-  } // if
 } // reformJacobian
 
 // ----------------------------------------------------------------------

@@ -417,7 +417,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
     dispSection->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
   } // for
   
-  topology::Jacobian jacobian(fields);
+  topology::Jacobian jacobian(fields.solution());
 
   const double t = 2.134;
   fault.integrateJacobian(&jacobian, t, &fields);
@@ -496,7 +496,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembled(void)
        ++v_iter, ++iVertex)
     dispSection->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
 
-  topology::Jacobian jacobian(fields);
+  topology::Jacobian jacobian(fields.solution());
 
   const double t = 2.134;
   fault.integrateJacobianAssembled(&jacobian, t, &fields);

@@ -77,16 +77,6 @@ pylith::faults::TestFaultCohesiveDyn::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
-// Test needJacobianDiag().
-void
-pylith::faults::TestFaultCohesiveDyn::testNeedJacobianDiag(void)
-{ // testNeedJacobianDiag
-  FaultCohesiveDyn fault;
-
-  CPPUNIT_ASSERT_EQUAL(true, fault.needJacobianDiag());
-} // testNeedJacobianDiag
-
-// ----------------------------------------------------------------------
 // Test needVelocity().
 void
 pylith::faults::TestFaultCohesiveDyn::testNeedVelocity(void)
@@ -189,7 +179,7 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
 
   // Initial forces/tractions
   if (0 != fault._dbInitialTract) {
-    fault._fields->get("initial forces").view("INITIAL FORCES"); // DEBUGGING
+    //fault._fields->get("initial forces").view("INITIAL FORCES"); // DEBUGGING
     const ALE::Obj<RealSection>& forcesInitialSection = 
       fault._fields->get("initial forces").section();
     CPPUNIT_ASSERT(!forcesInitialSection.isNull());
@@ -225,7 +215,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
   FaultCohesiveDyn fault;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
-  topology::Jacobian jacobian(fields, "seqdense");
+  topology::Jacobian jacobian(fields.solution(), "seqdense");
   _setFieldsJacobian(&mesh, &fault, &fields, &jacobian, _data->fieldIncrStick);
 
   const int spaceDim = _data->spaceDim;
@@ -331,7 +321,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
   FaultCohesiveDyn fault;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
-  topology::Jacobian jacobian(fields, "seqdense");
+  topology::Jacobian jacobian(fields.solution(), "seqdense");
   _setFieldsJacobian(&mesh, &fault, &fields, &jacobian, _data->fieldIncrSlip);
 
   const int spaceDim = _data->spaceDim;
@@ -454,7 +444,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
   FaultCohesiveDyn fault;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
-  topology::Jacobian jacobian(fields, "seqdense");
+  topology::Jacobian jacobian(fields.solution(), "seqdense");
   _setFieldsJacobian(&mesh, &fault, &fields, &jacobian, _data->fieldIncrOpen);
 
   const int spaceDim = _data->spaceDim;
@@ -577,7 +567,7 @@ pylith::faults::TestFaultCohesiveDyn::testUpdateStateVars(void)
   FaultCohesiveDyn fault;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
-  topology::Jacobian jacobian(fields, "seqdense");
+  topology::Jacobian jacobian(fields.solution(), "seqdense");
   _setFieldsJacobian(&mesh, &fault, &fields, &jacobian, _data->fieldIncrSlip);
 
   const int spaceDim = _data->spaceDim;
@@ -602,7 +592,7 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
   FaultCohesiveDyn fault;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
-  topology::Jacobian jacobian(fields, "seqdense");
+  topology::Jacobian jacobian(fields.solution(), "seqdense");
   _setFieldsJacobian(&mesh, &fault, &fields, &jacobian, _data->fieldIncrStick);
   
   CPPUNIT_ASSERT(0 != fault._faultMesh);
@@ -835,20 +825,10 @@ pylith::faults::TestFaultCohesiveDyn::_setFieldsJacobian(
     rows[iRow] = iRow;
   for (int iCol=0; iCol < ncols; ++iCol)
     cols[iCol] = iCol;
-  MatSetValues(jacobianMat, nrows, &rows[0], ncols, &cols[0], _data->jacobian, INSERT_VALUES);
+  MatSetValues(jacobianMat, nrows, &rows[0], ncols, &cols[0], 
+	       _data->jacobian, INSERT_VALUES);
   jacobian->assemble("final_assembly");
 
-  // Set Jacobian diagonal
-  fields->add("Jacobian diagonal", "jacobian_diagonal");
-  topology::Field<topology::Mesh>& jacobianDiag =
-    fields->get("Jacobian diagonal");
-  const topology::Field<topology::Mesh>& disp =
-    fields->get("disp(t)");
-  jacobianDiag.cloneSection(disp);
-  jacobianDiag.createVector();
-  jacobianDiag.createScatter();
-  MatGetDiagonal(jacobian->matrix(), jacobianDiag.vector());
-  jacobianDiag.scatterVectorToSection();
 } // _setFieldsJacobian
 
 // ----------------------------------------------------------------------

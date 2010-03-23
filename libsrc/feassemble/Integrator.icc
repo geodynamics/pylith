@@ -30,14 +30,6 @@ pylith::feassemble::Integrator<quadrature_type>::needNewJacobian(void) const {
   return _needNewJacobian;
 } // needNewJacobian
 
-// Check whether integrator needs Jacobian diagonal.
-template<typename quadrature_type>
-inline
-bool
-pylith::feassemble::Integrator<quadrature_type>::needJacobianDiag(void) const {
-  return _needJacobianDiag;
-} // needsJacobianDiag
-
 // Check whether integrator needs velocity.
 template<typename quadrature_type>
 inline
