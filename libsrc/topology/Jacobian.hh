@@ -19,10 +19,13 @@
 #if !defined(pylith_topology_jacobian_hh)
 #define pylith_topology_jacobian_hh
 
+
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 
 #include "pylith/utils/petscfwd.h" // HOLDSA PetscMat
+
+#include <mpi.h> // USES MPI_Comm
 
 // Jacobian -------------------------------------------------------------
 /// Jacobian of the system as a PETSc sparse matrix.
@@ -35,14 +38,25 @@ public :
 
   /** Default constructor.
    *
-   * @param fields Fields associated with mesh and solution of the problem.
+   * @param field Field associated with mesh and solution of the problem.
    * @param matrixType Type of PETSc sparse matrix.
    * @param blockOkay True if okay to use block size equal to fiberDim
    * (all or none of the DOF at each point are constrained).
    */
-  Jacobian(const SolutionFields& fields,
-	   const char* matrixType ="aij",
-	   const bool blockOkay =false);
+  Jacobian(const Field<Mesh>& field,
+           const char* matrixType ="aij",
+           const bool blockOkay =false);
+
+  /** Constructor with field for submesh.
+   *
+   * @param field Fields associated with submesh and solution of the problem.
+   * @param matrixType Type of PETSc sparse matrix.
+   * @param blockOkay True if okay to use block size equal to fiberDim
+   * (all or none of the DOF at each point are constrained).
+   */
+  Jacobian(const Field<SubMesh>& field,
+           const char* matrixType ="aij",
+           const bool blockOkay =true);
 
   /// Destructor.
   ~Jacobian(void);
@@ -62,6 +76,12 @@ public :
    */
   PetscMat matrix(void);
 
+  /** Get matrix type.
+   *
+   * @returns Matrix type.
+   */
+  const char* matrixType(void) const;
+
   /** Assemble matrix.
    *
    * @param mode Assembly mode.
@@ -77,8 +97,10 @@ public :
   /** Write matrix to binary file.
    *
    * @param filename Name of file.
+   * @param comm MPI communicator.
    */
-  void write(const char* filename);
+  void write(const char* filename,
+             const MPI_Comm comm);
 
   /// Verify symmetry of matrix. For debugger purposes only.
   void verifySymmetry(void) const;
@@ -97,10 +119,11 @@ public :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  const SolutionFields& _fields; ///< Solution fields associated with problem.
   PetscMat _matrix; ///< Sparse matrix for Jacobian of problem.
 
   bool _valuesChanged; ///< Sparse matrix values have been updated.
+
+  std::string _type; ///< String associated with matrix type.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

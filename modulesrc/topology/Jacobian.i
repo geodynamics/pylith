@@ -27,15 +27,26 @@ namespace pylith {
 
       /** Default constructor.
        *
-       * @param fields Fields associated with mesh and solution of the problem.
+       * @param field Field associated with mesh and solution of the problem.
        * @param matrixType Type of PETSc sparse matrix.
        * @param blockOkay True if okay to use block size equal to fiberDim
        * (all or none of the DOF at each point are constrained).
        */
-      Jacobian(const SolutionFields& fields,
+      Jacobian(const Field<Mesh>& field,
 	       const char* matrixType ="aij",
 	       const bool blockOkay =false);
-      
+
+      /** Constructor with field for submesh.
+       *
+       * @param field Fields associated with submesh and solution of the problem.
+       * @param matrixType Type of PETSc sparse matrix.
+       * @param blockOkay True if okay to use block size equal to fiberDim
+       * (all or none of the DOF at each point are constrained).
+       */
+      Jacobian(const Field<SubMesh>& field,
+	       const char* matrixType ="aij",
+	       const bool blockOkay =true);
+
       /// Destructor.
       ~Jacobian(void);
       
@@ -54,6 +65,12 @@ namespace pylith {
        */
       PetscMat* matrix(void);
       
+      /** Get matrix type.
+       *
+       * @returns Matrix type.
+       */
+      const char* matrixType(void) const;
+
       /** Assemble matrix.
        *
        * @param mode Assembly mode.
@@ -69,8 +86,10 @@ namespace pylith {
       /** Write matrix to binary file.
        *
        * @param filename Name of file.
+       * @param comm MPI communicator.
        */
-      void write(const char* filename);
+      void write(const char* filename,
+		 const MPI_Comm comm);
 
       /// Verify symmetry of matrix. For debugger purposes only.
       void verifySymmetry(void) const;

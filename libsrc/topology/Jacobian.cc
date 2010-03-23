@@ -15,22 +15,21 @@
 #include "Jacobian.hh" // implementation of class methods
 
 #include "Mesh.hh" // USES Mesh
-#include "SolutionFields.hh" // USES SolutionFields
+#include "SubMesh.hh" // USES SubMesh
 #include "Field.hh" // USES Field
 
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::topology::Jacobian::Jacobian(const SolutionFields& fields,
-				     const char* matrixType,
-				     const bool blockOkay) :
-  _fields(fields),
+pylith::topology::Jacobian::Jacobian(const Field<Mesh>& field,
+                                     const char* matrixType,
+                                     const bool blockOkay) :
   _matrix(0),
   _valuesChanged(true)
 { // constructor
-  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = fields.mesh().sieveMesh();
-  const ALE::Obj<Mesh::RealSection>& solnSection = fields.solution().section();
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = field.mesh().sieveMesh();
+  const ALE::Obj<Mesh::RealSection>& fieldSection = field.section();
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Jacobian");
 
@@ -38,11 +37,39 @@ pylith::topology::Jacobian::Jacobian(const SolutionFields& fields,
   // dimension, otherwise use a block size of 1.
   const int blockFlag = (blockOkay) ? -1 : 1;
 
-  PetscErrorCode err = MeshCreateMatrix(sieveMesh, solnSection, 
+  PetscErrorCode err = MeshCreateMatrix(sieveMesh, fieldSection,
 					matrixType, &_matrix, blockFlag);
   CHECK_PETSC_ERROR_MSG(err, "Could not create PETSc sparse matrix "
 			"associated with system Jacobian.");
   logger.stagePop();
+
+  _type = matrixType;
+} // constructor
+
+// ----------------------------------------------------------------------
+// Default constructor.
+pylith::topology::Jacobian::Jacobian(const Field<SubMesh>& field,
+                                     const char* matrixType,
+                                     const bool blockOkay) :
+  _matrix(0),
+  _valuesChanged(true)
+{ // constructor
+  const ALE::Obj<SubMesh::SieveMesh>& sieveMesh = field.mesh().sieveMesh();
+  const ALE::Obj<SubMesh::RealSection>& fieldSection = field.section();
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Jacobian");
+
+  // Set blockFlag to -1 if okay to set block size equal to fiber
+  // dimension, otherwise use a block size of 1.
+  const int blockFlag = (blockOkay) ? -1 : 1;
+
+  PetscErrorCode err = MeshCreateMatrix(sieveMesh, fieldSection,
+          matrixType, &_matrix, blockFlag);
+  CHECK_PETSC_ERROR_MSG(err, "Could not create PETSc sparse matrix "
+      "associated with subsystem Jacobian.");
+  logger.stagePop();
+
+  _type = matrixType;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -78,6 +105,14 @@ pylith::topology::Jacobian::matrix(void)
 { // matrix
   return _matrix;
 } // matrix
+
+// ----------------------------------------------------------------------
+// Get matrix type.
+const char*
+pylith::topology::Jacobian::matrixType(void) const
+{ // matrixType
+  return _type.c_str();
+} // matrixType
 
 // ----------------------------------------------------------------------
 // Assemble matrix.
@@ -124,11 +159,10 @@ pylith::topology::Jacobian::view(void) const
 // ----------------------------------------------------------------------
 // Write matrix to binary file.
 void
-pylith::topology::Jacobian::write(const char* filename)
+pylith::topology::Jacobian::write(const char* filename,
+                                  const MPI_Comm comm)
 { // write
   PetscViewer viewer;
-
-  const MPI_Comm comm = _fields.mesh().comm();
 
   PetscErrorCode err = 
     PetscViewerBinaryOpen(comm, filename, FILE_MODE_WRITE, &viewer);

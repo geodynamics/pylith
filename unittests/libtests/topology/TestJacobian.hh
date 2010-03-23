@@ -40,6 +40,7 @@ class pylith::topology::TestJacobian : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestJacobian );
 
   CPPUNIT_TEST( testConstructor );
+  CPPUNIT_TEST( testConstructorSubDomain );
   CPPUNIT_TEST( testMatrix );
   CPPUNIT_TEST( testAssemble );
   CPPUNIT_TEST( testZero );
@@ -53,6 +54,9 @@ public :
 
   /// Test constructor.
   void testConstructor(void);
+
+  /// Test constructor with subdomain.
+  void testConstructorSubDomain(void);
 
   /// Test matrix().
   void testMatrix(void);
@@ -75,10 +79,10 @@ private :
   /** Initialize mesh for Jacobian.
    *
    * @param mesh Finite-element mesh.
-   * @param fields Solution fields.
+   * @param field Solution field.
    */
   void _initialize(Mesh* mesh,
-		   SolutionFields* fields) const;
+                   Field<Mesh>* field) const;
 
 }; // class TestJacobian
 
