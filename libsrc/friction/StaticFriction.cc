@@ -33,16 +33,19 @@ namespace pylith {
     namespace _StaticFriction {
 
       // Number of physical properties.
-      const int numProperties = 1;
+      const int numProperties = 2;
 
       // Physical properties.
       const pylith::materials::Metadata::ParamDescription properties[] = {
 	{ "friction_coefficient", 1, pylith::topology::FieldBase::SCALAR },
+	{ "cohesion", 1, pylith::topology::FieldBase::SCALAR },
       };
 
       // Values expected in spatial database
-      const int numDBProperties = 1;
-      const char* dbProperties[] = { "friction-coefficient" };      
+      const int numDBProperties = 2;
+      const char* dbProperties[] = { "friction-coefficient", 
+				     "cohesion"
+};      
       
     } // _StaticFriction
   } // friction
@@ -50,9 +53,13 @@ namespace pylith {
 
 // Indices of physical properties
 const int pylith::friction::StaticFriction::p_coef = 0;
+const int pylith::friction::StaticFriction::p_cohesion =
+  pylith::friction::StaticFriction::p_coef + 1;
 
 // Indices of database values (order must match dbProperties)
 const int pylith::friction::StaticFriction::db_coef = 0;
+const int pylith::friction::StaticFriction::db_cohesion =
+  pylith::friction::StaticFriction::db_coef + 1;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -84,6 +91,7 @@ pylith::friction::StaticFriction::_dbToProperties(
   assert(_StaticFriction::numDBProperties == numDBValues);
 
   const double coef = dbValues[db_coef];
+  const double cohesion = dbValues[db_cohesion];
  
   if (coef <= 0.0) {
     std::ostringstream msg;
@@ -94,6 +102,7 @@ pylith::friction::StaticFriction::_dbToProperties(
   } // if
 
   propValues[p_coef] = coef;
+  propValues[p_cohesion] = cohesion;
 } // _dbToProperties
 
 // ----------------------------------------------------------------------
@@ -106,7 +115,9 @@ pylith::friction::StaticFriction::_nondimProperties(double* const values,
   assert(0 != values);
   assert(nvalues == _StaticFriction::numProperties);
 
-  // No dimensions
+  const double pressureScale = _normalizer->pressureScale();
+
+  values[p_cohesion] /= pressureScale;
 } // _nondimProperties
 
 // ----------------------------------------------------------------------
@@ -119,7 +130,9 @@ pylith::friction::StaticFriction::_dimProperties(double* const values,
   assert(0 != values);
   assert(nvalues == _StaticFriction::numProperties);
 
-  // No dimensions
+  const double pressureScale = _normalizer->pressureScale();
+
+  values[p_cohesion] *= pressureScale;
 } // _dimProperties
 
 // ----------------------------------------------------------------------
@@ -138,9 +151,10 @@ pylith::friction::StaticFriction::_calcFriction(const double slip,
   assert(0 == numStateVars);
 
   const double friction = (normalTraction < 0.0) ?
-    -properties[p_coef] * normalTraction : 0.0;
+    -properties[p_coef] * normalTraction + properties[p_cohesion]: 
+    0.0;
 
-  PetscLogFlops(1);
+  PetscLogFlops(2);
 
   return friction;
 } // _calcFriction
