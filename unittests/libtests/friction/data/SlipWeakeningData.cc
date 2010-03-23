@@ -14,15 +14,15 @@
 
 const int pylith::friction::SlipWeakeningData::_numLocs = 2;
 
-const int pylith::friction::SlipWeakeningData::_numProperties = 3;
+const int pylith::friction::SlipWeakeningData::_numProperties = 4;
 
 const int pylith::friction::SlipWeakeningData::_numStateVars = 2;
 
-const int pylith::friction::SlipWeakeningData::_numDBProperties = 3;
+const int pylith::friction::SlipWeakeningData::_numDBProperties = 4;
 
 const int pylith::friction::SlipWeakeningData::_numDBStateVars = 2;
 
-const int pylith::friction::SlipWeakeningData::_numPropsVertex = 3;
+const int pylith::friction::SlipWeakeningData::_numPropsVertex = 4;
 
 const int pylith::friction::SlipWeakeningData::_numVarsVertex = 2;
 
@@ -40,6 +40,7 @@ const int pylith::friction::SlipWeakeningData::_numPropertyValues[] = {
   1,
   1,
   1,
+  1,
 };
 
 const int pylith::friction::SlipWeakeningData::_numStateVarValues[] = {
@@ -51,6 +52,7 @@ const char* pylith::friction::SlipWeakeningData::_dbPropertyValues[] = {
   "static-coefficient",
   "dynamic-coefficient",
   "slip-weakeneing-parameter",
+  "cohesion",
 };
 
 const char* pylith::friction::SlipWeakeningData::_dbStateVarValues[] = {
@@ -62,9 +64,11 @@ const double pylith::friction::SlipWeakeningData::_dbProperties[] = {
   0.6,
   0.5,
   0.8,
+  1000000,
   0.6,
   0.5,
   0.4,
+  1000000,
 };
 
 const double pylith::friction::SlipWeakeningData::_dbStateVars[] = {
@@ -78,9 +82,11 @@ const double pylith::friction::SlipWeakeningData::_properties[] = {
   0.6,
   0.5,
   0.8,
+  1000000,
   0.6,
   0.5,
   0.4,
+  1000000,
 };
 
 const double pylith::friction::SlipWeakeningData::_stateVars[] = {
@@ -94,9 +100,11 @@ const double pylith::friction::SlipWeakeningData::_propertiesNondim[] = {
   0.6,
   0.5,
   0.0008,
+  0.000044444444,
   0.6,
   0.5,
   0.0004,
+  0.000044444444,
 };
 
 const double pylith::friction::SlipWeakeningData::_stateVarsNondim[] = {
@@ -107,8 +115,8 @@ const double pylith::friction::SlipWeakeningData::_stateVarsNondim[] = {
 };
 
 const double pylith::friction::SlipWeakeningData::_friction[] = {
-  1.21,
-  1.15,
+  1000001.21,
+  1000001.15,
 };
 
 const double pylith::friction::SlipWeakeningData::_slip[] = {
