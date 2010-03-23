@@ -27,6 +27,8 @@
 
 #include <mpi.h> // USES MPI_Comm
 
+#include <string> // USES std::string
+
 // Jacobian -------------------------------------------------------------
 /// Jacobian of the system as a PETSc sparse matrix.
 class pylith::topology::Jacobian
