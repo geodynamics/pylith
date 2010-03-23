@@ -14,15 +14,15 @@
 
 const int pylith::friction::RateStateAgeingData::_numLocs = 2;
 
-const int pylith::friction::RateStateAgeingData::_numProperties = 5;
+const int pylith::friction::RateStateAgeingData::_numProperties = 6;
 
 const int pylith::friction::RateStateAgeingData::_numStateVars = 1;
 
-const int pylith::friction::RateStateAgeingData::_numDBProperties = 5;
+const int pylith::friction::RateStateAgeingData::_numDBProperties = 6;
 
 const int pylith::friction::RateStateAgeingData::_numDBStateVars = 1;
 
-const int pylith::friction::RateStateAgeingData::_numPropsVertex = 5;
+const int pylith::friction::RateStateAgeingData::_numPropsVertex = 6;
 
 const int pylith::friction::RateStateAgeingData::_numVarsVertex = 1;
 
@@ -42,6 +42,7 @@ const int pylith::friction::RateStateAgeingData::_numPropertyValues[] = {
   1,
   1,
   1,
+  1,
 };
 
 const int pylith::friction::RateStateAgeingData::_numStateVarValues[] = {
@@ -54,6 +55,7 @@ const char* pylith::friction::RateStateAgeingData::_dbPropertyValues[] = {
   "characteristic-slip-distance",
   "constitutive-parameter-a",
   "constitutive-parameter-b",
+  "cohesion",
 };
 
 const char* pylith::friction::RateStateAgeingData::_dbStateVarValues[] = {
@@ -66,11 +68,13 @@ const double pylith::friction::RateStateAgeingData::_dbProperties[] = {
   0.0370,
   0.0125,
   0.0172,
+  1000000,
   0.5,
   0.000002,
   0.0470,
   0.0225,
   0.0272,
+  1000000,
 };
 
 const double pylith::friction::RateStateAgeingData::_dbStateVars[] = {
@@ -84,11 +88,13 @@ const double pylith::friction::RateStateAgeingData::_properties[] = {
   0.0370,
   0.0125,
   0.0172,
+  1000000,
   0.5,
   0.000002,
   0.0470,
   0.0225,
   0.0272,
+  1000000,
 };
 
 const double pylith::friction::RateStateAgeingData::_stateVars[] = {
@@ -102,11 +108,13 @@ const double pylith::friction::RateStateAgeingData::_propertiesNondim[] = {
   0.0000370,
   0.0125,
   0.0172,
+  0.000044444444,
   0.5,
   0.000000002,
   0.0000470,
   0.0225,
   0.0272,
+  0.000044444444,
 };
 
 const double pylith::friction::RateStateAgeingData::_stateVarsNondim[] = {
@@ -115,8 +123,8 @@ const double pylith::friction::RateStateAgeingData::_stateVarsNondim[] = {
 };
 
 const double pylith::friction::RateStateAgeingData::_friction[] = {
-  1.285949009547604,
-  1.164378652801948,
+  1000001.285949009547604,
+  1000001.164378652801948,
 };
 
 const double pylith::friction::RateStateAgeingData::_slip[] = {

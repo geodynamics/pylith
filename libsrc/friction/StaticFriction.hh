@@ -92,7 +92,10 @@ protected :
 private :
 
   static const int p_coef;
+  static const int p_cohesion;
+
   static const int db_coef;
+  static const int db_cohesion;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

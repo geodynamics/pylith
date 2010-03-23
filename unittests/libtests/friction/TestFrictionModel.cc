@@ -123,8 +123,8 @@ pylith::friction::TestFrictionModel::testNormalizer(void)
 void
 pylith::friction::TestFrictionModel::testInitialize(void)
 { // testInitialize
-  const double propertiesE[] = { 0.55, 0.45 };
-  const int numProperties = 1;
+  const double propertiesE[] = { 0.55, 1000000, 0.45, 1000000 };
+  const int numProperties = 2;
 
   topology::Mesh mesh;
   faults::FaultCohesiveDyn fault;
@@ -222,8 +222,8 @@ pylith::friction::TestFrictionModel::testGetField(void)
 void
 pylith::friction::TestFrictionModel::testRetrievePropsAndVars(void)
 { // testRetrievePropsAndVars
-  const double propertiesE[] = { 0.45 };
-  const int numProperties = 1;
+  const double propertiesE[] = { 0.45, 1000000 };
+  const int numProperties = 2;
   const double* stateVarsE = 0;
   const int numStateVars = 0;
   const int vertex = 2;
@@ -273,7 +273,8 @@ pylith::friction::TestFrictionModel::testCalcFriction(void)
   const double slipRate = -2.3;
   const double normalTraction = -2.4;
   const double frictionCoef = 0.45;
-  const double frictionE = -normalTraction*frictionCoef;
+  const double cohesion = 1000000;
+  const double frictionE = -normalTraction*frictionCoef + cohesion;
   const int vertex = 2;
 
   topology::Mesh mesh;
@@ -308,6 +309,7 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     const double slip = 1.2;
     const double slipRate = -2.3;
     const double normalTraction = -2.4;
+    const double cohesion = 1000000;
     const int vertex = 2;
     
     friction.timeStep(data.dt);
@@ -323,10 +325,11 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     const double slip = 0.25;
     const double slipRate = 0.64;
     const double normalTraction = -2.3;
+    const double cohesion = 1000000;
     const double dt = 0.01;
 
-    const size_t numProperties = 3;
-    const double properties[3] = { 0.6, 0.5, 0.004 };
+    const size_t numProperties = 4;
+    const double properties[4] = { 0.6, 0.5, 0.004, 1000000 };
     const size_t numStateVars = 2;
     const double stateVars[2] = { 0.5, 0.1 };
     const double stateVarsUpdated[2] = { 0.65, 0.5 };

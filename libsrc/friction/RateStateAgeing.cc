@@ -33,7 +33,7 @@ namespace pylith {
     namespace _RateStateAgeing {
 
       // Number of physical properties.
-      const int numProperties = 5;
+      const int numProperties = 6;
 
       // Physical properties.
       const pylith::materials::Metadata::ParamDescription properties[] = {
@@ -42,6 +42,7 @@ namespace pylith {
         { "characteristic_slip_distance", 1, pylith::topology::FieldBase::SCALAR },
         { "constitutive_parameter_a", 1, pylith::topology::FieldBase::SCALAR },
         { "constitutive_parameter_b", 1, pylith::topology::FieldBase::SCALAR },
+	{ "cohesion", 1, pylith::topology::FieldBase::SCALAR },
       };
 
       // Number of State Variables.
@@ -53,13 +54,14 @@ namespace pylith {
       };
 
       // Values expected in spatial database
-      const int numDBProperties = 5;
+      const int numDBProperties = 6;
       const char* dbProperties[] = {
           "reference-friction-coefficient"
           "reference-slip-rate"
           "characteristic-slip-distance"
           "constitutive-parameter-a"
           "constitutive-parameter-b"
+	  "cohesion"
       };
 
       const int numDBStateVars = 1;
@@ -81,6 +83,8 @@ const int pylith::friction::RateStateAgeing::p_a =
   pylith::friction::RateStateAgeing::p_L + 1;
 const int pylith::friction::RateStateAgeing::p_b = 
   pylith::friction::RateStateAgeing::p_a + 1;
+const int pylith::friction::RateStateAgeing::p_cohesion =
+  pylith::friction::RateStateAgeing::p_b + 1;
 
 // Indices of database values (order must match dbProperties)
 const int pylith::friction::RateStateAgeing::db_coef = 0;
@@ -92,6 +96,8 @@ const int pylith::friction::RateStateAgeing::db_a =
   pylith::friction::RateStateAgeing::db_L + 1;
 const int pylith::friction::RateStateAgeing::db_b = 
   pylith::friction::RateStateAgeing::db_a + 1;
+const int pylith::friction::RateStateAgeing::db_cohesion =
+  pylith::friction::RateStateAgeing::db_b + 1;
 
 // Indices of state variables.
 const int pylith::friction::RateStateAgeing::s_state = 0;
@@ -135,6 +141,7 @@ pylith::friction::RateStateAgeing::_dbToProperties(
   const double dc = dbValues[db_L];
   const double a = dbValues[db_a];
   const double b = dbValues[db_b];
+  const double cohesion = dbValues[db_cohesion];
  
   if (frictionCoef <= 0.0) {
     std::ostringstream msg;
@@ -173,6 +180,7 @@ pylith::friction::RateStateAgeing::_dbToProperties(
   propValues[p_L] = dc;
   propValues[p_a] = a;
   propValues[p_b] = b;
+  propValues[p_cohesion] = cohesion;
 
 } // _dbToProperties
 
@@ -188,9 +196,11 @@ pylith::friction::RateStateAgeing::_nondimProperties(double* const values,
 
   const double lengthScale = _normalizer->lengthScale();
   const double timeScale = _normalizer->timeScale();
+  const double pressureScale = _normalizer->pressureScale();
 
   values[p_slipRate0] /= lengthScale / timeScale;
   values[p_L] /= lengthScale;
+  values[p_cohesion] /= pressureScale;
 } // _nondimProperties
 
 // ----------------------------------------------------------------------
@@ -205,9 +215,11 @@ pylith::friction::RateStateAgeing::_dimProperties(double* const values,
 
   const double lengthScale = _normalizer->lengthScale();
   const double timeScale = _normalizer->timeScale();
+  const double pressureScale = _normalizer->pressureScale();
 
   values[p_slipRate0] *= lengthScale / timeScale;
   values[p_L] *= lengthScale;
+  values[p_cohesion] *= pressureScale;
 } // _dimProperties
 
 // ----------------------------------------------------------------------
@@ -290,10 +302,10 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
     const double sinhArg = 0.5 * slipRate / slipRate0 * expTerm;
 
     mu_f = a * asinh(sinhArg);
-    friction = -mu_f * normalTraction;
+    friction = -mu_f * normalTraction + properties[p_cohesion];
   } // if
 
-  PetscLogFlops(10);
+  PetscLogFlops(11);
 
   return friction;
 } // _calcFriction
