@@ -5,31 +5,24 @@ CURRENT ISSUES/PRIORITIES
 MAIN PRIORITIES
 
 * Better preconditioning
-  Better PETSc settings or Laplacian based preconditioner
+  + Need settings for Schur complement
 
 * Drucker-Prager elastoplastic
   Add isJacobianSymmetric() to Integrator (default is true, need to query material model).
   Need to pass hint when creating Jacobian.
 
 * Friction
-
   + Fix bug in explicit time-stepping
-
   + Check output (diagnostic + simulation data)
-
   + Add stuff to manual
 
 * Optimization
-
   + Reorder vertices/cells using Cuthill-McKee
-
   + Specialized elasticity integrator objects for Tri3, Quad4, Tet4, Hex8
-
   + inline methods (what isn't getting inlined) -Winline
 
 * Lumped solver
-
-  Need to finish unit tests
+  + Need to finish unit tests
 
 * Updates to manual
   + tutorial
@@ -398,6 +391,8 @@ Release 1.6
   4. Uniform global refinement
 
   5. Drucker-Prager viscoelastoplastic
+
+  6. FaultCohesiveTract (dikes)
 
 ----------------------------------------------------------------------
 Release 1.7
