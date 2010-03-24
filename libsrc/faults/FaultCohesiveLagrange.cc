@@ -241,20 +241,28 @@ pylith::faults::FaultCohesiveLagrange::integrateResidualAssembled(const topology
     _logger->eventBegin(restrictEvent);
 #endif
 
+    // Get slip at fault vertex.
     slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
 
-    // Get orientations at fault cell's vertices.
-    orientationSection->restrictPoint(v_fault, &orientationVertex[0], orientationVertex.size());
+    // Get orientations at fault vertex.
+    orientationSection->restrictPoint(v_fault, &orientationVertex[0],
+				      orientationVertex.size());
 
     // Get disp(t) at conventional vertices and Lagrange vertex.
-    dispTSection->restrictPoint(v_negative, &dispTVertexN[0], dispTVertexN.size());
-    dispTSection->restrictPoint(v_positive, &dispTVertexP[0], dispTVertexP.size());
-    dispTSection->restrictPoint(v_lagrange, &dispTVertexL[0], dispTVertexL.size());
+    dispTSection->restrictPoint(v_negative, &dispTVertexN[0],
+				dispTVertexN.size());
+    dispTSection->restrictPoint(v_positive, &dispTVertexP[0],
+				dispTVertexP.size());
+    dispTSection->restrictPoint(v_lagrange, &dispTVertexL[0],
+				dispTVertexL.size());
 
     // Get dispIncr(t->t+dt) at conventional vertices and Lagrange vertex.
-    dispTIncrSection->restrictPoint(v_negative, &dispTIncrVertexN[0], dispTIncrVertexN.size());
-    dispTIncrSection->restrictPoint(v_positive, &dispTIncrVertexP[0], dispTIncrVertexP.size());
-    dispTIncrSection->restrictPoint(v_lagrange, &dispTIncrVertexL[0], dispTIncrVertexL.size());
+    dispTIncrSection->restrictPoint(v_negative, &dispTIncrVertexN[0],
+				    dispTIncrVertexN.size());
+    dispTIncrSection->restrictPoint(v_positive, &dispTIncrVertexP[0],
+				    dispTIncrVertexP.size());
+    dispTIncrSection->restrictPoint(v_lagrange, &dispTIncrVertexL[0],
+				    dispTIncrVertexL.size());
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -271,7 +279,8 @@ pylith::faults::FaultCohesiveLagrange::integrateResidualAssembled(const topology
     residualVertexN = 0.0;
     for (int iDim = 0; iDim < spaceDim; ++iDim)
       for (int kDim = 0; kDim < spaceDim; ++kDim)
-        residualVertexN[iDim] -= dispTpdtVertexL[kDim] * -orientationVertex[kDim*spaceDim+iDim];
+        residualVertexN[iDim] -= 
+	  dispTpdtVertexL[kDim] * -orientationVertex[kDim*spaceDim+iDim];
 
     // Entries associated with constraint forces applied at positive vertex
     residualVertexP = -residualVertexN;
@@ -289,13 +298,16 @@ pylith::faults::FaultCohesiveLagrange::integrateResidualAssembled(const topology
     _logger->eventBegin(updateEvent);
 #endif
 
-    assert(residualVertexN.size() == residualSection->getFiberDimension(v_negative));
+    assert(residualVertexN.size() == 
+	   residualSection->getFiberDimension(v_negative));
     residualSection->updateAddPoint(v_negative, &residualVertexN[0]);
 
-    assert(residualVertexP.size() == residualSection->getFiberDimension(v_positive));
+    assert(residualVertexP.size() == 
+	   residualSection->getFiberDimension(v_positive));
     residualSection->updateAddPoint(v_positive, &residualVertexP[0]);
 
-    assert(residualVertexL.size() == residualSection->getFiberDimension(v_lagrange));
+    assert(residualVertexL.size() == 
+	   residualSection->getFiberDimension(v_lagrange));
     residualSection->updateAddPoint(v_lagrange, &residualVertexL[0]);
 
 #if defined(DETAILED_EVENT_LOGGING)

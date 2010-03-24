@@ -529,6 +529,18 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     assert(dLagrangeTpdtVertex.size() ==
 	   dispTIncrSection->getFiberDimension(v_lagrange));
     dispTIncrSection->updateAddPoint(v_lagrange, &dLagrangeTpdtVertex[0]);
+
+    // Update displacement field
+    dSlipVertex *= -0.5;
+    assert(dSlipVertex.size() ==
+	   dispTIncrSection->getFiberDimension(v_negative));
+    dispTIncrSection->updateAddPoint(v_negative, &dSlipVertex[0]);
+    
+    dSlipVertex *= -1.0;
+    assert(dSlipVertex.size() ==
+	   dispTIncrSection->getFiberDimension(v_positive));
+    dispTIncrSection->updateAddPoint(v_positive, &dSlipVertex[0]);
+    
   } // for
 
 #if 0 // DEBUGGING
