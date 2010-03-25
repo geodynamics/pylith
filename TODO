@@ -12,7 +12,6 @@ MAIN PRIORITIES
   Need to pass hint when creating Jacobian.
 
 * Friction
-  + Fix bug in explicit time-stepping
   + Check output (diagnostic + simulation data)
   + Add stuff to manual
 
@@ -33,6 +32,10 @@ MAIN PRIORITIES
 SECONDARY PRIORITIES
 
 * Uniform global refinement for tets with faults
+
+* Move time-stepping dependent code to Explicit.cc and Implicit.cc.
+  + Explicit: compute vel(t), acc(t) at beginning of reformResidual()
+  + Implicit: compute vel(t) at begining of reformResidial()
 
 * Cleanup
   + memory model
