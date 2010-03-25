@@ -89,8 +89,8 @@ const double pylith::feassemble::ElasticityExplicitData1DLinear::_fieldTmdt[] = 
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DLinear::_valsResidual[] = {
-  1.60042187e+10,
- -1.59957812e+10,
+  1.59634375e+10,
+ -1.60365625e+10,
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DLinear::_valsJacobian[] = {

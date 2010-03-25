@@ -103,9 +103,9 @@ const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_fieldTmdt[]
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_valsResidual[] = {
-  5.60018750e+10,
-  1.36000938e+11,
- -1.91994375e+11,
+  5.59837500e+10,
+  1.35994063e+11,
+ -1.92044375e+11,
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_valsJacobian[] = {

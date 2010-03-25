@@ -50,9 +50,9 @@ class ElasticityExplicit(Component):
     K = integrator._calculateStiffnessMat()    
     M = integrator._calculateMassMat()
 
-    dispResult = integrator.fieldT - integrator.fieldTmdt
-    residual = 1.0/integrator.dt**2 * numpy.dot(M, dispResult) - \
-        numpy.dot(K, integrator.fieldT)
+    vel = (integrator.fieldT + integrator.fieldTIncr - integrator.fieldTmdt) / (2.0*integrator.dt)
+    acc = (integrator.fieldTIncr - integrator.fieldT + integrator.fieldTmdt) / (integrator.dt**2) 
+    residual = -numpy.dot(M, acc) - numpy.dot(K, integrator.fieldT)
     return residual.flatten()
 
 

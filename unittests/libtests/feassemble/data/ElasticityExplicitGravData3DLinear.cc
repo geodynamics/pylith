@@ -100,10 +100,10 @@ const double pylith::feassemble::ElasticityExplicitGravData3DLinear::_fieldTmdt[
 };
 
 const double pylith::feassemble::ElasticityExplicitGravData3DLinear::_valsResidual[] = {
- -6.07582772e+09,  3.62539077e+10, -3.04285979e+10,
- -4.00897518e+09,  6.66855682e+10, -1.17054566e+10,
-  6.67380053e+09, -1.05592747e+11, -6.51248804e+10,
-  3.41301986e+09,  2.65427945e+09, -2.72420737e+10,
+ -6.07549147e+09,  3.62536555e+10, -3.04276732e+10,
+ -4.00863893e+09,  6.66853160e+10, -1.17045320e+10,
+  6.67413678e+09, -1.05592999e+11, -6.51239558e+10,
+  3.41335611e+09,  2.65402726e+09, -2.72411491e+10,
 };
 
 const double pylith::feassemble::ElasticityExplicitGravData3DLinear::_valsJacobian[] = {

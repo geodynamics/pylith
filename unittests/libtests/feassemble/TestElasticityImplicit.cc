@@ -21,6 +21,7 @@
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 
@@ -193,7 +194,7 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateJacobian(void)
   _initialize(&mesh, &integrator, &fields);
   integrator._needNewJacobian = true;
 
-  topology::Jacobian jacobian(fields);
+  topology::Jacobian jacobian(fields.solution());
 
   const double t = 1.0;
   //mesh->getSieve()->setDebug(10);
