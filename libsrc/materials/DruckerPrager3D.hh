@@ -10,13 +10,13 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/DruckerPragerEP3D.hh
+/** @file libsrc/materials/DruckerPrager3D.hh
  *
  * @brief 3-D, isotropic, Drucker-Prager elastic/perfectly plastic material. 
  */
 
-#if !defined(pylith_materials_druckerpragerep3d_hh)
-#define pylith_materials_druckerpragerep3d_hh
+#if !defined(pylith_materials_druckerprager3d_hh)
+#define pylith_materials_druckerprager3d_hh
 
 // Include directives ---------------------------------------------------
 #include "ElasticMaterial.hh" // ISA ElasticMaterial
@@ -33,18 +33,18 @@
  * beta, and alpha_flow.
  */
 
-class pylith::materials::DruckerPragerEP3D : public ElasticMaterial
-{ // class DruckerPragerEP3D
-  friend class TestDruckerPragerEP3D; // unit testing
+class pylith::materials::DruckerPrager3D : public ElasticMaterial
+{ // class DruckerPrager3D
+  friend class TestDruckerPrager3D; // unit testing
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
   /// Default constructor
-  DruckerPragerEP3D(void);
+  DruckerPrager3D(void);
 
   /// Destructor
-  ~DruckerPragerEP3D(void);
+  ~DruckerPrager3D(void);
 
   /** Set current time step.
    *
@@ -230,7 +230,7 @@ protected :
 private :
 
   /// Member prototype for _calcStress()
-  typedef void (pylith::materials::DruckerPragerEP3D::*calcStress_fn_type)
+  typedef void (pylith::materials::DruckerPrager3D::*calcStress_fn_type)
     (double* const,
      const int,
      const double*,
@@ -246,7 +246,7 @@ private :
      const bool);
 
   /// Member prototype for _calcElasticConsts()
-  typedef void (pylith::materials::DruckerPragerEP3D::*calcElasticConsts_fn_type)
+  typedef void (pylith::materials::DruckerPrager3D::*calcElasticConsts_fn_type)
     (double* const,
      const int,
      const double*,
@@ -261,7 +261,7 @@ private :
      const int);
 
   /// Member prototype for _updateStateVars()
-  typedef void (pylith::materials::DruckerPragerEP3D::*updateStateVars_fn_type)
+  typedef void (pylith::materials::DruckerPrager3D::*updateStateVars_fn_type)
     (double* const,
      const int,
      const double*,
@@ -443,8 +443,10 @@ private :
    * @param tensor1 First tensor.
    * @param tensor2 Second tensor.
    */
+  /*
   double _scalarProduct(const double* tensor1,
 			const double* tensor2) const;
+  */
 
   /** Compute tensor mean, assuming vector form of a tensor.
    *
@@ -492,14 +494,14 @@ private :
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
-  DruckerPragerEP3D(const DruckerPragerEP3D&); ///< Not implemented
-  const DruckerPragerEP3D& operator=(const DruckerPragerEP3D&); ///< Not implemented
+  DruckerPrager3D(const DruckerPrager3D&); ///< Not implemented
+  const DruckerPrager3D& operator=(const DruckerPrager3D&); ///< Not implemented
 
-}; // class DruckerPragerEP3D
+}; // class DruckerPrager3D
 
-#include "DruckerPragerEP3D.icc" // inline methods
+#include "DruckerPrager3D.icc" // inline methods
 
-#endif // pylith_materials_druckerpragerep3d_hh
+#endif // pylith_materials_druckerprager3d_hh
 
 
 // End of file 

@@ -53,6 +53,42 @@ public :
   virtual
   void deallocate(void);
   
+  /** Compute 2D deviatoric stress/strain from vector and mean value.
+   *
+   * @param deviatoric Array for deviatoric tensor.
+   * @param vec Input tensor (as vector).
+   * @param vecMean Tensor trace divided by spatial_dimension.
+   */
+  void calcDeviatoric2D(double* const deviatoric,
+			const double* vec,
+			const double vecMean);
+  
+  /** Compute 3D deviatoric stress/strain from vector and mean value.
+   *
+   * @param deviatoric Array for deviatoric tensor.
+   * @param vec Input tensor (as vector).
+   * @param vecMean Tensor trace divided by spatial_dimension.
+   */
+  void calcDeviatoric3D(double* const deviatoric,
+			const double* vec,
+			const double vecMean);
+  
+  /** Compute 2D scalar product of two tensors represented as vectors.
+   *
+   * @param tensor1 First tensor.
+   * @param tensor2 Second tensor.
+   */
+  double scalarProduct2D(const double* tensor1,
+			 const double* tensor2) const;
+  
+  /** Compute 3D scalar product of two tensors represented as vectors.
+   *
+   * @param tensor1 First tensor.
+   * @param tensor2 Second tensor.
+   */
+  double scalarProduct3D(const double* tensor1,
+			 const double* tensor2) const;
+  
   /** Set database for initial stress state.
    *
    * @param db Spatial database.

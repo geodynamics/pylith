@@ -96,6 +96,7 @@ libpylith_la_SOURCES = \
 	materials/MaxwellIsotropic3D.cc \
 	materials/MaxwellPlaneStrain.cc \
 	materials/PowerLaw3D.cc \
+	materials/DruckerPrager3D.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \
 	meshio/GMVFileAscii.cc \

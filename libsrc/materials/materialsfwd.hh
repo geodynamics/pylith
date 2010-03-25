@@ -39,6 +39,7 @@ namespace pylith {
     class MaxwellPlaneStrain;
     class GenMaxwellIsotropic3D;
     class PowerLaw3D;
+    class DruckerPrager3D;
 
     class EffectiveStress;
     class ViscoelasticMaxwell;
