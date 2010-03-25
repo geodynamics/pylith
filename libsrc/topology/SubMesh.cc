@@ -18,6 +18,10 @@
 
 #include <Selection.hh> // USES ALE::Selection
 
+#include <stdexcept> // USES std::runtime_error
+#include <sstream> // USES std::ostringstream
+#include <cassert> // USES assert()
+
 // ----------------------------------------------------------------------
 // Default constructor
 pylith::topology::SubMesh::SubMesh(void) :

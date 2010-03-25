@@ -17,6 +17,9 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 #include "pylith/utils/array.hh" // USES double_array
+#include <stdexcept> // USES std::runtime_error
+#include <sstream> // USES std::ostringstream
+#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Default constructor
