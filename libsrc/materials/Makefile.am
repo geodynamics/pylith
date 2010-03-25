@@ -30,6 +30,8 @@ subpkginclude_HEADERS = \
 	MaxwellPlaneStrain.icc \
 	PowerLaw3D.hh \
 	PowerLaw3D.icc \
+	DruckerPrager3D.hh \
+	DruckerPrager3D.icc \
 	Metadata.hh \
 	Metadata.icc \
 	Material.hh \

@@ -408,7 +408,8 @@ pylith::materials::PowerLaw3D::_stableTimeStepImplicit(
 			      stress[3],
 			      stress[4],
 			      stress[5] };
-  const double devStressProd = _scalarProduct(devStress, devStress);
+  const double devStressProd =
+    pylith::materials::ElasticMaterial::scalarProduct3D(devStress, devStress);
   const double effStress = (devStressProd <= 0.0) ? referenceStress :
     sqrt(0.5 * devStressProd);
   const double dtStable = 0.05 *
@@ -558,7 +559,8 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
 					initialStress[4],
 					initialStress[5] };
     const double stressInvar2Initial = 0.5 *
-      _scalarProduct(devStressInitial, devStressInitial);
+      pylith::materials::ElasticMaterial::scalarProduct3D(devStressInitial,
+							  devStressInitial);
 
     // Initial strain values
     const double meanStrainInitial = (initialStrain[0] +
@@ -582,7 +584,8 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
 	totalStrain[4] - visStrainT[4] - initialStrain[4],
 	totalStrain[5] - visStrainT[5] - initialStrain[5] };
     const double strainPPInvar2Tpdt = 0.5 *
-      _scalarProduct(strainPPTpdt, strainPPTpdt);
+      pylith::materials::ElasticMaterial::scalarProduct3D(strainPPTpdt,
+							  strainPPTpdt);
 
     // Values for previous time step
     const double meanStressT = (stressT[0] +
@@ -594,15 +597,22 @@ pylith::materials::PowerLaw3D::_calcStressViscoelastic(
 				  stressT[3],
 				  stressT[4],
 				  stressT[5] };
-    const double stressInvar2T = 0.5 * _scalarProduct(devStressT, devStressT);
+    const double stressInvar2T = 0.5 *
+      pylith::materials::ElasticMaterial::scalarProduct3D(devStressT,
+							  devStressT);
     const double effStressT = sqrt(stressInvar2T);
 
     // Finish defining parameters needed for root-finding algorithm.
-    const double b = strainPPInvar2Tpdt +
-      ae * _scalarProduct(strainPPTpdt, devStressInitial) +
+    const double b = strainPPInvar2Tpdt + ae *
+      pylith::materials::ElasticMaterial::scalarProduct3D(strainPPTpdt,
+							  devStressInitial) +
       ae * ae * stressInvar2Initial;
-    const double c = (_scalarProduct(strainPPTpdt, devStressT) +
-		      ae * _scalarProduct(devStressT, devStressInitial)) *
+    const double c =
+      (pylith::materials::ElasticMaterial::scalarProduct3D(strainPPTpdt,
+							   devStressT) +
+       ae *
+       pylith::materials::ElasticMaterial::scalarProduct3D(devStressT,
+							   devStressInitial)) *
       timeFac;
     const double d = timeFac * effStressT;
 
@@ -919,7 +929,8 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
 				      initialStress[4],
 				      initialStress[5] };
   const double stressInvar2Initial = 0.5 *
-    _scalarProduct(devStressInitial, devStressInitial);
+    pylith::materials::ElasticMaterial::scalarProduct3D(devStressInitial,
+							devStressInitial);
 
   // Initial strain values.
   const double meanStrainInitial = (initialStrain[0] +
@@ -944,7 +955,8 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
       totalStrain[4] - visStrainT[4] - initialStrain[4],
       totalStrain[5] - visStrainT[5] - initialStrain[5] };
   const double strainPPInvar2Tpdt = 0.5 *
-    _scalarProduct(strainPPTpdt, strainPPTpdt);
+    pylith::materials::ElasticMaterial::scalarProduct3D(strainPPTpdt,
+							strainPPTpdt);
   
   // Values for previous time step
   const double meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
@@ -954,15 +966,21 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
 				stressT[3],
 				stressT[4],
 				stressT[5] };
-  const double stressInvar2T = 0.5 * _scalarProduct(devStressT, devStressT);
+  const double stressInvar2T = 0.5 *
+    pylith::materials::ElasticMaterial::scalarProduct3D(devStressT, devStressT);
   const double effStressT = sqrt(stressInvar2T);
     
   // Finish defining parameters needed for root-finding algorithm.
   const double b = strainPPInvar2Tpdt +
-    ae * _scalarProduct(strainPPTpdt, devStressInitial) +
+    ae * pylith::materials::ElasticMaterial::scalarProduct3D(strainPPTpdt,
+							     devStressInitial) +
     ae * ae * stressInvar2Initial;
-  const double c = (_scalarProduct(strainPPTpdt, devStressT) +
-		    ae * _scalarProduct(devStressT, devStressInitial)) *
+  const double c =
+    (pylith::materials::ElasticMaterial::scalarProduct3D(strainPPTpdt,
+							 devStressT) +
+     ae *
+     pylith::materials::ElasticMaterial::scalarProduct3D(devStressT,
+							 devStressInitial)) *
     timeFac;
   const double d = timeFac * effStressT;
 
@@ -1213,7 +1231,8 @@ pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
 				      initialStress[4],
 				      initialStress[5] };
   const double stressInvar2Initial = 0.5 *
-    _scalarProduct(devStressInitial, devStressInitial);
+    pylith::materials::ElasticMaterial::scalarProduct3D(devStressInitial,
+							devStressInitial);
 
   // Initial strain values
   const double meanStrainInitial = (initialStrain[0] + initialStrain[1] +
@@ -1236,7 +1255,8 @@ pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
       totalStrain[4] - visStrainT[4] - initialStrain[4],
       totalStrain[5] - visStrainT[5] - initialStrain[5] };
   const double strainPPInvar2Tpdt = 0.5 *
-    _scalarProduct(strainPPTpdt, strainPPTpdt);
+    pylith::materials::ElasticMaterial::scalarProduct3D(strainPPTpdt,
+							strainPPTpdt);
 
   // Values for previous time step
   const double meanStressT = (stressT[0] + stressT[1] + stressT[2])/3.0;
@@ -1246,15 +1266,22 @@ pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
 				stressT[3],
 				stressT[4],
 				stressT[5] };
-  const double stressInvar2T = 0.5 * _scalarProduct(devStressT, devStressT);
+  const double stressInvar2T = 0.5 *
+    pylith::materials::ElasticMaterial::scalarProduct3D(devStressT,
+							devStressT);
   const double effStressT = sqrt(stressInvar2T);
 
   // Finish defining parameters needed for root-finding algorithm.
   const double b = strainPPInvar2Tpdt +
-    ae * _scalarProduct(strainPPTpdt, devStressInitial) +
+    ae * pylith::materials::ElasticMaterial::scalarProduct3D(strainPPTpdt,
+							     devStressInitial) +
     ae * ae * stressInvar2Initial;
-  const double c = (_scalarProduct(strainPPTpdt, devStressT) +
-		    ae * _scalarProduct(devStressT, devStressInitial)) *
+  const double c =
+    (pylith::materials::ElasticMaterial::scalarProduct3D(strainPPTpdt,
+							 devStressT) +
+     ae *
+     pylith::materials::ElasticMaterial::scalarProduct3D(devStressT,
+							 devStressInitial)) *
     timeFac;
   const double d = timeFac * effStressT;
   PetscLogFlops(92);
@@ -1312,22 +1339,5 @@ pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
   PetscLogFlops(14 + _tensorSize * 15);
 
 } // _updateStateVarsViscoelastic
-
-// ----------------------------------------------------------------------
-// Compute scalar product of two tensors.
-double
-pylith::materials::PowerLaw3D::_scalarProduct(
-				    const double* tensor1,
-				    const double* tensor2) const
-{ // _scalarProduct
-  const double scalarProduct = tensor1[0] * tensor2[0] +
-    tensor1[1] * tensor2[1] +
-    tensor1[2] * tensor2[2] +
-    2.0 * (tensor1[3] * tensor2[3] +
-	   tensor1[4] * tensor2[4] +
-	   tensor1[5] * tensor2[5]);
-  return scalarProduct;
-
-} // _scalarProduct
 
 // End of file 

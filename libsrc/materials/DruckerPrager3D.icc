@@ -10,8 +10,8 @@
 // ----------------------------------------------------------------------
 //
 
-#if !defined(pylith_materials_druckerpragerep3d_hh)
-#error "DruckerPragerEP3D.icc can only be included from DruckerPragerEP3D.hh"
+#if !defined(pylith_materials_druckerprager3d_hh)
+#error "DruckerPrager3D.icc can only be included from DruckerPrager3D.hh"
 #endif
 
 #include <cassert> // USES assert()
@@ -20,51 +20,29 @@
 // Set current time step.
 inline
 void
-pylith::materials::DruckerPragerEP3D::timeStep(const double dt) {
+pylith::materials::DruckerPrager3D::timeStep(const double dt) {
   // Not sure what to do here.  If we are using full Newton the Jacobian will
   // always need reforming, but SNES may opt not to reform it sometimes.
   _needNewJacobian = true;
   _dt = dt;
 } // timeStep
 
-// Compute mean stress/strain from vector.
-inline
-double
-pylith::materials::DruckerPragerEP3D::_calcMean(const double* vec) {
-  const double vecMean = (vec[0] + vec[1] + vec[2])/3.0;
-  return vecMean;
-} // _calcMean
-
-// Compute deviatoric stress/strain from vector and mean value.
-inline
-double
-pylith::materials::DruckerPragerEP3D::_calcDeviatoric(const double* vec,
-						      const double vecMean) {
-  const double deviatoric[] = {vec[0] - vecMean,
-			       vec[1] - vecMean,
-			       vec[2] - vecMean,
-			       vec[3],
-			       vec[4],
-			       vec[5]};
-  return deviatoric;
-} // _calcDeviatoric
-
 // Compute stress tensor from parameters.
 inline
 void
-pylith::materials::DruckerPragerEP3D::_calcStress(double* const stress,
-						  const int stressSize,
-						  const double* properties,
-						  const int numProperties,
-						  const double* stateVars,
-						  const int numStateVars,
-						  const double* totalStrain,
-						  const int strainSize,
-						  const double* initialStress,
-						  const int initialStressSize,
-						  const double* initialStrain,
-						  const int initialStrainSize,
-						  const bool computeStateVars)
+pylith::materials::DruckerPrager3D::_calcStress(double* const stress,
+						const int stressSize,
+						const double* properties,
+						const int numProperties,
+						const double* stateVars,
+						const int numStateVars,
+						const double* totalStrain,
+						const int strainSize,
+						const double* initialStress,
+						const int initialStressSize,
+						const double* initialStrain,
+						const int initialStrainSize,
+						const bool computeStateVars)
 {
   assert(0 != _calcStressFn);
   CALL_MEMBER_FN(*this, _calcStressFn)(stress, stressSize, 
@@ -79,7 +57,7 @@ pylith::materials::DruckerPragerEP3D::_calcStress(double* const stress,
 // Compute derivatives of elasticity matrix from parameters.
 inline
 void
-pylith::materials::DruckerPragerEP3D::_calcElasticConsts(
+pylith::materials::DruckerPrager3D::_calcElasticConsts(
 					double* const elasticConsts,
 					const int numElasticConsts,
 					const double* properties,
@@ -105,23 +83,24 @@ pylith::materials::DruckerPragerEP3D::_calcElasticConsts(
 // Update state variables after solve.
 inline
 void
-pylith::materials::DruckerPragerEP3D::_updateStateVars(double* const stateVars,
-						 const int numStateVars,
-						 const double* properties,
-						 const int numProperties,
-						 const double* totalStrain,
-						 const int strainSize,
-						 const double* initialStress,
-						 const int initialStressSize,
-						 const double* initialStrain,
-						 const int initialStrainSize)
+pylith::materials::DruckerPrager3D::_updateStateVars(
+					double* const stateVars,
+					const int numStateVars,
+					const double* properties,
+					const int numProperties,
+					const double* totalStrain,
+					const int strainSize,
+					const double* initialStress,
+					const int initialStressSize,
+					const double* initialStrain,
+					const int initialStrainSize)
 {
   assert(0 != _updateStateVarsFn);
   CALL_MEMBER_FN(*this, _updateStateVarsFn)(stateVars, numStateVars,
-					     properties, numProperties,
-					     totalStrain, strainSize,
-					     initialStress, initialStressSize,
-					     initialStrain, initialStrainSize);
+					    properties, numProperties,
+					    totalStrain, strainSize,
+					    initialStress, initialStressSize,
+					    initialStrain, initialStrainSize);
 } // _updateStateVars
 
 // End of file 
