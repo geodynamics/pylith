@@ -42,7 +42,6 @@ class pylith::feassemble::TestIntegrator : public CppUnit::TestFixture
 
   CPPUNIT_TEST( testTimeStep );
   CPPUNIT_TEST( testStableTimeStep );  
-  CPPUNIT_TEST( testNeedJacobianDiag );
   CPPUNIT_TEST( testNeedVelocity );
 
   CPPUNIT_TEST( testQuadrature );
@@ -65,9 +64,6 @@ public :
 
   /// Test stableTimeStep().
   void testStableTimeStep(void);
-
-  /// Test needJacobianDiag().
-  void testNeedJacobianDiag(void);
 
   /// Test needVelocity().
   void testNeedVelocity(void);
