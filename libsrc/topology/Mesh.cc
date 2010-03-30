@@ -120,15 +120,21 @@ pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimension
       ++v_iter) {
     coordsSection->restrictPoint(*v_iter,
 			       &coordsVertex[0], coordsVertex.size());
-    coordsDimSection->restrictPoint(*v_iter, &coordsDimVertex[0],
-				  coordsDimVertex.size());
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      coordsDimVertex[iDim] = coordsVertex[iDim];
+
+    // Save dimensioned coordinates in coordsDimVertex
+    coordsDimVertex = coordsVertex;
 
     // Nondimensionalize original coordinates.
     normalizer.nondimensionalize(&coordsVertex[0], spaceDim, lengthScale);
 
+    // Update section with nondimensional coordinates
+    assert(coordsVertex.size() == 
+	   coordsSection->getFiberDimension(*v_iter));
     coordsSection->updatePoint(*v_iter, &coordsVertex[0]);
+    
+    // Update section with dimensioned coordinates
+    assert(coordsDimVertex.size() == 
+	   coordsDimSection->getFiberDimension(*v_iter));
     coordsDimSection->updatePoint(*v_iter, &coordsDimVertex[0]);
   } // for
 } // nondimensionalize
