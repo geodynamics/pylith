@@ -571,7 +571,6 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     (double_array*,
      const double_array&,
      const double_array&,
-     const double_array&,
      const double_array&);
 
   /// Member prototype for _adjustSolnLumpedXD()
@@ -791,8 +790,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 					 tractionTpdtVertex, *areaVertex);
     CALL_MEMBER_FN(*this,
        sensitivitySolveLumpedFn)(&slipVertex,
-           dLagrangeTpdtVertex, orientationVertex,
-           jacobianVertexN, jacobianVertexP);
+           dLagrangeTpdtVertex, jacobianVertexN, jacobianVertexP);
 
     lagrangeTIncrVertex += dLagrangeTpdtVertex;
 
@@ -1759,19 +1757,16 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateSoln(const bool negativeSide
 // Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 1-D.
 void
 pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped1D(
-             double_array* slip,
+                                     double_array* slip,
 				     const double_array& dLagrangeTpdt,
-				     const double_array& orientation,
 				     const double_array& jacobianN,
 				     const double_array& jacobianP)
 { // _sensitivitySolveLumped1D
   assert(0 != slip);
 
   // Sensitivity of slip to changes in the Lagrange multipliers
-  // Aixjx = 1.0/Aix + 1.0/Ajx
-  const double Aixjx = 1.0 / jacobianN[0] + 1.0
+  const double Spp = 1.0 / jacobianN[0] + 1.0
     / jacobianP[0];
-  const double Spp = 1.0;
 
   const double dlp = dLagrangeTpdt[0];
   (*slip)[0] -= Spp * dlp;
@@ -1785,52 +1780,42 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped1D(
 // Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 2-D.
 void
 pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped2D(
-             double_array* slip,
+                                     double_array* slip,
 				     const double_array& dLagrangeTpdt,
-				     const double_array& orientation,
 				     const double_array& jacobianN,
 				     const double_array& jacobianP)
 { // _sensitivitySolveLumped2D
   assert(0 != slip);
 
   // Sensitivity of slip to changes in the Lagrange multipliers
-  // Aixjx = 1.0/Aix + 1.0/Ajx
+  // Spp = Sqq = 1.0/Aix + 1.0/Ajx
   assert(jacobianN[0] > 0.0);
   assert(jacobianP[0] > 0.0);
-  const double Aixjx = 1.0 / jacobianN[0] + 1.0
-    / jacobianP[0];
-  // Aiyjy = 1.0/Aiy + 1.0/Ajy
-  assert(jacobianN[1] > 0.0);
-  assert(jacobianP[1] > 0.0);
-  const double Aiyjy = 1.0 / jacobianN[1] + 1.0
-    / jacobianP[1];
-  const double Cpx = orientation[0];
-  const double Cpy = orientation[1];
-  const double Cqx = orientation[2];
-  const double Cqy = orientation[3];
 
-  // Sensitivity matrix using only diagonal of A to approximate its inverse
-   const double Spp = Cpx * Cpx * Aixjx + Cpy * Cpy * Aiyjy;
-   const double Spq = Cpx * Cqx * Aixjx + Cpy * Cqy * Aiyjy;
-   const double Sqq = Cqx * Cqx * Aixjx + Cqy * Cqy * Aiyjy;
+  // Check to make sure Jacobian is same at all DOF for
+  // vertices i and j (means S is diagonal with equal enties).
+  assert(jacobianN[0] == jacobianN[1]);
+  assert(jacobianP[0] == jacobianP[1]);
+  
+  const double Spp = 1.0 / jacobianN[0] + 1.0 / jacobianP[0];
+  const double Sqq = Spp;
 
   const double dlp = dLagrangeTpdt[0];
   const double dlq = dLagrangeTpdt[1];
-  (*slip)[0] -= Spp * dlp + Spq * dlq;
-  (*slip)[1] -= Spq * dlp + Sqq * dlq;
+  (*slip)[0] -= Spp * dlp;
+  (*slip)[1] -= Sqq * dlq;
 
   std::cout << "Slip: (" << (*slip)[0] << ", " << (*slip)[1] << ")" << std::endl;
 
-  PetscLogFlops(8);
+  PetscLogFlops(7);
 } // _sensitivitySolveLumped2D
 
 // ----------------------------------------------------------------------
 // Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 3-D.
 void
 pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped3D(
-             double_array* slip,
+                                     double_array* slip,
 				     const double_array& dLagrangeTpdt,
-				     const double_array& orientation,
 				     const double_array& jacobianN,
 				     const double_array& jacobianP)
 { // _sensitivitySolveLumped3D
@@ -1840,43 +1825,29 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped3D(
   // Aixjx = 1.0/Aix + 1.0/Ajx
   assert(jacobianN[0] > 0.0);
   assert(jacobianP[0] > 0.0);
-  const double Aixjx = 1.0 / jacobianN[0] + 1.0 / jacobianP[0];
-  // Aiyjy = 1.0/Aiy + 1.0/Ajy
-  assert(jacobianN[1] > 0.0);
-  assert(jacobianP[1] > 0.0);
-  const double Aiyjy = 1.0 / jacobianN[1] + 1.0 / jacobianP[1];
-  // Aizjz = 1.0/Aiz + 1.0/Ajz
-  assert(jacobianN[2] > 0.0);
-  assert(jacobianP[2] > 0.0);
-  const double Aizjz = 1.0 / jacobianN[2] + 1.0 / jacobianP[2];
-  const double Cpx = orientation[0];
-  const double Cpy = orientation[1];
-  const double Cpz = orientation[2];
-  const double Cqx = orientation[3];
-  const double Cqy = orientation[4];
-  const double Cqz = orientation[5];
-  const double Crx = orientation[6];
-  const double Cry = orientation[7];
-  const double Crz = orientation[8];
 
-  // Sensitivity matrix using only diagonal of A to approximate its inverse
-  const double Spp = Cpx * Cpx * Aixjx + Cpy * Cpy * Aiyjy + Cpz * Cpz * Aizjz;
-  const double Spq = Cpx * Cqx * Aixjx + Cpy * Cqy * Aiyjy + Cpz * Cqz * Aizjz;
-  const double Spr = Cpx * Crx * Aixjx + Cpy * Cry * Aiyjy + Cpz * Crz * Aizjz;
-  const double Sqq = Cqx * Cqx * Aixjx + Cqy * Cqy * Aiyjy + Cqz * Cqz * Aizjz;
-  const double Sqr = Cqx * Crx * Aixjx + Cqy * Cry * Aiyjy + Cqz * Crz * Aizjz;
-  const double Srr = Crx * Crx * Aixjx + Cry * Cry * Aiyjy + Crz * Crz * Aizjz;
+  // Check to make sure Jacobian is same at all DOF for
+  // vertices i and j (means S is diagonal with equal enties).
+  assert(jacobianN[0] == jacobianN[1] && 
+	 jacobianN[0] == jacobianN[2]);
+  assert(jacobianP[0] == jacobianP[1] && 
+	 jacobianP[0] == jacobianP[2]);
+
+
+  const double Spp = 1.0 / jacobianN[0] + 1.0 / jacobianP[0];
+  const double Sqq = Spp;
+  const double Srr = Spp;
 
   const double dlp = dLagrangeTpdt[0];
   const double dlq = dLagrangeTpdt[1];
   const double dlr = dLagrangeTpdt[2];
-  (*slip)[0] -= Spp * dlp + Spq * dlq + Spr * dlr;
-  (*slip)[1] -= Spq * dlp + Sqq * dlq + Sqr * dlr;
-  (*slip)[2] -= Spr * dlp + Sqr * dlq + Srr * dlr;
+  (*slip)[0] -= Spp * dlp;
+  (*slip)[1] -= Sqq * dlq;
+  (*slip)[2] -= Srr * dlr;
 
   std::cout << "Slip: (" << (*slip)[0] << ", " << (*slip)[1] << ", " << (*slip)[2] << ")" << std::endl;
 
-  PetscLogFlops(3*3 + 6*8 + 3*6);
+  PetscLogFlops(9);
 } // _sensitivitySolveLumped3D
 
 // ----------------------------------------------------------------------
