@@ -178,7 +178,7 @@ class TestFaultCohesiveDyn(unittest.TestCase):
     (mesh, fault, fields) = self._initialize()
 
     from pylith.topology.Jacobian import Jacobian
-    jacobian = Jacobian(fields)
+    jacobian = Jacobian(fields.solution())
     jacobian.zero()
     t = 1.0
     fault.integrateJacobian(jacobian, t, fields)
@@ -314,6 +314,9 @@ class TestFaultCohesiveDyn(unittest.TestCase):
     firstFaultCell      = 2*nvertices
     fault.adjustTopology(mesh, firstFaultVertex, firstLagrangeVertex,
                          firstFaultCell)
+
+    mesh.nondimensionalize(normalizer)
+
     fault.preinitialize(mesh)
     fault.timeStep(dt)
     fault.verifyConfiguration()

@@ -55,7 +55,7 @@ class TestJacobian(unittest.TestCase):
     solution.zero()
 
     self.fields = fields
-    self.jacobian = Jacobian(self.fields)
+    self.jacobian = Jacobian(solution)
     return
 
 
@@ -64,8 +64,8 @@ class TestJacobian(unittest.TestCase):
     Test constructor.
     """
     # setUp() tests constructor with default type
-    jacobianA = Jacobian(self.fields, "aij")
-    jacobianB = Jacobian(self.fields, "baij")
+    jacobianA = Jacobian(self.fields.solution(), "aij")
+    jacobianB = Jacobian(self.fields.solution(), "baij")
     return
 
 
@@ -130,9 +130,13 @@ class TestJacobian(unittest.TestCase):
     :WARNING: This is not a complete test of write(). We do not
     verify the results.
     """
-    self.jacobian = Jacobian(self.fields, "aij")
+    self.jacobian = Jacobian(self.fields.solution(), "aij")
     self.jacobian.assemble("final_assembly")
-    self.jacobian.write("jacobian.mat")
+
+    from pylith.mpi.Communicator import Communicator
+    comm = Communicator(self.mesh.comm())
+
+    self.jacobian.write("jacobian.mat", comm.handle)
 
     # No testing of result.
     return

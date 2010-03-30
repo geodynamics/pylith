@@ -205,7 +205,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     (mesh, fault, fields) = self._initialize()
 
     from pylith.topology.Jacobian import Jacobian
-    jacobian = Jacobian(fields)
+    jacobian = Jacobian(fields.solution())
     jacobian.zero()
     t = 1.0
     fault.integrateJacobian(jacobian, t, fields)
