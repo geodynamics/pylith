@@ -991,13 +991,6 @@ pylith::faults::TestFaultCohesiveKin::_initialize(
   
   //mesh->debug(true); // DEBUGGING
   
-  spatialdata::geocoords::CSCart cs;
-  spatialdata::units::Nondimensional normalizer;
-  cs.setSpaceDim(mesh->dimension());
-  cs.initialize();
-  mesh->coordsys(&cs);
-  mesh->nondimensionalize(normalizer);
-  
   _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,
 			  _data->basisDeriv,
 			  _data->numQuadPts, _data->numBasis, _data->cellDim,
@@ -1050,6 +1043,13 @@ pylith::faults::TestFaultCohesiveKin::_initialize(
   fault->eqsrcs(const_cast<const char**>(names), nsrcs, sources, nsrcs);
   fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
   
+  spatialdata::geocoords::CSCart cs;
+  spatialdata::units::Nondimensional normalizer;
+  cs.setSpaceDim(mesh->dimension());
+  cs.initialize();
+  mesh->coordsys(&cs);
+  mesh->nondimensionalize(normalizer);
+
   const double upDir[] = { 0.0, 0.0, 1.0 };
   const double normalDir[] = { 1.0, 0.0, 0.0 };
   
