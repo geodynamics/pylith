@@ -85,13 +85,17 @@ class MeshImporter(MeshGenerator):
     logEvent = "%screate" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)    
 
+    # Read mesh
     mesh = self.reader.read(self.debug, self.interpolate)
     if self.debug:
       mesh.view("Finite-element mesh.")
+
+    # Adjust topology
     self._debug.log(resourceUsageString())
     self._info.log("Adjusting topology.")
     self._adjustTopology(mesh, faults)
 
+    # Distribute mesh
     import mpi
     if mpi.MPI_Comm_size(mpi.MPI_COMM_WORLD) > 1:
       self._info.log("Distributing mesh.")
@@ -99,7 +103,7 @@ class MeshImporter(MeshGenerator):
       if self.debug:
         mesh.view("Distributed mesh.")
 
-    # refine mesh (if necessary)
+    # Refine mesh (if necessary)
     mesh = self.refiner.refine(mesh)
 
     # Nondimensionalize mesh (coordinates of vertices).
