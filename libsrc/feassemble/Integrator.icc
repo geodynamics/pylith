@@ -34,8 +34,8 @@ pylith::feassemble::Integrator<quadrature_type>::needNewJacobian(void) const {
 template<typename quadrature_type>
 inline
 bool
-pylith::feassemble::Integrator<quadrature_type>::needVelocity(void) const {
-  return _needVelocity;
+pylith::feassemble::Integrator<quadrature_type>::isJacobianSymmetric(void) const {
+  return _isJacobianSymmetric;
 } // needsVelocity
 
 // Set flag for setting constraints for total field solution or

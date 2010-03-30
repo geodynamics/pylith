@@ -61,11 +61,11 @@ public :
    */
   const topology::SolutionFields& fields(void) const;
 
-  /** Get flag indicating whether we need to compute velocity at time t.
+  /** Get flag indicating whether Jacobian is symmetric.
    *
-   * @returns True if velocity is needed, otherwise false.
+   * @returns True if Jacobian is symmetric, otherwise false.
    */
-  bool needVelocity(void) const;
+  bool isJacobianSymmetric(void) const;
   
   /** Set handles to integrators over the mesh.
    *
@@ -155,7 +155,7 @@ protected :
 
   /// Compute velocity at time t.
   virtual
-  void _calcVelocity(void) = 0;
+  void _calcRateFields(void) = 0;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
@@ -172,7 +172,7 @@ protected :
   ///< Integrators over lower-dimensional subdomains of the mesh.
   std::vector<IntegratorSubMesh*> _submeshIntegrators;
 
-  bool _needVelocity; ///< Integrator(s) need velocity.
+  bool _isJacobianSymmetric; ///< Is system Jacobian symmetric?
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

@@ -29,6 +29,9 @@ MAIN PRIORITIES
   + Large deformation formulation
   + Lumped solver
 
+* valgrind segfaults
+  cases with 1-D mesh - start with meshio
+
 SECONDARY PRIORITIES
 
 * Uniform global refinement for tets with faults

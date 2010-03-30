@@ -112,7 +112,7 @@ public :
     *
     * @returns True if integrator needs velocity for computation.
     */
-   bool needVelocity(void) const;
+   bool isJacobianSymmetric(void) const;
 
   /** Set flag for setting constraints for total field solution or
    *  incremental field solution.
@@ -313,7 +313,7 @@ protected :
 
   /// True if we need to compute velocity field, false otherwise.
   /// Default is false;
-  bool _needVelocity;
+  bool _isJacobianSymmetric;
 
   /// Flag indicating whether to set constraints for a total field
   /// solution or an incremental field solution

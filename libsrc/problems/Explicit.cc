@@ -34,14 +34,18 @@ pylith::problems::Explicit::~Explicit(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Compute velocity at time t.
+// Compute velocity and acceleration at time t.
 void
-pylith::problems::Explicit::_calcVelocity(void)
-{ // _calcVelocity
+pylith::problems::Explicit::_calcRateFields(void)
+{ // _calcRateFields
   assert(0 != _fields);
 
   // vel(t) = (disp(t+dt) - disp(t-dt)) / (2*dt)
   //        = (dispIncr(t+dt) + disp(t) - disp(t-dt)) / (2*dt)
+  //
+  // acc(t) = (disp(t+dt) - 2*disp(t) + disp(t-dt)) / (dt*dt)
+  //        = (dispIncr(t+dt) - disp(t) + disp(t-dt)) / (dt*dt)
+
   const double dt = _dt;
 
   topology::Field<topology::Mesh>& dispIncr = _fields->get("dispIncr(t->t+dt)");
@@ -53,6 +57,11 @@ pylith::problems::Explicit::_calcVelocity(void)
     _fields->add("velocity(t)", "velocity");
     topology::Field<topology::Mesh>& velocity = _fields->get("velocity(t)");
     velocity.cloneSection(dispIncr);
+
+    _fields->add("acceleration(t)", "acceleration");
+    topology::Field<topology::Mesh>& acceleration = 
+      _fields->get("acceleration(t)");
+    acceleration.cloneSection(dispIncr);
   } // if
 
   // Get sections.
@@ -69,10 +78,15 @@ pylith::problems::Explicit::_calcVelocity(void)
     _fields->get("disp(t-dt)").section();
   assert(!dispTmdtSection.isNull());
 
-  double_array velocityVertex(spaceDim);
-  topology::Field<topology::Mesh>& velocity = _fields->get("velocity(t)");
-  const ALE::Obj<RealSection>& velocitySection = velocity.section();
-  assert(!velocitySection.isNull());
+  double_array velVertex(spaceDim);
+  const ALE::Obj<RealSection>& velSection = 
+    _fields->get("velocity(t)").section();
+  assert(!velSection.isNull());
+
+  double_array accVertex(spaceDim);
+  const ALE::Obj<RealSection>&  accSection = 
+    _fields->get("acceleration(t)").section();
+  assert(!accSection.isNull());
 
   // Get mesh vertices.
   const ALE::Obj<SieveMesh>& sieveMesh = dispIncr.mesh().sieveMesh();
@@ -92,14 +106,20 @@ pylith::problems::Explicit::_calcVelocity(void)
 				dispTVertex.size());
     dispTmdtSection->restrictPoint(*v_iter, &dispTmdtVertex[0],
 				   dispTmdtVertex.size());
-    velocityVertex = (dispIncrVertex + dispTVertex - dispTmdtVertex) / (2.0 * dt);
-    
-    assert(velocitySection->getFiberDimension(*v_iter) == spaceDim);
-    velocitySection->updatePoint(*v_iter, &velocityVertex[0]);
-  } // for
-  PetscLogFlops(vertices->size() * spaceDim);
 
-} // _calcVelocity
+    velVertex = (dispIncrVertex + dispTVertex - dispTmdtVertex) / (2.0 * dt);
+    accVertex = (dispIncrVertex - dispTVertex + dispTmdtVertex) / (dt * dt);
+    
+    assert(velSection->getFiberDimension(*v_iter) == spaceDim);
+    velSection->updatePoint(*v_iter, &velVertex[0]);
+
+    assert(accSection->getFiberDimension(*v_iter) == spaceDim);
+    accSection->updatePoint(*v_iter, &accVertex[0]);
+  } // for
+
+  PetscLogFlops(vertices->size() * 6*spaceDim);
+} // _calcRateFields
+
 
 
 // End of file

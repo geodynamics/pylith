@@ -107,7 +107,7 @@ pylith::friction::FrictionModel::initialize(
   assert(0 != quadrature);
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Friction");
+  //logger.stagePush("Friction");
 
   // Get quadrature information
   const int numQuadPts = quadrature->numQuadPts();
@@ -362,7 +362,7 @@ pylith::friction::FrictionModel::initialize(
   _propertiesVertex.resize(_numPropsVertex);
   _stateVarsVertex.resize(_numVarsVertex);
 
-  logger.stagePop();
+  //logger.stagePop();
 } // initialize
 
 // ----------------------------------------------------------------------

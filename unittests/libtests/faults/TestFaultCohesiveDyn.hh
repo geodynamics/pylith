@@ -46,7 +46,6 @@ class pylith::faults::TestFaultCohesiveDyn: public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestFaultCohesiveDyn );
 
   CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testNeedVelocity );
   CPPUNIT_TEST( testDBInitialTract );
 
   // Tests in derived classes:
@@ -80,9 +79,6 @@ public:
 
   /// Test constructor.
   void testConstructor(void);
-
-  /// Test needVelocity().
-  void testNeedVelocity(void);
 
   /// Test dbInitialTract().
   void testDBInitialTract(void);
