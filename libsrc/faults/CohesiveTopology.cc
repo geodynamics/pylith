@@ -792,14 +792,23 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   assert(!fCoordinates.isNull());
   const ALE::Obj<SieveMesh::label_sequence>& vertices =
     sieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
   const SieveMesh::label_sequence::iterator vBegin = vertices->begin();
   const SieveMesh::label_sequence::iterator vEnd = vertices->end();
 
-  fCoordinates->setChart(topology::Mesh::RealSection::chart_type(faultSieveMesh->heightStratum(0)->size(),
-                                                             faultSieveMesh->getSieve()->getChart().max()));
+  const ALE::Obj<SieveMesh::label_sequence>& fvertices =
+    faultSieveMesh->depthStratum(0);
+  assert(!fvertices.isNull());
+  const point_type fvMin = *std::min_element(fvertices->begin(), 
+					     fvertices->end());
+  const point_type fvMax = *std::max_element(fvertices->begin(),
+					     fvertices->end());
+  
+  fCoordinates->setChart(topology::Mesh::RealSection::chart_type(fvMin, 
+								 fvMax+1));
   for (SieveMesh::label_sequence::iterator v_iter = vBegin;
-      v_iter != vEnd;
-      ++v_iter) {
+       v_iter != vEnd;
+       ++v_iter) {
     if (fRenumbering.find(*v_iter) == fRenumberingEnd)
       continue;
     fCoordinates->setFiberDimension(fRenumbering[*v_iter],
@@ -824,13 +833,9 @@ pylith::faults::CohesiveTopology::createFaultParallel(
     const ALE::Obj<topology::Mesh::RealSection>& fCoordinatesDim =
       faultSieveMesh->getRealSection("coordinates_dimensioned");
     assert(!fCoordinatesDim.isNull());
-    const ALE::Obj<SieveMesh::label_sequence>& vertices =
-      sieveMesh->depthStratum(0);
-    const SieveMesh::label_sequence::iterator vBegin = vertices->begin();
-    const SieveMesh::label_sequence::iterator vEnd = vertices->end();
 
-    fCoordinatesDim->setChart(topology::Mesh::RealSection::chart_type(faultSieveMesh->heightStratum(0)->size(),
-								   faultSieveMesh->getSieve()->getChart().max()));
+    fCoordinatesDim->setChart(topology::Mesh::RealSection::chart_type(fvMin,
+								      fvMax+1));
     for (SieveMesh::label_sequence::iterator v_iter = vBegin;
 	 v_iter != vEnd;
 	 ++v_iter) {
@@ -845,9 +850,9 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 	++v_iter) {
       if (fRenumbering.find(*v_iter) == fRenumberingEnd)
 	continue;
-    fCoordinatesDim->updatePoint(fRenumbering[*v_iter], 
-			      coordinatesDim->restrictPoint(*v_iter));
-    }
+      fCoordinatesDim->updatePoint(fRenumbering[*v_iter], 
+				   coordinatesDim->restrictPoint(*v_iter));
+    } // for
     //faultSieveMesh->view("Parallel fault mesh");
   } // if
 
