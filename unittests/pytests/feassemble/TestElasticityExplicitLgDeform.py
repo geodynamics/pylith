@@ -163,7 +163,7 @@ class TestElasticityExplicitLgDeform(unittest.TestCase):
     fields = self._initialize(mesh, integrator)
 
     from pylith.topology.Jacobian import Jacobian
-    jacobian = Jacobian(fields)
+    jacobian = Jacobian(fields.solution())
     jacobian.zero()
     t = 7.3
     self.assertEqual(True, integrator.needNewJacobian())

@@ -123,7 +123,7 @@ class TestNeumann(unittest.TestCase):
     (mesh, bc, fields) = self._initialize()
 
     from pylith.topology.Jacobian import Jacobian
-    jacobian = Jacobian(fields)
+    jacobian = Jacobian(fields.solution())
     jacobian.zero()
     t = 0.24
     bc.integrateJacobian(jacobian, t, fields)

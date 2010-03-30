@@ -124,7 +124,7 @@ class TestAbsorbingDampers(unittest.TestCase):
     (mesh, bc, fields) = self._initialize()
 
     from pylith.topology.Jacobian import Jacobian
-    jacobian = Jacobian(fields)
+    jacobian = Jacobian(fields.solution())
     jacobian.zero()
     t = 0.24
     bc.integrateJacobian(jacobian, t, fields)
@@ -232,10 +232,10 @@ class TestAbsorbingDampers(unittest.TestCase):
     from pylith.topology.SolutionFields import SolutionFields
     fields = SolutionFields(mesh)
     fields.add("residual", "residual")
-    fields.add("disp(t+dt)", "displacement")
+    fields.add("dispIncr(t->t+dt)", "displacement")
     fields.add("disp(t)", "displacement")
     fields.add("disp(t-dt)", "displacement")
-    fields.solutionName("disp(t+dt)")
+    fields.solutionName("dispIncr(t->t+dt)")
 
     residual = fields.get("residual")
     residual.newSection(residual.VERTICES_FIELD, cs.spaceDim())
