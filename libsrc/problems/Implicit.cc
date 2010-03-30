@@ -36,8 +36,8 @@ pylith::problems::Implicit::~Implicit(void)
 // ----------------------------------------------------------------------
 // Compute velocity at time t.
 void
-pylith::problems::Implicit::_calcVelocity(void)
-{ // _calcVelocity
+pylith::problems::Implicit::_calcRateFields(void)
+{ // _calcRateFields
   assert(0 != _fields);
 
   // vel(t) = (disp(t+dt) - disp(t)) / dt
@@ -60,10 +60,10 @@ pylith::problems::Implicit::_calcVelocity(void)
   const ALE::Obj<RealSection>& dispIncrSection = dispIncr.section();
   assert(!dispIncrSection.isNull());
 	 
-  double_array velocityVertex(spaceDim);
-  topology::Field<topology::Mesh>& velocity = _fields->get("velocity(t)");
-  const ALE::Obj<RealSection>& velocitySection = velocity.section();
-  assert(!velocitySection.isNull());
+  double_array velVertex(spaceDim);
+  const ALE::Obj<RealSection>& velSection = 
+    _fields->get("velocity(t)").section();
+  assert(!velSection.isNull());
 
   // Get mesh vertices.
   const ALE::Obj<SieveMesh>& sieveMesh = dispIncr.mesh().sieveMesh();
@@ -79,14 +79,14 @@ pylith::problems::Implicit::_calcVelocity(void)
        ++v_iter) {
     dispIncrSection->restrictPoint(*v_iter, &dispIncrVertex[0],
 				   dispIncrVertex.size());
-    velocityVertex = dispIncrVertex / dt;
+    velVertex = dispIncrVertex / dt;
     
-    assert(velocitySection->getFiberDimension(*v_iter) == spaceDim);
-    velocitySection->updatePoint(*v_iter, &velocityVertex[0]);
+    assert(velSection->getFiberDimension(*v_iter) == spaceDim);
+    velSection->updatePoint(*v_iter, &velVertex[0]);
   } // for
   PetscLogFlops(vertices->size() * spaceDim);
 
-} // _calcVelocity
+} // _calcRateFields
 
 
 // End of file

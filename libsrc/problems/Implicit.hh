@@ -45,7 +45,7 @@ public :
 protected :
 
   /// Compute velocity at time t.
-  void _calcVelocity(void);
+  void _calcRateFields(void);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

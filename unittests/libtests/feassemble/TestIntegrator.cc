@@ -49,17 +49,17 @@ pylith::feassemble::TestIntegrator::testStableTimeStep(void)
 } // testStableTimeStep
 
 // ----------------------------------------------------------------------
-// Test needVelocity().
+// Test isJacobianSymmetric().
 void
-pylith::feassemble::TestIntegrator::testNeedVelocity(void)
-{ // testNeedVelocity
+pylith::feassemble::TestIntegrator::testIsJacobianSymmetric(void)
+{ // testIsJacobianSymmetric
   ElasticityExplicit integrator;
 
-  CPPUNIT_ASSERT_EQUAL(false, integrator.needVelocity());
+  CPPUNIT_ASSERT_EQUAL(true, integrator.isJacobianSymmetric());
 
-  integrator._needVelocity = true;
-  CPPUNIT_ASSERT_EQUAL(true, integrator.needVelocity());
-} // testNeedVelocity
+  integrator._isJacobianSymmetric = false;
+  CPPUNIT_ASSERT_EQUAL(false, integrator.isJacobianSymmetric());
+} // testIsJacobianSymmetric
 
 // ----------------------------------------------------------------------
 // Test quadrature().

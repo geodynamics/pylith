@@ -58,7 +58,6 @@ pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void) :
   _jacobian(0),
   _ksp(0)
 { // constructor
-  _needVelocity = true;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -119,6 +118,8 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
 
   // Setup fault constitutive model.
   assert(0 != _friction);
+  assert(0 != _faultMesh);
+  assert(0 != _fields);
   _friction->initialize(*_faultMesh, _quadrature, _fields->get("area"));
 
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();

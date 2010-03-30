@@ -32,7 +32,7 @@ pylith::problems::Formulation::Formulation(void) :
   _jacobian(0),
   _jacobianLumped(0),
   _fields(0),
-  _needVelocity(false)
+  _isJacobianSymmetric(false)
 { // constructor
 } // constructor
 
@@ -64,10 +64,10 @@ pylith::problems::Formulation::fields(void) const
 // ----------------------------------------------------------------------
 // Get flag indicating whether we need to compute velocity at time t.
 bool
-pylith::problems::Formulation::needVelocity(void) const
-{ // needVelocity
-  return _needVelocity;
-} // needVelocity
+pylith::problems::Formulation::isJacobianSymmetric(void) const
+{ // isJacobianSymmetric
+  return _isJacobianSymmetric;
+} // isJacobianSymmetric
   
 // ----------------------------------------------------------------------
 // Set integrators over the mesh.
@@ -102,18 +102,18 @@ pylith::problems::Formulation::initialize(void)
 { // initialize
 
   // Determine whether we need to compute velocity
-  _needVelocity = false;
+  _isJacobianSymmetric = false;
   int numIntegrators = _meshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i) {
     assert(0 != _meshIntegrators[i]);
-    if (_meshIntegrators[i]->needVelocity())
-      _needVelocity = true;
+    if (_meshIntegrators[i]->isJacobianSymmetric())
+      _isJacobianSymmetric = true;
   } // fpr
   numIntegrators = _submeshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i) {
     assert(0 != _submeshIntegrators[i]);
-    if (_submeshIntegrators[i]->needVelocity())
-      _needVelocity = true;
+    if (_submeshIntegrators[i]->isJacobianSymmetric())
+      _isJacobianSymmetric = true;
   } // for
 } // initialize
 
@@ -169,9 +169,8 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
     solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
 
-  // Compute velocity if necessary.
-  if (_needVelocity)
-    _calcVelocity();
+  // Compute rate fields.
+  _calcRateFields();
 
   // Set residual to zero.
   topology::Field<topology::Mesh>& residual = _fields->get("residual");
@@ -226,9 +225,8 @@ pylith::problems::Formulation::reformResidualLumped(const PetscVec* tmpResidualV
     solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
 
-  // Compute velocity if necessary.
-  if (_needVelocity)
-    _calcVelocity();
+  // Compute rate fields.
+  _calcRateFields();
 
   // Set residual to zero.
   topology::Field<topology::Mesh>& residual = _fields->get("residual");

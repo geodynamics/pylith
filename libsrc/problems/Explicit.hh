@@ -44,8 +44,8 @@ public :
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
-  /// Compute velocity at time t.
-  void _calcVelocity(void);
+  /// Compute velocity and acceleration at time t.
+  void _calcRateFields(void);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

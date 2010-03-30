@@ -40,11 +40,11 @@ namespace pylith {
        */
       const pylith::topology::SolutionFields& fields(void) const;
 
-      /** Get flag indicating whether we need to compute velocity at time t.
+      /** Get flag indicating whether Jacobian is symmetric.
        *
-       * @returns True if velocity is needed, otherwise false.
+       * @returns True if Jacobian is symmetric, otherwise false.
        */
-      bool needVelocity(void) const;
+      bool isJacobianSymmetric(void) const;
   
       /** Set handles to integrators over the mesh.
        *

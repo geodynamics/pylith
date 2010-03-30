@@ -77,16 +77,6 @@ pylith::faults::TestFaultCohesiveDyn::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
-// Test needVelocity().
-void
-pylith::faults::TestFaultCohesiveDyn::testNeedVelocity(void)
-{ // testNeedVelocity
-  FaultCohesiveDyn fault;
-
-  CPPUNIT_ASSERT_EQUAL(true, fault.needVelocity());
-} // testNeedVelocity
-
-// ----------------------------------------------------------------------
 // Test dbInitialTract().
 void
 pylith::faults::TestFaultCohesiveDyn::testDBInitialTract(void)
