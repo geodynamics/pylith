@@ -210,13 +210,11 @@ private :
    *
    * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
    * @param dLagrangeTpdt Change in Lagrange multiplier.
-   * @param orientation Fault orientation assoc. w/Lagrang multiplier vertex.
    * @param jacobianN Jacobian for vertex on - side of the fault.
    * @param jacobianP Jacobian for vertex on + side of the fault.
    */
   void _sensitivitySolveLumped1D(double_array* slip,
                                  const double_array& dLagrangeTpdt,
-                                 const double_array& orientation,
                                  const double_array& jacobianN,
                                  const double_array& jacobianP);
 
@@ -224,13 +222,11 @@ private :
    *
    * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
    * @param dLagrangeTpdt Change in Lagrange multiplier.
-   * @param orientation Fault orientation assoc. w/Lagrang multiplier vertex.
    * @param jacobianN Jacobian for vertex on - side of the fault.
    * @param jacobianP Jacobian for vertex on + side of the fault.
    */
   void _sensitivitySolveLumped2D(double_array* slip,
                                  const double_array& dLagrangeTpdt,
-                                 const double_array& orientation,
                                  const double_array& jacobianN,
                                  const double_array& jacobianP);
 
@@ -238,13 +234,11 @@ private :
    *
    * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
    * @param dLagrangeTpdt Change in Lagrange multiplier.
-   * @param orientation Fault orientation assoc. w/Lagrang multiplier vertex.
    * @param jacobianN Jacobian for vertex on - side of the fault.
    * @param jacobianP Jacobian for vertex on + side of the fault.
    */
   void _sensitivitySolveLumped3D(double_array* slip,
                                  const double_array& dLagrangeTpdt,
-                                 const double_array& orientation,
                                  const double_array& jacobianN,
                                  const double_array& jacobianP);
 
