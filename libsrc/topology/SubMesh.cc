@@ -11,6 +11,7 @@
 //
 
 #include <portinfo>
+#include <stdexcept>
 
 #include "SubMesh.hh" // implementation of class methods
 

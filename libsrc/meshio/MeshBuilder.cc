@@ -178,6 +178,13 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
 						 &(*coordinates)[0]);
   logger.stagePop();
+
+  logger.stagePush("MeshReordering");
+  ALE::Obj<ALE::Ordering<>::perm_type> reordering = new ALE::Ordering<>::perm_type(sieveMesh->comm(), sieveMesh->debug());
+
+  ALE::Ordering<>::calculateMeshReordering(sieveMesh, reordering);
+  sieveMesh->relabel(*reordering);
+  logger.stagePop();
   logger.stagePop();
 
   sieveMesh->getFactory()->clear();

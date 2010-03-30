@@ -11,6 +11,7 @@
 //
 
 #include <portinfo>
+#include <stdexcept>
 
 #include "Mesh.hh" // implementation of class methods
 
