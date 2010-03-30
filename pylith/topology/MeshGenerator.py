@@ -68,6 +68,9 @@ class MeshGenerator(PetscComponent):
     """
     Generate a Mesh.
     """
+
+    # Need to nondimensionalize coordinates.
+    
     raise NotImplementedError("MeshGenerator.create() not implemented.")
     return
 
