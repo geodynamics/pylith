@@ -18,7 +18,6 @@
 #include "pylith/utils/array.hh" // USES double_array, int_array
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "Selection.hh" // USES boundary()
 
