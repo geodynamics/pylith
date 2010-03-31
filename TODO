@@ -32,9 +32,6 @@ MAIN PRIORITIES
   + Large deformation formulation
   + Lumped solver
 
-* valgrind segfaults
-  cases with 1-D mesh - start with meshio
-
 SECONDARY PRIORITIES
 
 * Uniform global refinement for tets with faults
@@ -79,6 +76,10 @@ Unit tests
 
   ElasticityExplicit
     integrateResidualLumped()
+  ElasticityExplicitTet4
+    integrateResidualLumped()
+  ElasticityExplicitLgDeform
+    integrateResidualLumped()
   AbsorbingDampers
     integrateResidualLumped()
 
@@ -86,6 +87,8 @@ Unit tests
   FaultCohesiveDyn
 
     adjustSolnLumped()
+    _adjustSolnLumpedXD()
+    _constrainSolnSpaceXD()
 
 ----------------------------------------------------------------------
 TODO WELL BEFORE WORKSHOP 2010
