@@ -56,6 +56,16 @@ namespace pylith {
 			     const double t,
 			     pylith::topology::SolutionFields* const fields);
       
+      /** Integrate contributions to residual term (r) for operator.
+       *
+       * @param residual Field containing values for residual
+       * @param t Current time
+       * @param fields Solution fields
+       */
+      void integrateResidualLumped(const pylith::topology::Field<pylith::topology::Mesh>& residual,
+				   const double t,
+				   pylith::topology::SolutionFields* const fields);
+
       /** Integrate contributions to Jacobian matrix (A) associated with
        * operator.
        *
