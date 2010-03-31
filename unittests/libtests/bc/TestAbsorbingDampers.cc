@@ -408,6 +408,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     fields->add("dispIncr(t->t+dt)", "displacement_increment");
     fields->add("disp(t)", "displacement");
     fields->add("disp(t-dt)", "displacement");
+    fields->add("velocity(t)", "velocity");
     fields->solutionName("dispIncr(t->t+dt)");
   
     topology::Field<topology::Mesh>& residual = fields->get("residual");
@@ -430,17 +431,30 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
       fields->get("disp(t)").section();
     const ALE::Obj<RealSection>& dispTmdtSection = 
       fields->get("disp(t-dt)").section();
+    const ALE::Obj<RealSection>& velSection = 
+      fields->get("velocity(t)").section();
     CPPUNIT_ASSERT(!dispTIncrSection.isNull());
     CPPUNIT_ASSERT(!dispTSection.isNull());
     CPPUNIT_ASSERT(!dispTmdtSection.isNull());
+    CPPUNIT_ASSERT(!velSection.isNull());
     const int offset = numMeshCells;
+    const int spaceDim = _data->spaceDim;
+    const double dt = _data->dt;
+    double_array velVertex(spaceDim);
     for (int iVertex=0; iVertex < totalNumVertices; ++iVertex) {
       dispTIncrSection->updatePoint(iVertex+offset, 
-				   &_data->fieldTIncr[iVertex*_data->spaceDim]);
+				    &_data->fieldTIncr[iVertex*spaceDim]);
       dispTSection->updatePoint(iVertex+offset, 
-				&_data->fieldT[iVertex*_data->spaceDim]);
+				&_data->fieldT[iVertex*spaceDim]);
       dispTmdtSection->updatePoint(iVertex+offset, 
-				   &_data->fieldTmdt[iVertex*_data->spaceDim]);
+				   &_data->fieldTmdt[iVertex*spaceDim]);
+      
+      for (int iDim=0; iDim < spaceDim; ++iDim)
+	velVertex[iDim] = (_data->fieldTIncr[iVertex*spaceDim+iDim] +
+			   _data->fieldT[iVertex*spaceDim+iDim] -
+			   _data->fieldTmdt[iVertex*spaceDim+iDim]) / (2*dt);
+
+      velSection->updatePoint(iVertex+offset, &velVertex[0]);
     } // for
   } catch (const ALE::Exception& err) {
     throw std::runtime_error(err.msg());
