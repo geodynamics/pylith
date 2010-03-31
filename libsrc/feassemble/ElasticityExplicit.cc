@@ -191,8 +191,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
   
   double_array dispCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispSection = 
-    fields->get("disp(t)").section();
+  const ALE::Obj<RealSection>& dispSection = fields->get("disp(t)").section();
   assert(!dispSection.isNull());
   RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
   
@@ -312,7 +311,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
       } // for
     } // for
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(2*spaceDim))));
+    PetscLogFlops(numQuadPts*(2+numBasis*(1+numBasis*(2*spaceDim))));
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(stressEvent);
 #endif
@@ -653,10 +652,8 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  double_array dispCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispSection = 
-    fields->get("disp(t)").section();
-  assert(!dispSection.isNull());
+  const ALE::Obj<RealSection>& solnSection = fields->solution().section();
+  assert(!solnSection.isNull());
 
   // Get sparse matrix
   const PetscMat jacobianMat = jacobian->matrix();
@@ -668,10 +665,10 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   assert(dt > 0);
 
   const ALE::Obj<SieveMesh::order_type>& globalOrder = 
-    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", dispSection);
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solnSection);
   assert(!globalOrder.isNull());
   // We would need to request unique points here if we had an interpolated mesh
-  topology::Mesh::IndicesVisitor jacobianVisitor(*dispSection, *globalOrder,
+  topology::Mesh::IndicesVisitor jacobianVisitor(*solnSection, *globalOrder,
 		  (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
 			    sieveMesh->depth())*spaceDim);
 
@@ -822,11 +819,6 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   double_array valuesIJ(numBasis);
 
   // Get sections
-  double_array dispCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispSection = 
-    fields->get("disp(t)").section();
-  assert(!dispSection.isNull());
-
   const ALE::Obj<RealSection>& jacobianSection = jacobian->section();
   assert(!jacobianSection.isNull());
   topology::Mesh::UpdateAddVisitor jacobianVisitor(*jacobianSection, 

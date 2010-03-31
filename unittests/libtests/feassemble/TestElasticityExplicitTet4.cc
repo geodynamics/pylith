@@ -368,6 +368,9 @@ pylith::feassemble::TestElasticityExplicitTet4::_initialize(
   CPPUNIT_ASSERT(0 != _quadrature);
   CPPUNIT_ASSERT(0 != _material);
 
+  const int spaceDim = _data->spaceDim;
+  const double dt = _data->dt;
+
   // Setup mesh
   mesh->createSieveMesh(_data->cellDim);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
@@ -390,7 +393,7 @@ pylith::feassemble::TestElasticityExplicitTet4::_initialize(
   ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
   sieveMesh->setSieve(sieve);
   sieveMesh->stratify();
-  ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, _data->spaceDim, 
+  ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
 						 _data->vertices);
 
   // Material ids
@@ -412,11 +415,11 @@ pylith::feassemble::TestElasticityExplicitTet4::_initialize(
 			  _data->numBasis, _data->cellDim,
 			  _data->quadPts, _data->numQuadPts, _data->cellDim,
 			  _data->quadWts, _data->numQuadPts,
-			  _data->spaceDim);
+			  spaceDim);
 
   spatialdata::units::Nondimensional normalizer;
   spatialdata::geocoords::CSCart cs;
-  cs.setSpaceDim(_data->spaceDim);
+  cs.setSpaceDim(spaceDim);
   cs.initialize();
   mesh->coordsys(&cs);
   mesh->nondimensionalize(normalizer);
@@ -444,32 +447,48 @@ pylith::feassemble::TestElasticityExplicitTet4::_initialize(
   fields->add("dispIncr(t->t+dt)", "displacement_increment");
   fields->add("disp(t)", "displacement");
   fields->add("disp(t-dt)", "displacement");
+  fields->add("acceleration(t)", "acceleration");
   fields->solutionName("dispIncr(t->t+dt)");
   
   topology::Field<topology::Mesh>& residual = fields->get("residual");
-  residual.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
+  residual.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   residual.allocate();
   residual.zero();
   fields->copyLayout("residual");
 
-  const int fieldSize = _data->spaceDim * _data->numVertices;
+  const int fieldSize = spaceDim * _data->numVertices;
   topology::Field<topology::Mesh>& dispIncr = fields->get("dispIncr(t->t+dt)");
   topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
   topology::Field<topology::Mesh>& dispTmdt = fields->get("disp(t-dt)");
-  const ALE::Obj<RealSection>& dispIncrSection = dispIncr.section();
-  const ALE::Obj<RealSection>& dispTSection = dispT.section();
-  const ALE::Obj<RealSection>& dispTmdtSection = dispTmdt.section();
+  const ALE::Obj<RealSection>& dispIncrSection = 
+    fields->get("dispIncr(t->t+dt)").section();
+  const ALE::Obj<RealSection>& dispTSection = 
+    fields->get("disp(t)").section();
+  const ALE::Obj<RealSection>& dispTmdtSection = 
+    fields->get("disp(t-dt)").section();
+  const ALE::Obj<RealSection>& accSection = 
+    fields->get("acceleration(t)").section();
   CPPUNIT_ASSERT(!dispIncrSection.isNull());
   CPPUNIT_ASSERT(!dispTSection.isNull());
   CPPUNIT_ASSERT(!dispTmdtSection.isNull());
+  CPPUNIT_ASSERT(!accSection.isNull());
+
+  double_array accVertex(spaceDim);
+
   const int offset = _data->numCells;
   for (int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
     dispIncrSection->updatePoint(iVertex+offset, 
-				 &_data->fieldTIncr[iVertex*_data->spaceDim]);
+				 &_data->fieldTIncr[iVertex*spaceDim]);
     dispTSection->updatePoint(iVertex+offset, 
-			      &_data->fieldT[iVertex*_data->spaceDim]);
+			      &_data->fieldT[iVertex*spaceDim]);
     dispTmdtSection->updatePoint(iVertex+offset, 
-				 &_data->fieldTmdt[iVertex*_data->spaceDim]);
+				 &_data->fieldTmdt[iVertex*spaceDim]);
+
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      accVertex[iDim] = (_data->fieldTIncr[iVertex*spaceDim+iDim] -
+			 _data->fieldT[iVertex*spaceDim+iDim] +
+			 _data->fieldTmdt[iVertex*spaceDim+iDim]) / (dt*dt);
+    accSection->updatePoint(iVertex+offset, &accVertex[0]);
   } // for
 } // _initialize
 
