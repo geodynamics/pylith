@@ -146,6 +146,7 @@ nobase_pkgpyexec_PYTHON = \
 	topology/MeshImporterDist.py \
 	topology/MeshRefiner.py \
 	topology/RefineUniform.py \
+	topology/ReverseCuthillMcKee.py \
 	utils/__init__.py \
 	utils/CheckpointTimer.py \
 	utils/CppData.py \

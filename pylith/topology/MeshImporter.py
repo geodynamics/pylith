@@ -46,7 +46,7 @@ class MeshImporter(MeshGenerator):
 
     import pyre.inventory
 
-    reorderMesh = pyre.inventory.bool("reorder_mesh", default=True)
+    reorderMesh = pyre.inventory.bool("reorder_mesh", default=False)
     reorderMesh.meta['tip'] = "Reorder mesh using reverse Cuthill-McKee."
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
@@ -93,7 +93,11 @@ class MeshImporter(MeshGenerator):
     if self.debug:
       mesh.view("Finite-element mesh.")
 
-    # :TODO: Reorder mesh
+    # Reorder mesh
+    if self.reorderMesh:
+      from pylith.topology.ReverseCuthillMcKee import ReverseCuthillMcKee
+      ordering = ReverseCuthillMcKee()
+      ordering.reorder(mesh)
 
     # Adjust topology
     self._debug.log(resourceUsageString())
@@ -128,6 +132,7 @@ class MeshImporter(MeshGenerator):
     self.reader = self.inventory.reader
     self.distributor = self.inventory.distributor
     self.refiner = self.inventory.refiner
+    self.reorderMesh = self.inventory.reorderMesh
     return
   
 

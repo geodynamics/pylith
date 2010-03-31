@@ -42,6 +42,8 @@ namespace pylith {
     class MeshRefiner;
     class RefineUniform;
 
+    class ReverseCuthillMcKee;
+
   } // topology
 } // pylith
 

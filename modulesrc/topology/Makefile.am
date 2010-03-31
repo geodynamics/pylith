@@ -28,7 +28,8 @@ swig_sources = \
 	SolutionFields.i \
 	Jacobian.i \
 	Distributor.i \
-	RefineUniform.i
+	RefineUniform.i \
+	ReverseCuthillMcKee.i
 
 swig_generated = \
 	topology_wrap.cxx \
