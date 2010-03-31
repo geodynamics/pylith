@@ -5,8 +5,7 @@ CURRENT ISSUES/PRIORITIES
 MAIN PRIORITIES
 
 * Mesh reordering
-
-  Make optional in MeshImporter.py.
+  debug
 
 * Better preconditioning
   + Need settings for Schur complement
@@ -39,11 +38,6 @@ MAIN PRIORITIES
 SECONDARY PRIORITIES
 
 * Uniform global refinement for tets with faults
-
-* Use rate fields.
-  + AbsorbingDampers
-  + ElasticityExplicit
-  + ElasticityExpligitLgDeform
 
 * Cleanup
   + memory model

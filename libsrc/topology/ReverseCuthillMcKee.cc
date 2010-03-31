@@ -17,6 +17,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include <cassert> // USES assert()
+#include <stdexcept> // USES std::exception
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
@@ -36,6 +37,10 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
     new ALE::Ordering<>::perm_type(sieveMesh->comm(), sieveMesh->debug());
 
   ALE::Ordering<>::calculateMeshReordering(sieveMesh, reordering);
+
+  reordering->view("REORDERING");
+  sieveMesh->view("MESH BEFORE RELABEL");
+
   sieveMesh->relabel(*reordering);
 
   //logger.stagePop();
