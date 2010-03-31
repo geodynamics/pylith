@@ -26,12 +26,15 @@
 #include "pylith/friction/RateStateAgeing.hh"
 
 #include "pylith/utils/arrayfwd.hh"
+#include "pylith/utils/sievetypes.hh"
 %}
 
 %include "exception.i"
 %exception {
   try {
     $action
+  } catch (const ALE::Exception& err) {
+    SWIG_exception(SWIG_RuntimeError, err.message());
   } catch (const std::exception& err) {
     SWIG_exception(SWIG_RuntimeError, err.what());
   } // try/catch
